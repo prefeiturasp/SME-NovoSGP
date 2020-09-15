@@ -4,7 +4,7 @@ using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
-using Newtonsoft.Json;
+using SME.SGP.Infra.Json;
 using Xunit;
 
 namespace SME.SGP.Integracao.Teste

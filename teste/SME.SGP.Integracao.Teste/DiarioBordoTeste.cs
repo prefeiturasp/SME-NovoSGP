@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using SME.SGP.Infra.Json;
 using SME.SGP.Infra;
 using System;
 using System.Net.Http;
@@ -132,7 +132,7 @@ namespace SME.SGP.Integracao.Teste
 
         private string TransformarEmJson(object model)
         {
-            return JsonConvert.SerializeObject(model);
+            return SgpJsonSerializer.Serialize(model);
         }
     }
 }

@@ -1,9 +1,9 @@
-﻿using Newtonsoft.Json;
-using SME.SGP.Aplicacao.Integracoes;
+﻿using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Json;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -91,7 +91,7 @@ namespace SME.SGP.Aplicacao
                 var disciplinasCacheString = await repositorioCache.ObterAsync(chaveCache);
 
                 if (!string.IsNullOrWhiteSpace(disciplinasCacheString))
-                    return JsonConvert.DeserializeObject<List<DisciplinaDto>>(disciplinasCacheString);
+                    return SgpJsonSerializer.Deserialize<List<DisciplinaDto>>(disciplinasCacheString);
             }
 
             var turma = await repositorioTurma.ObterPorCodigo(codigoTurma);
@@ -128,7 +128,7 @@ namespace SME.SGP.Aplicacao
                 })?.ToList();
 
                 if (!usuarioLogado.EhProfessor())
-                    await repositorioCache.SalvarAsync(chaveCache, JsonConvert.SerializeObject(disciplinasDto));
+                    await repositorioCache.SalvarAsync(chaveCache, SgpJsonSerializer.Serialize(disciplinasDto));
             }
 
             return disciplinasDto;
@@ -146,7 +146,7 @@ namespace SME.SGP.Aplicacao
 
                 if (!string.IsNullOrWhiteSpace(disciplinasCacheString))
                 {
-                    disciplinasDto = JsonConvert.DeserializeObject<List<DisciplinaDto>>(disciplinasCacheString);
+                    disciplinasDto = SgpJsonSerializer.Deserialize<List<DisciplinaDto>>(disciplinasCacheString);
                     return TratarRetornoDisciplinasPlanejamento(disciplinasDto, codigoDisciplina, regencia);
                 }
             }
@@ -187,7 +187,7 @@ namespace SME.SGP.Aplicacao
             }
 
             if (!usuario.EhProfessor() && !usuario.EhProfessorCj() && !usuario.EhProfessorPoa())
-                await repositorioCache.SalvarAsync(chaveCache, JsonConvert.SerializeObject(disciplinasDto));
+                await repositorioCache.SalvarAsync(chaveCache, SgpJsonSerializer.Serialize(disciplinasDto));
 
             return TratarRetornoDisciplinasPlanejamento(disciplinasDto, codigoDisciplina, regencia);
         }
@@ -226,7 +226,7 @@ namespace SME.SGP.Aplicacao
 
             if (!string.IsNullOrWhiteSpace(disciplinasCacheString))
             {
-                disciplinasDto = JsonConvert.DeserializeObject<List<DisciplinaDto>>(disciplinasCacheString);
+                disciplinasDto = SgpJsonSerializer.Deserialize<List<DisciplinaDto>>(disciplinasCacheString);
             }
             else
             {
@@ -281,7 +281,7 @@ namespace SME.SGP.Aplicacao
                 }
 
                 if (disciplinasDto.Any())
-                    await repositorioCache.SalvarAsync(chaveCache, JsonConvert.SerializeObject(disciplinasDto));
+                    await repositorioCache.SalvarAsync(chaveCache, SgpJsonSerializer.Serialize(disciplinasDto));
             }
 
             return disciplinasDto;
@@ -312,7 +312,7 @@ namespace SME.SGP.Aplicacao
             var disciplinasCacheString = await repositorioCache.ObterAsync(chaveCache);
 
             if (!string.IsNullOrWhiteSpace(disciplinasCacheString))
-                return JsonConvert.DeserializeObject<List<DisciplinaDto>>(disciplinasCacheString);
+                return SgpJsonSerializer.Deserialize<List<DisciplinaDto>>(disciplinasCacheString);
 
             var disciplinas = ehPefilCJ ? await ObterDisciplinasPerfilCJ(codigoTurma, login) :
                 await servicoEOL.ObterDisciplinasPorCodigoTurmaLoginEPerfil(codigoTurma, login, perfilAtual);
@@ -322,7 +322,7 @@ namespace SME.SGP.Aplicacao
 
             disciplinasDto = MapearParaDto(disciplinas, turmaPrograma);
 
-            await repositorioCache.SalvarAsync(chaveCache, JsonConvert.SerializeObject(disciplinasDto));
+            await repositorioCache.SalvarAsync(chaveCache, SgpJsonSerializer.Serialize(disciplinasDto));
 
             return disciplinasDto;
         }
@@ -339,7 +339,7 @@ namespace SME.SGP.Aplicacao
 
             if (!string.IsNullOrWhiteSpace(disciplinasCacheString))
             {
-                disciplinasDto = JsonConvert.DeserializeObject<List<DisciplinaDto>>(disciplinasCacheString);
+                disciplinasDto = SgpJsonSerializer.Deserialize<List<DisciplinaDto>>(disciplinasCacheString);
             }
             else
             {
@@ -363,7 +363,7 @@ namespace SME.SGP.Aplicacao
                 {
                     disciplinasDto = MapearParaDto(disciplinas, turmaPrograma);
 
-                    await repositorioCache.SalvarAsync(chaveCache, JsonConvert.SerializeObject(disciplinasDto));
+                    await repositorioCache.SalvarAsync(chaveCache, SgpJsonSerializer.Serialize(disciplinasDto));
                 }
             }
             return disciplinasDto;

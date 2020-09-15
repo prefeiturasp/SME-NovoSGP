@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
+using SME.SGP.Infra.Json;
 using SME.SGP.Dominio;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
@@ -59,7 +59,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             {
                 RequestUri = new Uri(httpClient.BaseAddress.ToString() + "v1/notificacao"),
                 Method = HttpMethod.Delete,
-                Content = new StringContent(JsonConvert.SerializeObject(ids), Encoding.UTF8, "application/json"),
+                Content = new StringContent(SgpJsonSerializer.Serialize(ids), Encoding.UTF8, "application/json"),
             };
             request.Headers.Add("x-integration-key", configuration.GetSection("AE_ChaveIntegracao").Value);
 
@@ -76,7 +76,7 @@ namespace SME.SGP.Aplicacao.Integracoes
         private void CriarParametrosEHEader(ComunicadoInserirAeDto comunicado, out string parametros, out StringContent input)
         {
             httpClient.DefaultRequestHeaders.Clear();
-            parametros = JsonConvert.SerializeObject(comunicado);
+            parametros = SgpJsonSerializer.Serialize(comunicado);
             input = new StringContent(parametros, Encoding.UTF8, "application/json");
             input.Headers.Add("x-integration-key", configuration.GetSection("AE_ChaveIntegracao").Value);
         }
@@ -84,7 +84,7 @@ namespace SME.SGP.Aplicacao.Integracoes
         private async Task RegistrarLogSentryAsync(HttpResponseMessage resposta, string rotina, string parametros)
         {
             var mensagem = await resposta.Content.ReadAsStringAsync();
-            servicoLog.Registrar(new NegocioException($"Ocorreu um erro ao {rotina} no Acompanhamento Escolar, código de erro: {resposta.StatusCode}, mensagem: {mensagem ?? "Sem mensagem"},Parametros:{parametros}, Request: {JsonConvert.SerializeObject(resposta.RequestMessage)}, "));
+            servicoLog.Registrar(new NegocioException($"Ocorreu um erro ao {rotina} no Acompanhamento Escolar, código de erro: {resposta.StatusCode}, mensagem: {mensagem ?? "Sem mensagem"},Parametros:{parametros}, Request: {SgpJsonSerializer.Serialize(resposta.RequestMessage)}, "));
         }
     }
 }

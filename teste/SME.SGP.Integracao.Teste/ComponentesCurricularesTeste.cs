@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using SME.SGP.Infra.Json;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.Relatorios;
 using System;
@@ -40,7 +40,7 @@ namespace SME.SGP.Integracao.Teste
         //{
         //    // Arrange
         //    FiltroComponentesCurricularesPorTurmaECodigoUeDto filtro = new FiltroComponentesCurricularesPorTurmaECodigoUeDto();
-        //    var jsonParaPost = new StringContent(JsonConvert.SerializeObject(filtro), Encoding.UTF8, "application/json");
+        //    var jsonParaPost = new StringContent(SgpJsonSerializer.Serialize(filtro), Encoding.UTF8, "application/json");
         //    // Act
         //    fixture._clientApi.DefaultRequestHeaders.Clear();
         //    fixture._clientApi.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", fixture.GerarToken(new Permissao[] { }));

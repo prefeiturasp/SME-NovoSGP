@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using SME.SGP.Infra.Json;
 using SME.SGP.Infra;
 using System;
 using System.Net;
@@ -26,7 +26,7 @@ namespace SME.SGP.Integracao.Teste
 
         //    var autenticacaoDto = new AutenticacaoDto() { Login = "testea", Senha = "senha123" };
 
-        //    var jsonParaPost = new StringContent(JsonConvert.SerializeObject(autenticacaoDto), UnicodeEncoding.UTF8, "application/json");
+        //    var jsonParaPost = new StringContent(SgpJsonSerializer.Serialize(autenticacaoDto), UnicodeEncoding.UTF8, "application/json");
 
         //    var postResult = fixture._clientApi.PostAsync($"api/v1/autenticacao", jsonParaPost).Result;
         //    Assert.True(!postResult.IsSuccessStatusCode);
@@ -89,7 +89,7 @@ namespace SME.SGP.Integracao.Teste
         {
             fixture._clientApi.DefaultRequestHeaders.Clear();                      
 
-            var jsonParaPost = new StringContent(JsonConvert.SerializeObject(primeiroAcessoDto), UnicodeEncoding.UTF8, "application/json");
+            var jsonParaPost = new StringContent(SgpJsonSerializer.Serialize(primeiroAcessoDto), UnicodeEncoding.UTF8, "application/json");
 
             var postResult = await fixture._clientApi.PostAsync($"api/v1/autenticacao/PrimeiroAcesso", jsonParaPost);
 

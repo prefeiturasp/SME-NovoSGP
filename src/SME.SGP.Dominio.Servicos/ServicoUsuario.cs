@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using SME.SGP.Infra.Json;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -104,7 +104,7 @@ namespace SME.SGP.Dominio
 
             var perfisDoUsuario = repositorioPrioridadePerfil.ObterPerfisPorIds(perfisPorLogin.Perfis);
 
-            _ = repositorioCache.SalvarAsync(chaveRedis, JsonConvert.SerializeObject(perfisDoUsuario));
+            _ = repositorioCache.SalvarAsync(chaveRedis, SgpJsonSerializer.Serialize(perfisDoUsuario));
 
             return perfisDoUsuario;
         }

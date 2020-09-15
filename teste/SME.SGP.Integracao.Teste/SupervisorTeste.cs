@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using SME.SGP.Infra.Json;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,7 +41,7 @@ namespace SME.SGP.Integracao.Teste
 
         //    if (postResult.IsSuccessStatusCode)
         //    {
-        //        var supervisorEscolasDto = JsonConvert.DeserializeObject<List<SupervisorDto>>(postResult.Content.ReadAsStringAsync().Result);
+        //        var supervisorEscolasDto = SgpJsonSerializer.Deserialize<List<SupervisorDto>>(postResult.Content.ReadAsStringAsync().Result);
         //        Assert.Equal(temSupervisores, supervisorEscolasDto.Count > 0);
         //    }
         //}
@@ -54,7 +54,7 @@ namespace SME.SGP.Integracao.Teste
         //    _fixture._clientApi.DefaultRequestHeaders.Authorization =
         //        new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { Permissao.ASP_I, Permissao.ASP_A, Permissao.ASP_E, Permissao.ASP_C }));
 
-        //    var post = JsonConvert.SerializeObject(new AtribuicaoSupervisorUEDto
+        //    var post = SgpJsonSerializer.Serialize(new AtribuicaoSupervisorUEDto
         //    {
         //        DreId = "108100",
         //        UESIds = new List<string> { "095346" },
@@ -68,7 +68,7 @@ namespace SME.SGP.Integracao.Teste
         //    Assert.True(postResult.IsSuccessStatusCode);
 
         //    var getResult = _fixture._clientApi.GetAsync("api/v1/supervisores/7827067/dre/108100").Result;
-        //    var supervisorEscolasDto = JsonConvert.DeserializeObject<List<SupervisorEscolasDto>>(getResult.Content.ReadAsStringAsync().Result);
+        //    var supervisorEscolasDto = SgpJsonSerializer.Deserialize<List<SupervisorEscolasDto>>(getResult.Content.ReadAsStringAsync().Result);
         //    Assert.Contains(supervisorEscolasDto, c => c.Escolas.Any(e => e.Codigo == "095346"));
         //}
 
@@ -76,7 +76,7 @@ namespace SME.SGP.Integracao.Teste
 
         private string TransformarEmJson(object model)
         {
-            return JsonConvert.SerializeObject(model);
+            return SgpJsonSerializer.Serialize(model);
         }
     }
 }

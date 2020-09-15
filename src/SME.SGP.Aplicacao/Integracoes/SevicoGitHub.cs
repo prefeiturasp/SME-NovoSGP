@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
+using SME.SGP.Infra.Json;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             if (resposta.IsSuccessStatusCode)
             {
                 var json = await resposta.Content.ReadAsStringAsync();
-                var versoes =  JsonConvert.DeserializeObject<IEnumerable<VersaoGitHubRetornoDto>>(json);
+                var versoes =  SgpJsonSerializer.Deserialize<IEnumerable<VersaoGitHubRetornoDto>>(json);
                 
                 if (versoes.Any())
                     return $"Versão: {versoes.FirstOrDefault().Name}";

@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Newtonsoft.Json;
+using SME.SGP.Infra.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using Sentry;
@@ -74,7 +74,7 @@ namespace SME.SGP.Worker.RabbitMQ
             {
                 using (SentrySdk.Init(sentryDSN))
                 {
-                    var mensagemRabbit = JsonConvert.DeserializeObject<MensagemRabbit>(mensagem);
+                    var mensagemRabbit = SgpJsonSerializer.Deserialize<MensagemRabbit>(mensagem);
                     SentrySdk.AddBreadcrumb($"Dados: {mensagemRabbit.Mensagem}");
                     var comandoRabbit = comandos[rota];
                     try
@@ -104,7 +104,7 @@ namespace SME.SGP.Worker.RabbitMQ
                     catch (ValidacaoException vex)
                     {
                         canalRabbit.BasicReject(ea.DeliveryTag, false);
-                        SentrySdk.AddBreadcrumb($"Erros: {JsonConvert.SerializeObject(vex.Mensagens())}");
+                        SentrySdk.AddBreadcrumb($"Erros: {SgpJsonSerializer.Serialize(vex.Mensagens())}");
                         RegistrarSentry(ea, mensagemRabbit, vex);
                         if (mensagemRabbit.NotificarErroUsuario)
                             NotificarErroUsuario($"Ocorreu um erro interno, por favor tente novamente", mensagemRabbit.UsuarioLogadoRF, comandoRabbit.NomeProcesso);
@@ -153,7 +153,7 @@ namespace SME.SGP.Worker.RabbitMQ
                                                           NotificacaoTipo.Worker);
 
                 var request = new MensagemRabbit(string.Empty, command, Guid.NewGuid(), usuarioRf);
-                var mensagem = JsonConvert.SerializeObject(request);
+                var mensagem = SgpJsonSerializer.Serialize(request);
                 var body = Encoding.UTF8.GetBytes(mensagem);
 
                 canalRabbit.QueueBind(RotasRabbit.FilaSgp, RotasRabbit.ExchangeSgp, RotasRabbit.RotaNotificacaoUsuario);

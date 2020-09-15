@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using SME.SGP.Infra.Json;
 using SME.SGP.Api.Controllers;
 using SME.SGP.Infra;
 using System;
@@ -35,7 +35,7 @@ namespace SME.SGP.Integracao.Teste
         //    var getResult = await _fixture._clientApi.GetAsync($"api/v1/professores/{login}/turmas/{codigoTurma}/disciplinas/");
 
         //    Assert.True(getResult.IsSuccessStatusCode);
-        //    var disciplinas = JsonConvert.DeserializeObject<IEnumerable<DisciplinaDto>>(await getResult.Content.ReadAsStringAsync());
+        //    var disciplinas = SgpJsonSerializer.Deserialize<IEnumerable<DisciplinaDto>>(await getResult.Content.ReadAsStringAsync());
         //    Assert.True(disciplinas != null);
         //}
 
@@ -54,7 +54,7 @@ namespace SME.SGP.Integracao.Teste
         //    var getResult = _fixture._clientApi.GetAsync($"api/v1/professores/{rf}/escolas/{escola}/turmas/anos-letivos/{ano}").Result;
 
         //    Assert.True(getResult.IsSuccessStatusCode);
-        //    var turmas = JsonConvert.DeserializeObject<IEnumerable<TurmaDto>>(getResult.Content.ReadAsStringAsync().Result);
+        //    var turmas = SgpJsonSerializer.Deserialize<IEnumerable<TurmaDto>>(getResult.Content.ReadAsStringAsync().Result);
         //    Assert.True(turmas != null);
         //}
 
@@ -70,7 +70,7 @@ namespace SME.SGP.Integracao.Teste
             var getResult = _fixture._clientApi.GetAsync($"api/v1/professores/{rf}/escolas/{escola}/turmas/anos-letivos/{ano}").Result;
 
             Assert.True(getResult.IsSuccessStatusCode);
-            var turmas = JsonConvert.DeserializeObject<IEnumerable<TurmaDto>>(getResult.Content.ReadAsStringAsync().Result);
+            var turmas = SgpJsonSerializer.Deserialize<IEnumerable<TurmaDto>>(getResult.Content.ReadAsStringAsync().Result);
             Assert.True(turmas == null);
         }
     }

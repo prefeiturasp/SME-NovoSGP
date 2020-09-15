@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using SME.SGP.Infra.Json;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
@@ -58,7 +58,7 @@ namespace SME.SGP.Integracao.Teste
         //        Nivel = 3
         //    });
 
-        //    var post = JsonConvert.SerializeObject(wfAprovacao);
+        //    var post = SgpJsonSerializer.Serialize(wfAprovacao);
 
         //    var jsonParaPost = new StringContent(post, UnicodeEncoding.UTF8, "application/json");
 
@@ -74,7 +74,7 @@ namespace SME.SGP.Integracao.Teste
 
         //        if (getResult.IsSuccessStatusCode)
         //        {
-        //            var notificacoes = JsonConvert.DeserializeObject<PaginacaoResultadoDto<NotificacaoBasicaDto>>(getResult.Content.ReadAsStringAsync().Result);
+        //            var notificacoes = SgpJsonSerializer.Deserialize<PaginacaoResultadoDto<NotificacaoBasicaDto>>(getResult.Content.ReadAsStringAsync().Result);
         //            Assert.True(notificacoes.Items.Count() > 0);
         //            if (notificacoes.Items.Count() > 0)
         //            {
@@ -84,7 +84,7 @@ namespace SME.SGP.Integracao.Teste
         //                Assert.True(getResultTimeline.IsSuccessStatusCode);
         //                if (getResultTimeline.IsSuccessStatusCode)
         //                {
-        //                    var timeline = JsonConvert.DeserializeObject<List<WorkflowAprovacaoTimeRespostaDto>>(getResultTimeline.Content.ReadAsStringAsync().Result);
+        //                    var timeline = SgpJsonSerializer.Deserialize<List<WorkflowAprovacaoTimeRespostaDto>>(getResultTimeline.Content.ReadAsStringAsync().Result);
         //                    if (timeline != null)
         //                    {
         //                        Assert.True(timeline.Count() == 3);
@@ -96,7 +96,7 @@ namespace SME.SGP.Integracao.Teste
         //                        var aprovacaoNivel = new WorkflowAprovacaoAprovacaoDto();
         //                        aprovacaoNivel.Aprova = true;
 
-        //                        var postAprovacaoNivel = JsonConvert.SerializeObject(aprovacaoNivel);
+        //                        var postAprovacaoNivel = SgpJsonSerializer.Serialize(aprovacaoNivel);
 
         //                        var jsonParaPostAprovacaoNivel = new StringContent(postAprovacaoNivel, UnicodeEncoding.UTF8, "application/json");
 
@@ -112,7 +112,7 @@ namespace SME.SGP.Integracao.Teste
 
         //                            if (getResultMensagemNivel2.IsSuccessStatusCode)
         //                            {
-        //                                var notificacoesNivel2 = JsonConvert.DeserializeObject<PaginacaoResultadoDto<NotificacaoBasicaDto>>(getResultMensagemNivel2.Content.ReadAsStringAsync().Result);
+        //                                var notificacoesNivel2 = SgpJsonSerializer.Deserialize<PaginacaoResultadoDto<NotificacaoBasicaDto>>(getResultMensagemNivel2.Content.ReadAsStringAsync().Result);
         //                                Assert.True(notificacoesNivel2.Items.Count() == 1);
         //                                if (notificacoesNivel2.Items.Count() == 1)
         //                                {
@@ -122,7 +122,7 @@ namespace SME.SGP.Integracao.Teste
         //                                    Assert.True(getResultTimeline.IsSuccessStatusCode);
         //                                    if (getResultTimelineNivel2.IsSuccessStatusCode)
         //                                    {
-        //                                        var timelineNivel2 = JsonConvert.DeserializeObject<List<WorkflowAprovacaoTimeRespostaDto>>(getResultTimelineNivel2.Content.ReadAsStringAsync().Result);
+        //                                        var timelineNivel2 = SgpJsonSerializer.Deserialize<List<WorkflowAprovacaoTimeRespostaDto>>(getResultTimelineNivel2.Content.ReadAsStringAsync().Result);
         //                                        if (timelineNivel2 != null)
         //                                        {
         //                                            Assert.True(timelineNivel2.Count() == 3);
@@ -136,7 +136,7 @@ namespace SME.SGP.Integracao.Teste
         //                                            reprovacaoNivel.Aprova = false;
         //                                            reprovacaoNivel.Observacao = "Observação de teste!";
 
-        //                                            var postReprovacaoNivel = JsonConvert.SerializeObject(reprovacaoNivel);
+        //                                            var postReprovacaoNivel = SgpJsonSerializer.Serialize(reprovacaoNivel);
 
         //                                            var jsonParaPutReprovacaoNivel = new StringContent(postReprovacaoNivel, UnicodeEncoding.UTF8, "application/json");
 
@@ -146,7 +146,7 @@ namespace SME.SGP.Integracao.Teste
         //                                            if (putResultReprovacaoNivel.IsSuccessStatusCode)
         //                                            {
         //                                                getResultTimelineNivel2 = _fixture._clientApi.GetAsync($"api/v1/workflows/aprovacoes/notificacoes/{notificacaoNivel2.Id}/linha-tempo").Result;
-        //                                                timelineNivel2 = JsonConvert.DeserializeObject<List<WorkflowAprovacaoTimeRespostaDto>>(getResultTimelineNivel2.Content.ReadAsStringAsync().Result);
+        //                                                timelineNivel2 = SgpJsonSerializer.Deserialize<List<WorkflowAprovacaoTimeRespostaDto>>(getResultTimelineNivel2.Content.ReadAsStringAsync().Result);
         //                                                Assert.True(timelineNivel2.Count() == 3);
         //                                                Assert.True(timelineNivel2.FirstOrDefault(a => a.Nivel == 1).StatusId == (int)WorkflowAprovacaoNivelStatus.Aprovado);
         //                                                Assert.True(timelineNivel2.FirstOrDefault(a => a.Nivel == 2).StatusId == (int)WorkflowAprovacaoNivelStatus.Reprovado);

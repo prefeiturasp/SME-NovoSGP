@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using SME.SGP.Infra.Json;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -32,7 +32,7 @@ namespace SME.SGP.Integracao.Teste
 
         //        PlanoAnualDto planoAnualDto = CriarDtoPlanoAnual();
 
-        //        var jsonParaPost = new StringContent(JsonConvert.SerializeObject(planoAnualDto), Encoding.UTF8, "application/json");
+        //        var jsonParaPost = new StringContent(SgpJsonSerializer.Serialize(planoAnualDto), Encoding.UTF8, "application/json");
 
         //        var postResult = _fixture._clientApi.PostAsync("api/v1/planos/anual/", jsonParaPost).Result;
 
@@ -45,12 +45,12 @@ namespace SME.SGP.Integracao.Teste
         //            TurmaId = "2008187",
         //            ComponenteCurricularEolId = 9
         //        };
-        //        var filtroPlanoAnual = new StringContent(JsonConvert.SerializeObject(filtro), Encoding.UTF8, "application/json");
+        //        var filtroPlanoAnual = new StringContent(SgpJsonSerializer.Serialize(filtro), Encoding.UTF8, "application/json");
 
         //        var planoAnualCompletoResponse = _fixture._clientApi.PostAsync("api/v1/planos/anual/obter", filtroPlanoAnual).Result;
         //        if (planoAnualCompletoResponse.IsSuccessStatusCode)
         //        {
-        //            var planoAnualCompleto = JsonConvert.DeserializeObject<PlanoCicloCompletoDto>(planoAnualCompletoResponse.Content.ReadAsStringAsync().Result);
+        //            var planoAnualCompleto = SgpJsonSerializer.Deserialize<PlanoCicloCompletoDto>(planoAnualCompletoResponse.Content.ReadAsStringAsync().Result);
         //            Assert.Contains(planoAnualDto.Bimestres, c => c.Descricao == planoAnualCompleto.Descricao);
 
         //            var planoAnualExistenteResponse = _fixture._clientApi.PostAsync("api/v1/planos/anual/validar-existente", filtroPlanoAnual).Result;
@@ -78,13 +78,13 @@ namespace SME.SGP.Integracao.Teste
 
             PlanoAnualDto planoAnualDto = CriarDtoPlanoAnual();
             planoAnualDto.EscolaId = null;
-            var jsonParaPost = new StringContent(JsonConvert.SerializeObject(planoAnualDto), Encoding.UTF8, "application/json");
+            var jsonParaPost = new StringContent(SgpJsonSerializer.Serialize(planoAnualDto), Encoding.UTF8, "application/json");
 
             var postResult = _fixture._clientApi.PostAsync("api/v1/planos/anual/", jsonParaPost).Result;
 
             Assert.False(postResult.IsSuccessStatusCode);
             var jsonErro = postResult.Content.ReadAsStringAsync().Result;
-            var retornoBase = JsonConvert.DeserializeObject<RetornoBaseDto>(jsonErro);
+            var retornoBase = SgpJsonSerializer.Deserialize<RetornoBaseDto>(jsonErro);
             Assert.Contains(retornoBase.Mensagens, c => c.Equals("A escola deve ser informada"));
         }
 

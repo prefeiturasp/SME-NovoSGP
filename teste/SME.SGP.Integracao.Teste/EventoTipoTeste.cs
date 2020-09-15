@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using SME.SGP.Infra.Json;
 using SME.SGP.Dominio;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
@@ -75,7 +75,7 @@ namespace SME.SGP.Integracao.Teste
 
             Assert.True(getResult.IsSuccessStatusCode);
 
-            Assert.IsType<EventoTipoDto>(JsonConvert.DeserializeObject<EventoTipoDto>(await getResult.Content.ReadAsStringAsync()));
+            Assert.IsType<EventoTipoDto>(SgpJsonSerializer.Deserialize<EventoTipoDto>(await getResult.Content.ReadAsStringAsync()));
         }
 
         [Fact(DisplayName = "Deve_Consultar_Retorno_Vazio"), Order(1)]
@@ -87,7 +87,7 @@ namespace SME.SGP.Integracao.Teste
 
             Assert.True(getResult.IsSuccessStatusCode);
 
-            Assert.IsNotType<EventoTipoDto>(JsonConvert.DeserializeObject<EventoTipoDto>(await getResult.Content.ReadAsStringAsync()));
+            Assert.IsNotType<EventoTipoDto>(SgpJsonSerializer.Deserialize<EventoTipoDto>(await getResult.Content.ReadAsStringAsync()));
         }
 
         [Fact(DisplayName = "Deve_Disparar_Excecao_Se_Tentativa_Delete_Sem_Tipo_Cadastrado"), Order(5)]

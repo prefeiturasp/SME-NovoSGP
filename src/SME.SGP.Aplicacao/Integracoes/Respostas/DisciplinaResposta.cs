@@ -1,37 +1,37 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace SME.SGP.Aplicacao.Integracoes.Respostas
 {
     public class DisciplinaResposta
     {
-        [JsonProperty("codDisciplina")]
+        [JsonPropertyName("codDisciplina")]
         public long CodigoComponenteCurricular { get; set; }
 
-        [JsonProperty("compartilhada")]
+        [JsonPropertyName("compartilhada")]
         public bool Compartilhada { get; set; }
 
-        [JsonProperty("codDisciplinaPai")]
+        [JsonPropertyName("codDisciplinaPai")]
         public long? CodigoComponenteCurricularPai { get; set; }
 
-        [JsonProperty("disciplina")]
+        [JsonPropertyName("disciplina")]
         public string Nome { get; set; }
 
-        [JsonProperty("regencia")]
+        [JsonPropertyName("regencia")]
         public bool Regencia { get; set; }
 
-        [JsonProperty("registrofrequencia")]
+        [JsonPropertyName("registrofrequencia")]
         public bool RegistroFrequencia { get; set; }
 
-        [JsonProperty("territoriosaber")]
+        [JsonPropertyName("territoriosaber")]
         public bool TerritorioSaber { get; set; }
 
-        [JsonProperty("lancaNota")]
+        [JsonPropertyName("lancaNota")]
         public bool LancaNota { get; set; }
 
-        [JsonProperty("baseNacional")]
+        [JsonPropertyName("baseNacional")]
         public bool BaseNacional { get; set; }
 
-        [JsonProperty("grupoMatriz")]
+        [JsonPropertyName("grupoMatriz")]
         public GrupoMatriz GrupoMatriz { get; set; }
     }
 }

@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using SME.SGP.Infra.Json;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
@@ -65,7 +65,7 @@ namespace SME.SGP.Integracao.Teste
         {
             PeriodoEscolarListaDto Dto = ObtenhaDto();
 
-            var jsonParaPost2 = new StringContent(JsonConvert.SerializeObject(Dto), Encoding.UTF8, "application/json");
+            var jsonParaPost2 = new StringContent(SgpJsonSerializer.Serialize(Dto), Encoding.UTF8, "application/json");
 
             var postResult2 = _fixture._clientApi.PostAsync("api/v1/periodo-escolar", jsonParaPost2).Result;
 
@@ -82,7 +82,7 @@ namespace SME.SGP.Integracao.Teste
             tipoCalendarioDto.Modalidade = ModalidadeTipoCalendario.FundamentalMedio;
             tipoCalendarioDto.Situacao = true;
 
-            var jsonParaPost = new StringContent(JsonConvert.SerializeObject(tipoCalendarioDto), UnicodeEncoding.UTF8, "application/json");
+            var jsonParaPost = new StringContent(SgpJsonSerializer.Serialize(tipoCalendarioDto), UnicodeEncoding.UTF8, "application/json");
             var postResult = _fixture._clientApi.PostAsync("api/v1/calendarios/tipos", jsonParaPost).Result;
 
             Assert.True(postResult.IsSuccessStatusCode);
@@ -103,7 +103,7 @@ namespace SME.SGP.Integracao.Teste
             Dto.Periodos[3].PeriodoInicio = DateTime.Now.AddMinutes(6);
             Dto.Periodos[3].PeriodoFim = DateTime.Now.AddMinutes(7);
 
-            var jsonParaPost3 = new StringContent(JsonConvert.SerializeObject(Dto), Encoding.UTF8, "application/json");
+            var jsonParaPost3 = new StringContent(SgpJsonSerializer.Serialize(Dto), Encoding.UTF8, "application/json");
 
             var postResult3 = _fixture._clientApi.PostAsync("api/v1/periodo-escolar", jsonParaPost3).Result;
 

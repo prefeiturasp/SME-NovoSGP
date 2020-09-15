@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using SME.SGP.Infra.Json;
 using SME.SGP.Api.Controllers;
 using SME.SGP.Infra;
 using System;
@@ -30,7 +30,7 @@ namespace SME.SGP.Integracao.Teste
 
             Assert.True(result.IsSuccessStatusCode);
 
-            var menu = JsonConvert.DeserializeObject<List<MenuRetornoDto>>(await result.Content.ReadAsStringAsync());
+            var menu = SgpJsonSerializer.Deserialize<List<MenuRetornoDto>>(await result.Content.ReadAsStringAsync());
 
             Assert.True(menu.Count() > 0);
         }

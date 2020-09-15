@@ -46,7 +46,7 @@ namespace SME.SGP.Infra
                 Nome = dadosAluno.NomeAluno,
                 NumeroChamada = dadosAluno.NumeroAlunoChamada,
                 DataNascimento = dadosAluno.DataNascimento,
-                CodigoEOL = dadosAluno.CodigoAluno,
+                CodigoEOL = dadosAluno.CodigoAluno.ToString(),
                 SituacaoCodigo = dadosAluno.CodigoSituacaoMatricula,
                 Situacao = dadosAluno.SituacaoMatricula,
                 DataSituacao = dadosAluno.DataSituacao

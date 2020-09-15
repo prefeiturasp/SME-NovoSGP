@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using SME.SGP.Infra.Json;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -40,7 +40,7 @@ namespace SME.SGP.Integracao.Teste
         //        }
         //    };
 
-        //    var jsonParaPost = new StringContent(JsonConvert.SerializeObject(dto), Encoding.UTF8, "application/json");
+        //    var jsonParaPost = new StringContent(SgpJsonSerializer.Serialize(dto), Encoding.UTF8, "application/json");
         //    var postResult = _fixture._clientApi.PostAsync($"api/v1/relatorios/pap/semestral/turmas/321/semestres/1/alunos/123", jsonParaPost).Result;
 
         //    Assert.True(postResult.IsSuccessStatusCode);

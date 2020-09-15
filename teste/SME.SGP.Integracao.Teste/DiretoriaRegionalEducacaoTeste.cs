@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using SME.SGP.Infra.Json;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System.Collections.Generic;
@@ -43,7 +43,7 @@ namespace SME.SGP.Integracao.Teste
 
             if (postResult.IsSuccessStatusCode)
             {
-                var supervisorEscolasDto = JsonConvert.DeserializeObject<List<UnidadeEscolarDto>>(postResult.Content.ReadAsStringAsync().Result);
+                var supervisorEscolasDto = SgpJsonSerializer.Deserialize<List<UnidadeEscolarDto>>(postResult.Content.ReadAsStringAsync().Result);
                 Assert.True(supervisorEscolasDto.Count > 0);
             }
         }

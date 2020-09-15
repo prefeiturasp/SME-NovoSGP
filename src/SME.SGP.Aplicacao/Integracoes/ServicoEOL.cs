@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using SME.SGP.Infra.Json;
 using Sentry;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
@@ -77,7 +77,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
             var retorno = await resposta.Content.ReadAsStringAsync();
 
-            return JsonConvert.DeserializeObject<bool>(retorno);
+            return SgpJsonSerializer.Deserialize<bool>(retorno);
         }
 
         public async Task AtribuirCJSeNecessario(string codigoRf)
@@ -89,7 +89,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         public async Task AtribuirCJSeNecessario(Guid usuarioId)
         {
-            var parametros = JsonConvert.SerializeObject(usuarioId.ToString());
+            var parametros = SgpJsonSerializer.Serialize(usuarioId.ToString());
 
             var resposta = await httpClient.PostAsync("autenticacaoSgp/AtribuirPerfilCJ", new StringContent(parametros, Encoding.UTF8, "application/json-patch+json"));
 
@@ -105,13 +105,13 @@ namespace SME.SGP.Aplicacao.Integracoes
         {
             
 
-            var parametros = JsonConvert.SerializeObject(new { login, senha });
+            var parametros = SgpJsonSerializer.Serialize(new { login, senha });
             var resposta = await httpClient.PostAsync($"v1/autenticacao", new StringContent(parametros, Encoding.UTF8, "application/json-patch+json"));
 
             if (resposta.IsSuccessStatusCode)
             {
                 var json = await resposta.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<UsuarioEolAutenticacaoRetornoDto>(json);
+                return SgpJsonSerializer.Deserialize<UsuarioEolAutenticacaoRetornoDto>(json);
             }
             else return null;
         }
@@ -125,7 +125,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             if (resposta.IsSuccessStatusCode)
             {
                 var json = resposta.Content.ReadAsStringAsync().Result;
-                return JsonConvert.DeserializeObject<IEnumerable<CicloRetornoDto>>(json);
+                return SgpJsonSerializer.Deserialize<IEnumerable<CicloRetornoDto>>(json);
             }
             else
             {
@@ -143,7 +143,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             if (resposta.IsSuccessStatusCode)
             {
                 var json = resposta.Content.ReadAsStringAsync().Result;
-                return JsonConvert.DeserializeObject<IEnumerable<TipoEscolaRetornoDto>>(json);
+                return SgpJsonSerializer.Deserialize<IEnumerable<TipoEscolaRetornoDto>>(json);
             }
             else
             {
@@ -159,7 +159,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             if (resposta.IsSuccessStatusCode)
             {
                 var json = await resposta.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<bool>(json);
+                return SgpJsonSerializer.Deserialize<bool>(json);
             }
             return false;
         }
@@ -171,7 +171,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             if (resposta.IsSuccessStatusCode)
             {
                 var json = await resposta.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<AbrangenciaRetornoEolDto>(json);
+                return SgpJsonSerializer.Deserialize<AbrangenciaRetornoEolDto>(json);
             }
             return null;
         }
@@ -183,14 +183,14 @@ namespace SME.SGP.Aplicacao.Integracoes
             if (resposta.IsSuccessStatusCode)
             {
                 var json = await resposta.Content.ReadAsStringAsync();                
-                return JsonConvert.DeserializeObject<AbrangenciaCompactaVigenteRetornoEOLDTO>(json);
+                return SgpJsonSerializer.Deserialize<AbrangenciaCompactaVigenteRetornoEOLDTO>(json);
             }
             return null;
         }
 
         public async Task<AbrangenciaRetornoEolDto> ObterAbrangenciaParaSupervisor(string[] uesIds)
         {
-            var json = new StringContent(JsonConvert.SerializeObject(uesIds), Encoding.UTF8, "application/json");
+            var json = new StringContent(SgpJsonSerializer.Serialize(uesIds), Encoding.UTF8, "application/json");
 
             var request = new HttpRequestMessage
             {
@@ -204,7 +204,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             if (resposta.IsSuccessStatusCode)
             {
                 var jsonRetorno = await resposta.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<AbrangenciaRetornoEolDto>(jsonRetorno);
+                return SgpJsonSerializer.Deserialize<AbrangenciaRetornoEolDto>(jsonRetorno);
             }
             else throw new NegocioException("Houve erro ao tentar obter a abrangência do Eol");
         }
@@ -216,7 +216,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             if (resposta.IsSuccessStatusCode)
             {
                 var json = await resposta.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<string[]>(json);
+                return SgpJsonSerializer.Deserialize<string[]>(json);
             }
             return null;
         }
@@ -228,7 +228,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             if (resposta.IsSuccessStatusCode)
             {
                 var json = await resposta.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<string[]>(json);
+                return SgpJsonSerializer.Deserialize<string[]>(json);
             }
             return null;
         }
@@ -246,7 +246,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
             var json = await resposta.Content.ReadAsStringAsync();
 
-            return JsonConvert.DeserializeObject<List<AlunoPorTurmaResposta>>(json);
+            return SgpJsonSerializer.Deserialize<List<AlunoPorTurmaResposta>>(json);
         }
 
         public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorTurma(string turmaId)
@@ -257,7 +257,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             var cacheAlunos = cache.Obter(chaveCache);
             if (cacheAlunos != null)
             {
-                alunos = JsonConvert.DeserializeObject<List<AlunoPorTurmaResposta>>(cacheAlunos);
+                alunos = SgpJsonSerializer.Deserialize<List<AlunoPorTurmaResposta>>(cacheAlunos);
             }
             else
             {
@@ -265,7 +265,7 @@ namespace SME.SGP.Aplicacao.Integracoes
                 if (resposta.IsSuccessStatusCode)
                 {
                     var json = await resposta.Content.ReadAsStringAsync();
-                    alunos = JsonConvert.DeserializeObject<List<AlunoPorTurmaResposta>>(json);
+                    alunos = SgpJsonSerializer.Deserialize<List<AlunoPorTurmaResposta>>(json);
 
                     // Salva em cache por 5 min
                     await cache.SalvarAsync(chaveCache, json, 5);
@@ -290,7 +290,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
             var json = await resposta.Content.ReadAsStringAsync();
 
-            return JsonConvert.DeserializeObject<List<AlunoPorTurmaResposta>>(json);
+            return SgpJsonSerializer.Deserialize<List<AlunoPorTurmaResposta>>(json);
         }
 
         [Obsolete("não utilizar mais esse método, utilize o ObterAlunosPorTurma")]
@@ -301,7 +301,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             if (resposta.IsSuccessStatusCode)
             {
                 var json = await resposta.Content.ReadAsStringAsync();
-                alunos = JsonConvert.DeserializeObject<List<AlunoPorTurmaResposta>>(json);
+                alunos = SgpJsonSerializer.Deserialize<List<AlunoPorTurmaResposta>>(json);
             }
 
             return alunos;
@@ -327,7 +327,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             if (resposta.IsSuccessStatusCode)
             {
                 var json = await resposta.Content.ReadAsStringAsync();
-                alunos = JsonConvert.DeserializeObject<List<AlunoPorTurmaResposta>>(json);
+                alunos = SgpJsonSerializer.Deserialize<List<AlunoPorTurmaResposta>>(json);
             }
 
             return alunos;
@@ -361,13 +361,13 @@ namespace SME.SGP.Aplicacao.Integracoes
             if (ids == null || !ids.Any())
                 return default;
 
-            var parametros = JsonConvert.SerializeObject(ids);
+            var parametros = SgpJsonSerializer.Serialize(ids);
             var resposta = httpClient.PostAsync("disciplinas", new StringContent(parametros, Encoding.UTF8, "application/json-patch+json")).Result;
 
             if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
             {
                 var json = resposta.Content.ReadAsStringAsync().Result;
-                var retorno = JsonConvert.DeserializeObject<IEnumerable<RetornoDisciplinaDto>>(json);
+                var retorno = SgpJsonSerializer.Deserialize<IEnumerable<RetornoDisciplinaDto>>(json);
                 return MapearParaDtoDisciplinas(retorno);
             }
             throw new NegocioException("Ocorreu um erro na tentativa de buscar as disciplinas no EOL.");
@@ -377,7 +377,7 @@ namespace SME.SGP.Aplicacao.Integracoes
         {
             
 
-            var parametros = JsonConvert.SerializeObject(ids);
+            var parametros = SgpJsonSerializer.Serialize(ids);
             var resposta = await httpClient.PostAsync("disciplinas", new StringContent(parametros, Encoding.UTF8, "application/json-patch+json"));
 
             if (!resposta.IsSuccessStatusCode || resposta.StatusCode == HttpStatusCode.NoContent)
@@ -387,7 +387,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             }
 
             var json = resposta.Content.ReadAsStringAsync().Result;
-            var retorno = JsonConvert.DeserializeObject<IEnumerable<RetornoDisciplinaDto>>(json);
+            var retorno = SgpJsonSerializer.Deserialize<IEnumerable<RetornoDisciplinaDto>>(json);
             return MapearParaDtoDisciplinas(retorno);
         }
 
@@ -395,7 +395,7 @@ namespace SME.SGP.Aplicacao.Integracoes
         {
             
 
-            var parametros = JsonConvert.SerializeObject(ids);
+            var parametros = SgpJsonSerializer.Serialize(ids);
             var resposta = await httpClient.PostAsync("disciplinas/SemAgrupamento", new StringContent(parametros, Encoding.UTF8, "application/json-patch+json"));
 
             if (!resposta.IsSuccessStatusCode || resposta.StatusCode == HttpStatusCode.NoContent)
@@ -406,7 +406,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
             var json = resposta.Content.ReadAsStringAsync().Result;
 
-            var retorno = JsonConvert.DeserializeObject<IEnumerable<RetornoDisciplinaDto>>(json);
+            var retorno = SgpJsonSerializer.Deserialize<IEnumerable<RetornoDisciplinaDto>>(json);
 
             return MapearParaDtoDisciplinas(retorno);
         }
@@ -417,7 +417,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             if (resposta.IsSuccessStatusCode)
             {
                 var json = resposta.Content.ReadAsStringAsync().Result;
-                return JsonConvert.DeserializeObject<IEnumerable<DreRespostaEolDto>>(json);
+                return SgpJsonSerializer.Deserialize<IEnumerable<DreRespostaEolDto>>(json);
             }
             return Enumerable.Empty<DreRespostaEolDto>();
         }
@@ -426,11 +426,11 @@ namespace SME.SGP.Aplicacao.Integracoes
         {
             
 
-            var resposta = httpClient.PostAsync("escolas", new StringContent(JsonConvert.SerializeObject(codigoUes), Encoding.UTF8, "application/json-patch+json")).Result;
+            var resposta = httpClient.PostAsync("escolas", new StringContent(SgpJsonSerializer.Serialize(codigoUes), Encoding.UTF8, "application/json-patch+json")).Result;
             if (resposta.IsSuccessStatusCode)
             {
                 var json = resposta.Content.ReadAsStringAsync().Result;
-                return JsonConvert.DeserializeObject<IEnumerable<EscolasRetornoDto>>(json);
+                return SgpJsonSerializer.Deserialize<IEnumerable<EscolasRetornoDto>>(json);
             }
             return Enumerable.Empty<EscolasRetornoDto>();
         }
@@ -443,7 +443,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             if (resposta.IsSuccessStatusCode)
             {
                 var json = resposta.Content.ReadAsStringAsync().Result;
-                return JsonConvert.DeserializeObject<IEnumerable<EscolasRetornoDto>>(json);
+                return SgpJsonSerializer.Deserialize<IEnumerable<EscolasRetornoDto>>(json);
             }
             return Enumerable.Empty<EscolasRetornoDto>();
         }
@@ -466,7 +466,7 @@ namespace SME.SGP.Aplicacao.Integracoes
                     if (resposta.IsSuccessStatusCode)
                     {
                         var json = resposta.Content.ReadAsStringAsync().Result;
-                        var parcial = JsonConvert.DeserializeObject<EstruturaInstitucionalRetornoEolDTO>(json);
+                        var parcial = SgpJsonSerializer.Deserialize<EstruturaInstitucionalRetornoEolDTO>(json);
 
                         if (parcial != null)
                             resultado.Dres.AddRange(parcial.Dres);
@@ -481,7 +481,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         public EstruturaInstitucionalRetornoEolDTO ObterEstruturaInstuticionalVigentePorTurma(string[] codigosTurma = null)
         {
-            var filtroTurmas = new StringContent(JsonConvert.SerializeObject(codigosTurma ?? new string[] { }), UnicodeEncoding.UTF8, "application/json");
+            var filtroTurmas = new StringContent(SgpJsonSerializer.Serialize(codigosTurma ?? new string[] { }), UnicodeEncoding.UTF8, "application/json");
 
             string url = $"abrangencia/estrutura-vigente";
 
@@ -492,7 +492,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             if (resposta.IsSuccessStatusCode)
             {
                 var json = resposta.Content.ReadAsStringAsync().Result;
-                return JsonConvert.DeserializeObject<EstruturaInstitucionalRetornoEolDTO>(json);
+                return SgpJsonSerializer.Deserialize<EstruturaInstitucionalRetornoEolDTO>(json);
             }
             else
             {
@@ -507,21 +507,21 @@ namespace SME.SGP.Aplicacao.Integracoes
             if (resposta.IsSuccessStatusCode)
             {
                 var json = resposta.Content.ReadAsStringAsync().Result;
-                return JsonConvert.DeserializeObject<IEnumerable<UsuarioEolRetornoDto>>(json);
+                return SgpJsonSerializer.Deserialize<IEnumerable<UsuarioEolRetornoDto>>(json);
             }
             return Enumerable.Empty<UsuarioEolRetornoDto>();
         }
 
         public async Task<IEnumerable<UsuarioEolRetornoDto>> ObterFuncionariosPorUe(BuscaFuncionariosFiltroDto buscaFuncionariosFiltroDto)
         {
-            var jsonParaPost = new StringContent(JsonConvert.SerializeObject(buscaFuncionariosFiltroDto), UnicodeEncoding.UTF8, "application/json");
+            var jsonParaPost = new StringContent(SgpJsonSerializer.Serialize(buscaFuncionariosFiltroDto), UnicodeEncoding.UTF8, "application/json");
 
             var resposta = await httpClient.PostAsync("funcionarios/", jsonParaPost);
 
             if (resposta.IsSuccessStatusCode)
             {
                 var json = await resposta.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<IEnumerable<UsuarioEolRetornoDto>>(json);
+                return SgpJsonSerializer.Deserialize<IEnumerable<UsuarioEolRetornoDto>>(json);
             }
 
             return null;
@@ -530,7 +530,7 @@ namespace SME.SGP.Aplicacao.Integracoes
         public async Task<IEnumerable<ProfessorResumoDto>> ObterListaNomePorListaRF(IEnumerable<string> codigosRF)
         {
             var resposta = await httpClient.PostAsync($"funcionarios/BuscarPorListaRF",
-                new StringContent(JsonConvert.SerializeObject(codigosRF),
+                new StringContent(SgpJsonSerializer.Serialize(codigosRF),
                 Encoding.UTF8, "application/json-patch+json"));
 
             if (!resposta.IsSuccessStatusCode)
@@ -541,13 +541,13 @@ namespace SME.SGP.Aplicacao.Integracoes
 
             var json = await resposta.Content.ReadAsStringAsync();
 
-            return JsonConvert.DeserializeObject<IEnumerable<ProfessorResumoDto>>(json);
+            return SgpJsonSerializer.Deserialize<IEnumerable<ProfessorResumoDto>>(json);
         }
 
         public async Task<IEnumerable<ProfessorResumoDto>> ObterListaResumosPorListaRF(IEnumerable<string> codigosRF, int anoLetivo)
         {
             var resposta = await httpClient.PostAsync($"professores/{anoLetivo}/BuscarPorListaRF",
-                new StringContent(JsonConvert.SerializeObject(codigosRF),
+                new StringContent(SgpJsonSerializer.Serialize(codigosRF),
                 Encoding.UTF8, "application/json-patch+json"));
 
             if (!resposta.IsSuccessStatusCode)
@@ -558,7 +558,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
             var json = await resposta.Content.ReadAsStringAsync();
 
-            return JsonConvert.DeserializeObject<IEnumerable<ProfessorResumoDto>>(json);
+            return SgpJsonSerializer.Deserialize<IEnumerable<ProfessorResumoDto>>(json);
         }
 
         public IEnumerable<ProfessorTurmaReposta> ObterListaTurmasPorProfessor(string codigoRf)
@@ -567,7 +567,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             if (resposta.IsSuccessStatusCode)
             {
                 var json = resposta.Content.ReadAsStringAsync().Result;
-                return JsonConvert.DeserializeObject<IEnumerable<ProfessorTurmaReposta>>(json);
+                return SgpJsonSerializer.Deserialize<IEnumerable<ProfessorTurmaReposta>>(json);
             }
             return Enumerable.Empty<ProfessorTurmaReposta>();
         }
@@ -583,7 +583,7 @@ namespace SME.SGP.Aplicacao.Integracoes
                 throw new NegocioException("Não foi possível obter os dados do usuário");
             }
             var json = await resposta.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<MeusDadosDto>(json);
+            return SgpJsonSerializer.Deserialize<MeusDadosDto>(json);
         }
 
         public async Task<UsuarioEolAutenticacaoRetornoDto> ObterPerfisPorLogin(string login)
@@ -593,7 +593,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             if (resposta.IsSuccessStatusCode)
             {
                 var json = await resposta.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<UsuarioEolAutenticacaoRetornoDto>(json);
+                return SgpJsonSerializer.Deserialize<UsuarioEolAutenticacaoRetornoDto>(json);
             }
             return null;
         }
@@ -605,7 +605,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             if (resposta.IsSuccessStatusCode)
             {
                 var json = await resposta.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<int[]>(json);
+                return SgpJsonSerializer.Deserialize<int[]>(json);
             }
             return null;
         }
@@ -621,7 +621,7 @@ namespace SME.SGP.Aplicacao.Integracoes
                 return null;
 
             var json = await resposta.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<IEnumerable<ProfessorResumoDto>>(json);
+            return SgpJsonSerializer.Deserialize<IEnumerable<ProfessorResumoDto>>(json);
         }
 
         public async Task<IEnumerable<ProfessorResumoDto>> ObterProfessoresAutoComplete(int anoLetivo, string dreId, string nomeProfessor, bool incluirEmei)
@@ -635,7 +635,7 @@ namespace SME.SGP.Aplicacao.Integracoes
                 return null;
 
             var json = await resposta.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<IEnumerable<ProfessorResumoDto>>(json);
+            return SgpJsonSerializer.Deserialize<IEnumerable<ProfessorResumoDto>>(json);
         }
 
         public async Task<IEnumerable<ProfessorTitularDisciplinaEol>> ObterProfessoresTitularesDisciplinas(string turmaCodigo, string professorRf = null)
@@ -658,7 +658,7 @@ namespace SME.SGP.Aplicacao.Integracoes
                 return null;
 
             var json = await resposta.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<IEnumerable<ProfessorTitularDisciplinaEol>>(json);
+            return SgpJsonSerializer.Deserialize<IEnumerable<ProfessorTitularDisciplinaEol>>(json);
         }
 
         public async Task<UsuarioResumoCoreDto> ObterResumoCore(string login)
@@ -673,7 +673,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
             var json = await resposta.Content.ReadAsStringAsync();
 
-            return JsonConvert.DeserializeObject<UsuarioResumoCoreDto>(json);
+            return SgpJsonSerializer.Deserialize<UsuarioResumoCoreDto>(json);
         }
 
         public async Task<ProfessorResumoDto> ObterResumoProfessorPorRFAnoLetivo(string codigoRF, int anoLetivo)
@@ -688,16 +688,16 @@ namespace SME.SGP.Aplicacao.Integracoes
 
             var json = await resposta.Content.ReadAsStringAsync();
 
-            return JsonConvert.DeserializeObject<ProfessorResumoDto>(json);
+            return SgpJsonSerializer.Deserialize<ProfessorResumoDto>(json);
         }
 
         public IEnumerable<SupervisoresRetornoDto> ObterSupervisoresPorCodigo(string[] codigoSupervisores)
         {
-            var resposta = httpClient.PostAsync("funcionarios/supervisores", new StringContent(JsonConvert.SerializeObject(codigoSupervisores), Encoding.UTF8, "application/json-patch+json")).Result;
+            var resposta = httpClient.PostAsync("funcionarios/supervisores", new StringContent(SgpJsonSerializer.Serialize(codigoSupervisores), Encoding.UTF8, "application/json-patch+json")).Result;
             if (resposta.IsSuccessStatusCode)
             {
                 var json = resposta.Content.ReadAsStringAsync().Result;
-                return JsonConvert.DeserializeObject<IEnumerable<SupervisoresRetornoDto>>(json);
+                return SgpJsonSerializer.Deserialize<IEnumerable<SupervisoresRetornoDto>>(json);
             }
             return Enumerable.Empty<SupervisoresRetornoDto>();
         }
@@ -708,7 +708,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             if (resposta.IsSuccessStatusCode)
             {
                 var json = resposta.Content.ReadAsStringAsync().Result;
-                return JsonConvert.DeserializeObject<IEnumerable<SupervisoresRetornoDto>>(json);
+                return SgpJsonSerializer.Deserialize<IEnumerable<SupervisoresRetornoDto>>(json);
             }
             return Enumerable.Empty<SupervisoresRetornoDto>();
         }
@@ -720,7 +720,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             if (resposta.IsSuccessStatusCode)
             {
                 var json = await resposta.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<IEnumerable<TurmaDto>>(json);
+                return SgpJsonSerializer.Deserialize<IEnumerable<TurmaDto>>(json);
             }
             return null;
         }
@@ -729,7 +729,7 @@ namespace SME.SGP.Aplicacao.Integracoes
         {
             
 
-            var parametros = JsonConvert.SerializeObject(new
+            var parametros = SgpJsonSerializer.Serialize(new
             {
                 codigoRf,
                 componenteCurricular = componenteCurricularId,
@@ -741,7 +741,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             if (resposta.IsSuccessStatusCode)
             {
                 var json = await resposta.Content.ReadAsStringAsync();
-                turmas = JsonConvert.DeserializeObject<List<TurmaParaCopiaPlanoAnualDto>>(json);
+                turmas = SgpJsonSerializer.Deserialize<List<TurmaParaCopiaPlanoAnualDto>>(json);
             }
             return turmas;
         }
@@ -755,7 +755,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             if (resposta.IsSuccessStatusCode)
             {
                 var json = resposta.Content.ReadAsStringAsync().Result;
-                turmas = JsonConvert.DeserializeObject<List<TurmaPorUEResposta>>(json);
+                turmas = SgpJsonSerializer.Deserialize<List<TurmaPorUEResposta>>(json);
             }
             return turmas;
         }
@@ -772,7 +772,7 @@ namespace SME.SGP.Aplicacao.Integracoes
                 throw new NegocioException("Não foi possível validar a atribuição do professor no EOL.");
 
             var json = resposta.Content.ReadAsStringAsync().Result;
-            return JsonConvert.DeserializeObject<bool>(json);
+            return SgpJsonSerializer.Deserialize<bool>(json);
         }
 
         public async Task<bool> PodePersistirTurmaDisciplina(string professorRf, string codigoTurma, string disciplinaId, DateTime data)
@@ -787,21 +787,21 @@ namespace SME.SGP.Aplicacao.Integracoes
                 throw new NegocioException("Não foi possível validar a atribuição do professor no EOL.");
 
             var json = resposta.Content.ReadAsStringAsync().Result;
-            return JsonConvert.DeserializeObject<bool>(json);
+            return SgpJsonSerializer.Deserialize<bool>(json);
         }
 
         public async Task<IEnumerable<PodePersistirNaDataRetornoEolDto>> PodePersistirTurmaNasDatas(string professorRf, string codigoTurma, string[] datas, long codigoDisciplina)
         {
             
 
-            var datasParaEnvio = JsonConvert.SerializeObject(datas);
+            var datasParaEnvio = SgpJsonSerializer.Serialize(datas);
 
             var resposta = await httpClient.PostAsync($"professores/{professorRf}/turmas/{codigoTurma}/disciplinas/{codigoDisciplina}/atribuicao/recorrencia/verificar/datas", new StringContent(datasParaEnvio, Encoding.UTF8, "application/json-patch+json"));
 
             if (resposta.IsSuccessStatusCode)
             {
                 var json = await resposta.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<List<PodePersistirNaDataRetornoEolDto>>(json);
+                return SgpJsonSerializer.Deserialize<List<PodePersistirNaDataRetornoEolDto>>(json);
             }
 
             throw new NegocioException("Não foi possível validar datas para a atribuição do professor no EOL.");
@@ -817,7 +817,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             if (resposta.IsSuccessStatusCode)
             {
                 var json = resposta.Content.ReadAsStringAsync().Result;
-                return JsonConvert.DeserializeObject<bool>(json);
+                return SgpJsonSerializer.Deserialize<bool>(json);
             }
             else throw new Exception("Não foi possível validar a atribuição do professor no EOL.");
         }
@@ -847,14 +847,14 @@ namespace SME.SGP.Aplicacao.Integracoes
             if (resposta.IsSuccessStatusCode)
             {
                 var json = await resposta.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<UsuarioEolAutenticacaoRetornoDto>(json);
+                return SgpJsonSerializer.Deserialize<UsuarioEolAutenticacaoRetornoDto>(json);
             }
             else return null;
         }
 
         public async Task RemoverCJSeNecessario(Guid usuarioId)
         {
-            var parametros = JsonConvert.SerializeObject(usuarioId.ToString());
+            var parametros = SgpJsonSerializer.Serialize(usuarioId.ToString());
 
             var resposta = await httpClient.PostAsync("autenticacaoSgp/RemoverPerfilCJ", new StringContent(parametros, Encoding.UTF8, "application/json-patch+json"));
 
@@ -873,7 +873,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             if (resposta.IsSuccessStatusCode)
             {
                 var json = await resposta.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<bool>(json);
+                return SgpJsonSerializer.Deserialize<bool>(json);
             }
             return false;
         }
@@ -905,7 +905,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             if (resposta.IsSuccessStatusCode)
             {
                 var json = resposta.Content.ReadAsStringAsync().Result;
-                return JsonConvert.DeserializeObject<string[]>(json);
+                return SgpJsonSerializer.Deserialize<string[]>(json);
             }
             else
             {
@@ -925,7 +925,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             }
 
             var json = await resposta.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<IEnumerable<ComponenteCurricularEol>>(json);
+            return SgpJsonSerializer.Deserialize<IEnumerable<ComponenteCurricularEol>>(json);
         }
 
         private async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinas(string url, string rotina)
@@ -935,7 +935,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
             {
                 var json = await resposta.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<IEnumerable<DisciplinaResposta>>(json);
+                return SgpJsonSerializer.Deserialize<IEnumerable<DisciplinaResposta>>(json);
             }
 
             if (resposta.StatusCode == HttpStatusCode.BadRequest)
@@ -956,7 +956,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             if (resposta.StatusCode != HttpStatusCode.NotFound)
             {
                 var mensagem = resposta.Content.ReadAsStringAsync().Result;
-                servicoLog.Registrar(new NegocioException($"Ocorreu um erro ao {rotina} no EOL, código de erro: {resposta.StatusCode}, mensagem: {mensagem ?? "Sem mensagem"},Parametros:{parametros}, Request: {JsonConvert.SerializeObject(resposta.RequestMessage)}, "));
+                servicoLog.Registrar(new NegocioException($"Ocorreu um erro ao {rotina} no EOL, código de erro: {resposta.StatusCode}, mensagem: {mensagem ?? "Sem mensagem"},Parametros:{parametros}, Request: {SgpJsonSerializer.Serialize(resposta.RequestMessage)}, "));
             }
         }
 
@@ -965,7 +965,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             if (resposta.StatusCode != HttpStatusCode.NotFound)
             {
                 var mensagem = await resposta.Content.ReadAsStringAsync();
-                servicoLog.Registrar(new NegocioException($"Ocorreu um erro ao {rotina} no EOL, código de erro: {resposta.StatusCode}, mensagem: {mensagem ?? "Sem mensagem"},Parametros:{parametros}, Request: {JsonConvert.SerializeObject(resposta.RequestMessage)}, "));
+                servicoLog.Registrar(new NegocioException($"Ocorreu um erro ao {rotina} no EOL, código de erro: {resposta.StatusCode}, mensagem: {mensagem ?? "Sem mensagem"},Parametros:{parametros}, Request: {SgpJsonSerializer.Serialize(resposta.RequestMessage)}, "));
             }
         }
 
@@ -976,7 +976,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             if (resposta.IsSuccessStatusCode)
             {
                 var json = await resposta.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<IEnumerable<UsuarioEolRetornoDto>>(json);
+                return SgpJsonSerializer.Deserialize<IEnumerable<UsuarioEolRetornoDto>>(json);
 
             }
             return Enumerable.Empty<UsuarioEolRetornoDto>();
@@ -993,7 +993,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             if (resposta.IsSuccessStatusCode)
             {
                 var json = await resposta.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<IEnumerable<ComponenteCurricularEol>>(json);
+                return SgpJsonSerializer.Deserialize<IEnumerable<ComponenteCurricularEol>>(json);
 
             }
             return Enumerable.Empty<ComponenteCurricularEol>();
@@ -1024,7 +1024,7 @@ namespace SME.SGP.Aplicacao.Integracoes
                 throw new NegocioException("Não foi possível validar a atribuição do professor no EOL.");
 
             var json = resposta.Content.ReadAsStringAsync().Result;
-            return JsonConvert.DeserializeObject<bool>(json);
+            return SgpJsonSerializer.Deserialize<bool>(json);
         }
     }
 }

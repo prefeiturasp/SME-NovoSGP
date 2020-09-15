@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using SME.SGP.Infra.Json;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
@@ -64,7 +64,7 @@ namespace SME.SGP.Integracao.Teste
 
         public static HttpResponseMessage ExecuteDeleteAsync(TestServerFixture _fixture, string Url, object ObjetoEnviar)
         {
-            var jsonParaPost = new StringContent(JsonConvert.SerializeObject(ObjetoEnviar), Encoding.UTF8, "application/json");
+            var jsonParaPost = new StringContent(SgpJsonSerializer.Serialize(ObjetoEnviar), Encoding.UTF8, "application/json");
 
             var request = new HttpRequestMessage
             {
@@ -83,14 +83,14 @@ namespace SME.SGP.Integracao.Teste
 
         public static HttpResponseMessage ExecutePostAsync(TestServerFixture _fixture, string Url, object ObjetoEnviar)
         {
-            var jsonParaPost = new StringContent(JsonConvert.SerializeObject(ObjetoEnviar), Encoding.UTF8, "application/json");
+            var jsonParaPost = new StringContent(SgpJsonSerializer.Serialize(ObjetoEnviar), Encoding.UTF8, "application/json");
 
             return _fixture._clientApi.PostAsync(Url, jsonParaPost).Result;
         }
 
         public static HttpResponseMessage ExecutePutAsync(TestServerFixture _fixture, string Url, object ObjetoEnviar)
         {
-            var jsonParaPost = new StringContent(JsonConvert.SerializeObject(ObjetoEnviar), Encoding.UTF8, "application/json");
+            var jsonParaPost = new StringContent(SgpJsonSerializer.Serialize(ObjetoEnviar), Encoding.UTF8, "application/json");
 
             return _fixture._clientApi.PutAsync(Url, jsonParaPost).Result;
         }

@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using SME.SGP.Infra.Json;
 using SME.SGP.Dominio;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
@@ -34,7 +34,7 @@ namespace SME.SGP.Integracao.Teste
         //        MontarCabecalho();
         //        TipoCalendarioDto tipoCalendario = AdicionarTipoCalendario(ano);
 
-        //        var jsonParaPost = new StringContent(JsonConvert.SerializeObject(tipoCalendario), Encoding.UTF8, "application/json");
+        //        var jsonParaPost = new StringContent(SgpJsonSerializer.Serialize(tipoCalendario), Encoding.UTF8, "application/json");
         //        var postResult = await _fixture._clientApi.PostAsync("api/v1/calendarios/tipos", jsonParaPost);
 
         //        Assert.True(postResult.IsSuccessStatusCode);
@@ -44,7 +44,7 @@ namespace SME.SGP.Integracao.Teste
 
         //           PeriodoEscolarListaDto periodoEscolar = AdicionarPerioEscolar(ano);
 
-        //            var jsonParaPost2 = new StringContent(JsonConvert.SerializeObject(periodoEscolar), Encoding.UTF8, "application/json");
+        //            var jsonParaPost2 = new StringContent(SgpJsonSerializer.Serialize(periodoEscolar), Encoding.UTF8, "application/json");
         //            var postResult2 = await _fixture._clientApi.PostAsync("api/v1/periodo-escolar", jsonParaPost2);
         //            Assert.True(postResult2.IsSuccessStatusCode);
 
@@ -53,11 +53,11 @@ namespace SME.SGP.Integracao.Teste
         //                TipoCalendarioId = 1
         //            };
 
-        //            var filtroPeriodoEscolar = new StringContent(JsonConvert.SerializeObject(filtro), Encoding.UTF8, "application/json");
+        //            var filtroPeriodoEscolar = new StringContent(SgpJsonSerializer.Serialize(filtro), Encoding.UTF8, "application/json");
         //            var diasLetivosResponse = await _fixture._clientApi.PostAsync("api/v1/calendarios/dias-letivos", filtroPeriodoEscolar);
         //            if (diasLetivosResponse.IsSuccessStatusCode)
         //            {
-        //                var diasLetivos = JsonConvert.DeserializeObject<DiasLetivosDto>(await diasLetivosResponse.Content.ReadAsStringAsync());
+        //                var diasLetivos = SgpJsonSerializer.Deserialize<DiasLetivosDto>(await diasLetivosResponse.Content.ReadAsStringAsync());
         //                Assert.True(diasLetivos.Dias > 0);
         //            }
         //        }

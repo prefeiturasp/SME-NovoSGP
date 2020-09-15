@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using SME.SGP.Infra.Json;
 using SME.SGP.Infra;
 using System;
 using System.Net.Http;
@@ -31,7 +31,7 @@ namespace SME.SGP.Integracao.Teste
             fixture._clientApi.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", fixture.GerarToken(new Permissao[] { Permissao.AS_C }));
             filtro.AtualizaCodigoDre(codigoDRE);
             filtro.AtualizaCodigoUe(codigoUE);
-            var jsonFiltro = new StringContent(JsonConvert.SerializeObject(filtro), Encoding.UTF8, "application/json");
+            var jsonFiltro = new StringContent(SgpJsonSerializer.Serialize(filtro), Encoding.UTF8, "application/json");
 
             // Act
             var result = await fixture._clientApi.PostAsync($"api/v1/unidades-escolares/funcionarios", jsonFiltro);
