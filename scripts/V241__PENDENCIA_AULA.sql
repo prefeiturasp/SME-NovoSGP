@@ -1,7 +1,7 @@
 DROP TABLE if exists public.pendencia_aula;
 
 CREATE TABLE public.pendencia_aula (
-	id int8 NOT NULL GENERATED ALWAYS AS identity,
+	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
 	aula_id int8 not null,
 	tipo int8 not null, 
     CONSTRAINT pendencia_aula_pk PRIMARY KEY (id)
