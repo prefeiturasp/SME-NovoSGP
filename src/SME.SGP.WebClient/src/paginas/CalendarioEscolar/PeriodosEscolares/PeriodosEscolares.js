@@ -457,16 +457,18 @@ const PeriodosEscolares = () => {
     });
   };
 
-  const selecionaTipoCalendario = (descricao, form) => {
+  const selecionaTipoCalendario = (descricao, form, foiSelecionado = false) => {
     const tipo = listaTipoCalendario?.find(t => t.descricao === descricao);
     if (Number(tipo?.id) || !tipo?.id) {
       const isPeriodoAnual = tipo?.periodo === periodo?.Anual;
       setIsTipoCalendarioAnual(isPeriodoAnual);
       setValorTipoCalendario(descricao);
     }
-    resetarTela(form);
-    setValoresIniciais({});
-    consultarPeriodoPorId(tipo?.id);
+    if (foiSelecionado) {
+      resetarTela(form);
+      setValoresIniciais({});
+      consultarPeriodoPorId(tipo?.id);
+    }
     setCalendarioEscolarSelecionado(tipo?.id);
   };
 
@@ -528,7 +530,7 @@ const PeriodosEscolares = () => {
                       lista={listaTipoCalendario}
                       valueField="id"
                       textField="descricao"
-                      onSelect={id => selecionaTipoCalendario(id, form)}
+                      onSelect={id => selecionaTipoCalendario(id, form, true)}
                       onChange={id => selecionaTipoCalendario(id, form)}
                       handleSearch={handleSearch}
                       value={valorTipoCalendario}
