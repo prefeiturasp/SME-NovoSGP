@@ -201,11 +201,11 @@ function Filtro({ onFiltrar }) {
   };
 
   const buscarTurmas = useCallback(async () => {
-    const turmas = await AtribuicaoCJServico.buscarTurmas(ueId, 5);
+    const turmas = await AtribuicaoCJServico.buscarTurmas(ueId, 5, anoLetivo);
     const { data } = turmas;
 
     if (data) setListaTodasTurmas(data);
-  }, [ueId]);
+  }, [ueId, anoLetivo]);
 
   useEffect(() => {
     if (!dreId && refForm && Object.entries(refForm).length) {
