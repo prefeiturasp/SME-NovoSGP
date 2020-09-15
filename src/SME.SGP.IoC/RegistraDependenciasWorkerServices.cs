@@ -371,7 +371,7 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<ISalvarCartaIntencoesObservacaoUseCase, SalvarCartaIntencoesObservacaoUseCase>();
             services.TryAddScopedWorkerService<IAlterarCartaIntencoesObservacaoUseCase, AlterarCartaIntencoesObservacaoUseCase>();
             services.TryAddScopedWorkerService<IExcluirCartaIntencoesObservacaoUseCase, ExcluirCartaIntencoesObservacaoUseCase>();
-
+            services.TryAddScopedWorkerService<IPendenciaAulaUseCase, PendenciaAulaUseCase>();
         }
 
         private static void ResgistraDependenciaHttp(IServiceCollection services)
