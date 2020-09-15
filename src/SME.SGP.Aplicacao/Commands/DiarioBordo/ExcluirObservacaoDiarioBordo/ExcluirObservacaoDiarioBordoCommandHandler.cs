@@ -26,13 +26,14 @@ namespace SME.SGP.Aplicacao
             if (diarioBordoObservacao == null)
                 throw new NegocioException("Observação do diário de bordo não encontrada.");
 
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaExcluirNotificacaoDiarioBordo,
-                      new ExcluirNotificacaoDiarioBordoDto(request.ObservacaoId), Guid.NewGuid(), null));
-
             diarioBordoObservacao.ValidarUsuarioAlteracao(request.UsuarioId);
             diarioBordoObservacao.Remover();
 
             await repositorioDiarioBordoObservacao.SalvarAsync(diarioBordoObservacao);
+
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaExcluirNotificacaoDiarioBordo,
+                      new ExcluirNotificacaoDiarioBordoDto(request.ObservacaoId), Guid.NewGuid(), null));
+
             return true;
         }
     }

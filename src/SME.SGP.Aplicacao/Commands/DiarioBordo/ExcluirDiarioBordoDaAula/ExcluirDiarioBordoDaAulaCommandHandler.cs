@@ -26,13 +26,14 @@ namespace SME.SGP.Aplicacao.Commands
             var diarioBordo = await repositorioDiarioBordo.ObterPorAulaId(request.AulaId);
             var observacoesId = await repositorioDiarioBordo.ObterObservacaoPorId(diarioBordo.Id);
 
+            await repositorioDiarioBordo.ExcluirDiarioBordoDaAula(request.AulaId);
+
             foreach (long observacaoId in observacoesId)
             {
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaExcluirNotificacaoDiarioBordo,
                           new ExcluirNotificacaoDiarioBordoDto(observacaoId), Guid.NewGuid(), null));
             }
 
-            await repositorioDiarioBordo.ExcluirDiarioBordoDaAula(request.AulaId);
             return true;
         }
     }
