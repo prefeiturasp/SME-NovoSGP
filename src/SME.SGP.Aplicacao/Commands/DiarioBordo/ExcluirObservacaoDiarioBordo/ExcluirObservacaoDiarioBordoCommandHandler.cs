@@ -26,7 +26,10 @@ namespace SME.SGP.Aplicacao
             if (diarioBordoObservacao == null)
                 throw new NegocioException("Observação do diário de bordo não encontrada.");
 
-            diarioBordoObservacao.ValidarUsuarioAlteracao(request.UsuarioId);
+            // na exclusão de aula o usuario da exclusão pode não ser o mesmo que inseriu a observação
+            if (request.UsuarioId.HasValue)
+                diarioBordoObservacao.ValidarUsuarioAlteracao(request.UsuarioId.Value);
+
             diarioBordoObservacao.Remover();
 
             await repositorioDiarioBordoObservacao.SalvarAsync(diarioBordoObservacao);

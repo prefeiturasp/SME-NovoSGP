@@ -16,11 +16,18 @@ namespace SME.SGP.Dados.Repositorios
             this.database = database;
         }
 
-        public async Task<IEnumerable<DiarioBordoObservacaoNotificacao>> ObterPorDiarioBordoObservacaoId(long DiarioBordoObservacaoId)
+        public async Task<IEnumerable<DiarioBordoObservacaoNotificacao>> ObterPorDiarioBordoObservacaoId(long diarioBordoObservacaoId)
         {
-            var query = "select id, notificacao_id as NotificacaoId, observacao_id as DiarioBordoObservacaoId from diario_bordo_observacao_notificacao where observacao_id = @DiarioBordoObservacaoId";
+            var query = "select * from diario_bordo_observacao_notificacao where observacao_id = @diarioBordoObservacaoId";
 
-            return (await database.Conexao.QueryAsync<DiarioBordoObservacaoNotificacao>(query, new { DiarioBordoObservacaoId }));
+            return (await database.Conexao.QueryAsync<DiarioBordoObservacaoNotificacao>(query, new { diarioBordoObservacaoId }));
+        }
+
+        public async Task<IEnumerable<long>> ObterObservacaoPorId(long diarioBordoId)
+        {
+            var query = "select id from diario_bordo_observacao where diario_bordo_id = @diarioBordoId";
+
+            return await database.Conexao.QueryAsync<long>(query, new { diarioBordoId });
         }
 
         public async Task Excluir(DiarioBordoObservacaoNotificacao notificacao)
