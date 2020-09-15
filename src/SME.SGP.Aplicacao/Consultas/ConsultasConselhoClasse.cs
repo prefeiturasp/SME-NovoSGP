@@ -57,10 +57,10 @@ namespace SME.SGP.Aplicacao
 
             if (fechamentoTurma == null && !ehAnoAnterior)
             {
-                throw new NegocioException("Fechamento da turma não localizado " + (!ehFinal ? $"para o bimestre {bimestre}" : ""));
+                throw new NegocioException("Fechamento da turma não localizado " + (!ehFinal && bimestre > 0 ? $"para o bimestre {bimestre}" : ""));
             }
 
-            var conselhoClasse = fechamentoTurma != null? await repositorioConselhoClasse.ObterPorFechamentoId(fechamentoTurma.Id): null;
+            var conselhoClasse = fechamentoTurma != null ? await repositorioConselhoClasse.ObterPorFechamentoId(fechamentoTurma.Id): null;
 
             var periodoEscolarId = fechamentoTurma?.PeriodoEscolarId;
             if (periodoEscolarId == null)
