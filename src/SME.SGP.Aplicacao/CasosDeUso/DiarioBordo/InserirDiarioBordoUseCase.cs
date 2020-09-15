@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
         public async Task<AuditoriaDto> Executar(InserirDiarioBordoDto param)
         {
             var auditoria = await mediator.Send(new InserirDiarioBordoCommand(param.AulaId, param.Planejamento, param.ReflexoesReplanejamento));
-
+            await mediator.Send(new ExcluirPendenciaAulaCommand(param.AulaId, Dominio.TipoPendenciaAula.DiarioBordo));
             return auditoria;
         }
     }
