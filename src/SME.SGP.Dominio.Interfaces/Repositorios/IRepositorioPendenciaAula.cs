@@ -10,7 +10,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<Aula>> ListarPendenciasAtividadeAvaliativa();
 
         Task Salvar(PendenciaAula pendenciaAula);
-        Task Excluir(PendenciaAula pendenciaAula);
+        Task Excluir(TipoPendenciaAula tipoPendenciaAula, long aulaId);
 
         
 
