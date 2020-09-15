@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { Form, Formik } from 'formik';
 import * as moment from 'moment';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import * as Yup from 'yup';
 import shortid from 'shortid';
 
@@ -38,6 +38,8 @@ import {
   sucesso,
   verificaSomenteConsulta,
 } from '~/servicos';
+
+import { temEventoCalendarioId } from '~/redux/modulos/calendarioEscolar/actions';
 
 const EventosLista = ({ match }) => {
   const usuario = useSelector(store => store.usuario);
@@ -103,6 +105,16 @@ const EventosLista = ({ match }) => {
         }
       ),
     })
+  );
+
+  const { eventoCalendarioId } = useSelector(
+    state => state.calendarioEscolar.eventoCalendarioId
+  );
+
+  const dispatch = useDispatch();
+  const setTemEventoCalendarioId = useCallback(
+    value => dispatch(temEventoCalendarioId(value)),
+    [dispatch]
   );
 
   const validarFiltrar = useCallback(async () => {
@@ -197,14 +209,11 @@ const EventosLista = ({ match }) => {
   ]);
 
   useEffect(() => {
-    const calendarioSelecionado = sessionStorage.getItem(
-      'calendarioSelecionadoEventos'
-    );
     if (
       refForm &&
       listaCalendario &&
       listaCalendario.length &&
-      calendarioSelecionado &&
+      eventoCalendarioId &&
       match &&
       match.params &&
       match.params.tipoCalendarioId
@@ -214,26 +223,28 @@ const EventosLista = ({ match }) => {
         item => item.id == tipoCalendarioId
       );
 
-      const calendarioConvertido =
-        calendarioSelecionado && JSON.parse(calendarioSelecionado);
-
       const valorDescricao = temTipoParaSetar
         ? temTipoParaSetar.descricao
-        : calendarioConvertido
-        ? calendarioConvertido.descricao
         : null;
 
-      if (calendarioSelecionado && !temTipoParaSetar) {
-        setPesquisaTipoCalendario(calendarioConvertido.descricao);
+      if (!temTipoParaSetar) {
+        setPesquisaTipoCalendario(valorDescricao);
       }
 
-      sessionStorage.clear('calendarioSelecionadoEventos');
+      setTemEventoCalendarioId(false);
       refForm.setFieldValue('tipoCalendarioId', tipoCalendarioId);
       setValorTipoCalendario(valorDescricao);
       setSelecionouCalendario(true);
       filtrar('tipoCalendarioId', tipoCalendarioId);
     }
-  }, [match, listaCalendario, refForm, filtrar]);
+  }, [
+    match,
+    listaCalendario,
+    refForm,
+    filtrar,
+    setTemEventoCalendarioId,
+    eventoCalendarioId,
+  ]);
 
   useEffect(() => {
     const obterListaEventos = async () => {
@@ -317,13 +328,6 @@ const EventosLista = ({ match }) => {
     if (dreSelecionada) listarUes();
   }, [dreSelecionada, selecionouCalendario, listaCalendario, refForm]);
 
-  const setSessionStorage = value => {
-    sessionStorage.setItem(
-      'calendarioSelecionadoEventos',
-      JSON.stringify(value)
-    );
-  };
-
   const onClickVoltar = () => {
     history.push(URL_HOME);
   };
@@ -385,12 +389,10 @@ const EventosLista = ({ match }) => {
   };
 
   const onClickNovo = () => {
-    const calendarioId = tipoCalendarioSelecionado;
-    const calendarioSelecionado = listaCalendario?.find(
-      t => t.id === calendarioId
+    setTemEventoCalendarioId(true);
+    history.push(
+      `/calendario-escolar/eventos/novo/${tipoCalendarioSelecionado}`
     );
-    setSessionStorage(calendarioSelecionado);
-    history.push(`/calendario-escolar/eventos/novo/${calendarioId}`);
   };
 
   const onChangeNomeEvento = e => {
@@ -430,11 +432,7 @@ const EventosLista = ({ match }) => {
   };
 
   const onClickEditar = evento => {
-    const calendarioId = tipoCalendarioSelecionado;
-    const calendarioSelecionado = listaCalendario?.find(
-      t => t.id === calendarioId
-    );
-    setSessionStorage(calendarioSelecionado);
+    setTemEventoCalendarioId(true);
     history.push(
       `/calendario-escolar/eventos/editar/${evento.id}/${filtro.tipoCalendarioId}`
     );
