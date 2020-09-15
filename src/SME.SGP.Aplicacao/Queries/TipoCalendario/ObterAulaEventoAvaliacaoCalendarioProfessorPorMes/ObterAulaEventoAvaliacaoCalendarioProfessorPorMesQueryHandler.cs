@@ -10,12 +10,12 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterAulaEventoAvaliacaoCalendarioProfessorPorMesQueryHandler : IRequestHandler<ObterAulaEventoAvaliacaoCalendarioProfessorPorMesQuery, IEnumerable<EventoAulaDiaDto>>
     {
-
-        public ObterAulaEventoAvaliacaoCalendarioProfessorPorMesQueryHandler()
+        private readonly IMediator mediator;
+        public ObterAulaEventoAvaliacaoCalendarioProfessorPorMesQueryHandler(IMediator mediator)
         {
-
+            this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
-        public Task<IEnumerable<EventoAulaDiaDto>> Handle(ObterAulaEventoAvaliacaoCalendarioProfessorPorMesQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<EventoAulaDiaDto>> Handle(ObterAulaEventoAvaliacaoCalendarioProfessorPorMesQuery request, CancellationToken cancellationToken)
         {
             var qntDiasMes = DateTime.DaysInMonth(request.AnoLetivo, request.Mes);
 
@@ -54,11 +54,14 @@ namespace SME.SGP.Aplicacao
                         }
 
                     }
+                    
+                    eventoAula.PendenciasAula = await mediator.Send(new ObterPendenciasAulaPorAulaIdQuery(aulasDoDia.Select(a => a.Id).ToArray()));
                 }
                 listaRetorno.Add(eventoAula);
             }
 
-            return Task.FromResult(listaRetorno.AsEnumerable());
+            //return Task.FromResult(listaRetorno.AsEnumerable());
+            return listaRetorno.AsEnumerable();
         }
     }
 }

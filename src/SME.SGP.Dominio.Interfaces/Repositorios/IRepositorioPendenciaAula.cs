@@ -9,6 +9,9 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<Aula>> ListarPendenciasPorTipo(TipoPendenciaAula tipoPendenciaAula, string tabelaReferencia);
         Task<IEnumerable<Aula>> ListarPendenciasAtividadeAvaliativa();
 
+        Task<long[]> ListarPendenciasPorAulaId(long aulaId);
+        Task<long[]> ListarPendenciasPorAulasId(long[] aulaId);
+
         Task Salvar(PendenciaAula pendenciaAula);
         Task Excluir(TipoPendenciaAula tipoPendenciaAula, long aulaId);
 
