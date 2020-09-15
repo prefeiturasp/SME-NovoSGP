@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Aplicacao
 {
-    public interface INotificarUsuarioUseCase : IUseCase<MensagemRabbit, bool>
+    public interface INotificarUsuarioUseCase : IUseCase<MensagemRabbit, long>
     {
     }
 }

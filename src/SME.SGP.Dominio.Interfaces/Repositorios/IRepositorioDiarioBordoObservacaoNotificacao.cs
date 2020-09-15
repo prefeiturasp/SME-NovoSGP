@@ -1,8 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
 {
-    public interface IRepositorioDiarioBordoObservacaoNotificacao
-    {        
+    public interface IRepositorioDiarioBordoObservacaoNotificacao    {
+        
+        Task Salvar(DiarioBordoObservacaoNotificacao notificacao);
     }
 }

@@ -3,6 +3,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -12,8 +13,13 @@ namespace SME.SGP.Dados.Repositorios
         
         public RepositorioDiarioBordoObservacaoNotificacao(ISgpContext database)
         {
-            this.database = database;           
-        }    
+            this.database = database;         
+        }       
+
+        public async Task Salvar(DiarioBordoObservacaoNotificacao notificacao)
+        {
+            await database.Conexao.InsertAsync(notificacao);
+        }
 
     }
 }
