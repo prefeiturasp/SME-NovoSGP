@@ -37,10 +37,9 @@ namespace SME.SGP.Aplicacao
             var aulas = await repositorioPendenciaAula.ListarPendenciasPorTipo(TipoPendenciaAula.DiarioBordo);
             if (aulas != null)
             {
-                foreach (var aula in aulas)
-                {
-                    await RegistraPendencia(aula.Id, TipoPendenciaAula.DiarioBordo);
-                }
+
+                await RegistraPendencia(aulas, TipoPendenciaAula.DiarioBordo);
+
             }
         }
 
@@ -49,11 +48,9 @@ namespace SME.SGP.Aplicacao
             var aulas = await repositorioPendenciaAula.ListarPendenciasPorTipo(TipoPendenciaAula.Avaliacao);
             if (aulas != null)
             {
-                foreach (var aula in aulas)
-                {
-                    await RegistraPendencia(aula.Id, TipoPendenciaAula.Avaliacao);
-                }
+                await RegistraPendencia(aulas, TipoPendenciaAula.Avaliacao);
             }
+
         }
 
         private async Task VerificaPendenciasFrequencia()
@@ -61,10 +58,8 @@ namespace SME.SGP.Aplicacao
             var aulas = await repositorioPendenciaAula.ListarPendenciasPorTipo(TipoPendenciaAula.Frequencia);
             if (aulas != null)
             {
-                foreach (var aula in aulas)
-                {
-                    await RegistraPendencia(aula.Id, TipoPendenciaAula.Frequencia);
-                }
+                await RegistraPendencia(aulas, TipoPendenciaAula.Frequencia);
+
             }
         }
 
@@ -73,16 +68,14 @@ namespace SME.SGP.Aplicacao
             var aulas = await repositorioPendenciaAula.ListarPendenciasPorTipo(TipoPendenciaAula.PlanoAula);
             if (aulas != null)
             {
-                foreach (var aula in aulas)
-                {
-                    await RegistraPendencia(aula.Id, TipoPendenciaAula.PlanoAula);
-                }
+                await RegistraPendencia(aulas, TipoPendenciaAula.PlanoAula);
+
             }
         }
 
-        private async Task RegistraPendencia(long aulaId, TipoPendenciaAula tipoPendenciaAula)
+        private async Task RegistraPendencia(IEnumerable<Aula> aulas, TipoPendenciaAula tipoPendenciaAula)
         {
-            await repositorioPendenciaAula.Salvar(new PendenciaAula(aulaId, tipoPendenciaAula));
+            repositorioPendenciaAula.SalvarVarias(aulas, tipoPendenciaAula);
         }
 
         #endregion

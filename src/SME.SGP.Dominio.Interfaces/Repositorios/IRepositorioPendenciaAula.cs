@@ -10,5 +10,7 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task Salvar(PendenciaAula pendenciaAula);
         Task Excluir(PendenciaAula pendenciaAula);
+
+        void SalvarVarias(IEnumerable<Aula> aulas, TipoPendenciaAula tipoPendenciaAula);
     }
 }

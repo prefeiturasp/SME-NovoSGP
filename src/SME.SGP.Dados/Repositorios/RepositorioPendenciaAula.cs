@@ -1,4 +1,6 @@
 ﻿using Dommel;
+using Npgsql;
+using NpgsqlTypes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -41,6 +43,23 @@ namespace SME.SGP.Dados.Repositorios
         public async Task Salvar(PendenciaAula pendencia)
         {
             await database.Conexao.InsertAsync(pendencia);
+        }
+
+        public void SalvarVarias(IEnumerable<Aula> aulas, TipoPendenciaAula tipoPendenciaAula)
+        {
+            var sql = @"copy pendencia_aula (aula_id, tipo)
+                            from
+                            stdin (FORMAT binary)";
+            using (var writer = ((NpgsqlConnection)database.Conexao).BeginBinaryImport(sql))
+            {
+                foreach (var aula in aulas)
+                {
+                    writer.StartRow();
+                    writer.Write(aula.Id, NpgsqlDbType.Bigint);
+                    writer.Write((long)tipoPendenciaAula, NpgsqlDbType.Bigint);
+                }
+                writer.Complete();
+            }
         }
 
     }
