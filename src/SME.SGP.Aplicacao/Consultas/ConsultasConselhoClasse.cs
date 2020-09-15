@@ -49,7 +49,7 @@ namespace SME.SGP.Aplicacao
             var fechamentoTurma = await consultasFechamentoTurma.ObterPorTurmaCodigoBimestreAsync(turmaCodigo, bimestre);
 
             if (fechamentoTurma == null)
-                throw new NegocioException("Fechamento da turma não localizado " + (!ehFinal ? $"para o bimestre {bimestre}" : ""));
+                throw new NegocioException("Fechamento da turma não localizado " + (!ehFinal && bimestre > 0 ? $"para o bimestre {bimestre}" : ""));
 
             var conselhoClasse = await repositorioConselhoClasse.ObterPorFechamentoId(fechamentoTurma.Id);
 
