@@ -8,21 +8,21 @@ namespace SME.SGP.Aplicacao
 {
     public class ExcluirNotificacaoDiarioBordoCommand : IRequest<bool>
     {
-        public ExcluirNotificacaoDiarioBordoCommand(long diarioBordoId)
+        public ExcluirNotificacaoDiarioBordoCommand(long observacaoId)
         {
-            DiarioBordoId = diarioBordoId;
+            ObservacaoId = observacaoId;
         }
 
-        public long DiarioBordoId { get; set; }
+        public long ObservacaoId { get; set; }
     }
 
     public class ExcluirNotificacaoDiarioBordoCommandValidator : AbstractValidator<ExcluirNotificacaoDiarioBordoCommand>
     {
         public ExcluirNotificacaoDiarioBordoCommandValidator()
         {
-            RuleFor(c => c.DiarioBordoId)
+            RuleFor(c => c.ObservacaoId)
                 .NotEmpty()
-                .WithMessage("O Diario de bordo deve ser informado.");
+                .WithMessage("O id da observação deve ser informado.");
         }
     }
 }

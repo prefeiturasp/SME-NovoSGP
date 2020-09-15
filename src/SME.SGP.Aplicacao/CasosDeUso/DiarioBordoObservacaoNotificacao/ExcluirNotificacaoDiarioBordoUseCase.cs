@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
         {
             var dadosMensagem = mensagemRabbit.ObterObjetoMensagem<ExcluirNotificacaoDiarioBordoDto>();
 
-            return await mediator.Send(new ExcluirNotificacaoDevolutivaCommand(dadosMensagem.DiarioBordoId));
+            return await mediator.Send(new ExcluirNotificacaoDiarioBordoCommand(dadosMensagem.ObservacaoId));
         }
     }
 }
