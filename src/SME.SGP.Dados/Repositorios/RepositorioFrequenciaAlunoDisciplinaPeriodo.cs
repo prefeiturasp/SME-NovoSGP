@@ -1,13 +1,11 @@
 ﻿using Dapper;
-using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using System;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using System.Linq;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -24,7 +22,7 @@ namespace SME.SGP.Dados.Repositorios
                         from
 	                        frequencia_aluno
                         where
-	                        codigo_aluno = @codigoAluno
+	                        codigo_aluno = @codigoAluno::int8
 	                        and disciplina_id = @disciplinaId
 	                        and tipo = @tipoFrequencia
 	                        and periodo_escolar_id = @periodoEscolarId";
@@ -94,11 +92,11 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine(" and disciplina_id = @componenteCurricularCodigo");
 
             return await database.Conexao
-                .QueryAsync<FrequenciaAluno>(query.ToString(), new 
-                { 
-                    alunoCodigo, 
-                    turmaCodigo, 
-                    componenteCurricularCodigo 
+                .QueryAsync<FrequenciaAluno>(query.ToString(), new
+                {
+                    alunoCodigo,
+                    turmaCodigo,
+                    componenteCurricularCodigo
                 });
         }
 
@@ -148,7 +146,7 @@ namespace SME.SGP.Dados.Repositorios
                         from frequencia_aluno fa
                         inner join periodo_escolar pe on fa.periodo_escolar_id = pe.id
                         where
-	                        codigo_aluno = @codigoAluno
+	                        codigo_aluno = @codigoAluno::int8
 	                        and tipo = @tipoFrequencia
 	                        and pe.periodo_inicio <= @dataAtual
 	                        and pe.periodo_fim >= @dataAtual ");
@@ -170,7 +168,7 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select *
                         from frequencia_aluno fa
                         inner join periodo_escolar pe on fa.periodo_escolar_id = pe.id
-                        where codigo_aluno = @codigoAluno
+                        where codigo_aluno = @codigoAluno::int8
                             and disciplina_id = @disciplinaId
 	                        and tipo = 1
 	                        and pe.periodo_inicio <= @dataAtual
