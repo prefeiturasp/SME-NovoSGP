@@ -103,7 +103,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaBimestresAsync(string codigoAluno, int bimestre, string codigoTurma)
         {
             var query = @"select * from frequencia_aluno fa 
-                            where fa.codigo_aluno = @codigoAluno
+                            where fa.codigo_aluno = @codigoAluno::int8
                             and fa.turma_id = @turmaId and fa.tipo = 1";
 
             if (bimestre > 0)
@@ -123,7 +123,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = new StringBuilder(@"select *
                         from frequencia_aluno
-                        where codigo_aluno = @codigoAluno
+                        where codigo_aluno = @codigoAluno::int8
 	                        and tipo = @tipoFrequencia
 	                        and bimestre = @bimestre ");
 
