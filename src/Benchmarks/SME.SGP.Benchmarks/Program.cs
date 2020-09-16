@@ -6,7 +6,7 @@ namespace SME.SGP.Benchmarks
     {
         private static void Main(string[] args)
         {
-            BenchmarkRunner.Run<RedisGZipBenchMark>();
+            BenchmarkRunner.Run<SerializerBenchMark>();
         }
     }
 }
