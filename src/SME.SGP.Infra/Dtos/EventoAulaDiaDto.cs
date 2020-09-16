@@ -12,13 +12,13 @@ namespace SME.SGP.Infra
             TemAula = false;
             TemAulaCJ = false;
             TemAvaliacao = false;
-            PendenciasAula = null;
+            PossuiPendencia = false;
         }
         public int Dia { get; set; }
         public bool TemEvento { get; set; }
         public bool TemAula { get; set; }
         public bool TemAulaCJ { get; set; }
         public bool TemAvaliacao { get; set; }
-        public long[] PendenciasAula { get; set; }
+        public bool PossuiPendencia { get; set; }
     }
 }

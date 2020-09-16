@@ -54,13 +54,15 @@ namespace SME.SGP.Aplicacao
                         }
 
                     }
-                    
-                    eventoAula.PendenciasAula = await mediator.Send(new ObterPendenciasAulaPorAulaIdQuery(aulasDoDia.Select(a => a.Id).ToArray()));
+
+
+                    var pendencias = await mediator.Send(new ObterPendenciasAulaPorAulaIdsQuery(aulasDoDia.Select(a => a.Id).ToArray()));
+                    if (pendencias.Length > 0)
+                        eventoAula.PossuiPendencia = true;
                 }
                 listaRetorno.Add(eventoAula);
             }
 
-            //return Task.FromResult(listaRetorno.AsEnumerable());
             return listaRetorno.AsEnumerable();
         }
     }
