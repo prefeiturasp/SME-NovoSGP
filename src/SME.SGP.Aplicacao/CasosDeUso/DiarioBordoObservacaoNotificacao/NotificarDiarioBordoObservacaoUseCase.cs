@@ -14,17 +14,17 @@ namespace SME.SGP.Aplicacao
     public class NotificarDiarioBordoObservacaoUseCase : INotificarDiarioBordoObservacaoUseCase
     {
         private readonly IMediator mediator;
-        private readonly IConfiguration configuration;        
+        private readonly IConfiguration configuration;
         private readonly IRepositorioDiarioBordoObservacaoNotificacao repositorioDiarioBordoObservacaoNotificacao;
         private readonly IUnitOfWork unitOfWork;
 
         public NotificarDiarioBordoObservacaoUseCase(IMediator mediator,
-                                                      IConfiguration configuration,                                                      
+                                                      IConfiguration configuration,
                                                       IRepositorioDiarioBordoObservacaoNotificacao repositorioDiarioBordoObservacaoNotificacao,
                                                       IUnitOfWork unitOfWork)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));            
+            this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             this.repositorioDiarioBordoObservacaoNotificacao = repositorioDiarioBordoObservacaoNotificacao ?? throw new ArgumentNullException(nameof(repositorioDiarioBordoObservacaoNotificacao));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
@@ -42,10 +42,19 @@ namespace SME.SGP.Aplicacao
 
             if (titulares != null)
             {
-                var mensagem = new StringBuilder($"O usuário {usuarioLogado.Nome} ({usuarioLogado.CodigoRf}) inseriu uma nova observação no Diário de bordo do dia {dataAtual} da turma <strong>{diarioBordo.Aula.Turma.Nome}</strong> da <strong>{diarioBordo.Aula.Turma.Ue.Nome}</strong> ({diarioBordo.Aula.Turma.Ue.Dre.Abreviacao})");
+                var mensagem = new StringBuilder($"O usuário {usuarioLogado.Nome} ({usuarioLogado.CodigoRf}) inseriu uma nova observação no Diário de bordo do dia {dataAtual} da turma <strong>{diarioBordo.Aula.Turma.Nome}</strong> da <strong>{diarioBordo.Aula.Turma.Ue.TipoEscola}-{diarioBordo.Aula.Turma.Ue.Nome}</strong> ({diarioBordo.Aula.Turma.Ue.Dre.Abreviacao}).");
 
                 var hostAplicacao = configuration["UrlFrontEnd"];
-                mensagem.AppendLine($"<br/><br/><a href='{hostAplicacao}diario-classe/diario-bordo'>Clique aqui para visualizar a observação.</a>");
+                
+                if (dadosMensagem.Observacao.Length > 200)
+                {
+                    mensagem.AppendLine($"<br/><br/>Observação: Acesse o Diário de bordo de uma das aulas para consultar a observação.");
+                }
+                else
+                {
+                    mensagem.AppendLine($"<br/><br/>Observação: {dadosMensagem.Observacao}.");
+                }
+
 
                 if (titulares.Count() == 1)
                     titulares = titulares.FirstOrDefault().Split(',');
@@ -64,7 +73,7 @@ namespace SME.SGP.Aplicacao
                                                                              mensagem.ToString(),
                                                                              codigoRf,
                                                                              NotificacaoCategoria.Aviso,
-                                                                             NotificacaoTipo.Planejamento));                           
+                                                                             NotificacaoTipo.Planejamento));
 
 
                             var diarioBordoObservacaoNotificacao = new DiarioBordoObservacaoNotificacao(dadosMensagem.ObservacaoId, notificacaoId);

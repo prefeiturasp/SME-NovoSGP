@@ -9,17 +9,19 @@ namespace SME.SGP.Infra.Dtos
 {
     public class SalvarNotificacaoCartaIntencoesObservacaoDto
     {
-        public SalvarNotificacaoCartaIntencoesObservacaoDto(Turma turma, Usuario usuario, long cartaIntencoesObservacaoId)
+        public SalvarNotificacaoCartaIntencoesObservacaoDto(Turma turma, Usuario usuario, long cartaIntencoesObservacaoId, string observacao)
         {
             Turma = turma;
             Usuario = usuario;
             CartaIntencoesObservacaoId = cartaIntencoesObservacaoId;
+            Observacao = observacao;
         }
 
         public Turma Turma { get; set; }
         public Usuario Usuario { get; set; }
 
         public long CartaIntencoesObservacaoId;
+        public string Observacao { get; set; }
     }
 
     public class NotificarNovaCartaIntencoesObservacaoDtoValidator : AbstractValidator<SalvarNotificacaoCartaIntencoesObservacaoDto>

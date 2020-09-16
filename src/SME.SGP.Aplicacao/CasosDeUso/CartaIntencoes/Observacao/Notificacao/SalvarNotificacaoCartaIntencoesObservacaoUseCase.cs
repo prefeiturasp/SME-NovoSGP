@@ -39,10 +39,20 @@ namespace SME.SGP.Aplicacao
 
             if (titulares != null)
             {
-                var mensagem = new StringBuilder($"O usuário {usuarioLogado.Nome} ({usuarioLogado.CodigoRf}) inseriu uma nova observação na Carta de intenções da turma <strong>{turma.Nome}</strong> da <strong>{turma.Ue.Nome}</strong> ({turma.Ue.Dre.Abreviacao})");
+                var mensagem = new StringBuilder($"O usuário {usuarioLogado.Nome} ({usuarioLogado.CodigoRf}) inseriu uma nova observação na Carta de intenções da turma <strong>{turma.Nome}</strong> da <strong>{turma.Ue.TipoEscola}-{turma.Ue.Nome}</strong> ({turma.Ue.Dre.Abreviacao}).");
 
                 var hostAplicacao = configuration["UrlFrontEnd"];
-                mensagem.AppendLine($"<br/><br/><a href='{hostAplicacao}planejamento/carta-intencoes'>Clique aqui para visualizar a observação.</a>");
+                
+                if (dadosMensagem.Observacao.Length > 200)
+                {
+                    mensagem.AppendLine($"<br/><br/>Observação: Acesse Carta de intenções para consultar o conteúdo da observação.");
+                }
+                else
+                {
+                    mensagem.AppendLine($"<br/><br/>Observação: {dadosMensagem.Observacao}.");
+                }
+
+
 
                 if (titulares.Count() == 1)
                     titulares = titulares.FirstOrDefault().Split(',');

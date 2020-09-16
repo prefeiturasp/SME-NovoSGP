@@ -8,13 +8,15 @@ namespace SME.SGP.Infra.Dtos
 {
     public class NotificarDiarioBordoObservacaoDto
     {
-        public NotificarDiarioBordoObservacaoDto(long diarioBordoId, Usuario usuario, long observacaoId)
+        public NotificarDiarioBordoObservacaoDto(long diarioBordoId, string observacao, Usuario usuario, long observacaoId)
         {
             DiarioBordoId = diarioBordoId;
+            Observacao = observacao;
             Usuario = usuario;
             ObservacaoId = observacaoId;
         }
         public long ObservacaoId { get; set; }
+        public string Observacao { get; set; }
         public long DiarioBordoId { get; set; }
         public Usuario Usuario { get; set; }
     }
