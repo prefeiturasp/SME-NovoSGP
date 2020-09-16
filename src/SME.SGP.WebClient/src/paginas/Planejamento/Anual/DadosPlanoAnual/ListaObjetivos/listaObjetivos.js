@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import TransferenciaLista from '~/componentes-sgp/TranferenciaLista/transferenciaLista';
+import { ContainerListaObjetivos } from './listaObjetivos.css';
 
 const ListaObjetivos = () => {
   const mock = [
@@ -197,12 +198,14 @@ const ListaObjetivos = () => {
   };
 
   return (
-    <TransferenciaLista
-      listaEsquerda={parametrosListaEsquerda}
-      listaDireita={parametrosListaDireita}
-      onClickAdicionar={onClickAdicionar}
-      onClickRemover={onClickRemover}
-    />
+    <ContainerListaObjetivos>
+      <TransferenciaLista
+        listaEsquerda={parametrosListaEsquerda}
+        listaDireita={parametrosListaDireita}
+        onClickAdicionar={onClickAdicionar}
+        onClickRemover={onClickRemover}
+      />
+    </ContainerListaObjetivos>
   );
 };
 
