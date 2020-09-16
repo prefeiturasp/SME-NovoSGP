@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dominio
 {
-    public class Resposta : EntidadeBase
+    public class RecuperacaoParalelaResposta : EntidadeBase
     {
         public string Descricao { get; set; }
         public DateTime DtFim { get; set; }
