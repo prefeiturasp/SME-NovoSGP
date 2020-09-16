@@ -125,5 +125,13 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.RPC_C, Policy = "Bearer")]
         public async Task<IActionResult> ListarPareceresConclusivos([FromServices] IObterPareceresConclusivosUseCase obterPareceresConclusivosUseCase)
          => Ok(await obterPareceresConclusivosUseCase.Executar());
+
+
+        [HttpGet("turmas/{turmaCodigo}")]
+        [ProducesResponseType(typeof(IEnumerable<BimestreComConselhoClasseTurmaDto>), 200)]        
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ObterBimestresComConselhoClasseTurma(long turmaCodigo, [FromServices]IObterBimestresComConselhoClasseTurmaUseCase obterBimestresComConselhoClasseTurmaUseCase)
+         => Ok(await obterBimestresComConselhoClasseTurmaUseCase.Executar(turmaCodigo));        
     }
 }
