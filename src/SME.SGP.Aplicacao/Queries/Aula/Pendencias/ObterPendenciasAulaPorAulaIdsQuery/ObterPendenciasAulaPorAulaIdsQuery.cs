@@ -6,9 +6,9 @@ using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterPendenciasAulaPorAulaIdQuery : IRequest<long[]>
+    public class ObterPendenciasAulaPorAulaIdsQuery : IRequest<long[]>
     {
-        public ObterPendenciasAulaPorAulaIdQuery(long[] aulasId)
+        public ObterPendenciasAulaPorAulaIdsQuery(long[] aulasId)
         {
             AulasId = aulasId;
         }
