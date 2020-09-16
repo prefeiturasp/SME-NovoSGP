@@ -2,7 +2,7 @@ import { setRotas } from '../redux/modulos/navegacao/actions';
 import { store } from '../redux';
 import Principal from '../paginas/Principal/principal';
 import PlanoCiclo from '../paginas/Planejamento/PlanoCiclo/planoCiclo';
-import PlanoAnual from '../paginas/Planejamento/PlanoAnual/planoAnual';
+import PlanoAnual from '../paginas/Planejamento/Anual/planoAnual';
 import AtribuicaoSupervisorLista from '../paginas/Gestao/AtribuicaoSupervisor/atribuicaoSupervisorLista';
 import AtribuicaoSupervisorCadastro from '../paginas/Gestao/AtribuicaoSupervisor/atribuicaoSupervisorCadastro';
 import AtribuicaoEsporadicaLista from '../paginas/Gestao/AtribuicaoEsporadica/Lista';
@@ -181,8 +181,8 @@ rotas.set(RotasDto.PLANO_ANUAL, {
   component: PlanoAnual,
   exact: false,
   tipo: RotasTipo.EstruturadaAutenticada,
-  temPermissionamento: true,
-  chavePermissao: RotasDto.PLANO_ANUAL,
+  // temPermissionamento: true,
+  // chavePermissao: RotasDto.PLANO_ANUAL,
 });
 
 rotas.set(RotasDto.TERRITORIO_SABER, {
