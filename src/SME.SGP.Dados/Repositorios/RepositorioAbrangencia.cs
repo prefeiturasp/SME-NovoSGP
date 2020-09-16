@@ -87,50 +87,30 @@ namespace SME.SGP.Dados.Repositorios
 
             var query = new StringBuilder();
 
-            query.AppendLine("select distinct modalidade,");
-            query.AppendLine("                anoLetivo,");
-            query.AppendLine("                ano,");
-            query.AppendLine("                codigoDre,");
-            query.AppendLine("                codigoTurma,");
-            query.AppendLine("                codigoUe,");
-            query.AppendLine("                ue.tipo_escola as tipoEscola,");
-            query.AppendLine("                nomeDre,");
-            query.AppendLine("                nomeTurma,");
-            query.AppendLine("                nomeUe,");
-            query.AppendLine("                semestre,");
-            query.AppendLine("                qtDuracaoAula,");
-            query.AppendLine("                tipoTurno");
-            query.AppendLine("from(");
-            query.AppendLine("         select coalesce(t_tur.modalidade_codigo, t_ue.modalidade_codigo, t_dre.modalidade_codigo) as modalidade,");
-            query.AppendLine("                coalesce(t_tur.turma_ano_letivo, t_ue.turma_ano_letivo, t_dre.turma_ano_letivo) as anoLetivo,");
-            query.AppendLine("                coalesce(t_tur.turma_ano, t_ue.turma_ano, t_dre.turma_ano) as ano,");
-            query.AppendLine("                coalesce(t_tur.dre_codigo, t_ue.dre_codigo, t_dre.dre_codigo) as codigoDre,");
-            query.AppendLine("                coalesce(t_tur.turma_id, t_ue.turma_id, t_dre.turma_id) as codigoTurma,");
-            query.AppendLine("                coalesce(t_tur.ue_codigo, t_ue.ue_codigo, t_dre.ue_codigo) as codigoUe,");
-            query.AppendLine("                coalesce(t_tur.dre_nome, t_ue.dre_nome, t_dre.dre_nome) as nomeDre,");
-            query.AppendLine("                coalesce(t_tur.turma_nome, t_ue.turma_nome, t_dre.turma_nome) as nomeTurma,");
-            query.AppendLine("                coalesce(t_tur.ue_nome, t_ue.ue_nome, t_dre.ue_nome) as nomeUe,");
-            query.AppendLine("                coalesce(t_tur.turma_semestre, t_ue.turma_semestre, t_dre.turma_semestre) as semestre,");
-            query.AppendLine("                coalesce(t_tur.qt_duracao_aula, t_ue.qt_duracao_aula, t_dre.qt_duracao_aula) as qtDuracaoAula,");
-            query.AppendLine("                coalesce(t_tur.tipo_turno, t_ue.tipo_turno, t_dre.tipo_turno) as tipoTurno");
-            query.AppendLine("         from abrangencia a");
-            query.AppendLine("                  join usuario u on a.usuario_id = u.id");
-            query.AppendLine("                  left join v_abrangencia_cadeia_turmas t_tur");
-            query.AppendLine("              on (a.turma_id notnull and a.turma_id = t_tur.turma_id)");
-            query.AppendLine("                  left join v_abrangencia_cadeia_turmas t_dre");
-            query.AppendLine("                            on(a.turma_id is null and a.ue_id is null and a.dre_id = t_dre.dre_id)-- admin dre");
-            query.AppendLine("                  left join v_abrangencia_cadeia_turmas t_ue");
-            query.AppendLine("                            on(a.turma_id is null and a.dre_id is null and a.ue_id = t_ue.ue_id)-- admin ue");
-            query.AppendLine($"         where { (!consideraHistorico ? " not " : string.Empty) } a.historico");
-            query.AppendLine("           and u.login = @login");
-            query.AppendLine("           and a.perfil = @perfil");
-            query.AppendLine("     ) t");
-            query.AppendLine("         inner join ue on ue.ue_id = t.codigoUe");
-            query.AppendLine("where upper(t.nomeTurma) like @texto OR upper(f_unaccent(t.nomeUe)) LIKE @texto");
-            query.AppendLine("order by nomeUe");
+            query.AppendLine("select distinct abt.codigomodalidade modalidade,");
+            query.AppendLine("                abt.anoletivo anoLetivo,");
+            query.AppendLine("                abt.ano,");
+            query.AppendLine("				  dre.dre_id codigoDre,");
+            query.AppendLine("                abt.codigo codigoTurma,");
+            query.AppendLine("                ue.ue_id codigoUe,");
+            query.AppendLine("                dre.nome nomeDre,");
+            query.AppendLine("                t.nome nomeTurma,");
+            query.AppendLine("                ue.nome nomeUe,");
+            query.AppendLine("                t.semestre,");
+            query.AppendLine("				  t.qt_duracao_aula qtDuracaoAula,");
+            query.AppendLine("                t.tipo_turno tipoTurno");
+            query.AppendLine("    from f_abrangencia_turmas(@login, @perfil, @consideraHistorico) abt");
+            query.AppendLine("        inner join turma t");
+            query.AppendLine("            on abt.codigo = t.turma_id");
+            query.AppendLine("        inner join ue");
+            query.AppendLine("            on t.ue_id = ue.id");
+            query.AppendLine("        inner join dre");
+            query.AppendLine("            on ue.dre_id = dre.id");
+            query.AppendLine("where upper(abt.nome) like @texto or upper(f_unaccent(ue.nome)) like @texto");
+            query.AppendLine("order by ue.nome");
             query.AppendLine("limit 10;");
 
-            return (await database.Conexao.QueryAsync<AbrangenciaFiltroRetorno>(query.ToString(), new { texto, login, perfil })).AsList();
+            return (await database.Conexao.QueryAsync<AbrangenciaFiltroRetorno>(query.ToString(), new { texto, login, perfil, consideraHistorico })).AsList();
         }
 
         public Task<IEnumerable<AbrangenciaSinteticaDto>> ObterAbrangenciaSintetica(string login, Guid perfil, string turmaId = "", bool consideraHistorico = false)
@@ -278,7 +258,8 @@ namespace SME.SGP.Dados.Repositorios
             // Foi utilizada função de banco de dados com intuíto de melhorar a performance
             string query = @"select distinct abreviacao, 
                                              codigo, 
-                                             nome 
+                                             nome,
+                                             dre_id as id
                              from f_abrangencia_dres(@login, @perfil, @consideraHistorico, @modalidade, @semestre, @anoLetivo)
                              order by 3";
 
@@ -322,7 +303,8 @@ namespace SME.SGP.Dados.Repositorios
 	                             semestre,
 	                             qtDuracaoAula,
 	                             tipoTurno,
-                                 ensinoEspecial
+                                 ensinoEspecial,
+                                 turma_id as id
                             from f_abrangencia_turmas(@login, @perfil, @consideraHistorico, @modalidade, @semestre, @codigoUe, @anoLetivo)
                           order by 5";
 
@@ -356,7 +338,8 @@ namespace SME.SGP.Dados.Repositorios
             // Foi utilizada função de banco de dados com intuíto de melhorar a performance
             var query = @"select distinct codigo,
 	                                      nome as NomeSimples,
-	                                      tipoescola
+	                                      tipoescola,
+                                          ue_id as id
 	                         from f_abrangencia_ues(@login, @perfil, @consideraHistorico, @modalidade, @semestre, @codigoDre, @anoLetivo)
                           order by 2;";
 
