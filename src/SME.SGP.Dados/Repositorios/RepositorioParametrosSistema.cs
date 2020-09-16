@@ -37,6 +37,14 @@ namespace SME.SGP.Dados.Repositorios
                 .ToDictionary(pair => pair.Key, pair => pair.Value);
         }
 
+        public async Task<IEnumerable<ParametrosSistema>> ObterPorTiposAsync(long[] tipos)
+        {
+            var query = @"SELECT * FROM PARAMETROS_SISTEMA WHERE TIPO = ANY(@tipos) AND ATIVO = TRUE";
+
+
+            return await database.Conexao.QueryAsync<ParametrosSistema>(query.ToString(), new { tipos });
+        }
+
         public async Task<string> ObterValorPorTipoEAno(TipoParametroSistema tipo, int? ano = null)
         {
             StringBuilder query = new StringBuilder();
