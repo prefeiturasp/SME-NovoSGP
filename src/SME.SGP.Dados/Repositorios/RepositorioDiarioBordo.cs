@@ -182,6 +182,7 @@ namespace SME.SGP.Dados.Repositorios
                            t.modalidade_codigo,
                            ue.ue_id,
                            ue.nome,
+                           ue.tipo_escola,
                            dre.dre_id,
                            dre.abreviacao 
                       from diario_bordo db  
