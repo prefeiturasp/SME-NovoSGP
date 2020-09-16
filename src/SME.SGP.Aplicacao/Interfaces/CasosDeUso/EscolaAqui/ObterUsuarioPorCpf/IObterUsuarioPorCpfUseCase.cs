@@ -5,6 +5,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IObterUsuarioPorCpfUseCase
     {
-        Task<UsuarioEscolaAquiDto> Executar(string cpf);
+        Task<UsuarioEscolaAquiDto> Executar(string codigoDre, long codigoUe, string cpf);
     }
 }
