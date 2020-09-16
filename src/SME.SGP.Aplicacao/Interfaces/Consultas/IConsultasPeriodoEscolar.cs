@@ -21,5 +21,6 @@ namespace SME.SGP.Aplicacao
         Task<IEnumerable<PeriodoEscolar>> ObterPeriodosEscolares(long tipoCalendarioId);
         Task<PeriodoEscolar> ObterUltimoPeriodoAbertoAsync(Turma turma);
         Task<PeriodoEscolar> ObterPeriodoEscolarEmAberto(Modalidade modalidadeCodigo, int anoLetivo);
+        Task<PeriodoEscolar> ObterPeriodoEscolarPorTipoCalendarioBimestre(long tipoCalendarioId, int bimestre);
     }
 }

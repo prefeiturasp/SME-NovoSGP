@@ -20,10 +20,15 @@ class ServicoConselhoClasse {
   obterAnotacoesRecomendacoes = (
     conselhoClasseId,
     fechamentoTurmaId,
-    alunoCodigo
+    alunoCodigo,
+    codigoTurma,
+    bimestre
   ) => {
     const url = `v1/conselhos-classe/${conselhoClasseId ||
-      0}/fechamentos/${fechamentoTurmaId}/alunos/${alunoCodigo}/recomendacoes`;
+      0}/fechamentos/${fechamentoTurmaId ||
+      0}/alunos/${alunoCodigo}/turmas/${codigoTurma}/bimestres/${
+      bimestre !== 'final' ? bimestre : 0
+    }/recomendacoes`;
     return api.get(url);
   };
 
@@ -37,10 +42,19 @@ class ServicoConselhoClasse {
     return api.post('v1/conselhos-classe/recomendacoes', params);
   };
 
-  obterSintese = (conselhoClasseId, fechamentoTurmaId, alunoCodigo) => {
+  obterSintese = (
+    conselhoClasseId,
+    fechamentoTurmaId,
+    alunoCodigo,
+    turmaId,
+    bimestre
+  ) => {
     return api.get(
       `v1/conselhos-classe/${conselhoClasseId ||
-        0}/fechamentos/${fechamentoTurmaId}/alunos/${alunoCodigo}/sintese`
+        0}/fechamentos/${fechamentoTurmaId ||
+        0}/alunos/${alunoCodigo}/turmas/${turmaId}/bimestres/${
+        bimestre === 'final' ? 0 : bimestre
+      }/sintese`
     );
   };
 
@@ -51,7 +65,9 @@ class ServicoConselhoClasse {
     ehFinal,
     consideraHistorico
   ) => {
-    const url = `v1/conselhos-classe/turmas/${turmaCodigo}/bimestres/${bimestre}/alunos/${alunoCodigo}/final/${ehFinal}/consideraHistorico/${consideraHistorico}`;
+    const url = `v1/conselhos-classe/turmas/${turmaCodigo}/bimestres/${
+      bimestre === 'final' ? 0 : bimestre
+    }/alunos/${alunoCodigo}/final/${ehFinal}/consideraHistorico/${consideraHistorico}`;
     return api.get(url);
   };
 
@@ -80,20 +96,27 @@ class ServicoConselhoClasse {
   acessarAbaFinalParecerConclusivo = (
     conselhoClasseId,
     fechamentoTurmaId,
-    alunoCodigo
+    alunoCodigo,
+    codigoTurma
   ) => {
     const url = `v1/conselhos-classe/${conselhoClasseId ||
-      0}/fechamentos/${fechamentoTurmaId}/alunos/${alunoCodigo}/parecer`;
+      0}/fechamentos/${fechamentoTurmaId ||
+      0}/alunos/${alunoCodigo}/turmas/${codigoTurma}/parecer`;
     return api.get(url);
   };
 
   obterNotasConceitosConselhoClasse = (
     conselhoClasseId,
     fechamentoTurmaId,
-    alunoCodigo
+    alunoCodigo,
+    turmaId,
+    bimestre
   ) => {
     const url = `v1/conselhos-classe/${conselhoClasseId ||
-      0}/fechamentos/${fechamentoTurmaId}/alunos/${alunoCodigo}/notas`;
+      0}/fechamentos/${fechamentoTurmaId ||
+      0}/alunos/${alunoCodigo}/turmas/${turmaId}/bimestres/${
+      bimestre === 'final' ? 0 : bimestre
+    }/notas`;
     return api.get(url);
   };
 
@@ -101,10 +124,14 @@ class ServicoConselhoClasse {
     conselhoClasseId,
     fechamentoTurmaId,
     alunoCodigo,
-    notaDto
+    notaDto,
+    codigoTurma,
+    bimestre
   ) => {
     const url = `v1/conselhos-classe/${conselhoClasseId ||
-      0}/notas/alunos/${alunoCodigo}/fechamento-turma/${fechamentoTurmaId}`;
+      0}/notas/alunos/${alunoCodigo}/turmas/${codigoTurma}/bimestres/${
+      bimestre !== 'final' ? bimestre : 0
+    }/fechamento-turma/${fechamentoTurmaId || 0}`;
     return api.post(url, notaDto);
   };
 

@@ -164,6 +164,9 @@ namespace SME.SGP.Aplicacao.Consultas
             return await BuscaUltimoPeriodoEscolar(tipoCalendario);
         }
 
+        public async Task<PeriodoEscolar> ObterPeriodoEscolarPorTipoCalendarioBimestre(long tipoCalendarioId, int bimestre) 
+            => await repositorio.ObterPorTipoCalendarioEBimestreAsync(tipoCalendarioId, bimestre);
+
         private async Task<PeriodoEscolar> BuscaUltimoPeriodoEscolar(TipoCalendarioCompletoDto tipoCalendario)
         {
             // Caso não esteja em periodo de fechamento ou escolar busca o ultimo existente
