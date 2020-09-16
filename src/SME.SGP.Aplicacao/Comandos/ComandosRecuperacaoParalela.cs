@@ -48,11 +48,11 @@ namespace SME.SGP.Aplicacao
 
 
             var turmaRecuperacaoParalelaId = recuperacaoParalelaDto.Periodo.Alunos.FirstOrDefault().TurmaRecuperacaoParalelaId;
-            var turmaRecuperacaoParalela = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaRecuperacaoParalelaId.ToString()));
+            var turmaRecuperacaoParalela = await mediator.Send(new ObterTurmaSimplesPorIdQuery(turmaRecuperacaoParalelaId));
 
             //var turmaCodigo = recuperacaoParalelaDto.Periodo.Alunos.FirstOrDefault().TurmaRecuperacaoParalelaId;
 
-            var turmaPap = await servicoEOL.TurmaPossuiComponenteCurricularPAP(turmaRecuperacaoParalela.CodigoTurma, usuarioLogin, usuarioPerfil);
+            var turmaPap = await servicoEOL.TurmaPossuiComponenteCurricularPAP(turmaRecuperacaoParalela.Codigo, usuarioLogin, usuarioPerfil);
 
             if (!turmaPap)
                 throw new NegocioException("Somente é possivel realizar acompanhamento para turmas PAP");
@@ -73,11 +73,13 @@ namespace SME.SGP.Aplicacao
                 await SalvarRespostasAluno(recuperacaoParalelaDto, item, recuperacaoParalela);
             }
             unitOfWork.PersistirTransacao();
+
             return await consultaRecuperacaoParalela.Listar(new Infra.FiltroRecuperacaoParalelaDto
             {
                 Ordenacao = recuperacaoParalelaDto.Ordenacao,
                 PeriodoId = recuperacaoParalelaDto.Periodo.Id,
-                TurmaId = recuperacaoParalelaDto.Periodo.Alunos.FirstOrDefault().TurmaRecuperacaoParalelaId
+                TurmaId = turmaRecuperacaoParalelaId,
+                TurmaCodigo = long.Parse(turmaRecuperacaoParalela.Codigo)
             });
         }
 
