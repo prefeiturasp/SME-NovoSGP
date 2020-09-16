@@ -21,6 +21,7 @@ import observacoesUsuario from './observacoesUsuario/reducers';
 import cartaIntencoes from './cartaIntencoes/reducers';
 import devolutivas from './devolutivas/reducers';
 import dashboard from './dashboard/reducers';
+import planoAnual from './anual/reducers';
 
 const reducers = combineReducers({
   navegacao,
@@ -44,6 +45,7 @@ const reducers = combineReducers({
   cartaIntencoes,
   devolutivas,
   dashboard,
+  planoAnual,
 });
 
 const rootReducer = (state, action) => {
