@@ -94,12 +94,9 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<long[]> ListarPendenciasPorAulaId(long aulaId)
         {
-            var sql = @"select tipo from pendencia_aula
-                     where 
-                        id = @aula
-            ";
+            var sql = @"select tipo from pendencia_aula where aula_id = @aula group by tipo";
 
-            return ((long[])await database.Conexao.QueryAsync<long>(sql.ToString(), new { aula = aulaId }));
+            return (await database.Conexao.QueryAsync<long>(sql.ToString(), new { aula = aulaId })).AsList().ToArray();
         }
 
         public async Task<long[]> ListarPendenciasPorAulasId(long[] aulas)
