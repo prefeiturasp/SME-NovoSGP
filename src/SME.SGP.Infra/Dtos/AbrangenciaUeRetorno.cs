@@ -8,6 +8,7 @@ namespace SME.SGP.Dto
         public string Codigo { get; set; }
         public string NomeSimples { get; set; }
         public TipoEscola TipoEscola { get; set; }
+        public long Id { get; set; }
         public string Nome
         {
             get
