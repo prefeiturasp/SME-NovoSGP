@@ -119,7 +119,7 @@ class ServicoSalvarConselhoClasse {
     return true;
   };
 
-  salvarNotaPosConselho = async () => {
+  salvarNotaPosConselho = async codigoTurma => {
     const { dispatch } = store;
 
     const state = store.getState();
@@ -200,13 +200,17 @@ class ServicoSalvarConselhoClasse {
       conselhoClasseId,
       fechamentoTurmaId,
       alunoCodigo,
-      notaDto
+      notaDto,
+      codigoTurma,
+      bimestreAtual.valor
     ).catch(e => erro(e));
 
     if (retorno && retorno.status === 200) {
       if (!dadosPrincipaisConselhoClasse.conselhoClasseId) {
         dadosPrincipaisConselhoClasse.conselhoClasseId =
           retorno.data.conselhoClasseId;
+        dadosPrincipaisConselhoClasse.fechamentoTurmaId =
+          retorno.data.fechamentoTurmaId;
         dispatch(
           setDadosPrincipaisConselhoClasse(dadosPrincipaisConselhoClasse)
         );
