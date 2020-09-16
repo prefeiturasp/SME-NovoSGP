@@ -55,36 +55,28 @@ namespace SME.SGP.Aplicacao
 
             var fechamentoTurma = await consultasFechamentoTurma.ObterPorTurmaCodigoBimestreAsync(turmaCodigo, bimestre);
 
-            if (fechamentoTurma == null)
+            if (fechamentoTurma == null && !ehAnoAnterior)
             {
-                if (ehAnoAnterior)
-                {                    
-                    var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre);
-                    if (tipoCalendario == null) throw new NegocioException("O sistema tentou criar um novo fechamento de turma, mas não encontrou o tipo de calendário para o mesmo");
-
-                    var periodoEscolar = await repositorioPeriodoEscolar.ObterPorTipoCalendarioEBimestreAsync(tipoCalendario.Id, bimestre);
-                    if (tipoCalendario == null) throw new NegocioException("O sistema tentou criar um novo fechamento de turma, mas não encontrou o período escolar para o mesmo");
-
-                    fechamentoTurma = new FechamentoTurma()
-                    {
-                        TurmaId = turma.Id,
-                        Migrado = false,
-                        PeriodoEscolarId = periodoEscolar?.Id
-                    };
-                    await repositorioFechamentoTurma.SalvarAsync(fechamentoTurma);
-                }
-                else
-                {
-                    throw new NegocioException("Fechamento da turma não localizado " + (!ehFinal ? $"para o bimestre {bimestre}" : ""));
-                }
+                throw new NegocioException("Fechamento da turma não localizado " + (!ehFinal ? $"para o bimestre {bimestre}" : ""));
             }
 
-            var conselhoClasse = await repositorioConselhoClasse.ObterPorFechamentoId(fechamentoTurma.Id);
+            var conselhoClasse = fechamentoTurma != null? await repositorioConselhoClasse.ObterPorFechamentoId(fechamentoTurma.Id): null;
+
+            var periodoEscolarId = fechamentoTurma?.PeriodoEscolarId;
+            if (periodoEscolarId == null)
+            {
+                var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre);
+                if (tipoCalendario == null) throw new NegocioException("Tipo de calendário não encontrado");
+
+                var periodoEscolar = await repositorioPeriodoEscolar.ObterPorTipoCalendarioEBimestreAsync(tipoCalendario.Id, bimestre);
+
+                periodoEscolarId = periodoEscolar?.Id;
+            }
 
             var bimestreFechamento = !ehFinal ? bimestre : (await ObterPeriodoUltimoBimestre(turma)).Bimestre;
 
             PeriodoFechamentoBimestre periodoFechamentoBimestre = await consultasPeriodoFechamento
-                .ObterPeriodoFechamentoTurmaAsync(turma, bimestreFechamento, fechamentoTurma.PeriodoEscolarId);
+                .ObterPeriodoFechamentoTurmaAsync(turma, bimestreFechamento, periodoEscolarId);
 
             var tipoNota = await ObterTipoNota(turma, periodoFechamentoBimestre, consideraHistorico);
             var mediaAprovacao = double.Parse(await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.MediaBimestre));
@@ -93,7 +85,7 @@ namespace SME.SGP.Aplicacao
 
             return new ConselhoClasseAlunoResumoDto()
             {
-                FechamentoTurmaId = fechamentoTurma.Id,
+                FechamentoTurmaId = fechamentoTurma?.Id,
                 ConselhoClasseId = conselhoClasse?.Id,
                 ConselhoClasseAlunoId = conselhoClasseAluno?.Id,
                 Bimestre = bimestre,

@@ -25,6 +25,8 @@ const Justificativa = props => {
     store => store.conselhoClasse.notaConceitoPosConselhoAtual
   );
 
+  const { turma } = useSelector(store => store.usuario.turmaSelecionada);
+
   const desabilitarCampos = useSelector(
     store => store.conselhoClasse.desabilitarCampos
   );
@@ -53,7 +55,7 @@ const Justificativa = props => {
   };
 
   const salvarJustificativa = () => {
-    servicoSalvarConselhoClasse.salvarNotaPosConselho(true);
+    servicoSalvarConselhoClasse.salvarNotaPosConselho(turma);
     dispatch(setSalvouJustificativa(true));
   };
 

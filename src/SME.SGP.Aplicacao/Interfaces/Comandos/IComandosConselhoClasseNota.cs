@@ -8,6 +8,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IComandosConselhoClasseNota
     {
-        Task<ConselhoClasseNotaRetornoDto> SalvarAsync(ConselhoClasseNotaDto conselhoClasseNotaDto, string alunoCodigo, long conselhoClasseId, long fechamentoTurmaId);
+        Task<ConselhoClasseNotaRetornoDto> SalvarAsync(ConselhoClasseNotaDto conselhoClasseNotaDto, string alunoCodigo, long conselhoClasseId, long fechamentoTurmaId, string codigoTurma, int bimestre);
     }
 }
