@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using SME.SGP.Infra;
 
 namespace SME.SGP.Dominio.Interfaces
 {
@@ -21,6 +22,7 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<long> ObterTurmaIdPorCodigo(string turmaCodigo);
         Task<IEnumerable<Turma>> ObterTurmasInfantilNaoDeProgramaPorAnoLetivoAsync(int anoLetivo);
+        Task<ObterTurmaSimplesPorIdRetornoDto> ObterTurmaSimplesPorId(long id);
         Task<IEnumerable<Turma>> ObterPorCodigosAsync(string[] codigos);
         Task<IEnumerable<long>> ObterTurmasPorUeAnos(string ueCodigo, int anoLetivo, string[] anos, int modalidadeId);
     }

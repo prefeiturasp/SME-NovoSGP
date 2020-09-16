@@ -431,5 +431,11 @@ namespace SME.SGP.Dados.Repositorios
 
             return await contexto.Conexao.QueryAsync<Turma>(query, new { codigos });
         }
+
+        public async Task<ObterTurmaSimplesPorIdRetornoDto> ObterTurmaSimplesPorId(long id)
+        {
+            var query = "select t.id, t.turma_id as codigo, t.nome from turma t where t.id = @id";
+            return await contexto.Conexao.QueryFirstOrDefaultAsync<ObterTurmaSimplesPorIdRetornoDto>(query, new { id });
+        }
     }
 }
