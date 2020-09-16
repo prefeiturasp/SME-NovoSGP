@@ -249,8 +249,8 @@ namespace SME.SGP.Aplicacao
 
             return new ParecerConclusivoDto()
             {
-                Id = conselhoClasseAluno != null ? conselhoClasseAluno.ConselhoClasseParecerId.Value: 0,
-                Nome = conselhoClasseAluno?.ConselhoClasseParecer.Nome
+                Id = conselhoClasseAluno?.ConselhoClasseParecerId != null  ? conselhoClasseAluno.ConselhoClasseParecerId.Value: 0,
+                Nome = conselhoClasseAluno?.ConselhoClasseParecer?.Nome
             };
         }
 
