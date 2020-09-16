@@ -42,16 +42,27 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<Aula>> ListarPendenciasAtividadeAvaliativa()
         {
-            var sql = @"select a.id as Id from atividade_avaliativa aa 
-                    inner join atividade_avaliativa_disciplina aad on aad.atividade_avaliativa_id = aa.id
-                    left join notas_conceito n on n.atividade_avaliativa = aa.id
-                    inner join aula a on aa.turma_id = a.turma_id 
-                     where 
-                        not a.excluido and 
-                        a.data_aula < @hoje and  
-                        n.id is null and
-                    a.id not in (select aula_id from pendencia_aula pa where pa.tipo = @tipo)
-            ";
+            var sql = @"select
+	                        a.id as Id
+                        from
+	                        atividade_avaliativa aa
+                        inner join atividade_avaliativa_disciplina aad on
+	                        aad.atividade_avaliativa_id = aa.id
+                        left join notas_conceito n on
+	                        n.atividade_avaliativa = aa.id
+                        inner join aula a on
+	                        aa.turma_id = a.turma_id
+	                        and aa.data_avaliacao = a.data_aula
+	                        and aad.disciplina_id = a.disciplina_id
+                        left join pendencia_aula on
+	                        a.id = aula_id
+	                        and pendencia_aula.tipo = @tipo
+                        where
+	                        not a.excluido
+	                        and a.data_aula < @hoje
+	                        and n.id is null
+	                        and pendencia_aula.id is null
+                        group by a.id";
 
             return (await database.Conexao.QueryAsync<Aula>(sql.ToString(), new { hoje = DateTime.Today, tipo = TipoPendenciaAula.Avaliacao }));
         }
