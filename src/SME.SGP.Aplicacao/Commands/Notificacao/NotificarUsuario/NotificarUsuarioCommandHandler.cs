@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class NotificarUsuarioCommandHandler : IRequestHandler<NotificarUsuarioCommand, bool>
+    public class NotificarUsuarioCommandHandler : IRequestHandler<NotificarUsuarioCommand, long>
     {
         private readonly IRepositorioNotificacao repositorioNotificacao;
         private readonly IRepositorioUsuario repositorioUsuario;
@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioUsuario = repositorioUsuario ?? throw new ArgumentNullException(nameof(repositorioUsuario));
         }
 
-        public async Task<bool> Handle(NotificarUsuarioCommand request, CancellationToken cancellationToken)
+        public async Task<long> Handle(NotificarUsuarioCommand request, CancellationToken cancellationToken)
         {
             var usuario = repositorioUsuario.ObterPorCodigoRfLogin(request.UsuarioRf, string.Empty);
 
@@ -35,10 +35,9 @@ namespace SME.SGP.Aplicacao
                 Categoria = request.Categoria,
                 Tipo = request.Tipo,
                 UsuarioId = usuario?.Id,
-            };
+            };            
 
-            await repositorioNotificacao.SalvarAsync(notificacao);
-            return true;
+            return await repositorioNotificacao.SalvarAsync(notificacao);            
         }
 
         public long ObtemNovoCodigo()

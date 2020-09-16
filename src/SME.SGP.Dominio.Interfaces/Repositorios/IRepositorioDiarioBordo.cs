@@ -1,13 +1,11 @@
-﻿using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra;
+﻿using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
 {
-    public interface IRepositorioDiarioBordo: IRepositorioBase<DiarioBordo>
+    public interface IRepositorioDiarioBordo : IRepositorioBase<DiarioBordo>
     {
         Task<DiarioBordo> ObterPorAulaId(long aulaId);
         Task<bool> ExisteDiarioParaAula(long aulaId);
@@ -19,5 +17,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<long>> ObterIdsPorDevolutiva(long devolutivaId);
         Task<PaginacaoResultadoDto<DiarioBordoDevolutivaDto>> ObterDiariosBordoPorDevolutivaPaginado(long devolutivaId, Paginacao paginacao);
         Task ExcluirReferenciaDevolutiva(long devolutivaId);
+        Task<DiarioBordo> ObterDiarioBordoComAulaETurmaPorCodigo(long diarioBordoId);
     }
 }
