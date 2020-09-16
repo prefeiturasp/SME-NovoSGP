@@ -25,6 +25,7 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
         {
             mediator = new Mock<IMediator>();
             repositorioDevolutiva = new Mock<IRepositorioDevolutiva>();
+            repositorioTurma = new Mock<IRepositorioTurma>();
             inserirDevolutivaCommandHandler = new InserirDevolutivaCommandHandler(mediator.Object, repositorioDevolutiva.Object, repositorioTurma.Object);
         }
 
