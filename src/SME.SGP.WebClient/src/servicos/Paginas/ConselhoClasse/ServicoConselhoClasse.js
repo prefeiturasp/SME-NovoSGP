@@ -145,7 +145,7 @@ class ServicoConselhoClasse {
     alunoCodigo
   ) => {
     const url = `v1/conselhos-classe/${conselhoClasseId ||
-      0}/fechamentos/${fechamentoTurmaId}/alunos/${alunoCodigo}/parecer`;
+      0}/fechamentos/${fechamentoTurmaId || 0}/alunos/${alunoCodigo}/parecer`;
     return api.post(url);
   };
 

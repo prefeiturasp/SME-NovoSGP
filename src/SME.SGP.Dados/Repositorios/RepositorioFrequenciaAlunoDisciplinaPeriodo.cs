@@ -51,7 +51,7 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.Query<FrequenciaAluno>(query, new { periodoId });
         }
 
-        public IEnumerable<AlunoFaltosoBimestreDto> ObterAlunosFaltososBimestre(bool modalidadeEJA, double percentualFrequenciaMinimo, int bimestre, int? anoLetivo)
+        public IEnumerable<AlunoFaltosoBimestreDto> ObterAlunosFaltososBimestre(ModalidadeTipoCalendario modalidade, double percentualFrequenciaMinimo, int bimestre, int? anoLetivo)
         {
             var query = new StringBuilder();
 
@@ -71,8 +71,10 @@ namespace SME.SGP.Dados.Repositorios
 
             query.AppendLine("and ((fa.total_ausencias::numeric - fa.total_compensacoes::numeric ) / fa.total_aulas::numeric) > (1 -(@percentualFrequenciaMinimo::numeric / 100::numeric)) ");
 
-            if (modalidadeEJA)
+            if (modalidade == ModalidadeTipoCalendario.EJA)
                 query.AppendLine("and t.modalidade_codigo = 3");
+            else if (modalidade == ModalidadeTipoCalendario.Infantil)
+                query.AppendLine("and t.modalidade_codigo = 1");
             else query.AppendLine("and t.modalidade_codigo in (5,6)");
 
 

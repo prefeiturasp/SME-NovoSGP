@@ -41,20 +41,17 @@ namespace SME.SGP.Dominio.Servicos
 
             foreach (var turma in turmasAulasPrevistasDivergentes)
             {
-                // Carrega todas as aulas das turmas com aulas previstas divergentes por disciplina para notificação
-                turma.ProfessorRf =
-                    repositorioAulaPrevista.ObterProfessorTurmaDisciplinaAulasPrevistasDivergente(turma.Bimestre, turma.CodigoTurma,
-                                                                                                  turma.DisciplinaId, qtdDiasBimestreNotificacao);
-
                 // Busca Professor/Gestor/Supervisor da Turma ou Ue
                 var usuarios = BuscaProfessorAula(turma);
 
                 if (usuarios != null)
                     foreach (var usuario in usuarios)
                     {
-                        if(!repositorioNotificacaoAulaPrevista.UsuarioNotificado(usuario.Id, turma.Bimestre, turma.CodigoTurma, turma.DisciplinaId))
+                        if (!repositorioNotificacaoAulaPrevista.UsuarioNotificado(usuario.Id, turma.Bimestre, turma.CodigoTurma, turma.DisciplinaId))
                             NotificaRegistroDivergencia(usuario, turma);
                     }
+
+
             }
         }
 
