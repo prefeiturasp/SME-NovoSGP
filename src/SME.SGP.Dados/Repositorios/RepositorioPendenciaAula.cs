@@ -91,5 +91,23 @@ namespace SME.SGP.Dados.Repositorios
                 writer.Complete();
             }
         }
+
+        public async Task<long[]> ListarPendenciasPorAulaId(long aulaId)
+        {
+            var sql = @"select tipo from pendencia_aula
+                     where 
+                        id = @aula
+            ";
+
+            return ((long[])await database.Conexao.QueryAsync<long>(sql.ToString(), new { aula = aulaId }));
+        }
+
+        public async Task<long[]> ListarPendenciasPorAulasId(long[] aulas)
+        {
+
+            var sql = @"select tipo from pendencia_aula where aula_id =ANY(@aulas) group by tipo";
+
+            return (await database.Conexao.QueryAsync<long>(sql.ToString(), new { aulas })).AsList().ToArray();
+        }
     }
 }
