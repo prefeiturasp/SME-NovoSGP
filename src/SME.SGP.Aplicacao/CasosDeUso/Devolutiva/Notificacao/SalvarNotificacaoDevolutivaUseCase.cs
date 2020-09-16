@@ -40,10 +40,9 @@ namespace SME.SGP.Aplicacao
 
             if (titulares != null)
             {
-                var mensagem = new StringBuilder($"O usuário {usuarioLogado.Nome} ({usuarioLogado.CodigoRf}) registrou a devolutiva dos diários de bordo da turma <strong>{turma.Nome}</strong> da <strong>{turma.Ue.Nome}</strong> ({turma.Ue.Dre.Abreviacao}). Esta devolutiva contempla os diários de bordo do período de <strong>{devolutiva.PeriodoInicio:dd/MM/yyyy}</strong> à <strong>{devolutiva.PeriodoFim:dd/MM/yyyy}</strong>");
-
-                var hostAplicacao = configuration["UrlFrontEnd"];
-                mensagem.AppendLine($"<br/><br/><a href='{hostAplicacao}diario-classe/diario-bordo'>Para consultar o diário de bordo da aula clique aqui.</a>");
+                var mensagem = new StringBuilder($"O usuário {usuarioLogado.Nome} ({usuarioLogado.CodigoRf}) registrou a devolutiva dos diários de bordo da turma <strong>{turma.Nome}</strong> da <strong>{turma.Ue.TipoEscola}-{turma.Ue.Nome}</strong> ({turma.Ue.Dre.Abreviacao}). Esta devolutiva contempla os diários de bordo do período de <strong>{devolutiva.PeriodoInicio:dd/MM/yyyy}</strong> à <strong>{devolutiva.PeriodoFim:dd/MM/yyyy}</strong>.");
+                                
+                mensagem.AppendLine($"<br/><br/>Acesse o Diário de Bordo de uma das aulas para consultar o conteúdo da devolutiva.");
 
                 if (titulares.Count() == 1)
                     titulares = titulares.FirstOrDefault().Split(',');
