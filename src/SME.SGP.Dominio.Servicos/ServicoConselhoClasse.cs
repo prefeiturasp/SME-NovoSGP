@@ -1,12 +1,10 @@
 ﻿using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
-using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Servicos
@@ -17,9 +15,14 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioConselhoClasse repositorioConselhoClasse;
         private readonly IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno;
         private readonly IRepositorioFechamentoTurma repositorioFechamentoTurma;
-        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
-        private readonly IRepositorioConselhoClasseParecerConclusivo repositorioParecer;        
+        private readonly IRepositorioConselhoClasseParecerConclusivo repositorioParecer;
+        private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IRepositorioConselhoClasseNota repositorioConselhoClasseNota;
+        private readonly IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina;
+        private readonly IRepositorioUe repositorioUe;
+        private readonly IRepositorioDre repositorioDre;
+        private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
+        private readonly IConsultasTurma consultasTurma;
         private readonly IConsultasConselhoClasse consultasConselhoClasse;
         private readonly IConsultasDisciplina consultasDisciplina;
         private readonly IUnitOfWork unitOfWork;
@@ -29,10 +32,15 @@ namespace SME.SGP.Dominio.Servicos
         public ServicoConselhoClasse(IRepositorioConselhoClasse repositorioConselhoClasse,
                                      IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno,
                                      IRepositorioFechamentoTurma repositorioFechamentoTurma,
-                                     IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
                                      IRepositorioConselhoClasseParecerConclusivo repositorioParecer,
+                                     IRepositorioTipoCalendario repositorioTipoCalendario,
+                                     IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina,
+                                     IRepositorioUe repositorioUe,
+                                     IRepositorioDre repositorioDre,
+                                     IConsultasPeriodoEscolar consultasPeriodoEscolar,
+                                     IConsultasTurma consultasTurma,
                                      IConsultasPeriodoFechamento consultasPeriodoFechamento,
-                                     IConsultasConselhoClasse consultasConselhoClasse,                                     
+                                     IConsultasConselhoClasse consultasConselhoClasse,
                                      IConsultasDisciplina consultasDisciplina,
                                      IRepositorioConselhoClasseNota repositorioConselhoClasseNota,
                                      IUnitOfWork unitOfWork,
@@ -43,9 +51,14 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioConselhoClasse = repositorioConselhoClasse ?? throw new ArgumentNullException(nameof(repositorioConselhoClasse));
             this.repositorioConselhoClasseAluno = repositorioConselhoClasseAluno ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAluno));
             this.repositorioFechamentoTurma = repositorioFechamentoTurma ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurma));
-            this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.repositorioParecer = repositorioParecer ?? throw new ArgumentNullException(nameof(repositorioParecer));
-            this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));            
+            this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
+            this.repositorioFechamentoTurmaDisciplina = repositorioFechamentoTurmaDisciplina ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurmaDisciplina));
+            this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
+            this.repositorioDre = repositorioDre ?? throw new ArgumentNullException(nameof(repositorioDre));
+            this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
+            this.consultasTurma = consultasTurma ?? throw new ArgumentNullException(nameof(consultasTurma));
+            this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));
             this.repositorioConselhoClasseNota = repositorioConselhoClasseNota ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseNota));
             this.consultasConselhoClasse = consultasConselhoClasse ?? throw new ArgumentNullException(nameof(consultasConselhoClasse));
             this.consultasDisciplina = consultasDisciplina ?? throw new ArgumentNullException(nameof(consultasDisciplina));
@@ -54,16 +67,54 @@ namespace SME.SGP.Dominio.Servicos
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
         }
 
-        public async Task<ConselhoClasseNotaRetornoDto> SalvarConselhoClasseAlunoNotaAsync(ConselhoClasseNotaDto conselhoClasseNotaDto, string alunoCodigo, long conselhoClasseId, long fechamentoTurmaId)
+        public async Task<ConselhoClasseNotaRetornoDto> SalvarConselhoClasseAlunoNotaAsync(ConselhoClasseNotaDto conselhoClasseNotaDto, string alunoCodigo, long conselhoClasseId, long fechamentoTurmaId, string codigoTurma, int bimestre)
         {
             var conselhoClasseNota = new ConselhoClasseNota();
-            if (fechamentoTurmaId == 0)
+
+            var fechamentoTurma = await repositorioFechamentoTurma.ObterCompletoPorIdAsync(fechamentoTurmaId);
+
+            var fechamentoTurmaDisciplina = new FechamentoTurmaDisciplina();
+
+            if (fechamentoTurma == null)
             {
-                throw new NegocioException("Não existe fechamento de turma para o conselho de classe");
+                var turma = await consultasTurma.ObterPorCodigo(codigoTurma);
+                if (turma == null) throw new NegocioException("Turma não encontrada");
+
+                var ue = repositorioUe.ObterPorId(turma.UeId);
+                ue.AdicionarDre(repositorioDre.ObterPorId(ue.DreId));
+                turma.AdicionarUe(ue);               
+
+                if (turma.AnoLetivo == DateTime.Today.Year) throw new NegocioException("Não existe fechamento de turma para o conselho de classe");
+
+                var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre);
+                if (tipoCalendario == null) throw new NegocioException("Tipo calendário não encontrado");
+
+                var periodoEscolar = await consultasPeriodoEscolar.ObterPeriodoEscolarPorTipoCalendarioBimestre(tipoCalendario.Id, bimestre);
+
+                fechamentoTurma = new FechamentoTurma()
+                {
+                    TurmaId = turma.Id,
+                    Migrado = false,
+                    PeriodoEscolarId = periodoEscolar?.Id,
+                    Turma = turma,
+                    PeriodoEscolar = periodoEscolar
+                };
+
+                fechamentoTurmaDisciplina = new FechamentoTurmaDisciplina()
+                {
+                    DisciplinaId = conselhoClasseNotaDto.CodigoComponenteCurricular
+                };
+
             }
-            else
+            try
             {
-                var fechamentoTurma = await repositorioFechamentoTurma.ObterCompletoPorIdAsync(fechamentoTurmaId);
+                unitOfWork.IniciarTransacao();
+                if (fechamentoTurmaDisciplina.DisciplinaId > 0)
+                {
+                    await repositorioFechamentoTurma.SalvarAsync(fechamentoTurma);
+                    fechamentoTurmaDisciplina.FechamentoTurmaId = fechamentoTurma.Id;
+                    await repositorioFechamentoTurmaDisciplina.SalvarAsync(fechamentoTurmaDisciplina);
+                }
                 if (fechamentoTurma.PeriodoEscolarId.HasValue)
                 {
                     // Fechamento Bimestral
@@ -74,9 +125,15 @@ namespace SME.SGP.Dominio.Servicos
                 {
                     // Fechamento Final
                     var validacaoConselhoFinal = await consultasConselhoClasse.ValidaConselhoClasseUltimoBimestre(fechamentoTurma.Turma);
-                    if (!validacaoConselhoFinal.Item2)
+                    if (!validacaoConselhoFinal.Item2 && fechamentoTurma.Turma.AnoLetivo == DateTime.Today.Year)
                         throw new NegocioException($"Para acessar este aba você precisa registrar o conselho de classe do {validacaoConselhoFinal.Item1}º bimestre");
                 }
+                unitOfWork.PersistirTransacao();
+            }
+            catch(Exception e)
+            {
+                unitOfWork.Rollback();
+                throw e;
             }
 
             try
@@ -85,7 +142,7 @@ namespace SME.SGP.Dominio.Servicos
                 {
 
                     var conselhoClasse = new ConselhoClasse();
-                    conselhoClasse.FechamentoTurmaId = fechamentoTurmaId;
+                    conselhoClasse.FechamentoTurmaId = fechamentoTurma.Id;
 
                     unitOfWork.IniciarTransacao();
                     await repositorioConselhoClasse.SalvarAsync(conselhoClasse);
@@ -137,6 +194,7 @@ namespace SME.SGP.Dominio.Servicos
             var conselhoClasseNotaRetorno = new ConselhoClasseNotaRetornoDto()
             {
                 ConselhoClasseId = conselhoClasseId,
+                FechamentoTurmaId = fechamentoTurmaId,
                 Auditoria = auditoria
             };
             return conselhoClasseNotaRetorno;
@@ -195,7 +253,7 @@ namespace SME.SGP.Dominio.Servicos
         public async Task<AuditoriaConselhoClasseAlunoDto> SalvarConselhoClasseAluno(ConselhoClasseAluno conselhoClasseAluno)
         {
             var fechamentoTurma = await ObterFechamentoTurma(conselhoClasseAluno.ConselhoClasse.FechamentoTurmaId);
-            if (! await VerificaNotasTodosComponentesCurriculares(conselhoClasseAluno.AlunoCodigo, fechamentoTurma.Turma, fechamentoTurma.PeriodoEscolarId))
+            if (!await VerificaNotasTodosComponentesCurriculares(conselhoClasseAluno.AlunoCodigo, fechamentoTurma.Turma, fechamentoTurma.PeriodoEscolarId))
                 throw new NegocioException("É necessário que todos os componentes tenham nota/conceito informados!");
 
             // Se não existir conselho de classe para o fechamento gera
@@ -260,8 +318,8 @@ namespace SME.SGP.Dominio.Servicos
             conselhoClasseAluno.ConselhoClasseParecerId = parecerConclusivo.Id;
             await repositorioConselhoClasseAluno.SalvarAsync(conselhoClasseAluno);
 
-            return new ParecerConclusivoDto() 
-            { 
+            return new ParecerConclusivoDto()
+            {
                 Id = parecerConclusivo.Id,
                 Nome = parecerConclusivo.Nome
             };
