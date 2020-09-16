@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaNovaNotificacaoObservacaoCartaIntencoes,
-                       new SalvarNotificacaoCartaIntencoesObservacaoDto(turma, usuarioLogado, cartaIntencoesObservacao.Id), Guid.NewGuid(), null));
+                       new SalvarNotificacaoCartaIntencoesObservacaoDto(turma, usuarioLogado, cartaIntencoesObservacao.Id, request.Observacao), Guid.NewGuid(), null));
 
 
             return (AuditoriaDto)cartaIntencoesObservacao;

@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
             var observacaoId = await repositorioDiarioBordoObservacao.SalvarAsync(diarioBordoObservacao);
             var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaNotificacaoNovaObservacaoDiarioBordo,
-                new NotificarDiarioBordoObservacaoDto(request.DiarioBordoId, usuario, observacaoId), Guid.NewGuid(), null));
+                new NotificarDiarioBordoObservacaoDto(request.DiarioBordoId, request.Observacao, usuario, observacaoId), Guid.NewGuid(), null));
 
             return (AuditoriaDto)diarioBordoObservacao;
         }
