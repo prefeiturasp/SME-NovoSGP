@@ -79,6 +79,7 @@ const Notas = ({ match }) => {
   const [exibeModalJustificativa, setExibeModalJustificativa] = useState(false);
   const [valoresIniciais] = useState({ descricao: undefined });
   const [refForm, setRefForm] = useState({});
+  const [carregandoGeral, setCarregandoGeral] = useState(false);
 
   const [validacoes] = useState(
     Yup.object({
@@ -303,12 +304,14 @@ const Notas = ({ match }) => {
   );
 
   const obterDisciplinas = useCallback(async () => {
+    setCarregandoGeral(true);
     const url = `v1/professores/turmas/${usuario.turmaSelecionada.turma}/disciplinas`;
     const disciplinas = await api.get(url).then(res => {
       if (res.data) setDesabilitarDisciplina(false);
 
       return res;
     });
+    setCarregandoGeral(false);
 
     setListaDisciplinas(disciplinas.data);
     if (disciplinas.data && disciplinas.data.length === 1) {
@@ -448,7 +451,7 @@ const Notas = ({ match }) => {
     if (quartoBimestre.modoEdicao) {
       valoresBimestresSalvar.push(...montarBimestreParaSalvar(quartoBimestre));
     }
-
+    setCarregandoGeral(true);
     return api
       .post(`v1/avaliacoes/notas`, {
         turmaId: usuario.turmaSelecionada.turma,
@@ -456,6 +459,7 @@ const Notas = ({ match }) => {
         notasConceitos: valoresBimestresSalvar,
       })
       .then(salvouNotas => {
+        setCarregandoGeral(false);
         if (salvouNotas && salvouNotas.status === 200) {
           sucesso('Suas informações foram salvas com sucesso.');
           dispatch(setModoEdicaoGeral(false));
@@ -473,6 +477,7 @@ const Notas = ({ match }) => {
       .catch(e => {
         erros(e);
         reject(e);
+        setCarregandoGeral(false);
       });
   };
 
@@ -580,10 +585,11 @@ const Notas = ({ match }) => {
           );
 
           if (valoresBimestresSalvarComNotas.length < 1) return resolve(false);
-
+          setCarregandoGeral(true);
           return api
             .post(`/v1/fechamentos/turmas`, valoresBimestresSalvarComNotas)
             .then(salvouNotas => {
+              setCarregandoGeral(false);
               if (salvouNotas && salvouNotas.status === 200) {
                 sucesso('Suas informações foram salvas com sucesso.');
                 dispatch(setModoEdicaoGeral(false));
@@ -599,6 +605,7 @@ const Notas = ({ match }) => {
             .catch(e => {
               erros(e);
               reject(e);
+              setCarregandoGeral(false);
             });
         }
         return resolve(false);
@@ -1089,7 +1096,7 @@ const Notas = ({ match }) => {
       ) : null}
       <AlertaModalidadeInfantil />
       <Cabecalho pagina={tituloNotasConceitos} />
-      <Loader loading={carregandoListaBimestres}>
+      <Loader loading={carregandoListaBimestres || carregandoGeral}>
         <Card>
           <div className="col-md-12">
             <div className="row">
