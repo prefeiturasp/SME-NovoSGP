@@ -127,11 +127,12 @@ namespace SME.SGP.Api.Controllers
          => Ok(await obterPareceresConclusivosUseCase.Executar());
 
 
-        [HttpGet("turmas/{turmaCodigo}")]
-        [ProducesResponseType(typeof(IEnumerable<BimestreComConselhoClasseTurmaDto>), 200)]        
+        [HttpGet("turmas/{turmaId}/bimestres")]
         [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(IEnumerable<BimestreComConselhoClasseTurmaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterBimestresComConselhoClasseTurma(long turmaCodigo, [FromServices]IObterBimestresComConselhoClasseTurmaUseCase obterBimestresComConselhoClasseTurmaUseCase)
-         => Ok(await obterBimestresComConselhoClasseTurmaUseCase.Executar(turmaCodigo));        
+        [Permissao(Permissao.CC_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterBimestresComConselhoClasseTurma(long turmaId, [FromServices]IObterBimestresComConselhoClasseTurmaUseCase obterBimestresComConselhoClasseTurmaUseCase)
+         => Ok(await obterBimestresComConselhoClasseTurmaUseCase.Executar(turmaId));        
     }
 }
