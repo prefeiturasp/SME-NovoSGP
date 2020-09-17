@@ -65,6 +65,8 @@ namespace SME.SGP.Dominio
 
         public bool EnsinoEspecial { get; set; }
         public DateTime? DataInicio { get; set; }
+        public DateTime? DataFim { get; set; }
+        public bool Extinta { get; set; }
 
         public int EtapaEJA { get; set; }
 
