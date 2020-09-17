@@ -193,7 +193,7 @@ namespace SME.SGP.Aplicacao
                     alunoDto.TemAnotacao = anotacaoAluno != null && anotacaoAluno.Anotacao != null &&
                                         !string.IsNullOrEmpty(anotacaoAluno.Anotacao.Trim());
 
-                    var marcador = servicoAluno.ObterMarcadorAluno(aluno, bimestreDoPeriodo);
+                    var marcador = await servicoAluno.ObterMarcadorAluno(aluno, bimestreDoPeriodo);
                     if (marcador != null)
                     {
                         alunoDto.Informacao = marcador.Descricao;
@@ -219,7 +219,7 @@ namespace SME.SGP.Aplicacao
                     {
                         if (fechamentoBimestre.EhSintese && fechamentoTurma == null)
                         {
-                            var sinteseDto = consultasFrequencia.ObterSinteseAluno(alunoDto.PercentualFrequencia, disciplinaEOL);
+                            var sinteseDto = await consultasFrequencia.ObterSinteseAluno(alunoDto.PercentualFrequencia, disciplinaEOL);
 
                             alunoDto.SinteseId = sinteseDto.Id;
                             alunoDto.Sintese = sinteseDto.Valor;

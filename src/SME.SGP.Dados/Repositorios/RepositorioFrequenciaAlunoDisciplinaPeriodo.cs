@@ -1,9 +1,8 @@
 ﻿using Dapper;
-using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using System;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,13 +22,30 @@ namespace SME.SGP.Dados.Repositorios
                         from
 	                        frequencia_aluno
                         where
-	                        codigo_aluno = @codigoAluno
+	                        codigo_aluno = @codigoAluno::int8
 	                        and disciplina_id = @disciplinaId
 	                        and tipo = @tipoFrequencia
 	                        and periodo_escolar_id = @periodoEscolarId";
             return database.QueryFirstOrDefault<FrequenciaAluno>(query, new
             {
                 codigoAluno,
+                disciplinaId,
+                periodoEscolarId,
+                tipoFrequencia
+            });
+        }
+
+        public async Task<IEnumerable<FrequenciaAluno>> ObterPorTurma(string turmaCodigo, string disciplinaId, long periodoEscolarId, TipoFrequenciaAluno tipoFrequencia)
+        {
+            var query = @"select *
+                        from frequencia_aluno
+                        where turma_id = @turmaCodigo
+	                        and disciplina_id = @disciplinaId
+	                        and tipo = @tipoFrequencia
+	                        and periodo_escolar_id = @periodoEscolarId";
+            return await database.QueryAsync<FrequenciaAluno>(query, new
+            {
+                turmaCodigo,
                 disciplinaId,
                 periodoEscolarId,
                 tipoFrequencia
@@ -84,18 +100,25 @@ namespace SME.SGP.Dados.Repositorios
             var query = new StringBuilder(@"select * 
                             from frequencia_aluno
                            where tipo = 2
-	                        and codigo_aluno = @alunoCodigo
+	                        and codigo_aluno = @alunoCodigo::int8
                             and turma_id = @turmaCodigo ");
+
             if (!string.IsNullOrEmpty(componenteCurricularCodigo))
                 query.AppendLine(" and disciplina_id = @componenteCurricularCodigo");
 
-            return await database.Conexao.QueryAsync<FrequenciaAluno>(query.ToString(), new { alunoCodigo, turmaCodigo, componenteCurricularCodigo });
+            return await database.Conexao
+                .QueryAsync<FrequenciaAluno>(query.ToString(), new
+                {
+                    alunoCodigo,
+                    turmaCodigo,
+                    componenteCurricularCodigo
+                });
         }
 
         public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaBimestresAsync(string codigoAluno, int bimestre, string codigoTurma)
         {
             var query = @"select * from frequencia_aluno fa 
-                            where fa.codigo_aluno = @codigoAluno
+                            where fa.codigo_aluno = @codigoAluno::int8
                             and fa.turma_id = @turmaId and fa.tipo = 1";
 
             if (bimestre > 0)
@@ -115,7 +138,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = new StringBuilder(@"select *
                         from frequencia_aluno
-                        where codigo_aluno = @codigoAluno
+                        where codigo_aluno = @codigoAluno::int8
 	                        and tipo = @tipoFrequencia
 	                        and bimestre = @bimestre ");
 
@@ -138,7 +161,7 @@ namespace SME.SGP.Dados.Repositorios
                         from frequencia_aluno fa
                         inner join periodo_escolar pe on fa.periodo_escolar_id = pe.id
                         where
-	                        codigo_aluno = @codigoAluno
+	                        codigo_aluno = @codigoAluno::int8
 	                        and tipo = @tipoFrequencia
 	                        and pe.periodo_inicio <= @dataAtual
 	                        and pe.periodo_fim >= @dataAtual ");
@@ -160,7 +183,7 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select *
                         from frequencia_aluno fa
                         inner join periodo_escolar pe on fa.periodo_escolar_id = pe.id
-                        where codigo_aluno = @codigoAluno
+                        where codigo_aluno = @codigoAluno::int8
                             and disciplina_id = @disciplinaId
 	                        and tipo = 1
 	                        and pe.periodo_inicio <= @dataAtual
