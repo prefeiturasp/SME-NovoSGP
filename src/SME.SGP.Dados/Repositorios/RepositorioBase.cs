@@ -87,10 +87,31 @@ namespace SME.SGP.Dados.Repositorios
             return entidade.Id;
         }
 
-        public virtual async Task<bool> Exists(long id)
+        public virtual async Task<bool> Exists(long id, string coluna = null)
         {
             var tableName = Dommel.DommelMapper.Resolvers.Table(typeof(T));
-            return await database.Conexao.ExecuteScalarAsync<bool>($"select count(1) from {tableName} where Id=@id", new { id });
+            var columName = coluna ?? "id";
+            return await database.Conexao.ExecuteScalarAsync<bool>($"select count(1) from {tableName} where {columName}=@id", new { id });
+        }
+
+        public virtual async Task<long> RemoverLogico(long id, string coluna = null)
+        {
+            var tableName = Dommel.DommelMapper.Resolvers.Table(typeof(T));
+            var columName = coluna ?? "id";
+
+            var query = $@"update {tableName} 
+                            set excluido = true
+                              , alterado_por = @alteradoPor
+                              , alterado_rf = @alteradoRF 
+                              , alterado_em = @alteradoEm
+                        where {columName}=@id RETURNING id";
+    
+            return await database.Conexao.ExecuteScalarAsync<long>(query
+                , new { id, 
+                        alteradoPor = database.UsuarioLogadoNomeCompleto,
+                        alteradoRF = database.UsuarioLogadoRF,
+                        alteradoEm = DateTime.Now
+                });
         }
 
         private void Auditar(long identificador, string acao)

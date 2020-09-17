@@ -426,9 +426,8 @@ const DiarioBordo = () => {
     return ServicoDiarioBordo.salvarEditarObservacao(diarioBordoId, obs)
       .then(resultado => {
         if (resultado && resultado.status === 200) {
-          const msg = `Observação ${
-            obs.id ? 'alterada' : 'inserida'
-          } com sucesso.`;
+          const msg = `Observação ${obs.id ? 'alterada' : 'inserida'
+            } com sucesso.`;
           sucesso(msg);
         }
         setCarregandoGeral(false);
@@ -530,8 +529,8 @@ const DiarioBordo = () => {
           className="mb-2"
         />
       ) : (
-        ''
-      )}
+          ''
+        )}
       {turmaSelecionada.turma ? <AlertaPermiteSomenteTurmaInfantil /> : ''}
       <AlertaPeriodoEncerrado exibir={!temPeriodoAberto && !somenteConsulta} />
       <ModalMultiLinhas
@@ -616,71 +615,79 @@ const DiarioBordo = () => {
                 </div>
                 <div className="row">
                   {turmaInfantil &&
-                  componenteCurricularSelecionado &&
-                  dataSelecionada &&
-                  aulaSelecionada ? (
-                    <>
-                      <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
-                        <PainelCollapse defaultActiveKey="1">
-                          <PainelCollapse.Painel
-                            temBorda
-                            header="Planejamento"
-                            key="1"
-                          >
-                            <Editor
-                              form={form}
-                              name="planejamento"
-                              id="editor-planejamento"
-                              onChange={v => {
-                                if (valoresIniciais.planejamento !== v) {
-                                  onChangeCampos();
-                                }
-                              }}
-                              desabilitar={desabilitarCampos}
-                            />
-                          </PainelCollapse.Painel>
-                        </PainelCollapse>
-                      </div>
-                      <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
-                        <PainelCollapse defaultActiveKey="2">
-                          <PainelCollapse.Painel
-                            temBorda
-                            header="Reflexões e Replanejamentos"
-                            key="2"
-                          >
-                            <Editor
-                              form={form}
-                              name="reflexoesReplanejamento"
-                              id="editor-reflexoes-replanejamentos"
-                              onChange={v => {
-                                if (
-                                  valoresIniciais.reflexoesReplanejamento !== v
-                                ) {
-                                  onChangeCampos();
-                                }
-                              }}
-                              desabilitar={desabilitarCampos}
-                            />
-                          </PainelCollapse.Painel>
-                        </PainelCollapse>
-                      </div>
-                      <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
-                        <PainelCollapse>
-                          <PainelCollapse.Painel temBorda header="Devolutivas">
-                            <CampoTexto
-                              id="editor-devolutivas"
-                              name="devolutivas"
-                              type="textarea"
-                              form={form}
-                              desabilitado
-                            />
-                          </PainelCollapse.Painel>
-                        </PainelCollapse>
-                      </div>
-                    </>
-                  ) : (
-                    ''
-                  )}
+                    componenteCurricularSelecionado &&
+                    dataSelecionada &&
+                    aulaSelecionada ? (
+                      <>
+                        <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
+                          <PainelCollapse defaultActiveKey="1">
+                            <PainelCollapse.Painel
+                              temBorda
+                              header="Planejamento"
+                              key="1"
+                            >
+                              <Editor
+                                form={form}
+                                name="planejamento"
+                                id="editor-planejamento"
+                                onChange={v => {
+                                  if (valoresIniciais.planejamento !== v) {
+                                    onChangeCampos();
+                                  }
+                                }}
+                                desabilitar={desabilitarCampos}
+                              />
+                            </PainelCollapse.Painel>
+                          </PainelCollapse>
+                        </div>
+                        <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
+                          <PainelCollapse defaultActiveKey="2">
+                            <PainelCollapse.Painel
+                              temBorda
+                              header="Reflexões e Replanejamentos"
+                              key="2"
+                            >
+                              <Editor
+                                form={form}
+                                name="reflexoesReplanejamento"
+                                id="editor-reflexoes-replanejamentos"
+                                onChange={v => {
+                                  if (
+                                    valoresIniciais.reflexoesReplanejamento !== v
+                                  ) {
+                                    onChangeCampos();
+                                  }
+                                }}
+                                desabilitar={desabilitarCampos}
+                              />
+                            </PainelCollapse.Painel>
+                          </PainelCollapse>
+                        </div>
+                        <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
+                          <PainelCollapse>
+                            <PainelCollapse.Painel temBorda header="Devolutivas">
+                              {form && form.values && form.values.devolutivas ? (
+                                <Editor
+                                  label="Somente leitura"
+                                  form={form}
+                                  name="devolutivas"
+                                  id="editor-devolutivas"
+                                  removerToolbar
+                                  desabilitar
+                                />
+                              ) : (
+                                  <div className="text-center p-2">
+                                    Não há devolutiva registrada para este diário de
+                                    bordo
+                                  </div>
+                                )}
+                            </PainelCollapse.Painel>
+                          </PainelCollapse>
+                        </div>
+                      </>
+                    ) : (
+                      ''
+                    )}
                   {auditoria ? (
                     <Auditoria
                       criadoEm={auditoria.criadoEm}
@@ -692,8 +699,8 @@ const DiarioBordo = () => {
                       ignorarMarginTop
                     />
                   ) : (
-                    ''
-                  )}
+                      ''
+                    )}
                 </div>
               </Form>
             )}
@@ -706,8 +713,8 @@ const DiarioBordo = () => {
             excluirObservacao={obs => excluirObservacao(obs)}
           />
         ) : (
-          ''
-        )}
+            ''
+          )}
       </Card>
     </Loader>
   );

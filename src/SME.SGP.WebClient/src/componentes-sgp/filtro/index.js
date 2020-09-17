@@ -168,6 +168,7 @@ const Filtro = () => {
         periodo: periodoSelecionado || 0,
         consideraHistorico,
         ensinoEspecial: turmaAtual.ensinoEspecial,
+        id: turmaAtual.id,
       };
 
       dispatch(turmasUsuario(turmas));
