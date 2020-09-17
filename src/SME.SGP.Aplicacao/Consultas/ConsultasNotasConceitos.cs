@@ -121,9 +121,9 @@ namespace SME.SGP.Aplicacao
             var tipoAvaliacaoBimestral = await repositorioTipoAvaliacao.ObterTipoAvaliacaoBimestral();
 
             retorno.BimestreAtual = bimestre.Value;
-            retorno.MediaAprovacaoBimestre = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.MediaBimestre));
+            retorno.MediaAprovacaoBimestre = double.Parse(await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.MediaBimestre));
             retorno.MinimoAvaliacoesBimestrais = tipoAvaliacaoBimestral.AvaliacoesNecessariasPorBimestre;
-            retorno.PercentualAlunosInsuficientes = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.PercentualAlunosInsuficientes));
+            retorno.PercentualAlunosInsuficientes = double.Parse(await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.PercentualAlunosInsuficientes));
 
             DateTime? dataUltimaNotaConceitoInserida = null;
             DateTime? dataUltimaNotaConceitoAlterada = null;
@@ -229,7 +229,7 @@ namespace SME.SGP.Aplicacao
 
                         notaConceitoAluno.PodeEditar = notasAvaliacoes.Any(na => na.PodeEditar);
 
-                        notaConceitoAluno.Marcador = servicoAluno.ObterMarcadorAluno(aluno, new PeriodoEscolar()
+                        notaConceitoAluno.Marcador = await servicoAluno.ObterMarcadorAluno(aluno, new PeriodoEscolar()
                         {
                             Bimestre = valorBimestreAtual,
                             PeriodoInicio = periodoAtual.PeriodoInicio,

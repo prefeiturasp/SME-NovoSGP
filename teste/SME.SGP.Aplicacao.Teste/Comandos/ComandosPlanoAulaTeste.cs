@@ -27,6 +27,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
         private readonly Mock<IRepositorioPlanoAula> repositorioPlanoAula;
         private readonly Mock<IRepositorioPeriodoEscolar> repositorioPeriodoEscolar;
         private readonly Mock<IServicoUsuario> servicoUsuario;
+        private readonly Mock<IServicoEol> servicoEol;
         private readonly Mock<IUnitOfWork> unitOfWork;
         private AbrangenciaFiltroRetorno abrangencia;
         private Aula aula;
@@ -42,11 +43,13 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
             repositorioObjetivosPlano = new Mock<IRepositorioObjetivoAprendizagemPlano>();
             repositorioAula = new Mock<IRepositorioAula>();
             servicoUsuario = new Mock<IServicoUsuario>();
+            servicoEol = new Mock<IServicoEol>();
+
             repositorioAbrangencia = new Mock<IRepositorioAbrangencia>();
             repositorioObjetivoAprendizagemPlano = new Mock<IRepositorioObjetivoAprendizagemPlano>();
             repositorioAtribuicaoCJ = new Mock<IRepositorioAtribuicaoCJ>();
             unitOfWork = new Mock<IUnitOfWork>();
-            consultasAbrangencia = new ConsultasAbrangencia(repositorioAbrangencia.Object, servicoUsuario.Object);
+            consultasAbrangencia = new ConsultasAbrangencia(repositorioAbrangencia.Object, servicoUsuario.Object, servicoEol.Object);
             consultasPlanoAnual = new Mock<IConsultasPlanoAnual>();
             consultasProfessor = new Mock<IConsultasProfessor>();
             consultasObjetivosAprendizagem = new Mock<IConsultasObjetivoAprendizagem>();
@@ -183,7 +186,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
                 Modalidade = Modalidade.Fundamental
             };
 
-            repositorioAbrangencia.Setup(a => a.ObterAbrangenciaTurma(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<bool>()))
+            repositorioAbrangencia.Setup(a => a.ObterAbrangenciaTurma(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<bool>()))
                 .Returns(Task.FromResult(abrangencia));
         }
     }

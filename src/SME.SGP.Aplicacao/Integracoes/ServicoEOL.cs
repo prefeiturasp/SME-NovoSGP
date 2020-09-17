@@ -182,7 +182,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
             if (resposta.IsSuccessStatusCode)
             {
-                var json = await resposta.Content.ReadAsStringAsync();
+                var json = await resposta.Content.ReadAsStringAsync();                
                 return JsonConvert.DeserializeObject<AbrangenciaCompactaVigenteRetornoEOLDTO>(json);
             }
             return null;

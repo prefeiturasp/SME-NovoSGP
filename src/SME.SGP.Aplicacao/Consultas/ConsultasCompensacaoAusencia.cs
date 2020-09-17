@@ -117,8 +117,8 @@ namespace SME.SGP.Aplicacao
             if (disciplinasEOL == null || !disciplinasEOL.Any())
                 throw new NegocioException("Disciplina informada na compensação não localizada no EOL.");
 
-            var quantidadeMaximaCompensacoes = int.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.QuantidadeMaximaCompensacaoAusencia));
-            var percentualFrequenciaAlerta = int.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(disciplinasEOL.First().Regencia ? TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse : TipoParametroSistema.CompensacaoAusenciaPercentualFund2));
+            var quantidadeMaximaCompensacoes = int.Parse(await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.QuantidadeMaximaCompensacaoAusencia));
+            var percentualFrequenciaAlerta = int.Parse(await repositorioParametrosSistema.ObterValorPorTipoEAno(disciplinasEOL.First().Regencia ? TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse : TipoParametroSistema.CompensacaoAusenciaPercentualFund2));
 
             foreach (var aluno in compensacao.Alunos)
             {
