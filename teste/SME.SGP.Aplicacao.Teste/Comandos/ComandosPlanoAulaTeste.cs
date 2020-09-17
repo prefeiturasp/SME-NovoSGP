@@ -28,6 +28,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
         private readonly Mock<IRepositorioPeriodoEscolar> repositorioPeriodoEscolar;
         private readonly Mock<IServicoUsuario> servicoUsuario;
         private readonly Mock<IUnitOfWork> unitOfWork;
+        private readonly Mock<IServicoEol> servicoEOL;
         private AbrangenciaFiltroRetorno abrangencia;
         private Aula aula;
         private Guid PERFIL_CJ = Guid.Parse("41e1e074-37d6-e911-abd6-f81654fe895d");
@@ -46,7 +47,8 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
             repositorioObjetivoAprendizagemPlano = new Mock<IRepositorioObjetivoAprendizagemPlano>();
             repositorioAtribuicaoCJ = new Mock<IRepositorioAtribuicaoCJ>();
             unitOfWork = new Mock<IUnitOfWork>();
-            consultasAbrangencia = new ConsultasAbrangencia(repositorioAbrangencia.Object, servicoUsuario.Object);
+            servicoEOL = new Mock<IServicoEol>();
+            consultasAbrangencia = new ConsultasAbrangencia(repositorioAbrangencia.Object, servicoUsuario.Object, servicoEOL.Object);
             consultasPlanoAnual = new Mock<IConsultasPlanoAnual>();
             consultasProfessor = new Mock<IConsultasProfessor>();
             consultasObjetivosAprendizagem = new Mock<IConsultasObjetivoAprendizagem>();
@@ -70,6 +72,20 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
         [Fact]
         public async void Deve_Consistir_Plano_Aula_Sem_Objetivos_Modalidade_Fundamental()
         {
+
+            repositorioAula
+                .Setup(x => x.ObterPorId(It.IsAny<long>()))
+                .Returns(new Aula());
+
+            servicoEOL.Setup(x => x.ObterAbrangenciaCompactaVigente(It.IsAny<string>(), It.IsAny<Guid>()))
+                .Returns(Task.FromResult(new AbrangenciaCompactaVigenteRetornoEOLDTO()
+                {
+                    Abrangencia = new AbrangenciaCargoRetornoEolDTO()
+                    {
+                        Abrangencia = Infra.Enumerados.Abrangencia.Dre
+                    }
+                }));
+            
             // ACT
             await Assert.ThrowsAsync<NegocioException>(() => comandosPlanoAula.Salvar(planoAulaDto));
         }
@@ -183,7 +199,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
                 Modalidade = Modalidade.Fundamental
             };
 
-            repositorioAbrangencia.Setup(a => a.ObterAbrangenciaTurma(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<bool>()))
+            repositorioAbrangencia.Setup(a => a.ObterAbrangenciaTurma(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<bool>()))
                 .Returns(Task.FromResult(abrangencia));
         }
     }

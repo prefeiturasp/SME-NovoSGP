@@ -1,13 +1,10 @@
 ﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Dominio;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class NotificarUsuarioCommand: IRequest<bool>
+    public class NotificarUsuarioCommand : IRequest<long>
     {
         public NotificarUsuarioCommand(string titulo,
                                        string mensagem,
@@ -41,7 +38,7 @@ namespace SME.SGP.Aplicacao
         public string UsuarioRf { get; set; }
     }
 
-    public class NotificarUsuarioCommandValidator: AbstractValidator<NotificarUsuarioCommand>
+    public class NotificarUsuarioCommandValidator : AbstractValidator<NotificarUsuarioCommand>
     {
 
     }
