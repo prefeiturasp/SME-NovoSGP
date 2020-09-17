@@ -5,7 +5,6 @@ CREATE TABLE if not exists public.componente_curricular_area_conhecimento (
 	CONSTRAINT componente_curricular_area_conhecimento_pk PRIMARY KEY (id)
 );
 
-
 INSERT INTO public.componente_curricular_area_conhecimento
 (id, nome)
 VALUES(1, 'Linguagens');
@@ -51,7 +50,6 @@ VALUES(4, 'Integral');
 
 
 --Componente Curricular
-
 CREATE TABLE if not exists public.componente_curricular(
 	id int8 NOT NULL,
 	componente_curricular_pai_id int8 NULL,
@@ -67,6 +65,9 @@ CREATE TABLE if not exists public.componente_curricular(
 	CONSTRAINT componente_curricular_teste_pk PRIMARY KEY (id)
 );
 
+CREATE INDEX IF NOT EXISTS componente_curricular_grupo_matriz_idx ON public.componente_curricular USING btree (grupo_matriz_id);
+
+CREATE INDEX IF NOT EXISTS componente_curricular_area_conhecimento_idx ON public.componente_curricular USING btree (area_conhecimento_id);
 
 select
 	f_cria_fk_se_nao_existir(
@@ -92,13 +93,14 @@ CREATE TABLE if not exists public.componente_curriculo_cidade(
 	CONSTRAINT componente_curriculo_cidade_pk PRIMARY KEY (id)
 );
 
-
 select
 	f_cria_fk_se_nao_existir(
 		'componente_curriculo_cidade',
 		'componente_curriculo_cidade_componente_curricular_fk',
 		'FOREIGN KEY (componente_curricular_id) REFERENCES componente_curricular (id)'
 	);
+
+CREATE INDEX IF NOT EXISTS componente_curriculo_cidade_componente_curricular_idx ON public.componente_curriculo_cidade USING btree (componente_curricular_id);
 
 
 --Plano Anual
@@ -116,6 +118,24 @@ CREATE TABLE if not exists public.planejamento_anual (
 	CONSTRAINT planejamento_anual_pk PRIMARY KEY (id)
 );
 
+select
+	f_cria_fk_se_nao_existir(
+		'planejamento_anual',
+		'planejamento_anual_turma_fk',
+		'FOREIGN KEY (turma_id) REFERENCES turma (id)'
+	);
+
+select
+	f_cria_fk_se_nao_existir(
+		'planejamento_anual',
+		'planejamento_anual_componente_curricular_fk',
+		'FOREIGN KEY (componente_curricular_id) REFERENCES componente_curricular (id)'
+	);
+
+CREATE INDEX IF NOT EXISTS planejamento_anual_turma_idx ON public.planejamento_anual USING btree (turma_id);
+
+CREATE INDEX IF NOT EXISTS planejamento_anual_componente_curricular_idx ON public.planejamento_anual USING btree (componente_curricular_id);
+
 
 CREATE TABLE if not exists public.planejamento_anual_periodo_escolar (
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
@@ -129,22 +149,7 @@ CREATE TABLE if not exists public.planejamento_anual_periodo_escolar (
 	alterado_rf varchar(200) NULL,
 	CONSTRAINT planejamento_anual_periodo_escolar_pk PRIMARY KEY (id)
 );
-
-select
-	f_cria_fk_se_nao_existir(
-		'planejamento_anual',
-		'planejamento_anual_turma_fk',
-		'FOREIGN KEY (turma_id) REFERENCES turma (id)'
-	);
 	
-	
-select
-	f_cria_fk_se_nao_existir(
-		'planejamento_anual',
-		'planejamento_anual_componente_curricular_fk',
-		'FOREIGN KEY (componente_curricular_id) REFERENCES componente_curricular (id)'
-	);
-
 select
 	f_cria_fk_se_nao_existir(
 		'planejamento_anual_periodo_escolar',
@@ -159,7 +164,12 @@ select
 		'FOREIGN KEY (periodo_escolar_id) REFERENCES periodo_escolar (id)'
 	);
 
-	
+CREATE INDEX IF NOT EXISTS planejamento_anual_periodo_escolar_periodo_escolar_idx ON public.planejamento_anual_periodo_escolar USING btree (periodo_escolar_id);
+
+
+CREATE INDEX IF NOT EXISTS planejamento_anual_periodo_escolar_planejamento_anual_idx ON public.planejamento_anual_periodo_escolar USING btree (planejamento_anual_id);
+
+
 CREATE TABLE if not exists public.planejamento_anual_componente (
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
 	planejamento_anual_periodo_escolar_id int8 NOT NULL,
@@ -173,10 +183,6 @@ CREATE TABLE if not exists public.planejamento_anual_componente (
 	alterado_rf varchar(200) NULL,
 	CONSTRAINT planejamento_anual_componente_pk PRIMARY KEY (id)
 );
-
-
---ALTER TABLE public.planejamento_anual_componente ADD CONSTRAINT planejamento_anual_componente_componente_curricular_fk FOREIGN KEY (componente_curricular_id) REFERENCES public.componente_curricular(id);
-
 
 select
 	f_cria_fk_se_nao_existir(
@@ -192,6 +198,11 @@ select
 		'FOREIGN KEY (componente_curricular_id) REFERENCES componente_curricular (id)'
 	);
 	
+
+CREATE INDEX IF NOT EXISTS planejamento_anual_componente_componente_componente_curricular_idx ON public.planejamento_anual_componente USING btree (componente_curricular_id);
+
+
+CREATE INDEX IF NOT EXISTS planejamento_anual_componente_componente_planejamento_anual_periodo_escolar_idx ON public.planejamento_anual_componente USING btree (planejamento_anual_periodo_escolar_id);
 
 
 CREATE TABLE if not exists public.planejamento_anual_objetivos_aprendizagem(
@@ -222,6 +233,11 @@ select
 		'FOREIGN KEY (objetivo_aprendizagem_id) REFERENCES objetivo_aprendizagem (id)'
 	);
 	
+
+CREATE INDEX IF NOT EXISTS planejamento_anual_objetivos_aprendizagem_planejamento_anual_componente_idx ON public.planejamento_anual_objetivos_aprendizagem USING btree (planejamento_anual_componente_id);
+
+CREATE INDEX IF NOT EXISTS planejamento_anual_objetivos_aprendizagem_objetivo_aprendizagem_idx ON public.planejamento_anual_objetivos_aprendizagem USING btree (objetivo_aprendizagem_id);
+
 
 INSERT INTO public.componente_curricular
 (id, componente_curricular_pai_id, grupo_matriz_id, area_conhecimento_id, descricao, eh_regencia, eh_compartilhada, eh_territorio, eh_base_nacional, permite_registro_frequencia, permite_lancamento_nota)
