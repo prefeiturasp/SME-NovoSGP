@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
 
             filtroRelatorioConselhoClasseAtaFinalDto.TurmasCodigos.RemoveAll(c => c == "-99");
 
-            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.ConselhoClasseAtaFinal, filtroRelatorioConselhoClasseAtaFinalDto, usuarioLogado));
+            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.ConselhoClasseAtaFinal, filtroRelatorioConselhoClasseAtaFinalDto, usuarioLogado, filtroRelatorioConselhoClasseAtaFinalDto.TipoFormatoRelatorio));
         }
     }
 }
