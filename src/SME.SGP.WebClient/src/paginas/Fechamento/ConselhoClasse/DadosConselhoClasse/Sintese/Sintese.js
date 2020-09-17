@@ -3,12 +3,12 @@ import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import shortid from 'shortid';
 import { Base } from '~/componentes';
-import { erro } from '~/servicos/alertas';
+import { erros } from '~/servicos/alertas';
 import ServicoConselhoClasse from '~/servicos/Paginas/ConselhoClasse/ServicoConselhoClasse';
 import ComponenteSemNota from './ComponenteSemNota/ComponenteSemNota';
 
 const Sintese = props => {
-  const { ehFinal } = props;
+  const { ehFinal, turmaId, bimestreSelecionado } = props;
 
   const dadosPrincipaisConselhoClasse = useSelector(
     store => store.conselhoClasse.dadosPrincipaisConselhoClasse
@@ -39,16 +39,24 @@ const Sintese = props => {
     ServicoConselhoClasse.obterSintese(
       conselhoClasseId,
       fechamentoTurmaId,
-      alunoCodigo
+      alunoCodigo,
+      turmaId,
+      bimestreSelecionado
     )
       .then(resp => {
         setDados(resp.data);
       })
       .catch(e => {
-        erro(e?.response?.data?.mensagens[0]);
+        erros(e);
         setDados([]);
       });
-  }, [alunoCodigo, conselhoClasseId, fechamentoTurmaId]);
+  }, [
+    alunoCodigo,
+    conselhoClasseId,
+    fechamentoTurmaId,
+    turmaId,
+    bimestreSelecionado,
+  ]);
 
   return (
     <>
@@ -72,10 +80,14 @@ const Sintese = props => {
 
 Sintese.propTypes = {
   ehFinal: PropTypes.oneOfType([PropTypes.bool]),
+  turmaId: PropTypes.oneOfType([PropTypes.number]),
+  bimestreSelecionado: PropTypes.oneOfType([PropTypes.number]),
 };
 
 Sintese.defaultProps = {
   ehFinal: false,
+  turmaId: 0,
+  bimestreSelecionado: 0,
 };
 
 export default Sintese;
