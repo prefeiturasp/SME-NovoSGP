@@ -5,6 +5,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -34,7 +35,8 @@ namespace SME.SGP.Aplicacao
         #region Metodos Privados
         private async Task VerificaPendenciasDiarioDeBordo()
         {
-            var aulas = await repositorioPendenciaAula.ListarPendenciasPorTipo(TipoPendenciaAula.DiarioBordo, "diario_bordo");
+            var aulas = await repositorioPendenciaAula.ListarPendenciasPorTipo(TipoPendenciaAula.DiarioBordo, "diario_bordo",
+                new long[] { (int)Modalidade.Infantil });
             if (aulas != null)
             {
 
@@ -55,7 +57,8 @@ namespace SME.SGP.Aplicacao
 
         private async Task VerificaPendenciasFrequencia()
         {
-            var aulas = await repositorioPendenciaAula.ListarPendenciasPorTipo(TipoPendenciaAula.Frequencia, "registro_frequencia");
+            var aulas = await repositorioPendenciaAula.ListarPendenciasPorTipo(TipoPendenciaAula.Frequencia, "registro_frequencia",
+                new long[] { (int)Modalidade.Infantil, (int)Modalidade.Fundamental, (int)Modalidade.EJA, (int)Modalidade.Medio });
             if (aulas != null)
             {
                 await RegistraPendencia(aulas, TipoPendenciaAula.Frequencia);
@@ -65,7 +68,8 @@ namespace SME.SGP.Aplicacao
 
         private async Task VerificaPendenciasPlanoAula()
         {
-            var aulas = await repositorioPendenciaAula.ListarPendenciasPorTipo(TipoPendenciaAula.PlanoAula, "plano_aula");
+            var aulas = await repositorioPendenciaAula.ListarPendenciasPorTipo(TipoPendenciaAula.PlanoAula, "plano_aula",
+                new long[] { (int)Modalidade.Fundamental, (int)Modalidade.EJA, (int)Modalidade.Medio });
             if (aulas != null)
             {
                 await RegistraPendencia(aulas, TipoPendenciaAula.PlanoAula);
