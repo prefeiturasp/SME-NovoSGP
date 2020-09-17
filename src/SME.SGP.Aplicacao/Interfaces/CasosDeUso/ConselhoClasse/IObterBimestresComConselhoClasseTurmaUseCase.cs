@@ -1,4 +1,5 @@
-﻿using SME.SGP.Infra;
+﻿using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -6,6 +7,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IObterBimestresComConselhoClasseTurmaUseCase
     {
-        Task<IEnumerable<BimestreComConselhoClasseTurmaDto>> Executar(long turmaId;
+        Task<IEnumerable<BimestreComConselhoClasseTurmaDto>> Executar(long turmaId);
     }
 }
