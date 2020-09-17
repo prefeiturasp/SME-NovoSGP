@@ -14,13 +14,13 @@ namespace SME.SGP.Dominio.Interfaces
 
         int ValidarAvaliacoesSemNotasParaNenhumAluno(long fechamentoId, string codigoTurma, long disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo);
 
-        int ValidarPercentualAlunosAbaixoDaMedia(FechamentoTurmaDisciplina fechamentoTurma);
+        Task<int> ValidarPercentualAlunosAbaixoDaMedia(FechamentoTurmaDisciplina fechamentoTurma);
         Task<AuditoriaPersistenciaDto> Aprovar(long pendenciaId);
         bool VerificaPendenciasFechamento(long fechamentoId);
 
         Task<AuditoriaPersistenciaDto> AtualizarPendencia(long pendenciaId, SituacaoPendencia situacaoPendencia);
 
         int ObterQuantidadePendenciasGeradas();
-        int ValidarAlteracaoExtemporanea(long fechamentoId, string turmaCodigo, long disciplinaId);
+        Task<int> ValidarAlteracaoExtemporanea(long fechamentoId, string turmaCodigo, long disciplinaId);
     }
 }
