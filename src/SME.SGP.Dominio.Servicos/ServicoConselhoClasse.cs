@@ -194,7 +194,7 @@ namespace SME.SGP.Dominio.Servicos
             var conselhoClasseNotaRetorno = new ConselhoClasseNotaRetornoDto()
             {
                 ConselhoClasseId = conselhoClasseId,
-                FechamentoTurmaId = fechamentoTurmaId,
+                FechamentoTurmaId = fechamentoTurma.Id,
                 Auditoria = auditoria
             };
             return conselhoClasseNotaRetorno;
