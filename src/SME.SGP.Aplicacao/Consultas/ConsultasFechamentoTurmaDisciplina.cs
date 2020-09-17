@@ -219,7 +219,7 @@ namespace SME.SGP.Aplicacao
                     {
                         if (fechamentoBimestre.EhSintese && fechamentoTurma == null)
                         {
-                            var sinteseDto = consultasFrequencia.ObterSinteseAluno(alunoDto.PercentualFrequencia, disciplinaEOL);
+                            var sinteseDto = await consultasFrequencia.ObterSinteseAluno(alunoDto.PercentualFrequencia, disciplinaEOL);
 
                             alunoDto.SinteseId = sinteseDto.Id;
                             alunoDto.Sintese = sinteseDto.Valor;
