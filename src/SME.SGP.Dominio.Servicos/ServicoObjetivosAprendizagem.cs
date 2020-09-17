@@ -28,16 +28,14 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task SincronizarObjetivosComJurema()
         {
-            var parametrosDataUltimaAtualizacao = repositorioParametrosSistema.ObterChaveEValorPorTipo(TipoParametroSistema.DataUltimaAtualizacaoObjetivosJurema);
-            if (parametrosDataUltimaAtualizacao != null && parametrosDataUltimaAtualizacao.Any())
+            var parametrosDataUltimaAtualizacao = await repositorioParametrosSistema.ObterUnicoChaveEValorPorTipo(TipoParametroSistema.DataUltimaAtualizacaoObjetivosJurema);
+            if (parametrosDataUltimaAtualizacao.HasValue)
             {
-                var parametroDataUltimaAtualizacao = parametrosDataUltimaAtualizacao.FirstOrDefault();
-                var dataUltimaAtualizacao = DateTime.Parse(parametroDataUltimaAtualizacao.Value);
+                var dataUltimaAtualizacao = DateTime.Parse(parametrosDataUltimaAtualizacao.Value.Value);
 
                 var objetivosJuremaRespostaApi = await servicoJurema.ObterListaObjetivosAprendizagem();
-                if (objetivosJuremaRespostaApi != null)
+                if (objetivosJuremaRespostaApi != null && objetivosJuremaRespostaApi.Any())
                 {
-
                     var objetivosBase = await repositorioObjetivoAprendizagem.ListarAsync();
 
                     var objetivosJuremaResposta = objetivosJuremaRespostaApi.Where(c => c.Codigo.Length <= 20);

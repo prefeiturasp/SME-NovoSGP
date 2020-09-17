@@ -23,7 +23,7 @@ namespace SME.SGP.Dominio.Servicos
         public async Task<IEnumerable<KeyValuePair<string, int>>> ObterFrequencias(string[] CodigoAlunos, string CodigoDisciplina, int Ano, PeriodoRecuperacaoParalela Periodo)
         {
             var retorno = new List<KeyValuePair<string, int>>();
-            var parametrosFrequencia = repositorioParametrosSistema.ObterChaveEValorPorTipo(TipoParametroSistema.RecuperacaoParalelaFrequencia);
+            var parametrosFrequencia = await repositorioParametrosSistema.ObterChaveEValorPorTipo(TipoParametroSistema.RecuperacaoParalelaFrequencia);
             var frequente = double.Parse(parametrosFrequencia.FirstOrDefault(w => w.Key == RecuperacaoParalelaFrequente).Value);
             var poucoFrequente = double.Parse(parametrosFrequencia.FirstOrDefault(w => w.Key == RecuperacaoParalelaPoucoFrequente).Value);
             var naoComparece = double.Parse(parametrosFrequencia.FirstOrDefault(w => w.Key == RecuperacaoParalelaNaoComparece).Value);
