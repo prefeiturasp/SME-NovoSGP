@@ -1,8 +1,7 @@
-﻿using SME.SGP.Infra;
-using System.Collections;
-using System.Collections.Generic;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
