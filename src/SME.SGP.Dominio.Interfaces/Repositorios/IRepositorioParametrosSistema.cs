@@ -8,7 +8,9 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task AtualizarValorPorTipoAsync(TipoParametroSistema tipo, string valor, int? ano = null);
 
-        IEnumerable<KeyValuePair<string, string>> ObterChaveEValorPorTipo(TipoParametroSistema tipo);
+        Task<IEnumerable<KeyValuePair<string, string>>> ObterChaveEValorPorTipo(TipoParametroSistema tipo);
+
+        Task<KeyValuePair<string, string>?> ObterUnicoChaveEValorPorTipo(TipoParametroSistema tipo);
 
         Task<string> ObterValorPorTipoEAno(TipoParametroSistema tipo, int? ano = null);
     }

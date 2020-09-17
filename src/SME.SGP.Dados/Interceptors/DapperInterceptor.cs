@@ -28,13 +28,13 @@ namespace SME.SGP.Dados
 
                 timer.Stop();
 
-                insightsClient.TrackDependency("PostgreSQL", "Query", sql, inicioOperacao, timer.Elapsed, true);
+                insightsClient?.TrackDependency("PostgreSQL", "Query", sql, inicioOperacao, timer.Elapsed, true);
 
                 return result;
             }
             catch (Exception ex)
             {
-                insightsClient.TrackDependency("PostgreSQL", "Query", $"{sql} -> erro: {ex.Message}", inicioOperacao, timer.Elapsed, false);
+                insightsClient?.TrackDependency("PostgreSQL", "Query", $"{sql} -> erro: {ex.Message}", inicioOperacao, timer.Elapsed, false);
                 throw ex;
             }
 
@@ -52,13 +52,13 @@ namespace SME.SGP.Dados
 
                 timer.Stop();
 
-                insightsClient.TrackDependency("PostgreSQL", "Query", sql, inicioOperacao, timer.Elapsed, true);
+                insightsClient?.TrackDependency("PostgreSQL", "Query", sql, inicioOperacao, timer.Elapsed, true);
 
                 return result;
             }
             catch (Exception ex)
             {
-                insightsClient.TrackDependency("PostgreSQL", "Query", $"{sql} -> erro: {ex.Message}", inicioOperacao, timer.Elapsed, false);
+                insightsClient?.TrackDependency("PostgreSQL", "Query", $"{sql} -> erro: {ex.Message}", inicioOperacao, timer.Elapsed, false);
                 throw ex;
             }
 
@@ -77,13 +77,13 @@ namespace SME.SGP.Dados
 
                 timer.Stop();
 
-                insightsClient.TrackDependency("PostgreSQL", "QueryAsync", sql, inicioOperacao, timer.Elapsed, true);
+                insightsClient?.TrackDependency("PostgreSQL", "QueryAsync", sql, inicioOperacao, timer.Elapsed, true);
 
                 return result;
             }
             catch (Exception ex)
             {
-                insightsClient.TrackDependency("PostgreSQL", "QueryAsync", $"{sql} -> erro: {ex.Message}", inicioOperacao, timer.Elapsed, false);
+                insightsClient?.TrackDependency("PostgreSQL", "QueryAsync", $"{sql} -> erro: {ex.Message}", inicioOperacao, timer.Elapsed, false);
                 throw ex;
             }
         }
@@ -101,13 +101,13 @@ namespace SME.SGP.Dados
 
                 timer.Stop();
 
-                insightsClient.TrackDependency("PostgreSQL", "QueryFirstOrDefaultAsync", sql, inicioOperacao, timer.Elapsed, true);
+                insightsClient?.TrackDependency("PostgreSQL", "QueryFirstOrDefaultAsync", sql, inicioOperacao, timer.Elapsed, true);
 
                 return result;
             }
             catch (Exception ex)
             {
-                insightsClient.TrackDependency("PostgreSQL", "QueryFirstOrDefaultAsync", $"{sql} -> erro: {ex.Message}", inicioOperacao, timer.Elapsed, false);
+                insightsClient?.TrackDependency("PostgreSQL", "QueryFirstOrDefaultAsync", $"{sql} -> erro: {ex.Message}", inicioOperacao, timer.Elapsed, false);
                 throw ex;
             }
         }
@@ -124,13 +124,13 @@ namespace SME.SGP.Dados
 
                 timer.Stop();
 
-                insightsClient.TrackDependency("PostgreSQL", "Query", sql, inicioOperacao, timer.Elapsed, true);
+                insightsClient?.TrackDependency("PostgreSQL", "Query", sql, inicioOperacao, timer.Elapsed, true);
 
                 return result;
             }
             catch (Exception ex)
             {
-                insightsClient.TrackDependency("PostgreSQL", "Query", $"{sql} -> erro: {ex.Message}", inicioOperacao, timer.Elapsed, false);
+                insightsClient?.TrackDependency("PostgreSQL", "Query", $"{sql} -> erro: {ex.Message}", inicioOperacao, timer.Elapsed, false);
                 throw ex;
             }
 
@@ -148,13 +148,13 @@ namespace SME.SGP.Dados
 
                 timer.Stop();
 
-                insightsClient.TrackDependency("PostgreSQL", "Query", sql, inicioOperacao, timer.Elapsed, true);
+                insightsClient?.TrackDependency("PostgreSQL", "Query", sql, inicioOperacao, timer.Elapsed, true);
 
                 return result;
             }
             catch (Exception ex)
             {
-                insightsClient.TrackDependency("PostgreSQL", "Query", $"{sql} -> erro: {ex.Message}", inicioOperacao, timer.Elapsed, false);
+                insightsClient?.TrackDependency("PostgreSQL", "Query", $"{sql} -> erro: {ex.Message}", inicioOperacao, timer.Elapsed, false);
                 throw ex;
             }
 
@@ -172,13 +172,13 @@ namespace SME.SGP.Dados
 
                 timer.Stop();
 
-                insightsClient.TrackDependency("PostgreSQL", "Query", sql, inicioOperacao, timer.Elapsed, true);
+                insightsClient?.TrackDependency("PostgreSQL", "Query", sql, inicioOperacao, timer.Elapsed, true);
 
                 return result;
             }
             catch (Exception ex)
             {
-                insightsClient.TrackDependency("PostgreSQL", "Query", $"{sql} -> erro: {ex.Message}", inicioOperacao, timer.Elapsed, false);
+                insightsClient?.TrackDependency("PostgreSQL", "Query", $"{sql} -> erro: {ex.Message}", inicioOperacao, timer.Elapsed, false);
                 throw ex;
             }
 
@@ -196,13 +196,13 @@ namespace SME.SGP.Dados
 
                 timer.Stop();
 
-                insightsClient.TrackDependency("PostgreSQL", "Query", sql, inicioOperacao, timer.Elapsed, true);
+                insightsClient?.TrackDependency("PostgreSQL", "Query", sql, inicioOperacao, timer.Elapsed, true);
 
                 return result;
             }
             catch (Exception ex)
             {
-                insightsClient.TrackDependency("PostgreSQL", "Query", $"{sql} -> erro: {ex.Message}", inicioOperacao, timer.Elapsed, false);
+                insightsClient?.TrackDependency("PostgreSQL", "Query", $"{sql} -> erro: {ex.Message}", inicioOperacao, timer.Elapsed, false);
                 throw ex;
             }
         }
@@ -219,13 +219,13 @@ namespace SME.SGP.Dados
 
                 timer.Stop();
 
-                insightsClient.TrackDependency("PostgreSQL", "Query", sql, inicioOperacao, timer.Elapsed, true);
+                insightsClient?.TrackDependency("PostgreSQL", "Query", sql, inicioOperacao, timer.Elapsed, true);
 
                 return result;
             }
             catch (Exception ex)
             {
-                insightsClient.TrackDependency("PostgreSQL", "Query", $"{sql} -> erro: {ex.Message}", inicioOperacao, timer.Elapsed, false);
+                insightsClient?.TrackDependency("PostgreSQL", "Query", $"{sql} -> erro: {ex.Message}", inicioOperacao, timer.Elapsed, false);
                 throw ex;
             }
         }
@@ -242,13 +242,13 @@ namespace SME.SGP.Dados
 
                 timer.Stop();
 
-                insightsClient.TrackDependency("PostgreSQL", "Query", sql, inicioOperacao, timer.Elapsed, true);
+                insightsClient?.TrackDependency("PostgreSQL", "Query", sql, inicioOperacao, timer.Elapsed, true);
 
                 return result;
             }
             catch (Exception ex)
             {
-                insightsClient.TrackDependency("PostgreSQL", "Query", $"{sql} -> erro: {ex.Message}", inicioOperacao, timer.Elapsed, false);
+                insightsClient?.TrackDependency("PostgreSQL", "Query", $"{sql} -> erro: {ex.Message}", inicioOperacao, timer.Elapsed, false);
                 throw ex;
             }
         }
@@ -265,13 +265,13 @@ namespace SME.SGP.Dados
 
                 timer.Stop();
 
-                insightsClient.TrackDependency("PostgreSQL", "QueryAsync", sql, inicioOperacao, timer.Elapsed, true);
+                insightsClient?.TrackDependency("PostgreSQL", "QueryAsync", sql, inicioOperacao, timer.Elapsed, true);
 
                 return result;
             }
             catch (Exception ex)
             {
-                insightsClient.TrackDependency("PostgreSQL", "QueryAsync", $"{sql} -> erro: {ex.Message}", inicioOperacao, timer.Elapsed, false);
+                insightsClient?.TrackDependency("PostgreSQL", "QueryAsync", $"{sql} -> erro: {ex.Message}", inicioOperacao, timer.Elapsed, false);
                 throw ex;
             }
         }
@@ -288,13 +288,13 @@ namespace SME.SGP.Dados
 
                 timer.Stop();
 
-                insightsClient.TrackDependency("PostgreSQL", "QueryAsync", sql, inicioOperacao, timer.Elapsed, true);
+                insightsClient?.TrackDependency("PostgreSQL", "QueryAsync", sql, inicioOperacao, timer.Elapsed, true);
 
                 return result;
             }
             catch (Exception ex)
             {
-                insightsClient.TrackDependency("PostgreSQL", "QueryAsync", $"{sql} -> erro: {ex.Message}", inicioOperacao, timer.Elapsed, false);
+                insightsClient?.TrackDependency("PostgreSQL", "QueryAsync", $"{sql} -> erro: {ex.Message}", inicioOperacao, timer.Elapsed, false);
                 throw ex;
             }
         }
@@ -311,13 +311,13 @@ namespace SME.SGP.Dados
 
                 timer.Stop();
 
-                insightsClient.TrackDependency("PostgreSQL", "QueryAsync", sql, inicioOperacao, timer.Elapsed, true);
+                insightsClient?.TrackDependency("PostgreSQL", "QueryAsync", sql, inicioOperacao, timer.Elapsed, true);
 
                 return result;
             }
             catch (Exception ex)
             {
-                insightsClient.TrackDependency("PostgreSQL", "QueryAsync", $"{sql} -> erro: {ex.Message}", inicioOperacao, timer.Elapsed, false);
+                insightsClient?.TrackDependency("PostgreSQL", "QueryAsync", $"{sql} -> erro: {ex.Message}", inicioOperacao, timer.Elapsed, false);
                 throw ex;
             }
         }
@@ -334,13 +334,13 @@ namespace SME.SGP.Dados
 
                 timer.Stop();
 
-                insightsClient.TrackDependency("PostgreSQL", "QueryAsync", sql, inicioOperacao, timer.Elapsed, true);
+                insightsClient?.TrackDependency("PostgreSQL", "QueryAsync", sql, inicioOperacao, timer.Elapsed, true);
 
                 return result;
             }
             catch (Exception ex)
             {
-                insightsClient.TrackDependency("PostgreSQL", "QueryAsync", $"{sql} -> erro: {ex.Message}", inicioOperacao, timer.Elapsed, false);
+                insightsClient?.TrackDependency("PostgreSQL", "QueryAsync", $"{sql} -> erro: {ex.Message}", inicioOperacao, timer.Elapsed, false);
                 throw ex;
             }
         }
@@ -357,13 +357,13 @@ namespace SME.SGP.Dados
 
                 timer.Stop();
 
-                insightsClient.TrackDependency("PostgreSQL", "QueryAsync", sql, inicioOperacao, timer.Elapsed, true);
+                insightsClient?.TrackDependency("PostgreSQL", "QueryAsync", sql, inicioOperacao, timer.Elapsed, true);
 
                 return result;
             }
             catch (Exception ex)
             {
-                insightsClient.TrackDependency("PostgreSQL", "QueryAsync", $"{sql} -> erro: {ex.Message}", inicioOperacao, timer.Elapsed, false);
+                insightsClient?.TrackDependency("PostgreSQL", "QueryAsync", $"{sql} -> erro: {ex.Message}", inicioOperacao, timer.Elapsed, false);
                 throw ex;
             }
         }
@@ -380,13 +380,13 @@ namespace SME.SGP.Dados
 
                 timer.Stop();
 
-                insightsClient.TrackDependency("PostgreSQL", "QueryAsync", sql, inicioOperacao, timer.Elapsed, true);
+                insightsClient?.TrackDependency("PostgreSQL", "QueryAsync", sql, inicioOperacao, timer.Elapsed, true);
 
                 return result;
             }
             catch (Exception ex)
             {
-                insightsClient.TrackDependency("PostgreSQL", "QueryAsync", $"{sql} -> erro: {ex.Message}", inicioOperacao, timer.Elapsed, false);
+                insightsClient?.TrackDependency("PostgreSQL", "QueryAsync", $"{sql} -> erro: {ex.Message}", inicioOperacao, timer.Elapsed, false);
                 throw ex;
             }
         }
@@ -403,13 +403,13 @@ namespace SME.SGP.Dados
 
                 timer.Stop();
 
-                insightsClient.TrackDependency("PostgreSQL", "Execute", sql, inicioOperacao, timer.Elapsed, true);
+                insightsClient?.TrackDependency("PostgreSQL", "Execute", sql, inicioOperacao, timer.Elapsed, true);
 
                 return result;
             }
             catch (Exception ex)
             {
-                insightsClient.TrackDependency("PostgreSQL", "Execute", $"{sql} -> erro: {ex.Message}", inicioOperacao, timer.Elapsed, false);
+                insightsClient?.TrackDependency("PostgreSQL", "Execute", $"{sql} -> erro: {ex.Message}", inicioOperacao, timer.Elapsed, false);
                 throw ex;
             }
         }
@@ -428,13 +428,13 @@ namespace SME.SGP.Dados
 
                 timer.Stop();
 
-                insightsClient.TrackDependency("PostgreSQL", "Execute", command.CommandText, inicioOperacao, timer.Elapsed, true);
+                insightsClient?.TrackDependency("PostgreSQL", "Execute", command.CommandText, inicioOperacao, timer.Elapsed, true);
 
                 return result;
             }
             catch (Exception ex)
             {
-                insightsClient.TrackDependency("PostgreSQL", "Execute", $"{command.CommandText} -> erro: {ex.Message}", inicioOperacao, timer.Elapsed, false);
+                insightsClient?.TrackDependency("PostgreSQL", "Execute", $"{command.CommandText} -> erro: {ex.Message}", inicioOperacao, timer.Elapsed, false);
                 throw ex;
             }
         }
@@ -454,13 +454,13 @@ namespace SME.SGP.Dados
 
                 timer.Stop();
 
-                insightsClient.TrackDependency("PostgreSQL", "GetAll", nameof(TEntity), inicioOperacao, timer.Elapsed, true);
+                insightsClient?.TrackDependency("PostgreSQL", "GetAll", nameof(TEntity), inicioOperacao, timer.Elapsed, true);
 
                 return result;
             }
             catch (Exception ex)
             {
-                insightsClient.TrackDependency("PostgreSQL", "GetAll", $"{nameof(TEntity)} -> erro: {ex.Message}", inicioOperacao, timer.Elapsed, false);
+                insightsClient?.TrackDependency("PostgreSQL", "GetAll", $"{nameof(TEntity)} -> erro: {ex.Message}", inicioOperacao, timer.Elapsed, false);
                 throw ex;
             }
         }      
@@ -478,13 +478,13 @@ namespace SME.SGP.Dados
 
                 timer.Stop();
 
-                insightsClient.TrackDependency("PostgreSQL", "Insert", nameof(entity), inicioOperacao, timer.Elapsed, true);
+                insightsClient?.TrackDependency("PostgreSQL", "Insert", nameof(entity), inicioOperacao, timer.Elapsed, true);
 
                 return result;
             }
             catch (Exception ex)
             {
-                insightsClient.TrackDependency("PostgreSQL", "Insert", $"{nameof(entity)} -> erro: {ex.Message}", inicioOperacao, timer.Elapsed, false);
+                insightsClient?.TrackDependency("PostgreSQL", "Insert", $"{nameof(entity)} -> erro: {ex.Message}", inicioOperacao, timer.Elapsed, false);
                 throw ex;
             }
         }
@@ -502,13 +502,13 @@ namespace SME.SGP.Dados
 
                 timer.Stop();
 
-                insightsClient.TrackDependency("PostgreSQL", "Update", nameof(entity), inicioOperacao, timer.Elapsed, true);
+                insightsClient?.TrackDependency("PostgreSQL", "Update", nameof(entity), inicioOperacao, timer.Elapsed, true);
 
                 return result;
             }
             catch (Exception ex)
             {
-                insightsClient.TrackDependency("PostgreSQL", "Update", $"{nameof(entity)} -> erro: {ex.Message}", inicioOperacao, timer.Elapsed, false);
+                insightsClient?.TrackDependency("PostgreSQL", "Update", $"{nameof(entity)} -> erro: {ex.Message}", inicioOperacao, timer.Elapsed, false);
                 throw ex;
             }
         }
@@ -526,13 +526,13 @@ namespace SME.SGP.Dados
 
                 timer.Stop();
 
-                insightsClient.TrackDependency("PostgreSQL", "Get", $"{nameof(TEntity)} -> id {id}", inicioOperacao, timer.Elapsed, true);
+                insightsClient?.TrackDependency("PostgreSQL", "Get", $"{nameof(TEntity)} -> id {id}", inicioOperacao, timer.Elapsed, true);
 
                 return result;
             }
             catch (Exception ex)
             {
-                insightsClient.TrackDependency("PostgreSQL", "Get", $"{nameof(TEntity)} -> id {id} -> erro: {ex.Message}", inicioOperacao, timer.Elapsed, false);
+                insightsClient?.TrackDependency("PostgreSQL", "Get", $"{nameof(TEntity)} -> id {id} -> erro: {ex.Message}", inicioOperacao, timer.Elapsed, false);
                 throw ex;
             }
         }
@@ -550,13 +550,13 @@ namespace SME.SGP.Dados
 
                 timer.Stop();
 
-                insightsClient.TrackDependency("PostgreSQL", "Delete", nameof(entity), inicioOperacao, timer.Elapsed, true);
+                insightsClient?.TrackDependency("PostgreSQL", "Delete", nameof(entity), inicioOperacao, timer.Elapsed, true);
 
                 return result;
             }
             catch (Exception ex)
             {
-                insightsClient.TrackDependency("PostgreSQL", "Delete", $"{nameof(entity)} -> erro: {ex.Message}", inicioOperacao, timer.Elapsed, false);
+                insightsClient?.TrackDependency("PostgreSQL", "Delete", $"{nameof(entity)} -> erro: {ex.Message}", inicioOperacao, timer.Elapsed, false);
                 throw ex;
             }
         }
@@ -574,13 +574,13 @@ namespace SME.SGP.Dados
 
                 timer.Stop();
 
-                insightsClient.TrackDependency("PostgreSQL", "GetAsync", $"{nameof(TEntity)} -> {id}", inicioOperacao, timer.Elapsed, true);
+                insightsClient?.TrackDependency("PostgreSQL", "GetAsync", $"{nameof(TEntity)} -> {id}", inicioOperacao, timer.Elapsed, true);
 
                 return result;
             }
             catch (Exception ex)
             {
-                insightsClient.TrackDependency("PostgreSQL", "GetAsync", $"{nameof(TEntity)} -> {id}", inicioOperacao, timer.Elapsed, false);
+                insightsClient?.TrackDependency("PostgreSQL", "GetAsync", $"{nameof(TEntity)} -> {id}", inicioOperacao, timer.Elapsed, false);
                 throw ex;
             }
         }
@@ -598,13 +598,13 @@ namespace SME.SGP.Dados
 
                 timer.Stop();
 
-                insightsClient.TrackDependency("PostgreSQL", "UpdateAsync", nameof(entity), inicioOperacao, timer.Elapsed, true);
+                insightsClient?.TrackDependency("PostgreSQL", "UpdateAsync", nameof(entity), inicioOperacao, timer.Elapsed, true);
 
                 return result;
             }
             catch (Exception ex)
             {
-                insightsClient.TrackDependency("PostgreSQL", "UpdateAsync", $"{nameof(entity)} -> erro: {ex.Message}", inicioOperacao, timer.Elapsed, false);
+                insightsClient?.TrackDependency("PostgreSQL", "UpdateAsync", $"{nameof(entity)} -> erro: {ex.Message}", inicioOperacao, timer.Elapsed, false);
                 throw ex;
             }
         }
@@ -622,13 +622,13 @@ namespace SME.SGP.Dados
 
                 timer.Stop();
 
-                insightsClient.TrackDependency("PostgreSQL", "InsertAsync", nameof(entity), inicioOperacao, timer.Elapsed, true);
+                insightsClient?.TrackDependency("PostgreSQL", "InsertAsync", nameof(entity), inicioOperacao, timer.Elapsed, true);
 
                 return result;
             }
             catch (Exception ex)
             {
-                insightsClient.TrackDependency("PostgreSQL", "InsertAsync", $"{nameof(entity)} -> erro: {ex.Message}", inicioOperacao, timer.Elapsed, false);
+                insightsClient?.TrackDependency("PostgreSQL", "InsertAsync", $"{nameof(entity)} -> erro: {ex.Message}", inicioOperacao, timer.Elapsed, false);
                 throw ex;
             }
         }
