@@ -22,21 +22,29 @@ namespace SME.SGP.Dados.Repositorios
         }
 
 
-        public async Task<IEnumerable<Aula>> ListarPendenciasPorTipo(TipoPendenciaAula tipoPendenciaAula, string tabelaReferencia)
+        public async Task<IEnumerable<Aula>> ListarPendenciasPorTipo(TipoPendenciaAula tipoPendenciaAula, string tabelaReferencia, long[] modalidades)
         {
-            var query = $@"select aula.id as Id from aula 
-                    left join
-	                    pendencia_aula on aula.id = aula_id and pendencia_aula.tipo = @tipo
-                    left join
-	                    {tabelaReferencia} on aula.id = {tabelaReferencia}.aula_id
-                    where 
-                        not aula.excluido and 
-                        aula.data_aula < @hoje and
-                        pendencia_aula.id is null and 
-                        {tabelaReferencia}.id is null
-                    group by aula.id";
+            var query = $@"select
+	                        aula.id as Id
+                        from
+	                        aula
+                        inner join turma on 
+	                        aula.turma_id = turma.turma_id
+                        left join pendencia_aula on
+	                        aula.id = aula_id
+	                        and pendencia_aula.tipo = @tipo
+                        left join {tabelaReferencia} on
+	                        aula.id = {tabelaReferencia}.aula_id
+                        where
+	                        not aula.excluido
+	                        and aula.data_aula < @hoje
+	                        and turma.modalidade_codigo = ANY(@modalidades)
+	                        and pendencia_aula.id is null
+	                        and {tabelaReferencia}.id is null
+                        group by
+	                        aula.id";
 
-            return (await database.Conexao.QueryAsync<Aula>(query, new { hoje = DateTime.Today, tipo = tipoPendenciaAula}));
+            return (await database.Conexao.QueryAsync<Aula>(query, new { hoje = DateTime.Today, tipo = tipoPendenciaAula, modalidades }));
         }
 
 
@@ -49,20 +57,21 @@ namespace SME.SGP.Dados.Repositorios
                         inner join atividade_avaliativa_disciplina aad on
 	                        aad.atividade_avaliativa_id = aa.id
                         left join notas_conceito n on
-	                        n.atividade_avaliativa = aa.id
+	                        aa.id = n.atividade_avaliativa
                         inner join aula a on
 	                        aa.turma_id = a.turma_id
-	                        and aa.data_avaliacao = a.data_aula
+	                        and aa.data_avaliacao::date = a.data_aula::date
 	                        and aad.disciplina_id = a.disciplina_id
                         left join pendencia_aula on
 	                        a.id = aula_id
 	                        and pendencia_aula.tipo = @tipo
                         where
 	                        not a.excluido
-	                        and a.data_aula < @hoje
+	                        and a.data_aula::date < @hoje
 	                        and n.id is null
 	                        and pendencia_aula.id is null
-                        group by a.id";
+                        group by
+	                        a.id";
 
             return (await database.Conexao.QueryAsync<Aula>(sql.ToString(), new { hoje = DateTime.Today, tipo = TipoPendenciaAula.Avaliacao }));
         }
