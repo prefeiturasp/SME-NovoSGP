@@ -5,7 +5,7 @@ namespace SME.SGP.Aplicacao.Integracoes.Respostas
 {
     public class ObjetivoAprendizagemResposta
     {
-        [JsonProperty("year")]
+        [JsonProperty("year_id")]
         public string Ano { get; set; }
 
         [JsonProperty("updated_at")]
