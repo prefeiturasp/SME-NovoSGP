@@ -319,7 +319,9 @@ namespace SME.SGP.Aplicacao.Servicos
                  Ue = new Ue() { CodigoUe = y.Codigo },
                  EnsinoEspecial = z.EnsinoEspecial,
                  EtapaEJA = z.EtapaEJA,
-                 DataInicio = z.DataInicioTurma
+                 DataInicio = z.DataInicioTurma,
+                 DataFim = z.DataFim,
+                 Extinta = z.Extinta
              })));
 
             dres = await repositorioDre.SincronizarAsync(dres);
