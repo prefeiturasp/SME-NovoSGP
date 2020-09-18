@@ -21,8 +21,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
         public async Task<bool> Executar(FiltroRelatorioPlanoAulaDto filtro)
         {
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
-            filtro.UsuarioNome = usuarioLogado.Nome;
-            filtro.UsuarioRf = usuarioLogado.CodigoRf;
+            filtro.Usuario = usuarioLogado;
 
             if (usuarioLogado == null)
             {
