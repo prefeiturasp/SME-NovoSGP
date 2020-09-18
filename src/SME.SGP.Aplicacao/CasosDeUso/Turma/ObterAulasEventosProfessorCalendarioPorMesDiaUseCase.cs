@@ -41,11 +41,7 @@ namespace SME.SGP.Aplicacao
                 DiaConsulta = dataConsulta
             });
 
-            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery()
-            {
-                TurmaCodigo = filtroAulasEventosCalendarioDto.TurmaCodigo
-            });
-
+            var ueId = await mediator.Send(new ObterUEIdPorCodigoQuery(filtroAulasEventosCalendarioDto.UeCodigo));
 
             var retorno = new EventosAulasNoDiaCalendarioDto();
 
@@ -55,7 +51,7 @@ namespace SME.SGP.Aplicacao
                 DreCodigo = filtroAulasEventosCalendarioDto.DreCodigo,
                 TipoCalendarioId = tipoCalendarioId,
                 DataAula = dataConsulta,
-                Turma = turma
+                UeId = ueId
             });
 
             retorno.PodeCadastrarAula = podeCadastrarAulaEMensagem.PodeCadastrar;
