@@ -255,7 +255,7 @@ const AtaFinalResultados = () => {
 
   const onClickGerar = async () => {
     if (permissoesTela.podeConsultar) {
-      const params = { turmasCodigos: [] };
+      const params = { turmasCodigos: [], tipoFormatoRelatorio: formato };
       if (turmaId === '-99') {
         params.turmasCodigos = listaTurmas.map(item => String(item.valor));
       } else {
