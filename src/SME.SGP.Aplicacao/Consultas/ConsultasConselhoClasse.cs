@@ -60,7 +60,7 @@ namespace SME.SGP.Aplicacao
 
             var tipoNota = await ObterTipoNota(turma, periodoFechamentoBimestre, consideraHistorico);
 
-            var mediaAprovacao = double.Parse(repositorioParametrosSistema
+            var mediaAprovacao = double.Parse(await repositorioParametrosSistema
                 .ObterValorPorTipoEAno(TipoParametroSistema.MediaBimestre));
 
             var conselhoClasseAluno = conselhoClasse != null ? await repositorioConselhoClasseAluno.ObterPorConselhoClasseAlunoCodigoAsync(conselhoClasse.Id, alunoCodigo) : null;
@@ -74,7 +74,8 @@ namespace SME.SGP.Aplicacao
                 PeriodoFechamentoInicio = periodoFechamentoBimestre?.InicioDoFechamento,
                 PeriodoFechamentoFim = periodoFechamentoBimestre?.FinalDoFechamento,
                 TipoNota = tipoNota,
-                Media = mediaAprovacao
+                Media = mediaAprovacao,
+                AnoLetivo = turma.AnoLetivo
             };
         }
 

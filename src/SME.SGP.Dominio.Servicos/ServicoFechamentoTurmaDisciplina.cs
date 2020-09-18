@@ -150,7 +150,7 @@ namespace SME.SGP.Dominio.Servicos
             if (!componenteSemNota)
             {
                 servicoPendenciaFechamento.ValidarAvaliacoesSemNotasParaNenhumAluno(fechamento.Id, turma.CodigoTurma, disciplinaId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim);
-                servicoPendenciaFechamento.ValidarPercentualAlunosAbaixoDaMedia(fechamento);
+                await servicoPendenciaFechamento.ValidarPercentualAlunosAbaixoDaMedia(fechamento);
                 servicoPendenciaFechamento.ValidarAlteracaoExtemporanea(fechamento.Id, turma.CodigoTurma, disciplinaId);
             }
             servicoPendenciaFechamento.ValidarAulasReposicaoPendente(fechamento.Id, turma, disciplinaId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim);
@@ -236,7 +236,7 @@ namespace SME.SGP.Dominio.Servicos
                 fechamentoAlunos = await CarregarFechamentoAlunoENota(id, entidadeDto.NotaConceitoAlunos);
 
             var alunos = await servicoEOL.ObterAlunosPorTurma(turmaFechamento.CodigoTurma);
-            var parametroDiasAlteracao = repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.QuantidadeDiasAlteracaoNotaFinal, turmaFechamento.AnoLetivo);
+            var parametroDiasAlteracao = await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.QuantidadeDiasAlteracaoNotaFinal, turmaFechamento.AnoLetivo);
             var diasAlteracao = DateTime.Today.DayOfYear - fechamentoTurmaDisciplina.CriadoEm.Date.DayOfYear;
             var acimaDiasPermitidosAlteracao = parametroDiasAlteracao != null && diasAlteracao > int.Parse(parametroDiasAlteracao);
             var alunosComNotaAlterada = "";
