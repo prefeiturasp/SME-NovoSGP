@@ -1,28 +1,31 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 import { Tooltip, Switch } from 'antd';
 import shortid from 'shortid';
-import Card from '~/componentes/card';
-import Grid from '~/componentes/grid';
-import Calendario from '~/componentes-sgp/calendarioEscolar/Calendario';
-import { Base, Colors } from '~/componentes/colors';
-import SelectComponent from '~/componentes/select';
-import api from '~/servicos/api';
-import Button from '~/componentes/button';
-import history from '~/servicos/history';
-import { store } from '~/redux';
+
 import {
-  zeraCalendario,
-  atribuiEventosMes,
-} from '~/redux/modulos/calendarioEscolar/actions';
-import ModalidadeDTO from '~/dtos/modalidade';
-import FiltroHelper from '~/componentes-sgp/filtro/helper';
-import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
-import ServicoCalendarios from '~/servicos/Paginas/Calendario/ServicoCalendarios';
-import { Loader } from '~/componentes';
-import { erro } from '~/servicos/alertas';
-import AbrangenciaServico from '~/servicos/Abrangencia';
+  Base,
+  Button,
+  Card,
+  Colors,
+  Loader,
+  Grid,
+  SelectComponent,
+  SelectAutocomplete,
+} from '~/componentes';
+import { FiltroHelper } from '~/componentes-sgp';
+import Calendario from '~/componentes-sgp/calendarioEscolar/Calendario';
+
+import {
+  api,
+  history,
+  ServicoCalendarios,
+  AbrangenciaServico,
+} from '~/servicos';
+
+import { store } from '~/redux';
+import { zeraCalendario } from '~/redux/modulos/calendarioEscolar/actions';
 
 const Div = styled.div``;
 const Titulo = styled(Div)`
@@ -33,151 +36,16 @@ const Icone = styled.i``;
 const Label = styled.label``;
 
 const CalendarioEscolar = () => {
-  const [tiposCalendario, setTiposCalendario] = useState([]);
   const [tipoCalendarioSelecionado, setTipoCalendarioSelecionado] = useState(
     undefined
   );
-
   const [diasLetivos, setDiasLetivos] = useState({});
-  const turmaSelecionadaStore = useSelector(
-    state => state.usuario.turmaSelecionada
-  );
-
-  const modalidadesAbrangencia = useSelector(state => state.filtro.modalidades);
-  const anosLetivosAbrangencia = useSelector(state => state.filtro.anosLetivos);
-
   const [carregandoTipos, setCarregandoTipos] = useState(false);
   const [carregandoDres, setCarregandoDres] = useState(false);
   const [carregandoUes, setCarregandoUes] = useState(false);
-
-  const obterTiposCalendario = useCallback(
-    async modalidades => {
-      setCarregandoTipos(true);
-      setCarregandoMeses(true);
-      const lista = await ServicoCalendarios.obterTiposCalendario(
-        turmaSelecionadaStore.anoLetivo
-      );
-      if (lista && lista.data) {
-        const tiposCalendarioLista = [];
-        if (lista.data) {
-          const anos = [];
-          anosLetivosAbrangencia.forEach(ano => {
-            if (!anos.includes(ano.valor)) anos.push(ano.valor);
-          });
-          const tipos = lista.data
-            .filter(tipo => {
-              return anos.indexOf(tipo.anoLetivo) > -1;
-            })
-            .filter(tipo => {
-              if (Object.entries(turmaSelecionadaStore).length)
-                return modalidades.indexOf(tipo.modalidade) > -1;
-              return true;
-            });
-          tipos.forEach(tipo => {
-            tiposCalendarioLista.push({
-              desc: tipo.nome,
-              valor: tipo.id,
-              modalidade: tipo.modalidade,
-            });
-          });
-        }
-        setCarregandoTipos(false);
-        setCarregandoMeses(false);
-        return tiposCalendarioLista;
-      }
-      setCarregandoTipos(false);
-      setCarregandoMeses(false);
-      return lista;
-    },
-    [anosLetivosAbrangencia, turmaSelecionadaStore]
-  );
-
-  const modalidadesPorAbrangencia = useMemo(() => {
-    const modalidades = [];
-    if (modalidadesAbrangencia) {
-      modalidadesAbrangencia.forEach(modalidade => {
-        if (
-          (modalidade.valor === ModalidadeDTO.FUNDAMENTAL ||
-            modalidade.valor === ModalidadeDTO.ENSINO_MEDIO) &&
-          !modalidades.includes(1)
-        )
-          modalidades.push(1);
-        if (modalidade.valor === ModalidadeDTO.EJA && !modalidades.includes(2))
-          modalidades.push(2);
-      });
-    }
-
-    return modalidades;
-  }, [modalidadesAbrangencia]);
-
-  const tiposDeCalendario = useMemo(() => {
-    if (tiposCalendario.length === 0)
-     return;
-
-    let tipos = tiposCalendario;
-
-    if (tipos.length > 0 && modalidadesPorAbrangencia.length === 1) {
-      tipos = tiposCalendario.filter(
-        x => Number(x.modalidade) === modalidadesPorAbrangencia[0]
-      );
-    }
-
-    if (Object.entries(turmaSelecionadaStore).length > 0) {
-      const modalidadeSelecionada =
-        turmaSelecionadaStore.modalidade === ModalidadeDTO.EJA.toString()
-          ? 2
-          : turmaSelecionadaStore.modalidade === ModalidadeDTO.INFANTIL.toString()
-          ? 3
-          : 1;
-
-      tipos =
-        tiposCalendario &&
-        tiposCalendario
-          .filter(x => x.anoLetivo === anosLetivosAbrangencia[0].valor)
-          .filter(y => Number(y.modalidade) === Number(modalidadeSelecionada));
-
-      if (!tipos || tipos.length === 0) {
-        erro(
-          'Nenhum tipo de calendário encontrado para o ano letivo e modalidade selecionada'
-        );
-      }
-    }
-
-    if (tipos && tipos.length > 0) {
-      setTipoCalendarioSelecionado(tipos[0].valor.toString());
-    }
-
-    return tipos;
-  }, [
-    anosLetivosAbrangencia,
-    modalidadesPorAbrangencia,
-    tiposCalendario,
-    turmaSelecionadaStore,
-  ]);
-
-  useEffect(() => {
-    // Busca os calendarios disponíveis por ano letivo
-    const buscarTipos = async () => {
-      setCarregandoTipos(true);
-      setCarregandoMeses(true);
-      const { data, status } = await ServicoCalendarios.obterTiposCalendario(
-        turmaSelecionadaStore.anoLetivo
-      );
-      if (data && status === 200) {
-        setTiposCalendario(
-          data.map(x => ({
-            desc: x.nome,
-            valor: x.id,
-            modalidade: x.modalidade,
-            anoLetivo: x.anoLetivo,
-          }))
-        );
-        setCarregandoTipos(false);
-        setCarregandoMeses(false);
-      }
-    };
-    buscarTipos();
-  }, [turmaSelecionadaStore.anoLetivo]);
+  const [listaTipoCalendario, setListaTipoCalendario] = useState([]);
+  const [valorTipoCalendario, setValorTipoCalendario] = useState('');
+  const [pesquisaTipoCalendario, setPesquisaTipoCalendario] = useState('');
 
   const eventoCalendarioEdicao = useSelector(
     state => state.calendarioEscolar.eventoCalendarioEdicao
@@ -186,17 +54,12 @@ const CalendarioEscolar = () => {
   const [eventoSme, setEventoSme] = useState(true);
 
   useEffect(() => {
-    if (
-      tiposCalendario &&
-      eventoCalendarioEdicao &&
-      eventoCalendarioEdicao.tipoCalendario
-    ) {
-      setTipoCalendarioSelecionado(eventoCalendarioEdicao.tipoCalendario);
+    if (eventoCalendarioEdicao?.tipoCalendario) {
       if (eventoCalendarioEdicao.eventoSme) {
         setEventoSme(eventoCalendarioEdicao.eventoSme);
       }
     }
-  }, [eventoCalendarioEdicao, tiposCalendario]);
+  }, [eventoCalendarioEdicao]);
 
   const [dreSelecionada, setDreSelecionada] = useState(undefined);
   const [unidadeEscolarSelecionada, setUnidadeEscolarSelecionada] = useState(
@@ -216,11 +79,6 @@ const CalendarioEscolar = () => {
       .catch(() => {
         setDiasLetivos({});
       });
-  };
-
-  const aoSelecionarTipoCalendario = tipo => {
-    store.dispatch(zeraCalendario());
-    setTipoCalendarioSelecionado(tipo);
   };
 
   const dresStore = useSelector(state => state.filtro.dres);
@@ -276,13 +134,14 @@ const CalendarioEscolar = () => {
       dreSelecionada,
       unidadeEscolarSelecionada,
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tipoCalendarioSelecionado]);
 
   const aoClicarBotaoVoltar = () => {
     history.push('/');
   };
 
-  const aoTrocarEventoSme = (valor) => {
+  const aoTrocarEventoSme = valor => {
     setEventoSme(valor);
   };
 
@@ -294,6 +153,7 @@ const CalendarioEscolar = () => {
       unidadeEscolarSelecionada,
     });
     store.dispatch(zeraCalendario());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [eventoSme]);
 
   useEffect(() => {
@@ -307,6 +167,7 @@ const CalendarioEscolar = () => {
     } else if (dres && eventoCalendarioEdicao && eventoCalendarioEdicao.dre) {
       setDreSelecionada(eventoCalendarioEdicao.dre);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dres, carregandoMeses]);
 
   const unidadesEscolaresStore = useSelector(
@@ -316,8 +177,8 @@ const CalendarioEscolar = () => {
 
   const obterUnidadesEscolares = dre => {
     setCarregandoUes(true);
-    const calendario = tiposDeCalendario.find(
-      item => String(item.valor) === tipoCalendarioSelecionado
+    const calendario = listaTipoCalendario.find(
+      item => item.id === tipoCalendarioSelecionado
     );
 
     const modalidade = ServicoCalendarios.converterModalidade(
@@ -360,6 +221,7 @@ const CalendarioEscolar = () => {
     ) {
       setDreSelecionada(eventoCalendarioEdicao.unidadeEscolar);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [unidadesEscolares, carregandoMeses]);
 
   const aoSelecionarDre = dre => {
@@ -380,6 +242,7 @@ const CalendarioEscolar = () => {
       dreSelecionada,
       unidadeEscolarSelecionada,
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dreSelecionada]);
 
   const aoSelecionarUnidadeEscolar = unidade => {
@@ -395,7 +258,47 @@ const CalendarioEscolar = () => {
       unidadeEscolarSelecionada,
     });
     store.dispatch(zeraCalendario());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [unidadeEscolarSelecionada]);
+
+  useEffect(() => {
+    let isSubscribed = true;
+    (async () => {
+      setCarregandoTipos(true);
+      setCarregandoMeses(true);
+
+      const {
+        data,
+      } = await ServicoCalendarios.obterTiposCalendarioAutoComplete(
+        pesquisaTipoCalendario
+      );
+
+      if (isSubscribed) {
+        setListaTipoCalendario(data);
+        setCarregandoTipos(false);
+        setCarregandoMeses(false);
+      }
+    })();
+
+    return () => {
+      isSubscribed = false;
+    };
+  }, [pesquisaTipoCalendario]);
+
+  const selecionaTipoCalendario = descricao => {
+    const tipo = listaTipoCalendario?.find(t => t.descricao === descricao);
+    if (Number(tipo?.id) || !tipo?.id) {
+      store.dispatch(zeraCalendario());
+      setValorTipoCalendario(descricao);
+    }
+    setTipoCalendarioSelecionado(tipo?.id);
+  };
+
+  const handleSearch = descricao => {
+    if (descricao.length > 3 || descricao.length === 0) {
+      setPesquisaTipoCalendario(descricao);
+    }
+  };
 
   return (
     <Div className="col-12">
@@ -407,14 +310,21 @@ const CalendarioEscolar = () => {
           <Div className="row">
             <Grid cols={4}>
               <Loader loading={carregandoTipos} tip="">
-                <SelectComponent
-                  className="fonte-14"
-                  onChange={aoSelecionarTipoCalendario}
-                  lista={tiposDeCalendario}
-                  valueOption="valor"
-                  valueText="desc"
-                  valueSelect={tipoCalendarioSelecionado}
-                  placeholder="Tipo de Calendário"
+                <SelectAutocomplete
+                  hideLabel
+                  showList
+                  isHandleSearch
+                  placeholder="Tipo de calendário"
+                  className="col-md-12"
+                  name="tipoCalendarioId"
+                  id="tipoCalendarioId"
+                  lista={listaTipoCalendario}
+                  valueField="id"
+                  textField="descricao"
+                  onSelect={selecionaTipoCalendario}
+                  onChange={selecionaTipoCalendario}
+                  handleSearch={handleSearch}
+                  value={valorTipoCalendario}
                 />
               </Loader>
             </Grid>
@@ -469,7 +379,7 @@ const CalendarioEscolar = () => {
                     eventoSme
                       ? 'Exibindo eventos da SME'
                       : 'Não exibindo eventos da SME'
-                    }`}
+                  }`}
                 >
                   <Switch
                     onChange={aoTrocarEventoSme}
