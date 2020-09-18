@@ -41,7 +41,8 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<BimestreComConselhoClasseTurmaDto>> ObterimestreComConselhoClasseTurmaAsync(long turmaId)
         {
             var query = new StringBuilder(@"select   	   
-                                               min(cc.id) as conselhoClasseId ,
+                                               min(cc.id) as conselhoClasseId,
+                                               cc.fechamento_turma_id as fechamentoTurmaId,
                                                coalesce(pe.bimestre, 0) as bimestre
                                           from fechamento_turma ft 
                                           inner join conselho_classe cc on
@@ -49,7 +50,7 @@ namespace SME.SGP.Dados.Repositorios
                                           left join periodo_escolar pe on 
                                            ft.periodo_escolar_id = pe.id  
                                           where ft.turma_id = @turmaId 
-                                        group by ft.turma_id, pe.bimestre");
+                                        group by ft.turma_id,cc.fechamento_turma_id, pe.bimestre");
             return await database.Conexao.QueryAsync<BimestreComConselhoClasseTurmaDto>(query.ToString(), new { turmaId });
         }
     }
