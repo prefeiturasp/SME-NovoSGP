@@ -27,6 +27,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
         private readonly Mock<IRepositorioPlanoAula> repositorioPlanoAula;
         private readonly Mock<IRepositorioPeriodoEscolar> repositorioPeriodoEscolar;
         private readonly Mock<IServicoUsuario> servicoUsuario;
+        private readonly Mock<IServicoEol> servicoEol;
         private readonly Mock<IUnitOfWork> unitOfWork;
         private readonly Mock<IServicoEol> servicoEOL;
         private AbrangenciaFiltroRetorno abrangencia;
@@ -43,12 +44,13 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
             repositorioObjetivosPlano = new Mock<IRepositorioObjetivoAprendizagemPlano>();
             repositorioAula = new Mock<IRepositorioAula>();
             servicoUsuario = new Mock<IServicoUsuario>();
+            servicoEol = new Mock<IServicoEol>();
+
             repositorioAbrangencia = new Mock<IRepositorioAbrangencia>();
             repositorioObjetivoAprendizagemPlano = new Mock<IRepositorioObjetivoAprendizagemPlano>();
             repositorioAtribuicaoCJ = new Mock<IRepositorioAtribuicaoCJ>();
             unitOfWork = new Mock<IUnitOfWork>();
-            servicoEOL = new Mock<IServicoEol>();
-            consultasAbrangencia = new ConsultasAbrangencia(repositorioAbrangencia.Object, servicoUsuario.Object, servicoEOL.Object);
+            consultasAbrangencia = new ConsultasAbrangencia(repositorioAbrangencia.Object, servicoUsuario.Object, servicoEol.Object);
             consultasPlanoAnual = new Mock<IConsultasPlanoAnual>();
             consultasProfessor = new Mock<IConsultasProfessor>();
             consultasObjetivosAprendizagem = new Mock<IConsultasObjetivoAprendizagem>();

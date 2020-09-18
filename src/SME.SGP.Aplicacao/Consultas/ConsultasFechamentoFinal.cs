@@ -128,7 +128,7 @@ namespace SME.SGP.Aplicacao
             {
                 FechamentoFinalConsultaRetornoAlunoDto fechamentoFinalAluno = await TrataFrequenciaAluno(filtros, periodosEscolares, aluno, turma);
 
-                var marcador = servicoAluno.ObterMarcadorAluno(aluno, new PeriodoEscolar() { PeriodoFim = retorno.EventoData });
+                var marcador = await servicoAluno.ObterMarcadorAluno(aluno, new PeriodoEscolar() { PeriodoFim = retorno.EventoData });
                 if (marcador != null)
                     fechamentoFinalAluno.Informacao = marcador.Descricao;
 
