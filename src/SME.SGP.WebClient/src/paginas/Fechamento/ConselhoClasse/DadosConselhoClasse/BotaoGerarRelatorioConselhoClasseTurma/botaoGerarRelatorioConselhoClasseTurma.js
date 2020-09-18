@@ -1,50 +1,36 @@
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
-import { Colors, Loader } from '~/componentes';
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Colors } from '~/componentes';
 import Button from '~/componentes/button';
-import { erros, sucesso } from '~/servicos/alertas';
-import ServicoConselhoClasse from '~/servicos/Paginas/ConselhoClasse/ServicoConselhoClasse';
+import { setExibirModalImpressaoConselhoClasse } from '~/redux/modulos/conselhoClasse/actions';
+import { erro } from '~/servicos/alertas';
 
 const BotaoGerarRelatorioConselhoClasseTurma = () => {
-  const conselhoClasseId = useSelector(
-    store => store.conselhoClasse.dadosPrincipaisConselhoClasse.conselhoClasseId
+  const dispatch = useDispatch();
+
+  const dadosBimestresConselhoClasse = useSelector(
+    store => store.conselhoClasse.dadosBimestresConselhoClasse
   );
 
-  const fechamentoTurmaId = useSelector(
-    store =>
-      store.conselhoClasse.dadosPrincipaisConselhoClasse.fechamentoTurmaId
-  );
-
-  const [imprimindo, setImprimindo] = useState(false);
-
-  const gerarConselhoClasseTurma = async () => {
-    setImprimindo(true);
-    await ServicoConselhoClasse.gerarConselhoClasseTurma(
-      conselhoClasseId || 0,
-      fechamentoTurmaId || 0
-    )
-      .then(() => {
-        sucesso(
-          'Solicitação de geração do relatório gerada com sucesso. Em breve você receberá uma notificação com o resultado.'
-        );
-      })
-      .finally(setImprimindo(false))
-      .catch(e => erros(e));
+  const onClickImprimir = () => {
+    if (dadosBimestresConselhoClasse && dadosBimestresConselhoClasse.length) {
+      dispatch(setExibirModalImpressaoConselhoClasse(true));
+    } else {
+      erro(
+        'Não foi encontrado nenhum registro de conselho de classe para a turma selecionada.'
+      );
+    }
   };
 
   return (
-    <div>
-      <Loader loading={imprimindo} ignorarTip>
-        <Button
-          className="btn-imprimir"
-          icon="print"
-          color={Colors.Azul}
-          border
-          onClick={() => gerarConselhoClasseTurma()}
-          id="btn-imprimir-relatorio-pendencias"
-        />
-      </Loader>
-    </div>
+    <Button
+      className="btn-imprimir"
+      icon="print"
+      color={Colors.Azul}
+      border
+      onClick={onClickImprimir}
+      id="btn-imprimir-relatorio-pendencias"
+    />
   );
 };
 
