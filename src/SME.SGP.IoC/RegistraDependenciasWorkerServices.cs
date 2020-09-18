@@ -383,6 +383,8 @@ private static void RegistrarRabbit(IServiceCollection services)
             services.TryAddScopedWorkerService<IExcluirNotificacaoDiarioBordoUseCase, ExcluirNotificacaoDiarioBordoUseCase>();
             services.TryAddScopedWorkerService<IObterAnosLetivosPAPUseCase, ObterAnosLetivosPAPUseCase>();
 
+            services.TryAddScopedWorkerService<IRelatorioPlanoAulaUseCase, RelatorioPlanoAulaUseCase>();
+
         }
 
         private static void ResgistraDependenciaHttp(IServiceCollection services)
