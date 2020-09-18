@@ -10,6 +10,8 @@ import {
   limparDadosConselhoClasse,
   setAlunosConselhoClasse,
   setDadosAlunoObjectCard,
+  setDadosBimestresConselhoClasse,
+  setExibirLoaderGeralConselhoClasse,
 } from '~/redux/modulos/conselhoClasse/actions';
 import { erros } from '~/servicos/alertas';
 import ServicoConselhoClasse from '~/servicos/Paginas/ConselhoClasse/ServicoConselhoClasse';
@@ -20,6 +22,8 @@ import BotaoGerarRelatorioConselhoClasseTurma from './DadosConselhoClasse/BotaoG
 import BotaoOrdenarListaAlunos from './DadosConselhoClasse/BotaoOrdenarListaAlunos/botaoOrdenarListaAlunos';
 import BotoesAcoesConselhoClasse from './DadosConselhoClasse/BotoesAcoes/botoesAcoesConselhoClasse';
 import DadosConselhoClasse from './DadosConselhoClasse/dadosConselhoClasse';
+import LoaderConselhoClasse from './DadosConselhoClasse/LoaderConselhoClasse/laderConselhoClasse';
+import ModalImpressaoBimestre from './DadosConselhoClasse/ModalImpressaoBimestre/modalImpressaoBimestre';
 import ObjectCardConselhoClasse from './DadosConselhoClasse/ObjectCardConselhoClasse/objectCardConselhoClasse';
 import TabelaRetratilConselhoClasse from './DadosConselhoClasse/TabelaRetratilConselhoClasse/tabelaRetratilConselhoClasse';
 import servicoSalvarConselhoClasse from './servicoSalvarConselhoClasse';
@@ -32,7 +36,6 @@ const ConselhoClasse = () => {
   const { turma, anoLetivo, periodo } = turmaSelecionada;
   const permissoesTela = usuario.permissoes[RotasDto.CONSELHO_CLASSE];
 
-  const [carregandoGeral, setCarregandoGeral] = useState(false);
   const [exibirListas, setExibirListas] = useState(false);
 
   const modalidadesFiltroPrincipal = useSelector(
@@ -40,7 +43,7 @@ const ConselhoClasse = () => {
   );
 
   const obterListaAlunos = useCallback(async () => {
-    setCarregandoGeral(true);
+    dispatch(setExibirLoaderGeralConselhoClasse(true));
     const retorno = await ServicoConselhoClasse.obterListaAlunos(
       turma,
       anoLetivo,
@@ -50,8 +53,21 @@ const ConselhoClasse = () => {
       dispatch(setAlunosConselhoClasse(retorno.data));
       setExibirListas(true);
     }
-    setCarregandoGeral(false);
+    dispatch(setExibirLoaderGeralConselhoClasse(false));
   }, [anoLetivo, dispatch, turma, periodo]);
+
+  const obterDadosBimestresConselhoClasse = useCallback(async () => {
+    dispatch(setExibirLoaderGeralConselhoClasse(true));
+    const retorno = await ServicoConselhoClasse.obterDadosBimestres(
+      turmaSelecionada.id
+    ).catch(e => erros(e));
+    if (retorno && retorno.data) {
+      dispatch(setDadosBimestresConselhoClasse(retorno.data));
+      obterListaAlunos();
+    } else {
+      dispatch(setExibirLoaderGeralConselhoClasse(false));
+    }
+  }, [dispatch, turmaSelecionada, obterListaAlunos]);
 
   const resetarInfomacoes = useCallback(() => {
     dispatch(limparDadosConselhoClasse());
@@ -72,10 +88,10 @@ const ConselhoClasse = () => {
       turmaSelecionada.turma &&
       !ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada)
     ) {
-      obterListaAlunos();
+      obterDadosBimestresConselhoClasse();
     }
   }, [
-    obterListaAlunos,
+    obterDadosBimestresConselhoClasse,
     turma,
     turmaSelecionada,
     resetarInfomacoes,
@@ -130,9 +146,10 @@ const ConselhoClasse = () => {
       ) : (
         ''
       )}
+      <ModalImpressaoBimestre />
       <AlertaModalidadeInfantil />
       <Cabecalho pagina="Conselho de classe" />
-      <Loader loading={carregandoGeral}>
+      <LoaderConselhoClasse>
         <Card>
           <>
             <div className="col-md-12">
@@ -175,7 +192,7 @@ const ConselhoClasse = () => {
             ''
           )}
         </Card>
-      </Loader>
+      </LoaderConselhoClasse>
     </Container>
   );
 };
