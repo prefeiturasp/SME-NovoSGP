@@ -39,9 +39,9 @@ namespace SME.SGP.Aplicacao
             var login = servicoUsuario.ObterLoginAtual();
             var perfil = servicoUsuario.ObterPerfilAtual();
             AbrangenciaCompactaVigenteRetornoEOLDTO abrangencia = await servicoEOL.ObterAbrangenciaCompactaVigente(login.ToString(), Guid.Parse(perfil.ToString()));            
-            bool abrangenciaPermitida = abrangencia != null && (abrangencia.Abrangencia.Abrangencia == Infra.Enumerados.Abrangencia.UE 
-                                                                || abrangencia.Abrangencia.Abrangencia == Infra.Enumerados.Abrangencia.Dre 
-                                                                || abrangencia.Abrangencia.Abrangencia == Infra.Enumerados.Abrangencia.SME);            
+            bool abrangenciaPermitida = abrangencia.Abrangencia.Abrangencia == Infra.Enumerados.Abrangencia.UE
+                                        || abrangencia.Abrangencia.Abrangencia == Infra.Enumerados.Abrangencia.Dre
+                                        || abrangencia.Abrangencia.Abrangencia == Infra.Enumerados.Abrangencia.SME;            
 
             return await repositorioAbrangencia.ObterAbrangenciaTurma(turma, login, perfil, consideraHistorico, abrangenciaPermitida);
         }
