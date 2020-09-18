@@ -29,7 +29,8 @@ namespace SME.SGP.Dados.Repositorios
 	                    data_atualizacao,
                         ensino_especial,
                         etapa_eja,
-                        data_inicio
+                        data_inicio,
+                        dt_fim_eol
                     from
 	                    public.turma
                     where turma_id in (#ids);";
@@ -48,7 +49,8 @@ namespace SME.SGP.Dados.Repositorios
 	                    data_atualizacao = @dataAtualizacao,
                         ensino_especial = @ensinoEspecial,
                         etapa_eja = @etapaEja,
-                        data_inicio = @dataInicio
+                        data_inicio = @dataInicio,
+                        dt_fim_eol = @dataFim
                     where
 	                    id = @id;";
 
@@ -308,7 +310,10 @@ namespace SME.SGP.Dados.Repositorios
                     QuerySincronizacao.Replace("#ids", string.Join(",", iteracao.Select(x => $"'{x.CodigoTurma}'"))))).ToList();
 
                 var idsArmazenados = armazenados.Select(y => y.CodigoTurma);
-                var novos = iteracao.Where(x => !idsArmazenados.Contains(x.CodigoTurma)).ToList();
+
+                var novos = iteracao
+                    .Where(x => !x.Extinta && !idsArmazenados.Contains(x.CodigoTurma))
+                    .ToList();
 
                 foreach (var item in novos)
                 {
@@ -321,8 +326,7 @@ namespace SME.SGP.Dados.Repositorios
 
                 var modificados = from c in entidades
                                   join l in armazenados on c.CodigoTurma equals l.CodigoTurma
-                                  where l.DataAtualizacao != DateTime.Today &&
-                                        (c.Nome != l.Nome ||
+                                  where c.Nome != l.Nome ||
                                         c.Ano != l.Ano ||
                                         c.AnoLetivo != l.AnoLetivo ||
                                         c.ModalidadeCodigo != l.ModalidadeCodigo ||
@@ -331,9 +335,10 @@ namespace SME.SGP.Dados.Repositorios
                                         c.TipoTurno != l.TipoTurno ||
                                         c.EnsinoEspecial != l.EnsinoEspecial ||
                                         c.EtapaEJA != l.EtapaEJA ||
-                                        c.DataInicio != l.DataInicio &&
-                                        c.DataFim != l.DataFim &&
-                                        c.Extinta != l.Extinta)
+                                        c.DataInicio.HasValue != l.DataInicio.HasValue ||
+                                        (c.DataInicio.HasValue && l.DataInicio.HasValue && c.DataInicio.Value.Date != l.DataInicio.Value.Date) ||
+                                        c.DataFim.HasValue != l.DataFim.HasValue ||
+                                        (c.DataFim.HasValue && l.DataFim.HasValue && c.DataFim.Value.Date != l.DataFim.Value.Date)
                                   select new Turma()
                                   {
                                       Ano = c.Ano,
@@ -371,8 +376,7 @@ namespace SME.SGP.Dados.Repositorios
                         ensinoEspecial = item.EnsinoEspecial,
                         etapaEja = item.EtapaEJA,
                         dataInicio = item.DataInicio,
-                        dataFim = item.DataFim,
-                        extinta = item.Extinta
+                        dataFim = item.DataFim
                     });
 
                     resultado.Add(item);
@@ -471,13 +475,13 @@ namespace SME.SGP.Dados.Repositorios
 			                on tc.id = pe.tipo_calendario_id 			
 		                inner join (select id, data_inicio, modalidade_codigo
 					                    from turma
-					                where not historica and
+					                where ano_letivo = {anoLetivo} and
 						                  turma_id not in (#idsTurmas)) t2
 			                on t.id = t2.id and
 			                   t.modalidade_codigo = t2.modalidade_codigo
-                where t.ano_letivo = {anoLetivo} and
-                      not t.historica and
+                where t.ano_letivo = {anoLetivo} and                      
 	                  pe.bimestre = 1 and                      
-	                  dt_fim_eol {(definirTurmasComoHistorica ? ">=" : "<")} pe.periodo_inicio"; //Turmas extintas após o 1º bimestre do ano letivo considerado serão marcadas como histórica
+	                  t.dt_fim_eol is not null and 
+                      t.dt_fim_eol {(definirTurmasComoHistorica ? ">=" : "<")} pe.periodo_inicio"; //Turmas extintas após o 1º bimestre do ano letivo considerado serão marcadas como histórica
     }
 }
