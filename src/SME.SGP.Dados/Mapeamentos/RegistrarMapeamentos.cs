@@ -1,5 +1,6 @@
 ﻿using Dapper.FluentMap;
 using Dapper.FluentMap.Dommel;
+using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados.Mapeamentos
 {
@@ -120,6 +121,10 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new DiarioBordoObservacaoMap());
                config.AddMap(new DevolutivaMap());
                config.AddMap(new CartaIntencoesObservacaoMap());
+               config.AddMap(new PlanejamentoAnualComponenteMap());
+               config.AddMap(new PlanejamentoAnualMap());
+               config.AddMap(new PlanejamentoAnualObjetivosAprendizagemMap());
+               config.AddMap(new PlanejamentoAnualPeriodoEscolarMap());
                config.ForDommel();
            });
         }

@@ -7,6 +7,6 @@ namespace SME.SGP.Dominio
         public long ComponenteCurricularId { get; set; }
         public string Descricao { get; set; }
         public long PlanejamentoAnualPeriodoEscolarId { get; set; }
-        public IEnumerable<PlanejamentoAnualObjetivoAprendizagem> ObjetivosAprendizagem { get; set; }
+        public List<PlanejamentoAnualObjetivoAprendizagem> ObjetivosAprendizagem { get; set; }
     }
 }

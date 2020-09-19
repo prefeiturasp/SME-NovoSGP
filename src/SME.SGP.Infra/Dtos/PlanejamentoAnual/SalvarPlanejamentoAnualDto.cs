@@ -6,6 +6,6 @@ namespace SME.SGP.Infra
     {
         public long Id { get; set; }
         public long PeriodoEscolarId { get; set; }
-        public IEnumerable<ComponentePlanejamentoAnualDto> Componentes { get; set; }
+        public IEnumerable<PlanejamentoAnualComponenteDto> Componentes { get; set; }
     }
 }

@@ -1,31 +1,49 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.CasosDeUso.PlanejamentoAnual.Salvar
+namespace SME.SGP.Aplicacao
 {
-    public class SalvarPlanejamentoAnualUseCase
+    public class SalvarPlanejamentoAnualUseCase : ISalvarPlanejamentoAnualUseCase
     {
         private readonly IMediator mediator;
+        private readonly IUnitOfWork unitOfWork;
 
-        public SalvarPlanejamentoAnualUseCase(IMediator mediator)
+        public SalvarPlanejamentoAnualUseCase(IMediator mediator,
+                                              IUnitOfWork unitOfWork)
         {
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
+            this.unitOfWork = unitOfWork ?? throw new System.ArgumentNullException(nameof(unitOfWork));
         }
         public async Task<AuditoriaDto> Executar(long turmaId, long componenteCurricularId, SalvarPlanejamentoAnualDto dto)
         {
-            return await mediator.Send(new SalvarPlanejamentoAnualCommand() { 
-            Id=dto.Id,
-            PeriodoEscolarId=dto.PeriodoEscolarId,
-            Componentes=new List<Dominio.PlanejamentoAnualComponente>
+            AuditoriaDto auditoria;
+            unitOfWork.IniciarTransacao();
+
+            if (dto.Id > 0)
             {
-                new Dominio.PlanejamentoAnualComponente
+                auditoria = await mediator.Send(new AlterarPlanejamentoAnualCommand()
                 {
-                    
-                }
+                    Id = dto.Id,
+                    PeriodoEscolarId = dto.PeriodoEscolarId,
+                    TurmaId = turmaId,
+                    Componentes = dto.Componentes,
+                    ComponenteCurricularId = componenteCurricularId
+                });
             }
-            });
+            else
+                auditoria = await mediator.Send(new SalvarPlanejamentoAnualCommand()
+                {
+                    PeriodoEscolarId = dto.PeriodoEscolarId,
+                    TurmaId = turmaId,
+                    Componentes = dto.Componentes,
+                    ComponenteCurricularId = componenteCurricularId
+                });
+
+            unitOfWork.PersistirTransacao();
+
+            return auditoria;
         }
     }
 }
