@@ -2,7 +2,7 @@
 using SME.SGP.Infra;
 using System.Collections.Generic;
 
-namespace SME.SGP.Aplicacao.Commands.PlanejamentoAnual.Alterar
+namespace SME.SGP.Aplicacao
 {
     public class AlterarPlanejamentoAnualCommand : IRequest<AuditoriaDto>
     {
@@ -12,6 +12,6 @@ namespace SME.SGP.Aplicacao.Commands.PlanejamentoAnual.Alterar
         public long TurmaId { get; set; }
         public long ComponenteCurricularId { get; set; }
         public bool EhAlteracao => Id > 0;
-        public IEnumerable<ComponentePlanejamentoAnualDto> Componentes { get; set; }
+        public IEnumerable<PlanejamentoAnualComponenteDto> Componentes { get; set; }
     }
 }
