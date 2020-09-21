@@ -50,7 +50,8 @@ namespace SME.SGP.Dados.Repositorios
                                           left join periodo_escolar pe on 
                                            ft.periodo_escolar_id = pe.id  
                                           where ft.turma_id = @turmaId 
-                                        group by ft.turma_id,cc.fechamento_turma_id, pe.bimestre");
+                                        group by ft.turma_id,cc.fechamento_turma_id, pe.bimestre
+                                        order by pe.bimestre ");
             return await database.Conexao.QueryAsync<BimestreComConselhoClasseTurmaDto>(query.ToString(), new { turmaId });
         }
     }
