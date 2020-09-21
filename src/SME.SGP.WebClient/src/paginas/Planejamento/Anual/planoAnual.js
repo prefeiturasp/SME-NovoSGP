@@ -79,7 +79,6 @@ const PlanoAnual = () => {
                 <BotoesAcoesPlanoAnual
                   onClickCancelar={onClickCancelar}
                   onClickSalvar={onClickSalvar}
-                  ehTurmaInfantil={turmaInfantil}
                 />
               </div>
             </div>

@@ -5,6 +5,7 @@ const inicial = {
   listaComponentesCurricularesPlanejamento: [],
   planoAnualEmEdicao: false,
   componenteCurricular: undefined,
+  tabAtualComponenteCurricular: [],
 };
 
 export default function planoAnual(state = inicial, action) {
@@ -40,6 +41,15 @@ export default function planoAnual(state = inicial, action) {
           planoAnualEmEdicao: false,
           componenteCurricular: undefined,
           dadosBimestresPlanoAnual: [],
+          tabAtualComponenteCurricular: [],
+        };
+      }
+      case '@planoAnual/setTabAtualComponenteCurricular': {
+        const dados = state.tabAtualComponenteCurricular;
+        dados[action.payload.bimestre] = action.payload.componente;
+        return {
+          ...draft,
+          tabAtualComponenteCurricular: dados,
         };
       }
 

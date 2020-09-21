@@ -22,3 +22,8 @@ export const limparDadosPlanoAnual = payload => ({
   type: '@planoAnual/limparDadosPlanoAnual',
   payload,
 });
+
+export const setTabAtualComponenteCurricular = payload => ({
+  type: '@planoAnual/setTabAtualComponenteCurricular',
+  payload,
+});
