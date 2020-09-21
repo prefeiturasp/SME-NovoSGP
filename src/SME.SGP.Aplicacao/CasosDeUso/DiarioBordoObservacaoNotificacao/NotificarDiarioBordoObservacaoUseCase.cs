@@ -50,7 +50,7 @@ namespace SME.SGP.Aplicacao
                 }
                 else
                 {
-                    mensagem.AppendLine($"<br/><br/>Observação: {dadosMensagem.Observacao}.");
+                    mensagem.AppendLine($"<br/><br/>Observação: {dadosMensagem.Observacao.TrimEnd('.').Trim()}.");
                 }
 
 
