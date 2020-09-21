@@ -1,4 +1,5 @@
-﻿using SME.SGP.Aplicacao.Integracoes;
+﻿using MediatR;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
@@ -17,13 +18,15 @@ namespace SME.SGP.Aplicacao
         private readonly IUnitOfWork unitOfWork;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IServicoEol servicoEOL;
+        private readonly IMediator mediator;
 
         public ComandosRecuperacaoParalela(IRepositorioRecuperacaoParalela repositorioRecuperacaoParalela,
             IRepositorioRecuperacaoParalelaPeriodoObjetivoResposta repositorioRecuperacaoParalelaPeriodoObjetivo,
             IConsultaRecuperacaoParalela consultaRecuperacaoParalela,
             IUnitOfWork unitOfWork,
             IServicoUsuario servicoUsuario,
-            IServicoEol servicoEOL
+            IServicoEol servicoEOL,
+            IMediator mediator
             )
         {
             this.repositorioRecuperacaoParalela = repositorioRecuperacaoParalela ?? throw new ArgumentNullException(nameof(repositorioRecuperacaoParalela));
@@ -32,47 +35,62 @@ namespace SME.SGP.Aplicacao
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<RecuperacaoParalelaListagemDto> Salvar(RecuperacaoParalelaDto recuperacaoParalelaDto)
         {
             var list = new List<RecuperacaoParalelaListagemDto>();
 
-            var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
+            //var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
+            var usuarioLogin =  servicoUsuario.ObterLoginAtual();
+            var usuarioPerfil = servicoUsuario.ObterPerfilAtual();
 
-            var turmaCodigo = recuperacaoParalelaDto.Periodo.Alunos.FirstOrDefault().TurmaRecuperacaoParalelaId;
 
-            var turmaPap = await servicoEOL.TurmaPossuiComponenteCurricularPAP(turmaCodigo.ToString(), usuarioLogado.Login, usuarioLogado.PerfilAtual);
+            var turmaRecuperacaoParalelaId = recuperacaoParalelaDto.Periodo.Alunos.FirstOrDefault().TurmaRecuperacaoParalelaId;
+            var turmaRecuperacaoParalela = await mediator.Send(new ObterTurmaSimplesPorIdQuery(turmaRecuperacaoParalelaId));
+
+            //var turmaCodigo = recuperacaoParalelaDto.Periodo.Alunos.FirstOrDefault().TurmaRecuperacaoParalelaId;
+
+            var turmaPap = await servicoEOL.TurmaPossuiComponenteCurricularPAP(turmaRecuperacaoParalela.Codigo, usuarioLogin, usuarioPerfil);
 
             if (!turmaPap)
                 throw new NegocioException("Somente é possivel realizar acompanhamento para turmas PAP");
-            
+
+            var turmasCodigo = recuperacaoParalelaDto.Periodo.Alunos.Select(a => a.TurmaId.ToString()).Distinct().ToArray();
+
+            var turmas = await mediator.Send(new ObterTurmasPorCodigosQuery(turmasCodigo));
+
             unitOfWork.IniciarTransacao();
 
             foreach (var item in recuperacaoParalelaDto.Periodo.Alunos)
             {
-                var recuperacaoParalela = MapearEntidade(recuperacaoParalelaDto, item);
+                var turmaDoItem = turmas.FirstOrDefault(a => a.CodigoTurma == item.TurmaId.ToString());
+                var recuperacaoParalela = MapearEntidade(recuperacaoParalelaDto, item, turmaDoItem.Id, turmaRecuperacaoParalela.Id, turmaDoItem.AnoLetivo);
 
                 await repositorioRecuperacaoParalela.SalvarAsync(recuperacaoParalela);
                 await repositorioRecuperacaoParalelaPeriodoObjetivoResposta.Excluir(item.Id, recuperacaoParalelaDto.Periodo.Id);
                 await SalvarRespostasAluno(recuperacaoParalelaDto, item, recuperacaoParalela);
             }
             unitOfWork.PersistirTransacao();
+
             return await consultaRecuperacaoParalela.Listar(new Infra.FiltroRecuperacaoParalelaDto
             {
                 Ordenacao = recuperacaoParalelaDto.Ordenacao,
                 PeriodoId = recuperacaoParalelaDto.Periodo.Id,
-                TurmaId = recuperacaoParalelaDto.Periodo.Alunos.FirstOrDefault().TurmaRecuperacaoParalelaId
+                TurmaId = turmaRecuperacaoParalelaId,
+                TurmaCodigo = long.Parse(turmaRecuperacaoParalela.Codigo)
             });
         }
 
-        private static RecuperacaoParalela MapearEntidade(RecuperacaoParalelaDto recuperacaoParalelaDto, RecuperacaoParalelaAlunoDto item)
+        private static RecuperacaoParalela MapearEntidade(RecuperacaoParalelaDto recuperacaoParalelaDto, RecuperacaoParalelaAlunoDto item, long turmaId, long turmaRecuperacaoParalelaId, int anoLetivo)
         {
             return new RecuperacaoParalela
             {
                 Id = item.Id,
-                TurmaId = item.TurmaId,
-                TurmaRecuperacaoParalelaId = item.TurmaRecuperacaoParalelaId,
+                TurmaId = turmaId,
+                AnoLetivo = anoLetivo,
+                TurmaRecuperacaoParalelaId = turmaRecuperacaoParalelaId,
                 Aluno_id = item.CodAluno,
                 CriadoEm = recuperacaoParalelaDto.Periodo.CriadoEm ?? default,
                 CriadoRF = recuperacaoParalelaDto.Periodo.CriadoRF ?? null,
