@@ -102,7 +102,7 @@ function DiaCompleto({
     });
 
     return (
-      <div style={{ fontSize: '12px', lineHeight: 0.5 }} className="mt-2">
+      <div style={{ fontSize: '12px' }} className="mt-2">
         {conteudo}
       </div>
     );
