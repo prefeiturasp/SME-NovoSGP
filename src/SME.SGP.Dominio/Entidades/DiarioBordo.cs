@@ -9,12 +9,20 @@ namespace SME.SGP.Dominio
         public long AulaId { get; set; }
         public Aula Aula { get; set; }
         public long? DevolutivaId { get; set; }
-        public DevolutivaDiarioBordo Devolutiva { get; set; }
+        public Devolutiva Devolutiva { get; set; }
 
         public string Planejamento { get; set; }
         public string ReflexoesReplanejamento { get; set; }
 
         public bool Excluido { get; set; }
         public bool Migrado { get; set; }
+
+
+        public void AdicionarAula(Aula aula)
+        {
+            Aula = aula ?? throw new NegocioException("É necessario informar uma aula.");
+        }
     }
+
+    
 }

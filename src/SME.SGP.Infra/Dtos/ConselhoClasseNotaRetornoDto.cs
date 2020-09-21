@@ -7,6 +7,7 @@ namespace SME.SGP.Infra
     public class ConselhoClasseNotaRetornoDto
     {
         public long ConselhoClasseId { get; set; }
+        public long FechamentoTurmaId { get; set; }
         public AuditoriaDto Auditoria { get; set; }
     }
 }

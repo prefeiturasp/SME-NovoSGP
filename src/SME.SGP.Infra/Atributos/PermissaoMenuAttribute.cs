@@ -22,6 +22,7 @@ namespace SME.SGP.Infra
         public bool EhMenu { get; set; }
         public bool EhSubMenu { get; set; }
         public string Icone { get; set; }
+        public string IconeDashBoard { get; set; }
         public string Menu { get; set; }
         public int OrdemAgrupamento { get; set; }
         public int OrdemMenu { get; set; }
