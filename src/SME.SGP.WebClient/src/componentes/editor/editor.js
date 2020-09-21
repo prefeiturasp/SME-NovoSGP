@@ -87,7 +87,7 @@ export default function Editor(props) {
             editor={ClassicEditor}
             disabled={desabilitar || false}
             config={{
-              toolbar,
+              toolbar: removerToolbar ? [] : toolbar,
               table: { isEnabled: true },
               language: 'pt-br',
               removePlugins: [

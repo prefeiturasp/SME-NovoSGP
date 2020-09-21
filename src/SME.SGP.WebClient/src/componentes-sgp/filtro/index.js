@@ -141,7 +141,7 @@ const Filtro = () => {
 
       setTextoAutocomplete(
         `${modalidadeDesc ? modalidadeDesc.desc : 'Modalidade'} - ${
-          turmaAtual ? turmaAtual.desc : 'Turma'
+        turmaAtual ? turmaAtual.desc : 'Turma'
         } - ${unidadeEscolarDesc ? unidadeEscolarDesc.desc : 'Unidade Escolar'}`
       );
 
@@ -160,14 +160,15 @@ const Filtro = () => {
         ano: turmaSelecionadaCompleta.ano,
         desc: `${
           modalidadeDesc && modalidadeDesc.desc ? modalidadeDesc.desc : ''
-        } - ${turmaAtual && turmaAtual.desc ? turmaAtual.desc : ''} - ${
+          } - ${turmaAtual && turmaAtual.desc ? turmaAtual.desc : ''} - ${
           unidadeEscolarDesc && unidadeEscolarDesc.desc
             ? unidadeEscolarDesc.desc
             : ''
-        }`,
+          }`,
         periodo: periodoSelecionado || 0,
         consideraHistorico,
         ensinoEspecial: turmaAtual.ensinoEspecial,
+        id: turmaAtual.id,
       };
 
       dispatch(turmasUsuario(turmas));
@@ -597,9 +598,6 @@ const Filtro = () => {
       obterTurmas(true);
       return;
     }
-
-    setTurmaSelecionada();
-    setCampoTurmaDesabilitado(true);
   }, [
     anoLetivoSelecionado,
     dreSelecionada,
@@ -883,6 +881,10 @@ const Filtro = () => {
 
   const aoSubmeterAutocomplete = evento => {
     evento.preventDefault();
+    Filtrar();
+  };
+
+  const Filtrar = () => {
     if (resultadosFiltro) {
       if (resultadosFiltro.length === 1) {
         setModalidadeSelecionada(
@@ -890,9 +892,7 @@ const Filtro = () => {
         );
         setDreSelecionada(resultadosFiltro[0].codigoDre);
         setUnidadeEscolarSelecionada(resultadosFiltro[0].codigoUe);
-        setTimeout(() => {
-          setTurmaSelecionada(resultadosFiltro[0].codigoTurma);
-        }, 1000);
+        setTurmaSelecionada(resultadosFiltro[0].codigoTurma);
         selecionaTurmaAutocomplete(resultadosFiltro[0]);
       } else {
         const itemSelecionado = document.querySelector(
@@ -906,16 +906,14 @@ const Filtro = () => {
               setModalidadeSelecionada(resultado.codigoModalidade.toString());
               setDreSelecionada(resultado.codigoDre);
               setUnidadeEscolarSelecionada(resultado.codigoUe);
-              setTimeout(() => {
-                setTurmaSelecionada(resultado.codigoTurma);
-              }, 1000);
+              setTurmaSelecionada(resultado.codigoTurma);
               selecionaTurmaAutocomplete(resultado);
             }
           }
         }
       }
     }
-  };
+  }
 
   const aoFocarBusca = () => {
     if (alternarFocoBusca) {
@@ -1079,7 +1077,7 @@ const Filtro = () => {
               <Grid
                 cols={
                   modalidadeSelecionada &&
-                  modalidadeSelecionada.toString() === modalidade.EJA.toString()
+                    modalidadeSelecionada.toString() === modalidade.EJA.toString()
                     ? 5
                     : 9
                 }
@@ -1103,7 +1101,7 @@ const Filtro = () => {
               </Grid>
               {modalidadeSelecionada &&
                 modalidadeSelecionada.toString() ===
-                  modalidade.EJA.toString() && (
+                modalidade.EJA.toString() && (
                   <Grid cols={4} className="form-group">
                     <Loader loading={carregandoPeriodos} tip="">
                       <SelectComponent

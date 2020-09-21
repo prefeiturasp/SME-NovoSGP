@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
-    public class RepositorioResposta : RepositorioBase<Resposta>, IRepositorioResposta
+    public class RepositorioResposta : RepositorioBase<RecuperacaoParalelaResposta>, IRepositorioResposta
     {
         public RepositorioResposta(ISgpContext conexao) : base(conexao)
         {
@@ -23,10 +23,10 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("r.descricao,");
             query.AppendLine("r.sim,");
             query.AppendLine("ob.id as objetivoId");
-            query.AppendLine("from resposta r");
-            query.AppendLine("inner join objetivo_resposta o on r.id = o.resposta_id");
-            query.AppendLine("inner join objetivo ob on o.objetivo_id = ob.id");
-            query.AppendLine("inner join eixo e on ob.eixo_id = e.id");
+            query.AppendLine("from recuperacao_paralela_resposta r");
+            query.AppendLine("inner join recuperacao_paralela_objetivo_resposta o on r.id = o.resposta_id");
+            query.AppendLine("inner join recuperacao_paralela_objetivo ob on o.objetivo_id = ob.id");
+            query.AppendLine("inner join recuperacao_paralela_eixo e on ob.eixo_id = e.id");
             query.AppendLine("where r.excluido = false");
             query.AppendLine("and o.excluido = false");
             query.AppendLine("and (r.dt_fim is null or r.dt_fim <= now())");

@@ -9,6 +9,6 @@ export const CaixaBimestre = styled.div`
   padding: 10px;
 `;
 
-export const BoxTextoBimetre = styled.div`
+export const BoxTextoBimestre = styled.div`
   color: #42474a;
 `;

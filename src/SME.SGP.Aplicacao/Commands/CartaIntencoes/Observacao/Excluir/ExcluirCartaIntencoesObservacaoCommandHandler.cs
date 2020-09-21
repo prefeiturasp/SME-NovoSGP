@@ -1,6 +1,9 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -9,10 +12,12 @@ namespace SME.SGP.Aplicacao
     public class ExcluirCartaIntencoesObservacaoCommandHandler : IRequestHandler<ExcluirCartaIntencoesObservacaoCommand, bool>
     {
         private readonly IRepositorioCartaIntencoesObservacao repositorioCartaIntencoesObservacao;
+        private readonly IMediator mediator;
 
-        public ExcluirCartaIntencoesObservacaoCommandHandler(IRepositorioCartaIntencoesObservacao repositorioCartaIntencoesObservacao)
+        public ExcluirCartaIntencoesObservacaoCommandHandler(IRepositorioCartaIntencoesObservacao repositorioCartaIntencoesObservacao, IMediator mediator)
         {
             this.repositorioCartaIntencoesObservacao = repositorioCartaIntencoesObservacao ?? throw new System.ArgumentNullException(nameof(repositorioCartaIntencoesObservacao));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<bool> Handle(ExcluirCartaIntencoesObservacaoCommand request, CancellationToken cancellationToken)
@@ -25,6 +30,10 @@ namespace SME.SGP.Aplicacao
             cartaIntencoesObservacao.Remover();
 
             await repositorioCartaIntencoesObservacao.SalvarAsync(cartaIntencoesObservacao);
+
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaExcluirNotificacaoObservacaoCartaIntencoes,
+                       new ExcluirNotificacaoCartaIntencoesObservacaoDto(cartaIntencoesObservacao.Id), Guid.NewGuid(), null));
+
             return true;
         }
     }
