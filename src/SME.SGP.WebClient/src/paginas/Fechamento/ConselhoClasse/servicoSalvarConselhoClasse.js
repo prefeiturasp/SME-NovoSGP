@@ -206,15 +206,11 @@ class ServicoSalvarConselhoClasse {
     ).catch(e => erro(e));
 
     if (retorno && retorno.status === 200) {
-      if (!dadosPrincipaisConselhoClasse.conselhoClasseId) {
-        dadosPrincipaisConselhoClasse.conselhoClasseId =
-          retorno.data.conselhoClasseId;
-        dadosPrincipaisConselhoClasse.fechamentoTurmaId =
-          retorno.data.fechamentoTurmaId;
-        dispatch(
-          setDadosPrincipaisConselhoClasse(dadosPrincipaisConselhoClasse)
-        );
-      }
+      dadosPrincipaisConselhoClasse.conselhoClasseId =
+        retorno.data.conselhoClasseId;
+      dadosPrincipaisConselhoClasse.fechamentoTurmaId =
+        retorno.data.fechamentoTurmaId;
+      dispatch(setDadosPrincipaisConselhoClasse(dadosPrincipaisConselhoClasse));
 
       const { auditoria } = retorno.data;
 
