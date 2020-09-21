@@ -309,10 +309,17 @@ const AtaFinalResultados = () => {
     setTurmaId(undefined);
   };
 
+  const resetFormato = valor => {
+    if (valor) {
+      setFormato('1');
+    }
+  };
+
   const habilitarSelecaoFormato = valor => {
     const turmaSelecionada = listaTurmas?.find(item => item.valor === valor);
     const ehDesabilitado = turmaSelecionada?.desc === 'Todas';
     setDesabilitarBtnFormato(ehDesabilitado);
+    resetFormato(ehDesabilitado);
   };
 
   const onChangeSemestre = valor => setSemestre(valor);
