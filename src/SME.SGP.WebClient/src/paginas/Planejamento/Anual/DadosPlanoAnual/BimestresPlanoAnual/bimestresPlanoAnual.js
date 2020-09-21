@@ -14,7 +14,7 @@ const BimestresPlanoAnual = () => {
         ? dadosBimestresPlanoAnual.map(item => {
             return (
               <div key={shortid.generate()} className="mb-4">
-                <BimestreCardCollapse dados={item} />
+                <BimestreCardCollapse dadosBimestre={item} />
               </div>
             );
           })

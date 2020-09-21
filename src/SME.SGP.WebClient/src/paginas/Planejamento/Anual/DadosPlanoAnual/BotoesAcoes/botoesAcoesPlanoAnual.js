@@ -1,12 +1,21 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { useSelector } from 'react-redux';
 import Button from '~/componentes/button';
 import { Colors } from '~/componentes/colors';
 import { URL_HOME } from '~/constantes/url';
 import history from '~/servicos/history';
+import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 
 const BotoesAcoesPlanoAnual = props => {
-  const { onClickCancelar, onClickSalvar, ehTurmaInfantil } = props;
+  const { onClickCancelar, onClickSalvar } = props;
+
+  const usuario = useSelector(store => store.usuario);
+  const { turmaSelecionada } = usuario;
+
+  const modalidadesFiltroPrincipal = useSelector(
+    store => store.filtro.modalidades
+  );
 
   const onSalvar = async () => {
     onClickSalvar();
@@ -38,7 +47,7 @@ const BotoesAcoesPlanoAnual = props => {
         border
         className="mr-3"
         onClick={onCancelar}
-        disabled={ehTurmaInfantil}
+        disabled={ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada)}
       />
       <Button
         id="btn-salvar-plano-anual"
@@ -47,7 +56,7 @@ const BotoesAcoesPlanoAnual = props => {
         border
         bold
         onClick={onSalvar}
-        disabled={ehTurmaInfantil}
+        disabled={ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada)}
       />
     </>
   );
@@ -55,14 +64,12 @@ const BotoesAcoesPlanoAnual = props => {
 
 BotoesAcoesPlanoAnual.propTypes = {
   onClickCancelar: PropTypes.func,
-  onClickSalvar: PropTypes.bool,
-  ehTurmaInfantil: PropTypes.func,
+  onClickSalvar: PropTypes.func,
 };
 
 BotoesAcoesPlanoAnual.defaultProps = {
   onClickCancelar: () => {},
   onClickSalvar: () => {},
-  ehTurmaInfantil: false,
 };
 
 export default BotoesAcoesPlanoAnual;

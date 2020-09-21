@@ -2,7 +2,6 @@ import React, { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   setDadosBimestresPlanoAnual,
-  setPlanoAnualEmEdicao,
   setListaComponentesCurricularesPlanejamento,
 } from '~/redux/modulos/anual/actions';
 import { erros } from '~/servicos/alertas';
@@ -24,27 +23,6 @@ const DadosPlanoAnual = () => {
   const componenteCurricular = useSelector(
     store => store.planoAnual.componenteCurricular
   );
-
-  // Carrega a lista de bimestres para montar os card collapse com 2 ou 4 bimestres!
-  const obterBimestresDadosPlanosAnual = useCallback(() => {
-    // TODO Loader!
-    ServicoPlanoAnual.obter(
-      turmaSelecionada.anoLetivo,
-      componenteCurricular.codigoComponenteCurricular,
-      turmaSelecionada.unidadeEscolar,
-      turmaSelecionada.turma
-    )
-      .then(resposta => {
-        dispatch(setDadosBimestresPlanoAnual(resposta.data));
-      })
-      .catch(e => {
-        dispatch(setDadosBimestresPlanoAnual([]));
-        erros(e);
-      })
-      .finally(() => {
-        // TODO Loader!
-      });
-  }, [dispatch, turmaSelecionada, componenteCurricular]);
 
   // Carrega lista de componentes para montar as TABS!
   const obterListaComponentesCurricularesPlanejamento = useCallback(() => {
@@ -74,6 +52,33 @@ const DadosPlanoAnual = () => {
       });
   }, [dispatch, componenteCurricular, turmaSelecionada]);
 
+  // Carrega a lista de bimestres para montar os card collapse com 2 ou 4 bimestres!
+  const obterBimestresDadosPlanosAnual = useCallback(() => {
+    // TODO Loader!
+    ServicoPlanoAnual.obter(
+      turmaSelecionada.anoLetivo,
+      componenteCurricular.codigoComponenteCurricular,
+      turmaSelecionada.unidadeEscolar,
+      turmaSelecionada.turma
+    )
+      .then(resposta => {
+        dispatch(setDadosBimestresPlanoAnual(resposta.data));
+        obterListaComponentesCurricularesPlanejamento();
+      })
+      .catch(e => {
+        dispatch(setDadosBimestresPlanoAnual([]));
+        erros(e);
+      })
+      .finally(() => {
+        // TODO Loader!
+      });
+  }, [
+    dispatch,
+    turmaSelecionada,
+    componenteCurricular,
+    obterListaComponentesCurricularesPlanejamento,
+  ]);
+
   /**
    * carrega a lista de bimestres com os dados dos planos
    */
@@ -86,13 +91,10 @@ const DadosPlanoAnual = () => {
       turmaSelecionada &&
       turmaSelecionada.turma
     ) {
-      // TODO Validar Loader e quando der erros para uma consulta nao atrapalhar a outra!
       obterBimestresDadosPlanosAnual();
-      obterListaComponentesCurricularesPlanejamento();
     }
   }, [
     obterBimestresDadosPlanosAnual,
-    obterListaComponentesCurricularesPlanejamento,
     componenteCurricular,
     dispatch,
     modalidadesFiltroPrincipal,

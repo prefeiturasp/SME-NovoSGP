@@ -1,10 +1,11 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import CardCollapse from '~/componentes/cardCollapse';
+import TabsComponentesCorriculares from '../TabsComponentesCorriculares/tabsComponentesCorriculares';
 
 const BimestreCardCollapse = props => {
-  const { dados } = props;
-  const { bimestre } = dados;
+  const { dadosBimestre } = props;
+  const { bimestre } = dadosBimestre;
 
   return (
     <CardCollapse
@@ -14,17 +15,17 @@ const BimestreCardCollapse = props => {
       alt={`bimestre-${bimestre}-alt`}
       show
     >
-      <>test</>
+      <TabsComponentesCorriculares dadosBimestre={dadosBimestre} />
     </CardCollapse>
   );
 };
 
 BimestreCardCollapse.propTypes = {
-  dados: PropTypes.oneOfType([PropTypes.object]),
+  dadosBimestre: PropTypes.oneOfType([PropTypes.object]),
 };
 
 BimestreCardCollapse.defaultProps = {
-  dados: '',
+  dadosBimestre: '',
 };
 
 export default BimestreCardCollapse;
