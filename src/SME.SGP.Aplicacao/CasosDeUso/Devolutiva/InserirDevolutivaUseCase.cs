@@ -33,9 +33,11 @@ namespace SME.SGP.Aplicacao
 
             IEnumerable<long> idsDiarios = dados.Select(x => x.Item1);
 
-            AuditoriaDto auditoria = await mediator.Send(new InserirDevolutivaCommand(param.CodigoComponenteCurricular, idsDiarios, inicioEfetivo, fimEfetivo, param.Descricao));
+            AuditoriaDto auditoria = await mediator.Send(new InserirDevolutivaCommand(param.CodigoComponenteCurricular, idsDiarios, inicioEfetivo, fimEfetivo, param.Descricao, turma.Id));
 
             bool diariosAtualizados = await mediator.Send(new AtualizarDiarioBordoComDevolutivaCommand(idsDiarios, auditoria.Id));
+
+
 
             return auditoria;
         }
