@@ -29,7 +29,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.TCE_A, Policy = "Bearer")]
-        public async Task<IActionResult> Alterar([FromBody]TipoCalendarioDto dto, long id)
+        public async Task<IActionResult> Alterar([FromBody] TipoCalendarioDto dto, long id)
         {
             await comandos.Alterar(dto, id);
             return Ok();
@@ -73,7 +73,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.TCE_I, Policy = "Bearer")]
-        public async Task<IActionResult> Incluir([FromBody]TipoCalendarioDto dto)
+        public async Task<IActionResult> Incluir([FromBody] TipoCalendarioDto dto)
         {
             await comandos.Incluir(dto);
             return Ok();
@@ -83,10 +83,20 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.TCE_E, Policy = "Bearer")]
-        public IActionResult MarcarExcluidos([FromBody]long[] ids)
+        public IActionResult MarcarExcluidos([FromBody] long[] ids)
         {
             comandos.MarcarExcluidos(ids);
             return Ok();
+        }
+
+        [HttpGet]
+        [Route("anos-letivos")]
+        [ProducesResponseType(typeof(IEnumerable<TipoCalendarioDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.TCE_C, Permissao.PFA_C, Permissao.PFR_C,  Policy = "Bearer")]
+        public async Task<IActionResult> BuscarPorDescricao([FromQuery]string descricao, [FromServices] IBuscarTiposCalendarioPorDescricaoUseCase buscarTiposCalendarioPorDescricaoUseCase)
+        {
+            return Ok(await buscarTiposCalendarioPorDescricaoUseCase.Executar(descricao));
         }
     }
 }

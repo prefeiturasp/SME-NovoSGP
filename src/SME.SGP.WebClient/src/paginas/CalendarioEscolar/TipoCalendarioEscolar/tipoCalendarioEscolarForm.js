@@ -1,25 +1,34 @@
+import React, { useEffect, useState, useCallback } from 'react';
+import PropTypes from 'prop-types';
 import { Form, Formik } from 'formik';
-import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import * as Yup from 'yup';
-import Cabecalho from '~/componentes-sgp/cabecalho';
-import Auditoria from '~/componentes/auditoria';
-import Button from '~/componentes/button';
-import CampoTexto from '~/componentes/campoTexto';
-import Card from '~/componentes/card';
-import { Colors } from '~/componentes/colors';
-import Label from '~/componentes/label';
-import RadioGroupButton from '~/componentes/radioGroupButton';
-import RotasDto from '~/dtos/rotasDto';
-import { confirmar, erros, sucesso } from '~/servicos/alertas';
-import api from '~/servicos/api';
-import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
-import history from '~/servicos/history';
-import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
-import SelectComponent from '~/componentes/select';
 
-import { CaixaAno, CaixaTextoAno } from './tipoCalendarioEscolar.css';
-import modalidadeTipoCalendario from '~/dtos/modalidadeTipoCalendario';
+import {
+  Auditoria,
+  Button,
+  CampoTexto,
+  Card,
+  Colors,
+  Loader,
+  RadioGroupButton,
+  SelectComponent,
+} from '~/componentes';
+
+import { Cabecalho } from '~/componentes-sgp';
+
+import { modalidadeTipoCalendario, RotasDto } from '~/dtos';
+
+import {
+  AbrangenciaServico,
+  api,
+  confirmar,
+  erros,
+  history,
+  setBreadcrumbManual,
+  sucesso,
+  verificaSomenteConsulta,
+} from '~/servicos';
 
 const TipoCalendarioEscolarForm = ({ match }) => {
   const usuario = useSelector(store => store.usuario);
@@ -44,6 +53,8 @@ const TipoCalendarioEscolarForm = ({ match }) => {
     periodo: '',
   };
   const [valoresIniciais, setValoresIniciais] = useState(valoresIniciaisForm);
+  const [listaAnosLetivo, setListaAnosLetivo] = useState([]);
+  const [carregandoAnos, setCarregandoAnos] = useState(false);
 
   const [validacoes] = useState(
     Yup.object({
@@ -62,7 +73,10 @@ const TipoCalendarioEscolarForm = ({ match }) => {
   ];
 
   const opcoesModalidade = [
-    { label: 'Fundamental/Médio', value: modalidadeTipoCalendario.FUNDAMENTAL_MEDIO },
+    {
+      label: 'Fundamental/Médio',
+      value: modalidadeTipoCalendario.FUNDAMENTAL_MEDIO,
+    },
     { label: 'EJA', value: modalidadeTipoCalendario.EJA },
     { label: 'Infantil', value: modalidadeTipoCalendario.Infantil },
   ];
@@ -85,6 +99,7 @@ const TipoCalendarioEscolarForm = ({ match }) => {
       setAnoLetivo(usuario.turmaSelecionada.anoLetivo);
     }
     setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -92,6 +107,7 @@ const TipoCalendarioEscolarForm = ({ match }) => {
       ? somenteConsulta || !permissoesTela.podeIncluir
       : somenteConsulta || !permissoesTela.podeAlterar;
     setDesabilitarCampos(desabilitar);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [somenteConsulta, novoRegistro]);
 
   const [possuiEventos, setPossuiEventos] = useState(false);
@@ -163,14 +179,11 @@ const TipoCalendarioEscolarForm = ({ match }) => {
   const onClickCadastrar = async valoresForm => {
     valoresForm.id = idTipoCalendario || 0;
     valoresForm.anoLetivo = anoLetivo;
-    var metodo = idTipoCalendario ? 'put' : 'post';
-    var url = 'v1/calendarios/tipos';
-    if (idTipoCalendario)
-      url += '/' + idTipoCalendario;
+    const metodo = idTipoCalendario ? 'put' : 'post';
+    let url = 'v1/calendarios/tipos';
+    if (idTipoCalendario) url += `/${idTipoCalendario}`;
 
-    const cadastrado = await api[metodo]
-      (url, valoresForm)
-      .catch(e => erros(e));
+    const cadastrado = await api[metodo](url, valoresForm).catch(e => erros(e));
     if (cadastrado) {
       sucesso('Suas informações foram salvas com sucesso.');
       history.push('/calendario-escolar/tipo-calendario-escolar');
@@ -217,12 +230,38 @@ const TipoCalendarioEscolarForm = ({ match }) => {
     });
   };
 
+  const onChangeAnoLetivo = async valor => {
+    setAnoLetivo(valor);
+  };
+
+  const obterAnosLetivos = useCallback(async () => {
+    setCarregandoAnos(true);
+
+    const anosLetivo = await AbrangenciaServico.buscarTodosAnosLetivos().catch(
+      e => {
+        erros(e);
+        setCarregandoAnos(false);
+      }
+    );
+
+    const valorAnos = anosLetivo?.data.map(ano => ({ desc: ano, valor: ano }));
+    const valor = valorAnos ? valorAnos[0]?.valor : [];
+
+    setAnoLetivo(valor);
+    setListaAnosLetivo(valorAnos);
+    setCarregandoAnos(false);
+  }, []);
+
+  useEffect(() => {
+    obterAnosLetivos();
+  }, [obterAnosLetivos]);
+
   return (
     <>
       <Cabecalho
         pagina={`${
           idTipoCalendario > 0 ? 'Alterar' : 'Cadastro do'
-          } Tipo de Calendário Escolar`}
+        } Tipo de Calendário Escolar`}
       />
       <Card>
         <Formik
@@ -276,14 +315,23 @@ const TipoCalendarioEscolarForm = ({ match }) => {
                 />
               </div>
               <div className="row">
-                <div className="col-sm-4 col-md-2 col-lg-2 col-xl-1 mb-2">
-                  <Label text="Ano" control="ano-letivo" />
-                  <CaixaAno>
-                    <CaixaTextoAno>{anoLetivo}</CaixaTextoAno>
-                  </CaixaAno>
+                <div className="col-sm-4 col-md-2 col-lg-2 col-xl-2 mb-2">
+                  <Loader loading={carregandoAnos} tip="">
+                    <SelectComponent
+                      id="drop-ano-letivo-rel-pendencias"
+                      label="Ano"
+                      lista={listaAnosLetivo}
+                      valueOption="valor"
+                      valueText="desc"
+                      disabled={listaAnosLetivo && listaAnosLetivo.length === 1}
+                      onChange={onChangeAnoLetivo}
+                      valueSelect={anoLetivo}
+                      placeholder="Ano"
+                    />
+                  </Loader>
                 </div>
 
-                <div className="col-sm-12 col-md-10 col-lg-10 col-xl-8 mb-2">
+                <div className="col-sm-12 col-md-10 col-lg-10 col-xl-7 mb-2">
                   <CampoTexto
                     form={form}
                     label="Nome do calendário"
@@ -342,11 +390,19 @@ const TipoCalendarioEscolarForm = ({ match }) => {
             alteradoRf={auditoria.alteradoRf}
           />
         ) : (
-            ''
-          )}
+          ''
+        )}
       </Card>
     </>
   );
+};
+
+TipoCalendarioEscolarForm.defaultProps = {
+  match: {},
+};
+
+TipoCalendarioEscolarForm.propTypes = {
+  match: PropTypes.instanceOf(Object),
 };
 
 export default TipoCalendarioEscolarForm;
