@@ -23,7 +23,14 @@ namespace SME.SGP.Api
                 c.DefaultRequestHeaders.Add("Accept", "application/json");
                 c.DefaultRequestHeaders.Add("x-api-eol-key", configuration.GetSection("ApiKeyEolApi").Value);
             });
+            
             services.AddHttpClient<IServicoAcompanhamentoEscolar, ServicoAcompanhamentoEscolar>(c =>
+            {
+                c.BaseAddress = new Uri(configuration.GetSection("UrlApiAE").Value);
+                c.DefaultRequestHeaders.Add("Accept", "application/json");
+            });
+
+            services.AddHttpClient(name: "servicoAcompanhamentoEscolar", c =>
             {
                 c.BaseAddress = new Uri(configuration.GetSection("UrlApiAE").Value);
                 c.DefaultRequestHeaders.Add("Accept", "application/json");

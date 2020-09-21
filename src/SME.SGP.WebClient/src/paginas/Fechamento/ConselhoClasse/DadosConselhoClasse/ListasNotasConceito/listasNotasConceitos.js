@@ -40,7 +40,9 @@ const ListasNotasConceitos = props => {
     const resultado = await ServicoConselhoClasse.obterNotasConceitosConselhoClasse(
       conselhoClasseId,
       fechamentoTurmaId,
-      alunoCodigo
+      alunoCodigo,
+      turmaCodigo,
+      bimestreSelecionado?.valor
     ).catch(e => erros(e));
 
     if (resultado && resultado.data) {
@@ -51,12 +53,19 @@ const ListasNotasConceitos = props => {
       setExibir(false);
     }
     setCarregando(false);
-  }, [alunoCodigo, conselhoClasseId, dispatch, fechamentoTurmaId]);
+  }, [
+    alunoCodigo,
+    conselhoClasseId,
+    dispatch,
+    fechamentoTurmaId,
+    turmaCodigo,
+    bimestreSelecionado,
+  ]);
 
   useEffect(() => {
     const bimestre = bimestreSelecionado.valor;
 
-    if (bimestre && turmaCodigo && fechamentoTurmaId && alunoCodigo) {
+    if (bimestre && turmaCodigo && alunoCodigo) {
       obterDadosLista();
     }
   }, [

@@ -11,7 +11,7 @@ const ComponenteLoader = () => (
 );
 
 function LazyLoad({ children }) {
-  return <Suspense fallback={ComponenteLoader}>{children}</Suspense>;
+  return <Suspense fallback={<ComponenteLoader />}>{children}</Suspense>;
 }
 
 LazyLoad.propTypes = {

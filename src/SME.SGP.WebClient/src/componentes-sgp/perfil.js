@@ -17,6 +17,7 @@ import { Base } from '../componentes/colors';
 import { store } from '../redux';
 import { perfilSelecionado } from '../redux/modulos/perfil/actions';
 import history from '../servicos/history';
+import ServicoDashboard from '~/servicos/Paginas/Dashboard/ServicoDashboard';
 
 const Perfil = props => {
   const { Botao, Icone, Texto } = props;
@@ -83,8 +84,8 @@ const Perfil = props => {
     justify-content: center !important;
     i {
       background: ${perfilStore.perfis.length > 1
-        ? Base.Roxo
-        : Base.CinzaDesabilitado} !important;
+      ? Base.Roxo
+      : Base.CinzaDesabilitado} !important;
     }
   `;
 
@@ -148,6 +149,8 @@ const Perfil = props => {
                 ehProfessorCjInfantil,
               })
             );
+
+            ServicoDashboard.obterDadosDashboard();
 
             setMenusPermissoes();
             limparFiltro();
@@ -233,7 +236,7 @@ const Perfil = props => {
                     width: '100%',
                     fontWeight:
                       item.codigoPerfil ===
-                      perfilStore.perfilSelecionado.codigoPerfil
+                        perfilStore.perfilSelecionado.codigoPerfil
                         ? 'bold'
                         : 'initial',
                   }}

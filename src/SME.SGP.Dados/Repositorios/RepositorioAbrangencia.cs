@@ -259,7 +259,8 @@ namespace SME.SGP.Dados.Repositorios
             // Foi utilizada função de banco de dados com intuíto de melhorar a performance
             string query = @"select distinct abreviacao, 
                                              codigo, 
-                                             nome 
+                                             nome,
+                                             dre_id as id
                              from f_abrangencia_dres(@login, @perfil, @consideraHistorico, @modalidade, @semestre, @anoLetivo)
                              order by 3";
 
@@ -303,7 +304,8 @@ namespace SME.SGP.Dados.Repositorios
 	                             semestre,
 	                             qtDuracaoAula,
 	                             tipoTurno,
-                                 ensinoEspecial
+                                 ensinoEspecial,
+                                 turma_id as id
                             from f_abrangencia_turmas(@login, @perfil, @consideraHistorico, @modalidade, @semestre, @codigoUe, @anoLetivo)
                           order by 5";
 
@@ -337,7 +339,8 @@ namespace SME.SGP.Dados.Repositorios
             // Foi utilizada função de banco de dados com intuíto de melhorar a performance
             var query = @"select distinct codigo,
 	                                      nome as NomeSimples,
-	                                      tipoescola
+	                                      tipoescola,
+                                          ue_id as id
 	                         from f_abrangencia_ues(@login, @perfil, @consideraHistorico, @modalidade, @semestre, @codigoDre, @anoLetivo)
                           order by 2;";
 

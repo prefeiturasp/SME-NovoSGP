@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
             return MapearParaDto(repositorioObjetivoDesenvolvimento.Listar());
         }
 
-        private IEnumerable<ObjetivoDesenvolvimentoDto> MapearParaDto(IEnumerable<ObjetivoDesenvolvimento> objetivos)
+        private IEnumerable<ObjetivoDesenvolvimentoDto> MapearParaDto(IEnumerable<RecuperacaoParalelaObjetivoDesenvolvimento> objetivos)
         {
             return objetivos?.Select(m => new ObjetivoDesenvolvimentoDto()
             {

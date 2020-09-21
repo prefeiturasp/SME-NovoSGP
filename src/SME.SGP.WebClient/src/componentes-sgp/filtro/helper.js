@@ -97,6 +97,7 @@ class FiltroHelper {
               desc: dre.nome,
               valor: dre.codigo,
               abrev: dre.abreviacao,
+              id: dre.id,
             });
           });
         }
@@ -130,6 +131,7 @@ class FiltroHelper {
             unidadesEscolares.push({
               desc: unidade.nome,
               valor: unidade.codigo,
+              id: unidade.id,
             });
           });
         }
@@ -161,6 +163,7 @@ class FiltroHelper {
         if (resposta.data) {
           resposta.data.forEach(turma => {
             turmas.push({
+              id: turma.id,
               desc: turma.nome,
               valor: turma.codigo,
               ano: turma.ano,
