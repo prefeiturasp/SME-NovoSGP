@@ -6,5 +6,6 @@
         public bool Excluido { get; set; }
         public long TurmaId { get; set; }
         public long TurmaRecuperacaoParalelaId { get; set; }
+        public int AnoLetivo { get; set; }
     }
 }

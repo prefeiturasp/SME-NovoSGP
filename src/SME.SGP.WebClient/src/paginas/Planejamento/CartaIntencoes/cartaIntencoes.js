@@ -11,7 +11,7 @@ import {
   setCarregandoCartaIntencoes,
   setDadosCartaIntencoes,
 } from '~/redux/modulos/cartaIntencoes/actions';
-import { erros } from '~/servicos/alertas';
+import { erros, sucesso, confirmar } from '~/servicos/alertas';
 import ServicoCartaIntencoes from '~/servicos/Paginas/CartaIntencoes/ServicoCartaIntencoes';
 import servicoDisciplinas from '~/servicos/Paginas/ServicoDisciplina';
 import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
@@ -23,6 +23,12 @@ import LoaderCartaIntencoes from './LoaderCartaIntencoes/laderCartaIntencoes';
 import servicoSalvarCartaIntencoes from './servicoSalvarCartaIntencoes';
 import RotasDto from '~/dtos/rotasDto';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
+import ObservacoesUsuario from '~/componentes-sgp/ObservacoesUsuario/observacoesUsuario';
+import ServicoObservacoesUsuario from '~/componentes-sgp/ObservacoesUsuario/ServicoObservacoesUsuario';
+import {
+  limparDadosObservacoesUsuario,
+  setDadosObservacoesUsuario,
+} from '~/redux/modulos/observacoesUsuario/actions';
 
 const CartaIntencoes = () => {
   const dispatch = useDispatch();
@@ -42,6 +48,7 @@ const CartaIntencoes = () => {
   );
   const [componenteCurricular, setComponenteCurricular] = useState(undefined);
   const [somenteConsulta, setSomenteConsulta] = useState(false);
+  const [exibirObservacoes, setExibirObservacoes] = useState(false);
 
   useEffect(() => {
     const naoSetarSomenteConsultaNoStore = !ehTurmaInfantil(
@@ -67,6 +74,29 @@ const CartaIntencoes = () => {
     [dispatch]
   );
 
+  const obterDadosObservacoes = useCallback(
+    async (turmaCodigo, componenteCurricularId) => {
+      dispatch(limparDadosObservacoesUsuario());
+      mostrarLoader(true);
+      const retorno = await ServicoCartaIntencoes.obterDadosObservacoes(
+        turmaCodigo,
+        componenteCurricularId
+      ).catch(e => {
+        erros(e);
+        mostrarLoader(false);
+      });
+
+      if (retorno && retorno.data) {
+        dispatch(setDadosObservacoesUsuario([...retorno.data]));
+      } else {
+        dispatch(setDadosObservacoesUsuario([]));
+      }
+
+      mostrarLoader(false);
+    },
+    [dispatch]
+  );
+
   const obterListaBimestres = useCallback(async () => {
     if (turma) {
       mostrarLoader(true);
@@ -75,14 +105,29 @@ const CartaIntencoes = () => {
         componenteCurricular
       ).catch(e => erros(e));
 
-      if (retorno && retorno.data) {
+      if (retorno && retorno.data && retorno.data.length) {
+        const exibir = retorno.data.find(
+          item => item.auditoria && item.auditoria.id
+        );
+        if (exibir) {
+          setExibirObservacoes(true);
+          obterDadosObservacoes(turma, componenteCurricular);
+        }
         dispatch(setDadosCartaIntencoes(retorno.data));
       } else {
         resetarInfomacoes();
+        setExibirObservacoes(false);
       }
       mostrarLoader(false);
     }
-  }, [dispatch, turma, resetarInfomacoes, componenteCurricular, mostrarLoader]);
+  }, [
+    dispatch,
+    turma,
+    resetarInfomacoes,
+    componenteCurricular,
+    mostrarLoader,
+    obterDadosObservacoes,
+  ]);
 
   const obterListaComponenteCurricular = useCallback(async () => {
     setCarregandoComponentes(true);
@@ -102,6 +147,11 @@ const CartaIntencoes = () => {
       setComponenteCurricular(undefined);
     }
   }, [turma]);
+
+  useEffect(() => {
+    dispatch(setDadosObservacoesUsuario([]));
+    setExibirObservacoes(false);
+  }, [turma, dispatch]);
 
   useEffect(() => {
     resetarInfomacoes();
@@ -151,6 +201,61 @@ const CartaIntencoes = () => {
     obterListaBimestres(componenteCurricular);
   };
 
+  const salvarEditarObservacao = async obs => {
+    mostrarLoader(true);
+    return ServicoCartaIntencoes.salvarEditarObservacao(
+      obs,
+      turma,
+      componenteCurricular
+    )
+      .then(resultado => {
+        if (resultado && resultado.status === 200) {
+          const msg = `Observação ${
+            obs.id ? 'alterada' : 'inserida'
+          } com sucesso.`;
+          sucesso(msg);
+        }
+        mostrarLoader(false);
+
+        ServicoObservacoesUsuario.atualizarSalvarEditarDadosObservacao(
+          obs,
+          resultado.data
+        );
+        return resultado;
+      })
+      .catch(e => {
+        erros(e);
+        mostrarLoader(false);
+        return e;
+      });
+  };
+
+  const excluirObservacao = async obs => {
+    const confirmado = await confirmar(
+      'Excluir',
+      '',
+      'Você tem certeza que deseja excluir este registro?'
+    );
+
+    if (confirmado) {
+      mostrarLoader(true);
+      const resultado = await ServicoCartaIntencoes.excluirObservacao(
+        obs
+      ).catch(e => {
+        erros(e);
+        mostrarLoader(false);
+      });
+      if (resultado && resultado.status === 200) {
+        sucesso('Registro excluído com sucesso');
+        ServicoObservacoesUsuario.atualizarExcluirDadosObservacao(
+          obs,
+          resultado.data
+        );
+      }
+      mostrarLoader(false);
+    }
+  };
+
   return (
     <Container>
       {!turmaSelecionada.turma ? (
@@ -187,6 +292,7 @@ const CartaIntencoes = () => {
                       turmaSelecionada
                     )}
                     somenteConsulta={somenteConsulta}
+                    salvarEditarObservacao={salvarEditarObservacao}
                   />
                 </div>
               </div>
@@ -229,6 +335,17 @@ const CartaIntencoes = () => {
               )}
             </div>
           </div>
+          {turmaSelecionada.turma &&
+          componenteCurricular &&
+          exibirObservacoes ? (
+            <ObservacoesUsuario
+              salvarObservacao={obs => salvarEditarObservacao(obs)}
+              editarObservacao={obs => salvarEditarObservacao(obs)}
+              excluirObservacao={obs => excluirObservacao(obs)}
+            />
+          ) : (
+            ''
+          )}
         </Card>
       </LoaderCartaIntencoes>
     </Container>

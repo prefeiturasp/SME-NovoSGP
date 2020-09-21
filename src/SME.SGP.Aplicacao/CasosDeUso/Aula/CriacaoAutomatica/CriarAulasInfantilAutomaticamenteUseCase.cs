@@ -22,6 +22,15 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
+            var executarManutencao = await mediator.Send(new ObterExecutarManutencaoAulasInfantilQuery());
+
+            if(!executarManutencao)
+            {
+                SentrySdk.CaptureMessage($"{DateTime.Now:dd/MM/yyyy HH:mm:ss} - Rotina de manutenção de aulas do Infantil não iniciada pois seu parâmetro está marcado como não executar", SentryLevel.Warning);
+                return false;
+            }
+                
+
             var anoAtual = DateTime.Now.Year;
             var tipoCalendarioId = await mediator.Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(Modalidade.Infantil, anoAtual, null));
             if (tipoCalendarioId > 0)
@@ -29,7 +38,9 @@ namespace SME.SGP.Aplicacao
                 var periodosEscolares = await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioIdQuery(tipoCalendarioId));
                 if (periodosEscolares != null && periodosEscolares.Any())
                 {
-                    var diasLetivos = await mediator.Send(new ObterDiasPorPeriodosEscolaresComEventosLetivosENaoLetivosQuery(periodosEscolares, tipoCalendarioId));
+                    var diasLetivosENaoLetivos = await mediator.Send(new ObterDiasPorPeriodosEscolaresComEventosLetivosENaoLetivosQuery(periodosEscolares, tipoCalendarioId));
+
+                    var diasForaDoPeriodoEscolar = await mediator.Send(new ObterDiasForaDoPeriodoEscolarQuery(periodosEscolares));
 
                     var turmas = await mediator.Send(new ObterTurmasInfantilNaoDeProgramaQuery(anoAtual));
                     if (turmas != null && turmas.Any())
@@ -40,7 +51,7 @@ namespace SME.SGP.Aplicacao
                             var lista = turmas.Skip(pagina).Take(paginador);
                             if (lista.Any())
                             {
-                                var comando = new CriarAulasInfantilAutomaticamenteCommand(diasLetivos.ToList(), lista, tipoCalendarioId);
+                                var comando = new CriarAulasInfantilAutomaticamenteCommand(diasLetivosENaoLetivos.ToList(), lista, tipoCalendarioId, diasForaDoPeriodoEscolar);
 
                                 SentrySdk.CaptureMessage($"{DateTime.Now:dd/MM/yyyy HH:mm:ss} - Iniciando Rotina de manutenção de aulas do Infantil");
                                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaCriarAulasInfatilAutomaticamente, comando, Guid.NewGuid(), null));

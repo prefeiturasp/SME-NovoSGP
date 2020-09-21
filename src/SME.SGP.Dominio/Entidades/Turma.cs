@@ -22,6 +22,7 @@ namespace SME.SGP.Dominio
         public int QuantidadeDuracaoAula { get; set; }
         public int Semestre { get; set; }
         public int TipoTurno { get; set; }
+        public string SerieEnsino { get; set; }
 
         public Ue Ue { get; set; }
         public long UeId { get; set; }
