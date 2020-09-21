@@ -31,5 +31,6 @@ namespace SME.SGP.Infra
         public string TipoEvento { get; set; }
         public bool EhReposicao { get; set; }
         public bool EstaAguardandoAprovacao { get; set; }
+        public long[] Pendencias { get; set; }
     }
 }
