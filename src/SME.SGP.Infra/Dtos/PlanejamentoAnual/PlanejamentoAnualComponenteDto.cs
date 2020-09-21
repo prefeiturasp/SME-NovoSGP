@@ -7,6 +7,7 @@ namespace SME.SGP.Infra
         public long ComponenteCurricularId { get; set; }
         public string Descricao { get; set; }
         public long PlanejamentoAnualPeriodoEscolarId { get; set; }
+        public long PlanejamentoAnualComponenteCurricularId { get; set; }
         public IEnumerable<long> ObjetivosAprendizagemId { get; set; }
     }
 }

@@ -14,21 +14,20 @@ namespace SME.SGP.Api.Controllers
     public class PlanejamentoAnualController : ControllerBase
     {
         [HttpPost("turmas/{turmaId}/componentes-curriculares/{componenteCurricularId}")]
-        [ProducesResponseType(204)]
-        [ProducesResponseType(typeof(GradeComponenteTurmaAulasDto), 200)]
+        [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> Salvar(long turmaId, long componenteCurricularId, [FromBody] SalvarPlanejamentoAnualDto dto, [FromServices] ISalvarPlanejamentoAnualUseCase useCase)
         {
             return Ok(await useCase.Executar(turmaId, componenteCurricularId, dto));
         }
 
-        [HttpPost("turmas/{turmaId}/componentes-curriculares/{componenteCurricularId}")]
+        [HttpGet("turmas/{turmaId}/componentes-curriculares/{componenteCurricularId}")]
         [ProducesResponseType(204)]
-        [ProducesResponseType(typeof(GradeComponenteTurmaAulasDto), 200)]
+        [ProducesResponseType(typeof(PlanejamentoAnualDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> Obter(long turmaId, long componenteCurricularId, [FromServices] ISalvarPlanejamentoAnualUseCase useCase)
+        public async Task<IActionResult> Obter(long turmaId, long componenteCurricularId, [FromServices] IObterPlanejamentoAnualPorTurmaComponenteUseCase useCase)
         {
-            return Ok(await useCase.Executar(turmaId, componenteCurricularId, dto));
+            return Ok(await useCase.Executar(turmaId, componenteCurricularId));
         }
     }
 }

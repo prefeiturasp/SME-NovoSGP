@@ -1,12 +1,11 @@
 ﻿using MediatR;
+using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.CasosDeUso.PlanejamentoAnual
+namespace SME.SGP.Aplicacao
 {
-    public class ObterPlanejamentoAnualPorTurmaComponenteUseCase
+    public class ObterPlanejamentoAnualPorTurmaComponenteUseCase : IObterPlanejamentoAnualPorTurmaComponenteUseCase
     {
         private readonly IMediator mediator;
 
@@ -14,8 +13,8 @@ namespace SME.SGP.Aplicacao.CasosDeUso.PlanejamentoAnual
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
-        
-        public async Task Executar(long turmaId, long componenteCurricularId)
+
+        public async Task<PlanejamentoAnualDto> Executar(long turmaId, long componenteCurricularId)
         {
             return await mediator.Send(new ObterPlanejamentoAnualPorTurmaComponenteQuery(turmaId, componenteCurricularId));
         }
