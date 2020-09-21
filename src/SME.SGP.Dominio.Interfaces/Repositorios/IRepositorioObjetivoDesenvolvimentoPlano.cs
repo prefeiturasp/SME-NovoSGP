@@ -2,8 +2,8 @@
 
 namespace SME.SGP.Dominio.Interfaces
 {
-    public interface IRepositorioObjetivoDesenvolvimentoPlano : IRepositorioBase<ObjetivoDesenvolvimentoPlano>
+    public interface IRepositorioObjetivoDesenvolvimentoPlano : IRepositorioBase<RecuperacaoParalelaObjetivoDesenvolvimentoPlano>
     {
-        IEnumerable<ObjetivoDesenvolvimentoPlano> ObterObjetivosDesenvolvimentoPorIdPlano(long idPlano);
+        IEnumerable<RecuperacaoParalelaObjetivoDesenvolvimentoPlano> ObterObjetivosDesenvolvimentoPorIdPlano(long idPlano);
     }
 }

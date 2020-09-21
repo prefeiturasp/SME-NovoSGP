@@ -38,7 +38,7 @@ function CadastroDeAula({ match, location }) {
   const { id, tipoCalendarioId } = match.params;
   const permissoesTela = useSelector(state => state.usuario.permissoes);
   const somenteConsulta = verificaSomenteConsulta(
-    permissoesTela[RotasDto.CADASTRO_DE_AULA]
+    permissoesTela[RotasDto.CALENDARIO_PROFESSOR]
   );
   const refForm = useRef();
   const modalidadesFiltroPrincipal = useSelector(
@@ -111,12 +111,14 @@ function CadastroDeAula({ match, location }) {
     {
       label: 'Repetir no Bimestre atual',
       value: recorrencia.REPETIR_BIMESTRE_ATUAL,
-      disabled: id && (recorrenciaAulaOriginal === 3 || recorrenciaAulaOriginal === 1),
+      disabled:
+        id && (recorrenciaAulaOriginal === 3 || recorrenciaAulaOriginal === 1),
     },
     {
       label: 'Repetir em todos os Bimestres',
       value: recorrencia.REPETIR_TODOS_BIMESTRES,
-      disabled: id && (recorrenciaAulaOriginal === 2 || recorrenciaAulaOriginal === 1),
+      disabled:
+        id && (recorrenciaAulaOriginal === 2 || recorrenciaAulaOriginal === 1),
     },
   ];
 
@@ -487,9 +489,13 @@ function CadastroDeAula({ match, location }) {
     if (recorrenciaAulaEmEdicao.recorrenciaAula == 1) {
       let mensagem = 'Você tem certeza que deseja excluir esta aula?';
       if (recorrenciaAulaEmEdicao.existeFrequenciaOuPlanoAula) {
-        const infantil = ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada);
-        mensagem +=
-          ` Obs: Esta aula ou sua recorrência possui frequência ou ${infantil ? 'diário de bordo' : 'plano de aula'} registrado, ao excluí - la estará excluindo esse registro também`;
+        const infantil = ehTurmaInfantil(
+          modalidadesFiltroPrincipal,
+          turmaSelecionada
+        );
+        mensagem += ` Obs: Esta aula ou sua recorrência possui frequência ou ${
+          infantil ? 'diário de bordo' : 'plano de aula'
+        } registrado, ao excluí - la estará excluindo esse registro também`;
       }
       const confirmado = await confirmar(
         `Excluir aula - ${obterDataFormatada()} `,
@@ -567,7 +573,7 @@ function CadastroDeAula({ match, location }) {
           }}
           recorrencia={recorrenciaAulaEmEdicao}
           recorrenciaSelecionada={aula.recorrenciaAula}
-          onFecharModal={(salvar) => {
+          onFecharModal={salvar => {
             setExibirModalAlteracao(false);
             if (salvar) {
               refForm.current.handleSubmit();
@@ -685,10 +691,13 @@ function CadastroDeAula({ match, location }) {
                         bold
                         className="mr-2"
                         onClick={() => {
-                          if (!id || (aula.recorrenciaAula == recorrencia.AULA_UNICA && !recorrenciaAulaEmEdicao.existeFrequenciaOuPlanoAula)) {
+                          if (
+                            !id ||
+                            (aula.recorrenciaAula == recorrencia.AULA_UNICA &&
+                              !recorrenciaAulaEmEdicao.existeFrequenciaOuPlanoAula)
+                          ) {
                             form.handleSubmit();
-                          }
-                          else {
+                          } else {
                             setExibirModalAlteracao(true);
                           }
                         }}
@@ -740,7 +749,7 @@ function CadastroDeAula({ match, location }) {
                         min={1}
                         onChange={onChangeQuantidadeAula}
                         disabled={quantidadeBloqueada}
-                      // ehDecimal={false}
+                        // ehDecimal={false}
                       />
                     </div>
                     <div className="col-xs-12 col-md-6 col-lg-6">

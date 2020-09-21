@@ -4,14 +4,10 @@ import { useSelector } from 'react-redux';
 import shortid from 'shortid';
 import Auditoria from '~/componentes/auditoria';
 import LinhaObservacaoProprietario from './linhaObservacaoProprietario';
-import { LinhaObservacao } from './observacoesUsuario.css';
+import { ContainerCampoObservacao } from './observacoesUsuario.css';
 
 const ObservacoesUsuarioMontarDados = props => {
-  const {
-    onClickSalvarEdicao,
-    onClickExcluir,
-    inserindoNovaObservacao,
-  } = props;
+  const { onClickSalvarEdicao, onClickExcluir } = props;
 
   const dadosObservacoes = useSelector(
     store => store.observacoesUsuario.dadosObservacoes
@@ -36,9 +32,13 @@ const ObservacoesUsuarioMontarDados = props => {
   const montaLinhaObservacao = obs => {
     return (
       <div className="mb-5" key={shortid.generate()}>
-        <LinhaObservacao className="col-md-12">
-          <div>{obs.observacao}</div>
-        </LinhaObservacao>
+        <ContainerCampoObservacao
+          style={{ cursor: 'not-allowed' }}
+          className="col-md-12"
+          readOnly
+          autoSize={{ minRows: 3 }}
+          value={obs.observacao}
+        />
         {obs.auditoria ? <>{auditoria(obs)}</> : ''}
       </div>
     );
@@ -53,7 +53,6 @@ const ObservacoesUsuarioMontarDados = props => {
             onClickSalvarEdicao={onClickSalvarEdicao}
             onClickExcluir={onClickExcluir}
             index={index}
-            inserindoNovaObservacao={inserindoNovaObservacao}
           >
             {obs.auditoria ? auditoria(obs) : ''}
           </LinhaObservacaoProprietario>
@@ -77,13 +76,11 @@ const ObservacoesUsuarioMontarDados = props => {
 ObservacoesUsuarioMontarDados.propTypes = {
   onClickSalvarEdicao: PropTypes.func,
   onClickExcluir: PropTypes.func,
-  inserindoNovaObservacao: PropTypes.bool,
 };
 
 ObservacoesUsuarioMontarDados.defaultProps = {
   onClickSalvarEdicao: () => {},
   onClickExcluir: () => {},
-  inserindoNovaObservacao: false,
 };
 
 export default ObservacoesUsuarioMontarDados;

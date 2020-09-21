@@ -9,5 +9,6 @@
         public string Nome { get; set; }
         public int Semestre { get; set; }
         public bool EnsinoEspecial { get; set; }
+        public long Id { get; set; }
     }
 }
