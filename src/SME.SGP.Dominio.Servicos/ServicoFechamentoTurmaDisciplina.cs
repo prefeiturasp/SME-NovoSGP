@@ -150,7 +150,7 @@ namespace SME.SGP.Dominio.Servicos
             if (!componenteSemNota)
             {
                 servicoPendenciaFechamento.ValidarAvaliacoesSemNotasParaNenhumAluno(fechamento.Id, turma.CodigoTurma, disciplinaId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim);
-                servicoPendenciaFechamento.ValidarPercentualAlunosAbaixoDaMedia(fechamento);
+                await servicoPendenciaFechamento.ValidarPercentualAlunosAbaixoDaMedia(fechamento);
                 servicoPendenciaFechamento.ValidarAlteracaoExtemporanea(fechamento.Id, turma.CodigoTurma, disciplinaId);
             }
             servicoPendenciaFechamento.ValidarAulasReposicaoPendente(fechamento.Id, turma, disciplinaId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim);
