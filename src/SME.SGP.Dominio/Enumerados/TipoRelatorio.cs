@@ -40,6 +40,9 @@ namespace SME.SGP.Dominio
         CompensacaoAusencia = 12,
 
         [Display(Name = "relatorios/impressaocalendario", ShortName = "Calendario", Description = "Relatório Impressão do Calendário")]
-        Calendario = 13
+        Calendario = 13,
+
+        [Display(Name = "relatorios/resumopap", ShortName = "ResumoPAP", Description = "Relatório de Resumos PAP")]
+        ResumoPAP = 14
     }
 }
