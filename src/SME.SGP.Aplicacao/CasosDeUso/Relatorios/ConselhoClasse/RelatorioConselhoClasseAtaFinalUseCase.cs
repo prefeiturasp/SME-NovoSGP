@@ -25,6 +25,10 @@ namespace SME.SGP.Aplicacao
             if (usuarioLogado == null)
                 throw new NegocioException("Não foi possível localizar o usuário.");
 
+            if (filtroRelatorioConselhoClasseAtaFinalDto.TipoFormatoRelatorio == TipoFormatoRelatorio.Xlsx &&
+                filtroRelatorioConselhoClasseAtaFinalDto.TurmasCodigos.Count > 1)
+                throw new NegocioException("Não é possível emitir este relatório para este formato para mais de uma turma.");
+
             filtroRelatorioConselhoClasseAtaFinalDto.TurmasCodigos.RemoveAll(c => c == "-99");
 
             return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.ConselhoClasseAtaFinal, filtroRelatorioConselhoClasseAtaFinalDto, usuarioLogado, filtroRelatorioConselhoClasseAtaFinalDto.TipoFormatoRelatorio));
