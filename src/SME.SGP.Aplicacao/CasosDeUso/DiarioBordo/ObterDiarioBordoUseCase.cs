@@ -33,6 +33,9 @@ namespace SME.SGP.Aplicacao
                 return MapearParaDto(diarioBordo, aberto);
             }
 
+            if (diarioBordo.DevolutivaId != null)
+                diarioBordo.Devolutiva = await mediator.Send(new ObterDevolutivaPorIdQuery(diarioBordo.DevolutivaId.GetValueOrDefault()));
+
             var dto = MapearParaDto(diarioBordo, aberto);
 
             return dto;
@@ -60,6 +63,7 @@ namespace SME.SGP.Aplicacao
             {
                 AulaId = diarioBordo.AulaId,
                 DevolutivaId = diarioBordo.DevolutivaId,
+                Devolutivas = diarioBordo.Devolutiva?.Descricao,
                 Excluido = diarioBordo.Excluido,
                 Migrado = diarioBordo.Migrado,
                 Planejamento = diarioBordo.Planejamento,

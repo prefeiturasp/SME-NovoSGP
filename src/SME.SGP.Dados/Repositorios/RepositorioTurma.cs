@@ -6,9 +6,8 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -202,6 +201,7 @@ namespace SME.SGP.Dados.Repositorios
 	                        d.dre_id,
 	                        d.abreviacao,
 	                        d.data_atualizacao
+
                         from
 	                        turma t
                         inner join ue u on
@@ -424,6 +424,19 @@ namespace SME.SGP.Dados.Repositorios
                                 .Replace("#ids", listaTurmas);
             await contexto.Conexao
                 .ExecuteAsync(sql);
+        }
+
+        public async Task<IEnumerable<Turma>> ObterPorCodigosAsync(string[] codigos)
+        {
+            var query = "select * from turma t where t.turma_id = ANY(@codigos)";
+
+            return await contexto.Conexao.QueryAsync<Turma>(query, new { codigos });
+        }
+
+        public async Task<ObterTurmaSimplesPorIdRetornoDto> ObterTurmaSimplesPorId(long id)
+        {
+            var query = "select t.id, t.turma_id as codigo, t.nome from turma t where t.id = @id";
+            return await contexto.Conexao.QueryFirstOrDefaultAsync<ObterTurmaSimplesPorIdRetornoDto>(query, new { id });
         }
     }
 }

@@ -8,7 +8,7 @@ namespace SME.SGP.Infra
     public class ConselhoClasseAlunoResumoDto
     {
         public long? ConselhoClasseId { get; set; }
-        public long FechamentoTurmaId { get; set; }
+        public long? FechamentoTurmaId { get; set; }
         public long? ConselhoClasseAlunoId { get; set; }
         public int Bimestre { get; set; }
         public DateTime? PeriodoFechamentoInicio { get; set; }
