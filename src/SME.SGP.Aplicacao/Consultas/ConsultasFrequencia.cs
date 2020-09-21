@@ -145,13 +145,13 @@ namespace SME.SGP.Aplicacao
 
             registroFrequenciaDto.TemPeriodoAberto = await consultasTurma.TurmaEmPeriodoAberto(turma, DateTime.Today, bimestre.Bimestre);
 
-            var parametroPercentualCritico = repositorioParametrosSistema.ObterValorPorTipoEAno(
+            var parametroPercentualCritico = await repositorioParametrosSistema.ObterValorPorTipoEAno(
                                                     TipoParametroSistema.PercentualFrequenciaCritico,
                                                     bimestre.PeriodoInicio.Year);
             if (parametroPercentualCritico == null)
                 throw new NegocioException("Parâmetro de percentual de frequência em nível crítico não encontrado contate a SME.");
 
-            var percentualCritico = int.Parse(await parametroPercentualCritico);
+            var percentualCritico = int.Parse(parametroPercentualCritico);
             var percentualAlerta = int.Parse(await repositorioParametrosSistema.ObterValorPorTipoEAno(
                                                     TipoParametroSistema.PercentualFrequenciaAlerta,
                                                     bimestre.PeriodoInicio.Year));
