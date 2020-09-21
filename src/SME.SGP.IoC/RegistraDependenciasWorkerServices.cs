@@ -195,7 +195,7 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IRepositorioAulaPrevistaBimestre, RepositorioAulaPrevistaBimestre>();
             services.TryAddScopedWorkerService<IRepositorioCache, RepositorioCache>();
             services.TryAddScopedWorkerService<IRepositorioCiclo, RepositorioCiclo>();
-            services.TryAddScopedWorkerService<IRepositorioComponenteCurricular, RepositorioComponenteCurricular>();
+            services.TryAddScopedWorkerService<IRepositorioComponenteCurricularJurema, RepositorioComponenteCurricularJurema>();
             services.TryAddScopedWorkerService<IRepositorioConceito, RepositorioConceito>();
             services.TryAddScopedWorkerService<IRepositorioConfiguracaoEmail, RepositorioConfiguracaoEmail>();
             services.TryAddScopedWorkerService<IRepositorioDre, RepositorioDre>();
@@ -281,6 +281,7 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IRepositorioAnoEscolar, RepositorioAnoEscolar>();
             services.TryAddScopedWorkerService<IRepositorioCartaIntencoes, RepositorioCartaIntencoes>();
             services.TryAddScopedWorkerService<IRepositorioCartaIntencoesObservacao, RepositorioCartaIntencoesObservacao>();
+            services.TryAddScopedWorkerService<IRepositorioPlanejamentoAnual, RepositorioPlanejamentoAnual>();
 
         }
 

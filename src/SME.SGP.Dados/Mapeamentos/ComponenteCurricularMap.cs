@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class ComponenteCurricularMap : BaseMap<ComponenteCurricular>
+    public class ComponenteCurricularMap : BaseMap<ComponenteCurricularJurema>
     {
         public ComponenteCurricularMap()
         {
