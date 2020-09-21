@@ -466,8 +466,8 @@ const EventosLista = ({ match }) => {
     const tipo = listaCalendario?.find(t => t.descricao === descricao);
     if (tipo?.id) {
       setSelecionouCalendario(true);
-      filtrar('tipoCalendarioId', tipo.id);
       const filtroAtual = filtro;
+      filtroAtual.tipoCalendarioId = tipo.id;
       if (listaDre && listaDre.length > 1) {
         form.setFieldValue('dreId', undefined);
         form.setFieldValue('ueId', undefined);
