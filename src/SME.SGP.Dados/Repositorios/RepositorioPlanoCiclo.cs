@@ -1,6 +1,4 @@
-﻿using Dapper;
-using SME.SGP.Dados.Contexto;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Linq;
@@ -33,7 +31,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("	plano_ciclo pc");
             query.AppendLine("left join matriz_saber_plano msp on");
             query.AppendLine("  pc.id = msp.plano_id");
-            query.AppendLine("left join objetivo_desenvolvimento_plano odp on");
+            query.AppendLine("left join recuperacao_paralela_objetivo_desenvolvimento_plano odp on");
             query.AppendLine("  odp.plano_id = pc.id");
             query.AppendLine("where");
             query.AppendLine("  pc.ciclo_id = @cicloId and pc.ano = @ano and pc.escola_id = @escolaId");

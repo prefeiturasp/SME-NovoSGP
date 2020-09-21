@@ -54,6 +54,9 @@
         //Frequencia Infantil
         PercentualFrequenciaMinimaInfantil = 27,
 
+        //PAP        
+        PAPInicioAnoLetivo = 28,
+
         //Sistema
         HabilitarServicosEmBackground = 100
     }

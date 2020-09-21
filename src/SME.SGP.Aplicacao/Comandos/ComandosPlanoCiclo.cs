@@ -75,7 +75,7 @@ namespace SME.SGP.Aplicacao
 
             foreach (var idObjetivo in objetivosIncluir)
             {
-                repositorioObjetivoDesenvolvimentoPlano.Salvar(new ObjetivoDesenvolvimentoPlano()
+                repositorioObjetivoDesenvolvimentoPlano.Salvar(new RecuperacaoParalelaObjetivoDesenvolvimentoPlano()
                 {
                     ObjetivoDesenvolvimentoId = idObjetivo,
                     PlanoId = planoCicloDto.Id
@@ -129,7 +129,7 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private void RemoverObjetivos(PlanoCicloDto planoCicloDto, IEnumerable<ObjetivoDesenvolvimentoPlano> objetivosPlanoCiclo)
+        private void RemoverObjetivos(PlanoCicloDto planoCicloDto, IEnumerable<RecuperacaoParalelaObjetivoDesenvolvimentoPlano> objetivosPlanoCiclo)
         {
             if (objetivosPlanoCiclo != null)
             {
