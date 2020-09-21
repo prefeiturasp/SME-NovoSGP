@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 
-namespace SME.SGP.Infra.Dtos.PlanejamentoAnual
+namespace SME.SGP.Infra
 {
     public class PlanejamentoAnualPeriodoEscolarDto
     {

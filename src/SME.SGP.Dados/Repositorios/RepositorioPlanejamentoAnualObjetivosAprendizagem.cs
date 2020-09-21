@@ -1,4 +1,5 @@
-﻿using Npgsql;
+﻿using Dapper;
+using Npgsql;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -13,7 +14,27 @@ namespace SME.SGP.Dados.Repositorios
         public RepositorioPlanejamentoAnualObjetivosAprendizagem(ISgpContext database) : base(database)
         {
         }
-        public void SalvarVarios(IEnumerable<PlanejamentoAnualObjetivoAprendizagem> objetivos)
+
+        public async Task RemoverTodosPorPlanejamentoAnualPeriodoEscolarId(long id)
+        {
+            var sql = @"delete
+                            from
+                                planejamento_anual_objetivos_aprendizagem
+                            where
+                                planejamento_anual_componente_id in (
+                                select
+
+                                    id
+                                from
+
+                                    planejamento_anual_componente
+                                where
+
+                                    planejamento_anual_periodo_escolar_id = @id)";
+            await database.Conexao.ExecuteAsync(sql, new { id });
+        }
+
+        public void SalvarVarios(IEnumerable<PlanejamentoAnualObjetivoAprendizagem> objetivos, long planejamentoAnualComponenteId)
         {
             var sql = @"copy planejamento_anual_objetivos_aprendizagem ( 
                                         planejamento_anual_componente_id,
@@ -29,7 +50,7 @@ namespace SME.SGP.Dados.Repositorios
                 foreach (var objetivo in objetivos)
                 {
                     writer.StartRow();
-                    writer.Write(objetivo.PlanejamentoAnualComponenteId);
+                    writer.Write(planejamentoAnualComponenteId);
                     writer.Write(objetivo.ObjetivoAprendizagemId);
                     writer.Write(DateTime.Now);
                     writer.Write(database.UsuarioLogadoNomeCompleto);

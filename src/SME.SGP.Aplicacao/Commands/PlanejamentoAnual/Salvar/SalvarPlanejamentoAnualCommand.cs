@@ -10,7 +10,8 @@ namespace SME.SGP.Aplicacao
         public long PeriodoEscolarId { get; set; }
         public long TurmaId { get; set; }
         public long ComponenteCurricularId { get; set; }
-        public IEnumerable<PlanejamentoAnualComponenteDto> Componentes { get; set; }
+        public long Id { get; set; }
+        public List<PlanejamentoAnualComponenteDto> Componentes { get; set; }
     }
 
 
