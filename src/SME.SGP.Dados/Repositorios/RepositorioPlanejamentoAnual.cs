@@ -25,7 +25,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<PlanejamentoAnualPeriodoEscolar>(sql, new { id });
         }
 
-        public async Task<PlanejamentoAnual> ObterPorTurmaEComponenteCurricular(long turmaId, long componenteCurricularId)
+        public async Task<PlanejamentoAnual> ObterPorTurmaEComponenteCurricular(long turmaId, long componenteCurricularId, long periodoEscolarId)
         {
             var sql = @"select
 	                        pa.*,
@@ -44,7 +44,8 @@ namespace SME.SGP.Dados.Repositorios
                         inner join periodo_escolar pe on pape.periodo_escolar_id = pe.id
                         where
 	                        turma_id = @turmaId
-	                        and pa.componente_curricular_id = @componenteCurricularId";
+	                        and pa.componente_curricular_id = @componenteCurricularId
+	                        and pape.periodo_escolar_id = @periodoEscolarId";
 
             var planejamentos = new List<PlanejamentoAnual>();
             await database.Conexao.QueryAsync<PlanejamentoAnual, PlanejamentoAnualPeriodoEscolar, PeriodoEscolar, PlanejamentoAnualComponente, PlanejamentoAnualObjetivoAprendizagem, PlanejamentoAnual>(sql,
@@ -89,7 +90,7 @@ namespace SME.SGP.Dados.Repositorios
                     }
                     return planejamento;
                 },
-                new { turmaId, componenteCurricularId });
+                new { turmaId, componenteCurricularId, periodoEscolarId });
 
             return planejamentos.FirstOrDefault();
         }
