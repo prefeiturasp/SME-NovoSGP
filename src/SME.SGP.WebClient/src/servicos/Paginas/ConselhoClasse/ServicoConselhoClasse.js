@@ -149,6 +149,10 @@ class ServicoConselhoClasse {
       `/v1/conselhos-classe/${conselhoClasseId}/fechamentos/${fechamentoTurmaId}/alunos/${alunoCodigo}/imprimir`
     );
   };
+
+  obterDadosBimestres = turmaId => {
+    return api.get(`/v1/conselhos-classe/turmas/${turmaId}/bimestres`);
+  };
 }
 
 export default new ServicoConselhoClasse();
