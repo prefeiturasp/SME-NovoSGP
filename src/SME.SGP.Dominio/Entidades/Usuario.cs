@@ -64,7 +64,7 @@ namespace SME.SGP.Dominio
             }
         }
 
-        public IEnumerable<AtividadeAvaliativa> ObterAtividadesAvaliativasQuePodeVisualizar(IEnumerable<AtividadeAvaliativa> atividades, string[] componentesCurricularesProfessor)
+        public IEnumerable<AtividadeAvaliativa> ObterAtividadesAvaliativasQuePodeVisualizar(IEnumerable<AtividadeAvaliativa> atividades, long[] componentesCurricularesProfessor)
         {
             if (TemPerfilGestaoUes())
             {

@@ -5,8 +5,8 @@ namespace SME.SGP.Infra
     public class FiltroAtividadeAvaliativaDto
     {
         public DateTime? DataAvaliacao { get; set; }
-        public string[] DisciplinaContidaRegenciaId { get; set; }
-        public string[] DisciplinasId { get; set; }
+        public long[] DisciplinaContidaRegenciaId { get; set; }
+        public long[] DisciplinasId { get; set; }
         public string DreId { get; set; }
         public long? Id { get; set; }
         public string Nome { get; set; }

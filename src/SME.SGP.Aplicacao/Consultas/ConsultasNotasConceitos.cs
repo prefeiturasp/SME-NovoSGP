@@ -98,12 +98,12 @@ namespace SME.SGP.Aplicacao
             List<AtividadeAvaliativa> atividadesAvaliativaEBimestres = new List<AtividadeAvaliativa>();
             // Carrega disciplinas filhas da disciplina passada como parametro
             var disciplinasProfessor = await consultasDisciplina.ObterComponentesCurricularesPorProfessorETurma(filtro.TurmaCodigo, true);
-            var disciplinasFilha = disciplinasProfessor.Where(d => d.CdComponenteCurricularPai == long.Parse(filtro.DisciplinaCodigo));
+            var disciplinasFilha = disciplinasProfessor.Where(d => d.CdComponenteCurricularPai == filtro.DisciplinaCodigo);
 
             if (disciplinasFilha.Any())
             {
                 foreach (var disciplinaFilha in disciplinasFilha)
-                    atividadesAvaliativaEBimestres.AddRange(await consultasAtividadeAvaliativa.ObterAvaliacoesNoBimestre(filtro.TurmaCodigo, disciplinaFilha.CodigoComponenteCurricular.ToString(), periodoAtual.PeriodoInicio, periodoAtual.PeriodoFim));
+                    atividadesAvaliativaEBimestres.AddRange(await consultasAtividadeAvaliativa.ObterAvaliacoesNoBimestre(filtro.TurmaCodigo, disciplinaFilha.CodigoComponenteCurricular, periodoAtual.PeriodoInicio, periodoAtual.PeriodoFim));
             }
             else
                 // Disciplina não tem disciplinas filhas então carrega avaliações da propria
@@ -158,10 +158,10 @@ namespace SME.SGP.Aplicacao
                         .ObterNotasPorAlunosAtividadesAvaliativas(atividadesAvaliativasdoBimestre.Select(a => a.Id).Distinct(), alunosIds, filtro.DisciplinaCodigo);
 
                     var ausenciasAtividadesAvaliativas = await repositorioFrequencia
-                        .ObterAusencias(filtro.TurmaCodigo, filtro.DisciplinaCodigo, atividadesAvaliativasdoBimestre.Select(a => a.DataAvaliacao).Distinct().ToArray(), alunosIds.ToArray());
+                        .ObterAusencias(filtro.TurmaCodigo, filtro.DisciplinaCodigo.ToString(), atividadesAvaliativasdoBimestre.Select(a => a.DataAvaliacao).Distinct().ToArray(), alunosIds.ToArray());
 
                     var consultaEOL = servicoEOL
-                        .ObterDisciplinasPorIds(new long[] { long.Parse(filtro.DisciplinaCodigo) });
+                        .ObterDisciplinasPorIds(new long[] { filtro.DisciplinaCodigo });
 
                     if (consultaEOL == null || !consultaEOL.Any())
                         throw new NegocioException("Disciplina informada não encontrada no EOL");
@@ -172,7 +172,7 @@ namespace SME.SGP.Aplicacao
                     if (disciplinaEOL.Regencia)
                         disciplinasRegencia = await servicoEOL.ObterDisciplinasParaPlanejamento(long.Parse(filtro.TurmaCodigo), servicoUsuario.ObterLoginAtual(), servicoUsuario.ObterPerfilAtual());
 
-                    var fechamentoTurma = await consultasFechamentoTurmaDisciplina.ObterFechamentoTurmaDisciplina(filtro.TurmaCodigo, long.Parse(filtro.DisciplinaCodigo), valorBimestreAtual);
+                    var fechamentoTurma = await consultasFechamentoTurmaDisciplina.ObterFechamentoTurmaDisciplina(filtro.TurmaCodigo, filtro.DisciplinaCodigo, valorBimestreAtual);
 
                     var alunosForeach = from a in alunos
                                         where (a.EstaAtivo(periodoAtual.PeriodoFim)) ||
@@ -296,7 +296,7 @@ namespace SME.SGP.Aplicacao
                         }
 
                         // Carrega Frequencia Aluno
-                        var frequenciaAluno = repositorioFrequenciaAluno.ObterPorAlunoData(aluno.CodigoAluno, periodoAtual.PeriodoFim, TipoFrequenciaAluno.PorDisciplina, filtro.DisciplinaCodigo);
+                        var frequenciaAluno = repositorioFrequenciaAluno.ObterPorAlunoData(aluno.CodigoAluno, periodoAtual.PeriodoFim, TipoFrequenciaAluno.PorDisciplina, filtro.DisciplinaCodigo.ToString());
                         notaConceitoAluno.PercentualFrequencia = frequenciaAluno != null ?
                                         (int)Math.Round(frequenciaAluno.PercentualFrequencia, 0) :
                                         100;
@@ -317,7 +317,7 @@ namespace SME.SGP.Aplicacao
                         {
                             avaliacaoDoBimestre.EhInterdisciplinar = true;
                             var atividadeDisciplinas = await repositorioAtividadeAvaliativaDisciplina.ListarPorIdAtividade(avaliacao.Id);
-                            var idsDisciplinas = atividadeDisciplinas.Select(a => long.Parse(a.DisciplinaId)).ToArray();
+                            var idsDisciplinas = atividadeDisciplinas.Select(a => a.DisciplinaId).ToArray();
                             var disciplinas = servicoEOL.ObterDisciplinasPorIds(idsDisciplinas);
                             var nomesDisciplinas = disciplinas.Select(d => d.Nome).ToArray();
                             avaliacaoDoBimestre.Disciplinas = nomesDisciplinas;
@@ -472,7 +472,7 @@ namespace SME.SGP.Aplicacao
             }
             else
             {
-                var avaliacoes = await repositorioAtividadeAvaliativaDisciplina.ObterAvaliacoesBimestrais(tipoCalendarioId, turmaCodigo, disciplinaEOL.CodigoComponenteCurricular.ToString(), bimestre);
+                var avaliacoes = await repositorioAtividadeAvaliativaDisciplina.ObterAvaliacoesBimestrais(tipoCalendarioId, turmaCodigo, disciplinaEOL.CodigoComponenteCurricular, bimestre);
                 if ((avaliacoes == null) || (avaliacoes.Count() < tipoAvaliacaoBimestral.AvaliacoesNecessariasPorBimestre))
                     bimestreDto.Observacoes.Add($"A disciplina [{disciplinaEOL.Nome}] não tem o número mínimo de avaliações bimestrais no bimestre {bimestre}");
             }

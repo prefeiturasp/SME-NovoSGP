@@ -285,18 +285,18 @@ namespace SME.SGP.Dominio
             await servicoEOL.AlterarEmail(usuario.Login, novoEmail);
         }
 
-        public async Task<string[]> ObterComponentesCurricularesQuePodeVisualizarHoje(string turmaCodigo, Usuario usuarioLogado)
+        public async Task<long[]> ObterComponentesCurricularesQuePodeVisualizarHoje(string turmaCodigo, Usuario usuarioLogado)
         {
-            var componentesCurricularesParaVisualizar = new List<string>();
+            var componentesCurricularesParaVisualizar = new List<long>();
 
             var componentesCurricularesUsuarioLogado = await servicoEOL.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(turmaCodigo, usuarioLogado.CodigoRf, usuarioLogado.PerfilAtual);
-            var componentesCurricularesIdsUsuarioLogado = componentesCurricularesUsuarioLogado.Select(b => b.Codigo.ToString());
+            var componentesCurricularesIdsUsuarioLogado = componentesCurricularesUsuarioLogado.Select(b => b.Codigo);
 
             var hoje = DateTime.Today;
 
             foreach (var componenteParaVerificarAtribuicao in componentesCurricularesIdsUsuarioLogado)
             {
-                if (await servicoEOL.PodePersistirTurmaDisciplina(usuarioLogado.CodigoRf, turmaCodigo, componenteParaVerificarAtribuicao, hoje))
+                if (await servicoEOL.PodePersistirTurmaDisciplina(usuarioLogado.CodigoRf, turmaCodigo, componenteParaVerificarAtribuicao.ToString(), hoje))
                     componentesCurricularesParaVisualizar.Add(componenteParaVerificarAtribuicao);
 
             }

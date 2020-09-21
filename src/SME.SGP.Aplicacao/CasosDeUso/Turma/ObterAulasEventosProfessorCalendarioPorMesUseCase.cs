@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -35,13 +36,13 @@ namespace SME.SGP.Aplicacao
                 Mes = mes
             });
 
-            string[] componentesCurricularesDoProfessor = new string[0];
+            long[] componentesCurricularesDoProfessor = new long[0];
             if (usuarioLogado.EhProfessor())
             {
                 componentesCurricularesDoProfessor = await servicoUsuario.ObterComponentesCurricularesQuePodeVisualizarHoje(filtroAulasEventosCalendarioDto.TurmaCodigo, usuarioLogado);
             }
 
-            IEnumerable<Aula> aulasParaVisualizar = usuarioLogado.ObterAulasQuePodeVisualizar(aulas, componentesCurricularesDoProfessor);
+            IEnumerable<Aula> aulasParaVisualizar = usuarioLogado.ObterAulasQuePodeVisualizar(aulas, Array.ConvertAll(componentesCurricularesDoProfessor, a => a.ToString()));
 
             var avaliacoes = await mediator.Send(new ObterAtividadesAvaliativasCalendarioProfessorPorMesQuery()
             {

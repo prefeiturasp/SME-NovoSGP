@@ -119,7 +119,7 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
                 DreCodigo = turma.Ue.Dre.CodigoDre,
                 TipoCalendarioId = inserirAulaUnicaCommand.TipoCalendarioId,
                 DataAula = inserirAulaUnicaCommand.DataAula,
-                Turma = turma
+                UeId = turma.UeId
             });
 
             if (!consultaPodeCadastrarAula.PodeCadastrar)

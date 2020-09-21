@@ -62,6 +62,7 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await ObterAulasEventosProfessorCalendarioPorMesUseCase.Executar(mediator, filtro, tipoCalendarioId, mes, servicoUsuario));            
         }
+
         [HttpGet]
         [ProducesResponseType(typeof(EventosAulasNoDiaCalendarioDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
