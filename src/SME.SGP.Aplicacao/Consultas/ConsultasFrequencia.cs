@@ -1,4 +1,5 @@
-﻿using SME.SGP.Aplicacao.Integracoes;
+﻿using MediatR;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -22,10 +23,12 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoAluno servicoAluno;
         private readonly IServicoEol servicoEOL;
         private readonly IServicoFrequencia servicoFrequencia;
+        private readonly IMediator mediator;
 
         private double _mediaFrequencia;
 
-        public ConsultasFrequencia(IServicoFrequencia servicoFrequencia,
+        public ConsultasFrequencia(IMediator mediator,
+                                   IServicoFrequencia servicoFrequencia,
                                    IServicoEol servicoEOL,
                                    IConsultasPeriodoEscolar consultasPeriodoEscolar,
                                    IConsultasTipoCalendario consultasTipoCalendario,
@@ -37,6 +40,7 @@ namespace SME.SGP.Aplicacao
                                    IRepositorioParametrosSistema repositorioParametrosSistema,
                                    IServicoAluno servicoAluno)
         {
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.servicoFrequencia = servicoFrequencia ?? throw new ArgumentNullException(nameof(servicoFrequencia));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
@@ -172,6 +176,7 @@ namespace SME.SGP.Aplicacao
             var alunosDaTurma = await consultaAlunosDaTurma;
             if (alunosDaTurma == null || !alunosDaTurma.Any())
                 throw new NegocioException("Não foram encontrados alunos para a aula/turma informada.");
+            var anotacoesTurma = await mediator.Send(new ObterAlunosComAnotacaoNaAulaQuery(aulaId));
 
             foreach (var aluno in alunosDaTurma.Where(a => a.DeveMostrarNaChamada(aula.DataAula)).OrderBy(c => c.NomeAluno))
             {
@@ -191,7 +196,11 @@ namespace SME.SGP.Aplicacao
                     NumeroAlunoChamada = aluno.NumeroAlunoChamada,
                     CodigoSituacaoMatricula = aluno.CodigoSituacaoMatricula,
                     SituacaoMatricula = aluno.SituacaoMatricula,
+                    DataSituacao = aluno.DataSituacao,
+                    DataNascimento = aluno.DataNascimento,
                     Desabilitado = aluno.EstaInativo(aula.DataAula) || aula.EhDataSelecionadaFutura,
+                    PermiteAnotacao = aluno.EstaAtivo(aula.DataAula),
+                    PossuiAnotacao = anotacoesTurma.Any(a => a == aluno.CodigoAluno)
                 };
 
                 if (!disciplinaAula.FirstOrDefault().RegistraFrequencia)

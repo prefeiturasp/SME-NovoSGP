@@ -57,11 +57,12 @@ const DadosConselhoClasse = props => {
   const [carregando, setCarregando] = useState(false);
 
   const validaAbaFinal = useCallback(
-    async (conselhoClasseId, fechamentoTurmaId, alunoCodigo) => {
+    async (conselhoClasseId, fechamentoTurmaId, alunoCodigo, codigoTurma) => {
       const resposta = await ServicoConselhoClasse.acessarAbaFinalParecerConclusivo(
         conselhoClasseId,
         fechamentoTurmaId,
-        alunoCodigo
+        alunoCodigo,
+        codigoTurma
       ).catch(e => erros(e));
       if (resposta && resposta.data) {
         ServicoConselhoClasse.setarParecerConclusivo(resposta.data);
@@ -133,7 +134,7 @@ const DadosConselhoClasse = props => {
           periodoFechamentoFim,
           tipoNota,
           media,
-          anoLetivo
+          anoLetivo,
         } = retorno.data;
 
         const novoRegistro = !conselhoClasseId;
@@ -144,7 +145,8 @@ const DadosConselhoClasse = props => {
           const podeAcessar = await validaAbaFinal(
             conselhoClasseId,
             fechamentoTurmaId,
-            codigoEOL
+            codigoEOL,
+            turmaCodigo
           ).catch(e => erros(e));
           podeAcessarAbaFinal = podeAcessar;
         }
@@ -178,7 +180,9 @@ const DadosConselhoClasse = props => {
             periodoFechamentoFim
           );
         } else {
-          ServicoConselhoClasse.carregarListaTiposConceito(anoLetivo + '/12/31');
+          ServicoConselhoClasse.carregarListaTiposConceito(
+            anoLetivo + '/12/31'
+          );
         }
 
         if (ehFinal) {
@@ -257,9 +261,13 @@ const DadosConselhoClasse = props => {
             <ListasNotasConceitos bimestreSelecionado={bimestreAtual} />
             <Sintese
               ehFinal={bimestreAtual.valor === 'final'}
-              bimestreSelecionado={bimestreAtual}
+              bimestreSelecionado={bimestreAtual.valor}
+              turmaId={turmaSelecionada.turma}
             />
-            <AnotacoesRecomendacoes bimestreSelecionado={bimestreAtual} />
+            <AnotacoesRecomendacoes
+              bimestre={bimestreAtual.valor}
+              codigoTurma={turmaCodigo}
+            />
           </>
         ) : semDados && !carregando ? (
           <div className="text-center">Sem dados</div>
@@ -267,8 +275,6 @@ const DadosConselhoClasse = props => {
       </Loader>
     );
   };
-
-  console.log(modalidade);
 
   return (
     <>

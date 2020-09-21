@@ -729,18 +729,19 @@ const FrequenciaPlanoAula = () => {
   useEffect(() => {
     if (exibeEscolhaAula) {
       setCarregandoMaterias(true);
-      const aulaDataSelecionada = obterAulaSelecionada(dataSelecionada);
-      const aulaSelecionada = aulaDataSelecionada.find(
-        item => item.aulaCJ === ehAulaCj
-      );
+      obterAulaSelecionada(dataSelecionada).then(aulaDataSelecionada => {
+        const aulaSelecionada = aulaDataSelecionada.find(
+          item => item.aulaCJ === ehAulaCj
+        );
 
-      if (aulaSelecionada) {
-        setAula(aulaSelecionada);
-        if (aulaSelecionada && aulaSelecionada.idAula) {
-          obterListaFrequencia(aulaSelecionada.idAula);
+        if (aulaSelecionada) {
+          setAula(aulaSelecionada);
+          if (aulaSelecionada && aulaSelecionada.idAula) {
+            obterListaFrequencia(aulaSelecionada.idAula);
+          }
         }
-      }
-      setCarregandoMaterias(false);
+        setCarregandoMaterias(false);
+      });
     }
   }, [dataSelecionada, ehAulaCj, exibeEscolhaAula, obterAulaSelecionada]);
 
@@ -1042,6 +1043,8 @@ const FrequenciaPlanoAula = () => {
                               permissoesTela={permissoesTela}
                               temPeriodoAberto={temPeriodoAberto}
                               ehInfantil={ehInfantil}
+                              aulaId={aulaId}
+                              componenteCurricularId={disciplinaIdSelecionada}
                             />
                           </div>
                           {exibirAuditoria && (

@@ -55,6 +55,7 @@ const PeriodoFechamentoReaberturaLista = () => {
   const [filtroValido, setFiltroValido] = useState(false);
   const [filtro, setFiltro] = useState({});
   const [modalidadeTurma, setModalidadeTurma] = useState('');
+  const [listaDres, setListaDres] = useState([]);
   const [listaTipoCalendario, setListaTipoCalendario] = useState([]);
   const [valorTipoCalendario, setValorTipoCalendario] = useState('');
   const [pesquisaTipoCalendario, setPesquisaTipoCalendario] = useState('');
@@ -244,7 +245,7 @@ const PeriodoFechamentoReaberturaLista = () => {
     },
   ];
 
-  const selecionaTipoCalendario = descricao => {
+  const selecionaTipoCalendario = (descricao, form) => {
     const tipo = listaTipoCalendario?.find(t => t.descricao === descricao);
     if (Number(tipo?.id) || !tipo?.id) {
       const value =
@@ -253,6 +254,12 @@ const PeriodoFechamentoReaberturaLista = () => {
           : getColunasBimestreSemestral;
       setColunasBimestre(value);
       setValorTipoCalendario(descricao);
+      form.setFieldValue('ueId', '');
+      setUeSelecionada('');
+      if (listaDres && listaDres.length > 1) {
+        form.setFieldValue('dreId', '');
+        setDreSelecionada('');
+      }
     }
     setTipoCalendarioSelecionado(tipo?.id);
   };
@@ -325,8 +332,8 @@ const PeriodoFechamentoReaberturaLista = () => {
                         lista={listaTipoCalendario}
                         valueField="id"
                         textField="descricao"
-                        onSelect={selecionaTipoCalendario}
-                        onChange={selecionaTipoCalendario}
+                        onSelect={valor => selecionaTipoCalendario(valor, form)}
+                        onChange={valor => selecionaTipoCalendario(valor, form)}
                         handleSearch={handleSearch}
                         value={valorTipoCalendario}
                       />
@@ -338,8 +345,9 @@ const PeriodoFechamentoReaberturaLista = () => {
                     <DreDropDown
                       label="Diretoria Regional de Educação (DRE)"
                       form={form}
-                      onChange={dreId => {
+                      onChange={(dreId, dres) => {
                         setDreSelecionada(dreId);
+                        setListaDres(dres);
                         const tipoSelecionado = listaTipoCalendario.find(
                           item => item.id === tipoCalendarioSelecionado
                         );

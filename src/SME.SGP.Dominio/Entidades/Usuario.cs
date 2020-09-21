@@ -15,6 +15,7 @@ namespace SME.SGP.Dominio
         public string Nome { get; set; }
         public Guid PerfilAtual { get; set; }
         public IEnumerable<PrioridadePerfil> Perfis { get; private set; }
+
         public Guid? TokenRecuperacaoSenha { get; set; }
         public DateTime UltimoLogin { get; set; }
         private string Email { get; set; }

@@ -8,7 +8,7 @@ let url = '';
 let CancelToken = axios.CancelToken.source();
 
 urlBase().then(resposta => {
-  url = resposta.data;
+  url = resposta?.data;
 });
 
 const api = axios.create({
