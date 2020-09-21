@@ -58,14 +58,14 @@ namespace SME.SGP.Aplicacao
             retorno.MensagemPeriodoEncerrado = podeCadastrarAulaEMensagem.MensagemPeriodo;
 
 
-            string[] componentesCurricularesDoProfessor = new string[0];
+            long[] componentesCurricularesDoProfessor = new long[0];
             if (usuarioLogado.EhProfessor())
             {
                 //Transformar em query
                 componentesCurricularesDoProfessor = await servicoUsuario.ObterComponentesCurricularesQuePodeVisualizarHoje(filtroAulasEventosCalendarioDto.TurmaCodigo, usuarioLogado);
             }
-
-            IEnumerable<Aula> aulasParaVisualizar = usuarioLogado.ObterAulasQuePodeVisualizar(aulasDoDia, componentesCurricularesDoProfessor);
+            
+            IEnumerable<Aula> aulasParaVisualizar = usuarioLogado.ObterAulasQuePodeVisualizar(aulasDoDia, componentesCurricularesDoProfessor.Select(a => a.ToString()).ToArray());
 
 
             IEnumerable<AtividadeAvaliativa> atividadesAvaliativas = Enumerable.Empty<AtividadeAvaliativa>();

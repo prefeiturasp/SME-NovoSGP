@@ -38,7 +38,7 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
-        public async Task<IEnumerable<AtividadeAvaliativaDisciplina>> ObterAvaliacoesBimestrais(long tipoCalendarioId, string turmaId, string disciplinaId, int bimestre)
+        public async Task<IEnumerable<AtividadeAvaliativaDisciplina>> ObterAvaliacoesBimestrais(long tipoCalendarioId, string turmaId, long disciplinaId, int bimestre)
         {
             var query = @"select aad.* 
                         from atividade_avaliativa_disciplina aad 
@@ -53,7 +53,7 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<AtividadeAvaliativaDisciplina>(query, new { tipoCalendarioId, disciplinaId, turmaId, bimestre });
         }
-        public bool PossuiDisciplinas(long atividadeAvaliativaId, string disciplinaId)
+        public bool PossuiDisciplinas(long atividadeAvaliativaId, long disciplinaId)
         {
             var query = new StringBuilder();
             query.AppendLine("SELECT 1 FROM atividade_avaliativa_disciplina");

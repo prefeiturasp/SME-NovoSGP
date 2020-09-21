@@ -3,7 +3,7 @@
     public class AtividadeAvaliativaRegencia : EntidadeBase
     {
         public long AtividadeAvaliativaId { get; set; }
-        public string DisciplinaContidaRegenciaId { get; set; }
+        public long DisciplinaContidaRegenciaId { get; set; }
         public string DisciplinaContidaRegenciaNome { get; set; }
         public bool Excluido { get; set; }
 

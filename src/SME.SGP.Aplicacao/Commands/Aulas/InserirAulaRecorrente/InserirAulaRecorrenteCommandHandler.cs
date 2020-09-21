@@ -190,7 +190,7 @@ namespace SME.SGP.Aplicacao
                     DreCodigo = turma.Ue.Dre.CodigoDre,
                     TipoCalendarioId = tipoCalendarioId,
                     DataAula = dataConsulta,
-                    Turma = turma
+                    UeId = turma.UeId
                 });
 
                 if (consultaPodeCadastrarAula.PodeCadastrar)

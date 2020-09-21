@@ -70,7 +70,7 @@ namespace SME.SGP.Aplicacao
                         ));
         }
 
-        public async Task<IEnumerable<AtividadeAvaliativa>> ObterAvaliacoesNoBimestre(string turmaCodigo, string disciplinaId, DateTime periodoInicio, DateTime periodoFim)
+        public async Task<IEnumerable<AtividadeAvaliativa>> ObterAvaliacoesNoBimestre(string turmaCodigo, long disciplinaId, DateTime periodoInicio, DateTime periodoFim)
             => await repositorioAtividadeAvaliativa.ListarPorTurmaDisciplinaPeriodo(turmaCodigo, disciplinaId, periodoInicio, periodoFim);
 
         public async Task<AtividadeAvaliativaCompletaDto> ObterPorIdAsync(long id)
@@ -116,7 +116,7 @@ namespace SME.SGP.Aplicacao
             return await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamento(turma, DateTime.Now, bimestreAtual);
         }
 
-        public async Task<IEnumerable<TurmaRetornoDto>> ObterTurmasCopia(string turmaId, string disciplinaId)
+        public async Task<IEnumerable<TurmaRetornoDto>> ObterTurmasCopia(string turmaId, long disciplinaId)
         {
             var retorno = new List<TurmaRetornoDto>();
 
@@ -125,7 +125,7 @@ namespace SME.SGP.Aplicacao
             var turmasAtribuidasAoProfessor = consultasProfessor.Listar(usuario.CodigoRf);
 
             var lstTurmasCJ = await repositorioAtribuicaoCJ.ObterPorFiltros(turma.ModalidadeCodigo, null, null,
-                                    Convert.ToInt64(disciplinaId), usuario.CodigoRf, null, true);
+                                    disciplinaId, usuario.CodigoRf, null, true);
 
             var turmasTitular = turmasAtribuidasAoProfessor.Where(t => t.AnoLetivo == turma.AnoLetivo &&
                                                                        t.Ano == turma.Ano &&
@@ -167,7 +167,7 @@ namespace SME.SGP.Aplicacao
                     var disciplina = ObterDisciplina(Convert.ToInt32(filtro.DisciplinasId[0]));
                     var usuario = await servicoUsuario.ObterUsuarioLogado();
                     DateTime dataAvaliacao = filtro.DataAvaliacao.Date;
-                    var aula = await repositorioAula.ObterAulas(filtro.TurmaId.ToString(), null, usuario.CodigoRf, dataAvaliacao, filtro.DisciplinasId);
+                    var aula = await repositorioAula.ObterAulas(filtro.TurmaId.ToString(), null, usuario.CodigoRf, dataAvaliacao, Array.ConvertAll(filtro.DisciplinasId, a => a.ToString()));
 
                     //verificar se tem para essa atividade
                     if (!aula.Any())
