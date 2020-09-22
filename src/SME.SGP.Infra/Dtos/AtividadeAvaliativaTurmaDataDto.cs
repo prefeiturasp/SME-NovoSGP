@@ -6,6 +6,6 @@ namespace SME.SGP.Infra
     {
         public DateTime DataAvaliacao { get; set; }
         public int TurmaId { get; set; }
-        public string[] DisciplinasId { get; set; }
+        public long[] DisciplinasId { get; set; }
     }
 }

@@ -41,12 +41,6 @@ namespace SME.SGP.Aplicacao
                 DiaConsulta = dataConsulta
             });
 
-            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery()
-            {
-                TurmaCodigo = filtroAulasEventosCalendarioDto.TurmaCodigo
-            });
-
-
             var retorno = new EventosAulasNoDiaCalendarioDto();
 
             var podeCadastrarAulaEMensagem = await mediator.Send(new ObterPodeCadastrarAulaPorDataQuery()
@@ -55,21 +49,21 @@ namespace SME.SGP.Aplicacao
                 DreCodigo = filtroAulasEventosCalendarioDto.DreCodigo,
                 TipoCalendarioId = tipoCalendarioId,
                 DataAula = dataConsulta,
-                Turma = turma
+                UeId = filtroAulasEventosCalendarioDto.UeId
             });
 
             retorno.PodeCadastrarAula = podeCadastrarAulaEMensagem.PodeCadastrar;
             retorno.MensagemPeriodoEncerrado = podeCadastrarAulaEMensagem.MensagemPeriodo;
 
 
-            string[] componentesCurricularesDoProfessor = new string[0];
+            long[] componentesCurricularesDoProfessor = new long[0];
             if (usuarioLogado.EhProfessor())
             {
                 //Transformar em query
                 componentesCurricularesDoProfessor = await servicoUsuario.ObterComponentesCurricularesQuePodeVisualizarHoje(filtroAulasEventosCalendarioDto.TurmaCodigo, usuarioLogado);
             }
-
-            IEnumerable<Aula> aulasParaVisualizar = usuarioLogado.ObterAulasQuePodeVisualizar(aulasDoDia, componentesCurricularesDoProfessor);
+            
+            IEnumerable<Aula> aulasParaVisualizar = usuarioLogado.ObterAulasQuePodeVisualizar(aulasDoDia, componentesCurricularesDoProfessor.Select(a => a.ToString()).ToArray());
 
 
             IEnumerable<AtividadeAvaliativa> atividadesAvaliativas = Enumerable.Empty<AtividadeAvaliativa>();

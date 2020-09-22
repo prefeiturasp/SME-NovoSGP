@@ -428,7 +428,7 @@ namespace SME.SGP.Aplicacao
 
         private bool PossuiDisciplinas(long atividadeId, string disciplinaId)
         {
-            return repositorioAtividadeAvaliativaDisciplina.PossuiDisciplinas(atividadeId, disciplinaId);
+            return repositorioAtividadeAvaliativaDisciplina.PossuiDisciplinas(atividadeId, long.Parse(disciplinaId));
         }
     }
 }

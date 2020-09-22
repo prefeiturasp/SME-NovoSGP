@@ -114,7 +114,7 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.AlterarAulaUnica
                 DreCodigo = turma.Ue.Dre.CodigoDre,
                 TipoCalendarioId = request.TipoCalendarioId,
                 DataAula = request.DataAula,
-                Turma = turma
+                UeId = turma.UeId
             });
 
             if (!consultaPodeCadastrarAula.PodeCadastrar)
