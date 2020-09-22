@@ -69,15 +69,13 @@ namespace SME.SGP.Api.Controllers
         }
 
 
-        [HttpGet("modalidades/{modalidade}")]
+        [HttpGet("modalidades/{modalidade}/anos-letivos/{anoLetivo}")]
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(int), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterPeriodosPorModalidade(Modalidade modalidade, [FromServices] IConsultasPeriodoEscolar consultas)
+        public async Task<IActionResult> ObterPeriodosPorModalidade(Modalidade modalidade, int anoLetivo, [FromServices] IObterPeriodosEscolaresPorAnoEModalidadeTurmaUseCase useCase)
         {
-            return Ok(await consultas.ObterBimestre(DateTime.Today, (Dominio.Modalidade)modalidade));
+            return Ok(await useCase.Executar(modalidade, anoLetivo));
         }
-
-
     }
 }

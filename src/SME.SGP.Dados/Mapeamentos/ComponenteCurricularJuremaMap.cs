@@ -2,9 +2,9 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class ComponenteCurricularMap : BaseMap<ComponenteCurricularJurema>
+    public class ComponenteCurricularJuremaMap : BaseMap<ComponenteCurricularJurema>
     {
-        public ComponenteCurricularMap()
+        public ComponenteCurricularJuremaMap()
         {
             ToTable("componente_curricular_jurema");
             Map(c => c.DescricaoEOL).ToColumn("descricao_eol");
