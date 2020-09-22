@@ -11,6 +11,8 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<IEnumerable<Modalidade>> ObterModalidades(string ueCodigo, int ano);
 
+        Task<long> ObterIdPorCodigo(string ueCodigo);
+
         Ue ObterPorCodigo(string ueId);
 
         Ue ObterPorId(long id);

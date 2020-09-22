@@ -106,7 +106,9 @@ function CalendarioProfessor() {
             numeroMes: dia.getMonth() + 1,
             tipoCalendarioId,
             dre: turmaSelecionada.dre,
+            dreId: turmaSelecionada.dreId,
             ue: turmaSelecionada.unidadeEscolar,
+            ueId: turmaSelecionada.unidadeEscolarId,
             turma: turmaSelecionada.turma,
             anoLetivo: turmaSelecionada.anoLetivo,
           });

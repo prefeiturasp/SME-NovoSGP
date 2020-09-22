@@ -9,7 +9,7 @@ namespace SME.SGP.Dominio
         public string AlunoId { get; set; }
         public long AtividadeAvaliativaID { get; set; }
         public long? ConceitoId { get; set; }
-        public string DisciplinaId { get; set; }
+        public long DisciplinaId { get; set; }
         public double? Nota { get; set; }
         public TipoNota TipoNota { get; set; }
 
