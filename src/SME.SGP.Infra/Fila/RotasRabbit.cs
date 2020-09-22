@@ -20,6 +20,8 @@
         public static string RotaSincronizarAulasInfatil => "aulas.infantil.sincronizar";
         public static string RotaRelatorioComErro => "relatorios.erro";
         public static string RotaRelatorioCorrelacaoCopiar => "relatorios.correlacao.copiar";
+
+        public static string RotaInserirPendenciaAula => "aulas.pendencias.inserir";
         public static string RotaNotificacaoNovaObservacaoCartaIntencoes => "notificacao.nova.observacao.cartaintencoes";
         public static string RotaNotificacaoNovaObservacaoDiarioBordo => "notificacao.nova.observacao.diariobordo";
         public static string RotaNovaNotificacaoObservacaoCartaIntencoes => "notificacao.nova.observacao.cartaintencoes";
@@ -27,6 +29,8 @@
         public static string RotaNovaNotificacaoDevolutiva => "notificacao.nova.devolutiva";
         public static string RotaExcluirNotificacaoDevolutiva => "notificacao.excluir.devolutiva";
         public static string RotaExcluirNotificacaoDiarioBordo => "notificacao.excluir.diariobordo";
+
+        public static string RotaExecutaPendenciasAula => "pendencias.aulas.executa";
 
 
     }
