@@ -4,7 +4,7 @@ using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterPlanejamentoAnualPorTurmaComponenteQuery : IRequest<PlanejamentoAnualDto>
+    public class ObterPlanejamentoAnualPorTurmaComponenteQuery : IRequest<PlanejamentoAnualPeriodoEscolarDto>
     {
         public ObterPlanejamentoAnualPorTurmaComponenteQuery(long turmaId, long componenteCurricularId, long periodoEscolarId)
         {

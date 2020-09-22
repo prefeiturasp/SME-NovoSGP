@@ -21,13 +21,13 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(turmaId, componenteCurricularId, dto));
         }
 
-        [HttpGet("turmas/{turmaId}/componentes-curriculares/{componenteCurricularId}")]
+        [HttpGet("turmas/{turmaId}/componentes-curriculares/{componenteCurricularId}/periodos-escolares/{periodoEscolarId}")]
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(PlanejamentoAnualDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> Obter(long turmaId, long componenteCurricularId, [FromServices] IObterPlanejamentoAnualPorTurmaComponenteUseCase useCase)
+        public async Task<IActionResult> Obter(long turmaId, long componenteCurricularId,long periodoEscolarId, [FromServices] IObterPlanejamentoAnualPorTurmaComponenteUseCase useCase)
         {
-            return Ok(await useCase.Executar(turmaId, componenteCurricularId));
+            return Ok(await useCase.Executar(turmaId, componenteCurricularId, periodoEscolarId));
         }
     }
 }
