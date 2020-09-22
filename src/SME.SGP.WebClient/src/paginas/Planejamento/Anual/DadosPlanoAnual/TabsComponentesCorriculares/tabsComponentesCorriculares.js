@@ -1,9 +1,10 @@
-import PropTypes from 'prop-types';
 import { Tabs } from 'antd';
-import React from 'react';
+import PropTypes from 'prop-types';
+import React, { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { ContainerTabsCard } from '~/componentes/tabs/tabs.css';
 import { setTabAtualComponenteCurricular } from '~/redux/modulos/anual/actions';
+import DescricaoPlanejamento from '../DescricaoPlanejamento/descricaoPlanejamento';
 import ListaObjetivos from '../ListaObjetivos/listaObjetivos';
 
 const { TabPane } = Tabs;
@@ -23,22 +24,44 @@ const TabsComponentesCorriculares = props => {
   );
 
   const montarDados = () => {
-    return <ListaObjetivos />;
-  };
-
-  const onChangeTab = codigoComponente => {
-    const componente = listaComponentesCurricularesPlanejamento.find(
-      item =>
-        String(item.codigoComponenteCurricular) === String(codigoComponente)
-    );
-
-    dispatch(
-      setTabAtualComponenteCurricular({
-        bimestre: dadosBimestre.bimestre,
-        componente,
-      })
+    return (
+      <div className="col-md-12">
+        <ListaObjetivos
+          tabAtualComponenteCurricular={tabAtualComponenteCurricular}
+        />
+        <DescricaoPlanejamento />
+      </div>
     );
   };
+
+  const onChangeTab = useCallback(
+    codigoComponente => {
+      const componente = listaComponentesCurricularesPlanejamento.find(
+        item =>
+          String(item.codigoComponenteCurricular) === String(codigoComponente)
+      );
+
+      dispatch(
+        setTabAtualComponenteCurricular({
+          bimestre: dadosBimestre.bimestre,
+          componente,
+        })
+      );
+    },
+    [dispatch, dadosBimestre, listaComponentesCurricularesPlanejamento]
+  );
+
+  // Quando tiver somente uma tab(componente curricular) já selecionar!
+  useEffect(() => {
+    if (
+      listaComponentesCurricularesPlanejamento &&
+      listaComponentesCurricularesPlanejamento.length === 1
+    ) {
+      onChangeTab(
+        listaComponentesCurricularesPlanejamento[0].codigoComponenteCurricular
+      );
+    }
+  }, [listaComponentesCurricularesPlanejamento, onChangeTab]);
 
   return (
     <>

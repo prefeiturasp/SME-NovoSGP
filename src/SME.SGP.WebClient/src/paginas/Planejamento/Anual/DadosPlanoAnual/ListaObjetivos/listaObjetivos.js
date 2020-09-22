@@ -1,116 +1,52 @@
-import React, { useState } from 'react';
+import PropTypes from 'prop-types';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import TransferenciaLista from '~/componentes-sgp/TranferenciaLista/transferenciaLista';
+import ServicoPlanoAnual from '~/servicos/Paginas/ServicoPlanoAnual';
 import { ContainerListaObjetivos } from './listaObjetivos.css';
 
-const ListaObjetivos = () => {
-  const mock = [
-    {
-      id: 1,
-      codigo: 'EF02M01',
-      descricao:
-        'Explorar números no contexto diário como indicadores de quantidade, ordem, medida e código; ler e produzir escritas numéricas, identificando algumas regularidades do sistema de numeração decimal ',
-    },
-    {
-      id: 2,
-      codigo: 'EF02M02',
-      descricao: 'Compor e decompor números naturais de diversas maneiras',
-    },
-    {
-      id: 3,
-      codigo: 'EF02M03',
-      descricao:
-        'Explorar diferentes estratégias para quantificar elementos de uma coleção: contagem um a um, formação de pares, agrupamentos e estimativas ',
-    },
-    {
-      id: 4,
-      codigo: 'EF02M01',
-      descricao:
-        'Explorar números no contexto diário como indicadores de quantidade, ordem, medida e código; ler e produzir escritas numéricas, identificando algumas regularidades do sistema de numeração decimal ',
-    },
-    {
-      id: 5,
-      codigo: 'EF02M02',
-      descricao: 'Compor e decompor números naturais de diversas maneiras',
-    },
-    {
-      id: 6,
-      codigo: 'EF02M03',
-      descricao:
-        'Explorar diferentes estratégias para quantificar elementos de uma coleção: contagem um a um, formação de pares, agrupamentos e estimativas ',
-    },
-    {
-      id: 7,
-      codigo: 'EF02M01',
-      descricao:
-        'Explorar números no contexto diário como indicadores de quantidade, ordem, medida e código; ler e produzir escritas numéricas, identificando algumas regularidades do sistema de numeração decimal ',
-    },
-    {
-      id: 8,
-      codigo: 'EF02M02',
-      descricao: 'Compor e decompor números naturais de diversas maneiras',
-    },
-    {
-      id: 9,
-      codigo: 'EF02M03',
-      descricao:
-        'Explorar diferentes estratégias para quantificar elementos de uma coleção: contagem um a um, formação de pares, agrupamentos e estimativas ',
-    },
-    {
-      id: 10,
-      codigo: 'EF02M01',
-      descricao:
-        'Explorar números no contexto diário como indicadores de quantidade, ordem, medida e código; ler e produzir escritas numéricas, identificando algumas regularidades do sistema de numeração decimal ',
-    },
-    {
-      id: 11,
-      codigo: 'EF02M02',
-      descricao: 'Compor e decompor números naturais de diversas maneiras',
-    },
-    {
-      id: 12,
-      codigo: 'EF02M03',
-      descricao:
-        'Explorar diferentes estratégias para quantificar elementos de uma coleção: contagem um a um, formação de pares, agrupamentos e estimativas ',
-    },
-    {
-      id: 13,
-      codigo: 'EF02M01',
-      descricao:
-        'Explorar números no contexto diário como indicadores de quantidade, ordem, medida e código; ler e produzir escritas numéricas, identificando algumas regularidades do sistema de numeração decimal ',
-    },
-    {
-      id: 14,
-      codigo: 'EF02M02',
-      descricao: 'Compor e decompor números naturais de diversas maneiras',
-    },
-    {
-      id: 15,
-      codigo: 'EF02M03',
-      descricao:
-        'Explorar diferentes estratégias para quantificar elementos de uma coleção: contagem um a um, formação de pares, agrupamentos e estimativas ',
-    },
-    {
-      id: 16,
-      codigo: 'EF02M01',
-      descricao:
-        'Explorar números no contexto diário como indicadores de quantidade, ordem, medida e código; ler e produzir escritas numéricas, identificando algumas regularidades do sistema de numeração decimal ',
-    },
-    {
-      id: 17,
-      codigo: 'EF02M02',
-      descricao: 'Compor e decompor números naturais de diversas maneiras',
-    },
-    {
-      id: 18,
-      codigo: 'EF02M03',
-      descricao:
-        'Explorar diferentes estratégias para quantificar elementos de uma coleção: contagem um a um, formação de pares, agrupamentos e estimativas ',
-    },
-  ];
-  const [dadosEsquerda, setDadosEsquerda] = useState(mock);
+const ListaObjetivos = props => {
+  const { tabAtualComponenteCurricular } = props;
+
+  const usuario = useSelector(store => store.usuario);
+  const { turmaSelecionada } = usuario;
+
+  const [dadosEsquerda, setDadosEsquerda] = useState([]);
   const [dadosDireita, setDadosDireita] = useState([]);
   const [idsSelecionadsEsquerda, setIdsSelecionadsEsquerda] = useState([]);
   const [idsSelecionadsDireita, setIdsSelecionadsDireita] = useState([]);
+
+  const obterObjetivosPorAnoEComponenteCurricular = useCallback(() => {
+    if (
+      tabAtualComponenteCurricular &&
+      tabAtualComponenteCurricular.codigoComponenteCurricular
+    ) {
+      // TODO LOADER!
+      ServicoPlanoAnual.obterObjetivosPorAnoEComponenteCurricular(
+        turmaSelecionada.ano,
+        turmaSelecionada.ensinoEspecial,
+        [tabAtualComponenteCurricular.codigoComponenteCurricular]
+      )
+        .then(resposta => {
+          setDadosEsquerda(resposta.data);
+          // TODO LOADER!
+        })
+        .catch(e => {
+          // mostrarErros(e);
+        })
+        .finally(() => {
+          // TODO LOADER!
+        });
+    } else {
+      // TODO LOADER!
+    }
+  }, [tabAtualComponenteCurricular, turmaSelecionada]);
+
+  useEffect(() => {
+    if (tabAtualComponenteCurricular) {
+      obterObjetivosPorAnoEComponenteCurricular();
+    }
+  }, [tabAtualComponenteCurricular, obterObjetivosPorAnoEComponenteCurricular]);
 
   const parametrosListaEsquerda = {
     title: 'Objetivos de aprendizagem',
@@ -207,6 +143,14 @@ const ListaObjetivos = () => {
       />
     </ContainerListaObjetivos>
   );
+};
+
+ListaObjetivos.propTypes = {
+  tabAtualComponenteCurricular: PropTypes.oneOfType([PropTypes.object]),
+};
+
+ListaObjetivos.defaultProps = {
+  tabAtualComponenteCurricular: {},
 };
 
 export default ListaObjetivos;
