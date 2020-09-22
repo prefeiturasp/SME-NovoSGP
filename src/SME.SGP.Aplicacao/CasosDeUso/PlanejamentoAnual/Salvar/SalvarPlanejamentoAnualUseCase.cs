@@ -22,10 +22,10 @@ namespace SME.SGP.Aplicacao
 
             var auditoria = await mediator.Send(new SalvarPlanejamentoAnualCommand()
             {
-                PeriodoEscolarId = dto.PeriodoEscolarId,
                 TurmaId = turmaId,
-                Componentes = dto.Componentes,
-                ComponenteCurricularId = componenteCurricularId
+                ComponenteCurricularId = componenteCurricularId,
+                Id = dto.Id,
+                PeriodosEscolares = dto.PeriodosEscolares
             });
 
             unitOfWork.PersistirTransacao();

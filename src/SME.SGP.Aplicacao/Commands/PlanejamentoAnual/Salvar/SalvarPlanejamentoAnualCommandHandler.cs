@@ -34,100 +34,83 @@ namespace SME.SGP.Aplicacao
                 planejamentoAnual = new PlanejamentoAnual(comando.TurmaId, comando.ComponenteCurricularId);
                 await repositorioPlanejamentoAnual.SalvarAsync(planejamentoAnual);
 
-                var planejamentoPeriodoEscolar = new PlanejamentoAnualPeriodoEscolar(comando.PeriodoEscolarId)
+                foreach (var periodo in comando.PeriodosEscolares)
                 {
-                    PlanejamentoAnualId = planejamentoAnual.Id
-                };
-
-                await repositorioPlanejamentoAnualPeriodoEscolar.SalvarAsync(planejamentoPeriodoEscolar);
-
-                var planejamentoAnualComponentes = new List<PlanejamentoAnualComponente>();
-                foreach (var componente in comando.Componentes)
-                {
-                    var planejamentoAnualComponente = new PlanejamentoAnualComponente
-                    {
-                        ComponenteCurricularId = componente.ComponenteCurricularId,
-                        Descricao = componente.Descricao,
-                        PlanejamentoAnualPeriodoEscolarId = planejamentoPeriodoEscolar.Id
-                    };
-                    //SALVAR COMPONENTES
-
-                    var objetivos = componente.ObjetivosAprendizagemId.Select(c => new PlanejamentoAnualObjetivoAprendizagem
-                    {
-                        ObjetivoAprendizagemId = c,
-                        PlanejamentoAnualComponenteId = planejamentoAnualComponente.Id
-                    });
-
-                    await repositorioPlanejamentoAnualComponente.SalvarAsync(planejamentoAnualComponente);
-                    await Task.Run(() => repositorioPlanejamentoAnualObjetivosAprendizagem.SalvarVarios(objetivos, planejamentoAnualComponente.Id));
-                }
-            }
-            else
-            {
-                var planejamentoAnualPeriodoEscolar = await repositorioPlanejamentoAnualPeriodoEscolar.ObterPorPlanejamentoAnualId(planejamentoAnual.Id, comando.PeriodoEscolarId);
-                if (planejamentoAnualPeriodoEscolar == null)
-                {
-                    planejamentoAnualPeriodoEscolar = new PlanejamentoAnualPeriodoEscolar(comando.PeriodoEscolarId)
+                    var planejamentoPeriodoEscolar = new PlanejamentoAnualPeriodoEscolar(periodo.PeriodoEscolarId)
                     {
                         PlanejamentoAnualId = planejamentoAnual.Id
                     };
 
-                    await repositorioPlanejamentoAnualPeriodoEscolar.SalvarAsync(planejamentoAnualPeriodoEscolar);
-                }
+                    await repositorioPlanejamentoAnualPeriodoEscolar.SalvarAsync(planejamentoPeriodoEscolar);
 
-                await repositorioPlanejamentoAnualObjetivosAprendizagem.RemoverTodosPorPlanejamentoAnualPeriodoEscolarId(planejamentoAnualPeriodoEscolar.Id);
-
-                var componentes = comando.Componentes.Select(c => new PlanejamentoAnualComponente
-                {
-                    ComponenteCurricularId = c.ComponenteCurricularId,
-                    Descricao = c.Descricao,
-                    PlanejamentoAnualPeriodoEscolarId = planejamentoAnualPeriodoEscolar.Id,
-                    ObjetivosAprendizagem = c.ObjetivosAprendizagemId.Select(o => new PlanejamentoAnualObjetivoAprendizagem
+                    var planejamentoAnualComponentes = new List<PlanejamentoAnualComponente>();
+                    foreach (var componente in periodo.Componentes)
                     {
-                        ObjetivoAprendizagemId = o
-                    })?.ToList()
-                })?.ToList();
-
-                foreach (var componente in componentes)
-                {
-                    var planejamentoAnualComponente = await repositorioPlanejamentoAnualComponente.ObterPorPlanejamentoAnualPeriodoEscolarId(componente.ComponenteCurricularId, planejamentoAnualPeriodoEscolar.Id);
-                    if (planejamentoAnualComponente == null)
-                    {
-                        planejamentoAnualComponente = new PlanejamentoAnualComponente
+                        var planejamentoAnualComponente = new PlanejamentoAnualComponente
                         {
                             ComponenteCurricularId = componente.ComponenteCurricularId,
-                            PlanejamentoAnualPeriodoEscolarId = planejamentoAnualPeriodoEscolar.Id,
+                            Descricao = componente.Descricao,
+                            PlanejamentoAnualPeriodoEscolarId = planejamentoPeriodoEscolar.Id
                         };
+                        //SALVAR COMPONENTES
+
+                        var objetivos = componente.ObjetivosAprendizagemId.Select(c => new PlanejamentoAnualObjetivoAprendizagem
+                        {
+                            ObjetivoAprendizagemId = c,
+                            PlanejamentoAnualComponenteId = planejamentoAnualComponente.Id
+                        });
+
+                        await repositorioPlanejamentoAnualComponente.SalvarAsync(planejamentoAnualComponente);
+                        await Task.Run(() => repositorioPlanejamentoAnualObjetivosAprendizagem.SalvarVarios(objetivos, planejamentoAnualComponente.Id));
+                    }
+                }
+            }
+            else
+            {
+                foreach (var periodo in comando.PeriodosEscolares)
+                {
+                    var planejamentoAnualPeriodoEscolar = await repositorioPlanejamentoAnualPeriodoEscolar.ObterPorPlanejamentoAnualId(planejamentoAnual.Id, periodo.PeriodoEscolarId);
+                    if (planejamentoAnualPeriodoEscolar == null)
+                    {
+                        planejamentoAnualPeriodoEscolar = new PlanejamentoAnualPeriodoEscolar(periodo.PeriodoEscolarId)
+                        {
+                            PlanejamentoAnualId = planejamentoAnual.Id
+                        };
+
+                        await repositorioPlanejamentoAnualPeriodoEscolar.SalvarAsync(planejamentoAnualPeriodoEscolar);
                     }
 
-                    planejamentoAnualComponente.Descricao = componente.Descricao;
-                    await repositorioPlanejamentoAnualComponente.SalvarAsync(planejamentoAnualComponente);
-                    await Task.Run(() => repositorioPlanejamentoAnualObjetivosAprendizagem.SalvarVarios(componente.ObjetivosAprendizagem, planejamentoAnualComponente.Id));
+                    await repositorioPlanejamentoAnualObjetivosAprendizagem.RemoverTodosPorPlanejamentoAnualPeriodoEscolarId(planejamentoAnualPeriodoEscolar.Id);
+
+                    var componentes = periodo.Componentes.Select(c => new PlanejamentoAnualComponente
+                    {
+                        ComponenteCurricularId = c.ComponenteCurricularId,
+                        Descricao = c.Descricao,
+                        PlanejamentoAnualPeriodoEscolarId = planejamentoAnualPeriodoEscolar.Id,
+                        ObjetivosAprendizagem = c.ObjetivosAprendizagemId.Select(o => new PlanejamentoAnualObjetivoAprendizagem
+                        {
+                            ObjetivoAprendizagemId = o
+                        })?.ToList()
+                    })?.ToList();
+
+                    foreach (var componente in componentes)
+                    {
+                        var planejamentoAnualComponente = await repositorioPlanejamentoAnualComponente.ObterPorPlanejamentoAnualPeriodoEscolarId(componente.ComponenteCurricularId, planejamentoAnualPeriodoEscolar.Id);
+                        if (planejamentoAnualComponente == null)
+                        {
+                            planejamentoAnualComponente = new PlanejamentoAnualComponente
+                            {
+                                ComponenteCurricularId = componente.ComponenteCurricularId,
+                                PlanejamentoAnualPeriodoEscolarId = planejamentoAnualPeriodoEscolar.Id,
+                            };
+                        }
+
+                        planejamentoAnualComponente.Descricao = componente.Descricao;
+                        await repositorioPlanejamentoAnualComponente.SalvarAsync(planejamentoAnualComponente);
+                        await Task.Run(() => repositorioPlanejamentoAnualObjetivosAprendizagem.SalvarVarios(componente.ObjetivosAprendizagem, planejamentoAnualComponente.Id));
+                    }
+
                 }
-
-                //foreach (var componente in comando.Componentes)
-                //{
-                //    var planejamentoAnualComponente = await repositorioPlanejamentoAnualComponente.ObterPorPlanejamentoAnualPeriodoEscolarId(componente.ComponenteCurricularId, planejamentoAnualPeriodoEscolar.Id);
-                //    if (planejamentoAnualComponente == null)
-                //    {
-                //        planejamentoAnualComponente = new PlanejamentoAnualComponente
-                //        {
-                //            ComponenteCurricularId = componente.ComponenteCurricularId,
-                //            Descricao = componente.Descricao,
-                //            PlanejamentoAnualPeriodoEscolarId = planejamentoAnualPeriodoEscolar.Id
-                //        };
-                //        await repositorioPlanejamentoAnualComponente.SalvarAsync(planejamentoAnualComponente);
-                //    }
-
-                //    var objetivos = componente.ObjetivosAprendizagemId.Select(c => new PlanejamentoAnualObjetivoAprendizagem
-                //    {
-                //        ObjetivoAprendizagemId = c,
-                //        PlanejamentoAnualComponenteId = planejamentoAnualComponente.Id
-                //    });
-
-                //    await Task.Run(() => repositorioPlanejamentoAnualObjetivosAprendizagem.SalvarVarios(objetivos));
-                //}
-
             }
 
             return (AuditoriaDto)planejamentoAnual;
