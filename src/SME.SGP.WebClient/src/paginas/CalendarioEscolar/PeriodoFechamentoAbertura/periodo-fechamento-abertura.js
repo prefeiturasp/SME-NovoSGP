@@ -61,6 +61,8 @@ const PeriodoFechamentoAbertura = () => {
   const [ehRegistroExistente, setEhRegistroExistente] = useState(false);
   const [modalidadeTurma, setModalidadeTurma] = useState('');
 
+  const [listaDres, setListaDres] = useState([]);
+
   const obtemPeriodosIniciais = () => {
     return {
       dreId: null,
@@ -436,7 +438,19 @@ const PeriodoFechamentoAbertura = () => {
     return dias;
   };
 
-  const onChangeDre = (dreId, form) => {
+  const setarModalidadeTurma = tipoSelecionado => {
+    if (tipoSelecionado && tipoSelecionado.modalidade) {
+      const modalidadeT = ServicoCalendarios.converterModalidade(
+        tipoSelecionado.modalidade
+      );
+      setModalidadeTurma(modalidadeT);
+    } else {
+      setModalidadeTurma('');
+    }
+  };
+
+  const onChangeDre = (dreId, form, dres) => {
+    setListaDres(dres);
     if (dreId !== dreSelecionada) {
       setDreSelecionada(dreId);
       const ue = undefined;
@@ -444,14 +458,7 @@ const PeriodoFechamentoAbertura = () => {
       const tipoSelecionado = listaTipoCalendario.find(
         item => item.id == form.values.tipoCalendarioId
       );
-      if (tipoSelecionado && tipoSelecionado.modalidade) {
-        const modalidadeT = ServicoCalendarios.converterModalidade(
-          tipoSelecionado.modalidade
-        );
-        setModalidadeTurma(modalidadeT);
-      } else {
-        setModalidadeTurma('');
-      }
+      setarModalidadeTurma(tipoSelecionado);
     }
   };
 
@@ -496,7 +503,7 @@ const PeriodoFechamentoAbertura = () => {
     );
   };
 
-  const selecionaTipoCalendario = descricao => {
+  const selecionaTipoCalendario = (descricao, form) => {
     const tipo = listaTipoCalendario?.find(t => t.descricao === descricao);
     if (Number(tipo?.id) || !tipo?.id) {
       const isPeriodoAnual = tipo?.periodo === periodo?.Anual;
@@ -504,6 +511,13 @@ const PeriodoFechamentoAbertura = () => {
       setValorTipoCalendario(descricao);
     }
     setTipoCalendarioSelecionado(tipo?.id);
+    setUeSelecionada('');
+    form.setFieldValue('ueId', '');
+    setarModalidadeTurma(tipo);
+    if (listaDres && listaDres.length > 1) {
+      setDreSelecionada('');
+      form.setFieldValue('dreId', '');
+    }
   };
 
   const handleSearch = descricao => {
@@ -579,8 +593,12 @@ const PeriodoFechamentoAbertura = () => {
                           lista={listaTipoCalendario}
                           valueField="id"
                           textField="descricao"
-                          onSelect={selecionaTipoCalendario}
-                          onChange={selecionaTipoCalendario}
+                          onSelect={valor =>
+                            selecionaTipoCalendario(valor, form)
+                          }
+                          onChange={valor =>
+                            selecionaTipoCalendario(valor, form)
+                          }
                           handleSearch={handleSearch}
                           value={valorTipoCalendario}
                         />
@@ -596,7 +614,9 @@ const PeriodoFechamentoAbertura = () => {
                         <DreDropDown
                           label="Diretoria Regional de Educação (DRE)"
                           form={form}
-                          onChange={dreId => onChangeDre(dreId, form)}
+                          onChange={(dreId, dres) =>
+                            onChangeDre(dreId, form, dres)
+                          }
                           desabilitado={desabilitarCampos}
                         />
                       )}

@@ -135,7 +135,9 @@ namespace SME.SGP.Aplicacao.Consultas
 
         private async Task<TipoCalendarioCompletoDto> ObterTipoCalendario(Modalidade modalidade, int anoLetivo, int semestre = 0)
         {
-            var modalidadeCalendario = modalidade == Modalidade.EJA ? ModalidadeTipoCalendario.EJA : ModalidadeTipoCalendario.FundamentalMedio;
+            var modalidadeCalendario = modalidade == Modalidade.EJA ? ModalidadeTipoCalendario.EJA : 
+                                        modalidade == Modalidade.Infantil ? ModalidadeTipoCalendario.Infantil :
+                                        ModalidadeTipoCalendario.FundamentalMedio;
 
             var tipoCalendario = await consultasTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, modalidadeCalendario, semestre);
             if (tipoCalendario == null)
@@ -163,6 +165,9 @@ namespace SME.SGP.Aplicacao.Consultas
 
             return await BuscaUltimoPeriodoEscolar(tipoCalendario);
         }
+
+        public async Task<PeriodoEscolar> ObterPeriodoEscolarPorTipoCalendarioBimestre(long tipoCalendarioId, int bimestre) 
+            => await repositorio.ObterPorTipoCalendarioEBimestreAsync(tipoCalendarioId, bimestre);
 
         private async Task<PeriodoEscolar> BuscaUltimoPeriodoEscolar(TipoCalendarioCompletoDto tipoCalendario)
         {
