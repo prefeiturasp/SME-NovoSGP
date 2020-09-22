@@ -7,40 +7,35 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterPlanejamentoAnualPorTurmaComponenteQueryHandler : IRequestHandler<ObterPlanejamentoAnualPorTurmaComponenteQuery, PlanejamentoAnualDto>
+    public class ObterPlanejamentoAnualPorTurmaComponenteQueryHandler : IRequestHandler<ObterPlanejamentoAnualPorTurmaComponenteQuery, PlanejamentoAnualPeriodoEscolarDto>
     {
-        private readonly IRepositorioPlanejamentoAnual repositorioPlanejamentoAnual;
-        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
+        private readonly IRepositorioPlanejamentoAnualPeriodoEscolar repositorioPlanejamentoAnualPeriodoEscolar;
 
-        public ObterPlanejamentoAnualPorTurmaComponenteQueryHandler(IRepositorioPlanejamentoAnual repositorioPlanejamentoAnual,
-                                                                    IRepositorioPeriodoEscolar repositorioPeriodoEscolar)
+        public ObterPlanejamentoAnualPorTurmaComponenteQueryHandler(IRepositorioPlanejamentoAnualPeriodoEscolar repositorioPlanejamentoAnualPeriodoEscolar)
         {
-            this.repositorioPlanejamentoAnual = repositorioPlanejamentoAnual ?? throw new System.ArgumentNullException(nameof(repositorioPlanejamentoAnual));
-            this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new System.ArgumentNullException(nameof(repositorioPeriodoEscolar));
+            this.repositorioPlanejamentoAnualPeriodoEscolar = repositorioPlanejamentoAnualPeriodoEscolar ?? throw new System.ArgumentNullException(nameof(repositorioPlanejamentoAnualPeriodoEscolar));
         }
-        public async Task<PlanejamentoAnualDto> Handle(ObterPlanejamentoAnualPorTurmaComponenteQuery request, CancellationToken cancellationToken)
-        {
-            var planejamentoAnual = await repositorioPlanejamentoAnual.ObterPorTurmaEComponenteCurricular(request.TurmaId, request.ComponenteCurricularId);
-            return new PlanejamentoAnualDto
-            {
-                Id = planejamentoAnual.Id,
-                ComponenteCurricularId = request.ComponenteCurricularId,
-                TurmaId = request.TurmaId,
-                PeriodosEscolares = planejamentoAnual.PeriodosEscolares.Select(p => new PlanejamentoAnualPeriodoEscolarDto
-                {
-                    Bimestre = p.PeriodoEscolar.Bimestre,
-                    PeriodoEscolarId = p.PeriodoEscolarId,
-                    Id = p.Id,
-                    Componentes = p.ComponentesCurriculares.Select(c => new PlanejamentoAnualComponenteDto
-                    {
-                        PlanejamentoAnualComponenteCurricularId = c.Id,
-                        ComponenteCurricularId = c.ComponenteCurricularId,
-                        Descricao = c.Descricao,
-                        PlanejamentoAnualPeriodoEscolarId = c.PlanejamentoAnualPeriodoEscolarId,
-                        ObjetivosAprendizagemId = c.ObjetivosAprendizagem.Select(o => o.ObjetivoAprendizagemId)
-                    })
 
-                })
+        public async Task<PlanejamentoAnualPeriodoEscolarDto> Handle(ObterPlanejamentoAnualPorTurmaComponenteQuery request, CancellationToken cancellationToken)
+        {
+            var periodo = await repositorioPlanejamentoAnualPeriodoEscolar.ObterPlanejamentoAnualPeriodoEscolarPorTurmaEComponenteCurricular(request.TurmaId, request.ComponenteCurricularId, request.PeriodoEscolarId);
+
+            if (periodo == null)
+                return null;
+
+            return new PlanejamentoAnualPeriodoEscolarDto
+            {
+                Bimestre = periodo.PeriodoEscolar.Bimestre,
+                Componentes = periodo.ComponentesCurriculares.Select(c => new PlanejamentoAnualComponenteDto
+                {
+                    ComponenteCurricularId = c.ComponenteCurricularId,
+                    Descricao = c.Descricao,
+                    PlanejamentoAnualComponenteCurricularId = c.Id,
+                    PlanejamentoAnualPeriodoEscolarId = c.PlanejamentoAnualPeriodoEscolarId,
+                    ObjetivosAprendizagemId = c.ObjetivosAprendizagem.Select(o => o.ObjetivoAprendizagemId)
+                }),
+                Id = periodo.Id,
+                PeriodoEscolarId = periodo.PeriodoEscolar.Id
             };
         }
     }
