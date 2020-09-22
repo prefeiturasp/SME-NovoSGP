@@ -1,15 +1,15 @@
 ﻿using MediatR;
-using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterBimestresComConselhoClasseTurmaUsecase : IObterBimestresComConselhoClasseTurmaUseCase
+    public class ObterBimestresComConselhoClasseTurmaUseCase : IObterBimestresComConselhoClasseTurmaUseCase
     {
         private readonly IMediator mediator;
-        public ObterBimestresComConselhoClasseTurmaUsecase(IMediator mediator) 
+        public ObterBimestresComConselhoClasseTurmaUseCase(IMediator mediator) 
+
         {
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
