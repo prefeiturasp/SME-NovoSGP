@@ -41,8 +41,6 @@ namespace SME.SGP.Aplicacao
                 DiaConsulta = dataConsulta
             });
 
-            var ueId = await mediator.Send(new ObterUEIdPorCodigoQuery(filtroAulasEventosCalendarioDto.UeCodigo));
-
             var retorno = new EventosAulasNoDiaCalendarioDto();
 
             var podeCadastrarAulaEMensagem = await mediator.Send(new ObterPodeCadastrarAulaPorDataQuery()
@@ -51,7 +49,7 @@ namespace SME.SGP.Aplicacao
                 DreCodigo = filtroAulasEventosCalendarioDto.DreCodigo,
                 TipoCalendarioId = tipoCalendarioId,
                 DataAula = dataConsulta,
-                UeId = ueId
+                UeId = filtroAulasEventosCalendarioDto.UeId
             });
 
             retorno.PodeCadastrarAula = podeCadastrarAulaEMensagem.PodeCadastrar;

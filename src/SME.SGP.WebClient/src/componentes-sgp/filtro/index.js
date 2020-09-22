@@ -135,14 +135,18 @@ const Filtro = () => {
 
       const turmaAtual = turmas.find(turma => turma.valor === turmaSelecionada);
 
-      const unidadeEscolarDesc = unidadesEscolares.find(
+      const unidadeEscolar = unidadesEscolares.find(
         unidade => unidade.valor === unidadeEscolarSelecionada
+      );
+
+      const dre = dres.find(
+        d => d.valor === dreSelecionada
       );
 
       setTextoAutocomplete(
         `${modalidadeDesc ? modalidadeDesc.desc : 'Modalidade'} - ${
         turmaAtual ? turmaAtual.desc : 'Turma'
-        } - ${unidadeEscolarDesc ? unidadeEscolarDesc.desc : 'Unidade Escolar'}`
+        } - ${unidadeEscolar ? unidadeEscolar.desc : 'Unidade Escolar'}`
       );
 
       setAlternarFocoBusca(false);
@@ -155,14 +159,16 @@ const Filtro = () => {
         anoLetivo: anoLetivoSelecionado,
         modalidade: modalidadeSelecionada,
         dre: dreSelecionada,
+        dreId: dre.id,
         unidadeEscolar: unidadeEscolarSelecionada,
+        unidadeEscolarId: unidadeEscolar.id,
         turma: turmaSelecionada,
         ano: turmaSelecionadaCompleta.ano,
         desc: `${
           modalidadeDesc && modalidadeDesc.desc ? modalidadeDesc.desc : ''
           } - ${turmaAtual && turmaAtual.desc ? turmaAtual.desc : ''} - ${
-          unidadeEscolarDesc && unidadeEscolarDesc.desc
-            ? unidadeEscolarDesc.desc
+            unidadeEscolar && unidadeEscolar.desc
+            ? unidadeEscolar.desc
             : ''
           }`,
         periodo: periodoSelecionado || 0,
