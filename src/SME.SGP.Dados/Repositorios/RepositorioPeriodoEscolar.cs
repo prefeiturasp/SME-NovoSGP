@@ -130,5 +130,15 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryFirstAsync<int>(query.ToString(), new { tipoCalendarioId, dataReferencia, bimestre }) > 0;
         }
+
+        public async Task<PeriodoEscolar> ObterPorTipoCalendarioEBimestreAsync(long tipoCalendarioId, int bimestre)
+        {
+            var query = $@"select p.* 
+                            from periodo_escolar p
+                          where p.tipo_calendario_id = @tipoCalendarioId
+                            and p.bimestre = @bimestre";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoEscolar>(query.ToString(), new { tipoCalendarioId, bimestre });
+        }
     }
 }

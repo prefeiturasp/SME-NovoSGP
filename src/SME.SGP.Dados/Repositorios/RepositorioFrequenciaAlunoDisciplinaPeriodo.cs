@@ -22,7 +22,7 @@ namespace SME.SGP.Dados.Repositorios
                         from
 	                        frequencia_aluno
                         where
-	                        codigo_aluno = @codigoAluno::int8
+	                        codigo_aluno = @codigoAluno
 	                        and disciplina_id = @disciplinaId
 	                        and tipo = @tipoFrequencia
 	                        and periodo_escolar_id = @periodoEscolarId";
@@ -67,7 +67,7 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.Query<FrequenciaAluno>(query, new { periodoId });
         }
 
-        public IEnumerable<AlunoFaltosoBimestreDto> ObterAlunosFaltososBimestre(bool modalidadeEJA, double percentualFrequenciaMinimo, int bimestre, int? anoLetivo)
+        public IEnumerable<AlunoFaltosoBimestreDto> ObterAlunosFaltososBimestre(ModalidadeTipoCalendario modalidade, double percentualFrequenciaMinimo, int bimestre, int? anoLetivo)
         {
             var query = new StringBuilder();
 
@@ -87,8 +87,10 @@ namespace SME.SGP.Dados.Repositorios
 
             query.AppendLine("and ((fa.total_ausencias::numeric - fa.total_compensacoes::numeric ) / fa.total_aulas::numeric) > (1 -(@percentualFrequenciaMinimo::numeric / 100::numeric)) ");
 
-            if (modalidadeEJA)
+            if (modalidade == ModalidadeTipoCalendario.EJA)
                 query.AppendLine("and t.modalidade_codigo = 3");
+            else if (modalidade == ModalidadeTipoCalendario.Infantil)
+                query.AppendLine("and t.modalidade_codigo = 1");
             else query.AppendLine("and t.modalidade_codigo in (5,6)");
 
 
@@ -100,7 +102,7 @@ namespace SME.SGP.Dados.Repositorios
             var query = new StringBuilder(@"select * 
                             from frequencia_aluno
                            where tipo = 2
-	                        and codigo_aluno = @alunoCodigo::int8
+	                        and codigo_aluno = @alunoCodigo
                             and turma_id = @turmaCodigo ");
 
             if (!string.IsNullOrEmpty(componenteCurricularCodigo))
@@ -118,7 +120,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaBimestresAsync(string codigoAluno, int bimestre, string codigoTurma)
         {
             var query = @"select * from frequencia_aluno fa 
-                            where fa.codigo_aluno = @codigoAluno::int8
+                            where fa.codigo_aluno = @codigoAluno
                             and fa.turma_id = @turmaId and fa.tipo = 1";
 
             if (bimestre > 0)
@@ -138,7 +140,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = new StringBuilder(@"select *
                         from frequencia_aluno
-                        where codigo_aluno = @codigoAluno::int8
+                        where codigo_aluno = @codigoAluno
 	                        and tipo = @tipoFrequencia
 	                        and bimestre = @bimestre ");
 
@@ -161,7 +163,7 @@ namespace SME.SGP.Dados.Repositorios
                         from frequencia_aluno fa
                         inner join periodo_escolar pe on fa.periodo_escolar_id = pe.id
                         where
-	                        codigo_aluno = @codigoAluno::int8
+	                        codigo_aluno = @codigoAluno
 	                        and tipo = @tipoFrequencia
 	                        and pe.periodo_inicio <= @dataAtual
 	                        and pe.periodo_fim >= @dataAtual ");
@@ -183,7 +185,7 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select *
                         from frequencia_aluno fa
                         inner join periodo_escolar pe on fa.periodo_escolar_id = pe.id
-                        where codigo_aluno = @codigoAluno::int8
+                        where codigo_aluno = @codigoAluno
                             and disciplina_id = @disciplinaId
 	                        and tipo = 1
 	                        and pe.periodo_inicio <= @dataAtual

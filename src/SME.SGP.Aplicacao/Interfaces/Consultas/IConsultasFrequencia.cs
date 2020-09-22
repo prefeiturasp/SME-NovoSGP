@@ -1,8 +1,5 @@
 ﻿using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using System.Collections;
-using System.Collections.Generic;
-using SME.SGP.Dominio;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -22,7 +19,6 @@ namespace SME.SGP.Aplicacao
         Task<SinteseDto> ObterSinteseAluno(double percentualFrequencia, DisciplinaDto disciplina);
 
         Task<double> ObterFrequenciaMedia(DisciplinaDto disciplina);
-
         Task<double> ObterFrequenciaGeralAluno(string alunoCodigo, string turmaCodigo, string componenteCurricularCodigo = "");
     }
 }

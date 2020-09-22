@@ -48,7 +48,8 @@ namespace SME.SGP.Dados.Repositorios
 	                    data_atualizacao = @dataAtualizacao,
                         ensino_especial = @ensinoEspecial,
                         etapa_eja = @etapaEja,
-                        data_inicio = @dataInicio
+                        data_inicio = @dataInicio,
+                        serie_ensino = @serieEnsino
                     where
 	                    id = @id;";        
 
@@ -205,6 +206,7 @@ namespace SME.SGP.Dados.Repositorios
 	                        d.dre_id,
 	                        d.abreviacao,
 	                        d.data_atualizacao
+
                         from
 	                        turma t
                         inner join ue u on
@@ -330,7 +332,8 @@ namespace SME.SGP.Dados.Repositorios
                                         c.TipoTurno != l.TipoTurno ||
                                         c.EnsinoEspecial != l.EnsinoEspecial ||
                                         c.EtapaEJA != l.EtapaEJA ||
-                                        c.DataInicio != l.DataInicio)
+                                        c.DataInicio != l.DataInicio ||
+                                        c.SerieEnsino != l.SerieEnsino )
                                   select new Turma()
                                   {
                                       Ano = c.Ano,
@@ -347,7 +350,8 @@ namespace SME.SGP.Dados.Repositorios
                                       UeId = l.UeId,
                                       EnsinoEspecial = c.EnsinoEspecial,
                                       EtapaEJA = c.EtapaEJA,
-                                      DataInicio = c.DataInicio
+                                      DataInicio = c.DataInicio,
+                                      SerieEnsino = c.SerieEnsino
                                   };
 
                 foreach (var item in modificados)
@@ -365,7 +369,8 @@ namespace SME.SGP.Dados.Repositorios
                         id = item.Id,
                         ensinoEspecial = item.EnsinoEspecial,
                         etapaEja = item.EtapaEJA,
-                        dataInicio = item.DataInicio
+                        dataInicio = item.DataInicio,
+                        serieEnsino = item.SerieEnsino
                     });
 
                     resultado.Add(item);
@@ -468,5 +473,17 @@ namespace SME.SGP.Dados.Repositorios
                       not t.historica and
 	                  pe.bimestre = 1 and                      
 	                  current_date {(definirTurmasComoHistorica ? ">=" : "<")} pe.periodo_inicio"; //Turmas que deram início após o 1º bimestre serão marcadas como histórica
+        public async Task<IEnumerable<Turma>> ObterPorCodigosAsync(string[] codigos)
+        {
+            var query = "select * from turma t where t.turma_id = ANY(@codigos)";
+
+            return await contexto.Conexao.QueryAsync<Turma>(query, new { codigos });
+        }
+
+        public async Task<ObterTurmaSimplesPorIdRetornoDto> ObterTurmaSimplesPorId(long id)
+        {
+            var query = "select t.id, t.turma_id as codigo, t.nome from turma t where t.id = @id";
+            return await contexto.Conexao.QueryFirstOrDefaultAsync<ObterTurmaSimplesPorIdRetornoDto>(query, new { id });
+        }
     }
 }
