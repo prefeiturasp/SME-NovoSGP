@@ -52,6 +52,7 @@ namespace SME.SGP.Api.Controllers
 
             return Ok(retorno);
         }
+
         [HttpGet]
         [ProducesResponseType(typeof(EventoAulaDiaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
@@ -75,6 +76,7 @@ namespace SME.SGP.Api.Controllers
             retorno.EventosAulasMes = await ObterAulasEventosProfessorCalendarioPorMesUseCase.Executar(mediator, filtro, tipoCalendarioId, mes, servicoUsuario);
             return Ok(retorno);
         }
+
         [HttpPost]
         [ProducesResponseType(typeof(EventosAulasTipoCalendarioDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
