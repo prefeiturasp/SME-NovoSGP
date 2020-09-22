@@ -34,6 +34,10 @@ const PlanoAnual = () => {
 
   useEffect(() => {
     resetarInfomacoes();
+    return () => {
+      // Quando sair da tela vai executar para limpar os dados no redux!
+      resetarInfomacoes();
+    };
   }, [turmaSelecionada, resetarInfomacoes]);
 
   useEffect(() => {

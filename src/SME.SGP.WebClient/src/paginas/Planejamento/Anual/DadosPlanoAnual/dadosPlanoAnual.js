@@ -24,6 +24,13 @@ const DadosPlanoAnual = () => {
     store => store.planoAnual.componenteCurricular
   );
 
+  // Seta o componente curricular selecionado no SelectComponent quando não é REGENCIA!
+  const montarListaComponenteCurricularesPlanejamento = useCallback(() => {
+    dispatch(
+      setListaComponentesCurricularesPlanejamento([componenteCurricular])
+    );
+  }, [dispatch, componenteCurricular]);
+
   // Carrega lista de componentes para montar as TABS!
   const obterListaComponentesCurricularesPlanejamento = useCallback(() => {
     const turmaPrograma = !!(turmaSelecionada.ano === '0');
@@ -92,8 +99,16 @@ const DadosPlanoAnual = () => {
       turmaSelecionada.turma
     ) {
       obterBimestresDadosPlanosAnual();
+      // Quando for regencia vai ter somente uma tab que é o componente curricular selecionado do SelectComponent!
+      if (componenteCurricular.regencia) {
+        obterListaComponentesCurricularesPlanejamento();
+      } else {
+        montarListaComponenteCurricularesPlanejamento();
+      }
     }
   }, [
+    obterListaComponentesCurricularesPlanejamento,
+    montarListaComponenteCurricularesPlanejamento,
     obterBimestresDadosPlanosAnual,
     componenteCurricular,
     dispatch,

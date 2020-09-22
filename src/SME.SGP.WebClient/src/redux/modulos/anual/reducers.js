@@ -38,9 +38,10 @@ export default function planoAnual(state = inicial, action) {
       case '@planoAnual/limparDadosPlanoAnual': {
         return {
           ...draft,
+          listaComponentesCurricularesPlanejamento: [],
+          dadosBimestresPlanoAnual: [],
           planoAnualEmEdicao: false,
           componenteCurricular: undefined,
-          dadosBimestresPlanoAnual: [],
           tabAtualComponenteCurricular: [],
         };
       }
