@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaExcluirNotificacaoDevolutiva,
                       new ExcluirNotificacaoDevolutivaDto(request.DevolutivaId), Guid.NewGuid(), null));
 
-            repositorioDevolutiva.Remover(request.DevolutivaId);
+            await repositorioDevolutiva.RemoverLogico(request.DevolutivaId);
 
             return true;
         }
