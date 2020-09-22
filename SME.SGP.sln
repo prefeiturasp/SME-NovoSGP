@@ -45,7 +45,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Benchmarks", "Benchmarks", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SME.SGP.Benchmarks", "src\Benchmarks\SME.SGP.Benchmarks\SME.SGP.Benchmarks.csproj", "{6EB81BA0-A25D-47D5-B121-2E16D00B905C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SME.SGP.Worker.Rabbbit", "src\SME.SGP.Worker.Rabbbit\SME.SGP.Worker.Rabbbit.csproj", "{5D1E1816-8C8B-4FB8-87BA-0E5D84FACA9C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SME.SGP.Worker.Rabbbit", "src\SME.SGP.Worker.Rabbbit\SME.SGP.Worker.Rabbbit.csproj", "{5D1E1816-8C8B-4FB8-87BA-0E5D84FACA9C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
