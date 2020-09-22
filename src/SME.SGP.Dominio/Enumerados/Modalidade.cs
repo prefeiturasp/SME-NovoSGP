@@ -16,4 +16,23 @@ namespace SME.SGP.Dominio
         [Display(Name = "EJA", ShortName = "EJA")]
         EJA = 3
     }
+
+    public static class ModalidadeExtension
+    {
+        public static ModalidadeTipoCalendario ObterModalidadeTipoCalendario(this Modalidade modalidade)
+        {
+            switch (modalidade)
+            {
+                case Modalidade.Infantil:
+                    return ModalidadeTipoCalendario.Infantil;
+                case Modalidade.Fundamental:
+                case Modalidade.Medio:
+                    return ModalidadeTipoCalendario.FundamentalMedio;
+                case Modalidade.EJA:
+                    return ModalidadeTipoCalendario.EJA;
+                default:
+                    return ModalidadeTipoCalendario.FundamentalMedio;
+            }
+        }
+    }
 }
