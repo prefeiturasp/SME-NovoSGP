@@ -8,7 +8,8 @@ namespace SME.SGP.Aplicacao
     public class ObterBimestresComConselhoClasseTurmaUseCase : IObterBimestresComConselhoClasseTurmaUseCase
     {
         private readonly IMediator mediator;
-        public ObterBimestresComConselhoClasseTurmaUseCase(IMediator mediator)
+        public ObterBimestresComConselhoClasseTurmaUseCase(IMediator mediator) 
+
         {
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
