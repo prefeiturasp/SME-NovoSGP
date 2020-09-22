@@ -1,4 +1,4 @@
---Área do conhecimento
+--ï¿½rea do conhecimento
 CREATE TABLE if not exists public.componente_curricular_area_conhecimento (
 	id int8 NOT NULL,
 	nome varchar(200) NOT null,
@@ -10,19 +10,19 @@ INSERT INTO public.componente_curricular_area_conhecimento
 VALUES(1, 'Linguagens');
 INSERT INTO public.componente_curricular_area_conhecimento
 (id, nome)
-VALUES(2, 'Matemática');
+VALUES(2, 'Matemï¿½tica');
 INSERT INTO public.componente_curricular_area_conhecimento
 (id, nome)
-VALUES(3, 'Ciências da Natureza');
+VALUES(3, 'Ciï¿½ncias da Natureza');
 INSERT INTO public.componente_curricular_area_conhecimento
 (id, nome)
-VALUES(4, 'Ciências Humanas');
+VALUES(4, 'Ciï¿½ncias Humanas');
 INSERT INTO public.componente_curricular_area_conhecimento
 (id, nome)
-VALUES(5, 'Língua Estrangeira Moderna');
+VALUES(5, 'Lï¿½ngua Estrangeira Moderna');
 INSERT INTO public.componente_curricular_area_conhecimento
 (id, nome)
-VALUES(6, 'Língua Brasileira de Sinais');
+VALUES(6, 'Lï¿½ngua Brasileira de Sinais');
 
 
 
@@ -48,6 +48,7 @@ INSERT INTO public.componente_curricular_grupo_matriz
 VALUES(4, 'Integral');
 
 
+ALTER TABLE public.componente_curricular RENAME TO componente_curricular_jurema;
 
 --Componente Curricular
 CREATE TABLE if not exists public.componente_curricular(
