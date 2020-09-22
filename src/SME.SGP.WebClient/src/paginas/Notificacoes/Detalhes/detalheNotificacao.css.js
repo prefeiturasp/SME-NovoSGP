@@ -71,4 +71,20 @@ export const EstiloDetalhe = styled.div`
       letter-spacing: normal;
     }
   }
+
+  .luiz {
+    font-stretch: normal;
+    height: 100%;
+    letter-spacing: normal;
+    line-height: normal;
+    font-family: 'FontAwesome', 'Roboto', sans-serif !important;
+    color: white;
+    background: #064f79;
+    border-radius: 2.52361px;
+    padding: 15px;
+   
+    :hover {
+      color: white !important;
+    }
+  }
 `;
