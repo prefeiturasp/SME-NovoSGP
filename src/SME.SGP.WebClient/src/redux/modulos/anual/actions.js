@@ -1,5 +1,5 @@
-export const setDadosBimestresPlanoAnual = payload => ({
-  type: '@planoAnual/setDadosBimestresPlanoAnual',
+export const setBimestresPlanoAnual = payload => ({
+  type: '@planoAnual/setBimestresPlanoAnual',
   payload,
 });
 
@@ -25,5 +25,10 @@ export const limparDadosPlanoAnual = payload => ({
 
 export const setTabAtualComponenteCurricular = payload => ({
   type: '@planoAnual/setTabAtualComponenteCurricular',
+  payload,
+});
+
+export const setDadosBimestresPlanoAnual = payload => ({
+  type: '@planoAnual/setDadosBimestresPlanoAnual',
   payload,
 });

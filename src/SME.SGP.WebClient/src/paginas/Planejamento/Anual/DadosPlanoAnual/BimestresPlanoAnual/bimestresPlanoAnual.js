@@ -4,14 +4,14 @@ import shortid from 'shortid';
 import BimestreCardCollapse from './bimestreCardCollapse';
 
 const BimestresPlanoAnual = () => {
-  const dadosBimestresPlanoAnual = useSelector(
-    store => store.planoAnual.dadosBimestresPlanoAnual
+  const bimestresPlanoAnual = useSelector(
+    store => store.planoAnual.bimestresPlanoAnual
   );
 
   return (
     <>
-      {dadosBimestresPlanoAnual && dadosBimestresPlanoAnual.length
-        ? dadosBimestresPlanoAnual.map(item => {
+      {bimestresPlanoAnual && bimestresPlanoAnual.length
+        ? bimestresPlanoAnual.map(item => {
             return (
               <div key={shortid.generate()} className="mb-4">
                 <BimestreCardCollapse dadosBimestre={item} />
