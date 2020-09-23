@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,22 +19,27 @@ namespace SME.SGP.Aplicacao
 
         public async Task<PlanejamentoAnualPeriodoEscolarDto> Handle(ObterPlanejamentoAnualPorTurmaComponenteQuery request, CancellationToken cancellationToken)
         {
-            var periodo = await repositorioPlanejamentoAnualPeriodoEscolar.ObterPlanejamentoAnualPeriodoEscolarPorTurmaEComponenteCurricular(request.TurmaId, request.ComponenteCurricularId, request.PeriodoEscolarId);
-
-            if (periodo == null)
-                return null;
-
-            return new PlanejamentoAnualPeriodoEscolarDto
+            var planejamento = new PlanejamentoAnualPeriodoEscolarDto
             {
-                Bimestre = periodo.PeriodoEscolar.Bimestre,
-                Componentes = periodo.ComponentesCurriculares.Select(c => new PlanejamentoAnualComponenteDto
+                Componentes = new List<PlanejamentoAnualComponenteDto>(),
+            };
+
+            var periodo = await repositorioPlanejamentoAnualPeriodoEscolar.ObterPlanejamentoAnualPeriodoEscolarPorTurmaEComponenteCurricular(request.TurmaId, request.ComponenteCurricularId, request.PeriodoEscolarId);
+            if (periodo != null)
+            {
+                planejamento.Bimestre = periodo.PeriodoEscolar != null ? periodo.PeriodoEscolar.Bimestre : 0;
+                planejamento.Componentes = periodo.ComponentesCurriculares?.Select(c => new PlanejamentoAnualComponenteDto
                 {
                     ComponenteCurricularId = c.ComponenteCurricularId,
                     Descricao = c.Descricao,
-                    ObjetivosAprendizagemId = c.ObjetivosAprendizagem.Select(o => o.ObjetivoAprendizagemId)
-                })?.ToList(),
-                PeriodoEscolarId = periodo.PeriodoEscolar.Id
-            };
+                    ObjetivosAprendizagemId = c.ObjetivosAprendizagem?.Select(o => o.ObjetivoAprendizagemId),
+                    Auditoria = (AuditoriaDto)c
+                })?.ToList();
+                planejamento.PeriodoEscolarId = periodo.PeriodoEscolar.Id;
+            }
+
+            return planejamento;
+
         }
     }
 }
