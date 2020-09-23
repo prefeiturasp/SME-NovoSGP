@@ -49,6 +49,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao
                 .QueryFirstAsync<KeyValuePair<string, string>>(query.ToString(), new { tipo });
         }
+
         public async Task<IEnumerable<ParametrosSistema>> ObterPorTiposAsync(long[] tipos)
         {
             var query = @"SELECT * FROM PARAMETROS_SISTEMA WHERE TIPO = ANY(@tipos) AND ATIVO = TRUE";

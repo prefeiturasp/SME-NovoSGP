@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿using MediatR;
+using Moq;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
@@ -29,6 +30,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
         private readonly Mock<IServicoUsuario> servicoUsuario;
         private readonly Mock<IUnitOfWork> unitOfWork;
         private readonly Mock<IServicoEol> servicoEOL;
+        private readonly Mock<IMediator> mediator;
         private AbrangenciaFiltroRetorno abrangencia;
         private Aula aula;
         private Guid PERFIL_CJ = Guid.Parse("41e1e074-37d6-e911-abd6-f81654fe895d");
@@ -53,6 +55,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
             consultasProfessor = new Mock<IConsultasProfessor>();
             consultasObjetivosAprendizagem = new Mock<IConsultasObjetivoAprendizagem>();
             repositorioPeriodoEscolar = new Mock<IRepositorioPeriodoEscolar>();
+            mediator = new Mock<IMediator>();
 
             comandosPlanoAula = new ComandosPlanoAula(repositorioPlanoAula.Object,
                                                     repositorioObjetivosAula.Object,
@@ -65,7 +68,8 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
                                                     consultasProfessor.Object,
                                                     servicoUsuario.Object,
                                                     unitOfWork.Object,
-                                                    repositorioPeriodoEscolar.Object);
+                                                    repositorioPeriodoEscolar.Object,
+                                                    mediator.Object);
             Setup();
         }
 

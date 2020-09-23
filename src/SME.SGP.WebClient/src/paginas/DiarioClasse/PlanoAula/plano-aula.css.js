@@ -30,6 +30,12 @@ export const Corpo = styled.div`
     background: ${Base.CinzaBadge} !important;
     border-color: ${Base.CinzaBadge} !important;
   }
+
+  .btn-imprimir {
+    i {
+      margin-right: 0px !important;
+    }
+  }
 `;
 
 export const Descritivo = styled.h6`
