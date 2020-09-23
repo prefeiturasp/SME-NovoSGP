@@ -10,12 +10,13 @@ namespace SME.SGP.Api.Controllers
     [ApiController]
     [Route("api/v1/planejamento/anual")]
     [ValidaDto]
-    //[Authorize("Bearer")]
+    [Authorize("Bearer")]
     public class PlanejamentoAnualController : ControllerBase
     {
         [HttpPost("turmas/{turmaId}/componentes-curriculares/{componenteCurricularId}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.PA_I, Policy = "Bearer")]
         public async Task<IActionResult> Salvar(long turmaId, long componenteCurricularId, [FromBody] SalvarPlanejamentoAnualDto dto, [FromServices] ISalvarPlanejamentoAnualUseCase useCase)
         {
             return Ok(await useCase.Executar(turmaId, componenteCurricularId, dto));
@@ -25,6 +26,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(PlanejamentoAnualDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.PA_C, Policy = "Bearer")]
         public async Task<IActionResult> Obter(long turmaId, long componenteCurricularId,long periodoEscolarId, [FromServices] IObterPlanejamentoAnualPorTurmaComponenteUseCase useCase)
         {
             return Ok(await useCase.Executar(turmaId, componenteCurricularId, periodoEscolarId));
