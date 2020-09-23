@@ -1,4 +1,7 @@
 import api from '~/servicos/api';
+import { store } from '~/redux';
+import { erros } from '../alertas';
+import { setListaObjetivosAprendizagemPorComponente } from '~/redux/modulos/anual/actions';
 
 class ServicoPlanoAnual {
   obter = (anoLetivo, componenteCurricularEolId, ueId, turmaId) => {
@@ -44,6 +47,42 @@ class ServicoPlanoAnual {
   ) => {
     const url = `v1/planejamento/anual/turmas/${turmaId}/componentes-curriculares/${componenteCurricularId}/periodos-escolares/${periodoEscolarId}`;
     return api.get(url);
+  };
+
+  obterListaObjetivosPorAnoEComponenteCurricular = async (
+    ano,
+    ensinoEspecial,
+    codigoComponenteCurricular
+  ) => {
+    const { dispatch } = store;
+    const state = store.getState();
+    const { planoAnual } = state;
+
+    const { listaObjetivosAprendizagemPorComponente } = planoAnual;
+
+    const listaObjetivos =
+      listaObjetivosAprendizagemPorComponente[codigoComponenteCurricular];
+
+    if (listaObjetivos && listaObjetivos.length) {
+      return listaObjetivos;
+    }
+
+    const objetivos = await this.obterObjetivosPorAnoEComponenteCurricular(
+      ano,
+      ensinoEspecial,
+      [codigoComponenteCurricular]
+    ).catch(e => erros(e));
+
+    if (objetivos && objetivos.data && objetivos.data.length) {
+      dispatch(
+        setListaObjetivosAprendizagemPorComponente({
+          objetivos: objetivos.data,
+          codigoComponenteCurricular,
+        })
+      );
+      return objetivos.data;
+    }
+    return [];
   };
 }
 

@@ -7,6 +7,8 @@ const inicial = {
   componenteCurricular: undefined,
   tabAtualComponenteCurricular: [],
   dadosBimestresPlanoAnual: [],
+  dadosEditadosBimestresPlanoAnual: [],
+  listaObjetivosAprendizagemPorComponente: [],
 };
 
 export default function planoAnual(state = inicial, action) {
@@ -45,6 +47,8 @@ export default function planoAnual(state = inicial, action) {
           componenteCurricular: undefined,
           tabAtualComponenteCurricular: [],
           dadosBimestresPlanoAnual: [],
+          dadosEditadosBimestresPlanoAnual: [],
+          listaObjetivosAprendizagemPorComponente: [],
         };
       }
       case '@planoAnual/setTabAtualComponenteCurricular': {
@@ -61,6 +65,23 @@ export default function planoAnual(state = inicial, action) {
         return {
           ...draft,
           dadosBimestresPlanoAnual: dados,
+        };
+      }
+      // case '@planoAnual/setDadosEditadosBimestresPlanoAnual': {
+      //   const dados = state.dadosBimestresPlanoAnual;
+      //   dados[action.payload.bimestre] = action.payload;
+      //   return {
+      //     ...draft,
+      //     dadosEditadosBimestresPlanoAnual: dados,
+      //   };
+      // }
+      case '@planoAnual/setListaObjetivosAprendizagemPorComponente': {
+        const dados = state.listaObjetivosAprendizagemPorComponente;
+        dados[action.payload.codigoComponenteCurricular] =
+          action.payload.objetivos;
+        return {
+          ...draft,
+          listaObjetivosAprendizagemPorComponente: dados,
         };
       }
 
