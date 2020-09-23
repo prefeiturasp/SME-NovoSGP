@@ -30,11 +30,8 @@ namespace SME.SGP.Aplicacao
                 {
                     ComponenteCurricularId = c.ComponenteCurricularId,
                     Descricao = c.Descricao,
-                    PlanejamentoAnualComponenteCurricularId = c.Id,
-                    PlanejamentoAnualPeriodoEscolarId = c.PlanejamentoAnualPeriodoEscolarId,
                     ObjetivosAprendizagemId = c.ObjetivosAprendizagem.Select(o => o.ObjetivoAprendizagemId)
                 }),
-                Id = periodo.Id,
                 PeriodoEscolarId = periodo.PeriodoEscolar.Id
             };
         }

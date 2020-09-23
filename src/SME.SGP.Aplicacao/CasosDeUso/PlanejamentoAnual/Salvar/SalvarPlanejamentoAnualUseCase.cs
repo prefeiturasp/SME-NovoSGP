@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
             this.unitOfWork = unitOfWork ?? throw new System.ArgumentNullException(nameof(unitOfWork));
         }
-        public async Task<AuditoriaDto> Executar(long turmaId, long componenteCurricularId, SalvarPlanejamentoAnualDto dto)
+        public async Task<PlanejamentoAnualAuditoriaDto> Executar(long turmaId, long componenteCurricularId, SalvarPlanejamentoAnualDto dto)
         {
             unitOfWork.IniciarTransacao();
 
@@ -24,7 +24,6 @@ namespace SME.SGP.Aplicacao
             {
                 TurmaId = turmaId,
                 ComponenteCurricularId = componenteCurricularId,
-                Id = dto.Id,
                 PeriodosEscolares = dto.PeriodosEscolares
             });
 

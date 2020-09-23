@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class SalvarPlanejamentoAnualCommandHandler : IRequestHandler<SalvarPlanejamentoAnualCommand, AuditoriaDto>
+    public class SalvarPlanejamentoAnualCommandHandler : IRequestHandler<SalvarPlanejamentoAnualCommand, PlanejamentoAnualAuditoriaDto>
     {
         private readonly IRepositorioPlanejamentoAnual repositorioPlanejamentoAnual;
         private readonly IRepositorioPlanejamentoAnualPeriodoEscolar repositorioPlanejamentoAnualPeriodoEscolar;
@@ -26,8 +26,9 @@ namespace SME.SGP.Aplicacao
             this.repositorioPlanejamentoAnualComponente = repositorioPlanejamentoAnualComponente ?? throw new System.ArgumentNullException(nameof(repositorioPlanejamentoAnualComponente));
             this.repositorioPlanejamentoAnualObjetivosAprendizagem = repositorioPlanejamentoAnualObjetivosAprendizagem ?? throw new System.ArgumentNullException(nameof(repositorioPlanejamentoAnualObjetivosAprendizagem));
         }
-        public async Task<AuditoriaDto> Handle(SalvarPlanejamentoAnualCommand comando, CancellationToken cancellationToken)
+        public async Task<PlanejamentoAnualAuditoriaDto> Handle(SalvarPlanejamentoAnualCommand comando, CancellationToken cancellationToken)
         {
+            PlanejamentoAnualAuditoriaDto auditoria = new PlanejamentoAnualAuditoriaDto();
             var planejamentoAnual = await repositorioPlanejamentoAnual.ObterPlanejamentoSimplificadoPorTurmaEComponenteCurricular(comando.TurmaId, comando.ComponenteCurricularId);
             if (planejamentoAnual == null)
             {
@@ -52,7 +53,6 @@ namespace SME.SGP.Aplicacao
                             Descricao = componente.Descricao,
                             PlanejamentoAnualPeriodoEscolarId = planejamentoPeriodoEscolar.Id
                         };
-                        //SALVAR COMPONENTES
 
                         var objetivos = componente.ObjetivosAprendizagemId.Select(c => new PlanejamentoAnualObjetivoAprendizagem
                         {
@@ -63,7 +63,18 @@ namespace SME.SGP.Aplicacao
                         await repositorioPlanejamentoAnualComponente.SalvarAsync(planejamentoAnualComponente);
                         await Task.Run(() => repositorioPlanejamentoAnualObjetivosAprendizagem.SalvarVarios(objetivos, planejamentoAnualComponente.Id));
                     }
+                    //auditoria.PeriodosEscolares.Add(new PlanejamentoAnualPeriodoEscolarDto
+                    //{
+                    //    Bimestre = planejamentoPeriodoEscolar.PeriodoEscolar.Bimestre,
+                    //    PeriodoEscolarId = planejamentoPeriodoEscolar.PeriodoEscolar.Id,
+                    //    Componentes = periodo.Componentes.Select(c => new PlanejamentoAnualComponenteDto
+                    //    {
+                    //        ComponenteCurricularId = c.ComponenteCurricularId,
+                    //        Auditoria = (AuditoriaDto)c
+                    //    })
+                    //});
                 }
+                //auditorias.Add((AuditoriaDto)planejamentoAnual);
             }
             else
             {
@@ -113,7 +124,7 @@ namespace SME.SGP.Aplicacao
                 }
             }
 
-            return (AuditoriaDto)planejamentoAnual;
+            return null;
         }
     }
 }

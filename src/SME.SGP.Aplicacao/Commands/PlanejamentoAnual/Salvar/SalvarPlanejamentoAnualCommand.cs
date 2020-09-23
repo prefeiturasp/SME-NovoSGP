@@ -5,11 +5,10 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class SalvarPlanejamentoAnualCommand : IRequest<AuditoriaDto>
+    public class SalvarPlanejamentoAnualCommand : IRequest<PlanejamentoAnualAuditoriaDto>
     {
         public long TurmaId { get; set; }
         public long ComponenteCurricularId { get; set; }
-        public long Id { get; set; }
         public IEnumerable<PlanejamentoAnualPeriodoEscolarDto> PeriodosEscolares { get; set; }
     }
 
