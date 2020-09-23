@@ -59,7 +59,7 @@ namespace SME.SGP.Aplicacao
 
             if(filtro.DreId != null && filtro.UeId == null)
             {
-                eventos = eventos.Where(e => e.DreId == null);
+                eventos = eventos.Where(e => e.DreCodigo == null);
             }
 
             if (tipoCalendario == null)

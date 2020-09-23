@@ -76,8 +76,8 @@ namespace SME.SGP.Dominio.Teste
                 {
                     LocalOcorrencia = EventoLocalOcorrencia.UE
                 },
-                DreId = "123",
-                UeId = "123"
+                DreCodigo = "123",
+                UeCodigo = "123"
             };
             var usuario = new Usuario();
             usuario.DefinirPerfis(perfisUsuario);
@@ -137,15 +137,15 @@ namespace SME.SGP.Dominio.Teste
                 {
                     LocalOcorrencia = EventoLocalOcorrencia.SME
                 },
-                UeId = "123"
+                UeCodigo = "123"
             };
             var usuario = new Usuario();
             usuario.DefinirPerfis(perfisUsuario);
             var erro = Assert.Throws<NegocioException>(() => usuario.PodeCriarEvento(evento));
             Assert.Equal("É necessário informar a DRE.", erro.Message);
 
-            evento.DreId = "123";
-            evento.UeId = "";
+            evento.DreCodigo = "123";
+            evento.UeCodigo = "";
             erro = Assert.Throws<NegocioException>(() => usuario.PodeCriarEvento(evento));
             Assert.Equal("É necessário informar a UE.", erro.Message);
         }
@@ -166,8 +166,8 @@ namespace SME.SGP.Dominio.Teste
                 {
                     LocalOcorrencia = EventoLocalOcorrencia.SME
                 },
-                DreId = "123",
-                UeId = "123"
+                DreCodigo = "123",
+                UeCodigo = "123"
             };
             var usuario = new Usuario();
             usuario.DefinirPerfis(perfisUsuario);

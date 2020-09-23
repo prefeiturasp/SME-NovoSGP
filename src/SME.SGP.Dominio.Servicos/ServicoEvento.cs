@@ -115,7 +115,7 @@ namespace SME.SGP.Dominio.Servicos
             repositorioEvento.Salvar(evento);
 
             // Envia para workflow apenas na Inclusão ou alteração apos aprovado
-            var enviarParaWorkflow = !string.IsNullOrWhiteSpace(evento.UeId) && devePassarPorWorkflowLiberacaoExcepcional;
+            var enviarParaWorkflow = !string.IsNullOrWhiteSpace(evento.UeCodigo) && devePassarPorWorkflowLiberacaoExcepcional;
             if (!ehAlteracao || (evento.Status == EntidadeStatus.Aprovado))
             {
                 if (enviarParaWorkflow)
@@ -214,23 +214,23 @@ namespace SME.SGP.Dominio.Servicos
 
         private static void AtribuirNullSeVazio(Evento evento)
         {
-            if (string.IsNullOrWhiteSpace(evento.DreId))
-                evento.DreId = null;
+            if (string.IsNullOrWhiteSpace(evento.DreCodigo))
+                evento.DreCodigo = null;
 
-            if (string.IsNullOrWhiteSpace(evento.UeId))
-                evento.UeId = null;
+            if (string.IsNullOrWhiteSpace(evento.UeCodigo))
+                evento.UeCodigo = null;
         }
 
         private Evento AlterarEventoDeRecorrencia(Evento evento, Evento eventoASerAlterado)
         {
             eventoASerAlterado.Descricao = evento.Descricao;
-            eventoASerAlterado.DreId = evento.DreId;
+            eventoASerAlterado.DreCodigo = evento.DreCodigo;
             eventoASerAlterado.FeriadoId = evento.FeriadoId;
             eventoASerAlterado.Letivo = evento.Letivo;
             eventoASerAlterado.Nome = evento.Nome;
             eventoASerAlterado.TipoCalendarioId = evento.TipoCalendarioId;
             eventoASerAlterado.TipoEventoId = evento.TipoEventoId;
-            eventoASerAlterado.UeId = evento.UeId;
+            eventoASerAlterado.UeCodigo = evento.UeCodigo;
             return eventoASerAlterado;
         }
 
@@ -244,8 +244,8 @@ namespace SME.SGP.Dominio.Servicos
                 NotificacaoCategoria = NotificacaoCategoria.Workflow_Aprovacao,
                 EntidadeParaAprovarId = evento.Id,
                 Tipo = WorkflowAprovacaoTipo.Evento_Liberacao_Excepcional,
-                UeId = evento.UeId,
-                DreId = evento.DreId,
+                UeId = evento.UeCodigo,
+                DreId = evento.DreCodigo,
                 NotificacaoTitulo = "Criação de Eventos Excepcionais",
                 NotificacaoTipo = NotificacaoTipo.Calendario,
                 NotificacaoMensagem = $"O evento {evento.Nome} - {evento.DataInicio.Day}/{evento.DataInicio.Month}/{evento.DataInicio.Year} foi criado no calendário {tipoCalendario.Nome} da {escola.NomeSimples}. Para que este evento seja considerado válido, você precisa aceitar esta notificação. Para visualizar o evento clique <a href='{linkParaEvento}'>aqui</a>."
@@ -357,7 +357,7 @@ namespace SME.SGP.Dominio.Servicos
         {
             var loginAtual = servicoUsuario.ObterLoginAtual();
             var perfilAtual = servicoUsuario.ObterPerfilAtual();
-            var escola = await repositorioAbrangencia.ObterUe(evento.UeId, loginAtual, perfilAtual);
+            var escola = await repositorioAbrangencia.ObterUe(evento.UeCodigo, loginAtual, perfilAtual);
 
             if (escola == null)
                 throw new NegocioException($"Não foi possível localizar a escola da criação do evento.");
@@ -423,7 +423,7 @@ namespace SME.SGP.Dominio.Servicos
                 }
                 else
                 {
-                    var temEventoLiberacaoExcepcional = await repositorioEvento.TemEventoNosDiasETipo(evento.DataInicio.Date, evento.DataFim.Date, TipoEvento.LiberacaoExcepcional, evento.TipoCalendarioId, evento.UeId, evento.DreId);
+                    var temEventoLiberacaoExcepcional = await repositorioEvento.TemEventoNosDiasETipo(evento.DataInicio.Date, evento.DataFim.Date, TipoEvento.LiberacaoExcepcional, evento.TipoCalendarioId, evento.UeCodigo, evento.DreCodigo);
 
                     if (await repositorioEvento.TemEventoNosDiasETipo(evento.DataInicio.Date, evento.DataFim.Date, TipoEvento.ReposicaoNoRecesso, evento.TipoCalendarioId, string.Empty, string.Empty))
                     {
@@ -447,7 +447,7 @@ namespace SME.SGP.Dominio.Servicos
 
                         if (estaNoPeriodoEscolar)
                         {
-                            var temEventoSuspensaoAtividades = await repositorioEvento.TemEventoNosDiasETipo(evento.DataInicio.Date, evento.DataFim.Date, TipoEvento.SuspensaoAtividades, evento.TipoCalendarioId, evento.UeId, evento.DreId, escopoRetroativo: true);
+                            var temEventoSuspensaoAtividades = await repositorioEvento.TemEventoNosDiasETipo(evento.DataInicio.Date, evento.DataFim.Date, TipoEvento.SuspensaoAtividades, evento.TipoCalendarioId, evento.UeCodigo, evento.DreCodigo, escopoRetroativo: true);
                             var temEventoFeriado = await repositorioEvento.TemEventoNosDiasETipo(evento.DataInicio.Date, evento.DataFim.Date, TipoEvento.Feriado, evento.TipoCalendarioId, string.Empty, string.Empty);
                             if ((temEventoFeriado || temEventoSuspensaoAtividades || evento.DataInicio.DayOfWeek == DayOfWeek.Sunday || evento.DataFim.DayOfWeek == DayOfWeek.Sunday) && evento.Letivo == EventoLetivo.Sim)
                             {

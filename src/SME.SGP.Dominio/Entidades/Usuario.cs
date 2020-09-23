@@ -180,7 +180,7 @@ namespace SME.SGP.Dominio
         {
             if (evento.CriadoRF != this.CodigoRf)
             {
-                if (string.IsNullOrEmpty(evento.DreId) && string.IsNullOrEmpty(evento.UeId) && !PossuiPerfilSme())
+                if (string.IsNullOrEmpty(evento.DreCodigo) && string.IsNullOrEmpty(evento.UeCodigo) && !PossuiPerfilSme())
                     throw new NegocioException("Evento da SME só pode ser editado por usuario com perfil SME.");
 
                 if (evento.TipoEvento.LocalOcorrencia == EventoLocalOcorrencia.DRE)
@@ -198,12 +198,12 @@ namespace SME.SGP.Dominio
 
         public void PodeCriarEvento(Evento evento)
         {
-            if (!PossuiPerfilSme() && string.IsNullOrWhiteSpace(evento.DreId))
+            if (!PossuiPerfilSme() && string.IsNullOrWhiteSpace(evento.DreCodigo))
             {
                 throw new NegocioException("É necessário informar a DRE.");
             }
 
-            if (!PossuiPerfilSmeOuDre() && string.IsNullOrWhiteSpace(evento.UeId))
+            if (!PossuiPerfilSmeOuDre() && string.IsNullOrWhiteSpace(evento.UeCodigo))
             {
                 throw new NegocioException("É necessário informar a UE.");
             }
