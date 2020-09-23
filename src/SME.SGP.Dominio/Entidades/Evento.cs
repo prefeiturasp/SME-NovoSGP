@@ -16,7 +16,7 @@ namespace SME.SGP.Dominio
         public DateTime DataFim { get; set; }
         public DateTime DataInicio { get; set; }
         public string Descricao { get; set; }
-        public string DreId { get; set; }
+        public string DreCodigo { get; set; }
         public long? EventoPaiId { get; set; }
         public bool Excluido { get; set; }
         public FeriadoCalendario FeriadoCalendario { get; set; }
@@ -30,9 +30,13 @@ namespace SME.SGP.Dominio
         public EventoTipo TipoEvento { get; set; }
         public long TipoEventoId { get; set; }
         public TipoPerfil? TipoPerfilCadastro { get; set; }
-        public string UeId { get; set; }
+        public string UeCodigo { get; set; }
         public WorkflowAprovacao WorkflowAprovacao { get; set; }
         public long? WorkflowAprovacaoId { get; set; }
+        public Dre Dre { get; set; }
+        public long DreId { get; set; }
+        public Ue Ue { get; set; }
+        public long UeId { get; set; }
 
         public void AdicionarTipoCalendario(TipoCalendario tipoCalendario)
         {
@@ -69,7 +73,7 @@ namespace SME.SGP.Dominio
                 DataFim = DataFim,
                 DataInicio = DataInicio,
                 Descricao = Descricao,
-                DreId = DreId,
+                DreCodigo = DreCodigo,
                 Excluido = Excluido,
                 FeriadoCalendario = FeriadoCalendario,
                 FeriadoId = FeriadoId,
@@ -79,7 +83,7 @@ namespace SME.SGP.Dominio
                 TipoCalendarioId = TipoCalendarioId,
                 TipoEvento = TipoEvento,
                 TipoEventoId = TipoEventoId,
-                UeId = UeId
+                UeCodigo = UeCodigo
             };
         }
 
@@ -183,10 +187,10 @@ namespace SME.SGP.Dominio
                 if (!usuario.PossuiPerfilSme())
                     throw new NegocioException("Somente usuário com perfil SME pode cadastrar esse tipo de evento.");
 
-                if (string.IsNullOrEmpty(this.DreId))
+                if (string.IsNullOrEmpty(this.DreCodigo))
                     throw new NegocioException("Para este tipo de evento, deve ser informado uma Dre.");
 
-                if (string.IsNullOrEmpty(this.UeId))
+                if (string.IsNullOrEmpty(this.UeCodigo))
                     throw new NegocioException("Para este tipo de evento, deve ser informado uma Ue.");
 
                 if (!periodos.Any(a => (a.PeriodoInicio <= this.DataInicio && a.PeriodoFim >= this.DataFim)) && !dataConfirmada)
@@ -258,13 +262,13 @@ namespace SME.SGP.Dominio
         }
 
         public bool EhEventoSME() =>
-            string.IsNullOrWhiteSpace(DreId) && string.IsNullOrWhiteSpace(UeId);
+            string.IsNullOrWhiteSpace(DreCodigo) && string.IsNullOrWhiteSpace(UeCodigo);
 
         public bool EhEventoDRE() =>
-            !string.IsNullOrWhiteSpace(DreId) && string.IsNullOrWhiteSpace(UeId);
+            !string.IsNullOrWhiteSpace(DreCodigo) && string.IsNullOrWhiteSpace(UeCodigo);
 
         public bool EhEventoUE() =>
-            !string.IsNullOrWhiteSpace(DreId) && !string.IsNullOrWhiteSpace(UeId);
+            !string.IsNullOrWhiteSpace(DreCodigo) && !string.IsNullOrWhiteSpace(UeCodigo);
 
         private static DateTime ObterPrimeiroDiaDoMes(DateTime dataAtual)
         {

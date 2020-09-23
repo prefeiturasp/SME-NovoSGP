@@ -249,8 +249,8 @@ namespace SME.SGP.Dominio.Servicos
                 Descricao = fechamentoReabertura.Descricao,
                 Nome = $"Reabertura de fechamento de bimestre - {fechamentoReabertura.TipoCalendario.Nome} - {fechamentoReabertura.TipoCalendario.AnoLetivo}.",
                 TipoCalendarioId = fechamentoReabertura.TipoCalendario.Id,
-                DreId = fechamentoReabertura.Dre.CodigoDre,
-                UeId = fechamentoReabertura.Ue.CodigoUe,
+                DreCodigo = fechamentoReabertura.Dre.CodigoDre,
+                UeCodigo = fechamentoReabertura.Ue.CodigoUe,
                 Status = EntidadeStatus.Aprovado,
                 TipoEventoId = tipoEvento.Id,
                 Migrado = false,
@@ -511,7 +511,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private void NotificarCriadorEventoDataPassadaAprovado(Evento evento, long codigoDaNotificacao)
         {
-            var escola = repositorioUe.ObterPorCodigo(evento.UeId);
+            var escola = repositorioUe.ObterPorCodigo(evento.UeCodigo);
 
             if (escola == null)
                 throw new NegocioException("Não foi possível localizar a Ue deste evento.");
@@ -522,11 +522,11 @@ namespace SME.SGP.Dominio.Servicos
 
             repositorioNotificacao.Salvar(new Notificacao()
             {
-                UeId = evento.UeId,
+                UeId = evento.UeCodigo,
                 UsuarioId = usuario.Id,
                 Ano = evento.CriadoEm.Year,
                 Categoria = NotificacaoCategoria.Aviso,
-                DreId = evento.DreId,
+                DreId = evento.DreCodigo,
                 Titulo = "Criação de evento com data passada",
                 Tipo = NotificacaoTipo.Calendario,
                 Codigo = codigoDaNotificacao,
@@ -538,18 +538,18 @@ namespace SME.SGP.Dominio.Servicos
         {
             var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(evento.CriadoRF);
 
-            var escola = repositorioUe.ObterPorCodigo(evento.UeId);
+            var escola = repositorioUe.ObterPorCodigo(evento.UeCodigo);
 
             if (escola == null)
                 throw new NegocioException("Não foi possível localizar a Ue deste evento.");
 
             repositorioNotificacao.Salvar(new Notificacao()
             {
-                UeId = evento.UeId,
+                UeId = evento.UeCodigo,
                 UsuarioId = usuario.Id,
                 Ano = evento.CriadoEm.Year,
                 Categoria = NotificacaoCategoria.Aviso,
-                DreId = evento.DreId,
+                DreId = evento.DreCodigo,
                 Titulo = "Criação de evento com data passada",
                 Tipo = NotificacaoTipo.Calendario,
                 Codigo = codigoDaNotificacao,
@@ -559,7 +559,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private void NotificarCriadorEventoLiberacaoExcepcionalAprovado(Evento evento, long codigoDaNotificacao)
         {
-            var escola = repositorioUe.ObterPorCodigo(evento.UeId);
+            var escola = repositorioUe.ObterPorCodigo(evento.UeCodigo);
 
             if (escola == null)
                 throw new NegocioException("Não foi possível localizar a Ue deste evento.");
@@ -570,11 +570,11 @@ namespace SME.SGP.Dominio.Servicos
 
             repositorioNotificacao.Salvar(new Notificacao()
             {
-                UeId = evento.UeId,
+                UeId = evento.UeCodigo,
                 UsuarioId = usuario.Id,
                 Ano = evento.CriadoEm.Year,
                 Categoria = NotificacaoCategoria.Aviso,
-                DreId = evento.DreId,
+                DreId = evento.DreCodigo,
                 Titulo = "Criação de Eventos Excepcionais",
                 Tipo = NotificacaoTipo.Calendario,
                 Codigo = codigoDaNotificacao,
@@ -584,7 +584,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private void NotificarDiretorUeEventoDataPassadaAprovado(Evento evento, long codigoDaNotificacao)
         {
-            var escola = repositorioUe.ObterPorCodigo(evento.UeId);
+            var escola = repositorioUe.ObterPorCodigo(evento.UeCodigo);
 
             if (escola == null)
                 throw new NegocioException("Não foi possível localizar a Ue deste evento.");
@@ -599,11 +599,11 @@ namespace SME.SGP.Dominio.Servicos
 
                 repositorioNotificacao.Salvar(new Notificacao()
                 {
-                    UeId = evento.UeId,
+                    UeId = evento.UeCodigo,
                     UsuarioId = usuario.Id,
                     Ano = evento.CriadoEm.Year,
                     Categoria = NotificacaoCategoria.Aviso,
-                    DreId = evento.DreId,
+                    DreId = evento.DreCodigo,
                     Titulo = "Criação de evento com data passada",
                     Tipo = NotificacaoTipo.Calendario,
                     Codigo = codigoDaNotificacao,
@@ -680,11 +680,11 @@ namespace SME.SGP.Dominio.Servicos
         {
             repositorioNotificacao.Salvar(new Notificacao()
             {
-                UeId = evento.UeId,
+                UeId = evento.UeCodigo,
                 UsuarioId = usuario.Id,
                 Ano = evento.CriadoEm.Year,
                 Categoria = NotificacaoCategoria.Aviso,
-                DreId = evento.DreId,
+                DreId = evento.DreCodigo,
                 Titulo = "Criação de Eventos Excepcionais",
                 Tipo = NotificacaoTipo.Calendario,
                 Codigo = codigoDaNotificacao,
@@ -745,14 +745,14 @@ namespace SME.SGP.Dominio.Servicos
             evento.ReprovarWorkflow();
             repositorioEvento.Salvar(evento);
 
-            var escola = repositorioUe.ObterPorCodigo(evento.UeId);
+            var escola = repositorioUe.ObterPorCodigo(evento.UeCodigo);
 
             if (escola == null)
                 throw new NegocioException("Não foi possível localizar a Ue deste evento.");
 
             if (cargoDoNivelQueRecusou == Cargo.Supervisor)
             {
-                var funcionariosRetorno = servicoNotificacao.ObterFuncionariosPorNivel(evento.UeId, Cargo.Diretor);
+                var funcionariosRetorno = servicoNotificacao.ObterFuncionariosPorNivel(evento.UeCodigo, Cargo.Diretor);
 
                 foreach (var funcionario in funcionariosRetorno)
                 {

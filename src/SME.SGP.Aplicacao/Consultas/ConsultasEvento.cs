@@ -113,7 +113,7 @@ namespace SME.SGP.Aplicacao
 
         private bool EhEventoSME(Evento evento)
         {
-            return evento.UeId == null && evento.DreId == null;
+            return evento.UeCodigo == null && evento.DreCodigo == null;
         }
 
         private IEnumerable<EventoCompletoDto> MapearEventosParaDto(IEnumerable<Evento> items)
@@ -128,14 +128,14 @@ namespace SME.SGP.Aplicacao
                 DataFim = evento.DataFim,
                 DataInicio = evento.DataInicio,
                 Descricao = evento.Descricao,
-                DreId = evento.DreId,
+                DreId = evento.DreCodigo,
                 FeriadoId = evento.FeriadoId,
                 Id = evento.Id,
                 Letivo = evento.Letivo,
                 Nome = evento.Nome,
                 TipoCalendarioId = evento.TipoCalendarioId,
                 TipoEventoId = evento.TipoEventoId,
-                UeId = evento.UeId,
+                UeId = evento.UeCodigo,
                 AlteradoEm = evento.AlteradoEm,
                 AlteradoPor = evento.AlteradoPor,
                 AlteradoRF = evento.AlteradoRF,

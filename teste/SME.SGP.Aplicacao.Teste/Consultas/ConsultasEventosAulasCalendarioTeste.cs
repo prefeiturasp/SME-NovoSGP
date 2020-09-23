@@ -188,8 +188,8 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         {
             evento.DataInicio = dataInicio;
             evento.DataFim = dataFim;
-            evento.DreId = "1";
-            evento.UeId = "2";
+            evento.DreCodigo = "1";
+            evento.UeCodigo = "2";
             evento.Nome = nome;
             evento.Letivo = EventoLetivo.Nao;
             evento.Descricao = "Feriado";

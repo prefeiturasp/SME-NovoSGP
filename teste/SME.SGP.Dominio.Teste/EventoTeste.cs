@@ -512,7 +512,7 @@ namespace SME.SGP.Dominio.Teste
                 DataFim = new DateTime(2019, 01, 01),
                 DataInicio = new DateTime(2019, 01, 01),
                 Descricao = "Novo evento",
-                DreId = "123",
+                DreCodigo = "123",
                 FeriadoId = null,
                 Letivo = EventoLetivo.Sim,
                 Nome = "Evento letivo",
@@ -527,7 +527,7 @@ namespace SME.SGP.Dominio.Teste
                     LocalOcorrencia = EventoLocalOcorrencia.UE,
                     Concomitancia = false
                 },
-                UeId = "123"
+                UeCodigo = "123"
             };
         }
     }

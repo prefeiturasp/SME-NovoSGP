@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
                 {
                     Data = data,
                     EhLetivo = evento.EhEventoLetivo(),
-                    UesIds = string.IsNullOrWhiteSpace(evento.UeId) ? new List<string>() : new List<string> { evento.UeId },
+                    UesIds = string.IsNullOrWhiteSpace(evento.UeCodigo) ? new List<string>() : new List<string> { evento.UeCodigo },
                     PossuiEvento = true
                 }));
 

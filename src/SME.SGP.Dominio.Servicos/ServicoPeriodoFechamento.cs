@@ -327,8 +327,8 @@ namespace SME.SGP.Dominio.Servicos
             {
                 DataInicio = bimestre.InicioDoFechamento,
                 DataFim = bimestre.FinalDoFechamento,
-                DreId = fechamento.Dre?.CodigoDre,
-                UeId = fechamento.Ue?.CodigoUe,
+                DreCodigo = fechamento.Dre?.CodigoDre,
+                UeCodigo = fechamento.Ue?.CodigoUe,
                 Nome = $"Fechamento do {bimestre.PeriodoEscolar?.Bimestre}º bimestre",
                 TipoEventoId = tipoEvento.Id,
                 TipoCalendarioId = bimestre.PeriodoEscolar.TipoCalendarioId

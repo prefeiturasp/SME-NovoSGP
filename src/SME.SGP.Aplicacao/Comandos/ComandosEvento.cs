@@ -158,13 +158,13 @@ namespace SME.SGP.Aplicacao
             evento.DataFim = eventoDto.DataFim.Value.Local();
             evento.DataInicio = eventoDto.DataInicio.Date.Local();
             evento.Descricao = eventoDto.Descricao;
-            evento.DreId = eventoDto.DreId;
+            evento.DreCodigo = eventoDto.DreId;
             evento.FeriadoId = eventoDto.FeriadoId;
             evento.Letivo = eventoDto.Letivo;
             evento.Nome = eventoDto.Nome;
             evento.TipoCalendarioId = eventoDto.TipoCalendarioId;
             evento.TipoEventoId = eventoDto.TipoEventoId;
-            evento.UeId = eventoDto.UeId;
+            evento.UeCodigo = eventoDto.UeId;
             return evento;
         }
 
@@ -188,10 +188,10 @@ namespace SME.SGP.Aplicacao
             if (evento.EhEventoSME() && !usuario.EhPerfilSME())
                 throw new NegocioException(evento.Nome);
 
-            if (evento.EhEventoDRE() && ((!usuario.EhPerfilDRE() && !usuario.EhPerfilSME()) || !servicoAbrangencia.DreEstaNaAbrangencia(usuario.Login, usuario.PerfilAtual, evento.DreId)))
+            if (evento.EhEventoDRE() && ((!usuario.EhPerfilDRE() && !usuario.EhPerfilSME()) || !servicoAbrangencia.DreEstaNaAbrangencia(usuario.Login, usuario.PerfilAtual, evento.DreCodigo)))
                 throw new NegocioException(evento.Nome);
 
-            if (evento.EhEventoUE() && ((!usuario.EhPerfilUE() && !usuario.EhPerfilDRE() && !usuario.EhPerfilSME()) || !servicoAbrangencia.UeEstaNaAbrangecia(usuario.Login, usuario.PerfilAtual, evento.DreId, evento.UeId)))
+            if (evento.EhEventoUE() && ((!usuario.EhPerfilUE() && !usuario.EhPerfilDRE() && !usuario.EhPerfilSME()) || !servicoAbrangencia.UeEstaNaAbrangecia(usuario.Login, usuario.PerfilAtual, evento.DreCodigo, evento.UeCodigo)))
                 throw new NegocioException(evento.Nome);
         }
     }
