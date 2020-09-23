@@ -13,7 +13,6 @@ const BimestreCardCollapse = props => {
       titulo={`${bimestre}º Bimestre`}
       indice={`bimestre-${bimestre}-collapse-indice`}
       alt={`bimestre-${bimestre}-alt`}
-      show
     >
       <TabsComponentesCorriculares dadosBimestre={dadosBimestre} />
     </CardCollapse>
