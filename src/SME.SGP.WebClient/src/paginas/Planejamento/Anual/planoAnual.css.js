@@ -1,19 +1,10 @@
 import styled from 'styled-components';
 
-export const ContainerPlanoAnual = styled.div`
-  .desc-codigo {
-    font-size: 12px !important;
-    padding-top: 3px !important;
-    padding-bottom: 3px !important;
-  }
+export const ContainerPlanoAnual = styled.div``;
 
-  .desc-descricao {
-    font-size: 9px !important;
-    padding-top: 3px !important;
-    padding-bottom: 3px !important;
-  }
-
-  .fundo-codigo-lista-direita {
-    background: #a4dafb;
-  }
+export const DescItensAutoraisProfessor = styled.div`
+  color: #a4a4a4;
+  font-size: 12px;
+  font-style: italic;
+  margin-left: 5px;
 `;
