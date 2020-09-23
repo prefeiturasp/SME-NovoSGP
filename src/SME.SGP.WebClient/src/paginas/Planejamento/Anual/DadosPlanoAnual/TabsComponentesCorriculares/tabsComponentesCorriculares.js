@@ -59,8 +59,22 @@ const TabsComponentesCorriculares = props => {
         .finally(() => {
           // TODO LOADER
         });
-      if (resultado && resultado.data) {
+      if (resultado && resultado.data && resultado.data.periodoEscolarId) {
         dispatch(setDadosBimestresPlanoAnual(resultado.data));
+      } else {
+        const params = {
+          bimestre: dadosBimestre.bimestre,
+          componentes: [
+            {
+              auditoria: null,
+              componenteCurricularId: codigoComponente,
+              descricao: '',
+              objetivosAprendizagemId: [],
+            },
+          ],
+          periodoEscolarId: dadosBimestre.id,
+        };
+        dispatch(setDadosBimestresPlanoAnual(params));
       }
     },
     [dispatch, dadosBimestre, turmaSelecionada]
