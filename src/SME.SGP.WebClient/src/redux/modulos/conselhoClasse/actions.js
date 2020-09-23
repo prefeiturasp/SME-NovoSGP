@@ -117,3 +117,18 @@ export const setSalvouJustificativa = payload => ({
   type: '@conselhoClasse/setSalvouJustificativa',
   payload,
 });
+
+export const setExibirModalImpressaoConselhoClasse = payload => ({
+  type: '@conselhoClasse/setExibirModalImpressaoConselhoClasse',
+  payload,
+});
+
+export const setDadosBimestresConselhoClasse = payload => ({
+  type: '@conselhoClasse/setDadosBimestresConselhoClasse',
+  payload,
+});
+
+export const setExibirLoaderGeralConselhoClasse = payload => ({
+  type: '@conselhoClasse/setExibirLoaderGeralConselhoClasse',
+  payload,
+});
