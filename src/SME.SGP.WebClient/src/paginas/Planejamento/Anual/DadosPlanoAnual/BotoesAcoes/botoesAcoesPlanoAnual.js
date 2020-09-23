@@ -31,9 +31,7 @@ const BotoesAcoesPlanoAnual = () => {
   );
 
   const onSalvar = async () => {
-    debugger;
     const registrosSalvos = await servicoSalvarPlanoAnual.validarSalvarPlanoAnual();
-    debugger;
   };
 
   const onClickVoltar = async () => {
