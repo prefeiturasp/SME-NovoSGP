@@ -103,6 +103,26 @@ select
 
 CREATE INDEX IF NOT EXISTS componente_curriculo_cidade_componente_curricular_idx ON public.componente_curriculo_cidade USING btree (componente_curricular_id);
 
+ALTER TABLE public.componente_curriculo_cidade ADD CONSTRAINT componente_curriculo_cidade_un UNIQUE (codigo,componente_curricular_id);
+
+	
+	insert
+	into
+	componente_curriculo_cidade (codigo, componente_curricular_id)
+select
+	ccj.codigo_jurema,
+	ccj.codigo_eol
+from
+	componente_curricular_jurema ccj
+inner join componente_curricular cc on
+	ccj.codigo_eol = cc.id
+
+select
+	f_cria_fk_se_nao_existir(
+		'objetivo_aprendizagem',
+		'componente_curriculo_cidade_componente_curricular_fk',
+		'FOREIGN KEY (componente_curricular_id) REFERENCES componente_curricular (id)'
+	);
 
 --Plano Anual
 CREATE TABLE if not exists public.planejamento_anual (
