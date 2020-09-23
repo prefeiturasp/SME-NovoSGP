@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
             if (!string.IsNullOrEmpty(filtro.TurmaId) && filtro.TurmaId != "0")
                 await mediator.Send(new ValidaSeExisteTurmaPorCodigoQuery(filtro.TurmaId));
 
-            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.RecuperacaoParalela, filtro, usuarioLogado));
+            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.ResumoPAP, filtro, usuarioLogado));
         }
     }
 }
