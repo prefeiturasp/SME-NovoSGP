@@ -1,14 +1,19 @@
-import PropTypes from 'prop-types';
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Button from '~/componentes/button';
 import { Colors } from '~/componentes/colors';
 import { URL_HOME } from '~/constantes/url';
+import {
+  limparDadosPlanoAnual,
+  setComponenteCurricularPlanoAnual,
+} from '~/redux/modulos/anual/actions';
+import { confirmar } from '~/servicos';
 import history from '~/servicos/history';
 import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
+import servicoSalvarPlanoAnual from '../../servicoSalvarPlanoAnual';
 
-const BotoesAcoesPlanoAnual = props => {
-  const { onClickCancelar, onClickSalvar } = props;
+const BotoesAcoesPlanoAnual = () => {
+  const dispatch = useDispatch();
 
   const usuario = useSelector(store => store.usuario);
   const { turmaSelecionada } = usuario;
@@ -17,8 +22,18 @@ const BotoesAcoesPlanoAnual = props => {
     store => store.filtro.modalidades
   );
 
+  const planoAnualEmEdicao = useSelector(
+    store => store.planoAnual.planoAnualEmEdicao
+  );
+
+  const componenteCurricular = useSelector(
+    store => store.planoAnual.componenteCurricular
+  );
+
   const onSalvar = async () => {
-    onClickSalvar();
+    debugger;
+    const registrosSalvos = await servicoSalvarPlanoAnual.validarSalvarPlanoAnual();
+    debugger;
   };
 
   const onClickVoltar = async () => {
@@ -26,7 +41,19 @@ const BotoesAcoesPlanoAnual = props => {
   };
 
   const onCancelar = async () => {
-    onClickCancelar();
+    if (planoAnualEmEdicao) {
+      const confirmou = await confirmar(
+        'Atenção',
+        'Você não salvou as informações preenchidas.',
+        'Deseja realmente cancelar as alterações?'
+      );
+      if (confirmou) {
+        // TODO Esta forlando a recarregar tela, ajustar!!!
+        dispatch(limparDadosPlanoAnual());
+        const componente = { ...componenteCurricular };
+        dispatch(setComponenteCurricularPlanoAnual(componente));
+      }
+    }
   };
 
   return (
@@ -47,7 +74,10 @@ const BotoesAcoesPlanoAnual = props => {
         border
         className="mr-3"
         onClick={onCancelar}
-        disabled={ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada)}
+        disabled={
+          ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada) ||
+          !planoAnualEmEdicao
+        }
       />
       <Button
         id="btn-salvar-plano-anual"
@@ -56,20 +86,13 @@ const BotoesAcoesPlanoAnual = props => {
         border
         bold
         onClick={onSalvar}
-        disabled={ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada)}
+        disabled={
+          ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada) ||
+          !planoAnualEmEdicao
+        }
       />
     </>
   );
-};
-
-BotoesAcoesPlanoAnual.propTypes = {
-  onClickCancelar: PropTypes.func,
-  onClickSalvar: PropTypes.func,
-};
-
-BotoesAcoesPlanoAnual.defaultProps = {
-  onClickCancelar: () => {},
-  onClickSalvar: () => {},
 };
 
 export default BotoesAcoesPlanoAnual;

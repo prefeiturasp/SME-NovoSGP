@@ -1,7 +1,11 @@
 import api from '~/servicos/api';
 import { store } from '~/redux';
 import { erros } from '../alertas';
-import { setListaObjetivosAprendizagemPorComponente } from '~/redux/modulos/anual/actions';
+import {
+  setDadosBimestresPlanoAnual,
+  setExibirLoaderPlanoAnual,
+  setListaObjetivosAprendizagemPorComponente,
+} from '~/redux/modulos/anual/actions';
 
 class ServicoPlanoAnual {
   obter = (anoLetivo, componenteCurricularEolId, ueId, turmaId) => {
@@ -40,13 +44,96 @@ class ServicoPlanoAnual {
     return api.get(url);
   };
 
-  obterDadosPlanoAnualPorComponenteCurricular = (
+  carregarDadosPlanoAnualPorComponenteCurricular = async (
     turmaId,
     componenteCurricularId,
-    periodoEscolarId
+    periodoEscolarId,
+    bimestre
   ) => {
-    const url = `v1/planejamento/anual/turmas/${turmaId}/componentes-curriculares/${componenteCurricularId}/periodos-escolares/${periodoEscolarId}`;
-    return api.get(url);
+    const obterDados = () => {
+      const url = `v1/planejamento/anual/turmas/${turmaId}/componentes-curriculares/${componenteCurricularId}/periodos-escolares/${periodoEscolarId}`;
+      return api.get(url);
+    };
+
+    const { dispatch } = store;
+    const state = store.getState();
+    const { planoAnual } = state;
+
+    const { dadosBimestresPlanoAnual } = planoAnual;
+
+    const dadosBimestre = { ...dadosBimestresPlanoAnual[bimestre] };
+
+    let temDadosEmEdicao = false;
+
+    if (
+      dadosBimestre &&
+      dadosBimestre.componentes &&
+      dadosBimestre.componentes.length
+    ) {
+      const componente = dadosBimestre.componentes.find(
+        item =>
+          String(item.componenteCurricularId) === String(componenteCurricularId)
+      );
+      if (componente && componente.emEdicao) {
+        temDadosEmEdicao = true;
+      }
+    }
+    if (!temDadosEmEdicao) {
+      const resultado = await obterDados()
+        .catch(e => erros(e))
+        .finally(() => {});
+      if (resultado && resultado.status === 200) {
+        const paramsIniciaisComponente = {
+          bimestre,
+          componentes: [
+            {
+              auditoria: null,
+              componenteCurricularId,
+              descricao: '',
+              objetivosAprendizagemId: [],
+            },
+          ],
+          periodoEscolarId,
+        };
+
+        if (
+          dadosBimestre &&
+          dadosBimestre.componentes &&
+          dadosBimestre.componentes.length
+        ) {
+          const componenteCurricularJaPesquisado = dadosBimestre.componentes.find(
+            item =>
+              String(item.componenteCurricularId) ===
+              String(componenteCurricularId)
+          );
+
+          if (componenteCurricularJaPesquisado) {
+            const index = dadosBimestre.componentes.indexOf(
+              componenteCurricularJaPesquisado
+            );
+            if (resultado.data.periodoEscolarId) {
+              dadosBimestre.componentes[index] = resultado.data.componentes[0];
+            } else {
+              dadosBimestre.componentes[index] =
+                paramsIniciaisComponente.componentes[0];
+            }
+            dispatch(setDadosBimestresPlanoAnual(dadosBimestre));
+          } else if (resultado.data.periodoEscolarId) {
+            dadosBimestre.componentes.push(resultado.data.componentes[0]);
+            dispatch(setDadosBimestresPlanoAnual(dadosBimestre));
+          } else {
+            dadosBimestre.componentes.push(
+              paramsIniciaisComponente.componentes[0]
+            );
+            dispatch(setDadosBimestresPlanoAnual(dadosBimestre));
+          }
+        } else if (resultado.data.periodoEscolarId) {
+          dispatch(setDadosBimestresPlanoAnual(resultado.data));
+        } else {
+          dispatch(setDadosBimestresPlanoAnual(paramsIniciaisComponente));
+        }
+      }
+    }
   };
 
   obterListaObjetivosPorAnoEComponenteCurricular = async (
@@ -66,12 +153,16 @@ class ServicoPlanoAnual {
     if (listaObjetivos && listaObjetivos.length) {
       return listaObjetivos;
     }
-
+    dispatch(setExibirLoaderPlanoAnual(true));
     const objetivos = await this.obterObjetivosPorAnoEComponenteCurricular(
       ano,
       ensinoEspecial,
       [codigoComponenteCurricular]
-    ).catch(e => erros(e));
+    )
+      .catch(e => erros(e))
+      .finally(() => {
+        dispatch(setExibirLoaderPlanoAnual(false));
+      });
 
     if (objetivos && objetivos.data && objetivos.data.length) {
       dispatch(
@@ -83,6 +174,11 @@ class ServicoPlanoAnual {
       return objetivos.data;
     }
     return [];
+  };
+
+  salvarEditarPlanoAnual = (turmaId, componenteCurricularId, params) => {
+    const url = `v1/planejamento/anual/turmas/${turmaId}/componentes-curriculares/${componenteCurricularId}`;
+    return api.post(url, params);
   };
 }
 
