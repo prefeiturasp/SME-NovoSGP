@@ -1,21 +1,42 @@
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
-import { useSelector } from 'react-redux';
-import { Label } from '~/componentes';
+import { useDispatch, useSelector } from 'react-redux';
+import { Auditoria, Label } from '~/componentes';
 import Editor from '~/componentes/editor/editor';
+import {
+  setDadosBimestresPlanoAnual,
+  setPlanoAnualEmEdicao,
+} from '~/redux/modulos/anual/actions';
 import { DescItensAutoraisProfessor } from '../../planoAnual.css';
+import servicoSalvarPlanoAnual from '../../servicoSalvarPlanoAnual';
 
-const DescricaoPlanejamento = props => {
+const DescricaoPlanejamento = React.memo(props => {
   const { dadosBimestre, tabAtualComponenteCurricular } = props;
   const { bimestre } = dadosBimestre;
+
+  const dispatch = useDispatch();
 
   const dadosBimestrePlanoAnual = useSelector(
     store => store.planoAnual.dadosBimestresPlanoAnual[bimestre]
   );
 
-  const onChange = useCallback(valorNovo => {
-    console.log(valorNovo);
-  }, []);
+  const onChange = useCallback(
+    valorNovo => {
+      // TODO Verificar para salvar dados editados no redux separada do atual para melhorar a performance!
+      const dados = { ...dadosBimestrePlanoAnual };
+      dados.componentes.forEach(item => {
+        if (
+          String(item.componenteCurricularId) ===
+          String(tabAtualComponenteCurricular.codigoComponenteCurricular)
+        ) {
+          item.descricao = valorNovo;
+          item.emEdicao = true;
+        }
+      });
+      dispatch(setDadosBimestresPlanoAnual(dados));
+    },
+    [dispatch, dadosBimestrePlanoAnual, tabAtualComponenteCurricular]
+  );
 
   const obterDadosComponenteAtual = () => {
     return dadosBimestrePlanoAnual?.componentes.find(
@@ -23,6 +44,32 @@ const DescricaoPlanejamento = props => {
         String(item.componenteCurricularId) ===
         String(tabAtualComponenteCurricular.codigoComponenteCurricular)
     );
+  };
+
+  const validarSeTemErro = valorEditado => {
+    if (servicoSalvarPlanoAnual.campoInvalido(valorEditado)) {
+      return true;
+    }
+    return false;
+  };
+
+  const obterAuditoria = () => {
+    const auditoria = obterDadosComponenteAtual()?.auditoria;
+    if (auditoria) {
+      return (
+        <div className="row">
+          <Auditoria
+            criadoEm={auditoria.criadoEm}
+            criadoPor={auditoria.criadoPor}
+            criadoRf={auditoria.criadoRF}
+            alteradoPor={auditoria.alteradoPor}
+            alteradoEm={auditoria.alteradoEm}
+            alteradoRf={auditoria.alteradoRF}
+          />
+        </div>
+      );
+    }
+    return '';
   };
 
   return (
@@ -38,21 +85,25 @@ const DescricaoPlanejamento = props => {
             </DescItensAutoraisProfessor>
           </span>
           <Editor
+            validarSeTemErro={validarSeTemErro}
+            mensagemErro="Campo obrigatório"
             id={`bimestre-${bimestre}-editor`}
             inicial={obterDadosComponenteAtual()?.descricao}
             onChange={v => {
               if (obterDadosComponenteAtual()?.descricao !== v) {
+                dispatch(setPlanoAnualEmEdicao(true));
                 onChange(v);
               }
             }}
           />
+          {obterAuditoria()}
         </div>
       ) : (
         ''
       )}
     </>
   );
-};
+});
 
 DescricaoPlanejamento.propTypes = {
   dadosBimestre: PropTypes.oneOfType([PropTypes.object]),

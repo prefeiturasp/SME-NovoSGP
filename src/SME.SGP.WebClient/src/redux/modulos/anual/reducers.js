@@ -7,6 +7,11 @@ const inicial = {
   componenteCurricular: undefined,
   tabAtualComponenteCurricular: [],
   dadosBimestresPlanoAnual: [],
+  dadosEditadosBimestresPlanoAnual: [],
+  listaObjetivosAprendizagemPorComponente: [],
+  errosPlanoAnual: [],
+  exibirModalErrosPlanoAnual: false,
+  exibirLoaderPlanoAnual: false,
 };
 
 export default function planoAnual(state = inicial, action) {
@@ -42,9 +47,14 @@ export default function planoAnual(state = inicial, action) {
           listaComponentesCurricularesPlanejamento: [],
           bimestresPlanoAnual: [],
           planoAnualEmEdicao: false,
-          componenteCurricular: undefined,
+          // componenteCurricular: undefined,
           tabAtualComponenteCurricular: [],
           dadosBimestresPlanoAnual: [],
+          dadosEditadosBimestresPlanoAnual: [],
+          listaObjetivosAprendizagemPorComponente: [],
+          errosPlanoAnual: [],
+          exibirModalErrosPlanoAnual: false,
+          exibirLoaderPlanoAnual: false,
         };
       }
       case '@planoAnual/setTabAtualComponenteCurricular': {
@@ -61,6 +71,33 @@ export default function planoAnual(state = inicial, action) {
         return {
           ...draft,
           dadosBimestresPlanoAnual: dados,
+        };
+      }
+      case '@planoAnual/setListaObjetivosAprendizagemPorComponente': {
+        const dados = state.listaObjetivosAprendizagemPorComponente;
+        dados[action.payload.codigoComponenteCurricular] =
+          action.payload.objetivos;
+        return {
+          ...draft,
+          listaObjetivosAprendizagemPorComponente: dados,
+        };
+      }
+      case '@planoAnual/setErrosPlanoAnual': {
+        return {
+          ...draft,
+          errosPlanoAnual: action.payload,
+        };
+      }
+      case '@planoAnual/setExibirModalErrosPlanoAnual': {
+        return {
+          ...draft,
+          exibirModalErrosPlanoAnual: action.payload,
+        };
+      }
+      case '@planoAnual/setExibirLoaderPlanoAnual': {
+        return {
+          ...draft,
+          exibirLoaderPlanoAnual: action.payload,
         };
       }
 

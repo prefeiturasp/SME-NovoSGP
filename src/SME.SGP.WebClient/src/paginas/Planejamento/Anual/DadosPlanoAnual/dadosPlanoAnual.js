@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   setBimestresPlanoAnual,
   setListaComponentesCurricularesPlanejamento,
+  setExibirLoaderPlanoAnual,
 } from '~/redux/modulos/anual/actions';
 import { erros } from '~/servicos/alertas';
 import ServicoPlanoAnual from '~/servicos/Paginas/ServicoPlanoAnual';
@@ -34,7 +35,7 @@ const DadosPlanoAnual = () => {
   // Carrega lista de componentes para montar as TABS!
   const obterListaComponentesCurricularesPlanejamento = useCallback(() => {
     const turmaPrograma = !!(turmaSelecionada.ano === '0');
-    // TODO LOADER!
+    dispatch(setExibirLoaderPlanoAnual(true));
     ServicoDisciplinas.obterDisciplinasPlanejamento(
       componenteCurricular.codigoComponenteCurricular,
       turmaSelecionada.turma,
@@ -55,13 +56,13 @@ const DadosPlanoAnual = () => {
         erros(e);
       })
       .finally(() => {
-        // TODO Loader!
+        dispatch(setExibirLoaderPlanoAnual(false));
       });
   }, [dispatch, componenteCurricular, turmaSelecionada]);
 
   // Carrega a lista de bimestres para montar os card collapse com 2 ou 4 bimestres!
   const obterBimestresPlanoAnual = useCallback(() => {
-    // TODO Loader!
+    dispatch(setExibirLoaderPlanoAnual(true));
     ServicoPlanoAnual.obterBimestresPlanoAnual(
       turmaSelecionada.modalidade,
       turmaSelecionada.anoLetivo
@@ -75,7 +76,7 @@ const DadosPlanoAnual = () => {
         erros(e);
       })
       .finally(() => {
-        // TODO Loader!
+        dispatch(setExibirLoaderPlanoAnual(false));
       });
   }, [
     dispatch,
