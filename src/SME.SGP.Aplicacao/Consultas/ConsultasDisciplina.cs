@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem;
         private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
         private readonly IRepositorioCache repositorioCache;
-        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
+        private readonly IRepositorioComponenteCurricularJurema repositorioComponenteCurricular;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
             IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem,
             IServicoUsuario servicoUsuario,
             IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ,
-            IRepositorioComponenteCurricular repositorioComponenteCurricular,
+            IRepositorioComponenteCurricularJurema repositorioComponenteCurricular,
             IRepositorioTurma repositorioTurma)
         {
             this.servicoEOL = servicoEOL ??
