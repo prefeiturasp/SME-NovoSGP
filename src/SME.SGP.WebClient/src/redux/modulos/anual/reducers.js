@@ -1,20 +1,21 @@
 import produce from 'immer';
 
 const inicial = {
-  dadosBimestresPlanoAnual: [],
+  bimestresPlanoAnual: [],
   listaComponentesCurricularesPlanejamento: [],
   planoAnualEmEdicao: false,
   componenteCurricular: undefined,
   tabAtualComponenteCurricular: [],
+  dadosBimestresPlanoAnual: [],
 };
 
 export default function planoAnual(state = inicial, action) {
   return produce(state, draft => {
     switch (action.type) {
-      case '@planoAnual/setDadosBimestresPlanoAnual': {
+      case '@planoAnual/setBimestresPlanoAnual': {
         return {
           ...draft,
-          dadosBimestresPlanoAnual: action.payload,
+          bimestresPlanoAnual: action.payload,
         };
       }
       case '@planoAnual/setListaComponentesCurricularesPlanejamento': {
@@ -39,10 +40,11 @@ export default function planoAnual(state = inicial, action) {
         return {
           ...draft,
           listaComponentesCurricularesPlanejamento: [],
-          dadosBimestresPlanoAnual: [],
+          bimestresPlanoAnual: [],
           planoAnualEmEdicao: false,
           componenteCurricular: undefined,
           tabAtualComponenteCurricular: [],
+          dadosBimestresPlanoAnual: [],
         };
       }
       case '@planoAnual/setTabAtualComponenteCurricular': {
@@ -51,6 +53,14 @@ export default function planoAnual(state = inicial, action) {
         return {
           ...draft,
           tabAtualComponenteCurricular: dados,
+        };
+      }
+      case '@planoAnual/setDadosBimestresPlanoAnual': {
+        const dados = state.dadosBimestresPlanoAnual;
+        dados[action.payload.bimestre] = action.payload;
+        return {
+          ...draft,
+          dadosBimestresPlanoAnual: dados,
         };
       }
 

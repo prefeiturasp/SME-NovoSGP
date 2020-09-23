@@ -6,20 +6,64 @@ import ServicoPlanoAnual from '~/servicos/Paginas/ServicoPlanoAnual';
 import { ContainerListaObjetivos } from './listaObjetivos.css';
 
 const ListaObjetivos = props => {
-  const { tabAtualComponenteCurricular } = props;
+  const { dadosBimestre, tabAtualComponenteCurricular } = props;
+  const { bimestre } = dadosBimestre;
 
   const usuario = useSelector(store => store.usuario);
   const { turmaSelecionada } = usuario;
+
+  const dadosBimestrePlanoAnual = useSelector(
+    store => store.planoAnual.dadosBimestresPlanoAnual[bimestre]
+  );
 
   const [dadosEsquerda, setDadosEsquerda] = useState([]);
   const [dadosDireita, setDadosDireita] = useState([]);
   const [idsSelecionadsEsquerda, setIdsSelecionadsEsquerda] = useState([]);
   const [idsSelecionadsDireita, setIdsSelecionadsDireita] = useState([]);
 
+  const obterDadosComponenteAtual = useCallback(() => {
+    return dadosBimestrePlanoAnual?.componentes.find(
+      item =>
+        String(item.componenteCurricularId) ===
+        String(tabAtualComponenteCurricular.codigoComponenteCurricular)
+    );
+  }, [tabAtualComponenteCurricular, dadosBimestrePlanoAnual]);
+
+  const montarDadosListasObjetivos = useCallback(
+    listaObjetivos => {
+      const dadosComponenteAtual = obterDadosComponenteAtual();
+
+      if (dadosComponenteAtual.objetivosAprendizagemId.length) {
+        const listaEsquerda = [];
+        const listaDireita = [];
+        listaObjetivos.forEach(objetivo => {
+          if (
+            dadosComponenteAtual.objetivosAprendizagemId.find(
+              objetivoId => objetivoId === objetivo.id
+            )
+          ) {
+            listaDireita.push(objetivo);
+          } else {
+            listaEsquerda.push(objetivo);
+          }
+        });
+
+        if (listaEsquerda.length) {
+          setDadosEsquerda(listaEsquerda);
+        }
+        if (listaDireita.length) {
+          setDadosDireita(listaDireita);
+        }
+      }
+    },
+    [obterDadosComponenteAtual]
+  );
+
   const obterObjetivosPorAnoEComponenteCurricular = useCallback(() => {
     if (
       tabAtualComponenteCurricular &&
-      tabAtualComponenteCurricular.codigoComponenteCurricular
+      tabAtualComponenteCurricular.codigoComponenteCurricular &&
+      obterDadosComponenteAtual()
     ) {
       // TODO LOADER!
       ServicoPlanoAnual.obterObjetivosPorAnoEComponenteCurricular(
@@ -28,7 +72,7 @@ const ListaObjetivos = props => {
         [tabAtualComponenteCurricular.codigoComponenteCurricular]
       )
         .then(resposta => {
-          setDadosEsquerda(resposta.data);
+          montarDadosListasObjetivos(resposta.data);
           // TODO LOADER!
         })
         .catch(e => {
@@ -40,13 +84,22 @@ const ListaObjetivos = props => {
     } else {
       // TODO LOADER!
     }
-  }, [tabAtualComponenteCurricular, turmaSelecionada]);
+  }, [
+    tabAtualComponenteCurricular,
+    turmaSelecionada,
+    montarDadosListasObjetivos,
+    obterDadosComponenteAtual,
+  ]);
 
   useEffect(() => {
-    if (tabAtualComponenteCurricular) {
+    if (tabAtualComponenteCurricular && dadosBimestrePlanoAnual) {
       obterObjetivosPorAnoEComponenteCurricular();
     }
-  }, [tabAtualComponenteCurricular, obterObjetivosPorAnoEComponenteCurricular]);
+  }, [
+    tabAtualComponenteCurricular,
+    obterObjetivosPorAnoEComponenteCurricular,
+    dadosBimestrePlanoAnual,
+  ]);
 
   const parametrosListaEsquerda = {
     title: 'Objetivos de aprendizagem',
@@ -146,10 +199,12 @@ const ListaObjetivos = props => {
 };
 
 ListaObjetivos.propTypes = {
+  dadosBimestre: PropTypes.oneOfType([PropTypes.object]),
   tabAtualComponenteCurricular: PropTypes.oneOfType([PropTypes.object]),
 };
 
 ListaObjetivos.defaultProps = {
+  dadosBimestre: {},
   tabAtualComponenteCurricular: {},
 };
 

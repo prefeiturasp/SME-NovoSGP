@@ -31,6 +31,20 @@ class ServicoPlanoAnual {
   copiarConteudo = migrarConteudoPlanoAnual => {
     return api.post(`v1/planos/anual/migrar`, migrarConteudoPlanoAnual);
   };
+
+  obterBimestresPlanoAnual = (modalidade, anoLetivo) => {
+    const url = `v1/periodo-escolar/modalidades/${modalidade}/anos-letivos/${anoLetivo}`;
+    return api.get(url);
+  };
+
+  obterDadosPlanoAnualPorComponenteCurricular = (
+    turmaId,
+    componenteCurricularId,
+    periodoEscolarId
+  ) => {
+    const url = `v1/planejamento/anual/turmas/${turmaId}/componentes-curriculares/${componenteCurricularId}/periodos-escolares/${periodoEscolarId}`;
+    return api.get(url);
+  };
 }
 
 export default new ServicoPlanoAnual();
