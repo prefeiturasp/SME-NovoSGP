@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  setDadosBimestresPlanoAnual,
+  setBimestresPlanoAnual,
   setListaComponentesCurricularesPlanejamento,
 } from '~/redux/modulos/anual/actions';
 import { erros } from '~/servicos/alertas';
@@ -51,7 +51,7 @@ const DadosPlanoAnual = () => {
         dispatch(setListaComponentesCurricularesPlanejamento(componestes));
       })
       .catch(e => {
-        dispatch(setDadosBimestresPlanoAnual([]));
+        dispatch(setBimestresPlanoAnual([]));
         erros(e);
       })
       .finally(() => {
@@ -60,20 +60,18 @@ const DadosPlanoAnual = () => {
   }, [dispatch, componenteCurricular, turmaSelecionada]);
 
   // Carrega a lista de bimestres para montar os card collapse com 2 ou 4 bimestres!
-  const obterBimestresDadosPlanosAnual = useCallback(() => {
+  const obterBimestresPlanoAnual = useCallback(() => {
     // TODO Loader!
-    ServicoPlanoAnual.obter(
-      turmaSelecionada.anoLetivo,
-      componenteCurricular.codigoComponenteCurricular,
-      turmaSelecionada.unidadeEscolar,
-      turmaSelecionada.turma
+    ServicoPlanoAnual.obterBimestresPlanoAnual(
+      turmaSelecionada.modalidade,
+      turmaSelecionada.anoLetivo
     )
       .then(resposta => {
-        dispatch(setDadosBimestresPlanoAnual(resposta.data));
+        dispatch(setBimestresPlanoAnual(resposta.data));
         obterListaComponentesCurricularesPlanejamento();
       })
       .catch(e => {
-        dispatch(setDadosBimestresPlanoAnual([]));
+        dispatch(setBimestresPlanoAnual([]));
         erros(e);
       })
       .finally(() => {
@@ -82,7 +80,6 @@ const DadosPlanoAnual = () => {
   }, [
     dispatch,
     turmaSelecionada,
-    componenteCurricular,
     obterListaComponentesCurricularesPlanejamento,
   ]);
 
@@ -98,7 +95,7 @@ const DadosPlanoAnual = () => {
       turmaSelecionada &&
       turmaSelecionada.turma
     ) {
-      obterBimestresDadosPlanosAnual();
+      obterBimestresPlanoAnual();
       // Quando for regencia vai ter somente uma tab que é o componente curricular selecionado do SelectComponent!
       if (componenteCurricular.regencia) {
         obterListaComponentesCurricularesPlanejamento();
@@ -109,7 +106,7 @@ const DadosPlanoAnual = () => {
   }, [
     obterListaComponentesCurricularesPlanejamento,
     montarListaComponenteCurricularesPlanejamento,
-    obterBimestresDadosPlanosAnual,
+    obterBimestresPlanoAnual,
     componenteCurricular,
     dispatch,
     modalidadesFiltroPrincipal,
