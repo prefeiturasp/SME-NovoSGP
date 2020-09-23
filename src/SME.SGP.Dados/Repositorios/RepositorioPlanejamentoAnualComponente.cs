@@ -15,7 +15,8 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<PlanejamentoAnualComponente> ObterPorPlanejamentoAnualPeriodoEscolarId(long componenteCurricularId, long id)
         {
             var sql = @"select * from planejamento_anual_componente where planejamento_anual_periodo_escolar_id = @id and componente_curricular_id = @componenteCurricularId";
-            return await database.Conexao.QueryFirstOrDefaultAsync<PlanejamentoAnualComponente>(sql, new { id, componenteCurricularId });
+            var planejamento = await database.Conexao.QueryFirstOrDefaultAsync<PlanejamentoAnualComponente>(sql, new { id, componenteCurricularId });
+            return planejamento;
         }
 
         public async Task RemoverPorPlanejamentoAnual(long id)

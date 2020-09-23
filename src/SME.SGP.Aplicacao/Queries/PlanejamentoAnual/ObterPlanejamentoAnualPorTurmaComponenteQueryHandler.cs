@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
                     ComponenteCurricularId = c.ComponenteCurricularId,
                     Descricao = c.Descricao,
                     ObjetivosAprendizagemId = c.ObjetivosAprendizagem.Select(o => o.ObjetivoAprendizagemId)
-                }),
+                })?.ToList(),
                 PeriodoEscolarId = periodo.PeriodoEscolar.Id
             };
         }
