@@ -1,7 +1,12 @@
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import TransferenciaLista from '~/componentes-sgp/TranferenciaLista/transferenciaLista';
+import {
+  setDadosBimestresPlanoAnual,
+  setExibirLoaderPlanoAnual,
+  setPlanoAnualEmEdicao,
+} from '~/redux/modulos/anual/actions';
 import { erros } from '~/servicos/alertas';
 import ServicoPlanoAnual from '~/servicos/Paginas/ServicoPlanoAnual';
 import { ContainerListaObjetivos } from './listaObjetivos.css';
@@ -9,6 +14,8 @@ import { ContainerListaObjetivos } from './listaObjetivos.css';
 const ListaObjetivos = React.memo(props => {
   const { dadosBimestre, tabAtualComponenteCurricular } = props;
   const { bimestre } = dadosBimestre;
+
+  const dispatch = useDispatch();
 
   const usuario = useSelector(store => store.usuario);
   const { turmaSelecionada } = usuario;
@@ -71,7 +78,7 @@ const ListaObjetivos = React.memo(props => {
       tabAtualComponenteCurricular &&
       tabAtualComponenteCurricular.codigoComponenteCurricular
     ) {
-      // TODO LOADER!
+      dispatch(setExibirLoaderPlanoAnual(true));
       ServicoPlanoAnual.obterListaObjetivosPorAnoEComponenteCurricular(
         turmaSelecionada.ano,
         turmaSelecionada.ensinoEspecial,
@@ -79,18 +86,16 @@ const ListaObjetivos = React.memo(props => {
       )
         .then(listaObjetivos => {
           montarDadosListasObjetivos(listaObjetivos);
-          // TODO LOADER!
         })
         .catch(e => {
           erros(e);
         })
         .finally(() => {
-          // TODO LOADER!
+          dispatch(setExibirLoaderPlanoAnual(false));
         });
-    } else {
-      // TODO LOADER!
     }
   }, [
+    dispatch,
     tabAtualComponenteCurricular,
     turmaSelecionada,
     montarDadosListasObjetivos,
@@ -169,6 +174,22 @@ const ListaObjetivos = React.memo(props => {
 
       setDadosEsquerda([...novaListaEsquerda]);
       setDadosDireita([...novaListaDireita, ...dadosDireita]);
+
+      // TODO Verificar para salvar dados editados no redux separada do atual para melhorar a performance!
+      const dados = { ...dadosBimestrePlanoAnual };
+      dados.componentes.forEach(item => {
+        if (
+          String(item.componenteCurricularId) ===
+          String(tabAtualComponenteCurricular.codigoComponenteCurricular)
+        ) {
+          const novaLista = [...novaListaDireita, ...dadosDireita];
+          item.objetivosAprendizagemId = novaLista.map(c => c.id);
+          item.emEdicao = true;
+          dispatch(setDadosBimestresPlanoAnual(dados));
+        }
+      });
+
+      dispatch(setPlanoAnualEmEdicao(true));
       setIdsSelecionadsEsquerda([]);
     }
   };
@@ -187,6 +208,21 @@ const ListaObjetivos = React.memo(props => {
 
       setDadosEsquerda([...novaListaEsquerda, ...dadosEsquerda]);
       setDadosDireita([...novaListaDireita]);
+
+      // TODO Verificar para salvar dados editados no redux separada do atual para melhorar a performance!
+      const dados = { ...dadosBimestrePlanoAnual };
+      dados.componentes.forEach(item => {
+        if (
+          String(item.componenteCurricularId) ===
+          String(tabAtualComponenteCurricular.codigoComponenteCurricular)
+        ) {
+          const novaLista = [...novaListaDireita];
+          item.objetivosAprendizagemId = novaLista.map(c => c.id);
+          item.emEdicao = true;
+          dispatch(setDadosBimestresPlanoAnual(dados));
+        }
+      });
+      dispatch(setPlanoAnualEmEdicao(true));
       setIdsSelecionadsDireita([]);
     }
   };

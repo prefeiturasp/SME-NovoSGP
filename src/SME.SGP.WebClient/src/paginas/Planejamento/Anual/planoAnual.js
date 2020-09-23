@@ -11,6 +11,8 @@ import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 import BotoesAcoesPlanoAnual from './DadosPlanoAnual/BotoesAcoes/botoesAcoesPlanoAnual';
 import ComponenteCurricularPlanoAnual from './DadosPlanoAnual/ComponenteCurricular/componenteCurricularPlanoAnual';
 import DadosPlanoAnual from './DadosPlanoAnual/dadosPlanoAnual';
+import LoaderPlanoAnual from './DadosPlanoAnual/LoaderPlanoAnual/loaderPlanoAnual';
+import ModalErrosPlanoAnual from './DadosPlanoAnual/ModalErros/ModalErrosPlanoAnual';
 import { ContainerPlanoAnual } from './planoAnual.css';
 
 const PlanoAnual = () => {
@@ -24,9 +26,6 @@ const PlanoAnual = () => {
   );
 
   const [turmaInfantil, setTurmaInfantil] = useState(false);
-
-  const onClickSalvar = () => {};
-  const onClickCancelar = () => {};
 
   const resetarInfomacoes = useCallback(() => {
     dispatch(limparDadosPlanoAnual());
@@ -55,7 +54,7 @@ const PlanoAnual = () => {
   }, [turmaInfantil, resetarInfomacoes]);
 
   return (
-    <>
+    <LoaderPlanoAnual>
       {!turmaSelecionada.turma && !turmaInfantil ? (
         <Alert
           alerta={{
@@ -68,6 +67,7 @@ const PlanoAnual = () => {
         />
       ) : null}
       <AlertaNaoPermiteTurmaInfantil />
+      <ModalErrosPlanoAnual />
       <ContainerPlanoAnual>
         <Cabecalho
           pagina={obterDescricaoNomeMenu(
@@ -80,10 +80,7 @@ const PlanoAnual = () => {
           <div className="col-md-12">
             <div className="row">
               <div className="col-md-12 d-flex justify-content-end pb-4">
-                <BotoesAcoesPlanoAnual
-                  onClickCancelar={onClickCancelar}
-                  onClickSalvar={onClickSalvar}
-                />
+                <BotoesAcoesPlanoAnual />
               </div>
             </div>
           </div>
@@ -103,7 +100,7 @@ const PlanoAnual = () => {
           </div>
         </Card>
       </ContainerPlanoAnual>
-    </>
+    </LoaderPlanoAnual>
   );
 };
 
