@@ -1,4 +1,4 @@
---�rea do conhecimento
+﻿--�rea do conhecimento
 CREATE TABLE if not exists public.componente_curricular_area_conhecimento (
 	id int8 NOT NULL,
 	nome varchar(200) NOT null,
@@ -10,19 +10,19 @@ INSERT INTO public.componente_curricular_area_conhecimento
 VALUES(1, 'Linguagens');
 INSERT INTO public.componente_curricular_area_conhecimento
 (id, nome)
-VALUES(2, 'Matem�tica');
+VALUES(2, 'Matemática');
 INSERT INTO public.componente_curricular_area_conhecimento
 (id, nome)
-VALUES(3, 'Ci�ncias da Natureza');
+VALUES(3, 'Ciências da Natureza');
 INSERT INTO public.componente_curricular_area_conhecimento
 (id, nome)
-VALUES(4, 'Ci�ncias Humanas');
+VALUES(4, 'Ciências Humanas');
 INSERT INTO public.componente_curricular_area_conhecimento
 (id, nome)
-VALUES(5, 'L�ngua Estrangeira Moderna');
+VALUES(5, 'Língua Estrangeira Moderna');
 INSERT INTO public.componente_curricular_area_conhecimento
 (id, nome)
-VALUES(6, 'L�ngua Brasileira de Sinais');
+VALUES(6, 'Língua Brasileira de Sinais');
 
 
 
