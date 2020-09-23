@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -65,6 +66,16 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterAtual(int modalidade, [FromServices] IConsultasPeriodoEscolar consultas)
         {
             return Ok(await consultas.ObterBimestre(DateTime.Today, (Dominio.Modalidade)modalidade));
+        }
+
+
+        [HttpGet("modalidades/{modalidade}/anos-letivos/{anoLetivo}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(int), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ObterPeriodosPorModalidade(Modalidade modalidade, int anoLetivo, [FromServices] IObterPeriodosEscolaresPorAnoEModalidadeTurmaUseCase useCase)
+        {
+            return Ok(await useCase.Executar(modalidade, anoLetivo));
         }
     }
 }
