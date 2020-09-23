@@ -47,25 +47,6 @@ const TabsComponentesCorriculares = props => {
     );
   };
 
-  const obterDadosPlanoAnualPorComponenteCurricular = useCallback(
-    async codigoComponente => {
-      // TODO LOADER
-      const resultado = await ServicoPlanoAnual.obterDadosPlanoAnualPorComponenteCurricular(
-        turmaSelecionada.id,
-        codigoComponente,
-        dadosBimestre.id
-      )
-        .catch(e => erros(e))
-        .finally(() => {
-          // TODO LOADER
-        });
-      if (resultado && resultado.data) {
-        dispatch(setDadosBimestresPlanoAnual(resultado.data));
-      }
-    },
-    [dispatch, dadosBimestre, turmaSelecionada]
-  );
-
   const onChangeTab = useCallback(
     codigoComponente => {
       const componente = listaComponentesCurricularesPlanejamento.find(
@@ -80,13 +61,18 @@ const TabsComponentesCorriculares = props => {
         })
       );
 
-      obterDadosPlanoAnualPorComponenteCurricular(codigoComponente);
+      ServicoPlanoAnual.carregarDadosPlanoAnualPorComponenteCurricular(
+        turmaSelecionada.id,
+        codigoComponente,
+        dadosBimestre.id,
+        dadosBimestre.bimestre
+      );
     },
     [
       dispatch,
       dadosBimestre,
       listaComponentesCurricularesPlanejamento,
-      obterDadosPlanoAnualPorComponenteCurricular,
+      turmaSelecionada,
     ]
   );
 

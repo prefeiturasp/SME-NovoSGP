@@ -37,7 +37,7 @@ namespace SME.SGP.Dados.Repositorios
                         inner join periodo_escolar pe on pape.periodo_escolar_id = pe.id
                         where
 	                        turma_id = @turmaId
-	                        and pa.componente_curricular_id = @componenteCurricularId
+	                        and pac.componente_curricular_id = @componenteCurricularId
 	                        and pape.periodo_escolar_id = @periodoEscolarId";
 
             var periodos = new List<PlanejamentoAnualPeriodoEscolar>();

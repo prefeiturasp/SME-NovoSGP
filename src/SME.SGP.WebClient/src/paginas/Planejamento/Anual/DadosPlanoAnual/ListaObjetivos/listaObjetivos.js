@@ -1,13 +1,21 @@
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import TransferenciaLista from '~/componentes-sgp/TranferenciaLista/transferenciaLista';
+import {
+  setDadosBimestresPlanoAnual,
+  setExibirLoaderPlanoAnual,
+  setPlanoAnualEmEdicao,
+} from '~/redux/modulos/anual/actions';
+import { erros } from '~/servicos/alertas';
 import ServicoPlanoAnual from '~/servicos/Paginas/ServicoPlanoAnual';
 import { ContainerListaObjetivos } from './listaObjetivos.css';
 
-const ListaObjetivos = props => {
+const ListaObjetivos = React.memo(props => {
   const { dadosBimestre, tabAtualComponenteCurricular } = props;
   const { bimestre } = dadosBimestre;
+
+  const dispatch = useDispatch();
 
   const usuario = useSelector(store => store.usuario);
   const { turmaSelecionada } = usuario;
@@ -33,7 +41,10 @@ const ListaObjetivos = props => {
     listaObjetivos => {
       const dadosComponenteAtual = obterDadosComponenteAtual();
 
-      if (dadosComponenteAtual.objetivosAprendizagemId.length) {
+      if (
+        dadosComponenteAtual &&
+        dadosComponenteAtual.objetivosAprendizagemId.length
+      ) {
         const listaEsquerda = [];
         const listaDireita = [];
         listaObjetivos.forEach(objetivo => {
@@ -54,51 +65,50 @@ const ListaObjetivos = props => {
         if (listaDireita.length) {
           setDadosDireita(listaDireita);
         }
+      } else {
+        setDadosEsquerda(listaObjetivos);
       }
     },
     [obterDadosComponenteAtual]
   );
 
+  // TODO Verificar para salvar dados no redux e não consultar no banco novamente a cada mudança de tab!
   const obterObjetivosPorAnoEComponenteCurricular = useCallback(() => {
     if (
       tabAtualComponenteCurricular &&
-      tabAtualComponenteCurricular.codigoComponenteCurricular &&
-      obterDadosComponenteAtual()
+      tabAtualComponenteCurricular.codigoComponenteCurricular
     ) {
-      // TODO LOADER!
-      ServicoPlanoAnual.obterObjetivosPorAnoEComponenteCurricular(
+      dispatch(setExibirLoaderPlanoAnual(true));
+      ServicoPlanoAnual.obterListaObjetivosPorAnoEComponenteCurricular(
         turmaSelecionada.ano,
         turmaSelecionada.ensinoEspecial,
-        [tabAtualComponenteCurricular.codigoComponenteCurricular]
+        tabAtualComponenteCurricular.codigoComponenteCurricular
       )
-        .then(resposta => {
-          montarDadosListasObjetivos(resposta.data);
-          // TODO LOADER!
+        .then(listaObjetivos => {
+          montarDadosListasObjetivos(listaObjetivos);
         })
         .catch(e => {
-          // mostrarErros(e);
+          erros(e);
         })
         .finally(() => {
-          // TODO LOADER!
+          dispatch(setExibirLoaderPlanoAnual(false));
         });
-    } else {
-      // TODO LOADER!
     }
   }, [
+    dispatch,
     tabAtualComponenteCurricular,
     turmaSelecionada,
     montarDadosListasObjetivos,
-    obterDadosComponenteAtual,
   ]);
 
   useEffect(() => {
-    if (tabAtualComponenteCurricular && dadosBimestrePlanoAnual) {
+    if (tabAtualComponenteCurricular && obterDadosComponenteAtual()) {
       obterObjetivosPorAnoEComponenteCurricular();
     }
   }, [
     tabAtualComponenteCurricular,
     obterObjetivosPorAnoEComponenteCurricular,
-    dadosBimestrePlanoAnual,
+    obterDadosComponenteAtual,
   ]);
 
   const parametrosListaEsquerda = {
@@ -164,6 +174,22 @@ const ListaObjetivos = props => {
 
       setDadosEsquerda([...novaListaEsquerda]);
       setDadosDireita([...novaListaDireita, ...dadosDireita]);
+
+      // TODO Verificar para salvar dados editados no redux separada do atual para melhorar a performance!
+      const dados = { ...dadosBimestrePlanoAnual };
+      dados.componentes.forEach(item => {
+        if (
+          String(item.componenteCurricularId) ===
+          String(tabAtualComponenteCurricular.codigoComponenteCurricular)
+        ) {
+          const novaLista = [...novaListaDireita, ...dadosDireita];
+          item.objetivosAprendizagemId = novaLista.map(c => c.id);
+          item.emEdicao = true;
+          dispatch(setDadosBimestresPlanoAnual(dados));
+        }
+      });
+
+      dispatch(setPlanoAnualEmEdicao(true));
       setIdsSelecionadsEsquerda([]);
     }
   };
@@ -182,10 +208,26 @@ const ListaObjetivos = props => {
 
       setDadosEsquerda([...novaListaEsquerda, ...dadosEsquerda]);
       setDadosDireita([...novaListaDireita]);
+
+      // TODO Verificar para salvar dados editados no redux separada do atual para melhorar a performance!
+      const dados = { ...dadosBimestrePlanoAnual };
+      dados.componentes.forEach(item => {
+        if (
+          String(item.componenteCurricularId) ===
+          String(tabAtualComponenteCurricular.codigoComponenteCurricular)
+        ) {
+          const novaLista = [...novaListaDireita];
+          item.objetivosAprendizagemId = novaLista.map(c => c.id);
+          item.emEdicao = true;
+          dispatch(setDadosBimestresPlanoAnual(dados));
+        }
+      });
+      dispatch(setPlanoAnualEmEdicao(true));
       setIdsSelecionadsDireita([]);
     }
   };
 
+  // TODO Verificar para renderizar somente quando terminar de obter os dados!
   return (
     <ContainerListaObjetivos>
       <TransferenciaLista
@@ -196,7 +238,7 @@ const ListaObjetivos = props => {
       />
     </ContainerListaObjetivos>
   );
-};
+});
 
 ListaObjetivos.propTypes = {
   dadosBimestre: PropTypes.oneOfType([PropTypes.object]),
