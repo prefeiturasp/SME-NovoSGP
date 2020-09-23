@@ -5,6 +5,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface ISalvarPlanejamentoAnualUseCase
     {
-        Task<AuditoriaDto> Executar(long turmaId, long componenteCurricularId, SalvarPlanejamentoAnualDto dto);
+        Task<PlanejamentoAnualAuditoriaDto> Executar(long turmaId, long componenteCurricularId, SalvarPlanejamentoAnualDto dto);
     }
 }
