@@ -7,6 +7,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IObterPeriodosEscolaresPorAnoEModalidadeTurmaUseCase
     {
-        Task<IEnumerable<PeriodoEscolarDto>> Executar(Modalidade modalidade, int anoLetivo);
+        Task<IEnumerable<PeriodoEscolarDto>> Executar(Modalidade modalidade, int anoLetivo, int? semestre);
     }
 }

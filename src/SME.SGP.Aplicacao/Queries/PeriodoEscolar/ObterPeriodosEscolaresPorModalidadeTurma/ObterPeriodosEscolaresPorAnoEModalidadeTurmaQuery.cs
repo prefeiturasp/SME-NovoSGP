@@ -7,13 +7,15 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterPeriodosEscolaresPorAnoEModalidadeTurmaQuery : IRequest<IEnumerable<PeriodoEscolar>>
     {
-        public ObterPeriodosEscolaresPorAnoEModalidadeTurmaQuery(Modalidade modalidadeTurma, int anoLetivo)
+        public ObterPeriodosEscolaresPorAnoEModalidadeTurmaQuery(Modalidade modalidadeTurma, int anoLetivo, int? semestre)
         {
             ModalidadeTurma = modalidadeTurma;
             AnoLetivo = anoLetivo;
+            Semestre = semestre;
         }
 
         public int AnoLetivo { get; set; }
+        public int? Semestre { get; }
         public Modalidade ModalidadeTurma { get; set; }
     }
 
