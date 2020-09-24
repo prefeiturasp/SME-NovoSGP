@@ -1,4 +1,4 @@
-﻿--�rea do conhecimento
+﻿--Area do conhecimento
 CREATE TABLE if not exists public.componente_curricular_area_conhecimento (
 	id int8 NOT NULL,
 	nome varchar(200) NOT null,
@@ -115,14 +115,7 @@ select
 from
 	componente_curricular_jurema ccj
 inner join componente_curricular cc on
-	ccj.codigo_eol = cc.id
-
-select
-	f_cria_fk_se_nao_existir(
-		'objetivo_aprendizagem',
-		'componente_curriculo_cidade_componente_curricular_fk',
-		'FOREIGN KEY (componente_curricular_id) REFERENCES componente_curricular (id)'
-	);
+	ccj.codigo_eol = cc.id;
 
 --Plano Anual
 CREATE TABLE if not exists public.planejamento_anual (

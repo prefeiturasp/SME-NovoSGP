@@ -3,6 +3,7 @@ using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,20 +16,22 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioPendenciaAula repositorioPendenciaAula;
 
+
         public PendenciaAulaUseCase(IRepositorioPendenciaAula repositorioPendenciaAula)
         {
             this.repositorioPendenciaAula = repositorioPendenciaAula ?? throw new ArgumentNullException(nameof(repositorioPendenciaAula));
         }
 
         #region Metodos Publicos
-        public async Task Executar()
-        {
 
+        public async Task<bool> Executar(MensagemRabbit param)
+        {
             await VerificaPendenciasDiarioDeBordo();
             await VerificaPendenciasAvaliacao();
             await VerificaPendenciasFrequencia();
             await VerificaPendenciasPlanoAula();
 
+            return true;
         }
         #endregion
 
@@ -81,6 +84,8 @@ namespace SME.SGP.Aplicacao
         {
             repositorioPendenciaAula.SalvarVarias(aulas, tipoPendenciaAula);
         }
+
+
 
         #endregion
     }

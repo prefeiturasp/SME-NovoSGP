@@ -30,6 +30,8 @@
         public static string RotaExcluirNotificacaoDevolutiva => "notificacao.excluir.devolutiva";
         public static string RotaExcluirNotificacaoDiarioBordo => "notificacao.excluir.diariobordo";
 
+        public static string RotaExecutaPendenciasAula => "pendencias.aulas.executa";
+
 
     }
 }

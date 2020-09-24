@@ -46,11 +46,11 @@ namespace SME.SGP.Aplicacao.Consultas
             var plano = await repositorio.ObterPlanoAulaPorAula(aulaId);
             var aulaDto = await consultasAula.BuscarPorId(aulaId);
             var atividadeAvaliativa = await repositorioAtividadeAvaliativa.ObterAtividadeAvaliativa(aulaDto.DataAula.Date, aulaDto.DisciplinaId, aulaDto.TurmaId, aulaDto.UeId);
-            
+
             var periodoEscolar = await repositorioPeriodoEscolar.ObterPorTipoCalendarioData(aulaDto.TipoCalendarioId, aulaDto.DataAula.Date);
             if (periodoEscolar == null)
                 throw new NegocioException("Período escolar não localizado.");
-           
+
             if (plano != null)
             {
                 planoAulaDto = MapearParaDto(plano) ?? new PlanoAulaRetornoDto();
@@ -85,7 +85,11 @@ namespace SME.SGP.Aplicacao.Consultas
             var planoAnualDto = await consultasPlanoAnual.ObterPlanoAnualPorAnoEscolaBimestreETurma(
                         aulaDto.DataAula.Year, aulaDto.UeId, long.Parse(aulaDto.TurmaId), periodoEscolar.Bimestre, long.Parse(aulaDto.DisciplinaId));
 
+
             // Carrega informações da aula para o retorno
+            if (planoAnualDto == null)
+                throw new NegocioException("Não foi possível carregar o plano de aula porque não há plano anual cadastrado");
+
             planoAulaDto.PossuiPlanoAnual = planoAnualDto.Id > 0;
             planoAulaDto.ObjetivosAprendizagemOpcionais = planoAnualDto.ObjetivosAprendizagemOpcionais;
             planoAulaDto.AulaId = aulaDto.Id;

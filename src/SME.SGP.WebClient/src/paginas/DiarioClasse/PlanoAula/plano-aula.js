@@ -28,6 +28,7 @@ import Grid from '~/componentes/grid';
 import Editor from '~/componentes/editor/editor';
 import ModalCopiarConteudo from './componentes/ModalCopiarConteudo';
 import { RegistroMigrado } from '~/componentes-sgp/registro-migrado';
+import BotaoGerarRelatorioPlanoAula from './componentes/BotaoGerarRelatorioPlanoAula/botaoGerarRelatorioPlanoAula'
 
 const PlanoAula = props => {
   const {
@@ -267,32 +268,37 @@ const PlanoAula = props => {
         show={mostrarCardPrincipal}
       >
         <Loader loading={mostrarCardPrincipal && carregandoMaterias}>
-          <QuantidadeBotoes className="col-md-12">
-            <span>Quantidade de aulas: {planoAula.qtdAulas}</span>
-            {planoAula && planoAula.id && !temAvaliacao ? (
+          <QuantidadeBotoes className="row">
+            <div className="col-md-3">
+              <span>Quantidade de aulas: {planoAula.qtdAulas}</span>  
+            </div>
+            <div className="col-md-9 d-flex justify-content-end ">              
+              {planoAula && planoAula.id && !temAvaliacao ? (
+                <Button
+                  id={shortid.generate()}
+                  label="Nova Avaliação"
+                  color={Colors.Roxo}
+                  className="mr-3"
+                  onClick={aoClicarBotaoNovaAvaliacao}
+                />
+              ) : null}
               <Button
                 id={shortid.generate()}
-                label="Nova Avaliação"
-                color={Colors.Roxo}
-                className="ml-auto mr-3"
-                onClick={aoClicarBotaoNovaAvaliacao}
+                label="Copiar Conteúdo"
+                icon="clipboard"
+                color={Colors.Azul}
+                border
+                className="mr-3"
+                onClick={() => setMostrarModalCopiarConteudo(true)}
+                disabled={!planoAula.id}
               />
-            ) : null}
-            <Button
-              id={shortid.generate()}
-              label="Copiar Conteúdo"
-              icon="clipboard"
-              color={Colors.Azul}
-              border
-              className="btnGroupItem"
-              onClick={() => setMostrarModalCopiarConteudo(true)}
-              disabled={!planoAula.id}
-            />
-            {planoAula.migrado && (
-              <RegistroMigrado className="ml-3 align-self-center float-right">
-                Registro Migrado
-              </RegistroMigrado>
-            )}
+              <BotaoGerarRelatorioPlanoAula planoAulaId={planoAula.id}/>
+              {planoAula.migrado && (
+                <RegistroMigrado className="align-self-center">
+                  Registro Migrado
+                </RegistroMigrado>
+              )}
+            </div>
           </QuantidadeBotoes>
           <HabilitaObjetivos
             className="row d-inline-block col-md-12"
