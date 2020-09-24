@@ -380,7 +380,7 @@ namespace SME.SGP.Dados.Repositorios
                         ensinoEspecial = item.EnsinoEspecial,
                         etapaEja = item.EtapaEJA,
                         dataInicio = item.DataInicio,
-                        serieEnsino = item.SerieEnsino,
+                        serieEnsino = item.SerieEnsino,                        
                         dataFim = item.DataFim
                     });
 
@@ -470,6 +470,19 @@ namespace SME.SGP.Dados.Repositorios
             }
         }
 
+        public async Task<IEnumerable<Turma>> ObterPorCodigosAsync(string[] codigos)
+        {
+            var query = "select * from turma t where t.turma_id = ANY(@codigos)";
+
+            return await contexto.Conexao.QueryAsync<Turma>(query, new { codigos });
+        }
+
+        public async Task<ObterTurmaSimplesPorIdRetornoDto> ObterTurmaSimplesPorId(long id)
+        {
+            var query = "select t.id, t.turma_id as codigo, t.nome from turma t where t.id = @id";
+            return await contexto.Conexao.QueryFirstOrDefaultAsync<ObterTurmaSimplesPorIdRetornoDto>(query, new { id });
+        }
+
         private string GerarQueryCodigosTurmasForaLista(int anoLetivo, bool definirTurmasComoHistorica) =>
             $@"select distinct t.turma_id
 	                from turma t
@@ -488,18 +501,5 @@ namespace SME.SGP.Dados.Repositorios
 	                  pe.bimestre = 1 and                      
 	                  t.dt_fim_eol is not null and 
                       t.dt_fim_eol {(definirTurmasComoHistorica ? ">=" : "<")} pe.periodo_inicio"; //Turmas extintas após o 1º bimestre do ano letivo considerado serão marcadas como histórica
-	                  
-        public async Task<IEnumerable<Turma>> ObterPorCodigosAsync(string[] codigos)
-        {
-            var query = "select * from turma t where t.turma_id = ANY(@codigos)";
-
-            return await contexto.Conexao.QueryAsync<Turma>(query, new { codigos });
-        }
-
-        public async Task<ObterTurmaSimplesPorIdRetornoDto> ObterTurmaSimplesPorId(long id)
-        {
-            var query = "select t.id, t.turma_id as codigo, t.nome from turma t where t.id = @id";
-            return await contexto.Conexao.QueryFirstOrDefaultAsync<ObterTurmaSimplesPorIdRetornoDto>(query, new { id });
-        }
     }
 }
