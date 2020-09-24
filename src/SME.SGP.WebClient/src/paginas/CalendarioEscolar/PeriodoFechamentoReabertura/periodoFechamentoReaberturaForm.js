@@ -538,7 +538,6 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
                           valueField="id"
                           textField="descricao"
                           disabled={
-                            desabilitarCampos ||
                             !novoRegistro ||
                             desabilitarTipoCalendario
                           }
