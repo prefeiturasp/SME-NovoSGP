@@ -34,5 +34,14 @@ namespace SME.SGP.Api.Controllers
             var filtro = new FiltroComponentesCurricularesPorTurmaECodigoUeDto { CodigoUe = ueId, CodigosDeTurmas = turmas };
             return Ok(await obterComponentesCurricularesPorTurmaECodigoUeUseCase.Executar(filtro));
         }
+
+        [HttpGet("turmas/{turmaId}")]
+        [ProducesResponseType(typeof(Boolean), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public async Task<IActionResult> ObterComponentesPorTurma(long turmaId,[FromQuery]bool turmaPrograma, [FromServices] IObterComponentesCurricularesPorTurmaIdUseCase obterComponentesCurricularesPorTurmaIdUseCase)
+        {
+            return Ok(await obterComponentesCurricularesPorTurmaIdUseCase.Executar(turmaId, turmaPrograma));
+        }
     }
 }

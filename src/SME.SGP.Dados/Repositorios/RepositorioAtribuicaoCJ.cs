@@ -90,5 +90,6 @@ namespace SME.SGP.Dados.Repositorios
                 anoLetivo
             }, splitOn: "id,id"));
         }
+      
     }
 }
