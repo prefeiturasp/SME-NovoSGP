@@ -1,8 +1,6 @@
-﻿using Hangfire.Annotations;
-using Hangfire.Dashboard;
+﻿using Hangfire.Dashboard;
 using Hangfire.Dashboard.BasicAuthorization;
 using System;
-using System.Collections.Generic;
 using System.Net.Http.Headers;
 using System.Text;
 

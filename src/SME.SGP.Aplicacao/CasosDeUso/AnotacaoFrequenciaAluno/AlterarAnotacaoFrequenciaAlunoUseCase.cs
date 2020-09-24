@@ -2,8 +2,6 @@
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -25,7 +23,7 @@ namespace SME.SGP.Aplicacao
         }
 
         private async Task<bool> AtualizarAnotacaoFrequenciaAluno(AnotacaoFrequenciaAluno anotacao, AlterarAnotacaoFrequenciaAlunoDto param)
-        {           
+        {
             anotacao.MotivoAusenciaId = param.MotivoAusenciaId;
             anotacao.Anotacao = param.Anotacao;
 

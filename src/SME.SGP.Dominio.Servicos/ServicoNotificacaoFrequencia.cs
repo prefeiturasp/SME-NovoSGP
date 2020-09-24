@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Org.BouncyCastle.Math.EC.Rfc7748;
 using Sentry;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Interfaces;
@@ -429,11 +430,13 @@ namespace SME.SGP.Dominio.Servicos
             if (turma.ModalidadeTurma == Modalidade.Infantil)
             {
                 var disciplinaEols = await servicoEOL.ObterProfessoresTitularesDisciplinas(turma.CodigoTurma);
+
                 if (disciplinaEols != null)
-                    foreach (var disciplina in disciplinaEols)
-                    {
-                        return RetornaUsuarios(disciplina.ProfessorRf);
-                    }
+                    return RetornaUsuarios(disciplinaEols.First().ProfessorRf);
+                    //foreach (var disciplina in disciplinaEols)
+                    //{
+                    //    return RetornaUsuarios(disciplina.ProfessorRf);
+                    //}
             }
             else
             {

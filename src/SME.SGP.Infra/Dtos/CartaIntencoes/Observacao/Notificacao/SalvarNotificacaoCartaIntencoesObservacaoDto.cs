@@ -19,8 +19,7 @@ namespace SME.SGP.Infra.Dtos
 
         public Turma Turma { get; set; }
         public Usuario Usuario { get; set; }
-
-        public long CartaIntencoesObservacaoId;
+        public long CartaIntencoesObservacaoId { get; set; }
         public string Observacao { get; set; }
     }
 

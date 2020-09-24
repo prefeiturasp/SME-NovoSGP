@@ -4,7 +4,6 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,7 +19,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(NotasConceitosRetornoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.NC_C, Permissao.NC_I, Policy = "Bearer")]
-        public async Task<IActionResult> Get([FromQuery]ListaNotasConceitosConsultaDto consultaListaNotasConceitosDto, [FromServices] IConsultasNotasConceitos consultasNotasConceitos)
+        public async Task<IActionResult> Get([FromQuery] ListaNotasConceitosConsultaDto consultaListaNotasConceitosDto, [FromServices] IConsultasNotasConceitos consultasNotasConceitos)
         {
             return Ok(await consultasNotasConceitos.ListarNotasConceitos(consultaListaNotasConceitosDto));
         }
@@ -47,7 +46,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(TipoNota), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.NC_C, Permissao.NC_I, Policy = "Bearer")]
-        public async Task<IActionResult> ObterNotaTipo(long turmaId, int anoLetivo,[FromQuery]bool consideraHistorico, [FromServices]IConsultasNotasConceitos consultasNotasConceitos)
+        public async Task<IActionResult> ObterNotaTipo(long turmaId, int anoLetivo, [FromQuery] bool consideraHistorico, [FromServices] IConsultasNotasConceitos consultasNotasConceitos)
         {
             return Ok(await consultasNotasConceitos.ObterNotaTipo(turmaId, anoLetivo, consideraHistorico));
         }
@@ -56,7 +55,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.NC_A, Permissao.NC_I, Policy = "Bearer")]
-        public async Task<IActionResult> Post([FromBody]NotaConceitoListaDto notaConceitoListaDto, [FromServices]IComandosNotasConceitos comandosNotasConceitos)
+        public async Task<IActionResult> Post([FromBody] NotaConceitoListaDto notaConceitoListaDto, [FromServices] IComandosNotasConceitos comandosNotasConceitos)
         {
             await comandosNotasConceitos.Salvar(notaConceitoListaDto);
 

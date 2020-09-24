@@ -1,9 +1,4 @@
-﻿using Hangfire;
-using Hangfire.Annotations;
-using Hangfire.Logging;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Hangfire.Logging;
 
 namespace SME.Background.Hangfire.Logging
 {
