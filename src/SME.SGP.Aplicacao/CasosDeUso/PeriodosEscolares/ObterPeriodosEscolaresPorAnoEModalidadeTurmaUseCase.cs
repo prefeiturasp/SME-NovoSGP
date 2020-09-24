@@ -17,9 +17,9 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<IEnumerable<PeriodoEscolarDto>> Executar(Modalidade modalidade, int anoLetivo)
+        public async Task<IEnumerable<PeriodoEscolarDto>> Executar(Modalidade modalidade, int anoLetivo, int? semestre)
         {
-            var periodos = await mediator.Send(new ObterPeriodosEscolaresPorAnoEModalidadeTurmaQuery(modalidade, anoLetivo));
+            var periodos = await mediator.Send(new ObterPeriodosEscolaresPorAnoEModalidadeTurmaQuery(modalidade, anoLetivo, semestre));
             return periodos?.Select(c => new PeriodoEscolarDto
             {
                 Bimestre = c.Bimestre,
