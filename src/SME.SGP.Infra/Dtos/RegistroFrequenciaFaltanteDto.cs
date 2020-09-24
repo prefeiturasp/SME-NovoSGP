@@ -9,6 +9,7 @@ namespace SME.SGP.Infra
     {
         public string DisciplinaId { get; set; }
         public string CodigoTurma { get; set; }
+        public Modalidade ModalidadeTurma { get; set; }
         public string NomeTurma { get; set; }
         public TipoEscola TipoEscola { get; set; }
         public string CodigoUe { get; set; }

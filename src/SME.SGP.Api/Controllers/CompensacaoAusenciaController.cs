@@ -86,14 +86,5 @@ namespace SME.SGP.Api.Controllers
             return Ok(await comandos.Copiar(compensacaoCopia));
         }
 
-        [HttpPost("notificar")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> Notificar([FromServices] IServicoNotificacaoFrequencia servicoNotificacao)
-        {
-            await servicoNotificacao.VerificaNotificacaoBimestral();
-            return Ok();
-        }
-
     }
 }

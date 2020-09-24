@@ -148,8 +148,8 @@ const ListaFinal = props => {
               dadosLista.componentesCurriculares &&
               dadosLista.componentesCurriculares.map((item, index) => {
                 return (
-                  <>
-                    <tr key={shortid.generate()}>
+                  <React.Fragment key={shortid.generate()}>
+                    <tr>
                       <BarraLateralLista cor={corBarraLateral} />
                       <td
                         className="coluna-disciplina sombra-direita"
@@ -181,7 +181,7 @@ const ListaFinal = props => {
                       ehRegencia={false}
                       alunoDesabilitado={alunoDesabilitado}
                     />
-                  </>
+                  </React.Fragment>
                 );
               })}
             {dadosLista &&

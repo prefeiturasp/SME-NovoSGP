@@ -18,6 +18,7 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select
 	                        distinct a.turma_id as CodigoTurma,
 	                        t.nome as NomeTurma ,
+							t.modalidade_codigo  as ModalidadeTurma,
 	                        ue.ue_id as CodigoUe,
 							ue.tipo_escola as TipoEscola,
 	                        ue.nome as NomeUe ,
