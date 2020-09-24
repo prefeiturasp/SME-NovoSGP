@@ -73,6 +73,12 @@ export default function planoAnual(state = inicial, action) {
           dadosBimestresPlanoAnual: dados,
         };
       }
+      case '@planoAnual/setTodosDadosBimestresPlanoAnual': {
+        return {
+          ...draft,
+          dadosBimestresPlanoAnual: action.payload,
+        };
+      }
       case '@planoAnual/setListaObjetivosAprendizagemPorComponente': {
         const dados = state.listaObjetivosAprendizagemPorComponente;
         dados[action.payload.codigoComponenteCurricular] =
