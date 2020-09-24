@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
         public async Task<PaginacaoResultadoDto<AlunoSimplesDto>> Executar(FiltroBuscaAlunosDto dto)
         {
             var resultado = new PaginacaoResultadoDto<AlunoSimplesDto>();
-
+            dto.AnoLetivo = "0";
             resultado.Items = await mediator.Send(new ObterAlunosPorCodigoEolNomeQuery(dto));
             resultado.TotalPaginas = 1;
             resultado.TotalRegistros = resultado.Items.Count();

@@ -55,7 +55,7 @@ namespace SME.SGP.Aplicacao
                     var periodoEscolarAtual = await repositorioTipoCalendario.ObterPeriodoEscolarPorCalendarioEData(request.TipoCalendarioId, hoje);
                     if (periodoEscolarAtual == null || periodoEscolar.Id != periodoEscolarAtual.Id)
                     {
-                        var periodoFechamento = await repositorioPeriodoFechamento.ObterPeriodoPorUeDataBimestreAsync(request.Turma.UeId, hoje, periodoEscolar.Bimestre);
+                        var periodoFechamento = await repositorioPeriodoFechamento.ObterPeriodoPorUeDataBimestreAsync(request.UeId, hoje, periodoEscolar.Bimestre);
                         if (periodoFechamento != null)
                         {
                             if (periodoFechamento.ExisteFechamentoEmAberto(hoje))
@@ -63,7 +63,7 @@ namespace SME.SGP.Aplicacao
                         }
                         else
                         {
-                            FechamentoReabertura periodoFechamentoReabertura = await ObterPeriodoFechamentoReabertura(request.TipoCalendarioId, request.Turma.UeId, hoje);
+                            FechamentoReabertura periodoFechamentoReabertura = await ObterPeriodoFechamentoReabertura(request.TipoCalendarioId, request.UeId, hoje);
 
                             return periodoFechamentoReabertura != null ?
                                 new PodeCadastrarAulaPorDataRetornoDto(true) :
@@ -76,7 +76,7 @@ namespace SME.SGP.Aplicacao
             }
             else
             {
-                FechamentoReabertura periodoFechamentoReabertura = await ObterPeriodoFechamentoReabertura(request.TipoCalendarioId, request.Turma.UeId, hoje);
+                FechamentoReabertura periodoFechamentoReabertura = await ObterPeriodoFechamentoReabertura(request.TipoCalendarioId, request.UeId, hoje);
                 return periodoFechamentoReabertura != null ?
                     new PodeCadastrarAulaPorDataRetornoDto(true) :
                     new PodeCadastrarAulaPorDataRetornoDto(false, "Apenas é possível consultar este registro pois o período deste bimestre não está aberto.");

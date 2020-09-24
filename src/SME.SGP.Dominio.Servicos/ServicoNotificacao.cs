@@ -47,6 +47,13 @@ namespace SME.SGP.Dominio.Servicos
             repositorioNotificacao.Salvar(notificacao);
         }
 
+        public async Task SalvarAsync(Notificacao notificacao)
+        {
+            GeraNovoCodigo(notificacao);
+
+            await repositorioNotificacao.SalvarAsync(notificacao);
+        }
+
         public IEnumerable<(Cargo? Cargo, string Id)> ObterFuncionariosPorNivel(string codigoUe, Cargo? cargo, bool primeiroNivel = true)
         {
             IEnumerable<SupervisorEscolasDreDto> supervisoresEscola = null;

@@ -53,6 +53,7 @@ const ResumosGraficosPAP = () => {
       TurmaId: filtro.turmaId,
       Periodo: filtro.periodo,
       Ano: filtro.ano,
+      AnoLetivo: filtro.anoLetivo,
     };
   }, [filtro]);
 

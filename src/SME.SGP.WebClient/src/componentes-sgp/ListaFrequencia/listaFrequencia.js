@@ -1,15 +1,12 @@
-import { Switch, Icon } from 'antd';
+import { Switch, Tooltip } from 'antd';
 import PropTypes from 'prop-types';
 import React, { useState, useEffect } from 'react';
 import shortid from 'shortid';
 
-import {
-  Lista,
-  CaixaMarcadores,
-  IconePlusMarcadores,
-} from './listaFrequencia.css';
+import { Lista, MarcadorSituacao, BtbAnotacao } from './listaFrequencia.css';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 import tipoIndicativoFrequencia from '~/dtos/tipoIndicativoFrequencia';
+import ModalAnotacoesFrequencia from '~/paginas/DiarioClasse/FrequenciaPlanoAula/ModalAnotacoes/modalAnotacoes';
 
 const ListaFrequencia = props => {
   const {
@@ -19,11 +16,14 @@ const ListaFrequencia = props => {
     frequenciaId,
     temPeriodoAberto,
     ehInfantil,
+    aulaId,
+    componenteCurricularId,
   } = props;
 
   const [dataSource, setDataSource] = useState(dados);
   const [desabilitarCampos, setDesabilitarCampos] = useState(false);
-  const [expandirLinha, setExpandirLinha] = useState([]);
+  const [exibirModalAnotacao, setExibirModalAnotacao] = useState(false);
+  const [dadosModalAnotacao, setDadosModalAnotacao] = useState({});
 
   useEffect(() => {
     const somenteConsulta = verificaSomenteConsulta(permissoesTela);
@@ -94,13 +94,62 @@ const ListaFrequencia = props => {
     }
   };
 
-  const onClickExpandir = index => {
-    expandirLinha[index] = !expandirLinha[index];
-    setExpandirLinha([...expandirLinha]);
+  const onClickAnotacao = aluno => {
+    setDadosModalAnotacao(aluno);
+    setExibirModalAnotacao(true);
+  };
+
+  const onCloseModalAnotacao = () => {
+    setExibirModalAnotacao(false);
+    setDadosModalAnotacao({});
+  };
+
+  const btnAnotacao = item => {
+    const podeAbrirModal =
+      (item.permiteAnotacao && !desabilitarCampos) ||
+      (item.possuiAnotacao && desabilitarCampos);
+    return (
+      <Tooltip
+        title={
+          item.possuiAnotacao
+            ? `${ehInfantil ? 'Criança' : 'Estudante'} com anotações`
+            : ''
+        }
+        placement="top"
+      >
+        <div className=" d-flex justify-content-end">
+          <BtbAnotacao
+            podeAbrirModal={podeAbrirModal}
+            className={item.possuiAnotacao ? 'btn-com-anotacao' : ''}
+            onClick={() => {
+              if (podeAbrirModal) {
+                onClickAnotacao(item);
+              }
+            }}
+          >
+            <i className="fas fa-pen" />
+          </BtbAnotacao>
+        </div>
+      </Tooltip>
+    );
   };
 
   return (
     <>
+      {exibirModalAnotacao ? (
+        <ModalAnotacoesFrequencia
+          exibirModal={exibirModalAnotacao}
+          onCloseModal={onCloseModalAnotacao}
+          dadosModalAnotacao={dadosModalAnotacao}
+          dadosListaFrequencia={dados}
+          ehInfantil={ehInfantil}
+          aulaId={aulaId}
+          componenteCurricularId={componenteCurricularId}
+          desabilitarCampos={desabilitarCampos}
+        />
+      ) : (
+        ''
+      )}
       {dataSource && dataSource.length > 0 ? (
         <Lista className="mt-4 table-responsive">
           <div className="scroll-tabela-frequencia-thead">
@@ -166,26 +215,27 @@ const ListaFrequencia = props => {
                       >
                         <td className="width-60 text-center font-weight-bold">
                           {aluno.numeroAlunoChamada}
-                        </td>
-                        <td className="text-left">
-                          {aluno.nomeAluno}
                           {aluno.marcador ? (
-                            <>
-                              <CaixaMarcadores>
-                                {aluno.marcador.nome}
-                              </CaixaMarcadores>
-                              <IconePlusMarcadores
-                                onClick={() => onClickExpandir(i)}
-                                className={
-                                  expandirLinha[i]
-                                    ? 'fas fa-minus fa-minus-linha-expandida '
-                                    : 'fas fa-plus-circle'
-                                }
-                              />
-                            </>
+                            <Tooltip
+                              title={aluno.marcador.descricao}
+                              placement="top"
+                            >
+                              <MarcadorSituacao className="fas fa-circle" />
+                            </Tooltip>
                           ) : (
-                            <></>
+                            ''
                           )}
+                        </td>
+                        <td>
+                          <div
+                            className="d-flex"
+                            style={{ justifyContent: 'space-between' }}
+                          >
+                            <div className=" d-flex justify-content-start">
+                              {aluno.nomeAluno}
+                            </div>
+                            {btnAnotacao(aluno)}
+                          </div>
                         </td>
                         {dataSource[0].aulas.length > 1 ? (
                           <>
@@ -266,20 +316,6 @@ const ListaFrequencia = props => {
                           </span>
                         </td>
                       </tr>
-                      {expandirLinha[i] ? (
-                        <>
-                          <tr className="linha-expandida">
-                            <td colSpan="1" className="text-center">
-                              <Icon type="double-right" />
-                            </td>
-                            <td colSpan={dataSource[0].aulas.length + 4}>
-                              {aluno.marcador.descricao}
-                            </td>
-                          </tr>
-                        </>
-                      ) : (
-                        <></>
-                      )}
                     </React.Fragment>
                   );
                 })}
@@ -301,6 +337,8 @@ ListaFrequencia.propTypes = {
   frequenciaId: PropTypes.oneOfType([PropTypes.any]),
   temPeriodoAberto: PropTypes.oneOfType([PropTypes.bool]),
   ehInfantil: PropTypes.oneOfType([PropTypes.bool]),
+  aulaId: PropTypes.oneOfType([PropTypes.any]),
+  componenteCurricularId: PropTypes.oneOfType([PropTypes.any]),
 };
 
 ListaFrequencia.defaultProps = {
@@ -310,6 +348,8 @@ ListaFrequencia.defaultProps = {
   frequenciaId: 0,
   temPeriodoAberto: false,
   ehInfantil: false,
+  aulaId: '',
+  componenteCurricularId: '',
 };
 
 export default ListaFrequencia;

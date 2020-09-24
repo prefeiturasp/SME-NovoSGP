@@ -13,6 +13,9 @@ namespace SME.SGP.Infra
         [Required(ErrorMessage = "A Ue é obrigatória.", AllowEmptyStrings = false)]
         public string UeCodigo { get; set; }
 
+        [Required(ErrorMessage = "A UeId é obrigatória.", AllowEmptyStrings = false)]
+        public long UeId { get; set; }
+
         [Required(ErrorMessage = "O ano letivo é obrigatório.")]
         public int AnoLetivo { get; set; }
         public string TurmaCodigo { get; set; }

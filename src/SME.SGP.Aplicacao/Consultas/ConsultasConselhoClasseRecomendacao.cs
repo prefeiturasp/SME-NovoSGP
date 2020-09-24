@@ -16,15 +16,15 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
         private readonly IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno;
         private readonly IRepositorioConselhoClasseRecomendacao repositorioConselhoClasseRecomendacao;
+        private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IConsultasTurma consultasTurma;
         private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
         private readonly IConsultasConselhoClasse consultasConselhoClasse;
-        private readonly IRepositorioConselhoClasse repositorioConselhoClasse;
 
         public ConsultasConselhoClasseRecomendacao(IRepositorioConselhoClasseRecomendacao repositorioConselhoClasseRecomendacao,
             IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno, IConsultasPeriodoEscolar consultasPeriodoEscolar, IConsultasTurma consultasTurma,
             IConsultasFechamentoAluno consultasFechamentoAluno, IConsultasFechamentoTurma consultasFechamentoTurma, IConsultasPeriodoFechamento consultasPeriodoFechamento,
-            IConsultasConselhoClasse consultasConselhoClasse, IRepositorioConselhoClasse repositorioConselhoClasse)
+            IConsultasConselhoClasse consultasConselhoClasse, IRepositorioTipoCalendario repositorioTipoCalendario)
         {
             this.repositorioConselhoClasseAluno = repositorioConselhoClasseAluno ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAluno));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao
             this.consultasFechamentoTurma = consultasFechamentoTurma ?? throw new ArgumentNullException(nameof(consultasFechamentoTurma));
             this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));
             this.consultasConselhoClasse = consultasConselhoClasse ?? throw new ArgumentNullException(nameof(consultasConselhoClasse));
-            this.repositorioConselhoClasse = repositorioConselhoClasse ?? throw new ArgumentNullException(nameof(repositorioConselhoClasse));
+            this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
         }
 
         public string MontaTextUlLis(IEnumerable<string> textos)
@@ -50,31 +50,43 @@ namespace SME.SGP.Aplicacao
             return str.ToString().Trim();
         }
         
-        public async Task<ConsultasConselhoClasseRecomendacaoConsultaDto> ObterRecomendacoesAlunoFamilia(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo)
+        public async Task<ConsultasConselhoClasseRecomendacaoConsultaDto> ObterRecomendacoesAlunoFamilia(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, string codigoTurma, int? bimestre)
         {
             var fechamentoTurma = await consultasFechamentoTurma.ObterCompletoPorIdAsync(fechamentoTurmaId);
-            var bimestre = fechamentoTurma.PeriodoEscolar?.Bimestre;
+            var turma = fechamentoTurma?.Turma;
+            var periodoEscolar = fechamentoTurma?.PeriodoEscolar;
 
             var emFechamento = true;
 
+            if(fechamentoTurma == null)
+            {
+                turma = await consultasTurma.ObterPorCodigo(codigoTurma);
+                if (turma == null) throw new NegocioException("Turma não encontrada");
+
+                var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre);
+                if (tipoCalendario == null) throw new NegocioException("Tipo calendário não encontrado");
+
+                periodoEscolar = await consultasPeriodoEscolar.ObterPeriodoEscolarPorTipoCalendarioBimestre(tipoCalendario.Id, bimestre.Value);
+            }
+
             if (!bimestre.HasValue)
             {
-                var validacaoConselhoFinal = await consultasConselhoClasse.ValidaConselhoClasseUltimoBimestre(fechamentoTurma.Turma);
+                var validacaoConselhoFinal = await consultasConselhoClasse.ValidaConselhoClasseUltimoBimestre(turma);
                 if (!validacaoConselhoFinal.Item2)
                     throw new NegocioException($"Para acessar este aba você precisa registrar o conselho de classe do {validacaoConselhoFinal.Item1}º bimestre");
                 
-                emFechamento = await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamento(fechamentoTurma.Turma.CodigoTurma, DateTime.Today);
+                emFechamento = await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamento(turma.CodigoTurma, DateTime.Today);
             }
             else
             {
-                emFechamento = await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamento(fechamentoTurma.Turma.CodigoTurma, DateTime.Today, bimestre.Value);
+                emFechamento = await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamento(turma.CodigoTurma, DateTime.Today, bimestre.Value);
             }
 
             var anotacoesDoAluno = await consultasFechamentoAluno.ObterAnotacaoAlunoParaConselhoAsync(alunoCodigo, fechamentoTurmaId);
             if (anotacoesDoAluno == null)
                 anotacoesDoAluno = new List<FechamentoAlunoAnotacaoConselhoDto>();
             
-            var conselhoClasseAluno = await repositorioConselhoClasseAluno.ObterPorFechamentoAsync(fechamentoTurma.Id, alunoCodigo);
+            var conselhoClasseAluno = fechamentoTurma != null ? await repositorioConselhoClasseAluno.ObterPorFechamentoAsync(fechamentoTurma.Id, alunoCodigo): null;
             if (conselhoClasseAluno == null || string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesAluno) || string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesFamilia))
                 return await ObterRecomendacoesIniciais(conselhoClasseAluno, anotacoesDoAluno, emFechamento);
 

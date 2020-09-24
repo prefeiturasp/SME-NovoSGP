@@ -50,6 +50,7 @@ namespace SME.SGP.Dados.Repositorios
                         ensino_especial = @ensinoEspecial,
                         etapa_eja = @etapaEja,
                         data_inicio = @dataInicio,
+                        serie_ensino = @serieEnsino,
                         dt_fim_eol = @dataFim
                     where
 	                    id = @id;";        
@@ -207,6 +208,7 @@ namespace SME.SGP.Dados.Repositorios
 	                        d.dre_id,
 	                        d.abreviacao,
 	                        d.data_atualizacao
+
                         from
 	                        turma t
                         inner join ue u on
@@ -335,6 +337,7 @@ namespace SME.SGP.Dados.Repositorios
                                         c.TipoTurno != l.TipoTurno ||
                                         c.EnsinoEspecial != l.EnsinoEspecial ||
                                         c.EtapaEJA != l.EtapaEJA ||
+                                        c.SerieEnsino != l.SerieEnsino ||
                                         c.DataInicio.HasValue != l.DataInicio.HasValue ||
                                         (c.DataInicio.HasValue && l.DataInicio.HasValue && c.DataInicio.Value.Date != l.DataInicio.Value.Date) ||
                                         c.DataFim.HasValue != l.DataFim.HasValue ||
@@ -356,6 +359,7 @@ namespace SME.SGP.Dados.Repositorios
                                       EnsinoEspecial = c.EnsinoEspecial,
                                       EtapaEJA = c.EtapaEJA,
                                       DataInicio = c.DataInicio,
+                                      SerieEnsino = c.SerieEnsino,                                      
                                       DataFim = c.DataFim,
                                       Extinta = c.Extinta
                                   };
@@ -376,6 +380,7 @@ namespace SME.SGP.Dados.Repositorios
                         ensinoEspecial = item.EnsinoEspecial,
                         etapaEja = item.EtapaEJA,
                         dataInicio = item.DataInicio,
+                        serieEnsino = item.SerieEnsino,
                         dataFim = item.DataFim
                     });
 
@@ -483,5 +488,18 @@ namespace SME.SGP.Dados.Repositorios
 	                  pe.bimestre = 1 and                      
 	                  t.dt_fim_eol is not null and 
                       t.dt_fim_eol {(definirTurmasComoHistorica ? ">=" : "<")} pe.periodo_inicio"; //Turmas extintas após o 1º bimestre do ano letivo considerado serão marcadas como histórica
+	                  
+        public async Task<IEnumerable<Turma>> ObterPorCodigosAsync(string[] codigos)
+        {
+            var query = "select * from turma t where t.turma_id = ANY(@codigos)";
+
+            return await contexto.Conexao.QueryAsync<Turma>(query, new { codigos });
+        }
+
+        public async Task<ObterTurmaSimplesPorIdRetornoDto> ObterTurmaSimplesPorId(long id)
+        {
+            var query = "select t.id, t.turma_id as codigo, t.nome from turma t where t.id = @id";
+            return await contexto.Conexao.QueryFirstOrDefaultAsync<ObterTurmaSimplesPorIdRetornoDto>(query, new { id });
+        }
     }
 }

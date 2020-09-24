@@ -10,11 +10,11 @@ namespace SME.SGP.Aplicacao
     {
         Task<PaginacaoResultadoDto<AtividadeAvaliativaCompletaDto>> ListarPaginado(FiltroAtividadeAvaliativaDto filtro);
 
-        Task<IEnumerable<AtividadeAvaliativa>> ObterAvaliacoesNoBimestre(string turmaCodigo, string disciplinaId, DateTime periodoInicio, DateTime periodoFim);
+        Task<IEnumerable<AtividadeAvaliativa>> ObterAvaliacoesNoBimestre(string turmaCodigo, long disciplinaId, DateTime periodoInicio, DateTime periodoFim);
 
         Task<AtividadeAvaliativaCompletaDto> ObterPorIdAsync(long id);
 
-        Task<IEnumerable<TurmaRetornoDto>> ObterTurmasCopia(string turmaId, string disciplinaId);
+        Task<IEnumerable<TurmaRetornoDto>> ObterTurmasCopia(string turmaId, long disciplinaId);
 
         Task<IEnumerable<AtividadeAvaliativaExistenteRetornoDto>> ValidarAtividadeAvaliativaExistente(FiltroAtividadeAvaliativaExistenteDto dto);
 

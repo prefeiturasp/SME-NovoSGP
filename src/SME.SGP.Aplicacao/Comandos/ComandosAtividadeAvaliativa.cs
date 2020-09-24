@@ -61,7 +61,7 @@ namespace SME.SGP.Aplicacao
 
             atividadeAvaliativa.PodeSerAlterada(usuario);
 
-            await VerificaSeProfessorPodePersistirTurma(usuario.CodigoRf, atividadeAvaliativa.TurmaId, dto.DisciplinasId[0], atividadeAvaliativa.DataAvaliacao, usuario);
+            await VerificaSeProfessorPodePersistirTurma(usuario.CodigoRf, atividadeAvaliativa.TurmaId, dto.DisciplinasId[0].ToString(), atividadeAvaliativa.DataAvaliacao, usuario);
 
             unitOfWork.IniciarTransacao();
 
@@ -70,7 +70,7 @@ namespace SME.SGP.Aplicacao
                 var regencias = await repositorioAtividadeAvaliativaRegencia.Listar(atividadeAvaliativa.Id);
                 foreach (var regencia in regencias)
                     repositorioAtividadeAvaliativaRegencia.Remover(regencia);
-                foreach (string idRegencia in dto.DisciplinaContidaRegenciaId)
+                foreach (var idRegencia in dto.DisciplinaContidaRegenciaId)
                 {
                     var ativRegencia = new AtividadeAvaliativaRegencia
                     {
@@ -136,7 +136,7 @@ namespace SME.SGP.Aplicacao
 
             foreach (var atividadeDisciplina in atividadeDisciplinas)
             {
-                await VerificaSeProfessorPodePersistirTurma(usuario.CodigoRf, atividadeAvaliativa.TurmaId, atividadeDisciplina.DisciplinaId, atividadeAvaliativa.DataAvaliacao, usuario);
+                await VerificaSeProfessorPodePersistirTurma(usuario.CodigoRf, atividadeAvaliativa.TurmaId, atividadeDisciplina.DisciplinaId.ToString(), atividadeAvaliativa.DataAvaliacao, usuario);
             }
 
             unitOfWork.IniciarTransacao();
@@ -187,7 +187,7 @@ namespace SME.SGP.Aplicacao
             var disciplina = ObterDisciplina(filtro.DisciplinasId[0]);
             var usuario = await servicoUsuario.ObterUsuarioLogado();
             DateTime dataAvaliacao = filtro.DataAvaliacao.Value.Date;
-            var aula = await repositorioAula.ObterAulas(filtro.TurmaId, filtro.UeID, usuario.CodigoRf, dataAvaliacao, filtro.DisciplinasId);
+            var aula = await repositorioAula.ObterAulas(filtro.TurmaId, filtro.UeID, usuario.CodigoRf, dataAvaliacao, Array.ConvertAll(filtro.DisciplinasId, a=> a.ToString()));
 
             //verificar se tem para essa atividade
             if (!aula.Any())
@@ -308,9 +308,9 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        private DisciplinaDto ObterDisciplina(string idDisciplina)
+        private DisciplinaDto ObterDisciplina(long idDisciplina)
         {
-            long[] disciplinaId = { long.Parse(idDisciplina) };
+            long[] disciplinaId = { idDisciplina };
             var disciplina = servicoEOL.ObterDisciplinasPorIds(disciplinaId);
             if (!disciplina.Any())
                 throw new NegocioException("Disciplina não encontrada no EOL.");
@@ -348,7 +348,7 @@ namespace SME.SGP.Aplicacao
 
             foreach (var id in dto.DisciplinasId)
             {
-                await VerificaSeProfessorPodePersistirTurma(atividadeAvaliativa.ProfessorRf, atividadeAvaliativa.TurmaId, id, atividadeAvaliativa.DataAvaliacao.Date);
+                await VerificaSeProfessorPodePersistirTurma(atividadeAvaliativa.ProfessorRf, atividadeAvaliativa.TurmaId, id.ToString(), atividadeAvaliativa.DataAvaliacao.Date);
             }
 
             unitOfWork.IniciarTransacao();
@@ -359,7 +359,7 @@ namespace SME.SGP.Aplicacao
                 if (dto.DisciplinaContidaRegenciaId.Length == 0)
                     throw new NegocioException("É necessário informar as disciplinas da regência");
 
-                foreach (string id in dto.DisciplinaContidaRegenciaId)
+                foreach (var id in dto.DisciplinaContidaRegenciaId)
                 {
                     var ativRegencia = new AtividadeAvaliativaRegencia
                     {
@@ -392,7 +392,7 @@ namespace SME.SGP.Aplicacao
         {
             var mensagens = new List<RetornoCopiarAtividadeAvaliativaDto>();
 
-            var turmasAtribuidasAoProfessor = await ObterTurmasAtribuidasAoProfessor(codigoRf, long.Parse(atividadeAvaliativaDto.DisciplinasId[0]));
+            var turmasAtribuidasAoProfessor = await ObterTurmasAtribuidasAoProfessor(codigoRf, atividadeAvaliativaDto.DisciplinasId[0]);
 
             if (atividadeAvaliativaDto.TurmasParaCopiar != null && atividadeAvaliativaDto.TurmasParaCopiar.Any())
             {

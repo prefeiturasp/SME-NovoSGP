@@ -1,5 +1,9 @@
-import { setRotas } from '../redux/modulos/navegacao/actions';
-import { store } from '../redux';
+import {
+  setRotas
+} from '../redux/modulos/navegacao/actions';
+import {
+  store
+} from '../redux';
 import Principal from '../paginas/Principal/principal';
 import PlanoCiclo from '../paginas/Planejamento/PlanoCiclo/planoCiclo';
 import PlanoAnual from '../paginas/Planejamento/PlanoAnual/planoAnual';
@@ -15,6 +19,7 @@ import RotasTipo from '~/constantes/rotasTipo';
 import MeusDados from '~/paginas/Perfil/meusDados';
 import PeriodosEscolares from '~/paginas/CalendarioEscolar/PeriodosEscolares/PeriodosEscolares';
 import ReiniciarSenha from '~/paginas/Configuracoes/Usuarios/reiniciarSenha';
+import TabsReiniciarSenha from '~/paginas/Configuracoes/Usuarios/TabsReiniciarSenha';
 import TipoCalendarioEscolarLista from '~/paginas/CalendarioEscolar/TipoCalendarioEscolar/tipoCalendarioEscolarLista';
 import TipoCalendarioEscolarForm from '~/paginas/CalendarioEscolar/TipoCalendarioEscolar/tipoCalendarioEscolarForm';
 import TipoFeriadoLista from '~/paginas/CalendarioEscolar/TipoFeriado/tipoFeriadoLista';
@@ -62,7 +67,10 @@ import DiarioBordo from '~/paginas/DiarioClasse/DiarioBordo/diarioBordo';
 import RelatorioPendencias from '~/paginas/Relatorios/Pendencias/relatorioPendencias';
 import CartaIntencoes from '~/paginas/Planejamento/CartaIntencoes/cartaIntencoes';
 import RelatorioParecerConclusivo from '~/paginas/Relatorios/ParecerConclusivo/relatorioParecerConclusivo';
+import DevolutivasLista from '~/paginas/DiarioClasse/Devolutivas/devolutivasLista';
+import DevolutivasForm from '~/paginas/DiarioClasse/Devolutivas/devolutivasForm';
 import RelatorioNotasConceitosFinais from '~/paginas/Relatorios/NotasConceitosFinais/relatorioNotasConceitosFinais';
+import RelatorioCompensacaoAusencia from '~/paginas/Relatorios/CompensacaoAusencia/relatorioCompensacaoAusencia';
 
 const rotas = new Map();
 
@@ -340,7 +348,7 @@ rotas.set(RotasDto.REINICIAR_SENHA, {
   breadcrumbName: 'Reiniciar Senha',
   menu: ['Configurações', 'Usuários'],
   parent: '/',
-  component: ReiniciarSenha,
+  component: TabsReiniciarSenha,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: true,
@@ -708,7 +716,7 @@ rotas.set(`${RotasDto.PERIODO_FECHAMENTO_REABERTURA}`, {
   chavePermissao: RotasDto.PERIODO_FECHAMENTO_REABERTURA,
 });
 
-rotas.set(`${RotasDto.PERIODO_FECHAMENTO_REABERTURA}/novo`, {
+rotas.set(`${RotasDto.PERIODO_FECHAMENTO_REABERTURA}/novo/:tipoCalendarioId`, {
   breadcrumbName: 'Períodos',
   parent: RotasDto.PERIODO_FECHAMENTO_REABERTURA,
   component: PeriodoFechamentoReaberturaForm,
@@ -739,8 +747,7 @@ rotas.set(`${RotasDto.PENDENCIAS_FECHAMENTO}`, {
   chavePermissao: RotasDto.PENDENCIAS_FECHAMENTO,
 });
 rotas.set(
-  `${RotasDto.PENDENCIAS_FECHAMENTO}/:bimestre/:codigoComponenteCurricular`,
-  {
+  `${RotasDto.PENDENCIAS_FECHAMENTO}/:bimestre/:codigoComponenteCurricular`, {
     breadcrumbName: 'Pendências do Fechamento',
     menu: ['Fechamento'],
     parent: '/',
@@ -890,6 +897,48 @@ rotas.set(RotasDto.CARTA_INTENCOES, {
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: true,
   chavePermissao: RotasDto.CARTA_INTENCOES,
+});
+
+rotas.set(RotasDto.DEVOLUTIVAS, {
+  breadcrumbName: 'Devolutivas',
+  menu: ['Diário de Classe '],
+  parent: '/',
+  component: DevolutivasLista,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.DEVOLUTIVAS,
+});
+
+rotas.set(`${RotasDto.DEVOLUTIVAS}/novo`, {
+  breadcrumbName: 'Cadastrar Devolutiva',
+  parent: RotasDto.DEVOLUTIVAS,
+  component: DevolutivasForm,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.DEVOLUTIVAS,
+});
+
+rotas.set(`${RotasDto.DEVOLUTIVAS}/editar/:id`, {
+  breadcrumbName: 'Alterar Devolutiva',
+  parent: RotasDto.DEVOLUTIVAS,
+  component: DevolutivasForm,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.DEVOLUTIVAS,
+});
+
+rotas.set(RotasDto.RELATORIO_COMPENSACAO_AUSENCIA, {
+  breadcrumbName: 'Compensação de ausência',
+  menu: ['Relatórios', 'Frequência'],
+  parent: '/',
+  component: RelatorioCompensacaoAusencia,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+  chavePermissao: RotasDto.RELATORIO_COMPENSACAO_AUSENCIA,
 });
 
 const rotasArray = [];
