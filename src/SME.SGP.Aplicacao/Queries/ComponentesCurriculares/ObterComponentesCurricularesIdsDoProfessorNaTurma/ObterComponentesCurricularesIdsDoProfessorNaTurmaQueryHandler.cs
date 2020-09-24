@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
         public async Task<long[]> Handle(ObterComponentesCurricularesIdsDoProfessorNaTurmaQuery request, CancellationToken cancellationToken)
         {
             var httpClient = httpClientFactory.CreateClient("servicoEOL");
-            var resposta = await httpClient.GetAsync($"turmas/{request.TurmaCodigo}/funcionarios/{request.ProfessorRF}/perfis/{request.Perfil}/atribuicoes");
+            var resposta = await httpClient.GetAsync($"v1/componentes-curriculares/turmas/{request.TurmaCodigo}/funcionarios/{request.ProfessorRF}/perfis/{request.Perfil}/atribuicoes");
 
             if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
             {

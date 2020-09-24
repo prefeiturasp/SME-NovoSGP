@@ -440,6 +440,9 @@ namespace SME.SGP.IoC
 
             services.TryAddScoped<ISalvarPlanejamentoAnualUseCase, SalvarPlanejamentoAnualUseCase>();
             services.TryAddScoped<IObterPlanejamentoAnualPorTurmaComponenteUseCase, ObterPlanejamentoAnualPorTurmaComponenteUseCase>();
+
+            services.TryAddScoped<IObterComponentesCurricularesPorTurmaIdUseCase, ObterComponentesCurricularesPorTurmaIdUseCase>();
+            
         }
     }
 }

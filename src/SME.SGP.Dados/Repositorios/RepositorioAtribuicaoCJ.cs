@@ -25,6 +25,16 @@ namespace SME.SGP.Dados.Repositorios
             return database.Query<AtribuicaoCJ>(query, parametros);
         }
 
+        public async Task<IEnumerable<long>> ObterComponentesIdsPorTurmaRFAsync(long turmaCodigo, string usuarioRF)
+        {
+            var query = @"select distinct disciplina_id from atribuicao_cj 
+                            where professor_rf = @usuarioRF and substituir = true and turma_id = @turmaCodigo";
+
+            var parametros = new { usuarioRF, turmaCodigo = turmaCodigo.ToString() };
+
+            return await database.QueryAsync<long>(query, parametros);
+        }
+
         public async Task<IEnumerable<AtribuicaoCJ>> ObterPorFiltros(Modalidade? modalidade, string turmaId, string ueId, long componenteCurricularId,
             string usuarioRf, string usuarioNome, bool? substituir, string dreCodigo = "", string[] turmaIds = null, int? anoLetivo = null)
         {

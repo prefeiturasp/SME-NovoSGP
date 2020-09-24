@@ -28,7 +28,6 @@
   <ItemGroup>
     <Folder Include="Interfaces\CasosDeUso\Aluno\" />
     <Folder Include="Queries\ComponentesCurriculares\ObterComponentesCurricularesCJPor\" />
-    <Folder Include="Queries\AtribuicaoCJ\" />
     <Folder Include="Servicos\Interfaces\" />
   </ItemGroup>
 </Project>

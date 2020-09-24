@@ -19,8 +19,7 @@ namespace SME.SGP.Dados
         {
             var query = @"select distinct cc.*, 
                             (select id from componente_curricular_jurema ccj where ccj.codigo_eol = cc.id limit 1) is not null TemCurriculoCidade
-                            from componente_curricular cc;
-                         cc.id = any(@ids)";
+                            from componente_curricular cc where cc.id = any(@ids)";
 
             return await database.Conexao.QueryAsync<ComponenteCurricular>(query, new { ids });
         }
