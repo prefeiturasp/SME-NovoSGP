@@ -6,6 +6,8 @@ import React, {
   useEffect,
 } from 'react';
 
+import RotasDto from '~/dtos/rotasDto';
+
 // Redux
 import { useSelector } from 'react-redux';
 
@@ -45,6 +47,7 @@ import AlertaModalidadeInfantil from '~/componentes-sgp/AlertaModalidadeInfantil
 import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 
 function RelatorioPAPAcompanhamento() {
+  const usuario = useSelector(store => store.usuario);
   const [estado, disparar] = useReducer(Reducer, estadoInicial);
   const [periodo, setPeriodo] = useState(undefined);
   const [ordenacao, setOrdenacao] = useState(2);
@@ -53,6 +56,7 @@ function RelatorioPAPAcompanhamento() {
   const [estadoOriginalAlunos, setEstadoOriginalAlunos] = useState(null);
   const { turmaSelecionada } = useSelector(store => store.usuario);
   const [semPeriodos, setSemPeriodos] = useState(false);
+  const permTela = usuario.permissoes[RotasDto.RELATORIO_PAP_ACOMPANHAMENTO];
   const [somenteLeitura, setSomenteLeitura] = useState(false);
   const modalidadesFiltroPrincipal = useSelector(
     store => store.filtro.modalidades
@@ -324,12 +328,9 @@ function RelatorioPAPAcompanhamento() {
         <Card mx="mx-0">
           <ButtonGroup
             somenteConsulta={somenteLeitura}
-            permissoesTela={{
-              podeConsultar: true,
-              podeAlterar: true,
-              podeIncluir: true,
-              podeExcluir: true,
-            }}
+            permissoesTela={
+              usuario.permissoes[RotasDto.RELATORIO_PAP_ACOMPANHAMENTO]
+            }
             modoEdicao={modoEdicao}
             temItemSelecionado
             onClickVoltar={() => onClickVoltarHandler()}
