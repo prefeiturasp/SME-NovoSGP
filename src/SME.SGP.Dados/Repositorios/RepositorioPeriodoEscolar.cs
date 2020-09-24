@@ -140,5 +140,22 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoEscolar>(query.ToString(), new { tipoCalendarioId, bimestre });
         }
+
+        public async Task<IEnumerable<PeriodoEscolar>> ObterPorAnoLetivoEModalidadeTurma(int anoLetivo, ModalidadeTipoCalendario modalidadeTipoCalendario)
+        {
+            var query = $@"select
+	                            distinct pe.*
+                            from
+	                            periodo_escolar pe
+                            inner join tipo_calendario tc on
+	                            pe.tipo_calendario_id = tc.id
+                            where
+	                            tc.modalidade = @modalidadeTipoCalendario
+	                            and tc.ano_letivo = @anoLetivo
+	                            and tc.situacao
+	                            and not tc.excluido";
+
+            return await database.Conexao.QueryAsync<PeriodoEscolar>(query.ToString(), new { modalidadeTipoCalendario, anoLetivo });
+        }
     }
 }
