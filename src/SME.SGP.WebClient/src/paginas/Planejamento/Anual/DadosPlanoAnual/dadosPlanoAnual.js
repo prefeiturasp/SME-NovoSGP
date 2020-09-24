@@ -65,7 +65,8 @@ const DadosPlanoAnual = () => {
     dispatch(setExibirLoaderPlanoAnual(true));
     ServicoPlanoAnual.obterBimestresPlanoAnual(
       turmaSelecionada.modalidade,
-      turmaSelecionada.anoLetivo
+      turmaSelecionada.anoLetivo,
+      turmaSelecionada.periodo
     )
       .then(resposta => {
         dispatch(setBimestresPlanoAnual(resposta.data));
