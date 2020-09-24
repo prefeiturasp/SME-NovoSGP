@@ -11,7 +11,7 @@ const CalendarioProfessorServico = {
   },
   buscarEventosAulasDia(params) {
     return api.get(
-      `v1/calendarios/${params.tipoCalendarioId}/meses/${params.numeroMes}/dias/${params.dia}/eventos-aulas?ueCodigo=${params.ue}&dreCodigo=${params.dre}&anoLetivo=${params.anoLetivo}&turmaCodigo=${params.turma}`
+      `v1/calendarios/${params.tipoCalendarioId}/meses/${params.numeroMes}/dias/${params.dia}/eventos-aulas?ueCodigo=${params.ue}&ueId=${params.ueId}&dreCodigo=${params.dre}&anoLetivo=${params.anoLetivo}&turmaCodigo=${params.turma}`
     );
   },
 };

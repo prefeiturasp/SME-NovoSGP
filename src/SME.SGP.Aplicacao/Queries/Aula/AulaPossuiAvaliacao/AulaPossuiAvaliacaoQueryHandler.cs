@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(AulaPossuiAvaliacaoQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioAtividadeAvaliativa.VerificarSeExisteAvaliacao(request.Aula.DataAula.Date, request.Aula.UeId, request.Aula.TurmaId, request.CodigoRf, request.Aula.DisciplinaId);
+            return await repositorioAtividadeAvaliativa.VerificarSeExisteAvaliacao(request.Aula.DataAula.Date, request.Aula.UeId, request.Aula.TurmaId, request.CodigoRf, long.Parse(request.Aula.DisciplinaId));
         }
     }
 }

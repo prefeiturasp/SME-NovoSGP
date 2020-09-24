@@ -135,14 +135,18 @@ const Filtro = () => {
 
       const turmaAtual = turmas.find(turma => turma.valor === turmaSelecionada);
 
-      const unidadeEscolarDesc = unidadesEscolares.find(
+      const unidadeEscolar = unidadesEscolares.find(
         unidade => unidade.valor === unidadeEscolarSelecionada
+      );
+
+      const dre = dres.find(
+        d => d.valor === dreSelecionada
       );
 
       setTextoAutocomplete(
         `${modalidadeDesc ? modalidadeDesc.desc : 'Modalidade'} - ${
         turmaAtual ? turmaAtual.desc : 'Turma'
-        } - ${unidadeEscolarDesc ? unidadeEscolarDesc.desc : 'Unidade Escolar'}`
+        } - ${unidadeEscolar ? unidadeEscolar.desc : 'Unidade Escolar'}`
       );
 
       setAlternarFocoBusca(false);
@@ -155,19 +159,22 @@ const Filtro = () => {
         anoLetivo: anoLetivoSelecionado,
         modalidade: modalidadeSelecionada,
         dre: dreSelecionada,
+        dreId: dre.id,
         unidadeEscolar: unidadeEscolarSelecionada,
+        unidadeEscolarId: unidadeEscolar.id,
         turma: turmaSelecionada,
         ano: turmaSelecionadaCompleta.ano,
         desc: `${
           modalidadeDesc && modalidadeDesc.desc ? modalidadeDesc.desc : ''
           } - ${turmaAtual && turmaAtual.desc ? turmaAtual.desc : ''} - ${
-          unidadeEscolarDesc && unidadeEscolarDesc.desc
-            ? unidadeEscolarDesc.desc
+            unidadeEscolar && unidadeEscolar.desc
+            ? unidadeEscolar.desc
             : ''
           }`,
         periodo: periodoSelecionado || 0,
         consideraHistorico,
         ensinoEspecial: turmaAtual.ensinoEspecial,
+        id: turmaAtual.id,
       };
 
       dispatch(turmasUsuario(turmas));
@@ -654,7 +661,6 @@ const Filtro = () => {
   }, []);
 
   const aoSelecionarHistorico = () => {
-    setTextoAutocomplete('');
     setConsideraHistorico(!consideraHistorico);
     limparCamposSelecionados();
   };
@@ -971,6 +977,32 @@ const Filtro = () => {
 
     reabilitarCampos();
   };
+
+  useEffect(() => {
+    if (!alternarFocoBusca) {
+      setAnoLetivoSelecionado(turmaUsuarioSelecionada.anoLetivo);
+      setModalidadeSelecionada(turmaUsuarioSelecionada.modalidade);
+      setPeriodoSelecionado(turmaUsuarioSelecionada.periodo);
+      setDreSelecionada(turmaUsuarioSelecionada.dre);
+      setUnidadeEscolarSelecionada(turmaUsuarioSelecionada.unidadeEscolar);
+      setTurmaSelecionada(turmaUsuarioSelecionada.turma);
+      setTextoAutocomplete(turmaUsuarioSelecionada.desc);
+      setConsideraHistorico(!!turmaUsuarioSelecionada.consideraHistorico);
+
+      if (!turmaUsuarioSelecionada.length) setCampoAnoLetivoDesabilitado(false);
+    }
+  }, [
+    alternarFocoBusca,
+    turmaUsuarioSelecionada.anoLetivo,
+    turmaUsuarioSelecionada.consideraHistorico,
+    turmaUsuarioSelecionada.desc,
+    turmaUsuarioSelecionada.dre,
+    turmaUsuarioSelecionada.length,
+    turmaUsuarioSelecionada.modalidade,
+    turmaUsuarioSelecionada.periodo,
+    turmaUsuarioSelecionada.turma,
+    turmaUsuarioSelecionada.unidadeEscolar,
+  ]);
 
   return (
     <Container className="position-relative w-100" id="containerFiltro">

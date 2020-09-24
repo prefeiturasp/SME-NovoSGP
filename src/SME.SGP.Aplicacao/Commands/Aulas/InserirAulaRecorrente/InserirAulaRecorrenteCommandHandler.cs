@@ -190,7 +190,7 @@ namespace SME.SGP.Aplicacao
                     DreCodigo = turma.Ue.Dre.CodigoDre,
                     TipoCalendarioId = tipoCalendarioId,
                     DataAula = dataConsulta,
-                    Turma = turma
+                    UeId = turma.UeId
                 });
 
                 if (consultaPodeCadastrarAula.PodeCadastrar)
@@ -224,7 +224,7 @@ namespace SME.SGP.Aplicacao
                         if (quantidadeAulasRestantes < quantidade)
                             throw new NegocioException("Quantidade de aulas superior ao limíte de aulas da grade.");
                         if (!gradeAulas.PodeEditar && (quantidade != gradeAulas.QuantidadeAulasRestante))
-                            throw new NegocioException("Quantidade de aulas não pode ser diferente do valor da grade curricular."); ;
+                            throw new NegocioException("Quantidade de aulas não pode ser diferente do valor da grade curricular.");
 
                     }
                     datasValidas.Add(dataConsulta);

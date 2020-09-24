@@ -150,7 +150,7 @@ namespace SME.SGP.Aplicacao
             {
                 await AplicarValidacoes(request, dataAula, turma, aula);
 
-                await AlterarAula(request, aula, dataAula, turma);
+                await AlterarAula(request, aula, dataAula);
             }
             catch (NegocioException ne)
             {
@@ -169,7 +169,7 @@ namespace SME.SGP.Aplicacao
             return (true, false, dataAula, string.Empty);
         }
 
-        private async Task AlterarAula(AlterarAulaRecorrenteCommand request, Aula aula, DateTime dataAula, Turma turma)
+        private async Task AlterarAula(AlterarAulaRecorrenteCommand request, Aula aula, DateTime dataAula)
         {
             aula.DataAula = dataAula;
             aula.Quantidade = request.Quantidade;
@@ -203,7 +203,7 @@ namespace SME.SGP.Aplicacao
                 DreCodigo = turma.Ue.Dre.CodigoDre,
                 TipoCalendarioId = tipoCalendarioId,
                 DataAula = dataAula,
-                Turma = turma
+                UeId = turma.UeId
             });
 
             if (!consultaPodeCadastrarAula.PodeCadastrar)

@@ -45,7 +45,7 @@ namespace SME.SGP.Aplicacao.Consultas
             // Busca plano de aula por data e disciplina da aula
             var plano = await repositorio.ObterPlanoAulaPorAula(aulaId);
             var aulaDto = await consultasAula.BuscarPorId(aulaId);
-            var atividadeAvaliativa = await repositorioAtividadeAvaliativa.ObterAtividadeAvaliativa(aulaDto.DataAula.Date, aulaDto.DisciplinaId, aulaDto.TurmaId, aulaDto.UeId);
+            var atividadeAvaliativa = await repositorioAtividadeAvaliativa.ObterAtividadeAvaliativa(aulaDto.DataAula.Date, long.Parse(aulaDto.DisciplinaId), aulaDto.TurmaId, aulaDto.UeId);
             
             var periodoEscolar = await repositorioPeriodoEscolar.ObterPorTipoCalendarioData(aulaDto.TipoCalendarioId, aulaDto.DataAula.Date);
             if (periodoEscolar == null)

@@ -65,8 +65,8 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
         public void DeveSalvarPlanoCicloAlterandoObjetivosEMatrizDoSaber()
         {
             repositorioObjetivoDesenvolvimentoPlano.Setup(c => c.ObterObjetivosDesenvolvimentoPorIdPlano(It.IsAny<long>()))
-                .Returns(new List<ObjetivoDesenvolvimentoPlano>() {
-                    new ObjetivoDesenvolvimentoPlano(){
+                .Returns(new List<RecuperacaoParalelaObjetivoDesenvolvimentoPlano>() {
+                    new RecuperacaoParalelaObjetivoDesenvolvimentoPlano(){
                         Id=1,
                         ObjetivoDesenvolvimentoId=1,
                         PlanoId=1
