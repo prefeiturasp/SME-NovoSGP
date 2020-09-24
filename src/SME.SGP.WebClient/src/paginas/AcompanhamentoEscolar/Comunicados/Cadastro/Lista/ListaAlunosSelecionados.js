@@ -4,7 +4,6 @@ import Container from './ListaAlunos.css';
 import { Linha } from '~/componentes/EstilosGlobais';
 import { confirmar, erro, sucesso, erros } from '~/servicos/alertas';
 import { Label } from '~/componentes';
-import Icon from '~/componentes/icon';
 
 const ListaAlunosSelecionados = props => {
   var { dadosAlunos, alunosSelecionados, onRemove, modoEdicaoConsulta } = props;
@@ -27,7 +26,7 @@ const ListaAlunosSelecionados = props => {
             if (!modoEdicaoConsulta) onRemove(record.codigoAluno);
           }}
         >
-          <Icon icon="fa-2x fa-times"></Icon>
+          <i className="fas fa-2x fa-times" />
         </a>
       ),
     },

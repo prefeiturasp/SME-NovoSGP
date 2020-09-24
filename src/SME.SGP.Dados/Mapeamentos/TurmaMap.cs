@@ -23,6 +23,7 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.EnsinoEspecial).ToColumn("ensino_especial");
             Map(c => c.EtapaEJA).ToColumn("etapa_eja");
             Map(c => c.DataInicio).ToColumn("data_inicio");
+            Map(c => c.SerieEnsino).ToColumn("serie_ensino");
             Map(c => c.DataFim).ToColumn("dt_fim_eol");
             Map(c => c.Extinta).Ignore();
         }

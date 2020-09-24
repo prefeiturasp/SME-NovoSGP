@@ -30,6 +30,7 @@ namespace SME.SGP.Aplicacao
             var tipoCalendarioId = request.TipoCalendarioId;
             var diasParaCriarAula = request.DiasLetivos;
             var diasParaExcluirAula = request.DiasLetivos;
+            var diasForaDoPeriodo = request.DiasForaDoPeriodoEscolar;
             var aulasACriar = new List<Aula>();
             var aulasAExcluir = new List<Aula>();
             var aulasComErro = new List<Aula>();
@@ -47,7 +48,7 @@ namespace SME.SGP.Aplicacao
             {
                 var turma = turmas[i];
 
-                var aulas = await mediator.Send(new ObterAulasDaTurmaPorTipoCalendarioQuery(turma.CodigoTurma, tipoCalendarioId));
+                var aulas = (await mediator.Send(new ObterAulasDaTurmaPorTipoCalendarioQuery(turma.CodigoTurma, tipoCalendarioId)))?.ToList();
 
                 if (aulas == null)
                 {
@@ -71,6 +72,10 @@ namespace SME.SGP.Aplicacao
                             }
                         IEnumerable<Aula> aulasDaTurmaParaExcluir = ObterAulasParaExcluir(diasParaCriarAula.ToList(), turma, aulas);
                         await ExcluirAulas(aulasAExcluirComFrequenciaRegistrada, idsAulasAExcluir, aulasDaTurmaParaExcluir.ToList());
+
+                        var aulasForaDoPeriodo = aulas.Where(c => diasForaDoPeriodo.Contains(c.DataAula));
+                        if (aulasForaDoPeriodo != null && aulasForaDoPeriodo.Any())
+                            await ExcluirAulas(aulasAExcluirComFrequenciaRegistrada, idsAulasAExcluir, aulasForaDoPeriodo.ToList());
                     }
                 }
 

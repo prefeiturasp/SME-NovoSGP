@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
-    public class RepositorioObjetivo : RepositorioBase<Objetivo>, IRepositorioObjetivo
+    public class RepositorioObjetivo : RepositorioBase<RecuperacaoParalelaObjetivo>, IRepositorioObjetivo
     {
         public RepositorioObjetivo(ISgpContext database) : base(database)
         { }
@@ -22,8 +22,8 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("o.nome,");
             query.AppendLine("o.descricao,");
             query.AppendLine("o.ordem");
-            query.AppendLine("from objetivo o ");
-            query.AppendLine("inner join eixo e on o.eixo_id = e.id ");
+            query.AppendLine("from recuperacao_paralela_objetivo o ");
+            query.AppendLine("inner join recuperacao_paralela_eixo e on o.eixo_id = e.id ");
             query.AppendLine("where (o.dt_fim is null or o.dt_fim <= now())");
             query.AppendLine("and o.excluido = false");
             //se não for encaminhamento, não traz os específicos do período

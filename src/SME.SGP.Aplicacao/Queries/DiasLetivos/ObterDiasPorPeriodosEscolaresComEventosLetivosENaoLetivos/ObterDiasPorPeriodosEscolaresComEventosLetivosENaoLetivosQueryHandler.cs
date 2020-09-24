@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
         public async Task<List<DiaLetivoDto>> Handle(ObterDiasPorPeriodosEscolaresComEventosLetivosENaoLetivosQuery request, CancellationToken cancellationToken)
         {
             var datasDosPeriodosEscolares = new List<DiaLetivoDto>();
-            foreach (var periodoEscolar in request.PeriodosEscolares)
+            foreach (var periodoEscolar in request.PeriodosEscolares.OrderBy(c=>c.Bimestre))
             {
                 datasDosPeriodosEscolares.AddRange(periodoEscolar.ObterIntervaloDatas().Select(c => new DiaLetivoDto
                 {

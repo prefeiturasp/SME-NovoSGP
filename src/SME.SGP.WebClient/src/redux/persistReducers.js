@@ -6,7 +6,7 @@ export default reducers => {
     {
       key: 'sme-sgp',
       storage,
-      whitelist: ['usuario', 'perfil', 'filtro', 'mensagens'],
+      whitelist: ['usuario', 'perfil', 'filtro', 'mensagens', 'dashboard'],
       blacklist: ['calendarioEscolar', 'calendarioProfessor'],
     },
     reducers
