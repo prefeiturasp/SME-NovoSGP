@@ -73,9 +73,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(int), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterPeriodosPorModalidade(Modalidade modalidade, int anoLetivo, [FromServices] IObterPeriodosEscolaresPorAnoEModalidadeTurmaUseCase useCase)
+        public async Task<IActionResult> ObterPeriodosPorModalidade(Modalidade modalidade, int anoLetivo, [FromQuery] int? semestre, [FromServices] IObterPeriodosEscolaresPorAnoEModalidadeTurmaUseCase useCase)
         {
-            return Ok(await useCase.Executar(modalidade, anoLetivo));
+            return Ok(await useCase.Executar(modalidade, anoLetivo, semestre));
         }
     }
 }
