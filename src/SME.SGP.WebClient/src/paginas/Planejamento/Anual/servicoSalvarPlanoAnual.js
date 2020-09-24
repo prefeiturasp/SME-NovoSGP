@@ -5,6 +5,7 @@ import {
   setExibirLoaderPlanoAnual,
   setExibirModalErrosPlanoAnual,
   setPlanoAnualEmEdicao,
+  setTodosDadosBimestresPlanoAnual,
 } from '~/redux/modulos/anual/actions';
 import { confirmar, erros, sucesso } from '~/servicos/alertas';
 import ServicoPlanoAnual from '~/servicos/Paginas/ServicoPlanoAnual';
@@ -116,19 +117,45 @@ class ServicoSalvarPlanoAnual {
         turmaSelecionada.id,
         componenteCurricular.codigoComponenteCurricular,
         params
-      )
-        .catch(e => erros(e))
-        .finally(() => {
-          dispatch(setExibirLoaderPlanoAnual(false));
-        });
+      ).catch(e => erros(e));
 
       if (retorno && retorno.status === 200) {
         dispatch(setPlanoAnualEmEdicao(false));
-        // TODO Setar auditoria!
-        sucesso('Suas informações foram salvas com sucesso.');
 
+        const { periodosEscolares } = retorno.data;
+
+        dadosBimestresPlanoAnual.forEach(bimestreParaSetarAuditoria => {
+          const bimestreComNovaAuditoria = periodosEscolares.find(
+            item =>
+              item.periodoEscolarId ===
+              bimestreParaSetarAuditoria.periodoEscolarId
+          );
+          if (bimestreComNovaAuditoria) {
+            bimestreParaSetarAuditoria.componentes.forEach(compSetarAudi => {
+              const componenteComNovaAuditoria = bimestreComNovaAuditoria.componentes.find(
+                comp =>
+                  String(comp.componenteCurricularId) ===
+                  String(compSetarAudi.componenteCurricularId)
+              );
+              if (componenteComNovaAuditoria) {
+                compSetarAudi.auditoria = componenteComNovaAuditoria.auditoria;
+                compSetarAudi.emEdicao = false;
+              }
+            });
+          }
+        });
+
+        const dadosParaAtualizarNoRedux = [];
+        dadosBimestresPlanoAnual.forEach(a => {
+          dadosParaAtualizarNoRedux[a.bimestre] = { ...a };
+        });
+        dispatch(setTodosDadosBimestresPlanoAnual(dadosParaAtualizarNoRedux));
+
+        sucesso('Suas informações foram salvas com sucesso.');
+        dispatch(setExibirLoaderPlanoAnual(false));
         return true;
       }
+      dispatch(setExibirLoaderPlanoAnual(false));
       return false;
     };
     if (planoAnualEmEdicao) {

@@ -31,11 +31,32 @@ const BotoesAcoesPlanoAnual = () => {
   );
 
   const onSalvar = async () => {
-    const registrosSalvos = await servicoSalvarPlanoAnual.validarSalvarPlanoAnual();
+    const salvou = await servicoSalvarPlanoAnual.validarSalvarPlanoAnual();
+    return salvou;
+  };
+
+  const perguntaAoSalvar = async () => {
+    return confirmar(
+      'Atenção',
+      '',
+      'Suas alterações não foram salvas, deseja salvar agora?'
+    );
   };
 
   const onClickVoltar = async () => {
-    history.push(URL_HOME);
+    if (planoAnualEmEdicao) {
+      const confirmado = await perguntaAoSalvar();
+      if (confirmado) {
+        const salvou = await onSalvar();
+        if (salvou) {
+          history.push(URL_HOME);
+        }
+      } else {
+        history.push(URL_HOME);
+      }
+    } else {
+      history.push(URL_HOME);
+    }
   };
 
   const onCancelar = async () => {

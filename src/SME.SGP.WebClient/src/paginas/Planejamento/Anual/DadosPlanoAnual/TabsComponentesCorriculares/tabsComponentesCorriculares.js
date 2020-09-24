@@ -3,11 +3,7 @@ import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { ContainerTabsCard } from '~/componentes/tabs/tabs.css';
-import {
-  setDadosBimestresPlanoAnual,
-  setTabAtualComponenteCurricular,
-} from '~/redux/modulos/anual/actions';
-import { erros } from '~/servicos';
+import { setTabAtualComponenteCurricular } from '~/redux/modulos/anual/actions';
 import ServicoPlanoAnual from '~/servicos/Paginas/ServicoPlanoAnual';
 import DescricaoPlanejamento from '../DescricaoPlanejamento/descricaoPlanejamento';
 import ListaObjetivos from '../ListaObjetivos/listaObjetivos';

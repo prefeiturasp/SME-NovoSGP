@@ -133,7 +133,9 @@ const ListaObjetivos = React.memo(props => {
 
   const parametrosListaDireita = {
     title:
-      'Você precisa selecionar ao menos um objetivo para poder inserir a descrição do plano',
+      dadosDireita && dadosDireita.length
+        ? 'Objetivos de aprendizagem selecionados para este componente curricular'
+        : 'Você precisa selecionar ao menos um objetivo para poder inserir a descrição do plano',
     columns: [
       {
         title: 'Código',
