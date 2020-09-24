@@ -33,6 +33,11 @@ export const setDadosBimestresPlanoAnual = payload => ({
   payload,
 });
 
+export const setTodosDadosBimestresPlanoAnual = payload => ({
+  type: '@planoAnual/setTodosDadosBimestresPlanoAnual',
+  payload,
+});
+
 export const setListaObjetivosAprendizagemPorComponente = payload => ({
   type: '@planoAnual/setListaObjetivosAprendizagemPorComponente',
   payload,

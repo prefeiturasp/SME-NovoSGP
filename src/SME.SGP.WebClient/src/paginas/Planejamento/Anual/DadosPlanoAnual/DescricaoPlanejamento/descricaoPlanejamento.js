@@ -95,6 +95,9 @@ const DescricaoPlanejamento = React.memo(props => {
                 onChange(v);
               }
             }}
+            desabilitar={
+              !obterDadosComponenteAtual()?.objetivosAprendizagemId?.length
+            }
           />
           {obterAuditoria()}
         </div>
