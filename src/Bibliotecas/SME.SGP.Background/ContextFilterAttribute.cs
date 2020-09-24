@@ -2,17 +2,15 @@
 using Hangfire.Common;
 using Hangfire.Server;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 using SME.Background.Core;
 using SME.SGP.Infra.Contexto;
 using SME.SGP.Infra.Escopo;
 using SME.SGP.Infra.Interfaces;
-using System.Threading;
 
 namespace SME.SGP.Hangfire
 {
     public class ContextFilterAttribute : JobFilterAttribute,
-    IClientFilter, IServerFilter 
+    IClientFilter, IServerFilter
     {
         public void OnCreated(CreatedContext filterContext)
         {

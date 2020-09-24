@@ -24,9 +24,7 @@ namespace SME.SGP.Dto
         public string CodigoUe { get; set; }
         public bool AlunoEspecificado { get; set; }
         public IEnumerable<ComunicadoTurmaDto> Turmas { get; set; }
-        public IEnumerable<ComunicadoAlunoDto> Alunos { get; set; }
-
-        public bool EmEdicao = true;
+        public IEnumerable<ComunicadoAlunoDto> Alunos { get; set; }       
 
         public static explicit operator ComunicadoDto(Comunicado comunicado)
         => comunicado == null ? null : new ComunicadoDto

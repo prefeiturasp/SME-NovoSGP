@@ -1,8 +1,6 @@
 ﻿using Hangfire.Logging;
 using Sentry;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.Background.Hangfire.Logging
 {

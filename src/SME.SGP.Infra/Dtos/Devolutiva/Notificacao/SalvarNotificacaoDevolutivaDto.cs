@@ -19,7 +19,7 @@ namespace SME.SGP.Infra.Dtos
         public Turma Turma { get; set; }
         public Usuario Usuario { get; set; }
 
-        public long DevolutivaId;
+        public long DevolutivaId { get; set; }
     }
 
     public class SalvarNotificacaoDevolutivaDtoValidator : AbstractValidator<SalvarNotificacaoDevolutivaDto>

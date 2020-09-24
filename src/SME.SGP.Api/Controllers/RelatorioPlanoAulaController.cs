@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Aplicacao;
-using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.Relatorios;
 using System;
@@ -12,7 +11,7 @@ namespace SME.SGP.Api.Controllers
     [Route("api/v1/relatorios/plano-aula")]
     public class RelatorioPlanoAulaController : ControllerBase
     {
-        [HttpPost]        
+        [HttpPost]
         [ProducesResponseType(typeof(Boolean), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
