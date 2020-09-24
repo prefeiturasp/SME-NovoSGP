@@ -12,6 +12,7 @@ const inicial = {
   errosPlanoAnual: [],
   exibirModalErrosPlanoAnual: false,
   exibirLoaderPlanoAnual: false,
+  clicouNoBimestre: [],
 };
 
 export default function planoAnual(state = inicial, action) {
@@ -55,6 +56,7 @@ export default function planoAnual(state = inicial, action) {
           errosPlanoAnual: [],
           exibirModalErrosPlanoAnual: false,
           exibirLoaderPlanoAnual: false,
+          clicouNoBimestre: [],
         };
       }
       case '@planoAnual/setTabAtualComponenteCurricular': {
@@ -104,6 +106,14 @@ export default function planoAnual(state = inicial, action) {
         return {
           ...draft,
           exibirLoaderPlanoAnual: action.payload,
+        };
+      }
+      case '@planoAnual/setClicouNoBimestre': {
+        const dados = state.clicouNoBimestre;
+        dados[action.payload.bimestre] = !dados[action.payload.bimestre];
+        return {
+          ...draft,
+          clicouNoBimestre: dados,
         };
       }
 

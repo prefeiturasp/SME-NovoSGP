@@ -57,3 +57,8 @@ export const setExibirLoaderPlanoAnual = payload => ({
   type: '@planoAnual/setExibirLoaderPlanoAnual',
   payload,
 });
+
+export const setClicouNoBimestre = payload => ({
+  type: '@planoAnual/setClicouNoBimestre',
+  payload,
+});

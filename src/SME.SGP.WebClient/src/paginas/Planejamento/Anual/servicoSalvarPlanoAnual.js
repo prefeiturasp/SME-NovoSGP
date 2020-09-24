@@ -66,7 +66,43 @@ class ServicoSalvarPlanoAnual {
       componenteCurricular,
     } = planoAnual;
 
-    const todosCamposValidos = () => {
+    const listaObjetivosSemDados = () => {
+      const camposInvalidos = [];
+
+      dadosBimestresPlanoAnual.forEach(bimestreAlterado => {
+        if (
+          bimestreAlterado.componentes &&
+          bimestreAlterado.componentes.length
+        ) {
+          const semObjetivos = bimestreAlterado.componentes.filter(
+            item =>
+              item.emEdicao &&
+              item.objetivosAprendizagemId &&
+              item.objetivosAprendizagemId.length === 0
+          );
+          if (semObjetivos && semObjetivos.length) {
+            semObjetivos.forEach(componente => {
+              const c = listaComponentesCurricularesPlanejamento.find(
+                item =>
+                  String(item.codigoComponenteCurricular) ===
+                  String(componente.componenteCurricularId)
+              );
+              const msg = `${bimestreAlterado.bimestre}º Bimestre - ${c.nome}: Ao menos um objetivo de aprendizagem deve ser selecionado.`;
+              camposInvalidos.push(msg);
+            });
+          }
+        }
+      });
+
+      if (camposInvalidos.length) {
+        dispatch(setErrosPlanoAnual(camposInvalidos));
+        dispatch(setExibirModalErrosPlanoAnual(true));
+        return false;
+      }
+      return true;
+    };
+
+    const campoDescricaoNaoInformado = () => {
       const camposInvalidos = [];
 
       dadosBimestresPlanoAnual.forEach(bimestreAlterado => {
@@ -160,8 +196,17 @@ class ServicoSalvarPlanoAnual {
     };
     if (planoAnualEmEdicao) {
       // Voltar para a tela e não executa a ação!
-      const temRegistrosInvalidos = !todosCamposValidos();
-      if (temRegistrosInvalidos) {
+
+      debugger;
+      if (componenteCurricular.possuiObjetivos) {
+        const temListaObjetivosSemDados = !listaObjetivosSemDados();
+        if (temListaObjetivosSemDados) {
+          return false;
+        }
+      }
+
+      const temCampoDescricaoNaoInformado = !campoDescricaoNaoInformado();
+      if (temCampoDescricaoNaoInformado) {
         return false;
       }
 
