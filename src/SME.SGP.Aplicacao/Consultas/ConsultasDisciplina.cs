@@ -101,7 +101,7 @@ namespace SME.SGP.Aplicacao
             if (usuarioLogado.EhProfessorCj())
             {
                 var disciplinas = await ObterDisciplinasPerfilCJ(codigoTurma, usuarioLogado.Login);
-                disciplinasDto = MapearParaDto(disciplinas, turmaPrograma, turma.EnsinoEspecial);
+                disciplinasDto = MapearParaDto(disciplinas, turmaPrograma, turma.EnsinoEspecial)?.OrderBy(c => c.Nome)?.ToList();
             }
             else
             {
@@ -125,7 +125,7 @@ namespace SME.SGP.Aplicacao
                     PossuiObjetivos = disciplina.PossuiObjetivosDeAprendizagem(componentesCurricularesJurema, turmaPrograma, turma.ModalidadeCodigo, turma.Ano),
                     ObjetivosAprendizagemOpcionais = disciplina.PossuiObjetivosDeAprendizagemOpcionais(componentesCurricularesJurema, turma.EnsinoEspecial),
                     RegistraFrequencia = disciplina.RegistraFrequencia
-                })?.ToList();
+                })?.OrderBy(c => c.Nome)?.ToList();
 
                 if (!usuarioLogado.EhProfessor())
                     await repositorioCache.SalvarAsync(chaveCache, JsonConvert.SerializeObject(disciplinasDto));
@@ -147,7 +147,7 @@ namespace SME.SGP.Aplicacao
                 if (!string.IsNullOrWhiteSpace(disciplinasCacheString))
                 {
                     disciplinasDto = JsonConvert.DeserializeObject<List<DisciplinaDto>>(disciplinasCacheString);
-                    return TratarRetornoDisciplinasPlanejamento(disciplinasDto, codigoDisciplina, regencia);
+                    return TratarRetornoDisciplinasPlanejamento(disciplinasDto, codigoDisciplina, regencia)?.OrderBy(c=>c.Nome)?.ToList();
                 }
             }
 
@@ -167,7 +167,7 @@ namespace SME.SGP.Aplicacao
                     string.Empty,
                     codigoDisciplina,
                     usuario.Login);
-                disciplinasDto = MapearParaDto(componentesCJ, turmaPrograma);
+                disciplinasDto = MapearParaDto(componentesCJ, turmaPrograma)?.OrderBy(c => c.Nome)?.ToList();
             }
             else
             {
@@ -183,7 +183,7 @@ namespace SME.SGP.Aplicacao
                     LancaNota = disciplina.LancaNota,
                     PossuiObjetivos = disciplina.PossuiObjetivosDeAprendizagem(componentesCurricularesJurema, turmaPrograma, turma.ModalidadeCodigo, turma.Ano),
                     ObjetivosAprendizagemOpcionais = disciplina.PossuiObjetivosDeAprendizagemOpcionais(componentesCurricularesJurema, turma.EnsinoEspecial)
-                })?.ToList();
+                })?.OrderBy(c => c.Nome)?.ToList();
             }
 
             if (!usuario.EhProfessor() && !usuario.EhProfessorCj() && !usuario.EhProfessorPoa())

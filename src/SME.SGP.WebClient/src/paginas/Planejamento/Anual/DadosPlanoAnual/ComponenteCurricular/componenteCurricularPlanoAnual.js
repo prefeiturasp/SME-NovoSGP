@@ -5,9 +5,10 @@ import {
   limparDadosPlanoAnual,
   setComponenteCurricularPlanoAnual,
 } from '~/redux/modulos/anual/actions';
-import { erros } from '~/servicos/alertas';
+import { confirmar, erros } from '~/servicos/alertas';
 import ServicoDisciplinas from '~/servicos/Paginas/ServicoDisciplina';
 import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
+import servicoSalvarPlanoAnual from '../../servicoSalvarPlanoAnual';
 
 const ComponenteCurricularPlanoAnual = () => {
   const dispatch = useDispatch();
@@ -21,6 +22,10 @@ const ComponenteCurricularPlanoAnual = () => {
 
   const componenteCurricular = useSelector(
     store => store.planoAnual.componenteCurricular
+  );
+
+  const planoAnualEmEdicao = useSelector(
+    store => store.planoAnual.planoAnualEmEdicao
   );
 
   const [carregandoComponentes, setCarregandoComponentes] = useState(undefined);
@@ -76,15 +81,40 @@ const ComponenteCurricularPlanoAnual = () => {
     dispatch,
   ]);
 
+  const perguntaAoSalvar = async () => {
+    return confirmar(
+      'Atenção',
+      '',
+      'Suas alterações não foram salvas, deseja salvar agora?'
+    );
+  };
+
   const onChangeComponenteCurricular = async valor => {
-    // TODO - perguntaDescartarRegistros() quando tiver em edição!;
-    if (valor) {
-      const componente = listaComponenteCurricular.find(
-        item => String(item.codigoComponenteCurricular) === valor
-      );
-      dispatch(setComponenteCurricularPlanoAnual(componente));
+    const aposValidarSalvar = () => {
+      dispatch(limparDadosPlanoAnual());
+      if (valor) {
+        const componente = listaComponenteCurricular.find(
+          item => String(item.codigoComponenteCurricular) === valor
+        );
+        dispatch(setComponenteCurricularPlanoAnual(componente));
+      } else {
+        dispatch(setComponenteCurricularPlanoAnual(undefined));
+      }
+    };
+
+    let salvou = false;
+    if (planoAnualEmEdicao) {
+      const confirmado = await perguntaAoSalvar();
+      if (confirmado) {
+        salvou = await servicoSalvarPlanoAnual.validarSalvarPlanoAnual();
+        if (salvou) {
+          aposValidarSalvar();
+        }
+      } else {
+        aposValidarSalvar();
+      }
     } else {
-      dispatch(setComponenteCurricularPlanoAnual(undefined));
+      aposValidarSalvar();
     }
   };
 

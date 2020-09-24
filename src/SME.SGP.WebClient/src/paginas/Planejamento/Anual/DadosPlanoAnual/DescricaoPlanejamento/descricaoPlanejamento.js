@@ -20,6 +20,10 @@ const DescricaoPlanejamento = React.memo(props => {
     store => store.planoAnual.dadosBimestresPlanoAnual[bimestre]
   );
 
+  const componenteCurricular = useSelector(
+    store => store.planoAnual.componenteCurricular
+  );
+
   const onChange = useCallback(
     valorNovo => {
       // TODO Verificar para salvar dados editados no redux separada do atual para melhorar a performance!
@@ -96,7 +100,8 @@ const DescricaoPlanejamento = React.memo(props => {
               }
             }}
             desabilitar={
-              !obterDadosComponenteAtual()?.objetivosAprendizagemId?.length
+              !obterDadosComponenteAtual()?.objetivosAprendizagemId?.length &&
+              componenteCurricular.possuiObjetivos
             }
           />
           {obterAuditoria()}

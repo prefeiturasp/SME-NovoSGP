@@ -97,7 +97,7 @@ const DadosPlanoAnual = () => {
       turmaSelecionada.turma
     ) {
       obterBimestresPlanoAnual();
-      // Quando for regencia vai ter somente uma tab que é o componente curricular selecionado do SelectComponent!
+      // Quando não for regencia vai ter somente uma tab que é o componente curricular selecionado do SelectComponent!
       if (componenteCurricular.regencia) {
         obterListaComponentesCurricularesPlanejamento();
       } else {

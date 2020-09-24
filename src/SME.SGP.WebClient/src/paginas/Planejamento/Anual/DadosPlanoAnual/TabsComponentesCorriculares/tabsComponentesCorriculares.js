@@ -28,13 +28,25 @@ const TabsComponentesCorriculares = props => {
       store.planoAnual.tabAtualComponenteCurricular[dadosBimestre.bimestre]
   );
 
+  const componenteCurricular = useSelector(
+    store => store.planoAnual.componenteCurricular
+  );
+
+  const clicouNoBimestre = useSelector(
+    store => store.planoAnual.clicouNoBimestre[dadosBimestre.bimestre]
+  );
+
   const montarDados = () => {
     return (
       <div className="col-md-12">
-        <ListaObjetivos
-          dadosBimestre={dadosBimestre}
-          tabAtualComponenteCurricular={tabAtualComponenteCurricular}
-        />
+        {componenteCurricular.possuiObjetivos ? (
+          <ListaObjetivos
+            dadosBimestre={dadosBimestre}
+            tabAtualComponenteCurricular={tabAtualComponenteCurricular}
+          />
+        ) : (
+          ''
+        )}
         <DescricaoPlanejamento
           dadosBimestre={dadosBimestre}
           tabAtualComponenteCurricular={tabAtualComponenteCurricular}
@@ -75,14 +87,14 @@ const TabsComponentesCorriculares = props => {
   // Quando tiver somente uma tab(componente curricular) já selecionar!
   useEffect(() => {
     if (
-      listaComponentesCurricularesPlanejamento &&
+      clicouNoBimestre &&
       listaComponentesCurricularesPlanejamento.length === 1
     ) {
       onChangeTab(
         listaComponentesCurricularesPlanejamento[0].codigoComponenteCurricular
       );
     }
-  }, [listaComponentesCurricularesPlanejamento, onChangeTab]);
+  }, [onChangeTab, clicouNoBimestre, listaComponentesCurricularesPlanejamento]);
 
   return (
     <>
