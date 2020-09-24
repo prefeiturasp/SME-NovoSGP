@@ -18,7 +18,7 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select distinct c.id, c.descricao_eol as descricao
                    from plano_anual pa
                   inner join objetivo_aprendizagem_plano o on o.plano_id = pa.id
-                  inner join componente_curricular c on c.id = o.componente_curricular_id
+                  inner join componente_curricular_jurema c on c.id = o.componente_curricular_id
                   where pa.ano = @ano
                     and pa.bimestre = @bimestre
                     and pa.turma_id = @turmaId
@@ -51,7 +51,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("select o.*");
             query.AppendLine(" from plano_anual pa");
             query.AppendLine("inner join objetivo_aprendizagem_plano o on o.plano_id = pa.id");
-            query.AppendLine("inner join componente_curricular cc on cc.id = o.componente_curricular_id");
+            query.AppendLine("inner join componente_curricular_jurema cc on cc.id = o.componente_curricular_id");
             query.AppendLine("where pa.ano = @ano");
             query.AppendLine("and pa.bimestre = @bimestre");
             query.AppendLine("and pa.componente_curricular_eol_id = @componenteCurricularId");
