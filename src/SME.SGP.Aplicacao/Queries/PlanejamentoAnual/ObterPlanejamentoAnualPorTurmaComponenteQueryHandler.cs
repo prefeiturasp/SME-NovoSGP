@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
                     ComponenteCurricularId = c.ComponenteCurricularId,
                     Descricao = c.Descricao,
                     ObjetivosAprendizagemId = c.ObjetivosAprendizagem?
-                    .Where(c => c!= null && c.ObjetivoAprendizagemId > 0)?
+                    .Where(oa => oa!= null && oa.ObjetivoAprendizagemId > 0)?
                     .Select(o => o.ObjetivoAprendizagemId),
                     Auditoria = (AuditoriaDto)c
                 })?.ToList();
