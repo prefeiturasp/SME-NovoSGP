@@ -15,9 +15,9 @@ namespace SME.SGP.Aplicacao
             this.servicoConselhoClasse = servicoConselhoClasse ?? throw new ArgumentNullException(nameof(servicoConselhoClasse));
         }
 
-        public async Task<ConselhoClasseNotaRetornoDto> SalvarAsync(ConselhoClasseNotaDto conselhoClasseNotaDto, string alunoCodigo, long conselhoClasseId, long fechamentoTurmaId)
+        public async Task<ConselhoClasseNotaRetornoDto> SalvarAsync(ConselhoClasseNotaDto conselhoClasseNotaDto, string alunoCodigo, long conselhoClasseId, long fechamentoTurmaId, string codigoTurma, int bimestre)
         {
-            return await servicoConselhoClasse.SalvarConselhoClasseAlunoNotaAsync(conselhoClasseNotaDto, alunoCodigo, conselhoClasseId, fechamentoTurmaId);
+            return await servicoConselhoClasse.SalvarConselhoClasseAlunoNotaAsync(conselhoClasseNotaDto, alunoCodigo, conselhoClasseId, fechamentoTurmaId, codigoTurma, bimestre);
         }
     }
 }

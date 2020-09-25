@@ -26,18 +26,38 @@ namespace SME.SGP.Dados.Repositorios
             await database.Conexao.ExecuteAsync(query.ToString(), new { tipo, valor, ano });
         }
 
-        public IEnumerable<KeyValuePair<string, string>> ObterChaveEValorPorTipo(TipoParametroSistema tipo)
+        public async Task<IEnumerable<KeyValuePair<string, string>>> ObterChaveEValorPorTipo(TipoParametroSistema tipo)
         {
             StringBuilder query = new StringBuilder();
             query.AppendLine("select nome as Key, valor as Value");
             query.AppendLine("from parametros_sistema");
             query.AppendLine("where ativo and tipo = @tipo");
 
-            return database.Conexao.Query<KeyValuePair<string, string>>(query.ToString(), new { tipo })
+            var resultado = await database.Conexao.QueryAsync<KeyValuePair<string, string>>(query.ToString(), new { tipo });
+
+            return resultado
                 .ToDictionary(pair => pair.Key, pair => pair.Value);
         }
 
-        public string ObterValorPorTipoEAno(TipoParametroSistema tipo, int? ano = null)
+        public async Task<KeyValuePair<string, string>?> ObterUnicoChaveEValorPorTipo(TipoParametroSistema tipo)
+        {
+            StringBuilder query = new StringBuilder();
+            query.AppendLine("select nome as Key, valor as Value");
+            query.AppendLine("from parametros_sistema");
+            query.AppendLine("where ativo and tipo = @tipo");
+
+            return await database.Conexao
+                .QueryFirstAsync<KeyValuePair<string, string>>(query.ToString(), new { tipo });
+        }
+        public async Task<IEnumerable<ParametrosSistema>> ObterPorTiposAsync(long[] tipos)
+        {
+            var query = @"SELECT * FROM PARAMETROS_SISTEMA WHERE TIPO = ANY(@tipos) AND ATIVO = TRUE";
+
+
+            return await database.Conexao.QueryAsync<ParametrosSistema>(query.ToString(), new { tipos });
+        }
+
+        public async Task<string> ObterValorPorTipoEAno(TipoParametroSistema tipo, int? ano = null)
         {
             StringBuilder query = new StringBuilder();
             query.AppendLine("select valor");
@@ -46,7 +66,27 @@ namespace SME.SGP.Dados.Repositorios
             if (ano.HasValue)
                 query.AppendLine("and ano = @ano");
 
-            return database.Conexao.QueryFirstOrDefault<string>(query.ToString(), new { tipo, ano });
+            return await database.Conexao.QueryFirstOrDefaultAsync<string>(query.ToString(), new { tipo, ano });
+        }
+
+        public async Task<string> ObterValorUnicoPorTipo(TipoParametroSistema tipoParametroSistema)
+        {
+
+            var query = @"select valor
+                          from parametros_sistema
+                         where tipo = @tipoParametroSistema and ativo";
+
+            return await database.Conexao.QueryFirstAsync<string>(query, new { tipoParametroSistema });
+        }
+
+        public async Task<T> ObterValorUnicoPorTipo<T>(TipoParametroSistema tipoParametroSistema)
+        {
+
+            var query = @"select valor
+                          from parametros_sistema
+                         where tipo = @tipoParametroSistema and ativo";
+
+            return await database.Conexao.QueryFirstAsync<T>(query, new { tipoParametroSistema });
         }
     }
 }

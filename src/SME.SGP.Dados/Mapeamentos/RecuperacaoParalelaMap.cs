@@ -9,6 +9,7 @@ namespace SME.SGP.Dados.Mapeamentos
             ToTable("recuperacao_paralela");
             Map(c => c.TurmaId).ToColumn("turma_id");
             Map(c => c.TurmaRecuperacaoParalelaId).ToColumn("turma_recuperacao_paralela_id");
+            Map(c => c.AnoLetivo).ToColumn("ano_letivo");
         }
     }
 }

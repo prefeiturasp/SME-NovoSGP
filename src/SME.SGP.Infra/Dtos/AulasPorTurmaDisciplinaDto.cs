@@ -6,7 +6,7 @@ namespace SME.SGP.Infra
     {
         public DateTime DataAula { get; set; }
         public long Id { get; set; }
-        public int ProfessorId { get; set; }
+        public string ProfessorId { get; set; }
         public int Quantidade { get; set; }
     }
 }

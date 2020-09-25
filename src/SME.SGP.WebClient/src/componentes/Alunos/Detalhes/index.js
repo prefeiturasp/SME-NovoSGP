@@ -7,7 +7,13 @@ import { Colors } from '~/componentes/colors';
 import { Container, DadosAluno, FrequenciaGlobal } from './styles';
 
 const DetalhesAluno = props => {
-  const { dados, desabilitarImprimir, onClickImprimir } = props;
+  const {
+    dados,
+    desabilitarImprimir,
+    onClickImprimir,
+    exibirBotaoImprimir,
+    exibirFrequencia,
+  } = props;
 
   const {
     avatar,
@@ -48,18 +54,26 @@ const DetalhesAluno = props => {
             </div>
           </div>
           <div className="col-md-4 d-flex justify-content-end display-block">
-            <Button
-              icon="print"
-              className="ml-auto mb-4"
-              color={Colors.Azul}
-              border
-              onClick={onClickImprimir}
-              disabled={desabilitarImprimir}
-              id="btn-imprimir-dados-aluno"
-            />
-            <FrequenciaGlobal>
-              Frequência Global: {frequencia || 0}%
-            </FrequenciaGlobal>
+            {exibirBotaoImprimir ? (
+              <Button
+                icon="print"
+                className="ml-auto mb-4"
+                color={Colors.Azul}
+                border
+                onClick={onClickImprimir}
+                disabled={desabilitarImprimir}
+                id="btn-imprimir-dados-aluno"
+              />
+            ) : (
+              ''
+            )}
+            {exibirFrequencia ? (
+              <FrequenciaGlobal>
+                Frequência Global: {frequencia || 0}%
+              </FrequenciaGlobal>
+            ) : (
+              ''
+            )}
           </div>
         </DadosAluno>
       </Card>
@@ -71,12 +85,16 @@ DetalhesAluno.propTypes = {
   dados: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
   desabilitarImprimir: PropTypes.oneOfType([PropTypes.bool]),
   onClickImprimir: PropTypes.oneOfType([PropTypes.func]),
+  exibirBotaoImprimir: PropTypes.oneOfType([PropTypes.bool]),
+  exibirFrequencia: PropTypes.oneOfType([PropTypes.bool]),
 };
 
 DetalhesAluno.defaultProps = {
   dados: [],
   desabilitarImprimir: true,
   onClickImprimir: () => {},
+  exibirBotaoImprimir: true,
+  exibirFrequencia: true,
 };
 
 export default DetalhesAluno;

@@ -211,9 +211,9 @@ namespace SME.SGP.Dominio.Servicos
                                 bimestreFechamentoSME.InicioDoFechamento < bimestreSME.InicioDoFechamento ?
                                 bimestreFechamentoSME.InicioDoFechamento.Value : bimestreSME.InicioDoFechamento;
 
-                            bimestreDreUe.FinalMaximo = 
+                            bimestreDreUe.FinalMaximo =
                                 bimestreFechamentoSME.FinalDoFechamento > bimestreSME.FinalDoFechamento ?
-                                bimestreFechamentoSME.FinalDoFechamento.Value : bimestreSME.FinalDoFechamento; ;
+                                bimestreFechamentoSME.FinalDoFechamento.Value : bimestreSME.FinalDoFechamento;
                         }
                         else
                         {
