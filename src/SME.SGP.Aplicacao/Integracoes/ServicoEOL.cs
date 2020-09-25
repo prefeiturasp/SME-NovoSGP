@@ -64,7 +64,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             };
         }
 
-        public async Task<ComponenteCurricularDto> ObterComponentesCuirriculares()
+        public async Task<IEnumerable<ComponenteCurricularDto>> ObterComponentesCuirriculares()
         {
             var url = $"v1/componentes-curriculares";
 
@@ -75,7 +75,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
             var retorno = await resposta.Content.ReadAsStringAsync();
 
-            return JsonConvert.DeserializeObject<ComponenteCurricularDto>(retorno);
+            return JsonConvert.DeserializeObject<IEnumerable<ComponenteCurricularDto>>(retorno);
         }
 
         public async Task<bool> TurmaPossuiComponenteCurricularPAP(string codigoTurma, string login, Guid idPerfil)
@@ -1040,5 +1040,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             var json = resposta.Content.ReadAsStringAsync().Result;
             return JsonConvert.DeserializeObject<bool>(json);
         }
+
+      
     }
 }

@@ -5,7 +5,8 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public interface ISincronizarComponentesCurricularesUseCase : IUseCase<MensagemRabbit, bool>
+    public interface IExecutaSincronismoComponentesCurricularesEolUseCase
     {
+        Task Executar();
     }
 }
