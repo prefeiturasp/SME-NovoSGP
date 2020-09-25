@@ -7,5 +7,4 @@ namespace SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui
     {
         Task<string> Executar(long id, ComunicadoInserirDto comunicado);
     }
-
 }
