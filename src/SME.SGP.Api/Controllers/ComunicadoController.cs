@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui.SolicitarReiniciarSenha;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
 using System.Collections.Generic;
@@ -24,12 +25,21 @@ namespace SME.SGP.Api.Controllers
             this.comandos = comandos ?? throw new System.ArgumentNullException(nameof(comandos));
         }
 
+        [HttpPost]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.CO_I, Policy = "Bearer")]
+        public async Task<IActionResult> PostAsync([FromBody] ComunicadoInserirDto comunicadoDto, [FromServices] ISolicitarInclusaoComunicadoEscolaAquiUseCase solicitarInclusaoComunicadoEscolaAquiUseCase)
+        {
+            return Ok(await solicitarInclusaoComunicadoEscolaAquiUseCase.Executar(comunicadoDto));
+        }
+
         [HttpPut("{id}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.CO_A, Policy = "Bearer")]
         public async Task<IActionResult> Alterar(long id, [FromBody]ComunicadoInserirDto comunicadoDto)
-        {
+        {    
             return Ok(await comandos.Alterar(id, comunicadoDto));
         }
 
@@ -83,13 +93,6 @@ namespace SME.SGP.Api.Controllers
             return Ok();
         }
 
-        [HttpPost]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.CO_I, Policy = "Bearer")]
-        public async Task<IActionResult> PostAsync([FromBody]ComunicadoInserirDto comunicadoDto)
-        {
-            return Ok(await comandos.Inserir(comunicadoDto));
-        }
+
     }
 }
