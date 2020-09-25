@@ -1,9 +1,9 @@
 import { Form, Formik } from 'formik';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import * as Yup from 'yup';
-import { Auditoria, Colors } from '~/componentes';
+import { Auditoria, Colors, Loader } from '~/componentes';
 import Button from '~/componentes/button';
 import Editor from '~/componentes/editor/editor';
 import {
@@ -54,7 +54,10 @@ const Justificativa = props => {
     justificativa: justificativa || '',
   };
 
+  const [carregandoSessao, setCarregandoSessao] = useState(false);
+
   const salvarJustificativa = () => {
+    setCarregandoSessao(true);
     servicoSalvarConselhoClasse.salvarNotaPosConselho(turma);
     dispatch(setSalvouJustificativa(true));
   };
@@ -96,71 +99,73 @@ const Justificativa = props => {
             <span>Justificativa de nota pós-conselho</span>
           </div>
           <div className="col-md-12">
-            <Formik
-              enableReinitialize
-              onSubmit={salvarJustificativa}
-              validationSchema={validacoes}
-              initialValues={valoresIniciais}
-              validateOnBlur={false}
-              validateOnChange={false}
-            >
-              {form => (
-                <Form>
-                  <fieldset className="mt-3">
-                    <Editor
-                      form={form}
-                      name="justificativa"
-                      id="justificativa"
-                      desabilitar={
-                        (alunoDesabilitado && !podeEditarNota) ||
-                        !podeEditarNota ||
-                        desabilitarCampos ||
-                        !dentroPeriodo ||
-                        !ehEdicao
-                      }
-                      onChange={onChange}
-                    />
-                    <div className="d-flex justify-content-end pt-2">
-                      {notaConceitoPosConselhoAtual &&
-                      notaConceitoPosConselhoAtual.id &&
-                      auditoria ? (
-                        <Auditoria
-                          criadoEm={auditoria.criadoEm}
-                          criadoPor={auditoria.criadoPor}
-                          criadoRf={auditoria.criadoRf}
-                          alteradoPor={auditoria.alteradoPor}
-                          alteradoEm={auditoria.alteradoEm}
-                          alteradoRf={auditoria.alteradoRf}
-                          ignorarMarginTop
-                        />
-                      ) : (
-                        ''
-                      )}
-                      <Button
-                        label="Salvar"
-                        color={Colors.Roxo}
-                        onClick={() => {
-                          clicouBotaoSalvar(form);
-                        }}
-                        disabled={
+            <Loader loading={carregandoSessao} tip="Carregando...">
+              <Formik
+                enableReinitialize
+                onSubmit={salvarJustificativa}
+                validationSchema={validacoes}
+                initialValues={valoresIniciais}
+                validateOnBlur={false}
+                validateOnChange={false}
+              >
+                {form => (
+                  <Form>
+                    <fieldset className="mt-3">
+                      <Editor
+                        form={form}
+                        name="justificativa"
+                        id="justificativa"
+                        desabilitar={
                           (alunoDesabilitado && !podeEditarNota) ||
                           !podeEditarNota ||
                           desabilitarCampos ||
                           !dentroPeriodo ||
                           !ehEdicao
                         }
-                        border
+                        onChange={onChange}
                       />
-                    </div>
-                  </fieldset>
-                </Form>
-              )}
-            </Formik>
+                      <div className="d-flex justify-content-end pt-2">
+                        {notaConceitoPosConselhoAtual &&
+                          notaConceitoPosConselhoAtual.id &&
+                          auditoria ? (
+                            <Auditoria
+                              criadoEm={auditoria.criadoEm}
+                              criadoPor={auditoria.criadoPor}
+                              criadoRf={auditoria.criadoRf}
+                              alteradoPor={auditoria.alteradoPor}
+                              alteradoEm={auditoria.alteradoEm}
+                              alteradoRf={auditoria.alteradoRf}
+                              ignorarMarginTop
+                            />
+                          ) : (
+                            ''
+                          )}
+                        <Button
+                          label="Salvar"
+                          color={Colors.Roxo}
+                          onClick={() => {
+                            clicouBotaoSalvar(form);
+                          }}
+                          disabled={
+                            (alunoDesabilitado && !podeEditarNota) ||
+                            !podeEditarNota ||
+                            desabilitarCampos ||
+                            !dentroPeriodo ||
+                            !ehEdicao
+                          }
+                          border
+                        />
+                      </div>
+                    </fieldset>
+                  </Form>
+                )}
+              </Formik>
+            </Loader>
           </div>
         </div>
       ) : (
-        ''
-      )}
+          ''
+        )}
     </>
   );
 };
