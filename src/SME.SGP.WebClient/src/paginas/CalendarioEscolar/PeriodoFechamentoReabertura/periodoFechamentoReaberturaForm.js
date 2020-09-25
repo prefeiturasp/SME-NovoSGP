@@ -444,18 +444,7 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
       if (listaDres && listaDres.length > 1) {
         form.setFieldValue('dreId', '');
       }
-      let modalidadeConsulta = 0;
-      switch (tipo?.modalidade) {
-        case modalidadeTipoCalendario.EJA:
-          modalidadeConsulta = modalidade.EJA;
-          break;
-        case modalidadeTipoCalendario.Infantil:
-          modalidadeConsulta = modalidade.INFANTIL;
-          break;
-        default:
-          modalidadeConsulta = modalidade.FUNDAMENTAL;
-          break;
-      }
+      let modalidadeConsulta = ServicoCalendarios.converterModalidade(tipo?.modalidade);
       setUrlDres(tipo ? '/v1/abrangencias/false/dres?modalidade=' + modalidadeConsulta : '');
       montarListaBimestres(tipo?.modalidade);
     }
@@ -538,7 +527,6 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
                           valueField="id"
                           textField="descricao"
                           disabled={
-                            desabilitarCampos ||
                             !novoRegistro ||
                             desabilitarTipoCalendario
                           }
