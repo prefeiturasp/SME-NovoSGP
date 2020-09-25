@@ -58,7 +58,7 @@ SELECT DISTINCT
  WHERE CPA.cpa_situacao = 1
    AND CAA.caa_situacao = 1
    AND AAC.alc_situacao = 1
-   AND TUR.tur_situacao IN (1,5,6,8)    -- 1. Ativo, 5. Encerrada, 6. Em matrícula, 8. Aguardando
+   AND TUR.tur_situacao IN (1,5,6,8)    -- 1. Ativo, 5. Encerrada, 6. Em matrÃ­cula, 8. Aguardando
    AND CAL.cal_ano BETWEEN 2014 AND 2019
 -- AND CAL.cal_ano = 2019
 -- AND ESC.esc_codigo IN ('094765','019455')
@@ -66,7 +66,7 @@ SELECT DISTINCT
 GO
 
 
--- CORRIGINDO DISCIPLINAS DE REGÊNCIA DE CLASSE
+-- CORRIGINDO DISCIPLINAS DE REGÃŠNCIA DE CLASSE
 TRUNCATE TABLE [Manutencao].[dbo].[ETL_SGP_Compensacao_Ausencia_508]
 GO
 
@@ -86,14 +86,14 @@ SELECT DISTINCT
 
   FROM            [Manutencao].[dbo].[ETL_SGP_Compensacao_Ausencia]          AS ETL (NOLOCK)
 
-       INNER JOIN [10.49.16.60].[se1426].[dbo].[serie_turma_grade]           AS STG (NOLOCK) 
+       INNER JOIN [PAJARO].[se1426].[dbo].[serie_turma_grade]           AS STG (NOLOCK) 
                ON STG.cd_turma_escola = ETL.TURMA_ID
               AND STG.dt_fim IS NULL
 
-       INNER JOIN [10.49.16.60].[se1426].[dbo].[escola_grade]                AS EGR (NOLOCK) 
+       INNER JOIN [PAJARO].[se1426].[dbo].[escola_grade]                AS EGR (NOLOCK) 
                ON EGR.cd_escola_grade = STG.cd_escola_grade
 
-       INNER JOIN [10.49.16.60].[se1426].[dbo].[grade_componente_curricular] AS GCC (NOLOCK) 
+       INNER JOIN [PAJARO].[se1426].[dbo].[grade_componente_curricular] AS GCC (NOLOCK) 
                ON GCC.cd_grade = EGR.cd_grade
               AND GCC.cd_componente_curricular IN (508, 511, 1064, 1065, 1104, 1105, 1112, 1113, 1114, 1115, 1117, 1121, 1124, 1125, 1211, 1212, 1213, 1290, 1301)
 
@@ -105,8 +105,6 @@ DELETE
   FROM [Manutencao].[dbo].[ETL_SGP_Compensacao_Ausencia]
  WHERE DISCIPLINA_ID IN (508, 511, 1064, 1065, 1104, 1105, 1112, 1113, 1114, 1115, 1117, 1121, 1124, 1125, 1211, 1212, 1213, 1290, 1301)
 GO
-
-
 
 INSERT INTO [Manutencao].[dbo].[ETL_SGP_Compensacao_Ausencia]
 SELECT DISTINCT
@@ -124,19 +122,20 @@ SELECT DISTINCT
 GO
 
 
--- CORRIGINDO CAMPOS NOME E DESCRIÇÃO
+-- CORRIGINDO CAMPOS NOME E DESCRIÃ‡ÃƒO
 UPDATE [Manutencao].[dbo].[ETL_SGP_Compensacao_Ausencia]
    SET [DESCRICAO] = LTRIM(RTRIM([DESCRICAO]))
 GO
 
-
+USE GestaoPedagogica
+GO
 UPDATE [Manutencao].[dbo].[ETL_SGP_Compensacao_Ausencia]
    SET [DESCRICAO] = dbo.fc_LimpaSujeira([DESCRICAO])
 GO
 
 
 UPDATE [Manutencao].[dbo].[ETL_SGP_Compensacao_Ausencia]
-   SET [DESCRICAO] = 'Não informado no legado'
+   SET [DESCRICAO] = 'NÃ£o informado no legado'
  WHERE [DESCRICAO] = ''
 GO
 
@@ -144,6 +143,5 @@ GO
 UPDATE [Manutencao].[dbo].[ETL_SGP_Compensacao_Ausencia]
    SET [NOME] = LEFT([DESCRICAO],1000)
 GO
-
 
 
