@@ -16,13 +16,11 @@ namespace SME.SGP.Api.Controllers
     [Authorize("Bearer")]
     public class ComunicadoController : ControllerBase
     {
-        private readonly IComandoComunicado comandos;
         private readonly IConsultaComunicado consultas;
 
-        public ComunicadoController(IConsultaComunicado consultas, IComandoComunicado comandos)
+        public ComunicadoController(IConsultaComunicado consultas)
         {
             this.consultas = consultas ?? throw new System.ArgumentNullException(nameof(consultas));
-            this.comandos = comandos ?? throw new System.ArgumentNullException(nameof(comandos));
         }
 
         [HttpPost]
@@ -58,9 +56,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<ComunicadoCompletoDto>), 204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.CO_C, Policy = "Bearer")]
-        public async Task<IActionResult> BuscarPorId(long id)
+        public async Task<IActionResult> BuscarPorId(long id, [FromServices] IObterComunicadoEscolaAquiUseCase obterComunicadoEscolaAquiUseCase)
         {
-            return Ok(await consultas.BuscarPorIdAsync(id));
+            return Ok(await obterComunicadoEscolaAquiUseCase.Executar(id));
         }
 
         [HttpGet("{codigoTurma}/alunos/{anoLetivo}")]

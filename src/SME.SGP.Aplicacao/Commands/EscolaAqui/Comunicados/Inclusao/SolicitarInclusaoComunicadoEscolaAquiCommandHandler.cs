@@ -22,6 +22,8 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioComunicadoTurma _repositorioComunicadoTurma;
         private readonly IRepositorioComunicadoAluno _repositorioComunicadoAluno;
         private readonly IServicoAcompanhamentoEscolar _servicoAcompanhamentoEscolar;
+        private readonly IServicoUsuario _servicoUsuario;
+        private readonly IConsultasAbrangencia _consultasAbrangencia;
 
         public SolicitarInclusaoComunicadoEscolaAquiCommandHandler(
               IRepositorioComunicado repositorioComunicado
@@ -30,6 +32,8 @@ namespace SME.SGP.Aplicacao
             , IRepositorioComunicadoTurma repositorioComunicadoTurma
             , IRepositorioComunicadoAluno repositorioComunicadoAluno
             , IServicoAcompanhamentoEscolar servicoAcompanhamentoEscolar
+            , IServicoUsuario servicoUsuario
+            , IConsultasAbrangencia consultasAbrangencia
             )
         {
             this._unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
@@ -38,6 +42,8 @@ namespace SME.SGP.Aplicacao
             this._repositorioComunicadoTurma = repositorioComunicadoTurma ?? throw new ArgumentNullException(nameof(repositorioComunicadoTurma));
             this._repositorioComunicadoAluno = repositorioComunicadoAluno ?? throw new ArgumentNullException(nameof(repositorioComunicadoAluno));
             this._servicoAcompanhamentoEscolar = servicoAcompanhamentoEscolar ?? throw new ArgumentNullException(nameof(servicoAcompanhamentoEscolar));
+            this._servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
+            this._consultasAbrangencia = consultasAbrangencia ?? throw new ArgumentNullException(nameof(consultasAbrangencia));
         }
 
         public async Task<string> Handle(SolicitarInclusaoComunicadoEscolaAquiCommand request, CancellationToken cancellationToken)
@@ -85,9 +91,10 @@ namespace SME.SGP.Aplicacao
 
         private async Task ValidarInsercao(SolicitarInclusaoComunicadoEscolaAquiCommand comunicado)
         {
-            //var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
 
-            //await ValidarAbrangenciaUsuario(comunicadoDto, usuarioLogado);
+            var usuarioLogado = await _servicoUsuario.ObterUsuarioLogado();
+
+            await ValidarAbrangenciaUsuario(comunicado, usuarioLogado);
 
             if (comunicado.CodigoDre == TODAS && !comunicado.CodigoUe.Equals(TODAS))
                 throw new NegocioException("Não é possivel especificar uma escola quando o comunicado é para todas as DREs");
@@ -99,6 +106,54 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Não é possivel especificar alunos quando o comunicado é para todas as Turmas");
         }
 
+        private async Task ValidarAbrangenciaUsuario(SolicitarInclusaoComunicadoEscolaAquiCommand comunicado, Usuario usuarioLogado)
+        {
+            if (comunicado.CodigoDre == TODAS && !usuarioLogado.EhPerfilSME())
+                throw new NegocioException("Apenas usuários SME podem realizar envio de Comunicados para todas as DREs");
+
+            if (comunicado.CodigoUe == TODAS && !(usuarioLogado.EhPerfilDRE() || usuarioLogado.EhPerfilSME()))
+                throw new NegocioException("Apenas usuários SME e DRE podem realizar envio de Comunicados para todas as Escolas");
+
+            if (usuarioLogado.EhPerfilDRE() && !comunicado.CodigoDre.Equals(TODAS))
+                await ValidarAbrangenciaDre(comunicado);
+
+            if (usuarioLogado.EhPerfilUE() && !comunicado.CodigoUe.Equals(TODAS))
+                await ValidarAbrangenciaUE(comunicado);
+        }
+
+        private async Task ValidarAbrangenciaUE(SolicitarInclusaoComunicadoEscolaAquiCommand comunicado)
+        {
+            var abrangenciaUes = await _consultasAbrangencia.ObterUes(comunicado.CodigoDre, null);
+
+            var ue = abrangenciaUes.FirstOrDefault(x => x.Codigo.Equals(comunicado.CodigoUe));
+
+            if (ue == null)
+                throw new NegocioException($"Usuário não possui permissão para enviar comunicados para a UE com codigo {comunicado.CodigoUe}");
+
+            if (comunicado.Turmas != null && comunicado.Turmas.Any())
+                await ValidarAbrangenciaTurma(comunicado);
+        }
+
+        private async Task ValidarAbrangenciaDre(SolicitarInclusaoComunicadoEscolaAquiCommand comunicado)
+        {
+            var abrangenciaDres = await _consultasAbrangencia.ObterDres(null);
+
+            var dre = abrangenciaDres.FirstOrDefault(x => x.Codigo.Equals(comunicado.CodigoDre));
+
+            if (dre == null)
+                throw new NegocioException($"Usuário não possui permissão para enviar comunicados para a DRE com codigo {comunicado.CodigoDre}");
+        }
+
+        private async Task ValidarAbrangenciaTurma(SolicitarInclusaoComunicadoEscolaAquiCommand comunicado)
+        {
+            foreach (var turma in comunicado.Turmas)
+            {
+                var abrangenciaTurmas = await _consultasAbrangencia.ObterAbrangenciaTurma(turma);
+
+                if (abrangenciaTurmas == null)
+                    throw new NegocioException($"Usuário não possui permissão para enviar comunicados para a Turma com codigo {turma}");
+            }
+        }
 
         private void MapearParaEntidade(SolicitarInclusaoComunicadoEscolaAquiCommand request, Comunicado comunicado)
         {
@@ -173,7 +228,5 @@ namespace SME.SGP.Aplicacao
             foreach (var aluno in alunos)
                 await _repositorioComunicadoAluno.SalvarAsync(aluno);
         }
-
-
     }
 }
