@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
                 throw new System.ArgumentNullException(nameof(listarComponentesCurricularesEolUseCase));
         }
 
-        public async Task<bool> Executar()
+        public async Task<bool> Executar(MensagemRabbit param)
         {
             var componentesEol = await listarComponentesCurricularesEolUseCase.Executar();
             return true;
