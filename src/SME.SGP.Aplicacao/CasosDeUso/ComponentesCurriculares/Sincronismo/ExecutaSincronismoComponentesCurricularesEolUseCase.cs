@@ -8,21 +8,17 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ExecutaSincronismoComponentesCurricularesEolUseCase: IExecutaSincronismoComponentesCurricularesEolUseCase
+    public class ExecutaSincronismoComponentesCurricularesEolUseCase:AbstractUseCase, IExecutaSincronismoComponentesCurricularesEolUseCase
     {
-        private readonly IMediator mediator;
-        private readonly IListarComponentesCurricularesEolUseCase listarComponentesCurricularesEolUseCase;
-        public ExecutaSincronismoComponentesCurricularesEolUseCase(IMediator mediator, IListarComponentesCurricularesEolUseCase listarComponentesCurricularesEolUseCase)
+        public ExecutaSincronismoComponentesCurricularesEolUseCase(IMediator mediator) : base(mediator)
         {
-            this.listarComponentesCurricularesEolUseCase = listarComponentesCurricularesEolUseCase ??
-                throw new System.ArgumentNullException(nameof(listarComponentesCurricularesEolUseCase));
-            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+
         }
         public async Task Executar()
         {
             SentrySdk.AddBreadcrumb($"Mensagem ExecutaSincronismoComponentesCurricularesEolUseCase", "Rabbit - ExecutaSincronismoComponentesCurricularesEolUseCase");
 
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaSincronizaComponetesCurricularesEol, new SincronizarComponentesCurricularesUseCase(listarComponentesCurricularesEolUseCase), Guid.NewGuid(), null));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaSincronizaComponetesCurricularesEol, new SincronizarComponentesCurricularesUseCase(mediator), Guid.NewGuid(), null));
         }
     }
 }

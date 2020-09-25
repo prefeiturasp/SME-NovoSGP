@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<ComponenteCurricularDto>> Handle(ObterComponentesCurricularesEolQuery request, CancellationToken cancellationToken)
         {
-            var componentes = (await servicoEol.ObterComponentesCuirriculares())?.ToList();
+            var componentes = (await servicoEol.ObterComponentesCurriculares())?.ToList();
             if (componentes == null || !componentes.Any())
             {
                 throw new NegocioException("Não foi encontrado nenhum componente curricular no EOL");
