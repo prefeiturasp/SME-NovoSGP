@@ -41,7 +41,7 @@ class ServicoPlanoAnual {
 
   obterBimestresPlanoAnual = (modalidade, anoLetivo, semestre) => {
     let url = `v1/periodo-escolar/modalidades/${modalidade}/anos-letivos/${anoLetivo}`;
-    // if (semestre) url = `${url}?semestre=${semestre}`;
+    if (semestre) url = `${url}?semestre=${semestre}`;
     return api.get(url);
   };
 
