@@ -32,7 +32,7 @@ namespace SME.SGP.Dados.Repositorios
 	                        pape.planejamento_anual_id = pa.id
                         inner join planejamento_anual_componente pac on
 	                        pac.planejamento_anual_periodo_escolar_id = pape.id
-                        inner join planejamento_anual_objetivos_aprendizagem paoa on
+                        left join planejamento_anual_objetivos_aprendizagem paoa on
 	                        paoa.planejamento_anual_componente_id = pac.id
                         inner join periodo_escolar pe on pape.periodo_escolar_id = pe.id
                         where
