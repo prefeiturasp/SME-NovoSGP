@@ -64,7 +64,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             };
         }
 
-        public async Task<IEnumerable<ComponenteCurricularDto>> ObterComponentesCuirriculares()
+        public async Task<IEnumerable<ComponenteCurricularDto>> ObterComponentesCurriculares()
         {
             var url = $"v1/componentes-curriculares";
 

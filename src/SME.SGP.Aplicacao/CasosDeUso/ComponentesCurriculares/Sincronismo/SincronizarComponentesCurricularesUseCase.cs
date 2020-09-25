@@ -3,23 +3,26 @@ using SME.SGP.Aplicacao.Queries.ComponentesCurriculares.ObterComponentesCurricul
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class SincronizarComponentesCurricularesUseCase : ISincronizarComponentesCurricularesUseCase
+    public class SincronizarComponentesCurricularesUseCase : AbstractUseCase, ISincronizarComponentesCurricularesUseCase
     {
-        private readonly IListarComponentesCurricularesEolUseCase listarComponentesCurricularesEolUseCase;
-
-        public SincronizarComponentesCurricularesUseCase(IListarComponentesCurricularesEolUseCase listarComponentesCurricularesEolUseCase)
+        public SincronizarComponentesCurricularesUseCase(IMediator mediator) : base(mediator)
         {
-            this.listarComponentesCurricularesEolUseCase = listarComponentesCurricularesEolUseCase ?? 
-                throw new System.ArgumentNullException(nameof(listarComponentesCurricularesEolUseCase));
         }
 
         public async Task<bool> Executar(MensagemRabbit param)
         {
-            var componentesEol = await listarComponentesCurricularesEolUseCase.Executar();
+            var componentesEol = await mediator.Send(new ObterComponentesCurricularesEolQuery());
+            var componentesSGP = await mediator.Send(new ObterComponentesCurricularesQuery());
+            var naoExiste = componentesEol.Where(c => !componentesSGP.Any(x => x.Codigo == c.Codigo));
+
+            if (naoExiste.Any())
+                await mediator.Send(new InserirVariosComponentesCurricularesCommand(naoExiste));
+
             return true;
         }
     }
