@@ -389,9 +389,11 @@ private static void RegistrarRabbit(IServiceCollection services)
             services.TryAddScopedWorkerService<IExcluirNotificacaoDiarioBordoUseCase, ExcluirNotificacaoDiarioBordoUseCase>();
             services.TryAddScopedWorkerService<IObterAnosLetivosPAPUseCase, ObterAnosLetivosPAPUseCase>();
             services.TryAddScopedWorkerService<IObterPeriodosEscolaresPorAnoEModalidadeTurmaUseCase, ObterPeriodosEscolaresPorAnoEModalidadeTurmaUseCase>();
-
-
             services.TryAddScopedWorkerService<IRelatorioPlanoAulaUseCase, RelatorioPlanoAulaUseCase>();
+
+            //Sincronismo CC Eol
+            services.TryAddScopedWorkerService<IListarComponentesCurricularesEolUseCase, ListarComponentesCurricularesEolUseCase>();
+            services.TryAddScopedWorkerService<ISincronizarComponentesCurricularesUseCase, SincronizarComponentesCurricularesUseCase>();
 
         }
 
