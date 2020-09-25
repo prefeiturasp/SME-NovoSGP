@@ -320,7 +320,9 @@ namespace SME.SGP.Aplicacao.Servicos
                  EnsinoEspecial = z.EnsinoEspecial,
                  EtapaEJA = z.EtapaEJA,
                  DataInicio = z.DataInicioTurma,
-                 SerieEnsino = z.SerieEnsino
+                 SerieEnsino = z.SerieEnsino,
+                 DataFim = z.DataFim,
+                 Extinta = z.Extinta
              })));
 
             dres = await repositorioDre.SincronizarAsync(dres);
