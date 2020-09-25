@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
-using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui.SolicitarReiniciarSenha;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
 using System.Collections.Generic;
@@ -38,9 +38,20 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.CO_A, Policy = "Bearer")]
-        public async Task<IActionResult> Alterar(long id, [FromBody]ComunicadoInserirDto comunicadoDto)
-        {    
-            return Ok(await comandos.Alterar(id, comunicadoDto));
+        public async Task<IActionResult> Alterar(long id, [FromBody] ComunicadoInserirDto comunicadoDto, [FromServices] ISolicitarAlteracaoComunicadoEscolaAquiUseCase solicitarAlteracaoComunicadoEscolaAquiUseCase)
+        {
+            return Ok(await solicitarAlteracaoComunicadoEscolaAquiUseCase.Executar(id, comunicadoDto));
+        }
+
+        [HttpDelete]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.CO_E, Policy = "Bearer")]
+        public async Task<IActionResult> Excluir([FromBody] long[] ids)
+        {
+            await comandos.Excluir(ids);
+            return Ok();
         }
 
         [HttpGet("{id}")]
@@ -72,7 +83,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<ComunicadoCompletoDto>), 204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.CO_C, Policy = "Bearer")]
-        public async Task<IActionResult> BuscarTodosAsync([FromQuery]FiltroComunicadoDto filtro)
+        public async Task<IActionResult> BuscarTodosAsync([FromQuery] FiltroComunicadoDto filtro)
         {
             var resultado = await consultas.ListarPaginado(filtro);
 
@@ -82,16 +93,7 @@ namespace SME.SGP.Api.Controllers
             return Ok(resultado);
         }
 
-        [HttpDelete]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [Permissao(Permissao.CO_E, Policy = "Bearer")]
-        public async Task<IActionResult> Excluir([FromBody]long[] ids)
-        {
-            await comandos.Excluir(ids);
-            return Ok();
-        }
+
 
 
     }

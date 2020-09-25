@@ -5,19 +5,20 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class SolicitarInclusaoComunicadoEscolaAquiUseCase : ISolicitarInclusaoComunicadoEscolaAquiUseCase
+    public class SolicitarAlteracaoComunicadoEscolaAquiUseCase : ISolicitarAlteracaoComunicadoEscolaAquiUseCase
     {
         private readonly IMediator mediator;
 
-        public SolicitarInclusaoComunicadoEscolaAquiUseCase(IMediator mediator)
+        public SolicitarAlteracaoComunicadoEscolaAquiUseCase(IMediator mediator)
         {
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<string> Executar(ComunicadoInserirDto comunicado)
+        public async Task<string> Executar(long id, ComunicadoInserirDto comunicado)
         {
-            return await mediator.Send(new SolicitarInclusaoComunicadoEscolaAquiCommand(
-                  comunicado.DataEnvio
+            return await mediator.Send(new SolicitarAlteracaoComunicadoEscolaAquiCommand(
+                  id
+                , comunicado.DataEnvio
                 , comunicado.DataExpiracao
                 , comunicado.Descricao
                 , comunicado.GruposId
