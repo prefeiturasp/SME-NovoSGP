@@ -29,7 +29,8 @@ namespace SME.SGP.Dados.Repositorios
 	                    data_atualizacao,
                         ensino_especial,
                         etapa_eja,
-                        data_inicio
+                        data_inicio,
+                        dt_fim_eol
                     from
 	                    public.turma
                     where turma_id in (#ids);";
@@ -49,7 +50,8 @@ namespace SME.SGP.Dados.Repositorios
                         ensino_especial = @ensinoEspecial,
                         etapa_eja = @etapaEja,
                         data_inicio = @dataInicio,
-                        serie_ensino = @serieEnsino
+                        serie_ensino = @serieEnsino,
+                        dt_fim_eol = @dataFim
                     where
 	                    id = @id;";        
 
@@ -135,7 +137,7 @@ namespace SME.SGP.Dados.Repositorios
 
         private const string QueryAulasTurmasForaListaCodigos = @"select id from public.aula where turma_id in (#codigosTurmasARemover)";
 
-        private const string QueryDefinirTurmaHistorica = "update public.turma set historica = true where turma_id in (#codigosTurmasParaHistorico);";        
+        private const string QueryDefinirTurmaHistorica = "update public.turma set historica = true where turma_id in (#codigosTurmasParaHistorico);";
 
         private readonly ISgpContext contexto;
 
@@ -296,6 +298,7 @@ namespace SME.SGP.Dados.Repositorios
             List<Turma> resultado = new List<Turma>();
 
             var anoLetivoConsiderado = (from e in entidades
+                                        where !e.Extinta
                                         orderby e.AnoLetivo descending
                                         select e.AnoLetivo).Last();
 
@@ -309,7 +312,10 @@ namespace SME.SGP.Dados.Repositorios
                     QuerySincronizacao.Replace("#ids", string.Join(",", iteracao.Select(x => $"'{x.CodigoTurma}'"))))).ToList();
 
                 var idsArmazenados = armazenados.Select(y => y.CodigoTurma);
-                var novos = iteracao.Where(x => !idsArmazenados.Contains(x.CodigoTurma)).ToList();
+
+                var novos = iteracao
+                    .Where(x => !x.Extinta && !idsArmazenados.Contains(x.CodigoTurma))
+                    .ToList();
 
                 foreach (var item in novos)
                 {
@@ -322,8 +328,7 @@ namespace SME.SGP.Dados.Repositorios
 
                 var modificados = from c in entidades
                                   join l in armazenados on c.CodigoTurma equals l.CodigoTurma
-                                  where l.DataAtualizacao != DateTime.Today &&
-                                        (c.Nome != l.Nome ||
+                                  where c.Nome != l.Nome ||
                                         c.Ano != l.Ano ||
                                         c.AnoLetivo != l.AnoLetivo ||
                                         c.ModalidadeCodigo != l.ModalidadeCodigo ||
@@ -332,8 +337,11 @@ namespace SME.SGP.Dados.Repositorios
                                         c.TipoTurno != l.TipoTurno ||
                                         c.EnsinoEspecial != l.EnsinoEspecial ||
                                         c.EtapaEJA != l.EtapaEJA ||
-                                        c.DataInicio != l.DataInicio ||
-                                        c.SerieEnsino != l.SerieEnsino )
+                                        c.SerieEnsino != l.SerieEnsino ||
+                                        c.DataInicio.HasValue != l.DataInicio.HasValue ||
+                                        (c.DataInicio.HasValue && l.DataInicio.HasValue && c.DataInicio.Value.Date != l.DataInicio.Value.Date) ||
+                                        c.DataFim.HasValue != l.DataFim.HasValue ||
+                                        (c.DataFim.HasValue && l.DataFim.HasValue && c.DataFim.Value.Date != l.DataFim.Value.Date)
                                   select new Turma()
                                   {
                                       Ano = c.Ano,
@@ -351,7 +359,9 @@ namespace SME.SGP.Dados.Repositorios
                                       EnsinoEspecial = c.EnsinoEspecial,
                                       EtapaEJA = c.EtapaEJA,
                                       DataInicio = c.DataInicio,
-                                      SerieEnsino = c.SerieEnsino
+                                      SerieEnsino = c.SerieEnsino,                                      
+                                      DataFim = c.DataFim,
+                                      Extinta = c.Extinta
                                   };
 
                 foreach (var item in modificados)
@@ -370,7 +380,8 @@ namespace SME.SGP.Dados.Repositorios
                         ensinoEspecial = item.EnsinoEspecial,
                         etapaEja = item.EtapaEJA,
                         dataInicio = item.DataInicio,
-                        serieEnsino = item.SerieEnsino
+                        serieEnsino = item.SerieEnsino,                        
+                        dataFim = item.DataFim
                     });
 
                     resultado.Add(item);
@@ -419,7 +430,11 @@ namespace SME.SGP.Dados.Repositorios
 
         private async Task AtualizarRemoverTurmasExtintasAsync(IEnumerable<Turma> entidades, int anoLetivo)
         {
-            var codigosTurmas = entidades.OrderBy(e => e.CodigoTurma).Select(e => $"'{e.CodigoTurma}'")?.ToArray();
+            var codigosTurmas = entidades
+                .Where(e => !e.Extinta)
+                .OrderBy(e => e.CodigoTurma)
+                .Select(e => $"'{e.CodigoTurma}'")?.ToArray();
+
             var listaTurmas = string.Join(",", codigosTurmas);
 
             var sqlQueryAtualizarTurmasComoHistoricas = QueryDefinirTurmaHistorica
@@ -431,19 +446,19 @@ namespace SME.SGP.Dados.Repositorios
                                          .Replace("#queryIdsFechamentoTurmaTurmasForaListaCodigos", QueryIdsFechamentoTurmaTurmasForaListaCodigos)
                                          .Replace("#queryIdsFechamentoTurmaDisciplinaTurmasForaListaCodigos", QueryIdsFechamentoTurmaDisciplinaTurmasForaListaCodigos)
                                          .Replace("#queryIdsTurmasForaListaCodigos", QueryIdsTurmasForaListaCodigos)
-                                         .Replace("#queryIdsAulasTurmasForaListaCodigos", QueryAulasTurmasForaListaCodigos)                            
+                                         .Replace("#queryIdsAulasTurmasForaListaCodigos", QueryAulasTurmasForaListaCodigos)
                                          .Replace("#codigosTurmasARemover", GerarQueryCodigosTurmasForaLista(anoLetivo, false))
                                          .Replace("#idsTurmas", listaTurmas);
 
             var transacao = contexto.Conexao.BeginTransaction();
 
             try
-            {                
+            {
                 await contexto.Conexao
                     .ExecuteAsync(sqlQueryAtualizarTurmasComoHistoricas, transacao);
 
                 await contexto.Conexao
-                    .ExecuteAsync(sqlExcluirTurmas, transacao);              
+                    .ExecuteAsync(sqlExcluirTurmas, transacao);
 
                 transacao.Commit();
             }
@@ -451,28 +466,10 @@ namespace SME.SGP.Dados.Repositorios
             {
                 var erro = new Exception("Erro ao atualizar ou excluir turmas extintas", ex);
                 SentrySdk.CaptureException(erro);
-                transacao.Rollback();                
-            }            
+                transacao.Rollback();
+            }
         }
 
-        private string GerarQueryCodigosTurmasForaLista(int anoLetivo, bool definirTurmasComoHistorica) =>
-            $@"select distinct t.turma_id
-	                from turma t
-		                inner join tipo_calendario tc
-			                on t.ano_letivo = tc.ano_letivo and
-			                   t.modalidade_codigo = t.modalidade_codigo 
-		                inner join periodo_escolar pe
-			                on tc.id = pe.tipo_calendario_id 			
-		                inner join (select id, data_inicio, modalidade_codigo
-					                    from turma
-					                where not historica and
-						                  turma_id not in (#idsTurmas)) t2
-			                on t.id = t2.id and
-			                   t.modalidade_codigo = t2.modalidade_codigo
-                where t.ano_letivo = {anoLetivo} and
-                      not t.historica and
-	                  pe.bimestre = 1 and                      
-	                  current_date {(definirTurmasComoHistorica ? ">=" : "<")} pe.periodo_inicio"; //Turmas que deram início após o 1º bimestre serão marcadas como histórica
         public async Task<IEnumerable<Turma>> ObterPorCodigosAsync(string[] codigos)
         {
             var query = "select * from turma t where t.turma_id = ANY(@codigos)";
@@ -485,5 +482,24 @@ namespace SME.SGP.Dados.Repositorios
             var query = "select t.id, t.turma_id as codigo, t.nome from turma t where t.id = @id";
             return await contexto.Conexao.QueryFirstOrDefaultAsync<ObterTurmaSimplesPorIdRetornoDto>(query, new { id });
         }
+
+        private string GerarQueryCodigosTurmasForaLista(int anoLetivo, bool definirTurmasComoHistorica) =>
+            $@"select distinct t.turma_id
+	                from turma t
+		                inner join tipo_calendario tc
+			                on t.ano_letivo = tc.ano_letivo and
+			                   t.modalidade_codigo = t.modalidade_codigo 
+		                inner join periodo_escolar pe
+			                on tc.id = pe.tipo_calendario_id 			
+		                inner join (select id, data_inicio, modalidade_codigo
+					                    from turma
+					                where ano_letivo = {anoLetivo} and
+						                  turma_id not in (#idsTurmas)) t2
+			                on t.id = t2.id and
+			                   t.modalidade_codigo = t2.modalidade_codigo
+                where t.ano_letivo = {anoLetivo} and                      
+	                  pe.bimestre = 1 and                      
+	                  t.dt_fim_eol is not null and 
+                      t.dt_fim_eol {(definirTurmasComoHistorica ? ">=" : "<")} pe.periodo_inicio"; //Turmas extintas após o 1º bimestre do ano letivo considerado serão marcadas como histórica
     }
 }
