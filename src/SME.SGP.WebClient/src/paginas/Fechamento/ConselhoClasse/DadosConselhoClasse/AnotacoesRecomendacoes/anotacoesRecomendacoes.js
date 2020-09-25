@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import PropTypes from 'prop-types';
 import { Loader } from '~/componentes';
 import {
   setAnotacoesAluno,
@@ -17,7 +18,8 @@ import AnotacoesPedagogicas from './AnotacoesPedagogicas/anotacoesPedagogicas';
 import AuditoriaAnotacaoRecomendacao from './AuditoriaAnotacaoRecomendacao/auditoriaAnotacaoRecomendacao';
 import RecomendacaoAlunoFamilia from './RecomendacaoAlunoFamilia/recomendacaoAlunoFamilia';
 
-const AnotacoesRecomendacoes = () => {
+const AnotacoesRecomendacoes = props => {
+  const { codigoTurma, bimestre } = props;
   const dispatch = useDispatch();
 
   const dadosPrincipaisConselhoClasse = useSelector(
@@ -113,7 +115,9 @@ const AnotacoesRecomendacoes = () => {
     const resposta = await ServicoConselhoClasse.obterAnotacoesRecomendacoes(
       conselhoClasseId,
       fechamentoTurmaId,
-      alunoCodigo
+      alunoCodigo,
+      codigoTurma,
+      bimestre
     ).catch(e => erros(e));
 
     if (resposta && resposta.data) {
@@ -144,7 +148,7 @@ const AnotacoesRecomendacoes = () => {
   ]);
 
   useEffect(() => {
-    if (fechamentoTurmaId && alunoCodigo) {
+    if (alunoCodigo) {
       obterAnotacoesRecomendacoes();
     }
   }, [fechamentoTurmaId, alunoCodigo, obterAnotacoesRecomendacoes]);
@@ -189,6 +193,16 @@ const AnotacoesRecomendacoes = () => {
       )}
     </Loader>
   );
+};
+
+AnotacoesRecomendacoes.propTypes = {
+  codigoTurma: PropTypes.oneOfType([PropTypes.string]),
+  bimestre: PropTypes.oneOfType([PropTypes.number]),
+};
+
+AnotacoesRecomendacoes.defaultProps = {
+  codigoTurma: '',
+  bimestre: 0,
 };
 
 export default AnotacoesRecomendacoes;

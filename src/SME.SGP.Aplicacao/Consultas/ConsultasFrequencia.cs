@@ -1,4 +1,5 @@
-﻿using SME.SGP.Aplicacao.Integracoes;
+﻿using MediatR;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -22,10 +23,12 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoAluno servicoAluno;
         private readonly IServicoEol servicoEOL;
         private readonly IServicoFrequencia servicoFrequencia;
+        private readonly IMediator mediator;
 
         private double _mediaFrequencia;
 
-        public ConsultasFrequencia(IServicoFrequencia servicoFrequencia,
+        public ConsultasFrequencia(IMediator mediator,
+                                   IServicoFrequencia servicoFrequencia,
                                    IServicoEol servicoEOL,
                                    IConsultasPeriodoEscolar consultasPeriodoEscolar,
                                    IConsultasTipoCalendario consultasTipoCalendario,
@@ -37,6 +40,7 @@ namespace SME.SGP.Aplicacao
                                    IRepositorioParametrosSistema repositorioParametrosSistema,
                                    IServicoAluno servicoAluno)
         {
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.servicoFrequencia = servicoFrequencia ?? throw new ArgumentNullException(nameof(servicoFrequencia));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
@@ -70,14 +74,14 @@ namespace SME.SGP.Aplicacao
             return frequenciaAluno.PercentualFrequencia;
         }
 
-        public double ObterFrequenciaMedia(DisciplinaDto disciplina)
+        public async Task<double> ObterFrequenciaMedia(DisciplinaDto disciplina)
         {
             if (_mediaFrequencia == 0)
             {
                 if (disciplina.Regencia || !disciplina.LancaNota)
-                    _mediaFrequencia = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse));
+                    _mediaFrequencia = double.Parse(await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse));
                 else
-                    _mediaFrequencia = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.CompensacaoAusenciaPercentualFund2));
+                    _mediaFrequencia = double.Parse(await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.CompensacaoAusenciaPercentualFund2));
             }
 
             return _mediaFrequencia;
@@ -100,8 +104,8 @@ namespace SME.SGP.Aplicacao
             if (disciplinasEOL == null || !disciplinasEOL.Any())
                 throw new NegocioException("Disciplina informada não localizada no EOL.");
 
-            var quantidadeMaximaCompensacoes = int.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.QuantidadeMaximaCompensacaoAusencia));
-            var percentualFrequenciaAlerta = int.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(disciplinasEOL.First().Regencia ? TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse : TipoParametroSistema.CompensacaoAusenciaPercentualFund2));
+            var quantidadeMaximaCompensacoes = int.Parse(await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.QuantidadeMaximaCompensacaoAusencia));
+            var percentualFrequenciaAlerta = int.Parse(await repositorioParametrosSistema.ObterValorPorTipoEAno(disciplinasEOL.First().Regencia ? TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse : TipoParametroSistema.CompensacaoAusenciaPercentualFund2));
 
             foreach (var alunoEOL in alunosEOL)
             {
@@ -152,14 +156,14 @@ namespace SME.SGP.Aplicacao
 
             registroFrequenciaDto.TemPeriodoAberto = await consultasTurma.TurmaEmPeriodoAberto(aula.TurmaId, DateTime.Today, bimestre.Bimestre);
 
-            var parametroPercentualCritico = repositorioParametrosSistema.ObterValorPorTipoEAno(
+            var parametroPercentualCritico = await repositorioParametrosSistema.ObterValorPorTipoEAno(
                                                     TipoParametroSistema.PercentualFrequenciaCritico,
                                                     bimestre.PeriodoInicio.Year);
             if (parametroPercentualCritico == null)
                 throw new NegocioException("Parâmetro de percentual de frequência em nível crítico não encontrado contate a SME.");
 
             var percentualCritico = int.Parse(parametroPercentualCritico);
-            var percentualAlerta = int.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(
+            var percentualAlerta = int.Parse(await repositorioParametrosSistema.ObterValorPorTipoEAno(
                                                     TipoParametroSistema.PercentualFrequenciaAlerta,
                                                     bimestre.PeriodoInicio.Year));
 
@@ -167,6 +171,8 @@ namespace SME.SGP.Aplicacao
 
             if (disciplinaAula == null || disciplinaAula.ToList().Count <= 0)
                 throw new NegocioException("Disciplina da aula não encontrada");
+
+            var anotacoesTurma = await mediator.Send(new ObterAlunosComAnotacaoNaAulaQuery(aulaId));
 
             foreach (var aluno in alunosDaTurma.Where(a => a.DeveMostrarNaChamada(aula.DataAula)).OrderBy(c => c.NomeAluno))
             {
@@ -183,7 +189,11 @@ namespace SME.SGP.Aplicacao
                     NumeroAlunoChamada = aluno.NumeroAlunoChamada,
                     CodigoSituacaoMatricula = aluno.CodigoSituacaoMatricula,
                     SituacaoMatricula = aluno.SituacaoMatricula,
+                    DataSituacao = aluno.DataSituacao,
+                    DataNascimento = aluno.DataNascimento,
                     Desabilitado = aluno.EstaInativo(aula.DataAula) || aula.EhDataSelecionadaFutura,
+                    PermiteAnotacao = aluno.EstaAtivo(aula.DataAula),
+                    PossuiAnotacao = anotacoesTurma.Any(a => a == aluno.CodigoAluno)
                 };
 
                 // Marcador visual da situação
@@ -220,9 +230,9 @@ namespace SME.SGP.Aplicacao
         public FrequenciaAluno ObterPorAlunoDisciplinaData(string codigoAluno, string disciplinaId, DateTime dataAtual)
             => repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunoDisciplinaData(codigoAluno, disciplinaId, dataAtual);
 
-        public SinteseDto ObterSinteseAluno(double percentualFrequencia, DisciplinaDto disciplina)
+        public async Task<SinteseDto> ObterSinteseAluno(double percentualFrequencia, DisciplinaDto disciplina)
         {
-            var sintese = percentualFrequencia >= ObterFrequenciaMedia(disciplina) ?
+            var sintese = percentualFrequencia >= await ObterFrequenciaMedia(disciplina) ?
                         SinteseEnum.Frequente : SinteseEnum.NaoFrequente;
 
             return new SinteseDto()

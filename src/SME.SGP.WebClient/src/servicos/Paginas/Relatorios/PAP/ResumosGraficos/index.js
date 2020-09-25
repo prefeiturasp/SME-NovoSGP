@@ -21,6 +21,9 @@ const ResumosGraficosPAPServico = {
       params,
     });
   },
+  ListarAnosLetivos() {
+    return api.get('v1/recuperacao-paralela/anos-letivos');
+  },
 };
 
 export default ResumosGraficosPAPServico;

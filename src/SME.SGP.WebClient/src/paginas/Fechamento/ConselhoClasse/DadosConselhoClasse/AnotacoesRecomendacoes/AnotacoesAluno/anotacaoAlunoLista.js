@@ -1,6 +1,7 @@
 import * as moment from 'moment';
 import PropTypes from 'prop-types';
 import React from 'react';
+import shortid from 'shortid';
 import { Base } from '~/componentes';
 import Editor from '~/componentes/editor/editor';
 import { ListaAnotacao, Tabela } from './anotacaoAluno.css';
@@ -55,7 +56,9 @@ const AnotacoesAlunoLista = props => {
             <Tabela
               className="table-responsive mb-3"
               style={{ borderLeftColor: `${cores[index]}` }}
-              key={`anotacao-disciplina-${item.disciplina}`}
+              key={`anotacao-disciplina-${
+                item.disciplina
+              }-${shortid.generate()}`}
             >
               <table className="table">
                 <thead>

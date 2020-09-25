@@ -25,11 +25,15 @@ namespace SME.SGP.Aplicacao.Queries.ComponentesCurriculares.ObterComponentesCurr
                 throw new NegocioException("Nenhum componente localizado para a modalidade e anos informados.");
             }
             componentes = componentes.OrderBy(c => c.Descricao).ToList();
-            componentes.Insert(0, new ComponenteCurricularEol
+
+            if (request.Modalidade != Modalidade.Infantil) 
             {
-                Codigo = -99,
-                Descricao = "Todos"
-            });
+                componentes.Insert(0, new ComponenteCurricularEol
+                {
+                    Codigo = -99,
+                    Descricao = "Todos"
+                });
+            }
             return componentes;
         }
     }
