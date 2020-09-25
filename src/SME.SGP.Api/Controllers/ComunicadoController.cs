@@ -48,10 +48,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.CO_E, Policy = "Bearer")]
-        public async Task<IActionResult> Excluir([FromBody] long[] ids)
+        public async Task<IActionResult> Excluir([FromBody] long[] ids, [FromServices] ISolicitarExclusaoComunicadosEscolaAquiUseCase solicitarExclusaoComunicadosEscolaAquiUseCase)
         {
-            await comandos.Excluir(ids);
-            return Ok();
+            return Ok(await solicitarExclusaoComunicadosEscolaAquiUseCase.Executar(ids));
         }
 
         [HttpGet("{id}")]

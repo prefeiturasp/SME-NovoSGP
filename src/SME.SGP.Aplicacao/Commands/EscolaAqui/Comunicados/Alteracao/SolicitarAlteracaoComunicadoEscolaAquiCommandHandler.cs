@@ -2,7 +2,6 @@
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Dto;
 using System;
 using System.Linq;
@@ -17,9 +16,6 @@ namespace SME.SGP.Aplicacao
         private const string TODAS = "todas";
         private readonly IUnitOfWork _unitOfWork;
         private readonly IRepositorioComunicado _repositorioComunicado;
-        private readonly IRepositorioComunicadoGrupo _repositorioComunicadoGrupo;
-        private readonly IRepositorioComunicadoTurma _repositorioComunicadoTurma;
-        private readonly IRepositorioComunicadoAluno _repositorioComunicadoAluno;
         private readonly IServicoAcompanhamentoEscolar _servicoAcompanhamentoEscolar;
         private readonly IConsultasAbrangencia _consultasAbrangencia;
 
@@ -27,20 +23,15 @@ namespace SME.SGP.Aplicacao
               IMediator mediator
             , IRepositorioComunicado repositorioComunicado
             , IUnitOfWork unitOfWork
-            , IRepositorioComunicadoGrupo repositorioComunicadoGrupo
-            , IRepositorioComunicadoTurma repositorioComunicadoTurma
-            , IRepositorioComunicadoAluno repositorioComunicadoAluno
             , IServicoAcompanhamentoEscolar servicoAcompanhamentoEscolar
-            , IConsultasAbrangencia _consultasAbrangencia
+            , IConsultasAbrangencia consultasAbrangencia
             )
         {
             this._mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this._unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this._repositorioComunicado = repositorioComunicado ?? throw new ArgumentNullException(nameof(repositorioComunicado));
-            this._repositorioComunicadoGrupo = repositorioComunicadoGrupo ?? throw new ArgumentNullException(nameof(repositorioComunicadoGrupo));
-            this._repositorioComunicadoTurma = repositorioComunicadoTurma ?? throw new ArgumentNullException(nameof(repositorioComunicadoTurma));
-            this._repositorioComunicadoAluno = repositorioComunicadoAluno ?? throw new ArgumentNullException(nameof(repositorioComunicadoAluno));
             this._servicoAcompanhamentoEscolar = servicoAcompanhamentoEscolar ?? throw new ArgumentNullException(nameof(servicoAcompanhamentoEscolar));
+            this._consultasAbrangencia = consultasAbrangencia ?? throw new ArgumentNullException(nameof(consultasAbrangencia));
         }
 
         public async Task<string> Handle(SolicitarAlteracaoComunicadoEscolaAquiCommand request, CancellationToken cancellationToken)
