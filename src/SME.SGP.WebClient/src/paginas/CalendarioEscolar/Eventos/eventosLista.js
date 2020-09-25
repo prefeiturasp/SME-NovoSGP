@@ -296,12 +296,15 @@ const EventosLista = ({ match }) => {
         item => item.id === tipoCalendarioId
       );
 
-      const ues = await ServicoEvento.listarUes(
-        dreSelecionada,
-        ServicoCalendarios.converterModalidade(
-          calendarioSelecionado?.modalidade
-        )
-      );
+      const ues =
+        calendarioSelecionado != undefined
+          ? await ServicoEvento.listarUes(
+              dreSelecionada,
+              ServicoCalendarios.converterModalidade(
+                calendarioSelecionado.modalidade
+              )
+            )
+          : [];
 
       if (!sucesso) {
         setListaUe([]);
