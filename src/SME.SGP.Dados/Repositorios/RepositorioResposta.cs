@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
-    public class RepositorioResposta : RepositorioBase<Resposta>, IRepositorioResposta
+    public class RepositorioResposta : RepositorioBase<RecuperacaoParalelaResposta>, IRepositorioResposta
     {
         public RepositorioResposta(ISgpContext conexao) : base(conexao)
         {

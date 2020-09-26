@@ -231,7 +231,6 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstAsync<int>(sql, new { anoLetivo, codigoRf, naoLida = (int)NotificacaoStatus.Pendente });
         }
 
-
         public async Task<IEnumerable<NotificacaoBasicaDto>> ObterNotificacoesPorAnoLetivoERfAsync(int anoLetivo, string usuarioRf, int limite = 5)
         {
             var sql = @"select
@@ -258,6 +257,27 @@ namespace SME.SGP.Dados.Repositorios
 	                        n.criado_em desc
                         limit @limite";
   return await database.Conexao.QueryAsync<NotificacaoBasicaDto>(sql, new { anoLetivo, usuarioRf, limite});
+        }
+
+        public override async Task<long> RemoverLogico(long id, string coluna = null)
+        {
+            var columName = coluna ?? "id";
+
+            var query = $@"update notificacao
+                            set excluida = true
+                              , alterado_por = @alteradoPor
+                              , alterado_rf = @alteradoRF 
+                              , alterado_em = @alteradoEm
+                        where {columName}=@id RETURNING id";
+
+            return await database.Conexao.ExecuteScalarAsync<long>(query
+                , new
+                {
+                    id,
+                    alteradoPor = database.UsuarioLogadoNomeCompleto,
+                    alteradoRF = database.UsuarioLogadoRF,
+                    alteradoEm = DateTime.Now
+                });
         }
     }
 }

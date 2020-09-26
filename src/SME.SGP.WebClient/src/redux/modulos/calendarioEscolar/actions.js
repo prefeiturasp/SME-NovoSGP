@@ -48,3 +48,12 @@ export function salvarEventoCalendarioEdicao(
     },
   };
 }
+
+export function temEventoCalendarioId(eventoCalendarioId) {
+  return {
+    type: '@calendarioEscolar/temEventoCalendarioId',
+    payload: {
+      eventoCalendarioId,
+    },
+  };
+}

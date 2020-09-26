@@ -47,8 +47,7 @@ namespace SME.SGP.IoC
             services.AddMediatR(assembly);
             services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidacoesPipeline<,>));
         }
-
-        private static void RegistrarRabbit(IServiceCollection services)
+private static void RegistrarRabbit(IServiceCollection services)
         {
             var factory = new ConnectionFactory
             {
@@ -271,15 +270,20 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IRepositorioObjetivoAprendizagem, RepositorioObjetivoAprendizagem>();
             services.TryAddScopedWorkerService<IRepositorioCorrelacaoRelatorio, RepositorioCorrelacaoRelatorio>();
             services.TryAddScopedWorkerService<IRepositorioCorrelacaoRelatorioJasper, RepositorioRelatorioCorrelacaoJasper>();
-            services.TryAddScopedWorkerService<IRepositorioTestePostgre, RepositorioTestePostgre>();
+            //services.TryAddScopedWorkerService<IRepositorioTestePostgre, RepositorioTestePostgre>();
             services.TryAddScopedWorkerService<IRepositorioFechamentoReaberturaBimestre, RepositorioFechamentoReaberturaBimestre>();
             services.TryAddScopedWorkerService<IRepositorioHistoricoReinicioSenha, RepositorioHistoricoReinicioSenha>();
             services.TryAddScopedWorkerService<IRepositorioComunicadoAluno, RepositorioComunicadoAluno>();
             services.TryAddScopedWorkerService<IRepositorioComunicadoTurma, RepositorioComunicadoTurma>();
             services.TryAddScopedWorkerService<IRepositorioDiarioBordo, RepositorioDiarioBordo>();
-            services.TryAddScopedWorkerService<IRepositorioDevolutivaDiarioBordo, RepositorioDevolutivaDiarioBordo>();
-            services.TryAddScoped<IRepositorioAnoEscolar, RepositorioAnoEscolar>();
+            services.TryAddScopedWorkerService<IRepositorioDevolutiva, RepositorioDevolutiva>();
+            services.TryAddScopedWorkerService<IRepositorioAnoEscolar, RepositorioAnoEscolar>();
             services.TryAddScopedWorkerService<IRepositorioCartaIntencoes, RepositorioCartaIntencoes>();
+            services.TryAddScopedWorkerService<IRepositorioCartaIntencoesObservacao, RepositorioCartaIntencoesObservacao>();
+            services.TryAddScopedWorkerService<IRepositorioNotificacaoCartaIntencoesObservacao, RepositorioNotificacaoCartaIntencoesObservacao>();
+            services.TryAddScopedWorkerService<IRepositorioNotificacaoDevolutiva, RepositorioNotificacaoDevolutiva>();
+            
+
         }
 
         private static void RegistrarServicos(IServiceCollection services)
@@ -341,13 +345,44 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterDatasAulasPorTurmaEComponenteUseCase, ObterDatasAulasPorTurmaEComponenteUseCase>();
             services.TryAddScoped<IObterFrequenciaOuPlanoNaRecorrenciaUseCase, ObterFrequenciaOuPlanoNaRecorrenciaUseCase>();
             services.TryAddScoped<IObterFiltroRelatoriosAnosPorCicloModalidadeUseCase, ObterFiltroRelatoriosAnosPorCicloModalidadeUseCase>();
+            services.TryAddScoped<IRelatorioCompensacaoAusenciaUseCase, RelatorioCompensacaoAusenciaUseCase>();
+            services.TryAddScoped<IRelatorioCalendarioUseCase, RelatorioCalendarioUseCase>();
 
-
+            services.TryAddScopedWorkerService<IExcluirDevolutivaUseCase, ExcluirDevolutivaUseCase>();
+            services.TryAddScopedWorkerService<IObterListaDevolutivasPorTurmaComponenteUseCase, ObterListaDevolutivasPorTurmaComponenteUseCase>();
+            services.TryAddScopedWorkerService<IObterDiariosBordoPorDevolutiva, ObterDiariosBordoPorDevolutiva>();
+            services.TryAddScopedWorkerService<IObterDevolutivaPorIdUseCase, ObterDevolutivaPorIdUseCase>();
+            services.TryAddScopedWorkerService<IObterDiariosDeBordoPorPeriodoUseCase, ObterDiariosDeBordoPorPeriodoUseCase>();
+            services.TryAddScopedWorkerService<IObterDataDiarioBordoSemDevolutivaPorTurmaComponenteUseCase, ObterDataDiarioBordoSemDevolutivaPorTurmaComponenteUseCase>();
             services.TryAddScopedWorkerService<ICartaIntencoesPersistenciaUseCase, CartaIntencoesPersistenciaUseCase>();
             services.TryAddScopedWorkerService<IObterCartasDeIntencoesPorTurmaEComponenteUseCase, ObterCartasDeIntencoesPorTurmaEComponenteUseCase>();
             services.TryAddScoped<ICriarAulasInfantilAutomaticamenteUseCase, CriarAulasInfantilAutomaticamenteUseCase>();
             services.TryAddScoped<ICriarAulasInfantilUseCase, CriarAulasInfantilUseCase>();
             services.TryAddScoped<ISincronizarAulasInfantilUseCase, SincronizarAulasInfantilUseCase>();
+            services.TryAddScoped<IObterAnotacaoFrequenciaAlunoUseCase, ObterAnotacaoFrequenciaAlunoUseCase>();
+            services.TryAddScoped<IAlterarAnotacaoFrequenciaAlunoUseCase, AlterarAnotacaoFrequenciaAlunoUseCase>();
+            services.TryAddScoped<IExcluirAnotacaoFrequenciaAlunoUseCase, ExcluirAnotacaoFrequenciaAlunoUseCase>();
+            services.TryAddScoped<IObterMotivosAusenciaUseCase, ObterMotivosAusenciaUseCase>();
+
+            services.TryAddScopedWorkerService<IObterDashBoardUseCase, ObterDashBoardUseCase>();
+
+            services.TryAddScopedWorkerService<IInserirDevolutivaUseCase, InserirDevolutivaUseCase>();
+            services.TryAddScopedWorkerService<IAlterarDevolutivaUseCase, AlterarDevolutivaUseCase>();
+
+            services.TryAddScopedWorkerService<IListarCartaIntencoesObservacoesPorTurmaEComponenteUseCase, ListarCartaIntencoesObservacoesPorTurmaEComponenteUseCase>();
+            services.TryAddScopedWorkerService<ISalvarCartaIntencoesObservacaoUseCase, SalvarCartaIntencoesObservacaoUseCase>();
+            services.TryAddScopedWorkerService<IAlterarCartaIntencoesObservacaoUseCase, AlterarCartaIntencoesObservacaoUseCase>();
+            services.TryAddScopedWorkerService<IExcluirCartaIntencoesObservacaoUseCase, ExcluirCartaIntencoesObservacaoUseCase>();
+            services.TryAddScopedWorkerService<ISalvarNotificacaoCartaIntencoesObservacaoUseCase, SalvarNotificacaoCartaIntencoesObservacaoUseCase>();
+            services.TryAddScopedWorkerService<IExcluirNotificacaoCartaIntencoesObservacaoUseCase, ExcluirNotificacaoCartaIntencoesObservacaoUseCase>();
+            services.TryAddScopedWorkerService<INotificarDiarioBordoObservacaoUseCase, NotificarDiarioBordoObservacaoUseCase>();
+
+            services.TryAddScopedWorkerService<ISalvarNotificacaoDevolutivaUseCase, SalvarNotificacaoDevolutivaUseCase>();
+            services.TryAddScopedWorkerService<IExcluirNotificacaoDevolutivaUseCase, ExcluirNotificacaoDevolutivaUseCase>();
+
+            services.TryAddScopedWorkerService<IExcluirNotificacaoDiarioBordoUseCase, ExcluirNotificacaoDiarioBordoUseCase>();
+            services.TryAddScopedWorkerService<IObterAnosLetivosPAPUseCase, ObterAnosLetivosPAPUseCase>();
+
         }
 
         private static void ResgistraDependenciaHttp(IServiceCollection services)

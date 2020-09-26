@@ -152,7 +152,8 @@ function RelatorioPAPAcompanhamento() {
         setPeriodo(valor);
 
         const { data } = await AcompanhamentoPAPServico.ListarAlunos({
-          TurmaId: turmaSelecionada.turma,
+          TurmaId: turmaSelecionada.id,
+          TurmaCodigo: turmaSelecionada.turma,
           PeriodoId: valor,
         });
 

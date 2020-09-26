@@ -6,14 +6,14 @@ namespace SME.SGP.Aplicacao
 {
     public class ExcluirObservacaoDiarioBordoCommand : IRequest<bool>
     {
-        public ExcluirObservacaoDiarioBordoCommand(long observacaoId, long usuarioId)
+        public ExcluirObservacaoDiarioBordoCommand(long observacaoId, long? usuarioId = null)
         {
             ObservacaoId = observacaoId;
             UsuarioId = usuarioId;
         }
 
         public long ObservacaoId { get; set; }
-        public long UsuarioId { get; set; }
+        public long? UsuarioId { get; set; }
     }
 
 
@@ -21,10 +21,6 @@ namespace SME.SGP.Aplicacao
     {
         public ExcluirObservacaoDiarioBordoCommandValidator()
         {
-            RuleFor(c => c.UsuarioId)
-                .NotEmpty()
-                .WithMessage("O usuário deve ser informado.");
-
             RuleFor(c => c.ObservacaoId)
                 .NotEmpty()
                 .WithMessage("A observação deve ser informada.");

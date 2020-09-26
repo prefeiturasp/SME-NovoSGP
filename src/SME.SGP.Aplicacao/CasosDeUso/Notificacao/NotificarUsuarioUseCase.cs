@@ -11,7 +11,7 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
+        public async Task<long> Executar(MensagemRabbit mensagemRabbit)
         {
             SentrySdk.AddBreadcrumb($"Mensagem NotificarUsuarioUseCase", "Rabbit - NotificarUsuarioUseCase");
 
