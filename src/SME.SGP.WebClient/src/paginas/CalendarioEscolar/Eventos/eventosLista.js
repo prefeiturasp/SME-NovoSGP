@@ -59,6 +59,7 @@ const EventosLista = ({ match }) => {
   const [eventosSelecionados, setEventosSelecionados] = useState([]);
   const [filtro, setFiltro] = useState({});
   const [selecionouCalendario, setSelecionouCalendario] = useState(false);
+
   const [carregandoTipos, setCarregandoTipos] = useState(false);
   const [valorTipoCalendario, setValorTipoCalendario] = useState('');
   const [pesquisaTipoCalendario, setPesquisaTipoCalendario] = useState('');
@@ -296,15 +297,12 @@ const EventosLista = ({ match }) => {
         item => item.id === tipoCalendarioId
       );
 
-      const ues =
-        calendarioSelecionado != undefined
-          ? await ServicoEvento.listarUes(
-              dreSelecionada,
-              ServicoCalendarios.converterModalidade(
-                calendarioSelecionado.modalidade
-              )
-            )
-          : [];
+      const ues = await ServicoEvento.listarUes(
+        dreSelecionada,
+        ServicoCalendarios.converterModalidade(
+          calendarioSelecionado?.modalidade
+        )
+      );
 
       if (!sucesso) {
         setListaUe([]);
