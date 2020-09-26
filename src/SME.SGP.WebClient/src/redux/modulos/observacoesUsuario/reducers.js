@@ -2,7 +2,7 @@ import produce from 'immer';
 
 const inicial = {
   dadosObservacoes: [],
-  observacaoEmEdicao: [],
+  observacaoEmEdicao: null,
   novaObservacao: '',
 };
 
@@ -31,7 +31,7 @@ export default function ObservacoesUsuario(state = inicial, action) {
         return {
           ...draft,
           dadosObservacoes: [],
-          observacaoEmEdicao: [],
+          observacaoEmEdicao: null,
           novaObservacao: '',
         };
       }

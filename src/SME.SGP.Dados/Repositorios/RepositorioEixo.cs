@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
-    public class RepositorioEixo : RepositorioBase<Eixo>, IRepositorioEixo
+    public class RepositorioEixo : RepositorioBase<RecuperacaoParalelaEixo>, IRepositorioEixo
     {
         public RepositorioEixo(ISgpContext conexao) : base(conexao)
         {

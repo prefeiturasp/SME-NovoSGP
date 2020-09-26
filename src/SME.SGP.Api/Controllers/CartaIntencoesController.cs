@@ -31,5 +31,42 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(new ObterCartaIntencoesDto(turmaCodigo, componenteCurricularId)));
         }
+
+        [HttpGet("turmas/{turmaCodigo}/componente-curricular/{componenteCurricularId}/observacoes")]
+        [ProducesResponseType(typeof(IEnumerable<CartaIntencoesObservacaoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.CI_C, Policy = "Bearer")]
+        public async Task<IActionResult> ListarObservacoes([FromServices] IListarCartaIntencoesObservacoesPorTurmaEComponenteUseCase useCase, string turmaCodigo, long componenteCurricularId)
+        {
+            return Ok(await useCase.Executar(new BuscaCartaIntencoesObservacaoDto(turmaCodigo, componenteCurricularId)));
+        }
+
+
+        [HttpPost("turmas/{turmaCodigo}/componente-curricular/{componenteCurricularId}/observacoes")]
+        [ProducesResponseType(typeof(AuditoriaDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.CI_C, Policy = "Bearer")]
+        public async Task<IActionResult> SalvarObservacao([FromBody] SalvarCartaIntencoesObservacaoDto dto, [FromServices] ISalvarCartaIntencoesObservacaoUseCase useCase, string turmaCodigo, long componenteCurricularId)
+        {
+            return Ok(await useCase.Executar(turmaCodigo, componenteCurricularId, dto));
+        }
+
+        [HttpPut("observacoes/{observacaoId}")]
+        [ProducesResponseType(typeof(AuditoriaDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.CI_C, Policy = "Bearer")]
+        public async Task<IActionResult> AlterarObservacao([FromBody] AlterarCartaIntencoesObservacaoDto dto, [FromServices] IAlterarCartaIntencoesObservacaoUseCase useCase, long observacaoId)
+        {
+            return Ok(await useCase.Executar(observacaoId, dto));
+        }
+
+        [HttpDelete("observacoes/{observacaoId}")]
+        [ProducesResponseType(typeof(AuditoriaDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.CI_C, Policy = "Bearer")]
+        public async Task<IActionResult> ExcluirObservacao([FromServices] IExcluirCartaIntencoesObservacaoUseCase useCase, long observacaoId)
+        {
+            return Ok(await useCase.Executar(observacaoId));
+        }
     }
 }

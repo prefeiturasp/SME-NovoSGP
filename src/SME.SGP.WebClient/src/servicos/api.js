@@ -1,13 +1,14 @@
 import axios from 'axios';
 import { urlBase } from './variaveis';
 import { store } from '~/redux';
+import { deslogarPorSessaoInvalida } from '~/servicos/ServicoUsuarioDeslogar';
 
 let url = '';
 
 let CancelToken = axios.CancelToken.source();
 
 urlBase().then(resposta => {
-  url = resposta.data;
+  url = resposta?.data;
 });
 
 const api = axios.create({
@@ -35,7 +36,9 @@ api.interceptors.response.use(
   response => response,
   error => {
     if (axios.isCancel(error)) return Promise.reject(error);
-
+    if (error.response.status === 401) {
+      deslogarPorSessaoInvalida();
+    }
     return Promise.reject(error);
   }
 );

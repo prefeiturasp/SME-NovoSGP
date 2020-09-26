@@ -1,30 +1,23 @@
 import { Form, Formik } from 'formik';
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import * as Yup from 'yup';
-import { erros } from 'servicos/alertas';
-import Cabecalho from '~/componentes-sgp/cabecalho';
+import moment from 'moment';
+import { Loader } from '~/componentes';
 import Button from '~/componentes/button';
 import CampoTexto from '~/componentes/campoTexto';
 import { Colors } from '~/componentes/colors';
 import ModalConteudoHtml from '~/componentes/modalConteudoHtml';
 import SelectComponent from '~/componentes/select';
 import DataTable from '~/componentes/table/dataTable';
-import { confirmar, sucesso } from '~/servicos/alertas';
+import { erros, confirmar } from '~/servicos/alertas';
 import api from '~/servicos/api';
-
-import Card from '../../../componentes/card';
-import history from '~/servicos/history';
-import { URL_HOME } from '~/constantes/url';
 import { store } from '~/redux';
 import RotasDto from '~/dtos/rotasDto';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
 import FiltroHelper from '~/componentes-sgp/filtro/helper';
-import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
-import moment from 'moment';
-import { Loader } from '~/componentes';
 
-export default function ReiniciarSenha() {
+export default function ReiniciarSenha({ perfilSelecionado }) {
   const [linhaSelecionada, setLinhaSelecionada] = useState({});
   const [listaUsuario, setListaUsuario] = useState([]);
 
@@ -145,12 +138,10 @@ export default function ReiniciarSenha() {
     setUeDesabilitada(desabilitada);
   }, [listaUes]);
 
-  const onClickVoltar = () => history.push(URL_HOME);
-
   const onChangeDre = dre => {
-    setDreSelecionada(dre);
-    setUeSelecionada();
-    setListaUes();
+    setDreSelecionada(!dre ? '' : dre);
+    setUeSelecionada([]);
+    setListaUes([]);
   };
 
   const onChangeUe = ue => {
@@ -295,18 +286,7 @@ export default function ReiniciarSenha() {
 
   return (
     <Loader loading={carregando}>
-      <Cabecalho pagina="Reiniciar senha" />
-      <Card>
-        <div className="col-md-12 d-flex justify-content-end pb-4">
-          <Button
-            label="Voltar"
-            icon="arrow-left"
-            color={Colors.Azul}
-            border
-            className="mr-2"
-            onClick={onClickVoltar}
-          />
-        </div>
+      <div className="row">
         <div className="col-sm-12 col-md-12 col-lg-6 col-xl-6 pb-2">
           <SelectComponent
             name="dre-reiniciar-senha"
@@ -335,6 +315,9 @@ export default function ReiniciarSenha() {
             placeholder="Unidade Escolar (UE)"
           />
         </div>
+      </div>
+
+      <div className="row">
         <div className="col-sm-12 col-md-6 col-lg-6 col-xl-6 pb-3">
           <CampoTexto
             label="Nome do usuário"
@@ -357,21 +340,25 @@ export default function ReiniciarSenha() {
           <Button
             label="Filtrar"
             color={Colors.Azul}
-            disabled={!permissoesTela.podeConsultar}
+            disabled={perfilSelecionado}
             border
             className="text-center d-block mt-4 float-right w-100"
             onClick={onClickFiltrar}
           />
         </div>
+      </div>
 
-        <div className="col-md-12 pt-4">
-          <DataTable
-            rowKey="codigoRf"
-            columns={colunas}
-            dataSource={listaUsuario}
-          />
+      {listaUsuario.length > 0 && (
+        <div className="row">
+          <div className="col-md-12 pt-4">
+            <DataTable
+              rowKey="codigoRf"
+              columns={colunas}
+              dataSource={listaUsuario}
+            />
+          </div>
         </div>
-      </Card>
+      )}
 
       <Formik
         ref={refFormik => setRefForm(refFormik)}
