@@ -65,10 +65,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<AlunoPorTurmaResposta>), 200)]
         [ProducesResponseType(typeof(IEnumerable<AlunoPorTurmaResposta>), 204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> BuscarAlunos(string codigoTurma, int anoLetivo)
+        public async Task<IActionResult> BuscarAlunos(string codigoTurma, int anoLetivo, IObterAlunosPorTurmaEAnoLetivoEscolaAquiUseCase obterAlunosPorTurmaEscolaAquiUseCase)
         {
-            var retorno = await consultas.ObterAlunosPorTurma(codigoTurma, anoLetivo);
-
+            var retorno = await obterAlunosPorTurmaEscolaAquiUseCase.Executar(codigoTurma, anoLetivo);
             if (retorno == null || !retorno.Any())
                 return NoContent();
 
