@@ -1,4 +1,5 @@
 import api from '~/servicos/api';
+import { store } from '~/redux';
 
 class ServicoNotaConceito {
   obterTodosConceitos = data => {
@@ -20,6 +21,20 @@ class ServicoNotaConceito {
     return api.get(
       `v1/avaliacoes/notas/turmas/${turma}/anos-letivos/${anoLetivo}/tipos?consideraHistorico=${consideraHistorico}`
     );
+  };
+
+  estaEmModoEdicaoGeral = () => {
+    const state = store.getState();
+    const { notasConceitos } = state;
+    const { modoEdicaoGeral } = notasConceitos;
+    return modoEdicaoGeral;
+  };
+
+  estaEmModoEdicaoGeralNotaFinal = () => {
+    const state = store.getState();
+    const { notasConceitos } = state;
+    const { modoEdicaoGeralNotaFinal } = notasConceitos;
+    return modoEdicaoGeralNotaFinal;
   };
 }
 export default new ServicoNotaConceito();
