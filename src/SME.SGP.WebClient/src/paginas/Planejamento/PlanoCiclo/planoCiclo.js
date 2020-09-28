@@ -162,14 +162,13 @@ export default function PlanoCiclo() {
       if (sugestaoCiclo && sugestaoCiclo.id) {
         sugestaoCiclo = sugestaoCiclo.id;
       }
-      const listaCiclosAtual = ciclos.data.filter(item => !item.selecionado);
 
-      setListaCiclos(listaCiclosAtual);
+      setListaCiclos(ciclos.data);
 
       if (sugestaoCiclo) {
         setCicloSelecionado(String(sugestaoCiclo));
       } else {
-        setCicloSelecionado(String(listaCiclosAtual[0]));
+        setCicloSelecionado(String(ciclos.data[0].id));
       }
 
       setCarregandoCiclos(false);
@@ -185,7 +184,7 @@ export default function PlanoCiclo() {
       obterCicloExistente(
         anoLetivo,
         codEscola,
-        String(sugestaoCiclo) || String(listaCiclosAtual[0])
+        String(sugestaoCiclo) || String(ciclos.data[0].id)
       );
     }
     setCarregando(false);
@@ -495,19 +494,19 @@ export default function PlanoCiclo() {
     <>
       <div className="col-md-12">
         {!turmaSelecionada.turma &&
-        !ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada) ? (
-          <Alert
-            alerta={{
-              tipo: 'warning',
-              id: 'plano-ciclo-selecione-turma',
-              mensagem: 'Você precisa escolher uma turma.',
-              estiloTitulo: { fontSize: '18px' },
-            }}
-            className="mb-0"
-          />
-        ) : (
-          ''
-        )}
+          !ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada) ? (
+            <Alert
+              alerta={{
+                tipo: 'warning',
+                id: 'plano-ciclo-selecione-turma',
+                mensagem: 'Você precisa escolher uma turma.',
+                estiloTitulo: { fontSize: '18px' },
+              }}
+              className="mb-0"
+            />
+          ) : (
+            ''
+          )}
       </div>
       <AlertaModalidadeInfantil />
       <div className="col-md-12 mt-1">
@@ -526,8 +525,8 @@ export default function PlanoCiclo() {
               Registro Migrado
             </RegistroMigrado>
           ) : (
-            ''
-          )}
+              ''
+            )}
         </Titulo>
       </div>
       <Card>
@@ -634,18 +633,18 @@ export default function PlanoCiclo() {
                         {inseridoAlterado.criadoEm}
                       </p>
                     ) : (
-                      ''
-                    )}
+                        ''
+                      )}
 
                     {inseridoAlterado.alteradoPor &&
-                    inseridoAlterado.alteradoEm ? (
-                      <p>
-                        ALTERADO por {inseridoAlterado.alteradoPor} em{' '}
-                        {inseridoAlterado.alteradoEm}
-                      </p>
-                    ) : (
-                      ''
-                    )}
+                      inseridoAlterado.alteradoEm ? (
+                        <p>
+                          ALTERADO por {inseridoAlterado.alteradoPor} em{' '}
+                          {inseridoAlterado.alteradoEm}
+                        </p>
+                      ) : (
+                        ''
+                      )}
                   </InseridoAlterado>
                 </div>
                 <div className="col-md-6 btn-link-plano-ciclo">
