@@ -83,6 +83,8 @@ const EventosForm = ({ match }) => {
   const [calendarioEscolarAtual, setCalendarioEscolarAtual] = useState([]);
   const [listaDres, setListaDres] = useState([]);
   const [listaUes, setListaUes] = useState([]);
+  const [dreSelecionada, setDreSelecionada] = useState([]);
+  const [ueSelecionada, setUeSelecionada] = useState([]);
   const [listaTipoEventoOrigem, setListaTipoEventoOrigem] = useState([]);
   const [listaTipoEvento, setListaTipoEvento] = useState([]);
   const [listaCalendarioParaCopiar, setlistaCalendarioParaCopiar] = useState(
@@ -165,6 +167,7 @@ const EventosForm = ({ match }) => {
       } else {
         setListaDres([]);
       }
+      setDreSelecionada({});
 
       const tiposEvento = await api.get(
         'v1/calendarios/eventos/tipos/listar?ehCadastro=true&numeroRegistros=100'
@@ -323,6 +326,7 @@ const EventosForm = ({ match }) => {
         } else {
           setListaUes([]);
         }
+        setUeSelecionada({});
         if (ues.data.length === 1) {
           inicial.ueId = String(ues.data[0].codigo);
         }
@@ -544,6 +548,12 @@ const EventosForm = ({ match }) => {
         valoresForm.dataFim.date()
       );
 
+    if (dreSelecionada)
+        valoresForm.dreId = dreSelecionada.id;
+
+    if (ueSelecionada)
+      valoresForm.ueId = ueSelecionada.id;
+
     const tiposCalendarioParaCopiar = listaCalendarioParaCopiar.map(id => {
       const calendario = listaCalendarioEscolar.find(e => e.id === id);
       return {
@@ -643,6 +653,7 @@ const EventosForm = ({ match }) => {
 
   const onChangeUe = (ue, form) => {
     filtraTipoEvento(form.values.dreId, ue);
+    setUeSelecionada(listaUes.find(a => a.codigo == ue));
 
     onChangeCampos();
   };
@@ -653,6 +664,7 @@ const EventosForm = ({ match }) => {
 
     if (dre) {
       carregarUes(dre);
+      setDreSelecionada(listaDres.find(d => d.codigo == dre));
     }
     filtraTipoEvento(dre);
     onChangeCampos();
@@ -918,7 +930,7 @@ const EventosForm = ({ match }) => {
                 <div className="col-sm-12 col-md-12 col-lg-6 col-xl-6 pb-2">
                   <SelectComponent
                     form={form}
-                    name="dreId"
+                    name="dreCodigo"
                     lista={listaDres}
                     valueOption="codigo"
                     valueText="nome"
@@ -935,7 +947,7 @@ const EventosForm = ({ match }) => {
                 <div className="col-sm-12 col-md-12 col-lg-6 col-xl-6 pb-2">
                   <SelectComponent
                     form={form}
-                    name="ueId"
+                    name="ueCodigo"
                     lista={listaUes}
                     valueOption="codigo"
                     valueText="nome"

@@ -22,7 +22,12 @@ namespace SME.SGP.Infra
         [MaxLength(500, ErrorMessage = "A descrição deve conter no máximo 500 caracteres.")]
         public string Descricao { get; set; }
 
-        public string DreId { get; set; }
+        public string DreCodigo { get; set; }
+        public string UeCodigo { get; set; }
+
+        public long DreId { get; set; }
+        public long UeId { get; set; }
+
         public long? EventoPaiId { get; set; }
         public long? FeriadoId { get; set; }
         public EventoLetivo Letivo { get; set; }
@@ -42,7 +47,6 @@ namespace SME.SGP.Infra
         public long TipoEventoId { get; set; }
 
         public IEnumerable<CopiarEventoDto> TiposCalendarioParaCopiar { get; set; }
-        public string UeId { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {

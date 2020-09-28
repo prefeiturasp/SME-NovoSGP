@@ -237,6 +237,8 @@ namespace SME.SGP.Dominio.Servicos
                 TipoCalendarioId = fechamentoReabertura.TipoCalendario.Id,
                 DreCodigo = fechamentoReabertura.Dre.CodigoDre,
                 UeCodigo = fechamentoReabertura.Ue.CodigoUe,
+                DreId = fechamentoReabertura.Dre.Id,
+                UeId = fechamentoReabertura.Ue.Id,
                 Status = EntidadeStatus.Aprovado,
                 TipoEventoId = tipoEvento.Id,
                 Migrado = false,

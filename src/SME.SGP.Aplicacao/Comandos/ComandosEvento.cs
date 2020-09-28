@@ -158,13 +158,15 @@ namespace SME.SGP.Aplicacao
             evento.DataFim = eventoDto.DataFim.Value.Local();
             evento.DataInicio = eventoDto.DataInicio.Date.Local();
             evento.Descricao = eventoDto.Descricao;
-            evento.DreCodigo = eventoDto.DreId;
+            evento.DreCodigo = eventoDto.DreCodigo;
+            evento.UeCodigo = eventoDto.UeCodigo;
             evento.FeriadoId = eventoDto.FeriadoId;
             evento.Letivo = eventoDto.Letivo;
             evento.Nome = eventoDto.Nome;
             evento.TipoCalendarioId = eventoDto.TipoCalendarioId;
             evento.TipoEventoId = eventoDto.TipoEventoId;
-            evento.UeCodigo = eventoDto.UeId;
+            evento.DreId = eventoDto.DreId;
+            evento.UeId = eventoDto.UeId;
             return evento;
         }
 
