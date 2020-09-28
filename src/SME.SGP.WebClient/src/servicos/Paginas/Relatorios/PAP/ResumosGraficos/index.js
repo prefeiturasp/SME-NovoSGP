@@ -25,9 +25,8 @@ const ResumosGraficosPAPServico = {
     return api.get('v1/recuperacao-paralela/anos-letivos');
   },
 
-  gerarResumosPap() {
-    return Promise.resolve();
-    // return api.get('v1/relatorios/resumopap/impressao');
+  gerarResumosPap(payload) {
+    return api.post('v1/relatorios/resumopap/impressao', payload);
   },
 };
 
