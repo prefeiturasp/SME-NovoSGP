@@ -3,9 +3,11 @@ using Dommel;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using SME.SGP.Infra;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -34,6 +36,20 @@ namespace SME.SGP.Dados.Repositorios
             {
                 await conexao.OpenAsync();
                 var objetivos = await conexao.QueryAsync<ObjetivoAprendizagem>("select * from objetivo_aprendizagem");
+                conexao.Close();
+                return objetivos;
+            }
+        }
+
+        public async Task<IEnumerable<ObjetivoAprendizagem>> ObterPorAnoEComponenteCurricularIdAsync(AnoTurma ano, long componenteCurricularId)
+        {
+            using (var conexao = new NpgsqlConnection(connectionString))
+            {
+                await conexao.OpenAsync();
+                var objetivos = await conexao.QueryAsync<ObjetivoAprendizagem>($@"select * from objetivo_aprendizagem 
+                        where ano_turma = @ano and 
+                        componente_curricular_id = @componente", 
+                        new { ano = ano.Name(), componente = componenteCurricularId });
                 conexao.Close();
                 return objetivos;
             }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using SME.SGP.Dominio.Enumerados;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
@@ -14,5 +15,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task ReativarAsync(long id);
 
         Task SalvarAsync(ObjetivoAprendizagem objetivoAprendizagem);
+
+        Task<IEnumerable<ObjetivoAprendizagem>> ObterPorAnoEComponenteCurricularIdAsync(AnoTurma ano, long componenteCurricularId);
     }
 }
