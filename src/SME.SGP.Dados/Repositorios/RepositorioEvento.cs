@@ -130,6 +130,8 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("e.data_fim,");
             query.AppendLine("e.dre_codigo,");
             query.AppendLine("e.ue_codigo,");
+            query.AppendLine("e.dre_id,");
+            query.AppendLine("e.ue_id,");
             query.AppendLine("e.letivo,");
             query.AppendLine("e.feriado_id,");
             query.AppendLine("e.tipo_calendario_id,");
