@@ -1,10 +1,20 @@
-import React, { lazy, useMemo } from 'react';
+import React, { lazy, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 
 // Componentes
-import { PainelCollapse, LazyLoad } from '~/componentes';
+import {
+  Button,
+  Colors,
+  LazyLoad,
+  Loader,
+  PainelCollapse,
+} from '~/componentes';
 
-function Resumos({ dados, ciclos, anos, isEncaminhamento }) {
+import { erros, sucesso, ResumosGraficosPAPServico } from '~/servicos';
+
+function Resumos({ dados, ciclos, anos, filtroTela, isEncaminhamento }) {
+  const [imprimindo, setImprimindo] = useState(false);
+
   const TabelaFrequencia = lazy(() => import('./componentes/TabelaFrequencia'));
   const TabelaResultados = lazy(() => import('./componentes/TabelaResultados'));
   const TabelaInformacoesEscolares = lazy(() =>
@@ -58,8 +68,30 @@ function Resumos({ dados, ciclos, anos, isEncaminhamento }) {
     return dadosFormatados;
   }, [dados, filtro]);
 
+  const gerarResumosPap = async () => {
+    setImprimindo(true);
+    await ResumosGraficosPAPServico.gerarResumosPap()
+      .then(() => {
+        sucesso(
+          'Solicitação de geração do relatório gerada com sucesso. Em breve você receberá uma notificação com o resultado.'
+        );
+      })
+      .finally(setImprimindo(false))
+      .catch(e => erros(e));
+  };
+
   return (
     <>
+      <Loader className="mb-2" loading={imprimindo} ignorarTip>
+        <Button
+          className="btn-imprimir"
+          icon="print"
+          color={Colors.Azul}
+          border
+          onClick={() => gerarResumosPap()}
+          id="btn-imprimir-resumos-pap"
+        />
+      </Loader>
       <PainelCollapse>
         <PainelCollapse.Painel temBorda header="Total de estudantes">
           <LazyLoad>
@@ -116,6 +148,7 @@ Resumos.propTypes = {
   ciclos: PropTypes.oneOfType([PropTypes.bool]),
   anos: PropTypes.oneOfType([PropTypes.bool]),
   isEncaminhamento: PropTypes.oneOfType([PropTypes.bool]),
+  filtroTela: PropTypes.instanceOf(Object),
 };
 
 Resumos.defaultProps = {
@@ -123,6 +156,7 @@ Resumos.defaultProps = {
   ciclos: false,
   anos: false,
   isEncaminhamento: false,
+  filtroTela: {},
 };
 
 export default Resumos;
