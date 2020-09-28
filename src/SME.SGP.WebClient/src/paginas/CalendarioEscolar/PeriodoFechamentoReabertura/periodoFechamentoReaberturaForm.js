@@ -21,6 +21,7 @@ import ServicoCalendarios from '~/servicos/Paginas/Calendario/ServicoCalendarios
 import ServicoFechamentoReabertura from '~/servicos/Paginas/Calendario/ServicoFechamentoReabertura';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 import modalidade from '~/dtos/modalidade';
+import api from '~/servicos/api';
 
 const PeriodoFechamentoReaberturaForm = ({ match }) => {
   const usuarioStore = useSelector(store => store.usuario);
@@ -63,9 +64,11 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
   const [salvandoInformacoes, setSalvandoInformacoes] = useState(false);
   const [modalidadeTurma, setModalidadeTurma] = useState('');
   const [listaDres, setListaDres] = useState([]);
+  const [listaUes, setListaUes] = useState([]);
   const [valorTipoCalendario, setValorTipoCalendario] = useState('');
   const [pesquisaTipoCalendario, setPesquisaTipoCalendario] = useState('');
   const [urlDres, setUrlDres] = useState('');
+  const [filtroInicialTipoCalendario, setfiltroInicialTipoCalendario] = useState(true);
   const montarListaBimestres = tipoModalidade => {
     const listaNova = [
       {
@@ -148,13 +151,21 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
     async function consultaTipos() {
       setCarregandoTipos(true);
       setDesabilitarCampos(true);
+      if (filtroInicialTipoCalendario) {
+        var tipoCalendario = await api.get(`v1/calendarios/tipos/${match?.params?.tipoCalendarioId}`);
+        setPesquisaTipoCalendario(tipoCalendario?.data?.descricaoPeriodo);
+        setfiltroInicialTipoCalendario(false);
+        setValorTipoCalendario(tipoCalendario?.data?.anoLetivo + " - " + tipoCalendario?.data?.nome);
+        montarListaBimestres(tipoCalendario?.data?.modalidade);
+        setDesabilitarCampos(false);
+      }
       const listaTipo = await ServicoCalendarios.obterTiposCalendarioAutoComplete(
         pesquisaTipoCalendario
       );
       if (listaTipo && listaTipo.data && listaTipo.data.length) {
         setListaTipoCalendarioEscolar(listaTipo.data);
         if (listaTipo.data.length === 1) {
-          setDesabilitarTipoCalendario(true);
+          setValorTipoCalendario(listaTipo.data[0].descricao);
           if (!(match && match.params && match.params.id)) {
             const valores = {
               tipoCalendarioId: String(listaTipo.data[0].id),
@@ -180,14 +191,6 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
             bimestres: [],
           };
           setValoresIniciais(valores);
-          if (match?.params?.tipoCalendarioId) {
-            let tipoCalendarioSelecionar = listaTipo.data.find(item => item.id === Number(match.params.tipoCalendarioId));
-            if (tipoCalendarioSelecionar) {
-              setValorTipoCalendario(tipoCalendarioSelecionar.descricao);
-              montarListaBimestres(tipoCalendarioSelecionar.modalidade);
-              setDesabilitarCampos(false);
-            }
-          }
           setDesabilitarTipoCalendario(false);
         }
       } else {
@@ -440,10 +443,10 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
     setDesabilitarCampos(tipo ? false : true);
     if (Number(tipo?.id) || !tipo?.id) {
       setValorTipoCalendario(valor);
-      form.setFieldValue('ueId', '');
-      if (listaDres && listaDres.length > 1) {
+      if (listaDres && listaDres.length > 1)
         form.setFieldValue('dreId', '');
-      }
+      if (listaUes && listaUes.length > 1)
+        form.setFieldValue('ueId', '');
       let modalidadeConsulta = ServicoCalendarios.converterModalidade(tipo?.modalidade);
       setUrlDres(tipo ? '/v1/abrangencias/false/dres?modalidade=' + modalidadeConsulta : '');
       montarListaBimestres(tipo?.modalidade);
@@ -573,7 +576,8 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
                       form={form}
                       url=""
                       desabilitado={desabilitarCampos || !novoRegistro}
-                      onChange={() => {
+                      onChange={(valor, ues) => {
+                        setListaUes(ues);
                         if (novoRegistro) {
                           onChangeCampos();
                         }
