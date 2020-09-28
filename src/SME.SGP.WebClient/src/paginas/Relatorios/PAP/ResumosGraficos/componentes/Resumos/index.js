@@ -1,5 +1,6 @@
 import React, { lazy, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
+import { useSelector } from 'react-redux';
 
 // Componentes
 import {
@@ -13,8 +14,6 @@ import {
 import { erros, sucesso, ResumosGraficosPAPServico } from '~/servicos';
 
 function Resumos({ dados, ciclos, anos, filtroTela, isEncaminhamento }) {
-  const [imprimindo, setImprimindo] = useState(false);
-
   const TabelaFrequencia = lazy(() => import('./componentes/TabelaFrequencia'));
   const TabelaResultados = lazy(() => import('./componentes/TabelaResultados'));
   const TabelaInformacoesEscolares = lazy(() =>
@@ -23,6 +22,9 @@ function Resumos({ dados, ciclos, anos, filtroTela, isEncaminhamento }) {
   const TabelaTotalEstudantes = lazy(() =>
     import('./componentes/TabelaTotalEstudantes')
   );
+
+  const [imprimindo, setImprimindo] = useState(false);
+  const { meusDados } = useSelector(state => state.usuario);
 
   const filtro = ciclos ? 'ciclos' : 'turma';
 
@@ -70,7 +72,12 @@ function Resumos({ dados, ciclos, anos, filtroTela, isEncaminhamento }) {
 
   const gerarResumosPap = async () => {
     setImprimindo(true);
-    await ResumosGraficosPAPServico.gerarResumosPap()
+    const payload = {
+      ...filtroTela,
+      usuarioNome: meusDados.nome,
+      usuarioRf: meusDados.rf,
+    };
+    await ResumosGraficosPAPServico.gerarResumosPap(payload)
       .then(() => {
         sucesso(
           'Solicitação de geração do relatório gerada com sucesso. Em breve você receberá uma notificação com o resultado.'
