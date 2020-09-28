@@ -2,6 +2,7 @@
 {
     public class ComponenteCurricular
     {
+        public long Codigo { get; set; }
         public long? AreaConhecimentoId { get; set; }
         public long ComponenteCurricularPaiId { get; set; }
         public string Descricao { get; set; }
