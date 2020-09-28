@@ -8,5 +8,8 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task<IEnumerable<ComponenteCurricularDto>> ListarComponentesCurriculares();
         void SalvarVarias(IEnumerable<ComponenteCurricularDto> componentesCurriculares);
+        Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorIds(long[] ids);
+
+
     }
 }

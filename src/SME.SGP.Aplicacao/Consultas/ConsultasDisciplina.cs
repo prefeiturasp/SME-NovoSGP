@@ -16,7 +16,8 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem;
         private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
         private readonly IRepositorioCache repositorioCache;
-        private readonly IRepositorioComponenteCurricularJurema repositorioComponenteCurricular;
+        private readonly IRepositorioComponenteCurricularJurema repositorioComponenteCurricularJurema;
+        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
@@ -25,8 +26,9 @@ namespace SME.SGP.Aplicacao
             IRepositorioCache repositorioCache,
             IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem,
             IServicoUsuario servicoUsuario,
+            IRepositorioComponenteCurricularJurema repositorioComponenteCurricularJurema,
             IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ,
-            IRepositorioComponenteCurricularJurema repositorioComponenteCurricular,
+            IRepositorioComponenteCurricular repositorioComponenteCurricular,
             IRepositorioTurma repositorioTurma)
         {
             this.servicoEOL = servicoEOL ??
@@ -41,6 +43,8 @@ namespace SME.SGP.Aplicacao
                 throw new System.ArgumentNullException(nameof(repositorioAtribuicaoCJ));
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ??
                 throw new System.ArgumentNullException(nameof(repositorioComponenteCurricular));
+            this.repositorioComponenteCurricularJurema = repositorioComponenteCurricularJurema ??
+                throw new System.ArgumentNullException(nameof(repositorioComponenteCurricularJurema));
             this.repositorioTurma = repositorioTurma ??
                 throw new System.ArgumentNullException(nameof(repositorioTurma));
         }
@@ -65,13 +69,13 @@ namespace SME.SGP.Aplicacao
             if (atribuicoes == null || !atribuicoes.Any())
                 return null;
 
-            var disciplinasEol = await servicoEOL.ObterDisciplinasPorIdsAsync(atribuicoes.Select(a => a.DisciplinaId).Distinct().ToArray());
+            var disciplinasEol = await repositorioComponenteCurricular.ObterDisciplinasPorIds(atribuicoes.Select(a => a.DisciplinaId).Distinct().ToArray());
 
             var componenteRegencia = disciplinasEol?.FirstOrDefault(c => c.Regencia);
             if (componenteRegencia == null || ignorarDeParaRegencia)
                 return TransformarListaDisciplinaEolParaRetornoDto(disciplinasEol);
 
-            var componentesRegencia = await servicoEOL.ObterDisciplinasPorIdsAsync(IDS_COMPONENTES_REGENCIA);
+            var componentesRegencia = await repositorioComponenteCurricular.ObterDisciplinasPorIds(IDS_COMPONENTES_REGENCIA);
             if (componentesRegencia != null)
                 return TransformarListaDisciplinaEolParaRetornoDto(componentesRegencia);
 
@@ -106,13 +110,13 @@ namespace SME.SGP.Aplicacao
             else
             {
                 var componentesCurriculares = await servicoEOL.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(codigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual);
-                
-                var componentesCurricularesJurema = await repositorioCache.Obter("ComponentesJurema", () => Task.FromResult(repositorioComponenteCurricular.Listar()));
+
+                var componentesCurricularesJurema = await repositorioCache.Obter("ComponentesJurema", () => Task.FromResult(repositorioComponenteCurricularJurema.Listar()));
                 if (componentesCurricularesJurema == null)
                 {
                     throw new NegocioException("Não foi possível recuperar a lista de componentes curriculares.");
                 }
-                
+
                 disciplinasDto = componentesCurriculares?.Select(disciplina => new DisciplinaDto()
                 {
                     CdComponenteCurricularPai = disciplina.CodigoComponenteCurricularPai,
@@ -147,11 +151,11 @@ namespace SME.SGP.Aplicacao
                 if (!string.IsNullOrWhiteSpace(disciplinasCacheString))
                 {
                     disciplinasDto = JsonConvert.DeserializeObject<List<DisciplinaDto>>(disciplinasCacheString);
-                    return TratarRetornoDisciplinasPlanejamento(disciplinasDto, codigoDisciplina, regencia)?.OrderBy(c=>c.Nome)?.ToList();
+                    return TratarRetornoDisciplinasPlanejamento(disciplinasDto, codigoDisciplina, regencia)?.OrderBy(c => c.Nome)?.ToList();
                 }
             }
 
-            var componentesCurricularesJurema = await repositorioCache.Obter("ComponentesJurema", () => Task.FromResult(repositorioComponenteCurricular.Listar()));
+            var componentesCurricularesJurema = await repositorioCache.Obter("ComponentesJurema", () => Task.FromResult(repositorioComponenteCurricularJurema.Listar()));
             if (componentesCurricularesJurema == null)
             {
                 throw new NegocioException("Não foi possível recuperar a lista de componentes curriculares.");
@@ -207,9 +211,9 @@ namespace SME.SGP.Aplicacao
 
         public async Task<DisciplinaDto> ObterDisciplina(long disciplinaId)
         {
-            var disciplinaEOL = await servicoEOL.ObterDisciplinasPorIdsAsync(new long[] { disciplinaId });
+            var disciplinaEOL = await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { disciplinaId });
             if (disciplinaEOL == null || !disciplinaEOL.Any())
-                throw new NegocioException($"Disciplina nÃ£o localizada no EOL [{disciplinaId}]");
+                throw new NegocioException($"Disciplina não localizada no SGP [{disciplinaId}]");
 
             return disciplinaEOL.FirstOrDefault();
         }
@@ -236,7 +240,7 @@ namespace SME.SGP.Aplicacao
                     var atribuicoes = await repositorioAtribuicaoCJ.ObterPorFiltros(null, codigoTurma, string.Empty, 0, login, string.Empty, true);
                     if (atribuicoes != null && atribuicoes.Any())
                     {
-                        var disciplinasEol = servicoEOL.ObterDisciplinasPorIds(atribuicoes.Select(a => a.DisciplinaId).Distinct().ToArray());
+                        var disciplinasEol = await repositorioComponenteCurricular.ObterDisciplinasPorIds(atribuicoes.Select(a => a.DisciplinaId).Distinct().ToArray());
 
                         foreach (var disciplinaEOL in disciplinasEol)
                         {
@@ -294,7 +298,7 @@ namespace SME.SGP.Aplicacao
             if (atribuicoes == null || !atribuicoes.Any())
                 return null;
 
-            var disciplinasEol = servicoEOL.ObterDisciplinasPorIds(atribuicoes.Select(a => a.DisciplinaId).Distinct().ToArray());
+            var disciplinasEol = await repositorioComponenteCurricular.ObterDisciplinasPorIds(atribuicoes.Select(a => a.DisciplinaId).Distinct().ToArray());
 
             return TransformarListaDisciplinaEolParaRetornoDto(disciplinasEol);
         }
@@ -350,7 +354,7 @@ namespace SME.SGP.Aplicacao
                     var atribuicoes = await repositorioAtribuicaoCJ.ObterPorFiltros(null, codigoTurma, string.Empty, 0, login, string.Empty, true);
                     if (atribuicoes != null && atribuicoes.Any())
                     {
-                        var disciplinasEol = servicoEOL.ObterDisciplinasPorIds(atribuicoes.Select(a => a.DisciplinaId).Distinct().ToArray());
+                        var disciplinasEol = await repositorioComponenteCurricular.ObterDisciplinasPorIds(atribuicoes.Select(a => a.DisciplinaId).Distinct().ToArray());
 
                         disciplinas = TransformarListaDisciplinaEolParaRetornoDto(disciplinasEol);
                     }
