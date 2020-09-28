@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
-using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
@@ -16,13 +15,6 @@ namespace SME.SGP.Api.Controllers
     [Authorize("Bearer")]
     public class ComunicadoController : ControllerBase
     {
-        private readonly IConsultaComunicado consultas;
-
-        public ComunicadoController(IConsultaComunicado consultas)
-        {
-            this.consultas = consultas ?? throw new System.ArgumentNullException(nameof(consultas));
-        }
-
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
@@ -65,7 +57,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<AlunoPorTurmaResposta>), 200)]
         [ProducesResponseType(typeof(IEnumerable<AlunoPorTurmaResposta>), 204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> BuscarAlunos(string codigoTurma, int anoLetivo, IObterAlunosPorTurmaEAnoLetivoEscolaAquiUseCase obterAlunosPorTurmaEscolaAquiUseCase)
+        public async Task<IActionResult> BuscarAlunos(string codigoTurma, int anoLetivo, [FromServices] IObterAlunosPorTurmaEAnoLetivoEscolaAquiUseCase obterAlunosPorTurmaEscolaAquiUseCase)
         {
             var retorno = await obterAlunosPorTurmaEscolaAquiUseCase.Executar(codigoTurma, anoLetivo);
             if (retorno == null || !retorno.Any())
@@ -79,18 +71,14 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<ComunicadoCompletoDto>), 204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.CO_C, Policy = "Bearer")]
-        public async Task<IActionResult> BuscarTodosAsync([FromQuery] FiltroComunicadoDto filtro)
+        public async Task<IActionResult> BuscarTodosAsync([FromQuery] FiltroComunicadoDto filtro, [FromServices] IObterComunicadosPaginadosEscolaAquiUseCase obterComunicadosPaginadosEscolaAquiUseCase)
         {
-            var resultado = await consultas.ListarPaginado(filtro);
+            var resultado = await obterComunicadosPaginadosEscolaAquiUseCase.Executar(filtro);
 
             if (!resultado.Items.Any())
                 return NoContent();
 
             return Ok(resultado);
         }
-
-
-
-
     }
 }
