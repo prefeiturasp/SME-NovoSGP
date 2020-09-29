@@ -45,6 +45,7 @@ import Reducer, {
 import { valorNuloOuVazio } from '~/utils/funcoes/gerais';
 import AlertaModalidadeInfantil from '~/componentes-sgp/AlertaModalidadeInfantil/alertaModalidadeInfantil';
 import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
+import { constant } from 'lodash';
 
 function RelatorioPAPAcompanhamento() {
   const usuario = useSelector(store => store.usuario);
@@ -57,7 +58,12 @@ function RelatorioPAPAcompanhamento() {
   const { turmaSelecionada } = useSelector(store => store.usuario);
   const [semPeriodos, setSemPeriodos] = useState(false);
   const permTela = usuario.permissoes[RotasDto.RELATORIO_PAP_ACOMPANHAMENTO];
-  const [somenteLeitura, setSomenteLeitura] = useState(false);
+  const [somenteLeitura, setSomenteLeitura] = useState(
+    permTela.podeConsultar &&
+      !permTela.podeIncluir &&
+      !permTela.podeAlterar &&
+      !permTela.podeExcluir
+  );
   const modalidadesFiltroPrincipal = useSelector(
     store => store.filtro.modalidades
   );
@@ -131,7 +137,12 @@ function RelatorioPAPAcompanhamento() {
   const onChangePeriodoHandler = async valor => {
     try {
       setCarregando(true);
-      setSomenteLeitura(false);
+      setSomenteLeitura(
+        permTela.podeConsultar &&
+          !permTela.podeIncluir &&
+          !permTela.podeAlterar &&
+          !permTela.podeExcluir
+      );
 
       if (modoEdicao && !somenteLeitura) {
         const confirmou = await confirmar(
@@ -389,13 +400,17 @@ function RelatorioPAPAcompanhamento() {
               onChangeOrdenacao={valor => setOrdenacao(valor)}
             />
           </Grid>
+
           <Grid className="p-0 mt-2" cols={12}>
             <TabelaAlunos
               alunos={estado.Alunos}
               objetivoAtivo={estado.ObjetivoAtivo}
               respostas={respostasCorrentes}
               onChangeResposta={onChangeRespostaHandler}
-              somenteConsulta={somenteLeitura}
+              somenteConsulta={permTela.podeConsultar &&
+                !permTela.podeIncluir &&
+                !permTela.podeAlterar &&
+                !permTela.podeExcluir}              
             />
           </Grid>
         </Card>

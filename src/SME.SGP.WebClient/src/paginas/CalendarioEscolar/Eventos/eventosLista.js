@@ -41,6 +41,7 @@ import {
 
 import { temEventoCalendarioId } from '~/redux/modulos/calendarioEscolar/actions';
 
+
 const EventosLista = ({ match }) => {
   const usuario = useSelector(store => store.usuario);
   const permissoesTela = usuario.permissoes[RotasDto.EVENTOS];
@@ -59,12 +60,11 @@ const EventosLista = ({ match }) => {
   const [eventosSelecionados, setEventosSelecionados] = useState([]);
   const [filtro, setFiltro] = useState({});
   const [selecionouCalendario, setSelecionouCalendario] = useState(false);
+
   const [carregandoTipos, setCarregandoTipos] = useState(false);
   const [valorTipoCalendario, setValorTipoCalendario] = useState('');
   const [pesquisaTipoCalendario, setPesquisaTipoCalendario] = useState('');
-  const [tipoCalendarioSelecionado, setTipoCalendarioSelecionado] = useState(
-    ''
-  );
+  const [tipoCalendarioSelecionado, setTipoCalendarioSelecionado] = useState('');
   const [refForm, setRefForm] = useState();
 
   const [valoresIniciais] = useState({
@@ -174,7 +174,7 @@ const EventosLista = ({ match }) => {
   ];
 
   const listarDres = async () => {
-    const dres = await ServicoEvento.listarDres();
+    const dres = await ServicoEvento.listarDres();    
 
     if (dres.sucesso) {
       dres.conteudo.sort(FiltroHelper.ordenarLista('nome'));
@@ -291,20 +291,17 @@ const EventosLista = ({ match }) => {
       )
         return;
 
-      const { tipoCalendarioId } = refForm.getFormikContext().values;
-      const calendarioSelecionado = listaCalendario.find(
+      const { tipoCalendarioId } = refForm.getFormikContext().values;      
+      const calendarioSelecionado = listaCalendario != undefined ? listaCalendario.find(
         item => item.id === tipoCalendarioId
-      );
+      ) : [];
 
-      const ues =
-        calendarioSelecionado != undefined
-          ? await ServicoEvento.listarUes(
-              dreSelecionada,
-              ServicoCalendarios.converterModalidade(
-                calendarioSelecionado.modalidade
-              )
-            )
-          : [];
+      const ues = await ServicoEvento.listarUes(
+        dreSelecionada,
+        ServicoCalendarios.converterModalidade(
+          calendarioSelecionado?.modalidade
+        )
+      );
 
       if (!sucesso) {
         setListaUe([]);
@@ -515,13 +512,8 @@ const EventosLista = ({ match }) => {
   useEffect(() => {
     let isSubscribed = true;
     (async () => {
-      setCarregandoTipos(true);
-
-      const {
-        data,
-      } = await ServicoCalendarios.obterTiposCalendarioAutoComplete(
-        pesquisaTipoCalendario
-      );
+      setCarregandoTipos(true);      
+      const {data} = await ServicoCalendarios.obterTiposCalendarioAutoComplete(pesquisaTipoCalendario);            
 
       if (isSubscribed) {
         setListaCalendario(data);
