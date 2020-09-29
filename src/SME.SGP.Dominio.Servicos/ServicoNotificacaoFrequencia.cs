@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Org.BouncyCastle.Math.EC.Rfc7748;
 using Sentry;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Interfaces;
@@ -433,10 +432,6 @@ namespace SME.SGP.Dominio.Servicos
 
                 if (disciplinaEols != null)
                     return RetornaUsuarios(disciplinaEols.First().ProfessorRf);
-                    //foreach (var disciplina in disciplinaEols)
-                    //{
-                    //    return RetornaUsuarios(disciplina.ProfessorRf);
-                    //}
             }
             else
             {
