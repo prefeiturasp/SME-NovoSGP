@@ -21,32 +21,7 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<IEnumerable<ObjetivoAprendizagemDto>> Handle(ListarObjetivoAprendizagemPorAnoEComponenteCurricularQuery request, CancellationToken cancellationToken)
         {
-            long[] ids;
-
-            if (request.ComponenteCurricularId == 138)
-            {
-                ids = new long[] { (request.EnsinoEspecial ? 11 : 6) };
-            }
-            else
-            {
-                ids = await mediator.Send(new ObterJuremaIdsPorComponentesCurricularIdQuery(request.ComponenteCurricularId));
-            }
-
-            var objetivos = await repositorioObjetivoAprendizagem.ObterPorAnoEComponenteCurricularJuremaIds((AnoTurma)request.Ano, ids);
-
-            foreach (var item in objetivos)
-            {
-                item.ComponenteCurricularEolId = request.ComponenteCurricularId;
-            }
-
-            IEnumerable<int> anos = Enumerable.Range(1, 9);
-            if (request.EnsinoEspecial && !anos.Select(a => a.ToString()).Contains(request.Ano.ToString()))
-            {
-                return objetivos.OrderBy(o => o.Ano).ThenBy(x => x.Codigo);
-            }
-
-            objetivos = objetivos.Where(x => x.Ano == ((AnoTurma)request.Ano).Name()).ToList();
-            return objetivos.OrderBy(o => o.Codigo);
+            return await repositorioObjetivoAprendizagem.ObterPorAnoEComponenteCurricularJuremaIds((AnoTurma)request.Ano, request.JuremaIds);
         }
     }
 }
