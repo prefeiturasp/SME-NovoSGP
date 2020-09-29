@@ -18,8 +18,27 @@ namespace SME.SGP.Dados.Repositorios
             this.database = database;
         }
 
-        public async Task<IEnumerable<ComponenteCurricularDto>> ListarComponentesCurriculares()
+        public async Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorIds(long[] ids)
         {
+            var query = $@"select
+	                        id as CodigoComponenteCurricular,
+                            area_conhecimento_id as AreaConhecimentoId,
+                            componente_curricular_pai_id as CdComponenteCurricularPai,
+                            descricao as Nome,
+                            eh_base_nacional as EhBaseNacional,
+                            eh_compartilhado as Compartilhada,
+                            eh_regencia_classe as Regencia,
+                            eh_territorio as TerritorioSaber,
+                            grupo_matriz_id as GrupoMatrizId,
+                            permite_lancamento_nota as LancaNota,
+                            permite_registro_frequencia as RegistraFrequencia
+                        from
+	                        componente_curricular WHERE id = ANY(@ids)";
+            return (await database.Conexao.QueryAsync<DisciplinaDto>(query, new { ids }));
+        }
+
+        public async Task<IEnumerable<ComponenteCurricularDto>> ListarComponentesCurriculares()
+        { 
             var query = $@"select
 	                        id as Codigo,
                             descricao
