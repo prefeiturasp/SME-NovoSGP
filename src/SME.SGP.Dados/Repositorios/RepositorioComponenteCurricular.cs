@@ -47,6 +47,18 @@ namespace SME.SGP.Dados.Repositorios
 
             return (await database.Conexao.QueryAsync<ComponenteCurricularDto>(query, new { }));
         }
+        public async Task<long[]> ListarCodigosJuremaPorComponenteCurricularId(long id)
+        {
+            var query = $@"select
+	                            distinct codigo
+                            from
+	                            componente_curriculo_cidade ccc
+                            inner join componente_curricular cc on
+	                            ccc.componente_curricular_id = cc.id
+                            WHERE ccc.componente_curricular_id = @id;";
+
+            return (await database.Conexao.QueryAsync<long>(query, new { id })).AsList().ToArray();
+        }
 
         public void SalvarVarias(IEnumerable<ComponenteCurricularDto> componentesCurriculares)
         {
