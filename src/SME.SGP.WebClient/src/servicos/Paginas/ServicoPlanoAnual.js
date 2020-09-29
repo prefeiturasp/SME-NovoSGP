@@ -45,6 +45,15 @@ class ServicoPlanoAnual {
     return api.get(url);
   };
 
+  obterObjetivosPorAnoEComponenteCurricularNovo = (
+    ano,
+    componenteCurricularId,
+    ensinoEspecial
+  ) => {
+    const url = `v1/objetivos-aprendizagem/${ano}/${componenteCurricularId}?ensinoEspecial=${ensinoEspecial}`;
+    return api.get(url);
+  };
+
   carregarDadosPlanoAnualPorComponenteCurricular = async (
     turmaId,
     componenteCurricularId,
@@ -155,10 +164,10 @@ class ServicoPlanoAnual {
       return listaObjetivos;
     }
     dispatch(setExibirLoaderPlanoAnual(true));
-    const objetivos = await this.obterObjetivosPorAnoEComponenteCurricular(
+    const objetivos = await this.obterObjetivosPorAnoEComponenteCurricularNovo(
       ano,
-      ensinoEspecial,
-      [codigoComponenteCurricular]
+      codigoComponenteCurricular,
+      ensinoEspecial
     )
       .catch(e => erros(e))
       .finally(() => {
