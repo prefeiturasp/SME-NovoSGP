@@ -337,8 +337,10 @@ namespace SME.SGP.Dominio.Servicos
 
                     unitOfWork.PersistirTransacao();
 
+                    var listaAlunos = alunosDaCompensacao.Select(a => a.CodigoAluno).ToList();
+
                     if (alunosDaCompensacao.Any())
-                        Cliente.Executar<IServicoCalculoFrequencia>(c => c.CalcularFrequenciaPorTurma(alunosDaCompensacao.Select(a => a.CodigoAluno), periodo.PeriodoFim, turma.CodigoTurma, compensacaoExcluir.DisciplinaId));
+                        Cliente.Executar<IServicoCalculoFrequencia>(c => c.CalcularFrequenciaPorTurma(listaAlunos, periodo.PeriodoFim, turma.CodigoTurma, compensacaoExcluir.DisciplinaId));
                 }
                 catch (Exception)
                 {
