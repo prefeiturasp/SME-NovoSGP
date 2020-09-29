@@ -4,6 +4,7 @@ import {
   setBimestresPlanoAnual,
   setListaComponentesCurricularesPlanejamento,
   setExibirLoaderPlanoAnual,
+  setEhRegistroMigrado,
 } from '~/redux/modulos/anual/actions';
 import { erros } from '~/servicos/alertas';
 import ServicoPlanoAnual from '~/servicos/Paginas/ServicoPlanoAnual';
@@ -70,7 +71,7 @@ const DadosPlanoAnual = () => {
     )
       .then(resposta => {
         dispatch(setBimestresPlanoAnual(resposta.data));
-        obterListaComponentesCurricularesPlanejamento();
+        // obterListaComponentesCurricularesPlanejamento();
       })
       .catch(e => {
         dispatch(setBimestresPlanoAnual([]));
@@ -82,7 +83,7 @@ const DadosPlanoAnual = () => {
   }, [
     dispatch,
     turmaSelecionada,
-    obterListaComponentesCurricularesPlanejamento,
+    // obterListaComponentesCurricularesPlanejamento,
   ]);
 
   /**
@@ -98,8 +99,15 @@ const DadosPlanoAnual = () => {
       turmaSelecionada.turma
     ) {
       obterBimestresPlanoAnual();
-      // Quando não for regencia vai ter somente uma tab que é o componente curricular selecionado do SelectComponent!
-      if (componenteCurricular.regencia) {
+
+      // TODO Vai ter um endpoint para obter essa informação!
+      const ehMigrado = true;
+      dispatch(setEhRegistroMigrado(ehMigrado));
+      // Quando for MIGRADO mostrar somente um tab com o componente curricular já selecionado!
+      if (ehMigrado) {
+        montarListaComponenteCurricularesPlanejamento();
+      } else if (componenteCurricular.regencia) {
+        // Quando for REGENCIA carregar a lista de componentes curriculares!
         obterListaComponentesCurricularesPlanejamento();
       } else {
         montarListaComponenteCurricularesPlanejamento();
