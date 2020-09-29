@@ -89,16 +89,18 @@ function Resumos({ dados, ciclos, anos, filtroTela, isEncaminhamento }) {
 
   return (
     <>
-      <Loader className="mb-2" loading={imprimindo} ignorarTip>
-        <Button
-          className="btn-imprimir"
-          icon="print"
-          color={Colors.Azul}
-          border
-          onClick={() => gerarResumosPap()}
-          id="btn-imprimir-resumos-pap"
-        />
-      </Loader>
+      <div className="mb-2 ml-1">
+        <Loader loading={imprimindo} ignorarTip>
+          <Button
+            className="btn-imprimir"
+            icon="print"
+            color={Colors.Azul}
+            border
+            onClick={() => gerarResumosPap()}
+            id="btn-imprimir-resumos-pap"
+          />
+        </Loader>
+      </div>
       <PainelCollapse>
         <PainelCollapse.Painel temBorda header="Total de estudantes">
           <LazyLoad>
