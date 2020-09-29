@@ -8,5 +8,7 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task<IEnumerable<ComponenteCurricularDto>> ListarComponentesCurriculares();
         void SalvarVarias(IEnumerable<ComponenteCurricularDto> componentesCurriculares);
+
+        Task<long[]> ListarCodigosJuremaPorComponenteCurricularId(long id);
     }
 }
