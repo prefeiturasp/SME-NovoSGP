@@ -39,9 +39,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<ObjetivoAprendizagemDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PA_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterObjetivosPorAnoEComponenteCurricular([FromServices] IListarObjetivoAprendizagemPorAnoEComponenteCurricularUseCase useCase, long ano, long componenteCurricularId)
+        public async Task<IActionResult> ObterObjetivosPorAnoEComponenteCurricular([FromServices] IListarObjetivoAprendizagemPorAnoEComponenteCurricularUseCase useCase, [FromQuery] bool ensinoEspecial, long ano, long componenteCurricularId)
         {
-            var result = await useCase.Executar(ano, componenteCurricularId);
+            var result = await useCase.Executar(ano, componenteCurricularId, ensinoEspecial);
             if (result == null)
                 return NoContent();
 
