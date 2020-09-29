@@ -21,6 +21,8 @@ namespace SME.SGP.Aplicacao
 
         public int AnoLetivo { get; set; }
 
+        public string SeriesResumidas { get; set; }
+
         public string CodigoDre { get; set; }
 
         public string CodigoUe { get; set; }
@@ -35,7 +37,7 @@ namespace SME.SGP.Aplicacao
 
         public IEnumerable<string> Alunos { get; set; }
 
-        public SolicitarAlteracaoComunicadoEscolaAquiCommand(long id, DateTime dataEnvio, DateTime? dataExpiracao, string descricao, List<int> gruposId, string titulo, int anoLetivo, string codigoDre, string codigoUe, bool alunosEspecificados, Modalidade? modalidade, int semestre)
+        public SolicitarAlteracaoComunicadoEscolaAquiCommand(long id, DateTime dataEnvio, DateTime? dataExpiracao, string descricao, List<int> gruposId, string titulo, int anoLetivo, string seriesResumidas, string codigoDre, string codigoUe, bool alunosEspecificados, Modalidade? modalidade, int semestre)
         {
             Id = id;
             Alunos = new List<string>();
@@ -46,6 +48,7 @@ namespace SME.SGP.Aplicacao
             GruposId = gruposId;
             Titulo = titulo;
             AnoLetivo = anoLetivo;
+            SeriesResumidas = seriesResumidas;
             CodigoDre = codigoDre;
             CodigoUe = codigoUe;
             AlunosEspecificados = alunosEspecificados;
