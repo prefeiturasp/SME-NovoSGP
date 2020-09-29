@@ -20,4 +20,14 @@ namespace SME.SGP.Aplicacao
         public long Id { get; set; }
     }
 
+    public class ObterJuremaIdsPorComponentesCurricularIdQueryValidator : AbstractValidator<ObterJuremaIdsPorComponentesCurricularIdQuery>
+    {
+        public ObterJuremaIdsPorComponentesCurricularIdQueryValidator()
+        {
+            RuleFor(c => c.Id)
+                .NotEmpty()
+                .WithMessage("O Id do componente curricular deve ser informado");
+        }
+    }
+
 }
