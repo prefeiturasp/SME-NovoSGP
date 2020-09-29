@@ -1,10 +1,10 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
+using SME.SGP.Aplicacao.Queries;
 using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using System;
 using System.Threading.Tasks;
-using SME.SGP.Aplicacao.Queries;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao.CasosDeUso
 {
@@ -20,11 +20,6 @@ namespace SME.SGP.Aplicacao.CasosDeUso
         public async Task<bool> Executar(FiltroRelatorioRecuperacaoParalelaDto filtro)
         {
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery()) ?? throw new NegocioException("Não foi possível identificar o usuário");
-
-            //if (usuarioLogado == null)
-            //{
-            //    throw new NegocioException("Não foi possível identificar o usuário");
-            //}
 
             filtro.UsuarioNome = usuarioLogado.Nome;
             filtro.UsuarioRf = usuarioLogado.CodigoRf;
