@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioAula repositorioAula;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IRepositorioTurma repositorioTurma;
-        private readonly IServicoEol servicoEOL;
+        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
         private readonly IConsultasTurma consultasTurma;
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
         private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
@@ -32,11 +32,11 @@ namespace SME.SGP.Aplicacao
             IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia,
             IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina,
             IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
+            IRepositorioComponenteCurricular repositorioComponenteCurricular,
             IRepositorioTurma repositorioTurma,
             IRepositorioAula repositorioAula,
             IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ,
             IServicoUsuario servicoUsuario,
-            IServicoEol servicoEOL,
             IContextoAplicacao contextoAplicacao,
             IConsultasTurma consultasTurma,
             IConsultasPeriodoEscolar consultasPeriodoEscolar,
@@ -47,11 +47,11 @@ namespace SME.SGP.Aplicacao
             this.repositorioAtividadeAvaliativaRegencia = repositorioAtividadeAvaliativaRegencia ?? throw new System.ArgumentNullException(nameof(repositorioAtividadeAvaliativaRegencia));
             this.repositorioAtividadeAvaliativaDisciplina = repositorioAtividadeAvaliativaDisciplina ?? throw new System.ArgumentNullException(nameof(repositorioAtividadeAvaliativaDisciplina));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new System.ArgumentNullException(nameof(repositorioPeriodoEscolar));
+            this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new System.ArgumentNullException(nameof(repositorioComponenteCurricular));
             this.repositorioTurma = repositorioTurma ?? throw new System.ArgumentNullException(nameof(repositorioTurma));
             this.repositorioAula = repositorioAula ?? throw new System.ArgumentNullException(nameof(repositorioAula));
             this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new System.ArgumentNullException(nameof(repositorioAtribuicaoCJ));
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
-            this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
             this.consultasTurma = consultasTurma ?? throw new ArgumentNullException(nameof(consultasTurma));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
             this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));
@@ -164,7 +164,7 @@ namespace SME.SGP.Aplicacao
                 {
                     if (filtro.DisciplinasId.Length <= 0)
                         throw new NegocioException("É necessário informar a disciplina");
-                    var disciplina = ObterDisciplina(Convert.ToInt32(filtro.DisciplinasId[0]));
+                    var disciplina = await ObterDisciplina(Convert.ToInt32(filtro.DisciplinasId[0]));
                     var usuario = await servicoUsuario.ObterUsuarioLogado();
                     DateTime dataAvaliacao = filtro.DataAvaliacao.Date;
                     var aula = await repositorioAula.ObterAulas(filtro.TurmaId.ToString(), null, usuario.CodigoRf, dataAvaliacao, filtro.DisciplinasId);
@@ -271,10 +271,10 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        private DisciplinaDto ObterDisciplina(long idDisciplina)
+        private async Task<DisciplinaDto> ObterDisciplina(long idDisciplina)
         {
             long[] disciplinaId = { idDisciplina };
-            var disciplina = servicoEOL.ObterDisciplinasPorIds(disciplinaId);
+            var disciplina = await repositorioComponenteCurricular.ObterDisciplinasPorIds(disciplinaId);
             if (!disciplina.Any())
                 throw new NegocioException("Disciplina não encontrada no EOL.");
             return disciplina.FirstOrDefault();

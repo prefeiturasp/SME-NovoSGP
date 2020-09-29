@@ -57,10 +57,6 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPorCodigoTurmaLoginEPerfil(string codigoTurma, string login, Guid perfil);
 
-        IEnumerable<DisciplinaDto> ObterDisciplinasPorIds(long[] ids);
-
-        Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorIdsAsync(long[] ids);
-
         Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorIdsSemAgrupamento(long[] ids);
 
         IEnumerable<DreRespostaEolDto> ObterDres();
