@@ -17,15 +17,15 @@ namespace SME.SGP.Aplicacao
 
         public IEnumerable<CicloDto> Listar(FiltroCicloDto filtroCicloDto)
         {
-            var ciclos = repositorioCiclo.ObterCiclosPorAnoModalidade(filtroCicloDto);            
+            var lista = repositorioCiclo.ObterCiclosPorAnoModalidade(filtroCicloDto);            
 
-            if (!ciclos.Any())
+            if (!lista.Any())
                 throw new NegocioException("Não foi possível localizar o ciclo da turma selecionada");
 
-            if (!ciclos.Any(ciclos => ciclos.Selecionado))
-                ciclos.First().Selecionado = true;
+            if (!lista.Any(ciclos => ciclos.Selecionado))
+                lista.First().Selecionado = true;
 
-            return ciclos;
+            return lista;
         }
 
         public CicloDto Selecionar(int ano)
