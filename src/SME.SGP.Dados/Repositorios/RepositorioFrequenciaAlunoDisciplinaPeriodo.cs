@@ -1,9 +1,8 @@
 ﻿using Dapper;
-using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using System;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -88,10 +87,17 @@ namespace SME.SGP.Dados.Repositorios
                            where tipo = 2
 	                        and codigo_aluno = @alunoCodigo
                             and turma_id = @turmaCodigo ");
+
             if (!string.IsNullOrEmpty(componenteCurricularCodigo))
                 query.AppendLine(" and disciplina_id = @componenteCurricularCodigo");
 
-            return await database.Conexao.QueryAsync<FrequenciaAluno>(query.ToString(), new { alunoCodigo, turmaCodigo, componenteCurricularCodigo });
+            return await database.Conexao
+                .QueryAsync<FrequenciaAluno>(query.ToString(), new
+                {
+                    alunoCodigo,
+                    turmaCodigo,
+                    componenteCurricularCodigo
+                });
         }
 
         public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaBimestresAsync(string codigoAluno, int bimestre, string codigoTurma)

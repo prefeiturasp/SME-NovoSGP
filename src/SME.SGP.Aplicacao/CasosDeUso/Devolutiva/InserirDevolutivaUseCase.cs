@@ -63,7 +63,12 @@ namespace SME.SGP.Aplicacao
             var bimestreFim = await mediator.Send(new ObterBimestreAtualQuery(turma.CodigoTurma, fimEfetivo, turma));
 
             if (bimestreInicio != bimestreFim)
+            {
+                if (inicioEfetivo.AddDays(30) <= fimEfetivo)
+                    return bimestreFim;
+
                 throw new NegocioException("Não é possível incluir diários de bordo de bimestres diferentes");
+            }
 
             return bimestreInicio;
         }

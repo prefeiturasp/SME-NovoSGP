@@ -19,7 +19,7 @@ namespace SME.SGP.Dominio
         public bool BaseNacional { get; set; }
         public GrupoMatriz GrupoMatriz { get; set; }
 
-        public bool PossuiObjetivosDeAprendizagem(IEnumerable<ComponenteCurricular> componentesCurricularesJurema, bool turmaPrograma, Modalidade turmaModalidade, string turmaAno)
+        public bool PossuiObjetivosDeAprendizagem(IEnumerable<ComponenteCurricularJurema> componentesCurricularesJurema, bool turmaPrograma, Modalidade turmaModalidade, string turmaAno)
         {
             var posuiObjetivos = componentesCurricularesJurema.Any(x => x.CodigoEOL == Codigo) && !turmaPrograma &&
                     !new[] { Modalidade.EJA, Modalidade.Medio }.Contains(turmaModalidade) && turmaAno != "0";
@@ -27,7 +27,7 @@ namespace SME.SGP.Dominio
             return posuiObjetivos;
         }
 
-        public bool PossuiObjetivosDeAprendizagemOpcionais(IEnumerable<ComponenteCurricular> componentesCurricularesJurema, bool ensinoEspecial)
+        public bool PossuiObjetivosDeAprendizagemOpcionais(IEnumerable<ComponenteCurricularJurema> componentesCurricularesJurema, bool ensinoEspecial)
         {
             return ensinoEspecial && (componentesCurricularesJurema.Any(x => x.CodigoEOL == Codigo && new long[] { 218, 138, 1116 }.Contains(Codigo)) || Regencia);
         }
