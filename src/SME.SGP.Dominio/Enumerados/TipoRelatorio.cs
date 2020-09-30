@@ -29,7 +29,7 @@ namespace SME.SGP.Dominio
 
         [Display(Name = "relatorios/parecerconclusivo", ShortName = "ParecerConclusivo", Description = "Relatório de Parecer Conclusivo")]
         ParecerConclusivo = 9,
-        
+
         [Display(Name = "relatorios/recuperacaoparalela", ShortName = "RecuperacaoParalela", Description = "Relatório de Recuperação Paralela")]
         RecuperacaoParalela = 10,
 
@@ -42,7 +42,10 @@ namespace SME.SGP.Dominio
         [Display(Name = "relatorios/impressaocalendario", ShortName = "Calendario", Description = "Relatório Impressão do Calendário")]
         Calendario = 13,
 
+        [Display(Name = "relatorios/planoaula", ShortName = "Plano de Aula", Description = "Relatório Plano de Aula")]
+        PlanoAula = 14,
+
         [Display(Name = "relatorios/resumopap", ShortName = "ResumoPAP", Description = "Relatório de Resumos PAP")]
-        ResumoPAP = 14
+        ResumoPAP = 15
     }
 }
