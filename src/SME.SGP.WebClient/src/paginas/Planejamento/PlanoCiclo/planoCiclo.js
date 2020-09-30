@@ -127,6 +127,7 @@ export default function PlanoCiclo() {
   }, [turmaSelecionada, modalidadesFiltroPrincipal]);
 
   const carregarCiclos = async () => {
+
     if (usuario && turmaSelecionada.turma) {
       let anoSelecionado = '';
       let codModalidade = null;
@@ -156,36 +157,46 @@ export default function PlanoCiclo() {
         params.anos = anosTurmasUsuario;
       }
 
-      const ciclos = await api.post('v1/ciclos/filtro', params);
+      const ciclos = await api.post('v1/ciclos/filtro', params)
+        .catch(err => {
+          if (err?.response?.status === 601)
+            erro(err.response.data.mensagens[0]);
+          else
+            erro('Ocorreu um erro interno.');
+          setSomenteConsulta(true);
+          setCarregandoCiclos(false);
+        });
 
-      let sugestaoCiclo = ciclos.data.find(item => item.selecionado);
-      if (sugestaoCiclo && sugestaoCiclo.id) {
-        sugestaoCiclo = sugestaoCiclo.id;
+      if (ciclos) {
+        let sugestaoCiclo = ciclos.data.find(item => item.selecionado);
+        if (sugestaoCiclo && sugestaoCiclo.id) {
+          sugestaoCiclo = sugestaoCiclo.id;
+        }
+
+        setListaCiclos(ciclos.data);
+
+        if (sugestaoCiclo) {
+          setCicloSelecionado(String(sugestaoCiclo));
+        } else {
+          setCicloSelecionado(String(ciclos.data[0].id));
+        }
+
+        setCarregandoCiclos(false);
+
+        const anoLetivo = String(turmaSelecionada.anoLetivo);
+        const codEscola = String(turmaSelecionada.unidadeEscolar);
+
+        if (turmaSelecionada.modalidade == modalidade.EJA) {
+          setModalidadeEja(true);
+        } else {
+          setModalidadeEja(false);
+        }
+        obterCicloExistente(
+          anoLetivo,
+          codEscola,
+          String(sugestaoCiclo) || String(ciclos.data[0].id)
+        );
       }
-
-      setListaCiclos(ciclos.data);
-
-      if (sugestaoCiclo) {
-        setCicloSelecionado(String(sugestaoCiclo));
-      } else {
-        setCicloSelecionado(String(ciclos.data[0].id));
-      }
-
-      setCarregandoCiclos(false);
-
-      const anoLetivo = String(turmaSelecionada.anoLetivo);
-      const codEscola = String(turmaSelecionada.unidadeEscolar);
-
-      if (turmaSelecionada.modalidade == modalidade.EJA) {
-        setModalidadeEja(true);
-      } else {
-        setModalidadeEja(false);
-      }
-      obterCicloExistente(
-        anoLetivo,
-        codEscola,
-        String(sugestaoCiclo) || String(ciclos.data[0].id)
-      );
     }
     setCarregando(false);
   };
@@ -320,7 +331,7 @@ export default function PlanoCiclo() {
   }
 
   const onClickTextEditor = ultimoFoco => {
-    if (!modoEdicao) {
+    if (!somenteConsulta && !modoEdicao) {
       setModoEdicao(true);
       setEstadoAdicionalTextEditor({
         focado: true,
@@ -548,7 +559,7 @@ export default function PlanoCiclo() {
                       disabled={
                         somenteConsulta || !podeAlterar()
                           ? true
-                          : listaCiclos.length === 1
+                          : listaCiclos.length < 2
                       }
                       valueOption="id"
                       valueText="descricao"
