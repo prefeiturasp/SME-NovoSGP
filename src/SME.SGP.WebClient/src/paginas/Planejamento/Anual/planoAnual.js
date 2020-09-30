@@ -5,7 +5,10 @@ import AlertaNaoPermiteTurmaInfantil from '~/componentes-sgp/AlertaNaoPermiteTur
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import Alert from '~/componentes/alert';
 import RotasDto from '~/dtos/rotasDto';
-import { limparDadosPlanoAnual } from '~/redux/modulos/anual/actions';
+import {
+  limparDadosPlanoAnual,
+  setComponenteCurricularPlanoAnual,
+} from '~/redux/modulos/anual/actions';
 import { obterDescricaoNomeMenu } from '~/servicos/servico-navegacao';
 import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 import BotoesAcoesPlanoAnual from './DadosPlanoAnual/BotoesAcoes/botoesAcoesPlanoAnual';
@@ -13,6 +16,7 @@ import ComponenteCurricularPlanoAnual from './DadosPlanoAnual/ComponenteCurricul
 import DadosPlanoAnual from './DadosPlanoAnual/dadosPlanoAnual';
 import LoaderPlanoAnual from './DadosPlanoAnual/LoaderPlanoAnual/loaderPlanoAnual';
 import ModalErrosPlanoAnual from './DadosPlanoAnual/ModalErros/ModalErrosPlanoAnual';
+import ModalCopiarConteudoPlanoAnual from './DadosPlanoAnual/ModalCopiarConteudoPlanoAnual/modalCopiarConteudoPlanoAnual';
 import { ContainerPlanoAnual } from './planoAnual.css';
 
 const PlanoAnual = () => {
@@ -31,13 +35,18 @@ const PlanoAnual = () => {
     dispatch(limparDadosPlanoAnual());
   }, [dispatch]);
 
+  const resetarComponenteCurricular = useCallback(() => {
+    dispatch(setComponenteCurricularPlanoAnual(undefined));
+  }, [dispatch]);
+
   useEffect(() => {
     resetarInfomacoes();
     return () => {
       // Quando sair da tela vai executar para limpar os dados no redux!
       resetarInfomacoes();
+      resetarComponenteCurricular();
     };
-  }, [turmaSelecionada, resetarInfomacoes]);
+  }, [turmaSelecionada, resetarInfomacoes, resetarComponenteCurricular]);
 
   useEffect(() => {
     const infantil = ehTurmaInfantil(
@@ -68,6 +77,7 @@ const PlanoAnual = () => {
       ) : null}
       <AlertaNaoPermiteTurmaInfantil />
       <ModalErrosPlanoAnual />
+      <ModalCopiarConteudoPlanoAnual />
       <ContainerPlanoAnual>
         <Cabecalho
           pagina={obterDescricaoNomeMenu(
