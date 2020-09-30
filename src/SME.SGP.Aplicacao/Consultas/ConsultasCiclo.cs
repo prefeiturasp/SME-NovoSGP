@@ -1,6 +1,8 @@
-﻿using SME.SGP.Dominio.Interfaces;
+﻿using SME.SGP.Dominio;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SME.SGP.Aplicacao
 {
@@ -15,7 +17,15 @@ namespace SME.SGP.Aplicacao
 
         public IEnumerable<CicloDto> Listar(FiltroCicloDto filtroCicloDto)
         {
-            return repositorioCiclo.ObterCiclosPorAnoModalidade(filtroCicloDto);
+            var ciclos = repositorioCiclo.ObterCiclosPorAnoModalidade(filtroCicloDto);            
+
+            if (!ciclos.Any())
+                throw new NegocioException("Não foi possível localizar o ciclo da turma selecionada");
+
+            if (!ciclos.Any(ciclos => ciclos.Selecionado))
+                ciclos.First().Selecionado = true;
+
+            return ciclos;
         }
 
         public CicloDto Selecionar(int ano)
