@@ -29,6 +29,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioEvento repositorioEvento;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IServicoEol servicoEOL;
+        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
         private readonly IServicoUsuario servicoUsuario;
 
         public ConsultasEventosAulasCalendario(
@@ -37,6 +38,7 @@ namespace SME.SGP.Aplicacao
             IRepositorioAula repositorioAula,
             IServicoUsuario servicoUsuario,
             IServicoEol servicoEOL,
+            IRepositorioComponenteCurricular repositorioComponenteCurricular,
             IConsultasAbrangencia consultasAbrangencia,
             IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
             IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
@@ -60,6 +62,7 @@ namespace SME.SGP.Aplicacao
             this.consultasDisciplina = consultasDisciplina ?? throw new ArgumentNullException(nameof(consultasDisciplina));
             this.consultasAula = consultasAula ?? throw new ArgumentNullException(nameof(consultasAula));
             this.repositorioEventoTipo = repositorioEventoTipo ?? throw new ArgumentNullException(nameof(repositorioEventoTipo));
+            this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
             this.repositorioFechamentoReabertura = repositorioFechamentoReabertura ?? throw new ArgumentNullException(nameof(repositorioFechamentoReabertura));
         }
 
@@ -103,7 +106,7 @@ namespace SME.SGP.Aplicacao
 
             IEnumerable<DisciplinaDto> disciplinasEol = new List<DisciplinaDto>();
             if (idsDisciplinasAulas != null && idsDisciplinasAulas.Any())
-                disciplinasEol = servicoEOL.ObterDisciplinasPorIds(idsDisciplinasAulas.ToArray());
+                disciplinasEol = await repositorioComponenteCurricular.ObterDisciplinasPorIds(idsDisciplinasAulas.ToArray());
 
             aulas
             .ToList()
@@ -122,7 +125,7 @@ namespace SME.SGP.Aplicacao
                         {
                             var disciplinasRegenciasComAtividades = repositorioAtividadeAvaliativaRegencia.Listar(item.Id).Result;
 
-                            disciplinasRegenciasComAtividades.ToList().ForEach(r => r.DisciplinaContidaRegenciaNome = servicoEOL.ObterDisciplinasPorIds(new long[] { Convert.ToInt64(r.DisciplinaContidaRegenciaId) }).FirstOrDefault().Nome);
+                            disciplinasRegenciasComAtividades.ToList().ForEach(async r => r.DisciplinaContidaRegenciaNome = (await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { Convert.ToInt64(r.DisciplinaContidaRegenciaId) })).ToList().FirstOrDefault().Nome);
 
                             item.AtividadeAvaliativaRegencia = new List<AtividadeAvaliativaRegencia>();
                             item.AtividadeAvaliativaRegencia.AddRange(disciplinasRegenciasComAtividades);
