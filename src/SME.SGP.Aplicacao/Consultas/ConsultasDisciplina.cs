@@ -111,25 +111,20 @@ namespace SME.SGP.Aplicacao
             {
                 var componentesCurriculares = await servicoEOL.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(codigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual);
 
+                disciplinasDto = (await repositorioComponenteCurricular.ObterDisciplinasPorIds(componentesCurriculares.Select(a => a.Codigo).ToArray()))?.OrderBy(c => c.Nome)?.ToList();
+
                 var componentesCurricularesJurema = await repositorioCache.Obter("ComponentesJurema", () => Task.FromResult(repositorioComponenteCurricularJurema.Listar()));
                 if (componentesCurricularesJurema == null)
                 {
                     throw new NegocioException("Não foi possível recuperar a lista de componentes curriculares.");
                 }
 
-                disciplinasDto = componentesCurriculares?.Select(disciplina => new DisciplinaDto()
+                disciplinasDto.ForEach(d =>
                 {
-                    CdComponenteCurricularPai = disciplina.CodigoComponenteCurricularPai,
-                    CodigoComponenteCurricular = disciplina.Codigo,
-                    Nome = disciplina.Descricao,
-                    Regencia = disciplina.Regencia,
-                    TerritorioSaber = disciplina.TerritorioSaber,
-                    Compartilhada = disciplina.Compartilhada,
-                    LancaNota = disciplina.LancaNota,
-                    PossuiObjetivos = disciplina.PossuiObjetivosDeAprendizagem(componentesCurricularesJurema, turmaPrograma, turma.ModalidadeCodigo, turma.Ano),
-                    ObjetivosAprendizagemOpcionais = disciplina.PossuiObjetivosDeAprendizagemOpcionais(componentesCurricularesJurema, turma.EnsinoEspecial),
-                    RegistraFrequencia = disciplina.RegistraFrequencia
-                })?.OrderBy(c => c.Nome)?.ToList();
+                    var componenteEOL = componentesCurriculares.FirstOrDefault(a => a.Codigo == d.CodigoComponenteCurricular);
+                    d.PossuiObjetivos = componenteEOL.PossuiObjetivosDeAprendizagem(componentesCurricularesJurema, turmaPrograma, turma.ModalidadeCodigo, turma.Ano);
+                    d.ObjetivosAprendizagemOpcionais = componenteEOL.PossuiObjetivosDeAprendizagemOpcionais(componentesCurricularesJurema, turma.EnsinoEspecial);
+                });
 
                 if (!usuarioLogado.EhProfessor())
                     await repositorioCache.SalvarAsync(chaveCache, JsonConvert.SerializeObject(disciplinasDto));
@@ -140,7 +135,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<DisciplinaDto>> ObterComponentesCurricularesPorProfessorETurmaParaPlanejamento(long codigoDisciplina, string codigoTurma, bool turmaPrograma, bool regencia)
         {
-            IEnumerable<DisciplinaDto> disciplinasDto = null;
+            List<DisciplinaDto> disciplinasDto;
             var usuario = await servicoUsuario.ObterUsuarioLogado();
 
             var chaveCache = $"Disciplinas-planejamento-{codigoTurma}-{codigoDisciplina}-{usuario.PerfilAtual}";
@@ -176,18 +171,15 @@ namespace SME.SGP.Aplicacao
             else
             {
                 var componentesCurriculares = await servicoEOL.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamento(codigoTurma, usuario.Login, usuario.PerfilAtual);
-                disciplinasDto = componentesCurriculares?.Select(disciplina => new DisciplinaDto()
+
+                disciplinasDto = (await repositorioComponenteCurricular.ObterDisciplinasPorIds(componentesCurriculares.Select(a => a.Codigo).ToArray()))?.OrderBy(c => c.Nome)?.ToList();
+
+                disciplinasDto.ForEach(d =>
                 {
-                    CdComponenteCurricularPai = disciplina.CodigoComponenteCurricularPai,
-                    CodigoComponenteCurricular = disciplina.Codigo,
-                    Nome = disciplina.Descricao,
-                    Regencia = disciplina.Regencia,
-                    TerritorioSaber = disciplina.TerritorioSaber,
-                    Compartilhada = disciplina.Compartilhada,
-                    LancaNota = disciplina.LancaNota,
-                    PossuiObjetivos = disciplina.PossuiObjetivosDeAprendizagem(componentesCurricularesJurema, turmaPrograma, turma.ModalidadeCodigo, turma.Ano),
-                    ObjetivosAprendizagemOpcionais = disciplina.PossuiObjetivosDeAprendizagemOpcionais(componentesCurricularesJurema, turma.EnsinoEspecial)
-                })?.OrderBy(c => c.Nome)?.ToList();
+                    var componenteEOL = componentesCurriculares.FirstOrDefault(a => a.Codigo == d.CodigoComponenteCurricular);
+                    d.PossuiObjetivos = componenteEOL.PossuiObjetivosDeAprendizagem(componentesCurricularesJurema, turmaPrograma, turma.ModalidadeCodigo, turma.Ano);
+                    d.ObjetivosAprendizagemOpcionais = componenteEOL.PossuiObjetivosDeAprendizagemOpcionais(componentesCurricularesJurema, turma.EnsinoEspecial);
+                });
             }
 
             if (!usuario.EhProfessor() && !usuario.EhProfessorCj() && !usuario.EhProfessorPoa())
