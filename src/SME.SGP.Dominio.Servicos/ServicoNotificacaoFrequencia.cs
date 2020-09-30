@@ -25,6 +25,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
+        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;        
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IRepositorioUe repositorioUe;
         private readonly IServicoEol servicoEOL;
@@ -34,6 +35,7 @@ namespace SME.SGP.Dominio.Servicos
         public ServicoNotificacaoFrequencia(IRepositorioNotificacaoFrequencia repositorioNotificacaoFrequencia,
                                             IRepositorioParametrosSistema repositorioParametrosSistema,
                                             IRepositorioFrequencia repositorioFrequencia,
+                                            IRepositorioComponenteCurricular repositorioComponenteCurricular,
                                             IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAluno,
                                             IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia,
                                             IRepositorioCompensacaoAusenciaAluno repositorioCompensacaoAusenciaAluno,
@@ -64,6 +66,7 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
         }
 
         #region Metodos Publicos
@@ -118,7 +121,7 @@ namespace SME.SGP.Dominio.Servicos
             var turma = await repositorioTurma.ObterPorId(compensacao.TurmaId);
             var ue = repositorioUe.ObterUEPorTurma(turma.CodigoTurma);
             var dre = repositorioDre.ObterPorId(ue.DreId);
-            var disciplinaEOL = ObterNomeDisciplina(compensacao.DisciplinaId);
+            var disciplinaEOL = await ObterNomeDisciplina(compensacao.DisciplinaId);
             MeusDadosDto professor = await servicoEOL.ObterMeusDados(compensacao.CriadoRF);
 
             // Carrega dados dos alunos não notificados
@@ -622,9 +625,9 @@ namespace SME.SGP.Dominio.Servicos
             return notificacao.Id;
         }
 
-        private void NotificaRegistroFrequencia(Usuario usuario, RegistroFrequenciaFaltanteDto turmaSemRegistro, TipoNotificacaoFrequencia tipo)
+        private async Task NotificaRegistroFrequencia(Usuario usuario, RegistroFrequenciaFaltanteDto turmaSemRegistro, TipoNotificacaoFrequencia tipo)
         {
-            var disciplinas = servicoEOL.ObterDisciplinasPorIds(new long[] { long.Parse(turmaSemRegistro.DisciplinaId) });
+            var disciplinas = await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { long.Parse(turmaSemRegistro.DisciplinaId) });
             if (disciplinas != null && disciplinas.Any() && disciplinas.FirstOrDefault().RegistraFrequencia)
             {
                 var disciplina = disciplinas.FirstOrDefault();
@@ -683,10 +686,10 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        private string ObterNomeDisciplina(string codigoDisciplina)
+        private async Task<string> ObterNomeDisciplina(string codigoDisciplina)
         {
             long[] disciplinaId = { long.Parse(codigoDisciplina) };
-            var disciplina = servicoEOL.ObterDisciplinasPorIds(disciplinaId);
+            var disciplina = await repositorioComponenteCurricular.ObterDisciplinasPorIds(disciplinaId);
 
             if (!disciplina.Any())
                 throw new NegocioException("Disciplina não encontrada no EOL.");
