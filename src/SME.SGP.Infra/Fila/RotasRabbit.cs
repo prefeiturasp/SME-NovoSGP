@@ -29,8 +29,10 @@
         public static string RotaNovaNotificacaoDevolutiva => "notificacao.nova.devolutiva";
         public static string RotaExcluirNotificacaoDevolutiva => "notificacao.excluir.devolutiva";
         public static string RotaExcluirNotificacaoDiarioBordo => "notificacao.excluir.diariobordo";
-
         public static string RotaExecutaPendenciasAula => "pendencias.aulas.executa";
+        public static string RotaSincronizaComponetesCurricularesEol => "componentes.curriculares.eol.sincronizar";
+
+        
 
 
     }
