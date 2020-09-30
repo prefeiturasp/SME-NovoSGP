@@ -29,8 +29,8 @@ namespace SME.SGP.Dados.Repositorios
 		                        else descricao
 	                        end as Nome,
                             eh_base_nacional as EhBaseNacional,
-                            eh_compartilhado as Compartilhada,
-                            eh_regencia_classe as Regencia,
+                            eh_compartilhada as Compartilhada,
+                            eh_regencia as Regencia,
                             eh_territorio as TerritorioSaber,
                             grupo_matriz_id as GrupoMatrizId,
                             permite_lancamento_nota as LancaNota,
