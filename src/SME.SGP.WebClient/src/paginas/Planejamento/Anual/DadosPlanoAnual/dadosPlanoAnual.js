@@ -4,6 +4,7 @@ import {
   setBimestresPlanoAnual,
   setListaComponentesCurricularesPlanejamento,
   setExibirLoaderPlanoAnual,
+  setListaTurmasParaCopiar,
 } from '~/redux/modulos/anual/actions';
 import { erros } from '~/servicos/alertas';
 import ServicoPlanoAnual from '~/servicos/Paginas/ServicoPlanoAnual';
@@ -85,6 +86,20 @@ const DadosPlanoAnual = () => {
     obterListaComponentesCurricularesPlanejamento,
   ]);
 
+  const obterTurmasParaCopiarConteudo = useCallback(() => {
+    ServicoPlanoAnual.obterTurmasParaCopia(
+      turmaSelecionada.turma,
+      componenteCurricular.codigoComponenteCurricular
+    )
+      .then(resposta => {
+        dispatch(setListaTurmasParaCopiar(resposta.data));
+      })
+      .catch(e => {
+        dispatch(setListaTurmasParaCopiar([]));
+        erros(e);
+      });
+  }, [componenteCurricular, turmaSelecionada.turma, dispatch]);
+
   /**
    * carrega a lista de bimestres com os dados dos planos
    */
@@ -97,6 +112,7 @@ const DadosPlanoAnual = () => {
       turmaSelecionada &&
       turmaSelecionada.turma
     ) {
+      obterTurmasParaCopiarConteudo();
       obterBimestresPlanoAnual();
       // Quando não for regencia vai ter somente uma tab que é o componente curricular selecionado do SelectComponent!
       if (componenteCurricular.regencia) {
@@ -113,6 +129,7 @@ const DadosPlanoAnual = () => {
     dispatch,
     modalidadesFiltroPrincipal,
     turmaSelecionada,
+    obterTurmasParaCopiarConteudo,
   ]);
 
   return (

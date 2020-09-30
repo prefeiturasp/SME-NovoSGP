@@ -62,3 +62,13 @@ export const setClicouNoBimestre = payload => ({
   type: '@planoAnual/setClicouNoBimestre',
   payload,
 });
+
+export const setExibirModalCopiarConteudo = payload => ({
+  type: '@planoAnual/setExibirModalCopiarConteudo',
+  payload,
+});
+
+export const setListaTurmasParaCopiar = payload => ({
+  type: '@planoAnual/setListaTurmasParaCopiar',
+  payload,
+});

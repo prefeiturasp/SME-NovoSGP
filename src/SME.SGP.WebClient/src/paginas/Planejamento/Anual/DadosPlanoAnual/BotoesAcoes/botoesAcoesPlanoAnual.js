@@ -6,6 +6,7 @@ import { URL_HOME } from '~/constantes/url';
 import {
   limparDadosPlanoAnual,
   setComponenteCurricularPlanoAnual,
+  setExibirModalCopiarConteudo,
 } from '~/redux/modulos/anual/actions';
 import { confirmar } from '~/servicos';
 import history from '~/servicos/history';
@@ -28,6 +29,10 @@ const BotoesAcoesPlanoAnual = () => {
 
   const componenteCurricular = useSelector(
     store => store.planoAnual.componenteCurricular
+  );
+
+  const listaTurmasParaCopiar = useSelector(
+    store => store.planoAnual.listaTurmasParaCopiar
   );
 
   const onSalvar = async () => {
@@ -67,7 +72,6 @@ const BotoesAcoesPlanoAnual = () => {
         'Deseja realmente cancelar as alterações?'
       );
       if (confirmou) {
-        // TODO Esta forlando a recarregar tela, ajustar!!!
         dispatch(limparDadosPlanoAnual());
         const componente = { ...componenteCurricular };
         dispatch(setComponenteCurricularPlanoAnual(componente));
@@ -75,8 +79,27 @@ const BotoesAcoesPlanoAnual = () => {
     }
   };
 
+  const abrirCopiarConteudo = async () => {
+    dispatch(setExibirModalCopiarConteudo(true));
+  };
+
   return (
     <>
+      <Button
+        id="btn-copiar-conteudo-plano-anual"
+        label="Copiar Conteúdo"
+        icon="share-square"
+        color={Colors.Azul}
+        className="mr-3"
+        border
+        onClick={abrirCopiarConteudo}
+        disabled={
+          ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada) ||
+          planoAnualEmEdicao ||
+          !listaTurmasParaCopiar ||
+          listaTurmasParaCopiar.length === 0
+        }
+      />
       <Button
         id="btn-voltar-plano-anual"
         label="Voltar"
