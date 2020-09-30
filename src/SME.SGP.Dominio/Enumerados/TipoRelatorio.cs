@@ -45,7 +45,7 @@ namespace SME.SGP.Dominio
         [Display(Name = "relatorios/planoaula", ShortName = "Plano de Aula", Description = "Relatório Plano de Aula")]
         PlanoAula = 14,
 
-        [Display(Name = "relatorios/resumopap", ShortName = "ResumoPAP", Description = "Relatório de Resumos PAP")]
+        [Display(Name = "relatorios/resumopap", ShortName = "ResumoPAP", Description = "Relatório de acompanhamento PAP - Resumos")]
         ResumoPAP = 15
     }
 }
