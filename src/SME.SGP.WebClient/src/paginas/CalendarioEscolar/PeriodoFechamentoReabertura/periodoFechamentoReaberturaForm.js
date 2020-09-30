@@ -151,7 +151,7 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
     async function consultaTipos() {
       setCarregandoTipos(true);
       setDesabilitarCampos(true);
-      if (filtroInicialTipoCalendario) {
+      if (filtroInicialTipoCalendario && match?.params?.tipoCalendarioId.trim()) {
         var tipoCalendario = await api.get(`v1/calendarios/tipos/${match?.params?.tipoCalendarioId}`);
         setPesquisaTipoCalendario(tipoCalendario?.data?.descricaoPeriodo);
         setfiltroInicialTipoCalendario(false);
@@ -159,6 +159,8 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
         montarListaBimestres(tipoCalendario?.data?.modalidade);
         setDesabilitarCampos(false);
       }
+      else if (filtroInicialTipoCalendario)
+        setfiltroInicialTipoCalendario(false);
       const listaTipo = await ServicoCalendarios.obterTiposCalendarioAutoComplete(
         pesquisaTipoCalendario
       );
