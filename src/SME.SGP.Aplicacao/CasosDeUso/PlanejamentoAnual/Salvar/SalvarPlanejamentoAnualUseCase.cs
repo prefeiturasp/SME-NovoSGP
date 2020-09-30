@@ -1,6 +1,8 @@
 ﻿using MediatR;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -18,6 +20,16 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<PlanejamentoAnualAuditoriaDto> Executar(long turmaId, long componenteCurricularId, SalvarPlanejamentoAnualDto dto)
         {
+            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var turma = await mediator.Send(new ObterTurmaSimplesPorIdQuery(turmaId));
+            foreach (var periodoEscolar in dto.PeriodosEscolares)
+            {
+                var periodo = await mediator.Send(new ObterPeriodoEscolarePorIdQuery(periodoEscolar.PeriodoEscolarId));
+                var teste = await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaNoPeriodoQuery(componenteCurricularId, turma.Codigo, usuario.CodigoRf, periodo.PeriodoInicio.Date, periodo.PeriodoFim.Date));
+                if (!teste)
+                    throw new NegocioException($"Você não está atribuido ao período de {periodo.PeriodoInicio:dd/MM/yyyy} à {periodo.PeriodoFim:dd/MM/yyyy} do {periodo.Bimestre}° Bimestre.");
+            }
+            
             unitOfWork.IniciarTransacao();
 
             var auditoria = await mediator.Send(new SalvarPlanejamentoAnualCommand()
