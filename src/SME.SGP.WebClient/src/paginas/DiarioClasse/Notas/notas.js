@@ -39,12 +39,6 @@ const { TabPane } = Tabs;
 const Notas = ({ match }) => {
   const usuario = useSelector(store => store.usuario);
   const dispatch = useDispatch();
-  const modoEdicaoGeral = useSelector(
-    store => store.notasConceitos.modoEdicaoGeral
-  );
-  const modoEdicaoGeralNotaFinal = useSelector(
-    store => store.notasConceitos.modoEdicaoGeralNotaFinal
-  );
 
   const modalidadesFiltroPrincipal = useSelector(
     store => store.filtro.modalidades
@@ -626,7 +620,10 @@ const Notas = ({ match }) => {
   };
 
   const onClickVoltar = async () => {
-    if (modoEdicaoGeral || modoEdicaoGeralNotaFinal) {
+    if (
+      ServicoNotaConceito.estaEmModoEdicaoGeral() ||
+      ServicoNotaConceito.estaEmModoEdicaoGeralNotaFinal()
+    ) {
       validarJustificativaAntesDeSalvar(bimestreCorrente, false, true);
     } else {
       irParaHome();
@@ -668,7 +665,7 @@ const Notas = ({ match }) => {
     dispatch(setModoEdicaoGeralNotaFinal(false));
     dispatch(setExpandirLinha([]));
 
-    if (modoEdicaoGeral) {
+    if (ServicoNotaConceito.estaEmModoEdicaoGeral()) {
       const confirmaSalvar = await pergutarParaSalvar();
       if (confirmaSalvar) {
         await onSalvarNotas(false);
@@ -734,7 +731,10 @@ const Notas = ({ match }) => {
     setClicouNoBotaoSalvar(clicouSalvar);
     setClicouNoBotaoVoltar(clicouVoltar);
 
-    if (modoEdicaoGeral || modoEdicaoGeralNotaFinal) {
+    if (
+      ServicoNotaConceito.estaEmModoEdicaoGeral() ||
+      ServicoNotaConceito.estaEmModoEdicaoGeralNotaFinal()
+    ) {
       let confirmado = true;
 
       if (!clicouSalvar) {
@@ -745,7 +745,7 @@ const Notas = ({ match }) => {
         const bimestre = getDadosBimestreAtual();
         const temPorcentagemAceitavel = verificaPorcentagemAprovados();
         if (
-          modoEdicaoGeralNotaFinal &&
+          ServicoNotaConceito.estaEmModoEdicaoGeralNotaFinal() &&
           !temPorcentagemAceitavel &&
           bimestre.modoEdicao
         ) {
@@ -755,7 +755,10 @@ const Notas = ({ match }) => {
           bimestre.justificativa = temPorcentagemAceitavel
             ? null
             : bimestre.justificativa;
-          await onSalvarNotas(clicouSalvar, modoEdicaoGeralNotaFinal);
+          await onSalvarNotas(
+            clicouSalvar,
+            ServicoNotaConceito.estaEmModoEdicaoGeralNotaFinal()
+          );
           aposValidarJustificativaAntesDeSalvar(
             numeroBimestre,
             clicouSalvar,
@@ -956,7 +959,10 @@ const Notas = ({ match }) => {
 
   const onConfirmarJustificativa = async () => {
     setExibeModalJustificativa(false);
-    await onSalvarNotas(clicouNoBotaoSalvar, modoEdicaoGeralNotaFinal);
+    await onSalvarNotas(
+      clicouNoBotaoSalvar,
+      ServicoNotaConceito.estaEmModoEdicaoGeralNotaFinal()
+    );
     refForm.resetForm();
     aposValidarJustificativaAntesDeSalvar(
       proximoBimestre,
@@ -1096,7 +1102,12 @@ const Notas = ({ match }) => {
       ) : null}
       <AlertaModalidadeInfantil />
       <Cabecalho pagina={tituloNotasConceitos} />
-      <Loader loading={carregandoListaBimestres || carregandoGeral}>
+      <Loader
+        loading={
+          (carregandoListaBimestres || carregandoGeral) &&
+          usuario.turmaSelecionada.turma
+        }
+      >
         <Card>
           <div className="col-md-12">
             <div className="row">
