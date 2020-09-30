@@ -24,7 +24,10 @@ namespace SME.SGP.Dados.Repositorios
 	                        id as CodigoComponenteCurricular,
                             area_conhecimento_id as AreaConhecimentoId,
                             componente_curricular_pai_id as CdComponenteCurricularPai,
-                            descricao as Nome,
+                            case
+		                        when descricao_sgp is not null then descricao_sgp
+		                        else descricao
+	                        end as Nome,
                             eh_base_nacional as EhBaseNacional,
                             eh_compartilhado as Compartilhada,
                             eh_regencia_classe as Regencia,
@@ -41,7 +44,10 @@ namespace SME.SGP.Dados.Repositorios
         { 
             var query = $@"select
 	                        id as Codigo,
-                            descricao
+                            case
+		                        when descricao_sgp is not null then descricao_sgp
+		                        else descricao
+	                        end as descricao
                         from
 	                        componente_curricular";
 
