@@ -39,5 +39,11 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await relatorioCalendarioUseCase.Executar(filtroRelatorioCalendarioDto));
         }
+
+        [HttpPost("resumopap/impressao")]
+        public async Task<IActionResult> ResumoPAP([FromBody] FiltroRelatorioResumoPAPDto filtroRelatorioResumoPAPDto, [FromServices] IRelatorioResumoPAPUseCase relatorioResumoPAPUseCase)
+        {
+            return Ok(await relatorioResumoPAPUseCase.Executar(filtroRelatorioResumoPAPDto));
+        }
     }
 }

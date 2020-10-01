@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -28,9 +29,23 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<ObjetivoAprendizagemDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PA_C, Policy = "Bearer")]
-        public async Task<IActionResult> Filtrar([FromBody]FiltroObjetivosAprendizagemDto filtroObjetivosAprendizagemDto)
+        public async Task<IActionResult> Filtrar([FromBody] FiltroObjetivosAprendizagemDto filtroObjetivosAprendizagemDto)
         {
             return Ok(await consultasObjetivoAprendizagem.Filtrar(filtroObjetivosAprendizagemDto));
+        }
+
+        [HttpGet]
+        [Route("{ano}/{componenteCurricularId}")]
+        [ProducesResponseType(typeof(IEnumerable<ObjetivoAprendizagemDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.PA_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterObjetivosPorAnoEComponenteCurricular([FromServices] IListarObjetivoAprendizagemPorAnoEComponenteCurricularUseCase useCase, [FromQuery] bool ensinoEspecial, long ano, long componenteCurricularId)
+        {
+            var result = await useCase.Executar(ano, componenteCurricularId, ensinoEspecial);
+            if (result == null)
+                return NoContent();
+
+            return Ok(result);
         }
 
         [HttpGet]
@@ -67,7 +82,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost]
         [Route("sincronizar-jurema")]
         [ProducesResponseType(200)]
-        public async Task<IActionResult> SincronizarObjetivos([FromServices]IServicoObjetivosAprendizagem servicoObjetivosAprendizagem)
+        public async Task<IActionResult> SincronizarObjetivos([FromServices] IServicoObjetivosAprendizagem servicoObjetivosAprendizagem)
         {
             await servicoObjetivosAprendizagem.SincronizarObjetivosComJurema();
             return Ok();

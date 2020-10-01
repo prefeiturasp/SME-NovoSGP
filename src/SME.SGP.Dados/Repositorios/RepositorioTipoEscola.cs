@@ -10,7 +10,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioTipoEscola : RepositorioBase<TipoEscolaEol>, IRepositorioTipoEscola
     {
-        private const string QuerySincronizacao = @"SELECT id, cod_tipo_escola_eol,  descricao, data_atualizacao FROM public.tipo_escola where cod_tipo_escola_eol in (#ids);";
+        private const string QuerySincronizacao = @"SELECT id, cod_tipo_escola_eol,  descricao, data_atualizacao, criado_por, criado_rf FROM public.tipo_escola where cod_tipo_escola_eol in (#ids);";
 
         public RepositorioTipoEscola(ISgpContext database) : base(database)
         {
@@ -34,6 +34,8 @@ namespace SME.SGP.Dados.Repositorios
                               {
                                   Id = l.Id,
                                   Descricao = c.Descricao,
+                                  CriadoPor = l.CriadoPor,
+                                  CriadoRF = l.CriadoRF,
                                   DtAtualizacao = DateTime.Today
                               };
 

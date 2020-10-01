@@ -37,6 +37,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioFechamentoTurma = repositorioFechamentoTurma ?? throw new System.ArgumentNullException(nameof(repositorioFechamentoTurma));
             this.repositorioFechamentoAluno = repositorioFechamentoAluno ?? throw new System.ArgumentNullException(nameof(repositorioFechamentoAluno));
             this.repositorioFechamentoNota = repositorioFechamentoNota ?? throw new System.ArgumentNullException(nameof(repositorioFechamentoNota));
+            this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
 
         public async Task<string[]> SalvarAsync(FechamentoFinalSalvarDto fechamentoFinalSalvarDto)
