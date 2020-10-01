@@ -36,6 +36,45 @@ function Filtro({ onFiltrar }) {
     { id: '2', nome: '2º Semestre' },
   ];
 
+  const anoModalidadeLista = [
+    {
+      modalidade: 5,
+      ano: '1',
+    },
+    {
+      modalidade: 5,
+      ano: '2',
+    },
+    {
+      modalidade: 5,
+      ano: '3',
+    },
+    {
+      modalidade: 5,
+      ano: '4',
+    },
+    {
+      modalidade: 5,
+      ano: '5',
+    },
+    {
+      modalidade: 5,
+      ano: '6',
+    },
+    {
+      modalidade: 5,
+      ano: '7',
+    },
+    {
+      modalidade: 5,
+      ano: '8',
+    },
+    {
+      modalidade: 5,
+      ano: '9',
+    },
+  ];
+
   const [refForm, setRefForm] = useState({});
   const [gruposLista, setGruposLista] = useState([]);
   const [anosLetivos, setAnosLetivos] = useState([]);
@@ -43,6 +82,7 @@ function Filtro({ onFiltrar }) {
   const [dres, setDres] = useState(todos);
   const [ues, setUes] = useState(todos);
   const [semestres] = useState(semestresLista);
+  const [anos] = useState(anoModalidadeLista);
   const [turmas, setTurmas] = useState(todosTurmasModalidade);
 
   const [modalidadeSelecionada, setModalidadeSelecionada] = useState('-99');
@@ -438,7 +478,26 @@ function Filtro({ onFiltrar }) {
                 }}
               />
             </Grid>
-            <Grid cols={6}>
+            <Grid cols={2}>
+              <Label control="ano" text="Ano" />
+              <SelectComponent
+                form={form}
+                id="ano"
+                name="ano"
+                placeholder="Selecione ano"
+                valueOption="ano"
+                valueText="ano"
+                value={form.values.semestre}
+                lista={anos}
+                allowClear
+                disabled={semestreDesabilitado}
+                onChange={x => {
+                  validarFiltro();
+                  onSemestreChange(x);
+                }}
+              />
+            </Grid>
+            <Grid cols={4}>
               <Label control="turmas" text="Turmas" />
               <SelectComponent
                 form={form}
