@@ -44,7 +44,7 @@ namespace SME.SGP.Dto
         public string CodigoDre { get; set; }
 
         [Required(ErrorMessage = "É necessário informar o codigo da UE")]
-        public string CodigoUe { get; set; } 
+        public string CodigoUe { get; set; }
 
         public IEnumerable<string> Turmas { get; set; }
 
@@ -53,7 +53,7 @@ namespace SME.SGP.Dto
         public Modalidade? Modalidade { get; set; }
 
         public int Semestre { get; set; }
-        
+
         public IEnumerable<string> Alunos { get; set; }
     }
 }

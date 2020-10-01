@@ -29,6 +29,8 @@ namespace SME.SGP.Background
 
             // Executa as 04am (vai ser ajustado o UTC corretamente depois no hangfire)
             Cliente.ExecutarPeriodicamente<IExecutaPendenciaAulaUseCase>(c => c.Executar(), Cron.Daily(4));
+
+            Cliente.ExecutarPeriodicamente<IExecutaSincronismoComponentesCurricularesEolUseCase>(c => c.Executar(), Cron.Daily(4));
         }
     }
 }
