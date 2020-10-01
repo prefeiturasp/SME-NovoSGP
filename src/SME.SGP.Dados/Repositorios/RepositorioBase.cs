@@ -49,7 +49,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             if (entidade.Id > 0)
             {
-                entidade.AlteradoEm = DateTime.Now;
+                entidade.AlteradoEm = DateTime.Now;                
                 entidade.AlteradoPor = database.UsuarioLogadoNomeCompleto;
                 entidade.AlteradoRF = database.UsuarioLogadoRF;
                 database.Conexao.Update(entidade);
