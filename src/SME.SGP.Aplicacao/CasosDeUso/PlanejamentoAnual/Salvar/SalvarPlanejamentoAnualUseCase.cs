@@ -25,8 +25,8 @@ namespace SME.SGP.Aplicacao
             foreach (var periodoEscolar in dto.PeriodosEscolares)
             {
                 var periodo = await mediator.Send(new ObterPeriodoEscolarePorIdQuery(periodoEscolar.PeriodoEscolarId));
-                var teste = await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaNoPeriodoQuery(componenteCurricularId, turma.Codigo, usuario.CodigoRf, periodo.PeriodoInicio.Date, periodo.PeriodoFim.Date));
-                if (!teste)
+                var temAtribuicao = await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaNoPeriodoQuery(componenteCurricularId, turma.Codigo, usuario.CodigoRf, periodo.PeriodoInicio.Date, periodo.PeriodoFim.Date));
+                if (!temAtribuicao)
                     throw new NegocioException($"Você não está atribuido ao período de {periodo.PeriodoInicio:dd/MM/yyyy} à {periodo.PeriodoFim:dd/MM/yyyy} do {periodo.Bimestre}° Bimestre.");
             }
             
