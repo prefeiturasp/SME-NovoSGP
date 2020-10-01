@@ -33,10 +33,8 @@ namespace SME.SGP.Aplicacao
 
         public IEnumerable<string> Alunos { get; set; }
 
-        public SolicitarInclusaoComunicadoEscolaAquiCommand(DateTime dataEnvio, DateTime? dataExpiracao, string descricao, List<int> gruposId, string titulo, int anoLetivo, string codigoDre, string codigoUe, bool alunosEspecificados, Modalidade? modalidade, int semestre)
+        public SolicitarInclusaoComunicadoEscolaAquiCommand(DateTime dataEnvio, DateTime? dataExpiracao, string descricao, List<int> gruposId, string titulo, int anoLetivo, string codigoDre, string codigoUe, bool alunosEspecificados, Modalidade? modalidade, int semestre, IEnumerable<string> turmas, IEnumerable<string> alunos)
         {
-            Alunos = new List<string>();
-            Turmas = new List<string>();
             DataEnvio = dataEnvio;
             DataExpiracao = dataExpiracao;
             Descricao = descricao;
@@ -48,6 +46,8 @@ namespace SME.SGP.Aplicacao
             AlunosEspecificados = alunosEspecificados;
             Modalidade = modalidade;
             Semestre = semestre;
+            Turmas = turmas;
+            Alunos = alunos;
         }
     }
 }

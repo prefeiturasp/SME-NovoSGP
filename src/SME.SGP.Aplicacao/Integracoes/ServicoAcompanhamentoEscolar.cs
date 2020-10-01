@@ -62,6 +62,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             };
             request.Headers.Add("x-integration-key", configuration.GetSection("AE_ChaveIntegracao").Value);
 
+
             using (var resposta = await httpClient.SendAsync(request))
             {
                 if (!resposta.IsSuccessStatusCode)
