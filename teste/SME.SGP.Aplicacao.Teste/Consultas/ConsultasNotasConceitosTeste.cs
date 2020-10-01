@@ -34,6 +34,8 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         private readonly Mock<IRepositorioDre> repositorioDre;
         private readonly Mock<IRepositorioEvento> repositorioEvento;
         private readonly Mock<IRepositorioAtividadeAvaliativaRegencia> repositorioAtividadeAvaliativaRegencia;
+        private readonly Mock<IRepositorioComponenteCurricular> repositorioComponenteCurricular;
+        
 
         public ConsultasNotasConceitosTeste()
         {
@@ -61,6 +63,8 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             repositorioDre = new Mock<IRepositorioDre>();
             repositorioEvento = new Mock<IRepositorioEvento>();
             repositorioAtividadeAvaliativaRegencia = new Mock<IRepositorioAtividadeAvaliativaRegencia>();
+            repositorioComponenteCurricular = new Mock<IRepositorioComponenteCurricular>();
+            
 
             consultasNotasConceito = new ConsultasNotasConceitos(servicoEOL.Object,
                     consultaAtividadeAvaliativa.Object,
@@ -85,7 +89,8 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
                     repositorioUe.Object,
                     repositorioDre.Object,
                     repositorioEvento.Object,
-                    repositorioAtividadeAvaliativaRegencia.Object);
+                    repositorioAtividadeAvaliativaRegencia.Object,
+                    repositorioComponenteCurricular.Object);
         }
 
         [Theory]

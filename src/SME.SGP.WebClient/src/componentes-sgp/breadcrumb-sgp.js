@@ -60,6 +60,12 @@ const BreadcrumbSgp = () => {
       modalidadesFiltroPrincipal,
       UsuarioStrore.turmaSelecionada
     );
+    const rotaPlanejamentoAnual = rotas.get(RotasDto.PLANEJAMENTO_ANUAL);
+    rotaPlanejamentoAnual.breadcrumbName = obterDescricaoNomeMenu(
+      RotasDto.PLANEJAMENTO_ANUAL,
+      modalidadesFiltroPrincipal,
+      UsuarioStrore.turmaSelecionada
+    );
     const rotaFrequencia = rotas.get(RotasDto.FREQUENCIA_PLANO_AULA);
     rotaFrequencia.breadcrumbName = obterDescricaoNomeMenu(
       RotasDto.FREQUENCIA_PLANO_AULA,

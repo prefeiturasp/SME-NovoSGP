@@ -22,12 +22,14 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
         private readonly IServicoEol servicoEOL;
+        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
         private readonly IServicoUsuario servicoUsuario;
 
         public ConsultasCompensacaoAusencia(IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia, 
                                             IConsultasCompensacaoAusenciaAluno consultasCompensacaoAusenciaAluno,
                                             IConsultasCompensacaoAusenciaDisciplinaRegencia consultasCompensacaoAusenciaDisciplinaRegencia,
                                             IConsultasFrequencia consultasFrequencia,
+                                            IRepositorioComponenteCurricular repositorioComponenteCurricular,
                                             IRepositorioTurma repositorioTurma,
                                             IRepositorioParametrosSistema repositorioParametrosSistema,
                                             IServicoEol servicoEOL, 
@@ -44,6 +46,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
+            this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.consultasUe = consultasUe ?? throw new ArgumentNullException(nameof(consultasUe));
         }
@@ -113,7 +116,7 @@ namespace SME.SGP.Aplicacao
             if (alunos == null)
                 throw new NegocioException("Alunos não localizados para a turma.");
 
-            var disciplinasEOL = servicoEOL.ObterDisciplinasPorIds(new long[] { long.Parse(compensacao.DisciplinaId) });
+            var disciplinasEOL = await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { long.Parse(compensacao.DisciplinaId) });
             if (disciplinasEOL == null || !disciplinasEOL.Any())
                 throw new NegocioException("Disciplina informada na compensação não localizada no EOL.");
 
@@ -152,7 +155,7 @@ namespace SME.SGP.Aplicacao
                 if(!disciplinasIds.Any())
                     return compensacaoDto;
 
-                disciplinasEOL = servicoEOL.ObterDisciplinasPorIds(disciplinasIds.ToArray());
+                disciplinasEOL = await repositorioComponenteCurricular.ObterDisciplinasPorIds(disciplinasIds.ToArray());
 
                 foreach (var disciplinaEOL in disciplinasEOL)
                 {
