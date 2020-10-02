@@ -7,6 +7,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IObterComponentesCurricularesRegenciaPorTurmaUseCase
     {
-        Task<IEnumerable<ComponenteCurricularDto>> Executar(long turmaId);
+        Task<IEnumerable<DisciplinaDto>> Executar(long turmaId);
     }
 }
