@@ -225,18 +225,19 @@ namespace SME.SGP.Aplicacao
                     var rfsOrnedadosPorDataCriacaoAula = aulas.OrderBy(a => a.CriadoEm)
                         .Select(a => a.ProfessorRf).Distinct();
 
-                    var ultimoRegente = rfsOrnedadosPorDataCriacaoAula.Last();
+                    var ultimoRegente = rfsOrnedadosPorDataCriacaoAula.Last();                   
 
                     // se regente atual, titular anterior ou professor anterior visualiza a aula
-                    if (ultimoRegente.Equals(usuarioRF, StringComparison.InvariantCultureIgnoreCase) ||
+                    if (ultimoRegente.Equals(usuarioRF, StringComparison.InvariantCultureIgnoreCase) ||                        
                         aula.ProfessorRf.Equals(usuarioRF, StringComparison.InvariantCultureIgnoreCase) ||
                         aula.Turma.EhTurmaInfantil ||
                         usuarioLogado.PerfilAtual != Perfis.PERFIL_PROFESSOR ||
                         usuarioLogado.PerfilAtual != Perfis.PERFIL_CJ ||
-                        usuarioLogado.PerfilAtual != Perfis.PERFIL_CJ_INFANTIL)
+                        usuarioLogado.PerfilAtual != Perfis.PERFIL_CJ_INFANTIL
+                        )
                         aulasRetorno.Add(MapearParaDto(aula, p.Bimestre));
                 });
-            });            
+            });
 
             return aulasRetorno.OrderBy(a => a.Data);
         }
