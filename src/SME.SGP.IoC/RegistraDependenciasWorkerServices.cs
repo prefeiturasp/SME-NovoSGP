@@ -195,6 +195,7 @@ private static void RegistrarRabbit(IServiceCollection services)
             services.TryAddScopedWorkerService<IRepositorioCache, RepositorioCache>();
             services.TryAddScopedWorkerService<IRepositorioCiclo, RepositorioCiclo>();
             services.TryAddScopedWorkerService<IRepositorioComponenteCurricularJurema, RepositorioComponenteCurricularJurema>();
+            services.TryAddScopedWorkerService<IRepositorioComponenteCurricular, RepositorioComponenteCurricular>();
             services.TryAddScopedWorkerService<IRepositorioConceito, RepositorioConceito>();
             services.TryAddScopedWorkerService<IRepositorioConfiguracaoEmail, RepositorioConfiguracaoEmail>();
             services.TryAddScopedWorkerService<IRepositorioDre, RepositorioDre>();
@@ -392,6 +393,7 @@ private static void RegistrarRabbit(IServiceCollection services)
 
 
             services.TryAddScopedWorkerService<IRelatorioPlanoAulaUseCase, RelatorioPlanoAulaUseCase>();
+            services.TryAddScopedWorkerService<IObterComponentesCurricularesRegenciaPorTurmaUseCase, ObterComponentesCurricularesRegenciaPorTurmaUseCase>();
 
         }
 
