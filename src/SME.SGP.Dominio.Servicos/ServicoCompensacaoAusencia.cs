@@ -25,7 +25,8 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
-
+        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
+        
         public ServicoCompensacaoAusencia(IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia,
                                           IRepositorioCompensacaoAusenciaAluno repositorioCompensacaoAusenciaAluno,
                                           IRepositorioCompensacaoAusenciaDisciplinaRegencia repositorioCompensacaoAusenciaDisciplinaRegencia,
@@ -36,6 +37,7 @@ namespace SME.SGP.Dominio.Servicos
                                           IServicoEol servicoEOL,
                                           IServicoUsuario servicoUsuario,
                                           IRepositorioTurma repositorioTurma,
+                                          IRepositorioComponenteCurricular repositorioComponenteCurricular,
                                           IRepositorioNotificacaoCompensacaoAusencia repositorioNotificacaoCompensacaoAusencia,
                                           IUnitOfWork unitOfWork)
         {
@@ -51,6 +53,7 @@ namespace SME.SGP.Dominio.Servicos
             this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
             this.unitOfWork = unitOfWork ?? throw new System.ArgumentNullException(nameof(unitOfWork));
+            this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new System.ArgumentNullException(nameof(repositorioComponenteCurricular));
         }
 
         public async Task Salvar(long id, CompensacaoAusenciaDto compensacaoDto)
@@ -106,9 +109,9 @@ namespace SME.SGP.Dominio.Servicos
             Cliente.Executar<IServicoNotificacaoFrequencia>(c => c.NotificarCompensacaoAusencia(compensacao.Id));
         }
 
-        private void ConsisteDisciplina(long disciplinaId, IEnumerable<string> disciplinasRegenciaIds, bool registroMigrado)
+        private async Task ConsisteDisciplina(long disciplinaId, IEnumerable<string> disciplinasRegenciaIds, bool registroMigrado)
         {
-            var disciplinasEOL = servicoEOL.ObterDisciplinasPorIds(new long[] { disciplinaId });
+            var disciplinasEOL = await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { disciplinaId });
 
             if (!disciplinasEOL.Any())
                 throw new NegocioException("Disciplina não encontrada no EOL.");
