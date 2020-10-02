@@ -11,7 +11,7 @@ insert into public.parametros_sistema (nome,
                                         criado_rf, 
                                         alterado_rf)
                                 values ('DataInicioSGP',
-                                        22,
+                                        29,
                                         'Data de início do Novo SGP',
                                         '2020',
                                         null,
