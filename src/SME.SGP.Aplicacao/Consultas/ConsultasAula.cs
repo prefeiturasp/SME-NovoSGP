@@ -230,7 +230,11 @@ namespace SME.SGP.Aplicacao
                     // se regente atual, titular anterior ou professor anterior visualiza a aula
                     if (ultimoRegente.Equals(usuarioRF, StringComparison.InvariantCultureIgnoreCase) ||                        
                         aula.ProfessorRf.Equals(usuarioRF, StringComparison.InvariantCultureIgnoreCase) ||
-                        aula.Turma.EhTurmaInfantil)
+                        aula.Turma.EhTurmaInfantil ||
+                        usuarioLogado.PerfilAtual != Perfis.PERFIL_PROFESSOR ||
+                        usuarioLogado.PerfilAtual != Perfis.PERFIL_CJ ||
+                        usuarioLogado.PerfilAtual != Perfis.PERFIL_CJ_INFANTIL
+                        )
                         aulasRetorno.Add(MapearParaDto(aula, p.Bimestre));
                 });
             });
