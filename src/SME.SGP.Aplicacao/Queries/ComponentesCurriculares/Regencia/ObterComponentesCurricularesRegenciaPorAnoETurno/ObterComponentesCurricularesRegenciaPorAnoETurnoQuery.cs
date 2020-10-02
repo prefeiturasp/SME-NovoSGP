@@ -5,7 +5,7 @@ using FluentValidation;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterComponentesCurricularesRegenciaPorAnoETurnoQuery : IRequest<IEnumerable<ComponenteCurricularDto>>
+    public class ObterComponentesCurricularesRegenciaPorAnoETurnoQuery : IRequest<IEnumerable<DisciplinaDto>>
     {
         public ObterComponentesCurricularesRegenciaPorAnoETurnoQuery(long ano, long turno)
         {
