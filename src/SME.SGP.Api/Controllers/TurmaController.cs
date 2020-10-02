@@ -29,13 +29,5 @@ namespace SME.SGP.Api.Controllers
         {
             return  Ok (await ObterTipoDeCalendarioDaTurmaUseCase.Executar(mediator, new ObterTipoDeCalendarioDaTurmaEntrada() { TurmaCodigo = turmaCodigo }));
         }
-
-        [HttpGet("{turmaId}/periodos-escolares/")]
-        [ProducesResponseType(typeof(IEnumerable<TipoCalendarioSugestaoDto>), 200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]        
-        public async Task<IActionResult> ObterBimetresPeriodosEscolaresTurma([FromServices] IObterPeriodoEscolarPorTurmaUseCase useCase, string turmaId)
-        {
-            return Ok(await useCase.Executar(turmaId));
-        }        
     }
 }
