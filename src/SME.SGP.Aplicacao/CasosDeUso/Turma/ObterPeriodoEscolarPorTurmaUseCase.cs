@@ -8,21 +8,18 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterPeriodoEscolarPorTurmaUseCase : IObterPeriodoEscolarPorTurmaUseCase
+    public class ObterPeriodoEscolarPorTurmaUseCase : AbstractUseCase, IObterPeriodoEscolarPorTurmaUseCase
     {
-        private readonly IMediator mediator;
-
-        public ObterPeriodoEscolarPorTurmaUseCase(IMediator mediator)
+        public ObterPeriodoEscolarPorTurmaUseCase(IMediator mediator) : base(mediator)
         {
-            this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<IEnumerable<PeriodoEscolarPorTurmaDto>> Executar(string turmaId)
+        public async Task<IEnumerable<PeriodoEscolarPorTurmaDto>> Executar(long turmaId)
         {
 
-            var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(turmaId));
+            var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(turmaId));
             if (turma == null)
-                throw new NegocioException($"Turma de codigo [{turmaId}] não localizada!");
+                throw new NegocioException($"Turma [{turmaId}] não localizada!");
 
             var periodos = await mediator.Send(new ObterPeriodosEscolaresPorAnoEModalidadeTurmaQuery(turma.ModalidadeCodigo, turma.AnoLetivo, turma.Semestre));       
             

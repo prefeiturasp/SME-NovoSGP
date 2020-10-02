@@ -6,6 +6,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IObterPeriodoEscolarPorTurmaUseCase
     {
-        Task<IEnumerable<PeriodoEscolarPorTurmaDto>> Executar(string turmaId);
+        Task<IEnumerable<PeriodoEscolarPorTurmaDto>> Executar(long turmaId);
     }
 }
