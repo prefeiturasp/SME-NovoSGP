@@ -1,16 +1,18 @@
-﻿using Newtonsoft.Json;
+﻿using MediatR;
+using Newtonsoft.Json;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ConsultasDisciplina : IConsultasDisciplina
+    public class ConsultasDisciplina : AbstractUseCase, IConsultasDisciplina
     {
         private static readonly long[] IDS_COMPONENTES_REGENCIA = { 2, 7, 8, 89, 138 };
         private readonly IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem;
@@ -27,7 +29,7 @@ namespace SME.SGP.Aplicacao
             IServicoUsuario servicoUsuario,
             IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ,
             IRepositorioComponenteCurricularJurema repositorioComponenteCurricular,
-            IRepositorioTurma repositorioTurma)
+            IRepositorioTurma repositorioTurma, IMediator mediator) : base(mediator)
         {
             this.servicoEOL = servicoEOL ??
                 throw new System.ArgumentNullException(nameof(servicoEOL));
@@ -86,6 +88,8 @@ namespace SME.SGP.Aplicacao
 
             var chaveCache = $"Disciplinas-{codigoTurma}-{usuarioLogado.PerfilAtual}";
 
+            var dataInicioNovoSGP = await mediator.Send(new ObterParametroSistemaPorTipoQuery(TipoParametroSistema.DataInicioSGP));
+
             if (!usuarioLogado.EhProfessor())
             {
                 var disciplinasCacheString = await repositorioCache.ObterAsync(chaveCache);
@@ -106,13 +110,13 @@ namespace SME.SGP.Aplicacao
             else
             {
                 var componentesCurriculares = await servicoEOL.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(codigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual);
-                
+
                 var componentesCurricularesJurema = await repositorioCache.Obter("ComponentesJurema", () => Task.FromResult(repositorioComponenteCurricular.Listar()));
                 if (componentesCurricularesJurema == null)
                 {
                     throw new NegocioException("Não foi possível recuperar a lista de componentes curriculares.");
                 }
-                
+
                 disciplinasDto = componentesCurriculares?.Select(disciplina => new DisciplinaDto()
                 {
                     CdComponenteCurricularPai = disciplina.CodigoComponenteCurricularPai,
@@ -122,7 +126,7 @@ namespace SME.SGP.Aplicacao
                     TerritorioSaber = disciplina.TerritorioSaber,
                     Compartilhada = disciplina.Compartilhada,
                     LancaNota = disciplina.LancaNota,
-                    PossuiObjetivos = disciplina.PossuiObjetivosDeAprendizagem(componentesCurricularesJurema, turmaPrograma, turma.ModalidadeCodigo, turma.Ano),
+                    PossuiObjetivos = disciplina.Regencia && turma.AnoLetivo < Convert.ToInt64(dataInicioNovoSGP) ? false : disciplina.PossuiObjetivosDeAprendizagem(componentesCurricularesJurema, turmaPrograma, turma.ModalidadeCodigo, turma.Ano),
                     ObjetivosAprendizagemOpcionais = disciplina.PossuiObjetivosDeAprendizagemOpcionais(componentesCurricularesJurema, turma.EnsinoEspecial),
                     RegistraFrequencia = disciplina.RegistraFrequencia
                 })?.OrderBy(c => c.Nome)?.ToList();
@@ -147,7 +151,7 @@ namespace SME.SGP.Aplicacao
                 if (!string.IsNullOrWhiteSpace(disciplinasCacheString))
                 {
                     disciplinasDto = JsonConvert.DeserializeObject<List<DisciplinaDto>>(disciplinasCacheString);
-                    return TratarRetornoDisciplinasPlanejamento(disciplinasDto, codigoDisciplina, regencia)?.OrderBy(c=>c.Nome)?.ToList();
+                    return TratarRetornoDisciplinasPlanejamento(disciplinasDto, codigoDisciplina, regencia)?.OrderBy(c => c.Nome)?.ToList();
                 }
             }
 
