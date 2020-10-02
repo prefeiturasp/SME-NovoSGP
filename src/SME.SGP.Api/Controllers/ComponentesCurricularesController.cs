@@ -36,7 +36,7 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpGet("turmas/{turmaId}/regencia/componentes")]
-        [ProducesResponseType(typeof(IEnumerable<ComponenteCurricularDto>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<DisciplinaDto>), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]

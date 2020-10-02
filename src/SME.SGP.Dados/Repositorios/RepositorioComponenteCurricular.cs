@@ -96,23 +96,33 @@ namespace SME.SGP.Dados.Repositorios
             }
         }
 
-        public async Task<IEnumerable<ComponenteCurricularDto>> ObterComponentesCurricularesRegenciaPorAnoETurno(long ano, long turno)
+        public async Task<IEnumerable<DisciplinaDto>> ObterComponentesCurricularesRegenciaPorAnoETurno(long ano, long turno)
         {
             var query = $@"select
-	                        cc.id as Codigo,
-	                        case
-		                        when cc.descricao_sgp is not null then cc.descricao_sgp
-		                        else cc.descricao
-	                        end as descricao
-                        from
-	                        componente_curricular_regencia ccr
-                        inner join componente_curricular cc on
-	                        ccr.componente_curricular_id = cc.id
-                        where
-	                        (turno = @turno
-	                        and ano = @ano) or turno is null";
+	                    cc.id as CodigoComponenteCurricular,
+	                    cc.area_conhecimento_id as AreaConhecimentoId,
+	                    cc.componente_curricular_pai_id as CdComponenteCurricularPai,
+	                    case
+		                    when cc.descricao_sgp is not null then cc.descricao_sgp
+		                    else cc.descricao
+	                    end as Nome,
+	                    cc.eh_base_nacional as EhBaseNacional,
+	                    cc.eh_compartilhada as Compartilhada,
+	                    cc.eh_regencia as Regencia,
+	                    cc.eh_territorio as TerritorioSaber,
+	                    cc.grupo_matriz_id as GrupoMatrizId,
+	                    cc.permite_lancamento_nota as LancaNota,
+	                    cc.permite_registro_frequencia as RegistraFrequencia
+                    from
+	                    componente_curricular_regencia ccr
+                    inner join componente_curricular cc on
+	                    ccr.componente_curricular_id = cc.id
+                    where
+	                    (turno = @turno
+	                    and ano = @ano)
+	                    or turno is null";
 
-            return (await database.Conexao.QueryAsync<ComponenteCurricularDto>(query, new { turno, ano}));
+            return (await database.Conexao.QueryAsync<DisciplinaDto>(query, new { turno, ano }));
         }
     }
 
