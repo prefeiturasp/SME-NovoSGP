@@ -72,7 +72,7 @@ export const EstiloDetalhe = styled.div`
     }
   }
 
-  .luiz {
+  .btn-baixar-relatorio {
     font-stretch: normal;
     height: 100%;
     letter-spacing: normal;
@@ -82,7 +82,7 @@ export const EstiloDetalhe = styled.div`
     background: #064f79;
     border-radius: 2.52361px;
     padding: 15px;
-   
+
     :hover {
       color: white !important;
     }

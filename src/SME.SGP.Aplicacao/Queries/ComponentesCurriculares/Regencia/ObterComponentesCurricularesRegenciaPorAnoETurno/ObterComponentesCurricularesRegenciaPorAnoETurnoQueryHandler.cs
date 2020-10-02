@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterComponentesCurricularesRegenciaPorAnoETurnoQueryHandler : IRequestHandler<ObterComponentesCurricularesRegenciaPorAnoETurnoQuery, IEnumerable<ComponenteCurricularDto>>
+    public class ObterComponentesCurricularesRegenciaPorAnoETurnoQueryHandler : IRequestHandler<ObterComponentesCurricularesRegenciaPorAnoETurnoQuery, IEnumerable<DisciplinaDto>>
     {
         private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
         public ObterComponentesCurricularesRegenciaPorAnoETurnoQueryHandler(IRepositorioComponenteCurricular repositorioComponenteCurricular)
@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
         }
 
-        public async Task<IEnumerable<ComponenteCurricularDto>> Handle(ObterComponentesCurricularesRegenciaPorAnoETurnoQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<DisciplinaDto>> Handle(ObterComponentesCurricularesRegenciaPorAnoETurnoQuery request, CancellationToken cancellationToken)
         {
             return await repositorioComponenteCurricular.ObterComponentesCurricularesRegenciaPorAnoETurno(request.Ano, request.Turno);
         }

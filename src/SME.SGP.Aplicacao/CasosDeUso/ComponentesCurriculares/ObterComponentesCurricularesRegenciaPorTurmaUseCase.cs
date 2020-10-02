@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<IEnumerable<ComponenteCurricularDto>> Executar(long turmaId)
+        public async Task<IEnumerable<DisciplinaDto>> Executar(long turmaId)
         {
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(turmaId));
             
