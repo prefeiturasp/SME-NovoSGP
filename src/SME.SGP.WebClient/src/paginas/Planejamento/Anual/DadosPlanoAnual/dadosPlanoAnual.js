@@ -64,14 +64,10 @@ const DadosPlanoAnual = () => {
   // Carrega a lista de bimestres para montar os card collapse com 2 ou 4 bimestres!
   const obterBimestresPlanoAnual = useCallback(() => {
     dispatch(setExibirLoaderPlanoAnual(true));
-    ServicoPlanoAnual.obterBimestresPlanoAnual(
-      turmaSelecionada.modalidade,
-      turmaSelecionada.anoLetivo,
-      turmaSelecionada.periodo
-    )
+    return ServicoPlanoAnual.obterBimestresPlanoAnual(turmaSelecionada.id)
       .then(resposta => {
         dispatch(setBimestresPlanoAnual(resposta.data));
-        // obterListaComponentesCurricularesPlanejamento();
+        return resposta.data;
       })
       .catch(e => {
         dispatch(setBimestresPlanoAnual([]));
@@ -80,11 +76,7 @@ const DadosPlanoAnual = () => {
       .finally(() => {
         dispatch(setExibirLoaderPlanoAnual(false));
       });
-  }, [
-    dispatch,
-    turmaSelecionada,
-    // obterListaComponentesCurricularesPlanejamento,
-  ]);
+  }, [dispatch, turmaSelecionada]);
 
   /**
    * carrega a lista de bimestres com os dados dos planos
@@ -98,20 +90,21 @@ const DadosPlanoAnual = () => {
       turmaSelecionada &&
       turmaSelecionada.turma
     ) {
-      obterBimestresPlanoAnual();
-
-      // TODO Vai ter um endpoint para obter essa informação!
-      const ehMigrado = true;
-      dispatch(setEhRegistroMigrado(ehMigrado));
-      // Quando for MIGRADO mostrar somente um tab com o componente curricular já selecionado!
-      if (ehMigrado) {
-        montarListaComponenteCurricularesPlanejamento();
-      } else if (componenteCurricular.regencia) {
-        // Quando for REGENCIA carregar a lista de componentes curriculares!
-        obterListaComponentesCurricularesPlanejamento();
-      } else {
-        montarListaComponenteCurricularesPlanejamento();
-      }
+      obterBimestresPlanoAnual().then(dados => {
+        if (dados && dados.length) {
+          const ehMigrado = dados.find(item => item.migrado);
+          dispatch(setEhRegistroMigrado(!!ehMigrado));
+          // Quando for MIGRADO mostrar somente um tab com o componente curricular já selecionado!
+          if (ehMigrado) {
+            montarListaComponenteCurricularesPlanejamento();
+          } else if (componenteCurricular.regencia) {
+            // Quando for REGENCIA carregar a lista de componentes curriculares!
+            obterListaComponentesCurricularesPlanejamento();
+          } else {
+            montarListaComponenteCurricularesPlanejamento();
+          }
+        }
+      });
     }
   }, [
     obterListaComponentesCurricularesPlanejamento,
