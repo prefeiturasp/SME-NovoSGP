@@ -21,4 +21,4 @@ insert into public.parametros_sistema (nome,
                                         null,
                                         null,
                                         'Carga Inicial',
-                                        null)
+                                        null);
