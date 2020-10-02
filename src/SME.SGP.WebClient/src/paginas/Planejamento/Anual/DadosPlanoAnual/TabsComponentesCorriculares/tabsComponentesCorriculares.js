@@ -117,7 +117,7 @@ const TabsComponentesCorriculares = props => {
             {listaComponentesCurricularesPlanejamento.map(item => {
               return (
                 <TabPane
-                  tab={item.nome}
+                  tab={<span title={item.nome}>{item.nome}</span>}
                   key={String(item.codigoComponenteCurricular)}
                 >
                   {String(
