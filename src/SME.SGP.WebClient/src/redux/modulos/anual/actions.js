@@ -62,3 +62,8 @@ export const setClicouNoBimestre = payload => ({
   type: '@planoAnual/setClicouNoBimestre',
   payload,
 });
+
+export const setEhRegistroMigrado = payload => ({
+  type: '@planoAnual/setEhRegistroMigrado',
+  payload,
+});
