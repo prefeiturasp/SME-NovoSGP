@@ -136,8 +136,8 @@ const CampoData = ({
   const Icone = carregando ? (
     <Icon style={{ fontSize: '16px', lineHeight: 0 }} type="loading" spin />
   ) : (
-    <Icon style={{ fontSize: '16px', lineHeight: 0 }} type="calendar" />
-  );
+      <Icon style={{ fontSize: '16px', lineHeight: 0 }} type="calendar" />
+    );
 
   const campoDataAntComValidacoes = () => {
     return (
@@ -146,34 +146,34 @@ const CampoData = ({
           field: { value },
           form: { setFieldValue, setFieldTouched, errors },
         }) => (
-          <div>
             <div>
-              <DatePicker
-                disabled={desabilitado}
-                format={formatoData}
-                locale={locale}
-                placeholder={placeholder}
-                suffixIcon={Icone}
-                name={name}
-                id={id || name}
-                onBlur={executaOnBlur}
-                className={
-                  form
-                    ? `${possuiErro() ? 'is-invalid' : ''} ${className || ''}`
-                    : ''
-                }
-                onChange={valorData => {
-                  setFieldValue(name, valorData || '');
-                  onChange(valorData);
-                  setFieldTouched(name, true, true);
-                }}
-                disabledDate={habilitarDatas}
-                showToday={false}
-                value={value || null}
-              />
+              <div>
+                <DatePicker
+                  disabled={desabilitado}
+                  format={formatoData}
+                  locale={locale}
+                  placeholder={placeholder}
+                  suffixIcon={Icone}
+                  name={name}
+                  id={id || name}
+                  onBlur={executaOnBlur}
+                  className={
+                    form
+                      ? `${possuiErro() ? 'is-invalid' : ''} ${className || ''}`
+                      : ''
+                  }
+                  onChange={valorData => {
+                    setFieldValue(name, valorData || '');
+                    onChange(valorData);
+                    setFieldTouched(name, true, true);
+                  }}
+                  disabledDate={habilitarDatas}
+                  showToday={false}
+                  value={value || null}
+                />
+              </div>
             </div>
-          </div>
-        )}
+          )}
       </Field>
     );
   };
@@ -237,8 +237,8 @@ const CampoData = ({
     return (form && form.touched[name] && form.errors[name]) || temErro ? (
       <span>{(form && form.errors[name]) || mensagemErro}</span>
     ) : (
-      ''
-    );
+        ''
+      );
   };
 
   return (
@@ -279,7 +279,7 @@ CampoData.defaultProps = {
   label: '',
   desabilitado: false,
   somenteHora: false,
-  onChange: () => {},
+  onChange: () => { },
   valor: null,
   form: null,
   name: null,
@@ -298,9 +298,9 @@ Yup.addMethod(
   Yup.mixed,
   'dataMenorIgualQue',
   // eslint-disable-next-line func-names
-  function(nomeDataInicial, nomeDataFinal, mensagem) {
+  function (nomeDataInicial, nomeDataFinal, mensagem) {
     // eslint-disable-next-line func-names
-    return this.test('dataMenorIgualQue', mensagem, function() {
+    return this.test('dataMenorIgualQue', mensagem, function () {
       let dataValida = true;
       const dataInicial = this.parent[nomeDataInicial];
       const dataFinal = this.parent[nomeDataFinal];
@@ -321,9 +321,9 @@ Yup.addMethod(
   Yup.mixed,
   'dataMenorQue',
   // eslint-disable-next-line func-names
-  function(nomeDataInicial, nomeDataFinal, mensagem) {
+  function (nomeDataInicial, nomeDataFinal, mensagem) {
     // eslint-disable-next-line func-names
-    return this.test('dataMenorQue', mensagem, function() {
+    return this.test('dataMenorQue', mensagem, function () {
       let dataValida = true;
       const dataInicial = this.parent[nomeDataInicial];
       const dataFinal = this.parent[nomeDataFinal];
@@ -335,4 +335,5 @@ Yup.addMethod(
     });
   }
 );
+
 export { CampoData, momentSchema };
