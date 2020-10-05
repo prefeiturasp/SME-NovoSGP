@@ -78,7 +78,10 @@ namespace SME.SGP.Aplicacao
                 }
                 else
                 {
-                    await repositorioPlanejamentoAnualObjetivosAprendizagem.RemoverTodosPorPlanejamentoAnualPeriodoEscolarId(planejamentoAnualPeriodoEscolar.Id);
+                    foreach(var componente in periodo.Componentes)
+                    {
+                        await repositorioPlanejamentoAnualObjetivosAprendizagem.RemoverTodosPorPlanejamentoAnualPeriodoEscolarIdEComponenteCurricularId(planejamentoAnualPeriodoEscolar.Id, componente.ComponenteCurricularId);
+                    }
                 }
 
                 var auditoria = new PlanejamentoAnualPeriodoEscolarDto
