@@ -34,6 +34,22 @@ namespace SME.SGP.Dados.Repositorios
             await database.Conexao.ExecuteAsync(sql, new { id });
         }
 
+        public async Task RemoverTodosPorPlanejamentoAnualPeriodoEscolarIdEComponenteCurricularId(long id, long componenteCurricularId)
+        {
+            var sql = @"delete
+                            from
+                                planejamento_anual_objetivos_aprendizagem    
+                            where
+                                planejamento_anual_componente_id in (
+                                select 
+                                    id 
+                                from
+                                    planejamento_anual_componente
+                                where
+                                    planejamento_anual_periodo_escolar_id = @id and componente_curricular_id = @componenteCurricularId)";
+            await database.Conexao.ExecuteAsync(sql, new { id, componenteCurricularId });
+        }
+
         public void SalvarVarios(IEnumerable<PlanejamentoAnualObjetivoAprendizagem> objetivos, long planejamentoAnualComponenteId)
         {
             var sql = @"copy planejamento_anual_objetivos_aprendizagem ( 
