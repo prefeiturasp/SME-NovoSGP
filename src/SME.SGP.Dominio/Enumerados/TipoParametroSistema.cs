@@ -56,6 +56,7 @@
 
         //PAP        
         PAPInicioAnoLetivo = 28,
+        DataInicioSGP = 29,
 
         //Sistema
         HabilitarServicosEmBackground = 100

@@ -22,7 +22,7 @@ const TransferenciaLista = props => {
     columns: [],
     dataSource: [],
     selectedRowKeys: [],
-    selectMultipleRows: true,
+    selectMultipleRows: false,
     pagination: false,
     scroll: { y: 400 },
     title: '',

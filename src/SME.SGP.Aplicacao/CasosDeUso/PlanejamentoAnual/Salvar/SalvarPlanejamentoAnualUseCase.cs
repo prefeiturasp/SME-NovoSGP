@@ -1,6 +1,8 @@
 ﻿using MediatR;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -17,7 +19,7 @@ namespace SME.SGP.Aplicacao
             this.unitOfWork = unitOfWork ?? throw new System.ArgumentNullException(nameof(unitOfWork));
         }
         public async Task<PlanejamentoAnualAuditoriaDto> Executar(long turmaId, long componenteCurricularId, SalvarPlanejamentoAnualDto dto)
-        {
+        {           
             unitOfWork.IniciarTransacao();
 
             var auditoria = await mediator.Send(new SalvarPlanejamentoAnualCommand()

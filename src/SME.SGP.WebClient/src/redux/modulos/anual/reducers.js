@@ -15,6 +15,7 @@ const inicial = {
   clicouNoBimestre: [],
   exibirModalCopiarConteudo: false,
   listaTurmasParaCopiar: [],
+  ehRegistroMigrado: false,
 };
 
 export default function planoAnual(state = inicial, action) {
@@ -60,6 +61,7 @@ export default function planoAnual(state = inicial, action) {
           clicouNoBimestre: [],
           exibirModalCopiarConteudo: false,
           listaTurmasParaCopiar: [],
+          ehRegistroMigrado: false,
         };
       }
       case '@planoAnual/setTabAtualComponenteCurricular': {
@@ -119,6 +121,7 @@ export default function planoAnual(state = inicial, action) {
           clicouNoBimestre: dados,
         };
       }
+
       case '@planoAnual/setExibirModalCopiarConteudo': {
         return {
           ...draft,
@@ -129,6 +132,13 @@ export default function planoAnual(state = inicial, action) {
         return {
           ...draft,
           listaTurmasParaCopiar: action.payload,
+        };
+      }
+
+      case '@planoAnual/setEhRegistroMigrado': {
+        return {
+          ...draft,
+          ehRegistroMigrado: action.payload,
         };
       }
 

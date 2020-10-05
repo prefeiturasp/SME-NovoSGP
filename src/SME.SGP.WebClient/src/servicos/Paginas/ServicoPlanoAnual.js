@@ -39,9 +39,16 @@ class ServicoPlanoAnual {
     return api.post(`v1/planos/anual/migrar`, migrarConteudoPlanoAnual);
   };
 
-  obterBimestresPlanoAnual = (modalidade, anoLetivo, semestre) => {
-    let url = `v1/periodo-escolar/modalidades/${modalidade}/anos-letivos/${anoLetivo}`;
-    if (semestre) url = `${url}?semestre=${semestre}`;
+  obterBimestresPlanoAnual = turmaId => {
+    return api.get(`v1/periodo-escolar/turmas/${turmaId}`);
+  };
+
+  obterObjetivosPorAnoEComponenteCurricularNovo = (
+    ano,
+    componenteCurricularId,
+    ensinoEspecial
+  ) => {
+    const url = `v1/objetivos-aprendizagem/${ano}/${componenteCurricularId}?ensinoEspecial=${ensinoEspecial}`;
     return api.get(url);
   };
 
@@ -155,10 +162,10 @@ class ServicoPlanoAnual {
       return listaObjetivos;
     }
     dispatch(setExibirLoaderPlanoAnual(true));
-    const objetivos = await this.obterObjetivosPorAnoEComponenteCurricular(
+    const objetivos = await this.obterObjetivosPorAnoEComponenteCurricularNovo(
       ano,
-      ensinoEspecial,
-      [codigoComponenteCurricular]
+      codigoComponenteCurricular,
+      ensinoEspecial
     )
       .catch(e => erros(e))
       .finally(() => {
