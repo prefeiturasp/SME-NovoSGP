@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
             IServicoUsuario servicoUsuario,
             IRepositorioComponenteCurricularJurema repositorioComponenteCurricularJurema,
             IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ,
-            IRepositorioComponenteCurricularJurema repositorioComponenteCurricular,
+            IRepositorioComponenteCurricular repositorioComponenteCurricular,
             IRepositorioTurma repositorioTurma, IMediator mediator) : base(mediator)
         {
             this.servicoEOL = servicoEOL ??
