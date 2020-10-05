@@ -11,5 +11,7 @@ namespace SME.SGP.Infra
 
         [JsonProperty("codTurma")]
         public int TurmaId { get; set; }
+
+        public long Id { get; set; }
     }
 }
