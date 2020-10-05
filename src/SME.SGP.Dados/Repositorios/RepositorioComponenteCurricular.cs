@@ -99,7 +99,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<DisciplinaDto>> ObterComponentesCurricularesRegenciaPorAnoETurno(long ano, long turno)
         {
             var query = $@"select
-	                    cc.id as CodigoComponenteCurricular,
+	                    distinct cc.id as CodigoComponenteCurricular,
 	                    cc.area_conhecimento_id as AreaConhecimentoId,
 	                    cc.componente_curricular_pai_id as CdComponenteCurricularPai,
 	                    case

@@ -41,7 +41,7 @@ namespace SME.SGP.Aplicacao
             List<PeriodoEscolar> excecoesAtribuicao = new List<PeriodoEscolar>();
             List<PeriodoEscolar> excecoesEmAberto = new List<PeriodoEscolar>();
             var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
-            var turma = await mediator.Send(new ObterTurmaPorIdQuery(comando.TurmaId));
+            var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(comando.TurmaId));
             if (turma == null)
                 throw new NegocioException($"Turma de id [{turma.Id}] não localizada!");
 
