@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<DisciplinaDto>> Executar(long turmaId)
         {
-            var turma = await mediator.Send(new ObterTurmaPorIdQuery(turmaId));
+            var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(turmaId));
             
             if(turma == null)
                 throw new NegocioException("Turma não encontrada.");
