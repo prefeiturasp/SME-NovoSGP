@@ -13,7 +13,7 @@ import { ContainerListaObjetivos } from './listaObjetivos.css';
 
 const ListaObjetivos = React.memo(props => {
   const { dadosBimestre, tabAtualComponenteCurricular } = props;
-  const { bimestre } = dadosBimestre;
+  const { bimestre, periodoAberto } = dadosBimestre;
 
   const dispatch = useDispatch();
 
@@ -129,6 +129,7 @@ const ListaObjetivos = React.memo(props => {
     dataSource: dadosEsquerda,
     onSelectRow: setIdsSelecionadsEsquerda,
     selectedRowKeys: idsSelecionadsEsquerda,
+    selectMultipleRows: periodoAberto,
   };
 
   const parametrosListaDireita = {
@@ -152,6 +153,7 @@ const ListaObjetivos = React.memo(props => {
     dataSource: dadosDireita,
     onSelectRow: setIdsSelecionadsDireita,
     selectedRowKeys: idsSelecionadsDireita,
+    selectMultipleRows: periodoAberto,
   };
 
   const obterListaComIdsSelecionados = (list, ids) => {
