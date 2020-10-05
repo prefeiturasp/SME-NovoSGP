@@ -8,9 +8,10 @@ export const ContainerListaObjetivos = styled.div`
   }
 
   .desc-descricao {
-    font-size: 9px !important;
+    font-size: 12px !important;
     padding-top: 3px !important;
     padding-bottom: 3px !important;
+    height: 45px;
   }
 
   .fundo-codigo-lista-direita {

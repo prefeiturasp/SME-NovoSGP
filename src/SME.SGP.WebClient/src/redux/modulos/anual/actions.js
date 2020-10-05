@@ -72,3 +72,8 @@ export const setListaTurmasParaCopiar = payload => ({
   type: '@planoAnual/setListaTurmasParaCopiar',
   payload,
 });
+
+export const setEhRegistroMigrado = payload => ({
+  type: '@planoAnual/setEhRegistroMigrado',
+  payload,
+});

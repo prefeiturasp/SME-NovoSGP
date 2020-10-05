@@ -15,6 +15,7 @@ import BotoesAcoesPlanoAnual from './DadosPlanoAnual/BotoesAcoes/botoesAcoesPlan
 import ComponenteCurricularPlanoAnual from './DadosPlanoAnual/ComponenteCurricular/componenteCurricularPlanoAnual';
 import DadosPlanoAnual from './DadosPlanoAnual/dadosPlanoAnual';
 import LoaderPlanoAnual from './DadosPlanoAnual/LoaderPlanoAnual/loaderPlanoAnual';
+import MarcadorMigrado from './DadosPlanoAnual/MarcadorMigrado/MarcadorMigrado';
 import ModalErrosPlanoAnual from './DadosPlanoAnual/ModalErros/ModalErrosPlanoAnual';
 import ModalCopiarConteudoPlanoAnual from './DadosPlanoAnual/ModalCopiarConteudoPlanoAnual/modalCopiarConteudoPlanoAnual';
 import { ContainerPlanoAnual } from './planoAnual.css';
@@ -85,7 +86,11 @@ const PlanoAnual = () => {
             modalidadesFiltroPrincipal,
             turmaSelecionada
           )}
-        />
+        >
+          <div className="col-md-2 float-right">
+            <MarcadorMigrado />
+          </div>
+        </Cabecalho>
         <Card>
           <div className="col-md-12">
             <div className="row">
