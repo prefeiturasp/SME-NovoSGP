@@ -197,7 +197,6 @@ class ServicoSalvarPlanoAnual {
     if (planoAnualEmEdicao) {
       // Voltar para a tela e não executa a ação!
 
-      debugger;
       if (componenteCurricular.possuiObjetivos) {
         const temListaObjetivosSemDados = !listaObjetivosSemDados();
         if (temListaObjetivosSemDados) {
