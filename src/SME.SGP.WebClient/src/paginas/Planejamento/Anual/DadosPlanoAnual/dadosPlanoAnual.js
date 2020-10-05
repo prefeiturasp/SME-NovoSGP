@@ -2,14 +2,15 @@ import React, { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   setBimestresPlanoAnual,
-  setListaComponentesCurricularesPlanejamento,
+  setEhRegistroMigrado,
   setExibirLoaderPlanoAnual,
+  setListaComponentesCurricularesPlanejamento,
 } from '~/redux/modulos/anual/actions';
 import { erros } from '~/servicos/alertas';
+import ServicoComponentesCurriculares from '~/servicos/Paginas/ComponentesCurriculares/ServicoComponentesCurriculares';
 import ServicoPlanoAnual from '~/servicos/Paginas/ServicoPlanoAnual';
 import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 import BimestresPlanoAnual from './BimestresPlanoAnual/bimestresPlanoAnual';
-import ServicoDisciplinas from '~/servicos/Paginas/ServicoDisciplina';
 
 const DadosPlanoAnual = () => {
   const dispatch = useDispatch();
@@ -34,22 +35,12 @@ const DadosPlanoAnual = () => {
 
   // Carrega lista de componentes para montar as TABS!
   const obterListaComponentesCurricularesPlanejamento = useCallback(() => {
-    const turmaPrograma = !!(turmaSelecionada.ano === '0');
     dispatch(setExibirLoaderPlanoAnual(true));
-    ServicoDisciplinas.obterDisciplinasPlanejamento(
-      componenteCurricular.codigoComponenteCurricular,
-      turmaSelecionada.turma,
-      turmaPrograma,
-      componenteCurricular.regencia
+    ServicoComponentesCurriculares.obterComponetensCuricularesRegencia(
+      turmaSelecionada.id
     )
       .then(resposta => {
-        const componestes = resposta.data.map(c => {
-          return {
-            ...c,
-            selecionada: false,
-          };
-        });
-        dispatch(setListaComponentesCurricularesPlanejamento(componestes));
+        dispatch(setListaComponentesCurricularesPlanejamento(resposta.data));
       })
       .catch(e => {
         dispatch(setBimestresPlanoAnual([]));
@@ -58,19 +49,15 @@ const DadosPlanoAnual = () => {
       .finally(() => {
         dispatch(setExibirLoaderPlanoAnual(false));
       });
-  }, [dispatch, componenteCurricular, turmaSelecionada]);
+  }, [dispatch, turmaSelecionada]);
 
   // Carrega a lista de bimestres para montar os card collapse com 2 ou 4 bimestres!
   const obterBimestresPlanoAnual = useCallback(() => {
     dispatch(setExibirLoaderPlanoAnual(true));
-    ServicoPlanoAnual.obterBimestresPlanoAnual(
-      turmaSelecionada.modalidade,
-      turmaSelecionada.anoLetivo,
-      turmaSelecionada.periodo
-    )
+    return ServicoPlanoAnual.obterBimestresPlanoAnual(turmaSelecionada.id)
       .then(resposta => {
         dispatch(setBimestresPlanoAnual(resposta.data));
-        obterListaComponentesCurricularesPlanejamento();
+        return resposta.data;
       })
       .catch(e => {
         dispatch(setBimestresPlanoAnual([]));
@@ -79,11 +66,7 @@ const DadosPlanoAnual = () => {
       .finally(() => {
         dispatch(setExibirLoaderPlanoAnual(false));
       });
-  }, [
-    dispatch,
-    turmaSelecionada,
-    obterListaComponentesCurricularesPlanejamento,
-  ]);
+  }, [dispatch, turmaSelecionada]);
 
   /**
    * carrega a lista de bimestres com os dados dos planos
@@ -97,13 +80,21 @@ const DadosPlanoAnual = () => {
       turmaSelecionada &&
       turmaSelecionada.turma
     ) {
-      obterBimestresPlanoAnual();
-      // Quando não for regencia vai ter somente uma tab que é o componente curricular selecionado do SelectComponent!
-      if (componenteCurricular.regencia) {
-        obterListaComponentesCurricularesPlanejamento();
-      } else {
-        montarListaComponenteCurricularesPlanejamento();
-      }
+      obterBimestresPlanoAnual().then(dados => {
+        if (dados && dados.length) {
+          const ehMigrado = dados.find(item => item.migrado);
+          dispatch(setEhRegistroMigrado(!!ehMigrado));
+          // Quando for MIGRADO mostrar somente um tab com o componente curricular já selecionado!
+          if (ehMigrado) {
+            montarListaComponenteCurricularesPlanejamento();
+          } else if (componenteCurricular.regencia) {
+            // Quando for REGENCIA carregar a lista de componentes curriculares!
+            obterListaComponentesCurricularesPlanejamento();
+          } else {
+            montarListaComponenteCurricularesPlanejamento();
+          }
+        }
+      });
     }
   }, [
     obterListaComponentesCurricularesPlanejamento,

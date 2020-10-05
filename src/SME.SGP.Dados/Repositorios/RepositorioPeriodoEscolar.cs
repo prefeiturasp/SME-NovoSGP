@@ -128,7 +128,7 @@ namespace SME.SGP.Dados.Repositorios
             if (bimestre > 0)
                 query.AppendLine(" and pe.bimestre = @bimestre");
 
-            return await database.Conexao.QueryFirstAsync<int>(query.ToString(), new { tipoCalendarioId, dataReferencia, bimestre }) > 0;
+            return (await database.Conexao.QueryFirstAsync<int>(query.ToString(), new { tipoCalendarioId, dataReferencia, bimestre })) > 0;
         }
 
         public async Task<PeriodoEscolar> ObterPorTipoCalendarioEBimestreAsync(long tipoCalendarioId, int bimestre)

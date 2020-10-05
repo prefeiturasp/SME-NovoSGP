@@ -13,6 +13,7 @@ const inicial = {
   exibirModalErrosPlanoAnual: false,
   exibirLoaderPlanoAnual: false,
   clicouNoBimestre: [],
+  ehRegistroMigrado: false,
 };
 
 export default function planoAnual(state = inicial, action) {
@@ -48,7 +49,6 @@ export default function planoAnual(state = inicial, action) {
           listaComponentesCurricularesPlanejamento: [],
           bimestresPlanoAnual: [],
           planoAnualEmEdicao: false,
-          // componenteCurricular: undefined,
           tabAtualComponenteCurricular: [],
           dadosBimestresPlanoAnual: [],
           dadosEditadosBimestresPlanoAnual: [],
@@ -57,6 +57,7 @@ export default function planoAnual(state = inicial, action) {
           exibirModalErrosPlanoAnual: false,
           exibirLoaderPlanoAnual: false,
           clicouNoBimestre: [],
+          ehRegistroMigrado: false,
         };
       }
       case '@planoAnual/setTabAtualComponenteCurricular': {
@@ -114,6 +115,12 @@ export default function planoAnual(state = inicial, action) {
         return {
           ...draft,
           clicouNoBimestre: dados,
+        };
+      }
+      case '@planoAnual/setEhRegistroMigrado': {
+        return {
+          ...draft,
+          ehRegistroMigrado: action.payload,
         };
       }
 

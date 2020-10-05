@@ -12,7 +12,7 @@ import servicoSalvarPlanoAnual from '../../servicoSalvarPlanoAnual';
 
 const DescricaoPlanejamento = React.memo(props => {
   const { dadosBimestre, tabAtualComponenteCurricular } = props;
-  const { bimestre } = dadosBimestre;
+  const { bimestre, periodoAberto } = dadosBimestre;
 
   const dispatch = useDispatch();
 
@@ -94,14 +94,18 @@ const DescricaoPlanejamento = React.memo(props => {
             id={`bimestre-${bimestre}-editor`}
             inicial={obterDadosComponenteAtual()?.descricao}
             onChange={v => {
-              if (obterDadosComponenteAtual()?.descricao !== v) {
+              if (
+                periodoAberto &&
+                obterDadosComponenteAtual()?.descricao !== v
+              ) {
                 dispatch(setPlanoAnualEmEdicao(true));
                 onChange(v);
               }
             }}
             desabilitar={
-              !obterDadosComponenteAtual()?.objetivosAprendizagemId?.length &&
-              componenteCurricular.possuiObjetivos
+              (!obterDadosComponenteAtual()?.objetivosAprendizagemId?.length &&
+                componenteCurricular.possuiObjetivos) ||
+              !periodoAberto
             }
           />
           {obterAuditoria()}
