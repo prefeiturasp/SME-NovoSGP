@@ -24,9 +24,6 @@ namespace SME.SGP.Aplicacao
             RuleFor(a => a.Ano)
                 .NotEmpty()
                 .WithMessage("O ano precisa ser informado");
-            RuleFor(a => a.Turno)
-                .NotEmpty()
-                .WithMessage("O turno precisa ser informado");
         }
     }
 }
