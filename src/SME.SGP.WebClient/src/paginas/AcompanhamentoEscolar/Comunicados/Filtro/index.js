@@ -497,7 +497,7 @@ function Filtro({ onFiltrar }) {
                 }}
               />
             </Grid>
-            <Grid cols={2}>
+            {/* <Grid cols={2}>
               <Label control="ano" text="Ano" />
               <SelectComponent
                 form={form}
@@ -515,8 +515,8 @@ function Filtro({ onFiltrar }) {
                   onSemestreChange(x);
                 }}
               />
-            </Grid>
-            <Grid cols={4}>
+            </Grid> */}
+            <Grid cols={6}>
               <Label control="turmas" text="Turma" />
               <SelectComponent
                 form={form}
