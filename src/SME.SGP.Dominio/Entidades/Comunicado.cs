@@ -32,6 +32,7 @@ namespace SME.SGP.Dominio
         public List<ComunicadoGrupo> Grupos { get; set; }
         public IList<ComunicadoAluno> Alunos { get; set; }
         public string Titulo { get; set; }
+        public string SeriesResumidas { get; set; }
 
         public void AdicionarGrupo(ComunicadoGrupo grupo)
         {
