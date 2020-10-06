@@ -13,7 +13,7 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<PlanejamentoAnualPeriodoEscolar> ObterPorPlanejamentoAnualId(long id, long periodoEscolarId)
+        public async Task<PlanejamentoAnualPeriodoEscolar> ObterPorPlanejamentoAnualIdEPeriodoId(long id, long periodoEscolarId)
         {
             var sql = "select * from planejamento_anual_periodo_escolar where planejamento_anual_id = @id and periodo_escolar_id = @periodoEscolarId";
             return await database.Conexao.QueryFirstOrDefaultAsync<PlanejamentoAnualPeriodoEscolar>(sql, new { id, periodoEscolarId });
@@ -76,5 +76,17 @@ namespace SME.SGP.Dados.Repositorios
             return periodos.FirstOrDefault();
         }
 
+        public async Task<IEnumerable<PlanejamentoAnualPeriodoEscolarResumoDto>> ObterPorPlanejamentoAnualId(long planejamentoAnualId)
+        {
+            var sql = @"select
+	                    pape.id,
+	                    bimestre
+                    from
+	                    planejamento_anual_periodo_escolar pape
+                    inner join periodo_escolar pe on
+	                    pape.periodo_escolar_id = pe.id
+                    where planejamento_anual_id = @planejamentoAnualId";
+            return await database.Conexao.QueryAsync<PlanejamentoAnualPeriodoEscolarResumoDto>(sql, new { planejamentoAnualId });
+        }
     }
 }

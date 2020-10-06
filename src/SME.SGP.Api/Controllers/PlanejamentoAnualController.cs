@@ -90,28 +90,9 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("{planejamentoAnualId}/preiodos-escolares/copia")]
         [ProducesResponseType(typeof(IEnumerable<PlanejamentoAnualPeriodoEscolarResumoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterPeriodosEscolaresParaCopia(long planejamentoAnualId)
+        public async Task<IActionResult> ObterPeriodosEscolaresParaCopia(long planejamentoAnualId, [FromServices] IObterPeriodosEscolaresParaCopiaPorPlanejamentoAnualIdUseCase useCase)
         {
-            // TODO Incluir UseCase de consulta de Periodos Escolares com conteúdo para cópia
-
-            return Ok(new List<PlanejamentoAnualPeriodoEscolarResumoDto>()
-            {
-                new PlanejamentoAnualPeriodoEscolarResumoDto()
-                {
-                    Id = 11,
-                    Bimestre = 1
-                },
-                new PlanejamentoAnualPeriodoEscolarResumoDto()
-                {
-                    Id = 22,
-                    Bimestre = 2
-                },
-                new PlanejamentoAnualPeriodoEscolarResumoDto()
-                {
-                    Id = 33,
-                    Bimestre = 3
-                },
-            });
+            return Ok(await useCase.Executar(planejamentoAnualId));
         }
 
     }
