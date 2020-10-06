@@ -8,8 +8,12 @@ import RotasDto from '~/dtos/rotasDto';
 import {
   limparDadosPlanoAnual,
   setComponenteCurricularPlanoAnual,
+  setPlanoAnualSomenteConsulta,
 } from '~/redux/modulos/anual/actions';
-import { obterDescricaoNomeMenu } from '~/servicos/servico-navegacao';
+import {
+  obterDescricaoNomeMenu,
+  verificaSomenteConsulta,
+} from '~/servicos/servico-navegacao';
 import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 import BotoesAcoesPlanoAnual from './DadosPlanoAnual/BotoesAcoes/botoesAcoesPlanoAnual';
 import ComponenteCurricularPlanoAnual from './DadosPlanoAnual/ComponenteCurricular/componenteCurricularPlanoAnual';
@@ -26,11 +30,26 @@ const PlanoAnual = () => {
   const usuario = useSelector(store => store.usuario);
   const { turmaSelecionada } = usuario;
 
+  const permissoesTela = usuario.permissoes[RotasDto.PLANO_ANUAL];
+
   const modalidadesFiltroPrincipal = useSelector(
     store => store.filtro.modalidades
   );
 
   const [turmaInfantil, setTurmaInfantil] = useState(false);
+
+  useEffect(() => {
+    const naoSetarSomenteConsultaNoStore = ehTurmaInfantil(
+      modalidadesFiltroPrincipal,
+      turmaSelecionada
+    );
+
+    const soConsulta = verificaSomenteConsulta(
+      permissoesTela,
+      naoSetarSomenteConsultaNoStore
+    );
+    dispatch(setPlanoAnualSomenteConsulta(soConsulta));
+  }, [permissoesTela, modalidadesFiltroPrincipal, turmaSelecionada, dispatch]);
 
   const resetarInfomacoes = useCallback(() => {
     dispatch(limparDadosPlanoAnual());

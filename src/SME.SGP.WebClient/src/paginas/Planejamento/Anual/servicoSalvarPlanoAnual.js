@@ -189,7 +189,10 @@ class ServicoSalvarPlanoAnual {
 
         sucesso('Suas informações foram salvas com sucesso.');
         dispatch(setExibirLoaderPlanoAnual(false));
-        ServicoPlanoAnual.obterPlanejamentoId();
+        ServicoPlanoAnual.obterPlanejamentoId(
+          turmaSelecionada.id,
+          componenteCurricular.codigoComponenteCurricular
+        );
         return true;
       }
       dispatch(setExibirLoaderPlanoAnual(false));
