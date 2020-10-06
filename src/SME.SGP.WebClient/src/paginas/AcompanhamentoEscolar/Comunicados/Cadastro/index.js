@@ -127,6 +127,8 @@ const ComunicadosCadastro = ({ match }) => {
 
   const [alunosLoader, setAlunosLoader] = useState(false);
 
+  const [unidadeEscolarUE, setUnidadeEscolarUE] = useState(false);
+
   useEffect(() => {
     setSomenteConsulta(
       verificaSomenteConsulta(
@@ -148,6 +150,10 @@ const ComunicadosCadastro = ({ match }) => {
       setBreadcrumbManual(match.url, '', RotasDto.ACOMPANHAMENTO_COMUNICADOS);
     }
   }, [match]);
+
+  useEffect(() => {
+    ObterModalidades('-99');
+  }, []);
 
   const valoresIniciaisImutaveis = {
     id: 0,
@@ -193,6 +199,7 @@ const ComunicadosCadastro = ({ match }) => {
   useEffect(() => {
     async function obterPorId(id) {
       const comunicado = await ServicoComunicados.consultarPorId(id);
+      console.log('comunicado ---> ', comunicado);
       if (comunicado && Object.entries(comunicado).length) {
         setValoresIniciais({
           id: comunicado.id,
@@ -240,12 +247,15 @@ const ComunicadosCadastro = ({ match }) => {
 
         ObterUes(String(comunicado.codigoDre));
         ObterModalidades(String(comunicado.codigoUe));
-        ObterTurmas(
-          String(comunicado.anoLetivo),
-          String(comunicado.codigoUe),
-          String(comunicado.modalidade),
-          String(comunicado.semestre)
-        );
+
+        if (modoEdicaoConsulta) {
+          ObterTurmas(
+            String(comunicado.anoLetivo),
+            String(comunicado.codigoUe ? comunicado.codigoUe : '-99'),
+            String(comunicado.modalidade ? comunicado.modalidade : '-99'),
+            String(comunicado.semestre)
+          );
+        }
 
         setInseridoAlterado({
           alteradoEm: comunicado.alteradoEm,
@@ -370,9 +380,9 @@ const ComunicadosCadastro = ({ match }) => {
 
   const gruposDesabilitados = useMemo(() => {
     return (
-      !!modalidadeSelecionada &&
-      modalidadeSelecionada !== '' &&
-      modalidadeSelecionada !== '-99'
+      (!!modalidadeSelecionada &&
+        modalidadeSelecionada !== '' &&
+        modalidadeSelecionada !== '-99') || unidadeEscolarUE
     );
   }, [modalidadeSelecionada]);
 
@@ -434,6 +444,7 @@ const ComunicadosCadastro = ({ match }) => {
   };
 
   const ObterModalidades = async ue => {
+    console.log('ue -->', ue);
     const dados = await FiltroHelper.ObterModalidades(ue);
 
     if (!dados || dados.length === 0) return;
@@ -445,6 +456,22 @@ const ComunicadosCadastro = ({ match }) => {
 
       if (dados[0].id !== '3')
         ObterTurmas(refForm.state.values.anoLetivo, ue, dados[0].id, 0);
+    }
+
+    if (ue !== '-99' && dados.length > 1) {
+      const data = [];
+      dados.forEach(value => {
+        if (value.id !== '-99') {
+          data.push({
+            id: value.id,
+            nome: value.nome,
+          });
+        }
+      });
+
+      const arrayString = data.map(x => `${x.nome}`);
+
+      refForm.setFieldValue('gruposId', arrayString);
     }
 
     setModalidades(dados);
@@ -514,9 +541,11 @@ const ComunicadosCadastro = ({ match }) => {
     refForm.setFieldValue('CodigoUe', 'todas');
     onChangeUe('todas');
     resetarTurmas();
-    ResetarModalidade();
+    // ResetarModalidade();
+    ObterModalidades('-99');
+    setUnidadeEscolarUE(false);
 
-    if (dre == 'todas') {
+    if (dre === 'todas') {
       setUes(todos);
       return;
     }
@@ -530,12 +559,12 @@ const ComunicadosCadastro = ({ match }) => {
     resetarTurmas();
     ResetarModalidade();
 
-    if (ue == 'todas') {
+    if (ue === 'todas') {
       setModalidades(todosTurmasModalidade);
       setTurmas(todosTurmasModalidade);
       return;
     }
-
+    setUnidadeEscolarUE(true);
     onChangeModalidade('');
     ObterModalidades(ue);
   };
@@ -546,7 +575,6 @@ const ComunicadosCadastro = ({ match }) => {
     refForm.setFieldValue('semestre', '');
     refForm.setFieldValue('gruposId', []);
     setModalidadeSelecionada(modalidade);
-    resetarTurmas();
 
     if (
       !refForm.state.values.CodigoUe ||
@@ -815,7 +843,7 @@ const ComunicadosCadastro = ({ match }) => {
                       value={form.values.modalidade}
                       lista={modalidades}
                       allowClear
-                      disabled={modalidadeDesabilitada || modoEdicaoConsulta}
+                      disabled={modoEdicaoConsulta}
                       onChange={x => {
                         onChangeModalidade(x);
                       }}
@@ -839,7 +867,7 @@ const ComunicadosCadastro = ({ match }) => {
                       }}
                     />
                   </Grid>
-                  <Grid cols={2}>
+                  {/* <Grid cols={2}>
                     <Label control="ano" text="Ano" />
                     <SelectComponent
                       form={form}
@@ -857,8 +885,8 @@ const ComunicadosCadastro = ({ match }) => {
                         onSemestreChange(x);
                       }}
                     />
-                  </Grid>
-                  <Grid cols={4}>
+                  </Grid> */}
+                  <Grid cols={6}>
                     <Label control="turmas" text="Turma" />
                     <SelectComponent
                       form={form}
