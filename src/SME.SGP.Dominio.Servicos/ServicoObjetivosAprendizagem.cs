@@ -28,7 +28,7 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task SincronizarObjetivosComJurema()
         {
-            var parametrosDataUltimaAtualizacao = repositorioParametrosSistema.ObterChaveEValorPorTipo(TipoParametroSistema.DataUltimaAtualizacaoObjetivosJurema);
+            var parametrosDataUltimaAtualizacao = await repositorioParametrosSistema.ObterChaveEValorPorTipo(TipoParametroSistema.DataUltimaAtualizacaoObjetivosJurema);
             if (parametrosDataUltimaAtualizacao != null && parametrosDataUltimaAtualizacao.Any())
             {
                 var parametroDataUltimaAtualizacao = parametrosDataUltimaAtualizacao.FirstOrDefault();

@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,8 +12,11 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioParametrosSistema : RepositorioBase<ParametrosSistema>, IRepositorioParametrosSistema
     {
-        public RepositorioParametrosSistema(ISgpContext database) : base(database)
+        private IRepositorioCache repositorioCache;
+
+        public RepositorioParametrosSistema(ISgpContext database, IRepositorioCache repositorioCache) : base(database)
         {
+            this.repositorioCache = repositorioCache;
         }
 
         public async Task AtualizarValorPorTipoAsync(TipoParametroSistema tipo, string valor, int? ano = null)
@@ -24,17 +28,25 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and ano = @ano");
 
             await database.Conexao.ExecuteAsync(query.ToString(), new { tipo, valor, ano });
+
+            string nomeChaveRedis = $"P_{Enum.GetName(typeof(TipoParametroSistema), tipo)}_{ano}";
+            await repositorioCache.RemoverAsync(nomeChaveRedis);
         }
 
-        public IEnumerable<KeyValuePair<string, string>> ObterChaveEValorPorTipo(TipoParametroSistema tipo)
+        public async Task<IEnumerable<KeyValuePair<string, string>>> ObterChaveEValorPorTipo(TipoParametroSistema tipo)
         {
             StringBuilder query = new StringBuilder();
             query.AppendLine("select nome as Key, valor as Value");
             query.AppendLine("from parametros_sistema");
             query.AppendLine("where ativo and tipo = @tipo");
 
-            return database.Conexao.Query<KeyValuePair<string, string>>(query.ToString(), new { tipo })
-                .ToDictionary(pair => pair.Key, pair => pair.Value);
+            string nomeChaveRedis = $"P_{Enum.GetName(typeof(TipoParametroSistema), tipo)}";
+            return await repositorioCache.ObterAsync<IEnumerable<KeyValuePair<string, string>>>(nomeChaveRedis, async () =>
+            {
+                var resultado = await database.Conexao.QueryAsync<KeyValuePair<string, string>>(
+                    query.ToString(), new { tipo });
+                return resultado.ToDictionary(pair => pair.Key, pair => pair.Value);
+            });
         }
 
         public async Task<string> ObterValorPorTipoEAno(TipoParametroSistema tipo, int? ano = null)
@@ -46,27 +58,36 @@ namespace SME.SGP.Dados.Repositorios
             if (ano.HasValue)
                 query.AppendLine("and ano = @ano");
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<string>(query.ToString(), new { tipo, ano });
+            string nomeChaveRedis = $"P_{Enum.GetName(typeof(TipoParametroSistema), tipo)}_{ano}";
+            return await repositorioCache.ObterAsync<string>( nomeChaveRedis, async () => {
+                return await database.Conexao.QueryFirstOrDefaultAsync<string>(query.ToString(), new { tipo, ano });
+            });
         }
 
         public async Task<string> ObterValorUnicoPorTipo(TipoParametroSistema tipoParametroSistema)
         {
-
             var query = @"select valor
                           from parametros_sistema
                          where tipo = @tipoParametroSistema and ativo";
 
-            return await database.Conexao.QueryFirstAsync<string>(query, new { tipoParametroSistema });
+            string nomeChaveRedis = $"P_{Enum.GetName(typeof(TipoParametroSistema), tipoParametroSistema)}";
+            return await repositorioCache.ObterAsync<string>(nomeChaveRedis, async () =>
+            {
+                return await database.Conexao.QueryFirstAsync<string>(query, new { tipoParametroSistema });
+            });
         }
 
         public async Task<T> ObterValorUnicoPorTipo<T>(TipoParametroSistema tipoParametroSistema)
         {
-
             var query = @"select valor
                           from parametros_sistema
                          where tipo = @tipoParametroSistema and ativo";
 
-            return await database.Conexao.QueryFirstAsync<T>(query, new { tipoParametroSistema });
+            string nomeChaveRedis = $"P_{Enum.GetName(typeof(TipoParametroSistema), tipoParametroSistema)}";
+            return await repositorioCache.ObterAsync<T>(nomeChaveRedis, async () =>
+            {
+                return await database.Conexao.QueryFirstAsync<T>(query, new { tipoParametroSistema });
+            });
         }
     }
 }
