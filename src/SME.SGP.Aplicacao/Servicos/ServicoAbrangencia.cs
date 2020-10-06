@@ -53,6 +53,34 @@ namespace SME.SGP.Aplicacao.Servicos
             repositorioAbrangencia.ExcluirAbrangencias(ids);
         }
 
+        public void RemoverAbrangenciasHistoricas(long[] ids)
+        {
+            repositorioAbrangencia.ExcluirAbrangenciasHistoricas(ids);
+        }
+
+        public void RemoverAbrangenciasHistoricasIncorretas(string login, List<Guid> perfis)
+        {
+            var abrangenciasHistorica = ObterAbrangenciaHistorica(login).Result;
+            long[] idsRemover = abrangenciasHistorica
+                .Where(a => a.perfil != Perfis.PERFIL_PAEE
+                         && a.perfil != Perfis.PERFIL_PAP
+                         && a.perfil != Perfis.PERFIL_PROFESSOR
+                         && a.perfil != Perfis.PERFIL_CJ
+                         && a.perfil != Perfis.PERFIL_POED
+                         && a.perfil != Perfis.PERFIL_POSL
+                         && a.perfil != Perfis.PERFIL_PROFESSOR_INFANTIL
+                         && a.perfil != Perfis.PERFIL_CJ_INFANTIL
+                         && !perfis.Contains(a.perfil)
+                ).Select(a => a.Id).ToArray();
+
+            if (idsRemover.Any())
+                RemoverAbrangenciasHistoricas(idsRemover);
+        }
+        public async Task<IEnumerable<AbrangenciaHistoricaDto>> ObterAbrangenciaHistorica(string login)
+        {
+            return await repositorioAbrangencia.ObterAbrangenciaHistoricaPorLogin(login);
+        }
+
         public async Task Salvar(string login, Guid perfil, bool ehLogin)
         {
             if (ehLogin)
