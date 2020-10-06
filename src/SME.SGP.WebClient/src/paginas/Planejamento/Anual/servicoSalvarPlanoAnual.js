@@ -189,6 +189,7 @@ class ServicoSalvarPlanoAnual {
 
         sucesso('Suas informações foram salvas com sucesso.');
         dispatch(setExibirLoaderPlanoAnual(false));
+        ServicoPlanoAnual.obterPlanejamentoId();
         return true;
       }
       dispatch(setExibirLoaderPlanoAnual(false));

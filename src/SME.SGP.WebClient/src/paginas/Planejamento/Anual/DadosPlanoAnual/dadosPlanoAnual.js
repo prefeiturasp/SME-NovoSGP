@@ -71,7 +71,7 @@ const DadosPlanoAnual = () => {
 
   const obterTurmasParaCopiarConteudo = useCallback(() => {
     ServicoPlanoAnual.obterTurmasParaCopia(
-      turmaSelecionada.turma,
+      turmaSelecionada.id,
       componenteCurricular.codigoComponenteCurricular
     )
       .then(resposta => {
@@ -81,7 +81,7 @@ const DadosPlanoAnual = () => {
         dispatch(setListaTurmasParaCopiar([]));
         erros(e);
       });
-  }, [componenteCurricular, turmaSelecionada.turma, dispatch]);
+  }, [componenteCurricular, turmaSelecionada, dispatch]);
 
   /**
    * carrega a lista de bimestres com os dados dos planos
@@ -95,6 +95,7 @@ const DadosPlanoAnual = () => {
       turmaSelecionada &&
       turmaSelecionada.turma
     ) {
+      ServicoPlanoAnual.obterPlanejamentoId();
       obterTurmasParaCopiarConteudo();
       obterBimestresPlanoAnual().then(dados => {
         if (dados && dados.length) {
