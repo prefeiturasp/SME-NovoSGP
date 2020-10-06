@@ -126,7 +126,7 @@ namespace SME.SGP.Aplicacao
                 disciplinasDto.ForEach(d =>
                 {
                     var componenteEOL = componentesCurriculares.FirstOrDefault(a => a.Codigo == d.CodigoComponenteCurricular);
-                    //d.CodigoComponenteCurricular = componenteEOL.Codigo;
+                    d.CodigoComponenteCurricular = componenteEOL.Codigo;
                     d.PossuiObjetivos = componenteEOL.PossuiObjetivosDeAprendizagem(componentesCurricularesJurema, turmaPrograma, turma.ModalidadeCodigo, turma.Ano);
                     d.Regencia = componenteEOL.Regencia;
                     d.ObjetivosAprendizagemOpcionais = componenteEOL.PossuiObjetivosDeAprendizagemOpcionais(componentesCurricularesJurema, turma.EnsinoEspecial);
