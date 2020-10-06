@@ -376,6 +376,7 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<ISalvarCartaIntencoesObservacaoUseCase, SalvarCartaIntencoesObservacaoUseCase>();
             services.TryAddScopedWorkerService<IAlterarCartaIntencoesObservacaoUseCase, AlterarCartaIntencoesObservacaoUseCase>();
             services.TryAddScopedWorkerService<IExcluirCartaIntencoesObservacaoUseCase, ExcluirCartaIntencoesObservacaoUseCase>();
+            services.TryAddScopedWorkerService<IObterPeriodosEscolaresParaCopiaPorPlanejamentoAnualIdUseCase, ObterPeriodosEscolaresParaCopiaPorPlanejamentoAnualIdUseCase>();
             services.TryAddScopedWorkerService<IObterPlanejamentoAnualPorTurmaComponentePeriodoEscolarUseCase, ObterPlanejamentoAnualPorTurmaComponentePeriodoEscolarUseCase>();
             services.TryAddScopedWorkerService<IObterPlanejamentoAnualPorTurmaComponenteUseCase, ObterPlanejamentoAnualPorTurmaComponenteUseCase>();
             services.TryAddScopedWorkerService<IPendenciaAulaUseCase, PendenciaAulaUseCase>();
