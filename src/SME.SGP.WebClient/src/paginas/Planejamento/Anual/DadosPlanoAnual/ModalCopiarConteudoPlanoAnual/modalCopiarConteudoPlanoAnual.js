@@ -1,9 +1,11 @@
 import { Form, Formik } from 'formik';
-import React, { useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import * as Yup from 'yup';
 import { ModalConteudoHtml, SelectComponent } from '~/componentes';
 import { setExibirModalCopiarConteudo } from '~/redux/modulos/anual/actions';
+import { erros, sucesso } from '~/servicos';
+import ServicoPlanoAnual from '~/servicos/Paginas/ServicoPlanoAnual';
 
 const ModalCopiarConteudoPlanoAnual = () => {
   const dispatch = useDispatch();
@@ -16,61 +18,94 @@ const ModalCopiarConteudoPlanoAnual = () => {
     store => store.planoAnual.listaTurmasParaCopiar
   );
 
-  const [turmasSelecionadas, setTurmasSelecionadas] = useState([]);
-  const [bimestresSelecionados, setBimestresSelecionados] = useState([]);
+  const planejamentoAnualId = useSelector(
+    store => store.planoAnual.planejamentoAnualId
+  );
+
+  const componenteCurricular = useSelector(
+    store => store.planoAnual.componenteCurricular
+  );
+
+  const [listaBimestres, setListaBimestres] = useState([]);
   const [exibirLoader, setExibirLoader] = useState(false);
   const [confirmacaoTurmasComPlano, setConfirmacaoTurmasComPlano] = useState(
     ''
   );
-  const refForm = useRef();
 
-  const listaBimestresMock = [
-    { valor: 1, nome: '1 Bimestre' },
-    { valor: 2, nome: '2 Bimestre' },
-    { valor: 3, nome: '3 Bimestre' },
-  ];
+  const obterPeriodosEscolaresParaCopia = useCallback(() => {
+    ServicoPlanoAnual.obterPeriodosEscolaresParaCopia(planejamentoAnualId)
+      .then(resposta => {
+        if (resposta && resposta.data && resposta.data.length) {
+          const lista = resposta.data.map(item => {
+            return {
+              valor: item.id,
+              nome: `${item.bimestre}º Bimestre`,
+            };
+          });
 
-  const fecharCopiarConteudo = () => {
-    setTurmasSelecionadas([]);
-    setBimestresSelecionados([]);
-    dispatch(setExibirModalCopiarConteudo(false));
+          if (lista.length > 1) {
+            lista.unshift({ nome: 'Todos', valor: '0' });
+          }
+          setListaBimestres(lista);
+        }
+      })
+      .catch(e => {
+        setListaBimestres([]);
+        erros(e);
+      });
+  }, [planejamentoAnualId]);
+
+  useEffect(() => {
+    if (planejamentoAnualId && exibirModalCopiarConteudo) {
+      obterPeriodosEscolaresParaCopia();
+    }
+  }, [
+    exibirModalCopiarConteudo,
+    planejamentoAnualId,
+    obterPeriodosEscolaresParaCopia,
+  ]);
+
+  const resetarDadosModal = form => {
     setConfirmacaoTurmasComPlano('');
-    refForm.current.handleReset();
+    form.resetForm();
   };
 
-  const copiar = async () => {
-    // const plano = {
-    //   // ...planoAnual,
-    //   // bimestres: planoAnual.bimestres.filter(c =>
-    //   //   bimestresSelecionados.includes(c.bimestre.toString())
-    //   // ),
-    // };
-    // setExibirLoader(true);
-    // servicoPlanoAnual
-    //   .copiarConteudo({
-    //     planoAnual: plano,
-    //     idsTurmasDestino: turmasSelecionadas,
-    //     bimestresDestino: bimestresSelecionados,
-    //   })
-    //   .then(() => {
-    //     sucesso('Planejamento copiado com sucesso.');
-    //     fecharCopiarConteudo();
-    //   })
-    //   .catch(e => {
-    //     erros(e);
-    //     // TODO TESTAR VEER SE QUANDO DA ERRO O ALERTA FICA ENCIMA DO MODAL
-    //   })
-    //   .finally(() => {
-    //     setExibirLoader(false);
-    //   });
+  const fecharCopiarConteudo = form => {
+    dispatch(setExibirModalCopiarConteudo(false));
+    resetarDadosModal(form);
+  };
+
+  const copiar = async (valores, form) => {
+    const ehTodasTurmas = valores.bimestres.includes('0');
+    let bimestres = [...valores.bimestres];
+
+    if (ehTodasTurmas) {
+      bimestres = listaBimestres
+        .filter(item => item.valor !== '0')
+        .map(item => item.valor);
+    }
+    const params = {
+      componenteCurricularId: componenteCurricular.codigoComponenteCurricular,
+      turmasDestinoIds: valores.turmas,
+      planejamentoPeriodosEscolaresIds: bimestres,
+    };
+
+    setExibirLoader(true);
+    ServicoPlanoAnual.copiarConteudo(params)
+      .then(() => {
+        sucesso('Cópia do planejamento anual realizada com sucesso.');
+        resetarDadosModal(form);
+      })
+      .catch(e => erros(e))
+      .finally(() => {
+        setExibirLoader(false);
+      });
   };
 
   const onChangeTurmasSelecionadas = turmas => {
-    setTurmasSelecionadas(turmas);
     const turmasComPlano = listaTurmasParaCopiar.filter(
       c => turmas.includes(c.codTurma.toString()) && c.possuiPlano
     );
-    // TODO Validar se vai continuar assim a consistência!
     if (turmasComPlano && turmasComPlano.length > 0) {
       setConfirmacaoTurmasComPlano(
         `As turmas: ${turmasComPlano
@@ -89,6 +124,16 @@ const ModalCopiarConteudoPlanoAnual = () => {
     bimestres: Yup.string().required('Selecione ao menos um bimestre.'),
   });
 
+  const onChangeBimestre = (bimestres, form) => {
+    const opcaoTodosJaSelecionado = form.values.bimestres.includes('0');
+    if (opcaoTodosJaSelecionado) {
+      const listaSemOpcaoTodos = bimestres.filter(bi => bi !== '0');
+      form.setFieldValue('bimestres', listaSemOpcaoTodos);
+    } else if (bimestres.includes('0')) {
+      form.setFieldValue('bimestres', ['0']);
+    }
+  };
+
   return (
     <Formik
       enableReinitialize
@@ -97,10 +142,11 @@ const ModalCopiarConteudoPlanoAnual = () => {
         bimestres: [],
       }}
       validationSchema={validacoes}
-      onSubmit={() => copiar()}
+      onSubmit={(valores, form) => {
+        copiar(valores, form);
+      }}
       validateOnChange
       validateOnBlur
-      ref={refForm}
     >
       {form => (
         <Form>
@@ -112,14 +158,14 @@ const ModalCopiarConteudoPlanoAnual = () => {
                 form.handleSubmit(e);
               });
             }}
-            onConfirmacaoSecundaria={fecharCopiarConteudo}
-            onClose={fecharCopiarConteudo}
+            onConfirmacaoSecundaria={() => resetarDadosModal(form)}
+            onClose={() => fecharCopiarConteudo(form)}
             labelBotaoPrincipal="Copiar"
             tituloAtencao={confirmacaoTurmasComPlano && 'Atenção'}
             perguntaAtencao={confirmacaoTurmasComPlano}
             labelBotaoSecundario="Cancelar"
             titulo="Copiar Conteúdo"
-            closable={false}
+            closable
             loader={exibirLoader}
             desabilitarBotaoPrincipal={false}
           >
@@ -131,7 +177,6 @@ const ModalCopiarConteudoPlanoAnual = () => {
                 lista={listaTurmasParaCopiar || []}
                 valueOption="codTurma"
                 valueText="nomeTurma"
-                valueSelect={turmasSelecionadas}
                 multiple
                 placeholder="Selecione uma ou mais turmas"
                 onChange={onChangeTurmasSelecionadas}
@@ -141,13 +186,12 @@ const ModalCopiarConteudoPlanoAnual = () => {
                 label="Copiar para o(s) bimestre(s)"
                 id="bimestres"
                 name="bimestres"
-                lista={listaBimestresMock}
+                lista={listaBimestres}
                 valueOption="valor"
                 valueText="nome"
-                valueSelect={bimestresSelecionados}
                 multiple
                 placeholder="Selecione um ou mais bimestres"
-                onChange={setBimestresSelecionados}
+                onChange={valores => onChangeBimestre(valores, form)}
                 form={form}
               />
             </div>

@@ -35,6 +35,10 @@ const BotoesAcoesPlanoAnual = () => {
     store => store.planoAnual.listaTurmasParaCopiar
   );
 
+  const planejamentoAnualId = useSelector(
+    store => store.planoAnual.planejamentoAnualId
+  );
+
   const onSalvar = async () => {
     const salvou = await servicoSalvarPlanoAnual.validarSalvarPlanoAnual();
     return salvou;
@@ -94,10 +98,11 @@ const BotoesAcoesPlanoAnual = () => {
         border
         onClick={abrirCopiarConteudo}
         disabled={
-          ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada) ||
-          planoAnualEmEdicao ||
-          !listaTurmasParaCopiar ||
-          listaTurmasParaCopiar.length === 0
+          !planejamentoAnualId &&
+          (ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada) ||
+            planoAnualEmEdicao ||
+            !listaTurmasParaCopiar ||
+            listaTurmasParaCopiar.length === 0)
         }
       />
       <Button

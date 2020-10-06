@@ -5,6 +5,7 @@ import {
   setDadosBimestresPlanoAnual,
   setExibirLoaderPlanoAnual,
   setListaObjetivosAprendizagemPorComponente,
+  setPlanejamentoAnualId,
 } from '~/redux/modulos/anual/actions';
 
 class ServicoPlanoAnual {
@@ -29,14 +30,14 @@ class ServicoPlanoAnual {
     return api.post('v1/planos/anual', planoAnual);
   };
 
-  obterTurmasParaCopia = (turmaId, componenteCurricularEolId) => {
+  obterTurmasParaCopia = (turmaId, componenteCurricularId) => {
     return api.get(
-      `v1/planos/anual/turmas/copia?turmaId=${turmaId}&componenteCurricular=${componenteCurricularEolId}`
+      `v1/planejamento/anual/turmas/copia?turmaId=${turmaId}&componenteCurricular=${componenteCurricularId}`
     );
   };
 
-  copiarConteudo = migrarConteudoPlanoAnual => {
-    return api.post(`v1/planos/anual/migrar`, migrarConteudoPlanoAnual);
+  copiarConteudo = params => {
+    return api.post(`v1/planejamento/anual/migrar`, params);
   };
 
   obterBimestresPlanoAnual = turmaId => {
@@ -187,6 +188,35 @@ class ServicoPlanoAnual {
   salvarEditarPlanoAnual = (turmaId, componenteCurricularId, params) => {
     const url = `v1/planejamento/anual/turmas/${turmaId}/componentes-curriculares/${componenteCurricularId}`;
     return api.post(url, params);
+  };
+
+  obterPlanejamentoId = () => {
+    const { dispatch } = store;
+    const state = store.getState();
+    const { planoAnual, usuario } = state;
+
+    const { turmaSelecionada } = usuario;
+    const { componenteCurricular } = planoAnual;
+
+    const turmaId = turmaSelecionada.id;
+    const componenteCurricularId =
+      componenteCurricular.codigoComponenteCurricular;
+
+    const url = `v1/planejamento/anual/turmas/${turmaId}/componentes-curriculares/${componenteCurricularId}`;
+    api
+      .get(url)
+      .then(resposta => {
+        dispatch(setPlanejamentoAnualId(resposta.data));
+      })
+      .catch(e => {
+        dispatch(setPlanejamentoAnualId(0));
+        erros(e);
+      });
+  };
+
+  obterPeriodosEscolaresParaCopia = planejamentoAnualId => {
+    const url = `v1/planejamento/anual/${planejamentoAnualId}/preiodos-escolares/copia`;
+    return api.get(url);
   };
 }
 
