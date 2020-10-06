@@ -1,6 +1,7 @@
 ﻿using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -13,6 +14,8 @@ namespace SME.SGP.Dominio.Interfaces
 
         void ExcluirAbrangencias(IEnumerable<long> ids);
 
+        void ExcluirAbrangenciasHistoricas(IEnumerable<long> ids);
+
         void InserirAbrangencias(IEnumerable<Abrangencia> abrangencias, string login);
 
         Task<bool> JaExisteAbrangencia(string login, Guid perfil);
@@ -20,6 +23,8 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<AbrangenciaFiltroRetorno>> ObterAbrangenciaPorFiltro(string texto, string login, Guid perfil, bool consideraHistorico);
 
         Task<IEnumerable<AbrangenciaSinteticaDto>> ObterAbrangenciaSintetica(string login, Guid perfil, string turmaId = "", bool consideraHistorico = false);
+
+        Task<IEnumerable<AbrangenciaHistoricaDto>> ObterAbrangenciaHistoricaPorLogin(string login);
 
         Task<AbrangenciaFiltroRetorno> ObterAbrangenciaTurma(string turma, string login, Guid perfil, bool consideraHistorico = false, bool abrangenciaPermitida = false);
 
