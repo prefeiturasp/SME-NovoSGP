@@ -21,6 +21,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorIds(long[] ids)
         {
             var query = $@"select
+                            id,
 	                        id as CodigoComponenteCurricular,
                             area_conhecimento_id as AreaConhecimentoId,
                             componente_curricular_pai_id as CdComponenteCurricularPai,
