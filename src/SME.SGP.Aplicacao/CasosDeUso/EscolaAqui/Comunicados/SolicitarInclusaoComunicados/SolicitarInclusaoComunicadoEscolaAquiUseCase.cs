@@ -27,7 +27,10 @@ namespace SME.SGP.Aplicacao
                 , comunicado.CodigoUe
                 , comunicado.AlunosEspecificados
                 , comunicado.Modalidade
-                , comunicado.Semestre));
+                , comunicado.Semestre
+                , comunicado.Alunos
+                , comunicado.Turmas
+                , comunicado.SeriesResumidas));
         }
     }
 }
