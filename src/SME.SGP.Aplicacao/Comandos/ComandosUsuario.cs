@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoEol servicoEOL;
         private readonly IServicoPerfil servicoPerfil;
         private readonly IServicoTokenJwt servicoTokenJwt;
-        private readonly IServicoUsuario servicoUsuario;        
+        private readonly IServicoUsuario servicoUsuario;
 
         public ComandosUsuario(IRepositorioUsuario repositorioUsuario,
             IServicoAutenticacao servicoAutenticacao,
@@ -122,7 +122,7 @@ namespace SME.SGP.Aplicacao
         {
             login = login.Trim().ToLower();
 
-            var retornoAutenticacaoEol = await servicoAutenticacao.AutenticarNoEol(login, senha);            
+            var retornoAutenticacaoEol = await servicoAutenticacao.AutenticarNoEol(login, senha);
 
             if (!retornoAutenticacaoEol.Item1.Autenticado)
                 return retornoAutenticacaoEol.Item1;
@@ -132,9 +132,6 @@ namespace SME.SGP.Aplicacao
             var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(retornoAutenticacaoEol.Item2, login, dadosUsuario.Nome, dadosUsuario.Email, true);
 
             retornoAutenticacaoEol.Item1.PerfisUsuario = await servicoPerfil.DefinirPerfilPrioritario(retornoAutenticacaoEol.Item3, usuario);
-                     
-            List<Guid> perfis = retornoAutenticacaoEol.Item1.PerfisUsuario.Perfis.Select(x => x.CodigoPerfil).ToList();
-            servicoAbrangencia.RemoverAbrangenciasHistoricasIncorretas(login, perfis);            
 
             var perfilSelecionado = retornoAutenticacaoEol.Item1.PerfisUsuario.PerfilSelecionado;
 
