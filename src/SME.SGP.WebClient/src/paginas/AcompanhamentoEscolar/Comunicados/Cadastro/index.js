@@ -272,23 +272,40 @@ const ComunicadosCadastro = ({ match }) => {
       dataEnvio: momentSchema.required('Campo obrigatório'),
       CodigoDre: Yup.string().required('Campo obrigatório'),
       CodigoUe: Yup.string().required('Campo obrigatório'),
-      dataExpiracao: momentSchema.test(
-        'validaDataMaiorQueEnvio',
-        'Data de expiração deve ser maior que a data de envio',
-        function validar() {
-          const { dataEnvio } = this.parent;
-          const { dataExpiracao } = this.parent;
-          if (
-            dataEnvio &&
-            dataExpiracao &&
-            window.moment(dataExpiracao) < window.moment(dataEnvio)
-          ) {
-            return false;
-          }
+      dataExpiracao: momentSchema
+        .required('Campo obrigatório')
+        .test(
+          'validaDataMaiorQueEnvio',
+          'Data de expiração deve ser maior que a data de envio',
+          function validar() {
+            const { dataEnvio } = this.parent;
+            const { dataExpiracao } = this.parent;
+            if (
+              dataEnvio &&
+              dataExpiracao &&
+              window.moment(dataExpiracao) < window.moment(dataEnvio)
+            ) {
+              return false;
+            }
 
-          return true;
-        }
-      ),
+            return true;
+          }
+        )
+        .test(
+          'validaDataAnoMaiorQueAnoAtual',
+          'Data de expiração não pode ser maior que ano atual',
+          function validar() {
+            const { dataExpiracao } = this.parent;
+            if (
+              moment(dataExpiracao).format('YYYY') >
+              moment(new Date()).format('YYYY')
+            ) {
+              return false;
+            }
+
+            return true;
+          }
+        ),
       titulo: Yup.string()
         .required('Campo obrigatório')
         .min(10, 'Deve conter no mínimo 10 caracteres')
@@ -746,7 +763,10 @@ const ComunicadosCadastro = ({ match }) => {
                     />
                   </Grid>
                   <Grid cols={5}>
-                    <Label control="CodigoDre" text="Dre" />
+                    <Label
+                      control="CodigoDre"
+                      text="Diretoria Regional de Educação (DRE)"
+                    />
                     <SelectComponent
                       form={form}
                       id="CodigoDre"
@@ -764,7 +784,7 @@ const ComunicadosCadastro = ({ match }) => {
                     />
                   </Grid>
                   <Grid cols={5}>
-                    <Label control="CodigoUe" text="Unidade Escolar" />
+                    <Label control="CodigoUe" text="Unidade Escolar (UE)" />
                     <SelectComponent
                       form={form}
                       id="CodigoUe"
@@ -839,12 +859,12 @@ const ComunicadosCadastro = ({ match }) => {
                     />
                   </Grid>
                   <Grid cols={4}>
-                    <Label control="turmas" text="Turmas" />
+                    <Label control="turmas" text="Turma" />
                     <SelectComponent
                       form={form}
                       id="turmas"
                       name="turmas"
-                      placeholder="Selecione uma ou mais turmas"
+                      placeholder="Selecione uma ou mais"
                       valueOption="id"
                       valueText="nome"
                       value={form.values.turmas}

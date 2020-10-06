@@ -130,24 +130,40 @@ function Filtro({ onFiltrar }) {
 
   const [validacoes] = useState(
     Yup.object({
-      dataExpiracao: momentSchema.test(
-        'validaDataMaiorQueEnvio',
-        'Data de expiração deve ser maior que a data de envio',
-        function validar() {
-          const { dataEnvio } = this.parent;
-          const { dataExpiracao } = this.parent;
+      dataExpiracao: momentSchema
+        .test(
+          'validaDataAnoMaiorQueAnoAtual',
+          'Data de expiração não pode ser maior que ano atual',
+          function validar() {
+            const { dataExpiracao } = this.parent;
+            if (
+              moment(dataExpiracao).format('YYYY') >
+              moment(new Date()).format('YYYY')
+            ) {
+              return false;
+            }
 
-          if (
-            dataEnvio &&
-            dataExpiracao &&
-            window.moment(dataExpiracao) < window.moment(dataEnvio)
-          ) {
-            return false;
+            return true;
           }
+        )
+        .test(
+          'validaDataMaiorQueEnvio',
+          'Data de expiração deve ser maior que a data de envio',
+          function validar() {
+            const { dataEnvio } = this.parent;
+            const { dataExpiracao } = this.parent;
 
-          return true;
-        }
-      ),
+            if (
+              dataEnvio &&
+              dataExpiracao &&
+              window.moment(dataExpiracao) < window.moment(dataEnvio)
+            ) {
+              return false;
+            }
+
+            return true;
+          }
+        ),
     })
   );
 
@@ -401,7 +417,10 @@ function Filtro({ onFiltrar }) {
               />
             </Grid>
             <Grid cols={5}>
-              <Label control="CodigoDre" text="Dre" />
+              <Label
+                control="CodigoDre"
+                text="Diretoria Regional de Educação (DRE)"
+              />
               <SelectComponent
                 form={form}
                 id="CodigoDre"
@@ -420,7 +439,7 @@ function Filtro({ onFiltrar }) {
               />
             </Grid>
             <Grid cols={5}>
-              <Label control="CodigoUe" text="Unidade Escolar" />
+              <Label control="CodigoUe" text="Unidade Escolar (UE)" />
               <SelectComponent
                 form={form}
                 id="CodigoUe"
@@ -498,12 +517,12 @@ function Filtro({ onFiltrar }) {
               />
             </Grid>
             <Grid cols={4}>
-              <Label control="turmas" text="Turmas" />
+              <Label control="turmas" text="Turma" />
               <SelectComponent
                 form={form}
                 id="turmas"
                 name="turmas"
-                placeholder="Selecione uma ou mais turmas"
+                placeholder="Selecione uma ou mais"
                 valueOption="id"
                 valueText="nome"
                 value={form.values.turmas}
