@@ -8,16 +8,16 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterPlanejamentoAnualPorTurmaComponenteQueryHandler : IRequestHandler<ObterPlanejamentoAnualPorTurmaComponenteQuery, PlanejamentoAnualPeriodoEscolarDto>
+    public class ObterPlanejamentoAnualPorTurmaComponentePeriodoEscolarQueryHandler : IRequestHandler<ObterPlanejamentoAnualPorTurmaComponentePeriodoEscolarQuery, PlanejamentoAnualPeriodoEscolarDto>
     {
         private readonly IRepositorioPlanejamentoAnualPeriodoEscolar repositorioPlanejamentoAnualPeriodoEscolar;
 
-        public ObterPlanejamentoAnualPorTurmaComponenteQueryHandler(IRepositorioPlanejamentoAnualPeriodoEscolar repositorioPlanejamentoAnualPeriodoEscolar)
+        public ObterPlanejamentoAnualPorTurmaComponentePeriodoEscolarQueryHandler(IRepositorioPlanejamentoAnualPeriodoEscolar repositorioPlanejamentoAnualPeriodoEscolar)
         {
             this.repositorioPlanejamentoAnualPeriodoEscolar = repositorioPlanejamentoAnualPeriodoEscolar ?? throw new System.ArgumentNullException(nameof(repositorioPlanejamentoAnualPeriodoEscolar));
         }
 
-        public async Task<PlanejamentoAnualPeriodoEscolarDto> Handle(ObterPlanejamentoAnualPorTurmaComponenteQuery request, CancellationToken cancellationToken)
+        public async Task<PlanejamentoAnualPeriodoEscolarDto> Handle(ObterPlanejamentoAnualPorTurmaComponentePeriodoEscolarQuery request, CancellationToken cancellationToken)
         {
             var planejamento = new PlanejamentoAnualPeriodoEscolarDto
             {

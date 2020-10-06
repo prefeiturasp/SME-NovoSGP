@@ -25,7 +25,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<PlanejamentoAnualPeriodoEscolar>(sql, new { id });
         }
 
-        public async Task<PlanejamentoAnual> ObterPorTurmaEComponenteCurricular(long turmaId, long componenteCurricularId, long periodoEscolarId)
+        public async Task<PlanejamentoAnual> ObterPorTurmaEComponenteCurricularPeriodoEscolar(long turmaId, long componenteCurricularId, long periodoEscolarId)
         {
             var sql = @"select
 	                        pa.*,
@@ -106,6 +106,19 @@ namespace SME.SGP.Dados.Repositorios
 	                        and pa.componente_curricular_id = @componenteCurricularId";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<PlanejamentoAnual>(sql, new { turmaId, componenteCurricularId });
+        }
+
+        public async Task<long> ObterIdPorTurmaEComponenteCurricular(long turmaId, long componenteCurricularId)
+        {
+            var sql = @"select
+	                        pa.id
+                        from
+	                        planejamento_anual pa
+                        where
+	                        turma_id = @turmaId
+	                        and pa.componente_curricular_id = @componenteCurricularId";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<long>(sql, new { turmaId, componenteCurricularId });
         }
     }
 }
