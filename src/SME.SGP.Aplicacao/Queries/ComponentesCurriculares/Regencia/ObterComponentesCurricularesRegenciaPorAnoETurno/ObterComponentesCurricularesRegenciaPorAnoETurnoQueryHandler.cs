@@ -5,6 +5,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
@@ -22,7 +23,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<DisciplinaDto>> Handle(ObterComponentesCurricularesRegenciaPorAnoETurnoQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioComponenteCurricular.ObterComponentesCurricularesRegenciaPorAnoETurno(request.Ano, request.Turno);
+            return (await repositorioComponenteCurricular.ObterComponentesCurricularesRegenciaPorAnoETurno(request.Ano, request.Turno)).OrderBy(c => c.Nome);
         }
     }
 }
