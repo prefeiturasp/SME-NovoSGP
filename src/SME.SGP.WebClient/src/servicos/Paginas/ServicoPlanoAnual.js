@@ -39,10 +39,8 @@ class ServicoPlanoAnual {
     return api.post(`v1/planos/anual/migrar`, migrarConteudoPlanoAnual);
   };
 
-  obterBimestresPlanoAnual = (modalidade, anoLetivo, semestre) => {
-    let url = `v1/periodo-escolar/modalidades/${modalidade}/anos-letivos/${anoLetivo}`;
-    if (semestre) url = `${url}?semestre=${semestre}`;
-    return api.get(url);
+  obterBimestresPlanoAnual = turmaId => {
+    return api.get(`v1/periodo-escolar/turmas/${turmaId}`);
   };
 
   obterObjetivosPorAnoEComponenteCurricularNovo = (
