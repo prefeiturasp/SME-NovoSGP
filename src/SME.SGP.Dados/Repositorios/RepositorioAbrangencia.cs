@@ -47,6 +47,18 @@ namespace SME.SGP.Dados.Repositorios
             }
         }
 
+        public void ExcluirAbrangenciasHistoricas(IEnumerable<long> ids)
+        {
+            const string comando = @"delete from public.abrangencia where id in (#ids) and historico = true";
+
+            for (int i = 0; i < ids.Count(); i = i + 900)
+            {
+                var iteracao = ids.Skip(i).Take(900);
+
+                database.Conexao.Execute(comando.Replace("#ids", string.Join(",", iteracao.Concat(new long[] { 0 }))));
+            }
+        }
+
         public void InserirAbrangencias(IEnumerable<Abrangencia> abrangencias, string login)
         {
             foreach (var item in abrangencias)
@@ -139,6 +151,27 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and codigo_turma = @turmaId");
 
             return database.Conexao.QueryAsync<AbrangenciaSinteticaDto>(query.ToString(), new { login, perfil, turmaId });
+        }
+
+        public async Task<IEnumerable<AbrangenciaHistoricaDto>> ObterAbrangenciaHistoricaPorLogin(string login)
+        {
+            var query = new StringBuilder();
+
+            query.AppendLine("select");
+            query.AppendLine("id,");
+            query.AppendLine("usuario_id,");
+            query.AppendLine("login,");
+            query.AppendLine("dre_id,");
+            query.AppendLine("codigo_dre,");
+            query.AppendLine("ue_id,");
+            query.AppendLine("codigo_ue,");
+            query.AppendLine("turma_id,");
+            query.AppendLine("codigo_turma,");
+            query.AppendLine("perfil");
+            query.AppendLine("from");
+            query.AppendLine("public.v_abrangencia_sintetica where login = @login and historico");
+
+            return (await database.Conexao.QueryAsync<AbrangenciaHistoricaDto>(query.ToString(), new { login })).AsList();
         }
 
         public async Task<AbrangenciaFiltroRetorno> ObterAbrangenciaTurma(string turma, string login, Guid perfil, bool consideraHistorico = false, bool abrangenciaPermitida = false)
