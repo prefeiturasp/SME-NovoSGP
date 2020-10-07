@@ -128,7 +128,7 @@ namespace SME.SGP.Dados.Repositorios
             if (bimestre > 0)
                 query.AppendLine(" and pe.bimestre = @bimestre");
 
-            return await database.Conexao.QueryFirstAsync<int>(query.ToString(), new { tipoCalendarioId, dataReferencia, bimestre }) > 0;
+            return (await database.Conexao.QueryFirstAsync<int>(query.ToString(), new { tipoCalendarioId, dataReferencia, bimestre })) > 0;
         }
 
         public async Task<PeriodoEscolar> ObterPorTipoCalendarioEBimestreAsync(long tipoCalendarioId, int bimestre)
@@ -139,6 +139,33 @@ namespace SME.SGP.Dados.Repositorios
                             and p.bimestre = @bimestre";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoEscolar>(query.ToString(), new { tipoCalendarioId, bimestre });
+        }
+
+        public async Task<IEnumerable<PeriodoEscolar>> ObterPorAnoLetivoEModalidadeTurma(int anoLetivo, ModalidadeTipoCalendario modalidadeTipoCalendario, int semestre = 1)
+        {
+            var query = new StringBuilder($@"select
+	                            distinct pe.*
+                            from
+	                            periodo_escolar pe
+                            inner join tipo_calendario tc on
+	                            pe.tipo_calendario_id = tc.id
+                            where
+	                            tc.modalidade = @modalidadeTipoCalendario
+	                            and tc.ano_letivo = @anoLetivo
+	                            and tc.situacao
+	                            and not tc.excluido");
+
+            var dataReferencia = DateTime.MinValue;
+            if (modalidadeTipoCalendario == ModalidadeTipoCalendario.EJA)
+            {
+                var periodoReferencia = semestre == 1 ? "pe.periodo_inicio < @dataReferencia" : "pe.periodo_fim > @dataReferencia";
+                query.AppendLine($" and exists(select 0 from periodo_escolar p where tipo_calendario_id = tc.id and {periodoReferencia})");
+
+                // 1/6/ano ou 1/7/ano dependendo do semestre
+                dataReferencia = new DateTime(anoLetivo, semestre == 1 ? 6 : 7, 1);
+            }
+
+            return await database.Conexao.QueryAsync<PeriodoEscolar>(query.ToString(), new { modalidadeTipoCalendario, anoLetivo, dataReferencia });
         }
     }
 }

@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
 
         private readonly IConfiguration configuration;
         private readonly IRepositorioCache repositorioCache;
-        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
+        private readonly IRepositorioComponenteCurricularJurema repositorioComponenteCurricular;
         private readonly IRepositorioObjetivoAprendizagem repositorioObjetivoAprendizagem;
         private readonly IRepositorioObjetivoAprendizagemPlano repositorioObjetivosPlano;
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
 
         public ConsultasObjetivoAprendizagem(IServicoJurema servicoJurema,
                                                      IRepositorioCache repositorioCache,
-                                                     IRepositorioComponenteCurricular repositorioComponenteCurricular,
+                                                     IRepositorioComponenteCurricularJurema repositorioComponenteCurricular,
                                                      IRepositorioObjetivoAprendizagemPlano repositorioObjetivosPlano,
                                                      IConfiguration configuration,
                                                      IServicoUsuario servicoUsuario,
@@ -53,7 +53,7 @@ namespace SME.SGP.Aplicacao
 
         public bool DisciplinaPossuiObjetivosDeAprendizagem(long codigoDisciplina)
         {
-            IEnumerable<ComponenteCurricular> componentesCurriculares = ObterComponentesCurriculares();
+            IEnumerable<ComponenteCurricularJurema> componentesCurriculares = ObterComponentesCurriculares();
 
             return componentesCurriculares.Any(x => x.CodigoEOL == codigoDisciplina);
         }
@@ -179,9 +179,9 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private IEnumerable<ComponenteCurricular> ObterComponentesCurriculares()
+        private IEnumerable<ComponenteCurricularJurema> ObterComponentesCurriculares()
         {
-            IEnumerable<ComponenteCurricular> componentesCurriculares = repositorioComponenteCurricular.Listar();
+            IEnumerable<ComponenteCurricularJurema> componentesCurriculares = repositorioComponenteCurricular.Listar();
             if (componentesCurriculares == null)
             {
                 throw new NegocioException("Não foi possível recuperar a lista de componentes curriculares.");
@@ -192,9 +192,9 @@ namespace SME.SGP.Aplicacao
 
         private IEnumerable<long> ObterComponentesJuremaPorIdEOL(IEnumerable<long> componentesCurricularesIds)
         {
-            IEnumerable<ComponenteCurricular> componentesCurriculares = ObterComponentesCurriculares();
+            IEnumerable<ComponenteCurricularJurema> componentesCurriculares = ObterComponentesCurriculares();
 
-            IEnumerable<ComponenteCurricular> componentesFiltro = componentesCurriculares.Where(c => componentesCurricularesIds.Contains(c.CodigoEOL));
+            IEnumerable<ComponenteCurricularJurema> componentesFiltro = componentesCurriculares.Where(c => componentesCurricularesIds.Contains(c.CodigoEOL));
             IEnumerable<long> componentesJurema = componentesFiltro.Select(c => c.CodigoJurema);
             return componentesJurema;
         }

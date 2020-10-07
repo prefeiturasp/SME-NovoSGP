@@ -15,13 +15,13 @@ namespace SME.SGP.Aplicacao
     {
         private static readonly long[] IDS_COMPONENTES_REGENCIA = { 2, 7, 8, 89, 138 };
         private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
-        private readonly IServicoEol servicoEOL;
+        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
 
         public ObterComponentesCJQueryHandler(IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ,
-                                              IServicoEol servicoEOL)
+                                              IRepositorioComponenteCurricular repositorioComponenteCurricular)
         {
             this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoCJ));
-            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
+            this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
         }
 
         public async Task<IEnumerable<ComponenteCurricularEol>> Handle(ObterComponentesCJQuery request, CancellationToken cancellationToken)
@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao
             if (atribuicoes == null || !atribuicoes.Any())
                 return null;
 
-            var disciplinasEol = await servicoEOL.ObterDisciplinasPorIdsAsync(atribuicoes.Select(a => a.DisciplinaId).Distinct().ToArray());
+            var disciplinasEol = await repositorioComponenteCurricular.ObterDisciplinasPorIds(atribuicoes.Select(a => a.DisciplinaId).Distinct().ToArray());
 
             IEnumerable<ComponenteCurricularEol> componentes = null;
 
@@ -45,7 +45,7 @@ namespace SME.SGP.Aplicacao
 
             if (request.ListarComponentesPlanejamento && componenteRegencia != null)
             {
-                var componentesRegencia = await servicoEOL.ObterDisciplinasPorIdsAsync(IDS_COMPONENTES_REGENCIA);
+                var componentesRegencia = await repositorioComponenteCurricular.ObterDisciplinasPorIds(IDS_COMPONENTES_REGENCIA);
                 if (componentesRegencia != null)
                     componentes = TransformarListaDisciplinaEolParaRetornoDto(componentesRegencia);
             }

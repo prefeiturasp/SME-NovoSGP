@@ -37,8 +37,6 @@ namespace SME.SGP.Aplicacao
 
         public SolicitarInclusaoComunicadoEscolaAquiCommand(DateTime dataEnvio, DateTime? dataExpiracao, string descricao, List<int> gruposId, string titulo, int anoLetivo, string codigoDre, string codigoUe, bool alunosEspecificados, Modalidade? modalidade, int semestre, IEnumerable<string> alunos, IEnumerable<string> turmas, string seriesResumidas)
         {
-            Alunos = new List<string>();
-            Turmas = new List<string>();
             DataEnvio = dataEnvio;
             DataExpiracao = dataExpiracao;
             Descricao = descricao;

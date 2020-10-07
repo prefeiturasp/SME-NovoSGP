@@ -18,10 +18,11 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IServicoAbrangencia servicoAbrangencia;
         private readonly IServicoEol servicoEOL;
+        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
         private readonly IServicoUsuario servicoUsuario;
 
         public ServicoAtribuicaoCJ(IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ, IServicoAbrangencia servicoAbrangencia, IRepositorioTurma repositorioTurma,
-            IRepositorioAbrangencia repositorioAbrangencia, IServicoEol servicoEOL, IRepositorioAula repositorioAula, IServicoUsuario servicoUsuario)
+            IRepositorioAbrangencia repositorioAbrangencia, IServicoEol servicoEOL, IRepositorioAula repositorioAula, IServicoUsuario servicoUsuario, IRepositorioComponenteCurricular repositorioComponenteCurricular)
         {
             this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoCJ));
             this.servicoAbrangencia = servicoAbrangencia ?? throw new ArgumentNullException(nameof(servicoAbrangencia));
@@ -30,6 +31,7 @@ namespace SME.SGP.Dominio.Servicos
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
+            this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
         }
 
         public async Task Salvar(AtribuicaoCJ atribuicaoCJ,IEnumerable<ProfessorTitularDisciplinaEol> professoresTitularesDisciplinasEol, IEnumerable<AtribuicaoCJ> atribuicoesAtuais = null)
@@ -92,11 +94,11 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        private void ValidaComponentesCurricularesQueNaoPodemSerSubstituidos(AtribuicaoCJ atribuicaoCJ)
+        private async Task ValidaComponentesCurricularesQueNaoPodemSerSubstituidos(AtribuicaoCJ atribuicaoCJ)
         {
             if (componentesQueNaoPodemSerSubstituidos.Any(a => a == atribuicaoCJ.DisciplinaId))
             {
-                var nomeComponenteCurricular = servicoEOL.ObterDisciplinasPorIds(new long[] { atribuicaoCJ.DisciplinaId });
+                var nomeComponenteCurricular = await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { atribuicaoCJ.DisciplinaId });
                 if (nomeComponenteCurricular != null && nomeComponenteCurricular.Any())
                 {
                     throw new NegocioException($"O componente curricular {nomeComponenteCurricular.FirstOrDefault().Nome} não pode ser substituido.");

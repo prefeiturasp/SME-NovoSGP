@@ -64,6 +64,20 @@ namespace SME.SGP.Aplicacao.Integracoes
             };
         }
 
+        public async Task<IEnumerable<ComponenteCurricularDto>> ObterComponentesCurriculares()
+        {
+            var url = $"v1/componentes-curriculares";
+
+            var resposta = await httpClient.GetAsync(url);
+
+            if (!resposta.IsSuccessStatusCode)
+                return null;
+
+            var retorno = await resposta.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<IEnumerable<ComponenteCurricularDto>>(retorno);
+        }
+
         public async Task<bool> TurmaPossuiComponenteCurricularPAP(string codigoTurma, string login, Guid idPerfil)
         {
             
@@ -352,43 +366,6 @@ namespace SME.SGP.Aplicacao.Integracoes
             var url = $"funcionarios/{login}/perfis/{perfil}/turmas/{codigoTurma}/disciplinas";
 
             return await ObterDisciplinas(url, "ObterDisciplinasPorCodigoTurmaLoginEPerfil");
-        }
-
-        public IEnumerable<DisciplinaDto> ObterDisciplinasPorIds(long[] ids)
-        {
-            
-
-            if (ids == null || !ids.Any())
-                return default;
-
-            var parametros = JsonConvert.SerializeObject(ids);
-            var resposta = httpClient.PostAsync("disciplinas", new StringContent(parametros, Encoding.UTF8, "application/json-patch+json")).Result;
-
-            if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
-            {
-                var json = resposta.Content.ReadAsStringAsync().Result;
-                var retorno = JsonConvert.DeserializeObject<IEnumerable<RetornoDisciplinaDto>>(json);
-                return MapearParaDtoDisciplinas(retorno);
-            }
-            throw new NegocioException("Ocorreu um erro na tentativa de buscar as disciplinas no EOL.");
-        }
-
-        public async Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorIdsAsync(long[] ids)
-        {
-            
-
-            var parametros = JsonConvert.SerializeObject(ids);
-            var resposta = await httpClient.PostAsync("disciplinas", new StringContent(parametros, Encoding.UTF8, "application/json-patch+json"));
-
-            if (!resposta.IsSuccessStatusCode || resposta.StatusCode == HttpStatusCode.NoContent)
-            {
-                await RegistrarLogSentryAsync(resposta, "obter as disciplinas", parametros);
-                return null;
-            }
-
-            var json = resposta.Content.ReadAsStringAsync().Result;
-            var retorno = JsonConvert.DeserializeObject<IEnumerable<RetornoDisciplinaDto>>(json);
-            return MapearParaDtoDisciplinas(retorno);
         }
 
         public async Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorIdsSemAgrupamento(long[] ids)
@@ -1026,5 +1003,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             var json = resposta.Content.ReadAsStringAsync().Result;
             return JsonConvert.DeserializeObject<bool>(json);
         }
+
+      
     }
 }

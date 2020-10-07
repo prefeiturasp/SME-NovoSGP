@@ -66,6 +66,45 @@ const ComunicadosCadastro = ({ match }) => {
     { id: '2', nome: 'Alunos Especificados' },
   ];
 
+  const anoModalidadeLista = [
+    {
+      modalidade: 5,
+      ano: '1',
+    },
+    {
+      modalidade: 5,
+      ano: '2',
+    },
+    {
+      modalidade: 5,
+      ano: '3',
+    },
+    {
+      modalidade: 5,
+      ano: '4',
+    },
+    {
+      modalidade: 5,
+      ano: '5',
+    },
+    {
+      modalidade: 5,
+      ano: '6',
+    },
+    {
+      modalidade: 5,
+      ano: '7',
+    },
+    {
+      modalidade: 5,
+      ano: '8',
+    },
+    {
+      modalidade: 5,
+      ano: '9',
+    },
+  ];
+
   const [loaderSecao] = useState(false);
 
   const [somenteConsulta, setSomenteConsulta] = useState(false);
@@ -100,6 +139,8 @@ const ComunicadosCadastro = ({ match }) => {
   const [modoEdicao, setModoEdicao] = useState(false);
 
   const [idComunicado, setIdComunicado] = useState();
+
+  const [anos] = useState(anoModalidadeLista);
 
   useEffect(() => {
     if (match && match.params && match.params.id) {
@@ -231,23 +272,40 @@ const ComunicadosCadastro = ({ match }) => {
       dataEnvio: momentSchema.required('Campo obrigatório'),
       CodigoDre: Yup.string().required('Campo obrigatório'),
       CodigoUe: Yup.string().required('Campo obrigatório'),
-      dataExpiracao: momentSchema.test(
-        'validaDataMaiorQueEnvio',
-        'Data de expiração deve ser maior que a data de envio',
-        function validar() {
-          const { dataEnvio } = this.parent;
-          const { dataExpiracao } = this.parent;
-          if (
-            dataEnvio &&
-            dataExpiracao &&
-            window.moment(dataExpiracao) < window.moment(dataEnvio)
-          ) {
-            return false;
-          }
+      dataExpiracao: momentSchema
+        .required('Campo obrigatório')
+        .test(
+          'validaDataMaiorQueEnvio',
+          'Data de expiração deve ser maior que a data de envio',
+          function validar() {
+            const { dataEnvio } = this.parent;
+            const { dataExpiracao } = this.parent;
+            if (
+              dataEnvio &&
+              dataExpiracao &&
+              window.moment(dataExpiracao) < window.moment(dataEnvio)
+            ) {
+              return false;
+            }
 
-          return true;
-        }
-      ),
+            return true;
+          }
+        )
+        .test(
+          'validaDataAnoMaiorQueAnoAtual',
+          'Data de expiração não pode ser maior que ano atual',
+          function validar() {
+            const { dataExpiracao } = this.parent;
+            if (
+              moment(dataExpiracao).format('YYYY') >
+              moment(new Date()).format('YYYY')
+            ) {
+              return false;
+            }
+
+            return true;
+          }
+        ),
       titulo: Yup.string()
         .required('Campo obrigatório')
         .min(10, 'Deve conter no mínimo 10 caracteres')
@@ -705,7 +763,10 @@ const ComunicadosCadastro = ({ match }) => {
                     />
                   </Grid>
                   <Grid cols={5}>
-                    <Label control="CodigoDre" text="Dre" />
+                    <Label
+                      control="CodigoDre"
+                      text="Diretoria Regional de Educação (DRE)"
+                    />
                     <SelectComponent
                       form={form}
                       id="CodigoDre"
@@ -723,7 +784,7 @@ const ComunicadosCadastro = ({ match }) => {
                     />
                   </Grid>
                   <Grid cols={5}>
-                    <Label control="CodigoUe" text="Unidade Escolar" />
+                    <Label control="CodigoUe" text="Unidade Escolar (UE)" />
                     <SelectComponent
                       form={form}
                       id="CodigoUe"
@@ -778,13 +839,32 @@ const ComunicadosCadastro = ({ match }) => {
                       }}
                     />
                   </Grid>
-                  <Grid cols={6}>
-                    <Label control="turmas" text="Turmas" />
+                  <Grid cols={2}>
+                    <Label control="ano" text="Ano" />
+                    <SelectComponent
+                      form={form}
+                      id="ano"
+                      name="ano"
+                      placeholder="Selecione ano"
+                      valueOption="ano"
+                      valueText="ano"
+                      value={form.values.semestre}
+                      lista={anos}
+                      allowClear
+                      disabled={semestreDesabilitado}
+                      onChange={x => {
+
+                        onSemestreChange(x);
+                      }}
+                    />
+                  </Grid>
+                  <Grid cols={4}>
+                    <Label control="turmas" text="Turma" />
                     <SelectComponent
                       form={form}
                       id="turmas"
                       name="turmas"
-                      placeholder="Selecione uma ou mais turmas"
+                      placeholder="Selecione uma ou mais"
                       valueOption="id"
                       valueText="nome"
                       value={form.values.turmas}
@@ -884,31 +964,31 @@ const ComunicadosCadastro = ({ match }) => {
                     )}
                     <InseridoAlterado>
                       {inseridoAlterado &&
-                      inseridoAlterado.criadoPor &&
-                      inseridoAlterado.criadoPor.length ? (
-                        <p className="pt-2">
-                          INSERIDO por {inseridoAlterado.criadoPor} (
-                          {inseridoAlterado.criadoRF}) em{' '}
-                          {window
-                            .moment(inseridoAlterado.criadoEm)
-                            .format('DD/MM/YYYY HH:mm:ss')}
-                        </p>
-                      ) : (
-                        ''
-                      )}
+                        inseridoAlterado.criadoPor &&
+                        inseridoAlterado.criadoPor.length ? (
+                          <p className="pt-2">
+                            INSERIDO por {inseridoAlterado.criadoPor} (
+                            {inseridoAlterado.criadoRF}) em{' '}
+                            {window
+                              .moment(inseridoAlterado.criadoEm)
+                              .format('DD/MM/YYYY HH:mm:ss')}
+                          </p>
+                        ) : (
+                          ''
+                        )}
                       {inseridoAlterado &&
-                      inseridoAlterado.alteradoPor &&
-                      inseridoAlterado.alteradoPor.length ? (
-                        <p>
-                          ALTERADO por {inseridoAlterado.alteradoPor} (
-                          {inseridoAlterado.alteradoRF}) em{' '}
-                          {window
-                            .moment(inseridoAlterado.alteradoEm)
-                            .format('DD/MM/YYYY HH:mm:ss')}
-                        </p>
-                      ) : (
-                        ''
-                      )}
+                        inseridoAlterado.alteradoPor &&
+                        inseridoAlterado.alteradoPor.length ? (
+                          <p>
+                            ALTERADO por {inseridoAlterado.alteradoPor} (
+                            {inseridoAlterado.alteradoRF}) em{' '}
+                            {window
+                              .moment(inseridoAlterado.alteradoEm)
+                              .format('DD/MM/YYYY HH:mm:ss')}
+                          </p>
+                        ) : (
+                          ''
+                        )}
                     </InseridoAlterado>
                   </Grid>
                 </Linha>
@@ -920,7 +1000,7 @@ const ComunicadosCadastro = ({ match }) => {
                       alunosLoader={alunosLoader}
                       ObterAlunos={ObterAlunos}
                       modoEdicaoConsulta={modoEdicaoConsulta}
-                      onClose={() => {}}
+                      onClose={() => { }}
                       onConfirm={alunosSel => {
                         setAlunosSelecionado([
                           ...alunosSelecionados,
@@ -941,8 +1021,8 @@ const ComunicadosCadastro = ({ match }) => {
                     />
                   </>
                 ) : (
-                  ''
-                )}
+                    ''
+                  )}
               </Form>
             )}
           </Formik>
