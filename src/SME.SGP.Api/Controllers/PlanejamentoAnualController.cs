@@ -49,10 +49,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PA_I, Permissao.PA_A, Policy = "Bearer")]
-        public IActionResult Migrar(MigrarPlanejamentoAnualDto migrarPlanoAnualDto)
-        {
-            // TODO Incluir UseCase para copia do plano
-            return Ok();
+        public async Task<IActionResult> Migrar(MigrarPlanejamentoAnualDto migrarPlanoAnualDto, [FromServices] IMigrarPlanejamentoAnualUseCase useCase)
+        {            
+            return Ok(await useCase.Executar(migrarPlanoAnualDto));
         }
 
         [HttpGet("turmas/copia")]
