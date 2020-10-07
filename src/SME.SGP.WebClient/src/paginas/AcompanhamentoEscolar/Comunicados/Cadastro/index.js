@@ -460,14 +460,11 @@ const ComunicadosCadastro = ({ match }) => {
       const data = [];
       dados.forEach(value => {
         if (value.id !== '-99') {
-          data.push({
-            id: value.id,
-            nome: value.nome,
-          });
+          const dataItem = gruposLista.filter(item => item.nome === value.nome);
+          data.push(...dataItem);
         }
       });
-
-      const arrayString = data.map(x => `${x.nome}`);
+      const arrayString = data.map(x => `${x.id}`);
 
       refForm.setFieldValue('gruposId', arrayString);
     }
@@ -496,6 +493,16 @@ const ComunicadosCadastro = ({ match }) => {
     if (!dados || dados.length === 0) return;
 
     refForm.setFieldValue('gruposId', dados);
+  };
+
+  const ObterGruposIdPorModalidadeFiltro = async modalidade => {
+    if (!modalidade || modalidade === '') return;
+
+    const dados = await FiltroHelper.ObterGruposIdPorModalidade(modalidade);
+
+    if (!dados || dados.length === 0) return;
+
+    return dados;
   };
 
   const ObterAlunos = async (codigoTurma, anoLetivo) => {
