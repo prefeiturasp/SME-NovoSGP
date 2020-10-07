@@ -17,15 +17,15 @@ namespace SME.SGP.Aplicacao
             this.unitOfWork = unitOfWork ?? throw new System.ArgumentNullException(nameof(unitOfWork));
         }
 
-        public async Task<AuditoriaDto> Executar(MigrarPlanejamentoAnualDto dto)
+        public async Task<bool> Executar(MigrarPlanejamentoAnualDto dto)
         {
             unitOfWork.IniciarTransacao();
 
-            var auditoria = await mediator.Send(new MigrarPlanejamentoAnualCommand(dto));
+            var retorno = await mediator.Send(new MigrarPlanejamentoAnualCommand(dto));
 
             unitOfWork.PersistirTransacao();
 
-            return auditoria;
+            return retorno;
         }
 
     }
