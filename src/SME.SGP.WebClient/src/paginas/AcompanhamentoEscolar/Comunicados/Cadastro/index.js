@@ -491,6 +491,7 @@ const ComunicadosCadastro = ({ match }) => {
   };
 
   const ObterGruposIdPorModalidade = async modalidade => {
+    console.log('modalidade -->', modalidade);
     if (!modalidade || modalidade === '') return;
 
     const dados = await FiltroHelper.ObterGruposIdPorModalidade(modalidade);
@@ -572,9 +573,14 @@ const ComunicadosCadastro = ({ match }) => {
   const onChangeModalidade = async modalidade => {
     handleModoEdicao();
 
+
     refForm.setFieldValue('semestre', '');
     refForm.setFieldValue('gruposId', []);
     setModalidadeSelecionada(modalidade);
+
+    if (modalidade !== '-99') {
+      ObterGruposIdPorModalidade(modalidade);
+    }
 
     if (
       !refForm.state.values.CodigoUe ||
@@ -584,8 +590,6 @@ const ComunicadosCadastro = ({ match }) => {
       refForm.setFieldValue('gruposId', []);
       return;
     }
-
-    if (modalidade !== '-99') ObterGruposIdPorModalidade(modalidade);
 
     if (modalidade !== '3' && modalidade !== '-99')
       ObterTurmas(
@@ -843,7 +847,7 @@ const ComunicadosCadastro = ({ match }) => {
                       value={form.values.modalidade}
                       lista={modalidades}
                       allowClear
-                      disabled={modoEdicaoConsulta}
+                      disabled={modoEdicaoConsulta || gruposId.length > 0}
                       onChange={x => {
                         onChangeModalidade(x);
                       }}
