@@ -5,6 +5,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IMigrarPlanejamentoAnualUseCase
     {
-        Task<AuditoriaDto> Executar(MigrarPlanejamentoAnualDto dto);
+        Task<bool> Executar(MigrarPlanejamentoAnualDto dto);
     }
 }

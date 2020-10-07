@@ -4,7 +4,7 @@ using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class MigrarPlanejamentoAnualCommand : IRequest<AuditoriaDto>
+    public class MigrarPlanejamentoAnualCommand : IRequest<bool>
     {
         public MigrarPlanejamentoAnualCommand(MigrarPlanejamentoAnualDto planejamento)
         {

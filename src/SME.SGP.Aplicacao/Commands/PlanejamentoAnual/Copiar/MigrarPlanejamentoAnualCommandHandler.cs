@@ -2,12 +2,15 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class MigrarPlanejamentoAnualCommandHandler : AbstractUseCase, IRequestHandler<MigrarPlanejamentoAnualCommand, AuditoriaDto>
+    public class MigrarPlanejamentoAnualCommandHandler : AbstractUseCase, IRequestHandler<MigrarPlanejamentoAnualCommand, bool>
     {
         private readonly IRepositorioPlanejamentoAnual repositorioPlanejamentoAnual;
         private readonly IRepositorioTurma repositorioTurma;
@@ -28,39 +31,82 @@ namespace SME.SGP.Aplicacao
             this.repositorioPlanejamentoAnualObjetivosAprendizagem = repositorioPlanejamentoAnualObjetivosAprendizagem ?? throw new System.ArgumentNullException(nameof(repositorioPlanejamentoAnualObjetivosAprendizagem));
         }
 
-        public async Task<AuditoriaDto> Handle(MigrarPlanejamentoAnualCommand comando, CancellationToken cancellationToken)
+        public async Task<bool> Handle(MigrarPlanejamentoAnualCommand comando, CancellationToken cancellationToken)
         {
-            AuditoriaDto auditorias = new AuditoriaDto();
-
-            var obterComponenteRegencia = await mediator.Send(new ObterComponentesCurricularesRegenciaPorTurmaUseCase());
-
+            var ehRegencia = await mediator.Send(new VerificarComponenteCurriculareSeERegenciaPorIdQuery(comando.Planejamento.ComponenteCurricularId));
 
             // Validando as turmas
-            foreach(var turma in comando.Planejamento.TurmasDestinoIds)
+            foreach (var turma in comando.Planejamento.TurmasDestinoIds)
             {
                 var checarTurma = await repositorioTurma.ObterPorId(turma);
                 if (checarTurma == null)
                     throw new NegocioException($"Turma não encontrada");
 
-                foreach(var periodo in comando.Planejamento.PlanejamentoPeriodosEscolaresIds)
+                foreach (var periodo in comando.Planejamento.PlanejamentoPeriodosEscolaresIds)
                 {
-                    var checarPeriodo = await repositorioPlanejamentoAnualPeriodoEscolar.ObterPorIdAsync(periodo);
-                    if (checarPeriodo == null)
-                        throw new NegocioException($"Período não encontrado");
+                    var planejamentoAnualPeriodoEscolar = await repositorioPlanejamentoAnualPeriodoEscolar.ObterPorIdAsync(periodo);
+                    if (planejamentoAnualPeriodoEscolar == null)
+                        throw new NegocioException($"Período escolar não encontrado");
 
-                    var componente = await repositorioPlanejamentoAnualComponente.ObterPorPlanejamentoAnualPeriodoEscolarId(comando.Planejamento.ComponenteCurricularId, checarPeriodo.Id);
+                    var planejamentoAnualComponente = await repositorioPlanejamentoAnualComponente.ObterPorPlanejamentoAnualPeriodoEscolarId(comando.Planejamento.ComponenteCurricularId, periodo);
+                    if (planejamentoAnualComponente == null)
+                        throw new NegocioException($"Componente não encontrado");
 
-                    if(componente != null)
+                    if (ehRegencia)
                     {
-                        var objetivos = await repositorioPlanejamentoAnualObjetivosAprendizagem.ObterPorPlanejamentoAnualComponenteId(componente.Id);
-                    }
+                        var turno = checarTurma.ModalidadeCodigo == Modalidade.Fundamental ? checarTurma.QuantidadeDuracaoAula : 0;
 
+                        var componentes = await mediator.Send(new ObterComponentesCurricularesRegenciaPorAnoETurnoQuery(Convert.ToInt64(checarTurma.Ano), turno));
+
+                        if (componentes.Any())
+                        {
+                            foreach (var componente in componentes)
+                            {
+                                var objetivos = await ObterObjetivos(componente.Id, planejamentoAnualPeriodoEscolar.Id);
+                                await MigrarPlano(checarTurma, planejamentoAnualPeriodoEscolar, objetivos, planejamentoAnualComponente);
+                            }
+                        }
+                    } 
+                    else
+                    {
+                        var objetivos = await ObterObjetivos(comando.Planejamento.ComponenteCurricularId, planejamentoAnualPeriodoEscolar.Id);
+                        await MigrarPlano(checarTurma, planejamentoAnualPeriodoEscolar, objetivos, planejamentoAnualComponente);
+                    }
                 }
             }
+            return true;
+        }
 
-            //var planoAnualOrigem  = await repositorioPlanejamentoAnual.ObterPlanejamentoSimplificadoPorTurmaEComponenteCurricular()
+        private async Task MigrarPlano(Turma turma, PlanejamentoAnualPeriodoEscolar periodo, IEnumerable<PlanejamentoAnualObjetivoAprendizagem> objetivos, PlanejamentoAnualComponente planejamentoAnualComponente)
+        {
+            PlanejamentoAnual planejamentoAnualNovo = new PlanejamentoAnual(turma.Id, planejamentoAnualComponente.ComponenteCurricularId);
+            var planejamentoAnualNovoId = await repositorioPlanejamentoAnual.SalvarAsync(planejamentoAnualNovo);
 
-            return auditorias;
+            PlanejamentoAnualPeriodoEscolar planejamentoAnualPeriodoEscolarNovo = new PlanejamentoAnualPeriodoEscolar(periodo.PeriodoEscolarId, planejamentoAnualNovoId);
+            var planejamentoAnualPeriodoEscolarNovoId = await repositorioPlanejamentoAnualPeriodoEscolar.SalvarAsync(planejamentoAnualPeriodoEscolarNovo);
+
+            PlanejamentoAnualComponente planejamentoAnualComponenteNovo = new PlanejamentoAnualComponente(planejamentoAnualComponente.ComponenteCurricularId, 
+                planejamentoAnualComponente.Descricao, planejamentoAnualPeriodoEscolarNovoId);
+            var planejamentoAnualComponenteNovoId = await repositorioPlanejamentoAnualComponente.SalvarAsync(planejamentoAnualComponenteNovo);
+
+            if(objetivos.Any())
+            {               
+                repositorioPlanejamentoAnualObjetivosAprendizagem.SalvarVarios(objetivos, planejamentoAnualComponenteNovoId);
+            }
+        }
+
+
+        private async Task<IEnumerable<PlanejamentoAnualObjetivoAprendizagem>> ObterObjetivos (long componenteCurricularId, long periodoId)
+        {
+            var planejamentoAnualComponente = await repositorioPlanejamentoAnualComponente.ObterPorPlanejamentoAnualPeriodoEscolarId(componenteCurricularId, periodoId);
+
+            if (planejamentoAnualComponente != null)
+            {
+                var objetivos = await repositorioPlanejamentoAnualObjetivosAprendizagem.ObterPorPlanejamentoAnualComponenteId(planejamentoAnualComponente.Id);
+                if (objetivos.Any())
+                    return objetivos;
+            }
+            return null;
         }
     }
 }
