@@ -24,6 +24,7 @@ namespace SME.SGP.Aplicacao
                 , comunicado.GruposId
                 , comunicado.Titulo
                 , comunicado.AnoLetivo
+                , comunicado.SeriesResumidas
                 , comunicado.CodigoDre
                 , comunicado.CodigoUe
                 , comunicado.AlunosEspecificados
