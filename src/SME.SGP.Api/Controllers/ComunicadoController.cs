@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
-using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
 using System.Collections.Generic;
@@ -15,22 +15,32 @@ namespace SME.SGP.Api.Controllers
     [Authorize("Bearer")]
     public class ComunicadoController : ControllerBase
     {
-        private readonly IComandoComunicado comandos;
-        private readonly IConsultaComunicado consultas;
-
-        public ComunicadoController(IConsultaComunicado consultas, IComandoComunicado comandos)
+        [HttpPost]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.CO_I, Policy = "Bearer")]
+        public async Task<IActionResult> PostAsync([FromBody] ComunicadoInserirDto comunicadoDto, [FromServices] ISolicitarInclusaoComunicadoEscolaAquiUseCase solicitarInclusaoComunicadoEscolaAquiUseCase)
         {
-            this.consultas = consultas ?? throw new System.ArgumentNullException(nameof(consultas));
-            this.comandos = comandos ?? throw new System.ArgumentNullException(nameof(comandos));
+            return Ok(await solicitarInclusaoComunicadoEscolaAquiUseCase.Executar(comunicadoDto));
         }
 
         [HttpPut("{id}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.CO_A, Policy = "Bearer")]
-        public async Task<IActionResult> Alterar(long id, [FromBody]ComunicadoInserirDto comunicadoDto)
+        public async Task<IActionResult> Alterar(long id, [FromBody] ComunicadoAlterarDto comunicadoDto, [FromServices] ISolicitarAlteracaoComunicadoEscolaAquiUseCase solicitarAlteracaoComunicadoEscolaAquiUseCase)
         {
-            return Ok(await comandos.Alterar(id, comunicadoDto));
+            return Ok(await solicitarAlteracaoComunicadoEscolaAquiUseCase.Executar(id, comunicadoDto));
+        }
+
+        [HttpDelete]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.CO_E, Policy = "Bearer")]
+        public async Task<IActionResult> Excluir([FromBody] long[] ids, [FromServices] ISolicitarExclusaoComunicadosEscolaAquiUseCase solicitarExclusaoComunicadosEscolaAquiUseCase)
+        {
+            return Ok(await solicitarExclusaoComunicadosEscolaAquiUseCase.Executar(ids));
         }
 
         [HttpGet("{id}")]
@@ -38,19 +48,18 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<ComunicadoCompletoDto>), 204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.CO_C, Policy = "Bearer")]
-        public async Task<IActionResult> BuscarPorId(long id)
+        public async Task<IActionResult> BuscarPorId(long id, [FromServices] IObterComunicadoEscolaAquiUseCase obterComunicadoEscolaAquiUseCase)
         {
-            return Ok(await consultas.BuscarPorIdAsync(id));
+            return Ok(await obterComunicadoEscolaAquiUseCase.Executar(id));
         }
 
         [HttpGet("{codigoTurma}/alunos/{anoLetivo}")]
         [ProducesResponseType(typeof(IEnumerable<AlunoPorTurmaResposta>), 200)]
         [ProducesResponseType(typeof(IEnumerable<AlunoPorTurmaResposta>), 204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> BuscarAlunos(string codigoTurma, int anoLetivo)
+        public async Task<IActionResult> BuscarAlunos(string codigoTurma, int anoLetivo, [FromServices] IObterAlunosPorTurmaEAnoLetivoEscolaAquiUseCase obterAlunosPorTurmaEscolaAquiUseCase)
         {
-            var retorno = await consultas.ObterAlunosPorTurma(codigoTurma, anoLetivo);
-
+            var retorno = await obterAlunosPorTurmaEscolaAquiUseCase.Executar(codigoTurma, anoLetivo);
             if (retorno == null || !retorno.Any())
                 return NoContent();
 
@@ -62,34 +71,14 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<ComunicadoCompletoDto>), 204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.CO_C, Policy = "Bearer")]
-        public async Task<IActionResult> BuscarTodosAsync([FromQuery]FiltroComunicadoDto filtro)
+        public async Task<IActionResult> BuscarTodosAsync([FromQuery] FiltroComunicadoDto filtro, [FromServices] IObterComunicadosPaginadosEscolaAquiUseCase obterComunicadosPaginadosEscolaAquiUseCase)
         {
-            var resultado = await consultas.ListarPaginado(filtro);
+            var resultado = await obterComunicadosPaginadosEscolaAquiUseCase.Executar(filtro);
 
             if (!resultado.Items.Any())
                 return NoContent();
 
             return Ok(resultado);
-        }
-
-        [HttpDelete]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [Permissao(Permissao.CO_E, Policy = "Bearer")]
-        public async Task<IActionResult> Excluir([FromBody]long[] ids)
-        {
-            await comandos.Excluir(ids);
-            return Ok();
-        }
-
-        [HttpPost]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.CO_I, Policy = "Bearer")]
-        public async Task<IActionResult> PostAsync([FromBody]ComunicadoInserirDto comunicadoDto)
-        {
-            return Ok(await comandos.Inserir(comunicadoDto));
         }
     }
 }

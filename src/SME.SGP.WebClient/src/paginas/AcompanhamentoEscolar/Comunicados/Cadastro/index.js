@@ -66,6 +66,45 @@ const ComunicadosCadastro = ({ match }) => {
     { id: '2', nome: 'Alunos Especificados' },
   ];
 
+  const anoModalidadeLista = [
+    {
+      modalidade: 5,
+      ano: '1',
+    },
+    {
+      modalidade: 5,
+      ano: '2',
+    },
+    {
+      modalidade: 5,
+      ano: '3',
+    },
+    {
+      modalidade: 5,
+      ano: '4',
+    },
+    {
+      modalidade: 5,
+      ano: '5',
+    },
+    {
+      modalidade: 5,
+      ano: '6',
+    },
+    {
+      modalidade: 5,
+      ano: '7',
+    },
+    {
+      modalidade: 5,
+      ano: '8',
+    },
+    {
+      modalidade: 5,
+      ano: '9',
+    },
+  ];
+
   const [loaderSecao] = useState(false);
 
   const [somenteConsulta, setSomenteConsulta] = useState(false);
@@ -88,6 +127,8 @@ const ComunicadosCadastro = ({ match }) => {
 
   const [alunosLoader, setAlunosLoader] = useState(false);
 
+  const [unidadeEscolarUE, setUnidadeEscolarUE] = useState(false);
+
   useEffect(() => {
     setSomenteConsulta(
       verificaSomenteConsulta(
@@ -101,12 +142,18 @@ const ComunicadosCadastro = ({ match }) => {
 
   const [idComunicado, setIdComunicado] = useState();
 
+  const [anos] = useState(anoModalidadeLista);
+
   useEffect(() => {
     if (match && match.params && match.params.id) {
       setIdComunicado(match.params.id);
       setBreadcrumbManual(match.url, '', RotasDto.ACOMPANHAMENTO_COMUNICADOS);
     }
   }, [match]);
+
+  useEffect(() => {
+    ObterModalidades('-99');
+  }, []);
 
   const valoresIniciaisImutaveis = {
     id: 0,
@@ -199,12 +246,15 @@ const ComunicadosCadastro = ({ match }) => {
 
         ObterUes(String(comunicado.codigoDre));
         ObterModalidades(String(comunicado.codigoUe));
-        ObterTurmas(
-          String(comunicado.anoLetivo),
-          String(comunicado.codigoUe),
-          String(comunicado.modalidade),
-          String(comunicado.semestre)
-        );
+
+        if (modoEdicaoConsulta) {
+          ObterTurmas(
+            String(comunicado.anoLetivo),
+            String(comunicado.codigoUe ? comunicado.codigoUe : '-99'),
+            String(comunicado.modalidade ? comunicado.modalidade : '-99'),
+            String(comunicado.semestre)
+          );
+        }
 
         setInseridoAlterado({
           alteradoEm: comunicado.alteradoEm,
@@ -231,23 +281,40 @@ const ComunicadosCadastro = ({ match }) => {
       dataEnvio: momentSchema.required('Campo obrigatório'),
       CodigoDre: Yup.string().required('Campo obrigatório'),
       CodigoUe: Yup.string().required('Campo obrigatório'),
-      dataExpiracao: momentSchema.test(
-        'validaDataMaiorQueEnvio',
-        'Data de expiração deve ser maior que a data de envio',
-        function validar() {
-          const { dataEnvio } = this.parent;
-          const { dataExpiracao } = this.parent;
-          if (
-            dataEnvio &&
-            dataExpiracao &&
-            window.moment(dataExpiracao) < window.moment(dataEnvio)
-          ) {
-            return false;
-          }
+      dataExpiracao: momentSchema
+        .required('Campo obrigatório')
+        .test(
+          'validaDataMaiorQueEnvio',
+          'Data de expiração deve ser maior que a data de envio',
+          function validar() {
+            const { dataEnvio } = this.parent;
+            const { dataExpiracao } = this.parent;
+            if (
+              dataEnvio &&
+              dataExpiracao &&
+              window.moment(dataExpiracao) < window.moment(dataEnvio)
+            ) {
+              return false;
+            }
 
-          return true;
-        }
-      ),
+            return true;
+          }
+        )
+        .test(
+          'validaDataAnoMaiorQueAnoAtual',
+          'Data de expiração não pode ser maior que ano atual',
+          function validar() {
+            const { dataExpiracao } = this.parent;
+            if (
+              moment(dataExpiracao).format('YYYY') >
+              moment(new Date()).format('YYYY')
+            ) {
+              return false;
+            }
+
+            return true;
+          }
+        ),
       titulo: Yup.string()
         .required('Campo obrigatório')
         .min(10, 'Deve conter no mínimo 10 caracteres')
@@ -312,9 +379,9 @@ const ComunicadosCadastro = ({ match }) => {
 
   const gruposDesabilitados = useMemo(() => {
     return (
-      !!modalidadeSelecionada &&
-      modalidadeSelecionada !== '' &&
-      modalidadeSelecionada !== '-99'
+      (!!modalidadeSelecionada &&
+        modalidadeSelecionada !== '' &&
+        modalidadeSelecionada !== '-99') || unidadeEscolarUE
     );
   }, [modalidadeSelecionada]);
 
@@ -389,6 +456,19 @@ const ComunicadosCadastro = ({ match }) => {
         ObterTurmas(refForm.state.values.anoLetivo, ue, dados[0].id, 0);
     }
 
+    if (ue !== '-99' && dados.length > 1) {
+      const data = [];
+      dados.forEach(value => {
+        if (value.id !== '-99') {
+          const dataItem = gruposLista.filter(item => item.nome === value.nome);
+          data.push(...dataItem);
+        }
+      });
+      const arrayString = data.map(x => `${x.id}`);
+
+      refForm.setFieldValue('gruposId', arrayString);
+    }
+
     setModalidades(dados);
   };
 
@@ -413,6 +493,16 @@ const ComunicadosCadastro = ({ match }) => {
     if (!dados || dados.length === 0) return;
 
     refForm.setFieldValue('gruposId', dados);
+  };
+
+  const ObterGruposIdPorModalidadeFiltro = async modalidade => {
+    if (!modalidade || modalidade === '') return;
+
+    const dados = await FiltroHelper.ObterGruposIdPorModalidade(modalidade);
+
+    if (!dados || dados.length === 0) return;
+
+    return dados;
   };
 
   const ObterAlunos = async (codigoTurma, anoLetivo) => {
@@ -456,9 +546,11 @@ const ComunicadosCadastro = ({ match }) => {
     refForm.setFieldValue('CodigoUe', 'todas');
     onChangeUe('todas');
     resetarTurmas();
-    ResetarModalidade();
+    // ResetarModalidade();
+    ObterModalidades('-99');
+    setUnidadeEscolarUE(false);
 
-    if (dre == 'todas') {
+    if (dre === 'todas') {
       setUes(todos);
       return;
     }
@@ -472,12 +564,12 @@ const ComunicadosCadastro = ({ match }) => {
     resetarTurmas();
     ResetarModalidade();
 
-    if (ue == 'todas') {
+    if (ue === 'todas') {
       setModalidades(todosTurmasModalidade);
       setTurmas(todosTurmasModalidade);
       return;
     }
-
+    setUnidadeEscolarUE(true);
     onChangeModalidade('');
     ObterModalidades(ue);
   };
@@ -485,10 +577,14 @@ const ComunicadosCadastro = ({ match }) => {
   const onChangeModalidade = async modalidade => {
     handleModoEdicao();
 
+
     refForm.setFieldValue('semestre', '');
     refForm.setFieldValue('gruposId', []);
     setModalidadeSelecionada(modalidade);
-    resetarTurmas();
+
+    if (modalidade !== '-99') {
+      ObterGruposIdPorModalidade(modalidade);
+    }
 
     if (
       !refForm.state.values.CodigoUe ||
@@ -498,8 +594,6 @@ const ComunicadosCadastro = ({ match }) => {
       refForm.setFieldValue('gruposId', []);
       return;
     }
-
-    if (modalidade !== '-99') ObterGruposIdPorModalidade(modalidade);
 
     if (modalidade !== '3' && modalidade !== '-99')
       ObterTurmas(
@@ -705,7 +799,10 @@ const ComunicadosCadastro = ({ match }) => {
                     />
                   </Grid>
                   <Grid cols={5}>
-                    <Label control="CodigoDre" text="Dre" />
+                    <Label
+                      control="CodigoDre"
+                      text="Diretoria Regional de Educação (DRE)"
+                    />
                     <SelectComponent
                       form={form}
                       id="CodigoDre"
@@ -723,7 +820,7 @@ const ComunicadosCadastro = ({ match }) => {
                     />
                   </Grid>
                   <Grid cols={5}>
-                    <Label control="CodigoUe" text="Unidade Escolar" />
+                    <Label control="CodigoUe" text="Unidade Escolar (UE)" />
                     <SelectComponent
                       form={form}
                       id="CodigoUe"
@@ -754,7 +851,7 @@ const ComunicadosCadastro = ({ match }) => {
                       value={form.values.modalidade}
                       lista={modalidades}
                       allowClear
-                      disabled={modalidadeDesabilitada || modoEdicaoConsulta}
+                      disabled={modoEdicaoConsulta || gruposId.length > 0}
                       onChange={x => {
                         onChangeModalidade(x);
                       }}
@@ -778,13 +875,32 @@ const ComunicadosCadastro = ({ match }) => {
                       }}
                     />
                   </Grid>
+                  {/* <Grid cols={2}>
+                    <Label control="ano" text="Ano" />
+                    <SelectComponent
+                      form={form}
+                      id="ano"
+                      name="ano"
+                      placeholder="Selecione ano"
+                      valueOption="ano"
+                      valueText="ano"
+                      value={form.values.semestre}
+                      lista={anos}
+                      allowClear
+                      disabled={semestreDesabilitado}
+                      onChange={x => {
+
+                        onSemestreChange(x);
+                      }}
+                    />
+                  </Grid> */}
                   <Grid cols={6}>
-                    <Label control="turmas" text="Turmas" />
+                    <Label control="turmas" text="Turma" />
                     <SelectComponent
                       form={form}
                       id="turmas"
                       name="turmas"
-                      placeholder="Selecione uma ou mais turmas"
+                      placeholder="Selecione uma ou mais"
                       valueOption="id"
                       valueText="nome"
                       value={form.values.turmas}
@@ -884,31 +1000,31 @@ const ComunicadosCadastro = ({ match }) => {
                     )}
                     <InseridoAlterado>
                       {inseridoAlterado &&
-                      inseridoAlterado.criadoPor &&
-                      inseridoAlterado.criadoPor.length ? (
-                        <p className="pt-2">
-                          INSERIDO por {inseridoAlterado.criadoPor} (
-                          {inseridoAlterado.criadoRF}) em{' '}
-                          {window
-                            .moment(inseridoAlterado.criadoEm)
-                            .format('DD/MM/YYYY HH:mm:ss')}
-                        </p>
-                      ) : (
-                        ''
-                      )}
+                        inseridoAlterado.criadoPor &&
+                        inseridoAlterado.criadoPor.length ? (
+                          <p className="pt-2">
+                            INSERIDO por {inseridoAlterado.criadoPor} (
+                            {inseridoAlterado.criadoRF}) em{' '}
+                            {window
+                              .moment(inseridoAlterado.criadoEm)
+                              .format('DD/MM/YYYY HH:mm:ss')}
+                          </p>
+                        ) : (
+                          ''
+                        )}
                       {inseridoAlterado &&
-                      inseridoAlterado.alteradoPor &&
-                      inseridoAlterado.alteradoPor.length ? (
-                        <p>
-                          ALTERADO por {inseridoAlterado.alteradoPor} (
-                          {inseridoAlterado.alteradoRF}) em{' '}
-                          {window
-                            .moment(inseridoAlterado.alteradoEm)
-                            .format('DD/MM/YYYY HH:mm:ss')}
-                        </p>
-                      ) : (
-                        ''
-                      )}
+                        inseridoAlterado.alteradoPor &&
+                        inseridoAlterado.alteradoPor.length ? (
+                          <p>
+                            ALTERADO por {inseridoAlterado.alteradoPor} (
+                            {inseridoAlterado.alteradoRF}) em{' '}
+                            {window
+                              .moment(inseridoAlterado.alteradoEm)
+                              .format('DD/MM/YYYY HH:mm:ss')}
+                          </p>
+                        ) : (
+                          ''
+                        )}
                     </InseridoAlterado>
                   </Grid>
                 </Linha>
@@ -920,7 +1036,7 @@ const ComunicadosCadastro = ({ match }) => {
                       alunosLoader={alunosLoader}
                       ObterAlunos={ObterAlunos}
                       modoEdicaoConsulta={modoEdicaoConsulta}
-                      onClose={() => {}}
+                      onClose={() => { }}
                       onConfirm={alunosSel => {
                         setAlunosSelecionado([
                           ...alunosSelecionados,
@@ -941,8 +1057,8 @@ const ComunicadosCadastro = ({ match }) => {
                     />
                   </>
                 ) : (
-                  ''
-                )}
+                    ''
+                  )}
               </Form>
             )}
           </Formik>

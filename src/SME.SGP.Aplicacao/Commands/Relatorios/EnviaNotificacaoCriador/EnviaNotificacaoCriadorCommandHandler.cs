@@ -42,8 +42,8 @@ namespace SME.SGP.Aplicacao
         }
 
         private string FormatarMensagem(string descricaoDoRelatorio, string urlNotificacao, string mensagemUsuario)
-            => $@"O <b>{descricaoDoRelatorio}</b> está disponível, clique no botão abaixo para fazer o download do arquivo.
-                <br/><br/><a href='{urlNotificacao}' target='_blank' class='luiz'><i class='fas fa-arrow-down mr-2'></i>Download</a><br/><br/><br/><br/>
+            => $@"O {descricaoDoRelatorio} está disponível, clique no botão abaixo para fazer o download do arquivo.
+                <br/><br/><a href='{urlNotificacao}' target='_blank' class='btn-baixar-relatorio'><i class='fas fa-arrow-down mr-2'></i>Download</a><br/><br/><br/><br/>
             OBSERVAÇÃO: O Download deve ser realizado em até 24 horas, após este prazo o arquivo será excluído e caso necessite você deve solicitar um novo relatório. " +
                 (string.IsNullOrEmpty(mensagemUsuario) ? "" : "<br/>" + mensagemUsuario);
     }
