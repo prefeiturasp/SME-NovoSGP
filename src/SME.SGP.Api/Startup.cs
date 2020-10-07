@@ -13,6 +13,7 @@ using SME.Background.Hangfire;
 using SME.SGP.Api.HealthCheck;
 using SME.SGP.Background;
 using SME.SGP.Dados;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.IoC;
 using System.Collections.Generic;

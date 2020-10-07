@@ -101,6 +101,7 @@ namespace SME.SGP.Aplicacao.Servicos
                 SentrySdk.CaptureException(erro);
                 throw erro;
             }
+
         }
 
         public bool UeEstaNaAbrangecia(string login, Guid perfilId, string codigoDre, string codigoUE)
