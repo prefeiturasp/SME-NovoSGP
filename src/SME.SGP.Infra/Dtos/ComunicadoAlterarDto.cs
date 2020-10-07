@@ -6,16 +6,15 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SME.SGP.Dto
 {
-    public class ComunicadoInserirDto
+    public class ComunicadoAlterarDto
     {
-        public ComunicadoInserirDto()
+        public ComunicadoAlterarDto()
         {
             Alunos = new List<string>();
             Turmas = new List<string>();
         }
 
         [DataRequerida(ErrorMessage = "A data de envio é obrigatória.")]
-        [DataMaiorAtual(ErrorMessage = "A data de envio deve ser igual ou maior que a data atual.")]
         public DateTime DataEnvio { get; set; }
 
         [DataMaiorAtual(ErrorMessage = "A data de expiração deve ser igual ou maior que a data atual.")]
