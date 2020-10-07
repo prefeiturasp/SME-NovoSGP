@@ -57,7 +57,10 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("WHERE ");
             query.AppendLine($"  tca.Ano = '{filtroCicloDto.AnoSelecionado}'");
             query.AppendLine($"  AND modalidade = {filtroCicloDto.Modalidade}");
-            query.AppendLine(" UNION ");
+
+            var cicloSelecionado = database.Conexao.QueryFirstOrDefault<CicloDto>(query.ToString());
+
+            query.Clear();
             query.AppendLine("SELECT");
             query.AppendLine("	tc.id,");
             query.AppendLine("	tc.descricao,");
@@ -66,9 +69,21 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("	tipo_ciclo tc inner join tipo_ciclo_ano tca on tc.id = tca.tipo_ciclo_id ");
             query.AppendLine("WHERE ");
             query.AppendLine($"  tca.Ano IN ({anos})");
-            query.AppendLine($"  AND modalidade = {filtroCicloDto.Modalidade} ");
-            query.AppendLine($"ORDER BY Selecionado DESC");
-            return database.Conexao.Query<CicloDto>(query.ToString()).ToList();
+            query.AppendLine($"  AND modalidade = {filtroCicloDto.Modalidade}");
+            if (cicloSelecionado != null)
+                query.AppendLine($"  AND tc.id <> {cicloSelecionado.Id}");
+
+            var ciclosNaoSelecionados = database.Conexao.Query<CicloDto>(query.ToString());
+
+            var ciclosRetorno = new List<CicloDto>();
+
+            if (cicloSelecionado != null)
+                ciclosRetorno.Add(cicloSelecionado);
+
+            if (ciclosNaoSelecionados.Any())
+                ciclosRetorno.AddRange(ciclosNaoSelecionados.ToList());
+
+            return ciclosRetorno.AsEnumerable();
         }
 
         public async Task<IEnumerable<RetornoCicloDto>> ObterCiclosPorAnoModalidadeECodigoUe(FiltroCicloPorModalidadeECodigoUeDto filtro)
