@@ -15,6 +15,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioComponenteCurricularJurema repositorioComponenteCurricular;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IRepositorioPlanoAnual repositorioPlanoAnual;
+        private readonly IRepositorioPlanejamentoAnual repositorioPlanejamentoAnual;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IServicoEol servicoEOL;
@@ -24,6 +25,7 @@ namespace SME.SGP.Aplicacao
                                    IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem,
                                    IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
                                    IRepositorioTipoCalendario repositorioTipoCalendario,
+                                   IRepositorioPlanejamentoAnual repositorioPlanejamentoAnual,
                                    IRepositorioTurma repositorioTurma,
                                    IRepositorioComponenteCurricularJurema repositorioComponenteCurricular,
                                    IServicoUsuario servicoUsuario,
@@ -33,6 +35,7 @@ namespace SME.SGP.Aplicacao
             this.consultasObjetivoAprendizagem = consultasObjetivoAprendizagem ?? throw new System.ArgumentNullException(nameof(consultasObjetivoAprendizagem));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
+            this.repositorioPlanejamentoAnual = repositorioPlanejamentoAnual ?? throw new ArgumentNullException(nameof(repositorioPlanejamentoAnual));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
@@ -178,7 +181,7 @@ namespace SME.SGP.Aplicacao
             if (turmasEOL != null && turmasEOL.Any())
             {
                 var idsTurmas = turmasEOL.Select(c => c.TurmaId.ToString());
-                turmasEOL = repositorioPlanoAnual.ValidaSeTurmasPossuemPlanoAnual(idsTurmas.ToArray());
+                turmasEOL = await repositorioPlanejamentoAnual.ValidaSeTurmasPossuemPlanejamentoAnual(idsTurmas.ToArray());
             }
             return turmasEOL;
         }

@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using SME.SGP.Infra;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
 {
@@ -7,5 +9,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<PlanejamentoAnual> ObterPorTurmaEComponenteCurricularPeriodoEscolar(long turmaId, long componenteCurricularId, long periodoEscolarId);
         Task<long> ObterIdPorTurmaEComponenteCurricular(long turmaId, long componenteCurricularId);
         Task<PlanejamentoAnual> ObterPlanejamentoSimplificadoPorTurmaEComponenteCurricular(long turmaId, long componenteCurricularId);
+        Task<IEnumerable<TurmaParaCopiaPlanoAnualDto>> ValidaSeTurmasPossuemPlanejamentoAnual(string[] turmasId);
     }
 }
