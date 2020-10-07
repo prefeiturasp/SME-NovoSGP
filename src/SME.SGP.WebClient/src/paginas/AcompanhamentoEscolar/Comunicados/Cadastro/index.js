@@ -199,7 +199,6 @@ const ComunicadosCadastro = ({ match }) => {
   useEffect(() => {
     async function obterPorId(id) {
       const comunicado = await ServicoComunicados.consultarPorId(id);
-      console.log('comunicado ---> ', comunicado);
       if (comunicado && Object.entries(comunicado).length) {
         setValoresIniciais({
           id: comunicado.id,
@@ -444,7 +443,6 @@ const ComunicadosCadastro = ({ match }) => {
   };
 
   const ObterModalidades = async ue => {
-    console.log('ue -->', ue);
     const dados = await FiltroHelper.ObterModalidades(ue);
 
     if (!dados || dados.length === 0) return;
@@ -491,7 +489,6 @@ const ComunicadosCadastro = ({ match }) => {
   };
 
   const ObterGruposIdPorModalidade = async modalidade => {
-    console.log('modalidade -->', modalidade);
     if (!modalidade || modalidade === '') return;
 
     const dados = await FiltroHelper.ObterGruposIdPorModalidade(modalidade);
