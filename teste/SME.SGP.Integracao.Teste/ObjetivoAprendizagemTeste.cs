@@ -20,6 +20,19 @@ namespace SME.SGP.Integracao.Teste
             this._fixture = fixture ?? throw new ArgumentNullException(nameof(fixture));
         }
 
+        [Fact]
+        public async void Deve_Listar_Todos_Objetivos()
+        {
+            _fixture._clientApi.DefaultRequestHeaders.Clear();
+            _fixture._clientApi.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { Permissao.PA_C }));
+
+            long ano = 1;
+            long componenteCurricularId = 1105;
+            HttpResponseMessage result = await _fixture._clientApi.GetAsync($"api/v1/objetivos-aprendizagem/{ano}/{componenteCurricularId}");
+
+            Assert.True(_fixture.ValidarStatusCodeComSucesso(result));
+        }
+
         [Fact, Order(8)]
         public void Deve_Consultar_Objetivos_Aprendizagem()
         {

@@ -6,6 +6,8 @@ import React, {
   useEffect,
 } from 'react';
 
+import RotasDto from '~/dtos/rotasDto';
+
 // Redux
 import { useSelector } from 'react-redux';
 
@@ -43,8 +45,10 @@ import Reducer, {
 import { valorNuloOuVazio } from '~/utils/funcoes/gerais';
 import AlertaModalidadeInfantil from '~/componentes-sgp/AlertaModalidadeInfantil/alertaModalidadeInfantil';
 import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
+import { constant } from 'lodash';
 
 function RelatorioPAPAcompanhamento() {
+  const usuario = useSelector(store => store.usuario);
   const [estado, disparar] = useReducer(Reducer, estadoInicial);
   const [periodo, setPeriodo] = useState(undefined);
   const [ordenacao, setOrdenacao] = useState(2);
@@ -53,7 +57,13 @@ function RelatorioPAPAcompanhamento() {
   const [estadoOriginalAlunos, setEstadoOriginalAlunos] = useState(null);
   const { turmaSelecionada } = useSelector(store => store.usuario);
   const [semPeriodos, setSemPeriodos] = useState(false);
-  const [somenteLeitura, setSomenteLeitura] = useState(false);
+  const permTela = usuario.permissoes[RotasDto.RELATORIO_PAP_ACOMPANHAMENTO];
+  const [somenteLeitura, setSomenteLeitura] = useState(
+    permTela.podeConsultar &&
+      !permTela.podeIncluir &&
+      !permTela.podeAlterar &&
+      !permTela.podeExcluir
+  );
   const modalidadesFiltroPrincipal = useSelector(
     store => store.filtro.modalidades
   );
@@ -127,7 +137,12 @@ function RelatorioPAPAcompanhamento() {
   const onChangePeriodoHandler = async valor => {
     try {
       setCarregando(true);
-      setSomenteLeitura(false);
+      setSomenteLeitura(
+        permTela.podeConsultar &&
+          !permTela.podeIncluir &&
+          !permTela.podeAlterar &&
+          !permTela.podeExcluir
+      );
 
       if (modoEdicao && !somenteLeitura) {
         const confirmou = await confirmar(
@@ -324,12 +339,9 @@ function RelatorioPAPAcompanhamento() {
         <Card mx="mx-0">
           <ButtonGroup
             somenteConsulta={somenteLeitura}
-            permissoesTela={{
-              podeConsultar: true,
-              podeAlterar: true,
-              podeIncluir: true,
-              podeExcluir: true,
-            }}
+            permissoesTela={
+              usuario.permissoes[RotasDto.RELATORIO_PAP_ACOMPANHAMENTO]
+            }
             modoEdicao={modoEdicao}
             temItemSelecionado
             onClickVoltar={() => onClickVoltarHandler()}
@@ -388,13 +400,17 @@ function RelatorioPAPAcompanhamento() {
               onChangeOrdenacao={valor => setOrdenacao(valor)}
             />
           </Grid>
+
           <Grid className="p-0 mt-2" cols={12}>
             <TabelaAlunos
               alunos={estado.Alunos}
               objetivoAtivo={estado.ObjetivoAtivo}
               respostas={respostasCorrentes}
               onChangeResposta={onChangeRespostaHandler}
-              somenteConsulta={somenteLeitura}
+              somenteConsulta={permTela.podeConsultar &&
+                !permTela.podeIncluir &&
+                !permTela.podeAlterar &&
+                !permTela.podeExcluir}              
             />
           </Grid>
         </Card>

@@ -40,8 +40,6 @@ namespace SME.SGP.Aplicacao
         public SolicitarAlteracaoComunicadoEscolaAquiCommand(long id, DateTime dataEnvio, DateTime? dataExpiracao, string descricao, List<int> gruposId, string titulo, int anoLetivo, string seriesResumidas, string codigoDre, string codigoUe, bool alunosEspecificados, Modalidade? modalidade, int semestre)
         {
             Id = id;
-            Alunos = new List<string>();
-            Turmas = new List<string>();
             DataEnvio = dataEnvio;
             DataExpiracao = dataExpiracao;
             Descricao = descricao;
@@ -54,6 +52,8 @@ namespace SME.SGP.Aplicacao
             AlunosEspecificados = alunosEspecificados;
             Modalidade = modalidade;
             Semestre = semestre;
+            Alunos = alunos;
+            Turmas = turmas;
         }
     }
 }
