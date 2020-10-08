@@ -101,6 +101,7 @@ namespace SME.SGP.Aplicacao.Servicos
                 SentrySdk.CaptureException(erro);
                 throw erro;
             }
+
         }
 
         public bool UeEstaNaAbrangecia(string login, Guid perfilId, string codigoDre, string codigoUE)
@@ -320,7 +321,9 @@ namespace SME.SGP.Aplicacao.Servicos
                  EnsinoEspecial = z.EnsinoEspecial,
                  EtapaEJA = z.EtapaEJA,
                  DataInicio = z.DataInicioTurma,
-                 SerieEnsino = z.SerieEnsino
+                 SerieEnsino = z.SerieEnsino,
+                 DataFim = z.DataFim,
+                 Extinta = z.Extinta
              })));
 
             dres = await repositorioDre.SincronizarAsync(dres);
