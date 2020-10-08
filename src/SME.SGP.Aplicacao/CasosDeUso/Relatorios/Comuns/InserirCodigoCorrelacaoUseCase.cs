@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
         {
             var mensagem = mensagemRabbit.ObterObjetoMensagem<MensagemInserirCodigoCorrelacaoDto>();
 
-            await mediator.Send(new InserirCodigoCorrelacaoCommand(mensagemRabbit.CodigoCorrelacao, mensagemRabbit.UsuarioLogadoRF, mensagem.TipoRelatorio));
+            await mediator.Send(new InserirCodigoCorrelacaoCommand(mensagemRabbit.CodigoCorrelacao, mensagemRabbit.UsuarioLogadoRF, mensagem.TipoRelatorio, mensagem.Formato));
 
             return await Task.FromResult(true);
         }
