@@ -2,6 +2,7 @@
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -17,7 +18,19 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<IEnumerable<NotificacaoBasicaDto>> Handle(ObterUltimasNotificacoesNaoLidasPorUsuarioQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioNotificacao.ObterNotificacoesPorAnoLetivoERfAsync(request.AnoLetivo, request.CodigoRf, 5);
+            var listaTratada = await repositorioNotificacao.ObterNotificacoesPorAnoLetivoERfAsync(request.AnoLetivo, request.CodigoRf, 5);
+            var listaRetorno = new List<NotificacaoBasicaDto>();
+            
+            foreach (var item in listaTratada)
+            {
+                var notificao = (NotificacaoBasicaDto)item.Clone();
+                notificao.Titulo = notificao.ObtemTituloRudizoParaCaixaNotificacao();
+                listaRetorno.Add(notificao);                
+            }
+
+            return await Task.FromResult(listaRetorno);
+            
+            
         }
     }
 }
