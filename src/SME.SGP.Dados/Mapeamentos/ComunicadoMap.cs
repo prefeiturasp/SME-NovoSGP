@@ -21,6 +21,7 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.Turmas).ToColumn("turma");
             Map(c => c.AlunoEspecificado).ToColumn("alunos_especificados");
             Map(c => c.TipoComunicado).ToColumn("tipo_comunicado");
+            Map(c => c.SeriesResumidas).ToColumn("series_resumidas");
         }
     }
 }
