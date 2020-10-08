@@ -135,18 +135,13 @@ const Filtro = () => {
 
       const turmaAtual = turmas.find(turma => turma.valor === turmaSelecionada);
 
-      const unidadeEscolar = unidadesEscolares.find(
+      const unidadeEscolarDesc = unidadesEscolares.find(
         unidade => unidade.valor === unidadeEscolarSelecionada
       );
 
-      const dre = dres.find(
-        d => d.valor === dreSelecionada
-      );
-
       setTextoAutocomplete(
-        `${modalidadeDesc ? modalidadeDesc.desc : 'Modalidade'} - ${
-        turmaAtual ? turmaAtual.desc : 'Turma'
-        } - ${unidadeEscolar ? unidadeEscolar.desc : 'Unidade Escolar'}`
+        `${modalidadeDesc ? modalidadeDesc.desc : 'Modalidade'} - ${turmaAtual ? turmaAtual.desc : 'Turma'
+        } - ${unidadeEscolarDesc ? unidadeEscolarDesc.desc : 'Unidade Escolar'}`
       );
 
       setAlternarFocoBusca(false);
@@ -159,16 +154,12 @@ const Filtro = () => {
         anoLetivo: anoLetivoSelecionado,
         modalidade: modalidadeSelecionada,
         dre: dreSelecionada,
-        dreId: dre.id,
         unidadeEscolar: unidadeEscolarSelecionada,
-        unidadeEscolarId: unidadeEscolar.id,
         turma: turmaSelecionada,
         ano: turmaSelecionadaCompleta.ano,
-        desc: `${
-          modalidadeDesc && modalidadeDesc.desc ? modalidadeDesc.desc : ''
-          } - ${turmaAtual && turmaAtual.desc ? turmaAtual.desc : ''} - ${
-            unidadeEscolar && unidadeEscolar.desc
-            ? unidadeEscolar.desc
+        desc: `${modalidadeDesc && modalidadeDesc.desc ? modalidadeDesc.desc : ''
+          } - ${turmaAtual && turmaAtual.desc ? turmaAtual.desc : ''} - ${unidadeEscolarDesc && unidadeEscolarDesc.desc
+            ? unidadeEscolarDesc.desc
             : ''
           }`,
         periodo: periodoSelecionado || 0,
@@ -938,25 +929,40 @@ const Filtro = () => {
     if (valor !== modalidadeSelecionada) {
       setDreSelecionada();
       setPeriodoSelecionado();
+      if (turmas) {
+        setTurmas([]);
+        setCampoTurmaDesabilitado(true);
+      }
     }
 
     setModalidadeSelecionada(valor);
   };
 
   const aoTrocarPeriodo = periodo => {
-    if (periodo !== periodoSelecionado) setDreSelecionada();
+    if (periodo !== periodoSelecionado) {
+      setDreSelecionada();
+    }
 
     setPeriodoSelecionado(periodo);
   };
 
   const aoTrocarDre = dre => {
-    if (dre !== dreSelecionada) setUnidadeEscolarSelecionada();
+    if (dre !== dreSelecionada) {
+      setUnidadeEscolarSelecionada();
+      if (turmas) {
+        setTurmas([]);
+        setCampoTurmaDesabilitado(true);
+      }
+    }
 
     setDreSelecionada(dre);
   };
 
   const aoTrocarUnidadeEscolar = unidade => {
-    if (unidade !== unidadeEscolarSelecionada) setTurmaSelecionada();
+    if (unidade !== unidadeEscolarSelecionada) {
+      setTurmaSelecionada();
+      obterTurmas();
+    }
 
     setUnidadeEscolarSelecionada(unidade);
   };
@@ -980,16 +986,24 @@ const Filtro = () => {
 
   useEffect(() => {
     if (!alternarFocoBusca) {
-      setAnoLetivoSelecionado(turmaUsuarioSelecionada.anoLetivo);
+
+      if (!anoLetivoSelecionado && turmaUsuarioSelecionada.length) {
+        setAnoLetivoSelecionado(turmaUsuarioSelecionada.anoLetivo);
+        setCampoAnoLetivoDesabilitado(false);
+      }
+
       setModalidadeSelecionada(turmaUsuarioSelecionada.modalidade);
       setPeriodoSelecionado(turmaUsuarioSelecionada.periodo);
       setDreSelecionada(turmaUsuarioSelecionada.dre);
       setUnidadeEscolarSelecionada(turmaUsuarioSelecionada.unidadeEscolar);
+      if (!turmaUsuarioSelecionada.unidadeEscolar || undefined) {
+        setTurmas([]);
+        setCampoTurmaDesabilitado(true);
+      }
       setTurmaSelecionada(turmaUsuarioSelecionada.turma);
       setTextoAutocomplete(turmaUsuarioSelecionada.desc);
       setConsideraHistorico(!!turmaUsuarioSelecionada.consideraHistorico);
 
-      if (!turmaUsuarioSelecionada.length) setCampoAnoLetivoDesabilitado(false);
     }
   }, [
     alternarFocoBusca,
