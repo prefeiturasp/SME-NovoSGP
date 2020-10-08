@@ -35,7 +35,8 @@ namespace SME.SGP.Aplicacao
             {
 
                 planejamentoAnual = new PlanejamentoAnual(comando.TurmaId, comando.ComponenteCurricularId);
-                await repositorioPlanejamentoAnual.SalvarAsync(planejamentoAnual);
+                var id = await repositorioPlanejamentoAnual.SalvarAsync(planejamentoAnual);
+                auditorias.Id = id;
             }
 
             List<PeriodoEscolar> excecoesAtribuicao = new List<PeriodoEscolar>();
