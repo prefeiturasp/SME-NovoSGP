@@ -52,5 +52,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<Modalidade>> ObterModalidadesPorUe(string codigoUe);
 
         Task<IEnumerable<OpcaoDropdownDto>> ObterDropDownTurmasPorUeAnoLetivoModalidadeSemestre(string codigoUe, int anoLetivo, Modalidade? modalidade, int semestre);
+
+        Task<IEnumerable<OpcaoDropdownDto>> ObterDropDownTurmasPorUeAnoLetivoModalidadeSemestreAnos(string codigoUe, int anoLetivo, Modalidade? modalidade, int semestre, IList<string> anos);
     }
 }
