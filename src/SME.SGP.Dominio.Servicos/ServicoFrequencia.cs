@@ -151,7 +151,9 @@ namespace SME.SGP.Dominio.Servicos
                 if (ausencia.NumeroAula > quantidadeAulas)
                     throw new NegocioException($"O número de aula informado: Aula {ausencia.NumeroAula} não foi encontrado.");
 
-                var aluno = alunos.FirstOrDefault(c => c.CodigoAluno == ausencia.CodigoAluno);
+                var aluno = alunos.Where(c => c.CodigoAluno == ausencia.CodigoAluno && c.EstaAtivo(dataAula)).Any() ?
+                    alunos.FirstOrDefault(c => c.CodigoAluno == ausencia.CodigoAluno && c.EstaAtivo(dataAula)) :
+                    alunos.FirstOrDefault(c => c.CodigoAluno == ausencia.CodigoAluno);
 
                 if (aluno == null)
                     throw new NegocioException("O aluno informado na frequência não pertence a essa turma.");
