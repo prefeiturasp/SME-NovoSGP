@@ -19,8 +19,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<AnosPorCodigoUeModalidadeEscolaAquiResult>> Handle(ObterAnosPorCodigoUeModalidadeQuery request, CancellationToken cancellationToken)
         {
-            var anosDaUeEModalidade = await _repositorioAnoEscolar.ObterAnosPorCodigoUeModalidade(request.CodigoUe, request.Modalidade);
-            return anosDaUeEModalidade;
+            return await _repositorioAnoEscolar.ObterAnosPorCodigoUeModalidade(request.CodigoUe, request.Modalidade);
         }
     }
 }
