@@ -53,6 +53,8 @@ namespace SME.SGP.Dto
 
         public int Semestre { get; set; }
 
+        public string SeriesResumidas { get; set; }
+
         public IEnumerable<string> Alunos { get; set; }
     }
 

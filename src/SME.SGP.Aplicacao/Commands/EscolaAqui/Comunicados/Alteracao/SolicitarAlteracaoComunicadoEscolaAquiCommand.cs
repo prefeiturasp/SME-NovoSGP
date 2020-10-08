@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao
 
         public IEnumerable<string> Alunos { get; set; }
 
-        public SolicitarAlteracaoComunicadoEscolaAquiCommand(long id, DateTime dataEnvio, DateTime? dataExpiracao, string descricao, List<int> gruposId, string titulo, int anoLetivo, string seriesResumidas, string codigoDre, string codigoUe, bool alunosEspecificados, Modalidade? modalidade, int semestre)
+        public SolicitarAlteracaoComunicadoEscolaAquiCommand(long id, DateTime dataEnvio, DateTime? dataExpiracao, string descricao, List<int> gruposId, string titulo, int anoLetivo, string seriesResumidas, string codigoDre, string codigoUe, bool alunosEspecificados, Modalidade? modalidade, int semestre, IEnumerable<string> alunos, IEnumerable<string> turmas)
         {
             Id = id;
             DataEnvio = dataEnvio;
