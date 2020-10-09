@@ -28,8 +28,9 @@ namespace SME.SGP.Aplicacao
                 , comunicado.AlunosEspecificados
                 , comunicado.Modalidade
                 , comunicado.Semestre
+                , comunicado.Alunos
                 , comunicado.Turmas
-                , comunicado.Alunos));
+                , comunicado.SeriesResumidas));
         }
     }
 }
