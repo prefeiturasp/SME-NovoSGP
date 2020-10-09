@@ -2,8 +2,11 @@
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui.Anos;
+using SME.SGP.Dominio;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos.EscolaAqui.Anos;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -28,7 +31,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.CO_A, Policy = "Bearer")]
-        public async Task<IActionResult> Alterar(long id, [FromBody] ComunicadoInserirDto comunicadoDto, [FromServices] ISolicitarAlteracaoComunicadoEscolaAquiUseCase solicitarAlteracaoComunicadoEscolaAquiUseCase)
+        public async Task<IActionResult> Alterar(long id, [FromBody] ComunicadoAlterarDto comunicadoDto, [FromServices] ISolicitarAlteracaoComunicadoEscolaAquiUseCase solicitarAlteracaoComunicadoEscolaAquiUseCase)
         {
             return Ok(await solicitarAlteracaoComunicadoEscolaAquiUseCase.Executar(id, comunicadoDto));
         }
@@ -76,6 +79,21 @@ namespace SME.SGP.Api.Controllers
             var resultado = await obterComunicadosPaginadosEscolaAquiUseCase.Executar(filtro);
 
             if (!resultado.Items.Any())
+                return NoContent();
+
+            return Ok(resultado);
+        }
+
+        [HttpGet("anos/modalidade/{modalidade}")]
+        [ProducesResponseType(typeof(IEnumerable<AnosPorCodigoUeModalidadeEscolaAquiResult>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<AnosPorCodigoUeModalidadeEscolaAquiResult>), 204)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.CO_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterAnosPorCodigoUeModalidade(Modalidade modalidade, [FromQuery] string codigoUe, [FromServices] IObterAnosPorCodigoUeModalidadeEscolaAquiUseCase obterAnosPorCodigoUeModalidadeEscolaAquiUseCase)
+        {
+            var resultado = await obterAnosPorCodigoUeModalidadeEscolaAquiUseCase.Executar(codigoUe, modalidade);
+
+            if (!resultado.Any())
                 return NoContent();
 
             return Ok(resultado);

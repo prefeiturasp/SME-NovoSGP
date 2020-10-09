@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<string> Executar(long id, ComunicadoInserirDto comunicado)
+        public async Task<string> Executar(long id, ComunicadoAlterarDto comunicado)
         {
             return await mediator.Send(new SolicitarAlteracaoComunicadoEscolaAquiCommand(
                   id
@@ -24,6 +24,7 @@ namespace SME.SGP.Aplicacao
                 , comunicado.GruposId
                 , comunicado.Titulo
                 , comunicado.AnoLetivo
+                , comunicado.SeriesResumidas
                 , comunicado.CodigoDre
                 , comunicado.CodigoUe
                 , comunicado.AlunosEspecificados
