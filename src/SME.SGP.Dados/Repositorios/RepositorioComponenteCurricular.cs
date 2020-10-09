@@ -125,6 +125,15 @@ namespace SME.SGP.Dados.Repositorios
 
             return (await database.Conexao.QueryAsync<DisciplinaDto>(query, new { turno, ano }));
         }
+
+        public async Task<bool> VerificarComponenteCurriculareSeERegenciaPorId(long id)
+        {
+            var query = $@"select
+                            eh_regencia
+                        from
+	                        componente_curricular WHERE id = @id;";
+            return (await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { id }));
+        }
     }
 
 }
