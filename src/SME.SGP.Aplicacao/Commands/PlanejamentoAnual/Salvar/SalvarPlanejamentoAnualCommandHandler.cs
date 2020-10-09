@@ -67,7 +67,7 @@ namespace SME.SGP.Aplicacao
             foreach (var periodo in comando.PeriodosEscolares)
             {
 
-                var planejamentoAnualPeriodoEscolar = await repositorioPlanejamentoAnualPeriodoEscolar.ObterPorPlanejamentoAnualId(planejamentoAnual.Id, periodo.PeriodoEscolarId);
+                var planejamentoAnualPeriodoEscolar = await repositorioPlanejamentoAnualPeriodoEscolar.ObterPorPlanejamentoAnualIdEPeriodoId(planejamentoAnual.Id, periodo.PeriodoEscolarId);
                 if (planejamentoAnualPeriodoEscolar == null)
                 {
                     planejamentoAnualPeriodoEscolar = new PlanejamentoAnualPeriodoEscolar(periodo.PeriodoEscolarId)
