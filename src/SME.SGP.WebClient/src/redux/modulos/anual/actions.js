@@ -77,3 +77,13 @@ export const setEhRegistroMigrado = payload => ({
   type: '@planoAnual/setEhRegistroMigrado',
   payload,
 });
+
+export const setPlanejamentoAnualId = payload => ({
+  type: '@planoAnual/setPlanejamentoAnualId',
+  payload,
+});
+
+export const setPlanoAnualSomenteConsulta = payload => ({
+  type: '@planoAnual/setPlanoAnualSomenteConsulta',
+  payload,
+});

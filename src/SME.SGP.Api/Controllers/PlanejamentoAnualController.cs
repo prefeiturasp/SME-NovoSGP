@@ -28,7 +28,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(PlanejamentoAnualDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PA_C, Policy = "Bearer")]
-        public async Task<IActionResult> Obter(long turmaId, long componenteCurricularId,long periodoEscolarId, [FromServices] IObterPlanejamentoAnualPorTurmaComponenteUseCase useCase)
+        public async Task<IActionResult> Obter(long turmaId, long componenteCurricularId,long periodoEscolarId, [FromServices] IObterPlanejamentoAnualPorTurmaComponentePeriodoEscolarUseCase useCase)
         {
             return Ok(await useCase.Executar(turmaId, componenteCurricularId, periodoEscolarId));
         }
@@ -38,10 +38,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(long), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PA_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterPlanejamentoId(long turmaId, long componenteCurricularId)
+        public async Task<IActionResult> ObterPlanejamentoId(long turmaId, long componenteCurricularId, [FromServices] IObterPlanejamentoAnualPorTurmaComponenteUseCase useCase)
         {
-            // TODO incluir UseCase para busca do planejamento anual id por turma e componente
-            return Ok(1000);
+            return Ok(await useCase.Executar(turmaId, componenteCurricularId));
         }
 
 
@@ -90,28 +89,9 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("{planejamentoAnualId}/preiodos-escolares/copia")]
         [ProducesResponseType(typeof(IEnumerable<PlanejamentoAnualPeriodoEscolarResumoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterPeriodosEscolaresParaCopia(long planejamentoAnualId)
+        public async Task<IActionResult> ObterPeriodosEscolaresParaCopia(long planejamentoAnualId, [FromServices] IObterPeriodosEscolaresParaCopiaPorPlanejamentoAnualIdUseCase useCase)
         {
-            // TODO Incluir UseCase de consulta de Periodos Escolares com conteúdo para cópia
-
-            return Ok(new List<PlanejamentoAnualPeriodoEscolarResumoDto>()
-            {
-                new PlanejamentoAnualPeriodoEscolarResumoDto()
-                {
-                    Id = 11,
-                    Bimestre = 1
-                },
-                new PlanejamentoAnualPeriodoEscolarResumoDto()
-                {
-                    Id = 22,
-                    Bimestre = 2
-                },
-                new PlanejamentoAnualPeriodoEscolarResumoDto()
-                {
-                    Id = 33,
-                    Bimestre = 3
-                },
-            });
+            return Ok(await useCase.Executar(planejamentoAnualId));
         }
 
     }

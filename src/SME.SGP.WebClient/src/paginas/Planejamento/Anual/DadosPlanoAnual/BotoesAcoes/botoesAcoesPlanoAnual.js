@@ -35,6 +35,14 @@ const BotoesAcoesPlanoAnual = () => {
     store => store.planoAnual.listaTurmasParaCopiar
   );
 
+  const planejamentoAnualId = useSelector(
+    store => store.planoAnual.planejamentoAnualId
+  );
+
+  const planoAnualSomenteConsulta = useSelector(
+    store => store.planoAnual.planoAnualSomenteConsulta
+  );
+
   const onSalvar = async () => {
     const salvou = await servicoSalvarPlanoAnual.validarSalvarPlanoAnual();
     return salvou;
@@ -49,7 +57,7 @@ const BotoesAcoesPlanoAnual = () => {
   };
 
   const onClickVoltar = async () => {
-    if (planoAnualEmEdicao) {
+    if (planoAnualEmEdicao && !planoAnualSomenteConsulta) {
       const confirmado = await perguntaAoSalvar();
       if (confirmado) {
         const salvou = await onSalvar();
@@ -65,7 +73,7 @@ const BotoesAcoesPlanoAnual = () => {
   };
 
   const onCancelar = async () => {
-    if (planoAnualEmEdicao) {
+    if (planoAnualEmEdicao && !planoAnualSomenteConsulta) {
       const confirmou = await confirmar(
         'Atenção',
         'Você não salvou as informações preenchidas.',
@@ -94,7 +102,9 @@ const BotoesAcoesPlanoAnual = () => {
         border
         onClick={abrirCopiarConteudo}
         disabled={
+          !planejamentoAnualId ||
           ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada) ||
+          planoAnualSomenteConsulta ||
           planoAnualEmEdicao ||
           !listaTurmasParaCopiar ||
           listaTurmasParaCopiar.length === 0
@@ -117,6 +127,7 @@ const BotoesAcoesPlanoAnual = () => {
         className="mr-3"
         onClick={onCancelar}
         disabled={
+          planoAnualSomenteConsulta ||
           ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada) ||
           !planoAnualEmEdicao
         }
@@ -129,6 +140,7 @@ const BotoesAcoesPlanoAnual = () => {
         bold
         onClick={onSalvar}
         disabled={
+          planoAnualSomenteConsulta ||
           ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada) ||
           !planoAnualEmEdicao
         }
