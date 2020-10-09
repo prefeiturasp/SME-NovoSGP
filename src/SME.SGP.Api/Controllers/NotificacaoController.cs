@@ -127,9 +127,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Route("nao-lidas")]
         [Permissao(Permissao.N_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterUltimasNaoLidas([FromServices] IObterUltimasNotificacoesNaoLidasPorUsuarioUseCase useCase)
+        public async Task<IActionResult> ObterUltimasNaoLidas([FromServices] IObterUltimasNotificacoesNaoLidasPorUsuarioUseCase useCase, [FromQuery]bool tituloReduzido = false)
         {
-            return Ok(await useCase.Executar());
+            return Ok(await useCase.Executar(tituloReduzido));
         }
     }
 }
