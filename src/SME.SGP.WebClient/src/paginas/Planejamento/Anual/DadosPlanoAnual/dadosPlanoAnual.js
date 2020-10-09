@@ -95,7 +95,10 @@ const DadosPlanoAnual = () => {
       turmaSelecionada &&
       turmaSelecionada.turma
     ) {
-      ServicoPlanoAnual.obterPlanejamentoId();
+      ServicoPlanoAnual.obterPlanejamentoId(
+        turmaSelecionada.id,
+        componenteCurricular.codigoComponenteCurricular
+      );
       obterTurmasParaCopiarConteudo();
       obterBimestresPlanoAnual().then(dados => {
         if (dados && dados.length) {

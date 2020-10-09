@@ -121,25 +121,19 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<long>(sql, new { turmaId, componenteCurricularId });
         }
 
-        public async Task<IEnumerable<TurmaParaCopiaPlanoAnualDto>> ValidaSeTurmasPossuemPlanejamentoAnual(string[] turmasId)
+        public async Task<IEnumerable<TurmaParaCopiaPlanoAnualDto>> ValidaSeTurmasPossuemPlanoAnual(string[] turmasId)
         {
             var query = @"select
 	                        t.*,
-	                        (select 1 from planejamento_anual 
-                            where
-		                        turma_id = t.turma_id::int8
-	                        limit 1) as possuiPlano
+	                        (select 1 from plano_anual where turma_id = t.turma_id::int8 limit 1) as possuiPlano
                         from
 	                        turma t
                         inner join abrangencia a on
 	                        a.turma_id = t.id
-                        left join planejamento_anual p on
+                        left join plano_anual p on
 	                        p.turma_id = a.turma_id
                         where
-	                        t.turma_id = any(@turmasId)
-	                        and not a.historico
-                        group by
-	                        t.id";
+	                        t.turma_id = Any(@turmasId) and not a.historico group by t.id";
 
             return await database.Conexao.QueryAsync<TurmaParaCopiaPlanoAnualDto>(query, new { turmasId });
         }

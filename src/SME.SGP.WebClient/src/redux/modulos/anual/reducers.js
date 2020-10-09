@@ -17,6 +17,7 @@ const inicial = {
   listaTurmasParaCopiar: [],
   ehRegistroMigrado: false,
   planejamentoAnualId: 0,
+  planoAnualSomenteConsulta: false,
 };
 
 export default function planoAnual(state = inicial, action) {
@@ -148,6 +149,13 @@ export default function planoAnual(state = inicial, action) {
         return {
           ...draft,
           planejamentoAnualId: action.payload,
+        };
+      }
+
+      case '@planoAnual/setPlanoAnualSomenteConsulta': {
+        return {
+          ...draft,
+          planoAnualSomenteConsulta: action.payload,
         };
       }
 
