@@ -190,19 +190,10 @@ class ServicoPlanoAnual {
     return api.post(url, params);
   };
 
-  obterPlanejamentoId = () => {
+  obterPlanejamentoId = (turmaId, codigoComponenteCurricular) => {
     const { dispatch } = store;
-    const state = store.getState();
-    const { planoAnual, usuario } = state;
 
-    const { turmaSelecionada } = usuario;
-    const { componenteCurricular } = planoAnual;
-
-    const turmaId = turmaSelecionada.id;
-    const componenteCurricularId =
-      componenteCurricular.codigoComponenteCurricular;
-
-    const url = `v1/planejamento/anual/turmas/${turmaId}/componentes-curriculares/${componenteCurricularId}`;
+    const url = `v1/planejamento/anual/turmas/${turmaId}/componentes-curriculares/${codigoComponenteCurricular}`;
     api
       .get(url)
       .then(resposta => {
