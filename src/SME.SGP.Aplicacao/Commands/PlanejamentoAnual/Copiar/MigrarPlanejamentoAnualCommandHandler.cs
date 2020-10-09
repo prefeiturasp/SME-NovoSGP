@@ -5,6 +5,7 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -12,15 +13,20 @@ namespace SME.SGP.Aplicacao
 {
     public class MigrarPlanejamentoAnualCommandHandler : AbstractUseCase, IRequestHandler<MigrarPlanejamentoAnualCommand, bool>
     {
-        public MigrarPlanejamentoAnualCommandHandler(IMediator mediator) : base(mediator)
+        private readonly IUnitOfWork unitOfWork;
+        public MigrarPlanejamentoAnualCommandHandler(IMediator mediator,
+                                              IUnitOfWork unitOfWork) : base(mediator)
         {
+            this.unitOfWork = unitOfWork ?? throw new System.ArgumentNullException(nameof(unitOfWork));
         }
 
         public async Task<bool> Handle(MigrarPlanejamentoAnualCommand comando, CancellationToken cancellationToken)
         {
-
+            unitOfWork.IniciarTransacao();
             var periodosOrigem = await mediator.Send(new ObterPlanejamentoAnualPeriodosEscolaresCompletoPorIdQuery(comando.Planejamento.PlanejamentoPeriodosEscolaresIds.ToArray()));
             var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+
+            List<string> excessoes = new List<string>();
 
             if (!periodosOrigem.Any())
                 throw new NegocioException($"Nenhum período foi encontrado");
@@ -32,32 +38,39 @@ namespace SME.SGP.Aplicacao
                 if (checarTurma == null)
                     throw new NegocioException($"Turma não encontrada");
 
-                List<PeriodoEscolar> excecoesAtribuicao = new List<PeriodoEscolar>();
-                List<PeriodoEscolar> excecoesEmAberto = new List<PeriodoEscolar>();
-
                 foreach (var periodoOrigem in periodosOrigem)
                 {
                     var periodo = await mediator.Send(new ObterPeriodoEscolarePorIdQuery(periodoOrigem.PeriodoEscolarId));
                     var temAtribuicao = await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaNoPeriodoQuery(comando.Planejamento.ComponenteCurricularId, checarTurma.CodigoTurma, usuario.CodigoRf, periodo.PeriodoInicio.Date, periodo.PeriodoFim.Date));
                     if (!temAtribuicao)
-                        excecoesAtribuicao.Add(periodo);
+                        excessoes.Add($"Você não possui atribuição na turma {checarTurma.Nome} - {periodo.Bimestre}° Bimestre.");
 
                     var periodoEmAberto = mediator.Send(new TurmaEmPeriodoAbertoQuery(checarTurma, DateTime.Today, periodo.Bimestre, checarTurma.AnoLetivo == DateTime.Today.Year)).Result;
                     if (!periodoEmAberto)
-                        excecoesEmAberto.Add(periodo);
+                        excessoes.Add($"O {periodo.Bimestre}° Bimestre não está aberto.");
                 }
-
-                if (excecoesAtribuicao.Any())
-                    throw new NegocioException($"Você não possui atribuição.");
-
-                if (excecoesEmAberto.Any())
-                    throw new NegocioException($"Algum bimestre não está com o período aberto.");
 
                 var planejamentoCopiado = new PlanejamentoAnual(checarTurma.Id, comando.Planejamento.ComponenteCurricularId);
                 planejamentoCopiado.PeriodosEscolares.AddRange(periodosOrigem);
 
-                await mediator.Send(new SalvarCopiaPlanejamentoAnualCommand(planejamentoCopiado));
+                if (!excessoes.Any())
+                    await mediator.Send(new SalvarCopiaPlanejamentoAnualCommand(planejamentoCopiado));
             }
+
+            if (excessoes.Any())
+            {
+                var str = new StringBuilder();
+                str.AppendLine($"Os seguintes erros foram encontrados: ");
+                foreach (var t in excessoes)
+                {
+                    str.AppendLine($"- {t}");
+                }
+                unitOfWork.Rollback();
+
+                throw new NegocioException(str.ToString());
+            }
+
+            unitOfWork.PersistirTransacao();
             return true;
         }
     }
