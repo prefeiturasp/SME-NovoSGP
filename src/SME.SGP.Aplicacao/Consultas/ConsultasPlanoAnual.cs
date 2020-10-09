@@ -1,4 +1,5 @@
-﻿using SME.SGP.Aplicacao.Integracoes;
+﻿using MediatR;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -19,6 +20,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
+        private readonly IMediator mediator;
 
         public ConsultasPlanoAnual(IRepositorioPlanoAnual repositorioPlanoAnual,
                                    IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem,
@@ -27,7 +29,7 @@ namespace SME.SGP.Aplicacao
                                    IRepositorioTurma repositorioTurma,
                                    IRepositorioComponenteCurricularJurema repositorioComponenteCurricular,
                                    IServicoUsuario servicoUsuario,
-                                   IServicoEol servicoEOL)
+                                   IServicoEol servicoEOL, IMediator mediator)
         {
             this.repositorioPlanoAnual = repositorioPlanoAnual ?? throw new System.ArgumentNullException(nameof(repositorioPlanoAnual));
             this.consultasObjetivoAprendizagem = consultasObjetivoAprendizagem ?? throw new System.ArgumentNullException(nameof(consultasObjetivoAprendizagem));
@@ -37,6 +39,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<PlanoAnualCompletoDto> ObterBimestreExpandido(FiltroPlanoAnualBimestreExpandidoDto filtro)
@@ -177,8 +180,8 @@ namespace SME.SGP.Aplicacao
             var turmasEOL = await servicoEOL.ObterTurmasParaCopiaPlanoAnual(codigoRfUsuarioLogado, componenteCurricular, turmaId);
             if (turmasEOL != null && turmasEOL.Any())
             {
-                var idsTurmas = turmasEOL.Select(c => c.TurmaId.ToString());
-                turmasEOL = repositorioPlanoAnual.ValidaSeTurmasPossuemPlanoAnual(idsTurmas.ToArray());
+                var idsTurmas = turmasEOL.Select(c => c.TurmaId.ToString());                
+                turmasEOL = await mediator.Send(new ValidaSeTurmasPossuemPlanoAnualQuery(idsTurmas.ToArray()));
             }
             return turmasEOL;
         }
