@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dominio;
+﻿using Dapper;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
@@ -76,17 +77,53 @@ namespace SME.SGP.Dados.Repositorios
             return periodos.FirstOrDefault();
         }
 
-        public async Task<IEnumerable<PlanejamentoAnualPeriodoEscolarResumoDto>> ObterPorPlanejamentoAnualId(long planejamentoAnualId)
+        public async Task<IEnumerable<PlanejamentoAnualPeriodoEscolar>> ObterCompletoPorIdAsync(long[] ids)
         {
+            List<PlanejamentoAnualPeriodoEscolar> retorno = new List<PlanejamentoAnualPeriodoEscolar>();
+
             var sql = @"select
-	                    pape.id,
-	                    bimestre
-                    from
-	                    planejamento_anual_periodo_escolar pape
-                    inner join periodo_escolar pe on
-	                    pape.periodo_escolar_id = pe.id
-                    where planejamento_anual_id = @planejamentoAnualId";
-            return await database.Conexao.QueryAsync<PlanejamentoAnualPeriodoEscolarResumoDto>(sql, new { planejamentoAnualId });
+                            id,
+	                        periodo_escolar_id,
+	                        planejamento_anual_id
+                        from
+	                        planejamento_anual_periodo_escolar
+                        where
+	                        planejamento_anual_periodo_escolar.id = ANY(@ids);
+
+                        select
+                            id,
+	                        componente_curricular_id,
+	                        descricao,
+	                        planejamento_anual_periodo_escolar_id
+                        from
+	                        planejamento_anual_componente
+                        where planejamento_anual_periodo_escolar_id = ANY(@ids);
+
+                        select
+                            planejamento_anual_objetivos_aprendizagem.id,
+	                        planejamento_anual_objetivos_aprendizagem.planejamento_anual_componente_id,
+	                        planejamento_anual_objetivos_aprendizagem.objetivo_aprendizagem_id
+                        from
+	                        planejamento_anual_objetivos_aprendizagem
+                        inner join planejamento_anual_componente on
+	                        planejamento_anual_objetivos_aprendizagem.planejamento_anual_componente_id = planejamento_anual_componente.id
+                        where
+	                        planejamento_anual_componente.planejamento_anual_periodo_escolar_id = ANY(@ids);";
+
+            using (var multi = await database.Conexao.QueryMultipleAsync(sql, new { ids }))
+            {
+                retorno = multi.Read<PlanejamentoAnualPeriodoEscolar>().ToList();
+                var componentes = multi.Read<PlanejamentoAnualComponente>().ToList();
+                var objetivoAprendizagems = multi.Read<PlanejamentoAnualObjetivoAprendizagem>().ToList();
+
+                componentes.ForEach(c => c.ObjetivosAprendizagem.AddRange(objetivoAprendizagems.Where(oa => oa.PlanejamentoAnualComponenteId == c.Id)));
+
+                retorno.ForEach(pe =>
+                    pe.ComponentesCurriculares.AddRange(componentes.Where(c =>
+                        c.PlanejamentoAnualPeriodoEscolarId == pe.Id)));
+            }
+
+            return retorno;
         }
     }
 }
