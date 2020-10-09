@@ -2,6 +2,12 @@ import moment from 'moment';
 import modalidadeDto from '~/dtos/modalidade';
 import modalidadeTipoCalendario from '~/dtos/modalidadeTipoCalendario';
 import api from '~/servicos/api';
+import { store } from '~/redux';
+import {
+  setExibirLoaderFrequenciaPlanoAula,
+  setListaDadosFrequencia,
+} from '~/redux/modulos/frequenciaPlanoAula/actions';
+import { erros } from '~/servicos/alertas';
 
 class ServicoCalendarios {
   obterTiposCalendario = async anoLetivo => {
@@ -29,6 +35,40 @@ class ServicoCalendarios {
 
   obterTiposCalendarioAutoComplete = (descricao = '') => {
     return api.get(`v1/calendarios/tipos/anos-letivos?descricao=${descricao}`);
+  };
+
+  obterDatasDeAulasDisponiveis = (
+    anoLetivo,
+    turma,
+    codigoComponenteCurricular
+  ) => {
+    const url = `v1/calendarios/frequencias/aulas/datas/${anoLetivo}/turmas/${turma}/disciplinas/${codigoComponenteCurricular}`;
+    return api.get(url);
+  };
+
+  obterListaFrequencia = async () => {
+    const { dispatch } = store;
+    const state = store.getState();
+
+    const { frequenciaPlanoAula } = state;
+
+    const { aulaId } = frequenciaPlanoAula;
+
+    dispatch(setExibirLoaderFrequenciaPlanoAula(true));
+    const frequenciaAlunos = await api
+      .get(`v1/calendarios/frequencias`, { params: { aulaId } })
+      .finally(() => dispatch(setExibirLoaderFrequenciaPlanoAula(false)))
+      .catch(e => erros(e));
+
+    if (frequenciaAlunos && frequenciaAlunos.data) {
+      dispatch(setListaDadosFrequencia(frequenciaAlunos.data));
+    } else {
+      dispatch(setListaDadosFrequencia({}));
+    }
+  };
+
+  salvarFrequencia = params => {
+    return api.post(`v1/calendarios/frequencias`, params);
   };
 }
 
