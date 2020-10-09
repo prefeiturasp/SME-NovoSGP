@@ -13,8 +13,6 @@ namespace SME.SGP.Dominio.Interfaces
 
         PlanoAnualObjetivosDisciplinaDto ObterPlanoObjetivosEscolaTurmaDisciplina(int ano, string escolaId, string turmaId, int bimestre, long componenteCurricularEolId, long disciplinaId);
 
-        bool ValidarPlanoExistentePorAnoEscolaTurmaEBimestre(int ano, string escolaId, string turmaId, int bimestre, long componenteCurricularEolId);
-
-        IEnumerable<TurmaParaCopiaPlanoAnualDto> ValidaSeTurmasPossuemPlanoAnual(string[] turmasId);
+        bool ValidarPlanoExistentePorAnoEscolaTurmaEBimestre(int ano, string escolaId, string turmaId, int bimestre, long componenteCurricularEolId);        
     }
 }
