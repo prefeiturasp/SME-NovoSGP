@@ -4,9 +4,11 @@ using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Prometheus;
 using SME.Background.Core;
 using SME.Background.Hangfire;
@@ -18,6 +20,7 @@ using SME.SGP.Infra;
 using SME.SGP.IoC;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.IO.Compression;
 
 namespace SME.SGP.Api
@@ -73,6 +76,16 @@ namespace SME.SGP.Api
             app.UseMvc();
 
             app.UseStaticFiles();
+
+            //TODO: <Configuração para upload com Jodit, se necessário pode ser removido após aprovação da história de demonstração>
+            app.UseStaticFiles(new StaticFileOptions()
+            {
+                FileProvider = new PhysicalFileProvider(
+                         Path.Combine(Directory.GetCurrentDirectory(), @"Imagens")),
+                RequestPath = new PathString("/imagens"),
+                ServeUnknownFileTypes = true
+            });
+            //TODO: </Configuração para upload com Jodit, se necessário pode ser removido após aprovação da história de demonstração>
 
             app.UseHealthChecks("/healthz", new HealthCheckOptions()
             {

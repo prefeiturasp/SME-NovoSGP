@@ -68,6 +68,7 @@ import DevolutivasLista from '~/paginas/DiarioClasse/Devolutivas/devolutivasList
 import DevolutivasForm from '~/paginas/DiarioClasse/Devolutivas/devolutivasForm';
 import RelatorioNotasConceitosFinais from '~/paginas/Relatorios/NotasConceitosFinais/relatorioNotasConceitosFinais';
 import RelatorioCompensacaoAusencia from '~/paginas/Relatorios/CompensacaoAusencia/relatorioCompensacaoAusencia';
+import PocEditor from '~/paginas/PocEditor/pocEditor';
 
 const rotas = new Map();
 
@@ -944,6 +945,16 @@ rotas.set(RotasDto.PLANEJAMENTO_ANUAL, {
   menu: ['Planejamento'],
   parent: '/',
   component: PlanejamentoAnual,
+  exact: false,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  // temPermissionamento: true,
+  // chavePermissao: RotasDto.PLANO_ANUAL,
+});
+
+rotas.set(RotasDto.POC_EDITOR, {
+  breadcrumbName: 'Poc Jodit Editor',
+  parent: '/',
+  component: PocEditor,
   exact: false,
   tipo: RotasTipo.EstruturadaAutenticada,
   // temPermissionamento: true,
