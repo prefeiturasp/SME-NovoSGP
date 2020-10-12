@@ -62,23 +62,7 @@ namespace SME.SGP.Api.Controllers
                 return Ok(disciplinas);
             else
                 return StatusCode(204);
-        }
-
-        //[HttpGet]
-        //[Route("objetivos/turmas/{turmaId}/componentes/{componenteId}/disciplinas/{disciplinaId}")]
-        //[ProducesResponseType(typeof(IEnumerable<ComponenteCurricularSimplificadoDto>), 200)]
-        //[ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        //[ProducesResponseType(204)]
-        //public async Task<IActionResult> ObterObjetivosPorDisciplina([FromQuery] DateTime dataAula, long turmaId, long componenteId, long disciplinaId, bool regencia)
-        //{
-
-        //    var objetivos = await consultasObjetivoAprendizagem.ObterObjetivosPlanoDisciplina(dataAula, turmaId, componenteId, disciplinaId, regencia);
-
-        //    if (objetivos.Any())
-        //        return Ok(objetivos);
-        //    else
-        //        return StatusCode(204);
-        //}
+        }       
 
         [HttpGet]
         [Route("objetivos/turmas/{turmaId}/componentes/{componenteId}/disciplinas/{disciplinaId}")]
