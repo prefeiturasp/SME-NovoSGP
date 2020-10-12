@@ -51,6 +51,7 @@ const RotasDto = {
   RELATORIO_COMPENSACAO_AUSENCIA: '/relatorios/compensacao-ausencia',
   DEVOLUTIVAS: '/diario-classe/devolutiva',
   PLANEJAMENTO_ANUAL: '/planejamento/planejamento-anual',
+  POC_EDITOR: '/editor',
 };
 
 export default RotasDto;
