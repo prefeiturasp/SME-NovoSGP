@@ -52,6 +52,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine(" from plano_anual pa");
             query.AppendLine("inner join objetivo_aprendizagem_plano o on o.plano_id = pa.id");
             query.AppendLine("inner join componente_curricular_jurema cc on cc.id = o.componente_curricular_id");
+            query.AppendLine("inner join objetivo_aprendizagem oa on o.objetivo_aprendizagem_jurema_id = oa.id ");
             query.AppendLine("where pa.ano = @ano");
             query.AppendLine("and pa.bimestre = @bimestre");
             query.AppendLine("and pa.componente_curricular_eol_id = @componenteCurricularId");
