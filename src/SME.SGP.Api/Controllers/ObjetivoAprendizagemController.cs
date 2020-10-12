@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
-using SME.SGP.Aplicacao.CasosDeUso.ObjetivoAprendizagem;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -62,7 +61,7 @@ namespace SME.SGP.Api.Controllers
                 return Ok(disciplinas);
             else
                 return StatusCode(204);
-        }       
+        }
 
         [HttpGet]
         [Route("objetivos/turmas/{turmaId}/componentes/{componenteId}/disciplinas/{disciplinaId}")]
