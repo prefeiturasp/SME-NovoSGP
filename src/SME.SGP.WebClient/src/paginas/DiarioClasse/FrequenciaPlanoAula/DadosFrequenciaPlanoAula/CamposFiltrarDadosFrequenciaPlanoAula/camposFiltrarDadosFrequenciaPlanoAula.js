@@ -16,6 +16,7 @@ import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
 import ServicoPlanoAnual from '~/servicos/Paginas/ServicoPlanoAnual';
 import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 import servicoSalvarFrequenciaPlanoAula from '../../servicoSalvarFrequenciaPlanoAula';
+import ModalSelecionarAulaFrequenciaPlanoAula from '../ModalSelecionarAula/modalSelecionarAulaFrequenciaPlanoAula';
 
 const CamposFiltrarDadosFrequenciaPlanoAula = () => {
   const dispatch = useDispatch();
@@ -54,10 +55,11 @@ const CamposFiltrarDadosFrequenciaPlanoAula = () => {
 
   const [listaDatasAulas, setListaDatasAulas] = useState();
   const [diasParaHabilitar, setDiasParaHabilitar] = useState();
-  const [exibeEscolhaAula, setExibeEscolhaAula] = useState(false);
-  const [ehAulaCj, setEhAulaCj] = useState(false);
   const [possuiPlanoAnual, setPossuiPlanoAnual] = useState(true);
-  const [aula, setAula] = useState();
+  const [aulasParaSelecionar, setAulasParaSelecionar] = useState([]);
+  const [exibirModalSelecionarAula, setExibirModalSelecionarAula] = useState(
+    false
+  );
 
   const obterDatasDeAulasDisponiveis = useCallback(async () => {
     dispatch(setExibirLoaderFrequenciaPlanoAula(true));
@@ -265,32 +267,17 @@ const CamposFiltrarDadosFrequenciaPlanoAula = () => {
   const validaSeTemIdAula = useCallback(
     async data => {
       const aulaDataSelecionada = await obterAulaSelecionada(data);
-
-      if (aulaDataSelecionada && aulaDataSelecionada.length) {
-        if (
-          usuario &&
-          !usuario.ehProfessor &&
-          !usuario.ehProfessorCj &&
-          !usuario.ehProfessorPoa &&
-          aulaDataSelecionada.length > 1
-        ) {
-          setExibeEscolhaAula(true);
-        } else {
-          const aulaSelecionada = aulaDataSelecionada.find(
-            item => item.aulaCJ === usuario.ehProfessorCj
-          );
-
-          if (aulaSelecionada) {
-            setAula(aulaSelecionada);
-            if (aulaSelecionada && aulaSelecionada.idAula) {
-              // Após setar o id vai disparar evento para buscar lista de frequencia!
-              dispatch(setAulaIdFrequenciaPlanoAula(aulaSelecionada.idAula));
-            }
-          }
-        }
+      if (aulaDataSelecionada && aulaDataSelecionada.length === 1) {
+        // Quando for Professor ou CJ podem visualizar somente uma aula por data selecionada!
+        dispatch(setAulaIdFrequenciaPlanoAula(aulaDataSelecionada[0].idAula));
+        // Após setar o id vai disparar evento para buscar lista de frequencia!
+      } else if (aulaDataSelecionada && aulaDataSelecionada.length > 1) {
+        // Quando for CP, Diretor ou usuários da DRE e SME podem visualizar mais aulas por data selecionada!
+        setAulasParaSelecionar(aulaDataSelecionada);
+        setExibirModalSelecionarAula(true);
       }
     },
-    [obterAulaSelecionada, usuario, dispatch]
+    [obterAulaSelecionada, dispatch]
   );
 
   const onChangeData = useCallback(
@@ -325,6 +312,18 @@ const CamposFiltrarDadosFrequenciaPlanoAula = () => {
     ]
   );
 
+  const onClickFecharModal = () => {
+    setExibirModalSelecionarAula(false);
+  };
+
+  const onClickSelecionarAula = aulaDataSelecionada => {
+    setExibirModalSelecionarAula(false);
+    if (aulaDataSelecionada) {
+      // Após setar o id vai disparar evento para buscar lista de frequencia!
+      dispatch(setAulaIdFrequenciaPlanoAula(aulaDataSelecionada.idAula));
+    }
+  };
+
   return (
     <>
       <div className="col-sm-12 col-md-4 col-lg-4 col-xl-4 mb-2">
@@ -358,19 +357,12 @@ const CamposFiltrarDadosFrequenciaPlanoAula = () => {
           diasParaHabilitar={diasParaHabilitar}
         />
       </div>
-      <div className="col-sm-12 col-md-4 col-lg-3 col-xl-3 mb-3">
-        {exibeEscolhaAula && (
-          <>
-            <Switch
-              onChange={() => setEhAulaCj(!ehAulaCj)}
-              checked={ehAulaCj}
-              size="small"
-              className="mr-2"
-            />
-            Aula CJ
-          </>
-        )}
-      </div>
+      <ModalSelecionarAulaFrequenciaPlanoAula
+        visivel={exibirModalSelecionarAula}
+        aulasParaSelecionar={aulasParaSelecionar}
+        onClickFecharModal={onClickFecharModal}
+        onClickSelecionarAula={onClickSelecionarAula}
+      />
     </>
   );
 };
