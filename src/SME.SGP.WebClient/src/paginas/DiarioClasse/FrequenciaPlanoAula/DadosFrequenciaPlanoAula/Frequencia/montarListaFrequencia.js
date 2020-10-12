@@ -93,7 +93,8 @@ const MontarListaFrequencia = () => {
     <>
       {componenteCurricular &&
       componenteCurricular.codigoComponenteCurricular &&
-      dataSelecionada ? (
+      dataSelecionada &&
+      aulaId ? (
         <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
           <CardCollapse
             key="frequencia-collapse"
