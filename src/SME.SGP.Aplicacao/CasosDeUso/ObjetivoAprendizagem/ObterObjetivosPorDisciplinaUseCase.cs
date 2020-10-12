@@ -20,7 +20,9 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ObjetivoAprendizagem
         {
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-            var bimestre = await mediator.Send(new ObterBimestreAtualQuery(turmaId.ToString(), dataReferencia)); // criar ObterBimestreAtualQuery pelo id da turma
+            var turma = await mediator.Send(new ObterTurmaPorIdQuery(turmaId));
+
+            var bimestre = await mediator.Send(new ObterBimestreAtualPorTurmaIdQuery(turma, dataReferencia));
 
             var filtrarSomenteRegencia = regencia && !usuarioLogado.EhProfessorCj();
 
