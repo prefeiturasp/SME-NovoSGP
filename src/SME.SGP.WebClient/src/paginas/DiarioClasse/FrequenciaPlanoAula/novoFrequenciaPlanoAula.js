@@ -4,6 +4,7 @@ import Cabecalho from '~/componentes-sgp/cabecalho';
 import Alert from '~/componentes/alert';
 import Card from '~/componentes/card';
 import { RotasDto } from '~/dtos';
+import { salvarDadosAulaFrequencia } from '~/redux/modulos/calendarioProfessor/actions';
 import {
   limparDadosFrequenciaPlanoAula,
   setSomenteConsultaFrequenciaPlanoAula,
@@ -42,8 +43,9 @@ const NovoFrequenciaPlanoAula = () => {
     return () => {
       // Quando sair da tela vai executar para limpar os dados no redux!
       resetarInfomacoes();
+      dispatch(salvarDadosAulaFrequencia());
     };
-  }, [turmaSelecionada, resetarInfomacoes, validaSomenteConsulta]);
+  }, [turmaSelecionada, resetarInfomacoes, validaSomenteConsulta, dispatch]);
 
   return (
     <LoaderFrequenciaPlanoAula>

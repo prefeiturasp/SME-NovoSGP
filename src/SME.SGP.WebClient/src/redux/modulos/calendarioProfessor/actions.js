@@ -51,12 +51,13 @@ export function salvarEventoAulaCalendarioEdicao(
   };
 }
 
-export function salvarDadosAulaFrequencia(disciplinaId, dia) {
+export function salvarDadosAulaFrequencia(disciplinaId, dia, aulaId) {
   return {
     type: '@calendarioProfessor/salvarDadosAulaFrequencia',
     payload: {
       disciplinaId,
       dia,
+      aulaId,
     },
   };
 }
