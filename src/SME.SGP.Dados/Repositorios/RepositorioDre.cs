@@ -55,7 +55,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<Dre>> SincronizarAsync(IEnumerable<Dre> entidades)
         {
-            List<Dre> resultado = new List<Dre>();
+            List<Dre> resultado = new List<Dre>();           
 
             var armazenados = await contexto.Conexao.QueryAsync<Dre>(QuerySincronizacao.Replace("#ids", string.Join(",", entidades.Select(x => $"'{x.CodigoDre}'"))));
 

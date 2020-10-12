@@ -1,6 +1,7 @@
 import { Switch, Tooltip } from 'antd';
 import PropTypes from 'prop-types';
 import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import shortid from 'shortid';
 
 import { Lista, MarcadorSituacao, BtbAnotacao } from './listaFrequencia.css';
@@ -10,7 +11,6 @@ import ModalAnotacoesFrequencia from '~/paginas/DiarioClasse/FrequenciaPlanoAula
 
 const ListaFrequencia = props => {
   const {
-    dados,
     onChangeFrequencia,
     permissoesTela,
     frequenciaId,
@@ -18,9 +18,13 @@ const ListaFrequencia = props => {
     ehInfantil,
     aulaId,
     componenteCurricularId,
+    setDataSource,
   } = props;
 
-  const [dataSource, setDataSource] = useState(dados);
+  const dataSource = useSelector(
+    state => state.frequenciaPlanoAula.listaDadosFrequencia?.listaFrequencia
+  );
+
   const [desabilitarCampos, setDesabilitarCampos] = useState(false);
   const [exibirModalAnotacao, setExibirModalAnotacao] = useState(false);
   const [dadosModalAnotacao, setDadosModalAnotacao] = useState({});
@@ -141,7 +145,7 @@ const ListaFrequencia = props => {
           exibirModal={exibirModalAnotacao}
           onCloseModal={onCloseModalAnotacao}
           dadosModalAnotacao={dadosModalAnotacao}
-          dadosListaFrequencia={dados}
+          dadosListaFrequencia={dataSource}
           ehInfantil={ehInfantil}
           aulaId={aulaId}
           componenteCurricularId={componenteCurricularId}
@@ -331,7 +335,6 @@ const ListaFrequencia = props => {
 };
 
 ListaFrequencia.propTypes = {
-  dados: PropTypes.oneOfType([PropTypes.array]),
   onChangeFrequencia: PropTypes.oneOfType([PropTypes.func]),
   permissoesTela: PropTypes.oneOfType([PropTypes.any]),
   frequenciaId: PropTypes.oneOfType([PropTypes.any]),
@@ -339,10 +342,10 @@ ListaFrequencia.propTypes = {
   ehInfantil: PropTypes.oneOfType([PropTypes.bool]),
   aulaId: PropTypes.oneOfType([PropTypes.any]),
   componenteCurricularId: PropTypes.oneOfType([PropTypes.any]),
+  setDataSource: PropTypes.oneOfType([PropTypes.func]),
 };
 
 ListaFrequencia.defaultProps = {
-  dados: [],
   onChangeFrequencia: () => {},
   permissoesTela: {},
   frequenciaId: 0,
@@ -350,6 +353,7 @@ ListaFrequencia.defaultProps = {
   ehInfantil: false,
   aulaId: '',
   componenteCurricularId: '',
+  setDataSource: () => {},
 };
 
 export default ListaFrequencia;
