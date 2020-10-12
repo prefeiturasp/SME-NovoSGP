@@ -944,11 +944,11 @@ rotas.set(RotasDto.PLANEJAMENTO_ANUAL, {
   breadcrumbName: 'Plano Anual',
   menu: ['Planejamento'],
   parent: '/',
-  component: PlanejamentoAnual,
+  component: FrequenciaPlanoAula,
   exact: false,
   tipo: RotasTipo.EstruturadaAutenticada,
-  // temPermissionamento: true,
-  // chavePermissao: RotasDto.PLANO_ANUAL,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.FREQUENCIA_PLANO_AULA,
 });
 
 const rotasArray = [];
