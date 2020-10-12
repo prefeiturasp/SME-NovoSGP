@@ -2,10 +2,9 @@
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.CasosDeUso.ObjetivoAprendizagem
+namespace SME.SGP.Aplicacao
 {
     public class ObterObjetivosPorDisciplinaUseCase : IObterObjetivosPorDisciplinaUseCase
     {
@@ -27,12 +26,12 @@ namespace SME.SGP.Aplicacao.CasosDeUso.ObjetivoAprendizagem
             var filtrarSomenteRegencia = regencia && !usuarioLogado.EhProfessorCj();
 
             return await mediator.Send(new ObterObjetivosPlanoDisciplinaQuery(dataReferencia,
-                                                                                         bimestre,
-                                                                                         turmaId,
-                                                                                         componenteCurricularId,
-                                                                                         disciplinaId,
-                                                                                         filtrarSomenteRegencia));
-            
+                                                                              bimestre,
+                                                                              turmaId,
+                                                                              componenteCurricularId,
+                                                                              disciplinaId,
+                                                                              filtrarSomenteRegencia));
+
         }
     }
 }
