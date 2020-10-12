@@ -15,6 +15,9 @@
         public long ObjetivoAprendizagemPlanoId { get; set; }
         public ObjetivoAprendizagemPlano ObjetivoAprendizagemPlano { get; set; }
 
+        public long ObjetivoAprendizagemId { get; set; }
+        public ObjetivoAprendizagem ObjetivoAprendizagem { get; set; }
+
         public bool Excluido { get; set; }
     }
 }

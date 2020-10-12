@@ -40,6 +40,8 @@ namespace SME.SGP.Dto
         [Range(0, int.MaxValue, ErrorMessage = "É necessário informar o ano letivo")]
         public int AnoLetivo { get; set; }
 
+        public string SeriesResumidas { get; set; }
+
         [Required(ErrorMessage = "É necessário informar o codigo da DRE")]
         public string CodigoDre { get; set; }
 
@@ -56,4 +58,5 @@ namespace SME.SGP.Dto
 
         public IEnumerable<string> Alunos { get; set; }
     }
+
 }
