@@ -20,7 +20,7 @@ import {
   obterDescricaoNomeMenu,
 } from '~/servicos/servico-navegacao';
 import RotasDto from '~/dtos/rotasDto';
-import { SelecionarDisciplina } from '~/redux/modulos/planoAula/actions';
+// import { SelecionarDisciplina } from '~/redux/modulos/planoAula/actions';
 import { stringNulaOuEmBranco } from '~/utils/funcoes/gerais';
 import ModalMultiLinhas from '~/componentes/modalMultiLinhas';
 import modalidade from '~/dtos/modalidade';
@@ -195,7 +195,7 @@ const FrequenciaPlanoAula = () => {
           disciplina.codigoComponenteCurricular
         );
       }
-      dispatch(SelecionarDisciplina(disciplina));
+      // dispatch(SelecionarDisciplina(disciplina));
     }
     setCarregandoDisciplinas(false);
   }, [turmaId, diasParaHabilitar, dispatch, obterDatasDeAulasDisponiveis]);

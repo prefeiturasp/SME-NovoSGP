@@ -68,6 +68,7 @@ import DevolutivasLista from '~/paginas/DiarioClasse/Devolutivas/devolutivasList
 import DevolutivasForm from '~/paginas/DiarioClasse/Devolutivas/devolutivasForm';
 import RelatorioNotasConceitosFinais from '~/paginas/Relatorios/NotasConceitosFinais/relatorioNotasConceitosFinais';
 import RelatorioCompensacaoAusencia from '~/paginas/Relatorios/CompensacaoAusencia/relatorioCompensacaoAusencia';
+import NovoFrequenciaPlanoAula from '~/paginas/DiarioClasse/FrequenciaPlanoAula/novoFrequenciaPlanoAula';
 
 const rotas = new Map();
 
@@ -552,11 +553,11 @@ rotas.set(`${RotasDto.FREQUENCIA_PLANO_AULA}`, {
   breadcrumbName: 'Frequência/Plano de aula',
   menu: ['Diário de Classe'],
   parent: '/',
-  component: FrequenciaPlanoAula,
+  component: NovoFrequenciaPlanoAula,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  temPermissionamento: true,
-  chavePermissao: RotasDto.FREQUENCIA_PLANO_AULA,
+  // temPermissionamento: true,
+  // chavePermissao: RotasDto.FREQUENCIA_PLANO_AULA,
 });
 
 rotas.set(`${RotasDto.NOTAS}/:disciplinaId/:bimestre`, {

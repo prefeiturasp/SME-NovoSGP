@@ -46,6 +46,10 @@ const CamposFiltrarDadosFrequenciaPlanoAula = () => {
 
   const aulaId = useSelector(state => state.frequenciaPlanoAula.aulaId);
 
+  const dadosAulaFrequencia = useSelector(
+    state => state.calendarioProfessor.dadosAulaFrequencia
+  );
+
   const [listaComponenteCurricular, setListaComponenteCurricular] = useState(
     []
   );
@@ -266,18 +270,23 @@ const CamposFiltrarDadosFrequenciaPlanoAula = () => {
 
   const validaSeTemIdAula = useCallback(
     async data => {
-      const aulaDataSelecionada = await obterAulaSelecionada(data);
-      if (aulaDataSelecionada && aulaDataSelecionada.length === 1) {
+      if (dadosAulaFrequencia && dadosAulaFrequencia.aulaId) {
         // Quando for Professor ou CJ podem visualizar somente uma aula por data selecionada!
-        dispatch(setAulaIdFrequenciaPlanoAula(aulaDataSelecionada[0].idAula));
-        // Após setar o id vai disparar evento para buscar lista de frequencia!
-      } else if (aulaDataSelecionada && aulaDataSelecionada.length > 1) {
-        // Quando for CP, Diretor ou usuários da DRE e SME podem visualizar mais aulas por data selecionada!
-        setAulasParaSelecionar(aulaDataSelecionada);
-        setExibirModalSelecionarAula(true);
+        dispatch(setAulaIdFrequenciaPlanoAula(dadosAulaFrequencia.aulaId));
+      } else {
+        const aulaDataSelecionada = await obterAulaSelecionada(data);
+        if (aulaDataSelecionada && aulaDataSelecionada.length === 1) {
+          // Quando for Professor ou CJ podem visualizar somente uma aula por data selecionada!
+          dispatch(setAulaIdFrequenciaPlanoAula(aulaDataSelecionada[0].idAula));
+          // Após setar o id vai disparar evento para buscar lista de frequencia!
+        } else if (aulaDataSelecionada && aulaDataSelecionada.length > 1) {
+          // Quando for CP, Diretor ou usuários da DRE e SME podem visualizar mais aulas por data selecionada!
+          setAulasParaSelecionar(aulaDataSelecionada);
+          setExibirModalSelecionarAula(true);
+        }
       }
     },
-    [obterAulaSelecionada, dispatch]
+    [obterAulaSelecionada, dispatch, dadosAulaFrequencia]
   );
 
   const onChangeData = useCallback(
@@ -323,6 +332,38 @@ const CamposFiltrarDadosFrequenciaPlanoAula = () => {
       dispatch(setAulaIdFrequenciaPlanoAula(aulaDataSelecionada.idAula));
     }
   };
+
+  // Executa quando vir da tela do calendario!
+  useEffect(() => {
+    if (
+      dadosAulaFrequencia &&
+      Object.entries(dadosAulaFrequencia).length &&
+      dadosAulaFrequencia.disciplinaId &&
+      listaComponenteCurricular &&
+      listaComponenteCurricular.length &&
+      !codigoComponenteCurricular
+    ) {
+      onChangeComponenteCurricular(String(dadosAulaFrequencia.disciplinaId));
+    }
+    if (
+      dadosAulaFrequencia &&
+      Object.entries(dadosAulaFrequencia).length &&
+      dadosAulaFrequencia.dia &&
+      diasParaHabilitar &&
+      diasParaHabilitar.length &&
+      !dataSelecionada
+    ) {
+      onChangeData(window.moment(dadosAulaFrequencia.dia));
+    }
+  }, [
+    dadosAulaFrequencia,
+    listaComponenteCurricular,
+    dataSelecionada,
+    diasParaHabilitar,
+    onChangeComponenteCurricular,
+    onChangeData,
+    codigoComponenteCurricular,
+  ]);
 
   return (
     <>
