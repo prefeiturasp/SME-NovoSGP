@@ -42,19 +42,6 @@ class FiltroHelper {
     }
   }
 
-  async obterAnosPorModalidade(modalidade) {
-    try {
-      // const retorno = await ServicoFiltroRelatorio.obterUes(dre);
-
-      // const dados = await this.mapearParaSelect(retorno.data, 'todas', true);
-
-      // return dados;
-    } catch (error) {
-      erros(`${error} Não foi possivel obter as Anos`);
-      return [];
-    }
-  }
-
   async ObterUes(dre) {
     try {
       const retorno = await ServicoFiltroRelatorio.obterUes(dre);
