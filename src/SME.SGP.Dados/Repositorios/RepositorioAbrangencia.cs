@@ -469,7 +469,7 @@ namespace SME.SGP.Dados.Repositorios
                 if (anos != null && anos.Any())
                     query.AppendLine(" and tca.ano IN (#anos)");
 
-                var dados = await database.Conexao.QueryAsync<OpcaoDropdownDto>(query.ToString().Replace("#anos", "'" + string.Join(",", anos) + "'"), new { codigoUe, anoLetivo, modalidade, semestre, anos });
+                var dados = await database.Conexao.QueryAsync<OpcaoDropdownDto>(query.ToString().Replace("#anos", "'" + string.Join("','", anos) + "'"), new { codigoUe, anoLetivo, modalidade, semestre, anos });
 
                 return dados.OrderBy(x => x.Descricao);
 
