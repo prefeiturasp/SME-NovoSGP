@@ -15,7 +15,6 @@ using SME.Background.Hangfire;
 using SME.SGP.Api.HealthCheck;
 using SME.SGP.Background;
 using SME.SGP.Dados;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.IoC;
 using System.Collections.Generic;
@@ -78,13 +77,14 @@ namespace SME.SGP.Api
             app.UseStaticFiles();
 
             //TODO: <Configuração para upload com Jodit, se necessário pode ser removido após aprovação da história de demonstração>
-            app.UseStaticFiles(new StaticFileOptions()
-            {
-                FileProvider = new PhysicalFileProvider(
+            if (_env.EnvironmentName != "teste-integrado")
+                app.UseStaticFiles(new StaticFileOptions()
+                {
+                    FileProvider = new PhysicalFileProvider(
                          Path.Combine(Directory.GetCurrentDirectory(), @"Imagens")),
-                RequestPath = new PathString("/imagens"),
-                ServeUnknownFileTypes = true
-            });
+                    RequestPath = new PathString("/imagens"),
+                    ServeUnknownFileTypes = true
+                });
             //TODO: </Configuração para upload com Jodit, se necessário pode ser removido após aprovação da história de demonstração>
 
             app.UseHealthChecks("/healthz", new HealthCheckOptions()
