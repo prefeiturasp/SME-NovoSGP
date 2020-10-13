@@ -240,13 +240,13 @@ const ComunicadosCadastro = ({ match }) => {
       CodigoUe: Yup.string().required('Campo obrigatório'),
       dataExpiracao: momentSchema
         .required('Campo obrigatório')
-        .test(
-          'validaUeSelecionada',
-          'Unidade Escolar (UE) for selecionada campo Ano deve ser obrigátorio',
-          function valida() {
-            const { ue } = this.parent;
-          }
-        )
+        // .test(
+        //   'validaUeSelecionada',
+        //   'Unidade Escolar (UE) for selecionada campo Ano deve ser obrigátorio',
+        //   function valida() {
+        //     const { ue } = this.parent;
+        //   }
+        // )
         .test(
           'validaDataMaiorQueEnvio',
           'Data de expiração deve ser maior que a data de envio',
