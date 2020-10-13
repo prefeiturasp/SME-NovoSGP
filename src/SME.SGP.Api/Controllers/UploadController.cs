@@ -12,6 +12,7 @@ namespace SME.SGP.Api.Controllers
     /// </summary>
     [ApiController]
     [Route("api/file/upload")]
+    [Authorize("Bearer")]
     public class UploadController : ControllerBase
     {
         [HttpPost]
@@ -21,7 +22,7 @@ namespace SME.SGP.Api.Controllers
             var theFile = filess.FirstOrDefault();
 
             var nomeArquivo = $"{Guid.NewGuid()}-{theFile.FileName}";
-            var caminhoArquivo = Path.Combine("wwwroot/ModelosEmail", nomeArquivo);
+            var caminhoArquivo = Path.Combine("Imagens", nomeArquivo);
 
             FileInfo dir = new FileInfo(caminhoArquivo);
             if (!dir.Exists)
@@ -41,10 +42,10 @@ namespace SME.SGP.Api.Controllers
                 data = new
                 {
                     files = new[] { nomeArquivo },
-                    baseurl = $"{AppBaseUrl}/ModelosEmail/",
+                    baseurl = $"{AppBaseUrl}/imagens/",
                     message = "",
                     error = "",
-                    path = $"{AppBaseUrl}/ModelosEmail/{nomeArquivo}"
+                    path = $"{AppBaseUrl}/imagens/{nomeArquivo}"
                 }
             });
         }
