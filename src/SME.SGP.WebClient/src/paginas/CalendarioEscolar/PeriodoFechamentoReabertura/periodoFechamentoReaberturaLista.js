@@ -67,8 +67,8 @@ const PeriodoFechamentoReaberturaLista = () => {
         <i className="fas fa-check" />
       </CampoBimestre>
     ) : (
-      <></>
-    );
+        <></>
+      );
   };
 
   const getColunasBimestreAnual = () => {
@@ -200,7 +200,7 @@ const PeriodoFechamentoReaberturaLista = () => {
   };
 
   const onClickNovo = () => {
-    history.push(`/calendario-escolar/periodo-fechamento-reabertura/novo`);
+    history.push(`/calendario-escolar/periodo-fechamento-reabertura/novo/${tipoCalendarioSelecionado ?? ' '}`);
   };
 
   const onClickEditar = item => {
@@ -391,8 +391,8 @@ const PeriodoFechamentoReaberturaLista = () => {
                       filtroEhValido={filtroValido}
                     />
                   ) : (
-                    ''
-                  )}
+                      ''
+                    )}
                 </div>
               </div>
             </Form>
