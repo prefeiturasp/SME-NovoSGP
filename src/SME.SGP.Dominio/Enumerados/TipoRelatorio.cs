@@ -50,5 +50,8 @@ namespace SME.SGP.Dominio
 
         [Display(Name = "relatorios/sondagem/matematica-por-turma", ShortName = "Relatório de Sondagem (Matemática)", Description = "Relatório de Sondagem (Matemática)")]
         RelatorioMatetimaticaPorTurma = 16,
+
+        [Display(Name = "relatorios/sondagem/matematica-consolidado", ShortName = "MatematicaConsolidado", Description = "Matematica Consolidado")]
+        RelatorioMatetimaticaConsolidado = 17
     }
 }
