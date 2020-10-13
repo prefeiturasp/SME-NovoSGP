@@ -10,7 +10,7 @@ namespace SME.SGP.Infra
         public bool PossuiPlano { get; set; }
 
         [JsonProperty("codTurma")]
-        public int TurmaId { get; set; }
+        public long TurmaId { get; set; }
 
         public long Id { get; set; }
     }
