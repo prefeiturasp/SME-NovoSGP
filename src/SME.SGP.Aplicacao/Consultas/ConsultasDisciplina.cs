@@ -126,7 +126,7 @@ namespace SME.SGP.Aplicacao
                 disciplinasDto.ForEach(d =>
                 {
                     var componenteEOL = componentesCurriculares.FirstOrDefault(a => a.Codigo == d.CodigoComponenteCurricular);
-                    d.PossuiObjetivos = componenteEOL.PossuiObjetivosDeAprendizagem(componentesCurricularesJurema, turmaPrograma, turma.ModalidadeCodigo, turma.Ano);
+                    d.PossuiObjetivos = turma.AnoLetivo < Convert.ToInt32(dataInicioNovoSGP) ? false : componenteEOL.PossuiObjetivosDeAprendizagem(componentesCurricularesJurema, turmaPrograma, turma.ModalidadeCodigo, turma.Ano);
                     d.Regencia = componenteEOL.Regencia;
                     d.ObjetivosAprendizagemOpcionais = componenteEOL.PossuiObjetivosDeAprendizagemOpcionais(componentesCurricularesJurema, turma.EnsinoEspecial);
                 });
@@ -142,6 +142,7 @@ namespace SME.SGP.Aplicacao
         {
             List<DisciplinaDto> disciplinasDto;
             var usuario = await servicoUsuario.ObterUsuarioLogado();
+            var dataInicioNovoSGP = await mediator.Send(new ObterParametroSistemaPorTipoQuery(TipoParametroSistema.DataInicioSGP));
 
             var chaveCache = $"Disciplinas-planejamento-{codigoTurma}-{codigoDisciplina}-{usuario.PerfilAtual}";
             if (!usuario.EhProfessor() && !usuario.EhProfessorCj() && !usuario.EhProfessorPoa())
@@ -182,7 +183,7 @@ namespace SME.SGP.Aplicacao
                 disciplinasDto.ForEach(d =>
                 {
                     var componenteEOL = componentesCurriculares.FirstOrDefault(a => a.Codigo == d.CodigoComponenteCurricular);
-                    d.PossuiObjetivos = componenteEOL.PossuiObjetivosDeAprendizagem(componentesCurricularesJurema, turmaPrograma, turma.ModalidadeCodigo, turma.Ano);
+                    d.PossuiObjetivos = turma.AnoLetivo < Convert.ToInt32(dataInicioNovoSGP) ? false : componenteEOL.PossuiObjetivosDeAprendizagem(componentesCurricularesJurema, turmaPrograma, turma.ModalidadeCodigo, turma.Ano);
                     d.Regencia = componenteEOL.Regencia;
                     d.ObjetivosAprendizagemOpcionais = componenteEOL.PossuiObjetivosDeAprendizagemOpcionais(componentesCurricularesJurema, turma.EnsinoEspecial);
                 });

@@ -3,11 +3,13 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.CasosDeUso;
 using SME.SGP.Aplicacao.CasosDeUso.Abrangencia;
+using SME.SGP.Aplicacao.CasosDeUso.EscolaAqui.Anos;
 using SME.SGP.Aplicacao.Consultas;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui.Anos;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui.SolicitarReiniciarSenha;
 using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Dados;
@@ -367,6 +369,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterComponentesCurricularesPorAnoEscolarUseCase, ObterComponentesCurricularesPorAnoEscolarUseCase>();
             services.TryAddScoped<IObterFiltroRelatoriosAnosEscolaresPorModalidadeUeUseCase, ObterFiltroRelatoriosAnosEscolaresPorModalidadeUeUseCase>();
             services.TryAddScoped<ICopiarCodigoCorrelacaoUseCase, CopiarCodigoCorrelacaoUseCase>();
+            services.TryAddScoped<IInserirCodigoCorrelacaoUseCase, InserirCodigoCorrelacaoUseCase>();
             services.TryAddScoped<IObterDiarioBordoUseCase, ObterDiarioBordoUseCase>();
             services.TryAddScoped<IInserirDiarioBordoUseCase, InserirDiarioBordoUseCase>();
             services.TryAddScoped<IAlterarDiarioBordoUseCase, AlterarDiarioBordoUseCase>();
@@ -468,6 +471,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterComunicadoEscolaAquiUseCase, ObterComunicadoEscolaAquiUseCase>();
             services.TryAddScoped<IObterAlunosPorTurmaEAnoLetivoEscolaAquiUseCase, ObterAlunosPorTurmaEAnoLetivoEscolaAquiUseCase>();
             services.TryAddScoped<IObterComunicadosPaginadosEscolaAquiUseCase, ObterComunicadosPaginadosEscolaAquiUseCase>();
+            services.TryAddScoped<IObterAnosPorCodigoUeModalidadeEscolaAquiUseCase, ObterAnosPorCodigoUeModalidadeEscolaAquiUseCase>();
+            services.TryAddScoped<IObterTurmaPorAnoLetivoCodigoUeModalidadeSemestreAnosUseCase, ObterTurmaPorAnoLetivoCodigoUeModalidadeSemestreAnosUseCase>();
+
 
         }
     }

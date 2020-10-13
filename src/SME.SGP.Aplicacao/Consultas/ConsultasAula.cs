@@ -233,7 +233,8 @@ namespace SME.SGP.Aplicacao
                         aula.Turma.EhTurmaInfantil ||
                         usuarioLogado.PerfilAtual != Perfis.PERFIL_PROFESSOR ||
                         usuarioLogado.PerfilAtual != Perfis.PERFIL_CJ ||
-                        usuarioLogado.PerfilAtual != Perfis.PERFIL_CJ_INFANTIL)
+                        usuarioLogado.PerfilAtual != Perfis.PERFIL_CJ_INFANTIL
+                        )
                         aulasRetorno.Add(MapearParaDto(aula, p.Bimestre));
                 });
             });            
