@@ -1,5 +1,4 @@
-﻿using SME.SGP.Dominio;
-using SME.SGP.Dominio.Enumerados;
+﻿using SME.SGP.Dominio.Enumerados;
 using System;
 using System.Collections.Generic;
 
@@ -21,6 +20,7 @@ namespace SME.SGP.Dto
         public string Mensagem { get; set; }
         public string Titulo { get; set; }
         public int AnoLetivo { get; set; }
+        public string SeriesResumidas { get; set; }
         public string CodigoDre { get; set; }
         public string CodigoUe { get; set; }
         public IEnumerable<string> Turmas { get; set; }
