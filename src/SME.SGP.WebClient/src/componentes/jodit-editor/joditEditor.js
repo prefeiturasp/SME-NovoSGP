@@ -10,11 +10,13 @@ import api from '~/servicos/api';
 import { Jodit } from 'jodit';
 import 'jodit/build/jodit.min.css';
 import { urlBase } from '~/servicos/variaveis';
+import { store } from '~/redux';
 
 const JoditEditor = forwardRef(
   ({ value, onChange, onBlur, tabIndex, name }, ref) => {
     const textArea = useRef(null);
     const [url, setUrl] = useState('');
+    const { token } = store.getState().usuario;
 
     const config = {
       events: {
@@ -32,6 +34,9 @@ const JoditEditor = forwardRef(
       enableDragAndDropFileToEditor: true,
       uploader: {
         url: `${url}/file/upload`, // 'http://localhost:5000/file/upload',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
         isSuccess: resp => {
           return resp;
         },
