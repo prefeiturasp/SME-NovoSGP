@@ -3,6 +3,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -106,6 +107,33 @@ namespace SME.SGP.Dados.Repositorios
 	                        and pa.componente_curricular_id = @componenteCurricularId";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<PlanejamentoAnual>(sql, new { turmaId, componenteCurricularId });
+        }
+
+        public async Task<PlanejamentoAnual> ObterPlanejamentoAnualPorAnoEscolaBimestreETurma(int ano, string escolaId, long turmaId, int bimestre, long disciplinaId)
+        {
+            StringBuilder query = new StringBuilder();
+
+            query.AppendLine("select");
+            query.AppendLine("id, escola_id, turma_id, ano, bimestre, componente_curricular_eol_id, descricao, migrado,");
+            query.AppendLine("criado_em, alterado_em, criado_por, alterado_por, criado_rf, alterado_rf, objetivos_opcionais");
+            query.AppendLine("from plano_anual");
+            query.AppendLine("where");
+            query.AppendLine("ano = @ano and");
+            query.AppendLine("escola_id = @escolaId and");
+            query.AppendLine("bimestre = @bimestre and");
+            query.AppendLine("turma_id = @turmaId and");
+            query.AppendLine("componente_curricular_eol_id = @disciplinaId");
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<PlanejamentoAnual>(query.ToString(),
+                new
+                {
+                    ano,
+                    escolaId,
+                    turmaId,
+                    bimestre,
+                    disciplinaId
+                });
+
         }
     }
 }
