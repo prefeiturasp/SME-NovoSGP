@@ -453,14 +453,12 @@ namespace SME.SGP.Dados.Repositorios
         {
             try
             {
-                var anosFiltro = "'" + string.Join("','", anos) + "'";
                 var query = new StringBuilder();
-
                 query.AppendLine(@"select t.turma_id as valor, t.nome as descricao from turma t
                             inner join ue ue on ue.id = t.ue_id
-                            inner join tipo_ciclo_ano tca on tca.ano = t.ano  ");
+                            inner join tipo_ciclo_ano tca on tca.ano = t.ano ");
 
-                query.AppendLine("where ue.ue_id = @codigoUe and ano_letivo = @anoLetivo");
+                query.AppendLine("where ue.ue_id = @codigoUe and ano_letivo = @anoLetivo ");
 
                 if (modalidade.HasValue && modalidade != 0)
                     query.AppendLine("and t.modalidade_codigo = @modalidade ");
@@ -468,10 +466,10 @@ namespace SME.SGP.Dados.Repositorios
                 if (semestre > 0)
                     query.AppendLine("and semestre = @semestre ");
 
-                if (anosFiltro != null && anosFiltro.Any())
-                    query.AppendLine(" and tca.ano IN (@anosFiltro)");
+                if (anos != null && anos.Any())
+                    query.AppendLine(" and tca.ano IN (#anos)");
 
-                var dados = await database.Conexao.QueryAsync<OpcaoDropdownDto>(query.ToString(), new { codigoUe, anoLetivo, modalidade, semestre, anosFiltro });
+                var dados = await database.Conexao.QueryAsync<OpcaoDropdownDto>(query.ToString().Replace("#anos", "'" + string.Join(",", anos) + "'"), new { codigoUe, anoLetivo, modalidade, semestre, anos });
 
                 return dados.OrderBy(x => x.Descricao);
 
