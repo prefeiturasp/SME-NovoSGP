@@ -452,7 +452,6 @@ const ComunicadosCadastro = ({ match }) => {
     if (!dados || dados.length === 0) return;
 
     setTurmas(dados);
-    console.log('Turmas ->', dados);
   };
 
   const ObterGruposIdPorModalidade = async modalidade => {
@@ -505,6 +504,7 @@ const ComunicadosCadastro = ({ match }) => {
 
     dados.unshift({ id: '-99', nome: 'Todas' });
     setTurmas(dados);
+    refForm.setFieldValue('seriesResumidas', anos.toString());
   };
 
   const ObterAlunos = async (codigoTurma, anoLetivo) => {
