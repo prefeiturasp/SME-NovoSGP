@@ -1,5 +1,9 @@
-import { setRotas } from '../redux/modulos/navegacao/actions';
-import { store } from '../redux';
+import {
+  setRotas
+} from '../redux/modulos/navegacao/actions';
+import {
+  store
+} from '../redux';
 import Principal from '../paginas/Principal/principal';
 import PlanoCiclo from '../paginas/Planejamento/PlanoCiclo/planoCiclo';
 import PlanoAnual from '../paginas/Planejamento/PlanoAnual/planoAnual';
@@ -712,7 +716,7 @@ rotas.set(`${RotasDto.PERIODO_FECHAMENTO_REABERTURA}`, {
   chavePermissao: RotasDto.PERIODO_FECHAMENTO_REABERTURA,
 });
 
-rotas.set(`${RotasDto.PERIODO_FECHAMENTO_REABERTURA}/novo`, {
+rotas.set(`${RotasDto.PERIODO_FECHAMENTO_REABERTURA}/novo/:tipoCalendarioId`, {
   breadcrumbName: 'Períodos',
   parent: RotasDto.PERIODO_FECHAMENTO_REABERTURA,
   component: PeriodoFechamentoReaberturaForm,
@@ -743,8 +747,7 @@ rotas.set(`${RotasDto.PENDENCIAS_FECHAMENTO}`, {
   chavePermissao: RotasDto.PENDENCIAS_FECHAMENTO,
 });
 rotas.set(
-  `${RotasDto.PENDENCIAS_FECHAMENTO}/:bimestre/:codigoComponenteCurricular`,
-  {
+  `${RotasDto.PENDENCIAS_FECHAMENTO}/:bimestre/:codigoComponenteCurricular`, {
     breadcrumbName: 'Pendências do Fechamento',
     menu: ['Fechamento'],
     parent: '/',
