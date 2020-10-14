@@ -8,6 +8,15 @@ namespace SME.SGP.Dominio
         {
             ObjetivosAprendizagem = new List<PlanejamentoAnualObjetivoAprendizagem>();
         }
+
+        public PlanejamentoAnualComponente(long componenteCurricularId, string descricao, long planejamentoAnualPeriodoEscolarId)
+        {
+            ComponenteCurricularId = componenteCurricularId;
+            Descricao = descricao;
+            PlanejamentoAnualPeriodoEscolarId = planejamentoAnualPeriodoEscolarId;
+            ObjetivosAprendizagem = new List<PlanejamentoAnualObjetivoAprendizagem>();
+        }
+
         public long ComponenteCurricularId { get; set; }
         public string Descricao { get; set; }
         public long PlanejamentoAnualPeriodoEscolarId { get; set; }
