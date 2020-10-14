@@ -13,6 +13,10 @@ const PlanoAula = () => {
     state => state.frequenciaPlanoAula.dataSelecionada
   );
 
+  const exibirCardCollapsePlanoAula = useSelector(
+    state => state.frequenciaPlanoAula.exibirCardCollapsePlanoAula
+  );
+
   const aulaId = useSelector(state => state.frequenciaPlanoAula.aulaId);
 
   const onClickPlanoAula = () => {
@@ -31,6 +35,7 @@ const PlanoAula = () => {
             onClick={onClickPlanoAula}
             titulo="Plano de aula"
             indice="plano-aula-collapse"
+            show={exibirCardCollapsePlanoAula.exibir}
           >
             <DadosPlanoAula />
           </CardCollapse>
