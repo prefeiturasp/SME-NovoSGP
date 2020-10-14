@@ -6,8 +6,7 @@ import {
 } from '../redux';
 import Principal from '../paginas/Principal/principal';
 import PlanoCiclo from '../paginas/Planejamento/PlanoCiclo/planoCiclo';
-import PlanoAnual from '../paginas/Planejamento/PlanoAnual/planoAnual';
-import PlanejamentoAnual from '../paginas/Planejamento/Anual/planoAnual';
+import PlanoAnual from '../paginas/Planejamento/Anual/planoAnual';
 import AtribuicaoSupervisorLista from '../paginas/Gestao/AtribuicaoSupervisor/atribuicaoSupervisorLista';
 import AtribuicaoSupervisorCadastro from '../paginas/Gestao/AtribuicaoSupervisor/atribuicaoSupervisorCadastro';
 import AtribuicaoEsporadicaLista from '../paginas/Gestao/AtribuicaoEsporadica/Lista';
@@ -941,27 +940,6 @@ rotas.set(RotasDto.RELATORIO_COMPENSACAO_AUSENCIA, {
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: false,
   chavePermissao: RotasDto.RELATORIO_COMPENSACAO_AUSENCIA,
-});
-
-rotas.set(RotasDto.PLANEJAMENTO_ANUAL, {
-  breadcrumbName: 'Plano Anual',
-  menu: ['Planejamento'],
-  parent: '/',
-  component: PlanejamentoAnual,
-  exact: false,
-  tipo: RotasTipo.EstruturadaAutenticada,
-  // temPermissionamento: true,
-  // chavePermissao: RotasDto.PLANO_ANUAL,
-});
-
-rotas.set(RotasDto.POC_EDITOR, {
-  breadcrumbName: 'Poc Jodit Editor',
-  parent: '/',
-  component: PocEditor,
-  exact: false,
-  tipo: RotasTipo.EstruturadaAutenticada,
-  // temPermissionamento: true,
-  // chavePermissao: RotasDto.PLANO_ANUAL,
 });
 
 const rotasArray = [];

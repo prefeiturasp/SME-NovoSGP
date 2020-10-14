@@ -8,6 +8,8 @@ namespace SME.SGP.Infra
         {
             PeriodosEscolares = new List<PlanejamentoAnualPeriodoEscolarDto>();
         }
+
+        public long Id { get; set; }
         public List<PlanejamentoAnualPeriodoEscolarDto> PeriodosEscolares { get; set; }
     }
 }

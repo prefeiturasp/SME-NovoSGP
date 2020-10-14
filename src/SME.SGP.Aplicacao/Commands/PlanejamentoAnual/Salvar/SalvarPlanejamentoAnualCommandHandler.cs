@@ -35,7 +35,8 @@ namespace SME.SGP.Aplicacao
             {
 
                 planejamentoAnual = new PlanejamentoAnual(comando.TurmaId, comando.ComponenteCurricularId);
-                await repositorioPlanejamentoAnual.SalvarAsync(planejamentoAnual);
+                var id = await repositorioPlanejamentoAnual.SalvarAsync(planejamentoAnual);
+                auditorias.Id = id;
             }
 
             List<PeriodoEscolar> excecoesAtribuicao = new List<PeriodoEscolar>();
@@ -66,7 +67,7 @@ namespace SME.SGP.Aplicacao
             foreach (var periodo in comando.PeriodosEscolares)
             {
 
-                var planejamentoAnualPeriodoEscolar = await repositorioPlanejamentoAnualPeriodoEscolar.ObterPorPlanejamentoAnualId(planejamentoAnual.Id, periodo.PeriodoEscolarId);
+                var planejamentoAnualPeriodoEscolar = await repositorioPlanejamentoAnualPeriodoEscolar.ObterPorPlanejamentoAnualIdEPeriodoId(planejamentoAnual.Id, periodo.PeriodoEscolarId);
                 if (planejamentoAnualPeriodoEscolar == null)
                 {
                     planejamentoAnualPeriodoEscolar = new PlanejamentoAnualPeriodoEscolar(periodo.PeriodoEscolarId)
