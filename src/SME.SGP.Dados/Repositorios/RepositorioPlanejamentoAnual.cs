@@ -135,5 +135,19 @@ namespace SME.SGP.Dados.Repositorios
                 });
 
         }
+
+        public async Task<PlanejamentoAnualDto> ObterPlanejamentoAnualSimplificadoPorTurma(long turmaId)
+        {
+            var sql = @"select
+	                        id, 	
+	                        turma_id, 	
+	                        componente_curricular_id	
+                        from
+	                        planejamento_anual pa
+                        where
+	                        turma_id = @turmaId";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<PlanejamentoAnualDto>(sql, new { turmaId });
+        }
     }
 }
