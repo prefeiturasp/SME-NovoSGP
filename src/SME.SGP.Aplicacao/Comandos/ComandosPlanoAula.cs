@@ -96,9 +96,9 @@ namespace SME.SGP.Aplicacao
                     Descricao = planoAulaDto.Descricao,
                     DesenvolvimentoAula = planoAulaDto.DesenvolvimentoAula,
                     LicaoCasa = migrarPlanoAulaDto.MigrarLicaoCasa ? planoAulaDto.LicaoCasa : string.Empty,
-                    ObjetivosAprendizagemJurema = !usuario.EhProfessorCj() ||
+                    ObjetivosAprendizagemIds = !usuario.EhProfessorCj() ||
                                                    migrarPlanoAulaDto.MigrarObjetivos ?
-                                                   objetivosPlanoAulaDto.Select(o => o.ObjetivoAprendizagemPlano.ObjetivoAprendizagemJuremaId).ToList() : null,
+                                                   objetivosPlanoAulaDto.Select(o => o.ObjetivoAprendizagem.ComponenteCurricularId).ToList() : null,
                     RecuperacaoAula = migrarPlanoAulaDto.MigrarRecuperacaoAula ?
                                         planoAulaDto.RecuperacaoAula : string.Empty
                 };
@@ -134,7 +134,7 @@ namespace SME.SGP.Aplicacao
             if (planoAnual.Id <= 0 && !usuario.PerfilAtual.Equals(Perfis.PERFIL_CJ))
                 throw new NegocioException("Não foi possível concluir o cadastro, pois não existe plano anual cadastrado");
 
-            if (planoAulaDto.ObjetivosAprendizagemJurema == null || !planoAulaDto.ObjetivosAprendizagemJurema.Any() && !planoAula.Migrado)
+            if (planoAulaDto.ObjetivosAprendizagemIds == null || !planoAulaDto.ObjetivosAprendizagemIds.Any() && !planoAula.Migrado)
             {
                 var permitePlanoSemObjetivos = false;
 
@@ -203,18 +203,10 @@ namespace SME.SGP.Aplicacao
 
             // Salvar Objetivos
             await repositorioObjetivosAula.LimparObjetivosAula(planoAula.Id);
-            if (planoAulaDto.ObjetivosAprendizagemJurema != null)
-                foreach (var objetivoJuremaId in planoAulaDto.ObjetivosAprendizagemJurema)
+            if (planoAulaDto.ObjetivosAprendizagemIds != null)
+                foreach (var objetivoAprendizagemId in planoAulaDto.ObjetivosAprendizagemIds)
                 {
-                    var objetivoPlanoAnualId = consultasObjetivoAprendizagem
-                        .ObterIdPorObjetivoAprendizagemJurema(planoAnualId, objetivoJuremaId);
-
-                    if (objetivoPlanoAnualId <= 0)
-                    {
-                        objetivoPlanoAnualId = await SalvarObjetivoPlanoAnual(objetivoJuremaId, planoAnualId);
-                    }
-
-                    repositorioObjetivosAula.Salvar(new ObjetivoAprendizagemAula(planoAula.Id, objetivoPlanoAnualId));
+                    repositorioObjetivosAula.Salvar(new ObjetivoAprendizagemAula(planoAula.Id, objetivoAprendizagemId));
                 }
         }
 
