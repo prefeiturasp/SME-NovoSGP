@@ -3,6 +3,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -106,6 +107,20 @@ namespace SME.SGP.Dados.Repositorios
 	                        and pa.componente_curricular_id = @componenteCurricularId";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<PlanejamentoAnual>(sql, new { turmaId, componenteCurricularId });
+        }
+
+        public async Task<PlanejamentoAnualDto> ObterPlanejamentoAnualSimplificadoPorTurma(long turmaId)
+        {
+            var sql = @"select
+	                        id, 	
+	                        turma_id, 	
+	                        componente_curricular_id	
+                        from
+	                        planejamento_anual pa
+                        where
+	                        turma_id = @turmaId";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<PlanejamentoAnualDto>(sql, new { turmaId });
         }
     }
 }
