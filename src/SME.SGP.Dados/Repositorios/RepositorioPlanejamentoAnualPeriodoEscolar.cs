@@ -39,7 +39,8 @@ namespace SME.SGP.Dados.Repositorios
                         where
 	                        turma_id = @turmaId
 	                        and pac.componente_curricular_id = @componenteCurricularId
-	                        and pape.periodo_escolar_id = @periodoEscolarId";
+	                        and pape.periodo_escolar_id = @periodoEscolarId
+                        order by paoa.objetivo_aprendizagem_id";
 
             var periodos = new List<PlanejamentoAnualPeriodoEscolar>();
             await database.Conexao.QueryAsync<PlanejamentoAnualPeriodoEscolar, PeriodoEscolar, PlanejamentoAnualComponente, PlanejamentoAnualObjetivoAprendizagem, PlanejamentoAnualPeriodoEscolar>(sql,
@@ -124,6 +125,19 @@ namespace SME.SGP.Dados.Repositorios
             }
 
             return retorno;
+        }
+
+        public async Task<IEnumerable<PlanejamentoAnualPeriodoEscolarResumoDto>> ObterPorPlanejamentoAnualId(long planejamentoAnualId)
+        {
+            var sql = @"select
+	                    pape.id,
+	                    bimestre
+                    from
+	                    planejamento_anual_periodo_escolar pape
+                    inner join periodo_escolar pe on
+	                    pape.periodo_escolar_id = pe.id
+                    where planejamento_anual_id = @planejamentoAnualId";
+            return await database.Conexao.QueryAsync<PlanejamentoAnualPeriodoEscolarResumoDto>(sql, new { planejamentoAnualId });
         }
     }
 }

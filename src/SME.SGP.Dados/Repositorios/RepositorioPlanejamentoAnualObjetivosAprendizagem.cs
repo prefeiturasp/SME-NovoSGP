@@ -18,6 +18,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<PlanejamentoAnualObjetivoAprendizagem>> ObterPorPlanejamentoAnualComponenteId(long componenteId)
         {
             var sql = @"select
+                            id as Id,
                             planejamento_anual_componente_id as PlanejamentoAnualComponenteId,
 	                        objetivo_aprendizagem_id as ObjetivoAprendizagemId
                         from

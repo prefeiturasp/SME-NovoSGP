@@ -57,7 +57,11 @@ namespace SME.SGP.Aplicacao
                     planejamentoCopiado.PeriodosEscolares.AddRange(periodosOrigem);
 
                     if (!excessoes.Any())
+                    {
+                        await mediator.Send(new ExcluirPlanejamentoAnualPorTurmaIdEComponenteCurricularIdCommand(checarTurma.Id, comando.Planejamento.ComponenteCurricularId)); 
                         await mediator.Send(new SalvarCopiaPlanejamentoAnualCommand(planejamentoCopiado));
+                    }
+                        
                 }
 
                 if (excessoes.Any())

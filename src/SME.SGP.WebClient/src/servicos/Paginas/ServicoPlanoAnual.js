@@ -30,9 +30,9 @@ class ServicoPlanoAnual {
     return api.post('v1/planos/anual', planoAnual);
   };
 
-  obterTurmasParaCopia = (turmaId, componenteCurricularId) => {
+  obterTurmasParaCopia = (turmaId, componenteCurricularId, ensinoEspecial) => {
     return api.get(
-      `v1/planejamento/anual/turmas/copia?turmaId=${turmaId}&componenteCurricular=${componenteCurricularId}`
+      `v1/planejamento/anual/turmas/copia?turmaId=${turmaId}&componenteCurricular=${componenteCurricularId}&ensinoEspecial=${ensinoEspecial}`
     );
   };
 
@@ -206,7 +206,7 @@ class ServicoPlanoAnual {
   };
 
   obterPeriodosEscolaresParaCopia = planejamentoAnualId => {
-    const url = `v1/planejamento/anual/${planejamentoAnualId}/preiodos-escolares/copia`;
+    const url = `v1/planejamento/anual/${planejamentoAnualId}/periodos-escolares/copia`;
     return api.get(url);
   };
 }

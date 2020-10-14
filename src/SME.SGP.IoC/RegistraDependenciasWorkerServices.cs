@@ -401,6 +401,7 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<ISincronizarComponentesCurricularesUseCase, SincronizarComponentesCurricularesUseCase>();
             services.TryAddScopedWorkerService<IExecutaSincronismoComponentesCurricularesEolUseCase, ExecutaSincronismoComponentesCurricularesEolUseCase>();
 
+            services.TryAddScopedWorkerService<IObterTurmasParaCopiaUseCase, ObterTurmasParaCopiaUseCase>();
         }
 
         private static void ResgistraDependenciaHttp(IServiceCollection services)
