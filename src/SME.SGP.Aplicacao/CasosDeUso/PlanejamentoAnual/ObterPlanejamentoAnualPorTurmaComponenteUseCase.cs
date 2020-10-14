@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<PlanejamentoAnualPeriodoEscolarDto> Executar(long turmaId, long componenteCurricularId, long periodoEscolarId)
         {
-            return await mediator.Send(new ObterPlanejamentoAnualPorTurmaComponenteQuery(turmaId, componenteCurricularId, periodoEscolarId));
+            return await mediator.Send(new ObterPlanejamentoAnualSimplificadoPorTurmaQuery(turmaId, componenteCurricularId, periodoEscolarId));
         }
     }
 }
