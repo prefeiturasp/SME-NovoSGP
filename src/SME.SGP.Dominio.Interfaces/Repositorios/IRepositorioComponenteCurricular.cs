@@ -11,5 +11,6 @@ namespace SME.SGP.Dominio.Interfaces
         void SalvarVarias(IEnumerable<ComponenteCurricularDto> componentesCurriculares);
         Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorIds(long[] ids);
         Task<long[]> ListarCodigosJuremaPorComponenteCurricularId(long id);
+        Task<bool> VerificaPossuiObjetivosAprendizagemPorComponenteCurricularId(long id);
     }
 }
