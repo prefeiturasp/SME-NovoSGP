@@ -9,5 +9,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task RemoverTodosPorPlanejamentoAnualPeriodoEscolarId(long id);
         Task RemoverTodosPorPlanejamentoAnualPeriodoEscolarIdEComponenteCurricularId(long id, long componenteCurricularId);
         
+
+        Task<IEnumerable<PlanejamentoAnualObjetivoAprendizagem>> ObterPorPlanejamentoAnualComponenteId(long componenteId);
     }
 }
