@@ -41,10 +41,10 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PDA_I, Permissao.PDA_A, Policy = "Bearer")]
-        public async Task<IActionResult> Post(PlanoAulaDto planoAulaDto, [FromServices]IComandosPlanoAula comandos)
+        public async Task<IActionResult> Post(PlanoAulaDto planoAulaDto, [FromServices]ISalvarPlanoAulaUseCase useCase)
         {
-            await comandos.Salvar(planoAulaDto);
-            return Ok();
+            //await comandos.Salvar(planoAulaDto);
+            return Ok(await useCase.Executar(planoAulaDto));
         }
 
         [HttpPost("validar-existente")]
