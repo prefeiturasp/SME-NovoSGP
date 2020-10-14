@@ -1,9 +1,5 @@
-import {
-  setRotas
-} from '../redux/modulos/navegacao/actions';
-import {
-  store
-} from '../redux';
+import { setRotas } from '../redux/modulos/navegacao/actions';
+import { store } from '../redux';
 import Principal from '../paginas/Principal/principal';
 import PlanoCiclo from '../paginas/Planejamento/PlanoCiclo/planoCiclo';
 import PlanoAnual from '../paginas/Planejamento/Anual/planoAnual';
@@ -748,7 +744,8 @@ rotas.set(`${RotasDto.PENDENCIAS_FECHAMENTO}`, {
   chavePermissao: RotasDto.PENDENCIAS_FECHAMENTO,
 });
 rotas.set(
-  `${RotasDto.PENDENCIAS_FECHAMENTO}/:bimestre/:codigoComponenteCurricular`, {
+  `${RotasDto.PENDENCIAS_FECHAMENTO}/:bimestre/:codigoComponenteCurricular`,
+  {
     breadcrumbName: 'Pendências do Fechamento',
     menu: ['Fechamento'],
     parent: '/',
@@ -940,6 +937,14 @@ rotas.set(RotasDto.RELATORIO_COMPENSACAO_AUSENCIA, {
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: false,
   chavePermissao: RotasDto.RELATORIO_COMPENSACAO_AUSENCIA,
+});
+
+rotas.set(RotasDto.POC_EDITOR, {
+  breadcrumbName: 'Poc Jodit Editor',
+  parent: '/',
+  component: PocEditor,
+  exact: false,
+  tipo: RotasTipo.EstruturadaAutenticada,
 });
 
 const rotasArray = [];
