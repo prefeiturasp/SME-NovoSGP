@@ -5,6 +5,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -66,6 +67,21 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryAsync<long>(query, new { id })).AsList().ToArray();
         }
 
+        public async Task<bool> VerificaPossuiObjetivosAprendizagemPorComponenteCurricularId(long id)
+        {
+            var query = $@"select
+	                           distinct 1
+                            from
+	                            componente_curriculo_cidade ccc
+                            inner join componente_curricular cc on
+	                            ccc.componente_curricular_id = cc.id
+                            inner join objetivo_aprendizagem oa on
+                                ccc.codigo = oa.componente_curricular_id
+                            WHERE ccc.componente_curricular_id = @id;";
+
+            return (await database.Conexao.QueryAsync<int>(query, new { id })).Any() ;
+        }
+
         public void SalvarVarias(IEnumerable<ComponenteCurricularDto> componentesCurriculares)
         {
             var sql = @"copy componente_curricular (id, 
@@ -124,6 +140,7 @@ namespace SME.SGP.Dados.Repositorios
 
             return (await database.Conexao.QueryAsync<DisciplinaDto>(query, new { turno, ano }));
         }
+
     }
 
 }

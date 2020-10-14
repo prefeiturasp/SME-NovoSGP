@@ -1,5 +1,6 @@
 ﻿using SME.SGP.Infra;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
 {
@@ -8,6 +9,8 @@ namespace SME.SGP.Dominio.Interfaces
         IEnumerable<ComponenteCurricularSimplificadoDto> ObterDisciplinasDoBimestrePlanoAula(int ano, int bimestre, long turmaId, long componenteCurricularId);
 
         long ObterIdPorObjetivoAprendizagemJurema(long planoId, long objetivoAprendizagemJuremaId);
+
+        Task<long> ObterIdPorObjetivoAprendizagemJuremaAsync(long planoId, long objetivoAprendizagemJuremaId);
 
         IEnumerable<ObjetivoAprendizagemPlano> ObterObjetivosAprendizagemPorIdPlano(long idPlano);
 

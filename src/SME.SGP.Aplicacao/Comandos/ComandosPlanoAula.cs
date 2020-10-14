@@ -98,7 +98,7 @@ namespace SME.SGP.Aplicacao
                     LicaoCasa = migrarPlanoAulaDto.MigrarLicaoCasa ? planoAulaDto.LicaoCasa : string.Empty,
                     ObjetivosAprendizagemIds = !usuario.EhProfessorCj() ||
                                                    migrarPlanoAulaDto.MigrarObjetivos ?
-                                                   objetivosPlanoAulaDto.Select(o => o.ObjetivoAprendizagemPlano.ObjetivoAprendizagemJuremaId).ToList() : null,
+                                                   objetivosPlanoAulaDto.Select(o => o.ObjetivoAprendizagem.ComponenteCurricularId).ToList() : null,
                     RecuperacaoAula = migrarPlanoAulaDto.MigrarRecuperacaoAula ?
                                         planoAulaDto.RecuperacaoAula : string.Empty
                 };
