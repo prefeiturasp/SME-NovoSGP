@@ -79,8 +79,6 @@ namespace SME.SGP.Aplicacao
                                                    new[] { Modalidade.EJA, Modalidade.Medio }.Contains(abrangenciaTurma.Modalidade) ||  // EJA e Médio não obrigam seleção
                                                    usuario.EhProfessorCj() ||  // Para professores substitutos (CJ) a seleção dos objetivos deve ser opcional
                                                    !possuiObjetivos || // Caso a disciplina não possui vinculo com Jurema, os objetivos não devem ser exigidos
-                                                                       //TODO
-                                                                       //planoAnual.ObjetivosAprendizagemOpcionais || // Turma Especial não obriga seleção de componentes
                                                    abrangenciaTurma.Ano.Equals("0"); // Caso a turma for de  educação física multisseriadas, os objetivos não devem ser exigidos;
 
                     if (!permitePlanoSemObjetivos)
@@ -99,7 +97,7 @@ namespace SME.SGP.Aplicacao
                 if (planoAulaDto.ObjetivosAprendizagemIds != null)
                     foreach (var objetivoAprendizagemId in planoAulaDto.ObjetivosAprendizagemIds)
                     {
-                        repositorioObjetivosAula.Salvar(new ObjetivoAprendizagemAula(planoAula.Id, objetivoAprendizagemId));
+                        await repositorioObjetivosAula.SalvarAsync(new ObjetivoAprendizagemAula(planoAula.Id, objetivoAprendizagemId));
                     }
             }
             catch (Exception ex)
