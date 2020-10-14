@@ -14,9 +14,9 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<PlanejamentoAnualPeriodoEscolarDto> Executar(long turmaId, long componenteCurricularId, long periodoEscolarId)
+        public async Task<long> Executar(long turmaId, long componenteCurricularId)
         {
-            return await mediator.Send(new ObterPlanejamentoAnualPorTurmaComponenteQuery(turmaId, componenteCurricularId, periodoEscolarId));
+            return await mediator.Send(new ObterPlanejamentoAnualPorTurmaComponenteQuery(turmaId, componenteCurricularId));
         }
     }
 }
