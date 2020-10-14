@@ -46,6 +46,12 @@ namespace SME.SGP.Dominio
         PlanoAula = 14,
 
         [Display(Name = "relatorios/resumopap", ShortName = "ResumoPAP", Description = "Relatório de acompanhamento PAP - Resumos")]
-        ResumoPAP = 15
+        ResumoPAP = 15,
+
+        [Display(Name = "relatorios/sondagem/matematica-por-turma", ShortName = "Relatório de Sondagem (Matemática)", Description = "Relatório de Sondagem (Matemática)")]
+        RelatorioMatetimaticaPorTurma = 16,
+
+        [Display(Name = "relatorios/sondagem/matematica-consolidado", ShortName = "MatematicaConsolidado", Description = "Matematica Consolidado")]
+        RelatorioMatetimaticaConsolidado = 17
     }
 }

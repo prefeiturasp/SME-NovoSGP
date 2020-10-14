@@ -163,6 +163,7 @@ namespace SME.SGP.Aplicacao
             comunicado.Descricao = request.Descricao;
             comunicado.Titulo = request.Titulo;
             comunicado.AnoLetivo = request.AnoLetivo;
+            comunicado.SeriesResumidas = request.SeriesResumidas;
 
             if (!request.CodigoDre.Equals("todas"))
                 comunicado.CodigoDre = request.CodigoDre;
@@ -209,6 +210,7 @@ namespace SME.SGP.Aplicacao
             comunicadoServico.Turmas = comunicado.Turmas.Select(x => x.CodigoTurma);
             comunicadoServico.TipoComunicado = comunicado.TipoComunicado;
             comunicadoServico.Semestre = comunicado.Semestre;
+            comunicadoServico.SeriesResumidas = comunicado.SeriesResumidas;
         }
 
         private async Task SalvarComunicadosParaGrupos(long id, SolicitarInclusaoComunicadoEscolaAquiCommand comunicado)

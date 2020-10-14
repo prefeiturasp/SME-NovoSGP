@@ -63,7 +63,27 @@ export const setClicouNoBimestre = payload => ({
   payload,
 });
 
+export const setExibirModalCopiarConteudo = payload => ({
+  type: '@planoAnual/setExibirModalCopiarConteudo',
+  payload,
+});
+
+export const setListaTurmasParaCopiar = payload => ({
+  type: '@planoAnual/setListaTurmasParaCopiar',
+  payload,
+});
+
 export const setEhRegistroMigrado = payload => ({
   type: '@planoAnual/setEhRegistroMigrado',
+  payload,
+});
+
+export const setPlanejamentoAnualId = payload => ({
+  type: '@planoAnual/setPlanejamentoAnualId',
+  payload,
+});
+
+export const setPlanoAnualSomenteConsulta = payload => ({
+  type: '@planoAnual/setPlanoAnualSomenteConsulta',
   payload,
 });

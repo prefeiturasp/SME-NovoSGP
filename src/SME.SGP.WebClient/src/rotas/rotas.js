@@ -1,13 +1,8 @@
-import {
-  setRotas
-} from '../redux/modulos/navegacao/actions';
-import {
-  store
-} from '../redux';
+import { setRotas } from '../redux/modulos/navegacao/actions';
+import { store } from '../redux';
 import Principal from '../paginas/Principal/principal';
 import PlanoCiclo from '../paginas/Planejamento/PlanoCiclo/planoCiclo';
-import PlanoAnual from '../paginas/Planejamento/PlanoAnual/planoAnual';
-import PlanejamentoAnual from '../paginas/Planejamento/Anual/planoAnual';
+import PlanoAnual from '../paginas/Planejamento/Anual/planoAnual';
 import AtribuicaoSupervisorLista from '../paginas/Gestao/AtribuicaoSupervisor/atribuicaoSupervisorLista';
 import AtribuicaoSupervisorCadastro from '../paginas/Gestao/AtribuicaoSupervisor/atribuicaoSupervisorCadastro';
 import AtribuicaoEsporadicaLista from '../paginas/Gestao/AtribuicaoEsporadica/Lista';
@@ -72,6 +67,7 @@ import DevolutivasLista from '~/paginas/DiarioClasse/Devolutivas/devolutivasList
 import DevolutivasForm from '~/paginas/DiarioClasse/Devolutivas/devolutivasForm';
 import RelatorioNotasConceitosFinais from '~/paginas/Relatorios/NotasConceitosFinais/relatorioNotasConceitosFinais';
 import RelatorioCompensacaoAusencia from '~/paginas/Relatorios/CompensacaoAusencia/relatorioCompensacaoAusencia';
+import PocEditor from '~/paginas/PocEditor/pocEditor';
 
 const rotas = new Map();
 
@@ -748,7 +744,8 @@ rotas.set(`${RotasDto.PENDENCIAS_FECHAMENTO}`, {
   chavePermissao: RotasDto.PENDENCIAS_FECHAMENTO,
 });
 rotas.set(
-  `${RotasDto.PENDENCIAS_FECHAMENTO}/:bimestre/:codigoComponenteCurricular`, {
+  `${RotasDto.PENDENCIAS_FECHAMENTO}/:bimestre/:codigoComponenteCurricular`,
+  {
     breadcrumbName: 'Pendências do Fechamento',
     menu: ['Fechamento'],
     parent: '/',
@@ -942,15 +939,12 @@ rotas.set(RotasDto.RELATORIO_COMPENSACAO_AUSENCIA, {
   chavePermissao: RotasDto.RELATORIO_COMPENSACAO_AUSENCIA,
 });
 
-rotas.set(RotasDto.PLANEJAMENTO_ANUAL, {
-  breadcrumbName: 'Plano Anual',
-  menu: ['Planejamento'],
+rotas.set(RotasDto.POC_EDITOR, {
+  breadcrumbName: 'Poc Jodit Editor',
   parent: '/',
-  component: PlanejamentoAnual,
+  component: PocEditor,
   exact: false,
   tipo: RotasTipo.EstruturadaAutenticada,
-  // temPermissionamento: true,
-  // chavePermissao: RotasDto.PLANO_ANUAL,
 });
 
 const rotasArray = [];

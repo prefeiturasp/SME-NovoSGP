@@ -57,10 +57,10 @@ namespace SME.SGP.Aplicacao
                 case TipoRelatorio.FaltasFrequencia:
                 case TipoRelatorio.FechamentoPendencias:
                     SentrySdk.AddBreadcrumb($"Enviando notificação..", $"{relatorioCorrelacao.Codigo.ToString().Substring(0,3)}{relatorioCorrelacao.TipoRelatorio.ShortName()}");
-                    await EnviaNotificacaoCriador(relatorioCorrelacao, mensagem.MensagemUsuario);
+                    await EnviaNotificacaoCriador(relatorioCorrelacao, mensagem.MensagemUsuario, mensagem.MensagemTitulo);
                     break;
                 default:
-                    await EnviaNotificacaoCriador(relatorioCorrelacao, mensagem.MensagemUsuario);
+                    await EnviaNotificacaoCriador(relatorioCorrelacao, mensagem.MensagemUsuario, mensagem.MensagemTitulo);
                     break;
             }
 
@@ -72,11 +72,11 @@ namespace SME.SGP.Aplicacao
             return await Task.FromResult(true);
         }
 
-        private async Task EnviaNotificacaoCriador(RelatorioCorrelacao relatorioCorrelacao, string mensagemUsuario)
+        private async Task EnviaNotificacaoCriador(RelatorioCorrelacao relatorioCorrelacao, string mensagemUsuario, string mensagemTitulo)
         {
             var urlRedirecionamentoBase = configuration.GetSection("UrlServidorRelatorios").Value;
 
-            await mediator.Send(new EnviaNotificacaoCriadorCommand(relatorioCorrelacao, urlRedirecionamentoBase, mensagemUsuario));
+            await mediator.Send(new EnviaNotificacaoCriadorCommand(relatorioCorrelacao, urlRedirecionamentoBase, mensagemUsuario, mensagemTitulo));
         }
     }
 }

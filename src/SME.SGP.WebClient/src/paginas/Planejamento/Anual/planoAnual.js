@@ -5,8 +5,15 @@ import AlertaNaoPermiteTurmaInfantil from '~/componentes-sgp/AlertaNaoPermiteTur
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import Alert from '~/componentes/alert';
 import RotasDto from '~/dtos/rotasDto';
-import { limparDadosPlanoAnual } from '~/redux/modulos/anual/actions';
-import { obterDescricaoNomeMenu } from '~/servicos/servico-navegacao';
+import {
+  limparDadosPlanoAnual,
+  setComponenteCurricularPlanoAnual,
+  setPlanoAnualSomenteConsulta,
+} from '~/redux/modulos/anual/actions';
+import {
+  obterDescricaoNomeMenu,
+  verificaSomenteConsulta,
+} from '~/servicos/servico-navegacao';
 import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 import BotoesAcoesPlanoAnual from './DadosPlanoAnual/BotoesAcoes/botoesAcoesPlanoAnual';
 import ComponenteCurricularPlanoAnual from './DadosPlanoAnual/ComponenteCurricular/componenteCurricularPlanoAnual';
@@ -14,6 +21,7 @@ import DadosPlanoAnual from './DadosPlanoAnual/dadosPlanoAnual';
 import LoaderPlanoAnual from './DadosPlanoAnual/LoaderPlanoAnual/loaderPlanoAnual';
 import MarcadorMigrado from './DadosPlanoAnual/MarcadorMigrado/MarcadorMigrado';
 import ModalErrosPlanoAnual from './DadosPlanoAnual/ModalErros/ModalErrosPlanoAnual';
+import ModalCopiarConteudoPlanoAnual from './DadosPlanoAnual/ModalCopiarConteudoPlanoAnual/modalCopiarConteudoPlanoAnual';
 import { ContainerPlanoAnual } from './planoAnual.css';
 
 const PlanoAnual = () => {
@@ -22,14 +30,33 @@ const PlanoAnual = () => {
   const usuario = useSelector(store => store.usuario);
   const { turmaSelecionada } = usuario;
 
+  const permissoesTela = usuario.permissoes[RotasDto.PLANO_ANUAL];
+
   const modalidadesFiltroPrincipal = useSelector(
     store => store.filtro.modalidades
   );
 
   const [turmaInfantil, setTurmaInfantil] = useState(false);
 
+  useEffect(() => {
+    const naoSetarSomenteConsultaNoStore = ehTurmaInfantil(
+      modalidadesFiltroPrincipal,
+      turmaSelecionada
+    );
+
+    const soConsulta = verificaSomenteConsulta(
+      permissoesTela,
+      naoSetarSomenteConsultaNoStore
+    );
+    dispatch(setPlanoAnualSomenteConsulta(soConsulta));
+  }, [permissoesTela, modalidadesFiltroPrincipal, turmaSelecionada, dispatch]);
+
   const resetarInfomacoes = useCallback(() => {
     dispatch(limparDadosPlanoAnual());
+  }, [dispatch]);
+
+  const resetarComponenteCurricular = useCallback(() => {
+    dispatch(setComponenteCurricularPlanoAnual(undefined));
   }, [dispatch]);
 
   useEffect(() => {
@@ -37,8 +64,9 @@ const PlanoAnual = () => {
     return () => {
       // Quando sair da tela vai executar para limpar os dados no redux!
       resetarInfomacoes();
+      resetarComponenteCurricular();
     };
-  }, [turmaSelecionada, resetarInfomacoes]);
+  }, [turmaSelecionada, resetarInfomacoes, resetarComponenteCurricular]);
 
   useEffect(() => {
     const infantil = ehTurmaInfantil(
@@ -69,6 +97,7 @@ const PlanoAnual = () => {
       ) : null}
       <AlertaNaoPermiteTurmaInfantil />
       <ModalErrosPlanoAnual />
+      <ModalCopiarConteudoPlanoAnual />
       <ContainerPlanoAnual>
         <Cabecalho
           pagina={obterDescricaoNomeMenu(
