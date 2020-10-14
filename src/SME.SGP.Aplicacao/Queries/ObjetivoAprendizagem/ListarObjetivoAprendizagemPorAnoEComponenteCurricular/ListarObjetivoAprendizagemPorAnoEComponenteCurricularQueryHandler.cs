@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
 
         public ListarObjetivoAprendizagemPorAnoEComponenteCurricularQueryHandler(IRepositorioObjetivoAprendizagem repositorioObjetivoAprendizagem, IMediator mediator) : base(mediator)
         {
-            this.repositorioObjetivoAprendizagem = repositorioObjetivoAprendizagem;
+            this.repositorioObjetivoAprendizagem = repositorioObjetivoAprendizagem ?? throw new ArgumentNullException(nameof(repositorioObjetivoAprendizagem));
         }
         public async Task<IEnumerable<ObjetivoAprendizagemDto>> Handle(ListarObjetivoAprendizagemPorAnoEComponenteCurricularQuery request, CancellationToken cancellationToken)
         {

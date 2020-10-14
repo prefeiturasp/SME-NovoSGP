@@ -73,7 +73,7 @@ namespace SME.SGP.Aplicacao.Consultas
                 {
                     // Filtra objetivos anual com os objetivos da aula
                     planoAulaDto.ObjetivosAprendizagemAula = planoAnual.ObjetivosAprendizagem
-                                        .Where(c => objetivosAula.Any(a => a.ObjetivoAprendizagemPlano.ObjetivoAprendizagemJuremaId == c.Id))
+                                        .Where(c => objetivosAula.Any(a => a.ObjetivoAprendizagem.ComponenteCurricularId == c.Id))
                                         .ToList();
                 }
                 else
