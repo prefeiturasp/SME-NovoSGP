@@ -4,6 +4,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -38,6 +39,13 @@ namespace SME.SGP.Dados.Repositorios
             var query = "select id from objetivo_aprendizagem_plano where plano_id = @planoId and objetivo_aprendizagem_jurema_id = @objetivoAprendizagemJuremaId";
 
             return database.Conexao.QueryFirstOrDefault<long>(query, new { planoId, objetivoAprendizagemJuremaId });
+        }
+
+        public async Task<long> ObterIdPorObjetivoAprendizagemJuremaAsync(long planoId, long objetivoAprendizagemJuremaId)
+        {
+            var query = "select id from objetivo_aprendizagem_plano where plano_id = @planoId and objetivo_aprendizagem_jurema_id = @objetivoAprendizagemJuremaId";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<long>(query, new { planoId, objetivoAprendizagemJuremaId });
         }
 
         public IEnumerable<ObjetivoAprendizagemPlano> ObterObjetivosAprendizagemPorIdPlano(long idPlano)
