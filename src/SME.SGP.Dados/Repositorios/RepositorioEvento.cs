@@ -1087,5 +1087,31 @@ namespace SME.SGP.Dados.Repositorios
                         and not e.excluido";
             return await database.Conexao.QueryAsync<Evento>(query.ToString(), new { tipoCalendarioId });
         }
+
+        public async Task<IEnumerable<Evento>> ObterEventosPorTipoDeCalendarioDreUeModalidadeAsync(long tipoCalendario,
+                                                                                                   string codigoDre,
+                                                                                                   string codigoUe,
+                                                                                                   int? modalidade)
+        {
+            var whereDre = string.IsNullOrEmpty(codigoDre) ? "" : "and (dre_id is null or dre_id = @codigoDre)";
+            var whereUe = string.IsNullOrEmpty(codigoUe)   ? "" : "and (ue_id is null or ue_id = @codigoUe)";
+            var whereModalidade = modalidade.HasValue      ? "" : "and tc.modalidade = @modalidade";
+            var query = $@"
+                select 
+                	e.*
+                from
+	                evento e
+				inner join 
+					tipo_calendario tc on tc.id = e.tipo_calendario_id 	                
+                where
+	                e.tipo_calendario_id = e.tipo_calendario_id
+                    {whereDre}
+                    {whereUe}
+                    {whereModalidade}
+                and not e.excluido
+            ";
+            return await database.Conexao.QueryAsync<Evento>(query.ToString(), new { tipoCalendario });
+        }
+
     }
 }
