@@ -7,6 +7,7 @@ import DesenvolvimentoDaAula from './CamposEditorPlanoAula/desenvolvimentoDaAula
 import LicaoDeCasa from './CamposEditorPlanoAula/licaoDeCasa';
 import ObjetivosEspecificosParaAula from './CamposEditorPlanoAula/objetivosEspecificosParaAula';
 import RecuperacaoContinua from './CamposEditorPlanoAula/recuperacaoContinua';
+import ObjetivosAprendizagemDesenvolvimento from './ObjetivosAprendizagemDesenvolvimento/objetivosAprendizagemDesenvolvimento';
 
 const DadosPlanoAula = () => {
   const dispatch = useDispatch();
@@ -36,6 +37,12 @@ const DadosPlanoAula = () => {
     <>
       {dadosPlanoAula ? (
         <>
+          <div className="row mb-3">
+            <div className="col-md-12">
+              <span>Quantidade de aulas: {dadosPlanoAula.qtdAulas}</span>
+            </div>
+          </div>
+          <ObjetivosAprendizagemDesenvolvimento />
           <ObjetivosEspecificosParaAula />
           <DesenvolvimentoDaAula />
           <RecuperacaoContinua />

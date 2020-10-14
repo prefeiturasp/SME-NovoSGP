@@ -81,3 +81,24 @@ export function setDadosParaSalvarPlanoAula(payload) {
     payload,
   };
 }
+
+export function setTabAtualComponenteCurricular(payload) {
+  return {
+    type: '@frequenciaPlanoAula/setTabAtualComponenteCurricular',
+    payload,
+  };
+}
+
+export function setListaComponentesCurricularesPlanejamento(payload) {
+  return {
+    type: '@frequenciaPlanoAula/setListaComponentesCurricularesPlanejamento',
+    payload,
+  };
+}
+
+export function setExibirCardCollapsePlanoAula(payload) {
+  return {
+    type: '@frequenciaPlanoAula/setExibirCardCollapsePlanoAula',
+    payload,
+  };
+}
