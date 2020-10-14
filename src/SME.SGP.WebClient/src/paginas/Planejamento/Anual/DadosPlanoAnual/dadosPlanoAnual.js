@@ -72,7 +72,8 @@ const DadosPlanoAnual = () => {
   const obterTurmasParaCopiarConteudo = useCallback(() => {
     ServicoPlanoAnual.obterTurmasParaCopia(
       turmaSelecionada.id,
-      componenteCurricular.codigoComponenteCurricular
+      componenteCurricular.codigoComponenteCurricular,
+      turmaSelecionada.ensinoEspecial
     )
       .then(resposta => {
         dispatch(setListaTurmasParaCopiar(resposta.data));

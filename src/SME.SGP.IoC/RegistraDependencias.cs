@@ -472,6 +472,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterComunicadosPaginadosEscolaAquiUseCase, ObterComunicadosPaginadosEscolaAquiUseCase>();
             services.TryAddScoped<IMigrarPlanejamentoAnualUseCase, MigrarPlanejamentoAnualUseCase>();
 
+            services.TryAddScoped<IObterTurmasParaCopiaUseCase,ObterTurmasParaCopiaUseCase > ();
+            
+
         }
     }
 }

@@ -10,5 +10,8 @@ namespace SME.SGP.Dominio.Interfaces
         Task<long> ObterIdPorTurmaEComponenteCurricular(long turmaId, long componenteCurricularId);
         Task<PlanejamentoAnual> ObterPlanejamentoSimplificadoPorTurmaEComponenteCurricular(long turmaId, long componenteCurricularId);
         Task<IEnumerable<TurmaParaCopiaPlanoAnualDto>> ValidaSeTurmasPossuemPlanejamentoAnual(string[] turmasId);
+        Task<IEnumerable<TurmaParaCopiaPlanoAnualDto>> ValidaSeTurmasPossuemPlanoAnual(string[] turmasId);
+        Task<IEnumerable<TurmaParaCopiaPlanoAnualDto>> ObterTurmasParaCopiaPlanejamentoAnual(long turmaId, string ano, long componenteCurricularId, string rf, bool ensinoEspecial);      
+
     }
 }

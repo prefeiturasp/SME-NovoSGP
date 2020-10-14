@@ -56,37 +56,12 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("turmas/copia")]
         [ProducesResponseType(typeof(IEnumerable<TurmaParaCopiaPlanoAnualDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterTurmasParaCopia([FromQuery] int turmaId, [FromQuery] long componenteCurricular)
+        public async Task<IActionResult> ObterTurmasParaCopia([FromQuery] long turmaId, [FromQuery] long componenteCurricular, [FromQuery] bool ensinoEspecial, [FromServices] IObterTurmasParaCopiaUseCase useCase)
         {
-            // TODO Incluir UseCase de consulta de Turmas para copia por componente e turma de origem
-
-            return Ok(new List<TurmaParaCopiaPlanoAnualDto>()
-            {
-                new TurmaParaCopiaPlanoAnualDto()
-                {
-                    Id = 11,
-                    Nome = "1A",
-                    PossuiPlano = true,
-                    TurmaId = 123123
-                },
-                new TurmaParaCopiaPlanoAnualDto()
-                {
-                    Id = 22,
-                    Nome = "1B",
-                    PossuiPlano = false,
-                    TurmaId = 321321
-                },
-                new TurmaParaCopiaPlanoAnualDto()
-                {
-                    Id = 33,
-                    Nome = "1C",
-                    PossuiPlano = false,
-                    TurmaId = 123321
-                },
-            });
+            return Ok(await useCase.Executar(turmaId, componenteCurricular, ensinoEspecial ));
         }
 
-        [HttpGet("{planejamentoAnualId}/preiodos-escolares/copia")]
+        [HttpGet("{planejamentoAnualId}/periodos-escolares/copia")]
         [ProducesResponseType(typeof(IEnumerable<PlanejamentoAnualPeriodoEscolarResumoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> ObterPeriodosEscolaresParaCopia(long planejamentoAnualId, [FromServices] IObterPeriodosEscolaresParaCopiaPorPlanejamentoAnualIdUseCase useCase)
