@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using SME.SGP.Infra;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
 {
@@ -8,5 +9,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<PlanejamentoAnual> ObterPlanejamentoSimplificadoPorTurmaEComponenteCurricular(long turmaId, long componenteCurricularId);
 
         Task<PlanejamentoAnual> ObterPlanejamentoAnualPorAnoEscolaBimestreETurma(int ano, string escolaId, long turmaId, int bimestre, long disciplinaId);
+        Task<PlanejamentoAnualDto> ObterPlanejamentoAnualSimplificadoPorTurma(long turmaId);
     }
 }
