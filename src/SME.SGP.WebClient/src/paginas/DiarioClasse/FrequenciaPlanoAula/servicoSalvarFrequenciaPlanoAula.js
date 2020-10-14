@@ -1,16 +1,15 @@
-import { erros, sucesso } from '~/servicos/alertas';
 import { store } from '~/redux';
-import { salvarDadosAulaFrequencia } from '~/redux/modulos/calendarioProfessor/actions';
-import { ServicoCalendarios } from '~/servicos';
 import {
-  setModoEdicaoFrequencia,
-  setExibirCardFrequencia,
-  setExibirLoaderFrequenciaPlanoAula,
   setDataSelecionadaFrequenciaPlanoAula,
+  setExibirLoaderFrequenciaPlanoAula,
+  setModoEdicaoFrequencia,
+  setModoEdicaoPlanoAula,
 } from '~/redux/modulos/frequenciaPlanoAula/actions';
+import { erros, sucesso } from '~/servicos/alertas';
+import ServicoFrequencia from '~/servicos/Paginas/DiarioClasse/ServicoFrequencia';
+import ServicoPlanoAula from '~/servicos/Paginas/DiarioClasse/ServicoPlanoAula';
 
 class ServicoSalvarFrequenciaPlanoAula {
-
   salvarFrequencia = async () => {
     const { dispatch } = store;
     const state = store.getState();
@@ -25,7 +24,7 @@ class ServicoSalvarFrequenciaPlanoAula {
 
     dispatch(setExibirLoaderFrequenciaPlanoAula(true));
 
-    const salvouFrequencia = await ServicoCalendarios.salvarFrequencia(
+    const salvouFrequencia = await ServicoFrequencia.salvarFrequencia(
       valorParaSalvar
     )
       .finally(() => dispatch(setExibirLoaderFrequenciaPlanoAula(false)))
@@ -33,7 +32,6 @@ class ServicoSalvarFrequenciaPlanoAula {
 
     if (salvouFrequencia && salvouFrequencia.status === 200) {
       sucesso('Frequência realizada com sucesso.');
-      dispatch(setExibirCardFrequencia(false));
       dispatch(setModoEdicaoFrequencia(false));
       return true;
     }
@@ -41,8 +39,48 @@ class ServicoSalvarFrequenciaPlanoAula {
     return false;
   };
 
-  salvarPlanoAula = () => {
-    sucesso('WOOOOWO');
+  salvarPlanoAula = async () => {
+    const { dispatch } = store;
+    const state = store.getState();
+
+    const { frequenciaPlanoAula } = state;
+    const { dadosParaSalvarPlanoAula, aulaId } = frequenciaPlanoAula;
+
+    let objetivosId = [];
+
+    if (
+      dadosParaSalvarPlanoAula &&
+      dadosParaSalvarPlanoAula.objetivosAprendizagemAula.length
+    ) {
+      objetivosId = dadosParaSalvarPlanoAula.objetivosAprendizagemAula.map(
+        item => item.id
+      );
+    }
+
+    const valorParaSalvar = {
+      descricao: dadosParaSalvarPlanoAula.descricao,
+      desenvolvimentoAula: dadosParaSalvarPlanoAula.desenvolvimentoAula,
+      recuperacaoAula: dadosParaSalvarPlanoAula.recuperacaoAula,
+      licaoCasa: dadosParaSalvarPlanoAula.licaoCasa,
+      aulaId,
+      objetivosAprendizagemJurema: objetivosId,
+    };
+
+    dispatch(setExibirLoaderFrequenciaPlanoAula(true));
+
+    const salvouPlanoAula = await ServicoPlanoAula.salvarPlanoAula(
+      valorParaSalvar
+    )
+      .finally(() => dispatch(setExibirLoaderFrequenciaPlanoAula(false)))
+      .catch(e => erros(e));
+
+    if (salvouPlanoAula && salvouPlanoAula.status === 200) {
+      sucesso('Plano de aula salvo com sucesso.');
+      dispatch(setModoEdicaoPlanoAula(false));
+      return true;
+    }
+
+    return false;
   };
 
   validarSalvarFrequenciPlanoAula = async () => {
@@ -68,9 +106,6 @@ class ServicoSalvarFrequenciaPlanoAula {
     if (modoEdicaoPlanoAula) {
       salvouPlanoAula = await this.salvarPlanoAula();
     }
-
-    // Limpa os dados salvos quando entra na tela pelo calendário!
-    dispatch(salvarDadosAulaFrequencia());
 
     const salvouComSucesso = salvouFrequencia && salvouPlanoAula;
 

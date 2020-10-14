@@ -107,14 +107,14 @@ const ModalSelecionarAulaFrequenciaPlanoAula = props => {
 };
 
 ModalSelecionarAulaFrequenciaPlanoAula.propTypes = {
-  aulasParaSelecionar: PropTypes.oneOfType([PropTypes.object]),
+  aulasParaSelecionar: PropTypes.oneOfType([PropTypes.array]),
   visivel: PropTypes.bool,
   onClickFecharModal: PropTypes.func,
   onClickSelecionarAula: PropTypes.func,
 };
 
 ModalSelecionarAulaFrequenciaPlanoAula.defaultProps = {
-  aulasParaSelecionar: {},
+  aulasParaSelecionar: [],
   visivel: false,
   onClickFecharModal: () => {},
   onClickSelecionarAula: () => {},
