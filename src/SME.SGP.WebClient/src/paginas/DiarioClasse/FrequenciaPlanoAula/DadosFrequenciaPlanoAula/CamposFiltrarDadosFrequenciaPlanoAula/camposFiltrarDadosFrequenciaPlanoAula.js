@@ -1,4 +1,3 @@
-import { Switch } from 'antd';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { CampoData } from '~/componentes';
@@ -12,6 +11,7 @@ import {
   setExibirLoaderFrequenciaPlanoAula,
 } from '~/redux/modulos/frequenciaPlanoAula/actions';
 import { confirmar, erros, ServicoCalendarios } from '~/servicos';
+import ServicoFrequencia from '~/servicos/Paginas/DiarioClasse/ServicoFrequencia';
 import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
 import ServicoPlanoAnual from '~/servicos/Paginas/ServicoPlanoAnual';
 import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
@@ -264,7 +264,7 @@ const CamposFiltrarDadosFrequenciaPlanoAula = () => {
 
   useEffect(() => {
     if (aulaId) {
-      ServicoCalendarios.obterListaFrequencia();
+      ServicoFrequencia.obterListaFrequencia();
     }
   }, [aulaId]);
 

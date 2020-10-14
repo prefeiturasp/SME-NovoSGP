@@ -26,6 +26,13 @@ export function setListaDadosFrequencia(payload) {
   };
 }
 
+export function setDadosPlanoAula(payload) {
+  return {
+    type: '@frequenciaPlanoAula/setDadosPlanoAula',
+    payload,
+  };
+}
+
 export function setModoEdicaoFrequencia(payload) {
   return {
     type: '@frequenciaPlanoAula/setModoEdicaoFrequencia',
@@ -47,9 +54,9 @@ export function setAulaIdFrequenciaPlanoAula(payload) {
   };
 }
 
-export function setExibirCardFrequencia(payload) {
+export function setDesabilitarCamposPlanoAula(payload) {
   return {
-    type: '@frequenciaPlanoAula/setExibirCardFrequencia',
+    type: '@frequenciaPlanoAula/setDesabilitarCamposPlanoAula',
     payload,
   };
 }
@@ -64,6 +71,13 @@ export function setExibirLoaderFrequenciaPlanoAula(payload) {
 export function setSomenteConsultaFrequenciaPlanoAula(payload) {
   return {
     type: '@frequenciaPlanoAula/setSomenteConsultaFrequenciaPlanoAula',
+    payload,
+  };
+}
+
+export function setDadosParaSalvarPlanoAula(payload) {
+  return {
+    type: '@frequenciaPlanoAula/setDadosParaSalvarPlanoAula',
     payload,
   };
 }
