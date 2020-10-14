@@ -164,6 +164,8 @@ namespace SME.SGP.Aplicacao
             comunicado.Titulo = request.Titulo;
             comunicado.AnoLetivo = request.AnoLetivo;
             comunicado.SeriesResumidas = request.SeriesResumidas;
+            comunicado.TipoCalendarioId = request.TipoCalendarioId;
+            comunicado.EventoId = request.EventoId;
 
             if (!request.CodigoDre.Equals("todas"))
                 comunicado.CodigoDre = request.CodigoDre;

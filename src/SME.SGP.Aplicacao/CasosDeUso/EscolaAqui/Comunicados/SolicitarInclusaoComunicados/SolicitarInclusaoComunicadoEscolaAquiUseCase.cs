@@ -30,7 +30,10 @@ namespace SME.SGP.Aplicacao
                 , comunicado.Semestre
                 , comunicado.Alunos
                 , comunicado.Turmas
-                , comunicado.SeriesResumidas));
+                , comunicado.SeriesResumidas
+                , comunicado.TipoCalendarioId
+                , comunicado.EventoId
+                ));
         }
     }
 }
