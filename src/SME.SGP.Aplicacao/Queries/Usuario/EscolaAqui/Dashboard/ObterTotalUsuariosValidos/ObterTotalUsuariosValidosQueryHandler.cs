@@ -27,9 +27,9 @@ namespace SME.SGP.Aplicacao
             
             if (!String.IsNullOrEmpty(request.CodigoDre))
                 url.Append(@"?codigoDre=" + request.CodigoDre);
-            
-            if (request.CodigoUe > 0)
-                url.Append(@"?codigoUe=" + request.CodigoUe);
+
+            if (!String.IsNullOrEmpty(request.CodigoDre) && request.CodigoUe > 0)
+                url.Append(@"&codigoUe=" + request.CodigoUe);
 
             var resposta = await httpClient.GetAsync($"{url}");
 
