@@ -475,6 +475,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterTurmaPorAnoLetivoCodigoUeModalidadeSemestreAnosUseCase, ObterTurmaPorAnoLetivoCodigoUeModalidadeSemestreAnosUseCase>();
             services.TryAddScoped<IObterPlanoAulaUseCase, ObterPlanoAulaUseCase>();
 
+            // Plano Aula
+            services.TryAddScoped<IMigrarPlanoAulaUseCase, MigrarPlanoAulaUseCase>();
             services.TryAddScoped<ISalvarPlanoAulaUseCase, SalvarPlanoAulaUseCase>();
 
             

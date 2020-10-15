@@ -15,5 +15,7 @@ namespace SME.SGP.Dominio.Interfaces
         IEnumerable<ObjetivoAprendizagemPlano> ObterObjetivosAprendizagemPorIdPlano(long idPlano);
 
         Task<IEnumerable<ObjetivoAprendizagem>> ObterObjetivosPlanoDisciplina(int ano, int bimestre, long turmaId, long componenteCurricularId, long disciplinaId, bool ehRegencia = false);
+
+        Task<IEnumerable<ObjetivosAprendizagemPorComponenteDto>> ObterObjetivosPorComponenteNoPlano(int ano, int bimestre, long turmaId, long componenteCurricularId, long disciplinaId, bool ehRegencia = false);
     }
 }

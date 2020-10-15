@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterObjetivosPlanoDisciplinaQuery : IRequest<IEnumerable<ObjetivoAprendizagemDto>>
+    public class ObterObjetivosPlanoDisciplinaQuery : IRequest<IEnumerable<ObjetivosAprendizagemPorComponenteDto>>
     {
         public ObterObjetivosPlanoDisciplinaQuery(DateTime dataReferencia, int bimestre, long turmaId, long componenteCurricularId, long disciplinaId, bool filtrarSomenteRegencia)
         {

@@ -65,7 +65,7 @@ namespace SME.SGP.Aplicacao
                 if (planejamentoAnual.Id <= 0 && !usuario.PerfilAtual.Equals(Perfis.PERFIL_CJ))
                     throw new NegocioException("Não foi possível concluir o cadastro, pois não existe plano anual cadastrado");
 
-                if (planoAulaDto.ObjetivosAprendizagemIds == null || !planoAulaDto.ObjetivosAprendizagemIds.Any() && !planoAula.Migrado)
+                if (planoAulaDto.ObjetivosAprendizagemComponente == null || !planoAulaDto.ObjetivosAprendizagemComponente.Any() && !planoAula.Migrado)
                 {
                     var permitePlanoSemObjetivos = false;
 
@@ -94,10 +94,10 @@ namespace SME.SGP.Aplicacao
 
                 // Salvar Objetivos
                 await repositorioObjetivosAula.LimparObjetivosAula(planoAula.Id);
-                if (planoAulaDto.ObjetivosAprendizagemIds != null)
-                    foreach (var objetivoAprendizagemId in planoAulaDto.ObjetivosAprendizagemIds)
+                if (planoAulaDto.ObjetivosAprendizagemComponente != null)
+                    foreach (var objetivoAprendizagem in planoAulaDto.ObjetivosAprendizagemComponente)
                     {
-                        await repositorioObjetivosAula.SalvarAsync(new ObjetivoAprendizagemAula(planoAula.Id, objetivoAprendizagemId));
+                        await repositorioObjetivosAula.SalvarAsync(new ObjetivoAprendizagemAula(planoAula.Id, objetivoAprendizagem.Id, objetivoAprendizagem.ComponenteCurricularId));
                     }
             }
             catch (Exception ex)

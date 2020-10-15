@@ -75,9 +75,10 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select
                            pa.id, pa.descricao,
-                           a.id as aulaId, a.ue_id, a.disciplina_id, a.turma_id,
- 	                       a.quantidade, a.tipo_calendario_id, a.data_aula, 	   
- 	                       oa.id, oa.descricao, oa.codigo, oa.ano_turma, oa.componente_curricular_id
+                           a.id as AulaId, a.ue_id as UeId, a.disciplina_id as DisciplinaId, a.turma_id as TurmaId,
+                           a.quantidade, a.tipo_calendario_id as TipoCalendarioId, a.data_aula as DataAula,
+                           oaa.componente_curricular_id as id,
+                           oa.id, oa.descricao, oa.codigo, oa.ano_turma as Ano, oa.componente_curricular_id as IdComponenteCurricular
                       from aula a
                       inner join plano_aula pa on a.id = pa.aula_id
                       left join objetivo_aprendizagem_aula oaa on pa.id = oaa.plano_aula_id
@@ -86,16 +87,25 @@ namespace SME.SGP.Dados.Repositorios
 
             var lookup = new Dictionary<long, PlanoAulaObjetivosAprendizagemDto>();
 
-            await database.Conexao.QueryAsync<PlanoAulaObjetivosAprendizagemDto, ObjetivoAprendizagemDto, PlanoAulaObjetivosAprendizagemDto>(query, (PlanoAulaObjetivosAprendizagemDto, ObjetivoAprendizagemDto) => {
+            await database.Conexao.QueryAsync<PlanoAulaObjetivosAprendizagemDto, long, ObjetivoAprendizagemDto, PlanoAulaObjetivosAprendizagemDto>(query, (planoAulaObjetivosAprendizagemDto, componenteId, objetivoAprendizagemDto) => {
 
                 var retorno = new PlanoAulaObjetivosAprendizagemDto();
-                if (!lookup.TryGetValue(PlanoAulaObjetivosAprendizagemDto.Id, out retorno))
+                if (!lookup.TryGetValue(planoAulaObjetivosAprendizagemDto.Id, out retorno))
                 {
-                    retorno = PlanoAulaObjetivosAprendizagemDto;
-                    lookup.Add(PlanoAulaObjetivosAprendizagemDto.Id, retorno);
+                    retorno = planoAulaObjetivosAprendizagemDto;
+                    lookup.Add(planoAulaObjetivosAprendizagemDto.Id, retorno);
                 }
 
-                retorno.Adicionar(ObjetivoAprendizagemDto);
+                var objetivoComponente = retorno.ObjetivosAprendizagemAula.FirstOrDefault(c => c.ComponenteCurricularId == componenteId);
+                if (objetivoComponente == null)
+                {
+                    objetivoComponente = new ObjetivosAprendizagemPorComponenteDto();
+                    objetivoComponente.ComponenteCurricularId = componenteId;
+
+                    objetivoComponente.ObjetivosAprendizagem.Add(objetivoAprendizagemDto);
+                }
+
+                retorno.Adicionar(objetivoComponente);
 
                 return retorno;
             }, param: new

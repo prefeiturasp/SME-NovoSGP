@@ -65,7 +65,7 @@ namespace SME.SGP.Api.Controllers
 
         [HttpGet]
         [Route("objetivos/turmas/{turmaId}/componentes/{componenteId}/disciplinas/{disciplinaId}")]
-        [ProducesResponseType(typeof(IEnumerable<ComponenteCurricularSimplificadoDto>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<ObjetivosAprendizagemPorComponenteDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(204)]
         public async Task<IActionResult> ObterObjetivosPorDisciplina([FromServices] IObterObjetivosPorDisciplinaUseCase UseCase, DateTime dataAula, long turmaId, long componenteId, long disciplinaId, bool regencia)
