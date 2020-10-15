@@ -107,8 +107,7 @@ function CalendarioProfessor() {
             tipoCalendarioId,
             dre: turmaSelecionada.dre,
             dreId: turmaSelecionada.dreId,
-            ue: turmaSelecionada.unidadeEscolar,
-            ueId: turmaSelecionada.unidadeEscolarId,
+            ue: turmaSelecionada.unidadeEscolar,            
             turma: turmaSelecionada.turma,
             anoLetivo: turmaSelecionada.anoLetivo,
           });
