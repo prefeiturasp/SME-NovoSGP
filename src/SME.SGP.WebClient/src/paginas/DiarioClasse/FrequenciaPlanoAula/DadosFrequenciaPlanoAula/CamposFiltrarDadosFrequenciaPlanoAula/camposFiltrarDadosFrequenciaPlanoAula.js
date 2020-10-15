@@ -59,7 +59,6 @@ const CamposFiltrarDadosFrequenciaPlanoAula = () => {
 
   const [listaDatasAulas, setListaDatasAulas] = useState();
   const [diasParaHabilitar, setDiasParaHabilitar] = useState();
-  const [possuiPlanoAnual, setPossuiPlanoAnual] = useState(true);
   const [aulasParaSelecionar, setAulasParaSelecionar] = useState([]);
   const [exibirModalSelecionarAula, setExibirModalSelecionarAula] = useState(
     false
@@ -202,48 +201,6 @@ const CamposFiltrarDadosFrequenciaPlanoAula = () => {
       resetarInfomacoes,
     ]
   );
-
-  const validaSePossuiPlanoAnual = useCallback(() => {
-    if (!ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada)) {
-      ServicoPlanoAnual.obter(
-        turmaSelecionada.anoLetivo,
-        codigoComponenteCurricular,
-        turmaSelecionada.unidadeEscolar,
-        turmaSelecionada.turma
-      )
-        .then(resposta => {
-          const planoAnualCadastrado =
-            resposta?.data &&
-            !!resposta.data.filter(
-              plano => plano.id && plano.criadoEm && plano.descricao.length
-            ).length;
-
-          setPossuiPlanoAnual(planoAnualCadastrado);
-        })
-        .catch(e => erros(e));
-    }
-  }, [
-    turmaSelecionada,
-    codigoComponenteCurricular,
-    modalidadesFiltroPrincipal,
-  ]);
-
-  useEffect(() => {
-    if (
-      !ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada) &&
-      turmaSelecionada.anoLetivo &&
-      codigoComponenteCurricular &&
-      turmaSelecionada.unidadeEscolar &&
-      turmaSelecionada.turma
-    ) {
-      validaSePossuiPlanoAnual();
-    }
-  }, [
-    turmaSelecionada,
-    codigoComponenteCurricular,
-    modalidadesFiltroPrincipal,
-    validaSePossuiPlanoAnual,
-  ]);
 
   const obterAulaSelecionada = useCallback(
     async data => {

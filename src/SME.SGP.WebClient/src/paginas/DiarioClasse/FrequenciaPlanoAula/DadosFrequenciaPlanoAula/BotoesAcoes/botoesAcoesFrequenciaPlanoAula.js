@@ -9,6 +9,7 @@ import {
 } from '~/redux/modulos/frequenciaPlanoAula/actions';
 import { confirmar, history } from '~/servicos';
 import ServicoFrequencia from '~/servicos/Paginas/DiarioClasse/ServicoFrequencia';
+import ServicoPlanoAula from '~/servicos/Paginas/DiarioClasse/ServicoPlanoAula';
 import servicoSalvarFrequenciaPlanoAula from '../../servicoSalvarFrequenciaPlanoAula';
 
 const BotoesAcoesFrequenciaPlanoAula = () => {
@@ -68,11 +69,9 @@ const BotoesAcoesFrequenciaPlanoAula = () => {
       if (confirmou) {
         ServicoFrequencia.obterListaFrequencia();
         dispatch(setModoEdicaoFrequencia(false));
-        // const aulaSelecionada = await obterAulaSelecionada(dataSelecionada);
-        // TODO
-        // obterPlanoAula(aulaSelecionada);
+
+        ServicoPlanoAula.atualizarDadosAposCancelarEdicao();
         dispatch(setModoEdicaoPlanoAula(false));
-        // resetarPlanoAula();
       }
     }
   };

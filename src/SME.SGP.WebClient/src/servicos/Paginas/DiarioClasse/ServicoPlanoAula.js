@@ -62,8 +62,8 @@ class ServicoPlanoAula {
         .catch(e => erros(e));
 
       if (plano && plano.data) {
-        dispatch(setDadosPlanoAula(plano.data));
-        dispatch(setDadosParaSalvarPlanoAula(plano.data));
+        dispatch(setDadosPlanoAula({ ...plano.data }));
+        dispatch(setDadosParaSalvarPlanoAula({ ...plano.data }));
 
         const ehMigrado = plano.data.migrado;
         // TODO Validar se é necessário usar essa prop no redux!
@@ -98,6 +98,51 @@ class ServicoPlanoAula {
 
     dadosParaSalvarPlanoAula[nomeCampo] = valorNovo;
     dispatch(setDadosParaSalvarPlanoAula(dadosParaSalvarPlanoAula));
+  };
+
+  obterListaObjetivosPorAnoEComponenteCurricular = async () => {
+    const state = store.getState();
+
+    const { frequenciaPlanoAula, usuario } = state;
+    const { turmaSelecionada } = usuario;
+
+    const {
+      dataSelecionada,
+      componenteCurricular,
+      tabAtualComponenteCurricular,
+    } = frequenciaPlanoAula;
+
+    const codigoComponenteCurricularTabAtual =
+      tabAtualComponenteCurricular.codigoComponenteCurricular;
+
+    const { codigoComponenteCurricular, regencia } = componenteCurricular;
+
+    const objetivos = await api.get(
+      `v1/objetivos-aprendizagem/objetivos/turmas/${
+        turmaSelecionada.turma
+      }/componentes/${codigoComponenteCurricular}/disciplinas/${codigoComponenteCurricularTabAtual}?dataAula=${dataSelecionada.format(
+        'YYYY-MM-DD'
+      )}&regencia=${regencia}`
+    );
+
+    if (objetivos && objetivos.data && objetivos.data.length) {
+      // TODO - Adicionar no redux para melhorar a performance!
+      return objetivos.data;
+    }
+    return [];
+  };
+
+  atualizarDadosAposCancelarEdicao = () => {
+    const { dispatch } = store;
+
+    const state = store.getState();
+
+    const { frequenciaPlanoAula } = state;
+
+    const { dadosPlanoAula } = frequenciaPlanoAula;
+
+    dispatch(setDadosParaSalvarPlanoAula({ ...dadosPlanoAula }));
+    dispatch(setDadosPlanoAula({ ...dadosPlanoAula }));
   };
 }
 
