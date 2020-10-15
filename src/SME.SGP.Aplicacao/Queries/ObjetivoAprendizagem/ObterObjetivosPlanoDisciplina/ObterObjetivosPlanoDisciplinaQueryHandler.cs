@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterObjetivosPlanoDisciplinaQueryHandler : AbstractUseCase, IRequestHandler<ObterObjetivosPlanoDisciplinaQuery, IEnumerable<ObjetivoAprendizagemDto>>
+    public class ObterObjetivosPlanoDisciplinaQueryHandler : AbstractUseCase, IRequestHandler<ObterObjetivosPlanoDisciplinaQuery, IEnumerable<ObjetivosAprendizagemPorComponenteDto>>
     {
 
         private readonly IRepositorioObjetivoAprendizagemPlano repositorioObjetivosPlano;
@@ -20,34 +20,16 @@ namespace SME.SGP.Aplicacao
             this.repositorioObjetivosPlano = repositorioObjetivosPlano ?? throw new ArgumentNullException(nameof(repositorioObjetivosPlano));
         }
 
-        public async Task<IEnumerable<ObjetivoAprendizagemDto>> Handle(ObterObjetivosPlanoDisciplinaQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<ObjetivosAprendizagemPorComponenteDto>> Handle(ObterObjetivosPlanoDisciplinaQuery request, CancellationToken cancellationToken)
         {
-            var objetivosPlano = await repositorioObjetivosPlano.ObterObjetivosPlanoDisciplina(request.DataReferencia.Year,
+            return await repositorioObjetivosPlano.ObterObjetivosPorComponenteNoPlano(request.DataReferencia.Year,
                                                                                                request.Bimestre,
                                                                                                request.TurmaId,
                                                                                                request.ComponenteCurricularId,
                                                                                                request.DisciplinaId,
                                                                                                request.FiltrarSomenteRegencia);
 
-            return MapearParaDto(objetivosPlano).ToList();
         }
 
-        private IEnumerable<ObjetivoAprendizagemDto> MapearParaDto(IEnumerable<ObjetivoAprendizagem> objetivos)
-        {
-            foreach (ObjetivoAprendizagem objetivoBase in objetivos)
-            {
-                if (objetivoBase.Ano != 0)
-                {
-                    yield return new ObjetivoAprendizagemDto()
-                    {
-                        Descricao = objetivoBase.Descricao,
-                        Id = objetivoBase.Id,
-                        Ano = objetivoBase.Ano.ToString(),
-                        Codigo = objetivoBase.Codigo,
-                        IdComponenteCurricular = objetivoBase.ComponenteCurricularId
-                    };
-                }
-            }
-        }
     }
 }

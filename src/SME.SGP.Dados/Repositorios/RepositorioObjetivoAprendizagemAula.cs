@@ -21,6 +21,18 @@ namespace SME.SGP.Dados.Repositorios
             await database.ExecuteAsync(command, new { planoAulaId });
         }
 
+        public async Task<IEnumerable<ObjetivoAprendizagemComponenteDto>> ObterObjetivosComComponentePlanoAula(long planoAulaId)
+        {
+            var query = @"select
+                             oaa.componente_curricular_id as ComponenteCurricularId
+                             oaa.objetivo_aprendizagem_id as ObjetivoAprendizagemId
+                        from objetivo_aprendizagem_aula oaa
+                        where not oaa.excluido
+                         and oaa.plano_aula_id = @planoAulaId";
+
+            return await database.Conexao.QueryAsync<ObjetivoAprendizagemComponenteDto>(query, new { planoAulaId });
+        }
+
         public async Task<IEnumerable<ObjetivoAprendizagemAula>> ObterObjetivosPlanoAula(long planoAulaId)
         {
             var query = @"select

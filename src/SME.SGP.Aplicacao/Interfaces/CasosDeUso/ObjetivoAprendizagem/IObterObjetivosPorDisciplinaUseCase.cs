@@ -7,6 +7,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IObterObjetivosPorDisciplinaUseCase
     {
-        Task<IEnumerable<ObjetivoAprendizagemDto>> Executar(DateTime dataReferencia, long turmaId, long componenteCurricularId, long disciplinaId, bool regencia = false);
+        Task<IEnumerable<ObjetivosAprendizagemPorComponenteDto>> Executar(DateTime dataReferencia, long turmaId, long componenteCurricularId, long disciplinaId, bool regencia = false);
     }
 }
