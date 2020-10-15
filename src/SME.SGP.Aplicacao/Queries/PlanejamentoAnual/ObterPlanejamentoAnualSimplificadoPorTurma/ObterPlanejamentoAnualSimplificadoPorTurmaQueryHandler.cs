@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterPlanejamentoAnualPorAnoEscolaBimestreETurmaQueryHandler : IRequestHandler<ObterPlanejamentoAnualSimplificadoPorTurmaQuery, PlanoAnualResumoDto>
+    public class ObterPlanejamentoAnualSimplificadoPorTurmaQueryHandler : IRequestHandler<ObterPlanejamentoAnualSimplificadoPorTurmaQuery, PlanoAnualResumoDto>
     {
         public readonly IRepositorioPlanejamentoAnual repositorioPlanejamentoAnual;
 
-        public ObterPlanejamentoAnualPorAnoEscolaBimestreETurmaQueryHandler(IRepositorioPlanejamentoAnual repositorioPlanejamentoAnual)
+        public ObterPlanejamentoAnualSimplificadoPorTurmaQueryHandler(IRepositorioPlanejamentoAnual repositorioPlanejamentoAnual)
         {
             this.repositorioPlanejamentoAnual = repositorioPlanejamentoAnual ?? throw new System.ArgumentNullException(nameof(repositorioPlanejamentoAnual));
         }
