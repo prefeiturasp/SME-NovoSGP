@@ -474,7 +474,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterAnosPorCodigoUeModalidadeEscolaAquiUseCase, ObterAnosPorCodigoUeModalidadeEscolaAquiUseCase>();
             services.TryAddScoped<IObterTurmaPorAnoLetivoCodigoUeModalidadeSemestreAnosUseCase, ObterTurmaPorAnoLetivoCodigoUeModalidadeSemestreAnosUseCase>();
 
-
+            services.TryAddScoped<IObterTiposCalendarioPorAnoLetivoModalidadeoUseCase, ObterTiposCalendarioPorAnoLetivoModalidadeoUseCase>();
         }
     }
 }
