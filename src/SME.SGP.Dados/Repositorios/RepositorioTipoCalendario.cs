@@ -188,7 +188,24 @@ namespace SME.SGP.Dados.Repositorios
             StringBuilder query = ObterQueryListarPorAnoLetivo();
             query.AppendLine("and modalidade = any(@modalidades)");
 
-             return await database.Conexao.QueryAsync<TipoCalendario>(query.ToString(), new { anoLetivo, modalidades });
+            return await database.Conexao.QueryAsync<TipoCalendario>(query.ToString(), new { anoLetivo, modalidades });
+        }
+
+        public async Task<IEnumerable<TipoCalendario>> ListarPorAnoLetivoUE(int anoLetivo, string codigoUE)
+        {
+            var query =
+                @"
+                    select * from 
+                    (   select 
+                        *,
+                        (select e.ue_id from evento e where e.tipo_calendario_id = tc.id limit 1) ue_id 
+                        from tipo_calendario tc
+                        where tc.ano_letivo = @anoLetivo and situacao
+                    ) tce
+                    where ue_id = @codigoUE
+                ";
+
+            return await database.Conexao.QueryAsync<TipoCalendario>(query.ToString(), new { anoLetivo, codigoUE });
         }
 
         public async Task<IEnumerable<TipoCalendarioBuscaDto>> ObterTiposCalendarioPorDescricaoAsync(string descricao)

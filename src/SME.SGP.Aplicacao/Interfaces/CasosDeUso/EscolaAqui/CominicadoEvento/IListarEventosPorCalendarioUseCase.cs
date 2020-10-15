@@ -9,6 +9,6 @@ namespace SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui
 {
     public interface IListarEventosPorCalendarioUseCase
     {
-        Task<IEnumerable<ListarEventosPorCalendarioRetornoDto>> Executar(int tipoCalendario, string codigoDre, string codigoUe, int? modalidade);
+        Task<IEnumerable<ListarEventosPorCalendarioRetornoDto>> Executar(int tipoCalendario, int anoLetivo, string codigoDre, string codigoUe, int? modalidade);
     }    
 }
