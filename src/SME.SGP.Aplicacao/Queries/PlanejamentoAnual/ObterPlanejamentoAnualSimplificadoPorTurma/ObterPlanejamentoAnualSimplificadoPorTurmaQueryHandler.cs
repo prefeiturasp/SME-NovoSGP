@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Threading;
@@ -7,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterPlanejamentoAnualSimplificadoPorTurmaQueryHandler : IRequestHandler<ObterPlanejamentoAnualSimplificadoPorTurmaQuery, PlanoAnualResumoDto>
+    public class ObterPlanejamentoAnualSimplificadoPorTurmaQueryHandler : IRequestHandler<ObterPlanejamentoAnualSimplificadoPorTurmaQuery, PlanejamentoAnualDto>
     {
         public readonly IRepositorioPlanejamentoAnual repositorioPlanejamentoAnual;
 
@@ -15,19 +14,10 @@ namespace SME.SGP.Aplicacao
         {
             this.repositorioPlanejamentoAnual = repositorioPlanejamentoAnual ?? throw new System.ArgumentNullException(nameof(repositorioPlanejamentoAnual));
         }
-        public async Task<PlanoAnualResumoDto> Handle(ObterPlanejamentoAnualSimplificadoPorTurmaQuery request, CancellationToken cancellationToken)
+        public async Task<PlanejamentoAnualDto> Handle(ObterPlanejamentoAnualSimplificadoPorTurmaQuery request, CancellationToken cancellationToken)
         {
-            var planoAnual = await repositorioPlanejamentoAnual.ObterPlanoAnualSimplificadoPorAnoEscolaBimestreETurma(request.Ano, request.EscolaId, request.TurmaId, request.Bimestre, request.DisciplinaId);
+            return await repositorioPlanejamentoAnual.ObterPlanejamentoAnualSimplificadoPorTurma(request.TurmaId);
 
-            return MapearParaDto(planoAnual);
         }
-
-        private PlanoAnualResumoDto MapearParaDto(PlanoAnual plano) =>
-            plano == null ? null :
-            new PlanoAnualResumoDto()
-            {
-                Id = plano.Id,
-                ObjetivosAprendizagemOpcionais = plano.ObjetivosAprendizagemOpcionais
-            };
     }
 }
