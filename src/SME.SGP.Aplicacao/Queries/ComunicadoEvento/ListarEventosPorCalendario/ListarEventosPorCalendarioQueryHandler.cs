@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra.Dtos;
 using System.Collections.Generic;
@@ -19,8 +20,10 @@ namespace SME.SGP.Aplicacao.Queries.Evento.ObterDataPossuiEventoLiberacaoExcepci
 
         public async Task<IEnumerable<ListarEventosPorCalendarioRetornoDto>> Handle(ListarEventosPorCalendarioQuery request, CancellationToken cancellationToken)
         {
-            var eventos = await repositorioEvento.ObterEventosPorTipoDeCalendarioDreUeModalidadeAsync(request.TipoCalendario, request.CodigoDre, request.CodigoUe, request.Modalidade);
-            return eventos.Select(e => new ListarEventosPorCalendarioRetornoDto { Id = e.Id, Nome = e.Nome });
+            var modalidade = (int)((Modalidade)request.Modalidade).ObterModalidadeTipoCalendario();
+            var eventos = await repositorioEvento.ObterEventosPorTipoDeCalendarioDreUeModalidadeAsync(request.TipoCalendario, request.CodigoDre, request.CodigoUe, modalidade);
+            return eventos
+                .Select(e => new ListarEventosPorCalendarioRetornoDto { Id = e.Id, Nome = e.Nome });
         }
     }
 }
