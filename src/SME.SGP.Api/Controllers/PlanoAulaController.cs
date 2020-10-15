@@ -15,9 +15,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PA_I, Permissao.PA_A, Policy = "Bearer")]
-        public async Task<IActionResult> Migrar(MigrarPlanoAulaDto migrarPlanoAulaDto, [FromServices]IComandosPlanoAula comandosPlanoAula)
+        public async Task<IActionResult> Migrar(MigrarPlanoAulaDto migrarPlanoAulaDto, [FromServices]IMigrarPlanoAulaUseCase migrarPlanoAula)
         {
-            await comandosPlanoAula.Migrar(migrarPlanoAulaDto);
+            await migrarPlanoAula.Executar(migrarPlanoAulaDto);
             return Ok();
         }
 
@@ -38,7 +38,6 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.PDA_I, Permissao.PDA_A, Policy = "Bearer")]
         public async Task<IActionResult> Post(PlanoAulaDto planoAulaDto, [FromServices]ISalvarPlanoAulaUseCase useCase)
         {
-            //await comandos.Salvar(planoAulaDto);
             return Ok(await useCase.Executar(planoAulaDto));
         }
 

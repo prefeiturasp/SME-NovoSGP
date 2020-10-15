@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<IEnumerable<ObjetivoAprendizagemDto>> Executar(DateTime dataReferencia, long turmaId, long componenteCurricularId, long disciplinaId, bool regencia = false)
+        public async Task<IEnumerable<ObjetivosAprendizagemPorComponenteDto>> Executar(DateTime dataReferencia, long turmaId, long componenteCurricularId, long disciplinaId, bool regencia = false)
         {
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 

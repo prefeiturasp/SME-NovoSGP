@@ -71,5 +71,48 @@ namespace SME.SGP.Dados.Repositorios
 
             return database.Conexao.QueryAsync<ObjetivoAprendizagem>(query.ToString(), new { ano, bimestre, componenteCurricularId, turmaId, disciplinaId });
         }
+
+        public async Task<IEnumerable<ObjetivosAprendizagemPorComponenteDto>> ObterObjetivosPorComponenteNoPlano(int ano, int bimestre, long turmaId, long componenteCurricularId, long disciplinaId, bool ehRegencia = false)
+        {
+            StringBuilder query = new StringBuilder();
+            query.AppendLine("select cc.id, oa.*");
+            query.AppendLine(" from plano_anual pa");
+            query.AppendLine("inner join objetivo_aprendizagem_plano o on o.plano_id = pa.id");
+            query.AppendLine("inner join componente_curricular cc on cc.id = o.componente_curricular_id");
+            query.AppendLine("inner join objetivo_aprendizagem oa on o.objetivo_aprendizagem_jurema_id = oa.id ");
+            query.AppendLine("where pa.ano = @ano");
+            query.AppendLine("and pa.bimestre = @bimestre");
+            query.AppendLine("and pa.componente_curricular_eol_id = @componenteCurricularId");
+            query.AppendLine("and pa.turma_id = @turmaId");
+
+            if (ehRegencia)
+                query.AppendLine("and cc.id = @disciplinaId");
+
+            var lookup = new Dictionary<long, ObjetivosAprendizagemPorComponenteDto>();
+
+
+            await database.Conexao.QueryAsync<long, ObjetivoAprendizagem, long>(query.ToString(), (componenteId, objetivoAprendizagem) =>
+                {
+                    var retorno = new ObjetivosAprendizagemPorComponenteDto();
+                    if (!lookup.TryGetValue(componenteId, out retorno))
+                    {
+                        retorno.ComponenteCurricularId = componenteId;
+                        lookup.Add(componenteId, retorno);
+                    }
+
+                    retorno.ObjetivosAprendizagem.Add(new ObjetivoAprendizagemDto()
+                    {
+                        Ano = objetivoAprendizagem.Ano.ToString(),
+                        Codigo = objetivoAprendizagem.Codigo,
+                        IdComponenteCurricular = objetivoAprendizagem.ComponenteCurricularId,
+                        Descricao = objetivoAprendizagem.Descricao
+                    });
+
+                    return componenteId;
+                }
+                , new { ano, bimestre, componenteCurricularId, turmaId, disciplinaId });
+
+            return lookup.Values;
+        }
     }
 }

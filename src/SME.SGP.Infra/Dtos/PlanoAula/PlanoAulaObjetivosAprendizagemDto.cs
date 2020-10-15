@@ -15,12 +15,12 @@ namespace SME.SGP.Infra
         public long TipoCalendarioId { get; set; }
         public DateTime DataAula { get; set; }
 
-        public List<ObjetivoAprendizagemDto> ObjetivosAprendizagemAula { get; set; }
+        public List<ObjetivosAprendizagemPorComponenteDto> ObjetivosAprendizagemAula { get; set; }
 
-        public void Adicionar(ObjetivoAprendizagemDto objetivoAprendizagem)
+        public void Adicionar(ObjetivosAprendizagemPorComponenteDto objetivoAprendizagemComponente)
         {
-            if (objetivoAprendizagem != null)
-                ObjetivosAprendizagemAula.Add(objetivoAprendizagem);
+            if (objetivoAprendizagemComponente != null)
+                ObjetivosAprendizagemAula.Add(objetivoAprendizagemComponente);
         }
     }
 }
