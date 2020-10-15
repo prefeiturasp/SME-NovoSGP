@@ -15,7 +15,6 @@ namespace SME.SGP.Infra
         public long TipoCalendarioId { get; set; }
         public DateTime DataAula { get; set; }
 
-        //public AulaConsultaSimplesDto AulaConsultaSimples { get; set; }
         public List<ObjetivoAprendizagemDto> ObjetivosAprendizagemAula { get; set; }
 
         public void Adicionar(ObjetivoAprendizagemDto objetivoAprendizagem)
