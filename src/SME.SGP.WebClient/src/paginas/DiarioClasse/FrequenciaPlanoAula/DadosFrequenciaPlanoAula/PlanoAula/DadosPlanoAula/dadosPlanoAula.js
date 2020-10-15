@@ -1,12 +1,19 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Auditoria } from '~/componentes';
+import { Auditoria, Colors } from '~/componentes';
+import { RegistroMigrado } from '~/componentes-sgp';
+import Button from '~/componentes/button';
 import { RotasDto } from '~/dtos';
-import { setDesabilitarCamposPlanoAula } from '~/redux/modulos/frequenciaPlanoAula/actions';
+import {
+  setDesabilitarCamposPlanoAula,
+  setExibirModalCopiarConteudoPlanoAula,
+} from '~/redux/modulos/frequenciaPlanoAula/actions';
+import BotaoGerarRelatorioPlanoAula from './BotaoGerarRelatorioPlanoAula/botaoGerarRelatorioPlanoAula';
 import DesenvolvimentoDaAula from './CamposEditorPlanoAula/desenvolvimentoDaAula';
 import LicaoDeCasa from './CamposEditorPlanoAula/licaoDeCasa';
 import ObjetivosEspecificosParaAula from './CamposEditorPlanoAula/objetivosEspecificosParaAula';
 import RecuperacaoContinua from './CamposEditorPlanoAula/recuperacaoContinua';
+import ModalCopiarConteudoPlanoAula from './ModalCopiarConteudo/modalCopiarConteudoPlanoAula';
 import ObjetivosAprendizagemDesenvolvimento from './ObjetivosAprendizagemDesenvolvimento/objetivosAprendizagemDesenvolvimento';
 
 const DadosPlanoAula = () => {
@@ -37,11 +44,34 @@ const DadosPlanoAula = () => {
     <>
       {dadosPlanoAula ? (
         <>
+          <ModalCopiarConteudoPlanoAula />
+
           <div className="row mb-3">
-            <div className="col-md-12">
+            <div className="col-md-3">
               <span>Quantidade de aulas: {dadosPlanoAula.qtdAulas}</span>
             </div>
+            <div className="col-md-9 d-flex justify-content-end ">
+              <Button
+                id="copiar-conteudo-plano-aula"
+                label="Copiar Conteúdo"
+                icon="clipboard"
+                color={Colors.Azul}
+                border
+                className="mr-3"
+                onClick={() =>
+                  dispatch(setExibirModalCopiarConteudoPlanoAula(true))
+                }
+                disabled={!dadosPlanoAula.id}
+              />
+              <BotaoGerarRelatorioPlanoAula planoAulaId={dadosPlanoAula.id} />
+              {dadosPlanoAula.migrado && (
+                <RegistroMigrado className="align-self-center">
+                  Registro Migrado
+                </RegistroMigrado>
+              )}
+            </div>
           </div>
+
           <ObjetivosAprendizagemDesenvolvimento />
           <ObjetivosEspecificosParaAula />
           <DesenvolvimentoDaAula />

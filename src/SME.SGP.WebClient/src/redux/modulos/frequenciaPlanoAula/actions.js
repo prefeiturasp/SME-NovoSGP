@@ -102,3 +102,10 @@ export function setExibirCardCollapsePlanoAula(payload) {
     payload,
   };
 }
+
+export function setExibirModalCopiarConteudoPlanoAula(payload) {
+  return {
+    type: '@frequenciaPlanoAula/setExibirModalCopiarConteudoPlanoAula',
+    payload,
+  };
+}
