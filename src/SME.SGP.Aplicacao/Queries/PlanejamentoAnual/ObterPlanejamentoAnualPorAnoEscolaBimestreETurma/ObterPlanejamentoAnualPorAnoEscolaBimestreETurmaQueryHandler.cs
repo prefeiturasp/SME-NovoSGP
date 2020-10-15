@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterPlanejamentoAnualPorAnoEscolaBimestreETurmaQueryHandler : IRequestHandler<ObterPlanejamentoAnualPorAnoEscolaBimestreETurmaQuery, PlanejamentoAnual>
+    public class ObterPlanejamentoAnualSimplificadoPorTurmaQueryHandler : IRequestHandler<ObterPlanejamentoAnualPorAnoEscolaBimestreETurmaQuery, PlanejamentoAnual>
     {
         private readonly IRepositorioPlanejamentoAnual repositorioPlanejamentoAnual;
 
-        public ObterPlanejamentoAnualPorAnoEscolaBimestreETurmaQueryHandler(IRepositorioPlanejamentoAnual repositorioPlanejamentoAnual)
+        public ObterPlanejamentoAnualSimplificadoPorTurmaQueryHandler(IRepositorioPlanejamentoAnual repositorioPlanejamentoAnual)
         {
             this.repositorioPlanejamentoAnual = repositorioPlanejamentoAnual ?? throw new System.ArgumentNullException(nameof(repositorioPlanejamentoAnual));
         }
