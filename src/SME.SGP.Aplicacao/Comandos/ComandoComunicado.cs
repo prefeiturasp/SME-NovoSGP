@@ -171,6 +171,8 @@ namespace SME.SGP.Aplicacao
             comunicado.Descricao = comunicadoDto.Descricao;
             comunicado.Titulo = comunicadoDto.Titulo;
             comunicado.DataExpiracao = comunicadoDto.DataExpiracao;
+            comunicado.TipoCalendarioId = comunicadoDto.TipoCalendarioId;
+            comunicado.EventoId = comunicadoDto.EventoId;
         }
 
         private async Task ValidarInsercao(ComunicadoInserirDto comunicadoDto)
@@ -246,6 +248,8 @@ namespace SME.SGP.Aplicacao
             comunicado.Descricao = comunicadoDto.Descricao;
             comunicado.Titulo = comunicadoDto.Titulo;
             comunicado.AnoLetivo = comunicadoDto.AnoLetivo;
+            comunicado.TipoCalendarioId = comunicadoDto.TipoCalendarioId;
+            comunicado.EventoId = comunicadoDto.EventoId;
 
             if (!comunicadoDto.CodigoDre.Equals("todas"))
                 comunicado.CodigoDre = comunicadoDto.CodigoDre;

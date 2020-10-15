@@ -38,6 +38,8 @@ namespace SME.SGP.Dto
                  Semestre = comunicado.Semestre ?? default,
                  Titulo = comunicado.Titulo,
                  Turmas = comunicado.Turmas.Select(x => (ComunicadoTurmaDto)x),
+                 TipoCalendarioId = comunicado.TipoCalendarioId,
+                 EventoId = comunicado.EventoId
              };
         
     }
