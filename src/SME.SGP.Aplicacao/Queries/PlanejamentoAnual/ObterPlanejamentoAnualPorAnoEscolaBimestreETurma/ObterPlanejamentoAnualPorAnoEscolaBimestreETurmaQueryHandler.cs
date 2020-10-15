@@ -1,19 +1,16 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterPlanejamentoAnualSimplificadoPorTurmaQueryHandler : IRequestHandler<ObterPlanejamentoAnualPorAnoEscolaBimestreETurmaQuery, PlanejamentoAnual>
+    public class ObterPlanejamentoAnualPorAnoEscolaBimestreETurmaQueryHandler : IRequestHandler<ObterPlanejamentoAnualPorAnoEscolaBimestreETurmaQuery, PlanejamentoAnual>
     {
         private readonly IRepositorioPlanejamentoAnual repositorioPlanejamentoAnual;
 
-        public ObterPlanejamentoAnualSimplificadoPorTurmaQueryHandler(IRepositorioPlanejamentoAnual repositorioPlanejamentoAnual)
+        public ObterPlanejamentoAnualPorAnoEscolaBimestreETurmaQueryHandler(IRepositorioPlanejamentoAnual repositorioPlanejamentoAnual)
         {
             this.repositorioPlanejamentoAnual = repositorioPlanejamentoAnual ?? throw new System.ArgumentNullException(nameof(repositorioPlanejamentoAnual));
         }
