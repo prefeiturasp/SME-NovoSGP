@@ -24,7 +24,7 @@ const TabsComponentesCorriculares = () => {
 
   const montarDados = () => {
     return (
-      <div className="col-md-12">
+      <div className="col-md-12 mb-2">
         {componenteCurricular.possuiObjetivos ? (
           <ListaObjetivosPlanoAula
             tabAtualComponenteCurricular={tabAtualComponenteCurricular}
