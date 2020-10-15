@@ -1109,6 +1109,7 @@ namespace SME.SGP.Dados.Repositorios
                     {whereUe}
                     {whereModalidade}
                 and not e.excluido
+                and e.status = 1
             ";
             return await database.Conexao.QueryAsync<Evento>(query.ToString(), new { tipoCalendario });
         }
