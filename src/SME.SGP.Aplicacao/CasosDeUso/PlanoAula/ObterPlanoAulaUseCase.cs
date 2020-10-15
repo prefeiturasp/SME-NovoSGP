@@ -23,14 +23,14 @@ namespace SME.SGP.Aplicacao
             if (planoAula == null)
                 throw new NegocioException("Não foi possível carregar o plano de aula porque não há plano anual cadastrado");
 
-            var atividadeAvaliativa = await mediator.Send(new ObterAtividadeAvaliativaQuery(planoAula.AulaConsultaSimples.DataAula.Date, planoAula.AulaConsultaSimples.DisciplinaId, planoAula.AulaConsultaSimples.TurmaId, planoAula.AulaConsultaSimples.UeId));
+            var atividadeAvaliativa = await mediator.Send(new ObterAtividadeAvaliativaQuery(planoAula.DataAula.Date, planoAula.DisciplinaId, planoAula.TurmaId, planoAula.UeId));
 
-            var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorCalendarioEDataQuery(long.Parse(planoAula.AulaConsultaSimples.DisciplinaId), planoAula.AulaConsultaSimples.DataAula.Date));
+            var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorCalendarioEDataQuery(long.Parse(planoAula.DisciplinaId), planoAula.DataAula.Date));
 
             if (periodoEscolar == null)
                 throw new NegocioException("Período escolar não localizado.");
 
-            var planoAnualDto = await mediator.Send(new ObterPlanejamentoAnualSimplificadoPorTurmaQuery( long.Parse(planoAula.AulaConsultaSimples.TurmaId)));
+            var planoAnualDto = await mediator.Send(new ObterPlanejamentoAnualSimplificadoPorTurmaQuery( long.Parse(planoAula.TurmaId)));
 
             if (planoAnualDto == null && !usuario.PerfilAtual.Equals(Perfis.PERFIL_CJ))
                 throw new NegocioException("Não foi possível carregar o plano de aula porque não há plano anual cadastrado");
@@ -38,10 +38,10 @@ namespace SME.SGP.Aplicacao
 
             planoAulaDto.PossuiPlanoAnual = planoAnualDto.Id > 0;
             planoAulaDto.ObjetivosAprendizagemOpcionais = false;
-            planoAulaDto.AulaId = planoAula.AulaConsultaSimples.Id;
-            planoAulaDto.QtdAulas = planoAula.AulaConsultaSimples.Quantidade;
+            planoAulaDto.AulaId = planoAula.AulaId;
+            planoAulaDto.QtdAulas = planoAula.Quantidade;
             planoAulaDto.IdAtividadeAvaliativa = atividadeAvaliativa?.Id;
-            planoAulaDto.PodeLancarNota = planoAulaDto.IdAtividadeAvaliativa.HasValue && planoAula.AulaConsultaSimples.DataAula.Date <= DateTime.Now.Date;
+            planoAulaDto.PodeLancarNota = planoAulaDto.IdAtividadeAvaliativa.HasValue && planoAula.DataAula.Date <= DateTime.Now.Date;
             return planoAulaDto;
         }
 
