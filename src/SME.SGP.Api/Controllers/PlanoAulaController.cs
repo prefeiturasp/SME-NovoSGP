@@ -25,16 +25,11 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(PlanoAulaRetornoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PDA_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterPlanoAula(long aulaId,
-            [FromServices] IConsultasPlanoAula consultas)
+        public async Task<IActionResult> ObterPlanoAula(long aulaId, [FromServices] IObterPlanoAulaUseCase useCase)
         {
-            // Data Escola Turma Dis
-            var planoDto = await consultas.ObterPlanoAulaPorAula(aulaId);
 
-            if (planoDto != null)
-                return Ok(planoDto);
-            else
-                return StatusCode(204);
+            return Ok(await useCase.Executar(aulaId));
+           
         }
 
         [HttpPost]
