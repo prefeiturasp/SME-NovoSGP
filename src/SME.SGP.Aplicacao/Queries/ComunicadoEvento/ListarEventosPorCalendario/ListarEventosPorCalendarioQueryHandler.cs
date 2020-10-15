@@ -20,8 +20,12 @@ namespace SME.SGP.Aplicacao.Queries.Evento.ObterDataPossuiEventoLiberacaoExcepci
 
         public async Task<IEnumerable<ListarEventosPorCalendarioRetornoDto>> Handle(ListarEventosPorCalendarioQuery request, CancellationToken cancellationToken)
         {
-            var modalidade = (int)((Modalidade)request.Modalidade).ObterModalidadeTipoCalendario();
-            var eventos = await repositorioEvento.ObterEventosPorTipoDeCalendarioDreUeModalidadeAsync(request.TipoCalendario, request.CodigoDre, request.CodigoUe, modalidade);
+            int? modalidade = null;
+            if (request.Modalidade.HasValue)
+            {
+                modalidade = (int)((Modalidade)request.Modalidade).ObterModalidadeTipoCalendario();
+            }
+            var eventos = await repositorioEvento.ObterEventosPorTipoDeCalendarioDreUeModalidadeAsync(request.TipoCalendario, request.AnoLetivo, request.CodigoDre, request.CodigoUe, modalidade);
             return eventos
                 .Select(e => new ListarEventosPorCalendarioRetornoDto { Id = e.Id, Nome = e.Nome });
         }
