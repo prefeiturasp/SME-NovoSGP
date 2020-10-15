@@ -75,7 +75,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select
                            pa.id, pa.descricao,
-                           a.id, a.ue_id, a.disciplina_id, a.turma_id,
+                           a.id as aulaId, a.ue_id, a.disciplina_id, a.turma_id,
  	                       a.quantidade, a.tipo_calendario_id, a.data_aula, 	   
  	                       oa.id, oa.descricao, oa.codigo, oa.ano_turma, oa.componente_curricular_id
                       from aula a
