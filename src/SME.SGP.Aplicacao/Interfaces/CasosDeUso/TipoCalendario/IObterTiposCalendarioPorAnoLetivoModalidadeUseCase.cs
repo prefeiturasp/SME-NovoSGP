@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public interface IObterTiposCalendarioPorAnoLetivoModalidadeoUseCase
+    public interface IObterTiposCalendarioPorAnoLetivoModalidadeUseCase
     {
         Task<IEnumerable<TipoCalendarioDto>> Executar(int anoLetivo, Modalidade modalidade);
     }
