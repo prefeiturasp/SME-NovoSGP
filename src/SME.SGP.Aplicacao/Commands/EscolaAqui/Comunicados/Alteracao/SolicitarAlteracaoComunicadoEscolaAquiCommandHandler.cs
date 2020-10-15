@@ -74,6 +74,8 @@ namespace SME.SGP.Aplicacao
             comunicado.Descricao = request.Descricao;
             comunicado.Titulo = request.Titulo;
             comunicado.DataExpiracao = request.DataExpiracao;
+            comunicado.TipoCalendarioId = request.TipoCalendarioId;
+            comunicado.EventoId = request.EventoId;
         }
 
         private void MapearParaEntidadeServico(ComunicadoInserirAeDto comunicadoServico, Comunicado comunicado)

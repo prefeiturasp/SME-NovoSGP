@@ -25,6 +25,8 @@ namespace SME.SGP.Dto
         public bool AlunoEspecificado { get; set; }
         public IEnumerable<ComunicadoTurmaDto> Turmas { get; set; }
         public IEnumerable<ComunicadoAlunoDto> Alunos { get; set; }
+        public long? TipoCalendarioId { get; set; }
+        public long? EventoId { get; set; }
 
         public bool EmEdicao = true;
 
@@ -50,6 +52,8 @@ namespace SME.SGP.Dto
             TipoComunicado = comunicado.TipoComunicado,
             Titulo = comunicado.Titulo,
             AlunoEspecificado = comunicado.AlunoEspecificado,
+            TipoCalendarioId = comunicado.TipoCalendarioId,
+            EventoId = comunicado.EventoId
         };
     }
 }
