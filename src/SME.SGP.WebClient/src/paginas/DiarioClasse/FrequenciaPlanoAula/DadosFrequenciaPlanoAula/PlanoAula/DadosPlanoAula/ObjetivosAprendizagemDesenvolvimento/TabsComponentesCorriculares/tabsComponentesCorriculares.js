@@ -3,6 +3,7 @@ import React, { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { ContainerTabsCard } from '~/componentes/tabs/tabs.css';
 import { setTabAtualComponenteCurricular } from '~/redux/modulos/frequenciaPlanoAula/actions';
+import ListaObjetivosPlanoAula from '../ListaObjetivos/listaObjetivosPlanoAula';
 import { ContainerTabsComponentesCorriculares } from './tabsComponentesCorriculares.css';
 
 const { TabPane } = Tabs;
@@ -25,11 +26,9 @@ const TabsComponentesCorriculares = () => {
     return (
       <div className="col-md-12">
         {componenteCurricular.possuiObjetivos ? (
-          // <ListaObjetivos
-          //   dadosBimestre={dadosBimestre}
-          //   tabAtualComponenteCurricular={tabAtualComponenteCurricular}
-          // />
-          <div>opa </div>
+          <ListaObjetivosPlanoAula
+            tabAtualComponenteCurricular={tabAtualComponenteCurricular}
+          />
         ) : (
           ''
         )}
@@ -44,10 +43,7 @@ const TabsComponentesCorriculares = () => {
           String(item.codigoComponenteCurricular) === String(codigoComponente)
       );
 
-      // NO REDUX REFATORAR PARA NAO CONSIDERAR O BIMESTRE!
       dispatch(setTabAtualComponenteCurricular(componente));
-
-      // TODO AQUI CARREGAR OS DADOS JA SALVOS DO PLANO AULA!
     },
     [dispatch, listaComponentesCurricularesPlanejamento]
   );
