@@ -1095,7 +1095,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var whereDre = string.IsNullOrEmpty(codigoDre) ? "" : "and (dre_id is null or dre_id = @codigoDre)";
             var whereUe = string.IsNullOrEmpty(codigoUe)   ? "" : "and (ue_id is null or ue_id = @codigoUe)";
-            var whereModalidade = modalidade.HasValue      ? "" : "and tc.modalidade = @modalidade";
+            var whereModalidade = !modalidade.HasValue     ? "" : "and tc.modalidade = @modalidade";
             var query = $@"
                 select 
                 	e.*
