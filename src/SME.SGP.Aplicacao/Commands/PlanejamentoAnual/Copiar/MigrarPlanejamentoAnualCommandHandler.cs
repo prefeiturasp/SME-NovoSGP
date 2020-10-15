@@ -37,16 +37,20 @@ namespace SME.SGP.Aplicacao
                 // Validando as turmas
                 foreach (var turma in comando.Planejamento.TurmasDestinoIds)
                 {
-                    var checarTurma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(turma));
+                    var checarTurma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(turma.ToString()));
                     if (checarTurma == null)
                         throw new NegocioException($"Turma não encontrada");
 
                     foreach (var periodoOrigem in periodosOrigem)
                     {
                         var periodo = await mediator.Send(new ObterPeriodoEscolarePorIdQuery(periodoOrigem.PeriodoEscolarId));
-                        var temAtribuicao = await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaNoPeriodoQuery(comando.Planejamento.ComponenteCurricularId, checarTurma.CodigoTurma, usuario.CodigoRf, periodo.PeriodoInicio.Date, periodo.PeriodoFim.Date));
-                        if (!temAtribuicao)
-                            excessoes.Add($"Você não possui atribuição na turma {checarTurma.Nome} - {periodo.Bimestre}° Bimestre.");
+
+                        if (usuario.EhProfessor())
+                        {
+                            var temAtribuicao = await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaNoPeriodoQuery(comando.Planejamento.ComponenteCurricularId, checarTurma.CodigoTurma, usuario.CodigoRf, periodo.PeriodoInicio.Date, periodo.PeriodoFim.Date));
+                            if (!temAtribuicao)
+                                excessoes.Add($"Você não possui atribuição na turma {checarTurma.Nome} - {periodo.Bimestre}° Bimestre.");
+                        }
 
                         var periodoEmAberto = mediator.Send(new TurmaEmPeriodoAbertoQuery(checarTurma, DateTime.Today, periodo.Bimestre, checarTurma.AnoLetivo == DateTime.Today.Year)).Result;
                         if (!periodoEmAberto)
@@ -58,10 +62,10 @@ namespace SME.SGP.Aplicacao
 
                     if (!excessoes.Any())
                     {
-                        await mediator.Send(new ExcluirPlanejamentoAnualPorTurmaIdEComponenteCurricularIdCommand(checarTurma.Id, comando.Planejamento.ComponenteCurricularId)); 
+                        await mediator.Send(new ExcluirPlanejamentoAnualPorTurmaIdEComponenteCurricularIdCommand(checarTurma.Id, comando.Planejamento.ComponenteCurricularId));
                         await mediator.Send(new SalvarCopiaPlanejamentoAnualCommand(planejamentoCopiado));
                     }
-                        
+
                 }
 
                 if (excessoes.Any())
@@ -72,18 +76,18 @@ namespace SME.SGP.Aplicacao
                     {
                         str.AppendLine($"- {t}");
                     }
-                   
+
                     throw new NegocioException(str.ToString());
                 }
 
                 unitOfWork.PersistirTransacao();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 unitOfWork.Rollback();
                 throw;
             }
-           
+
             return true;
         }
     }

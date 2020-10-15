@@ -7,18 +7,20 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterTurmasParaCopiaPlanejamentoAnualQuery : IRequest<IEnumerable<TurmaParaCopiaPlanoAnualDto>>
     {
-        public ObterTurmasParaCopiaPlanejamentoAnualQuery(long turmaId, long componenteCurricularId, string rf, bool ensinoEspecial)
+        public ObterTurmasParaCopiaPlanejamentoAnualQuery(long turmaId, long componenteCurricularId, string rf, bool ensinoEspecial, bool ehProfessor)
         {
             TurmaId = turmaId;
             ComponenteCurricularId = componenteCurricularId;
             RF = rf;
             EnsinoEspecial = ensinoEspecial;
+            EhProfessor = ehProfessor;
         }
 
         public long TurmaId { get; set; }
         public string RF { get; set; }
         public long ComponenteCurricularId { get; set; }
         public bool EnsinoEspecial { get; set; }
+        public bool EhProfessor { get; set; }
     }
 
     public class ObterTurmasParaCopiaPlanejamentoAnualQueryValidator : AbstractValidator<ObterTurmasParaCopiaPlanejamentoAnualQuery>
