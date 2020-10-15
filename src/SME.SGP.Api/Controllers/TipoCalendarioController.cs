@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Linq;
@@ -97,6 +98,15 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> BuscarPorDescricao([FromQuery]string descricao, [FromServices] IBuscarTiposCalendarioPorDescricaoUseCase buscarTiposCalendarioPorDescricaoUseCase)
         {
             return Ok(await buscarTiposCalendarioPorDescricaoUseCase.Executar(descricao));
+        }
+
+        [HttpGet]
+        [Route("ano-letivo/{anoLetivo}/modalidade/{modalidade}")]
+        [ProducesResponseType(typeof(IEnumerable<TipoCalendarioDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> BuscarPorAnoLetivoModalidade(int anoLetivo, int modalidade, [FromServices] IObterTiposCalendarioPorAnoLetivoModalidadeoUseCase obterTiposCalendarioPorAnoLetivoModalidadeoUseCase)
+        {
+            return Ok(await obterTiposCalendarioPorAnoLetivoModalidadeoUseCase.Executar(anoLetivo, (Modalidade)modalidade));
         }
     }
 }
