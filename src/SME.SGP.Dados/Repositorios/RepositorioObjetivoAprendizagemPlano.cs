@@ -53,22 +53,23 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.Query<ObjetivoAprendizagemPlano>("select * from objetivo_aprendizagem_plano where plano_id = @Id", new { Id = idPlano });
         }
 
-        public IEnumerable<ObjetivoAprendizagemPlano> ObterObjetivosPlanoDisciplina(int ano, int bimestre, long turmaId, long componenteCurricularId, long disciplinaId, bool ehRegencia = false)
+        public Task<IEnumerable<ObjetivoAprendizagem>> ObterObjetivosPlanoDisciplina(int ano, int bimestre, long turmaId, long componenteCurricularId, long disciplinaId, bool ehRegencia = false)
         {
             StringBuilder query = new StringBuilder();
-            query.AppendLine("select o.*");
+            query.AppendLine("select oa.*");
             query.AppendLine(" from plano_anual pa");
-            query.AppendLine("inner join objetivo_aprendizagem_plano o on o.plano_id = pa.id");
-            query.AppendLine("inner join componente_curricular_jurema cc on cc.id = o.componente_curricular_id");
+            query.AppendLine("inner join objetivo_aprendizagem_plano o on o.plano_id = pa.id");            
+            query.AppendLine("inner join componente_curricular cc on cc.id = o.componente_curricular_id");            
+            query.AppendLine("inner join objetivo_aprendizagem oa on o.objetivo_aprendizagem_jurema_id = oa.id ");
             query.AppendLine("where pa.ano = @ano");
             query.AppendLine("and pa.bimestre = @bimestre");
             query.AppendLine("and pa.componente_curricular_eol_id = @componenteCurricularId");
             query.AppendLine("and pa.turma_id = @turmaId");
 
             if (ehRegencia)
-                query.AppendLine("and cc.codigo_eol = @disciplinaId");
+                query.AppendLine("and cc.id = @disciplinaId");
 
-            return database.Conexao.Query<ObjetivoAprendizagemPlano>(query.ToString(), new { ano, bimestre, componenteCurricularId, turmaId, disciplinaId });
+            return database.Conexao.QueryAsync<ObjetivoAprendizagem>(query.ToString(), new { ano, bimestre, componenteCurricularId, turmaId, disciplinaId });
         }
     }
 }
