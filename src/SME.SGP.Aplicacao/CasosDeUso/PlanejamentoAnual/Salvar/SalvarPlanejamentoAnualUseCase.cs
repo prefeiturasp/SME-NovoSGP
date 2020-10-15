@@ -10,17 +10,14 @@ namespace SME.SGP.Aplicacao
     public class SalvarPlanejamentoAnualUseCase : ISalvarPlanejamentoAnualUseCase
     {
         private readonly IMediator mediator;
-        private readonly IUnitOfWork unitOfWork;
 
-        public SalvarPlanejamentoAnualUseCase(IMediator mediator,
-                                              IUnitOfWork unitOfWork)
+        public SalvarPlanejamentoAnualUseCase(IMediator mediator)
         {
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
-            this.unitOfWork = unitOfWork ?? throw new System.ArgumentNullException(nameof(unitOfWork));
         }
         public async Task<PlanejamentoAnualAuditoriaDto> Executar(long turmaId, long componenteCurricularId, SalvarPlanejamentoAnualDto dto)
         {           
-            unitOfWork.IniciarTransacao();
+           
 
             var auditoria = await mediator.Send(new SalvarPlanejamentoAnualCommand()
             {
@@ -28,8 +25,6 @@ namespace SME.SGP.Aplicacao
                 ComponenteCurricularId = componenteCurricularId,
                 PeriodosEscolares = dto.PeriodosEscolares
             });
-
-            unitOfWork.PersistirTransacao();
 
             return auditoria;
         }

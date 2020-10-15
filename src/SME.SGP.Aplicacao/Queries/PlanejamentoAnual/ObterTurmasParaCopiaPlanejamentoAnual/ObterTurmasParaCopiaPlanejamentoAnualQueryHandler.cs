@@ -19,8 +19,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<TurmaParaCopiaPlanoAnualDto>> Handle(ObterTurmasParaCopiaPlanejamentoAnualQuery request, CancellationToken cancellationToken)
         {
-            var turma = await mediator.Send(new ObterTurmaPorIdQuery(request.TurmaId));
-            var planejamentoId = await repositorioPlanejamentoAnual.ObterTurmasParaCopiaPlanejamentoAnual(request.TurmaId, turma.Ano, request.ComponenteCurricularId, request.RF, request.EnsinoEspecial);
+            var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(request.TurmaId));
+            var planejamentoId = await repositorioPlanejamentoAnual.ObterTurmasParaCopiaPlanejamentoAnual(turma, turma.Ano, request.ComponenteCurricularId, request.RF, request.EnsinoEspecial, request.EhProfessor);
 
             return planejamentoId;
         }
