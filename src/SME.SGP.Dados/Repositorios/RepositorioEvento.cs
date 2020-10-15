@@ -1089,6 +1089,7 @@ namespace SME.SGP.Dados.Repositorios
         }
 
         public async Task<IEnumerable<Evento>> ObterEventosPorTipoDeCalendarioDreUeModalidadeAsync(long tipoCalendario,
+                                                                                                   int anoLetivo, 
                                                                                                    string codigoDre,
                                                                                                    string codigoUe,
                                                                                                    int? modalidade)
@@ -1104,14 +1105,24 @@ namespace SME.SGP.Dados.Repositorios
 				inner join 
 					tipo_calendario tc on tc.id = e.tipo_calendario_id 	                
                 where
-	                e.tipo_calendario_id = e.tipo_calendario_id
+	                e.tipo_calendario_id = @tipoCalendario
                     {whereDre}
                     {whereUe}
                     {whereModalidade}
                 and not e.excluido
                 and e.status = 1
+                and tc.situacao
+                and tc.ano_letivo = @anoLetivo
             ";
-            return await database.Conexao.QueryAsync<Evento>(query.ToString(), new { tipoCalendario });
+            return await database.Conexao.QueryAsync<Evento>(
+                query, 
+                new { 
+                    tipoCalendario, 
+                    anoLetivo,
+                    codigoDre, 
+                    codigoUe, 
+                    modalidade = modalidade.HasValue ? modalidade.Value : 0 
+                });
         }
 
     }
