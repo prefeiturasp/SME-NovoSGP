@@ -14,10 +14,10 @@ namespace SME.SGP.Aplicacao
 
         public ObterAtividadeAvaliativaQuery(DateTime dataAvaliacao, string disciplinaId, string turmaId, string ueId)
         {
-            this.DataAvaliacao = dataAvaliacao;
-            this.DisciplinaId = disciplinaId;
-            this.TurmaId = turmaId;
-            this.UeId = ueId;
+            DataAvaliacao = dataAvaliacao;
+            DisciplinaId = disciplinaId;
+            TurmaId = turmaId;
+            UeId = ueId;
         }
     }
 
