@@ -5,6 +5,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IObterPlanoAulaUseCase
     {
-        Task<PlanoAulaRetornoDto> Executar(long aulaId);
+        Task<PlanoAulaRetornoDto> Executar(FiltroObterPlanoAulaDto filtro);
     }
 }
