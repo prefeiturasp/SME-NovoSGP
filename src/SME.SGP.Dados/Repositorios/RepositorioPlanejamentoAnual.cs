@@ -111,12 +111,13 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<PlanejamentoAnual> ObterPlanejamentoAnualPorAnoEscolaBimestreETurma(long turmaId, long periodoEscolarId, long componenteCurricularId)
         {
-            var query = @"select id, turma_id, componente_curricular_id, migrado, 
-	                        criado_em, alterado_em, criado_por, alterado_por, criado_rf, alterado_rf
-                        from planejamento_anual
-                        where turma_id = :turmaId 
-                          and periodo_escolar_id = :periodoEscolarId 
-                          and componente_curricular_id = :componenteCurricularId";
+            var query = @"select pa.id, pa.turma_id, pa.componente_curricular_id, pa.migrado, 
+	                        pa.criado_em, pa.alterado_em, pa.criado_por, pa.alterado_por, pa.criado_rf, pa.alterado_rf
+                        from planejamento_anual pa
+                        inner join planejamento_anual_periodo_escolar pe on pe.planejamento_anual_id = pa.id
+                        where turma_id = @turmaId 
+                          and periodo_escolar_id = @periodoEscolarId 
+                          and componente_curricular_id = @componenteCurricularId";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<PlanejamentoAnual>(query.ToString(),
                 new
@@ -147,9 +148,9 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select pe.id
                             from planejamento_anual pa
                            inner join planejamento_anual_periodo_escolar pe on pe.planejamento_anual_id = pa.id
-                           where turma_id = :turmaId 
-                             and periodo_escolar_id = :periodoEscolarId 
-                              and componente_curricular_id = :disciplinaId";
+                           where turma_id = @turmaId 
+                             and periodo_escolar_id = @periodoEscolarId 
+                              and componente_curricular_id = @componenteCurricularId";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<long>(query.ToString(),
                 new

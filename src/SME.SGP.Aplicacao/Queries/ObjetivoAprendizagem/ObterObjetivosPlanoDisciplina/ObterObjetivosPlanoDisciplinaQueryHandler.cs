@@ -22,12 +22,11 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<ObjetivosAprendizagemPorComponenteDto>> Handle(ObterObjetivosPlanoDisciplinaQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioObjetivosPlano.ObterObjetivosPorComponenteNoPlano(request.DataReferencia.Year,
-                                                                                               request.Bimestre,
-                                                                                               request.TurmaId,
-                                                                                               request.ComponenteCurricularId,
-                                                                                               request.DisciplinaId,
-                                                                                               request.FiltrarSomenteRegencia);
+            return await repositorioObjetivosPlano.ObterObjetivosPorComponenteNoPlano(request.Bimestre,
+                                                                                    request.TurmaId,
+                                                                                    request.ComponenteCurricularId,
+                                                                                    request.DisciplinaId,
+                                                                                    request.FiltrarSomenteRegencia);
 
         }
 

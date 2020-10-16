@@ -5,6 +5,11 @@ namespace SME.SGP.Infra
 {
     public class PlanoAulaObjetivosAprendizagemDto
     {
+        public PlanoAulaObjetivosAprendizagemDto()
+        {
+            ObjetivosAprendizagemComponente = new List<ObjetivosAprendizagemPorComponenteDto>();
+        }
+
         public long Id { get; set; }
         public string Descricao { get; set; }
         public string DesenvolvimentoAula { get; set; }
@@ -26,12 +31,12 @@ namespace SME.SGP.Infra
         public string AlteradoPor { get; set; }
         public string AlteradoRf { get; set; }
 
-        public List<ObjetivosAprendizagemPorComponenteDto> ObjetivosAprendizagemAula { get; set; }
+        public List<ObjetivosAprendizagemPorComponenteDto> ObjetivosAprendizagemComponente { get; set; }
 
         public void Adicionar(ObjetivosAprendizagemPorComponenteDto objetivoAprendizagemComponente)
         {
             if (objetivoAprendizagemComponente != null)
-                ObjetivosAprendizagemAula.Add(objetivoAprendizagemComponente);
+                ObjetivosAprendizagemComponente.Add(objetivoAprendizagemComponente);
         }
     }
 }
