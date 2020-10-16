@@ -7,13 +7,15 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterTurmasEOLParaCopiaPorIdEComponenteCurricularIdQuery : IRequest<IEnumerable<TurmaParaCopiaPlanoAnualDto>>
     {
-        public ObterTurmasEOLParaCopiaPorIdEComponenteCurricularIdQuery(int turmaId, long componenteCurricularId)
+        public ObterTurmasEOLParaCopiaPorIdEComponenteCurricularIdQuery(int turmaId, long componenteCurricularId, string codigoRF)
         {
             TurmaId = turmaId;
             ComponenteCurricularId = componenteCurricularId;
+            CodigoRF = codigoRF;
         }
         public long ComponenteCurricularId { get; set; }
         public int TurmaId { get; set; }
+        public string CodigoRF { get; set; }
 
     }
 
@@ -29,6 +31,10 @@ namespace SME.SGP.Aplicacao
             RuleFor(c => c.ComponenteCurricularId)
                 .NotEmpty()
                 .WithMessage("O id do componente curricular deve ser informado.");
+
+            RuleFor(c => c.CodigoRF)
+                .NotEmpty()
+                .WithMessage("O Usuário deve ser informado");
         }
     }
 }

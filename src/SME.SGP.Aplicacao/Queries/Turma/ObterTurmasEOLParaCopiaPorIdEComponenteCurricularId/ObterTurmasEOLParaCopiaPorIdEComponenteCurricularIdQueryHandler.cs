@@ -21,8 +21,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<TurmaParaCopiaPlanoAnualDto>> Handle(ObterTurmasEOLParaCopiaPorIdEComponenteCurricularIdQuery request, CancellationToken cancellationToken)
         {
-            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
-            var turmasEOL = await servicoEOL.ObterTurmasParaCopiaPlanoAnual(usuario.CodigoRf, request.ComponenteCurricularId, request.TurmaId);
+            var turmasEOL = await servicoEOL.ObterTurmasParaCopiaPlanoAnual(request.CodigoRF, request.ComponenteCurricularId, request.TurmaId);
             if (turmasEOL != null && turmasEOL.Any())
             {
                 var idsTurmas = turmasEOL.Select(c => c.TurmaId.ToString());
