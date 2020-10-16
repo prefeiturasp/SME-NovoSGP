@@ -18,16 +18,19 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<IEnumerable<TipoCalendarioDto>> Executar(int anoLetivo, Modalidade modalidade)
+        public async Task<IEnumerable<TipoCalendarioDto>> Executar(int anoLetivo, string modalidades)
         {
-            return (await mediator.Send(new ObterTiposCalendarioPorAnoLetivoModalidadeoQuery(anoLetivo, modalidade))).Select(t => new TipoCalendarioDto { 
-                Id = t.Id,
-                Modalidade = t.Modalidade,
-                AnoLetivo = t.AnoLetivo,
-                Nome = t.Nome,
-                Periodo = t.Periodo,
-                Situacao = t.Situacao,
-            });
+            return (await mediator.Send(new ObterTiposCalendarioPorAnoLetivoModalidadeoQuery(anoLetivo, modalidades)))
+                .Where(tc => tc.Situacao && !tc.Excluido)
+                .Select(t => new TipoCalendarioDto
+                {
+                    Id = t.Id,
+                    Modalidade = t.Modalidade,
+                    AnoLetivo = t.AnoLetivo,
+                    Nome = t.Nome,
+                    Periodo = t.Periodo,
+                    Situacao = t.Situacao,
+                });
         }
     }
 }
