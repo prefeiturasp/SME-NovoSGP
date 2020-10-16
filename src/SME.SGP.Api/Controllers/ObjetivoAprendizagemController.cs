@@ -68,9 +68,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<ObjetivosAprendizagemPorComponenteDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(204)]
-        public async Task<IActionResult> ObterObjetivosPorDisciplina([FromServices] IObterObjetivosPorDisciplinaUseCase UseCase, DateTime dataAula, long turmaId, long componenteId, long disciplinaId, bool regencia)
+        public async Task<IActionResult> ObterObjetivosPorDisciplina([FromServices] IObterObjetivosPorDisciplinaUseCase UseCase, long turmaId, long componenteId, long disciplinaId, [FromQuery] DateTime dataReferencia, [FromQuery] bool regencia)
         {
-            var objetivos = await UseCase.Executar(dataAula, turmaId, componenteId, disciplinaId, regencia);
+            var objetivos = await UseCase.Executar(dataReferencia, turmaId, componenteId, disciplinaId, regencia);
 
             if (objetivos.Any())
                 return Ok(objetivos);
