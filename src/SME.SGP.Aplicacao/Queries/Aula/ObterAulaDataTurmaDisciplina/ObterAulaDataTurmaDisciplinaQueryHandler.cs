@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
 
         public ObterAulaDataTurmaDisciplinaQueryHandler(IRepositorioAula repositorioAula)
         {
-            repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
+            this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
         }
 
         public async Task<AulaConsultaDto> Handle(ObterAulaDataTurmaDisciplinaQuery request, CancellationToken cancellationToken)
