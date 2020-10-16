@@ -1,4 +1,3 @@
-import { Switch } from 'antd';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { CampoData } from '~/componentes';
@@ -12,9 +11,8 @@ import {
   setExibirLoaderFrequenciaPlanoAula,
 } from '~/redux/modulos/frequenciaPlanoAula/actions';
 import { confirmar, erros, ServicoCalendarios } from '~/servicos';
+import ServicoFrequencia from '~/servicos/Paginas/DiarioClasse/ServicoFrequencia';
 import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
-import ServicoPlanoAnual from '~/servicos/Paginas/ServicoPlanoAnual';
-import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 import servicoSalvarFrequenciaPlanoAula from '../../servicoSalvarFrequenciaPlanoAula';
 import ModalSelecionarAulaFrequenciaPlanoAula from '../ModalSelecionarAula/modalSelecionarAulaFrequenciaPlanoAula';
 
@@ -23,10 +21,6 @@ const CamposFiltrarDadosFrequenciaPlanoAula = () => {
 
   const usuario = useSelector(store => store.usuario);
   const { turmaSelecionada } = usuario;
-
-  const modalidadesFiltroPrincipal = useSelector(
-    state => state.filtro.modalidades
-  );
 
   const componenteCurricular = useSelector(
     state => state.frequenciaPlanoAula.componenteCurricular
@@ -59,7 +53,6 @@ const CamposFiltrarDadosFrequenciaPlanoAula = () => {
 
   const [listaDatasAulas, setListaDatasAulas] = useState();
   const [diasParaHabilitar, setDiasParaHabilitar] = useState();
-  const [possuiPlanoAnual, setPossuiPlanoAnual] = useState(true);
   const [aulasParaSelecionar, setAulasParaSelecionar] = useState([]);
   const [exibirModalSelecionarAula, setExibirModalSelecionarAula] = useState(
     false
@@ -203,48 +196,6 @@ const CamposFiltrarDadosFrequenciaPlanoAula = () => {
     ]
   );
 
-  const validaSePossuiPlanoAnual = useCallback(() => {
-    if (!ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada)) {
-      ServicoPlanoAnual.obter(
-        turmaSelecionada.anoLetivo,
-        codigoComponenteCurricular,
-        turmaSelecionada.unidadeEscolar,
-        turmaSelecionada.turma
-      )
-        .then(resposta => {
-          const planoAnualCadastrado =
-            resposta?.data &&
-            !!resposta.data.filter(
-              plano => plano.id && plano.criadoEm && plano.descricao.length
-            ).length;
-
-          setPossuiPlanoAnual(planoAnualCadastrado);
-        })
-        .catch(e => erros(e));
-    }
-  }, [
-    turmaSelecionada,
-    codigoComponenteCurricular,
-    modalidadesFiltroPrincipal,
-  ]);
-
-  useEffect(() => {
-    if (
-      !ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada) &&
-      turmaSelecionada.anoLetivo &&
-      codigoComponenteCurricular &&
-      turmaSelecionada.unidadeEscolar &&
-      turmaSelecionada.turma
-    ) {
-      validaSePossuiPlanoAnual();
-    }
-  }, [
-    turmaSelecionada,
-    codigoComponenteCurricular,
-    modalidadesFiltroPrincipal,
-    validaSePossuiPlanoAnual,
-  ]);
-
   const obterAulaSelecionada = useCallback(
     async data => {
       if (listaDatasAulas) {
@@ -264,7 +215,7 @@ const CamposFiltrarDadosFrequenciaPlanoAula = () => {
 
   useEffect(() => {
     if (aulaId) {
-      ServicoCalendarios.obterListaFrequencia();
+      ServicoFrequencia.obterListaFrequencia();
     }
   }, [aulaId]);
 

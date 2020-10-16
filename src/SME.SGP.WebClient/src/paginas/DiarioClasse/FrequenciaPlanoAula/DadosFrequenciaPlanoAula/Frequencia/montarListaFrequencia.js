@@ -6,7 +6,6 @@ import Ordenacao from '~/componentes-sgp/Ordenacao/ordenacao';
 import CardCollapse from '~/componentes/cardCollapse';
 import { RotasDto } from '~/dtos';
 import {
-  setExibirCardFrequencia,
   setListaDadosFrequencia,
   setModoEdicaoFrequencia,
 } from '~/redux/modulos/frequenciaPlanoAula/actions';
@@ -32,10 +31,6 @@ const MontarListaFrequencia = () => {
     state => state.frequenciaPlanoAula.dataSelecionada
   );
 
-  const exibirCardFrequencia = useSelector(
-    state => state.frequenciaPlanoAula.exibirCardFrequencia
-  );
-
   const modalidadesFiltroPrincipal = useSelector(
     state => state.filtro.modalidades
   );
@@ -55,11 +50,7 @@ const MontarListaFrequencia = () => {
         ? somenteConsulta || !permissoesTela.podeAlterar
         : somenteConsulta || !permissoesTela.podeIncluir;
 
-    if (
-      !desabilitarCampos &&
-      !exibirCardFrequencia &&
-      permiteRegistroFrequencia
-    ) {
+    if (!desabilitarCampos && permiteRegistroFrequencia) {
       let temAulas = false;
       if (
         listaDadosFrequencia &&
@@ -76,12 +67,10 @@ const MontarListaFrequencia = () => {
         dispatch(setModoEdicaoFrequencia(true));
       }
     }
-    dispatch(setExibirCardFrequencia(!exibirCardFrequencia));
   };
 
   const onChangeFrequencia = () => {
     dispatch(setModoEdicaoFrequencia(true));
-    dispatch(setExibirCardFrequencia(true));
   };
 
   const atualizarValoresAlterados = dados => {
@@ -101,7 +90,6 @@ const MontarListaFrequencia = () => {
             onClick={onClickFrequencia}
             titulo="Frequência"
             indice="frequencia-collapse"
-            show={exibirCardFrequencia}
             alt="card-collapse-frequencia"
           >
             {listaDadosFrequencia &&

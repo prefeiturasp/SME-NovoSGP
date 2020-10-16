@@ -14,6 +14,8 @@ import BotoesAcoesFrequenciaPlanoAula from './DadosFrequenciaPlanoAula/BotoesAco
 import CamposFiltrarDadosFrequenciaPlanoAula from './DadosFrequenciaPlanoAula/CamposFiltrarDadosFrequenciaPlanoAula/camposFiltrarDadosFrequenciaPlanoAula';
 import MontarListaFrequencia from './DadosFrequenciaPlanoAula/Frequencia/montarListaFrequencia';
 import LoaderFrequenciaPlanoAula from './DadosFrequenciaPlanoAula/LoaderFrequenciaPlanoAula/loaderFrequenciaPlanoAula';
+import AlertaDentroPeriodoFrequenciaPlanoAula from './DadosFrequenciaPlanoAula/PlanoAula/DadosPlanoAula/AlertaDentroPeriodo/alertaDentroPeriodoFrequenciaPlanoAula';
+import PlanoAula from './DadosFrequenciaPlanoAula/PlanoAula/planoAula';
 
 const NovoFrequenciaPlanoAula = () => {
   const dispatch = useDispatch();
@@ -49,37 +51,41 @@ const NovoFrequenciaPlanoAula = () => {
 
   return (
     <LoaderFrequenciaPlanoAula>
-      {!turmaSelecionada.turma ? (
-        <Alert
-          alerta={{
-            tipo: 'warning',
-            id: 'plano-anual-selecione-turma',
-            mensagem: 'Você precisa escolher uma turma.',
-            estiloTitulo: { fontSize: '18px' },
-          }}
-          className="mb-2"
+      <>
+        {!turmaSelecionada.turma ? (
+          <Alert
+            alerta={{
+              tipo: 'warning',
+              id: 'plano-anual-selecione-turma',
+              mensagem: 'Você precisa escolher uma turma.',
+              estiloTitulo: { fontSize: '18px' },
+            }}
+            className="mb-2"
+          />
+        ) : null}
+        <AlertaDentroPeriodoFrequenciaPlanoAula />
+        <Cabecalho
+          pagina={obterDescricaoNomeMenu(
+            RotasDto.FREQUENCIA_PLANO_AULA,
+            modalidadesFiltroPrincipal,
+            turmaSelecionada
+          )}
         />
-      ) : null}
-      <Cabecalho
-        pagina={obterDescricaoNomeMenu(
-          RotasDto.FREQUENCIA_PLANO_AULA,
-          modalidadesFiltroPrincipal,
-          turmaSelecionada
-        )}
-      />
-      <Card>
-        <div className="col-md-12">
-          <div className="row">
-            <div className="col-md-12 d-flex justify-content-end pb-4">
-              <BotoesAcoesFrequenciaPlanoAula />
+        <Card>
+          <div className="col-md-12">
+            <div className="row">
+              <div className="col-md-12 d-flex justify-content-end pb-4">
+                <BotoesAcoesFrequenciaPlanoAula />
+              </div>
+            </div>
+            <div className="row">
+              <CamposFiltrarDadosFrequenciaPlanoAula />
+              <MontarListaFrequencia />
+              <PlanoAula />
             </div>
           </div>
-          <div className="row">
-            <CamposFiltrarDadosFrequenciaPlanoAula />
-            <MontarListaFrequencia />
-          </div>
-        </div>
-      </Card>
+        </Card>
+      </>
     </LoaderFrequenciaPlanoAula>
   );
 };

@@ -25,8 +25,7 @@ namespace SME.SGP.Aplicacao
 
             var filtrarSomenteRegencia = regencia && !usuarioLogado.EhProfessorCj();
 
-            return await mediator.Send(new ObterObjetivosPlanoDisciplinaQuery(dataReferencia,
-                                                                              bimestre,
+            return await mediator.Send(new ObterObjetivosPlanoDisciplinaQuery(bimestre,
                                                                               turmaId,
                                                                               componenteCurricularId,
                                                                               disciplinaId,
