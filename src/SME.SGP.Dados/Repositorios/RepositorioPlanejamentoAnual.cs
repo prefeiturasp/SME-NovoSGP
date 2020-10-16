@@ -109,29 +109,21 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<PlanejamentoAnual>(sql, new { turmaId, componenteCurricularId });
         }
 
-        public async Task<PlanejamentoAnual> ObterPlanejamentoAnualPorAnoEscolaBimestreETurma(int ano, string escolaId, long turmaId, int bimestre, long disciplinaId)
+        public async Task<PlanejamentoAnual> ObterPlanejamentoAnualPorAnoEscolaBimestreETurma(long turmaId, long periodoEscolarId, long componenteCurricularId)
         {
-            StringBuilder query = new StringBuilder();
-
-            query.AppendLine("select");
-            query.AppendLine("id, escola_id, turma_id, ano, bimestre, componente_curricular_eol_id, descricao, migrado,");
-            query.AppendLine("criado_em, alterado_em, criado_por, alterado_por, criado_rf, alterado_rf, objetivos_opcionais");
-            query.AppendLine("from plano_anual");
-            query.AppendLine("where");
-            query.AppendLine("ano = @ano and");
-            query.AppendLine("escola_id = @escolaId and");
-            query.AppendLine("bimestre = @bimestre and");
-            query.AppendLine("turma_id = @turmaId and");
-            query.AppendLine("componente_curricular_eol_id = @disciplinaId");
+            var query = @"select id, turma_id, componente_curricular_id, migrado, 
+	                        criado_em, alterado_em, criado_por, alterado_por, criado_rf, alterado_rf
+                        from planejamento_anual
+                        where turma_id = :turmaId 
+                          and periodo_escolar_id = :periodoEscolarId 
+                          and componente_curricular_id = :componenteCurricularId";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<PlanejamentoAnual>(query.ToString(),
                 new
                 {
-                    ano,
-                    escolaId,
                     turmaId,
-                    bimestre,
-                    disciplinaId
+                    periodoEscolarId,
+                    componenteCurricularId
                 });
 
         }
@@ -148,6 +140,24 @@ namespace SME.SGP.Dados.Repositorios
 	                        turma_id = @turmaId";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<PlanejamentoAnualDto>(sql, new { turmaId });
+        }
+
+        public async Task<long> ExistePlanejamentoAnualParaTurmaPeriodoEComponente(long turmaId, long periodoEscolarId, long componenteCurricularId)
+        {
+            var query = @"select pe.id
+                            from planejamento_anual pa
+                           inner join planejamento_anual_periodo_escolar pe on pe.planejamento_anual_id = pa.id
+                           where turma_id = :turmaId 
+                             and periodo_escolar_id = :periodoEscolarId 
+                              and componente_curricular_id = :disciplinaId";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<long>(query.ToString(),
+                new
+                {
+                    turmaId,
+                    periodoEscolarId,
+                    componenteCurricularId
+                });
         }
     }
 }
