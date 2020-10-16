@@ -34,6 +34,12 @@ namespace SME.SGP.Aplicacao
             return await repositorioAbrangencia.ObterAbrangenciaPorFiltro(texto, login, perfil, consideraHistorico);
         }
 
+        public async Task<IEnumerable<AbrangenciaHistoricaDto>> ObterAbrangenciaHistorica()
+        {
+            var login = servicoUsuario.ObterLoginAtual();            
+            return await repositorioAbrangencia.ObterAbrangenciaHistoricaPorLogin(login);
+        }
+
         public async Task<AbrangenciaFiltroRetorno> ObterAbrangenciaTurma(string turma, bool consideraHistorico = false)
         {
             var login = servicoUsuario.ObterLoginAtual();
