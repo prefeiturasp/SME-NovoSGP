@@ -17,7 +17,13 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<TurmaParaCopiaPlanoAnualDto>> Executar(int turmaId, long componenteCurricularId, bool ensinoEspecial)
         {
-            return await mediator.Send(new ObterTurmasEOLParaCopiaPorIdEComponenteCurricularIdQuery(turmaId, componenteCurricularId));
+            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+
+            if (usuario.PerfilAtual == Dominio.Perfis.PERFIL_CP)
+                return await mediator.Send(new ObterTurmasParaCopiaPlanejamentoAnualUsuarioCPQuery(turmaId, ensinoEspecial));
+
+
+            return await mediator.Send(new ObterTurmasEOLParaCopiaPorIdEComponenteCurricularIdQuery(turmaId, componenteCurricularId, usuario.CodigoRf));
         }
     }
 }

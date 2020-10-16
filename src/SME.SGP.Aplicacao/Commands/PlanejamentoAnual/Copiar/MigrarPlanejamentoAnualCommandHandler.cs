@@ -37,7 +37,16 @@ namespace SME.SGP.Aplicacao
                 // Validando as turmas
                 foreach (var turma in comando.Planejamento.TurmasDestinoIds)
                 {
-                    var checarTurma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(turma.ToString()));
+                    var checarTurma = new Turma();
+                    if (usuario.PerfilAtual == Dominio.Perfis.PERFIL_CP)
+                    {
+                        checarTurma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(turma));
+                    }
+                    else
+                    {
+                        checarTurma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(turma.ToString()));
+                    }
+
                     if (checarTurma == null)
                         throw new NegocioException($"Turma não encontrada");
 
