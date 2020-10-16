@@ -187,5 +187,34 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<TurmaParaCopiaPlanoAnualDto>(query, new { turmaId = turma.Id, ueId = turma.UeId, componenteCurricularId = componenteCurricularId.ToString(), ano, rf });
         }
+
+        public async Task<IEnumerable<TurmaParaCopiaPlanoAnualDto>> ObterTurmasParaCopiaPlanejamentoAnualCP(Turma turma, string ano,  bool ensinoEspecial)
+        {
+            var query = @"select
+	                        t.id,
+	                        t.id as TurmaId,
+	                        t.nome as nome,
+	                        (
+	                        select
+		                        1
+	                        from
+		                        planejamento_anual
+	                        where
+		                        turma_id = t.id
+	                        limit 1) as possuiPlano
+                        from
+	                        turma t
+                        inner join abrangencia ab on
+	                        t.id = ab.turma_id
+                        left join planejamento_anual p on
+	                        p.turma_id = ab.turma_id
+                        where
+	                        not ab.historico and t.id <> @turmaId and t.ue_id = @ueId ";
+            if (!ensinoEspecial)
+                query += "and t.ano = @ano";
+            query += $" group by t.id order by t.nome";
+
+            return await database.Conexao.QueryAsync<TurmaParaCopiaPlanoAnualDto>(query, new { turmaId = turma.Id, ueId = turma.UeId,  ano });
+        }
     }
 }
