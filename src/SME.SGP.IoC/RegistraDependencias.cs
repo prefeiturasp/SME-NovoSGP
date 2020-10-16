@@ -477,7 +477,6 @@ namespace SME.SGP.IoC
 
 
             services.TryAddScoped<IObterTiposCalendarioPorAnoLetivoModalidadeUseCase, ObterTiposCalendarioPorAnoLetivoModalidadeUseCase>();
-            services.TryAddScoped<IObterTiposCalendarioPorAnoLetivoUEUseCase, ObterTiposCalendarioPorAnoLetivoUEUseCase>();
         }
     }
 }
