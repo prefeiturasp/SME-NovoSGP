@@ -6,5 +6,6 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task<PlanejamentoAnualPeriodoEscolar> ObterPorPlanejamentoAnualId(long id, long periodoEscolarId);
         Task<PlanejamentoAnualPeriodoEscolar> ObterPlanejamentoAnualPeriodoEscolarPorTurmaEComponenteCurricular(long turmaId, long componenteCurricularId, long periodoEscolarId);
+        Task<bool> PlanejamentoPossuiObjetivos(long planejamentoAnualPeriodoId);
     }
 }

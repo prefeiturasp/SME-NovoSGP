@@ -58,8 +58,7 @@ namespace SME.SGP.Aplicacao
                     throw new NegocioException("Não foi possível concluir o cadastro, pois não foi localizado o bimestre da aula.");
 
                 var planejamentoAnual = await mediator.Send(
-                    new ObterPlanejamentoAnualPorAnoEscolaBimestreETurmaQuery(aula.DataAula.Year, aula.UeId, long.Parse(aula.TurmaId),
-                    periodoEscolar.Bimestre, long.Parse(aula.DisciplinaId))
+                    new ObterPlanejamentoAnualPorAnoEscolaBimestreETurmaQuery(turma.Id, periodoEscolar.Id, long.Parse(aula.DisciplinaId))
                     );
 
                 if (planejamentoAnual.Id <= 0 && !usuario.PerfilAtual.Equals(Perfis.PERFIL_CJ))

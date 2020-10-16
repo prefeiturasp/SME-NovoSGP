@@ -12,38 +12,50 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<PlanoAulaRetornoDto> Executar(long aulaId)
+        public async Task<PlanoAulaRetornoDto> Executar(FiltroObterPlanoAulaDto filtro)
         {
-            PlanoAulaRetornoDto planoAulaDto = new PlanoAulaRetornoDto();
+            var aulaDto = await mediator.Send(new ObterAulaPorIdQuery(filtro.AulaId));
 
-            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var planoAula = await mediator.Send(new ObterPlanoAulaEObjetivosAprendizagemQuery(filtro.AulaId));
+            var planoAulaDto = MapearParaDto(planoAula) ?? new PlanoAulaRetornoDto();
 
-            var planoAula = await mediator.Send(new ObterPlanoAulaEObjetivosAprendizagemQuery(aulaId));
-
-            if (planoAula == null)
-                throw new NegocioException("Não foi possível carregar o plano de aula porque não há plano anual cadastrado");
-
-            var atividadeAvaliativa = await mediator.Send(new ObterAtividadeAvaliativaQuery(planoAula.DataAula.Date, planoAula.DisciplinaId, planoAula.TurmaId, planoAula.UeId));
-
-            var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorCalendarioEDataQuery(long.Parse(planoAula.DisciplinaId), planoAula.DataAula.Date));
-
+            var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorCalendarioEDataQuery(aulaDto.TipoCalendarioId, aulaDto.DataAula.Date));
             if (periodoEscolar == null)
                 throw new NegocioException("Período escolar não localizado.");
 
-            var planoAnualDto = await mediator.Send(new ObterPlanejamentoAnualSimplificadoPorTurmaQuery( long.Parse(planoAula.TurmaId)));
-
-            if (planoAnualDto == null && !usuario.PerfilAtual.Equals(Perfis.PERFIL_CJ))
+            var planejamentoAnualPeriodoId = await mediator.Send(new ExistePlanejamentoAnualParaTurmaPeriodoEComponenteQuery(filtro.TurmaId, periodoEscolar.Id, long.Parse(aulaDto.DisciplinaId)));
+            if (planejamentoAnualPeriodoId == 0)
                 throw new NegocioException("Não foi possível carregar o plano de aula porque não há plano anual cadastrado");
 
+            var atividadeAvaliativa = await mediator.Send(new ObterAtividadeAvaliativaQuery(aulaDto.DataAula.Date, aulaDto.DisciplinaId, aulaDto.TurmaId, aulaDto.UeId));
 
-            planoAulaDto.PossuiPlanoAnual = planoAnualDto.Id > 0;
-            planoAulaDto.ObjetivosAprendizagemOpcionais = false;
-            planoAulaDto.AulaId = planoAula.AulaId;
-            planoAulaDto.QtdAulas = planoAula.Quantidade;
+            planoAulaDto.PossuiPlanoAnual = planejamentoAnualPeriodoId > 0;
             planoAulaDto.IdAtividadeAvaliativa = atividadeAvaliativa?.Id;
-            planoAulaDto.PodeLancarNota = planoAulaDto.IdAtividadeAvaliativa.HasValue && planoAula.DataAula.Date <= DateTime.Now.Date;
+            planoAulaDto.PodeLancarNota = planoAulaDto.IdAtividadeAvaliativa.HasValue && aulaDto.DataAula.Date <= DateTime.Now.Date;
             return planoAulaDto;
         }
 
+        private PlanoAulaRetornoDto MapearParaDto(PlanoAulaObjetivosAprendizagemDto plano) =>
+            plano == null ? null :
+            new PlanoAulaRetornoDto()
+            {
+                Id = plano.Id,
+                Descricao = plano.Descricao,
+                DesenvolvimentoAula = plano.DesenvolvimentoAula,
+                RecuperacaoAula = plano.RecuperacaoAula,
+                LicaoCasa = plano.LicaoCasa,
+                AulaId = plano.AulaId,
+                QtdAulas = plano.Quantidade,
+
+                Migrado = plano.Migrado,
+                CriadoEm = plano.CriadoEm,
+                CriadoPor = plano.CriadoPor,
+                CriadoRf = plano.CriadoRf,
+                AlteradoEm = plano.AlteradoEm,
+                AlteradoPor = plano.AlteradoPor,
+                AlteradoRf = plano.AlteradoRf,
+
+                ObjetivosAprendizagemAula = plano.ObjetivosAprendizagemAula
+            };
     }
 }

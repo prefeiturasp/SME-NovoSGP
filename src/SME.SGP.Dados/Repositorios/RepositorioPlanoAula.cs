@@ -74,7 +74,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<PlanoAulaObjetivosAprendizagemDto> ObterPlanoAulaEObjetivosAprendizagem(long aulaId)
         {
             var query = @"select
-                           pa.id, pa.descricao,
+                           pa.id, pa.descricao, pa.desenvolvimento_aula as DesenvolvimentoAula, pa.recuperacao_aula as RecuperacaoAula, pa.licao_casa as LicaoCasa,
                            a.id as AulaId, a.ue_id as UeId, a.disciplina_id as DisciplinaId, a.turma_id as TurmaId,
                            a.quantidade, a.tipo_calendario_id as TipoCalendarioId, a.data_aula as DataAula,
                            oaa.componente_curricular_id as id,
