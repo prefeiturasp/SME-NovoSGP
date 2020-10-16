@@ -227,7 +227,6 @@ const ListaObjetivosPlanoAula = React.memo(props => {
           index,
           1
         );
-        debugger;
       }
     }
 
