@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿
+using FluentValidation;
 using MediatR;
 using SME.SGP.Infra;
 using System;
@@ -8,9 +9,8 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterObjetivosPlanoDisciplinaQuery : IRequest<IEnumerable<ObjetivosAprendizagemPorComponenteDto>>
     {
-        public ObterObjetivosPlanoDisciplinaQuery(DateTime dataReferencia, int bimestre, long turmaId, long componenteCurricularId, long disciplinaId, bool filtrarSomenteRegencia)
+        public ObterObjetivosPlanoDisciplinaQuery(int bimestre, long turmaId, long componenteCurricularId, long disciplinaId, bool filtrarSomenteRegencia)
         {
-            DataReferencia = dataReferencia;
             Bimestre = bimestre;
             TurmaId = turmaId;
             ComponenteCurricularId = componenteCurricularId;
@@ -30,9 +30,6 @@ namespace SME.SGP.Aplicacao
     {
         public ObterObjetivosPlanoDisciplinaQueryValidator()
         {
-            RuleFor(a => a.DataReferencia)
-                .NotEmpty()
-                .WithMessage("A data de referência precisa ser informado.");
             RuleFor(a => a.Bimestre)
                 .NotEmpty()
                 .WithMessage("O bimestre precisa ser informado.");
@@ -41,13 +38,7 @@ namespace SME.SGP.Aplicacao
                 .WithMessage("O id da turma precisa ser informado.");
             RuleFor(a => a.ComponenteCurricularId)
                 .NotEmpty()
-                .WithMessage("O id do componente curricular precisa ser informado.");
-            RuleFor(a => a.DisciplinaId)
-                .NotEmpty()
-                .WithMessage("O id da disciplina precisa ser informado.");
-            RuleFor(a => a.FiltrarSomenteRegencia)
-                .NotEmpty()
-                .WithMessage("Precisa informar se é para filtrar somente regência.");
+                .WithMessage("O id do componente curricular precisa ser informado.");       
         }
     }
 }

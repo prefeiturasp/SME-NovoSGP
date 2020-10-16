@@ -55,7 +55,7 @@ namespace SME.SGP.Aplicacao
                 AlteradoPor = plano.AlteradoPor,
                 AlteradoRf = plano.AlteradoRf,
 
-                ObjetivosAprendizagemAula = plano.ObjetivosAprendizagemAula
+                ObjetivosAprendizagemComponente = plano.ObjetivosAprendizagemComponente
             };
     }
 }

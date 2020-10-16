@@ -3,13 +3,21 @@ import produce from 'immer';
 const inicial = {
   componenteCurricular: undefined,
   listaDadosFrequencia: {},
+  dadosPlanoAula: undefined,
   modoEdicaoFrequencia: false,
   modoEdicaoPlanoAula: false,
   aulaId: 0,
   dataSelecionada: undefined,
-  exibirCardFrequencia: false,
   exibirLoaderFrequenciaPlanoAula: false,
   somenteConsulta: false,
+  desabilitarCamposPlanoAula: false,
+  dadosParaSalvarPlanoAula: undefined,
+  tabAtualComponenteCurricular: undefined,
+  listaComponentesCurricularesPlanejamento: [],
+  exibirCardCollapsePlanoAula: { exibir: false },
+  exibirModalCopiarConteudoPlanoAula: false,
+  temPeriodoAberto: true,
+  listaObjetivosComponenteCurricular: [],
 };
 
 export default function frequenciaPlanoAula(state = inicial, action) {
@@ -31,17 +39,31 @@ export default function frequenciaPlanoAula(state = inicial, action) {
         return {
           ...draft,
           listaDadosFrequencia: [],
+          dadosPlanoAula: undefined,
           modoEdicaoFrequencia: false,
           modoEdicaoPlanoAula: false,
           aulaId: 0,
           dataSelecionada: undefined,
-          exibirCardFrequencia: false,
+          desabilitarCamposPlanoAula: false,
+          dadosParaSalvarPlanoAula: undefined,
+          tabAtualComponenteCurricular: undefined,
+          listaComponentesCurricularesPlanejamento: [],
+          exibirCardCollapsePlanoAula: { exibir: false },
+          exibirModalCopiarConteudoPlanoAula: false,
+          temPeriodoAberto: true,
+          listaObjetivosComponenteCurricular: [],
         };
       }
       case '@frequenciaPlanoAula/setListaDadosFrequencia': {
         return {
           ...draft,
           listaDadosFrequencia: action.payload,
+        };
+      }
+      case '@frequenciaPlanoAula/setDadosPlanoAula': {
+        return {
+          ...draft,
+          dadosPlanoAula: action.payload,
         };
       }
       case '@frequenciaPlanoAula/setModoEdicaoFrequencia': {
@@ -62,10 +84,10 @@ export default function frequenciaPlanoAula(state = inicial, action) {
           aulaId: action.payload,
         };
       }
-      case '@frequenciaPlanoAula/setExibirCardFrequencia': {
+      case '@frequenciaPlanoAula/setDesabilitarCamposPlanoAula': {
         return {
           ...draft,
-          exibirCardFrequencia: action.payload,
+          desabilitarCamposPlanoAula: action.payload,
         };
       }
       case '@frequenciaPlanoAula/setExibirLoaderFrequenciaPlanoAula': {
@@ -78,6 +100,48 @@ export default function frequenciaPlanoAula(state = inicial, action) {
         return {
           ...draft,
           somenteConsulta: action.payload,
+        };
+      }
+      case '@frequenciaPlanoAula/setDadosParaSalvarPlanoAula': {
+        return {
+          ...draft,
+          dadosParaSalvarPlanoAula: action.payload,
+        };
+      }
+      case '@frequenciaPlanoAula/setTabAtualComponenteCurricular': {
+        return {
+          ...draft,
+          tabAtualComponenteCurricular: action.payload,
+        };
+      }
+      case '@frequenciaPlanoAula/setListaComponentesCurricularesPlanejamento': {
+        return {
+          ...draft,
+          listaComponentesCurricularesPlanejamento: action.payload,
+        };
+      }
+      case '@frequenciaPlanoAula/setExibirCardCollapsePlanoAula': {
+        return {
+          ...draft,
+          exibirCardCollapsePlanoAula: action.payload,
+        };
+      }
+      case '@frequenciaPlanoAula/setExibirModalCopiarConteudoPlanoAula': {
+        return {
+          ...draft,
+          exibirModalCopiarConteudoPlanoAula: action.payload,
+        };
+      }
+      case '@frequenciaPlanoAula/setTemPeriodoAbertoFrequenciaPlanoAula': {
+        return {
+          ...draft,
+          temPeriodoAberto: action.payload,
+        };
+      }
+      case '@frequenciaPlanoAula/setListaObjetivosComponenteCurricular': {
+        return {
+          ...draft,
+          listaObjetivosComponenteCurricular: action.payload,
         };
       }
 
