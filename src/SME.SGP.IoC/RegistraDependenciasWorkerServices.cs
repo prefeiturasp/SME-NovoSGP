@@ -85,7 +85,6 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IComandosAtribuicaoEsporadica, ComandosAtribuicaoEsporadica>();
             services.TryAddScopedWorkerService<IComandosAtividadeAvaliativa, ComandosAtividadeAvaliativa>();
             services.TryAddScopedWorkerService<IComandosTipoAvaliacao, ComandosTipoAavaliacao>();
-            services.TryAddScopedWorkerService<IComandosPlanoAula, ComandosPlanoAula>();
             services.TryAddScopedWorkerService<IComandosAtribuicaoCJ, ComandosAtribuicaoCJ>();
             services.TryAddScopedWorkerService<IComandosEventoMatricula, ComandosEventoMatricula>();
             services.TryAddScopedWorkerService<IComandosNotasConceitos, ComandosNotasConceitos>();
