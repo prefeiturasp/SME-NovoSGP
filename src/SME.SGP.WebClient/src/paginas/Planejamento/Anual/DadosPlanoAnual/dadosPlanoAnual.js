@@ -87,14 +87,11 @@ const DadosPlanoAnual = () => {
   /**
    * carrega a lista de bimestres com os dados dos planos
    */
-  useEffect(() => {
-    // TODO VER PARA LIMPAR OS DADOS ANTIGOS!
+  useEffect(() => {  
     if (
       !ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada) &&
       componenteCurricular &&
-      componenteCurricular.codigoComponenteCurricular &&
-      turmaSelecionada &&
-      turmaSelecionada.turma
+      componenteCurricular.codigoComponenteCurricular
     ) {
       ServicoPlanoAnual.obterPlanejamentoId(
         turmaSelecionada.id,
@@ -117,16 +114,7 @@ const DadosPlanoAnual = () => {
         }
       });
     }
-  }, [
-    obterListaComponentesCurricularesPlanejamento,
-    montarListaComponenteCurricularesPlanejamento,
-    obterBimestresPlanoAnual,
-    componenteCurricular,
-    dispatch,
-    modalidadesFiltroPrincipal,
-    turmaSelecionada,
-    obterTurmasParaCopiarConteudo,
-  ]);
+  }, [componenteCurricular]);
 
   return (
     <>
