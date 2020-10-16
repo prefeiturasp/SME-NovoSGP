@@ -16,6 +16,8 @@ const inicial = {
   listaComponentesCurricularesPlanejamento: [],
   exibirCardCollapsePlanoAula: { exibir: false },
   exibirModalCopiarConteudoPlanoAula: false,
+  temPeriodoAberto: true,
+  listaObjetivosComponenteCurricular: [],
 };
 
 export default function frequenciaPlanoAula(state = inicial, action) {
@@ -48,6 +50,8 @@ export default function frequenciaPlanoAula(state = inicial, action) {
           listaComponentesCurricularesPlanejamento: [],
           exibirCardCollapsePlanoAula: { exibir: false },
           exibirModalCopiarConteudoPlanoAula: false,
+          temPeriodoAberto: true,
+          listaObjetivosComponenteCurricular: [],
         };
       }
       case '@frequenciaPlanoAula/setListaDadosFrequencia': {
@@ -126,6 +130,18 @@ export default function frequenciaPlanoAula(state = inicial, action) {
         return {
           ...draft,
           exibirModalCopiarConteudoPlanoAula: action.payload,
+        };
+      }
+      case '@frequenciaPlanoAula/setTemPeriodoAbertoFrequenciaPlanoAula': {
+        return {
+          ...draft,
+          temPeriodoAberto: action.payload,
+        };
+      }
+      case '@frequenciaPlanoAula/setListaObjetivosComponenteCurricular': {
+        return {
+          ...draft,
+          listaObjetivosComponenteCurricular: action.payload,
         };
       }
 

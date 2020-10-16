@@ -1,7 +1,8 @@
 import { store } from '~/redux';
 import {
-  setExibirLoaderFrequenciaPlanoAula,
   setListaDadosFrequencia,
+  setExibirLoaderFrequenciaPlanoAula,
+  setTemPeriodoAbertoFrequenciaPlanoAula,
 } from '~/redux/modulos/frequenciaPlanoAula/actions';
 import { erros } from '~/servicos/alertas';
 import api from '~/servicos/api';
@@ -38,8 +39,14 @@ class ServicoFrequencia {
 
     if (frequenciaAlunos && frequenciaAlunos.data) {
       dispatch(setListaDadosFrequencia(frequenciaAlunos.data));
+      dispatch(
+        setTemPeriodoAbertoFrequenciaPlanoAula(
+          frequenciaAlunos.data.temPeriodoAberto
+        )
+      );
     } else {
       dispatch(setListaDadosFrequencia({}));
+      dispatch(setTemPeriodoAbertoFrequenciaPlanoAula(true));
     }
   };
 

@@ -14,6 +14,7 @@ import BotoesAcoesFrequenciaPlanoAula from './DadosFrequenciaPlanoAula/BotoesAco
 import CamposFiltrarDadosFrequenciaPlanoAula from './DadosFrequenciaPlanoAula/CamposFiltrarDadosFrequenciaPlanoAula/camposFiltrarDadosFrequenciaPlanoAula';
 import MontarListaFrequencia from './DadosFrequenciaPlanoAula/Frequencia/montarListaFrequencia';
 import LoaderFrequenciaPlanoAula from './DadosFrequenciaPlanoAula/LoaderFrequenciaPlanoAula/loaderFrequenciaPlanoAula';
+import AlertaDentroPeriodoFrequenciaPlanoAula from './DadosFrequenciaPlanoAula/PlanoAula/DadosPlanoAula/AlertaDentroPeriodo/alertaDentroPeriodoFrequenciaPlanoAula';
 import PlanoAula from './DadosFrequenciaPlanoAula/PlanoAula/planoAula';
 
 const NovoFrequenciaPlanoAula = () => {
@@ -62,6 +63,7 @@ const NovoFrequenciaPlanoAula = () => {
             className="mb-2"
           />
         ) : null}
+        <AlertaDentroPeriodoFrequenciaPlanoAula />
         <Cabecalho
           pagina={obterDescricaoNomeMenu(
             RotasDto.FREQUENCIA_PLANO_AULA,

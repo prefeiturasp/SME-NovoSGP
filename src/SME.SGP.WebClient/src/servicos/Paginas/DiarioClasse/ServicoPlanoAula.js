@@ -5,6 +5,7 @@ import {
   setExibirCardCollapsePlanoAula,
   setExibirLoaderFrequenciaPlanoAula,
   setListaComponentesCurricularesPlanejamento,
+  setListaObjetivosComponenteCurricular,
 } from '~/redux/modulos/frequenciaPlanoAula/actions';
 import { erros } from '~/servicos/alertas';
 import api from '~/servicos/api';
@@ -57,7 +58,7 @@ class ServicoPlanoAula {
       dispatch(setExibirLoaderFrequenciaPlanoAula(true));
 
       const plano = await api
-        .get(`v1/planos/aulas/${aulaId}`)
+        .get(`v1/planos/aulas/${aulaId}?turmaId=${turmaSelecionada.id}`)
         .finally(() => dispatch(setExibirLoaderFrequenciaPlanoAula(false)))
         .catch(e => erros(e));
 
@@ -66,8 +67,6 @@ class ServicoPlanoAula {
         dispatch(setDadosParaSalvarPlanoAula({ ...plano.data }));
 
         const ehMigrado = plano.data.migrado;
-        // TODO Validar se é necessário usar essa prop no redux!
-        // dispatch(setEhRegistroMigrado(!!ehMigrado));
 
         // Quando for MIGRADO mostrar somente um tab com o componente curricular já selecionado!
         if (ehMigrado) {
@@ -101,6 +100,8 @@ class ServicoPlanoAula {
   };
 
   obterListaObjetivosPorAnoEComponenteCurricular = async () => {
+    const { dispatch } = store;
+
     const state = store.getState();
 
     const { frequenciaPlanoAula, usuario } = state;
@@ -109,26 +110,32 @@ class ServicoPlanoAula {
     const {
       dataSelecionada,
       componenteCurricular,
-      tabAtualComponenteCurricular,
+      listaObjetivosComponenteCurricular,
     } = frequenciaPlanoAula;
 
-    const codigoComponenteCurricularTabAtual =
-      tabAtualComponenteCurricular.codigoComponenteCurricular;
+    const { codigoComponenteCurricular } = componenteCurricular;
 
-    const { codigoComponenteCurricular, regencia } = componenteCurricular;
+    // Caso já tenha sido realizado a consulta vai retornar os dados que estão no redux!
+    if (
+      listaObjetivosComponenteCurricular &&
+      listaObjetivosComponenteCurricular.length
+    ) {
+      return listaObjetivosComponenteCurricular;
+    }
 
     const objetivos = await api.get(
       `v1/objetivos-aprendizagem/objetivos/turmas/${
-        turmaSelecionada.turma
-      }/componentes/${codigoComponenteCurricular}/disciplinas/${codigoComponenteCurricularTabAtual}?dataAula=${dataSelecionada.format(
+        turmaSelecionada.id
+      }/componentes/${codigoComponenteCurricular}/disciplinas/0?dataReferencia=${dataSelecionada.format(
         'YYYY-MM-DD'
-      )}&regencia=${regencia}`
+      )}&regencia=${false}`
     );
 
     if (objetivos && objetivos.data && objetivos.data.length) {
-      // TODO - Adicionar no redux para melhorar a performance!
+      dispatch(setListaObjetivosComponenteCurricular(objetivos.data));
       return objetivos.data;
     }
+    dispatch(setListaObjetivosComponenteCurricular([]));
     return [];
   };
 

@@ -16,6 +16,10 @@ const LicaoDeCasa = () => {
     state => state.frequenciaPlanoAula.dadosPlanoAula
   );
 
+  const temPeriodoAberto = useSelector(
+    state => state.frequenciaPlanoAula.temPeriodoAberto
+  );
+
   const configCabecalho = {
     altura: '44px',
     corBorda: '#4072d6',
@@ -36,7 +40,7 @@ const LicaoDeCasa = () => {
       >
         <fieldset className="mt-3">
           <Editor
-            desabilitar={desabilitarCamposPlanoAula}
+            desabilitar={desabilitarCamposPlanoAula || !temPeriodoAberto}
             onChange={onChangeLicaoCasa}
             inicial={dadosPlanoAula.licaoCasa}
           />
