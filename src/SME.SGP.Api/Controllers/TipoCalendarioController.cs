@@ -101,20 +101,12 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpGet]
-        [Route("ano-letivo/{anoLetivo}/modalidade/{modalidade}")]
+        [Route("ano-letivo/{anoLetivo}/modalidade/{modalidades}")]
         [ProducesResponseType(typeof(IEnumerable<TipoCalendarioDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> BuscarPorAnoLetivoModalidade(int anoLetivo, int modalidade, [FromServices] IObterTiposCalendarioPorAnoLetivoModalidadeUseCase obterTiposCalendarioPorAnoLetivoModalidadeoUseCase)
+        public async Task<IActionResult> BuscarPorAnoLetivoModalidade(int anoLetivo, string modalidades, [FromServices] IObterTiposCalendarioPorAnoLetivoModalidadeUseCase obterTiposCalendarioPorAnoLetivoModalidadeoUseCase)
         {
-            return Ok(await obterTiposCalendarioPorAnoLetivoModalidadeoUseCase.Executar(anoLetivo, (Modalidade)modalidade));
-        }
-        [HttpGet]
-        [Route("ano-letivo/{anoLetivo}/UE/{codigoUE}")]
-        [ProducesResponseType(typeof(IEnumerable<TipoCalendarioDto>), 200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> BuscarPorAnoLetivoUE(int anoLetivo, string codigoUE, [FromServices] IObterTiposCalendarioPorAnoLetivoUEUseCase obterTiposCalendarioPorAnoLetivoUEUseCase)
-        {
-            return Ok(await obterTiposCalendarioPorAnoLetivoUEUseCase.Executar(anoLetivo, codigoUE));
+            return Ok(await obterTiposCalendarioPorAnoLetivoModalidadeoUseCase.Executar(anoLetivo, modalidades));
         }
     }
 }
