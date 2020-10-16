@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<PlanejamentoAnual> Handle(ObterPlanejamentoAnualPorAnoEscolaBimestreETurmaQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioPlanejamentoAnual.ObterPlanejamentoAnualPorAnoEscolaBimestreETurma(request.Ano, request.EscolaId, request.TurmaId, request.Bimestre, request.DisciplinaId);
+            return await repositorioPlanejamentoAnual.ObterPlanejamentoAnualPorAnoEscolaBimestreETurma(request.TurmaId, request.PeriodoEscolarId, request.ComponenteCurricularId);
         }
     }
 }

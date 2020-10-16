@@ -7,45 +7,33 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterPlanejamentoAnualPorAnoEscolaBimestreETurmaQuery : IRequest<PlanejamentoAnual>
     {
-        public ObterPlanejamentoAnualPorAnoEscolaBimestreETurmaQuery(int ano, string escolaId, long turmaId, int bimestre, long disciplinaId)
+        public ObterPlanejamentoAnualPorAnoEscolaBimestreETurmaQuery(long turmaId, long periodoEscolarId, long componenteCurricularId)
         {
-            Ano = ano;
-            EscolaId = escolaId;
             TurmaId = turmaId;
-            Bimestre = bimestre;
-            DisciplinaId = disciplinaId;
+            PeriodoEscolarId = periodoEscolarId;
+            ComponenteCurricularId = componenteCurricularId;
         }
 
         public long TurmaId { get; set; }
-        public int Ano { get; set; }
-        public string EscolaId { get; set; }
-        public int Bimestre { get; set; }
-        public long DisciplinaId { get; set; }
+        public long PeriodoEscolarId { get; set; }
+        public long ComponenteCurricularId { get; set; }
     }
 
     public class ObterPlanejamentoAnualPorAnoEscolaBimestreETurmaQueryValidator : AbstractValidator<ObterPlanejamentoAnualPorAnoEscolaBimestreETurmaQuery>
     {
         public ObterPlanejamentoAnualPorAnoEscolaBimestreETurmaQueryValidator()
         {
-            RuleFor(c => c.Ano)
-                .NotEmpty()
-                .WithMessage("O Ano deve ser informado.");
-
-            RuleFor(c => c.EscolaId)
-                .NotEmpty()
-                .WithMessage("O ID da escola deve ser informado.");
-
             RuleFor(c => c.TurmaId)
                 .NotEmpty()
-                .WithMessage("A turma deve ser informada.");
+                .WithMessage("A turma deve ser informada para consulta do plano anual.");
 
-            RuleFor(c => c.Bimestre)
+            RuleFor(c => c.PeriodoEscolarId)
                 .NotEmpty()
-                .WithMessage("O Bimestre deve ser informado.");
+                .WithMessage("O periodo escolar deve ser informado para consulta do plano anual.");
 
-            RuleFor(c => c.DisciplinaId)
+            RuleFor(c => c.ComponenteCurricularId)
                 .NotEmpty()
-                .WithMessage("O Id da Disciplina deve ser informado.");
+                .WithMessage("O componente curricular deve ser informado para consulta do plano anual.");
         }
     }
 }

@@ -25,10 +25,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(PlanoAulaRetornoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PDA_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterPlanoAula(long aulaId, [FromServices] IObterPlanoAulaUseCase useCase)
+        public async Task<IActionResult> ObterPlanoAula(long aulaId, [FromQuery]long turmaId, [FromServices] IObterPlanoAulaUseCase useCase)
         {
-
-            return Ok(await useCase.Executar(aulaId));
+            return Ok(await useCase.Executar(new FiltroObterPlanoAulaDto(aulaId, turmaId)));
            
         }
 
