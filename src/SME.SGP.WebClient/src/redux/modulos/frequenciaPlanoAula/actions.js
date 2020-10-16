@@ -109,3 +109,17 @@ export function setExibirModalCopiarConteudoPlanoAula(payload) {
     payload,
   };
 }
+
+export function setTemPeriodoAbertoFrequenciaPlanoAula(payload) {
+  return {
+    type: '@frequenciaPlanoAula/setTemPeriodoAbertoFrequenciaPlanoAula',
+    payload,
+  };
+}
+
+export function setListaObjetivosComponenteCurricular(payload) {
+  return {
+    type: '@frequenciaPlanoAula/setListaObjetivosComponenteCurricular',
+    payload,
+  };
+}

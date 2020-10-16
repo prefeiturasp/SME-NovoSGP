@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import TransferenciaLista from '~/componentes-sgp/TranferenciaLista/transferenciaLista';
 import {
+  setDadosParaSalvarPlanoAula,
   setExibirLoaderFrequenciaPlanoAula,
   setModoEdicaoPlanoAula,
 } from '~/redux/modulos/frequenciaPlanoAula/actions';
@@ -23,54 +24,82 @@ const ListaObjetivosPlanoAula = React.memo(props => {
     state => state.frequenciaPlanoAula.dadosParaSalvarPlanoAula
   );
 
+  const componenteCurricular = useSelector(
+    state => state.frequenciaPlanoAula.componenteCurricular
+  );
+
   const [dadosEsquerda, setDadosEsquerda] = useState([]);
   const [dadosDireita, setDadosDireita] = useState([]);
   const [idsSelecionadsEsquerda, setIdsSelecionadsEsquerda] = useState([]);
   const [idsSelecionadsDireita, setIdsSelecionadsDireita] = useState([]);
 
+  const obterObjetivosPlanoAnualComponenteAtual = useCallback(
+    listaObjetivos => {
+      return listaObjetivos.find(
+        item =>
+          String(item.componenteCurricularId) ===
+          String(tabAtualComponenteCurricular.codigoComponenteCurricular)
+      );
+    },
+    [tabAtualComponenteCurricular]
+  );
+
+  const obterObjetivosPlanoAulaComponenteAtual = useCallback(() => {
+    return dadosParaSalvarPlanoAula?.objetivosAprendizagemComponente.find(
+      item =>
+        String(item.componenteCurricularId) ===
+        String(tabAtualComponenteCurricular.codigoComponenteCurricular)
+    );
+  }, [dadosParaSalvarPlanoAula, tabAtualComponenteCurricular]);
+
   const montarDadosListasObjetivos = useCallback(
     listaObjetivos => {
-      if (
-        dadosParaSalvarPlanoAula.objetivosAprendizagemAula &&
-        dadosParaSalvarPlanoAula.objetivosAprendizagemAula.length
-      ) {
-        const listaEsquerda = [];
-        const listaDireita = [];
-        listaObjetivos.forEach(objetivo => {
+      const objetivosPlanoAula = obterObjetivosPlanoAulaComponenteAtual();
+      const objetivosPlanoAnual = obterObjetivosPlanoAnualComponenteAtual(
+        listaObjetivos
+      );
+
+      let listaEsquerda = [];
+      let listaDireita = [];
+      if (objetivosPlanoAula && objetivosPlanoAnual) {
+        objetivosPlanoAnual.objetivosAprendizagem.forEach(objetivo => {
           if (
-            dadosParaSalvarPlanoAula.objetivosAprendizagemAula.find(
+            !objetivosPlanoAula.objetivosAprendizagem.find(
               item => item.id === objetivo.id
             )
           ) {
-            listaDireita.push(objetivo);
-          } else {
             listaEsquerda.push(objetivo);
           }
         });
+      } else if (objetivosPlanoAnual) {
+        listaEsquerda = objetivosPlanoAnual.objetivosAprendizagem;
+      }
 
-        if (listaEsquerda.length) {
-          setDadosEsquerda(listaEsquerda);
-        }
-        if (listaDireita.length) {
-          setDadosDireita(listaDireita);
-        }
-      } else {
-        setDadosEsquerda(listaObjetivos);
+      if (objetivosPlanoAula) {
+        listaDireita = objetivosPlanoAula.objetivosAprendizagem;
+      }
+
+      if (listaEsquerda.length) {
+        setDadosEsquerda(listaEsquerda);
+      }
+
+      if (listaDireita.length) {
+        setDadosDireita(listaDireita);
       }
     },
-    [dadosParaSalvarPlanoAula]
+    [
+      obterObjetivosPlanoAulaComponenteAtual,
+      obterObjetivosPlanoAnualComponenteAtual,
+    ]
   );
 
-  // TODO Verificar para salvar dados no redux e não consultar no banco novamente a cada mudança de tab!
   const obterObjetivosPorAnoEComponenteCurricular = useCallback(() => {
     if (
-      tabAtualComponenteCurricular &&
-      tabAtualComponenteCurricular.codigoComponenteCurricular
+      componenteCurricular &&
+      componenteCurricular.codigoComponenteCurricular
     ) {
       dispatch(setExibirLoaderFrequenciaPlanoAula(true));
-      ServicoPlanoAula.obterListaObjetivosPorAnoEComponenteCurricular(
-        tabAtualComponenteCurricular.codigoComponenteCurricular
-      )
+      ServicoPlanoAula.obterListaObjetivosPorAnoEComponenteCurricular()
         .then(listaObjetivos => {
           montarDadosListasObjetivos(listaObjetivos);
         })
@@ -81,7 +110,7 @@ const ListaObjetivosPlanoAula = React.memo(props => {
           dispatch(setExibirLoaderFrequenciaPlanoAula(false));
         });
     }
-  }, [dispatch, tabAtualComponenteCurricular, montarDadosListasObjetivos]);
+  }, [dispatch, componenteCurricular, montarDadosListasObjetivos]);
 
   useEffect(() => {
     if (tabAtualComponenteCurricular) {
@@ -142,6 +171,69 @@ const ListaObjetivosPlanoAula = React.memo(props => {
     return list.filter(item => !ids.find(id => String(id) === String(item.id)));
   };
 
+  const obterIndexComponenteJaInseridoPlanoAula = () => {
+    // Pegar a lista de objetivos  já inseridos no Plano de Aula pelo componente curricular selecionado na tab!
+    // Pega o index desse componente e remove o componente na lista de objetivos já inseridos no Plano de Aula pelo componente curricular selecionado na tab!
+    const componenteParaRemover = dadosParaSalvarPlanoAula.objetivosAprendizagemComponente.find(
+      item =>
+        item.componenteCurricularId ==
+        tabAtualComponenteCurricular.codigoComponenteCurricular
+    );
+    const indexComponente = dadosParaSalvarPlanoAula.objetivosAprendizagemComponente.indexOf(
+      componenteParaRemover
+    );
+
+    return indexComponente;
+  };
+
+  const adicionarRemoverItensReduxListaDireita = novaLista => {
+    if (
+      dadosParaSalvarPlanoAula.objetivosAprendizagemComponente &&
+      dadosParaSalvarPlanoAula.objetivosAprendizagemComponente.length &&
+      novaLista &&
+      novaLista.length
+    ) {
+      const index = obterIndexComponenteJaInseridoPlanoAula();
+
+      if (index > -1) {
+        dadosParaSalvarPlanoAula.objetivosAprendizagemComponente[
+          index
+        ].objetivosAprendizagem = novaLista;
+      } else {
+        // Quando tiver um novo componente selecionado na tab que não tem objetivos inseridos ainda vai criar um novo!
+        const novoValor = {
+          componenteCurricularId:
+            tabAtualComponenteCurricular.codigoComponenteCurricular,
+          objetivosAprendizagem: novaLista,
+        };
+        dadosParaSalvarPlanoAula.objetivosAprendizagemComponente.push(
+          novoValor
+        );
+      }
+    } else if (novaLista && novaLista.length) {
+      // Quando for o primeiro registro na lista da direita!
+      dadosParaSalvarPlanoAula.objetivosAprendizagemComponente = [
+        {
+          componenteCurricularId:
+            tabAtualComponenteCurricular.codigoComponenteCurricular,
+          objetivosAprendizagem: novaLista,
+        },
+      ];
+    } else {
+      // Remove os objetivos da direita (inseridos do plano aula) para adicionar na lista da esquerda( que vem do plano anual )
+      const index = obterIndexComponenteJaInseridoPlanoAula();
+      if (index > -1) {
+        dadosParaSalvarPlanoAula.objetivosAprendizagemComponente.splice(
+          index,
+          1
+        );
+        debugger;
+      }
+    }
+
+    dispatch(setDadosParaSalvarPlanoAula(dadosParaSalvarPlanoAula));
+  };
+
   const onClickAdicionar = () => {
     if (idsSelecionadsEsquerda && idsSelecionadsEsquerda.length) {
       const novaListaDireita = obterListaComIdsSelecionados(
@@ -158,10 +250,7 @@ const ListaObjetivosPlanoAula = React.memo(props => {
       setDadosDireita([...novaListaDireita, ...dadosDireita]);
 
       const novaLista = [...novaListaDireita, ...dadosDireita];
-      ServicoPlanoAula.atualizarDadosParaSalvarPlanoAula(
-        'objetivosAprendizagemAula',
-        novaLista
-      );
+      adicionarRemoverItensReduxListaDireita(novaLista);
 
       dispatch(setModoEdicaoPlanoAula(true));
       setIdsSelecionadsEsquerda([]);
@@ -184,10 +273,7 @@ const ListaObjetivosPlanoAula = React.memo(props => {
       setDadosDireita([...novaListaDireita]);
 
       const novaLista = [...novaListaDireita];
-      ServicoPlanoAula.atualizarDadosParaSalvarPlanoAula(
-        'objetivosAprendizagemAula',
-        novaLista
-      );
+      adicionarRemoverItensReduxListaDireita(novaLista);
 
       dispatch(setModoEdicaoPlanoAula(true));
       setIdsSelecionadsDireita([]);

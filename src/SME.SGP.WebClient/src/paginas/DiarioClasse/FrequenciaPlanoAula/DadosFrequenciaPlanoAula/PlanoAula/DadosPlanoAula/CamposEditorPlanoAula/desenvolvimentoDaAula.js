@@ -16,6 +16,10 @@ const DesenvolvimentoDaAula = () => {
     state => state.frequenciaPlanoAula.dadosPlanoAula
   );
 
+  const temPeriodoAberto = useSelector(
+    state => state.frequenciaPlanoAula.temPeriodoAberto
+  );
+
   const configCabecalho = {
     altura: '44px',
     corBorda: '#4072d6',
@@ -40,7 +44,7 @@ const DesenvolvimentoDaAula = () => {
       >
         <fieldset className="mt-3">
           <Editor
-            desabilitar={desabilitarCamposPlanoAula}
+            desabilitar={desabilitarCamposPlanoAula || !temPeriodoAberto}
             onChange={onChangeDesenvolvimentoAula}
             inicial={dadosPlanoAula.desenvolvimentoAula}
           />

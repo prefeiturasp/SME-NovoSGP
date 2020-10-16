@@ -13,8 +13,6 @@ import {
 import { confirmar, erros, ServicoCalendarios } from '~/servicos';
 import ServicoFrequencia from '~/servicos/Paginas/DiarioClasse/ServicoFrequencia';
 import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
-import ServicoPlanoAnual from '~/servicos/Paginas/ServicoPlanoAnual';
-import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 import servicoSalvarFrequenciaPlanoAula from '../../servicoSalvarFrequenciaPlanoAula';
 import ModalSelecionarAulaFrequenciaPlanoAula from '../ModalSelecionarAula/modalSelecionarAulaFrequenciaPlanoAula';
 
@@ -23,10 +21,6 @@ const CamposFiltrarDadosFrequenciaPlanoAula = () => {
 
   const usuario = useSelector(store => store.usuario);
   const { turmaSelecionada } = usuario;
-
-  const modalidadesFiltroPrincipal = useSelector(
-    state => state.filtro.modalidades
-  );
 
   const componenteCurricular = useSelector(
     state => state.frequenciaPlanoAula.componenteCurricular

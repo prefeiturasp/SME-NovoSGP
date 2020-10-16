@@ -46,15 +46,20 @@ class ServicoSalvarFrequenciaPlanoAula {
     const { frequenciaPlanoAula } = state;
     const { dadosParaSalvarPlanoAula, aulaId } = frequenciaPlanoAula;
 
-    let objetivosId = [];
+    const objetivosAprendizagemComponente = [];
 
     if (
       dadosParaSalvarPlanoAula &&
-      dadosParaSalvarPlanoAula.objetivosAprendizagemAula.length
+      dadosParaSalvarPlanoAula.objetivosAprendizagemComponente.length
     ) {
-      objetivosId = dadosParaSalvarPlanoAula.objetivosAprendizagemAula.map(
-        item => item.id
-      );
+      dadosParaSalvarPlanoAula.objetivosAprendizagemComponente.forEach(item => {
+        item.objetivosAprendizagem.forEach(obj => {
+          objetivosAprendizagemComponente.push({
+            componenteCurricularId: item.componenteCurricularId,
+            id: obj.id,
+          });
+        });
+      });
     }
 
     const valorParaSalvar = {
@@ -63,7 +68,7 @@ class ServicoSalvarFrequenciaPlanoAula {
       recuperacaoAula: dadosParaSalvarPlanoAula.recuperacaoAula,
       licaoCasa: dadosParaSalvarPlanoAula.licaoCasa,
       aulaId,
-      objetivosAprendizagemJurema: objetivosId,
+      objetivosAprendizagemComponente,
     };
 
     dispatch(setExibirLoaderFrequenciaPlanoAula(true));
