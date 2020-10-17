@@ -151,6 +151,33 @@ class ServicoPlanoAula {
     dispatch(setDadosParaSalvarPlanoAula({ ...dadosPlanoAula }));
     dispatch(setDadosPlanoAula({ ...dadosPlanoAula }));
   };
+
+  temObjetivosSelecionadosTabComponenteCurricular = codigoComponenteCurricular => {
+    const state = store.getState();
+    const { frequenciaPlanoAula } = state;
+    const { dadosParaSalvarPlanoAula } = frequenciaPlanoAula;
+
+    if (
+      dadosParaSalvarPlanoAula &&
+      dadosParaSalvarPlanoAula.objetivosAprendizagemComponente &&
+      dadosParaSalvarPlanoAula.objetivosAprendizagemComponente.length
+    ) {
+      const tabAtual = dadosParaSalvarPlanoAula.objetivosAprendizagemComponente.find(
+        item =>
+          String(item.componenteCurricularId) ===
+          String(codigoComponenteCurricular)
+      );
+
+      if (
+        tabAtual &&
+        tabAtual.objetivosAprendizagem &&
+        tabAtual.objetivosAprendizagem.length
+      ) {
+        return true;
+      }
+    }
+    return false;
+  };
 }
 
 export default new ServicoPlanoAula();
