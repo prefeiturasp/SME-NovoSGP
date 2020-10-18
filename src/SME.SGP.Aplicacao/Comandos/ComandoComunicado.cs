@@ -22,6 +22,7 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoUsuario servicoUsuario;
         private readonly IConsultasAbrangencia consultasAbrangencia;
         private readonly IRepositorioComunicadoTurma repositorioComunicadoTurma;
+        private readonly IRepositorioEvento repositorioEvento;
         private const string Todas = "todas";
 
         public ComandoComunicado(IRepositorioComunicado repositorio,
@@ -31,7 +32,8 @@ namespace SME.SGP.Aplicacao
             IRepositorioComunicadoAluno repositorioComunicadoAluno,
             IServicoUsuario servicoUsuario,
             IConsultasAbrangencia consultasAbrangencia,
-            IRepositorioComunicadoTurma repositorioComunicadoTurma)
+            IRepositorioComunicadoTurma repositorioComunicadoTurma,
+            IRepositorioEvento repositorioEvento)
         {
             this.repositorio = repositorio ?? throw new System.ArgumentNullException(nameof(repositorio));
             this.repositorioComunicadoGrupo = repositorioComunicadoGrupo ?? throw new System.ArgumentNullException(nameof(repositorioComunicadoGrupo));
@@ -41,6 +43,7 @@ namespace SME.SGP.Aplicacao
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.consultasAbrangencia = consultasAbrangencia ?? throw new ArgumentNullException(nameof(consultasAbrangencia));
             this.repositorioComunicadoTurma = repositorioComunicadoTurma ?? throw new ArgumentNullException(nameof(repositorioComunicadoTurma));
+            this.repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));
         }
 
         public async Task<string> Alterar(long id, ComunicadoInserirDto comunicadoDto)
@@ -80,19 +83,37 @@ namespace SME.SGP.Aplicacao
         public async Task Excluir(long[] ids)
         {
             var erros = new StringBuilder();
-            await servicoAcompanhamentoEscolar.ExcluirComunicado(ids);
-            foreach (var id in ids)
+
+            var comunicados = ids.Select(id =>
             {
                 var comunicado = repositorio.ObterPorId(id);
                 if (comunicado == null)
+                {
                     erros.Append($"<li>{id} - comunicado não encontrado</li>");
+                }
                 else
+                {
+                    if (comunicado.EventoId.HasValue)
+                    {
+                        var evento = repositorioEvento.ObterPorId(comunicado.EventoId.Value);
+                        if (evento != null && !evento.Excluido)
+                        {
+                            erros.Append($"<li>{id} - {comunicado.Titulo} - Comunicado com evento vinculado</li>");
+                        }
+                    }
+                }
+                return comunicado;
+            });
+
+            if (string.IsNullOrEmpty(erros.ToString())) {
+                await servicoAcompanhamentoEscolar.ExcluirComunicado(ids);
+                foreach (var comunicado in comunicados)
                 {
                     try
                     {
-                        await repositorioComunicadoGrupo.ExcluirPorIdComunicado(id);
-                        await repositorioComunicadoAluno.RemoverTodosAlunosComunicado(id);
-                        await repositorioComunicadoTurma.RemoverTodasTurmasComunicado(id);
+                        await repositorioComunicadoGrupo.ExcluirPorIdComunicado(comunicado.Id);
+                        await repositorioComunicadoAluno.RemoverTodosAlunosComunicado(comunicado.Id);
+                        await repositorioComunicadoTurma.RemoverTodasTurmasComunicado(comunicado.Id);
 
                         comunicado.MarcarExcluido();
 
@@ -100,10 +121,11 @@ namespace SME.SGP.Aplicacao
                     }
                     catch
                     {
-                        erros.Append($"<li>{id} - {comunicado.Titulo}</li>");
+                        erros.Append($"<li>{comunicado.Id} - {comunicado.Titulo}</li>");
                     }
                 }
             }
+
             if (!string.IsNullOrEmpty(erros.ToString()))
                 throw new NegocioException($"<p>Os seguintes comunicados não puderam ser excluídos:</p><br/>{erros.ToString()} por favor, tente novamente");
         }
