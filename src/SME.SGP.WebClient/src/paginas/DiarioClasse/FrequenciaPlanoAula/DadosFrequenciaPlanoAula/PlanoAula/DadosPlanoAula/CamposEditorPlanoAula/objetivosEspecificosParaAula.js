@@ -16,6 +16,11 @@ const ObjetivosEspecificosParaAula = () => {
     state => state.frequenciaPlanoAula.dadosPlanoAula
   );
 
+  const objetivosAprendizagemComponente = useSelector(
+    state =>
+      state.frequenciaPlanoAula.dadosPlanoAula?.objetivosAprendizagemComponente
+  );
+
   const temPeriodoAberto = useSelector(
     state => state.frequenciaPlanoAula.temPeriodoAberto
   );
@@ -25,8 +30,23 @@ const ObjetivosEspecificosParaAula = () => {
     corBorda: '#4072d6',
   };
 
+  const temPeloMenosUmObjetivoSelecionado = () => {
+    if (
+      objetivosAprendizagemComponente &&
+      objetivosAprendizagemComponente.length
+    ) {
+      const algumaTabTemObjetivoSelecionado = objetivosAprendizagemComponente.find(
+        item => item.objetivosAprendizagem && item.objetivosAprendizagem.length
+      );
+      if (algumaTabTemObjetivoSelecionado) {
+        return true;
+      }
+    }
+    return false;
+  };
+
   const onChangeObjetivosEspecificosParaAula = valor => {
-    ServicoPlanoAula.atualizarDadosParaSalvarPlanoAula('descricao', valor);
+    ServicoPlanoAula.atualizarDadosPlanoAula('descricao', valor);
     dispatch(setModoEdicaoPlanoAula(true));
   };
 
@@ -41,7 +61,11 @@ const ObjetivosEspecificosParaAula = () => {
       >
         <fieldset className="mt-3">
           <Editor
-            desabilitar={desabilitarCamposPlanoAula || !temPeriodoAberto}
+            desabilitar={
+              desabilitarCamposPlanoAula ||
+              !temPeriodoAberto ||
+              !temPeloMenosUmObjetivoSelecionado()
+            }
             onChange={onChangeObjetivosEspecificosParaAula}
             inicial={dadosPlanoAula.descricao}
           />

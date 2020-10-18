@@ -75,9 +75,9 @@ export function setSomenteConsultaFrequenciaPlanoAula(payload) {
   };
 }
 
-export function setDadosParaSalvarPlanoAula(payload) {
+export function setDadosOriginaisPlanoAula(payload) {
   return {
-    type: '@frequenciaPlanoAula/setDadosParaSalvarPlanoAula',
+    type: '@frequenciaPlanoAula/setDadosOriginaisPlanoAula',
     payload,
   };
 }
