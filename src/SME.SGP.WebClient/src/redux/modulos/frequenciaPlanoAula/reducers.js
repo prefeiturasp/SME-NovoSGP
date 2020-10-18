@@ -11,7 +11,6 @@ const inicial = {
   exibirLoaderFrequenciaPlanoAula: false,
   somenteConsulta: false,
   desabilitarCamposPlanoAula: false,
-  dadosOriginaisPlanoAula: undefined,
   tabAtualComponenteCurricular: undefined,
   listaComponentesCurricularesPlanejamento: [],
   exibirCardCollapsePlanoAula: { exibir: false },
@@ -45,7 +44,6 @@ export default function frequenciaPlanoAula(state = inicial, action) {
           aulaId: 0,
           dataSelecionada: undefined,
           desabilitarCamposPlanoAula: false,
-          dadosOriginaisPlanoAula: undefined,
           tabAtualComponenteCurricular: undefined,
           listaComponentesCurricularesPlanejamento: [],
           exibirCardCollapsePlanoAula: { exibir: false },
@@ -102,12 +100,6 @@ export default function frequenciaPlanoAula(state = inicial, action) {
           somenteConsulta: action.payload,
         };
       }
-      case '@frequenciaPlanoAula/setDadosOriginaisPlanoAula': {
-        return {
-          ...draft,
-          dadosOriginaisPlanoAula: action.payload,
-        };
-      }
       case '@frequenciaPlanoAula/setTabAtualComponenteCurricular': {
         return {
           ...draft,
@@ -142,6 +134,18 @@ export default function frequenciaPlanoAula(state = inicial, action) {
         return {
           ...draft,
           listaObjetivosComponenteCurricular: action.payload,
+        };
+      }
+      case '@frequenciaPlanoAula/setLimparDadosPlanoAula': {
+        return {
+          ...draft,
+          dadosPlanoAula: undefined,
+          modoEdicaoPlanoAula: false,
+          tabAtualComponenteCurricular: undefined,
+          listaComponentesCurricularesPlanejamento: [],
+          exibirCardCollapsePlanoAula: { exibir: false },
+          exibirModalCopiarConteudoPlanoAula: false,
+          listaObjetivosComponenteCurricular: [],
         };
       }
 
