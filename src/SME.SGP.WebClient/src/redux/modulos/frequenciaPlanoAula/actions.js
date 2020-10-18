@@ -123,3 +123,13 @@ export function setLimparDadosPlanoAula(payload) {
     payload,
   };
 }
+
+export const setErrosPlanoAula = payload => ({
+  type: '@planoAnual/setErrosPlanoAula',
+  payload,
+});
+
+export const setExibirModalErrosPlanoAula = payload => ({
+  type: '@planoAnual/setExibirModalErrosPlanoAula',
+  payload,
+});

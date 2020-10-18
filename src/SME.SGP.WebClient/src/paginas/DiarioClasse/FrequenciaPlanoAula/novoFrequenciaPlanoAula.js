@@ -7,9 +7,12 @@ import { RotasDto } from '~/dtos';
 import { salvarDadosAulaFrequencia } from '~/redux/modulos/calendarioProfessor/actions';
 import {
   limparDadosFrequenciaPlanoAula,
+  setComponenteCurricularFrequenciaPlanoAula,
+  setLimparDadosPlanoAula,
   setSomenteConsultaFrequenciaPlanoAula,
 } from '~/redux/modulos/frequenciaPlanoAula/actions';
 import { obterDescricaoNomeMenu, verificaSomenteConsulta } from '~/servicos';
+import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 import BotoesAcoesFrequenciaPlanoAula from './DadosFrequenciaPlanoAula/BotoesAcoes/botoesAcoesFrequenciaPlanoAula';
 import CamposFiltrarDadosFrequenciaPlanoAula from './DadosFrequenciaPlanoAula/CamposFiltrarDadosFrequenciaPlanoAula/camposFiltrarDadosFrequenciaPlanoAula';
 import MontarListaFrequencia from './DadosFrequenciaPlanoAula/Frequencia/montarListaFrequencia';
@@ -34,6 +37,12 @@ const NovoFrequenciaPlanoAula = () => {
     dispatch(limparDadosFrequenciaPlanoAula());
   }, [dispatch]);
 
+  useEffect(() => {
+    if (ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada)) {
+      dispatch(setLimparDadosPlanoAula());
+    }
+  }, [dispatch, modalidadesFiltroPrincipal, turmaSelecionada]);
+
   const validaSomenteConsulta = useCallback(() => {
     const soConsulta = verificaSomenteConsulta(permissoesTela);
     dispatch(setSomenteConsultaFrequenciaPlanoAula(soConsulta));
@@ -42,6 +51,7 @@ const NovoFrequenciaPlanoAula = () => {
   useEffect(() => {
     resetarInfomacoes();
     validaSomenteConsulta();
+    dispatch(setComponenteCurricularFrequenciaPlanoAula());
     return () => {
       // Quando sair da tela vai executar para limpar os dados no redux!
       resetarInfomacoes();

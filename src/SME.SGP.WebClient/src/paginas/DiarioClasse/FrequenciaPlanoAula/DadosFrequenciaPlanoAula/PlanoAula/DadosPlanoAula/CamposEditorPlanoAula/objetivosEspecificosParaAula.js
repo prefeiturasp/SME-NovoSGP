@@ -26,6 +26,10 @@ const ObjetivosEspecificosParaAula = () => {
     state => state.frequenciaPlanoAula.temPeriodoAberto
   );
 
+  const componenteCurricular = useSelector(
+    state => state.frequenciaPlanoAula.componenteCurricular
+  );
+
   const configCabecalho = {
     altura: '44px',
     corBorda: '#4072d6',
@@ -61,7 +65,8 @@ const ObjetivosEspecificosParaAula = () => {
         show
       >
         <fieldset className="mt-3">
-          {!temPeloMenosUmObjetivoSelecionado() ? (
+          {componenteCurricular.possuiObjetivos &&
+          !temPeloMenosUmObjetivoSelecionado() ? (
             <p style={{ color: `${Base.VermelhoAlerta}` }}>
               Você precisa selecionar pelo menos um objetivo para poder inserir
               a descrição do plano.
@@ -73,7 +78,8 @@ const ObjetivosEspecificosParaAula = () => {
             desabilitar={
               desabilitarCamposPlanoAula ||
               !temPeriodoAberto ||
-              !temPeloMenosUmObjetivoSelecionado()
+              (componenteCurricular.possuiObjetivos &&
+                !temPeloMenosUmObjetivoSelecionado())
             }
             onChange={onChangeObjetivosEspecificosParaAula}
             inicial={dadosPlanoAula?.descricao}

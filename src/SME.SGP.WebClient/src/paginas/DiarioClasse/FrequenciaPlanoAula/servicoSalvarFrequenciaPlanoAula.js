@@ -1,7 +1,9 @@
 import { store } from '~/redux';
 import {
   setDataSelecionadaFrequenciaPlanoAula,
+  setErrosPlanoAula,
   setExibirLoaderFrequenciaPlanoAula,
+  setExibirModalErrosPlanoAula,
   setModoEdicaoFrequencia,
   setModoEdicaoPlanoAula,
 } from '~/redux/modulos/frequenciaPlanoAula/actions';
@@ -43,10 +45,62 @@ class ServicoSalvarFrequenciaPlanoAula {
     const { dispatch } = store;
     const state = store.getState();
 
-    const { frequenciaPlanoAula } = state;
-    const { dadosPlanoAula, aulaId } = frequenciaPlanoAula;
+    const { frequenciaPlanoAula, usuario, perfis } = state;
+    const { ehProfessorCj } = usuario;
+    const {
+      dadosPlanoAula,
+      aulaId,
+      componenteCurricular,
+    } = frequenciaPlanoAula;
 
     const objetivosAprendizagemComponente = [];
+
+    const validaSeTemErrosPlanoAula = () => {
+      const errosValidacaoPlano = [];
+
+      if (!dadosPlanoAula.descricao) {
+        errosValidacaoPlano.push(
+          'Meus objetivos - O campo meus objetivos específicos para a aula é obrigatório'
+        );
+      }
+
+      if (!dadosPlanoAula.desenvolvimentoAula) {
+        errosValidacaoPlano.push(
+          'Desenvolvimento da aula - A sessão de desenvolvimento da aula deve ser preenchida'
+        );
+      }
+
+      const perfil =
+        perfis && perfis.perfis.find(item => item.nomePerfil === 'PAP');
+      if (perfil && !dadosPlanoAula.objetivosAprendizagemComponente.length) {
+        return false;
+      }
+
+      if (
+        !ehProfessorCj &&
+        componenteCurricular.possuiObjetivos &&
+        !ServicoPlanoAula.temPeloMenosUmObjetivoSelecionado(
+          dadosPlanoAula.objetivosAprendizagemComponente
+        )
+      ) {
+        errosValidacaoPlano.push(
+          'Objetivos de aprendizagem - É obrigatório selecionar ao menos um objetivo de aprendizagem'
+        );
+      }
+
+      if (errosValidacaoPlano && errosValidacaoPlano.length) {
+        dispatch(setErrosPlanoAula(errosValidacaoPlano));
+        return true;
+      }
+      return false;
+    };
+
+    const temErrosValidacaoPlano = validaSeTemErrosPlanoAula();
+
+    if (temErrosValidacaoPlano) {
+      dispatch(setExibirModalErrosPlanoAula(true));
+      return false;
+    }
 
     if (
       dadosPlanoAula &&

@@ -162,6 +162,21 @@ class ServicoPlanoAula {
     }
     return false;
   };
+
+  temPeloMenosUmObjetivoSelecionado = objetivosAprendizagemComponente => {
+    if (
+      objetivosAprendizagemComponente &&
+      objetivosAprendizagemComponente.length
+    ) {
+      const algumaTabTemObjetivoSelecionado = objetivosAprendizagemComponente.find(
+        item => item.objetivosAprendizagem && item.objetivosAprendizagem.length
+      );
+      if (algumaTabTemObjetivoSelecionado) {
+        return true;
+      }
+    }
+    return false;
+  };
 }
 
 export default new ServicoPlanoAula();

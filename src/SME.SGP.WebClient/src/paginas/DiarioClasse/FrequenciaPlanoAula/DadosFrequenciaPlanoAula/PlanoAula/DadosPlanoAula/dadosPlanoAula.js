@@ -14,6 +14,7 @@ import LicaoDeCasa from './CamposEditorPlanoAula/licaoDeCasa';
 import ObjetivosEspecificosParaAula from './CamposEditorPlanoAula/objetivosEspecificosParaAula';
 import RecuperacaoContinua from './CamposEditorPlanoAula/recuperacaoContinua';
 import ModalCopiarConteudoPlanoAula from './ModalCopiarConteudo/modalCopiarConteudoPlanoAula';
+import ModalErrosPlanoAula from './ModalErros/modalErrosPlanoAula';
 import ObjetivosAprendizagemDesenvolvimento from './ObjetivosAprendizagemDesenvolvimento/objetivosAprendizagemDesenvolvimento';
 
 const DadosPlanoAula = () => {
@@ -90,6 +91,7 @@ const DadosPlanoAula = () => {
           ) : (
             ''
           )}
+          <ModalErrosPlanoAula />
         </>
       ) : (
         ''
