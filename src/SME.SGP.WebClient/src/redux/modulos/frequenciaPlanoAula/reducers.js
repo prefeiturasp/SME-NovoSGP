@@ -11,7 +11,7 @@ const inicial = {
   exibirLoaderFrequenciaPlanoAula: false,
   somenteConsulta: false,
   desabilitarCamposPlanoAula: false,
-  dadosParaSalvarPlanoAula: undefined,
+  dadosOriginaisPlanoAula: undefined,
   tabAtualComponenteCurricular: undefined,
   listaComponentesCurricularesPlanejamento: [],
   exibirCardCollapsePlanoAula: { exibir: false },
@@ -45,7 +45,7 @@ export default function frequenciaPlanoAula(state = inicial, action) {
           aulaId: 0,
           dataSelecionada: undefined,
           desabilitarCamposPlanoAula: false,
-          dadosParaSalvarPlanoAula: undefined,
+          dadosOriginaisPlanoAula: undefined,
           tabAtualComponenteCurricular: undefined,
           listaComponentesCurricularesPlanejamento: [],
           exibirCardCollapsePlanoAula: { exibir: false },
@@ -102,10 +102,10 @@ export default function frequenciaPlanoAula(state = inicial, action) {
           somenteConsulta: action.payload,
         };
       }
-      case '@frequenciaPlanoAula/setDadosParaSalvarPlanoAula': {
+      case '@frequenciaPlanoAula/setDadosOriginaisPlanoAula': {
         return {
           ...draft,
-          dadosParaSalvarPlanoAula: action.payload,
+          dadosOriginaisPlanoAula: action.payload,
         };
       }
       case '@frequenciaPlanoAula/setTabAtualComponenteCurricular': {

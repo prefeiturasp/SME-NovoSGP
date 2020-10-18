@@ -44,15 +44,15 @@ class ServicoSalvarFrequenciaPlanoAula {
     const state = store.getState();
 
     const { frequenciaPlanoAula } = state;
-    const { dadosParaSalvarPlanoAula, aulaId } = frequenciaPlanoAula;
+    const { dadosPlanoAula, aulaId } = frequenciaPlanoAula;
 
     const objetivosAprendizagemComponente = [];
 
     if (
-      dadosParaSalvarPlanoAula &&
-      dadosParaSalvarPlanoAula.objetivosAprendizagemComponente.length
+      dadosPlanoAula &&
+      dadosPlanoAula.objetivosAprendizagemComponente.length
     ) {
-      dadosParaSalvarPlanoAula.objetivosAprendizagemComponente.forEach(item => {
+      dadosPlanoAula.objetivosAprendizagemComponente.forEach(item => {
         item.objetivosAprendizagem.forEach(obj => {
           objetivosAprendizagemComponente.push({
             componenteCurricularId: item.componenteCurricularId,
@@ -63,10 +63,10 @@ class ServicoSalvarFrequenciaPlanoAula {
     }
 
     const valorParaSalvar = {
-      descricao: dadosParaSalvarPlanoAula.descricao,
-      desenvolvimentoAula: dadosParaSalvarPlanoAula.desenvolvimentoAula,
-      recuperacaoAula: dadosParaSalvarPlanoAula.recuperacaoAula,
-      licaoCasa: dadosParaSalvarPlanoAula.licaoCasa,
+      descricao: dadosPlanoAula.descricao,
+      desenvolvimentoAula: dadosPlanoAula.desenvolvimentoAula,
+      recuperacaoAula: dadosPlanoAula.recuperacaoAula,
+      licaoCasa: dadosPlanoAula.licaoCasa,
       aulaId,
       objetivosAprendizagemComponente,
     };

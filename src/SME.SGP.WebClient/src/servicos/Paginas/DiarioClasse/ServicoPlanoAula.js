@@ -1,6 +1,6 @@
 import { store } from '~/redux';
 import {
-  setDadosParaSalvarPlanoAula,
+  setDadosOriginaisPlanoAula,
   setDadosPlanoAula,
   setExibirCardCollapsePlanoAula,
   setExibirLoaderFrequenciaPlanoAula,
@@ -64,7 +64,7 @@ class ServicoPlanoAula {
 
       if (plano && plano.data) {
         dispatch(setDadosPlanoAula({ ...plano.data }));
-        dispatch(setDadosParaSalvarPlanoAula({ ...plano.data }));
+        dispatch(setDadosOriginaisPlanoAula({ ...plano.data }));
 
         const ehMigrado = plano.data.migrado;
 
@@ -88,15 +88,15 @@ class ServicoPlanoAula {
     return api.post('v1/planos/aulas', dadosPlanoAula);
   };
 
-  atualizarDadosParaSalvarPlanoAula = (nomeCampo, valorNovo) => {
+  atualizarDadosPlanoAula = (nomeCampo, valorNovo) => {
     const { dispatch } = store;
     const state = store.getState();
 
     const { frequenciaPlanoAula } = state;
-    const { dadosParaSalvarPlanoAula } = frequenciaPlanoAula;
+    const { dadosPlanoAula } = frequenciaPlanoAula;
 
-    dadosParaSalvarPlanoAula[nomeCampo] = valorNovo;
-    dispatch(setDadosParaSalvarPlanoAula(dadosParaSalvarPlanoAula));
+    dadosPlanoAula[nomeCampo] = valorNovo;
+    dispatch(setDadosPlanoAula(dadosPlanoAula));
   };
 
   obterListaObjetivosPorAnoEComponenteCurricular = async () => {
@@ -146,23 +146,23 @@ class ServicoPlanoAula {
 
     const { frequenciaPlanoAula } = state;
 
-    const { dadosPlanoAula } = frequenciaPlanoAula;
+    const { dadosOriginaisPlanoAula } = frequenciaPlanoAula;
 
-    dispatch(setDadosParaSalvarPlanoAula({ ...dadosPlanoAula }));
-    dispatch(setDadosPlanoAula({ ...dadosPlanoAula }));
+    dispatch(setDadosOriginaisPlanoAula({ ...dadosOriginaisPlanoAula }));
+    dispatch(setDadosPlanoAula({ ...dadosOriginaisPlanoAula }));
   };
 
   temObjetivosSelecionadosTabComponenteCurricular = codigoComponenteCurricular => {
     const state = store.getState();
     const { frequenciaPlanoAula } = state;
-    const { dadosParaSalvarPlanoAula } = frequenciaPlanoAula;
+    const { dadosPlanoAula } = frequenciaPlanoAula;
 
     if (
-      dadosParaSalvarPlanoAula &&
-      dadosParaSalvarPlanoAula.objetivosAprendizagemComponente &&
-      dadosParaSalvarPlanoAula.objetivosAprendizagemComponente.length
+      dadosPlanoAula &&
+      dadosPlanoAula.objetivosAprendizagemComponente &&
+      dadosPlanoAula.objetivosAprendizagemComponente.length
     ) {
-      const tabAtual = dadosParaSalvarPlanoAula.objetivosAprendizagemComponente.find(
+      const tabAtual = dadosPlanoAula.objetivosAprendizagemComponente.find(
         item =>
           String(item.componenteCurricularId) ===
           String(codigoComponenteCurricular)
