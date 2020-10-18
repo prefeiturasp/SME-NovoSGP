@@ -1,6 +1,5 @@
 import { store } from '~/redux';
 import {
-  setDadosOriginaisPlanoAula,
   setDadosPlanoAula,
   setExibirCardCollapsePlanoAula,
   setExibirLoaderFrequenciaPlanoAula,
@@ -64,8 +63,6 @@ class ServicoPlanoAula {
 
       if (plano && plano.data) {
         dispatch(setDadosPlanoAula({ ...plano.data }));
-        dispatch(setDadosOriginaisPlanoAula({ ...plano.data }));
-
         const ehMigrado = plano.data.migrado;
 
         // Quando for MIGRADO mostrar somente um tab com o componente curricular já selecionado!
@@ -137,19 +134,6 @@ class ServicoPlanoAula {
     }
     dispatch(setListaObjetivosComponenteCurricular([]));
     return [];
-  };
-
-  atualizarDadosAposCancelarEdicao = () => {
-    const { dispatch } = store;
-
-    const state = store.getState();
-
-    const { frequenciaPlanoAula } = state;
-
-    const { dadosOriginaisPlanoAula } = frequenciaPlanoAula;
-
-    dispatch(setDadosOriginaisPlanoAula({ ...dadosOriginaisPlanoAula }));
-    dispatch(setDadosPlanoAula({ ...dadosOriginaisPlanoAula }));
   };
 
   temObjetivosSelecionadosTabComponenteCurricular = codigoComponenteCurricular => {

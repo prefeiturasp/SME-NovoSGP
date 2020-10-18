@@ -75,13 +75,6 @@ export function setSomenteConsultaFrequenciaPlanoAula(payload) {
   };
 }
 
-export function setDadosOriginaisPlanoAula(payload) {
-  return {
-    type: '@frequenciaPlanoAula/setDadosOriginaisPlanoAula',
-    payload,
-  };
-}
-
 export function setTabAtualComponenteCurricular(payload) {
   return {
     type: '@frequenciaPlanoAula/setTabAtualComponenteCurricular',
@@ -120,6 +113,13 @@ export function setTemPeriodoAbertoFrequenciaPlanoAula(payload) {
 export function setListaObjetivosComponenteCurricular(payload) {
   return {
     type: '@frequenciaPlanoAula/setListaObjetivosComponenteCurricular',
+    payload,
+  };
+}
+
+export function setLimparDadosPlanoAula(payload) {
+  return {
+    type: '@frequenciaPlanoAula/setLimparDadosPlanoAula',
     payload,
   };
 }

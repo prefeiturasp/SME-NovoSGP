@@ -1,5 +1,6 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { Base } from '~/componentes';
 import CardCollapse from '~/componentes/cardCollapse';
 import Editor from '~/componentes/editor/editor';
 import { setModoEdicaoPlanoAula } from '~/redux/modulos/frequenciaPlanoAula/actions';
@@ -60,6 +61,14 @@ const ObjetivosEspecificosParaAula = () => {
         show
       >
         <fieldset className="mt-3">
+          {!temPeloMenosUmObjetivoSelecionado() ? (
+            <p style={{ color: `${Base.VermelhoAlerta}` }}>
+              Você precisa selecionar pelo menos um objetivo para poder inserir
+              a descrição do plano.
+            </p>
+          ) : (
+            ''
+          )}
           <Editor
             desabilitar={
               desabilitarCamposPlanoAula ||
@@ -67,7 +76,7 @@ const ObjetivosEspecificosParaAula = () => {
               !temPeloMenosUmObjetivoSelecionado()
             }
             onChange={onChangeObjetivosEspecificosParaAula}
-            inicial={dadosPlanoAula.descricao}
+            inicial={dadosPlanoAula?.descricao}
           />
         </fieldset>
       </CardCollapse>
