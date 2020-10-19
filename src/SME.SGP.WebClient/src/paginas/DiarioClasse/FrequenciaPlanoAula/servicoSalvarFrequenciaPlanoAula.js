@@ -53,6 +53,7 @@ class ServicoSalvarFrequenciaPlanoAula {
       exibirSwitchEscolhaObjetivos,
       checkedExibirEscolhaObjetivos,
       dadosOriginaisPlanoAula,
+      componenteCurricular,
     } = frequenciaPlanoAula;
 
     const validaSeTemErrosPlanoAula = () => {
@@ -79,10 +80,12 @@ class ServicoSalvarFrequenciaPlanoAula {
       if (
         exibirSwitchEscolhaObjetivos
           ? checkedExibirEscolhaObjetivos &&
+            componenteCurricular.possuiObjetivos &&
             !ServicoPlanoAula.temPeloMenosUmObjetivoSelecionado(
               dadosPlanoAula.objetivosAprendizagemComponente
             )
-          : !ServicoPlanoAula.temPeloMenosUmObjetivoSelecionado(
+          : componenteCurricular.possuiObjetivos &&
+            !ServicoPlanoAula.temPeloMenosUmObjetivoSelecionado(
               dadosPlanoAula.objetivosAprendizagemComponente
             )
       ) {

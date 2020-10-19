@@ -88,7 +88,7 @@ namespace SME.SGP.Dados.Repositorios
 
             var lookup = new Dictionary<long, PlanoAulaObjetivosAprendizagemDto>();
 
-            await database.Conexao.QueryAsync<PlanoAulaObjetivosAprendizagemDto, long, ObjetivoAprendizagemDto, PlanoAulaObjetivosAprendizagemDto>(query, (planoAulaObjetivosAprendizagemDto, componenteId, objetivoAprendizagemDto) => {
+            await database.Conexao.QueryAsync<PlanoAulaObjetivosAprendizagemDto, long?, ObjetivoAprendizagemDto, PlanoAulaObjetivosAprendizagemDto>(query, (planoAulaObjetivosAprendizagemDto, componenteId, objetivoAprendizagemDto) => {
 
                 var retorno = new PlanoAulaObjetivosAprendizagemDto();
                 if (!lookup.TryGetValue(planoAulaObjetivosAprendizagemDto.Id, out retorno))
@@ -98,15 +98,16 @@ namespace SME.SGP.Dados.Repositorios
                 }
 
                 var objetivoComponente = retorno.ObjetivosAprendizagemComponente.FirstOrDefault(c => c.ComponenteCurricularId == componenteId);
-                if (objetivoComponente == null)
+                if (objetivoComponente == null && componenteId.HasValue)
                 {
                     objetivoComponente = new ObjetivosAprendizagemPorComponenteDto();
-                    objetivoComponente.ComponenteCurricularId = componenteId;
+                    objetivoComponente.ComponenteCurricularId = componenteId.Value;
 
                     retorno.Adicionar(objetivoComponente);
                 }
 
-                objetivoComponente.ObjetivosAprendizagem.Add(objetivoAprendizagemDto);
+                if (objetivoAprendizagemDto != null)
+                    objetivoComponente.ObjetivosAprendizagem.Add(objetivoAprendizagemDto);
 
                 return retorno;
             }, param: new
