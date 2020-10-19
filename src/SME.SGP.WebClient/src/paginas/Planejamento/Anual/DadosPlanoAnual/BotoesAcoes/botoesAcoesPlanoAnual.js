@@ -6,6 +6,7 @@ import { URL_HOME } from '~/constantes/url';
 import {
   limparDadosPlanoAnual,
   setComponenteCurricularPlanoAnual,
+  setExibirModalCopiarConteudo,
 } from '~/redux/modulos/anual/actions';
 import { confirmar } from '~/servicos';
 import history from '~/servicos/history';
@@ -30,6 +31,18 @@ const BotoesAcoesPlanoAnual = () => {
     store => store.planoAnual.componenteCurricular
   );
 
+  const listaTurmasParaCopiar = useSelector(
+    store => store.planoAnual.listaTurmasParaCopiar
+  );
+
+  const planejamentoAnualId = useSelector(
+    store => store.planoAnual.planejamentoAnualId
+  );
+
+  const planoAnualSomenteConsulta = useSelector(
+    store => store.planoAnual.planoAnualSomenteConsulta
+  );
+
   const onSalvar = async () => {
     const salvou = await servicoSalvarPlanoAnual.validarSalvarPlanoAnual();
     return salvou;
@@ -44,7 +57,7 @@ const BotoesAcoesPlanoAnual = () => {
   };
 
   const onClickVoltar = async () => {
-    if (planoAnualEmEdicao) {
+    if (planoAnualEmEdicao && !planoAnualSomenteConsulta) {
       const confirmado = await perguntaAoSalvar();
       if (confirmado) {
         const salvou = await onSalvar();
@@ -60,14 +73,13 @@ const BotoesAcoesPlanoAnual = () => {
   };
 
   const onCancelar = async () => {
-    if (planoAnualEmEdicao) {
+    if (planoAnualEmEdicao && !planoAnualSomenteConsulta) {
       const confirmou = await confirmar(
         'Atenção',
         'Você não salvou as informações preenchidas.',
         'Deseja realmente cancelar as alterações?'
       );
       if (confirmou) {
-        // TODO Esta forlando a recarregar tela, ajustar!!!
         dispatch(limparDadosPlanoAnual());
         const componente = { ...componenteCurricular };
         dispatch(setComponenteCurricularPlanoAnual(componente));
@@ -75,8 +87,29 @@ const BotoesAcoesPlanoAnual = () => {
     }
   };
 
+  const abrirCopiarConteudo = async () => {
+    dispatch(setExibirModalCopiarConteudo(true));
+  };
+
   return (
     <>
+      <Button
+        id="btn-copiar-conteudo-plano-anual"
+        label="Copiar Conteúdo"
+        icon="share-square"
+        color={Colors.Azul}
+        className="mr-3"
+        border
+        onClick={abrirCopiarConteudo}
+        disabled={
+          !planejamentoAnualId ||
+          ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada) ||
+          planoAnualSomenteConsulta ||
+          planoAnualEmEdicao ||
+          !listaTurmasParaCopiar ||
+          listaTurmasParaCopiar.length === 0
+        }
+      />
       <Button
         id="btn-voltar-plano-anual"
         label="Voltar"
@@ -94,6 +127,7 @@ const BotoesAcoesPlanoAnual = () => {
         className="mr-3"
         onClick={onCancelar}
         disabled={
+          planoAnualSomenteConsulta ||
           ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada) ||
           !planoAnualEmEdicao
         }
@@ -106,6 +140,7 @@ const BotoesAcoesPlanoAnual = () => {
         bold
         onClick={onSalvar}
         disabled={
+          planoAnualSomenteConsulta ||
           ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada) ||
           !planoAnualEmEdicao
         }

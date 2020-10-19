@@ -5,6 +5,7 @@ import {
   setEhRegistroMigrado,
   setExibirLoaderPlanoAnual,
   setListaComponentesCurricularesPlanejamento,
+  setListaTurmasParaCopiar,
 } from '~/redux/modulos/anual/actions';
 import { erros } from '~/servicos/alertas';
 import ServicoComponentesCurriculares from '~/servicos/Paginas/ComponentesCurriculares/ServicoComponentesCurriculares';
@@ -68,18 +69,35 @@ const DadosPlanoAnual = () => {
       });
   }, [dispatch, turmaSelecionada]);
 
+  const obterTurmasParaCopiarConteudo = useCallback(() => {
+    ServicoPlanoAnual.obterTurmasParaCopia(
+      turmaSelecionada.turma,
+      componenteCurricular.codigoComponenteCurricular,
+      turmaSelecionada.ensinoEspecial
+    )
+      .then(resposta => {
+        dispatch(setListaTurmasParaCopiar(resposta.data));
+      })
+      .catch(e => {
+        dispatch(setListaTurmasParaCopiar([]));
+        erros(e);
+      });
+  }, [componenteCurricular, turmaSelecionada, dispatch]);
+
   /**
    * carrega a lista de bimestres com os dados dos planos
    */
-  useEffect(() => {
-    // TODO VER PARA LIMPAR OS DADOS ANTIGOS!
+  useEffect(() => {  
     if (
       !ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada) &&
       componenteCurricular &&
-      componenteCurricular.codigoComponenteCurricular &&
-      turmaSelecionada &&
-      turmaSelecionada.turma
+      componenteCurricular.codigoComponenteCurricular
     ) {
+      ServicoPlanoAnual.obterPlanejamentoId(
+        turmaSelecionada.id,
+        componenteCurricular.codigoComponenteCurricular
+      );
+      obterTurmasParaCopiarConteudo();
       obterBimestresPlanoAnual().then(dados => {
         if (dados && dados.length) {
           const ehMigrado = dados.find(item => item.migrado);
@@ -96,15 +114,7 @@ const DadosPlanoAnual = () => {
         }
       });
     }
-  }, [
-    obterListaComponentesCurricularesPlanejamento,
-    montarListaComponenteCurricularesPlanejamento,
-    obterBimestresPlanoAnual,
-    componenteCurricular,
-    dispatch,
-    modalidadesFiltroPrincipal,
-    turmaSelecionada,
-  ]);
+  }, [componenteCurricular]);
 
   return (
     <>

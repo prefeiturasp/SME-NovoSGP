@@ -26,7 +26,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<PlanejamentoAnualPeriodoEscolar>(sql, new { id });
         }
 
-        public async Task<PlanejamentoAnual> ObterPorTurmaEComponenteCurricular(long turmaId, long componenteCurricularId, long periodoEscolarId)
+        public async Task<PlanejamentoAnual> ObterPorTurmaEComponenteCurricularPeriodoEscolar(long turmaId, long componenteCurricularId, long periodoEscolarId)
         {
             var sql = @"select
 	                        pa.*,
@@ -107,6 +107,115 @@ namespace SME.SGP.Dados.Repositorios
 	                        and pa.componente_curricular_id = @componenteCurricularId";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<PlanejamentoAnual>(sql, new { turmaId, componenteCurricularId });
+        }
+
+        public async Task<long> ObterIdPorTurmaEComponenteCurricular(long turmaId, long componenteCurricularId)
+        {
+            var sql = @"select
+	                        pa.id
+                        from
+	                        planejamento_anual pa
+                        where
+	                        turma_id = @turmaId
+	                        and pa.componente_curricular_id = @componenteCurricularId";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<long>(sql, new { turmaId, componenteCurricularId });
+        }
+
+        public async Task<IEnumerable<TurmaParaCopiaPlanoAnualDto>> ValidaSeTurmasPossuemPlanoAnual(string[] turmasId)
+        {
+            var query = @"select
+	                        t.*,
+	                        (select 1 from plano_anual where turma_id = t.turma_id::int8 limit 1) as possuiPlano
+                        from
+	                        turma t
+                        inner join abrangencia a on
+	                        a.turma_id = t.id
+                        left join plano_anual p on
+	                        p.turma_id = a.turma_id
+                        where
+	                        t.turma_id = Any(@turmasId) and not a.historico group by t.id";
+
+            return await database.Conexao.QueryAsync<TurmaParaCopiaPlanoAnualDto>(query, new { turmasId });
+        }
+
+        public async Task<IEnumerable<TurmaParaCopiaPlanoAnualDto>> ValidaSeTurmasPossuemPlanejamentoAnual(string[] turmasId)
+        {
+             var query = @"select
+	                        t.*,
+	                        (select 1 from planejamento_anual where turma_id = t.turma_id::int8 limit 1) as possuiPlano
+                        from
+	                        turma t
+                        inner join abrangencia a on
+	                        a.turma_id = t.id
+                        left join planejamento_anual p on
+	                        p.turma_id = a.turma_id
+                        where
+	                        t.turma_id = Any(@turmasId) and not a.historico group by t.id";
+
+            return await database.Conexao.QueryAsync<TurmaParaCopiaPlanoAnualDto>(query, new { turmasId });
+        }
+
+        public async Task<IEnumerable<TurmaParaCopiaPlanoAnualDto>> ObterTurmasParaCopiaPlanejamentoAnual(Turma turma, string ano, long componenteCurricularId, string rf, bool ensinoEspecial, bool ehProfessor)
+        {
+            var query = @"select
+	                        t.id,
+	                        t.id as TurmaId,
+	                        t.nome as nome,
+	                        (
+	                        select
+		                        1
+	                        from
+		                        planejamento_anual
+	                        where
+		                        turma_id = t.id
+	                        limit 1) as possuiPlano
+                        from
+	                        turma t
+                        inner join abrangencia ab on
+	                        t.id = ab.turma_id
+                        inner join aula a on
+	                        a.turma_id = t.turma_id 
+                        left join planejamento_anual p on
+	                        p.turma_id = ab.turma_id
+                        where
+	                        not ab.historico and a.disciplina_id = @componenteCurricularId and t.id <> @turmaId and t.ue_id = @ueId ";
+            if (ehProfessor)
+                query += " and a.criado_rf = @rf ";
+            if (!ensinoEspecial)
+                query += "and t.ano = @ano";
+            query += $" group by t.id order by t.nome";
+
+            return await database.Conexao.QueryAsync<TurmaParaCopiaPlanoAnualDto>(query, new { turmaId = turma.Id, ueId = turma.UeId, componenteCurricularId = componenteCurricularId.ToString(), ano, rf });
+        }
+
+        public async Task<IEnumerable<TurmaParaCopiaPlanoAnualDto>> ObterTurmasParaCopiaPlanejamentoAnualCP(Turma turma, string ano,  bool ensinoEspecial)
+        {
+            var query = @"select
+	                        t.id,
+	                        t.id as TurmaId,
+	                        t.nome as nome,
+	                        (
+	                        select
+		                        1
+	                        from
+		                        planejamento_anual
+	                        where
+		                        turma_id = t.id
+	                        limit 1) as possuiPlano
+                        from
+	                        turma t
+                        inner join abrangencia ab on
+	                        t.id = ab.turma_id
+                        left join planejamento_anual p on
+	                        p.turma_id = ab.turma_id
+                        where
+	                        not ab.historico and t.id <> @turmaId and t.ue_id = @ueId ";
+            if (!ensinoEspecial)
+                query += "and t.ano = @ano";
+            query += $" group by t.id order by t.nome";
+
+            return await database.Conexao.QueryAsync<TurmaParaCopiaPlanoAnualDto>(query, new { turmaId = turma.Id, ueId = turma.UeId,  ano });
         }
 
         public async Task<PlanejamentoAnual> ObterPlanejamentoAnualPorAnoEscolaBimestreETurma(long turmaId, long periodoEscolarId, long componenteCurricularId)

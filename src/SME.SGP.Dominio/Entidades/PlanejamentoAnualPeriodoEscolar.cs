@@ -14,6 +14,13 @@ namespace SME.SGP.Dominio
             ComponentesCurriculares = new List<PlanejamentoAnualComponente>();
         }
 
+        public PlanejamentoAnualPeriodoEscolar(long periodoEscolarId, long planejamentoAnualId)
+        {
+            PeriodoEscolarId = periodoEscolarId;
+            PlanejamentoAnualId = planejamentoAnualId;
+            ComponentesCurriculares = new List<PlanejamentoAnualComponente>();
+        }
+
         public long PeriodoEscolarId { get; set; }
         public long PlanejamentoAnualId { get; set; }
         public List<PlanejamentoAnualComponente> ComponentesCurriculares { get; set; }

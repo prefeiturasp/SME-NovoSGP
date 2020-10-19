@@ -56,6 +56,8 @@ namespace SME.SGP.Dto
         public string SeriesResumidas { get; set; }
 
         public IEnumerable<string> Alunos { get; set; }
+        public long? TipoCalendarioId { get; set; }
+        public long? EventoId { get; set; }
     }
 
 }
