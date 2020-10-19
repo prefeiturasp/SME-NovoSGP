@@ -11,13 +11,17 @@ const inicial = {
   exibirLoaderFrequenciaPlanoAula: false,
   somenteConsulta: false,
   desabilitarCamposPlanoAula: false,
-  dadosParaSalvarPlanoAula: undefined,
   tabAtualComponenteCurricular: undefined,
   listaComponentesCurricularesPlanejamento: [],
   exibirCardCollapsePlanoAula: { exibir: false },
   exibirModalCopiarConteudoPlanoAula: false,
   temPeriodoAberto: true,
   listaObjetivosComponenteCurricular: [],
+  errosPlanoAula: false,
+  exibirModalErrosPlanoAula: false,
+  checkedExibirEscolhaObjetivos: false,
+  exibirSwitchEscolhaObjetivos: false,
+  dadosOriginaisPlanoAula: [],
 };
 
 export default function frequenciaPlanoAula(state = inicial, action) {
@@ -45,13 +49,17 @@ export default function frequenciaPlanoAula(state = inicial, action) {
           aulaId: 0,
           dataSelecionada: undefined,
           desabilitarCamposPlanoAula: false,
-          dadosParaSalvarPlanoAula: undefined,
           tabAtualComponenteCurricular: undefined,
           listaComponentesCurricularesPlanejamento: [],
           exibirCardCollapsePlanoAula: { exibir: false },
           exibirModalCopiarConteudoPlanoAula: false,
           temPeriodoAberto: true,
           listaObjetivosComponenteCurricular: [],
+          errosPlanoAula: false,
+          exibirModalErrosPlanoAula: false,
+          checkedExibirEscolhaObjetivos: false,
+          exibirSwitchEscolhaObjetivos: false,
+          dadosOriginaisPlanoAula: [],
         };
       }
       case '@frequenciaPlanoAula/setListaDadosFrequencia': {
@@ -102,12 +110,6 @@ export default function frequenciaPlanoAula(state = inicial, action) {
           somenteConsulta: action.payload,
         };
       }
-      case '@frequenciaPlanoAula/setDadosParaSalvarPlanoAula': {
-        return {
-          ...draft,
-          dadosParaSalvarPlanoAula: action.payload,
-        };
-      }
       case '@frequenciaPlanoAula/setTabAtualComponenteCurricular': {
         return {
           ...draft,
@@ -142,6 +144,51 @@ export default function frequenciaPlanoAula(state = inicial, action) {
         return {
           ...draft,
           listaObjetivosComponenteCurricular: action.payload,
+        };
+      }
+      case '@frequenciaPlanoAula/setLimparDadosPlanoAula': {
+        return {
+          ...draft,
+          dadosPlanoAula: undefined,
+          modoEdicaoPlanoAula: false,
+          tabAtualComponenteCurricular: undefined,
+          listaComponentesCurricularesPlanejamento: [],
+          exibirCardCollapsePlanoAula: { exibir: false },
+          exibirModalCopiarConteudoPlanoAula: false,
+          listaObjetivosComponenteCurricular: [],
+          checkedExibirEscolhaObjetivos: false,
+          exibirSwitchEscolhaObjetivos: false,
+          dadosOriginaisPlanoAula: [],
+        };
+      }
+      case '@planoAnual/setErrosPlanoAula': {
+        return {
+          ...draft,
+          errosPlanoAula: action.payload,
+        };
+      }
+      case '@planoAnual/setExibirModalErrosPlanoAula': {
+        return {
+          ...draft,
+          exibirModalErrosPlanoAula: action.payload,
+        };
+      }
+      case '@planoAnual/setCheckedExibirEscolhaObjetivos': {
+        return {
+          ...draft,
+          checkedExibirEscolhaObjetivos: action.payload,
+        };
+      }
+      case '@planoAnual/setExibirSwitchEscolhaObjetivos': {
+        return {
+          ...draft,
+          exibirSwitchEscolhaObjetivos: action.payload,
+        };
+      }
+      case '@planoAnual/setDadosOriginaisPlanoAula': {
+        return {
+          ...draft,
+          dadosOriginaisPlanoAula: action.payload,
         };
       }
 

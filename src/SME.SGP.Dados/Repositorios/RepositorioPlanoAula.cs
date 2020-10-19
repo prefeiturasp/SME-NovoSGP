@@ -75,7 +75,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select
                            pa.id, pa.descricao, pa.desenvolvimento_aula as DesenvolvimentoAula, pa.recuperacao_aula as RecuperacaoAula, pa.licao_casa as LicaoCasa,
-                           pa.criado_em as CriadoEm, pa.alterado_em as AlteradoEm, pa.criado_por as CriadoPor, pa.alterado_por as AlteradoPor, pa.criado_rf as CriadoRf, pa.alterado_rf as AlteradoRf
+                           pa.criado_em as CriadoEm, pa.alterado_em as AlteradoEm, pa.criado_por as CriadoPor, pa.alterado_por as AlteradoPor, pa.criado_rf as CriadoRf, pa.alterado_rf as AlteradoRf,
                            a.id as AulaId, a.ue_id as UeId, a.disciplina_id as DisciplinaId, a.turma_id as TurmaId,
                            a.quantidade, a.tipo_calendario_id as TipoCalendarioId, a.data_aula as DataAula,
                            oaa.componente_curricular_id as id,
@@ -88,7 +88,7 @@ namespace SME.SGP.Dados.Repositorios
 
             var lookup = new Dictionary<long, PlanoAulaObjetivosAprendizagemDto>();
 
-            await database.Conexao.QueryAsync<PlanoAulaObjetivosAprendizagemDto, long, ObjetivoAprendizagemDto, PlanoAulaObjetivosAprendizagemDto>(query, (planoAulaObjetivosAprendizagemDto, componenteId, objetivoAprendizagemDto) => {
+            await database.Conexao.QueryAsync<PlanoAulaObjetivosAprendizagemDto, long?, ObjetivoAprendizagemDto, PlanoAulaObjetivosAprendizagemDto>(query, (planoAulaObjetivosAprendizagemDto, componenteId, objetivoAprendizagemDto) => {
 
                 var retorno = new PlanoAulaObjetivosAprendizagemDto();
                 if (!lookup.TryGetValue(planoAulaObjetivosAprendizagemDto.Id, out retorno))
@@ -98,15 +98,16 @@ namespace SME.SGP.Dados.Repositorios
                 }
 
                 var objetivoComponente = retorno.ObjetivosAprendizagemComponente.FirstOrDefault(c => c.ComponenteCurricularId == componenteId);
-                if (objetivoComponente == null)
+                if (objetivoComponente == null && componenteId.HasValue)
                 {
                     objetivoComponente = new ObjetivosAprendizagemPorComponenteDto();
-                    objetivoComponente.ComponenteCurricularId = componenteId;
+                    objetivoComponente.ComponenteCurricularId = componenteId.Value;
 
                     retorno.Adicionar(objetivoComponente);
                 }
 
-                objetivoComponente.ObjetivosAprendizagem.Add(objetivoAprendizagemDto);
+                if (objetivoAprendizagemDto != null)
+                    objetivoComponente.ObjetivosAprendizagem.Add(objetivoAprendizagemDto);
 
                 return retorno;
             }, param: new

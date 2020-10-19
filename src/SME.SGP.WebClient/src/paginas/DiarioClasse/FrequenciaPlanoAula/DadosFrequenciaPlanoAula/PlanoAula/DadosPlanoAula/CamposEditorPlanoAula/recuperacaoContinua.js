@@ -26,10 +26,7 @@ const RecuperacaoContinua = () => {
   };
 
   const onChangeRecuperacaoContinua = valor => {
-    ServicoPlanoAula.atualizarDadosParaSalvarPlanoAula(
-      'recuperacaoAula',
-      valor
-    );
+    ServicoPlanoAula.atualizarDadosPlanoAula('recuperacaoAula', valor);
     dispatch(setModoEdicaoPlanoAula(true));
   };
 

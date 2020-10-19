@@ -68,7 +68,6 @@ import DevolutivasLista from '~/paginas/DiarioClasse/Devolutivas/devolutivasList
 import DevolutivasForm from '~/paginas/DiarioClasse/Devolutivas/devolutivasForm';
 import RelatorioNotasConceitosFinais from '~/paginas/Relatorios/NotasConceitosFinais/relatorioNotasConceitosFinais';
 import RelatorioCompensacaoAusencia from '~/paginas/Relatorios/CompensacaoAusencia/relatorioCompensacaoAusencia';
-// import NovoFrequenciaPlanoAula from '~/paginas/DiarioClasse/FrequenciaPlanoAula/novoFrequenciaPlanoAula';
 
 const rotas = new Map();
 

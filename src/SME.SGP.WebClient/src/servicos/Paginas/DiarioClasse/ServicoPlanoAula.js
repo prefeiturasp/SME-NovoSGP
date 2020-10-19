@@ -1,11 +1,11 @@
 import { store } from '~/redux';
 import {
-  setDadosParaSalvarPlanoAula,
   setDadosPlanoAula,
   setExibirCardCollapsePlanoAula,
   setExibirLoaderFrequenciaPlanoAula,
   setListaComponentesCurricularesPlanejamento,
   setListaObjetivosComponenteCurricular,
+  setDadosOriginaisPlanoAula,
 } from '~/redux/modulos/frequenciaPlanoAula/actions';
 import { erros } from '~/servicos/alertas';
 import api from '~/servicos/api';
@@ -36,6 +36,22 @@ class ServicoPlanoAula {
       );
     };
 
+    const setarDadosOriginaisPlanoAula = dados => {
+      if (
+        dados &&
+        dados.objetivosAprendizagemComponente &&
+        dados.objetivosAprendizagemComponente.length
+      ) {
+        dados.objetivosAprendizagemComponente = [
+          ...dados.objetivosAprendizagemComponente,
+        ];
+      } else {
+        dados.objetivosAprendizagemComponente = [];
+      }
+
+      dispatch(setDadosOriginaisPlanoAula(dados));
+    };
+
     // Carrega lista de componentes para montar as TABS!
     const obterListaComponentesCurricularesPlanejamento = () => {
       dispatch(setExibirLoaderFrequenciaPlanoAula(true));
@@ -64,8 +80,7 @@ class ServicoPlanoAula {
 
       if (plano && plano.data) {
         dispatch(setDadosPlanoAula({ ...plano.data }));
-        dispatch(setDadosParaSalvarPlanoAula({ ...plano.data }));
-
+        setarDadosOriginaisPlanoAula({ ...plano.data });
         const ehMigrado = plano.data.migrado;
 
         // Quando for MIGRADO mostrar somente um tab com o componente curricular já selecionado!
@@ -88,15 +103,15 @@ class ServicoPlanoAula {
     return api.post('v1/planos/aulas', dadosPlanoAula);
   };
 
-  atualizarDadosParaSalvarPlanoAula = (nomeCampo, valorNovo) => {
+  atualizarDadosPlanoAula = (nomeCampo, valorNovo) => {
     const { dispatch } = store;
     const state = store.getState();
 
     const { frequenciaPlanoAula } = state;
-    const { dadosParaSalvarPlanoAula } = frequenciaPlanoAula;
+    const { dadosPlanoAula } = frequenciaPlanoAula;
 
-    dadosParaSalvarPlanoAula[nomeCampo] = valorNovo;
-    dispatch(setDadosParaSalvarPlanoAula(dadosParaSalvarPlanoAula));
+    dadosPlanoAula[nomeCampo] = valorNovo;
+    dispatch(setDadosPlanoAula(dadosPlanoAula));
   };
 
   obterListaObjetivosPorAnoEComponenteCurricular = async () => {
@@ -123,7 +138,9 @@ class ServicoPlanoAula {
       return listaObjetivosComponenteCurricular;
     }
 
-    const objetivos = await api.get(
+    let objetivos = [];
+
+    objetivos = await api.get(
       `v1/objetivos-aprendizagem/objetivos/turmas/${
         turmaSelecionada.id
       }/componentes/${codigoComponenteCurricular}/disciplinas/0?dataReferencia=${dataSelecionada.format(
@@ -139,17 +156,46 @@ class ServicoPlanoAula {
     return [];
   };
 
-  atualizarDadosAposCancelarEdicao = () => {
-    const { dispatch } = store;
-
+  temObjetivosSelecionadosTabComponenteCurricular = codigoComponenteCurricular => {
     const state = store.getState();
-
     const { frequenciaPlanoAula } = state;
-
     const { dadosPlanoAula } = frequenciaPlanoAula;
 
-    dispatch(setDadosParaSalvarPlanoAula({ ...dadosPlanoAula }));
-    dispatch(setDadosPlanoAula({ ...dadosPlanoAula }));
+    if (
+      dadosPlanoAula &&
+      dadosPlanoAula.objetivosAprendizagemComponente &&
+      dadosPlanoAula.objetivosAprendizagemComponente.length
+    ) {
+      const tabAtual = dadosPlanoAula.objetivosAprendizagemComponente.find(
+        item =>
+          String(item.componenteCurricularId) ===
+          String(codigoComponenteCurricular)
+      );
+
+      if (
+        tabAtual &&
+        tabAtual.objetivosAprendizagem &&
+        tabAtual.objetivosAprendizagem.length
+      ) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  temPeloMenosUmObjetivoSelecionado = objetivosAprendizagemComponente => {
+    if (
+      objetivosAprendizagemComponente &&
+      objetivosAprendizagemComponente.length
+    ) {
+      const algumaTabTemObjetivoSelecionado = objetivosAprendizagemComponente.find(
+        item => item.objetivosAprendizagem && item.objetivosAprendizagem.length
+      );
+      if (algumaTabTemObjetivoSelecionado) {
+        return true;
+      }
+    }
+    return false;
   };
 }
 
