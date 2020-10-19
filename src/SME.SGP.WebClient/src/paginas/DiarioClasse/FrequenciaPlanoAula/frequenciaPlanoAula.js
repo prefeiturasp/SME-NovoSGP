@@ -20,7 +20,7 @@ import LoaderFrequenciaPlanoAula from './DadosFrequenciaPlanoAula/LoaderFrequenc
 import AlertaDentroPeriodoFrequenciaPlanoAula from './DadosFrequenciaPlanoAula/PlanoAula/DadosPlanoAula/AlertaDentroPeriodo/alertaDentroPeriodoFrequenciaPlanoAula';
 import PlanoAula from './DadosFrequenciaPlanoAula/PlanoAula/planoAula';
 
-const NovoFrequenciaPlanoAula = () => {
+const FrequenciaPlanoAula = () => {
   const dispatch = useDispatch();
 
   const usuario = useSelector(state => state.usuario);
@@ -100,4 +100,4 @@ const NovoFrequenciaPlanoAula = () => {
   );
 };
 
-export default NovoFrequenciaPlanoAula;
+export default FrequenciaPlanoAula;
