@@ -1,7 +1,9 @@
 import { store } from '~/redux';
 import {
   setDataSelecionadaFrequenciaPlanoAula,
+  setErrosPlanoAula,
   setExibirLoaderFrequenciaPlanoAula,
+  setExibirModalErrosPlanoAula,
   setModoEdicaoFrequencia,
   setModoEdicaoPlanoAula,
 } from '~/redux/modulos/frequenciaPlanoAula/actions';
@@ -43,16 +45,91 @@ class ServicoSalvarFrequenciaPlanoAula {
     const { dispatch } = store;
     const state = store.getState();
 
-    const { frequenciaPlanoAula } = state;
-    const { dadosParaSalvarPlanoAula, aulaId } = frequenciaPlanoAula;
+    const { frequenciaPlanoAula, usuario, perfis } = state;
+    const { ehProfessorCj } = usuario;
+    const {
+      dadosPlanoAula,
+      aulaId,
+      exibirSwitchEscolhaObjetivos,
+      checkedExibirEscolhaObjetivos,
+      dadosOriginaisPlanoAula,
+      componenteCurricular,
+    } = frequenciaPlanoAula;
 
-    const objetivosAprendizagemComponente = [];
+    const validaSeTemErrosPlanoAula = () => {
+      const errosValidacaoPlano = [];
 
+      if (!dadosPlanoAula.descricao) {
+        errosValidacaoPlano.push(
+          'Meus objetivos - O campo meus objetivos específicos para a aula é obrigatório'
+        );
+      }
+
+      if (!dadosPlanoAula.desenvolvimentoAula) {
+        errosValidacaoPlano.push(
+          'Desenvolvimento da aula - A sessão de desenvolvimento da aula deve ser preenchida'
+        );
+      }
+
+      const perfil =
+        perfis && perfis.perfis.find(item => item.nomePerfil === 'PAP');
+      if (perfil && !dadosPlanoAula.objetivosAprendizagemComponente.length) {
+        return false;
+      }
+
+      if (
+        exibirSwitchEscolhaObjetivos
+          ? checkedExibirEscolhaObjetivos &&
+            componenteCurricular.possuiObjetivos &&
+            !ServicoPlanoAula.temPeloMenosUmObjetivoSelecionado(
+              dadosPlanoAula.objetivosAprendizagemComponente
+            )
+          : componenteCurricular.possuiObjetivos &&
+            !ServicoPlanoAula.temPeloMenosUmObjetivoSelecionado(
+              dadosPlanoAula.objetivosAprendizagemComponente
+            )
+      ) {
+        errosValidacaoPlano.push(
+          'Objetivos de aprendizagem - É obrigatório selecionar ao menos um objetivo de aprendizagem'
+        );
+      }
+
+      if (errosValidacaoPlano && errosValidacaoPlano.length) {
+        dispatch(setErrosPlanoAula(errosValidacaoPlano));
+        return true;
+      }
+      return false;
+    };
+
+    const temErrosValidacaoPlano = validaSeTemErrosPlanoAula();
+
+    if (temErrosValidacaoPlano) {
+      dispatch(setExibirModalErrosPlanoAula(true));
+      return false;
+    }
+
+    let objetivosAprendizagemComponente = [];
+    // TODO Testar quando o enpoint de obter plano aula for ajustado para obter dados quando nao for componente de regencia!
+    // Testar para ver se os dados editados estão alterando os dados originais por referencia de memoria!
     if (
-      dadosParaSalvarPlanoAula &&
-      dadosParaSalvarPlanoAula.objetivosAprendizagemComponente.length
+      ehProfessorCj &&
+      exibirSwitchEscolhaObjetivos &&
+      !checkedExibirEscolhaObjetivos
     ) {
-      dadosParaSalvarPlanoAula.objetivosAprendizagemComponente.forEach(item => {
+      if (
+        dadosOriginaisPlanoAula &&
+        dadosOriginaisPlanoAula.objetivosAprendizagemComponente &&
+        dadosOriginaisPlanoAula.objetivosAprendizagemComponente.length
+      ) {
+        objetivosAprendizagemComponente = [
+          ...dadosOriginaisPlanoAula.objetivosAprendizagemComponente,
+        ];
+      }
+    } else if (
+      dadosPlanoAula &&
+      dadosPlanoAula.objetivosAprendizagemComponente.length
+    ) {
+      dadosPlanoAula.objetivosAprendizagemComponente.forEach(item => {
         item.objetivosAprendizagem.forEach(obj => {
           objetivosAprendizagemComponente.push({
             componenteCurricularId: item.componenteCurricularId,
@@ -63,10 +140,10 @@ class ServicoSalvarFrequenciaPlanoAula {
     }
 
     const valorParaSalvar = {
-      descricao: dadosParaSalvarPlanoAula.descricao,
-      desenvolvimentoAula: dadosParaSalvarPlanoAula.desenvolvimentoAula,
-      recuperacaoAula: dadosParaSalvarPlanoAula.recuperacaoAula,
-      licaoCasa: dadosParaSalvarPlanoAula.licaoCasa,
+      descricao: dadosPlanoAula.descricao,
+      desenvolvimentoAula: dadosPlanoAula.desenvolvimentoAula,
+      recuperacaoAula: dadosPlanoAula.recuperacaoAula,
+      licaoCasa: dadosPlanoAula.licaoCasa,
       aulaId,
       objetivosAprendizagemComponente,
     };

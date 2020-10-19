@@ -1,19 +1,20 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Auditoria, Colors } from '~/componentes';
-import { RegistroMigrado } from '~/componentes-sgp';
-import Button from '~/componentes/button';
+import { Auditoria } from '~/componentes';
+
 import { RotasDto } from '~/dtos';
+import modalidade from '~/dtos/modalidade';
 import {
   setDesabilitarCamposPlanoAula,
-  setExibirModalCopiarConteudoPlanoAula,
+  setExibirSwitchEscolhaObjetivos,
 } from '~/redux/modulos/frequenciaPlanoAula/actions';
-import BotaoGerarRelatorioPlanoAula from './BotaoGerarRelatorioPlanoAula/botaoGerarRelatorioPlanoAula';
+import CabecalhoDadosPlanoAula from './CabecalhoDadosPlanoAula/cabecalhoDadosPlanoAula';
 import DesenvolvimentoDaAula from './CamposEditorPlanoAula/desenvolvimentoDaAula';
 import LicaoDeCasa from './CamposEditorPlanoAula/licaoDeCasa';
 import ObjetivosEspecificosParaAula from './CamposEditorPlanoAula/objetivosEspecificosParaAula';
 import RecuperacaoContinua from './CamposEditorPlanoAula/recuperacaoContinua';
 import ModalCopiarConteudoPlanoAula from './ModalCopiarConteudo/modalCopiarConteudoPlanoAula';
+import ModalErrosPlanoAula from './ModalErros/modalErrosPlanoAula';
 import ObjetivosAprendizagemDesenvolvimento from './ObjetivosAprendizagemDesenvolvimento/objetivosAprendizagemDesenvolvimento';
 
 const DadosPlanoAula = () => {
@@ -30,6 +31,12 @@ const DadosPlanoAula = () => {
     state => state.frequenciaPlanoAula.somenteConsulta
   );
 
+  const { ehProfessorCj, turmaSelecionada } = usuario;
+
+  const componenteCurricular = useSelector(
+    store => store.frequenciaPlanoAula.componenteCurricular
+  );
+
   useEffect(() => {
     if (dadosPlanoAula && dadosPlanoAula.id > 0) {
       const desabilitar = !permissoesTela.podeAlterar || somenteConsulta;
@@ -40,38 +47,33 @@ const DadosPlanoAula = () => {
     }
   }, [permissoesTela, somenteConsulta, dadosPlanoAula, dispatch]);
 
+  useEffect(() => {
+    const ehEja = !!(
+      turmaSelecionada &&
+      String(turmaSelecionada.modalidade) === String(modalidade.EJA)
+    );
+
+    const ehMedio = !!(
+      turmaSelecionada &&
+      String(turmaSelecionada.modalidade) === String(modalidade.ENSINO_MEDIO)
+    );
+
+    const esconderSwitch =
+      !(componenteCurricular && componenteCurricular.possuiObjetivos) ||
+      !ehProfessorCj ||
+      ehEja ||
+      ehMedio;
+
+    dispatch(setExibirSwitchEscolhaObjetivos(!esconderSwitch));
+  }, [turmaSelecionada, ehProfessorCj, componenteCurricular, dispatch]);
+
   return (
     <>
       {dadosPlanoAula ? (
         <>
+          <ModalErrosPlanoAula />
           <ModalCopiarConteudoPlanoAula />
-
-          <div className="row mb-3">
-            <div className="col-md-3">
-              <span>Quantidade de aulas: {dadosPlanoAula.qtdAulas}</span>
-            </div>
-            <div className="col-md-9 d-flex justify-content-end ">
-              <Button
-                id="copiar-conteudo-plano-aula"
-                label="Copiar Conteúdo"
-                icon="clipboard"
-                color={Colors.Azul}
-                border
-                className="mr-3"
-                onClick={() =>
-                  dispatch(setExibirModalCopiarConteudoPlanoAula(true))
-                }
-                disabled={!dadosPlanoAula.id}
-              />
-              <BotaoGerarRelatorioPlanoAula planoAulaId={dadosPlanoAula.id} />
-              {dadosPlanoAula.migrado && (
-                <RegistroMigrado className="align-self-center">
-                  Registro Migrado
-                </RegistroMigrado>
-              )}
-            </div>
-          </div>
-
+          <CabecalhoDadosPlanoAula />
           <ObjetivosAprendizagemDesenvolvimento />
           <ObjetivosEspecificosParaAula />
           <DesenvolvimentoDaAula />

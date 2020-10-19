@@ -75,13 +75,6 @@ export function setSomenteConsultaFrequenciaPlanoAula(payload) {
   };
 }
 
-export function setDadosParaSalvarPlanoAula(payload) {
-  return {
-    type: '@frequenciaPlanoAula/setDadosParaSalvarPlanoAula',
-    payload,
-  };
-}
-
 export function setTabAtualComponenteCurricular(payload) {
   return {
     type: '@frequenciaPlanoAula/setTabAtualComponenteCurricular',
@@ -123,3 +116,35 @@ export function setListaObjetivosComponenteCurricular(payload) {
     payload,
   };
 }
+
+export function setLimparDadosPlanoAula(payload) {
+  return {
+    type: '@frequenciaPlanoAula/setLimparDadosPlanoAula',
+    payload,
+  };
+}
+
+export const setErrosPlanoAula = payload => ({
+  type: '@planoAnual/setErrosPlanoAula',
+  payload,
+});
+
+export const setExibirModalErrosPlanoAula = payload => ({
+  type: '@planoAnual/setExibirModalErrosPlanoAula',
+  payload,
+});
+
+export const setCheckedExibirEscolhaObjetivos = payload => ({
+  type: '@planoAnual/setCheckedExibirEscolhaObjetivos',
+  payload,
+});
+
+export const setExibirSwitchEscolhaObjetivos = payload => ({
+  type: '@planoAnual/setExibirSwitchEscolhaObjetivos',
+  payload,
+});
+
+export const setDadosOriginaisPlanoAula = payload => ({
+  type: '@planoAnual/setDadosOriginaisPlanoAula',
+  payload,
+});

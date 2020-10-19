@@ -26,7 +26,7 @@ const LicaoDeCasa = () => {
   };
 
   const onChangeLicaoCasa = valor => {
-    ServicoPlanoAula.atualizarDadosParaSalvarPlanoAula('licaoCasa', valor);
+    ServicoPlanoAula.atualizarDadosPlanoAula('licaoCasa', valor);
     dispatch(setModoEdicaoPlanoAula(true));
   };
 

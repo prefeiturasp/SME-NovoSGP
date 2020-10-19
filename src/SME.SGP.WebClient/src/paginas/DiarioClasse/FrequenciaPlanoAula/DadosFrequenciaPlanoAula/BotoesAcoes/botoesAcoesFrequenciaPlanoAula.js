@@ -4,12 +4,12 @@ import Button from '~/componentes/button';
 import { Colors } from '~/componentes/colors';
 import { URL_HOME } from '~/constantes';
 import {
+  setLimparDadosPlanoAula,
   setModoEdicaoFrequencia,
   setModoEdicaoPlanoAula,
 } from '~/redux/modulos/frequenciaPlanoAula/actions';
 import { confirmar, history } from '~/servicos';
 import ServicoFrequencia from '~/servicos/Paginas/DiarioClasse/ServicoFrequencia';
-import ServicoPlanoAula from '~/servicos/Paginas/DiarioClasse/ServicoPlanoAula';
 import servicoSalvarFrequenciaPlanoAula from '../../servicoSalvarFrequenciaPlanoAula';
 
 const BotoesAcoesFrequenciaPlanoAula = () => {
@@ -69,8 +69,7 @@ const BotoesAcoesFrequenciaPlanoAula = () => {
       if (confirmou) {
         ServicoFrequencia.obterListaFrequencia();
         dispatch(setModoEdicaoFrequencia(false));
-
-        ServicoPlanoAula.atualizarDadosAposCancelarEdicao();
+        dispatch(setLimparDadosPlanoAula());
         dispatch(setModoEdicaoPlanoAula(false));
       }
     }

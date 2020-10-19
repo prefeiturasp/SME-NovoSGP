@@ -3,8 +3,12 @@ import React, { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { ContainerTabsCard } from '~/componentes/tabs/tabs.css';
 import { setTabAtualComponenteCurricular } from '~/redux/modulos/frequenciaPlanoAula/actions';
+import ServicoPlanoAula from '~/servicos/Paginas/DiarioClasse/ServicoPlanoAula';
 import ListaObjetivosPlanoAula from '../ListaObjetivos/listaObjetivosPlanoAula';
-import { ContainerTabsComponentesCorriculares } from './tabsComponentesCorriculares.css';
+import {
+  ContainerTabsComponentesCorriculares,
+  DescricaoNomeTabComponenteCurricular,
+} from './tabsComponentesCorriculares.css';
 
 const { TabPane } = Tabs;
 
@@ -57,6 +61,31 @@ const TabsComponentesCorriculares = () => {
     }
   }, [onChangeTab, listaComponentesCurricularesPlanejamento]);
 
+  const obterDescricaoNomeTabComponenteCurricular = (
+    nome,
+    codigoComponenteCurricular
+  ) => {
+    const temObjetivosSelecionados = ServicoPlanoAula.temObjetivosSelecionadosTabComponenteCurricular(
+      codigoComponenteCurricular
+    );
+
+    if (temObjetivosSelecionados) {
+      return (
+        <DescricaoNomeTabComponenteCurricular
+          title={nome}
+          tabSelecionada={
+            String(tabAtualComponenteCurricular?.codigoComponenteCurricular) ===
+            String(codigoComponenteCurricular)
+          }
+        >
+          <span className="desc-nome">{nome}</span>
+          <i className="fas fa-check-circle ml-2" />
+        </DescricaoNomeTabComponenteCurricular>
+      );
+    }
+    return <span title={nome}>{nome}</span>;
+  };
+
   return (
     <>
       {listaComponentesCurricularesPlanejamento &&
@@ -78,7 +107,10 @@ const TabsComponentesCorriculares = () => {
             {listaComponentesCurricularesPlanejamento.map(item => {
               return (
                 <TabPane
-                  tab={<span title={item.nome}>{item.nome}</span>}
+                  tab={obterDescricaoNomeTabComponenteCurricular(
+                    item.nome,
+                    item.codigoComponenteCurricular
+                  )}
                   key={String(item.codigoComponenteCurricular)}
                 >
                   {String(

@@ -26,10 +26,7 @@ const DesenvolvimentoDaAula = () => {
   };
 
   const onChangeDesenvolvimentoAula = valor => {
-    ServicoPlanoAula.atualizarDadosParaSalvarPlanoAula(
-      'desenvolvimentoAula',
-      valor
-    );
+    ServicoPlanoAula.atualizarDadosPlanoAula('desenvolvimentoAula', valor);
     dispatch(setModoEdicaoPlanoAula(true));
   };
 
