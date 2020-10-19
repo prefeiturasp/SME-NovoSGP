@@ -6,6 +6,7 @@ volumes:
 services:
   sme-api:
     container_name: sme-api
+    restart: on-failure
     image: sme-api
     build:
       context: .
@@ -21,6 +22,7 @@ services:
       - sme-api.env
   sme-workerservice:
     container_name: sme-workerservice
+    restart: on-failure
     image: sme-workerservice
     build:
       context: .
@@ -35,22 +37,6 @@ services:
       - "sme-api"
     env_file:
       - sme-api.env
-  sme-workerservice:
-    container_name: sme-workerservice
-    image: sme-workerservice
-    build:
-      context: .
-      dockerfile: ./src/SME.SGP.WorkerService/Dockerfile
-    ports:
-      - '5000:5000'
-    networks:
-      - sme-network
-    depends_on:
-      - 'sme-db'
-      - 'sme-redis'
-      - 'sme-api'
-    env_file:
-      - sme-api.env 
   sme-db:
     container_name: sme-db
     restart: always
@@ -73,6 +59,7 @@ services:
       - sme-network
   sme-flyway:
     container_name: sme-flyway
+    restart: on-failure
     image: boxfuse/flyway:5.2.4
     command: -url=jdbc:postgresql://sme-db:5432/sgp_db?user=postgres&password=postgres -locations='filesystem:/opt/scripts' -outOfOrder=true migrate
     volumes:
@@ -83,4 +70,6 @@ services:
       - sme-network
 networks:
   sme-network:
-    driver: bridge
+    external:
+      name: sme_external_network
+    

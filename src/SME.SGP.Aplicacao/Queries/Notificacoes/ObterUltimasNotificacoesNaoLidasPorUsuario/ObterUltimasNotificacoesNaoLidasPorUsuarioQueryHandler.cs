@@ -17,7 +17,23 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<IEnumerable<NotificacaoBasicaDto>> Handle(ObterUltimasNotificacoesNaoLidasPorUsuarioQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioNotificacao.ObterNotificacoesPorAnoLetivoERfAsync(request.AnoLetivo, request.CodigoRf, 5);
+            var listaTratada = await repositorioNotificacao.ObterNotificacoesPorAnoLetivoERfAsync(request.AnoLetivo, request.CodigoRf, 5);
+
+            if (request.TituloReduzido)
+            {
+                var listaRetorno = new List<NotificacaoBasicaDto>();
+
+                foreach (var item in listaTratada)
+                {
+                    var notificao = (NotificacaoBasicaDto)item.Clone();
+                    notificao.Titulo = notificao.ObtemTituloRudizoParaCaixaNotificacao();
+                    listaRetorno.Add(notificao);
+                }
+                return await Task.FromResult(listaRetorno);
+            }
+            else return await Task.FromResult(listaTratada);
+
+
         }
     }
 }

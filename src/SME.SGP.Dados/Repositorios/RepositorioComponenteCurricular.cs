@@ -22,6 +22,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorIds(long[] ids)
         {
             var query = $@"select
+                            id,
 	                        id as CodigoComponenteCurricular,
                             area_conhecimento_id as AreaConhecimentoId,
                             componente_curricular_pai_id as CdComponenteCurricularPai,
@@ -141,6 +142,14 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryAsync<DisciplinaDto>(query, new { turno, ano }));
         }
 
+        public async Task<bool> VerificarComponenteCurriculareSeERegenciaPorId(long id)
+        {
+            var query = $@"select
+                            eh_regencia
+                        from
+	                        componente_curricular WHERE id = @id;";
+            return (await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { id }));
+        }
     }
 
 }

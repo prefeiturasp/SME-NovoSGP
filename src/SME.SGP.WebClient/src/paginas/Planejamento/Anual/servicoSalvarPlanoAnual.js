@@ -139,6 +139,7 @@ class ServicoSalvarPlanoAnual {
       const listaNova = [...dadosBimestresPlanoAnual];
       const listaParaSalvar = listaNova
         .filter(a => a)
+        .filter(b => b.componentes.find(c => c.emEdicao))
         .map(item => {
           return {
             periodoEscolarId: item.periodoEscolarId,
@@ -189,6 +190,10 @@ class ServicoSalvarPlanoAnual {
 
         sucesso('Suas informações foram salvas com sucesso.');
         dispatch(setExibirLoaderPlanoAnual(false));
+        ServicoPlanoAnual.obterPlanejamentoId(
+          turmaSelecionada.id,
+          componenteCurricular.codigoComponenteCurricular
+        );
         return true;
       }
       dispatch(setExibirLoaderPlanoAnual(false));
