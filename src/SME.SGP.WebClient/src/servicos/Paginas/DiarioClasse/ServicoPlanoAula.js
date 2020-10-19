@@ -140,23 +140,13 @@ class ServicoPlanoAula {
 
     let objetivos = [];
 
-    if (componenteCurricular.regencia) {
-      objetivos = await api.get(
-        `v1/objetivos-aprendizagem/objetivos/turmas/${
-          turmaSelecionada.id
-        }/componentes/${codigoComponenteCurricular}/disciplinas/0?dataReferencia=${dataSelecionada.format(
-          'YYYY-MM-DD'
-        )}&regencia=${false}`
-      );
-    } else {
-      objetivos = await api.get(
-        `v1/objetivos-aprendizagem/disciplinas/turmas/${
-          turmaSelecionada.turma
-        }/componentes/${
-          componenteCurricular.codigoComponenteCurricular
-        }?dataAula=${dataSelecionada.format('YYYY-MM-DD')}`
-      );
-    }
+    objetivos = await api.get(
+      `v1/objetivos-aprendizagem/objetivos/turmas/${
+        turmaSelecionada.id
+      }/componentes/${codigoComponenteCurricular}/disciplinas/0?dataReferencia=${dataSelecionada.format(
+        'YYYY-MM-DD'
+      )}&regencia=${false}`
+    );
 
     if (objetivos && objetivos.data && objetivos.data.length) {
       dispatch(setListaObjetivosComponenteCurricular(objetivos.data));
@@ -194,11 +184,7 @@ class ServicoPlanoAula {
   };
 
   temPeloMenosUmObjetivoSelecionado = objetivosAprendizagemComponente => {
-    const state = store.getState();
-    const { frequenciaPlanoAula } = state;
-    const { componenteCurricular } = frequenciaPlanoAula;
     if (
-      componenteCurricular.possuiObjetivos &&
       objetivosAprendizagemComponente &&
       objetivosAprendizagemComponente.length
     ) {

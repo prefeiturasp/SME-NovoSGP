@@ -45,7 +45,6 @@ const ObjetivosEspecificosParaAula = () => {
 
   const temPeloMenosUmObjetivoSelecionado = () => {
     if (
-      componenteCurricular.possuiObjetivos &&
       objetivosAprendizagemComponente &&
       objetivosAprendizagemComponente.length
     ) {
@@ -76,8 +75,10 @@ const ObjetivosEspecificosParaAula = () => {
         <fieldset className="mt-3">
           {(exibirSwitchEscolhaObjetivos ? (
             checkedExibirEscolhaObjetivos &&
+            componenteCurricular.possuiObjetivos &&
             !temPeloMenosUmObjetivoSelecionado()
           ) : (
+            componenteCurricular.possuiObjetivos &&
             !temPeloMenosUmObjetivoSelecionado()
           )) ? (
             <p style={{ color: `${Base.VermelhoAlerta}` }}>
@@ -93,8 +94,10 @@ const ObjetivosEspecificosParaAula = () => {
               !temPeriodoAberto ||
               (exibirSwitchEscolhaObjetivos
                 ? checkedExibirEscolhaObjetivos &&
+                  componenteCurricular.possuiObjetivos &&
                   !temPeloMenosUmObjetivoSelecionado()
-                : !temPeloMenosUmObjetivoSelecionado())
+                : componenteCurricular.possuiObjetivos &&
+                  !temPeloMenosUmObjetivoSelecionado())
             }
             onChange={onChangeObjetivosEspecificosParaAula}
             inicial={dadosPlanoAula?.descricao}
