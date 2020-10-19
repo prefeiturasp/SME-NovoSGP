@@ -22,6 +22,7 @@ const inicial = {
   checkedExibirEscolhaObjetivos: false,
   exibirSwitchEscolhaObjetivos: false,
   dadosOriginaisPlanoAula: [],
+  exibirCardCollapseFrequencia: false,
 };
 
 export default function frequenciaPlanoAula(state = inicial, action) {
@@ -60,6 +61,7 @@ export default function frequenciaPlanoAula(state = inicial, action) {
           checkedExibirEscolhaObjetivos: false,
           exibirSwitchEscolhaObjetivos: false,
           dadosOriginaisPlanoAula: [],
+          exibirCardCollapseFrequencia: false,
         };
       }
       case '@frequenciaPlanoAula/setListaDadosFrequencia': {
@@ -189,6 +191,12 @@ export default function frequenciaPlanoAula(state = inicial, action) {
         return {
           ...draft,
           dadosOriginaisPlanoAula: action.payload,
+        };
+      }
+      case '@planoAnual/setExibirCardCollapseFrequencia': {
+        return {
+          ...draft,
+          exibirCardCollapseFrequencia: action.payload,
         };
       }
 

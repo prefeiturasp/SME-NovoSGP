@@ -4,6 +4,7 @@ import Button from '~/componentes/button';
 import { Colors } from '~/componentes/colors';
 import { URL_HOME } from '~/constantes';
 import {
+  setExibirCardCollapseFrequencia,
   setLimparDadosPlanoAula,
   setModoEdicaoFrequencia,
   setModoEdicaoPlanoAula,
@@ -68,6 +69,7 @@ const BotoesAcoesFrequenciaPlanoAula = () => {
       );
       if (confirmou) {
         ServicoFrequencia.obterListaFrequencia();
+        dispatch(setExibirCardCollapseFrequencia(false));
         dispatch(setModoEdicaoFrequencia(false));
         dispatch(setLimparDadosPlanoAula());
         dispatch(setModoEdicaoPlanoAula(false));
