@@ -6,6 +6,7 @@ import Ordenacao from '~/componentes-sgp/Ordenacao/ordenacao';
 import CardCollapse from '~/componentes/cardCollapse';
 import { RotasDto } from '~/dtos';
 import {
+  setExibirCardCollapseFrequencia,
   setListaDadosFrequencia,
   setModoEdicaoFrequencia,
 } from '~/redux/modulos/frequenciaPlanoAula/actions';
@@ -41,6 +42,10 @@ const MontarListaFrequencia = () => {
 
   const aulaId = useSelector(state => state.frequenciaPlanoAula.aulaId);
 
+  const exibirCardCollapseFrequencia = useSelector(
+    state => state.frequenciaPlanoAula.exibirCardCollapseFrequencia
+  );
+
   const onClickFrequencia = () => {
     const permiteRegistroFrequencia = !listaDadosFrequencia.desabilitado;
     const frequenciaId = listaDadosFrequencia.id;
@@ -67,6 +72,7 @@ const MontarListaFrequencia = () => {
         dispatch(setModoEdicaoFrequencia(true));
       }
     }
+    dispatch(setExibirCardCollapseFrequencia(!exibirCardCollapseFrequencia));
   };
 
   const onChangeFrequencia = () => {
@@ -91,6 +97,7 @@ const MontarListaFrequencia = () => {
             titulo="Frequência"
             indice="frequencia-collapse"
             alt="card-collapse-frequencia"
+            show={exibirCardCollapseFrequencia}
           >
             {listaDadosFrequencia &&
             listaDadosFrequencia.listaFrequencia &&
