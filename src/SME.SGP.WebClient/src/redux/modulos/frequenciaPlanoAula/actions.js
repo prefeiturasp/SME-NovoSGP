@@ -133,3 +133,18 @@ export const setExibirModalErrosPlanoAula = payload => ({
   type: '@planoAnual/setExibirModalErrosPlanoAula',
   payload,
 });
+
+export const setCheckedExibirEscolhaObjetivos = payload => ({
+  type: '@planoAnual/setCheckedExibirEscolhaObjetivos',
+  payload,
+});
+
+export const setExibirSwitchEscolhaObjetivos = payload => ({
+  type: '@planoAnual/setExibirSwitchEscolhaObjetivos',
+  payload,
+});
+
+export const setDadosOriginaisPlanoAula = payload => ({
+  type: '@planoAnual/setDadosOriginaisPlanoAula',
+  payload,
+});

@@ -30,6 +30,14 @@ const ObjetivosEspecificosParaAula = () => {
     state => state.frequenciaPlanoAula.componenteCurricular
   );
 
+  const checkedExibirEscolhaObjetivos = useSelector(
+    store => store.frequenciaPlanoAula.checkedExibirEscolhaObjetivos
+  );
+
+  const exibirSwitchEscolhaObjetivos = useSelector(
+    store => store.frequenciaPlanoAula.exibirSwitchEscolhaObjetivos
+  );
+
   const configCabecalho = {
     altura: '44px',
     corBorda: '#4072d6',
@@ -37,6 +45,7 @@ const ObjetivosEspecificosParaAula = () => {
 
   const temPeloMenosUmObjetivoSelecionado = () => {
     if (
+      componenteCurricular.possuiObjetivos &&
       objetivosAprendizagemComponente &&
       objetivosAprendizagemComponente.length
     ) {
@@ -65,8 +74,12 @@ const ObjetivosEspecificosParaAula = () => {
         show
       >
         <fieldset className="mt-3">
-          {componenteCurricular.possuiObjetivos &&
-          !temPeloMenosUmObjetivoSelecionado() ? (
+          {(exibirSwitchEscolhaObjetivos ? (
+            checkedExibirEscolhaObjetivos &&
+            !temPeloMenosUmObjetivoSelecionado()
+          ) : (
+            !temPeloMenosUmObjetivoSelecionado()
+          )) ? (
             <p style={{ color: `${Base.VermelhoAlerta}` }}>
               Você precisa selecionar pelo menos um objetivo para poder inserir
               a descrição do plano.
@@ -78,8 +91,10 @@ const ObjetivosEspecificosParaAula = () => {
             desabilitar={
               desabilitarCamposPlanoAula ||
               !temPeriodoAberto ||
-              (componenteCurricular.possuiObjetivos &&
-                !temPeloMenosUmObjetivoSelecionado())
+              (exibirSwitchEscolhaObjetivos
+                ? checkedExibirEscolhaObjetivos &&
+                  !temPeloMenosUmObjetivoSelecionado()
+                : !temPeloMenosUmObjetivoSelecionado())
             }
             onChange={onChangeObjetivosEspecificosParaAula}
             inicial={dadosPlanoAula?.descricao}
