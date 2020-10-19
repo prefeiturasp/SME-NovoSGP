@@ -148,3 +148,8 @@ export const setDadosOriginaisPlanoAula = payload => ({
   type: '@planoAnual/setDadosOriginaisPlanoAula',
   payload,
 });
+
+export const setExibirCardCollapseFrequencia = payload => ({
+  type: '@planoAnual/setExibirCardCollapseFrequencia',
+  payload,
+});
