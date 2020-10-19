@@ -50,10 +50,10 @@ class ServicoSalvarFrequenciaPlanoAula {
     const {
       dadosPlanoAula,
       aulaId,
-      componenteCurricular,
+      exibirSwitchEscolhaObjetivos,
+      checkedExibirEscolhaObjetivos,
+      dadosOriginaisPlanoAula,
     } = frequenciaPlanoAula;
-
-    const objetivosAprendizagemComponente = [];
 
     const validaSeTemErrosPlanoAula = () => {
       const errosValidacaoPlano = [];
@@ -77,11 +77,14 @@ class ServicoSalvarFrequenciaPlanoAula {
       }
 
       if (
-        !ehProfessorCj &&
-        componenteCurricular.possuiObjetivos &&
-        !ServicoPlanoAula.temPeloMenosUmObjetivoSelecionado(
-          dadosPlanoAula.objetivosAprendizagemComponente
-        )
+        exibirSwitchEscolhaObjetivos
+          ? checkedExibirEscolhaObjetivos &&
+            !ServicoPlanoAula.temPeloMenosUmObjetivoSelecionado(
+              dadosPlanoAula.objetivosAprendizagemComponente
+            )
+          : !ServicoPlanoAula.temPeloMenosUmObjetivoSelecionado(
+              dadosPlanoAula.objetivosAprendizagemComponente
+            )
       ) {
         errosValidacaoPlano.push(
           'Objetivos de aprendizagem - É obrigatório selecionar ao menos um objetivo de aprendizagem'
@@ -102,7 +105,24 @@ class ServicoSalvarFrequenciaPlanoAula {
       return false;
     }
 
+    let objetivosAprendizagemComponente = [];
+    // TODO Testar quando o enpoint de obter plano aula for ajustado para obter dados quando nao for componente de regencia!
+    // Testar para ver se os dados editados estão alterando os dados originais por referencia de memoria!
     if (
+      ehProfessorCj &&
+      exibirSwitchEscolhaObjetivos &&
+      !checkedExibirEscolhaObjetivos
+    ) {
+      if (
+        dadosOriginaisPlanoAula &&
+        dadosOriginaisPlanoAula.objetivosAprendizagemComponente &&
+        dadosOriginaisPlanoAula.objetivosAprendizagemComponente.length
+      ) {
+        objetivosAprendizagemComponente = [
+          ...dadosOriginaisPlanoAula.objetivosAprendizagemComponente,
+        ];
+      }
+    } else if (
       dadosPlanoAula &&
       dadosPlanoAula.objetivosAprendizagemComponente.length
     ) {

@@ -8,6 +8,14 @@ const ObjetivosAprendizagemDesenvolvimento = () => {
     state => state.frequenciaPlanoAula.componenteCurricular
   );
 
+  const checkedExibirEscolhaObjetivos = useSelector(
+    store => store.frequenciaPlanoAula.checkedExibirEscolhaObjetivos
+  );
+
+  const exibirSwitchEscolhaObjetivos = useSelector(
+    store => store.frequenciaPlanoAula.exibirSwitchEscolhaObjetivos
+  );
+
   const configCabecalho = {
     altura: '44px',
     corBorda: '#4072d6',
@@ -21,7 +29,12 @@ const ObjetivosAprendizagemDesenvolvimento = () => {
           titulo="Objetivos de aprendizagem e meus objetivos (Currículo da Cidade)"
           indice="objetivos-aprendizagem-desenvolvimento"
           configCabecalho={configCabecalho}
-          show
+          show={
+            exibirSwitchEscolhaObjetivos ? checkedExibirEscolhaObjetivos : true
+          }
+          icon={
+            exibirSwitchEscolhaObjetivos ? checkedExibirEscolhaObjetivos : true
+          }
         >
           <div className="row mb-4">
             <div className="col-md-12 mb-2">

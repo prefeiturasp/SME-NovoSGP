@@ -19,6 +19,9 @@ const inicial = {
   listaObjetivosComponenteCurricular: [],
   errosPlanoAula: false,
   exibirModalErrosPlanoAula: false,
+  checkedExibirEscolhaObjetivos: false,
+  exibirSwitchEscolhaObjetivos: false,
+  dadosOriginaisPlanoAula: [],
 };
 
 export default function frequenciaPlanoAula(state = inicial, action) {
@@ -54,6 +57,9 @@ export default function frequenciaPlanoAula(state = inicial, action) {
           listaObjetivosComponenteCurricular: [],
           errosPlanoAula: false,
           exibirModalErrosPlanoAula: false,
+          checkedExibirEscolhaObjetivos: false,
+          exibirSwitchEscolhaObjetivos: false,
+          dadosOriginaisPlanoAula: [],
         };
       }
       case '@frequenciaPlanoAula/setListaDadosFrequencia': {
@@ -150,6 +156,9 @@ export default function frequenciaPlanoAula(state = inicial, action) {
           exibirCardCollapsePlanoAula: { exibir: false },
           exibirModalCopiarConteudoPlanoAula: false,
           listaObjetivosComponenteCurricular: [],
+          checkedExibirEscolhaObjetivos: false,
+          exibirSwitchEscolhaObjetivos: false,
+          dadosOriginaisPlanoAula: [],
         };
       }
       case '@planoAnual/setErrosPlanoAula': {
@@ -162,6 +171,24 @@ export default function frequenciaPlanoAula(state = inicial, action) {
         return {
           ...draft,
           exibirModalErrosPlanoAula: action.payload,
+        };
+      }
+      case '@planoAnual/setCheckedExibirEscolhaObjetivos': {
+        return {
+          ...draft,
+          checkedExibirEscolhaObjetivos: action.payload,
+        };
+      }
+      case '@planoAnual/setExibirSwitchEscolhaObjetivos': {
+        return {
+          ...draft,
+          exibirSwitchEscolhaObjetivos: action.payload,
+        };
+      }
+      case '@planoAnual/setDadosOriginaisPlanoAula': {
+        return {
+          ...draft,
+          dadosOriginaisPlanoAula: action.payload,
         };
       }
 

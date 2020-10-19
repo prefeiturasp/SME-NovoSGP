@@ -5,6 +5,7 @@ import {
   setExibirLoaderFrequenciaPlanoAula,
   setListaComponentesCurricularesPlanejamento,
   setListaObjetivosComponenteCurricular,
+  setDadosOriginaisPlanoAula,
 } from '~/redux/modulos/frequenciaPlanoAula/actions';
 import { erros } from '~/servicos/alertas';
 import api from '~/servicos/api';
@@ -35,6 +36,22 @@ class ServicoPlanoAula {
       );
     };
 
+    const setarDadosOriginaisPlanoAula = dados => {
+      if (
+        dados &&
+        dados.objetivosAprendizagemComponente &&
+        dados.objetivosAprendizagemComponente.length
+      ) {
+        dados.objetivosAprendizagemComponente = [
+          ...dados.objetivosAprendizagemComponente,
+        ];
+      } else {
+        dados.objetivosAprendizagemComponente = [];
+      }
+
+      dispatch(setDadosOriginaisPlanoAula(dados));
+    };
+
     // Carrega lista de componentes para montar as TABS!
     const obterListaComponentesCurricularesPlanejamento = () => {
       dispatch(setExibirLoaderFrequenciaPlanoAula(true));
@@ -63,6 +80,7 @@ class ServicoPlanoAula {
 
       if (plano && plano.data) {
         dispatch(setDadosPlanoAula({ ...plano.data }));
+        setarDadosOriginaisPlanoAula({ ...plano.data });
         const ehMigrado = plano.data.migrado;
 
         // Quando for MIGRADO mostrar somente um tab com o componente curricular já selecionado!
@@ -120,13 +138,25 @@ class ServicoPlanoAula {
       return listaObjetivosComponenteCurricular;
     }
 
-    const objetivos = await api.get(
-      `v1/objetivos-aprendizagem/objetivos/turmas/${
-        turmaSelecionada.id
-      }/componentes/${codigoComponenteCurricular}/disciplinas/0?dataReferencia=${dataSelecionada.format(
-        'YYYY-MM-DD'
-      )}&regencia=${false}`
-    );
+    let objetivos = [];
+
+    if (componenteCurricular.regencia) {
+      objetivos = await api.get(
+        `v1/objetivos-aprendizagem/objetivos/turmas/${
+          turmaSelecionada.id
+        }/componentes/${codigoComponenteCurricular}/disciplinas/0?dataReferencia=${dataSelecionada.format(
+          'YYYY-MM-DD'
+        )}&regencia=${false}`
+      );
+    } else {
+      objetivos = await api.get(
+        `v1/objetivos-aprendizagem/disciplinas/turmas/${
+          turmaSelecionada.turma
+        }/componentes/${
+          componenteCurricular.codigoComponenteCurricular
+        }?dataAula=${dataSelecionada.format('YYYY-MM-DD')}`
+      );
+    }
 
     if (objetivos && objetivos.data && objetivos.data.length) {
       dispatch(setListaObjetivosComponenteCurricular(objetivos.data));
@@ -164,7 +194,11 @@ class ServicoPlanoAula {
   };
 
   temPeloMenosUmObjetivoSelecionado = objetivosAprendizagemComponente => {
+    const state = store.getState();
+    const { frequenciaPlanoAula } = state;
+    const { componenteCurricular } = frequenciaPlanoAula;
     if (
+      componenteCurricular.possuiObjetivos &&
       objetivosAprendizagemComponente &&
       objetivosAprendizagemComponente.length
     ) {
