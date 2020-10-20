@@ -939,6 +939,17 @@ rotas.set(RotasDto.RELATORIO_COMPENSACAO_AUSENCIA, {
   chavePermissao: RotasDto.RELATORIO_COMPENSACAO_AUSENCIA,
 });
 
+rotas.set(RotasDto.RELATORIO_ESCOLA_AQUI_DASHBOARD, {
+  breadcrumbName: 'Dashboard',
+  menu: ['Relatórios', 'Escola aqui '],
+  parent: '/',
+  component: RelatorioCompensacaoAusencia,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+  chavePermissao: RotasDto.RELATORIO_ESCOLA_AQUI_DASHBOARD,
+});
+
 rotas.set(RotasDto.POC_EDITOR, {
   breadcrumbName: 'Poc Jodit Editor',
   parent: '/',
