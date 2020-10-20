@@ -84,11 +84,12 @@ namespace SME.SGP.Dados.Repositorios
             inner join objetivo_aprendizagem oa on oa.Id = po.objetivo_aprendizagem_id
             where pa.turma_id = @turmaId
               and pe.bimestre = @bimestre
-              and pa.componente_curricular_id = @componenteCurricularId ");
+              and pa.componente_curricular_id = @componenteCurricularId");
 
             if (ehRegencia)
-                query.AppendLine("and cc.id = @disciplinaId");
+                query.AppendLine(" and cc.id = @disciplinaId");
 
+            query.AppendLine(" order by oa.codigo");
             var lookup = new Dictionary<long, ObjetivosAprendizagemPorComponenteDto>();
 
 
