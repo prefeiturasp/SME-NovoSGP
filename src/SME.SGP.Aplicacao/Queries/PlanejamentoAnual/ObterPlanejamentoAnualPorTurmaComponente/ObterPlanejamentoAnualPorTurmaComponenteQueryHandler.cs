@@ -8,40 +8,16 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterPlanejamentoAnualPorTurmaComponentePeriodoEscolarQueryHandler : IRequestHandler<ObterPlanejamentoAnualPorTurmaComponentePeriodoEscolarQuery, PlanejamentoAnualPeriodoEscolarDto>
+    public class ObterPlanejamentoAnualPorTurmaComponenteQueryHandler : IRequestHandler<ObterPlanejamentoAnualPorTurmaComponenteQuery, long>
     {
-        private readonly IRepositorioPlanejamentoAnualPeriodoEscolar repositorioPlanejamentoAnualPeriodoEscolar;
+        private readonly IRepositorioPlanejamentoAnual repositorioPlanejamentoAnual;
 
-        public ObterPlanejamentoAnualPorTurmaComponentePeriodoEscolarQueryHandler(IRepositorioPlanejamentoAnualPeriodoEscolar repositorioPlanejamentoAnualPeriodoEscolar)
+        public ObterPlanejamentoAnualPorTurmaComponenteQueryHandler(IRepositorioPlanejamentoAnual repositorioPlanejamentoAnual)
         {
-            this.repositorioPlanejamentoAnualPeriodoEscolar = repositorioPlanejamentoAnualPeriodoEscolar ?? throw new System.ArgumentNullException(nameof(repositorioPlanejamentoAnualPeriodoEscolar));
+            this.repositorioPlanejamentoAnual = repositorioPlanejamentoAnual ?? throw new System.ArgumentNullException(nameof(repositorioPlanejamentoAnual));
         }
 
-        public async Task<PlanejamentoAnualPeriodoEscolarDto> Handle(ObterPlanejamentoAnualPorTurmaComponentePeriodoEscolarQuery request, CancellationToken cancellationToken)
-        {
-            var planejamento = new PlanejamentoAnualPeriodoEscolarDto
-            {
-                Componentes = new List<PlanejamentoAnualComponenteDto>(),
-            };
-
-            var periodo = await repositorioPlanejamentoAnualPeriodoEscolar.ObterPlanejamentoAnualPeriodoEscolarPorTurmaEComponenteCurricular(request.TurmaId, request.ComponenteCurricularId, request.PeriodoEscolarId);
-            if (periodo != null)
-            {
-                planejamento.Bimestre = periodo.PeriodoEscolar != null ? periodo.PeriodoEscolar.Bimestre : 0;
-                planejamento.Componentes = periodo.ComponentesCurriculares?.Select(c => new PlanejamentoAnualComponenteDto
-                {
-                    ComponenteCurricularId = c.ComponenteCurricularId,
-                    Descricao = c.Descricao,
-                    ObjetivosAprendizagemId = c.ObjetivosAprendizagem?
-                    .Where(oa => oa!= null && oa.ObjetivoAprendizagemId > 0)?
-                    .Select(o => o.ObjetivoAprendizagemId),
-                    Auditoria = (AuditoriaDto)c
-                })?.ToList();
-                planejamento.PeriodoEscolarId = periodo.PeriodoEscolar.Id;
-            }
-
-            return planejamento;
-
-        }
+        public async Task<long> Handle(ObterPlanejamentoAnualPorTurmaComponenteQuery request, CancellationToken cancellationToken)
+            => await repositorioPlanejamentoAnual.ObterIdPorTurmaEComponenteCurricular(request.TurmaId, request.ComponenteCurricularId);
     }
 }
