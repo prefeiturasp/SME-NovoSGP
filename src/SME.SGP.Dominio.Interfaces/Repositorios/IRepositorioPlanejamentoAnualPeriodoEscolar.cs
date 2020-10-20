@@ -11,5 +11,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<PlanejamentoAnualPeriodoEscolar> ObterPlanejamentoAnualPeriodoEscolarPorTurmaEComponenteCurricular(long turmaId, long componenteCurricularId, long periodoEscolarId);
 
         Task<IEnumerable<PlanejamentoAnualPeriodoEscolar>> ObterCompletoPorIdAsync(long[] ids);
+        Task<bool> PlanejamentoPossuiObjetivos(long planejamentoAnualPeriodoId);
     }
 }
