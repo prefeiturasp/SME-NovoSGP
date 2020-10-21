@@ -309,10 +309,13 @@ const ControleGrade = () => {
       ]);
       setComponentesCurricularesId('0');
     } else {
+      setExibirLoader(true);
       const componentes = await ServicoComponentesCurriculares.obterComponentesPorUeTurmas(
         ueId,
         [turmaId]
-      ).catch(e => erros(e));
+      )
+        .catch(e => erros(e))
+        .finally(() => setExibirLoader(false));
 
       if (componentes && componentes.data && componentes.data.length) {
         const lista = [];
@@ -333,8 +336,6 @@ const ControleGrade = () => {
         setListaComponentesCurriculares([]);
       }
     }
-
-    setExibirLoader(false);
   }, [ueId, turmaId]);
 
   useEffect(() => {
