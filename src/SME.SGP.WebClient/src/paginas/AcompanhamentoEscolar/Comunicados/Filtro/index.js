@@ -497,25 +497,6 @@ function Filtro({ onFiltrar }) {
                 }}
               />
             </Grid>
-            {/* <Grid cols={2}>
-              <Label control="ano" text="Ano" />
-              <SelectComponent
-                form={form}
-                id="ano"
-                name="ano"
-                placeholder="Selecione ano"
-                valueOption="ano"
-                valueText="ano"
-                value={form.values.semestre}
-                lista={anos}
-                allowClear
-                disabled={semestreDesabilitado}
-                onChange={x => {
-                  validarFiltro();
-                  onSemestreChange(x);
-                }}
-              />
-            </Grid> */}
             <Grid cols={6}>
               <Label control="turmas" text="Turma" />
               <SelectComponent
