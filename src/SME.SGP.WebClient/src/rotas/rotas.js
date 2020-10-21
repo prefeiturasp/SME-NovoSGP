@@ -947,7 +947,7 @@ rotas.set(RotasDto.CONTROLE_GRADE, {
   component: ControleGrade,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  temPermissionamento: false,
+  temPermissionamento: true,
   chavePermissao: RotasDto.CONTROLE_GRADE,
 });
 
