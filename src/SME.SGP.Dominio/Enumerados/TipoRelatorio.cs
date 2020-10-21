@@ -52,6 +52,9 @@ namespace SME.SGP.Dominio
         RelatorioMatetimaticaPorTurma = 16,
 
         [Display(Name = "relatorios/sondagem/matematica-consolidado", ShortName = "MatematicaConsolidado", Description = "Matematica Consolidado")]
-        RelatorioMatetimaticaConsolidado = 17
+        RelatorioMatetimaticaConsolidado = 17,
+
+        [Display(Name = "relatorios/sondagem/matematica-consolidado-aditivo-multiplicativo", ShortName = "MatematicaConsolidadoAditMult", Description = "Matematica Consolidado Aditivo Multiplicativo")]
+        RelatorioMatetimaticaConsolidadoAditMult = 18
     }
 }
