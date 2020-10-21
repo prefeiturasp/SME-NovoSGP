@@ -29,8 +29,8 @@ const ControleGrade = () => {
   const [listaBimestres, setListaBimestres] = useState([]);
 
   const listaTipoRelatorio = [
-    { valor: '0', desc: 'Sintético ' },
-    { valor: '1', desc: 'Analítico' },
+    { valor: '1', desc: 'Sintético ' },
+    { valor: '2', desc: 'Analítico' },
   ];
 
   const bimestresEja = [
@@ -303,8 +303,8 @@ const ControleGrade = () => {
     if (turmaId === '0') {
       setListaComponentesCurriculares([
         {
-          codigo: '0',
-          descricao: 'Todos',
+          valor: '0',
+          desc: 'Todos',
         },
       ]);
       setComponentesCurricularesId('0');
@@ -315,7 +315,20 @@ const ControleGrade = () => {
       ).catch(e => erros(e));
 
       if (componentes && componentes.data && componentes.data.length) {
-        setListaComponentesCurriculares(componentes.data);
+        const lista = [];
+        if (componentes.data.length > 1) {
+          lista.push({ valor: '0', desc: 'Todos' });
+        }
+        componentes.data.map(item =>
+          lista.push({
+            desc: item.descricao,
+            valor: item.codigo,
+          })
+        );
+        setListaComponentesCurriculares(lista);
+        if (lista.length === 1) {
+          setListaComponentesCurriculares(lista[0].valor);
+        }
       } else {
         setListaComponentesCurriculares([]);
       }
@@ -392,7 +405,33 @@ const ControleGrade = () => {
 
   const gerar = async () => {
     setExibirLoader(true);
-    const params = {};
+
+    let turmas = [turmaId];
+    let componentesCurriculares = [componentesCurricularesId];
+    let bimestres = [...bimestre];
+
+    if (turmaId === '0') {
+      turmas = listaTurmas.filter(item => item.valor !== '0').map(b => b.valor);
+    }
+
+    if (componentesCurricularesId === '0') {
+      componentesCurriculares = listaComponentesCurriculares
+        .filter(item => item.valor !== '0')
+        .map(b => b.valor);
+    }
+
+    if (bimestre === '0') {
+      bimestres = listaBimestres
+        .filter(item => item.valor !== '0')
+        .map(b => b.valor);
+    }
+
+    const params = {
+      turmas,
+      componentesCurriculares,
+      bimestres,
+      modelo: tipoRelatorio,
+    };
     const retorno = await ServicoRelatorioControleGrade.gerar(params)
       .catch(e => erros(e))
       .finally(setExibirLoader(false));
@@ -406,8 +445,8 @@ const ControleGrade = () => {
   return (
     <>
       <Cabecalho pagina="Relatório controle de grade" />
-      <Loader loading={exibirLoader}>
-        <Card>
+      <Card>
+        <Loader loading={exibirLoader}>
           <div className="col-md-12">
             <div className="row">
               <div className="col-md-12 d-flex justify-content-end pb-4 justify-itens-end">
@@ -536,8 +575,8 @@ const ControleGrade = () => {
                 <SelectComponent
                   id="drop-componente-curricular"
                   lista={listaComponentesCurriculares}
-                  valueOption="codigo"
-                  valueText="descricao"
+                  valueOption="valor"
+                  valueText="desc"
                   label="Componente curricular"
                   disabled={
                     !modalidadeId || listaComponentesCurriculares?.length === 1
@@ -586,8 +625,8 @@ const ControleGrade = () => {
               </div>
             </div>
           </div>
-        </Card>
-      </Loader>
+        </Loader>
+      </Card>
     </>
   );
 };
