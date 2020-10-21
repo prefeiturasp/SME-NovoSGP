@@ -454,7 +454,7 @@ namespace SME.SGP.Dados.Repositorios
             }
             if (disciplinaId.HasValue)
             {
-                query.AppendLine("and aad.disciplina_id =  @disciplinaId");
+                query.AppendLine("and aad.disciplina_id::text =  @disciplinaId");
                 query.AppendLine("and aad.excluido =  false");
             }
             if (ehRegencia.HasValue)
