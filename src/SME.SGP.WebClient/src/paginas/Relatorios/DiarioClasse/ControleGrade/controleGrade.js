@@ -391,6 +391,7 @@ const ControleGrade = () => {
     await setTurmaId(undefined);
     await setAnoLetivo();
     await setAnoLetivo(anoAtual);
+    await setTipoRelatorio();
   };
 
   const desabilitarGerar =
@@ -421,7 +422,7 @@ const ControleGrade = () => {
         .map(b => b.valor);
     }
 
-    if (bimestre === '0') {
+    if (bimestre[0] === '0') {
       bimestres = listaBimestres
         .filter(item => item.valor !== '0')
         .map(b => b.valor);
