@@ -151,7 +151,7 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
     async function consultaTipos() {
       setCarregandoTipos(true);
       setDesabilitarCampos(true);
-      if (filtroInicialTipoCalendario && match?.params?.tipoCalendarioId.trim()) {
+      if (filtroInicialTipoCalendario && match?.params?.tipoCalendarioId?.trim()) {
         var tipoCalendario = await api.get(`v1/calendarios/tipos/${match?.params?.tipoCalendarioId}`);
         setPesquisaTipoCalendario(tipoCalendario?.data?.descricaoPeriodo);
         setfiltroInicialTipoCalendario(false);
