@@ -120,29 +120,7 @@ namespace SME.SGP.Aplicacao
         public long ObterIdPorObjetivoAprendizagemJurema(long planoId, long objetivoAprendizagemJuremaId)
         {
             return repositorioObjetivosPlano.ObterIdPorObjetivoAprendizagemJurema(planoId, objetivoAprendizagemJuremaId);
-        }
-
-
-        public async Task<IEnumerable<ObjetivoAprendizagemDto>> ObterObjetivosPlanoDisciplina(DateTime dataReferencia, long turmaId, long componenteCurricularId, long disciplinaId, bool regencia = false)
-        {
-            Usuario usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
-
-            int bimestre = await ObterBimestreAtual(dataReferencia, turmaId.ToString());
-
-            bool filtrarSomenteRegencia = regencia && !usuarioLogado.EhProfessorCj();
-            IEnumerable<ObjetivoAprendizagemPlano> objetivosPlano = repositorioObjetivosPlano.ObterObjetivosPlanoDisciplina(dataReferencia.Year,
-                                                                                         bimestre,
-                                                                                         turmaId,
-                                                                                         componenteCurricularId,
-                                                                                         disciplinaId,
-                                                                                         filtrarSomenteRegencia);
-
-            IEnumerable<ObjetivoAprendizagemDto> objetivosJurema = await Listar();
-
-            // filtra objetivos do jurema com os objetivos cadastrados no plano anual nesse bimestre
-            return objetivosJurema.
-                Where(c => objetivosPlano.Any(o => o.ObjetivoAprendizagemJuremaId == c.Id)).OrderBy(c => c.Codigo);
-        }
+        }    
 
 
         private async Task<int> ObterBimestreAtual(DateTime dataReferencia, string turmaId)

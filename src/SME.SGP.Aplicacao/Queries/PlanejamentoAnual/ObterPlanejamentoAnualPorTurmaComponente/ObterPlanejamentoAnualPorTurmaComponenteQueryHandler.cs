@@ -18,10 +18,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<long> Handle(ObterPlanejamentoAnualPorTurmaComponenteQuery request, CancellationToken cancellationToken)
-        {
-            var planejamentoId = await repositorioPlanejamentoAnual.ObterIdPorTurmaEComponenteCurricular(request.TurmaId, request.ComponenteCurricularId);
-
-            return planejamentoId;
-        }
+            => await repositorioPlanejamentoAnual.ObterIdPorTurmaEComponenteCurricular(request.TurmaId, request.ComponenteCurricularId);
     }
 }
