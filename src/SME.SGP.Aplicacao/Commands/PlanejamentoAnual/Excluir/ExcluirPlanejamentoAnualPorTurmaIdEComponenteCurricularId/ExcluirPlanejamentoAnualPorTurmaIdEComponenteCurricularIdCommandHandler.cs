@@ -30,6 +30,9 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(ExcluirPlanejamentoAnualPorTurmaIdEComponenteCurricularIdCommand comando, CancellationToken cancellationToken)
         {
             var planejamentoAnual = await repositorioPlanejamentoAnual.ObterIdPorTurmaEComponenteCurricular(comando.TurmaId, comando.ComponenteCurricularId);
+            if (planejamentoAnual == 0)
+                return true;
+
             var planejamentoAnualPeriodosEscolares = await repositorioPlanejamentoAnualPeriodoEscolar.ObterPorPlanejamentoAnualId(planejamentoAnual);
 
 
@@ -38,7 +41,7 @@ namespace SME.SGP.Aplicacao
                 var planejamentoAnualComponente = await repositorioPlanejamentoAnualComponente.ObterPorPlanejamentoAnualPeriodoEscolarId(comando.ComponenteCurricularId, pape.Id);
                 var planejamentoAnualObjetivosAprendizagem = await repositorioPlanejamentoAnualObjetivosAprendizagem.ObterPorPlanejamentoAnualComponenteId(planejamentoAnualComponente.Id);
 
-                foreach(var paoa in planejamentoAnualObjetivosAprendizagem)
+                foreach (var paoa in planejamentoAnualObjetivosAprendizagem)
                 {
                     repositorioPlanejamentoAnualObjetivosAprendizagem.Remover(paoa.Id);
                 }
@@ -49,7 +52,7 @@ namespace SME.SGP.Aplicacao
             }
 
             repositorioPlanejamentoAnual.Remover(planejamentoAnual);
-            
+
             return true;
         }
     }

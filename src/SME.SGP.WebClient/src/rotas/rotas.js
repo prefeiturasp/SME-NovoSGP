@@ -68,6 +68,7 @@ import DevolutivasForm from '~/paginas/DiarioClasse/Devolutivas/devolutivasForm'
 import RelatorioNotasConceitosFinais from '~/paginas/Relatorios/NotasConceitosFinais/relatorioNotasConceitosFinais';
 import RelatorioCompensacaoAusencia from '~/paginas/Relatorios/CompensacaoAusencia/relatorioCompensacaoAusencia';
 import PocEditor from '~/paginas/PocEditor/pocEditor';
+import ControleGrade from '~/paginas/Relatorios/DiarioClasse/ControleGrade/controleGrade';
 
 const rotas = new Map();
 
@@ -937,6 +938,17 @@ rotas.set(RotasDto.RELATORIO_COMPENSACAO_AUSENCIA, {
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: false,
   chavePermissao: RotasDto.RELATORIO_COMPENSACAO_AUSENCIA,
+});
+
+rotas.set(RotasDto.CONTROLE_GRADE, {
+  breadcrumbName: 'Controle de grade',
+  menu: ['Relatórios', 'Diário de classe'],
+  parent: '/',
+  component: ControleGrade,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+  chavePermissao: RotasDto.CONTROLE_GRADE,
 });
 
 rotas.set(RotasDto.POC_EDITOR, {

@@ -6,6 +6,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IObterTurmasParaCopiaUseCase
     {
-        Task<IEnumerable<TurmaParaCopiaPlanoAnualDto>> Executar(long turmaId, long componenteCurricularId, bool ensinoEspecial);
+        Task<IEnumerable<TurmaParaCopiaPlanoAnualDto>> Executar(int turmaId, long componenteCurricularId, bool ensinoEspecial);
     }
 }

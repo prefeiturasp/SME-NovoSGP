@@ -139,6 +139,7 @@ class ServicoSalvarPlanoAnual {
       const listaNova = [...dadosBimestresPlanoAnual];
       const listaParaSalvar = listaNova
         .filter(a => a)
+        .filter(b => b.componentes.find(c => c.emEdicao))
         .map(item => {
           return {
             periodoEscolarId: item.periodoEscolarId,

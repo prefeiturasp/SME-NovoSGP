@@ -30,6 +30,15 @@ class ServicoCalendarios {
   obterTiposCalendarioAutoComplete = (descricao = '') => {
     return api.get(`v1/calendarios/tipos/anos-letivos?descricao=${descricao}`);
   };
+
+  obterDatasDeAulasDisponiveis = (
+    anoLetivo,
+    turma,
+    codigoComponenteCurricular
+  ) => {
+    const url = `v1/calendarios/frequencias/aulas/datas/${anoLetivo}/turmas/${turma}/disciplinas/${codigoComponenteCurricular}`;
+    return api.get(url);
+  };
 }
 
 export default new ServicoCalendarios();
