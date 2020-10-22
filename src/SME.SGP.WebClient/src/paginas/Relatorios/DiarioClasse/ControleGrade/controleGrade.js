@@ -228,6 +228,7 @@ const ControleGrade = () => {
           lista.push({
             desc: item.nome,
             valor: item.codigo,
+            id: item.id,
           })
         );
         setListaTurmas(lista);
@@ -300,41 +301,43 @@ const ControleGrade = () => {
   }, [obterAnosLetivos]);
 
   const obterComponentesCurriculares = useCallback(async () => {
+    let turmas = [];
     if (turmaId === '0') {
-      setListaComponentesCurriculares([
-        {
-          valor: '0',
-          desc: 'Todos',
-        },
-      ]);
-      setComponentesCurricularesId('0');
+      turmas = listaTurmas.filter(item => item.valor !== '0').map(a => a.valor);
     } else {
-      setExibirLoader(true);
-      const componentes = await ServicoComponentesCurriculares.obterComponentesPorUeTurmas(
-        ueId,
-        [turmaId]
-      )
-        .catch(e => erros(e))
-        .finally(() => setExibirLoader(false));
+      turmas = [turmaId];
+    }
 
-      if (componentes && componentes.data && componentes.data.length) {
-        const lista = [];
-        if (componentes.data.length > 1) {
-          lista.push({ valor: '0', desc: 'Todos' });
-        }
-        componentes.data.map(item =>
-          lista.push({
-            desc: item.descricao,
-            valor: item.codigo,
-          })
-        );
-        setListaComponentesCurriculares(lista);
-        if (lista.length === 1) {
-          setListaComponentesCurriculares(lista[0].valor);
-        }
-      } else {
-        setListaComponentesCurriculares([]);
+    setExibirLoader(true);
+    const componentes = await ServicoComponentesCurriculares.obterComponentesPorUeTurmas(
+      ueId,
+      turmas
+    )
+      .catch(e => erros(e))
+      .finally(() => setExibirLoader(false));
+
+    if (componentes && componentes.data && componentes.data.length) {
+      const lista = [];
+      if (componentes.data.length > 1) {
+        lista.push({ valor: '0', desc: 'Todos' });
       }
+      componentes.data.map(item =>
+        lista.push({
+          desc: item.descricao,
+          valor: item.codigo,
+        })
+      );
+
+      setListaComponentesCurriculares(lista);
+      if (lista.length === 1) {
+        setComponentesCurricularesId(lista[0].valor);
+      }
+
+      if (turmaId === '0') {
+        setComponentesCurricularesId('0');
+      }
+    } else {
+      setListaComponentesCurriculares([]);
     }
   }, [ueId, turmaId]);
 
@@ -408,12 +411,17 @@ const ControleGrade = () => {
   const gerar = async () => {
     setExibirLoader(true);
 
-    let turmas = [turmaId];
+    let turmas = [];
     let componentesCurriculares = [componentesCurricularesId];
     let bimestres = [...bimestre];
 
     if (turmaId === '0') {
-      turmas = listaTurmas.filter(item => item.valor !== '0').map(b => b.valor);
+      turmas = listaTurmas.filter(item => item.valor !== '0').map(b => b.id);
+    } else {
+      const turmaSelecionada = listaTurmas.find(
+        item => String(item.valor) === String(turmaId)
+      );
+      turmas = [turmaSelecionada.id];
     }
 
     if (componentesCurricularesId === '0') {
@@ -581,7 +589,9 @@ const ControleGrade = () => {
                   valueText="desc"
                   label="Componente curricular"
                   disabled={
-                    !modalidadeId || listaComponentesCurriculares?.length === 1
+                    !modalidadeId ||
+                    listaComponentesCurriculares?.length === 1 ||
+                    turmaId === '0'
                   }
                   valueSelect={componentesCurricularesId}
                   onChange={onChangeComponenteCurricular}
