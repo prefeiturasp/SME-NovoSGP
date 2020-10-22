@@ -50,6 +50,8 @@ const RotasDto = {
   RELATORIO_NOTAS_CONCEITOS_FINAIS: '/relatorios/notas-conceitos-finais',
   RELATORIO_COMPENSACAO_AUSENCIA: '/relatorios/compensacao-ausencia',
   DEVOLUTIVAS: '/diario-classe/devolutiva',
+  CONTROLE_GRADE: '/relatorios/diario-classe/controle-grade',
+  POC_EDITOR: 'editor'
 };
 
 export default RotasDto;
