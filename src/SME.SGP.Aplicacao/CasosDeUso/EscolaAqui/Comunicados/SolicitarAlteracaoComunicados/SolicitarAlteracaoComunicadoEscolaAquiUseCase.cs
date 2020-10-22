@@ -31,7 +31,9 @@ namespace SME.SGP.Aplicacao
                 , comunicado.Modalidade
                 , comunicado.Semestre
                 , comunicado.Alunos
-                , comunicado.Turmas));
+                , comunicado.Turmas
+                , comunicado.TipoCalendarioId
+                , comunicado.EventoId));
         }
     }
 }

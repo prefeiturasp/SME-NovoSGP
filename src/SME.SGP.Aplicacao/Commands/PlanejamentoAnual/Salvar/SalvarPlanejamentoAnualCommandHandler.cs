@@ -5,6 +5,7 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -16,119 +17,149 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioPlanejamentoAnualPeriodoEscolar repositorioPlanejamentoAnualPeriodoEscolar;
         private readonly IRepositorioPlanejamentoAnualComponente repositorioPlanejamentoAnualComponente;
         private readonly IRepositorioPlanejamentoAnualObjetivosAprendizagem repositorioPlanejamentoAnualObjetivosAprendizagem;
+        private readonly IUnitOfWork unitOfWork;
 
         public SalvarPlanejamentoAnualCommandHandler(IRepositorioPlanejamentoAnual repositorioPlanejamentoAnual,
                                                      IRepositorioPlanejamentoAnualPeriodoEscolar repositorioPlanejamentoAnualPeriodoEscolar,
                                                      IRepositorioPlanejamentoAnualComponente repositorioPlanejamentoAnualComponente,
-                                                     IRepositorioPlanejamentoAnualObjetivosAprendizagem repositorioPlanejamentoAnualObjetivosAprendizagem, IMediator mediator) : base(mediator)
+                                                     IRepositorioPlanejamentoAnualObjetivosAprendizagem repositorioPlanejamentoAnualObjetivosAprendizagem,
+                                                     IMediator mediator,
+                                                     IUnitOfWork unitOfWork) : base(mediator)
         {
             this.repositorioPlanejamentoAnual = repositorioPlanejamentoAnual ?? throw new System.ArgumentNullException(nameof(repositorioPlanejamentoAnual));
             this.repositorioPlanejamentoAnualPeriodoEscolar = repositorioPlanejamentoAnualPeriodoEscolar ?? throw new System.ArgumentNullException(nameof(repositorioPlanejamentoAnualPeriodoEscolar));
             this.repositorioPlanejamentoAnualComponente = repositorioPlanejamentoAnualComponente ?? throw new System.ArgumentNullException(nameof(repositorioPlanejamentoAnualComponente));
             this.repositorioPlanejamentoAnualObjetivosAprendizagem = repositorioPlanejamentoAnualObjetivosAprendizagem ?? throw new System.ArgumentNullException(nameof(repositorioPlanejamentoAnualObjetivosAprendizagem));
+            this.unitOfWork = unitOfWork ?? throw new System.ArgumentNullException(nameof(unitOfWork));
         }
         public async Task<PlanejamentoAnualAuditoriaDto> Handle(SalvarPlanejamentoAnualCommand comando, CancellationToken cancellationToken)
         {
+
             PlanejamentoAnualAuditoriaDto auditorias = new PlanejamentoAnualAuditoriaDto();
-            var planejamentoAnual = await repositorioPlanejamentoAnual.ObterPlanejamentoSimplificadoPorTurmaEComponenteCurricular(comando.TurmaId, comando.ComponenteCurricularId);
-            if (planejamentoAnual == null)
+            try
             {
+                unitOfWork.IniciarTransacao();
 
-                planejamentoAnual = new PlanejamentoAnual(comando.TurmaId, comando.ComponenteCurricularId);
-                var id = await repositorioPlanejamentoAnual.SalvarAsync(planejamentoAnual);
-                auditorias.Id = id;
-            }
-
-            List<PeriodoEscolar> excecoesAtribuicao = new List<PeriodoEscolar>();
-            List<PeriodoEscolar> excecoesEmAberto = new List<PeriodoEscolar>();
-            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
-            var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(comando.TurmaId));
-            if (turma == null)
-                throw new NegocioException($"Turma de id [{turma.Id}] não localizada!");
-
-            foreach (var periodoEscolar in comando.PeriodosEscolares)
-            {
-                var periodo = await mediator.Send(new ObterPeriodoEscolarePorIdQuery(periodoEscolar.PeriodoEscolarId));
-                var temAtribuicao = await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaNoPeriodoQuery(comando.ComponenteCurricularId, turma.CodigoTurma, usuario.CodigoRf, periodo.PeriodoInicio.Date, periodo.PeriodoFim.Date));
-                if (!temAtribuicao)
-                    excecoesAtribuicao.Add(periodo);
-
-                var periodoEmAberto = mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, periodo.Bimestre, turma.AnoLetivo == DateTime.Today.Year)).Result;
-                if (!periodoEmAberto)
-                    excecoesEmAberto.Add(periodo);
-            }
-
-            if (excecoesAtribuicao.Any())
-                throw new NegocioException($"Você não possui atribuição.");
-
-            if (excecoesEmAberto.Any())
-                throw new NegocioException($"Algum bimestre não está com o período aberto.");
-
-            foreach (var periodo in comando.PeriodosEscolares)
-            {
-
-                var planejamentoAnualPeriodoEscolar = await repositorioPlanejamentoAnualPeriodoEscolar.ObterPorPlanejamentoAnualIdEPeriodoId(planejamentoAnual.Id, periodo.PeriodoEscolarId);
-                if (planejamentoAnualPeriodoEscolar == null)
+                var planejamentoAnual = await repositorioPlanejamentoAnual.ObterPlanejamentoSimplificadoPorTurmaEComponenteCurricular(comando.TurmaId, comando.ComponenteCurricularId);
+                if (planejamentoAnual == null)
                 {
-                    planejamentoAnualPeriodoEscolar = new PlanejamentoAnualPeriodoEscolar(periodo.PeriodoEscolarId)
-                    {
-                        PlanejamentoAnualId = planejamentoAnual.Id
-                    };
 
-                    await repositorioPlanejamentoAnualPeriodoEscolar.SalvarAsync(planejamentoAnualPeriodoEscolar);
+                    planejamentoAnual = new PlanejamentoAnual(comando.TurmaId, comando.ComponenteCurricularId);
+                    var id = await repositorioPlanejamentoAnual.SalvarAsync(planejamentoAnual);
+                    auditorias.Id = id;
                 }
-                else
+
+                List<string> excessoes = new List<string>();
+                var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+                var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(comando.TurmaId));
+                if (turma == null)
+                    throw new NegocioException($"Turma de id [{turma.Id}] não localizada!");
+
+                foreach (var periodoEscolar in comando.PeriodosEscolares)
                 {
-                    foreach(var componente in periodo.Componentes)
+                    var periodo = await mediator.Send(new ObterPeriodoEscolarePorIdQuery(periodoEscolar.PeriodoEscolarId));
+                    if (usuario.EhProfessor())
                     {
-                        await repositorioPlanejamentoAnualObjetivosAprendizagem.RemoverTodosPorPlanejamentoAnualPeriodoEscolarIdEComponenteCurricularId(planejamentoAnualPeriodoEscolar.Id, componente.ComponenteCurricularId);
+                        var temAtribuicao = await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaNoPeriodoQuery(comando.ComponenteCurricularId, turma.CodigoTurma, usuario.CodigoRf, periodo.PeriodoInicio.Date, periodo.PeriodoFim.Date));
+                        if (!temAtribuicao)
+                            excessoes.Add($"Você não possui atribuição na turma {turma.Nome} - {periodo.Bimestre}° Bimestre.");
                     }
+
+                    var periodoEmAberto = mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, periodo.Bimestre, turma.AnoLetivo == DateTime.Today.Year)).Result;
+                    if (!periodoEmAberto)
+                        excessoes.Add($"O {periodo.Bimestre}° Bimestre não está aberto.");
                 }
 
-                var auditoria = new PlanejamentoAnualPeriodoEscolarDto
+                if (!excessoes.Any())
                 {
-                    PeriodoEscolarId = periodo.PeriodoEscolarId,
-                };
 
-                var componentes = periodo.Componentes.Select(c => new PlanejamentoAnualComponente
-                {
-                    ComponenteCurricularId = c.ComponenteCurricularId,
-                    Descricao = c.Descricao,
-                    PlanejamentoAnualPeriodoEscolarId = planejamentoAnualPeriodoEscolar.Id,
-                    ObjetivosAprendizagem = c.ObjetivosAprendizagemId.Select(o => new PlanejamentoAnualObjetivoAprendizagem
+                    foreach (var periodo in comando.PeriodosEscolares)
                     {
-                        ObjetivoAprendizagemId = o
-                    })?.ToList()
-                })?.ToList();
 
-                if (componentes != null)
-                {
-                    foreach (var componente in componentes)
-                    {
-                        var planejamentoAnualComponente = await repositorioPlanejamentoAnualComponente.ObterPorPlanejamentoAnualPeriodoEscolarId(componente.ComponenteCurricularId, planejamentoAnualPeriodoEscolar.Id);
-                        if (planejamentoAnualComponente == null)
+                        var planejamentoAnualPeriodoEscolar = await repositorioPlanejamentoAnualPeriodoEscolar.ObterPorPlanejamentoAnualIdEPeriodoId(planejamentoAnual.Id, periodo.PeriodoEscolarId);
+                        if (planejamentoAnualPeriodoEscolar == null)
                         {
-                            planejamentoAnualComponente = new PlanejamentoAnualComponente
+                            planejamentoAnualPeriodoEscolar = new PlanejamentoAnualPeriodoEscolar(periodo.PeriodoEscolarId)
                             {
-                                ComponenteCurricularId = componente.ComponenteCurricularId,
-                                PlanejamentoAnualPeriodoEscolarId = planejamentoAnualPeriodoEscolar.Id,
+                                PlanejamentoAnualId = planejamentoAnual.Id
                             };
+
+                            await repositorioPlanejamentoAnualPeriodoEscolar.SalvarAsync(planejamentoAnualPeriodoEscolar);
+                        }
+                        else
+                        {
+                            foreach (var componente in periodo.Componentes)
+                            {
+                                await repositorioPlanejamentoAnualObjetivosAprendizagem.RemoverTodosPorPlanejamentoAnualPeriodoEscolarIdEComponenteCurricularId(planejamentoAnualPeriodoEscolar.Id, componente.ComponenteCurricularId);
+                            }
                         }
 
-                        planejamentoAnualComponente.Descricao = componente.Descricao;
-
-                        await repositorioPlanejamentoAnualComponente.SalvarAsync(planejamentoAnualComponente);
-                        auditoria.Componentes.Add(new PlanejamentoAnualComponenteDto
+                        var auditoria = new PlanejamentoAnualPeriodoEscolarDto
                         {
-                            Auditoria = (AuditoriaDto)planejamentoAnualComponente,
-                            ComponenteCurricularId = componente.ComponenteCurricularId,
-                        });
+                            PeriodoEscolarId = periodo.PeriodoEscolarId,
+                        };
 
-                        await Task.Run(() => repositorioPlanejamentoAnualObjetivosAprendizagem.SalvarVarios(componente.ObjetivosAprendizagem, planejamentoAnualComponente.Id));
+                        var componentes = periodo.Componentes.Select(c => new PlanejamentoAnualComponente
+                        {
+                            ComponenteCurricularId = c.ComponenteCurricularId,
+                            Descricao = c.Descricao,
+                            PlanejamentoAnualPeriodoEscolarId = planejamentoAnualPeriodoEscolar.Id,
+                            ObjetivosAprendizagem = c.ObjetivosAprendizagemId.Select(o => new PlanejamentoAnualObjetivoAprendizagem
+                            {
+                                ObjetivoAprendizagemId = o
+                            })?.ToList()
+                        })?.ToList();
+
+                        if (componentes != null)
+                        {
+                            foreach (var componente in componentes)
+                            {
+                                var planejamentoAnualComponente = await repositorioPlanejamentoAnualComponente.ObterPorPlanejamentoAnualPeriodoEscolarId(componente.ComponenteCurricularId, planejamentoAnualPeriodoEscolar.Id);
+                                if (planejamentoAnualComponente == null)
+                                {
+                                    planejamentoAnualComponente = new PlanejamentoAnualComponente
+                                    {
+                                        ComponenteCurricularId = componente.ComponenteCurricularId,
+                                        PlanejamentoAnualPeriodoEscolarId = planejamentoAnualPeriodoEscolar.Id,
+                                    };
+                                }
+
+                                planejamentoAnualComponente.Descricao = componente.Descricao;
+
+                                await repositorioPlanejamentoAnualComponente.SalvarAsync(planejamentoAnualComponente);
+                                auditoria.Componentes.Add(new PlanejamentoAnualComponenteDto
+                                {
+                                    Auditoria = (AuditoriaDto)planejamentoAnualComponente,
+                                    ComponenteCurricularId = componente.ComponenteCurricularId,
+                                });
+
+                                await Task.Run(() => repositorioPlanejamentoAnualObjetivosAprendizagem.SalvarVarios(componente.ObjetivosAprendizagem, planejamentoAnualComponente.Id));
+                            }
+                        }
+                        auditorias.PeriodosEscolares.Add(auditoria);
                     }
                 }
-                auditorias.PeriodosEscolares.Add(auditoria);
+
+                if (excessoes.Any())
+                {
+                    var str = new StringBuilder();
+                    str.AppendLine($"Os seguintes erros foram encontrados: ");
+                    foreach (var t in excessoes)
+                    {
+                        str.AppendLine($"- {t}");
+                    }
+
+                    throw new NegocioException(str.ToString());
+                }
+
+                unitOfWork.PersistirTransacao();
             }
+            catch (Exception ex)
+            {
+                unitOfWork.Rollback();
+                throw;
+            }
+
             return auditorias;
         }
     }

@@ -28,7 +28,8 @@ namespace SME.SGP.Aplicacao
         public string CodigoUe { get; set; }
 
         public IEnumerable<string> Turmas { get; set; }
-
+        public long? TipoCalendarioId { get; }
+        public long? EventoId { get; }
         public bool AlunosEspecificados { get; set; }
 
         public Modalidade? Modalidade { get; set; }
@@ -37,7 +38,7 @@ namespace SME.SGP.Aplicacao
 
         public IEnumerable<string> Alunos { get; set; }
 
-        public SolicitarAlteracaoComunicadoEscolaAquiCommand(long id, DateTime dataEnvio, DateTime? dataExpiracao, string descricao, List<int> gruposId, string titulo, int anoLetivo, string seriesResumidas, string codigoDre, string codigoUe, bool alunosEspecificados, Modalidade? modalidade, int semestre, IEnumerable<string> alunos, IEnumerable<string> turmas)
+        public SolicitarAlteracaoComunicadoEscolaAquiCommand(long id, DateTime dataEnvio, DateTime? dataExpiracao, string descricao, List<int> gruposId, string titulo, int anoLetivo, string seriesResumidas, string codigoDre, string codigoUe, bool alunosEspecificados, Modalidade? modalidade, int semestre, IEnumerable<string> alunos, IEnumerable<string> turmas, long? tipoCalendarioId, long? eventoId)
         {
             Id = id;
             DataEnvio = dataEnvio;
@@ -54,6 +55,8 @@ namespace SME.SGP.Aplicacao
             Semestre = semestre;
             Alunos = alunos;
             Turmas = turmas;
+            TipoCalendarioId = tipoCalendarioId;
+            EventoId = eventoId;
         }
     }
 }

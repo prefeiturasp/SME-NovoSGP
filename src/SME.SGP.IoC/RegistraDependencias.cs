@@ -62,7 +62,6 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IComandosAtribuicaoEsporadica, ComandosAtribuicaoEsporadica>();
             services.TryAddScoped<IComandosAtividadeAvaliativa, ComandosAtividadeAvaliativa>();
             services.TryAddScoped<IComandosTipoAvaliacao, ComandosTipoAavaliacao>();
-            services.TryAddScoped<IComandosPlanoAula, ComandosPlanoAula>();
             services.TryAddScoped<IComandosAtribuicaoCJ, ComandosAtribuicaoCJ>();
             services.TryAddScoped<IComandosEventoMatricula, ComandosEventoMatricula>();
             services.TryAddScoped<IComandosNotasConceitos, ComandosNotasConceitos>();
@@ -451,6 +450,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterPeriodosEscolaresPorAnoEModalidadeTurmaUseCase, ObterPeriodosEscolaresPorAnoEModalidadeTurmaUseCase>();
             services.TryAddScoped<IObterBimestresComConselhoClasseTurmaUseCase, ObterBimestresComConselhoClasseTurmaUseCase>();
 
+            // Grade Curricular
+            services.TryAddScoped<IRelatorioControleGradeUseCase, RelatorioControleGradeUseCase>();
+
             //Sincronismo CC Eol
             services.TryAddScoped<IListarComponentesCurricularesEolUseCase, ListarComponentesCurricularesEolUseCase>();
             services.TryAddScoped<ISincronizarComponentesCurricularesUseCase, SincronizarComponentesCurricularesUseCase>();
@@ -465,6 +467,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IListarObjetivoAprendizagemPorAnoEComponenteCurricularUseCase, ListarObjetivoAprendizagemPorAnoEComponenteCurricularUseCase>();
 
             services.TryAddScoped<IObterBimestresComConselhoClasseTurmaUseCase, ObterBimestresComConselhoClasseTurmaUseCase>();
+            services.TryAddScoped<IObterObjetivosPorDisciplinaUseCase, ObterObjetivosPorDisciplinaUseCase>();
 
             // Comunicados EA
             services.TryAddScoped<ISolicitarInclusaoComunicadoEscolaAquiUseCase, SolicitarInclusaoComunicadoEscolaAquiUseCase>();
@@ -479,8 +482,21 @@ namespace SME.SGP.IoC
             
             services.TryAddScoped<IObterAnosPorCodigoUeModalidadeEscolaAquiUseCase, ObterAnosPorCodigoUeModalidadeEscolaAquiUseCase>();
             services.TryAddScoped<IObterTurmaPorAnoLetivoCodigoUeModalidadeSemestreAnosUseCase, ObterTurmaPorAnoLetivoCodigoUeModalidadeSemestreAnosUseCase>();
+            services.TryAddScoped<IListarEventosPorCalendarioUseCase, ListarEventosPorCalendarioUseCase>();
 
+            // Dashboard EA
+            services.TryAddScoped<IObterTotalUsuariosComAcessoIncompletoUseCase, ObterTotalUsuariosComAcessoIncompletoUseCase>();
+            services.TryAddScoped<IObterTotalUsuariosValidosUseCase, ObterTotalUsuariosValidosUseCase>();
+            services.TryAddScoped<IObterPlanoAulaUseCase, ObterPlanoAulaUseCase>();
 
+            // Plano Aula
+            services.TryAddScoped<IExcluirPlanoAulaUseCase, ExcluirPlanoAulaUseCase>();
+            services.TryAddScoped<IMigrarPlanoAulaUseCase, MigrarPlanoAulaUseCase>();
+            services.TryAddScoped<ISalvarPlanoAulaUseCase, SalvarPlanoAulaUseCase>();
+
+            
+
+            services.TryAddScoped<IObterTiposCalendarioPorAnoLetivoModalidadeUseCase, ObterTiposCalendarioPorAnoLetivoModalidadeUseCase>();
         }
     }
 }

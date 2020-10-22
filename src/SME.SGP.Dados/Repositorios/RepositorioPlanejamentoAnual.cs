@@ -3,6 +3,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -155,7 +156,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<TurmaParaCopiaPlanoAnualDto>(query, new { turmasId });
         }
 
-        public async Task<IEnumerable<TurmaParaCopiaPlanoAnualDto>> ObterTurmasParaCopiaPlanejamentoAnual(long turmaId, string ano, long componenteCurricularId, string rf, bool ensinoEspecial)
+        public async Task<IEnumerable<TurmaParaCopiaPlanoAnualDto>> ObterTurmasParaCopiaPlanejamentoAnual(Turma turma, string ano, long componenteCurricularId, string rf, bool ensinoEspecial, bool ehProfessor)
         {
             var query = @"select
 	                        t.id,
@@ -178,12 +179,95 @@ namespace SME.SGP.Dados.Repositorios
                         left join planejamento_anual p on
 	                        p.turma_id = ab.turma_id
                         where
-	                        not ab.historico and a.disciplina_id = @componenteCurricularId and a.criado_rf = @rf and t.id <> @turmaId ";
+	                        not ab.historico and a.disciplina_id = @componenteCurricularId and t.id <> @turmaId and t.ue_id = @ueId ";
+            if (ehProfessor)
+                query += " and a.criado_rf = @rf ";
             if (!ensinoEspecial)
                 query += "and t.ano = @ano";
             query += $" group by t.id order by t.nome";
 
-            return await database.Conexao.QueryAsync<TurmaParaCopiaPlanoAnualDto>(query, new { turmaId, componenteCurricularId = componenteCurricularId.ToString(), ano, rf });
+            return await database.Conexao.QueryAsync<TurmaParaCopiaPlanoAnualDto>(query, new { turmaId = turma.Id, ueId = turma.UeId, componenteCurricularId = componenteCurricularId.ToString(), ano, rf });
+        }
+
+        public async Task<IEnumerable<TurmaParaCopiaPlanoAnualDto>> ObterTurmasParaCopiaPlanejamentoAnualCP(Turma turma, string ano,  bool ensinoEspecial)
+        {
+            var query = @"select
+	                        t.id,
+	                        t.id as TurmaId,
+	                        t.nome as nome,
+	                        (
+	                        select
+		                        1
+	                        from
+		                        planejamento_anual
+	                        where
+		                        turma_id = t.id
+	                        limit 1) as possuiPlano
+                        from
+	                        turma t
+                        inner join abrangencia ab on
+	                        t.id = ab.turma_id
+                        left join planejamento_anual p on
+	                        p.turma_id = ab.turma_id
+                        where
+	                        not ab.historico and t.id <> @turmaId and t.ue_id = @ueId ";
+            if (!ensinoEspecial)
+                query += "and t.ano = @ano";
+            query += $" group by t.id order by t.nome";
+
+            return await database.Conexao.QueryAsync<TurmaParaCopiaPlanoAnualDto>(query, new { turmaId = turma.Id, ueId = turma.UeId,  ano });
+        }
+
+        public async Task<PlanejamentoAnual> ObterPlanejamentoAnualPorAnoEscolaBimestreETurma(long turmaId, long periodoEscolarId, long componenteCurricularId)
+        {
+            var query = @"select pa.id, pa.turma_id, pa.componente_curricular_id, pa.migrado, 
+	                        pa.criado_em, pa.alterado_em, pa.criado_por, pa.alterado_por, pa.criado_rf, pa.alterado_rf
+                        from planejamento_anual pa
+                        inner join planejamento_anual_periodo_escolar pe on pe.planejamento_anual_id = pa.id
+                        where turma_id = @turmaId 
+                          and periodo_escolar_id = @periodoEscolarId 
+                          and componente_curricular_id = @componenteCurricularId";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<PlanejamentoAnual>(query.ToString(),
+                new
+                {
+                    turmaId,
+                    periodoEscolarId,
+                    componenteCurricularId
+                });
+
+        }
+
+        public async Task<PlanejamentoAnualDto> ObterPlanejamentoAnualSimplificadoPorTurma(long turmaId)
+        {
+            var sql = @"select
+	                        id, 	
+	                        turma_id, 	
+	                        componente_curricular_id	
+                        from
+	                        planejamento_anual pa
+                        where
+	                        turma_id = @turmaId";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<PlanejamentoAnualDto>(sql, new { turmaId });
+        }
+
+        public async Task<long> ExistePlanejamentoAnualParaTurmaPeriodoEComponente(long turmaId, long periodoEscolarId, long componenteCurricularId)
+        {
+            var query = @"select pe.id
+                            from planejamento_anual pa
+                           inner join planejamento_anual_periodo_escolar pe on pe.planejamento_anual_id = pa.id
+                           where turma_id = @turmaId 
+                             and periodo_escolar_id = @periodoEscolarId 
+                              and componente_curricular_id = @componenteCurricularId";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<long>(query.ToString(),
+                new
+                {
+                    turmaId,
+                    periodoEscolarId,
+                    componenteCurricularId
+                });
         }
     }
 }
