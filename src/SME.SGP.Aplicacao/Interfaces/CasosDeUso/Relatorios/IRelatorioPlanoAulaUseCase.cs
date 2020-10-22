@@ -1,4 +1,4 @@
-﻿using SME.SGP.Infra.Dtos.Relatorios;
+﻿using SME.SGP.Infra;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao

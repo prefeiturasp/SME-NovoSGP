@@ -1,6 +1,6 @@
 ﻿using SME.SGP.Dominio;
 
-namespace SME.SGP.Infra.Dtos.Relatorios
+namespace SME.SGP.Infra
 {
     public class FiltroRelatorioPlanoAulaDto
     {
