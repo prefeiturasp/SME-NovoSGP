@@ -10,5 +10,6 @@ namespace SME.SGP.Infra
         }
 
         public TipoRelatorio TipoRelatorio { get; set; }
+        public TipoFormatoRelatorio Formato { get; set; }
     }
 }

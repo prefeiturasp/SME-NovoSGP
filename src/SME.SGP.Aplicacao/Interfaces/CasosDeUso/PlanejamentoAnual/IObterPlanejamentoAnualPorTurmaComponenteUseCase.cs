@@ -5,6 +5,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IObterPlanejamentoAnualPorTurmaComponenteUseCase
     {
-        Task<PlanejamentoAnualPeriodoEscolarDto> Executar(long turmaId, long componenteCurricularId, long periodoEscolarId);
+        Task<long> Executar(long turmaId, long componenteCurricularId);
     }
 }

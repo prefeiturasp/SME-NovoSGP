@@ -105,12 +105,6 @@ const obterDescricaoNomeMenu = (
       [String(modalidade.FUNDAMENTAL)]: 'Plano Anual',
       [String(modalidade.ENSINO_MEDIO)]: 'Plano Anual',
     },
-    [RotasDto.PLANEJAMENTO_ANUAL]: {
-      [String(modalidade.INFANTIL)]: 'Plano Anual',
-      [String(modalidade.EJA)]: 'Plano Semestral',
-      [String(modalidade.FUNDAMENTAL)]: 'Plano Anual',
-      [String(modalidade.ENSINO_MEDIO)]: 'Plano Anual',
-    },
     [RotasDto.PLANO_CICLO]: {
       [String(modalidade.INFANTIL)]: 'Plano de Ciclo',
       [String(modalidade.EJA)]: 'Plano de Etapa',

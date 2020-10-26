@@ -4,6 +4,7 @@ namespace SME.SGP.Infra
 {
     public class DisciplinaDto
     {
+        public long Id { get; set; }
         public long CodigoComponenteCurricular { get; set; }
         [JsonProperty("codDisciplinaPai")]
         public long? CdComponenteCurricularPai { get; set; }

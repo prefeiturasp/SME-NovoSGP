@@ -24,6 +24,10 @@ const ListaObjetivos = React.memo(props => {
     store => store.planoAnual.dadosBimestresPlanoAnual[bimestre]
   );
 
+  const planoAnualSomenteConsulta = useSelector(
+    store => store.planoAnual.planoAnualSomenteConsulta
+  );
+
   const [dadosEsquerda, setDadosEsquerda] = useState([]);
   const [dadosDireita, setDadosDireita] = useState([]);
   const [idsSelecionadsEsquerda, setIdsSelecionadsEsquerda] = useState([]);
@@ -129,7 +133,7 @@ const ListaObjetivos = React.memo(props => {
     dataSource: dadosEsquerda,
     onSelectRow: setIdsSelecionadsEsquerda,
     selectedRowKeys: idsSelecionadsEsquerda,
-    selectMultipleRows: periodoAberto,
+    selectMultipleRows: periodoAberto && !planoAnualSomenteConsulta,
   };
 
   const parametrosListaDireita = {
@@ -153,7 +157,7 @@ const ListaObjetivos = React.memo(props => {
     dataSource: dadosDireita,
     onSelectRow: setIdsSelecionadsDireita,
     selectedRowKeys: idsSelecionadsDireita,
-    selectMultipleRows: periodoAberto,
+    selectMultipleRows: periodoAberto && !planoAnualSomenteConsulta,
   };
 
   const obterListaComIdsSelecionados = (list, ids) => {
@@ -165,7 +169,11 @@ const ListaObjetivos = React.memo(props => {
   };
 
   const onClickAdicionar = () => {
-    if (idsSelecionadsEsquerda && idsSelecionadsEsquerda.length) {
+    if (
+      idsSelecionadsEsquerda &&
+      idsSelecionadsEsquerda.length &&
+      !planoAnualSomenteConsulta
+    ) {
       const novaListaDireita = obterListaComIdsSelecionados(
         dadosEsquerda,
         idsSelecionadsEsquerda
@@ -199,7 +207,11 @@ const ListaObjetivos = React.memo(props => {
   };
 
   const onClickRemover = async () => {
-    if (idsSelecionadsDireita && idsSelecionadsDireita.length) {
+    if (
+      idsSelecionadsDireita &&
+      idsSelecionadsDireita.length &&
+      !planoAnualSomenteConsulta
+    ) {
       const novaListaEsquerda = obterListaComIdsSelecionados(
         dadosDireita,
         idsSelecionadsDireita

@@ -23,8 +23,12 @@ namespace SME.SGP.Aplicacao
             var extensaoRelatorio = request.RelatorioCorrelacao.Formato.Name();
             var urlNotificacao = $"{request.UrlRedirecionamentoBase}api/v1/downloads/sgp/{extensaoRelatorio}/{request.RelatorioCorrelacao.TipoRelatorio.ShortName()}.{extensaoRelatorio}/{request.RelatorioCorrelacao.Codigo}";
 
-            var descricaoDoRelatorio = request.RelatorioCorrelacao.TipoRelatorio.GetAttribute<DisplayAttribute>().Description;
-            var mensagem = FormatarMensagem(descricaoDoRelatorio, urlNotificacao, request.MensagemUsuario);
+            string descricaoDoRelatorio;
+            if (string.IsNullOrEmpty(request.MensagemTitulo))
+                descricaoDoRelatorio = request.RelatorioCorrelacao.TipoRelatorio.GetAttribute<DisplayAttribute>().Description;
+            else descricaoDoRelatorio = request.MensagemTitulo;
+
+            var mensagem = FormatarMensagem(descricaoDoRelatorio, urlNotificacao, request.MensagemUsuario);                        
 
             var notificacao = new Notificacao()
             {
