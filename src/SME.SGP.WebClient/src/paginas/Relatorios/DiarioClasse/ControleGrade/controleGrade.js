@@ -333,7 +333,7 @@ const ControleGrade = () => {
         setComponentesCurricularesId(lista[0].valor);
       }
 
-      if (turmaId === '0') {
+      if (turmaId === '0' || componentes.data.length > 1) {
         setComponentesCurricularesId('0');
       }
     } else {
