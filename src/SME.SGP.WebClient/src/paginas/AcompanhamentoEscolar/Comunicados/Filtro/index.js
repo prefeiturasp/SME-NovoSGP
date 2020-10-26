@@ -27,6 +27,8 @@ import ServicoComunicadoEvento from '~/servicos/Paginas/AcompanhamentoEscolar/Co
 import { ServicoCalendarios } from '~/servicos';
 import FiltroHelper from '~/paginas/AcompanhamentoEscolar/Comunicados/Helper/helper.js';
 
+const MODALIDADE_EJA_ID = '3';
+
 function Filtro({ onFiltrar }) {
   const todos = [{ id: 'todas', nome: 'Todas' }];
   const todosTurmasModalidade = [{ id: '-99', nome: 'Todas' }];
@@ -81,7 +83,7 @@ function Filtro({ onFiltrar }) {
   const [dres, setDres] = useState(todos);
   const [ues, setUes] = useState(todos);
   const [semestres] = useState(semestresLista);
-  const [anos] = useState(anoModalidadeLista);
+  const [anos, setAnos] = useState(anoModalidadeLista);
   const [turmas, setTurmas] = useState(todosTurmasModalidade);
 
   const [modalidadeSelecionada, setModalidadeSelecionada] = useState('-99');
@@ -95,11 +97,11 @@ function Filtro({ onFiltrar }) {
   }, [ues]);
 
   const modalidadeDesabilitada = useMemo(() => {
-    return modalidades.length <= 1;
-  }, [modalidades]);
+    return modalidades.length <= 1 || ues?.id === 'todas' || dres?.id === 'todas';
+  }, [modalidades, ues, dres]);
 
   const semestreDesabilitado = useMemo(() => {
-    return refForm.state?.values?.modalidade !== '3';
+    return refForm.state?.values?.modalidade !== MODALIDADE_EJA_ID;
   }, [refForm?.state?.values?.modalidade]);
 
   const turmasDesabilitada = useMemo(() => {
@@ -447,7 +449,7 @@ function Filtro({ onFiltrar }) {
     setModalidadeSelecionada(modalidade);
     loadTiposCalendarioEffect();
 
-    if (modalidade !== '3')
+    if (modalidade !== MODALIDADE_EJA_ID)
       ObterTurmas(
         refForm.state.values.anoLetivo,
         refForm.state.values.CodigoUe,
@@ -458,6 +460,7 @@ function Filtro({ onFiltrar }) {
 
   const onSemestreChange = async semestre => {
     refForm.setFieldValue('turmas', []);
+    refForm.setFieldValue('anos', []);
 
     if (!semestre || semestre == 0) {
       setTurmas(todosTurmasModalidade);
@@ -465,7 +468,7 @@ function Filtro({ onFiltrar }) {
       return;
     }
 
-    if (refForm.state.values.modalidade === '3')
+    if (refForm.state.values.modalidade === MODALIDADE_EJA_ID)
       ObterTurmas(
         refForm.state.values.anoLetivo,
         refForm.state.values.CodigoUe,
@@ -527,6 +530,18 @@ function Filtro({ onFiltrar }) {
         onSubmitFiltro(refForm.state.values);
       }
     });
+  };
+
+  const validarFitlroDebounced = () => {
+    let timeout;
+
+    if(timeout)
+      clearTimeout(timeout);
+    
+      timeout = setTimeout(() => {
+      timeout = null;
+      validarFiltro();
+    }, 500);
   };
 
   useEffect(loadTiposCalendarioEffect, [
@@ -667,7 +682,7 @@ function Filtro({ onFiltrar }) {
                 placeholder="Selecione ano"
                 valueOption="ano"
                 valueText="ano"
-                value={form.values.semestre}
+                value={form.values.ano}
                 lista={anos}
                 allowClear
                 disabled={semestreDesabilitado}
@@ -788,7 +803,7 @@ function Filtro({ onFiltrar }) {
                 name="titulo"
                 placeholder="Procure pelo título do comunicado"
                 value={form.values.titulo}
-                onChange={() => validarFiltro()}
+                onChange={validarFitlroDebounced}
               />
             </Grid>
           </Linha>
