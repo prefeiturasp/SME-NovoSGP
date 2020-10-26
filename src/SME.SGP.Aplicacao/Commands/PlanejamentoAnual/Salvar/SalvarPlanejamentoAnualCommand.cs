@@ -7,6 +7,15 @@ namespace SME.SGP.Aplicacao
 {
     public class SalvarPlanejamentoAnualCommand : IRequest<PlanejamentoAnualAuditoriaDto>
     {
+        public SalvarPlanejamentoAnualCommand()
+        {
+
+        }
+        public SalvarPlanejamentoAnualCommand(long turmaId, long componenteCurricularId)
+        {
+            TurmaId = turmaId;
+            ComponenteCurricularId = componenteCurricularId;
+        }
         public long TurmaId { get; set; }
         public long ComponenteCurricularId { get; set; }
         public IEnumerable<PlanejamentoAnualPeriodoEscolarDto> PeriodosEscolares { get; set; }

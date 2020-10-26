@@ -13,7 +13,11 @@ const inicial = {
   exibirModalErrosPlanoAnual: false,
   exibirLoaderPlanoAnual: false,
   clicouNoBimestre: [],
+  exibirModalCopiarConteudo: false,
+  listaTurmasParaCopiar: [],
   ehRegistroMigrado: false,
+  planejamentoAnualId: 0,
+  planoAnualSomenteConsulta: false,
 };
 
 export default function planoAnual(state = inicial, action) {
@@ -57,7 +61,10 @@ export default function planoAnual(state = inicial, action) {
           exibirModalErrosPlanoAnual: false,
           exibirLoaderPlanoAnual: false,
           clicouNoBimestre: [],
+          exibirModalCopiarConteudo: false,
+          listaTurmasParaCopiar: [],
           ehRegistroMigrado: false,
+          planejamentoAnualId: 0,
         };
       }
       case '@planoAnual/setTabAtualComponenteCurricular': {
@@ -117,10 +124,38 @@ export default function planoAnual(state = inicial, action) {
           clicouNoBimestre: dados,
         };
       }
+
+      case '@planoAnual/setExibirModalCopiarConteudo': {
+        return {
+          ...draft,
+          exibirModalCopiarConteudo: action.payload,
+        };
+      }
+      case '@planoAnual/setListaTurmasParaCopiar': {
+        return {
+          ...draft,
+          listaTurmasParaCopiar: action.payload,
+        };
+      }
+
       case '@planoAnual/setEhRegistroMigrado': {
         return {
           ...draft,
           ehRegistroMigrado: action.payload,
+        };
+      }
+
+      case '@planoAnual/setPlanejamentoAnualId': {
+        return {
+          ...draft,
+          planejamentoAnualId: action.payload,
+        };
+      }
+
+      case '@planoAnual/setPlanoAnualSomenteConsulta': {
+        return {
+          ...draft,
+          planoAnualSomenteConsulta: action.payload,
         };
       }
 

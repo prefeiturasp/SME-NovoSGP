@@ -28,7 +28,8 @@ namespace SME.SGP.Aplicacao
             {
                 Codigo = request.CodigoCorrelacao,
                 TipoRelatorio = request.TipoRelatorio,
-                UsuarioSolicitanteId = usuario.Id
+                UsuarioSolicitanteId = usuario.Id,
+                Formato = request.Formato
             };
 
             await repositorioCorrelacaoRelatorio.SalvarAsync(novoRelatorioCorrelacao);

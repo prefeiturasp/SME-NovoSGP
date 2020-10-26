@@ -51,6 +51,7 @@ const SelectAutocomplete = ({
   showList,
   value,
   valueField,
+  disabled
 }) => {
   const [itensFiltrados, setItensFiltrados] = useState(lista);
 
@@ -96,6 +97,7 @@ const SelectAutocomplete = ({
         onSelect={onSelect}
         id={id}
         value={value}
+        disabled={disabled}
       >
         {opcoes}
       </AutoComplete>
@@ -106,21 +108,22 @@ const SelectAutocomplete = ({
 SelectAutocomplete.defaultProps = {
   allowClear: true,
   className: '',
-  filtro: () => {},
+  filtro: () => { },
   id: '',
   isHandleSearch: false,
-  handleSearch: () => {},
+  handleSearch: () => { },
   hideLabel: false,
   label: '',
   lista: [],
   name: '',
-  onChange: () => {},
-  onSelect: () => {},
+  onChange: () => { },
+  onSelect: () => { },
   placeholder: '',
   textField: '',
   showList: false,
   value: '',
   valueField: '',
+  disabled: false
 };
 
 SelectAutocomplete.propTypes = {

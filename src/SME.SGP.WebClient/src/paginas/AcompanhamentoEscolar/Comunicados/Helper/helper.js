@@ -12,7 +12,7 @@ class FiltroHelper {
     });
   }
 
-  async ObterAnoLetivo() {
+  async ObterAnoLetivo(modalidade) {
     try {
       var anosLetivos = await AbrangenciaServico.buscarTodosAnosLetivos();
 
@@ -125,6 +125,40 @@ class FiltroHelper {
       erros(
         `Não foi possivel obter os alunos da turma ${codigoTurma} e ano letivo ${anoLetivo}`
       );
+      return [];
+    }
+  }
+
+  async obterAnosPorModalidade(modalidade, codigoUe) {
+    try {
+      const response = await ServicoComunicados.buscarAnosPorModalidade(modalidade, codigoUe);
+      return response.data;
+    } catch (error) {
+      erros('Não foi possivel obter anos de modalidade');
+      return [];
+    }
+  }
+
+  async obterTurmasEspecificas(
+    codigoUe,
+    anoLetivo,
+    semestre,
+    modalidade,
+    anosEscolares
+  ) {
+    try {
+      const response = await ServicoFiltroRelatorio.obterTurmasEspecificas(
+        codigoUe,
+        anoLetivo,
+        semestre,
+        modalidade,
+        anosEscolares
+      ).catch(e => {
+        erros(e);
+      });
+      return response.data;
+    } catch (error) {
+      erros('Não foi possivel obter as obterTurmasEspecificas');
       return [];
     }
   }

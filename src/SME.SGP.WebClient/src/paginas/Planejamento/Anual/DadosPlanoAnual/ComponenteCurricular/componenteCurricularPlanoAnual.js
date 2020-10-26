@@ -62,6 +62,8 @@ const ComponenteCurricularPlanoAnual = () => {
   }, [dispatch]);
 
   useEffect(() => {
+    dispatch(setComponenteCurricularPlanoAnual(undefined));
+    setCodigoComponenteCurricular(undefined)
     resetarInfomacoes();
     if (
       turmaSelecionada &&
@@ -70,7 +72,6 @@ const ComponenteCurricularPlanoAnual = () => {
     ) {
       obterListaComponenteCurricular();
     } else {
-      dispatch(setComponenteCurricularPlanoAnual(undefined));
       setListaComponenteCurricular([]);
     }
   }, [

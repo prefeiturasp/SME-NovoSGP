@@ -47,6 +47,18 @@ namespace SME.SGP.Dados.Repositorios
             }
         }
 
+        public void ExcluirAbrangenciasHistoricas(IEnumerable<long> ids)
+        {
+            const string comando = @"delete from public.abrangencia where id in (#ids) and historico = true";
+
+            for (int i = 0; i < ids.Count(); i = i + 900)
+            {
+                var iteracao = ids.Skip(i).Take(900);
+
+                database.Conexao.Execute(comando.Replace("#ids", string.Join(",", iteracao.Concat(new long[] { 0 }))));
+            }
+        }
+
         public void InserirAbrangencias(IEnumerable<Abrangencia> abrangencias, string login)
         {
             foreach (var item in abrangencias)
@@ -139,6 +151,27 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and codigo_turma = @turmaId");
 
             return database.Conexao.QueryAsync<AbrangenciaSinteticaDto>(query.ToString(), new { login, perfil, turmaId });
+        }
+
+        public async Task<IEnumerable<AbrangenciaHistoricaDto>> ObterAbrangenciaHistoricaPorLogin(string login)
+        {
+            var query = new StringBuilder();
+
+            query.AppendLine("select");
+            query.AppendLine("id,");
+            query.AppendLine("usuario_id,");
+            query.AppendLine("login,");
+            query.AppendLine("dre_id,");
+            query.AppendLine("codigo_dre,");
+            query.AppendLine("ue_id,");
+            query.AppendLine("codigo_ue,");
+            query.AppendLine("turma_id,");
+            query.AppendLine("codigo_turma,");
+            query.AppendLine("perfil");
+            query.AppendLine("from");
+            query.AppendLine("public.v_abrangencia_sintetica where login = @login and historico");
+
+            return (await database.Conexao.QueryAsync<AbrangenciaHistoricaDto>(query.ToString(), new { login })).AsList();
         }
 
         public async Task<AbrangenciaFiltroRetorno> ObterAbrangenciaTurma(string turma, string login, Guid perfil, bool consideraHistorico = false, bool abrangenciaPermitida = false)
@@ -453,14 +486,12 @@ namespace SME.SGP.Dados.Repositorios
         {
             try
             {
-                var anosFiltro = "'" + string.Join("','", anos) + "'";
                 var query = new StringBuilder();
-
                 query.AppendLine(@"select t.turma_id as valor, t.nome as descricao from turma t
                             inner join ue ue on ue.id = t.ue_id
-                            inner join tipo_ciclo_ano tca on tca.ano = t.ano  ");
+                            inner join tipo_ciclo_ano tca on tca.ano = t.ano ");
 
-                query.AppendLine("where ue.ue_id = @codigoUe and ano_letivo = @anoLetivo");
+                query.AppendLine("where ue.ue_id = @codigoUe and ano_letivo = @anoLetivo ");
 
                 if (modalidade.HasValue && modalidade != 0)
                     query.AppendLine("and t.modalidade_codigo = @modalidade ");
@@ -468,10 +499,10 @@ namespace SME.SGP.Dados.Repositorios
                 if (semestre > 0)
                     query.AppendLine("and semestre = @semestre ");
 
-                if (anosFiltro != null && anosFiltro.Any())
-                    query.AppendLine(" and tca.ano IN (@anosFiltro)");
+                if (anos != null && anos.Any())
+                    query.AppendLine(" and tca.ano IN (#anos)");
 
-                var dados = await database.Conexao.QueryAsync<OpcaoDropdownDto>(query.ToString(), new { codigoUe, anoLetivo, modalidade, semestre, anosFiltro });
+                var dados = await database.Conexao.QueryAsync<OpcaoDropdownDto>(query.ToString().Replace("#anos", "'" + string.Join("','", anos) + "'"), new { codigoUe, anoLetivo, modalidade, semestre, anos });
 
                 return dados.OrderBy(x => x.Descricao);
 

@@ -65,47 +65,7 @@ const ComunicadosCadastro = ({ match }) => {
     { id: '1', nome: 'Todos' },
     { id: '2', nome: 'Alunos Especificados' },
   ];
-
-  const anoModalidadeLista = [
-    {
-      modalidade: 5,
-      ano: '1',
-    },
-    {
-      modalidade: 5,
-      ano: '2',
-    },
-    {
-      modalidade: 5,
-      ano: '3',
-    },
-    {
-      modalidade: 5,
-      ano: '4',
-    },
-    {
-      modalidade: 5,
-      ano: '5',
-    },
-    {
-      modalidade: 5,
-      ano: '6',
-    },
-    {
-      modalidade: 5,
-      ano: '7',
-    },
-    {
-      modalidade: 5,
-      ano: '8',
-    },
-    {
-      modalidade: 5,
-      ano: '9',
-    },
-  ];
-
-  const [loaderSecao] = useState(false);
+  const [loaderSecao, setLoaderSecao] = useState(false);
 
   const [somenteConsulta, setSomenteConsulta] = useState(false);
   const permissoesTela = useSelector(state => state.usuario.permissoes);
@@ -115,7 +75,6 @@ const ComunicadosCadastro = ({ match }) => {
   const [modalidades, setModalidades] = useState(todosTurmasModalidade);
   const [dres, setDres] = useState(todos);
   const [ues, setUes] = useState(todos);
-  const [semestres, setSemestres] = useState(semestresLista);
   const [turmas, setTurmas] = useState(todosTurmasModalidade);
   const [alunos, setAlunos] = useState([]);
   const [alunosSelecionados, setAlunosSelecionado] = useState([]);
@@ -254,6 +213,7 @@ const ComunicadosCadastro = ({ match }) => {
       isSubscribed = false;
     };
   };
+  const [anosModalidade, setAnosModalidade] = useState([]);
 
   useEffect(() => {
     setSomenteConsulta(
@@ -267,8 +227,6 @@ const ComunicadosCadastro = ({ match }) => {
   const [modoEdicao, setModoEdicao] = useState(false);
 
   const [idComunicado, setIdComunicado] = useState();
-
-  const [anos] = useState(anoModalidadeLista);
 
   useEffect(() => {
     if (match && match.params && match.params.id) {
@@ -284,6 +242,8 @@ const ComunicadosCadastro = ({ match }) => {
   const valoresIniciaisImutaveis = {
     id: 0,
     gruposId: [],
+    anosModalidade: [],
+    seriesResumidas: '',
     dataEnvio: '',
     dataExpiracao: '',
     titulo: '',
@@ -413,6 +373,13 @@ const ComunicadosCadastro = ({ match }) => {
       CodigoUe: Yup.string().required('Campo obrigatório'),
       dataExpiracao: momentSchema
         .required('Campo obrigatório')
+        // .test(
+        //   'validaUeSelecionada',
+        //   'Unidade Escolar (UE) for selecionada campo Ano deve ser obrigátorio',
+        //   function valida() {
+        //     const { ue } = this.parent;
+        //   }
+        // )
         .test(
           'validaDataMaiorQueEnvio',
           'Data de expiração deve ser maior que a data de envio',
@@ -503,15 +470,20 @@ const ComunicadosCadastro = ({ match }) => {
     return modalidadeSelecionada !== '3' ?? true;
   }, [modalidadeSelecionada]);
 
+  const anosModalidadeDesabilita = useMemo(() => {
+    return false;
+  }, [modalidadeSelecionada]);
+
   const turmasDesabilitada = useMemo(() => {
-    return turmas.length <= 1;
+    return turmas.length === 0;
   }, [turmas]);
 
   const gruposDesabilitados = useMemo(() => {
     return (
       (!!modalidadeSelecionada &&
         modalidadeSelecionada !== '' &&
-        modalidadeSelecionada !== '-99') || unidadeEscolarUE
+        modalidadeSelecionada !== '-99') ||
+      unidadeEscolarUE
     );
   }, [modalidadeSelecionada]);
 
@@ -628,6 +600,19 @@ const ComunicadosCadastro = ({ match }) => {
     refForm.setFieldValue('gruposId', dados);
   };
 
+  const obeterAnosPorModalidade = async (modalidade, codigoUe = 0) => {
+    if (!modalidade || modalidade === '') return;
+
+    setLoaderSecao(true);
+    const dados = await FiltroHelper.obterAnosPorModalidade(
+      modalidade,
+      codigoUe
+    );
+    setLoaderSecao(false);
+
+    setAnosModalidade(dados);
+  };
+
   const ObterGruposIdPorModalidadeFiltro = async modalidade => {
     if (!modalidade || modalidade === '') return;
 
@@ -636,6 +621,26 @@ const ComunicadosCadastro = ({ match }) => {
     if (!dados || dados.length === 0) return;
 
     return dados;
+  };
+
+  const obterTurmasEspecificas = async anos => {
+    refForm.setFieldValue('turmas', []);
+    setAlunosLoader(true);
+    const response = await FiltroHelper.obterTurmasEspecificas(
+      refForm.state.values.CodigoUe,
+      refForm.state.values.anoLetivo,
+      refForm.state.values.semestre ?? '',
+      refForm.state.values.modalidade,
+      anos
+    );
+    setAlunosLoader(false);
+    const dados = response.map(x => {
+      return { id: x.valor, nome: x.descricao };
+    });
+
+    dados.unshift({ id: '-99', nome: 'Todas' });
+    setTurmas(dados);
+    refForm.setFieldValue('seriesResumidas', anos.toString());
   };
 
   const ObterAlunos = async (codigoTurma, anoLetivo) => {
@@ -712,13 +717,16 @@ const ComunicadosCadastro = ({ match }) => {
 
   const onChangeModalidade = async modalidade => {
     handleModoEdicao();
+
     refForm.setFieldValue('semestre', '');
     refForm.setFieldValue('gruposId', []);
+
     setModalidadeSelecionada(modalidade);
     loadTiposCalendarioEffect();
 
     if (modalidade !== '-99') {
       ObterGruposIdPorModalidade(modalidade);
+      obeterAnosPorModalidade(modalidade, '-99');
     }
 
     if (
@@ -754,7 +762,7 @@ const ComunicadosCadastro = ({ match }) => {
     handleModoEdicao();
     resetarTurmas();
 
-    if (!semestre || semestre == 0) {
+    if (!semestre || semestre === 0) {
       ObterTurmas(
         refForm.state.values.anoLetivo,
         refForm.state.values.CodigoUe,
@@ -769,6 +777,10 @@ const ComunicadosCadastro = ({ match }) => {
       refForm.state.values.modalidade,
       semestre
     );
+  };
+
+  const onChangeAnosModalidades = async anos => {
+    obterTurmasEspecificas(anos);
   };
 
   const onClickExcluir = async () => {
@@ -1018,7 +1030,7 @@ const ComunicadosCadastro = ({ match }) => {
                       valueOption="id"
                       valueText="nome"
                       value={form.values.semestre}
-                      lista={semestres}
+                      lista={semestresLista}
                       allowClear
                       disabled={semestreDesabilitado || modoEdicaoConsulta}
                       onChange={x => {
@@ -1026,7 +1038,26 @@ const ComunicadosCadastro = ({ match }) => {
                       }}
                     />
                   </Grid>
-                  <Grid cols={6}>
+                  <Grid cols={2}>
+                    <Label control="anosModalidade" text="Ano" />
+                    <SelectComponent
+                      form={form}
+                      id="anosModalidade"
+                      name="anosModalidade"
+                      placeholder="Selecione ano"
+                      valueOption="ano"
+                      valueText="ano"
+                      value={form.values.anosModalidade}
+                      lista={anosModalidade}
+                      multiple
+                      allowClear
+                      disabled={anosModalidadeDesabilita || modoEdicaoConsulta}
+                      onChange={value => {
+                        onChangeAnosModalidades(value);
+                      }}
+                    />
+                  </Grid>
+                  <Grid cols={4}>
                     <Label control="turmas" text="Turma" />
                     <SelectComponent
                       form={form}
