@@ -2,7 +2,6 @@ import React, {
   useState,
   useEffect,
   useMemo,
-  useLayoutEffect,
   useCallback,
 } from 'react';
 import PropTypes from 'prop-types';
@@ -17,15 +16,15 @@ import {
   CampoTexto,
   CampoData,
   Label,
+  Loader,
+  SelectAutocomplete,
   momentSchema,
 } from '~/componentes';
 
-import AbrangenciaServico from '~/servicos/Abrangencia';
-
 import { Linha } from '~/componentes/EstilosGlobais';
 import ServicoComunicados from '~/servicos/Paginas/AcompanhamentoEscolar/Comunicados/ServicoComunicados';
-import ServicoFiltroRelatorio from '~/servicos/Paginas/FiltroRelatorio/ServicoFiltroRelatorio';
-import { erros } from '~/servicos/alertas';
+import ServicoComunicadoEvento from '~/servicos/Paginas/AcompanhamentoEscolar/ComunicadoEvento/ServicoComunicadoEvento';
+import { ServicoCalendarios } from '~/servicos';
 import FiltroHelper from '~/paginas/AcompanhamentoEscolar/Comunicados/Helper/helper.js';
 
 function Filtro({ onFiltrar }) {
@@ -126,6 +125,8 @@ function Filtro({ onFiltrar }) {
     modalidade: '-99',
     semestre: '',
     turmas: ['-99'],
+    tipoCalendarioId: '',
+    eventoId: ''
   });
 
   const [validacoes] = useState(
@@ -166,6 +167,142 @@ function Filtro({ onFiltrar }) {
         ),
     })
   );
+
+  const [carregandoTipos, setCarregandoTipos] = useState(false);
+  const [listaCalendario, setListaCalendario] = useState([]);
+  const [valorTipoCalendario, setValorTipoCalendario] = useState('');
+  const [selecionouCalendario, setSelecionouCalendario] = useState(false);
+  const [tipoCalendarioSelecionado, setTipoCalendarioSelecionado] = useState('');
+  const [pesquisaTipoCalendario, setPesquisaTipoCalendario] = useState('');
+
+  const [carregandoEventos, setCarregandoEventos] = useState(false);
+  const [listaEvento, setListaEvento] = useState([]);
+  const [selecionouEvento, setSelecionouEvento] = useState(false);
+  const [valorEvento, setValorEvento] = useState('');
+  const [eventoSelecionado, setEventoSelecionado] = useState('');
+  const [pesquisaEvento, setPesquisaEvento] = useState('');
+
+  const selecionaTipoCalendario = (descricao, form) => {
+    const tipo = listaCalendario?.find(t => {
+      return t.descricao === descricao;
+    });
+
+    if (tipo?.id) {
+      setSelecionouCalendario(true);
+      setValorTipoCalendario(descricao);
+      setTipoCalendarioSelecionado(tipo.id);
+    }
+  };
+
+  const selecionaEvento = (nome, form) => {
+    const evento = listaEvento?.find(t => {
+      return t.nome === nome;
+    });
+
+    if (evento?.id) {
+      setSelecionouEvento(true);
+      setValorEvento(evento.nome);
+      setEventoSelecionado(evento);
+    }
+  };
+
+  const modalidadeTurmaCalendarioRelation = {
+    "1": "3",
+    "3": "2",
+    "5": "1",
+    "6": "1"
+  };
+
+  const hasAnoLetivoClause = (t) => (refForm?.state?.values?.anoLetivo ?? false) 
+      ? (t.anoLetivo == refForm.state.values.anoLetivo) 
+      : true;
+
+  const hasModalidadeSelecionadaClause = (t) => modalidadeSelecionada && modalidadeSelecionada != '-99'
+      ? (modalidadeTurmaCalendarioRelation[modalidadeSelecionada] 
+          && modalidadeTurmaCalendarioRelation[modalidadeSelecionada] == t.modalidade) 
+      : true;
+
+  const filterAllowedCalendarTypes = (data) => {
+    return data
+      .filter(hasAnoLetivoClause)
+      .filter(hasModalidadeSelecionadaClause);
+  };
+
+  const loadTiposCalendarioEffect = () => {
+    let isSubscribed = true;
+
+    (async () => {
+      setCarregandoTipos(true);
+  
+      const {
+        data,
+      } = await ServicoCalendarios.obterTiposCalendarioAutoComplete(
+        pesquisaTipoCalendario
+      );
+
+      if(isSubscribed) {
+        let allowedList = filterAllowedCalendarTypes(data);
+        setListaCalendario(allowedList);
+        selecionaTipoCalendario(
+          allowedList.length > 0 
+            ? allowedList[0].descricao
+            : '', 
+          refForm
+        );
+        setCarregandoTipos(false);
+      }
+    })();
+
+    return () => {
+      isSubscribed = false;
+    };
+  };
+
+  const changeListaCalendarioEffect = () => {
+    if(refForm && refForm.state)
+      validarFiltro();
+  };
+
+  const changeValorEventoEffect = () => {
+    if(refForm && refForm.state)
+      validarFiltro();
+  };
+
+  const loadEventosEffect = () => {
+    let isSubscribed = true;
+
+    (async () => {
+      setCarregandoEventos(true);
+
+      const _form = refForm?.state?.values;
+      let filter = {
+        tipoCalendario: +(tipoCalendarioSelecionado ?? null),
+        anoLetivo: +(_form?.anoLetivo ?? null),
+        modalidade: +(_form?.modalidade ?? null),
+        codigoDre: _form?.CodigoDre && _form?.CodigoDre != 'todas' ? null : _form?.CodigoDre,
+        codigoUe: _form?.CodigoUe && _form?.CodigoUe != 'todas' ? null : _form?.codigoUe,
+      };
+
+      Object.keys(filter).forEach((key) => {
+        if(filter[key] == null || filter[key] == 'todas')
+          delete filter[key];
+      });
+
+      let data = await ServicoComunicadoEvento.listarPor(filter);
+      
+      if(isSubscribed) {
+        if(data && data.length > 0) {
+          data.forEach(item => item.nome = `${item.id} - ${item.nome}`);
+        }
+        setListaEvento(data);
+        setCarregandoEventos(false);
+      }
+    })();
+
+    return () => {
+      isSubscribed = false;
+    };
+  };
 
   const ObterDres = useCallback(async () => {
     const dados = await FiltroHelper.ObterDres();
@@ -244,6 +381,7 @@ function Filtro({ onFiltrar }) {
 
   const onChangeAnoLetivo = async ano => {
     refForm.setFieldValue('CodigoDre', 'todas');
+    refForm.setFieldValue('tipoCalendarioId', '');
     onChangeDre('todas');
 
     if (ano == 0 || !ano || ano == '') {
@@ -252,6 +390,7 @@ function Filtro({ onFiltrar }) {
     }
 
     ObterDres();
+    loadTiposCalendarioEffect();
   };
 
   const onChangeDre = async dre => {
@@ -266,6 +405,7 @@ function Filtro({ onFiltrar }) {
 
     validarFiltro();
     ObterUes(dre);
+    loadTiposCalendarioEffect();
   };
 
   const onChangeUe = async ue => {
@@ -280,6 +420,7 @@ function Filtro({ onFiltrar }) {
 
     onChangeModalidade('-99');
     ObterModalidades(ue);
+    loadTiposCalendarioEffect();
   };
 
   const onChangeModalidade = async modalidade => {
@@ -304,6 +445,7 @@ function Filtro({ onFiltrar }) {
 
     ObterGruposIdPorModalidade(modalidade);
     setModalidadeSelecionada(modalidade);
+    loadTiposCalendarioEffect();
 
     if (modalidade !== '3')
       ObterTurmas(
@@ -355,6 +497,8 @@ function Filtro({ onFiltrar }) {
       ...valores,
       modalidade: valores.modalidade === '-99' ? '' : valores.modalidade,
       turmas: valores.turmas[0] === '-99' ? [] : valores.turmas,
+      tipoCalendarioId: tipoCalendarioSelecionado ?? null,
+      eventoId: eventoSelecionado?.id ?? null
     };
 
     onFiltrar(valoresSubmit);
@@ -384,6 +528,23 @@ function Filtro({ onFiltrar }) {
       }
     });
   };
+
+  useEffect(loadTiposCalendarioEffect, [
+    pesquisaTipoCalendario, 
+    modalidadeSelecionada,
+    refForm
+  ]);
+
+  useEffect(loadEventosEffect, [
+    pesquisaEvento, 
+    tipoCalendarioSelecionado,
+    valorTipoCalendario,
+    modalidadeSelecionada,
+    refForm,
+  ]);
+
+  useEffect(changeListaCalendarioEffect, [listaCalendario]);
+  useEffect(changeValorEventoEffect, [valorEvento]);
 
   return (
     <Formik
@@ -553,6 +714,51 @@ function Filtro({ onFiltrar }) {
                 formatoData="DD/MM/YYYY"
                 onChange={() => validarFiltro()}
               />
+            </Grid>
+          </Linha>
+          <Linha className="row mb-2">
+            <Grid cols={6}>
+              <Label control="tipoCalendarioId" text="Tipo de Calendário" />
+              <Loader loading={carregandoTipos} tip="">
+                <SelectAutocomplete
+                  hideLabel
+                  showList
+                  isHandleSearch
+                  placeholder="Selecione um calendário"
+                  className="col-md-12"
+                  name="tipoCalendarioId"
+                  id="select-tipo-calendario"
+                  lista={listaCalendario}
+                  valueField="id"
+                  textField="descricao"
+                  onSelect={valor => selecionaTipoCalendario(valor, form)}
+                  value={valorTipoCalendario}
+                  form={form}
+                  allowClear={false}
+                />
+              </Loader>
+            </Grid>
+            <Grid cols={6}>
+              <Label control="evento" text="Evento" />
+              <Loader loading={carregandoEventos} tip="">
+                <SelectAutocomplete
+                  hideLabel
+                  showList
+                  isHandleSearch
+                  placeholder="Selecione um evento"
+                  className="col-md-12"
+                  name="eventoId"
+                  id="select-evento"
+                  key="select-evento-key"
+                  lista={listaEvento}
+                  valueField="id"
+                  textField="nome"
+                  onSelect={valor => selecionaEvento(valor, form)}
+                  value={valorEvento}
+                  form={form}
+                  allowClear={false}
+                />
+              </Loader>
             </Grid>
           </Linha>
           <Linha className="row">
