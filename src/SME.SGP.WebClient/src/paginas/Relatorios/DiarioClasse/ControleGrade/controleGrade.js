@@ -250,7 +250,7 @@ const ControleGrade = () => {
   }, [modalidadeId, ueId, anoLetivo, obterTurmas]);
 
   useEffect(() => {
-    if (modalidadeId === modalidade.EJA) {
+    if (String(modalidadeId) === String(modalidade.EJA)) {
       setListaBimestres(bimestresEja);
     } else {
       setListaBimestres(bimestresFundMedio);
