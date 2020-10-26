@@ -54,6 +54,8 @@ class ServicoSalvarFrequenciaPlanoAula {
       checkedExibirEscolhaObjetivos,
       dadosOriginaisPlanoAula,
       componenteCurricular,
+      desenvolvimentoDaAulaValidaObrigatoriedade,
+      objetivosEspecificosParaAulaValidarObrigatoriedade,
     } = frequenciaPlanoAula;
 
     const validaSeTemErrosPlanoAula = () => {
@@ -63,12 +65,14 @@ class ServicoSalvarFrequenciaPlanoAula {
         errosValidacaoPlano.push(
           'Meus objetivos - O campo meus objetivos específicos para a aula é obrigatório'
         );
+        objetivosEspecificosParaAulaValidarObrigatoriedade();
       }
 
       if (!dadosPlanoAula.desenvolvimentoAula) {
         errosValidacaoPlano.push(
           'Desenvolvimento da aula - A sessão de desenvolvimento da aula deve ser preenchida'
         );
+        desenvolvimentoDaAulaValidaObrigatoriedade();
       }
 
       const perfil =
