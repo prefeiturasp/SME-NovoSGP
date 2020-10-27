@@ -19,6 +19,10 @@ function SwitchInformarObjetivos() {
     state => state.frequenciaPlanoAula.exibirSwitchEscolhaObjetivos
   );
 
+  const possuiPlanoAnual = useSelector(
+    state => state.frequenciaPlanoAula.dadosPlanoAula?.possuiPlanoAnual
+  );
+
   return (
     <>
       {exibirSwitchEscolhaObjetivos ? (
@@ -33,7 +37,7 @@ function SwitchInformarObjetivos() {
             checked={checkedExibirEscolhaObjetivos}
             size="default"
             className="ml-2 mr-2"
-            disabled={desabilitarCamposPlanoAula}
+            disabled={desabilitarCamposPlanoAula || !possuiPlanoAnual}
           />
         </>
       ) : (
