@@ -487,6 +487,8 @@ namespace SME.SGP.IoC
             // Dashboard EA
             services.TryAddScoped<IObterTotalUsuariosComAcessoIncompletoUseCase, ObterTotalUsuariosComAcessoIncompletoUseCase>();
             services.TryAddScoped<IObterTotalUsuariosValidosUseCase, ObterTotalUsuariosValidosUseCase>();
+            services.TryAddScoped<IObterTotaisAdesaoUseCase, ObterTotaisAdesaoUseCase>();
+
             services.TryAddScoped<IObterPlanoAulaUseCase, ObterPlanoAulaUseCase>();
 
             // Plano Aula
