@@ -11,7 +11,7 @@ import api from '~/servicos/api';
 import history from '~/servicos/history';
 import ServicoFiltroRelatorio from '~/servicos/Paginas/FiltroRelatorio/ServicoFiltroRelatorio';
 import ServicoRelatorioControleGrade from '~/servicos/Paginas/Relatorios/DiarioClasse/ControleGrade/ServicoRelatorioControleGrade';
-import ServicoComponentesCurriculares from '~/servicos/ServicoComponentesCurriculares';
+import ServicoComponentesCurriculares from '~/servicos/Paginas/ComponentesCurriculares/ServicoComponentesCurriculares';
 import FiltroHelper from '~componentes-sgp/filtro/helper';
 
 const ControleGrade = () => {
@@ -229,6 +229,7 @@ const ControleGrade = () => {
             desc: item.nome,
             valor: item.codigo,
             id: item.id,
+            ano: item.ano,
           })
         );
         setListaTurmas(lista);
@@ -301,30 +302,32 @@ const ControleGrade = () => {
   }, [obterAnosLetivos]);
 
   const obterComponentesCurriculares = useCallback(async () => {
-    let turmas = [];
+    let codigoTodosAnosEscolares = [];
     if (turmaId === '0') {
-      turmas = listaTurmas.filter(item => item.valor !== '0').map(a => a.valor);
+      codigoTodosAnosEscolares = listaTurmas
+        .filter(item => String(item.valor) !== '0')
+        .map(a => a.ano);
     } else {
-      turmas = [turmaId];
+      codigoTodosAnosEscolares = [listaTurmas
+        .find(item => String(item.valor) === String(turmaId)).ano];
     }
 
     setExibirLoader(true);
-    const componentes = await ServicoComponentesCurriculares.obterComponentesPorUeTurmas(
+    const componentes = await ServicoComponentesCurriculares.obterComponetensCuriculares(
       ueId,
-      turmas
+      modalidadeId,
+      anoLetivo,
+      codigoTodosAnosEscolares
     )
       .catch(e => erros(e))
       .finally(() => setExibirLoader(false));
 
     if (componentes && componentes.data && componentes.data.length) {
-      const lista = [];
-      if (componentes.data.length > 1) {
-        lista.push({ valor: '0', desc: 'Todos' });
-      }
+      const lista = [];      
       componentes.data.map(item =>
         lista.push({
           desc: item.descricao,
-          valor: item.codigo,
+          valor: String(item.codigo),
         })
       );
 
@@ -333,8 +336,8 @@ const ControleGrade = () => {
         setComponentesCurricularesId(lista[0].valor);
       }
 
-      if (turmaId === '0' || componentes.data.length > 1) {
-        setComponentesCurricularesId('0');
+      if (turmaId === '0' && componentes.data.length > 1) {
+        setComponentesCurricularesId('-99');
       }
     } else {
       setListaComponentesCurriculares([]);
@@ -424,9 +427,9 @@ const ControleGrade = () => {
       turmas = [turmaSelecionada.id];
     }
 
-    if (componentesCurricularesId === '0') {
+    if (componentesCurricularesId === '-99') {
       componentesCurriculares = listaComponentesCurriculares
-        .filter(item => item.valor !== '0')
+        .filter(item => item.valor !== '-99')
         .map(b => b.valor);
     }
 
