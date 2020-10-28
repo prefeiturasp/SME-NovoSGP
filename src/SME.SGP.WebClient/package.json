@@ -22,6 +22,7 @@
     ]
   },
   "dependencies": {
+    "@ant-design/icons": "^4.2.2",
     "@ckeditor/ckeditor5-build-classic": "^16.0.0",
     "@ckeditor/ckeditor5-react": "^2.0.0",
     "@fortawesome/fontawesome-free": "^5.10.2",
