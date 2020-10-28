@@ -439,6 +439,7 @@ const ControleGrade = () => {
     const params = {
       anoLetivo,
       modalidadeTurma: modalidadeId,
+      semestre,
       turmas,
       componentesCurriculares,
       bimestres,
