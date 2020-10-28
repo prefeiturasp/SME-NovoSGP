@@ -4,6 +4,7 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.CasosDeUso;
 using SME.SGP.Aplicacao.CasosDeUso.Abrangencia;
 using SME.SGP.Aplicacao.CasosDeUso.EscolaAqui.Anos;
+using SME.SGP.Aplicacao.CasosDeUso.EscolaAqui.Dashboard;
 using SME.SGP.Aplicacao.Consultas;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Interfaces;
@@ -488,6 +489,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterTotalUsuariosComAcessoIncompletoUseCase, ObterTotalUsuariosComAcessoIncompletoUseCase>();
             services.TryAddScoped<IObterTotalUsuariosValidosUseCase, ObterTotalUsuariosValidosUseCase>();
             services.TryAddScoped<IObterTotaisAdesaoUseCase, ObterTotaisAdesaoUseCase>();
+            services.TryAddScoped<IObterUltimaAtualizacaoPorProcessoUseCase, ObterUltimaAtualizacaoPorProcessoUseCase>();
 
             services.TryAddScoped<IObterPlanoAulaUseCase, ObterPlanoAulaUseCase>();
 
