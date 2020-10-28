@@ -101,9 +101,7 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and EXTRACT(year FROM n.criado_em) = @anoLetivo");
 
             if (!string.IsNullOrEmpty(titulo))
-            {
-                query.AppendLine("and lower(f_unaccent(n.titulo)) LIKE  @titulo");
-            }
+                query.AppendLine("and lower(f_unaccent(n.titulo)) LIKE lower(f_unaccent(@titulo))");
         }
 
         private static void MontaQueryObterCabecalho(StringBuilder query, bool EhParaCount)

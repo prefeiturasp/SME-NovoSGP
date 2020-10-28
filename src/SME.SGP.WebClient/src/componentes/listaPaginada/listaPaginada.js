@@ -24,6 +24,7 @@ const ListaPaginada = props => {
     paramArrayFormat,
     temPaginacao,
     setLista,
+    pagina
   } = props;
 
   const [carregando, setCarregando] = useState(false);
@@ -39,7 +40,7 @@ const ListaPaginada = props => {
     showSizeChanger: true,
     pageSizeOptions: ['10', '20', '50', '100'],
     locale: { items_per_page: 'Linhas' },
-    current: 1,
+    current: pagina || 1
   });
 
   const obterUrlBusca = pagina => {
@@ -125,6 +126,10 @@ const ListaPaginada = props => {
       })
       .finally(() => setCarregando(false));
   };
+
+  useEffect(() => {
+    setPaginaAtual(pagina);
+  }, [pagina]);
 
   useEffect(() => {
     if (filtroEhValido) {
@@ -218,6 +223,7 @@ ListaPaginada.propTypes = {
   paramArrayFormat: PropTypes.oneOfType([PropTypes.string]),
   temPaginacao: PropTypes.oneOfType([PropTypes.bool]),
   setLista: PropTypes.oneOfType([PropTypes.func]),
+  pagina: PropTypes.oneOfType([PropTypes.string])
 };
 
 ListaPaginada.defaultProps = {
@@ -234,6 +240,7 @@ ListaPaginada.defaultProps = {
   paramArrayFormat: 'brackets',
   temPaginacao: true,
   setLista: () => {},
+  pagina: 1
 };
 
 export default ListaPaginada;

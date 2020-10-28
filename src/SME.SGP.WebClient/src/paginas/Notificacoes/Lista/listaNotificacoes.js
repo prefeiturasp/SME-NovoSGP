@@ -107,6 +107,7 @@ export default function NotificacoesLista() {
   const [carregandoTela, setCarregandoTela] = useState(false);
   const [desabilitarTurma, setDesabilitarTurma] = useState(true);
   const [colunasTabela, setColunasTabela] = useState([]);
+  const [paginaAtual, setPaginaAtual] = useState(1);
 
   const permissoesTela = usuario.permissoes[RotasDto.NOTIFICACOES];
 
@@ -139,7 +140,10 @@ export default function NotificacoesLista() {
   }, [turmaSelecionada]);
 
   useEffect(() => {
-    onClickFiltrar();
+    onClickFiltrar(statusSelecionado,
+                   categoriaSelecionada,
+                   tipoSelecionado,
+                   tituloSelecionado);
   }, [
     statusSelecionado,
     dropdownTurmaSelecionada,
@@ -192,15 +196,15 @@ export default function NotificacoesLista() {
     setTituloSelecionado(titulo.target.value);
   }
 
-  const filtrarNotificacoes = useCallback(() => {
+  const filtrarNotificacoes = useCallback((situacao, categoria, tipo, titulo) => {
     const paramsQuery = {
-      categoria: categoriaSelecionada,
+      categoria: categoria,
       codigo: codigoSelecionado || null,
-      status: statusSelecionado,
-      tipo: tipoSelecionado,
-      titulo: tituloSelecionado || null,
+      status: situacao,
+      tipo: tipo,
+      titulo: titulo || null,
       usuarioRf: usuario.rf || null,
-      anoLetivo: usuario.filtroAtual.anoLetivo,
+      anoLetivo: usuario.filtroAtual.anoLetivo      
     };
     if (dropdownTurmaSelecionada && dropdownTurmaSelecionada == '2') {
       if (turmaSelecionada) {
@@ -212,11 +216,12 @@ export default function NotificacoesLista() {
         paramsQuery.turmaId = turmaSelecionada.unidadeEscolar;
       }
     }
+    setPaginaAtual(1);
     setFiltro(paramsQuery);
   }, []);
 
-  const onClickFiltrar = useCallback(() => {
-    filtrarNotificacoes();
+  const onClickFiltrar = useCallback((situacao, categoria, tipo, titulo) => {
+    filtrarNotificacoes(situacao, categoria, tipo, titulo);
   }, []);
 
   function onSearchCodigo() {
@@ -437,6 +442,7 @@ export default function NotificacoesLista() {
                 multiSelecao
                 selecionarItems={onSelecionarItems}
                 filtroEhValido={validarFiltro()}
+                pagina={paginaAtual}
               />
             )}
           </div>
