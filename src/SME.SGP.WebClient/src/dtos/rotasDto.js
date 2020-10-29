@@ -52,6 +52,7 @@ const RotasDto = {
   DEVOLUTIVAS: '/diario-classe/devolutiva',
   CONTROLE_GRADE: '/relatorios/diario-classe/controle-grade',
   POC_EDITOR: '/editor',
+  POC_UPLOAD_ARQUIVOS: '/upload-arquivos',
 };
 
 export default RotasDto;
