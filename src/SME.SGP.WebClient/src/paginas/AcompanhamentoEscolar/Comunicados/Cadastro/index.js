@@ -40,6 +40,8 @@ import { ServicoCalendarios } from '~/servicos';
 
 const TODAS_UE_ID = 'todas';
 const TODAS_DRE_ID = 'todas';
+const TODAS_MODALIDADES_ID = '-99';
+const TODAS_TURMAS_ID = '-99';
 
 const ComunicadosCadastro = ({ match }) => {
   const ErroValidacao = styled.span`
@@ -58,7 +60,7 @@ const ComunicadosCadastro = ({ match }) => {
   `;
 
   const todos = [{ id: 'todas', nome: 'Todas' }];
-  const todosTurmasModalidade = [{ id: '-99', nome: 'Todas' }];
+  const todosTurmasModalidade = [{ id: TODAS_TURMAS_ID, nome: 'Todas' }];
   const semestresLista = [
     { id: '1', nome: '1º Semestre' },
     { id: '2', nome: '2º Semestre' },
@@ -139,7 +141,7 @@ const ComunicadosCadastro = ({ match }) => {
       ? (t.anoLetivo == refForm.state.values.anoLetivo) 
       : true;
 
-  const hasModalidadeSelecionadaClause = (t) => modalidadeSelecionada && modalidadeSelecionada != '-99'
+  const hasModalidadeSelecionadaClause = (t) => modalidadeSelecionada && modalidadeSelecionada != TODAS_MODALIDADES_ID
       ? (modalidadeTurmaCalendarioRelation[modalidadeSelecionada] 
           && modalidadeTurmaCalendarioRelation[modalidadeSelecionada] == t.modalidade) 
       : true;
@@ -238,7 +240,7 @@ const ComunicadosCadastro = ({ match }) => {
   }, [match]);
 
   useEffect(() => {
-    ObterModalidades('-99');
+    ObterModalidades(TODAS_MODALIDADES_ID);
   }, []);
 
   const valoresIniciaisImutaveis = {
@@ -254,9 +256,9 @@ const ComunicadosCadastro = ({ match }) => {
     CodigoDre: TODAS_DRE_ID,
     CodigoUe: TODAS_UE_ID,
     alunosEspecificados: false,
-    modalidade: '-99',
+    modalidade: TODAS_MODALIDADES_ID,
     semestre: '',
-    turmas: ['-99'],
+    turmas: [TODAS_TURMAS_ID],
     alunos: '1',
     tipoCalendarioId: '',
     eventoId: ''
@@ -300,7 +302,7 @@ const ComunicadosCadastro = ({ match }) => {
           CodigoUe: comunicado.codigoUe ? String(comunicado.codigoUe) : TODAS_UE_ID,
           modalidade:
             String(comunicado.modalidade) === '0'
-              ? '-99'
+              ? TODAS_MODALIDADES_ID
               : String(comunicado.modalidade),
           semestre:
             String(comunicado.semestre) === '0'
@@ -310,7 +312,7 @@ const ComunicadosCadastro = ({ match }) => {
           turmas:
             comunicado.turmas.length > 0
               ? [...comunicado.turmas.map(turma => String(turma.codigoTurma))]
-              : ['-99'],
+              : [TODAS_TURMAS_ID],
           dataEnvio: comunicado.dataEnvio
             ? window.moment(comunicado.dataEnvio)
             : '',
@@ -343,7 +345,7 @@ const ComunicadosCadastro = ({ match }) => {
           ObterTurmas(
             String(comunicado.anoLetivo),
             String(comunicado.codigoUe ? comunicado.codigoUe : '-99'),
-            String(comunicado.modalidade ? comunicado.modalidade : '-99'),
+            String(comunicado.modalidade ? comunicado.modalidade : TODAS_MODALIDADES_ID),
             String(comunicado.semestre)
           );
         }
@@ -458,9 +460,7 @@ const ComunicadosCadastro = ({ match }) => {
   }, [ues]);
 
   const modalidadeDesabilitada = useMemo(() => {
-    return modalidades.length <= 1 
-      || refForm?.state?.values.CodigoUe === TODAS_UE_ID 
-      || refForm?.state?.values.CodigoDre === TODAS_DRE_ID;
+    return modalidades.length <= 1;
   }, [modalidades, ues, dres]);
 
   const semestreDesabilitado = useMemo(() => {
@@ -468,24 +468,22 @@ const ComunicadosCadastro = ({ match }) => {
   }, [modalidadeSelecionada]);
 
   const turmasDesabilitada = useMemo(() => {
-    return turmas.length === 0 
-      || modalidadeSelecionada === '-99' 
-      || refForm?.state?.values.CodigoUe === TODAS_UE_ID 
-      || refForm?.state?.values.CodigoDre === TODAS_DRE_ID;
+    return turmas.length === 1 
+      || modalidadeSelecionada === TODAS_MODALIDADES_ID;
   }, [turmas]);
 
   const gruposDesabilitados = useMemo(() => {
     return (
       (!!modalidadeSelecionada &&
         modalidadeSelecionada !== '' &&
-        modalidadeSelecionada !== '-99') ||
+        modalidadeSelecionada !== TODAS_MODALIDADES_ID) ||
       unidadeEscolarUE
     );
   }, [modalidadeSelecionada]);
 
   const estudantesDesabilitados = useMemo(() => {
     return (
-      (turmasSelecionadas?.length !== 1 || turmasSelecionadas[0] === '-99') ??
+      (turmasSelecionadas?.length !== 1 || turmasSelecionadas[0] === TODAS_TURMAS_ID) ??
       true
     );
   }, [turmasSelecionadas]);
@@ -495,10 +493,7 @@ const ComunicadosCadastro = ({ match }) => {
   }, [alunoEspecificado]);
 
   const anosModalidadeDesabilita = useMemo(() => {
-    return anosModalidade?.length <= 1 
-      ||  modalidadeSelecionada === '-99'
-      || refForm?.state?.values.CodigoUe === TODAS_UE_ID 
-      || refForm?.state?.values.CodigoDre === TODAS_DRE_ID;
+    return anosModalidade?.length <= 1 ||  modalidadeSelecionada === TODAS_MODALIDADES_ID;
   }, [modalidadeSelecionada]);
 
   useEffect(() => {
@@ -564,10 +559,10 @@ const ComunicadosCadastro = ({ match }) => {
         ObterTurmas(refForm.state.values.anoLetivo, ue, dados[0].id, 0);
     }
 
-    if (ue !== '-99' && dados.length > 1) {
+    if (ue !== TODAS_MODALIDADES_ID && dados.length > 1) {
       const data = [];
       dados.forEach(value => {
-        if (value.id !== '-99') {
+        if (value.id !== TODAS_MODALIDADES_ID) {
           const dataItem = gruposLista.filter(item => item.nome === value.nome);
           data.push(...dataItem);
         }
@@ -603,7 +598,7 @@ const ComunicadosCadastro = ({ match }) => {
     refForm.setFieldValue('gruposId', dados);
   };
 
-  const obeterAnosPorModalidade = async (modalidade, codigoUe = 0) => {
+  const obeterAnosPorModalidade = async (modalidade, codigoUe = 'todas') => {
     if (!modalidade || modalidade === '') return;
 
     setLoaderSecao(true);
@@ -628,6 +623,7 @@ const ComunicadosCadastro = ({ match }) => {
 
   const obterTurmasEspecificas = async anos => {
     refForm.setFieldValue('turmas', []);
+    
     setAlunosLoader(true);
     const response = await FiltroHelper.obterTurmasEspecificas(
       refForm.state.values.CodigoUe,
@@ -636,12 +632,17 @@ const ComunicadosCadastro = ({ match }) => {
       refForm.state.values.modalidade,
       anos
     );
+
     setAlunosLoader(false);
     const dados = response.map(x => {
       return { id: x.valor, nome: x.descricao };
     });
 
-    dados.unshift({ id: '-99', nome: 'Todas' });
+    dados.unshift({ id: TODAS_TURMAS_ID, nome: 'Todas' });
+    if(dados.length == 1) {
+      refForm.setFieldValue('turmas', [TODAS_TURMAS_ID]);
+    }
+
     setTurmas(dados);
     refForm.setFieldValue('seriesResumidas', anos.toString());
   };
@@ -661,9 +662,9 @@ const ComunicadosCadastro = ({ match }) => {
   const ResetarModalidade = async () => {
     setGruposId([]);
     setModalidades(todosTurmasModalidade);
-    setModalidadeSelecionada('-99');
+    setModalidadeSelecionada(TODAS_MODALIDADES_ID);
     refForm.setFieldValue('gruposId', []);
-    refForm.setFieldValue('modalidade', '-99');
+    refForm.setFieldValue('modalidade', TODAS_MODALIDADES_ID);
     refForm.setFieldValue('semestre', '');
   };
 
@@ -689,7 +690,7 @@ const ComunicadosCadastro = ({ match }) => {
     refForm.setFieldValue('CodigoUe', TODAS_UE_ID);
     onChangeUe(TODAS_UE_ID);
     resetarTurmas();
-    ObterModalidades('-99');
+    ObterModalidades(TODAS_MODALIDADES_ID);
     setUnidadeEscolarUE(false);
 
     if (dre === TODAS_DRE_ID) {
@@ -728,9 +729,11 @@ const ComunicadosCadastro = ({ match }) => {
     setModalidadeSelecionada(modalidade);
     loadTiposCalendarioEffect();
 
-    if (modalidade !== '-99') {
+    if (modalidade !== TODAS_MODALIDADES_ID) {
       ObterGruposIdPorModalidade(modalidade);
-      obeterAnosPorModalidade(modalidade, '-99');
+      obeterAnosPorModalidade(
+        modalidade, 
+        (refForm?.state?.values.CodigoUe ?? null));
     }
 
     if (
@@ -742,7 +745,7 @@ const ComunicadosCadastro = ({ match }) => {
       return;
     }
 
-    if (modalidade !== '3' && modalidade !== '-99')
+    if (modalidade !== '3' && modalidade !== TODAS_MODALIDADES_ID)
       ObterTurmas(
         refForm.state.values.anoLetivo,
         refForm.state.values.CodigoUe,
@@ -753,8 +756,8 @@ const ComunicadosCadastro = ({ match }) => {
 
   const resetarTurmas = () => {
     setTurmas(todosTurmasModalidade);
-    refForm.setFieldValue('turmas', ['-99']);
-    setTurmasSelecionadas(['-99']);
+    refForm.setFieldValue('turmas', [TODAS_TURMAS_ID]);
+    setTurmasSelecionadas([TODAS_TURMAS_ID]);
     refForm.setFieldValue('alunos', '1');
     setAlunoEspecificado(false);
     refForm.setFieldValue('alunosEspecificados', false);
@@ -828,8 +831,8 @@ const ComunicadosCadastro = ({ match }) => {
       descricao: descricaoComunicado,
       alunos: alunosSelecionados,
       alunosEspecificados: alunoEspecificado,
-      turmas: valores.turmas.filter(x => x !== '-99'),
-      modalidade: valores.modalidade === '-99' ? '' : valores.modalidade,
+      turmas: valores.turmas.filter(x => x !== TODAS_TURMAS_ID),
+      modalidade: valores.modalidade === TODAS_MODALIDADES_ID ? '' : valores.modalidade,
     };
 
     dadosSalvar.tipoCalendarioId = tipoCalendarioSelecionado ?? null;
@@ -877,18 +880,18 @@ const ComunicadosCadastro = ({ match }) => {
     let turmasSalvar = turmas;
 
     if (turmas.length > 0) {
-      todasSelecionado = turmas[turmas.length - 1] === '-99';
+      todasSelecionado = turmas[turmas.length - 1] === TODAS_TURMAS_ID;
 
       turmasSalvar = todasSelecionado
-        ? ['-99']
-        : turmas.filter(x => x !== '-99');
+        ? [TODAS_TURMAS_ID]
+        : turmas.filter(x => x !== TODAS_TURMAS_ID);
     }
 
     handleModoEdicao();
 
     if (turmas.length <= 0) {
       todasSelecionado = true;
-      turmasSalvar.push('-99');
+      turmasSalvar.push(TODAS_TURMAS_ID);
     }
 
     setTurmasSelecionadas(turmasSalvar);
