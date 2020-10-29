@@ -139,5 +139,13 @@ namespace SME.SGP.Dados.Repositorios
                     where planejamento_anual_id = @planejamentoAnualId";
             return await database.Conexao.QueryAsync<PlanejamentoAnualPeriodoEscolarResumoDto>(sql, new { planejamentoAnualId });
         }
+        public async Task<bool> PlanejamentoPossuiObjetivos(long planejamentoAnualPeriodoId)
+        {
+            var query = @"select pc.id
+                            from planejamento_anual_componente pc 
+                           where pc.planejamento_anual_periodo_escolar_id = @planejamentoAnualPeriodoId";
+
+            return (await database.Conexao.QueryAsync<int>(query, new { planejamentoAnualPeriodoId })).Any();
+        }
     }
 }

@@ -85,7 +85,6 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IComandosAtribuicaoEsporadica, ComandosAtribuicaoEsporadica>();
             services.TryAddScopedWorkerService<IComandosAtividadeAvaliativa, ComandosAtividadeAvaliativa>();
             services.TryAddScopedWorkerService<IComandosTipoAvaliacao, ComandosTipoAavaliacao>();
-            services.TryAddScopedWorkerService<IComandosPlanoAula, ComandosPlanoAula>();
             services.TryAddScopedWorkerService<IComandosAtribuicaoCJ, ComandosAtribuicaoCJ>();
             services.TryAddScopedWorkerService<IComandosEventoMatricula, ComandosEventoMatricula>();
             services.TryAddScopedWorkerService<IComandosNotasConceitos, ComandosNotasConceitos>();
@@ -402,6 +401,7 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IExecutaSincronismoComponentesCurricularesEolUseCase, ExecutaSincronismoComponentesCurricularesEolUseCase>();
 
             services.TryAddScopedWorkerService<IObterTurmasParaCopiaUseCase, ObterTurmasParaCopiaUseCase>();
+            services.TryAddScopedWorkerService<ISalvarPlanoAulaUseCase, SalvarPlanoAulaUseCase>();
         }
 
         private static void ResgistraDependenciaHttp(IServiceCollection services)
