@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Loader, SelectComponent } from '~/componentes';
+import { Tabs, Row } from 'antd';
+import { Loader, SelectComponent, Graficos } from '~/componentes';
 import { Cabecalho } from '~/componentes-sgp';
 import Button from '~/componentes/button';
 import Card from '~/componentes/card';
@@ -11,18 +12,63 @@ import history from '~/servicos/history';
 
 import FiltroHelper from '~componentes-sgp/filtro/helper';
 
+import { ContainerTabs } from './style';
+
+const { TabPane } = Tabs;
+
+const data = [
+  {
+    "id": 21234,
+    "nomeCompletoDre": null,
+    "nomeCompletoUe": null,
+    "codigoturma": 0,
+    "totalUsuariosComCpfInvalidos": 21956,
+    "totalUsuariosPrimeiroAcessoIncompleto": 7,
+    "totalUsuariosSemAppInstalado": 1194399,
+    "totalUsuariosValidos": 59,
+    "label": "Total de usuários",
+    "value": 59,
+    "color": "hsl(181, 70%, 50%)"
+  },
+  {
+    "id": "hack",
+    "label": "hack",
+    "value": 111,
+    "color": "hsl(181, 70%, 50%)"
+  },
+  {
+    "id": "ruby",
+    "label": "ruby",
+    "value": 9,
+    "color": "hsl(115, 70%, 50%)"
+  },
+  {
+    "id": "sass",
+    "label": "sass",
+    "value": 344,
+    "color": "hsl(75, 70%, 50%)"
+  },
+  {
+    "id": "erlang",
+    "label": "erlang",
+    "value": 482,
+    "color": "hsl(199, 70%, 50%)"
+  },
+  {
+    "id": "scala",
+    "label": "scala",
+    "value": 154,
+    "color": "hsl(123, 70%, 50%)"
+  }
+];
+
+
 const DashboardEscolaAqui = () => {
   const [anoLetivo, setAnoLetivo] = useState(undefined);
   const [carregandoDres, setCarregandoDres] = useState(false);
   const [listaDres, setListaDres] = useState([]);
   const [carregandoUes, setCarregandoUes] = useState(false);
   const [listaUes, setListaUes] = useState([]);
-
-  const listaAdesao = [
-    { valor: '0', desc: 'Adesão' },
-    { valor: '1', desc: 'Exemplo 1' },
-    { valor: '2', desc: 'Exemplo 2' },
-  ];
 
   const [dreId, setDreId] = useState(undefined);
   const [ueId, setUeId] = useState(undefined);
@@ -156,44 +202,21 @@ const DashboardEscolaAqui = () => {
                 />
               </Loader>
             </div>
-            <div className={`"col-sm-12 col-md-4 col-lg-4`}>
-              <SelectComponent
-                id="drop-bimestre-rel-pendencias"
-                lista={listaAdesao}
-                valueOption="valor"
-                valueText="desc"
-                label="Adesão"
-                // disabled={!modalidadeId}
-                // valueSelect={bimestre}
-                // onChange={onChangeBimestre}
-                placeholder="Adesão"
-              />
-            </div>
-            <div className={`"col-sm-12 col-md-4 col-lg-4`}>
-              <SelectComponent
-                id="drop-bimestre-rel-pendencias"
-                lista={listaAdesao}
-                valueOption="valor"
-                valueText="desc"
-                label="Comunicados Totais"
-                // disabled={!modalidadeId}
-                // valueSelect={bimestre}
-                // onChange={onChangeBimestre}
-                placeholder="Comunicados Totais"
-              />
-            </div>
-            <div className={`"col-sm-12 col-md-4 col-lg-4`}>
-              <SelectComponent
-                id="drop-bimestre-rel-pendencias"
-                lista={listaAdesao}
-                valueOption="valor"
-                valueText="desc"
-                label="Comunicados Leitura"
-                // disabled={!modalidadeId}
-                // valueSelect={bimestre}
-                // onChange={onChangeBimestre}
-                placeholder="AComunicados Leitura"
-              />
+
+            <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+              <ContainerTabs type="card" defaultActiveKey="1">
+                <TabPane tab="Adesão" key="1">
+                  <div style={{ height: 400 }}>
+                    <Graficos.Pie data={data} />
+                  </div>
+                </TabPane>
+                <TabPane tab="Comunicados Totais" key="2">
+                  <p>Teste 2</p>
+                </TabPane>
+                <TabPane tab="Comunicados Leitura" key="3">
+                  <p>Teste 3</p>
+                </TabPane>
+              </ContainerTabs>
             </div>
           </div>
         </div>
