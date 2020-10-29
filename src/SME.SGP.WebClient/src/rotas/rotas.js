@@ -67,6 +67,7 @@ import DevolutivasLista from '~/paginas/DiarioClasse/Devolutivas/devolutivasList
 import DevolutivasForm from '~/paginas/DiarioClasse/Devolutivas/devolutivasForm';
 import RelatorioNotasConceitosFinais from '~/paginas/Relatorios/NotasConceitosFinais/relatorioNotasConceitosFinais';
 import RelatorioCompensacaoAusencia from '~/paginas/Relatorios/CompensacaoAusencia/relatorioCompensacaoAusencia';
+import DashboardEscolaAqui from '~/paginas/Relatorios/DashboardEscolaAqui';
 import PocEditor from '~/paginas/PocEditor/pocEditor';
 
 const rotas = new Map();
@@ -943,7 +944,7 @@ rotas.set(RotasDto.RELATORIO_ESCOLA_AQUI_DASHBOARD, {
   breadcrumbName: 'Dashboard',
   menu: ['Relatórios', 'Escola aqui '],
   parent: '/',
-  component: RelatorioCompensacaoAusencia,
+  component: DashboardEscolaAqui,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: false,
