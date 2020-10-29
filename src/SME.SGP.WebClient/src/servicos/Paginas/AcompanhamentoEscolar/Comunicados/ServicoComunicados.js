@@ -87,7 +87,7 @@ class ServicoComunicados {
 
   buscarAnosPorModalidade = async (modalidade, codigoUe, params) => {
     return api.get(
-      codigoUe !== '-99'
+      (codigoUe != null && codigoUe !== 'todas')
         ? `v1/comunicado/anos/modalidade/${modalidade}?codigoUe=${codigoUe}`
         : `v1/comunicado/anos/modalidade/${modalidade}`,
       {
