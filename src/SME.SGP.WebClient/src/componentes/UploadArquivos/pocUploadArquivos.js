@@ -1,9 +1,10 @@
 import { Upload } from 'antd';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Card from '~/componentes/card';
 import { erro, sucesso } from '~/servicos';
 import UploadArquivos from './uploadArquivos';
+import { urlBase } from '~/servicos/variaveis';
 
 const { Dragger } = Upload;
 
@@ -12,6 +13,12 @@ export const ContainerDragger = styled(Dragger)`
 `;
 
 const PocUploadArquivos = () => {
+  const [url, setUrl] = useState('');
+
+  useEffect(() => {
+    urlBase().then(resposta => setUrl(resposta));
+  }, []);
+
   const onChange = info => {
     const { status } = info.file;
     if (status !== 'uploading') {
@@ -26,7 +33,7 @@ const PocUploadArquivos = () => {
 
   const props = {
     onChange,
-    urlAction: 'https://www.mocky.io/v2/5cc8019d300000980a055e76',
+    urlAction: `https://localhost:5001/api/v1/armazenamento/upload`,
     multiplosArquivos: true,
     texoErroUpload: 'Erro ao carregar arquivo',
     textoUpload:
