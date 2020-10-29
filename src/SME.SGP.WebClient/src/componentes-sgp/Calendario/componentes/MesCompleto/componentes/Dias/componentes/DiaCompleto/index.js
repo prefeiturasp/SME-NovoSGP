@@ -70,8 +70,10 @@ function DiaCompleto({
   }, []);
 
   const onClickFrequenciaHandler = useCallback(
-    (disciplinaId, diaSelecionado) => {
-      store.dispatch(salvarDadosAulaFrequencia(disciplinaId, diaSelecionado));
+    (disciplinaId, diaSelecionado, aulaId) => {
+      store.dispatch(
+        salvarDadosAulaFrequencia(disciplinaId, diaSelecionado, aulaId)
+      );
       history.push(`${RotasDTO.FREQUENCIA_PLANO_AULA}`);
     },
     []
@@ -174,7 +176,8 @@ function DiaCompleto({
                           onClickFrequencia={() =>
                             onClickFrequenciaHandler(
                               eventoAula.componenteCurricularId,
-                              dia
+                              dia,
+                              eventoAula.aulaId
                             )
                           }
                         />

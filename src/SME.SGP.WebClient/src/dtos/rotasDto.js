@@ -51,6 +51,8 @@ const RotasDto = {
   RELATORIO_COMPENSACAO_AUSENCIA: '/relatorios/compensacao-ausencia',
   RELATORIO_ESCOLA_AQUI_DASHBOARD: '/relatorios/escola-aqui/dashboard',
   DEVOLUTIVAS: '/diario-classe/devolutiva',
+  CONTROLE_GRADE: '/relatorios/diario-classe/controle-grade',
+  POC_EDITOR: '/editor',
 };
 
 export default RotasDto;
