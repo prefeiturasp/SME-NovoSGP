@@ -1,4 +1,5 @@
-﻿using SME.SGP.Aplicacao.Interfaces;
+﻿using MediatR;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -11,14 +12,20 @@ namespace SME.SGP.Aplicacao
     public class ComandosNotasConceitos : IComandosNotasConceitos
     {
         private readonly IRepositorioNotasConceitos repositorioNotasConceitos;
+        private readonly IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa;
         private readonly IServicoDeNotasConceitos servicosDeNotasConceitos;
         private readonly IServicoUsuario servicoUsuario;
+        private readonly IMediator mediator;
 
-        public ComandosNotasConceitos(IServicoDeNotasConceitos servicosDeNotasConceitos, IRepositorioNotasConceitos repositorioNotasConceitos, IServicoUsuario servicoUsuario)
+        public ComandosNotasConceitos(IServicoDeNotasConceitos servicosDeNotasConceitos, IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa, IRepositorioNotasConceitos repositorioNotasConceitos, IServicoUsuario servicoUsuario,
+            IMediator mediator)
         {
             this.servicosDeNotasConceitos = servicosDeNotasConceitos ?? throw new System.ArgumentNullException(nameof(servicosDeNotasConceitos));
             this.repositorioNotasConceitos = repositorioNotasConceitos ?? throw new System.ArgumentNullException(nameof(repositorioNotasConceitos));
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
+            this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
+            this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new System.ArgumentNullException(nameof(repositorioAtividadeAvaliativa));
+            
         }
 
         public async Task Salvar(NotaConceitoListaDto notaConceitoLista)
@@ -37,6 +44,13 @@ namespace SME.SGP.Aplicacao
                 await IncluirTodasNotas(notasConceitosDto, professorRf, notaConceitoLista.TurmaId, notaConceitoLista.DisciplinaId);
             else
                 await TratarInclusaoEdicaoNotas(notasConceitosDto, notasBanco, professorRf, notaConceitoLista.TurmaId, notaConceitoLista.DisciplinaId);
+
+
+            var atividadeAvaliativa = await repositorioAtividadeAvaliativa.ObterPorIdAsync(notasConceitosDto.Select(x => x.AtividadeAvaliativaId).FirstOrDefault());
+            var aula = await mediator.Send(new ObterAulaPorComponenteCurricularIdTurmaIdEDataQuery(notaConceitoLista.DisciplinaId, notaConceitoLista.TurmaId, atividadeAvaliativa.DataAvaliacao));
+
+            if(aula != null)
+                await mediator.Send(new ExcluirPendenciaAulaCommand(aula.Id, TipoPendenciaAula.Avaliacao));
         }
 
         private async Task IncluirTodasNotas(IEnumerable<NotaConceitoDto> notasConceitosDto, string professorRf, string turmaId, string disiplinaId)

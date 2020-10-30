@@ -59,6 +59,12 @@ export const LinhaEvento = styled.div`
       background: ${Base.Roxo};
       color: white;
     }
+
+    .icone-alerta {
+      i {
+        color: ${Base.Branco} !important;
+      }
+    }
   }
 `;
 

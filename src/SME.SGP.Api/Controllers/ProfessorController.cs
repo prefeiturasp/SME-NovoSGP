@@ -62,6 +62,16 @@ namespace SME.SGP.Api.Controllers
             return Ok(retorno);
         }
 
+        [HttpGet("disciplinas/turmas")]
+        [ProducesResponseType(typeof(IEnumerable<DisciplinaDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ObterDisciplinas(string[] codigosTurmas, [FromServices]IObterComponentesCurricularesPorProfessorETurmasCodigosUseCase useCase)
+        {
+            var retorno = await useCase.Executar(codigosTurmas);
+
+            return Ok(retorno);
+        }
+
         [HttpGet("turmas/{codigoTurma}/docencias-compartilhadas/disciplinas/")]
         [ProducesResponseType(typeof(IEnumerable<DisciplinaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]

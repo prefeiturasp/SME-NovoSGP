@@ -33,6 +33,7 @@
     "gerador-validador-cpf": "^5.0.1",
     "history": "^4.9.0",
     "immer": "^3.2.0",
+    "jodit-react": "^1.0.65",
     "jquery": "^3.4.1",
     "lodash": "^4.17.19",
     "moment": "^2.24.0",

@@ -23,6 +23,9 @@ const inicial = {
   desabilitarCampos: false,
   podeEditarNota: false,
   salvouJustificativa: false,
+  exibirModalImpressaoConselhoClasse: false,
+  dadosBimestresConselhoClasse: [],
+  exibirLoaderGeralConselhoClasse: false,
 };
 
 export default function ConselhoClasse(state = inicial, action) {
@@ -92,6 +95,8 @@ export default function ConselhoClasse(state = inicial, action) {
           marcadorParecerConclusivo: {},
           gerandoParecerConclusivo: false,
           desabilitarCampos: false,
+          exibirModalImpressaoConselhoClasse: false,
+          exibirLoaderGeralConselhoClasse: false,
         };
       }
       case '@conselhoClasse/setConselhoClasseEmEdicao': {
@@ -193,6 +198,24 @@ export default function ConselhoClasse(state = inicial, action) {
         return {
           ...draft,
           salvouJustificativa: action.payload,
+        };
+      }
+      case '@conselhoClasse/setExibirModalImpressaoConselhoClasse': {
+        return {
+          ...draft,
+          exibirModalImpressaoConselhoClasse: action.payload,
+        };
+      }
+      case '@conselhoClasse/setDadosBimestresConselhoClasse': {
+        return {
+          ...draft,
+          dadosBimestresConselhoClasse: action.payload,
+        };
+      }
+      case '@conselhoClasse/setExibirLoaderGeralConselhoClasse': {
+        return {
+          ...draft,
+          exibirLoaderGeralConselhoClasse: action.payload,
         };
       }
 

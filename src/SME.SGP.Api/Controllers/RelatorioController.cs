@@ -39,5 +39,24 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await relatorioCalendarioUseCase.Executar(filtroRelatorioCalendarioDto));
         }
+
+        [HttpPost("resumopap/impressao")]
+        public async Task<IActionResult> ResumoPAP([FromBody] FiltroRelatorioResumoPAPDto filtroRelatorioResumoPAPDto, [FromServices] IRelatorioResumoPAPUseCase relatorioResumoPAPUseCase)
+        {
+            return Ok(await relatorioResumoPAPUseCase.Executar(filtroRelatorioResumoPAPDto));
+        }
+
+        [HttpPost("plano-aula")]
+        public async Task<IActionResult> PlanoAula([FromBody] FiltroRelatorioPlanoAulaDto filtro, [FromServices] IRelatorioPlanoAulaUseCase useCase)
+        {
+            return Ok(await useCase.Executar(filtro));
+        }
+
+
+        [HttpPost("controle-grade/impressao")]
+        public async Task<IActionResult> ControleGrade([FromBody] FiltroRelatorioControleGrade filtro, [FromServices] IRelatorioControleGradeUseCase relatorioUseCase)
+        {
+            return Ok(await relatorioUseCase.Executar(filtro));
+        }
     }
 }

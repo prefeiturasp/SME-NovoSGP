@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasProfessor consultasProfessor;
         private readonly IConsultasTurma consultasTurma;
         private readonly IConsultasPlanoAnual consultasPlanoAnual;
-        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
+        private readonly IRepositorioComponenteCurricularJurema repositorioComponenteCurricular;
         private readonly IRepositorioObjetivoAprendizagemPlano repositorioObjetivoAprendizagemPlano;
         private readonly IRepositorioPlanoAnual repositorioPlanoAnual;
         private readonly IServicoUsuario servicoUsuario;
@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
 
         public ComandosPlanoAnual(IRepositorioPlanoAnual repositorioPlanoAnual,
                                   IRepositorioObjetivoAprendizagemPlano repositorioObjetivoAprendizagemPlano,
-                                  IRepositorioComponenteCurricular repositorioComponenteCurricular,
+                                  IRepositorioComponenteCurricularJurema repositorioComponenteCurricular,
                                   IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem,
                                   IConsultasProfessor consultasProfessor,
                                   IConsultasTurma consultasTurma,
@@ -111,7 +111,7 @@ namespace SME.SGP.Aplicacao
 
         private static void ValidarObjetivoPertenceAoComponenteCurricular(IEnumerable<ObjetivoAprendizagemDto> objetivosAprendizagem,
                                                                           ObjetivoAprendizagemSimplificadoDto objetivo,
-                                                                          ComponenteCurricular componenteEol)
+                                                                          ComponenteCurricularJurema componenteEol)
         {
             var objetivoAprendizagem = objetivosAprendizagem.FirstOrDefault(c => c.Id == objetivo.Id);
             if (objetivoAprendizagem.IdComponenteCurricular != componenteEol.CodigoJurema)
@@ -136,7 +136,7 @@ namespace SME.SGP.Aplicacao
             if (bimestrePlanoAnualDto.ObjetivosAprendizagem != null && bimestrePlanoAnualDto.ObjetivosAprendizagem.Any())
             {
                 var idsObjetivos = objetivosAprendizagemPlanoAnual?.Select(c => c.ObjetivoAprendizagemJuremaId);
-                IEnumerable<ComponenteCurricular> componentesCurriculares = ObterComponentesCurriculares();
+                IEnumerable<ComponenteCurricularJurema> componentesCurriculares = ObterComponentesCurriculares();
                 IEnumerable<ObjetivoAprendizagemDto> objetivosAprendizagem = ObterObjetivosDeAprendizagem();
 
                 foreach (var objetivo in bimestrePlanoAnualDto.ObjetivosAprendizagem)
@@ -165,7 +165,7 @@ namespace SME.SGP.Aplicacao
             return planoAnual;
         }
 
-        private IEnumerable<ComponenteCurricular> ObterComponentesCurriculares()
+        private IEnumerable<ComponenteCurricularJurema> ObterComponentesCurriculares()
         {
             var componentesCurriculares = repositorioComponenteCurricular.Listar();
             if (componentesCurriculares == null)
@@ -218,7 +218,7 @@ namespace SME.SGP.Aplicacao
         }
 
         private void SalvarObjetivoAprendizagem(PlanoAnualDto planoAnualDto,
-                                                IEnumerable<ComponenteCurricular> componentesCurriculares,
+                                                IEnumerable<ComponenteCurricularJurema> componentesCurriculares,
                                                 IEnumerable<ObjetivoAprendizagemDto> objetivosAprendizagem,
                                                 ObjetivoAprendizagemSimplificadoDto objetivo)
         {
