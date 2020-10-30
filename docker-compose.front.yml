@@ -13,11 +13,14 @@ services:
       dockerfile: ./src/SME.SGP.Api/Dockerfile
     ports:
       - "8080:80"
+      - "5001:80"
+    restart: on-failure
     networks:
       - sme-network
     depends_on:
-      - "sme-db"
+      # - "sme-db"
       - "sme-redis"
+      - "sme-rabbitmq"
     env_file:
       - sme-api.env
   sme-workerservice:
@@ -59,17 +62,28 @@ services:
       - sme-network
   sme-flyway:
     container_name: sme-flyway
-    restart: on-failure
     image: boxfuse/flyway:5.2.4
     command: -url=jdbc:postgresql://sme-db:5432/sgp_db?user=postgres&password=postgres -locations='filesystem:/opt/scripts' -outOfOrder=true migrate
     volumes:
       - ./scripts:/opt/scripts
     depends_on:
       - "sme-db"
+      - "sme-rabbitmq"
     networks:
       - sme-network
+  sme-rabbitmq:
+    container_name: sme-rabbitmq
+    image: rabbitmq:3.7-management-alpine
+    environment:
+      - RABBITMQ_DEFAULT_USER=user
+      - RABBITMQ_DEFAULT_PASS=bitnami
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - sme-network
+
 networks:
   sme-network:
-    external:
-      name: sme_external_network
+    driver: bridge
     
