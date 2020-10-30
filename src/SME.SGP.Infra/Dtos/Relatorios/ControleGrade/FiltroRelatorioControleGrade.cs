@@ -12,5 +12,9 @@ namespace SME.SGP.Infra
         public IEnumerable<long> ComponentesCurriculares { get; set; }
         public IEnumerable<int> Bimestres { get; set; }
         public ModeloRelatorio Modelo { get; set; }
+
+        public int AnoLetivo { get; set; }
+        public Modalidade ModalidadeTurma { get; set; }
+        public int Semestre { get; set; }
     }
 }
