@@ -106,8 +106,7 @@ export default function NotificacoesLista() {
   );
   const [carregandoTela, setCarregandoTela] = useState(false);
   const [desabilitarTurma, setDesabilitarTurma] = useState(true);
-  const [colunasTabela, setColunasTabela] = useState([]);
-  const [paginaAtual, setPaginaAtual] = useState(1);
+  const [colunasTabela, setColunasTabela] = useState([]);  
 
   const permissoesTela = usuario.permissoes[RotasDto.NOTIFICACOES];
 
@@ -204,7 +203,7 @@ export default function NotificacoesLista() {
       tipo: tipo,
       titulo: titulo || null,
       usuarioRf: usuario.rf || null,
-      anoLetivo: usuario.filtroAtual.anoLetivo      
+      anoLetivo: usuario.filtroAtual.anoLetivo    
     };
     if (dropdownTurmaSelecionada && dropdownTurmaSelecionada == '2') {
       if (turmaSelecionada) {
@@ -215,8 +214,7 @@ export default function NotificacoesLista() {
       if (turmaSelecionada && !desabilitarTurma) {
         paramsQuery.turmaId = turmaSelecionada.unidadeEscolar;
       }
-    }
-    setPaginaAtual(1);
+    }    
     setFiltro(paramsQuery);
   }, []);
 
@@ -441,8 +439,7 @@ export default function NotificacoesLista() {
                 onClick={permissoesTela.podeAlterar && onClickEditar}
                 multiSelecao
                 selecionarItems={onSelecionarItems}
-                filtroEhValido={validarFiltro()}
-                pagina={paginaAtual}
+                filtroEhValido={validarFiltro()}                
               />
             )}
           </div>
