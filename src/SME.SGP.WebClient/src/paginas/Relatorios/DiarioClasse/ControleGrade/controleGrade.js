@@ -302,32 +302,29 @@ const ControleGrade = () => {
   }, [obterAnosLetivos]);
 
   const obterComponentesCurriculares = useCallback(async () => {
-    let codigoTodosAnosEscolares = [];
+    let turmas = [];
     if (turmaId === '0') {
-      codigoTodosAnosEscolares = listaTurmas
-        .filter(item => String(item.valor) !== '0')
-        .map(a => a.ano);
+      turmas = listaTurmas.filter(item => item.valor !== '0').map(a => a.valor);
     } else {
-      codigoTodosAnosEscolares = [listaTurmas
-        .find(item => String(item.valor) === String(turmaId)).ano];
+      turmas = [turmaId];
     }
 
     setExibirLoader(true);
-    const componentes = await ServicoComponentesCurriculares.obterComponetensCuriculares(
-      ueId,
-      modalidadeId,
-      anoLetivo,
-      codigoTodosAnosEscolares
+    const componentes = await ServicoComponentesCurriculares.obterComponentesPorListaDeTurmas(
+      turmas
     )
       .catch(e => erros(e))
       .finally(() => setExibirLoader(false));
 
     if (componentes && componentes.data && componentes.data.length) {
-      const lista = [];      
+      const lista = [];
+      if (turmaId === '0' || componentes.data.length > 1) {
+        lista.push({ valor: '0', desc: 'Todos' });
+      }
       componentes.data.map(item =>
         lista.push({
-          desc: item.descricao,
-          valor: String(item.codigo),
+          desc: item.nome,
+          valor: item.codigo,
         })
       );
 
@@ -336,13 +333,13 @@ const ControleGrade = () => {
         setComponentesCurricularesId(lista[0].valor);
       }
 
-      if (turmaId === '0' && componentes.data.length > 1) {
-        setComponentesCurricularesId('-99');
+      if (turmaId === '0' || componentes.data.length > 1) {
+        setComponentesCurricularesId('0');
       }
     } else {
       setListaComponentesCurriculares([]);
     }
-  }, [ueId, turmaId]);
+  }, [turmaId, listaTurmas]);
 
   useEffect(() => {
     if (ueId && turmaId) {
