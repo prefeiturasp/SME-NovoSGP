@@ -18,50 +18,31 @@ const { TabPane } = Tabs;
 
 const data = [
   {
-    "id": 21234,
-    "nomeCompletoDre": null,
-    "nomeCompletoUe": null,
-    "codigoturma": 0,
-    "totalUsuariosComCpfInvalidos": 21956,
-    "totalUsuariosPrimeiroAcessoIncompleto": 7,
-    "totalUsuariosSemAppInstalado": 1194399,
-    "totalUsuariosValidos": 59,
-    "label": "Total de usuários",
-    "value": 59,
-    "color": "hsl(181, 70%, 50%)"
+    id: '1',
+    label: 'Responsáveis sem CPF ou com CPF inválido no EOL',
+    value: 42,
+    color: '#F98F84',
+    cleiton: 'asdasd',
   },
   {
-    "id": "hack",
-    "label": "hack",
-    "value": 111,
-    "color": "hsl(181, 70%, 50%)"
+    id: '2',
+    label: 'Usuários que não realizaram a instalação',
+    value: 120,
+    color: '#57CDBC',
   },
   {
-    "id": "ruby",
-    "label": "ruby",
-    "value": 9,
-    "color": "hsl(115, 70%, 50%)"
+    id: '3',
+    label: 'Usuários com primeiro acesso incompleto',
+    value: 48,
+    color: '#EFB971',
   },
   {
-    "id": "sass",
-    "label": "sass",
-    "value": 344,
-    "color": "hsl(75, 70%, 50%)"
+    id: '4',
+    label: 'Usuários válidos',
+    value: 75,
+    color: '#3982AC',
   },
-  {
-    "id": "erlang",
-    "label": "erlang",
-    "value": 482,
-    "color": "hsl(199, 70%, 50%)"
-  },
-  {
-    "id": "scala",
-    "label": "scala",
-    "value": 154,
-    "color": "hsl(123, 70%, 50%)"
-  }
 ];
-
 
 const DashboardEscolaAqui = () => {
   const [anoLetivo, setAnoLetivo] = useState(undefined);
