@@ -13,14 +13,15 @@ namespace SME.SGP.Aplicacao
 {
     public class ConsultasPendenciaFechamento : ConsultasBase, IConsultasPendenciaFechamento
     {
-        private readonly IServicoEol servicoEOL;
         private readonly IRepositorioPendenciaFechamento repositorioPendenciaFechamento;
+        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
+        
         public ConsultasPendenciaFechamento(IContextoAplicacao contextoAplicacao
-                                , IServicoEol servicoEOL
-                                , IRepositorioPendenciaFechamento repositorioPendenciaFechamento) : base(contextoAplicacao)
+                                , IRepositorioPendenciaFechamento repositorioPendenciaFechamento,
+                        IRepositorioComponenteCurricular repositorioComponenteCurricular) : base(contextoAplicacao)
         {
-            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.repositorioPendenciaFechamento = repositorioPendenciaFechamento ?? throw new ArgumentNullException(nameof(repositorioPendenciaFechamento));
+            this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
         }
 
         public async Task<PaginacaoResultadoDto<PendenciaFechamentoResumoDto>> Listar(FiltroPendenciasFechamentosDto filtro)
@@ -34,7 +35,7 @@ namespace SME.SGP.Aplicacao
                     .ForEach(i => i.SituacaoNome = Enum.GetName(typeof(SituacaoPendencia), i.Situacao));
 
                 // Carrega nomes das disciplinas para o DTO de retorno
-                var disciplinasEOL = await servicoEOL.ObterDisciplinasPorIdsAsync(retornoConsultaPaginada.Items.Select(a => a.DisciplinaId).Distinct().ToArray());
+                var disciplinasEOL = await repositorioComponenteCurricular.ObterDisciplinasPorIds(retornoConsultaPaginada.Items.Select(a => a.DisciplinaId).Distinct().ToArray());
                 foreach(var disciplinaEOL in disciplinasEOL)
                 {
                     retornoConsultaPaginada.Items.Where(c => c.DisciplinaId == disciplinaEOL.CodigoComponenteCurricular).ToList()
@@ -53,7 +54,7 @@ namespace SME.SGP.Aplicacao
 
             pendencia.SituacaoNome = Enum.GetName(typeof(SituacaoPendencia), pendencia.Situacao);
 
-            var disciplinasEOL = await servicoEOL.ObterDisciplinasPorIdsAsync(new long[] { pendencia.DisciplinaId });
+            var disciplinasEOL = await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { pendencia.DisciplinaId });
             if (disciplinasEOL == null || !disciplinasEOL.Any())
                 throw new NegocioException("Disciplina informada não localizada.");
 

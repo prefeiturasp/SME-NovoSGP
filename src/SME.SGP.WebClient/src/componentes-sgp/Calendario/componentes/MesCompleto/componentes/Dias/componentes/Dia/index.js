@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import t from 'prop-types';
 
 // Ant
@@ -14,6 +14,7 @@ import {
 
 // Componentes
 import { Base } from '~/componentes';
+import { IconeDiaComPendencia } from '../../styles';
 
 function Dia({
   dia,
@@ -33,13 +34,22 @@ function Dia({
     >
       <div className="numeroDia">
         <div>
-          {eventos?.temAvaliacao && (
-            <Tooltip title="Atividade avaliativa">
-              <IconeAtividadeAvaliativa className="fas fa-sticky-note" />
+          {eventos?.possuiPendencia && (
+            <Tooltip title="Dia com pendência">
+              <IconeDiaComPendencia className="fas fa-exclamation-triangle" />
             </Tooltip>
           )}
         </div>
-        <div>{dia.getDate() < 10 ? `0${dia.getDate()}` : dia.getDate()}</div>
+        <div style={{ flexDirection: 'row', display: 'flex' }}>
+          <div>{dia.getDate() < 10 ? `0${dia.getDate()}` : dia.getDate()}</div>
+          <div className="ml-2">
+            {eventos?.temAvaliacao && (
+              <Tooltip title="Atividade avaliativa">
+                <IconeAtividadeAvaliativa className="fas fa-sticky-note" />
+              </Tooltip>
+            )}
+          </div>
+        </div>
       </div>
       {eventos && (
         <TipoEventosLista className="position-absolute">
