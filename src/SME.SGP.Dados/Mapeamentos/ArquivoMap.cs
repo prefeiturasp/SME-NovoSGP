@@ -10,7 +10,6 @@ namespace SME.SGP.Dados.Mapeamentos
         public ArquivoMap()
         {
             ToTable("arquivo");
-            Map(a => a.NomeFisico).ToColumn("nome_fisico");
         }
     }
 }
