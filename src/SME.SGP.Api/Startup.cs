@@ -105,6 +105,11 @@ namespace SME.SGP.Api
         {
             services.AddResponseCompression();
 
+            services.Configure<Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServerOptions>(options =>
+            {
+                options.Limits.MaxRequestBodySize = int.MaxValue;
+            });
+
             services.Configure<BrotliCompressionProviderOptions>(options =>
             {
                 options.Level = CompressionLevel.Fastest;

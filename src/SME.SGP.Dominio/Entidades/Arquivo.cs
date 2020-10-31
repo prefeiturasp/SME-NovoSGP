@@ -7,7 +7,7 @@ namespace SME.SGP.Dominio
     public class Arquivo : EntidadeBase
     {
         public string Nome { get; set; }
-        public string NomeFisico { get; set; }
+        public Guid Codigo { get; set; }
         public TipoArquivo Tipo { get; set; }
     }
 }
