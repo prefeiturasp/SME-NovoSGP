@@ -3,16 +3,16 @@
     public enum Permissao
     {
         /*Retirar comentário após a implementação dos menus*/
-        [PermissaoMenu(Menu = "Sondagem", Icone = "fas fa-book-reader", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 9, Url = "/sondagem", EhConsulta = true)]
+        [PermissaoMenu(Menu = "Sondagem", Icone = "fas fa-book-reader", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, Url = "/sondagem", EhConsulta = true)]
         S_C = 1,
 
-        [PermissaoMenu(Menu = "Sondagem", Icone = "fas fa-book-reader", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 9, Url = "/sondagem", EhInclusao = true)]
+        [PermissaoMenu(Menu = "Sondagem", Icone = "fas fa-book-reader", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, Url = "/sondagem", EhInclusao = true)]
         S_I = 2,
 
-        [PermissaoMenu(Menu = "Sondagem", Icone = "fas fa-book-reader", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 9, Url = "/sondagem", EhExclusao = true)]
+        [PermissaoMenu(Menu = "Sondagem", Icone = "fas fa-book-reader", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, Url = "/sondagem", EhExclusao = true)]
         S_E = 3,
 
-        [PermissaoMenu(Menu = "Sondagem", Icone = "fas fa-book-reader", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 9, Url = "/sondagem", EhAlteracao = true)]
+        [PermissaoMenu(Menu = "Sondagem", Icone = "fas fa-book-reader", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, Url = "/sondagem", EhAlteracao = true)]
         S_A = 4,
 
         //[PermissaoMenu(Menu = "Relatório de Sondagem", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, Url = "/sondagem", OrdemMenu = 2)]
