@@ -67,6 +67,7 @@ import DevolutivasLista from '~/paginas/DiarioClasse/Devolutivas/devolutivasList
 import DevolutivasForm from '~/paginas/DiarioClasse/Devolutivas/devolutivasForm';
 import RelatorioNotasConceitosFinais from '~/paginas/Relatorios/NotasConceitosFinais/relatorioNotasConceitosFinais';
 import RelatorioCompensacaoAusencia from '~/paginas/Relatorios/CompensacaoAusencia/relatorioCompensacaoAusencia';
+import DashboardEscolaAqui from '~/paginas/Relatorios/DashboardEscolaAqui/dashboardEscolaAqui';
 import PocEditor from '~/paginas/PocEditor/pocEditor';
 import ControleGrade from '~/paginas/Relatorios/DiarioClasse/ControleGrade/controleGrade';
 
@@ -938,6 +939,17 @@ rotas.set(RotasDto.RELATORIO_COMPENSACAO_AUSENCIA, {
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: false,
   chavePermissao: RotasDto.RELATORIO_COMPENSACAO_AUSENCIA,
+});
+
+rotas.set(RotasDto.RELATORIO_ESCOLA_AQUI_DASHBOARD, {
+  breadcrumbName: 'Dashboard',
+  menu: ['Relatórios', 'Escola aqui '],
+  parent: '/',
+  component: DashboardEscolaAqui,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+  chavePermissao: RotasDto.RELATORIO_ESCOLA_AQUI_DASHBOARD,
 });
 
 rotas.set(RotasDto.CONTROLE_GRADE, {
