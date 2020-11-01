@@ -1,7 +1,7 @@
-// import api from '~/servicos/api';
+const urlPadrao = `v1/ea/dashboard`;
 
 class ServicoDashboardEscolaAqui {
-  obterDadosGraficoAdesao = () => {
+  obterDadosGraficoAdesao = (codigoDre, codigoUe) => {
     const dadosMock = [
       {
         id: '1',
@@ -29,11 +29,29 @@ class ServicoDashboardEscolaAqui {
       },
     ];
 
+    console.log(urlPadrao);
+    console.log(codigoDre);
+    console.log(codigoUe);
+
     return new Promise(resolve => {
       setTimeout(() => {
         resolve({ data: dadosMock });
       }, 3000);
     });
+    // TODO
+    // const url = `${urlPadrao}/adesao?codigoDre=${codigoDre}&codigoUe=${codigoUe}`;
+    // return api.get(url);
+  };
+
+  obterUltimaAtualizacaoPorProcesso = () => {
+    return new Promise(resolve => {
+      setTimeout(() => {
+        resolve({ data: '2020-11-01T14:11:34' });
+      }, 3000);
+    });
+    // TODO
+    // const url = `${urlPadrao}/ultimoProcessamento`;
+    // return api.get(url);
   };
 }
 
