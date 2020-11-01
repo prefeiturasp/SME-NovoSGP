@@ -3,7 +3,7 @@ DROP TABLE if exists public.arquivo;
 create table public.arquivo (
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
 	nome varchar not null,
-	nome_fisico varchar not null,
+	codigo uuid NOT NULL,
 	tipo int not null,
 
 	criado_em timestamp NOT NULL,
