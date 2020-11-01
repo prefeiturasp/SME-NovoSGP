@@ -8,6 +8,7 @@ namespace SME.SGP.Dominio
     {
         public string Nome { get; set; }
         public Guid Codigo { get; set; }
+        public string TipoConteudo { get; set; }
         public TipoArquivo Tipo { get; set; }
     }
 }

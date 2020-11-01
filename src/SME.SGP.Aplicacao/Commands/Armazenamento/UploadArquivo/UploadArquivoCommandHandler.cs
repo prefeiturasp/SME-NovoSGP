@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
             var nomeArquivo = request.Arquivo.FileName;
             var caminhoArquivo = ObterCaminhoArquivo(request.Tipo, request.Arquivo);
 
-            var arquivo = await mediator.Send(new SalvarArquivoRepositorioCommand(nomeArquivo, request.Tipo));
+            var arquivo = await mediator.Send(new SalvarArquivoRepositorioCommand(nomeArquivo, request.Tipo, request.Arquivo.ContentType));
             await mediator.Send(new ArmazenarArquivoFisicoCommand(request.Arquivo, arquivo.Codigo.ToString(), caminhoArquivo));
 
             return arquivo.Codigo;

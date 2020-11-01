@@ -25,7 +25,8 @@ namespace SME.SGP.Aplicacao
             {
                 Nome = request.NomeArquivo,
                 Codigo = Guid.NewGuid(),
-                Tipo = request.Tipo
+                Tipo = request.Tipo,
+                TipoConteudo = request.TipoConteudo
             };
 
             await repositorioArquivo.SalvarAsync(arquivo);
