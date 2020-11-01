@@ -36,6 +36,15 @@ namespace SME.SGP.Api.Controllers
             }
         }
 
+        [HttpGet("{codigoArquivo}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> Upload(Guid codigoArquivo, [FromServices] IDownloadDeArquivoUseCase useCase)
+        {
+            var (arquivo, contentType, nomeArquivo) = await useCase.Executar(codigoArquivo);
+            return File(arquivo, contentType, nomeArquivo);
+        }
 
     }
 }

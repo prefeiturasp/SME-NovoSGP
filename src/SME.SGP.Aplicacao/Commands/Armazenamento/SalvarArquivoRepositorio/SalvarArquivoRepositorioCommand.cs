@@ -10,14 +10,16 @@ namespace SME.SGP.Aplicacao
 {
     public class SalvarArquivoRepositorioCommand : IRequest<ArquivoArmazenadoDto>
     {
-        public SalvarArquivoRepositorioCommand(string nomeArquivo, TipoArquivo tipo)
+        public SalvarArquivoRepositorioCommand(string nomeArquivo, TipoArquivo tipo, string tipoConteudo)
         {
             NomeArquivo = nomeArquivo;
             Tipo = tipo;
+            TipoConteudo = tipoConteudo;
         }
 
         public string NomeArquivo { get; set; }
         public TipoArquivo Tipo { get; set; }
+        public string TipoConteudo { get; set; }
     }
 
     public class SalvarArquivoRepositorioCommandValidator : AbstractValidator<SalvarArquivoRepositorioCommand>
