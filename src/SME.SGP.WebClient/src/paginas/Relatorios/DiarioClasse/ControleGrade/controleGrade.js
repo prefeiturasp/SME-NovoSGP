@@ -11,7 +11,7 @@ import api from '~/servicos/api';
 import history from '~/servicos/history';
 import ServicoFiltroRelatorio from '~/servicos/Paginas/FiltroRelatorio/ServicoFiltroRelatorio';
 import ServicoRelatorioControleGrade from '~/servicos/Paginas/Relatorios/DiarioClasse/ControleGrade/ServicoRelatorioControleGrade';
-import ServicoComponentesCurriculares from '~/servicos/ServicoComponentesCurriculares';
+import ServicoComponentesCurriculares from '~/servicos/Paginas/ComponentesCurriculares/ServicoComponentesCurriculares';
 import FiltroHelper from '~componentes-sgp/filtro/helper';
 
 const ControleGrade = () => {
@@ -229,6 +229,7 @@ const ControleGrade = () => {
             desc: item.nome,
             valor: item.codigo,
             id: item.id,
+            ano: item.ano,
           })
         );
         setListaTurmas(lista);
@@ -250,7 +251,7 @@ const ControleGrade = () => {
   }, [modalidadeId, ueId, anoLetivo, obterTurmas]);
 
   useEffect(() => {
-    if (modalidadeId === modalidade.EJA) {
+    if (String(modalidadeId) === String(modalidade.EJA)) {
       setListaBimestres(bimestresEja);
     } else {
       setListaBimestres(bimestresFundMedio);
@@ -309,8 +310,7 @@ const ControleGrade = () => {
     }
 
     setExibirLoader(true);
-    const componentes = await ServicoComponentesCurriculares.obterComponentesPorUeTurmas(
-      ueId,
+    const componentes = await ServicoComponentesCurriculares.obterComponentesPorListaDeTurmas(
       turmas
     )
       .catch(e => erros(e))
@@ -318,12 +318,12 @@ const ControleGrade = () => {
 
     if (componentes && componentes.data && componentes.data.length) {
       const lista = [];
-      if (componentes.data.length > 1) {
+      if (turmaId === '0' || componentes.data.length > 1) {
         lista.push({ valor: '0', desc: 'Todos' });
       }
       componentes.data.map(item =>
         lista.push({
-          desc: item.descricao,
+          desc: item.nome,
           valor: item.codigo,
         })
       );
@@ -333,13 +333,13 @@ const ControleGrade = () => {
         setComponentesCurricularesId(lista[0].valor);
       }
 
-      if (turmaId === '0') {
+      if (turmaId === '0' || componentes.data.length > 1) {
         setComponentesCurricularesId('0');
       }
     } else {
       setListaComponentesCurriculares([]);
     }
-  }, [ueId, turmaId]);
+  }, [turmaId, listaTurmas]);
 
   useEffect(() => {
     if (ueId && turmaId) {
@@ -424,9 +424,9 @@ const ControleGrade = () => {
       turmas = [turmaSelecionada.id];
     }
 
-    if (componentesCurricularesId === '0') {
+    if (componentesCurricularesId === '-99') {
       componentesCurriculares = listaComponentesCurriculares
-        .filter(item => item.valor !== '0')
+        .filter(item => item.valor !== '-99')
         .map(b => b.valor);
     }
 
@@ -437,6 +437,9 @@ const ControleGrade = () => {
     }
 
     const params = {
+      anoLetivo,
+      modalidadeTurma: modalidadeId,
+      semestre,
       turmas,
       componentesCurriculares,
       bimestres,

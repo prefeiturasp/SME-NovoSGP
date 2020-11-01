@@ -487,7 +487,7 @@ namespace SME.SGP.Dados.Repositorios
             try
             {
                 var query = new StringBuilder();
-                query.AppendLine(@"select t.turma_id as valor, t.nome as descricao from turma t
+                query.AppendLine(@"select distinct t.turma_id as valor, t.nome as descricao from turma t
                             inner join ue ue on ue.id = t.ue_id
                             inner join tipo_ciclo_ano tca on tca.ano = t.ano ");
 
