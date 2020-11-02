@@ -26,3 +26,4 @@
 [Environment]::SetEnvironmentVariable("UrlBackEnd", "http://localhost:5001/", "Machine")
 [Environment]::SetEnvironmentVariable("UrlServidorRelatorios", "http://localhost:5010/", "Machine")
 [Environment]::SetEnvironmentVariable("ApiKeyEolApi", "XXX", "Machine")
+[Environment]::SetEnvironmentVariable("SGP_MaxRequestSizeBody", "104857600", "Machine")
