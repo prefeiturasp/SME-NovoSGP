@@ -1,8 +1,10 @@
 import { InboxOutlined } from '@ant-design/icons';
 import { Upload } from 'antd';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
+import { erro, erros, sucesso } from '~/servicos';
+import ServicoArmazenamento from '~/servicos/Componentes/ServicoArmazenamento';
 
 const { Dragger } = Upload;
 
@@ -10,34 +12,131 @@ export const ContainerDragger = styled(Dragger)`
   height: auto !important;
 `;
 
+const TAMANHO_MAXIMO_UPLOAD = 100;
+
 const UploadArquivos = props => {
   const {
-    onChange,
     urlAction,
     multiplosArquivos,
-    mensagemErroUpload,
+    textoErroUpload,
     textoUpload,
     textoFormatoUpload,
     customRequest,
-    fileList,
     beforeUpload,
-    onDownload,
     showUploadList,
     onRemove,
   } = props;
 
+  const [listaDeArquivos, setLstaDeArquivos] = useState();
+
+  const excedeuLimiteMaximo = arquivo => {
+    const tamanhoArquivo = arquivo.size / 1024 / 1024;
+    return tamanhoArquivo > TAMANHO_MAXIMO_UPLOAD;
+  };
+
+  const onRemoveDefault = async arquivo => {
+    const codigoArquivo = arquivo.xhr;
+    const resposta = await ServicoArmazenamento.removerArquivo(
+      codigoArquivo
+    ).catch(e => erros(e));
+
+    if (resposta && resposta.status === 200) {
+      sucesso(`Arquivo ${arquivo.name} excluído com sucesso`);
+      return true;
+    }
+    return false;
+  };
+
+  const downloadBlob = (data, fileName) => {
+    const a = document.createElement('a');
+    document.body.appendChild(a);
+    a.style = 'display: none';
+
+    const blob = new Blob([data]);
+    const url = window.URL.createObjectURL(blob);
+    a.href = url;
+    a.download = fileName;
+    a.click();
+    window.URL.revokeObjectURL(url);
+
+    document.body.removeChild(a);
+  };
+
+  const beforeUploadDefault = arquivo => {
+    if (excedeuLimiteMaximo(arquivo)) {
+      erro('Tamanho máximo 100mb');
+      return false;
+    }
+
+    return true;
+  };
+
+  const onDownload = arquivo => {
+    const codigoArquivo = arquivo.xhr;
+    ServicoArmazenamento.obterArquivoParaDownload(codigoArquivo)
+      .then(resposta => {
+        downloadBlob(resposta.data, arquivo.name);
+      })
+      .catch(e => erros(e));
+  };
+
+  const customRequestDefault = options => {
+    const { onSuccess, onError, file, onProgress } = options;
+
+    const fmData = new FormData();
+    const config = {
+      headers: { 'content-type': 'multipart/form-data' },
+      onUploadProgress: event => {
+        onProgress({ percent: (event.loaded / event.total) * 100 }, file);
+      },
+    };
+    fmData.append('file', file);
+
+    ServicoArmazenamento.fazerUploadArquivo(fmData, config)
+      .then(resposta => {
+        onSuccess(file, resposta.data);
+      })
+      .catch(e => {
+        onError({ event: e });
+      });
+  };
+
+  const atualizaListaArquivos = (fileList, file) => {
+    const novaLista = fileList.filter(item => item.uid !== file.uid);
+    setLstaDeArquivos([...novaLista]);
+  };
+
+  const onChange = ({ file, fileList }) => {
+    const { status } = file;
+
+    if (excedeuLimiteMaximo(file)) {
+      atualizaListaArquivos(fileList, file);
+      return;
+    }
+
+    if (status === 'done') {
+      sucesso(`${file.name} arquivo carregado com sucesso`);
+    } else if (status === 'error') {
+      atualizaListaArquivos(fileList, file);
+      erro(`${file.name} erro ao carregar arquivo`);
+      return;
+    }
+
+    setLstaDeArquivos([...fileList]);
+  };
+
   const propsDragger = {
-    locale: { uploadError: mensagemErroUpload },
+    locale: { uploadError: textoErroUpload },
     name: 'file',
     multiple: multiplosArquivos,
     action: urlAction,
     onChange,
-    customRequest,
-    fileList,
-    beforeUpload,
+    customRequest: customRequest || customRequestDefault,
+    fileList: listaDeArquivos,
+    beforeUpload: beforeUpload || beforeUploadDefault,
     onDownload,
     showUploadList,
-    onRemove,
+    onRemove: onRemove || onRemoveDefault,
   };
 
   return (
@@ -52,32 +151,33 @@ const UploadArquivos = props => {
 };
 
 UploadArquivos.propTypes = {
-  onChange: PropTypes.func,
   urlAction: PropTypes.string,
   multiplosArquivos: PropTypes.bool,
-  mensagemErroUpload: PropTypes.string,
+  textoErroUpload: PropTypes.string,
   textoUpload: PropTypes.string,
   textoFormatoUpload: PropTypes.string,
   customRequest: PropTypes.func,
   fileList: PropTypes.oneOfType([PropTypes.array]),
   beforeUpload: PropTypes.func,
-  onDownload: PropTypes.func,
-  showUploadList: PropTypes.oneOfType([PropTypes.any]),
+  showUploadList: PropTypes.oneOfType([PropTypes.object]),
   onRemove: PropTypes.func,
 };
 
 UploadArquivos.defaultProps = {
-  onChange: () => {},
   urlAction: '',
   multiplosArquivos: false,
-  mensagemErroUpload: '',
-  textoUpload: '',
-  textoFormatoUpload: '',
+  textoErroUpload: 'Erro ao carregar arquivo',
+  textoUpload:
+    'Clique ou arraste para fazer o upload do arquivo de planejamento',
+  textoFormatoUpload: 'Todos os formatos são suportados no limite de 100mb',
   customRequest: null,
   fileList: [],
   beforeUpload: null,
-  onDownload: null,
-  showUploadList: {},
+  showUploadList: {
+    showRemoveIcon: true,
+    showDownloadIcon: true,
+    showPreviewIcon: false,
+  },
   onRemove: null,
 };
 
