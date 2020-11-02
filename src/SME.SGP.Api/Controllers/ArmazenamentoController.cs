@@ -40,11 +40,19 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> Upload(Guid codigoArquivo, [FromServices] IDownloadDeArquivoUseCase useCase)
+        public async Task<IActionResult> Download(Guid codigoArquivo, [FromServices] IDownloadDeArquivoUseCase useCase)
         {
             var (arquivo, contentType, nomeArquivo) = await useCase.Executar(codigoArquivo);
             return File(arquivo, contentType, nomeArquivo);
         }
 
+        [HttpDelete("{codigoArquivo}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> Delete(Guid codigoArquivo, [FromServices] IExcluirArquivoUseCase useCase)
+        {
+            return Ok(await useCase.Executar(codigoArquivo));
+        }
     }
 }
