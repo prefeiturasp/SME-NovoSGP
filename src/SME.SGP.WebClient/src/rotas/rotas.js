@@ -69,7 +69,7 @@ import RelatorioNotasConceitosFinais from '~/paginas/Relatorios/NotasConceitosFi
 import RelatorioCompensacaoAusencia from '~/paginas/Relatorios/CompensacaoAusencia/relatorioCompensacaoAusencia';
 import PocEditor from '~/paginas/PocEditor/pocEditor';
 import ControleGrade from '~/paginas/Relatorios/DiarioClasse/ControleGrade/controleGrade';
-import PocUploadArquivos from '~/componentes/UploadArquivos/pocUploadArquivos';
+import PocUploadArquivos from '~/componentes-sgp/UploadArquivos/pocUploadArquivos';
 
 const rotas = new Map();
 
