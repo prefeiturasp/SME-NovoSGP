@@ -8,5 +8,7 @@ namespace SME.SGP.Dominio.Interfaces
     public interface IRepositorioArquivo : IRepositorioBase<Arquivo>
     {
         Task<Arquivo> ObterPorCodigo(Guid codigo);
+        Task<bool> ExcluirArquivoPorCodigo(Guid codigoArquivo);
+        Task<bool> ExcluirArquivoPorId(long id);
     }
 }
