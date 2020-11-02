@@ -415,7 +415,6 @@ const ControleGrade = () => {
     let componentesCurriculares = [componentesCurricularesId];
     let bimestres = [...bimestre];
 
-    debugger;
     if (turmaId === '0') {
       turmas = listaTurmas.filter(item => item.valor !== '0').map(b => b.id);
     } else {
