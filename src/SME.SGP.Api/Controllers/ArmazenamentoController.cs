@@ -20,6 +20,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        //[RequestSizeLimit(200 * 1024 * 1024)]
         public async Task<IActionResult> Upload([FromForm]IFormFile file, [FromServices] IUploadDeArquivoUseCase useCase)
         {
             try
