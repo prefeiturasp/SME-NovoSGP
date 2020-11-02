@@ -1,5 +1,7 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using MediatR;
+using Microsoft.Extensions.Configuration;
 using Sentry;
+using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -31,6 +33,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IServicoEol servicoEOL;
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoUsuario servicoUsuario;
+        private readonly IMediator mediator;
 
         public ServicoNotificacaoFrequencia(IRepositorioNotificacaoFrequencia repositorioNotificacaoFrequencia,
                                             IRepositorioParametrosSistema repositorioParametrosSistema,
@@ -48,7 +51,8 @@ namespace SME.SGP.Dominio.Servicos
                                             IServicoNotificacao servicoNotificacao,
                                             IServicoUsuario servicoUsuario,
                                             IServicoEol servicoEOL,
-                                            IConfiguration configuration)
+                                            IConfiguration configuration,
+                                            IMediator mediator)
         {
             this.repositorioNotificacaoFrequencia = repositorioNotificacaoFrequencia ?? throw new ArgumentNullException(nameof(repositorioNotificacaoFrequencia));
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
@@ -67,6 +71,7 @@ namespace SME.SGP.Dominio.Servicos
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         #region Metodos Publicos
@@ -87,9 +92,9 @@ namespace SME.SGP.Dominio.Servicos
         public async Task NotificarAlunosFaltosos()
         {
             var dataReferencia = DateTime.Today.AddDays(-1);
-
-            var quantidadeDiasCP = int.Parse(await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.QuantidadeDiasNotificaoCPAlunosAusentes));
-            var quantidadeDiasDiretor = int.Parse(await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.QuantidadeDiasNotificaoDiretorAlunosAusentes));
+                        
+            var quantidadeDiasCP = int.Parse(await mediator.Send(new ObterParametroSistemaTipoEAnoQuery(TipoParametroSistema.QuantidadeDiasNotificaoCPAlunosAusentes, DateTime.Today.Year)));            
+            var quantidadeDiasDiretor = int.Parse(await mediator.Send(new ObterParametroSistemaTipoEAnoQuery(TipoParametroSistema.QuantidadeDiasNotificaoDiretorAlunosAusentes, DateTime.Today.Year)));
 
             await NotificarAlunosFaltososModalidade(dataReferencia, ModalidadeTipoCalendario.Infantil, quantidadeDiasCP, quantidadeDiasDiretor);
             await NotificarAlunosFaltososModalidade(dataReferencia, ModalidadeTipoCalendario.FundamentalMedio, quantidadeDiasCP, quantidadeDiasDiretor);

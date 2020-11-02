@@ -1,4 +1,6 @@
-﻿using SME.SGP.Dominio.Interfaces;
+﻿using MediatR;
+using SME.SGP.Aplicacao;
+using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,19 +13,19 @@ namespace SME.SGP.Dominio.Servicos
         private const string RecuperacaoParalelaFrequente = "RecuperacaoParalelaFrequente";
         private const string RecuperacaoParalelaNaoComparece = "RecuperacaoParalelaNaoComparece";
         private const string RecuperacaoParalelaPoucoFrequente = "RecuperacaoParalelaPoucoFrequente";
-        private readonly IRepositorioFrequencia repositorioFrequencia;
-        private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
+        private readonly IRepositorioFrequencia repositorioFrequencia;        
+        private readonly IMediator mediator;
 
-        public ServicoRecuperacaoParalela(IRepositorioFrequencia repositorioFrequencia, IRepositorioParametrosSistema repositorioParametrosSistema)
+        public ServicoRecuperacaoParalela(IRepositorioFrequencia repositorioFrequencia, IMediator mediator)
         {
-            this.repositorioFrequencia = repositorioFrequencia ?? throw new ArgumentNullException(nameof(repositorioFrequencia));
-            this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
+            this.repositorioFrequencia = repositorioFrequencia ?? throw new ArgumentNullException(nameof(repositorioFrequencia));            
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<IEnumerable<KeyValuePair<string, int>>> ObterFrequencias(string[] CodigoAlunos, string CodigoDisciplina, int Ano, PeriodoRecuperacaoParalela Periodo)
         {
-            var retorno = new List<KeyValuePair<string, int>>();
-            var parametrosFrequencia = await repositorioParametrosSistema.ObterChaveEValorPorTipo(TipoParametroSistema.RecuperacaoParalelaFrequencia);
+            var retorno = new List<KeyValuePair<string, int>>();            
+            var parametrosFrequencia = await mediator.Send(new ObterChaveEValorPorTipoEAnoQuery(TipoParametroSistema.RecuperacaoParalelaFrequencia, DateTime.Today.Year));
             var frequente = double.Parse(parametrosFrequencia.FirstOrDefault(w => w.Key == RecuperacaoParalelaFrequente).Value);
             var poucoFrequente = double.Parse(parametrosFrequencia.FirstOrDefault(w => w.Key == RecuperacaoParalelaPoucoFrequente).Value);
             var naoComparece = double.Parse(parametrosFrequencia.FirstOrDefault(w => w.Key == RecuperacaoParalelaNaoComparece).Value);

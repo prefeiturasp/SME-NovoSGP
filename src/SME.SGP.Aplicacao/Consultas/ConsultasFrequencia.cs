@@ -82,9 +82,9 @@ namespace SME.SGP.Aplicacao
             if (_mediaFrequencia == 0)
             {
                 if (disciplina.Regencia || !disciplina.LancaNota)
-                    _mediaFrequencia = double.Parse(await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse));
+                    _mediaFrequencia = double.Parse(await mediator.Send(new ObterParametroSistemaTipoEAnoQuery(TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse, DateTime.Today.Year)));                    
                 else
-                    _mediaFrequencia = double.Parse(await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.CompensacaoAusenciaPercentualFund2));
+                    _mediaFrequencia = double.Parse(await mediator.Send(new ObterParametroSistemaTipoEAnoQuery(TipoParametroSistema.CompensacaoAusenciaPercentualFund2, DateTime.Today.Year)));                   
             }
 
             return _mediaFrequencia;
@@ -106,9 +106,9 @@ namespace SME.SGP.Aplicacao
             var disciplinasEOL = await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { long.Parse(disciplinaId) });
             if (disciplinasEOL == null || !disciplinasEOL.Any())
                 throw new NegocioException("Disciplina informada não localizada no EOL.");
-
-            var quantidadeMaximaCompensacoes = int.Parse(await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.QuantidadeMaximaCompensacaoAusencia));
-            var percentualFrequenciaAlerta = int.Parse(await repositorioParametrosSistema.ObterValorPorTipoEAno(disciplinasEOL.First().Regencia ? TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse : TipoParametroSistema.CompensacaoAusenciaPercentualFund2));
+            
+            var quantidadeMaximaCompensacoes = int.Parse(await mediator.Send(new ObterParametroSistemaTipoEAnoQuery(TipoParametroSistema.QuantidadeMaximaCompensacaoAusencia, DateTime.Today.Year)));
+            var percentualFrequenciaAlerta = int.Parse(await mediator.Send(new ObterParametroSistemaTipoEAnoQuery(disciplinasEOL.First().Regencia ? TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse : TipoParametroSistema.CompensacaoAusenciaPercentualFund2, DateTime.Today.Year)));
 
             foreach (var alunoEOL in alunosEOL)
             {

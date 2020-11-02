@@ -1,4 +1,6 @@
-﻿using SME.Background.Core;
+﻿using MediatR;
+using SME.Background.Core;
+using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -21,6 +23,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioFechamentoNota repositorioFechamentoNota;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
+        private readonly IMediator mediator;
 
         private int avaliacoesSemnota;
         private int aulasReposicaoPendentes;
@@ -37,7 +40,8 @@ namespace SME.SGP.Dominio.Servicos
                                           IRepositorioComponenteCurricular repositorioComponenteCurricular,
                                           IRepositorioParametrosSistema repositorioParametrosSistema,
                                           IRepositorioFechamentoNota repositorioFechamentoNota,
-                                          IServicoUsuario servicoUsuario)
+                                          IServicoUsuario servicoUsuario,
+                                          IMediator mediator)
         {
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativa));
@@ -48,6 +52,7 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioFechamentoNota = repositorioFechamentoNota ?? throw new ArgumentNullException(nameof(repositorioFechamentoNota));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<int> ValidarAulasReposicaoPendente(long fechamentoId, Turma turma, long disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo)
@@ -184,8 +189,8 @@ namespace SME.SGP.Dominio.Servicos
         public async Task<int> ValidarPercentualAlunosAbaixoDaMedia(FechamentoTurmaDisciplina fechamentoTurma)
         {
             if (!string.IsNullOrEmpty(fechamentoTurma.Justificativa))
-            {
-                var percentualReprovacao = double.Parse(await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.PercentualAlunosInsuficientes));
+            {                
+                var percentualReprovacao = double.Parse(await mediator.Send(new ObterParametroSistemaTipoEAnoQuery(TipoParametroSistema.PercentualAlunosInsuficientes, DateTime.Today.Year)));
                 var mensagem = new StringBuilder($"O fechamento do bimestre possui mais de {percentualReprovacao}% das notas consideradas insuficientes<br>");
 
                 GerarPendencia(fechamentoTurma.Id, TipoPendencia.ResultadosFinaisAbaixoDaMedia, mensagem.ToString());
