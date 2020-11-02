@@ -5,6 +5,7 @@ create table public.arquivo (
 	nome varchar not null,
 	codigo uuid NOT NULL,
 	tipo int not null,
+	tipo_conteudo varchar not null,
 
 	criado_em timestamp NOT NULL,
 	criado_por varchar(200) NOT NULL,

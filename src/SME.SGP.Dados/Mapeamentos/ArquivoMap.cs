@@ -1,7 +1,4 @@
 ﻿using SME.SGP.Dominio;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Dados.Mapeamentos
 {
@@ -10,6 +7,7 @@ namespace SME.SGP.Dados.Mapeamentos
         public ArquivoMap()
         {
             ToTable("arquivo");
+            Map(a => a.TipoConteudo).ToColumn("tipo_conteudo");
         }
     }
 }

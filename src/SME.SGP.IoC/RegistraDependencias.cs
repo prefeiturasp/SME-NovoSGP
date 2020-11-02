@@ -453,6 +453,7 @@ namespace SME.SGP.IoC
 
             // Armazenamento de arquivos
             services.TryAddScoped<IUploadDeArquivoUseCase, UploadDeArquivoUseCase>();
+            services.TryAddScoped<IDownloadDeArquivoUseCase, DownloadDeArquivoUseCase>();
 
 
             // Grade Curricular
