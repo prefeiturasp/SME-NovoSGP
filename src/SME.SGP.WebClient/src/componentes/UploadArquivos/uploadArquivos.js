@@ -18,6 +18,12 @@ const UploadArquivos = props => {
     mensagemErroUpload,
     textoUpload,
     textoFormatoUpload,
+    customRequest,
+    fileList,
+    beforeUpload,
+    onDownload,
+    showUploadList,
+    onRemove,
   } = props;
 
   const propsDragger = {
@@ -26,6 +32,12 @@ const UploadArquivos = props => {
     multiple: multiplosArquivos,
     action: urlAction,
     onChange,
+    customRequest,
+    fileList,
+    beforeUpload,
+    onDownload,
+    showUploadList,
+    onRemove,
   };
 
   return (
@@ -46,6 +58,12 @@ UploadArquivos.propTypes = {
   mensagemErroUpload: PropTypes.string,
   textoUpload: PropTypes.string,
   textoFormatoUpload: PropTypes.string,
+  customRequest: PropTypes.func,
+  fileList: PropTypes.oneOfType([PropTypes.array]),
+  beforeUpload: PropTypes.func,
+  onDownload: PropTypes.func,
+  showUploadList: PropTypes.oneOfType([PropTypes.any]),
+  onRemove: PropTypes.func,
 };
 
 UploadArquivos.defaultProps = {
@@ -55,6 +73,12 @@ UploadArquivos.defaultProps = {
   mensagemErroUpload: '',
   textoUpload: '',
   textoFormatoUpload: '',
+  customRequest: null,
+  fileList: [],
+  beforeUpload: null,
+  onDownload: null,
+  showUploadList: {},
+  onRemove: null,
 };
 
 export default UploadArquivos;
