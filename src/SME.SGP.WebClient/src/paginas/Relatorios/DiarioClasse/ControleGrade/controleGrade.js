@@ -424,11 +424,11 @@ const ControleGrade = () => {
       turmas = [turmaSelecionada.id];
     }
 
-    if (componentesCurricularesId === '-99') {
+    if (componentesCurricularesId === '0') {
       componentesCurriculares = listaComponentesCurriculares
-        .filter(item => item.valor !== '-99')
+        .filter(item => item.valor !== '0')
         .map(b => b.valor);
-    }
+     }
 
     if (bimestre[0] === '0') {
       bimestres = listaBimestres
