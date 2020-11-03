@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public interface IObterTotaisAdesaoUseCase
+    public interface IObterTotaisAdesaoAgrupadosPorDreUseCase
     {
-        Task<IEnumerable<TotaisAdesaoResultado>> Executar(string codigoDre, long codigoUe);
+        Task<IEnumerable<TotaisAdesaoAgrupadoProDreResultado>> Executar();
     }
-    
+
 }
