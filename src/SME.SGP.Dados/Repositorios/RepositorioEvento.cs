@@ -3,6 +3,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -1088,22 +1089,25 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<Evento>(query.ToString(), new { tipoCalendarioId });
         }
 
-        public async Task<IEnumerable<Evento>> ObterEventosPorTipoDeCalendarioDreUeModalidadeAsync(long tipoCalendario,
-                                                                                                   int anoLetivo, 
+        public async Task<IEnumerable<ListarEventosPorCalendarioRetornoDto>> ObterEventosPorTipoDeCalendarioDreUeModalidadeAsync(long tipoCalendario,
+                                                                                                   int anoLetivo,
                                                                                                    string codigoDre,
                                                                                                    string codigoUe,
                                                                                                    int? modalidade)
         {
             var whereDre = string.IsNullOrEmpty(codigoDre) ? "" : "and (dre_id is null or dre_id = @codigoDre)";
-            var whereUe = string.IsNullOrEmpty(codigoUe)   ? "" : "and (ue_id is null or ue_id = @codigoUe)";
-            var whereModalidade = !modalidade.HasValue     ? "" : "and tc.modalidade = @modalidade";
+            var whereUe = string.IsNullOrEmpty(codigoUe) ? "" : "and (ue_id is null or ue_id = @codigoUe)";
+            var whereModalidade = !modalidade.HasValue ? "" : "and tc.modalidade = @modalidade";
             var query = $@"
                 select 
-                	e.*
+                	e.Id As Id,
+                    e.Nome as Nome,
+                    te.descricao as TipoEvento
                 from
 	                evento e
 				inner join 
-					tipo_calendario tc on tc.id = e.tipo_calendario_id 	                
+					tipo_calendario tc on tc.id = e.tipo_calendario_id 	    
+					inner join evento_tipo te on te.id = e.tipo_evento_id 
                 where
 	                e.tipo_calendario_id = @tipoCalendario
                     {whereDre}
@@ -1114,16 +1118,16 @@ namespace SME.SGP.Dados.Repositorios
                 and tc.situacao
                 and tc.ano_letivo = @anoLetivo
             ";
-            return await database.Conexao.QueryAsync<Evento>(
-                query, 
-                new { 
-                    tipoCalendario, 
+            return await database.Conexao.QueryAsync<ListarEventosPorCalendarioRetornoDto>(
+                query,
+                new
+                {
+                    tipoCalendario,
                     anoLetivo,
-                    codigoDre, 
-                    codigoUe, 
-                    modalidade = modalidade.HasValue ? modalidade.Value : 0 
+                    codigoDre,
+                    codigoUe,
+                    modalidade = modalidade.HasValue ? modalidade.Value : 0
                 });
         }
-
     }
 }
