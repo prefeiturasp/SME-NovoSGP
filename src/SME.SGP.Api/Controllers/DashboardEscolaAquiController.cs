@@ -21,6 +21,15 @@ namespace SME.SGP.Api.Controllers
             return Ok(await obterTotaisAdesaoUseCase.Executar(codigoDre, codigoUe));
         }
 
+        [HttpGet("adesao/agrupados")]
+        [ProducesResponseType(typeof(UsuarioEscolaAquiDto), 200)]
+        [ProducesResponseType(typeof(UsuarioEscolaAquiDto), 204)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ObterTotaisAdesaoAgrupadosPorDre([FromServices] IObterTotaisAdesaoAgrupadosPorDreUseCase obterTotaisAdesaoAgrupadosPorDreUseCase)
+        {
+            return Ok(await obterTotaisAdesaoAgrupadosPorDreUseCase.Executar());
+        }
+
         [HttpGet("ultimoProcessamento")]
         [ProducesResponseType(typeof(UsuarioEscolaAquiDto), 200)]
         [ProducesResponseType(typeof(UsuarioEscolaAquiDto), 204)]
