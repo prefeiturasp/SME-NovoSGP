@@ -1,17 +1,11 @@
 import { Tabs } from 'antd';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
-import styled from 'styled-components';
 import { ContainerTabsCard } from '~/componentes/tabs/tabs.css';
+import { ContainerTabsDashboardEscolaAqui } from '../dashboardEscolaAqui.css';
 import DadosAdesao from './DadosAdesao/dadosAdesao';
 
 const { TabPane } = Tabs;
-
-export const ContainerTabsDashboardEscolaAqui = styled.div`
-  .ant-tabs-nav {
-    width: 33.33% !important;
-  }
-`;
 
 const TabsDashboardEscolaAqui = props => {
   const { codigoDre, codigoUe } = props;
