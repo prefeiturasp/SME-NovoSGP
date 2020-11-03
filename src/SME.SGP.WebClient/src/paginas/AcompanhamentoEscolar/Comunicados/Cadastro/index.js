@@ -38,10 +38,11 @@ import FiltroHelper from '~/paginas/AcompanhamentoEscolar/Comunicados/Helper/hel
 import ListaAlunosSelecionados from './Lista/ListaAlunosSelecionados';
 import { ServicoCalendarios } from '~/servicos';
 
-const TODAS_UE_ID = 'todas';
-const TODAS_DRE_ID = 'todas';
+const TODAS_UE_ID = '-99';
+const TODAS_DRE_ID = '-99';
 const TODAS_MODALIDADES_ID = '-99';
 const TODAS_TURMAS_ID = '-99';
+const MODALIDADE_EJA_ID = '3';
 
 const ComunicadosCadastro = ({ match }) => {
   const ErroValidacao = styled.span`
@@ -59,7 +60,7 @@ const ComunicadosCadastro = ({ match }) => {
     }
   `;
 
-  const todos = [{ id: 'todas', nome: 'Todas' }];
+  const todos = [{ id: TODAS_UE_ID, nome: 'Todas' }];
   const todosTurmasModalidade = [{ id: TODAS_TURMAS_ID, nome: 'Todas' }];
   const semestresLista = [
     { id: '1', nome: '1º Semestre' },
@@ -146,10 +147,13 @@ const ComunicadosCadastro = ({ match }) => {
           && modalidadeTurmaCalendarioRelation[modalidadeSelecionada] == t.modalidade) 
       : true;
 
+  const hasActiveSituation = (t) => t.situacao;
+
   const filterAllowedCalendarTypes = (data) => {
     return data
       .filter(hasAnoLetivoClause)
-      .filter(hasModalidadeSelecionadaClause);
+      .filter(hasModalidadeSelecionadaClause)
+      .filter(hasActiveSituation);
   };
 
   const loadTiposCalendarioEffect = () => {
@@ -493,8 +497,10 @@ const ComunicadosCadastro = ({ match }) => {
   }, [alunoEspecificado]);
 
   const anosModalidadeDesabilita = useMemo(() => {
-    return anosModalidade?.length <= 1 ||  modalidadeSelecionada === TODAS_MODALIDADES_ID;
-  }, [modalidadeSelecionada]);
+    return anosModalidade?.length <= 1 
+        || modalidadeSelecionada === TODAS_MODALIDADES_ID
+        || modalidadeSelecionada === MODALIDADE_EJA_ID;
+  }, [modalidadeSelecionada, ues, dres, refForm]);
 
   useEffect(() => {
     if (!refForm?.setFieldValue) return;
@@ -598,16 +604,23 @@ const ComunicadosCadastro = ({ match }) => {
     refForm.setFieldValue('gruposId', dados);
   };
 
-  const obeterAnosPorModalidade = async (modalidade, codigoUe = 'todas') => {
+  const ObterAnosPorModalidade = async (modalidade, codigoUe = TODAS_UE_ID) => {
     if (!modalidade || modalidade === '') return;
-
+    
     setLoaderSecao(true);
     const dados = await FiltroHelper.obterAnosPorModalidade(
       modalidade,
       codigoUe
     );
-    setLoaderSecao(false);
 
+    if(dados && dados.length == 0) {
+      dados.unshift({
+        modalidade: -99,
+        ano: 'Todos'
+      });
+    }
+
+    setLoaderSecao(false);
     setAnosModalidade(dados);
   };
 
@@ -730,8 +743,8 @@ const ComunicadosCadastro = ({ match }) => {
     loadTiposCalendarioEffect();
 
     if (modalidade !== TODAS_MODALIDADES_ID) {
-      ObterGruposIdPorModalidade(modalidade);
-      obeterAnosPorModalidade(
+      await ObterGruposIdPorModalidade(modalidade);
+      await ObterAnosPorModalidade(
         modalidade, 
         (refForm?.state?.values.CodigoUe ?? null));
     }
@@ -745,7 +758,7 @@ const ComunicadosCadastro = ({ match }) => {
       return;
     }
 
-    if (modalidade !== '3' && modalidade !== TODAS_MODALIDADES_ID)
+    if (modalidade !== MODALIDADE_EJA_ID && modalidade !== TODAS_MODALIDADES_ID)
       ObterTurmas(
         refForm.state.values.anoLetivo,
         refForm.state.values.CodigoUe,
@@ -833,8 +846,10 @@ const ComunicadosCadastro = ({ match }) => {
       alunosEspecificados: alunoEspecificado,
       turmas: valores.turmas.filter(x => x !== TODAS_TURMAS_ID),
       modalidade: valores.modalidade === TODAS_MODALIDADES_ID ? '' : valores.modalidade,
+      seriesResumidas: valores.anosModalidade
     };
 
+    dadosSalvar.anosModalidade = null;
     dadosSalvar.tipoCalendarioId = tipoCalendarioSelecionado ?? null;
     dadosSalvar.eventoId = eventoSelecionado?.id ?? null;
     dadosSalvar.semestre =
@@ -1159,7 +1174,7 @@ const ComunicadosCadastro = ({ match }) => {
                         onSelect={valor => selecionaTipoCalendario(valor, form)}
                         value={valorTipoCalendario}
                         form={form}
-                        allowClear={false}
+                        allowClear={true}
                       />
                     </Loader>
                   </Grid>
