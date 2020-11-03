@@ -4,6 +4,10 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Graficos, Loader } from '~/componentes';
 import { erros } from '~/servicos';
 import ServicoDashboardEscolaAqui from '~/servicos/Paginas/Relatorios/EscolaAqui/DashboardEscolaAqui/ServicoDashboardEscolaAqui';
+import {
+  DataUltimaAtualizacao,
+  LegendaGrafico,
+} from '../../dashboardEscolaAqui.css';
 
 const DadosAdesao = props => {
   const { codigoDre, codigoUe } = props;
@@ -23,39 +27,84 @@ const DadosAdesao = props => {
     }
   };
 
+  const obterPercentual = (valorAtual, valorTotal) => {
+    const porcentagemAtual = (valorAtual / valorTotal) * 100;
+    return `(${porcentagemAtual.toFixed(2)}%)`;
+  };
+
+  const formataMilhar = valor => {
+    return valor.toLocaleString('pt-BR');
+  };
+
+  const obterValorTotal = dadosMapeados => {
+    const getTotal = (total, item) => {
+      return total + item.value;
+    };
+    return dadosMapeados.reduce(getTotal, 0);
+  };
+
+  const mapearDadosComPorcentagem = dadosMapeados => {
+    if (dadosMapeados && dadosMapeados.length) {
+      const valorTotal = obterValorTotal(dadosMapeados);
+
+      dadosMapeados.forEach(item => {
+        item.radialLabel = `${formataMilhar(item.value)} ${obterPercentual(
+          item.value,
+          valorTotal
+        )}`;
+      });
+    }
+
+    return dadosMapeados;
+  };
+
   const mapearParaDtoGraficoPizza = dados => {
-    const totalUsuariosComCpfInvalidos = {
-      label: 'Responsáveis sem CPF ou com CPF inválido no EOL',
-      value: dados.totalUsuariosComCpfInvalidos || 0,
-      color: '#F98F84',
-    };
+    const dadosMapeados = [];
 
-    const totalUsuariosSemAppInstalado = {
-      label: 'Usuários que não realizaram a instalação',
-      value: dados.totalUsuariosSemAppInstalado || 0,
-      color: '#57CDBC',
-    };
+    if (dados.totalUsuariosComCpfInvalidos) {
+      const totalUsuariosComCpfInvalidos = {
+        id: '1',
+        label: 'Responsáveis sem CPF ou com CPF inválido no EOL',
+        value: dados.totalUsuariosComCpfInvalidos || 0,
+        color: '#F98F84',
+      };
+      dadosMapeados.push(totalUsuariosComCpfInvalidos);
+    }
 
-    const totalUsuariosPrimeiroAcesso = {
-      label: 'Usuários com primeiro acesso incompleto',
-      value: dados.totalUsuariosPrimeiroAcesso || 0,
-      color: '#EFB971',
-    };
+    if (dados.totalUsuariosSemAppInstalado) {
+      const totalUsuariosSemAppInstalado = {
+        id: '2',
+        label: 'Usuários que não realizaram a instalação',
+        value: dados.totalUsuariosSemAppInstalado || 0,
+        color: '#57CDBC',
+      };
+      dadosMapeados.push(totalUsuariosSemAppInstalado);
+    }
 
-    const totalUsuariosValidos = {
-      label: 'Usuários válidos',
-      value: dados.totalUsuariosValidos || 0,
-      color: '#3982AC',
-    };
+    if (dados.totalUsuariosPrimeiroAcesso) {
+      const totalUsuariosPrimeiroAcesso = {
+        id: '3',
+        label: 'Usuários com primeiro acesso incompleto',
+        value: dados.totalUsuariosPrimeiroAcesso || 0,
+        color: '#EFB971',
+      };
+      dadosMapeados.push(totalUsuariosPrimeiroAcesso);
+    }
 
-    const dadosMapeados = [
-      totalUsuariosComCpfInvalidos,
-      totalUsuariosSemAppInstalado,
-      totalUsuariosPrimeiroAcesso,
-      totalUsuariosValidos,
-    ];
+    if (dados.totalUsuariosValidos) {
+      const totalUsuariosValidos = {
+        id: '4',
+        label: 'Usuários válidos',
+        value: dados.totalUsuariosValidos || 0,
+        color: '#3982AC',
+      };
+      dadosMapeados.push(totalUsuariosValidos);
+    }
 
-    setDadosGraficoAdesao(dadosMapeados);
+    const dadosMapeadosComPorcentagem = mapearDadosComPorcentagem(
+      dadosMapeados
+    );
+    setDadosGraficoAdesao(dadosMapeadosComPorcentagem);
   };
 
   const obterDadosGraficoAdesao = useCallback(async () => {
@@ -86,15 +135,20 @@ const DadosAdesao = props => {
 
   return (
     <Loader loading={exibirLoader} className="text-center">
+      {dataUltimaAtualizacao ? (
+        <div className="col-md-12">
+          <div className=" d-flex justify-content-end pb-4">
+            <DataUltimaAtualizacao>
+              Data da última atualização: {dataUltimaAtualizacao}
+            </DataUltimaAtualizacao>
+          </div>
+        </div>
+      ) : (
+        ''
+      )}
+
       {dadosGraficoAdesao && dadosGraficoAdesao.length ? (
         <>
-          {dataUltimaAtualizacao ? (
-            <div className="col-md-12" style={{ textAlign: 'end' }}>
-              Data da última atualização: {dataUltimaAtualizacao}
-            </div>
-          ) : (
-            ''
-          )}
           <div
             className="col-md-12"
             style={{
@@ -106,12 +160,33 @@ const DadosAdesao = props => {
           >
             Total de Usuários
           </div>
-          <div className="col-md-12" style={{ height: 400 }}>
-            <Graficos.Pie data={dadosGraficoAdesao} />
+          <div className="row">
+            <div className="col-md-6">
+              <Graficos.Pie
+                data={dadosGraficoAdesao}
+                style={{ fontSize: '14px !important' }}
+              />
+            </div>
+            <div className="col-md-6 d-flex align-items-center">
+              <LegendaGrafico>
+                <div className="legend-scale">
+                  <ul className="legend-labels">
+                    {dadosGraficoAdesao.map(item => {
+                      return (
+                        <li>
+                          <span style={{ backgroundColor: item.color }} />
+                          {item.label}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              </LegendaGrafico>
+            </div>
           </div>
         </>
       ) : (
-        ''
+        'Sem dados'
       )}
     </Loader>
   );
