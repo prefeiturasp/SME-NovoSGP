@@ -75,13 +75,12 @@ namespace SME.SGP.Dominio.Servicos
         {
             WorkflowAprovacaoNivel nivel = workflow.ObterNivelPorNotificacaoId(notificacaoId);
 
+            var codigoDaNotificacao = nivel.Notificacoes.FirstOrDefault(a => a.Id == notificacaoId).Codigo;            
+
             nivel.PodeAprovar();
 
             var niveisParaPersistir = workflow.ModificarStatusPorNivel(aprovar ? WorkflowAprovacaoNivelStatus.Aprovado : WorkflowAprovacaoNivelStatus.Reprovado, nivel.Nivel, observacao);
             AtualizaNiveis(niveisParaPersistir);
-
-            var codigoDaNotificacao = nivel.Notificacoes
-                .FirstOrDefault(a => a.Id == notificacaoId).Codigo;
 
             if (aprovar)
                 await AprovarNivel(nivel, workflow, codigoDaNotificacao);
@@ -195,7 +194,8 @@ namespace SME.SGP.Dominio.Servicos
         }
 
         private async Task AprovarUltimoNivelDaReposicaoAula(long codigoDaNotificacao, long workflowId)
-        {
+        {            
+
             Aula aula = repositorioAula.ObterPorWorkflowId(workflowId);
             if (aula == null)
                 throw new NegocioException("Não foi possível localizar a aula deste fluxo de aprovação.");
@@ -620,19 +620,19 @@ namespace SME.SGP.Dominio.Servicos
                 throw new NegocioException("Não foi possível localizar o diretor da Ue desta reabertura de fechamento.");
             else
                 foreach (var diretorDaEscola in diretoresDaEscola)
-            {
-                var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(diretorDaEscola.CodigoRf);
-                var notificacao = new Notificacao()
                 {
-                    UeId = fechamentoReabertura.Ue.CodigoUe,
-                    UsuarioId = usuario.Id,
-                    Ano = fechamentoReabertura.CriadoEm.Year,
-                    Categoria = NotificacaoCategoria.Aviso,
-                    DreId = fechamentoReabertura.Dre.CodigoDre,
-                    Titulo = "Cadastro de período de reabertura de fechamento - ano anterior",
-                    Tipo = NotificacaoTipo.Calendario,
-                    Codigo = codigoDaNotificacao,
-                    Mensagem = $@"O período de reabertura do fechamento de bimestre abaixo da {fechamentoReabertura.Ue.TipoEscola.ShortName()} {fechamentoReabertura.Ue.Nome} ({fechamentoReabertura.Dre.Abreviacao}) foi aprovado pela supervisão escolar. <br/>
+                    var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(diretorDaEscola.CodigoRf);
+                    var notificacao = new Notificacao()
+                    {
+                        UeId = fechamentoReabertura.Ue.CodigoUe,
+                        UsuarioId = usuario.Id,
+                        Ano = fechamentoReabertura.CriadoEm.Year,
+                        Categoria = NotificacaoCategoria.Aviso,
+                        DreId = fechamentoReabertura.Dre.CodigoDre,
+                        Titulo = "Cadastro de período de reabertura de fechamento - ano anterior",
+                        Tipo = NotificacaoTipo.Calendario,
+                        Codigo = codigoDaNotificacao,
+                        Mensagem = $@"O período de reabertura do fechamento de bimestre abaixo da {fechamentoReabertura.Ue.TipoEscola.ShortName()} {fechamentoReabertura.Ue.Nome} ({fechamentoReabertura.Dre.Abreviacao}) foi aprovado pela supervisão escolar. <br/>
                                   Tipo de Calendário: {fechamentoReabertura.TipoCalendario.Nome}<br/>
                                   Descrição: { fechamentoReabertura.Descricao} <br/>
                                   Início: { fechamentoReabertura.Inicio.ToString("dd/MM/yyyy")} <br/>
@@ -652,20 +652,20 @@ namespace SME.SGP.Dominio.Servicos
             if (diretoresDaEscola == null || !diretoresDaEscola.Any())
                 throw new NegocioException("Não foi possível localizar o diretor da Ue desta reabertura de fechamento.");
             else
-            foreach (var diretorDaEscola in diretoresDaEscola)
-            {
-                var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(diretorDaEscola.CodigoRf);
-                var notificacao = new Notificacao()
+                foreach (var diretorDaEscola in diretoresDaEscola)
                 {
-                    UeId = fechamentoReabertura.Ue.CodigoUe,
-                    UsuarioId = usuario.Id,
-                    Ano = fechamentoReabertura.CriadoEm.Year,
-                    Categoria = NotificacaoCategoria.Aviso,
-                    DreId = fechamentoReabertura.Dre.CodigoDre,
-                    Titulo = "Cadastro de período de reabertura de fechamento - ano anterior",
-                    Tipo = NotificacaoTipo.Calendario,
-                    Codigo = codigoDaNotificacao,
-                    Mensagem = $@"O período de reabertura do fechamento de bimestre abaixo da {fechamentoReabertura.Ue.Nome} ({fechamentoReabertura.Dre.Abreviacao}) foi reprovado pela supervisão escolar. Motivo: {motivo} <br/>
+                    var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(diretorDaEscola.CodigoRf);
+                    var notificacao = new Notificacao()
+                    {
+                        UeId = fechamentoReabertura.Ue.CodigoUe,
+                        UsuarioId = usuario.Id,
+                        Ano = fechamentoReabertura.CriadoEm.Year,
+                        Categoria = NotificacaoCategoria.Aviso,
+                        DreId = fechamentoReabertura.Dre.CodigoDre,
+                        Titulo = "Cadastro de período de reabertura de fechamento - ano anterior",
+                        Tipo = NotificacaoTipo.Calendario,
+                        Codigo = codigoDaNotificacao,
+                        Mensagem = $@"O período de reabertura do fechamento de bimestre abaixo da {fechamentoReabertura.Ue.Nome} ({fechamentoReabertura.Dre.Abreviacao}) foi reprovado pela supervisão escolar. Motivo: {motivo} <br/>
                                   Descrição: { fechamentoReabertura.Descricao} < br />
                                   Início: { fechamentoReabertura.Inicio.ToString("dd/MM/yyyy")} < br />
                                   Fim: { fechamentoReabertura.Fim.ToString("dd/MM/yyyy")} < br />
@@ -780,7 +780,8 @@ namespace SME.SGP.Dominio.Servicos
         }
 
         private async Task TrataReprovacaoReposicaoAula(WorkflowAprovacao workflow, long codigoDaNotificacao, string motivo)
-        {
+        {            
+
             Aula aula = repositorioAula.ObterPorWorkflowId(workflow.Id);
             if (aula == null)
                 throw new NegocioException("Não foi possível localizar a aula deste fluxo de aprovação.");
@@ -790,5 +791,18 @@ namespace SME.SGP.Dominio.Servicos
 
             await NotificarAulaReposicaoQueFoiReprovada(aula, codigoDaNotificacao, motivo);
         }
+
+        public async Task<string> VerificaAulaReposicao(long workflowId, long codigoDaNotificacao)
+        {
+            if (!repositorioAula.VerificarAulaPorWorkflowId(workflowId))
+            {
+                Notificacao notificacao = servicoNotificacao.ObterPorCodigo(codigoDaNotificacao);
+                await servicoNotificacao.ExcluirPeloSistemaAsync(new long[notificacao.Id]);
+                await ExcluirWorkflowNotificacoes(workflowId);
+                return "Não existe aula para esse fluxo de aprovação. A notificação foi excluída.";                
+            }
+            return null;
+        }
+
     }
 }
