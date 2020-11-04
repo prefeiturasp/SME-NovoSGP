@@ -163,7 +163,7 @@ namespace SME.SGP.Aplicacao
                     var ausenciasAtividadesAvaliativas = await repositorioFrequencia
                         .ObterAusencias(filtro.TurmaCodigo, filtro.DisciplinaCodigo.ToString(), atividadesAvaliativasdoBimestre.Select(a => a.DataAvaliacao).Distinct().ToArray(), alunosIds.ToArray());
 
-                    var consultaEOL = await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { long.Parse(filtro.DisciplinaCodigo) });
+                    var consultaEOL = await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { filtro.DisciplinaCodigo });
 
                     if (consultaEOL == null || !consultaEOL.Any())
                         throw new NegocioException("Disciplina informada não encontrada no EOL");
@@ -319,7 +319,7 @@ namespace SME.SGP.Aplicacao
                         {
                             avaliacaoDoBimestre.EhInterdisciplinar = true;
                             var atividadeDisciplinas = await repositorioAtividadeAvaliativaDisciplina.ListarPorIdAtividade(avaliacao.Id);
-                            var idsDisciplinas = atividadeDisciplinas.Select(a => long.Parse(a.DisciplinaId)).ToArray();
+                            var idsDisciplinas = atividadeDisciplinas.Select(a => long.Parse(a.DisciplinaId.ToString())).ToArray();
                             var disciplinas = await repositorioComponenteCurricular.ObterDisciplinasPorIds(idsDisciplinas);
                             var nomesDisciplinas = disciplinas.Select(d => d.Nome).ToArray();
                             avaliacaoDoBimestre.Disciplinas = nomesDisciplinas;

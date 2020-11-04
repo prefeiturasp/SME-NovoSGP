@@ -56,7 +56,7 @@ namespace SME.SGP.Aplicacao
             var mensagens = new List<RetornoCopiarAtividadeAvaliativaDto>();
 
             var usuario = await servicoUsuario.ObterUsuarioLogado();
-            var disciplina = await ObterDisciplina(dto.DisciplinasId[0]);
+            var disciplina = await ObterDisciplina(dto.DisciplinasId[0].ToString());
             ValidaDisciplinaNaAvaliacao(disciplina);
 
             var atividadeAvaliativa = MapearDtoParaEntidade(dto, id, usuario.CodigoRf, disciplina.Regencia, usuario.EhProfessorCj());
@@ -150,7 +150,7 @@ namespace SME.SGP.Aplicacao
 
             foreach (var atividadeDisciplina in atividadeDisciplinas)
             {
-                var disciplina = await ObterDisciplina(atividadeDisciplina.DisciplinaId);
+                var disciplina = await ObterDisciplina(atividadeDisciplina.DisciplinaId.ToString());
 
                 atividadeDisciplina.Excluir();
 
@@ -174,7 +174,7 @@ namespace SME.SGP.Aplicacao
             var mensagens = new List<RetornoCopiarAtividadeAvaliativaDto>();
             var usuario = await servicoUsuario.ObterUsuarioLogado();
 
-            var disciplina = await ObterDisciplina(dto.DisciplinasId[0]);
+            var disciplina = await ObterDisciplina(dto.DisciplinasId[0].ToString());
             ValidaDisciplinaNaAvaliacao(disciplina);
 
             var atividadeAvaliativa = MapearDtoParaEntidade(dto, 0L, usuario.CodigoRf, disciplina.Regencia, usuario.EhProfessorCj());
@@ -188,7 +188,7 @@ namespace SME.SGP.Aplicacao
         {
             if (filtro.DisciplinasId.Length <= 0)
                 throw new NegocioException("É necessário informar a disciplina");
-            var disciplina = await ObterDisciplina(filtro.DisciplinasId[0]);
+            var disciplina = await ObterDisciplina(filtro.DisciplinasId[0].ToString());
             var usuario = await servicoUsuario.ObterUsuarioLogado();
             DateTime dataAvaliacao = filtro.DataAvaliacao.Value.Date;
             var aula = await repositorioAula.ObterAulas(filtro.TurmaId, filtro.UeID, usuario.CodigoRf, dataAvaliacao, Array.ConvertAll(filtro.DisciplinasId, a=> a.ToString()));
