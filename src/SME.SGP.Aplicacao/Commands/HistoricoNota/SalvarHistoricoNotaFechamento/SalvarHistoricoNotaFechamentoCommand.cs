@@ -1,18 +1,19 @@
 ﻿using FluentValidation;
 using MediatR;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class SalvarHistoricoNotaFechamentoCommand : IRequest<bool>
+    public class SalvarHistoricoNotaFechamentoCommand : IRequest<long>
     {
-        public SalvarHistoricoNotaFechamentoCommand(long historicoNotaId, long fechamentoNotaId)
+        public SalvarHistoricoNotaFechamentoCommand(double notaAnterior, double notaNova, long fechamentoNotaId)
         {
-            HistoricoNotaId = historicoNotaId;
+            NotaAnterior = notaAnterior;
+            NotaNova = notaNova;
             FechamentoNotaId = fechamentoNotaId;
         }
 
-        public long HistoricoNotaId { get; set; }
+        public double NotaAnterior { get; set; }
+        public double NotaNova { get; set; }
         public long FechamentoNotaId { get; set; }
     }
 
@@ -20,12 +21,17 @@ namespace SME.SGP.Aplicacao
     {
         public SalvarHistoricoNotaFechamentoCommandValidator()
         {
-            RuleFor(a => a.HistoricoNotaId)
-                   .NotEmpty()
-                   .WithMessage("O id do Historico de Nota deve ser informada!");
+            RuleFor(c => c.NotaAnterior)
+            .NotEmpty()
+            .WithMessage("A nota anteior deve ser informada para geração do histórico");
+
+            RuleFor(c => c.NotaNova)
+            .NotEmpty()
+            .WithMessage("A nota nova deve ser informada para geração do histórico");
+
             RuleFor(a => a.FechamentoNotaId)
-                  .NotEmpty()
-                  .WithMessage("O id da nota do fechamento deve ser informada!");
+            .NotEmpty()
+            .WithMessage("O id da nota do fechamento deve ser informada!");
         }
     }
 }
