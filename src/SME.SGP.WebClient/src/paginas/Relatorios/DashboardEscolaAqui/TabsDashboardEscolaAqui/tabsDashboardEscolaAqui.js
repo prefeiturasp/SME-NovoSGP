@@ -1,6 +1,6 @@
 import { Tabs } from 'antd';
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ContainerTabsCard } from '~/componentes/tabs/tabs.css';
 import { ContainerTabsDashboardEscolaAqui } from '../dashboardEscolaAqui.css';
 import DadosAdesao from './DadosAdesao/dadosAdesao';
@@ -11,6 +11,12 @@ const TabsDashboardEscolaAqui = props => {
   const { codigoDre, codigoUe } = props;
 
   const [tabSelecionada, setTabSelecionada] = useState();
+
+  useEffect(() => {
+    if (!codigoDre || !codigoUe) {
+      setTabSelecionada();
+    }
+  }, [codigoDre, codigoUe]);
 
   const montarDados = () => {
     return (
