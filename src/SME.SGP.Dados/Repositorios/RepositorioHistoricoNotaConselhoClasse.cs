@@ -1,4 +1,6 @@
-﻿using SME.SGP.Dominio.Interfaces;
+﻿using System.Threading.Tasks;
+using SME.SGP.Dominio;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 
 namespace SME.SGP.Dados.Repositorios
@@ -10,6 +12,13 @@ namespace SME.SGP.Dados.Repositorios
         public RepositorioHistoricoNotaConselhoClasse(ISgpContext database)
         {
             this.database = database;
+        }
+
+        public async Task<long> SalvarAsync(HistoricoNotaConselhoClasse historicoNotaConselhoClasse)
+        {
+            historicoNotaConselhoClasse.Id = (long)(await database.Conexao.InsertAsync(historicoNotaConselhoClasse));
+
+            return historicoNotaConselhoClasse.Id;
         }
     }
 }

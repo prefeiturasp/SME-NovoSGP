@@ -5,26 +5,33 @@ namespace SME.SGP.Aplicacao
 {
     public class SalvarHistoricoNotaConselhoClasseCommand : IRequest<long>
     {
-        public SalvarHistoricoNotaConselhoClasseCommand(long historicoNotaId, long conselhoClasseNotaId)
+        public SalvarHistoricoNotaConselhoClasseCommand(long conselhoClasseNotaId, double notaAnterior, double notaNova)
         {
-            HistoricoNotaId = historicoNotaId;
             ConselhoClasseNotaId = conselhoClasseNotaId;
+            NotaAnteior = notaAnterior;
+            NotaNova = notaNova;
         }
 
-        public long HistoricoNotaId { get; set; }
         public long ConselhoClasseNotaId { get; set; }
+        public double NotaAnteior { get; set; }
+        public double NotaNova { get; set; }
     }
 
     public class SalvarHistoricoNotaConselhoClasseCommandValidator : AbstractValidator<SalvarHistoricoNotaConselhoClasseCommand>
     {
         public SalvarHistoricoNotaConselhoClasseCommandValidator()
         {
-            RuleFor(a => a.HistoricoNotaId)
-                   .NotEmpty()
-                   .WithMessage("O id do Historico de Nota deve ser informada!");
             RuleFor(a => a.ConselhoClasseNotaId)
                   .NotEmpty()
-                  .WithMessage("O id da nota do consecho de classe deve ser informada!");
+                  .WithMessage("O id da nota do conselho de classe deve ser informada para geração do histórico!");
+
+            RuleFor(a => a.NotaAnteior)
+                  .NotEmpty()
+                  .WithMessage("A nota anterior do conselho de classe deve ser informada para geração do histórico!");
+
+            RuleFor(a => a.NotaNova)
+                  .NotEmpty()
+                  .WithMessage("A nota anterior do conselho de classe deve ser informada para geração do histórico!");
         }
     }
 }
