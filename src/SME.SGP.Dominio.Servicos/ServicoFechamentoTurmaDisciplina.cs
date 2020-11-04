@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using MediatR;
+using Microsoft.Extensions.Configuration;
 using SME.Background.Core;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
@@ -46,6 +47,8 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IUnitOfWork unitOfWork;
         private List<FechamentoNotaDto> notasEnvioWfAprovacao;
         private Turma turmaFechamento;
+        private readonly IMediator mediator;
+
 
         public ServicoFechamentoTurmaDisciplina(IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina,
                                                 IRepositorioFechamentoTurma repositorioFechamentoTurma,
@@ -76,7 +79,8 @@ namespace SME.SGP.Dominio.Servicos
                                                 IConsultasSupervisor consultasSupervisor,
                                                 IRepositorioEvento repositorioEvento,
                                                 IRepositorioEventoTipo repositorioEventoTipo,
-                                                IRepositorioFechamentoReabertura repositorioFechamentoReabertura)
+                                                IRepositorioFechamentoReabertura repositorioFechamentoReabertura,
+                                                IMediator mediator)
         {
             this.repositorioFechamentoTurma = repositorioFechamentoTurma ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurma));
             this.repositorioFechamentoTurmaDisciplina = repositorioFechamentoTurmaDisciplina ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurmaDisciplina));
@@ -106,7 +110,8 @@ namespace SME.SGP.Dominio.Servicos
             this.servicoPendenciaFechamento = servicoPendenciaFechamento ?? throw new ArgumentNullException(nameof(servicoPendenciaFechamento));
             this.comandosWorkflowAprovacao = comandosWorkflowAprovacao ?? throw new ArgumentNullException(nameof(comandosWorkflowAprovacao));
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
-            
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+
         }
 
         public void GerarNotificacaoAlteracaoLimiteDias(Turma turma, Usuario usuarioLogado, Ue ue, int bimestre, string alunosComNotaAlterada)
@@ -366,8 +371,21 @@ namespace SME.SGP.Dominio.Servicos
                     {
                         if (!EnviarWfAprovacao())
                         {
-                            notaFechamento.Nota = fechamentoNotaDto.Nota;
-                            notaFechamento.ConceitoId = fechamentoNotaDto.ConceitoId;
+                            if (fechamentoNotaDto.Nota.HasValue)
+                            {                                
+                                if (fechamentoNotaDto.Nota != notaFechamento.Nota)                                    
+                                    await mediator.Send(new SalvarHistoricoNotaFechamentoCommand(notaFechamento.Nota.Value, fechamentoNotaDto.Nota.Value, fechamentoNotaDto.Id));
+
+                                notaFechamento.Nota = fechamentoNotaDto.Nota;
+                            }
+                            else
+                            {                                
+                                if (fechamentoNotaDto.ConceitoId != notaFechamento.ConceitoId)
+                                    await mediator.Send(new SalvarHistoricoConceitoFechamentoCommand(notaFechamento.ConceitoId.Value, fechamentoNotaDto.ConceitoId.Value, fechamentoNotaDto.Id));
+                            
+                                notaFechamento.ConceitoId = fechamentoNotaDto.ConceitoId;
+                            }
+
                             notaFechamento.SinteseId = fechamentoNotaDto.SinteseId;
                         }
                         else
