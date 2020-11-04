@@ -5,14 +5,14 @@ namespace SME.SGP.Aplicacao
 {
     public class SalvarHistoricoNotaCommand : IRequest<long>
     {
-        public SalvarHistoricoNotaCommand(string notaAnterior, string notaNova)
+        public SalvarHistoricoNotaCommand(double notaAnterior, double notaNova)
         {
             NotaAnterior = notaAnterior;
             NotaNova = notaNova;
         }
 
-        public string NotaAnterior { get; set; }
-        public string NotaNova { get; set; }
+        public double NotaAnterior { get; set; }
+        public double NotaNova { get; set; }
     }
 
     public class SalvarHistoricoNotaCommandValidator : AbstractValidator<SalvarHistoricoNotaCommand>
