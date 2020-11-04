@@ -2,8 +2,11 @@
 {
     public class HistoricoNota : EntidadeBase
     {
-        public long Id { get; set; }
-        public string NotaAnterior { get; set; }
-        public string NotaNova { get; set; }
+        public double? NotaAnterior { get; set; }
+        public double? NotaNova { get; set; }
+        public long? ConceitoAnteriorId { get; set; }
+        public Conceito ConceitoAnterior { get; set; }
+        public long? ConceitoNovoId { get; set; }
+        public Conceito ConceitoNovo { get; set; }
     }
 }
