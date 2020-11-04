@@ -849,10 +849,12 @@ const ComunicadosCadastro = ({ match }) => {
       alunos: alunosSelecionados,
       alunosEspecificados: alunoEspecificado,
       turmas: valores.turmas.filter(x => x !== TODAS_TURMAS_ID),
-      modalidade: valores.modalidade === TODAS_MODALIDADES_ID ? '' : valores.modalidade,
+      modalidade: null,
       seriesResumidas: valores.anosModalidade?.join(',') ?? '',
       CodigoUe: valores.CodigoUe == TODAS_UE_ID ? 'todas' : valores.CodigoUe,
       CodigoDre: valores.CodigoDre == TODAS_DRE_ID ? 'todas' : valores.CodigoDre,
+      dataEnvio: valores?.dataEnvio?.set({hour: 0, minute: 0, second: 0}),
+      dataExpiracao: valores?.dataExpiracao?.set({hour: 23, minute: 59, second: 59}),
     };
 
     dadosSalvar.anosModalidade = null;
