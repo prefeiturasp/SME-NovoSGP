@@ -38,7 +38,8 @@ namespace SME.SGP.Aplicacao
                 var json = await resposta.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<IEnumerable<TotaisAdesaoResultado>>(json);
             }
-            return null;
+            
+            throw new Exception("Não foi possível obter dados de adesão do aplicativo.");
         }
     }
 }
