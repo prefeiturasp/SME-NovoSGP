@@ -134,7 +134,16 @@ class FiltroHelper {
   async obterAnosPorModalidade(modalidade, codigoUe) {
     try {
       const response = await ServicoComunicados.buscarAnosPorModalidade(modalidade, codigoUe);
-      return response.data;
+      let dados = response.data;
+
+      if(dados && dados.length == 0) {
+        dados.unshift({
+          modalidade: +modalidade,
+          ano: 'Todos'
+        });
+      }
+
+      return dados;
     } catch (error) {
       erros('Não foi possivel obter anos de modalidade');
       return [];
