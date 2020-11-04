@@ -379,8 +379,6 @@ const ComunicadosCadastro = ({ match }) => {
       dataEnvio: momentSchema.required('Campo obrigatório'),
       CodigoDre: Yup.string().required('Campo obrigatório'),
       CodigoUe: Yup.string().required('Campo obrigatório'),
-      eventoId: Yup.string().required('Campo obrigatório'),
-      tipoCalendarioId: Yup.string().required('Campo obrigatório'),
       dataExpiracao: momentSchema
         .required('Campo obrigatório')
         .test(
