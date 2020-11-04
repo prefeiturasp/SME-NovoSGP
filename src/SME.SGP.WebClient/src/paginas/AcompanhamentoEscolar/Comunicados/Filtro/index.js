@@ -122,7 +122,7 @@ function Filtro({ onFiltrar }) {
       modalidadeSelecionada !== 'Todas' && 
       gruposSelecionados?.length > 0
     );
-  });
+  }, [modalidadeSelecionada]);
 
   const [valoresIniciais] = useState({
     gruposId: '',
@@ -463,6 +463,7 @@ function Filtro({ onFiltrar }) {
 
   const onChangeModalidade = async modalidade => {
     refForm.setFieldValue('semestre', '');
+    refForm.setFieldValue('ano', []);
     refForm.setFieldValue('turmas', [TODAS_TURMAS_ID]);
     refForm.setFieldValue('gruposId', '');
     setGruposSelecionados([]);
@@ -539,6 +540,7 @@ function Filtro({ onFiltrar }) {
 
   const onGrupoChange = (grupos) => {
     refForm.setFieldValue('modalidade', TODAS_MODALIDADES_ID);
+    refForm.setFieldValue('ano', []);
     setModalidadeSelecionada(TODAS_MODALIDADES_ID);
     setGruposSelecionados(grupos);
   };
@@ -546,7 +548,8 @@ function Filtro({ onFiltrar }) {
   const onSubmitFiltro = valores => {
     let valoresSubmit = {
       ...valores,
-      modalidade: valores.modalidade === TODAS_MODALIDADES_ID ? '' : valores.modalidade,
+      // modalidade: valores.modalidade === TODAS_MODALIDADES_ID ? '' : valores.modalidade,
+      modalidade: null,
       turmas: valores.turmas[0] === TODAS_TURMAS_ID ? [] : valores.turmas,
       tipoCalendarioId: tipoCalendarioSelecionado ?? null,
       eventoId: eventoSelecionado?.id ?? null,
@@ -554,7 +557,9 @@ function Filtro({ onFiltrar }) {
       ano: valores.ano == 'Todos' ? null : valores.ano,
       CodigoUe: valores.CodigoUe == TODAS_UES_ID ? 'todas' : valores.CodigoUe,
       CodigoDre: valores.CodigoDre == TODAS_DRE_ID ? 'todas' : valores.CodigoDre,
-      gruposId: gruposSelecionados
+      gruposId: gruposSelecionados,
+      dataEnvio: valores?.dataEnvio?.set({hour: 0, minute: 0, second: 0}),
+      dataExpiracao: valores?.dataExpiracao?.set({hour: 23, minute: 59, second: 59}),
     };
 
     onFiltrar(valoresSubmit);
