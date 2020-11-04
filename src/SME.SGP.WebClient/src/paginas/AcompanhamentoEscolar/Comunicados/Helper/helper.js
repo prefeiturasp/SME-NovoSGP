@@ -14,7 +14,7 @@ class FiltroHelper {
     });
   }
 
-  async ObterAnoLetivo() {
+  async ObterAnoLetivo(modalidade) {
     try {
       var anosLetivos = await AbrangenciaServico.buscarTodosAnosLetivos();
 

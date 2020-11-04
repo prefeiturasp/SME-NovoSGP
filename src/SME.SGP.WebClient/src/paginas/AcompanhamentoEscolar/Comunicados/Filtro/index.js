@@ -2,7 +2,6 @@ import React, {
   useState,
   useEffect,
   useMemo,
-  useLayoutEffect,
   useCallback,
 } from 'react';
 import PropTypes from 'prop-types';
@@ -17,15 +16,15 @@ import {
   CampoTexto,
   CampoData,
   Label,
+  Loader,
+  SelectAutocomplete,
   momentSchema,
 } from '~/componentes';
 
-import AbrangenciaServico from '~/servicos/Abrangencia';
-
 import { Linha } from '~/componentes/EstilosGlobais';
 import ServicoComunicados from '~/servicos/Paginas/AcompanhamentoEscolar/Comunicados/ServicoComunicados';
-import ServicoFiltroRelatorio from '~/servicos/Paginas/FiltroRelatorio/ServicoFiltroRelatorio';
-import { erros } from '~/servicos/alertas';
+import ServicoComunicadoEvento from '~/servicos/Paginas/AcompanhamentoEscolar/ComunicadoEvento/ServicoComunicadoEvento';
+import { ServicoCalendarios } from '~/servicos';
 import FiltroHelper from '~/paginas/AcompanhamentoEscolar/Comunicados/Helper/helper.js';
 
 const MODALIDADE_EJA_ID = '3';
@@ -40,6 +39,45 @@ function Filtro({ onFiltrar }) {
   const semestresLista = [
     { id: '1', nome: '1º Semestre' },
     { id: '2', nome: '2º Semestre' },
+  ];
+
+  const anoModalidadeLista = [
+    {
+      modalidade: 5,
+      ano: '1',
+    },
+    {
+      modalidade: 5,
+      ano: '2',
+    },
+    {
+      modalidade: 5,
+      ano: '3',
+    },
+    {
+      modalidade: 5,
+      ano: '4',
+    },
+    {
+      modalidade: 5,
+      ano: '5',
+    },
+    {
+      modalidade: 5,
+      ano: '6',
+    },
+    {
+      modalidade: 5,
+      ano: '7',
+    },
+    {
+      modalidade: 5,
+      ano: '8',
+    },
+    {
+      modalidade: 5,
+      ano: '9',
+    },
   ];
 
   const [refForm, setRefForm] = useState({});
@@ -84,7 +122,7 @@ function Filtro({ onFiltrar }) {
       modalidadeSelecionada !== 'Todas' && 
       gruposSelecionados?.length > 0
     );
-  });
+  }, [modalidadeSelecionada]);
 
   const [valoresIniciais] = useState({
     gruposId: '',
@@ -269,9 +307,15 @@ function Filtro({ onFiltrar }) {
         if(data && data.length > 0) {
           data.forEach(item => item.nome = `${item.id} - ${item.nome}`);
         }
-      ),
-    })
-  );
+        setListaEvento(data);
+        setCarregandoEventos(false);
+      }
+    })();
+
+    return () => {
+      isSubscribed = false;
+    };
+  };
 
   const ObterDres = useCallback(async () => {
     const dados = await FiltroHelper.ObterDres();
@@ -384,6 +428,7 @@ function Filtro({ onFiltrar }) {
     }
 
     ObterDres();
+    loadTiposCalendarioEffect();
   };
 
   const onChangeDre = async dre => {
@@ -399,6 +444,7 @@ function Filtro({ onFiltrar }) {
 
     validarFiltro();
     ObterUes(dre);
+    loadTiposCalendarioEffect();
   };
 
   const onChangeUe = async ue => {
@@ -417,6 +463,7 @@ function Filtro({ onFiltrar }) {
 
   const onChangeModalidade = async modalidade => {
     refForm.setFieldValue('semestre', '');
+    refForm.setFieldValue('ano', []);
     refForm.setFieldValue('turmas', [TODAS_TURMAS_ID]);
     refForm.setFieldValue('gruposId', '');
     setGruposSelecionados([]);
@@ -429,6 +476,7 @@ function Filtro({ onFiltrar }) {
     }
 
     setModalidadeSelecionada(modalidade);
+    loadTiposCalendarioEffect();
 
     await ObterGruposIdPorModalidade(modalidade);
     await ObterAnosPorModalidade(modalidade, ueSelecionada);
@@ -492,6 +540,7 @@ function Filtro({ onFiltrar }) {
 
   const onGrupoChange = (grupos) => {
     refForm.setFieldValue('modalidade', TODAS_MODALIDADES_ID);
+    refForm.setFieldValue('ano', []);
     setModalidadeSelecionada(TODAS_MODALIDADES_ID);
     setGruposSelecionados(grupos);
   };
@@ -499,7 +548,8 @@ function Filtro({ onFiltrar }) {
   const onSubmitFiltro = valores => {
     let valoresSubmit = {
       ...valores,
-      modalidade: valores.modalidade === TODAS_MODALIDADES_ID ? '' : valores.modalidade,
+      // modalidade: valores.modalidade === TODAS_MODALIDADES_ID ? '' : valores.modalidade,
+      modalidade: null,
       turmas: valores.turmas[0] === TODAS_TURMAS_ID ? [] : valores.turmas,
       tipoCalendarioId: tipoCalendarioSelecionado ?? null,
       eventoId: eventoSelecionado?.id ?? null,
@@ -507,7 +557,9 @@ function Filtro({ onFiltrar }) {
       ano: valores.ano == 'Todos' ? null : valores.ano,
       CodigoUe: valores.CodigoUe == TODAS_UES_ID ? 'todas' : valores.CodigoUe,
       CodigoDre: valores.CodigoDre == TODAS_DRE_ID ? 'todas' : valores.CodigoDre,
-      gruposId: gruposSelecionados
+      gruposId: gruposSelecionados,
+      dataEnvio: valores?.dataEnvio?.set({hour: 0, minute: 0, second: 0}),
+      dataExpiracao: valores?.dataExpiracao?.set({hour: 23, minute: 59, second: 59}),
     };
 
     onFiltrar(valoresSubmit);
@@ -602,7 +654,10 @@ function Filtro({ onFiltrar }) {
               />
             </Grid>
             <Grid cols={5}>
-              <Label control="CodigoDre" text="Dre" />
+              <Label
+                control="CodigoDre"
+                text="Diretoria Regional de Educação (DRE)"
+              />
               <SelectComponent
                 form={form}
                 id="CodigoDre"
@@ -621,7 +676,7 @@ function Filtro({ onFiltrar }) {
               />
             </Grid>
             <Grid cols={5}>
-              <Label control="CodigoUe" text="Unidade Escolar" />
+              <Label control="CodigoUe" text="Unidade Escolar (UE)" />
               <SelectComponent
                 form={form}
                 id="CodigoUe"
@@ -704,7 +759,7 @@ function Filtro({ onFiltrar }) {
                 form={form}
                 id="turmas"
                 name="turmas"
-                placeholder="Selecione uma ou mais turmas"
+                placeholder="Selecione uma ou mais"
                 valueOption="id"
                 valueText="nome"
                 value={form.values.turmas}
