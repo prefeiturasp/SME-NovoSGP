@@ -85,6 +85,17 @@ class ServicoComunicados {
     return exclusao;
   };
 
+  buscarAnosPorModalidade = async (modalidade, codigoUe, params) => {
+    return api.get(
+      (codigoUe != null && codigoUe !== 'todas')
+        ? `v1/comunicado/anos/modalidade/${modalidade}?codigoUe=${codigoUe}`
+        : `v1/comunicado/anos/modalidade/${modalidade}`,
+      {
+        params,
+      }
+    );
+  };
+
   async obterGruposPorModalidade(modalidade) {
     try {
       const requisicao = await api.get(
