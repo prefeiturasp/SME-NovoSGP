@@ -88,7 +88,10 @@ namespace SME.SGP.Dominio
             if (Turmas != null && Turmas.Any())
                 return TipoComunicado.TURMA;
 
-            if (Modalidade.HasValue)
+            if (Grupos != null && Grupos.Count == 1 && CodigoUe != null && CodigoUe != "todas" && SeriesResumidas.Any())
+                return TipoComunicado.UEMOD;
+
+            if (Grupos!= null && Grupos.Count == 1 && CodigoUe != null && CodigoUe != "todas")
                 return TipoComunicado.UEMOD;
 
             if (CodigoDre == null && CodigoUe == null && SeriesResumidas.Any())
