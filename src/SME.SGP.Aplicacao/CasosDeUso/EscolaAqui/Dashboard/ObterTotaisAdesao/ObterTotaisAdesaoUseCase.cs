@@ -13,7 +13,7 @@ namespace SME.SGP.Aplicacao
         {
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
-        public async Task<IEnumerable<TotaisAdesaoResultado>> Executar(string codigoDre, long codigoUe)
+        public async Task<IEnumerable<TotaisAdesaoResultado>> Executar(string codigoDre, string codigoUe)
         {
             return await mediator.Send(new ObterTotaisAdesaoQuery(codigoDre, codigoUe));
         }

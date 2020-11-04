@@ -7,9 +7,9 @@ namespace SME.SGP.Aplicacao
     public class ObterTotaisAdesaoQuery : IRequest<IEnumerable<TotaisAdesaoResultado>>
     {
         public string CodigoDre { get; set; }
-        public long CodigoUe { get; set; }
+        public string CodigoUe { get; set; }
 
-        public ObterTotaisAdesaoQuery(string codigoDre, long codigoUe)
+        public ObterTotaisAdesaoQuery(string codigoDre, string codigoUe)
         {
             CodigoDre = codigoDre;
             CodigoUe = codigoUe;
