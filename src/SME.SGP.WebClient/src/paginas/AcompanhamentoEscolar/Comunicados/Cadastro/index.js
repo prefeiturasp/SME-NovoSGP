@@ -472,9 +472,11 @@ const ComunicadosCadastro = ({ match }) => {
   }, [modalidadeSelecionada]);
 
   const turmasDesabilitada = useMemo(() => {
-    return turmas.length === 1 
-      || modalidadeSelecionada === TODAS_MODALIDADES_ID;
-  }, [turmas]);
+    return turmas.length <= 1 
+      || modalidadeSelecionada === TODAS_MODALIDADES_ID
+      || modalidadeSelecionada === 'Todas'
+      || modalidadeSelecionada === '';
+  }, [modalidadeSelecionada, anosModalidade, turmas]);
 
   const gruposDesabilitados = useMemo(() => {
     return (
