@@ -81,14 +81,14 @@ const DadosAdesao = props => {
       dadosMapeados.push(totalUsuariosSemAppInstalado);
     }
 
-    if (dados.totalUsuariosPrimeiroAcesso) {
-      const totalUsuariosPrimeiroAcesso = {
+    if (dados.totalUsuariosPrimeiroAcessoIncompleto) {
+      const totalUsuariosPrimeiroAcessoIncompleto = {
         id: '3',
         label: 'Usuários com primeiro acesso incompleto',
-        value: dados.totalUsuariosPrimeiroAcesso || 0,
+        value: dados.totalUsuariosPrimeiroAcessoIncompleto || 0,
         color: '#EFB971',
       };
-      dadosMapeados.push(totalUsuariosPrimeiroAcesso);
+      dadosMapeados.push(totalUsuariosPrimeiroAcessoIncompleto);
     }
 
     if (dados.totalUsuariosValidos) {
