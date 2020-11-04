@@ -12,13 +12,15 @@ namespace SME.SGP.Aplicacao
     public class ConsultasFechamentoAluno : IConsultasFechamentoAluno
     {
         private readonly IRepositorioFechamentoAluno repositorio;
+        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
         private readonly IServicoEol servicoEOL;
 
         public ConsultasFechamentoAluno(IRepositorioFechamentoAluno repositorio
-                                            , IServicoEol servicoEOL)
+                                            , IServicoEol servicoEOL, IRepositorioComponenteCurricular repositorioComponenteCurricular)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
+            this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
         }
 
         public async Task<FechamentoAlunoCompletoDto> ObterAnotacaoAluno(string codigoAluno, long fechamentoId, string codigoTurma, int anoLetivo)
@@ -46,7 +48,7 @@ namespace SME.SGP.Aplicacao
 
             var disciplinasIds = anotacoesDto.Select(a => long.Parse(a.DisciplinaId)).ToArray();
 
-            var disciplinas = await servicoEOL.ObterDisciplinasPorIdsAsync(disciplinasIds);
+            var disciplinas = await repositorioComponenteCurricular.ObterDisciplinasPorIds(disciplinasIds);
 
             foreach (var anotacao in anotacoesDto)
             {

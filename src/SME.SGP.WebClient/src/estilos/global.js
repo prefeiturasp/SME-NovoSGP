@@ -391,4 +391,8 @@ export default createGlobalStyle`
       color: #721c24 !important;
     }
   }
+
+  .ant-tooltip {    
+    z-index: 999999 !important;    
+  }
 `;

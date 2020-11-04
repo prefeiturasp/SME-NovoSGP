@@ -851,5 +851,13 @@ namespace SME.SGP.Dados.Repositorios
             var sql = "update aula set excluido = true, alterado_por = @alteradoPor, alterado_em = @alteradoEm, alterado_rf = @alteradoRf where id = any(@idsAulas)";
             await database.Conexao.ExecuteAsync(sql, new { idsAulas, alteradoPor = "Sistema", alteradoEm = DateTime.Now, alteradoRf = "Sistema" });
         }
+
+        public async Task<Aula> ObterAulaPorComponenteCurricularIdTurmaIdEData(string componenteCurricularId, string turmaId, DateTime data)
+        {
+            var query = @"select a.* from aula a
+                                where a.disciplina_id  = @ccid and turma_id = @turmaid and data_aula::date = @data";
+
+            return (await database.Conexao.QueryAsync<Aula>(query, new { ccid = componenteCurricularId, turmaid = turmaId, data = data.Date })).FirstOrDefault();
+        }
     }
 }
