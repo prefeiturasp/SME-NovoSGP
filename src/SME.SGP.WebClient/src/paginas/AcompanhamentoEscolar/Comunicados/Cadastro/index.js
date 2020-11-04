@@ -210,7 +210,7 @@ const ComunicadosCadastro = ({ match }) => {
       
       if(isSubscribed) {
         if(data && data.length > 0) {
-          data.forEach(item => item.nome = `${item.id} - ${item.nome}`);
+          data.forEach(item => item.nome = `${item.id} - ${item.nome} (${item.tipoEvento})`);
         }
         setListaEvento(data);
         setCarregandoEventos(false);
@@ -379,6 +379,8 @@ const ComunicadosCadastro = ({ match }) => {
       dataEnvio: momentSchema.required('Campo obrigatório'),
       CodigoDre: Yup.string().required('Campo obrigatório'),
       CodigoUe: Yup.string().required('Campo obrigatório'),
+      eventoId: Yup.string().required('Campo obrigatório'),
+      tipoCalendarioId: Yup.string().required('Campo obrigatório'),
       dataExpiracao: momentSchema
         .required('Campo obrigatório')
         .test(
@@ -472,9 +474,11 @@ const ComunicadosCadastro = ({ match }) => {
   }, [modalidadeSelecionada]);
 
   const turmasDesabilitada = useMemo(() => {
-    return turmas.length === 1 
-      || modalidadeSelecionada === TODAS_MODALIDADES_ID;
-  }, [turmas]);
+    return turmas.length <= 1 
+      || modalidadeSelecionada === TODAS_MODALIDADES_ID
+      || modalidadeSelecionada === 'Todas'
+      || modalidadeSelecionada === '';
+  }, [modalidadeSelecionada, anosModalidade, turmas]);
 
   const gruposDesabilitados = useMemo(() => {
     return (
