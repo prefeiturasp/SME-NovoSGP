@@ -5,6 +5,7 @@ import { ResponsivePie } from '@nivo/pie';
 const Pie = ({ data }) => (
   <div style={{ height: 400 }}>
     <ResponsivePie
+      padAngle={data.length > 3 ? 18 : 0}
       style={{ height: 400 }}
       radialLabelsLinkColor={{ from: 'color' }}
       radialLabel={item => item.radialLabel || item.value}
