@@ -1,5 +1,7 @@
 import api from '../../../api';
 
+const TODAS_UES_ID = '-99';
+
 class ServicoComunicados {
   listarGrupos = async () => {
     const lista = [];
@@ -65,6 +67,7 @@ class ServicoComunicados {
       const requisicao = await api[metodo](url, dados);
       if (requisicao.data) salvou = requisicao;
     } catch (erro) {
+      console.error('[ FAIL ] Erro ao salvar comunicado: ', erro)
       salvou = [...erro.response.data.mensagens];
     }
 
@@ -87,7 +90,7 @@ class ServicoComunicados {
 
   buscarAnosPorModalidade = async (modalidade, codigoUe, params) => {
     return api.get(
-      codigoUe !== '-99'
+      (codigoUe != null && codigoUe !== TODAS_UES_ID)
         ? `v1/comunicado/anos/modalidade/${modalidade}?codigoUe=${codigoUe}`
         : `v1/comunicado/anos/modalidade/${modalidade}`,
       {
