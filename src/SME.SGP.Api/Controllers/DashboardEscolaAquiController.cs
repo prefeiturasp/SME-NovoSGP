@@ -16,7 +16,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(UsuarioEscolaAquiDto), 200)]
         [ProducesResponseType(typeof(UsuarioEscolaAquiDto), 204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterTotaisAdesao([FromQuery] string codigoDre, [FromQuery] long codigoUe, [FromServices] IObterTotaisAdesaoUseCase obterTotaisAdesaoUseCase)
+        public async Task<IActionResult> ObterTotaisAdesao([FromQuery] string codigoDre, [FromQuery] string codigoUe, [FromServices] IObterTotaisAdesaoUseCase obterTotaisAdesaoUseCase)
         {
             return Ok(await obterTotaisAdesaoUseCase.Executar(codigoDre, codigoUe));
         }

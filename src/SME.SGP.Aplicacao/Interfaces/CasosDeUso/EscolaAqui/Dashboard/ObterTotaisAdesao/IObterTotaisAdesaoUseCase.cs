@@ -6,7 +6,7 @@ namespace SME.SGP.Aplicacao
 {
     public interface IObterTotaisAdesaoUseCase
     {
-        Task<IEnumerable<TotaisAdesaoResultado>> Executar(string codigoDre, long codigoUe);
+        Task<IEnumerable<TotaisAdesaoResultado>> Executar(string codigoDre, string codigoUe);
     }
     
 }
