@@ -505,7 +505,7 @@ const ComunicadosCadastro = ({ match }) => {
     if (!dados || dados.length === 0) return;
 
     setAnosLetivos(dados);
-    ObterDres();
+    await ObterDres();
   };
 
   const ObterDres = async () => {
