@@ -1,14 +1,13 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class SalvarHistoricoNotaCommandHandler : IRequestHandler<SalvarHistoricoNotaCommand, AuditoriaDto>
+    public class SalvarHistoricoNotaCommandHandler : IRequestHandler<SalvarHistoricoNotaCommand, long>
     {
         private readonly IRepositorioHistoricoNota repositorioHistoricoNota;
 
@@ -16,13 +15,11 @@ namespace SME.SGP.Aplicacao
         {
             this.repositorioHistoricoNota = repositorioHistoricoNota ?? throw new ArgumentNullException(nameof(repositorioHistoricoNota));
         }
-        public async Task<AuditoriaDto> Handle(SalvarHistoricoNotaCommand request, CancellationToken cancellationToken)
+        public async Task<long> Handle(SalvarHistoricoNotaCommand request, CancellationToken cancellationToken)
         {
             var historicoNota = MapearParaEntidade(request);
 
-            await repositorioHistoricoNota.SalvarAsync(historicoNota);
-
-            return (AuditoriaDto)historicoNota;
+            return await repositorioHistoricoNota.SalvarAsync(historicoNota);
         }
 
         private HistoricoNota MapearParaEntidade(SalvarHistoricoNotaCommand request)
