@@ -47,7 +47,7 @@ namespace SME.SGP.Aplicacao
 
 
             var atividadeAvaliativa = await repositorioAtividadeAvaliativa.ObterPorIdAsync(notasConceitosDto.Select(x => x.AtividadeAvaliativaId).FirstOrDefault());
-            var aula = await mediator.Send(new ObterAulaPorComponenteCurricularIdTurmaIdEDataQuery(notaConceitoLista.DisciplinaId, notaConceitoLista.TurmaId, atividadeAvaliativa.DataAvaliacao));
+            var aula = await mediator.Send(new ObterAulaPorComponenteCurricularIdTurmaIdEDataQuery(notaConceitoLista.DisciplinaId.ToString(), notaConceitoLista.TurmaId, atividadeAvaliativa.DataAvaliacao));
 
             if(aula != null)
                 await mediator.Send(new ExcluirPendenciaAulaCommand(aula.Id, TipoPendenciaAula.Avaliacao));
