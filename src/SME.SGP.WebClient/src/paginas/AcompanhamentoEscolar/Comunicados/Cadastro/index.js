@@ -38,6 +38,10 @@ import FiltroHelper from '~/paginas/AcompanhamentoEscolar/Comunicados/Helper/hel
 import { Titulo } from '~/paginas/Planejamento/PlanoCiclo/planoCiclo.css';
 import { exception } from 'react-ga';
 import ListaAlunosSelecionados from './Lista/ListaAlunosSelecionados';
+import { ServicoCalendarios } from '~/servicos';
+
+const TODAS_UE_ID = 'todas';
+const TODAS_DRE_ID = 'todas';
 
 const ComunicadosCadastro = ({ match }) => {
   const ErroValidacao = styled.span`
@@ -88,6 +92,135 @@ const ComunicadosCadastro = ({ match }) => {
 
   const [alunosLoader, setAlunosLoader] = useState(false);
 
+  const [unidadeEscolarUE, setUnidadeEscolarUE] = useState(false);
+
+  const [carregandoTipos, setCarregandoTipos] = useState(false);
+  const [listaCalendario, setListaCalendario] = useState([]);
+  const [valorTipoCalendario, setValorTipoCalendario] = useState('');
+  const [selecionouCalendario, setSelecionouCalendario] = useState(false);
+  const [tipoCalendarioSelecionado, setTipoCalendarioSelecionado] = useState('');
+  const [pesquisaTipoCalendario, setPesquisaTipoCalendario] = useState('');
+
+  const [carregandoEventos, setCarregandoEventos] = useState(false);
+  const [listaEvento, setListaEvento] = useState([]);
+  const [selecionouEvento, setSelecionouEvento] = useState(false);
+  const [valorEvento, setValorEvento] = useState('');
+  const [eventoSelecionado, setEventoSelecionado] = useState('');
+  const [pesquisaEvento, setPesquisaEvento] = useState('');
+
+  const selecionaTipoCalendario = (descricao, form) => {
+    const tipo = listaCalendario?.find(t => {
+      return t.descricao === descricao;
+    });
+
+    if (tipo?.id) {
+      setSelecionouCalendario(true);
+      setValorTipoCalendario(descricao);
+      setTipoCalendarioSelecionado(tipo.id);
+    }
+  };
+
+  const selecionaEvento = (nome, form) => {
+    const evento = listaEvento?.find(t => {
+      return t.nome === nome;
+    });
+
+    if (evento?.id) {
+      setSelecionouEvento(true);
+      setValorEvento(evento.nome);
+      setEventoSelecionado(evento);
+    }
+  };
+
+  const modalidadeTurmaCalendarioRelation = {
+    "1": "3",
+    "3": "2",
+    "5": "1",
+    "6": "1"
+  };
+
+  const hasAnoLetivoClause = (t) => (refForm?.state?.values?.anoLetivo ?? false) 
+      ? (t.anoLetivo == refForm.state.values.anoLetivo) 
+      : true;
+
+  const hasModalidadeSelecionadaClause = (t) => modalidadeSelecionada && modalidadeSelecionada != '-99'
+      ? (modalidadeTurmaCalendarioRelation[modalidadeSelecionada] 
+          && modalidadeTurmaCalendarioRelation[modalidadeSelecionada] == t.modalidade) 
+      : true;
+
+  const filterAllowedCalendarTypes = (data) => {
+    return data
+      .filter(hasAnoLetivoClause)
+      .filter(hasModalidadeSelecionadaClause);
+  };
+
+  const loadTiposCalendarioEffect = () => {
+    let isSubscribed = true;
+
+    (async () => {
+      setCarregandoTipos(true);
+  
+      const {
+        data,
+      } = await ServicoCalendarios.obterTiposCalendarioAutoComplete(
+        pesquisaTipoCalendario
+      );
+
+      if(isSubscribed) {
+        let allowedList = filterAllowedCalendarTypes(data);
+        setListaCalendario(allowedList);
+        selecionaTipoCalendario(
+          allowedList.length > 0 
+            ? allowedList[0].descricao
+            : '', 
+          refForm
+        );
+        setCarregandoTipos(false);
+      }
+    })();
+
+    return () => {
+      isSubscribed = false;
+    };
+  };
+
+  const loadEventosEffect = () => {
+    let isSubscribed = true;
+
+    (async () => {
+      setCarregandoEventos(true);
+
+      const _form = refForm?.state?.values;
+      let filter = {
+        tipoCalendario: +(tipoCalendarioSelecionado ?? null),
+        anoLetivo: +(_form?.anoLetivo ?? null),
+        modalidade: +(_form?.modalidade ?? null),
+        codigoDre: _form?.CodigoDre && _form?.CodigoDre != TODAS_DRE_ID ? null : _form?.CodigoDre,
+        codigoUe: _form?.CodigoUe && _form?.CodigoUe != TODAS_UE_ID ? null : _form?.codigoUe,
+      };
+
+      Object.keys(filter).forEach((key) => {
+        if(filter[key] == null || filter[key] == TODAS_DRE_ID)
+          delete filter[key];
+      });
+
+      let data = await ServicoComunicadoEvento.listarPor(filter);
+      
+      if(isSubscribed) {
+        if(data && data.length > 0) {
+          data.forEach(item => item.nome = `${item.id} - ${item.nome}`);
+        }
+        setListaEvento(data);
+        setCarregandoEventos(false);
+      }
+    })();
+
+    return () => {
+      isSubscribed = false;
+    };
+  };
+  const [anosModalidade, setAnosModalidade] = useState([]);
+
   useEffect(() => {
     setSomenteConsulta(
       verificaSomenteConsulta(
@@ -116,8 +249,8 @@ const ComunicadosCadastro = ({ match }) => {
     titulo: '',
     descricao: '',
     anoLetivo: moment().year(),
-    CodigoDre: 'todas',
-    CodigoUe: 'todas',
+    CodigoDre: TODAS_DRE_ID,
+    CodigoUe: TODAS_UE_ID,
     alunosEspecificados: false,
     modalidade: '-99',
     semestre: '',
@@ -159,8 +292,8 @@ const ComunicadosCadastro = ({ match }) => {
           gruposId: [...comunicado.grupos.map(grupo => String(grupo.id))],
           CodigoDre: comunicado.codigoDre
             ? String(comunicado.codigoDre)
-            : 'todas',
-          CodigoUe: comunicado.codigoUe ? String(comunicado.codigoUe) : 'todas',
+            : TODAS_DRE_ID,
+          CodigoUe: comunicado.codigoUe ? String(comunicado.codigoUe) : TODAS_UE_ID,
           modalidade:
             String(comunicado.modalidade) === '0'
               ? '-99'
@@ -231,18 +364,23 @@ const ComunicadosCadastro = ({ match }) => {
       dataEnvio: momentSchema.required('Campo obrigatório'),
       CodigoDre: Yup.string().required('Campo obrigatório'),
       CodigoUe: Yup.string().required('Campo obrigatório'),
-      dataExpiracao: momentSchema.test(
-        'validaDataMaiorQueEnvio',
-        'Data de expiração deve ser maior que a data de envio',
-        function validar() {
-          const { dataEnvio } = this.parent;
-          const { dataExpiracao } = this.parent;
-          if (
-            dataEnvio &&
-            dataExpiracao &&
-            window.moment(dataExpiracao) < window.moment(dataEnvio)
-          ) {
-            return false;
+      dataExpiracao: momentSchema
+        .required('Campo obrigatório')
+        .test(
+          'validaDataMaiorQueEnvio',
+          'Data de expiração deve ser maior que a data de envio',
+          function validar() {
+            const { dataEnvio } = this.parent;
+            const { dataExpiracao } = this.parent;
+            if (
+              dataEnvio &&
+              dataExpiracao &&
+              window.moment(dataExpiracao) < window.moment(dataEnvio)
+            ) {
+              return false;
+            }
+
+            return true;
           }
 
           return true;
@@ -299,15 +437,20 @@ const ComunicadosCadastro = ({ match }) => {
   }, [ues]);
 
   const modalidadeDesabilitada = useMemo(() => {
-    return modalidades.length <= 1;
-  }, [modalidades]);
+    return modalidades.length <= 1 
+      || refForm?.state?.values.CodigoUe === TODAS_UE_ID 
+      || refForm?.state?.values.CodigoDre === TODAS_DRE_ID;
+  }, [modalidades, ues, dres]);
 
   const semestreDesabilitado = useMemo(() => {
     return modalidadeSelecionada !== '3' ?? true;
   }, [modalidadeSelecionada]);
 
   const turmasDesabilitada = useMemo(() => {
-    return turmas.length <= 1;
+    return turmas.length === 0 
+      || modalidadeSelecionada === '-99' 
+      || refForm?.state?.values.CodigoUe === TODAS_UE_ID 
+      || refForm?.state?.values.CodigoDre === TODAS_DRE_ID;
   }, [turmas]);
 
   const gruposDesabilitados = useMemo(() => {
@@ -328,6 +471,13 @@ const ComunicadosCadastro = ({ match }) => {
   const estudantesVisiveis = useMemo(() => {
     return alunoEspecificado;
   }, [alunoEspecificado]);
+
+  const anosModalidadeDesabilita = useMemo(() => {
+    return anosModalidade?.length <= 1 
+      ||  modalidadeSelecionada === '-99'
+      || refForm?.state?.values.CodigoUe === TODAS_UE_ID 
+      || refForm?.state?.values.CodigoDre === TODAS_DRE_ID;
+  }, [modalidadeSelecionada]);
 
   useEffect(() => {
     if (!refForm?.setFieldValue) return;
@@ -438,8 +588,9 @@ const ComunicadosCadastro = ({ match }) => {
 
   const onChangeAnoLetivo = async ano => {
     handleModoEdicao();
-    refForm.setFieldValue('CodigoDre', 'todas');
-    onChangeDre('todas');
+    refForm.setFieldValue('CodigoDre', TODAS_DRE_ID);
+    refForm.setFieldValue('tipoCalendarioId', '');
+    onChangeDre(TODAS_DRE_ID);
     resetarTurmas();
     ResetarModalidade();
 
@@ -453,12 +604,12 @@ const ComunicadosCadastro = ({ match }) => {
 
   const onChangeDre = async dre => {
     handleModoEdicao();
-    refForm.setFieldValue('CodigoUe', 'todas');
-    onChangeUe('todas');
+    refForm.setFieldValue('CodigoUe', TODAS_UE_ID);
+    onChangeUe(TODAS_UE_ID);
     resetarTurmas();
     ResetarModalidade();
 
-    if (dre == 'todas') {
+    if (dre === TODAS_DRE_ID) {
       setUes(todos);
       return;
     }
@@ -472,12 +623,13 @@ const ComunicadosCadastro = ({ match }) => {
     resetarTurmas();
     ResetarModalidade();
 
-    if (ue == 'todas') {
+    if (ue === TODAS_UE_ID) {
       setModalidades(todosTurmasModalidade);
       setTurmas(todosTurmasModalidade);
       return;
     }
 
+    setUnidadeEscolarUE(true);
     onChangeModalidade('');
     ObterModalidades(ue);
   };
@@ -492,7 +644,7 @@ const ComunicadosCadastro = ({ match }) => {
 
     if (
       !refForm.state.values.CodigoUe ||
-      refForm.state.values.CodigoUe === 'todas'
+      refForm.state.values.CodigoUe === TODAS_UE_ID
     ) {
       setGruposId([]);
       refForm.setFieldValue('gruposId', []);
