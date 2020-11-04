@@ -2,31 +2,34 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
+using System.Collections.Generic;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class SalvarHistoricoNotaCommandHandler : IRequestHandler<SalvarHistoricoNotaCommand, long>
+    public class SalvarHistoricoConceitoCommandHandler : IRequestHandler<SalvarHistoricoConceitoCommand, long>
     {
         private readonly IRepositorioHistoricoNota repositorioHistoricoNota;
 
-        public SalvarHistoricoNotaCommandHandler(IRepositorioHistoricoNota repositorioHistoricoNota)
+        public SalvarHistoricoConceitoCommandHandler(IRepositorioHistoricoNota repositorioHistoricoNota)
         {
             this.repositorioHistoricoNota = repositorioHistoricoNota ?? throw new ArgumentNullException(nameof(repositorioHistoricoNota));
         }
-        public async Task<long> Handle(SalvarHistoricoNotaCommand request, CancellationToken cancellationToken)
+
+        public async Task<long> Handle(SalvarHistoricoConceitoCommand request, CancellationToken cancellationToken)
         {
             var historicoNota = MapearParaEntidade(request);
 
             return await repositorioHistoricoNota.SalvarAsync(historicoNota);
         }
 
-        private HistoricoNota MapearParaEntidade(SalvarHistoricoNotaCommand request)
+        private HistoricoNota MapearParaEntidade(SalvarHistoricoConceitoCommand request)
             => new HistoricoNota()
             {
-                NotaAnterior = request.NotaAnterior,
-                NotaNova = request.NotaNova
+                ConceitoAnteriorId = request.ConceitoAnteriorId,
+                ConceitoNovoId = request.ConceitoNovoId
             };
     }
 }
