@@ -142,6 +142,7 @@ const ResumosGraficosPAP = () => {
                           dados={dadosTela}
                           ciclos={!filtroTela.Ano && !!filtroTela.CicloId}
                           anos={!!filtroTela.Ano}
+                          filtroTela={filtroTela}
                           isEncaminhamento={
                             filtroTela &&
                             filtroTela.Periodo &&

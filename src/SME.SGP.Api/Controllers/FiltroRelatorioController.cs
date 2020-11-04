@@ -51,6 +51,15 @@ namespace SME.SGP.Api.Controllers
             return Ok(await obterTurmaPorAnoLetivoCodigoUeModalidadeSemestreUseCase.Executar(codigoUe, anoLetivo, modalidade, semestre));
         }
 
+        [HttpGet("turmas/ues/{codigoUe}/anoletivo/{anoLetivo}")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(IEnumerable<OpcaoDropdownDto>), 200)]
+        public async Task<IActionResult> ObterTurmasEscolaresPorUEAnoLetivoModalidadeSemestreEAno(string codigoUe, int anoLetivo, [FromQuery] int semestre, [FromQuery] Modalidade modalidade, [FromQuery] IList<string> anos, [FromServices] IObterTurmaPorAnoLetivoCodigoUeModalidadeSemestreAnosUseCase obterTurmaPorAnoLetivoCodigoUeModalidadeSemestreAnosUseCase)
+        {
+            return Ok(await obterTurmaPorAnoLetivoCodigoUeModalidadeSemestreAnosUseCase.Executar(codigoUe, anoLetivo, modalidade, semestre, anos));
+        }
+
         [HttpGet("ues/{codigoUe}/modalidades/{modalidade}/ciclos")]
         [ProducesResponseType(typeof(IEnumerable<RetornoCicloDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]

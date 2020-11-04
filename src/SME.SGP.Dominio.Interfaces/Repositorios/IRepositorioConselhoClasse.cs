@@ -1,6 +1,5 @@
-﻿using System;
+﻿using SME.SGP.Infra;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
@@ -9,5 +8,6 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task<ConselhoClasse> ObterPorTurmaEPeriodoAsync(long turmaId, long? periodoEscolarId = null);
         Task<ConselhoClasse> ObterPorFechamentoId(long fechamentoTurmaId);
+        Task<IEnumerable<BimestreComConselhoClasseTurmaDto>> ObterimestreComConselhoClasseTurmaAsync(long turmaId);
     }
 }

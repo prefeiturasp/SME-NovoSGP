@@ -16,11 +16,11 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<IEnumerable<NotificacaoBasicaDto>> Executar()
+        public async Task<IEnumerable<NotificacaoBasicaDto>> Executar(bool tituloReduzido)
         {
             //TODO: Utilizar query que retorna apenas o RF quando for feito merge com dev release
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
-            return await mediator.Send(new ObterUltimasNotificacoesNaoLidasPorUsuarioQuery(DateTime.Now.Year, usuarioLogado.CodigoRf));
+            return await mediator.Send(new ObterUltimasNotificacoesNaoLidasPorUsuarioQuery(DateTime.Now.Year, usuarioLogado.CodigoRf, tituloReduzido));
         }
     }
 }

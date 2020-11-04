@@ -1,12 +1,8 @@
-import {
-  setRotas
-} from '../redux/modulos/navegacao/actions';
-import {
-  store
-} from '../redux';
+import { setRotas } from '../redux/modulos/navegacao/actions';
+import { store } from '../redux';
 import Principal from '../paginas/Principal/principal';
 import PlanoCiclo from '../paginas/Planejamento/PlanoCiclo/planoCiclo';
-import PlanoAnual from '../paginas/Planejamento/PlanoAnual/planoAnual';
+import PlanoAnual from '../paginas/Planejamento/Anual/planoAnual';
 import AtribuicaoSupervisorLista from '../paginas/Gestao/AtribuicaoSupervisor/atribuicaoSupervisorLista';
 import AtribuicaoSupervisorCadastro from '../paginas/Gestao/AtribuicaoSupervisor/atribuicaoSupervisorCadastro';
 import AtribuicaoEsporadicaLista from '../paginas/Gestao/AtribuicaoEsporadica/Lista';
@@ -71,6 +67,8 @@ import DevolutivasLista from '~/paginas/DiarioClasse/Devolutivas/devolutivasList
 import DevolutivasForm from '~/paginas/DiarioClasse/Devolutivas/devolutivasForm';
 import RelatorioNotasConceitosFinais from '~/paginas/Relatorios/NotasConceitosFinais/relatorioNotasConceitosFinais';
 import RelatorioCompensacaoAusencia from '~/paginas/Relatorios/CompensacaoAusencia/relatorioCompensacaoAusencia';
+import PocEditor from '~/paginas/PocEditor/pocEditor';
+import ControleGrade from '~/paginas/Relatorios/DiarioClasse/ControleGrade/controleGrade';
 
 const rotas = new Map();
 
@@ -747,7 +745,8 @@ rotas.set(`${RotasDto.PENDENCIAS_FECHAMENTO}`, {
   chavePermissao: RotasDto.PENDENCIAS_FECHAMENTO,
 });
 rotas.set(
-  `${RotasDto.PENDENCIAS_FECHAMENTO}/:bimestre/:codigoComponenteCurricular`, {
+  `${RotasDto.PENDENCIAS_FECHAMENTO}/:bimestre/:codigoComponenteCurricular`,
+  {
     breadcrumbName: 'Pendências do Fechamento',
     menu: ['Fechamento'],
     parent: '/',
@@ -939,6 +938,25 @@ rotas.set(RotasDto.RELATORIO_COMPENSACAO_AUSENCIA, {
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: false,
   chavePermissao: RotasDto.RELATORIO_COMPENSACAO_AUSENCIA,
+});
+
+rotas.set(RotasDto.CONTROLE_GRADE, {
+  breadcrumbName: 'Controle de grade',
+  menu: ['Relatórios', 'Diário de classe'],
+  parent: '/',
+  component: ControleGrade,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+  chavePermissao: RotasDto.CONTROLE_GRADE,
+});
+
+rotas.set(RotasDto.POC_EDITOR, {
+  breadcrumbName: 'Poc Jodit Editor',
+  parent: '/',
+  component: PocEditor,
+  exact: false,
+  tipo: RotasTipo.EstruturadaAutenticada,
 });
 
 const rotasArray = [];
