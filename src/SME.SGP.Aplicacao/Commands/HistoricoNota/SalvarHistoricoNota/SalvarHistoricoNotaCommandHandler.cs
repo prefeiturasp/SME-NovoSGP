@@ -26,7 +26,9 @@ namespace SME.SGP.Aplicacao
             => new HistoricoNota()
             {
                 NotaAnterior = request.NotaAnterior,
-                NotaNova = request.NotaNova
+                NotaNova = request.NotaNova,
+                ConceitoAnteriorId = request.ConceitoAnteriorId,
+                ConceitoNovoId = request.ConceitoNovoId
             };
     }
 }
