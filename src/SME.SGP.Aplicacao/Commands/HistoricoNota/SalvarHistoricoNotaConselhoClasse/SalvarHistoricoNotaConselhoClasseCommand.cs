@@ -3,7 +3,7 @@ using MediatR;
 
 namespace SME.SGP.Aplicacao
 {
-    public class SalvarHistoricoNotaConselhoClasseCommand : IRequest<bool>
+    public class SalvarHistoricoNotaConselhoClasseCommand : IRequest<long>
     {
         public SalvarHistoricoNotaConselhoClasseCommand(long historicoNotaId, long conselhoClasseNotaId)
         {

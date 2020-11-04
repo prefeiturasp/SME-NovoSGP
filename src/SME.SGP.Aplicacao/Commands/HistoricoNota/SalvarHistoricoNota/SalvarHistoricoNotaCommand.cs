@@ -1,10 +1,9 @@
 ﻿using FluentValidation;
 using MediatR;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class SalvarHistoricoNotaCommand : IRequest<AuditoriaDto>
+    public class SalvarHistoricoNotaCommand : IRequest<long>
     {
         public SalvarHistoricoNotaCommand(string notaAnterior, string notaNova)
         {
