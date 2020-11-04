@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SME.SGP.Dominio.Enumerados
+﻿namespace SME.SGP.Dominio.Enumerados
 {
     public enum TipoComunicado
     {
@@ -11,6 +7,9 @@ namespace SME.SGP.Dominio.Enumerados
         UE = 3,      // UE-10180
         UEMOD = 4,   // UE-10180-MOD-2
         TURMA = 5,   // TUR-5689
-        ALUNO = 6    // ALU-55689
+        ALUNO = 6,    // ALU-55689
+        SME_ANO = 7,
+        DRE_ANO = 8
+
     }
 }
