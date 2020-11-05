@@ -47,7 +47,7 @@ namespace SME.SGP.Dominio
 
         public IEnumerable<Aula> ObterAulasQuePodeVisualizar(IEnumerable<Aula> aulas, string[] componentesCurricularesProfessor)
         {
-            if (TemPerfilGestaoUes())
+            if (TemPerfilGestaoUes() || TemPerfilAdmUE())
             {
                 return aulas;
             }
@@ -287,7 +287,7 @@ namespace SME.SGP.Dominio
             if (Perfis != null && PossuiPerfilCJ() && PossuiPerfilProfessor())
             {
                 var perfilCj = Perfis.FirstOrDefault(x => x.CodigoPerfil == Dominio.Perfis.PERFIL_CJ);
-                return !Perfis.Any(x => x.Ordem < perfilCj.Ordem);                
+                return !Perfis.Any(x => x.Ordem < perfilCj.Ordem);
             }
             return false;
         }
@@ -297,9 +297,9 @@ namespace SME.SGP.Dominio
             if (Perfis != null && PossuiPerfilCJInfantil() && PossuiPerfilProfessorInfantil())
             {
                 var perfilCjInfantil = Perfis.FirstOrDefault(x => x.CodigoPerfil == Dominio.Perfis.PERFIL_CJ_INFANTIL);
-                return !Perfis.Any(x => x.Ordem < perfilCjInfantil.Ordem);                
-            }                
-            return false;            
+                return !Perfis.Any(x => x.Ordem < perfilCjInfantil.Ordem);
+            }
+            return false;
         }
 
         public bool PossuiPerfilSme()
@@ -334,8 +334,13 @@ namespace SME.SGP.Dominio
         public bool TemPerfilGestaoUes()
         {
             return (PerfilAtual == Dominio.Perfis.PERFIL_DIRETOR || PerfilAtual == Dominio.Perfis.PERFIL_AD ||
-                    PerfilAtual == Dominio.Perfis.PERFIL_SECRETARIO || PerfilAtual == Dominio.Perfis.PERFIL_CP ||
-                    EhPerfilSME() || EhPerfilDRE());
+                    PerfilAtual == Dominio.Perfis.PERFIL_SECRETARIO || 
+                    PerfilAtual == Dominio.Perfis.PERFIL_CP || EhPerfilSME() || EhPerfilDRE());
+        }
+
+        public bool TemPerfilAdmUE()
+        {
+            return PerfilAtual == Dominio.Perfis.PERFIL_ADMUE;
         }
 
         public bool TemPerfilSupervisorOuDiretor()
