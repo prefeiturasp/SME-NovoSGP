@@ -62,16 +62,14 @@ namespace SME.SGP.Aplicacao
                     new ObterPlanejamentoAnualPorAnoEscolaBimestreETurmaQuery(turma.Id, periodoEscolar.Id, long.Parse(aula.DisciplinaId))
                     );
 
-                if (planejamentoAnual.Id <= 0 && !usuario.PerfilAtual.Equals(Perfis.PERFIL_CJ))
+                if ((planejamentoAnual?.Id <= 0 || planejamentoAnual == null) && !usuario.PerfilAtual.Equals(Perfis.PERFIL_CJ))
                     throw new NegocioException("Não foi possível concluir o cadastro, pois não existe plano anual cadastrado");
 
                 if (planoAulaDto.ObjetivosAprendizagemComponente == null || !planoAulaDto.ObjetivosAprendizagemComponente.Any() && !planoAula.Migrado)
                 {
                     var permitePlanoSemObjetivos = false;
 
-                    var possuiObjetivos = await mediator.Send(new VerificaPossuiObjetivosAprendizagemPorComponenteCurricularIdQuery(long.Parse(aula.DisciplinaId)));
-
-                    //!(consultasObjetivoAprendizagem.DisciplinaPossuiObjetivosDeAprendizagem(Convert.ToInt64(aula.DisciplinaId)))
+                    var possuiObjetivos = await mediator.Send(new VerificaPossuiObjetivosAprendizagemPorComponenteCurricularIdQuery(long.Parse(aula.DisciplinaId)));                    
 
                     // Os seguintes componentes curriculares (disciplinas) não tem seleção de objetivos de aprendizagem
                     // Libras, Sala de Leitura
@@ -83,10 +81,7 @@ namespace SME.SGP.Aplicacao
 
                     if (!permitePlanoSemObjetivos)
                         throw new NegocioException("A seleção de objetivos de aprendizagem é obrigatória para criação do plano de aula");
-                }
-
-
-                //await SalvarPlanoAula(planoAula, planoAulaDto, planejamentoAnual.Id);
+                }                            
 
                 await repositorioPlanoAula.SalvarAsync(planoAula);
 
