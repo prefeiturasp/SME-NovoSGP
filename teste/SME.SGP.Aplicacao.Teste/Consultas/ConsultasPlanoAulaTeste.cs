@@ -80,12 +80,10 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
                 new ObjetivoAprendizagemAula()
                 {
                     PlanoAulaId = 1,
-                    ObjetivoAprendizagemPlanoId = 1,
-                    ObjetivoAprendizagemPlano = new ObjetivoAprendizagemPlano()
+                    ObjetivoAprendizagemId = 1,
+                    ObjetivoAprendizagem = new ObjetivoAprendizagem()
                     {
                         ComponenteCurricularId = 1,
-                        ObjetivoAprendizagemJuremaId = 1,
-                        PlanoId = 1
                     }
                 }
             };

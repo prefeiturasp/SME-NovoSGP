@@ -47,7 +47,7 @@ namespace SME.SGP.IoC
             services.AddMediatR(assembly);
             services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidacoesPipeline<,>));
         }
-private static void RegistrarRabbit(IServiceCollection services)
+        private static void RegistrarRabbit(IServiceCollection services)
         {
             var factory = new ConnectionFactory
             {
@@ -85,7 +85,6 @@ private static void RegistrarRabbit(IServiceCollection services)
             services.TryAddScopedWorkerService<IComandosAtribuicaoEsporadica, ComandosAtribuicaoEsporadica>();
             services.TryAddScopedWorkerService<IComandosAtividadeAvaliativa, ComandosAtividadeAvaliativa>();
             services.TryAddScopedWorkerService<IComandosTipoAvaliacao, ComandosTipoAavaliacao>();
-            services.TryAddScopedWorkerService<IComandosPlanoAula, ComandosPlanoAula>();
             services.TryAddScopedWorkerService<IComandosAtribuicaoCJ, ComandosAtribuicaoCJ>();
             services.TryAddScopedWorkerService<IComandosEventoMatricula, ComandosEventoMatricula>();
             services.TryAddScopedWorkerService<IComandosNotasConceitos, ComandosNotasConceitos>();
@@ -194,6 +193,7 @@ private static void RegistrarRabbit(IServiceCollection services)
             services.TryAddScopedWorkerService<IRepositorioAulaPrevistaBimestre, RepositorioAulaPrevistaBimestre>();
             services.TryAddScopedWorkerService<IRepositorioCache, RepositorioCache>();
             services.TryAddScopedWorkerService<IRepositorioCiclo, RepositorioCiclo>();
+            services.TryAddScopedWorkerService<IRepositorioComponenteCurricularJurema, RepositorioComponenteCurricularJurema>();
             services.TryAddScopedWorkerService<IRepositorioComponenteCurricular, RepositorioComponenteCurricular>();
             services.TryAddScopedWorkerService<IRepositorioConceito, RepositorioConceito>();
             services.TryAddScopedWorkerService<IRepositorioConfiguracaoEmail, RepositorioConfiguracaoEmail>();
@@ -282,7 +282,9 @@ private static void RegistrarRabbit(IServiceCollection services)
             services.TryAddScopedWorkerService<IRepositorioCartaIntencoesObservacao, RepositorioCartaIntencoesObservacao>();
             services.TryAddScopedWorkerService<IRepositorioNotificacaoCartaIntencoesObservacao, RepositorioNotificacaoCartaIntencoesObservacao>();
             services.TryAddScopedWorkerService<IRepositorioNotificacaoDevolutiva, RepositorioNotificacaoDevolutiva>();
-            
+            services.TryAddScopedWorkerService<IRepositorioPendenciaAula, RepositorioPendenciaAula>();
+            services.TryAddScopedWorkerService<IRepositorioPlanejamentoAnual, RepositorioPlanejamentoAnual>();
+            services.TryAddScopedWorkerService<IRepositorioComponenteCurricular, RepositorioComponenteCurricular>();
 
         }
 
@@ -373,6 +375,11 @@ private static void RegistrarRabbit(IServiceCollection services)
             services.TryAddScopedWorkerService<ISalvarCartaIntencoesObservacaoUseCase, SalvarCartaIntencoesObservacaoUseCase>();
             services.TryAddScopedWorkerService<IAlterarCartaIntencoesObservacaoUseCase, AlterarCartaIntencoesObservacaoUseCase>();
             services.TryAddScopedWorkerService<IExcluirCartaIntencoesObservacaoUseCase, ExcluirCartaIntencoesObservacaoUseCase>();
+            services.TryAddScopedWorkerService<IObterPeriodosEscolaresParaCopiaPorPlanejamentoAnualIdUseCase, ObterPeriodosEscolaresParaCopiaPorPlanejamentoAnualIdUseCase>();
+            services.TryAddScopedWorkerService<IObterPlanejamentoAnualPorTurmaComponentePeriodoEscolarUseCase, ObterPlanejamentoAnualPorTurmaComponentePeriodoEscolarUseCase>();
+            services.TryAddScopedWorkerService<IObterPlanejamentoAnualPorTurmaComponenteUseCase, ObterPlanejamentoAnualPorTurmaComponenteUseCase>();
+            services.TryAddScopedWorkerService<IPendenciaAulaUseCase, PendenciaAulaUseCase>();
+            services.TryAddScopedWorkerService<IExecutaPendenciaAulaUseCase, ExecutaPendenciaAulaUseCase>();
             services.TryAddScopedWorkerService<ISalvarNotificacaoCartaIntencoesObservacaoUseCase, SalvarNotificacaoCartaIntencoesObservacaoUseCase>();
             services.TryAddScopedWorkerService<IExcluirNotificacaoCartaIntencoesObservacaoUseCase, ExcluirNotificacaoCartaIntencoesObservacaoUseCase>();
             services.TryAddScopedWorkerService<INotificarDiarioBordoObservacaoUseCase, NotificarDiarioBordoObservacaoUseCase>();
@@ -382,7 +389,19 @@ private static void RegistrarRabbit(IServiceCollection services)
 
             services.TryAddScopedWorkerService<IExcluirNotificacaoDiarioBordoUseCase, ExcluirNotificacaoDiarioBordoUseCase>();
             services.TryAddScopedWorkerService<IObterAnosLetivosPAPUseCase, ObterAnosLetivosPAPUseCase>();
+            services.TryAddScopedWorkerService<IObterPeriodosEscolaresPorAnoEModalidadeTurmaUseCase, ObterPeriodosEscolaresPorAnoEModalidadeTurmaUseCase>();
+            services.TryAddScopedWorkerService<IRelatorioPlanoAulaUseCase, RelatorioPlanoAulaUseCase>();
+            services.TryAddScopedWorkerService<IObterComponentesCurricularesRegenciaPorTurmaUseCase, ObterComponentesCurricularesRegenciaPorTurmaUseCase>();
+            services.TryAddScopedWorkerService<IObterPeriodoEscolarPorTurmaUseCase, ObterPeriodoEscolarPorTurmaUseCase>();
+            
 
+            //Sincronismo CC Eol
+            services.TryAddScopedWorkerService<IListarComponentesCurricularesEolUseCase, ListarComponentesCurricularesEolUseCase>();
+            services.TryAddScopedWorkerService<ISincronizarComponentesCurricularesUseCase, SincronizarComponentesCurricularesUseCase>();
+            services.TryAddScopedWorkerService<IExecutaSincronismoComponentesCurricularesEolUseCase, ExecutaSincronismoComponentesCurricularesEolUseCase>();
+
+            services.TryAddScopedWorkerService<IObterTurmasParaCopiaUseCase, ObterTurmasParaCopiaUseCase>();
+            services.TryAddScopedWorkerService<ISalvarPlanoAulaUseCase, SalvarPlanoAulaUseCase>();
         }
 
         private static void ResgistraDependenciaHttp(IServiceCollection services)

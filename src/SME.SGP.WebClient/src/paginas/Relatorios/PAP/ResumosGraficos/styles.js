@@ -9,6 +9,12 @@ import { Base } from '~/componentes';
 export const ContainerTabs = styled(Tabs)`
   width: 100%;
 
+  .btn-imprimir {
+    i {
+      margin-right: 0px !important;
+    }
+  }
+
   .ant-tabs-tab {
     width: 100% !important;
     margin-right: 0px !important;
