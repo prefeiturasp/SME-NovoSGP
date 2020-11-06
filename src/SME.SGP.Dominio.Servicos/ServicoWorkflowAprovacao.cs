@@ -75,7 +75,9 @@ namespace SME.SGP.Dominio.Servicos
         {
             WorkflowAprovacaoNivel nivel = workflow.ObterNivelPorNotificacaoId(notificacaoId);
 
-            var codigoDaNotificacao = nivel.Notificacoes.FirstOrDefault(a => a.Id == notificacaoId).Codigo;            
+            var codigoDaNotificacao = nivel.Notificacoes.FirstOrDefault(a => a.Id == notificacaoId)?.Codigo;
+            if (codigoDaNotificacao == null)
+                throw new NegocioException("Não foi possível localizar a notificação.");
 
             nivel.PodeAprovar();
 
@@ -83,8 +85,8 @@ namespace SME.SGP.Dominio.Servicos
             AtualizaNiveis(niveisParaPersistir);
 
             if (aprovar)
-                await AprovarNivel(nivel, workflow, codigoDaNotificacao);
-            else await ReprovarNivel(workflow, codigoDaNotificacao, observacao, nivel.Cargo, nivel);
+                await AprovarNivel(nivel, workflow, (long)codigoDaNotificacao);
+            else await ReprovarNivel(workflow, (long)codigoDaNotificacao, observacao, nivel.Cargo, nivel);
         }
 
         public void ConfiguracaoInicial(WorkflowAprovacao workflowAprovacao, long idEntidadeParaAprovar)
