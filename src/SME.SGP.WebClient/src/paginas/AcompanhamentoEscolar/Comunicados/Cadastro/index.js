@@ -384,18 +384,17 @@ const ComunicadosCadastro = ({ match }) => {
       CodigoDre: Yup.string().required('Campo obrigatório'),
       CodigoUe: Yup.string().required('Campo obrigatório'),
       eventoId: Yup.string().required('Campo obrigatório'),
-      tipoCalendarioId: Yup.string()
-        .test(
-          'validaTipoCalendarioId',
-          'Campo obrigatório',
-          function validar() {
-            const { CodigoUe } = this.parent;
-            if (CodigoUe !== '-99') {
-              return false;
-            }
-            return true;
+      tipoCalendarioId: Yup.string().test(
+        'validaTipoCalendarioId',
+        'Campo obrigatório',
+        function validar() {
+          const { CodigoUe } = this.parent;
+          if (CodigoUe !== '-99') {
+            return false;
           }
-        ),
+          return true;
+        }
+      ),
       dataExpiracao: momentSchema
         .required('Campo obrigatório')
         .test(
