@@ -107,15 +107,19 @@ const ComunicadosCadastro = ({ match }) => {
   const [eventoSelecionado, setEventoSelecionado] = useState('');
   const [pesquisaEvento, setPesquisaEvento] = useState('');
 
-  const selecionaTipoCalendario = (descricao, form) => {
+  const selecionaTipoCalendario = valor => {
     const tipo = listaCalendario?.find(t => {
-      return t.descricao === descricao;
+      return valor === t.id;
     });
 
     if (tipo?.id) {
       setSelecionouCalendario(true);
-      setValorTipoCalendario(descricao);
+      setValorTipoCalendario(tipo.descricao);
       setTipoCalendarioSelecionado(tipo.id);
+    } else {
+      setSelecionouCalendario(false);
+      setValorTipoCalendario('');
+      setTipoCalendarioSelecionado('');
     }
   };
 
@@ -138,14 +142,14 @@ const ComunicadosCadastro = ({ match }) => {
     "6": "1"
   };
 
-  const hasAnoLetivoClause = (t) => (refForm?.state?.values?.anoLetivo ?? false) 
-      ? (t.anoLetivo == refForm.state.values.anoLetivo) 
-      : true;
+  const hasAnoLetivoClause = (t) => (refForm?.state?.values?.anoLetivo ?? false)
+    ? (t.anoLetivo == refForm.state.values.anoLetivo)
+    : true;
 
   const hasModalidadeSelecionadaClause = (t) => modalidadeSelecionada && modalidadeSelecionada != TODAS_MODALIDADES_ID
-      ? (modalidadeTurmaCalendarioRelation[modalidadeSelecionada] 
-          && modalidadeTurmaCalendarioRelation[modalidadeSelecionada] == t.modalidade) 
-      : true;
+    ? (modalidadeTurmaCalendarioRelation[modalidadeSelecionada]
+      && modalidadeTurmaCalendarioRelation[modalidadeSelecionada] == t.modalidade)
+    : true;
 
   const hasActiveSituation = (t) => t.situacao;
 
@@ -161,20 +165,20 @@ const ComunicadosCadastro = ({ match }) => {
 
     (async () => {
       setCarregandoTipos(true);
-  
+
       const {
         data,
       } = await ServicoCalendarios.obterTiposCalendarioAutoComplete(
         pesquisaTipoCalendario
       );
 
-      if(isSubscribed) {
+      if (isSubscribed) {
         let allowedList = filterAllowedCalendarTypes(data);
         setListaCalendario(allowedList);
         selecionaTipoCalendario(
-          allowedList.length > 0 
+          allowedList.length > 0
             ? allowedList[0].descricao
-            : '', 
+            : '',
           refForm
         );
         setCarregandoTipos(false);
@@ -202,14 +206,14 @@ const ComunicadosCadastro = ({ match }) => {
       };
 
       Object.keys(filter).forEach((key) => {
-        if(filter[key] == null || filter[key] == TODAS_DRE_ID)
+        if (filter[key] == null || filter[key] == TODAS_DRE_ID)
           delete filter[key];
       });
 
       let data = await ServicoComunicadoEvento.listarPor(filter);
-      
-      if(isSubscribed) {
-        if(data && data.length > 0) {
+
+      if (isSubscribed) {
+        if (data && data.length > 0) {
           data.forEach(item => item.nome = `${item.id} - ${item.nome} (${item.tipoEvento})`);
         }
         setListaEvento(data);
@@ -265,7 +269,7 @@ const ComunicadosCadastro = ({ match }) => {
     turmas: [TODAS_TURMAS_ID],
     alunos: '1',
     tipoCalendarioId: '',
-    eventoId: ''
+    eventoId: '',
   };
 
   const [valoresIniciais, setValoresIniciais] = useState(
@@ -380,7 +384,18 @@ const ComunicadosCadastro = ({ match }) => {
       CodigoDre: Yup.string().required('Campo obrigatório'),
       CodigoUe: Yup.string().required('Campo obrigatório'),
       eventoId: Yup.string().required('Campo obrigatório'),
-      tipoCalendarioId: Yup.string().required('Campo obrigatório'),
+      tipoCalendarioId: Yup.string()
+        .test(
+          'validaTipoCalendarioId',
+          'Campo obrigatório',
+          function validar() {
+            const { CodigoUe } = this.parent;
+            if (CodigoUe !== '-99') {
+              return false;
+            }
+            return true;
+          }
+        ),
       dataExpiracao: momentSchema
         .required('Campo obrigatório')
         .test(
@@ -474,7 +489,7 @@ const ComunicadosCadastro = ({ match }) => {
   }, [modalidadeSelecionada]);
 
   const turmasDesabilitada = useMemo(() => {
-    return turmas.length <= 1 
+    return turmas.length <= 1
       || modalidadeSelecionada === TODAS_MODALIDADES_ID
       || modalidadeSelecionada === 'Todas'
       || modalidadeSelecionada === '';
@@ -501,9 +516,9 @@ const ComunicadosCadastro = ({ match }) => {
   }, [alunoEspecificado]);
 
   const anosModalidadeDesabilita = useMemo(() => {
-    return anosModalidade?.length <= 1 
-        || modalidadeSelecionada === TODAS_MODALIDADES_ID
-        || modalidadeSelecionada === MODALIDADE_EJA_ID;
+    return anosModalidade?.length <= 1
+      || modalidadeSelecionada === TODAS_MODALIDADES_ID
+      || modalidadeSelecionada === MODALIDADE_EJA_ID;
   }, [modalidadeSelecionada, anosModalidade]);
 
   useEffect(() => {
@@ -610,14 +625,14 @@ const ComunicadosCadastro = ({ match }) => {
   };
 
   const chainTodosAnos = (dados, modalidade) => {
-    if(dados.length == 1 || modalidade == TODAS_MODALIDADES_ID || modalidade == MODALIDADE_EJA_ID) {
+    if (dados.length == 1 || modalidade == TODAS_MODALIDADES_ID || modalidade == MODALIDADE_EJA_ID) {
       refForm.setFieldValue('ano', 'Todos');
       return;
     }
   };
 
   const chainLimpaAnos = (dados, modalidade) => {
-    if(modalidade != TODAS_MODALIDADES_ID && modalidade != MODALIDADE_EJA_ID) {
+    if (modalidade != TODAS_MODALIDADES_ID && modalidade != MODALIDADE_EJA_ID) {
       refForm.setFieldValue('ano', '');
       return;
     }
@@ -631,7 +646,7 @@ const ComunicadosCadastro = ({ match }) => {
       codigoUe
     );
 
-    if(!dados) {
+    if (!dados) {
       setAnosModalidade([]);
       return;
     }
@@ -653,7 +668,7 @@ const ComunicadosCadastro = ({ match }) => {
 
   const obterTurmasEspecificas = async anos => {
     refForm.setFieldValue('turmas', []);
-    
+
     setAlunosLoader(true);
     const response = await FiltroHelper.obterTurmasEspecificas(
       refForm.state.values.CodigoUe,
@@ -669,7 +684,7 @@ const ComunicadosCadastro = ({ match }) => {
     });
 
     dados.unshift({ id: TODAS_TURMAS_ID, nome: 'Todas' });
-    if(dados.length == 1) {
+    if (dados.length == 1) {
       refForm.setFieldValue('turmas', [TODAS_TURMAS_ID]);
     }
 
@@ -762,7 +777,7 @@ const ComunicadosCadastro = ({ match }) => {
     if (modalidade !== TODAS_MODALIDADES_ID) {
       await ObterGruposIdPorModalidade(modalidade);
       await ObterAnosPorModalidade(
-        modalidade, 
+        modalidade,
         (refForm?.state?.values.CodigoUe ?? null));
     }
 
@@ -857,8 +872,8 @@ const ComunicadosCadastro = ({ match }) => {
       seriesResumidas: valores.anosModalidade?.join(',') ?? '',
       CodigoUe: valores.CodigoUe == TODAS_UE_ID ? 'todas' : valores.CodigoUe,
       CodigoDre: valores.CodigoDre == TODAS_DRE_ID ? 'todas' : valores.CodigoDre,
-      dataEnvio: valores?.dataEnvio?.set({hour: 0, minute: 0, second: 0}),
-      dataExpiracao: valores?.dataExpiracao?.set({hour: 23, minute: 59, second: 59}),
+      dataEnvio: valores?.dataEnvio?.set({ hour: 0, minute: 0, second: 0 }),
+      dataExpiracao: valores?.dataExpiracao?.set({ hour: 23, minute: 59, second: 59 }),
     };
 
     dadosSalvar.anosModalidade = null;
@@ -932,15 +947,15 @@ const ComunicadosCadastro = ({ match }) => {
       refForm.setFieldValue('alunosEspecificados', false);
     }
   };
-  
+
   useEffect(loadTiposCalendarioEffect, [
-    pesquisaTipoCalendario, 
+    pesquisaTipoCalendario,
     modalidadeSelecionada,
     refForm
   ]);
 
   useEffect(loadEventosEffect, [
-    pesquisaEvento, 
+    pesquisaEvento,
     tipoCalendarioSelecionado,
     valorTipoCalendario,
     modalidadeSelecionada,
@@ -1172,23 +1187,20 @@ const ComunicadosCadastro = ({ match }) => {
                 </Linha>
                 <Linha className="row mb-2">
                   <Grid cols={6}>
-                    <Label control="tipoCalendarioId" text="Tipo de Calendário" />
+                    <Label
+                      control="tipoCalendarioId"
+                      text="Tipo de Calendário"
+                    />
                     <Loader loading={carregandoTipos} tip="">
-                      <SelectAutocomplete
-                        hideLabel
-                        showList
-                        isHandleSearch
-                        placeholder="Selecione um calendário"
-                        className="col-md-12"
-                        name="tipoCalendarioId"
-                        id="select-tipo-calendario"
-                        lista={listaCalendario}
-                        valueField="id"
-                        textField="descricao"
-                        onSelect={valor => selecionaTipoCalendario(valor, form)}
-                        value={valorTipoCalendario}
+                      <SelectComponent
                         form={form}
-                        allowClear={true}
+                        id="tipoCalendarioId"
+                        name="tipoCalendarioId"
+                        placeholder="Selecione um calendário"
+                        valueOption="id"
+                        valueText="descricao"
+                        lista={listaCalendario}
+                        onChange={selecionaTipoCalendario}
                       />
                     </Loader>
                   </Grid>
