@@ -1,9 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  useMemo,
-  useCallback,
-} from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
 import { Form, Formik } from 'formik';
@@ -41,58 +36,22 @@ function Filtro({ onFiltrar }) {
     { id: '2', nome: '2º Semestre' },
   ];
 
-  const anoModalidadeLista = [
-    {
-      modalidade: 5,
-      ano: '1',
-    },
-    {
-      modalidade: 5,
-      ano: '2',
-    },
-    {
-      modalidade: 5,
-      ano: '3',
-    },
-    {
-      modalidade: 5,
-      ano: '4',
-    },
-    {
-      modalidade: 5,
-      ano: '5',
-    },
-    {
-      modalidade: 5,
-      ano: '6',
-    },
-    {
-      modalidade: 5,
-      ano: '7',
-    },
-    {
-      modalidade: 5,
-      ano: '8',
-    },
-    {
-      modalidade: 5,
-      ano: '9',
-    },
-  ];
-
   const [refForm, setRefForm] = useState({});
   const [gruposLista, setGruposLista] = useState([]);
   const [anosLetivos, setAnosLetivos] = useState([]);
   const [modalidades, setModalidades] = useState(todosTurmasModalidade);
-  const [dres, setDres] = useState(todos);
+  const [dres, setDres] = useState([]);
   const [ues, setUes] = useState(todos);
   const [ueSelecionada, setUeSelecionada] = useState(TODAS_UES_ID);
   const [semestres] = useState(semestresLista);
   const [turmas, setTurmas] = useState(todosTurmasModalidade);
 
-  const [modalidadeSelecionada, setModalidadeSelecionada] = useState(TODAS_MODALIDADES_ID);
+  const [modalidadeSelecionada, setModalidadeSelecionada] = useState(
+    TODAS_MODALIDADES_ID
+  );
   const [anosModalidade, setAnosModalidade] = useState([]);
   const [gruposSelecionados, setGruposSelecionados] = useState([]);
+  const [timeoutCampoPesquisa, setTimeoutCampoPesquisa] = useState();
 
   const dreDesabilitada = useMemo(() => {
     return dres.length <= 1;
@@ -118,8 +77,8 @@ function Filtro({ onFiltrar }) {
     return (
       modalidadeSelecionada &&
       modalidadeSelecionada !== '' &&
-      modalidadeSelecionada !== TODAS_MODALIDADES_ID && 
-      modalidadeSelecionada !== 'Todas' && 
+      modalidadeSelecionada !== TODAS_MODALIDADES_ID &&
+      modalidadeSelecionada !== 'Todas' &&
       gruposSelecionados?.length > 0
     );
   }, [modalidadeSelecionada]);
@@ -137,7 +96,7 @@ function Filtro({ onFiltrar }) {
     turmas: [TODAS_TURMAS_ID],
     tipoCalendarioId: '',
     eventoId: '',
-    ano: 'Todos'
+    ano: 'Todos',
   });
 
   const [validacoes] = useState(
@@ -176,7 +135,9 @@ function Filtro({ onFiltrar }) {
   const [listaCalendario, setListaCalendario] = useState([]);
   const [valorTipoCalendario, setValorTipoCalendario] = useState('');
   const [selecionouCalendario, setSelecionouCalendario] = useState(false);
-  const [tipoCalendarioSelecionado, setTipoCalendarioSelecionado] = useState('');
+  const [tipoCalendarioSelecionado, setTipoCalendarioSelecionado] = useState(
+    ''
+  );
   const [pesquisaTipoCalendario, setPesquisaTipoCalendario] = useState('');
 
   const [carregandoEventos, setCarregandoEventos] = useState(false);
@@ -211,9 +172,11 @@ function Filtro({ onFiltrar }) {
   };
 
   const anosModalidadeDesabilita = useMemo(() => {
-    return anosModalidade?.length <= 1 
-      || modalidadeSelecionada === TODAS_MODALIDADES_ID 
-      || modalidadeSelecionada === MODALIDADE_EJA_ID;
+    return (
+      anosModalidade?.length <= 1 ||
+      modalidadeSelecionada === TODAS_MODALIDADES_ID ||
+      modalidadeSelecionada === MODALIDADE_EJA_ID
+    );
   }, [anosModalidade, modalidadeSelecionada]);
 
   const modalidadeTurmaCalendarioRelation = {
@@ -223,18 +186,20 @@ function Filtro({ onFiltrar }) {
     "6": "1"
   };
 
-  const hasAnoLetivoClause = (t) => (refForm?.state?.values?.anoLetivo ?? false) 
-      ? (t.anoLetivo == refForm.state.values.anoLetivo) 
+  const hasAnoLetivoClause = t =>
+    refForm?.state?.values?.anoLetivo ?? false
+      ? t.anoLetivo == refForm.state.values.anoLetivo
       : true;
 
-  const hasModalidadeSelecionadaClause = (t) => modalidadeSelecionada && modalidadeSelecionada != TODAS_MODALIDADES_ID
-      ? (modalidadeTurmaCalendarioRelation[modalidadeSelecionada] 
-          && modalidadeTurmaCalendarioRelation[modalidadeSelecionada] == t.modalidade) 
+  const hasModalidadeSelecionadaClause = t =>
+    modalidadeSelecionada && modalidadeSelecionada != TODAS_MODALIDADES_ID
+      ? modalidadeTurmaCalendarioRelation[modalidadeSelecionada] &&
+        modalidadeTurmaCalendarioRelation[modalidadeSelecionada] == t.modalidade
       : true;
 
-  const hasActiveSituation = (t) => t.situacao;
+  const hasActiveSituation = t => t.situacao;
 
-  const filterAllowedCalendarTypes = (data) => {
+  const filterAllowedCalendarTypes = data => {
     return data
       .filter(hasAnoLetivoClause)
       .filter(hasModalidadeSelecionadaClause)
@@ -246,20 +211,18 @@ function Filtro({ onFiltrar }) {
 
     (async () => {
       setCarregandoTipos(true);
-  
+
       const {
         data,
       } = await ServicoCalendarios.obterTiposCalendarioAutoComplete(
         pesquisaTipoCalendario
       );
 
-      if(isSubscribed) {
+      if (isSubscribed) {
         let allowedList = filterAllowedCalendarTypes(data);
         setListaCalendario(allowedList);
         selecionaTipoCalendario(
-          allowedList.length > 0 
-            ? allowedList[0].descricao
-            : '', 
+          allowedList.length > 0 ? allowedList[0].descricao : '',
           refForm
         );
         setCarregandoTipos(false);
@@ -272,13 +235,11 @@ function Filtro({ onFiltrar }) {
   };
 
   const changeListaCalendarioEffect = () => {
-    if(refForm && refForm.state)
-      validarFiltro();
+    if (refForm && refForm.state) validarFiltro();
   };
 
   const changeValorEventoEffect = () => {
-    if(refForm && refForm.state)
-      validarFiltro();
+    if (refForm && refForm.state) validarFiltro();
   };
 
   const loadEventosEffect = () => {
@@ -292,20 +253,26 @@ function Filtro({ onFiltrar }) {
         tipoCalendario: +(tipoCalendarioSelecionado ?? null),
         anoLetivo: +(_form?.anoLetivo ?? null),
         modalidade: +(_form?.modalidade ?? null),
-        codigoDre: _form?.CodigoDre && _form?.CodigoDre != TODAS_DRE_ID ? null : _form?.CodigoDre,
-        codigoUe: _form?.CodigoUe && _form?.CodigoUe != TODAS_UES_ID ? null : _form?.codigoUe,
+        codigoDre:
+          _form?.CodigoDre && _form?.CodigoDre != TODAS_DRE_ID
+            ? null
+            : _form?.CodigoDre,
+        codigoUe:
+          _form?.CodigoUe && _form?.CodigoUe != TODAS_UES_ID
+            ? null
+            : _form?.codigoUe,
       };
 
-      Object.keys(filter).forEach((key) => {
-        if(filter[key] == null || filter[key] == TODAS_UES_ID)
+      Object.keys(filter).forEach(key => {
+        if (filter[key] == null || filter[key] == TODAS_UES_ID)
           delete filter[key];
       });
 
       let data = await ServicoComunicadoEvento.listarPor(filter);
-      
-      if(isSubscribed) {
-        if(data && data.length > 0) {
-          data.forEach(item => item.nome = `${item.id} - ${item.nome}`);
+
+      if (isSubscribed) {
+        if (data && data.length > 0) {
+          data.forEach(item => (item.nome = `${item.id} - ${item.nome}`));
         }
         setListaEvento(data);
         setCarregandoEventos(false);
@@ -386,20 +353,27 @@ function Filtro({ onFiltrar }) {
   };
 
   const chainTodosAnos = (dados, modalidade) => {
-    if(dados.length == 1 || modalidade == TODAS_MODALIDADES_ID || modalidade == MODALIDADE_EJA_ID) {
+    if (
+      dados.length == 1 ||
+      modalidade == TODAS_MODALIDADES_ID ||
+      modalidade == MODALIDADE_EJA_ID
+    ) {
       refForm.setFieldValue('ano', 'Todos');
       return;
     }
   };
 
   const chainLimpaAnos = (dados, modalidade) => {
-    if(modalidade != TODAS_MODALIDADES_ID && modalidade != MODALIDADE_EJA_ID) {
+    if (modalidade != TODAS_MODALIDADES_ID && modalidade != MODALIDADE_EJA_ID) {
       refForm.setFieldValue('ano', '');
       return;
     }
   };
 
-  const ObterAnosPorModalidade = async (modalidade, codigoUe = TODAS_UES_ID) => {
+  const ObterAnosPorModalidade = async (
+    modalidade,
+    codigoUe = TODAS_UES_ID
+  ) => {
     if (!modalidade || modalidade === '') return;
 
     const dados = await FiltroHelper.obterAnosPorModalidade(
@@ -407,7 +381,7 @@ function Filtro({ onFiltrar }) {
       codigoUe
     );
 
-    if(!dados) {
+    if (!dados) {
       setAnosModalidade([]);
       return;
     }
@@ -470,7 +444,11 @@ function Filtro({ onFiltrar }) {
 
     setTurmas(todosTurmasModalidade);
 
-    if (!modalidade || modalidade === '' || modalidade === TODAS_MODALIDADES_ID) {
+    if (
+      !modalidade ||
+      modalidade === '' ||
+      modalidade === TODAS_MODALIDADES_ID
+    ) {
       setModalidadeSelecionada(TODAS_MODALIDADES_ID);
       return;
     }
@@ -482,12 +460,7 @@ function Filtro({ onFiltrar }) {
     await ObterAnosPorModalidade(modalidade, ueSelecionada);
 
     if (modalidade !== MODALIDADE_EJA_ID) {
-      ObterTurmas(
-        refForm.state.values.anoLetivo,
-        ueSelecionada,
-        modalidade,
-        0
-      );
+      ObterTurmas(refForm.state.values.anoLetivo, ueSelecionada, modalidade, 0);
     }
   };
 
@@ -538,7 +511,7 @@ function Filtro({ onFiltrar }) {
     validarFiltro();
   };
 
-  const onGrupoChange = (grupos) => {
+  const onGrupoChange = grupos => {
     refForm.setFieldValue('modalidade', TODAS_MODALIDADES_ID);
     refForm.setFieldValue('ano', []);
     setModalidadeSelecionada(TODAS_MODALIDADES_ID);
@@ -546,23 +519,30 @@ function Filtro({ onFiltrar }) {
   };
 
   const onSubmitFiltro = valores => {
-    let valoresSubmit = {
-      ...valores,
-      // modalidade: valores.modalidade === TODAS_MODALIDADES_ID ? '' : valores.modalidade,
-      modalidade: null,
-      turmas: valores.turmas[0] === TODAS_TURMAS_ID ? [] : valores.turmas,
-      tipoCalendarioId: tipoCalendarioSelecionado ?? null,
-      eventoId: eventoSelecionado?.id ?? null,
-      semestre: valores.semestre == 'Todos' ? null : valores.semestre,
-      ano: valores.ano == 'Todos' ? null : valores.ano,
-      CodigoUe: valores.CodigoUe == TODAS_UES_ID ? 'todas' : valores.CodigoUe,
-      CodigoDre: valores.CodigoDre == TODAS_DRE_ID ? 'todas' : valores.CodigoDre,
-      gruposId: gruposSelecionados,
-      dataEnvio: valores?.dataEnvio?.set({hour: 0, minute: 0, second: 0}),
-      dataExpiracao: valores?.dataExpiracao?.set({hour: 23, minute: 59, second: 59}),
-    };
+    if (dres?.length && ues?.length) {
+      let valoresSubmit = {
+        ...valores,
+        // modalidade: valores.modalidade === TODAS_MODALIDADES_ID ? '' : valores.modalidade,
+        modalidade: null,
+        turmas: valores.turmas[0] === TODAS_TURMAS_ID ? [] : valores.turmas,
+        tipoCalendarioId: tipoCalendarioSelecionado ?? null,
+        eventoId: eventoSelecionado?.id ?? null,
+        semestre: valores.semestre == 'Todos' ? null : valores.semestre,
+        ano: valores.ano == 'Todos' ? null : valores.ano,
+        CodigoUe: valores.CodigoUe == TODAS_UES_ID ? 'todas' : valores.CodigoUe,
+        CodigoDre:
+          valores.CodigoDre == TODAS_DRE_ID ? 'todas' : valores.CodigoDre,
+        gruposId: gruposSelecionados,
+        dataEnvio: valores?.dataEnvio?.set({ hour: 0, minute: 0, second: 0 }),
+        dataExpiracao: valores?.dataExpiracao?.set({
+          hour: 23,
+          minute: 59,
+          second: 59,
+        }),
+      };
 
-    onFiltrar(valoresSubmit);
+      onFiltrar(valoresSubmit);
+    }
   };
 
   async function obterListaGrupos() {
@@ -591,34 +571,39 @@ function Filtro({ onFiltrar }) {
   };
 
   const validarFitlroDebounced = () => {
-    let timeout;
-
-    if(timeout)
-      clearTimeout(timeout);
-    
-      timeout = setTimeout(() => {
-      timeout = null;
+    if (timeoutCampoPesquisa) {
+      clearTimeout(timeoutCampoPesquisa);
+    }
+    const timeout = setTimeout(() => {
       validarFiltro();
     }, 500);
+
+    setTimeoutCampoPesquisa(timeout);
   };
 
   useEffect(loadTiposCalendarioEffect, [
-    pesquisaTipoCalendario, 
+    pesquisaTipoCalendario,
     modalidadeSelecionada,
-    refForm
+    refForm,
   ]);
 
   useEffect(loadEventosEffect, [
-    pesquisaEvento, 
+    pesquisaEvento,
     tipoCalendarioSelecionado,
     valorTipoCalendario,
     modalidadeSelecionada,
     refForm,
   ]);
 
+  useEffect(() => {
+    if (dres?.length && ues?.length) {
+      validarFitlroDebounced();
+    }
+  }, [dres, ues]);
+
   useEffect(changeListaCalendarioEffect, [listaCalendario]);
   useEffect(changeValorEventoEffect, [valorEvento]);
-  useEffect(() => { 
+  useEffect(() => {
     ObterModalidades(ueSelecionada ?? TODAS_UES_ID);
   }, [anosLetivos, dres, ues, ueSelecionada]);
 
@@ -787,7 +772,7 @@ function Filtro({ onFiltrar }) {
                 lista={gruposLista}
                 valueOption="id"
                 valueText="nome"
-                onChange={(grupo) => {
+                onChange={grupo => {
                   validarFiltro();
                   onGrupoChange(grupo);
                 }}
