@@ -58,6 +58,14 @@
         PAPInicioAnoLetivo = 28,
         DataInicioSGP = 29,
 
+        //Pendências gerais
+        ConselhoClasse = 30,
+        ReuniaoAPM = 31,
+        ReuniaoConselhoEscola = 32,
+        ReunioesPedagógicas = 33,
+        DataInicioGeracaoPendencia = 34,
+
+
         //Sistema
         HabilitarServicosEmBackground = 100
     }
