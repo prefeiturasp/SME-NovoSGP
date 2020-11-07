@@ -74,6 +74,8 @@ namespace SME.SGP.Worker.RabbitMQ
             comandos.Add(RotasRabbit.RotaExecutaPendenciasAula, new ComandoRabbit("Verifica as pendências de aula e cria caso exista", typeof(IPendenciaAulaUseCase)));
             comandos.Add(RotasRabbit.RotaSincronizaComponetesCurricularesEol, new ComandoRabbit("Sincroniza os compoentes curriculares com o Eol", typeof(ISincronizarComponentesCurricularesUseCase)));
 
+            comandos.Add(RotasRabbit.RotaExecutaVerificacaoPendenciasGerais, new ComandoRabbit("Executa verficação das pendências gerais", typeof(IExecutaVerificacaoPendenciasGeraisUseCase)));
+
         }
 
         private async Task TratarMensagem(BasicDeliverEventArgs ea)
