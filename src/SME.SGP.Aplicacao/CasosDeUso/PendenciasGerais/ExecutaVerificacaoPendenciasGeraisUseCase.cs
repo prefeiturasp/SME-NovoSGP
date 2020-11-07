@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Infra;
 using System;
 
 namespace SME.SGP.Aplicacao
@@ -15,7 +14,7 @@ namespace SME.SGP.Aplicacao
 
         public void Executar()
         {
-           // mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaExecutaVerificacaoPendenciasGerais, null, Guid.NewGuid(), null));
+            throw new NotImplementedException();
         }
     }
 }
