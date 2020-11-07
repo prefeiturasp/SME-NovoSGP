@@ -133,6 +133,9 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new HistoricoNotaMap());
                config.AddMap(new HistoricoNotaFechamentoMap());
                config.AddMap(new HistoricoNotaConselhoClasseMap());
+               config.AddMap(new PendenciaUsuarioMap());
+               config.AddMap(new PendenciaCalendarioUeMap());
+               config.AddMap(new PendenciaParametroEventoMap());
                config.ForDommel();
            });
         }
