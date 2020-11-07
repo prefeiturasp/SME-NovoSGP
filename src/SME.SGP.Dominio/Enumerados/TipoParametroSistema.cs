@@ -59,10 +59,10 @@
         DataInicioSGP = 29,
 
         //Pendências gerais
-        ConselhoClasse = 30,
-        ReuniaoAPM = 31,
-        ReuniaoConselhoEscola = 32,
-        ReunioesPedagógicas = 33,
+        QuantidadeEventosConselhoClasse = 30,
+        QuantidadeEventosAPM = 31,
+        QuantidadeEventosConselhoEscolar = 32,
+        QuantidadeEventosPedagogicos = 33,
         DataInicioGeracaoPendencia = 34,
 
 
