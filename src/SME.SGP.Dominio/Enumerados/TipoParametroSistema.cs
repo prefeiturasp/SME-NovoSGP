@@ -58,6 +58,14 @@
         PAPInicioAnoLetivo = 28,
         DataInicioSGP = 29,
 
+        //Pendências gerais
+        QuantidadeEventosConselhoClasse = 30,
+        QuantidadeEventosAPM = 31,
+        QuantidadeEventosConselhoEscolar = 32,
+        QuantidadeEventosPedagogicos = 33,
+        DataInicioGeracaoPendencias = 34,
+
+
         //Sistema
         HabilitarServicosEmBackground = 100
     }
