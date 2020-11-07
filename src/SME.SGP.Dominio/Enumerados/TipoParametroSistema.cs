@@ -58,6 +58,11 @@
         PAPInicioAnoLetivo = 28,
         DataInicioSGP = 29,
 
+        //Pendencias Gerais
+        NotificarPendenciaDiasNaoLetivos = 35,
+        NotificarPendenciaDiasLetivosInsuficientes = 36,
+        NotificarPendenciaEventoCalendario = 37,
+
         //Sistema
         HabilitarServicosEmBackground = 100
     }
