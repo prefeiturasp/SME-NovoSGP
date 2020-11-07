@@ -63,7 +63,7 @@
         QuantidadeEventosAPM = 31,
         QuantidadeEventosConselhoEscolar = 32,
         QuantidadeEventosPedagogicos = 33,
-        DataInicioGeracaoPendencia = 34,
+        DataInicioGeracaoPendencias = 34,
 
 
         //Sistema
