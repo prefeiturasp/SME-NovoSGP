@@ -1,7 +1,7 @@
 insert  into  
 	public.parametros_sistema (nome,descricao,valor,ano,ativo,criado_em,criado_por, criado_rf,tipo)
 select
-	'ConselhoClasse','Conselho de Classe','4', 2020, true, now(),'Carga Inicial','Carga Inicial',30
+	'QuantidadeEventosConselhoClasse','Quantidade de Eventos de Conselho de Classe','4', 2020, true, now(),'Carga Inicial','Carga Inicial',30
 where
 	not exists(
 	select 	1
@@ -12,7 +12,7 @@ where
 insert  into  
 	public.parametros_sistema (nome,descricao,valor,ano,ativo,criado_em,criado_por, criado_rf,tipo)
 select
-	'ReuniaoAPM','Reunião de APM','5', 2020, true, now(),'Carga Inicial','Carga Inicial',31
+	'QuantidadeEventosAPM','Quantidade de Eventos de APM','5', 2020, true, now(),'Carga Inicial','Carga Inicial',31
 where
 	not exists(
 	select 	1
@@ -23,7 +23,7 @@ where
 insert  into  
 	public.parametros_sistema (nome,descricao,valor,ano,ativo,criado_em,criado_por, criado_rf,tipo)
 select
-	'ReuniaoConselhoEscola','Reunião de Conselho de Escola','11', 2020, true, now(),'Carga Inicial','Carga Inicial',32
+	'QuantidadeEventosConselhoEscolar','Quantidade de Eventos de Conselho de Escola','11', 2020, true, now(),'Carga Inicial','Carga Inicial',32
 where
 	not exists(
 	select 	1
@@ -33,7 +33,7 @@ where
 insert  into  
 	public.parametros_sistema (nome,descricao,valor,ano,ativo,criado_em,criado_por, criado_rf,tipo)
 select
-	'ReunioesPedagógicas','Reuniões Pedagógicas','11', 2020, true, now(),'Carga Inicial','Carga Inicial',33
+	'QuantidadeEventosPedagogicos','Quantidade de Eventos Pedagógicos','11', 2020, true, now(),'Carga Inicial','Carga Inicial',33
 where
 	not exists(
 	select 	1
