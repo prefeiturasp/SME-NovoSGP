@@ -43,7 +43,7 @@ where
 insert  into  
 	public.parametros_sistema (nome,descricao,valor,ano,ativo,criado_em,criado_por, criado_rf,tipo)
 select
-	'DataInicioGeracaoPendencia','Data de Inicio da geração de Pendências','01/03', 2020, true, now(),'Carga Inicial','Carga Inicial',34
+	'DataInicioGeracaoPendencias','Data de Inicio da geração de Pendências','01/03', 2020, true, now(),'Carga Inicial','Carga Inicial',34
 where
 	not exists(
 	select 	1
