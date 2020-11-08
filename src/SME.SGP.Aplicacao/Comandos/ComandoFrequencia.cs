@@ -39,7 +39,7 @@ namespace SME.SGP.Aplicacao
             var aula = await consultasAula.BuscarPorId(frequenciaDto.AulaId);
             Cliente.Executar<IServicoCalculoFrequencia>(c => c.CalcularFrequenciaPorTurma(alunos, aula.DataAula, aula.TurmaId, aula.DisciplinaId));
 
-            await mediator.Send(new ExcluirPendenciaAulaCommand(aula.Id, TipoPendenciaAula.Frequencia));
+            await mediator.Send(new ExcluirPendenciaAulaCommand(aula.Id, TipoPendencia.Frequencia));
         }
 
         private static List<RegistroAusenciaAluno> ObtemListaDeAusencias(FrequenciaDto frequenciaDto)
