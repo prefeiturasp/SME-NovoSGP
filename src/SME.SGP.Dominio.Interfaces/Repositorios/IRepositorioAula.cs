@@ -1,4 +1,5 @@
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -83,5 +84,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<Aula>> ObterAulasPorTurmaETipoCalendario(long tipoCalendarioId, string turmaId);
         void SalvarVarias(IEnumerable<Aula> aulas);
         Task ExcluirPeloSistemaAsync(long[] idsAulas);
+
+        Task<IEnumerable<AulaReduzidaDto>> ObterQuantidadeAulasReduzido(long turmaId, string componenteCurricularId, long tipoCalendarioId, int bimestre, bool professorCJ);
     }
 }
