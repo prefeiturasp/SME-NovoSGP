@@ -22,7 +22,7 @@ namespace SME.SGP.Dados.Repositorios
         }
 
 
-        public async Task<IEnumerable<Aula>> ListarPendenciasPorTipo(TipoPendenciaAula tipoPendenciaAula, string tabelaReferencia, long[] modalidades)
+        public async Task<IEnumerable<Aula>> ListarPendenciasPorTipo(TipoPendencia tipoPendenciaAula, string tabelaReferencia, long[] modalidades)
         {
             var query = $@"select
 	                        aula.id as Id
@@ -30,9 +30,9 @@ namespace SME.SGP.Dados.Repositorios
 	                        aula
                         inner join turma on 
 	                        aula.turma_id = turma.turma_id
-                        left join pendencia_aula on
-	                        aula.id = aula_id
-	                        and pendencia_aula.tipo = @tipo
+                        left join pendencia_aula pa on
+	                        aula.id = pa.aula_id
+	                    left join pendencia p on p.id = pa.pendencia_id and p.tipo = @tipo
                         left join {tabelaReferencia} on
 	                        aula.id = {tabelaReferencia}.aula_id
                         where
@@ -62,32 +62,27 @@ namespace SME.SGP.Dados.Repositorios
 	                        aa.turma_id = a.turma_id
 	                        and aa.data_avaliacao::date = a.data_aula::date
 	                        and aad.disciplina_id = a.disciplina_id
-                        left join pendencia_aula on
-	                        a.id = aula_id
-	                        and pendencia_aula.tipo = @tipo
+                        left join pendencia_aula pa on
+	                        a.id = pa.aula_id
+                        left join pendencia p on p.id = pa.pendencia_id
+	                        and p.tipo = @tipo
                         where
 	                        not a.excluido
 	                        and a.data_aula::date < @hoje
 	                        and n.id is null
-	                        and pendencia_aula.id is null
+	                        and pa.id is null
+	                        and p.id is null
                         group by
 	                        a.id";
 
-            return (await database.Conexao.QueryAsync<Aula>(sql.ToString(), new { hoje = DateTime.Today, tipo = TipoPendenciaAula.Avaliacao }));
+            return (await database.Conexao.QueryAsync<Aula>(sql.ToString(), new { hoje = DateTime.Today, tipo = TipoPendencia.Avaliacao }));
         }
 
-
-        public async Task<PendenciaAula> ObterPendenciaPorAulaIdETipo(TipoPendenciaAula tipoPendenciaAula, long aulaId)
+        public async Task Excluir(TipoPendencia tipoPendenciaAula, long aulaId)
         {
-            var query = $@"select id as Id, aula_id as AulaId, tipo as TipoPendenciaAula from pendencia_aula 
-                    WHERE tipo = @tipo AND aula_id = @aulaid";
-
-            return (await database.Conexao.QueryFirstOrDefaultAsync<PendenciaAula>(query, new { aulaid = aulaId, tipo = tipoPendenciaAula }));
-        }
-
-        public async Task Excluir(TipoPendenciaAula tipoPendenciaAula, long aulaId)
-        {
-            await database.Conexao.ExecuteScalarAsync("delete from pendencia_aula where aula_id= @aulaid and tipo = @tipo", new { aulaid = aulaId, tipo = tipoPendenciaAula });
+            await database.Conexao.ExecuteScalarAsync(@"delete from pendencia_aula pa
+                                                     inner join pendencia p on p.id = pa.pendencia_id
+                                                    where pa.aula_id= @aulaid and p.tipo = @tipo", new { aulaid = aulaId, tipo = tipoPendenciaAula });
         }
 
         public async Task Salvar(PendenciaAula pendencia)
@@ -95,18 +90,19 @@ namespace SME.SGP.Dados.Repositorios
             await database.Conexao.InsertAsync(pendencia);
         }
 
-        public void SalvarVarias(IEnumerable<Aula> aulas, TipoPendenciaAula tipoPendenciaAula)
+        public async Task SalvarVarias(long pendenciaId, IEnumerable<long> aulas)
         {
-            var sql = @"copy pendencia_aula (aula_id, tipo)
+            var sql = @"copy pendencia_aula (pendencia_id, aula_id)
                             from
                             stdin (FORMAT binary)";
+
             using (var writer = ((NpgsqlConnection)database.Conexao).BeginBinaryImport(sql))
             {
-                foreach (var aula in aulas)
+                foreach (var aulaId in aulas)
                 {
                     writer.StartRow();
-                    writer.Write(aula.Id, NpgsqlDbType.Bigint);
-                    writer.Write((long)tipoPendenciaAula, NpgsqlDbType.Bigint);
+                    writer.Write(pendenciaId, NpgsqlDbType.Bigint);
+                    writer.Write(aulaId, NpgsqlDbType.Bigint);
                 }
                 writer.Complete();
             }

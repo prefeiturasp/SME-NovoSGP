@@ -211,9 +211,7 @@ namespace SME.SGP.Dominio.Servicos
             {
                 repositorioPendencia.ExcluirPendenciasFechamento(fechamentoId, tipoPendencia);
 
-                var pendencia = new Pendencia(tipoPendencia.Name(),
-                                        mensagem,
-                                        tipoPendencia);
+                var pendencia = new Pendencia(tipoPendencia, tipoPendencia.Name(), mensagem);
                 repositorioPendencia.Salvar(pendencia);
 
                 var pendenciaFechamento = new PendenciaFechamento(fechamentoId, pendencia.Id);
