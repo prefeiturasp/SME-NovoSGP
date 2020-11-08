@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { ContainerTabsCard } from '~/componentes/tabs/tabs.css';
 import { ContainerTabsDashboardEscolaAqui } from '../dashboardEscolaAqui.css';
 import DadosAdesao from './DadosAdesao/dadosAdesao';
+import DadosComunicadosTotais from './DadosComunicadosTotais/dadosComunicadosTotais';
 
 const { TabPane } = Tabs;
 
@@ -27,7 +28,11 @@ const TabsDashboardEscolaAqui = props => {
           ) : (
             ''
           )}
-          {tabSelecionada === '2' ? 'Comunicados - Leitura' : ''}
+          {tabSelecionada === '2' ? (
+            <DadosComunicadosTotais codigoDre={codigoDre} codigoUe={codigoUe} />
+          ) : (
+            ''
+          )}
           {tabSelecionada === '3' ? 'Comunicados - Totais' : ''}
         </div>
       </>
@@ -50,10 +55,10 @@ const TabsDashboardEscolaAqui = props => {
             <TabPane tab="Adesão" key="1">
               {montarDados()}
             </TabPane>
-            <TabPane tab="Comunicados - Leitura" key="3">
+            <TabPane tab="Comunicados - Totais" key="2">
               {montarDados()}
             </TabPane>
-            <TabPane tab="Comunicados - Totais" key="2">
+            <TabPane tab="Comunicados - Leitura" key="3">
               {montarDados()}
             </TabPane>
           </ContainerTabsCard>
