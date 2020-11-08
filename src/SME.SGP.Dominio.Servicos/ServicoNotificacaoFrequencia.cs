@@ -89,7 +89,7 @@ namespace SME.SGP.Dominio.Servicos
         }
 
         public async Task NotificarAlunosFaltosos()
-        {
+        {            
             var dataReferencia = DateTime.Today.AddDays(-1);
 
             var quantidadeDiasCP = int.Parse(await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.QuantidadeDiasNotificaoCPAlunosAusentes));
@@ -106,9 +106,6 @@ namespace SME.SGP.Dominio.Servicos
 
             await NotificaAlunosFaltososCargo(DiaRetroativo(dataReferencia, quantidadeDiasCP - 1), quantidadeDiasCP, Cargo.CP, tipoCalendario?.Id ?? 0);
             await NotificaAlunosFaltososCargo(DiaRetroativo(dataReferencia, quantidadeDiasDiretor - 1), quantidadeDiasDiretor, Cargo.Diretor, tipoCalendario?.Id ?? 0);
-
-            //await NotificaAlunosFaltososCargo(dataReferencia.DiaRetroativo(quantidadeDiasCP - 1), quantidadeDiasCP, Cargo.CP, tipoCalendario?.Id ?? 0);
-            //await NotificaAlunosFaltososCargo(dataReferencia.DiaRetroativo(quantidadeDiasDiretor - 1), quantidadeDiasDiretor, Cargo.Diretor, tipoCalendario?.Id ?? 0);
         }
 
         public async Task NotificarCompensacaoAusencia(long compensacaoId)
@@ -741,7 +738,8 @@ namespace SME.SGP.Dominio.Servicos
         {
             FiltroFeriadoCalendarioDto filtro = new FiltroFeriadoCalendarioDto();
             filtro.Ano = data.Year;
-            return consultasFeriadoCalendario.Listar(filtro).Result.Any(x => x.DataFeriado == data);            
+            var ret = consultasFeriadoCalendario.Listar(filtro).Result;
+            return ret.Any(x => x.DataFeriado == data);            
         }
 
         #endregion Metodos Privados
