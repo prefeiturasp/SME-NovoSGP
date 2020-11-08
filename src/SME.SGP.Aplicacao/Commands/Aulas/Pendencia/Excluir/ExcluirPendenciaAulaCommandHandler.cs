@@ -17,7 +17,6 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(ExcluirPendenciaAulaCommand request, CancellationToken cancellationToken)
         {
-            var pendencia = await repositorioPendenciaAula.ObterPendenciaPorAulaIdETipo(request.TipoPendenciaAula, request.AulaId);
             await repositorioPendenciaAula.Excluir(request.TipoPendenciaAula, request.AulaId);
             return true;
         }
