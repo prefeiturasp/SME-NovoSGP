@@ -9,7 +9,7 @@ namespace SME.SGP.Dados.Mapeamentos
         {
             ToTable("pendencia_aula");
             Map(c => c.AulaId).ToColumn("aula_id");
-            Map(c => c.TipoPendenciaAula).ToColumn("tipo");            
+            Map(c => c.PendenciaId).ToColumn("pendencia_id");            
         }
     }
 }

@@ -7,14 +7,14 @@ namespace SME.SGP.Aplicacao
 {
     public class ExcluirPendenciaAulaCommand : IRequest<bool>
     {
-        public ExcluirPendenciaAulaCommand(long aulaId, TipoPendenciaAula tipoPendenciaAula)
+        public ExcluirPendenciaAulaCommand(long aulaId, TipoPendencia tipoPendenciaAula)
         {
             AulaId = aulaId;
             TipoPendenciaAula = tipoPendenciaAula;
         }
 
         public long AulaId { get; set; }
-        public TipoPendenciaAula TipoPendenciaAula { get; set; }
+        public TipoPendencia TipoPendenciaAula { get; set; }
     }
 
 
