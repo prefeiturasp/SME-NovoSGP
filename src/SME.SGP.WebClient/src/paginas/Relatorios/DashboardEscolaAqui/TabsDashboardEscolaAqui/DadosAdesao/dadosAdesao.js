@@ -1,18 +1,42 @@
 import * as moment from 'moment';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Graficos, Loader } from '~/componentes';
+import { CoresGraficos, Graficos, Loader } from '~/componentes';
 import { erros } from '~/servicos';
 import ServicoDashboardEscolaAqui from '~/servicos/Paginas/Relatorios/EscolaAqui/DashboardEscolaAqui/ServicoDashboardEscolaAqui';
 import {
   DataUltimaAtualizacao,
   LegendaGrafico,
+  TituloGrafico,
+  ContainerGraficoBarras,
 } from '../../dashboardEscolaAqui.css';
 
 const DadosAdesao = props => {
   const { codigoDre, codigoUe } = props;
 
   const [dadosGraficoAdesao, setDadosGraficoAdesao] = useState([]);
+  const [chavesGrafico, setChavesGrafico] = useState([]);
+
+  const [
+    dadosGraficoTotalUsuariosSemAppInstalado,
+    setDadosGraficoTotalUsuariosSemAppInstalado,
+  ] = useState([]);
+
+  const [
+    dadosGraficoTotalUsuariosComCpfInvalidos,
+    setDadosGraficoTotalUsuariosComCpfInvalidos,
+  ] = useState([]);
+
+  const [
+    dadosGraficoTotalUsuariosPrimeiroAcesso,
+    setDadosGraficoTotalUsuariosPrimeiroAcesso,
+  ] = useState([]);
+
+  const [
+    dadosGraficoTotalUsuariosValidos,
+    setDadosGraficoTotalUsuariosValidos,
+  ] = useState([]);
+
   const [exibirLoader, setExibirLoader] = useState(false);
   const [dataUltimaAtualizacao, setDataUltimaAtualizacao] = useState();
 
@@ -123,15 +147,130 @@ const DadosAdesao = props => {
     }
   }, [codigoDre, codigoUe]);
 
+  const montarDadosGrafico = (item, nomeCampo, dados, index) => {
+    if (item[nomeCampo]) {
+      const totalDados = {
+        nomeCompletoDre: item.nomeCompletoDre,
+        color: CoresGraficos[index],
+      };
+      totalDados[nomeCampo] = item[nomeCampo];
+      totalDados[item.nomeCompletoDre] = item[nomeCampo];
+      dados.push(totalDados);
+    }
+  };
+
+  const mapearDadosGraficos = useCallback(dados => {
+    const chaves = [];
+    const dadosTotalUsuariosComCpfInvalidos = [];
+    const dadosTotalUsuariosSemAppInstalado = [];
+    const dadosTotalUsuariosPrimeiroAcesso = [];
+    const dadosTotalUsuariosValidos = [];
+
+    dados.forEach((item, index) => {
+      chaves.push(item.nomeCompletoDre);
+
+      montarDadosGrafico(
+        item,
+        'totalUsuariosComCpfInvalidos',
+        dadosTotalUsuariosComCpfInvalidos,
+        index
+      );
+
+      montarDadosGrafico(
+        item,
+        'totalUsuariosSemAppInstalado',
+        dadosTotalUsuariosSemAppInstalado,
+        index
+      );
+
+      montarDadosGrafico(
+        item,
+        'totalUsuariosPrimeiroAcesso',
+        dadosTotalUsuariosPrimeiroAcesso,
+        index
+      );
+
+      montarDadosGrafico(
+        item,
+        'totalUsuariosValidos',
+        dadosTotalUsuariosValidos,
+        index
+      );
+    });
+
+    setChavesGrafico(chaves);
+    setDadosGraficoTotalUsuariosComCpfInvalidos(
+      dadosTotalUsuariosComCpfInvalidos
+    );
+    setDadosGraficoTotalUsuariosSemAppInstalado(
+      dadosTotalUsuariosSemAppInstalado
+    );
+    setDadosGraficoTotalUsuariosPrimeiroAcesso(
+      dadosTotalUsuariosPrimeiroAcesso
+    );
+    setDadosGraficoTotalUsuariosValidos(dadosTotalUsuariosValidos);
+  }, []);
+
+  const limparGraficosTotais = () => {
+    setDadosGraficoTotalUsuariosComCpfInvalidos([]);
+    setDadosGraficoTotalUsuariosSemAppInstalado([]);
+    setDadosGraficoTotalUsuariosPrimeiroAcesso([]);
+    setDadosGraficoTotalUsuariosValidos([]);
+  };
+
+  const obterDadosGraficoAdesaoAgrupados = useCallback(async () => {
+    setExibirLoader(true);
+    const retorno = await ServicoDashboardEscolaAqui.obterDadosGraficoAdesaoAgrupados()
+      .catch(e => erros(e))
+      .finally(() => setExibirLoader(false));
+
+    if (retorno && retorno.data && retorno.data.length) {
+      mapearDadosGraficos(retorno.data);
+    } else {
+      limparGraficosTotais();
+    }
+  }, [mapearDadosGraficos]);
+
   useEffect(() => {
     if (codigoDre && codigoUe) {
+      if (codigoDre === '-99' && codigoUe === '-99') {
+        obterDadosGraficoAdesaoAgrupados();
+      } else {
+        limparGraficosTotais();
+      }
       obterDadosGraficoAdesao();
     } else {
       setDadosGraficoAdesao([]);
     }
 
     obterDataUltimaAtualizacao();
-  }, [codigoDre, codigoUe, obterDadosGraficoAdesao]);
+  }, [
+    codigoDre,
+    codigoUe,
+    obterDadosGraficoAdesao,
+    obterDadosGraficoAdesaoAgrupados,
+  ]);
+
+  const graficoBarras = (dados, titulo) => {
+    return (
+      <div className="scrolling-chart">
+        <div className="col-md-12">
+          <TituloGrafico>{titulo}</TituloGrafico>
+          <ContainerGraficoBarras>
+            <Graficos.Barras
+              dados={dados}
+              indice="nomeCompletoDre"
+              chaves={chavesGrafico}
+              groupMode="stacked"
+              legendsTranslateX={105}
+              showAxisBottom={false}
+              customProps={{ colors: item => item?.data?.color }}
+            />
+          </ContainerGraficoBarras>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <Loader loading={exibirLoader} className="text-center">
@@ -149,18 +288,8 @@ const DadosAdesao = props => {
 
       {dadosGraficoAdesao && dadosGraficoAdesao.length ? (
         <>
-          <div
-            className="col-md-12"
-            style={{
-              fontSize: '24px',
-              fontWeight: 700,
-              textAlign: 'center',
-              color: '#000000',
-            }}
-          >
-            Total de Usuários
-          </div>
-          <div className="row">
+          <TituloGrafico>Total de Usuários</TituloGrafico>
+          <div className="row mb-5">
             <div className="col-md-6">
               <Graficos.Pie
                 data={dadosGraficoAdesao}
@@ -184,6 +313,34 @@ const DadosAdesao = props => {
               </LegendaGrafico>
             </div>
           </div>
+
+          {dadosGraficoTotalUsuariosComCpfInvalidos?.length
+            ? graficoBarras(
+                dadosGraficoTotalUsuariosComCpfInvalidos,
+                'Responsáveis sem CPF ou com CPF inválido no EOL'
+              )
+            : ''}
+
+          {dadosGraficoTotalUsuariosSemAppInstalado?.length
+            ? graficoBarras(
+                dadosGraficoTotalUsuariosSemAppInstalado,
+                'Responsáveis que não realizaram a instalação'
+              )
+            : ''}
+
+          {dadosGraficoTotalUsuariosPrimeiroAcesso?.length
+            ? graficoBarras(
+                dadosGraficoTotalUsuariosPrimeiroAcesso,
+                ' Responsáveis com primeiro acesso incompleto'
+              )
+            : ''}
+
+          {dadosGraficoTotalUsuariosValidos?.length
+            ? graficoBarras(
+                dadosGraficoTotalUsuariosValidos,
+                ' Responsáveis válidos'
+              )
+            : ''}
         </>
       ) : (
         'Sem dados'
