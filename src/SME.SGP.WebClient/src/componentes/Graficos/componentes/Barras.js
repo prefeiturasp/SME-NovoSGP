@@ -15,6 +15,7 @@ function Barras({
   legendsTranslateX,
   showAxisBottom,
   customProps,
+  removeLegends,
 }) {
   const format = v => `${Math.round(v, 2)}%`;
 
@@ -68,13 +69,13 @@ function Barras({
           itemWidth: 100,
           itemHeight: 20,
           itemDirection: 'left-to-right',
-          itemOpacity: 0.85,
+          itemOpacity: removeLegends ? 0 : 0.85,
           symbolSize: 20,
           effects: [
             {
               on: 'hover',
               style: {
-                itemOpacity: 1,
+                itemOpacity: removeLegends ? 0 : 1,
               },
             },
           ],
@@ -100,6 +101,7 @@ Barras.propTypes = {
   legendsTranslateX: t.number,
   showAxisBottom: t.bool,
   customProps: t.oneOfType([t.object]),
+  removeLegends: t.bool,
 };
 
 Barras.defaultProps = {
@@ -113,6 +115,7 @@ Barras.defaultProps = {
   legendsTranslateX: 120,
   showAxisBottom: true,
   customProps: {},
+  removeLegends: false,
 };
 
 export default Barras;
