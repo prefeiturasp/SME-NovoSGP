@@ -319,6 +319,9 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine(fromCompletoRegencia);
             MontaWhere(query, dataAvaliacao, dreId, ueId, null, null, turmaId, professorRf, null, null, false, null, disciplinasId, true, null, null, id, id.HasValue);
             MontaWhereRegencia(query);
+            
+            string[] strDisciplinasContidaId = disciplinasContidaId.Select(x => x.ToString()).ToArray();
+
             var resultado = (await database.Conexao.QueryAsync<AtividadeAvaliativa>(query.ToString(), new
             {
                 id,
@@ -328,7 +331,7 @@ namespace SME.SGP.Dados.Repositorios
                 turmaId,
                 professorRf,
                 disciplinasId,
-                disciplinasContidaId
+                strDisciplinasContidaId                
             }));
 
             return resultado.Any();
@@ -457,12 +460,13 @@ namespace SME.SGP.Dados.Repositorios
 
             if (disciplinasId != null && disciplinasId.Length > 0)
             {
-                query.AppendLine("and aad.disciplina_id =  ANY(@disciplinasId)");
+                query.AppendLine("and aad.disciplina_id = ANY(@disciplinasId)");
                 query.AppendLine("and aad.excluido =  false");
             }
+
             if (disciplinaId.HasValue)
             {
-                query.AppendLine("and aad.disciplina_id::text =  @disciplinaId");
+                query.AppendLine("and aad.disciplina_id = @disciplinasId");
                 query.AppendLine("and aad.excluido =  false");
             }
 
@@ -486,7 +490,7 @@ namespace SME.SGP.Dados.Repositorios
 
         private void MontaWhereRegencia(StringBuilder query)
         {
-            query.AppendLine("AND aar.disciplina_contida_regencia_id = ANY(@disciplinasContidaId)");
+            query.AppendLine("AND aar.disciplina_contida_regencia_id = ANY(@strDisciplinasContidaId)");                        
         }
     }
 }
