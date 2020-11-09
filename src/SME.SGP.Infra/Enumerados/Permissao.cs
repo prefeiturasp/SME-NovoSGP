@@ -524,6 +524,6 @@
         RCG_C = 173,
 
         [PermissaoMenu(Menu = "Dashboard Escola aqui", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = false, Url = "/relatorios/escola-aqui/dashboard")]
-        RDE_A = 174
+        RDE_A = 177
     }
 }
