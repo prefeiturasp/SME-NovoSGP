@@ -21,7 +21,6 @@ namespace SME.SGP.Dados.Repositorios
             this.database = database;
         }
 
-
         public async Task<IEnumerable<Aula>> ListarPendenciasPorTipo(TipoPendencia tipoPendenciaAula, string tabelaReferencia, long[] modalidades)
         {
             var query = $@"select
@@ -46,7 +45,6 @@ namespace SME.SGP.Dados.Repositorios
 
             return (await database.Conexao.QueryAsync<Aula>(query, new { hoje = DateTime.Today, tipo = tipoPendenciaAula, modalidades }));
         }
-
 
         public async Task<IEnumerable<Aula>> ListarPendenciasAtividadeAvaliativa()
         {
@@ -121,6 +119,27 @@ namespace SME.SGP.Dados.Repositorios
             var sql = @"select tipo from pendencia_aula where aula_id =ANY(@aulas) group by tipo";
 
             return (await database.Conexao.QueryAsync<long>(sql.ToString(), new { aulas })).AsList().ToArray();
+        }
+
+        public async Task<Turma> ObterNomeTurmaPorPendencia(long pendenciaId)
+        {
+            var query = @"select t.* 
+                         from pendencia_aula pa
+                        inner join aula a on a.id = pa.aula_id
+                        inner join turma t on t.turma_id = a.turma_id
+                        where pa.pendencia_id = @pendenciaId ";
+
+            return await database.Conexao.QueryFirstAsync<Turma>(query, new { pendenciaId });
+        }
+
+        public async Task<IEnumerable<PendenciaAulaDto>> ObterPendenciasAulasPorPendencia(long pendenciaId)
+        {
+            var query = @"select a.data_aula as DataAula, pa.Motivo
+                           from pendencia_aula pa
+                          inner join aula a on a.id = pa.aula_id
+                          where pa.pendencia_id = @pendenciaId";
+
+            return await database.Conexao.QueryAsync<PendenciaAulaDto>(query, new { pendenciaId });
         }
     }
 }
