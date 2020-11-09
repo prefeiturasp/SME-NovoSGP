@@ -14,5 +14,6 @@
         public long Id { get; set; }
         public long AulaId { get; set; }
         public long PendenciaId { get; set; }
+        public string Motivo { get; set; }
     }
 }
