@@ -58,6 +58,7 @@ drop table if exists public.pendencia_usuario;
 CREATE TABLE public.pendencia_usuario (
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
 	usuario_id int8 NOT NULL,
+	pendencia_id int8 NOT NULL,
 	
 	alterado_por varchar(200) NULL,
 	alterado_rf varchar(200) NULL,
@@ -75,4 +76,12 @@ select
 		'FOREIGN KEY (usuario_id) REFERENCES usuario (id)'
 	);
 
+select
+	f_cria_fk_se_nao_existir(
+		'pendencia_usuario',
+		'pendencia_usuario_pendencia_fk',
+		'FOREIGN KEY (pendencia_id) REFERENCES pendencia (id)'
+	);
+
 CREATE INDEX pendencia_usuario_usuario_idx ON public.pendencia_usuario USING btree (usuario_id);
+CREATE INDEX pendencia_usuario_pendencia_idx ON public.pendencia_usuario USING btree (pendencia_id);
