@@ -65,5 +65,14 @@ namespace SME.SGP.Api.Controllers
         {
            return Ok(await useCase.Executar(new VerificarUsuarioDocumentoDto(tipoDocumentoId, classificacaoId, usuarioId)));
         }
+
+        [HttpGet("documentos/tipos")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ListarTiposDeDocumentos([FromServices] IListarTipoDeDocumentosUseCase useCase)
+        {
+            return Ok(await useCase.Executar());
+        }
     }
 }
