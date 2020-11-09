@@ -13,15 +13,6 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<(byte[], string, string)> Executar(Guid codigoArquivo)
-        {
-            var entidadeArquivo = await mediator.Send(new ObterArquivoPorCodigoQuery(codigoArquivo));
-
-            var arquivoFisico = await mediator.Send(new DownloadArquivoCommand(codigoArquivo, entidadeArquivo.Nome, entidadeArquivo.Tipo));
-
-            return (arquivoFisico, entidadeArquivo.TipoConteudo, entidadeArquivo.Nome);
-        }
-
         public async Task<bool> Executar(VerificarUsuarioDocumentoDto param)
         {
             return await mediator.Send(new VerificaUsuarioPossuiArquivoQuery(param.TipoDocumentoId, param.ClassificacaoId, param.UsuarioId));

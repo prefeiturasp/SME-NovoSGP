@@ -512,6 +512,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<ISalvarPlanoAulaUseCase, SalvarPlanoAulaUseCase>();
 
             services.TryAddScoped<IVerificarUsuarioDocumentoUseCase, VerificarUsuarioDocumentoUseCase>();
+            services.TryAddScoped<IListarTipoDeDocumentosUseCase, ListarTiposDeDocumentosUseCase>();
 
 
 
