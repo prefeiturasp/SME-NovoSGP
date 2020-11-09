@@ -14,5 +14,5 @@ namespace SME.SGP.Dados.Repositorios
         public RepositorioDocumento(ISgpContext conexao) : base(conexao)
         {
         }
-
+    }
 }
