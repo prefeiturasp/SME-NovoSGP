@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS public.classificacao_documento(
 
 CREATE TABLE IF NOT EXISTS public.documento(
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
-	usuario_rf varchar(200) NULL,
+	usuario_id int8 NOT NULL,
 	alterado_por varchar(200) NULL,
 	alterado_rf varchar(200) NULL,
 	alterado_em timestamp NULL,
@@ -46,9 +46,17 @@ select
 		'FOREIGN KEY (arquivo_id) REFERENCES arquivo (id)'
 	);
 
+select
+	f_cria_fk_se_nao_existir(
+		'documento',
+		'documento_usuario',
+		'FOREIGN KEY (usuario_id) REFERENCES usuario (id)'
+	);
+
 CREATE INDEX classificacao_documento_tipo_documento_idx ON public.classificacao_documento USING btree (tipo_documento_id);
 CREATE INDEX documento_classificacao_documento_idx ON public.documento USING btree (classificacao_documento_id);
 CREATE INDEX documento_arquivo_idx ON public.documento USING btree (arquivo_id);
+CREATE INDEX documento_usuario_idx ON public.documento USING btree (usuario_id);
 
 insert into public.tipo_documento (descricao) values ('Plano de Trabalho');
 insert into public.tipo_documento (descricao) values ('Documentos');
