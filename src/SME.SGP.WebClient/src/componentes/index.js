@@ -1,5 +1,5 @@
 export { CampoData, momentSchema } from './campoData/campoData';
-export { Colors, Base, Active, Hover } from './colors';
+export { CoresGraficos, Colors, Base, Active, Hover } from './colors';
 export { default as Alert } from './alert';
 export { default as Auditoria } from './auditoria';
 export { default as BarraNavegacao } from './BarraNavegacao';

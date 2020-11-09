@@ -14,6 +14,11 @@ class ServicoDashboardEscolaAqui {
     return api.get(url);
   };
 
+  obterDadosGraficoAdesaoAgrupados = () => {
+    const url = `${urlPadrao}/adesao/agrupados`;
+    return api.get(url);
+  };
+
   obterUltimaAtualizacaoPorProcesso = nomeProcesso => {
     const url = `${urlPadrao}/ultimoProcessamento?nomeProcesso=${nomeProcesso}`;
     return api.get(url);
