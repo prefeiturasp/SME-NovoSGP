@@ -56,5 +56,14 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(codigoArquivo));
         }
+
+        [HttpGet("documentos/tipo-documento/{tipoDocumentoId}/classificacao/{classificacaoId}/usuario/{usuarioId}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ValidacaoUsuarioDocumento(long tipoDocumentoId, long classificacaoId, long usuarioId, [FromServices] IVerificarUsuarioDocumentoUseCase useCase)
+        {
+           return Ok(await useCase.Executar(new VerificarUsuarioDocumentoDto(tipoDocumentoId, classificacaoId, usuarioId)));
+        }
     }
 }
