@@ -44,6 +44,7 @@ drop table if exists public.pendencia_parametro_evento;
 CREATE TABLE public.pendencia_parametro_evento (
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
 	parametro_sistema_id int8 NOT NULL,
+	pendencia_id int8 not null,
 	
 	alterado_por varchar(200) NULL,
 	alterado_rf varchar(200) NULL,
@@ -61,7 +62,15 @@ select
 		'FOREIGN KEY (parametro_sistema_id) REFERENCES parametros_sistema (id)'
 	);
 
+select
+	f_cria_fk_se_nao_existir(
+		'pendencia_parametro_evento',
+		'pendencia_parametro_evento_pendencia_fk',
+		'FOREIGN KEY (pendencia_id) REFERENCES pendencia (id)'
+	);
+
 CREATE INDEX pendencia_parametro_evento_parametro_idx ON public.pendencia_parametro_evento USING btree (parametro_sistema_id);
+CREATE INDEX pendencia_parametro_evento_pendencia_idx ON public.pendencia_parametro_evento USING btree (pendencia_id);
 
 drop table if exists public.pendencia_usuario;
 CREATE TABLE public.pendencia_usuario (
