@@ -49,7 +49,7 @@ select
 	f_cria_fk_se_nao_existir(
 		'pendencia_parametro_evento',
 		'pendencia_parametro_evento_parametro_fk',
-		'FOREIGN KEY (parametro_sistema_id) REFERENCES parametro_sistema (id)'
+		'FOREIGN KEY (parametro_sistema_id) REFERENCES parametros_sistema (id)'
 	);
 
 CREATE INDEX pendencia_parametro_evento_parametro_idx ON public.pendencia_parametro_evento USING btree (parametro_sistema_id);
