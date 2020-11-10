@@ -521,6 +521,18 @@
         RCA_C = 172,
 
         [PermissaoMenu(Menu = "Diario classe", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = false, Url = "/relatorios/diario-classe/controle-grade", EhSubMenu = true, OrdemSubMenu = 2, SubMenu = "Controle de Grade")]
-        RCG_C = 173
+        RCG_C = 173,
+
+        [PermissaoMenu(Menu = "Documentos e planos de trabalho", Icone = "fas fa-file-alt", Agrupamento = "Gestão", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = false, Url = "/gestao/documentos/plano-trabalho", EhSubMenu = true, OrdemSubMenu = 2)]
+        DPU_C = 177,
+
+        [PermissaoMenu(Menu = "Documentos e planos de trabalho", Icone = "fas fa-file-alt", Agrupamento = "Gestão", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = false, Url = "/gestao/documentos/plano-trabalho", EhSubMenu = true, OrdemSubMenu = 2)]
+        DPU_I = 178,
+
+        [PermissaoMenu(Menu = "Documentos e planos de trabalho", Icone = "fas fa-file-alt", Agrupamento = "Gestão", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = false, Url = "/gestao/documentos/plano-trabalho", EhSubMenu = true, OrdemSubMenu = 2)]
+        DPU_E = 179,
+
+        [PermissaoMenu(Menu = "Documentos e planos de trabalho", Icone = "fas fa-file-alt", Agrupamento = "Gestão", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = false, Url = "/gestao/documentos/plano-trabalho", EhSubMenu = true, OrdemSubMenu = 2)]
+        DPU_A = 180
     }
 }
