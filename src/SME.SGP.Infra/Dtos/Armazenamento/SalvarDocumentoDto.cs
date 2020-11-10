@@ -4,23 +4,23 @@ using System.Text;
 
 namespace SME.SGP.Infra
 {
-    public class VerificarUsuarioDocumentoDto
+    public class SalvarDocumentoDto
     {
-        public VerificarUsuarioDocumentoDto()
-        {
+        public SalvarDocumentoDto() { }
 
-        }
-
-        public VerificarUsuarioDocumentoDto(long tipoDocumentoId, long classificacaoId, long usuarioId, long ueId)
+        public SalvarDocumentoDto(Guid arquivoCodigo, long ueId, long tipoDocumentoId, long classificacaoId, long usuarioId)
         {
+            ArquivoCodigo = arquivoCodigo;
+            UeId = ueId;
             TipoDocumentoId = tipoDocumentoId;
             ClassificacaoId = classificacaoId;
             UsuarioId = usuarioId;
-            UeId = ueId;
         }
+
+        public long UeId { get; set; }
         public long TipoDocumentoId { get; set; }
         public long ClassificacaoId { get; set; }
         public long UsuarioId { get; set; }
-        public long UeId { get; set; }
+        public Guid ArquivoCodigo { get; set; }
     }
 }

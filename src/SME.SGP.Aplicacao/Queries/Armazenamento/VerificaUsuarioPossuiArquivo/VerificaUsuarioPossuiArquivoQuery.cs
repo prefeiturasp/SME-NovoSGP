@@ -9,15 +9,17 @@ namespace SME.SGP.Aplicacao
 {
     public class VerificaUsuarioPossuiArquivoQuery : IRequest<bool>
     {
-        public VerificaUsuarioPossuiArquivoQuery(long tipoDocumentoId, long classificacaoId, long usuarioId)
+        public VerificaUsuarioPossuiArquivoQuery(long tipoDocumentoId, long classificacaoId, long usuarioId, long ueId)
         {
             TipoDocumentoId = tipoDocumentoId;
             ClassificacaoId = classificacaoId;
             UsuarioId = usuarioId;
+            UeId = ueId;
         }
         public long TipoDocumentoId { get; set; }
         public long ClassificacaoId { get; set; }
         public long UsuarioId { get; set; }
+        public long UeId { get; set; }
     }
 
     public class VerificaUsuarioPossuiArquivoQueryValidator : AbstractValidator<VerificaUsuarioPossuiArquivoQuery>
@@ -35,6 +37,10 @@ namespace SME.SGP.Aplicacao
             RuleFor(c => c.UsuarioId)
             .NotEmpty()
             .WithMessage("O id do usuario deve ser informado.");
+
+            RuleFor(c => c.UeId)
+           .NotEmpty()
+           .WithMessage("O id do UE deve ser informado.");
 
         }
     }
