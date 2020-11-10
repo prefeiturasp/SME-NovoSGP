@@ -57,13 +57,13 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(codigoArquivo));
         }
 
-        [HttpGet("documentos/tipo-documento/{tipoDocumentoId}/classificacao/{classificacaoId}/usuario/{usuarioId}")]
+        [HttpGet("documentos/tipo-documento/{tipoDocumentoId}/classificacao/{classificacaoId}/usuario/{usuarioId}/usuario/{ueId}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ValidacaoUsuarioDocumento(long tipoDocumentoId, long classificacaoId, long usuarioId, [FromServices] IVerificarUsuarioDocumentoUseCase useCase)
+        public async Task<IActionResult> ValidacaoUsuarioDocumento(long tipoDocumentoId, long classificacaoId, long usuarioId, long ueId, [FromServices] IVerificarUsuarioDocumentoUseCase useCase)
         {
-           return Ok(await useCase.Executar(new VerificarUsuarioDocumentoDto(tipoDocumentoId, classificacaoId, usuarioId)));
+           return Ok(await useCase.Executar(new VerificarUsuarioDocumentoDto(tipoDocumentoId, classificacaoId, usuarioId, ueId)));
         }
 
         [HttpGet("documentos/tipos")]
@@ -73,6 +73,15 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ListarTiposDeDocumentos([FromServices] IListarTipoDeDocumentosUseCase useCase)
         {
             return Ok(await useCase.Executar());
+        }
+
+        [HttpPost("documentos")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> SalvarDocumento(SalvarDocumentoDto dto, [FromServices] ISalvarDocumentoUseCase useCase)
+        {
+            return Ok(await useCase.Executar(dto));
         }
     }
 }
