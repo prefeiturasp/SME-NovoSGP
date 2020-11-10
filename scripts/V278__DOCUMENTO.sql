@@ -29,35 +29,35 @@ CREATE TABLE IF NOT EXISTS public.documento(
 select
 	f_cria_fk_se_nao_existir(
 		'classificacao_documento',
-		'classificacao_documento_tipo_documento',
+		'classificacao_documento_tipo_documento_fk',
 		'FOREIGN KEY (tipo_documento_id) REFERENCES tipo_documento (id)'
 	);
 
 select
 	f_cria_fk_se_nao_existir(
 		'documento',
-		'documento_classificacao_documento',
+		'documento_classificacao_documento_fk',
 		'FOREIGN KEY (classificacao_documento_id) REFERENCES classificacao_documento (id)'
 	);
 
 select
 	f_cria_fk_se_nao_existir(
 		'documento',
-		'documento_arquivo',
+		'documento_arquivo_fk',
 		'FOREIGN KEY (arquivo_id) REFERENCES arquivo (id)'
 	);
 
 select
 	f_cria_fk_se_nao_existir(
 		'documento',
-		'documento_usuario',
+		'documento_usuario_fk',
 		'FOREIGN KEY (usuario_id) REFERENCES usuario (id)'
 	);
 
 select
 	f_cria_fk_se_nao_existir(
 		'documento',
-		'documento_ue',
+		'documento_ue_fk',
 		'FOREIGN KEY (ue_id) REFERENCES ue (id)'
 	);
 
