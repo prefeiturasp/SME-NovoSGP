@@ -28,9 +28,10 @@ begin
 		RETURNING id INTO pendenciaId;
 
 		update pendencia_aula pa
-		 inner join aula a on a.id = pa.aula_id
 			set pendencia_id = pendenciaId
-		 where a.turma_id = pendencia.turmaId
+		 from aula a 
+		 where a.id = pa.aula_id
+ 		   and a.turma_id = pendencia.turmaId
 		   and a.disciplina_id = pendencia.componenteId;
 		
 		commit;
@@ -38,4 +39,5 @@ begin
 
     alter table pendencia_aula drop column tipo;
 	alter table pendencia_aula alter pendencia_id set not null;
+    alter table pendencia_aula add if not exists motivo varchar(100) null;
 end $$;
