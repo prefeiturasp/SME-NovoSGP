@@ -15,12 +15,17 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<bool> ValidarUsuarioPossuiDocumento(long tipoDocumentoId, long classificacaoId, long usuarioId)
+        public async Task<bool> ValidarUsuarioPossuiDocumento(long tipoDocumentoId, long classificacaoId, long usuarioId, long ueId)
         {
             var query = @"select distinct 1 from documento 
                    inner join classificacao_documento cd on documento.classificacao_documento_id = cd.id
-                where classificacao_documento_id = @classificacaoId and usuario_id = @usuarioId and cd.tipo_documento_id = @tipoDocumentoId";
-            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { tipoDocumentoId, classificacaoId, usuarioId });
+                where 
+                documento.classificacao_documento_id = @classificacaoId and 
+                documento.usuario_id = @usuarioId and 
+                documento.ue_id = @ueId and
+                cd.tipo_documento_id = @tipoDocumentoId and
+                cd.tipo_documento_id = @tipoDocumentoId";
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { tipoDocumentoId, classificacaoId, usuarioId, ueId });
         }
     }
 }
