@@ -508,6 +508,12 @@ namespace SME.SGP.IoC
 
             services.TryAddScoped<IObterPlanoAulaUseCase, ObterPlanoAulaUseCase>();
 
+            // Pendencias
+            services.TryAddScoped<IObterPendenciasUseCase, ObterPendenciasUseCase>();
+            services.TryAddScoped<IExecutaVerificacaoPendenciasGeraisUseCase, ExecutaVerificacaoPendenciasGeraisUseCase>();
+            services.TryAddScoped<IPendenciasGeraisUseCase, PendenciasGeraisUseCase>();
+
+
             // Plano Aula
             services.TryAddScoped<IExcluirPlanoAulaUseCase, ExcluirPlanoAulaUseCase>();
             services.TryAddScoped<IMigrarPlanoAulaUseCase, MigrarPlanoAulaUseCase>();
@@ -516,9 +522,6 @@ namespace SME.SGP.IoC
             
 
             services.TryAddScoped<IObterTiposCalendarioPorAnoLetivoModalidadeUseCase, ObterTiposCalendarioPorAnoLetivoModalidadeUseCase>();
-
-            services.TryAddScoped<IExecutaVerificacaoPendenciasGeraisUseCase, ExecutaVerificacaoPendenciasGeraisUseCase>();
-            services.TryAddScoped<IPendenciasGeraisUseCase, PendenciasGeraisUseCase>();
         }
     }
 }
