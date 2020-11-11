@@ -517,6 +517,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<ISalvarDocumentoUseCase, SalvarDocumentoUseCase>();
             services.TryAddScoped<IUploadDocumentoUseCase, UploadDocumentoUseCase>();
             services.TryAddScoped<IExcluirDocumentoArquivoUseCase, ExcluirDocumentoArquivoUseCase>();
+            services.TryAddScoped<IExcluirDocumentoUseCase, ExcluirDocumentoUseCase>();
             
 
             services.TryAddScoped<IObterTiposCalendarioPorAnoLetivoModalidadeUseCase, ObterTiposCalendarioPorAnoLetivoModalidadeUseCase>();
