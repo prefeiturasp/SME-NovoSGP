@@ -511,7 +511,13 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IMigrarPlanoAulaUseCase, MigrarPlanoAulaUseCase>();
             services.TryAddScoped<ISalvarPlanoAulaUseCase, SalvarPlanoAulaUseCase>();
 
-            
+            services.TryAddScoped<IVerificarUsuarioDocumentoUseCase, VerificarUsuarioDocumentoUseCase>();
+            services.TryAddScoped<IListarTiposDeDocumentosUseCase, ListarTiposDeDocumentosUseCase>();
+            services.TryAddScoped<IListarDocumentosUseCase, ListarDocumentosUseCase>();
+            services.TryAddScoped<ISalvarDocumentoUseCase, SalvarDocumentoUseCase>();
+            services.TryAddScoped<IUploadDocumentoUseCase, UploadDocumentoUseCase>();
+
+
 
             services.TryAddScoped<IObterTiposCalendarioPorAnoLetivoModalidadeUseCase, ObterTiposCalendarioPorAnoLetivoModalidadeUseCase>();
         }
