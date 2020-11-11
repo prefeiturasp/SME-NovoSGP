@@ -17,10 +17,5 @@ namespace SME.SGP.Aplicacao
         {
             return await mediator.Send(new UploadArquivoCommand(file));
         }
-
-        public Task<Guid> Executar((IFormFile, string) param)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
