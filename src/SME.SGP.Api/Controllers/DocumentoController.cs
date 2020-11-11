@@ -16,7 +16,7 @@ namespace SME.SGP.Api.Controllers
     [Authorize("Bearer")]
     public class DocumentoController : ControllerBase
     {
-        [HttpGet("tipo-documento/{tipoDocumentoId}/classificacao/{classificacaoId}/usuario/{usuarioId}/usuario/{ueId}")]
+        [HttpGet("tipo-documento/{tipoDocumentoId}/classificacao/{classificacaoId}/usuario/{usuarioId}/ue/{ueId}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
@@ -29,7 +29,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ListarTiposDeDocumentos([FromServices] IListarDocumentosUseCase useCase)
+        public async Task<IActionResult> ListarTiposDeDocumentos([FromServices] IListarTiposDeDocumentosUseCase useCase)
         {
             return Ok(await useCase.Executar());
         }
@@ -68,9 +68,27 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> Delete(long documentoId, Guid codigoArquivo, [FromServices] IExcluirDocumentoArquivoUseCase useCase)
+        public async Task<IActionResult> ExcluirArquivo(long documentoId, Guid codigoArquivo, [FromServices] IExcluirDocumentoArquivoUseCase useCase)
         {
             return Ok(await useCase.Executar((documentoId, codigoArquivo)));
+        }
+
+        [HttpDelete("{documentoId}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ExcluirDocumento(long documentoId, Guid codigoArquivo, [FromServices] IExcluirDocumentoUseCase useCase)
+        {
+            return Ok(await useCase.Executar(documentoId));
+        }
+
+        [HttpPut("{documentoId}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> AtualizarDocumento(long documentoId, [FromBody] Guid codigoArquivo, [FromServices] IExcluirDocumentoUseCase useCase)
+        {
+            return Ok(await useCase.Executar(documentoId));
         }
     }
 }

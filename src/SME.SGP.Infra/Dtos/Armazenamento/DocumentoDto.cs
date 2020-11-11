@@ -8,19 +8,19 @@ namespace SME.SGP.Infra
     {
         public DocumentoDto() { }
 
-        public DocumentoDto(string tipoDocumento, string classificacao, long usuarioId, string usuario, DateTime dataUpload)
+        public DocumentoDto(string tipoDocumento, string classificacao, string usuario, DateTime dataUpload)
         {
             TipoDocumento = tipoDocumento;
             Classificacao = classificacao;
-            UsuarioId = usuarioId;
             Usuario = usuario;
             DataUpload = dataUpload;
         }
 
+        public long DocumentoId { get; set; }
         public string Usuario { get; set; }
         public DateTime DataUpload { get; set; }
         public string TipoDocumento { get; set; }
         public string Classificacao { get; set; }
-        public long UsuarioId { get; set; }
+        public Guid CodigoArquivo { get; set; }
     }
 }
