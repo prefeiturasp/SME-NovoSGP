@@ -515,6 +515,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IListarTiposDeDocumentosUseCase, ListarTiposDeDocumentosUseCase>();
             services.TryAddScoped<IListarDocumentosUseCase, ListarDocumentosUseCase>();
             services.TryAddScoped<ISalvarDocumentoUseCase, SalvarDocumentoUseCase>();
+            services.TryAddScoped<IUploadDocumentoUseCase, UploadDocumentoUseCase>();
 
 
 

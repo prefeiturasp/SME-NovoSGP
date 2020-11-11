@@ -22,7 +22,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         //[RequestSizeLimit(200 * 1024 * 1024)]
-        public async Task<IActionResult> Upload([FromForm]IFormFile file, [FromServices] IUploadDeArquivoUseCase useCase)
+        public async Task<IActionResult> Upload([FromForm] IFormFile file, [FromServices] IUploadDeArquivoUseCase useCase)
         {
             try
             {
@@ -62,34 +62,8 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> ValidacaoUsuarioDocumento(long tipoDocumentoId, long classificacaoId, long usuarioId, long ueId, [FromServices] IVerificarUsuarioDocumentoUseCase useCase)
         {
-           return Ok(await useCase.Executar(new VerificarUsuarioDocumentoDto(tipoDocumentoId, classificacaoId, usuarioId, ueId)));
+            return Ok(await useCase.Executar(new VerificarUsuarioDocumentoDto(tipoDocumentoId, classificacaoId, usuarioId, ueId)));
         }
 
-        [HttpGet("documentos/tipos")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ListarTiposDeDocumentos([FromServices] IListarDocumentosUseCase useCase)
-        {
-            return Ok(await useCase.Executar());
-        }
-
-        [HttpPost("documentos")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> SalvarDocumento(SalvarDocumentoDto dto, [FromServices] ISalvarDocumentoUseCase useCase)
-        {
-            return Ok(await useCase.Executar(dto));
-        }
-
-        [HttpGet("documentos")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ListarDocumentos([FromQuery] long ueId, [FromQuery] long tipoDocumentoId, [FromQuery] long classificacaoId , [FromServices] IListarDocumentosUseCase useCase)
-        {
-            return Ok(await useCase.Executar(ueId, tipoDocumentoId, classificacaoId));
-        }
     }
 }
