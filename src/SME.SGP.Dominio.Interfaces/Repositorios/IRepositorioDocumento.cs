@@ -10,5 +10,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<bool> ValidarUsuarioPossuiDocumento(long tipoDocumentoId, long classificacaoId, long usuarioId, long ueId);
         Task<IEnumerable<DocumentoDto>> ObterPorUeTipoEClassificacao(long ueId, long tipoDocumentoId, long classificacaoId);
         Task<bool> RemoverReferenciaArquivo(long documentoId, long arquivoId);
+        Task<bool> ExcluirDocumentoPorId(long id);
     }
 }

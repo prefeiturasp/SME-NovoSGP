@@ -16,19 +16,30 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
+        public async Task<bool> ExcluirDocumentoPorId(long id)
+        {
+            var query = "delete from documento where id = @id";
+
+            return await database.Conexao.ExecuteScalarAsync<bool>(query, new { id });
+        }
+
         public async Task<IEnumerable<DocumentoDto>> ObterPorUeTipoEClassificacao(long ueId, long tipoDocumentoId, long classificacaoId)
         {
             var query = @"select 
+                            d.id as DocumentoId,
 	                        td.descricao as tipoDocumento,
                             cd.descricao as classificacao,
                             usuario_id as usuarioId,
                             u.nome || ' (' || u.rf_codigo || ')' as usuario,
-                            case when d.alterado_em is not null then d.alterado_em else d.criado_em end as dataUpload
+                            case when d.alterado_em is not null then d.alterado_em else d.criado_em end as dataUpload,
+                            a.codigo as CodigoArquivo          
                         from documento d
                         inner join
 	                        classificacao_documento cd on d.classificacao_documento_id = cd.id
                         inner join
 	                        tipo_documento td on cd.tipo_documento_id = td.id
+                        inner join
+	                        arquivo a on d.arquivo_id = a.id
                         inner join usuario u on 
 	                        d.usuario_id = u.id
                         where d.ue_id = @ueId and td.id = @tipoDocumentoId and cd.id = @classificacaoId";
