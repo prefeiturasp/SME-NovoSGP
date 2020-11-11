@@ -30,7 +30,6 @@ namespace SME.SGP.Api.Controllers
                     return Ok(await useCase.Executar(file));
 
                 return BadRequest();
-
             }
             catch (Exception ex)
             {
@@ -70,7 +69,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ListarTiposDeDocumentos([FromServices] IListarTipoDeDocumentosUseCase useCase)
+        public async Task<IActionResult> ListarTiposDeDocumentos([FromServices] IListarDocumentosUseCase useCase)
         {
             return Ok(await useCase.Executar());
         }
@@ -82,6 +81,15 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> SalvarDocumento(SalvarDocumentoDto dto, [FromServices] ISalvarDocumentoUseCase useCase)
         {
             return Ok(await useCase.Executar(dto));
+        }
+
+        [HttpGet("documentos")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ListarDocumentos([FromQuery] long ueId, [FromQuery] long tipoDocumentoId, [FromQuery] long classificacaoId , [FromServices] IListarDocumentosUseCase useCase)
+        {
+            return Ok(await useCase.Executar(ueId, tipoDocumentoId, classificacaoId));
         }
     }
 }
