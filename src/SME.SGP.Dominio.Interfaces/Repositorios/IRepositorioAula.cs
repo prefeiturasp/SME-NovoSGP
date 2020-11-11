@@ -86,5 +86,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task ExcluirPeloSistemaAsync(long[] idsAulas);
 
         Task<IEnumerable<AulaReduzidaDto>> ObterQuantidadeAulasReduzido(long turmaId, string componenteCurricularId, long tipoCalendarioId, int bimestre, bool professorCJ);
+
+        Task<IEnumerable<AulaReduzidaDto>> ObterAulasReduzidasPorTipoCalendario(long tipoCalendarioId);
     }
 }

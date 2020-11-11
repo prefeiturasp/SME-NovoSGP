@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -12,72 +13,61 @@ namespace SME.SGP.Aplicacao
     public class PendenciaDiasNaoLetivosCommandHandler : IRequestHandler<PendenciaDiasNaoLetivosCommand, bool>
     {
         private readonly IMediator mediator;
-        public PendenciaDiasNaoLetivosCommandHandler(IMediator mediator)
+        private readonly IRepositorioPendenciaAula repositorioPendenciaAula;
+        public PendenciaDiasNaoLetivosCommandHandler(IMediator mediator, IRepositorioPendenciaAula repositorioPendenciaAula)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            this.repositorioPendenciaAula = repositorioPendenciaAula ?? throw new ArgumentNullException(nameof(repositorioPendenciaAula));
         }
 
         public async Task<bool> Handle(PendenciaDiasNaoLetivosCommand request, CancellationToken cancellationToken)
         {
             var data = DateTime.Today;
 
-            long componenteCurricularId = 0;  // temporario
+            var modalidades = new List<Modalidade> { Modalidade.Fundamental, Modalidade.Medio, Modalidade.EJA };
 
-            bool professorCj = false;  // temporario
-
-            var Eventos = await mediator.Send(new ObterEventosPorTipoCalendarioIdTurmaIdEDataQuery(request.TipoCalendarioId, data, data, request.TurmaId));
-
-            var aulas = await mediator.Send(new ObterAulaReduzidaPorTurmaComponenteEBimestreQuery(request.TurmaId, professorCj, request.TipoCalendarioId, componenteCurricularId, request.Bimestre));
-
-            var diasComEventosNaoLetivos = MapearParaDiaLetivo(Eventos).Where(e => e.EhNaoLetivo);
-
-            //var aulasDiasNaoLetivos = new List<AulaDiasNaoLetivosControleGradeDto>();
-            //if (aulas != null)
-            //{
-            //    aulas.Where(a => diasComEventosNaoLetivos.Any(d => d.Data == a.Data)).ToList()
-            //        .ForEach(aula =>
-            //        {
-            //            foreach (var eventoNaoLetivo in diasComEventosNaoLetivos.Where(d => d.Data == aula.Data))
-            //            {
-            //                aulasDiasNaoLetivos.Add(new AulaDiasNaoLetivosControleGradeDto()
-            //                {
-            //                    Data = $"{aula.Data:dd/MM/yyyy}",
-            //                    Professor = $"{aula.Professor} ({aula.ProfessorRf})",
-            //                    QuantidadeAulas = aula.Quantidade,
-            //                    Motivo = eventoNaoLetivo.Motivo
-            //                });
-            //            }
-            //        });
-            //}
-
-            return true;
-        }
-
-
-        private List<DiaLetivoDto> MapearParaDiaLetivo(IEnumerable<Evento> eventos)
-        {
-            var DiasLetivos = new List<DiaLetivoDto>();
-
-            if (eventos != null)
+            foreach (var modalidade in modalidades)
             {
-                foreach (var evento in eventos)
+                var tipoCalendarioId = await mediator.Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(modalidade, data.Year, null));
+
+                var periodosEscolares = await mediator.Send(new ObterPeridosEscolaresPorTipoCalendarioIdQuery(tipoCalendarioId));
+
+                var aulas = await mediator.Send(new ObterAulasReduzidaPorTipoCalendarioQuery(tipoCalendarioId));
+
+                var diasComEvento = await mediator.Send(new ObterDiasPorPeriodosEscolaresComEventosLetivosENaoLetivosQuery(periodosEscolares, tipoCalendarioId));
+
+                var diasComEventosNaoLetivos = diasComEvento.Where(e => e.EhNaoLetivo);
+
+                if (aulas != null)
                 {
-                    foreach (var data in evento.ObterIntervaloDatas())
+                    var listaAgrupada = aulas.Where(a => diasComEventosNaoLetivos.Any(d => d.Data == a.Data)).GroupBy(x => new { x.TurmaId, x.DisciplinaId }).ToList();
+
+                    foreach (var turmas in listaAgrupada)
                     {
-                        DiasLetivos.Add(new DiaLetivoDto
+                        var pendenciaId = await mediator.Send(new ObterPendenciaAulaPorTurmaIdDisciplinaIdQuery(turmas.Key.TurmaId, turmas.Key.DisciplinaId));
+
+                        if (pendenciaId == 0)
+                            pendenciaId = await mediator.Send(new SalvarPendenciaCommand(TipoPendencia.AulaNaoLetivo, TipoPendencia.AulaNaoLetivo.Name()));
+
+                        foreach (var aula in turmas)
                         {
-                            Data = data,
-                            Motivo = evento.TipoEvento.Descricao,
-                            EhLetivo = evento.EhEventoLetivo(),
-                            EhNaoLetivo = evento.NaoEhEventoLetivo(),
-                            UesIds = string.IsNullOrWhiteSpace(evento.UeId) ? new List<string>() : new List<string> { evento.UeId },
-                            PossuiEvento = true
-                        });
+                            var pendenciaAulaId = await repositorioPendenciaAula.ObterPendenciaAulaPorAulaId(aula.aulaId);
+
+                            if (pendenciaAulaId > 0)
+                            {
+                                var pendenciaAula = new PendenciaAula
+                                {
+                                    AulaId = aula.aulaId,
+                                    Motivo = "",
+                                    PendenciaId = pendenciaId
+                                };
+                                await repositorioPendenciaAula.Salvar(pendenciaAula);
+                            }
+                        }
                     }
                 }
             }
-
-            return DiasLetivos;
+            return true;
         }
     }
 }

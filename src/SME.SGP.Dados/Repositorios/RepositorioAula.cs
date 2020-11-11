@@ -808,6 +808,22 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<Aula>(query.ToString(), new { tipoCalendarioId, turmaId });
         }
 
+        public async Task<IEnumerable<AulaReduzidaDto>> ObterAulasReduzidasPorTipoCalendario(long tipoCalendarioId)
+        {
+            var query = @"select
+   		                       a.id as aulaId,
+                               a.data_aula as Data,
+                               a.quantidade as Quantidade,
+                               a.criado_por as Professor,
+                               a.criado_rf as ProfessorRf,
+                               a.turma_id as TurmaId,
+                               a.disciplina_id as DisciplinaId
+                          from
+                          aula a 
+                         where tipo_calendario_id = @tipoCalendarioId";
+            return await database.Conexao.QueryAsync<AulaReduzidaDto>(query.ToString(), new { tipoCalendarioId });
+        }
+
         public void SalvarVarias(IEnumerable<Aula> aulas)
         {
             var sql = @"copy aula ( 

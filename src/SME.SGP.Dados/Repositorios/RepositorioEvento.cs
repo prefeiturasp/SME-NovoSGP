@@ -1080,7 +1080,8 @@ namespace SME.SGP.Dados.Repositorios
 	                        data_fim,
 	                        letivo,
                             e.ue_id,
-                            e.dre_id
+                            e.dre_id,
+                            e.nome
                         from
 	                        evento e
                         where
