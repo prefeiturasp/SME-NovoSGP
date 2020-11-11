@@ -63,5 +63,14 @@ namespace SME.SGP.Api.Controllers
 
             return BadRequest();
         }
+
+        [HttpDelete("{documentoId}/arquivo/{codigoArquivo}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> Delete(long documentoId, Guid codigoArquivo, [FromServices] IExcluirDocumentoArquivoUseCase useCase)
+        {
+            return Ok(await useCase.Executar((documentoId, codigoArquivo)));
+        }
     }
 }
