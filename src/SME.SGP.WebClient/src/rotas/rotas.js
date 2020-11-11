@@ -72,6 +72,7 @@ import PocEditor from '~/paginas/PocEditor/pocEditor';
 import ControleGrade from '~/paginas/Relatorios/DiarioClasse/ControleGrade/controleGrade';
 import PocUploadArquivos from '~/componentes-sgp/UploadArquivos/pocUploadArquivos';
 import DocumentosPlanosTrabalhoLista from '~/paginas/Gestao/DocumentosPlanosTrabalho/documentosPlanosTrabalhoLista';
+import DocumentosPlanosTrabalhoCadastro from '~/paginas/Gestao/DocumentosPlanosTrabalho/documentosPlanosTrabalhoCadastro';
 
 const rotas = new Map();
 
@@ -986,6 +987,16 @@ rotas.set(RotasDto.DOCUMENTOS_PLANOS_TRABALHO, {
   menu: ['Gestão'],
   parent: '/',
   component: DocumentosPlanosTrabalhoLista,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  // temPermissionamento: false,
+  // chavePermissao: RotasDto.DOCUMENTOS_PLANOS_TRABALHO,
+});
+
+rotas.set(`${RotasDto.DOCUMENTOS_PLANOS_TRABALHO}/novo`, {
+  breadcrumbName: 'Upload do arquivo',
+  parent: RotasDto.DOCUMENTOS_PLANOS_TRABALHO,
+  component: DocumentosPlanosTrabalhoCadastro,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
   // temPermissionamento: false,
