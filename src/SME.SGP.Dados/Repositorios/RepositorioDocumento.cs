@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -32,6 +33,15 @@ namespace SME.SGP.Dados.Repositorios
 	                        d.usuario_id = u.id
                         where d.ue_id = @ueId and td.id = @tipoDocumentoId and cd.id = @classificacaoId";
             return await database.Conexao.QueryAsync<DocumentoDto>(query, new { ueId, tipoDocumentoId, classificacaoId });
+        }
+
+        public async Task<bool> RemoverReferenciaArquivo(long documentoId, long arquivoId)
+        {
+            var query = @"update documento set arquivo_id = null where id = @documentoId and arquivo_id = @arquivoId";
+
+            await database.Conexao.ExecuteAsync(query, new { documentoId, arquivoId });
+
+            return true;
         }
 
         public async Task<bool> ValidarUsuarioPossuiDocumento(long tipoDocumentoId, long classificacaoId, long usuarioId, long ueId)
