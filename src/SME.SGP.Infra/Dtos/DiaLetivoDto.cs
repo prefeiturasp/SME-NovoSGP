@@ -9,6 +9,7 @@ namespace SME.SGP.Infra
         public DiaLetivoDto()
         {
             UesIds = new List<string>();
+            DreIds = new List<string>();
         }
 
         public DateTime Data { get; set; }
@@ -16,6 +17,7 @@ namespace SME.SGP.Infra
         public bool EhLetivo { get; set; }
         public bool EhNaoLetivo { get; set; }
         public List<string> UesIds { get; set; }
+        public List<string> DreIds { get; set; }
         public bool PossuiEvento { get; set; }
         public bool PossuiEventoUe(string codigoUe) => PossuiUe(codigoUe) && PossuiEvento;
         public bool PossuiEventoSME(string codigoUe) => NaoPossuiUe(codigoUe) && PossuiEvento;
