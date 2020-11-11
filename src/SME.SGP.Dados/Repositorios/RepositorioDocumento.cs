@@ -18,8 +18,8 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<DocumentoDto>> ObterPorUeTipoEClassificacao(long ueId, long tipoDocumentoId, long classificacaoId)
         {
             var query = @"select 
-	                        tipo_documento_id as tipoDocumentoId,
-                            classificacao_documento_id as classificacaoId,
+	                        td.descricao as tipoDocumento,
+                            cd.descricao as classificacao,
                             usuario_id as usuarioId,
                             u.nome || ' (' || u.rf_codigo || ')' as usuario,
                             case when d.alterado_em is not null then d.alterado_em else d.criado_em end as dataUpload
