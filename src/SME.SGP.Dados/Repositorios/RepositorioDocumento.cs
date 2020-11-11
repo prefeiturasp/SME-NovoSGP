@@ -16,6 +16,13 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
+        public async Task<bool> ExcluirDocumentoPorId(long id)
+        {
+            var query = "delete from documento where id = @id";
+
+            return await database.Conexao.ExecuteScalarAsync<bool>(query, new { id });
+        }
+
         public async Task<IEnumerable<DocumentoDto>> ObterPorUeTipoEClassificacao(long ueId, long tipoDocumentoId, long classificacaoId)
         {
             var query = @"select 
