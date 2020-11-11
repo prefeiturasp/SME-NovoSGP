@@ -83,7 +83,7 @@ function UeDropDown({
         name="ueId"
         className="fonte-14"
         label={!label ? null : label}
-        onChange={onChange}
+        onChange={a => onChange(a, listaUes, true)}
         lista={listaUes}
         valueOption="valor"
         valueText="desc"
