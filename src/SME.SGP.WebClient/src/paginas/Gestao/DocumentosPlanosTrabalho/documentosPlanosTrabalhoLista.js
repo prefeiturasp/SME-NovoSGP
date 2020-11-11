@@ -34,23 +34,45 @@ const DocumentosPlanosTrabalhoLista = () => {
 
   const [filtro, setFiltro] = useState({});
 
+  const [anoAtual] = useState(window.moment().format('YYYY'));
+
   const obterAnosLetivos = useCallback(async () => {
     setCarregandoAnos(true);
-    const anosLetivo = await AbrangenciaServico.buscarTodosAnosLetivos()
-      .catch(e => erros(e))
-      .finally(() => setCarregandoAnos(false));
+    let anosLetivos = [];
 
-    if (anosLetivo && anosLetivo.data) {
-      const a = [];
-      anosLetivo.data.forEach(ano => {
-        a.push({ desc: ano, valor: ano });
+    const anosLetivoComHistorico = await FiltroHelper.obterAnosLetivos({
+      consideraHistorico: true,
+    });
+    const anosLetivoSemHistorico = await FiltroHelper.obterAnosLetivos({
+      consideraHistorico: false,
+    });
+
+    anosLetivos = anosLetivos.concat(anosLetivoComHistorico);
+
+    anosLetivoSemHistorico.forEach(ano => {
+      if (!anosLetivoComHistorico.find(a => a.valor === ano.valor)) {
+        anosLetivos.push(ano);
+      }
+    });
+
+    if (!anosLetivos.length) {
+      anosLetivos.push({
+        desc: anoAtual,
+        valor: anoAtual,
       });
-      setAnoLetivo(a[0].valor);
-      setListaAnosLetivo(a);
-    } else {
-      setListaAnosLetivo([]);
     }
-  }, []);
+
+    if (anosLetivos && anosLetivos.length) {
+      const temAnoAtualNaLista = anosLetivos.find(
+        item => String(item.valor) === String(anoAtual)
+      );
+      if (temAnoAtualNaLista) setAnoLetivo(anoAtual);
+      else setAnoLetivo(anosLetivos[0].valor);
+    }
+
+    setListaAnosLetivo(anosLetivos);
+    setCarregandoAnos(false);
+  }, [anoAtual]);
 
   const obterTiposDocumento = () => {
     // TODO MOCK!
@@ -165,7 +187,9 @@ const DocumentosPlanosTrabalhoLista = () => {
     }
   }, [dreId, anoLetivo, obterUes]);
 
-  const onClickNovo = () => {};
+  const onClickNovo = () => {
+    history.push(`${RotasDto.DOCUMENTOS_PLANOS_TRABALHO}/novo`);
+  };
 
   const onClickVoltar = () => {
     history.push(URL_HOME);
@@ -259,7 +283,7 @@ const DocumentosPlanosTrabalhoLista = () => {
                 onClick={onClickNovo}
               />
             </div>
-            <div className="col-sm-12 col-md-6 col-lg-2 col-xl-2 mb-2">
+            <div className="col-sm-12 col-md-6 col-lg-6 col-xl-2 mb-2">
               <Loader loading={carregandoAnos} tip="">
                 <SelectComponent
                   id="select-ano-letivo"
@@ -274,7 +298,7 @@ const DocumentosPlanosTrabalhoLista = () => {
                 />
               </Loader>
             </div>
-            <div className="col-sm-12 col-md-12 col-lg-5 col-xl-5 mb-2">
+            <div className="col-sm-12 col-md-12 col-lg-6 col-xl-5 mb-2">
               <Loader loading={carregandoDres} tip="">
                 <SelectComponent
                   id="select-dre"
@@ -289,7 +313,7 @@ const DocumentosPlanosTrabalhoLista = () => {
                 />
               </Loader>
             </div>
-            <div className="col-sm-12 col-md-12 col-lg-5 col-xl-5 mb-2">
+            <div className="col-sm-12 col-md-12 col-lg-6 col-xl-5 mb-2">
               <Loader loading={carregandoUes} tip="">
                 <SelectComponent
                   id="select-ue"
@@ -328,14 +352,16 @@ const DocumentosPlanosTrabalhoLista = () => {
                 placeholder="Classificação do documento"
               />
             </div>
-            <ListaPaginada
-              url="v1/calendarios/eventos/tipos/listar"
-              id="lista-tipo-documento"
-              colunaChave="id"
-              colunas={colunas}
-              filtro={filtro}
-              onClick={onClickEditar}
-            />
+            <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
+              <ListaPaginada
+                url="v1/calendarios/eventos/tipos/listar"
+                id="lista-tipo-documento"
+                colunaChave="id"
+                colunas={colunas}
+                filtro={filtro}
+                onClick={onClickEditar}
+              />
+            </div>
           </div>
         </div>
       </Card>
