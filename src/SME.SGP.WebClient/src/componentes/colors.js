@@ -60,4 +60,28 @@ const Hover = {
   Vermelho: '#AD0007',
 };
 
-export { Colors, Base, Active, Hover };
+const CoresGraficos = [
+  '#EECDB6',
+  '#F98F84',
+  '#F5E68D',
+  '#EFB971',
+  '#57CDBC',
+  '#3982AC',
+  '#B15832',
+  '#A6CEE1',
+  '#B1DF94',
+  '#CAB2D3',
+  '#2179AF',
+  '#30A041',
+  '#FF7E2F',
+  '#6B3E94',
+  '#086397',
+  Base.Azul,
+  Base.LaranjaAlerta,
+  Base.AzulCalendario,
+  Base.CinzaBarras,
+  Base.RoxoClaro,
+  Base.VerdeBorda,
+];
+
+export { Colors, Base, Active, Hover, CoresGraficos };
