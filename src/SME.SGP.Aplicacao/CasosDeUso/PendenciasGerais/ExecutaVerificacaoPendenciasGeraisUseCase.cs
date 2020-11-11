@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
 
         public void Executar()
         {
-            throw new NotImplementedException();
+            
         }
     }
 }
