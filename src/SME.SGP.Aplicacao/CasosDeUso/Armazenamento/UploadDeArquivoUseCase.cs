@@ -13,9 +13,9 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<Guid> Executar(IFormFile file, string tipoConteudo = "")
+        public async Task<Guid> Executar(IFormFile file)
         {
-            return await mediator.Send(new UploadArquivoCommand(file,Dominio.TipoArquivo.Geral,tipoConteudo));
+            return await mediator.Send(new UploadArquivoCommand(file));
         }
 
         public Task<Guid> Executar((IFormFile, string) param)

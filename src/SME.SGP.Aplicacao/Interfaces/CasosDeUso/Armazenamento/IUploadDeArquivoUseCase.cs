@@ -8,6 +8,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IUploadDeArquivoUseCase
     {
-        Task<Guid> Executar(IFormFile file, string tipoConteudo = "");
+        Task<Guid> Executar(IFormFile file);
     }
 }
