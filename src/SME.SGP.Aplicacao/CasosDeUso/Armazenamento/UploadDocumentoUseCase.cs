@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao
 {
@@ -13,9 +14,9 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<Guid> Executar(IFormFile file, TipoConteudoArquivo )
+        public async Task<Guid> Executar(IFormFile file, TipoConteudoArquivo tipoConteudoArquivo = TipoConteudoArquivo.Indefinido)
         {
-            return await mediator.Send(new UploadArquivoCommand(file,Dominio.TipoArquivo.Geral, Dominio.TipoConteudoArquivo.Indefinido));
+            return await mediator.Send(new UploadArquivoCommand(file,TipoArquivo.Geral, tipoConteudoArquivo));
         }
 
         public Task<Guid> Executar((IFormFile, string) param)
