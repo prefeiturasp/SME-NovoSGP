@@ -8,7 +8,7 @@ namespace SME.SGP.Dominio
         public ClassificacaoDocumento ClassificacaoDocumento { get; set; }
         public long UsuarioId { get; set; }
         public long UeId { get; set; }
-        public long ArquivoId { get; set; }
+        public long? ArquivoId { get; set; }
         public Arquivo Arquivo { get; set; }
 
     }
