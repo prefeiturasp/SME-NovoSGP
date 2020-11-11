@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public interface IListarTipoDeDocumentosUseCase
+    public interface IListarTiposDeDocumentosUseCase
     {
         Task<IEnumerable<TipoDocumentoDto>> Executar();
     }

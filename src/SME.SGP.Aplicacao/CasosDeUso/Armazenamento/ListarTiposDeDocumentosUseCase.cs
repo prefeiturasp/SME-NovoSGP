@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ListarTiposDeDocumentosUseCase : AbstractUseCase, IListarTipoDeDocumentosUseCase
+    public class ListarTiposDeDocumentosUseCase : AbstractUseCase, IListarTiposDeDocumentosUseCase
     {
         public ListarTiposDeDocumentosUseCase(IMediator mediator) : base(mediator)
         {

@@ -26,8 +26,7 @@ namespace SME.SGP.Aplicacao
             if (arquivo == null)
                 throw new NegocioException("Não foi encontrado um arquivo com este código");
 
-            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
-            var existeArquivo = await mediator.Send(new VerificaUsuarioPossuiArquivoQuery(request.SalvarDocumentoDto.TipoDocumentoId, request.SalvarDocumentoDto.ClassificacaoId, usuario.Id, request.SalvarDocumentoDto.UeId));
+            var existeArquivo = await mediator.Send(new VerificaUsuarioPossuiArquivoQuery(request.SalvarDocumentoDto.TipoDocumentoId, request.SalvarDocumentoDto.ClassificacaoId, request.SalvarDocumentoDto.UsuarioId, request.SalvarDocumentoDto.UeId));
             if (existeArquivo)
                 throw new NegocioException("Este usuário já possui um arquivo");
 
