@@ -175,5 +175,22 @@ namespace SME.SGP.Dados.Repositorios
 
             return resultado;
         }
+
+        public async Task<IEnumerable<Ue>> ObterUesPorModalidade(Modalidade[] modalidades)
+        {
+            var query = @"select distinct ue.*, dre.*
+                          from turma t
+                         inner join ue on ue.id = t.ue_id
+                         inner join dre on dre.id = ue.dre_id
+                         where t.modalidade_codigo = ANY(@modalidades) ";
+
+            return await contexto.Conexao.QueryAsync<Ue, Dre, Ue>(query, (ue, dre) =>
+            {
+                ue.Dre = dre;
+
+                return ue;
+            }, new { modalidades });
+
+        }
     }
 }

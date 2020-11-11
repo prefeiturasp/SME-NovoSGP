@@ -1,0 +1,35 @@
+﻿using MediatR;
+using SME.SGP.Dominio.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace SME.SGP.Aplicacao
+{
+    public class SalvarPendenciaCalendarioUeCommandHandler : IRequestHandler<SalvarPendenciaCalendarioUeCommand, bool>
+    {
+        private readonly IMediator mediator;
+        private readonly IRepositorioPendenciaCalendarioUe repositorioPendenciaCalendarioUe;
+
+        public SalvarPendenciaCalendarioUeCommandHandler(IMediator mediator, IRepositorioPendenciaCalendarioUe repositorioPendenciaCalendarioUe)
+        {
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            this.repositorioPendenciaCalendarioUe = repositorioPendenciaCalendarioUe ?? throw new ArgumentNullException(nameof(repositorioPendenciaCalendarioUe));
+        }
+
+        public async Task<bool> Handle(SalvarPendenciaCalendarioUeCommand request, CancellationToken cancellationToken)
+        {
+            var pendenciaId = await mediator.Send(new SalvarPendenciaCommand(Dominio.TipoPendencia.CalendarioLetivoInsuficiente, request.Descricao));
+            await repositorioPendenciaCalendarioUe.SalvarAsync(new Dominio.PendenciaCalendarioUe()
+            {
+                PendenciaId = pendenciaId,
+                UeId = request.UeId,
+                TipoCalendarioId = request.TipoCalendarioId
+            });
+
+            return true;
+        }
+    }
+}
