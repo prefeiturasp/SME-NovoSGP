@@ -33,8 +33,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
                          Usuario = "USUARIO (2555567)",
                          DataUpload = DateTime.Now,
                          TipoDocumento = "Tipo de Documento",
-                         Classificacao = "Classificacao de Documento",
-                         UsuarioId = 1
+                         Classificacao = "Classificacao de Documento"
                     }
                 };
 
