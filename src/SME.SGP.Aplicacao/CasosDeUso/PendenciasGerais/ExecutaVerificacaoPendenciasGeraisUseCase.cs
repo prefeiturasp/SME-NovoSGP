@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using System;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -12,9 +13,9 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public void Executar()
+        public async Task Executar()
         {
-            
+            await mediator.Send(new VerificaPendenciaCalendarioUeCommand());
         }
     }
 }
