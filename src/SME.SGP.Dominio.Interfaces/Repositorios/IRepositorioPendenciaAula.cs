@@ -12,7 +12,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<long[]> ListarPendenciasPorAulaId(long aulaId);
         Task<long[]> ListarPendenciasPorAulasId(long[] aulaId);
 
-        Task Salvar(long aulaId, string motivo, long pendenciaId, TipoPendencia tipo);
+        Task Salvar(long aulaId, string motivo, long pendenciaId);
         Task Excluir(TipoPendencia tipoPendenciaAula, long aulaId);
 
         Task SalvarVarias(long pendenciaId, IEnumerable<long> aulas);        

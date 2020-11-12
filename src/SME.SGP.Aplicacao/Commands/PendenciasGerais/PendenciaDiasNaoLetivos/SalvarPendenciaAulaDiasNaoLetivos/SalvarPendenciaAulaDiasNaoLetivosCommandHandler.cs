@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(SalvarPendenciaAulaDiasNaoLetivosCommand request, CancellationToken cancellationToken)
         {
-            await repositorioPendenciaAula.Salvar(request.AulaId, request.Motivo, request.PendenciaId, Dominio.TipoPendencia.AulaNaoLetivo);
+            await repositorioPendenciaAula.Salvar(request.AulaId, request.Motivo, request.PendenciaId);
             return true;
         }
 

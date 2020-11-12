@@ -84,13 +84,12 @@ namespace SME.SGP.Dados.Repositorios
                                                     where pa.aula_id= @aulaid and p.tipo = @tipo", new { aulaid = aulaId, tipo = tipoPendenciaAula });
         }
 
-        public async Task Salvar(long aulaId, string motivo, long pendenciaId, TipoPendencia tipo)
+        public async Task Salvar(long aulaId, string motivo, long pendenciaId)
         {
             await database.Conexao.InsertAsync(new PendenciaAula()
             {
                 AulaId = aulaId,
-                Motivo = motivo,
-                Tipo = tipo,
+                Motivo = motivo,                
                 PendenciaId = pendenciaId
             });            
         }      
