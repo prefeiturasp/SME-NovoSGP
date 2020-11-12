@@ -38,5 +38,14 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await obterUltimaAtualizacaoPorProcessoUseCase.Executar(nomeProcesso));
         }
+
+        [HttpGet("comunicados/totais/sme")]
+        [ProducesResponseType(typeof(UsuarioEscolaAquiDto), 200)]
+        [ProducesResponseType(typeof(UsuarioEscolaAquiDto), 204)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ObterComunicadosTotaisSme([FromQuery] int anoLetivo, [FromServices] IObterComunicadosTotaisSmeUseCase obterComunicadosTotaisUseCase)
+        {
+            return Ok(await obterComunicadosTotaisUseCase.Executar(anoLetivo));
+        }
     }
 }
