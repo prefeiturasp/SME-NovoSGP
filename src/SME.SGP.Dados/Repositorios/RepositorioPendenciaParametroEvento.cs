@@ -15,12 +15,25 @@ namespace SME.SGP.Dados
         {
         }
 
+        public async Task<PendenciaParametroEvento> ObterPendenciaEventoPorPendenciaEParametroId(long pendenciaId, long parametroId)
+        {
+            var query = @"select pe.*
+                          from pendencia_parametro_evento pe 
+                        inner join pendencia_calendario_ue pc on pc.id = pe.pendencia_calendario_ue_id
+                        inner join parametros_sistema ps on ps.id = pe.parametro_sistema_id
+                         where pc.pendencia_id = @pendenciaId
+                           and pe.parametro_sistema_id = @parametroId";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<PendenciaParametroEvento>(query, new { pendenciaId, parametroId });
+        }
+
         public async Task<IEnumerable<PendenciaParametroEventoDto>> ObterPendenciasEventoPorPendenciaId(long pendenciaId)
         {
-            var query = @"select ps.descricao, ps.valor 
+            var query = @"select ps.id as ParametroSistemaId, ps.descricao, ps.valor 
                           from pendencia_parametro_evento pe 
+                        inner join pendencia_calendario_ue pc on pc.id = pe.pendencia_calendario_ue_id
                         inner join parametros_sistema ps on ps.id = pe.parametro_sistema_id
-                         where pe.pendencia_id = @pendenciaId";
+                         where pc.pendencia_id = @pendenciaId";
 
             return await database.Conexao.QueryAsync<PendenciaParametroEventoDto>(query, new { pendenciaId });
         }

@@ -9,14 +9,16 @@ namespace SME.SGP.Aplicacao
 {
     public class SalvarPendenciaCommand : IRequest<long>
     {
-        public SalvarPendenciaCommand(TipoPendencia tipoPendencia, string descricao = "")
+        public SalvarPendenciaCommand(TipoPendencia tipoPendencia, string descricao = "", string instrucao = "")
         {
             TipoPendencia = TipoPendencia;
             Descricao = descricao;
+            Instrucao = instrucao;
         }
 
         public TipoPendencia TipoPendencia { get; set; }
         public string Descricao { get; set; }
+        public string Instrucao { get; set; }
     }
 
     public class SalvarPendenciaCommandValidator : AbstractValidator<SalvarPendenciaCommand>

@@ -10,8 +10,9 @@ namespace SME.SGP.Dados
         public PendenciaParametroEventoMap()
         {
             ToTable("pendencia_parametro_evento");
-            Map(c => c.PendenciaId).ToColumn("pendencia_id");
+            Map(c => c.PendenciaCalendarioUeId).ToColumn("pendencia_calendario_ue_id");
             Map(c => c.ParametroSistemaId).ToColumn("parametro_sistema_id");
+            Map(c => c.QuantidadeEventos).ToColumn("quantidade_eventos");
         }
     }
 }

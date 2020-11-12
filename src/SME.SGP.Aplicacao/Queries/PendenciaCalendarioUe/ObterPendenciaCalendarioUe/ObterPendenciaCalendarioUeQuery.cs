@@ -9,7 +9,7 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterPendenciaCalendarioUeQuery : IRequest<PendenciaCalendarioUe>
     {
-        public ObterPendenciaCalendarioUeQuery(long tipoCalendarioId, long ueId)
+        public ObterPendenciaCalendarioUeQuery(long tipoCalendarioId, long ueId, TipoPendencia tipoPendencia)
         {
             TipoCalendarioId = tipoCalendarioId;
             UeId = ueId;
@@ -17,6 +17,7 @@ namespace SME.SGP.Aplicacao
 
         public long TipoCalendarioId { get; set; }
         public long UeId { get; set; }
+        public TipoPendencia TipoPendencia { get; set; }
     }
 
     public class ObterPendenciaCalendarioUeQueryValidator : AbstractValidator<ObterPendenciaCalendarioUeQuery>

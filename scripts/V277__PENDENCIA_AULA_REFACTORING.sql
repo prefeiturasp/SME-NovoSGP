@@ -27,12 +27,12 @@ begin
 		  values (pendencia.titulo, pendencia.descricao, 1, pendencia.tipo, false, false, NOW(), 'SISTEMA', 'SISTEMA', null, '', '')
 		RETURNING id INTO pendenciaId;
 
-		update pendencia_aula pa
-			set pendencia_id = pendenciaId
-		 from aula a 
-		 where a.id = pa.aula_id
- 		   and a.turma_id = pendencia.turmaId
-		   and a.disciplina_id = pendencia.componenteId;
+		 update pendencia_aula
+		        set pendencia_id = pendenciaId
+		  from aula 
+		  where aula.id = pendencia_aula.aula_id
+		    and aula.turma_id = pendencia.turmaId
+		    and aula.disciplina_id = pendencia.componenteId;
 		
 		commit;
 	end loop;

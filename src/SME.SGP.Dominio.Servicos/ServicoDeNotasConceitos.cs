@@ -154,7 +154,7 @@ namespace SME.SGP.Dominio
             var atividadesAvaliativas = repositorioAtividadeAvaliativa.ListarPorIds(idsAtividadesAvaliativas);
 
             var notasPorAvaliacoes = notasConceitos.GroupBy(x => x.AtividadeAvaliativaID);            
-            var percentualAlunosInsuficientes = double.Parse(await mediator.Send(new ObterParametroSistemaTipoEAnoQuery(TipoParametroSistema.PercentualAlunosInsuficientes, DateTime.Today.Year)));
+            var percentualAlunosInsuficientes = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.PercentualAlunosInsuficientes, DateTime.Today.Year)));
 
             foreach (var notasPorAvaliacao in notasPorAvaliacoes)
             {
