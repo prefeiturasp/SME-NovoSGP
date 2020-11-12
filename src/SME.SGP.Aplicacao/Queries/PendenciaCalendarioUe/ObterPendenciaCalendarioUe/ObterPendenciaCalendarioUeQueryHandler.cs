@@ -20,6 +20,6 @@ namespace SME.SGP.Aplicacao
 
 
         public async Task<PendenciaCalendarioUe> Handle(ObterPendenciaCalendarioUeQuery request, CancellationToken cancellationToken)
-            => await repositorioPendenciaCalendarioUe.ObterPendenciaPorCalendarioUe(request.TipoCalendarioId, request.UeId);
+            => await repositorioPendenciaCalendarioUe.ObterPendenciaPorCalendarioUe(request.TipoCalendarioId, request.UeId, request.TipoPendencia);
     }
 }
