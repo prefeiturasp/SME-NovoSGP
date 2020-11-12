@@ -153,7 +153,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select p.id 
                             from pendencia p 
-                           inner join pendencia_aula pa on p.id = pa.id 
+                           inner join pendencia_aula pa on p.id = pa.pendencia_id 
                            inner join aula a on pa.aula_id = a.id 
                            where a.turma_id = @turmaId 
                              and a.disciplina_id = @disciplinaId";
@@ -164,7 +164,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select pa.id 
                             from pendencia_aula pa  
-                           inner join pendencia p on p.id = pa.id 
+                           inner join pendencia p on p.id = pa.pendencia_id 
                            where pa.aula_id  = @aulaId
                             and p.tipo = @tipoPendencia";
             return await database.Conexao.QueryFirstOrDefaultAsync<long>(query, new { aulaId, tipoPendencia });
