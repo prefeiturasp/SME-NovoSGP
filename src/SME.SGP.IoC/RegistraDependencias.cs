@@ -500,9 +500,12 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterTotaisAdesaoUseCase, ObterTotaisAdesaoUseCase>();
             services.TryAddScoped<IObterTotaisAdesaoAgrupadosPorDreUseCase, ObterTotaisAdesaoAgrupadosPorDreUseCase>();
             services.TryAddScoped<IObterUltimaAtualizacaoPorProcessoUseCase, ObterUltimaAtualizacaoPorProcessoUseCase>();
-            services.TryAddScoped<IObterComunicadosTotaisSmeUseCase, ObterComunicadosTotaisSmeUseCase>();
-
+            services.TryAddScoped<IObterComunicadosTotaisUseCase, ObterComunicadosTotaisUseCase>();
+            services.TryAddScoped<IObterComunicadosTotaisAgrupadosPorDreUseCase, ObterComunicadosTotaisAgrupadosPorDreUseCase>();
             
+
+
+
 
             services.TryAddScoped<IObterPlanoAulaUseCase, ObterPlanoAulaUseCase>();
 
