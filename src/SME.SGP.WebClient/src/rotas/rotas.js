@@ -989,8 +989,8 @@ rotas.set(RotasDto.DOCUMENTOS_PLANOS_TRABALHO, {
   component: DocumentosPlanosTrabalhoLista,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  // temPermissionamento: false,
-  // chavePermissao: RotasDto.DOCUMENTOS_PLANOS_TRABALHO,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.DOCUMENTOS_PLANOS_TRABALHO,
 });
 
 rotas.set(`${RotasDto.DOCUMENTOS_PLANOS_TRABALHO}/novo`, {
@@ -999,8 +999,8 @@ rotas.set(`${RotasDto.DOCUMENTOS_PLANOS_TRABALHO}/novo`, {
   component: DocumentosPlanosTrabalhoCadastro,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  // temPermissionamento: false,
-  // chavePermissao: RotasDto.DOCUMENTOS_PLANOS_TRABALHO,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.DOCUMENTOS_PLANOS_TRABALHO,
 });
 
 const rotasArray = [];

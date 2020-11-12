@@ -9,7 +9,10 @@ import { URL_HOME } from '~/constantes';
 import { RotasDto } from '~/dtos';
 import { erros } from '~/servicos';
 import AbrangenciaServico from '~/servicos/Abrangencia';
+import ServicoArmazenamento from '~/servicos/Componentes/ServicoArmazenamento';
 import history from '~/servicos/history';
+import ServicoDocumentosPlanosTrabalho from '~/servicos/Paginas/Gestao/DocumentosPlanosTrabalho/ServicoDocumentosPlanosTrabalho';
+import { downloadBlob } from '~/utils/funcoes/gerais';
 import FiltroHelper from '~componentes-sgp/filtro/helper';
 
 const DocumentosPlanosTrabalhoLista = () => {
@@ -27,14 +30,16 @@ const DocumentosPlanosTrabalhoLista = () => {
   const [ueId, setUeId] = useState(undefined);
 
   const [listaTipoDocumento, setListaTipoDocumento] = useState([]);
-  const [tipoDocumento, setTipoDocumento] = useState();
+  const [tipoDocumentoId, setTipoDocumentoId] = useState();
 
   const [listaClassificacao, setListaClassificacao] = useState([]);
-  const [classificacao, setClassificacao] = useState();
+  const [classificacaoId, setClassificacaoId] = useState();
 
   const [filtro, setFiltro] = useState({});
 
   const [anoAtual] = useState(window.moment().format('YYYY'));
+
+  const NOME_BTN_DOWNLOAD = 'BOTAO-DOWNLOAD-ARQUIVO';
 
   const obterAnosLetivos = useCallback(async () => {
     setCarregandoAnos(true);
@@ -74,32 +79,39 @@ const DocumentosPlanosTrabalhoLista = () => {
     setCarregandoAnos(false);
   }, [anoAtual]);
 
-  const obterTiposDocumento = () => {
-    // TODO MOCK!
-    const mockTipoDocumento = [
-      {
-        valor: '1',
-        desc: 'Documento',
-        classificacao: [
-          { valor: 'PEA ', desc: 'PEA ' },
-          { valor: 'PPP', desc: 'PPP' },
-        ],
-      },
-      {
-        valor: '2',
-        desc: 'Plano de Trabalho',
-        classificacao: [
-          { valor: 'PAEE', desc: 'PAEE' },
-          { valor: 'PAP', desc: 'PAP' },
-          { valor: 'POA', desc: 'POA' },
-          { valor: 'POED', desc: 'POED' },
-          { valor: 'POEI', desc: 'POEI' },
-          { valor: 'POSL', desc: 'POSL' },
-        ],
-      },
-    ];
-    setListaTipoDocumento(mockTipoDocumento);
+  const obterTiposDocumento = async () => {
+    const resposta = await ServicoDocumentosPlanosTrabalho.obterTiposDeDocumentos().catch(
+      e => erros(e)
+    );
+
+    if (resposta?.data?.length) {
+      setListaTipoDocumento(resposta.data);
+      if (resposta.data.length === 1) {
+        const tipo = resposta.data[0];
+        setTipoDocumentoId(String(tipo.id));
+
+        if (tipo.classificacoes.length === 1) {
+          setListaClassificacao(tipo.classificacoes);
+          const classificacao = tipo.classificacoes[0];
+          setClassificacaoId(String(classificacao.id));
+        }
+      }
+    }
   };
+
+  useEffect(() => {
+    if (ueId && tipoDocumentoId && classificacaoId && listaUes?.length) {
+      const ueSelecionada = listaUes.find(
+        item => String(item.valor) === String(ueId)
+      );
+      const params = {
+        ueId: ueSelecionada.id,
+        tipoDocumentoId,
+        classificacaoId,
+      };
+      setFiltro({ ...params });
+    }
+  }, [ueId, tipoDocumentoId, classificacaoId, listaUes]);
 
   useEffect(() => {
     obterAnosLetivos();
@@ -164,6 +176,7 @@ const DocumentosPlanosTrabalhoLista = () => {
         const lista = data.map(item => ({
           desc: item.nome,
           valor: String(item.codigo),
+          id: item.id,
         }));
 
         if (lista && lista.length && lista.length === 1) {
@@ -198,12 +211,14 @@ const DocumentosPlanosTrabalhoLista = () => {
   const onChangeTipoDocumento = tipo => {
     let classificacaoPorTipo = [];
     if (tipo) {
-      const lista = listaTipoDocumento.find(item => item.valor === tipo);
-      classificacaoPorTipo = lista.classificacao;
+      const lista = listaTipoDocumento.find(
+        item => String(item.id) === String(tipo)
+      );
+      classificacaoPorTipo = lista.classificacoes;
     }
-    setTipoDocumento(tipo);
+    setTipoDocumentoId(tipo);
     setListaClassificacao(classificacaoPorTipo);
-    setClassificacao();
+    setClassificacaoId();
   };
 
   const formatarCampoDataGrid = data => {
@@ -215,17 +230,21 @@ const DocumentosPlanosTrabalhoLista = () => {
   };
 
   const onClickDownload = linha => {
-    console.log(linha);
+    ServicoArmazenamento.obterArquivoParaDownload(linha.codigoArquivo)
+      .then(resposta => {
+        downloadBlob(resposta.data, linha.nomeArquivo);
+      })
+      .catch(e => erros(e));
   };
 
   const colunas = [
     {
       title: 'Tipo',
-      dataIndex: 'tipo',
+      dataIndex: 'tipoDocumento',
     },
     {
       title: 'Cassificação',
-      dataIndex: 'cassificacao',
+      dataIndex: 'classificacao',
     },
     {
       title: 'Usuário',
@@ -233,7 +252,7 @@ const DocumentosPlanosTrabalhoLista = () => {
     },
     {
       title: 'Data de inclusão',
-      dataIndex: 'dataInclusao',
+      dataIndex: 'dataUpload',
       render: data => formatarCampoDataGrid(data),
     },
     {
@@ -243,10 +262,10 @@ const DocumentosPlanosTrabalhoLista = () => {
       render: (texto, linha) => {
         return (
           <Button
-            icon="fas fa-arrow-down"
+            icon={`fas fa-arrow-down ${NOME_BTN_DOWNLOAD}`}
             label="Download"
             color={Colors.Azul}
-            className="ml-2 text-center"
+            className={`ml-2 text-center ${NOME_BTN_DOWNLOAD}`}
             onClick={() => onClickDownload(linha)}
           />
         );
@@ -254,8 +273,20 @@ const DocumentosPlanosTrabalhoLista = () => {
     },
   ];
 
-  const onClickEditar = linha => {
-    history.push(`${RotasDto.DOCUMENTOS_PLANOS_TRABALHO}/editar/${linha.id}`);
+  const onClickEditar = (linha, colunaClicada) => {
+    let executarClick = true;
+    if (colunaClicada?.target?.className) {
+      const clicouNoBotao = colunaClicada.target.className.includes(
+        NOME_BTN_DOWNLOAD
+      );
+      executarClick = !clicouNoBotao;
+    }
+
+    if (executarClick) {
+      history.push(
+        `${RotasDto.DOCUMENTOS_PLANOS_TRABALHO}/editar/${linha.documentoId}`
+      );
+    }
   };
 
   return (
@@ -333,11 +364,12 @@ const DocumentosPlanosTrabalhoLista = () => {
                 id="select-tipos-documento"
                 label="Tipo de documento"
                 lista={listaTipoDocumento}
-                valueOption="valor"
-                valueText="desc"
+                valueOption="id"
+                valueText="tipoDocumento"
                 onChange={onChangeTipoDocumento}
-                valueSelect={tipoDocumento}
+                valueSelect={tipoDocumentoId}
                 placeholder="Tipo de documento"
+                disabled={listaTipoDocumento.length === 1}
               />
             </div>
             <div className="col-sm-12 col-md-12 col-lg-6 col-xl-6 mb-2">
@@ -345,22 +377,38 @@ const DocumentosPlanosTrabalhoLista = () => {
                 id="select-classificacao-documento"
                 label="Classificação"
                 lista={listaClassificacao}
-                valueOption="valor"
-                valueText="desc"
-                onChange={setClassificacao}
-                valueSelect={classificacao}
+                valueOption="id"
+                valueText="classificacao"
+                onChange={setClassificacaoId}
+                valueSelect={classificacaoId}
                 placeholder="Classificação do documento"
+                disabled={listaClassificacao.length === 1}
               />
             </div>
             <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
-              <ListaPaginada
-                url="v1/calendarios/eventos/tipos/listar"
-                id="lista-tipo-documento"
-                colunaChave="id"
-                colunas={colunas}
-                filtro={filtro}
-                onClick={onClickEditar}
-              />
+              {filtro.ueId &&
+              filtro.tipoDocumentoId &&
+              filtro.classificacaoId ? (
+                <ListaPaginada
+                  url="v1/armazenamento/documentos"
+                  id="lista-tipo-documento"
+                  colunaChave="documentoId"
+                  colunas={colunas}
+                  filtro={filtro}
+                  onClick={(linha, colunaClicada) =>
+                    onClickEditar(linha, colunaClicada)
+                  }
+                  filtroEhValido={
+                    !!(
+                      filtro.ueId &&
+                      filtro.tipoDocumentoId &&
+                      filtro.classificacaoId
+                    )
+                  }
+                />
+              ) : (
+                ''
+              )}
             </div>
           </div>
         </div>
