@@ -5,6 +5,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { erro, erros, sucesso } from '~/servicos';
 import ServicoArmazenamento from '~/servicos/Componentes/ServicoArmazenamento';
+import { downloadBlob } from '~/utils/funcoes/gerais';
 
 const { Dragger } = Upload;
 
@@ -45,21 +46,6 @@ const UploadArquivos = props => {
       return true;
     }
     return false;
-  };
-
-  const downloadBlob = (data, fileName) => {
-    const a = document.createElement('a');
-    document.body.appendChild(a);
-    a.style = 'display: none';
-
-    const blob = new Blob([data]);
-    const url = window.URL.createObjectURL(blob);
-    a.href = url;
-    a.download = fileName;
-    a.click();
-    window.URL.revokeObjectURL(url);
-
-    document.body.removeChild(a);
   };
 
   const beforeUploadDefault = arquivo => {
