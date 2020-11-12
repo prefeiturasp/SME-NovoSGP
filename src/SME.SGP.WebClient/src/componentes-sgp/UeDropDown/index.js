@@ -40,6 +40,7 @@ function UeDropDown({
         lista = data.map(item => ({
           desc: item.nome,
           valor: item.codigo,
+          id: item.id,
         }));
       }
       if (lista.length > 1) {
