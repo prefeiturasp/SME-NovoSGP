@@ -6,7 +6,8 @@ where
 	not exists(
 	select 	1
 	from public.parametros_sistema 
-	where tipo = 35);
+	where tipo = 35
+      and valor = 'Professor');
 
 	
 insert  into  
@@ -17,7 +18,8 @@ where
 	not exists(
 	select 	1
 	from public.parametros_sistema 
-	where tipo = 35);
+	where tipo = 35
+	  and valor = 'CP');
 	
 insert  into  
 	public.parametros_sistema (nome,descricao,valor,ano,ativo,criado_em,criado_por, criado_rf,tipo)
@@ -27,7 +29,8 @@ where
 	not exists(
 	select 	1
 	from public.parametros_sistema 
-	where tipo = 36);
+	where tipo = 36
+	  and valor = 'CP');
 	
 insert  into  
 	public.parametros_sistema (nome,descricao,valor,ano,ativo,criado_em,criado_por, criado_rf,tipo)
@@ -37,7 +40,8 @@ where
 	not exists(
 	select 	1
 	from public.parametros_sistema 
-	where tipo = 36);
+	where tipo = 36
+	  and valor = 'AD');
 	
 insert  into  
 	public.parametros_sistema (nome,descricao,valor,ano,ativo,criado_em,criado_por, criado_rf,tipo)
@@ -47,7 +51,8 @@ where
 	not exists(
 	select 	1
 	from public.parametros_sistema 
-	where tipo = 36);
+	where tipo = 36
+	  and valor = 'Diretor');
 	
 insert  into  
 	public.parametros_sistema (nome,descricao,valor,ano,ativo,criado_em,criado_por, criado_rf,tipo)
@@ -57,4 +62,5 @@ where
 	not exists(
 	select 	1
 	from public.parametros_sistema 
-	where tipo = 36);
+	where tipo = 36
+	  and valor = 'ADM UE');
