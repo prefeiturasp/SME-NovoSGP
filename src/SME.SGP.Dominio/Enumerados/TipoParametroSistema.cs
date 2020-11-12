@@ -59,10 +59,9 @@
         DataInicioSGP = 29,
 
         //Pendencias Gerais
-        NotificarPendenciaDiasNaoLetivos = 35,
-        NotificarPendenciaDiasLetivosInsuficientes = 36,
-        NotificarPendenciaEventoCalendario = 37,
-
+        GerarPendenciaAulasDiasNaoLetivos = 35,
+        GerarPendenciaDiasLetivosInsuficientes = 36,
+        
         //Sistema
         HabilitarServicosEmBackground = 100
     }
