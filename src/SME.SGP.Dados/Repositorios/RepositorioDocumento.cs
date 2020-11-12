@@ -132,6 +132,7 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select 
                             d.id as Id,
                             d.arquivo_id as arquivoId,
+                            a2.nome as NomeArquivo,
 	                        d.alterado_em,
 	                        d.alterado_por ,
 	                        d.alterado_rf ,
