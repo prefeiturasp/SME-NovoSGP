@@ -51,10 +51,12 @@ namespace SME.SGP.Aplicacao
                 {
                     Data = data,
                     EhLetivo = false,
+                    EhNaoLetivo = true,
+                    Motivo = evento.Nome,
                     UesIds = string.IsNullOrWhiteSpace(evento.UeId) ? new List<string>() : new List<string> { evento.UeId },
                     DreIds = string.IsNullOrWhiteSpace(evento.DreId) ? new List<string>() : new List<string> { evento.DreId },
                     PossuiEvento = true
-                }));
+                }));;
 
             return datasComEventosNaoLetivos;
         }

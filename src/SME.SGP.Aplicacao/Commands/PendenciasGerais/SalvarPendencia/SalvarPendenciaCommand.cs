@@ -11,7 +11,7 @@ namespace SME.SGP.Aplicacao
     {
         public SalvarPendenciaCommand(TipoPendencia tipoPendencia, string descricao = "", string instrucao = "")
         {
-            TipoPendencia = TipoPendencia;
+            TipoPendencia = tipoPendencia;
             Descricao = descricao;
             Instrucao = instrucao;
         }
