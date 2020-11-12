@@ -14,6 +14,7 @@ namespace SME.SGP.Infra
         public string DreId { get; set; }
         public long ArquivoId { get; set; }
         public string ProfessorRf { get; set; }
+        public string NomeArquivo { get; set; }
         public Guid CodigoArquivo { get; set; }
     }
 }

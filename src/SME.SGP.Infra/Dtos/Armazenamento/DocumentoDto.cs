@@ -18,6 +18,7 @@ namespace SME.SGP.Infra
 
         public long DocumentoId { get; set; }
         public string Usuario { get; set; }
+        public string NomeArquivo { get; set; }
         public DateTime DataUpload { get; set; }
         public string TipoDocumento { get; set; }
         public string Classificacao { get; set; }

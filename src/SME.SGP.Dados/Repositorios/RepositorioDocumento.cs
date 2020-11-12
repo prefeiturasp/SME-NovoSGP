@@ -80,6 +80,7 @@ namespace SME.SGP.Dados.Repositorios
             else
             {
                 sql.AppendLine("d.id as DocumentoId, ");
+                sql.AppendLine("a.nome as NomeArquivo, ");
                 sql.AppendLine("td.descricao as tipoDocumento, ");
                 sql.AppendLine("cd.descricao as classificacao, ");
                 sql.AppendLine("usuario_id as usuarioId, ");
@@ -132,6 +133,7 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select 
                             d.id as Id,
                             d.arquivo_id as arquivoId,
+                            a2.nome as NomeArquivo,
 	                        d.alterado_em,
 	                        d.alterado_por ,
 	                        d.alterado_rf ,
