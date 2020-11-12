@@ -49,6 +49,7 @@ function Localizador({
       setPessoaSelecionada({
         professorRf: '',
         professorNome: '',
+        usuarioId: '',
       });
       setTimeout(() => {
         setDesabilitarCampo(() => ({
@@ -68,7 +69,11 @@ function Localizador({
 
     if (dados && dados.length > 0) {
       setDataSource(
-        dados.map(x => ({ professorRf: x.codigoRF, professorNome: x.nome }))
+        dados.map(x => ({
+          professorRf: x.codigoRF,
+          professorNome: x.nome,
+          usuarioId: x.usuarioId,
+        }))
       );
     }
   };
@@ -86,6 +91,7 @@ function Localizador({
         setPessoaSelecionada({
           professorRf: dados.codigoRF,
           professorNome: dados.nome,
+          usuarioId: dados.usuarioId,
         });
 
         setDesabilitarCampo(estado => ({
@@ -104,6 +110,7 @@ function Localizador({
       setPessoaSelecionada({
         professorRf: '',
         professorNome: '',
+        usuarioId: '',
       });
       setDesabilitarCampo(estado => ({
         ...estado,
