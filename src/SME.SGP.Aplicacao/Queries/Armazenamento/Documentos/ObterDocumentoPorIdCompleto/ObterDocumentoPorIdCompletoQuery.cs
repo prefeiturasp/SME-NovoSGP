@@ -8,9 +8,9 @@ using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterDocumentoPorIdQuery : IRequest<Documento>
+    public class ObterDocumentoPorIdCompletoQuery : IRequest<ObterDocumentoDto>
     {
-        public ObterDocumentoPorIdQuery(long documentoId)
+        public ObterDocumentoPorIdCompletoQuery(long documentoId)
         {
             DocumentoId = documentoId;
         }
@@ -18,9 +18,9 @@ namespace SME.SGP.Aplicacao
         public long DocumentoId { get; set; }
     }
 
-    public class ObterDocumentoPorIdQueryValidator : AbstractValidator<ObterDocumentoPorIdQuery>
+    public class ObterDocumentoPorIdCompletoQueryValidator : AbstractValidator<ObterDocumentoPorIdCompletoQuery>
     {
-        public ObterDocumentoPorIdQueryValidator()
+        public ObterDocumentoPorIdCompletoQueryValidator()
         {
             RuleFor(c => c.DocumentoId)
             .NotEmpty()

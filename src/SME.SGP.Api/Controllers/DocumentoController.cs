@@ -44,7 +44,7 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpGet("")]
-        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(PaginacaoResultadoDto<DocumentoDto>), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> ListarDocumentos([FromQuery] long ueId, [FromQuery] long tipoDocumentoId, [FromQuery] long classificacaoId, [FromServices] IListarDocumentosUseCase useCase)
@@ -77,7 +77,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ExcluirDocumento(long documentoId, Guid codigoArquivo, [FromServices] IExcluirDocumentoUseCase useCase)
+        public async Task<IActionResult> ExcluirDocumento(long documentoId, [FromServices] IExcluirDocumentoUseCase useCase)
         {
             return Ok(await useCase.Executar(documentoId));
         }
@@ -86,7 +86,16 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> AtualizarDocumento(long documentoId, [FromBody] Guid codigoArquivo, [FromServices] IExcluirDocumentoUseCase useCase)
+        public async Task<IActionResult> AtualizarDocumento(long documentoId, [FromBody] Guid codigoArquivo, [FromServices] IAlterarDocumentoUseCase useCase)
+        {
+            return Ok(await useCase.Executar(new AlterarDocumentoDto() { DocumentoId = documentoId, CodigoArquivo = codigoArquivo }));
+        }
+
+        [HttpGet("{documentoId}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ObterDocumento(long documentoId, [FromServices] IObterDocumentoUseCase useCase)
         {
             return Ok(await useCase.Executar(documentoId));
         }
