@@ -28,14 +28,13 @@ loop
 				select 1 into existe_periodo_escolar_id 
 				from planejamento_anual_componente where planejamento_anual_periodo_escolar_id = p_anual_periodo.id;
 				
-				if existe_periodo_escolar_id then
-				    delete from planejamento_anual_objetivos_aprendizagem where planejamento_anual_componente_id 
-				    in (select id from planejamento_anual_componente where planejamento_anual_periodo_escolar_id = p_anual_periodo.id);
-				    delete from planejamento_anual_componente where planejamento_anual_periodo_escolar_id = p_anual_periodo.id;					
-				end if;
-				
-				insert into planejamento_anual_componente (planejamento_anual_periodo_escolar_id, componente_curricular_id, descricao, criado_em, criado_por, criado_rf, alterado_em, alterado_por, alterado_rf)
-				values (p_anual_periodo.id, planoanual.componente_curricular_eol_id, planoanual.descricao, planoanual.criado_em, planoanual.criado_por, planoanual.criado_rf, planoanual.alterado_em, planoanual.alterado_por, planoanual.alterado_rf);
+				if not existe_periodo_escolar_id then
+				    --delete from planejamento_anual_objetivos_aprendizagem where planejamento_anual_componente_id 
+				    --in (select id from planejamento_anual_componente where planejamento_anual_periodo_escolar_id = p_anual_periodo.id);
+				    --delete from planejamento_anual_componente where planejamento_anual_periodo_escolar_id = p_anual_periodo.id;
+				    insert into planejamento_anual_componente (planejamento_anual_periodo_escolar_id, componente_curricular_id, descricao, criado_em, criado_por, criado_rf, alterado_em, alterado_por, alterado_rf)
+					values (p_anual_periodo.id, planoanual.componente_curricular_eol_id, planoanual.descricao, planoanual.criado_em, planoanual.criado_por, planoanual.criado_rf, planoanual.alterado_em, planoanual.alterado_por, planoanual.alterado_rf);					
+				end if;							
 		-- ----------------------
 		end loop;
 -- ---------------------------------
