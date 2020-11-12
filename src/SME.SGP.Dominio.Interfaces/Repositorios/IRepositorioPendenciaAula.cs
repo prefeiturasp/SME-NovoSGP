@@ -12,14 +12,14 @@ namespace SME.SGP.Dominio.Interfaces
         Task<long[]> ListarPendenciasPorAulaId(long aulaId);
         Task<long[]> ListarPendenciasPorAulasId(long[] aulaId);
 
-        Task Salvar(PendenciaAula pendenciaAula);
+        Task Salvar(long aulaId, string motivo, long pendenciaId, TipoPendencia tipo);
         Task Excluir(TipoPendencia tipoPendenciaAula, long aulaId);
 
-        Task SalvarVarias(long pendenciaId, IEnumerable<long> aulas);
+        Task SalvarVarias(long pendenciaId, IEnumerable<long> aulas);        
         Task<Turma> ObterNomeTurmaPorPendencia(long pendenciaId);
         Task<IEnumerable<PendenciaAulaDto>> ObterPendenciasAulasPorPendencia(long pendenciaId);
         Task<long> ObterPendenciaAulaPorTurmaIdDisciplinaId(string turmaId, string disciplinaId);
-        Task<long> ObterPendenciaAulaPorAulaId(long aulaId);
+        Task<long> ObterPendenciaAulaPorAulaId(long aulaId, TipoPendencia tipoPendencia);
 
     }
 }
