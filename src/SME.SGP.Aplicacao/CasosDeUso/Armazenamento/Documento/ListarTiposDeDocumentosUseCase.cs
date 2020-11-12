@@ -18,9 +18,15 @@ namespace SME.SGP.Aplicacao
         {
             var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-            string[] perfis = usuario.Perfis.Select(p => p.NomePerfil).ToArray();
+            var tipoPerfil = usuario.ObterTipoPerfilAtual();
 
-            return await mediator.Send(new ObterTipoDocumentoClassificacaoPorPerfilUsuarioLogadoQuery(perfis));
+            if (tipoPerfil == Dominio.TipoPerfil.UE)
+            {
+                return await mediator.Send(new ObterTipoDocumentoClassificacaoPorPerfilUsuarioLogadoQuery(
+                    usuario.Perfis.Where(x => x.CodigoPerfil == usuario.PerfilAtual).Select(p => p.NomePerfil).ToArray()
+                    ));
+            }
+            return await mediator.Send(new ObterTipoDocumentoClassificacaoQuery()); ;
         }
     }
 }
