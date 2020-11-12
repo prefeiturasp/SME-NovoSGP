@@ -16,6 +16,7 @@ namespace SME.SGP.Aplicacao
         public async Task Executar()
         {
             await mediator.Send(new VerificaPendenciaCalendarioUeCommand());
+            await mediator.Send(new VerificaPendenciaParametroEventoCommand());
         }
     }
 }

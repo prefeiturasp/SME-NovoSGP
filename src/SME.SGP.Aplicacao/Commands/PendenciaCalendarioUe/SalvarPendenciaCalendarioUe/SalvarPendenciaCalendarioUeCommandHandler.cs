@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class SalvarPendenciaCalendarioUeCommandHandler : IRequestHandler<SalvarPendenciaCalendarioUeCommand, bool>
+    public class SalvarPendenciaCalendarioUeCommandHandler : IRequestHandler<SalvarPendenciaCalendarioUeCommand, long>
     {
         private readonly IMediator mediator;
         private readonly IRepositorioPendenciaCalendarioUe repositorioPendenciaCalendarioUe;
@@ -19,17 +19,15 @@ namespace SME.SGP.Aplicacao
             this.repositorioPendenciaCalendarioUe = repositorioPendenciaCalendarioUe ?? throw new ArgumentNullException(nameof(repositorioPendenciaCalendarioUe));
         }
 
-        public async Task<bool> Handle(SalvarPendenciaCalendarioUeCommand request, CancellationToken cancellationToken)
+        public async Task<long> Handle(SalvarPendenciaCalendarioUeCommand request, CancellationToken cancellationToken)
         {
-            var pendenciaId = await mediator.Send(new SalvarPendenciaCommand(Dominio.TipoPendencia.CalendarioLetivoInsuficiente, request.Descricao));
-            await repositorioPendenciaCalendarioUe.SalvarAsync(new Dominio.PendenciaCalendarioUe()
+            var pendenciaId = await mediator.Send(new SalvarPendenciaCommand(request.TipoPendencia, request.Descricao, request.Instrucao));
+            return await repositorioPendenciaCalendarioUe.SalvarAsync(new Dominio.PendenciaCalendarioUe()
             {
                 PendenciaId = pendenciaId,
                 UeId = request.UeId,
                 TipoCalendarioId = request.TipoCalendarioId
             });
-
-            return true;
         }
     }
 }

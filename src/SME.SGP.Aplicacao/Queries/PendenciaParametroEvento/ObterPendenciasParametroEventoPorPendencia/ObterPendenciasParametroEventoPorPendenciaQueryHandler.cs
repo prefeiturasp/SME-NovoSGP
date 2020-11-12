@@ -18,7 +18,6 @@ namespace SME.SGP.Aplicacao
             this.repositorioPendenciaParametroEvento = repositorioPendenciaParametroEvento ?? throw new ArgumentNullException(nameof(repositorioPendenciaParametroEvento));
         }
 
-
         public async Task<IEnumerable<PendenciaParametroEventoDto>> Handle(ObterPendenciasParametroEventoPorPendenciaQuery request, CancellationToken cancellationToken)
             => await repositorioPendenciaParametroEvento.ObterPendenciasEventoPorPendenciaId(request.PendenciaId);
     }
