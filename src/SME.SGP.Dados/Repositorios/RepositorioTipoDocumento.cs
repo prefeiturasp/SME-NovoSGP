@@ -42,5 +42,25 @@ namespace SME.SGP.Dados.Repositorios
 
             return retorno;
         }
+
+        public async Task<IEnumerable<TipoDocumentoDto>> ListarTipoDocumentoClassificacao()
+        {
+            List<TipoDocumentoDto> retorno = new List<TipoDocumentoDto>();
+
+            var query = @"select distinct tipo_documento.id, tipo_documento.descricao as tipodocumento from tipo_documento 
+                          inner join classificacao_documento on tipo_documento.id = classificacao_documento.tipo_documento_id;
+
+                        select Id, descricao as Classificacao, tipo_documento_id as TipoDocumentoId from classificacao_documento; ";
+
+            using (var multi = await database.Conexao.QueryMultipleAsync(query))
+            {
+                retorno = multi.Read<TipoDocumentoDto>().ToList();
+                var classificacoes = multi.Read<ClassificacaoDocumentoDto>().ToList();
+
+                retorno.ForEach(td => td.Classificacoes.AddRange(classificacoes.Where(c => c.TipoDocumentoId == td.Id)));
+            }
+
+            return retorno;
+        }
     }
 }
