@@ -8,7 +8,7 @@ using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterDocumentosPorUeETipoEClassificacaoQuery : IRequest<IEnumerable<DocumentoDto>>
+    public class ObterDocumentosPorUeETipoEClassificacaoQuery : IRequest<PaginacaoResultadoDto<DocumentoDto>>
     {
         public ObterDocumentosPorUeETipoEClassificacaoQuery(long ueId, long tipoDocumentoId, long classificacaoId)
         {
