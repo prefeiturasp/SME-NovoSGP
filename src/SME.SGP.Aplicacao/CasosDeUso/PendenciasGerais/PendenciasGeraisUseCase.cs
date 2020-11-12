@@ -1,21 +1,22 @@
 ﻿using MediatR;
+using Sentry;
 using SME.SGP.Infra;
 using System;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class PendenciasGeraisUseCase : IPendenciasGeraisUseCase
+    public class PendenciasGeraisUseCase : AbstractUseCase, IPendenciasGeraisUseCase
     {
-        private readonly IMediator mediator;
-
-        public PendenciasGeraisUseCase(IMediator mediator)
-        {
-            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        public PendenciasGeraisUseCase(IMediator mediator) : base(mediator)
+        {           
         }
 
-        public void Executar()
+        public async Task Executar()
         {
-            mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaExecutaVerificacaoPendenciasGerais, null, Guid.NewGuid(), null));
+            SentrySdk.AddBreadcrumb($"Mensagem PendenciasGeraisUseCase", "Rabbit - PendenciasGeraisUseCase");
+
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaExecutaVerificacaoPendenciasGerais, new ExecutaVerificacaoPendenciasGeraisUseCase(mediator), Guid.NewGuid(), null));
         }
     }
 }
