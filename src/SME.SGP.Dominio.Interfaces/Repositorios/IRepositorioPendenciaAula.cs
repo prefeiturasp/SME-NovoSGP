@@ -19,7 +19,8 @@ namespace SME.SGP.Dominio.Interfaces
         Task<Turma> ObterNomeTurmaPorPendencia(long pendenciaId);
         Task<IEnumerable<PendenciaAulaDto>> ObterPendenciasAulasPorPendencia(long pendenciaId);
         Task<long> ObterPendenciaAulaPorTurmaIdDisciplinaId(string turmaId, string disciplinaId);
-        Task<long> ObterPendenciaAulaPorAulaId(long aulaId, TipoPendencia tipoPendencia);
+        Task<long> ObterPendenciaAulaIdPorAulaId(long aulaId, TipoPendencia tipoPendencia);
+        Task<long> ObterPendenciaIdPorAula(long aulaId, TipoPendencia tipoPendencia);
 
     }
 }

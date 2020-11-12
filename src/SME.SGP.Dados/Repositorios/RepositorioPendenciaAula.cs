@@ -159,9 +159,20 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryFirstOrDefaultAsync<long>(query, new { turmaId, disciplinaId });
         }
-        public async Task<long> ObterPendenciaAulaPorAulaId(long aulaId, TipoPendencia tipoPendencia)
+
+        public async Task<long> ObterPendenciaAulaIdPorAulaId(long aulaId, TipoPendencia tipoPendencia)
         {
             var query = @"select pa.id 
+                            from pendencia_aula pa  
+                           inner join pendencia p on p.id = pa.pendencia_id 
+                           where pa.aula_id  = @aulaId
+                            and p.tipo = @tipoPendencia";
+            return await database.Conexao.QueryFirstOrDefaultAsync<long>(query, new { aulaId, tipoPendencia });
+        }
+
+        public async Task<long> ObterPendenciaIdPorAula(long aulaId, TipoPendencia tipoPendencia)
+        {
+            var query = @"select p.id 
                             from pendencia_aula pa  
                            inner join pendencia p on p.id = pa.pendencia_id 
                            where pa.aula_id  = @aulaId
