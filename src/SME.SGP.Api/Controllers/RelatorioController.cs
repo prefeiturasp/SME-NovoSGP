@@ -58,5 +58,11 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await relatorioUseCase.Executar(filtro));
         }
+
+        [HttpPost("notificacoes/impressao")]
+        public async Task<IActionResult> Notificacoes([FromBody] FiltroRelatorioNotificacao filtro, [FromServices] IRelatorioNotificacaoUseCase useCase)
+        {
+            return Ok(await useCase.Executar(filtro));
+        }
     }
 }
