@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos.EscolaAqui.Dashboard;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -204,6 +205,17 @@ namespace SME.SGP.Dados.Repositorios
             builder.AppendLine($@"{prefixoGrupoComunicado}.etapa_ensino_id");
             
             return builder.ToString();
+        }
+
+        public async Task<ComunicadosTotaisSmeResultado> ObterComunicadosTotaisSme(int anoLetivo)
+        {
+            var sql = @"select
+	                        distinct 
+	                        (select count(1) from comunicado where excluido = false and ano_letivo = @anoLetivo and data_expiracao >= current_date) as TotalComunicadosVigentes,
+	                        (select count(1) from comunicado where excluido = false and ano_letivo = @anoLetivo and data_expiracao < current_date) as TotalComunicadosExpirados 
+                        from comunicado";
+            var parametros = new { anoLetivo };
+            return await database.QueryFirstAsync<ComunicadosTotaisSmeResultado>(sql, parametros);
         }
     }
 }
