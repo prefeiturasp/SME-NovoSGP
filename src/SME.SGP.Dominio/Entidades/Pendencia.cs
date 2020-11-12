@@ -5,12 +5,13 @@ namespace SME.SGP.Dominio
 {
     public class Pendencia : EntidadeBase
     {
-        public Pendencia(TipoPendencia tipo, string titulo = "", string descricao = "")
+        public Pendencia(TipoPendencia tipo, string titulo = "", string descricao = "", string instrucao = "")
         {
             Situacao = SituacaoPendencia.Pendente;
             Tipo = tipo;
             Titulo = titulo;
             Descricao = descricao;
+            Instrucao = instrucao;
         }
 
         protected Pendencia()
@@ -21,6 +22,7 @@ namespace SME.SGP.Dominio
         public SituacaoPendencia Situacao { get; set; }
         public TipoPendencia Tipo { get; set; }
         public string Titulo { get; set; }
+        public string Instrucao { get; set; }
 
         public bool EhPendenciaFechamento()
             => new TipoPendencia[] {

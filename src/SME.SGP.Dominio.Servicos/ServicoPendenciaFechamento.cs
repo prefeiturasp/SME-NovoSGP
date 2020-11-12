@@ -190,7 +190,7 @@ namespace SME.SGP.Dominio.Servicos
         {
             if (!string.IsNullOrEmpty(fechamentoTurma.Justificativa))
             {                
-                var percentualReprovacao = double.Parse(await mediator.Send(new ObterParametroSistemaTipoEAnoQuery(TipoParametroSistema.PercentualAlunosInsuficientes, DateTime.Today.Year)));
+                var percentualReprovacao = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.PercentualAlunosInsuficientes, DateTime.Today.Year)));
                 var mensagem = new StringBuilder($"O fechamento do bimestre possui mais de {percentualReprovacao}% das notas consideradas insuficientes<br>");
 
                 GerarPendencia(fechamentoTurma.Id, TipoPendencia.ResultadosFinaisAbaixoDaMedia, mensagem.ToString());

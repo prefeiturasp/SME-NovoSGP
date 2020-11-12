@@ -9,5 +9,6 @@ namespace SME.SGP.Dominio.Interfaces
     public interface IRepositorioPendenciaParametroEvento : IRepositorioBase<PendenciaParametroEvento>
     {
         Task<IEnumerable<PendenciaParametroEventoDto>> ObterPendenciasEventoPorPendenciaId(long pendenciaId);
+        Task<PendenciaParametroEvento> ObterPendenciaEventoPorPendenciaEParametroId(long pendenciaId, long parametroId);
     }
 }

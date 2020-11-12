@@ -22,8 +22,8 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(VerificaPendenciaCalendarioUeCommand request, CancellationToken cancellationToken)
         {
             var anoAtual = DateTime.Now.Year;
-            var diasLetivosEja = int.Parse(await mediator.Send(new ObterParametroSistemaTipoEAnoQuery(Dominio.TipoParametroSistema.EjaDiasLetivos, anoAtual)));
-            var diasLetivosFundamentalMedio = int.Parse(await mediator.Send(new ObterParametroSistemaTipoEAnoQuery(Dominio.TipoParametroSistema.EjaDiasLetivos, anoAtual)));
+            var diasLetivosEja = int.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(Dominio.TipoParametroSistema.EjaDiasLetivos, anoAtual)));
+            var diasLetivosFundamentalMedio = int.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(Dominio.TipoParametroSistema.EjaDiasLetivos, anoAtual)));
 
             var tipoCalendarioId = await mediator.Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(Dominio.Modalidade.Fundamental, anoAtual, 0));
             if (tipoCalendarioId > 0)
@@ -59,7 +59,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<bool> VerificaPendenciaDiasLetivosCalendarioUe(long tipoCalendarioId, long ueId)
         {
-            var pendenciaUe = await mediator.Send(new ObterPendenciaCalendarioUeQuery(tipoCalendarioId, ueId));
+            var pendenciaUe = await mediator.Send(new ObterPendenciaCalendarioUeQuery(tipoCalendarioId, ueId, TipoPendencia.CalendarioLetivoInsuficiente));
             return pendenciaUe != null;
         }
 
@@ -88,10 +88,10 @@ namespace SME.SGP.Aplicacao
             descricao.AppendLine($"UE: {ue.TipoEscola.ShortName()} - {ue.Nome}<br />");
             descricao.AppendLine($"Calendário: {nomeTipoCalendario}<br />");
             descricao.AppendLine($"Quantidade de dias letivos: {diasLetivos}<br />");
-            descricao.AppendLine($"<br />");
-            descricao.AppendLine($"Acesse a tela de Calendário Escolar e confira os eventos da sua UE.");
+            
+            var instrucao = "Acesse a tela de Calendário Escolar e confira os eventos da sua UE.";
 
-            await mediator.Send(new SalvarPendenciaCalendarioUeCommand(tipoCalendarioId, ue.Id, descricao.ToString()));
+            await mediator.Send(new SalvarPendenciaCalendarioUeCommand(tipoCalendarioId, ue.Id, descricao.ToString(), instrucao, TipoPendencia.CalendarioLetivoInsuficiente));
         }
     }
 }

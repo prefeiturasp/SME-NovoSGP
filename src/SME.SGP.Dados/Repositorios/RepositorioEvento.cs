@@ -1129,5 +1129,17 @@ namespace SME.SGP.Dados.Repositorios
                     modalidade = modalidade.HasValue ? modalidade.Value : 0
                 });
         }
+
+        public async Task<IEnumerable<Evento>> ObterEventosPorTipoECalendarioUe(long tipoCalendarioId, string ueCodigo, TipoEvento tipoEvento)
+        {
+            var query = @"select * 
+                        from evento 
+                       where not excluido
+                         and tipo_calendario_id = @tipoCalendarioId
+                         and ue_id = @ueCodigo
+                         and tipo_evento_id = @tipoEvento";
+
+            return await database.Conexao.QueryAsync<Evento>(query, new { tipoCalendarioId, ueCodigo });
+        }
     }
 }
