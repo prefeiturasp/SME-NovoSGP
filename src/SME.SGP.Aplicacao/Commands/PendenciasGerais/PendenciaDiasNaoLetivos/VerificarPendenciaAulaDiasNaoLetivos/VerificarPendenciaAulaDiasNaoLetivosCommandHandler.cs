@@ -61,7 +61,7 @@ namespace SME.SGP.Aplicacao
                         var pendenciaAulaId = await mediator.Send(new ObterPendenciaAulaPorAulaIdQuery(aula.aulaId, TipoPendencia.AulaNaoLetivo));
                         var motivo = motivos.FirstOrDefault(m => m.data == aula.Data)?.motivo;
                         if (pendenciaAulaId == 0)
-                            await mediator.Send(new SalvarPendenciaAulaDiasNaoLetivosCommand(aula.aulaId, motivo, pendenciaId, TipoPendencia.AulaNaoLetivo));
+                            await mediator.Send(new SalvarPendenciaAulaDiasNaoLetivosCommand(aula.aulaId, motivo, pendenciaId));
                     }
                 }
             }
