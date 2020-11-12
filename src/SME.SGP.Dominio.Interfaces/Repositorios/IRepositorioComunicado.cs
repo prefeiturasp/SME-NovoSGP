@@ -9,6 +9,8 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task<PaginacaoResultadoDto<Comunicado>> ListarPaginado(FiltroComunicadoDto filtro, Paginacao paginacao);
 
-        Task<ComunicadosTotaisSmeResultado> ObterComunicadosTotaisSme(int anoLetivo);
+        Task<ComunicadosTotaisResultado> ObterComunicadosTotaisSme(int anoLetivo, string codigoDre, string codigoUe);
+
+        Task<IEnumerable<ComunicadosTotaisPorDreResultado>> ObterComunicadosTotaisAgrupadosPorDre(int anoLetivo);
     }
 }
