@@ -12,10 +12,9 @@ namespace SME.SGP.Aplicacao
 
         public async Task Executar(MensagemRabbit mensagem)
         {
+            await mediator.Send(new VerificarPendenciaAulaDiasNaoLetivosCommand());
             await mediator.Send(new VerificaPendenciaCalendarioUeCommand());
             await mediator.Send(new VerificaPendenciaParametroEventoCommand());
-
-            await mediator.Send(new VerificarPendenciaAulaDiasNaoLetivosCommand());
         }
     }
 }

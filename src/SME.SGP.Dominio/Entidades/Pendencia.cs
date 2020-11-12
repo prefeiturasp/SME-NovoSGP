@@ -23,6 +23,7 @@ namespace SME.SGP.Dominio
         public TipoPendencia Tipo { get; set; }
         public string Titulo { get; set; }
         public string Instrucao { get; set; }
+        public bool Excluido { get; set; }
 
         public bool EhPendenciaFechamento()
             => new TipoPendencia[] {
