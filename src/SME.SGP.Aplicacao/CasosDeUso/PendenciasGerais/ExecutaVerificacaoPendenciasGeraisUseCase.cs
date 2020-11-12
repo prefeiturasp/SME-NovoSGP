@@ -1,21 +1,20 @@
 ﻿using MediatR;
-using System;
+using SME.SGP.Infra;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ExecutaVerificacaoPendenciasGeraisUseCase : IExecutaVerificacaoPendenciasGeraisUseCase
+    public class ExecutaVerificacaoPendenciasGeraisUseCase : AbstractUseCase, IExecutaVerificacaoPendenciasGeraisUseCase
     {
-        private readonly IMediator mediator;
-
-        public ExecutaVerificacaoPendenciasGeraisUseCase(IMediator mediator)
+        public ExecutaVerificacaoPendenciasGeraisUseCase(IMediator mediator) : base(mediator)
         {
-            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task Executar()
+        public async Task Executar(MensagemRabbit mensagem)
         {
             await mediator.Send(new VerificaPendenciaCalendarioUeCommand());
+
+            await mediator.Send(new VerificarPendenciaAulaDiasNaoLetivosCommand());
         }
     }
 }

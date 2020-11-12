@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Dommel;
+using Microsoft.AspNetCore.Mvc.TagHelpers.Cache;
 using Npgsql;
 using NpgsqlTypes;
 using SME.SGP.Dominio;
@@ -83,10 +84,16 @@ namespace SME.SGP.Dados.Repositorios
                                                     where pa.aula_id= @aulaid and p.tipo = @tipo", new { aulaid = aulaId, tipo = tipoPendenciaAula });
         }
 
-        public async Task Salvar(PendenciaAula pendencia)
+        public async Task Salvar(long aulaId, string motivo, long pendenciaId, TipoPendencia tipo)
         {
-            await database.Conexao.InsertAsync(pendencia);
-        }
+            await database.Conexao.InsertAsync(new PendenciaAula()
+            {
+                AulaId = aulaId,
+                Motivo = motivo,
+                Tipo = tipo,
+                PendenciaId = pendenciaId
+            });            
+        }      
 
         public async Task SalvarVarias(long pendenciaId, IEnumerable<long> aulas)
         {
@@ -146,19 +153,21 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select p.id 
                             from pendencia p 
-                           inner join pendencia_aula pa on p.id = pa.pendencia_id 
+                           inner join pendencia_aula pa on p.id = pa.id 
                            inner join aula a on pa.aula_id = a.id 
                            where a.turma_id = @turmaId 
                              and a.disciplina_id = @disciplinaId";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<long>(query, new { turmaId, disciplinaId });
         }
-        public async Task<long> ObterPendenciaAulaPorAulaId(long aulaId)
+        public async Task<long> ObterPendenciaAulaPorAulaId(long aulaId, TipoPendencia tipoPendencia)
         {
-            var query = @"select id
-                            from pendencia_aula pa 
-                           where aula_id = @aula_id";
-            return await database.Conexao.QueryFirstOrDefaultAsync<long>(query, new { aulaId });
+            var query = @"select pa.id 
+                            from pendencia_aula pa  
+                           inner join pendencia p on p.id = pa.id 
+                           where pa.aula_id  = @aulaId
+                            and p.tipo = @tipoPendencia";
+            return await database.Conexao.QueryFirstOrDefaultAsync<long>(query, new { aulaId, tipoPendencia });
         }
     }
 }
