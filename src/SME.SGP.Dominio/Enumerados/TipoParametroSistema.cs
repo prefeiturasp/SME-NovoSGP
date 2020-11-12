@@ -59,6 +59,11 @@
         DataInicioSGP = 29,
 
         //Pendencias Gerais
+        QuantidadeEventosConselhoClasse = 30,
+        QuantidadeEventosAPM = 31,
+        QuantidadeEventosConselhoEscolar = 32,
+        QuantidadeEventosPedagogicos = 33,
+        DataInicioGeracaoPendencias = 34,
         GerarPendenciaAulasDiasNaoLetivos = 35,
         GerarPendenciaDiasLetivosInsuficientes = 36,
 
