@@ -23,27 +23,86 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.ExecuteScalarAsync<bool>(query, new { id });
         }
 
-        public async Task<IEnumerable<DocumentoDto>> ObterPorUeTipoEClassificacao(long ueId, long tipoDocumentoId, long classificacaoId)
+        public async Task<PaginacaoResultadoDto<DocumentoDto>> ObterPorUeTipoEClassificacaoPaginada(long ueId, long tipoDocumentoId, 
+            long classificacaoId, Paginacao paginacao)
         {
-            var query = @"select 
-                            d.id as DocumentoId,
-	                        td.descricao as tipoDocumento,
-                            cd.descricao as classificacao,
-                            usuario_id as usuarioId,
-                            u.nome || ' (' || u.rf_codigo || ')' as usuario,
-                            case when d.alterado_em is not null then d.alterado_em else d.criado_em end as dataUpload,
-                            a.codigo as CodigoArquivo          
-                        from documento d
-                        inner join
-	                        classificacao_documento cd on d.classificacao_documento_id = cd.id
-                        inner join
-	                        tipo_documento td on cd.tipo_documento_id = td.id
-                        inner join
-	                        arquivo a on d.arquivo_id = a.id
-                        inner join usuario u on 
-	                        d.usuario_id = u.id
-                        where d.ue_id = @ueId and td.id = @tipoDocumentoId and cd.id = @classificacaoId";
-            return await database.Conexao.QueryAsync<DocumentoDto>(query, new { ueId, tipoDocumentoId, classificacaoId });
+            var retorno = new PaginacaoResultadoDto<DocumentoDto>();
+
+            var sql = MontaQueryCompleta(paginacao);
+
+            var parametros = new { ueId, tipoDocumentoId, classificacaoId };
+
+            using (var multi = await database.Conexao.QueryMultipleAsync(sql, parametros))
+            {
+                retorno.Items = multi.Read<DocumentoDto>().ToList();
+                retorno.TotalRegistros = multi.ReadFirst<int>();
+            }
+
+            retorno.TotalPaginas = (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros);
+
+            return retorno;
+
+        }
+
+        private static string MontaQueryCompleta(Paginacao paginacao)
+        {
+            StringBuilder sql = new StringBuilder();
+
+            MontaQueryConsulta(paginacao, sql, contador: false);
+
+            sql.AppendLine(";");
+
+            MontaQueryConsulta(paginacao, sql, contador: true);
+
+            return sql.ToString();
+        }
+
+        private static void MontaQueryConsulta(Paginacao paginacao, StringBuilder sql, bool contador = false)
+        {
+            ObtenhaCabecalho(sql, contador);
+
+            ObtenhaFiltro(sql);
+
+            if (!contador)
+                sql.AppendLine("order by d.id");
+
+            if (paginacao.QuantidadeRegistros > 0 && !contador)
+                sql.AppendLine($"OFFSET {paginacao.QuantidadeRegistrosIgnorados} ROWS FETCH NEXT {paginacao.QuantidadeRegistros} ROWS ONLY");
+        }
+
+        private static void ObtenhaCabecalho(StringBuilder sql, bool contador)
+        {
+            sql.AppendLine("select ");
+            if(contador)
+            {
+                sql.AppendLine("count(*) ");
+            } 
+            else
+            {
+                sql.AppendLine("d.id as DocumentoId, ");
+                sql.AppendLine("td.descricao as tipoDocumento, ");
+                sql.AppendLine("cd.descricao as classificacao, ");
+                sql.AppendLine("usuario_id as usuarioId, ");
+                sql.AppendLine("u.nome || ' (' || u.rf_codigo || ')' as usuario, ");
+                sql.AppendLine("case when d.alterado_em is not null then d.alterado_em else d.criado_em end as dataUpload, ");
+                sql.AppendLine("a.codigo as CodigoArquivo ");
+            }
+            sql.AppendLine("from documento d ");
+            sql.AppendLine("inner join ");
+            sql.AppendLine("classificacao_documento cd on d.classificacao_documento_id = cd.id ");
+            sql.AppendLine("inner join ");
+            sql.AppendLine("tipo_documento td on cd.tipo_documento_id = td.id ");
+            sql.AppendLine("inner join ");
+            sql.AppendLine("arquivo a on d.arquivo_id = a.id ");
+            sql.AppendLine("inner join usuario u on ");
+            sql.AppendLine("d.usuario_id = u.id ");
+        }
+
+        private static void ObtenhaFiltro(StringBuilder sql)
+        {
+            sql.AppendLine("where d.ue_id = @ueId and");
+            sql.AppendLine("td.id = @tipoDocumentoId and");
+            sql.AppendLine("cd.id = @classificacaoId");
         }
 
         public async Task<bool> RemoverReferenciaArquivo(long documentoId, long arquivoId)
@@ -66,6 +125,33 @@ namespace SME.SGP.Dados.Repositorios
                 cd.tipo_documento_id = @tipoDocumentoId and
                 cd.tipo_documento_id = @tipoDocumentoId";
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { tipoDocumentoId, classificacaoId, usuarioId, ueId });
+        }
+
+        public async Task<ObterDocumentoDto> ObterPorIdCompleto(long documentoId)
+        {
+            var query = @"select 
+                            d.id as Id,
+                            d.arquivo_id as arquivoId,
+	                        d.alterado_em,
+	                        d.alterado_por ,
+	                        d.alterado_rf ,
+	                        d.criado_em ,
+	                        d.criado_por ,
+	                        d.criado_rf ,
+	                        d.classificacao_documento_id as ClassificacaoId,
+	                        cd.tipo_documento_id as TipoDocumentoId,
+	                        u.rf_codigo as ProfessorRf,
+	                        ue.ue_id as UeId,
+	                        dre.dre_id as DreId,
+	                        a2.codigo  as CodigoArquivo
+	                        from documento d
+                        inner join usuario u on d.usuario_id = u.id
+                        inner join ue on d.ue_id = ue.id
+                        inner join arquivo a2 on d.arquivo_id = a2.id 
+                        inner join classificacao_documento cd on d.classificacao_documento_id = cd.id 
+                        inner join dre on ue.dre_id = dre.id 
+                        WHERE d.id = @documentoId";
+            return await database.Conexao.QueryFirstOrDefaultAsync<ObterDocumentoDto>(query, new { documentoId });
         }
     }
 }
