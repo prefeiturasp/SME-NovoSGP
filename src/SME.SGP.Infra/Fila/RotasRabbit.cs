@@ -34,8 +34,9 @@
         public static string RotaSincronizaComponetesCurricularesEol => "componentes.curriculares.eol.sincronizar";
         public static string RotaExecutaVerificacaoPendenciasGerais => "pendencias.gerais.executa.verificacao";
 
-        
-
+        public static string RotaExecutaExclusaoPendenciasAula => "pendencias.gerais.pendencias.aula.excluir";
+        public static string RotaExecutaExclusaoPendenciasDiasLetivosInsuficientes => "pendencias.gerais.pendencias.calendario.excluir";
+        public static string RotaExecutaExclusaoPendenciaParametroEvento => "pendencias.gerais.pendencias.evento.excluir";
 
     }
 }

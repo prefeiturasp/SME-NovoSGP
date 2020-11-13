@@ -65,6 +65,21 @@ namespace SME.SGP.Dados.Repositorios
             return contexto.QueryFirstOrDefault<Ue>("select * from ue where ue_id = @ueId", new { ueId });
         }
 
+        public async Task<Ue> ObterUeComDrePorCodigo(string ueCodigo)
+        {
+            var query = @"select ue.*, dre.* 
+                            from ue 
+                           inner join dre on dre.id = ue.dre_id
+                           where ue_id = @ueCodigo";
+
+            return (await contexto.Conexao.QueryAsync<Ue, Dre, Ue>(query, (ue, dre) =>
+            {
+                ue.AdicionarDre(dre);
+                return ue;
+            }, 
+            new { ueCodigo })).FirstOrDefault();
+        }
+
         public IEnumerable<Ue> ObterTodas()
         {
             var query = @"select
@@ -191,6 +206,22 @@ namespace SME.SGP.Dados.Repositorios
                 return ue;
             }, new { modalidades });
 
+        }
+
+        public async Task<IEnumerable<Ue>> ObterUesComDrePorDreEModalidade(string dreCodigo, Modalidade modalidade)
+        {
+            var query = @"select ue.*, dre.* 
+                            from ue 
+                           inner join dre on dre.id = ue.dre_id
+                           where dre_id = @dreCodigo
+                             and exists (select 1 from turma where modalidade_codigo = @modalidade)";
+
+            return (await contexto.Conexao.QueryAsync<Ue, Dre, Ue>(query, (ue, dre) =>
+            {
+                ue.AdicionarDre(dre);
+                return ue;
+            },
+            new { dreCodigo, modalidade }));
         }
     }
 }
