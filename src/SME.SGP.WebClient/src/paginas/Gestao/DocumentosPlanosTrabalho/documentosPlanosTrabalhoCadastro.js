@@ -531,10 +531,12 @@ const DocumentosPlanosTrabalhoCadastro = ({ match }) => {
                         url={`v1/abrangencias/false/dres/${form.values.dreId}/ues?anoLetivo=${form.values.anoLetivo}`}
                         temParametros
                         onChange={(_, lista, changeManual) => {
-                          setListaUes(lista);
                           if (changeManual) {
                             setModoEdicao(true);
                           }
+                        }}
+                        onChangeListaUes={lista => {
+                          setListaUes(lista);
                         }}
                         desabilitado={
                           !!idDocumentosPlanoTrabalho || desabilitarCampos
