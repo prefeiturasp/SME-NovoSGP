@@ -181,11 +181,14 @@ export default function ReiniciarSenha({ perfilSelecionado }) {
 
     if (dreSelecionada) {
       const parametrosPost = {
-        codigoDRE: dreSelecionada,
-        codigoUE: ueSelecionada,
+        codigoDRE: dreSelecionada,        
         nomeServidor: nomeUsuarioSelecionado,
         codigoRF: rfSelecionado,
       };
+
+      if (ueSelecionada && ueSelecionada.length > 0)
+        parametrosPost["codigoUE"] = ueSelecionada;
+
       const lista = await api
         .post(`v1/unidades-escolares/funcionarios`, parametrosPost)
         .catch(() => {
