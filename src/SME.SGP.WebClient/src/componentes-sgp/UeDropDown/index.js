@@ -21,10 +21,15 @@ function UeDropDown({
   opcaoTodas,
   temParametros,
   modalidade,
+  onChangeListaUes,
 }) {
   const [carregando, setCarregando] = useState(false);
   const [listaUes, setListaUes] = useState([]);
   const [forcaDesabilitado, setForcaDesabilitado] = useState(false);
+
+  useEffect(() => {
+    onChangeListaUes(listaUes);
+  }, [listaUes, onChangeListaUes]);
 
   useEffect(() => {
     async function buscarUes() {
@@ -112,6 +117,7 @@ UeDropDown.propTypes = {
   opcaoTodas: PropTypes.bool,
   temParametros: PropTypes.bool,
   modalidade: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  onChangeListaUes: PropTypes.func,
 };
 
 UeDropDown.defaultProps = {
@@ -124,6 +130,7 @@ UeDropDown.defaultProps = {
   opcaoTodas: false,
   temParametros: false,
   modalidade: '',
+  onChangeListaUes: () => {},
 };
 
 export default UeDropDown;
