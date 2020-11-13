@@ -235,9 +235,7 @@ const Filtro = () => {
     setModalidadeSelecionada(turmaUsuarioSelecionada.modalidade || undefined);
     setPeriodoSelecionado(turmaUsuarioSelecionada.periodo || undefined);
     setDreSelecionada(turmaUsuarioSelecionada.dre || undefined);
-    setUnidadeEscolarSelecionada(
-      turmaUsuarioSelecionada.unidadeEscolar || undefined
-    );
+    setUnidadeEscolarSelecionada(turmaUsuarioSelecionada.unidadeEscolar || undefined);
     setTurmaSelecionada(turmaUsuarioSelecionada.turma || undefined);
     setTextoAutocomplete(turmaUsuarioSelecionada.desc || undefined);
     setConsideraHistorico(!!turmaUsuarioSelecionada.consideraHistorico);
@@ -635,6 +633,10 @@ const Filtro = () => {
 
   useEffect(() => {
     if (turmas && turmas.length === 1) setTurmaSelecionada(turmas[0].valor);
+    else if (turmas && turmas.length > 1) {
+      setCampoTurmaDesabilitado(false);
+    }
+
   }, [turmas]);
 
   useEffect(() => {
@@ -930,6 +932,7 @@ const Filtro = () => {
       setDreSelecionada();
       setPeriodoSelecionado();
       if (turmas) {
+        setTurmaSelecionada('');
         setTurmas([]);
         setCampoTurmaDesabilitado(true);
       }
@@ -996,10 +999,6 @@ const Filtro = () => {
       setPeriodoSelecionado(turmaUsuarioSelecionada.periodo);
       setDreSelecionada(turmaUsuarioSelecionada.dre);
       setUnidadeEscolarSelecionada(turmaUsuarioSelecionada.unidadeEscolar);
-      if (!turmaUsuarioSelecionada.unidadeEscolar || undefined) {
-        setTurmas([]);
-        setCampoTurmaDesabilitado(true);
-      }
       setTurmaSelecionada(turmaUsuarioSelecionada.turma);
       setTextoAutocomplete(turmaUsuarioSelecionada.desc);
       setConsideraHistorico(!!turmaUsuarioSelecionada.consideraHistorico);
