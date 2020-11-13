@@ -28,7 +28,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var retorno = new PaginacaoResultadoDto<DocumentoDto>();
 
-            var sql = MontaQueryCompleta(paginacao);
+            var sql = MontaQueryCompleta(paginacao, tipoDocumentoId, classificacaoId);
 
             var parametros = new { ueId, tipoDocumentoId, classificacaoId };
 
@@ -44,24 +44,24 @@ namespace SME.SGP.Dados.Repositorios
 
         }
 
-        private static string MontaQueryCompleta(Paginacao paginacao)
+        private static string MontaQueryCompleta(Paginacao paginacao, long tipoDocumentoId, long classificacaoId)
         {
             StringBuilder sql = new StringBuilder();
 
-            MontaQueryConsulta(paginacao, sql, contador: false);
+            MontaQueryConsulta(paginacao, sql, contador: false, tipoDocumentoId, classificacaoId);
 
             sql.AppendLine(";");
 
-            MontaQueryConsulta(paginacao, sql, contador: true);
+            MontaQueryConsulta(paginacao, sql, contador: true, tipoDocumentoId, classificacaoId);
 
             return sql.ToString();
         }
 
-        private static void MontaQueryConsulta(Paginacao paginacao, StringBuilder sql, bool contador = false)
+        private static void MontaQueryConsulta(Paginacao paginacao, StringBuilder sql, bool contador = false, long tipoDocumentoId = 0, long classificacaoId = 0)
         {
             ObtenhaCabecalho(sql, contador);
 
-            ObtenhaFiltro(sql);
+            ObtenhaFiltro(sql, tipoDocumentoId, classificacaoId);
 
             if (!contador)
                 sql.AppendLine("order by d.id");
@@ -99,11 +99,14 @@ namespace SME.SGP.Dados.Repositorios
             sql.AppendLine("d.usuario_id = u.id ");
         }
 
-        private static void ObtenhaFiltro(StringBuilder sql)
+        private static void ObtenhaFiltro(StringBuilder sql, long tipoDocumentoId, long classificacaoId)
         {
-            sql.AppendLine("where d.ue_id = @ueId and");
-            sql.AppendLine("td.id = @tipoDocumentoId and");
-            sql.AppendLine("cd.id = @classificacaoId");
+            sql.AppendLine("where d.ue_id = @ueId ");
+
+            if (tipoDocumentoId > 0)
+                sql.AppendLine("and td.id = @tipoDocumentoId ");
+            if (classificacaoId > 0)
+                sql.AppendLine("and cd.id = @classificacaoId ");
         }
 
         public async Task<bool> RemoverReferenciaArquivo(long documentoId, long arquivoId)
@@ -119,7 +122,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select distinct 1 from documento 
                    inner join classificacao_documento cd on documento.classificacao_documento_id = cd.id
-                where documento.id <> @documentoId
+                where documento.id <> @documentoId and
                 documento.classificacao_documento_id = @classificacaoId and 
                 documento.usuario_id = @usuarioId and 
                 documento.ue_id = @ueId and

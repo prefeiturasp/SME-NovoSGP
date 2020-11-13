@@ -29,13 +29,6 @@ namespace SME.SGP.Aplicacao
             RuleFor(c => c.UeId)
             .NotEmpty()
             .WithMessage("O id da ue deve ser informado.");
-            RuleFor(c => c.TipoDocumentoId)
-            .NotEmpty()
-            .WithMessage("O id do tipo de documento deve ser informado.");
-            RuleFor(c => c.ClassificacaoId)
-            .NotEmpty()
-            .WithMessage("O id da classificação deve ser informado.");
-
         }
     }
 }
