@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -28,9 +29,23 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<ObjetivoAprendizagemDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PA_C, Policy = "Bearer")]
-        public async Task<IActionResult> Filtrar([FromBody]FiltroObjetivosAprendizagemDto filtroObjetivosAprendizagemDto)
+        public async Task<IActionResult> Filtrar([FromBody] FiltroObjetivosAprendizagemDto filtroObjetivosAprendizagemDto)
         {
             return Ok(await consultasObjetivoAprendizagem.Filtrar(filtroObjetivosAprendizagemDto));
+        }
+
+        [HttpGet]
+        [Route("{ano}/{componenteCurricularId}")]
+        [ProducesResponseType(typeof(IEnumerable<ObjetivoAprendizagemDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.PA_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterObjetivosPorAnoEComponenteCurricular([FromServices] IListarObjetivoAprendizagemPorAnoEComponenteCurricularUseCase useCase, [FromQuery] bool ensinoEspecial, long ano, long componenteCurricularId)
+        {
+            var result = await useCase.Executar(ano, componenteCurricularId, ensinoEspecial);
+            if (result == null)
+                return NoContent();
+
+            return Ok(result);
         }
 
         [HttpGet]
@@ -50,13 +65,12 @@ namespace SME.SGP.Api.Controllers
 
         [HttpGet]
         [Route("objetivos/turmas/{turmaId}/componentes/{componenteId}/disciplinas/{disciplinaId}")]
-        [ProducesResponseType(typeof(IEnumerable<ComponenteCurricularSimplificadoDto>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<ObjetivosAprendizagemPorComponenteDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(204)]
-        public async Task<IActionResult> ObterObjetivosPorDisciplina([FromQuery] DateTime dataAula, long turmaId, long componenteId, long disciplinaId, bool regencia)
+        public async Task<IActionResult> ObterObjetivosPorDisciplina([FromServices] IObterObjetivosPorDisciplinaUseCase UseCase, long turmaId, long componenteId, long disciplinaId, [FromQuery] DateTime dataReferencia, [FromQuery] bool regencia)
         {
-
-            var objetivos = await consultasObjetivoAprendizagem.ObterObjetivosPlanoDisciplina(dataAula, turmaId, componenteId, disciplinaId, regencia);
+            var objetivos = await UseCase.Executar(dataReferencia, turmaId, componenteId, disciplinaId, regencia);
 
             if (objetivos.Any())
                 return Ok(objetivos);
@@ -67,7 +81,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost]
         [Route("sincronizar-jurema")]
         [ProducesResponseType(200)]
-        public async Task<IActionResult> SincronizarObjetivos([FromServices]IServicoObjetivosAprendizagem servicoObjetivosAprendizagem)
+        public async Task<IActionResult> SincronizarObjetivos([FromServices] IServicoObjetivosAprendizagem servicoObjetivosAprendizagem)
         {
             await servicoObjetivosAprendizagem.SincronizarObjetivosComJurema();
             return Ok();

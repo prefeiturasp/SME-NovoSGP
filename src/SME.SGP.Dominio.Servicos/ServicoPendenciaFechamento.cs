@@ -19,8 +19,8 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioPendenciaFechamento repositorioPendenciaFechamento;
         private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
         private readonly IRepositorioFechamentoNota repositorioFechamentoNota;
-        private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
+        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
 
         private int avaliacoesSemnota;
         private int aulasReposicaoPendentes;
@@ -34,9 +34,9 @@ namespace SME.SGP.Dominio.Servicos
                                           IRepositorioPendencia repositorioPendencia,
                                           IRepositorioPendenciaFechamento repositorioPendenciaFechamento,
                                           IRepositorioAula repositorioAula,
+                                          IRepositorioComponenteCurricular repositorioComponenteCurricular,
                                           IRepositorioParametrosSistema repositorioParametrosSistema,
                                           IRepositorioFechamentoNota repositorioFechamentoNota,
-                                          IServicoEol servicoEOL,
                                           IServicoUsuario servicoUsuario)
         {
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
@@ -46,16 +46,16 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
             this.repositorioFechamentoNota = repositorioFechamentoNota ?? throw new ArgumentNullException(nameof(repositorioFechamentoNota));
-            this.servicoEOL = servicoEOL;
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
+            this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
         }
 
-        public int ValidarAulasReposicaoPendente(long fechamentoId, Turma turma, long disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo)
+        public async Task<int> ValidarAulasReposicaoPendente(long fechamentoId, Turma turma, long disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo)
         {
             var aulasPendentes = repositorioAula.ObterAulasReposicaoPendentes(turma.CodigoTurma, disciplinaId.ToString(), inicioPeriodo, fimPeriodo);
             if (aulasPendentes != null && aulasPendentes.Any())
             {
-                var componenteCurricular = servicoEOL.ObterDisciplinasPorIds(new long[] { disciplinaId })?.FirstOrDefault();
+                var componenteCurricular = (await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { disciplinaId })).ToList()?.FirstOrDefault();
                 if (componenteCurricular == null)
                 {
                     throw new NegocioException("Componente curricular não encontrado.");
@@ -80,12 +80,12 @@ namespace SME.SGP.Dominio.Servicos
             return aulasReposicaoPendentes;
         }
 
-        public int ValidarAulasSemFrequenciaRegistrada(long fechamentoId, Turma turma, long disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo)
+        public async Task<int> ValidarAulasSemFrequenciaRegistrada(long fechamentoId, Turma turma, long disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo)
         {
             var registrosAulasSemFrequencia = repositorioAula.ObterAulasSemFrequenciaRegistrada(turma.CodigoTurma, disciplinaId.ToString(), inicioPeriodo, fimPeriodo);
             if (registrosAulasSemFrequencia != null && registrosAulasSemFrequencia.Any())
             {
-                var componenteCurricular = servicoEOL.ObterDisciplinasPorIds(new long[] { disciplinaId })?.FirstOrDefault();
+                var componenteCurricular = (await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { disciplinaId })).ToList()?.FirstOrDefault();
                 if (componenteCurricular == null)
                 {
                     throw new NegocioException("Componente curricular não encontrado.");
@@ -123,7 +123,7 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        public int ValidarAulasSemPlanoAulaNaDataDoFechamento(long fechamentoId, Turma turma, long disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo)
+        public async Task<int> ValidarAulasSemPlanoAulaNaDataDoFechamento(long fechamentoId, Turma turma, long disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo)
         {
             var registrosAulasSemPlanoAula = repositorioAula.ObterAulasSemPlanoAulaNaDataAtual(turma.CodigoTurma,
                                                                             disciplinaId.ToString(),
@@ -132,7 +132,7 @@ namespace SME.SGP.Dominio.Servicos
 
             if (registrosAulasSemPlanoAula != null && registrosAulasSemPlanoAula.Any())
             {
-                var componenteCurricular = servicoEOL.ObterDisciplinasPorIds(new long[] { disciplinaId })?.FirstOrDefault();
+                var componenteCurricular = (await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { disciplinaId })).ToList()?.FirstOrDefault();
                 if (componenteCurricular == null)
                 {
                     throw new NegocioException("Componente curricular não encontrado.");

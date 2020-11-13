@@ -32,6 +32,8 @@ import history from '~/servicos/history';
 
 // DTOs
 import RotasDTO from '~/dtos/rotasDto';
+import { IconeDiaComPendencia } from '../../styles';
+import tipoPendenciaAula from '~/dtos/tipoPendenciaAula';
 
 function DiaCompleto({
   dia,
@@ -68,8 +70,10 @@ function DiaCompleto({
   }, []);
 
   const onClickFrequenciaHandler = useCallback(
-    (disciplinaId, diaSelecionado) => {
-      store.dispatch(salvarDadosAulaFrequencia(disciplinaId, diaSelecionado));
+    (disciplinaId, diaSelecionado, aulaId) => {
+      store.dispatch(
+        salvarDadosAulaFrequencia(disciplinaId, diaSelecionado, aulaId)
+      );
       history.push(`${RotasDTO.FREQUENCIA_PLANO_AULA}`);
     },
     []
@@ -79,6 +83,32 @@ function DiaCompleto({
     if (item.ehAula)
       history.push(`${RotasDTO.CADASTRO_DE_AULA}/editar/${item.aulaId}`);
   }, []);
+
+  const obterDescricoesPendencias = pendencias => {
+    const obterDesc = id => {
+      switch (id) {
+        case tipoPendenciaAula.Frequencia:
+          return 'Frequência não registrada';
+        case tipoPendenciaAula.PlanoAula:
+          return 'Plano de aula não registrado';
+        case tipoPendenciaAula.DiarioBordo:
+          return 'Diário de bordo não registrado';
+        case tipoPendenciaAula.Avaliacao:
+          return 'Avaliação sem notas/conceitos lançados';
+        default:
+          return '';
+      }
+    };
+    const conteudo = pendencias.map(item => {
+      return <p key={shortid.generate()}>{obterDesc(item)}</p>;
+    });
+
+    return (
+      <div style={{ fontSize: '12px' }} className="mt-2">
+        {conteudo}
+      </div>
+    );
+  };
 
   return (
     <DiaCompletoWrapper className={`${deveExibir && `visivel`}`}>
@@ -122,6 +152,22 @@ function DiaCompleto({
                         <DataInicioFim dadosAula={eventoAula} />
                       </div>
                     </div>
+                    {eventoAula.pendencias && eventoAula.pendencias.length ? (
+                      <div
+                        className="icone-alerta"
+                        style={{ display: 'flex', alignItems: 'center' }}
+                      >
+                        <Tooltip
+                          title={obterDescricoesPendencias(
+                            eventoAula.pendencias
+                          )}
+                        >
+                          <IconeDiaComPendencia className="fas fa-exclamation-triangle" />
+                        </Tooltip>
+                      </div>
+                    ) : (
+                      ''
+                    )}
                   </LinhaEvento>
                   <div className="botoesEventoAula">
                     {eventoAula?.ehAula && eventoAula?.mostrarBotaoFrequencia && (
@@ -130,7 +176,8 @@ function DiaCompleto({
                           onClickFrequencia={() =>
                             onClickFrequenciaHandler(
                               eventoAula.componenteCurricularId,
-                              dia
+                              dia,
+                              eventoAula.aulaId
                             )
                           }
                         />

@@ -20,6 +20,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo;
         private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
         private readonly IRepositorioTurma repositorioTurma;
+        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
         private readonly IServicoAluno servicoAluno;
         private readonly IServicoEol servicoEOL;
         private readonly IServicoFrequencia servicoFrequencia;
@@ -31,6 +32,7 @@ namespace SME.SGP.Aplicacao
                                    IServicoFrequencia servicoFrequencia,
                                    IServicoEol servicoEOL,
                                    IConsultasPeriodoEscolar consultasPeriodoEscolar,
+                                    IRepositorioComponenteCurricular repositorioComponenteCurricular,
                                    IConsultasTipoCalendario consultasTipoCalendario,
                                    IConsultasTurma consultasTurma,
                                    IRepositorioAula repositorioAula,
@@ -52,6 +54,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioFrequenciaAlunoDisciplinaPeriodo = repositorioFrequenciaAlunoDisciplinaPeriodo ?? throw new ArgumentNullException(nameof(repositorioFrequenciaAlunoDisciplinaPeriodo));
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
             this.servicoAluno = servicoAluno ?? throw new ArgumentNullException(nameof(servicoAluno));
+            this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
         }
 
         public async Task<bool> FrequenciaAulaRegistrada(long aulaId)
@@ -100,7 +103,7 @@ namespace SME.SGP.Aplicacao
             if (alunosEOL == null || !alunosEOL.Any())
                 throw new NegocioException("Não foram localizados alunos para a turma selecionada.");
 
-            var disciplinasEOL = servicoEOL.ObterDisciplinasPorIds(new long[] { long.Parse(disciplinaId) });
+            var disciplinasEOL = await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { long.Parse(disciplinaId) });
             if (disciplinasEOL == null || !disciplinasEOL.Any())
                 throw new NegocioException("Disciplina informada não localizada no EOL.");
 
@@ -167,7 +170,7 @@ namespace SME.SGP.Aplicacao
                                                     TipoParametroSistema.PercentualFrequenciaAlerta,
                                                     bimestre.PeriodoInicio.Year));
 
-            var disciplinaAula = servicoEOL.ObterDisciplinasPorIds(new long[] { Convert.ToInt64(aula.DisciplinaId) });
+            var disciplinaAula = await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { Convert.ToInt64(aula.DisciplinaId) });
 
             if (disciplinaAula == null || disciplinaAula.ToList().Count <= 0)
                 throw new NegocioException("Disciplina da aula não encontrada");

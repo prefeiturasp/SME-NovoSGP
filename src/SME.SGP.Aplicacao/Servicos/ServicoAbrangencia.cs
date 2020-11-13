@@ -281,11 +281,11 @@ namespace SME.SGP.Aplicacao.Servicos
                         break;
 
                     case Infra.Enumerados.Abrangencia.DreEscolasAtribuidas:
+                    case Infra.Enumerados.Abrangencia.UeTurmasDisciplinas:
                     case Infra.Enumerados.Abrangencia.UE:
                         SincronizarAbrangenciaPorUes(abrangenciaSintetica, ues, login, perfil);
                         break;
 
-                    case Infra.Enumerados.Abrangencia.UeTurmasDisciplinas:
                     case Infra.Enumerados.Abrangencia.Professor:
                         SincronizarAbragenciaPorTurmas(abrangenciaSintetica, turmas, login, perfil);
                         break;

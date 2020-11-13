@@ -72,6 +72,25 @@ class ServicoFiltroRelatorio {
     )}`;
     return api.get(url);
   };
+
+  obterTurmasEspecificas = (
+    codigoUe,
+    anoLetivo,
+    semestre,
+    modalidade,
+    anosEscolares
+  ) => {
+    const codigoUeAndAnoLetivo = `${urlPadrao}/turmas/ues/${codigoUe}/anoletivo/${anoLetivo}?`;
+    const semestreParams = semestre && `semestre=${semestre}`;
+    const modalidadePrams = modalidade && `&modalidade=${modalidade}`;
+    const anosParams =
+      anosEscolares && `&anos=${anosEscolares.join('&anos=', anosEscolares)}`;
+
+    const url =
+      codigoUeAndAnoLetivo + semestreParams + modalidadePrams + anosParams;
+
+    return api.get(url);
+  };
 }
 
 export default new ServicoFiltroRelatorio();
