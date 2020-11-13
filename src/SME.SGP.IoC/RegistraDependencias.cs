@@ -522,6 +522,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IAlterarDocumentoUseCase, AlterarDocumentoUseCase>();
 
             services.TryAddScoped<IObterTiposCalendarioPorAnoLetivoModalidadeUseCase, ObterTiposCalendarioPorAnoLetivoModalidadeUseCase>();
+
+            services.TryAddScoped<ITrataNotificacoesNiveisCargos, TrataNotificacoesNiveisCargos>();
         }
     }
 }

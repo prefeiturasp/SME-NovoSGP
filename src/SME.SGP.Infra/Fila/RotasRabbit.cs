@@ -32,9 +32,7 @@
         public static string RotaExcluirNotificacaoDiarioBordo => "notificacao.excluir.diariobordo";
         public static string RotaExecutaPendenciasAula => "pendencias.aulas.executa";
         public static string RotaSincronizaComponetesCurricularesEol => "componentes.curriculares.eol.sincronizar";
-
-        
-
+        public static string RotaTrataNotificacoesNiveis => "notificacao.tratamento.niveiscargos";
 
     }
 }
