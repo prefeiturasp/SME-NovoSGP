@@ -35,7 +35,8 @@ namespace SME.SGP.Aplicacao
                 ClassificacaoDocumentoId = request.SalvarDocumentoDto.ClassificacaoId,
                 UsuarioId = request.SalvarDocumentoDto.UsuarioId,
                 UeId = request.SalvarDocumentoDto.UeId,
-                ArquivoId = arquivo.Id
+                ArquivoId = arquivo.Id,
+                AnoLetivo = request.SalvarDocumentoDto.AnoLetivo
             };
 
             await repositorioDocumento.SalvarAsync(documento);
