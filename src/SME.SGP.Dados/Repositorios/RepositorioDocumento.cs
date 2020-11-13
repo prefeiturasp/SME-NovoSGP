@@ -140,6 +140,7 @@ namespace SME.SGP.Dados.Repositorios
 	                        d.criado_em ,
 	                        d.criado_por ,
 	                        d.criado_rf ,
+                            d.ano_letivo as AnoLetivo,
 	                        d.classificacao_documento_id as ClassificacaoId,
 	                        cd.tipo_documento_id as TipoDocumentoId,
 	                        u.rf_codigo as ProfessorRf,

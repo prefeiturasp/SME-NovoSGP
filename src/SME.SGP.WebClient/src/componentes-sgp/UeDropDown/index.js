@@ -40,6 +40,7 @@ function UeDropDown({
         lista = data.map(item => ({
           desc: item.nome,
           valor: item.codigo,
+          id: item.id,
         }));
       }
       if (lista.length > 1) {
@@ -83,7 +84,7 @@ function UeDropDown({
         name="ueId"
         className="fonte-14"
         label={!label ? null : label}
-        onChange={onChange}
+        onChange={a => onChange(a, listaUes, true)}
         lista={listaUes}
         valueOption="valor"
         valueText="desc"

@@ -18,6 +18,7 @@ namespace SME.SGP.Infra
         }
 
         public long UeId { get; set; }
+        public long AnoLetivo { get; set; }
         public long TipoDocumentoId { get; set; }
         public long ClassificacaoId { get; set; }
         public long UsuarioId { get; set; }
