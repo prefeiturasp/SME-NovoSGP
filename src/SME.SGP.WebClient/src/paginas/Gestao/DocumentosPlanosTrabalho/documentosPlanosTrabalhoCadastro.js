@@ -11,7 +11,13 @@ import Button from '~/componentes/button';
 import Card from '~/componentes/card';
 import { Colors } from '~/componentes/colors';
 import { RotasDto } from '~/dtos';
-import { confirmar, erros, setBreadcrumbManual, sucesso } from '~/servicos';
+import {
+  confirmar,
+  erro,
+  erros,
+  setBreadcrumbManual,
+  sucesso,
+} from '~/servicos';
 import ServicoArmazenamento from '~/servicos/Componentes/ServicoArmazenamento';
 import history from '~/servicos/history';
 import ServicoDocumentosPlanosTrabalho from '~/servicos/Paginas/Gestao/DocumentosPlanosTrabalho/ServicoDocumentosPlanosTrabalho';
@@ -256,6 +262,30 @@ const DocumentosPlanosTrabalhoCadastro = ({ match }) => {
       item => String(item.valor) === String(ueId)
     );
 
+    setExibirLoader(true);
+    const existeRegistro = await ServicoDocumentosPlanosTrabalho.validacaoUsuarioDocumento(
+      tipoDocumentoId,
+      classificacaoId,
+      usuarioId,
+      ueSelecionada.id
+    ).catch(e => {
+      erros(e);
+      setExibirLoader(false);
+    });
+
+    if (!(existeRegistro?.status === 200)) {
+      setExibirLoader(false);
+      return;
+    }
+
+    if (existeRegistro?.data) {
+      erro(
+        `Este RF já está vinculado a outro registro do mesmo tipo e classificação no ano letivo ${anoLetivo}`
+      );
+      setExibirLoader(false);
+      return;
+    }
+
     const arquivoCodigo = listaDeArquivos[0].xhr;
     const params = {
       arquivoCodigo,
@@ -266,7 +296,7 @@ const DocumentosPlanosTrabalhoCadastro = ({ match }) => {
       anoLetivo,
     };
 
-    setExibirLoader(true);
+    // setExibirLoader(true);
     const resposta = await ServicoDocumentosPlanosTrabalho.salvarDocumento(
       params,
       idDocumentosPlanoTrabalho
