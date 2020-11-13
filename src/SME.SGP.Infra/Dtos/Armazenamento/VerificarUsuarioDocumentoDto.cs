@@ -11,13 +11,15 @@ namespace SME.SGP.Infra
 
         }
 
-        public VerificarUsuarioDocumentoDto(long tipoDocumentoId, long classificacaoId, long usuarioId, long ueId)
+        public VerificarUsuarioDocumentoDto(long tipoDocumentoId, long classificacaoId, long usuarioId, long ueId, long documentoId)
         {
             TipoDocumentoId = tipoDocumentoId;
             ClassificacaoId = classificacaoId;
             UsuarioId = usuarioId;
             UeId = ueId;
+            DocumentoId = documentoId;
         }
+        public long DocumentoId { get; set; }
         public long TipoDocumentoId { get; set; }
         public long ClassificacaoId { get; set; }
         public long UsuarioId { get; set; }
