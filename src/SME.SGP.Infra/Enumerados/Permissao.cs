@@ -534,5 +534,8 @@
 
         [PermissaoMenu(Menu = "Documentos e planos de trabalho", Icone = "fas fa-user-cog", Agrupamento = "Gestão", OrdemAgrupamento = 6, EhAlteracao = true, Url = "/gestao/documentos-planos-trabalho")]
         DPU_A = 180,
+
+        [PermissaoMenu(Menu = "Escola aqui", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = false, Url = "/relatorios/escola-aqui/dashboard", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Dashboard")]
+        RDE_A = 181
     }
 }
