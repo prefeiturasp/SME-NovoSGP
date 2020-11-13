@@ -2,8 +2,6 @@
 Documentation       Robo de teste 
 
 Library             SeleniumLibrary
-Library             ScreenCapLibrary
-Library             OperatingSystem
 
 Resource            ../../../configuracao/variaveis.robot
 Resource            ../../Login/Login.lib.robot
@@ -14,15 +12,13 @@ Resource            Cadastro.lib.robot
 ${NOVO COMUNICADO URL}                http://${SERVER}/gestao/acompanhamento-escolar/comunicados/novo
 
 *** Keywords ***
-
+Teardown Story 20085
+    Close Browser
 
 
 *** Test Cases ***
 Story 20085
-    Start Video Recording   monitor=1
     Open Browser To Login Page
     Login Into System
 
-    
-
-    [Teardown]  Teardown
+    [Teardown]  Teardown Story 20085

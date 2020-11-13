@@ -2,8 +2,6 @@
 Documentation       Lib de comandos para o fluxo de login
 
 Library             SeleniumLibrary
-Library             ScreenCapLibrary
-Library             OperatingSystem
 
 Resource            ../../configuracao/variaveis.robot
 
@@ -13,7 +11,6 @@ ${TEACHER_CALENDAR_URL}     http://${SERVER}/calendario-escolar/calendario-profe
 
 ${LOGIN BUTTON SELECTOR}    div.ant-spin-container>button
 ${MAIN SEARCH SELECTOR}     div#containerFiltro>form>div.form-group>input
-${TEATCHER_CALENDAR_BREADCRUMB_SELECTOR}    span.ant-breadcrumb-link>a[href="/calendario-escolar/calendario-professor"]
 
 *** Keywords ***
 Open Browser To Login Page
@@ -29,10 +26,6 @@ Login Into System
 
 Select Group 7A
     Input Main Search  7A
-
-Go To Teatcher Calendar
-    Go To           ${TEACHER_CALENDAR_URL}
-    Wait Until Page Contains Element    css=${TEATCHER_CALENDAR_BREADCRUMB_SELECTOR}
 
 Input Username
     [Arguments]     ${username}
