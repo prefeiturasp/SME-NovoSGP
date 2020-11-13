@@ -100,7 +100,7 @@ const DocumentosPlanosTrabalhoLista = () => {
   };
 
   useEffect(() => {
-    if (ueId && tipoDocumentoId && classificacaoId && listaUes?.length) {
+    if (ueId && listaUes?.length) {
       const ueSelecionada = listaUes.find(
         item => String(item.valor) === String(ueId)
       );
@@ -390,9 +390,7 @@ const DocumentosPlanosTrabalhoLista = () => {
               />
             </div>
             <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
-              {filtro.ueId &&
-              filtro.tipoDocumentoId &&
-              filtro.classificacaoId ? (
+              {filtro.ueId ? (
                 <ListaPaginada
                   url="v1/armazenamento/documentos"
                   id="lista-tipo-documento"
@@ -402,13 +400,7 @@ const DocumentosPlanosTrabalhoLista = () => {
                   onClick={(linha, colunaClicada) =>
                     onClickEditar(linha, colunaClicada)
                   }
-                  filtroEhValido={
-                    !!(
-                      filtro.ueId &&
-                      filtro.tipoDocumentoId &&
-                      filtro.classificacaoId
-                    )
-                  }
+                  filtroEhValido={!!filtro.ueId}
                 />
               ) : (
                 ''
