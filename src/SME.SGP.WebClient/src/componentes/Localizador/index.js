@@ -27,6 +27,7 @@ function Localizador({
   anoLetivo,
   desabilitado,
   incluirEmei,
+  rfEdicao,
 }) {
   const usuario = useSelector(store => store.usuario);
   const [dataSource, setDataSource] = useState([]);
@@ -131,6 +132,12 @@ function Localizador({
   };
 
   useEffect(() => {
+    if (rfEdicao && !pessoaSelecionada?.professorRf) {
+      onBuscarPorRF({ rf: rfEdicao });
+    }
+  }, [rfEdicao]);
+
+  useEffect(() => {
     onChange(pessoaSelecionada);
     form.setValues({
       ...form.values,
@@ -224,6 +231,7 @@ Localizador.propTypes = {
   dreId: PropTypes.string,
   anoLetivo: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   desabilitado: PropTypes.bool,
+  rfEdicao: PropTypes.string,
 };
 
 Localizador.defaultProps = {
@@ -233,6 +241,7 @@ Localizador.defaultProps = {
   dreId: null,
   anoLetivo: null,
   desabilitado: false,
+  rfEdicao: '',
 };
 
 export default Localizador;
