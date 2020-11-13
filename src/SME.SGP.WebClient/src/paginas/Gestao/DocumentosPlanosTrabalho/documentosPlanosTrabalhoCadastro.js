@@ -2,23 +2,23 @@ import { Form, Formik } from 'formik';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import * as Yup from 'yup';
-import { Loader, Localizador, SelectComponent } from '~/componentes';
+import { Auditoria, Loader, Localizador, SelectComponent } from '~/componentes';
 import { Cabecalho } from '~/componentes-sgp';
 import DreDropDown from '~/componentes-sgp/DreDropDown/';
 import UeDropDown from '~/componentes-sgp/UeDropDown/';
+import UploadArquivos from '~/componentes-sgp/UploadArquivos/uploadArquivos';
 import Button from '~/componentes/button';
 import Card from '~/componentes/card';
 import { Colors } from '~/componentes/colors';
 import { RotasDto } from '~/dtos';
-import { confirmar, erros, sucesso } from '~/servicos';
+import { confirmar, erros, setBreadcrumbManual, sucesso } from '~/servicos';
+import ServicoArmazenamento from '~/servicos/Componentes/ServicoArmazenamento';
 import history from '~/servicos/history';
 import ServicoDocumentosPlanosTrabalho from '~/servicos/Paginas/Gestao/DocumentosPlanosTrabalho/ServicoDocumentosPlanosTrabalho';
 import FiltroHelper from '~componentes-sgp/filtro/helper';
 
 const DocumentosPlanosTrabalhoCadastro = ({ match }) => {
   const [listaAnosLetivo, setListaAnosLetivo] = useState([]);
-
-  const [listaDres, setListaDres] = useState([]);
 
   const [listaUes, setListaUes] = useState([]);
 
@@ -43,6 +43,10 @@ const DocumentosPlanosTrabalhoCadastro = ({ match }) => {
   const [carregouAnosLetivos, setCarregouAnosLetivos] = useState(false);
   const [carregouTiposDocumento, setCarregouTiposDocumento] = useState(false);
 
+  const [listaDeArquivos, setListaDeArquivos] = useState([]);
+
+  const [defaultFileList, setDefaultFileList] = useState([]);
+
   const montarUrlBuscarDres = anoLetivo => {
     setUrlBuscarDres();
     setUrlBuscarDres(`v1/abrangencias/false/dres?anoLetivo=${anoLetivo}`);
@@ -62,8 +66,47 @@ const DocumentosPlanosTrabalhoCadastro = ({ match }) => {
   useEffect(() => {
     if (match?.params?.id) {
       setIdDocumentosPlanoTrabalho(match.params.id);
+      setBreadcrumbManual(
+        match.url,
+        'Upload do arquivo',
+        RotasDto.DOCUMENTOS_PLANOS_TRABALHO
+      );
     }
   }, [match]);
+
+  const obterDadosDocumento = useCallback(async () => {
+    setExibirLoader(true);
+
+    const resposta = await ServicoDocumentosPlanosTrabalho.obterDocumento(
+      idDocumentosPlanoTrabalho
+    )
+      .catch(e => erros(e))
+      .finally(() => setExibirLoader(false));
+
+    if (resposta && resposta.status === 200) {
+      resposta.data.tipoDocumentoId = String(resposta.data.tipoDocumentoId);
+      resposta.data.classificacaoId = String(resposta.data.classificacaoId);
+
+      resposta.data.defaultFileList = [
+        {
+          uid: resposta.data.codigoArquivo,
+          xhr: resposta.data.codigoArquivo,
+          name: resposta.data.nomeArquivo,
+          status: 'done',
+          documentoId: resposta.data.id,
+        },
+      ];
+      setDefaultFileList(resposta.data.defaultFileList);
+      setListaDeArquivos([...resposta.data.defaultFileList]);
+      setValoresIniciais(resposta.data);
+    }
+  }, [idDocumentosPlanoTrabalho]);
+
+  useEffect(() => {
+    if (idDocumentosPlanoTrabalho) {
+      obterDadosDocumento();
+    }
+  }, [idDocumentosPlanoTrabalho, obterDadosDocumento]);
 
   const atualizaValoresIniciais = useCallback(
     (nomeCampo, valor) => {
@@ -136,6 +179,16 @@ const DocumentosPlanosTrabalhoCadastro = ({ match }) => {
           atualizaValoresIniciais('classificacaoId', String(classificacao.id));
         }
       }
+
+      if (match?.params?.id && valoresIniciais.tipoDocumentoId) {
+        let classificacaoPorTipo = [];
+
+        const lista = resposta.data.find(
+          item => String(item.id) === String(valoresIniciais.tipoDocumentoId)
+        );
+        classificacaoPorTipo = lista.classificacoes;
+        setListaClassificacao(classificacaoPorTipo);
+      }
     }
     setCarregouTiposDocumento(true);
   }, [atualizaValoresIniciais]);
@@ -159,8 +212,15 @@ const DocumentosPlanosTrabalhoCadastro = ({ match }) => {
         'Deseja voltar para tela de listagem agora?'
       );
       if (confirmado) {
+        if (listaDeArquivos?.length && !listaDeArquivos[0].documentoId) {
+          await ServicoArmazenamento.removerArquivo(
+            listaDeArquivos[0].xhr
+          ).catch(e => erros(e));
+        }
         history.push(RotasDto.DOCUMENTOS_PLANOS_TRABALHO);
       }
+    } else {
+      history.push(RotasDto.DOCUMENTOS_PLANOS_TRABALHO);
     }
   };
 
@@ -183,29 +243,42 @@ const DocumentosPlanosTrabalhoCadastro = ({ match }) => {
   };
 
   const onSubmitFormulario = async valores => {
-    const { ueId, usuarioId, classificacaoId, tipoDocumentoId } = valores;
+    const {
+      ueId,
+      usuarioId,
+      classificacaoId,
+      tipoDocumentoId,
+      anoLetivo,
+    } = valores;
 
     const ueSelecionada = listaUes.find(
       item => String(item.valor) === String(ueId)
     );
 
+    const arquivoCodigo = listaDeArquivos[0].xhr;
     const params = {
-      arquivoCodigo: '8c3b3eda-f61c-42db-b794-e960b66f6f9c',
+      arquivoCodigo,
       ueId: ueSelecionada.id,
       tipoDocumentoId,
       classificacaoId,
       usuarioId,
+      anoLetivo,
     };
 
     setExibirLoader(true);
     const resposta = await ServicoDocumentosPlanosTrabalho.salvarDocumento(
-      params
+      params,
+      idDocumentosPlanoTrabalho
     )
       .catch(e => erros(e))
       .finally(() => setExibirLoader(false));
 
     if (resposta && resposta.status === 200) {
-      sucesso('Registro salvo com sucesso');
+      sucesso(
+        `Registro ${
+          idDocumentosPlanoTrabalho ? 'alterado' : 'salvo'
+        } com sucesso`
+      );
       history.push(RotasDto.DOCUMENTOS_PLANOS_TRABALHO);
     }
   };
@@ -225,6 +298,17 @@ const DocumentosPlanosTrabalhoCadastro = ({ match }) => {
       );
       if (confirmou) {
         resetarTela(form);
+        if (idDocumentosPlanoTrabalho) {
+          setDefaultFileList([...valoresIniciais.defaultFileList]);
+          setListaDeArquivos([...valoresIniciais.defaultFileList]);
+        }
+        if (listaDeArquivos?.length && !listaDeArquivos[0].documentoId) {
+          await ServicoArmazenamento.removerArquivo(
+            listaDeArquivos[0].xhr
+          ).catch(e => erros(e));
+          setListaDeArquivos([]);
+          setDefaultFileList([]);
+        }
       }
     }
   };
@@ -239,6 +323,46 @@ const DocumentosPlanosTrabalhoCadastro = ({ match }) => {
         form.submitForm(form);
       }
     });
+  };
+
+  const onRemoveFile = async arquivo => {
+    const codigoArquivo = arquivo.xhr;
+
+    if (arquivo.documentoId) {
+      setListaDeArquivos([]);
+      sucesso(`Arquivo ${arquivo.name} removido com sucesso`);
+      return true;
+    }
+
+    const resposta = await ServicoArmazenamento.removerArquivo(
+      codigoArquivo
+    ).catch(e => erros(e));
+
+    if (resposta && resposta.status === 200) {
+      sucesso(`Arquivo ${arquivo.name} removido com sucesso`);
+      return true;
+    }
+    return false;
+  };
+
+  const onClickExcluir = async () => {
+    const confirmado = await confirmar(
+      'Atenção',
+      'Você tem certeza que deseja excluir este registro?'
+    );
+    if (confirmado) {
+      setExibirLoader(true);
+      const resultado = await ServicoDocumentosPlanosTrabalho.excluirDocumento(
+        idDocumentosPlanoTrabalho
+      )
+        .catch(e => erros(e))
+        .finally(() => setExibirLoader(false));
+
+      if (resultado && resultado.status === 200) {
+        sucesso('Registro excluído com sucesso!');
+        history.push(RotasDto.DOCUMENTOS_PLANOS_TRABALHO);
+      }
+    }
   };
 
   return (
@@ -280,6 +404,14 @@ const DocumentosPlanosTrabalhoCadastro = ({ match }) => {
                         disabled={!modoEdicao}
                       />
                       <Button
+                        label="Excluir"
+                        color={Colors.Vermelho}
+                        border
+                        className="mr-2"
+                        disabled={!idDocumentosPlanoTrabalho}
+                        onClick={onClickExcluir}
+                      />
+                      <Button
                         id="btn-novo"
                         label={
                           idDocumentosPlanoTrabalho ? 'Alterar' : 'Cadastrar'
@@ -301,7 +433,8 @@ const DocumentosPlanosTrabalhoCadastro = ({ match }) => {
                         valueOption="valor"
                         valueText="desc"
                         disabled={
-                          listaAnosLetivo && listaAnosLetivo.length === 1
+                          (listaAnosLetivo && listaAnosLetivo.length === 1) ||
+                          !!idDocumentosPlanoTrabalho
                         }
                         onChange={() => onChangeAnoLetivo(form)}
                         placeholder="Ano letivo"
@@ -318,12 +451,12 @@ const DocumentosPlanosTrabalhoCadastro = ({ match }) => {
                         label="Diretoria Regional de Educação (DRE)"
                         url={urlBuscarDres}
                         form={form}
-                        onChange={(_, lista, changeManual) => {
-                          setListaDres(lista);
+                        onChange={(valor, lista, changeManual) => {
                           if (changeManual) {
                             setModoEdicao(true);
                           }
                         }}
+                        desabilitado={!!idDocumentosPlanoTrabalho}
                       />
                     </div>
                     <div className="col-sm-12 col-md-12 col-lg-6 col-xl-6 mb-2">
@@ -340,6 +473,7 @@ const DocumentosPlanosTrabalhoCadastro = ({ match }) => {
                             setModoEdicao(true);
                           }
                         }}
+                        desabilitado={!!idDocumentosPlanoTrabalho}
                       />
                     </div>
 
@@ -354,7 +488,10 @@ const DocumentosPlanosTrabalhoCadastro = ({ match }) => {
                         placeholder="Tipo de documento"
                         form={form}
                         name="tipoDocumentoId"
-                        disabled={listaTipoDocumento?.length === 1}
+                        disabled={
+                          listaTipoDocumento?.length === 1 ||
+                          !!idDocumentosPlanoTrabalho
+                        }
                       />
                     </div>
                     <div className="col-sm-12 col-md-6 col-lg-6 col-xl- mb-2">
@@ -368,14 +505,19 @@ const DocumentosPlanosTrabalhoCadastro = ({ match }) => {
                         placeholder="Classificação do documento"
                         form={form}
                         name="classificacaoId"
-                        disabled={listaClassificacao?.length === 1}
+                        disabled={
+                          listaClassificacao?.length === 1 ||
+                          !!idDocumentosPlanoTrabalho
+                        }
                       />
                     </div>
                     <div className="col-md-12 mb-2">
                       <div className="row pr-3">
                         <Localizador
+                          desabilitado={!!idDocumentosPlanoTrabalho}
                           dreId={form.values.dreId}
                           anoLetivo={form.values.anoLetivo}
+                          rfEdicao={form.values.professorRf}
                           showLabel
                           form={form}
                           onChange={valor => {
@@ -383,13 +525,38 @@ const DocumentosPlanosTrabalhoCadastro = ({ match }) => {
                             const onChangeManual = campos.find(
                               item => item === 'professorNome'
                             );
-                            if (onChangeManual === 'professorNome') {
+                            if (
+                              !idDocumentosPlanoTrabalho &&
+                              onChangeManual === 'professorNome'
+                            ) {
                               setModoEdicao(true);
                             }
                           }}
                         />
                       </div>
                     </div>
+                    <div className="col-md-12 mt-2">
+                      <UploadArquivos
+                        desabilitar={listaDeArquivos.length > 0}
+                        textoFormatoUpload="Permitido somente um arquivo. Tipo permitido PDF"
+                        tiposArquivosPermitidos=".pdf"
+                        onRemove={onRemoveFile}
+                        urlUpload="v1/armazenamento/documentos/upload"
+                        defaultFileList={defaultFileList}
+                        onChangeListaArquivos={lista => {
+                          setListaDeArquivos(lista);
+                          setModoEdicao(true);
+                        }}
+                      />
+                    </div>
+                    <Auditoria
+                      criadoEm={valoresIniciais?.criadoEm}
+                      criadoPor={valoresIniciais?.criadoPor}
+                      criadoRf={valoresIniciais?.criadoRf}
+                      alteradoPor={valoresIniciais?.alteradoPor}
+                      alteradoEm={valoresIniciais?.alteradoEm}
+                      alteradoRf={valoresIniciais?.alteradoRf}
+                    />
                   </div>
                 </div>
               </Form>

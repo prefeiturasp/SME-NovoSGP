@@ -1003,6 +1003,16 @@ rotas.set(`${RotasDto.DOCUMENTOS_PLANOS_TRABALHO}/novo`, {
   chavePermissao: RotasDto.DOCUMENTOS_PLANOS_TRABALHO,
 });
 
+rotas.set(`${RotasDto.DOCUMENTOS_PLANOS_TRABALHO}/editar/:id`, {
+  breadcrumbName: 'Upload do arquivo',
+  parent: RotasDto.DOCUMENTOS_PLANOS_TRABALHO,
+  component: DocumentosPlanosTrabalhoCadastro,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.DOCUMENTOS_PLANOS_TRABALHO,
+});
+
 const rotasArray = [];
 for (var [key, value] of rotas) {
   const rota = value;

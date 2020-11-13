@@ -136,11 +136,14 @@ const DocumentosPlanosTrabalhoLista = () => {
   const obterDres = useCallback(async () => {
     if (anoLetivo) {
       setCarregandoDres(true);
-      const { data } = await AbrangenciaServico.buscarDres(
+      const resposta = await AbrangenciaServico.buscarDres(
         `v1/abrangencias/false/dres?anoLetivo=${anoLetivo}`
-      );
-      if (data && data.length) {
-        const lista = data
+      )
+        .catch(e => erros(e))
+        .finally(() => setCarregandoDres(false));
+
+      if (resposta?.data && resposta?.data?.length) {
+        const lista = resposta.data
           .map(item => ({
             desc: item.nome,
             valor: String(item.codigo),
@@ -156,7 +159,6 @@ const DocumentosPlanosTrabalhoLista = () => {
         setListaDres([]);
         setDreId(undefined);
       }
-      setCarregandoDres(false);
     }
   }, [anoLetivo]);
 
@@ -167,13 +169,16 @@ const DocumentosPlanosTrabalhoLista = () => {
   const obterUes = useCallback(async (dre, ano) => {
     if (dre) {
       setCarregandoUes(true);
-      const { data } = await AbrangenciaServico.buscarUes(
+      const resposta = await AbrangenciaServico.buscarUes(
         dre,
         `v1/abrangencias/false/dres/${dre}/ues?anoLetivo=${ano}`,
         true
-      );
-      if (data) {
-        const lista = data.map(item => ({
+      )
+        .catch(e => erros(e))
+        .finally(() => setCarregandoUes(false));
+
+      if (resposta?.data?.length) {
+        const lista = resposta.data.map(item => ({
           desc: item.nome,
           valor: String(item.codigo),
           id: item.id,
@@ -187,7 +192,6 @@ const DocumentosPlanosTrabalhoLista = () => {
       } else {
         setListaUes([]);
       }
-      setCarregandoUes(false);
     }
   }, []);
 
