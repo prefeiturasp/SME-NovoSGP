@@ -122,7 +122,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select distinct 1 from documento 
                    inner join classificacao_documento cd on documento.classificacao_documento_id = cd.id
-                where documento.id <> @documentoId
+                where documento.id <> @documentoId and
                 documento.classificacao_documento_id = @classificacaoId and 
                 documento.usuario_id = @usuarioId and 
                 documento.ue_id = @ueId and
