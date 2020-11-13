@@ -22,11 +22,17 @@ namespace SME.SGP.Aplicacao
 
             if (tipoPerfil == Dominio.TipoPerfil.UE)
             {
-                return await mediator.Send(new ObterTipoDocumentoClassificacaoPorPerfilUsuarioLogadoQuery(
+                var tiposDocumentos =  await mediator.Send(new ObterTipoDocumentoClassificacaoPorPerfilUsuarioLogadoQuery(
                     usuario.Perfis.Where(x => x.CodigoPerfil == usuario.PerfilAtual).Select(p => p.NomePerfil).ToArray()
                     ));
+
+                if (tiposDocumentos != null && tiposDocumentos.Any())
+                    return tiposDocumentos;
+
+                return await mediator.Send(new ObterTipoDocumentoClassificacaoQuery());
             }
-            return await mediator.Send(new ObterTipoDocumentoClassificacaoQuery()); ;
+
+            return Enumerable.Empty<TipoDocumentoDto>();
         }
     }
 }
