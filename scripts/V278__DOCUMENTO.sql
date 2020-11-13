@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS public.documento(
 	criado_em timestamp NOT null,
 	arquivo_id int8 NULL,
 	ue_id int8 NOT NULL,
+	ano_letivo int8 NULL,
 	classificacao_documento_id int8 NOT NULL,
 	CONSTRAINT documento_pk PRIMARY KEY (id)
 );
