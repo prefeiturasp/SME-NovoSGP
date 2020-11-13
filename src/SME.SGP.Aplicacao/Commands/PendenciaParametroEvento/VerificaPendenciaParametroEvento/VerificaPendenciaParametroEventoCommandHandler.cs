@@ -26,7 +26,6 @@ namespace SME.SGP.Aplicacao
             var dataInicioGeracaoPendencia = DateTime.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(Dominio.TipoParametroSistema.DataInicioGeracaoPendencias, anoAtual)));
             if (DateTime.Now >= dataInicioGeracaoPendencia)
             {
-
                 var tipoCalendarioId = await mediator.Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(Dominio.Modalidade.Fundamental, anoAtual, 0));
                 if (tipoCalendarioId > 0)
                     await VerificaPendenciaEventosCalendario(tipoCalendarioId, anoAtual);
@@ -89,13 +88,19 @@ namespace SME.SGP.Aplicacao
             var parametroQuantidadeEventos = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(ObterTipoParametroPorTipoEvento(tipoEvento), anoAtual));
             var eventos = await mediator.Send(new ObterEventosPorTipoECalendarioUeQuery(tipoCalendarioId, ue.CodigoUe, tipoEvento));
 
-            if (eventos.Count() < int.Parse(parametroQuantidadeEventos.Valor))
+            if (EventosInsuficientes(eventos, int.Parse(parametroQuantidadeEventos.Valor)))
             {
                 var pendenciaParametroEvento = pendenciasParametroEventoUe.FirstOrDefault(c => c.ParametroSistemaId == parametroQuantidadeEventos.Id);
                 return (pendenciaParametroEvento == null, parametroQuantidadeEventos.Id, eventos.Count());
             }
 
             return (false, 0, 0);
+        }
+
+        private bool EventosInsuficientes(IEnumerable<Evento> eventos, int quantidadeEventosParametro)
+        {
+            return eventos == null
+                || eventos.Count() < quantidadeEventosParametro;
         }
 
         private TipoParametroSistema ObterTipoParametroPorTipoEvento(TipoEvento tipoEvento)
