@@ -24,6 +24,16 @@ class ServicoDocumentosPlanosTrabalho {
   excluirDocumento = documentoId => {
     return api.delete(`${urlPadrao}/${documentoId}`);
   };
+
+  validacaoUsuarioDocumento = (
+    tipoDocumentoId,
+    classificacaoId,
+    usuarioId,
+    ueId
+  ) => {
+    const url = `tipo-documento/${tipoDocumentoId}/classificacao/${classificacaoId}/usuario/${usuarioId}/ue/${ueId}`;
+    return api.get(`${urlPadrao}/${url}`);
+  };
 }
 
 export default new ServicoDocumentosPlanosTrabalho();
