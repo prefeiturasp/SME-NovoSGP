@@ -21,5 +21,11 @@ namespace SME.SGP.Dados.Repositorios
             this.database = database;
         }
 
+        public async Task<bool> ValidarTipoDocumento(long classificacaoDocumentoId, int tipoDocumento)
+        {
+            var query = "select 1 from classificacao_documento where id = @classificacaoDocumentoId and tipo_documento_id = @tipoDocumento";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { classificacaoDocumentoId, tipoDocumento });
+        }
     }
 }

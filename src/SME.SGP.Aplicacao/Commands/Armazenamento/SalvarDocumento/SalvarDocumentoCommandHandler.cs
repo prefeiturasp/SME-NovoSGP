@@ -1,10 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -19,7 +16,6 @@ namespace SME.SGP.Aplicacao
             this.repositorioDocumento = repositorioDocumento ?? throw new ArgumentNullException(nameof(repositorioDocumento));
         }
 
-
         public async Task<bool> Handle(SalvarDocumentoCommand request, CancellationToken cancellationToken)
         {
             var arquivo = await mediator.Send(new ObterArquivoPorCodigoQuery(request.SalvarDocumentoDto.ArquivoCodigo));
@@ -29,6 +25,10 @@ namespace SME.SGP.Aplicacao
             var existeArquivo = await mediator.Send(new VerificaUsuarioPossuiArquivoQuery(request.SalvarDocumentoDto.TipoDocumentoId, request.SalvarDocumentoDto.ClassificacaoId, request.SalvarDocumentoDto.UsuarioId, request.SalvarDocumentoDto.UeId));
             if (existeArquivo)
                 throw new NegocioException("Este usuário já possui um arquivo");
+
+            if (await mediator.Send(new ValidarTipoDocumentoDaClassificacaoQuery(request.SalvarDocumentoDto.ClassificacaoId, Dominio.Enumerados.TipoDocumento.PlanoTrabalho)) 
+                && await mediator.Send(new ValidarUeEducacaoInfantilQuery(request.SalvarDocumentoDto.UeId)))
+                throw new NegocioException("Escolas de educação infantíl não podem fazer upload de Plano de Trabalho!");
 
             var documento = new Documento()
             {
