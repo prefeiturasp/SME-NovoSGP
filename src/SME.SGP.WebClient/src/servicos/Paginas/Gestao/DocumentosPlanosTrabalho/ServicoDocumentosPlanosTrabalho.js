@@ -26,12 +26,13 @@ class ServicoDocumentosPlanosTrabalho {
   };
 
   validacaoUsuarioDocumento = (
+    documentoId,
     tipoDocumentoId,
     classificacaoId,
     usuarioId,
     ueId
   ) => {
-    const url = `tipo-documento/${tipoDocumentoId}/classificacao/${classificacaoId}/usuario/${usuarioId}/ue/${ueId}`;
+    const url = `${documentoId}/tipo-documento/${tipoDocumentoId}/classificacao/${classificacaoId}/usuario/${usuarioId}/ue/${ueId}`;
     return api.get(`${urlPadrao}/${url}`);
   };
 }
