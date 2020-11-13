@@ -1,6 +1,7 @@
 import { Form, Formik } from 'formik';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import * as Yup from 'yup';
 import { Auditoria, Loader, Localizador, SelectComponent } from '~/componentes';
 import { Cabecalho } from '~/componentes-sgp';
@@ -17,6 +18,7 @@ import {
   erros,
   setBreadcrumbManual,
   sucesso,
+  verificaSomenteConsulta,
 } from '~/servicos';
 import ServicoArmazenamento from '~/servicos/Componentes/ServicoArmazenamento';
 import history from '~/servicos/history';
@@ -24,6 +26,10 @@ import ServicoDocumentosPlanosTrabalho from '~/servicos/Paginas/Gestao/Documento
 import FiltroHelper from '~componentes-sgp/filtro/helper';
 
 const DocumentosPlanosTrabalhoCadastro = ({ match }) => {
+  const usuario = useSelector(store => store.usuario);
+  const permissoesTela =
+    usuario.permissoes[RotasDto.DOCUMENTOS_PLANOS_TRABALHO];
+
   const [listaAnosLetivo, setListaAnosLetivo] = useState([]);
 
   const [listaUes, setListaUes] = useState([]);
@@ -52,6 +58,17 @@ const DocumentosPlanosTrabalhoCadastro = ({ match }) => {
   const [listaDeArquivos, setListaDeArquivos] = useState([]);
 
   const [defaultFileList, setDefaultFileList] = useState([]);
+
+  const [desabilitarCampos, setDesabilitarCampos] = useState(false);
+
+  useEffect(() => {
+    const soConsulta = verificaSomenteConsulta(permissoesTela);
+    const desabilitar =
+      idDocumentosPlanoTrabalho && idDocumentosPlanoTrabalho > 0
+        ? soConsulta || !permissoesTela.podeAlterar
+        : soConsulta || !permissoesTela.podeIncluir;
+    setDesabilitarCampos(desabilitar);
+  }, [permissoesTela, idDocumentosPlanoTrabalho]);
 
   const montarUrlBuscarDres = anoLetivo => {
     setUrlBuscarDres();
@@ -212,7 +229,7 @@ const DocumentosPlanosTrabalhoCadastro = ({ match }) => {
   };
 
   const onClickVoltar = async () => {
-    if (modoEdicao) {
+    if (!desabilitarCampos && modoEdicao) {
       const confirmado = await confirmar(
         'Atenção',
         'Você não salvou as informações preenchidas.',
@@ -264,6 +281,7 @@ const DocumentosPlanosTrabalhoCadastro = ({ match }) => {
 
     setExibirLoader(true);
     const existeRegistro = await ServicoDocumentosPlanosTrabalho.validacaoUsuarioDocumento(
+      idDocumentosPlanoTrabalho || 0,
       tipoDocumentoId,
       classificacaoId,
       usuarioId,
@@ -296,7 +314,6 @@ const DocumentosPlanosTrabalhoCadastro = ({ match }) => {
       anoLetivo,
     };
 
-    // setExibirLoader(true);
     const resposta = await ServicoDocumentosPlanosTrabalho.salvarDocumento(
       params,
       idDocumentosPlanoTrabalho
@@ -321,7 +338,7 @@ const DocumentosPlanosTrabalhoCadastro = ({ match }) => {
   };
 
   const onClickCancelar = async form => {
-    if (modoEdicao) {
+    if (!desabilitarCampos && modoEdicao) {
       const confirmou = await confirmar(
         'Atenção',
         'Você não salvou as informações preenchidas.',
@@ -359,21 +376,24 @@ const DocumentosPlanosTrabalhoCadastro = ({ match }) => {
   };
 
   const onRemoveFile = async arquivo => {
-    const codigoArquivo = arquivo.xhr;
+    if (!desabilitarCampos) {
+      const codigoArquivo = arquivo.xhr;
 
-    if (arquivo.documentoId) {
-      setListaDeArquivos([]);
-      sucesso(`Arquivo ${arquivo.name} removido com sucesso`);
-      return true;
-    }
+      if (arquivo.documentoId) {
+        setListaDeArquivos([]);
+        sucesso(`Arquivo ${arquivo.name} removido com sucesso`);
+        return true;
+      }
 
-    const resposta = await ServicoArmazenamento.removerArquivo(
-      codigoArquivo
-    ).catch(e => erros(e));
+      const resposta = await ServicoArmazenamento.removerArquivo(
+        codigoArquivo
+      ).catch(e => erros(e));
 
-    if (resposta && resposta.status === 200) {
-      sucesso(`Arquivo ${arquivo.name} removido com sucesso`);
-      return true;
+      if (resposta && resposta.status === 200) {
+        sucesso(`Arquivo ${arquivo.name} removido com sucesso`);
+        return true;
+      }
+      return false;
     }
     return false;
   };
@@ -409,7 +429,11 @@ const DocumentosPlanosTrabalhoCadastro = ({ match }) => {
             enableReinitialize
             initialValues={valoresIniciais}
             validationSchema={validacoes}
-            onSubmit={onSubmitFormulario}
+            onSubmit={valores => {
+              if (!desabilitarCampos) {
+                onSubmitFormulario(valores);
+              }
+            }}
             validateOnBlur
             validateOnChange
           >
@@ -441,7 +465,10 @@ const DocumentosPlanosTrabalhoCadastro = ({ match }) => {
                         color={Colors.Vermelho}
                         border
                         className="mr-2"
-                        disabled={!idDocumentosPlanoTrabalho}
+                        disabled={
+                          !idDocumentosPlanoTrabalho ||
+                          !permissoesTela.podeExcluir
+                        }
                         onClick={onClickExcluir}
                       />
                       <Button
@@ -453,7 +480,7 @@ const DocumentosPlanosTrabalhoCadastro = ({ match }) => {
                         border
                         bold
                         onClick={() => validaAntesDoSubmit(form)}
-                        disabled={!modoEdicao}
+                        disabled={!modoEdicao || desabilitarCampos}
                       />
                     </div>
                   </div>
@@ -467,7 +494,8 @@ const DocumentosPlanosTrabalhoCadastro = ({ match }) => {
                         valueText="desc"
                         disabled={
                           (listaAnosLetivo && listaAnosLetivo.length === 1) ||
-                          !!idDocumentosPlanoTrabalho
+                          !!idDocumentosPlanoTrabalho ||
+                          desabilitarCampos
                         }
                         onChange={valor => onChangeAnoLetivo(valor, form)}
                         placeholder="Ano letivo"
@@ -489,7 +517,9 @@ const DocumentosPlanosTrabalhoCadastro = ({ match }) => {
                             setModoEdicao(true);
                           }
                         }}
-                        desabilitado={!!idDocumentosPlanoTrabalho}
+                        desabilitado={
+                          !!idDocumentosPlanoTrabalho || desabilitarCampos
+                        }
                       />
                     </div>
                     <div className="col-sm-12 col-md-12 col-lg-6 col-xl-6 mb-2">
@@ -506,7 +536,9 @@ const DocumentosPlanosTrabalhoCadastro = ({ match }) => {
                             setModoEdicao(true);
                           }
                         }}
-                        desabilitado={!!idDocumentosPlanoTrabalho}
+                        desabilitado={
+                          !!idDocumentosPlanoTrabalho || desabilitarCampos
+                        }
                       />
                     </div>
 
@@ -523,7 +555,8 @@ const DocumentosPlanosTrabalhoCadastro = ({ match }) => {
                         name="tipoDocumentoId"
                         disabled={
                           listaTipoDocumento?.length === 1 ||
-                          !!idDocumentosPlanoTrabalho
+                          !!idDocumentosPlanoTrabalho ||
+                          desabilitarCampos
                         }
                       />
                     </div>
@@ -540,14 +573,17 @@ const DocumentosPlanosTrabalhoCadastro = ({ match }) => {
                         name="classificacaoId"
                         disabled={
                           listaClassificacao?.length === 1 ||
-                          !!idDocumentosPlanoTrabalho
+                          !!idDocumentosPlanoTrabalho ||
+                          desabilitarCampos
                         }
                       />
                     </div>
                     <div className="col-md-12 mb-2">
                       <div className="row pr-3">
                         <Localizador
-                          desabilitado={!!idDocumentosPlanoTrabalho}
+                          desabilitado={
+                            !!idDocumentosPlanoTrabalho || desabilitarCampos
+                          }
                           dreId={form.values.dreId}
                           anoLetivo={form.values.anoLetivo}
                           rfEdicao={form.values.professorRf}
@@ -570,7 +606,8 @@ const DocumentosPlanosTrabalhoCadastro = ({ match }) => {
                     </div>
                     <div className="col-md-12 mt-2">
                       <UploadArquivos
-                        desabilitar={listaDeArquivos.length > 0}
+                        desabilitarGeral={desabilitarCampos}
+                        desabilitarUpload={listaDeArquivos.length > 0}
                         textoFormatoUpload="Permitido somente um arquivo. Tipo permitido PDF"
                         tiposArquivosPermitidos=".pdf"
                         onRemove={onRemoveFile}
