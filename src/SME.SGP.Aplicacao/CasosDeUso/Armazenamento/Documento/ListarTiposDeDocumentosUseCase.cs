@@ -29,10 +29,9 @@ namespace SME.SGP.Aplicacao
                 if (tiposDocumentos != null && tiposDocumentos.Any())
                     return tiposDocumentos;
 
-                return await mediator.Send(new ObterTipoDocumentoClassificacaoQuery());
             }
 
-            return Enumerable.Empty<TipoDocumentoDto>();
+            return await mediator.Send(new ObterTipoDocumentoClassificacaoQuery());
         }
     }
 }
