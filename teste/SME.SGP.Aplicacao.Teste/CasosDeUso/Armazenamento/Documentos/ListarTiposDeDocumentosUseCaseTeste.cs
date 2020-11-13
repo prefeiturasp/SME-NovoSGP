@@ -49,7 +49,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
                 CodigoRf = "7938128"
             };
 
-            usuario.DefinirPerfis(new List<PrioridadePerfil>() { new PrioridadePerfil() { NomePerfil = "PAP" } });
+            usuario.DefinirPerfis(new List<PrioridadePerfil>() { new PrioridadePerfil() { NomePerfil = "PAP", Tipo = Dominio.TipoPerfil.UE } });
 
             mediator.Setup(a => a.Send(It.IsAny<ObterUsuarioLogadoQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(usuario);
 
