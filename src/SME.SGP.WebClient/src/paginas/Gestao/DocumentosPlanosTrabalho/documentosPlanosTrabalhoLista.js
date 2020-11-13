@@ -1,5 +1,6 @@
 import * as moment from 'moment';
 import React, { useCallback, useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { ListaPaginada, Loader, SelectComponent } from '~/componentes';
 import { Cabecalho } from '~/componentes-sgp';
 import Button from '~/componentes/button';
@@ -7,7 +8,7 @@ import Card from '~/componentes/card';
 import { Colors } from '~/componentes/colors';
 import { URL_HOME } from '~/constantes';
 import { RotasDto } from '~/dtos';
-import { erros } from '~/servicos';
+import { erros, verificaSomenteConsulta } from '~/servicos';
 import AbrangenciaServico from '~/servicos/Abrangencia';
 import ServicoArmazenamento from '~/servicos/Componentes/ServicoArmazenamento';
 import history from '~/servicos/history';
@@ -16,6 +17,10 @@ import { downloadBlob } from '~/utils/funcoes/gerais';
 import FiltroHelper from '~componentes-sgp/filtro/helper';
 
 const DocumentosPlanosTrabalhoLista = () => {
+  const usuario = useSelector(store => store.usuario);
+  const permissoesTela =
+    usuario.permissoes[RotasDto.DOCUMENTOS_PLANOS_TRABALHO];
+
   const [carregandoAnos, setCarregandoAnos] = useState(false);
   const [listaAnosLetivo, setListaAnosLetivo] = useState([]);
 
@@ -37,9 +42,15 @@ const DocumentosPlanosTrabalhoLista = () => {
 
   const [filtro, setFiltro] = useState({});
 
+  const [somenteConsulta, setSomenteConsulta] = useState(false);
+
   const [anoAtual] = useState(window.moment().format('YYYY'));
 
   const NOME_BTN_DOWNLOAD = 'BOTAO-DOWNLOAD-ARQUIVO';
+
+  useEffect(() => {
+    setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
+  }, [permissoesTela]);
 
   const obterAnosLetivos = useCallback(async () => {
     setCarregandoAnos(true);
@@ -205,7 +216,9 @@ const DocumentosPlanosTrabalhoLista = () => {
   }, [dreId, anoLetivo, obterUes]);
 
   const onClickNovo = () => {
-    history.push(`${RotasDto.DOCUMENTOS_PLANOS_TRABALHO}/novo`);
+    if (!somenteConsulta && permissoesTela.podeIncluir) {
+      history.push(`${RotasDto.DOCUMENTOS_PLANOS_TRABALHO}/novo`);
+    }
   };
 
   const onClickVoltar = () => {
@@ -316,6 +329,7 @@ const DocumentosPlanosTrabalhoLista = () => {
                 border
                 bold
                 onClick={onClickNovo}
+                disabled={somenteConsulta || !permissoesTela.podeIncluir}
               />
             </div>
             <div className="col-sm-12 col-md-6 col-lg-6 col-xl-2 mb-2">
@@ -390,7 +404,7 @@ const DocumentosPlanosTrabalhoLista = () => {
               />
             </div>
             <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
-              {filtro.ueId ? (
+              {ueId ? (
                 <ListaPaginada
                   url="v1/armazenamento/documentos"
                   id="lista-tipo-documento"
