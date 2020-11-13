@@ -31,7 +31,8 @@ services:
     depends_on:
       - sme-db
     networks:
-      - sme-network    
+      - sme-network
 networks:
   sme-network:
     driver: bridge
+    name: sme_external_network

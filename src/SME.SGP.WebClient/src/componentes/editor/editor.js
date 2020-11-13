@@ -41,7 +41,7 @@ const toolbar = [
   'undo',
 ];
 
-export default function Editor(props) {
+export default React.forwardRef((props, ref) => {
   const {
     onChange,
     inicial,
@@ -145,6 +145,7 @@ export default function Editor(props) {
               }
               onChange && onChange(data);
             }}
+            ref={ref}
           />
         </div>
       </Campo>
@@ -158,4 +159,4 @@ export default function Editor(props) {
       {obterErros()}
     </>
   );
-}
+});
