@@ -201,6 +201,14 @@ namespace SME.SGP.Dominio
                 throw new NegocioException("Somente usuário com perfil SME pode cadastrar esse tipo de evento.");
         }
 
+        public bool GeraPendenciaParametroEvento()
+        {
+            return TipoEventoId == (int)Dominio.TipoEvento.ConselhoDeClasse ||
+                TipoEventoId == (int)Dominio.TipoEvento.ReuniaoAPM ||
+                TipoEventoId == (int)Dominio.TipoEvento.ReuniaoConselhoEscola ||
+                TipoEventoId == (int)Dominio.TipoEvento.ReuniaoPedagogica;
+        }
+
         public void PodeSerEnviadoParaAprovacao()
         {
             if (Status != EntidadeStatus.AguardandoAprovacao)

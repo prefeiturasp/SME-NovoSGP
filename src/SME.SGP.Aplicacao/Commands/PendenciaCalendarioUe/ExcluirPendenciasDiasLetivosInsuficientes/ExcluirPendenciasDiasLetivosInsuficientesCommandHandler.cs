@@ -35,19 +35,11 @@ namespace SME.SGP.Aplicacao
                 {
                     var diasLetivos = await ObterDiasLetivosUe(ue, diasLetivosENaoLetivos);
                     if (diasLetivos >= diasLetivosParametro)
-                        await ExcluirPendenciaCalendarioUe(ue.Id, tipoCalendario.Id);
+                        await mediator.Send(new ExcluirPendenciaCalendarioUeCommand(tipoCalendario.Id, ue.Id, TipoPendencia.CalendarioLetivoInsuficiente));
                 }
             }
 
             return true;
-        }
-
-        private async Task ExcluirPendenciaCalendarioUe(long ueId, long tipoCalendarioId)
-        {
-            var pendenciaCalendario = await repositorioPendenciaCalendarioUe.ObterPendenciaPorCalendarioUe(tipoCalendarioId, ueId, TipoPendencia.CalendarioLetivoInsuficiente);
-            repositorioPendenciaCalendarioUe.Remover(pendenciaCalendario);
-
-            await mediator.Send(new ExcluirPendenciaPorIdCommand(pendenciaCalendario.PendenciaId));
         }
 
         private async Task<int> ObterParametroDiasLetivos(TipoCalendario tipoCalendario)
