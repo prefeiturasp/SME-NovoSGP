@@ -198,10 +198,11 @@ const DocumentosPlanosTrabalhoCadastro = ({ match }) => {
     obterTiposDocumento();
   }, [obterAnosLetivos, obterTiposDocumento]);
 
-  const onChangeAnoLetivo = form => {
+  const onChangeAnoLetivo = (ano, form) => {
     form.setFieldValue('dreId', '');
     form.setFieldValue('ueId', '');
     setModoEdicao(true);
+    montarUrlBuscarDres(ano);
   };
 
   const onClickVoltar = async () => {
@@ -297,18 +298,20 @@ const DocumentosPlanosTrabalhoCadastro = ({ match }) => {
         'Deseja realmente cancelar as alterações?'
       );
       if (confirmou) {
-        resetarTela(form);
         if (idDocumentosPlanoTrabalho) {
           setDefaultFileList([...valoresIniciais.defaultFileList]);
           setListaDeArquivos([...valoresIniciais.defaultFileList]);
+        } else {
+          setListaDeArquivos([]);
+          setDefaultFileList([]);
         }
+
         if (listaDeArquivos?.length && !listaDeArquivos[0].documentoId) {
           await ServicoArmazenamento.removerArquivo(
             listaDeArquivos[0].xhr
           ).catch(e => erros(e));
-          setListaDeArquivos([]);
-          setDefaultFileList([]);
         }
+        resetarTela(form);
       }
     }
   };
@@ -436,7 +439,7 @@ const DocumentosPlanosTrabalhoCadastro = ({ match }) => {
                           (listaAnosLetivo && listaAnosLetivo.length === 1) ||
                           !!idDocumentosPlanoTrabalho
                         }
-                        onChange={() => onChangeAnoLetivo(form)}
+                        onChange={valor => onChangeAnoLetivo(valor, form)}
                         placeholder="Ano letivo"
                         form={form}
                         name="anoLetivo"
