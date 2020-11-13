@@ -523,16 +523,16 @@
         [PermissaoMenu(Menu = "Diario classe", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = false, Url = "/relatorios/diario-classe/controle-grade", EhSubMenu = true, OrdemSubMenu = 2, SubMenu = "Controle de Grade")]
         RCG_C = 173,
 
-        [PermissaoMenu(Menu = "Documentos e planos de trabalho", Icone = "fas fa-user-cog", Agrupamento = "Gestão", OrdemAgrupamento = 6, EhAlteracao = false, Url = "/gestao/documentos-planos-trabalho")]
+        [PermissaoMenu(Menu = "Documentos e planos de trabalho", Icone = "fas fa-user-cog", Agrupamento = "Gestão", OrdemAgrupamento = 6, EhConsulta = true, Url = "/gestao/documentos-planos-trabalho")]
         DPU_C = 177,
 
-        [PermissaoMenu(Menu = "Documentos e planos de trabalho", Icone = "fas fa-user-cog", Agrupamento = "Gestão", OrdemAgrupamento = 6, EhAlteracao = false, Url = "/gestao/documentos-planos-trabalho")]
+        [PermissaoMenu(Menu = "Documentos e planos de trabalho", Icone = "fas fa-user-cog", Agrupamento = "Gestão", OrdemAgrupamento = 6, EhInclusao = true, Url = "/gestao/documentos-planos-trabalho")]
         DPU_I = 178,
 
-        [PermissaoMenu(Menu = "Documentos e planos de trabalho", Icone = "fas fa-user-cog", Agrupamento = "Gestão", OrdemAgrupamento = 6, EhAlteracao = false, Url = "/gestao/documentos-planos-trabalho")]
+        [PermissaoMenu(Menu = "Documentos e planos de trabalho", Icone = "fas fa-user-cog", Agrupamento = "Gestão", OrdemAgrupamento = 6, EhExclusao = true, Url = "/gestao/documentos-planos-trabalho")]
         DPU_E = 179,
 
-        [PermissaoMenu(Menu = "Documentos e planos de trabalho", Icone = "fas fa-user-cog", Agrupamento = "Gestão", OrdemAgrupamento = 6, EhAlteracao = false, Url = "/gestao/documentos-planos-trabalho")]
+        [PermissaoMenu(Menu = "Documentos e planos de trabalho", Icone = "fas fa-user-cog", Agrupamento = "Gestão", OrdemAgrupamento = 6, EhAlteracao = true, Url = "/gestao/documentos-planos-trabalho")]
         DPU_A = 180,
     }
 }
