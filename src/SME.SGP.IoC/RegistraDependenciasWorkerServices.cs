@@ -402,6 +402,8 @@ namespace SME.SGP.IoC
 
             services.TryAddScopedWorkerService<IObterTurmasParaCopiaUseCase, ObterTurmasParaCopiaUseCase>();
             services.TryAddScopedWorkerService<ISalvarPlanoAulaUseCase, SalvarPlanoAulaUseCase>();
+
+            services.TryAddScopedWorkerService<ITrataNotificacoesNiveisCargos, TrataNotificacoesNiveisCargos>();
         }
 
         private static void ResgistraDependenciaHttp(IServiceCollection services)
