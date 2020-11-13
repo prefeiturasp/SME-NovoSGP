@@ -13,13 +13,13 @@ export const ContainerDragger = styled(Dragger)`
   height: auto !important;
 
   cursor: ${props =>
-    props.desabilitar ? 'not-allowed' : 'pointer'} !important;
+    props.desabilitarUpload ? 'not-allowed' : 'pointer'} !important;
 
   .ant-upload-btn {
     pointer-events: ${props =>
-      props.desabilitar ? 'none' : 'auto'} !important;
+      props.desabilitarUpload ? 'none' : 'auto'} !important;
 
-    opacity: ${props => (props.desabilitar ? '0.6' : '1')} !important;
+    opacity: ${props => (props.desabilitarUpload ? '0.6' : '1')} !important;
   }
 `;
 
@@ -46,7 +46,8 @@ const UploadArquivos = props => {
     defaultFileList,
     urlUpload,
     tiposArquivosPermitidos,
-    desabilitar,
+    desabilitarUpload,
+    desabilitarGeral,
   } = props;
 
   const [listaDeArquivos, setListaDeArquivos] = useState([...defaultFileList]);
@@ -160,11 +161,12 @@ const UploadArquivos = props => {
     onRemove: onRemove || onRemoveDefault,
     defaultFileList,
     accept: tiposArquivosPermitidos,
+    disabled: desabilitarGeral,
   };
 
   return (
     <ContainerUpload>
-      <ContainerDragger {...propsDragger} desabilitar={desabilitar}>
+      <ContainerDragger {...propsDragger} desabilitarUpload={desabilitarUpload}>
         <p className="ant-upload-drag-icon">
           <InboxOutlined />
         </p>
@@ -190,7 +192,8 @@ UploadArquivos.propTypes = {
   urlUpload: PropTypes.string,
   defaultFileList: PropTypes.oneOfType([PropTypes.array]),
   tiposArquivosPermitidos: PropTypes.string,
-  desabilitar: PropTypes.bool,
+  desabilitarUpload: PropTypes.bool,
+  desabilitarGeral: PropTypes.bool,
 };
 
 UploadArquivos.defaultProps = {
@@ -212,7 +215,8 @@ UploadArquivos.defaultProps = {
   urlUpload: '',
   defaultFileList: [],
   tiposArquivosPermitidos: '',
-  desabilitar: false,
+  desabilitarUpload: false,
+  desabilitarGeral: false,
 };
 
 export default UploadArquivos;
