@@ -523,7 +523,7 @@
         [PermissaoMenu(Menu = "Diario classe", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = false, Url = "/relatorios/diario-classe/controle-grade", EhSubMenu = true, OrdemSubMenu = 2, SubMenu = "Controle de Grade")]
         RCG_C = 173,
 
-        [PermissaoMenu(Menu = "Dashboard Escola aqui", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = false, Url = "/relatorios/escola-aqui/dashboard")]
-        RDE_A = 177
+        [PermissaoMenu(Menu = "Escola aqui", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = false, Url = "/relatorios/escola-aqui/dashboard", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Dashboard")]
+        RDE_A = 181
     }
 }
