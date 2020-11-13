@@ -30,6 +30,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IRepositorioTipoAvaliacao repositorioTipoAvaliacao;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
+        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IRepositorioUe repositorioUe;
         private readonly IServicoAluno servicoAluno;
@@ -47,7 +48,8 @@ namespace SME.SGP.Aplicacao
             IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina, IRepositorioConceito repositorioConceito,
             IRepositorioPeriodoEscolar repositorioPeriodoEscolar, IRepositorioParametrosSistema repositorioParametrosSistema,
             IRepositorioTipoAvaliacao repositorioTipoAvaliacao, IRepositorioTurma repositorioTurma, IRepositorioUe repositorioUe,
-            IRepositorioDre repositorioDre, IRepositorioEvento repositorioEvento, IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia)
+            IRepositorioDre repositorioDre, IRepositorioEvento repositorioEvento, IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia,
+            IRepositorioComponenteCurricular repositorioComponenteCurricular)
         {
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.consultasAtividadeAvaliativa = consultasAtividadeAvaliativa ?? throw new ArgumentNullException(nameof(consultasAtividadeAvaliativa));
@@ -73,6 +75,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioDre = repositorioDre ?? throw new ArgumentNullException(nameof(repositorioDre));
             this.repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));
             this.repositorioAtividadeAvaliativaRegencia = repositorioAtividadeAvaliativaRegencia ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativaRegencia));
+            this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
         }
 
         public async Task<NotasConceitosRetornoDto> ListarNotasConceitos(ListaNotasConceitosConsultaDto filtro)
@@ -160,8 +163,7 @@ namespace SME.SGP.Aplicacao
                     var ausenciasAtividadesAvaliativas = await repositorioFrequencia
                         .ObterAusencias(filtro.TurmaCodigo, filtro.DisciplinaCodigo, atividadesAvaliativasdoBimestre.Select(a => a.DataAvaliacao).Distinct().ToArray(), alunosIds.ToArray());
 
-                    var consultaEOL = servicoEOL
-                        .ObterDisciplinasPorIds(new long[] { long.Parse(filtro.DisciplinaCodigo) });
+                    var consultaEOL = await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { long.Parse(filtro.DisciplinaCodigo) });
 
                     if (consultaEOL == null || !consultaEOL.Any())
                         throw new NegocioException("Disciplina informada não encontrada no EOL");
@@ -318,7 +320,7 @@ namespace SME.SGP.Aplicacao
                             avaliacaoDoBimestre.EhInterdisciplinar = true;
                             var atividadeDisciplinas = await repositorioAtividadeAvaliativaDisciplina.ListarPorIdAtividade(avaliacao.Id);
                             var idsDisciplinas = atividadeDisciplinas.Select(a => long.Parse(a.DisciplinaId)).ToArray();
-                            var disciplinas = servicoEOL.ObterDisciplinasPorIds(idsDisciplinas);
+                            var disciplinas = await repositorioComponenteCurricular.ObterDisciplinasPorIds(idsDisciplinas);
                             var nomesDisciplinas = disciplinas.Select(d => d.Nome).ToArray();
                             avaliacaoDoBimestre.Disciplinas = nomesDisciplinas;
                         }

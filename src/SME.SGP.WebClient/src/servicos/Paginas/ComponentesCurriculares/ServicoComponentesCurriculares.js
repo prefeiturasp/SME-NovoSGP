@@ -15,6 +15,10 @@ class ServicoComponentesCurriculares {
     )}`;
     return api.get(url);
   };
+
+  obterComponetensCuricularesRegencia = turmaId => {
+    return api.get(`${urlPadrao}/turmas/${turmaId}/regencia/componentes`);
+  };
 }
 
 export default new ServicoComponentesCurriculares();

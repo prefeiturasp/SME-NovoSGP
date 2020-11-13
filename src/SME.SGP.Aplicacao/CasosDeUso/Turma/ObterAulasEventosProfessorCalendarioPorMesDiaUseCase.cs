@@ -13,7 +13,7 @@ namespace SME.SGP.Aplicacao
     public class ObterAulasEventosProfessorCalendarioPorMesDiaUseCase
     {
         public static async Task<EventosAulasNoDiaCalendarioDto> Executar(IMediator mediator, FiltroAulasEventosCalendarioDto filtroAulasEventosCalendarioDto, long tipoCalendarioId, int mes, int dia, int anoLetivo,
-            IServicoUsuario servicoUsuario, IServicoEol servicoEOL)
+            IServicoUsuario servicoUsuario)
         {
 
             var dataConsulta = new DateTime(anoLetivo, mes, dia);
@@ -78,7 +78,7 @@ namespace SME.SGP.Aplicacao
             if (aulasParaVisualizar.Any())
             {
 
-                componentesCurriculares = await servicoEOL.ObterDisciplinasPorIdsAsync(aulasParaVisualizar.Select(a => long.Parse(a.DisciplinaId)).ToArray());
+                componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(aulasParaVisualizar.Select(a => long.Parse(a.DisciplinaId)).ToArray()));
 
                 atividadesAvaliativas = await mediator.Send(new ObterAtividadesAvaliativasCalendarioProfessorPorMesDiaQuery()
                 {

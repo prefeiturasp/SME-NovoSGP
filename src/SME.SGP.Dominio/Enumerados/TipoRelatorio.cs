@@ -29,7 +29,7 @@ namespace SME.SGP.Dominio
 
         [Display(Name = "relatorios/parecerconclusivo", ShortName = "ParecerConclusivo", Description = "Relatório de Parecer Conclusivo")]
         ParecerConclusivo = 9,
-        
+
         [Display(Name = "relatorios/recuperacaoparalela", ShortName = "RecuperacaoParalela", Description = "Relatório de Recuperação Paralela")]
         RecuperacaoParalela = 10,
 
@@ -40,6 +40,21 @@ namespace SME.SGP.Dominio
         CompensacaoAusencia = 12,
 
         [Display(Name = "relatorios/impressaocalendario", ShortName = "Calendario", Description = "Relatório Impressão do Calendário")]
-        Calendario = 13
+        Calendario = 13,
+
+        [Display(Name = "relatorios/planoaula", ShortName = "Plano de Aula", Description = "Relatório Plano de Aula")]
+        PlanoAula = 14,
+
+        [Display(Name = "relatorios/resumopap", ShortName = "ResumoPAP", Description = "Relatório de acompanhamento PAP - Resumos")]
+        ResumoPAP = 15,
+
+        [Display(Name = "relatorios/sondagem/matematica-por-turma", ShortName = "Relatório de Sondagem (Matemática)", Description = "Relatório de Sondagem (Matemática)")]
+        RelatorioMatetimaticaPorTurma = 16,
+
+        [Display(Name = "relatorios/sondagem/matematica-consolidado", ShortName = "MatematicaConsolidado", Description = "Matematica Consolidado")]
+        RelatorioMatetimaticaConsolidado = 17,
+
+        [Display(Name = "relatorios/controle-grade", ShortName = "ControleGrade", Description = "Relatório Controle de Grade")]
+        ControleGrade = 18
     }
 }
