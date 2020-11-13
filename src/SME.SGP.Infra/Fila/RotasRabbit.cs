@@ -35,6 +35,7 @@
         public static string RotaExecutaVerificacaoPendenciasGerais => "pendencias.gerais.executa.verificacao";
 
         public static string RotaExecutaExclusaoPendenciasAula => "pendencias.gerais.pendencias.aula.excluir";
+        public static string RotaExecutaExclusaoPendenciasDiasLetivosInsuficientes => "pendencias.gerais.pendencias.calendario.excluir";
 
     }
 }

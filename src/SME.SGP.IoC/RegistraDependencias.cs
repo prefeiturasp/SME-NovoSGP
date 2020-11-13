@@ -511,6 +511,8 @@ namespace SME.SGP.IoC
             // Pendencias
             services.TryAddScoped<IObterPendenciasUseCase, ObterPendenciasUseCase>();
             services.TryAddScoped<IExecutaVerificacaoPendenciasGeraisUseCase, ExecutaVerificacaoPendenciasGeraisUseCase>();
+            services.TryAddScoped<IExecutarExclusaoPendenciasAulaUseCase, ExecutarExclusaoPendenciasAulaUseCase>();
+            services.TryAddScoped<IExecutarExclusaoPendenciaDiasLetivosInsuficientes, ExecutarExclusaoPendenciaDiasLetivosInsuficientes>();
             services.TryAddScoped<IPendenciasGeraisUseCase, PendenciasGeraisUseCase>();
 
 

@@ -403,7 +403,10 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IObterTurmasParaCopiaUseCase, ObterTurmasParaCopiaUseCase>();
             services.TryAddScopedWorkerService<ISalvarPlanoAulaUseCase, SalvarPlanoAulaUseCase>();
 
+            //Pendências Gerais
             services.TryAddScopedWorkerService<IExecutaVerificacaoPendenciasGeraisUseCase, ExecutaVerificacaoPendenciasGeraisUseCase>();
+            services.TryAddScopedWorkerService<IExecutarExclusaoPendenciasAulaUseCase, ExecutarExclusaoPendenciasAulaUseCase>();
+            services.TryAddScopedWorkerService<IExecutarExclusaoPendenciaDiasLetivosInsuficientes, ExecutarExclusaoPendenciaDiasLetivosInsuficientes>();
             services.TryAddScopedWorkerService<IPendenciasGeraisUseCase, PendenciasGeraisUseCase>();
 
         }
