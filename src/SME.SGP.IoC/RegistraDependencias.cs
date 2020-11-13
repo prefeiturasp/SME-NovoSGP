@@ -295,6 +295,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioHistoricoNota, RepositorioHistoricoNota>();
             services.TryAddScoped<IRepositorioHistoricoNotaConselhoClasse, RepositorioHistoricoNotaConselhoClasse>();
             services.TryAddScoped<IRepositorioHistoricoNotaFechamento, RepositorioHistoricoNotaFechamento>();
+            services.TryAddScoped<IRepositorioDocumento, RepositorioDocumento>();
+            services.TryAddScoped<IRepositorioClassificacaoDocumento, RepositorioClassificacaoDocumento>();
+            services.TryAddScoped<IRepositorioTipoDocumento, RepositorioTipoDocumento>();
 
         }
 
@@ -508,7 +511,15 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IMigrarPlanoAulaUseCase, MigrarPlanoAulaUseCase>();
             services.TryAddScoped<ISalvarPlanoAulaUseCase, SalvarPlanoAulaUseCase>();
 
-            
+            services.TryAddScoped<IVerificarUsuarioDocumentoUseCase, VerificarUsuarioDocumentoUseCase>();
+            services.TryAddScoped<IListarTiposDeDocumentosUseCase, ListarTiposDeDocumentosUseCase>();
+            services.TryAddScoped<IListarDocumentosUseCase, ListarDocumentosUseCase>();
+            services.TryAddScoped<ISalvarDocumentoUseCase, SalvarDocumentoUseCase>();
+            services.TryAddScoped<IUploadDocumentoUseCase, UploadDocumentoUseCase>();
+            services.TryAddScoped<IExcluirDocumentoArquivoUseCase, ExcluirDocumentoArquivoUseCase>();
+            services.TryAddScoped<IExcluirDocumentoUseCase, ExcluirDocumentoUseCase>();
+            services.TryAddScoped<IObterDocumentoUseCase, ObterDocumentoUseCase>();
+            services.TryAddScoped<IAlterarDocumentoUseCase, AlterarDocumentoUseCase>();
 
             services.TryAddScoped<IObterTiposCalendarioPorAnoLetivoModalidadeUseCase, ObterTiposCalendarioPorAnoLetivoModalidadeUseCase>();
         }

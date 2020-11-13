@@ -27,6 +27,7 @@ function Localizador({
   anoLetivo,
   desabilitado,
   incluirEmei,
+  rfEdicao,
 }) {
   const usuario = useSelector(store => store.usuario);
   const [dataSource, setDataSource] = useState([]);
@@ -49,6 +50,7 @@ function Localizador({
       setPessoaSelecionada({
         professorRf: '',
         professorNome: '',
+        usuarioId: '',
       });
       setTimeout(() => {
         setDesabilitarCampo(() => ({
@@ -68,7 +70,11 @@ function Localizador({
 
     if (dados && dados.length > 0) {
       setDataSource(
-        dados.map(x => ({ professorRf: x.codigoRF, professorNome: x.nome }))
+        dados.map(x => ({
+          professorRf: x.codigoRF,
+          professorNome: x.nome,
+          usuarioId: x.usuarioId,
+        }))
       );
     }
   };
@@ -86,6 +92,7 @@ function Localizador({
         setPessoaSelecionada({
           professorRf: dados.codigoRF,
           professorNome: dados.nome,
+          usuarioId: dados.usuarioId,
         });
 
         setDesabilitarCampo(estado => ({
@@ -104,6 +111,7 @@ function Localizador({
       setPessoaSelecionada({
         professorRf: '',
         professorNome: '',
+        usuarioId: '',
       });
       setDesabilitarCampo(estado => ({
         ...estado,
@@ -122,6 +130,12 @@ function Localizador({
       rf: true,
     }));
   };
+
+  useEffect(() => {
+    if (rfEdicao && !pessoaSelecionada?.professorRf) {
+      onBuscarPorRF({ rf: rfEdicao });
+    }
+  }, [rfEdicao]);
 
   useEffect(() => {
     onChange(pessoaSelecionada);
@@ -217,6 +231,7 @@ Localizador.propTypes = {
   dreId: PropTypes.string,
   anoLetivo: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   desabilitado: PropTypes.bool,
+  rfEdicao: PropTypes.string,
 };
 
 Localizador.defaultProps = {
@@ -226,6 +241,7 @@ Localizador.defaultProps = {
   dreId: null,
   anoLetivo: null,
   desabilitado: false,
+  rfEdicao: '',
 };
 
 export default Localizador;
