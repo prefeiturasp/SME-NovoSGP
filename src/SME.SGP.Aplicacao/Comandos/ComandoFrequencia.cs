@@ -1,4 +1,5 @@
-﻿using SME.Background.Core;
+﻿using MediatR;
+using SME.Background.Core;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -12,12 +13,16 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IConsultasAula consultasAula;
         private readonly IServicoFrequencia servicoFrequencia;
+        private readonly IMediator mediator;
 
         public ComandoFrequencia(IServicoFrequencia servicoFrequencia,
-                                 IConsultasAula consultasAula)
+                                 IConsultasAula consultasAula,
+                                 IMediator mediator)
         {
             this.servicoFrequencia = servicoFrequencia ?? throw new System.ArgumentNullException(nameof(servicoFrequencia));
             this.consultasAula = consultasAula ?? throw new System.ArgumentNullException(nameof(consultasAula));
+            this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
+            
         }
 
         public async Task Registrar(FrequenciaDto frequenciaDto)
@@ -33,6 +38,8 @@ namespace SME.SGP.Aplicacao
 
             var aula = await consultasAula.BuscarPorId(frequenciaDto.AulaId);
             Cliente.Executar<IServicoCalculoFrequencia>(c => c.CalcularFrequenciaPorTurma(alunos, aula.DataAula, aula.TurmaId, aula.DisciplinaId));
+
+            await mediator.Send(new ExcluirPendenciaAulaCommand(aula.Id, TipoPendenciaAula.Frequencia));
         }
 
         private static List<RegistroAusenciaAluno> ObtemListaDeAusencias(FrequenciaDto frequenciaDto)

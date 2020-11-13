@@ -57,10 +57,6 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPorCodigoTurmaLoginEPerfil(string codigoTurma, string login, Guid perfil);
 
-        IEnumerable<DisciplinaDto> ObterDisciplinasPorIds(long[] ids);
-
-        Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorIdsAsync(long[] ids);
-
         Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorIdsSemAgrupamento(long[] ids);
 
         IEnumerable<DreRespostaEolDto> ObterDres();
@@ -131,5 +127,6 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         Task<bool> TurmaPossuiComponenteCurricularPAP(string codigoTurma, string login, Guid idPerfil);
         Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorAnosEModalidade(string codigoUe, Modalidade modalidade, string[] anosEscolares, int anoLetivo);
+        Task<IEnumerable<ComponenteCurricularDto>> ObterComponentesCurriculares();
     }
 }
