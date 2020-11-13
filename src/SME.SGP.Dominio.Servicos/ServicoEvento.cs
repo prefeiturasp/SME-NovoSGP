@@ -134,7 +134,8 @@ namespace SME.SGP.Dominio.Servicos
             }
 
             // Verifica existencia de pendencia de calendario com dias letivos insuficientes
-            await VerificaPendenciaDiasLetivosInsuficientes(ehAlteracao, enviarParaWorkflow, evento, usuario);
+            VerificaPendenciaDiasLetivosInsuficientes(ehAlteracao, enviarParaWorkflow, evento, usuario);
+            VerificaPendenciaParametroEvento(evento, usuario);
 
             if (ehAlteracao)
             {
@@ -150,7 +151,18 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        private async Task VerificaPendenciaDiasLetivosInsuficientes(bool ehAlteracao, bool enviarParaWorkflow, Evento evento, Usuario usuario)
+        private void VerificaPendenciaParametroEvento(Evento evento, Usuario usuario)
+        {
+            if ( evento.GeraPendenciaParametroEvento())
+            {
+                servicoFila.PublicaFilaWorkerSgp(new PublicaFilaSgpDto(RotasRabbit.RotaExecutaExclusaoPendenciaParametroEvento,
+                                                                       new VerificaExclusaoPendenciasParametroEventoCommand(evento.TipoCalendarioId, evento.UeId, (TipoEvento)evento.TipoEventoId),
+                                                                       Guid.NewGuid(),
+                                                                       usuario));
+            }
+        }
+
+        private void VerificaPendenciaDiasLetivosInsuficientes(bool ehAlteracao, bool enviarParaWorkflow, Evento evento, Usuario usuario)
         {
             if (!enviarParaWorkflow && !ehAlteracao && evento.EhEventoLetivo())
             {
