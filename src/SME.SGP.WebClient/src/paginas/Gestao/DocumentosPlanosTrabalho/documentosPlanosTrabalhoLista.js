@@ -116,7 +116,7 @@ const DocumentosPlanosTrabalhoLista = () => {
         item => String(item.valor) === String(ueId)
       );
       const params = {
-        ueId: ueSelecionada.id,
+        ueId: ueSelecionada ? ueSelecionada.id : '',
         tipoDocumentoId,
         classificacaoId,
       };
