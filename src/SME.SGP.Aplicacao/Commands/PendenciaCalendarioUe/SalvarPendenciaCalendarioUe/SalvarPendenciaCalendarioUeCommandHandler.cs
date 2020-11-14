@@ -22,14 +22,14 @@ namespace SME.SGP.Aplicacao
 
         public async Task<long> Handle(SalvarPendenciaCalendarioUeCommand request, CancellationToken cancellationToken)
         {
-            var pendenciaId = await mediator.Send(new SalvarPendenciaCommand(request.TipoPendencia, request.Descricao, request.Instrucao));
+            var pendenciaId = await mediator.Send(new SalvarPendenciaCommand(request.TipoPendencia, request.Descricao, request.Instrucao));           
 
-            await mediator.Send(new RelacionaPendenciaUsuarioCommand(TipoParametroSistema.GerarPendenciaDiasLetivosInsuficientes, request.UeId.ToString(), pendenciaId, 0));
+            await mediator.Send(new RelacionaPendenciaUsuarioCommand(TipoParametroSistema.GerarPendenciaDiasLetivosInsuficientes, request.Ue.CodigoUe, pendenciaId, 0));
 
             return await repositorioPendenciaCalendarioUe.SalvarAsync(new Dominio.PendenciaCalendarioUe()
             {
                 PendenciaId = pendenciaId,
-                UeId = request.UeId,
+                UeId = request.Ue.Id,
                 TipoCalendarioId = request.TipoCalendarioId
             });
         }
