@@ -6,18 +6,18 @@ namespace SME.SGP.Aplicacao
 {
     public class RelacionaPendenciaUsuarioCommand : IRequest<bool>
     {
-        public RelacionaPendenciaUsuarioCommand(TipoParametroSistema tipoParametro, string codigoUe, long pendenciaId, long aulaId)
+        public RelacionaPendenciaUsuarioCommand(TipoParametroSistema tipoParametro, string codigoUe, long pendenciaId, long? professorId = null)
         {
             TipoParametro = tipoParametro;
             CodigoUe = codigoUe;
             PendenciaId = pendenciaId;
-            AulaId = aulaId;
+            ProfessorId = professorId;
         }
 
         public TipoParametroSistema TipoParametro { get; set; }
         public string CodigoUe { get; set; }
         public long PendenciaId { get; set; }
-        public long AulaId { get; set; }
+        public long? ProfessorId { get; set; }
     }
 
     public class RelacionaPendenciaUsuarioCommandValidator : AbstractValidator<RelacionaPendenciaUsuarioCommand>
