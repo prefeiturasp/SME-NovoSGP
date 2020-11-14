@@ -122,5 +122,16 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryFirstAsync<ParametrosSistema>(query, new { tipo, ano });
         }
+
+        public async Task<IEnumerable<ParametrosSistema>> ObterParametrosPorTipoEAno(TipoParametroSistema tipo, int ano)
+        {
+            var query = @"select *
+                            from parametros_sistema ps
+                           where ano = @ano
+                             and tipo = @tipo
+                             and ativo";
+
+            return await database.Conexao.QueryAsync<ParametrosSistema>(query.ToString(), new { tipo, ano });
+        }
     }
 }
