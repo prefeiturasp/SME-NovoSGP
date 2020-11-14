@@ -32,7 +32,7 @@ namespace SME.SGP.Dados.Repositorios
 	                        aula.turma_id = turma.turma_id
                         left join pendencia_aula pa on
 	                        aula.id = pa.aula_id
-	                    left join pendencia p on p.id = pa.pendencia_id and p.tipo = @tipo
+	                    left join pendencia p on p.id = pa.pendencia_id and p.tipo = @tipo and not p.excluido
                         left join {tabelaReferencia} on
 	                        aula.id = {tabelaReferencia}.aula_id
                         where
@@ -65,6 +65,7 @@ namespace SME.SGP.Dados.Repositorios
 	                        a.id = pa.aula_id
                         left join pendencia p on p.id = pa.pendencia_id
 	                        and p.tipo = @tipo
+	                        and not p.excluido
                         where
 	                        not a.excluido
 	                        and a.data_aula::date < @hoje
@@ -114,20 +115,27 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<long[]> ListarPendenciasPorAulaId(long aulaId)
         {
-            var sql = @"select tipo from pendencia_aula where aula_id = @aula group by tipo";
+            var sql = @"select p.tipo 
+                        from pendencia_aula pa
+                       inner join pendencia p on p.id = pa.pendencia_id and not p.excluido
+                       where pa.aula_id = @aula 
+                       group by p.tipo";
 
             return (await database.Conexao.QueryAsync<long>(sql.ToString(), new { aula = aulaId })).AsList().ToArray();
         }
 
         public async Task<long[]> ListarPendenciasPorAulasId(long[] aulas)
         {
-
-            var sql = @"select tipo from pendencia_aula where aula_id =ANY(@aulas) group by tipo";
+            var sql = @"select p.tipo 
+                        from pendencia_aula pa 
+                       inner join pendencia p on p.id = pa.pendencia_id and not p.excluido
+                       where pa.aula_id =ANY(@aulas) 
+                       group by p.tipo";
 
             return (await database.Conexao.QueryAsync<long>(sql.ToString(), new { aulas })).AsList().ToArray();
         }
 
-        public async Task<Turma> ObterNomeTurmaPorPendencia(long pendenciaId)
+        public async Task<Turma> ObterTurmaPorPendencia(long pendenciaId)
         {
             var query = @"select t.* 
                          from pendencia_aula pa
@@ -154,7 +162,8 @@ namespace SME.SGP.Dados.Repositorios
                             from pendencia p 
                            inner join pendencia_aula pa on p.id = pa.pendencia_id 
                            inner join aula a on pa.aula_id = a.id 
-                           where a.turma_id = @turmaId 
+                           where not p.excluido
+                             and a.turma_id = @turmaId 
                              and a.disciplina_id = @disciplinaId";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<long>(query, new { turmaId, disciplinaId });
@@ -164,7 +173,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select pa.id 
                             from pendencia_aula pa  
-                           inner join pendencia p on p.id = pa.pendencia_id 
+                           inner join pendencia p on p.id = pa.pendencia_id and not p.excluido
                            where pa.aula_id  = @aulaId
                             and p.tipo = @tipoPendencia";
             return await database.Conexao.QueryFirstOrDefaultAsync<long>(query, new { aulaId, tipoPendencia });
@@ -174,7 +183,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select p.id 
                             from pendencia_aula pa  
-                           inner join pendencia p on p.id = pa.pendencia_id 
+                           inner join pendencia p on p.id = pa.pendencia_id and not p.excluido
                            where pa.aula_id  = @aulaId
                             and p.tipo = @tipoPendencia";
             return await database.Conexao.QueryFirstOrDefaultAsync<long>(query, new { aulaId, tipoPendencia });
