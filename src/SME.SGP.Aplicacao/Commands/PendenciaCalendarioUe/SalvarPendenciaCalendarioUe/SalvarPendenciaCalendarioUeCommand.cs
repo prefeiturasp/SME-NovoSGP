@@ -1,25 +1,22 @@
 ﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Dominio;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
     public class SalvarPendenciaCalendarioUeCommand : IRequest<long>
     {
-        public SalvarPendenciaCalendarioUeCommand(long tipoCalendarioId, long ueId, string descricao, string instrucao, TipoPendencia tipoPendencia)
+        public SalvarPendenciaCalendarioUeCommand(long tipoCalendarioId, Ue ue, string descricao, string instrucao, TipoPendencia tipoPendencia)
         {
             TipoCalendarioId = tipoCalendarioId;
-            UeId = ueId;
+            Ue = ue;
             Descricao = descricao;
             Instrucao = instrucao;
             TipoPendencia = tipoPendencia;
         }
 
         public long TipoCalendarioId { get; set; }
-        public long UeId { get; set; }
+        public Ue Ue { get; set; }
         public string Descricao { get; set; }
         public string Instrucao { get; set; }
         public TipoPendencia TipoPendencia { get; set; }
@@ -33,9 +30,9 @@ namespace SME.SGP.Aplicacao
             .NotEmpty()
             .WithMessage("O id do tipo de calendário deve ser informado para geração de pendência.");
 
-            RuleFor(c => c.UeId)
+            RuleFor(c => c.Ue)
             .NotEmpty()
-            .WithMessage("O id da UE deve ser informado para geração de pendência.");
+            .WithMessage("A UE deve ser informada para geração de pendência.");
 
             RuleFor(c => c.Descricao)
             .NotEmpty()

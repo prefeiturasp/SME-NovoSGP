@@ -71,7 +71,7 @@ namespace SME.SGP.Aplicacao
 
             var instrucao = "Acesse a tela de Calendário Escolar e confira os eventos da sua UE.";
 
-            return await mediator.Send(new SalvarPendenciaCalendarioUeCommand(tipoCalendarioId, ue.Id, descricao.ToString(), instrucao, TipoPendencia.CadastroEventoPendente));
+            return await mediator.Send(new SalvarPendenciaCalendarioUeCommand(tipoCalendarioId, ue, descricao.ToString(), instrucao, TipoPendencia.CadastroEventoPendente));
         }
 
         private async Task<IEnumerable<PendenciaParametroEventoDto>> ObterPendenciasParametroEventoPorPendenciaId(long? pendenciaId)
