@@ -818,9 +818,8 @@ namespace SME.SGP.Dados.Repositorios
                                a.criado_rf as ProfessorRf,
                                a.turma_id as TurmaId,
                                a.disciplina_id as DisciplinaId
-                          from
-                          aula a 
-                         where tipo_calendario_id = @tipoCalendarioId";
+                          from aula a 
+                         where not excluido and tipo_calendario_id = @tipoCalendarioId";
             return await database.Conexao.QueryAsync<AulaReduzidaDto>(query.ToString(), new { tipoCalendarioId });
         }
 

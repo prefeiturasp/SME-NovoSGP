@@ -17,6 +17,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<Turma> Handle(ObterTurmaDaPendenciaQuery request, CancellationToken cancellationToken)
-            => await repositorioPendenciaAula.ObterNomeTurmaPorPendencia(request.PendenciaId);
+            => await repositorioPendenciaAula.ObterTurmaPorPendencia(request.PendenciaId);
     }
 }

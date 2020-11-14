@@ -3,11 +3,13 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -64,21 +66,43 @@ namespace SME.SGP.Aplicacao
                     var ue = await mediator.Send(new ObterUEPorTurmaCodigoQuery(turmas.Key.TurmaId));
 
                     if (pendenciaId == 0)
-                        pendenciaId = await mediator.Send(new SalvarPendenciaCommand(TipoPendencia.AulaNaoLetivo, TipoPendencia.AulaNaoLetivo.Name(), instrucao));
+                        pendenciaId = await mediator.Send(new SalvarPendenciaCommand(TipoPendencia.AulaNaoLetivo, await ObterDescricao(turmas.FirstOrDefault(), TipoPendencia.AulaNaoLetivo), ObterInstrucoes()));
 
                     foreach (var aula in turmas)
                     {
                         var pendenciaAulaId = await mediator.Send(new ObterPendenciaAulaPorAulaIdQuery(aula.aulaId, TipoPendencia.AulaNaoLetivo));
-                        var motivo = motivos.FirstOrDefault(m => m.data == aula.Data)?.motivo;
                         if (pendenciaAulaId == 0)
                         {
+                            var motivo = motivos.FirstOrDefault(m => m.data == aula.Data)?.motivo;
                             await mediator.Send(new SalvarPendenciaAulaDiasNaoLetivosCommand(aula.aulaId, motivo, pendenciaId));
-
-                            await mediator.Send(new RelacionaPendenciaUsuarioCommand(TipoParametroSistema.GerarPendenciaAulasDiasNaoLetivos, ue.CodigoUe, pendenciaId, aula.aulaId));
                         }
                     }
+                    await mediator.Send(new RelacionaPendenciaUsuarioCommand(TipoParametroSistema.GerarPendenciaAulasDiasNaoLetivos, ue.CodigoUe, pendenciaId, aula.aulaId));
+
                 }
             }
+        }
+
+        private async Task<string> ObterDescricao(AulaReduzidaDto aula, TipoPendencia tipoPendencia)
+        {
+            var componenteCurricular = await ObterComponenteCurricular(long.Parse(aula.DisciplinaId));
+            var mensagem = new StringBuilder();
+
+            mensagem.AppendLine(tipoPendencia.Name());
+            mensagem.AppendLine("<br />");
+            mensagem.AppendLine($"<i>Componente Curricular:</i> <b>{componenteCurricular?.Nome ?? aula.DisciplinaId}</b><br />");
+            mensagem.AppendLine($"<i>Professor</i>: <b>{aula.Professor}({aula.ProfessorRf})</b><br />");
+
+            return mensagem.ToString();
+        }
+
+        private string ObterInstrucoes()
+            => "Você precisa excluir estas aulas no Calendário do Professor ou entrar em contato com a gestão da UE para ajustar o calendário da escola.";
+
+        private async Task<DisciplinaDto> ObterComponenteCurricular(long componenteCurricularId)
+        {
+            var componentes = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new[] { componenteCurricularId }));
+            return componentes.FirstOrDefault();
         }
     }
 }
