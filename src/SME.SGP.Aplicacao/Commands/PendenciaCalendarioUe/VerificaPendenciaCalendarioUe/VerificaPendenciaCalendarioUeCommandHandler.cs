@@ -75,6 +75,7 @@ namespace SME.SGP.Aplicacao
             var instrucao = "Acesse a tela de Calendário Escolar e confira os eventos da sua UE.";
 
             await mediator.Send(new SalvarPendenciaCalendarioUeCommand(tipoCalendarioId, ue.Id, descricao.ToString(), instrucao, TipoPendencia.CalendarioLetivoInsuficiente));
+
         }
     }
 }
