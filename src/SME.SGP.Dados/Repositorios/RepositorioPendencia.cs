@@ -45,8 +45,8 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"from pendencia p
                           inner join pendencia_usuario pu on pu.pendencia_id = p.id
-                         where pu.usuario_id = @usuarioId
-                        order by coalesce(p.alterado_em, p.criado_em) desc";
+                         where pu.usuario_id = @usuarioId";
+            var orderBy = "order by coalesce(p.alterado_em, p.criado_em) desc";
 
             if (paginacao == null || (paginacao.QuantidadeRegistros == 0 && paginacao.QuantidadeRegistrosIgnorados == 0))
                 paginacao = new Paginacao(1, 10);
@@ -55,10 +55,10 @@ namespace SME.SGP.Dados.Repositorios
             var queryTotalRegistros = $"select count(0) {query}";
             var totalRegistrosDaQuery = await database.Conexao.QueryFirstOrDefaultAsync<int>(queryTotalRegistros, new { usuarioId });
 
-            var queryPendencias = $@"select p.* {query}
+            var queryPendencias = $@"select p.* {query} {orderBy}
                     offset @qtde_registros_ignorados rows fetch next @qtde_registros rows only;";
 
-            retornoPaginado.Items = await database.Conexao.QueryAsync<Pendencia>(queryPendencias, new { usuarioId });
+            retornoPaginado.Items = await database.Conexao.QueryAsync<Pendencia>(queryPendencias, new { usuarioId, qtde_registros_ignorados = paginacao.QuantidadeRegistrosIgnorados, qtde_registros = paginacao.QuantidadeRegistros });
             retornoPaginado.TotalRegistros = totalRegistrosDaQuery;
             retornoPaginado.TotalPaginas = (int)Math.Ceiling((double)retornoPaginado.TotalRegistros / paginacao.QuantidadeRegistros);
 
