@@ -1,10 +1,13 @@
-﻿using SME.SGP.Dados.Repositorios;
+﻿using Npgsql;
+using NpgsqlTypes;
+using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados
 {
@@ -12,6 +15,6 @@ namespace SME.SGP.Dados
     {
         public RepositorioPendenciaUsuario(ISgpContext database) : base(database)
         {
-        }
+        }        
     }
 }

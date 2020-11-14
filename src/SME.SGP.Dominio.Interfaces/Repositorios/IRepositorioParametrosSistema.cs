@@ -15,5 +15,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<ParametrosSistema> ObterParametroPorTipoEAno(TipoParametroSistema tipo, int ano = 0);
         Task<IEnumerable<ParametrosSistema>> ObterPorTiposAsync(long[] tipos);
         Task<bool> VerificaSeExisteParametroSistemaPorAno(int ano);
+        Task<IEnumerable<ParametrosSistema>> ObterParametrosPorTipoEAno(TipoParametroSistema tipo, int ano);
     }
 }
