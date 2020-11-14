@@ -14,9 +14,7 @@ namespace SME.SGP.Aplicacao
         {
             await mediator.Send(new VerificarPendenciaAulaDiasNaoLetivosCommand());
             await mediator.Send(new VerificaPendenciaCalendarioUeCommand());
-            await mediator.Send(new VerificaPendenciaParametroEventoCommand());
-
-            await mediator.Send(new VerificarPendenciaAulaDiasNaoLetivosCommand());
+            await mediator.Send(new VerificaPendenciaParametroEventoCommand());            
         }
     }
 }
