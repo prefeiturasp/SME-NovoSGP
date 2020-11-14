@@ -32,8 +32,7 @@ namespace SME.SGP.Aplicacao
                     switch (parametro.Valor)
                     {
                         case "Professor":
-                            var professor = await mediator.Send(new ObterProfessorDaTurmaPorAulaIdQuery(request.AulaId));
-                            funcionariosIdTemp.Add(professor.Id);
+                            funcionariosIdTemp.Add(request.ProfessorId.Value);
                             break;
                         case "CP":
                             var funcionariosIdCP = await mediator.Send(new ObterFuncionariosIdPorCodigoUeECargoQuery(request.CodigoUe, Cargo.CP));
