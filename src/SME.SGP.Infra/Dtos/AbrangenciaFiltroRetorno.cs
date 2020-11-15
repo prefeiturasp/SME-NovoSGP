@@ -13,7 +13,7 @@ namespace SME.SGP.Dto
         public int CodigoModalidade { get { return (int)this.Modalidade; } }
         public string CodigoTurma { get; set; }
         public string CodigoUe { get; set; }
-        public string DescricaoFiltro { get { return $"{AbreviacaoModalidade} - {NomeTurma} - {NomeUe} "; } }
+        public string DescricaoFiltro { get { return $"{NomeModalidade} - {NomeTurma} - {NomeTipoEscola} {NomeUe} "; } }
         public Modalidade Modalidade { get; set; }
         public string NomeDre { get; set; }
         public string NomeModalidade { get { return this.Modalidade.GetAttribute<DisplayAttribute>().Name; } }
@@ -22,6 +22,7 @@ namespace SME.SGP.Dto
         public int QtDuracaoAula { get; set; }
         public int Semestre { get; set; }
         public TipoEscola TipoEscola { get; set; }
+        public string NomeTipoEscola { get { return TipoEscola.GetAttribute<DisplayAttribute>().ShortName; } }
         public int TipoTurno { get; set; }
     }
 }

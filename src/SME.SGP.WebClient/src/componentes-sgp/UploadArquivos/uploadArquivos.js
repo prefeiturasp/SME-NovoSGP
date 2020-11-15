@@ -1,15 +1,32 @@
 import { InboxOutlined } from '@ant-design/icons';
 import { Upload } from 'antd';
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { erro, erros, sucesso } from '~/servicos';
 import ServicoArmazenamento from '~/servicos/Componentes/ServicoArmazenamento';
+import { downloadBlob } from '~/utils/funcoes/gerais';
 
 const { Dragger } = Upload;
 
 export const ContainerDragger = styled(Dragger)`
   height: auto !important;
+
+  cursor: ${props =>
+    props.desabilitarUpload ? 'not-allowed' : 'pointer'} !important;
+
+  .ant-upload-btn {
+    pointer-events: ${props =>
+      props.desabilitarUpload ? 'none' : 'auto'} !important;
+
+    opacity: ${props => (props.desabilitarUpload ? '0.6' : '1')} !important;
+  }
+`;
+
+export const ContainerUpload = styled.div`
+  .ant-upload-list-item-card-actions {
+    opacity: 1 !important;
+  }
 `;
 
 const TAMANHO_MAXIMO_UPLOAD = 100;
@@ -25,9 +42,26 @@ const UploadArquivos = props => {
     beforeUpload,
     showUploadList,
     onRemove,
+    onChangeListaArquivos,
+    defaultFileList,
+    urlUpload,
+    tiposArquivosPermitidos,
+    desabilitarUpload,
+    desabilitarGeral,
   } = props;
 
-  const [listaDeArquivos, setLstaDeArquivos] = useState();
+  const [listaDeArquivos, setListaDeArquivos] = useState([...defaultFileList]);
+
+  useEffect(() => {
+    if (defaultFileList?.length) {
+      const novoMap = defaultFileList.map(item => {
+        return { ...item, status: 'done' };
+      });
+      setListaDeArquivos(novoMap);
+    } else {
+      setListaDeArquivos([]);
+    }
+  }, [defaultFileList]);
 
   const excedeuLimiteMaximo = arquivo => {
     const tamanhoArquivo = arquivo.size / 1024 / 1024;
@@ -45,21 +79,6 @@ const UploadArquivos = props => {
       return true;
     }
     return false;
-  };
-
-  const downloadBlob = (data, fileName) => {
-    const a = document.createElement('a');
-    document.body.appendChild(a);
-    a.style = 'display: none';
-
-    const blob = new Blob([data]);
-    const url = window.URL.createObjectURL(blob);
-    a.href = url;
-    a.download = fileName;
-    a.click();
-    window.URL.revokeObjectURL(url);
-
-    document.body.removeChild(a);
   };
 
   const beforeUploadDefault = arquivo => {
@@ -92,18 +111,21 @@ const UploadArquivos = props => {
     };
     fmData.append('file', file);
 
-    ServicoArmazenamento.fazerUploadArquivo(fmData, config)
+    ServicoArmazenamento.fazerUploadArquivo(fmData, config, urlUpload)
       .then(resposta => {
         onSuccess(file, resposta.data);
       })
       .catch(e => {
         onError({ event: e });
+        erros(e);
       });
   };
 
   const atualizaListaArquivos = (fileList, file) => {
     const novaLista = fileList.filter(item => item.uid !== file.uid);
-    setLstaDeArquivos([...novaLista]);
+    const novoMap = [...novaLista];
+    setListaDeArquivos(novoMap);
+    onChangeListaArquivos(novoMap);
   };
 
   const onChange = ({ file, fileList }) => {
@@ -118,11 +140,11 @@ const UploadArquivos = props => {
       sucesso(`${file.name} arquivo carregado com sucesso`);
     } else if (status === 'error') {
       atualizaListaArquivos(fileList, file);
-      erro(`${file.name} erro ao carregar arquivo`);
       return;
     }
-
-    setLstaDeArquivos([...fileList]);
+    const novoMap = [...fileList];
+    setListaDeArquivos(novoMap);
+    onChangeListaArquivos(novoMap);
   };
 
   const propsDragger = {
@@ -137,16 +159,21 @@ const UploadArquivos = props => {
     onDownload,
     showUploadList,
     onRemove: onRemove || onRemoveDefault,
+    defaultFileList,
+    accept: tiposArquivosPermitidos,
+    disabled: desabilitarGeral,
   };
 
   return (
-    <ContainerDragger {...propsDragger}>
-      <p className="ant-upload-drag-icon">
-        <InboxOutlined />
-      </p>
-      <p className="ant-upload-text">{textoUpload}</p>
-      <p className="ant-upload-hint">{textoFormatoUpload}</p>
-    </ContainerDragger>
+    <ContainerUpload>
+      <ContainerDragger {...propsDragger} desabilitarUpload={desabilitarUpload}>
+        <p className="ant-upload-drag-icon">
+          <InboxOutlined />
+        </p>
+        <p className="ant-upload-text">{textoUpload}</p>
+        <p className="ant-upload-hint">{textoFormatoUpload}</p>
+      </ContainerDragger>
+    </ContainerUpload>
   );
 };
 
@@ -161,14 +188,19 @@ UploadArquivos.propTypes = {
   beforeUpload: PropTypes.func,
   showUploadList: PropTypes.oneOfType([PropTypes.object]),
   onRemove: PropTypes.func,
+  onChangeListaArquivos: PropTypes.func,
+  urlUpload: PropTypes.string,
+  defaultFileList: PropTypes.oneOfType([PropTypes.array]),
+  tiposArquivosPermitidos: PropTypes.string,
+  desabilitarUpload: PropTypes.bool,
+  desabilitarGeral: PropTypes.bool,
 };
 
 UploadArquivos.defaultProps = {
   urlAction: '',
   multiplosArquivos: false,
   textoErroUpload: 'Erro ao carregar arquivo',
-  textoUpload:
-    'Clique ou arraste para fazer o upload do arquivo de planejamento',
+  textoUpload: 'Clique ou arraste para fazer o upload do arquivo',
   textoFormatoUpload: 'Todos os formatos são suportados no limite de 100mb',
   customRequest: null,
   fileList: [],
@@ -179,6 +211,12 @@ UploadArquivos.defaultProps = {
     showPreviewIcon: false,
   },
   onRemove: null,
+  onChangeListaArquivos: () => {},
+  urlUpload: '',
+  defaultFileList: [],
+  tiposArquivosPermitidos: '',
+  desabilitarUpload: false,
+  desabilitarGeral: false,
 };
 
 export default UploadArquivos;
