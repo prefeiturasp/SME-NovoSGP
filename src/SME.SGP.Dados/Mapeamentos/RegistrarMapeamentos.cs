@@ -136,6 +136,9 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new ClassificacaoDocumentoMap());
                config.AddMap(new TipoDocumentoMap());
                config.AddMap(new DocumentoMap());
+               config.AddMap(new PendenciaUsuarioMap());
+               config.AddMap(new PendenciaCalendarioUeMap());
+               config.AddMap(new PendenciaParametroEventoMap());
                config.ForDommel();
            });
         }
