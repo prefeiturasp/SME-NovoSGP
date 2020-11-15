@@ -22,38 +22,18 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(ExcluirPendenciasDiasLetivosInsuficientesCommand request, CancellationToken cancellationToken)
         {
             var tipoCalendario = await mediator.Send(new ObterTipoCalendarioPorIdQuery(request.TipoCalendarioId));
-            var diasLetivosParametro = await ObterParametroDiasLetivos(tipoCalendario);
-            if (diasLetivosParametro == 0)
-                return true;
-
-            var periodosEscolares = await mediator.Send(new ObterPeridosEscolaresPorTipoCalendarioIdQuery(request.TipoCalendarioId));
-            var diasLetivosENaoLetivos = await mediator.Send(new ObterDiasPorPeriodosEscolaresComEventosLetivosENaoLetivosQuery(periodosEscolares, request.TipoCalendarioId));
 
             foreach(var ue in await ObterUesEvento(request.DreCodigo, request.UeCodigo, tipoCalendario))
             {
                 if (await mediator.Send(new ExistePendenciaDiasLetivosCalendarioUeQuery(tipoCalendario.Id, ue.Id)))
                 {
-                    var diasLetivos = await ObterDiasLetivosUe(ue, diasLetivosENaoLetivos);
-                    if (diasLetivos >= diasLetivosParametro)
+                    var diasLetivos = await mediator.Send(new ObterQuantidadeDiasLetivosPorCalendarioQuery(request.TipoCalendarioId, ue.Dre.CodigoDre, ue.CodigoUe));
+                    if (!diasLetivos.EstaAbaixoPermitido)
                         await mediator.Send(new ExcluirPendenciaCalendarioUeCommand(tipoCalendario.Id, ue.Id, TipoPendencia.CalendarioLetivoInsuficiente));
                 }
             }
 
             return true;
-        }
-
-        private async Task<int> ObterParametroDiasLetivos(TipoCalendario tipoCalendario)
-        {
-            return tipoCalendario.Modalidade == ModalidadeTipoCalendario.EJA ?
-                int.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(Dominio.TipoParametroSistema.EjaDiasLetivos, tipoCalendario.AnoLetivo))) :
-                tipoCalendario.Modalidade == ModalidadeTipoCalendario.FundamentalMedio ?
-                int.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(Dominio.TipoParametroSistema.FundamentalMedioDiasLetivos, tipoCalendario.AnoLetivo))) :
-                0;
-        }
-
-        private async Task<int> ObterDiasLetivosUe(Ue ue, List<Infra.DiaLetivoDto> diasLetivosENaoLetivos)
-        {
-            return await mediator.Send(new ObterDiasLetivosDaUeQuery(diasLetivosENaoLetivos, ue.Dre.CodigoDre, ue.CodigoUe));
         }
 
         private async Task<IEnumerable<Ue>> ObterUesEvento(string dreCodigo, string ueCodigo, TipoCalendario tipoCalendario)

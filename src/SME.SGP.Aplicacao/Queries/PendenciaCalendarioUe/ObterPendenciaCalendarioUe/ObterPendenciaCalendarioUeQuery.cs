@@ -13,6 +13,7 @@ namespace SME.SGP.Aplicacao
         {
             TipoCalendarioId = tipoCalendarioId;
             UeId = ueId;
+            TipoPendencia = tipoPendencia;
         }
 
         public long TipoCalendarioId { get; set; }
