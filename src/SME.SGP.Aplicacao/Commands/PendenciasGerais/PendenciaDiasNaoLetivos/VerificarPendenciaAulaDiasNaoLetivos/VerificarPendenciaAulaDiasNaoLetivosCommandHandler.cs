@@ -62,10 +62,17 @@ namespace SME.SGP.Aplicacao
                 {
                     var pendenciaId = await mediator.Send(new ObterPendenciaAulaPorTurmaIdDisciplinaIdQuery(turmas.Key.TurmaId, turmas.Key.DisciplinaId));
 
+                    var pendenciaExistente = pendenciaId != 0;
+
                     var ue = await mediator.Send(new ObterUEPorTurmaCodigoQuery(turmas.Key.TurmaId));
 
-                    if (pendenciaId == 0)
+                    if (!pendenciaExistente)
+                    {
                         pendenciaId = await mediator.Send(new SalvarPendenciaCommand(TipoPendencia.AulaNaoLetivo, await ObterDescricao(turmas.FirstOrDefault(), TipoPendencia.AulaNaoLetivo), ObterInstrucoes()));
+
+                        var professor = await mediator.Send(new ObterProfessorDaTurmaPorAulaIdQuery(turmas.FirstOrDefault().aulaId));
+                        await mediator.Send(new RelacionaPendenciaUsuarioCommand(TipoParametroSistema.GerarPendenciaAulasDiasNaoLetivos, ue.CodigoUe, pendenciaId, professor.Id));
+                    }
 
                     foreach (var aula in turmas)
                     {
@@ -76,8 +83,6 @@ namespace SME.SGP.Aplicacao
                             await mediator.Send(new SalvarPendenciaAulaDiasNaoLetivosCommand(aula.aulaId, motivo, pendenciaId));
                         }
                     }
-                    var professor = await mediator.Send(new ObterProfessorDaTurmaPorAulaIdQuery(turmas.FirstOrDefault().aulaId));
-                    await mediator.Send(new RelacionaPendenciaUsuarioCommand(TipoParametroSistema.GerarPendenciaAulasDiasNaoLetivos, ue.CodigoUe, pendenciaId, professor.Id));
                 }
             }
         }

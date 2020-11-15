@@ -45,7 +45,8 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"from pendencia p
                           inner join pendencia_usuario pu on pu.pendencia_id = p.id
-                         where pu.usuario_id = @usuarioId";
+                         where not p.excluido 
+                           and pu.usuario_id = @usuarioId";
             var orderBy = "order by coalesce(p.alterado_em, p.criado_em) desc";
 
             if (paginacao == null || (paginacao.QuantidadeRegistros == 0 && paginacao.QuantidadeRegistrosIgnorados == 0))

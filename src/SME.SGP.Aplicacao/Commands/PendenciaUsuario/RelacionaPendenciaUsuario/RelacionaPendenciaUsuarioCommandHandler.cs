@@ -51,7 +51,7 @@ namespace SME.SGP.Aplicacao
 
                             foreach (var adm in administradoresId)
                             {
-                                funcionariosIdTemp.Add(long.Parse(adm));
+                                funcionariosIdTemp.Add(await ObterUsuarioId(adm));
                             }
                             break;
                         default:
@@ -68,6 +68,15 @@ namespace SME.SGP.Aplicacao
                     }
             }
             return true;
+        }
+
+        private async Task<long> ObterUsuarioId(string rf)
+        {
+            var usuario = await mediator.Send(new ObterUsuarioPorRfQuery(rf));
+            if (usuario == null)
+                throw new NegocioException($"Usuário de RF {rf} não localizado!");
+
+            return usuario.Id;
         }
     }
 }

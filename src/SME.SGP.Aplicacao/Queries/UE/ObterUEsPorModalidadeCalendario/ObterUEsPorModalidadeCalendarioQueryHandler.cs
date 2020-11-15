@@ -25,16 +25,16 @@ namespace SME.SGP.Aplicacao.Queries.UE.ObterUEsPorModalidadeCalendario
             return await repositorioUe.ObterUesPorModalidade(modalidades);
         }
 
-        private Modalidade[] ObterTurmas(ModalidadeTipoCalendario modalidadeTipoCalendario)
+        private int[] ObterTurmas(ModalidadeTipoCalendario modalidadeTipoCalendario)
         {
             switch (modalidadeTipoCalendario)
             {
                 case ModalidadeTipoCalendario.FundamentalMedio:
-                    return new Modalidade[] { Modalidade.Fundamental, Modalidade.Medio };
+                    return new int[] { (int)Modalidade.Fundamental, (int)Modalidade.Medio };
                 case ModalidadeTipoCalendario.EJA:
-                    return new Modalidade[] { Modalidade.EJA };
+                    return new int[] { (int)Modalidade.EJA };
                 case ModalidadeTipoCalendario.Infantil:
-                    return new Modalidade[] { Modalidade.Infantil };
+                    return new int[] { (int)Modalidade.Infantil };
                 default:
                     return null;
             }
