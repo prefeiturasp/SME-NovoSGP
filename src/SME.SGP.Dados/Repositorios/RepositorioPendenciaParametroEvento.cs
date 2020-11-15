@@ -21,7 +21,6 @@ namespace SME.SGP.Dados
             var query = @"select ppe.*, pc.*
                           from pendencia_parametro_evento ppe 
                          inner join pendencia_calendario_ue pc on pc.id = ppe.pendencia_calendario_ue_id
-                                    return await database.Conexao.QueryFirstOrDefaultAsync<PendenciaParametroEvento>(query, new { tipoCalendarioId, ueId, parametroId })
                          where pc.tipo_calendario_id = @tipoCalendarioId
                            and pc.ue_id = @ueId
                            and ppe.parametro_sistema_id = @parametroId";

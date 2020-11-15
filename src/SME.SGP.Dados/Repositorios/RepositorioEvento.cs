@@ -1184,7 +1184,7 @@ namespace SME.SGP.Dados.Repositorios
                          and ue_id = @ueCodigo
                          and tipo_evento_id = @tipoEvento";
 
-            return await database.Conexao.QueryAsync<Evento>(query, new { tipoCalendarioId, ueCodigo });
+            return await database.Conexao.QueryAsync<Evento>(query, new { tipoCalendarioId, ueCodigo, tipoEvento });
         }
     }
 }
