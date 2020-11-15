@@ -93,8 +93,8 @@ namespace SME.SGP.Dominio.Servicos
         {
             var dataReferencia = DateTime.Today.AddDays(-1);
                         
-            var quantidadeDiasCP = int.Parse(await mediator.Send(new ObterParametroSistemaTipoEAnoQuery(TipoParametroSistema.QuantidadeDiasNotificaoCPAlunosAusentes, DateTime.Today.Year)));            
-            var quantidadeDiasDiretor = int.Parse(await mediator.Send(new ObterParametroSistemaTipoEAnoQuery(TipoParametroSistema.QuantidadeDiasNotificaoDiretorAlunosAusentes, DateTime.Today.Year)));
+            var quantidadeDiasCP = int.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.QuantidadeDiasNotificaoCPAlunosAusentes, DateTime.Today.Year)));            
+            var quantidadeDiasDiretor = int.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.QuantidadeDiasNotificaoDiretorAlunosAusentes, DateTime.Today.Year)));
 
             await NotificarAlunosFaltososModalidade(dataReferencia, ModalidadeTipoCalendario.Infantil, quantidadeDiasCP, quantidadeDiasDiretor);
             await NotificarAlunosFaltososModalidade(dataReferencia, ModalidadeTipoCalendario.FundamentalMedio, quantidadeDiasCP, quantidadeDiasDiretor);

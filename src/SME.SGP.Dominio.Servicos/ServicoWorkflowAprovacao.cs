@@ -10,6 +10,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SME.SGP.Infra.Interfaces;
 
 namespace SME.SGP.Dominio.Servicos
 {
@@ -33,6 +34,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
         private readonly IRepositorioWorkflowAprovacaoNivel workflowAprovacaoNivel;
+        private readonly IServicoFila servicoFila;
         private readonly IMediator mediator;
 
         public ServicoWorkflowAprovacao(IRepositorioNotificacao repositorioNotificacao,
@@ -53,6 +55,7 @@ namespace SME.SGP.Dominio.Servicos
                                         IRepositorioUsuario repositorioUsuario,
                                         IRepositorioPendencia repositorioPendencia,
                                         IRepositorioEventoTipo repositorioEventoTipo,
+                                        IServicoFila servicoFila,
                                         IMediator mediator)
         {
             this.repositorioNotificacao = repositorioNotificacao ?? throw new System.ArgumentNullException(nameof(repositorioNotificacao));
@@ -73,6 +76,7 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioUsuario = repositorioUsuario ?? throw new ArgumentNullException(nameof(repositorioUsuario));
             this.repositorioPendencia = repositorioPendencia ?? throw new ArgumentNullException(nameof(repositorioPendencia));
             this.repositorioEventoTipo = repositorioEventoTipo ?? throw new ArgumentNullException(nameof(repositorioEventoTipo));
+            this.servicoFila = servicoFila ?? throw new ArgumentNullException(nameof(servicoFila));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
@@ -141,7 +145,7 @@ namespace SME.SGP.Dominio.Servicos
             {
                 if (workflow.Tipo == WorkflowAprovacaoTipo.Evento_Liberacao_Excepcional)
                 {
-                    AprovarUltimoNivelEventoLiberacaoExcepcional(codigoDaNotificacao, workflow.Id);
+                    await AprovarUltimoNivelEventoLiberacaoExcepcional(codigoDaNotificacao, workflow.Id);
                 }
                 else if (workflow.Tipo == WorkflowAprovacaoTipo.ReposicaoAula)
                 {
@@ -276,7 +280,7 @@ namespace SME.SGP.Dominio.Servicos
             repositorioEvento.Salvar(evento);
         }
 
-        private void AprovarUltimoNivelEventoLiberacaoExcepcional(long codigoDaNotificacao, long workflowId)
+        private async Task AprovarUltimoNivelEventoLiberacaoExcepcional(long codigoDaNotificacao, long workflowId)
         {
             Evento evento = repositorioEvento.ObterPorWorkflowId(workflowId);
             if (evento == null)
@@ -285,7 +289,21 @@ namespace SME.SGP.Dominio.Servicos
             evento.AprovarWorkflow();
             repositorioEvento.Salvar(evento);
 
+            await VerificaPendenciaDiasLetivosInsuficientes(evento);
             NotificarCriadorEventoLiberacaoExcepcionalAprovado(evento, codigoDaNotificacao);
+        }
+
+        private async Task VerificaPendenciaDiasLetivosInsuficientes(Evento evento)
+        {
+            if (evento.EhEventoLetivo())
+            {
+                var usuario = await servicoUsuario.ObterUsuarioLogado();
+
+                servicoFila.PublicaFilaWorkerSgp(new PublicaFilaSgpDto(RotasRabbit.RotaExecutaExclusaoPendenciasDiasLetivosInsuficientes,
+                                                                   new ExcluirPendenciasDiasLetivosInsuficientesCommand(evento.TipoCalendarioId, evento.DreId, evento.UeId),
+                                                                   Guid.NewGuid(),
+                                                                   usuario));
+            }
         }
 
         private void AtualizaNiveis(IEnumerable<WorkflowAprovacaoNivel> niveis)

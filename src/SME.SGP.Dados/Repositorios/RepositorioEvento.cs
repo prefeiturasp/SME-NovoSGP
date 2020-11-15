@@ -1080,7 +1080,8 @@ namespace SME.SGP.Dados.Repositorios
 	                        data_fim,
 	                        letivo,
                             e.ue_id,
-                            e.dre_id
+                            e.dre_id,
+                            e.nome
                         from
 	                        evento e
                         where
@@ -1128,6 +1129,62 @@ namespace SME.SGP.Dados.Repositorios
                     codigoUe,
                     modalidade = modalidade.HasValue ? modalidade.Value : 0
                 });
+        }
+
+        public async Task<IEnumerable<Evento>> ObterEventosPorTipoCalendarioIdEPeriodoInicioEFim(long tipoCalendarioId, DateTime periodoInicio, DateTime periodoFim, long? turmaId = null)
+        {
+            var filtroTurma = !turmaId.HasValue ? "" :
+                @"inner join (
+    	                select ue.ue_id, dre.dre_id from turma t
+    	                inner join ue on ue.id = t.ue_id
+    	                inner join dre on dre.id = ue.dre_id
+    	                where t.id = @turmaId
+                    ) x on e.dre_id is null 
+    	                or (e.dre_id = x.dre_id and (e.ue_id is null or e.ue_id = x.ue_id))";
+
+            var query = $@"select
+                            e.id,
+	                        data_inicio as DataInicio,
+	                        data_fim as DataFim,
+	                        e.letivo,
+	                        e.nome,
+	                        e.descricao,
+                            e.ue_id as UeId,
+                            e.dre_id as DreId,
+                            e.tipo_evento_id as TipoEvento,
+                            et.id,
+                            et.descricao
+                        from
+	                        evento e
+                        inner join evento_tipo et on et.id = e.tipo_evento_id
+                        {filtroTurma}
+                        where
+                        e.tipo_calendario_id = @tipoCalendarioId
+                        and not e.excluido and data_inicio between @periodoInicio and @periodoFim;";
+
+            
+                return await database.Conexao.QueryAsync<Evento, EventoTipo, Evento>(query.ToString(),
+                    (evento, eventoTipo) =>
+                    {
+                        evento.TipoEvento = eventoTipo;
+                        return evento;
+                    },
+                    new { tipoCalendarioId, periodoInicio, periodoFim, turmaId });
+            
+        }
+
+
+
+        public async Task<IEnumerable<Evento>> ObterEventosPorTipoECalendarioUe(long tipoCalendarioId, string ueCodigo, TipoEvento tipoEvento)
+        {
+            var query = @"select * 
+                        from evento 
+                       where not excluido
+                         and tipo_calendario_id = @tipoCalendarioId
+                         and ue_id = @ueCodigo
+                         and tipo_evento_id = @tipoEvento";
+
+            return await database.Conexao.QueryAsync<Evento>(query, new { tipoCalendarioId, ueCodigo, tipoEvento });
         }
     }
 }
