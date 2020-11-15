@@ -22,23 +22,34 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(VerificaPendenciaCalendarioUeCommand request, CancellationToken cancellationToken)
         {
             var anoAtual = DateTime.Now.Year;
-            var diasLetivosEja = int.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(Dominio.TipoParametroSistema.EjaDiasLetivos, anoAtual)));
-            var diasLetivosFundamentalMedio = int.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(Dominio.TipoParametroSistema.EjaDiasLetivos, anoAtual)));
+            var parametrosDiasLetivos = await ObterParametrosDiasLetivos(anoAtual);
 
             var tipoCalendarioId = await mediator.Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(Dominio.Modalidade.Fundamental, anoAtual, 0));
             if (tipoCalendarioId > 0)
-                await VerificaPendenciasNoCalendario(tipoCalendarioId, diasLetivosFundamentalMedio, Dominio.ModalidadeTipoCalendario.FundamentalMedio);
+                await VerificaPendenciasNoCalendario(tipoCalendarioId, parametrosDiasLetivos.diasLetivosFundamentalMedio, Dominio.ModalidadeTipoCalendario.FundamentalMedio);
 
             tipoCalendarioId = await mediator.Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(Dominio.Modalidade.EJA, anoAtual, 1));
             if (tipoCalendarioId > 0)
-                await VerificaPendenciasNoCalendario(tipoCalendarioId, diasLetivosEja, Dominio.ModalidadeTipoCalendario.EJA);
+                await VerificaPendenciasNoCalendario(tipoCalendarioId, parametrosDiasLetivos.diasLetivosEja, Dominio.ModalidadeTipoCalendario.EJA);
 
             tipoCalendarioId = await mediator.Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(Dominio.Modalidade.EJA, anoAtual, 2));
             if (tipoCalendarioId > 0)
-                await VerificaPendenciasNoCalendario(tipoCalendarioId, diasLetivosEja, Dominio.ModalidadeTipoCalendario.EJA);
+                await VerificaPendenciasNoCalendario(tipoCalendarioId, parametrosDiasLetivos.diasLetivosEja, Dominio.ModalidadeTipoCalendario.EJA);
 
             return true;
         }
+
+        private async Task<(int diasLetivosEja, int diasLetivosFundamentalMedio)> ObterParametrosDiasLetivos(int anoAtual)
+        {
+            var parametros = await mediator.Send(new ObterParametrosSistemaPorTipoEAnoQuery(TipoParametroSistema.EjaDiasLetivos, anoAtual));
+            return (ObterParametrosDiasLetivosEja(parametros), ObterParametroDiasLetivosFundMedio(parametros));
+        }
+
+        private int ObterParametroDiasLetivosFundMedio(IEnumerable<ParametrosSistema> parametros)
+            => int.Parse(parametros.FirstOrDefault(c => c.Nome == "FundamentalMedioDiasLetivos").Valor);
+
+        private int ObterParametrosDiasLetivosEja(IEnumerable<ParametrosSistema> parametros)
+            => int.Parse(parametros.FirstOrDefault(c => c.Nome == "EjaDiasLetivos").Valor);
 
         private async Task VerificaPendenciasNoCalendario(long tipoCalendarioId, int diasLetivosParametro, Dominio.ModalidadeTipoCalendario modalidadeCalendario)
         {
@@ -67,10 +78,10 @@ namespace SME.SGP.Aplicacao
             var nomeTipoCalendario = await mediator.Send(new ObterNomeTipoCalendarioPorIdQuery(tipoCalendarioId));
 
             var descricao = new StringBuilder();
-            descricao.AppendLine($"DRE: DRE - {ue.Dre.Abreviacao}<br />");
-            descricao.AppendLine($"UE: {ue.TipoEscola.ShortName()} - {ue.Nome}<br />");
-            descricao.AppendLine($"Calendário: {nomeTipoCalendario}<br />");
-            descricao.AppendLine($"Quantidade de dias letivos: {diasLetivos}<br />");
+            descricao.AppendLine($"<i>DRE:</i><b> DRE - {ue.Dre.Abreviacao}</b><br />");
+            descricao.AppendLine($"<i>UE:</i><b> {ue.TipoEscola.ShortName()} - {ue.Nome}</b><br />");
+            descricao.AppendLine($"<i>Calendário:</i><b> {nomeTipoCalendario}</b><br />");
+            descricao.AppendLine($"<i>Quantidade de dias letivos:</i><b> {diasLetivos}</b><br />");
             
             var instrucao = "Acesse a tela de Calendário Escolar e confira os eventos da sua UE.";
 

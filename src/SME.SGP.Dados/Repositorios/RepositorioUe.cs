@@ -191,7 +191,7 @@ namespace SME.SGP.Dados.Repositorios
             return resultado;
         }
 
-        public async Task<IEnumerable<Ue>> ObterUesPorModalidade(Modalidade[] modalidades)
+        public async Task<IEnumerable<Ue>> ObterUesPorModalidade(int[] modalidades)
         {
             var query = @"select distinct ue.*, dre.*
                           from turma t

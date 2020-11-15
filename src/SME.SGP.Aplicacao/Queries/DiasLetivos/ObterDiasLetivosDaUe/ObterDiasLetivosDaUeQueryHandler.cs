@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
                                 || (x.DreIds.Contains(request.DreCodigo) && x.UesIds.Contains(request.UeCodigo)));
 
             var diasLetivos = diasLetivosENaoLetivosDaUe.Where(c => c.EhLetivo).Count();
-            var diasNaoLetivos = diasLetivosENaoLetivosDaUe.Where(c => !c.EhLetivo).Count();
+            var diasNaoLetivos = diasLetivosENaoLetivosDaUe.Where(c => c.EhNaoLetivo).Count();
 
             return Task.FromResult( diasLetivos - diasNaoLetivos );
         }

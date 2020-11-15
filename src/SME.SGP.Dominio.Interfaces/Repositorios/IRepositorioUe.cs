@@ -29,6 +29,6 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<IEnumerable<Ue>> SincronizarAsync(IEnumerable<Ue> entidades, IEnumerable<Dre> dres);
 
-        Task<IEnumerable<Ue>> ObterUesPorModalidade(Modalidade[] modalidades);
+        Task<IEnumerable<Ue>> ObterUesPorModalidade(int[] modalidades);
     }
 }

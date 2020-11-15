@@ -60,7 +60,12 @@ namespace SME.SGP.Aplicacao
             if (pendencia.EhPendenciaCadastroEvento())
                 return await ObterDescricaoPendenciaEvento(pendencia);
             else
-                return pendencia.Descricao;
+                return ObterDescricaoPendenciaGeral(pendencia);
+        }
+
+        private string ObterDescricaoPendenciaGeral(Pendencia pendencia)
+        {
+            return $"{pendencia.Descricao}<br />{pendencia.Instrucao}";
         }
 
         private async Task<string> ObterDescricaoPendenciaEvento(Pendencia pendencia)
@@ -75,6 +80,7 @@ namespace SME.SGP.Aplicacao
                 descricao.AppendLine($"<li>{pendenciaEvento.Descricao} ({pendenciaEvento.Valor})</li>");
             }
             descricao.AppendLine("</ul>");
+            descricao.AppendLine(pendencia.Instrucao);
 
             return descricao.ToString();
         }
@@ -91,6 +97,7 @@ namespace SME.SGP.Aplicacao
                 descricao.AppendLine($"<li>{pendenciaAula.DataAula:dd/MM} - {pendenciaAula.Motivo}</li>");
             }
             descricao.AppendLine("</ul>");
+            descricao.AppendLine(pendencia.Instrucao);
 
             return descricao.ToString();
         }
