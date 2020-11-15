@@ -191,6 +191,16 @@ namespace SME.SGP.Dados.Repositorios
             return resultado;
         }
 
+        public async Task<bool> ValidarUeEducacaoInfantil(long ueId)
+        {
+            var query = @"select 1 
+                          from ue
+                         where ue.Id = @ueId
+                           and ue.tipo_escola in (2, 17, 28, 30, 31)";
+
+            return await contexto.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { ueId });
+        }
+
         public async Task<IEnumerable<Ue>> ObterUesPorModalidade(int[] modalidades)
         {
             var query = @"select distinct ue.*, dre.*
