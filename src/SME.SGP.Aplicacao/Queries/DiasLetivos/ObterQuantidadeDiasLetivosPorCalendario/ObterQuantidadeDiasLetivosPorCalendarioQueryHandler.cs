@@ -82,12 +82,12 @@ namespace SME.SGP.Aplicacao
                             await ObterParametroDiasLetivosFundMedio(parametros));
         }
 
-        private async Task<string> ObterParametroDiasLetivosFundMedio(IEnumerable<ParametrosSistema> parametros)
+        private async Task<string> ObterParametroDiasLetivosEja(IEnumerable<ParametrosSistema> parametros)
         {
             return parametros.FirstOrDefault(a => a.Nome == "EjaDiasLetivos").Valor;
         }
 
-        private async Task<string> ObterParametroDiasLetivosEja(IEnumerable<ParametrosSistema> parametros)
+        private async Task<string> ObterParametroDiasLetivosFundMedio(IEnumerable<ParametrosSistema> parametros)
         {
             return parametros.FirstOrDefault(a => a.Nome == "FundamentalMedioDiasLetivos").Valor;
         }

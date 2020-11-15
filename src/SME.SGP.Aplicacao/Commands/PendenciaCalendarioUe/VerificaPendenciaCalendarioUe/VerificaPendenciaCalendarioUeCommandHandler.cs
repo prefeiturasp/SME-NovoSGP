@@ -22,55 +22,33 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(VerificaPendenciaCalendarioUeCommand request, CancellationToken cancellationToken)
         {
             var anoAtual = DateTime.Now.Year;
-            var parametrosDiasLetivos = await ObterParametrosDiasLetivos(anoAtual);
-
             var tipoCalendarioId = await mediator.Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(Dominio.Modalidade.Fundamental, anoAtual, 0));
             if (tipoCalendarioId > 0)
-                await VerificaPendenciasNoCalendario(tipoCalendarioId, parametrosDiasLetivos.diasLetivosFundamentalMedio, Dominio.ModalidadeTipoCalendario.FundamentalMedio);
+                await VerificaPendenciasNoCalendario(tipoCalendarioId, Dominio.ModalidadeTipoCalendario.FundamentalMedio);
 
             tipoCalendarioId = await mediator.Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(Dominio.Modalidade.EJA, anoAtual, 1));
             if (tipoCalendarioId > 0)
-                await VerificaPendenciasNoCalendario(tipoCalendarioId, parametrosDiasLetivos.diasLetivosEja, Dominio.ModalidadeTipoCalendario.EJA);
+                await VerificaPendenciasNoCalendario(tipoCalendarioId, Dominio.ModalidadeTipoCalendario.EJA);
 
             tipoCalendarioId = await mediator.Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(Dominio.Modalidade.EJA, anoAtual, 2));
             if (tipoCalendarioId > 0)
-                await VerificaPendenciasNoCalendario(tipoCalendarioId, parametrosDiasLetivos.diasLetivosEja, Dominio.ModalidadeTipoCalendario.EJA);
+                await VerificaPendenciasNoCalendario(tipoCalendarioId, Dominio.ModalidadeTipoCalendario.EJA);
 
             return true;
         }
 
-        private async Task<(int diasLetivosEja, int diasLetivosFundamentalMedio)> ObterParametrosDiasLetivos(int anoAtual)
+        private async Task VerificaPendenciasNoCalendario(long tipoCalendarioId, Dominio.ModalidadeTipoCalendario modalidadeCalendario)
         {
-            var parametros = await mediator.Send(new ObterParametrosSistemaPorTipoEAnoQuery(TipoParametroSistema.EjaDiasLetivos, anoAtual));
-            return (ObterParametrosDiasLetivosEja(parametros), ObterParametroDiasLetivosFundMedio(parametros));
-        }
-
-        private int ObterParametroDiasLetivosFundMedio(IEnumerable<ParametrosSistema> parametros)
-            => int.Parse(parametros.FirstOrDefault(c => c.Nome == "FundamentalMedioDiasLetivos").Valor);
-
-        private int ObterParametrosDiasLetivosEja(IEnumerable<ParametrosSistema> parametros)
-            => int.Parse(parametros.FirstOrDefault(c => c.Nome == "EjaDiasLetivos").Valor);
-
-        private async Task VerificaPendenciasNoCalendario(long tipoCalendarioId, int diasLetivosParametro, Dominio.ModalidadeTipoCalendario modalidadeCalendario)
-        {
-            var periodosEscolares = await mediator.Send(new ObterPeridosEscolaresPorTipoCalendarioIdQuery(tipoCalendarioId));
-            var diasLetivosENaoLetivos = await mediator.Send(new ObterDiasPorPeriodosEscolaresComEventosLetivosENaoLetivosQuery(periodosEscolares, tipoCalendarioId));
-
             var ues = await mediator.Send(new ObterUEsPorModalidadeCalendarioQuery(modalidadeCalendario));
             foreach(var ue in ues)
             {
                 if (!(await mediator.Send(new ExistePendenciaDiasLetivosCalendarioUeQuery(tipoCalendarioId, ue.Id))))
                 {
-                    var diasLetivos = await ObterDiasLetivosUe(ue, diasLetivosENaoLetivos);
-                    if (diasLetivos < diasLetivosParametro)
-                        await GerarPendenciaCalendarioUe(ue, diasLetivos, tipoCalendarioId);
+                    var diasLetivos = await mediator.Send(new ObterQuantidadeDiasLetivosPorCalendarioQuery(tipoCalendarioId, ue.Dre.CodigoDre, ue.CodigoUe));
+                    if (diasLetivos.EstaAbaixoPermitido)
+                        await GerarPendenciaCalendarioUe(ue, diasLetivos.Dias, tipoCalendarioId);
                 }
             }
-        }
-
-        private async Task<int> ObterDiasLetivosUe(Ue ue, List<Infra.DiaLetivoDto> diasLetivosENaoLetivos)
-        {
-            return await mediator.Send(new ObterDiasLetivosDaUeQuery(diasLetivosENaoLetivos, ue.Dre.CodigoDre, ue.CodigoUe));
         }
 
         private async Task GerarPendenciaCalendarioUe(Ue ue, int diasLetivos, long tipoCalendarioId)
