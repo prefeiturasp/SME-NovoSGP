@@ -28,6 +28,7 @@ namespace SME.SGP.Dominio.Interfaces
         Ue ObterUEPorTurma(string turmaId);
 
         Task<IEnumerable<Ue>> SincronizarAsync(IEnumerable<Ue> entidades, IEnumerable<Dre> dres);
+        Task<bool> ValidarUeEducacaoInfantil(long ueId);
 
         Task<IEnumerable<Ue>> ObterUesPorModalidade(int[] modalidades);
     }

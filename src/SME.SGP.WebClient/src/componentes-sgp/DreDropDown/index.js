@@ -65,7 +65,7 @@ function DreDropDown({
         form={form}
         name="dreId"
         className="fonte-14"
-        onChange={valor => onChange(valor, listaDres)}
+        onChange={valor => onChange(valor, listaDres, true)}
         lista={listaDres}
         valueOption="valor"
         valueText="desc"
