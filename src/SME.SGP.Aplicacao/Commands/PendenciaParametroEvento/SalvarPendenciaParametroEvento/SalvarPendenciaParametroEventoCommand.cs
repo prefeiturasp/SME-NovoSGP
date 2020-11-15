@@ -31,10 +31,6 @@ namespace SME.SGP.Aplicacao
             RuleFor(c => c.ParametroSistemaId)
             .NotEmpty()
             .WithMessage("O id do parâmetro do sistema deve ser informado para geração de pendência parâmetro.");
-
-            RuleFor(c => c.QuantidadeEventos)
-            .Must(a => a > 0)
-            .WithMessage("A quantidade de eventos deve ser informada para geração de pendência parâmetro.");
         }
     }
 }

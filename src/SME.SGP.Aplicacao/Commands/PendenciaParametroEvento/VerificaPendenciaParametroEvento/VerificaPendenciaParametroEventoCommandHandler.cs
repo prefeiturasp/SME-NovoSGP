@@ -53,9 +53,7 @@ namespace SME.SGP.Aplicacao
                     var pendenciaCalendarioUeId = pendenciaCalendarioUe == null ? await GerarPendenciaCalendarioUe(tipoCalendarioId, ue) : pendenciaCalendarioUe.Id;
 
                     await GerarPendenciaParametroEvento(pendenciaCalendarioUeId, listaValidacoesEvento.Where(a => a.gerarPedencia));
-
                 }
-
             }
         }
 
@@ -64,10 +62,10 @@ namespace SME.SGP.Aplicacao
             var nomeTipoCalendario = await mediator.Send(new ObterNomeTipoCalendarioPorIdQuery(tipoCalendarioId));
             var descricao = new StringBuilder();
 
-            descricao.AppendLine($"DRE: DRE - {ue.Dre.Abreviacao}<br />");
-            descricao.AppendLine($"UE: {ue.TipoEscola.ShortName()} - {ue.Nome}<br />");
-            descricao.AppendLine($"Calendário: {nomeTipoCalendario}<br />");
-            descricao.AppendLine($"Eventos pendentes de cadastro:<br />");
+            descricao.AppendLine($"<i>DRE:</i><b> DRE - {ue.Dre.Abreviacao}</b><br />");
+            descricao.AppendLine($"<i>UE:</i><b> {ue.TipoEscola.ShortName()} - {ue.Nome}</b><br />");
+            descricao.AppendLine($"<i>Calendário:</i><b> {nomeTipoCalendario}</b><br />");
+            descricao.AppendLine($"<i>Eventos pendentes de cadastro:</i><br />");
 
             var instrucao = "Acesse a tela de Calendário Escolar e confira os eventos da sua UE.";
 
