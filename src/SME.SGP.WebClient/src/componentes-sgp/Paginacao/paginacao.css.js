@@ -3,13 +3,14 @@ import styled from 'styled-components';
 import { Base } from '~/componentes/colors';
 
 export const ContainerPaginacao = styled(Pagination)`
-  .ant-table-pagination.ant-pagination {
-    float: none;
-    text-align: center !important;
-  }
+  text-align: center;
 
   .ant-pagination-item {
-    border-radius: 0;
+    border-radius: 0 !important;
+    height: 45px;
+    line-height: 45px;
+    margin: 0;
+    min-width: 45px;
 
     a {
       font-family: Roboto;
@@ -20,40 +21,34 @@ export const ContainerPaginacao = styled(Pagination)`
     }
   }
 
-  .ant-pagination.mini .ant-pagination-item {
-    height: 45px;
-    line-height: 45px;
-    margin: 0;
-    min-width: 45px;
-  }
-
   .ant-pagination-prev {
-    border: solid 1px ${Base.CinzaDesabilitado} !important;
-  }
-
-  .ant-pagination.mini .ant-pagination-prev {
-    border-radius: 4px 0px 0px 4px;
-    border-right: none !important;
     height: 45px;
     line-height: 40px;
     margin: 0;
     min-width: 45px;
-  }
 
-  .ant-pagination.mini .ant-pagination-next {
-    border-radius: 0px 4px 4px 0px;
-    border-left: none !important;
-    height: 45px;
-    line-height: 40px;
-    margin: 0;
-    min-width: 45px;
+    .ant-pagination-item-link {
+      border-radius: 4px 0px 0px 4px;
+      border-right: 0px !important;
+    }
   }
 
   .ant-pagination-next {
-    border: solid 1px ${Base.CinzaDesabilitado} !important;
+    height: 45px;
+    line-height: 40px;
+    margin: 0;
+    min-width: 45px;
+
+    .ant-pagination-item-link {
+      border-radius: 0px 4px 4px 0px;
+      border-left: 0px !important;
+    }
   }
 
-  .ant-pagination-item {
+  .ant-pagination-prev:focus .ant-pagination-item-link,
+  .ant-pagination-next:focus .ant-pagination-item-link,
+  .ant-pagination-prev:hover .ant-pagination-item-link,
+  .ant-pagination-next:hover .ant-pagination-item-link {
     border: solid 1px ${Base.CinzaDesabilitado} !important;
   }
 
@@ -68,17 +63,7 @@ export const ContainerPaginacao = styled(Pagination)`
     color: ${Base.Branco} !important;
   }
 
-  .ant-pagination-item-active:focus,
-  .ant-pagination-item-active:hover {
-    border-color: ${Base.Roxo} !important;
-  }
-
-  .ant-pagination-item-active:focus a,
-  .ant-pagination-item-active:hover a {
-    color: ${Base.Branco} !important;
-  }
-
-  .ant-pagination-options {
-    padding-left: 20px;
+  .ant-pagination-item {
+    border: solid 1px ${Base.CinzaDesabilitado} !important;
   }
 `;
