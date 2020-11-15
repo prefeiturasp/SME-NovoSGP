@@ -1,0 +1,12 @@
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace SME.SGP.Infra.Dtos.EscolaAqui.DadosDeLeituraDeComunicados
+{
+    public class ObterDadosDeLeituraDeComunicadosDto
+    {
+        public string CodigoDre { get; set; }
+        public string CodigoUe { get; set; }
+        [Required(ErrorMessage = "O comunicado deve ser informado.")]
+        public long ComunicadoId { get; set; }
+    }
+}

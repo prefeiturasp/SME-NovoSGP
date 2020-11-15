@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui.Dashboard.ObterDadosDeLeituraDeComunicados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.EscolaAqui;
+using SME.SGP.Infra.Dtos.EscolaAqui.DadosDeLeituraDeComunicados;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
@@ -11,7 +13,6 @@ namespace SME.SGP.Api.Controllers
     //[Authorize("Bearer")]
     public class DashboardEAController : ControllerBase
     {
-
         [HttpGet("adesao")]
         [ProducesResponseType(typeof(UsuarioEscolaAquiDto), 200)]
         [ProducesResponseType(typeof(UsuarioEscolaAquiDto), 204)]
@@ -37,6 +38,15 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterUltimaAtualizacaoPorProcesso([FromQuery] string nomeProcesso, [FromServices] IObterUltimaAtualizacaoPorProcessoUseCase obterUltimaAtualizacaoPorProcessoUseCase)
         {
             return Ok(await obterUltimaAtualizacaoPorProcessoUseCase.Executar(nomeProcesso));
+        }
+
+        [HttpGet("leitura-comunicados")]
+        [ProducesResponseType(typeof(UsuarioEscolaAquiDto), 200)]
+        [ProducesResponseType(typeof(UsuarioEscolaAquiDto), 204)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ObterDadosDeLeituraDeComunicados([FromQuery] ObterDadosDeLeituraDeComunicadosDto obterDadosDeLeituraDeComunicadosDto, [FromServices] IObterDadosDeLeituraDeComunicadosUseCase obterDadosDeLeituraDeComunicadosUseCase)
+        {
+            return Ok(await obterDadosDeLeituraDeComunicadosUseCase.Executar(obterDadosDeLeituraDeComunicadosDto));
         }
     }
 }
