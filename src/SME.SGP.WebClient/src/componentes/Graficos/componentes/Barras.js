@@ -21,7 +21,6 @@ function Barras({
 
   return (
     <ResponsiveBar
-      {...customProps}
       data={dados}
       keys={chaves}
       indexBy={indice}
@@ -86,6 +85,7 @@ function Barras({
       motionDamping={15}
       labelFormat={porcentagem && format}
       tooltipFormat={porcentagem && format}
+      {...customProps}
     />
   );
 }
