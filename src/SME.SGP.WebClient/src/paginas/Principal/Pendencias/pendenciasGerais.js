@@ -79,31 +79,33 @@ const PendenciasGerais = () => {
             <Cabecalho pagina="Pendências" />
           </div>
           <div className="col-md-12">
-            {dadosPendencias?.items?.length
-              ? dadosPendencias.items.map(item => {
-                  return (
-                    <div key={shortid.generate()} className="mb-3">
-                      <CardCollapse
-                        key={`pendencia-${shortid.generate()}-collapse-key`}
-                        titulo={titutoPersonalizado(item)}
-                        indice={`pendencia-${shortid.generate()}-collapse-indice`}
-                        alt={`pendencia-${shortid.generate()}-alt`}
-                        configCabecalho={configCabecalho}
-                        styleCardBody={{ backgroundColor: Base.CinzaBadge }}
-                      >
-                        <span
-                          dangerouslySetInnerHTML={{
-                            __html: item.detalhe,
-                          }}
-                        />
-                      </CardCollapse>
-                    </div>
-                  );
-                })
-              : ''}
+            {dadosPendencias?.items?.length ? (
+              dadosPendencias.items.map(item => {
+                return (
+                  <div key={shortid.generate()} className="mb-3">
+                    <CardCollapse
+                      key={`pendencia-${shortid.generate()}-collapse-key`}
+                      titulo={titutoPersonalizado(item)}
+                      indice={`pendencia-${shortid.generate()}-collapse-indice`}
+                      alt={`pendencia-${shortid.generate()}-alt`}
+                      configCabecalho={configCabecalho}
+                      styleCardBody={{ backgroundColor: Base.CinzaBadge }}
+                    >
+                      <span
+                        dangerouslySetInnerHTML={{
+                          __html: item.detalhe,
+                        }}
+                      />
+                    </CardCollapse>
+                  </div>
+                );
+              })
+            ) : (
+              <div className="text-center">Sem Pendências</div>
+            )}
           </div>
 
-          {numeroRegistros ? (
+          {dadosPendencias?.items?.length && numeroRegistros ? (
             <div className="col-md-12">
               <Paginacao
                 numeroRegistros={numeroRegistros}
