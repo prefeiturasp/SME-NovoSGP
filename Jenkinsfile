@@ -54,7 +54,7 @@ pipeline {
         
               stage('Fim Análise Código') {
           when {
-            branch 'development'
+            branch 'development-NaoExecutar'
           }
             steps {
                 sh 'echo Fim SonarQube API'
