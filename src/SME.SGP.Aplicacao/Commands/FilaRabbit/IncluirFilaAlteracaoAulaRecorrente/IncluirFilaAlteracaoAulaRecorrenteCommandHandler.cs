@@ -10,14 +10,14 @@ namespace SME.SGP.Aplicacao
 {
     public class IncluirFilaAlteracaoAulaRecorrenteCommandHandler : IRequestHandler<IncluirFilaAlteracaoAulaRecorrenteCommand, bool>
     {
-        private readonly IServicoFila servicoFila;
+        private readonly IMediator mediator;
 
-        public IncluirFilaAlteracaoAulaRecorrenteCommandHandler(IServicoFila servicoFila)
+        public IncluirFilaAlteracaoAulaRecorrenteCommandHandler(IMediator mediator)
         {
-            this.servicoFila = servicoFila ?? throw new ArgumentNullException(nameof(servicoFila));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public Task<bool> Handle(IncluirFilaAlteracaoAulaRecorrenteCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(IncluirFilaAlteracaoAulaRecorrenteCommand request, CancellationToken cancellationToken)
         {
             var command = new AlterarAulaRecorrenteCommand(request.Usuario,
                                                            request.AulaId,
@@ -32,10 +32,10 @@ namespace SME.SGP.Aplicacao
                                                            request.EhRegencia,
                                                            request.RecorrenciaAula);
 
-            servicoFila.PublicaFilaWorkerSgp(new PublicaFilaSgpDto(RotasRabbit.RotaAlterarAulaRecorrencia, command, Guid.NewGuid(), request.Usuario));
+            await mediator.Send(new PublicaFilaWorkerSgpCommand(RotasRabbit.RotaAlterarAulaRecorrencia, command, Guid.NewGuid(), request.Usuario));
             SentrySdk.AddBreadcrumb($"Incluir fila alteração de aula recorrente", "RabbitMQ");
 
-            return Task.FromResult(true);
+            return true;
         }
     }
 }
