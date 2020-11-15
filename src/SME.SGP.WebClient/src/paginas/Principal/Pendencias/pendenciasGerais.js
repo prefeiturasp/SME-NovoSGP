@@ -101,7 +101,7 @@ const PendenciasGerais = () => {
                 );
               })
             ) : (
-              <div className="text-center">Sem Pendências</div>
+              <div className="text-center">Você não tem nenhuma pendência.</div>
             )}
           </div>
 
