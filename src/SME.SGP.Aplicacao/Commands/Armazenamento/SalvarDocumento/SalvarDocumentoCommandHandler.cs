@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -25,6 +26,15 @@ namespace SME.SGP.Aplicacao
             var existeArquivo = await mediator.Send(new VerificaUsuarioPossuiArquivoQuery(request.SalvarDocumentoDto.TipoDocumentoId, request.SalvarDocumentoDto.ClassificacaoId, request.SalvarDocumentoDto.UsuarioId, request.SalvarDocumentoDto.UeId));
             if (existeArquivo)
                 throw new NegocioException("Este usuário já possui um arquivo");
+
+            var usuario = await mediator.Send(new ObterUsuarioPorIdQuery(request.SalvarDocumentoDto.UsuarioId));
+            var tiposDocumentos = await mediator.Send(new ObterTipoDocumentoClassificacaoQuery());
+
+            var classificacao = tiposDocumentos.FirstOrDefault(t => t.Id == request.SalvarDocumentoDto.TipoDocumentoId).Classificacoes.FirstOrDefault(c => c.Id == request.SalvarDocumentoDto.ClassificacaoId);
+            
+            if(!usuario.Perfis.Where(u => u.NomePerfil == classificacao.Classificacao).Any())
+                throw new NegocioException("O usuário vinculado a este documento não possui o perfil que corresponde ao tipo de plano selecionado.");
+
 
             if (await mediator.Send(new ValidarTipoDocumentoDaClassificacaoQuery(request.SalvarDocumentoDto.ClassificacaoId, Dominio.Enumerados.TipoDocumento.PlanoTrabalho)) 
                 && await mediator.Send(new ValidarUeEducacaoInfantilQuery(request.SalvarDocumentoDto.UeId)))
