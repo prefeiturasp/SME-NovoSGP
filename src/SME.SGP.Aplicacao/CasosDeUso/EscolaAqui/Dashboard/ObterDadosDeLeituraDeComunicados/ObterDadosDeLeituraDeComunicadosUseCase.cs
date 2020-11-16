@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui.Dashboard.ObterDadosDeLeituraDeComunicados;
-using SME.SGP.Aplicacao.Queries.Usuario.EscolaAqui.Dashboard.ObterDadosDeLeituraDeComunicados;
 using SME.SGP.Infra.Dtos.EscolaAqui.DadosDeLeituraDeComunicados;
 using System;
 using System.Collections.Generic;
