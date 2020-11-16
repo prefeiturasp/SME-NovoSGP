@@ -8,6 +8,7 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
@@ -22,6 +23,12 @@ namespace SME.SGP.Aplicacao
 
         public async Task<Guid> Handle(UploadArquivoCommand request, CancellationToken cancellationToken)
         {
+            if (request.TipoConteudo != TipoConteudoArquivo.Indefinido)
+            {
+                if (request.Arquivo.ContentType != request.TipoConteudo.Name())
+                    throw new NegocioException("O formato de arquivo enviado não é aceito");
+            }
+
             var nomeArquivo = request.Arquivo.FileName;
             var caminhoArquivo = ObterCaminhoArquivo(request.Tipo, request.Arquivo);
 
