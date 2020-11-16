@@ -312,12 +312,13 @@ namespace SME.SGP.Aplicacao
         {
             var frequenciaAluno = new FrequenciaAluno();
             if (periodoEscolar != null)
-            {
+            {                
                 // Frequencia do bimestre
                 frequenciaAluno = repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunoData(alunoCodigo,
                                                                                periodoEscolar.PeriodoFim,
                                                                                TipoFrequenciaAluno.PorDisciplina,
-                                                                               componenteCurricularCodigo.ToString());
+                                                                               componenteCurricularCodigo.ToString(),
+                                                                               turma.CodigoTurma);
                 if (frequenciaAluno != null)
                     return frequenciaAluno;
 
