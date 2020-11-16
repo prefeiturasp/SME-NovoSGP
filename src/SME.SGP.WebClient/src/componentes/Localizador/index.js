@@ -37,14 +37,7 @@ function Localizador({
     rf: false,
     nome: false,
   });
-  const {
-    ehProfessor,
-    ehProfessorCj,
-    ehProfessorPoa,
-    rf,
-    ehProfessorInfantil,
-    ehProfessorCjInfantil,
-  } = usuario;
+  const { ehPerfilProfessor, rf } = usuario;
 
   const onChangeInput = async valor => {
     if (valor.length === 0) {
@@ -154,26 +147,10 @@ function Localizador({
   }, [form.initialValues]);
 
   useEffect(() => {
-    if (
-      dreId &&
-      (ehProfessor ||
-        ehProfessorCj ||
-        ehProfessorPoa ||
-        ehProfessorInfantil ||
-        ehProfessorCjInfantil)
-    ) {
+    if (dreId && ehPerfilProfessor) {
       onBuscarPorRF({ rf });
     }
-  }, [
-    dreId,
-    ehProfessor,
-    ehProfessorCj,
-    ehProfessorPoa,
-    ehProfessorInfantil,
-    ehProfessorCjInfantil,
-    rf,
-    onBuscarPorRF,
-  ]);
+  }, [dreId, ehPerfilProfessor, rf, onBuscarPorRF]);
 
   useEffect(() => {
     const { values: valores } = form;
@@ -199,13 +176,7 @@ function Localizador({
           name="professorRf"
           form={form}
           desabilitado={
-            desabilitado ||
-            usuario.ehProfessor ||
-            usuario.ehProfessorCj ||
-            usuario.ehProfessorInfantil ||
-            usuario.ehProfessorCjInfantil ||
-            usuario.ehProfessorPoa ||
-            desabilitarCampo.rf
+            desabilitado || ehPerfilProfessor || desabilitarCampo.rf
           }
         />
       </Grid>
@@ -219,13 +190,7 @@ function Localizador({
           form={form}
           name="professorNome"
           desabilitado={
-            desabilitado ||
-            usuario.ehProfessor ||
-            usuario.ehProfessorCj ||
-            usuario.ehProfessorInfantil ||
-            usuario.ehProfessorCjInfantil ||
-            usuario.ehProfessorPoa ||
-            desabilitarCampo.nome
+            desabilitado || ehPerfilProfessor || desabilitarCampo.nome
           }
         />
       </Grid>
