@@ -24,6 +24,7 @@ const obterUrlSondagem = () =>
   axios
     .get('/../../../configuracoes/variaveis.json')
     .then(response => {
+      debugger;
       return response.data.URL_SONDAGEM;
     })
     .catch(() => {
