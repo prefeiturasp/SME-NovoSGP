@@ -4,6 +4,7 @@ using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui.Dashboard.ObterDadosDeL
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.EscolaAqui;
 using SME.SGP.Infra.Dtos.EscolaAqui.DadosDeLeituraDeComunicados;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
@@ -40,10 +41,11 @@ namespace SME.SGP.Api.Controllers
             return Ok(await obterUltimaAtualizacaoPorProcessoUseCase.Executar(nomeProcesso));
         }
 
-        [HttpGet("leitura-comunicados")]
-        [ProducesResponseType(typeof(UsuarioEscolaAquiDto), 200)]
-        [ProducesResponseType(typeof(UsuarioEscolaAquiDto), 204)]
+        [HttpGet("comunicados/leitura")]
+        [ProducesResponseType(typeof(IEnumerable<DadosDeLeituraDoComunicadoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 400)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         public async Task<IActionResult> ObterDadosDeLeituraDeComunicados([FromQuery] ObterDadosDeLeituraDeComunicadosDto obterDadosDeLeituraDeComunicadosDto, [FromServices] IObterDadosDeLeituraDeComunicadosUseCase obterDadosDeLeituraDeComunicadosUseCase)
         {
             return Ok(await obterDadosDeLeituraDeComunicadosUseCase.Executar(obterDadosDeLeituraDeComunicadosDto));

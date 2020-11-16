@@ -3,7 +3,7 @@ using MediatR;
 using SME.SGP.Infra.Dtos.EscolaAqui.DadosDeLeituraDeComunicados;
 using System.Collections.Generic;
 
-namespace SME.SGP.Aplicacao.Queries.Usuario.EscolaAqui.Dashboard.ObterDadosDeLeituraDeComunicados
+namespace SME.SGP.Aplicacao
 {
     public class ObterDadosDeLeituraDeComunicadosQuery : IRequest<IEnumerable<DadosDeLeituraDoComunicadoDto>>
     {
