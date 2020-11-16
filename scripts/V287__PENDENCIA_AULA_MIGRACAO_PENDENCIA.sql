@@ -22,15 +22,15 @@ begin
 		group by a.turma_id, a.disciplina_id, pa.tipo
 	loop
 	    insert into pendencia(titulo, descricao, situacao, tipo, excluido, migrado, criado_em, criado_por, criado_rf, alterado_em, alterado_por, alterado_rf)
-			  values (titulo, descricao, 1, tipo, false, false, NOW(), 'SISTEMA', 'SISTEMA', null, '', '')
+			  values (pendencia.titulo, pendencia.descricao, 1, pendencia.tipo, false, false, NOW(), 'SISTEMA', 'SISTEMA', null, '', '')
 			RETURNING id INTO pendenciaId;
 	
 		 update pendencia_aula
 		        set pendencia_id = pendenciaId
 		  from aula 
-		  where aula.id = aulaId
-		    and aula.turma_id = turmaId
-		    and aula.disciplina_id = componenteId;
+		  where aula.id = pendencia_aula.aula_id
+		    and aula.turma_id = pendencia.turmaId
+		    and aula.disciplina_id = pendencia.componenteId;
 
 	end loop;
 END; $$;
