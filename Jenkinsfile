@@ -62,6 +62,9 @@ pipeline {
             }
        }
               stage('Functional regression tests') {
+              agent {
+                label 'master'
+              }
           when {
             branch 'story/27640'
           }
