@@ -61,6 +61,10 @@ const DocumentosPlanosTrabalhoCadastro = ({ match }) => {
 
   const [desabilitarCampos, setDesabilitarCampos] = useState(false);
 
+  const TIPO_DOCUMENTO = {
+    DOCUMENTOS: '2',
+  };
+
   useEffect(() => {
     const soConsulta = verificaSomenteConsulta(permissoesTela);
     const desabilitar =
@@ -261,8 +265,19 @@ const DocumentosPlanosTrabalhoCadastro = ({ match }) => {
     if (classificacaoPorTipo?.length === 1) {
       form.setFieldValue('classificacaoId', String(classificacaoPorTipo[0].id));
     } else {
-      form.setFieldValue('classificacaoId', '');
+      form.setFieldValue('classificacaoId', undefined);
     }
+
+    if (tipo !== TIPO_DOCUMENTO.DOCUMENTOS) {
+      form.setFieldValue('professorRf', '');
+      form.setFieldValue('professorNome', '');
+      form.setFieldValue('usuarioId', '');
+    }
+
+    if (tipo === TIPO_DOCUMENTO.DOCUMENTOS) {
+      form.setFieldValue('professorRf', usuario.rf);
+    }
+
     setModoEdicao(true);
   };
 
@@ -364,7 +379,14 @@ const DocumentosPlanosTrabalhoCadastro = ({ match }) => {
   };
 
   const validaAntesDoSubmit = form => {
-    const arrayCampos = Object.keys(valoresIniciais);
+    const arrayCampos = [
+      'anoLetivo',
+      'dreId',
+      'ueId',
+      'tipoDocumentoId',
+      'classificacaoId',
+      'professorRf',
+    ];
     arrayCampos.forEach(campo => {
       form.setFieldTouched(campo, true, true);
     });
@@ -584,7 +606,11 @@ const DocumentosPlanosTrabalhoCadastro = ({ match }) => {
                       <div className="row pr-3">
                         <Localizador
                           desabilitado={
-                            !!idDocumentosPlanoTrabalho || desabilitarCampos
+                            !form.values.tipoDocumentoId ||
+                            form.values.tipoDocumentoId ===
+                              TIPO_DOCUMENTO.DOCUMENTOS ||
+                            !!idDocumentosPlanoTrabalho ||
+                            desabilitarCampos
                           }
                           dreId={form.values.dreId}
                           anoLetivo={form.values.anoLetivo}
@@ -603,6 +629,10 @@ const DocumentosPlanosTrabalhoCadastro = ({ match }) => {
                               setModoEdicao(true);
                             }
                           }}
+                          buscarOutrosCargos={
+                            form.values.tipoDocumentoId ===
+                            TIPO_DOCUMENTO.DOCUMENTOS
+                          }
                         />
                       </div>
                     </div>
