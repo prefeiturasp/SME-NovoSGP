@@ -120,7 +120,7 @@ namespace SME.SGP.Dominio.Servicos
             var ausenciasAlunoPorDisciplina = repositorioRegistroAusenciaAluno.ObterTotalAusenciasPorAlunoETurma(dataAtual, codigoAluno, disciplinaId, turmaId);
             if (ausenciasAlunoPorDisciplina != null)
             {
-                var totalCompensacoesDisciplinaAluno = repositorioCompensacaoAusenciaAluno.ObterTotalCompensacoesPorAlunoETurma(ausenciasAlunoPorDisciplina.Bimestre, codigoAluno, string.Empty, turmaId);
+                var totalCompensacoesDisciplinaAluno = repositorioCompensacaoAusenciaAluno.ObterTotalCompensacoesPorAlunoETurma(ausenciasAlunoPorDisciplina.Bimestre, codigoAluno, disciplinaId, turmaId);
                 var frequenciaAluno = MapearFrequenciaAluno(codigoAluno,
                                                             turmaId,
                                                             disciplinaId,
