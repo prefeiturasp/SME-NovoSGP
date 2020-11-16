@@ -28,6 +28,7 @@ function Localizador({
   desabilitado,
   incluirEmei,
   rfEdicao,
+  buscarOutrosCargos,
 }) {
   const usuario = useSelector(store => store.usuario);
   const [dataSource, setDataSource] = useState([]);
@@ -85,7 +86,7 @@ function Localizador({
         const { data: dados } = await service.buscarPorRf({
           rf,
           anoLetivo,
-          incluirEmei,
+          buscarOutrosCargos,
         });
         if (!dados) throw new RFNaoEncontradoExcecao();
 
@@ -103,7 +104,7 @@ function Localizador({
         erros(error);
       }
     },
-    [anoLetivo, incluirEmei]
+    [anoLetivo, buscarOutrosCargos]
   );
 
   const onChangeRF = valor => {
@@ -174,6 +175,17 @@ function Localizador({
     onBuscarPorRF,
   ]);
 
+  useEffect(() => {
+    const { values: valores } = form;
+    if (valores && !valores.professorRf && pessoaSelecionada.professorRf) {
+      setPessoaSelecionada({
+        professorRf: '',
+        professorNome: '',
+        usuarioId: '',
+      });
+    }
+  }, [form, form.values]);
+
   return (
     <>
       <Grid cols={4}>
@@ -232,6 +244,7 @@ Localizador.propTypes = {
   anoLetivo: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   desabilitado: PropTypes.bool,
   rfEdicao: PropTypes.string,
+  buscarOutrosCargos: PropTypes.bool,
 };
 
 Localizador.defaultProps = {
@@ -242,6 +255,7 @@ Localizador.defaultProps = {
   anoLetivo: null,
   desabilitado: false,
   rfEdicao: '',
+  buscarOutrosCargos: false,
 };
 
 export default Localizador;
