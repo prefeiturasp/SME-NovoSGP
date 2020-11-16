@@ -536,6 +536,9 @@
         DPU_A = 180,
 
         [PermissaoMenu(Menu = "Escola aqui", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = false, Url = "/relatorios/escola-aqui/dashboard", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Dashboard")]
-        RDE_A = 181
+        RDE_A = 181,
+
+        [PermissaoMenu(Menu = "Gestão", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = false, Url = "/relatorios/gestao/usuarios", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Usuários")]
+        RDU_C = 182
     }
 }
