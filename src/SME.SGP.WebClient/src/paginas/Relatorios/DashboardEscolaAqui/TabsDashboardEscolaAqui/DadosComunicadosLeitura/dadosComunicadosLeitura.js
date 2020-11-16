@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Loader, SelectComponent } from '~/componentes';
 import modalidade from '~/dtos/modalidade';
 import { AbrangenciaServico, api, erros } from '~/servicos';
+import ServicoFiltroRelatorio from '~/servicos/Paginas/FiltroRelatorio/ServicoFiltroRelatorio';
 
 const DadosComunicadosLeitura = props => {
   const { codigoDre, codigoUe } = props;
@@ -19,6 +20,9 @@ const DadosComunicadosLeitura = props => {
   const [carregandoSemestres, setCarregandoSemestres] = useState(false);
   const [listaSemestres, setListaSemestres] = useState([]);
   const [semestre, setSemestre] = useState();
+
+  const [listaAnosEscolares, setListaAnosEscolares] = useState([]);
+  const [anosEscolares, setAnosEscolares] = useState(undefined);
 
   const [listaGrupo] = useState([
     { valor: 1, desc: 'Grupo 01' },
@@ -69,13 +73,44 @@ const DadosComunicadosLeitura = props => {
   };
 
   useEffect(() => {
+    setModalidadeId();
     if (anoLetivo && codigoUe) {
       obterModalidades(codigoUe, anoLetivo);
     } else {
-      setModalidadeId();
       setListaModalidades([]);
     }
   }, [anoLetivo, codigoUe]);
+
+  const obterAnosEscolares = useCallback(async (mod, ue) => {
+    // loader
+    const respota = await ServicoFiltroRelatorio.obterAnosEscolares(
+      ue,
+      mod
+    ).catch(e => {
+      erros(e);
+      // loader
+    });
+
+    if (respota && respota.data && respota.data.length) {
+      setListaAnosEscolares(respota.data);
+
+      if (respota.data && respota.data.length && respota.data.length === 1) {
+        setAnosEscolares(respota.data[0].valor);
+      }
+    } else {
+      setListaAnosEscolares([]);
+    }
+    // loader
+  }, []);
+
+  useEffect(() => {
+    if (modalidadeId && codigoUe) {
+      obterAnosEscolares(modalidadeId, codigoUe);
+    } else {
+      setAnosEscolares(undefined);
+      setListaAnosEscolares([]);
+    }
+  }, [modalidadeId, codigoUe, obterAnosEscolares]);
 
   const obterSemestres = async (
     modalidadeSelecionada,
@@ -172,6 +207,18 @@ const DadosComunicadosLeitura = props => {
               placeholder="Semestre"
             />
           </Loader>
+        </div>
+        <div className="col-sm-12 col-md-9 col-lg-10 col-xl-7 mb-2">
+          <SelectComponent
+            lista={listaAnosEscolares}
+            valueOption="valor"
+            valueText="descricao"
+            label="Ano"
+            disabled={listaAnosEscolares && listaAnosEscolares.length === 1}
+            valueSelect={anosEscolares}
+            onChange={setAnosEscolares}
+            placeholder="Selecione o ano"
+          />
         </div>
       </div>
     </Loader>
