@@ -2,10 +2,19 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import shortid from 'shortid';
+import { useSelector } from 'react-redux';
 
 // Componentes
-import { BarraNavegacao, Graficos } from '~/componentes';
+import {
+  BarraNavegacao,
+  Graficos,
+  Loader,
+  Button,
+  Colors,
+} from '~/componentes';
 import EixoObjetivo from './componentes/EixoObjetivo';
+
+import { erros, sucesso, ResumosGraficosPAPServico } from '~/servicos';
 
 // Estilos
 import { Linha } from '~/componentes/EstilosGlobais';
@@ -14,11 +23,14 @@ import { Linha } from '~/componentes/EstilosGlobais';
 import { removerCaracteresEspeciais } from '~/utils/funcoes/gerais';
 import FiltroHelper from '~/componentes-sgp/filtro/helper';
 
-function TabGraficos({ dados, periodo, ciclos }) {
+function TabGraficos({ dados, periodo, ciclos, filtroTela }) {
   const [itemAtivo, setItemAtivo] = useState(null);
   const [cicloOuAno] = useState(ciclos ? 'ciclos' : 'anos');
 
   const [chaves, setChaves] = useState([]);
+  const [imprimindo, setImprimindo] = useState(false);
+
+  const { meusDados } = useSelector(state => state.usuario);
 
   // Frequência
   const dadosTabelaFrequencia = useMemo(() => {
@@ -400,8 +412,38 @@ function TabGraficos({ dados, periodo, ciclos }) {
     setItemAtivo(item);
   };
 
+  const gerarGraficosPap = async () => {
+    setImprimindo(true);
+    const payload = {
+      ...filtroTela,
+      usuarioNome: meusDados.nome,
+      usuarioRf: meusDados.rf,
+    };
+
+    await ResumosGraficosPAPServico.gerarGraficosPap(payload)
+      .then(() => {
+        sucesso(
+          'Solicitação de geração do relatório gerada com sucesso. Em breve você receberá uma notificação com o resultado.'
+        );
+      })
+      .finally(setImprimindo(false))
+      .catch(e => erros(e));
+  };
+
   return (
     <>
+      <div className="mb-2 ml-1">
+        <Loader loading={imprimindo} ignorarTip>
+          <Button
+            className="btn-imprimir"
+            icon="print"
+            color={Colors.Azul}
+            border
+            onClick={() => gerarGraficosPap()}
+            id="btn-imprimir-resumos-pap"
+          />
+        </Loader>
+      </div>
       <Linha style={{ marginBottom: '8px' }}>
         <BarraNavegacao
           itens={objetivos}
@@ -465,12 +507,14 @@ TabGraficos.propTypes = {
   dados: PropTypes.oneOfType([PropTypes.any]),
   periodo: PropTypes.string,
   ciclos: PropTypes.oneOfType([PropTypes.bool]),
+  filtroTela: PropTypes.instanceOf(Object),
 };
 
 TabGraficos.defaultProps = {
   dados: [],
   periodo: '',
   ciclos: true,
+  filtroTela: {},
 };
 
 export default TabGraficos;
