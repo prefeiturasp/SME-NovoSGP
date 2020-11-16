@@ -185,7 +185,7 @@ namespace SME.SGP.Aplicacao
             retorno.AuditoriaAlteracao = MontaTextoAuditoriaAlteracao(fechamentoTurmaDisciplina, retorno.EhNota);
             retorno.AuditoriaInclusao = MontaTextoAuditoriaInclusao(fechamentoTurmaDisciplina, retorno.EhNota);
 
-            retorno.NotaMedia = double.Parse(await mediator.Send(new ObterParametroSistemaTipoEAnoQuery(TipoParametroSistema.MediaBimestre, DateTime.Today.Year)));
+            retorno.NotaMedia = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.MediaBimestre, DateTime.Today.Year)));
             retorno.FrequenciaMedia = await consultasFrequencia.ObterFrequenciaMedia(disciplinaEOL);
 
             return retorno;
