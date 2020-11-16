@@ -375,7 +375,15 @@ const DocumentosPlanosTrabalhoCadastro = ({ match }) => {
   };
 
   const validaAntesDoSubmit = form => {
-    const arrayCampos = Object.keys(valoresIniciais);
+    const arrayCampos = [
+      'anoLetivo',
+      'dreId',
+      'ueId',
+      'tipoDocumentoId',
+      'classificacaoId',
+      'professorRf',
+      'listaArquivos',
+    ];
     arrayCampos.forEach(campo => {
       form.setFieldTouched(campo, true, true);
     });
