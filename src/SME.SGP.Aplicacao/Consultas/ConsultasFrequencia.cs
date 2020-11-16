@@ -280,7 +280,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<IndicativoFrequenciaDto> ObterIndicativoFrequencia(AlunoPorTurmaResposta aluno, string disciplinaId, PeriodoEscolar bimestre, int percentualAlerta, int percentualCritico, IEnumerable<FrequenciaAluno> frequenciaTurma)
         {
-            var frequenciaAluno = frequenciaTurma.FirstOrDefault(a => a.CodigoAluno == aluno.CodigoAluno);
+            var frequenciaAluno = repositorioFrequenciaAlunoDisciplinaPeriodo.Obter(aluno.CodigoAluno, disciplinaId, bimestre.Id, TipoFrequenciaAluno.PorDisciplina, aluno.CodigoTurma.ToString());
             // Frequencia não calculada
             if (frequenciaAluno == null)
             {
