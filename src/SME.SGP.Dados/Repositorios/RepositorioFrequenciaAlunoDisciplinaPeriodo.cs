@@ -142,16 +142,19 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
-        public FrequenciaAluno ObterPorAlunoData(string codigoAluno, DateTime dataAtual, TipoFrequenciaAluno tipoFrequencia, string disciplinaId = "")
+        public FrequenciaAluno ObterPorAlunoData(string codigoAluno, DateTime dataAtual, TipoFrequenciaAluno tipoFrequencia, string disciplinaId = "", string codigoTurma = "")
         {
             var query = new StringBuilder(@"select fa.*
                         from frequencia_aluno fa
                         inner join periodo_escolar pe on fa.periodo_escolar_id = pe.id
                         where
 	                        codigo_aluno = @codigoAluno
-	                        and tipo = @tipoFrequencia
+	                        and tipo = @tipoFrequencia                            
 	                        and pe.periodo_inicio <= @dataAtual
 	                        and pe.periodo_fim >= @dataAtual ");
+
+            if (!string.IsNullOrWhiteSpace(codigoTurma))
+                query.AppendLine("and turma_id = @codigoTurma");
 
             if (!string.IsNullOrEmpty(disciplinaId))
                 query.AppendLine("and disciplina_id = @disciplinaId");
@@ -161,7 +164,8 @@ namespace SME.SGP.Dados.Repositorios
                 codigoAluno,
                 dataAtual,
                 tipoFrequencia,
-                disciplinaId
+                disciplinaId,
+                codigoTurma
             });
         }
 
