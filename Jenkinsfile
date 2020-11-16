@@ -69,13 +69,13 @@ pipeline {
             branch 'story/27640'
           }
             steps {
-                sh "docker run --shm-size=1g \
+                sh "ls -la ${WORKSPACE} && docker run --shm-size=1g \
                 -e BROWSER=Chrome \
                 -e SERVER=dev-novosgp.sme.prefeitura.sp.gov.br \
                 -e SGP_USER=7944560 \
                 -e SGP_PASS=Sgp@1234 \
-                -v ${pwd}/teste/SME.SGP.WebClient.RPA/src:/opt/robotframework/tests:Z \
-                -v ${pwd}/teste/SME.SGP.WebClient.RPA/reports:/opt/robotframework/reports:Z \
+                -v ${WORKSPACE}/teste/SME.SGP.WebClient.RPA/src:/opt/robotframework/tests:Z \
+                -v ${WORKSPACE}/teste/SME.SGP.WebClient.RPA/reports:/opt/robotframework/reports:Z \
                 ppodgorsek/robot-framework:3.6.0"
             }
           }
