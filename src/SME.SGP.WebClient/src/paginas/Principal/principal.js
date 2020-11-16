@@ -34,11 +34,7 @@ const Principal = () => {
     <div className="col-md-12">
       {modalidades &&
       !modalidades.length &&
-      !usuario.ehProfessorCj &&
-      !usuario.ehProfessor &&
-      !usuario.ehProfessorInfantil &&
-      !usuario.ehProfessorCjInfantil &&
-      !usuario.ehProfessorPoa &&
+      !usuario.ehPerfilProfessor &&
       perfil &&
       perfil.nomePerfil === 'Supervisor' ? (
         <Row className="mb-0 pb-0">
