@@ -1021,7 +1021,7 @@ rotas.set(RotasDto.RELATORIO_USUARIOS, {
   component: RelatorioUsuarios,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  temPermissionamento: false,
+  temPermissionamento: true,
   chavePermissao: RotasDto.RELATORIO_USUARIOS,
 });
 
