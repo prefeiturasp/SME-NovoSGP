@@ -1,10 +1,9 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import {
   Loader,
-
   Localizador,
-
-  RadioGroupButton, SelectComponent
+  RadioGroupButton,
+  SelectComponent,
 } from '~/componentes';
 import { Cabecalho } from '~/componentes-sgp';
 import Button from '~/componentes/button';
@@ -18,7 +17,7 @@ import ServicoFiltroRelatorio from '~/servicos/Paginas/FiltroRelatorio/ServicoFi
 import ServicoRelatorioUsuarios from '~/servicos/Paginas/Relatorios/Usuarios/ServicoRelatorioUsuarios';
 import {
   obterListaSituacoes,
-  obterTodosPerfis
+  obterTodosPerfis,
 } from '~/servicos/Paginas/ServicoUsuario';
 
 const RelatorioUsuarios = () => {
@@ -42,6 +41,8 @@ const RelatorioUsuarios = () => {
 
   const [carregandoGeral, setCarregandoGeral] = useState(false);
   const [desabilitarBtnGerar, setDesabilitarBtnGerar] = useState(true);
+
+  const [anoAtual] = useState(window.moment().format('YYYY'));
 
   const OPCAO_TODOS = '-99';
 
@@ -147,8 +148,16 @@ const RelatorioUsuarios = () => {
   };
 
   const onClickCancelar = () => {
-    setCodigoDre(undefined);
+    setCodigoDre();
+    setCodigoUe();
+    setUsuarioRf();
+    setPerfisSelecionados([]);
+    setSituacoesSelecionadas([]);
+    setDiasSemAcesso();
+    setExibirHistorico(true);
+
     setListaDres([]);
+    setListaUes([]);
 
     obterDres();
   };
@@ -162,6 +171,8 @@ const RelatorioUsuarios = () => {
       keysPerfis = listaPerfis
         .map(item => item.key)
         .filter(item => item !== OPCAO_TODOS);
+    } else if (perfisSelecionados?.length) {
+      keysPerfis = perfisSelecionados;
     }
 
     let keysSituacoes = [];
@@ -172,6 +183,8 @@ const RelatorioUsuarios = () => {
       keysSituacoes = listaSituacao
         .map(item => item.key)
         .filter(item => item !== OPCAO_TODOS);
+    } else if (situacoesSelecionadas?.length) {
+      keysSituacoes = situacoesSelecionadas;
     }
 
     const params = {
@@ -266,18 +279,20 @@ const RelatorioUsuarios = () => {
                   placeholder="Unidade Escolar (UE)"
                 />
               </div>
-              <div className="col-md-12  mb-2">
+              <div className="col-md-12 mb-2">
                 <div className="row pr-3">
                   <Localizador
+                    rfEdicao={usuarioRf}
                     buscandoDados={setCarregandoGeral}
                     dreId={codigoDre}
-                    anoLetivo={2020}
+                    anoLetivo={anoAtual}
                     showLabel
                     onChange={valores => {
                       if (valores && valores.professorRf) {
                         setUsuarioRf(valores.professorRf);
                       }
                     }}
+                    buscarOutrosCargos
                   />
                 </div>
               </div>
