@@ -75,8 +75,8 @@ pipeline {
           environment {
             BROWSER = 'chrome'
             SERVER = 'dev-novosgp.sme.prefeitura.sp.gov.br'
-            SGP_USER = 7944560
-            SGP_PASS = Sgp@1234
+            SGP_USER = '7944560'
+            SGP_PASS = 'Sgp@1234'
             ROBOT_TESTS_DIR = "$WORKSPACE/teste/SME.SGP.WebClient.RPA/src"
             ROBOT_REPORTS_DIR = "$WORKSPACE/teste/SME.SGP.WebClient.RPA/reports"
           }
