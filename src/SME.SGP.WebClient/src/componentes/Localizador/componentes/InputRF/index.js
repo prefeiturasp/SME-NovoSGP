@@ -76,7 +76,7 @@ function InputRF({
     if (form && form.initialValues) {
       setValor(form.initialValues.professorRf);
     }
-  }, [form]);
+  }, [form?.initialValues]);
 
   useEffect(() => {
     if (form) {
@@ -85,7 +85,7 @@ function InputRF({
         setValor('');
       }
     }
-  }, [form, form?.values]);
+  }, [form?.values]);
 
   return (
     <>
