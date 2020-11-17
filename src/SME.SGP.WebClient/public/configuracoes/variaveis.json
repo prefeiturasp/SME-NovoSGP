@@ -1,5 +1,6 @@
 {
   "API_URL": "https://localhost:5001/api",
   "TRACKING_ID": "",
-  "URL_SONDAGEM": "http://localhost:61541"
+  "URL_SONDAGEM": "http://localhost:61540",
+  "URL_SGP_FRONT": "http://localhost:3000"
 }
