@@ -29,6 +29,7 @@ function Localizador({
   incluirEmei,
   rfEdicao,
   buscarOutrosCargos,
+  buscandoDados,
 }) {
   const usuario = useSelector(store => store.usuario);
   const [dataSource, setDataSource] = useState([]);
@@ -76,6 +77,7 @@ function Localizador({
   const onBuscarPorRF = useCallback(
     async ({ rf }) => {
       try {
+        buscandoDados(true);
         const { data: dados } = await service.buscarPorRf({
           rf,
           anoLetivo,
@@ -93,8 +95,15 @@ function Localizador({
           ...estado,
           nome: true,
         }));
+        buscandoDados(false);
       } catch (error) {
         erros(error);
+        buscandoDados(false);
+        setPessoaSelecionada({
+          professorRf: '',
+          professorNome: '',
+          usuarioId: '',
+        });
       }
     },
     [anoLetivo, buscarOutrosCargos]
@@ -128,23 +137,33 @@ function Localizador({
   useEffect(() => {
     if (rfEdicao && !pessoaSelecionada?.professorRf) {
       onBuscarPorRF({ rf: rfEdicao });
+    } else if (!form && !rfEdicao) {
+      setPessoaSelecionada({
+        professorRf: '',
+        professorNome: '',
+        usuarioId: '',
+      });
     }
   }, [rfEdicao]);
 
   useEffect(() => {
     onChange(pessoaSelecionada);
-    form.setValues({
-      ...form.values,
-      ...pessoaSelecionada,
-    });
+    if (form) {
+      form.setValues({
+        ...form.values,
+        ...pessoaSelecionada,
+      });
+    }
   }, [pessoaSelecionada]);
 
   useEffect(() => {
-    if (validaSeObjetoEhNuloOuVazio(form.initialValues)) return;
-    if (form.initialValues) {
-      setPessoaSelecionada(form.initialValues);
+    if (form) {
+      if (validaSeObjetoEhNuloOuVazio(form.initialValues)) return;
+      if (form.initialValues) {
+        setPessoaSelecionada(form.initialValues);
+      }
     }
-  }, [form.initialValues]);
+  }, [form?.initialValues]);
 
   useEffect(() => {
     if (dreId && ehPerfilProfessor) {
@@ -153,15 +172,17 @@ function Localizador({
   }, [dreId, ehPerfilProfessor, rf, onBuscarPorRF]);
 
   useEffect(() => {
-    const { values: valores } = form;
-    if (valores && !valores.professorRf && pessoaSelecionada.professorRf) {
-      setPessoaSelecionada({
-        professorRf: '',
-        professorNome: '',
-        usuarioId: '',
-      });
+    if (form) {
+      const { values: valores } = form;
+      if (valores && !valores.professorRf && pessoaSelecionada.professorRf) {
+        setPessoaSelecionada({
+          professorRf: '',
+          professorNome: '',
+          usuarioId: '',
+        });
+      }
     }
-  }, [form, form.values]);
+  }, [form?.values]);
 
   return (
     <>
@@ -210,17 +231,19 @@ Localizador.propTypes = {
   desabilitado: PropTypes.bool,
   rfEdicao: PropTypes.string,
   buscarOutrosCargos: PropTypes.bool,
+  buscandoDados: PropTypes.func,
 };
 
 Localizador.defaultProps = {
   onChange: PropTypes.func,
-  form: {},
+  form: null,
   showLabel: false,
   dreId: null,
   anoLetivo: null,
   desabilitado: false,
   rfEdicao: '',
   buscarOutrosCargos: false,
+  buscandoDados: () => {},
 };
 
 export default Localizador;
