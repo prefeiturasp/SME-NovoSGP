@@ -61,6 +61,10 @@ const DocumentosPlanosTrabalhoCadastro = ({ match }) => {
 
   const [desabilitarCampos, setDesabilitarCampos] = useState(false);
 
+  const TIPO_DOCUMENTO = {
+    DOCUMENTOS: '2',
+  };
+
   useEffect(() => {
     const soConsulta = verificaSomenteConsulta(permissoesTela);
     const desabilitar =
@@ -83,6 +87,17 @@ const DocumentosPlanosTrabalhoCadastro = ({ match }) => {
       tipoDocumentoId: Yup.string().required('Campo obrigatório'),
       classificacaoId: Yup.string().required('Campo obrigatório'),
       professorRf: Yup.string().required('Campo obrigatório'),
+      listaArquivos: Yup.string().test(
+        'validaListaArquivos',
+        'Campo obrigatório',
+        function validar() {
+          const { listaArquivos } = this.parent;
+          if (listaArquivos?.length > 0) {
+            return true;
+          }
+          return false;
+        }
+      ),
     });
   };
 
@@ -261,8 +276,19 @@ const DocumentosPlanosTrabalhoCadastro = ({ match }) => {
     if (classificacaoPorTipo?.length === 1) {
       form.setFieldValue('classificacaoId', String(classificacaoPorTipo[0].id));
     } else {
-      form.setFieldValue('classificacaoId', '');
+      form.setFieldValue('classificacaoId', undefined);
     }
+
+    if (tipo !== TIPO_DOCUMENTO.DOCUMENTOS) {
+      form.setFieldValue('professorRf', '');
+      form.setFieldValue('professorNome', '');
+      form.setFieldValue('usuarioId', '');
+    }
+
+    if (tipo === TIPO_DOCUMENTO.DOCUMENTOS) {
+      form.setFieldValue('professorRf', usuario.rf);
+    }
+
     setModoEdicao(true);
   };
 
@@ -364,7 +390,15 @@ const DocumentosPlanosTrabalhoCadastro = ({ match }) => {
   };
 
   const validaAntesDoSubmit = form => {
-    const arrayCampos = Object.keys(valoresIniciais);
+    const arrayCampos = [
+      'anoLetivo',
+      'dreId',
+      'ueId',
+      'tipoDocumentoId',
+      'classificacaoId',
+      'professorRf',
+      'listaArquivos',
+    ];
     arrayCampos.forEach(campo => {
       form.setFieldTouched(campo, true, true);
     });
@@ -584,7 +618,11 @@ const DocumentosPlanosTrabalhoCadastro = ({ match }) => {
                       <div className="row pr-3">
                         <Localizador
                           desabilitado={
-                            !!idDocumentosPlanoTrabalho || desabilitarCampos
+                            !form.values.tipoDocumentoId ||
+                            form.values.tipoDocumentoId ===
+                              TIPO_DOCUMENTO.DOCUMENTOS ||
+                            !!idDocumentosPlanoTrabalho ||
+                            desabilitarCampos
                           }
                           dreId={form.values.dreId}
                           anoLetivo={form.values.anoLetivo}
@@ -603,11 +641,18 @@ const DocumentosPlanosTrabalhoCadastro = ({ match }) => {
                               setModoEdicao(true);
                             }
                           }}
+                          buscarOutrosCargos={
+                            form.values.tipoDocumentoId ===
+                            TIPO_DOCUMENTO.DOCUMENTOS
+                          }
                         />
                       </div>
                     </div>
                     <div className="col-md-12 mt-2">
                       <UploadArquivos
+                        form={form}
+                        name="listaArquivos"
+                        id="lista-arquivos"
                         desabilitarGeral={desabilitarCampos}
                         desabilitarUpload={listaDeArquivos.length > 0}
                         textoFormatoUpload="Permitido somente um arquivo. Tipo permitido PDF"
@@ -624,10 +669,10 @@ const DocumentosPlanosTrabalhoCadastro = ({ match }) => {
                     <Auditoria
                       criadoEm={valoresIniciais?.criadoEm}
                       criadoPor={valoresIniciais?.criadoPor}
-                      criadoRf={valoresIniciais?.criadoRf}
+                      criadoRf={valoresIniciais?.criadoRF}
                       alteradoPor={valoresIniciais?.alteradoPor}
                       alteradoEm={valoresIniciais?.alteradoEm}
-                      alteradoRf={valoresIniciais?.alteradoRf}
+                      alteradoRf={valoresIniciais?.alteradoRF}
                     />
                   </div>
                 </div>
