@@ -61,25 +61,31 @@ pipeline {
                 sh 'dotnet-sonarscanner end /d:sonar.login="8fd25bf927e18aa448d4d00ef7478004a67bf485"'
             }
        }
-              stage('Functional regression tests') {
-              agent {
-                label 'master'
-              }
+       
+        stage('Functional regression tests') {
+          agent { 
+            docker {
+              image 'ppodgorsek/robot-framework:latest'
+              args '--shm-size=1g -u root' 
+            }
+          }
           when {
             branch 'story/27640'
           }
-            steps {
-                checkout scm
-                sh "ls -la ${WORKSPACE}/test/SME.SGP.WebClient.RPA/src/ && docker run --shm-size=1g \
-                -e BROWSER=Chrome \
-                -e SERVER=dev-novosgp.sme.prefeitura.sp.gov.br \
-                -e SGP_USER=7944560 \
-                -e SGP_PASS=Sgp@1234 \
-                -v ${WORKSPACE}/teste/SME.SGP.WebClient.RPA/src:/opt/robotframework/tests:Z \
-                -v ${WORKSPACE}/teste/SME.SGP.WebClient.RPA/reports:/opt/robotframework/reports:Z \
-                ppodgorsek/robot-framework:3.6.0"
-            }
+          environment {
+            BROWSER = 'chrome'
+            SERVER = 'dev-novosgp.sme.prefeitura.sp.gov.br'
+            SGP_USER = 7944560
+            SGP_PASS = Sgp@1234
+            ROBOT_TESTS_DIR = "$WORKSPACE/teste/SME.SGP.WebClient.RPA/src"
+            ROBOT_REPORTS_DIR = "$WORKSPACE/teste/SME.SGP.WebClient.RPA/reports"
           }
+          steps {
+            sh '''
+                /opt/robotframework/bin/run-tests-in-virtual-screen.sh
+            '''
+          }
+        }
 
       stage('Deploy DEV') {
         when {
