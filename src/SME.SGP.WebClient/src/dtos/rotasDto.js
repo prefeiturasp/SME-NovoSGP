@@ -1,4 +1,4 @@
- RotasDto = {
+const RotasDto = {
   PRINCIPAL: '/',
   MEUS_DADOS: '/meus-dados',
   NOTIFICACOES: '/notificacoes',
