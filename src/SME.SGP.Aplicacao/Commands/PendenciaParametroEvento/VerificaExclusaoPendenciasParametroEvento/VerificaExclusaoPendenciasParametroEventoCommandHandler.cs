@@ -17,6 +17,7 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
+
         public async Task<bool> Handle(VerificaExclusaoPendenciasParametroEventoCommand request, CancellationToken cancellationToken)
         {
             var anoAtual = DateTime.Now.Year;
@@ -30,7 +31,7 @@ namespace SME.SGP.Aplicacao
                 if (EventosSuficientes(eventos, int.Parse(parametroQuantidadeEventos.Valor)))
                     await mediator.Send(new ExcluirPendenciaParametroEventoCommand(pendenciaParametroEvento));
                 else
-                    await AtualizarPendenciaParametroEvento(pendenciaParametroEvento, eventos.Count());
+                    await AtualizarPendenciaParametroEvento(pendenciaParametroEvento, int.Parse(parametroQuantidadeEventos.Valor) - eventos.Count());
             }
 
             return true;
