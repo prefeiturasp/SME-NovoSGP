@@ -1,15 +1,14 @@
+import createHost from 'cross-domain-storage/host';
 import { obterUrlSondagem } from '~/servicos/variaveis';
 
-const createHost = require('cross-domain-storage/host');
+const newHost = async () => {
+  const origin = await obterUrlSondagem();
+  return createHost([
+    {
+      origin,
+      allowedMethods: ['get'],
+    },
+  ]);
+};
 
-obterUrlSondagem().then(resposta => {
-  debugger;
-  return resposta;
-});
-
-export default createHost([
-  {
-    origin: obterUrlSondagem(),
-    allowedMethods: ['get'],
-  },
-]);
+export default newHost();
