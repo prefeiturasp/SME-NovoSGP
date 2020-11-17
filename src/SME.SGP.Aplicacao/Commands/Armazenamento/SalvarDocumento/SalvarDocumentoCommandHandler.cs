@@ -12,7 +12,7 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioDocumento repositorioDocumento;
 
-        public SalvarDocumentoCommandHandler(IRepositorioDocumento repositorioDocumento, IMediator mediator) :base(mediator)
+        public SalvarDocumentoCommandHandler(IRepositorioDocumento repositorioDocumento, IMediator mediator) : base(mediator)
         {
             this.repositorioDocumento = repositorioDocumento ?? throw new ArgumentNullException(nameof(repositorioDocumento));
         }
@@ -27,16 +27,19 @@ namespace SME.SGP.Aplicacao
             if (existeArquivo)
                 throw new NegocioException("Este usuário já possui um arquivo");
 
-            var usuario = await mediator.Send(new ObterUsuarioPorIdQuery(request.SalvarDocumentoDto.UsuarioId));
-            var tiposDocumentos = await mediator.Send(new ObterTipoDocumentoClassificacaoQuery());
+            if(request.SalvarDocumentoDto.TipoDocumentoId == 1)
+            {
+                var usuario = await mediator.Send(new ObterUsuarioPorIdQuery(request.SalvarDocumentoDto.UsuarioId));
+                var tiposDocumentos = await mediator.Send(new ObterTipoDocumentoClassificacaoQuery());
 
-            var classificacao = tiposDocumentos.FirstOrDefault(t => t.Id == request.SalvarDocumentoDto.TipoDocumentoId).Classificacoes.FirstOrDefault(c => c.Id == request.SalvarDocumentoDto.ClassificacaoId);
-            
-            if(!usuario.Perfis.Where(u => u.NomePerfil == classificacao.Classificacao).Any())
-                throw new NegocioException("O usuário vinculado a este documento não possui o perfil que corresponde ao tipo de plano selecionado.");
+                var classificacao = tiposDocumentos.FirstOrDefault(t => t.Id == request.SalvarDocumentoDto.TipoDocumentoId).Classificacoes.FirstOrDefault(c => c.Id == request.SalvarDocumentoDto.ClassificacaoId);
+
+                if (!usuario.Perfis.Where(u => u.NomePerfil == classificacao.Classificacao).Any())
+                    throw new NegocioException("O usuário vinculado a este documento não possui o perfil que corresponde ao tipo de plano selecionado.");
+            }            
 
 
-            if (await mediator.Send(new ValidarTipoDocumentoDaClassificacaoQuery(request.SalvarDocumentoDto.ClassificacaoId, Dominio.Enumerados.TipoDocumento.PlanoTrabalho)) 
+            if (await mediator.Send(new ValidarTipoDocumentoDaClassificacaoQuery(request.SalvarDocumentoDto.ClassificacaoId, Dominio.Enumerados.TipoDocumento.PlanoTrabalho))
                 && await mediator.Send(new ValidarUeEducacaoInfantilQuery(request.SalvarDocumentoDto.UeId)))
                 throw new NegocioException("Escolas de educação infantíl não podem fazer upload de Plano de Trabalho!");
 
