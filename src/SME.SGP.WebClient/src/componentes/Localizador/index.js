@@ -29,6 +29,7 @@ function Localizador({
   incluirEmei,
   rfEdicao,
   buscarOutrosCargos,
+  buscandoDados,
 }) {
   const usuario = useSelector(store => store.usuario);
   const [dataSource, setDataSource] = useState([]);
@@ -136,6 +137,12 @@ function Localizador({
   useEffect(() => {
     if (rfEdicao && !pessoaSelecionada?.professorRf) {
       onBuscarPorRF({ rf: rfEdicao });
+    } else if (!form && !rfEdicao) {
+      setPessoaSelecionada({
+        professorRf: '',
+        professorNome: '',
+        usuarioId: '',
+      });
     }
   }, [rfEdicao]);
 
@@ -165,15 +172,17 @@ function Localizador({
   }, [dreId, ehPerfilProfessor, rf, onBuscarPorRF]);
 
   useEffect(() => {
-    const { values: valores } = form;
-    if (valores && !valores.professorRf && pessoaSelecionada.professorRf) {
-      setPessoaSelecionada({
-        professorRf: '',
-        professorNome: '',
-        usuarioId: '',
-      });
+    if (form) {
+      const { values: valores } = form;
+      if (valores && !valores.professorRf && pessoaSelecionada.professorRf) {
+        setPessoaSelecionada({
+          professorRf: '',
+          professorNome: '',
+          usuarioId: '',
+        });
+      }
     }
-  }, [form, form.values]);
+  }, [form?.values]);
 
   return (
     <>
@@ -222,6 +231,7 @@ Localizador.propTypes = {
   desabilitado: PropTypes.bool,
   rfEdicao: PropTypes.string,
   buscarOutrosCargos: PropTypes.bool,
+  buscandoDados: PropTypes.func,
 };
 
 Localizador.defaultProps = {
@@ -233,6 +243,7 @@ Localizador.defaultProps = {
   desabilitado: false,
   rfEdicao: '',
   buscarOutrosCargos: false,
+  buscandoDados: () => {},
 };
 
 export default Localizador;
