@@ -70,7 +70,7 @@ pipeline {
           agent { 
             docker {
               image 'ppodgorsek/robot-framework:latest'
-              args '-v $WORKSPACE:/tmp --user=1001:1001' 
+              args '--shm-size=1g' 
             }
           }
           
@@ -83,9 +83,10 @@ pipeline {
             ROBOT_REPORTS_DIR = "$WORKSPACE/teste/SME.SGP.WebClient.RPA/reports/"
           }
           steps {
-            unstash 'scm'  
-            sh 'ls -la /tmp && export && ls -la /opt/robotframework'
-            sh '/opt/robotframework/bin/run-tests-in-virtual-screen.sh'
+            //unstash 'scm'  
+            sh 'ls -la'
+            sh 'ls -la /opt'  
+            //sh '/opt/robotframework/bin/run-tests-in-virtual-screen.sh'
           }
         }
 
