@@ -6,8 +6,8 @@ namespace SME.SGP.Infra
 {
     public class FiltroRelatorioUsuarios
     {
-        public int DreId { get; set; }
-        public int UeId { get; set; }
+        public string CodigoDre { get; set; }
+        public string CodigoUe { get; set; }
         public string UsuarioRf { get; set; }
         public string[] Perfis { get; set; }
         public int[] Situacoes { get; set; }
