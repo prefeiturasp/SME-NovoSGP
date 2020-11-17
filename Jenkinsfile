@@ -69,7 +69,8 @@ pipeline {
             branch 'story/27640'
           }
             steps {
-                sh "ls -la ${WORKSPACE} && docker run --shm-size=1g \
+                checkout scm
+                sh "ls -la ${WORKSPACE}/test/SME.SGP.WebClient.RPA/src/ && docker run --shm-size=1g \
                 -e BROWSER=Chrome \
                 -e SERVER=dev-novosgp.sme.prefeitura.sp.gov.br \
                 -e SGP_USER=7944560 \
