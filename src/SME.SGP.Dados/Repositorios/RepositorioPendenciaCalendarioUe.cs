@@ -16,7 +16,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public Task<PendenciaCalendarioUe> ObterPendenciaPorCalendarioUe(long tipoCalendarioId, long ueId, TipoPendencia tipoPendencia)
         {
-            var query = @"select * 
+            var query = @"select pc.* 
                         from pendencia_calendario_ue pc
                        inner join pendencia p on p.id = pc.pendencia_id
                         where not p.excluido 
