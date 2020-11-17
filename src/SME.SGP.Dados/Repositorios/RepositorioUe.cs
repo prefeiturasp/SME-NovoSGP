@@ -65,6 +65,21 @@ namespace SME.SGP.Dados.Repositorios
             return contexto.QueryFirstOrDefault<Ue>("select * from ue where ue_id = @ueId", new { ueId });
         }
 
+        public async Task<Ue> ObterUeComDrePorCodigo(string ueCodigo)
+        {
+            var query = @"select ue.*, dre.* 
+                            from ue 
+                           inner join dre on dre.id = ue.dre_id
+                           where ue_id = @ueCodigo";
+
+            return (await contexto.Conexao.QueryAsync<Ue, Dre, Ue>(query, (ue, dre) =>
+            {
+                ue.AdicionarDre(dre);
+                return ue;
+            }, 
+            new { ueCodigo })).FirstOrDefault();
+        }
+
         public IEnumerable<Ue> ObterTodas()
         {
             var query = @"select
@@ -184,6 +199,39 @@ namespace SME.SGP.Dados.Repositorios
                            and ue.tipo_escola in (2, 17, 28, 30, 31)";
 
             return await contexto.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { ueId });
+        }
+
+        public async Task<IEnumerable<Ue>> ObterUesPorModalidade(int[] modalidades)
+        {
+            var query = @"select distinct ue.*, dre.*
+                          from turma t
+                         inner join ue on ue.id = t.ue_id
+                         inner join dre on dre.id = ue.dre_id
+                         where t.modalidade_codigo = ANY(@modalidades) ";
+
+            return await contexto.Conexao.QueryAsync<Ue, Dre, Ue>(query, (ue, dre) =>
+            {
+                ue.Dre = dre;
+
+                return ue;
+            }, new { modalidades });
+
+        }
+
+        public async Task<IEnumerable<Ue>> ObterUesComDrePorDreEModalidade(string dreCodigo, Modalidade modalidade)
+        {
+            var query = @"select ue.*, dre.* 
+                            from ue 
+                           inner join dre on dre.id = ue.dre_id
+                           where dre_id = @dreCodigo
+                             and exists (select 1 from turma where modalidade_codigo = @modalidade)";
+
+            return (await contexto.Conexao.QueryAsync<Ue, Dre, Ue>(query, (ue, dre) =>
+            {
+                ue.AdicionarDre(dre);
+                return ue;
+            },
+            new { dreCodigo, modalidade }));
         }
     }
 }

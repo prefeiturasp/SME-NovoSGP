@@ -64,7 +64,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private FrequenciaAluno MapearFrequenciaAluno(string codigoAluno, string turmaId, string disciplinaId, long? periodoEscolarId, DateTime periodoInicio, DateTime periodoFim, int bimestre, int totalAusencias, int totalAulas, int totalCompensacoes, TipoFrequenciaAluno tipo)
         {
-            var frequenciaAluno = repositorioFrequenciaAlunoDisciplinaPeriodo.Obter(codigoAluno, disciplinaId, periodoEscolarId.Value, tipo);
+            var frequenciaAluno = repositorioFrequenciaAlunoDisciplinaPeriodo.Obter(codigoAluno, disciplinaId, periodoEscolarId.Value, tipo, turmaId);
             return frequenciaAluno == null ?
             new FrequenciaAluno
                          (
@@ -120,7 +120,7 @@ namespace SME.SGP.Dominio.Servicos
             var ausenciasAlunoPorDisciplina = repositorioRegistroAusenciaAluno.ObterTotalAusenciasPorAlunoETurma(dataAtual, codigoAluno, disciplinaId, turmaId);
             if (ausenciasAlunoPorDisciplina != null)
             {
-                var totalCompensacoesDisciplinaAluno = repositorioCompensacaoAusenciaAluno.ObterTotalCompensacoesPorAlunoETurma(ausenciasAlunoPorDisciplina.Bimestre, codigoAluno, string.Empty, turmaId);
+                var totalCompensacoesDisciplinaAluno = repositorioCompensacaoAusenciaAluno.ObterTotalCompensacoesPorAlunoETurma(ausenciasAlunoPorDisciplina.Bimestre, codigoAluno, disciplinaId, turmaId);
                 var frequenciaAluno = MapearFrequenciaAluno(codigoAluno,
                                                             turmaId,
                                                             disciplinaId,
@@ -141,7 +141,7 @@ namespace SME.SGP.Dominio.Servicos
             }
             else
             {
-                var frequenciaAluno = repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunoData(codigoAluno, dataAtual, TipoFrequenciaAluno.PorDisciplina);
+                var frequenciaAluno = repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunoData(codigoAluno, dataAtual, TipoFrequenciaAluno.PorDisciplina, disciplinaId);
 
                 if (frequenciaAluno != null)
                     repositorioFrequenciaAlunoDisciplinaPeriodo.Remover(frequenciaAluno);
