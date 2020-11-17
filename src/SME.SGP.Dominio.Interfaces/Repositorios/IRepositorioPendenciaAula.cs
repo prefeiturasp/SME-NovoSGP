@@ -15,7 +15,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task Salvar(long aulaId, string motivo, long pendenciaId);
         Task Excluir(TipoPendencia tipoPendenciaAula, long aulaId);
 
-        Task SalvarVarias(long pendenciaId, IEnumerable<long> aulas);        
+        void SalvarVarias(long pendenciaId, IEnumerable<long> aulas);        
         Task<Turma> ObterTurmaPorPendencia(long pendenciaId);
         Task<IEnumerable<PendenciaAulaDto>> ObterPendenciasAulasPorPendencia(long pendenciaId);
         Task<long> ObterPendenciaAulaPorTurmaIdDisciplinaId(string turmaId, string disciplinaId);

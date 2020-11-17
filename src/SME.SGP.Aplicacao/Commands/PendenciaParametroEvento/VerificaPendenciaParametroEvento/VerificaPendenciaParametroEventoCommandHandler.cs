@@ -89,7 +89,7 @@ namespace SME.SGP.Aplicacao
             if (EventosInsuficientes(eventos, int.Parse(parametroQuantidadeEventos.Valor)))
             {
                 var pendenciaParametroEvento = pendenciasParametroEventoUe.FirstOrDefault(c => c.ParametroSistemaId == parametroQuantidadeEventos.Id);
-                return (pendenciaParametroEvento == null, parametroQuantidadeEventos.Id, eventos.Count());
+                return (pendenciaParametroEvento == null, parametroQuantidadeEventos.Id, int.Parse(parametroQuantidadeEventos.Valor) - eventos.Count());
             }
 
             return (false, 0, 0);

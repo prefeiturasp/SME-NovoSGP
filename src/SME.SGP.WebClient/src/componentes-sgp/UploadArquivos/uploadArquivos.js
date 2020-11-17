@@ -1,8 +1,10 @@
 import { InboxOutlined } from '@ant-design/icons';
 import { Upload } from 'antd';
+import { Field } from 'formik';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import { Base } from '~/componentes/colors';
 import { erro, erros, sucesso } from '~/servicos';
 import ServicoArmazenamento from '~/servicos/Componentes/ServicoArmazenamento';
 import { downloadBlob } from '~/utils/funcoes/gerais';
@@ -21,12 +23,19 @@ export const ContainerDragger = styled(Dragger)`
 
     opacity: ${props => (props.desabilitarUpload ? '0.6' : '1')} !important;
   }
+
+  border-color: ${props =>
+    props.campoObrigadorio ? Base.Vermelho : '#d9d9d9'} !important;
 `;
 
 export const ContainerUpload = styled.div`
   .ant-upload-list-item-card-actions {
     opacity: 1 !important;
   }
+`;
+
+export const MensagemCampoObrigatorio = styled.span`
+  color: ${Base.Vermelho} !important;
 `;
 
 const TAMANHO_MAXIMO_UPLOAD = 100;
@@ -48,6 +57,9 @@ const UploadArquivos = props => {
     tiposArquivosPermitidos,
     desabilitarUpload,
     desabilitarGeral,
+    form,
+    name,
+    id,
   } = props;
 
   const [listaDeArquivos, setListaDeArquivos] = useState([...defaultFileList]);
@@ -145,6 +157,15 @@ const UploadArquivos = props => {
     const novoMap = [...fileList];
     setListaDeArquivos(novoMap);
     onChangeListaArquivos(novoMap);
+
+    if (form && form.setFieldValue) {
+      form.setFieldValue(name, novoMap);
+      form.setFieldTouched(name, true);
+    }
+  };
+
+  const possuiErro = () => {
+    return form && form.errors[name] && form.touched[name];
   };
 
   const propsDragger = {
@@ -162,10 +183,11 @@ const UploadArquivos = props => {
     defaultFileList,
     accept: tiposArquivosPermitidos,
     disabled: desabilitarGeral,
+    campoObrigadorio: possuiErro(),
   };
 
-  return (
-    <ContainerUpload>
+  const campoUpload = () => {
+    return (
       <ContainerDragger {...propsDragger} desabilitarUpload={desabilitarUpload}>
         <p className="ant-upload-drag-icon">
           <InboxOutlined />
@@ -173,6 +195,37 @@ const UploadArquivos = props => {
         <p className="ant-upload-text">{textoUpload}</p>
         <p className="ant-upload-hint">{textoFormatoUpload}</p>
       </ContainerDragger>
+    );
+  };
+
+  const campoComValidacoes = () => {
+    return (
+      <Field name={name} id={id}>
+        {() => campoUpload()}
+      </Field>
+    );
+  };
+
+  const campoSemValidacoes = () => {
+    return campoUpload();
+  };
+
+  const obterErros = () => {
+    return form && form.touched[name] && form.errors[name] ? (
+      <MensagemCampoObrigatorio>
+        {form && form.errors[name]}
+      </MensagemCampoObrigatorio>
+    ) : (
+      ''
+    );
+  };
+
+  return (
+    <ContainerUpload>
+      <>
+        {form ? campoComValidacoes() : campoSemValidacoes()}
+        {obterErros()}
+      </>
     </ContainerUpload>
   );
 };
@@ -184,7 +237,6 @@ UploadArquivos.propTypes = {
   textoUpload: PropTypes.string,
   textoFormatoUpload: PropTypes.string,
   customRequest: PropTypes.func,
-  fileList: PropTypes.oneOfType([PropTypes.array]),
   beforeUpload: PropTypes.func,
   showUploadList: PropTypes.oneOfType([PropTypes.object]),
   onRemove: PropTypes.func,
@@ -194,6 +246,9 @@ UploadArquivos.propTypes = {
   tiposArquivosPermitidos: PropTypes.string,
   desabilitarUpload: PropTypes.bool,
   desabilitarGeral: PropTypes.bool,
+  form: PropTypes.oneOfType([PropTypes.object, PropTypes.any]),
+  name: PropTypes.string,
+  id: PropTypes.string,
 };
 
 UploadArquivos.defaultProps = {
@@ -203,7 +258,6 @@ UploadArquivos.defaultProps = {
   textoUpload: 'Clique ou arraste para fazer o upload do arquivo',
   textoFormatoUpload: 'Todos os formatos são suportados no limite de 100mb',
   customRequest: null,
-  fileList: [],
   beforeUpload: null,
   showUploadList: {
     showRemoveIcon: true,
@@ -217,6 +271,9 @@ UploadArquivos.defaultProps = {
   tiposArquivosPermitidos: '',
   desabilitarUpload: false,
   desabilitarGeral: false,
+  form: null,
+  name: '',
+  id: '',
 };
 
 export default UploadArquivos;

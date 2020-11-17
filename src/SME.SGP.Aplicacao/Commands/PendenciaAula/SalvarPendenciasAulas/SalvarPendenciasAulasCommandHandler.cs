@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(SalvarPendenciasAulasCommand request, CancellationToken cancellationToken)
         {
-            await repositorioPendenciaAula.SalvarVarias(request.PendenciaId, request.AulasIds);
+            repositorioPendenciaAula.SalvarVarias(request.PendenciaId, request.AulasIds);
 
             IList<long> professoresId = new List<long>();
             foreach (var aulaId in request.AulasIds)
