@@ -77,10 +77,11 @@ pipeline {
             SERVER = 'dev-novosgp.sme.prefeitura.sp.gov.br'
             SGP_USER = '7944560'
             SGP_PASS = 'Sgp@1234'
-            ROBOT_TESTS_DIR = "$WORKSPACE/teste/SME.SGP.WebClient.RPA/src/paginas/Login"
+            ROBOT_TESTS_DIR = "$WORKSPACE/teste/SME.SGP.WebClient.RPA/src"
             ROBOT_REPORTS_DIR = "$WORKSPACE/teste/SME.SGP.WebClient.RPA/reports"
           }
           steps {
+            sh 'ls -la /opt/robotframework/tests'
             sh '''
                 /opt/robotframework/bin/run-tests-in-virtual-screen.sh
             '''
