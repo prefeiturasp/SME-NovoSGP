@@ -669,10 +669,10 @@ const DocumentosPlanosTrabalhoCadastro = ({ match }) => {
                     <Auditoria
                       criadoEm={valoresIniciais?.criadoEm}
                       criadoPor={valoresIniciais?.criadoPor}
-                      criadoRf={valoresIniciais?.criadoRf}
+                      criadoRf={valoresIniciais?.criadoRF}
                       alteradoPor={valoresIniciais?.alteradoPor}
                       alteradoEm={valoresIniciais?.alteradoEm}
-                      alteradoRf={valoresIniciais?.alteradoRf}
+                      alteradoRf={valoresIniciais?.alteradoRF}
                     />
                   </div>
                 </div>
