@@ -13,5 +13,6 @@ namespace SME.SGP.Infra
         public int[] Situacoes { get; set; }
         public int DiasSemAcesso { get; set; }
         public bool ExibirHistorico { get; set; }
+        public string NomeUsuario { get; set; }
     }
 }
