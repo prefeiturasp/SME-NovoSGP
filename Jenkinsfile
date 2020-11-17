@@ -16,6 +16,7 @@ pipeline {
       stage('CheckOut') {
         steps {
           checkout scm
+          stash name:'scm', includes:'*'
         }
        }
 
@@ -82,6 +83,7 @@ pipeline {
             ROBOT_REPORTS_DIR = "$WORKSPACE/teste/SME.SGP.WebClient.RPA/reports/"
           }
           steps {
+            unstash 'scm'  
             sh 'ls -la /tmp && export && ls -la /opt/robotframework'
             sh '/opt/robotframework/bin/run-tests-in-virtual-screen.sh'
           }
