@@ -81,7 +81,7 @@ pipeline {
             ROBOT_REPORTS_DIR = "$WORKSPACE/teste/SME.SGP.WebClient.RPA/reports"
           }
           steps {
-            sh 'ls -la ..'
+            sh 'ls -la . && export && ls -la /opt/robotframework'
             sh '''
                 /opt/robotframework/bin/run-tests-in-virtual-screen.sh
             '''
