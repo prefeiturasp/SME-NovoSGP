@@ -13,8 +13,12 @@ class ServicoArmazenamento {
     return api.delete(`${urlPadrao}/${codigoArquivo}`);
   };
 
-  fazerUploadArquivo = (formData, configuracaoHeader) => {
-    return api.post(`${urlPadrao}/upload`, formData, configuracaoHeader);
+  fazerUploadArquivo = (formData, configuracaoHeader, urlUpload) => {
+    let url = `${urlPadrao}/upload`;
+    if (urlUpload) {
+      url = urlUpload;
+    }
+    return api.post(url, formData, configuracaoHeader);
   };
 }
 
