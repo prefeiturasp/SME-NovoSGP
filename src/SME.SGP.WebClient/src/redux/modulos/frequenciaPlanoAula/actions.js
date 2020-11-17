@@ -125,31 +125,41 @@ export function setLimparDadosPlanoAula(payload) {
 }
 
 export const setErrosPlanoAula = payload => ({
-  type: '@planoAnual/setErrosPlanoAula',
+  type: '@frequenciaPlanoAula/setErrosPlanoAula',
   payload,
 });
 
 export const setExibirModalErrosPlanoAula = payload => ({
-  type: '@planoAnual/setExibirModalErrosPlanoAula',
+  type: '@frequenciaPlanoAula/setExibirModalErrosPlanoAula',
   payload,
 });
 
 export const setCheckedExibirEscolhaObjetivos = payload => ({
-  type: '@planoAnual/setCheckedExibirEscolhaObjetivos',
+  type: '@frequenciaPlanoAula/setCheckedExibirEscolhaObjetivos',
   payload,
 });
 
 export const setExibirSwitchEscolhaObjetivos = payload => ({
-  type: '@planoAnual/setExibirSwitchEscolhaObjetivos',
+  type: '@frequenciaPlanoAula/setExibirSwitchEscolhaObjetivos',
   payload,
 });
 
 export const setDadosOriginaisPlanoAula = payload => ({
-  type: '@planoAnual/setDadosOriginaisPlanoAula',
+  type: '@frequenciaPlanoAula/setDadosOriginaisPlanoAula',
   payload,
 });
 
 export const setExibirCardCollapseFrequencia = payload => ({
-  type: '@planoAnual/setExibirCardCollapseFrequencia',
+  type: '@frequenciaPlanoAula/setExibirCardCollapseFrequencia',
+  payload,
+});
+
+export const setDesenvolvimentoDaAulaValidaObrigatoriedade = payload => ({
+  type: '@frequenciaPlanoAula/setDesenvolvimentoDaAulaValidaObrigatoriedade',
+  payload,
+});
+
+export const setobjetivosEspecificosParaAulaValidarObrigatoriedade = payload => ({
+  type: '@frequenciaPlanoAula/setobjetivosEspecificosParaAulaValidarObrigatoriedade',
   payload,
 });

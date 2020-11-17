@@ -23,6 +23,8 @@ const inicial = {
   exibirSwitchEscolhaObjetivos: false,
   dadosOriginaisPlanoAula: [],
   exibirCardCollapseFrequencia: false,
+  desenvolvimentoDaAulaValidaObrigatoriedade: undefined,
+  objetivosEspecificosParaAulaValidarObrigatoriedade: undefined,
 };
 
 export default function frequenciaPlanoAula(state = inicial, action) {
@@ -62,6 +64,8 @@ export default function frequenciaPlanoAula(state = inicial, action) {
           exibirSwitchEscolhaObjetivos: false,
           dadosOriginaisPlanoAula: [],
           exibirCardCollapseFrequencia: false,
+          desenvolvimentoDaAulaValidaObrigatoriedade: undefined,
+          objetivosEspecificosParaAulaValidarObrigatoriedade: undefined,
         };
       }
       case '@frequenciaPlanoAula/setListaDadosFrequencia': {
@@ -161,42 +165,56 @@ export default function frequenciaPlanoAula(state = inicial, action) {
           checkedExibirEscolhaObjetivos: false,
           exibirSwitchEscolhaObjetivos: false,
           dadosOriginaisPlanoAula: [],
+          desenvolvimentoDaAulaValidaObrigatoriedade: undefined,
+          objetivosEspecificosParaAulaValidarObrigatoriedade: undefined,
         };
       }
-      case '@planoAnual/setErrosPlanoAula': {
+      case '@frequenciaPlanoAula/setErrosPlanoAula': {
         return {
           ...draft,
           errosPlanoAula: action.payload,
         };
       }
-      case '@planoAnual/setExibirModalErrosPlanoAula': {
+      case '@frequenciaPlanoAula/setExibirModalErrosPlanoAula': {
         return {
           ...draft,
           exibirModalErrosPlanoAula: action.payload,
         };
       }
-      case '@planoAnual/setCheckedExibirEscolhaObjetivos': {
+      case '@frequenciaPlanoAula/setCheckedExibirEscolhaObjetivos': {
         return {
           ...draft,
           checkedExibirEscolhaObjetivos: action.payload,
         };
       }
-      case '@planoAnual/setExibirSwitchEscolhaObjetivos': {
+      case '@frequenciaPlanoAula/setExibirSwitchEscolhaObjetivos': {
         return {
           ...draft,
           exibirSwitchEscolhaObjetivos: action.payload,
         };
       }
-      case '@planoAnual/setDadosOriginaisPlanoAula': {
+      case '@frequenciaPlanoAula/setDadosOriginaisPlanoAula': {
         return {
           ...draft,
           dadosOriginaisPlanoAula: action.payload,
         };
       }
-      case '@planoAnual/setExibirCardCollapseFrequencia': {
+      case '@frequenciaPlanoAula/setExibirCardCollapseFrequencia': {
         return {
           ...draft,
           exibirCardCollapseFrequencia: action.payload,
+        };
+      }
+      case '@frequenciaPlanoAula/setDesenvolvimentoDaAulaValidaObrigatoriedade': {
+        return {
+          ...draft,
+          desenvolvimentoDaAulaValidaObrigatoriedade: action.payload,
+        };
+      }
+      case '@frequenciaPlanoAula/setobjetivosEspecificosParaAulaValidarObrigatoriedade': {
+        return {
+          ...draft,
+          objetivosEspecificosParaAulaValidarObrigatoriedade: action.payload,
         };
       }
 

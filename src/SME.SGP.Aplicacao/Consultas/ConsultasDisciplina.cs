@@ -115,7 +115,7 @@ namespace SME.SGP.Aplicacao
             {
                 var componentesCurriculares = await servicoEOL.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(codigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual);
 
-                disciplinasDto = (await repositorioComponenteCurricular.ObterDisciplinasPorIds(componentesCurriculares.Select(a => a.Codigo).ToArray()))?.OrderBy(c => c.Nome)?.ToList();
+                disciplinasDto = (await repositorioComponenteCurricular.ObterDisciplinasPorIds(componentesCurriculares.Select(a => a.TerritorioSaber ? a.CodigoComponenteTerritorioSaber : a.Codigo).ToArray()))?.OrderBy(c => c.Nome)?.ToList();
 
                 var componentesCurricularesJurema = await repositorioCache.Obter("ComponentesJurema", () => Task.FromResult(repositorioComponenteCurricularJurema.Listar()));
                 if (componentesCurricularesJurema == null)
@@ -125,10 +125,12 @@ namespace SME.SGP.Aplicacao
 
                 disciplinasDto.ForEach(d =>
                 {
-                    var componenteEOL = componentesCurriculares.FirstOrDefault(a => a.Codigo == d.CodigoComponenteCurricular);
+                    var componenteEOL = componentesCurriculares.FirstOrDefault(a => a.TerritorioSaber ? a.CodigoComponenteTerritorioSaber == d.CodigoComponenteCurricular : a.Codigo == d.CodigoComponenteCurricular);
                     d.PossuiObjetivos = turma.AnoLetivo < Convert.ToInt32(dataInicioNovoSGP) ? false : componenteEOL.PossuiObjetivosDeAprendizagem(componentesCurricularesJurema, turmaPrograma, turma.ModalidadeCodigo, turma.Ano);
                     d.CodigoComponenteCurricular = componenteEOL.Codigo;
                     d.Regencia = componenteEOL.Regencia;
+                    if (d.TerritorioSaber)
+                        d.Nome = componenteEOL.Descricao;
                     d.ObjetivosAprendizagemOpcionais = componenteEOL.PossuiObjetivosDeAprendizagemOpcionais(componentesCurricularesJurema, turma.EnsinoEspecial);
                 });
 

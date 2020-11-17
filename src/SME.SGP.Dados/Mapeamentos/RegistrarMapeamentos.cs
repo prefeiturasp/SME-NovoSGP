@@ -129,6 +129,10 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new PlanejamentoAnualMap());
                config.AddMap(new PlanejamentoAnualObjetivosAprendizagemMap());
                config.AddMap(new PlanejamentoAnualPeriodoEscolarMap());
+               config.AddMap(new ArquivoMap());
+               config.AddMap(new HistoricoNotaMap());
+               config.AddMap(new HistoricoNotaFechamentoMap());
+               config.AddMap(new HistoricoNotaConselhoClasseMap());
                config.ForDommel();
            });
         }
