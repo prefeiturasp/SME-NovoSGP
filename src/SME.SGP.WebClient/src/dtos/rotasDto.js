@@ -55,7 +55,6 @@ const RotasDto = {
   POC_EDITOR: '/editor',
   POC_UPLOAD_ARQUIVOS: '/upload-arquivos',
   DOCUMENTOS_PLANOS_TRABALHO: '/gestao/documentos-planos-trabalho',
-  RELATORIO_USUARIOS: '/relatorios/gestao/usuarios',
 };
 
 export default RotasDto;

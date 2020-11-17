@@ -28,7 +28,6 @@ function Localizador({
   desabilitado,
   incluirEmei,
   rfEdicao,
-  buscandoDados,
 }) {
   const usuario = useSelector(store => store.usuario);
   const [dataSource, setDataSource] = useState([]);
@@ -83,7 +82,6 @@ function Localizador({
   const onBuscarPorRF = useCallback(
     async ({ rf }) => {
       try {
-        buscandoDados(true);
         const { data: dados } = await service.buscarPorRf({
           rf,
           anoLetivo,
@@ -101,15 +99,8 @@ function Localizador({
           ...estado,
           nome: true,
         }));
-        buscandoDados(false);
       } catch (error) {
         erros(error);
-        buscandoDados(false);
-        setPessoaSelecionada({
-          professorRf: '',
-          professorNome: '',
-          usuarioId: '',
-        });
       }
     },
     [anoLetivo, incluirEmei]
@@ -148,22 +139,18 @@ function Localizador({
 
   useEffect(() => {
     onChange(pessoaSelecionada);
-    if (form) {
-      form.setValues({
-        ...form.values,
-        ...pessoaSelecionada,
-      });
-    }
+    form.setValues({
+      ...form.values,
+      ...pessoaSelecionada,
+    });
   }, [pessoaSelecionada]);
 
   useEffect(() => {
-    if (form) {
-      if (validaSeObjetoEhNuloOuVazio(form.initialValues)) return;
-      if (form.initialValues) {
-        setPessoaSelecionada(form.initialValues);
-      }
+    if (validaSeObjetoEhNuloOuVazio(form.initialValues)) return;
+    if (form.initialValues) {
+      setPessoaSelecionada(form.initialValues);
     }
-  }, [form?.initialValues]);
+  }, [form.initialValues]);
 
   useEffect(() => {
     if (
@@ -245,18 +232,16 @@ Localizador.propTypes = {
   anoLetivo: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   desabilitado: PropTypes.bool,
   rfEdicao: PropTypes.string,
-  buscandoDados: PropTypes.func,
 };
 
 Localizador.defaultProps = {
   onChange: PropTypes.func,
-  form: null,
+  form: {},
   showLabel: false,
   dreId: null,
   anoLetivo: null,
   desabilitado: false,
   rfEdicao: '',
-  buscandoDados: () => {},
 };
 
 export default Localizador;

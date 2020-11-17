@@ -43,7 +43,6 @@ const RadioGroupButton = ({
   desabilitado,
   label,
   opcoes,
-  value,
 }) => {
   const obterErros = () => {
     return form && form.touched[name] && form.errors[name] ? (
@@ -55,44 +54,26 @@ const RadioGroupButton = ({
     );
   };
 
-  const campoComValidacoes = () => {
-    return (
-      <Field
-        name={name}
-        id={id || name}
-        component={Radio.Group}
-        options={opcoes}
-        onChange={e => {
-          form.setFieldValue(name, e.target.value);
-          onChange(e);
-          form.setFieldTouched(name, true, true);
-        }}
-        defaultValue={valorInicial}
-        disabled={desabilitado}
-        value={form.values[name]}
-      />
-    );
-  };
-
-  const campoSemValidacoes = () => {
-    return (
-      <Radio.Group
-        id={id}
-        options={opcoes}
-        onChange={onChange}
-        disabled={desabilitado}
-        value={value || false}
-      />
-    );
-  };
-
   return (
     <>
       <Campo className={className}>
         {label ? <Label text={label} control={name || ''} /> : ''}
         {
           <>
-            {form ? campoComValidacoes() : campoSemValidacoes()}
+            <Field
+              name={name}
+              id={id || name}
+              component={Radio.Group}
+              options={opcoes}
+              onChange={e => {
+                form.setFieldValue(name, e.target.value);
+                onChange(e);
+                form.setFieldTouched(name, true, true);
+              }}
+              defaultValue={valorInicial}
+              disabled={desabilitado}
+              value={form.values[name]}
+            />
             <br />
             {obterErros()}
           </>
