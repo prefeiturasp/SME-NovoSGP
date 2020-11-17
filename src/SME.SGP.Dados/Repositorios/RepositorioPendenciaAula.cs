@@ -156,7 +156,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<PendenciaAulaDto>(query, new { pendenciaId });
         }
 
-        public async Task<long> ObterPendenciaAulaPorTurmaIdDisciplinaId(string turmaId, string disciplinaId)
+        public async Task<long> ObterPendenciaAulaPorTurmaIdDisciplinaId(string turmaId, string disciplinaId, TipoPendencia tipoPendencia)
         {
             var query = @"select p.id 
                             from pendencia p 
@@ -164,9 +164,10 @@ namespace SME.SGP.Dados.Repositorios
                            inner join aula a on pa.aula_id = a.id 
                            where not p.excluido
                              and a.turma_id = @turmaId 
-                             and a.disciplina_id = @disciplinaId";
+                             and a.disciplina_id = @disciplinaId
+                             and p.tipo = @tipoPendencia";
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<long>(query, new { turmaId, disciplinaId });
+            return await database.Conexao.QueryFirstOrDefaultAsync<long>(query, new { turmaId, disciplinaId, tipoPendencia });
         }
 
         public async Task<long> ObterPendenciaAulaIdPorAulaId(long aulaId, TipoPendencia tipoPendencia)
