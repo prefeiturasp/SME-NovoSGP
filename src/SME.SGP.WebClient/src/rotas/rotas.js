@@ -71,6 +71,7 @@ import DashboardEscolaAqui from '~/paginas/Relatorios/DashboardEscolaAqui/dashbo
 import PocEditor from '~/paginas/PocEditor/pocEditor';
 import ControleGrade from '~/paginas/Relatorios/DiarioClasse/ControleGrade/controleGrade';
 import PocUploadArquivos from '~/componentes-sgp/UploadArquivos/pocUploadArquivos';
+import HistoricoNotificacoes from '~/paginas/Relatorios/Notificacoes/HistoricoNotificacoes/historicoNotificacoes';
 
 const rotas = new Map();
 
@@ -978,6 +979,17 @@ rotas.set(RotasDto.POC_UPLOAD_ARQUIVOS, {
   component: PocUploadArquivos,
   exact: false,
   tipo: RotasTipo.EstruturadaAutenticada,
+});
+
+rotas.set(RotasDto.HISTORICO_NOTIFICACOES, {
+  breadcrumbName: 'Histórico de notificações',
+  menu: ['Relatórios', 'Notificações'],
+  parent: '/',
+  component: HistoricoNotificacoes,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.HISTORICO_NOTIFICACOES,
 });
 
 const rotasArray = [];
