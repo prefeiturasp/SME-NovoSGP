@@ -28,8 +28,8 @@ const DadosAdesao = props => {
   ] = useState([]);
 
   const [
-    dadosGraficoTotalUsuariosPrimeiroAcesso,
-    setDadosGraficoTotalUsuariosPrimeiroAcesso,
+    dadosGraficoTotalUsuariosPrimeiroAcessoIncompleto,
+    setDadosGraficoTotalUsuariosPrimeiroAcessoIncompleto,
   ] = useState([]);
 
   const [
@@ -154,7 +154,7 @@ const DadosAdesao = props => {
         color: CoresGraficos[index],
       };
       totalDados[nomeCampo] = item[nomeCampo];
-      totalDados[item.nomeCompletoDre] = item[nomeCampo];
+      totalDados[item.nomeCompletoDre] = formataMilhar(item[nomeCampo]);
       dados.push(totalDados);
     }
   };
@@ -163,7 +163,7 @@ const DadosAdesao = props => {
     const chaves = [];
     const dadosTotalUsuariosComCpfInvalidos = [];
     const dadosTotalUsuariosSemAppInstalado = [];
-    const dadosTotalUsuariosPrimeiroAcesso = [];
+    const dadosTotalUsuariosPrimeiroAcessoIncompleto = [];
     const dadosTotalUsuariosValidos = [];
 
     dados.forEach((item, index) => {
@@ -185,8 +185,8 @@ const DadosAdesao = props => {
 
       montarDadosGrafico(
         item,
-        'totalUsuariosPrimeiroAcesso',
-        dadosTotalUsuariosPrimeiroAcesso,
+        'totalUsuariosPrimeiroAcessoIncompleto',
+        dadosTotalUsuariosPrimeiroAcessoIncompleto,
         index
       );
 
@@ -205,8 +205,8 @@ const DadosAdesao = props => {
     setDadosGraficoTotalUsuariosSemAppInstalado(
       dadosTotalUsuariosSemAppInstalado
     );
-    setDadosGraficoTotalUsuariosPrimeiroAcesso(
-      dadosTotalUsuariosPrimeiroAcesso
+    setDadosGraficoTotalUsuariosPrimeiroAcessoIncompleto(
+      dadosTotalUsuariosPrimeiroAcessoIncompleto
     );
     setDadosGraficoTotalUsuariosValidos(dadosTotalUsuariosValidos);
   }, []);
@@ -214,7 +214,7 @@ const DadosAdesao = props => {
   const limparGraficosTotais = () => {
     setDadosGraficoTotalUsuariosComCpfInvalidos([]);
     setDadosGraficoTotalUsuariosSemAppInstalado([]);
-    setDadosGraficoTotalUsuariosPrimeiroAcesso([]);
+    setDadosGraficoTotalUsuariosPrimeiroAcessoIncompleto([]);
     setDadosGraficoTotalUsuariosValidos([]);
   };
 
@@ -251,6 +251,23 @@ const DadosAdesao = props => {
     obterDadosGraficoAdesaoAgrupados,
   ]);
 
+  const tooltipCustomizado = item => {
+    return (
+      <div style={{ whiteSpace: 'pre', display: 'flex', alignItems: 'center' }}>
+        <span
+          style={{
+            display: 'block',
+            width: '12px',
+            height: '12px',
+            background: item.color,
+            marginRight: '7px',
+          }}
+        />
+        {item.id} - <strong>{item.value}</strong>
+      </div>
+    );
+  };
+
   const graficoBarras = (dados, titulo) => {
     return (
       <div className="scrolling-chart">
@@ -264,7 +281,13 @@ const DadosAdesao = props => {
               groupMode="stacked"
               legendsTranslateX={105}
               showAxisBottom={false}
-              customProps={{ colors: item => item?.data?.color }}
+              customProps={{
+                colors: item => item?.data?.color,
+                tooltip: item => {
+                  return tooltipCustomizado(item);
+                },
+                labelFormat: d => <tspan y={-7}>{d}</tspan>,
+              }}
             />
           </ContainerGraficoBarras>
         </div>
@@ -328,9 +351,9 @@ const DadosAdesao = props => {
               )
             : ''}
 
-          {dadosGraficoTotalUsuariosPrimeiroAcesso?.length
+          {dadosGraficoTotalUsuariosPrimeiroAcessoIncompleto?.length
             ? graficoBarras(
-                dadosGraficoTotalUsuariosPrimeiroAcesso,
+                dadosGraficoTotalUsuariosPrimeiroAcessoIncompleto,
                 ' Responsáveis com primeiro acesso incompleto'
               )
             : ''}

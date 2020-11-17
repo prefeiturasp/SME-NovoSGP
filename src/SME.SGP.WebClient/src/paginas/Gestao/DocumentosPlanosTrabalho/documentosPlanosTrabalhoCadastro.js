@@ -87,6 +87,17 @@ const DocumentosPlanosTrabalhoCadastro = ({ match }) => {
       tipoDocumentoId: Yup.string().required('Campo obrigatório'),
       classificacaoId: Yup.string().required('Campo obrigatório'),
       professorRf: Yup.string().required('Campo obrigatório'),
+      listaArquivos: Yup.string().test(
+        'validaListaArquivos',
+        'Campo obrigatório',
+        function validar() {
+          const { listaArquivos } = this.parent;
+          if (listaArquivos?.length > 0) {
+            return true;
+          }
+          return false;
+        }
+      ),
     });
   };
 
@@ -386,6 +397,7 @@ const DocumentosPlanosTrabalhoCadastro = ({ match }) => {
       'tipoDocumentoId',
       'classificacaoId',
       'professorRf',
+      'listaArquivos',
     ];
     arrayCampos.forEach(campo => {
       form.setFieldTouched(campo, true, true);
@@ -638,6 +650,9 @@ const DocumentosPlanosTrabalhoCadastro = ({ match }) => {
                     </div>
                     <div className="col-md-12 mt-2">
                       <UploadArquivos
+                        form={form}
+                        name="listaArquivos"
+                        id="lista-arquivos"
                         desabilitarGeral={desabilitarCampos}
                         desabilitarUpload={listaDeArquivos.length > 0}
                         textoFormatoUpload="Permitido somente um arquivo. Tipo permitido PDF"

@@ -5,7 +5,7 @@ import Alert from '../../componentes/alert';
 import Card from '../../componentes/card';
 import Grid from '../../componentes/grid';
 import Row from '../../componentes/row';
-import ListaNotificacoes from './listaNotificacoes';
+import PendenciasGerais from './Pendencias/pendenciasGerais';
 import { Container, Label } from './principal.css';
 
 const Principal = () => {
@@ -68,20 +68,8 @@ const Principal = () => {
           </Grid>
         </Row>
       ) : null}
-      <Card className="rounded mb-4">
-        <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-          <Label>
-            <span className="fas fa-thumbtack mr-2 mb-0" />
-            Notificações
-          </Label>
-          <div className="row pt-3 pb-4">
-            <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-              <ListaNotificacoes />
-            </div>
-          </div>
-        </div>
-      </Card>
       <CardsDashboard />
+      <PendenciasGerais />
     </div>
   );
 };
