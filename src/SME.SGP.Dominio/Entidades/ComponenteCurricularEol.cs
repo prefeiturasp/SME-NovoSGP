@@ -9,6 +9,7 @@ namespace SME.SGP.Dominio
     {
         public long Codigo { get; set; }
         public long? CodigoComponenteCurricularPai { get; set; }
+        public long CodigoComponenteTerritorioSaber { get; set; }
         public bool Compartilhada { get; set; }
         public string Descricao { get; set; }
         public bool LancaNota { get; set; }

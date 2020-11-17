@@ -1,4 +1,5 @@
-﻿using SME.SGP.Aplicacao;
+﻿using MediatR;
+using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -27,7 +28,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IConsultasDisciplina consultasDisciplina;
         private readonly IUnitOfWork unitOfWork;
         private readonly IServicoCalculoParecerConclusivo servicoCalculoParecerConclusivo;
-        private readonly IServicoEol servicoEOL;
+        private readonly IMediator mediator;
 
         public ServicoConselhoClasse(IRepositorioConselhoClasse repositorioConselhoClasse,
                                      IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno,
@@ -45,7 +46,7 @@ namespace SME.SGP.Dominio.Servicos
                                      IRepositorioConselhoClasseNota repositorioConselhoClasseNota,
                                      IUnitOfWork unitOfWork,
                                      IServicoCalculoParecerConclusivo servicoCalculoParecerConclusivo,
-                                     IServicoEol servicoEOL)
+                                     IMediator mediator)
 
         {
             this.repositorioConselhoClasse = repositorioConselhoClasse ?? throw new ArgumentNullException(nameof(repositorioConselhoClasse));
@@ -64,7 +65,7 @@ namespace SME.SGP.Dominio.Servicos
             this.consultasDisciplina = consultasDisciplina ?? throw new ArgumentNullException(nameof(consultasDisciplina));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.servicoCalculoParecerConclusivo = servicoCalculoParecerConclusivo ?? throw new ArgumentNullException(nameof(servicoCalculoParecerConclusivo));
-            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<ConselhoClasseNotaRetornoDto> SalvarConselhoClasseAlunoNotaAsync(ConselhoClasseNotaDto conselhoClasseNotaDto, string alunoCodigo, long conselhoClasseId, long fechamentoTurmaId, string codigoTurma, int bimestre)
@@ -173,10 +174,23 @@ namespace SME.SGP.Dominio.Servicos
                     {
                         conselhoClasseNota.Justificativa = conselhoClasseNotaDto.Justificativa;
                         if (conselhoClasseNotaDto.Nota.HasValue)
+                        {
+                            // Gera histórico de alteração
+                            if (conselhoClasseNota.Nota != conselhoClasseNotaDto.Nota.Value)
+                                await mediator.Send(new SalvarHistoricoNotaConselhoClasseCommand(conselhoClasseNota.Id, conselhoClasseNota.Nota.Value, conselhoClasseNotaDto.Nota.Value));
+
                             conselhoClasseNota.Nota = conselhoClasseNotaDto.Nota.Value;
+                        }
                         else conselhoClasseNota.Nota = null;
+
                         if (conselhoClasseNotaDto.Conceito.HasValue)
+                        {
+                            // Gera histórico de alteração
+                            if (conselhoClasseNota.ConceitoId != conselhoClasseNotaDto.Conceito.Value)
+                                await mediator.Send(new SalvarHistoricoConceitoConselhoClasseCommand(conselhoClasseNota.Id, conselhoClasseNota.ConceitoId.Value, conselhoClasseNotaDto.Conceito.Value));
+
                             conselhoClasseNota.ConceitoId = conselhoClasseNotaDto.Conceito.Value;
+                        }
                     }
 
                     await repositorioConselhoClasseNota.SalvarAsync(conselhoClasseNota);

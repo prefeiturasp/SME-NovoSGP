@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import CardCollapse from '~/componentes/cardCollapse';
 import Editor from '~/componentes/editor/editor';
-import { setModoEdicaoPlanoAula } from '~/redux/modulos/frequenciaPlanoAula/actions';
+import {
+  setDesenvolvimentoDaAulaValidaObrigatoriedade,
+  setModoEdicaoPlanoAula,
+} from '~/redux/modulos/frequenciaPlanoAula/actions';
 import ServicoPlanoAula from '~/servicos/Paginas/DiarioClasse/ServicoPlanoAula';
 
 const DesenvolvimentoDaAula = () => {
@@ -20,10 +23,24 @@ const DesenvolvimentoDaAula = () => {
     state => state.frequenciaPlanoAula.temPeriodoAberto
   );
 
+  const refForm = useRef();
+
   const configCabecalho = {
     altura: '44px',
     corBorda: '#4072d6',
   };
+
+  const desenvolvimentoDaAulaValidaObrigatoriedade = () => {
+    refForm.current.props.onChange(null, refForm.current.editor);
+  };
+
+  useEffect(() => {
+    dispatch(
+      setDesenvolvimentoDaAulaValidaObrigatoriedade(() =>
+        desenvolvimentoDaAulaValidaObrigatoriedade()
+      )
+    );
+  }, [refForm, dispatch]);
 
   const onChangeDesenvolvimentoAula = valor => {
     ServicoPlanoAula.atualizarDadosPlanoAula('desenvolvimentoAula', valor);
@@ -41,6 +58,11 @@ const DesenvolvimentoDaAula = () => {
       >
         <fieldset className="mt-3">
           <Editor
+            ref={refForm}
+            validarSeTemErro={valor =>
+              !valor && !desabilitarCamposPlanoAula && temPeriodoAberto
+            }
+            mensagemErro="Campo obrigatório"
             desabilitar={desabilitarCamposPlanoAula || !temPeriodoAberto}
             onChange={onChangeDesenvolvimentoAula}
             inicial={dadosPlanoAula.desenvolvimentoAula}
