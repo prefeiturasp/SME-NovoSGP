@@ -83,9 +83,9 @@ const ListaPaginada = props => {
     selecionaItems(selecionadas);
   };
 
-  const clicarLinha = row => {
+  const clicarLinha = (row, colunaClicada) => {
     if (onClick) {
-      onClick(row);
+      onClick(row, colunaClicada);
     }
   };
 
@@ -158,7 +158,7 @@ const ListaPaginada = props => {
             ) {
               selecionarLinha(row);
             } else {
-              clicarLinha(row);
+              clicarLinha(row, colunaClicada);
             }
           },
         })}

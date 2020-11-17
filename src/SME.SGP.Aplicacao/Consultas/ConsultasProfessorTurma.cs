@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using MediatR;
+using Newtonsoft.Json;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio.Interfaces;
@@ -9,12 +10,12 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ConsultasProfessor : IConsultasProfessor
+    public class ConsultasProfessor : AbstractUseCase, IConsultasProfessor
     {
         private readonly IRepositorioCache repositorioCache;
         private readonly IServicoEol servicoEOL;
 
-        public ConsultasProfessor(IServicoEol servicoEOL, IRepositorioCache repositorioCache)
+        public ConsultasProfessor(IServicoEol servicoEOL, IRepositorioCache repositorioCache, IMediator mediator) : base(mediator)
         {
             this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
             this.repositorioCache = repositorioCache ?? throw new System.ArgumentNullException(nameof(repositorioCache));
@@ -41,9 +42,15 @@ namespace SME.SGP.Aplicacao
             return await servicoEOL.ObterProfessoresAutoComplete(anoLetivo, dreId, nomeProfessor, incluirEmei);
         }
 
-        public async Task<ProfessorResumoDto> ObterResumoPorRFAnoLetivo(string codigoRF, int anoLetivo)
+        public async Task<ProfessorResumoDto> ObterResumoPorRFAnoLetivo(string codigoRF, int anoLetivo, bool buscarOutrosCargos = false)
         {
-            return await servicoEOL.ObterResumoProfessorPorRFAnoLetivo(codigoRF, anoLetivo);
+            var professorResumo = await servicoEOL.ObterResumoProfessorPorRFAnoLetivo(codigoRF, anoLetivo, buscarOutrosCargos);
+            var professorSgp = await mediator.Send(new ObterUsuarioPorRfQuery(codigoRF));
+
+            if(professorResumo != null)
+                professorResumo.UsuarioId = professorSgp.Id;
+
+            return professorResumo;
         }
 
         public async Task<IEnumerable<TurmaDto>> ObterTurmasAtribuidasAoProfessorPorEscolaEAnoLetivo(string rfProfessor, string codigoEscola, int anoLetivo)

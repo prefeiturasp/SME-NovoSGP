@@ -10,6 +10,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SME.SGP.Infra.Interfaces;
 
 namespace SME.SGP.Dominio.Servicos
 {
@@ -141,7 +142,7 @@ namespace SME.SGP.Dominio.Servicos
             {
                 if (workflow.Tipo == WorkflowAprovacaoTipo.Evento_Liberacao_Excepcional)
                 {
-                    AprovarUltimoNivelEventoLiberacaoExcepcional(codigoDaNotificacao, workflow.Id);
+                    await AprovarUltimoNivelEventoLiberacaoExcepcional(codigoDaNotificacao, workflow.Id);
                 }
                 else if (workflow.Tipo == WorkflowAprovacaoTipo.ReposicaoAula)
                 {
@@ -276,7 +277,7 @@ namespace SME.SGP.Dominio.Servicos
             repositorioEvento.Salvar(evento);
         }
 
-        private void AprovarUltimoNivelEventoLiberacaoExcepcional(long codigoDaNotificacao, long workflowId)
+        private async Task AprovarUltimoNivelEventoLiberacaoExcepcional(long codigoDaNotificacao, long workflowId)
         {
             Evento evento = repositorioEvento.ObterPorWorkflowId(workflowId);
             if (evento == null)
@@ -285,7 +286,18 @@ namespace SME.SGP.Dominio.Servicos
             evento.AprovarWorkflow();
             repositorioEvento.Salvar(evento);
 
+            await VerificaPendenciaDiasLetivosInsuficientes(evento);
             NotificarCriadorEventoLiberacaoExcepcionalAprovado(evento, codigoDaNotificacao);
+        }
+
+        private async Task VerificaPendenciaDiasLetivosInsuficientes(Evento evento)
+        {
+            if (evento.EhEventoLetivo())
+            {
+                var usuario = await servicoUsuario.ObterUsuarioLogado();
+
+                await mediator.Send(new IncluirFilaExcluirPendenciasDiasLetivosInsuficientesCommand(evento.TipoCalendarioId, evento.DreId, evento.UeId, usuario));
+            }
         }
 
         private void AtualizaNiveis(IEnumerable<WorkflowAprovacaoNivel> niveis)
