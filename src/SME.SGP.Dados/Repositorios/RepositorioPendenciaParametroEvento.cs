@@ -57,7 +57,7 @@ namespace SME.SGP.Dados
 
         public async Task<IEnumerable<PendenciaParametroEventoDto>> ObterPendenciasEventoPorPendenciaId(long pendenciaId)
         {
-            var query = @"select ps.id as ParametroSistemaId, ps.descricao, ps.valor 
+            var query = @"select ps.id as ParametroSistemaId, ps.descricao, pe.quantidade_eventos as valor
                           from pendencia_parametro_evento pe 
                         inner join pendencia_calendario_ue pc on pc.id = pe.pendencia_calendario_ue_id
                         inner join parametros_sistema ps on ps.id = pe.parametro_sistema_id
