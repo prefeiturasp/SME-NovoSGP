@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Loader, SelectComponent } from '~/componentes';
+import { Loader, RadioGroupButton, SelectComponent } from '~/componentes';
 import { Cabecalho } from '~/componentes-sgp';
 import Button from '~/componentes/button';
 import Card from '~/componentes/card';
@@ -7,10 +7,11 @@ import { Colors } from '~/componentes/colors';
 import { URL_HOME } from '~/constantes/url';
 import modalidade from '~/dtos/modalidade';
 import AbrangenciaServico from '~/servicos/Abrangencia';
-import { erros } from '~/servicos/alertas';
+import { erros, sucesso } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import history from '~/servicos/history';
 import ServicoFiltroRelatorio from '~/servicos/Paginas/FiltroRelatorio/ServicoFiltroRelatorio';
+import ServicoHistoricoNotificacoes from '~/servicos/Paginas/Relatorios/Historico/HistoricoNotificacoes/ServicoHistoricoNotificacoes';
 
 const HistoricoNotificacoes = () => {
   const [listaAnosLetivo, setListaAnosLetivo] = useState([]);
@@ -19,6 +20,9 @@ const HistoricoNotificacoes = () => {
   const [listaModalidades, setListaModalidades] = useState([]);
   const [listaSemestre, setListaSemestre] = useState([]);
   const [listaTurmas, setListaTurmas] = useState([]);
+  const [listaCategorias, setListaCategorias] = useState([]);
+  const [listaTipos, setListaTipos] = useState([]);
+  const [listaSituacao, setListaSituacao] = useState([]);
 
   const [anoLetivo, setAnoLetivo] = useState(undefined);
   const [codigoDre, setCodigoDre] = useState(undefined);
@@ -26,11 +30,29 @@ const HistoricoNotificacoes = () => {
   const [modalidadeId, setModalidadeId] = useState(undefined);
   const [semestre, setSemestre] = useState(undefined);
   const [turmaId, setTurmaId] = useState(undefined);
+  const [categorias, setCategorias] = useState([]);
+  const [tipos, setTipos] = useState([]);
+  const [situacoes, setSituacoes] = useState([]);
+  const [exibirDescricao, setExibirDescricao] = useState(false);
+  const [
+    exibirNotificacoesExcluidas,
+    setExibirNotificacoesExcluidas,
+  ] = useState(false);
 
   const [carregandoGeral, setCarregandoGeral] = useState(false);
   const [desabilitarBtnGerar, setDesabilitarBtnGerar] = useState(true);
 
   const OPCAO_TODAS = '-99';
+
+  const opcoesExibirDescricao = [
+    { label: 'Sim', value: true },
+    { label: 'Não', value: false },
+  ];
+
+  const opcoesExibirNotificacoesExcluidas = [
+    { label: 'Sim', value: true },
+    { label: 'Não', value: false },
+  ];
 
   const obterAnosLetivos = useCallback(async () => {
     setCarregandoGeral(true);
@@ -158,9 +180,8 @@ const HistoricoNotificacoes = () => {
   };
 
   const obterTurmas = useCallback(async () => {
-    debugger;
     if (codigoUe === OPCAO_TODAS) {
-      setListaTurmas([{ valor: '-99', desc: 'Todas' }]);
+      setListaTurmas([{ valor: '-99', descricao: 'Todas' }]);
       setTurmaId(OPCAO_TODAS);
       return;
     }
@@ -240,9 +261,45 @@ const HistoricoNotificacoes = () => {
     }
   }, [anoLetivo, codigoDre, codigoUe, modalidadeId, semestre, turmaId]);
 
+  const carregarListas = async () => {
+    const status = await api.get('v1/notificacoes/status').catch(e => erros(e));
+    if (status?.data?.length) {
+      if (status.data.length > 1) {
+        status.data.unshift({ descricao: 'Todas', id: OPCAO_TODAS });
+      }
+      setListaSituacao(status.data);
+    } else {
+      setListaSituacao([]);
+    }
+
+    const cat = await api
+      .get('v1/notificacoes/categorias')
+      .catch(e => erros(e));
+
+    if (cat?.data?.length) {
+      if (cat.data.length > 1) {
+        cat.data.unshift({ descricao: 'Todas', id: OPCAO_TODAS });
+      }
+      setListaCategorias(cat.data);
+    } else {
+      setListaCategorias([]);
+    }
+
+    const tip = await api.get('v1/notificacoes/tipos').catch(e => erros(e));
+    if (tip?.data?.length) {
+      if (tip.data.length > 1) {
+        tip.data.unshift({ descricao: 'Todos', id: OPCAO_TODAS });
+      }
+      setListaTipos(tip.data);
+    } else {
+      setListaTipos([]);
+    }
+  };
+
   useEffect(() => {
     obterAnosLetivos();
     obterDres();
+    carregarListas();
   }, [obterAnosLetivos]);
 
   const onClickVoltar = () => {
@@ -261,42 +318,31 @@ const HistoricoNotificacoes = () => {
 
   const onClickGerar = async () => {
     const params = {
+      anoLetivo,
       dre: codigoDre,
       ue: codigoUe,
-      anoLetivo,
       modalidadeTurma: modalidadeId,
-      turmas: turmaId,
+      semestre,
+      turma: turmaId,
+      usuarioBuscaRf: '',
+      categoria: categorias,
+      tipo: tipos,
+      situacao: situacoes,
+      exibirDescricao,
+      exibirNotificacoesExcluidas,
     };
 
-    // {
-    //   "dre": -99,
-    //   "ue": -99,
-    //   "anoLetivo": 2020,
-    //   "modalidadeTurma": 5,
-    //   "turmas": -99,
-    //   "usuarioBuscaNome":"",
-    //   "usuarioBuscaRf":"",
-    //   "categorias":[1,3],
-    //   "tipos":[1],
-    //   "situacoes":[-99],
-    //   "exibirDescricao":false,
-    //   "exibirNotificacoesExcluidas":false
-    // }
+    setCarregandoGeral(true);
+    const retorno = await ServicoHistoricoNotificacoes.gerar(params)
+      .catch(e => erros(e))
+      .finally(() => setCarregandoGeral(false));
 
-    console.log(params);
-
-    // setCarregandoGeral(true);
-    // const retorno = await ServicoFaltasFrequencia.gerar(params).catch(e => {
-    //   erros(e);
-    //   setCarregandoGeral(false);
-    // });
-    // if (retorno && retorno.status === 200) {
-    //   sucesso(
-    //     'Solicitação de geração do relatório gerada com sucesso. Em breve você receberá uma notificação com o resultado.'
-    //   );
-    //   setDesabilitarBtnGerar(true);
-    // }
-    // setCarregandoGeral(false);
+    if (retorno && retorno.status === 200) {
+      sucesso(
+        'Solicitação de geração do relatório gerada com sucesso. Em breve você receberá uma notificação com o resultado.'
+      );
+      setDesabilitarBtnGerar(true);
+    }
   };
 
   const onChangeUe = ue => {
@@ -333,6 +379,20 @@ const HistoricoNotificacoes = () => {
   };
 
   const onChangeSemestre = valor => setSemestre(valor);
+
+  const onchangeMultiSelect = (valores, valoreAtual, funSetarNovoValor) => {
+    const opcaoTodosJaSelecionado = valoreAtual
+      ? valoreAtual.includes('-99')
+      : false;
+    if (opcaoTodosJaSelecionado) {
+      const listaSemOpcaoTodos = valores.filter(v => v !== '-99');
+      funSetarNovoValor(listaSemOpcaoTodos);
+    } else if (valores.includes('-99')) {
+      funSetarNovoValor(['-99']);
+    } else {
+      funSetarNovoValor(valores);
+    }
+  };
 
   return (
     <>
@@ -436,7 +496,7 @@ const HistoricoNotificacoes = () => {
                   placeholder="Selecione o semestre"
                 />
               </div>
-              <div className="col-sm-12 col-md-6 col-lg-4 col-xl-5  mb-2">
+              <div className="col-sm-12 col-md-6 col-lg-4 col-xl-5 mb-2">
                 <SelectComponent
                   id="drop-turma"
                   lista={listaTurmas}
@@ -449,6 +509,86 @@ const HistoricoNotificacoes = () => {
                   valueSelect={turmaId}
                   onChange={setTurmaId}
                   placeholder="Turma"
+                />
+              </div>
+              {/* <div className="col-sm-12 col-md-6 col-lg-4 col-xl-4 mb-2">
+                <div className="row pr-3">
+                  <Localizador
+                    buscandoDados={setCarregandoGeral}
+                    dreId={codigoDre}
+                    anoLetivo={2020}
+                    showLabel
+                    onChange={valores => {
+                      if (valores && valores.professorRf) {
+                        setUsuarioRf(valores.professorRf);
+                      }
+                    }}
+                  />
+                </div>
+              </div> */}
+              <div className="col-sm-12 col-md-6 col-lg-4 col-xl-4 mb-2">
+                <SelectComponent
+                  label="Categoria"
+                  id="categoria-noti"
+                  lista={listaCategorias}
+                  valueOption="id"
+                  valueText="descricao"
+                  onChange={valores => {
+                    onchangeMultiSelect(valores, categorias, setCategorias);
+                  }}
+                  valueSelect={categorias}
+                  placeholder="Categoria"
+                  multiple
+                />
+              </div>
+              <div className="col-sm-12 col-md-6 col-lg-4 col-xl-4 mb-2">
+                <SelectComponent
+                  label="Tipo"
+                  id="tipo-noti"
+                  lista={listaTipos}
+                  valueOption="id"
+                  valueText="descricao"
+                  onChange={valores => {
+                    onchangeMultiSelect(valores, tipos, setTipos);
+                  }}
+                  valueSelect={tipos}
+                  placeholder="Tipo"
+                />
+              </div>
+              <div className="col-sm-12 col-md-6 col-lg-4 col-xl-4 mb-2">
+                <SelectComponent
+                  label="Situação"
+                  id="situacao-noti"
+                  lista={listaSituacao}
+                  valueOption="id"
+                  valueText="descricao"
+                  onChange={valores => {
+                    onchangeMultiSelect(valores, situacoes, setSituacoes);
+                  }}
+                  valueSelect={situacoes}
+                  placeholder="Situação"
+                />
+              </div>
+              <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 mb-2">
+                <RadioGroupButton
+                  label="Exibir descrição"
+                  opcoes={opcoesExibirDescricao}
+                  valorInicial
+                  onChange={e => {
+                    setExibirDescricao(e.target.value);
+                  }}
+                  value={exibirDescricao}
+                />
+              </div>
+              <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 mb-2">
+                <RadioGroupButton
+                  label="Exibir notificações excluídas"
+                  opcoes={opcoesExibirNotificacoesExcluidas}
+                  valorInicial
+                  onChange={e => {
+                    setExibirNotificacoesExcluidas(e.target.value);
+                  }}
+                  value={exibirNotificacoesExcluidas}
                 />
               </div>
             </div>
