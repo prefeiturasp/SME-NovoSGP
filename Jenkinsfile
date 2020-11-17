@@ -63,15 +63,16 @@ pipeline {
        }
        
         stage('Functional regression tests') {
+            when {
+            branch 'story/27640'
+          }
           agent { 
             docker {
               image 'ppodgorsek/robot-framework:latest'
               args '--shm-size=1g' 
             }
           }
-          when {
-            branch 'story/27640'
-          }
+          
           environment {
             BROWSER = 'chrome'
             SERVER = 'dev-novosgp.sme.prefeitura.sp.gov.br'
@@ -371,7 +372,8 @@ pipeline {
 
 post {
         always {
-          echo 'One way or another, I have finished'
+          cleanWs()
+            
         }
         success {
           telegramSend("${JOB_NAME}...O Build ${BUILD_DISPLAY_NAME} - Esta ok !!!\n Consulte o log para detalhes -> [Job logs](${env.BUILD_URL}console)\n\n Uma nova versão da aplicação esta disponivel!!!")
