@@ -10,12 +10,10 @@ namespace SME.SGP.Aplicacao
     public class RelatorioConselhoClasseAtaFinalUseCase : IRelatorioConselhoClasseAtaFinalUseCase
     {
         private readonly IMediator mediator;
-        private readonly IServicoFila servicoFila;
 
-        public RelatorioConselhoClasseAtaFinalUseCase(IMediator mediator, IServicoFila servicoFila)
+        public RelatorioConselhoClasseAtaFinalUseCase(IMediator mediator)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.servicoFila = servicoFila;
         }
 
         public async Task<bool> Executar(FiltroRelatorioConselhoClasseAtaFinalDto filtroRelatorioConselhoClasseAtaFinalDto)

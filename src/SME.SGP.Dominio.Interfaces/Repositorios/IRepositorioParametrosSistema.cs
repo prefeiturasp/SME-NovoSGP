@@ -12,7 +12,9 @@ namespace SME.SGP.Dominio.Interfaces
         Task<string> ObterValorUnicoPorTipo(TipoParametroSistema tipo);
         Task<T> ObterValorUnicoPorTipo<T>(TipoParametroSistema tipoParametroSistema);
         Task<string> ObterValorPorTipoEAno(TipoParametroSistema tipo, int? ano = null);
+        Task<ParametrosSistema> ObterParametroPorTipoEAno(TipoParametroSistema tipo, int ano = 0);
         Task<IEnumerable<ParametrosSistema>> ObterPorTiposAsync(long[] tipos);
         Task<bool> VerificaSeExisteParametroSistemaPorAno(int ano);
+        Task<IEnumerable<ParametrosSistema>> ObterParametrosPorTipoEAno(TipoParametroSistema tipo, int ano);
     }
 }
