@@ -524,6 +524,11 @@
         RCG_C = 173,
 
         [PermissaoMenu(Menu = "Dashboard Escola aqui", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = false, Url = "/relatorios/escola-aqui/dashboard")]
-        RDE_A = 177
+        RDE_A = 177,
+
+        [PermissaoMenu(Menu = "Gestão", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = false, Url = "/relatorios/gestao/notificacoes", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Notificações")]
+        RDN_C = 183
+
+
     }
 }
