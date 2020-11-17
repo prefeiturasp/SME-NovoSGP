@@ -35,4 +35,12 @@ const obterPerfis = login => {
     });
 };
 
-export { obterMeusDados, obterPerfis };
+const obterTodosPerfis = () => {
+  return api.get('v1/usuarios/perfis');
+};
+
+const obterListaSituacoes = () => {
+  return api.get('v1/usuarios/situacoes');
+};
+
+export { obterMeusDados, obterPerfis, obterTodosPerfis, obterListaSituacoes };

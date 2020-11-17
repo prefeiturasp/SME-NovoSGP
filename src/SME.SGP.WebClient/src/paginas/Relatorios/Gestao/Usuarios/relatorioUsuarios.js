@@ -1,11 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
 import {
   Loader,
-  SelectComponent,
+
   Localizador,
-  Grid,
-  RadioGroupButton,
+
+  RadioGroupButton, SelectComponent
 } from '~/componentes';
 import { Cabecalho } from '~/componentes-sgp';
 import Button from '~/componentes/button';
@@ -17,17 +16,17 @@ import { erros, sucesso } from '~/servicos/alertas';
 import history from '~/servicos/history';
 import ServicoFiltroRelatorio from '~/servicos/Paginas/FiltroRelatorio/ServicoFiltroRelatorio';
 import ServicoRelatorioUsuarios from '~/servicos/Paginas/Relatorios/Usuarios/ServicoRelatorioUsuarios';
+import {
+  obterListaSituacoes,
+  obterTodosPerfis
+} from '~/servicos/Paginas/ServicoUsuario';
 
 const RelatorioUsuarios = () => {
-  const perfilStore = useSelector(e => e.perfil);
-
   const [listaDres, setListaDres] = useState([]);
   const [listaUes, setListaUes] = useState([]);
   const [listaPerfis, setListaPerfis] = useState([]);
-  const [listaSituacao] = useState([
-    { desc: 'Ativo', valor: 5 },
-    { desc: 'Expirado', valor: 6 },
-  ]);
+  const [listaSituacao, setListaSituacao] = useState([]);
+
   const opcoesExibirHistorico = [
     { label: 'Não exibir', value: true },
     { label: 'Exibir', value: false },
@@ -36,13 +35,15 @@ const RelatorioUsuarios = () => {
   const [codigoDre, setCodigoDre] = useState(undefined);
   const [codigoUe, setCodigoUe] = useState(undefined);
   const [usuarioRf, setUsuarioRf] = useState(undefined);
-  const [perfisSelecionados, setPerfisSelecionados] = useState(undefined);
-  const [situacao, setSituacao] = useState(undefined);
+  const [perfisSelecionados, setPerfisSelecionados] = useState([]);
+  const [situacoesSelecionadas, setSituacoesSelecionadas] = useState([]);
   const [diasSemAcesso, setDiasSemAcesso] = useState();
   const [exibirHistorico, setExibirHistorico] = useState(true);
 
   const [carregandoGeral, setCarregandoGeral] = useState(false);
   const [desabilitarBtnGerar, setDesabilitarBtnGerar] = useState(true);
+
+  const OPCAO_TODOS = '-99';
 
   const obterUes = useCallback(async dre => {
     if (dre) {
@@ -92,24 +93,6 @@ const RelatorioUsuarios = () => {
   };
 
   useEffect(() => {
-    if (perfilStore?.perfis?.length) {
-      const lista = perfilStore.perfis.map(item => {
-        return {
-          valor: item.codigoPerfil,
-          desc: item.nomePerfil + (item.sigla ? ` (${item.sigla})` : ''),
-        };
-      });
-      if (lista.length > 1) {
-        lista.unshift({ valor: '-99', desc: 'Todos' });
-        setPerfisSelecionados(['-99']);
-      }
-      setListaPerfis(lista);
-    } else {
-      setListaPerfis([]);
-    }
-  }, [perfilStore]);
-
-  useEffect(() => {
     if (codigoDre) {
       obterUes(codigoDre);
     } else {
@@ -119,26 +102,44 @@ const RelatorioUsuarios = () => {
   }, [codigoDre, obterUes]);
 
   useEffect(() => {
-    const desabilitar =
-      !codigoDre ||
-      !codigoUe ||
-      !usuarioRf ||
-      !perfisSelecionados?.length ||
-      !situacao ||
-      !diasSemAcesso;
+    const desabilitar = !codigoDre || !codigoUe || !perfisSelecionados?.length;
 
     setDesabilitarBtnGerar(desabilitar);
-  }, [
-    codigoDre,
-    codigoUe,
-    usuarioRf,
-    perfisSelecionados,
-    situacao,
-    diasSemAcesso,
-  ]);
+  }, [codigoDre, codigoUe, perfisSelecionados]);
+
+  const montarListaPerfis = async () => {
+    const resposta = await obterTodosPerfis().catch(e => erros(e));
+    if (resposta?.data?.length) {
+      const lista = resposta.data;
+      setListaPerfis(lista);
+
+      if (lista.length > 1) {
+        lista.unshift({ key: OPCAO_TODOS, value: 'Todos' });
+        setPerfisSelecionados([OPCAO_TODOS]);
+      }
+    } else {
+      setListaPerfis([]);
+    }
+  };
+
+  const montarListaSituacoes = async () => {
+    const resposta = await obterListaSituacoes().catch(e => erros(e));
+    if (resposta?.data?.length) {
+      const lista = resposta.data;
+      setListaSituacao(lista);
+
+      if (lista.length > 1) {
+        lista.unshift({ key: OPCAO_TODOS, value: 'Todas' });
+      }
+    } else {
+      setListaSituacao([]);
+    }
+  };
 
   useEffect(() => {
     obterDres();
+    montarListaPerfis();
+    montarListaSituacoes();
   }, []);
 
   const onClickVoltar = () => {
@@ -153,21 +154,33 @@ const RelatorioUsuarios = () => {
   };
 
   const onClickGerar = async () => {
-    const dreSelecionada = listaDres.find(
-      item => String(item.codigo) === String(codigoDre)
-    );
+    let keysPerfis = [];
+    if (
+      perfisSelecionados?.length === 1 &&
+      perfisSelecionados[0] === OPCAO_TODOS
+    ) {
+      keysPerfis = listaPerfis
+        .map(item => item.key)
+        .filter(item => item !== OPCAO_TODOS);
+    }
 
-    const ueSelecionada = listaUes.find(
-      item => String(item.codigo) === String(codigoUe)
-    );
+    let keysSituacoes = [];
+    if (
+      situacoesSelecionadas?.length === 1 &&
+      situacoesSelecionadas[0] === OPCAO_TODOS
+    ) {
+      keysSituacoes = listaSituacao
+        .map(item => item.key)
+        .filter(item => item !== OPCAO_TODOS);
+    }
 
     const params = {
-      dreId: dreSelecionada?.id,
-      ueId: ueSelecionada?.id,
-      usuarioRf,
-      perfis: perfisSelecionados,
-      situacoes: [situacao],
-      diasSemAcesso,
+      codigoDre,
+      codigoUe,
+      usuarioRf: usuarioRf || '',
+      perfis: keysPerfis,
+      situacoes: keysSituacoes,
+      diasSemAcesso: diasSemAcesso || 0,
       exibirHistorico,
     };
 
@@ -272,22 +285,22 @@ const RelatorioUsuarios = () => {
                 <SelectComponent
                   id="select-perfis"
                   lista={listaPerfis}
-                  valueOption="valor"
-                  valueText="desc"
+                  valueOption="key"
+                  valueText="value"
                   label="Perfil"
                   valueSelect={perfisSelecionados}
                   multiple
                   onChange={valores => {
                     const opcaoTodosJaSelecionado = perfisSelecionados
-                      ? perfisSelecionados.includes('-99')
+                      ? perfisSelecionados.includes(OPCAO_TODOS)
                       : false;
                     if (opcaoTodosJaSelecionado) {
                       const listaSemOpcaoTodos = valores.filter(
-                        v => v !== '-99'
+                        v => v !== OPCAO_TODOS
                       );
                       setPerfisSelecionados(listaSemOpcaoTodos);
-                    } else if (valores.includes('-99')) {
-                      setPerfisSelecionados(['-99']);
+                    } else if (valores.includes(OPCAO_TODOS)) {
+                      setPerfisSelecionados([OPCAO_TODOS]);
                     } else {
                       setPerfisSelecionados(valores);
                     }
@@ -295,19 +308,34 @@ const RelatorioUsuarios = () => {
                   placeholder="Perfil"
                 />
               </div>
-              <div className="col-sm-12 col-md-6 col-lg-6 col-xl-3 mb-2">
+              <div className="col-sm-12 col-md-6 col-lg-6 col-xl-6 mb-2">
                 <SelectComponent
                   label="Situação"
                   lista={listaSituacao}
-                  valueOption="valor"
-                  valueText="desc"
+                  valueOption="key"
+                  valueText="value"
                   disabled={listaSituacao && listaSituacao.length === 1}
-                  onChange={setSituacao}
-                  valueSelect={situacao}
+                  valueSelect={situacoesSelecionadas}
+                  multiple
+                  onChange={valores => {
+                    const opcaoTodosJaSelecionado = situacoesSelecionadas
+                      ? situacoesSelecionadas.includes(OPCAO_TODOS)
+                      : false;
+                    if (opcaoTodosJaSelecionado) {
+                      const listaSemOpcaoTodos = valores.filter(
+                        v => v !== OPCAO_TODOS
+                      );
+                      setSituacoesSelecionadas(listaSemOpcaoTodos);
+                    } else if (valores.includes(OPCAO_TODOS)) {
+                      setSituacoesSelecionadas([OPCAO_TODOS]);
+                    } else {
+                      setSituacoesSelecionadas(valores);
+                    }
+                  }}
                   placeholder="Situação"
                 />
               </div>
-              <div className="col-sm-12 col-md-6 col-lg-6 col-xl-3 mb-4">
+              <div className="col-sm-12 col-md-6 col-lg-6 col-xl-3 mb-2">
                 <CampoNumero
                   onChange={setDiasSemAcesso}
                   value={diasSemAcesso}
