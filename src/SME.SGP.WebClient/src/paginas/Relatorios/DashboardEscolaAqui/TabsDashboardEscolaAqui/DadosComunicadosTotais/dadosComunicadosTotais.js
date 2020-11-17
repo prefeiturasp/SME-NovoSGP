@@ -41,11 +41,11 @@ const DadosComunicadosTotais = props => {
       const dadosMapeados = [
         {
           label: 'Expirados',
-          Expirados: dados.totalComunicadosVigentes,
+          Expirados: dados.totalComunicadosExpirados,
         },
         {
           label: 'Vigentes',
-          Vigentes: dados.totalComunicadosExpirados,
+          Vigentes: dados.totalComunicadosVigentes,
         },
       ];
       setDadosGraficoTotalComunicadosEnviados(dadosMapeados);
