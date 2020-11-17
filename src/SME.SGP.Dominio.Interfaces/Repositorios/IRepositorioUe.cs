@@ -13,9 +13,13 @@ namespace SME.SGP.Dominio.Interfaces
 
         Ue ObterPorCodigo(string ueId);
 
+        Task<Ue> ObterUeComDrePorCodigo(string ueCodigo);
+
         Ue ObterPorId(long id);
 
         IEnumerable<Ue> ObterPorDre(long dreId);
+
+        Task<IEnumerable<Ue>> ObterUesComDrePorDreEModalidade(string dreCodigo, Modalidade modalidade);
 
         IEnumerable<Ue> ObterTodas();
 
@@ -24,5 +28,8 @@ namespace SME.SGP.Dominio.Interfaces
         Ue ObterUEPorTurma(string turmaId);
 
         Task<IEnumerable<Ue>> SincronizarAsync(IEnumerable<Ue> entidades, IEnumerable<Dre> dres);
+        Task<bool> ValidarUeEducacaoInfantil(long ueId);
+
+        Task<IEnumerable<Ue>> ObterUesPorModalidade(int[] modalidades);
     }
 }

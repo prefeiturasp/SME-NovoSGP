@@ -21,7 +21,7 @@ pipeline {
        
       stage('Início Análise Código') {
           when {
-            branch 'development'
+            branch 'development-NaoExecutar'
           }
             steps {
                 sh 'echo Analise SonarQube API'
@@ -54,7 +54,7 @@ pipeline {
         
               stage('Fim Análise Código') {
           when {
-            branch 'development'
+            branch 'development-NaoExecutar'
           }
             steps {
                 sh 'echo Fim SonarQube API'

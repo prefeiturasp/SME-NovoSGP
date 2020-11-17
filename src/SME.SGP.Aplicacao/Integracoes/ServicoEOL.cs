@@ -653,9 +653,9 @@ namespace SME.SGP.Aplicacao.Integracoes
             return JsonConvert.DeserializeObject<UsuarioResumoCoreDto>(json);
         }
 
-        public async Task<ProfessorResumoDto> ObterResumoProfessorPorRFAnoLetivo(string codigoRF, int anoLetivo)
+        public async Task<ProfessorResumoDto> ObterResumoProfessorPorRFAnoLetivo(string codigoRF, int anoLetivo, bool buscarOutrosCargos = false)
         {
-            var resposta = await httpClient.GetAsync($"professores/{codigoRF}/BuscarPorRf/{anoLetivo}");
+            var resposta = await httpClient.GetAsync($"professores/{codigoRF}/BuscarPorRf/{anoLetivo}?buscarOutrosCargos={buscarOutrosCargos}");
 
             if (!resposta.IsSuccessStatusCode)
                 throw new NegocioException("Ocorreu uma falha ao consultar o professor");
