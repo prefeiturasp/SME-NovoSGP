@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using MediatR;
+using Microsoft.Extensions.Configuration;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
@@ -28,7 +29,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IServicoLog servicoLog;
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoUsuario servicoUsuario;
-        private readonly IServicoFila servicoFila;
+        private readonly IMediator mediator;
         private readonly IUnitOfWork unitOfWork;
 
         public ServicoEvento(IRepositorioEvento repositorioEvento,
@@ -39,7 +40,7 @@ namespace SME.SGP.Dominio.Servicos
                              IRepositorioTipoCalendario repositorioTipoCalendario,
                              IComandosWorkflowAprovacao comandosWorkflowAprovacao,
                              IRepositorioAbrangencia repositorioAbrangencia, IConfiguration configuration,
-                             IUnitOfWork unitOfWork, IServicoNotificacao servicoNotificacao, IServicoLog servicoLog, IServicoDiaLetivo servicoDiaLetivo, IServicoFila servicoFila)
+                             IUnitOfWork unitOfWork, IServicoNotificacao servicoNotificacao, IServicoLog servicoLog, IServicoDiaLetivo servicoDiaLetivo, IMediator mediator)
         {
             this.repositorioEvento = repositorioEvento ?? throw new System.ArgumentNullException(nameof(repositorioEvento));
             this.repositorioEventoTipo = repositorioEventoTipo ?? throw new System.ArgumentNullException(nameof(repositorioEventoTipo));
@@ -54,7 +55,7 @@ namespace SME.SGP.Dominio.Servicos
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
             this.servicoLog = servicoLog ?? throw new ArgumentNullException(nameof(servicoLog));
             this.servicoDiaLetivo = servicoDiaLetivo ?? throw new ArgumentNullException(nameof(servicoDiaLetivo));
-            this.servicoFila = servicoFila ?? throw new ArgumentNullException(nameof(servicoFila));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public static DateTime ObterProximoDiaDaSemana(DateTime data, DayOfWeek diaDaSemana)
@@ -134,8 +135,8 @@ namespace SME.SGP.Dominio.Servicos
             }
 
             // Verifica existencia de pendencia de calendario com dias letivos insuficientes
-            VerificaPendenciaDiasLetivosInsuficientes(ehAlteracao, enviarParaWorkflow, evento, usuario);
-            VerificaPendenciaParametroEvento(evento, usuario);
+            await VerificaPendenciaDiasLetivosInsuficientes(ehAlteracao, enviarParaWorkflow, evento, usuario);
+            await VerificaPendenciaParametroEvento(evento, usuario);
 
             if (ehAlteracao)
             {
@@ -151,26 +152,16 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        private void VerificaPendenciaParametroEvento(Evento evento, Usuario usuario)
+        private async Task VerificaPendenciaParametroEvento(Evento evento, Usuario usuario)
         {
             if ( evento.GeraPendenciaParametroEvento())
-            {
-                servicoFila.PublicaFilaWorkerSgp(new PublicaFilaSgpDto(RotasRabbit.RotaExecutaExclusaoPendenciaParametroEvento,
-                                                                       new VerificaExclusaoPendenciasParametroEventoCommand(evento.TipoCalendarioId, evento.UeId, (TipoEvento)evento.TipoEventoId),
-                                                                       Guid.NewGuid(),
-                                                                       usuario));
-            }
+                await mediator.Send(new IncluirFilaVerificaExclusaoPendenciasParametroEventoCommand(evento.TipoCalendarioId, evento.UeId, (TipoEvento)evento.TipoEventoId, usuario));
         }
 
-        private void VerificaPendenciaDiasLetivosInsuficientes(bool ehAlteracao, bool enviarParaWorkflow, Evento evento, Usuario usuario)
+        private async Task VerificaPendenciaDiasLetivosInsuficientes(bool ehAlteracao, bool enviarParaWorkflow, Evento evento, Usuario usuario)
         {
             if (!enviarParaWorkflow && !ehAlteracao && evento.EhEventoLetivo())
-            {
-                servicoFila.PublicaFilaWorkerSgp(new PublicaFilaSgpDto(RotasRabbit.RotaExecutaExclusaoPendenciasDiasLetivosInsuficientes,
-                                                                       new ExcluirPendenciasDiasLetivosInsuficientesCommand(evento.TipoCalendarioId, evento.DreId, evento.UeId),
-                                                                       Guid.NewGuid(),
-                                                                       usuario));
-            }
+                await mediator.Send(new IncluirFilaExcluirPendenciasDiasLetivosInsuficientesCommand(evento.TipoCalendarioId, evento.DreId, evento.UeId, usuario));
         }
 
         public void SalvarEventoFeriadosAoCadastrarTipoCalendario(TipoCalendario tipoCalendario)
@@ -529,10 +520,7 @@ namespace SME.SGP.Dominio.Servicos
             {
                 var usuario = await servicoUsuario.ObterUsuarioLogado();
 
-                servicoFila.PublicaFilaWorkerSgp(new PublicaFilaSgpDto(RotasRabbit.RotaExecutaExclusaoPendenciasDiasLetivosInsuficientes,
-                                                                   new ExcluirPendenciasDiasLetivosInsuficientesCommand(evento.TipoCalendarioId, evento.DreId, evento.UeId),
-                                                                   Guid.NewGuid(),
-                                                                   usuario));
+                await mediator.Send(new IncluirFilaExcluirPendenciasDiasLetivosInsuficientesCommand(evento.TipoCalendarioId, evento.DreId, evento.UeId, usuario));
             }
         }
     }
