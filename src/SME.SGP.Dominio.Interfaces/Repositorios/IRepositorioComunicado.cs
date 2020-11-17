@@ -12,5 +12,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<ComunicadosTotaisResultado> ObterComunicadosTotaisSme(int anoLetivo, string codigoDre, string codigoUe);
 
         Task<IEnumerable<ComunicadosTotaisPorDreResultado>> ObterComunicadosTotaisAgrupadosPorDre(int anoLetivo);
+        Task<bool> VerificaExistenciaComunicadoParaEvento(long eventoId);
     }
 }
