@@ -1,6 +1,11 @@
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Graficos, Loader, SelectComponent } from '~/componentes';
+import {
+  CoresGraficos,
+  Graficos,
+  Loader,
+  SelectComponent,
+} from '~/componentes';
 import { AbrangenciaServico, erros } from '~/servicos';
 import ServicoDashboardEscolaAqui from '~/servicos/Paginas/Relatorios/EscolaAqui/DashboardEscolaAqui/ServicoDashboardEscolaAqui';
 import {
@@ -32,22 +37,26 @@ const DadosComunicadosTotais = props => {
   };
 
   const mapearParaDtoGraficoTotalComunicadosEnviados = dados => {
-    const dadosMapeados = [
-      {
-        label: 'Expirados',
-        Expirados: dados.totalExpirados,
-      },
-      {
-        label: 'Vigentes',
-        Vigentes: dados.totalVigentes,
-      },
-    ];
-    setDadosGraficoTotalComunicadosEnviados(dadosMapeados);
+    if (dados.totalComunicadosVigentes || dados.totalComunicadosExpirados) {
+      const dadosMapeados = [
+        {
+          label: 'Expirados',
+          Expirados: dados.totalComunicadosVigentes,
+        },
+        {
+          label: 'Vigentes',
+          Vigentes: dados.totalComunicadosExpirados,
+        },
+      ];
+      setDadosGraficoTotalComunicadosEnviados(dadosMapeados);
+    } else {
+      setDadosGraficoTotalComunicadosEnviados([]);
+    }
   };
 
-  const obterDadosGraficoTotalComunicadosEnviados = useCallback(async () => {
+  const obterComunicadosTotaisSme = useCallback(async () => {
     setExibirLoader(true);
-    const retorno = await ServicoDashboardEscolaAqui.obterDadosGraficoTotalComunicadosEnviados(
+    const retorno = await ServicoDashboardEscolaAqui.obterComunicadosTotaisSme(
       codigoDre === '-99' ? '' : codigoDre,
       codigoUe === '-99' ? '' : codigoUe,
       anoLetivo
@@ -63,24 +72,37 @@ const DadosComunicadosTotais = props => {
   }, [codigoDre, codigoUe, anoLetivo]);
 
   const mapearParaDtoGraficoTotalComunicadosPorDRE = useCallback(dados => {
-    const dadosMapeados = dados.map(item => {
-      return {
-        nomeDre: item.nomeDre,
-        comunicadosvigentes: item.comunicadosvigentes,
-        comunicadosExpirados: item.comunicadosExpirados,
-        Vigentes: item.comunicadosvigentes,
-        Expirados: item.comunicadosExpirados,
-      };
-    });
-    setDadosTotalComunicadosPorDRE(dadosMapeados);
+    const temDados = dados.filter(
+      item => item.totalComunicadosVigentes || item.totalComunicadosExpirados
+    );
+    if (temDados?.length) {
+      const dadosMapeados = dados.map(item => {
+        const novo = {};
+        if (item.totalComunicadosVigentes || item.totalComunicadosExpirados) {
+          novo.nomeAbreviadoDre = item.nomeAbreviadoDre;
+          if (item.totalComunicadosVigentes) {
+            novo.totalComunicadosVigentes = item.totalComunicadosVigentes;
+            novo.Vigentes = item.totalComunicadosVigentes;
+          }
+          if (item.totalComunicadosExpirados) {
+            novo.totalComunicadosExpirados = item.totalComunicadosExpirados;
+            novo.Expirados = item.totalComunicadosExpirados;
+          }
+        }
+        return novo;
+      });
+      setDadosTotalComunicadosPorDRE(
+        dadosMapeados.filter(item => item.nomeAbreviadoDre)
+      );
+    } else {
+      setDadosTotalComunicadosPorDRE([]);
+    }
   }, []);
 
-  const obterDadosGraficoTotalComunicadosPorDRE = useCallback(async () => {
-    if (codigoDre === '-99' && codigoUe === '-99') {
+  const obterComunicadosTotaisAgrupadosPorDre = useCallback(async () => {
+    if (codigoDre === '-99' && codigoUe === '-99' && anoLetivo) {
       setExibirLoader(true);
-      const retorno = await ServicoDashboardEscolaAqui.obterDadosGraficoTotalComunicadosPorDRE(
-        codigoDre === '-99' ? '' : codigoDre,
-        codigoUe === '-99' ? '' : codigoUe,
+      const retorno = await ServicoDashboardEscolaAqui.obterComunicadosTotaisAgrupadosPorDre(
         anoLetivo
       )
         .catch(e => erros(e))
@@ -103,8 +125,8 @@ const DadosComunicadosTotais = props => {
 
   useEffect(() => {
     if (codigoDre && codigoUe && anoLetivo) {
-      obterDadosGraficoTotalComunicadosEnviados();
-      obterDadosGraficoTotalComunicadosPorDRE();
+      obterComunicadosTotaisSme();
+      obterComunicadosTotaisAgrupadosPorDre();
     } else {
       limparDadosGraficos();
     }
@@ -112,8 +134,8 @@ const DadosComunicadosTotais = props => {
     anoLetivo,
     codigoDre,
     codigoUe,
-    obterDadosGraficoTotalComunicadosEnviados,
-    obterDadosGraficoTotalComunicadosPorDRE,
+    obterComunicadosTotaisSme,
+    obterComunicadosTotaisAgrupadosPorDre,
   ]);
 
   const obterAnosLetivos = useCallback(async () => {
@@ -138,6 +160,27 @@ const DadosComunicadosTotais = props => {
     obterAnosLetivos();
   }, [obterAnosLetivos]);
 
+  const tooltipCustomizado = item => {
+    return (
+      <div style={{ whiteSpace: 'pre', display: 'flex', alignItems: 'center' }}>
+        <span
+          style={{
+            display: 'block',
+            width: '12px',
+            height: '12px',
+            background: item.color,
+            marginRight: '7px',
+          }}
+        />
+        {item.id} - <strong>{item.value}</strong>
+      </div>
+    );
+  };
+
+  const formataMilhar = valor => {
+    return valor.toLocaleString('pt-BR');
+  };
+
   const graficoTotalComunicadosEnviados = () => {
     return dadosGraficoTotalComunicadosEnviados?.length ? (
       <div className="scrolling-chart">
@@ -150,6 +193,20 @@ const DadosComunicadosTotais = props => {
               chaves={chavesGraficos}
               groupMode="stacked"
               removeLegends
+              customProps={{
+                colors: item => {
+                  if (item.id === 'Vigentes') {
+                    return CoresGraficos[0];
+                  }
+                  return CoresGraficos[1];
+                },
+                tooltip: item => {
+                  return tooltipCustomizado(item);
+                },
+                labelFormat: valor => {
+                  return formataMilhar(valor);
+                },
+              }}
             />
           </ContainerGraficoBarras>
         </div>
@@ -167,8 +224,22 @@ const DadosComunicadosTotais = props => {
           <ContainerGraficoBarras>
             <Graficos.Barras
               dados={dadosTotalComunicadosPorDRE}
-              indice="nomeDre"
+              indice="nomeAbreviadoDre"
               chaves={chavesGraficos}
+              customProps={{
+                colors: item => {
+                  if (item.id === 'Vigentes') {
+                    return CoresGraficos[0];
+                  }
+                  return CoresGraficos[1];
+                },
+                tooltip: item => {
+                  return tooltipCustomizado(item);
+                },
+                labelFormat: valor => {
+                  return formataMilhar(valor);
+                },
+              }}
             />
           </ContainerGraficoBarras>
         </div>
@@ -197,10 +268,10 @@ const DadosComunicadosTotais = props => {
       {graficoTotalComunicadosPorDRE()}
 
       <div className="col-md-12 text-center">
-        {dadosTotalComunicadosPorDRE?.length &&
-        dadosTotalComunicadosPorDRE?.length
-          ? ''
-          : 'Sem dados'}
+        {!dadosGraficoTotalComunicadosEnviados?.length &&
+        !dadosTotalComunicadosPorDRE?.length
+          ? 'Sem dados'
+          : ''}
       </div>
     </Loader>
   );
