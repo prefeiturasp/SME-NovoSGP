@@ -95,7 +95,7 @@ namespace SME.SGP.Dados.Repositorios
             });            
         }      
 
-        public async Task SalvarVarias(long pendenciaId, IEnumerable<long> aulas)
+        public void SalvarVarias(long pendenciaId, IEnumerable<long> aulas)
         {
             var sql = @"copy pendencia_aula (pendencia_id, aula_id)
                             from
