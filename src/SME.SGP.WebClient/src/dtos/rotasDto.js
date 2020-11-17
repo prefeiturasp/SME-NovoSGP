@@ -1,4 +1,4 @@
-const RotasDto = {
+ RotasDto = {
   PRINCIPAL: '/',
   MEUS_DADOS: '/meus-dados',
   NOTIFICACOES: '/notificacoes',
@@ -53,6 +53,7 @@ const RotasDto = {
   DEVOLUTIVAS: '/diario-classe/devolutiva',
   CONTROLE_GRADE: '/relatorios/diario-classe/controle-grade',
   POC_EDITOR: '/editor',
+  SONDAGEM: '/sondagem',
   POC_UPLOAD_ARQUIVOS: '/upload-arquivos',
 };
 

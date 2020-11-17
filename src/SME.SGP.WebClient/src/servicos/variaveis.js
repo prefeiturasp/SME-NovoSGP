@@ -20,4 +20,24 @@ const obterTrackingID = () =>
       window.location.href = '/erro';
     });
 
-export { urlBase, obterTrackingID };
+const obterUrlSondagem = () =>
+  axios
+    .get('/../../../configuracoes/variaveis.json')
+    .then(response => {
+      return response.data.URL_SONDAGEM;
+    })
+    .catch(() => {
+      window.location.href = '/erro';
+    });
+
+const obterUrlSgpFront = () =>
+  axios
+    .get('/../../../configuracoes/variaveis.json')
+    .then(response => {
+      return response.data.URL_SGP_FRONT;
+    })
+    .catch(() => {
+      window.location.href = '/erro';
+    });
+
+export { urlBase, obterTrackingID, obterUrlSondagem, obterUrlSgpFront };
