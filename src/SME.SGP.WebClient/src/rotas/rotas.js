@@ -73,6 +73,7 @@ import ControleGrade from '~/paginas/Relatorios/DiarioClasse/ControleGrade/contr
 import PocUploadArquivos from '~/componentes-sgp/UploadArquivos/pocUploadArquivos';
 import DocumentosPlanosTrabalhoLista from '~/paginas/Gestao/DocumentosPlanosTrabalho/documentosPlanosTrabalhoLista';
 import DocumentosPlanosTrabalhoCadastro from '~/paginas/Gestao/DocumentosPlanosTrabalho/documentosPlanosTrabalhoCadastro';
+import RelatorioUsuarios from '~/paginas/Relatorios/Gestao/Usuarios/relatorioUsuarios';
 
 const rotas = new Map();
 
@@ -1011,6 +1012,17 @@ rotas.set(`${RotasDto.DOCUMENTOS_PLANOS_TRABALHO}/editar/:id`, {
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: true,
   chavePermissao: RotasDto.DOCUMENTOS_PLANOS_TRABALHO,
+});
+
+rotas.set(RotasDto.RELATORIO_USUARIOS, {
+  breadcrumbName: 'usuários',
+  menu: ['Relatórios', 'Gestão', 'Usuários'],
+  parent: '/',
+  component: RelatorioUsuarios,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.RELATORIO_USUARIOS,
 });
 
 const rotasArray = [];
