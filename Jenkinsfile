@@ -69,7 +69,7 @@ pipeline {
           agent { 
             docker {
               image 'ppodgorsek/robot-framework:latest'
-              args '-v $WORKSPACE/teste/SME.SGP.WebClient.RPA/src:/tmp' 
+              args '-v $WORKSPACE:/tmp --user=1001:1001' 
             }
           }
           
