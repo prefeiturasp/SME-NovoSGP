@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Aplicacao.Interfaces
 {
-    public interface ITrataNotificacoesNiveisCargos
+    public interface ITrataNotificacoesNiveisCargosUseCase
     {
         Task Executar();
     }
