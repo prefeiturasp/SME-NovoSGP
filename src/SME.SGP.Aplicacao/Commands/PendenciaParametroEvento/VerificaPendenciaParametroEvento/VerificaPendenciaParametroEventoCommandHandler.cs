@@ -67,7 +67,7 @@ namespace SME.SGP.Aplicacao
             descricao.AppendLine($"<i>Calendário:</i><b> {nomeTipoCalendario}</b><br />");
             descricao.AppendLine($"<i>Eventos pendentes de cadastro:</i><br />");
 
-            var instrucao = "Acesse a tela de Calendário Escolar e confira os eventos da sua UE.";
+            var instrucao = "Acesse a tela de Eventos e realize o cadastro dos eventos relatados acima.";
 
             return await mediator.Send(new SalvarPendenciaCalendarioUeCommand(tipoCalendarioId, ue, descricao.ToString(), instrucao, TipoPendencia.CadastroEventoPendente));
         }
