@@ -4,11 +4,11 @@ using SME.SGP.Aplicacao.Interfaces;
 
 namespace SME.SGP.Aplicacao
 {
-    public class TrataNotificacoesNiveisCargos : ITrataNotificacoesNiveisCargos
+    public class TrataNotificacoesNiveisCargosUseCase : ITrataNotificacoesNiveisCargosUseCase
     {
         private readonly IMediator mediator;
 
-        public TrataNotificacoesNiveisCargos(IMediator mediator)
+        public TrataNotificacoesNiveisCargosUseCase(IMediator mediator)
         {
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
