@@ -1,18 +1,21 @@
 ﻿using FluentValidation;
 using MediatR;
+using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao
 {
     public class ObterPendenciaAulaPorTurmaIdDisciplinaIdQuery : IRequest<long>
     {
-        public ObterPendenciaAulaPorTurmaIdDisciplinaIdQuery(string turmaId, string disciplinaId)
+        public ObterPendenciaAulaPorTurmaIdDisciplinaIdQuery(string turmaId, string disciplinaId, TipoPendencia tipoPendencia)
         {            
             TurmaId = turmaId;
             DisciplinaId = disciplinaId;
+            TipoPendencia = tipoPendencia;
         }
                 
         public string TurmaId { get; set; }
         public string DisciplinaId { get; set; }
+        public TipoPendencia TipoPendencia { get; set; }
     }
     public class ObterPendenciaAulaPorTurmaIdDisciplinaIdQueryValidator : AbstractValidator<ObterPendenciaAulaPorTurmaIdDisciplinaIdQuery>
     {
