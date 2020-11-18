@@ -78,11 +78,10 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryAsync<Aula>(sql.ToString(), new { hoje = DateTime.Today, tipo = TipoPendencia.Avaliacao }));
         }
 
-        public async Task Excluir(TipoPendencia tipoPendenciaAula, long aulaId)
+        public async Task Excluir(long pendenciaId, long aulaId)
         {
-            await database.Conexao.ExecuteScalarAsync(@"delete from pendencia_aula pa
-                                                     inner join pendencia p on p.id = pa.pendencia_id
-                                                    where pa.aula_id= @aulaid and p.tipo = @tipo", new { aulaid = aulaId, tipo = tipoPendenciaAula });
+            await database.Conexao.ExecuteScalarAsync(@"delete from pendencia_aula 
+                                                    where aula_id = @aulaId and pendencia_id = @pendenciaId", new { aulaid = aulaId, pendenciaId });
         }
 
         public async Task Salvar(long aulaId, string motivo, long pendenciaId)
