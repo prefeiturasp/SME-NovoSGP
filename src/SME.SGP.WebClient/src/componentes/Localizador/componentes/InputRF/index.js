@@ -54,7 +54,7 @@ function InputRF({
   };
 
   const onChangeRf = e => {
-    if (valorNuloOuVazio(e.target.value)) {
+    if (form && valorNuloOuVazio(e.target.value)) {
       form.setFieldValue(name, e.target.value, false);
       form.setFieldTouched(name);
     }
@@ -64,24 +64,28 @@ function InputRF({
 
   useEffect(() => {
     setValor(pessoaSelecionada && pessoaSelecionada.professorRf);
-    form.setFieldValue(
-      name,
-      pessoaSelecionada && pessoaSelecionada.professorRf
-    );
+    if (form) {
+      form.setFieldValue(
+        name,
+        pessoaSelecionada && pessoaSelecionada.professorRf
+      );
+    }
   }, [pessoaSelecionada]);
 
   useEffect(() => {
     if (form && form.initialValues) {
       setValor(form.initialValues.professorRf);
     }
-  }, [form.initialValues]);
+  }, [form?.initialValues]);
 
   useEffect(() => {
-    const { values: valores } = form;
-    if (valores && valorNuloOuVazio(valores.professorRf)) {
-      setValor('');
+    if (form) {
+      const { values: valores } = form;
+      if (valores && valorNuloOuVazio(valores.professorRf)) {
+        setValor('');
+      }
     }
-  }, [form, form.values]);
+  }, [form?.values]);
 
   return (
     <>
@@ -115,7 +119,7 @@ function InputRF({
           <Input
             value={valor}
             placeholder="Digite o RF"
-            onChange={e => onChangeRf(e.target.value)}
+            onChange={onChangeRf}
             onPressEnter={e => onSubmitRF(e.target.value)}
             suffix={botao}
             disabled={desabilitado}
@@ -143,7 +147,7 @@ InputRF.propTypes = {
 InputRF.defaultProps = {
   pessoaSelecionada: {},
   onSelect: () => null,
-  form: {},
+  form: null,
   name: '',
   id: '',
   className: '',

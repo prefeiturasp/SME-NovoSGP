@@ -73,6 +73,7 @@ import ControleGrade from '~/paginas/Relatorios/DiarioClasse/ControleGrade/contr
 import PocUploadArquivos from '~/componentes-sgp/UploadArquivos/pocUploadArquivos';
 import DocumentosPlanosTrabalhoLista from '~/paginas/Gestao/DocumentosPlanosTrabalho/documentosPlanosTrabalhoLista';
 import DocumentosPlanosTrabalhoCadastro from '~/paginas/Gestao/DocumentosPlanosTrabalho/documentosPlanosTrabalhoCadastro';
+import HistoricoNotificacoes from '~/paginas/Relatorios/Notificacoes/HistoricoNotificacoes/historicoNotificacoes';
 
 const rotas = new Map();
 
@@ -980,6 +981,17 @@ rotas.set(RotasDto.POC_UPLOAD_ARQUIVOS, {
   component: PocUploadArquivos,
   exact: false,
   tipo: RotasTipo.EstruturadaAutenticada,
+});
+
+rotas.set(RotasDto.HISTORICO_NOTIFICACOES, {
+  breadcrumbName: 'Histórico de notificações',
+  menu: ['Relatórios', 'Notificações'],
+  parent: '/',
+  component: HistoricoNotificacoes,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.HISTORICO_NOTIFICACOES,
 });
 
 rotas.set(RotasDto.DOCUMENTOS_PLANOS_TRABALHO, {
