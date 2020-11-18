@@ -70,10 +70,9 @@ pipeline {
           agent { 
             docker {
               image 'ppodgorsek/robot-framework:latest'
-              args '--shm-size=1g' 
+              args '--shm-size=1g -u root' 
             }
           }
-          
           environment {
             BROWSER = 'chrome'
             SERVER = 'dev-novosgp.sme.prefeitura.sp.gov.br'
@@ -83,6 +82,7 @@ pipeline {
             ROBOT_REPORTS_DIR = "$WORKSPACE/teste/SME.SGP.WebClient.RPA/reports/"
           }
           steps {
+            sh 'apk update && apk add tree && tree /opt/robotframework'
             sh '/opt/robotframework/bin/run-tests-in-virtual-screen.sh'
           }
         }
