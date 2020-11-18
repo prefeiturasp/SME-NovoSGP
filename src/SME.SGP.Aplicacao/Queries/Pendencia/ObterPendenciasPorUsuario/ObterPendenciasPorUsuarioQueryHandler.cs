@@ -105,7 +105,9 @@ namespace SME.SGP.Aplicacao
         private async Task<string> ObterDescricaoTurma(long pendenciaId)
         {
             var turma = await mediator.Send(new ObterTurmaDaPendenciaQuery(pendenciaId));
-            return $"{turma.ModalidadeCodigo.ShortName()} - {turma.Nome}";
+            if(turma != null)
+                return $"{turma.ModalidadeCodigo.ShortName()} - {turma.Nome}";
+            return "";
         }
     }
 }
