@@ -27,8 +27,8 @@ const RelatorioUsuarios = () => {
   const [listaSituacao, setListaSituacao] = useState([]);
 
   const opcoesExibirHistorico = [
-    { label: 'Não exibir', value: true },
-    { label: 'Exibir', value: false },
+    { label: 'Não exibir', value: false },
+    { label: 'Exibir', value: true },
   ];
 
   const [codigoDre, setCodigoDre] = useState(undefined);
@@ -37,7 +37,7 @@ const RelatorioUsuarios = () => {
   const [perfisSelecionados, setPerfisSelecionados] = useState([]);
   const [situacoesSelecionadas, setSituacoesSelecionadas] = useState([]);
   const [diasSemAcesso, setDiasSemAcesso] = useState();
-  const [exibirHistorico, setExibirHistorico] = useState(true);
+  const [exibirHistorico, setExibirHistorico] = useState(false);
 
   const [carregandoGeral, setCarregandoGeral] = useState(false);
   const [desabilitarBtnGerar, setDesabilitarBtnGerar] = useState(true);
@@ -106,7 +106,15 @@ const RelatorioUsuarios = () => {
     const desabilitar = !codigoDre || !codigoUe || !perfisSelecionados?.length;
 
     setDesabilitarBtnGerar(desabilitar);
-  }, [codigoDre, codigoUe, perfisSelecionados]);
+  }, [
+    codigoDre,
+    codigoUe,
+    usuarioRf,
+    perfisSelecionados,
+    situacoesSelecionadas,
+    diasSemAcesso,
+    exibirHistorico,
+  ]);
 
   const montarListaPerfis = async () => {
     const resposta = await obterTodosPerfis().catch(e => erros(e));
@@ -154,7 +162,7 @@ const RelatorioUsuarios = () => {
     setPerfisSelecionados([]);
     setSituacoesSelecionadas([]);
     setDiasSemAcesso();
-    setExibirHistorico(true);
+    setExibirHistorico(false);
 
     setListaDres([]);
     setListaUes([]);
@@ -163,28 +171,17 @@ const RelatorioUsuarios = () => {
   };
 
   const onClickGerar = async () => {
-    let keysPerfis = [];
-    if (
-      perfisSelecionados?.length === 1 &&
-      perfisSelecionados[0] === OPCAO_TODOS
-    ) {
-      keysPerfis = listaPerfis
-        .map(item => item.key)
-        .filter(item => item !== OPCAO_TODOS);
-    } else if (perfisSelecionados?.length) {
-      keysPerfis = perfisSelecionados;
+    let keysPerfis = perfisSelecionados;
+    if (perfisSelecionados[0] === OPCAO_TODOS) {
+      keysPerfis = [];
     }
 
-    let keysSituacoes = [];
+    let keysSituacoes = situacoesSelecionadas;
     if (
       situacoesSelecionadas?.length === 1 &&
       situacoesSelecionadas[0] === OPCAO_TODOS
     ) {
-      keysSituacoes = listaSituacao
-        .map(item => item.key)
-        .filter(item => item !== OPCAO_TODOS);
-    } else if (situacoesSelecionadas?.length) {
-      keysSituacoes = situacoesSelecionadas;
+      keysSituacoes = [];
     }
 
     const params = {
