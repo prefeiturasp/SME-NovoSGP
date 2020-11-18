@@ -15,9 +15,9 @@ namespace SME.SGP.Infra
         public long Turma { get; set; }
         public string UsuarioBuscaNome { get; set; }
         public string UsuarioBuscaRf { get; set; }
-        public IEnumerable<long> Categoria { get; set; }
-        public IEnumerable<long> Tipo { get; set; }
-        public IEnumerable<long> Situacao { get; set; }
+        public IEnumerable<long> Categorias { get; set; }
+        public IEnumerable<long> Tipos { get; set; }
+        public IEnumerable<long> Situacoes { get; set; }
         public bool ExibirDescricao { get; set; }
         public bool ExibirNotificacoesExcluidas { get; set; }
 
