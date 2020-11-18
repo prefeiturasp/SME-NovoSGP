@@ -1,5 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Loader, RadioGroupButton, SelectComponent } from '~/componentes';
+import {
+  Loader,
+  Localizador,
+  RadioGroupButton,
+  SelectComponent,
+} from '~/componentes';
 import { Cabecalho } from '~/componentes-sgp';
 import Button from '~/componentes/button';
 import Card from '~/componentes/card';
@@ -24,12 +29,14 @@ const HistoricoNotificacoes = () => {
   const [listaTipos, setListaTipos] = useState([]);
   const [listaSituacao, setListaSituacao] = useState([]);
 
-  const [anoLetivo, setAnoLetivo] = useState(undefined);
+  const [anoAtual] = useState(window.moment().format('YYYY'));
+  const [anoLetivo, setAnoLetivo] = useState(anoAtual);
   const [codigoDre, setCodigoDre] = useState(undefined);
   const [codigoUe, setCodigoUe] = useState(undefined);
   const [modalidadeId, setModalidadeId] = useState(undefined);
   const [semestre, setSemestre] = useState(undefined);
   const [turmaId, setTurmaId] = useState(undefined);
+  const [usuarioRf, setUsuarioRf] = useState(undefined);
   const [categorias, setCategorias] = useState([]);
   const [tipos, setTipos] = useState([]);
   const [situacoes, setSituacoes] = useState([]);
@@ -251,15 +258,14 @@ const HistoricoNotificacoes = () => {
   }, [modalidadeId, anoLetivo]);
 
   useEffect(() => {
-    const desabilitar =
-      !anoLetivo || !codigoDre || !codigoUe || !modalidadeId || !turmaId;
+    const desabilitar = !anoLetivo || !codigoDre || !codigoUe;
 
     if (modalidadeId == modalidade.EJA) {
       setDesabilitarBtnGerar(!semestre || desabilitar);
     } else {
       setDesabilitarBtnGerar(desabilitar);
     }
-  }, [anoLetivo, codigoDre, codigoUe, modalidadeId, semestre, turmaId]);
+  }, [anoLetivo, codigoDre, codigoUe, modalidadeId, semestre]);
 
   const carregarListas = async () => {
     const status = await api.get('v1/notificacoes/status').catch(e => erros(e));
@@ -307,10 +313,29 @@ const HistoricoNotificacoes = () => {
   };
 
   const onClickCancelar = () => {
-    setAnoLetivo(undefined);
-    setCodigoDre(undefined);
+    setAnoLetivo(anoAtual);
+    setCodigoDre();
+    setCodigoUe();
+    setModalidadeId();
+    setSemestre();
+    setTurmaId();
+    setUsuarioRf();
+    setCategorias([]);
+    setTipos([]);
+    setSituacoes([]);
+    setExibirDescricao(false);
+    setExibirNotificacoesExcluidas(false);
+    setDesabilitarBtnGerar(true);
+
     setListaAnosLetivo([]);
     setListaDres([]);
+    setListaUes([]);
+    setListaModalidades([]);
+    setListaSemestre([]);
+    setListaTurmas([]);
+    setListaCategorias([]);
+    setListaTipos([]);
+    setListaSituacao([]);
 
     obterAnosLetivos();
     obterDres();
@@ -324,7 +349,7 @@ const HistoricoNotificacoes = () => {
       modalidadeTurma: modalidadeId,
       semestre,
       turma: turmaId,
-      usuarioBuscaRf: '',
+      usuarioBuscaRf: usuarioRf,
       categorias: categorias,
       tipos: tipos,
       situacoes: situacoes,
@@ -511,21 +536,23 @@ const HistoricoNotificacoes = () => {
                   placeholder="Turma"
                 />
               </div>
-              {/* <div className="col-sm-12 col-md-6 col-lg-4 col-xl-4 mb-2">
+              <div className="col-md-12 mb-2">
                 <div className="row pr-3">
                   <Localizador
+                    rfEdicao={usuarioRf}
                     buscandoDados={setCarregandoGeral}
                     dreId={codigoDre}
-                    anoLetivo={2020}
+                    anoLetivo={anoLetivo}
                     showLabel
                     onChange={valores => {
                       if (valores && valores.professorRf) {
                         setUsuarioRf(valores.professorRf);
                       }
                     }}
+                    buscarOutrosCargos
                   />
                 </div>
-              </div> */}
+              </div>
               <div className="col-sm-12 col-md-6 col-lg-4 col-xl-4 mb-2">
                 <SelectComponent
                   label="Categoria"
@@ -553,6 +580,7 @@ const HistoricoNotificacoes = () => {
                   }}
                   valueSelect={tipos}
                   placeholder="Tipo"
+                  multiple
                 />
               </div>
               <div className="col-sm-12 col-md-6 col-lg-4 col-xl-4 mb-2">
@@ -567,6 +595,7 @@ const HistoricoNotificacoes = () => {
                   }}
                   valueSelect={situacoes}
                   placeholder="Situação"
+                  multiple
                 />
               </div>
               <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 mb-2">
