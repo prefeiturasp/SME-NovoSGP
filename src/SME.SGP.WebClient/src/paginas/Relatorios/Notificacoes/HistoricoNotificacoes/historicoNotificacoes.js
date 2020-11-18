@@ -325,9 +325,9 @@ const HistoricoNotificacoes = () => {
       semestre,
       turma: turmaId,
       usuarioBuscaRf: '',
-      categoria: categorias,
-      tipo: tipos,
-      situacao: situacoes,
+      categorias: categorias,
+      tipos: tipos,
+      situacoes: situacoes,
       exibirDescricao,
       exibirNotificacoesExcluidas,
     };
