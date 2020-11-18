@@ -83,14 +83,14 @@ namespace SME.SGP.Api
             
 
             //TODO: <Configuração para upload com Jodit, se necessário pode ser removido após aprovação da história de demonstração>
-            if (_env.EnvironmentName != "teste-integrado")
-                app.UseStaticFiles(new StaticFileOptions()
-            {
-                FileProvider = new PhysicalFileProvider(
-                         Path.Combine(Directory.GetCurrentDirectory(), @"Imagens")),
-                RequestPath = new PathString("/imagens"),
-                ServeUnknownFileTypes = true
-            });
+            //if (_env.EnvironmentName != "teste-integrado")
+            //    app.UseStaticFiles(new StaticFileOptions()
+            //{
+            //    FileProvider = new PhysicalFileProvider(
+            //             Path.Combine(Directory.GetCurrentDirectory(), @"Imagens")),
+            //    RequestPath = new PathString("/imagens"),
+            //    ServeUnknownFileTypes = true
+            //});
             //TODO: </Configuração para upload com Jodit, se necessário pode ser removido após aprovação da história de demonstração>
 
             app.UseHealthChecks("/healthz", new HealthCheckOptions()
