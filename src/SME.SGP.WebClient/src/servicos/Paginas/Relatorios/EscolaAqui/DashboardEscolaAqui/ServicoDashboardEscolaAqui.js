@@ -14,8 +14,23 @@ class ServicoDashboardEscolaAqui {
     return api.get(url);
   };
 
+  obterDadosGraficoAdesaoAgrupados = () => {
+    const url = `${urlPadrao}/adesao/agrupados`;
+    return api.get(url);
+  };
+
   obterUltimaAtualizacaoPorProcesso = nomeProcesso => {
     const url = `${urlPadrao}/ultimoProcessamento?nomeProcesso=${nomeProcesso}`;
+    return api.get(url);
+  };
+
+  obterComunicadosTotaisSme = (codigoDre, codigoUe, anoLetivo) => {
+    const url = `${urlPadrao}/comunicados/totais?anoLetivo=${anoLetivo}&codigoDre=${codigoDre}&codigoUe=${codigoUe}`;
+    return api.get(url);
+  };
+
+  obterComunicadosTotaisAgrupadosPorDre = anoLetivo => {
+    const url = `${urlPadrao}/comunicados/totais/agrupados?anoLetivo=${anoLetivo}`;
     return api.get(url);
   };
 }
