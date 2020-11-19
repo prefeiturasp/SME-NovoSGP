@@ -54,13 +54,17 @@ namespace SME.SGP.Aplicacao
 
             if (aulas != null)
             {
-                var listaAgrupada = aulas.Where(a => diasComEventosNaoLetivos.Any(d => d.Data == a.Data)).GroupBy(x => new { x.TurmaId, x.DisciplinaId }).ToList();
+                var listaAgrupada = aulas
+                    .Where(a => diasComEventosNaoLetivos.Any(d => d.Data == a.Data && d.UesIds.Contains(a.CodigoUe)))
+                    .GroupBy(x => new { x.TurmaId, x.DisciplinaId, x.ProfessorRf }).ToList();
 
-                var motivos = diasComEventosNaoLetivos.Where(d => aulas.Any(a => a.Data == d.Data)).Select(d => new { data = d.Data, motivo = d.Motivo }).ToList();
+                var motivos = diasComEventosNaoLetivos
+                    .Where(d => aulas.Any(a => a.Data == d.Data && d.UesIds.Contains(a.CodigoUe)))
+                    .Select(d => new { data = d.Data, motivo = d.Motivo }).ToList();
 
                 foreach (var turmas in listaAgrupada)
                 {
-                    var pendenciaId = await mediator.Send(new ObterPendenciaAulaPorTurmaIdDisciplinaIdQuery(turmas.Key.TurmaId, turmas.Key.DisciplinaId));
+                    var pendenciaId = await mediator.Send(new ObterPendenciaAulaPorTurmaIdDisciplinaIdQuery(turmas.Key.TurmaId, turmas.Key.DisciplinaId, turmas.Key.ProfessorRf, TipoPendencia.AulaNaoLetivo));
 
                     var pendenciaExistente = pendenciaId != 0;
 

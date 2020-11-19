@@ -544,6 +544,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IExcluirDocumentoUseCase, ExcluirDocumentoUseCase>();
             services.TryAddScoped<IObterDocumentoUseCase, ObterDocumentoUseCase>();
             services.TryAddScoped<IAlterarDocumentoUseCase, AlterarDocumentoUseCase>();
+            services.TryAddScoped<IRelatorioNotificacaoUseCase, RelatorioNotificacaoUseCase>();
+
+
 
             services.TryAddScoped<IObterTiposCalendarioPorAnoLetivoModalidadeUseCase, ObterTiposCalendarioPorAnoLetivoModalidadeUseCase>();
         }
