@@ -105,6 +105,33 @@ namespace SME.SGP.Dominio
             return Perfis.Any(c => c.Tipo == TipoPerfil.UE && c.CodigoPerfil == PerfilAtual);
         }
 
+        public bool EhPerfilProfessor()
+            => EhProfessor()
+            || EhProfessorCj()
+            || EhProfessorInfantil()
+            || EhProfessorCjInfantil()
+            || EhProfessorPoa()
+            || EhProfessorPaee()
+            || EhProfessorPap()
+            || EhProfessorPoei()
+            || EhProfessorPoed()
+            || EhProfessorPosl() ;
+
+        public bool EhProfessorPaee()
+            => PerfilAtual == Dominio.Perfis.PERFIL_PAEE;
+
+        public bool EhProfessorPap()
+            => PerfilAtual == Dominio.Perfis.PERFIL_PAP;
+
+        public bool EhProfessorPoei()
+            => PerfilAtual == Dominio.Perfis.PERFIL_POEI;
+
+        public bool EhProfessorPoed()
+            => PerfilAtual == Dominio.Perfis.PERFIL_POED;
+
+        public bool EhProfessorPosl()
+            => PerfilAtual == Dominio.Perfis.PERFIL_POSL;
+
         public bool EhProfessor()
         {
             return PerfilAtual == Dominio.Perfis.PERFIL_PROFESSOR

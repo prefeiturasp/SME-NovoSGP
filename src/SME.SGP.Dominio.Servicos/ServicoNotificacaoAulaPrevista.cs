@@ -61,7 +61,7 @@ namespace SME.SGP.Dominio.Servicos
         }
         
         private async Task<int> QuantidadeDiasFimBimestreParaNotificacao()
-            => int.Parse(await mediator.Send(new ObterParametroSistemaTipoEAnoQuery(TipoParametroSistema.QuantidadeDiasNotificarProfessor, DateTime.Today.Year)));
+            => int.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.QuantidadeDiasNotificarProfessor, DateTime.Today.Year)));
 
         private IEnumerable<Usuario> BuscaProfessorAula(RegistroAulaPrevistaDivergenteDto turma)
         {
