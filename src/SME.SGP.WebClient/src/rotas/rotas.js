@@ -70,6 +70,7 @@ import RelatorioCompensacaoAusencia from '~/paginas/Relatorios/CompensacaoAusenc
 import DashboardEscolaAqui from '~/paginas/Relatorios/DashboardEscolaAqui/dashboardEscolaAqui';
 import PocEditor from '~/paginas/PocEditor/pocEditor';
 import ControleGrade from '~/paginas/Relatorios/DiarioClasse/ControleGrade/controleGrade';
+import Sondagem from '~/paginas/Sondagem/sondagem';
 import PocUploadArquivos from '~/componentes-sgp/UploadArquivos/pocUploadArquivos';
 import DocumentosPlanosTrabalhoLista from '~/paginas/Gestao/DocumentosPlanosTrabalho/documentosPlanosTrabalhoLista';
 import DocumentosPlanosTrabalhoCadastro from '~/paginas/Gestao/DocumentosPlanosTrabalho/documentosPlanosTrabalhoCadastro';
@@ -972,6 +973,15 @@ rotas.set(RotasDto.POC_EDITOR, {
   breadcrumbName: 'Poc Jodit Editor',
   parent: '/',
   component: PocEditor,
+  exact: false,
+  tipo: RotasTipo.EstruturadaAutenticada,
+});
+
+
+rotas.set(RotasDto.SONDAGEM, {
+  breadcrumbName: 'Sistema Sondagem',
+  parent: '/',
+  component: Sondagem,
   exact: false,
   tipo: RotasTipo.EstruturadaAutenticada,
 });
