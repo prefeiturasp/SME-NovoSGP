@@ -61,5 +61,9 @@ namespace SME.SGP.Dominio
         Notificacoes = 19
 
 
+        ControleGrade = 18,
+
+        [Display(Name = "relatorios/usuarios", ShortName = "Usuarios", Description = "Relatório de Usuários")]
+        Usuarios = 19
     }
 }
