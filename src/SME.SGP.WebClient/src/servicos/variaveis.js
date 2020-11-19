@@ -30,14 +30,4 @@ const obterUrlSondagem = () =>
       window.location.href = '/erro';
     });
 
-const obterUrlSgpFront = () =>
-  axios
-    .get('/../../../configuracoes/variaveis.json')
-    .then(response => {
-      return response.data.URL_SGP_FRONT;
-    })
-    .catch(() => {
-      window.location.href = '/erro';
-    });
-
-export { urlBase, obterTrackingID, obterUrlSondagem, obterUrlSgpFront };
+export { urlBase, obterTrackingID, obterUrlSondagem };
