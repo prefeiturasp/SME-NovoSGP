@@ -539,8 +539,7 @@
         RDE_A = 181,
 
         [PermissaoMenu(Menu = "Gestão", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = false, Url = "/relatorios/gestao/usuarios", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Usuários")]
-        RDU_C = 182
-        RDE_A = 181,
+        RDU_C = 182,        
 
         [PermissaoMenu(Menu = "Notificações ", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = false, Url = "/relatorios/notificacoes/historico-notificacoes", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Histórico de notificações")]
         RDN_C = 183
