@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
             var pendenciaId = await repositorioPendenciaAula.ObterPendenciaIdPorAula(request.AulaId, request.TipoPendenciaAula);
             if (pendenciaId > 0)
             {
-                await repositorioPendenciaAula.Excluir(request.TipoPendenciaAula, request.AulaId);
+                await repositorioPendenciaAula.Excluir(pendenciaId, request.AulaId);
 
                 await ExcluirPendenciaSeNaoHouverMaisPendenciaAula(pendenciaId);
             }
