@@ -60,7 +60,7 @@ namespace SME.SGP.Aplicacao
 
                 var motivos = diasComEventosNaoLetivos
                     .Where(d => aulas.Any(a => a.Data == d.Data && d.UesIds.Contains(a.CodigoUe)))
-                    .Select(d => new { data = d.Data, motivo = d.Motivo }).ToList();
+                    .Select(d => new { data = d.Data, motivo = d.Motivo, UesIds = d.UesIds }).ToList();
 
                 foreach (var turmas in listaAgrupada)
                 {
@@ -82,8 +82,8 @@ namespace SME.SGP.Aplicacao
                     {
                         var pendenciaAulaId = await mediator.Send(new ObterPendenciaAulaPorAulaIdQuery(aula.aulaId, TipoPendencia.AulaNaoLetivo));
                         if (pendenciaAulaId == 0)
-                        {
-                            var motivo = motivos.FirstOrDefault(m => m.data == aula.Data)?.motivo;
+                        {                            
+                            var motivo = motivos.FirstOrDefault(m => m.data == aula.Data && m.UesIds.Contains(aula.CodigoUe))?.motivo;
                             await mediator.Send(new SalvarPendenciaAulaDiasNaoLetivosCommand(aula.aulaId, motivo, pendenciaId));
                         }
                     }
