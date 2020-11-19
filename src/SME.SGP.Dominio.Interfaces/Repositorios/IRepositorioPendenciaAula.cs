@@ -20,7 +20,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<PendenciaAulaDto>> ObterPendenciasAulasPorPendencia(long pendenciaId);
         Task<long> ObterPendenciaAulaPorTurmaIdDisciplinaId(string turmaId, string disciplinaId, string professorRf, TipoPendencia tipoPendencia);
         Task<long> ObterPendenciaAulaIdPorAulaId(long aulaId, TipoPendencia tipoPendencia);
-        Task<long> ObterPendenciaIdPorAula(long aulaId, TipoPendencia tipoPendencia);
+        Task<IEnumerable<long>> ObterPendenciaIdPorAula(long aulaId, TipoPendencia tipoPendencia);
 
     }
 }
