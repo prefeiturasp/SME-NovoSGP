@@ -6,6 +6,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IObterUltimasNotificacoesNaoLidasPorUsuarioUseCase
     {
-        Task<IEnumerable<NotificacaoBasicaDto>> Executar();
+        Task<IEnumerable<NotificacaoBasicaDto>> Executar(bool tituloReduzido);
     }
 }

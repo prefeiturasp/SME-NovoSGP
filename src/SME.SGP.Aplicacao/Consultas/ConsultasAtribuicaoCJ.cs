@@ -13,12 +13,14 @@ namespace SME.SGP.Aplicacao
     public class ConsultasAtribuicaoCJ : IConsultasAtribuicaoCJ
     {
         private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
+        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
 
         private readonly IServicoEol servicoEOL;
 
-        public ConsultasAtribuicaoCJ(IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ, IServicoEol servicoEOL)
+        public ConsultasAtribuicaoCJ(IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ, IRepositorioComponenteCurricular repositorioComponenteCurricular, IServicoEol servicoEOL)
         {
             this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoCJ));
+            this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
         }
 
@@ -28,7 +30,7 @@ namespace SME.SGP.Aplicacao
                 filtroDto.UsuarioRf, filtroDto.UsuarioNome, true, anoLetivo: filtroDto.AnoLetivo);
 
             if (listaRetorno.Any())
-                return TransformaEntidadesEmDtosListaRetorno(listaRetorno);
+                return await TransformaEntidadesEmDtosListaRetorno(listaRetorno);
             else return null;
         }
 
@@ -78,14 +80,14 @@ namespace SME.SGP.Aplicacao
             return listaRetorno;
         }
 
-        private IEnumerable<AtribuicaoCJListaRetornoDto> TransformaEntidadesEmDtosListaRetorno(IEnumerable<AtribuicaoCJ> listaDto)
+        private async Task<IEnumerable<AtribuicaoCJListaRetornoDto>> TransformaEntidadesEmDtosListaRetorno(IEnumerable<AtribuicaoCJ> listaDto)
         {
             var idsDisciplinas = listaDto
                 .Select(a => a.DisciplinaId)
                 .Distinct<long>()
                 .ToArray();
 
-            var disciplinasEol = servicoEOL.ObterDisciplinasPorIds(idsDisciplinas);
+            var disciplinasEol = await repositorioComponenteCurricular.ObterDisciplinasPorIds(idsDisciplinas);
 
             if (!disciplinasEol.Any())
                 throw new NegocioException("Não foi possível obter as descrições das disciplinas no Eol.");
