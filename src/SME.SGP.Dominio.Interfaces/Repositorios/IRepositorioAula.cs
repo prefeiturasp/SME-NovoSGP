@@ -85,8 +85,7 @@ namespace SME.SGP.Dominio.Interfaces
         void SalvarVarias(IEnumerable<Aula> aulas);
         Task ExcluirPeloSistemaAsync(long[] idsAulas);
 
-        Task<IEnumerable<AulaReduzidaDto>> ObterQuantidadeAulasReduzido(long turmaId, string componenteCurricularId, long tipoCalendarioId, int bimestre, bool professorCJ);
+        bool VerificarAulaPorWorkflowId(long workflowId);
 
-        Task<IEnumerable<AulaReduzidaDto>> ObterAulasReduzidasPorTipoCalendario(long tipoCalendarioId);
     }
 }
