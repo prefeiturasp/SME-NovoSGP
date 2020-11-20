@@ -42,6 +42,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IServicoPendenciaFechamento servicoPendenciaFechamento;
         private readonly IServicoPeriodoFechamento servicoPeriodoFechamento;
         private readonly IServicoUsuario servicoUsuario;
+        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
         private readonly IUnitOfWork unitOfWork;
         private List<FechamentoNotaDto> notasEnvioWfAprovacao;
         private Turma turmaFechamento;
@@ -51,6 +52,7 @@ namespace SME.SGP.Dominio.Servicos
                                                 IRepositorioFechamentoAluno repositorioFechamentoAluno,
                                                 IRepositorioFechamentoNota repositorioFechamentoNota,
                                                 IRepositorioDre repositorioDre,
+                                                IRepositorioComponenteCurricular repositorioComponenteCurricular,
                                                 IRepositorioTurma repositorioTurma,
                                                 IRepositorioUe repositorioUe,
                                                 IServicoPeriodoFechamento servicoPeriodoFechamento,
@@ -103,6 +105,8 @@ namespace SME.SGP.Dominio.Servicos
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
             this.servicoPendenciaFechamento = servicoPendenciaFechamento ?? throw new ArgumentNullException(nameof(servicoPendenciaFechamento));
             this.comandosWorkflowAprovacao = comandosWorkflowAprovacao ?? throw new ArgumentNullException(nameof(comandosWorkflowAprovacao));
+            this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
+            
         }
 
         public void GerarNotificacaoAlteracaoLimiteDias(Turma turma, Usuario usuarioLogado, Ue ue, int bimestre, string alunosComNotaAlterada)
@@ -180,7 +184,7 @@ namespace SME.SGP.Dominio.Servicos
             if (turma == null)
                 throw new NegocioException("Turma não encontrada.");
 
-            var disciplinaEOL = servicoEOL.ObterDisciplinasPorIds(new long[] { fechamentoTurmaDisciplina.DisciplinaId }).FirstOrDefault();
+            var disciplinaEOL = (await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { fechamentoTurmaDisciplina.DisciplinaId })).ToList().FirstOrDefault();
             if (disciplinaEOL == null)
                 throw new NegocioException("Componente Curricular não localizado.");
 
@@ -432,9 +436,9 @@ namespace SME.SGP.Dominio.Servicos
         private bool EnviarWfAprovacao()
             => turmaFechamento.AnoLetivo != DateTime.Today.Year;
 
-        private void GerarNotificacaoFechamento(FechamentoTurmaDisciplina fechamentoTurmaDisciplina, Turma turma, int quantidadePendencias, Usuario usuarioLogado, PeriodoEscolar periodoEscolar)
+        private async Task GerarNotificacaoFechamento(FechamentoTurmaDisciplina fechamentoTurmaDisciplina, Turma turma, int quantidadePendencias, Usuario usuarioLogado, PeriodoEscolar periodoEscolar)
         {
-            var componentes = servicoEOL.ObterDisciplinasPorIds(new long[] { fechamentoTurmaDisciplina.DisciplinaId });
+            var componentes = await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { fechamentoTurmaDisciplina.DisciplinaId });
             if (componentes == null || !componentes.Any())
             {
                 throw new NegocioException("Componente curricular não encontrado.");

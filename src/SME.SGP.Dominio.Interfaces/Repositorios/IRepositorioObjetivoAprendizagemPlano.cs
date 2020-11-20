@@ -1,5 +1,6 @@
 ﻿using SME.SGP.Infra;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
 {
@@ -9,8 +10,12 @@ namespace SME.SGP.Dominio.Interfaces
 
         long ObterIdPorObjetivoAprendizagemJurema(long planoId, long objetivoAprendizagemJuremaId);
 
+        Task<long> ObterIdPorObjetivoAprendizagemJuremaAsync(long planoId, long objetivoAprendizagemJuremaId);
+
         IEnumerable<ObjetivoAprendizagemPlano> ObterObjetivosAprendizagemPorIdPlano(long idPlano);
 
-        IEnumerable<ObjetivoAprendizagemPlano> ObterObjetivosPlanoDisciplina(int ano, int bimestre, long turmaId, long componenteCurricularId, long disciplinaId, bool ehRegencia = false);
+        Task<IEnumerable<ObjetivoAprendizagem>> ObterObjetivosPlanoDisciplina(int ano, int bimestre, long turmaId, long componenteCurricularId, long disciplinaId, bool ehRegencia = false);
+
+        Task<IEnumerable<ObjetivosAprendizagemPorComponenteDto>> ObterObjetivosPorComponenteNoPlano(int bimestre, long turmaId, long componenteCurricularId, long disciplinaId, bool ehRegencia = false);
     }
 }

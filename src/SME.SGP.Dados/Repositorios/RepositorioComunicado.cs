@@ -32,6 +32,8 @@ namespace SME.SGP.Dados.Repositorios
                   {0}.codigo_dre,
                   {0}.codigo_ue,
                   {0}.excluido,
+                  {0}.tipo_calendario_id,
+                  {0}.evento_id,
                   {0}.alunos_especificados", prefixo);
 
         private string queryComunicadoListagem()
