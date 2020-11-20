@@ -2,6 +2,7 @@
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -28,15 +29,27 @@ namespace SME.SGP.Aplicacao
 
         public async Task Aprovar(bool aprovar, long notificacaoId, string observacao)
         {
-            var workflow = repositorioWorkflowAprovacao.ObterEntidadeCompleta(0, notificacaoId);
-            if (workflow == null)
-                throw new NegocioException($"Não foi possível localizar o fluxo de aprovação da notificação {notificacaoId}");
+            var workflow = ObterWorkflow(notificacaoId);
 
             unitOfWork.IniciarTransacao();
 
             await servicoWorkflowAprovacao.Aprovar(workflow, aprovar, observacao, notificacaoId);
 
             unitOfWork.PersistirTransacao();
+        }
+
+        public async Task<string> ValidarWorkflowAprovacao(long notificacaoId)
+        {
+            var workflow = ObterWorkflow(notificacaoId);            
+
+            if (workflow.Tipo == WorkflowAprovacaoTipo.ReposicaoAula)
+            {
+                WorkflowAprovacaoNivel nivel = workflow.ObterNivelPorNotificacaoId(notificacaoId);
+                var codigoDaNotificacao = nivel.Notificacoes.FirstOrDefault(a => a.Id == notificacaoId).Codigo;
+                return await servicoWorkflowAprovacao.VerificaAulaReposicao(workflow.Id, codigoDaNotificacao);
+            }
+
+            return null;
         }
 
         public async Task ExcluirAsync(long idWorkflowAprovacao)
@@ -104,6 +117,14 @@ namespace SME.SGP.Aplicacao
                 workflowAprovacao.Adicionar(workflowNivel);
             }
             return workflowAprovacao;
+        }
+
+        private WorkflowAprovacao ObterWorkflow(long notificacaoId)
+        {
+            WorkflowAprovacao workflow = repositorioWorkflowAprovacao.ObterEntidadeCompleta(0, notificacaoId);
+            if (workflow == null)
+                throw new NegocioException($"Não foi possível localizar o fluxo de aprovação da notificação {notificacaoId}");
+            return workflow;
         }
     }
 }
