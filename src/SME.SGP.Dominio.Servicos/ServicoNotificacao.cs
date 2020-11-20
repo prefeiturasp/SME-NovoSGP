@@ -107,5 +107,16 @@ namespace SME.SGP.Dominio.Servicos
                     return null;
             }
         }
+
+        public Notificacao ObterPorCodigo(long codigo)
+        {
+            return repositorioNotificacao.ObterPorCodigo(codigo);
+        }        
+
+        public async Task ExcluirPeloSistemaAsync(long[] ids)
+        {
+            await repositorioNotificacao.ExcluirPeloSistemaAsync(ids);
+        }
+
     }
 }
