@@ -9,5 +9,8 @@ namespace SME.SGP.Dominio.Interfaces
         void ConfiguracaoInicial(WorkflowAprovacao workflowAprovacao, long idEntidadeParaAprovar);
 
         Task ExcluirWorkflowNotificacoes(long id);
+
+        Task<string> VerificaAulaReposicao(long workflowId, long codigoDaNotificacao);
+
     }
 }

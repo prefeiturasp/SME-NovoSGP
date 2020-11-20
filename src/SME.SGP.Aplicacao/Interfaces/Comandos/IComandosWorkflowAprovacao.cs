@@ -7,6 +7,8 @@ namespace SME.SGP.Aplicacao
     {
         Task Aprovar(bool aprovar, long notificacaoId, string observacao);
 
+        Task<string> ValidarWorkflowAprovacao(long notificacaoId);
+
         Task ExcluirAsync(long idWorkflowAprovacao);
 
         Task<long> Salvar(WorkflowAprovacaoDto workflowAprovacaoNiveisDto);
