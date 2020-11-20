@@ -33,7 +33,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IServicoEol servicoEOL;
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoUsuario servicoUsuario;
-        private readonly IMediator mediator;
+        private readonly IConsultasFeriadoCalendario consultasFeriadoCalendario;
 
         public ServicoNotificacaoFrequencia(IRepositorioNotificacaoFrequencia repositorioNotificacaoFrequencia,
                                             IRepositorioParametrosSistema repositorioParametrosSistema,
@@ -52,7 +52,7 @@ namespace SME.SGP.Dominio.Servicos
                                             IServicoUsuario servicoUsuario,
                                             IServicoEol servicoEOL,
                                             IConfiguration configuration,
-                                            IMediator mediator)
+                                            IConsultasFeriadoCalendario consultasFeriadoCalendario)
         {
             this.repositorioNotificacaoFrequencia = repositorioNotificacaoFrequencia ?? throw new ArgumentNullException(nameof(repositorioNotificacaoFrequencia));
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
@@ -71,7 +71,7 @@ namespace SME.SGP.Dominio.Servicos
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
-            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            this.consultasFeriadoCalendario = consultasFeriadoCalendario ?? throw new System.ArgumentNullException(nameof(consultasFeriadoCalendario));
         }
 
         #region Metodos Publicos
@@ -90,11 +90,11 @@ namespace SME.SGP.Dominio.Servicos
         }
 
         public async Task NotificarAlunosFaltosos()
-        {
+        {            
             var dataReferencia = DateTime.Today.AddDays(-1);
-                        
-            var quantidadeDiasCP = int.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.QuantidadeDiasNotificaoCPAlunosAusentes, DateTime.Today.Year)));            
-            var quantidadeDiasDiretor = int.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.QuantidadeDiasNotificaoDiretorAlunosAusentes, DateTime.Today.Year)));
+
+            var quantidadeDiasCP = int.Parse(await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.QuantidadeDiasNotificaoCPAlunosAusentes));
+            var quantidadeDiasDiretor = int.Parse(await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.QuantidadeDiasNotificaoDiretorAlunosAusentes));
 
             await NotificarAlunosFaltososModalidade(dataReferencia, ModalidadeTipoCalendario.Infantil, quantidadeDiasCP, quantidadeDiasDiretor);
             await NotificarAlunosFaltososModalidade(dataReferencia, ModalidadeTipoCalendario.FundamentalMedio, quantidadeDiasCP, quantidadeDiasDiretor);
@@ -105,8 +105,8 @@ namespace SME.SGP.Dominio.Servicos
         {
             var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(dataReferencia.Year, modalidade, dataReferencia.Semestre());
 
-            await NotificaAlunosFaltososCargo(dataReferencia.DiaRetroativo(quantidadeDiasCP - 1), quantidadeDiasCP, Cargo.CP, tipoCalendario?.Id ?? 0);
-            await NotificaAlunosFaltososCargo(dataReferencia.DiaRetroativo(quantidadeDiasDiretor - 1), quantidadeDiasDiretor, Cargo.Diretor, tipoCalendario?.Id ?? 0);
+            await NotificaAlunosFaltososCargo(DiaRetroativo(dataReferencia, quantidadeDiasCP - 1), quantidadeDiasCP, Cargo.CP, tipoCalendario?.Id ?? 0);
+            await NotificaAlunosFaltososCargo(DiaRetroativo(dataReferencia, quantidadeDiasDiretor - 1), quantidadeDiasDiretor, Cargo.Diretor, tipoCalendario?.Id ?? 0);
         }
 
         public async Task NotificarCompensacaoAusencia(long compensacaoId)
@@ -716,6 +716,31 @@ namespace SME.SGP.Dominio.Servicos
             var qtdDias = await repositorioParametrosSistema.ObterValorPorTipoEAno(tipoParametroSistema, DateTime.Now.Year);
 
             return !string.IsNullOrEmpty(qtdDias) ? int.Parse(qtdDias) : (int?)null;
+        }
+
+        private DateTime DiaRetroativo(DateTime data, int nrDias)
+        {
+
+            int contadorDias = nrDias;
+            DateTime dataRetorno = data;
+
+            while (contadorDias > 0)
+            {
+                if (!dataRetorno.FimDeSemana() && !Feriado(dataRetorno))
+                    contadorDias--;
+
+                dataRetorno = dataRetorno.AddDays(-1);
+            }
+
+            return dataRetorno;
+        }
+
+        private bool Feriado(DateTime data)
+        {
+            FiltroFeriadoCalendarioDto filtro = new FiltroFeriadoCalendarioDto();
+            filtro.Ano = data.Year;
+            var ret = consultasFeriadoCalendario.Listar(filtro).Result;
+            return ret.Any(x => x.DataFeriado == data);            
         }
 
         #endregion Metodos Privados
