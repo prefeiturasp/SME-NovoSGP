@@ -333,9 +333,6 @@ const HistoricoNotificacoes = () => {
     setListaModalidades([]);
     setListaSemestre([]);
     setListaTurmas([]);
-    setListaCategorias([]);
-    setListaTipos([]);
-    setListaSituacao([]);
 
     obterAnosLetivos();
     obterDres();
