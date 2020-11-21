@@ -22,9 +22,9 @@ namespace SME.SGP.Aplicacao
 
         public async Task<long> Handle(SalvarPendenciaCalendarioUeCommand request, CancellationToken cancellationToken)
         {
-            var pendenciaId = await mediator.Send(new SalvarPendenciaCommand(request.TipoPendencia, request.Descricao, request.Instrucao));           
-
-            await mediator.Send(new RelacionaPendenciaUsuarioCommand(TipoParametroSistema.GerarPendenciaDiasLetivosInsuficientes, request.Ue.CodigoUe, pendenciaId, 0));
+            var pendenciaId = await mediator.Send(new SalvarPendenciaCommand(request.TipoPendencia, request.Descricao, request.Instrucao));         
+                        
+             await SalvarPendenciaUsuario(await ObterAdministradoresPorUE(request.Ue.CodigoUe), pendenciaId);
 
             return await repositorioPendenciaCalendarioUe.SalvarAsync(new Dominio.PendenciaCalendarioUe()
             {
@@ -32,6 +32,37 @@ namespace SME.SGP.Aplicacao
                 UeId = request.Ue.Id,
                 TipoCalendarioId = request.TipoCalendarioId
             });
+        }      
+
+        private async Task<IList<long>> ObterAdministradoresPorUE(string CodigoUe)
+        {
+            var administradoresId = await mediator.Send(new ObterAdministradoresPorUEQuery(CodigoUe));
+            IList<long> AdministradoresUeId = new List<long>();
+
+            foreach (var adm in administradoresId)
+            {
+                AdministradoresUeId.Add(await ObterUsuarioId(adm));
+            }
+            return AdministradoresUeId;
+        }
+
+        private async Task<bool> SalvarPendenciaUsuario(IList<long> administradoresUeId, long pendenciaId)
+        {
+            if (administradoresUeId.Count > 0)
+                foreach (var id in administradoresUeId)
+                {
+                    await mediator.Send(new SalvarPendenciaUsuarioCommand(pendenciaId, id));
+                }
+            return true;
+        }
+
+        private async Task<long> ObterUsuarioId(string rf)
+        {
+            var usuario = await mediator.Send(new ObterUsuarioPorRfQuery(rf));
+            if (usuario == null)
+                throw new NegocioException($"Usuário de RF {rf} não localizado!");
+
+            return usuario.Id;
         }
     }
 }
