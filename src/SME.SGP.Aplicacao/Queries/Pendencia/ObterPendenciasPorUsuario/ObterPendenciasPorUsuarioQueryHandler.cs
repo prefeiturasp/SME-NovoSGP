@@ -83,7 +83,7 @@ namespace SME.SGP.Aplicacao
 
         private string ObterDescricaoPendenciaGeral(Pendencia pendencia)
         {
-            return $"{pendencia.Descricao}<br />{pendencia.Instrucao}";
+            return $"{pendencia.Descricao}<br /><b>{pendencia.Instrucao}</b>";
         }
 
         private async Task<string> ObterDescricaoPendenciaEvento(Pendencia pendencia)
