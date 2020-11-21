@@ -98,8 +98,8 @@ namespace SME.SGP.Aplicacao
 
             mensagem.AppendLine($"<i>{tipoPendencia.Name()}</i>");
             mensagem.AppendLine("<br />");
-            mensagem.AppendLine($"<i>Componente Curricular:</i> {componenteCurricular?.Nome ?? aula.DisciplinaId}<br />");
-            mensagem.AppendLine($"<i>Professor</i>: {aula.Professor}({aula.ProfessorRf})<br />");
+            mensagem.AppendLine($"<i>Componente Curricular: {componenteCurricular?.Nome ?? aula.DisciplinaId}</i><br />");
+            mensagem.AppendLine($"<i>Professor: {aula.Professor}({aula.ProfessorRf})</i><br />");
 
             return mensagem.ToString();
         }
