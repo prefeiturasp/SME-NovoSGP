@@ -83,7 +83,7 @@ namespace SME.SGP.Aplicacao
 
         private string ObterDescricaoPendenciaGeral(Pendencia pendencia)
         {
-            return $"<i>{pendencia.Descricao}</i><br /><i>{pendencia.Instrucao}</i>";
+            return $"{pendencia.Descricao}<br />{pendencia.Instrucao}";
         }
 
         private async Task<string> ObterDescricaoPendenciaEvento(Pendencia pendencia)
@@ -95,10 +95,10 @@ namespace SME.SGP.Aplicacao
 
             foreach (var pendenciaEvento in pendenciasEventos)
             {
-                descricao.AppendLine($"<li><i>{pendenciaEvento.Descricao} ({pendenciaEvento.Valor})</i></li>");
+                descricao.AppendLine($"<li>{pendenciaEvento.Descricao} ({pendenciaEvento.Valor})</li>");
             }
             descricao.AppendLine("</ul>");
-            descricao.AppendLine($"<b><i>{pendencia.Instrucao}</i></b>");
+            descricao.AppendLine($"<b>{pendencia.Instrucao}</b>");
 
             return descricao.ToString();
         }
@@ -112,10 +112,10 @@ namespace SME.SGP.Aplicacao
 
             foreach (var pendenciaAula in pendenciasAulas)
             {
-                descricao.AppendLine($"<li><i>{pendenciaAula.DataAula:dd/MM} - {pendenciaAula.Motivo}<i></li>");
+                descricao.AppendLine($"<li>{pendenciaAula.DataAula:dd/MM} - {pendenciaAula.Motivo}</li>");
             }
             descricao.AppendLine("</ul>");
-            descricao.AppendLine($"<b><i>{pendencia.Instrucao}</i></b>");
+            descricao.AppendLine($"<b>{pendencia.Instrucao}</b>");
 
             return descricao.ToString();
         }
