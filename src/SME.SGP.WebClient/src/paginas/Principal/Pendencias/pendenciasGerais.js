@@ -33,6 +33,7 @@ const PendenciasGerais = () => {
     } else {
       setDadosPendencias([]);
     }
+    setCollapseExpandido();
   }, []);
 
   useEffect(() => {
