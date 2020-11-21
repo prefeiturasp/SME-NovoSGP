@@ -92,9 +92,9 @@ namespace SME.SGP.Dominio.Servicos
         public async Task NotificarAlunosFaltosos()
         {            
             var dataReferencia = DateTime.Today.AddDays(-1);
-                        
-            var quantidadeDiasCP = int.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.QuantidadeDiasNotificaoCPAlunosAusentes, DateTime.Today.Year)));            
-            var quantidadeDiasDiretor = int.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.QuantidadeDiasNotificaoDiretorAlunosAusentes, DateTime.Today.Year)));
+
+            var quantidadeDiasCP = int.Parse(await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.QuantidadeDiasNotificaoCPAlunosAusentes));
+            var quantidadeDiasDiretor = int.Parse(await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.QuantidadeDiasNotificaoDiretorAlunosAusentes));
 
             await NotificarAlunosFaltososModalidade(dataReferencia, ModalidadeTipoCalendario.Infantil, quantidadeDiasCP, quantidadeDiasDiretor);
             await NotificarAlunosFaltososModalidade(dataReferencia, ModalidadeTipoCalendario.FundamentalMedio, quantidadeDiasCP, quantidadeDiasDiretor);

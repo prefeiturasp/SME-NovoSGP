@@ -49,7 +49,7 @@ namespace SME.SGP.Dados.Repositorios
 
                 if (!String.IsNullOrEmpty(codigoUe))
                     query.AppendLine(" and ue.ue_id = @codigoUe");
-
+                query.AppendLine(" order by tca.ano ");
 
                 return await database.Conexao.QueryAsync<AnosPorCodigoUeModalidadeEscolaAquiResult>(query.ToString(), new { codigoUe, modalidadeId = (int)modalidade });
             }
