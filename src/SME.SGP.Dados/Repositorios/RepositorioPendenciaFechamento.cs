@@ -50,6 +50,18 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstAsync<PendenciaFechamentoCompletoDto>(query, new { pendenciaId });
         }
 
+        public async Task<Turma> ObterTurmaPorPendenciaId(long pendenciaId)
+        {
+            var query = @"select t.* 
+                          from pendencia_fechamento fp
+                         inner join fechamento_turma_disciplina ftd on ftd.id = fp.fechamento_turma_disciplina_id
+                         inner join fechamento_turma ft on ft.id = ftd.fechamento_turma_id
+                         inner join turma t on t.id = ft.turma_id
+                        where fp.pendencia_id = @pendenciaId ";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<Turma>(query, new { pendenciaId });
+        }
+
         public bool VerificaPendenciasAbertoPorFechamento(long fechamentoId)
         {
             var query = @"select count(p.id)
