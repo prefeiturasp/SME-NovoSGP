@@ -85,7 +85,7 @@ const HistoricoNotificacoes = () => {
   const obterModalidades = async ue => {
     if (ue) {
       setCarregandoGeral(true);
-      const retorno = await ServicoFiltroRelatorio.obterModalidades(ue).catch(
+      const retorno = await ServicoFiltroRelatorio.obterModalidadesPorAbrangencia(ue).catch(
         e => {
           erros(e);
           setCarregandoGeral(false);
