@@ -63,7 +63,7 @@ namespace SME.SGP.Aplicacao
         }
 
         private async Task<string> ObterDescricaoTurmaPendenciaFechamento(long pendenciaId)
-            => ObterNomeTurma(await mediator.Send(new ObterTurmaDaPendenciaAulaQuery(pendenciaId)));
+            => ObterNomeTurma(await mediator.Send(new ObterTurmaDaPendenciaFechamentoQuery(pendenciaId)));
 
         private async Task<string> ObterDescricaoTurmaPendenciaAula(long pendenciaId)
             => ObterNomeTurma(await mediator.Send(new ObterTurmaDaPendenciaAulaQuery(pendenciaId)));
