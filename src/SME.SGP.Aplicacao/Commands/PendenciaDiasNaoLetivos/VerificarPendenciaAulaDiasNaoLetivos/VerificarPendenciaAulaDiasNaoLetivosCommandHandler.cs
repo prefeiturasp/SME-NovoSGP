@@ -96,10 +96,10 @@ namespace SME.SGP.Aplicacao
             var componenteCurricular = await ObterComponenteCurricular(long.Parse(aula.DisciplinaId));
             var mensagem = new StringBuilder();
 
-            mensagem.AppendLine(tipoPendencia.Name());
+            mensagem.AppendLine($"<i>{tipoPendencia.Name()}</i>");
             mensagem.AppendLine("<br />");
-            mensagem.AppendLine($"<i>Componente Curricular:</i> <b>{componenteCurricular?.Nome ?? aula.DisciplinaId}</b><br />");
-            mensagem.AppendLine($"<i>Professor</i>: <b>{aula.Professor}({aula.ProfessorRf})</b><br />");
+            mensagem.AppendLine($"<i>Componente Curricular:</i> {componenteCurricular?.Nome ?? aula.DisciplinaId}<br />");
+            mensagem.AppendLine($"<i>Professor</i>: {aula.Professor}({aula.ProfessorRf})<br />");
 
             return mensagem.ToString();
         }
