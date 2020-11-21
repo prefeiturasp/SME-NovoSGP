@@ -76,5 +76,14 @@ namespace SME.SGP.Dados.Repositorios
             query.Append("'0')");
             return await database.Conexao.QueryAsync<long>(query.ToString());
         }
+
+        public async Task<long> ObterUsuarioIdPorCodigoRfAsync(string codigoRf)
+        {
+            var query = @"select id 
+                            from usuario 
+                           where rf_codigo = @codigoRf";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<long>(query.ToString());
+        }
     }
 }
