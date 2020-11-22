@@ -124,6 +124,7 @@ function InputRF({
             suffix={botao}
             disabled={desabilitado}
             allowClear
+            maxLength={maxlength || 7}
           />
         </InputRFEstilo>
       )}
