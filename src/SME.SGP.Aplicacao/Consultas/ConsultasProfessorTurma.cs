@@ -2,8 +2,10 @@
 using Newtonsoft.Json;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -44,11 +46,29 @@ namespace SME.SGP.Aplicacao
 
         public async Task<ProfessorResumoDto> ObterResumoPorRFAnoLetivo(string codigoRF, int anoLetivo, bool buscarOutrosCargos = false)
         {
-            var professorResumo = await servicoEOL.ObterResumoProfessorPorRFAnoLetivo(codigoRF, anoLetivo, buscarOutrosCargos);
-            var professorSgp = await mediator.Send(new ObterUsuarioPorRfQuery(codigoRF));
-
-            if(professorResumo != null)
+            var professorResumo = await ObterProfessorEOL(codigoRF, anoLetivo, buscarOutrosCargos);
+            var professorSgp = await ObterProfessorSGP(codigoRF);
+                
+            if (professorResumo != null)
                 professorResumo.UsuarioId = professorSgp.Id;
+
+            return professorResumo;
+        }
+
+        private async Task<Usuario> ObterProfessorSGP(string codigoRF)
+        {
+            var usuarioSgp = await mediator.Send(new ObterUsuarioPorRfQuery(codigoRF));
+            if (usuarioSgp == null)
+                throw new NegocioException("RF não localizado no SGP");
+
+            return usuarioSgp;
+        }
+
+        private async Task<ProfessorResumoDto> ObterProfessorEOL(string codigoRF, int anoLetivo, bool buscarOutrosCargos)
+        {
+            var professorResumo = await servicoEOL.ObterResumoProfessorPorRFAnoLetivo(codigoRF, anoLetivo, buscarOutrosCargos);
+            if (professorResumo == null)
+                throw new NegocioException("RF não localizado do EOL");
 
             return professorResumo;
         }
