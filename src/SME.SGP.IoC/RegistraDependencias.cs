@@ -303,6 +303,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioPendenciaUsuario, RepositorioPendenciaUsuario>();
             services.TryAddScoped<IRepositorioPendenciaCalendarioUe, RepositorioPendenciaCalendarioUe>();
             services.TryAddScoped<IRepositorioPendenciaParametroEvento, RepositorioPendenciaParametroEvento>();
+            services.TryAddScoped<IRepositorioPendenciaProfessor, RepositorioPendenciaProfessor>();
 
         }
 
