@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Sentry;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -28,20 +29,29 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(VerificarPendenciaAulaDiasNaoLetivosCommand request, CancellationToken cancellationToken)
         {
-            var anoAtual = DateTime.Now.Year;
-            var tipoCalendarioId = await mediator.Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(Modalidade.Fundamental, anoAtual, 0));
-            if (tipoCalendarioId > 0)
-                await VerificaPendenciasAulaDiasNaoLetivos(tipoCalendarioId, ModalidadeTipoCalendario.FundamentalMedio, anoAtual);
+            try
+            {
+                var anoAtual = DateTime.Now.Year;
+                var tipoCalendarioId = await mediator.Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(Modalidade.Fundamental, anoAtual, 0));
+                if (tipoCalendarioId > 0)
+                    await VerificaPendenciasAulaDiasNaoLetivos(tipoCalendarioId, ModalidadeTipoCalendario.FundamentalMedio, anoAtual);
 
-            tipoCalendarioId = await mediator.Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(Modalidade.EJA, anoAtual, 1));
-            if (tipoCalendarioId > 0)
-                await VerificaPendenciasAulaDiasNaoLetivos(tipoCalendarioId, ModalidadeTipoCalendario.EJA, anoAtual);
+                tipoCalendarioId = await mediator.Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(Modalidade.EJA, anoAtual, 1));
+                if (tipoCalendarioId > 0)
+                    await VerificaPendenciasAulaDiasNaoLetivos(tipoCalendarioId, ModalidadeTipoCalendario.EJA, anoAtual);
 
-            tipoCalendarioId = await mediator.Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(Modalidade.EJA, anoAtual, 2));
-            if (tipoCalendarioId > 0)
-                await VerificaPendenciasAulaDiasNaoLetivos(tipoCalendarioId, ModalidadeTipoCalendario.EJA, anoAtual);
+                tipoCalendarioId = await mediator.Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(Modalidade.EJA, anoAtual, 2));
+                if (tipoCalendarioId > 0)
+                    await VerificaPendenciasAulaDiasNaoLetivos(tipoCalendarioId, ModalidadeTipoCalendario.EJA, anoAtual);
 
-            return true;
+                return true;
+
+            }
+            catch (Exception ex)
+            {
+                SentrySdk.CaptureException(ex);
+                return false;
+            }        
         }
 
         private async Task VerificaPendenciasAulaDiasNaoLetivos(long tipoCalendarioId, ModalidadeTipoCalendario modalidadeCalendario, int anoAtual)
@@ -64,30 +74,37 @@ namespace SME.SGP.Aplicacao
 
                 foreach (var turmas in listaAgrupada)
                 {
-                    var pendenciaId = await mediator.Send(new ObterPendenciaAulaPorTurmaIdDisciplinaIdQuery(turmas.Key.TurmaId, turmas.Key.DisciplinaId, turmas.Key.ProfessorRf, TipoPendencia.AulaNaoLetivo));
-
-                    var pendenciaExistente = pendenciaId != 0;
-
-                    var ue = await mediator.Send(new ObterUEPorTurmaCodigoQuery(turmas.Key.TurmaId));
-
-                    if (!pendenciaExistente)
+                    try
                     {
-                        pendenciaId = await mediator.Send(new SalvarPendenciaCommand(TipoPendencia.AulaNaoLetivo, await ObterDescricao(turmas.FirstOrDefault(), TipoPendencia.AulaNaoLetivo), ObterInstrucoes()));
+                        var pendenciaId = await mediator.Send(new ObterPendenciaAulaPorTurmaIdDisciplinaIdQuery(turmas.Key.TurmaId, turmas.Key.DisciplinaId, turmas.Key.ProfessorRf, TipoPendencia.AulaNaoLetivo));
 
-                        var professor = await mediator.Send(new ObterProfessorDaTurmaPorAulaIdQuery(turmas.FirstOrDefault().aulaId));
-                        await mediator.Send(new RelacionaPendenciaUsuarioCommand(TipoParametroSistema.GerarPendenciaAulasDiasNaoLetivos, ue.CodigoUe, pendenciaId, professor.Id));
-                    }
+                        var pendenciaExistente = pendenciaId != 0;
 
-                    foreach (var aula in turmas)
-                    {
-                        var pendenciaAulaId = await mediator.Send(new ObterPendenciaAulaPorAulaIdQuery(aula.aulaId, TipoPendencia.AulaNaoLetivo));
-                        if (pendenciaAulaId == 0)
-                        {                            
-                            var motivo = motivos.FirstOrDefault(m => m.data == aula.Data && m.UesIds.Contains(aula.CodigoUe))?.motivo;
-                            await mediator.Send(new SalvarPendenciaAulaDiasNaoLetivosCommand(aula.aulaId, motivo, pendenciaId));
+                        var ue = await mediator.Send(new ObterUEPorTurmaCodigoQuery(turmas.Key.TurmaId));
+
+                        if (!pendenciaExistente)
+                        {
+                            pendenciaId = await mediator.Send(new SalvarPendenciaCommand(TipoPendencia.AulaNaoLetivo, await ObterDescricao(turmas.FirstOrDefault(), TipoPendencia.AulaNaoLetivo), ObterInstrucoes()));
+
+                            var professor = await mediator.Send(new ObterProfessorDaTurmaPorAulaIdQuery(turmas.FirstOrDefault().aulaId));
+                            await mediator.Send(new RelacionaPendenciaUsuarioCommand(TipoParametroSistema.GerarPendenciaAulasDiasNaoLetivos, ue.CodigoUe, pendenciaId, professor.Id));
                         }
+
+                        foreach (var aula in turmas)
+                        {
+                            var pendenciaAulaId = await mediator.Send(new ObterPendenciaAulaPorAulaIdQuery(aula.aulaId, TipoPendencia.AulaNaoLetivo));
+                            if (pendenciaAulaId == 0)
+                            {
+                                var motivo = motivos.FirstOrDefault(m => m.data == aula.Data && m.UesIds.Contains(aula.CodigoUe))?.motivo;
+                                await mediator.Send(new SalvarPendenciaAulaDiasNaoLetivosCommand(aula.aulaId, motivo, pendenciaId));
+                            }
+                        }
+
                     }
-                }
+                    catch (Exception ex)
+                    {
+                        SentrySdk.CaptureException(ex);
+                    }                }
             }
         }
 

@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Sentry;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
@@ -51,18 +52,23 @@ namespace SME.SGP.Aplicacao
             if (administradoresUeId.Count > 0)
                 foreach (var id in administradoresUeId)
                 {
-                    await mediator.Send(new SalvarPendenciaUsuarioCommand(pendenciaId, id));
+                    try
+                    {
+                        await mediator.Send(new SalvarPendenciaUsuarioCommand(pendenciaId, id));
+                    }
+                    catch (Exception e)
+                    {
+                        SentrySdk.CaptureException(e);
+                    }
                 }
             return true;
         }
 
         private async Task<long> ObterUsuarioId(string rf)
         {
-            var usuario = await mediator.Send(new ObterUsuarioPorRfQuery(rf));
-            if (usuario == null)
-                throw new NegocioException($"Usuário de RF {rf} não localizado!");
+            var usuarioId = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(rf));
 
-            return usuario.Id;
+            return usuarioId;
         }
     }
 }
