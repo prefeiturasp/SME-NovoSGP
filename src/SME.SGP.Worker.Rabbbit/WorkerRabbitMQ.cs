@@ -96,7 +96,6 @@ namespace SME.SGP.Worker.RabbitMQ
                     {
                         using (var scope = serviceScopeFactory.CreateScope())
                         {
-
                             AtribuirContextoAplicacao(mensagemRabbit, scope);
 
                             SentrySdk.CaptureMessage($"{mensagemRabbit.UsuarioLogadoRF} - {mensagemRabbit.CodigoCorrelacao.ToString().Substring(0, 3)} - EXECUTANDO - {ea.RoutingKey} - {DateTime.Now:dd/MM/yyyy HH:mm:ss}", SentryLevel.Debug);
