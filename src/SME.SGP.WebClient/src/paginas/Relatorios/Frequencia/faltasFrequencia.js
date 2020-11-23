@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Loader, SelectComponent } from '~/componentes';
+import { Loader, RadioGroupButton, SelectComponent } from '~/componentes';
 import { Cabecalho } from '~/componentes-sgp';
 import Button from '~/componentes/button';
 import CampoNumero from '~/componentes/campoNumero';
@@ -7,7 +7,6 @@ import Card from '~/componentes/card';
 import { Colors } from '~/componentes/colors';
 import { URL_HOME } from '~/constantes/url';
 import modalidade from '~/dtos/modalidade';
-import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
 import AbrangenciaServico from '~/servicos/Abrangencia';
 import { erros, sucesso } from '~/servicos/alertas';
 import api from '~/servicos/api';
@@ -15,7 +14,6 @@ import history from '~/servicos/history';
 import ServicoFaltasFrequencia from '~/servicos/Paginas/Relatorios/FaltasFrequencia/ServicoFaltasFrequencia';
 import ServicoFiltroRelatorio from '~/servicos/Paginas/FiltroRelatorio/ServicoFiltroRelatorio';
 import ServicoComponentesCurriculares from '~/servicos/Paginas/ComponentesCurriculares/ServicoComponentesCurriculares';
-import FiltroHelper from '~/componentes-sgp/filtro/helper';
 import tipoDeRelatorio from '~/dtos/tipoDeRelatorio';
 
 const FaltasFrequencia = () => {
@@ -64,6 +62,18 @@ const FaltasFrequencia = () => {
 
   const [carregandoGeral, setCarregandoGeral] = useState(false);
   const [desabilitarBtnGerar, setDesabilitarBtnGerar] = useState(true);
+
+  const opcoesListarTurmasDePrograma = [
+    { label: 'Sim', value: true },
+    { label: 'Não', value: false },
+  ];
+  const [turmasPrograma, setTurmasPrograma] = useState(false);
+
+  const opcoesTodosEstudantes = [
+    { label: 'Sim', value: true },
+    { label: 'Não', value: false },
+  ];
+  const [todosEstudantes, setTodosEstudantes] = useState(false);
 
   const obterAnosLetivos = useCallback(async () => {
     setCarregandoGeral(true);
@@ -171,7 +181,7 @@ const FaltasFrequencia = () => {
     const retorno = await api
       .get(
         `v1/abrangencias/false/semestres?anoLetivo=${anoLetivoSelecionado}&modalidade=${modalidadeSelecionada ||
-        0}`
+          0}`
       )
       .catch(e => {
         erros(e);
@@ -244,6 +254,19 @@ const FaltasFrequencia = () => {
     }
   }, [modalidadeId, codigoUe, obterAnosEscolares]);
 
+  useEffect(() => {
+    if (todosEstudantes) {
+      setValorCondicao();
+    }
+  }, [todosEstudantes]);
+
+  useEffect(() => {
+    const selecionouTodos = anosEscolares?.find(ano => ano === '-99');
+    if (!selecionouTodos) {
+      setTurmasPrograma(false);
+    }
+  }, [anosEscolares]);
+
   const obterCodigoTodosAnosEscolares = useCallback(() => {
     let todosAnosEscolares = anosEscolares;
     const selecionouTodos = anosEscolares.find(ano => ano === '-99');
@@ -272,7 +295,8 @@ const FaltasFrequencia = () => {
         codigoUe,
         modalidadeId,
         anoLetivo,
-        codigoTodosAnosEscolares
+        codigoTodosAnosEscolares,
+        turmasPrograma
       ).catch(e => {
         erros(e);
         setCarregandoGeral(false);
@@ -418,6 +442,8 @@ const FaltasFrequencia = () => {
       condicao,
       valorCondicao,
       tipoFormatoRelatorio: formato,
+      turmasPrograma,
+      todosEstudantes,
     };
     setCarregandoGeral(true);
     const retorno = await ServicoFaltasFrequencia.gerar(params).catch(e => {
@@ -692,8 +718,8 @@ const FaltasFrequencia = () => {
                     A condição considerada será pela quantidade de faltas
                   </span>
                 ) : (
-                    ''
-                  )}
+                  ''
+                )}
               </div>
               <div className="col-sm-12 col-md-6 col-lg-3 col-xl-2 mb-2">
                 <SelectComponent
@@ -716,6 +742,7 @@ const FaltasFrequencia = () => {
                   className="w-100"
                   placeholder="Digite o valor"
                   ehDecimal={false}
+                  disabled={todosEstudantes}
                 />
               </div>
               <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 mb-2">
@@ -727,6 +754,33 @@ const FaltasFrequencia = () => {
                   valueSelect={formato}
                   onChange={onChangeFormato}
                   placeholder="Selecione o formato"
+                />
+              </div>
+              <div className="col-sm-6 col-md-6 col-lg-4 col-xl-3 mb-2">
+                <RadioGroupButton
+                  label="Listar turmas de programa"
+                  opcoes={opcoesListarTurmasDePrograma}
+                  valorInicial
+                  onChange={e => {
+                    setTurmasPrograma(e.target.value);
+                  }}
+                  value={turmasPrograma}
+                  desabilitado={
+                    !anosEscolares ||
+                    (anosEscolares.length &&
+                      !!anosEscolares?.find(ano => ano !== '-99'))
+                  }
+                />
+              </div>
+              <div className="col-sm-6 col-md-6 col-lg-4 col-xl-3 mb-2">
+                <RadioGroupButton
+                  label="Todos os estudantes"
+                  opcoes={opcoesTodosEstudantes}
+                  valorInicial
+                  onChange={e => {
+                    setTodosEstudantes(e.target.value);
+                  }}
+                  value={todosEstudantes}
                 />
               </div>
             </div>
