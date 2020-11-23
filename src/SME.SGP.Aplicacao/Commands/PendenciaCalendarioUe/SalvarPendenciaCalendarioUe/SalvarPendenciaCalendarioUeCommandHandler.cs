@@ -23,9 +23,9 @@ namespace SME.SGP.Aplicacao
 
         public async Task<long> Handle(SalvarPendenciaCalendarioUeCommand request, CancellationToken cancellationToken)
         {
-            var pendenciaId = await mediator.Send(new SalvarPendenciaCommand(request.TipoPendencia, request.Descricao, request.Instrucao));         
-                        
-             await SalvarPendenciaUsuario(await ObterAdministradoresPorUE(request.Ue.CodigoUe), pendenciaId);
+            var pendenciaId = await mediator.Send(new SalvarPendenciaCommand(request.TipoPendencia, request.Descricao, request.Instrucao));
+
+            await mediator.Send(new RelacionaPendenciaUsuarioCommand(ObterPerfisParaPendencia(request.TipoPendencia), request.Ue.CodigoUe, pendenciaId, 0));
 
             return await repositorioPendenciaCalendarioUe.SalvarAsync(new Dominio.PendenciaCalendarioUe()
             {
@@ -33,42 +33,19 @@ namespace SME.SGP.Aplicacao
                 UeId = request.Ue.Id,
                 TipoCalendarioId = request.TipoCalendarioId
             });
-        }      
+        }
 
-        private async Task<IList<long>> ObterAdministradoresPorUE(string CodigoUe)
+        private string[] ObterPerfisParaPendencia(TipoPendencia tipoPendencia)
         {
-            var administradoresId = await mediator.Send(new ObterAdministradoresPorUEQuery(CodigoUe));
-            IList<long> AdministradoresUeId = new List<long>();
-
-            foreach (var adm in administradoresId)
+            switch (tipoPendencia)
             {
-                AdministradoresUeId.Add(await ObterUsuarioId(adm));
+                case TipoPendencia.CalendarioLetivoInsuficiente:
+                    return new string[] { "CP", "AD", "Diretor", "ADM UE" };
+                case TipoPendencia.CadastroEventoPendente:
+                    return new string[] { "ADM UE" };
+                default:
+                    return new string[] { };
             }
-            return AdministradoresUeId;
-        }
-
-        private async Task<bool> SalvarPendenciaUsuario(IList<long> administradoresUeId, long pendenciaId)
-        {
-            if (administradoresUeId.Count > 0)
-                foreach (var id in administradoresUeId)
-                {
-                    try
-                    {
-                        await mediator.Send(new SalvarPendenciaUsuarioCommand(pendenciaId, id));
-                    }
-                    catch (Exception e)
-                    {
-                        SentrySdk.CaptureException(e);
-                    }
-                }
-            return true;
-        }
-
-        private async Task<long> ObterUsuarioId(string rf)
-        {
-            var usuarioId = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(rf));
-
-            return usuarioId;
         }
     }
 }
