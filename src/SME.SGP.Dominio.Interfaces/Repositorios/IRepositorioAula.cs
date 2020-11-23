@@ -91,5 +91,9 @@ namespace SME.SGP.Dominio.Interfaces
 
         bool VerificarAulaPorWorkflowId(long workflowId);
 
+        Task<IEnumerable<AulaReduzidaDto>> ObterQuantidadeAulasReduzido(long turmaId, string componenteCurricularId, long tipoCalendarioId, int bimestre, bool professorCJ);
+
+        Task<IEnumerable<AulaReduzidaDto>> ObterAulasReduzidasPorTipoCalendario(long tipoCalendarioId);
+
     }
 }
