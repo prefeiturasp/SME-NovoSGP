@@ -6,15 +6,15 @@ namespace SME.SGP.Aplicacao
 {
     public class RelacionaPendenciaUsuarioCommand : IRequest<bool>
     {
-        public RelacionaPendenciaUsuarioCommand(TipoParametroSistema tipoParametro, string codigoUe, long pendenciaId, long? professorId = null)
+        public RelacionaPendenciaUsuarioCommand(string[] perfisUsuarios, string codigoUe, long pendenciaId, long? professorId = null)
         {
-            TipoParametro = tipoParametro;
+            PerfisUsuarios = perfisUsuarios;
             CodigoUe = codigoUe;
             PendenciaId = pendenciaId;
             ProfessorId = professorId;
         }
 
-        public TipoParametroSistema TipoParametro { get; set; }
+        public string[] PerfisUsuarios { get; set; }
         public string CodigoUe { get; set; }
         public long PendenciaId { get; set; }
         public long? ProfessorId { get; set; }
@@ -24,9 +24,9 @@ namespace SME.SGP.Aplicacao
     {
         public RelacionaPendenciaUsuarioCommandValidator()
         {
-            RuleFor(c => c.TipoParametro)
+            RuleFor(c => c.PerfisUsuarios)
             .NotEmpty()
-            .WithMessage("O tipo do parametro sistema deve ser informado.");
+            .WithMessage("Os perfis de usuário que receberão a pendência devem ser informados.");
 
             RuleFor(c => c.CodigoUe)
             .NotEmpty()

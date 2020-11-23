@@ -87,7 +87,7 @@ namespace SME.SGP.Aplicacao
                             pendenciaId = await mediator.Send(new SalvarPendenciaCommand(TipoPendencia.AulaNaoLetivo, await ObterDescricao(turmas.FirstOrDefault(), TipoPendencia.AulaNaoLetivo), ObterInstrucoes()));
 
                             var professor = await mediator.Send(new ObterProfessorDaTurmaPorAulaIdQuery(turmas.FirstOrDefault().aulaId));
-                            await mediator.Send(new RelacionaPendenciaUsuarioCommand(TipoParametroSistema.GerarPendenciaAulasDiasNaoLetivos, ue.CodigoUe, pendenciaId, professor.Id));
+                            await mediator.Send(new RelacionaPendenciaUsuarioCommand(ObterPerfisUsuarios(), ue.CodigoUe, pendenciaId, professor.Id));
                         }
 
                         foreach (var aula in turmas)
@@ -107,6 +107,9 @@ namespace SME.SGP.Aplicacao
                     }                }
             }
         }
+
+        private string[] ObterPerfisUsuarios()
+            => new[] { "Professor", "CP" };
 
         private async Task<string> ObterDescricao(AulaReduzidaDto aula, TipoPendencia tipoPendencia)
         {
