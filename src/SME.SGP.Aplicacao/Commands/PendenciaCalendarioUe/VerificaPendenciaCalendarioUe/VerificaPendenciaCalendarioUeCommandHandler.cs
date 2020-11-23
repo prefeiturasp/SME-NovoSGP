@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Sentry;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
@@ -21,20 +22,28 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(VerificaPendenciaCalendarioUeCommand request, CancellationToken cancellationToken)
         {
-            var anoAtual = DateTime.Now.Year;
-            var tipoCalendarioId = await mediator.Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(Dominio.Modalidade.Fundamental, anoAtual, 0));
-            if (tipoCalendarioId > 0)
-                await VerificaPendenciasNoCalendario(tipoCalendarioId, Dominio.ModalidadeTipoCalendario.FundamentalMedio);
+            try
+            {
+                var anoAtual = DateTime.Now.Year;
+                var tipoCalendarioId = await mediator.Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(Dominio.Modalidade.Fundamental, anoAtual, 0));
+                if (tipoCalendarioId > 0)
+                    await VerificaPendenciasNoCalendario(tipoCalendarioId, Dominio.ModalidadeTipoCalendario.FundamentalMedio);
 
-            tipoCalendarioId = await mediator.Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(Dominio.Modalidade.EJA, anoAtual, 1));
-            if (tipoCalendarioId > 0)
-                await VerificaPendenciasNoCalendario(tipoCalendarioId, Dominio.ModalidadeTipoCalendario.EJA);
+                tipoCalendarioId = await mediator.Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(Dominio.Modalidade.EJA, anoAtual, 1));
+                if (tipoCalendarioId > 0)
+                    await VerificaPendenciasNoCalendario(tipoCalendarioId, Dominio.ModalidadeTipoCalendario.EJA);
 
-            tipoCalendarioId = await mediator.Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(Dominio.Modalidade.EJA, anoAtual, 2));
-            if (tipoCalendarioId > 0)
-                await VerificaPendenciasNoCalendario(tipoCalendarioId, Dominio.ModalidadeTipoCalendario.EJA);
+                tipoCalendarioId = await mediator.Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(Dominio.Modalidade.EJA, anoAtual, 2));
+                if (tipoCalendarioId > 0)
+                    await VerificaPendenciasNoCalendario(tipoCalendarioId, Dominio.ModalidadeTipoCalendario.EJA);
 
-            return true;
+                return true;
+            }
+            catch (Exception ex)
+            {
+                SentrySdk.CaptureException(ex);
+                return false;
+            }        
         }
 
         private async Task VerificaPendenciasNoCalendario(long tipoCalendarioId, Dominio.ModalidadeTipoCalendario modalidadeCalendario)
@@ -42,12 +51,19 @@ namespace SME.SGP.Aplicacao
             var ues = await mediator.Send(new ObterUEsPorModalidadeCalendarioQuery(modalidadeCalendario));
             foreach(var ue in ues)
             {
-                if (!(await mediator.Send(new ExistePendenciaDiasLetivosCalendarioUeQuery(tipoCalendarioId, ue.Id))))
+                try
                 {
-                    var diasLetivos = await mediator.Send(new ObterQuantidadeDiasLetivosPorCalendarioQuery(tipoCalendarioId, ue.Dre.CodigoDre, ue.CodigoUe));
-                    if (diasLetivos.EstaAbaixoPermitido)
-                        await GerarPendenciaCalendarioUe(ue, diasLetivos.Dias, tipoCalendarioId);
+                    if (!(await mediator.Send(new ExistePendenciaDiasLetivosCalendarioUeQuery(tipoCalendarioId, ue.Id))))
+                    {
+                        var diasLetivos = await mediator.Send(new ObterQuantidadeDiasLetivosPorCalendarioQuery(tipoCalendarioId, ue.Dre.CodigoDre, ue.CodigoUe));
+                        if (diasLetivos.EstaAbaixoPermitido)
+                            await GerarPendenciaCalendarioUe(ue, diasLetivos.Dias, tipoCalendarioId);
+                    }
                 }
+                catch (Exception ex)
+                {
+                    SentrySdk.CaptureException(ex);
+                }            
             }
         }
 
