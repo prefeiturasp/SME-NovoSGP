@@ -190,5 +190,25 @@ namespace SME.SGP.Dados.Repositorios
                 fechamentoId
             });
         }
+
+        public async Task<IEnumerable<PeriodoFechamentoBimestre>> ObterPeriodosFechamentoEscolasPorDataFinal(DateTime dataFinal)
+        {
+            var query = @"select pf.*, ue.id, pfb.*, pe.*
+                          from periodo_fechamento pf
+                         inner join ue on ue.id = pf.ue_id
+                         inner join periodo_fechamento_bimestre pfb on pfb.periodo_fechamento_id = pf.id
+                         inner join periodo_escolar pe on pe.id = pfb.periodo_escolar_id
+                         where pfb.final_fechamento = @dataFinal ";
+
+            return await database.Conexao.QueryAsync<PeriodoFechamento, Ue, PeriodoFechamentoBimestre, PeriodoEscolar, PeriodoFechamentoBimestre>(query,
+                (periodoFechamento, ue, periodoFechamentoBimestre, periodoEscolar) =>
+                {
+                    periodoFechamento.Ue = ue;
+                    periodoFechamentoBimestre.PeriodoFechamento = periodoFechamento;
+                    periodoFechamentoBimestre.PeriodoEscolar = periodoEscolar;
+
+                    return periodoFechamentoBimestre;
+                }, new { dataFinal });
+        }
     }
 }

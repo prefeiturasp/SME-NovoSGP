@@ -6,6 +6,15 @@ namespace SME.SGP.Dominio
 {
     public class PendenciaProfessor
     {
+        public PendenciaProfessor() { }
+        public PendenciaProfessor(long pendenciaId, long turmaId, long componenteCurricularId, string professorRf) 
+        {
+            PendenciaId = pendenciaId;
+            TurmaId = turmaId;
+            ComponenteCurricularId = componenteCurricularId;
+            ProfessorRf = professorRf;
+        }
+
         public long Id { get; set; }
 
         public long PendenciaId { get; set; }
