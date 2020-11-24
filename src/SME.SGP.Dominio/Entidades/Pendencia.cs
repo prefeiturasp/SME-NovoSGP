@@ -53,5 +53,10 @@ namespace SME.SGP.Dominio
             => new TipoPendencia[] {
                 TipoPendencia.CadastroEventoPendente
             }.Contains(Tipo);
+
+        public bool EhPendenciaAusenciaAvaliacaoCP()
+            => new TipoPendencia[] {
+                TipoPendencia.AusenciaDeAvaliacaoCP
+            }.Contains(Tipo);
     }
 }
