@@ -14,7 +14,7 @@ import ServicoComponentesCurriculares from '~/servicos/Paginas/ComponentesCurric
 import FiltroHelper from '~componentes-sgp/filtro/helper';
 import ServicoHistoricoAlteracoesNotas from '~/servicos/Paginas/Relatorios/Fechamento/HistoricoAlteracoesNotas/ServicoHistoricoAlteracoesNotas';
 
-const RelatorioAlteracaoDeNotas = () => {
+const RelatorioHistoricoAlteracoesNotas = () => {
   const [exibirLoader, setExibirLoader] = useState(false);
   const [listaAnosLetivo, setListaAnosLetivo] = useState([]);
   const [listaDres, setListaDres] = useState([]);
@@ -645,4 +645,4 @@ const RelatorioAlteracaoDeNotas = () => {
   );
 };
 
-export default RelatorioAlteracaoDeNotas;
+export default RelatorioHistoricoAlteracoesNotas;

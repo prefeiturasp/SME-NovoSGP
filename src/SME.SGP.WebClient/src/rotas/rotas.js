@@ -76,7 +76,7 @@ import DocumentosPlanosTrabalhoLista from '~/paginas/Gestao/DocumentosPlanosTrab
 import DocumentosPlanosTrabalhoCadastro from '~/paginas/Gestao/DocumentosPlanosTrabalho/documentosPlanosTrabalhoCadastro';
 import HistoricoNotificacoes from '~/paginas/Relatorios/Notificacoes/HistoricoNotificacoes/historicoNotificacoes';
 import RelatorioUsuarios from '~/paginas/Relatorios/Gestao/Usuarios/relatorioUsuarios';
-import RelatorioAlteracaoDeNotas from '~/paginas/Relatorios/DiarioClasse/AlteracaoNotas/relatorioAlteracaoDeNotas';
+import RelatorioHistoricoAlteracoesNotas from '~/paginas/Relatorios/Fechamento/HistoricoAlteracoesNotas/relatorioAlteracaoDeNotas';
 
 const rotas = new Map();
 
@@ -978,7 +978,6 @@ rotas.set(RotasDto.POC_EDITOR, {
   tipo: RotasTipo.EstruturadaAutenticada,
 });
 
-
 rotas.set(RotasDto.SONDAGEM, {
   breadcrumbName: 'Sistema Sondagem',
   parent: '/',
@@ -1052,7 +1051,7 @@ rotas.set(RotasDto.RELATORIO_ALTERACAO_NOTAS, {
   breadcrumbName: 'Histórico de alterações em notas',
   menu: ['Relatórios', 'Fechamento'],
   parent: '/',
-  component: RelatorioAlteracaoDeNotas,
+  component: RelatorioHistoricoAlteracoesNotas,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: false,
