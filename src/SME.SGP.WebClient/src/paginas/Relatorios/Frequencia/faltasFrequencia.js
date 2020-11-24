@@ -181,7 +181,7 @@ const FaltasFrequencia = () => {
     const retorno = await api
       .get(
         `v1/abrangencias/false/semestres?anoLetivo=${anoLetivoSelecionado}&modalidade=${modalidadeSelecionada ||
-          0}`
+        0}`
       )
       .catch(e => {
         erros(e);
@@ -269,7 +269,7 @@ const FaltasFrequencia = () => {
 
   const obterCodigoTodosAnosEscolares = useCallback(() => {
     let todosAnosEscolares = anosEscolares;
-    const selecionouTodos = anosEscolares.find(ano => ano === '-99');
+    const selecionouTodos = anosEscolares?.find(ano => ano === '-99');
     if (selecionouTodos) {
       todosAnosEscolares = listaAnosEscolares.map(item => item.valor);
     }
@@ -315,7 +315,13 @@ const FaltasFrequencia = () => {
       }
       setCarregandoGeral(false);
     }
-  }, [modalidadeId, anoLetivo, obterCodigoTodosAnosEscolares, codigoUe]);
+  }, [
+    modalidadeId,
+    anoLetivo,
+    obterCodigoTodosAnosEscolares,
+    codigoUe,
+    turmasPrograma,
+  ]);
 
   useEffect(() => {
     if (anosEscolares && anosEscolares.length) {
@@ -324,7 +330,7 @@ const FaltasFrequencia = () => {
       setComponentesCurriculares(undefined);
       setListaComponenteCurricular([]);
     }
-  }, [anosEscolares, obterComponenteCurricular]);
+  }, [anosEscolares, turmasPrograma, obterComponenteCurricular]);
 
   const obterBimestres = useCallback(() => {
     const bi = [];
@@ -367,17 +373,17 @@ const FaltasFrequencia = () => {
   useEffect(() => {
     const desabilitar =
       !anoLetivo ||
-      !codigoDre ||
-      !codigoUe ||
-      !modalidadeId ||
-      !anosEscolares ||
-      !componentesCurriculares ||
-      !bimestres ||
-      !tipoRelatorio ||
-      !condicao ||
-      valorCondicao === undefined ||
-      valorCondicao === '' ||
-      !formato;
+        !codigoDre ||
+        !codigoUe ||
+        !modalidadeId ||
+        !anosEscolares ||
+        !componentesCurriculares ||
+        !bimestres ||
+        !tipoRelatorio ||
+        !condicao ||
+        !todosEstudantes ?
+        (valorCondicao === undefined || valorCondicao === '') : !todosEstudantes ||
+        !formato;
 
     if (modalidadeId == modalidade.EJA) {
       setDesabilitarBtnGerar(!semestre || desabilitar);
@@ -397,6 +403,8 @@ const FaltasFrequencia = () => {
     condicao,
     valorCondicao,
     formato,
+    turmasPrograma,
+    todosEstudantes,
   ]);
 
   useEffect(() => {
@@ -718,8 +726,8 @@ const FaltasFrequencia = () => {
                     A condição considerada será pela quantidade de faltas
                   </span>
                 ) : (
-                  ''
-                )}
+                    ''
+                  )}
               </div>
               <div className="col-sm-12 col-md-6 col-lg-3 col-xl-2 mb-2">
                 <SelectComponent
