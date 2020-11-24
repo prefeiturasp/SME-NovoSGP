@@ -84,11 +84,11 @@ namespace SME.SGP.Aplicacao
 
         private async Task<long> IncluirPendenciaProfessor(Turma turma, int bimestre)
         {
-            var escolaUe = $"{turma.Ue.TipoEscola.ShortName()} {turma.Ue.Nome} (DRE - {turma.Ue.Dre.Abreviacao})";
+            var escolaUe = $"{turma.Ue.TipoEscola.ShortName()} {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao}) - Turma {turma.Nome}";
             var titulo = $"Ausência de avaliação no {bimestre}º bimestre {escolaUe}";
 
             var descricao = $"<i>Os componentes curriculares abaixo não possuem nenhuma avaliação cadastrada no {bimestre}º bimestre {escolaUe}</i>";
-            var instrucao = "Oriente os professores a cadastrarem as avaliações.";
+            var instrucao = "<i style='color:#FF0000';>Oriente os professores a cadastrarem as avaliações.</i>";
 
             return await mediator.Send(new SalvarPendenciaCommand(TipoPendencia.AusenciaDeAvaliacaoCP, descricao, instrucao, titulo));
         }
