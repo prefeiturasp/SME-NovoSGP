@@ -76,6 +76,7 @@ import DocumentosPlanosTrabalhoLista from '~/paginas/Gestao/DocumentosPlanosTrab
 import DocumentosPlanosTrabalhoCadastro from '~/paginas/Gestao/DocumentosPlanosTrabalho/documentosPlanosTrabalhoCadastro';
 import HistoricoNotificacoes from '~/paginas/Relatorios/Notificacoes/HistoricoNotificacoes/historicoNotificacoes';
 import RelatorioUsuarios from '~/paginas/Relatorios/Gestao/Usuarios/relatorioUsuarios';
+import RelatorioAlteracaoDeNotas from '~/paginas/Relatorios/DiarioClasse/AlteracaoNotas/relatorioAlteracaoDeNotas';
 
 const rotas = new Map();
 
@@ -1045,6 +1046,17 @@ rotas.set(RotasDto.RELATORIO_USUARIOS, {
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: true,
   chavePermissao: RotasDto.RELATORIO_USUARIOS,
+});
+
+rotas.set(RotasDto.RELATORIO_ALTERACAO_NOTAS, {
+  breadcrumbName: 'Histórico de alterações em notas',
+  menu: ['Relatórios', 'Fechamento'],
+  parent: '/',
+  component: RelatorioAlteracaoDeNotas,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+  chavePermissao: RotasDto.RELATORIO_ALTERACAO_NOTAS,
 });
 
 const rotasArray = [];
