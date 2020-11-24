@@ -67,6 +67,8 @@
         GerarPendenciaAulasDiasNaoLetivos = 35,
         GerarPendenciaDiasLetivosInsuficientes = 36,
 
+        // Pendencias Fechamento
+        DiasGeracaoPendenciaAvaliacao = 37,
 
         //Sistema
         HabilitarServicosEmBackground = 100
