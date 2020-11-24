@@ -818,7 +818,7 @@ rotas.set(RotasDto.RELATORIO_SEMESTRAL, {
   chavePermissao: RotasDto.RELATORIO_SEMESTRAL,
 });
 rotas.set(RotasDto.ATA_FINAL_RESULTADOS, {
-  breadcrumbName: 'Ata final de resultados',
+  breadcrumbName: 'Conselho Classe Ata Final',
   menu: ['Relatórios', 'Atas'],
   parent: '/',
   component: AtaFinalResultados,

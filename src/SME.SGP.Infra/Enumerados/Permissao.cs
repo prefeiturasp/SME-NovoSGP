@@ -445,16 +445,16 @@
         //[PermissaoMenu(Menu = "Relatório Semestral PAP", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = true, Url = "/relatorios/pap/relatorio-semestral")]
         //RSP_A = 147,
 
-        [PermissaoMenu(Menu = "Atas", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 4, EhConsulta = true, Url = "/relatorios/atas/ata-final-resultados", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Ata Final de Resultados")]
+        [PermissaoMenu(Menu = "Atas", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 4, EhConsulta = true, Url = "/relatorios/atas/conselho-classe-ata-final", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Conselho Classe Ata Final")]
         AFR_C = 148,
 
-        [PermissaoMenu(Menu = "Atas", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 4, EhInclusao = true, Url = "/relatorios/atas/ata-final-resultados", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Ata Final de Resultados")]
+        [PermissaoMenu(Menu = "Atas", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 4, EhInclusao = true, Url = "/relatorios/atas/conselho-classe-ata-final", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Conselho Classe Ata Final")]
         AFR_I = 149,
 
-        [PermissaoMenu(Menu = "Atas", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 4, EhExclusao = true, Url = "/relatorios/atas/ata-final-resultados", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Ata Final de Resultados")]
+        [PermissaoMenu(Menu = "Atas", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 4, EhExclusao = true, Url = "/relatorios/atas/conselho-classe-ata-final", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Conselho Classe Ata Final")]
         AFR_E = 150,
 
-        [PermissaoMenu(Menu = "Ata Final de Resultados", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 4, EhAlteracao = true, Url = "/relatorios/atas/ata-final-resultados")]
+        [PermissaoMenu(Menu = "Conselho Classe Ata Final", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 4, EhAlteracao = true, Url = "/relatorios/atas/conselho-classe-ata-final")]
         AFR_A = 151,
 
         [PermissaoMenu(Menu = "Histórico Escolar", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 5, EhConsulta = true, Url = "/relatorios/historico-escolar")]
