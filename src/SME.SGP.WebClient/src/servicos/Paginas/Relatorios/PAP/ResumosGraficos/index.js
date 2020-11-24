@@ -30,9 +30,7 @@ const ResumosGraficosPAPServico = {
   },
 
   gerarGraficosPap(payload) {
-    console.log('payload ---------------------------> ', payload);
-
-    return Promise.resolve();
+    return api.post('v1/relatorios/graficopap/impressao', payload);
   },
 };
 
