@@ -1,9 +1,7 @@
 --do $$
 --declare 
 --	pendencia record;
---	pendenciaId bigint;
 --begin
---
 --	for pendencia in 
 --		select a.turma_id as turmaId, a.disciplina_id as componenteId, pa.tipo + 6 as tipo
 --			, case pa.tipo
@@ -22,21 +20,6 @@
 --		 inner join aula a on a.id = pa.aula_id
 --		group by a.turma_id, a.disciplina_id, pa.tipo
 --	loop
---		insert into pendencia(titulo, descricao, situacao, tipo, excluido, migrado, criado_em, criado_por, criado_rf, alterado_em, alterado_por, alterado_rf)
---		  values (pendencia.titulo, pendencia.descricao, 1, pendencia.tipo, false, false, NOW(), 'SISTEMA', 'SISTEMA', null, '', '')
---		RETURNING id INTO pendenciaId;
---
---		 update pendencia_aula
---		        set pendencia_id = pendenciaId
---		  from aula 
---		  where aula.id = pendencia_aula.aula_id
---		    and aula.turma_id = pendencia.turmaId
---		    and aula.disciplina_id = pendencia.componenteId;
---		
---		commit;
+--		CALL INSERIR_PENDENCIA(pendencia.titulo, pendencia.descricao, pendencia.tipo, pendencia_aula.aula_id, pendencia.turmaId, pendencia.componenteId);
 --	end loop;
---
---    alter table pendencia_aula drop column tipo;
---	alter table pendencia_aula alter pendencia_id set not null;
---    alter table pendencia_aula add if not exists motivo varchar(100) null;
---end $$;
+--END; $$;

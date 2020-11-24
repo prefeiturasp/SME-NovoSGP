@@ -46,6 +46,12 @@ namespace SME.SGP.Api.Controllers
             return Ok(await relatorioResumoPAPUseCase.Executar(filtroRelatorioResumoPAPDto));
         }
 
+        [HttpPost("graficopap/impressao")]
+        public async Task<IActionResult> GraficoPAP([FromBody] FiltroRelatorioResumoPAPDto filtroRelatorioGraficoPAPDto, [FromServices] IRelatorioGraficoPAPUseCase relatorioGraficoPAPUseCase)
+        {
+            return Ok(await relatorioGraficoPAPUseCase.Executar(filtroRelatorioGraficoPAPDto));
+        }
+
         [HttpPost("plano-aula")]
         public async Task<IActionResult> PlanoAula([FromBody] FiltroRelatorioPlanoAulaDto filtro, [FromServices] IRelatorioPlanoAulaUseCase useCase)
         {
