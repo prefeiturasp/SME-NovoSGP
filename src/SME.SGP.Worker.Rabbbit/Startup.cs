@@ -83,6 +83,14 @@ namespace SME.SGP.Worker.Rabbbit
                 c.DefaultRequestHeaders.Add("Accept", "application/json");
                 c.DefaultRequestHeaders.Add("x-api-eol-key", configuration.GetSection("ApiKeyEolApi").Value);
             });
+
+            services.AddHttpClient(name: "servicoEOL", c =>
+            {
+                c.BaseAddress = new Uri(configuration.GetSection("UrlApiEOL").Value);
+                c.DefaultRequestHeaders.Add("Accept", "application/json");
+                c.DefaultRequestHeaders.Add("x-api-eol-key", configuration.GetSection("ApiKeyEolApi").Value);
+            });
+
             services.AddHttpClient<IServicoAcompanhamentoEscolar, ServicoAcompanhamentoEscolar>(c =>
             {
                 c.BaseAddress = new Uri(configuration.GetSection("UrlApiAE").Value);

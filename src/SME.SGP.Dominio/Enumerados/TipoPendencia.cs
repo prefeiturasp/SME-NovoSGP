@@ -47,6 +47,9 @@ namespace SME.SGP.Dominio
         AusenciaDeAvaliacaoProfessor = 14,
 
         [Display(Name = "Ausência de Avaliacao", GroupName = "Fechamento")]
-        AusenciaDeAvaliacaoCP = 15
+        AusenciaDeAvaliacaoCP = 15,
+
+        [Display(Name = "Ausência de Fechamento", GroupName = "Fechamento")]
+        AusenciaFechamento = 16
     }
 }

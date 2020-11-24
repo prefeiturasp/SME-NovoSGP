@@ -527,6 +527,10 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IExecutaPendenciasProfessorAvaliacaoUseCase, ExecutaPendenciasProfessorAvaliacaoUseCase>();
             services.TryAddScoped<IExecutaVerificacaoGeracaoPendenciaProfessorAvaliacaoUseCase, ExecutaVerificacaoGeracaoPendenciaProfessorAvaliacaoUseCase>();
 
+            // Pendencias Ausencia Fechamento
+            services.TryAddScoped<IExecutaVerificacaoGeracaoPendenciaAusenciaFechamentoUseCase, ExecutaVerificacaoGeracaoPendenciaAusenciaFechamentoUseCase>();
+            services.TryAddScoped<IExecutaPendenciasAusenciaFechamentoUseCase, ExecutaPendenciasAusenciaFechamentoUseCase>();
+
 
             // Plano Aula
             services.TryAddScoped<IObterPlanoAulaUseCase, ObterPlanoAulaUseCase>();
