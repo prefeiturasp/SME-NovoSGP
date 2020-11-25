@@ -502,13 +502,13 @@ namespace SME.SGP.Dados.Repositorios
 	                  t.dt_fim_eol is not null and 
                       t.dt_fim_eol {(definirTurmasComoHistorica ? ">=" : "<")} pe.periodo_inicio"; //Turmas extintas após o 1º bimestre do ano letivo considerado serão marcadas como histórica
 
-        public async Task<IEnumerable<Turma>> ObterTurmasPorAnoLetivoModalidade(int anoLetivo, int modalidadeId)
+        public async Task<IEnumerable<Turma>> ObterTurmasPorAnoLetivoModalidade(int anoLetivo, Modalidade[] modalidades)
         {
 
             var query = new StringBuilder(@"select distinct * from turma t
-                                            where  t.ano_letivo = @anoLetivo and t.modalidade_codigo = @modalidadeId ");
+                                            where  t.ano_letivo = @anoLetivo and t.modalidade_codigo = ANY(@modalidades)");
 
-            return await contexto.Conexao.QueryAsync<Turma>(query.ToString(), new { anoLetivo, modalidadeId });
+            return await contexto.Conexao.QueryAsync<Turma>(query.ToString(), new { anoLetivo, modalidades = modalidades.Cast<int>().ToArray() });
 
         }
     }

@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(ExecutarVerificacaoPendenciaAusenciaFechamentoCommand request, CancellationToken cancellationToken)
         {
-            var turmas = await mediator.Send(new ObterTurmasPorAnoModalidadeQuery(DateTime.Now.Year, (int)request.Modalidade));
+            var turmas = await mediator.Send(new ObterTurmasPorAnoModalidadeQuery(DateTime.Now.Year, request.ModalidadeTipoCalendario.ObterModalidadesTurma()));
 
             var periodosEscolares = await mediator.Send(new ObterPeriodosEscolaresPorModalidadeDataFechamentoQuery((int)request.ModalidadeTipoCalendario, DateTime.Now.AddDays(request.DiasParaGeracaoDePendencia)));
             var componentes = await mediator.Send(new ObterComponentesCurricularesQuery());
@@ -41,14 +41,26 @@ namespace SME.SGP.Aplicacao
                         var obterComponenteCurricular = componentes.FirstOrDefault(c => long.Parse(c.Codigo) == professorTurma.DisciplinaId);
                         if (obterComponenteCurricular != null)
                         {
-                            var verificaFechamento = await mediator.Send(new VerificaFechamentoTurmaDisciplinaPorIdCCEPeriodoEscolarQuery(turma.Id, long.Parse(obterComponenteCurricular.Codigo), periodoEscolar.Id));
-                            if (!verificaFechamento)
+                            if (professorTurma.ProfessorRf != "")
                             {
-                                if(professorTurma.ProfessorRf != "")
+                                var verificaFechamento = await mediator.Send(new VerificaFechamentoTurmaDisciplinaPorIdCCEPeriodoEscolarQuery(turma.Id, long.Parse(obterComponenteCurricular.Codigo), periodoEscolar.Id));
+
+                                if (!verificaFechamento)
                                 {
-                                    if (!await ExistePendenciaProfessor(turma.Id, long.Parse(obterComponenteCurricular.Codigo), professorTurma.ProfessorRf))
-                                        await IncluirPendenciaAusenciaFechamento(turma.Id, long.Parse(obterComponenteCurricular.Codigo), professorTurma.ProfessorRf, periodoEscolar.Bimestre, obterComponenteCurricular.Descricao, obterComponenteCurricular.LancaNota);
+                                    if (!await ExistePendenciaProfessor(turma.Id, long.Parse(obterComponenteCurricular.Codigo), professorTurma.ProfessorRf, periodoEscolar.Id))
+                                        await IncluirPendenciaAusenciaFechamento(turma.Id, long.Parse(obterComponenteCurricular.Codigo), professorTurma.ProfessorRf, periodoEscolar.Bimestre, obterComponenteCurricular.Descricao, obterComponenteCurricular.LancaNota, periodoEscolar.Id);
                                 }
+
+                                if(EhBimestreFinal(request.ModalidadeTipoCalendario, periodoEscolar.Bimestre))
+                                {
+                                    var verificaFechamentoFinal = await mediator.Send(new VerificaFechamentoTurmaDisciplinaPorIdCCEPeriodoEscolarQuery(turma.Id, long.Parse(obterComponenteCurricular.Codigo), null));
+                                    if (!verificaFechamentoFinal)
+                                    {
+
+                                        if (!await ExistePendenciaProfessor(turma.Id, long.Parse(obterComponenteCurricular.Codigo), professorTurma.ProfessorRf, null))
+                                            await IncluirPendenciaAusenciaFechamento(turma.Id, long.Parse(obterComponenteCurricular.Codigo), professorTurma.ProfessorRf, periodoEscolar.Bimestre, obterComponenteCurricular.Descricao, obterComponenteCurricular.LancaNota, null);
+                                    }
+                                }                                
                             }
                         }
                     }
@@ -58,13 +70,19 @@ namespace SME.SGP.Aplicacao
             return true;
         }
 
-        private async Task<bool> ExistePendenciaProfessor(long turmaId, long componenteCurricularId, string professorRf)
+        private bool EhBimestreFinal(ModalidadeTipoCalendario modalidadeTipoCalendario, int bimestre)
+        {
+            return (bimestre == 2 && modalidadeTipoCalendario == ModalidadeTipoCalendario.EJA) || bimestre == 4;
+        }
+
+        private async Task<bool> ExistePendenciaProfessor(long turmaId, long componenteCurricularId, string professorRf, long? periodoEscolarId)
            => await mediator.Send(new ExistePendenciaProfessorPorTurmaEComponenteQuery(turmaId,
                                                                                        componenteCurricularId,
+                                                                                       periodoEscolarId,
                                                                                        professorRf,
                                                                                        TipoPendencia.AusenciaFechamento));
 
-        private async Task IncluirPendenciaAusenciaFechamento(long turmaId, long componenteCurricularId, string professorRf, int bimestre, string componenteCurricularNome, bool lancaNota)
+        private async Task IncluirPendenciaAusenciaFechamento(long turmaId, long componenteCurricularId, string professorRf, int bimestre, string componenteCurricularNome, bool lancaNota, long? periodoEscolarId)
         {
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(turmaId));
 
@@ -82,9 +100,9 @@ namespace SME.SGP.Aplicacao
             {
                 instrucao = "Você precisa acessar a tela de Fechamento do Bimestre e executar o processo de fechamento.";
             }
-            
 
-            await mediator.Send(new SalvarPendenciaAusenciaFechamentoCommand(turma.Id, componenteCurricularId, professorRf, titulo, descricao, instrucao));
+
+            await mediator.Send(new SalvarPendenciaAusenciaFechamentoCommand(turma.Id, componenteCurricularId, professorRf, titulo, descricao, instrucao, periodoEscolarId));
 
         }
 

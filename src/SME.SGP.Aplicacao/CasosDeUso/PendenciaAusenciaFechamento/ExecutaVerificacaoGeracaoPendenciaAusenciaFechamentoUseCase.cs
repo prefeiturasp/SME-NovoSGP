@@ -24,15 +24,18 @@ namespace SME.SGP.Aplicacao
             var anoAtual = DateTime.Now.Year;
             var parametroDiasAusenciaFechamento = await mediator.Send(new ObterParametrosSistemaPorTipoEAnoQuery(Dominio.TipoParametroSistema.DiasGeracaoPendenciaAusenciaFechamento, anoAtual));
 
-            await ExecutaVerificacaoPendenciaAusenciaFechamentoPorModalidade(parametroDiasAusenciaFechamento, Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
+            await ExecutaVerificacaoPendenciaAusenciaFechamentoPorModalidade(parametroDiasAusenciaFechamento, ModalidadeTipoCalendario.FundamentalMedio);
+            await ExecutaVerificacaoPendenciaAusenciaFechamentoPorModalidade(parametroDiasAusenciaFechamento, ModalidadeTipoCalendario.EJA);
+            
+
         }
 
-        private async Task ExecutaVerificacaoPendenciaAusenciaFechamentoPorModalidade(IEnumerable<ParametrosSistema> parametroDiasAusenciaFechamento, Modalidade modalidade, ModalidadeTipoCalendario modalidadeTipoCalendario)
+        private async Task ExecutaVerificacaoPendenciaAusenciaFechamentoPorModalidade(IEnumerable<ParametrosSistema> parametroDiasAusenciaFechamento, ModalidadeTipoCalendario modalidadeTipoCalendario)
         {
             var parametroPendenciaAusencia = parametroDiasAusenciaFechamento.FirstOrDefault(c => c.Ativo && c.Nome == "DiasGeracaoPendenciaAusenciaFechamento");
             if (parametroPendenciaAusencia != null)
             {
-                await mediator.Send(new ExecutarVerificacaoPendenciaAusenciaFechamentoCommand(int.Parse(parametroPendenciaAusencia.Valor), modalidade, modalidadeTipoCalendario));
+                await mediator.Send(new ExecutarVerificacaoPendenciaAusenciaFechamentoCommand(int.Parse(parametroPendenciaAusencia.Valor), modalidadeTipoCalendario));
             }
                 
         }
