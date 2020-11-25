@@ -1,8 +1,10 @@
-﻿using SME.SGP.Dominio;
+﻿using Dommel;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados
@@ -16,21 +18,34 @@ namespace SME.SGP.Dados
             this.database = database ?? throw new ArgumentNullException(nameof(database));
         }
 
-        public async Task<bool> ExistePendenciaProfessorPorTurmaEComponente(long turmaId, long componenteCurricularId, string professorRf, TipoPendencia tipoPendencia)
+        public async Task<bool> ExistePendenciaProfessorPorPendenciaId(long pendenciaId)
         {
-            var query = @"select 1
+            var query = "select 1 from pendencia_professor where pendencia_id = @pendenciaId";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { pendenciaId });
+        }
+
+        public async Task<bool> ExistePendenciaProfessorPorTurmaEComponente(long turmaId, long componenteCurricularId, long? periodoEscolarId, string professorRf, TipoPendencia tipoPendencia)
+        {
+            var query = new StringBuilder(@"select 1
                          from pendencia_professor pp
                         inner join pendencia p on p.id = pp.pendencia_id
                         where pp.turma_id = @turmaId
                           and pp.componente_curricular_id = @componenteCurricularId
                           and pp.professor_rf = @professorRf
-                          and p.tipo = @tipoPendencia";
+                          and p.tipo = @tipoPendencia ");
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { turmaId, componenteCurricularId, professorRf, tipoPendencia });
+            if (periodoEscolarId.HasValue)
+                query.Append("and pp.periodo_escolar_id = @periodoEscolarId");
+            else
+                query.Append("and pp.periodo_escolar_id is null");
+
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query.ToString(), new { turmaId, componenteCurricularId, periodoEscolarId, professorRf, tipoPendencia });
         }
 
-        public async Task<long> Inserir(long pendenciaId, long turmaId, long componenteCurricularId, string professorRf)
-            => (long)database.Conexao.Insert(new PendenciaProfessor(pendenciaId, turmaId, componenteCurricularId, professorRf));
+        public async Task<long> Inserir(long pendenciaId, long turmaId, long componenteCurricularId, string professorRf, long periodoEscolarId)
+            => (long)database.Conexao.Insert(new PendenciaProfessor(pendenciaId, turmaId, componenteCurricularId, professorRf, periodoEscolarId));
 
         public async Task<long> ObterPendenciaIdPorTurma(long turmaId, TipoPendencia tipoPendencia)
         {
@@ -54,5 +69,41 @@ namespace SME.SGP.Dados
 
             return await database.Conexao.QueryAsync<PendenciaProfessorDto>(query, new { pendenciaId });
         }
+
+        public async Task<IEnumerable<PendenciaProfessor>> ObterPendenciasProfessorPorTurmaEComponente(string turmaCodigo, long[] componentesCurriculares, long periodoEscolarId, TipoPendencia tipoPendencia)
+        {
+            var query = @"select pp.* 
+                          from pendencia_professor pp 
+                          inner join pendencia p on p.id = pp.pendencia_id
+                          inner join turma t on t.id = pp.turma_id
+                          where not p.excluido
+                            and p.tipo = @tipoPendencia
+                            and t.turma_id = @turmaCodigo
+                            and pp.componente_curricular_id = any(@componentesCurriculares)
+                            and pp.periodo_escolar_id = @periodoEscolarId";
+
+            return await database.Conexao.QueryAsync<PendenciaProfessor>(query, new { turmaCodigo, componentesCurriculares, tipoPendencia, periodoEscolarId });
+        }
+
+        public async Task Remover(PendenciaProfessor pendenciaProfessor)
+        {
+            await database.Conexao.DeleteAsync(pendenciaProfessor);
+            Auditar(pendenciaProfessor.Id, "E");
+        }
+
+        private void Auditar(long identificador, string acao)
+        {
+            database.Conexao.Insert<Auditoria>(new Auditoria()
+            {
+                Data = DateTime.Now,
+                Entidade = "pendenciaprofessor",
+                Chave = identificador,
+                Usuario = database.UsuarioLogadoNomeCompleto,
+                RF = database.UsuarioLogadoRF,
+                Acao = acao
+            });
+        }
+
+
     }
 }

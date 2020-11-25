@@ -5,10 +5,11 @@ namespace SME.SGP.Aplicacao
 {
     public class SalvarPendenciaAusenciaDeAvaliacaoProfessorCommand : IRequest<bool>
     {
-        public SalvarPendenciaAusenciaDeAvaliacaoProfessorCommand(long turmaId, long componenteCurricularId, string professorRf, string titulo, string mensagem, string instrucao)
+        public SalvarPendenciaAusenciaDeAvaliacaoProfessorCommand(long turmaId, long componenteCurricularId, long periodoEscolarId, string professorRf, string titulo, string mensagem, string instrucao)
         {
             TurmaId = turmaId;
             ComponenteCurricularId = componenteCurricularId;
+            PeriodoEscolarId = periodoEscolarId;
             ProfessorRf = professorRf;
             Titulo = titulo;
             Mensagem = mensagem;
@@ -17,6 +18,7 @@ namespace SME.SGP.Aplicacao
 
         public long TurmaId { get; set; }
         public long ComponenteCurricularId { get; set; }
+        public long PeriodoEscolarId { get; set; }
         public string ProfessorRf { get; set; }
 
         public string Titulo { get; set; }
@@ -35,6 +37,10 @@ namespace SME.SGP.Aplicacao
             RuleFor(c => c.ComponenteCurricularId)
                .NotEmpty()
                .WithMessage("O id do componente curricular deve ser informado para geração da pendência do professor.");
+
+            RuleFor(c => c.PeriodoEscolarId)
+               .Must(a => a > 0)
+               .WithMessage("O periodo escolar deve ser informado para geração da pendência do professor.");
 
             RuleFor(c => c.ProfessorRf)
                .NotEmpty()
