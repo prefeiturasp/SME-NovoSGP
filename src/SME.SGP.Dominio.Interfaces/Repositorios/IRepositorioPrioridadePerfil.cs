@@ -10,5 +10,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<int> ObterTipoPerfil(Guid perfil);
 
         Task<IEnumerable<PrioridadePerfil>> ObterPerfisPorTipo(int tipo);
+        Task<IEnumerable<PrioridadePerfil>> ObterHierarquiaPerfisPorPerfil(Guid perfilUsuario);
     }
 }
