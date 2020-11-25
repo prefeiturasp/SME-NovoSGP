@@ -74,5 +74,11 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await relatorioUseCase.Executar(filtro));
         }
+
+        [HttpPost("alteracao-notas")]
+        public async Task<IActionResult> AlteracaoNotas([FromBody] FiltroRelatorioUsuarios filtro, [FromServices] IRelatorioUsuariosUseCase relatorioUseCase)
+        {
+            return Ok(await relatorioUseCase.Executar(filtro));
+        }
     }
 }
