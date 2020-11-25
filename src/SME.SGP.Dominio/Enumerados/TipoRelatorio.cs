@@ -61,6 +61,9 @@ namespace SME.SGP.Dominio
         Notificacoes = 19,        
 
         [Display(Name = "relatorios/usuarios", ShortName = "Usuarios", Description = "Relatório de Usuários")]
-        Usuarios = 20
+        Usuarios = 20,
+
+        [Display(Name = "relatorios/graficopap", ShortName = "GraficoPAP", Description = "Relatório de acompanhamento PAP - Gráficos")]
+        GraficoPAP = 21
     }
 }

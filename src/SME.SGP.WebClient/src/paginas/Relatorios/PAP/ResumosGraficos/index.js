@@ -168,6 +168,7 @@ const ResumosGraficosPAP = () => {
                           ciclos={!filtroTela.Ano && !!filtroTela.CicloId}
                           anos={!!filtroTela.Ano}
                           periodo={filtroTela.Periodo}
+                          filtroTela={filtroTela}
                         />
                       </LazyLoad>
                     ) : (
