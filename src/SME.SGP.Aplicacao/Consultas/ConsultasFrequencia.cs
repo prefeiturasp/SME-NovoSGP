@@ -138,6 +138,8 @@ namespace SME.SGP.Aplicacao
             if (aula == null)
                 throw new NegocioException("Aula não encontrada.");
 
+            
+            
             var alunosDaTurma = await servicoEOL.ObterAlunosPorTurma(aula.TurmaId);
             if (alunosDaTurma == null || !alunosDaTurma.Any())
                 throw new NegocioException("Não foram encontrados alunos para a aula/turma informada.");
@@ -196,7 +198,11 @@ namespace SME.SGP.Aplicacao
                     DataNascimento = aluno.DataNascimento,
                     Desabilitado = aluno.EstaInativo(aula.DataAula) || aula.EhDataSelecionadaFutura,
                     PermiteAnotacao = aluno.EstaAtivo(aula.DataAula),
-                    PossuiAnotacao = anotacoesTurma.Any(a => a == aluno.CodigoAluno)
+                    PossuiAnotacao = anotacoesTurma.Any(a => a == aluno.CodigoAluno),
+                    NomeResponsavel = aluno.NomeResponsavel,
+                    TipoResponsavel = aluno.TipoResponsavel,
+                    CelularResponsavel = aluno.CelularResponsavel,
+                    DataAtualizacaoContato = aluno.DataAtualizacaoContato
                 };
 
                 // Marcador visual da situação
