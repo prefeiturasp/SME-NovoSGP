@@ -413,6 +413,8 @@ namespace SME.SGP.IoC
 
 
             services.TryAddScopedWorkerService<IUsuarioPossuiAbrangenciaAcessoSondagemUseCase, UsuarioPossuiAbrangenciaAcessoSondagemUseCase>();
+
+            services.TryAddScopedWorkerService<ITrataNotificacoesNiveisCargos, TrataNotificacoesNiveisCargos>();
         }
 
         private static void ResgistraDependenciaHttp(IServiceCollection services)
