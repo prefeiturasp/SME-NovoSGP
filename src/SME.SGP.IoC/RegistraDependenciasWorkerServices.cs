@@ -403,7 +403,7 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IObterTurmasParaCopiaUseCase, ObterTurmasParaCopiaUseCase>();
             services.TryAddScopedWorkerService<ISalvarPlanoAulaUseCase, SalvarPlanoAulaUseCase>();
 
-            services.TryAddScopedWorkerService<ITrataNotificacoesNiveisCargos, TrataNotificacoesNiveisCargos>();
+            services.TryAddScopedWorkerService<ITrataNotificacoesNiveisCargosUseCase, TrataNotificacoesNiveisCargosUseCase>();
         }
 
         private static void ResgistraDependenciaHttp(IServiceCollection services)

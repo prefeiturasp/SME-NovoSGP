@@ -15,8 +15,7 @@ namespace SME.SGP.Aplicacao
         public async Task Executar()
         {
             var listaDeNotificacoesParaTratar = await mediator.Send(new ObterNotificacoesNiveisCargosQuery());
-
-            throw new System.NotImplementedException();
+            await mediator.Send(new TrataNotificacaoCargosNiveisCommand(listaDeNotificacoesParaTratar));            
         }
     }
 }
