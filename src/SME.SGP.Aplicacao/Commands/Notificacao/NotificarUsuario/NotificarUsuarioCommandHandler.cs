@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
 
             var notificacao = new Notificacao()
             {
-                Codigo = ObtemNovoCodigo(),
+                Codigo = request.Codigo == 0 ? ObtemNovoCodigo() : request.Codigo,
                 Titulo = request.Titulo,
                 Mensagem = request.Mensagem,
                 DreId = request.DreCodigo,
@@ -35,7 +35,10 @@ namespace SME.SGP.Aplicacao
                 Categoria = request.Categoria,
                 Tipo = request.Tipo,
                 UsuarioId = usuario?.Id,
-            };            
+            };
+
+            if (request.CriadoEm.HasValue)
+                notificacao.CriadoEm = request.CriadoEm.Value;
 
             return await repositorioNotificacao.SalvarAsync(notificacao);            
         }

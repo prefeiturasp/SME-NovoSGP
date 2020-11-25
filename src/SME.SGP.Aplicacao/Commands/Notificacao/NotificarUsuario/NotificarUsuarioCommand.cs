@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Dominio;
+using System;
 
 namespace SME.SGP.Aplicacao
 {
@@ -14,7 +15,8 @@ namespace SME.SGP.Aplicacao
                                        string dreCodigo = "",
                                        string ueCodigo = "",
                                        string turmaCodigo = "",
-                                       int ano = 0)
+                                       int ano = 0,
+                                       long codigo = 0, DateTime? criadoEm = null)
         {
             Titulo = titulo;
             Mensagem = mensagem;
@@ -25,6 +27,8 @@ namespace SME.SGP.Aplicacao
             Categoria = categoria;
             Tipo = tipo;
             UsuarioRf = usuarioRf;
+            Codigo = codigo;
+            CriadoEm = criadoEm;
         }
 
         public string Titulo { get; set; }
@@ -36,6 +40,8 @@ namespace SME.SGP.Aplicacao
         public NotificacaoCategoria Categoria { get; set; }
         public NotificacaoTipo Tipo { get; set; }
         public string UsuarioRf { get; set; }
+        public long Codigo { get; set; }
+        public DateTime? CriadoEm { get; set; }
     }
 
     public class NotificarUsuarioCommandValidator : AbstractValidator<NotificarUsuarioCommand>
