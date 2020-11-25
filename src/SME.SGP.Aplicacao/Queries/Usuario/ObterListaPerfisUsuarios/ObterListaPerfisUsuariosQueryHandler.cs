@@ -4,6 +4,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,6 +21,10 @@ namespace SME.SGP.Aplicacao.Queries.Usuario.ObterListaPerfisUsuarios
         }
 
         public async Task<IEnumerable<PrioridadePerfil>> Handle(ObterListaPerfisUsuariosQuery request, CancellationToken cancellationToken)
-            => repositorioPrioridadePerfil.Listar();
+        {
+            var tipoPerfilUsuario = await repositorioPrioridadePerfil.ObterTipoPerfil(request.PerfilUsuario);
+
+            return await repositorioPrioridadePerfil.ObterPerfisPorTipo(tipoPerfilUsuario);
+        }
     }
 }

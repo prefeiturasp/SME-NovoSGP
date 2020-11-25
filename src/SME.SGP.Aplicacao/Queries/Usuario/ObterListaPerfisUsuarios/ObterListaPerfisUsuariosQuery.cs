@@ -9,5 +9,11 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterListaPerfisUsuariosQuery : IRequest<IEnumerable<PrioridadePerfil>>
     {
+        public ObterListaPerfisUsuariosQuery(Guid perfilUsuario)
+        {
+            PerfilUsuario = perfilUsuario;
+        }
+
+        public Guid PerfilUsuario { get; set; }
     }
 }

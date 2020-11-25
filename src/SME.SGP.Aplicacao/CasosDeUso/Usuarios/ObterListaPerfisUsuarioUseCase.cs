@@ -20,7 +20,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<KeyValuePair<Guid, string>>> Executar()
         {
-            var perfis = await mediator.Send(new ObterListaPerfisUsuariosQuery());
+            var perfilUsuario = await mediator.Send(new ObterPerfilAtualQuery());
+            var perfis = await mediator.Send(new ObterListaPerfisUsuariosQuery(perfilUsuario));
 
             return perfis
                 .OrderBy(a => a.Ordem)
