@@ -78,7 +78,7 @@ namespace SME.SGP.Aplicacao
             var titulo = $"Ausência de avaliação no {bimestre}º bimestre {escolaUe}";
 
             var descricao = $"<i>O componente curricular {componenteCurricularNome} não possui nenhuma avaliação cadastrada no {bimestre}º bimestre - {escolaUe}</i>";
-            var instrucao = "<i style='color:#FF0000';>Acesse a tela de Calendário Escolar e confira os eventos da sua UE.</i>";
+            var instrucao = "Acesse a tela de Calendário Escolar e confira os eventos da sua UE.";
 
             await mediator.Send(new SalvarPendenciaAusenciaDeAvaliacaoProfessorCommand(turma.Id, componenteCurricularId, periodoEscolarId, professorRf, titulo, descricao, instrucao));
             
