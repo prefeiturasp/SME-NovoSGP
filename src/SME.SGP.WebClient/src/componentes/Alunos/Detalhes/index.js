@@ -4,7 +4,9 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import Button from '~/componentes/button';
 import { Colors } from '~/componentes/colors';
+import { Base } from '~/componentes';
 import { Container, DadosAluno, FrequenciaGlobal } from './styles';
+import { maskTelefone } from '~/utils/funcoes/gerais';
 
 const DetalhesAluno = props => {
   const {
@@ -24,6 +26,10 @@ const DetalhesAluno = props => {
     situacao,
     dataSituacao,
     frequencia,
+    nomeResponsavel,
+    tipoResponsavel,
+    celularResponsavel,
+    dataAtualizacaoContato,
   } = dados;
 
   return (
@@ -35,8 +41,27 @@ const DetalhesAluno = props => {
         bodyStyle={{ borderTopRightRadius: 0 }}
       >
         <DadosAluno className="row">
-          <div className="col-md-8 d-flex justify-content-start">
-            <Avatar className="mr-2" size={80} icon="user" src={avatar} />
+          <div
+            className={`col-md-${
+              nomeResponsavel
+                ? exibirBotaoImprimir || exibirFrequencia
+                  ? '6'
+                  : '8'
+                : '8'
+            } d-flex justify-content-start`}
+            style={{
+              borderRight: nomeResponsavel
+                ? `1px solid ${Base.CinzaDesabilitado}`
+                : 'none',
+            }}
+          >
+            <Avatar
+              className="mr-2"
+              size={80}
+              icon="user"
+              src={avatar}
+              style={{ minWidth: '80px' }}
+            />
             <div>
               <p>
                 {nome} Nº {numeroChamada}
@@ -53,28 +78,60 @@ const DetalhesAluno = props => {
               </p>
             </div>
           </div>
-          <div className="col-md-4 d-flex justify-content-end display-block">
-            {exibirBotaoImprimir ? (
-              <Button
-                icon="print"
-                className="ml-auto mb-4"
-                color={Colors.Azul}
-                border
-                onClick={onClickImprimir}
-                disabled={desabilitarImprimir}
-                id="btn-imprimir-dados-aluno"
-              />
-            ) : (
-              ''
-            )}
-            {exibirFrequencia ? (
-              <FrequenciaGlobal>
-                Frequência Global: {frequencia || 0}%
-              </FrequenciaGlobal>
-            ) : (
-              ''
-            )}
-          </div>
+          {nomeResponsavel ? (
+            <div className="col-md-4">
+              <div>
+                <p>
+                  Responsável: {nomeResponsavel}
+                  <span
+                    style={{ color: Base.CinzaDesabilitado, fontSize: '13px' }}
+                  >{` (${tipoResponsavel})`}</span>
+                </p>
+                <p>
+                  Telefone: {maskTelefone(celularResponsavel)}
+                  <span
+                    style={{ color: Base.CinzaDesabilitado, fontSize: '13px' }}
+                  >{` (Atualizado - ${
+                    dataAtualizacaoContato
+                      ? moment(dataAtualizacaoContato).format('L')
+                      : ''
+                  })`}</span>
+                </p>
+              </div>
+            </div>
+          ) : (
+            ''
+          )}
+          {exibirBotaoImprimir || exibirFrequencia ? (
+            <div
+              className={`col-md-${
+                nomeResponsavel ? '2' : '4'
+              } d-flex justify-content-end display-block`}
+            >
+              {exibirBotaoImprimir ? (
+                <Button
+                  icon="print"
+                  className="ml-auto mb-4"
+                  color={Colors.Azul}
+                  border
+                  onClick={onClickImprimir}
+                  disabled={desabilitarImprimir}
+                  id="btn-imprimir-dados-aluno"
+                />
+              ) : (
+                ''
+              )}
+              {exibirFrequencia ? (
+                <FrequenciaGlobal>
+                  Frequência Global: {frequencia || 0}%
+                </FrequenciaGlobal>
+              ) : (
+                ''
+              )}
+            </div>
+          ) : (
+            ''
+          )}
         </DadosAluno>
       </Card>
     </Container>
