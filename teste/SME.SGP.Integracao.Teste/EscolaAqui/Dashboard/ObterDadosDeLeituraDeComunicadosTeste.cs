@@ -18,22 +18,26 @@ namespace SME.SGP.Integracao.Teste.EscolaAqui.Dashboard
         }
 
         [Theory(DisplayName = "Requisição para API do App Escola Aqui para busca de dados de leitura de comunicado (DRE/UE)")]
-        [InlineData("109300", "099139", 237)]
-        [InlineData("", "", 254)]
-        [InlineData("109300", "099139", 256)]
-        private async Task ObterDadosDeLeituraDeComunicados_ComEntradasValidas_RetornandoListaVaziaOuPreenchida(string codigoDre, string codigoUe, long comunicadoId)
+        [InlineData("109300", "099139", 237, 1)]
+        [InlineData("", "", 254, 1)]
+        [InlineData("109300", "099139", 256, 1)]
+        [InlineData("109300", "099139", 237, 2)]
+        [InlineData("", "", 254, 2)]
+        [InlineData("109300", "099139", 256, 2)]
+        private async Task ObterDadosDeLeituraDeComunicados_ComEntradasValidas_RetornandoListaVaziaOuPreenchida(string codigoDre, string codigoUe, long comunicadoId, int modoVisualizacao)
         {
             // Arrange
             var dto = new ObterDadosDeLeituraDeComunicadosDto
             {
                 CodigoDre = codigoDre,
                 CodigoUe = codigoUe,
-                ComunicadoId = comunicadoId
+                ComunicadoId = comunicadoId,
+                ModoVisualizacao = modoVisualizacao
             };
 
             // Act
             fixture._clientApi.DefaultRequestHeaders.Clear();
-            var requestParameters = $"?codigoDre={dto.CodigoDre}&codigoUe={dto.CodigoUe}&comunicadoId={dto.ComunicadoId}";
+            var requestParameters = $"?codigoDre={dto.CodigoDre}&codigoUe={dto.CodigoUe}&comunicadoId={dto.ComunicadoId}&modoVisualizacao={dto.ModoVisualizacao}";
             var result = await fixture._clientApi.GetAsync($"api/v1/ea/dashboard/comunicados/leitura{requestParameters}");
 
             // Assert
@@ -50,12 +54,13 @@ namespace SME.SGP.Integracao.Teste.EscolaAqui.Dashboard
             {
                 CodigoDre = codigoDre,
                 CodigoUe = codigoUe,
-                ComunicadoId = comunicadoId
+                ComunicadoId = comunicadoId,
+                ModoVisualizacao = 1
             };
 
             // Act
             fixture._clientApi.DefaultRequestHeaders.Clear();
-            var requestParameters = $"?codigoDre={dto.CodigoDre}&codigoUe={dto.CodigoUe}&comunicadoId={dto.ComunicadoId}";
+            var requestParameters = $"?codigoDre={dto.CodigoDre}&codigoUe={dto.CodigoUe}&comunicadoId={dto.ComunicadoId}&modoVisualizacao={dto.ModoVisualizacao}";
             var result = await fixture._clientApi.GetAsync($"api/v1/ea/dashboard/comunicados/leitura{requestParameters}");
 
             // Assert

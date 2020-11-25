@@ -34,6 +34,7 @@ namespace SME.SGP.Aplicacao
             var url = new StringBuilder(BaseUrl);
 
             url.Append(@"?comunicadoId=" + request.ComunicadoId);
+            url.Append(@"?modoVisualizacao=" + request.ModoVisualizacao);
             if (!string.IsNullOrEmpty(request.CodigoDre))
             {
                 url.Append(@"&codigoDre=" + request.CodigoDre);
