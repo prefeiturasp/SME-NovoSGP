@@ -7,9 +7,9 @@ using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterListaPerfisUsuariosQuery : IRequest<IEnumerable<PrioridadePerfil>>
+    public class ObterHierarquiaPerfisPorPerfilQuery : IRequest<IEnumerable<PrioridadePerfil>>
     {
-        public ObterListaPerfisUsuariosQuery(Guid perfilUsuario)
+        public ObterHierarquiaPerfisPorPerfilQuery(Guid perfilUsuario)
         {
             PerfilUsuario = perfilUsuario;
         }
