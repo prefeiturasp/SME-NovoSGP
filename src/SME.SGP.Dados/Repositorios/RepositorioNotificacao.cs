@@ -143,7 +143,16 @@ namespace SME.SGP.Dados.Repositorios
         {
             await database.Conexao.ExecuteAsync("DELETE FROM NOTIFICACAO WHERE ID = ANY(@ids)", new { ids });
         }
+        public async Task ExcluirLogicamentePorIdsAsync(long[] ids)
+        {
+            var query = @"UPDATE NOTIFICACAO SET 
+                            EXCLUIDA = true, 
+                            ALTERADO_EM = @dataAlteracao, 
+                            ALTERADO_POR = 'Sistema'
+                         WHERE ID = ANY(@ids)";
 
+            await database.Conexao.ExecuteAsync(query, new { ids, dataAlteracao = DateTime.Now });
+        }
         public IEnumerable<Notificacao> ObterNotificacoesPorAnoLetivoERf(int anoLetivo, string usuarioRf, int limite)
         {
             var query = new StringBuilder();
@@ -283,19 +292,12 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<NotificacoesParaTratamentoCargosNiveisDto>> ObterNotificacoesParaTratamentoCargosNiveis()
         {
-            var query = @"select wan.cargo, 
-                            n.titulo as notificacaoTitulo, 
-                            n.mensagem notificacaoMensagem, 
-                            n.status as notificacaoStatus, 
-                            n.categoria as notificacaoCategoria,
-                            n.tipo as notificacaoTipo,
-                            n.ue_id as UEId,
-                            n.dre_id as DREId,
-                            n.ano as notificacaoAnoLetivo,
-                            n.codigo as notificacaoCodigo,
-                            n.turma_id as notificacaoTurmaId,
-                            n.usuario_id as usuarioId,
-                            u.rf_codigo as usuarioRF
+            var query = @"select 
+                            wan.cargo,                                                         
+                            n.ue_id as UECodigo,
+                            n.dre_id as DRECodigo,                            
+                            n.id as NotificacaoId,
+                            wan.wf_aprovacao_id as WorkflowId
                             from wf_aprovacao_nivel wan
 	                            inner join wf_aprovacao_nivel_notificacao wann 
 		                            on wann.wf_aprovacao_nivel_id  = wan.id
@@ -310,6 +312,6 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<NotificacoesParaTratamentoCargosNiveisDto>(query);
         }
     }
-   
+
 
 }

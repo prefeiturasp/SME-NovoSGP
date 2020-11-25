@@ -523,7 +523,7 @@ namespace SME.SGP.IoC
 
             services.TryAddScoped<IObterTiposCalendarioPorAnoLetivoModalidadeUseCase, ObterTiposCalendarioPorAnoLetivoModalidadeUseCase>();
 
-            services.TryAddScoped<ITrataNotificacoesNiveisCargos, TrataNotificacoesNiveisCargos>();
+            services.TryAddScoped<ITrataNotificacoesNiveisCargosUseCase, TrataNotificacoesNiveisCargosUseCase>();
         }
     }
 }
