@@ -544,7 +544,7 @@
         [PermissaoMenu(Menu = "Notificações ", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = false, Url = "/relatorios/notificacoes/historico-notificacoes", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Histórico de notificações")]
         RDN_C = 183,
 
-        [PermissaoMenu(Menu = "Alterações de notas", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = false, Url = "/relatorios/Fechamento/Historico-alteracoes-notas", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Histórico de alterações de notas")]
-        RDA_C = 184
+        [PermissaoMenu(Menu = "Fechamento", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhConsulta = true, Url = "/relatorios/fechamento/historico-alteracao-notas", EhSubMenu = true, OrdemSubMenu = 4, SubMenu = "Histórico de alterações em notas")]
+        RDA_C = 184,
     }
 }
