@@ -6,6 +6,11 @@ namespace SME.SGP.Aplicacao
 {
     public class TrataNotificacaoCargosNiveisCommand : IRequest<bool>
     {
+        public TrataNotificacaoCargosNiveisCommand(IEnumerable<NotificacoesParaTratamentoCargosNiveisDto> notificacoes)
+        {
+            Notificacoes = notificacoes;
+        }
+
         public IEnumerable<NotificacoesParaTratamentoCargosNiveisDto> Notificacoes { get; set; }
     }
 }

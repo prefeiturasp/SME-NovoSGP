@@ -1,4 +1,7 @@
 ﻿using MediatR;
+using SME.SGP.Aplicacao.Commands;
+using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,15 +19,33 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(TrataNotificacaoCargosNiveisCommand request, CancellationToken cancellationToken)
         {
 
-            foreach (var notificacaoParaTratar in request.Notificacoes.GroupBy(a => a.UEId))
+            foreach (var notificacaoParaTratarAgrupada in request.Notificacoes.GroupBy(a => a.UECodigo))
             {
-                var cargosIdsDaUe = notificacaoParaTratar.Select(a => a.Cargo).Distinct();
-                var funcionariosCargosDaUe = await mediator.Send(new ObterFuncionariosCargosPorUeCargosQuery(notificacaoParaTratar.Key, cargosIdsDaUe));
+
+                var cargosIdsDaUe = notificacaoParaTratarAgrupada.Select(a => a.Cargo).Distinct().ToList();
+                var listaCargoDosNiveis = EnumExtensao.ListarDto<Cargo>();
+                cargosIdsDaUe.AddRange(listaCargoDosNiveis.Select(a => a.Id));
+                cargosIdsDaUe = cargosIdsDaUe.Distinct().ToList();
+                var dreCodigo = notificacaoParaTratarAgrupada.FirstOrDefault(a => !string.IsNullOrEmpty(a.DRECodigo)).DRECodigo;
+
+                var funcionariosCargosDaUe = await mediator.Send(new ObterFuncionariosCargosPorUeCargosQuery(notificacaoParaTratarAgrupada.Key, cargosIdsDaUe, dreCodigo));
                 
-                //Verificar no EOL rfs e cargos na UE
+                var workflowsIdsParaTratar = notificacaoParaTratarAgrupada.Select(a => a.WorkflowId).Distinct();
+
+                foreach (var workflowsIdParaTratar in workflowsIdsParaTratar)
+                {
+                    var notificacaoParaTratar = notificacaoParaTratarAgrupada.FirstOrDefault(a => a.WorkflowId == workflowsIdParaTratar);
+
+                    var funcionariosNoCargo = funcionariosCargosDaUe.Where(a => a.CargoId == notificacaoParaTratar.Cargo);
+
+                    //Se não tem ninguem no cargo, faço as regras da história.
+                    if (!funcionariosNoCargo.Any())
+                        await mediator.Send(new ModificaNivelWorkflowAprovacaoCommand(notificacaoParaTratar.WorkflowId, notificacaoParaTratar.NotificacaoId, funcionariosCargosDaUe.ToList()));                    
+                }
             }
 
             return true;
         }
+
     }
 }
