@@ -7,11 +7,12 @@ namespace SME.SGP.Dominio
     public class PendenciaProfessor
     {
         public PendenciaProfessor() { }
-        public PendenciaProfessor(long pendenciaId, long turmaId, long componenteCurricularId, string professorRf) 
+        public PendenciaProfessor(long pendenciaId, long turmaId, long componenteCurricularId, string professorRf, long periodoEscolarId)
         {
             PendenciaId = pendenciaId;
             TurmaId = turmaId;
             ComponenteCurricularId = componenteCurricularId;
+            PeriodoEscolarId = periodoEscolarId;
             ProfessorRf = professorRf;
         }
 
@@ -25,6 +26,9 @@ namespace SME.SGP.Dominio
 
         public long TurmaId { get; set; }
         public Turma Turma { get; set; }
+
+        public long PeriodoEscolarId { get; set; }
+        public PeriodoEscolar PeriodoEscolar { get; set; }
 
         public string ProfessorRf { get; set; }
     }

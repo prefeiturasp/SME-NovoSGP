@@ -50,8 +50,8 @@ namespace SME.SGP.Aplicacao
                                 var componenteCurricular = componentesCurriculares.FirstOrDefault(c => c.Codigo == componenteCurricularNaTurma.ComponenteCurricularId.ToString());
 
                                 if (professorComponente != null)
-                                    if (!await ExistePendenciaProfessor(turma, componenteCurricularNaTurma, professorComponente))
-                                        await IncluirPendenciaProfessor(turma, componenteCurricularNaTurma.ComponenteCurricularId, professorComponente.ProfessorRf, periodoEncerrando.PeriodoEscolar.Bimestre, componenteCurricular.Descricao);
+                                    if (!await ExistePendenciaProfessor(turma, componenteCurricularNaTurma, professorComponente, periodoEncerrando.PeriodoEscolar.Id))
+                                        await IncluirPendenciaProfessor(turma, componenteCurricularNaTurma.ComponenteCurricularId, professorComponente.ProfessorRf, periodoEncerrando.PeriodoEscolar.Bimestre, componenteCurricular.Descricao, periodoEncerrando.PeriodoEscolar.Id);
                             }
                             catch (Exception ex)
                             {
@@ -65,13 +65,14 @@ namespace SME.SGP.Aplicacao
             return true;
         }
 
-        private async Task<bool> ExistePendenciaProfessor(Turma turma, TurmaEComponenteDto componenteCurricularNaTurma, ProfessorTitularDisciplinaEol professorComponente)
+        private async Task<bool> ExistePendenciaProfessor(Turma turma, TurmaEComponenteDto componenteCurricularNaTurma, ProfessorTitularDisciplinaEol professorComponente, long periodoEscolarId)
             => await mediator.Send(new ExistePendenciaProfessorPorTurmaEComponenteQuery(turma.Id,
                                                                                         componenteCurricularNaTurma.ComponenteCurricularId,
+                                                                                        periodoEscolarId,
                                                                                         professorComponente.ProfessorRf,
                                                                                         TipoPendencia.AusenciaDeAvaliacaoProfessor));
 
-        private async Task IncluirPendenciaProfessor(Turma turma, long componenteCurricularId, string professorRf, int bimestre, string componenteCurricularNome)
+        private async Task IncluirPendenciaProfessor(Turma turma, long componenteCurricularId, string professorRf, int bimestre, string componenteCurricularNome, long periodoEscolarId)
         {
             var escolaUe = $"{turma.Ue.TipoEscola.ShortName()} {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao}) - Turma {turma.Nome}";
             var titulo = $"Ausência de avaliação no {bimestre}º bimestre {escolaUe}";
@@ -79,7 +80,7 @@ namespace SME.SGP.Aplicacao
             var descricao = $"<i>O componente curricular {componenteCurricularNome} não possui nenhuma avaliação cadastrada no {bimestre}º bimestre - {escolaUe}</i>";
             var instrucao = "<i style='color:#FF0000';>Acesse a tela de Calendário Escolar e confira os eventos da sua UE.</i>";
 
-            await mediator.Send(new SalvarPendenciaAusenciaDeAvaliacaoProfessorCommand(turma.Id, componenteCurricularId, professorRf, titulo, descricao, instrucao));
+            await mediator.Send(new SalvarPendenciaAusenciaDeAvaliacaoProfessorCommand(turma.Id, componenteCurricularId, periodoEscolarId, professorRf, titulo, descricao, instrucao));
             
         }
     }

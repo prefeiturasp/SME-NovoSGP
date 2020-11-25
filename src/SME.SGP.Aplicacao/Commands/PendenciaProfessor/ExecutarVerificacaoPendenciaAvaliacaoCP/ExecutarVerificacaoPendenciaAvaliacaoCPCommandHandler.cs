@@ -66,20 +66,20 @@ namespace SME.SGP.Aplicacao
                 var professorComponente = professoresTurma.FirstOrDefault(c => c.DisciplinaId == componenteCurricularNaTurma.ComponenteCurricularId);
                 var componenteCurricular = componentesCurriculares.FirstOrDefault(c => c.Codigo == componenteCurricularNaTurma.ComponenteCurricularId.ToString());
 
-                if (professorComponente != null && !await ExistePendenciaProfessor(pendenciaId, turma.Id, componenteCurricular.Codigo, professorComponente.ProfessorRf))
+                if (professorComponente != null && !await ExistePendenciaProfessor(pendenciaId, turma.Id, componenteCurricular.Codigo, professorComponente.ProfessorRf, periodoEncerrando.PeriodoEscolar.Id))
                     gerarPendenciasProfessor.Add((long.Parse(componenteCurricular.Codigo), professorComponente.ProfessorRf));
             }
 
             if (gerarPendenciasProfessor.Any())
-                await GerarPendenciasProfessor(pendenciaId, gerarPendenciasProfessor, turma, periodoEncerrando.PeriodoEscolar.Bimestre);
+                await GerarPendenciasProfessor(pendenciaId, gerarPendenciasProfessor, turma, periodoEncerrando.PeriodoEscolar);
         }
 
-        private async Task GerarPendenciasProfessor(long pendenciaId, List<(long componenteCurricularId, string professorRf)> gerarPendenciasProfessor, Turma turma, int bimestre)
+        private async Task GerarPendenciasProfessor(long pendenciaId, List<(long componenteCurricularId, string professorRf)> gerarPendenciasProfessor, Turma turma, PeriodoEscolar periodoEscolar)
         {
             if (pendenciaId == 0)
-                pendenciaId = await IncluirPendenciaProfessor(turma, bimestre);
+                pendenciaId = await IncluirPendenciaProfessor(turma, periodoEscolar.Bimestre);
 
-            await mediator.Send(new SalvarPendenciaAusenciaDeAvaliacaoCPCommand(pendenciaId, turma.Id, turma.Ue.CodigoUe, gerarPendenciasProfessor));
+            await mediator.Send(new SalvarPendenciaAusenciaDeAvaliacaoCPCommand(pendenciaId, turma.Id, periodoEscolar.Id, turma.Ue.CodigoUe, gerarPendenciasProfessor));
         }
 
         private async Task<long> IncluirPendenciaProfessor(Turma turma, int bimestre)
@@ -93,10 +93,11 @@ namespace SME.SGP.Aplicacao
             return await mediator.Send(new SalvarPendenciaCommand(TipoPendencia.AusenciaDeAvaliacaoCP, descricao, instrucao, titulo));
         }
 
-        private async Task<bool> ExistePendenciaProfessor(long pendenciaId, long turmaId, string componenteCurricularId, string professorRf)
+        private async Task<bool> ExistePendenciaProfessor(long pendenciaId, long turmaId, string componenteCurricularId, string professorRf, long periodoEscolarId)
             => pendenciaId != 0 &&
             await mediator.Send(new ExistePendenciaProfessorPorTurmaEComponenteQuery(turmaId,
                                                                                      long.Parse(componenteCurricularId),
+                                                                                     periodoEscolarId,
                                                                                      professorRf,
                                                                                      TipoPendencia.AusenciaDeAvaliacaoCP));
 

@@ -14,6 +14,7 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(a => a.PendenciaId).ToColumn("pendencia_id");
             Map(a => a.ComponenteCurricularId).ToColumn("componente_curricular_id");
             Map(a => a.TurmaId).ToColumn("turma_id");
+            Map(a => a.PeriodoEscolarId).ToColumn("periodo_escolar_id");
             Map(a => a.ProfessorRf).ToColumn("professor_rf");
         }
     }
