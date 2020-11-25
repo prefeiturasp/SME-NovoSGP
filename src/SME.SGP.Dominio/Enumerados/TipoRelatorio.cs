@@ -61,6 +61,9 @@ namespace SME.SGP.Dominio
         Notificacoes = 19,        
 
         [Display(Name = "relatorios/usuarios", ShortName = "Usuarios", Description = "Relatório de Usuários")]
-        Usuarios = 20
+        Usuarios = 20,
+
+        [Display(Name = "relatorios/atribuicoes-cj", ShortName = "Atribuição CJ", Description = "Relatório de Atribuições de CJ")]
+        AtribuicaoCJ = 21
     }
 }
