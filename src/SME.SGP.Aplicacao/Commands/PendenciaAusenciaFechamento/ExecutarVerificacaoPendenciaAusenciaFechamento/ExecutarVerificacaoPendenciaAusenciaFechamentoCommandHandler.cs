@@ -80,7 +80,7 @@ namespace SME.SGP.Aplicacao
             }
             else
             {
-                instrucao = "<i style='color:#FF0000';>Você precisa acessar a tela de Fechamento do Bimestre e executar o processo de fechamento.</i>";
+                instrucao = "Você precisa acessar a tela de Fechamento do Bimestre e executar o processo de fechamento.";
             }
             
 
