@@ -76,7 +76,7 @@ namespace SME.SGP.Aplicacao
             var instrucao = "";
             if (lancaNota)
             {
-                instrucao = "<i style='color:#FF0000';>Você precisa acessar a tela de Notas e Conceitos e registrar a avaliação final dos estudantes para que o processo seja iniciado.</i>";
+                instrucao = "Você precisa acessar a tela de Notas e Conceitos e registrar a avaliação final dos estudantes para que o processo seja iniciado";
             }
             else
             {
