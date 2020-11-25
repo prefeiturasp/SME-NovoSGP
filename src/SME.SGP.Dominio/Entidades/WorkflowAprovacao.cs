@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace SME.SGP.Dominio
@@ -68,6 +69,12 @@ namespace SME.SGP.Dominio
 
                 yield return nivel;
             }
+        }
+
+        public WorkflowAprovacaoNivel ObterPrimeiroNivelPorCargo(Cargo cargo)
+        {
+            return niveis.Where(a => a.Cargo == cargo)
+                .OrderBy(a => a.Nivel).FirstOrDefault();
         }
 
         public IEnumerable<WorkflowAprovacaoNivel> ObtemNiveis(long nivel)
