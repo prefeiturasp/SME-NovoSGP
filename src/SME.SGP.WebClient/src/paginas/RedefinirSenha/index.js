@@ -206,6 +206,7 @@ const RedefinirSenha = props => {
               requisicao.resposta.data.perfisUsuario.ehProfessorInfantil,
             ehProfessorCjInfantil:
               requisicao.resposta.data.perfisUsuario.ehProfessorCjInfantil,
+            ehPerfilProfessor: requisicao.data.perfisUsuario.ehPerfilProfessor,
             dataHoraExpiracao: requisicao.resposta.data.dataHoraExpiracao,
           })
         );

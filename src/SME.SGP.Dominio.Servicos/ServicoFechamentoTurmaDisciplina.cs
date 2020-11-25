@@ -158,21 +158,21 @@ namespace SME.SGP.Dominio.Servicos
 
             if (!componenteSemNota)
             {
-                servicoPendenciaFechamento.ValidarAvaliacoesSemNotasParaNenhumAluno(fechamento.Id, turma.CodigoTurma, disciplinaId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim);
+                await servicoPendenciaFechamento.ValidarAvaliacoesSemNotasParaNenhumAluno(fechamento.Id, turma.CodigoTurma, disciplinaId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim);
                 await servicoPendenciaFechamento.ValidarPercentualAlunosAbaixoDaMedia(fechamento);
-                servicoPendenciaFechamento.ValidarAlteracaoExtemporanea(fechamento.Id, turma.CodigoTurma, disciplinaId);
+                await servicoPendenciaFechamento.ValidarAlteracaoExtemporanea(fechamento.Id, turma.CodigoTurma, fechamento.CriadoRF);
             }
-            servicoPendenciaFechamento.ValidarAulasReposicaoPendente(fechamento.Id, turma, disciplinaId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim);
-            servicoPendenciaFechamento.ValidarAulasSemPlanoAulaNaDataDoFechamento(fechamento.Id, turma, disciplinaId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim);
+            await servicoPendenciaFechamento.ValidarAulasReposicaoPendente(fechamento.Id, turma, disciplinaId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim);
+            await servicoPendenciaFechamento.ValidarAulasSemPlanoAulaNaDataDoFechamento(fechamento.Id, turma, disciplinaId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim);
 
             if (registraFrequencia)
-                servicoPendenciaFechamento.ValidarAulasSemFrequenciaRegistrada(fechamento.Id, turma, disciplinaId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim);
+                await servicoPendenciaFechamento.ValidarAulasSemFrequenciaRegistrada(fechamento.Id, turma, disciplinaId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim);
 
             var quantidadePendencias = servicoPendenciaFechamento.ObterQuantidadePendenciasGeradas();
             if (quantidadePendencias > 0)
             {
                 situacaoFechamento = SituacaoFechamento.ProcessadoComPendencias;
-                GerarNotificacaoFechamento(fechamento, turma, quantidadePendencias, usuarioLogado, periodoEscolar);
+                await GerarNotificacaoFechamento(fechamento, turma, quantidadePendencias, usuarioLogado, periodoEscolar);
             }
 
             fechamento.AtualizarSituacao(situacaoFechamento);
