@@ -85,7 +85,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<string> ObterDescricaoPendenciaAusenciaAvaliacaoCP(Pendencia pendencia)
         {
-            var pendenciasProfessor = await mediator.Send(new ObterPendenciasAusenciaAvaliacaoPorPendenciaIdQuery(pendencia.Id));
+            var pendenciasProfessor = await mediator.Send(new ObterPendenciasProfessorPorPendenciaIdQuery(pendencia.Id));
 
             var descricao = new StringBuilder(pendencia.Descricao);
             descricao.Append("<br/><table style='margin-left: auto; margin-right: auto; margin-top: 10px' border='2' cellpadding='5'>");
