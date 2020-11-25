@@ -557,6 +557,7 @@ namespace SME.SGP.IoC
 
             services.TryAddScoped<ITrataNotificacoesNiveisCargos, TrataNotificacoesNiveisCargos>();
             services.TryAddScoped<IUsuarioPossuiAbrangenciaAcessoSondagemUseCase, UsuarioPossuiAbrangenciaAcessoSondagemUseCase>();
+            services.TryAddScoped<ITrataNotificacoesNiveisCargosUseCase, TrataNotificacoesNiveisCargosUseCase>();
         }
     }
 }
