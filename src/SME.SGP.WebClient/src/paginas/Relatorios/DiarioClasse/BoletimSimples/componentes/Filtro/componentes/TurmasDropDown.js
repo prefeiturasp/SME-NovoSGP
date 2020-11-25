@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
 // Componentes
@@ -7,15 +8,21 @@ import { SelectComponent } from '~/componentes';
 // Servicos
 import AbrangenciaServico from '~/servicos/Abrangencia';
 
-function TurmasDropDown({ form, onChange, label }) {
-  const [listaTurmas, setListaTurmas] = useState([]);
+function TurmasDropDown({ form, onChange, label }) {  
+  const [listaTurmas, setListaTurmas] = useState([]);  
+  const { ueId, modalidadeId } = form.values;  
+  const usuario = useSelector(store => store.usuario);
+  const { turmaSelecionada } = usuario;
+  const { consideraHistorico, anoLetivo } = turmaSelecionada;
 
-  const { ueId, modalidadeId } = form.values;
-  useEffect(() => {
-    async function buscaTurmas() {
+  useEffect(() => {    
+    async function buscaTurmas() {      
       const { data } = await AbrangenciaServico.buscarTurmas(
         ueId,
-        modalidadeId
+        modalidadeId,
+        '',
+        anoLetivo,
+        consideraHistorico
       );
       if (data) {
         const lista = data.map(item => ({
