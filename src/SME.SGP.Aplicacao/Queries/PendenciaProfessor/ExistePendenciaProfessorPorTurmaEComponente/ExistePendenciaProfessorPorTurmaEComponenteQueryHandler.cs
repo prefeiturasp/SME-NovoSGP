@@ -18,6 +18,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<bool> Handle(ExistePendenciaProfessorPorTurmaEComponenteQuery request, CancellationToken cancellationToken)
-            => await repositorioPendenciaProfessor.ExistePendenciaProfessorPorTurmaEComponente(request.TurmaId, request.ComponenteCurricularId, request.ProfessorRf, request.TipoPendencia);
+            => await repositorioPendenciaProfessor.ExistePendenciaProfessorPorTurmaEComponente(request.TurmaId, request.ComponenteCurricularId, request.PeridoEscolarId, request.ProfessorRf, request.TipoPendencia);
     }
 }

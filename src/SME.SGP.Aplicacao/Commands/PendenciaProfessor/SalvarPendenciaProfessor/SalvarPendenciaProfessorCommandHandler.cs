@@ -18,6 +18,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<long> Handle(SalvarPendenciaProfessorCommand request, CancellationToken cancellationToken)
-            => await repositorioPendenciaProfessor.Inserir(request.PendenciaId, request.TurmaId, request.ComponenteCurricularId, request.ProfessorRf);
+            => await repositorioPendenciaProfessor.Inserir(request.PendenciaId, request.TurmaId, request.ComponenteCurricularId, request.ProfessorRf, request.PeriodoEscolarId);
     }
 }
