@@ -6,13 +6,13 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterTurmasPorAnoModalidadeQuery : IRequest<IEnumerable<Turma>>
     {
-        public ObterTurmasPorAnoModalidadeQuery(int anoLetivo, int modalidadeId)
+        public ObterTurmasPorAnoModalidadeQuery(int anoLetivo, Modalidade[] modalidades)
         {
             AnoLetivo = anoLetivo;
-            ModalidadeId = modalidadeId;
+            Modalidades = modalidades;
         }
         public int AnoLetivo { get; set; }
-        public int ModalidadeId { get; set; }
+        public Modalidade[] Modalidades { get; set; }
 
     }
 }

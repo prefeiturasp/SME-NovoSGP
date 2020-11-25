@@ -9,15 +9,13 @@ namespace SME.SGP.Aplicacao
 {
     public class ExecutarVerificacaoPendenciaAusenciaFechamentoCommand : IRequest<bool>
     {
-        public ExecutarVerificacaoPendenciaAusenciaFechamentoCommand(int diasParaGeracaoDePendencia, Modalidade modalidade, ModalidadeTipoCalendario modalidadeTipoCalendario)
+        public ExecutarVerificacaoPendenciaAusenciaFechamentoCommand(int diasParaGeracaoDePendencia, ModalidadeTipoCalendario modalidadeTipoCalendario)
         {
             DiasParaGeracaoDePendencia = diasParaGeracaoDePendencia;
-            Modalidade = modalidade;
             ModalidadeTipoCalendario = modalidadeTipoCalendario;
         }
 
         public int DiasParaGeracaoDePendencia { get; set; }
-        public Modalidade Modalidade { get; set; }
         public ModalidadeTipoCalendario ModalidadeTipoCalendario { get; set; }
     }
 }

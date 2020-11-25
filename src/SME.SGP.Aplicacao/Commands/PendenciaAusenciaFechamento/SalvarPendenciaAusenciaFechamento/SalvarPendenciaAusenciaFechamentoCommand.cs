@@ -5,7 +5,8 @@ namespace SME.SGP.Aplicacao
 {
     public class SalvarPendenciaAusenciaFechamentoCommand : IRequest<bool>
     {
-        public SalvarPendenciaAusenciaFechamentoCommand(long turmaId, long componenteCurricularId, string professorRf, string titulo, string mensagem, string instrucao)
+        public SalvarPendenciaAusenciaFechamentoCommand(long turmaId, long componenteCurricularId, string professorRf, 
+            string titulo, string mensagem, string instrucao, long? periodoEscolarId)
         {
             TurmaId = turmaId;
             ComponenteCurricularId = componenteCurricularId;
@@ -13,10 +14,12 @@ namespace SME.SGP.Aplicacao
             Titulo = titulo;
             Mensagem = mensagem;
             Instrucao = instrucao;
+            PeriodoEscolarId = periodoEscolarId;
         }
 
         public long TurmaId { get; set; }
         public long ComponenteCurricularId { get; set; }
+        public long? PeriodoEscolarId { get; set; }
         public string ProfessorRf { get; set; }
 
         public string Titulo { get; set; }

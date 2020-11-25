@@ -5,7 +5,7 @@ namespace SME.SGP.Aplicacao
 {
     public class VerificaFechamentoTurmaDisciplinaPorIdCCEPeriodoEscolarQuery : IRequest<bool>
     {
-        public VerificaFechamentoTurmaDisciplinaPorIdCCEPeriodoEscolarQuery(long turmaId, long componenteCurricularId, long periodoEscolarId)
+        public VerificaFechamentoTurmaDisciplinaPorIdCCEPeriodoEscolarQuery(long turmaId, long componenteCurricularId, long? periodoEscolarId)
         {
             TurmaId = turmaId;
             ComponenteCurricularId = componenteCurricularId;
@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
 
         public long TurmaId { get; set; }
         public long ComponenteCurricularId { get; set; }
-        public long PeriodoEscolarId { get; set; }
+        public long? PeriodoEscolarId { get; set; }
     }
 
     public class VerificaFechamentoTurmaDisciplinaPorIdCCEPeriodoEscolarQueryValidator : AbstractValidator<VerificaFechamentoTurmaDisciplinaPorIdCCEPeriodoEscolarQuery>
@@ -27,9 +27,6 @@ namespace SME.SGP.Aplicacao
             RuleFor(a => a.ComponenteCurricularId)
                 .NotEmpty()
                 .WithMessage("Necessário informar o Id do componente curricular");
-            RuleFor(a => a.PeriodoEscolarId)
-                .NotEmpty()
-                .WithMessage("Necessário informar o Id do periodo escolar");
         }
     }
 }
