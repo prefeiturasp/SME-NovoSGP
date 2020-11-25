@@ -186,6 +186,32 @@ namespace SME.SGP.Dados.Repositorios
                 }, param: new { id }).FirstOrDefault();
         }
 
+        public Notificacao ObterPorCodigo(long codigo)
+        {
+            var query = new StringBuilder();
+
+            query.AppendLine("select n.*, wan.*, u.* from notificacao n");
+            query.AppendLine("left join wf_aprovacao_nivel_notificacao wann");
+            query.AppendLine("on wann.notificacao_id = n.id");
+            query.AppendLine("left join wf_aprovacao_nivel wan");
+            query.AppendLine("on wan.id = wann.wf_aprovacao_nivel_id");
+            query.AppendLine("left join usuario u");
+            query.AppendLine("on u.id = n.usuario_id");
+
+            query.AppendLine("where excluida = false ");
+            query.AppendLine("and n.codigo = @codigo ");
+
+            return database.Conexao.Query<Notificacao, WorkflowAprovacaoNivel, Usuario, Notificacao>(query.ToString(),
+                (notificacao, workflowNivel, usuario) =>
+                {
+                    notificacao.WorkflowAprovacaoNivel = workflowNivel;
+                    notificacao.Usuario = usuario;
+                    notificacao.UsuarioId = usuario.Id;
+
+                    return notificacao;
+                }, param: new { codigo }).FirstOrDefault();
+        }
+
         public int ObterQuantidadeNotificacoesNaoLidasPorAnoLetivoERf(int anoLetivo, string usuarioRf)
         {
             var query = new StringBuilder();
@@ -309,6 +335,14 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<NotificacoesParaTratamentoCargosNiveisDto>(query);
         }
+                
+
+        public async Task ExcluirPeloSistemaAsync(long[] ids)
+        {
+            var sql = "update notificacao set excluida = true, alterado_por = @alteradoPor, alterado_em = @alteradoEm, alterado_rf = @alteradoRf where id = any(@ids)";
+            await database.Conexao.ExecuteAsync(sql, new { ids, alteradoPor = "Sistema", alteradoEm = DateTime.Now, alteradoRf = "Sistema" });
+        }
+
     }
    
 

@@ -1,25 +1,21 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
     public class PendenciaAulaUseCase : IPendenciaAulaUseCase
     {
-        private readonly IRepositorioPendenciaAula repositorioPendenciaAula;
+        private readonly IMediator mediator;
 
-
-        public PendenciaAulaUseCase(IRepositorioPendenciaAula repositorioPendenciaAula)
+        public PendenciaAulaUseCase(IMediator mediator)
         {
-            this.repositorioPendenciaAula = repositorioPendenciaAula ?? throw new ArgumentNullException(nameof(repositorioPendenciaAula));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         #region Metodos Publicos
@@ -38,55 +34,56 @@ namespace SME.SGP.Aplicacao
         #region Metodos Privados
         private async Task VerificaPendenciasDiarioDeBordo()
         {
-            var aulas = await repositorioPendenciaAula.ListarPendenciasPorTipo(TipoPendenciaAula.DiarioBordo, "diario_bordo",
-                new long[] { (int)Modalidade.Infantil });
+            var aulas = await mediator.Send(new ObterPendenciasAulasPorTipoQuery(TipoPendencia.DiarioBordo, "diario_bordo",
+                new long[] { (int)Modalidade.Infantil }));
             if (aulas != null)
             {
-
-                await RegistraPendencia(aulas, TipoPendenciaAula.DiarioBordo);
-
+                await RegistraPendencia(aulas, TipoPendencia.DiarioBordo);
             }
         }
 
         private async Task VerificaPendenciasAvaliacao()
         {
-            var aulas = await repositorioPendenciaAula.ListarPendenciasAtividadeAvaliativa();
+            var aulas = await mediator.Send(new ObterPendenciasAtividadeAvaliativaQuery());
             if (aulas != null)
-            {
-                await RegistraPendencia(aulas, TipoPendenciaAula.Avaliacao);
-            }
-
+                await RegistraPendencia(aulas, TipoPendencia.Avaliacao);
         }
 
         private async Task VerificaPendenciasFrequencia()
         {
-            var aulas = await repositorioPendenciaAula.ListarPendenciasPorTipo(TipoPendenciaAula.Frequencia, "registro_frequencia",
-                new long[] { (int)Modalidade.Infantil, (int)Modalidade.Fundamental, (int)Modalidade.EJA, (int)Modalidade.Medio });
+            var aulas = await mediator.Send(new ObterPendenciasAulasPorTipoQuery(TipoPendencia.Frequencia, "registro_frequencia",
+                new long[] { (int)Modalidade.Infantil, (int)Modalidade.Fundamental, (int)Modalidade.EJA, (int)Modalidade.Medio }));
             if (aulas != null)
             {
-                await RegistraPendencia(aulas, TipoPendenciaAula.Frequencia);
+                await RegistraPendencia(aulas, TipoPendencia.Frequencia);
 
             }
         }
 
         private async Task VerificaPendenciasPlanoAula()
         {
-            var aulas = await repositorioPendenciaAula.ListarPendenciasPorTipo(TipoPendenciaAula.PlanoAula, "plano_aula",
-                new long[] { (int)Modalidade.Fundamental, (int)Modalidade.EJA, (int)Modalidade.Medio });
+            var aulas = await mediator.Send(new ObterPendenciasAulasPorTipoQuery(TipoPendencia.PlanoAula, "plano_aula",
+                new long[] { (int)Modalidade.Fundamental, (int)Modalidade.EJA, (int)Modalidade.Medio }));
             if (aulas != null)
             {
-                await RegistraPendencia(aulas, TipoPendenciaAula.PlanoAula);
+                await RegistraPendencia(aulas, TipoPendencia.PlanoAula);
 
             }
         }
 
-        private async Task RegistraPendencia(IEnumerable<Aula> aulas, TipoPendenciaAula tipoPendenciaAula)
+        private async Task RegistraPendencia(IEnumerable<Aula> aulas, TipoPendencia tipoPendenciaAula)
         {
-            repositorioPendenciaAula.SalvarVarias(aulas, tipoPendenciaAula);
+            var pendenciaId = await mediator.Send(new SalvarPendenciaCommand(tipoPendenciaAula));
+
+            await mediator.Send(new SalvarPendenciasAulasCommand(pendenciaId, aulas.Select(a => a.Id)));
+            await SalvarPendenciaUsuario(pendenciaId, aulas.First().ProfessorRf);
         }
 
-
-
+        private async Task SalvarPendenciaUsuario(long pendenciaId, string professorRf)
+        {
+            var usuarioId = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(professorRf));
+            await mediator.Send(new SalvarPendenciaUsuarioCommand(pendenciaId, usuarioId));
+        }
         #endregion
     }
 }

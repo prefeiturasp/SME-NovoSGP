@@ -35,6 +35,9 @@ namespace SME.SGP.Background
 
             // de segunda a sexta as 11 horas
             Cliente.ExecutarPeriodicamente<ITrataNotificacoesNiveisCargos>(c => c.Executar(), "0 14 * * 1-5");
+
+            // Executa as 02:00 
+            Cliente.ExecutarPeriodicamente<IPendenciasGeraisUseCase>(c => c.Executar(), Cron.Daily(5));
         }
     }
 }

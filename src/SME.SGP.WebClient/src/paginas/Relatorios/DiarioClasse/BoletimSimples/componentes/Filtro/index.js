@@ -157,12 +157,13 @@ function Filtro({ onFiltrar, resetForm }) {
       validateOnChange
     >
       {form => (
-        <Form className="col-md-12 mb-4">
+        <Form className="col-md-12 mb-4">          
           <Linha className="row mb-2">
             <Grid cols={2}>
               <AnoLetivoDropDown
                 form={form}
                 onChange={ano => setAnoLetivo(ano)}
+                consideraHistorico={true}
               />
             </Grid>
             <Grid

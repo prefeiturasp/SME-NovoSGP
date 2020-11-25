@@ -61,24 +61,26 @@ namespace SME.SGP.Aplicacao
 
                         };
 
-                        foreach (var subMenu in permissaoMenu.GroupBy( a => a.GetAttribute<PermissaoMenuAttribute>().Url))
+                        foreach (var subMenu in permissaoMenu.GroupBy(a => a.GetAttribute<PermissaoMenuAttribute>().Url))
                         {
                             if (menuEnumerado.EhSubMenu)
                             {
                                 var menuSubEnumerado = subMenu.FirstOrDefault();
                                 var menuSubEnumeradoComAtributo = menuSubEnumerado.GetAttribute<PermissaoMenuAttribute>();
 
+                                var url = ObterUrlComRedirect(menuSubEnumeradoComAtributo);
+
                                 menuPai.SubMenus.Add(new MenuPermissaoDto()
                                 {
                                     Codigo = (int)menuSubEnumerado,
-                                    Url = menuSubEnumeradoComAtributo.Url,
+                                    Url = url,
                                     Descricao = menuSubEnumeradoComAtributo.SubMenu,
-                                    Ordem = menuSubEnumeradoComAtributo.OrdemSubMenu,                                    
+                                    Ordem = menuSubEnumeradoComAtributo.OrdemSubMenu,
                                     PodeConsultar = permissaoMenu.Any(a => a.GetAttribute<PermissaoMenuAttribute>().EhConsulta),
                                     PodeAlterar = permissaoMenu.Any(a => a.GetAttribute<PermissaoMenuAttribute>().EhAlteracao),
                                     PodeIncluir = permissaoMenu.Any(a => a.GetAttribute<PermissaoMenuAttribute>().EhInclusao),
                                     PodeExcluir = permissaoMenu.Any(a => a.GetAttribute<PermissaoMenuAttribute>().EhExclusao)
-                                }) ;
+                                });
                             }
                         }
 
@@ -86,10 +88,11 @@ namespace SME.SGP.Aplicacao
                     }
                     else
                     {
+                        var url = ObterUrlComRedirect(menuEnumerado);
                         menuRetornoDto.Menus.Add(new MenuPermissaoDto()
                         {
                             Codigo = (int)menu,
-                            Url = menuEnumerado.Url,
+                            Url = url,
                             Descricao = menuEnumerado.Menu,
                             PodeAlterar = permissaoMenu.Any(a => a.GetAttribute<PermissaoMenuAttribute>().EhAlteracao),
                             PodeIncluir = permissaoMenu.Any(a => a.GetAttribute<PermissaoMenuAttribute>().EhInclusao),
@@ -102,6 +105,16 @@ namespace SME.SGP.Aplicacao
                 listaRetorno.Add(menuRetornoDto);
             }
             return listaRetorno;
+        }
+
+        private string ObterUrlComRedirect(PermissaoMenuAttribute permissaoMenuAttribute)
+        {
+            var url = permissaoMenuAttribute.Url;
+            //if (!string.IsNullOrWhiteSpace(permissaoMenuAttribute.Redirect))
+            //{
+            //    url = $"{url}?redirect={permissaoMenuAttribute.Redirect}";
+            //}
+            return url;
         }
     }
 }

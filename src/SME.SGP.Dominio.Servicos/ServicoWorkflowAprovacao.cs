@@ -10,6 +10,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SME.SGP.Infra.Interfaces;
 
 namespace SME.SGP.Dominio.Servicos
 {
@@ -80,17 +81,18 @@ namespace SME.SGP.Dominio.Servicos
         {
             WorkflowAprovacaoNivel nivel = workflow.ObterNivelPorNotificacaoId(notificacaoId);
 
+            var codigoDaNotificacao = nivel.Notificacoes.FirstOrDefault(a => a.Id == notificacaoId)?.Codigo;
+            if (codigoDaNotificacao == null)
+                throw new NegocioException("Não foi possível localizar a notificação.");
+
             nivel.PodeAprovar();
 
             var niveisParaPersistir = workflow.ModificarStatusPorNivel(aprovar ? WorkflowAprovacaoNivelStatus.Aprovado : WorkflowAprovacaoNivelStatus.Reprovado, nivel.Nivel, observacao);
             AtualizaNiveis(niveisParaPersistir);
 
-            var codigoDaNotificacao = nivel.Notificacoes
-                .FirstOrDefault(a => a.Id == notificacaoId).Codigo;
-
             if (aprovar)
-                await AprovarNivel(nivel, workflow, codigoDaNotificacao);
-            else await ReprovarNivel(workflow, codigoDaNotificacao, observacao, nivel.Cargo, nivel);
+                await AprovarNivel(nivel, workflow, (long)codigoDaNotificacao);
+            else await ReprovarNivel(workflow, (long)codigoDaNotificacao, observacao, nivel.Cargo, nivel);
         }
 
         public void ConfiguracaoInicial(WorkflowAprovacao workflowAprovacao, long idEntidadeParaAprovar)
@@ -141,7 +143,7 @@ namespace SME.SGP.Dominio.Servicos
             {
                 if (workflow.Tipo == WorkflowAprovacaoTipo.Evento_Liberacao_Excepcional)
                 {
-                    AprovarUltimoNivelEventoLiberacaoExcepcional(codigoDaNotificacao, workflow.Id);
+                    await AprovarUltimoNivelEventoLiberacaoExcepcional(codigoDaNotificacao, workflow.Id);
                 }
                 else if (workflow.Tipo == WorkflowAprovacaoTipo.ReposicaoAula)
                 {
@@ -212,7 +214,8 @@ namespace SME.SGP.Dominio.Servicos
         }
 
         private async Task AprovarUltimoNivelDaReposicaoAula(long codigoDaNotificacao, long workflowId)
-        {
+        {            
+
             Aula aula = repositorioAula.ObterPorWorkflowId(workflowId);
             if (aula == null)
                 throw new NegocioException("Não foi possível localizar a aula deste fluxo de aprovação.");
@@ -276,7 +279,7 @@ namespace SME.SGP.Dominio.Servicos
             repositorioEvento.Salvar(evento);
         }
 
-        private void AprovarUltimoNivelEventoLiberacaoExcepcional(long codigoDaNotificacao, long workflowId)
+        private async Task AprovarUltimoNivelEventoLiberacaoExcepcional(long codigoDaNotificacao, long workflowId)
         {
             Evento evento = repositorioEvento.ObterPorWorkflowId(workflowId);
             if (evento == null)
@@ -285,7 +288,18 @@ namespace SME.SGP.Dominio.Servicos
             evento.AprovarWorkflow();
             repositorioEvento.Salvar(evento);
 
+            await VerificaPendenciaDiasLetivosInsuficientes(evento);
             NotificarCriadorEventoLiberacaoExcepcionalAprovado(evento, codigoDaNotificacao);
+        }
+
+        private async Task VerificaPendenciaDiasLetivosInsuficientes(Evento evento)
+        {
+            if (evento.EhEventoLetivo())
+            {
+                var usuario = await servicoUsuario.ObterUsuarioLogado();
+
+                await mediator.Send(new IncluirFilaExcluirPendenciasDiasLetivosInsuficientesCommand(evento.TipoCalendarioId, evento.DreId, evento.UeId, usuario));
+            }
         }
 
         private void AtualizaNiveis(IEnumerable<WorkflowAprovacaoNivel> niveis)
@@ -797,7 +811,8 @@ namespace SME.SGP.Dominio.Servicos
         }
 
         private async Task TrataReprovacaoReposicaoAula(WorkflowAprovacao workflow, long codigoDaNotificacao, string motivo)
-        {
+        {            
+
             Aula aula = repositorioAula.ObterPorWorkflowId(workflow.Id);
             if (aula == null)
                 throw new NegocioException("Não foi possível localizar a aula deste fluxo de aprovação.");
@@ -807,5 +822,18 @@ namespace SME.SGP.Dominio.Servicos
 
             await NotificarAulaReposicaoQueFoiReprovada(aula, codigoDaNotificacao, motivo);
         }
+
+        public async Task<string> VerificaAulaReposicao(long workflowId, long codigoDaNotificacao)
+        {
+            if (!repositorioAula.VerificarAulaPorWorkflowId(workflowId))
+            {
+                Notificacao notificacao = servicoNotificacao.ObterPorCodigo(codigoDaNotificacao);
+                await servicoNotificacao.ExcluirPeloSistemaAsync(new long[notificacao.Id]);
+                await ExcluirWorkflowNotificacoes(workflowId);
+                return "Não existe aula para esse fluxo de aprovação. A notificação foi excluída.";                
+            }
+            return null;
+        }
+
     }
 }

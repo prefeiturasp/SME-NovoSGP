@@ -55,6 +55,12 @@ namespace SME.SGP.Dominio
         RelatorioMatetimaticaConsolidado = 17,
 
         [Display(Name = "relatorios/controle-grade", ShortName = "ControleGrade", Description = "Relatório Controle de Grade")]
-        ControleGrade = 18
+        ControleGrade = 18,
+
+        [Display(Name = "relatorios/notificacoes", ShortName = "Notificacoes", Description = "Relatório de Notificações")]
+        Notificacoes = 19,        
+
+        [Display(Name = "relatorios/usuarios", ShortName = "Usuarios", Description = "Relatório de Usuários")]
+        Usuarios = 20
     }
 }
