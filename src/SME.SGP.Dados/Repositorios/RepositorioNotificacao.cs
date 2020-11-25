@@ -2,6 +2,7 @@ using Dapper;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -304,7 +305,37 @@ namespace SME.SGP.Dados.Repositorios
                     alteradoRF = database.UsuarioLogadoRF,
                     alteradoEm = DateTime.Now
                 });
-        }        
+        }
+
+        public async Task<IEnumerable<NotificacoesParaTratamentoCargosNiveisDto>> ObterNotificacoesParaTratamentoCargosNiveis()
+        {
+            var query = @"select wan.cargo, 
+                            n.titulo as notificacaoTitulo, 
+                            n.mensagem notificacaoMensagem, 
+                            n.status as notificacaoStatus, 
+                            n.categoria as notificacaoCategoria,
+                            n.tipo as notificacaoTipo,
+                            n.ue_id as UEId,
+                            n.dre_id as DREId,
+                            n.ano as notificacaoAnoLetivo,
+                            n.codigo as notificacaoCodigo,
+                            n.turma_id as notificacaoTurmaId,
+                            n.usuario_id as usuarioId,
+                            u.rf_codigo as usuarioRF
+                            from wf_aprovacao_nivel wan
+	                            inner join wf_aprovacao_nivel_notificacao wann 
+		                            on wann.wf_aprovacao_nivel_id  = wan.id
+                                inner join notificacao n 
+    	                            on wann.notificacao_id  = n.id                            
+                                inner join usuario u 
+    	                            on n.usuario_id  = u.id 
+	                            where n.status = 1
+    	                            and n.excluida = false
+                                    and n.tipo in (1,2)";
+
+            return await database.Conexao.QueryAsync<NotificacoesParaTratamentoCargosNiveisDto>(query);
+        }
+                
 
         public async Task ExcluirPeloSistemaAsync(long[] ids)
         {
@@ -313,4 +344,6 @@ namespace SME.SGP.Dados.Repositorios
         }
 
     }
+   
+
 }
