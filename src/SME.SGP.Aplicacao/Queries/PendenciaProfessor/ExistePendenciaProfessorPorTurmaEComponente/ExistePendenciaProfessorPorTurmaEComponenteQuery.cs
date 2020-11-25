@@ -41,7 +41,7 @@ namespace SME.SGP.Aplicacao
                .WithMessage("O RF do professor deve ser informado para consulta de pendência do professor.");
 
             RuleFor(c => c.TipoPendencia)
-               .Must(a => new[] { TipoPendencia.AusenciaDeAvaliacaoProfessor, TipoPendencia.AusenciaDeAvaliacaoCP }.Contains(a))
+               .Must(a => new[] { TipoPendencia.AusenciaDeAvaliacaoProfessor, TipoPendencia.AusenciaDeAvaliacaoCP, TipoPendencia.AusenciaFechamento }.Contains(a))
                .WithMessage("O tipo de pendencia deve ser um que gere pendência do professor para consulta de sua existência.");
         }
     }
