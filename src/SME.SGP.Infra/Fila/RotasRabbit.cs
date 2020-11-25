@@ -39,6 +39,8 @@
         public static string RotaExecutaExclusaoPendenciaParametroEvento => "pendencias.gerais.pendencias.evento.excluir";
 
         public static string RotaExecutaVerificacaoPendenciasProfessor => "pendencias.professor.executa.verificacao";
+
+        public static string RotaExecutaVerificacaoPendenciasAusenciaFechamento => "pendencias.bimestre.ausencia.fechamento";
         public static string RotaExecutaExclusaoPendenciasAusenciaAvaliacao => "pendencias.professor.avaliacao.excluir";
     }
 }

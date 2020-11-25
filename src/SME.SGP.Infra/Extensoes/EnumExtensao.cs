@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SME.SGP.Dominio;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -19,6 +20,21 @@ namespace SME.SGP.Infra
                             .GetMember(enumValue.ToString())
                             .First()
                             .GetCustomAttribute<TAttribute>();
+        }
+
+        public static Modalidade[] ObterModalidadesTurma(this ModalidadeTipoCalendario modalidadeTipoCalendario)
+        {
+            switch (modalidadeTipoCalendario)
+            {
+                case ModalidadeTipoCalendario.FundamentalMedio:
+                    return new[] { Modalidade.Fundamental, Modalidade.Medio };
+                case ModalidadeTipoCalendario.EJA:
+                    return new[] { Modalidade.EJA };
+                case ModalidadeTipoCalendario.Infantil:
+                    return new[] { Modalidade.Infantil };
+                default:
+                    throw new NegocioException("ModalidadeTipoCalendario não implementada.");
+            }
         }
 
         public static IEnumerable<EnumeradoRetornoDto> ListarDto<TEnum>()

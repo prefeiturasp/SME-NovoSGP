@@ -74,7 +74,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task IncluirPendenciaProfessor(Turma turma, long componenteCurricularId, string professorRf, int bimestre, string componenteCurricularNome, long periodoEscolarId)
         {
-            var escolaUe = $"{turma.Ue.TipoEscola.ShortName()} {turma.Ue.Nome} (DRE - {turma.Ue.Dre.Abreviacao})";
+            var escolaUe = $"{turma.Ue.TipoEscola.ShortName()} {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao}) - Turma {turma.Nome}";
             var titulo = $"Ausência de avaliação no {bimestre}º bimestre {escolaUe}";
 
             var descricao = $"<i>O componente curricular {componenteCurricularNome} não possui nenhuma avaliação cadastrada no {bimestre}º bimestre - {escolaUe}</i>";
