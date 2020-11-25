@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Loader, SelectComponent } from '~/componentes';
 import { Cabecalho } from '~/componentes-sgp';
+import Alert from '~/componentes/alert';
 import Button from '~/componentes/button';
 import Card from '~/componentes/card';
 import { Colors } from '~/componentes/colors';
@@ -9,10 +10,10 @@ import AbrangenciaServico from '~/servicos/Abrangencia';
 import { erros, sucesso } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import history from '~/servicos/history';
-import ServicoFiltroRelatorio from '~/servicos/Paginas/FiltroRelatorio/ServicoFiltroRelatorio';
 import ServicoComponentesCurriculares from '~/servicos/Paginas/ComponentesCurriculares/ServicoComponentesCurriculares';
-import FiltroHelper from '~componentes-sgp/filtro/helper';
+import ServicoFiltroRelatorio from '~/servicos/Paginas/FiltroRelatorio/ServicoFiltroRelatorio';
 import ServicoHistoricoAlteracoesNotas from '~/servicos/Paginas/Relatorios/Fechamento/HistoricoAlteracoesNotas/ServicoHistoricoAlteracoesNotas';
+import FiltroHelper from '~componentes-sgp/filtro/helper';
 
 const RelatorioHistoricoAlteracoesNotas = () => {
   const [exibirLoader, setExibirLoader] = useState(false);
@@ -29,23 +30,9 @@ const RelatorioHistoricoAlteracoesNotas = () => {
   const [listaBimestres, setListaBimestres] = useState([]);
 
   const listaTipoNota = [
-    { valor: '1', desc: 'Fechamento ' },
-    { valor: '2', desc: 'Conselho de classe' },
-    { valor: '3', desc: 'Ambas' },
-  ];
-
-  const bimestresEja = [
-    { valor: '0', desc: 'Todos' },
-    { valor: '1', desc: '1' },
-    { valor: '2', desc: '2' },
-  ];
-
-  const bimestresFundMedio = [
-    { valor: '0', desc: 'Todos' },
-    { valor: '1', desc: '1' },
-    { valor: '2', desc: '2' },
-    { valor: '3', desc: '3' },
-    { valor: '4', desc: '4' },
+    { valor: '1', desc: 'Ambas' },
+    { valor: '2', desc: 'Fechamento' },
+    { valor: '3', desc: 'Conselho de classe' },
   ];
 
   const [anoLetivo, setAnoLetivo] = useState(undefined);
@@ -58,7 +45,9 @@ const RelatorioHistoricoAlteracoesNotas = () => {
     undefined
   );
   const [bimestre, setBimestre] = useState(undefined);
-  const [tipoDeNota, setTipoDeNota] = useState(undefined);
+  const [tipoDeNota, setTipoDeNota] = useState('1');
+
+  const OPCAO_TODOS = '-99';
 
   const onChangeAnoLetivo = async valor => {
     setDreId();
@@ -223,7 +212,7 @@ const RelatorioHistoricoAlteracoesNotas = () => {
       if (data) {
         const lista = [];
         if (data.length > 1) {
-          lista.push({ valor: '0', desc: 'Todas' });
+          lista.push({ valor: OPCAO_TODOS, desc: 'Todas' });
         }
         data.map(item =>
           lista.push({
@@ -235,7 +224,7 @@ const RelatorioHistoricoAlteracoesNotas = () => {
         );
         setListaTurmas(lista);
         if (lista.length === 1) {
-          setTurmaId(lista[0].valor);
+          setTurmaId([lista[0].valor]);
         }
       }
       setExibirLoader(false);
@@ -252,11 +241,18 @@ const RelatorioHistoricoAlteracoesNotas = () => {
   }, [modalidadeId, ueId, anoLetivo, obterTurmas]);
 
   useEffect(() => {
-    if (String(modalidadeId) === String(modalidade.EJA)) {
-      setListaBimestres(bimestresEja);
-    } else {
-      setListaBimestres(bimestresFundMedio);
+    const bi = [];
+    bi.push({ desc: '1º', valor: '1' });
+    bi.push({ desc: '2º', valor: '2' });
+
+    if (String(modalidadeId) !== String(modalidade.EJA)) {
+      bi.push({ desc: '3º', valor: '3' });
+      bi.push({ desc: '4º', valor: '4' });
     }
+
+    bi.push({ desc: 'Final', valor: '0' });
+    bi.push({ desc: 'Todos', valor: OPCAO_TODOS });
+    setListaBimestres(bi);
     setBimestre();
   }, [modalidadeId]);
 
@@ -304,10 +300,12 @@ const RelatorioHistoricoAlteracoesNotas = () => {
 
   const obterComponentesCurriculares = useCallback(async () => {
     let turmas = [];
-    if (turmaId === '0') {
-      turmas = listaTurmas.filter(item => item.valor !== '0').map(a => a.valor);
+    if (turmaId?.find(item => item === OPCAO_TODOS)) {
+      turmas = listaTurmas
+        .filter(item => item.valor !== OPCAO_TODOS)
+        .map(a => a.valor);
     } else {
-      turmas = [turmaId];
+      turmas = turmaId;
     }
 
     setExibirLoader(true);
@@ -319,8 +317,8 @@ const RelatorioHistoricoAlteracoesNotas = () => {
 
     if (componentes && componentes.data && componentes.data.length) {
       const lista = [];
-      if (turmaId === '0' || componentes.data.length > 1) {
-        lista.push({ valor: '0', desc: 'Todos' });
+      if (turmaId === OPCAO_TODOS || componentes.data.length > 1) {
+        lista.push({ valor: OPCAO_TODOS, desc: 'Todos' });
       }
       componentes.data.map(item =>
         lista.push({
@@ -331,11 +329,11 @@ const RelatorioHistoricoAlteracoesNotas = () => {
 
       setListaComponentesCurriculares(lista);
       if (lista.length === 1) {
-        setComponentesCurricularesId(lista[0].valor);
+        setComponentesCurricularesId([lista[0].valor]);
       }
 
-      if (turmaId === '0' || componentes.data.length > 1) {
-        setComponentesCurricularesId('0');
+      if (turmaId === OPCAO_TODOS || componentes.data.length > 1) {
+        setComponentesCurricularesId([OPCAO_TODOS]);
       }
     } else {
       setListaComponentesCurriculares([]);
@@ -395,7 +393,7 @@ const RelatorioHistoricoAlteracoesNotas = () => {
     await setTurmaId(undefined);
     await setAnoLetivo();
     await setAnoLetivo(anoAtual);
-    await setTipoDeNota();
+    await setTipoDeNota('1');
   };
 
   const desabilitarGerar =
@@ -405,47 +403,22 @@ const RelatorioHistoricoAlteracoesNotas = () => {
     !modalidadeId ||
     (String(modalidadeId) === String(modalidade.EJA) ? !semestre : false) ||
     !turmaId ||
-    !componentesCurricularesId ||
-    !bimestre ||
+    !componentesCurricularesId?.length ||
+    !bimestre?.length ||
     !tipoDeNota;
 
   const gerar = async () => {
-    setExibirLoader(true);
-
-    let turmas = [];
-    let componentesCurriculares = [componentesCurricularesId];
-    let bimestres = [...bimestre];
-
-    if (turmaId === '0') {
-      turmas = listaTurmas.filter(item => item.valor !== '0').map(b => b.id);
-    } else {
-      const turmaSelecionada = listaTurmas.find(
-        item => String(item.valor) === String(turmaId)
-      );
-      turmas = [turmaSelecionada.id];
-    }
-
-    if (componentesCurricularesId === '0') {
-      componentesCurriculares = listaComponentesCurriculares
-        .filter(item => item.valor !== '0')
-        .map(b => b.valor);
-    }
-
-    if (bimestre[0] === '0') {
-      bimestres = listaBimestres
-        .filter(item => item.valor !== '0')
-        .map(b => b.valor);
-    }
-
     const params = {
       anoLetivo,
       modalidadeTurma: modalidadeId,
       semestre,
-      turmas,
-      componentesCurriculares,
-      bimestres,
-      tipoNota: tipoDeNota,
+      turmaId,
+      componentesCurricularesId,
+      bimestre,
+      tipoDeNota,
     };
+
+    setExibirLoader(true);
     const retorno = await ServicoHistoricoAlteracoesNotas.gerar(params)
       .catch(e => erros(e))
       .finally(setExibirLoader(false));
@@ -456,8 +429,38 @@ const RelatorioHistoricoAlteracoesNotas = () => {
     }
   };
 
+  const onchangeMultiSelect = (valores, valoreAtual, funSetarNovoValor) => {
+    const opcaoTodosJaSelecionado = valoreAtual
+      ? valoreAtual.includes(OPCAO_TODOS)
+      : false;
+    if (opcaoTodosJaSelecionado) {
+      const listaSemOpcaoTodos = valores.filter(v => v !== OPCAO_TODOS);
+      funSetarNovoValor(listaSemOpcaoTodos);
+    } else if (valores.includes(OPCAO_TODOS)) {
+      funSetarNovoValor([OPCAO_TODOS]);
+    } else {
+      funSetarNovoValor(valores);
+    }
+  };
+
   return (
     <Loader loading={exibirLoader}>
+      {modalidadeId && String(modalidadeId) === String(modalidade.INFANTIL) ? (
+        <div className="col-md-12">
+          <Alert
+            alerta={{
+              tipo: 'warning',
+              id: 'alerta-sem-turma-conselho-classe',
+              mensagem:
+                'Não é possível gerar este relatório para a modalidade infantil',
+              estiloTitulo: { fontSize: '18px' },
+            }}
+            className="mb-2"
+          />
+        </div>
+      ) : (
+        ''
+      )}
       <Cabecalho pagina="Relatório de alteração de notas" />
       <Card>
         <div className="col-md-12">
@@ -495,7 +498,10 @@ const RelatorioHistoricoAlteracoesNotas = () => {
                 bold
                 className="mr-0"
                 onClick={gerar}
-                disabled={desabilitarGerar}
+                disabled={
+                  desabilitarGerar ||
+                  String(modalidadeId) === String(modalidade.INFANTIL)
+                }
               />
             </div>
             <div className="col-sm-12 col-md-6 col-lg-2 col-xl-2 mb-2">
@@ -580,8 +586,11 @@ const RelatorioHistoricoAlteracoesNotas = () => {
                   !modalidadeId || (listaTurmas && listaTurmas.length === 1)
                 }
                 valueSelect={turmaId}
-                onChange={onChangeTurma}
                 placeholder="Turma"
+                multiple
+                onChange={valores => {
+                  onchangeMultiSelect(valores, turmaId, onChangeTurma);
+                }}
               />
             </div>
             <div className="col-sm-12 col-md-6 col-lg-4 col-xl-4  mb-2">
@@ -594,11 +603,18 @@ const RelatorioHistoricoAlteracoesNotas = () => {
                 disabled={
                   !modalidadeId ||
                   listaComponentesCurriculares?.length === 1 ||
-                  turmaId === '0'
+                  turmaId?.find(item => item === OPCAO_TODOS)
                 }
                 valueSelect={componentesCurricularesId}
-                onChange={onChangeComponenteCurricular}
                 placeholder="Componente curricular"
+                multiple
+                onChange={valores => {
+                  onchangeMultiSelect(
+                    valores,
+                    componentesCurricularesId,
+                    onChangeComponenteCurricular
+                  );
+                }}
               />
             </div>
             <div className="col-sm-12 col-md-6 col-lg-4 col-xl-4  mb-2">
@@ -612,17 +628,7 @@ const RelatorioHistoricoAlteracoesNotas = () => {
                 valueSelect={bimestre}
                 multiple
                 onChange={valores => {
-                  const opcaoTodosJaSelecionado = bimestre
-                    ? bimestre.includes('0')
-                    : false;
-                  if (opcaoTodosJaSelecionado) {
-                    const listaSemOpcaoTodos = valores.filter(v => v !== '0');
-                    onChangeBimestre(listaSemOpcaoTodos);
-                  } else if (valores.includes('0')) {
-                    onChangeBimestre(['0']);
-                  } else {
-                    onChangeBimestre(valores);
-                  }
+                  onchangeMultiSelect(valores, bimestre, onChangeBimestre);
                 }}
                 placeholder="Bimestre"
               />
