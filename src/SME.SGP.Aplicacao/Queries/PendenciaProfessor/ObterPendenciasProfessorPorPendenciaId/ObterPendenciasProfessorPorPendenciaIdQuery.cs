@@ -1,15 +1,13 @@
 ﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Infra;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterPendenciasAusenciaAvaliacaoPorPendenciaIdQuery : IRequest<IEnumerable<PendenciaProfessorDto>>
+    public class ObterPendenciasProfessorPorPendenciaIdQuery : IRequest<IEnumerable<PendenciaProfessorDto>>
     {
-        public ObterPendenciasAusenciaAvaliacaoPorPendenciaIdQuery(long pendenciaId)
+        public ObterPendenciasProfessorPorPendenciaIdQuery(long pendenciaId)
         {
             PendenciaId = pendenciaId;
         }
@@ -17,7 +15,7 @@ namespace SME.SGP.Aplicacao
         public long PendenciaId { get; set; }
     }
 
-    public class ObterPendenciasAusenciaAvaliacaoPorPendenciaIdQueryValidator : AbstractValidator<ObterPendenciasAusenciaAvaliacaoPorPendenciaIdQuery>
+    public class ObterPendenciasAusenciaAvaliacaoPorPendenciaIdQueryValidator : AbstractValidator<ObterPendenciasProfessorPorPendenciaIdQuery>
     {
         public ObterPendenciasAusenciaAvaliacaoPorPendenciaIdQueryValidator()
         {

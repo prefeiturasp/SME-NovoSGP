@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
             {
                 foreach (var pendenciaProfessor in request.PendenciasProfessores)
                 {
-                    await mediator.Send(new SalvarPendenciaProfessorCommand(request.PendenciaId, request.TurmaId, pendenciaProfessor.componenteCurricularId, pendenciaProfessor.professorRf));
+                    await mediator.Send(new SalvarPendenciaProfessorCommand(request.PendenciaId, request.TurmaId, pendenciaProfessor.componenteCurricularId, pendenciaProfessor.professorRf, request.PeriodoEscolarId));
                 }
                 await GerarPendenciaUsuario(request.PendenciaId, request.UeCodigo);
 

@@ -2,24 +2,24 @@
 using MediatR;
 using SME.SGP.Dominio;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
     public class ExistePendenciaProfessorPorTurmaEComponenteQuery : IRequest<bool>
     {
-        public ExistePendenciaProfessorPorTurmaEComponenteQuery(long turmaId, long componenteCurricularId, string professorRf, TipoPendencia tipoPendencia)
+        public ExistePendenciaProfessorPorTurmaEComponenteQuery(long turmaId, long componenteCurricularId, long? peridoEscolarId, string professorRf, TipoPendencia tipoPendencia)
         {
             TurmaId = turmaId;
             ComponenteCurricularId = componenteCurricularId;
+            PeridoEscolarId = peridoEscolarId;
             ProfessorRf = professorRf;
             TipoPendencia = tipoPendencia;
         }
 
         public long TurmaId { get; set; }
         public long ComponenteCurricularId { get; set; }
+        public long? PeridoEscolarId { get; set; }
         public string ProfessorRf { get; set; }
         public TipoPendencia TipoPendencia { get; set; }
     }
