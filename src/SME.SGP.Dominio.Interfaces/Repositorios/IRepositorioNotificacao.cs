@@ -20,6 +20,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<int> ObterQuantidadeNotificacoesNaoLidasPorAnoLetivoEUsuarioAsync(int anoLetivo, string codigoRf);
         Task<IEnumerable<NotificacoesParaTratamentoCargosNiveisDto>> ObterNotificacoesParaTratamentoCargosNiveis();
         Task<IEnumerable<NotificacaoBasicaDto>> ObterNotificacoesPorAnoLetivoERfAsync(int anoLetivo, string usuarioRf, int limite = 5);
+        Task ExcluirLogicamentePorIdsAsync(long[] ids);
         Notificacao ObterPorCodigo(long codigo);        
 
         Task ExcluirPeloSistemaAsync(long[] ids);
