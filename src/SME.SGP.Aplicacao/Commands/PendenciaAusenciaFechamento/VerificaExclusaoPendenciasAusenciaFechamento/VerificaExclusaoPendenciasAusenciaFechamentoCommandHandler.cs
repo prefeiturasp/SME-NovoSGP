@@ -17,11 +17,17 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(VerificaExclusaoPendenciasAusenciaFechamentoCommand request, CancellationToken cancellationToken)
         {
-            var pendenciaFechamentos = await mediator.Send(new ObterPendenciasFechamentoIdDisciplinaQuery(request.FechamentoId, request.DisciplinaId));
 
-            foreach (var pendenciaFechamento in pendenciaFechamentos)
+
+            var periodoEscolarId = await mediator.Send(new ObterPeriodoEscolarIdPorTurmaBimestreQuery(request.TurmaCodigo, request.Bimestre));
+            var pendenciasProfessores = await mediator.Send(new ObterPendenciasProfessorPorTurmaEComponenteQuery(request.TurmaCodigo,
+                                                                                                                 new long[] { request.DisciplinaId },
+                                                                                                                 periodoEscolarId,
+                                                                                                                 request.TipoPendencia));
+
+            foreach (var pendenciaProfessor in pendenciasProfessores)
             {
-                await mediator.Send(new ExcluirPendenciaFechamentoCommand(pendenciaFechamento));
+                await mediator.Send(new ExcluirPendenciaProfessorCommand(pendenciaProfessor));
             }
 
             return true;
