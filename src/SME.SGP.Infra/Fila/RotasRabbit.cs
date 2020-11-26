@@ -40,7 +40,10 @@
 
         public static string RotaExecutaVerificacaoPendenciasProfessor => "pendencias.professor.executa.verificacao";
 
-        public static string RotaExecutaVerificacaoPendenciasAusenciaFechamento => "pendencias.bimestre.ausencia.fechamento";
+        public static string RotaExecutaVerificacaoPendenciasAusenciaFechamento => "pendencias.bimestre.ausencia.fechamento.verificacao";
         public static string RotaExecutaExclusaoPendenciasAusenciaAvaliacao => "pendencias.professor.avaliacao.excluir";
+
+        public static string RotaExecutaExclusaoPendenciasAusenciaFechamento => "pendencias.bimestre.ausencia.fechamento.excluir";
+        
     }
 }
