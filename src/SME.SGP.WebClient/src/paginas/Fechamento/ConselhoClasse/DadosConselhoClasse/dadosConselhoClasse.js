@@ -55,6 +55,7 @@ const DadosConselhoClasse = props => {
 
   const [semDados, setSemDados] = useState(true);
   const [carregando, setCarregando] = useState(false);
+  const [turmaAtual, setTurmaAtual] = useState(0);
 
   const validaAbaFinal = useCallback(
     async (conselhoClasseId, fechamentoTurmaId, alunoCodigo, codigoTurma) => {
@@ -102,6 +103,7 @@ const DadosConselhoClasse = props => {
   // Quando passa bimestre 0 o retorno vai trazer dados do bimestre corrente!
   const caregarInformacoes = useCallback(
     async (bimestreConsulta = 0, ehFinal = false) => {
+      setTurmaAtual(turmaSelecionada.turma);
       limparDadosNotaPosConselhoJustificativa();
       ServicoConselhoClasse.setarParecerConclusivo('');
       setCarregando(true);
@@ -238,14 +240,16 @@ const DadosConselhoClasse = props => {
     store => store.conselhoClasse.dadosPrincipaisConselhoClasse
   );
 
-  useEffect(() => {
+  useEffect(() => {                    
     dispatch(
       setConselhoClasseEmEdicao(
         !carregando &&
-          !semDados &&
-          !Object.entries(dadosPrincipaisConselhoClasse).length
+        !semDados && 
+        !Object.entries(dadosPrincipaisConselhoClasse).length &&
+        turmaSelecionada.turma == turmaAtual
       )
     );
+
   }, [dispatch, carregando, semDados, dadosPrincipaisConselhoClasse]);
 
   const montarDados = () => {
