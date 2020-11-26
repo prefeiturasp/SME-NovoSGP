@@ -83,7 +83,7 @@ namespace SME.SGP.Dados.Repositorios
                             from usuario 
                            where rf_codigo = @codigoRf";
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<long>(query.ToString());
+            return await database.Conexao.QueryFirstOrDefaultAsync<long>(query, new { codigoRf });
         }
     }
 }
