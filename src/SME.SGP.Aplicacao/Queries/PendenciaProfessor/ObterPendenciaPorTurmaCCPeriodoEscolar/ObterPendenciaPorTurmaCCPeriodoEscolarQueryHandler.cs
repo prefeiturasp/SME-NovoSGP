@@ -8,16 +8,16 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterPendenciaIdPorTurmaQueryHandler : IRequestHandler<ObterPendenciaIdPorTurmaQuery, long>
+    public class ObterPendenciaPorTurmaCCPeriodoEscolarQueryHandler : IRequestHandler<ObterPendenciaPorTurmaCCPeriodoEscolarQuery, long>
     {
         private readonly IRepositorioPendenciaProfessor repositorioPendenciaProfessor;
 
-        public ObterPendenciaIdPorTurmaQueryHandler(IRepositorioPendenciaProfessor repositorioPendenciaProfessor)
+        public ObterPendenciaPorTurmaCCPeriodoEscolarQueryHandler(IRepositorioPendenciaProfessor repositorioPendenciaProfessor)
         {
             this.repositorioPendenciaProfessor = repositorioPendenciaProfessor ?? throw new ArgumentNullException(nameof(repositorioPendenciaProfessor));
         }
 
-        public async Task<long> Handle(ObterPendenciaIdPorTurmaQuery request, CancellationToken cancellationToken)
-            => await repositorioPendenciaProfessor.ObterPendenciaIdPorTurma(request.TurmaId, request.TipoPendencia);
+        public async Task<long> Handle(ObterPendenciaPorTurmaCCPeriodoEscolarQuery request, CancellationToken cancellationToken)
+            => await repositorioPendenciaProfessor.ObterPendenciaIdPorTurmaCCPeriodoEscolar(request.TurmaId, request.ComponenteCurricularId, request.PeriodoEscolarId, request.TipoPendencia);
     }
 }
