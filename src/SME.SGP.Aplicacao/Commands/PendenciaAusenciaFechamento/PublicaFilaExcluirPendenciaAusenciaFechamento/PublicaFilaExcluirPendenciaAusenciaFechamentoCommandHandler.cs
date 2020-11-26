@@ -21,14 +21,11 @@ namespace SME.SGP.Aplicacao
         {
             await mediator.Send(new PublicaFilaWorkerSgpCommand(RotasRabbit.RotaExecutaExclusaoPendenciasAusenciaFechamento,
                                                        new VerificaExclusaoPendenciasAusenciaFechamentoCommand
-                                                       (request.FechamentoTurmaDisciplinaDto.DisciplinaId,
-                                                       request.FechamentoTurmaDisciplinaDto.Bimestre,
-                                                       request.FechamentoTurmaDisciplinaDto.Id,
-                                                       request.FechamentoTurmaDisciplinaDto.TurmaId,
-                                                       request.Usuario.CodigoRf,
-                                                       Dominio.TipoPendencia.AusenciaFechamento),
+                                                       (request.DisciplinaId,
+                                                       request.PeriodoEscolarId,
+                                                       request.TurmaCodigo),
                                                        Guid.NewGuid(),
-                                                       request.Usuario));
+                                                       request.UsuarioLogado));
             return true;
         }
     }

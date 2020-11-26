@@ -8,27 +8,40 @@ namespace SME.SGP.Aplicacao
 {
     public class PublicaFilaExcluirPendenciaAusenciaFechamentoCommand : IRequest<bool>
     {
-        public PublicaFilaExcluirPendenciaAusenciaFechamentoCommand(FechamentoTurmaDisciplinaDto fechamentoTurmaDisciplinaDto, Usuario usuario)
+
+        public PublicaFilaExcluirPendenciaAusenciaFechamentoCommand(long disciplinaId, long periodoEscolarId, string turmaId, Usuario usuarioLogado)
         {
-            FechamentoTurmaDisciplinaDto = fechamentoTurmaDisciplinaDto;
-            Usuario = usuario;
+            this.DisciplinaId = disciplinaId;
+            this.PeriodoEscolarId = periodoEscolarId;
+            this.TurmaCodigo = turmaId;
+            this.UsuarioLogado = usuarioLogado;
         }
 
-        public FechamentoTurmaDisciplinaDto FechamentoTurmaDisciplinaDto { get; set; }
-        public Usuario Usuario { get; set; }
+        public long DisciplinaId { get; set; }
+        public long PeriodoEscolarId { get; set; }
+        public string TurmaCodigo { get; set; }
+        public Usuario UsuarioLogado { get; set; }
     }
 
     public class PublicaFilaExcluirPendenciaAusenciaFechamentoCommandValidator : AbstractValidator<PublicaFilaExcluirPendenciaAusenciaFechamentoCommand>
     {
         public PublicaFilaExcluirPendenciaAusenciaFechamentoCommandValidator()
         {
-            RuleFor(c => c.Usuario)
+            RuleFor(c => c.UsuarioLogado)
                .NotEmpty()
                .WithMessage("O usuário precisa ser informado para verificação de exclusão de pendencia de ausencia de fechamento.");
 
-            RuleFor(c => c.FechamentoTurmaDisciplinaDto)
+            RuleFor(c => c.PeriodoEscolarId)
                .NotEmpty()
-               .WithMessage("O FechamentoTurmaDisciplina precisa ser informado para verificação de exclusão de pendencia de ausencia de fechamento.");
+               .WithMessage("O PeriodoEscolar precisa ser informado para verificação de exclusão de pendencia de ausencia de fechamento.");
+
+            RuleFor(c => c.DisciplinaId)
+               .NotEmpty()
+               .WithMessage("A DisciplinaId precisa ser informado para verificação de exclusão de pendencia de ausencia de fechamento.");
+
+            RuleFor(c => c.TurmaCodigo)
+               .NotEmpty()
+               .WithMessage("A TurmaCodigo precisa ser informado para verificação de exclusão de pendencia de ausencia de fechamento.");
         }
     }
 }
