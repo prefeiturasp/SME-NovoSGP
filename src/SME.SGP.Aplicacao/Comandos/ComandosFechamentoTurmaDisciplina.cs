@@ -30,11 +30,6 @@ namespace SME.SGP.Aplicacao
                 try
                 {
                     listaAuditoria.Add(await servicoFechamentoTurmaDisciplina.Salvar(fechamentoTurma.Id, fechamentoTurma, componenteSemNota));
-
-                    var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
-
-                    await mediator.Send(new PublicaFilaExcluirPendenciaAusenciaFechamentoCommand(fechamentoTurma, usuario));
-
                 }
                 catch (Exception e)
                 {

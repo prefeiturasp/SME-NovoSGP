@@ -19,11 +19,10 @@ namespace SME.SGP.Aplicacao
         {
 
 
-            var periodoEscolarId = await mediator.Send(new ObterPeriodoEscolarIdPorTurmaBimestreQuery(request.TurmaCodigo, request.Bimestre));
             var pendenciasProfessores = await mediator.Send(new ObterPendenciasProfessorPorTurmaEComponenteQuery(request.TurmaCodigo,
                                                                                                                  new long[] { request.DisciplinaId },
-                                                                                                                 periodoEscolarId,
-                                                                                                                 request.TipoPendencia));
+                                                                                                                 request.PeriodoEscolarId,
+                                                                                                                 Dominio.TipoPendencia.AusenciaFechamento));
 
             foreach (var pendenciaProfessor in pendenciasProfessores)
             {
