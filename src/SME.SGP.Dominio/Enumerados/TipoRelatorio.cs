@@ -63,7 +63,7 @@ namespace SME.SGP.Dominio
         [Display(Name = "relatorios/usuarios", ShortName = "Usuarios", Description = "Relatório de Usuários")]
         Usuarios = 20,
 
-        [Display(Name = "relatorios/alteracao-notas-bimestre", ShortName = "Usuarios", Description = "Relatório Aletrações de Notas em Bimestre")]
+        [Display(Name = "relatorios/alteracao-notas", ShortName = "Usuarios", Description = "Relatório Aletrações de Notas em Bimestre")]
         AlteracaoNotasBimestre = 21
     }
 }

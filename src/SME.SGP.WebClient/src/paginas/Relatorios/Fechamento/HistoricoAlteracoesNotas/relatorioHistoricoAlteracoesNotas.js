@@ -409,14 +409,16 @@ const RelatorioHistoricoAlteracoesNotas = () => {
 
   const gerar = async () => {
     const params = {
+      codigoDre: dreId,
+      codigoUe: ueId,
       anoLetivo,
       modalidadeTurma: modalidadeId,
       semestre,
-      turmaId,
-      componentesCurricularesId,
-      bimestre,
-      tipoDeNota,
-    };
+      turma: turmaId,
+      componentesCurriculares: componentesCurricularesId,
+      bimestres: bimestre,
+      tipoAlteracaoNota: tipoDeNota      
+    };  
 
     setExibirLoader(true);
     const retorno = await ServicoHistoricoAlteracoesNotas.gerar(params)
