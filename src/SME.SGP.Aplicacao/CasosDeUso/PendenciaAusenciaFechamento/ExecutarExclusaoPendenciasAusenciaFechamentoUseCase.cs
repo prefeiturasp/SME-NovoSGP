@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit mensagem)
         {
-            var command = mensagem.ObterObjetoMensagem<VerificaExclusaoPendenciasAusenciaAvaliacaoCommand>();
+            var command = mensagem.ObterObjetoMensagem<VerificaExclusaoPendenciasAusenciaFechamentoCommand>();
 
             LogSentry(command, "Inicio");
             await mediator.Send(command);
@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
             return true;
         }
 
-        private void LogSentry(VerificaExclusaoPendenciasAusenciaAvaliacaoCommand command, string mensagem)
+        private void LogSentry(VerificaExclusaoPendenciasAusenciaFechamentoCommand command, string mensagem)
         {
             SentrySdk.AddBreadcrumb($"Mensagem ExecutarExclusaoPendenciasAusenciaFechamentoUseCase : {mensagem} - Turma:{command.TurmaCodigo} Tipo:{command.TipoPendencia.ToString()}", "Rabbit - ExecutarExclusaoPendenciasAusenciaFechamentoUseCase");
         }
