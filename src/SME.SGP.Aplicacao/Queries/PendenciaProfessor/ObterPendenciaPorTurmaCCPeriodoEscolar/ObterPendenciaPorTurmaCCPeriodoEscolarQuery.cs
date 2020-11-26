@@ -30,6 +30,13 @@ namespace SME.SGP.Aplicacao
             RuleFor(c => c.TurmaId)
                .NotEmpty()
                .WithMessage("O id da turma deve ser informado para localizar a pendência.");
+            RuleFor(c => c.ComponenteCurricularId)
+               .NotEmpty()
+               .WithMessage("O id do componente curricular deve ser informado para localizar a pendência.");
+
+            RuleFor(c => c.PeriodoEscolarId)
+              .NotEmpty()
+              .WithMessage("O id do periodo escolar deve ser informado para localizar a pendência.");
 
         }
     }

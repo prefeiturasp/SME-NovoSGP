@@ -59,6 +59,20 @@ namespace SME.SGP.Dados
             return await database.Conexao.QueryFirstOrDefaultAsync<long>(query, new { turmaId, tipoPendencia });
         }
 
+        public async Task<long> ObterPendenciaIdPorTurmaCCPeriodoEscolar(long turmaId, long componenteCurricularId, long periodoEscolarId, TipoPendencia tipoPendencia)
+        {
+            var query = @"select pp.pendencia_id
+                         from pendencia_professor pp
+                        inner join pendencia p on p.id = pp.pendencia_id
+                        where not p.excluido
+                          and pp.turma_id = @turmaId
+                          and pp.periodo_escolar_id = @componenteCurricularId
+                          and pp.componente_curricular_id = @periodoEscolarId
+                          and p.tipo = @tipoPendencia";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<long>(query, new { turmaId, componenteCurricularId, periodoEscolarId, tipoPendencia });
+        }
+
         public async Task<IEnumerable<PendenciaProfessorDto>> ObterPendenciasPorPendenciaId(long pendenciaId)
         {
             var query = @"select coalesce(cc.descricao_sgp, cc.descricao) as ComponenteCurricular, u.rf_codigo as ProfessorRf, u.nome as Professor
