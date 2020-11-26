@@ -14,6 +14,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<PendenciaProfessorDto>> ObterPendenciasPorPendenciaId(long pendenciaId);
         Task<IEnumerable<PendenciaProfessor>> ObterPendenciasProfessorPorTurmaEComponente(string turmaCodigo, long[] componentesCurriculares, long periodoEscolarId, TipoPendencia tipoPendencia);
         Task Remover(PendenciaProfessor pendenciaProfessor);
+        Task<long> ObterPendenciaIdPorTurmaCCPeriodoEscolar(long turmaId, long componenteCurricularId, long periodoEscolarId, TipoPendencia tipoPendencia);
         Task<bool> ExistePendenciaProfessorPorPendenciaId(long pendenciaId);
     }
 }

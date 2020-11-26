@@ -1,8 +1,10 @@
 ﻿using Dapper;
+using Dommel;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -34,6 +36,18 @@ namespace SME.SGP.Dados.Repositorios
             return retorno;
         }
 
+        public async Task<IEnumerable<PendenciaFechamento>> ObterPorFechamentoIdDisciplinaId(long fechamentoId, long disciplinaId)
+        {
+            var query = @"select pf.fechamento_turma_disciplina_id as FechamentoTurmaDisciplinaId ,
+                            pf.pendencia_id as PendenciaId
+                            from pendencia_fechamento pf 
+                            inner join fechamento_turma_disciplina ftd on pf.fechamento_turma_disciplina_id = ftd.id 
+                            where disciplina_id = @disciplinaId and
+                            fechamento_turma_id = @fechamentoId";
+
+            return await database.Conexao.QueryAsync<PendenciaFechamento>(query, new { fechamentoId, disciplinaId });
+        }
+
         public async Task<PendenciaFechamentoCompletoDto> ObterPorPendenciaId(long pendenciaId)
         {
             var query = @"select p.id as PendenciaId, p.titulo as descricao, p.descricao as detalhamento
@@ -60,6 +74,25 @@ namespace SME.SGP.Dados.Repositorios
                         where fp.pendencia_id = @pendenciaId ";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<Turma>(query, new { pendenciaId });
+        }
+
+        public async Task RemoverAsync(PendenciaFechamento pendencia)
+        {
+            await database.Conexao.DeleteAsync(pendencia);
+            Auditar(pendencia.Id, "E");
+        }
+
+        private void Auditar(long identificador, string acao)
+        {
+            database.Conexao.Insert<Auditoria>(new Auditoria()
+            {
+                Data = DateTime.Now,
+                Entidade = "pendenciafechamento",
+                Chave = identificador,
+                Usuario = database.UsuarioLogadoNomeCompleto,
+                RF = database.UsuarioLogadoRF,
+                Acao = acao
+            });
         }
 
         public bool VerificaPendenciasAbertoPorFechamento(long fechamentoId)
@@ -95,6 +128,13 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine($"OFFSET {paginacao.QuantidadeRegistrosIgnorados} ROWS FETCH NEXT {paginacao.QuantidadeRegistros} ROWS ONLY");
             
             return query.ToString();
+        }
+
+        public async Task<bool> ExistePendenciaFechamentoPorPendenciaId(long pendenciaId)
+        {
+            var query = "select 1 from pendencia_fechamento where pendencia_id = @pendenciaId";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { pendenciaId });
         }
     }
 }
