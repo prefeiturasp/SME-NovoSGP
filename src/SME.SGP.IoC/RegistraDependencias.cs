@@ -552,7 +552,7 @@ namespace SME.SGP.IoC
 
             // Usuários
             services.TryAddScoped<IObterListaSituacoesUsuarioUseCase, ObterListaSituacoesUsuarioUseCase>();
-            services.TryAddScoped<IObterListaPerfisUsuarioUseCase, ObterListaPerfisUsuarioUseCase>();
+            services.TryAddScoped<IObterHierarquiaPerfisUsuarioUseCase, ObterHierarquiaPerfisUsuarioUseCase>();
 
             services.TryAddScoped<IObterTiposCalendarioPorAnoLetivoModalidadeUseCase, ObterTiposCalendarioPorAnoLetivoModalidadeUseCase>();
             

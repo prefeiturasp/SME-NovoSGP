@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Sentry;
 using SME.SGP.Dominio;
 using System;
 using System.Collections.Generic;
@@ -20,16 +21,14 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(RelacionaPendenciaUsuarioCommand request, CancellationToken cancellationToken)
         {
             var anoAtual = DateTime.Today.Year;
-            var parametrosSistema = await mediator.Send(new ObterParametrosSistemaPorTipoEAnoQuery(request.TipoParametro, anoAtual));
-
-            if (parametrosSistema != null)
+            IList<long> funcionariosId = new List<long>();
+            foreach (var perfilUsuario in request.PerfisUsuarios)
             {
-                IList<long> funcionariosId = new List<long>();
-                foreach (var parametro in parametrosSistema)
+                try
                 {
-                    IList<long> funcionariosIdTemp = new List<long>();
+                    List<long> funcionariosIdTemp = new List<long>();
 
-                    switch (parametro.Valor)
+                    switch (perfilUsuario)
                     {
                         case "Professor":
                             funcionariosIdTemp.Add(request.ProfessorId.Value);
@@ -47,36 +46,47 @@ namespace SME.SGP.Aplicacao
                             funcionariosIdTemp = funcionarioDiretor.ToList();
                             break;
                         case "ADM UE":
-                            var administradoresId = await mediator.Send(new ObterAdministradoresPorUEQuery(request.CodigoUe));
-
-                            foreach (var adm in administradoresId)
-                            {
-                                funcionariosIdTemp.Add(await ObterUsuarioId(adm));
-                            }
+                            funcionariosIdTemp.AddRange(await ObterAdministradoresPorUE(request.CodigoUe));
                             break;
                         default:
                             break;
                     }
 
                     funcionariosId = funcionariosId.Concat(funcionariosIdTemp).ToList();
+
+                }
+                catch (Exception ex)
+                {
+                    SentrySdk.CaptureException(ex);
+                }            
+            }
+
+            if (funcionariosId.Any())
+                foreach (var id in funcionariosId)
+                {
+                    await mediator.Send(new SalvarPendenciaUsuarioCommand(request.PendenciaId, id));
                 }
 
-                if (funcionariosId.Count > 0)
-                    foreach (var id in funcionariosId)
-                    {
-                        await mediator.Send(new SalvarPendenciaUsuarioCommand(request.PendenciaId, id));
-                    }
-            }
             return true;
         }
 
+        private async Task<List<long>> ObterAdministradoresPorUE(string CodigoUe)
+        {
+            var administradoresId = await mediator.Send(new ObterAdministradoresPorUEQuery(CodigoUe));
+            var AdministradoresUeId = new List<long>();
+
+            foreach (var adm in administradoresId)
+            {
+                AdministradoresUeId.Add(await ObterUsuarioId(adm));
+            }
+            return AdministradoresUeId;
+        }
+
+
         private async Task<long> ObterUsuarioId(string rf)
         {
-            var usuario = await mediator.Send(new ObterUsuarioPorRfQuery(rf));
-            if (usuario == null)
-                throw new NegocioException($"Usuário de RF {rf} não localizado!");
-
-            return usuario.Id;
+            var usuarioId = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(rf));
+            return usuarioId;
         }
     }
 }
