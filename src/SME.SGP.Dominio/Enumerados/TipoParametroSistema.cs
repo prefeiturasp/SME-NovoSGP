@@ -70,6 +70,9 @@
         // Pendencias Fechamento
         DiasGeracaoPendenciaAvaliacao = 37,
         DiasGeracaoPendenciaAusenciaFechamento = 38,
+        
+        // Notificacao Andamento do Fechamento
+        DiasNotificacaoAndamentoFechamento = 39,
 
         //Sistema
         HabilitarServicosEmBackground = 100
