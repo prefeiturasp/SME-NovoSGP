@@ -176,7 +176,9 @@ const RelatorioUsuarios = () => {
   const onClickGerar = async () => {
     let keysPerfis = perfisSelecionados;
     if (perfisSelecionados[0] === OPCAO_TODOS) {
-      keysPerfis = [];
+      keysPerfis = listaPerfis
+        .filter(a => a.key !== OPCAO_TODOS)
+        .map(a => a.key);
     }
 
     let keysSituacoes = situacoesSelecionadas;
