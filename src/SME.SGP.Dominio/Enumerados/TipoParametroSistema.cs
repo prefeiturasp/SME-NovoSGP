@@ -71,6 +71,8 @@
         DiasGeracaoPendenciaAvaliacao = 37,
         DiasGeracaoPendenciaAusenciaFechamento = 38,
 
+        DiasNotificacaoResultadoInsatisfatorio = 40,
+
         //Sistema
         HabilitarServicosEmBackground = 100
     }

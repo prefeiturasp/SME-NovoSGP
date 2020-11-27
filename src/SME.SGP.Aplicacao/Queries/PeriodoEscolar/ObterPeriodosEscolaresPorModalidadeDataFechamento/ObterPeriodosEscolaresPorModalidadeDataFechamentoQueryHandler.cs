@@ -7,17 +7,17 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterPeriodosEscolaresPorModalidadeDataFechamentoQueryHandler : IRequestHandler<ObterPeriodosEscolaresPorModalidadeDataFechamentoQuery, IEnumerable<PeriodoEscolar>>
+    public class ObterPeriodosEscolaresPorModalidadeDataFechamentoQueryHandler : IRequestHandler<ObterPeriodosEscolaresPorModalidadeDataFechamentoQuery, IEnumerable<PeriodoFechamentoBimestre>>
     {
-        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
+        private readonly IRepositorioPeriodoFechamento repositorioPeriodoFechamento;
 
-        public ObterPeriodosEscolaresPorModalidadeDataFechamentoQueryHandler(IRepositorioPeriodoEscolar repositorioPeriodoEscolar)
+        public ObterPeriodosEscolaresPorModalidadeDataFechamentoQueryHandler(IRepositorioPeriodoFechamento repositorioPeriodoFechamento)
         {
-            this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new System.ArgumentNullException(nameof(repositorioPeriodoEscolar));
+            this.repositorioPeriodoFechamento = repositorioPeriodoFechamento ?? throw new System.ArgumentNullException(nameof(repositorioPeriodoFechamento));
         }
-        public async Task<IEnumerable<PeriodoEscolar>> Handle(ObterPeriodosEscolaresPorModalidadeDataFechamentoQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<PeriodoFechamentoBimestre>> Handle(ObterPeriodosEscolaresPorModalidadeDataFechamentoQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioPeriodoEscolar.ObterPorModalidadeDataFechamento(request.ModalidadeTipoCalendario, request.DataFechamento);
+            return await repositorioPeriodoFechamento.ObterPeriodosFechamentoEscolasPorModalidadeDataFinal(request.ModalidadeTipoCalendario, request.DataFechamento);
         }
     }
 }

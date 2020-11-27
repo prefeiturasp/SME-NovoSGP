@@ -38,6 +38,8 @@ namespace SME.SGP.Background
             Cliente.ExecutarPeriodicamente<IExecutaPendenciasProfessorAvaliacaoUseCase>(c => c.Executar(), Cron.Daily(5));
 
             Cliente.ExecutarPeriodicamente<IExecutaPendenciasAusenciaFechamentoUseCase>(c => c.Executar(), Cron.Daily(5));
+
+            Cliente.ExecutarPeriodicamente<INotificarResultadoInsatisfatorioUseCase>(c => c.Executar(), Cron.Daily(5));
         }
     }
 }

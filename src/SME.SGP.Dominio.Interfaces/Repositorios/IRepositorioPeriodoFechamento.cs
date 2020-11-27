@@ -19,5 +19,7 @@ namespace SME.SGP.Dominio.Interfaces
         
         Task<PeriodoFechamentoBimestre> ObterPeriodoFechamentoTurmaAsync(long ueId, long dreId, int anoLetivo, int bimestre, long? periodoEscolarId);
         Task<IEnumerable<PeriodoFechamentoBimestre>> ObterPeriodosFechamentoEscolasPorDataFinal(DateTime dataFinal);
+        Task<IEnumerable<PeriodoFechamentoBimestre>> ObterPeriodosFechamentoEscolasPorModalidadeDataFinal(long modalidadeTipoCalendario, DateTime dataFinal);
+        
     }
 }
