@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<IEnumerable<PeriodoFechamentoBimestre>> Handle(ObterPeriodosEscolaresPorModalidadeDataFechamentoQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioPeriodoFechamento.ObterPeriodosFechamentoEscolasPorModalidadeDataFinal(request.ModalidadeTipoCalendario, request.DataFechamento);
+            return await repositorioPeriodoFechamento.ObterPeriodosFechamentoBimestrePorDataFinal(request.ModalidadeTipoCalendario, request.DataFechamento);
         }
     }
 }

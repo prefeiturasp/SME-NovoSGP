@@ -39,7 +39,7 @@ namespace SME.SGP.Aplicacao
                             var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(turmaId.Key));
                             foreach (var componenteCurricularId in alunosComNotaLancada.Where(a => a.TurmaId == turmaId.Key).GroupBy(a => a.ComponenteCurricularId))
                             {
-                                var alunosTurma = await mediator.Send(new ObterAlunosPorTurmaEAnoLetivoQuery(turma.CodigoTurma, DateTime.Now.Year));
+                                var alunosTurma = await mediator.Send(new ObterAlunosPorTurmaEAnoLetivoQuery(turma.CodigoTurma));
                                 var alunosComNota = alunosComNotaLancada.Where(a => a.TurmaId == turmaId.Key && a.ComponenteCurricularId == componenteCurricularId.Key);
 
                                 if (alunosComNota.FirstOrDefault().EhConceito)
