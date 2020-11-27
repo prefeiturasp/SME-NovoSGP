@@ -134,13 +134,12 @@ namespace SME.SGP.Aplicacao.Commands
         private async Task VerificaSeExisteNivelEadiciona(WorkflowAprovacao wfAprovacao, WorkflowAprovacaoNivel nivelParaModificar, Cargo cargo, List<FuncionarioCargoDTO> funcionariosCargosDaUe)
         {
             var nivelDoCargo = wfAprovacao.ObterPrimeiroNivelPorCargo(cargo);
-            var modificarNivelAtual = false;
+
             var modificaNiveisPosteriores = false;
 
             if (nivelDoCargo == null)
             {
                 modificaNiveisPosteriores = true;
-                modificarNivelAtual = true;
 
                 nivelDoCargo = new WorkflowAprovacaoNivel()
                 {
@@ -155,7 +154,7 @@ namespace SME.SGP.Aplicacao.Commands
                     return;
             }
 
-            await TrataModificacaoDosNiveis(funcionariosCargosDaUe, wfAprovacao, nivelParaModificar, modificarNivelAtual, nivelDoCargo, modificaNiveisPosteriores);
+            await TrataModificacaoDosNiveis(funcionariosCargosDaUe, wfAprovacao, nivelParaModificar, true, nivelDoCargo, modificaNiveisPosteriores);
 
         }
 
