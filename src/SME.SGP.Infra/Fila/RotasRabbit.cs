@@ -44,6 +44,6 @@
         public static string RotaExecutaExclusaoPendenciasAusenciaAvaliacao => "pendencias.professor.avaliacao.excluir";
 
         public static string RotaExecutaExclusaoPendenciasAusenciaFechamento => "pendencias.bimestre.ausencia.fechamento.excluir";
-        
+        public static string RotaNotificacaoResultadoInsatisfatorio => "notificacao.nova.resultado.insatisfatorio";
     }
 }
