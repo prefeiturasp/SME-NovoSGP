@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Dominio;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,7 +21,17 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<KeyValuePair<Guid, string>>> Executar()
         {
-            var perfilUsuario = await mediator.Send(new ObterPerfilAtualQuery());
+            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var perfilUsuario = usuarioLogado.PerfilAtual;
+            if (usuarioLogado.EhPerfilProfessor())
+            {
+                var perfil = await mediator.Send(new ObterPerfilPorGuidQuery(perfilUsuario));
+                if (perfil == null)
+                    throw new NegocioException("Perfil do usuário não localizado na base de dados do SGP");
+
+                return new[] { new KeyValuePair<Guid, string>( perfil.CodigoPerfil, perfil.NomePerfil) };
+            }
+
             var perfis = await mediator.Send(new ObterHierarquiaPerfisPorPerfilQuery(perfilUsuario));
 
             return perfis
