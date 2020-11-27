@@ -11,6 +11,8 @@ namespace SME.SGP.Infra
         public long Nota { get; set; }
         public string NotaConceito { get; set; }
         public bool NotaConceitoAprovado { get; set; }
+        public string ProfessorRf { get; set; }
+        public string ProfessorNome { get; set; }
         public bool EhConceito { get; set; }
         public string AlunoCodigo { get; set; }
         public string Justificativa { get; set; }

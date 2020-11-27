@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<AlunosFechamentoNotaDto>> Handle(ObterAlunosComNotaLancadaPorPeriodoEscolarUEQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioFechamentoNota.ObterAComNotaLancadaPorPeriodoEscolarUE(request.UeId, request.PeriodoEscolarId);
+            return await repositorioFechamentoNota.ObterComNotaLancadaPorPeriodoEscolarUE(request.UeId, request.PeriodoEscolarId);
         }
     }
 }
