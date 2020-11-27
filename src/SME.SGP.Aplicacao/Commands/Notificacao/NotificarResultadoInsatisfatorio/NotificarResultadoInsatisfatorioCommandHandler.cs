@@ -5,6 +5,7 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -22,9 +23,13 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(NotificarResultadoInsatisfatorioCommand request, CancellationToken cancellationToken)
         {
 
-            var periodoFechamentoBimestres = await mediator.Send(new ObterPeriodosEscolaresPorModalidadeDataFechamentoQuery((int)request.ModalidadeTipoCalendario, DateTime.Now.AddDays(request.Dias)));
+            var periodoFechamentoBimestres = await mediator.Send(new ObterPeriodosEscolaresPorModalidadeDataFechamentoQuery((int)request.ModalidadeTipoCalendario, DateTime.Now.AddDays(request.Dias).Date));
 
             var percentualReprovacao = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.PercentualAlunosInsuficientes, DateTime.Today.Year)));
+            var mediaBimestre = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.MediaBimestre, DateTime.Today.Year)));
+            var componentes = await mediator.Send(new ObterComponentesCurricularesQuery());
+
+            List<NotificarResultadoInsatisfatorioDto> listaNotificacoes = new List<NotificarResultadoInsatisfatorioDto>();
 
             foreach(var periodoFechamentoBimestre in periodoFechamentoBimestres)
             {
@@ -36,94 +41,129 @@ namespace SME.SGP.Aplicacao
                     {
                         foreach(var turmaId in alunosComNotaLancada.GroupBy(a => a.TurmaId))
                         {
+                            
                             var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(turmaId.Key));
+
+                            var turmaNotificacao = new NotificarResultadoInsatisfatorioDto();
+                            turmaNotificacao.TurmaNome = turma.Nome;
+                            turmaNotificacao.TurmaModalidade = turma.ModalidadeCodigo.Name();
+
                             foreach (var componenteCurricularId in alunosComNotaLancada.Where(a => a.TurmaId == turmaId.Key).GroupBy(a => a.ComponenteCurricularId))
                             {
                                 var alunosTurma = await mediator.Send(new ObterAlunosPorTurmaEAnoLetivoQuery(turma.CodigoTurma));
                                 var alunosComNota = alunosComNotaLancada.Where(a => a.TurmaId == turmaId.Key && a.ComponenteCurricularId == componenteCurricularId.Key);
 
-                                if (alunosComNota.FirstOrDefault().EhConceito)
+                                var alunosRetorno = VerificaAlunosResultadoInsatisfatorio(alunosComNota, percentualReprovacao, turma, componenteCurricularId.Key, mediaBimestre);
+
+                                if(alunosRetorno.Any())
                                 {
-                                    VerificaAlunosResultadoInsatisfatorioConceito(alunosComNota, percentualReprovacao, turmaId.Key, componenteCurricularId.Key);
+                                    var componenteNotificacao = new NotificarResultadoInsatisfatorioCCDto();
+                                    var obterComponenteCurricular = componentes.FirstOrDefault(c => long.Parse(c.Codigo) == componenteCurricularId.Key);
+
+                                    componenteNotificacao.ComponenteCurricularNome = obterComponenteCurricular.Descricao;
+                                    componenteNotificacao.Professor = $"{alunosRetorno.FirstOrDefault().ProfessorNome} ({alunosRetorno.FirstOrDefault().ProfessorRf})";
+                                    componenteNotificacao.Justificativa = alunosRetorno.FirstOrDefault().Justificativa;
+
+                                    turmaNotificacao.ComponentesCurriculares.Add(componenteNotificacao);
                                 }
-                                else
-                                {
-                                    VerificaAlunosResultadoInsatisfatorioNota(alunosComNota, percentualReprovacao, turmaId.Key, componenteCurricularId.Key);
-                                }
+
                             }
+
+                            if(turmaNotificacao.ComponentesCurriculares.Any())
+                                listaNotificacoes.Add(turmaNotificacao);
                         }
                     }
-                }                    
+                }
+
+                if (listaNotificacoes.Any())
+                    await EnviarNotificacoes(listaNotificacoes, periodoFechamentoBimestre);
             }
-            
-            //retorno.MediaAprovacaoBimestre = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.MediaBimestre, DateTime.Today.Year)));
-
-            //fechamento nota vai ter uma FK para conceito valores e vai ter um booleano informando sim ou não
-
-
-            //private async Task EnviarNotasWfAprovacao(long fechamentoTurmaDisciplinaId, PeriodoEscolar periodoEscolar, Usuario usuarioLogado)
-            //{
-            //    if (notasEnvioWfAprovacao.Any())
-            //    {
-            //        var lancaNota = !notasEnvioWfAprovacao.First().ConceitoId.HasValue;
-            //        var notaConceitoMensagem = lancaNota ? "nota" : "conceito";
-
-            //        var mensagem = await MontaMensagemWfAprovacao(notaConceitoMensagem, periodoEscolar, usuarioLogado);
-
-            //        var wfAprovacaoNota = new WorkflowAprovacaoDto()
-            //        {
-            //            Ano = DateTime.Today.Year,
-            //            NotificacaoCategoria = NotificacaoCategoria.Workflow_Aprovacao,
-            //            EntidadeParaAprovarId = fechamentoTurmaDisciplinaId,
-            //            Tipo = WorkflowAprovacaoTipo.AlteracaoNotaFechamento,
-            //            TurmaId = turmaFechamento.CodigoTurma,
-            //            UeId = turmaFechamento.Ue.CodigoUe,
-            //            DreId = turmaFechamento.Ue.Dre.CodigoDre,
-            //            NotificacaoTitulo = $"Alteração em {notaConceitoMensagem} final - Turma {turmaFechamento.Nome} ({turmaFechamento.AnoLetivo})",
-            //            NotificacaoTipo = NotificacaoTipo.Notas,
-            //            NotificacaoMensagem = mensagem
-            //        };
-
-            //        wfAprovacaoNota.AdicionarNivel(Cargo.CP);
-            //        wfAprovacaoNota.AdicionarNivel(Cargo.Diretor);
-            //        wfAprovacaoNota.AdicionarNivel(Cargo.Supervisor);
-
-            //        var idWorkflow = await comandosWorkflowAprovacao.Salvar(wfAprovacaoNota);
-            //        foreach (var notaFechamento in notasEnvioWfAprovacao)
-            //        {
-            //            await repositorioWfAprovacaoNotaFechamento.SalvarAsync(new WfAprovacaoNotaFechamento()
-            //            {
-            //                WfAprovacaoId = idWorkflow,
-            //                FechamentoNotaId = notaFechamento.Id,
-            //                Nota = notaFechamento.Nota,
-            //                ConceitoId = notaFechamento.ConceitoId
-            //            });
-            //        }
-            //    }
-            //}
-
-
+                    
+           
             return true;
         }
 
-        private void VerificaAlunosResultadoInsatisfatorioConceito(IEnumerable<AlunosFechamentoNotaDto> alunosComNota, double percentualReprovacao, long turmaId, long componenteCurricularId)
+        private async Task EnviarNotificacoes(List<NotificarResultadoInsatisfatorioDto> listaNotificacoes, PeriodoFechamentoBimestre periodoFechamentoBimestre)
         {
-            var alunosTurmaComNotaAbaixo = alunosComNota.Where(a => a.EhConceito && a.TurmaId == turmaId && a.ComponenteCurricularId == componenteCurricularId && !a.NotaConceitoAprovado);
-            var totalAlunosRI = ((alunosTurmaComNotaAbaixo.Count() / (double)alunosComNota.Count()) * 100);
-            if (totalAlunosRI > percentualReprovacao)
+            var titulo = $"Turmas com resultados insatisfatórios no {periodoFechamentoBimestre.PeriodoEscolar.Bimestre}º bimestre";
+            var mensagem = new StringBuilder($"As turmas e componentes curriculares abaixo da <b>{periodoFechamentoBimestre.PeriodoFechamento.Ue.TipoEscola.ShortName()} {periodoFechamentoBimestre.PeriodoFechamento.Ue.Nome} ({periodoFechamentoBimestre.PeriodoFechamento.Ue.Dre.Abreviacao}) tiveram mais de 50% dos estudantes com resultado insatisfatório no <b>{periodoFechamentoBimestre.PeriodoEscolar.Bimestre}º bimestre</b>:");
+
+            mensagem.Append("<table style='margin-left: auto; margin-right: auto; margin-top: 10px' border='2' cellpadding='5'>");
+            foreach (var turmasPorModalidade in listaNotificacoes.GroupBy(c => c.TurmaModalidade))
             {
-                var i = componenteCurricularId;
+                mensagem.Append(ObterHeaderModalidade(turmasPorModalidade.Key));
+
+                foreach (var turma in turmasPorModalidade)
+                {
+                    mensagem.Append(MontarLinhaDaTurma(turma));
+                }
             }
+            mensagem.Append("</table>");
+
+            await EnviarNotificacao(titulo, mensagem.ToString(), periodoFechamentoBimestre.PeriodoFechamento.Ue.Dre.CodigoDre, periodoFechamentoBimestre.PeriodoFechamento.Ue.CodigoUe);
         }
 
-        private void VerificaAlunosResultadoInsatisfatorioNota(IEnumerable<AlunosFechamentoNotaDto> alunosComNota, double percentualReprovacao, long turmaId, long componenteCurricularId)
+        private List<AlunosFechamentoNotaDto> VerificaAlunosResultadoInsatisfatorio(IEnumerable<AlunosFechamentoNotaDto> alunosComNota, double percentualReprovacao, Turma turma, long componenteCurricularId, double mediaBimestre)
         {
-            var alunosTurmaComNotaAbaixo = alunosComNota.Where(a => !a.EhConceito && a.TurmaId == turmaId && a.ComponenteCurricularId == componenteCurricularId);
-            var totalAlunosRI = ((alunosTurmaComNotaAbaixo.Count() / (double)alunosComNota.Count()) * 100);
-            if (totalAlunosRI > percentualReprovacao)
+            List<AlunosFechamentoNotaDto> alunos = new List<AlunosFechamentoNotaDto>();
+
+            if (alunosComNota.FirstOrDefault().EhConceito)
             {
-                var i = componenteCurricularId;
+                var alunosTurmaComNotaAbaixo = alunosComNota.Where(a => a.EhConceito && a.TurmaId == turma.Id && a.ComponenteCurricularId == componenteCurricularId && !a.NotaConceitoAprovado);
+                var totalAlunosRI = ((alunosTurmaComNotaAbaixo.Count() / (double)alunosComNota.Count()) * 100);
+                if (totalAlunosRI > percentualReprovacao)
+                {
+                    alunos = alunosTurmaComNotaAbaixo.ToList();
+                }
             }
+            else
+            {
+                var alunosTurmaComNotaAbaixo = alunosComNota.Where(a => !a.EhConceito && a.TurmaId == turma.Id && a.ComponenteCurricularId == componenteCurricularId && a.Nota < mediaBimestre);
+                var totalAlunosRI = ((alunosTurmaComNotaAbaixo.Count() / (double)alunosComNota.Count()) * 100);
+                if (totalAlunosRI > percentualReprovacao)
+                {
+                    alunos = alunosTurmaComNotaAbaixo.ToList();
+                }
+            }
+
+            return alunos;
+        }
+
+        private async Task EnviarNotificacao(string titulo, string mensagem, string codigoDre, string codigoUe)
+        {
+            var cargos = new[] { Cargo.CP, Cargo.AD, Cargo.Diretor };
+            await mediator.Send(new EnviarNotificacaoCommand(titulo, mensagem, NotificacaoCategoria.Aviso, NotificacaoTipo.Fechamento, cargos, codigoDre, codigoUe));
+        }
+
+        private string MontarLinhaDaTurma(NotificarResultadoInsatisfatorioDto dto)
+        {
+            var mensagem = new StringBuilder();
+
+            mensagem.Append("<tr>");
+            mensagem.Append($"<td rowspan='{dto.ComponentesCurriculares.Count()}'>{dto.TurmaNome}</td>");
+            mensagem.Append("</tr>");
+            foreach (var componenteCurricular in dto.ComponentesCurriculares)
+            {
+                mensagem.Append("<tr>");
+                mensagem.Append($"<td>{componenteCurricular.ComponenteCurricularNome}</td>");
+                mensagem.Append($"<td>{componenteCurricular.Justificativa}</td>");
+                mensagem.Append($"<td>{componenteCurricular.Professor}</td>");
+                mensagem.Append("</tr>");
+            }
+            return mensagem.ToString();
+        }
+
+        private string ObterHeaderModalidade(string modalidade)
+        {
+            return @$"<tr>
+	                    <td colspan='4'>{modalidade}</td>
+                    </tr>
+                    <tr>
+                      <td>Turma</td>
+                      <td>Componente curricular</td>
+                      <td>Justificativa</td>
+                      <td>Professor</td>
+                    </tr>";
         }
     }
 }

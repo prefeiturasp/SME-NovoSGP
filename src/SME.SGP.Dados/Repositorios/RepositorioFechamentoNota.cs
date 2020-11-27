@@ -117,7 +117,7 @@ namespace SME.SGP.Dados.Repositorios
                 , new { fechamentoTurmaDisciplinaId });
         }
 
-        public async Task<IEnumerable<AlunosFechamentoNotaDto>> ObterAComNotaLancadaPorPeriodoEscolarUE(long ueId, long periodoEscolarId)
+        public async Task<IEnumerable<AlunosFechamentoNotaDto>> ObterComNotaLancadaPorPeriodoEscolarUE(long ueId, long periodoEscolarId)
         {
             var query = @"select distinct 
 	                            ftd.disciplina_id as ComponenteCurricularId,
@@ -127,6 +127,8 @@ namespace SME.SGP.Dados.Repositorios
                                 cv.aprovado as NotaConceitoAprovado,
                                 case when nota is not null then false else true end as EhConceito,
 	                            fa.aluno_codigo as AlunoCodigo,
+                                ftd.criado_rf as ProfessorRf,
+                                ftd.criado_por as ProfessorNome,
 	                            ftd.justificativa as Justificativa,
 	                            t.id as TurmaId,
 	                            t.ue_id as UeId,
@@ -139,7 +141,7 @@ namespace SME.SGP.Dados.Repositorios
                             left join conceito_valores cv on fn.conceito_id = cv.id 
                             inner join periodo_escolar pe on periodo_escolar_id = pe.id 
                             inner join turma t on ft.turma_id = t.id
-                            where ftd.situacao = 3
+                            where 
                             and not ftd.excluido
                             and cc.permite_lancamento_nota = true
                             and periodo_escolar_id = @periodoEscolarId and 
