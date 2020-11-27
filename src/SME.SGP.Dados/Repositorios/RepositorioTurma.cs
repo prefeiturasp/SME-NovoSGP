@@ -511,5 +511,24 @@ namespace SME.SGP.Dados.Repositorios
             return await contexto.Conexao.QueryAsync<Turma>(query.ToString(), new { anoLetivo, modalidades = modalidades.Cast<int>().ToArray() });
 
         }
+
+        public async Task<IEnumerable<Turma>> ObterTurmasComFechamentoOuConselhoNaoFinalizados(long ueId, long periodoEscolarId, int[] modalidades)
+        {
+            var query = @"select t.*
+                          from turma t
+                        inner join ue on ue.id = t.ue_id
+                        inner join dre on dre.id = ue.dre_id
+                         left join fechamento_turma ft on ft.turma_id = t.id and ft.periodo_escolar_id = @periodoEscolarId
+                         left join fechamento_turma_disciplina d on d.fechamento_turma_id = ft.id
+                         left join conselho_classe cc on cc.fechamento_turma_id = ft.id
+                         where t.ue_id = @ueId
+                           and t.modalidade_codigo = ANY(@modalidades)
+                           and (d.situacao in (1,2) 
+   	                         or d.id is null 
+   	                         or cc.id is null 
+   	                         or cc.situacao = 1)";
+
+            return await contexto.Conexao.QueryAsync<Turma>(query, new { ueId, periodoEscolarId, modalidades });
+        }
     }
 }
