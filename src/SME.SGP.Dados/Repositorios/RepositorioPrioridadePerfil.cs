@@ -20,9 +20,16 @@ namespace SME.SGP.Dados.Repositorios
                           from prioridade_perfil pp
                           inner join (select pp.id, pp.tipo 
 			                         from prioridade_perfil pp 
-			                         where pp.codigo_perfil = @perfilUsuario) pa on pp.id = pa.id or pp.tipo > pa.tipo";
+			                         where pp.codigo_perfil = @perfilUsuario) pa on pp.id = pa.id or pp.tipo >= pa.tipo";
 
             return await database.Conexao.QueryAsync<PrioridadePerfil>(query, new { perfilUsuario });
+        }
+
+        public async Task<PrioridadePerfil> ObterPerfilPorId(Guid perfil)
+        {
+            var query = "select * from prioridade_perfil where codigo_perfil = @perfil";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<PrioridadePerfil>(query, new { perfil });
         }
 
         public IEnumerable<PrioridadePerfil> ObterPerfisPorIds(IEnumerable<Guid> idsPerfis)
