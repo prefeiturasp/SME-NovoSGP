@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -40,15 +41,19 @@ namespace SME.SGP.Aplicacao.Commands
 
 
             //Verifico se tem notificação para excluir, quando o funcionário não está mais no cargo
+            var listaIds = new List<long>();
 
             foreach (var notificacao in nivelParaModificar.Notificacoes)
             {
                 if (!request.FuncionariosCargos.Any(a => a.FuncionarioRF == notificacao.Usuario.CodigoRf))
                 {
-                    //TODO: Remover a notificacao
+                    listaIds.Add(notificacao.Id);
                 }
             }
+            
+            await repositorioNotificacao.ExcluirLogicamentePorIdsAsync(listaIds.ToArray());
 
+            
             //Verifico se os funcionários no nível tem notificação
             foreach (var funcionario in request.FuncionariosCargos)
             {
