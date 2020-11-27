@@ -198,12 +198,14 @@ namespace SME.SGP.Dominio.Servicos
                     unitOfWork.PersistirTransacao();
                 }
             }
-
             catch (Exception e)
             {
                 unitOfWork.Rollback();
                 throw e;
             }
+            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            await mediator.Send(new PublicaFilaAtualizacaoSituacaoConselhoClasseCommand(conselhoClasseId, usuarioLogado));
+
             var auditoria = (AuditoriaDto)conselhoClasseNota;
             var conselhoClasseNotaRetorno = new ConselhoClasseNotaRetornoDto()
             {
