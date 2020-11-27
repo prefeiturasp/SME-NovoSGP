@@ -36,11 +36,12 @@ namespace SME.SGP.Aplicacao
                 {
                     var notificacaoParaTratar = notificacaoParaTratarAgrupada.FirstOrDefault(a => a.WorkflowId == workflowsIdParaTratar);
 
-                    var funcionariosNoCargo = funcionariosCargosDaUe.Where(a => a.CargoId == notificacaoParaTratar.Cargo);
+                    var funcionariosNoCargo = funcionariosCargosDaUe.Where(a => a.CargoId == notificacaoParaTratar.Cargo).ToList();
 
                     //Se não tem ninguem no cargo, faço as regras da história.
                     if (!funcionariosNoCargo.Any())
-                        await mediator.Send(new ModificaNivelWorkflowAprovacaoCommand(notificacaoParaTratar.WorkflowId, notificacaoParaTratar.NotificacaoId, funcionariosCargosDaUe.ToList()));                    
+                        await mediator.Send(new AlteraWorkflowAprovacaoNivelNotificacaoCargoCommand(notificacaoParaTratar.WorkflowId, notificacaoParaTratar.NotificacaoId, funcionariosCargosDaUe.ToList()));
+                  //  else await mediator.Send(new AlteraWorkflowAprovacaoNotificacaoCargoCommand(notificacaoParaTratar.WorkflowId, notificacaoParaTratar.NotificacaoId, funcionariosNoCargo));
                 }
             }
 
