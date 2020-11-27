@@ -52,7 +52,9 @@ namespace SME.SGP.Aplicacao
                 if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
                 {
                     var json = await resposta.Content.ReadAsStringAsync();
-                    listaRetorno = JsonConvert.DeserializeObject<IEnumerable<FuncionarioCargoDTO>>(json) as List<FuncionarioCargoDTO>;
+                    var listaRetornoEOL = JsonConvert.DeserializeObject<IEnumerable<FuncionarioCargoDTO>>(json) as List<FuncionarioCargoDTO>;
+                    if (listaRetornoEOL.Any())
+                        listaRetorno.AddRange(listaRetornoEOL);
                 }
 
             }
