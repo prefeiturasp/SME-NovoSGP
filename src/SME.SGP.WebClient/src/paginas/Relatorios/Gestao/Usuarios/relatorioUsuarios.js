@@ -127,7 +127,7 @@ const RelatorioUsuarios = () => {
         setPerfisSelecionados([OPCAO_TODOS]);
       }
       if (lista?.length === 1) {
-        setPerfisSelecionados(lista[0].key);
+        setPerfisSelecionados([lista[0].key]);
       }
     } else {
       setListaPerfis([]);
