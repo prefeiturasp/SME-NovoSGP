@@ -74,6 +74,8 @@
         // Notificacao Andamento do Fechamento
         DiasNotificacaoAndamentoFechamento = 39,
 
+        DiasNotificacaoResultadoInsatisfatorio = 40,
+
         //Sistema
         HabilitarServicosEmBackground = 100
     }

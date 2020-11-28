@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterPeriodosEscolaresPorModalidadeDataFechamentoQuery : IRequest<IEnumerable<PeriodoEscolar>>
+    public class ObterPeriodosEscolaresPorModalidadeDataFechamentoQuery : IRequest<IEnumerable<PeriodoFechamentoBimestre>>
     {
         public ObterPeriodosEscolaresPorModalidadeDataFechamentoQuery(int modalidadeTipoCalendario, DateTime dataFechamento)
         {
