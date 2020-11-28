@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dominio;
+﻿using Dapper;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -83,6 +84,17 @@ namespace SME.SGP.Dados.Repositorios
             database.Conexao.Execute("update conselho_classe set situacao = @situacaoConselhoClasse where id = @conselhoClasseId", new { conselhoClasseId, situacaoConselhoClasse = (int)situacaoConselhoClasse });
 
             return Task.FromResult(true);
+        }
+
+        public async Task<SituacaoConselhoClasse> ObterSituacaoConselhoClasse(long turmaId, long periodoEscolarId)
+        {
+            var query = @"select cc.situacao
+                        from conselho_classe cc
+                       inner join fechamento_turma ft on ft.id = cc.fechamento_turma_id
+                       where ft.turma_id = @turmaId
+                        and ft.periodo_escolar_id = @periodoEscolarId";
+
+            return (SituacaoConselhoClasse)await database.Conexao.QueryFirstOrDefaultAsync<int>(query, new { turmaId, periodoEscolarId });
         }
     }
 }
