@@ -74,7 +74,7 @@ namespace SME.SGP.Infra
         {
             if (!PodeEditarNotaConceito())
             {
-                return DataSituacao >= periodoEscolar.PeriodoFim;
+                return DataSituacao >= periodoEscolar?.PeriodoFim;
             }
             return true;
         }
