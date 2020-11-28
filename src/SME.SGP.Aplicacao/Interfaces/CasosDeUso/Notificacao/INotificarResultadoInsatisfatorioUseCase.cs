@@ -3,8 +3,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public interface INotificarResultadoInsatisfatorioUseCase
+    public interface INotificarResultadoInsatisfatorioUseCase : IUseCase<MensagemRabbit, bool>
     {
-        Task Executar();
     }
 }

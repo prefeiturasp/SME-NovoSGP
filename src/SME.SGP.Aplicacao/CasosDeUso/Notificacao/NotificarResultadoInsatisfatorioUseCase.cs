@@ -4,7 +4,6 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -17,7 +16,8 @@ namespace SME.SGP.Aplicacao
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
-        public async Task Executar()
+
+        public async Task<bool> Executar(MensagemRabbit param)
         {
             var anoAtual = DateTime.Now.Year;
             var parametroDiasAusenciaFechamento = await mediator.Send(new ObterParametrosSistemaPorTipoEAnoQuery(Dominio.TipoParametroSistema.DiasNotificacaoResultadoInsatisfatorio, anoAtual));
@@ -25,6 +25,7 @@ namespace SME.SGP.Aplicacao
             await NotificarResultadoInsatisfatorio(parametroDiasAusenciaFechamento, ModalidadeTipoCalendario.FundamentalMedio);
             await NotificarResultadoInsatisfatorio(parametroDiasAusenciaFechamento, ModalidadeTipoCalendario.EJA);
 
+            return true;
         }
 
         private async Task NotificarResultadoInsatisfatorio(IEnumerable<ParametrosSistema> parametro, ModalidadeTipoCalendario modalidadeTipoCalendario)
@@ -34,7 +35,6 @@ namespace SME.SGP.Aplicacao
             {
                 await mediator.Send(new NotificarResultadoInsatisfatorioCommand(int.Parse(parametroPendenciaAusencia.Valor), (long)modalidadeTipoCalendario));
             }
-
         }
     }
 }
