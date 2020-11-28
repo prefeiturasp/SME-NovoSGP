@@ -16,7 +16,9 @@ namespace SME.SGP.Aplicacao
                                        string ueCodigo = "",
                                        string turmaCodigo = "",
                                        int ano = 0,
-                                       long codigo = 0, DateTime? criadoEm = null)
+                                       long codigo = 0, 
+                                       DateTime? criadoEm = null,
+                                       string nomeUsuario = "")
         {
             Titulo = titulo;
             Mensagem = mensagem;
@@ -29,6 +31,7 @@ namespace SME.SGP.Aplicacao
             UsuarioRf = usuarioRf;
             Codigo = codigo;
             CriadoEm = criadoEm;
+            NomeUsuario = NomeUsuario;
         }
 
         public string Titulo { get; set; }
@@ -42,6 +45,7 @@ namespace SME.SGP.Aplicacao
         public string UsuarioRf { get; set; }
         public long Codigo { get; set; }
         public DateTime? CriadoEm { get; set; }
+        public string NomeUsuario { get; set; }
     }
 
     public class NotificarUsuarioCommandValidator : AbstractValidator<NotificarUsuarioCommand>
