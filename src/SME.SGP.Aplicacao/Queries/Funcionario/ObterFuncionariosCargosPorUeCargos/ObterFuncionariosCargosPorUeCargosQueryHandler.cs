@@ -25,6 +25,7 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<IEnumerable<FuncionarioCargoDTO>> Handle(ObterFuncionariosCargosPorUeCargosQuery request, CancellationToken cancellationToken)
         {
+
             var cargos = String.Join("&cargos=", request.cargosIdsDaUe);
 
             var listaRetorno = new List<FuncionarioCargoDTO>();
@@ -62,6 +63,7 @@ namespace SME.SGP.Aplicacao
             if (!listaRetorno.Any())
                 throw new NegocioException("Não foi possível obter funcionários da UE.");
             else return listaRetorno;
+
         }
     }
 }

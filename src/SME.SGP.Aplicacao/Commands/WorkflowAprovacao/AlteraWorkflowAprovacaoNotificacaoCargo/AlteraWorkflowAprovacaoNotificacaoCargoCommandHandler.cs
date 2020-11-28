@@ -12,19 +12,14 @@ namespace SME.SGP.Aplicacao.Commands
     public class AlteraWorkflowAprovacaoNotificacaoCargoCommandHandler : IRequestHandler<AlteraWorkflowAprovacaoNotificacaoCargoCommand, bool>
     {
         private readonly IRepositorioWorkflowAprovacao repositorioWorkflowAprovacao;
-        private readonly IRepositorioWorkflowAprovacaoNivel repositorioWorkflowAprovacaoNivel;
-        private readonly IUnitOfWork unitOfWork;
         private readonly IMediator mediator;
         private readonly IRepositorioWorkflowAprovacaoNivelNotificacao repositorioWorkflowAprovacaoNivelNotificacao;
         private readonly IRepositorioNotificacao repositorioNotificacao;
 
         public AlteraWorkflowAprovacaoNotificacaoCargoCommandHandler(IRepositorioWorkflowAprovacao repositorioWorkflowAprovacao,
-            IRepositorioWorkflowAprovacaoNivel repositorioWorkflowAprovacaoNivel, IUnitOfWork unitOfWork, IMediator mediator,
-            IRepositorioWorkflowAprovacaoNivelNotificacao repositorioWorkflowAprovacaoNivelNotificacao, IRepositorioNotificacao repositorioNotificacao)
+            IMediator mediator, IRepositorioWorkflowAprovacaoNivelNotificacao repositorioWorkflowAprovacaoNivelNotificacao, IRepositorioNotificacao repositorioNotificacao)
         {
             this.repositorioWorkflowAprovacao = repositorioWorkflowAprovacao ?? throw new ArgumentNullException(nameof(repositorioWorkflowAprovacao));
-            this.repositorioWorkflowAprovacaoNivel = repositorioWorkflowAprovacaoNivel ?? throw new ArgumentNullException(nameof(repositorioWorkflowAprovacaoNivel));
-            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioWorkflowAprovacaoNivelNotificacao = repositorioWorkflowAprovacaoNivelNotificacao ?? throw new ArgumentNullException(nameof(repositorioWorkflowAprovacaoNivelNotificacao));
             this.repositorioNotificacao = repositorioNotificacao ?? throw new ArgumentNullException(nameof(repositorioNotificacao));
@@ -43,21 +38,22 @@ namespace SME.SGP.Aplicacao.Commands
             //Verifico se tem notificação para excluir, quando o funcionário não está mais no cargo
             var listaIds = new List<long>();
 
-            foreach (var notificacao in nivelParaModificar.Notificacoes)
+            foreach (var notificacao in nivelParaModificar.Notificacoes.Where(a => !a.Excluida))
             {
                 if (!request.FuncionariosCargos.Any(a => a.FuncionarioRF == notificacao.Usuario.CodigoRf))
                 {
                     listaIds.Add(notificacao.Id);
                 }
             }
-            
-            await repositorioNotificacao.ExcluirLogicamentePorIdsAsync(listaIds.ToArray());
 
-            
+            if (listaIds.Any())
+                await repositorioNotificacao.ExcluirLogicamentePorIdsAsync(listaIds.ToArray());
+
+
             //Verifico se os funcionários no nível tem notificação
             foreach (var funcionario in request.FuncionariosCargos)
             {
-                if (!nivelParaModificar.Notificacoes.Any(a => a.Usuario.CodigoRf == funcionario.FuncionarioRF))
+                if (!nivelParaModificar.Notificacoes.Where(a => !a.Excluida).Any(a => a.Usuario.CodigoRf == funcionario.FuncionarioRF))
                 {
                     await TrataNovoFuncionarioNivel(wfAprovacao, nivelParaModificar, funcionario.FuncionarioRF);
                 }
