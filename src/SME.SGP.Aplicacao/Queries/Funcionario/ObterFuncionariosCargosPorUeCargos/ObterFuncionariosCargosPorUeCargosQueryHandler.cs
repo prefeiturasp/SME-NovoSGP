@@ -25,6 +25,7 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<IEnumerable<FuncionarioCargoDTO>> Handle(ObterFuncionariosCargosPorUeCargosQuery request, CancellationToken cancellationToken)
         {
+
             var cargos = String.Join("&cargos=", request.cargosIdsDaUe);
 
             var listaRetorno = new List<FuncionarioCargoDTO>();
@@ -52,7 +53,9 @@ namespace SME.SGP.Aplicacao
                 if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
                 {
                     var json = await resposta.Content.ReadAsStringAsync();
-                    listaRetorno = JsonConvert.DeserializeObject<IEnumerable<FuncionarioCargoDTO>>(json) as List<FuncionarioCargoDTO>;
+                    var listaRetornoEOL = JsonConvert.DeserializeObject<IEnumerable<FuncionarioCargoDTO>>(json) as List<FuncionarioCargoDTO>;
+                    if (listaRetornoEOL.Any())
+                        listaRetorno.AddRange(listaRetornoEOL);
                 }
 
             }
@@ -60,6 +63,7 @@ namespace SME.SGP.Aplicacao
             if (!listaRetorno.Any())
                 throw new NegocioException("Não foi possível obter funcionários da UE.");
             else return listaRetorno;
+
         }
     }
 }
