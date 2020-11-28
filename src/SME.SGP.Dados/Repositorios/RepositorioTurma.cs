@@ -512,24 +512,29 @@ namespace SME.SGP.Dados.Repositorios
 
         }
 
-        public async Task<IEnumerable<Turma>> ObterTurmasComFechamentoOuConselhoNaoFinalizados(long ueId, long periodoEscolarId, int[] modalidades)
+        public async Task<IEnumerable<Turma>> ObterTurmasComFechamentoOuConselhoNaoFinalizados(long ueId, long? periodoEscolarId, int[] modalidades, int semestre)
         {
-            var query = @"select t.*
+            var joinFechamentoTurma = periodoEscolarId.HasValue ?
+                "left join fechamento_turma ft on ft.turma_id = t.id and ft.periodo_escolar_id = @periodoEscolarId" :
+                "left join fechamento_turma ft on ft.turma_id = t.id and ft.periodo_escolar_id is null";
+
+            var query = $@"select t.*
                           from turma t
                         inner join ue on ue.id = t.ue_id
                         inner join dre on dre.id = ue.dre_id
-                         left join fechamento_turma ft on ft.turma_id = t.id and ft.periodo_escolar_id = @periodoEscolarId
+                         {joinFechamentoTurma}
                          left join fechamento_turma_disciplina d on d.fechamento_turma_id = ft.id
                          left join conselho_classe cc on cc.fechamento_turma_id = ft.id
                          where t.ue_id = @ueId
                            and t.modalidade_codigo = ANY(@modalidades)
                            and t.ano between '1' and '9'
+                           and (t.semestre = 0 or t.semestre = @semestre)
                            and (d.situacao in (1,2) 
    	                         or d.id is null 
    	                         or cc.id is null 
    	                         or cc.situacao = 1)";
 
-            return await contexto.Conexao.QueryAsync<Turma>(query, new { ueId, periodoEscolarId, modalidades });
+            return await contexto.Conexao.QueryAsync<Turma>(query, new { ueId, periodoEscolarId, modalidades, semestre });
         }
     }
 }

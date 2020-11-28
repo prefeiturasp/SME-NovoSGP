@@ -10,16 +10,18 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterTurmasComFechamentoOuConselhoNaoFinalizadosQuery : IRequest<IEnumerable<Turma>>
     {
-        public ObterTurmasComFechamentoOuConselhoNaoFinalizadosQuery(long ueId, long periodoEscolarId, Modalidade[] modalidades)
+        public ObterTurmasComFechamentoOuConselhoNaoFinalizadosQuery(long ueId, long? periodoEscolarId, Modalidade[] modalidades, int semestre)
         {
             UeId = ueId;
             PeriodoEscolarId = periodoEscolarId;
             Modalidades = modalidades.Cast<int>().ToArray();
+            Semestre = semestre;
         }
 
         public long UeId { get; set; }
-        public long PeriodoEscolarId { get; set; }
+        public long? PeriodoEscolarId { get; set; }
         public int[] Modalidades { get; set; }
+        public int Semestre { get; set; }
     }
 
     public class ObterTurmasComFechamentoOuConselhoNaoFinalizadosQueryValidator : AbstractValidator<ObterTurmasComFechamentoOuConselhoNaoFinalizadosQuery>
@@ -29,10 +31,6 @@ namespace SME.SGP.Aplicacao
             RuleFor(c => c.UeId)
                .Must(a => a > 0)
                .WithMessage("O id da UE deve ser informado para consulta da situação de fechamento de conselho de classe das turmas.");
-
-            RuleFor(c => c.PeriodoEscolarId)
-               .Must(a => a > 0)
-               .WithMessage("O id do Periodo Escolar deve ser informado para consulta da situação de fechamento de conselho de classe das turmas.");
 
             RuleFor(c => c.Modalidades)
                .Must(a => a.Length > 0)
