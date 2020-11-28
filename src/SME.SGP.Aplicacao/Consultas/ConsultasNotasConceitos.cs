@@ -178,14 +178,14 @@ namespace SME.SGP.Aplicacao
                     if (disciplinaEOL.Regencia)
                         disciplinasRegencia = await servicoEOL.ObterDisciplinasParaPlanejamento(long.Parse(filtro.TurmaCodigo), servicoUsuario.ObterLoginAtual(), servicoUsuario.ObterPerfilAtual());
 
-                    var fechamentoTurma = await consultasFechamentoTurmaDisciplina.ObterFechamentoTurmaDisciplina(filtro.TurmaCodigo, long.Parse(filtro.DisciplinaCodigo), valorBimestreAtual);
+                    var fechamentosTurma = await consultasFechamentoTurmaDisciplina.ObterFechamentosTurmaDisciplina(filtro.TurmaCodigo, filtro.DisciplinaCodigo, valorBimestreAtual);
 
                     var alunosForeach = from a in alunos
                                         where (a.EstaAtivo(periodoAtual.PeriodoFim)) ||
                                               (a.EstaInativo(periodoAtual.PeriodoFim) && a.DataSituacao.Date >= periodoAtual.PeriodoInicio.Date)
                                         orderby a.NomeValido(), a.NumeroAlunoChamada
-                                                
-                                        select a;                   
+
+                                        select a;
 
                     foreach (var aluno in alunosForeach)
                     {
@@ -244,9 +244,14 @@ namespace SME.SGP.Aplicacao
 
                         notaConceitoAluno.NotasAvaliacoes = notasAvaliacoes;
 
+                        var fechamentoTurma = (from ft in fechamentosTurma
+                                               from fa in ft.FechamentoAlunos
+                                               where fa.AlunoCodigo.Equals(aluno.CodigoAluno)
+                                               select ft).FirstOrDefault();
+
                         // Carrega Notas do Bimestre
                         if (fechamentoTurma != null)
-                        {
+                        {                            
                             bimestreParaAdicionar.FechamentoTurmaId = fechamentoTurma.Id;
                             bimestreParaAdicionar.Situacao = fechamentoTurma.Situacao;
 
