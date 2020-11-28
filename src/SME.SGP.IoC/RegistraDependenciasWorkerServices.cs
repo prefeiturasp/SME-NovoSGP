@@ -402,6 +402,8 @@ namespace SME.SGP.IoC
             // Notificações
             services.TryAddScopedWorkerService<IExecutaNotificacaoAndamentoFechamentoUseCase, ExecutaNotificacaoAndamentoFechamentoUseCase>();
             services.TryAddScopedWorkerService<INotificacaoAndamentoFechamentoUseCase, NotificacaoAndamentoFechamentoUseCase>();
+            services.TryAddScopedWorkerService<IExecutaNotificacaoPeriodoFechamentoUseCase, ExecutaNotificacaoPeriodoFechamentoUseCase>();
+            services.TryAddScopedWorkerService<INotificacaoPeriodoFechamentoUseCase, NotificacaoPeriodoFechamentoUseCase>();
 
             //Sincronismo CC Eol
             services.TryAddScopedWorkerService<IListarComponentesCurricularesEolUseCase, ListarComponentesCurricularesEolUseCase>();

@@ -76,6 +76,10 @@
 
         DiasNotificacaoResultadoInsatisfatorio = 40,
 
+        //Notificacao Periodo Fechamento
+        DiasNotificacaoPeriodoFechamentoInicio = 43,
+        DiasNotificacaoPeriodoFechamentoFim = 44,
+
         //Sistema
         HabilitarServicosEmBackground = 100
     }

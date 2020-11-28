@@ -22,6 +22,7 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<long> ObterTurmaIdPorCodigo(string turmaCodigo);
         Task<IEnumerable<Turma>> ObterTurmasInfantilNaoDeProgramaPorAnoLetivoAsync(int anoLetivo);
+        Task<IEnumerable<Turma>> ObterTurmasComInicioFechamento(long ueId, long periodoEscolarId, int[] modalidades);
         Task<IEnumerable<Turma>> ObterTurmasPorAnoLetivoModalidade(int anoLetivo, Modalidade[] modalidades);
         Task<IEnumerable<Turma>> ObterTurmasComFechamentoOuConselhoNaoFinalizados(long ueId, long periodoEscolarId, int[] modalidades);
         Task<ObterTurmaSimplesPorIdRetornoDto> ObterTurmaSimplesPorId(long id);
