@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
         private async Task EnviarNotificacaoTurmas(IEnumerable<Turma> turmas, IEnumerable<ComponenteCurricularDto> componentes, PeriodoEscolar periodoEscolar, Ue ue)
         {
             var titulo = $"Situação do processo de fechamento ({periodoEscolar.Bimestre}º Bimestre)";
-            var mensagem = new StringBuilder($"Segue abaixo o situação do processo de fechamento do <b>{periodoEscolar.Bimestre}° bimestre da {ue.TipoEscola.ShortName()} {ue.Nome} ({ue.Dre.Abreviacao}):");
+            var mensagem = new StringBuilder($"Segue abaixo o situação do processo de fechamento do <b>{periodoEscolar.Bimestre}° bimestre da {ue.TipoEscola.ShortName()} {ue.Nome} ({ue.Dre.Abreviacao}):</b>");
 
             mensagem.Append("<table style='margin-left: auto; margin-right: auto; margin-top: 10px' border='2' cellpadding='5'>");
             foreach (var turmasPorModalidade in turmas.GroupBy(c => c.ModalidadeCodigo))
@@ -95,15 +95,7 @@ namespace SME.SGP.Aplicacao
 
         private string ObterHeaderModalidade(string modalidade)
         {
-            return @$"<tr>
-	                    <td colspan='4'>{modalidade}</td>
-                    </tr>
-                    <tr>
-                      <td>Turma</td>
-                      <td>Componente curricular</td>
-                      <td>Fechamento</td>
-                      <td>Conselho de classe</td>
-                    </tr>";
+            return $"<tr><td colspan='4'><b>{modalidade}</b></td></tr><tr><td><b>Turma</b></td><td><b>Componente curricular</b></td><td><b>Fechamento</b></td><td><b>Conselho de classe</b></td></tr>";
         }
 
         private async Task<IEnumerable<ComponenteCurricularDto>> ObterComponentesDaTurma(Turma turma, Ue ue)
