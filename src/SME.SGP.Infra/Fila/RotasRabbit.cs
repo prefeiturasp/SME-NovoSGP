@@ -46,6 +46,7 @@
         public static string RotaExecutaExclusaoPendenciasAusenciaFechamento => "pendencias.bimestre.ausencia.fechamento.excluir";
 
         public static string RotaExecutaAtualizacaoSituacaoConselhoClasse => "conselho.classe.situacao.atualizar";
+        public static string RotaNotificacaoAndamentoFechamento => "fechamento.andamento.notificar";
         
     }
 }

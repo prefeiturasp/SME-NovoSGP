@@ -1,6 +1,8 @@
 ﻿using MediatR;
+using Sentry;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using System;
 using System.Threading.Tasks;
 
@@ -14,24 +16,9 @@ namespace SME.SGP.Aplicacao
 
         public async Task Executar()
         {
-            var anoAtual = DateTime.Now.Year;
-            var parametros = await mediator.Send(new ObterParametrosSistemaPorTipoEAnoQuery(Dominio.TipoParametroSistema.DiasNotificacaoAndamentoFechamento, anoAtual));
+            SentrySdk.AddBreadcrumb($"Mensagem NotificacaoAndamentoFechamentoUseCase", "Rabbit - NotificacaoAndamentoFechamentoUseCase");
 
-            foreach(var parametro in parametros)
-            {
-                var diasParaEncerramento = int.Parse(parametro.Valor);
-                await VerificaPeriodosFechamentoEncerrando(ModalidadeTipoCalendario.FundamentalMedio, diasParaEncerramento);
-                await VerificaPeriodosFechamentoEncerrando(ModalidadeTipoCalendario.EJA, diasParaEncerramento);
-            }
-        }
-
-        private async Task VerificaPeriodosFechamentoEncerrando(ModalidadeTipoCalendario modalidade, int diasParaEncerramento)
-        {
-            var periodosEncerrando = await mediator.Send(new ObterPeriodosFechamentoBimestrePorDataFinalQuery(modalidade, DateTime.Now.Date.AddDays(diasParaEncerramento)));
-            foreach(var periodoEncerrando in periodosEncerrando)
-            {
-                await mediator.Send(new ExecutaNotificacaoAndamentoFechamentoCommand(periodoEncerrando, modalidade));
-            }
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaNotificacaoAndamentoFechamento, null, Guid.NewGuid(), null));
         }
     }
 }

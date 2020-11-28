@@ -3,16 +3,18 @@ using MediatR;
 using SME.SGP.Dominio;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
     public class ObterTurmasComFechamentoOuConselhoNaoFinalizadosQuery : IRequest<IEnumerable<Turma>>
     {
-        public ObterTurmasComFechamentoOuConselhoNaoFinalizadosQuery(long ueId, long periodoEscolarId, Modalidade[] modalidade)
+        public ObterTurmasComFechamentoOuConselhoNaoFinalizadosQuery(long ueId, long periodoEscolarId, Modalidade[] modalidades)
         {
             UeId = ueId;
             PeriodoEscolarId = periodoEscolarId;
+            Modalidades = modalidades.Cast<int>().ToArray();
         }
 
         public long UeId { get; set; }
@@ -33,7 +35,7 @@ namespace SME.SGP.Aplicacao
                .WithMessage("O id do Periodo Escolar deve ser informado para consulta da situação de fechamento de conselho de classe das turmas.");
 
             RuleFor(c => c.Modalidades)
-               .NotEmpty()
+               .Must(a => a.Length > 0)
                .WithMessage("As modalidades devem ser informadas para consulta da situação de fechamento de conselho de classe das turmas.");
         }
     }

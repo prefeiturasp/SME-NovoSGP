@@ -523,6 +523,7 @@ namespace SME.SGP.Dados.Repositorios
                          left join conselho_classe cc on cc.fechamento_turma_id = ft.id
                          where t.ue_id = @ueId
                            and t.modalidade_codigo = ANY(@modalidades)
+                           and t.ano between '1' and '9'
                            and (d.situacao in (1,2) 
    	                         or d.id is null 
    	                         or cc.id is null 

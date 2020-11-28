@@ -91,8 +91,8 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select cc.situacao
                         from conselho_classe cc
                        inner join fechamento_turma ft on ft.id = cc.fechamento_turma_id
-                       where ft.turma_id = @
-                        and ft.periodo_escolar_id = @";
+                       where ft.turma_id = @turmaId
+                        and ft.periodo_escolar_id = @periodoEscolarId";
 
             return (SituacaoConselhoClasse)await database.Conexao.QueryFirstOrDefaultAsync<int>(query, new { turmaId, periodoEscolarId });
         }
