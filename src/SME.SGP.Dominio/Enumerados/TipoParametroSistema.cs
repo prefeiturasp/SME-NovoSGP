@@ -76,6 +76,8 @@
 
         DiasNotificacaoResultadoInsatisfatorio = 40,
 
+        DiasNotificacaoReuniaoPedagogica = 45,
+
         //Sistema
         HabilitarServicosEmBackground = 100
     }
