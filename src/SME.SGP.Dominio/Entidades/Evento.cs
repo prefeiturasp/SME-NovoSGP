@@ -16,6 +16,7 @@ namespace SME.SGP.Dominio
         public DateTime DataFim { get; set; }
         public DateTime DataInicio { get; set; }
         public string Descricao { get; set; }
+        public Dre Dre { get; set; }
         public string DreId { get; set; }
         public long? EventoPaiId { get; set; }
         public bool Excluido { get; set; }
@@ -30,6 +31,7 @@ namespace SME.SGP.Dominio
         public EventoTipo TipoEvento { get; set; }
         public long TipoEventoId { get; set; }
         public TipoPerfil? TipoPerfilCadastro { get; set; }
+        public Ue Ue { get; set; }
         public string UeId { get; set; }
         public WorkflowAprovacao WorkflowAprovacao { get; set; }
         public long? WorkflowAprovacaoId { get; set; }
