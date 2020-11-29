@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<SinteseDto>> Executar(int anoLetivo)
         {
-            var dataReferencia = new DateTime(anoLetivo, 4, 1);
+            var dataReferencia = new DateTime(anoLetivo, 6, 28);
             var sinteses = repositorioSintese.ObterPorData(dataReferencia);
 
             if (sinteses == null || !sinteses.Any())
