@@ -51,5 +51,7 @@
         public static string RotaNotificacaoResultadoInsatisfatorio => "notificacao.nova.resultado.insatisfatorio";
 
         public static string RotaNotificacaoReuniaoPedagogica => "evento.reuniao.pedagogica.notificar";
+
+        public static string RotaNotificacaoPeriodoFechamento => "periodo.fechamento.notificar";
     }
 }
