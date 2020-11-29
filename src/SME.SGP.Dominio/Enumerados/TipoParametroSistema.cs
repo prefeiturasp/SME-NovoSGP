@@ -78,6 +78,9 @@
 
         DiasNotificacaoReuniaoPedagogica = 45,
 
+        DiasNotificacaoPeriodoFechamentoUe = 46,
+        DiasNotificacaoPeriodoFechamentoDre = 47,
+
         //Sistema
         HabilitarServicosEmBackground = 100
     }
