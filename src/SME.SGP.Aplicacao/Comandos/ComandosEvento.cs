@@ -176,6 +176,8 @@ namespace SME.SGP.Aplicacao
 
         private async Task<IEnumerable<RetornoCopiarEventoDto>> SalvarEvento(EventoDto eventoDto, Evento evento)
         {
+            evento.ValidarDescricaoEvento();
+
             var retornoCadasradoEvento = await servicoEvento.Salvar(evento, eventoDto.AlterarARecorrenciaCompleta, eventoDto.DataConfirmada);
             var mensagens = new List<RetornoCopiarEventoDto>
             {

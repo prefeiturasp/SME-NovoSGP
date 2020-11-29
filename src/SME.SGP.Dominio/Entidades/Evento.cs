@@ -209,6 +209,16 @@ namespace SME.SGP.Dominio
                 TipoEventoId == (int)Dominio.TipoEvento.ReuniaoPedagogica;
         }
 
+        public void ValidarDescricaoEvento()
+        {
+            if (EventoExigeDescricao() && string.IsNullOrEmpty(this.Descricao.Trim()))
+                throw new NegocioException("O Tipo de Evento selecionado exige uma descrição.");
+        }
+
+        public bool EventoExigeDescricao()
+            => new[] { Dominio.TipoEvento.ReuniaoPedagogica, Dominio.TipoEvento.ReuniaoAPM, Dominio.TipoEvento.ReuniaoConselhoEscola }
+            .Contains((TipoEvento)this.TipoEventoId);
+
         public void PodeSerEnviadoParaAprovacao()
         {
             if (Status != EntidadeStatus.AguardandoAprovacao)
