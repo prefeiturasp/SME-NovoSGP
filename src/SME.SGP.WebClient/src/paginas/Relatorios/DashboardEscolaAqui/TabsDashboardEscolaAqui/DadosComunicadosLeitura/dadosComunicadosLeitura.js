@@ -7,8 +7,9 @@ import {
   SelectComponent,
 } from '~/componentes';
 import modalidade from '~/dtos/modalidade';
-import { AbrangenciaServico, api, erros, ServicoCalendarios } from '~/servicos';
+import { AbrangenciaServico, api, erros } from '~/servicos';
 import ServicoFiltroRelatorio from '~/servicos/Paginas/FiltroRelatorio/ServicoFiltroRelatorio';
+import ServicoDashboardEscolaAqui from '~/servicos/Paginas/Relatorios/EscolaAqui/DashboardEscolaAqui/ServicoDashboardEscolaAqui';
 
 const DadosComunicadosLeitura = props => {
   const { codigoUe } = props;
@@ -219,7 +220,7 @@ const DadosComunicadosLeitura = props => {
     (async () => {
       setCarrecandoComunicado(true);
 
-      const resposta = await ServicoCalendarios.obterTiposCalendarioAutoComplete(
+      const resposta = await ServicoDashboardEscolaAqui.obterComunicadosAutoComplete(
         pesquisaComunicado
       )
         .catch(e => erros(e))
