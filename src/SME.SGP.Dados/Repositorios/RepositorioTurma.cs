@@ -541,7 +541,7 @@ var query = @"select t.*
                         left join fechamento_turma ft on ft.turma_id = t.id and ft.periodo_escolar_id = @periodoEscolarId
                         left join fechamento_turma_disciplina d on d.fechamento_turma_id = ft.id
                         where t.ue_id = @ueId
-                           and t.modalidade_codigo = ANY(@modalidades))";
+                           and t.modalidade_codigo = ANY(@modalidades)";
 
             return await contexto.Conexao.QueryAsync<Turma>(query, new { ueId, periodoEscolarId, modalidades });
 
