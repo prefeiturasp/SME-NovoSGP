@@ -285,12 +285,12 @@ namespace SME.SGP.Dominio
             await servicoEOL.AlterarEmail(usuario.Login, novoEmail);
         }
 
-        public async Task<long[]> ObterComponentesCurricularesQuePodeVisualizarHoje(string turmaCodigo, Usuario usuarioLogado)
+        public async Task<string[]> ObterComponentesCurricularesQuePodeVisualizarHoje(string turmaCodigo, Usuario usuarioLogado)
         {
-            var componentesCurricularesParaVisualizar = new List<long>();
+            var componentesCurricularesParaVisualizar = new List<string>();
 
             var componentesCurricularesUsuarioLogado = await servicoEOL.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(turmaCodigo, usuarioLogado.CodigoRf, usuarioLogado.PerfilAtual);
-            var componentesCurricularesIdsUsuarioLogado = componentesCurricularesUsuarioLogado.Select(b => b.Codigo);
+            var componentesCurricularesIdsUsuarioLogado = componentesCurricularesUsuarioLogado.Select(b => b.Codigo.ToString());
 
             var hoje = DateTime.Today;
 

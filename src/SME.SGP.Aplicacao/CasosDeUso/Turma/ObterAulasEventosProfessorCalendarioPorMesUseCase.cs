@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao
                 Mes = mes
             });
 
-            long[] componentesCurricularesDoProfessor = new long[0];
+            string[] componentesCurricularesDoProfessor = new string[0];
             if (usuarioLogado.EhProfessor())
             {
                 componentesCurricularesDoProfessor = await servicoUsuario.ObterComponentesCurricularesQuePodeVisualizarHoje(filtroAulasEventosCalendarioDto.TurmaCodigo, usuarioLogado);

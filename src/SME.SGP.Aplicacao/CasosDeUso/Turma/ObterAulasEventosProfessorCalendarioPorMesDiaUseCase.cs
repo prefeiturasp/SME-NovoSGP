@@ -56,7 +56,7 @@ namespace SME.SGP.Aplicacao
             retorno.MensagemPeriodoEncerrado = podeCadastrarAulaEMensagem.MensagemPeriodo;
 
 
-            long[] componentesCurricularesDoProfessor = new long[0];
+            string[] componentesCurricularesDoProfessor = new string[0];
             if (usuarioLogado.EhProfessor())
             {
                 //Transformar em query
