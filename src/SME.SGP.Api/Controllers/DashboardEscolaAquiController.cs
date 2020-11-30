@@ -40,16 +40,6 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await obterUltimaAtualizacaoPorProcessoUseCase.Executar(nomeProcesso));
         }
-
-        [HttpGet("comunicados/leitura")]
-        [ProducesResponseType(typeof(IEnumerable<DadosDeLeituraDoComunicadoDto>), 200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 400)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        public async Task<IActionResult> ObterDadosDeLeituraDeComunicados([FromQuery] ObterDadosDeLeituraDeComunicadosDto obterDadosDeLeituraDeComunicadosDto, [FromServices] IObterDadosDeLeituraDeComunicadosUseCase obterDadosDeLeituraDeComunicadosUseCase)
-        {
-            return Ok(await obterDadosDeLeituraDeComunicadosUseCase.Executar(obterDadosDeLeituraDeComunicadosDto));
-        }
         
         [HttpGet("comunicados/totais")]
         [ProducesResponseType(typeof(UsuarioEscolaAquiDto), 200)]
@@ -67,6 +57,26 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterComunicadosTotaisAgrupadosPorDre([FromQuery] int anoLetivo, [FromServices] IObterComunicadosTotaisAgrupadosPorDreUseCase obterComunicadosTotaisAgrupadosPorDreUseCase)
         {
             return Ok(await obterComunicadosTotaisAgrupadosPorDreUseCase.Executar(anoLetivo));
+        }
+
+        [HttpGet("comunicados/leitura")]
+        [ProducesResponseType(typeof(IEnumerable<DadosDeLeituraDoComunicadoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 400)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public async Task<IActionResult> ObterDadosDeLeituraDeComunicados([FromQuery] ObterDadosDeLeituraDeComunicadosDto obterDadosDeLeituraDeComunicadosDto, [FromServices] IObterDadosDeLeituraDeComunicadosUseCase obterDadosDeLeituraDeComunicadosUseCase)
+        {
+            return Ok(await obterDadosDeLeituraDeComunicadosUseCase.Executar(obterDadosDeLeituraDeComunicadosDto));
+        }
+
+        [HttpGet("comunicados/leitura/agrupados")]
+        [ProducesResponseType(typeof(IEnumerable<DadosDeLeituraDoComunicadoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 400)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public async Task<IActionResult> ObterDadosDeLeituraDeComunicadosAgrupadosPorDre([FromQuery] ObterDadosDeLeituraDeComunicadosAgrupadosPorDreDto obterDadosDeLeituraDeComunicadosAgrupadosPorDreDto, [FromServices] IObterDadosDeLeituraDeComunicadosAgrupadosPorDreUseCase obterDadosDeLeituraDeComunicadosAgrupadosPorDreUseCase)
+        {
+            return Ok(await obterDadosDeLeituraDeComunicadosAgrupadosPorDreUseCase.Executar(obterDadosDeLeituraDeComunicadosAgrupadosPorDreDto));
         }
     }
 }
