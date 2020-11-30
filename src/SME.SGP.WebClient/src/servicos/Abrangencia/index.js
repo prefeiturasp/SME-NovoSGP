@@ -1,16 +1,16 @@
 import api from '~/servicos/api';
 
 const AbrangenciaServico = {
-  buscarDres(url = '') {
-    if (url) return api.get(url);
-    return api.get(`/v1/abrangencias/false/dres`);
+  buscarDres(url = '', consideraHistorico = false) {    
+    if (url) return api.get(url, consideraHistorico = false);
+    return api.get(`/v1/abrangencias/${consideraHistorico}/dres`);
   },
-  buscarUes(dreId, url = '', temParametros = false, modalidade) {
+  buscarUes(dreId, url = '', temParametros = false, modalidade, consideraHistorico = false) {
     if (url && !temParametros)
       return api.get(`${url}/${dreId}/ues/atribuicoes`);
     if (temParametros) return api.get(url);
     return api.get(
-      `/v1/abrangencias/false/dres/${dreId}/ues?modalidade=${modalidade || ''}`
+      `/v1/abrangencias/${consideraHistorico}/dres/${dreId}/ues?modalidade=${modalidade || ''}`
     );
   },
   buscarModalidades() {
@@ -21,14 +21,14 @@ const AbrangenciaServico = {
    * @param {String} modalidade Modalidade Selecionada
    * @param {String} periodo Periodo (opcional)
    */
-  buscarTurmas(ue, modalidade = 0, periodo = '', anoLetivo = '') {
+  buscarTurmas(ue, modalidade = 0, periodo = '', anoLetivo = '', consideraHistorico = false) {
     let params = { modalidade };
     if (periodo) {
       params = { ...params, periodo };
     }
 
     return api.get(
-      `v1/abrangencias/false/dres/ues/${ue}/turmas${
+      `v1/abrangencias/${consideraHistorico}/dres/ues/${ue}/turmas${
         anoLetivo ? `?anoLetivo=${anoLetivo}` : ''
       }`,
       {
@@ -49,11 +49,11 @@ const AbrangenciaServico = {
       }
     );
   },
-  buscarTodosAnosLetivos() {
-    return api.get(`v1/abrangencias/false/anos-letivos-todos`);
+  buscarTodosAnosLetivos(consideraHistorico = false) {
+    return api.get(`v1/abrangencias/${consideraHistorico}/anos-letivos-todos`);
   },
-  usuarioTemAbrangenciaTodasTurmas() {
-    return api.get(`v1/abrangencias/false/adm`);
+  usuarioTemAbrangenciaTodasTurmas(consideraHistorico = false) {
+    return api.get(`v1/abrangencias/${consideraHistorico}/adm`);
   },
   buscarAnosEscolares(codigoUe, modalidade, consideraHistorico = false) {
     return api.get(

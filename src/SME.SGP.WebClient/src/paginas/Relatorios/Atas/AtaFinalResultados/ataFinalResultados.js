@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { SelectComponent } from '~/componentes';
+import { SelectComponent, CheckboxComponent, Loader } from '~/componentes';
 import { Cabecalho } from '~/componentes-sgp';
 import Button from '~/componentes/button';
 import Card from '~/componentes/card';
@@ -34,32 +34,35 @@ const AtaFinalResultados = () => {
   const [semestre, setSemestre] = useState(undefined);
   const [turmaId, setTurmaId] = useState(undefined);
   const [formato, setFormato] = useState('1');
+  const [consideraHistorico, setConsideraHistorico] = useState(false);  
 
   const [desabilitarBtnGerar, setDesabilitarBtnGerar] = useState(true);
   const [desabilitarBtnFormato, setDesabilitarBtnFormato] = useState(true);
+  const [carregandoAnosLetivos, setCarregandoAnosLetivos] = useState(false);
+  const [carregandoDres, setCarregandoDres] = useState(false);
+  const [carregandoUes, setCarregandoUes] = useState(false);
 
   const listaFormatos = [
     { valor: '1', desc: 'PDF' },
     { valor: '4', desc: 'EXCEL' },
   ];
 
-  const obterAnosLetivos = useCallback(async () => {
-    const anosLetivo = await AbrangenciaServico.buscarTodosAnosLetivos().catch(
+  const obterAnosLetivos = useCallback(async (consideraHistorico) => {
+    setCarregandoAnosLetivos(true);
+    const anosLetivo = await FiltroHelper.obterAnosLetivos( { consideraHistorico }).catch(
       e => erros(e)
     );
-    if (anosLetivo && anosLetivo.data) {
-      const anos = [];
-      anosLetivo.data.forEach(ano => {
-        anos.push({ desc: ano, valor: ano });
-      });
-      setAnoLetivo(anos[0].valor);
-      setListaAnosLetivo(anos);
+    if (anosLetivo) {
+      setListaAnosLetivo(anosLetivo);
+      setAnoLetivo(anosLetivo[0].valor);  
+      setDreId();      
     } else {
       setListaAnosLetivo([]);
     }
+    setCarregandoAnosLetivos(false);
   }, []);
 
-  const obterModalidades = async (ue, ano) => {
+  const obterModalidades = useCallback(async (ue, ano) => {
     if (ue && ano) {
       const { data } = await api.get(`/v1/ues/${ue}/modalidades?ano=${ano}`);
       if (data) {
@@ -74,11 +77,12 @@ const AtaFinalResultados = () => {
         setListaModalidades(lista);
       }
     }
-  };
+  }, [ueId]);
 
-  const obterUes = useCallback(async dre => {
+  const obterUes = useCallback(async dre => {   
+    setCarregandoUes(true);
     if (dre) {
-      const { data } = await AbrangenciaServico.buscarUes(dre);
+      const { data } = await AbrangenciaServico.buscarUes(dre, '', false, undefined, consideraHistorico);
       if (data) {
         const lista = data.map(item => ({
           desc: item.nome,
@@ -94,7 +98,8 @@ const AtaFinalResultados = () => {
         setListaUes([]);
       }
     }
-  }, []);
+    setCarregandoUes(false);    
+  }, [dreId]);
 
   const onChangeDre = dre => {
     setDreId(dre);
@@ -112,44 +117,47 @@ const AtaFinalResultados = () => {
     setTurmaId(undefined);
   };
 
-  const obterDres = async () => {
-    const { data } = await AbrangenciaServico.buscarDres();
-    if (data && data.length) {
-      const lista = data
+  const obterDres = useCallback (async () => { 
+    if (anoLetivo) {        
+      setCarregandoDres(true);
+      const { data } = await AbrangenciaServico.buscarDres(`v1/abrangencias/${consideraHistorico}/dres?anoLetivo=${anoLetivo}`, consideraHistorico);
+      if (data && data.length) {
+        const lista = data
         .map(item => ({
           desc: item.nome,
           valor: String(item.codigo),
           abrev: item.abreviacao,
         }))
         .sort(FiltroHelper.ordenarLista('desc'));
-      setListaDres(lista);
-
-      if (lista && lista.length && lista.length === 1) {
-        setDreId(lista[0].valor);
+        setListaDres(lista);
+        
+        if (lista && lista.length && lista.length === 1) {
+          setDreId(lista[0].valor);
+        }
+      } else {
+        setListaDres([]);
       }
-    } else {
-      setListaDres([]);
-    }
-  };
+      setCarregandoDres(false);  
+    }  
+  }, [anoLetivo]);
 
   const obterTurmas = useCallback(async (modalidadeSelecionada, ue) => {
     if (ue && modalidadeSelecionada) {
       const { data } = await AbrangenciaServico.buscarTurmas(
         ue,
-        modalidadeSelecionada
+        modalidadeSelecionada,
+        '',
+        anoLetivo,
+        consideraHistorico
       );
       if (data) {
         const lista = data.map(item => ({
           desc: item.nome,
           valor: item.codigo,
         }));
-
-        const temAbrangenciaTodasTurmas = await AbrangenciaServico.usuarioTemAbrangenciaTodasTurmas().catch(
-          e => erros(e)
-        );
-        if (temAbrangenciaTodasTurmas && temAbrangenciaTodasTurmas.data) {
-          lista.unshift({ desc: 'Todas', valor: '-99' });
-        }
+          
+        lista.unshift({ desc: 'Todas', valor: '-99' });
+                
         setListaTurmas(lista);
 
         if (lista && lista.length && lista.length === 1) {
@@ -157,7 +165,7 @@ const AtaFinalResultados = () => {
         }
       }
     }
-  }, []);
+  }, [modalidadeId]);
 
   const obterSemestres = async (
     modalidadeSelecionada,
@@ -186,7 +194,7 @@ const AtaFinalResultados = () => {
       setModalidadeId(undefined);
       setListaModalidades([]);
     }
-  }, [anoLetivo, ueId]);
+  }, [ueId]);
 
   useEffect(() => {
     if (dreId) {
@@ -236,10 +244,13 @@ const AtaFinalResultados = () => {
     }
   }, [anoLetivo, dreId, ueId, modalidadeId, turmaId, formato, semestre]);
 
+  useEffect(() => {    
+    obterAnosLetivos(consideraHistorico);    
+  }, [obterAnosLetivos, consideraHistorico]);
+
   useEffect(() => {
-    obterAnosLetivos();
     obterDres();
-  }, [obterAnosLetivos]);
+  }, [obterDres]);
 
   const onClickVoltar = () => {
     history.push(URL_HOME);
@@ -302,7 +313,8 @@ const AtaFinalResultados = () => {
 
   const onChangeAnoLetivo = ano => {
     setAnoLetivo(ano);
-
+    setDreId();
+    
     setListaModalidades([]);
     setModalidadeId(undefined);
 
@@ -335,6 +347,10 @@ const AtaFinalResultados = () => {
     habilitarSelecaoFormato(valor);
   };
   const onChangeFormato = valor => setFormato(valor);
+
+  function onCheckedConsideraHistorico(e){   
+    setConsideraHistorico(e.target.checked);    
+  }
 
   return (
     <>
@@ -381,47 +397,61 @@ const AtaFinalResultados = () => {
                 }
               />
             </div>
+            <div className="col-sm-12 mb-4">
+              <CheckboxComponent
+                label="Exibir histótico?"
+                onChangeCheckbox={onCheckedConsideraHistorico}
+                checked={consideraHistorico} />
+            </div>
             <div className="col-sm-12 col-md-6 col-lg-2 col-xl-2 mb-2">
-              <SelectComponent
-                label="Ano Letivo"
-                lista={listaAnosLetivo}
-                valueOption="valor"
-                valueText="desc"
-                disabled={
-                  !permissoesTela.podeConsultar ||
-                  (listaAnosLetivo && listaAnosLetivo.length === 1)
-                }
-                onChange={onChangeAnoLetivo}
-                valueSelect={anoLetivo}
-              />
+              <Loader loading={carregandoAnosLetivos} tip="">
+                <SelectComponent
+                  label="Ano Letivo"
+                  lista={listaAnosLetivo}
+                  valueOption="valor"
+                  valueText="desc"
+                  disabled={
+                    !permissoesTela.podeConsultar ||
+                    (listaAnosLetivo && listaAnosLetivo.length === 1)
+                  }
+                  onChange={onChangeAnoLetivo}
+                  valueSelect={anoLetivo}                
+                />
+              </Loader>
             </div>
             <div className="col-sm-12 col-md-6 col-lg-5 col-xl-5 mb-2">
-              <SelectComponent
-                label="Diretoria Regional de Educação (DRE)"
-                lista={listaDres}
-                valueOption="valor"
-                valueText="desc"
-                disabled={
-                  !permissoesTela.podeConsultar ||
-                  (listaDres && listaDres.length === 1)
-                }
-                onChange={onChangeDre}
-                valueSelect={dreId}
-              />
+              <Loader loading={carregandoDres} tip="">
+                <SelectComponent
+                  label="Diretoria Regional de Educação (DRE)"
+                  lista={listaDres}
+                  valueOption="valor"
+                  valueText="desc"
+                  disabled={
+                    !permissoesTela.podeConsultar ||
+                    (listaDres && listaDres.length === 1) |
+                    !anoLetivo
+                  }
+                  onChange={onChangeDre}
+                  valueSelect={dreId}
+                />
+              </Loader>
             </div>
-            <div className="col-sm-12 col-md-6 col-lg-5 col-xl-5 mb-2">
-              <SelectComponent
-                label="Unidade Escolar (UE)"
-                lista={listaUes}
-                valueOption="valor"
-                valueText="desc"
-                disabled={
-                  !permissoesTela.podeConsultar ||
-                  (listaUes && listaUes.length === 1)
-                }
-                onChange={onChangeUe}
-                valueSelect={ueId}
-              />
+            <div className="col-sm-12 col-md-6 col-lg-5 col-xl-5 mb-2">              
+              <Loader loading={carregandoUes} tip="">
+                <SelectComponent
+                  label="Unidade Escolar (UE)"
+                  lista={listaUes}
+                  valueOption="valor"
+                  valueText="desc"
+                  disabled={
+                    !permissoesTela.podeConsultar ||
+                    (listaUes && listaUes.length === 1) ||
+                    !dreId
+                  }
+                  onChange={onChangeUe}
+                  valueSelect={ueId}
+                />
+              </Loader>
             </div>
             <div className="col-sm-12 col-md-6 col-lg-5 col-xl-3 mb-2">
               <SelectComponent
@@ -431,7 +461,8 @@ const AtaFinalResultados = () => {
                 valueText="desc"
                 disabled={
                   !permissoesTela.podeConsultar ||
-                  (listaModalidades && listaModalidades.length === 1)
+                  (listaModalidades && listaModalidades.length === 1) ||
+                  !ueId
                 }
                 onChange={onChangeModalidade}
                 valueSelect={modalidadeId}
@@ -461,7 +492,8 @@ const AtaFinalResultados = () => {
                 label="Turma"
                 disabled={
                   !permissoesTela.podeConsultar ||
-                  (listaTurmas && listaTurmas.length === 1)
+                  (listaTurmas && listaTurmas.length === 1) ||
+                  !modalidadeId
                 }
                 valueSelect={turmaId}
                 onChange={onChangeTurma}
