@@ -53,7 +53,7 @@ namespace SME.SGP.Aplicacao
                 await mediator.Send(new ExcluirPendenciaAulaCommand(aula.Id, TipoPendenciaAula.Avaliacao));
         }
 
-        private async Task IncluirTodasNotas(IEnumerable<NotaConceitoDto> notasConceitosDto, string professorRf, string turmaId, long disiplinaId)
+        private async Task IncluirTodasNotas(IEnumerable<NotaConceitoDto> notasConceitosDto, string professorRf, string turmaId, string disiplinaId)
         {
             var notasSalvar = notasConceitosDto.Select(x => ObterEntidadeInclusao(x)).ToList();
             await servicosDeNotasConceitos.Salvar(notasSalvar, professorRf, turmaId, disiplinaId);
@@ -78,7 +78,7 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        private async Task TratarInclusaoEdicaoNotas(IEnumerable<NotaConceitoDto> notasConceitosDto, IEnumerable<NotaConceito> notasBanco, string professorRf, string turmaId, long disciplinaId)
+        private async Task TratarInclusaoEdicaoNotas(IEnumerable<NotaConceitoDto> notasConceitosDto, IEnumerable<NotaConceito> notasBanco, string professorRf, string turmaId, string disciplinaId)
         {
             var notasEdicao = notasConceitosDto.Where(dto => notasBanco.Any(banco => banco.AlunoId == dto.AlunoId && banco.AtividadeAvaliativaID == dto.AtividadeAvaliativaId))
                 .Select(dto => ObterEntidadeEdicao(dto, notasBanco.FirstOrDefault(banco => banco.AtividadeAvaliativaID == dto.AtividadeAvaliativaId && banco.AlunoId == dto.AlunoId)));

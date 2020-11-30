@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<AtividadeAvaliativa> Handle(ObterAtividadeAvaliativaQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioAtividadeAvaliativa.ObterAtividadeAvaliativa(request.DataAvaliacao, long.Parse(request.DisciplinaId), request.TurmaId, request.UeId);
+            return await repositorioAtividadeAvaliativa.ObterAtividadeAvaliativa(request.DataAvaliacao, request.DisciplinaId, request.TurmaId, request.UeId);
         }
     }
 }
