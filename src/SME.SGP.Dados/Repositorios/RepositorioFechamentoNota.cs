@@ -14,7 +14,7 @@ namespace SME.SGP.Dados.Repositorios
         const string queryPorFechamento = @"select n.*, fa.* 
                                              from fechamento_nota n
                                             inner join fechamento_aluno fa on fa.id = n.fechamento_aluno_id
-                                            where fa.fechamento_turma_disciplina_id = @fechamentoTurmaDisciplinaId";
+                                            where fa.fechamento_turma_disciplina_id = ANY(@fechamentosTurmaDisciplinaId)";
         const string queryNotasFechamento = @"select fn.disciplina_id as ComponenteCurricularCodigo, fn.conceito_id as ConceitoId, fn.nota, pe.bimestre 
                           from fechamento_turma ft
                          inner join turma t on t.id = ft.turma_id 
@@ -114,7 +114,18 @@ namespace SME.SGP.Dados.Repositorios
                     fechamentoNota.FechamentoAluno = fechamentoAluno;
                     return fechamentoNota;
                 }     
-                , new { fechamentoTurmaDisciplinaId });
+                , new { fechamentosTurmaDisciplinaId = new long[] { fechamentoTurmaDisciplinaId } });
+        }
+
+        public async Task<IEnumerable<FechamentoNota>> ObterPorFechamentosTurma(long[] fechamentosTurmaDisciplinaId)
+        {
+            return await database.Conexao.QueryAsync<FechamentoNota, FechamentoAluno, FechamentoNota>(queryPorFechamento
+                , (fechamentoNota, fechamentoAluno) =>
+                {
+                    fechamentoNota.FechamentoAluno = fechamentoAluno;
+                    return fechamentoNota;
+                }
+                , new { fechamentosTurmaDisciplinaId });
         }
     }
 }
