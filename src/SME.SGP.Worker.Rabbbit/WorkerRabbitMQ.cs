@@ -81,6 +81,9 @@ namespace SME.SGP.Worker.RabbitMQ
             comandos.Add(RotasRabbit.RotaExecutaExclusaoPendenciasDiasLetivosInsuficientes, new ComandoRabbit("Executa exclusão de pendências de dias letivos insuficientes", typeof(IExecutarExclusaoPendenciaDiasLetivosInsuficientes)));
             comandos.Add(RotasRabbit.RotaExecutaExclusaoPendenciaParametroEvento, new ComandoRabbit("Executa exclusão de pendências de eventos por parâmetro", typeof(IExecutarExclusaoPendenciaParametroEvento)));
 
+            
+            comandos.Add(RotasRabbit.RotaTrataNotificacoesNiveis, new ComandoRabbit("Trata Níveis e Cargos das notificações aguardando ação", typeof(ITrataNotificacoesNiveisCargosUseCase)));
+
         }
 
         private async Task TratarMensagem(BasicDeliverEventArgs ea)
@@ -98,7 +101,6 @@ namespace SME.SGP.Worker.RabbitMQ
                     {
                         using (var scope = serviceScopeFactory.CreateScope())
                         {
-
                             AtribuirContextoAplicacao(mensagemRabbit, scope);
 
                             SentrySdk.CaptureMessage($"{mensagemRabbit.UsuarioLogadoRF} - {mensagemRabbit.CodigoCorrelacao.ToString().Substring(0, 3)} - EXECUTANDO - {ea.RoutingKey} - {DateTime.Now:dd/MM/yyyy HH:mm:ss}", SentryLevel.Debug);

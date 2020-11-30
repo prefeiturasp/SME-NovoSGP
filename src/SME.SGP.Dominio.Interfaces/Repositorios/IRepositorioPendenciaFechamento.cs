@@ -11,5 +11,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<PaginacaoResultadoDto<PendenciaFechamentoResumoDto>> ListarPaginada(Paginacao paginacao, string turmaCodigo, int bimestre, long componenteCurricularId);
         Task<PendenciaFechamentoCompletoDto> ObterPorPendenciaId(long pendenciaId);
         bool VerificaPendenciasAbertoPorFechamento(long fechamentoId);
+        Task<Turma> ObterTurmaPorPendenciaId(long pendenciaId);
     }
 }
