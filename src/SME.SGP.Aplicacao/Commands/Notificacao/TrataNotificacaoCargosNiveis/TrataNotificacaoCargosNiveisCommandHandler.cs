@@ -29,22 +29,25 @@ namespace SME.SGP.Aplicacao
                 var dreCodigo = notificacaoParaTratarAgrupada.FirstOrDefault(a => !string.IsNullOrEmpty(a.DRECodigo)).DRECodigo;
 
                 var funcionariosCargosDaUe = await mediator.Send(new ObterFuncionariosCargosPorUeCargosQuery(notificacaoParaTratarAgrupada.Key, cargosIdsDaUe, dreCodigo));
-                
-                var workflowsIdsParaTratar = notificacaoParaTratarAgrupada.Select(a => a.WorkflowId).Distinct();
+
+                var workflowsIdsParaTratar = notificacaoParaTratarAgrupada.Select(a => a.WorkflowId).Distinct().ToList();
 
                 foreach (var workflowsIdParaTratar in workflowsIdsParaTratar)
                 {
+
                     var notificacaoParaTratar = notificacaoParaTratarAgrupada.FirstOrDefault(a => a.WorkflowId == workflowsIdParaTratar);
 
-                    var funcionariosNoCargo = funcionariosCargosDaUe.Where(a => a.CargoId == notificacaoParaTratar.Cargo);
+                    var funcionariosNoCargo = funcionariosCargosDaUe.Where(a => a.CargoId == notificacaoParaTratar.Cargo).ToList();
 
-                    //Se não tem ninguem no cargo, faço as regras da história.
                     if (!funcionariosNoCargo.Any())
-                        await mediator.Send(new ModificaNivelWorkflowAprovacaoCommand(notificacaoParaTratar.WorkflowId, notificacaoParaTratar.NotificacaoId, funcionariosCargosDaUe.ToList()));                    
+                        await mediator.Send(new AlteraWorkflowAprovacaoNivelNotificacaoCargoCommand(notificacaoParaTratar.WorkflowId, notificacaoParaTratar.NotificacaoId, funcionariosCargosDaUe.ToList()));
+                    else await mediator.Send(new AlteraWorkflowAprovacaoNotificacaoCargoCommand(notificacaoParaTratar.WorkflowId, notificacaoParaTratar.NotificacaoId, funcionariosNoCargo));
+
                 }
             }
 
             return true;
+
         }
 
     }

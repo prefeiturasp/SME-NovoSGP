@@ -1,14 +1,12 @@
 ﻿using MediatR;
 using SME.SGP.Infra.Dtos;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao.Commands
 {
-    public class ModificaNivelWorkflowAprovacaoCommand : IRequest<bool>
+    public class AlteraWorkflowAprovacaoNotificacaoCargoCommand : IRequest<bool>
     {
-        public ModificaNivelWorkflowAprovacaoCommand(long workflowId, long notificacaoId, List<FuncionarioCargoDTO> funcionariosCargos)
+        public AlteraWorkflowAprovacaoNotificacaoCargoCommand(long workflowId, long notificacaoId, List<FuncionarioCargoDTO> funcionariosCargos)
         {
             WorkflowId = workflowId;
             NotificacaoId = notificacaoId;

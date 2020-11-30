@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Commands
 {
-    public class ModificaNivelWorkflowAprovacaoCommandHandler : IRequestHandler<ModificaNivelWorkflowAprovacaoCommand, bool>
+    public class AlteraWorkflowAprovacaoNivelNotificacaoCargoCommandHandler : IRequestHandler<AlteraWorkflowAprovacaoNivelNotificacaoCargoCommand, bool>
     {
         private readonly IRepositorioWorkflowAprovacao repositorioWorkflowAprovacao;
         private readonly IRepositorioWorkflowAprovacaoNivel repositorioWorkflowAprovacaoNivel;
@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao.Commands
         private readonly IRepositorioWorkflowAprovacaoNivelNotificacao repositorioWorkflowAprovacaoNivelNotificacao;
         private readonly IRepositorioNotificacao repositorioNotificacao;
 
-        public ModificaNivelWorkflowAprovacaoCommandHandler(IRepositorioWorkflowAprovacao repositorioWorkflowAprovacao,
+        public AlteraWorkflowAprovacaoNivelNotificacaoCargoCommandHandler(IRepositorioWorkflowAprovacao repositorioWorkflowAprovacao,
             IRepositorioWorkflowAprovacaoNivel repositorioWorkflowAprovacaoNivel, IUnitOfWork unitOfWork, IMediator mediator,
             IRepositorioWorkflowAprovacaoNivelNotificacao repositorioWorkflowAprovacaoNivelNotificacao, IRepositorioNotificacao repositorioNotificacao)
         {
@@ -30,8 +30,9 @@ namespace SME.SGP.Aplicacao.Commands
             this.repositorioWorkflowAprovacaoNivelNotificacao = repositorioWorkflowAprovacaoNivelNotificacao ?? throw new ArgumentNullException(nameof(repositorioWorkflowAprovacaoNivelNotificacao));
             this.repositorioNotificacao = repositorioNotificacao ?? throw new ArgumentNullException(nameof(repositorioNotificacao));
         }
-        public async Task<bool> Handle(ModificaNivelWorkflowAprovacaoCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(AlteraWorkflowAprovacaoNivelNotificacaoCargoCommand request, CancellationToken cancellationToken)
         {
+
             var wfAprovacao = repositorioWorkflowAprovacao.ObterEntidadeCompleta(request.WorkflowId);
             if (wfAprovacao == null)
                 throw new NegocioException("Não foi possível obter o workflow de aprovação.");
@@ -73,7 +74,7 @@ namespace SME.SGP.Aplicacao.Commands
                 var adicionouNivelAd = await VerificaSeExisteNivelEadiciona(wfAprovacao, nivelParaModificar, Cargo.AD, funcionariosCargosDaUe);
                 if (!adicionouNivelAd)
                     await TrataSupervisoresDiretor(funcionariosCargosDaUe, wfAprovacao, nivelParaModificar);
-            }
+            }                
             else
             {
                 await TrataSupervisoresDiretor(funcionariosCargosDaUe, wfAprovacao, nivelParaModificar);
@@ -164,7 +165,7 @@ namespace SME.SGP.Aplicacao.Commands
             }
 
             await TrataModificacaoDosNiveis(funcionariosCargosDaUe, wfAprovacao, nivelParaModificar, true, nivelDoCargo, modificaNiveisPosteriores);
-
+            
             return true;
         }
 
