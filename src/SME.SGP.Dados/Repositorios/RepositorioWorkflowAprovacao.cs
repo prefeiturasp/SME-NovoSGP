@@ -26,10 +26,9 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("on wfnn.wf_aprovacao_nivel_id = wfn.id");
             query.AppendLine("left join notificacao n");
             query.AppendLine("on wfnn.notificacao_id = n.id");
-            query.AppendLine("left join wf_aprovacao_nivel_usuario wfnu");
-            query.AppendLine("on wfnu.wf_aprovacao_nivel_id = wfn.id");
             query.AppendLine("left join usuario u");
-            query.AppendLine("on wfnu.usuario_id = u.id");
+            query.AppendLine("on n.usuario_id = u.id");
+
             query.AppendLine("where 1=1");
 
             if (workflowId > 0)
@@ -57,8 +56,9 @@ namespace SME.SGP.Dados.Repositorios
                         lookup.Add(workflow.Id, workflowAprovacao);
                     }
                     workflowAprovacao.Adicionar(workflowNivel);
-                    workflowAprovacao.Adicionar(workflowNivel.Id, notificacao);
-                    workflowAprovacao.Adicionar(workflowNivel.Id, usuario);
+
+                    if (notificacao != null)
+                        workflowAprovacao.Adicionar(workflowNivel.Id, notificacao, usuario);                    
 
                     return workflowAprovacao;
                 }, param: new { workflowId, notificacaoId });

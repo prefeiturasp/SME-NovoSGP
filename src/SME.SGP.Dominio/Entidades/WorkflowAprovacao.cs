@@ -37,11 +37,13 @@ namespace SME.SGP.Dominio
                 niveis.Add(nivel);
         }
 
-        public void Adicionar(long nivelId, Notificacao notificacao)
+        public void Adicionar(long nivelId, Notificacao notificacao, Usuario usuario)
         {
             var nivel = niveis.FirstOrDefault(a => a.Id == nivelId);
             if (nivel == null)
                 throw new NegocioException($"Não foi possível localizar o nível de Id {nivelId}");
+
+            notificacao.Usuario = usuario;
 
             nivel.Adicionar(notificacao);
         }
