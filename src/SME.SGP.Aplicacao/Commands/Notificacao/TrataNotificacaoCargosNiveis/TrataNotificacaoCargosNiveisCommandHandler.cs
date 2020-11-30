@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
 
                 var funcionariosCargosDaUe = await mediator.Send(new ObterFuncionariosCargosPorUeCargosQuery(notificacaoParaTratarAgrupada.Key, cargosIdsDaUe, dreCodigo));
 
-                var workflowsIdsParaTratar = notificacaoParaTratarAgrupada.Select(a => a.WorkflowId).Distinct();
+                var workflowsIdsParaTratar = notificacaoParaTratarAgrupada.Select(a => a.WorkflowId).Distinct().ToList();
 
                 foreach (var workflowsIdParaTratar in workflowsIdsParaTratar)
                 {
@@ -47,6 +47,7 @@ namespace SME.SGP.Aplicacao
             }
 
             return true;
+
         }
 
     }
