@@ -150,7 +150,8 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select a.data_aula as DataAula, pa.Motivo
                            from pendencia_aula pa
                           inner join aula a on a.id = pa.aula_id
-                          where pa.pendencia_id = @pendenciaId";
+                          where pa.pendencia_id = @pendenciaId
+                          order by data_aula desc";
 
             return await database.Conexao.QueryAsync<PendenciaAulaDto>(query, new { pendenciaId });
         }

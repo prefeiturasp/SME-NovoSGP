@@ -28,8 +28,7 @@ namespace SME.SGP.Dominio
         {
             if (notificacao != null && !notificacoes.Any(a => a.Id == notificacao.Id))
                 notificacoes.Add(notificacao);
-        }
-
+        }        
         public void Adicionar(Usuario usuario)
         {
             if (usuario != null)

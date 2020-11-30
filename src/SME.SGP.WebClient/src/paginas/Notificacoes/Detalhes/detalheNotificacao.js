@@ -35,6 +35,8 @@ const DetalheNotificacao = ({ match }) => {
     'Aceita',
     'Recusada',
     'Sem status',
+    '',
+    'Substituído',
   ];
 
   const usuario = useSelector(state => state.usuario);

@@ -46,12 +46,30 @@ namespace SME.SGP.Aplicacao
                     Tipo = pendencia.Tipo.GroupName(),
                     Titulo = pendencia.Tipo.Name(),
                     Detalhe = await ObterDescricaoPendencia(pendencia),
-                    Turma = pendencia.EhPendenciaAula() ? await ObterDescricaoTurma(pendencia.Id) : ""
+                    Turma = await ObterNomeTurma(pendencia)
                 });
             }
 
             return listaPendenciasDto;
         }
+
+        private async Task<string> ObterNomeTurma(Pendencia pendencia)
+        {
+            return pendencia.EhPendenciaAula() ?
+                           await ObterDescricaoTurmaPendenciaAula(pendencia.Id) :
+                           pendencia.EhPendenciaFechamento() ?
+                               await ObterDescricaoTurmaPendenciaFechamento(pendencia.Id) :
+                               "";
+        }
+
+        private async Task<string> ObterDescricaoTurmaPendenciaFechamento(long pendenciaId)
+            => ObterNomeTurma(await mediator.Send(new ObterTurmaDaPendenciaFechamentoQuery(pendenciaId)));
+
+        private async Task<string> ObterDescricaoTurmaPendenciaAula(long pendenciaId)
+            => ObterNomeTurma(await mediator.Send(new ObterTurmaDaPendenciaAulaQuery(pendenciaId)));
+
+        private string ObterNomeTurma(Turma turma)
+            => turma != null ? $"{turma.ModalidadeCodigo.ShortName()} - {turma.Nome}" : "";
 
         private async Task<string> ObterDescricaoPendencia(Pendencia pendencia)
         {
@@ -65,7 +83,7 @@ namespace SME.SGP.Aplicacao
 
         private string ObterDescricaoPendenciaGeral(Pendencia pendencia)
         {
-            return $"{pendencia.Descricao}<br />{pendencia.Instrucao}";
+            return $"{pendencia.Descricao}<br /><b>{pendencia.Instrucao}</b>";
         }
 
         private async Task<string> ObterDescricaoPendenciaEvento(Pendencia pendencia)
@@ -80,7 +98,7 @@ namespace SME.SGP.Aplicacao
                 descricao.AppendLine($"<li>{pendenciaEvento.Descricao} ({pendenciaEvento.Valor})</li>");
             }
             descricao.AppendLine("</ul>");
-            descricao.AppendLine(pendencia.Instrucao);
+            descricao.AppendLine($"<b>{pendencia.Instrucao}</b>");
 
             return descricao.ToString();
         }
@@ -97,17 +115,9 @@ namespace SME.SGP.Aplicacao
                 descricao.AppendLine($"<li>{pendenciaAula.DataAula:dd/MM} - {pendenciaAula.Motivo}</li>");
             }
             descricao.AppendLine("</ul>");
-            descricao.AppendLine(pendencia.Instrucao);
+            descricao.AppendLine($"<b>{pendencia.Instrucao}</b>");
 
             return descricao.ToString();
-        }
-
-        private async Task<string> ObterDescricaoTurma(long pendenciaId)
-        {
-            var turma = await mediator.Send(new ObterTurmaDaPendenciaQuery(pendenciaId));
-            if(turma != null)
-                return $"{turma.ModalidadeCodigo.ShortName()} - {turma.Nome}";
-            return "";
         }
     }
 }
