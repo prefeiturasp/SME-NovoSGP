@@ -33,6 +33,13 @@ class ServicoDashboardEscolaAqui {
     const url = `${urlPadrao}/comunicados/totais/agrupados?anoLetivo=${anoLetivo}`;
     return api.get(url);
   };
+
+  obterComunicadosAutoComplete = descricao => {
+    // TODO Alterar rota!
+    return api.get(
+      `${urlPadrao}/comunicados/auto-complete?descricao=${descricao}`
+    );
+  };
 }
 
 export default new ServicoDashboardEscolaAqui();
