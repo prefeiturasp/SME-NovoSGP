@@ -26,7 +26,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
         private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
-        
+
         public ServicoCompensacaoAusencia(IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia,
                                           IRepositorioCompensacaoAusenciaAluno repositorioCompensacaoAusenciaAluno,
                                           IRepositorioCompensacaoAusenciaDisciplinaRegencia repositorioCompensacaoAusenciaDisciplinaRegencia,
@@ -81,7 +81,7 @@ namespace SME.SGP.Dominio.Servicos
                 compensacaoBanco = repositorioCompensacaoAusencia.ObterPorId(id);
 
             // Carrega dasdos da disciplina no EOL
-            ConsisteDisciplina(long.Parse(compensacaoDto.DisciplinaId), compensacaoDto.DisciplinasRegenciaIds, compensacaoBanco.Migrado);
+            await ConsisteDisciplina(long.Parse(compensacaoDto.DisciplinaId), compensacaoDto.DisciplinasRegenciaIds, compensacaoBanco.Migrado);
 
             // Persiste os dados
             var compensacao = MapearEntidade(compensacaoDto, compensacaoBanco);
