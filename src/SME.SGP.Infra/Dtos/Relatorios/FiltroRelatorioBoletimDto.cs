@@ -22,5 +22,7 @@ namespace SME.SGP.Infra.Dtos.Relatorios
         public string[] AlunosCodigo { get; set; }
 
         public Usuario Usuario { get; set; }
+
+        public bool ConsideraHistorico { get; set; }
     }
 }

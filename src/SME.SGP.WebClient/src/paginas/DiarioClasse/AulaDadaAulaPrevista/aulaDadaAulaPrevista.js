@@ -160,11 +160,13 @@ const AulaDadaAulaPrevista = () => {
   const salvar = async () => {
     const bimestresQuantidade = [];
     dadoslista.bimestres.forEach(item => {
-      const dados = {
-        bimestre: item.bimestre,
-        quantidade: item.previstas.quantidade,
-      };
-      bimestresQuantidade.push(dados);
+      if (Date.now() <= new Date(item.fim)) {
+        const dados = {
+          bimestre: item.bimestre,
+          quantidade: item.previstas.quantidade,
+        };
+        bimestresQuantidade.push(dados);
+      }
     });
     const dados = {
       bimestresQuantidade,
@@ -236,19 +238,19 @@ const AulaDadaAulaPrevista = () => {
   return (
     <>
       {!turmaSelecionada.turma &&
-      !ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada) ? (
-        <Grid cols={12} className="p-0">
-          <Alert
-            alerta={{
-              tipo: 'warning',
-              id: 'AlertaPrincipal',
-              mensagem: 'Você precisa escolher uma turma.',
-              estiloTitulo: { fontSize: '18px' },
-            }}
-            className="mb-2"
-          />
-        </Grid>
-      ) : null}{' '}
+        !ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada) ? (
+          <Grid cols={12} className="p-0">
+            <Alert
+              alerta={{
+                tipo: 'warning',
+                id: 'AlertaPrincipal',
+                mensagem: 'Você precisa escolher uma turma.',
+                estiloTitulo: { fontSize: '18px' },
+              }}
+              className="mb-2"
+            />
+          </Grid>
+        ) : null}{' '}
       <AlertaModalidadeInfantil />
       <Grid cols={12} className="p-0">
         <Titulo>

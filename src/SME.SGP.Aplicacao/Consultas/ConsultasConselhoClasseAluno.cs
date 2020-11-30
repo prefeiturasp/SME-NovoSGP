@@ -116,7 +116,7 @@ namespace SME.SGP.Aplicacao
                     ComponenteSinteses = new List<ConselhoDeClasseComponenteSinteseDto>()
                 };
 
-                foreach (var componenteCurricular in grupoDisiplinasMatriz)
+                foreach (var componenteCurricular in grupoDisiplinasMatriz.Where(x => x.LancaNota))
                 {
                     var componenteCurricularDto = await MapearDto(frequenciaAluno, componenteCurricular, bimestre);
                     grupoMatriz.ComponenteSinteses.Add(componenteCurricularDto);
