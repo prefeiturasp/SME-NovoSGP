@@ -79,7 +79,7 @@ namespace SME.SGP.Aplicacao
         {
             var supervisoresEscolasDres = repositorioSupervisorEscolaDre.ObtemPorDreESupervisores(dreId, supervisoresId);
 
-            if (supervisoresEscolasDres == null || supervisoresEscolasDres.Any())
+            if (supervisoresEscolasDres == null || !supervisoresEscolasDres.Any())
                 return Enumerable.Empty<SupervisorEscolasDto>();
             else return MapearSupervisorEscolaDre(supervisoresEscolasDres).ToList();
         }
