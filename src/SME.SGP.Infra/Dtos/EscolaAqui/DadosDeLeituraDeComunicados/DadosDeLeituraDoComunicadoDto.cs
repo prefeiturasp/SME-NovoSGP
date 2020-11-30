@@ -2,8 +2,8 @@
 {
     public class DadosDeLeituraDoComunicadoDto
     {
-        public string NomeCompletoDre { get; set; }
-        public string NomeCompletoUe { get; set; }
+        public string NomeAbreviadoDre { get; set; }
+        public string NomeAbreviadoUe { get; set; }
         public long NaoReceberamComunicado { get; set; }
         public long ReceberamENaoVisualizaram { get; set; }
         public long VisualizaramComunicado { get; set; }

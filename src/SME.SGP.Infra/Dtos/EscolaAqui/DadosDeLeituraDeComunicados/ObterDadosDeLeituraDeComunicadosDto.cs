@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace SME.SGP.Infra.Dtos.EscolaAqui.DadosDeLeituraDeComunicados
 {
@@ -7,6 +7,8 @@ namespace SME.SGP.Infra.Dtos.EscolaAqui.DadosDeLeituraDeComunicados
         public string CodigoDre { get; set; }
         public string CodigoUe { get; set; }
         [Required(ErrorMessage = "O comunicado deve ser informado.")]
-        public long ComunicadoId { get; set; }
+        public long NotificacaoId { get; set; }
+        [Required(ErrorMessage = "O modo de visualização deve ser informado.")]
+        public int ModoVisualizacao { get; set; }
     }
 }
