@@ -1,9 +1,8 @@
-﻿using MediatR;
+using MediatR;
 using Newtonsoft.Json;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra.Dtos.EscolaAqui.DadosDeLeituraDeComunicados;
-using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
@@ -17,7 +16,7 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IHttpClientFactory httpClientFactory;
         private readonly IRepositorioComunicado repositorioComunicado;
-        private const string BaseUrl = "/api/v1/dashboard/comunicados/leitura";
+        private const string BaseUrl = "/api/v1/dashboard/leitura";
 
         public ObterDadosDeLeituraDeComunicadosQueryHandler(IHttpClientFactory httpClientFactory, IRepositorioComunicado repositorioComunicado)
         {
@@ -27,18 +26,19 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<DadosDeLeituraDoComunicadoDto>> Handle(ObterDadosDeLeituraDeComunicadosQuery request, CancellationToken cancellationToken)
         {
-            if(!await repositorioComunicado.Exists(request.ComunicadoId))
+            if (!await repositorioComunicado.Exists(request.ComunicadoId))
                 throw new NegocioException("O comunicado informado não existe. Por favor tente novamente.", HttpStatusCode.BadRequest);
 
             var httpClient = httpClientFactory.CreateClient("servicoAcompanhamentoEscolar");
             var url = new StringBuilder(BaseUrl);
 
-            url.Append(@"?comunicadoId=" + request.ComunicadoId);
+            url.Append(@"?notificacaoId=" + request.ComunicadoId);
+            url.Append(@"&modoVisualizacao=" + request.ModoVisualizacao);
             if (!string.IsNullOrEmpty(request.CodigoDre))
             {
                 url.Append(@"&codigoDre=" + request.CodigoDre);
 
-                if(!string.IsNullOrEmpty(request.CodigoUe))
+                if (!string.IsNullOrEmpty(request.CodigoUe))
                     url.Append(@"&codigoUe=" + request.CodigoUe);
             }
 
