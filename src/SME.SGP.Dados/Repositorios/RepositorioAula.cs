@@ -101,7 +101,7 @@ namespace SME.SGP.Dados.Repositorios
                   and DATE(data_aula) between @dataInicio and @dataFim
                   and turma_id = @turmaId
                   and disciplina_id in (
-                select disciplina_id from atividade_avaliativa_disciplina aad
+                select disciplina_id::varchar from atividade_avaliativa_disciplina aad
                where atividade_avaliativa_id = @atividadeAvaliativaId)";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<AulaConsultaDto>(query, new
