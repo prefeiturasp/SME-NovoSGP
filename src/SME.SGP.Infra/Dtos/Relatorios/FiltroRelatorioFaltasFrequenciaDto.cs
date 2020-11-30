@@ -20,6 +20,7 @@ namespace SME.SGP.Infra
         public TipoFormatoRelatorio TipoFormatoRelatorio { get; set; }
         public string NomeUsuario { get; set; }
         public string CodigoRf { get; set; }
+        public bool TodosEstudantes { get; set; }
     }
 
 

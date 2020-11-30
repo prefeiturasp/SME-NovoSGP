@@ -53,7 +53,7 @@ namespace SME.SGP.Aplicacao
                 case TipoRelatorio.Boletim:
                 case TipoRelatorio.ConselhoClasseAluno:
                 case TipoRelatorio.ConselhoClasseTurma:
-                case TipoRelatorio.ConselhoClasseAtaFinal:
+                case TipoRelatorio.AtaFinalResultados:
                 case TipoRelatorio.FaltasFrequencia:
                 case TipoRelatorio.FechamentoPendencias:
                     SentrySdk.AddBreadcrumb($"Enviando notificação..", $"{relatorioCorrelacao.Codigo.ToString().Substring(0,3)}{relatorioCorrelacao.TipoRelatorio.ShortName()}");

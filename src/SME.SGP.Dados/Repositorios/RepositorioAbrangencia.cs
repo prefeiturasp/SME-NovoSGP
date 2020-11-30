@@ -513,5 +513,19 @@ namespace SME.SGP.Dados.Repositorios
                 throw ex;
             }
         }
+
+        public async Task<bool> ObterUsuarioPossuiAbrangenciaAcessoSondagemTiposEscola(string usuarioRF, Guid usuarioPerfil)
+        {
+            var query = @"select 1 from abrangencia a 
+	                        inner join usuario u 
+		                        on u.id = a.usuario_id 
+	                        inner join ue ue 
+		                        on ue.id = a.ue_id 
+                        where u.rf_codigo  = @usuarioRF
+	                        and a.perfil  = @usuarioPerfil 
+	                        and ue.tipo_escola in (1,3,4,16)";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { usuarioRF, usuarioPerfil });
+        }     
     }
 }

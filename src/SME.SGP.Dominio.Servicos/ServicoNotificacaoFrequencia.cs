@@ -34,7 +34,6 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IConsultasFeriadoCalendario consultasFeriadoCalendario;
-        private readonly IMediator mediator;
 
         public ServicoNotificacaoFrequencia(IRepositorioNotificacaoFrequencia repositorioNotificacaoFrequencia,
                                             IRepositorioParametrosSistema repositorioParametrosSistema,
@@ -52,7 +51,6 @@ namespace SME.SGP.Dominio.Servicos
                                             IServicoNotificacao servicoNotificacao,
                                             IServicoUsuario servicoUsuario,
                                             IServicoEol servicoEOL,
-                                            IMediator mediator,
                                             IConfiguration configuration,
                                             IConsultasFeriadoCalendario consultasFeriadoCalendario)
         {
@@ -71,7 +69,6 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
-            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
             this.consultasFeriadoCalendario = consultasFeriadoCalendario ?? throw new System.ArgumentNullException(nameof(consultasFeriadoCalendario));

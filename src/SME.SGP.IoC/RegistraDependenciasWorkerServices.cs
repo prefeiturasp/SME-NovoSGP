@@ -411,6 +411,12 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IExecutarExclusaoPendenciaParametroEvento, ExecutarExclusaoPendenciaParametroEvento>();
             services.TryAddScopedWorkerService<IPendenciasGeraisUseCase, PendenciasGeraisUseCase>();
 
+
+            services.TryAddScopedWorkerService<IUsuarioPossuiAbrangenciaAcessoSondagemUseCase, UsuarioPossuiAbrangenciaAcessoSondagemUseCase>();
+            
+            services.TryAddScopedWorkerService<ITrataNotificacoesNiveisCargosUseCase, TrataNotificacoesNiveisCargosUseCase>();
+            services.TryAddScopedWorkerService<IExecutaTrataNotificacoesNiveisCargosUseCase, ExecutaTrataNotificacoesNiveisCargosUseCase>();
+            
         }
 
         private static void ResgistraDependenciaHttp(IServiceCollection services)
