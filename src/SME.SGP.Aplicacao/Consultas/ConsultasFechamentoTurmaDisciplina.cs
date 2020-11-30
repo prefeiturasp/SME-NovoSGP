@@ -120,6 +120,9 @@ namespace SME.SGP.Aplicacao
         public async Task<FechamentoTurmaDisciplina> ObterFechamentoTurmaDisciplina(string turmaId, long disciplinaId, int bimestre)
                     => await repositorioFechamentoTurmaDisciplina.ObterFechamentoTurmaDisciplina(turmaId, disciplinaId, bimestre);
 
+        public async Task<IEnumerable<FechamentoTurmaDisciplina>> ObterFechamentosTurmaDisciplina(string turmaCodigo, string disciplinaId, int bimestre)
+                    => await repositorioFechamentoTurmaDisciplina.ObterFechamentosTurmaDisciplinas(turmaCodigo, new long[] { Convert.ToInt64(disciplinaId) }, bimestre);
+
         public async Task<IEnumerable<FechamentoNotaDto>> ObterNotasBimestre(string codigoAluno, long fechamentoTurmaId)
             => await repositorioFechamentoTurmaDisciplina.ObterNotasBimestre(codigoAluno, fechamentoTurmaId);
 
@@ -165,16 +168,16 @@ namespace SME.SGP.Aplicacao
 
             fechamentoBimestre.EhSintese = !disciplinaEOL.LancaNota;
 
-            // Carrega fechamento da Turma x Disciplina x Bimestre
-            var fechamentoTurma = await ObterFechamentoTurmaDisciplina(turmaId, disciplinaId, bimestreAtual.Value);
-            if (fechamentoTurma != null || fechamentoBimestre.EhSintese)
+            // Carrega fechamento da Turma x Disciplina x Bimestre  
+            var fechamentosTurma = await ObterFechamentosTurmaDisciplina(turmaId, disciplinaId.ToString(), bimestreAtual.Value);            
+            if ((fechamentosTurma != null && fechamentosTurma.Any()) || fechamentoBimestre.EhSintese)
             {
-                if (fechamentoTurma != null)
-                {
-                    fechamentoBimestre.Situacao = fechamentoTurma.Situacao;
-                    fechamentoBimestre.SituacaoNome = fechamentoTurma.Situacao.Name();
-                    fechamentoBimestre.FechamentoId = fechamentoTurma.Id;
-                    fechamentoBimestre.DataFechamento = fechamentoTurma.AlteradoEm.HasValue ? fechamentoTurma.AlteradoEm.Value : fechamentoTurma.CriadoEm;
+                if (fechamentosTurma != null && fechamentosTurma.Any())
+                {                     
+                    fechamentoBimestre.Situacao = fechamentosTurma.First().Situacao;
+                    fechamentoBimestre.SituacaoNome = fechamentosTurma.First().Situacao.Name();
+                    fechamentoBimestre.FechamentoId = fechamentosTurma.First().Id;
+                    fechamentoBimestre.DataFechamento = fechamentosTurma.First().AlteradoEm.HasValue ? fechamentosTurma.First().AlteradoEm.Value : fechamentosTurma.First().CriadoEm;
                 }
 
                 fechamentoBimestre.Alunos = new List<NotaConceitoAlunoBimestreDto>();
@@ -183,6 +186,11 @@ namespace SME.SGP.Aplicacao
 
                 foreach (var aluno in alunos.Where(a => a.NumeroAlunoChamada > 0 || a.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Ativo)).OrderBy(a => a.NumeroAlunoChamada).ThenBy(a => a.NomeValido()))
                 {
+                    var fechamentoTurma = (from ft in fechamentosTurma
+                                           from fa in ft.FechamentoAlunos
+                                           where fa.AlunoCodigo.Equals(aluno.CodigoAluno)
+                                           select ft).FirstOrDefault();
+
                     var alunoDto = new NotaConceitoAlunoBimestreDto();
                     alunoDto.CodigoAluno = aluno.CodigoAluno;
                     alunoDto.NumeroChamada = aluno.NumeroAlunoChamada;
@@ -227,9 +235,9 @@ namespace SME.SGP.Aplicacao
                         else
                         {
                             // Carrega notas do bimestre
-                            var notasConceitoBimestre = await ObterNotasBimestre(aluno.CodigoAluno, fechamentoTurma.Id);
+                            var notasConceitoBimestre = await ObterNotasBimestre(aluno.CodigoAluno, fechamentoTurma != null ? fechamentoTurma.Id : 0);
 
-                            if (notasConceitoBimestre.Count() > 0)
+                            if (notasConceitoBimestre.Any())
                                 alunoDto.Notas = new List<FechamentoNotaRetornoDto>();
 
                             if (fechamentoBimestre.EhSintese)
