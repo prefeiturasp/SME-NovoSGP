@@ -28,9 +28,6 @@ namespace SME.SGP.Aplicacao
             if (turmas != null && turmas.Any())
             {
                 await EnviarNotificacaoTurmas(turmas, request.PeriodoIniciandoBimestre.PeriodoEscolar, request.PeriodoIniciandoBimestre,  request.PeriodoIniciandoBimestre.PeriodoFechamento.Ue);
-
-
-
             }
             //    await EnviarNotificacaoTurmas(turmas, componentes, request.PeriodoIniciandoBimestre.PeriodoEscolar, request.PeriodoIniciandoBimestre.PeriodoFechamento.Ue);
 
