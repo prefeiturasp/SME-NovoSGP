@@ -158,7 +158,7 @@ namespace SME.SGP.Dominio.Servicos
         public int ValidarAvaliacoesSemNotasParaNenhumAluno(long fechamentoId, string codigoTurma, long disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo)
         {
             var registrosAvaliacoesSemNotaParaNenhumAluno = repositorioAtividadeAvaliativa.ObterAtividadesAvaliativasSemNotaParaNenhumAluno(codigoTurma,
-                                                                            disciplinaId,
+                                                                            disciplinaId.ToString(),
                                                                             inicioPeriodo,
                                                                             fimPeriodo);
 

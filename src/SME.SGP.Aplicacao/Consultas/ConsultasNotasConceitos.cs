@@ -101,12 +101,12 @@ namespace SME.SGP.Aplicacao
             List<AtividadeAvaliativa> atividadesAvaliativaEBimestres = new List<AtividadeAvaliativa>();
             // Carrega disciplinas filhas da disciplina passada como parametro
             var disciplinasProfessor = await consultasDisciplina.ObterComponentesCurricularesPorProfessorETurma(filtro.TurmaCodigo, true);
-            var disciplinasFilha = disciplinasProfessor.Where(d => d.CdComponenteCurricularPai == filtro.DisciplinaCodigo);
+            var disciplinasFilha = disciplinasProfessor.Where(d => d.CdComponenteCurricularPai == long.Parse(filtro.DisciplinaCodigo));
 
             if (disciplinasFilha.Any())
             {
                 foreach (var disciplinaFilha in disciplinasFilha)
-                    atividadesAvaliativaEBimestres.AddRange(await consultasAtividadeAvaliativa.ObterAvaliacoesNoBimestre(filtro.TurmaCodigo, disciplinaFilha.CodigoComponenteCurricular, periodoAtual.PeriodoInicio, periodoAtual.PeriodoFim));
+                    atividadesAvaliativaEBimestres.AddRange(await consultasAtividadeAvaliativa.ObterAvaliacoesNoBimestre(filtro.TurmaCodigo, disciplinaFilha.CodigoComponenteCurricular.ToString(), periodoAtual.PeriodoInicio, periodoAtual.PeriodoFim));
             }
             else
                 // Disciplina não tem disciplinas filhas então carrega avaliações da propria
@@ -163,7 +163,7 @@ namespace SME.SGP.Aplicacao
                     var ausenciasAtividadesAvaliativas = await repositorioFrequencia
                         .ObterAusencias(filtro.TurmaCodigo, filtro.DisciplinaCodigo.ToString(), atividadesAvaliativasdoBimestre.Select(a => a.DataAvaliacao).Distinct().ToArray(), alunosIds.ToArray());
 
-                    var consultaEOL = await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { filtro.DisciplinaCodigo });
+                    var consultaEOL = await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { long.Parse(filtro.DisciplinaCodigo) });
 
                     if (consultaEOL == null || !consultaEOL.Any())
                         throw new NegocioException("Disciplina informada não encontrada no EOL");
@@ -479,7 +479,7 @@ namespace SME.SGP.Aplicacao
             }
             else
             {
-                var avaliacoes = await repositorioAtividadeAvaliativaDisciplina.ObterAvaliacoesBimestrais(tipoCalendarioId, turmaCodigo, disciplinaEOL.CodigoComponenteCurricular, bimestre);
+                var avaliacoes = await repositorioAtividadeAvaliativaDisciplina.ObterAvaliacoesBimestrais(tipoCalendarioId, turmaCodigo, disciplinaEOL.CodigoComponenteCurricular.ToString(), bimestre);
                 if ((avaliacoes == null) || (avaliacoes.Count() < tipoAvaliacaoBimestral.AvaliacoesNecessariasPorBimestre))
                     bimestreDto.Observacoes.Add($"A disciplina [{disciplinaEOL.Nome}] não tem o número mínimo de avaliações bimestrais no bimestre {bimestre}");
             }

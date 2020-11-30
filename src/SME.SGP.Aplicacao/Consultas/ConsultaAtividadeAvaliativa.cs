@@ -70,7 +70,7 @@ namespace SME.SGP.Aplicacao
                         ));
         }
 
-        public async Task<IEnumerable<AtividadeAvaliativa>> ObterAvaliacoesNoBimestre(string turmaCodigo, long disciplinaId, DateTime periodoInicio, DateTime periodoFim)
+        public async Task<IEnumerable<AtividadeAvaliativa>> ObterAvaliacoesNoBimestre(string turmaCodigo, string disciplinaId, DateTime periodoInicio, DateTime periodoFim)
             => await repositorioAtividadeAvaliativa.ListarPorTurmaDisciplinaPeriodo(turmaCodigo, disciplinaId, periodoInicio, periodoFim);
 
         public async Task<AtividadeAvaliativaCompletaDto> ObterPorIdAsync(long id)
@@ -116,7 +116,7 @@ namespace SME.SGP.Aplicacao
             return await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamento(turma, DateTime.Now, bimestreAtual);
         }
 
-        public async Task<IEnumerable<TurmaRetornoDto>> ObterTurmasCopia(string turmaId, long disciplinaId)
+        public async Task<IEnumerable<TurmaRetornoDto>> ObterTurmasCopia(string turmaId, string disciplinaId)
         {
             var retorno = new List<TurmaRetornoDto>();
 
@@ -125,7 +125,7 @@ namespace SME.SGP.Aplicacao
             var turmasAtribuidasAoProfessor = consultasProfessor.Listar(usuario.CodigoRf);
 
             var lstTurmasCJ = await repositorioAtribuicaoCJ.ObterPorFiltros(turma.ModalidadeCodigo, null, null,
-                                    disciplinaId, usuario.CodigoRf, null, true);
+                                    Convert.ToInt64(disciplinaId), usuario.CodigoRf, null, true);
 
             var turmasTitular = turmasAtribuidasAoProfessor.Where(t => t.AnoLetivo == turma.AnoLetivo &&
                                                                        t.Ano == turma.Ano &&

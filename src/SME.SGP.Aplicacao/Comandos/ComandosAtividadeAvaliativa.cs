@@ -396,7 +396,7 @@ namespace SME.SGP.Aplicacao
         {
             var mensagens = new List<RetornoCopiarAtividadeAvaliativaDto>();
 
-            var turmasAtribuidasAoProfessor = await ObterTurmasAtribuidasAoProfessor(codigoRf, atividadeAvaliativaDto.DisciplinasId[0]);
+            var turmasAtribuidasAoProfessor = await ObterTurmasAtribuidasAoProfessor(codigoRf, long.Parse(atividadeAvaliativaDto.DisciplinasId[0]));
 
             if (atividadeAvaliativaDto.TurmasParaCopiar != null && atividadeAvaliativaDto.TurmasParaCopiar.Any())
             {
