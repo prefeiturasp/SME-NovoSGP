@@ -126,6 +126,9 @@ const RelatorioUsuarios = () => {
         lista.unshift({ key: OPCAO_TODOS, value: 'Todos' });
         setPerfisSelecionados([OPCAO_TODOS]);
       }
+      if (lista?.length === 1) {
+        setPerfisSelecionados([lista[0].key]);
+      }
     } else {
       setListaPerfis([]);
     }
@@ -173,7 +176,9 @@ const RelatorioUsuarios = () => {
   const onClickGerar = async () => {
     let keysPerfis = perfisSelecionados;
     if (perfisSelecionados[0] === OPCAO_TODOS) {
-      keysPerfis = [];
+      keysPerfis = listaPerfis
+        .filter(a => a.key !== OPCAO_TODOS)
+        .map(a => a.key);
     }
 
     let keysSituacoes = situacoesSelecionadas;
@@ -318,6 +323,7 @@ const RelatorioUsuarios = () => {
                     }
                   }}
                   placeholder="Perfil"
+                  disabled={listaPerfis?.length === 1}
                 />
               </div>
               <div className="col-sm-12 col-md-6 col-lg-6 col-xl-6 mb-2">
