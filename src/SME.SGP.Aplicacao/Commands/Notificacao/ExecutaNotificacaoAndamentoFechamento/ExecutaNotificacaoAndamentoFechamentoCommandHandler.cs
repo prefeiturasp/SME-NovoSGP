@@ -22,6 +22,7 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(ExecutaNotificacaoAndamentoFechamentoCommand request, CancellationToken cancellationToken)
         {
             var turmas = await mediator.Send(new ObterTurmasComFechamentoOuConselhoNaoFinalizadosQuery(request.PeriodoEncerrandoBimestre.PeriodoFechamento.UeId.Value,
+                                                                                                       DateTime.Now.Year,
                                                                                                        request.PeriodoEncerrandoBimestre.PeriodoFechamentoId,
                                                                                                        request.ModalidadeTipoCalendario.ObterModalidadesTurma()));
             var componentes = await mediator.Send(new ObterComponentesCurricularesQuery());
@@ -68,13 +69,13 @@ namespace SME.SGP.Aplicacao
             {
                 mensagem.Append("<tr>");
                 if (componenteCurricular.Codigo == componentesCurriculares.First().Codigo)
-                    mensagem.Append($"<td rowspan='{componentesCurriculares.Count()}'>{turma.Nome}</td>");
+                    mensagem.Append($"<td style='padding:2px' rowspan='{componentesCurriculares.Count()}'>{turma.Nome}</td>");
 
-                mensagem.Append($"<td>{componenteCurricular.Descricao}</td>");
-                mensagem.Append($"<td>{await ObterSituacaoFechamento(turma, componenteCurricular, periodoEscolar)}</td>");
+                mensagem.Append($"<td style='padding:2px'>{componenteCurricular.Descricao}</td>");
+                mensagem.Append($"<td style='padding:2px'>{await ObterSituacaoFechamento(turma, componenteCurricular, periodoEscolar)}</td>");
 
                 if (componenteCurricular.Codigo == componentesCurriculares.First().Codigo)
-                    mensagem.Append($"<td rowspan='{componentesCurriculares.Count()}'>{await ObterSituacaoConselhoClasse(turma, periodoEscolar)}</td>");
+                    mensagem.Append($"<td  style='padding:2px' rowspan='{componentesCurriculares.Count()}'>{await ObterSituacaoConselhoClasse(turma, periodoEscolar)}</td>");
                 mensagem.Append("</tr>");
             }
 
@@ -95,7 +96,7 @@ namespace SME.SGP.Aplicacao
 
         private string ObterHeaderModalidade(string modalidade)
         {
-            return $"<tr><td colspan='4'><b>{modalidade}</b></td></tr><tr><td><b>Turma</b></td><td><b>Componente curricular</b></td><td><b>Fechamento</b></td><td><b>Conselho de classe</b></td></tr>";
+            return $"<tr><td colspan='4' style='text-align:center;padding:2px'><b>{modalidade}</b></td></tr><tr><td><b>Turma</b></td><td style='padding:2px'><b>Componente curricular</b></td><td style='padding:2px'><b>Fechamento</b></td><td style='padding:2px' ><b>Conselho de classe</b></td></tr>";
         }
 
         private async Task<IEnumerable<ComponenteCurricularDto>> ObterComponentesDaTurma(Turma turma, Ue ue)

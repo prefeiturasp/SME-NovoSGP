@@ -142,7 +142,7 @@ namespace SME.SGP.Dados.Repositorios
                             inner join periodo_escolar pe on periodo_escolar_id = pe.id 
                             inner join turma t on ft.turma_id = t.id
                             where 
-                            and not ftd.excluido
+                            not ftd.excluido
                             and cc.permite_lancamento_nota = true
                             and periodo_escolar_id = @periodoEscolarId and 
                             t.ue_id = @ueId";
