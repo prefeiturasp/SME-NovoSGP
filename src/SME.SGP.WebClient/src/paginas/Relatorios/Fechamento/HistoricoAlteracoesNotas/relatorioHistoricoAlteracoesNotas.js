@@ -356,7 +356,7 @@ const RelatorioHistoricoAlteracoesNotas = () => {
     setExibirLoader(true);
     const retorno = await api.get(
       `v1/abrangencias/false/semestres?anoLetivo=${anoLetivoSelecionado}&modalidade=${modalidadeSelecionada ||
-        0}`
+      0}`
     );
     if (retorno && retorno.data) {
       const lista = retorno.data.map(periodo => {
@@ -408,17 +408,26 @@ const RelatorioHistoricoAlteracoesNotas = () => {
     !tipoDeNota;
 
   const gerar = async () => {
+    
+    let turmas = turmaId;
+    if (turmaId.find(item => item !== OPCAO_TODOS)) {
+      turmas = listaTurmas.filter(item => item.valor === turmaId.find(codigo => codigo === item.valor));
+      if (turmas?.length) {
+        turmas = turmas.map(t => t.id);
+      }
+    }
+
     const params = {
       codigoDre: dreId,
       codigoUe: ueId,
       anoLetivo,
       modalidadeTurma: modalidadeId,
       semestre,
-      turma: turmaId,
+      turma: turmas,
       componentesCurriculares: componentesCurricularesId,
       bimestres: bimestre,
-      tipoAlteracaoNota: tipoDeNota      
-    };  
+      tipoAlteracaoNota: tipoDeNota
+    };
 
     setExibirLoader(true);
     const retorno = await ServicoHistoricoAlteracoesNotas.gerar(params)
@@ -461,8 +470,8 @@ const RelatorioHistoricoAlteracoesNotas = () => {
           />
         </div>
       ) : (
-        ''
-      )}
+          ''
+        )}
       <Cabecalho pagina="Relatório de alteração de notas" />
       <Card>
         <div className="col-md-12">
