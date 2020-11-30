@@ -1,4 +1,3 @@
-﻿using SME.SGP.Infra.Enumerados;
 using System.ComponentModel.DataAnnotations;
 
 namespace SME.SGP.Infra.Dtos.EscolaAqui.DadosDeLeituraDeComunicados
