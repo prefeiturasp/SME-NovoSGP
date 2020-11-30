@@ -5,6 +5,6 @@ namespace SME.SGP.Aplicacao.Interfaces
 {
     public interface ITrataNotificacoesNiveisCargosUseCase
     {
-        Task Executar(MensagemRabbit param);
+        Task<bool> Executar(MensagemRabbit param);
     }
 }

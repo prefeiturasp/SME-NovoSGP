@@ -13,10 +13,12 @@ namespace SME.SGP.Aplicacao
         {
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
-        public async Task Executar(MensagemRabbit param)
+        public async Task<bool> Executar(MensagemRabbit param)
         {
             var listaDeNotificacoesParaTratar = await mediator.Send(new ObterNotificacoesNiveisCargosQuery());
             await mediator.Send(new TrataNotificacaoCargosNiveisCommand(listaDeNotificacoesParaTratar));
+
+            return true;
         }
 
     }
