@@ -56,10 +56,12 @@ namespace SME.SGP.Aplicacao
         private async Task<string> ObterNomeTurma(Pendencia pendencia)
         {
             return pendencia.EhPendenciaAula() ?
-                           await ObterDescricaoTurmaPendenciaAula(pendencia.Id) :
-                           pendencia.EhPendenciaFechamento() ?
-                               await ObterDescricaoTurmaPendenciaFechamento(pendencia.Id) :
-                               "";
+                        await ObterDescricaoTurmaPendenciaAula(pendencia.Id) :
+                    pendencia.EhPendenciaFechamento() ?
+                        await ObterDescricaoTurmaPendenciaFechamento(pendencia.Id) :
+                    pendencia.EhPendenciaProfessor() ?
+                        await ObterDescricaoTurmaPendenciaProfessor(pendencia.Id) :
+                        "";
         }
 
         private async Task<string> ObterDescricaoTurmaPendenciaFechamento(long pendenciaId)
@@ -67,6 +69,9 @@ namespace SME.SGP.Aplicacao
 
         private async Task<string> ObterDescricaoTurmaPendenciaAula(long pendenciaId)
             => ObterNomeTurma(await mediator.Send(new ObterTurmaDaPendenciaAulaQuery(pendenciaId)));
+
+        private async Task<string> ObterDescricaoTurmaPendenciaProfessor(long pendenciaId)
+            => ObterNomeTurma(await mediator.Send(new ObterTurmaDaPendenciaProfessorQuery(pendenciaId)));
 
         private string ObterNomeTurma(Turma turma)
             => turma != null ? $"{turma.ModalidadeCodigo.ShortName()} - {turma.Nome}" : "";
