@@ -69,18 +69,27 @@ namespace SME.SGP.Aplicacao.Commands
 
             var ad = funcionariosCargosDaUe.FirstOrDefault(a => a.CargoId == (int)Cargo.AD);
             if (ad != null)
-                await VerificaSeExisteNivelEadiciona(wfAprovacao, nivelParaModificar, Cargo.AD, funcionariosCargosDaUe);            
+            {
+                var adicionouNivelAd = await VerificaSeExisteNivelEadiciona(wfAprovacao, nivelParaModificar, Cargo.AD, funcionariosCargosDaUe);
+                if (!adicionouNivelAd)
+                    await TrataSupervisoresDiretor(funcionariosCargosDaUe, wfAprovacao, nivelParaModificar);
+            }
             else
             {
-                var supervisor = funcionariosCargosDaUe.FirstOrDefault(a => a.CargoId == (int)Cargo.Supervisor);
-                if (supervisor != null)
-                    await VerificaSeExisteNivelEadiciona(wfAprovacao, nivelParaModificar, Cargo.Supervisor, funcionariosCargosDaUe);
-                else
-                {
-                    var supervisorTecnico = funcionariosCargosDaUe.FirstOrDefault(a => a.CargoId == (int)Cargo.SupervisorTecnico);
-                    if (supervisorTecnico != null)
-                        await VerificaSeExisteNivelEadiciona(wfAprovacao, nivelParaModificar, Cargo.SupervisorTecnico, funcionariosCargosDaUe);
-                }
+                await TrataSupervisoresDiretor(funcionariosCargosDaUe, wfAprovacao, nivelParaModificar);
+            }
+        }
+
+        private async Task TrataSupervisoresDiretor(List<FuncionarioCargoDTO> funcionariosCargosDaUe, WorkflowAprovacao wfAprovacao, WorkflowAprovacaoNivel nivelParaModificar)
+        {
+            var supervisor = funcionariosCargosDaUe.FirstOrDefault(a => a.CargoId == (int)Cargo.Supervisor);
+            if (supervisor != null)
+                await VerificaSeExisteNivelEadiciona(wfAprovacao, nivelParaModificar, Cargo.Supervisor, funcionariosCargosDaUe);
+            else
+            {
+                var supervisorTecnico = funcionariosCargosDaUe.FirstOrDefault(a => a.CargoId == (int)Cargo.SupervisorTecnico);
+                if (supervisorTecnico != null)
+                    await VerificaSeExisteNivelEadiciona(wfAprovacao, nivelParaModificar, Cargo.SupervisorTecnico, funcionariosCargosDaUe);
             }
         }
 
@@ -88,7 +97,7 @@ namespace SME.SGP.Aplicacao.Commands
         {
             var diretor = funcionariosCargosDaUe.FirstOrDefault(a => a.CargoId == (int)Cargo.Diretor);
             if (diretor != null)
-                await VerificaSeExisteNivelEadiciona(wfAprovacao, nivelParaModificar, Cargo.Diretor, funcionariosCargosDaUe);            
+                await VerificaSeExisteNivelEadiciona(wfAprovacao, nivelParaModificar, Cargo.Diretor, funcionariosCargosDaUe);
             else
             {
                 var supervisor = funcionariosCargosDaUe.FirstOrDefault(a => a.CargoId == (int)Cargo.Supervisor);
@@ -114,7 +123,7 @@ namespace SME.SGP.Aplicacao.Commands
         {
             var ad = funcionariosCargosDaUe.FirstOrDefault(a => a.CargoId == (int)Cargo.AD);
             if (ad != null)
-                await VerificaSeExisteNivelEadiciona(wfAprovacao, nivelParaModificar, Cargo.AD, funcionariosCargosDaUe);            
+                await VerificaSeExisteNivelEadiciona(wfAprovacao, nivelParaModificar, Cargo.AD, funcionariosCargosDaUe);
             else
             {
                 var diretor = funcionariosCargosDaUe.FirstOrDefault(a => a.CargoId == (int)Cargo.Diretor);
@@ -131,7 +140,7 @@ namespace SME.SGP.Aplicacao.Commands
             }
         }
 
-        private async Task VerificaSeExisteNivelEadiciona(WorkflowAprovacao wfAprovacao, WorkflowAprovacaoNivel nivelParaModificar, Cargo cargo, List<FuncionarioCargoDTO> funcionariosCargosDaUe)
+        private async Task<bool> VerificaSeExisteNivelEadiciona(WorkflowAprovacao wfAprovacao, WorkflowAprovacaoNivel nivelParaModificar, Cargo cargo, List<FuncionarioCargoDTO> funcionariosCargosDaUe)
         {
             var nivelDoCargo = wfAprovacao.ObterPrimeiroNivelPorCargo(cargo);
 
@@ -151,11 +160,12 @@ namespace SME.SGP.Aplicacao.Commands
             else
             {
                 if (nivelDoCargo.Notificacoes.Any())
-                    return;
+                    return false;
             }
 
             await TrataModificacaoDosNiveis(funcionariosCargosDaUe, wfAprovacao, nivelParaModificar, true, nivelDoCargo, modificaNiveisPosteriores);
 
+            return true;
         }
 
         private async Task TrataModificacaoDosNiveis(List<FuncionarioCargoDTO> funcionariosCargosDaUe, WorkflowAprovacao wfAprovacao, WorkflowAprovacaoNivel nivelParaModificar, bool modificarNivelAtual, WorkflowAprovacaoNivel nivelDoCargo, bool modificaNiveisPosteriores)
