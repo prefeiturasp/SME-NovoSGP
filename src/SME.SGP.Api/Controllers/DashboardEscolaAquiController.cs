@@ -2,6 +2,7 @@
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.EscolaAqui;
+using SME.SGP.Infra.Dtos.EscolaAqui.Dashboard.ComunicadosPesquisa;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
@@ -57,5 +58,10 @@ namespace SME.SGP.Api.Controllers
             return Ok(await obterComunicadosTotaisAgrupadosPorDreUseCase.Executar(anoLetivo));
         }
 
+        [HttpGet("comunicados/filtro")]
+        public async Task<IActionResult> ObterComunicadosParaFiltroDaDashboard([FromQuery] ObterComunicadosParaFiltroDaDashboardDto obterComunicadosFiltroDto, [FromServices] IObterComunicadosParaFiltroDaDashboardUseCase obterComunicadosParaFiltroUseCase)
+        {
+            return Ok(await obterComunicadosParaFiltroUseCase.Executar(obterComunicadosFiltroDto));
+        }
     }
 }

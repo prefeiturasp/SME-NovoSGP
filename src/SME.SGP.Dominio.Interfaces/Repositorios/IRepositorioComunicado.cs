@@ -1,5 +1,6 @@
 ﻿using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.EscolaAqui.Dashboard;
+using SME.SGP.Infra.Dtos.EscolaAqui.Dashboard.ComunicadosFiltro;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -12,5 +13,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<ComunicadosTotaisResultado> ObterComunicadosTotaisSme(int anoLetivo, string codigoDre, string codigoUe);
 
         Task<IEnumerable<ComunicadosTotaisPorDreResultado>> ObterComunicadosTotaisAgrupadosPorDre(int anoLetivo);
+        Task<IEnumerable<ComunicadoParaFiltroDaDashboardDto>> ObterComunicadosParaFiltroDaDashboard(FiltroObterComunicadosParaFiltroDaDashboardDto filtro);
     }
 }
