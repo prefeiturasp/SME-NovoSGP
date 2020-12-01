@@ -8,13 +8,13 @@ namespace SME.SGP.Aplicacao
 {
     public class ExecutaNotificacaoPeriodoFechamentoEncerrandoCommand : IRequest<bool>
     {
-        public ExecutaNotificacaoPeriodoFechamentoEncerrandoCommand(PeriodoFechamentoBimestre periodoIniciandoBimestre, ModalidadeTipoCalendario modalidadeTipoCalendario)
+        public ExecutaNotificacaoPeriodoFechamentoEncerrandoCommand(PeriodoFechamentoBimestre periodoFechamentoBimestre, ModalidadeTipoCalendario modalidadeTipoCalendario)
         {
-            PeriodoIniciandoBimestre = periodoIniciandoBimestre;
+            PeriodoFechamentoBimestre = periodoFechamentoBimestre;
             ModalidadeTipoCalendario = modalidadeTipoCalendario;
         }
 
-        public PeriodoFechamentoBimestre PeriodoIniciandoBimestre { get; set; }
+        public PeriodoFechamentoBimestre PeriodoFechamentoBimestre { get; set; }
         public ModalidadeTipoCalendario ModalidadeTipoCalendario { get; set; }
     }
 }

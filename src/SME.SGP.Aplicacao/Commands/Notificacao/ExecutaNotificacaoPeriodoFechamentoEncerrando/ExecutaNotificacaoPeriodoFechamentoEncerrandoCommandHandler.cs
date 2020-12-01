@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Aplicacao.Queries.Funcionario;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
@@ -21,74 +22,44 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(ExecutaNotificacaoPeriodoFechamentoEncerrandoCommand request, CancellationToken cancellationToken)
         {
-            var turmas = await mediator.Send(new ObterTurmasComInicioFechamentoQuery(request.PeriodoIniciandoBimestre.PeriodoFechamento.UeId.Value,
-                request.PeriodoIniciandoBimestre.PeriodoEscolarId,
-                request.ModalidadeTipoCalendario.ObterModalidadesTurma()));
-
+            var turmas = await mediator.Send(new ObterTurmasComFechamentoOuConselhoNaoFinalizadosQuery(request.PeriodoFechamentoBimestre.PeriodoFechamento.UeId.Value,
+                                                                                                      request.PeriodoFechamentoBimestre.PeriodoFechamentoId,
+                                                                                                      request.ModalidadeTipoCalendario.ObterModalidadesTurma()));
             if (turmas != null && turmas.Any())
-            {
-                await EnviarNotificacaoTurmas(turmas, request.PeriodoIniciandoBimestre.PeriodoEscolar, request.PeriodoIniciandoBimestre,  request.PeriodoIniciandoBimestre.PeriodoFechamento.Ue);
-            }
-            //    await EnviarNotificacaoTurmas(turmas, componentes, request.PeriodoIniciandoBimestre.PeriodoEscolar, request.PeriodoIniciandoBimestre.PeriodoFechamento.Ue);
+                await EnviarNotificacaoProfessores(turmas, request.PeriodoFechamentoBimestre.PeriodoEscolar, request.PeriodoFechamentoBimestre, request.PeriodoFechamentoBimestre.PeriodoFechamento.Ue);
 
             return true;
         }
 
-        private async Task EnviarNotificacaoTurmas(IEnumerable<Turma> turmas, PeriodoEscolar periodoEscolar, PeriodoFechamentoBimestre periodoFechamentoBimestre, Ue ue)
+        private async Task EnviarNotificacaoProfessores(IEnumerable<Turma> turmas, PeriodoEscolar periodoEscolar, PeriodoFechamentoBimestre periodoFechamentoBimestre, Ue ue)
         {
-            var titulo = $"Início do período de fechamento do {periodoEscolar.Bimestre}º bimestre - {ue.TipoEscola.ShortName()} {ue.Nome} ({ue.Dre.Abreviacao})";
-            var mensagem = @$"O fechamento do <b>{periodoEscolar.Bimestre}º bimestre</b> na <b>{ue.TipoEscola.ShortName()} {ue.Nome} ({ue.Dre.Abreviacao})</b> irá iniciar no dia <b>{periodoFechamentoBimestre.InicioDoFechamento.Date}</b>.";
+            var descricaoUe = $"{ue.TipoEscola.ShortName()} {ue.Nome} ({ue.Dre.Abreviacao})";
+            var titulo = $"Término do período de fechamento do  {periodoEscolar.Bimestre}º bimestre - {descricaoUe}";
+            var mensagem = @$"O fechamento do <b>{periodoEscolar.Bimestre}º bimestre</b> na <b>{descricaoUe}</b> irá encerrar no dia <b>{periodoFechamentoBimestre.FinalDoFechamento.Date:dd/MM/yyyy}</b>.
+                <br/><br/>Após esta data o sistema será bloqueado para edições neste bimestre.";
 
-            await EnviarNotificacao(titulo, mensagem.ToString(), ue.Dre.CodigoDre, ue.CodigoUe);
+
+            var professores = await ObterProfessores(turmas);
+            if (professores != null && professores.Any())
+                await mediator.Send(new EnviarNotificacaoUsuariosCommand(titulo, mensagem, NotificacaoCategoria.Aviso, NotificacaoTipo.Calendario, professores, ue.Dre.CodigoDre, ue.CodigoUe));
+
         }
 
-        private async Task EnviarNotificacao(string titulo, string mensagem, string codigoDre, string codigoUe)
-        {
-            var cargos = new[] { Cargo.CP, Cargo.AD, Cargo.Diretor };
-            await mediator.Send(new EnviarNotificacaoCommand(titulo, mensagem, NotificacaoCategoria.Aviso, NotificacaoTipo.Fechamento, cargos, codigoDre, codigoUe));
-        }
 
-        private async Task<string> MontarLinhaDaTurma(Turma turma, IEnumerable<ComponenteCurricularDto> componentes, Ue ue, PeriodoEscolar periodoEscolar)
+        private async Task<IEnumerable<long>> ObterProfessores(IEnumerable<Turma> turmas)
         {
-            var mensagem = new StringBuilder();
-            var componentesDaTurma = await ObterComponentesDaTurma(turma, ue);
-            var componentesCurriculares = componentes.Where(c => componentesDaTurma.Any(t => t.Codigo == c.Codigo));
 
-            foreach (var componenteCurricular in componentesCurriculares)
+            var listaUsuarios = new List<long>();
+            foreach (var turma in turmas)
             {
-                mensagem.Append("<tr>");
-                if (componenteCurricular.Codigo == componentesCurriculares.First().Codigo)
-                    mensagem.Append($"<td rowspan='{componentesCurriculares.Count()}'>{turma.Nome}</td>");
+                var professores = await mediator.Send(new ObterProfessoresTitularesDaTurmaQuery(turma.CodigoTurma));
 
-                mensagem.Append($"<td>{componenteCurricular.Descricao}</td>");
-                mensagem.Append($"<td>{await ObterSituacaoFechamento(turma, componenteCurricular, periodoEscolar)}</td>");
-
-                if (componenteCurricular.Codigo == componentesCurriculares.First().Codigo)
-                    mensagem.Append($"<td rowspan='{componentesCurriculares.Count()}'>{await ObterSituacaoConselhoClasse(turma, periodoEscolar)}</td>");
-                mensagem.Append("</tr>");
+                foreach (var professor in professores)
+                {
+                    listaUsuarios.Add(await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(professor)));
+                }
             }
-
-            return mensagem.ToString();
+            return listaUsuarios;
         }
-
-        private async Task<string> ObterSituacaoFechamento(Turma turma, ComponenteCurricularDto componenteCurricular, PeriodoEscolar periodoEscolar)
-        {
-            var situacao = await mediator.Send(new ObterSituacaoFechamentoTurmaComponenteQuery(turma.Id, long.Parse(componenteCurricular.Codigo), periodoEscolar.Id));
-            return situacao.Name();
-        }
-
-        private async Task<string> ObterSituacaoConselhoClasse(Turma turma, PeriodoEscolar periodoEscolar)
-        {
-            var situacao = await mediator.Send(new ObterSituacaoConselhoClasseQuery(turma.Id, periodoEscolar.Id));
-            return situacao.Name();
-        }
-
-        private string ObterHeaderModalidade(string modalidade)
-        {
-            return $"<tr><td colspan='4'><b>{modalidade}</b></td></tr><tr><td><b>Turma</b></td><td><b>Componente curricular</b></td><td><b>Fechamento</b></td><td><b>Conselho de classe</b></td></tr>";
-        }
-
-        private async Task<IEnumerable<ComponenteCurricularDto>> ObterComponentesDaTurma(Turma turma, Ue ue)
-            => await mediator.Send(new ObterComponentesCurricularesPorTurmaECodigoUeQuery(new[] { turma.CodigoTurma }, ue.CodigoUe));
     }
 }
