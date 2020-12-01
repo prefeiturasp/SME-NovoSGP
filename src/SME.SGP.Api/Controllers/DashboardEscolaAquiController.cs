@@ -3,6 +3,7 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui.Dashboard.ObterDadosDeLeituraDeComunicados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.EscolaAqui;
+using SME.SGP.Infra.Dtos.EscolaAqui.ComunicadosFiltro;
 using SME.SGP.Infra.Dtos.EscolaAqui.DadosDeLeituraDeComunicados;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -77,6 +78,12 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterDadosDeLeituraDeComunicadosAgrupadosPorDre([FromQuery] ObterDadosDeLeituraDeComunicadosAgrupadosPorDreDto obterDadosDeLeituraDeComunicadosAgrupadosPorDreDto, [FromServices] IObterDadosDeLeituraDeComunicadosAgrupadosPorDreUseCase obterDadosDeLeituraDeComunicadosAgrupadosPorDreUseCase)
         {
             return Ok(await obterDadosDeLeituraDeComunicadosAgrupadosPorDreUseCase.Executar(obterDadosDeLeituraDeComunicadosAgrupadosPorDreDto));
+        }
+
+        [HttpGet("comunicados/filtro")]
+        public async Task<IActionResult> ObterComunicadosParaFiltroDaDashboard([FromQuery] ObterComunicadosParaFiltroDaDashboardDto obterComunicadosFiltroDto, [FromServices] IObterComunicadosParaFiltroDaDashboardUseCase obterComunicadosParaFiltroUseCase)
+        {
+            return Ok(await obterComunicadosParaFiltroUseCase.Executar(obterComunicadosFiltroDto));
         }
     }
 }
