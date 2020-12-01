@@ -466,7 +466,7 @@ namespace SME.SGP.Dados.Repositorios
 
             if (!String.IsNullOrEmpty(disciplinaId))
             {
-                query.AppendLine("and aad.disciplina_id = @disciplinasId");
+                query.AppendLine($"and aad.disciplina_id::varchar(20) = @disciplinaId");
                 query.AppendLine("and aad.excluido =  false");
             }
 
