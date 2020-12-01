@@ -38,10 +38,10 @@ namespace SME.SGP.Aplicacao
                 await mediator.Send(new ExecutaNotificacaoPeriodoFechamentoIniciandoCommand(periodoIniciando, modalidade));
             }
 
-            //foreach (var periodoEncerrando in periodosEncerrando)
-            //{
-            //    await mediator.Send(new ExecutaNotificacaoAndamentoFechamentoCommand(periodoEncerrando, modalidade));
-            //}
+            foreach (var periodoEncerrando in periodosEncerrando)
+            {
+                await mediator.Send(new ExecutaNotificacaoPeriodoFechamentoEncerrandoCommand(periodoEncerrando, modalidade));
+            }
 
         }
 
