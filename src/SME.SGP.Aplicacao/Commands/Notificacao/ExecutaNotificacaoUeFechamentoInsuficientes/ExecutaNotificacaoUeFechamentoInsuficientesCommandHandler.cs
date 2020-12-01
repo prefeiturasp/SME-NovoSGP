@@ -94,27 +94,29 @@ namespace SME.SGP.Aplicacao
             var mensagem = new StringBuilder($"As UEs da <b>{dre.Abreviacao}</b> abaixo estão com menos de {percentualFechamentoInsuficiente}% do fechamento do <b>{descricaoBimestre}</b> concluído:<br/>");
 
             mensagem.Append(ObterHeaderTabela());
-            foreach(var notificarUe in listaUes.Where(c => c.notificar))
+            var supervisores = new List<long>();
+            foreach (var notificarUe in listaUes.Where(c => c.notificar))
             {
                 mensagem.Append("<tr>");
                 mensagem.Append($"<td>{notificarUe.ue.TipoEscola.ShortName()} {notificarUe.ue.Nome}</td>");
                 mensagem.Append($"<td style='text-align: center'>{notificarUe.quantidadeTurmasPendentes}</td>");
                 mensagem.Append("</tr>");
+                supervisores.AddRange(await ObterUsuariosSupervisores(notificarUe.ue.CodigoUe));
             }
             mensagem.Append("</table>");
-
-            var supervisores = await ObterUsuariosSupervisores(dre.CodigoDre);
+            
+            
             if (supervisores != null && supervisores.Any())
                 await mediator.Send(new EnviarNotificacaoUsuariosCommand(titulo, mensagem.ToString(), NotificacaoCategoria.Aviso, NotificacaoTipo.Fechamento, supervisores, dre.CodigoDre));
         }
 
-        private async Task<IEnumerable<long>> ObterUsuariosSupervisores(String codigoDre)
+        private async Task<IEnumerable<long>> ObterUsuariosSupervisores(String codigoUe)
         {
-            var supervisores = await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(codigoDre, ObterPerfis()));
+            var supervisores = await mediator.Send(new ObterFuncionariosPorCargoUeQuery(Cargo.Supervisor, codigoUe));
 
             var listaUsuarios = new List<long>();
             foreach (var supervisor in supervisores)
-                listaUsuarios.Add(await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(supervisor)));
+                listaUsuarios.Add(await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(supervisor.CodigoRf)));
 
             return listaUsuarios;
         }
