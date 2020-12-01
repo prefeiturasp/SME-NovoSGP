@@ -86,7 +86,7 @@ namespace SME.SGP.Aplicacao
         private async Task EnviarNotificacoes(List<NotificarResultadoInsatisfatorioDto> listaNotificacoes, PeriodoFechamentoBimestre periodoFechamentoBimestre)
         {
             var titulo = $"Turmas com resultados insatisfatórios no {periodoFechamentoBimestre.PeriodoEscolar.Bimestre}º bimestre";
-            var mensagem = new StringBuilder($"As turmas e componentes curriculares abaixo da <b>{periodoFechamentoBimestre.PeriodoFechamento.Ue.TipoEscola.ShortName()} {periodoFechamentoBimestre.PeriodoFechamento.Ue.Nome} ({periodoFechamentoBimestre.PeriodoFechamento.Ue.Dre.Abreviacao}) tiveram mais de 50% dos estudantes com resultado insatisfatório no <b>{periodoFechamentoBimestre.PeriodoEscolar.Bimestre}º bimestre</b>:");
+            var mensagem = new StringBuilder($"As turmas e componentes curriculares abaixo da <b>{periodoFechamentoBimestre.PeriodoFechamento.Ue.TipoEscola.ShortName()} {periodoFechamentoBimestre.PeriodoFechamento.Ue.Nome} ({periodoFechamentoBimestre.PeriodoFechamento.Ue.Dre.Abreviacao})</b> tiveram mais de 50% dos estudantes com resultado insatisfatório no <b>{periodoFechamentoBimestre.PeriodoEscolar.Bimestre}º bimestre</b>:");
 
             mensagem.Append("<table style='margin-left: auto; margin-right: auto; margin-top: 10px' border='2' cellpadding='5'>");
             foreach (var turmasPorModalidade in listaNotificacoes.GroupBy(c => c.TurmaModalidade))
