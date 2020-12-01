@@ -14,12 +14,10 @@ namespace SME.SGP.Aplicacao
     public class NotificarPeriodoFechamentoUeCommandHandler : IRequestHandler<NotificarPeriodoFechamentoUeCommand, bool>
     {
         private readonly IMediator mediator;
-        private readonly IServicoEol servicoEol;
 
-        public NotificarPeriodoFechamentoUeCommandHandler(IMediator mediator, IServicoEol servicoEol)
+        public NotificarPeriodoFechamentoUeCommandHandler(IMediator mediator)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.servicoEol = servicoEol ?? throw new ArgumentNullException(nameof(servicoEol));
         }
 
         public async Task<bool> Handle(NotificarPeriodoFechamentoUeCommand request, CancellationToken cancellationToken)
@@ -50,13 +48,18 @@ namespace SME.SGP.Aplicacao
 
         private async Task<IEnumerable<long>> ObterUsuariosAdms(Ue ue)
         {
-            var adms = await mediator.Send(new ObterAdministradoresPorUEQuery(ue.CodigoUe));
+            var adms = await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(ue.CodigoUe, ObterPerfis()));
 
             var listaUsuarios = new List<long>();
             foreach (var adm in adms)
                 listaUsuarios.Add(await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(adm)));
 
             return listaUsuarios;
+        }
+
+        private IEnumerable<Guid> ObterPerfis()
+        {
+            return new List<Guid>() { Perfis.PERFIL_ADMUE };
         }
 
         private Cargo[] ObterCargosGestaoEscola()
