@@ -1,8 +1,8 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
-using SME.SGP.Dominio;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -26,14 +26,15 @@ namespace SME.SGP.Aplicacao
 
             var parametros = JsonConvert.SerializeObject(request.Perfis);
 
-            var resposta = await httpClient.PostAsync("admins/sme", new StringContent(parametros, Encoding.UTF8, "application/json-patch+json"));
+            var resposta = await httpClient.PostAsync("/api/funcionarios/admins/sme", new StringContent(parametros, Encoding.UTF8, "application/json-patch+json"));
 
             if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
             {
                 var json = await resposta.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<IEnumerable<string>>(json);
             }
-            else throw new NegocioException("Não foi possível obter os funcionários da API EOL.");
+
+            return Enumerable.Empty<string>();
         }
     }
 }
