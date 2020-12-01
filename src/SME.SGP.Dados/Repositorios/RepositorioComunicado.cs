@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos.EscolaAqui.ComunicadosFiltro;
 using SME.SGP.Infra.Dtos.EscolaAqui.Dashboard;
 using System;
 using System.Collections.Generic;
@@ -99,7 +100,7 @@ namespace SME.SGP.Dados.Repositorios
                 parametros,
                 splitOn: "id,GrupoId")
             };
-                                               
+
             retornoPaginado.TotalRegistros = (await database.Conexao.QueryAsync<int>(queryCount.ToString(), parametros)).Sum();
 
             retornoPaginado.TotalPaginas = (int)Math.Ceiling((double)retornoPaginado.TotalRegistros / paginacao.QuantidadeRegistros);
@@ -203,16 +204,16 @@ namespace SME.SGP.Dados.Repositorios
             builder.AppendLine($@"{prefixoGrupoComunicado}.tipo_escola_id,");
             builder.AppendLine($@"{prefixoGrupoComunicado}.tipo_ciclo_id,");
             builder.AppendLine($@"{prefixoGrupoComunicado}.etapa_ensino_id");
-            
+
             return builder.ToString();
         }
 
         public async Task<ComunicadosTotaisResultado> ObterComunicadosTotaisSme(int anoLetivo, string codigoDre, string codigoUe)
         {
-            
+
             string filtroPorDre = "";
             string filtroPorUe = "";
-            
+
             if (!String.IsNullOrEmpty(codigoDre))
                 filtroPorDre = " and codigo_dre = @codigoDre ";
 
@@ -362,6 +363,84 @@ namespace SME.SGP.Dados.Repositorios
                                         where dre.id = 13 ) as aaa order by aaa.dre_id";
             var parametros = new { anoLetivo };
             return await database.QueryAsync<ComunicadosTotaisPorDreResultado>(sql, parametros);
+        }
+
+        public Task<IEnumerable<ComunicadoParaFiltroDaDashboardDto>> ObterComunicadosParaFiltroDaDashboard(FiltroObterComunicadosParaFiltroDaDashboardDto filtro)
+        {
+            var comunicadoAlias = "cm";
+            var comunicadoTumaAlias = "cmt";
+            var turmaAlias = "tur";
+
+            var sql = new StringBuilder($@"SELECT
+                                            id AS Id,
+                                            titulo AS Titulo,
+                                            data_envio AS DataEnvio
+                                        FROM comunicado {comunicadoAlias} ");
+
+            if (!string.IsNullOrWhiteSpace(filtro.CodigoTurma))
+            {
+                sql.Append($@" INNER JOIN comunicado_turma {comunicadoTumaAlias} ON {comunicadoAlias}.id = {comunicadoTumaAlias}.comunicado_id ");
+                sql.Append($@" INNER JOIN turma {turmaAlias} ON {comunicadoTumaAlias}.turma_codigo = {turmaAlias}.turma_id ");
+            }
+
+            sql.Append(MontarCondicoesDaConsultaObterComunicadosParaFiltroDaDashboard(filtro, comunicadoAlias, comunicadoTumaAlias, turmaAlias));
+
+            var parametros = new
+            {
+                filtro.AnoEscolar,
+                filtro.AnoLetivo,
+                filtro.CodigoDre,
+                filtro.CodigoTurma,
+                filtro.CodigoUe,
+                filtro.DataEnvioFinal,
+                filtro.DataEnvioInicial,
+                filtro.GruposIds,
+                filtro.Modalidade,
+                filtro.Semestre,
+                filtro.Titulo
+            };
+
+            return database.QueryAsync<ComunicadoParaFiltroDaDashboardDto>(sql.ToString(), parametros);
+        }
+
+        private string MontarCondicoesDaConsultaObterComunicadosParaFiltroDaDashboard(FiltroObterComunicadosParaFiltroDaDashboardDto filtro, string comunicadoAlias,
+            string comunicadoTumaAlias, string turmaAlias)
+        {
+            var where = new StringBuilder($" WHERE {comunicadoAlias}.ano_letivo = @anoLetivo ");
+            if (!string.IsNullOrWhiteSpace(filtro.CodigoDre))
+                where.Append($" AND {comunicadoAlias}.codigo_dre = @CodigoDre");
+
+            if (!string.IsNullOrWhiteSpace(filtro.CodigoUe))
+                where.Append($" AND {comunicadoAlias}.codigo_e = @CodigoUe");
+
+            if (filtro.GruposIds.Any())
+                where.Append($" AND {comunicadoAlias}.grupo_comunicado_id = ANY(@GruposIds)");
+
+            if (filtro.Modalidade != null)
+                where.Append($" AND {comunicadoAlias}.modalidade = @Modalidade");
+
+            if (filtro.Semestre != null)
+                where.Append($" AND {comunicadoAlias}.semestre = @Semestre");
+
+            if (filtro.AnoEscolar != null)
+                where.Append($" AND {comunicadoAlias}.turma_codigo = @CodigoTurma");
+
+            if (!string.IsNullOrWhiteSpace(filtro.CodigoTurma))
+                where.Append($" AND {comunicadoTumaAlias}.turma_codigo = @CodigoTurma");
+
+            if (filtro.DataEnvioInicial != null)
+                where.Append($" AND {comunicadoAlias}.data_evento >= @DataEnvioInicial");
+
+            if (filtro.DataEnvioFinal != null)
+                where.Append($" AND {comunicadoAlias}.data_evento <= @DataEnvioFinal");
+
+            if (!string.IsNullOrWhiteSpace(filtro.Titulo))
+            {
+                filtro.Titulo = filtro.Titulo.ToUpperInvariant();
+                where.Append($" AND (upper(f_unaccent({comunicadoAlias}.titulo)) LIKE '%@Titulo%'");
+            }
+
+            return where.ToString();
         }
     }
 }
