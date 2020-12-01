@@ -234,6 +234,29 @@ namespace SME.SGP.Dados.Repositorios
             new { dreCodigo, modalidade }));
         }
 
+        public async Task<IEnumerable<Ue>> ObterUEsSemPeriodoFechamento(long periodoEscolarId, int ano, int[] modalidades)
+        {
+            var query = @" select distinct ue.*, dre.*
+                               from ue 
+                              inner join dre on dre.id = ue.dre_id
+                              inner join turma t on t.ue_id = ue.id
+                              where t.modalidade_codigo = any(@modalidades)
+                                and t.ano_letivo = @ano
+                                and not exists (select 1
+    		                            from periodo_fechamento pf
+    		                            inner join periodo_fechamento_bimestre pb on pb.periodo_fechamento_id = pf.id
+    		                            where pf.ue_id = ue.id
+    		                             and pb.periodo_escolar_id = @periodoEscolarId)";
+
+            return await contexto.Conexao.QueryAsync<Ue, Dre, Ue>(query,
+                (ue, dre) =>
+                {
+                    ue.AdicionarDre(dre);
+
+                    return ue;
+                }, new { periodoEscolarId, ano, modalidades });
+        }
+
         public async Task<int> ObterQuantidadeTurmasSeriadas(long ueId)
         {
             var query = @"select count(id) from turma where ano between '1' and '9' and ue_id = @ueId";

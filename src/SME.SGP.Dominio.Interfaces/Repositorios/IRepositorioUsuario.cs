@@ -11,6 +11,7 @@ namespace SME.SGP.Dominio.Interfaces
         Usuario ObterPorTokenRecuperacaoSenha(Guid token);
         Task<Usuario> ObterUsuarioPorCodigoRfAsync(string codigoRf);
         Task<long> ObterUsuarioIdPorCodigoRfAsync(string codigoRf);
+        Task<long> ObterUsuarioIdPorLoginAsync(string login);
         Task<ProfessorDto> ObterProfessorDaTurmaPorAulaId(long aulaId);
         Task<IEnumerable<long>> ObterUsuariosIdPorCodigoRf(IList<string> codigoRf);
     }
