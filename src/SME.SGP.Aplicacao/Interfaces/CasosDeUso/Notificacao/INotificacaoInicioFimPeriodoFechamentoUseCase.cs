@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SME.SGP.Aplicacao.Interfaces
 {
-    public interface INotificacaoPeriodoFechamentoUseCase : IUseCase<MensagemRabbit, bool>
+    public interface INotificacaoInicioFimPeriodoFechamentoUseCase : IUseCase<MensagemRabbit, bool>
     {
     }
 }
