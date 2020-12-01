@@ -76,6 +76,11 @@
 
         DiasNotificacaoResultadoInsatisfatorio = 40,
 
+        DiasNotificacaoReuniaoPedagogica = 45,
+
+        DiasNotificacaoPeriodoFechamentoUe = 46,
+        DiasNotificacaoPeriodoFechamentoDre = 47,
+
         //Notificacao Periodo Fechamento
         DiasNotificacaoPeriodoFechamentoInicio = 43,
         DiasNotificacaoPeriodoFechamentoFim = 44,
