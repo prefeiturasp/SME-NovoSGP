@@ -38,25 +38,31 @@ function Filtro({ onFiltrar, resetForm }) {
     }
   }, [modalidadeId, semestreId, anoLetivo]);
 
-  useEffect(() => {
-    setCarregandoModalidades(true);       
+  useEffect(() => {    
+    setCarregandoModalidades(true);
+    setModalidades([]);
     const obterModalidades = async () => {
       var modalidades = await FiltroHelper.obterModalidades({
         consideraHistorico,
-        anoLetivoSelecionado: anoLetivo
+        anoLetivoSelecionado: anoLetivo           
       });     
       setModalidades(modalidades);
     }    
     if (anoLetivo)
-      obterModalidades();
+      obterModalidades(); 
+
     setCarregandoModalidades(false);
   }, [anoLetivo]);  
 
-  useEffect(() => {
+  useEffect(() => {        
     if (modalidades && modalidades.length === 1 && refForm) {
       refForm.setFieldValue('modalidadeId', String(modalidades[0].valor));
       setModalidadeId(String(modalidades[0].valor));
-    }
+    }    
+    else if (modalidades && modalidades.length > 1 && refForm){
+      refForm.setFieldValue('modalidadeId', '');
+      setModalidadeId('');
+    }        
   }, [modalidades, refForm]);
 
   useEffect(() => {
@@ -71,14 +77,16 @@ function Filtro({ onFiltrar, resetForm }) {
             Object.entries(refForm.fields[field].props.children).length === 1
               ? String(refForm.fields[field].props.children[0].props.value)
               : '';
-          refForm.setFieldValue(`${field}`, value);
+          refForm.setFieldValue(`${field}`, value);          setConsideraHistorico(false);
           if (field === 'modalidadeId') setModalidadeId(value);
           if (field === 'dreId') setDreId(value);
           if (
             field === 'ueId' &&
             !Object.entries(refForm.fields.dreId.props.children).length
           )
-            refForm.setFieldValue('ueId', '');
+          refForm.setFieldValue('ueId', '');
+          setConsideraHistorico(false);
+          refForm.setFieldValue('consideraHistorico', false);
         });
       }
     }
@@ -151,8 +159,14 @@ function Filtro({ onFiltrar, resetForm }) {
     onFiltrar(valores);
   };
 
-  function onCheckedConsideraHistorico(e){   
-    setConsideraHistorico(e.target.checked);    
+  function onChangeAnoLetivo(ano){
+    setCarregandoModalidades(true);    
+    setAnoLetivo(ano);    
+  }
+
+  function onCheckedConsideraHistorico(e){     
+    setConsideraHistorico(e.target.checked);
+    refForm.setFieldValue('consideraHistorico', e.target.checked);    
   }
 
   return (
@@ -178,7 +192,7 @@ function Filtro({ onFiltrar, resetForm }) {
             <Grid cols={2}>
               <AnoLetivoDropDown
                 form={form}
-                onChange={ano => setAnoLetivo(ano) }
+                onChange={ano =>  onChangeAnoLetivo(ano)}
                 consideraHistorico={consideraHistorico}
               />
             </Grid>
@@ -201,7 +215,8 @@ function Filtro({ onFiltrar, resetForm }) {
                   placeholder="Modalidade"
                   label="Modalidade"
                   disabled={
-                    !anoLetivo || (modalidades && modalidades.length === 1)
+                    !anoLetivo ||                     
+                    (modalidades && (modalidades.length < 1 || modalidades.length === 1))
                   }
                 />
               </Loader>
@@ -285,12 +300,12 @@ function Filtro({ onFiltrar, resetForm }) {
 
 Filtro.propTypes = {
   onFiltrar: PropTypes.func,
-  resetForm: PropTypes.oneOfType([PropTypes.any]),
+  resetForm: PropTypes.oneOfType([PropTypes.any])  
 };
 
 Filtro.defaultProps = {
   onFiltrar: () => null,
-  resetForm: false,
+  resetForm: false  
 };
 
 export default Filtro;
