@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Interfaces
 {
-    public interface IExecutaNotificacaoPeriodoFechamentoUseCase
+    public interface IExecutaNotificacaoInicioFimPeriodoFechamentoUseCase
     {
         Task Executar();
     }

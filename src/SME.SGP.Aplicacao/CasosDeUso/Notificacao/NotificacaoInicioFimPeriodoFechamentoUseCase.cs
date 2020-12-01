@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class NotificacaoPeriodoFechamentoUseCase : AbstractUseCase, INotificacaoPeriodoFechamentoUseCase
+    public class NotificacaoInicioFimPeriodoFechamentoUseCase : AbstractUseCase, INotificacaoInicioFimPeriodoFechamentoUseCase
     {
-        public NotificacaoPeriodoFechamentoUseCase(IMediator mediator) : base(mediator)
+        public NotificacaoInicioFimPeriodoFechamentoUseCase(IMediator mediator) : base(mediator)
         {
         }
 
