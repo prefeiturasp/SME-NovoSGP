@@ -28,6 +28,8 @@ namespace SME.SGP.Dominio.Interfaces
         Ue ObterUEPorTurma(string turmaId);
 
         Task<IEnumerable<Ue>> SincronizarAsync(IEnumerable<Ue> entidades, IEnumerable<Dre> dres);
+        Task<IEnumerable<Ue>> ObterUEsSemPeriodoFechamento(long periodoEscolarId, object ano, object p);
+        Task<IEnumerable<Ue>> ObterUEsSemPeriodoFechamento(long periodoEscolarId, int ano, int[] modalidades);
         Task<bool> ValidarUeEducacaoInfantil(long ueId);
 
         Task<IEnumerable<Ue>> ObterUesPorModalidade(int[] modalidades);
