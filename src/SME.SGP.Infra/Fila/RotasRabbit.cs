@@ -49,5 +49,6 @@
         public static string RotaNotificacaoAndamentoFechamento => "fechamento.andamento.notificar";
         
         public static string RotaNotificacaoResultadoInsatisfatorio => "notificacao.nova.resultado.insatisfatorio";
+        public static string RotaNotificacaoUeFechamentosInsuficientes => "fechamento.insuficiente.notificar";
     }
 }

@@ -24,7 +24,7 @@ namespace SME.SGP.Dominio.Interfaces
         IEnumerable<Ue> ObterTodas();
 
         Task<IEnumerable<Turma>> ObterTurmas(string ueCodigo, Modalidade modalidade, int ano);
-
+        Task<int> ObterQuantidadeTurmasSeriadas(long ueId);
         Ue ObterUEPorTurma(string turmaId);
 
         Task<IEnumerable<Ue>> SincronizarAsync(IEnumerable<Ue> entidades, IEnumerable<Dre> dres);

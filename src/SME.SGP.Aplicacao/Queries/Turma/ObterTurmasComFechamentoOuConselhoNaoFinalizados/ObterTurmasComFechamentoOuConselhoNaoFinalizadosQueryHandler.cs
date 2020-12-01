@@ -19,6 +19,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<IEnumerable<Turma>> Handle(ObterTurmasComFechamentoOuConselhoNaoFinalizadosQuery request, CancellationToken cancellationToken)
-            => await repositorioTurma.ObterTurmasComFechamentoOuConselhoNaoFinalizados(request.UeId, request.AnoLetivo, request.PeriodoEscolarId, request.Modalidades);
+            => await repositorioTurma.ObterTurmasComFechamentoOuConselhoNaoFinalizados(request.UeId, request.AnoLetivo, request.PeriodoEscolarId, request.Modalidades, request.Semestre);
     }
 }

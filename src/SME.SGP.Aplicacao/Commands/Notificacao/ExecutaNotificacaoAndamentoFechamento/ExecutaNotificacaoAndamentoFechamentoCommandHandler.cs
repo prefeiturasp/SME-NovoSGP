@@ -23,8 +23,9 @@ namespace SME.SGP.Aplicacao
         {
             var turmas = await mediator.Send(new ObterTurmasComFechamentoOuConselhoNaoFinalizadosQuery(request.PeriodoEncerrandoBimestre.PeriodoFechamento.UeId.Value,
                                                                                                        DateTime.Now.Year,
-                                                                                                       request.PeriodoEncerrandoBimestre.PeriodoFechamentoId,
-                                                                                                       request.ModalidadeTipoCalendario.ObterModalidadesTurma()));
+                                                                                                       request.PeriodoEncerrandoBimestre.PeriodoEscolarId,
+                                                                                                       request.ModalidadeTipoCalendario.ObterModalidadesTurma(),
+                                                                                                       DateTime.Now.Semestre()));
             var componentes = await mediator.Send(new ObterComponentesCurricularesQuery());
 
             if (turmas != null && turmas.Any())
