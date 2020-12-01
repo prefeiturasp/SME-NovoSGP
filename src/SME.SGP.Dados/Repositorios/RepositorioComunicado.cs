@@ -372,9 +372,9 @@ namespace SME.SGP.Dados.Repositorios
             var turmaAlias = "tur";
 
             var sql = new StringBuilder($@"SELECT
-                                            id AS Id,
-                                            titulo AS Titulo,
-                                            data_envio AS DataEnvio
+                                            {comunicadoAlias}.id AS Id,
+                                            {comunicadoAlias}.titulo AS Titulo,
+                                            {comunicadoAlias}.data_envio AS DataEnvio
                                         FROM comunicado {comunicadoAlias} ");
 
             if (!string.IsNullOrWhiteSpace(filtro.CodigoTurma))
@@ -384,6 +384,8 @@ namespace SME.SGP.Dados.Repositorios
             }
 
             sql.Append(MontarCondicoesDaConsultaObterComunicadosParaFiltroDaDashboard(filtro, comunicadoAlias, comunicadoTumaAlias, turmaAlias));
+
+            sql.Append($@" ORDER BY {comunicadoAlias}.titulo LIMIT 10");
 
             var parametros = new
             {
@@ -399,7 +401,6 @@ namespace SME.SGP.Dados.Repositorios
                 filtro.Semestre,
                 filtro.Titulo
             };
-
             return database.QueryAsync<ComunicadoParaFiltroDaDashboardDto>(sql.ToString(), parametros);
         }
 
@@ -411,9 +412,9 @@ namespace SME.SGP.Dados.Repositorios
                 where.Append($" AND {comunicadoAlias}.codigo_dre = @CodigoDre");
 
             if (!string.IsNullOrWhiteSpace(filtro.CodigoUe))
-                where.Append($" AND {comunicadoAlias}.codigo_e = @CodigoUe");
+                where.Append($" AND {comunicadoAlias}.codigo_ue = @CodigoUe");
 
-            if (filtro.GruposIds.Any())
+            if (filtro.GruposIds != null)
                 where.Append($" AND {comunicadoAlias}.grupo_comunicado_id = ANY(@GruposIds)");
 
             if (filtro.Modalidade != null)
@@ -423,21 +424,21 @@ namespace SME.SGP.Dados.Repositorios
                 where.Append($" AND {comunicadoAlias}.semestre = @Semestre");
 
             if (filtro.AnoEscolar != null)
-                where.Append($" AND {comunicadoAlias}.turma_codigo = @CodigoTurma");
+                where.Append($" AND {comunicadoAlias}.series_resumidas = @AnoEscolar");
 
             if (!string.IsNullOrWhiteSpace(filtro.CodigoTurma))
                 where.Append($" AND {comunicadoTumaAlias}.turma_codigo = @CodigoTurma");
 
             if (filtro.DataEnvioInicial != null)
-                where.Append($" AND {comunicadoAlias}.data_evento >= @DataEnvioInicial");
+                where.Append($" AND {comunicadoAlias}.data_envio >= @DataEnvioInicial");
 
             if (filtro.DataEnvioFinal != null)
-                where.Append($" AND {comunicadoAlias}.data_evento <= @DataEnvioFinal");
+                where.Append($" AND {comunicadoAlias}.data_envio <= @DataEnvioFinal");
 
             if (!string.IsNullOrWhiteSpace(filtro.Titulo))
             {
                 filtro.Titulo = filtro.Titulo.ToUpperInvariant();
-                where.Append($" AND (upper(f_unaccent({comunicadoAlias}.titulo)) LIKE '%@Titulo%'");
+                where.Append($" AND lower(f_unaccent(cm.titulo)) LIKE lower(f_unaccent('%" + filtro.Titulo + "%'))");
             }
 
             return where.ToString();

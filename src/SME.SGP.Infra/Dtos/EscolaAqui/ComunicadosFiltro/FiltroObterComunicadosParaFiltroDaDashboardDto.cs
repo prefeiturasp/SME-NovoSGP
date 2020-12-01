@@ -8,13 +8,15 @@ namespace SME.SGP.Infra.Dtos.EscolaAqui.ComunicadosFiltro
         public int AnoLetivo { get; set; }
         public string CodigoDre { get; set; }
         public string CodigoUe { get; set; }
-        public long[] GruposIds { get; set; }
+        public int[] GruposIds { get; set; }
         public Modalidade? Modalidade { get; set; }
         public short? Semestre { get; set; }
-        public short? AnoEscolar { get; set; }
+        public string AnoEscolar { get; set; }
         public string CodigoTurma { get; set; }
         public DateTime? DataEnvioInicial { get; set; }
         public DateTime? DataEnvioFinal { get; set; }
         public string Titulo { get; set; }
+
+
     }
 }

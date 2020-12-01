@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra.Dtos.EscolaAqui.ComunicadosFiltro;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -19,22 +20,30 @@ namespace SME.SGP.Aplicacao.Queries.EscolaAqui.ObterComunicadosParaFiltro
 
         public async Task<IEnumerable<ComunicadoParaFiltroDaDashboardDto>> Handle(ObterComunicadosParaFiltroDaDashboardQuery request, CancellationToken cancellationToken)
         {
-            var filtro = new FiltroObterComunicadosParaFiltroDaDashboardDto
+            try
             {
-                AnoEscolar = request.AnoEscolar,
-                AnoLetivo = request.AnoLetivo,
-                CodigoDre = request.CodigoDre,
-                CodigoTurma = request.CodigoTurma,
-                CodigoUe = request.CodigoUe,
-                DataEnvioFinal = request.DataEnvioFinal,
-                DataEnvioInicial = request.DataEnvioInicial,
-                Titulo = request.Descricao,
-                GruposIds = request.GruposIds.ToArray(),
-                Modalidade = request.Modalidade,
-                Semestre = request.Semestre
-            };
+                var filtro = new FiltroObterComunicadosParaFiltroDaDashboardDto
+                {
+                    AnoEscolar = request.AnoEscolar,
+                    AnoLetivo = request.AnoLetivo,
+                    CodigoDre = request.CodigoDre,
+                    CodigoTurma = request.CodigoTurma,
+                    CodigoUe = request.CodigoUe,
+                    DataEnvioFinal = request.DataEnvioFinal,
+                    DataEnvioInicial = request.DataEnvioInicial,
+                    Titulo = request.Descricao,
+                    GruposIds = request.GruposIds,
+                    Modalidade = request.Modalidade,
+                    Semestre = request.Semestre
+                };
 
-            return await repositorioComunicado.ObterComunicadosParaFiltroDaDashboard(filtro);
+                return await repositorioComunicado.ObterComunicadosParaFiltroDaDashboard(filtro);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
         }
     }
 }
