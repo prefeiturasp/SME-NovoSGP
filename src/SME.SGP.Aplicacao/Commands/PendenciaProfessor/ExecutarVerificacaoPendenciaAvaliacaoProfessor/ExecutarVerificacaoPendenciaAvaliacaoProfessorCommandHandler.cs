@@ -74,11 +74,11 @@ namespace SME.SGP.Aplicacao
 
         private async Task IncluirPendenciaProfessor(Turma turma, long componenteCurricularId, string professorRf, int bimestre, string componenteCurricularNome, long periodoEscolarId)
         {
-            var escolaUe = $"{turma.Ue.TipoEscola.ShortName()} {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao}) - Turma {turma.Nome}";
+            var escolaUe = $"{turma.Ue.TipoEscola.ShortName()} {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao})";
             var titulo = $"Ausência de avaliação no {bimestre}º bimestre {escolaUe}";
 
             var descricao = $"<i>O componente curricular {componenteCurricularNome} não possui nenhuma avaliação cadastrada no {bimestre}º bimestre - {escolaUe}</i>";
-            var instrucao = "Acesse a tela de Calendário Escolar e confira os eventos da sua UE.";
+            var instrucao = "Você precisa criar uma avaliação para esta turma e componente curricular.";
 
             await mediator.Send(new SalvarPendenciaAusenciaDeAvaliacaoProfessorCommand(turma.Id, componenteCurricularId, periodoEscolarId, professorRf, titulo, descricao, instrucao));
             
