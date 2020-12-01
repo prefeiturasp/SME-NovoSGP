@@ -1,8 +1,10 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,24 +22,9 @@ namespace SME.SGP.Aplicacao.Queries.UE.ObterUEsPorModalidadeCalendario
 
         public async Task<IEnumerable<Ue>> Handle(ObterUEsPorModalidadeCalendarioQuery request, CancellationToken cancellationToken)
         {
-            var modalidades = ObterTurmas(request.ModalidadeTipoCalendario);
+            var modalidades = request.ModalidadeTipoCalendario.ObterModalidadesTurma();
 
-            return await repositorioUe.ObterUesPorModalidade(modalidades);
-        }
-
-        private int[] ObterTurmas(ModalidadeTipoCalendario modalidadeTipoCalendario)
-        {
-            switch (modalidadeTipoCalendario)
-            {
-                case ModalidadeTipoCalendario.FundamentalMedio:
-                    return new int[] { (int)Modalidade.Fundamental, (int)Modalidade.Medio };
-                case ModalidadeTipoCalendario.EJA:
-                    return new int[] { (int)Modalidade.EJA };
-                case ModalidadeTipoCalendario.Infantil:
-                    return new int[] { (int)Modalidade.Infantil };
-                default:
-                    return null;
-            }
+            return await repositorioUe.ObterUesPorModalidade(modalidades.Cast<int>().ToArray());
         }
     }
 }
