@@ -36,9 +36,10 @@ namespace SME.SGP.Aplicacao
                 foreach(var periodoEncerrando in periodoEncerrandoBimestre)
                 {
                     var turmas = await mediator.Send(new ObterTurmasComFechamentoOuConselhoNaoFinalizadosQuery(periodoEncerrando.PeriodoFechamento.UeId.Value,
-                                                                                                                periodoEncerrando.PeriodoEscolarId,
-                                                                                                                modalidade.ObterModalidadesTurma(),
-                                                                                                                DateTime.Now.Semestre()));
+                                                                                                               DateTime.Now.Year,
+                                                                                                               periodoEncerrando.PeriodoEscolarId,
+                                                                                                               modalidade.ObterModalidadesTurma(),
+                                                                                                               DateTime.Now.Semestre()));
 
                     if (turmas != null && turmas.Any())
                         listaUes.Add(await VerificaTurmasComPendenciaFechamentoNaUe(turmas, periodoEncerrando.PeriodoFechamento.Ue, percentualFechamentoInsuficiente));
@@ -71,6 +72,7 @@ namespace SME.SGP.Aplicacao
             foreach (var periodoEncerramentoUe in periodosEncerramentoUes)
             {
                 var turmas = await mediator.Send(new ObterTurmasComFechamentoOuConselhoNaoFinalizadosQuery(periodoEncerramentoUe.PeriodoFechamento.UeId.Value,
+                                                                                                           DateTime.Now.Year,
                                                                                                            null,
                                                                                                            modalidade.ObterModalidadesTurma(),
                                                                                                            DateTime.Now.Semestre()));
