@@ -251,6 +251,7 @@ namespace SME.SGP.Dados.Repositorios
                 (periodoFechamento, ue, dre, periodoFechamentoBimestre, periodoEscolar) =>
                 {
                     ue.AdicionarDre(dre);
+                    periodoFechamento.Dre = dre;
                     periodoFechamento.Ue = ue;
                     periodoFechamentoBimestre.PeriodoFechamento = periodoFechamento;
                     periodoFechamentoBimestre.PeriodoEscolar = periodoEscolar;

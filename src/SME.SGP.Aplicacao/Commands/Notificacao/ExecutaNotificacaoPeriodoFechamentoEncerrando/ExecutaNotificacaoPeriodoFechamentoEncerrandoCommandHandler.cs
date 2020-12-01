@@ -10,16 +10,16 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ExecutaNotificacaoPeriodoFechamentoIniciandoCommandHandler : IRequestHandler<ExecutaNotificacaoPeriodoFechamentoIniciandoCommand, bool>
+    public class ExecutaNotificacaoPeriodoFechamentoEncerrandoCommandHandler : IRequestHandler<ExecutaNotificacaoPeriodoFechamentoEncerrandoCommand, bool>
     {
         private readonly IMediator mediator;
 
-        public ExecutaNotificacaoPeriodoFechamentoIniciandoCommandHandler(IMediator mediator)
+        public ExecutaNotificacaoPeriodoFechamentoEncerrandoCommandHandler(IMediator mediator)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<bool> Handle(ExecutaNotificacaoPeriodoFechamentoIniciandoCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(ExecutaNotificacaoPeriodoFechamentoEncerrandoCommand request, CancellationToken cancellationToken)
         {
             var turmas = await mediator.Send(new ObterTurmasComInicioFechamentoQuery(request.PeriodoIniciandoBimestre.PeriodoFechamento.UeId.Value,
                 request.PeriodoIniciandoBimestre.PeriodoEscolarId,
