@@ -512,7 +512,7 @@ namespace SME.SGP.Dados.Repositorios
 
         }
 
-        public async Task<IEnumerable<Turma>> ObterTurmasComFechamentoOuConselhoNaoFinalizados(long ueId, long? periodoEscolarId, int[] modalidades, int semestre)
+        public async Task<IEnumerable<Turma>> ObterTurmasComFechamentoOuConselhoNaoFinalizados(long ueId, int anoLetivo, long? periodoEscolarId, int[] modalidades, int semestre)
         {
             var joinFechamentoTurma = periodoEscolarId.HasValue ?
                 "left join fechamento_turma ft on ft.turma_id = t.id and ft.periodo_escolar_id = @periodoEscolarId" :
@@ -526,6 +526,7 @@ namespace SME.SGP.Dados.Repositorios
                          left join fechamento_turma_disciplina d on d.fechamento_turma_id = ft.id
                          left join conselho_classe cc on cc.fechamento_turma_id = ft.id
                          where t.ue_id = @ueId
+                           and t.ano_letivo  = @anoLetivo
                            and t.modalidade_codigo = ANY(@modalidades)
                            and t.ano between '1' and '9'
                            and (t.semestre = 0 or t.semestre = @semestre)
@@ -534,7 +535,7 @@ namespace SME.SGP.Dados.Repositorios
    	                         or cc.id is null 
    	                         or cc.situacao = 1)";
 
-            return await contexto.Conexao.QueryAsync<Turma>(query, new { ueId, periodoEscolarId, modalidades, semestre });
+            return await contexto.Conexao.QueryAsync<Turma>(query, new { ueId, anoLetivo, periodoEscolarId, modalidades, semestre });
         }
     }
 }
