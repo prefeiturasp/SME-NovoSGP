@@ -103,12 +103,25 @@ namespace SME.SGP.Aplicacao
             }
             mensagem.Append("</table>");
 
-            await mediator.Send(new EnviarNotificacaoCommand(titulo,
-                                                             mensagem.ToString(),
-                                                             NotificacaoCategoria.Aviso,
-                                                             NotificacaoTipo.Fechamento,
-                                                             new[] { Cargo.Supervisor },
-                                                             dre.CodigoDre));
+            var supervisores = await ObterUsuariosSupervisores(dre.CodigoDre);
+            if (supervisores != null && supervisores.Any())
+                await mediator.Send(new EnviarNotificacaoUsuariosCommand(titulo, mensagem.ToString(), NotificacaoCategoria.Aviso, NotificacaoTipo.Fechamento, supervisores, dre.CodigoDre));
+        }
+
+        private async Task<IEnumerable<long>> ObterUsuariosSupervisores(String codigoDre)
+        {
+            var supervisores = await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(codigoDre, ObterPerfis()));
+
+            var listaUsuarios = new List<long>();
+            foreach (var supervisor in supervisores)
+                listaUsuarios.Add(await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(supervisor)));
+
+            return listaUsuarios;
+        }
+
+        private IEnumerable<Guid> ObterPerfis()
+        {
+            return new List<Guid>() { Perfis.PERFIL_SUPERVISOR };
         }
 
         private string ObterHeaderTabela()
