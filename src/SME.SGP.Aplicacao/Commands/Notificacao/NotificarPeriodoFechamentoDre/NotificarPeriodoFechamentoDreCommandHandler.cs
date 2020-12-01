@@ -65,7 +65,7 @@ namespace SME.SGP.Aplicacao
 
             var listaUsuarios = new List<long>();
             foreach (var funcionario in funcionarios)
-                listaUsuarios.Add(await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(funcionario));
+                listaUsuarios.Add(await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(funcionario)));
 
             return listaUsuarios;
         }
