@@ -436,7 +436,7 @@ const Filtro = () => {
         modalidadeSelecionada,
         unidadeEscolarSelecionada,
         periodoSelecionado: periodo,
-        anoLetivoSelecionado,
+        anoLetivoSelecionado,        
       });
 
       if (!listaTurmas || listaTurmas.length === 0) {
@@ -590,7 +590,7 @@ const Filtro = () => {
       dreSelecionada &&
       unidadeEscolarSelecionada
     ) {
-      obterTurmas(true);
+      obterTurmas(true);      
       return;
     }
   }, [
@@ -726,7 +726,7 @@ const Filtro = () => {
           return;
         }
 
-        const listaTurmas = await obterTurmas(false);
+        const listaTurmas = await obterTurmas(false);        
         if (listaTurmas && listaTurmas.length) {
           const turmaNaLista = listaTurmas.find(
             item => String(item.valor) === String(turmaBkp.turma)
@@ -962,7 +962,7 @@ const Filtro = () => {
   const aoTrocarUnidadeEscolar = unidade => {
     if (unidade !== unidadeEscolarSelecionada) {
       setTurmaSelecionada();
-      obterTurmas();
+      obterTurmas();      
     }
 
     setUnidadeEscolarSelecionada(unidade);
@@ -990,8 +990,11 @@ const Filtro = () => {
 
       if (!anoLetivoSelecionado && turmaUsuarioSelecionada.length) {
         setAnoLetivoSelecionado(turmaUsuarioSelecionada.anoLetivo);
-        setCampoAnoLetivoDesabilitado(false);
+        setCampoAnoLetivoDesabilitado(false);        
       }
+
+      if(turmaUsuarioSelecionada.anoLetivo && anoLetivoSelecionado && turmaUsuarioSelecionada.anoLetivo != anoLetivoSelecionado)
+        setAnoLetivoSelecionado(turmaUsuarioSelecionada.anoLetivo);      
 
       if(turmaUsuarioSelecionada.modalidade && modalidadeSelecionada && turmaUsuarioSelecionada.modalidade != modalidadeSelecionada)
         setModalidadeSelecionada(turmaUsuarioSelecionada.modalidade);
