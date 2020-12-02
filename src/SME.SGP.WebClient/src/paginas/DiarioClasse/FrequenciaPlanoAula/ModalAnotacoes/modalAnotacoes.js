@@ -90,13 +90,11 @@ const ModalAnotacoesFrequencia = props => {
 
   const montarDadosAluno = useCallback(() => {
     const aluno = {
+      ...dadosModalAnotacao,
       nome: dadosModalAnotacao.nomeAluno,
       numeroChamada: dadosModalAnotacao.numeroAlunoChamada,
       dataNascimento: dadosModalAnotacao.dataNascimento,
       codigoEOL: dadosModalAnotacao.codigoAluno,
-      frequencia: 89,
-      situacao: dadosModalAnotacao.situacaoMatricula,
-      dataSituacao: dadosModalAnotacao.dataSituacao,
     };
     setDadosEstudanteOuCrianca(aluno);
   }, [dadosModalAnotacao]);
