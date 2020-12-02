@@ -501,5 +501,41 @@ namespace SME.SGP.Dados.Repositorios
 	                  pe.bimestre = 1 and                      
 	                  t.dt_fim_eol is not null and 
                       t.dt_fim_eol {(definirTurmasComoHistorica ? ">=" : "<")} pe.periodo_inicio"; //Turmas extintas após o 1º bimestre do ano letivo considerado serão marcadas como histórica
+
+        public async Task<IEnumerable<Turma>> ObterTurmasPorAnoLetivoModalidade(int anoLetivo, Modalidade[] modalidades)
+        {
+
+            var query = new StringBuilder(@"select distinct * from turma t
+                                            where  t.ano_letivo = @anoLetivo and t.modalidade_codigo = ANY(@modalidades)");
+
+            return await contexto.Conexao.QueryAsync<Turma>(query.ToString(), new { anoLetivo, modalidades = modalidades.Cast<int>().ToArray() });
+
+        }
+
+        public async Task<IEnumerable<Turma>> ObterTurmasComFechamentoOuConselhoNaoFinalizados(long ueId, int anoLetivo, long? periodoEscolarId, int[] modalidades, int semestre)
+        {
+            var joinFechamentoTurma = periodoEscolarId.HasValue ?
+                "left join fechamento_turma ft on ft.turma_id = t.id and ft.periodo_escolar_id = @periodoEscolarId" :
+                "left join fechamento_turma ft on ft.turma_id = t.id and ft.periodo_escolar_id is null";
+
+            var query = $@"select t.*
+                          from turma t
+                        inner join ue on ue.id = t.ue_id
+                        inner join dre on dre.id = ue.dre_id
+                         {joinFechamentoTurma}
+                         left join fechamento_turma_disciplina d on d.fechamento_turma_id = ft.id
+                         left join conselho_classe cc on cc.fechamento_turma_id = ft.id
+                         where t.ue_id = @ueId
+                           and t.ano_letivo  = @anoLetivo
+                           and t.modalidade_codigo = ANY(@modalidades)
+                           and t.ano between '1' and '9'
+                           and (t.semestre = 0 or t.semestre = @semestre)
+                           and (d.situacao in (1,2) 
+   	                         or d.id is null 
+   	                         or cc.id is null 
+   	                         or cc.situacao = 1)";
+
+            return await contexto.Conexao.QueryAsync<Turma>(query, new { ueId, anoLetivo, periodoEscolarId, modalidades, semestre });
+        }
     }
 }

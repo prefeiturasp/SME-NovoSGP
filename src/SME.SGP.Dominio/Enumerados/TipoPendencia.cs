@@ -41,6 +41,15 @@ namespace SME.SGP.Dominio
         CalendarioLetivoInsuficiente = 12,
 
         [Display(Name = "Cadastro de eventos pendente", GroupName = "Calendário")]
-        CadastroEventoPendente = 13
+        CadastroEventoPendente = 13,
+
+        [Display(Name = "Ausência de Avaliacao", GroupName = "Fechamento")]
+        AusenciaDeAvaliacaoProfessor = 14,
+
+        [Display(Name = "Ausência de Avaliacao", GroupName = "Fechamento")]
+        AusenciaDeAvaliacaoCP = 15,
+
+        [Display(Name = "Ausência de Fechamento", GroupName = "Fechamento")]
+        AusenciaFechamento = 16
     }
 }
