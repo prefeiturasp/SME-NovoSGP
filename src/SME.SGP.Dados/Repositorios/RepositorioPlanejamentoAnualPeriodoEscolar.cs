@@ -147,5 +147,11 @@ namespace SME.SGP.Dados.Repositorios
 
             return (await database.Conexao.QueryAsync<int>(query, new { planejamentoAnualPeriodoId })).Any();
         }
+
+        public async Task RemoverLogicamenteAsync(long id)
+        {
+            var sql = "UPDATE planejamento_anual_periodo_escolar SET EXCLUIDO = TRUE WHERE ID = @id";
+            await database.Conexao.ExecuteAsync(sql, new { id });
+        }
     }
 }

@@ -1,9 +1,9 @@
-﻿using SME.SGP.Dominio;
+﻿using Dapper;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -141,7 +141,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<TurmaParaCopiaPlanoAnualDto>> ValidaSeTurmasPossuemPlanejamentoAnual(string[] turmasId)
         {
-             var query = @"select
+            var query = @"select
 	                        t.*,
 	                        (select 1 from planejamento_anual where turma_id = t.turma_id::int8 limit 1) as possuiPlano
                         from
@@ -189,7 +189,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<TurmaParaCopiaPlanoAnualDto>(query, new { turmaId = turma.Id, ueId = turma.UeId, componenteCurricularId = componenteCurricularId.ToString(), ano, rf });
         }
 
-        public async Task<IEnumerable<TurmaParaCopiaPlanoAnualDto>> ObterTurmasParaCopiaPlanejamentoAnualCP(Turma turma, string ano,  bool ensinoEspecial)
+        public async Task<IEnumerable<TurmaParaCopiaPlanoAnualDto>> ObterTurmasParaCopiaPlanejamentoAnualCP(Turma turma, string ano, bool ensinoEspecial)
         {
             var query = @"select
 	                        t.id,
@@ -215,7 +215,7 @@ namespace SME.SGP.Dados.Repositorios
                 query += "and t.ano = @ano";
             query += $" group by t.id order by t.nome";
 
-            return await database.Conexao.QueryAsync<TurmaParaCopiaPlanoAnualDto>(query, new { turmaId = turma.Id, ueId = turma.UeId,  ano });
+            return await database.Conexao.QueryAsync<TurmaParaCopiaPlanoAnualDto>(query, new { turmaId = turma.Id, ueId = turma.UeId, ano });
         }
 
         public async Task<PlanejamentoAnual> ObterPlanejamentoAnualPorAnoEscolaBimestreETurma(long turmaId, long periodoEscolarId, long componenteCurricularId)
@@ -268,6 +268,12 @@ namespace SME.SGP.Dados.Repositorios
                     periodoEscolarId,
                     componenteCurricularId
                 });
+        }
+
+        public async Task RemoverLogicamenteAsync(long id)
+        {
+            var sql = "UPDATE planejamento_anual SET EXCLUIDO = TRUE WHERE ID = @id";
+            await database.Conexao.ExecuteAsync(sql, new { id });
         }
     }
 }

@@ -6,5 +6,6 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task RemoverPorPlanejamentoAnual(long id);
         Task<PlanejamentoAnualComponente> ObterPorPlanejamentoAnualPeriodoEscolarId(long componenteCurricularId, long id);
+        Task RemoverLogicamenteAsync(long id);
     }
 }
