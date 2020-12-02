@@ -442,6 +442,7 @@ namespace SME.SGP.Dados.Repositorios
             }
 
             return where.ToString();
+        }
 
         public async Task<bool> VerificaExistenciaComunicadoParaEvento(long eventoId)
         {
