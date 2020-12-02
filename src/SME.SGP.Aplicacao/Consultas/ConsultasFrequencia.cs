@@ -82,9 +82,9 @@ namespace SME.SGP.Aplicacao
             if (_mediaFrequencia == 0)
             {
                 if (disciplina.Regencia || !disciplina.LancaNota)
-                    _mediaFrequencia = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse, DateTime.Today.Year)));                    
+                    _mediaFrequencia = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse, DateTime.Today.Year)));
                 else
-                    _mediaFrequencia = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.CompensacaoAusenciaPercentualFund2, DateTime.Today.Year)));                   
+                    _mediaFrequencia = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.CompensacaoAusenciaPercentualFund2, DateTime.Today.Year)));
             }
 
             return _mediaFrequencia;
@@ -106,7 +106,7 @@ namespace SME.SGP.Aplicacao
             var disciplinasEOL = await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { long.Parse(disciplinaId) });
             if (disciplinasEOL == null || !disciplinasEOL.Any())
                 throw new NegocioException("Disciplina informada não localizada no EOL.");
-            
+
             var quantidadeMaximaCompensacoes = int.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.QuantidadeMaximaCompensacaoAusencia, DateTime.Today.Year)));
             var percentualFrequenciaAlerta = int.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(disciplinasEOL.First().Regencia ? TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse : TipoParametroSistema.CompensacaoAusenciaPercentualFund2, DateTime.Today.Year)));
 
@@ -138,12 +138,12 @@ namespace SME.SGP.Aplicacao
             if (aula == null)
                 throw new NegocioException("Aula não encontrada.");
 
-            
-            
+
+
             var alunosDaTurma = await servicoEOL.ObterAlunosPorTurma(aula.TurmaId);
             if (alunosDaTurma == null || !alunosDaTurma.Any())
                 throw new NegocioException("Não foram encontrados alunos para a aula/turma informada.");
-            
+
             var turma = await repositorioTurma.ObterPorCodigo(aula.TurmaId);
             if (turma == null)
                 throw new NegocioException("Não foi encontrada uma turma com o id informado. Verifique se você possui abrangência para essa turma.");
@@ -200,7 +200,7 @@ namespace SME.SGP.Aplicacao
                     PermiteAnotacao = aluno.EstaAtivo(aula.DataAula),
                     PossuiAnotacao = anotacoesTurma.Any(a => a == aluno.CodigoAluno),
                     NomeResponsavel = aluno.NomeResponsavel,
-                    TipoResponsavel = aluno.TipoResponsavel,
+                    TipoResponsavel = ObterTipoResponsavel(aluno.TipoResponsavel),
                     CelularResponsavel = aluno.CelularResponsavel,
                     DataAtualizacaoContato = aluno.DataAtualizacaoContato
                 };
@@ -320,6 +320,30 @@ namespace SME.SGP.Aplicacao
                 Desabilitado = !aula.PermiteRegistroFrequencia(turma)
             };
             return registroFrequenciaDto;
+        }
+
+        private string ObterTipoResponsavel(string tipoResponsavel)
+        {
+            switch (tipoResponsavel)
+            {
+                case "1":
+                    {
+                        return TipoResponsavel.Filicacao1.Name();
+                    }
+                case "2":
+                    {
+                        return TipoResponsavel.Filiacao2.Name();
+                    }
+                case "3":
+                    {
+                        return TipoResponsavel.ResponsavelLegal.Name();
+                    }
+                case "4":
+                    {
+                        return TipoResponsavel.ProprioEstudante.Name();
+                    }
+            }
+            return TipoResponsavel.Filicacao1.ToString();
         }
     }
 }
