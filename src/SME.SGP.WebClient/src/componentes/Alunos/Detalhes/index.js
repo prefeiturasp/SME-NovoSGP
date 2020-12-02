@@ -6,7 +6,6 @@ import Button from '~/componentes/button';
 import { Colors } from '~/componentes/colors';
 import { Base } from '~/componentes';
 import { Container, DadosAluno, FrequenciaGlobal } from './styles';
-import { maskTelefone } from '~/utils/funcoes/gerais';
 
 const DetalhesAluno = props => {
   const {
@@ -88,7 +87,7 @@ const DetalhesAluno = props => {
                   >{` (${tipoResponsavel})`}</span>
                 </p>
                 <p>
-                  Telefone: {maskTelefone(celularResponsavel)}
+                  Telefone: {celularResponsavel}
                   <span
                     style={{ color: Base.CinzaDesabilitado, fontSize: '13px' }}
                   >{` (Atualizado - ${
