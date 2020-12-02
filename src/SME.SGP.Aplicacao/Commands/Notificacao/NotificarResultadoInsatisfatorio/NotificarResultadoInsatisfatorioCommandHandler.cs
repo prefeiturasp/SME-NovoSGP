@@ -158,7 +158,7 @@ namespace SME.SGP.Aplicacao
 
         private string ObterHeaderModalidade(string modalidade)
         {
-            return @$"<tr style='padding:4px;'>
+            return $@"<tr style='padding:4px;'>
 	                    <td style='padding:4px;text-align:center;' colspan='4'>{modalidade}</td>
                        </tr>
                     <tr style='padding:4px;'>
