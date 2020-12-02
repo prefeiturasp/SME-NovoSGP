@@ -583,6 +583,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterDocumentoUseCase, ObterDocumentoUseCase>();
             services.TryAddScoped<IAlterarDocumentoUseCase, AlterarDocumentoUseCase>();
             services.TryAddScoped<IRelatorioNotificacaoUseCase, RelatorioNotificacaoUseCase>();
+            services.TryAddScoped<IRelatorioAlteracaoNotasUseCase, RelatorioAlteracaoNotasUseCase>();
 
             // Usuários
             services.TryAddScoped<IObterListaSituacoesUsuarioUseCase, ObterListaSituacoesUsuarioUseCase>();
