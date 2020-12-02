@@ -24,7 +24,7 @@ namespace SME.SGP.Dados.Repositorios
                         from
                             planejamento_anual_objetivos_aprendizagem paoa
                         where
-                            paoa.planejamento_anual_componente_id = @componenteId";
+                            paoa.planejamento_anual_componente_id = @componenteId and paoa.excluido = false";
             return await database.Conexao.QueryAsync<PlanejamentoAnualObjetivoAprendizagem>(sql, new { componenteId });
         }
 
