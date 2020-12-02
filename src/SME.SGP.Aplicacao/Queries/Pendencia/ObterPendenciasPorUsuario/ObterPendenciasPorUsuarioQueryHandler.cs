@@ -105,7 +105,7 @@ namespace SME.SGP.Aplicacao
                 descricao.Append($"<td style='padding: 5px;'>{pendenciaProfessor.Professor}({pendenciaProfessor.ProfessorRf})</td>");
                 descricao.Append("</tr>");
             }
-            descricao.Append("</table><br/>");
+            descricao.Append("</table><br/><br/>");
             descricao.Append($"<b>{pendencia.Instrucao}</b>");
 
             return descricao.ToString();
