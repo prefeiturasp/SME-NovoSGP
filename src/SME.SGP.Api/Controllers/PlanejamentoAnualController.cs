@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -49,7 +50,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PA_I, Permissao.PA_A, Policy = "Bearer")]
         public async Task<IActionResult> Migrar(MigrarPlanejamentoAnualDto migrarPlanoAnualDto, [FromServices] IMigrarPlanejamentoAnualUseCase useCase)
-        {            
+        {
             return Ok(await useCase.Executar(migrarPlanoAnualDto));
         }
 
