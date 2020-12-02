@@ -1,18 +1,27 @@
+import * as moment from 'moment';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
   CampoData,
+  CoresGraficos,
   Loader,
   SelectAutocomplete,
   SelectComponent,
 } from '~/componentes';
-import modalidade from '~/dtos/modalidade';
+import { ModalidadeDTO } from '~/dtos';
 import { AbrangenciaServico, api, erros } from '~/servicos';
 import ServicoFiltroRelatorio from '~/servicos/Paginas/FiltroRelatorio/ServicoFiltroRelatorio';
 import ServicoDashboardEscolaAqui from '~/servicos/Paginas/Relatorios/EscolaAqui/DashboardEscolaAqui/ServicoDashboardEscolaAqui';
+import {
+  adicionarCoresNosGraficos,
+  mapearParaDtoGraficoPizzaComValorEPercentual,
+} from '../../dashboardEscolaAquiGraficosUtils';
+import DataUltimaAtualizacaoDashboardEscolaAqui from '../ComponentesDashboardEscolaAqui/dataUltimaAtualizacaoDashboardEscolaAqui';
+import GraficoBarraDashboardEscolaAqui from '../ComponentesDashboardEscolaAqui/graficoBarraDashboardEscolaAqui';
+import GraficoPizzaDashboardEscolaAqui from '../ComponentesDashboardEscolaAqui/graficoPizzaDashboardEscolaAqui';
 
 const DadosComunicadosLeitura = props => {
-  const { codigoUe } = props;
+  const { codigoDre, codigoUe } = props;
 
   const [exibirLoader, setExibirLoader] = useState(false);
 
@@ -37,10 +46,31 @@ const DadosComunicadosLeitura = props => {
   const [dataInicio, setDataInicio] = useState();
   const [dataFim, setDataFim] = useState();
 
+  const [carregandoTurmas, setCarregandoTurmas] = useState(false);
+  const [codigoTurma, setCodigoTurma] = useState();
+  const [listaTurmas, setListaTurmas] = useState([]);
+
   const [carrecandoComunicado, setCarrecandoComunicado] = useState(false);
   const [listaComunicado, setListaComunicado] = useState([]);
   const [comunicado, setComunicado] = useState();
   const [pesquisaComunicado, setPesquisaComunicado] = useState('');
+
+  const [
+    dadosDeLeituraDeComunicados,
+    setDadosDeLeituraDeComunicados,
+  ] = useState([]);
+
+  const [
+    dadosDeLeituraDeComunicadosAgrupadosPorDre,
+    setDadosDeLeituraDeComunicadosAgrupadosPorDre,
+  ] = useState([]);
+
+  // TODO Verificar no componente de gráficos outra forma de fazer!
+  const chavesGrafico = [
+    'Usuários que não receberam o comunicado (CPF válido porém que não tem o APP instalado)',
+    'Usuário que receberam o comunicado e ainda não visualizaram',
+    'Visualizaram o comunicado',
+  ];
 
   const [listaVisualizacao] = useState([
     {
@@ -156,13 +186,13 @@ const DadosComunicadosLeitura = props => {
   }, []);
 
   useEffect(() => {
-    if (modalidadeId && codigoUe) {
+    if (modalidadeId && codigoUe && codigoUe !== OPCAO_TODOS) {
       obterAnosEscolares(modalidadeId, codigoUe);
     } else {
       setAnosEscolares(undefined);
       setListaAnosEscolares([]);
     }
-  }, [modalidadeId, obterAnosEscolares]);
+  }, [modalidadeId, codigoUe, obterAnosEscolares]);
 
   const obterSemestres = async (
     modalidadeSelecionada,
@@ -190,7 +220,7 @@ const DadosComunicadosLeitura = props => {
     if (
       modalidadeId &&
       anoLetivo &&
-      String(modalidadeId) === String(modalidade.EJA)
+      String(modalidadeId) === String(ModalidadeDTO.EJA)
     ) {
       obterSemestres(modalidadeId, anoLetivo);
     } else {
@@ -199,11 +229,52 @@ const DadosComunicadosLeitura = props => {
     }
   }, [modalidadeId, anoLetivo]);
 
+  const obterTurmas = useCallback(async (modalidadeSelecionada, ue, ano) => {
+    if (ue && modalidadeSelecionada) {
+      setCarregandoTurmas(true);
+      const resultado = await AbrangenciaServico.buscarTurmas(
+        ue,
+        modalidadeSelecionada,
+        '',
+        ano
+      )
+        .catch(e => erros(e))
+        .finally(() => setCarregandoTurmas(false));
+
+      if (resultado?.data?.length) {
+        const lista = resultado.data.map(item => ({
+          desc: item.nome,
+          valor: item.codigo,
+        }));
+        setListaTurmas(lista);
+
+        if (lista && lista.length && lista.length === 1) {
+          setCodigoTurma(lista[0].valor);
+        }
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (codigoUe && codigoUe !== OPCAO_TODOS && modalidadeId && anoLetivo) {
+      obterTurmas(modalidadeId, codigoUe, anoLetivo);
+    } else {
+      setCodigoTurma();
+      setListaTurmas([]);
+    }
+  }, [modalidadeId, codigoUe, anoLetivo, obterTurmas]);
+
+  useEffect(() => {
+    if (codigoUe === OPCAO_TODOS) {
+      setCodigoTurma();
+      setListaTurmas([]);
+    }
+  }, [codigoUe]);
+
   const desabilitarData = current => {
     if (current) {
       return (
-        current < window.moment().startOf('year') ||
-        current > window.moment().endOf('year')
+        current < moment().startOf('year') || current > moment().endOf('year')
       );
     }
     return false;
@@ -218,17 +289,50 @@ const DadosComunicadosLeitura = props => {
   useEffect(() => {
     let isSubscribed = true;
     (async () => {
-      setCarrecandoComunicado(true);
+      if (isSubscribed && anoLetivo && codigoDre && codigoUe) {
+        if (
+          modalidadeId &&
+          String(modalidadeId) === String(ModalidadeDTO.EJA) &&
+          !semestre
+        ) {
+          return;
+        }
 
-      const resposta = await ServicoDashboardEscolaAqui.obterComunicadosAutoComplete(
-        pesquisaComunicado
-      )
-        .catch(e => erros(e))
-        .finally(() => setCarrecandoComunicado(false));
+        const todosGrupos =
+          grupo && grupo[0] === OPCAO_TODOS
+            ? listaGrupo
+                .filter(item => item.valor !== OPCAO_TODOS)
+                .map(g => g.valor)
+            : grupo;
 
-      if (isSubscribed) {
+        setCarrecandoComunicado(true);
+        setComunicado();
+        const resposta = await ServicoDashboardEscolaAqui.obterComunicadosAutoComplete(
+          anoLetivo || '',
+          codigoDre === OPCAO_TODOS ? '' : codigoDre || '',
+          codigoUe === OPCAO_TODOS ? '' : codigoUe || '',
+          todosGrupos,
+          modalidadeId || '',
+          semestre || '',
+          anosEscolares === OPCAO_TODOS ? '' : anosEscolares || '',
+          codigoTurma || '',
+          dataInicio || '',
+          dataFim || '',
+          pesquisaComunicado || ''
+        )
+          .catch(e => erros(e))
+          .finally(() => setCarrecandoComunicado(false));
+
         if (resposta?.data?.length) {
-          setListaComunicado(resposta.data);
+          const lista = resposta.data.map(item => {
+            return {
+              id: item.id,
+              descricao: `${item.titulo} - ${moment(item.dataEnvio).format(
+                'DD/MM/YYYY'
+              )}`,
+            };
+          });
+          setListaComunicado(lista);
         } else {
           setListaComunicado([]);
         }
@@ -238,7 +342,202 @@ const DadosComunicadosLeitura = props => {
     return () => {
       isSubscribed = false;
     };
-  }, [pesquisaComunicado]);
+  }, [
+    anoLetivo,
+    codigoDre,
+    codigoUe,
+    grupo,
+    modalidadeId,
+    semestre,
+    anosEscolares,
+    codigoTurma,
+    dataInicio,
+    dataFim,
+    pesquisaComunicado,
+    listaGrupo,
+  ]);
+
+  const mapearParaDtoGraficoPizza = dados => {
+    const dadosParaMapear = [];
+
+    if (dados.naoReceberamComunicado) {
+      const naoReceberamComunicado = {
+        label: chavesGrafico[0],
+        value: dados.naoReceberamComunicado || 0,
+      };
+      dadosParaMapear.push(naoReceberamComunicado);
+    }
+
+    if (dados.receberamENaoVisualizaram) {
+      const receberamENaoVisualizaram = {
+        label: chavesGrafico[1],
+        value: dados.receberamENaoVisualizaram || 0,
+      };
+      dadosParaMapear.push(receberamENaoVisualizaram);
+    }
+
+    if (dados.visualizaramComunicado) {
+      const visualizaramComunicado = {
+        label: chavesGrafico[2],
+        value: dados.visualizaramComunicado || 0,
+      };
+      dadosParaMapear.push(visualizaramComunicado);
+    }
+
+    const dadosMapeados = mapearParaDtoGraficoPizzaComValorEPercentual(
+      dadosParaMapear
+    );
+    setDadosDeLeituraDeComunicados(dadosMapeados);
+  };
+
+  const obterCominicadoId = useCallback(
+    descricaoComunicado => {
+      let comunicadoId = '';
+      if (descricaoComunicado) {
+        const comunicadoAtual = listaComunicado.find(
+          item => item.descricao === descricaoComunicado
+        );
+        if (comunicadoAtual?.id) {
+          comunicadoId = comunicadoAtual.id;
+        }
+      }
+
+      return comunicadoId;
+    },
+    [listaComunicado]
+  );
+
+  const obterDadosDeLeituraDeComunicados = useCallback(async () => {
+    const comunicadoId = obterCominicadoId(comunicado);
+    if (comunicadoId) {
+      setExibirLoader(true);
+
+      const resposta = await ServicoDashboardEscolaAqui.obterDadosDeLeituraDeComunicados(
+        codigoDre === OPCAO_TODOS ? '' : codigoDre,
+        codigoUe === OPCAO_TODOS ? '' : codigoUe,
+        obterCominicadoId(comunicado),
+        visualizacao
+      )
+        .catch(e => erros(e))
+        .finally(() => setExibirLoader(false));
+
+      if (resposta?.data) {
+        mapearParaDtoGraficoPizza(resposta.data[0]);
+      } else {
+        setDadosDeLeituraDeComunicados([]);
+      }
+    } else {
+      setDadosDeLeituraDeComunicados([]);
+    }
+  }, [codigoDre, codigoUe, visualizacao, comunicado, obterCominicadoId]);
+
+  useEffect(() => {
+    if (
+      visualizacao &&
+      comunicado &&
+      codigoDre &&
+      codigoUe &&
+      listaComunicado.length
+    ) {
+      obterDadosDeLeituraDeComunicados();
+    }
+  }, [
+    codigoDre,
+    codigoUe,
+    comunicado,
+    visualizacao,
+    listaComunicado,
+    obterDadosDeLeituraDeComunicados,
+  ]);
+
+  useEffect(() => {
+    if (!comunicado) {
+      setDadosDeLeituraDeComunicados([]);
+    }
+  }, [comunicado]);
+
+  const mapearParaDtoGraficoComunicadosAgrupadosPorDre = useCallback(
+    dados => {
+      const temDados = dados.filter(
+        item =>
+          item.naoReceberamComunicado ||
+          item.receberamENaoVisualizaram ||
+          item.visualizaramComunicado
+      );
+      if (temDados?.length) {
+        const dadosMapeados = dados.map(item => {
+          const novo = {};
+          if (
+            item.naoReceberamComunicado ||
+            item.receberamENaoVisualizaram ||
+            item.visualizaramComunicado
+          ) {
+            novo.nomeAbreviadoDre = item.nomeAbreviadoDre;
+            if (item.naoReceberamComunicado) {
+              novo.naoReceberamComunicado = item.naoReceberamComunicado;
+              novo[chavesGrafico[0]] = item.naoReceberamComunicado;
+            }
+            if (item.receberamENaoVisualizaram) {
+              novo.receberamENaoVisualizaram = item.receberamENaoVisualizaram;
+              novo[chavesGrafico[1]] = item.receberamENaoVisualizaram;
+            }
+            if (item.visualizaramComunicado) {
+              novo.visualizaramComunicado = item.visualizaramComunicado;
+              novo[chavesGrafico[2]] = item.visualizaramComunicado;
+            }
+          }
+          return novo;
+        });
+        setDadosDeLeituraDeComunicadosAgrupadosPorDre(
+          adicionarCoresNosGraficos(
+            dadosMapeados.filter(item => item.nomeAbreviadoDre)
+          )
+        );
+      } else {
+        setDadosDeLeituraDeComunicadosAgrupadosPorDre([]);
+      }
+    },
+    [chavesGrafico]
+  );
+
+  const obterDadosDeLeituraDeComunicadosAgrupadosPorDre = useCallback(async () => {
+    const comunicadoId = obterCominicadoId(comunicado);
+
+    if (comunicadoId) {
+      setExibirLoader(true);
+      const resposta = await ServicoDashboardEscolaAqui.obterDadosDeLeituraDeComunicadosAgrupadosPorDre(
+        comunicadoId,
+        visualizacao
+      )
+        .catch(e => erros(e))
+        .finally(() => setExibirLoader(false));
+
+      if (resposta?.data?.length) {
+        mapearParaDtoGraficoComunicadosAgrupadosPorDre(resposta.data);
+      } else {
+        setDadosDeLeituraDeComunicadosAgrupadosPorDre([]);
+      }
+    }
+  }, [visualizacao, comunicado, obterCominicadoId]);
+
+  useEffect(() => {
+    if (
+      comunicado &&
+      codigoDre === OPCAO_TODOS &&
+      codigoUe === OPCAO_TODOS &&
+      listaComunicado?.length
+    ) {
+      obterDadosDeLeituraDeComunicadosAgrupadosPorDre();
+    } else {
+      setDadosDeLeituraDeComunicadosAgrupadosPorDre([]);
+    }
+  }, [
+    codigoDre,
+    codigoUe,
+    comunicado,
+    listaComunicado,
+    obterDadosDeLeituraDeComunicadosAgrupadosPorDre,
+  ]);
 
   return (
     <Loader loading={exibirLoader}>
@@ -254,6 +553,7 @@ const DadosComunicadosLeitura = props => {
             onChange={setAnoLetivo}
             valueSelect={anoLetivo}
             placeholder="Selecione o ano"
+            allowClear={false}
           />
         </div>
         <div className="col-sm-12 col-md-6 col-lg-6 col-xl-4 mb-2">
@@ -311,7 +611,7 @@ const DadosComunicadosLeitura = props => {
               disabled={
                 !modalidadeId ||
                 (listaSemestres && listaSemestres.length === 1) ||
-                String(modalidadeId) !== String(modalidade.EJA)
+                String(modalidadeId) !== String(ModalidadeDTO.EJA)
               }
               valueSelect={semestre}
               onChange={setSemestre}
@@ -338,6 +638,26 @@ const DadosComunicadosLeitura = props => {
             />
           </Loader>
         </div>
+        <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 mb-2">
+          <Loader loading={carregandoTurmas} tip="">
+            <SelectComponent
+              id="select-turma"
+              lista={listaTurmas}
+              valueOption="valor"
+              valueText="desc"
+              label="Turma"
+              disabled={
+                codigoUe === OPCAO_TODOS ||
+                !modalidadeId ||
+                (listaTurmas && listaTurmas.length === 1)
+              }
+              valueSelect={codigoTurma}
+              onChange={setCodigoTurma}
+              placeholder="Turma"
+            />
+          </Loader>
+        </div>
+
         <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 pb-2">
           <CampoData
             if="data-inicio"
@@ -388,7 +708,52 @@ const DadosComunicadosLeitura = props => {
             valueSelect={visualizacao}
             onChange={setVisualizacao}
             placeholder="Selecione a visualização"
+            allowClear={false}
           />
+        </div>
+        {dadosDeLeituraDeComunicados?.length ||
+        dadosDeLeituraDeComunicadosAgrupadosPorDre?.length ? (
+          <div className="col-md-12 mt-5">
+            <DataUltimaAtualizacaoDashboardEscolaAqui
+              nomeConsulta="ConsolidarLeituraNotificacao"
+              tituloAdicional="Os dados estão considerando a situação atual dos estudantes e responsáveis"
+            />
+          </div>
+        ) : (
+          ''
+        )}
+
+        <div className="col-md-12">
+          {dadosDeLeituraDeComunicados?.length ? (
+            <GraficoPizzaDashboardEscolaAqui
+              titulo="Dados de leitura"
+              dadosGrafico={dadosDeLeituraDeComunicados}
+            />
+          ) : (
+            ''
+          )}
+        </div>
+
+        <div className="col-md-12">
+          {dadosDeLeituraDeComunicadosAgrupadosPorDre?.length ? (
+            <GraficoBarraDashboardEscolaAqui
+              titulo="Total de Comunicados por DRE"
+              dadosGrafico={dadosDeLeituraDeComunicadosAgrupadosPorDre}
+              chavesGrafico={chavesGrafico}
+              indice="nomeAbreviadoDre"
+              customPropsColors={item => {
+                if (item.id === chavesGrafico[0]) {
+                  return CoresGraficos[0];
+                }
+                if (item.id === chavesGrafico[1]) {
+                  return CoresGraficos[1];
+                }
+                return CoresGraficos[2];
+              }}
+            />
+          ) : (
+            ''
+          )}
         </div>
       </div>
     </Loader>
