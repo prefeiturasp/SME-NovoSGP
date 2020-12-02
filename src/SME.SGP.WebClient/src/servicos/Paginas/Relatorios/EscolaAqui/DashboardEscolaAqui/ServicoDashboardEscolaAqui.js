@@ -34,11 +34,81 @@ class ServicoDashboardEscolaAqui {
     return api.get(url);
   };
 
-  obterComunicadosAutoComplete = descricao => {
-    // TODO Alterar rota!
-    return api.get(
-      `${urlPadrao}/comunicados/auto-complete?descricao=${descricao}`
-    );
+  obterComunicadosAutoComplete = (
+    anoLetivo,
+    codigoDre,
+    codigoUe,
+    gruposIds,
+    modalidade,
+    semestre,
+    anoEscolar,
+    codigoTurma,
+    dataEnvioInicial,
+    dataEnvioFinal,
+    descricao
+  ) => {
+    let url = `${urlPadrao}/comunicados/filtro`;
+    url += `?anoLetivo=${anoLetivo}`;
+
+    if (codigoDre) {
+      url += `&codigoDre=${codigoDre}`;
+    }
+
+    if (codigoUe) {
+      url += `&codigoUe=${codigoUe}`;
+    }
+
+    if (descricao) {
+      url += `&descricao=${descricao}`;
+    }
+
+    if (modalidade) {
+      url += `&modalidade=${modalidade}`;
+    }
+
+    if (semestre) {
+      url += `&semestre=${semestre}`;
+    }
+
+    if (anoEscolar) {
+      url += `&anoEscolar=${anoEscolar}`;
+    }
+
+    if (codigoTurma) {
+      url += `&codigoTurma=${codigoTurma}`;
+    }
+
+    if (dataEnvioInicial) {
+      url += `&dataEnvioInicial=${dataEnvioInicial.format('YYYY-MM-DD')}`;
+    }
+
+    if (dataEnvioFinal) {
+      url += `&dataEnvioFinal=${dataEnvioFinal.format('YYYY-MM-DD')}`;
+    }
+
+    if (gruposIds?.length) {
+      url += `&gruposIds=${gruposIds.join('&gruposIds=', gruposIds)}`;
+    }
+
+    return api.get(url);
+  };
+
+  obterDadosDeLeituraDeComunicados = (
+    codigoDre,
+    codigoUe,
+    notificacaoId,
+    modoVisualizacao
+  ) => {
+    const url = `${urlPadrao}/comunicados/leitura?codigoDre=${codigoDre}&codigoUe=${codigoUe}&notificacaoId=${notificacaoId}&modoVisualizacao=${modoVisualizacao}`;
+    return api.get(url);
+  };
+
+  obterDadosDeLeituraDeComunicadosAgrupadosPorDre = (
+    notificacaoId,
+    modoVisualizacao
+  ) => {
+    const url = `${urlPadrao}/comunicados/leitura/agrupados?notificacaoId=${notificacaoId}&modoVisualizacao=${modoVisualizacao}`;
+    return api.get(url);
   };
 }
 
