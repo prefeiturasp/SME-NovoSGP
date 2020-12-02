@@ -43,15 +43,15 @@ namespace SME.SGP.Aplicacao
 
                 foreach (var paoa in planejamentoAnualObjetivosAprendizagem)
                 {
-                    repositorioPlanejamentoAnualObjetivosAprendizagem.Remover(paoa.Id);
+                    await repositorioPlanejamentoAnualObjetivosAprendizagem.RemoverLogicamenteAsync(paoa.Id);
                 }
 
-                repositorioPlanejamentoAnualComponente.Remover(planejamentoAnualComponente.Id);
+                await repositorioPlanejamentoAnualComponente.RemoverLogicamenteAsync(planejamentoAnualComponente.Id);
 
-                repositorioPlanejamentoAnualPeriodoEscolar.Remover(pape.Id);
+                await repositorioPlanejamentoAnualPeriodoEscolar.RemoverLogicamenteAsync(pape.Id);
             }
 
-            repositorioPlanejamentoAnual.Remover(planejamentoAnual);
+            await repositorioPlanejamentoAnual.RemoverLogicamenteAsync(planejamentoAnual);
 
             return true;
         }
