@@ -46,17 +46,11 @@ namespace SME.SGP.Worker.Service
                 services.AddSingleton<IConnectionMultiplexerSME>(
                     new ConnectionMultiplexerSME(hostContext.Configuration.GetConnectionString("SGP-Redis"), provider.GetService<IServicoLog>()));
 
-                // Teste para injeção do client de telemetria em classe estática                 ,
-
-
                 var telemetryConfiguration = new Microsoft.ApplicationInsights.Extensibility.TelemetryConfiguration(hostContext.Configuration.GetValue<string>("ApplicationInsights:InstrumentationKey"));
 
                 var telemetryClient = new TelemetryClient(telemetryConfiguration);
 
                 DapperExtensionMethods.Init(telemetryClient);
-
-                //
-
 
             });
 

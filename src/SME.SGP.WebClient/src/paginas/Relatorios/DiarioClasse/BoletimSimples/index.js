@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 
 import shortid from 'shortid';
 import { Loader, Card, ButtonGroup, ListaPaginada } from '~/componentes';
@@ -15,13 +16,19 @@ import modalidade from '~/dtos/modalidade';
 const BoletimSimples = () => {
   const [loaderSecao] = useState(false);
   const [somenteConsulta] = useState(false);
+  
+  const usuario = useSelector(store => store.usuario);
+  const { turmaSelecionada } = usuario;
+  const { consideraHistorico } = turmaSelecionada;
+
   const [filtro, setFiltro] = useState({
     anoLetivo: '',
     modalidade: '',
     semestre: '',
     dreCodigo: '',
     ueCodigo: '',
-    turmaCodigo: '',
+    turmaCodigo: '',   
+    consideraHistorico: consideraHistorico 
   });
 
   const [itensSelecionados, setItensSelecionados] = useState([]);
@@ -40,6 +47,7 @@ const BoletimSimples = () => {
       ueCodigo: valoresFiltro.ueId,
       turmaCodigo: valoresFiltro.turmaId,
       semestre: valoresFiltro.semestre,
+      consideraHistorico: consideraHistorico 
     });
     setItensSelecionados([]);
     setSelecionarAlunos(
