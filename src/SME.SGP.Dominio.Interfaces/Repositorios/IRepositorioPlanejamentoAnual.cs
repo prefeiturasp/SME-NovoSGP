@@ -19,5 +19,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<PlanejamentoAnual> ObterPlanejamentoAnualPorAnoEscolaBimestreETurma(long turmaId, long periodoEscolarId, long componenteCurricularId);
         Task<PlanejamentoAnualDto> ObterPlanejamentoAnualSimplificadoPorTurma(long turmaId);
         Task<long> ExistePlanejamentoAnualParaTurmaPeriodoEComponente(long turmaId, long periodoEscolarId, long componenteCurricularId);
+        Task RemoverLogicamenteAsync(long planejamentoAnual);
     }
 }

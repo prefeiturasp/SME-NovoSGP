@@ -8,12 +8,9 @@ import { SelectComponent } from '~/componentes';
 // Servicos
 import AbrangenciaServico from '~/servicos/Abrangencia';
 
-function TurmasDropDown({ form, onChange, label }) {  
+function TurmasDropDown({ form, onChange, label, consideraHistorico, anoLetivo }) {  
   const [listaTurmas, setListaTurmas] = useState([]);  
-  const { ueId, modalidadeId } = form.values;  
-  const usuario = useSelector(store => store.usuario);
-  const { turmaSelecionada } = usuario;
-  const { consideraHistorico, anoLetivo } = turmaSelecionada;
+  const { ueId, modalidadeId } = form.values;      
 
   useEffect(() => {    
     async function buscaTurmas() {      
@@ -72,12 +69,16 @@ TurmasDropDown.propTypes = {
   ]),
   onChange: PropTypes.func,
   label: PropTypes.string,
+  consideraHistorico: PropTypes.bool,
+  anoLetivo: PropTypes.string
 };
 
 TurmasDropDown.defaultProps = {
   form: {},
   onChange: () => {},
   label: null,
+  consideraHistorico: false,
+  anoLetivo: ''
 };
 
 export default TurmasDropDown;
