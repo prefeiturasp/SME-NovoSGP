@@ -42,7 +42,7 @@ namespace SME.SGP.Dados.Repositorios
 	                        and pape.periodo_escolar_id = @periodoEscolarId
                             and pa.excluido = false 
                             and pac.excluido = false
-                            and paoa.excluido = false
+                            and (paoa.excluido is null or paoa.excluido = false)
                         order by paoa.objetivo_aprendizagem_id";
 
             var periodos = new List<PlanejamentoAnualPeriodoEscolar>();
