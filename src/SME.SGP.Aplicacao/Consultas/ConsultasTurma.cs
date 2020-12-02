@@ -126,6 +126,8 @@ namespace SME.SGP.Aplicacao
             foreach(var dadoAluno in dadosAlunos)
             {
                 var dadosBasicos = (AlunoDadosBasicosDto)dadoAluno;
+
+                dadosBasicos.TipoResponsavel = ObterTipoResponsavel(dadoAluno.TipoResponsavel);
                 // se informado periodo escolar carrega marcadores no periodo
                 if (periodoEscolar != null)
                     dadosBasicos.Marcador = servicoAluno.ObterMarcadorAluno(dadoAluno, periodoEscolar);
@@ -138,5 +140,29 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> ObterTurmaEspecialPorCodigo(string turmaCodigo)
             => await repositorioTurma.ObterTurmaEspecialPorCodigo(turmaCodigo);
+
+        private string ObterTipoResponsavel(string tipoResponsavel)
+        {
+            switch (tipoResponsavel)
+            {
+                case "1":
+                    {
+                        return TipoResponsavel.Filicacao1.Name();
+                    }
+                case "2":
+                    {
+                        return TipoResponsavel.Filiacao2.Name();
+                    }
+                case "3":
+                    {
+                        return TipoResponsavel.ResponsavelLegal.Name();
+                    }
+                case "4":
+                    {
+                        return TipoResponsavel.ProprioEstudante.Name();
+                    }
+            }
+            return TipoResponsavel.Filicacao1.ToString();
+        }
     }
 }
