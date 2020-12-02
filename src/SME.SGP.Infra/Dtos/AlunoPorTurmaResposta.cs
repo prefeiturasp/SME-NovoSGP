@@ -25,7 +25,7 @@ namespace SME.SGP.Infra
         public string TurmaRemanejamento { get; set; }
         public string TurmaTransferencia { get; set; }
         public string NomeResponsavel { get; set; }
-        public int TipoResponsavel { get; set; }
+        public string TipoResponsavel { get; set; }
         public string CelularResponsavel { get; set; }
         public DateTime DataAtualizacaoContato { get; set; }
 
