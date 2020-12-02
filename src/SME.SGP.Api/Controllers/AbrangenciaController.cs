@@ -104,10 +104,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> ObterDres([FromQuery]Modalidade? modalidade, [FromQuery]int periodo = 0, [FromQuery]int anoLetivo = 0)
         {
-            var consideraHistorico = ((anoLetivo != 0) && (anoLetivo < DateTime.Now.Year))
-                                    || ConsideraHistorico;
-
-            var dres = await consultasAbrangencia.ObterDres(modalidade, periodo, consideraHistorico, anoLetivo);
+            var dres = await consultasAbrangencia.ObterDres(modalidade, periodo, ConsideraHistorico, anoLetivo);
 
             if (dres.Any())
                 return Ok(dres);
@@ -150,10 +147,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         public async Task<IActionResult> ObterTurmas(string codigoUe, [FromQuery]Modalidade modalidade, int periodo = 0, [FromQuery]int anoLetivo = 0)
         {
-            var consideraHistorico = ((anoLetivo != 0) && (anoLetivo < DateTime.Now.Year))
-                                    || ConsideraHistorico;
-
-            var turmas = await consultasAbrangencia.ObterTurmas(codigoUe, modalidade, periodo, consideraHistorico, anoLetivo);
+            var turmas = await consultasAbrangencia.ObterTurmas(codigoUe, modalidade, periodo, ConsideraHistorico, anoLetivo);
 
             if (!turmas.Any())
                 return NoContent();
@@ -168,10 +162,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         public async Task<IActionResult> ObterUes(string codigoDre, [FromQuery]Modalidade? modalidade, [FromQuery]int periodo = 0, [FromQuery]int anoLetivo = 0)
         {
-            var consideraHistorico = ((anoLetivo != 0) && (anoLetivo < DateTime.Now.Year))
-                                    || ConsideraHistorico;
-
-            var ues = await consultasAbrangencia.ObterUes(codigoDre, modalidade, periodo, consideraHistorico, anoLetivo);
+            var ues = await consultasAbrangencia.ObterUes(codigoDre, modalidade, periodo, ConsideraHistorico, anoLetivo);
 
             if (!ues.Any())
                 return NoContent();
@@ -187,6 +178,16 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> UsuarioAdm([FromServices] IUsuarioPossuiAbrangenciaAdmUseCase useCase)
         {
             return Ok(await useCase.Executar());
+        }
+        [HttpGet("/api/v1/abrangencias/{usuarioRF}/perfis/{usuarioPerfil}/acesso-sondagem")]
+        [ProducesResponseType(typeof(bool), 200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [AllowAnonymous]
+        public async Task<IActionResult> PodeAcessarSondagem(string usuarioRF, Guid usuarioPerfil, [FromServices] IUsuarioPossuiAbrangenciaAcessoSondagemUseCase useCase)
+        {
+            return Ok(await useCase.Executar(usuarioRF, usuarioPerfil));
         }
 
     }

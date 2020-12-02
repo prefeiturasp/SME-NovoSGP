@@ -21,7 +21,9 @@ namespace SME.SGP.Dados
             var query = @"select ppe.*, pc.*
                           from pendencia_parametro_evento ppe 
                          inner join pendencia_calendario_ue pc on pc.id = ppe.pendencia_calendario_ue_id
-                         where pc.tipo_calendario_id = @tipoCalendarioId
+                         inner join pendencia p on p.id = pc.pendencia_id
+                         where not p.excluido
+                           and pc.tipo_calendario_id = @tipoCalendarioId
                            and pc.ue_id = @ueId
                            and ppe.parametro_sistema_id = @parametroId";
 

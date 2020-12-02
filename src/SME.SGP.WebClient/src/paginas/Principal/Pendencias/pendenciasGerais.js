@@ -12,6 +12,7 @@ const PendenciasGerais = () => {
   const [carregando, setCarregando] = useState(false);
   const [dadosPendencias, setDadosPendencias] = useState([]);
   const [numeroRegistros, setNumeroRegistros] = useState(0);
+  const [collapseExpandido, setCollapseExpandido] = useState();
 
   const configCabecalho = {
     altura: '50px',
@@ -32,6 +33,7 @@ const PendenciasGerais = () => {
     } else {
       setDadosPendencias([]);
     }
+    setCollapseExpandido();
   }, []);
 
   useEffect(() => {
@@ -80,7 +82,7 @@ const PendenciasGerais = () => {
           </div>
           <div className="col-md-12">
             {dadosPendencias?.items?.length ? (
-              dadosPendencias.items.map(item => {
+              dadosPendencias.items.map((item, index) => {
                 return (
                   <div key={shortid.generate()} className="mb-3">
                     <CardCollapse
@@ -90,6 +92,10 @@ const PendenciasGerais = () => {
                       alt={`pendencia-${shortid.generate()}-alt`}
                       configCabecalho={configCabecalho}
                       styleCardBody={{ backgroundColor: Base.CinzaBadge }}
+                      show={collapseExpandido === index}
+                      onClick={() => {
+                        setCollapseExpandido(index);
+                      }}
                     >
                       <span
                         dangerouslySetInnerHTML={{

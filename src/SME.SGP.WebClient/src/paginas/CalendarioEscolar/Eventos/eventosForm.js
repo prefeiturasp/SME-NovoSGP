@@ -51,6 +51,7 @@ import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
 import entidadeStatusDto from '~/dtos/entidadeStatusDto';
 import AbrangenciaServico from '~/servicos/Abrangencia';
 import ServicoCalendarios from '~/servicos/Paginas/Calendario/ServicoCalendarios';
+import tipoEvento from '~/dtos/tipoEvento';
 
 const EventosForm = ({ match }) => {
   const usuarioStore = useSelector(store => store.usuario);
@@ -207,6 +208,22 @@ const EventosForm = ({ match }) => {
       nome: Yup.string().required('Nome obrigatório'),
       tipoCalendarioId: Yup.string().required('Calendário obrigatório'),
       tipoEventoId: Yup.string().required('Tipo obrigatório'),
+      descricao: Yup.string().test(
+        'validaDescricaoObrigatoria',
+        'Descrição obrigatória',
+        function validar() {
+          const { tipoEventoId, descricao } = this.parent;
+          if (
+            !descricao &&
+            (String(tipoEventoId) === String(tipoEvento.ReuniaoPedagogica) ||
+              String(tipoEventoId) === String(tipoEvento.ReuniaoAPM) ||
+              String(tipoEventoId) === String(tipoEvento.ReuniaoConselhoEscola))
+          ) {
+            return false;
+          }
+          return true;
+        }
+      ),
     };
 
     if (usuarioStore.possuiPerfilDre) {

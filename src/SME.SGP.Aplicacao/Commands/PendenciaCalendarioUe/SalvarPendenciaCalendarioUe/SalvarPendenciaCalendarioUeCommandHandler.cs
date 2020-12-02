@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Sentry;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
@@ -22,9 +23,9 @@ namespace SME.SGP.Aplicacao
 
         public async Task<long> Handle(SalvarPendenciaCalendarioUeCommand request, CancellationToken cancellationToken)
         {
-            var pendenciaId = await mediator.Send(new SalvarPendenciaCommand(request.TipoPendencia, request.Descricao, request.Instrucao));           
+            var pendenciaId = await mediator.Send(new SalvarPendenciaCommand(request.TipoPendencia, request.Descricao, request.Instrucao));
 
-            await mediator.Send(new RelacionaPendenciaUsuarioCommand(TipoParametroSistema.GerarPendenciaDiasLetivosInsuficientes, request.Ue.CodigoUe, pendenciaId, 0));
+            await mediator.Send(new RelacionaPendenciaUsuarioCommand(ObterPerfisParaPendencia(request.TipoPendencia), request.Ue.CodigoUe, pendenciaId, 0));
 
             return await repositorioPendenciaCalendarioUe.SalvarAsync(new Dominio.PendenciaCalendarioUe()
             {
@@ -32,6 +33,19 @@ namespace SME.SGP.Aplicacao
                 UeId = request.Ue.Id,
                 TipoCalendarioId = request.TipoCalendarioId
             });
+        }
+
+        private string[] ObterPerfisParaPendencia(TipoPendencia tipoPendencia)
+        {
+            switch (tipoPendencia)
+            {
+                case TipoPendencia.CalendarioLetivoInsuficiente:
+                    return new string[] { "CP", "AD", "Diretor", "ADM UE" };
+                case TipoPendencia.CadastroEventoPendente:
+                    return new string[] { "ADM UE" };
+                default:
+                    return new string[] { };
+            }
         }
     }
 }

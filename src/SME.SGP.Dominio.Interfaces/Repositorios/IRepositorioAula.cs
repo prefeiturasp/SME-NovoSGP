@@ -88,5 +88,8 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<AulaReduzidaDto>> ObterQuantidadeAulasReduzido(long turmaId, string componenteCurricularId, long tipoCalendarioId, int bimestre, bool professorCJ);
 
         Task<IEnumerable<AulaReduzidaDto>> ObterAulasReduzidasPorTipoCalendario(long tipoCalendarioId);
+
+        bool VerificarAulaPorWorkflowId(long workflowId);
+
     }
 }
