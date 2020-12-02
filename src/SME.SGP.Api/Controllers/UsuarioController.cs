@@ -63,7 +63,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.M_C, Policy = "Bearer")]
-        public async Task<IActionResult> ListarPerfis([FromServices] IObterListaPerfisUsuarioUseCase useCase)
+        public async Task<IActionResult> ListarPerfis([FromServices] IObterHierarquiaPerfisUsuarioUseCase useCase)
         {
             return Ok(await useCase.Executar());
         }
