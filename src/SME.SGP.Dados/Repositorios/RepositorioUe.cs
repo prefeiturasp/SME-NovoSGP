@@ -256,5 +256,12 @@ namespace SME.SGP.Dados.Repositorios
                     return ue;
                 }, new { periodoEscolarId, ano, modalidades });
         }
+
+        public async Task<int> ObterQuantidadeTurmasSeriadas(long ueId)
+        {
+            var query = @"select count(id) from turma where ano between '1' and '9' and ue_id = @ueId";
+
+            return await contexto.Conexao.QueryFirstOrDefaultAsync<int>(query, new { ueId });
+       }
     }
 }

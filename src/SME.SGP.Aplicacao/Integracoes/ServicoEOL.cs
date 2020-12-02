@@ -976,6 +976,22 @@ namespace SME.SGP.Aplicacao.Integracoes
             return Enumerable.Empty<ComponenteCurricularEol>();
         }
 
+        public async Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesTurmasProgramaPorAnoEModalidade(string codigoUe, Modalidade modalidade, int anoLetivo)
+        {
+
+            var url = $@"v1/componentes-curriculares/ues/{codigoUe}/modalidades/{modalidade}/anos/{anoLetivo}";
+
+            var resposta = await httpClient.GetAsync(url);
+
+            if (resposta.IsSuccessStatusCode)
+            {
+                var json = await resposta.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<IEnumerable<ComponenteCurricularEol>>(json);
+
+            }
+            return Enumerable.Empty<ComponenteCurricularEol>();
+        }
+
         public async Task AtribuirPerfil(string codigoRf, Guid perfil)
         {
             var resposta = await httpClient.GetAsync($"perfis/servidores/{codigoRf}/perfil/{perfil}/atribuirPerfil");
