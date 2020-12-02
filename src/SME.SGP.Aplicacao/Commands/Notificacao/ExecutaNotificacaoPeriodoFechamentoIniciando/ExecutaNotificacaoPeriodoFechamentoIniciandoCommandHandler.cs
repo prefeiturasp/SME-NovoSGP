@@ -55,9 +55,8 @@ namespace SME.SGP.Aplicacao
             {
                 listaUsuarios.Add(await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(professor)));
             }
-                
 
-            return listaUsuarios;
+            return listaUsuarios.Distinct();
         }
 
         private async Task<IEnumerable<long>> ObterUsuariosAdms(Ue ue)
