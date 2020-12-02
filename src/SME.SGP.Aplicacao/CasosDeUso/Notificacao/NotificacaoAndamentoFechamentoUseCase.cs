@@ -35,7 +35,6 @@ namespace SME.SGP.Aplicacao
             {
                 await mediator.Send(new ExecutaNotificacaoAndamentoFechamentoCommand(periodoEncerrando, modalidade));
             }
-
         }
     }
 }

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Interfaces
 {
-    public interface IObterListaPerfisUsuarioUseCase
+    public interface IObterHierarquiaPerfisUsuarioUseCase
     {
         Task<IEnumerable<KeyValuePair<Guid, string>>> Executar();
     }

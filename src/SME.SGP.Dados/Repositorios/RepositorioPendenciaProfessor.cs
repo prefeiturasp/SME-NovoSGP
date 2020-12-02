@@ -99,6 +99,16 @@ namespace SME.SGP.Dados
             return await database.Conexao.QueryAsync<PendenciaProfessor>(query, new { turmaCodigo, componentesCurriculares, tipoPendencia, periodoEscolarId });
         }
 
+        public async Task<Turma> ObterTurmaDaPendencia(long pendenciaId)
+        {
+            var query = @"select t.* 
+                          from pendencia_professor pp
+                         inner join turma t on t.id = pp.turma_id
+                         where pp.pendencia_id = @pendenciaId";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<Turma>(query, new { pendenciaId });
+        }
+
         public async Task Remover(PendenciaProfessor pendenciaProfessor)
         {
             await database.Conexao.DeleteAsync(pendenciaProfessor);

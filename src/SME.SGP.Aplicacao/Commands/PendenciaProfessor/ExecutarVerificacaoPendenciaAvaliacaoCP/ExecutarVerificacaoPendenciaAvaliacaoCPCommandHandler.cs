@@ -59,7 +59,7 @@ namespace SME.SGP.Aplicacao
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(turmaSemAvaliacao.Key.TurmaId));
 
             var pendenciaId = await ObterPendenciaIdDaTurma(turmaSemAvaliacao.Key.TurmaId);
-            var gerarPendenciasProfessor = new List<(long componenteCurricularId, string professorRf)>();
+            var gerarPendenciasCP = new List<(long componenteCurricularId, string professorRf)>();
 
             foreach (var componenteCurricularNaTurma in turmaSemAvaliacao)
             {
@@ -67,24 +67,24 @@ namespace SME.SGP.Aplicacao
                 var componenteCurricular = componentesCurriculares.FirstOrDefault(c => c.Codigo == componenteCurricularNaTurma.ComponenteCurricularId.ToString());
 
                 if (professorComponente != null && !await ExistePendenciaProfessor(pendenciaId, turma.Id, componenteCurricular.Codigo, professorComponente.ProfessorRf, periodoEncerrando.PeriodoEscolar.Id))
-                    gerarPendenciasProfessor.Add((long.Parse(componenteCurricular.Codigo), professorComponente.ProfessorRf));
+                    gerarPendenciasCP.Add((long.Parse(componenteCurricular.Codigo), professorComponente.ProfessorRf));
             }
 
-            if (gerarPendenciasProfessor.Any())
-                await GerarPendenciasProfessor(pendenciaId, gerarPendenciasProfessor, turma, periodoEncerrando.PeriodoEscolar);
+            if (gerarPendenciasCP.Any())
+                await GerarPendenciasCP(pendenciaId, gerarPendenciasCP, turma, periodoEncerrando.PeriodoEscolar);
         }
 
-        private async Task GerarPendenciasProfessor(long pendenciaId, List<(long componenteCurricularId, string professorRf)> gerarPendenciasProfessor, Turma turma, PeriodoEscolar periodoEscolar)
+        private async Task GerarPendenciasCP(long pendenciaId, List<(long componenteCurricularId, string professorRf)> gerarPendenciasProfessor, Turma turma, PeriodoEscolar periodoEscolar)
         {
             if (pendenciaId == 0)
-                pendenciaId = await IncluirPendenciaProfessor(turma, periodoEscolar.Bimestre);
+                pendenciaId = await IncluirPendenciaCP(turma, periodoEscolar.Bimestre);
 
             await mediator.Send(new SalvarPendenciaAusenciaDeAvaliacaoCPCommand(pendenciaId, turma.Id, periodoEscolar.Id, turma.Ue.CodigoUe, gerarPendenciasProfessor));
         }
 
-        private async Task<long> IncluirPendenciaProfessor(Turma turma, int bimestre)
+        private async Task<long> IncluirPendenciaCP(Turma turma, int bimestre)
         {
-            var escolaUe = $"{turma.Ue.TipoEscola.ShortName()} {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao}) - Turma {turma.Nome}";
+            var escolaUe = $"{turma.Ue.TipoEscola.ShortName()} {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao})";
             var titulo = $"Ausência de avaliação no {bimestre}º bimestre {escolaUe}";
 
             var descricao = $"<i>Os componentes curriculares abaixo não possuem nenhuma avaliação cadastrada no {bimestre}º bimestre {escolaUe}</i>";

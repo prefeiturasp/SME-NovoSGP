@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao
             
             var descricaoUe = $"{ue.TipoEscola.ShortName()} {ue.Nome} ({ue.Dre.Abreviacao})";
             var titulo = $"Término do período de fechamento do  {periodoEscolar.Bimestre}º bimestre - {descricaoUe}";
-            var mensagem = @$"O fechamento do <b>{periodoEscolar.Bimestre}º bimestre</b> na <b>{descricaoUe}</b> irá encerrar no dia <b>{periodoFechamentoBimestre.FinalDoFechamento.Date:dd/MM/yyyy}</b>.
+            var mensagem = $@"O fechamento do <b>{periodoEscolar.Bimestre}º bimestre</b> na <b>{descricaoUe}</b> irá encerrar no dia <b>{periodoFechamentoBimestre.FinalDoFechamento.Date:dd/MM/yyyy}</b>.
                 <br/><br/>Após esta data o sistema será bloqueado para edições neste bimestre.";
 
 

@@ -86,7 +86,7 @@ namespace SME.SGP.Aplicacao
         private async Task EnviarNotificacoes(List<NotificarResultadoInsatisfatorioDto> listaNotificacoes, PeriodoFechamentoBimestre periodoFechamentoBimestre)
         {
             var titulo = $"Turmas com resultados insatisfatórios no {periodoFechamentoBimestre.PeriodoEscolar.Bimestre}º bimestre";
-            var mensagem = new StringBuilder($"As turmas e componentes curriculares abaixo da <b>{periodoFechamentoBimestre.PeriodoFechamento.Ue.TipoEscola.ShortName()} {periodoFechamentoBimestre.PeriodoFechamento.Ue.Nome} ({periodoFechamentoBimestre.PeriodoFechamento.Ue.Dre.Abreviacao}) tiveram mais de 50% dos estudantes com resultado insatisfatório no <b>{periodoFechamentoBimestre.PeriodoEscolar.Bimestre}º bimestre</b>:");
+            var mensagem = new StringBuilder($"As turmas e componentes curriculares abaixo da <b>{periodoFechamentoBimestre.PeriodoFechamento.Ue.TipoEscola.ShortName()} {periodoFechamentoBimestre.PeriodoFechamento.Ue.Nome} ({periodoFechamentoBimestre.PeriodoFechamento.Ue.Dre.Abreviacao})</b> tiveram mais de 50% dos estudantes com resultado insatisfatório no <b>{periodoFechamentoBimestre.PeriodoEscolar.Bimestre}º bimestre</b>:");
 
             mensagem.Append("<table style='margin-left: auto; margin-right: auto; margin-top: 10px' border='2' cellpadding='5'>");
             foreach (var turmasPorModalidade in listaNotificacoes.GroupBy(c => c.TurmaModalidade))
@@ -139,15 +139,18 @@ namespace SME.SGP.Aplicacao
         {
             var mensagem = new StringBuilder();
 
-            mensagem.Append("<tr>");
-            mensagem.Append($"<td rowspan='{dto.ComponentesCurriculares.Count()}'>{dto.TurmaNome}</td>");
-            mensagem.Append("</tr>");
+            var primeiroComponente = true;
             foreach (var componenteCurricular in dto.ComponentesCurriculares)
             {
-                mensagem.Append("<tr>");
-                mensagem.Append($"<td>{componenteCurricular.ComponenteCurricularNome}</td>");
-                mensagem.Append($"<td>{componenteCurricular.Justificativa}</td>");
-                mensagem.Append($"<td>{componenteCurricular.Professor}</td>");
+                mensagem.Append("<tr style='padding:4px;'>");
+                if(primeiroComponente)
+                {
+                    mensagem.Append($"<td style='padding:4px;' rowspan='{dto.ComponentesCurriculares.Count()}'>{dto.TurmaNome}</td>");
+                    primeiroComponente = false;
+                }
+                mensagem.Append($"<td style='padding:4px;'>{componenteCurricular.ComponenteCurricularNome}</td>");
+                mensagem.Append($"<td style='padding:4px;'>{componenteCurricular.Justificativa}</td>");
+                mensagem.Append($"<td style='padding:4px;'>{componenteCurricular.Professor}</td>");
                 mensagem.Append("</tr>");
             }
             return mensagem.ToString();
@@ -155,14 +158,14 @@ namespace SME.SGP.Aplicacao
 
         private string ObterHeaderModalidade(string modalidade)
         {
-            return @$"<tr>
-	                    <td colspan='4'>{modalidade}</td>
-                    </tr>
-                    <tr>
-                      <td>Turma</td>
-                      <td>Componente curricular</td>
-                      <td>Justificativa</td>
-                      <td>Professor</td>
+            return $@"<tr style='padding:4px;'>
+	                    <td style='padding:4px;text-align:center;' colspan='4'>{modalidade}</td>
+                       </tr>
+                    <tr style='padding:4px;'>
+                      <td style='padding:4px;'>Turma</td>
+                      <td style='padding:4px;'>Componente curricular</td>
+                      <td style='padding:4px;'>Justificativa</td>
+                      <td style='padding:4px;'>Professor</td>
                     </tr>";
         }
     }

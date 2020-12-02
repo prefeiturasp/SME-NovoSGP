@@ -76,6 +76,10 @@
 
         DiasNotificacaoResultadoInsatisfatorio = 40,
 
+        // Notificação UE fechamentos insuficientes
+        DiasNotificacaoFechamentoPendente = 41,
+        PercentualFechamentosInsuficientesNotificacao = 42,
+
         DiasNotificacaoReuniaoPedagogica = 45,
 
         DiasNotificacaoPeriodoFechamentoUe = 46,

@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
         {
             var descricaoUe = $"{ue.TipoEscola.ShortName()} {ue.Nome} ({ue.Dre.Abreviacao})";
             var titulo = $"Início do período de fechamento do {periodoEscolar.Bimestre}º bimestre - {descricaoUe}";
-            var mensagem = @$"O fechamento do <b>{periodoEscolar.Bimestre}º bimestre</b> na <b>{descricaoUe}</b> irá iniciar no dia <b>{periodoFechamentoBimestre.InicioDoFechamento.Date.ToString("dd/MM/yyyy")}</b>.";
+            var mensagem = $@"O fechamento do <b>{periodoEscolar.Bimestre}º bimestre</b> na <b>{descricaoUe}</b> irá iniciar no dia <b>{periodoFechamentoBimestre.InicioDoFechamento.Date.ToString("dd/MM/yyyy")}</b>.";
 
             await mediator.Send(new EnviarNotificacaoCommand(titulo, mensagem, NotificacaoCategoria.Aviso, NotificacaoTipo.Calendario, ObterCargosGestaoEscola(), ue.Dre.CodigoDre, ue.CodigoUe));
 

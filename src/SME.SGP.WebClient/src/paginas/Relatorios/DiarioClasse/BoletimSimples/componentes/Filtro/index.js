@@ -16,26 +16,29 @@ import TurmasDropDown from './componentes/TurmasDropDown';
 function Filtro({ onFiltrar, resetForm }) {
   const [refForm, setRefForm] = useState({});
   const filtro = useSelector(store => store.filtro);
+  const usuario = useSelector(store => store.usuario);
+  const { turmaSelecionada } = usuario;
+  const { consideraHistorico } = turmaSelecionada;
 
   const [carregandoModalidades, setCarregandoModalidades] = useState(false);
   const [carregandoPeriodos, setCarregandoPeriodos] = useState(false);
-
+  
   const [modalidadeId, setModalidadeId] = useState(undefined);
   const [semestreId, setSemestreId] = useState(undefined);
   const [anoLetivo, setAnoLetivo] = useState(undefined);
-  const [dreId, setDreId] = useState(undefined);
-
-  const [urlDre, setUrlDre] = useState('v1/abrangencias/false/dres');
-  const [urlUe, setUrlUe] = useState(`v1/abrangencias/false/dres/${dreId}/ues`);
+  const [dreId, setDreId] = useState(undefined);    
+  
+  const [urlDre, setUrlDre] = useState(`v1/abrangencias/${consideraHistorico}/dres`);
+  const [urlUe, setUrlUe] = useState(`v1/abrangencias/${consideraHistorico}/dres/${dreId}/ues`);  
   const modalidadesStore = filtro.modalidades;
   const periodosStore = filtro.periodos;
 
   const [modalidades, setModalidades] = useState([]);
-  const [periodos, setPeriodos] = useState([]);
+  const [periodos, setPeriodos] = useState([]); 
 
-  useEffect(() => {
+  useEffect(() => {    
     if (modalidadeId && anoLetivo) {
-      let url = `v1/abrangencias/false/dres?modalidade=${modalidadeId}&anoLetivo=${anoLetivo}`;
+      let url = urlDre + `?modalidade=${modalidadeId}&anoLetivo=${anoLetivo}`;
       if (modalidadeId === '3' && semestreId) url += `&periodo=${semestreId}`;
       setUrlDre(url);
     }
@@ -125,18 +128,18 @@ function Filtro({ onFiltrar, resetForm }) {
     if (!id) refForm.setFieldValue('ueId', undefined);
     setDreId(id);
     if (modalidadeId && anoLetivo && id) {
-      let url = `v1/abrangencias/false/dres/${id}/ues?modalidade=${modalidadeId}&anoLetivo=${anoLetivo}`;
+      let url = urlDre.split('?')[0] + `/${id}/ues?modalidade=${modalidadeId}&anoLetivo=${anoLetivo}`;
       if (modalidadeId === '3' && semestreId) url += `&periodo=${semestreId}`;
       setUrlUe(url);
     }
   };
 
   const aoTrocarUeId = id => {
-    if (!id) refForm.setFieldValue('turmaId', undefined);
+    if (!id) refForm.setFieldValue('turmaId', undefined);    
   };
 
   const aoTrocarTurma = () => {
-    refForm.setFieldValue('opcaoAlunoId', '0');
+    refForm.setFieldValue('opcaoAlunoId', '0');    
   };
 
   const opcoesAlunos = [
