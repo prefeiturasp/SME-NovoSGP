@@ -18,17 +18,13 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(ExcluirTodasPendenciasAulaCommand request, CancellationToken cancellationToken)
         {
-            var exclusaoPendenciaFrequencia = mediator.Send(new ExcluirPendenciaAulaCommand(request.AulaId, Dominio.TipoPendencia.Frequencia));
-            var exclusaoPendenciaPlanoAula = mediator.Send(new ExcluirPendenciaAulaCommand(request.AulaId, Dominio.TipoPendencia.PlanoAula));
-            var exclusaoPendenciaDiarioBordo = mediator.Send(new ExcluirPendenciaAulaCommand(request.AulaId, Dominio.TipoPendencia.DiarioBordo));
-            var exclusaoPendenciaAvaliacao = mediator.Send(new ExcluirPendenciaAulaCommand(request.AulaId, Dominio.TipoPendencia.Avaliacao));
-            var exclusaoPendenciaAulaNaoLetivo = mediator.Send(new ExcluirPendenciaAulaCommand(request.AulaId, Dominio.TipoPendencia.AulaNaoLetivo));
+            await mediator.Send(new ExcluirPendenciaAulaCommand(request.AulaId, Dominio.TipoPendencia.Frequencia));
+            await mediator.Send(new ExcluirPendenciaAulaCommand(request.AulaId, Dominio.TipoPendencia.PlanoAula));
+            await mediator.Send(new ExcluirPendenciaAulaCommand(request.AulaId, Dominio.TipoPendencia.DiarioBordo));
+            await mediator.Send(new ExcluirPendenciaAulaCommand(request.AulaId, Dominio.TipoPendencia.Avaliacao));
+            await mediator.Send(new ExcluirPendenciaAulaCommand(request.AulaId, Dominio.TipoPendencia.AulaNaoLetivo));
 
-            return await exclusaoPendenciaFrequencia
-                && await exclusaoPendenciaPlanoAula
-                && await exclusaoPendenciaDiarioBordo
-                && await exclusaoPendenciaAvaliacao
-                && await exclusaoPendenciaAulaNaoLetivo;
+            return true;
         }
     }
 }

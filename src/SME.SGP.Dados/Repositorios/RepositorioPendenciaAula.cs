@@ -78,11 +78,10 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryAsync<Aula>(sql.ToString(), new { hoje = DateTime.Today, tipo = TipoPendencia.Avaliacao }));
         }
 
-        public async Task Excluir(TipoPendencia tipoPendenciaAula, long aulaId)
+        public async Task Excluir(long pendenciaId, long aulaId)
         {
-            await database.Conexao.ExecuteScalarAsync(@"delete from pendencia_aula pa
-                                                     inner join pendencia p on p.id = pa.pendencia_id
-                                                    where pa.aula_id= @aulaid and p.tipo = @tipo", new { aulaid = aulaId, tipo = tipoPendenciaAula });
+            await database.Conexao.ExecuteScalarAsync(@"delete from pendencia_aula 
+                                                    where aula_id = @aulaId and pendencia_id = @pendenciaId", new { aulaid = aulaId, pendenciaId });
         }
 
         public async Task Salvar(long aulaId, string motivo, long pendenciaId)
@@ -143,7 +142,7 @@ namespace SME.SGP.Dados.Repositorios
                         inner join turma t on t.turma_id = a.turma_id
                         where pa.pendencia_id = @pendenciaId ";
 
-            return await database.Conexao.QueryFirstAsync<Turma>(query, new { pendenciaId });
+            return await database.Conexao.QueryFirstOrDefaultAsync<Turma>(query, new { pendenciaId });
         }
 
         public async Task<IEnumerable<PendenciaAulaDto>> ObterPendenciasAulasPorPendencia(long pendenciaId)
@@ -151,12 +150,13 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select a.data_aula as DataAula, pa.Motivo
                            from pendencia_aula pa
                           inner join aula a on a.id = pa.aula_id
-                          where pa.pendencia_id = @pendenciaId";
+                          where pa.pendencia_id = @pendenciaId
+                          order by data_aula desc";
 
             return await database.Conexao.QueryAsync<PendenciaAulaDto>(query, new { pendenciaId });
         }
 
-        public async Task<long> ObterPendenciaAulaPorTurmaIdDisciplinaId(string turmaId, string disciplinaId)
+        public async Task<long> ObterPendenciaAulaPorTurmaIdDisciplinaId(string turmaId, string disciplinaId, string professorRf, TipoPendencia tipoPendencia)
         {
             var query = @"select p.id 
                             from pendencia p 
@@ -164,9 +164,11 @@ namespace SME.SGP.Dados.Repositorios
                            inner join aula a on pa.aula_id = a.id 
                            where not p.excluido
                              and a.turma_id = @turmaId 
-                             and a.disciplina_id = @disciplinaId";
+                             and a.disciplina_id = @disciplinaId
+                             and a.professor_rf = @professorRf
+                             and p.tipo = @tipoPendencia";
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<long>(query, new { turmaId, disciplinaId });
+            return await database.Conexao.QueryFirstOrDefaultAsync<long>(query, new { turmaId, disciplinaId, tipoPendencia, professorRf });
         }
 
         public async Task<long> ObterPendenciaAulaIdPorAulaId(long aulaId, TipoPendencia tipoPendencia)
@@ -179,14 +181,14 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<long>(query, new { aulaId, tipoPendencia });
         }
 
-        public async Task<long> ObterPendenciaIdPorAula(long aulaId, TipoPendencia tipoPendencia)
+        public async Task<IEnumerable<long>> ObterPendenciaIdPorAula(long aulaId, TipoPendencia tipoPendencia)
         {
             var query = @"select p.id 
                             from pendencia_aula pa  
                            inner join pendencia p on p.id = pa.pendencia_id and not p.excluido
                            where pa.aula_id  = @aulaId
                             and p.tipo = @tipoPendencia";
-            return await database.Conexao.QueryFirstOrDefaultAsync<long>(query, new { aulaId, tipoPendencia });
+            return await database.Conexao.QueryAsync<long>(query, new { aulaId, tipoPendencia });
         }
     }
 }

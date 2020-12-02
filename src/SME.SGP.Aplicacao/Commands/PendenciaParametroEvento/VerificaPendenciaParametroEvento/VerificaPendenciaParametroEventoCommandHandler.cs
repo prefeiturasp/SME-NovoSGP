@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Sentry;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
@@ -21,17 +22,25 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(VerificaPendenciaParametroEventoCommand request, CancellationToken cancellationToken)
         {
-            var anoAtual = DateTime.Now.Year;
-
-            var dataInicioGeracaoPendencia = DateTime.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(Dominio.TipoParametroSistema.DataInicioGeracaoPendencias, anoAtual)));
-            if (DateTime.Now >= dataInicioGeracaoPendencia)
+            try
             {
-                var tipoCalendarioId = await mediator.Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(Dominio.Modalidade.Fundamental, anoAtual, 0));
-                if (tipoCalendarioId > 0)
-                    await VerificaPendenciaEventosCalendario(tipoCalendarioId, anoAtual);
-            }
+                var anoAtual = DateTime.Now.Year;
 
-            return true;
+                var dataInicioGeracaoPendencia = DateTime.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(Dominio.TipoParametroSistema.DataInicioGeracaoPendencias, anoAtual)));
+                if (DateTime.Now >= dataInicioGeracaoPendencia)
+                {
+                    var tipoCalendarioId = await mediator.Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(Dominio.Modalidade.Fundamental, anoAtual, 0));
+                    if (tipoCalendarioId > 0)
+                        await VerificaPendenciaEventosCalendario(tipoCalendarioId, anoAtual);
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                SentrySdk.CaptureException(ex);
+                return false;
+            }        
         }
 
         private async Task VerificaPendenciaEventosCalendario(long tipoCalendarioId, int anoAtual)
@@ -39,20 +48,27 @@ namespace SME.SGP.Aplicacao
             var ues = await mediator.Send(new ObterUEsPorModalidadeCalendarioQuery(Dominio.ModalidadeTipoCalendario.FundamentalMedio));
             foreach(var ue in ues)
             {
-                var pendenciaCalendarioUe = await mediator.Send(new ObterPendenciaCalendarioUeQuery(tipoCalendarioId, ue.Id, Dominio.TipoPendencia.CadastroEventoPendente));
-                var pendenciasParametroEventoUe = await ObterPendenciasParametroEventoPorPendenciaId(pendenciaCalendarioUe?.PendenciaId);
-
-                var listaValidacoesEvento = new List<(bool gerarPedencia, long parametroSistemaId, int quantidadeEventos)>();
-                listaValidacoesEvento.Add(await ValidarQuantidadeEventosPorTipo(tipoCalendarioId, ue, anoAtual, pendenciasParametroEventoUe, TipoEvento.ConselhoDeClasse));
-                listaValidacoesEvento.Add(await ValidarQuantidadeEventosPorTipo(tipoCalendarioId, ue, anoAtual, pendenciasParametroEventoUe, TipoEvento.ReuniaoAPM));
-                listaValidacoesEvento.Add(await ValidarQuantidadeEventosPorTipo(tipoCalendarioId, ue, anoAtual, pendenciasParametroEventoUe, TipoEvento.ReuniaoConselhoEscola));
-                listaValidacoesEvento.Add(await ValidarQuantidadeEventosPorTipo(tipoCalendarioId, ue, anoAtual, pendenciasParametroEventoUe, TipoEvento.ReuniaoPedagogica));
-
-                if (listaValidacoesEvento.Any(a => a.gerarPedencia))
+                try
                 {
-                    var pendenciaCalendarioUeId = pendenciaCalendarioUe == null ? await GerarPendenciaCalendarioUe(tipoCalendarioId, ue) : pendenciaCalendarioUe.Id;
+                    var pendenciaCalendarioUe = await mediator.Send(new ObterPendenciaCalendarioUeQuery(tipoCalendarioId, ue.Id, Dominio.TipoPendencia.CadastroEventoPendente));
+                    var pendenciasParametroEventoUe = await ObterPendenciasParametroEventoPorPendenciaId(pendenciaCalendarioUe?.PendenciaId);
 
-                    await GerarPendenciaParametroEvento(pendenciaCalendarioUeId, listaValidacoesEvento.Where(a => a.gerarPedencia));
+                    var listaValidacoesEvento = new List<(bool gerarPedencia, long parametroSistemaId, int quantidadeEventos)>();
+                    listaValidacoesEvento.Add(await ValidarQuantidadeEventosPorTipo(tipoCalendarioId, ue, anoAtual, pendenciasParametroEventoUe, TipoEvento.ConselhoDeClasse));
+                    listaValidacoesEvento.Add(await ValidarQuantidadeEventosPorTipo(tipoCalendarioId, ue, anoAtual, pendenciasParametroEventoUe, TipoEvento.ReuniaoAPM));
+                    listaValidacoesEvento.Add(await ValidarQuantidadeEventosPorTipo(tipoCalendarioId, ue, anoAtual, pendenciasParametroEventoUe, TipoEvento.ReuniaoConselhoEscola));
+                    listaValidacoesEvento.Add(await ValidarQuantidadeEventosPorTipo(tipoCalendarioId, ue, anoAtual, pendenciasParametroEventoUe, TipoEvento.ReuniaoPedagogica));
+
+                    if (listaValidacoesEvento.Any(a => a.gerarPedencia))
+                    {
+                        var pendenciaCalendarioUeId = pendenciaCalendarioUe == null ? await GerarPendenciaCalendarioUe(tipoCalendarioId, ue) : pendenciaCalendarioUe.Id;
+
+                        await GerarPendenciaParametroEvento(pendenciaCalendarioUeId, listaValidacoesEvento.Where(a => a.gerarPedencia));
+                    }
+                }
+                catch (Exception ex)
+                {
+                    SentrySdk.CaptureException(ex);
                 }
             }
         }
@@ -67,7 +83,7 @@ namespace SME.SGP.Aplicacao
             descricao.AppendLine($"<i>Calendário:</i><b> {nomeTipoCalendario}</b><br />");
             descricao.AppendLine($"<i>Eventos pendentes de cadastro:</i><br />");
 
-            var instrucao = "Acesse a tela de Calendário Escolar e confira os eventos da sua UE.";
+            var instrucao = "Acesse a tela de Eventos e realize o cadastro dos eventos relatados acima.";
 
             return await mediator.Send(new SalvarPendenciaCalendarioUeCommand(tipoCalendarioId, ue, descricao.ToString(), instrucao, TipoPendencia.CadastroEventoPendente));
         }

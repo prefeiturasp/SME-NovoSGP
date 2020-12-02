@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { SelectComponent, ListaPaginada, Loader } from '~/componentes';
+import { SelectComponent, ListaPaginada, Loader, CheckboxComponent } from '~/componentes';
 import { Cabecalho } from '~/componentes-sgp';
 import Button from '~/componentes/button';
 import Card from '~/componentes/card';
@@ -21,6 +21,7 @@ const HistoricoEscolar = () => {
     state => state.localizadorEstudante.codigosAluno
   );
 
+  const [consideraHistorico, setConsideraHistorico] = useState(false);
   const [anoAtual] = useState(window.moment().format('YYYY'));
 
   const [listaAnosLetivo, setListaAnosLetivo] = useState([]);
@@ -93,35 +94,17 @@ const HistoricoEscolar = () => {
 
   const obterAnosLetivos = useCallback(async () => {
     setCarregandoAnos(true);
-    let anosLetivo = [];
-
-    const anosLetivoComHistorico = await FiltroHelper.obterAnosLetivos({
-      consideraHistorico: true,
+    let anosLetivos = await FiltroHelper.obterAnosLetivos({
+      consideraHistorico: consideraHistorico,
     });
-    const anosLetivoSemHistorico = await FiltroHelper.obterAnosLetivos({
-      consideraHistorico: false,
-    });
-
-    anosLetivo = anosLetivoComHistorico.concat(anosLetivoSemHistorico);
-
-    if (!anosLetivo.length) {
-      anosLetivo.push({
-        desc: anoAtual,
-        valor: anoAtual,
-      });
-    }
-
-    if (anosLetivo && anosLetivo.length) {
-      const temAnoAtualNaLista = anosLetivo.find(
-        item => String(item.valor) === String(anoAtual)
-      );
-      if (temAnoAtualNaLista) setAnoLetivo(anoAtual);
-      else setAnoLetivo(anosLetivo[0].valor);
-    }
-
-    setListaAnosLetivo(anosLetivo);
+    setListaAnosLetivo(anosLetivos); 
+    setAnoLetivo(anosLetivos[0].valor);
+    setDreId();
+    setListaDres([]);
+    setAlunosSelecionados([]);
+    setEstudanteOpt('0');
     setCarregandoAnos(false);
-  }, [anoAtual]);
+  }, [anoAtual, consideraHistorico]);
 
   useEffect(() => {
     obterAnosLetivos();
@@ -150,12 +133,12 @@ const HistoricoEscolar = () => {
 
   const [carregandoUes, setCarregandoUes] = useState(false);
 
-  const obterUes = useCallback(async (dre, ano) => {
+  const obterUes = useCallback(async (dre, ano, consideraHistorico = false) => {
     if (dre) {
       setCarregandoUes(true);
       const { data } = await AbrangenciaServico.buscarUes(
         dre,
-        `v1/abrangencias/false/dres/${dre}/ues?anoLetivo=${ano}`,
+        `v1/abrangencias/${consideraHistorico}/dres/${dre}/ues?anoLetivo=${ano}`,
         true
       );
       if (data) {
@@ -198,7 +181,7 @@ const HistoricoEscolar = () => {
     if (anoLetivo) {
       setCarregandoDres(true);
       const { data } = await AbrangenciaServico.buscarDres(
-        `v1/abrangencias/false/dres?anoLetivo=${anoLetivo}`
+        `v1/abrangencias/${consideraHistorico}/dres?anoLetivo=${anoLetivo}`
       );
       if (data && data.length) {
         const lista = data
@@ -223,14 +206,15 @@ const HistoricoEscolar = () => {
 
   const [carregandoTurmas, setCarregandoTurmas] = useState(false);
 
-  const obterTurmas = useCallback(async (modalidadeSelecionada, ue, ano) => {
+  const obterTurmas = useCallback(async (modalidadeSelecionada, ue, ano, consideraHistorico = false) => {
     if (ue && modalidadeSelecionada) {
       setCarregandoTurmas(true);
       const { data } = await AbrangenciaServico.buscarTurmas(
         ue,
         modalidadeSelecionada,
         '',
-        ano
+        ano,
+        consideraHistorico
       );
       if (data) {
         const lista = data.map(item => ({
@@ -255,7 +239,7 @@ const HistoricoEscolar = () => {
   ) => {
     setCarregandoSemestres(true);
     const retorno = await api.get(
-      `v1/abrangencias/false/semestres?anoLetivo=${anoLetivoSelecionado}&modalidade=${modalidadeSelecionada ||
+      `v1/abrangencias/${consideraHistorico}/semestres?anoLetivo=${anoLetivoSelecionado}&modalidade=${modalidadeSelecionada ||
         0}`
     );
     if (retorno && retorno.data) {
@@ -282,7 +266,7 @@ const HistoricoEscolar = () => {
 
   useEffect(() => {
     if (dreId) {
-      obterUes(dreId, anoLetivo);
+      obterUes(dreId, anoLetivo, consideraHistorico);
     } else {
       setUeId();
       setListaUes([]);
@@ -291,7 +275,7 @@ const HistoricoEscolar = () => {
 
   useEffect(() => {
     if (modalidadeId && ueId && anoLetivo) {
-      obterTurmas(modalidadeId, ueId, anoLetivo);
+      obterTurmas(modalidadeId, ueId, anoLetivo, consideraHistorico);
     } else {
       setTurmaId();
       setListaTurmas([]);
@@ -371,6 +355,7 @@ const HistoricoEscolar = () => {
       modalidade: modalidadeId,
       semestre,
       turmaCodigo: turmaId,
+      consideraHistorico,
       imprimirDadosResponsaveis: imprimirDadosResp === '0',
       preencherDataImpressao: preencherDataImpressao === '0',
       alunosCodigo:
@@ -467,6 +452,10 @@ const HistoricoEscolar = () => {
     setAlunosSelecionados([...items.map(item => String(item.codigo))]);
   };
 
+  function onCheckedConsideraHistorico(e){   
+    setConsideraHistorico(e.target.checked);    
+  }
+
   return (
     <>
       <AlertaModalidadeInfantil
@@ -513,6 +502,13 @@ const HistoricoEscolar = () => {
                   disabled={desabilitarBtnGerar}
                 />
               </Loader>
+            </div>            
+            <div className="col-sm-12 mb-4">
+              <CheckboxComponent 
+                label="Exibir histórico?" 
+                onChangeCheckbox={onCheckedConsideraHistorico}
+                checked={consideraHistorico}
+              />            
             </div>
             <div className="col-sm-12 col-md-6 col-lg-2 col-xl-2 mb-2">
               <Loader loading={carregandoAnos} tip="">

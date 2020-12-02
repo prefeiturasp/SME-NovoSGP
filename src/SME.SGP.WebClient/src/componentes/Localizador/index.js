@@ -28,6 +28,8 @@ function Localizador({
   desabilitado,
   incluirEmei,
   rfEdicao,
+  buscarOutrosCargos,
+  buscandoDados,
 }) {
   const usuario = useSelector(store => store.usuario);
   const [dataSource, setDataSource] = useState([]);
@@ -36,14 +38,7 @@ function Localizador({
     rf: false,
     nome: false,
   });
-  const {
-    ehProfessor,
-    ehProfessorCj,
-    ehProfessorPoa,
-    rf,
-    ehProfessorInfantil,
-    ehProfessorCjInfantil,
-  } = usuario;
+  const { ehPerfilProfessor, rf } = usuario;
 
   const onChangeInput = async valor => {
     if (valor.length === 0) {
@@ -82,10 +77,11 @@ function Localizador({
   const onBuscarPorRF = useCallback(
     async ({ rf }) => {
       try {
+        buscandoDados(true);
         const { data: dados } = await service.buscarPorRf({
           rf,
           anoLetivo,
-          incluirEmei,
+          buscarOutrosCargos,
         });
         if (!dados) throw new RFNaoEncontradoExcecao();
 
@@ -99,11 +95,18 @@ function Localizador({
           ...estado,
           nome: true,
         }));
+        buscandoDados(false);
       } catch (error) {
         erros(error);
+        buscandoDados(false);
+        setPessoaSelecionada({
+          professorRf: '',
+          professorNome: '',
+          usuarioId: '',
+        });
       }
     },
-    [anoLetivo, incluirEmei]
+    [anoLetivo, buscarOutrosCargos]
   );
 
   const onChangeRF = valor => {
@@ -134,45 +137,52 @@ function Localizador({
   useEffect(() => {
     if (rfEdicao && !pessoaSelecionada?.professorRf) {
       onBuscarPorRF({ rf: rfEdicao });
+    } else if (!form && !rfEdicao) {
+      setPessoaSelecionada({
+        professorRf: '',
+        professorNome: '',
+        usuarioId: '',
+      });
     }
   }, [rfEdicao]);
 
   useEffect(() => {
     onChange(pessoaSelecionada);
-    form.setValues({
-      ...form.values,
-      ...pessoaSelecionada,
-    });
+    if (form) {
+      form.setValues({
+        ...form.values,
+        ...pessoaSelecionada,
+      });
+    }
   }, [pessoaSelecionada]);
 
   useEffect(() => {
-    if (validaSeObjetoEhNuloOuVazio(form.initialValues)) return;
-    if (form.initialValues) {
-      setPessoaSelecionada(form.initialValues);
+    if (form) {
+      if (validaSeObjetoEhNuloOuVazio(form.initialValues)) return;
+      if (form.initialValues) {
+        setPessoaSelecionada(form.initialValues);
+      }
     }
-  }, [form.initialValues]);
+  }, [form?.initialValues]);
 
   useEffect(() => {
-    if (
-      dreId &&
-      (ehProfessor ||
-        ehProfessorCj ||
-        ehProfessorPoa ||
-        ehProfessorInfantil ||
-        ehProfessorCjInfantil)
-    ) {
+    if (dreId && ehPerfilProfessor) {
       onBuscarPorRF({ rf });
     }
-  }, [
-    dreId,
-    ehProfessor,
-    ehProfessorCj,
-    ehProfessorPoa,
-    ehProfessorInfantil,
-    ehProfessorCjInfantil,
-    rf,
-    onBuscarPorRF,
-  ]);
+  }, [dreId, ehPerfilProfessor, rf, onBuscarPorRF]);
+
+  useEffect(() => {
+    if (form) {
+      const { values: valores } = form;
+      if (valores && !valores.professorRf && pessoaSelecionada.professorRf) {
+        setPessoaSelecionada({
+          professorRf: '',
+          professorNome: '',
+          usuarioId: '',
+        });
+      }
+    }
+  }, [form?.values]);
 
   return (
     <>
@@ -187,13 +197,7 @@ function Localizador({
           name="professorRf"
           form={form}
           desabilitado={
-            desabilitado ||
-            usuario.ehProfessor ||
-            usuario.ehProfessorCj ||
-            usuario.ehProfessorInfantil ||
-            usuario.ehProfessorCjInfantil ||
-            usuario.ehProfessorPoa ||
-            desabilitarCampo.rf
+            desabilitado || ehPerfilProfessor || desabilitarCampo.rf
           }
         />
       </Grid>
@@ -207,13 +211,7 @@ function Localizador({
           form={form}
           name="professorNome"
           desabilitado={
-            desabilitado ||
-            usuario.ehProfessor ||
-            usuario.ehProfessorCj ||
-            usuario.ehProfessorInfantil ||
-            usuario.ehProfessorCjInfantil ||
-            usuario.ehProfessorPoa ||
-            desabilitarCampo.nome
+            desabilitado || ehPerfilProfessor || desabilitarCampo.nome
           }
         />
       </Grid>
@@ -232,16 +230,20 @@ Localizador.propTypes = {
   anoLetivo: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   desabilitado: PropTypes.bool,
   rfEdicao: PropTypes.string,
+  buscarOutrosCargos: PropTypes.bool,
+  buscandoDados: PropTypes.func,
 };
 
 Localizador.defaultProps = {
   onChange: PropTypes.func,
-  form: {},
+  form: null,
   showLabel: false,
   dreId: null,
   anoLetivo: null,
   desabilitado: false,
   rfEdicao: '',
+  buscarOutrosCargos: false,
+  buscandoDados: () => {},
 };
 
 export default Localizador;

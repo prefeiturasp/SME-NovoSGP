@@ -442,6 +442,14 @@ namespace SME.SGP.Dados.Repositorios
             }
 
             return where.ToString();
+
+        public async Task<bool> VerificaExistenciaComunicadoParaEvento(long eventoId)
+        {
+            var sql = $@"select count(id) from comunicado where not excluido and data_expiracao >= current_date+1 and evento_id = @eventoId";
+            var parametros = new { eventoId };
+            var quantidadeComunicadosComEvento = await database.QuerySingleAsync<int>(sql, parametros);
+            return (quantidadeComunicadosComEvento > 0 ? true : false);
+
         }
     }
 }

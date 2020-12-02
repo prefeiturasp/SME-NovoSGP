@@ -7,12 +7,13 @@ class ServicoComponentesCurriculares {
     codigoUe,
     modalidade,
     anoLetivo,
-    anosEscolares
+    anosEscolares,
+    turmasPrograma
   ) => {
     const url = `${urlPadrao}/ues/${codigoUe}/modalidades/${modalidade}/anos/${anoLetivo}/anos-escolares?anosEscolares=${anosEscolares.join(
       '&anosEscolares=',
       anosEscolares
-    )}`;
+    )}&turmasPrograma=${!!turmasPrograma}`;
     return api.get(url);
   };
 

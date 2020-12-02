@@ -102,7 +102,7 @@ namespace SME.SGP.Dados.Repositorios
                   and DATE(data_aula) between @dataInicio and @dataFim
                   and turma_id = @turmaId
                   and disciplina_id in (
-                select disciplina_id from atividade_avaliativa_disciplina aad
+                select disciplina_id::varchar from atividade_avaliativa_disciplina aad
                where atividade_avaliativa_id = @atividadeAvaliativaId)";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<AulaConsultaDto>(query, new
@@ -638,6 +638,23 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
+        public bool VerificarAulaPorWorkflowId(long workflowId)
+        {
+            var query = @"select count(a.id)
+                             from aula a
+                            where a.excluido = false
+                              and a.migrado = false
+                              and tipo_aula = 2
+                              and a.wf_aprovacao_id = @workflowId";
+
+            int qtde = database.Conexao.QueryFirst<int>(query.ToString(), new
+            {
+                workflowId
+            });
+
+            return qtde > 0 ? true : false;
+        }
+
         public async Task<int> ObterQuantidadeDeAulasPorTurmaDisciplinaPeriodoAsync(string turmaId, string disciplinaId, DateTime inicio, DateTime fim)
         {
             var query = @"select count(id)
@@ -817,8 +834,11 @@ namespace SME.SGP.Dados.Repositorios
                                a.criado_por as Professor,
                                a.criado_rf as ProfessorRf,
                                a.turma_id as TurmaId,
-                               a.disciplina_id as DisciplinaId
+                               a.disciplina_id as DisciplinaId,
+                               ue.ue_id as CodigoUe
                           from aula a 
+                        inner join turma t on t.turma_id = a.turma_id
+                        inner join ue on ue.id = t.ue_id
                          where not excluido and tipo_calendario_id = @tipoCalendarioId";
             return await database.Conexao.QueryAsync<AulaReduzidaDto>(query.ToString(), new { tipoCalendarioId });
         }

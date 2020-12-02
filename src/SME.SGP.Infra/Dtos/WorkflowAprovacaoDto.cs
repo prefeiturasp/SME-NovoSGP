@@ -63,5 +63,14 @@ namespace SME.SGP.Infra
                 Nivel = Niveis.Count() + 1
             });
         }
+
+        public void AdicionarCargo(Cargo cargo)
+        {
+            Niveis.Add(new WorkflowAprovacaoNivelDto()
+            {
+                Cargo = cargo,
+                Nivel = 1
+            });
+        }
     }
 }
