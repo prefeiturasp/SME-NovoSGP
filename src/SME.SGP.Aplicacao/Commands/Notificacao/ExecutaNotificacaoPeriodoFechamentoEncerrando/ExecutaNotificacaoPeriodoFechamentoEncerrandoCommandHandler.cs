@@ -23,8 +23,9 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(ExecutaNotificacaoPeriodoFechamentoEncerrandoCommand request, CancellationToken cancellationToken)
         {
             var turmas = await mediator.Send(new ObterTurmasComFechamentoOuConselhoNaoFinalizadosQuery(request.PeriodoFechamentoBimestre.PeriodoFechamento.UeId.Value,
+                                                                                                        DateTime.Now.Year,
                                                                                                       request.PeriodoFechamentoBimestre.PeriodoFechamentoId,
-                                                                                                      request.ModalidadeTipoCalendario.ObterModalidadesTurma()));
+                                                                                                      request.ModalidadeTipoCalendario.ObterModalidadesTurma(), 0));
             if (turmas != null && turmas.Any())
                 await EnviarNotificacaoProfessores(turmas, request.PeriodoFechamentoBimestre.PeriodoEscolar, request.PeriodoFechamentoBimestre, request.PeriodoFechamentoBimestre.PeriodoFechamento.Ue);
 
