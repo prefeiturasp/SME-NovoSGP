@@ -33,6 +33,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task EnviarNotificacaoProfessores(IEnumerable<Turma> turmas, PeriodoEscolar periodoEscolar, PeriodoFechamentoBimestre periodoFechamentoBimestre, Ue ue)
         {
+            
             var descricaoUe = $"{ue.TipoEscola.ShortName()} {ue.Nome} ({ue.Dre.Abreviacao})";
             var titulo = $"Término do período de fechamento do  {periodoEscolar.Bimestre}º bimestre - {descricaoUe}";
             var mensagem = @$"O fechamento do <b>{periodoEscolar.Bimestre}º bimestre</b> na <b>{descricaoUe}</b> irá encerrar no dia <b>{periodoFechamentoBimestre.FinalDoFechamento.Date:dd/MM/yyyy}</b>.
@@ -56,10 +57,11 @@ namespace SME.SGP.Aplicacao
 
                 foreach (var professor in professores)
                 {
-                    listaUsuarios.Add(await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(professor)));
+                    if(professor != "")
+                        listaUsuarios.Add(await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(professor)));
                 }
             }
-            return listaUsuarios;
+            return listaUsuarios.Distinct();
         }
     }
 }
