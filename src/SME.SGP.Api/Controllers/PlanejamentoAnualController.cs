@@ -51,8 +51,6 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.PA_I, Permissao.PA_A, Policy = "Bearer")]
         public async Task<IActionResult> Migrar(MigrarPlanejamentoAnualDto migrarPlanoAnualDto, [FromServices] IMigrarPlanejamentoAnualUseCase useCase)
         {
-            throw new NegocioException("Função desabilitada temporariamente.");
-
             return Ok(await useCase.Executar(migrarPlanoAnualDto));
         }
 
