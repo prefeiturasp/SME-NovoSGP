@@ -87,13 +87,13 @@ const BotoesAcoesPlanoAnual = () => {
     }
   };
 
-  // const abrirCopiarConteudo = async () => {
-  //   dispatch(setExibirModalCopiarConteudo(true));
-  // };
+  const abrirCopiarConteudo = async () => {
+    dispatch(setExibirModalCopiarConteudo(true));
+  };
 
   return (
     <>
-      {/* <Button
+      <Button
         id="btn-copiar-conteudo-plano-anual"
         label="Copiar Conteúdo"
         icon="share-square"
@@ -109,7 +109,7 @@ const BotoesAcoesPlanoAnual = () => {
           !listaTurmasParaCopiar ||
           listaTurmasParaCopiar.length === 0
         }
-      /> */}
+      />
       
       <Button
         id="btn-voltar-plano-anual"
