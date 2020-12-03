@@ -345,8 +345,7 @@ namespace SME.SGP.IoC
 
         }
 
-        private static void RegistrarCasosDeUso(IServiceCollection services)
-        {
+        private static void RegistrarCasosDeUso(IServiceCollection services){
             services.TryAddScoped<IObterUltimaVersaoUseCase, ObterUltimaVersaoUseCase>();
             services.TryAddScoped<IImpressaoConselhoClasseAlunoUseCase, ImpressaoConselhoClasseAlunoUseCase>();
             services.TryAddScoped<IImpressaoConselhoClasseTurmaUseCase, ImpressaoConselhoClasseTurmaUseCase>();
@@ -527,6 +526,14 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IExecutaNotificacaoInicioFimPeriodoFechamentoUseCase, ExecutaNotificacaoInicioFimPeriodoFechamentoUseCase>();
             services.TryAddScoped<INotificacaoInicioFimPeriodoFechamentoUseCase, NotificacaoInicioFimPeriodoFechamentoUseCase>();
 
+
+            // Dias Letivos
+            services.TryAddScoped<IObterDiasLetivosPorCalendarioUseCase, ObterDiasLetivosPorCalendarioUseCase>();
+
+
+            // Notificação
+            services.TryAddScoped<IExecutaNotificacaoFrequenciaUeUseCase, ExecutaNotificacaoFrequenciaUeUseCase>();
+            services.TryAddScoped<INotificacaoFrequenciaUeUseCase, NotificacaoFrequenciaUeUseCase>();
 
             //Notificação Resultado Insatisfatorio 
             services.TryAddScoped<IExecutaNotificacaoResultadoInsatisfatorioUseCase, ExecutaNotificacaoResultadoInsatisfatorioUseCase>();
