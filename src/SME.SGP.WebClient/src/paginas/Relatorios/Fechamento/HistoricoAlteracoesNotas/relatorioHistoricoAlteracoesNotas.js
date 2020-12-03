@@ -106,7 +106,10 @@ const RelatorioHistoricoAlteracoesNotas = () => {
   const obterDres = useCallback(async () => {
     if (anoLetivo) {
       setExibirLoader(true);
-      const resposta = await ServicoFiltroRelatorio.obterDres()
+      const resposta = await AbrangenciaServico.buscarDres(
+        `v1/abrangencias/${anoAtual !== anoLetivo}/dres?anoLetivo=${anoLetivo}`,
+        anoAtual !== anoLetivo
+      )
         .catch(e => erros(e))
         .finally(() => setExibirLoader(false));
 
@@ -129,7 +132,7 @@ const RelatorioHistoricoAlteracoesNotas = () => {
         setDreId(undefined);
       }
     }
-  }, [anoLetivo]);
+  }, [anoLetivo, anoAtual]);
 
   useEffect(() => {
     obterDres();
@@ -138,7 +141,13 @@ const RelatorioHistoricoAlteracoesNotas = () => {
   const obterUes = useCallback(async dre => {
     if (dre) {
       setExibirLoader(true);
-      const resposta = await ServicoFiltroRelatorio.obterUes(dre)
+      const resposta = await AbrangenciaServico.buscarUes(
+        dre,
+        '',
+        false,
+        undefined,
+        anoAtual !== anoLetivo
+      )
         .catch(e => erros(e))
         .finally(() => setExibirLoader(false));
 
@@ -208,7 +217,8 @@ const RelatorioHistoricoAlteracoesNotas = () => {
         ue,
         modalidadeSelecionada,
         '',
-        ano
+        ano,
+        anoAtual !== anoLetivo
       );
       if (data) {
         const lista = [];
