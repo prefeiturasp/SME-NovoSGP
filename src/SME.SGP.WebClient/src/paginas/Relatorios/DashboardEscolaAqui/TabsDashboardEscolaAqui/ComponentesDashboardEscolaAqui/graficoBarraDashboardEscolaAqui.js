@@ -23,6 +23,12 @@ const GraficoBarraDashboardEscolaAqui = props => {
     dadosLegendaCustomizada,
   } = props;
 
+  const margemPersonalizada = {
+    top: 50,
+    right: dadosLegendaCustomizada?.length ? 0 : 130,
+    bottom: 50,
+    left: 60,
+  };
   return (
     <>
       <div
@@ -41,6 +47,7 @@ const GraficoBarraDashboardEscolaAqui = props => {
               chaves={chavesGrafico}
               legendsTranslateX={105}
               removeLegends={removeLegends}
+              customMargins={margemPersonalizada}
               customProps={{
                 colors: customPropsColors || (item => item?.data?.color),
                 tooltip: item => {
