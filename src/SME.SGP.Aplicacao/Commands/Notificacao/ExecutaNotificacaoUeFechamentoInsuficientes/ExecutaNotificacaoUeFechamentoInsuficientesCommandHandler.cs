@@ -121,6 +121,6 @@ namespace SME.SGP.Aplicacao
 
         private string ObterHeaderTabela()
             => "<table style='margin-left: auto; margin-right: auto; margin-top: 10px' border='2' cellpadding='5'>"
-             + "<tr style='font-weight: bold'><td>Escola</td><td>Turmas Pendentes</td></tr>";
+             + "<tr style='font-weight: bold'><td>Unidade Escolar</td><td>Turmas Pendentes</td></tr>";
     }
 }
