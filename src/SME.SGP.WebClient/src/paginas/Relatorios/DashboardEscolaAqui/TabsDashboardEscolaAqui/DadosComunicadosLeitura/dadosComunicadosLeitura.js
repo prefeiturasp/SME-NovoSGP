@@ -65,6 +65,8 @@ const DadosComunicadosLeitura = props => {
     setDadosDeLeituraDeComunicadosAgrupadosPorDre,
   ] = useState([]);
 
+  const [dadosLegendaGrafico, setDadosLegendaGrafico] = useState([]);
+
   // TODO Verificar no componente de gráficos outra forma de fazer!
   const chavesGrafico = [
     'Usuários que não receberam o comunicado (CPF válido porém que não tem o APP instalado)',
@@ -488,11 +490,35 @@ const DadosComunicadosLeitura = props => {
           }
           return novo;
         });
-        setDadosDeLeituraDeComunicadosAgrupadosPorDre(
-          adicionarCoresNosGraficos(
-            dadosMapeados.filter(item => item.nomeAbreviadoDre)
-          )
+
+        const dadosMapeadosComCores = adicionarCoresNosGraficos(
+          dadosMapeados.filter(item => item.nomeAbreviadoDre)
         );
+
+        const dadosParaMontarLegenda = [];
+        if (dadosMapeadosComCores.find(item => !!item.naoReceberamComunicado)) {
+          dadosParaMontarLegenda.push({
+            label: chavesGrafico[0],
+            color: CoresGraficos[0],
+          });
+        }
+        if (
+          dadosMapeadosComCores.find(item => !!item.receberamENaoVisualizaram)
+        ) {
+          dadosParaMontarLegenda.push({
+            label: chavesGrafico[1],
+            color: CoresGraficos[1],
+          });
+        }
+        if (dadosMapeadosComCores.find(item => !!item.visualizaramComunicado)) {
+          dadosParaMontarLegenda.push({
+            label: chavesGrafico[2],
+            color: CoresGraficos[2],
+          });
+        }
+
+        setDadosLegendaGrafico(dadosParaMontarLegenda);
+        setDadosDeLeituraDeComunicadosAgrupadosPorDre(dadosMapeadosComCores);
       } else {
         setDadosDeLeituraDeComunicadosAgrupadosPorDre([]);
       }
@@ -741,6 +767,8 @@ const DadosComunicadosLeitura = props => {
               dadosGrafico={dadosDeLeituraDeComunicadosAgrupadosPorDre}
               chavesGrafico={chavesGrafico}
               indice="nomeAbreviadoDre"
+              dadosLegendaCustomizada={dadosLegendaGrafico}
+              removeLegends
               customPropsColors={item => {
                 if (item.id === chavesGrafico[0]) {
                   return CoresGraficos[0];

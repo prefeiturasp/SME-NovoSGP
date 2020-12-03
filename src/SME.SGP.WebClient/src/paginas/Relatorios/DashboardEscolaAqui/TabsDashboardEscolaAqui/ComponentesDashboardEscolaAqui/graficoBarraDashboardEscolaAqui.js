@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Graficos } from '~/componentes';
+import LegendaGrafico from '~/componentes-sgp/LegendaGrafico/legendaGrafico';
 import {
   ContainerGraficoBarras,
   TituloGrafico,
@@ -19,11 +20,17 @@ const GraficoBarraDashboardEscolaAqui = props => {
     groupMode,
     removeLegends,
     customPropsColors,
+    dadosLegendaCustomizada,
   } = props;
 
   return (
     <>
-      <div className="scrolling-chart">
+      <div
+        className="scrolling-chart"
+        style={{
+          flexDirection: dadosLegendaCustomizada?.length ? 'column' : 'row',
+        }}
+      >
         <div className="col-md-12">
           <TituloGrafico>{titulo}</TituloGrafico>
           <ContainerGraficoBarras>
@@ -46,6 +53,13 @@ const GraficoBarraDashboardEscolaAqui = props => {
             />
           </ContainerGraficoBarras>
         </div>
+        {dadosLegendaCustomizada?.length ? (
+          <div className="col-md-12">
+            <LegendaGrafico dados={dadosLegendaCustomizada} orizontal />
+          </div>
+        ) : (
+          ''
+        )}
       </div>
     </>
   );
@@ -59,6 +73,7 @@ GraficoBarraDashboardEscolaAqui.propTypes = {
   groupMode: PropTypes.string,
   removeLegends: PropTypes.bool,
   customPropsColors: PropTypes.oneOfType([PropTypes.any]),
+  dadosLegendaCustomizada: PropTypes.oneOfType([PropTypes.array]),
 };
 
 GraficoBarraDashboardEscolaAqui.defaultProps = {
@@ -69,6 +84,7 @@ GraficoBarraDashboardEscolaAqui.defaultProps = {
   groupMode: '',
   removeLegends: false,
   customPropsColors: null,
+  dadosLegendaCustomizada: [],
 };
 
 export default GraficoBarraDashboardEscolaAqui;
