@@ -1,15 +1,16 @@
-import * as moment from 'moment';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
-import { CoresGraficos, Graficos, Loader } from '~/componentes';
+import { Loader } from '~/componentes';
 import { erros } from '~/servicos';
 import ServicoDashboardEscolaAqui from '~/servicos/Paginas/Relatorios/EscolaAqui/DashboardEscolaAqui/ServicoDashboardEscolaAqui';
 import {
-  DataUltimaAtualizacao,
-  LegendaGrafico,
-  TituloGrafico,
-  ContainerGraficoBarras,
-} from '../../dashboardEscolaAqui.css';
+  adicionarCoresNosGraficos,
+  formataMilhar,
+  mapearParaDtoGraficoPizzaComValorEPercentual,
+} from '../../dashboardEscolaAquiGraficosUtils';
+import DataUltimaAtualizacaoDashboardEscolaAqui from '../ComponentesDashboardEscolaAqui/dataUltimaAtualizacaoDashboardEscolaAqui';
+import GraficoBarraDashboardEscolaAqui from '../ComponentesDashboardEscolaAqui/graficoBarraDashboardEscolaAqui';
+import GraficoPizzaDashboardEscolaAqui from '../ComponentesDashboardEscolaAqui/graficoPizzaDashboardEscolaAqui';
 
 const DadosAdesao = props => {
   const { codigoDre, codigoUe } = props;
@@ -38,95 +39,46 @@ const DadosAdesao = props => {
   ] = useState([]);
 
   const [exibirLoader, setExibirLoader] = useState(false);
-  const [dataUltimaAtualizacao, setDataUltimaAtualizacao] = useState();
 
-  const obterDataUltimaAtualizacao = async () => {
-    const retorno = await ServicoDashboardEscolaAqui.obterUltimaAtualizacaoPorProcesso(
-      'ConsolidarAdesaoEOL'
-    );
-    if (retorno && retorno.data && retorno.data.dataUltimaAtualizacao) {
-      setDataUltimaAtualizacao(
-        moment(retorno.data.dataUltimaAtualizacao).format('DD/MM/YYYY HH:mm')
-      );
-    }
-  };
-
-  const obterPercentual = (valorAtual, valorTotal) => {
-    const porcentagemAtual = (valorAtual / valorTotal) * 100;
-    return `(${porcentagemAtual.toFixed(2)}%)`;
-  };
-
-  const formataMilhar = valor => {
-    return valor.toLocaleString('pt-BR');
-  };
-
-  const obterValorTotal = dadosMapeados => {
-    const getTotal = (total, item) => {
-      return total + item.value;
-    };
-    return dadosMapeados.reduce(getTotal, 0);
-  };
-
-  const mapearDadosComPorcentagem = dadosMapeados => {
-    if (dadosMapeados && dadosMapeados.length) {
-      const valorTotal = obterValorTotal(dadosMapeados);
-
-      dadosMapeados.forEach(item => {
-        item.radialLabel = `${formataMilhar(item.value)} ${obterPercentual(
-          item.value,
-          valorTotal
-        )}`;
-      });
-    }
-
-    return dadosMapeados;
-  };
+  const OPCAO_TODOS = '-99';
 
   const mapearParaDtoGraficoPizza = dados => {
-    const dadosMapeados = [];
+    const dadosParaMapear = [];
 
     if (dados.totalUsuariosComCpfInvalidos) {
       const totalUsuariosComCpfInvalidos = {
-        id: '1',
         label: 'Responsáveis sem CPF ou com CPF inválido no EOL',
         value: dados.totalUsuariosComCpfInvalidos || 0,
-        color: '#F98F84',
       };
-      dadosMapeados.push(totalUsuariosComCpfInvalidos);
+      dadosParaMapear.push(totalUsuariosComCpfInvalidos);
     }
 
     if (dados.totalUsuariosSemAppInstalado) {
       const totalUsuariosSemAppInstalado = {
-        id: '2',
         label: 'Usuários que não realizaram a instalação',
         value: dados.totalUsuariosSemAppInstalado || 0,
-        color: '#57CDBC',
       };
-      dadosMapeados.push(totalUsuariosSemAppInstalado);
+      dadosParaMapear.push(totalUsuariosSemAppInstalado);
     }
 
     if (dados.totalUsuariosPrimeiroAcessoIncompleto) {
       const totalUsuariosPrimeiroAcessoIncompleto = {
-        id: '3',
         label: 'Usuários com primeiro acesso incompleto',
         value: dados.totalUsuariosPrimeiroAcessoIncompleto || 0,
-        color: '#EFB971',
       };
-      dadosMapeados.push(totalUsuariosPrimeiroAcessoIncompleto);
+      dadosParaMapear.push(totalUsuariosPrimeiroAcessoIncompleto);
     }
 
     if (dados.totalUsuariosValidos) {
       const totalUsuariosValidos = {
-        id: '4',
         label: 'Usuários válidos',
         value: dados.totalUsuariosValidos || 0,
-        color: '#3982AC',
       };
-      dadosMapeados.push(totalUsuariosValidos);
+      dadosParaMapear.push(totalUsuariosValidos);
     }
 
-    const dadosMapeadosComPorcentagem = mapearDadosComPorcentagem(
-      dadosMapeados
+    const dadosMapeadosComPorcentagem = mapearParaDtoGraficoPizzaComValorEPercentual(
+      dadosParaMapear
     );
     setDadosGraficoAdesao(dadosMapeadosComPorcentagem);
   };
@@ -134,8 +86,8 @@ const DadosAdesao = props => {
   const obterDadosGraficoAdesao = useCallback(async () => {
     setExibirLoader(true);
     const retorno = await ServicoDashboardEscolaAqui.obterDadosGraficoAdesao(
-      codigoDre === '-99' ? '' : codigoDre,
-      codigoUe === '-99' ? '' : codigoUe
+      codigoDre === OPCAO_TODOS ? '' : codigoDre,
+      codigoUe === OPCAO_TODOS ? '' : codigoUe
     )
       .catch(e => erros(e))
       .finally(() => setExibirLoader(false));
@@ -147,11 +99,10 @@ const DadosAdesao = props => {
     }
   }, [codigoDre, codigoUe]);
 
-  const montarDadosGrafico = (item, nomeCampo, dados, index) => {
+  const montarDadosGrafico = (item, nomeCampo, dados) => {
     if (item[nomeCampo]) {
       const totalDados = {
         nomeCompletoDre: item.nomeCompletoDre,
-        color: CoresGraficos[index],
       };
       totalDados[nomeCampo] = item[nomeCampo];
       totalDados[item.nomeCompletoDre] = formataMilhar(item[nomeCampo]);
@@ -166,49 +117,47 @@ const DadosAdesao = props => {
     const dadosTotalUsuariosPrimeiroAcessoIncompleto = [];
     const dadosTotalUsuariosValidos = [];
 
-    dados.forEach((item, index) => {
+    dados.forEach(item => {
       chaves.push(item.nomeCompletoDre);
 
       montarDadosGrafico(
         item,
         'totalUsuariosComCpfInvalidos',
-        dadosTotalUsuariosComCpfInvalidos,
-        index
+        dadosTotalUsuariosComCpfInvalidos
       );
 
       montarDadosGrafico(
         item,
         'totalUsuariosSemAppInstalado',
-        dadosTotalUsuariosSemAppInstalado,
-        index
+        dadosTotalUsuariosSemAppInstalado
       );
 
       montarDadosGrafico(
         item,
         'totalUsuariosPrimeiroAcessoIncompleto',
-        dadosTotalUsuariosPrimeiroAcessoIncompleto,
-        index
+        dadosTotalUsuariosPrimeiroAcessoIncompleto
       );
 
       montarDadosGrafico(
         item,
         'totalUsuariosValidos',
-        dadosTotalUsuariosValidos,
-        index
+        dadosTotalUsuariosValidos
       );
     });
 
     setChavesGrafico(chaves);
     setDadosGraficoTotalUsuariosComCpfInvalidos(
-      dadosTotalUsuariosComCpfInvalidos
+      adicionarCoresNosGraficos(dadosTotalUsuariosComCpfInvalidos)
     );
     setDadosGraficoTotalUsuariosSemAppInstalado(
-      dadosTotalUsuariosSemAppInstalado
+      adicionarCoresNosGraficos(dadosTotalUsuariosSemAppInstalado)
     );
     setDadosGraficoTotalUsuariosPrimeiroAcessoIncompleto(
-      dadosTotalUsuariosPrimeiroAcessoIncompleto
+      adicionarCoresNosGraficos(dadosTotalUsuariosPrimeiroAcessoIncompleto)
     );
-    setDadosGraficoTotalUsuariosValidos(dadosTotalUsuariosValidos);
+    setDadosGraficoTotalUsuariosValidos(
+      adicionarCoresNosGraficos(dadosTotalUsuariosValidos)
+    );
   }, []);
 
   const limparGraficosTotais = () => {
@@ -233,7 +182,7 @@ const DadosAdesao = props => {
 
   useEffect(() => {
     if (codigoDre && codigoUe) {
-      if (codigoDre === '-99' && codigoUe === '-99') {
+      if (codigoDre === OPCAO_TODOS && codigoUe === OPCAO_TODOS) {
         obterDadosGraficoAdesaoAgrupados();
       } else {
         limparGraficosTotais();
@@ -242,8 +191,6 @@ const DadosAdesao = props => {
     } else {
       setDadosGraficoAdesao([]);
     }
-
-    obterDataUltimaAtualizacao();
   }, [
     codigoDre,
     codigoUe,
@@ -251,91 +198,30 @@ const DadosAdesao = props => {
     obterDadosGraficoAdesaoAgrupados,
   ]);
 
-  const tooltipCustomizado = item => {
-    return (
-      <div style={{ whiteSpace: 'pre', display: 'flex', alignItems: 'center' }}>
-        <span
-          style={{
-            display: 'block',
-            width: '12px',
-            height: '12px',
-            background: item.color,
-            marginRight: '7px',
-          }}
-        />
-        {item.id} - <strong>{item.value}</strong>
-      </div>
-    );
-  };
-
   const graficoBarras = (dados, titulo) => {
     return (
-      <div className="scrolling-chart">
-        <div className="col-md-12">
-          <TituloGrafico>{titulo}</TituloGrafico>
-          <ContainerGraficoBarras>
-            <Graficos.Barras
-              dados={dados}
-              indice="nomeCompletoDre"
-              chaves={chavesGrafico}
-              groupMode="stacked"
-              legendsTranslateX={105}
-              showAxisBottom={false}
-              customProps={{
-                colors: item => item?.data?.color,
-                tooltip: item => {
-                  return tooltipCustomizado(item);
-                },
-                labelFormat: d => <tspan y={-7}>{d}</tspan>,
-              }}
-            />
-          </ContainerGraficoBarras>
-        </div>
-      </div>
+      <GraficoBarraDashboardEscolaAqui
+        titulo={titulo}
+        dadosGrafico={dados}
+        chavesGrafico={chavesGrafico}
+        indice="nomeCompletoDre"
+        groupMode="stacked"
+      />
     );
   };
 
   return (
     <Loader loading={exibirLoader} className="text-center">
-      {dataUltimaAtualizacao ? (
-        <div className="col-md-12">
-          <div className=" d-flex justify-content-end pb-4">
-            <DataUltimaAtualizacao>
-              Data da última atualização: {dataUltimaAtualizacao}
-            </DataUltimaAtualizacao>
-          </div>
-        </div>
-      ) : (
-        ''
-      )}
+      <div className="col-md-12 mt-2">
+        <DataUltimaAtualizacaoDashboardEscolaAqui nomeConsulta="ConsolidarAdesaoEOL" />
+      </div>
 
       {dadosGraficoAdesao && dadosGraficoAdesao.length ? (
         <>
-          <TituloGrafico>Total de Usuários</TituloGrafico>
-          <div className="row mb-5">
-            <div className="col-md-6">
-              <Graficos.Pie
-                data={dadosGraficoAdesao}
-                style={{ fontSize: '14px !important' }}
-              />
-            </div>
-            <div className="col-md-6 d-flex align-items-center">
-              <LegendaGrafico>
-                <div className="legend-scale">
-                  <ul className="legend-labels">
-                    {dadosGraficoAdesao.map(item => {
-                      return (
-                        <li>
-                          <span style={{ backgroundColor: item.color }} />
-                          {item.label}
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </div>
-              </LegendaGrafico>
-            </div>
-          </div>
+          <GraficoPizzaDashboardEscolaAqui
+            titulo="Total de Usuários"
+            dadosGrafico={dadosGraficoAdesao}
+          />
 
           {dadosGraficoTotalUsuariosComCpfInvalidos?.length
             ? graficoBarras(

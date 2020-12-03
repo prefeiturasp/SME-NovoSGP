@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao.Commands.PendenciasGerais.SalvarPendencia
         public async Task<long> Handle(SalvarPendenciaCommand request, CancellationToken cancellationToken)
         {
             var pendencia = new Pendencia(request.TipoPendencia);
-            pendencia.Titulo = ObterTitulo(request.TipoPendencia);
+            pendencia.Titulo = string.IsNullOrEmpty(request.Titulo) ? ObterTitulo(request.TipoPendencia) : request.Titulo;
             pendencia.Descricao = string.IsNullOrEmpty(request.Descricao) ? ObterDescricao(request.TipoPendencia) : request.Descricao;
             pendencia.Instrucao = request.Instrucao;
 
