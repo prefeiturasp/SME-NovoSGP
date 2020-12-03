@@ -110,18 +110,13 @@ namespace SME.SGP.Aplicacao
 
         private async Task<IEnumerable<long>> ObterUsuariosSupervisores(String codigoDre)
         {
-            var supervisores = await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(codigoDre, ObterPerfis()));
+            var supervisores = await mediator.Send(new ObterSupervisoresPorDreQuery(codigoDre));
 
             var listaUsuarios = new List<long>();
-            foreach (var supervisor in supervisores)
-                listaUsuarios.Add(await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(supervisor)));
+            foreach (var supervisor in supervisores.GroupBy(c => c.SupervisorId))
+                listaUsuarios.Add(await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(supervisor.Key)));
 
             return listaUsuarios;
-        }
-
-        private IEnumerable<Guid> ObterPerfis()
-        {
-            return new List<Guid>() { Perfis.PERFIL_SUPERVISOR };
         }
 
         private string ObterHeaderTabela()
