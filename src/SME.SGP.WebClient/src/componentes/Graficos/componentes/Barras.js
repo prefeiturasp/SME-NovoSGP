@@ -16,6 +16,7 @@ function Barras({
   showAxisBottom,
   customProps,
   removeLegends,
+  customMargins,
 }) {
   const format = v => `${Math.round(v, 2)}%`;
 
@@ -24,7 +25,7 @@ function Barras({
       data={dados}
       keys={chaves}
       indexBy={indice}
-      margin={{ top: 50, right: 130, bottom: 50, left: 60 }}
+      margin={customMargins || { top: 50, right: 130, bottom: 50, left: 60 }}
       padding={0.3}
       innerPadding={1}
       groupMode={groupMode}
@@ -102,6 +103,7 @@ Barras.propTypes = {
   showAxisBottom: t.bool,
   customProps: t.oneOfType([t.object]),
   removeLegends: t.bool,
+  customMargins: t.oneOfType([t.any]),
 };
 
 Barras.defaultProps = {
@@ -116,6 +118,7 @@ Barras.defaultProps = {
   showAxisBottom: true,
   customProps: {},
   removeLegends: false,
+  customMargins: null,
 };
 
 export default Barras;
