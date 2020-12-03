@@ -7,9 +7,9 @@ using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterPendenciaCalendarioUeQuery : IRequest<PendenciaCalendarioUe>
+    public class ObterPendenciasCalendarioUeQuery : IRequest<IEnumerable<PendenciaCalendarioUe>>
     {
-        public ObterPendenciaCalendarioUeQuery(long tipoCalendarioId, long ueId, TipoPendencia tipoPendencia)
+        public ObterPendenciasCalendarioUeQuery(long tipoCalendarioId, long ueId, TipoPendencia tipoPendencia)
         {
             TipoCalendarioId = tipoCalendarioId;
             UeId = ueId;
@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
         public TipoPendencia TipoPendencia { get; set; }
     }
 
-    public class ObterPendenciaCalendarioUeQueryValidator : AbstractValidator<ObterPendenciaCalendarioUeQuery>
+    public class ObterPendenciaCalendarioUeQueryValidator : AbstractValidator<ObterPendenciasCalendarioUeQuery>
     {
         public ObterPendenciaCalendarioUeQueryValidator()
         {

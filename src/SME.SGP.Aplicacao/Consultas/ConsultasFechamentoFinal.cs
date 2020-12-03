@@ -178,8 +178,8 @@ namespace SME.SGP.Aplicacao
                 retorno.Alunos.Add(fechamentoFinalAluno);
             }
 
-            retorno.AuditoriaAlteracao = MontaTextoAuditoriaAlteracao(fechamentosTurmaDisciplina.First(), retorno.EhNota);
-            retorno.AuditoriaInclusao = MontaTextoAuditoriaInclusao(fechamentosTurmaDisciplina.First(), retorno.EhNota);
+            retorno.AuditoriaAlteracao = MontaTextoAuditoriaAlteracao(fechamentosTurmaDisciplina.FirstOrDefault(), retorno.EhNota);
+            retorno.AuditoriaInclusao = MontaTextoAuditoriaInclusao(fechamentosTurmaDisciplina.FirstOrDefault(), retorno.EhNota);
 
             retorno.NotaMedia = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.MediaBimestre, DateTime.Today.Year)));
             retorno.FrequenciaMedia = await consultasFrequencia.ObterFrequenciaMedia(disciplinaEOL);
