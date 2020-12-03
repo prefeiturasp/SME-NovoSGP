@@ -218,7 +218,7 @@ const RelatorioHistoricoAlteracoesNotas = () => {
         modalidadeSelecionada,
         '',
         ano,
-        anoAtual !== anoLetivo
+        anoAtual !== ano
       );
       if (data) {
         const lista = [];
