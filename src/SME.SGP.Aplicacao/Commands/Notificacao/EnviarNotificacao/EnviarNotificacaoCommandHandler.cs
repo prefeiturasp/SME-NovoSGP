@@ -34,7 +34,12 @@ namespace SME.SGP.Aplicacao
             };
 
             foreach(var cargo in request.Cargos)
-                wf.AdicionarCargo(cargo);
+            {
+                if (request.CategoriaNotificacao == NotificacaoCategoria.Workflow_Aprovacao)
+                    wf.AdicionarNivel(cargo);
+                else
+                    wf.AdicionarCargo(cargo);
+            }
 
             return await mediator.Send(new SalvarWorkflowAprovacaoCommand(wf));
         }
