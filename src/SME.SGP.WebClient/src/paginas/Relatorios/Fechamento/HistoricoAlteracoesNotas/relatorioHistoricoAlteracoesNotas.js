@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Loader, SelectComponent } from '~/componentes';
+import { CheckboxComponent, Loader, SelectComponent } from '~/componentes';
 import { Cabecalho } from '~/componentes-sgp';
 import Alert from '~/componentes/alert';
 import Button from '~/componentes/button';
@@ -46,6 +46,7 @@ const RelatorioHistoricoAlteracoesNotas = () => {
   );
   const [bimestre, setBimestre] = useState(undefined);
   const [tipoDeNota, setTipoDeNota] = useState('1');
+  const [consideraHistorico, setConsideraHistorico] = useState(false);
 
   const OPCAO_TODOS = '-99';
 
@@ -107,8 +108,8 @@ const RelatorioHistoricoAlteracoesNotas = () => {
     if (anoLetivo) {
       setExibirLoader(true);
       const resposta = await AbrangenciaServico.buscarDres(
-        `v1/abrangencias/${anoAtual !== anoLetivo}/dres?anoLetivo=${anoLetivo}`,
-        anoAtual !== anoLetivo
+        `v1/abrangencias/${consideraHistorico}/dres?anoLetivo=${anoLetivo}`,
+        consideraHistorico
       )
         .catch(e => erros(e))
         .finally(() => setExibirLoader(false));
@@ -132,21 +133,23 @@ const RelatorioHistoricoAlteracoesNotas = () => {
         setDreId(undefined);
       }
     }
-  }, [anoLetivo, anoAtual]);
+  }, [anoLetivo, consideraHistorico]);
 
   useEffect(() => {
     obterDres();
-  }, [obterDres]);
+  }, [obterDres, anoLetivo, consideraHistorico]);
 
-  const obterUes = useCallback(async dre => {
-    if (dre) {
+  useEffect(() => {
+    setAnoLetivo(anoAtual);
+  }, [consideraHistorico, anoAtual]);
+
+  const obterUes = useCallback(async () => {
+    if (dreId) {
       setExibirLoader(true);
       const resposta = await AbrangenciaServico.buscarUes(
-        dre,
-        '',
-        false,
-        undefined,
-        anoAtual !== anoLetivo
+        dreId,
+        `v1/abrangencias/${consideraHistorico}/dres/${dreId}/ues?anoLetivo=${anoLetivo}`,
+        true
       )
         .catch(e => erros(e))
         .finally(() => setExibirLoader(false));
@@ -168,16 +171,16 @@ const RelatorioHistoricoAlteracoesNotas = () => {
         setListaUes([]);
       }
     }
-  }, []);
+  }, [consideraHistorico, anoLetivo, dreId]);
 
   useEffect(() => {
     if (dreId) {
-      obterUes(dreId, anoLetivo);
+      obterUes();
     } else {
       setUeId();
       setListaUes([]);
     }
-  }, [dreId, anoLetivo, obterUes]);
+  }, [dreId, anoLetivo, consideraHistorico, obterUes]);
 
   const obterModalidades = async (ue, ano) => {
     if (ue && ano) {
@@ -210,15 +213,15 @@ const RelatorioHistoricoAlteracoesNotas = () => {
     }
   }, [anoLetivo, ueId]);
 
-  const obterTurmas = useCallback(async (modalidadeSelecionada, ue, ano) => {
-    if (ue && modalidadeSelecionada) {
+  const obterTurmas = useCallback(async () => {
+    if (dreId && ueId && modalidadeId) {
       setExibirLoader(true);
       const { data } = await AbrangenciaServico.buscarTurmas(
-        ue,
-        modalidadeSelecionada,
+        ueId,
+        modalidadeId,
         '',
-        ano,
-        anoAtual !== anoLetivo
+        anoLetivo,
+        consideraHistorico
       );
       if (data) {
         const lista = [];
@@ -240,16 +243,16 @@ const RelatorioHistoricoAlteracoesNotas = () => {
       }
       setExibirLoader(false);
     }
-  }, []);
+  }, [ueId, dreId, consideraHistorico, anoLetivo, modalidadeId]);
 
   useEffect(() => {
-    if (modalidadeId && ueId) {
-      obterTurmas(modalidadeId, ueId, anoLetivo);
+    if (modalidadeId && ueId && dreId) {
+      obterTurmas();
     } else {
       setTurmaId();
       setListaTurmas([]);
     }
-  }, [modalidadeId, ueId, anoLetivo, obterTurmas]);
+  }, [modalidadeId, ueId, dreId, anoLetivo, consideraHistorico, obterTurmas]);
 
   useEffect(() => {
     const bi = [];
@@ -527,6 +530,21 @@ const RelatorioHistoricoAlteracoesNotas = () => {
                 }
               />
             </div>
+          </div>
+          <div className="row">
+            <div className="col-sm-12 col-md-6 col-lg-4 col-xl-4 mb-2">
+              <CheckboxComponent
+                label="Exibir histórico?"
+                onChangeCheckbox={e => {
+                  setAnoLetivo();
+                  setDreId();
+                  setConsideraHistorico(e.target.checked);
+                }}
+                checked={consideraHistorico}
+              />
+            </div>
+          </div>
+          <div className="row">
             <div className="col-sm-12 col-md-6 col-lg-2 col-xl-2 mb-2">
               <SelectComponent
                 id="drop-ano-letivo"
@@ -534,7 +552,7 @@ const RelatorioHistoricoAlteracoesNotas = () => {
                 lista={listaAnosLetivo}
                 valueOption="valor"
                 valueText="desc"
-                disabled={listaAnosLetivo && listaAnosLetivo.length === 1}
+                disabled={!consideraHistorico || listaAnosLetivo?.length === 1}
                 onChange={onChangeAnoLetivo}
                 valueSelect={anoLetivo}
                 placeholder="Ano letivo"
