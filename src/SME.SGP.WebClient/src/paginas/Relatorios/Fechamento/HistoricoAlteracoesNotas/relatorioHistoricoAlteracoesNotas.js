@@ -106,17 +106,19 @@ const RelatorioHistoricoAlteracoesNotas = () => {
   const obterDres = useCallback(async () => {
     if (anoLetivo) {
       setExibirLoader(true);
-      const { data } = await AbrangenciaServico.buscarDres(
-        `v1/abrangencias/false/dres?anoLetivo=${anoLetivo}`
-      );
-      if (data && data.length) {
-        const lista = data
+      const resposta = await ServicoFiltroRelatorio.obterDres()
+        .catch(e => erros(e))
+        .finally(() => setExibirLoader(false));
+
+      if (resposta?.data?.length) {
+        const lista = resposta.data
           .map(item => ({
             desc: item.nome,
             valor: String(item.codigo),
             abrev: item.abreviacao,
           }))
-          .sort(FiltroHelper.ordenarLista('desc'));
+          .filter(d => d.valor !== OPCAO_TODOS);
+
         setListaDres(lista);
 
         if (lista && lista.length && lista.length === 1) {
@@ -126,7 +128,6 @@ const RelatorioHistoricoAlteracoesNotas = () => {
         setListaDres([]);
         setDreId(undefined);
       }
-      setExibirLoader(false);
     }
   }, [anoLetivo]);
 
@@ -134,19 +135,20 @@ const RelatorioHistoricoAlteracoesNotas = () => {
     obterDres();
   }, [obterDres]);
 
-  const obterUes = useCallback(async (dre, ano) => {
+  const obterUes = useCallback(async dre => {
     if (dre) {
       setExibirLoader(true);
-      const { data } = await AbrangenciaServico.buscarUes(
-        dre,
-        `v1/abrangencias/false/dres/${dre}/ues?anoLetivo=${ano}`,
-        true
-      );
-      if (data) {
-        const lista = data.map(item => ({
-          desc: item.nome,
-          valor: String(item.codigo),
-        }));
+      const resposta = await ServicoFiltroRelatorio.obterUes(dre)
+        .catch(e => erros(e))
+        .finally(() => setExibirLoader(false));
+
+      if (resposta?.data?.length) {
+        const lista = resposta.data
+          .map(item => ({
+            desc: item.nome,
+            valor: String(item.codigo),
+          }))
+          .filter(d => d.valor !== OPCAO_TODOS);
 
         if (lista && lista.length && lista.length === 1) {
           setUeId(lista[0].valor);
@@ -156,7 +158,6 @@ const RelatorioHistoricoAlteracoesNotas = () => {
       } else {
         setListaUes([]);
       }
-      setExibirLoader(false);
     }
   }, []);
 
@@ -356,7 +357,7 @@ const RelatorioHistoricoAlteracoesNotas = () => {
     setExibirLoader(true);
     const retorno = await api.get(
       `v1/abrangencias/false/semestres?anoLetivo=${anoLetivoSelecionado}&modalidade=${modalidadeSelecionada ||
-      0}`
+        0}`
     );
     if (retorno && retorno.data) {
       const lista = retorno.data.map(periodo => {
@@ -408,10 +409,11 @@ const RelatorioHistoricoAlteracoesNotas = () => {
     !tipoDeNota;
 
   const gerar = async () => {
-    
     let turmas = turmaId;
     if (turmaId.find(item => item !== OPCAO_TODOS)) {
-      turmas = listaTurmas.filter(item => item.valor === turmaId.find(codigo => codigo === item.valor));
+      turmas = listaTurmas.filter(
+        item => item.valor === turmaId.find(codigo => codigo === item.valor)
+      );
       if (turmas?.length) {
         turmas = turmas.map(t => t.id);
       }
@@ -426,7 +428,7 @@ const RelatorioHistoricoAlteracoesNotas = () => {
       turma: turmas,
       componentesCurriculares: componentesCurricularesId,
       bimestres: bimestre,
-      tipoAlteracaoNota: tipoDeNota
+      tipoAlteracaoNota: tipoDeNota,
     };
 
     setExibirLoader(true);
@@ -470,8 +472,8 @@ const RelatorioHistoricoAlteracoesNotas = () => {
           />
         </div>
       ) : (
-          ''
-        )}
+        ''
+      )}
       <Cabecalho pagina="Relatório de alteração de notas" />
       <Card>
         <div className="col-md-12">
