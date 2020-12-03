@@ -31,8 +31,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioEventoTipo repositorioEventoTipo;
         private readonly IServicoEol servicoEOL;
         private readonly IServicoNotificacao servicoNotificacao;
-        private readonly IServicoUsuario servicoUsuario;
-        private readonly IUnitOfWork unitOfWork;
+        private readonly IServicoUsuario servicoUsuario;        
         private readonly IRepositorioWorkflowAprovacaoNivel workflowAprovacaoNivel;
         private readonly IMediator mediator;
 
@@ -47,8 +46,7 @@ namespace SME.SGP.Dominio.Servicos
                                         IRepositorioAula repositorioAula,
                                         IRepositorioUe repositorioUe,
                                         IRepositorioTurma repositorioTurma,
-                                        IRepositorioWorkflowAprovacao repositorioWorkflowAprovacao,
-                                        IUnitOfWork unitOfWork,
+                                        IRepositorioWorkflowAprovacao repositorioWorkflowAprovacao,                                        
                                         IRepositorioFechamentoReabertura repositorioFechamentoReabertura,
                                         IRepositorioFechamentoNota repositorioFechamentoNota,
                                         IRepositorioUsuario repositorioUsuario,
@@ -67,8 +65,7 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioAula = repositorioAula ?? throw new ArgumentException(nameof(repositorioAula));
             this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
-            this.repositorioWorkflowAprovacao = repositorioWorkflowAprovacao ?? throw new ArgumentNullException(nameof(repositorioWorkflowAprovacao));
-            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+            this.repositorioWorkflowAprovacao = repositorioWorkflowAprovacao ?? throw new ArgumentNullException(nameof(repositorioWorkflowAprovacao));            
             this.repositorioFechamentoReabertura = repositorioFechamentoReabertura ?? throw new ArgumentNullException(nameof(repositorioFechamentoReabertura));
             this.repositorioFechamentoNota = repositorioFechamentoNota ?? throw new ArgumentNullException(nameof(repositorioFechamentoNota));
             this.repositorioUsuario = repositorioUsuario ?? throw new ArgumentNullException(nameof(repositorioUsuario));
@@ -177,11 +174,8 @@ namespace SME.SGP.Dominio.Servicos
         {
             var fechamentoTurmaDisciplinaId = notasEmAprovacao.First().FechamentoNota.FechamentoAluno.FechamentoTurmaDisciplinaId;
 
-            unitOfWork.IniciarTransacao();
-            try
-            {
-                // Resolve a pendencia de fechamento
-                repositorioPendencia.AtualizarPendencias(fechamentoTurmaDisciplinaId, SituacaoPendencia.Resolvida, TipoPendencia.AlteracaoNotaFechamento);
+            // Resolve a pendencia de fechamento
+            repositorioPendencia.AtualizarPendencias(fechamentoTurmaDisciplinaId, SituacaoPendencia.Resolvida, TipoPendencia.AlteracaoNotaFechamento);
 
                 foreach (var notaEmAprovacao in notasEmAprovacao)
                 {
@@ -190,27 +184,20 @@ namespace SME.SGP.Dominio.Servicos
                     if (notaEmAprovacao.Nota.HasValue)
                     {
                         if (notaEmAprovacao.Nota != fechamentoNota.Nota)
-                            await mediator.Send(new SalvarHistoricoNotaFechamentoCommand(notaEmAprovacao.Nota.Value, fechamentoNota.Nota.Value, notaEmAprovacao.Id));
+                            await mediator.Send(new SalvarHistoricoNotaFechamentoCommand(notaEmAprovacao.Nota.Value, fechamentoNota.Nota.Value, notaEmAprovacao.FechamentoNotaId));
 
                         fechamentoNota.Nota = notaEmAprovacao.Nota;
                     }
                     else
                     {
                         if (notaEmAprovacao.ConceitoId != fechamentoNota.ConceitoId)
-                            await mediator.Send(new SalvarHistoricoConceitoFechamentoCommand(notaEmAprovacao.ConceitoId.Value, fechamentoNota.ConceitoId.Value, notaEmAprovacao.Id));
+                            await mediator.Send(new SalvarHistoricoConceitoFechamentoCommand(notaEmAprovacao.ConceitoId.Value, fechamentoNota.ConceitoId.Value, notaEmAprovacao.FechamentoNotaId));
 
                         fechamentoNota.ConceitoId = notaEmAprovacao.ConceitoId;
                     }
 
                     repositorioFechamentoNota.Salvar(fechamentoNota);
                 }
-                unitOfWork.PersistirTransacao();
-            }
-            catch (Exception)
-            {
-                unitOfWork.Rollback();
-                throw;
-            }
         }
 
         private async Task AprovarUltimoNivelDaReposicaoAula(long codigoDaNotificacao, long workflowId)
