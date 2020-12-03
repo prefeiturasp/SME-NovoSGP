@@ -17,6 +17,8 @@ function Barras({
   customProps,
   removeLegends,
   customMargins,
+  labelSkipWidth,
+  labelSkipHeight,
 }) {
   const format = v => `${Math.round(v, 2)}%`;
 
@@ -53,8 +55,8 @@ function Barras({
         legendPosition: 'middle',
         legendOffset: -40,
       }}
-      labelSkipWidth={12}
-      labelSkipHeight={12}
+      labelSkipWidth={labelSkipWidth}
+      labelSkipHeight={labelSkipHeight}
       labelTextColor={{ from: 'color', modifiers: [['darker', 3]] }}
       legends={[
         {
@@ -104,6 +106,8 @@ Barras.propTypes = {
   customProps: t.oneOfType([t.object]),
   removeLegends: t.bool,
   customMargins: t.oneOfType([t.any]),
+  labelSkipWidth: t.number,
+  labelSkipHeight: t.number,
 };
 
 Barras.defaultProps = {
@@ -119,6 +123,8 @@ Barras.defaultProps = {
   customProps: {},
   removeLegends: false,
   customMargins: null,
+  labelSkipWidth: 12,
+  labelSkipHeight: 12,
 };
 
 export default Barras;
