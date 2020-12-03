@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 export const ContainerLegendaGrafico = styled.div`
-  font-size: 18px !important;
+  font-size: ${props => (props.orizontal ? '16px' : '18px')};
   font-family: 'Roboto' !important;
   font-weight: 700;
   color: #42474a;
@@ -9,15 +9,17 @@ export const ContainerLegendaGrafico = styled.div`
   .legenda-container-conteudo {
     display: flex;
     align-items: center;
+    margin-right: 5px;
   }
 
   .legenda-container ul {
     margin: 0;
     margin-bottom: 5px;
     padding: 0;
-    float: left;
+    float: ${props => (props.orizontal ? 'none' : 'left')};
     list-style: none;
     display: ${props => (props.orizontal ? 'flex' : 'block')};
+    justify-content: space-around;
   }
 
   .legenda-container ul li {
