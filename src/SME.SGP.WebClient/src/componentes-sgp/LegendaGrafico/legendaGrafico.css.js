@@ -5,11 +5,12 @@ export const ContainerLegendaGrafico = styled.div`
   font-family: 'Roboto' !important;
   font-weight: 700;
   color: #42474a;
+  min-width: ${props => (props.orizontal ? '900px' : '100%')};
 
   .legenda-container-conteudo {
     display: flex;
     align-items: center;
-    margin-right: 5px;
+    margin: 5px;
   }
 
   .legenda-container ul {
@@ -19,7 +20,7 @@ export const ContainerLegendaGrafico = styled.div`
     float: ${props => (props.orizontal ? 'none' : 'left')};
     list-style: none;
     display: ${props => (props.orizontal ? 'flex' : 'block')};
-    justify-content: space-around;
+    justify-content: space-evenly;
   }
 
   .legenda-container ul li {
