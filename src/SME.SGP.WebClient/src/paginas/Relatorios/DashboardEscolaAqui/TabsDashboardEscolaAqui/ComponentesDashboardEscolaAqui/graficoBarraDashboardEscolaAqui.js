@@ -48,6 +48,8 @@ const GraficoBarraDashboardEscolaAqui = props => {
               legendsTranslateX={105}
               removeLegends={removeLegends}
               customMargins={margemPersonalizada}
+              labelSkipWidth={0}
+              labelSkipHeight={0}
               customProps={{
                 colors: customPropsColors || (item => item?.data?.color),
                 tooltip: item => {
