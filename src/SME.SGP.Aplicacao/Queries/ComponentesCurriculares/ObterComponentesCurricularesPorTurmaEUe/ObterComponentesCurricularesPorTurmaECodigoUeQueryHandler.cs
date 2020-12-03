@@ -24,6 +24,7 @@ namespace SME.SGP.Aplicacao
         {
             var httpClient = httpClientFactory.CreateClient("servicoEOL");
 
+
             var turmas = String.Join("&turmas=", request.CodigosDeTurmas);
 
             var resposta = await httpClient.GetAsync($"/api/v1/componentes-curriculares/ues/{request.CodigoUe}/turmas?turmas={turmas}");

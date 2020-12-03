@@ -58,6 +58,7 @@ const RotasDto = {
   HISTORICO_NOTIFICACOES: '/relatorios/notificacoes/historico-notificacoes',
   DOCUMENTOS_PLANOS_TRABALHO: '/gestao/documentos-planos-trabalho',
   RELATORIO_USUARIOS: '/relatorios/gestao/usuarios',
+  RELATORIO_ALTERACAO_NOTAS: '/relatorios/fechamento/historico-alteracao-notas',
 };
 
 export default RotasDto;

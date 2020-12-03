@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dominio;
+﻿using Dapper;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -53,6 +54,47 @@ namespace SME.SGP.Dados.Repositorios
                                         group by ft.turma_id,cc.fechamento_turma_id, pe.bimestre
                                         order by pe.bimestre ");
             return await database.Conexao.QueryAsync<BimestreComConselhoClasseTurmaDto>(query.ToString(), new { turmaId });
+        }
+
+        public async Task<string> ObterTurmaCodigoPorConselhoClasseId(long conselhoClasseId)
+        {
+            var query = @"select t.turma_id
+                          from conselho_classe cc
+                          inner join fechamento_turma ft on ft.id = cc.fechamento_turma_id
+                          inner join turma t on t.id = ft.turma_id
+                         where not cc.excluido and not ft.excluido
+                           and cc.id = @conselhoClasseId";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<string>(query, new { conselhoClasseId });
+        }
+
+        public async Task<IEnumerable<string>> ObterAlunosComNotaLancadaPorConselhoClasseId(long conselhoClasseId)
+        {
+            var query = @"select distinct cca.aluno_codigo
+                          from conselho_classe_aluno cca
+                          inner join conselho_classe_nota ccn on ccn.conselho_classe_aluno_id = cca.id
+                         where not cca.excluido
+                           and cca.conselho_classe_id = @conselhoClasseId";
+
+            return await database.Conexao.QueryAsync<string>(query, new { conselhoClasseId });
+        }
+
+        public Task<bool> AtualizarSituacao(long conselhoClasseId, SituacaoConselhoClasse situacaoConselhoClasse)
+        {
+            database.Conexao.Execute("update conselho_classe set situacao = @situacaoConselhoClasse where id = @conselhoClasseId", new { conselhoClasseId, situacaoConselhoClasse = (int)situacaoConselhoClasse });
+
+            return Task.FromResult(true);
+        }
+
+        public async Task<SituacaoConselhoClasse> ObterSituacaoConselhoClasse(long turmaId, long periodoEscolarId)
+        {
+            var query = @"select cc.situacao
+                        from conselho_classe cc
+                       inner join fechamento_turma ft on ft.id = cc.fechamento_turma_id
+                       where ft.turma_id = @turmaId
+                        and ft.periodo_escolar_id = @periodoEscolarId";
+
+            return (SituacaoConselhoClasse)await database.Conexao.QueryFirstOrDefaultAsync<int>(query, new { turmaId, periodoEscolarId });
         }
     }
 }

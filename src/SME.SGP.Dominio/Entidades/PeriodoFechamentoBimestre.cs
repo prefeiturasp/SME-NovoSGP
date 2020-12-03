@@ -28,6 +28,7 @@ namespace SME.SGP.Dominio
         public long Id { get; set; }
         public DateTime InicioDoFechamento { get; set; }
         public PeriodoEscolar PeriodoEscolar { get; set; }
+
         public long PeriodoEscolarId { get; set; }
 
         public void AdicionarPeriodoEscolar(PeriodoEscolar periodoEscolar)

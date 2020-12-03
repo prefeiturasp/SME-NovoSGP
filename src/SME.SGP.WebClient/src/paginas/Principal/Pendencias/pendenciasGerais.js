@@ -15,7 +15,7 @@ const PendenciasGerais = () => {
   const [collapseExpandido, setCollapseExpandido] = useState();
 
   const configCabecalho = {
-    altura: '50px',
+    altura: '65px',
     corBorda: Base.Roxo,
   };
 

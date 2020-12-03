@@ -67,6 +67,27 @@
         GerarPendenciaAulasDiasNaoLetivos = 35,
         GerarPendenciaDiasLetivosInsuficientes = 36,
 
+        // Pendencias Fechamento
+        DiasGeracaoPendenciaAvaliacao = 37,
+        DiasGeracaoPendenciaAusenciaFechamento = 38,
+        
+        // Notificacao Andamento do Fechamento
+        DiasNotificacaoAndamentoFechamento = 39,
+
+        DiasNotificacaoResultadoInsatisfatorio = 40,
+
+        // Notificação UE fechamentos insuficientes
+        DiasNotificacaoFechamentoPendente = 41,
+        PercentualFechamentosInsuficientesNotificacao = 42,
+
+        DiasNotificacaoReuniaoPedagogica = 45,
+
+        DiasNotificacaoPeriodoFechamentoUe = 46,
+        DiasNotificacaoPeriodoFechamentoDre = 47,
+
+        //Notificacao Periodo Fechamento
+        DiasNotificacaoPeriodoFechamentoInicio = 43,
+        DiasNotificacaoPeriodoFechamentoFim = 44,
 
         //Sistema
         HabilitarServicosEmBackground = 100
