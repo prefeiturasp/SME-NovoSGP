@@ -96,11 +96,11 @@ namespace SME.SGP.Dados.Repositorios
             MontaQueryCabecalho(sql, false);
             sql.AppendLine(fromCompleto);
             sql.AppendLine("where a.excluido = false");
-            sql.AppendLine($"and a.turma_id::text = {turmaCodigo}::text");
+            sql.AppendLine($"and a.turma_id = @turmaCodigo");
             sql.AppendLine("and a.data_avaliacao >= @inicioPeriodo and a.data_avaliacao <= @fimPeriodo");
-            sql.AppendLine($"and aad.disciplina_id = {disciplinaId}::int8");
+            sql.AppendLine($"and aad.disciplina_id = @disciplinaId");
 
-            return await database.QueryAsync<AtividadeAvaliativa>(sql.ToString(), new { turmaCodigo, inicioPeriodo, fimPeriodo, disciplinaId });
+            return await database.QueryAsync<AtividadeAvaliativa>(sql.ToString(), new { turmaCodigo, inicioPeriodo, fimPeriodo, disciplinaId = long.Parse(disciplinaId) });
         }
 
         public async Task<AtividadeAvaliativa> ObterAtividadeAvaliativa(DateTime dataAvaliacao, string disciplinaId, string turmaId, string ueId)
