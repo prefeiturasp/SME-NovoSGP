@@ -150,6 +150,7 @@ class ServicoSalvarFrequenciaPlanoAula {
       licaoCasa: dadosPlanoAula.licaoCasa,
       aulaId,
       objetivosAprendizagemComponente,
+      ComponenteCurricularId: componenteCurricular.id
     };
 
     dispatch(setExibirLoaderFrequenciaPlanoAula(true));
