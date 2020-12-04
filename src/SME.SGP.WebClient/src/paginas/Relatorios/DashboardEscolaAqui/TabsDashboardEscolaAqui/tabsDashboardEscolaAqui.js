@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { ContainerTabsCard } from '~/componentes/tabs/tabs.css';
 import { ContainerTabsDashboardEscolaAqui } from '../dashboardEscolaAqui.css';
 import DadosAdesao from './DadosAdesao/dadosAdesao';
+import DadosComunicadosLeitura from './DadosComunicadosLeitura/dadosComunicadosLeitura';
 import DadosComunicadosTotais from './DadosComunicadosTotais/dadosComunicadosTotais';
 
 const { TabPane } = Tabs;
@@ -33,7 +34,14 @@ const TabsDashboardEscolaAqui = props => {
           ) : (
             ''
           )}
-          {tabSelecionada === '3' ? 'Comunicados - Totais' : ''}
+          {tabSelecionada === '3' ? (
+            <DadosComunicadosLeitura
+              codigoDre={codigoDre}
+              codigoUe={codigoUe}
+            />
+          ) : (
+            ''
+          )}
         </div>
       </>
     );

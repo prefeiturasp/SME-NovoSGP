@@ -110,22 +110,17 @@ namespace SME.SGP.Aplicacao
 
         private async Task<IEnumerable<long>> ObterUsuariosSupervisores(String codigoDre)
         {
-            var supervisores = await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(codigoDre, ObterPerfis()));
+            var supervisores = await mediator.Send(new ObterSupervisoresPorDreQuery(codigoDre));
 
             var listaUsuarios = new List<long>();
-            foreach (var supervisor in supervisores)
-                listaUsuarios.Add(await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(supervisor)));
+            foreach (var supervisor in supervisores.GroupBy(c => c.SupervisorId))
+                listaUsuarios.Add(await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(supervisor.Key)));
 
             return listaUsuarios;
         }
 
-        private IEnumerable<Guid> ObterPerfis()
-        {
-            return new List<Guid>() { Perfis.PERFIL_SUPERVISOR };
-        }
-
         private string ObterHeaderTabela()
             => "<table style='margin-left: auto; margin-right: auto; margin-top: 10px' border='2' cellpadding='5'>"
-             + "<tr style='font-weight: bold'><td>Escola</td><td>Turmas Pendentes</td></tr>";
+             + "<tr style='font-weight: bold'><td>Unidade Escolar</td><td>Turmas Pendentes</td></tr>";
     }
 }

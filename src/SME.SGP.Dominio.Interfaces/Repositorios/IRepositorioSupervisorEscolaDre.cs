@@ -1,5 +1,6 @@
 ﻿using SME.SGP.Infra;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
 {
@@ -12,5 +13,8 @@ namespace SME.SGP.Dominio.Interfaces
         SupervisorEscolasDreDto ObtemPorUe(string ueId);
 
         IEnumerable<SupervisorEscolasDreDto> ObtemSupervisoresPorUe(string ueId);
+
+        Task<IEnumerable<SupervisorEscolasDreDto>> ObtemSupervisoresPorUeAsync(string codigoUe);
+        Task<IEnumerable<SupervisorEscolasDreDto>> ObtemSupervisoresPorDreAsync(string codigoDre);
     }
 }

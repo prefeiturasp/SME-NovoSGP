@@ -47,11 +47,15 @@ const FaltasFrequencia = () => {
   ]);
   const [tipoRelatorio, setTipoRelatorio] = useState(undefined);
 
+  const OPCAO_TODOS_ESTUDANTES = '4';
+
   const [listaCondicao] = useState([
     { valor: '1', desc: 'Igual' },
     { valor: '2', desc: 'Maior ' },
     { valor: '3', desc: 'Menor' },
+    { valor: OPCAO_TODOS_ESTUDANTES, desc: 'Todos os estudantes' },
   ]);
+  
   const [condicao, setCondicao] = useState(undefined);
 
   const listaFormatos = [
@@ -67,13 +71,7 @@ const FaltasFrequencia = () => {
     { label: 'Sim', value: true },
     { label: 'Não', value: false },
   ];
-  const [turmasPrograma, setTurmasPrograma] = useState(false);
-
-  const opcoesTodosEstudantes = [
-    { label: 'Sim', value: true },
-    { label: 'Não', value: false },
-  ];
-  const [todosEstudantes, setTodosEstudantes] = useState(false);
+  const [turmasPrograma, setTurmasPrograma] = useState(false); 
 
   const obterAnosLetivos = useCallback(async () => {
     setCarregandoGeral(true);
@@ -255,10 +253,10 @@ const FaltasFrequencia = () => {
   }, [modalidadeId, codigoUe, obterAnosEscolares]);
 
   useEffect(() => {
-    if (todosEstudantes) {
+    if (condicao === OPCAO_TODOS_ESTUDANTES) {
       setValorCondicao();
     }
-  }, [todosEstudantes]);
+  }, [condicao]);
 
   useEffect(() => {
     const selecionouTodos = anosEscolares?.find(ano => ano === '-99');
@@ -371,7 +369,7 @@ const FaltasFrequencia = () => {
   }, [modalidadeId, anoLetivo]);
 
   useEffect(() => {
-    const desabilitar =
+    let desabilitar =
       !anoLetivo ||
         !codigoDre ||
         !codigoUe ||
@@ -380,10 +378,12 @@ const FaltasFrequencia = () => {
         !componentesCurriculares ||
         !bimestres ||
         !tipoRelatorio ||
-        !condicao ||
-        !todosEstudantes ?
-        (valorCondicao === undefined || valorCondicao === '') : !todosEstudantes ||
+        !condicao ||        
         !formato;
+
+    if (!desabilitar && condicao !== OPCAO_TODOS_ESTUDANTES) {
+      desabilitar = !valorCondicao;
+    }   
 
     if (modalidadeId == modalidade.EJA) {
       setDesabilitarBtnGerar(!semestre || desabilitar);
@@ -404,7 +404,6 @@ const FaltasFrequencia = () => {
     valorCondicao,
     formato,
     turmasPrograma,
-    todosEstudantes,
   ]);
 
   useEffect(() => {
@@ -451,7 +450,6 @@ const FaltasFrequencia = () => {
       valorCondicao,
       tipoFormatoRelatorio: formato,
       turmasPrograma,
-      todosEstudantes,
     };
     setCarregandoGeral(true);
     const retorno = await ServicoFaltasFrequencia.gerar(params).catch(e => {
@@ -708,7 +706,7 @@ const FaltasFrequencia = () => {
                   placeholder="Selecione o bimestre"
                 />
               </div>
-              <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 mb-2">
+              <div className="col-sm-12 col-md-6 col-lg-3 col-xl-2 mb-2">
                 <SelectComponent
                   lista={listaTipoRelatorio}
                   valueOption="valor"
@@ -729,7 +727,7 @@ const FaltasFrequencia = () => {
                     ''
                   )}
               </div>
-              <div className="col-sm-12 col-md-6 col-lg-3 col-xl-2 mb-2">
+              <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 mb-2">
                 <SelectComponent
                   lista={listaCondicao}
                   valueOption="valor"
@@ -750,7 +748,7 @@ const FaltasFrequencia = () => {
                   className="w-100"
                   placeholder="Digite o valor"
                   ehDecimal={false}
-                  disabled={todosEstudantes}
+                  disabled={condicao === OPCAO_TODOS_ESTUDANTES}
                 />
               </div>
               <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 mb-2">
@@ -778,17 +776,6 @@ const FaltasFrequencia = () => {
                     (anosEscolares.length &&
                       !!anosEscolares?.find(ano => ano !== '-99'))
                   }
-                />
-              </div>
-              <div className="col-sm-6 col-md-6 col-lg-4 col-xl-3 mb-2">
-                <RadioGroupButton
-                  label="Todos os estudantes"
-                  opcoes={opcoesTodosEstudantes}
-                  valorInicial
-                  onChange={e => {
-                    setTodosEstudantes(e.target.value);
-                  }}
-                  value={todosEstudantes}
                 />
               </div>
             </div>
