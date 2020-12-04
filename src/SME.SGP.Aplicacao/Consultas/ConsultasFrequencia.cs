@@ -132,7 +132,7 @@ namespace SME.SGP.Aplicacao
             return alunosAusentesDto;
         }
 
-        public async Task<FrequenciaDto> ObterListaFrequenciaPorAula(long aulaId)
+        public async Task<FrequenciaDto> ObterListaFrequenciaPorAula(long aulaId, long? disciplinaId = null)
         {
             var aula = await repositorioAula.ObterPorIdAsync(aulaId);
             if (aula == null)
@@ -163,7 +163,7 @@ namespace SME.SGP.Aplicacao
                                                     TipoParametroSistema.PercentualFrequenciaAlerta,
                                                     bimestre.PeriodoInicio.Year));
 
-            var disciplinaAula = await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { Convert.ToInt64(aula.DisciplinaId) });
+            var disciplinaAula = await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { disciplinaId.HasValue ? disciplinaId.Value : Convert.ToInt64(aula.DisciplinaId) });
 
             if (disciplinaAula == null || disciplinaAula.ToList().Count <= 0)
                 throw new NegocioException("Disciplina da aula não encontrada");
