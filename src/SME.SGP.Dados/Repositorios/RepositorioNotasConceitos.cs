@@ -34,7 +34,7 @@ namespace SME.SGP.Dados.Repositorios
                          from notas_conceito 
                          where atividade_avaliativa = any(array[{atividadesAvaliativasString}]) 
                             and aluno_id = any(array[{alunosIdsString}])
-                            and disciplina_id = @disciplinaId";
+                            and disciplina_id = @disciplinaId::int8";
 
             return database.Query<NotaConceito>(sql, new { disciplinaId });
         }
