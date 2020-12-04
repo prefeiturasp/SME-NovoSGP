@@ -51,7 +51,7 @@ namespace SME.SGP.Dados.Repositorios
                         and p.bimestre = @bimestre
                         and p.tipo_calendario_id = @tipoCalendarioId ";
 
-            return await database.Conexao.QueryAsync<AtividadeAvaliativaDisciplina>(query, new { tipoCalendarioId, disciplinaId, turmaId, bimestre });
+            return await database.Conexao.QueryAsync<AtividadeAvaliativaDisciplina>(query, new { tipoCalendarioId, disciplinaId = long.Parse(disciplinaId), turmaId, bimestre });
         }
         public bool PossuiDisciplinas(long atividadeAvaliativaId, string disciplinaId)
         {

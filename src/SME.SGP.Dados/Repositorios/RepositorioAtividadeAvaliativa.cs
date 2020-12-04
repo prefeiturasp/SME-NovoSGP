@@ -100,7 +100,7 @@ namespace SME.SGP.Dados.Repositorios
             sql.AppendLine("and a.data_avaliacao >= @inicioPeriodo and a.data_avaliacao <= @fimPeriodo");
             sql.AppendLine("and aad.disciplina_id = @disciplinaId");
 
-            return await database.QueryAsync<AtividadeAvaliativa>(sql.ToString(), new { turmaCodigo, inicioPeriodo, fimPeriodo, disciplinaId });
+            return await database.QueryAsync<AtividadeAvaliativa>(sql.ToString(), new { turmaCodigo, inicioPeriodo, fimPeriodo, disciplinaId = long.Parse(disciplinaId) });
         }
 
         public async Task<AtividadeAvaliativa> ObterAtividadeAvaliativa(DateTime dataAvaliacao, string disciplinaId, string turmaId, string ueId)
