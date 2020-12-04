@@ -36,7 +36,7 @@ namespace SME.SGP.Dados.Repositorios
                             and aluno_id = any(array[{alunosIdsString}])
                             and disciplina_id = @disciplinaId";
 
-            return database.Query<NotaConceito>(sql, new { disciplinaId });
+            return database.Query<NotaConceito>(sql, new { disciplinaId = long.Parse(disciplinaId) });
         }
     }
 }
