@@ -77,7 +77,7 @@ const AtribuicaoCJ = () => {
     setUsuarioRf();
     setExibirAulas(false);
     setExibirAtribuicoesExporadicas(false);
-    setTipoVisualizacao(false);
+    setTipoVisualizacao(1);
   };
 
   const onClickGerar = async () => {
