@@ -8,5 +8,6 @@ namespace SME.SGP.Dominio
     {
         CalculoFrequencia = 1,
         ManutencaoAula = 2,
+        CriacaoDePendenciasGerais = 3
     }
 }
