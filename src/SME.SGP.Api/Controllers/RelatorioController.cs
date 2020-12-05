@@ -86,5 +86,11 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await relatorioUseCase.Executar(filtro));
         }
+        [HttpPost("ae/adesao")]
+        [ProducesResponseType(typeof(bool), 200)]
+        public async Task<IActionResult> AdesaoApp([FromBody] FiltroRelatorioAEAdesao filtro, [FromServices] IRelatorioAEAdesaoUseCase relatorioUseCase)
+        {
+            return Ok(await relatorioUseCase.Executar(filtro));
+        }
     }
 }
