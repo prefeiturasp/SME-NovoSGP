@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
 
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.CompensacaoAusencia, filtroAtribuicaoCJDto, usuarioLogado));
+            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.AtribuicaoCJ, filtroAtribuicaoCJDto, usuarioLogado));
         }
     }
 }
