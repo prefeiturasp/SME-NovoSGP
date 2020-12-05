@@ -4,6 +4,7 @@ using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Threading.Tasks;
@@ -84,6 +85,8 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("historico-alteracao-notas")]
         public async Task<IActionResult> AlteracaoNotas([FromBody] FiltroRelatorioAlteracaoNotas filtro, [FromServices] IRelatorioAlteracaoNotasUseCase relatorioUseCase)
         {
+            if (filtro.ModalidadeTurma == Dominio.Modalidade.Infantil)
+                throw new NegocioException("Não é possível gerar este relatório para a modalidade infantil.");
             return Ok(await relatorioUseCase.Executar(filtro));
         }
     }
