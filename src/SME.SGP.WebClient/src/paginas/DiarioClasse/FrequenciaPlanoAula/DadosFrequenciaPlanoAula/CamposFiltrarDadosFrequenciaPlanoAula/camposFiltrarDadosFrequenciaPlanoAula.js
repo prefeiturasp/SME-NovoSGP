@@ -220,13 +220,16 @@ const CamposFiltrarDadosFrequenciaPlanoAula = () => {
 
   const validaSeTemIdAula = useCallback(
     async data => {
+      const aulaDataSelecionada = await obterAulaSelecionada(data);
       if (dadosAulaFrequencia && dadosAulaFrequencia.aulaId) {
         // Quando for Professor ou CJ podem visualizar somente uma aula por data selecionada!
-        dispatch(setAulaIdFrequenciaPlanoAula(dadosAulaFrequencia.aulaId));
-      } else {
-        const aulaDataSelecionada = await obterAulaSelecionada(data);
+        if(aulaDataSelecionada){
+          dispatch(salvarDadosAulaFrequencia(aulaDataSelecionada.aulas[0].disciplinaId,aulaDataSelecionada.aulas[0].dia,aulaDataSelecionada.aulas[0].aulaId));
+          dispatch(setAulaIdFrequenciaPlanoAula(aulaDataSelecionada.aulas[0].aulaId));
+        }          
+      } else {        
         if (aulaDataSelecionada && aulaDataSelecionada.aulas.length === 1) {
-          // Quando for Professor ou CJ podem visualizar somente uma aula por data selecionada!
+          // Quando for Professor ou CJ podem visualizar somente uma aula por data selecionada!          
           dispatch(
             setAulaIdFrequenciaPlanoAula(aulaDataSelecionada.aulas[0].aulaId)
           );
@@ -239,6 +242,7 @@ const CamposFiltrarDadosFrequenciaPlanoAula = () => {
           setAulasParaSelecionar(aulaDataSelecionada.aulas);
           setExibirModalSelecionarAula(true);
         }
+
       }
     },
     [obterAulaSelecionada, dispatch, dadosAulaFrequencia]
@@ -261,7 +265,7 @@ const CamposFiltrarDadosFrequenciaPlanoAula = () => {
         }
       }
 
-      if (salvou) {
+      if (salvou) {            
         resetarInfomacoes();
         await validaSeTemIdAula(data);
         dispatch(setDataSelecionadaFrequenciaPlanoAula(data));
@@ -280,7 +284,7 @@ const CamposFiltrarDadosFrequenciaPlanoAula = () => {
     setExibirModalSelecionarAula(false);
   };
 
-  const onClickSelecionarAula = aulaDataSelecionada => {
+  const onClickSelecionarAula = aulaDataSelecionada => {    
     setExibirModalSelecionarAula(false);
     if (aulaDataSelecionada) {
       // Após setar o id vai disparar evento para buscar lista de frequencia!
@@ -305,9 +309,9 @@ const CamposFiltrarDadosFrequenciaPlanoAula = () => {
       Object.entries(dadosAulaFrequencia).length &&
       dadosAulaFrequencia.dia &&
       diasParaHabilitar &&
-      diasParaHabilitar.length &&
+      diasParaHabilitar.length && 
       !dataSelecionada
-    ) {
+    ) {      
       onChangeData(window.moment(dadosAulaFrequencia.dia));
     }
   }, [
