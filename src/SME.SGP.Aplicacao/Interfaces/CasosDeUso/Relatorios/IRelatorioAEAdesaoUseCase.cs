@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Aplicacao
 {
-    public interface IRelatorioAEAdesaoUseCase : IUseCase<FiltroRelatorioAEAdesao, bool>
+    public interface IRelatorioAEAdesaoUseCase : IUseCase<FiltroRelatorioAEAdesaoDto, bool>
     {
     }
 }

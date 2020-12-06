@@ -12,7 +12,7 @@ namespace SME.SGP.Aplicacao
 
         }
 
-        public async Task<bool> Executar(FiltroRelatorioAEAdesao filtro)
+        public async Task<bool> Executar(FiltroRelatorioAEAdesaoDto filtro)
         {
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
