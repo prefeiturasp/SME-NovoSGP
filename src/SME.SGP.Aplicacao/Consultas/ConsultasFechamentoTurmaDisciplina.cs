@@ -243,7 +243,7 @@ namespace SME.SGP.Aplicacao
                             if (fechamentoBimestre.EhSintese)
                             {
                                 var notaConceitoBimestre = notasConceitoBimestre.FirstOrDefault();
-                                if (notaConceitoBimestre != null)
+                                if (notaConceitoBimestre != null && notaConceitoBimestre.SinteseId.HasValue)
                                 {
                                     alunoDto.SinteseId = (SinteseEnum)notaConceitoBimestre.SinteseId.Value;
                                     alunoDto.Sintese = ObterSintese(notaConceitoBimestre.SinteseId.Value);
