@@ -19,13 +19,6 @@ const LocalizadorEstudante = props => {
     nome: false,
   });
 
-  useEffect(() => {
-    setPessoaSelecionada({
-      alunoCodigo: '',
-      alunoNome: '',
-    });
-  }, [ueId])
-
   const onChangeNome = async valor => {
     valor = removerNumeros(valor);
     if (valor.length === 0) {
