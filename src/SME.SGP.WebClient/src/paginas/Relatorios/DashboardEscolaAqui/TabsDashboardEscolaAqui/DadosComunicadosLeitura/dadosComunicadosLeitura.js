@@ -18,6 +18,7 @@ import {
 import DataUltimaAtualizacaoDashboardEscolaAqui from '../ComponentesDashboardEscolaAqui/dataUltimaAtualizacaoDashboardEscolaAqui';
 import GraficoPizzaDashboardEscolaAqui from '../ComponentesDashboardEscolaAqui/graficoPizzaDashboardEscolaAqui';
 import LeituraDeComunicadosAgrupadosPorDre from './leituraDeComunicadosAgrupadosPorDre';
+import LeituraDeComunicadosPorModalidades from './leituraDeComunicadosPorModalidades';
 
 const DadosComunicadosLeitura = props => {
   const { codigoDre, codigoUe } = props;
@@ -186,7 +187,7 @@ const DadosComunicadosLeitura = props => {
       setAnosEscolares(undefined);
       setListaAnosEscolares([]);
     }
-  }, [modalidadeId, codigoUe, obterAnosEscolares]);
+  }, [modalidadeId, obterAnosEscolares]);
 
   const obterSemestres = async (
     modalidadeSelecionada,
@@ -256,7 +257,7 @@ const DadosComunicadosLeitura = props => {
       setCodigoTurma();
       setListaTurmas([]);
     }
-  }, [modalidadeId, codigoUe, anoLetivo, obterTurmas]);
+  }, [modalidadeId, obterTurmas]);
 
   useEffect(() => {
     if (codigoUe === OPCAO_TODOS) {
@@ -629,6 +630,18 @@ const DadosComunicadosLeitura = props => {
         </div>
         {dadosDeLeituraDeComunicados?.length ? (
           <LeituraDeComunicadosAgrupadosPorDre
+            codigoDre={codigoDre}
+            codigoUe={codigoUe}
+            chavesGrafico={chavesGrafico}
+            modoVisualizacao={visualizacao}
+            comunicado={comunicado}
+            listaComunicado={listaComunicado}
+          />
+        ) : (
+          ''
+        )}
+        {dadosDeLeituraDeComunicados?.length ? (
+          <LeituraDeComunicadosPorModalidades
             codigoDre={codigoDre}
             codigoUe={codigoUe}
             chavesGrafico={chavesGrafico}

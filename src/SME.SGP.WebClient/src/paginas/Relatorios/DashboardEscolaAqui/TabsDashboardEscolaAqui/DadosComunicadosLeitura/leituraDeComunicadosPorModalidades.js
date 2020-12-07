@@ -9,7 +9,7 @@ import {
 } from '../../dashboardEscolaAquiGraficosUtils';
 import GraficoBarraDashboardEscolaAqui from '../ComponentesDashboardEscolaAqui/graficoBarraDashboardEscolaAqui';
 
-const LeituraDeComunicadosAgrupadosPorDre = props => {
+const LeituraDeComunicadosPorModalidades = props => {
   const {
     codigoDre,
     codigoUe,
@@ -22,20 +22,22 @@ const LeituraDeComunicadosAgrupadosPorDre = props => {
   const [exibirLoader, setExibirLoader] = useState(false);
 
   const [
-    dadosDeLeituraDeComunicadosAgrupadosPorDre,
-    setDadosDeLeituraDeComunicadosAgrupadosPorDre,
+    dadosDeLeituraDeComunicadosAgrupadosPorModalidade,
+    setDadosDeLeituraDeComunicadosAgrupadosPorModalidade,
   ] = useState([]);
 
   const [dadosLegendaGrafico, setDadosLegendaGrafico] = useState([]);
 
   const OPCAO_TODOS = '-99';
 
-  const obterDadosDeLeituraDeComunicadosAgrupadosPorDre = useCallback(async () => {
+  const obterDadosDeLeituraDeComunicadosAgrupadosPorModalidade = useCallback(async () => {
     const comunicadoId = obterComunicadoId(comunicado, listaComunicado);
 
     if (comunicadoId) {
       setExibirLoader(true);
-      const resposta = await ServicoDashboardEscolaAqui.obterDadosDeLeituraDeComunicadosAgrupadosPorDre(
+      const resposta = await ServicoDashboardEscolaAqui.obterDadosDeLeituraDeComunicadosPorModalidades(
+        codigoDre === OPCAO_TODOS ? codigoDre || '' : '',
+        codigoUe === OPCAO_TODOS ? codigoUe || '' : '',
         comunicadoId,
         modoVisualizacao
       )
@@ -45,33 +47,35 @@ const LeituraDeComunicadosAgrupadosPorDre = props => {
       if (resposta?.data?.length) {
         const retornoDados = mapearParaDtoDadosComunicadosGraficoBarras(
           resposta.data,
-          'nomeAbreviadoDre',
+          'modalidade',
           chavesGrafico
         );
         if (retornoDados?.dadosLegendaGrafico?.length) {
           setDadosLegendaGrafico(retornoDados.dadosLegendaGrafico);
         }
         if (retornoDados?.dadosComunicadosGraficoBarras?.length) {
-          setDadosDeLeituraDeComunicadosAgrupadosPorDre(
+          setDadosDeLeituraDeComunicadosAgrupadosPorModalidade(
             retornoDados.dadosComunicadosGraficoBarras
           );
         }
       } else {
-        setDadosDeLeituraDeComunicadosAgrupadosPorDre([]);
+        setDadosDeLeituraDeComunicadosAgrupadosPorModalidade([]);
       }
     }
-  }, [modoVisualizacao, comunicado, chavesGrafico, listaComunicado]);
+  }, [
+    codigoDre,
+    codigoUe,
+    modoVisualizacao,
+    comunicado,
+    chavesGrafico,
+    listaComunicado,
+  ]);
 
   useEffect(() => {
-    if (
-      comunicado &&
-      codigoDre === OPCAO_TODOS &&
-      codigoUe === OPCAO_TODOS &&
-      listaComunicado?.length
-    ) {
-      obterDadosDeLeituraDeComunicadosAgrupadosPorDre();
+    if (comunicado && codigoDre && codigoUe && listaComunicado?.length) {
+      obterDadosDeLeituraDeComunicadosAgrupadosPorModalidade();
     } else {
-      setDadosDeLeituraDeComunicadosAgrupadosPorDre([]);
+      setDadosDeLeituraDeComunicadosAgrupadosPorModalidade([]);
     }
   }, [codigoDre, codigoUe, comunicado, listaComunicado]);
 
@@ -79,14 +83,14 @@ const LeituraDeComunicadosAgrupadosPorDre = props => {
     <div className="col-md-12">
       <Loader
         loading={exibirLoader}
-        tip="Carregando Total de Comunicados por DRE"
+        tip="Carregando Total de leituras por Modalidade"
       >
-        {dadosDeLeituraDeComunicadosAgrupadosPorDre?.length ? (
+        {dadosDeLeituraDeComunicadosAgrupadosPorModalidade?.length ? (
           <GraficoBarraDashboardEscolaAqui
-            titulo="Total de Comunicados por DRE"
-            dadosGrafico={dadosDeLeituraDeComunicadosAgrupadosPorDre}
+            titulo="Total de leituras por Modalidade"
+            dadosGrafico={dadosDeLeituraDeComunicadosAgrupadosPorModalidade}
             chavesGrafico={chavesGrafico}
-            indice="nomeAbreviadoDre"
+            indice="modalidade"
             dadosLegendaCustomizada={dadosLegendaGrafico}
             removeLegends
             customPropsColors={item => {
@@ -107,7 +111,7 @@ const LeituraDeComunicadosAgrupadosPorDre = props => {
   );
 };
 
-LeituraDeComunicadosAgrupadosPorDre.propTypes = {
+LeituraDeComunicadosPorModalidades.propTypes = {
   codigoDre: PropTypes.oneOfType([PropTypes.string]),
   codigoUe: PropTypes.oneOfType([PropTypes.string]),
   modoVisualizacao: PropTypes.oneOfType([PropTypes.string]),
@@ -116,7 +120,7 @@ LeituraDeComunicadosAgrupadosPorDre.propTypes = {
   listaComunicado: PropTypes.oneOfType([PropTypes.array]),
 };
 
-LeituraDeComunicadosAgrupadosPorDre.defaultProps = {
+LeituraDeComunicadosPorModalidades.defaultProps = {
   codigoDre: '',
   codigoUe: '',
   modoVisualizacao: '',
@@ -125,4 +129,4 @@ LeituraDeComunicadosAgrupadosPorDre.defaultProps = {
   listaComunicado: [],
 };
 
-export default LeituraDeComunicadosAgrupadosPorDre;
+export default LeituraDeComunicadosPorModalidades;

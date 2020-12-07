@@ -32,7 +32,7 @@ const GraficoBarraDashboardEscolaAqui = props => {
   return (
     <>
       <div
-        className="scrolling-chart"
+        className="scrolling-chart  mt-3 mb-3"
         style={{
           flexDirection: dadosLegendaCustomizada?.length ? 'column' : 'row',
         }}
