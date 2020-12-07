@@ -35,7 +35,7 @@ const mapearDadosComPorcentagem = dadosMapeados => {
 const mapearParaDtoGraficoPizzaComValorEPercentual = dados => {
   const dadosMapeados = dados.map((item, index) => {
     return {
-      id: index + 1,
+      id: String(index + 1),
       label: item.label,
       value: item.value || 0,
       color: CoresGraficos[index],
