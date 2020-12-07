@@ -33,9 +33,6 @@ namespace SME.SGP.Aplicacao
 
             foreach (var turma in turmas.Where(t => periodoFechamentoBimestres.Any(p => t.UeId == p.PeriodoFechamento.UeId.Value)))
             {
-                if (turma.CodigoTurma != "2117338")
-                    continue;
-
                 var ue = await mediator.Send(new ObterUEPorTurmaCodigoQuery(turma.CodigoTurma));
                 foreach (var periodoFechamentoBimestre in periodoFechamentoBimestres)
                 {
