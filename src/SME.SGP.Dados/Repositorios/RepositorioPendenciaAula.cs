@@ -61,7 +61,7 @@ namespace SME.SGP.Dados.Repositorios
                         inner join aula a on
 	                        aa.turma_id = a.turma_id
 	                        and aa.data_avaliacao::date = a.data_aula::date
-	                        and aad.disciplina_id = a.disciplina_id
+	                        and aad.disciplina_id = a.disciplina_id::bigint
                         left join pendencia_aula on
 	                        a.id = aula_id
 	                        and pendencia_aula.tipo = @tipo
