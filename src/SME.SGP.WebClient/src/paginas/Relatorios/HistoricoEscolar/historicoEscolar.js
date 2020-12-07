@@ -98,7 +98,6 @@ const HistoricoEscolar = () => {
       consideraHistorico: consideraHistorico,
     });
     setListaAnosLetivo(anosLetivos); 
-    setAnoLetivo();
     setAnoLetivo(anosLetivos[0].valor);
     setDreId();
     setListaDres([]);
