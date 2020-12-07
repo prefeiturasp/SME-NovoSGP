@@ -11,7 +11,10 @@ import { ModalidadeDTO } from '~/dtos';
 import { AbrangenciaServico, api, erros } from '~/servicos';
 import ServicoFiltroRelatorio from '~/servicos/Paginas/FiltroRelatorio/ServicoFiltroRelatorio';
 import ServicoDashboardEscolaAqui from '~/servicos/Paginas/Relatorios/EscolaAqui/DashboardEscolaAqui/ServicoDashboardEscolaAqui';
-import { mapearParaDtoGraficoPizzaComValorEPercentual } from '../../dashboardEscolaAquiGraficosUtils';
+import {
+  mapearParaDtoGraficoPizzaComValorEPercentual,
+  obterComunicadoId,
+} from '../../dashboardEscolaAquiGraficosUtils';
 import DataUltimaAtualizacaoDashboardEscolaAqui from '../ComponentesDashboardEscolaAqui/dataUltimaAtualizacaoDashboardEscolaAqui';
 import GraficoPizzaDashboardEscolaAqui from '../ComponentesDashboardEscolaAqui/graficoPizzaDashboardEscolaAqui';
 import LeituraDeComunicadosAgrupadosPorDre from './leituraDeComunicadosAgrupadosPorDre';
@@ -378,49 +381,33 @@ const DadosComunicadosLeitura = props => {
     const dadosMapeados = mapearParaDtoGraficoPizzaComValorEPercentual(
       dadosParaMapear
     );
-    setDadosDeLeituraDeComunicados(dadosMapeados);
+    return dadosMapeados;
   };
 
-  const obterCominicadoId = useCallback(
-    descricaoComunicado => {
-      let comunicadoId = '';
-      if (descricaoComunicado) {
-        const comunicadoAtual = listaComunicado.find(
-          item => item.descricao === descricaoComunicado
-        );
-        if (comunicadoAtual?.id) {
-          comunicadoId = comunicadoAtual.id;
-        }
-      }
-
-      return comunicadoId;
-    },
-    [listaComunicado]
-  );
-
   const obterDadosDeLeituraDeComunicados = useCallback(async () => {
-    const comunicadoId = obterCominicadoId(comunicado);
+    const comunicadoId = obterComunicadoId(comunicado, listaComunicado);
     if (comunicadoId) {
       setExibirLoader(true);
 
       const resposta = await ServicoDashboardEscolaAqui.obterDadosDeLeituraDeComunicados(
         codigoDre === OPCAO_TODOS ? '' : codigoDre,
         codigoUe === OPCAO_TODOS ? '' : codigoUe,
-        obterCominicadoId(comunicado),
+        comunicadoId,
         visualizacao
       )
         .catch(e => erros(e))
         .finally(() => setExibirLoader(false));
 
       if (resposta?.data) {
-        mapearParaDtoGraficoPizza(resposta.data[0]);
+        const dados = mapearParaDtoGraficoPizza(resposta.data[0]);
+        setDadosDeLeituraDeComunicados(dados);
       } else {
         setDadosDeLeituraDeComunicados([]);
       }
     } else {
       setDadosDeLeituraDeComunicados([]);
     }
-  }, [codigoDre, codigoUe, visualizacao, comunicado, obterCominicadoId]);
+  }, [codigoDre, codigoUe, visualizacao, comunicado, listaComunicado]);
 
   useEffect(() => {
     if (
@@ -648,7 +635,6 @@ const DadosComunicadosLeitura = props => {
             modoVisualizacao={visualizacao}
             comunicado={comunicado}
             listaComunicado={listaComunicado}
-            obterCominicadoId={obterCominicadoId}
           />
         ) : (
           ''
