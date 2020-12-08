@@ -546,5 +546,8 @@
 
         [PermissaoMenu(Menu = "Fechamento", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhConsulta = true, Url = "/relatorios/fechamento/historico-alteracao-notas", EhSubMenu = true, OrdemSubMenu = 4, SubMenu = "Histórico de alterações em notas")]
         RDA_C = 184,
+
+        [PermissaoMenu(Menu = "Escola aqui", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = false, Url = "/relatorios/escola-aqui/leitura", EhSubMenu = true, OrdemSubMenu = 2, SubMenu = "Leitura")]
+        RLC_C = 185,
     }
 }
