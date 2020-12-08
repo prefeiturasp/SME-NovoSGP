@@ -849,7 +849,7 @@ const Filtro = () => {
       consideraHistorico,
       ano: resultado.ano,
       ensinoEspecial: resultado.ensinoEspecial,
-      id: resultado.id,
+      id: resultado.turmaId,
     };
 
     dispatch(selecionarTurma(turma));
