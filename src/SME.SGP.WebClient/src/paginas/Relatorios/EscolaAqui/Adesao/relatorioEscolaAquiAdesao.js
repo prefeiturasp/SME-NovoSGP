@@ -106,8 +106,10 @@ const RelatorioEscolaAquiAdesao = () => {
   };
 
   useEffect(() => {
-    obterDres();
-  }, []);
+    if (!dreCodigo) {
+      obterDres();
+    }
+  }, [dreCodigo]);
 
   const obterUes = useCallback(async dre => {
     if (dre) {
