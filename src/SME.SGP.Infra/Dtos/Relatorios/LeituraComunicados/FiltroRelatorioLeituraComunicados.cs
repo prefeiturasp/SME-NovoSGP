@@ -16,7 +16,7 @@ namespace SME.SGP.Infra
         public List<long> Grupo { get; set; }
         public DateTime DataInicio { get; set; }
         public DateTime DataFim { get; set; }
-        public string Comunicado { get; set; }
+        public long NotificacaoId { get; set; }
         public bool ListarResponsavelEstudante { get; set; }
         public bool ListarComunicadosExpirados { get; set; }
         public string NomeUsuario { get; set; }
