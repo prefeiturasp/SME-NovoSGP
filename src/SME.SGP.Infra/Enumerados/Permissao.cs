@@ -542,6 +542,9 @@
         RDU_C = 182,        
 
         [PermissaoMenu(Menu = "Notificações ", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = false, Url = "/relatorios/notificacoes/historico-notificacoes", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Histórico de notificações")]
-        RDN_C = 183
+        RDN_C = 183,
+
+        [PermissaoMenu(Menu = "Gestão", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = false, Url = "/relatorios/gestao/atribuicao-cj", EhSubMenu = true, OrdemSubMenu = 2, SubMenu = "Atribuições")]
+        RACJ_C = 186
     }
 }
