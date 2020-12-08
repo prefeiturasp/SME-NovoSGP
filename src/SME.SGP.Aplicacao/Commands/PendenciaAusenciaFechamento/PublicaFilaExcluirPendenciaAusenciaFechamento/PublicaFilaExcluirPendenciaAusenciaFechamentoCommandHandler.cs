@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
                                                        new VerificaExclusaoPendenciasAusenciaFechamentoCommand
                                                        (request.DisciplinaId,
                                                        request.PeriodoEscolarId,
-                                                       request.TurmaCodigo),
+                                                       request.TurmaId),
                                                        Guid.NewGuid(),
                                                        request.UsuarioLogado));
             return true;

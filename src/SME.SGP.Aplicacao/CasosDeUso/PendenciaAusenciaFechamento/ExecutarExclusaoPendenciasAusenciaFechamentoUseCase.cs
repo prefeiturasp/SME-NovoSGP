@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
 
         private void LogSentry(VerificaExclusaoPendenciasAusenciaFechamentoCommand command, string mensagem)
         {
-            SentrySdk.AddBreadcrumb($"Mensagem ExecutarExclusaoPendenciasAusenciaFechamentoUseCase : {mensagem} - Turma:{command.TurmaCodigo} Tipo: AusenciaFechamento", "Rabbit - ExecutarExclusaoPendenciasAusenciaFechamentoUseCase");
+            SentrySdk.AddBreadcrumb($"Mensagem ExecutarExclusaoPendenciasAusenciaFechamentoUseCase : {mensagem} - Turma:{command.TurmaId} Tipo: AusenciaFechamento", "Rabbit - ExecutarExclusaoPendenciasAusenciaFechamentoUseCase");
         }
     }
 }
