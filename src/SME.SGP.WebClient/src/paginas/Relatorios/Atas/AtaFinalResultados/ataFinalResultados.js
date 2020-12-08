@@ -392,7 +392,7 @@ const AtaFinalResultados = () => {
             </div>
             <div className="col-sm-12 mb-4">
               <CheckboxComponent
-                label="Exibir histótico?"
+                label="Exibir histórico?"
                 onChangeCheckbox={onCheckedConsideraHistorico}
                 checked={consideraHistorico} />
             </div>
