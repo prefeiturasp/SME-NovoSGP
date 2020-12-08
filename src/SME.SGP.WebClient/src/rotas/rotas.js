@@ -77,6 +77,7 @@ import DocumentosPlanosTrabalhoCadastro from '~/paginas/Gestao/DocumentosPlanosT
 import HistoricoNotificacoes from '~/paginas/Relatorios/Notificacoes/HistoricoNotificacoes/historicoNotificacoes';
 import RelatorioUsuarios from '~/paginas/Relatorios/Gestao/Usuarios/relatorioUsuarios';
 import RelatorioHistoricoAlteracoesNotas from '~/paginas/Relatorios/Fechamento/HistoricoAlteracoesNotas/relatorioHistoricoAlteracoesNotas';
+import RelatorioLeitura from '~/paginas/Relatorios/EscolaAqui/Leitura/relatorioLeitura';
 
 const rotas = new Map();
 
@@ -1056,6 +1057,17 @@ rotas.set(RotasDto.RELATORIO_ALTERACAO_NOTAS, {
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: false,
   chavePermissao: RotasDto.RELATORIO_ALTERACAO_NOTAS,
+});
+
+rotas.set(RotasDto.RELATORIO_LEITURA, {
+  breadcrumbName: 'Leitura',
+  menu: ['Relatórios', 'Escola aqui'],
+  parent: '/',
+  component: RelatorioLeitura,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+  chavePermissao: RotasDto.RELATORIO_LEITURA,
 });
 
 const rotasArray = [];
