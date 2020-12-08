@@ -10,7 +10,6 @@ namespace SME.SGP.Aplicacao
     public class RelatorioAtribuicaoCJUseCase : IRelatorioAtribuicaoCJUseCase
     {
         private readonly IMediator mediator;
-        private object filtroAtribuicaoCJDto;
 
         public RelatorioAtribuicaoCJUseCase(IMediator mediator)
         {
@@ -27,7 +26,7 @@ namespace SME.SGP.Aplicacao
 
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.AtribuicaoCJ, filtroAtribuicaoCJDto, usuarioLogado));
+            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.AtribuicaoCJ, filtro, usuarioLogado));
         }
     }
 }
