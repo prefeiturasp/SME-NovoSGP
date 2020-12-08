@@ -21,9 +21,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(RetornoBaseDto), 200)]
         [Permissao(Permissao.PDA_C, Policy = "Bearer")]
-        public async Task<IActionResult> Listar(long aulaId, [FromServices] IConsultasFrequencia consultasFrequencia)
+        public async Task<IActionResult> Listar(long aulaId, long? componenteCurricularId, [FromServices] IConsultasFrequencia consultasFrequencia)
         {
-            var retorno = await consultasFrequencia.ObterListaFrequenciaPorAula(aulaId);
+            var retorno = await consultasFrequencia.ObterListaFrequenciaPorAula(aulaId, componenteCurricularId);
 
             if (retorno == null)
                 return NoContent();
