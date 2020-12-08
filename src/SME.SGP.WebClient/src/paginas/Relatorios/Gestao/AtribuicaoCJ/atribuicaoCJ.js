@@ -525,9 +525,9 @@ const AtribuicaoCJ = () => {
                   opcoes={opcoesExibir}
                   valorInicial
                   onChange={e => {
-                    setExibirAtribuicoesExporadicas(e.target.value);
+                    setExibirAulas(e.target.value);
                   }}
-                  value={exibirAtribuicoesExporadicas}
+                  value={exibirAulas}
                 />
               </div>
               <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 mb-2 pl-0">
@@ -536,9 +536,9 @@ const AtribuicaoCJ = () => {
                   opcoes={opcoesExibir}
                   valorInicial
                   onChange={e => {
-                    setExibirAulas(e.target.value);
+                    setExibirAtribuicoesExporadicas(e.target.value);
                   }}
-                  value={exibirAulas}
+                  value={exibirAtribuicoesExporadicas}
                 />
               </div>
               <div className="col-sm-12 col-md-6 col-lg-7 col-xl-7 mb-2 p-0">
