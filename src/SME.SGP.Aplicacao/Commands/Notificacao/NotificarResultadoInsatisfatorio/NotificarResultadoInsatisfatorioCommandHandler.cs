@@ -100,7 +100,7 @@ namespace SME.SGP.Aplicacao
             }
             mensagem.Append("</table>");
 
-            await mediator.Send(new EnviarNotificacaoCommand(titulo, mensagem.ToString(), NotificacaoCategoria.Aviso, NotificacaoTipo.Calendario, ObterCargosGestaoEscola(), 
+            await mediator.Send(new EnviarNotificacaoCommand(titulo, mensagem.ToString(), NotificacaoCategoria.Aviso, NotificacaoTipo.Fechamento, ObterCargosGestaoEscola(), 
                 periodoFechamentoBimestre.PeriodoFechamento.Ue.Dre.CodigoDre, 
                 periodoFechamentoBimestre.PeriodoFechamento.Ue.CodigoUe));
         }
