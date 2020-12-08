@@ -89,5 +89,11 @@ namespace SME.SGP.Api.Controllers
                 throw new NegocioException("Não é possível gerar este relatório para a modalidade infantil.");
             return Ok(await relatorioUseCase.Executar(filtro));
         }
+
+        [HttpPost("escola-aqui/dados-leitura")]
+        public async Task<IActionResult> LeituraComunicados([FromBody] FiltroRelatorioLeituraComunicados filtro, [FromServices] IRelatorioLeituraComunicadosUseCase relatorioUseCase)
+        {            
+            return Ok(await relatorioUseCase.Executar(filtro));
+        }
     }
 }
