@@ -202,7 +202,7 @@ const Filtro = () => {
       turmas.length === 1 &&
       turmaSelecionada
     ) {
-      aplicarFiltro();      
+      aplicarFiltro();
       setPodeRemoverTurma(false);
     }
   }, [
@@ -436,7 +436,7 @@ const Filtro = () => {
         modalidadeSelecionada,
         unidadeEscolarSelecionada,
         periodoSelecionado: periodo,
-        anoLetivoSelecionado,        
+        anoLetivoSelecionado,
       });
 
       if (!listaTurmas || listaTurmas.length === 0) {
@@ -590,7 +590,7 @@ const Filtro = () => {
       dreSelecionada &&
       unidadeEscolarSelecionada
     ) {
-      obterTurmas(true);      
+      obterTurmas(true);
       return;
     }
   }, [
@@ -726,7 +726,7 @@ const Filtro = () => {
           return;
         }
 
-        const listaTurmas = await obterTurmas(false);        
+        const listaTurmas = await obterTurmas(false);
         if (listaTurmas && listaTurmas.length) {
           const turmaNaLista = listaTurmas.find(
             item => String(item.valor) === String(turmaBkp.turma)
@@ -780,7 +780,7 @@ const Filtro = () => {
 
   useEffect(() => {
     const controlaClickFora = evento => {
-      if (        
+      if (
         evento.target.nodeName !== 'svg' &&
         evento.target.nodeName !== 'path' &&
         !evento.target.classList.contains('fa-caret-down') &&
@@ -801,9 +801,9 @@ const Filtro = () => {
         !divBuscaRef.current.contains(evento.target)
       ) {
         setAlternarFocoBusca(!alternarFocoBusca);
-      }      
-      setAlternarFocoCampo(false);      
-    };    
+      }
+      setAlternarFocoCampo(false);
+    };
 
     if (!turmaUsuarioSelecionada && !alternarFocoBusca && alternarFocoCampo)
       campoBuscaRef.current.focus();
@@ -848,6 +848,8 @@ const Filtro = () => {
       periodo: resultado.semestre,
       consideraHistorico,
       ano: resultado.ano,
+      ensinoEspecial: resultado.ensinoEspecial,
+      id: resultado.id,
     };
 
     dispatch(selecionarTurma(turma));
@@ -962,7 +964,7 @@ const Filtro = () => {
   const aoTrocarUnidadeEscolar = unidade => {
     if (unidade !== unidadeEscolarSelecionada) {
       setTurmaSelecionada();
-      obterTurmas();      
+      obterTurmas();
     }
 
     setUnidadeEscolarSelecionada(unidade);
@@ -990,11 +992,11 @@ const Filtro = () => {
 
       if (!anoLetivoSelecionado && turmaUsuarioSelecionada.length) {
         setAnoLetivoSelecionado(turmaUsuarioSelecionada.anoLetivo);
-        setCampoAnoLetivoDesabilitado(false);        
+        setCampoAnoLetivoDesabilitado(false);
       }
 
       if(turmaUsuarioSelecionada.anoLetivo && anoLetivoSelecionado && turmaUsuarioSelecionada.anoLetivo != anoLetivoSelecionado)
-        setAnoLetivoSelecionado(turmaUsuarioSelecionada.anoLetivo);      
+        setAnoLetivoSelecionado(turmaUsuarioSelecionada.anoLetivo);
 
       if(turmaUsuarioSelecionada.modalidade && modalidadeSelecionada && turmaUsuarioSelecionada.modalidade != modalidadeSelecionada)
         setModalidadeSelecionada(turmaUsuarioSelecionada.modalidade);
@@ -1009,10 +1011,10 @@ const Filtro = () => {
         setUnidadeEscolarSelecionada(turmaUsuarioSelecionada.unidadeEscolar);
 
       if(turmaUsuarioSelecionada.turma && turmaSelecionada && turmaUsuarioSelecionada.turma != turmaSelecionada)
-        setTurmaSelecionada(turmaUsuarioSelecionada.turma);      
+        setTurmaSelecionada(turmaUsuarioSelecionada.turma);
 
       setTextoAutocomplete(turmaUsuarioSelecionada.desc);
-      setConsideraHistorico(!!turmaUsuarioSelecionada.consideraHistorico);      
+      setConsideraHistorico(!!turmaUsuarioSelecionada.consideraHistorico);
 
     }
   }, [
@@ -1026,7 +1028,7 @@ const Filtro = () => {
     turmaUsuarioSelecionada.periodo,
     turmaUsuarioSelecionada.turma,
     turmaUsuarioSelecionada.unidadeEscolar,
-  ]);  
+  ]);
 
   return (
     <Container className="position-relative w-100" id="containerFiltro">
