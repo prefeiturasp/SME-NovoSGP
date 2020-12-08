@@ -518,7 +518,7 @@ namespace SME.SGP.Dados.Repositorios
                 "left join fechamento_turma ft on ft.turma_id = t.id and ft.periodo_escolar_id = @periodoEscolarId" :
                 "left join fechamento_turma ft on ft.turma_id = t.id and ft.periodo_escolar_id is null";
 
-            var query = $@"select t.*
+            var query = $@"select distinct t.*
                           from turma t
                         inner join ue on ue.id = t.ue_id
                         inner join dre on dre.id = ue.dre_id
