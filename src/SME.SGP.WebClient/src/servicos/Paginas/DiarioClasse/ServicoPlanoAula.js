@@ -74,7 +74,7 @@ class ServicoPlanoAula {
       dispatch(setExibirLoaderFrequenciaPlanoAula(true));
 
       const plano = await api
-        .get(`v1/planos/aulas/${aulaId}?turmaId=${turmaSelecionada.id}`)
+        .get(`v1/planos/aulas/${aulaId}?turmaId=${turmaSelecionada.id}&componenteCurricularId=${componenteCurricular.id}`)
         .finally(() => dispatch(setExibirLoaderFrequenciaPlanoAula(false)))
         .catch(e => erros(e));
 

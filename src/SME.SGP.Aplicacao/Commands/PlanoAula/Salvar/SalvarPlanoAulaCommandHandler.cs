@@ -42,6 +42,13 @@ namespace SME.SGP.Aplicacao
                 var planoAulaDto = request.PlanoAula;
                 var aula = await mediator.Send(new ObterAulaPorIdQuery(planoAulaDto.AulaId));
                 var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(aula.TurmaId));
+                DisciplinaDto disciplinaDto = null;
+
+                if (request.PlanoAula.ComponenteCurricularId.HasValue)
+                {
+                    var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { request.PlanoAula.ComponenteCurricularId.Value }));
+                    disciplinaDto = componentesCurriculares.SingleOrDefault();
+                }
 
                 var abrangenciaTurma = await consultasAbrangencia.ObterAbrangenciaTurma(aula.TurmaId);
                 if (abrangenciaTurma == null)
@@ -62,7 +69,7 @@ namespace SME.SGP.Aplicacao
                     new ObterPlanejamentoAnualPorAnoEscolaBimestreETurmaQuery(turma.Id, periodoEscolar.Id, long.Parse(aula.DisciplinaId))
                     );
 
-                if ((planejamentoAnual?.Id <= 0 || planejamentoAnual == null) && !usuario.PerfilAtual.Equals(Perfis.PERFIL_CJ))
+                if ((planejamentoAnual?.Id <= 0 || planejamentoAnual == null) && !usuario.PerfilAtual.Equals(Perfis.PERFIL_CJ) && !(disciplinaDto != null && disciplinaDto.TerritorioSaber))
                     throw new NegocioException("Não foi possível concluir o cadastro, pois não existe plano anual cadastrado");
 
                 if (planoAulaDto.ObjetivosAprendizagemComponente == null || !planoAulaDto.ObjetivosAprendizagemComponente.Any() && !planoAula.Migrado)
