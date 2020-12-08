@@ -17,5 +17,7 @@ namespace SME.SGP.Infra
         [Required(ErrorMessage = "É necessário vincular o plano a uma aula.")]
         public long AulaId { get; set; }
         public List<ObjetivoAprendizagemComponenteDto> ObjetivosAprendizagemComponente { get; set; }
+
+        public long? ComponenteCurricularId { get; set; }
     }
 }
