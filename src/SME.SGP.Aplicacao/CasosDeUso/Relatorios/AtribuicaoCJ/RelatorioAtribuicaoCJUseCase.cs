@@ -20,9 +20,12 @@ namespace SME.SGP.Aplicacao
         {
             await mediator.Send(new ValidaSeExisteDrePorCodigoQuery(filtro.DreCodigo));
             await mediator.Send(new ValidaSeExisteUePorCodigoQuery(filtro.UeCodigo));
-            var usuario = await mediator.Send(new ObterUsuarioPorRfQuery(filtro.UsuarioRf));
-            if (usuario == null)
-                throw new NegocioException($@"Não existe usuário com o código RF {filtro.UsuarioRf}");
+            if (!string.IsNullOrEmpty(filtro.UsuarioRf))
+            {
+                var usuario = await mediator.Send(new ObterUsuarioPorRfQuery(filtro.UsuarioRf));
+                if (usuario == null)
+                    throw new NegocioException($@"Não existe usuário com o código RF {filtro.UsuarioRf}");
+            }
 
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
