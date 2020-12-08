@@ -12,7 +12,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<bool> ExistePendenciaProfessorPorTurmaEComponente(long turmaId, long componenteCurricularId, long? periodoEscolarId, string professorRf, TipoPendencia tipoPendencia);
         Task<long> ObterPendenciaIdPorTurma(long turmaId, TipoPendencia tipoPendencia);
         Task<IEnumerable<PendenciaProfessorDto>> ObterPendenciasPorPendenciaId(long pendenciaId);
-        Task<IEnumerable<PendenciaProfessor>> ObterPendenciasProfessorPorTurmaEComponente(string turmaCodigo, long[] componentesCurriculares, long periodoEscolarId, TipoPendencia tipoPendencia);
+        Task<IEnumerable<PendenciaProfessor>> ObterPendenciasProfessorPorTurmaEComponente(long turmaId, long[] componentesCurriculares, long? periodoEscolarId, TipoPendencia tipoPendencia);
         Task<Turma> ObterTurmaDaPendencia(long pendenciaId);
         Task Remover(PendenciaProfessor pendenciaProfessor);
         Task<long> ObterPendenciaIdPorTurmaCCPeriodoEscolar(long turmaId, long componenteCurricularId, long periodoEscolarId, TipoPendencia tipoPendencia);
