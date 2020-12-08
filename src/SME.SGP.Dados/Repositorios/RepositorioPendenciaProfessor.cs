@@ -84,19 +84,22 @@ namespace SME.SGP.Dados
             return await database.Conexao.QueryAsync<PendenciaProfessorDto>(query, new { pendenciaId });
         }
 
-        public async Task<IEnumerable<PendenciaProfessor>> ObterPendenciasProfessorPorTurmaEComponente(string turmaCodigo, long[] componentesCurriculares, long periodoEscolarId, TipoPendencia tipoPendencia)
+        public async Task<IEnumerable<PendenciaProfessor>> ObterPendenciasProfessorPorTurmaEComponente(long turmaId, long[] componentesCurriculares, long? periodoEscolarId, TipoPendencia tipoPendencia)
         {
-            var query = @"select pp.* 
+            var condicaoPeriodoEscolar = periodoEscolarId.HasValue ?
+                "and pp.periodo_escolar_id = @periodoEscolarId" :
+                "and pp.periodo_escolar_id id null";
+
+            var query = $@"select pp.* 
                           from pendencia_professor pp 
                           inner join pendencia p on p.id = pp.pendencia_id
-                          inner join turma t on t.id = pp.turma_id
                           where not p.excluido
                             and p.tipo = @tipoPendencia
-                            and t.turma_id = @turmaCodigo
+                            and pp.turma_id = @turmaId
                             and pp.componente_curricular_id = any(@componentesCurriculares)
-                            and pp.periodo_escolar_id = @periodoEscolarId";
+                            {condicaoPeriodoEscolar}";
 
-            return await database.Conexao.QueryAsync<PendenciaProfessor>(query, new { turmaCodigo, componentesCurriculares, tipoPendencia, periodoEscolarId });
+            return await database.Conexao.QueryAsync<PendenciaProfessor>(query, new { turmaId, componentesCurriculares, tipoPendencia, periodoEscolarId });
         }
 
         public async Task<Turma> ObterTurmaDaPendencia(long pendenciaId)

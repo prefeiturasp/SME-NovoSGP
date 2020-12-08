@@ -18,7 +18,9 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(VerificaExclusaoPendenciasAusenciaAvaliacaoCommand request, CancellationToken cancellationToken)
         {
             var periodoEscolarId = await ObterPeriodoEscolar(request.TurmaCodigo, request.DataAvaliacao);
-            var pendenciasProfessores = await mediator.Send(new ObterPendenciasProfessorPorTurmaEComponenteQuery(request.TurmaCodigo,
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(request.TurmaCodigo));
+
+            var pendenciasProfessores = await mediator.Send(new ObterPendenciasProfessorPorTurmaEComponenteQuery(turma.Id,
                                                                                                                  request.ComponentesCurriculares.Select(a => long.Parse(a)).ToArray(),
                                                                                                                  periodoEscolarId,
                                                                                                                  request.TipoPendencia));
