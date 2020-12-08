@@ -2,6 +2,7 @@
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui.Dashboard.ObterDadosDeLeituraDeComunicados;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui.ObterDadosDeLeituraDeComunicadosPorModalidade;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui.ObterDadosDeLeituraDeComunicadosPorModalidadeETurma;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.EscolaAqui;
 using SME.SGP.Infra.Dtos.EscolaAqui.ComunicadosFiltro;
@@ -95,6 +96,16 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterDadosDeLeituraDeComunicadosPorModalidades([FromQuery] ObterDadosDeLeituraDeComunicadosDto obterDadosDeLeituraDeComunicadosDto, [FromServices] IObterDadosDeLeituraDeComunicadosPorModalidadeUseCase obterDadosDeLeituraDeComunicadosPorModalidadeUseCase)
         {
             return Ok(await obterDadosDeLeituraDeComunicadosPorModalidadeUseCase.Executar(obterDadosDeLeituraDeComunicadosDto));
+        }
+
+        [HttpGet("comunicados/leitura/turmas")]
+        [ProducesResponseType(typeof(IEnumerable<DadosDeLeituraDoComunicadoPorModalidadeETurmaDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 400)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public async Task<IActionResult> ObterDadosDeLeituraDeComunicadosPorModalidadeETurma([FromQuery] FiltroDadosDeLeituraDeComunicadosPorModalidadeDto filtroDadosDeLeituraDeComunicadosPorModalidadeDto, [FromServices] IObterDadosDeLeituraDeComunicadosPorModalidadeETurmaUseCase obterDadosDeLeituraDeComunicadosPorModalidadeETurmaUseCase)
+        {
+            return Ok(await obterDadosDeLeituraDeComunicadosPorModalidadeETurmaUseCase.Executar(filtroDadosDeLeituraDeComunicadosPorModalidadeDto));
         }
     }
 }
