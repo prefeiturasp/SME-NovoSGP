@@ -1,4 +1,6 @@
-﻿using SME.SGP.Aplicacao.Integracoes;
+﻿using MediatR;
+using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -20,6 +22,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
         private readonly IServicoLog servicoLog;
+        private readonly IMediator mediator;
 
         public ServicoFechamentoFinal(IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina,
                                       IRepositorioFechamentoTurma repositorioFechamentoTurma,
@@ -30,7 +33,8 @@ namespace SME.SGP.Dominio.Servicos
                                       IServicoEol servicoEOL,
                                       IServicoUsuario servicoUsuario,
                                       IUnitOfWork unitOfWork,
-                                      IServicoLog servicoLog)
+                                      IServicoLog servicoLog,
+                                      IMediator mediator)
         {
             this.repositorioFechamentoTurmaDisciplina = repositorioFechamentoTurmaDisciplina ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurmaDisciplina));
             this.repositorioFechamentoTurma = repositorioFechamentoTurma ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurma));
@@ -42,6 +46,7 @@ namespace SME.SGP.Dominio.Servicos
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.servicoLog = servicoLog ?? throw new ArgumentNullException(nameof(servicoLog));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<List<string>> SalvarAsync(FechamentoTurmaDisciplina fechamentoFinal)
@@ -83,6 +88,8 @@ namespace SME.SGP.Dominio.Servicos
                 }
                 unitOfWork.PersistirTransacao();
 
+                await ExcluirPendenciaAusenciaFechamento(fechamentoFinal.DisciplinaId, fechamentoFinal.FechamentoTurma.TurmaId);
+
                 return mensagens;
             }
             catch (Exception e)
@@ -92,6 +99,12 @@ namespace SME.SGP.Dominio.Servicos
                 unitOfWork.Rollback();
                 throw e;
             }
+        }
+
+        private async Task ExcluirPendenciaAusenciaFechamento(long disciplinaId, long turmaId)
+        {
+            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            await mediator.Send(new PublicaFilaExcluirPendenciaAusenciaFechamentoCommand(disciplinaId, null, turmaId, usuarioLogado));
         }
 
         public async Task VerificaPersistenciaGeral(Turma turma)
