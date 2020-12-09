@@ -76,6 +76,7 @@ import DocumentosPlanosTrabalhoLista from '~/paginas/Gestao/DocumentosPlanosTrab
 import DocumentosPlanosTrabalhoCadastro from '~/paginas/Gestao/DocumentosPlanosTrabalho/documentosPlanosTrabalhoCadastro';
 import HistoricoNotificacoes from '~/paginas/Relatorios/Notificacoes/HistoricoNotificacoes/historicoNotificacoes';
 import RelatorioUsuarios from '~/paginas/Relatorios/Gestao/Usuarios/relatorioUsuarios';
+import AtribuicaoCJ from '~/paginas/Relatorios/Gestao/AtribuicaoCJ/atribuicaoCJ';
 import RelatorioHistoricoAlteracoesNotas from '~/paginas/Relatorios/Fechamento/HistoricoAlteracoesNotas/relatorioHistoricoAlteracoesNotas';
 
 const rotas = new Map();
@@ -1047,6 +1048,17 @@ rotas.set(RotasDto.RELATORIO_USUARIOS, {
   chavePermissao: RotasDto.RELATORIO_USUARIOS,
 });
 
+rotas.set(RotasDto.RELATORIO_ATRIBUICAO_CJ, {
+  breadcrumbName: 'Atribuições',
+  menu: ['Relatórios', 'Gestão'],
+  parent: '/',
+  component: AtribuicaoCJ,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+  chavePermissao: RotasDto.RELATORIO_ATRIBUICAO_CJ,
+});
+
 rotas.set(RotasDto.RELATORIO_ALTERACAO_NOTAS, {
   breadcrumbName: 'Histórico de alterações em notas',
   menu: ['Relatórios', 'Fechamento'],
@@ -1059,7 +1071,7 @@ rotas.set(RotasDto.RELATORIO_ALTERACAO_NOTAS, {
 });
 
 const rotasArray = [];
-for (var [key, value] of rotas) {
+for (const [key, value] of rotas) {
   const rota = value;
   rota.path = key;
   rotasArray.push(rota);
