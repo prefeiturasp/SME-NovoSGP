@@ -4,6 +4,7 @@ using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Threading.Tasks;
@@ -47,6 +48,12 @@ namespace SME.SGP.Api.Controllers
             return Ok(await relatorioResumoPAPUseCase.Executar(filtroRelatorioResumoPAPDto));
         }
 
+        [HttpPost("graficopap/impressao")]
+        public async Task<IActionResult> GraficoPAP([FromBody] FiltroRelatorioResumoPAPDto filtroRelatorioGraficoPAPDto, [FromServices] IRelatorioGraficoPAPUseCase relatorioGraficoPAPUseCase)
+        {
+            return Ok(await relatorioGraficoPAPUseCase.Executar(filtroRelatorioGraficoPAPDto));
+        }
+
         [HttpPost("plano-aula")]
         public async Task<IActionResult> PlanoAula([FromBody] FiltroRelatorioPlanoAulaDto filtro, [FromServices] IRelatorioPlanoAulaUseCase useCase)
         {
@@ -82,6 +89,14 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> Gerar(FiltroRelatorioAtribuicaoCJDto filtros, [FromServices] IRelatorioAtribuicaoCJUseCase relatorioAtribuicaoCJUseCase)
         {
             return Ok(await relatorioAtribuicaoCJUseCase.Executar(filtros));
+        }
+        
+        [HttpPost("historico-alteracao-notas")]
+        public async Task<IActionResult> AlteracaoNotas([FromBody] FiltroRelatorioAlteracaoNotas filtro, [FromServices] IRelatorioAlteracaoNotasUseCase relatorioUseCase)
+        {
+            if (filtro.ModalidadeTurma == Dominio.Modalidade.Infantil)
+                throw new NegocioException("Não é possível gerar este relatório para a modalidade infantil.");
+            return Ok(await relatorioUseCase.Executar(filtro));
         }
     }
 }

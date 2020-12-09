@@ -111,7 +111,9 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("                t.semestre,");
             query.AppendLine("				  t.qt_duracao_aula qtDuracaoAula,");
             query.AppendLine("                t.tipo_turno tipoTurno,");
-            query.AppendLine("                ue.tipo_escola tipoEscola");
+            query.AppendLine("                ue.tipo_escola tipoEscola,");
+            query.AppendLine("                abt.turma_id TurmaId,");
+            query.AppendLine("                abt.ensinoespecial");
             query.AppendLine("    from f_abrangencia_turmas(@login, @perfil, @consideraHistorico) abt");
             query.AppendLine("        inner join turma t");
             query.AppendLine("            on abt.codigo = t.turma_id");
@@ -215,7 +217,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             // Foi utilizada função de banco de dados com intuíto de melhorar a performance
             return (await database.Conexao.QueryAsync<int>(@"select f_abrangencia_anos_letivos(@login, @perfil, @consideraHistorico)
-                                                             order by 1", new { login, perfil, consideraHistorico }));
+                                                             order by 1 desc", new { login, perfil, consideraHistorico }));
         }
 
         public async Task<IEnumerable<string>> ObterAnosTurmasPorCodigoUeModalidade(string login, Guid perfil, string codigoUe, Modalidade modalidade, bool consideraHistorico)

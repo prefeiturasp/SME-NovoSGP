@@ -848,6 +848,8 @@ const Filtro = () => {
       periodo: resultado.semestre,
       consideraHistorico,
       ano: resultado.ano,
+      ensinoEspecial: resultado.ensinoEspecial,
+      id: resultado.turmaId,
     };
 
     dispatch(selecionarTurma(turma));
@@ -886,9 +888,7 @@ const Filtro = () => {
   const Filtrar = () => {
     if (resultadosFiltro) {
       if (resultadosFiltro.length === 1) {
-        setModalidadeSelecionada(
-          resultadosFiltro[0].codigoModalidade.toString()
-        );
+        setModalidadeSelecionada(resultadosFiltro[0].codigoModalidade.toString());
         setDreSelecionada(resultadosFiltro[0].codigoDre);
         setUnidadeEscolarSelecionada(resultadosFiltro[0].codigoUe);
         setTurmaSelecionada(resultadosFiltro[0].codigoTurma);
@@ -995,11 +995,24 @@ const Filtro = () => {
         setCampoAnoLetivoDesabilitado(false);
       }
 
-      setModalidadeSelecionada(turmaUsuarioSelecionada.modalidade);
-      setPeriodoSelecionado(turmaUsuarioSelecionada.periodo);
-      setDreSelecionada(turmaUsuarioSelecionada.dre);
-      setUnidadeEscolarSelecionada(turmaUsuarioSelecionada.unidadeEscolar);
-      setTurmaSelecionada(turmaUsuarioSelecionada.turma);
+      if(turmaUsuarioSelecionada.anoLetivo && anoLetivoSelecionado && turmaUsuarioSelecionada.anoLetivo != anoLetivoSelecionado)
+        setAnoLetivoSelecionado(turmaUsuarioSelecionada.anoLetivo);
+
+      if(turmaUsuarioSelecionada.modalidade && modalidadeSelecionada && turmaUsuarioSelecionada.modalidade != modalidadeSelecionada)
+        setModalidadeSelecionada(turmaUsuarioSelecionada.modalidade);
+
+      if(turmaUsuarioSelecionada.periodo && periodoSelecionado && turmaUsuarioSelecionada.periodo != periodoSelecionado)
+        setPeriodoSelecionado(turmaUsuarioSelecionada.periodo);
+
+      if(turmaUsuarioSelecionada.dre && dreSelecionada && turmaUsuarioSelecionada.dre != dreSelecionada)
+        setDreSelecionada(turmaUsuarioSelecionada.dre);
+
+      if(turmaUsuarioSelecionada.unidadeEscolar && unidadeEscolarSelecionada && turmaUsuarioSelecionada.unidadeEscolar && unidadeEscolarSelecionada)
+        setUnidadeEscolarSelecionada(turmaUsuarioSelecionada.unidadeEscolar);
+
+      if(turmaUsuarioSelecionada.turma && turmaSelecionada && turmaUsuarioSelecionada.turma != turmaSelecionada)
+        setTurmaSelecionada(turmaUsuarioSelecionada.turma);
+
       setTextoAutocomplete(turmaUsuarioSelecionada.desc);
       setConsideraHistorico(!!turmaUsuarioSelecionada.consideraHistorico);
 

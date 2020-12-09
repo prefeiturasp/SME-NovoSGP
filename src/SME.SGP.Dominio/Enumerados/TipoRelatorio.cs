@@ -16,8 +16,8 @@ namespace SME.SGP.Dominio
         [Display(Name = "relatorios/boletimescolar", ShortName = "BoletimEscolar", Description = "Boletim escolar")]
         Boletim = 4,
 
-        [Display(Name = "relatorios/conselhoclasseatafinal", ShortName = "RelatorioConselhoClasseAtaFinal", Description = "Conselho Classe Ata Final")]
-        ConselhoClasseAtaFinal = 5,
+        [Display(Name = "relatorios/atafinalresultados", ShortName = "RelatorioAtaFinalResultados", Description = "Relatório Ata final de resultados")]
+        AtaFinalResultados = 5,
 
         [Display(Name = "relatorios/faltas-frequencia", ShortName = "RelatorioFaltasFrequencia", Description = "Relatório de faltas e frequência")]
         FaltasFrequencia = 6,
@@ -64,6 +64,12 @@ namespace SME.SGP.Dominio
         Usuarios = 20,
 
         [Display(Name = "relatorios/atribuicoes-cj", ShortName = "Atribuição CJ", Description = "Relatório de Atribuições de CJ")]
-        AtribuicaoCJ = 21
+        AtribuicaoCJ = 22,
+        
+        [Display(Name = "relatorios/graficopap", ShortName = "GraficoPAP", Description = "Relatório de acompanhamento PAP - Gráficos")]
+        GraficoPAP = 23,
+
+        [Display(Name = "relatorios/alteracao-notas", ShortName = "AlteracaoNotas", Description = "Relatório Alterações de Notas em Bimestre")]
+        AlteracaoNotasBimestre = 24
     }
 }

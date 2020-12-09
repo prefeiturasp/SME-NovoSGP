@@ -73,6 +73,18 @@ const downloadBlob = (data, fileName) => {
   document.body.removeChild(a);
 };
 
+const removerTudoQueNaoEhDigito = v => {
+  return String(v).replace(/\D/g, '');
+};
+
+const maskTelefone = v => {
+  v = String(v);
+  v = removerTudoQueNaoEhDigito(v);
+  v = v.replace(/^(\d{2})(\d)/g, '($1) $2'); // Coloca parênteses em volta dos dois primeiros dígitos
+  v = v.replace(/(\d)(\d{4})$/, '$1-$2'); // Coloca hífen entre o quarto e o quinto dígitos
+  return v;
+};
+
 export {
   validaSeObjetoEhNuloOuVazio,
   valorNuloOuVazio,
@@ -83,4 +95,5 @@ export {
   ordenarDescPor,
   removerNumeros,
   downloadBlob,
+  maskTelefone,
 };

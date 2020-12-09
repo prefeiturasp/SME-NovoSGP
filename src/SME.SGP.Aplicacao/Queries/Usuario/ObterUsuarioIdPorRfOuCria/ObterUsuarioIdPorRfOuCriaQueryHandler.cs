@@ -20,7 +20,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<long> Handle(ObterUsuarioIdPorRfOuCriaQuery request, CancellationToken cancellationToken)
         {
-            var usuarioId = await repositorioUsuario.ObterUsuarioIdPorCodigoRfAsync(request.UsuarioRf);
+            var usuarioId = await repositorioUsuario.ObterUsuarioIdPorLoginAsync(request.UsuarioRf);
+
             if (usuarioId == 0)
                 return await repositorioUsuario.SalvarAsync(new Usuario() { CodigoRf = request.UsuarioRf, Login = request.UsuarioRf });
 

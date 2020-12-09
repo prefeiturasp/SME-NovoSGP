@@ -10,22 +10,22 @@ namespace SME.SGP.Aplicacao
     public class NotificarUsuarioCommandHandler : IRequestHandler<NotificarUsuarioCommand, long>
     {
         private readonly IRepositorioNotificacao repositorioNotificacao;
+        private readonly IMediator mediator;
         private readonly IRepositorioUsuario repositorioUsuario;
 
-        public NotificarUsuarioCommandHandler(IRepositorioNotificacao repositorioNotificacao,
-                                              IRepositorioUsuario repositorioUsuario)
+        public NotificarUsuarioCommandHandler(IRepositorioNotificacao repositorioNotificacao, IMediator mediator)
         {
             this.repositorioNotificacao = repositorioNotificacao ?? throw new ArgumentNullException(nameof(repositorioNotificacao));
-            this.repositorioUsuario = repositorioUsuario ?? throw new ArgumentNullException(nameof(repositorioUsuario));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<long> Handle(NotificarUsuarioCommand request, CancellationToken cancellationToken)
         {
-            var usuario = repositorioUsuario.ObterPorCodigoRfLogin(request.UsuarioRf, string.Empty);
+            var usuarioId = await mediator.Send(new ObterOuAdicionarUsuarioIdCommand(request.UsuarioRf, request.NomeUsuario));
 
             var notificacao = new Notificacao()
             {
-                Codigo = ObtemNovoCodigo(),
+                Codigo = request.Codigo == 0 ? ObtemNovoCodigo() : request.Codigo,
                 Titulo = request.Titulo,
                 Mensagem = request.Mensagem,
                 DreId = request.DreCodigo,
@@ -34,8 +34,11 @@ namespace SME.SGP.Aplicacao
                 Ano = request.Ano,
                 Categoria = request.Categoria,
                 Tipo = request.Tipo,
-                UsuarioId = usuario?.Id,
-            };            
+                UsuarioId = usuarioId,
+            };
+
+            if (request.CriadoEm.HasValue)
+                notificacao.CriadoEm = request.CriadoEm.Value;
 
             return await repositorioNotificacao.SalvarAsync(notificacao);            
         }

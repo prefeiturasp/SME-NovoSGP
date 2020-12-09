@@ -511,6 +511,8 @@ const AtribuicaoCJ = () => {
                 onChange={valores => {
                   if (valores && valores.professorRf) {
                     setUsuarioRf(valores.professorRf);
+                  } else {
+                    setUsuarioRf(undefined);
                   }
                 }}
                 buscarOutrosCargos
