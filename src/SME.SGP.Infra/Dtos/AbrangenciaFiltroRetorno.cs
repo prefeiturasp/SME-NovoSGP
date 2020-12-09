@@ -24,5 +24,7 @@ namespace SME.SGP.Dto
         public TipoEscola TipoEscola { get; set; }
         public string NomeTipoEscola { get { return TipoEscola.GetAttribute<DisplayAttribute>().ShortName; } }
         public int TipoTurno { get; set; }
+        public long TurmaId { get; set; }
+        public bool EnsinoEspecial { get; set; }
     }
 }
