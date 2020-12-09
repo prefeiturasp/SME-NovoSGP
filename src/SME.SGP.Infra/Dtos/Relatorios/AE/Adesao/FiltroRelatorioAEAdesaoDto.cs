@@ -2,11 +2,12 @@
 {
     public class FiltroRelatorioAEAdesaoDto
     {
-        public long DreCodigo { get; set; }
+        public string DreCodigo { get; set; }
         public string UeCodigo { get; set; }
         [EnumeradoRequirido(ErrorMessage = "É necessário informar a opção de listagem de usuários.")]
         public FiltroRelatorioAEAdesao OpcaoListaUsuarios { get; set; }
-        public string NomeUsuario { get; set; }
+        public string UsuarioNome { get; set; }
+        public string UsuarioRF { get; set; }
 
     }
     public enum FiltroRelatorioAEAdesao
