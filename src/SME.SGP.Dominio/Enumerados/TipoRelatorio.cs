@@ -69,7 +69,7 @@ namespace SME.SGP.Dominio
         [Display(Name = "relatorios/graficopap", ShortName = "GraficoPAP", Description = "Relatório de acompanhamento PAP - Gráficos")]
         GraficoPAP = 23,
 
-        [Display(Name = "relatorios/alteracao-notas", ShortName = "AlteracaoNotas", Description = "Relatório Alterações de Notas em Bimestre")]
+        [Display(Name = "relatorios/alteracao-notas", ShortName = "AlteracaoNotas", Description = "Relatório alterações de notas")]
         AlteracaoNotasBimestre = 24
     }
 }
