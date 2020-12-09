@@ -29,17 +29,14 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("O comunicado informado não existe. Por favor tente novamente.", HttpStatusCode.BadRequest);
 
             var httpClient = httpClientFactory.CreateClient("servicoAcompanhamentoEscolar");
-            var url = new StringBuilder("/api/v1/dashboard/leitura/modalidade/turma");
+            var url = new StringBuilder("/api/v1/dashboard/leitura/turma");
 
-            url.Append(@"?notificacaoId=" + request.ComunicadoId);
+            url.Append(@"?codigoDre=" + request.CodigoDre);
+            url.Append(@"&codigoUe=" + request.CodigoUe);
+            url.Append(@"&notificacaoId=" + request.ComunicadoId);
             url.Append(@"&modoVisualizacao=" + request.ModoVisualizacao);
-            url.Append(@"&modalidade=" + request.Modalidade);
-            if (!string.IsNullOrEmpty(request.CodigoDre))
-            {
-                url.Append(@"&codigoDre=" + request.CodigoDre);
-                if (!string.IsNullOrEmpty(request.CodigoUe))
-                    url.Append(@"&codigoUe=" + request.CodigoUe);
-            }
+            url.Append(@"&modalidade=" + (int)request.Modalidade);
+
 
             var resposta = await httpClient.GetAsync($"{url}", cancellationToken);
             if (!resposta.IsSuccessStatusCode || resposta.StatusCode == HttpStatusCode.NoContent)
