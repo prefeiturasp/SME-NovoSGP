@@ -59,6 +59,7 @@ const RotasDto = {
   DOCUMENTOS_PLANOS_TRABALHO: '/gestao/documentos-planos-trabalho',
   RELATORIO_USUARIOS: '/relatorios/gestao/usuarios',
   RELATORIO_ATRIBUICAO_CJ: '/relatorios/gestao/atribuicao-cj',
+  RELATORIO_ALTERACAO_NOTAS: '/relatorios/fechamento/historico-alteracao-notas',
 };
 
 export default RotasDto;

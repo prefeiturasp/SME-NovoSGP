@@ -1186,5 +1186,27 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<Evento>(query, new { tipoCalendarioId, ueCodigo, tipoEvento });
         }
+
+        public async Task<IEnumerable<Evento>> ObterEventosPorTipoEData(TipoEvento tipoEvento, DateTime data)
+        {
+            var query = @"select e.*, et.*, ue.*, dre.*
+                        from evento e 
+                       inner join evento_tipo et on et.id = e.tipo_evento_id
+                        left join ue on ue.ue_id = e.ue_id
+                        left join dre on dre.id = ue.dre_id
+                       where not e.excluido
+                         and e.tipo_evento_id = @tipoEvento
+                         and e.data_inicio = @data";
+
+            return await database.Conexao.QueryAsync<Evento, EventoTipo, Ue, Dre, Evento>(query, 
+                (evento, eventoTipo, ue, dre) =>
+                {
+                    evento.Ue = ue;
+                    evento.Dre = dre;
+                    evento.TipoEvento = eventoTipo;
+
+                    return evento;
+                }, new { tipoEvento = (int)tipoEvento, data });
+        }
     }
 }

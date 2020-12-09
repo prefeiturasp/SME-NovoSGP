@@ -113,18 +113,14 @@ namespace SME.SGP.Aplicacao
 
             retorno.EhSintese = !disciplinaEOL.LancaNota;
 
-            var fechamentoTurmaDisciplina = await repositorioFechamentoTurmaDisciplina.ObterFechamentoTurmaDisciplina(turma.CodigoTurma, filtros.DisciplinaCodigo);
+            var fechamentosTurmaDisciplina = await repositorioFechamentoTurmaDisciplina.ObterFechamentosTurmaDisciplinas(turma.CodigoTurma, new long[] { filtros.DisciplinaCodigo });
             var notasFechamentosFinais = Enumerable.Empty<FechamentoNota>();
-            if (fechamentoTurmaDisciplina != null)
-            {
-                notasFechamentosFinais = await repositorioFechamentoNota.ObterPorFechamentoTurma(fechamentoTurmaDisciplina.Id);
-            }
+            if (fechamentosTurmaDisciplina != null && fechamentosTurmaDisciplina.Any())
+                notasFechamentosFinais = await repositorioFechamentoNota.ObterPorFechamentosTurma(fechamentosTurmaDisciplina.Select(ftd => ftd.Id).ToArray());
 
             var notasFechamentosBimestres = Enumerable.Empty<FechamentoNotaAlunoDto>();
             if (!retorno.EhSintese)
-            {
                 notasFechamentosBimestres = await ObterNotasFechamentosBimestres(filtros.DisciplinaCodigo, turma, periodosEscolares, retorno.EhNota);
-            }
 
             var usuarioEPeriodoPodeEditar = await PodeEditarNotaOuConceitoPeriodoUsuario(usuarioAtual, ultimoPeriodoEscolar, turma, filtros.DisciplinaCodigo.ToString(), retorno.EventoData);
 
@@ -182,8 +178,8 @@ namespace SME.SGP.Aplicacao
                 retorno.Alunos.Add(fechamentoFinalAluno);
             }
 
-            retorno.AuditoriaAlteracao = MontaTextoAuditoriaAlteracao(fechamentoTurmaDisciplina, retorno.EhNota);
-            retorno.AuditoriaInclusao = MontaTextoAuditoriaInclusao(fechamentoTurmaDisciplina, retorno.EhNota);
+            retorno.AuditoriaAlteracao = MontaTextoAuditoriaAlteracao(fechamentosTurmaDisciplina.Any() ? fechamentosTurmaDisciplina.First() : null, retorno.EhNota);
+            retorno.AuditoriaInclusao = MontaTextoAuditoriaInclusao(fechamentosTurmaDisciplina.Any() ? fechamentosTurmaDisciplina.First() : null, retorno.EhNota);
 
             retorno.NotaMedia = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.MediaBimestre, DateTime.Today.Year)));
             retorno.FrequenciaMedia = await consultasFrequencia.ObterFrequenciaMedia(disciplinaEOL);
@@ -212,9 +208,9 @@ namespace SME.SGP.Aplicacao
             //BIMESTRE / NOTA / DISCIPLINA ID / ALUNO CODIGO
             foreach (var periodo in periodosEscolares)
             {
-                var fechamentoTurmaDisciplina = await repositorioFechamentoTurmaDisciplina.ObterFechamentoTurmaDisciplina(turma.CodigoTurma, disciplinaCodigo, periodo.Bimestre);
+                var fechamentosTurmaDisciplina = await repositorioFechamentoTurmaDisciplina.ObterFechamentosTurmaDisciplinas(turma.CodigoTurma, new long[] { disciplinaCodigo }, periodo.Bimestre);
 
-                if (fechamentoTurmaDisciplina != null)
+                foreach (var fechamentoTurmaDisciplina in fechamentosTurmaDisciplina)
                 {
                     var notasDoBimestre = await repositorioFechamentoNota.ObterPorFechamentoTurma(fechamentoTurmaDisciplina.Id);
                     if (notasDoBimestre != null && notasDoBimestre.Any())
@@ -222,7 +218,6 @@ namespace SME.SGP.Aplicacao
                         foreach (var nota in notasDoBimestre)
                         {
                             var notaParaAdicionar = ehNota ? nota.Nota?.ToString() : nota.ConceitoId?.ToString();
-
                             listaRetorno.Add(new FechamentoNotaAlunoDto(periodo.Bimestre, notaParaAdicionar, nota.DisciplinaId, nota.FechamentoAluno.AlunoCodigo));
                         }
                     }

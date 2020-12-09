@@ -37,6 +37,25 @@
         public static string RotaExecutaExclusaoPendenciasAula => "pendencias.gerais.pendencias.aula.excluir";
         public static string RotaExecutaExclusaoPendenciasDiasLetivosInsuficientes => "pendencias.gerais.pendencias.calendario.excluir";
         public static string RotaExecutaExclusaoPendenciaParametroEvento => "pendencias.gerais.pendencias.evento.excluir";
+        public static string RotaTrataNotificacoesNiveis => "notificacao.tratamento.niveiscargos";
 
+        public static string RotaExecutaVerificacaoPendenciasProfessor => "pendencias.professor.executa.verificacao";
+
+        public static string RotaExecutaVerificacaoPendenciasAusenciaFechamento => "pendencias.bimestre.ausencia.fechamento.verificacao";
+        public static string RotaExecutaExclusaoPendenciasAusenciaAvaliacao => "pendencias.professor.avaliacao.excluir";
+
+        public static string RotaExecutaExclusaoPendenciasAusenciaFechamento => "pendencias.bimestre.ausencia.fechamento.excluir";
+
+        public static string RotaExecutaAtualizacaoSituacaoConselhoClasse => "conselho.classe.situacao.atualizar";
+        public static string RotaNotificacaoAndamentoFechamento => "fechamento.andamento.notificar";
+
+        public static string RotaNotificacaoInicioFimPeriodoFechamento => "fechamento.iniciofim.periodo.notificar";
+               
+        public static string RotaNotificacaoResultadoInsatisfatorio => "notificacao.nova.resultado.insatisfatorio";
+        public static string RotaNotificacaoUeFechamentosInsuficientes => "fechamento.insuficiente.notificar";
+
+        public static string RotaNotificacaoReuniaoPedagogica => "evento.reuniao.pedagogica.notificar";
+
+        public static string RotaNotificacaoPeriodoFechamento => "periodo.fechamento.notificar";
     }
 }

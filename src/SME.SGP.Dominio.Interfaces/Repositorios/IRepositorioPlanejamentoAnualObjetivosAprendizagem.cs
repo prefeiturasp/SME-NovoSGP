@@ -11,5 +11,6 @@ namespace SME.SGP.Dominio.Interfaces
         
 
         Task<IEnumerable<PlanejamentoAnualObjetivoAprendizagem>> ObterPorPlanejamentoAnualComponenteId(long componenteId);
+        Task RemoverLogicamenteAsync(long id);
     }
 }

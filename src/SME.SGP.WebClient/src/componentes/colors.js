@@ -61,12 +61,12 @@ const Hover = {
 };
 
 const CoresGraficos = [
-  '#EECDB6',
   '#F98F84',
-  '#F5E68D',
-  '#EFB971',
   '#57CDBC',
+  '#EFB971',
   '#3982AC',
+  '#EECDB6',
+  '#F5E68D',
   '#B15832',
   '#A6CEE1',
   '#B1DF94',

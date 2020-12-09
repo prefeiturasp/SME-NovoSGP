@@ -12,5 +12,9 @@ namespace SME.SGP.Dominio.Interfaces
         Task<PendenciaFechamentoCompletoDto> ObterPorPendenciaId(long pendenciaId);
         bool VerificaPendenciasAbertoPorFechamento(long fechamentoId);
         Task<Turma> ObterTurmaPorPendenciaId(long pendenciaId);
+        Task<IEnumerable<PendenciaFechamento>> ObterPorFechamentoIdDisciplinaId(long fechamentoId, long disciplinaId);
+
+        Task RemoverAsync(PendenciaFechamento pendencia);
+        Task<bool> ExistePendenciaFechamentoPorPendenciaId(long pendenciaId);
     }
 }

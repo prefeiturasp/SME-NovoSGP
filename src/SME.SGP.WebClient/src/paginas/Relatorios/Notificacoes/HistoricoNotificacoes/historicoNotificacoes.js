@@ -85,12 +85,12 @@ const HistoricoNotificacoes = () => {
   const obterModalidades = async ue => {
     if (ue) {
       setCarregandoGeral(true);
-      const retorno = await ServicoFiltroRelatorio.obterModalidadesPorAbrangencia(ue).catch(
-        e => {
-          erros(e);
-          setCarregandoGeral(false);
-        }
-      );
+      const retorno = await ServicoFiltroRelatorio.obterModalidadesPorAbrangencia(
+        ue
+      ).catch(e => {
+        erros(e);
+        setCarregandoGeral(false);
+      });
       if (retorno && retorno.data) {
         if (retorno.data && retorno.data.length && retorno.data.length === 1) {
           setModalidadeId(retorno.data[0].valor);
@@ -265,7 +265,20 @@ const HistoricoNotificacoes = () => {
     } else {
       setDesabilitarBtnGerar(desabilitar);
     }
-  }, [anoLetivo, codigoDre, codigoUe, modalidadeId, semestre]);
+  }, [
+    anoLetivo,
+    codigoDre,
+    codigoUe,
+    modalidadeId,
+    semestre,
+    turmaId,
+    usuarioRf,
+    categorias,
+    tipos,
+    situacoes,
+    exibirDescricao,
+    exibirNotificacoesExcluidas,
+  ]);
 
   const carregarListas = async () => {
     const status = await api.get('v1/notificacoes/status').catch(e => erros(e));
@@ -544,6 +557,8 @@ const HistoricoNotificacoes = () => {
                     onChange={valores => {
                       if (valores && valores.professorRf) {
                         setUsuarioRf(valores.professorRf);
+                      } else {
+                        setUsuarioRf();
                       }
                     }}
                     buscarOutrosCargos

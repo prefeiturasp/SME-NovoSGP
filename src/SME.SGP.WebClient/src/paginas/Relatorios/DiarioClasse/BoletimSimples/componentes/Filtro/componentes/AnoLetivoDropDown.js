@@ -7,51 +7,54 @@ import FiltroHelper from '~componentes-sgp/filtro/helper';
 import { useSelector } from 'react-redux';
 
 // Componentes
-import { SelectComponent } from '~/componentes';
+import { SelectComponent, Loader } from '~/componentes';
 
 function AnoLetivoDropDown({ form, onChange, consideraHistorico }) {
-
-  const anosLetivos = useSelector(store => store.filtro.anosLetivos);
   const [listaAnosLetivo, setListaAnosLetivo] = useState([]);  
+  const [carregando, setCarregando] = useState(false);
 
   const obterAnosLetivos = useCallback(async () => {    
-    let anosLetivo = [];
-
-    const anosLetivoComHistorico = await FiltroHelper.obterAnosLetivos({
-      consideraHistorico: true,
-    });
-    const anosLetivoSemHistorico = await FiltroHelper.obterAnosLetivos({
-      consideraHistorico: false,
-    });
-
-    anosLetivo = anosLetivoComHistorico.concat(anosLetivoSemHistorico);
+    setCarregando(true);
+    const anosLetivo = await FiltroHelper.obterAnosLetivos({
+      consideraHistorico: consideraHistorico
+    });    
     
     setListaAnosLetivo(anosLetivo);           
-  }, []);
+    setCarregando(false);
+  }, [consideraHistorico]);
 
   useEffect(() => {
     obterAnosLetivos();
   }, [obterAnosLetivos]);
 
-  useEffect(() => {
-    if (anosLetivos.length === 1) {
-      form.setFieldValue('anoLetivo', String(anosLetivos[0].valor), false);
-      onChange(String(anosLetivos[0].valor));
+  useEffect(() => {    
+    if (listaAnosLetivo && listaAnosLetivo.length > 0) {
+      form.setFieldValue('anoLetivo', String(listaAnosLetivo[0].valor), false);
+      onChange(String(listaAnosLetivo[0].valor));
     }
-  }, [anosLetivos]);
+    else{
+      form.setFieldValue('anoLetivo', '', false);
+      onChange(String(''));
+    }
 
-  return (
-    <SelectComponent
-      label="Ano Letivo"
-      valueOption="valor"
-      valueText="desc"
-      form={form}
-      name="anoLetivo"
-      lista={consideraHistorico ? listaAnosLetivo : anosLetivos}
-      placeholder="Ano Letivo"
-      onChange={onChange}
-      disabled={anosLetivos && anosLetivos.length === 1 && !consideraHistorico}      
-    />
+  }, [listaAnosLetivo]);
+
+  return (   
+    <>
+      <Loader loading={carregando} tip="">      
+        <SelectComponent
+        label="Ano Letivo"
+        valueOption="valor"
+        valueText="desc"
+        form={form}
+        name="anoLetivo"
+        lista={listaAnosLetivo}
+        placeholder="Ano Letivo"
+        onChange={onChange}
+        disabled={listaAnosLetivo && listaAnosLetivo.length === 1}      
+        />
+      </Loader>
+    </> 
   );
 }
 
