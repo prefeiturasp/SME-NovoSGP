@@ -18,8 +18,16 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(FiltroRelatorioAtribuicaoCJDto filtro)
         {
-            await mediator.Send(new ValidaSeExisteDrePorCodigoQuery(filtro.DreCodigo));
-            await mediator.Send(new ValidaSeExisteUePorCodigoQuery(filtro.UeCodigo));
+            if (filtro.DreCodigo != "-99")
+                await mediator.Send(new ValidaSeExisteDrePorCodigoQuery(filtro.DreCodigo));
+            else
+                filtro.DreCodigo = null;
+
+            if (filtro.UeCodigo != "-99")
+                await mediator.Send(new ValidaSeExisteUePorCodigoQuery(filtro.UeCodigo));
+            else
+                filtro.UeCodigo = null;
+
             if (!string.IsNullOrEmpty(filtro.UsuarioRf))
             {
                 var usuario = await mediator.Send(new ObterUsuarioPorRfQuery(filtro.UsuarioRf));
