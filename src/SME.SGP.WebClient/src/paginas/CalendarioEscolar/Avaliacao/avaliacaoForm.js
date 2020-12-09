@@ -481,10 +481,7 @@ const AvaliacaoForm = ({ match, location }) => {
       listaDisciplinasRegencia.forEach((item, indice) => {
         const disciplina = dadosAvaliacao.atividadesRegencia.filter(
           atividade => {
-            return (
-              atividade.disciplinaContidaRegenciaId ===
-              item.codigoComponenteCurricular.toString()
-            );
+            return (atividade.disciplinaContidaRegenciaId == item.codigoComponenteCurricular);
           }
         );
         if (disciplina && disciplina.length)
