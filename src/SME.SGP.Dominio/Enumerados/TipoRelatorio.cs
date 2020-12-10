@@ -63,13 +63,15 @@ namespace SME.SGP.Dominio
         [Display(Name = "relatorios/usuarios", ShortName = "Usuarios", Description = "Relatório de Usuários")]
         Usuarios = 20,
 
-        [Display(Name = "relatorios/graficopap", ShortName = "GraficoPAP", Description = "Relatório de acompanhamento PAP - Gráficos")]
-        GraficoPAP = 21,
-
-        [Display(Name = "relatorios/alteracao-notas", ShortName = "AlteracaoNotas", Description = "Relatório Aletrações de Notas em Bimestre")]
-        AlteracaoNotasBimestre = 22,
+        [Display(Name = "relatorios/atribuicoes-cj", ShortName = "Atribuição CJ", Description = "Relatório de Atribuições de CJ")]
+        AtribuicaoCJ = 22,
         
+        [Display(Name = "relatorios/graficopap", ShortName = "GraficoPAP", Description = "Relatório de acompanhamento PAP - Gráficos")]
+        GraficoPAP = 23,
+
+        [Display(Name = "relatorios/alteracao-notas", ShortName = "AlteracaoNotas", Description = "Relatório de alterações de notas")]
+        AlteracaoNotasBimestre = 24,
         [Display(Name = "relatorios/ae/adesao", ShortName = "AEAdesao", Description = "Relatório de Adesão do Escola Aqui")]
-        AEAdesao = 23
+        AEAdesao = 25
     }
 }

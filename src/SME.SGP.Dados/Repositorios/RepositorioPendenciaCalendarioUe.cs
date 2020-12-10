@@ -14,7 +14,7 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public Task<PendenciaCalendarioUe> ObterPendenciaPorCalendarioUe(long tipoCalendarioId, long ueId, TipoPendencia tipoPendencia)
+        public async Task<IEnumerable<PendenciaCalendarioUe>> ObterPendenciasPorCalendarioUe(long tipoCalendarioId, long ueId, TipoPendencia tipoPendencia)
         {
             var query = @"select pc.* 
                         from pendencia_calendario_ue pc
@@ -24,7 +24,7 @@ namespace SME.SGP.Dados.Repositorios
                           and pc.ue_id = @ueId
                           and p.tipo = @tipoPendencia";
 
-            return database.Conexao.QueryFirstOrDefaultAsync<PendenciaCalendarioUe>(query, new { tipoCalendarioId, ueId, tipoPendencia });
+            return await database.Conexao.QueryAsync<PendenciaCalendarioUe>(query, new { tipoCalendarioId, ueId, tipoPendencia });
         }
     }
 }

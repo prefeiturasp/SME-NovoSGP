@@ -1,12 +1,8 @@
 ﻿using Dapper;
 using Dommel;
-using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados
@@ -42,6 +38,13 @@ namespace SME.SGP.Dados
             return await database.Conexao.QueryFirstOrDefaultAsync<ProcessoExecutando>(query, new { turmaId, disciplinaId, bimestre });
         }
 
+        public async Task<bool> ProcessoEstaEmExecucao(TipoProcesso tipoProcesso)
+        {
+            var query = "select 1 from processo_executando where tipo_processo = @tipoProcesso";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { tipoProcesso = (int)tipoProcesso });
+        }
+
         public void Remover(ProcessoExecutando processo)
             => database.Conexao.Delete(processo);
 
@@ -50,12 +53,21 @@ namespace SME.SGP.Dados
 
         public async Task RemoverIdsAsync(long[] ids)
         {
-
             var query = @"delete
                             from processo_executando
                            where id IN (#ids)";
 
             await database.Conexao.ExecuteAsync(query.Replace("#ids", string.Join(",", ids)));
+        }
+
+
+        public async Task RemoverPorId(long id)
+        {
+            var query = @"delete
+                            from processo_executando
+                           where id = @id";
+
+            await database.Conexao.ExecuteAsync(query, new { id });
         }
 
         public async Task<long> SalvarAsync(ProcessoExecutando entidade)

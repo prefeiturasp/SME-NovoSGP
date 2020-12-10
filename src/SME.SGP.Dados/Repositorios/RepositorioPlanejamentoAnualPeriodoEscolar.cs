@@ -69,7 +69,8 @@ namespace SME.SGP.Dados.Repositorios
                             }
                         }
                         else
-                        {
+                        {                            
+                            componenteCurricular = componente;
                             componenteCurricular.ObjetivosAprendizagem.Add(objetivo);
                             periodoAdicionado.ComponentesCurriculares.Add(componenteCurricular);
                         }

@@ -58,7 +58,8 @@ namespace SME.SGP.Aplicacao
 
         private async Task<(bool notificar, Ue ue, int quantidadeTurmasPendentes)> VerificaTurmasComPendenciaFechamentoNaUe(IEnumerable<Turma> turmas, Ue ue, double percentualFechamentoInsuficiente)
         {
-            var quantidadeTurmasUe = await mediator.Send(new ObterQuantidadeTurmasSeriadasNaUeQuery(ue.Id));
+            var ano = turmas.First().AnoLetivo;
+            var quantidadeTurmasUe = await mediator.Send(new ObterQuantidadeTurmasSeriadasNaUeQuery(ue.Id, ano));
 
             var indiceTurmasPendentes = turmas.Count() / (double)quantidadeTurmasUe * 100;
 
