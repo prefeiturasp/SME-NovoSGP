@@ -459,10 +459,20 @@ const RelatorioLeitura = () => {
   }, [modalidadeId]);
 
   const cancelar = async () => {
-    await setCodigoDre();
     await setCodigoUe();
-    await setModalidadeId();
+    await setCodigoDre();
+    await setListaComunicado();
+    await setComunicado();
+    await setGrupos();
+    await setListarComunicadosExpirados(false);
+    await setListarResponsaveisEstudantes(false);
+    await setPesquisaComunicado();
+    await setDataFim();
+    await setDataInicio();
     await setTurmaId();
+    await setAnosEscolares();
+    await setSemestre();
+    await setModalidadeId();
     await setAnoLetivo();
     await setAnoLetivo(anoAtual);
   };
@@ -590,7 +600,13 @@ const RelatorioLeitura = () => {
           setListaComunicado(lista);
         } else {
           setListaComunicado([]);
+          setComunicado();
+          setPesquisaComunicado();
         }
+      } else {
+        setListaComunicado([]);
+        setComunicado();
+        setPesquisaComunicado();
       }
     })();
 
