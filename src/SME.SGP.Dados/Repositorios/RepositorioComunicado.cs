@@ -374,7 +374,10 @@ namespace SME.SGP.Dados.Repositorios
             var sql = new StringBuilder($@"SELECT
                                             {comunicadoAlias}.id AS Id,
                                             {comunicadoAlias}.titulo AS Titulo,
-                                            {comunicadoAlias}.data_envio AS DataEnvio
+                                            {comunicadoAlias}.data_envio AS DataEnvio,
+                                            {comunicadoAlias}.codigo_dre AS CodigoDre,
+                                            {comunicadoAlias}.codigo_ue AS CodigoUe,
+                                            {comunicadoAlias}.modalidade AS Modalidade
                                         FROM comunicado {comunicadoAlias} ");
 
             if (!string.IsNullOrWhiteSpace(filtro.CodigoTurma))
