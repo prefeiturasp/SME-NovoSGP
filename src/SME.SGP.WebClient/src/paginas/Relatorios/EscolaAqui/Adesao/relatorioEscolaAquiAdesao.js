@@ -75,14 +75,13 @@ const RelatorioEscolaAquiAdesao = () => {
   const onChangeDre = valor => {
     setDreCodigo(valor);
     setUeCodigo(undefined);
-    if (valor === OPCAO_TODOS) {
-      setOpcaoListaUsuarios(1);
-    }
+    setOpcaoListaUsuarios(1);
+
   };
 
   const onChangeUe = valor => {
     setUeCodigo(valor);
-    if (valor === OPCAO_TODOS) {
+    if (valor === OPCAO_TODOS || !valor) {
       setOpcaoListaUsuarios(1);
     }
   };
@@ -136,10 +135,11 @@ const RelatorioEscolaAquiAdesao = () => {
   useEffect(() => {
     if (dreCodigo) {
       obterUes(dreCodigo);
-    } else {
-      setUeCodigo(undefined);
-      setListaUes([]);
+      return;
     }
+    setUeCodigo(undefined);
+    setOpcaoListaUsuarios(1);
+    setListaUes([]);
   }, [dreCodigo, obterUes]);
 
   useEffect(() => {
