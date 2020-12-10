@@ -1,5 +1,6 @@
 import * as moment from 'moment';
 import React, { useCallback, useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import {
   CampoData,
   CheckboxComponent,
@@ -13,17 +14,19 @@ import Button from '~/componentes/button';
 import Card from '~/componentes/card';
 import { Colors } from '~/componentes/colors';
 import { ModalidadeDTO } from '~/dtos';
-import modalidade from '~/dtos/modalidade';
 import AbrangenciaServico from '~/servicos/Abrangencia';
 import { erros, sucesso } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import history from '~/servicos/history';
 import ServicoFiltroRelatorio from '~/servicos/Paginas/FiltroRelatorio/ServicoFiltroRelatorio';
 import ServicoDashboardEscolaAqui from '~/servicos/Paginas/Relatorios/EscolaAqui/DashboardEscolaAqui/ServicoDashboardEscolaAqui';
-import ServicoHistoricoAlteracoesNotas from '~/servicos/Paginas/Relatorios/Fechamento/HistoricoAlteracoesNotas/ServicoHistoricoAlteracoesNotas';
+import ServicoRelatorioLeitura from '~/servicos/Paginas/Relatorios/EscolaAqui/Leitura/ServicoRelatorioLeitura';
 import FiltroHelper from '~componentes-sgp/filtro/helper';
 
 const RelatorioLeitura = () => {
+  const usuario = useSelector(store => store.usuario);
+  const { possuiPerfilSme, possuiPerfilDre } = usuario;
+
   const [exibirLoader, setExibirLoader] = useState(false);
 
   const [listaAnosLetivo, setListaAnosLetivo] = useState([]);
@@ -57,10 +60,9 @@ const RelatorioLeitura = () => {
   );
 
   const [consideraHistorico, setConsideraHistorico] = useState(false);
+  const [desabilitarGerar, setDesabilitarGerar] = useState(true);
 
   const OPCAO_TODOS = '-99';
-
-  const desabilitarGerar = !anoLetivo || !codigoDre || !codigoUe;
 
   const opcoesRadioSimNao = [
     { label: 'Não', value: false },
@@ -122,6 +124,10 @@ const RelatorioLeitura = () => {
           abrev: item.abreviacao,
         }));
 
+        if (possuiPerfilSme) {
+          lista.unshift({ valor: OPCAO_TODOS, desc: 'Enviado para todas' });
+        }
+
         setListaDres(lista);
 
         if (lista && lista.length && lista.length === 1) {
@@ -132,11 +138,65 @@ const RelatorioLeitura = () => {
         setCodigoDre(undefined);
       }
     }
-  }, [anoLetivo, consideraHistorico]);
+  }, [anoLetivo, consideraHistorico, possuiPerfilSme]);
 
   useEffect(() => {
     obterDres();
   }, [obterDres, anoLetivo, consideraHistorico]);
+
+  useEffect(() => {
+    if (codigoDre === OPCAO_TODOS) {
+      setCodigoUe(OPCAO_TODOS);
+    }
+  }, [codigoDre]);
+
+  useEffect(() => {
+    let desabilitar = !anoLetivo || !codigoDre || !codigoUe;
+
+    const temDreUeSelecionada =
+      codigoDre &&
+      codigoUe &&
+      codigoDre !== OPCAO_TODOS &&
+      codigoUe !== OPCAO_TODOS;
+
+    if (!desabilitar && temDreUeSelecionada && !modalidadeId) {
+      desabilitar = true;
+    }
+
+    if (
+      !desabilitar &&
+      temDreUeSelecionada &&
+      modalidadeId &&
+      modalidadeId === ModalidadeDTO.EJA &&
+      !semestre
+    ) {
+      desabilitar = true;
+    }
+
+    if (
+      !desabilitar &&
+      codigoDre &&
+      codigoUe &&
+      codigoDre !== OPCAO_TODOS &&
+      codigoUe !== OPCAO_TODOS &&
+      !turmaId
+    ) {
+      desabilitar = true;
+    }
+
+    setDesabilitarGerar(desabilitar);
+  }, [anoLetivo, codigoDre, codigoUe, turmaId, modalidadeId, semestre]);
+
+  useEffect(() => {
+    if (
+      codigoDre &&
+      codigoUe &&
+      codigoDre === OPCAO_TODOS &&
+      codigoUe === OPCAO_TODOS
+    ) {
+      setListarResponsaveisEstudantes(false);
+    }
+  }, [codigoDre, codigoUe]);
 
   useEffect(() => {
     setAnoLetivo(anoAtual);
@@ -144,6 +204,11 @@ const RelatorioLeitura = () => {
 
   const obterUes = useCallback(async () => {
     if (codigoDre) {
+      if (codigoDre === OPCAO_TODOS) {
+        setListaUes([{ valor: OPCAO_TODOS, desc: 'Enviado para todas' }]);
+        return;
+      }
+
       setExibirLoader(true);
       const resposta = await AbrangenciaServico.buscarUes(
         codigoDre,
@@ -159,6 +224,10 @@ const RelatorioLeitura = () => {
           valor: String(item.codigo),
         }));
 
+        if (possuiPerfilSme || possuiPerfilDre) {
+          lista.unshift({ valor: OPCAO_TODOS, desc: 'Enviado para todas' });
+        }
+
         if (lista && lista.length && lista.length === 1) {
           setCodigoUe(lista[0].valor);
         }
@@ -168,7 +237,13 @@ const RelatorioLeitura = () => {
         setListaUes([]);
       }
     }
-  }, [consideraHistorico, anoLetivo, codigoDre]);
+  }, [
+    consideraHistorico,
+    anoLetivo,
+    codigoDre,
+    possuiPerfilDre,
+    possuiPerfilSme,
+  ]);
 
   useEffect(() => {
     if (codigoDre) {
@@ -344,7 +419,7 @@ const RelatorioLeitura = () => {
     if (
       modalidadeId &&
       anoLetivo &&
-      String(modalidadeId) === String(modalidade.EJA)
+      String(modalidadeId) === String(ModalidadeDTO.EJA)
     ) {
       obterSemestres(modalidadeId, anoLetivo);
     } else {
@@ -392,18 +467,42 @@ const RelatorioLeitura = () => {
     await setAnoLetivo(anoAtual);
   };
 
+  const obterCominicadoId = useCallback(
+    descricaoComunicado => {
+      let comunicadoId = '';
+      if (descricaoComunicado) {
+        const comunicadoAtual = listaComunicado.find(
+          item => item.descricao === descricaoComunicado
+        );
+        if (comunicadoAtual?.id) {
+          comunicadoId = comunicadoAtual.id;
+        }
+      }
+
+      return comunicadoId;
+    },
+    [listaComunicado]
+  );
+
   const gerar = async () => {
     const params = {
       codigoDre,
       codigoUe,
       anoLetivo,
-      modalidadeId,
+      modalidadeTurma: modalidadeId,
       semestre,
-      turmaId,
+      ano: anoLetivo,
+      turma: turmaId,
+      grupos,
+      dataInicio,
+      dataFim,
+      notificacaoId: obterCominicadoId(comunicado),
+      listarResponsaveisEstudantes,
+      listarComunicadosExpirados,
     };
 
     setExibirLoader(true);
-    const retorno = await ServicoHistoricoAlteracoesNotas.gerar(params)
+    const retorno = await ServicoRelatorioLeitura.gerar(params)
       .catch(e => erros(e))
       .finally(setExibirLoader(false));
     if (retorno && retorno.status === 200) {
@@ -551,10 +650,7 @@ const RelatorioLeitura = () => {
                 bold
                 className="mr-0"
                 onClick={gerar}
-                disabled={
-                  desabilitarGerar ||
-                  String(modalidadeId) === String(modalidade.INFANTIL)
-                }
+                disabled={desabilitarGerar}
               />
             </div>
           </div>
@@ -649,7 +745,7 @@ const RelatorioLeitura = () => {
                 disabled={
                   !modalidadeId ||
                   listaSemestres?.length === 1 ||
-                  String(modalidadeId) !== String(modalidade.EJA)
+                  String(modalidadeId) !== String(ModalidadeDTO.EJA)
                 }
                 valueSelect={semestre}
                 onChange={onChangeSemestre}
@@ -734,6 +830,9 @@ const RelatorioLeitura = () => {
                   setListarResponsaveisEstudantes(e.target.value);
                 }}
                 value={listarResponsaveisEstudantes}
+                desabilitado={
+                  codigoDre === OPCAO_TODOS && codigoUe === OPCAO_TODOS
+                }
               />
             </div>
             <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 mb-2">

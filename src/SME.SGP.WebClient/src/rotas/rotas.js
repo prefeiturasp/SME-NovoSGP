@@ -1066,7 +1066,7 @@ rotas.set(RotasDto.RELATORIO_LEITURA, {
   component: RelatorioLeitura,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  temPermissionamento: false,
+  temPermissionamento: true,
   chavePermissao: RotasDto.RELATORIO_LEITURA,
 });
 
