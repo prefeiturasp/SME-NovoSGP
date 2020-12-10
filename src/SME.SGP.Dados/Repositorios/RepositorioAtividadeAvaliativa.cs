@@ -493,11 +493,25 @@ namespace SME.SGP.Dados.Repositorios
    		                        select 1 
 		                        from atividade_avaliativa aa
 	                           inner join atividade_avaliativa_disciplina ad on ad.atividade_avaliativa_id = aa.id
-	                           where aa.turma_id = a.turma_id
+	                           where not aa.excluido
+                                 and aa.turma_id = a.turma_id
 	                             and ad.disciplina_id = a.disciplina_id
 	                             and aa.data_avaliacao between @dataInicio and @dataFim)";
 
             return await database.Conexao.QueryAsync<TurmaEComponenteDto>(query, new { ueId, tipoCalendarioId, dataInicio, dataFim });
+        }
+
+        public async Task<IEnumerable<AvaliacoesPorTurmaComponenteDto>> ObterAvaliacoesTurmaComponentePorUeNoPeriodo(long ueId, DateTime dataInicio, DateTime dataFim)
+        {
+            var query = @"select t.id as TurmaId, ad.disciplina_id as DisciplinaId, count(distinct aa.id) QuantidadeAvaliacoes
+                            from turma t 
+                           inner join atividade_avaliativa aa on aa.turma_id = t.turma_id
+                           inner join atividade_avaliativa_disciplina ad on ad.atividade_avaliativa_id = aa.id
+                           where t.ue_id = @ueId
+                             and aa.data_avaliacao between @dataInicio and @dataFim
+                          group by t.id , ad.disciplina_id";
+
+            return await database.Conexao.QueryAsync<AvaliacoesPorTurmaComponenteDto>(query, new { ueId, dataInicio, dataFim });
         }
     }
 }

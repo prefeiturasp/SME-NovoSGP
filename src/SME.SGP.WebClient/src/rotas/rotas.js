@@ -76,6 +76,7 @@ import DocumentosPlanosTrabalhoLista from '~/paginas/Gestao/DocumentosPlanosTrab
 import DocumentosPlanosTrabalhoCadastro from '~/paginas/Gestao/DocumentosPlanosTrabalho/documentosPlanosTrabalhoCadastro';
 import HistoricoNotificacoes from '~/paginas/Relatorios/Notificacoes/HistoricoNotificacoes/historicoNotificacoes';
 import RelatorioUsuarios from '~/paginas/Relatorios/Gestao/Usuarios/relatorioUsuarios';
+import AtribuicaoCJ from '~/paginas/Relatorios/Gestao/AtribuicaoCJ/atribuicaoCJ';
 import RelatorioHistoricoAlteracoesNotas from '~/paginas/Relatorios/Fechamento/HistoricoAlteracoesNotas/relatorioHistoricoAlteracoesNotas';
 import relatorioEscolaAquiAdesao from '~/paginas/Relatorios/EscolaAqui/Adesao/relatorioEscolaAquiAdesao';
 
@@ -1046,6 +1047,17 @@ rotas.set(RotasDto.RELATORIO_USUARIOS, {
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: true,
   chavePermissao: RotasDto.RELATORIO_USUARIOS,
+});
+
+rotas.set(RotasDto.RELATORIO_ATRIBUICAO_CJ, {
+  breadcrumbName: 'Atribuições',
+  menu: ['Relatórios', 'Gestão'],
+  parent: '/',
+  component: AtribuicaoCJ,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+  chavePermissao: RotasDto.RELATORIO_ATRIBUICAO_CJ,
 });
 
 rotas.set(RotasDto.RELATORIO_ALTERACAO_NOTAS, {

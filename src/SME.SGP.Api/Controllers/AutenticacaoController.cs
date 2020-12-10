@@ -90,7 +90,7 @@ namespace SME.SGP.Api.Controllers
             var retornoAlteracao = await comandosUsuario.AlterarSenhaPrimeiroAcesso(primeiroAcessoDto);
 
             if (!retornoAlteracao.SenhaAlterada)
-                return StatusCode(retornoAlteracao.StatusRetorno, retornoAlteracao.Mensagem);
+                return BadRequest(retornoAlteracao.Mensagem);
 
             var retornoAutenticacao = await comandosUsuario.Autenticar(primeiroAcessoDto.Usuario, primeiroAcessoDto.NovaSenha);
 
