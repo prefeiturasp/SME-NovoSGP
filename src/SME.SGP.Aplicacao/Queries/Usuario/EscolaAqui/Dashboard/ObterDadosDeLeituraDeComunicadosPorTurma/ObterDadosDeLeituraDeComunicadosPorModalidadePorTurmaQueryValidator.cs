@@ -2,9 +2,9 @@
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterDadosDeLeituraDeComunicadosPorModalidadeQueryValidator : AbstractValidator<ObterDadosDeLeituraDeComunicadosPorModalidadeQuery>
+    public class ObterDadosDeLeituraDeComunicadosPorModalidadePorTurmaQueryValidator : AbstractValidator<ObterDadosDeLeituraDeComunicadosPorModalidadePorTurmaQuery>
     {
-        public ObterDadosDeLeituraDeComunicadosPorModalidadeQueryValidator()
+        public ObterDadosDeLeituraDeComunicadosPorModalidadePorTurmaQueryValidator()
         {
             RuleFor(x => x.CodigoDre)
                 .NotEmpty()
@@ -21,8 +21,6 @@ namespace SME.SGP.Aplicacao
             RuleFor(x => x.ModoVisualizacao)
                 .NotEmpty()
                 .WithMessage("O Modo de Visualização é obrigatório.");
-
-
         }
     }
 }
