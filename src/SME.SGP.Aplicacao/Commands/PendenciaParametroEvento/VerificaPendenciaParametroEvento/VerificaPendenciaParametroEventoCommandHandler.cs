@@ -50,7 +50,7 @@ namespace SME.SGP.Aplicacao
             {
                 try
                 {
-                    var pendenciaCalendarioUe = await mediator.Send(new ObterPendenciaCalendarioUeQuery(tipoCalendarioId, ue.Id, Dominio.TipoPendencia.CadastroEventoPendente));
+                    var pendenciaCalendarioUe = await ObterPendenciaCalendarioUe(tipoCalendarioId, ue.Id);
                     var pendenciasParametroEventoUe = await ObterPendenciasParametroEventoPorPendenciaId(pendenciaCalendarioUe?.PendenciaId);
 
                     var listaValidacoesEvento = new List<(bool gerarPedencia, long parametroSistemaId, int quantidadeEventos)>();
@@ -71,6 +71,14 @@ namespace SME.SGP.Aplicacao
                     SentrySdk.CaptureException(ex);
                 }
             }
+        }
+
+        private async Task<PendenciaCalendarioUe> ObterPendenciaCalendarioUe(long tipoCalendarioId, long ueId)
+        {
+            var pendenciasCalendario = await mediator.Send(new ObterPendenciasCalendarioUeQuery(tipoCalendarioId, ueId, TipoPendencia.CadastroEventoPendente));
+
+            return pendenciasCalendario != null & pendenciasCalendario.Any() ?
+                    pendenciasCalendario.First() : null;
         }
 
         private async Task<long> GerarPendenciaCalendarioUe(long tipoCalendarioId, Ue ue)

@@ -18,6 +18,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<int> Handle(ObterQuantidadeTurmasSeriadasNaUeQuery request, CancellationToken cancellationToken)
-            => await repositorioUe.ObterQuantidadeTurmasSeriadas(request.UeId);
+            => await repositorioUe.ObterQuantidadeTurmasSeriadas(request.UeId, request.Ano);
     }
 }
