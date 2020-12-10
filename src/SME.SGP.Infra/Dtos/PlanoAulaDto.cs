@@ -19,5 +19,7 @@ namespace SME.SGP.Infra
         public List<ObjetivoAprendizagemComponenteDto> ObjetivosAprendizagemComponente { get; set; }
 
         public long? ComponenteCurricularId { get; set; }
+
+        public bool ConsideraHistorico { get; set; }
     }
 }
