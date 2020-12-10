@@ -91,17 +91,19 @@ const ComponenteCurricularPlanoAnual = () => {
   };
 
   const onChangeComponenteCurricular = async valor => {
-    const aposValidarSalvar = () => {
-      dispatch(limparDadosPlanoAnual());
+    const aposValidarSalvar = () => {      
       if (valor) {
         const componente = listaComponenteCurricular.find(
           item => String(item.codigoComponenteCurricular) === valor
         );
         if(componente.territorioSaber)
           aviso('O plano anual do território do saber deve ser registrado na tela "Planejamento > Território do saber');
-        else        
+        else{
+          dispatch(limparDadosPlanoAnual());
           dispatch(setComponenteCurricularPlanoAnual(componente));
+        }          
       } else {
+        dispatch(limparDadosPlanoAnual());
         dispatch(setComponenteCurricularPlanoAnual(undefined));
       }
     };
