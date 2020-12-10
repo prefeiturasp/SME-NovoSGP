@@ -5,7 +5,7 @@ import {
   limparDadosPlanoAnual,
   setComponenteCurricularPlanoAnual,
 } from '~/redux/modulos/anual/actions';
-import { confirmar, erros } from '~/servicos/alertas';
+import { confirmar, erros, aviso } from '~/servicos/alertas';
 import ServicoDisciplinas from '~/servicos/Paginas/ServicoDisciplina';
 import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 import servicoSalvarPlanoAnual from '../../servicoSalvarPlanoAnual';
@@ -97,7 +97,10 @@ const ComponenteCurricularPlanoAnual = () => {
         const componente = listaComponenteCurricular.find(
           item => String(item.codigoComponenteCurricular) === valor
         );
-        dispatch(setComponenteCurricularPlanoAnual(componente));
+        if(componente.territorioSaber)
+          aviso('O plano anual do território do saber deve ser registrado na tela "Planejamento > Território do saber');
+        else        
+          dispatch(setComponenteCurricularPlanoAnual(componente));
       } else {
         dispatch(setComponenteCurricularPlanoAnual(undefined));
       }
