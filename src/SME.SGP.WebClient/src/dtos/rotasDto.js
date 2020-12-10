@@ -60,6 +60,7 @@ const RotasDto = {
   RELATORIO_USUARIOS: '/relatorios/gestao/usuarios',
   RELATORIO_ATRIBUICAO_CJ: '/relatorios/gestao/atribuicao-cj',
   RELATORIO_ALTERACAO_NOTAS: '/relatorios/fechamento/historico-alteracao-notas',
+  RELATORIO_ESCOLA_AQUI_ADESAO: '/relatorios/escola-aqui/adesao',
 };
 
 export default RotasDto;

@@ -98,5 +98,11 @@ namespace SME.SGP.Api.Controllers
                 throw new NegocioException("Não é possível gerar este relatório para a modalidade infantil.");
             return Ok(await relatorioUseCase.Executar(filtro));
         }
+        [HttpPost("ae/adesao")]
+        [ProducesResponseType(typeof(bool), 200)]
+        public async Task<IActionResult> AdesaoApp([FromBody] FiltroRelatorioAEAdesaoDto filtro, [FromServices] IRelatorioAEAdesaoUseCase relatorioUseCase)
+        {
+            return Ok(await relatorioUseCase.Executar(filtro));
+        }
     }
 }
