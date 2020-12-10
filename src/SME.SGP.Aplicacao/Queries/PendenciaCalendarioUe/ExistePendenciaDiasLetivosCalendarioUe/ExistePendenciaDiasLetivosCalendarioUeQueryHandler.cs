@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,8 +19,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(ExistePendenciaDiasLetivosCalendarioUeQuery request, CancellationToken cancellationToken)
         {
-            var pendenciaUe = await mediator.Send(new ObterPendenciaCalendarioUeQuery(request.TipoCalendarioId, request.UeId, Dominio.TipoPendencia.CalendarioLetivoInsuficiente));
-            return pendenciaUe != null;
+            var pendenciasUe = await mediator.Send(new ObterPendenciasCalendarioUeQuery(request.TipoCalendarioId, request.UeId, Dominio.TipoPendencia.CalendarioLetivoInsuficiente));
+            return pendenciasUe != null && pendenciasUe.Any();
         }
     }
 }
