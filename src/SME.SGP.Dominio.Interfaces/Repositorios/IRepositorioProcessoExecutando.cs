@@ -13,5 +13,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task RemoverIdsAsync(long[] ids);
         Task<ProcessoExecutando> ObterProcessoCalculoFrequencia(string turmaId, string disciplinaId, int bimestre);
         Task<bool> ObterAulaEmManutencaoAsync(long aulaId);
+        Task RemoverPorId(long id);
+        Task<bool> ProcessoEstaEmExecucao(TipoProcesso tipoProcesso);
     }
 }

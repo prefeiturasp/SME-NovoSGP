@@ -518,7 +518,7 @@ namespace SME.SGP.Dados.Repositorios
                 "left join fechamento_turma ft on ft.turma_id = t.id and ft.periodo_escolar_id = @periodoEscolarId" :
                 "left join fechamento_turma ft on ft.turma_id = t.id and ft.periodo_escolar_id is null";
 
-            var query = $@"select t.*
+            var query = $@"select distinct t.*
                           from turma t
                         inner join ue on ue.id = t.ue_id
                         inner join dre on dre.id = ue.dre_id
@@ -551,6 +551,24 @@ var query = @"select t.*
 
             return await contexto.Conexao.QueryAsync<Turma>(query, new { ueId, periodoEscolarId, modalidades });
 
+        }
+
+        public async Task<IEnumerable<Turma>> ObterTurmasPorUeModalidadesAno(long ueId, int[] modalidades, int ano)
+        {
+            var query = @"select turma.*, ue.*, dre.* 
+                         from turma
+                        inner join ue on ue.id = turma.ue_id
+                        inner join dre on dre.id = ue.dre_id
+                        where turma.ue_id = @ueId
+                          and turma.ano_letivo = @ano
+                          and turma.modalidade_codigo = any(@modalidades) ";
+
+            return await contexto.QueryAsync<Turma, Ue, Dre, Turma>(query, (turma, ue, dre) =>
+            {
+                ue.AdicionarDre(dre);
+                turma.AdicionarUe(ue);
+                return turma;
+            } , new { ueId, modalidades, ano });
         }
     }
 }
