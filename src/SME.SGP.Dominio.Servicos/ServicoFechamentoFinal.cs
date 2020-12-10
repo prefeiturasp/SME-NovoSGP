@@ -71,6 +71,11 @@ namespace SME.SGP.Dominio.Servicos
                                 fechamentoNota.FechamentoAlunoId = fechamentoAlunoId;
                                 await repositorioFechamentoNota.SalvarAsync(fechamentoNota);
                             }
+                            catch(NegocioException e)
+                            {
+                                servicoLog.Registrar(e);
+                                mensagens.Add(e.Message);
+                            }
                             catch (Exception e)
                             {
                                 servicoLog.Registrar(e);
