@@ -117,43 +117,15 @@ class ServicoDashboardEscolaAqui {
     notificacaoId,
     modoVisualizacao
   ) => {
-    // let url = `${urlPadrao}/comunicados/leitura/modalidades?notificacaoId=${notificacaoId}&modoVisualizacao=${modoVisualizacao}`;
-    // if (codigoDre) {
-    //   url += `&codigoDre=${codigoDre}`;
-    // }
+    let url = `${urlPadrao}/comunicados/leitura/modalidades?notificacaoId=${notificacaoId}&modoVisualizacao=${modoVisualizacao}`;
+    if (codigoDre) {
+      url += `&codigoDre=${codigoDre}`;
+    }
 
-    // if (codigoUe) {
-    //   url += `&codigoUe=${codigoUe}`;
-    // }
-    // return api.get(url);
-    console.log('Total de leituras por Modalidade');
-    console.log('Params:');
-    console.log('codigoDre: ' + codigoDre);
-    console.log('codigoUe: ' + codigoUe);
-    console.log('notificacaoId: ' + notificacaoId);
-    console.log('modoVisualizacao: ' + modoVisualizacao);
-    // TODO Remover mock!
-    const mock = [
-      {
-        modalidade: 'Fundamental',
-        naoReceberamComunicado: 50,
-        receberamENaoVisualizaram: 80,
-        visualizaramComunicado: 500,
-      },
-      {
-        modalidade: 'Médio',
-        naoReceberamComunicado: 100,
-        receberamENaoVisualizaram: 500,
-        visualizaramComunicado: 700,
-      },
-      {
-        modalidade: 'Eja',
-        naoReceberamComunicado: 10,
-        receberamENaoVisualizaram: 20,
-        visualizaramComunicado: 60,
-      },
-    ];
-    return new Promise(resolve => resolve({ data: mock, status: 200 }));
+    if (codigoUe) {
+      url += `&codigoUe=${codigoUe}`;
+    }
+    return api.get(url);
   };
 }
 

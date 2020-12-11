@@ -13,7 +13,7 @@ import ServicoFiltroRelatorio from '~/servicos/Paginas/FiltroRelatorio/ServicoFi
 import ServicoDashboardEscolaAqui from '~/servicos/Paginas/Relatorios/EscolaAqui/DashboardEscolaAqui/ServicoDashboardEscolaAqui';
 import {
   mapearParaDtoGraficoPizzaComValorEPercentual,
-  obterComunicadoId,
+  obterDadosComunicadoSelecionado,
 } from '../../dashboardEscolaAquiGraficosUtils';
 import DataUltimaAtualizacaoDashboardEscolaAqui from '../ComponentesDashboardEscolaAqui/dataUltimaAtualizacaoDashboardEscolaAqui';
 import GraficoPizzaDashboardEscolaAqui from '../ComponentesDashboardEscolaAqui/graficoPizzaDashboardEscolaAqui';
@@ -321,7 +321,7 @@ const DadosComunicadosLeitura = props => {
         if (resposta?.data?.length) {
           const lista = resposta.data.map(item => {
             return {
-              id: item.id,
+              ...item,
               descricao: `${item.titulo} - ${moment(item.dataEnvio).format(
                 'DD/MM/YYYY'
               )}`,
@@ -386,14 +386,17 @@ const DadosComunicadosLeitura = props => {
   };
 
   const obterDadosDeLeituraDeComunicados = useCallback(async () => {
-    const comunicadoId = obterComunicadoId(comunicado, listaComunicado);
-    if (comunicadoId) {
+    const dadosComunicado = obterDadosComunicadoSelecionado(
+      comunicado,
+      listaComunicado
+    );
+    if (dadosComunicado?.id) {
       setExibirLoader(true);
 
       const resposta = await ServicoDashboardEscolaAqui.obterDadosDeLeituraDeComunicados(
-        codigoDre === OPCAO_TODOS ? '' : codigoDre,
-        codigoUe === OPCAO_TODOS ? '' : codigoUe,
-        comunicadoId,
+        dadosComunicado.codigoDre || '',
+        dadosComunicado.codigoUe || '',
+        dadosComunicado.id,
         visualizacao
       )
         .catch(e => erros(e))
@@ -411,18 +414,10 @@ const DadosComunicadosLeitura = props => {
   }, [codigoDre, codigoUe, visualizacao, comunicado, listaComunicado]);
 
   useEffect(() => {
-    if (
-      visualizacao &&
-      comunicado &&
-      codigoDre &&
-      codigoUe &&
-      listaComunicado.length
-    ) {
+    if (visualizacao && comunicado && listaComunicado.length) {
       obterDadosDeLeituraDeComunicados();
     }
   }, [
-    codigoDre,
-    codigoUe,
     comunicado,
     visualizacao,
     listaComunicado,
@@ -630,8 +625,6 @@ const DadosComunicadosLeitura = props => {
         </div>
         {dadosDeLeituraDeComunicados?.length ? (
           <LeituraDeComunicadosAgrupadosPorDre
-            codigoDre={codigoDre}
-            codigoUe={codigoUe}
             chavesGrafico={chavesGrafico}
             modoVisualizacao={visualizacao}
             comunicado={comunicado}
@@ -642,8 +635,6 @@ const DadosComunicadosLeitura = props => {
         )}
         {dadosDeLeituraDeComunicados?.length ? (
           <LeituraDeComunicadosPorModalidades
-            codigoDre={codigoDre}
-            codigoUe={codigoUe}
             chavesGrafico={chavesGrafico}
             modoVisualizacao={visualizacao}
             comunicado={comunicado}
