@@ -1,5 +1,4 @@
-﻿using SME.SGP.Dominio;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace SME.SGP.Infra.Dtos.EscolaAqui.DadosDeLeituraDeComunicados
 {
@@ -7,11 +6,17 @@ namespace SME.SGP.Infra.Dtos.EscolaAqui.DadosDeLeituraDeComunicados
     {
         [Required(ErrorMessage = "O código da DRE deve ser informado.")]
         public string CodigoDre { get; set; }
+
         [Required(ErrorMessage = "O código da UE deve ser informado.")]
         public string CodigoUe { get; set; }
+
         [Required(ErrorMessage = "O comunicado deve ser informado.")]
         public long NotificacaoId { get; set; }
-        public Modalidade Modalidade { get; set; }
+
+        public short[] Modalidades { get; set; }
+
+        public long CodigoTurma { get; set; }
+
         [Required(ErrorMessage = "O modo de visualização deve ser informado.")]
         public int ModoVisualizacao { get; set; }
     }
