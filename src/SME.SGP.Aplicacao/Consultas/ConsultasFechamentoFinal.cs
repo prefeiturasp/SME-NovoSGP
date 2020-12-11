@@ -72,7 +72,8 @@ namespace SME.SGP.Aplicacao
             if (periodosEscolares == null || !periodosEscolares.Any())
                 throw new NegocioException("Não foi encontrado período Escolar para a modalidade informada.");
 
-            await VerificaSePodeFazerFechamentoFinal(periodosEscolares, turma);
+            if (turma.AnoLetivo != 2020)
+                await VerificaSePodeFazerFechamentoFinal(periodosEscolares, turma);
 
             var ultimoPeriodoEscolar = periodosEscolares.OrderByDescending(a => a.Bimestre).FirstOrDefault();
 
