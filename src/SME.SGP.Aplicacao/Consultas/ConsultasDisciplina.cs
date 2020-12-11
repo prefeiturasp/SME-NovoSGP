@@ -196,7 +196,7 @@ namespace SME.SGP.Aplicacao
             if (!usuario.EhProfessor() && !usuario.EhProfessorCj() && !usuario.EhProfessorPoa())
                 await repositorioCache.SalvarAsync(chaveCache, JsonConvert.SerializeObject(disciplinasDto));
 
-            return await TratarRetornoDisciplinasPlanejamento(disciplinasDto, codigoDisciplina, regencia);
+            return await TratarRetornoDisciplinasPlanejamento(disciplinasDto, codigoDisciplina, regencia, codigoTurma);
         }
 
         public async Task<IEnumerable<DisciplinaResposta>> ObterComponentesRegencia(Turma turma, long componenteCurricularCodigo)
