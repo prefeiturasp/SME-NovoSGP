@@ -18,7 +18,14 @@ namespace SME.SGP.Aplicacao.CasosDeUso.EscolaAqui.Dashboard.ObterDadosDeLeituraD
 
         public async Task<IEnumerable<DadosDeLeituraDoComunicadoPorModalidadeETurmaDto>> Executar(FiltroDadosDeLeituraDeComunicadosPorModalidadeDto filtroDadosDeLeituraDeComunicadosPorModalidadeDto)
         {
-            return await mediator.Send(new ObterDadosDeLeituraDeComunicadosPorModalidadePorTurmaQuery(filtroDadosDeLeituraDeComunicadosPorModalidadeDto.CodigoDre, filtroDadosDeLeituraDeComunicadosPorModalidadeDto.CodigoUe, filtroDadosDeLeituraDeComunicadosPorModalidadeDto.NotificacaoId, filtroDadosDeLeituraDeComunicadosPorModalidadeDto.ModoVisualizacao, filtroDadosDeLeituraDeComunicadosPorModalidadeDto.Modalidade));
+            return await mediator.Send(new ObterDadosDeLeituraDeComunicadosPorModalidadePorTurmaQuery(filtroDadosDeLeituraDeComunicadosPorModalidadeDto.CodigoDre,
+                                                                                                      filtroDadosDeLeituraDeComunicadosPorModalidadeDto.CodigoUe, 
+                                                                                                      filtroDadosDeLeituraDeComunicadosPorModalidadeDto.NotificacaoId, 
+                                                                                                      filtroDadosDeLeituraDeComunicadosPorModalidadeDto.Modalidades,
+                                                                                                      filtroDadosDeLeituraDeComunicadosPorModalidadeDto.CodigoTurma,
+                                                                                                      filtroDadosDeLeituraDeComunicadosPorModalidadeDto.ModoVisualizacao));
+
+
         }
     }
 }
