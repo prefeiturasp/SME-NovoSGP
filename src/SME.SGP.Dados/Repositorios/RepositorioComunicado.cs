@@ -370,11 +370,15 @@ namespace SME.SGP.Dados.Repositorios
             var comunicadoAlias = "cm";
             var comunicadoTumaAlias = "cmt";
             var turmaAlias = "tur";
+            var comunicadoGrupoAlias = "cmg";
 
             var sql = new StringBuilder($@"SELECT
                                             {comunicadoAlias}.id AS Id,
                                             {comunicadoAlias}.titulo AS Titulo,
-                                            {comunicadoAlias}.data_envio AS DataEnvio
+                                            {comunicadoAlias}.data_envio AS DataEnvio,
+                                            {comunicadoAlias}.codigo_dre AS CodigoDre,
+                                            {comunicadoAlias}.codigo_ue AS CodigoUe,
+                                            {comunicadoAlias}.modalidade AS Modalidade
                                         FROM comunicado {comunicadoAlias} ");
 
             if (!string.IsNullOrWhiteSpace(filtro.CodigoTurma))
@@ -383,7 +387,12 @@ namespace SME.SGP.Dados.Repositorios
                 sql.Append($@" INNER JOIN turma {turmaAlias} ON {comunicadoTumaAlias}.turma_codigo = {turmaAlias}.turma_id ");
             }
 
-            sql.Append(MontarCondicoesDaConsultaObterComunicadosParaFiltroDaDashboard(filtro, comunicadoAlias, comunicadoTumaAlias, turmaAlias));
+            if (filtro.GruposIds != null && filtro.GruposIds.Any())
+            {
+                sql.Append($@" INNER JOIN comunidado_grupo {comunicadoGrupoAlias} ON {comunicadoAlias}.id = {comunicadoGrupoAlias}.comunicado_id ");
+            }
+
+            sql.Append(MontarCondicoesDaConsultaObterComunicadosParaFiltroDaDashboard(filtro, comunicadoAlias, comunicadoTumaAlias, turmaAlias, comunicadoGrupoAlias));
 
             sql.Append($@" ORDER BY {comunicadoAlias}.titulo LIMIT 10");
 
@@ -405,7 +414,7 @@ namespace SME.SGP.Dados.Repositorios
         }
 
         private string MontarCondicoesDaConsultaObterComunicadosParaFiltroDaDashboard(FiltroObterComunicadosParaFiltroDaDashboardDto filtro, string comunicadoAlias,
-            string comunicadoTumaAlias, string turmaAlias)
+            string comunicadoTumaAlias, string turmaAlias, string comunicadoGrupoAlias)
         {
             var where = new StringBuilder($" WHERE {comunicadoAlias}.ano_letivo = @anoLetivo ");
             if (!string.IsNullOrWhiteSpace(filtro.CodigoDre))
@@ -415,7 +424,7 @@ namespace SME.SGP.Dados.Repositorios
                 where.Append($" AND {comunicadoAlias}.codigo_ue = @CodigoUe");
 
             if (filtro.GruposIds != null)
-                where.Append($" AND {comunicadoAlias}.grupo_comunicado_id = ANY(@GruposIds)");
+                where.Append($" AND {comunicadoGrupoAlias}.grupo_comunicado_id = ANY(@GruposIds)");
 
             if (filtro.Modalidade != null)
                 where.Append($" AND {comunicadoAlias}.modalidade = @Modalidade");
