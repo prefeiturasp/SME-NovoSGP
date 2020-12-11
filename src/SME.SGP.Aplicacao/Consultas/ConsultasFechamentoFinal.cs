@@ -242,32 +242,14 @@ namespace SME.SGP.Aplicacao
 
         private async Task<FechamentoFinalConsultaRetornoAlunoDto> TrataFrequenciaAluno(FechamentoFinalConsultaFiltroDto filtros, IEnumerable<PeriodoEscolar> periodosEscolares, AlunoPorTurmaResposta aluno, Turma turma)
         {
-            var frequenciaAluno = new FrequenciaAluno();
-            foreach (var periodoEscolar in periodosEscolares)
-            {
-                var frequenciaAlunoPeriodo = await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunoBimestreAsync(aluno.CodigoAluno,
-                                                                                                         periodoEscolar.Bimestre,
-                                                                                                         TipoFrequenciaAluno.PorDisciplina,
-                                                                                                         filtros.DisciplinaCodigo.ToString());
-                if (frequenciaAlunoPeriodo != null)
-                {
-                    frequenciaAluno.TotalAulas += frequenciaAlunoPeriodo.TotalAulas;
-                    frequenciaAluno.TotalAusencias += frequenciaAlunoPeriodo.TotalAusencias;
-                    frequenciaAluno.TotalCompensacoes += frequenciaAlunoPeriodo.TotalCompensacoes;
-                }
-                else
-                    // Se não tem ausencia não vai ter registro de frequencia então soma apenas aulas do bimestre
-                    frequenciaAluno.TotalAulas += await consultasAulaPrevista.ObterAulasDadas(turma,
-                                                                                              filtros.DisciplinaCodigo.ToString(),
-                                                                                              periodoEscolar.Bimestre);
-            }
+            var frequenciaAluno = await consultasFrequencia.ObterFrequenciaGeralAlunoPorTurmaEComponente(aluno.CodigoAluno, turma.CodigoTurma, filtros.DisciplinaCodigo.ToString());
 
             var fechamentoFinalAluno = new FechamentoFinalConsultaRetornoAlunoDto
             {
                 Nome = aluno.NomeAluno,
-                TotalAusenciasCompensadas = frequenciaAluno.TotalCompensacoes,
-                Frequencia = frequenciaAluno.PercentualFrequencia,
-                TotalFaltas = frequenciaAluno.TotalAusencias,
+                TotalAusenciasCompensadas = frequenciaAluno?.TotalCompensacoes ?? 0,
+                Frequencia = frequenciaAluno?.PercentualFrequencia ?? 100,
+                TotalFaltas = frequenciaAluno?.TotalAusencias ?? 0,
                 NumeroChamada = aluno.NumeroAlunoChamada
             };
             return fechamentoFinalAluno;
