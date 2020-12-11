@@ -428,45 +428,35 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("and ta.situacao = true");
             if (dataAvaliacao.HasValue)
                 query.AppendLine("and date(a.data_avaliacao) = @dataAvaliacao");
-
             if (!string.IsNullOrEmpty(dreId))
-                query.AppendLine($"and a.dre_id = {dreId}::varchar(20)");
-
+                query.AppendLine("and a.dre_id = @dreId");
             if (!string.IsNullOrEmpty(ueId))
-                query.AppendLine($"and a.ue_id = {ueId}::varchar(20)");
-
+                query.AppendLine("and a.ue_id = @ueId");
             if (!string.IsNullOrEmpty(nomeAvaliacao))
                 if (nomeExato)
                     query.AppendLine("and  lower(f_unaccent(a.nome_avaliacao)) = f_unaccent(@nomeAvaliacao)");
                 else
                     query.AppendLine("and  lower(f_unaccent(a.nome_avaliacao)) LIKE f_unaccent(@nomeAvaliacao)");
-
             if (!string.IsNullOrEmpty(turmaId))
-                query.AppendLine($"and a.turma_id = {turmaId}::varchar(20)");
-
+                query.AppendLine("and a.turma_id = @turmaId");
             if (tipoAvaliacaoId.HasValue)
                 query.AppendLine("and ta.id = @tipoAvaliacaoId");
-
             if (!string.IsNullOrEmpty(professorRf))
-                query.AppendLine($"and a.professor_rf = {professorRf}::varchar(20)");
-
+                query.AppendLine("and a.professor_rf = @professorRf");
             if (perioInicio.HasValue)
                 query.AppendLine("and date(a.data_avaliacao) >= @periodoInicio");
             if (periodoFim.HasValue)
                 query.AppendLine("and date(a.data_avaliacao) <= @periodoFim");
-
             if (disciplinasId != null && disciplinasId.Length > 0)
             {
                 query.AppendLine("and aad.disciplina_id =  ANY(@disciplinasId)");
                 query.AppendLine("and aad.excluido =  false");
             }
-
             if (!String.IsNullOrEmpty(disciplinaId))
             {
                 query.AppendLine("and aad.disciplina_id =  @disciplinaId");
                 query.AppendLine("and aad.excluido =  false");
             }
-
             if (ehRegencia.HasValue)
             {
                 if (ehRegencia.Value)
