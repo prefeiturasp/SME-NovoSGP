@@ -138,25 +138,28 @@ const mapearParaDtoDadosComunicadosGraficoBarras = (
   return null;
 };
 
-const obterComunicadoId = (descricaoComunicado, listaComunicado) => {
-  let comunicadoId = '';
+const obterDadosComunicadoSelecionado = (
+  descricaoComunicado,
+  listaComunicado
+) => {
+  let comunicado = null;
   if (descricaoComunicado) {
     const comunicadoAtual = listaComunicado.find(
       item => item.descricao === descricaoComunicado
     );
     if (comunicadoAtual?.id) {
-      comunicadoId = comunicadoAtual.id;
+      comunicado = comunicadoAtual;
     }
   }
 
-  return comunicadoId;
+  return comunicado;
 };
 
 export {
   formataMilhar,
-  obterComunicadoId,
   adicionarCoresNosGraficos,
+  obterDadosComunicadoSelecionado,
   tooltipCustomizadoDashboardEscolaAqui,
-  mapearParaDtoGraficoPizzaComValorEPercentual,
   mapearParaDtoDadosComunicadosGraficoBarras,
+  mapearParaDtoGraficoPizzaComValorEPercentual,
 };

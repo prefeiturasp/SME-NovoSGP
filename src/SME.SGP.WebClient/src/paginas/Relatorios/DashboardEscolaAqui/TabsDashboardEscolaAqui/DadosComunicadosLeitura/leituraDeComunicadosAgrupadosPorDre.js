@@ -5,14 +5,12 @@ import { erros } from '~/servicos';
 import ServicoDashboardEscolaAqui from '~/servicos/Paginas/Relatorios/EscolaAqui/DashboardEscolaAqui/ServicoDashboardEscolaAqui';
 import {
   mapearParaDtoDadosComunicadosGraficoBarras,
-  obterComunicadoId,
+  obterDadosComunicadoSelecionado,
 } from '../../dashboardEscolaAquiGraficosUtils';
 import GraficoBarraDashboardEscolaAqui from '../ComponentesDashboardEscolaAqui/graficoBarraDashboardEscolaAqui';
 
 const LeituraDeComunicadosAgrupadosPorDre = props => {
   const {
-    codigoDre,
-    codigoUe,
     chavesGrafico,
     modoVisualizacao,
     comunicado,
@@ -28,52 +26,58 @@ const LeituraDeComunicadosAgrupadosPorDre = props => {
 
   const [dadosLegendaGrafico, setDadosLegendaGrafico] = useState([]);
 
-  const OPCAO_TODOS = '-99';
+  const obterDadosDeLeituraDeComunicadosAgrupadosPorDre = useCallback(
+    async dadosComunicado => {
+      if (dadosComunicado?.id) {
+        setExibirLoader(true);
+        const resposta = await ServicoDashboardEscolaAqui.obterDadosDeLeituraDeComunicadosAgrupadosPorDre(
+          dadosComunicado.id,
+          modoVisualizacao
+        )
+          .catch(e => erros(e))
+          .finally(() => setExibirLoader(false));
 
-  const obterDadosDeLeituraDeComunicadosAgrupadosPorDre = useCallback(async () => {
-    const comunicadoId = obterComunicadoId(comunicado, listaComunicado);
-
-    if (comunicadoId) {
-      setExibirLoader(true);
-      const resposta = await ServicoDashboardEscolaAqui.obterDadosDeLeituraDeComunicadosAgrupadosPorDre(
-        comunicadoId,
-        modoVisualizacao
-      )
-        .catch(e => erros(e))
-        .finally(() => setExibirLoader(false));
-
-      if (resposta?.data?.length) {
-        const retornoDados = mapearParaDtoDadosComunicadosGraficoBarras(
-          resposta.data,
-          'nomeAbreviadoDre',
-          chavesGrafico
-        );
-        if (retornoDados?.dadosLegendaGrafico?.length) {
-          setDadosLegendaGrafico(retornoDados.dadosLegendaGrafico);
-        }
-        if (retornoDados?.dadosComunicadosGraficoBarras?.length) {
-          setDadosDeLeituraDeComunicadosAgrupadosPorDre(
-            retornoDados.dadosComunicadosGraficoBarras
+        if (resposta?.data?.length) {
+          const retornoDados = mapearParaDtoDadosComunicadosGraficoBarras(
+            resposta.data,
+            'nomeAbreviadoDre',
+            chavesGrafico
           );
+          if (retornoDados?.dadosLegendaGrafico?.length) {
+            setDadosLegendaGrafico(retornoDados.dadosLegendaGrafico);
+          }
+          if (retornoDados?.dadosComunicadosGraficoBarras?.length) {
+            setDadosDeLeituraDeComunicadosAgrupadosPorDre(
+              retornoDados.dadosComunicadosGraficoBarras
+            );
+          }
+        } else {
+          setDadosDeLeituraDeComunicadosAgrupadosPorDre([]);
         }
+      }
+    },
+    [modoVisualizacao, chavesGrafico]
+  );
+
+  useEffect(() => {
+    if (comunicado && listaComunicado?.length) {
+      const dadosComunicado = obterDadosComunicadoSelecionado(
+        comunicado,
+        listaComunicado
+      );
+      if (
+        dadosComunicado?.id &&
+        !dadosComunicado.codigoDre &&
+        !dadosComunicado.codigoUe
+      ) {
+        obterDadosDeLeituraDeComunicadosAgrupadosPorDre(dadosComunicado);
       } else {
         setDadosDeLeituraDeComunicadosAgrupadosPorDre([]);
       }
-    }
-  }, [modoVisualizacao, comunicado, chavesGrafico, listaComunicado]);
-
-  useEffect(() => {
-    if (
-      comunicado &&
-      codigoDre === OPCAO_TODOS &&
-      codigoUe === OPCAO_TODOS &&
-      listaComunicado?.length
-    ) {
-      obterDadosDeLeituraDeComunicadosAgrupadosPorDre();
     } else {
       setDadosDeLeituraDeComunicadosAgrupadosPorDre([]);
     }
-  }, [codigoDre, codigoUe, comunicado, listaComunicado]);
+  }, [comunicado, listaComunicado]);
 
   return (
     <div className="col-md-12">
@@ -108,8 +112,6 @@ const LeituraDeComunicadosAgrupadosPorDre = props => {
 };
 
 LeituraDeComunicadosAgrupadosPorDre.propTypes = {
-  codigoDre: PropTypes.oneOfType([PropTypes.string]),
-  codigoUe: PropTypes.oneOfType([PropTypes.string]),
   modoVisualizacao: PropTypes.oneOfType([PropTypes.string]),
   chavesGrafico: PropTypes.oneOfType([PropTypes.array]),
   comunicado: PropTypes.oneOfType([PropTypes.string]),
@@ -117,8 +119,6 @@ LeituraDeComunicadosAgrupadosPorDre.propTypes = {
 };
 
 LeituraDeComunicadosAgrupadosPorDre.defaultProps = {
-  codigoDre: '',
-  codigoUe: '',
   modoVisualizacao: '',
   chavesGrafico: [],
   comunicado: '',
