@@ -4,6 +4,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra.Dtos.EscolaAqui.DadosDeLeituraDeComunicados;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -35,8 +36,11 @@ namespace SME.SGP.Aplicacao
             url.Append(@"&codigoUe=" + request.CodigoUe);
             url.Append(@"&notificacaoId=" + request.ComunicadoId);
             url.Append(@"&modoVisualizacao=" + request.ModoVisualizacao);
-            url.Append(@"&modalidade=" + (int)request.Modalidade);
-
+            url.Append(@"&codigoTurma=" + request.CodigoTurma);
+            foreach (var item in request.Modalidades)
+            {
+                url.Append(@"&modalidades=" + item);
+            }
 
             var resposta = await httpClient.GetAsync($"{url}", cancellationToken);
             if (!resposta.IsSuccessStatusCode || resposta.StatusCode == HttpStatusCode.NoContent)
