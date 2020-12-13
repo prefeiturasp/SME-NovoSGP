@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<long> Handle(SalvarHistoricoConceitoFechamentoCommand request, CancellationToken cancellationToken)
         {
-            var historicoNotaId = await mediator.Send(new SalvarHistoricoConceitoCommand(request.ConceitoAnteriorId, request.ConceitoNovoId));
+            var historicoNotaId = await mediator.Send(new SalvarHistoricoConceitoCommand(request.ConceitoAnteriorId, request.ConceitoNovoId, request.CriadoRF, request.CriadoPor));
 
             var historicoNotaFechamento = MapearParaEntidade(request, historicoNotaId);
 
