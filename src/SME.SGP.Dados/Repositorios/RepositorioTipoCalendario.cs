@@ -4,6 +4,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -18,13 +19,18 @@ namespace SME.SGP.Dados.Repositorios
         {
             StringBuilder query = new StringBuilder();
 
-            query.AppendLine("select pe.* from periodo_escolar pe");
+            query.AppendLine("select pe.*, tc.* from periodo_escolar pe");
             query.AppendLine("inner join tipo_calendario tc");
             query.AppendLine("on tc.id = pe.tipo_calendario_id");
             query.AppendLine("where tc.id = @tipoCalendarioId");
             query.AppendLine("and @dataParaVerificar between symmetric pe.periodo_inicio::date and pe.periodo_fim ::date");
             
-            return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoEscolar>(query.ToString(), new { tipoCalendarioId, dataParaVerificar });
+            return (await database.Conexao.QueryAsync<PeriodoEscolar, TipoCalendario, PeriodoEscolar>(query.ToString(), (pe, tc) => 
+            {
+                pe.AdicionarTipoCalendario(tc);
+                return pe;
+
+            }, new { tipoCalendarioId, dataParaVerificar }, splitOn: "id" )).FirstOrDefault();
         }
         public async Task<IEnumerable<TipoCalendario>> BuscarPorAnoLetivo(int anoLetivo)
         {
