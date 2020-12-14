@@ -30,7 +30,8 @@ const Auditoria = ({
             ignorarMarginTop ? '' : 'mt-2'
           }`}
         >
-          INSERIDO por {criadoPor} {criadoRf && `(${criadoRf})`} em{' '}
+          INSERIDO por {criadoPor}{' '}
+          {criadoRf && criadoRf !== '0' && `(${criadoRf})`} em{' '}
           {`${criado.format('DD/MM/YYYY')} às ${criado.format('HH:mm')}`}
         </div>
       ) : (
@@ -38,7 +39,8 @@ const Auditoria = ({
       )}
       {alteradoPor ? (
         <div className="col-xs-12 col-md-12 col-lg-12 d-flex justify-content-start mt-2">
-          ALTERADO por {alteradoPor} {alteradoRf && `(${alteradoRf})`} em{' '}
+          ALTERADO por {alteradoPor}{' '}
+          {alteradoRf && alteradoRf !== '0' && `(${alteradoRf})`} em{' '}
           {`${alterado.format('DD/MM/YYYY')}  às ${alterado.format('HH:mm')}`}
         </div>
       ) : (
