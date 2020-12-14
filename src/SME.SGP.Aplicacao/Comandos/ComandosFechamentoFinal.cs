@@ -50,7 +50,7 @@ namespace SME.SGP.Aplicacao
 
             var fechamentoTurmaDisciplina = await TransformarDtoSalvarEmEntidade(fechamentoFinalSalvarDto, turma);
             
-            var mensagensDeErro = await servicoFechamentoFinal.SalvarAsync(fechamentoTurmaDisciplina);
+            var mensagensDeErro = await servicoFechamentoFinal.SalvarAsync(fechamentoTurmaDisciplina, turma);
 
             return mensagensDeErro.ToArray();
         }
