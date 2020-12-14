@@ -1,4 +1,3 @@
-CREATE EXTENSION unaccent;
 CREATE OR REPLACE FUNCTION f_unaccent(text)
   RETURNS text AS
 $func$
