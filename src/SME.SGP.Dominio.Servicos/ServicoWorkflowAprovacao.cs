@@ -155,22 +155,22 @@ namespace SME.SGP.Dominio.Servicos
                     AprovarUltimoNivelDeEventoFechamentoReabertura(codigoDaNotificacao, workflow.Id, nivel.Id);
                 }
                 else if (workflow.Tipo == WorkflowAprovacaoTipo.AlteracaoNotaFechamento)
-                    await AprovarAlteracaoNotaFechamento(codigoDaNotificacao, workflow.Id, workflow.TurmaId);
+                    await AprovarAlteracaoNotaFechamento(codigoDaNotificacao, workflow.Id, workflow.TurmaId, workflow.CriadoRF, workflow.CriadoPor);
             }
         }
 
-        private async Task AprovarAlteracaoNotaFechamento(long codigoDaNotificacao, long workFlowId, string turmaCodigo)
+        private async Task AprovarAlteracaoNotaFechamento(long codigoDaNotificacao, long workFlowId, string turmaCodigo, string criadoRF, string criadoPor)
         {
             var notasEmAprovacao = ObterNotasEmAprovacao(workFlowId);
             if (notasEmAprovacao != null && notasEmAprovacao.Any())
             {
-                await AtualizarNotasFechamento(notasEmAprovacao);
+                await AtualizarNotasFechamento(notasEmAprovacao, criadoRF, criadoPor);
 
                 await NotificarAprovacaoNotasFechamento(notasEmAprovacao, codigoDaNotificacao, turmaCodigo);
             }
         }
 
-        private async Task AtualizarNotasFechamento(IEnumerable<WfAprovacaoNotaFechamento> notasEmAprovacao)
+        private async Task AtualizarNotasFechamento(IEnumerable<WfAprovacaoNotaFechamento> notasEmAprovacao, string criadoRF, string criadoPor)
         {
             var fechamentoTurmaDisciplinaId = notasEmAprovacao.First().FechamentoNota.FechamentoAluno.FechamentoTurmaDisciplinaId;
 
@@ -184,14 +184,14 @@ namespace SME.SGP.Dominio.Servicos
                     if (notaEmAprovacao.Nota.HasValue)
                     {
                         if (notaEmAprovacao.Nota != fechamentoNota.Nota)
-                            await mediator.Send(new SalvarHistoricoNotaFechamentoCommand(notaEmAprovacao.Nota.Value, fechamentoNota.Nota.Value, notaEmAprovacao.FechamentoNotaId));
+                            await mediator.Send(new SalvarHistoricoNotaFechamentoCommand(notaEmAprovacao.Nota.Value, fechamentoNota.Nota.Value, notaEmAprovacao.FechamentoNotaId, criadoRF, criadoPor));
 
                         fechamentoNota.Nota = notaEmAprovacao.Nota;
                     }
                     else
                     {
                         if (notaEmAprovacao.ConceitoId != fechamentoNota.ConceitoId)
-                            await mediator.Send(new SalvarHistoricoConceitoFechamentoCommand(notaEmAprovacao.ConceitoId.Value, fechamentoNota.ConceitoId.Value, notaEmAprovacao.FechamentoNotaId));
+                            await mediator.Send(new SalvarHistoricoConceitoFechamentoCommand(notaEmAprovacao.ConceitoId.Value, fechamentoNota.ConceitoId.Value, notaEmAprovacao.FechamentoNotaId, criadoRF, criadoPor));
 
                         fechamentoNota.ConceitoId = notaEmAprovacao.ConceitoId;
                     }
