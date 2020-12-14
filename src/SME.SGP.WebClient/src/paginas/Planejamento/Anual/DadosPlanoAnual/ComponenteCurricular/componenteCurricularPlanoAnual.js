@@ -36,6 +36,8 @@ const ComponenteCurricularPlanoAnual = () => {
     undefined
   );
 
+  const avisoPlanoTerritorio = 'O plano anual do território do saber deve ser registrado na tela "Planejamento > Território do saber';
+
   const obterListaComponenteCurricular = useCallback(async () => {
     setCarregandoComponentes(true);
     const resposta = await ServicoDisciplinas.obterDisciplinasPorTurma(
@@ -47,8 +49,13 @@ const ComponenteCurricularPlanoAnual = () => {
     if (resposta && resposta.data) {
       setListaComponenteCurricular(resposta.data);
       if (resposta.data.length === 1) {
-        const componente = resposta.data[0];
-        dispatch(setComponenteCurricularPlanoAnual(componente));
+        const componente = resposta.data[0];        
+        if(componente.territorioSaber){
+          dispatch(limparDadosPlanoAnual());
+          dispatch(setComponenteCurricularPlanoAnual(undefined));
+          aviso(avisoPlanoTerritorio);
+        }else
+          dispatch(setComponenteCurricularPlanoAnual(componente));
       }
     } else {
       setListaComponenteCurricular([]);
@@ -97,7 +104,7 @@ const ComponenteCurricularPlanoAnual = () => {
           item => String(item.codigoComponenteCurricular) === valor
         );
         if(componente.territorioSaber)
-          aviso('O plano anual do território do saber deve ser registrado na tela "Planejamento > Território do saber');
+          aviso(avisoPlanoTerritorio);
         else{
           dispatch(limparDadosPlanoAnual());
           dispatch(setComponenteCurricularPlanoAnual(componente));
