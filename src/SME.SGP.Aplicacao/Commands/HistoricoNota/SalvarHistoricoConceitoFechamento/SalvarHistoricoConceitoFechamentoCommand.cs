@@ -5,7 +5,7 @@ namespace SME.SGP.Aplicacao
 {
     public class SalvarHistoricoConceitoFechamentoCommand : IRequest<long>
     {
-        public SalvarHistoricoConceitoFechamentoCommand(long conceitoAnteriorId, long conceitoNovoId, long fechamentoNotaId)
+        public SalvarHistoricoConceitoFechamentoCommand(long conceitoAnteriorId, long conceitoNovoId, long fechamentoNotaId, string criadoRF = "", string criadoPor = "")
         {
             ConceitoAnteriorId = conceitoAnteriorId;
             ConceitoNovoId = conceitoNovoId;
@@ -15,6 +15,8 @@ namespace SME.SGP.Aplicacao
         public long ConceitoAnteriorId { get; set; }
         public long ConceitoNovoId { get; set; }
         public long FechamentoNotaId { get; set; }
+        public string CriadoRF { get; set; }
+        public string CriadoPor { get; set; }
     }
 
     public class SalvarHistoricoConceitoFechamentoCommandValidator : AbstractValidator<SalvarHistoricoConceitoFechamentoCommand>
@@ -31,7 +33,7 @@ namespace SME.SGP.Aplicacao
 
             RuleFor(a => a.FechamentoNotaId)
             .NotEmpty()
-            .WithMessage("O id da nota do fechamento deve ser informada!");
+            .WithMessage("O id da nota do fechamento deve ser informada para geração do histórico!");
         }
     }
 }
