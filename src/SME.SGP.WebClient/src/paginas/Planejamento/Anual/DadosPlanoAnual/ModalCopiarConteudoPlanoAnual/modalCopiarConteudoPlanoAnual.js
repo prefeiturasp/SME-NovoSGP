@@ -2,7 +2,7 @@ import { Form, Formik } from 'formik';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import * as Yup from 'yup';
-import { ModalConteudoHtml, SelectComponent } from '~/componentes';
+import { ModalConteudoHtml, SelectComponent, Loader } from '~/componentes';
 import { setExibirModalCopiarConteudo } from '~/redux/modulos/anual/actions';
 import { erros, sucesso } from '~/servicos';
 import ServicoPlanoAnual from '~/servicos/Paginas/ServicoPlanoAnual';
@@ -36,12 +36,19 @@ const ModalCopiarConteudoPlanoAnual = () => {
     ServicoPlanoAnual.obterPeriodosEscolaresParaCopia(planejamentoAnualId)
       .then(resposta => {
         if (resposta && resposta.data && resposta.data.length) {
-          const lista = resposta.data.map(item => {
-            return {
-              valor: item.id,
-              nome: `${item.bimestre}º Bimestre`,
-            };
-          });
+          const lista = resposta.data
+            .sort((a, b) => {
+              if (a.bimestre > b.bimestre) {
+                return 1;
+              }
+              return -1;
+            })
+            .map(item => {
+              return {
+                valor: item.id,
+                nome: `${item.bimestre}º Bimestre`,
+              };
+            });
 
           if (lista.length > 1) {
             lista.unshift({ nome: 'Todos', valor: '0' });
@@ -94,7 +101,7 @@ const ModalCopiarConteudoPlanoAnual = () => {
     ServicoPlanoAnual.copiarConteudo(params)
       .then(() => {
         sucesso('Cópia do planejamento anual realizada com sucesso.');
-        resetarDadosModal(form);
+        fecharCopiarConteudo(form);
       })
       .catch(e => erros(e))
       .finally(() => {
@@ -167,9 +174,10 @@ const ModalCopiarConteudoPlanoAnual = () => {
             titulo="Copiar Conteúdo"
             closable
             loader={exibirLoader}
+            esconderBotoes={exibirLoader}
             desabilitarBotaoPrincipal={false}
           >
-            <div>
+            <Loader loading={exibirLoader} ignorarTip>
               <SelectComponent
                 label="Copiar para a(s) turma(s)"
                 id="turmas"
@@ -194,7 +202,7 @@ const ModalCopiarConteudoPlanoAnual = () => {
                 onChange={valores => onChangeBimestre(valores, form)}
                 form={form}
               />
-            </div>
+            </Loader>
           </ModalConteudoHtml>
         </Form>
       )}
