@@ -38,7 +38,7 @@ const RelatorioEscolaAquiAdesao = () => {
   const opcoesListarUsuarios = [
     { label: 'Não', value: 1 },
     { label: 'Válidos', value: 2 },
-    { label: 'CPF inrregular no EOL', value: 3 },
+    { label: 'CPF irregular no EOL', value: 3 },
     { label: 'Todos', value: 4 },
   ];
 

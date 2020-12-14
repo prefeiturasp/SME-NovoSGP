@@ -31,10 +31,6 @@ namespace SME.SGP.Aplicacao
                .NotEmpty()
                .WithMessage("O usuário precisa ser informado para verificação de exclusão de pendencia de ausencia de fechamento.");
 
-            RuleFor(c => c.PeriodoEscolarId)
-               .NotEmpty()
-               .WithMessage("O PeriodoEscolar precisa ser informado para verificação de exclusão de pendencia de ausencia de fechamento.");
-
             RuleFor(c => c.DisciplinaId)
                .NotEmpty()
                .WithMessage("A DisciplinaId precisa ser informado para verificação de exclusão de pendencia de ausencia de fechamento.");
