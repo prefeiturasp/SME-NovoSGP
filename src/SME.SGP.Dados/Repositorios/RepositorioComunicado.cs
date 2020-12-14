@@ -461,5 +461,13 @@ namespace SME.SGP.Dados.Repositorios
             return (quantidadeComunicadosComEvento > 0 ? true : false);
 
         }
+
+        public Task<IEnumerable<ComunicadoTurmaDto>> ObterComunicadosTurma(long comunicadoId) 
+        {
+            var sql = $@"select turma_codigo AS CodigoTurma from comunicado_turma ct where comunicado_id = @comunicadoId";
+            var parametros = new { comunicadoId };
+            return database.QueryAsync<ComunicadoTurmaDto>(sql, parametros);
+
+        }
     }
 }
