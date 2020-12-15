@@ -19,14 +19,16 @@ namespace SME.SGP.Aplicacao.Teste.Queries
         private readonly Mock<IMediator> mediator;
         private readonly Mock<IRepositorioAula> repositorio;
         private readonly Mock<IRepositorioTurma> repositorioTurma;
+        private readonly Mock<IRepositorioAula> repositorioAula;
 
         public ObterDatasAulasPorProfessorEComponenteQueryHandlerTeste()
         {
             mediator = new Mock<IMediator>();
             repositorio = new Mock<IRepositorioAula>();
             repositorioTurma = new Mock<IRepositorioTurma>();
+            repositorioAula = new Mock<IRepositorioAula>();
 
-            query = new ObterDatasAulasPorProfessorEComponenteQueryHandler(mediator.Object, repositorio.Object, repositorioTurma.Object);
+            query = new ObterDatasAulasPorProfessorEComponenteQueryHandler(mediator.Object, repositorio.Object, repositorioTurma.Object, repositorioAula.Object);
         }
 
         [Fact]
