@@ -53,8 +53,7 @@ namespace SME.SGP.Aplicacao
                                 eventoAula.TemAvaliacao = true;
                         }
 
-                    }
-
+                    }                   
 
                     var pendencias = await mediator.Send(new ObterPendenciasAulaPorAulaIdsQuery(aulasDoDia.Select(a => a.Id).ToArray()));
                     if (pendencias.Length > 0)
