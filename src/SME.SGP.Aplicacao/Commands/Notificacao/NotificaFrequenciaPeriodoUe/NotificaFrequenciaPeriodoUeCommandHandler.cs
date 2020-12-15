@@ -47,8 +47,8 @@ namespace SME.SGP.Aplicacao
         private async Task EnviarRelatorio(Guid codigoRelatorio, Ue ue, PeriodoEscolar periodoEscolarEncerrado)
         {
             var descricaoUe = $"{ue.TipoEscola.ShortName()} {ue.Nome} ({ue.Dre.Abreviacao})";
-            var titulo = $"Validação bimestral de frequência OSL, OIE e PAP - {periodoEscolarEncerrado.Bimestre}º Bimestre - {descricaoUe})";
-            var mensagem = $"Segue o relatório de frequência dos componentes de Sala de Leitura, Informática e PAP do <b>{periodoEscolarEncerrado.Bimestre}º Bimestre</b> da <b>{descricaoUe}</b> para sua validação.<br/><br/>Clique no botão abaixo para fazer o download do arquivo.<br/>";
+            var titulo = $"Validação bimestral de frequência OSL, OIE e PAP - {periodoEscolarEncerrado.Bimestre}º Bimestre - {descricaoUe}";
+            var mensagem = $"Segue o relatório de frequência dos componentes de Sala de Leitura, Informática e PAP do <b>{periodoEscolarEncerrado.Bimestre}º Bimestre</b> da <b>{descricaoUe}</b> para sua validação.<br/><br/>Clique no botão abaixo para fazer o download do arquivo.<br/><br/>";
             mensagem += await MontarBotaoDownload(codigoRelatorio);
 
             await mediator.Send(new EnviarNotificacaoCommand(titulo, mensagem, NotificacaoCategoria.Workflow_Aprovacao, NotificacaoTipo.Frequencia, ObterCargos(), ue.Dre.CodigoDre, ue.CodigoUe));
@@ -60,7 +60,7 @@ namespace SME.SGP.Aplicacao
         private async Task<string> MontarBotaoDownload(Guid codigoRelatorio)
         {
             var urlRedirecionamentoBase = configuration.GetSection("UrlServidorRelatorios").Value;
-            var urlNotificacao = $"{urlRedirecionamentoBase}api/v1/downloads/sgp/pdf/RelatorioFaltasFrequencia/{codigoRelatorio}";
+            var urlNotificacao = $"{urlRedirecionamentoBase}api/v1/downloads/sgp/pdf/RelatorioFaltasFrequencia.pdf/{codigoRelatorio}";
             return $"<a href='{urlNotificacao}' target='_blank' class='btn-baixar-relatorio'><i class='fas fa-arrow-down mr-2'></i>Download</a>";
         }
 
@@ -72,7 +72,7 @@ namespace SME.SGP.Aplicacao
             var filtro = new FiltroRelatorioFaltasFrequenciaDto()
             {
                 AnoLetivo = DateTime.Now.Year,
-                AnosEscolares = Enumerable.Range(1, 9).Select(a => a.ToString()),
+                AnosEscolares = new[] { "-99" },
                 Bimestres = new List<int>() { bimestre },
                 Modalidade = Modalidade.Fundamental,
                 CodigoDre = ue.Dre.CodigoDre,
@@ -80,7 +80,9 @@ namespace SME.SGP.Aplicacao
                 ComponentesCurriculares = new List<string>() { "1060", "1061", "1322" },
                 TodosEstudantes = true,
                 TipoRelatorio = TipoRelatorioFaltasFrequencia.Ambos,
-                TipoFormatoRelatorio = TipoFormatoRelatorio.Pdf
+                TipoFormatoRelatorio = TipoFormatoRelatorio.Pdf,
+                NomeUsuario = "Processo automático",
+                CodigoRf = " - ",
             };
 
             return await mediator.Send(new SolicitaRelatorioFaltasFrequenciaCommand(filtro));
