@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Microsoft.Extensions.Configuration;
+using Sentry;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
@@ -28,8 +29,16 @@ namespace SME.SGP.Aplicacao
             
             foreach(var ue in ues)
             {
-                var codigoRelatorio = await SolicitarRelatorioBimestral(request.PeriodoEscolarEncerrado.Bimestre, ue);
-                await EnviarRelatorio(codigoRelatorio, ue, request.PeriodoEscolarEncerrado);
+                try
+                {
+                    var codigoRelatorio = await SolicitarRelatorioBimestral(request.PeriodoEscolarEncerrado.Bimestre, ue);
+                    if (!codigoRelatorio.Equals(Guid.Empty))
+                        await EnviarRelatorio(codigoRelatorio, ue, request.PeriodoEscolarEncerrado);
+                }
+                catch (Exception e)
+                {
+                    SentrySdk.CaptureException(e);
+                }            
             }
 
             return true;
@@ -37,12 +46,12 @@ namespace SME.SGP.Aplicacao
 
         private async Task EnviarRelatorio(Guid codigoRelatorio, Ue ue, PeriodoEscolar periodoEscolarEncerrado)
         {
-            var descricaoUe = $"{ue.TipoEscola.ShortName()} {ue.Nome} ({ue.Dre.Abreviacao}";
+            var descricaoUe = $"{ue.TipoEscola.ShortName()} {ue.Nome} ({ue.Dre.Abreviacao})";
             var titulo = $"Validação bimestral de frequência OSL, OIE e PAP - {periodoEscolarEncerrado.Bimestre}º Bimestre - {descricaoUe})";
-            var mensagem = $"Segue o relatório de frequência dos componentes de Sala de Leitura, Informática e PAP do <b>{periodoEscolarEncerrado.Bimestre}º Bimestre</b> da <b>{descricaoUe}</b> para sua validação.<br/><br/>Clique no botão abaixo para fazer o download do arquivo.";
+            var mensagem = $"Segue o relatório de frequência dos componentes de Sala de Leitura, Informática e PAP do <b>{periodoEscolarEncerrado.Bimestre}º Bimestre</b> da <b>{descricaoUe}</b> para sua validação.<br/><br/>Clique no botão abaixo para fazer o download do arquivo.<br/>";
             mensagem += await MontarBotaoDownload(codigoRelatorio);
 
-            await mediator.Send(new EnviarNotificacaoCommand(titulo, mensagem, NotificacaoCategoria.Workflow_Aprovacao, NotificacaoTipo.Frequencia, ObterCargos()));
+            await mediator.Send(new EnviarNotificacaoCommand(titulo, mensagem, NotificacaoCategoria.Workflow_Aprovacao, NotificacaoTipo.Frequencia, ObterCargos(), ue.Dre.CodigoDre, ue.CodigoUe));
         }
 
         private Cargo[] ObterCargos()
@@ -63,12 +72,12 @@ namespace SME.SGP.Aplicacao
             var filtro = new FiltroRelatorioFaltasFrequenciaDto()
             {
                 AnoLetivo = DateTime.Now.Year,
-                AnosEscolares = Enumerable.Range(1, 9).Cast<string>(),
+                AnosEscolares = Enumerable.Range(1, 9).Select(a => a.ToString()),
                 Bimestres = new List<int>() { bimestre },
                 Modalidade = Modalidade.Fundamental,
                 CodigoDre = ue.Dre.CodigoDre,
                 CodigoUe = ue.CodigoUe,
-                ComponentesCurriculares = new List<long>() { 1060, 1061, 1322 },
+                ComponentesCurriculares = new List<string>() { "1060", "1061", "1322" },
                 TodosEstudantes = true,
                 TipoRelatorio = TipoRelatorioFaltasFrequencia.Ambos,
                 TipoFormatoRelatorio = TipoFormatoRelatorio.Pdf

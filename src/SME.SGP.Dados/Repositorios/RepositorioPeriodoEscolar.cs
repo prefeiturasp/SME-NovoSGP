@@ -242,7 +242,7 @@ namespace SME.SGP.Dados.Repositorios
                      and t.ano_letivo = @ano
                      and p.periodo_fim = @dataFim";
 
-            return await database.Conexao.QueryFirstOrDefaultAsync(query, new { modalidade = (int)modalidade, ano, dataFim });
+            return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoEscolar>(query, new { modalidade = (int)modalidade, ano, dataFim });
         }
     }
 }
