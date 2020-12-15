@@ -4,6 +4,7 @@
     {
         Igual = 1,
         Maior = 2,
-        Menor = 3
+        Menor = 3,
+        TodosEstudantes = 4
     }
 }
