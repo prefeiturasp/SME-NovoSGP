@@ -14,6 +14,7 @@ import ServicoRelatorioPendencias from '~/servicos/Paginas/Relatorios/Pendencias
 import ServicoComponentesCurriculares from '~/servicos/ServicoComponentesCurriculares';
 import FiltroHelper from '~componentes-sgp/filtro/helper';
 import ServicoFiltroRelatorio from '~/servicos/Paginas/FiltroRelatorio/ServicoFiltroRelatorio';
+import { ordenarListaMaiorParaMenor } from '~/utils/funcoes/gerais';
 
 const RelatorioPendencias = () => {
   const [carregandoGerar, setCarregandoGerar] = useState(false);
@@ -299,7 +300,7 @@ const RelatorioPendencias = () => {
       else setAnoLetivo(anosLetivos[0].valor);
     }
 
-    setListaAnosLetivo(anosLetivos);
+    setListaAnosLetivo(ordenarListaMaiorParaMenor(anosLetivos, 'valor'));
     setCarregandoAnos(false);
   }, [anoAtual]);
 
