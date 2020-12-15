@@ -16,25 +16,37 @@ namespace SME.SGP.Aplicacao
         private readonly IMediator mediator;
         private readonly IRepositorioAula repositorio;
         private readonly IRepositorioTurma repositorioTurma;
+        private readonly IServicoUsuario servicoUsuario;
+        private readonly IRepositorioAula repositorioAula;
 
-        public ObterDatasAulasPorProfessorEComponenteQueryHandler(IMediator mediator, IRepositorioAula repositorio, IRepositorioTurma repositorioTurma)
+        public ObterDatasAulasPorProfessorEComponenteQueryHandler(IMediator mediator, IRepositorioAula repositorio, IRepositorioTurma repositorioTurma, IServicoUsuario servicoUsuario, IRepositorioAula repositorioAula)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
+            this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
+            this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
         }
 
         public async Task<IEnumerable<DatasAulasDto>> Handle(ObterDatasAulasPorProfessorEComponenteQuery request, CancellationToken cancellationToken)
         {
             var turma = await ObterTurma(request.TurmaCodigo);
-
             var tipoCalendarioId = await ObterTipoCalendario(turma);
-
             var periodosEscolares = await ObterPeriodosEscolares(tipoCalendarioId);
+            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-            var datasAulas = ObterAulasNosPeriodos(periodosEscolares, turma.AnoLetivo, turma.CodigoTurma, request.ComponenteCurricularCodigo, request.ProfessorRf, request.EhProfessorCj, request.EhProfessor);
+            var datasAulas = ObterAulasNosPeriodos(periodosEscolares, turma.AnoLetivo, turma.CodigoTurma, request.ComponenteCurricularCodigo, 
+                string.Empty, request.EhProfessorCj, request.EhProfessor);            
 
-            return datasAulas.GroupBy(g => g.Data)
+            var aulas = new List<Aula>();
+            datasAulas.ToList()
+                .ForEach(da => aulas.Add(repositorioAula.ObterPorId(da.IdAula)));
+
+            var aulasPermitidas = usuarioLogado
+                .ObterAulasQuePodeVisualizar(aulas, new string[] { request.ComponenteCurricularCodigo })
+                .Select(a => a.Id);
+
+            return datasAulas.Where(da => aulasPermitidas.Contains(da.IdAula)).GroupBy(g => g.Data)
                     .Select(x => new DatasAulasDto()
                     {
                         Data = x.Key,
