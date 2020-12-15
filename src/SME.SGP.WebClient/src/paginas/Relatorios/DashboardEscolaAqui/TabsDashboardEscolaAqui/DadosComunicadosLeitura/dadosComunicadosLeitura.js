@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
   CampoData,
-  CoresGraficos,
   Loader,
   SelectAutocomplete,
   SelectComponent,
@@ -13,12 +12,13 @@ import { AbrangenciaServico, api, erros } from '~/servicos';
 import ServicoFiltroRelatorio from '~/servicos/Paginas/FiltroRelatorio/ServicoFiltroRelatorio';
 import ServicoDashboardEscolaAqui from '~/servicos/Paginas/Relatorios/EscolaAqui/DashboardEscolaAqui/ServicoDashboardEscolaAqui';
 import {
-  adicionarCoresNosGraficos,
   mapearParaDtoGraficoPizzaComValorEPercentual,
+  obterDadosComunicadoSelecionado,
 } from '../../dashboardEscolaAquiGraficosUtils';
 import DataUltimaAtualizacaoDashboardEscolaAqui from '../ComponentesDashboardEscolaAqui/dataUltimaAtualizacaoDashboardEscolaAqui';
-import GraficoBarraDashboardEscolaAqui from '../ComponentesDashboardEscolaAqui/graficoBarraDashboardEscolaAqui';
 import GraficoPizzaDashboardEscolaAqui from '../ComponentesDashboardEscolaAqui/graficoPizzaDashboardEscolaAqui';
+import LeituraDeComunicadosAgrupadosPorDre from './leituraDeComunicadosAgrupadosPorDre';
+import LeituraDeComunicadosPorModalidades from './leituraDeComunicadosPorModalidades';
 
 const DadosComunicadosLeitura = props => {
   const { codigoDre, codigoUe } = props;
@@ -59,13 +59,6 @@ const DadosComunicadosLeitura = props => {
     dadosDeLeituraDeComunicados,
     setDadosDeLeituraDeComunicados,
   ] = useState([]);
-
-  const [
-    dadosDeLeituraDeComunicadosAgrupadosPorDre,
-    setDadosDeLeituraDeComunicadosAgrupadosPorDre,
-  ] = useState([]);
-
-  const [dadosLegendaGrafico, setDadosLegendaGrafico] = useState([]);
 
   // TODO Verificar no componente de gráficos outra forma de fazer!
   const chavesGrafico = [
@@ -194,7 +187,7 @@ const DadosComunicadosLeitura = props => {
       setAnosEscolares(undefined);
       setListaAnosEscolares([]);
     }
-  }, [modalidadeId, codigoUe, obterAnosEscolares]);
+  }, [modalidadeId, obterAnosEscolares]);
 
   const obterSemestres = async (
     modalidadeSelecionada,
@@ -264,7 +257,7 @@ const DadosComunicadosLeitura = props => {
       setCodigoTurma();
       setListaTurmas([]);
     }
-  }, [modalidadeId, codigoUe, anoLetivo, obterTurmas]);
+  }, [modalidadeId, obterTurmas]);
 
   useEffect(() => {
     if (codigoUe === OPCAO_TODOS) {
@@ -328,7 +321,7 @@ const DadosComunicadosLeitura = props => {
         if (resposta?.data?.length) {
           const lista = resposta.data.map(item => {
             return {
-              id: item.id,
+              ...item,
               descricao: `${item.titulo} - ${moment(item.dataEnvio).format(
                 'DD/MM/YYYY'
               )}`,
@@ -389,63 +382,42 @@ const DadosComunicadosLeitura = props => {
     const dadosMapeados = mapearParaDtoGraficoPizzaComValorEPercentual(
       dadosParaMapear
     );
-    setDadosDeLeituraDeComunicados(dadosMapeados);
+    return dadosMapeados;
   };
 
-  const obterCominicadoId = useCallback(
-    descricaoComunicado => {
-      let comunicadoId = '';
-      if (descricaoComunicado) {
-        const comunicadoAtual = listaComunicado.find(
-          item => item.descricao === descricaoComunicado
-        );
-        if (comunicadoAtual?.id) {
-          comunicadoId = comunicadoAtual.id;
-        }
-      }
-
-      return comunicadoId;
-    },
-    [listaComunicado]
-  );
-
   const obterDadosDeLeituraDeComunicados = useCallback(async () => {
-    const comunicadoId = obterCominicadoId(comunicado);
-    if (comunicadoId) {
+    const dadosComunicado = obterDadosComunicadoSelecionado(
+      comunicado,
+      listaComunicado
+    );
+    if (dadosComunicado?.id) {
       setExibirLoader(true);
 
       const resposta = await ServicoDashboardEscolaAqui.obterDadosDeLeituraDeComunicados(
-        codigoDre === OPCAO_TODOS ? '' : codigoDre,
-        codigoUe === OPCAO_TODOS ? '' : codigoUe,
-        obterCominicadoId(comunicado),
+        dadosComunicado.codigoDre || '',
+        dadosComunicado.codigoUe || '',
+        dadosComunicado.id,
         visualizacao
       )
         .catch(e => erros(e))
         .finally(() => setExibirLoader(false));
 
       if (resposta?.data) {
-        mapearParaDtoGraficoPizza(resposta.data[0]);
+        const dados = mapearParaDtoGraficoPizza(resposta.data[0]);
+        setDadosDeLeituraDeComunicados(dados);
       } else {
         setDadosDeLeituraDeComunicados([]);
       }
     } else {
       setDadosDeLeituraDeComunicados([]);
     }
-  }, [codigoDre, codigoUe, visualizacao, comunicado, obterCominicadoId]);
+  }, [codigoDre, codigoUe, visualizacao, comunicado, listaComunicado]);
 
   useEffect(() => {
-    if (
-      visualizacao &&
-      comunicado &&
-      codigoDre &&
-      codigoUe &&
-      listaComunicado.length
-    ) {
+    if (visualizacao && comunicado && listaComunicado.length) {
       obterDadosDeLeituraDeComunicados();
     }
   }, [
-    codigoDre,
-    codigoUe,
     comunicado,
     visualizacao,
     listaComunicado,
@@ -457,113 +429,6 @@ const DadosComunicadosLeitura = props => {
       setDadosDeLeituraDeComunicados([]);
     }
   }, [comunicado]);
-
-  const mapearParaDtoGraficoComunicadosAgrupadosPorDre = useCallback(
-    dados => {
-      const temDados = dados.filter(
-        item =>
-          item.naoReceberamComunicado ||
-          item.receberamENaoVisualizaram ||
-          item.visualizaramComunicado
-      );
-      if (temDados?.length) {
-        const dadosMapeados = dados.map(item => {
-          const novo = {};
-          if (
-            item.naoReceberamComunicado ||
-            item.receberamENaoVisualizaram ||
-            item.visualizaramComunicado
-          ) {
-            novo.nomeAbreviadoDre = item.nomeAbreviadoDre;
-            if (item.naoReceberamComunicado) {
-              novo.naoReceberamComunicado = item.naoReceberamComunicado;
-              novo[chavesGrafico[0]] = item.naoReceberamComunicado;
-            }
-            if (item.receberamENaoVisualizaram) {
-              novo.receberamENaoVisualizaram = item.receberamENaoVisualizaram;
-              novo[chavesGrafico[1]] = item.receberamENaoVisualizaram;
-            }
-            if (item.visualizaramComunicado) {
-              novo.visualizaramComunicado = item.visualizaramComunicado;
-              novo[chavesGrafico[2]] = item.visualizaramComunicado;
-            }
-          }
-          return novo;
-        });
-
-        const dadosMapeadosComCores = adicionarCoresNosGraficos(
-          dadosMapeados.filter(item => item.nomeAbreviadoDre)
-        );
-
-        const dadosParaMontarLegenda = [];
-        if (dadosMapeadosComCores.find(item => !!item.naoReceberamComunicado)) {
-          dadosParaMontarLegenda.push({
-            label: chavesGrafico[0],
-            color: CoresGraficos[0],
-          });
-        }
-        if (
-          dadosMapeadosComCores.find(item => !!item.receberamENaoVisualizaram)
-        ) {
-          dadosParaMontarLegenda.push({
-            label: chavesGrafico[1],
-            color: CoresGraficos[1],
-          });
-        }
-        if (dadosMapeadosComCores.find(item => !!item.visualizaramComunicado)) {
-          dadosParaMontarLegenda.push({
-            label: chavesGrafico[2],
-            color: CoresGraficos[2],
-          });
-        }
-
-        setDadosLegendaGrafico(dadosParaMontarLegenda);
-        setDadosDeLeituraDeComunicadosAgrupadosPorDre(dadosMapeadosComCores);
-      } else {
-        setDadosDeLeituraDeComunicadosAgrupadosPorDre([]);
-      }
-    },
-    [chavesGrafico]
-  );
-
-  const obterDadosDeLeituraDeComunicadosAgrupadosPorDre = useCallback(async () => {
-    const comunicadoId = obterCominicadoId(comunicado);
-
-    if (comunicadoId) {
-      setExibirLoader(true);
-      const resposta = await ServicoDashboardEscolaAqui.obterDadosDeLeituraDeComunicadosAgrupadosPorDre(
-        comunicadoId,
-        visualizacao
-      )
-        .catch(e => erros(e))
-        .finally(() => setExibirLoader(false));
-
-      if (resposta?.data?.length) {
-        mapearParaDtoGraficoComunicadosAgrupadosPorDre(resposta.data);
-      } else {
-        setDadosDeLeituraDeComunicadosAgrupadosPorDre([]);
-      }
-    }
-  }, [visualizacao, comunicado, obterCominicadoId]);
-
-  useEffect(() => {
-    if (
-      comunicado &&
-      codigoDre === OPCAO_TODOS &&
-      codigoUe === OPCAO_TODOS &&
-      listaComunicado?.length
-    ) {
-      obterDadosDeLeituraDeComunicadosAgrupadosPorDre();
-    } else {
-      setDadosDeLeituraDeComunicadosAgrupadosPorDre([]);
-    }
-  }, [
-    codigoDre,
-    codigoUe,
-    comunicado,
-    listaComunicado,
-    obterDadosDeLeituraDeComunicadosAgrupadosPorDre,
-  ]);
 
   return (
     <Loader loading={exibirLoader}>
@@ -737,8 +602,7 @@ const DadosComunicadosLeitura = props => {
             allowClear={false}
           />
         </div>
-        {dadosDeLeituraDeComunicados?.length ||
-        dadosDeLeituraDeComunicadosAgrupadosPorDre?.length ? (
+        {dadosDeLeituraDeComunicados?.length ? (
           <div className="col-md-12 mt-5">
             <DataUltimaAtualizacaoDashboardEscolaAqui
               nomeConsulta="ConsolidarLeituraNotificacao"
@@ -759,30 +623,26 @@ const DadosComunicadosLeitura = props => {
             ''
           )}
         </div>
-
-        <div className="col-md-12">
-          {dadosDeLeituraDeComunicadosAgrupadosPorDre?.length ? (
-            <GraficoBarraDashboardEscolaAqui
-              titulo="Total de Comunicados por DRE"
-              dadosGrafico={dadosDeLeituraDeComunicadosAgrupadosPorDre}
-              chavesGrafico={chavesGrafico}
-              indice="nomeAbreviadoDre"
-              dadosLegendaCustomizada={dadosLegendaGrafico}
-              removeLegends
-              customPropsColors={item => {
-                if (item.id === chavesGrafico[0]) {
-                  return CoresGraficos[0];
-                }
-                if (item.id === chavesGrafico[1]) {
-                  return CoresGraficos[1];
-                }
-                return CoresGraficos[2];
-              }}
-            />
-          ) : (
-            ''
-          )}
-        </div>
+        {dadosDeLeituraDeComunicados?.length ? (
+          <LeituraDeComunicadosAgrupadosPorDre
+            chavesGrafico={chavesGrafico}
+            modoVisualizacao={visualizacao}
+            comunicado={comunicado}
+            listaComunicado={listaComunicado}
+          />
+        ) : (
+          ''
+        )}
+        {dadosDeLeituraDeComunicados?.length ? (
+          <LeituraDeComunicadosPorModalidades
+            chavesGrafico={chavesGrafico}
+            modoVisualizacao={visualizacao}
+            comunicado={comunicado}
+            listaComunicado={listaComunicado}
+          />
+        ) : (
+          ''
+        )}
       </div>
     </Loader>
   );
