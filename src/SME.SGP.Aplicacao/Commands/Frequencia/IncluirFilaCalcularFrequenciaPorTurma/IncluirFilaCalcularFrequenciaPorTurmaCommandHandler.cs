@@ -34,8 +34,10 @@ namespace SME.SGP.Aplicacao
                 });
 
                 var comando = new CalcularFrequenciaPorTurmaCommand(request.Alunos, request.DataAula, request.TurmaId, request.DisciplinaId, request.Bimestre);
+                
+                var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaCalculoFrequenciaPorTurmaComponente, comando, Guid.NewGuid(), null));
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaCalculoFrequenciaPorTurmaComponente, comando, Guid.NewGuid(), usuarioLogado));
             }
 
             return true;
