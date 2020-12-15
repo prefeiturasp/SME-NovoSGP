@@ -33,7 +33,8 @@ namespace SME.SGP.Aplicacao
            => new HistoricoNotaFechamento()
            {
                HistoricoNotaId = historicoNotaId,
-               FechamentoNotaId = request.FechamentoNotaId
+               FechamentoNotaId = request.FechamentoNotaId,
+               WorkFlowId = request.WorkFlowId
            };
     }
 }
