@@ -287,7 +287,7 @@ namespace SME.SGP.Dominio.Servicos
 
                 Cliente.Executar<IServicoFechamentoTurmaDisciplina>(c => c.GerarPendenciasFechamento(fechamentoTurmaDisciplina.DisciplinaId, turmaFechamento, periodoEscolar, fechamentoTurmaDisciplina, usuarioLogado, componenteSemNota, disciplinaEOL.RegistraFrequencia));
 
-                await mediator.Send(new PublicaFilaExcluirPendenciaAusenciaFechamentoCommand(fechamentoTurmaDisciplina.DisciplinaId,periodoEscolar.Id,entidadeDto.TurmaId,usuarioLogado));
+                await mediator.Send(new PublicaFilaExcluirPendenciaAusenciaFechamentoCommand(fechamentoTurmaDisciplina.DisciplinaId,periodoEscolar.Id, turmaFechamento.Id, usuarioLogado));
 
                 return (AuditoriaPersistenciaDto)fechamentoTurmaDisciplina;
             }

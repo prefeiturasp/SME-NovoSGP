@@ -16,7 +16,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<PlanejamentoAnualPeriodoEscolar> ObterPorPlanejamentoAnualIdEPeriodoId(long id, long periodoEscolarId)
         {
-            var sql = "select * from planejamento_anual_periodo_escolar where planejamento_anual_id = @id and periodo_escolar_id = @periodoEscolarId";
+            var sql = "select * from planejamento_anual_periodo_escolar where planejamento_anual_id = @id and periodo_escolar_id = @periodoEscolarId and excluido = false";
             return await database.Conexao.QueryFirstOrDefaultAsync<PlanejamentoAnualPeriodoEscolar>(sql, new { id, periodoEscolarId });
         }
 
@@ -40,6 +40,9 @@ namespace SME.SGP.Dados.Repositorios
 	                        turma_id = @turmaId
 	                        and pac.componente_curricular_id = @componenteCurricularId
 	                        and pape.periodo_escolar_id = @periodoEscolarId
+                            and pa.excluido = false 
+                            and pac.excluido = false
+                            and (paoa.excluido is null or paoa.excluido = false)
                         order by paoa.objetivo_aprendizagem_id";
 
             var periodos = new List<PlanejamentoAnualPeriodoEscolar>();
@@ -66,7 +69,8 @@ namespace SME.SGP.Dados.Repositorios
                             }
                         }
                         else
-                        {
+                        {                            
+                            componenteCurricular = componente;
                             componenteCurricular.ObjetivosAprendizagem.Add(objetivo);
                             periodoAdicionado.ComponentesCurriculares.Add(componenteCurricular);
                         }
@@ -89,7 +93,7 @@ namespace SME.SGP.Dados.Repositorios
                         from
 	                        planejamento_anual_periodo_escolar
                         where
-	                        planejamento_anual_periodo_escolar.id = ANY(@ids);
+	                        planejamento_anual_periodo_escolar.id = ANY(@ids) and excluido = false;
 
                         select
                             id,
@@ -98,7 +102,7 @@ namespace SME.SGP.Dados.Repositorios
 	                        planejamento_anual_periodo_escolar_id
                         from
 	                        planejamento_anual_componente
-                        where planejamento_anual_periodo_escolar_id = ANY(@ids);
+                        where planejamento_anual_periodo_escolar_id = ANY(@ids) and excluido = false;
 
                         select
                             planejamento_anual_objetivos_aprendizagem.id,
@@ -109,7 +113,9 @@ namespace SME.SGP.Dados.Repositorios
                         inner join planejamento_anual_componente on
 	                        planejamento_anual_objetivos_aprendizagem.planejamento_anual_componente_id = planejamento_anual_componente.id
                         where
-	                        planejamento_anual_componente.planejamento_anual_periodo_escolar_id = ANY(@ids);";
+	                        planejamento_anual_componente.planejamento_anual_periodo_escolar_id = ANY(@ids) 
+                            and planejamento_anual_objetivos_aprendizagem.excluido = false 
+                            and planejamento_anual_componente.excluido = false;";
 
             using (var multi = await database.Conexao.QueryMultipleAsync(sql, new { ids }))
             {
@@ -136,7 +142,7 @@ namespace SME.SGP.Dados.Repositorios
 	                    planejamento_anual_periodo_escolar pape
                     inner join periodo_escolar pe on
 	                    pape.periodo_escolar_id = pe.id
-                    where planejamento_anual_id = @planejamentoAnualId";
+                    where planejamento_anual_id = @planejamentoAnualId and pape.excluido = false";
             return await database.Conexao.QueryAsync<PlanejamentoAnualPeriodoEscolarResumoDto>(sql, new { planejamentoAnualId });
         }
         public async Task<bool> PlanejamentoPossuiObjetivos(long planejamentoAnualPeriodoId)
@@ -146,6 +152,12 @@ namespace SME.SGP.Dados.Repositorios
                            where pc.planejamento_anual_periodo_escolar_id = @planejamentoAnualPeriodoId";
 
             return (await database.Conexao.QueryAsync<int>(query, new { planejamentoAnualPeriodoId })).Any();
+        }
+
+        public async Task RemoverLogicamenteAsync(long id)
+        {
+            var sql = "UPDATE planejamento_anual_periodo_escolar SET EXCLUIDO = TRUE WHERE ID = @id";
+            await database.Conexao.ExecuteAsync(sql, new { id });
         }
     }
 }

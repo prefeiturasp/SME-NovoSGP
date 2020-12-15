@@ -19,8 +19,8 @@ namespace SME.SGP.Infra
         public int ValorCondicao { get; set; }
         public TipoFormatoRelatorio TipoFormatoRelatorio { get; set; }
         public string NomeUsuario { get; set; }
-        public string CodigoRf { get; set; }
-        public bool TodosEstudantes { get; set; }
+        public string CodigoRf { get; set; }        
+        public bool TurmasPrograma { get; set; }        
     }
 
 
@@ -44,12 +44,7 @@ namespace SME.SGP.Infra
             RuleFor(c => c.Bimestres)
                 .NotEmpty()
                 .WithMessage("Os bimestres devem ser informados.")
-                .When(c => c.Modalidade != Modalidade.EJA);
-
-
-            RuleFor(c => c.Condicao)
-                .IsInEnum()
-                .WithMessage("A condição deve ser informada.");
+                .When(c => c.Modalidade != Modalidade.EJA);            
 
             RuleFor(c => c.ValorCondicao)
                 .GreaterThanOrEqualTo(0)

@@ -9,17 +9,17 @@ namespace SME.SGP.Aplicacao
     public class PublicaFilaExcluirPendenciaAusenciaFechamentoCommand : IRequest<bool>
     {
 
-        public PublicaFilaExcluirPendenciaAusenciaFechamentoCommand(long disciplinaId, long periodoEscolarId, string turmaId, Usuario usuarioLogado)
+        public PublicaFilaExcluirPendenciaAusenciaFechamentoCommand(long disciplinaId, long? periodoEscolarId, long turmaId, Usuario usuarioLogado)
         {
             this.DisciplinaId = disciplinaId;
             this.PeriodoEscolarId = periodoEscolarId;
-            this.TurmaCodigo = turmaId;
+            this.TurmaId = turmaId;
             this.UsuarioLogado = usuarioLogado;
         }
 
         public long DisciplinaId { get; set; }
-        public long PeriodoEscolarId { get; set; }
-        public string TurmaCodigo { get; set; }
+        public long? PeriodoEscolarId { get; set; }
+        public long TurmaId { get; set; }
         public Usuario UsuarioLogado { get; set; }
     }
 
@@ -31,15 +31,11 @@ namespace SME.SGP.Aplicacao
                .NotEmpty()
                .WithMessage("O usuário precisa ser informado para verificação de exclusão de pendencia de ausencia de fechamento.");
 
-            RuleFor(c => c.PeriodoEscolarId)
-               .NotEmpty()
-               .WithMessage("O PeriodoEscolar precisa ser informado para verificação de exclusão de pendencia de ausencia de fechamento.");
-
             RuleFor(c => c.DisciplinaId)
                .NotEmpty()
                .WithMessage("A DisciplinaId precisa ser informado para verificação de exclusão de pendencia de ausencia de fechamento.");
 
-            RuleFor(c => c.TurmaCodigo)
+            RuleFor(c => c.TurmaId)
                .NotEmpty()
                .WithMessage("A TurmaCodigo precisa ser informado para verificação de exclusão de pendencia de ausencia de fechamento.");
         }

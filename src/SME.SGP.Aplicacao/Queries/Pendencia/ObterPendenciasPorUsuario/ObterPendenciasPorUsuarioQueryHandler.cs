@@ -113,7 +113,7 @@ namespace SME.SGP.Aplicacao
 
         private string ObterDescricaoPendenciaGeral(Pendencia pendencia)
         {
-            return $"{pendencia.Descricao}<br /><b>{pendencia.Instrucao}</b>";
+            return $"{pendencia.Descricao}<br /><br/><b>{pendencia.Instrucao}</b>";
         }
 
         private async Task<string> ObterDescricaoPendenciaEvento(Pendencia pendencia)
@@ -128,7 +128,7 @@ namespace SME.SGP.Aplicacao
                 descricao.AppendLine($"<li>{pendenciaEvento.Descricao} ({pendenciaEvento.Valor})</li>");
             }
             descricao.AppendLine("</ul>");
-            descricao.AppendLine($"<b>{pendencia.Instrucao}</b>");
+            descricao.AppendLine($"<br/><b>{pendencia.Instrucao}</b>");
 
             return descricao.ToString();
         }
@@ -145,7 +145,7 @@ namespace SME.SGP.Aplicacao
                 descricao.AppendLine($"<li>{pendenciaAula.DataAula:dd/MM} - {pendenciaAula.Motivo}</li>");
             }
             descricao.AppendLine("</ul>");
-            descricao.AppendLine($"<b>{pendencia.Instrucao}</b>");
+            descricao.AppendLine($"<br/><b>{pendencia.Instrucao}</b>");
 
             return descricao.ToString();
         }

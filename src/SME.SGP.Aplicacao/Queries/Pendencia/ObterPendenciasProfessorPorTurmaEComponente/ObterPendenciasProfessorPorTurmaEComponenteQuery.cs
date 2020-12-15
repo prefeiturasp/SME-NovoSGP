@@ -9,17 +9,17 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterPendenciasProfessorPorTurmaEComponenteQuery : IRequest<IEnumerable<PendenciaProfessor>>
     {
-        public ObterPendenciasProfessorPorTurmaEComponenteQuery(string turmaCodigo, long[] componentesCurriculares, long periodoEscolarId, TipoPendencia tipoPendencia)
+        public ObterPendenciasProfessorPorTurmaEComponenteQuery(long turmaId, long[] componentesCurriculares, long? periodoEscolarId, TipoPendencia tipoPendencia)
         {
-            TurmaCodigo = turmaCodigo;
+            TurmaId = turmaId;
             ComponentesCurriculares = componentesCurriculares;
             PeriodoEscolarId = periodoEscolarId;
             TipoPendencia = tipoPendencia;
         }
 
-        public string TurmaCodigo { get; set; }
+        public long TurmaId { get; set; }
         public long[] ComponentesCurriculares { get; set; }
-        public long PeriodoEscolarId { get; set; }
+        public long? PeriodoEscolarId { get; set; }
         public TipoPendencia TipoPendencia { get; set; }
     }
 
@@ -27,17 +27,13 @@ namespace SME.SGP.Aplicacao
     {
         public ObterPendenciasProfessorPorUeEComponenteQueryValidator()
         {
-            RuleFor(c => c.TurmaCodigo)
+            RuleFor(c => c.TurmaId)
                .NotEmpty()
                .WithMessage("O código da turma deve ser informado para consulta de pendencias do professor.");
 
             RuleFor(c => c.ComponentesCurriculares)
                .NotEmpty()
                .WithMessage("Os componentes curriculares devem ser informados para consulta de pendencias do professor.");
-
-            RuleFor(c => c.PeriodoEscolarId)
-               .NotEmpty()
-               .WithMessage("O período escolar deve ser informados para consulta de pendencias do professor.");
         }
     }
 }

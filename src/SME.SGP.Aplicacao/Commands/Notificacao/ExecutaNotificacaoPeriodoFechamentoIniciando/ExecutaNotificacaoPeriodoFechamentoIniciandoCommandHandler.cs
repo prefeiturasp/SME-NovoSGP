@@ -32,28 +32,44 @@ namespace SME.SGP.Aplicacao
             var titulo = $"Início do período de fechamento do {periodoEscolar.Bimestre}º bimestre - {descricaoUe}";
             var mensagem = $@"O fechamento do <b>{periodoEscolar.Bimestre}º bimestre</b> na <b>{descricaoUe}</b> irá iniciar no dia <b>{periodoFechamentoBimestre.InicioDoFechamento.Date.ToString("dd/MM/yyyy")}</b>.";
 
-            await mediator.Send(new EnviarNotificacaoCommand(titulo, mensagem, NotificacaoCategoria.Aviso, NotificacaoTipo.Calendario, ObterCargosGestaoEscola(), ue.Dre.CodigoDre, ue.CodigoUe));
+            var usuarios = await ObterUsuarios(ue);
+            if (usuarios != null && usuarios.Any())
+                await mediator.Send(new EnviarNotificacaoUsuariosCommand(titulo, mensagem, NotificacaoCategoria.Aviso, NotificacaoTipo.Calendario, usuarios, ue.Dre.CodigoDre, ue.CodigoUe));
 
-
-            var professores = await ObterProfessores(ue);
-            if (professores != null && professores.Any())
-                await mediator.Send(new EnviarNotificacaoUsuariosCommand(titulo, mensagem, NotificacaoCategoria.Aviso, NotificacaoTipo.Calendario, professores, ue.Dre.CodigoDre, ue.CodigoUe));
-
-            var admins = await ObterUsuariosAdms(ue);
-            if (admins != null && admins.Any())
-                await mediator.Send(new EnviarNotificacaoUsuariosCommand(titulo, mensagem, NotificacaoCategoria.Aviso, NotificacaoTipo.Calendario, admins, ue.Dre.CodigoDre, ue.CodigoUe));
-
+            await mediator.Send(new EnviarNotificacaoCommand(titulo, mensagem.ToString(), NotificacaoCategoria.Aviso, NotificacaoTipo.Calendario, ObterCargosGestaoEscola(),
+            periodoFechamentoBimestre.PeriodoFechamento.Ue.Dre.CodigoDre,
+            periodoFechamentoBimestre.PeriodoFechamento.Ue.CodigoUe));
         }
+
+        private async Task<IEnumerable<long>> ObterUsuarios(Ue ue)
+        {
+            var listaUsuarios = new List<long>();
+
+            var usuariosAdm = await ObterUsuariosAdms(ue);
+            if (usuariosAdm != null && usuariosAdm.Any())
+                listaUsuarios.AddRange(usuariosAdm);
+
+            var usuariosProfessores = await ObterProfessores(ue);
+            if (usuariosProfessores != null && usuariosProfessores.Any())
+                listaUsuarios.AddRange(usuariosProfessores);
+
+            return listaUsuarios.Distinct();
+        }
+
+        private Cargo[] ObterCargosGestaoEscola()
+       => new[] { Cargo.CP, Cargo.AD, Cargo.Diretor };
+
 
         private async Task<IEnumerable<long>> ObterProfessores(Ue ue)
         {
-          
+
             var professores = await mediator.Send(new ObterProfessoresDreOuUeAnoLetivoQuery(ue.CodigoUe, DateTime.Now.Year));
 
             var listaUsuarios = new List<long>();
             foreach (var professor in professores.Select(c => c.CodigoRF).Distinct())
             {
-                listaUsuarios.Add(await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(professor)));
+                if (professor != "")
+                    listaUsuarios.Add(await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(professor)));
             }
 
             return listaUsuarios.Distinct();
@@ -74,8 +90,5 @@ namespace SME.SGP.Aplicacao
         {
             return new List<Guid>() { Perfis.PERFIL_ADMUE };
         }
-
-        private Cargo[] ObterCargosGestaoEscola()
-            => new[] { Cargo.CP, Cargo.AD, Cargo.Diretor };
     }
 }

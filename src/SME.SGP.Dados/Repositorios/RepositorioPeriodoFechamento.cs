@@ -193,16 +193,18 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<PeriodoFechamentoBimestre>> ObterPeriodosFechamentoEscolasPorDataFinal(DateTime dataFinal)
         {
-            var query = @"select pf.*, ue.*, pfb.*, pe.*
+            var query = @"select pf.*, ue.*, pfb.*, pe.*, tc.*
                           from periodo_fechamento pf
                          inner join ue on ue.id = pf.ue_id
                          inner join periodo_fechamento_bimestre pfb on pfb.periodo_fechamento_id = pf.id
                          inner join periodo_escolar pe on pe.id = pfb.periodo_escolar_id
+                         inner join tipo_calendario tc on tc.id = pe.tipo_calendario_id
                          where pfb.final_fechamento = @dataFinal ";
 
-            return await database.Conexao.QueryAsync<PeriodoFechamento, Ue, PeriodoFechamentoBimestre, PeriodoEscolar, PeriodoFechamentoBimestre>(query,
-                (periodoFechamento, ue, periodoFechamentoBimestre, periodoEscolar) =>
+            return await database.Conexao.QueryAsync<PeriodoFechamento, Ue, PeriodoFechamentoBimestre, PeriodoEscolar, TipoCalendario, PeriodoFechamentoBimestre>(query,
+                (periodoFechamento, ue, periodoFechamentoBimestre, periodoEscolar, tipoCalendario) =>
                 {
+                    periodoEscolar.TipoCalendario = tipoCalendario;
                     periodoFechamento.Ue = ue;
                     periodoFechamentoBimestre.PeriodoFechamento = periodoFechamento;
                     periodoFechamentoBimestre.PeriodoEscolar = periodoEscolar;
