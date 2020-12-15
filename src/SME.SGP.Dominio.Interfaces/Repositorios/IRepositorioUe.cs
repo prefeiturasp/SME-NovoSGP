@@ -31,6 +31,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<Ue>> ObterUEsSemPeriodoFechamento(long periodoEscolarId, int ano, int[] modalidades);
         Task<bool> ValidarUeEducacaoInfantil(long ueId);
 
-        Task<IEnumerable<Ue>> ObterUesPorModalidade(int[] modalidades);
+        Task<IEnumerable<Ue>> ObterUesPorModalidade(int[] modalidades, int anoLetivo = 0);
     }
 }
