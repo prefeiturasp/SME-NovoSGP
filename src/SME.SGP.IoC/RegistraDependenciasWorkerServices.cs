@@ -436,7 +436,8 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IExecutarExclusaoPendenciasAusenciaAvaliacaoUseCase, ExecutarExclusaoPendenciasAusenciaAvaliacaoUseCase>();
 
             //Notificação Resultado Insatisfatorio 
-            services.TryAddScopedWorkerService<INotificarResultadoInsatisfatorioUseCase, NotificarResultadoInsatisfatorioUseCase>();
+            services.TryAddScoped<IExecutaNotificacaoResultadoInsatisfatorioUseCase, ExecutaNotificacaoResultadoInsatisfatorioUseCase>();
+            services.TryAddScoped<INotificarResultadoInsatisfatorioUseCase, NotificarResultadoInsatisfatorioUseCase>();
 
             // Pendencias Ausencia Fechamento
             services.TryAddScopedWorkerService<IExecutaVerificacaoGeracaoPendenciaAusenciaFechamentoUseCase, ExecutaVerificacaoGeracaoPendenciaAusenciaFechamentoUseCase>();
@@ -448,6 +449,8 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<ITrataNotificacoesNiveisCargosUseCase, TrataNotificacoesNiveisCargosUseCase>();
             services.TryAddScopedWorkerService<IExecutaTrataNotificacoesNiveisCargosUseCase, ExecutaTrataNotificacoesNiveisCargosUseCase>();
             
+            services.TryAddScopedWorkerService<IRelatorioAEAdesaoUseCase, RelatorioAEAdesaoUseCase>();
+
         }
 
         private static void ResgistraDependenciaHttp(IServiceCollection services)

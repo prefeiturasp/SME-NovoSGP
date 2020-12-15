@@ -1,4 +1,6 @@
-﻿using SME.SGP.Aplicacao.Integracoes;
+﻿using MediatR;
+using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -20,6 +22,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
         private readonly IServicoLog servicoLog;
+        private readonly IMediator mediator;
 
         public ServicoFechamentoFinal(IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina,
                                       IRepositorioFechamentoTurma repositorioFechamentoTurma,
@@ -30,7 +33,8 @@ namespace SME.SGP.Dominio.Servicos
                                       IServicoEol servicoEOL,
                                       IServicoUsuario servicoUsuario,
                                       IUnitOfWork unitOfWork,
-                                      IServicoLog servicoLog)
+                                      IServicoLog servicoLog,
+                                      IMediator mediator)
         {
             this.repositorioFechamentoTurmaDisciplina = repositorioFechamentoTurmaDisciplina ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurmaDisciplina));
             this.repositorioFechamentoTurma = repositorioFechamentoTurma ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurma));
@@ -42,9 +46,10 @@ namespace SME.SGP.Dominio.Servicos
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.servicoLog = servicoLog ?? throw new ArgumentNullException(nameof(servicoLog));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<List<string>> SalvarAsync(FechamentoTurmaDisciplina fechamentoFinal)
+        public async Task<List<string>> SalvarAsync(FechamentoTurmaDisciplina fechamentoFinal, Turma turma)
         {
             var mensagens = new List<string>();
             unitOfWork.IniciarTransacao();
@@ -65,8 +70,16 @@ namespace SME.SGP.Dominio.Servicos
                         {
                             try
                             {
+                                if (turma.AnoLetivo == 2020)
+                                    ValidarNotasFechamento2020(fechamentoNota);
+
                                 fechamentoNota.FechamentoAlunoId = fechamentoAlunoId;
                                 await repositorioFechamentoNota.SalvarAsync(fechamentoNota);
+                            }
+                            catch(NegocioException e)
+                            {
+                                servicoLog.Registrar(e);
+                                mensagens.Add(e.Message);
                             }
                             catch (Exception e)
                             {
@@ -83,6 +96,8 @@ namespace SME.SGP.Dominio.Servicos
                 }
                 unitOfWork.PersistirTransacao();
 
+                await ExcluirPendenciaAusenciaFechamento(fechamentoFinal.DisciplinaId, fechamentoFinal.FechamentoTurma.TurmaId);
+
                 return mensagens;
             }
             catch (Exception e)
@@ -92,6 +107,22 @@ namespace SME.SGP.Dominio.Servicos
                 unitOfWork.Rollback();
                 throw e;
             }
+        }
+
+        private void ValidarNotasFechamento2020(FechamentoNota fechamentoNota)
+        {
+            if (fechamentoNota.ConceitoId.HasValue && fechamentoNota.ConceitoId.Value == 3)
+                throw new NegocioException("Não é possível atribuir conceito NS (Não Satisfatório) pois em 2020 não há retenção dos estudantes conforme o Art 5º da LEI Nº 17.437 DE 12 DE AGOSTO DE 2020.");
+            else
+            if (!fechamentoNota.SinteseId.HasValue && fechamentoNota.Nota < 5)
+                throw new NegocioException("Não é possível atribuir uma nota menor que 5 pois em 2020 não há retenção dos estudantes conforme o Art 5º da LEI Nº 17.437 DE 12 DE AGOSTO DE 2020.");
+
+        }
+
+        private async Task ExcluirPendenciaAusenciaFechamento(long disciplinaId, long turmaId)
+        {
+            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            await mediator.Send(new PublicaFilaExcluirPendenciaAusenciaFechamentoCommand(disciplinaId, null, turmaId, usuarioLogado));
         }
 
         public async Task VerificaPersistenciaGeral(Turma turma)

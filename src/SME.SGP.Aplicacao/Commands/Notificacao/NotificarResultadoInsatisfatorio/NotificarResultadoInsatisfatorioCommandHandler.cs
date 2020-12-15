@@ -31,17 +31,17 @@ namespace SME.SGP.Aplicacao
 
             List<NotificarResultadoInsatisfatorioDto> listaNotificacoes = new List<NotificarResultadoInsatisfatorioDto>();
 
-            foreach(var periodoFechamentoBimestre in periodoFechamentoBimestres)
+            foreach (var periodoFechamentoBimestre in periodoFechamentoBimestres)
             {
-                if(periodoFechamentoBimestre.PeriodoFechamento.UeId != null)
+                if (periodoFechamentoBimestre.PeriodoFechamento.UeId != null)
                 {
                     var alunosComNotaLancada = await mediator.Send(new ObterAlunosComNotaLancadaPorPeriodoEscolarUEQuery(periodoFechamentoBimestre.PeriodoFechamento.UeId.GetValueOrDefault(), periodoFechamentoBimestre.PeriodoEscolarId));
 
-                    if(alunosComNotaLancada != null)
+                    if (alunosComNotaLancada != null)
                     {
-                        foreach(var turmaId in alunosComNotaLancada.GroupBy(a => a.TurmaId))
+                        foreach (var turmaId in alunosComNotaLancada.GroupBy(a => a.TurmaId))
                         {
-                            
+
                             var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(turmaId.Key));
 
                             var turmaNotificacao = new NotificarResultadoInsatisfatorioDto();
@@ -55,7 +55,7 @@ namespace SME.SGP.Aplicacao
 
                                 var alunosRetorno = VerificaAlunosResultadoInsatisfatorio(alunosComNota, percentualReprovacao, turma, componenteCurricularId.Key, mediaBimestre);
 
-                                if(alunosRetorno.Any())
+                                if (alunosRetorno.Any())
                                 {
                                     var componenteNotificacao = new NotificarResultadoInsatisfatorioCCDto();
                                     var obterComponenteCurricular = componentes.FirstOrDefault(c => long.Parse(c.Codigo) == componenteCurricularId.Key);
@@ -69,7 +69,7 @@ namespace SME.SGP.Aplicacao
 
                             }
 
-                            if(turmaNotificacao.ComponentesCurriculares.Any())
+                            if (turmaNotificacao.ComponentesCurriculares.Any())
                                 listaNotificacoes.Add(turmaNotificacao);
                         }
                     }
@@ -78,8 +78,8 @@ namespace SME.SGP.Aplicacao
                 if (listaNotificacoes.Any())
                     await EnviarNotificacoes(listaNotificacoes, periodoFechamentoBimestre);
             }
-                    
-           
+
+
             return true;
         }
 
@@ -100,7 +100,9 @@ namespace SME.SGP.Aplicacao
             }
             mensagem.Append("</table>");
 
-            await EnviarNotificacao(titulo, mensagem.ToString(), periodoFechamentoBimestre.PeriodoFechamento.Ue.Dre.CodigoDre, periodoFechamentoBimestre.PeriodoFechamento.Ue.CodigoUe);
+            await mediator.Send(new EnviarNotificacaoCommand(titulo, mensagem.ToString(), NotificacaoCategoria.Aviso, NotificacaoTipo.Fechamento, ObterCargosGestaoEscola(), 
+                periodoFechamentoBimestre.PeriodoFechamento.Ue.Dre.CodigoDre, 
+                periodoFechamentoBimestre.PeriodoFechamento.Ue.CodigoUe));
         }
 
         private List<AlunosFechamentoNotaDto> VerificaAlunosResultadoInsatisfatorio(IEnumerable<AlunosFechamentoNotaDto> alunosComNota, double percentualReprovacao, Turma turma, long componenteCurricularId, double mediaBimestre)
@@ -129,10 +131,18 @@ namespace SME.SGP.Aplicacao
             return alunos;
         }
 
-        private async Task EnviarNotificacao(string titulo, string mensagem, string codigoDre, string codigoUe)
+        private async Task<IEnumerable<long>> ObterCargosGestaoEscola(Ue ue)
         {
-            var cargos = new[] { Cargo.CP, Cargo.AD, Cargo.Diretor };
-            await mediator.Send(new EnviarNotificacaoCommand(titulo, mensagem, NotificacaoCategoria.Aviso, NotificacaoTipo.Fechamento, cargos, codigoDre, codigoUe));
+            var usuarios = await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(ue.CodigoUe, new List<Guid> { Perfis.PERFIL_AD, Perfis.PERFIL_CP, Perfis.PERFIL_DIRETOR }));
+
+            var listaUsuarios = new List<long>();
+            foreach (var usuario in usuarios.Distinct())
+            {
+                if (usuario != "")
+                    listaUsuarios.Add(await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(usuario)));
+            }
+
+            return listaUsuarios.Distinct();
         }
 
         private string MontarLinhaDaTurma(NotificarResultadoInsatisfatorioDto dto)
@@ -143,7 +153,7 @@ namespace SME.SGP.Aplicacao
             foreach (var componenteCurricular in dto.ComponentesCurriculares)
             {
                 mensagem.Append("<tr style='padding:4px;'>");
-                if(primeiroComponente)
+                if (primeiroComponente)
                 {
                     mensagem.Append($"<td style='padding:4px;' rowspan='{dto.ComponentesCurriculares.Count()}'>{dto.TurmaNome}</td>");
                     primeiroComponente = false;
@@ -168,5 +178,8 @@ namespace SME.SGP.Aplicacao
                       <td style='padding:4px;'>Professor</td>
                     </tr>";
         }
+
+        private Cargo[] ObterCargosGestaoEscola()
+         => new[] { Cargo.CP, Cargo.AD, Cargo.Diretor };
     }
 }

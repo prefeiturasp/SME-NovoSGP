@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect, useState } from 'react';
 
 import shortid from 'shortid';
 import { Loader, Card, ButtonGroup, ListaPaginada } from '~/componentes';
@@ -15,11 +14,7 @@ import modalidade from '~/dtos/modalidade';
 
 const BoletimSimples = () => {
   const [loaderSecao] = useState(false);
-  const [somenteConsulta] = useState(false);
-  
-  const usuario = useSelector(store => store.usuario);
-  const { turmaSelecionada } = usuario;
-  const { consideraHistorico } = turmaSelecionada;
+  const [somenteConsulta] = useState(false); 
 
   const [filtro, setFiltro] = useState({
     anoLetivo: '',
@@ -27,8 +22,8 @@ const BoletimSimples = () => {
     semestre: '',
     dreCodigo: '',
     ueCodigo: '',
-    turmaCodigo: '',   
-    consideraHistorico: consideraHistorico 
+    turmaCodigo: '',
+    consideraHistorico: false
   });
 
   const [itensSelecionados, setItensSelecionados] = useState([]);
@@ -47,7 +42,7 @@ const BoletimSimples = () => {
       ueCodigo: valoresFiltro.ueId,
       turmaCodigo: valoresFiltro.turmaId,
       semestre: valoresFiltro.semestre,
-      consideraHistorico: consideraHistorico 
+      consideraHistorico: valoresFiltro.consideraHistorico     
     });
     setItensSelecionados([]);
     setSelecionarAlunos(
@@ -87,7 +82,7 @@ const BoletimSimples = () => {
       title: 'Nome',
       dataIndex: 'nome',
     },
-  ];
+  ]; 
 
   return (
     <>
@@ -102,9 +97,9 @@ const BoletimSimples = () => {
             somenteConsulta={somenteConsulta}
             permissoesTela={{
               podeAlterar: true,
-              podeConsultar: true,
+              podeConsultar: false,
               podeExcluir: false,
-              podeIncluir: true,
+              podeIncluir: filtro.turmaCodigo,
             }}
             temItemSelecionado={itensSelecionados && itensSelecionados.length}
             onClickVoltar={onClickVoltar}
