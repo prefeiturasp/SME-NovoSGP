@@ -33,7 +33,7 @@ class ServicoFrequencia {
 
     dispatch(setExibirLoaderFrequenciaPlanoAula(true));
     const frequenciaAlunos = await api
-      .get(`v1/calendarios/frequencias`, { params: { aulaId, componenteCurricularId: componenteCurricular.id } })
+      .get(`v1/calendarios/frequencias`, { params: { aulaId, componenteCurricularId: componenteCurricular.id > 0 ? componenteCurricular.id : componenteCurricular.codigoComponenteCurricular } })
       .finally(() => dispatch(setExibirLoaderFrequenciaPlanoAula(false)))
       .catch(e => erros(e));
 
