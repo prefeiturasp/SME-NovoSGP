@@ -36,19 +36,12 @@ const ModalCopiarConteudoPlanoAnual = () => {
     ServicoPlanoAnual.obterPeriodosEscolaresParaCopia(planejamentoAnualId)
       .then(resposta => {
         if (resposta && resposta.data && resposta.data.length) {
-          const lista = resposta.data
-            .sort((a, b) => {
-              if (a.bimestre > b.bimestre) {
-                return 1;
-              }
-              return -1;
-            })
-            .map(item => {
-              return {
-                valor: item.id,
-                nome: `${item.bimestre}º Bimestre`,
-              };
-            });
+          const lista = resposta.data.map(item => {
+            return {
+              valor: item.id,
+              nome: `${item.bimestre}º Bimestre`,
+            };
+          });
 
           if (lista.length > 1) {
             lista.unshift({ nome: 'Todos', valor: '0' });
