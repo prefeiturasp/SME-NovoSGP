@@ -27,7 +27,8 @@ namespace SME.SGP.Aplicacao
         private async Task<PeriodoEscolar> ObterPeriodoEncerrado()
         {
             var ano = DateTime.Now.Year;
-            return await mediator.Send(new ObterPeriodoEscolarPorModalidadeAnoEDataFinalQuery(Dominio.ModalidadeTipoCalendario.FundamentalMedio, ano, DateTime.Now.AddDays(-1)));
+            var dataEncerramento = DateTime.Now.Date.AddDays(-1);
+            return await mediator.Send(new ObterPeriodoEscolarPorModalidadeAnoEDataFinalQuery(Dominio.ModalidadeTipoCalendario.FundamentalMedio, ano, dataEncerramento));
         }
     }
 }
