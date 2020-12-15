@@ -25,6 +25,7 @@ function InputRF({
   maxlength,
   onKeyDown,
   style,
+  placeholderRF,
 }) {
   const [valor, setValor] = useState('');
 
@@ -101,7 +102,7 @@ function InputRF({
             onBlur={executaOnBlur}
             maxLength={maxlength || 7}
             value={valor}
-            placeholder="Digite o RF"
+            placeholder={placeholderRF}
             onKeyDown={onKeyDown}
             onChange={onChangeRf}
             style={style}
@@ -118,7 +119,7 @@ function InputRF({
         <InputRFEstilo>
           <Input
             value={valor}
-            placeholder="Digite o RF"
+            placeholder={placeholderRF}
             onChange={onChangeRf}
             onPressEnter={e => onSubmitRF(e.target.value)}
             suffix={botao}
@@ -143,6 +144,7 @@ InputRF.propTypes = {
   maxlength: t.number,
   onKeyDown: t.func,
   style: t.objectOf(t.object),
+  placeholderRF: t.string.isRequired,
 };
 
 InputRF.defaultProps = {
