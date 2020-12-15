@@ -407,12 +407,11 @@ namespace SME.SGP.Dados.Repositorios
         private string MontarCondicoesDaConsultaObterComunicadosParaFiltroDaDashboard(FiltroObterComunicadosParaFiltroDaDashboardDto filtro, string comunicadoAlias,
             string comunicadoTumaAlias, string turmaAlias)
         {
-            var where = new StringBuilder($" WHERE {comunicadoAlias}.ano_letivo = @anoLetivo ");
-            if (!string.IsNullOrWhiteSpace(filtro.CodigoDre))
-                where.Append($" AND {comunicadoAlias}.codigo_dre = @CodigoDre");
+            var where = new StringBuilder($" WHERE {comunicadoAlias}.ano_letivo = @anoLetivo ");            
 
-            if (!string.IsNullOrWhiteSpace(filtro.CodigoUe))
-                where.Append($" AND {comunicadoAlias}.codigo_ue = @CodigoUe");
+            where.Append(!string.IsNullOrWhiteSpace(filtro.CodigoDre) ? $" AND {comunicadoAlias}.codigo_dre = @CodigoDre" : $" AND {comunicadoAlias}.codigo_dre is null");
+                        
+            where.Append(!string.IsNullOrWhiteSpace(filtro.CodigoUe) ? $" AND {comunicadoAlias}.codigo_ue = @CodigoUe" : $" AND {comunicadoAlias}.codigo_ue is null");
 
             if (filtro.GruposIds != null)
                 where.Append($" AND {comunicadoAlias}.grupo_comunicado_id = ANY(@GruposIds)");
