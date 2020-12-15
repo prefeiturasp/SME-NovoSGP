@@ -1061,7 +1061,7 @@ rotas.set(RotasDto.RELATORIO_ATRIBUICAO_CJ, {
 });
 
 rotas.set(RotasDto.RELATORIO_ALTERACAO_NOTAS, {
-  breadcrumbName: 'Histórico de alterações em notas',
+  breadcrumbName: 'Histórico de alterações de notas',
   menu: ['Relatórios', 'Fechamento'],
   parent: '/',
   component: RelatorioHistoricoAlteracoesNotas,
