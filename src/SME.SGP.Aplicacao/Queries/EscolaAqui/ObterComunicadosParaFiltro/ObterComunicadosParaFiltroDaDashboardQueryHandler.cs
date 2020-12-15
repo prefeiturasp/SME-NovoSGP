@@ -22,6 +22,8 @@ namespace SME.SGP.Aplicacao.Queries.EscolaAqui.ObterComunicadosParaFiltro
         {
             try
             {
+                var comunicadosComTurmas = new List<ComunicadoParaFiltroDaDashboardDto>();
+
                 var filtro = new FiltroObterComunicadosParaFiltroDaDashboardDto
                 {
                     AnoEscolar = request.AnoEscolar,
@@ -37,13 +39,27 @@ namespace SME.SGP.Aplicacao.Queries.EscolaAqui.ObterComunicadosParaFiltro
                     Semestre = request.Semestre
                 };
 
-                return await repositorioComunicado.ObterComunicadosParaFiltroDaDashboard(filtro);
+                var comunicadosFiltrados = await repositorioComunicado.ObterComunicadosParaFiltroDaDashboard(filtro);
+
+                comunicadosComTurmas = await ObterTurmasAssociadas(comunicadosFiltrados);
+
+                return comunicadosComTurmas;
             }
             catch (Exception ex)
             {
                 throw ex;
             }
 
+        }
+
+        private async Task<List<ComunicadoParaFiltroDaDashboardDto>> ObterTurmasAssociadas(IEnumerable<ComunicadoParaFiltroDaDashboardDto> comunicadosFiltrados)
+        {
+            foreach (var item in comunicadosFiltrados)
+            {
+                var turmas = await repositorioComunicado.ObterComunicadosTurma(item.Id);
+                item.TurmasCodigo.AddRange(turmas);
+            }
+            return comunicadosFiltrados.ToList();
         }
     }
 }

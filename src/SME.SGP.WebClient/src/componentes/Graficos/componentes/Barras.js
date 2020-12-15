@@ -86,8 +86,8 @@ function Barras({
       animate
       motionStiffness={90}
       motionDamping={15}
-      labelFormat={porcentagem && format}
-      tooltipFormat={porcentagem && format}
+      labelFormat={porcentagem ? format : ''}
+      tooltipFormat={porcentagem ? format : ''}
       {...customProps}
     />
   );
