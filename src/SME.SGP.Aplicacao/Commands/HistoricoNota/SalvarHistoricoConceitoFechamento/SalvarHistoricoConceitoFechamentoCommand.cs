@@ -5,11 +5,12 @@ namespace SME.SGP.Aplicacao
 {
     public class SalvarHistoricoConceitoFechamentoCommand : IRequest<long>
     {
-        public SalvarHistoricoConceitoFechamentoCommand(long conceitoAnteriorId, long conceitoNovoId, long fechamentoNotaId, string criadoRF = "", string criadoPor = "")
+        public SalvarHistoricoConceitoFechamentoCommand(long conceitoAnteriorId, long conceitoNovoId, long fechamentoNotaId, string criadoRF = "", string criadoPor = "", long? workflowId = null)
         {
             ConceitoAnteriorId = conceitoAnteriorId;
             ConceitoNovoId = conceitoNovoId;
             FechamentoNotaId = fechamentoNotaId;
+            WorkFlowId = workflowId;
         }
 
         public long ConceitoAnteriorId { get; set; }
@@ -17,6 +18,7 @@ namespace SME.SGP.Aplicacao
         public long FechamentoNotaId { get; set; }
         public string CriadoRF { get; set; }
         public string CriadoPor { get; set; }
+        public long? WorkFlowId { get; set; }
     }
 
     public class SalvarHistoricoConceitoFechamentoCommandValidator : AbstractValidator<SalvarHistoricoConceitoFechamentoCommand>
