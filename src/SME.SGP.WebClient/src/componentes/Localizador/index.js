@@ -30,6 +30,11 @@ function Localizador({
   rfEdicao,
   buscarOutrosCargos,
   buscandoDados,
+  labelRF,
+  placeholderRF,
+  placeholderNome,
+  labelNome,
+  classesRF,
 }) {
   const usuario = useSelector(store => store.usuario);
   const [dataSource, setDataSource] = useState([]);
@@ -186,15 +191,14 @@ function Localizador({
 
   return (
     <>
-      <Grid cols={4}>
-        {showLabel && (
-          <Label text="Registro Funcional (RF)" control="professorRf" />
-        )}
+      <Grid cols={4} className={classesRF}>
+        {showLabel && <Label text={labelRF} control="professorRf" />}
         <InputRF
           pessoaSelecionada={pessoaSelecionada}
           onSelect={onBuscarPorRF}
           onChange={onChangeRF}
           name="professorRf"
+          placeholderRF={placeholderRF}
           form={form}
           desabilitado={
             desabilitado || ehPerfilProfessor || desabilitarCampo.rf
@@ -202,7 +206,7 @@ function Localizador({
         />
       </Grid>
       <Grid className="pr-0" cols={8}>
-        {showLabel && <Label text="Nome" control="professorNome" />}
+        {showLabel && <Label text={labelNome} control="professorNome" />}
         <InputNome
           dataSource={dataSource}
           onSelect={onSelectPessoa}
@@ -210,6 +214,7 @@ function Localizador({
           pessoaSelecionada={pessoaSelecionada}
           form={form}
           name="professorNome"
+          placeholderNome={placeholderNome}
           desabilitado={
             desabilitado || ehPerfilProfessor || desabilitarCampo.nome
           }
@@ -232,6 +237,11 @@ Localizador.propTypes = {
   rfEdicao: PropTypes.string,
   buscarOutrosCargos: PropTypes.bool,
   buscandoDados: PropTypes.func,
+  labelRF: PropTypes.string,
+  labelNome: PropTypes.string,
+  placeholderRF: PropTypes.string,
+  placeholderNome: PropTypes.string,
+  classesRF: PropTypes.string,
 };
 
 Localizador.defaultProps = {
@@ -244,6 +254,11 @@ Localizador.defaultProps = {
   rfEdicao: '',
   buscarOutrosCargos: false,
   buscandoDados: () => {},
+  labelRF: 'Registro Funcional (RF)',
+  labelNome: 'Nome',
+  placeholderRF: 'Digite o RF',
+  placeholderNome: 'Digite o nome da pessoa',
+  classesRF: '',
 };
 
 export default Localizador;

@@ -4,6 +4,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,8 +12,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioPeriodoEscolar : RepositorioBase<PeriodoEscolar>, IRepositorioPeriodoEscolar
     {
-        public RepositorioPeriodoEscolar(ISgpContext conexao) : base(conexao)
-        { }
+        public RepositorioPeriodoEscolar(ISgpContext conexao) : base(conexao) { }
 
         public async Task<IEnumerable<PeriodoEscolar>> ObterPorTipoCalendario(long tipoCalendarioId)
         {
@@ -31,12 +31,16 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<PeriodoEscolar> ObterPorTipoCalendarioData(long tipoCalendarioId, DateTime data)
         {
             StringBuilder query = new StringBuilder();
-            MontaQuery(query);
-            query.AppendLine("where tipo_calendario_id = @tipoCalendarioId");
-            query.AppendLine("and periodo_inicio::date <= date(@dataPeriodo)");
-            query.AppendLine("and periodo_fim::date >= date(@dataPeriodo)");
+            MontaQueryComTipoCalendario(query);
+            query.AppendLine("where pe.tipo_calendario_id = @tipoCalendarioId");
+            query.AppendLine("and pe.periodo_inicio::date <= date(@dataPeriodo)");
+            query.AppendLine("and pe.periodo_fim::date >= date(@dataPeriodo)");
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoEscolar>(query.ToString(), new { tipoCalendarioId, dataPeriodo = data.Date });
+            return (await database.Conexao.QueryAsync<PeriodoEscolar, TipoCalendario, PeriodoEscolar>(query.ToString(), (pe, tipoCalendario) =>
+            {                
+                pe.AdicionarTipoCalendario(tipoCalendario);
+                return pe;
+            }, new { tipoCalendarioId, dataPeriodo = data.Date }, splitOn: "id")).FirstOrDefault();
         }
 
         public async Task<IEnumerable<PeriodoEscolar>> ObterPeriodosEmAbertoPorTipoCalendarioData(long tipoCalendarioId, DateTime data)
@@ -64,7 +68,6 @@ namespace SME.SGP.Dados.Repositorios
         {
             query.AppendLine("select ");
             query.AppendLine("id,");
-            query.AppendLine("tipo_calendario_id,");
             query.AppendLine("bimestre,");
             query.AppendLine("periodo_inicio,");
             query.AppendLine("periodo_fim,");
@@ -73,8 +76,18 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("alterado_em,");
             query.AppendLine("criado_por,");
             query.AppendLine("criado_rf,");
-            query.AppendLine("criado_em");
+            query.AppendLine("criado_em,");
+            query.AppendLine("tipo_calendario_id");
             query.AppendLine("from periodo_escolar");
+        }
+
+        private static void MontaQueryComTipoCalendario(StringBuilder query)
+        {
+            query.AppendLine("select ");
+            query.AppendLine("pe.*,");
+            query.AppendLine("tc.*");
+            query.AppendLine("from periodo_escolar pe");
+            query.AppendLine("inner join tipo_calendario tc on pe.tipo_calendario_id = tc.id");
         }
 
         public async Task<PeriodoEscolar> ObterUltimoBimestreAsync(int anoLetivo, ModalidadeTipoCalendario modalidade, int semestre = 0)

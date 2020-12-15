@@ -256,6 +256,7 @@ const RelatorioHistoricoAlteracoesNotas = () => {
 
   useEffect(() => {
     const bi = [];
+    bi.push({ desc: 'Todos', valor: OPCAO_TODOS });
     bi.push({ desc: '1º', valor: '1' });
     bi.push({ desc: '2º', valor: '2' });
 
@@ -263,9 +264,7 @@ const RelatorioHistoricoAlteracoesNotas = () => {
       bi.push({ desc: '3º', valor: '3' });
       bi.push({ desc: '4º', valor: '4' });
     }
-
     bi.push({ desc: 'Final', valor: '0' });
-    bi.push({ desc: 'Todos', valor: OPCAO_TODOS });
     setListaBimestres(bi);
     setBimestre();
   }, [modalidadeId]);

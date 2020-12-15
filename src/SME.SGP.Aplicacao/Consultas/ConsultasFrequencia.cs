@@ -77,6 +77,23 @@ namespace SME.SGP.Aplicacao
             return frequenciaAluno.PercentualFrequencia;
         }
 
+        public async Task<FrequenciaAluno> ObterFrequenciaGeralAlunoPorTurmaEComponente(string alunoCodigo, string turmaCodigo, string componenteCurricularCodigo = "")
+        {
+            var frequenciaAlunoPeriodos = await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterFrequenciaGeralAluno(alunoCodigo, turmaCodigo, componenteCurricularCodigo);
+
+            if (frequenciaAlunoPeriodos == null || !frequenciaAlunoPeriodos.Any())
+                return null;
+
+            var frequenciaAluno = new FrequenciaAluno()
+            {
+                TotalAulas = frequenciaAlunoPeriodos.Sum(f => f.TotalAulas),
+                TotalAusencias = frequenciaAlunoPeriodos.Sum(f => f.TotalAusencias),
+                TotalCompensacoes = frequenciaAlunoPeriodos.Sum(f => f.TotalCompensacoes),
+            };
+
+            return frequenciaAluno;
+        }
+
         public async Task<double> ObterFrequenciaMedia(DisciplinaDto disciplina)
         {
             if (_mediaFrequencia == 0)
@@ -132,7 +149,7 @@ namespace SME.SGP.Aplicacao
             return alunosAusentesDto;
         }
 
-        public async Task<FrequenciaDto> ObterListaFrequenciaPorAula(long aulaId)
+        public async Task<FrequenciaDto> ObterListaFrequenciaPorAula(long aulaId, long? disciplinaId = null)
         {
             var aula = repositorioAula.ObterPorId(aulaId);
             if (aula == null)
@@ -172,7 +189,7 @@ namespace SME.SGP.Aplicacao
                                                     TipoParametroSistema.PercentualFrequenciaAlerta,
                                                     bimestre.PeriodoInicio.Year));
 
-            var disciplinaAula = await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { Convert.ToInt64(aula.DisciplinaId) });
+            var disciplinaAula = await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { disciplinaId.HasValue ? disciplinaId.Value : Convert.ToInt64(aula.DisciplinaId) });
 
             if (disciplinaAula == null || disciplinaAula.ToList().Count <= 0)
                 throw new NegocioException("Disciplina da aula não encontrada");

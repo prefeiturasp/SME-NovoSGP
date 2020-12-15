@@ -26,48 +26,72 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(ExecutarVerificacaoPendenciaAvaliacaoProfessorCommand request, CancellationToken cancellationToken)
         {
+            var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesQuery());
+
             var periodosEncerrando = await mediator.Send(new ObterPeriodosFechamentoEscolasPorDataFinalQuery(DateTime.Now.Date.AddDays(request.DiasParaGeracaoDePendencia)));
             foreach (var periodoEncerrando in periodosEncerrando)
             {
-                var turmasSemAvaliacao = await mediator.Send(new ObterTurmaEComponenteSemAvaliacaoNoPeriodoPorUeQuery(periodoEncerrando.PeriodoFechamento.UeId.Value,
-                                                                                                                        periodoEncerrando.PeriodoEscolar.TipoCalendarioId,
-                                                                                                                        periodoEncerrando.PeriodoEscolar.PeriodoInicio,
-                                                                                                                        periodoEncerrando.PeriodoEscolar.PeriodoFim));
-
-                if (turmasSemAvaliacao != null && turmasSemAvaliacao.Any())
+                try
                 {
-                    var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesQuery());
-                    foreach (var turmaSemAvaliacao in turmasSemAvaliacao.GroupBy(a => (a.TurmaCodigo, a.TurmaId)))
+                    var turmas = await mediator.Send(new ObterTurmasPorUeModalidadesAnoQuery(periodoEncerrando.PeriodoFechamento.UeId.Value,
+                                                                                             periodoEncerrando.PeriodoEscolar.TipoCalendario.Modalidade.ObterModalidadesTurma(),
+                                                                                             periodoEncerrando.PeriodoEscolar.TipoCalendario.AnoLetivo));
+
+                    var turmasComAvaliacao = await mediator.Send(new ObterQuantidadeAvaliacoesTurmaComponentePorUeNoPeriodoQuery(periodoEncerrando.PeriodoFechamento.UeId.Value,
+                                                                                                                            periodoEncerrando.PeriodoEscolar.PeriodoInicio,
+                                                                                                                            periodoEncerrando.PeriodoEscolar.PeriodoFim));
+
+
+                    // Filtra turmas seriadas 1º ao 9º ano
+                    foreach (var turma in turmas.Where(c => Enumerable.Range(1, 9).Select(a => a.ToString()).Contains(c.Ano)))
                     {
-                        var professoresTurma = await servicoEol.ObterProfessoresTitularesDisciplinas(turmaSemAvaliacao.Key.TurmaCodigo);
-                        var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(turmaSemAvaliacao.Key.TurmaId));
-
-                        foreach (var componenteCurricularNaTurma in turmaSemAvaliacao)
+                        try
                         {
-                            try
-                            {
-                                var professorComponente = professoresTurma.FirstOrDefault(c => c.DisciplinaId == componenteCurricularNaTurma.ComponenteCurricularId);
-                                var componenteCurricular = componentesCurriculares.FirstOrDefault(c => c.Codigo == componenteCurricularNaTurma.ComponenteCurricularId.ToString());
+                            var professoresTurma = await servicoEol.ObterProfessoresTitularesDisciplinas(turma.CodigoTurma);
 
-                                if (professorComponente != null)
-                                    if (!await ExistePendenciaProfessor(turma, componenteCurricularNaTurma, professorComponente, periodoEncerrando.PeriodoEscolar.Id))
-                                        await IncluirPendenciaProfessor(turma, componenteCurricularNaTurma.ComponenteCurricularId, professorComponente.ProfessorRf, periodoEncerrando.PeriodoEscolar.Bimestre, componenteCurricular.Descricao, periodoEncerrando.PeriodoEscolar.Id);
-                            }
-                            catch (Exception ex)
+                            foreach (var professorComponenteTurma in professoresTurma)
                             {
-                                SentrySdk.CaptureException(ex);
+                                if (string.IsNullOrEmpty(professorComponenteTurma.ProfessorRf))
+                                    continue;
+
+                                try
+                                {
+                                    var componenteCurricular = componentesCurriculares.FirstOrDefault(c => c.Codigo == professorComponenteTurma.DisciplinaId.ToString()
+                                                                                               && c.LancaNota);
+
+                                    if (componenteCurricular != null)
+                                    {
+                                        if (turmasComAvaliacao.Any(c => c.TurmaId == turma.Id && c.ComponenteCurricularId == professorComponenteTurma.DisciplinaId))
+                                            continue;
+
+                                        if (!await ExistePendenciaProfessor(turma, professorComponenteTurma, periodoEncerrando.PeriodoEscolar.Id))
+                                            await IncluirPendenciaProfessor(turma, professorComponenteTurma.DisciplinaId, professorComponenteTurma.ProfessorRf, periodoEncerrando.PeriodoEscolar.Bimestre, componenteCurricular.Descricao, periodoEncerrando.PeriodoEscolar.Id);
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    SentrySdk.CaptureException(ex);
+                                }
                             }
                         }
+                        catch (Exception ex)
+                        {
+                            SentrySdk.CaptureException(ex);
+                        }
                     }
+                }
+                catch (Exception ex)
+                {
+                    SentrySdk.CaptureException(ex);
                 }
             }
 
             return true;
         }
 
-        private async Task<bool> ExistePendenciaProfessor(Turma turma, TurmaEComponenteDto componenteCurricularNaTurma, ProfessorTitularDisciplinaEol professorComponente, long periodoEscolarId)
+        private async Task<bool> ExistePendenciaProfessor(Turma turma, ProfessorTitularDisciplinaEol professorComponente, long periodoEscolarId)
             => await mediator.Send(new ExistePendenciaProfessorPorTurmaEComponenteQuery(turma.Id,
-                                                                                        componenteCurricularNaTurma.ComponenteCurricularId,
+                                                                                        professorComponente.DisciplinaId,
                                                                                         periodoEscolarId,
                                                                                         professorComponente.ProfessorRf,
                                                                                         TipoPendencia.AusenciaDeAvaliacaoProfessor));
