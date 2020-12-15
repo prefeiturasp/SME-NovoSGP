@@ -1,12 +1,10 @@
 ﻿using Dapper;
 using Dommel;
-using SME.SGP.Dados.Repositorios;
+using Npgsql;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados
@@ -49,7 +47,11 @@ namespace SME.SGP.Dados
                              and disciplina_id = @disciplinaId
                              and bimestre = @bimestre";
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<ProcessoExecutando>(query, new { turmaId, disciplinaId, bimestre, tipoProcesso = (int)tipoProcesso });
+
+            using (var conexao = new NpgsqlConnection(database.ConnectionString))
+            {
+                return await conexao.QueryFirstOrDefaultAsync<ProcessoExecutando>(query, new { turmaId, disciplinaId, bimestre, tipoProcesso = (int)tipoProcesso });
+            }
         }
 
         public void Remover(ProcessoExecutando processo)
