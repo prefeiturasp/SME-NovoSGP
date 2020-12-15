@@ -88,7 +88,7 @@ namespace SME.SGP.Dados
         {
             var condicaoPeriodoEscolar = periodoEscolarId.HasValue ?
                 "and pp.periodo_escolar_id = @periodoEscolarId" :
-                "and pp.periodo_escolar_id id null";
+                "and pp.periodo_escolar_id is null";
 
             var query = $@"select pp.* 
                           from pendencia_professor pp 
