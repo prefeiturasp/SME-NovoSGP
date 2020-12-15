@@ -17,13 +17,4 @@ namespace SME.SGP.Aplicacao
         public long Turno { get; set; }
     }
 
-    public class ObterComponentesCurricularesRegenciaPorAnoETurnoQueryValidator : AbstractValidator<ObterComponentesCurricularesRegenciaPorAnoETurnoQuery>
-    {
-        public ObterComponentesCurricularesRegenciaPorAnoETurnoQueryValidator()
-        {
-            RuleFor(a => a.Ano)
-                .NotEmpty()
-                .WithMessage("O ano precisa ser informado");
-        }
-    }
 }
