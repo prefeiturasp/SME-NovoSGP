@@ -49,7 +49,7 @@ namespace SME.SGP.Dominio.Servicos
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<List<string>> SalvarAsync(FechamentoTurmaDisciplina fechamentoFinal)
+        public async Task<List<string>> SalvarAsync(FechamentoTurmaDisciplina fechamentoFinal, Turma turma)
         {
             var mensagens = new List<string>();
             unitOfWork.IniciarTransacao();
@@ -70,8 +70,16 @@ namespace SME.SGP.Dominio.Servicos
                         {
                             try
                             {
+                                if (turma.AnoLetivo == 2020)
+                                    ValidarNotasFechamento2020(fechamentoNota);
+
                                 fechamentoNota.FechamentoAlunoId = fechamentoAlunoId;
                                 await repositorioFechamentoNota.SalvarAsync(fechamentoNota);
+                            }
+                            catch(NegocioException e)
+                            {
+                                servicoLog.Registrar(e);
+                                mensagens.Add(e.Message);
                             }
                             catch (Exception e)
                             {
@@ -99,6 +107,16 @@ namespace SME.SGP.Dominio.Servicos
                 unitOfWork.Rollback();
                 throw e;
             }
+        }
+
+        private void ValidarNotasFechamento2020(FechamentoNota fechamentoNota)
+        {
+            if (fechamentoNota.ConceitoId.HasValue && fechamentoNota.ConceitoId.Value == 3)
+                throw new NegocioException("Não é possível atribuir conceito NS (Não Satisfatório) pois em 2020 não há retenção dos estudantes conforme o Art 5º da LEI Nº 17.437 DE 12 DE AGOSTO DE 2020.");
+            else
+            if (!fechamentoNota.SinteseId.HasValue && fechamentoNota.Nota < 5)
+                throw new NegocioException("Não é possível atribuir uma nota menor que 5 pois em 2020 não há retenção dos estudantes conforme o Art 5º da LEI Nº 17.437 DE 12 DE AGOSTO DE 2020.");
+
         }
 
         private async Task ExcluirPendenciaAusenciaFechamento(long disciplinaId, long turmaId)
