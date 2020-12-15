@@ -58,6 +58,14 @@ const removerNumeros = numChar => {
   return numChar;
 };
 
+const ordenarListaMaiorParaMenor = (conteudoParaOrdenar, nomeCampo) => {
+  const ordenar = (a, b) => {
+    return b[nomeCampo] - a[nomeCampo];
+  };
+  const dadosOrdenados = conteudoParaOrdenar.sort(ordenar);
+  return dadosOrdenados;
+};
+
 export {
   validaSeObjetoEhNuloOuVazio,
   valorNuloOuVazio,
@@ -67,4 +75,5 @@ export {
   ordenarPor,
   ordenarDescPor,
   removerNumeros,
+  ordenarListaMaiorParaMenor,
 };
