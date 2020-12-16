@@ -1,8 +1,10 @@
 ﻿using Dapper;
 using Dommel;
+using Npgsql;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados
@@ -26,16 +28,30 @@ namespace SME.SGP.Dados
             return await database.Conexao.QueryFirstOrDefaultAsync<int?>(query, new { aulaId }) != null;
         }
 
-        public async Task<ProcessoExecutando> ObterProcessoCalculoFrequencia(string turmaId, string disciplinaId, int bimestre)
+        public async Task<IEnumerable<long>> ObterIdsPorFiltrosAsync(int bimestre, string disciplinaId, string turmaId)
+        {
+            var query = @"select id from processo_executando where   
+                             turma_id = @turmaId
+                             and disciplina_id = @disciplinaId
+                             and bimestre = @bimestre ";
+
+            return await database.Conexao.QueryAsync<long>(query, new { turmaId, disciplinaId, bimestre });
+        }
+
+        public async Task<ProcessoExecutando> ObterProcessoCalculoFrequenciaAsync(string turmaId, string disciplinaId, int bimestre, TipoProcesso tipoProcesso)
         {
             var query = @"select * 
                             from processo_executando
-                           where tipo_processo = 1
+                           where tipo_processo = @tipoProcesso
                              and turma_id = @turmaId
                              and disciplina_id = @disciplinaId
                              and bimestre = @bimestre";
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<ProcessoExecutando>(query, new { turmaId, disciplinaId, bimestre });
+
+            using (var conexao = new NpgsqlConnection(database.ConnectionString))
+            {
+                return await conexao.QueryFirstOrDefaultAsync<ProcessoExecutando>(query, new { turmaId, disciplinaId, bimestre, tipoProcesso = (int)tipoProcesso });
+            }
         }
 
         public async Task<bool> ProcessoEstaEmExecucao(TipoProcesso tipoProcesso)
