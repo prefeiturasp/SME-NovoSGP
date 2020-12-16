@@ -29,4 +29,4 @@ apt update && \
 apt install -y redis-server && \ 
 chmod a+x /app/run.sh
 
-CMD ["sh", "/app/run.sh"]
+ENTRYPOINT ["sh", "/app/run.sh"]
