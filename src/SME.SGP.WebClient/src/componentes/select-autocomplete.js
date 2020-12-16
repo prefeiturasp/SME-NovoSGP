@@ -133,6 +133,7 @@ const SelectAutocomplete = ({
       id={id}
       value={form.values[name] || undefined}
       disabled={disabled}
+      notFoundContent="Sem dados"
       component={AutoComplete}
     >
       {opcoes}
@@ -152,6 +153,7 @@ const SelectAutocomplete = ({
       id={id}
       value={value}
       disabled={disabled}
+      notFoundContent="Sem dados"
     >
       {opcoes}
     </AutoComplete>
