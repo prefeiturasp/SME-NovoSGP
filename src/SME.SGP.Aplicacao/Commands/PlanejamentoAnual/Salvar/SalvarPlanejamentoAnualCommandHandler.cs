@@ -55,17 +55,19 @@ namespace SME.SGP.Aplicacao
                 if (turma == null)
                     throw new NegocioException($"Turma de id [{turma.Id}] não localizada!");
 
+                var regenteAtual = await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(comando.ComponenteCurricularId, turma.CodigoTurma, DateTime.Now.Date, usuario));
+
                 foreach (var periodoEscolar in comando.PeriodosEscolares)
                 {
                     var periodo = await mediator.Send(new ObterPeriodoEscolarePorIdQuery(periodoEscolar.PeriodoEscolarId));
                     if (usuario.EhProfessor())
                     {
                         var temAtribuicao = await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaNoPeriodoQuery(comando.ComponenteCurricularId, turma.CodigoTurma, usuario.CodigoRf, periodo.PeriodoInicio.Date, periodo.PeriodoFim.Date));
-                        if (!temAtribuicao)
+                        if (!temAtribuicao && !regenteAtual)
                             excessoes.Add($"Você não possui atribuição na turma {turma.Nome} - {periodo.Bimestre}° Bimestre.");
                     }
 
-                    var periodoEmAberto = mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, periodo.Bimestre, turma.AnoLetivo == DateTime.Today.Year)).Result;
+                    var periodoEmAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, periodo.Bimestre, turma.AnoLetivo == DateTime.Today.Year));
                     if (!periodoEmAberto)
                         excessoes.Add($"O {periodo.Bimestre}° Bimestre não está aberto.");
                 }
