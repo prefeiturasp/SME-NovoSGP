@@ -72,6 +72,9 @@ namespace SME.SGP.Dominio
         [Display(Name = "relatorios/alteracao-notas", ShortName = "AlteracaoNotas", Description = "Relatório de alterações de notas")]
         AlteracaoNotasBimestre = 24,
         [Display(Name = "relatorios/ae/adesao", ShortName = "AEAdesao", Description = "Relatório de Adesão do Escola Aqui")]
-        AEAdesao = 25
+        AEAdesao = 25,
+
+        [Display(Name = "relatorios/dados-leitura", ShortName = "DadosLeitura", Description = "Relatório de Leitura")]
+        Leitura = 26
     }
 }
