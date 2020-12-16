@@ -81,7 +81,7 @@ export default function ConselhoClasse(state = inicial, action) {
           recomendacaoFamilia: '',
           anotacoesPedagogicas: '',
           anotacoesAluno: [],
-          bimestreAtual: { valor: '' },
+          bimestreAtual: { valor: draft.bimestreAtual.valor },
           conselhoClasseEmEdicao: false,
           dadosPrincipaisConselhoClasse: {},
           auditoriaAnotacaoRecomendacao: null,
