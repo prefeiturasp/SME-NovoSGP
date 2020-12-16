@@ -364,11 +364,12 @@ const RelatorioHistoricoAlteracoesNotas = () => {
 
   const obterSemestres = async (
     modalidadeSelecionada,
-    anoLetivoSelecionado
+    anoLetivoSelecionado,
+    historico,
   ) => {
     setExibirLoader(true);
     const retorno = await api.get(
-      `v1/abrangencias/false/semestres?anoLetivo=${anoLetivoSelecionado}&modalidade=${modalidadeSelecionada ||
+      `v1/abrangencias/${historico}/semestres?anoLetivo=${anoLetivoSelecionado}&modalidade=${modalidadeSelecionada ||
         0}`
     );
     if (retorno && retorno.data) {
@@ -390,12 +391,12 @@ const RelatorioHistoricoAlteracoesNotas = () => {
       anoLetivo &&
       String(modalidadeId) === String(modalidade.EJA)
     ) {
-      obterSemestres(modalidadeId, anoLetivo);
+      obterSemestres(modalidadeId, anoLetivo, consideraHistorico);
     } else {
       setSemestre();
       setListaSemestres([]);
     }
-  }, [obterAnosLetivos, modalidadeId, anoLetivo]);
+  }, [obterAnosLetivos, modalidadeId, anoLetivo, consideraHistorico]);
 
   const cancelar = async () => {
     await setDreId();
