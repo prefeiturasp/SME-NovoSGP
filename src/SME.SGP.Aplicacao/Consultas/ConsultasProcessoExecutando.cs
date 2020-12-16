@@ -17,6 +17,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<bool> ExecutandoCalculoFrequencia(string turmaId, string disciplinaId, int bimestre)
-            => (await repositorio.ObterProcessoCalculoFrequencia(turmaId, disciplinaId, bimestre)) != null;
+            => (await repositorio.ObterProcessoCalculoFrequenciaAsync(turmaId, disciplinaId, bimestre, Dominio.TipoProcesso.CalculoFrequencia)) != null;
     }
 }
