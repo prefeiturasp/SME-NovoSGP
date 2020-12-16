@@ -212,16 +212,14 @@ const EventosLista = ({ match }) => {
   useEffect(() => {
     if (
       refForm &&
-      listaCalendario &&
-      listaCalendario.length &&
+      listaCalendario?.length &&
       eventoCalendarioId &&
-      match &&
-      match.params &&
-      match.params.tipoCalendarioId
+      match?.params?.tipoCalendarioId
     ) {
       const { tipoCalendarioId } = match.params;
+      const tipoCalendarioIdParseado = Number(tipoCalendarioId);
       const temTipoParaSetar = listaCalendario.find(
-        item => item.id === tipoCalendarioId
+        item => item.id === tipoCalendarioIdParseado
       );
 
       const valorDescricao = temTipoParaSetar
@@ -233,10 +231,10 @@ const EventosLista = ({ match }) => {
       }
 
       setTemEventoCalendarioId(false);
-      refForm.setFieldValue('tipoCalendarioId', tipoCalendarioId);
+      refForm.setFieldValue('tipoCalendarioId', tipoCalendarioIdParseado);
       setValorTipoCalendario(valorDescricao);
       setSelecionouCalendario(true);
-      filtrar('tipoCalendarioId', tipoCalendarioId);
+      filtrar('tipoCalendarioId', tipoCalendarioIdParseado);
     }
   }, [
     match,
