@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<long> Handle(SalvarHistoricoNotaFechamentoCommand request, CancellationToken cancellationToken)
         {
-            var historicoNotaId = await mediator.Send(new SalvarHistoricoNotaCommand(request.NotaAnterior, request.NotaNova));
+            var historicoNotaId = await mediator.Send(new SalvarHistoricoNotaCommand(request.NotaAnterior, request.NotaNova, request.CriadoRF, request.CriadoPor));
 
             var historicoNotaFechamento = MapearParaEntidade(request, historicoNotaId);
 
@@ -33,7 +33,8 @@ namespace SME.SGP.Aplicacao
            => new HistoricoNotaFechamento()
            {
                HistoricoNotaId = historicoNotaId,
-               FechamentoNotaId = request.FechamentoNotaId
+               FechamentoNotaId = request.FechamentoNotaId,
+               WorkFlowId = request.WorkFlowId
            };
     }
 }

@@ -35,7 +35,7 @@ const mapearDadosComPorcentagem = dadosMapeados => {
 const mapearParaDtoGraficoPizzaComValorEPercentual = dados => {
   const dadosMapeados = dados.map((item, index) => {
     return {
-      id: index + 1,
+      id: String(index + 1),
       label: item.label,
       value: item.value || 0,
       color: CoresGraficos[index],
@@ -70,9 +70,96 @@ const adicionarCoresNosGraficos = dados => {
   return dados;
 };
 
+const mapearParaDtoDadosComunicadosGraficoBarras = (
+  dados,
+  chavePrincipal,
+  chavesGrafico
+) => {
+  const temDados = dados.filter(
+    item =>
+      item.naoReceberamComunicado ||
+      item.receberamENaoVisualizaram ||
+      item.visualizaramComunicado
+  );
+  if (temDados?.length) {
+    const dadosMapeados = dados.map(item => {
+      const novo = {};
+      if (
+        item.naoReceberamComunicado ||
+        item.receberamENaoVisualizaram ||
+        item.visualizaramComunicado
+      ) {
+        novo[chavePrincipal] = item[chavePrincipal];
+        if (item.naoReceberamComunicado) {
+          novo.naoReceberamComunicado = item.naoReceberamComunicado;
+          novo[chavesGrafico[0]] = item.naoReceberamComunicado;
+        }
+        if (item.receberamENaoVisualizaram) {
+          novo.receberamENaoVisualizaram = item.receberamENaoVisualizaram;
+          novo[chavesGrafico[1]] = item.receberamENaoVisualizaram;
+        }
+        if (item.visualizaramComunicado) {
+          novo.visualizaramComunicado = item.visualizaramComunicado;
+          novo[chavesGrafico[2]] = item.visualizaramComunicado;
+        }
+      }
+      return novo;
+    });
+
+    const dadosMapeadosComCores = adicionarCoresNosGraficos(
+      dadosMapeados.filter(item => item[chavePrincipal])
+    );
+
+    const dadosParaMontarLegenda = [];
+    if (dadosMapeadosComCores.find(item => !!item.naoReceberamComunicado)) {
+      dadosParaMontarLegenda.push({
+        label: chavesGrafico[0],
+        color: CoresGraficos[0],
+      });
+    }
+    if (dadosMapeadosComCores.find(item => !!item.receberamENaoVisualizaram)) {
+      dadosParaMontarLegenda.push({
+        label: chavesGrafico[1],
+        color: CoresGraficos[1],
+      });
+    }
+    if (dadosMapeadosComCores.find(item => !!item.visualizaramComunicado)) {
+      dadosParaMontarLegenda.push({
+        label: chavesGrafico[2],
+        color: CoresGraficos[2],
+      });
+    }
+
+    return {
+      dadosLegendaGrafico: dadosParaMontarLegenda,
+      dadosComunicadosGraficoBarras: dadosMapeadosComCores,
+    };
+  }
+  return null;
+};
+
+const obterDadosComunicadoSelecionado = (
+  descricaoComunicado,
+  listaComunicado
+) => {
+  let comunicado = null;
+  if (descricaoComunicado) {
+    const comunicadoAtual = listaComunicado.find(
+      item => item.descricao === descricaoComunicado
+    );
+    if (comunicadoAtual?.id) {
+      comunicado = comunicadoAtual;
+    }
+  }
+
+  return comunicado;
+};
+
 export {
-  mapearParaDtoGraficoPizzaComValorEPercentual,
   formataMilhar,
-  tooltipCustomizadoDashboardEscolaAqui,
   adicionarCoresNosGraficos,
+  obterDadosComunicadoSelecionado,
+  tooltipCustomizadoDashboardEscolaAqui,
+  mapearParaDtoDadosComunicadosGraficoBarras,
+  mapearParaDtoGraficoPizzaComValorEPercentual,
 };

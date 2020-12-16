@@ -18,5 +18,7 @@ namespace SME.SGP.Dominio.Interfaces
         
         Task<bool> VerificaExistenciaComunicadoParaEvento(long eventoId);
 
+        Task<IEnumerable<ComunicadoTurmaDto>> ObterComunicadosTurma(long comunicadoId);
+
     }
 }
