@@ -451,6 +451,7 @@ namespace SME.SGP.IoC
             
             services.TryAddScopedWorkerService<IRelatorioAEAdesaoUseCase, RelatorioAEAdesaoUseCase>();
 
+            services.TryAddScopedWorkerService<ICalculoFrequenciaTurmaDisciplinaUseCase, CalculoFrequenciaTurmaDisciplinaUseCase>();
         }
 
         private static void ResgistraDependenciaHttp(IServiceCollection services)

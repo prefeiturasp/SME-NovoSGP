@@ -59,12 +59,10 @@ namespace SME.SGP.Aplicacao
                     {
                         eventoAulaDto.MostrarBotaoFrequencia = componenteCurricular.RegistraFrequencia;
                         eventoAulaDto.PodeCadastrarAvaliacao = ObterPodeCadastrarAvaliacao(atividadesAvaliativasDaAula, componenteCurricular);
-                    }
-
+                    }                    
                     eventoAulaDto.Pendencias = await mediator.Send(new ObterPendenciasAulaPorAulaIdQuery(aulaParaVisualizar.Id));
-                    
-                    retorno.Add(eventoAulaDto);
 
+                    retorno.Add(eventoAulaDto);
                 }
             }
 
