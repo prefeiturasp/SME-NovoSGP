@@ -25,8 +25,9 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Turma não encontrada.");
 
             var turno = turma.ModalidadeCodigo == Modalidade.Fundamental ? turma.QuantidadeDuracaoAula : 0;
+            var ano = turma.ModalidadeCodigo == Modalidade.Fundamental ? Convert.ToInt64(turma.Ano) : 0;
 
-            return await mediator.Send(new ObterComponentesCurricularesRegenciaPorAnoETurnoQuery(Convert.ToInt64(turma.Ano), turno));
+            return await mediator.Send(new ObterComponentesCurricularesRegenciaPorAnoETurnoQuery(ano, turno));
 
         }
     }
