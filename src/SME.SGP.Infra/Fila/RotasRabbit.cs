@@ -32,6 +32,7 @@
         public static string RotaExcluirNotificacaoDiarioBordo => "notificacao.excluir.diariobordo";
         public static string RotaExecutaPendenciasAula => "pendencias.aulas.executa";
         public static string RotaSincronizaComponetesCurricularesEol => "componentes.curriculares.eol.sincronizar";
+        public static string RotaCalculoFrequenciaPorTurmaComponente => "frequencia.turma.componente";
         public static string RotaExecutaVerificacaoPendenciasGerais => "pendencias.gerais.executa.verificacao";
 
         public static string RotaExecutaExclusaoPendenciasAula => "pendencias.gerais.pendencias.aula.excluir";
