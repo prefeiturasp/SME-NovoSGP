@@ -36,20 +36,22 @@ const Sintese = props => {
   const [dados, setDados] = useState([]);
 
   useEffect(() => {
-    ServicoConselhoClasse.obterSintese(
-      conselhoClasseId,
-      fechamentoTurmaId,
-      alunoCodigo,
-      turmaId,
-      bimestreSelecionado
-    )
-      .then(resp => {
-        setDados(resp.data);
-      })
-      .catch(e => {
-        erros(e);
-        setDados([]);
-      });
+    if (turmaId && bimestreSelecionado && alunoCodigo) {
+      ServicoConselhoClasse.obterSintese(
+        conselhoClasseId,
+        fechamentoTurmaId,
+        alunoCodigo,
+        turmaId,
+        bimestreSelecionado
+      )
+        .then(resp => {
+          setDados(resp.data);
+        })
+        .catch(e => {
+          erros(e);
+          setDados([]);
+        });
+    }
   }, [
     alunoCodigo,
     conselhoClasseId,
