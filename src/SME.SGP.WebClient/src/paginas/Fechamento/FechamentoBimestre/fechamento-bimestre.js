@@ -87,17 +87,15 @@ const FechamentoBismestre = () => {
   };
 
   const onChangeDisciplinas = id => {
-    setDisciplinaIdSelecionada(id);
     if (id) {
       const disciplina = listaDisciplinas.find(
         c => String(c.codigoComponenteCurricular) === id
-      );
-      if (disciplina && disciplina.regencia) {
-        setEhRegencia(true);
-      } else {
-        setEhRegencia(false);
-      }
+        );     
+        setIdDisciplinaTerritorioSaber(disciplina.territorioSaber ? disciplina.id : id);
+        setDisciplinaIdSelecionada(id);
+        setEhRegencia(disciplina && disciplina.regencia);      
     } else {
+      setDisciplinaIdSelecionada(id);
       resetarTela();
     }
   };
@@ -142,11 +140,11 @@ const FechamentoBismestre = () => {
           setListaDisciplinas([...lista.data]);
           if (lista.data.length === 1) {
             setDisciplinaIdSelecionada(undefined);
+            setIdDisciplinaTerritorioSaber(lista.data[0].territorioSaber ? lista.data[0].id : undefined);
             setDisciplinaIdSelecionada(
               String(lista.data[0].codigoComponenteCurricular)
             );
-            setEhRegencia(lista.data[0].regencia);
-            setIdDisciplinaTerritorioSaber(lista.data[0].territorioSaber ? lista.data[0].id : undefined);
+            setEhRegencia(lista.data[0].regencia);            
             setDesabilitarDisciplina(true);
           }
         } else {
@@ -214,8 +212,8 @@ const FechamentoBismestre = () => {
   useEffect(() => {
     if (disciplinaIdSelecionada) {
       const disciplina = listaDisciplinas.find(
-        item => item.codigoComponenteCurricular == disciplinaIdSelecionada
-      );
+        item => String(item.codigoComponenteCurricular) == disciplinaIdSelecionada
+      );      
       if (disciplina) {
         setRegistraFrequencia(disciplina.registraFrequencia);
       }
