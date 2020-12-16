@@ -46,6 +46,6 @@ export const TituloGrafico = styled.div`
 `;
 
 export const ContainerGraficoBarras = styled.div`
-  height: 80vh;
-  width: 80vw;
+  height: 70vh;
+  width: 70vw;
 `;

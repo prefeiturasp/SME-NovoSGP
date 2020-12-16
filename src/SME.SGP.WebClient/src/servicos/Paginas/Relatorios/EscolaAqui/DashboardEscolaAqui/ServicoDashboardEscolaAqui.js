@@ -110,6 +110,23 @@ class ServicoDashboardEscolaAqui {
     const url = `${urlPadrao}/comunicados/leitura/agrupados?notificacaoId=${notificacaoId}&modoVisualizacao=${modoVisualizacao}`;
     return api.get(url);
   };
+
+  obterDadosDeLeituraDeComunicadosPorModalidades = (
+    codigoDre,
+    codigoUe,
+    notificacaoId,
+    modoVisualizacao
+  ) => {
+    let url = `${urlPadrao}/comunicados/leitura/modalidades?notificacaoId=${notificacaoId}&modoVisualizacao=${modoVisualizacao}`;
+    if (codigoDre) {
+      url += `&codigoDre=${codigoDre}`;
+    }
+
+    if (codigoUe) {
+      url += `&codigoUe=${codigoUe}`;
+    }
+    return api.get(url);
+  };
 }
 
 export default new ServicoDashboardEscolaAqui();

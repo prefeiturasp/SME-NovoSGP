@@ -4,7 +4,7 @@ using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao
+namespace SME.SGP.Aplicacao.Integracoes
 {
     public class ServicoServidorRelatorios : IServicoServidorRelatorios
     {
