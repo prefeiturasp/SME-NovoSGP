@@ -46,12 +46,41 @@ namespace SME.SGP.Aplicacao
 
         private async Task EnviarRelatorio(Guid codigoRelatorio, Ue ue, PeriodoEscolar periodoEscolarEncerrado)
         {
+            var componentesUe = await VerificaComponentesUe(ue);
+
+            var siglasComponentesUe = ObterSiglasComponentes(componentesUe);
+            var nomesComponentesUe = OterNomesComponentes(componentesUe);
+
             var descricaoUe = $"{ue.TipoEscola.ShortName()} {ue.Nome} ({ue.Dre.Abreviacao})";
-            var titulo = $"Validação bimestral de frequência OSL, OIE e PAP - {periodoEscolarEncerrado.Bimestre}º Bimestre - {descricaoUe}";
-            var mensagem = $"Segue o relatório de frequência dos componentes de Sala de Leitura, Informática e PAP do <b>{periodoEscolarEncerrado.Bimestre}º Bimestre</b> da <b>{descricaoUe}</b> para sua validação.<br/><br/>Clique no botão abaixo para fazer o download do arquivo.<br/><br/>";
+            var titulo = $"Validação bimestral de frequência {siglasComponentesUe} - {periodoEscolarEncerrado.Bimestre}º Bimestre - {descricaoUe}";
+            var mensagem = $"Segue o relatório de frequência dos componentes de {nomesComponentesUe} do <b>{periodoEscolarEncerrado.Bimestre}º Bimestre</b> da <b>{descricaoUe}</b> para sua validação.<br/><br/>Clique no botão abaixo para fazer o download do arquivo.<br/><br/>";
             mensagem += await MontarBotaoDownload(codigoRelatorio);
 
             await mediator.Send(new EnviarNotificacaoCommand(titulo, mensagem, NotificacaoCategoria.Workflow_Aprovacao, NotificacaoTipo.Frequencia, ObterCargos(), ue.Dre.CodigoDre, ue.CodigoUe));
+        }
+
+        private string OterNomesComponentes(IEnumerable<ComponenteCurricularDto> componentesUe)
+        {
+            return string.Join(", ",
+                            componentesUe.Select(a => a.Codigo == "1060" ? "Sala de Leitura" :
+                                                      a.Codigo == "1061" ? "Informática" :
+                                                       "PAP"));
+        }
+
+        private string ObterSiglasComponentes(IEnumerable<ComponenteCurricularDto> componentesUe)
+        {
+            return string.Join(", ",
+                            componentesUe.Select(a => a.Codigo == "1060" ? "OSL" :
+                                                      a.Codigo == "1061" ? "OIE" :
+                                                       "PAP"));
+        }
+
+        private async Task<IEnumerable<ComponenteCurricularDto>> VerificaComponentesUe(Ue ue)
+        {
+            var componentesUe = await mediator.Send(new ObterComponentesCurricularesPorUeQuery(ue.CodigoUe));
+            var componentesNotificacao = new[] { "1060", "1061", "1322" };
+
+            return componentesUe.Where(a => componentesNotificacao.Contains(a.Codigo.ToString()));
         }
 
         private Cargo[] ObterCargos()
