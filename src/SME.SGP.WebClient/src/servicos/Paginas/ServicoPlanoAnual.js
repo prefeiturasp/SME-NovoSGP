@@ -209,6 +209,27 @@ class ServicoPlanoAnual {
     const url = `v1/planejamento/anual/${planejamentoAnualId}/periodos-escolares/copia`;
     return api.get(url);
   };
+
+  temObjetivosSelecionadosTabComponenteCurricular = codigoComponenteCurricular => {
+    const { planoAnual } = store.getState();
+
+    if (planoAnual?.objetivosAprendizagemComponente?.length) {
+      const tabAtual = planoAnual.objetivosAprendizagemComponente.find(
+        item =>
+          String(item.componenteCurricularId) ===
+          String(codigoComponenteCurricular)
+      );
+
+      if (
+        tabAtual &&
+        tabAtual.objetivosAprendizagem &&
+        tabAtual.objetivosAprendizagem.length
+      ) {
+        return true;
+      }
+    }
+    return false;
+  };
 }
 
 export default new ServicoPlanoAnual();
