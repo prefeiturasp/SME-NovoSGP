@@ -449,6 +449,8 @@ namespace SME.SGP.Dados.Repositorios
                 where.Append($" AND lower(f_unaccent(cm.titulo)) LIKE lower(f_unaccent('%" + filtro.Titulo + "%'))");
             }
 
+            where.Append($" and not {comunicadoAlias}.excluido ");
+
             return where.ToString();
         }
 
