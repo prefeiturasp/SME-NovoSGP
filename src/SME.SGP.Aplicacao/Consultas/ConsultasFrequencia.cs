@@ -77,6 +77,23 @@ namespace SME.SGP.Aplicacao
             return frequenciaAluno.PercentualFrequencia;
         }
 
+        public async Task<FrequenciaAluno> ObterFrequenciaGeralAlunoPorTurmaEComponente(string alunoCodigo, string turmaCodigo, string componenteCurricularCodigo = "")
+        {
+            var frequenciaAlunoPeriodos = await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterFrequenciaGeralAluno(alunoCodigo, turmaCodigo, componenteCurricularCodigo);
+
+            if (frequenciaAlunoPeriodos == null || !frequenciaAlunoPeriodos.Any())
+                return null;
+
+            var frequenciaAluno = new FrequenciaAluno()
+            {
+                TotalAulas = frequenciaAlunoPeriodos.Sum(f => f.TotalAulas),
+                TotalAusencias = frequenciaAlunoPeriodos.Sum(f => f.TotalAusencias),
+                TotalCompensacoes = frequenciaAlunoPeriodos.Sum(f => f.TotalCompensacoes),
+            };
+
+            return frequenciaAluno;
+        }
+
         public async Task<double> ObterFrequenciaMedia(DisciplinaDto disciplina)
         {
             if (_mediaFrequencia == 0)
