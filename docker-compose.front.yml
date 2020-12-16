@@ -19,27 +19,10 @@ services:
       - sme-network
     depends_on:
       # - "sme-db"
-      - "sme-redis"
+      #- "sme-redis"
       - "sme-rabbitmq"
     env_file:
-      - sme-api.env
-  sme-workerservice:
-    container_name: sme-workerservice
-    restart: on-failure
-    image: sme-workerservice
-    build:
-      context: .
-      dockerfile: ./src/SME.SGP.WorkerService/Dockerfile
-    ports:
-      - "5000:5000"
-    networks:
-      - sme-network
-    depends_on:
-      - "sme-db"
-      - "sme-redis"
-      - "sme-api"
-    env_file:
-      - sme-api.env
+      - sme-api.env  
   sme-db:
     container_name: sme-db
     restart: always
@@ -71,18 +54,6 @@ services:
       - "sme-rabbitmq"
     networks:
       - sme-network
-  sme-rabbitmq:
-    container_name: sme-rabbitmq
-    image: rabbitmq:3.7-management-alpine
-    environment:
-      - RABBITMQ_DEFAULT_USER=user
-      - RABBITMQ_DEFAULT_PASS=bitnami
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    networks:
-      - sme-network
-
 networks:
   sme-network:
     driver: bridge
