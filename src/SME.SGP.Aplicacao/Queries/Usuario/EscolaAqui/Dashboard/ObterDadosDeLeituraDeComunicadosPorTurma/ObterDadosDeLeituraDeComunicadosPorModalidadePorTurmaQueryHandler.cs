@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao
             url.Append(@"&codigoUe=" + request.CodigoUe);
             url.Append(@"&notificacaoId=" + request.ComunicadoId);
             url.Append(@"&modoVisualizacao=" + request.ModoVisualizacao);
-            url.Append(@"&codigoTurma=" + request.CodigoTurma);
+            url.Append(@"&codigosTurmas=" + request.CodigosTurmas);
             foreach (var item in request.Modalidades)
             {
                 url.Append(@"&modalidades=" + item);
