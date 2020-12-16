@@ -103,7 +103,6 @@ const DadosConselhoClasse = props => {
   // Quando passa bimestre 0 o retorno vai trazer dados do bimestre corrente!
   const caregarInformacoes = useCallback(
     async (bimestreConsulta = 0, ehFinal = false) => {
-      setTurmaAtual(turmaSelecionada.turma);
       limparDadosNotaPosConselhoJustificativa();
       ServicoConselhoClasse.setarParecerConclusivo('');
       setCarregando(true);
@@ -213,10 +212,19 @@ const DadosConselhoClasse = props => {
   );
 
   useEffect(() => {
-    if (codigoEOL && !bimestreAtual.valor) {
-      caregarInformacoes();
+    if (codigoEOL && turmaSelecionada.turma == turmaAtual) {
+      if (!bimestreAtual.valor) {
+        caregarInformacoes();
+      } else {
+        const ehFinal = bimestreAtual.valor === 'final';
+        caregarInformacoes(bimestreAtual.valor, ehFinal);
+      }
     }
-  }, [codigoEOL, bimestreAtual, caregarInformacoes]);
+    if (turmaSelecionada.turma != turmaAtual) {
+      dispatch(setBimestreAtual(''));
+      setTurmaAtual(turmaSelecionada.turma);
+    }
+  }, [codigoEOL, turmaSelecionada, turmaAtual]);
 
   const onChangeTab = async numeroBimestre => {
     let continuar = false;
@@ -236,26 +244,11 @@ const DadosConselhoClasse = props => {
     }
   };
 
-  const dadosPrincipaisConselhoClasse = useSelector(
-    store => store.conselhoClasse.dadosPrincipaisConselhoClasse
-  );
-
-  useEffect(() => {                    
-    dispatch(
-      setConselhoClasseEmEdicao(
-        !carregando &&
-        !semDados && 
-        !Object.entries(dadosPrincipaisConselhoClasse).length &&
-        turmaSelecionada.turma == turmaAtual
-      )
-    );
-
-  }, [dispatch, carregando, semDados, dadosPrincipaisConselhoClasse]);
 
   const montarDados = () => {
     return (
       <Loader loading={carregando} className={carregando ? 'text-center' : ''}>
-        {!semDados ? (
+        {!semDados && turmaSelecionada.turma == turmaAtual ? (
           <>
             <AlertaDentroPeriodo />
             {bimestreAtual.valor === 'final' ? (

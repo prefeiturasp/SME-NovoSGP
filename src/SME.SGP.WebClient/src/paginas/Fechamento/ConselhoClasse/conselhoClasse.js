@@ -37,6 +37,7 @@ const ConselhoClasse = () => {
   const permissoesTela = usuario.permissoes[RotasDto.CONSELHO_CLASSE];
 
   const [exibirListas, setExibirListas] = useState(false);
+  const [turmaAtual, setTurmaAtual] = useState(0);
 
   const modalidadesFiltroPrincipal = useSelector(
     store => store.filtro.modalidades
@@ -82,10 +83,14 @@ const ConselhoClasse = () => {
   }, [turmaSelecionada, permissoesTela, modalidadesFiltroPrincipal]);
 
   useEffect(() => {
+    if (turmaSelecionada.turma != turmaAtual) {
+      setTurmaAtual(turmaSelecionada.turma);
+    }
     resetarInfomacoes();
     if (
       turmaSelecionada &&
       turmaSelecionada.turma &&
+      turmaSelecionada.turma == turmaAtual &&
       !ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada)
     ) {
       obterDadosBimestresConselhoClasse();
@@ -93,6 +98,7 @@ const ConselhoClasse = () => {
   }, [
     obterDadosBimestresConselhoClasse,
     turma,
+    turmaAtual,
     turmaSelecionada,
     resetarInfomacoes,
     modalidadesFiltroPrincipal,
