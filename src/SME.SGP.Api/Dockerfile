@@ -27,4 +27,5 @@ COPY ["src/SME.SGP.Api/run.sh", "/app/run.sh"]
 RUN mkdir Imagens && \ 
 apt update && \ 
 apt install -y redis-server
+RUN ["chmod", "+x", "/startup.sh"]
 CMD ["/app/run.sh"]
