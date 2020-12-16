@@ -58,7 +58,6 @@
         public static string RotaNotificacaoReuniaoPedagogica => "evento.reuniao.pedagogica.notificar";
 
         public static string RotaNotificacaoPeriodoFechamento => "periodo.fechamento.notificar";
-        public static string RotaNotificacaoFrequenciaUe => "frequencia.ue.notificar";
-
+        public static string RotaNotificacaoFrequenciaUe => "frequencia.ue.notificar";        
     }
 }
