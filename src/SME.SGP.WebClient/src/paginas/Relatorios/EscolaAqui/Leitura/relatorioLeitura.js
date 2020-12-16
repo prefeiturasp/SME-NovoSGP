@@ -854,8 +854,8 @@ const RelatorioLeitura = () => {
             <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 pb-2">
               <CampoData
                 if="data-inicio"
-                label="Data de envio início"
-                placeholder="DD/MM/AAAA"
+                label="Data de envio"
+                placeholder="Data inicial"
                 formatoData="DD/MM/YYYY"
                 onChange={setDataInicio}
                 desabilitarData={desabilitarData}
@@ -865,8 +865,8 @@ const RelatorioLeitura = () => {
             <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 pb-2">
               <CampoData
                 id="data-fim"
-                label="Data de envio fim"
-                placeholder="DD/MM/AAAA"
+                label=""
+                placeholder="Data final"
                 formatoData="DD/MM/YYYY"
                 onChange={setDataFim}
                 desabilitarData={desabilitarData}
