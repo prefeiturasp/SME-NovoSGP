@@ -22,6 +22,8 @@ import ServicoFiltroRelatorio from '~/servicos/Paginas/FiltroRelatorio/ServicoFi
 import ServicoDashboardEscolaAqui from '~/servicos/Paginas/Relatorios/EscolaAqui/DashboardEscolaAqui/ServicoDashboardEscolaAqui';
 import ServicoRelatorioLeitura from '~/servicos/Paginas/Relatorios/EscolaAqui/Leitura/ServicoRelatorioLeitura';
 import FiltroHelper from '~componentes-sgp/filtro/helper';
+import FiltroHelperComunicados from '~/paginas/AcompanhamentoEscolar/Comunicados/Helper/helper.js';
+import ServicoComunicados from '~/servicos/Paginas/AcompanhamentoEscolar/Comunicados/ServicoComunicados';
 
 const RelatorioLeitura = () => {
   const usuario = useSelector(store => store.usuario);
@@ -37,6 +39,7 @@ const RelatorioLeitura = () => {
   const [listaSemestres, setListaSemestres] = useState([]);
   const [listaAnosEscolares, setListaAnosEscolares] = useState([]);
   const [listaTurmas, setListaTurmas] = useState([]);
+  const [listaTurmasOriginal, setListaTurmasOriginal] = useState([]);
   const [listaComunicado, setListaComunicado] = useState([]);
 
   const [anoLetivo, setAnoLetivo] = useState();
@@ -62,6 +65,8 @@ const RelatorioLeitura = () => {
   const [consideraHistorico, setConsideraHistorico] = useState(false);
   const [desabilitarGerar, setDesabilitarGerar] = useState(true);
 
+  const [timeoutCampoPesquisa, setTimeoutCampoPesquisa] = useState();
+
   const OPCAO_TODOS = '-99';
 
   const opcoesRadioSimNao = [
@@ -72,6 +77,7 @@ const RelatorioLeitura = () => {
   const onChangeAnoLetivo = async valor => {
     setCodigoDre();
     setCodigoUe();
+    setGrupos();
     setModalidadeId();
     setTurmaId();
     setAnoLetivo(valor);
@@ -80,13 +86,14 @@ const RelatorioLeitura = () => {
   const onChangeDre = valor => {
     setCodigoDre(valor);
     setCodigoUe();
+    setGrupos();
     setModalidadeId();
     setTurmaId();
-
     setCodigoUe(undefined);
   };
 
   const onChangeUe = valor => {
+    setGrupos();
     setModalidadeId();
     setTurmaId();
     setCodigoUe(valor);
@@ -95,6 +102,7 @@ const RelatorioLeitura = () => {
   const onChangeModalidade = valor => {
     setTurmaId();
     setModalidadeId(valor);
+    setGrupos([]);
   };
 
   const onChangeSemestre = valor => {
@@ -296,24 +304,45 @@ const RelatorioLeitura = () => {
         consideraHistorico
       );
       if (data) {
-        const lista = [];
+        const turmas = [];
 
         data.map(item =>
-          lista.push({
+          turmas.push({
             desc: item.nome,
             valor: item.codigo,
             id: item.id,
             ano: item.ano,
           })
         );
-        setListaTurmas(lista);
-        if (lista.length === 1) {
-          setTurmaId(lista[0].valor);
+        if (turmas.length > 1) {
+          turmas.unshift({ valor: OPCAO_TODOS, desc: 'Todas' });
+        }
+
+        setListaTurmas(turmas);
+        setListaTurmasOriginal(turmas);
+        if (turmas.length === 1) {
+          setTurmaId(turmas[0].valor);
         }
       }
       setExibirLoader(false);
     }
   }, [modalidadeId]);
+
+  const filterTurmasAnoSelecionado = useCallback(() => {
+    const turmas = listaTurmasOriginal.filter(a => a.ano === anosEscolares);
+    if (turmas?.length > 1) {
+      turmas.unshift({ valor: OPCAO_TODOS, desc: 'Todas' });
+    }
+    setListaTurmas(turmas);
+  }, [anosEscolares, listaTurmasOriginal]);
+
+  useEffect(() => {
+    if (anosEscolares) {
+      filterTurmasAnoSelecionado();
+    } else {
+      setListaTurmas(listaTurmasOriginal);
+    }
+  }, [anosEscolares, listaTurmasOriginal]);
 
   useEffect(() => {
     if (modalidadeId && codigoUe && codigoDre) {
@@ -321,6 +350,23 @@ const RelatorioLeitura = () => {
     } else {
       setTurmaId();
       setListaTurmas([]);
+      setListaTurmasOriginal([]);
+    }
+  }, [modalidadeId]);
+
+  const obterGruposIdPorModalidade = async mod => {
+    if (!mod) return;
+
+    const dados = await FiltroHelperComunicados.ObterGruposIdPorModalidade(mod);
+
+    if (dados?.length === 0) return;
+
+    setGrupos(dados);
+  };
+
+  useEffect(() => {
+    if (modalidadeId) {
+      obterGruposIdPorModalidade(modalidadeId);
     }
   }, [modalidadeId]);
 
@@ -428,30 +474,32 @@ const RelatorioLeitura = () => {
     }
   }, [obterAnosLetivos, modalidadeId, anoLetivo]);
 
-  const obterAnosEscolares = useCallback(async () => {
-    setExibirLoader(true);
-    const respota = await AbrangenciaServico.buscarAnosEscolares(
-      codigoUe,
+  const obterAnosEscolaresPorModalidade = useCallback(async () => {
+    const resposta = await ServicoComunicados.buscarAnosPorModalidade(
       modalidadeId,
-      consideraHistorico
-    )
-      .catch(e => erros(e))
-      .finally(() => setExibirLoader(false));
+      codigoUe
+    );
 
-    if (respota?.data?.length) {
-      setListaAnosEscolares(respota.data);
-
-      if (respota?.data?.length === 1) {
-        setAnosEscolares(respota.data[0].valor);
-      }
+    if (resposta.data?.length) {
+      const dadosMap = resposta.data.map(item => {
+        return {
+          valor: item.ano,
+          descricao: item.ano,
+        };
+      });
+      setListaAnosEscolares(dadosMap);
     } else {
       setListaAnosEscolares([]);
     }
-  }, [codigoUe, modalidadeId, consideraHistorico]);
+  }, [modalidadeId, codigoUe]);
 
   useEffect(() => {
-    if (modalidadeId && codigoUe && codigoUe !== OPCAO_TODOS) {
-      obterAnosEscolares();
+    if (
+      modalidadeId &&
+      (modalidadeId == ModalidadeDTO.ENSINO_MEDIO ||
+        modalidadeId == ModalidadeDTO.FUNDAMENTAL)
+    ) {
+      obterAnosEscolaresPorModalidade();
     } else {
       setAnosEscolares();
       setListaAnosEscolares([]);
@@ -499,7 +547,6 @@ const RelatorioLeitura = () => {
       codigoDre,
       codigoUe,
       anoLetivo,
-      modalidadeTurma: modalidadeId,
       semestre,
       ano: anoLetivo,
       turma: turmaId,
@@ -547,7 +594,13 @@ const RelatorioLeitura = () => {
 
   const handleSearch = descricao => {
     if (descricao.length > 3 || descricao.length === 0) {
-      setPesquisaComunicado(descricao);
+      if (timeoutCampoPesquisa) {
+        clearTimeout(timeoutCampoPesquisa);
+      }
+      const timeout = setTimeout(() => {
+        setPesquisaComunicado(descricao);
+      }, 500);
+      setTimeoutCampoPesquisa(timeout);
     }
   };
 
@@ -571,16 +624,15 @@ const RelatorioLeitura = () => {
             : grupos;
 
         setExibirLoader(true);
-        setComunicado();
         const resposta = await ServicoDashboardEscolaAqui.obterComunicadosAutoComplete(
           anoLetivo || '',
           codigoDre === OPCAO_TODOS ? '' : codigoDre || '',
           codigoUe === OPCAO_TODOS ? '' : codigoUe || '',
           todosGrupos,
-          modalidadeId || '',
+          '',
           semestre || '',
-          anosEscolares === OPCAO_TODOS ? '' : anosEscolares || '',
-          turmaId || '',
+          anosEscolares || '',
+          turmaId === OPCAO_TODOS ? '' : turmaId || '',
           dataInicio || '',
           dataFim || '',
           pesquisaComunicado || ''
@@ -592,16 +644,15 @@ const RelatorioLeitura = () => {
           const lista = resposta.data.map(item => {
             return {
               id: item.id,
-              descricao: `${item.titulo} - ${moment(item.dataEnvio).format(
-                'DD/MM/YYYY'
-              )}`,
+              descricao: `${item.id} - ${item.titulo} - ${moment(
+                item.dataEnvio
+              ).format('DD/MM/YYYY')}`,
             };
           });
+          setListaComunicado([]);
           setListaComunicado(lista);
         } else {
           setListaComunicado([]);
-          setComunicado();
-          setPesquisaComunicado();
         }
       } else {
         setListaComunicado([]);
@@ -677,6 +728,7 @@ const RelatorioLeitura = () => {
                 onChangeCheckbox={e => {
                   setAnoLetivo();
                   setCodigoDre();
+                  setGrupos();
                   setConsideraHistorico(e.target.checked);
                 }}
                 checked={consideraHistorico}
@@ -736,6 +788,7 @@ const RelatorioLeitura = () => {
                 onChange={valores => {
                   onchangeMultiSelect(valores, grupos, setGrupos);
                 }}
+                disabled={modalidadeId}
               />
             </div>
             <div className="col-sm-12 col-md-6 col-lg-4 col-xl-4 mb-2">
@@ -775,11 +828,7 @@ const RelatorioLeitura = () => {
                 valueOption="valor"
                 valueText="descricao"
                 label="Ano"
-                disabled={
-                  !modalidadeId ||
-                  codigoUe === OPCAO_TODOS ||
-                  listaAnosEscolares?.length === 1
-                }
+                disabled={!modalidadeId || listaAnosEscolares?.length === 1}
                 valueSelect={anosEscolares}
                 onChange={setAnosEscolares}
                 placeholder="Selecione o ano"
@@ -792,7 +841,11 @@ const RelatorioLeitura = () => {
                 valueOption="valor"
                 valueText="desc"
                 label="Turma"
-                disabled={!modalidadeId || listaTurmas?.length === 1}
+                disabled={
+                  !modalidadeId ||
+                  listaTurmas?.length === 1 ||
+                  codigoUe === OPCAO_TODOS
+                }
                 valueSelect={turmaId}
                 placeholder="Turma"
                 onChange={onChangeTurma}
