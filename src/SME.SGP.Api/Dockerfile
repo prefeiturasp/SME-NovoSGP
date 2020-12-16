@@ -23,5 +23,7 @@ RUN dotnet publish "SME.SGP.Api.csproj" -c Release -o /app
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app .
-RUN mkdir Imagens
-ENTRYPOINT ["dotnet", "SME.SGP.Api.dll"]
+RUN mkdir Imagens && \ 
+ apt update && \ 
+ apt install -y redis-server
+ENTRYPOINT ["redis-server", "&", "dotnet", "SME.SGP.Api.dll"]
