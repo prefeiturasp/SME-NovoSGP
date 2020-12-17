@@ -14,22 +14,29 @@ import Button from '~/componentes/button';
 import Card from '~/componentes/card';
 import { Colors } from '~/componentes/colors';
 import { ModalidadeDTO } from '~/dtos';
+import FiltroHelperComunicados from '~/paginas/AcompanhamentoEscolar/Comunicados/Helper/helper';
 import AbrangenciaServico from '~/servicos/Abrangencia';
 import { erros, sucesso } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import history from '~/servicos/history';
+import ServicoComunicados from '~/servicos/Paginas/AcompanhamentoEscolar/Comunicados/ServicoComunicados';
 import ServicoFiltroRelatorio from '~/servicos/Paginas/FiltroRelatorio/ServicoFiltroRelatorio';
 import ServicoDashboardEscolaAqui from '~/servicos/Paginas/Relatorios/EscolaAqui/DashboardEscolaAqui/ServicoDashboardEscolaAqui';
 import ServicoRelatorioLeitura from '~/servicos/Paginas/Relatorios/EscolaAqui/Leitura/ServicoRelatorioLeitura';
 import FiltroHelper from '~componentes-sgp/filtro/helper';
-import FiltroHelperComunicados from '~/paginas/AcompanhamentoEscolar/Comunicados/Helper/helper.js';
-import ServicoComunicados from '~/servicos/Paginas/AcompanhamentoEscolar/Comunicados/ServicoComunicados';
 
 const RelatorioLeitura = () => {
   const usuario = useSelector(store => store.usuario);
   const { possuiPerfilSme, possuiPerfilDre } = usuario;
 
-  const [exibirLoader, setExibirLoader] = useState(false);
+  const [exibirLoaderGeral, setExibirLoaderGeral] = useState(false);
+  const [carregandoAnosLetivos, setCarregandoAnosLetivos] = useState(false);
+  const [carregandoDres, setCarregandoDres] = useState(false);
+  const [carregandoUes, setCarregandoUes] = useState(false);
+  const [carregandoModalidade, setCarregandoModalidade] = useState(false);
+  const [carregandoAnosEscolares, setCarregandoAnosEscolares] = useState(false);
+  const [carregandoTurma, setCarregandoTurma] = useState(false);
+  const [carregandoComunicados, setCarregandoComunicados] = useState(false);
 
   const [listaAnosLetivo, setListaAnosLetivo] = useState([]);
   const [listaDres, setListaDres] = useState([]);
@@ -117,13 +124,13 @@ const RelatorioLeitura = () => {
 
   const obterDres = useCallback(async () => {
     if (anoLetivo) {
-      setExibirLoader(true);
+      setCarregandoDres(true);
       const resposta = await AbrangenciaServico.buscarDres(
         `v1/abrangencias/${consideraHistorico}/dres?anoLetivo=${anoLetivo}`,
         consideraHistorico
       )
         .catch(e => erros(e))
-        .finally(() => setExibirLoader(false));
+        .finally(() => setCarregandoDres(false));
 
       if (resposta?.data?.length) {
         const lista = resposta.data.map(item => ({
@@ -197,9 +204,9 @@ const RelatorioLeitura = () => {
 
   useEffect(() => {
     if (
-      codigoDre &&
-      codigoUe &&
-      codigoDre === OPCAO_TODOS &&
+      !codigoDre ||
+      !codigoUe ||
+      codigoDre === OPCAO_TODOS ||
       codigoUe === OPCAO_TODOS
     ) {
       setListarResponsaveisEstudantes(false);
@@ -217,14 +224,14 @@ const RelatorioLeitura = () => {
         return;
       }
 
-      setExibirLoader(true);
+      setCarregandoUes(true);
       const resposta = await AbrangenciaServico.buscarUes(
         codigoDre,
         `v1/abrangencias/${consideraHistorico}/dres/${codigoDre}/ues?anoLetivo=${anoLetivo}`,
         true
       )
         .catch(e => erros(e))
-        .finally(() => setExibirLoader(false));
+        .finally(() => setCarregandoUes(false));
 
       if (resposta?.data?.length) {
         const lista = resposta.data.map(item => ({
@@ -264,7 +271,7 @@ const RelatorioLeitura = () => {
 
   const obterModalidades = async (ue, ano) => {
     if (ue && ano) {
-      setExibirLoader(true);
+      setCarregandoModalidade(true);
       const {
         data,
       } = await ServicoFiltroRelatorio.obterModalidadesPorAbrangencia(ue);
@@ -280,7 +287,7 @@ const RelatorioLeitura = () => {
         }
         setListaModalidades(lista);
       }
-      setExibirLoader(false);
+      setCarregandoModalidade(false);
     }
   };
 
@@ -295,7 +302,7 @@ const RelatorioLeitura = () => {
 
   const obterTurmas = useCallback(async () => {
     if (codigoDre && codigoUe && modalidadeId) {
-      setExibirLoader(true);
+      setCarregandoTurma(true);
       const { data } = await AbrangenciaServico.buscarTurmas(
         codigoUe,
         modalidadeId,
@@ -324,7 +331,7 @@ const RelatorioLeitura = () => {
           setTurmaId(turmas[0].valor);
         }
       }
-      setExibirLoader(false);
+      setCarregandoTurma(false);
     }
   }, [modalidadeId]);
 
@@ -371,7 +378,7 @@ const RelatorioLeitura = () => {
   }, [modalidadeId]);
 
   const obterAnosLetivos = useCallback(async () => {
-    setExibirLoader(true);
+    setCarregandoAnosLetivos(true);
     let anosLetivos = [];
 
     const anosLetivoComHistorico = await FiltroHelper.obterAnosLetivos({
@@ -405,7 +412,7 @@ const RelatorioLeitura = () => {
     }
 
     setListaAnosLetivo(anosLetivos);
-    setExibirLoader(false);
+    setCarregandoAnosLetivos(false);
   }, [anoAtual]);
 
   const obterListaGrupos = async () => {
@@ -443,7 +450,6 @@ const RelatorioLeitura = () => {
     modalidadeSelecionada,
     anoLetivoSelecionado
   ) => {
-    setExibirLoader(true);
     const retorno = await api.get(
       `v1/abrangencias/false/semestres?anoLetivo=${anoLetivoSelecionado}&modalidade=${modalidadeSelecionada ||
         0}`
@@ -458,7 +464,6 @@ const RelatorioLeitura = () => {
       }
       setListaSemestres(lista);
     }
-    setExibirLoader(false);
   };
 
   useEffect(() => {
@@ -478,7 +483,9 @@ const RelatorioLeitura = () => {
     const resposta = await ServicoComunicados.buscarAnosPorModalidade(
       modalidadeId,
       codigoUe
-    );
+    )
+      .catch(e => erros(e))
+      .finally(() => setCarregandoAnosEscolares(false));
 
     if (resposta.data?.length) {
       const dadosMap = resposta.data.map(item => {
@@ -558,10 +565,10 @@ const RelatorioLeitura = () => {
       listarComunicadosExpirados,
     };
 
-    setExibirLoader(true);
+    setExibirLoaderGeral(true);
     const retorno = await ServicoRelatorioLeitura.gerar(params)
       .catch(e => erros(e))
-      .finally(setExibirLoader(false));
+      .finally(setExibirLoaderGeral(false));
     if (retorno && retorno.status === 200) {
       sucesso(
         'Solicitação de geração do relatório gerada com sucesso. Em breve você receberá uma notificação com o resultado.'
@@ -623,7 +630,7 @@ const RelatorioLeitura = () => {
                 .map(g => g.valor)
             : grupos;
 
-        setExibirLoader(true);
+        setCarregandoComunicados(true);
         const resposta = await ServicoDashboardEscolaAqui.obterComunicadosAutoComplete(
           anoLetivo || '',
           codigoDre === OPCAO_TODOS ? '' : codigoDre || '',
@@ -638,7 +645,7 @@ const RelatorioLeitura = () => {
           pesquisaComunicado || ''
         )
           .catch(e => erros(e))
-          .finally(() => setExibirLoader(false));
+          .finally(() => setCarregandoComunicados(false));
 
         if (resposta?.data?.length) {
           const lista = resposta.data.map(item => {
@@ -653,6 +660,9 @@ const RelatorioLeitura = () => {
           setListaComunicado(lista);
         } else {
           setListaComunicado([]);
+        }
+        if (!pesquisaComunicado) {
+          setComunicado();
         }
       } else {
         setListaComunicado([]);
@@ -680,7 +690,7 @@ const RelatorioLeitura = () => {
   ]);
 
   return (
-    <Loader loading={exibirLoader}>
+    <Loader loading={exibirLoaderGeral}>
       <Cabecalho pagina="Relatório de leitura" />
       <Card>
         <div className="col-md-12">
@@ -737,43 +747,51 @@ const RelatorioLeitura = () => {
           </div>
           <div className="row">
             <div className="col-sm-12 col-md-4 col-lg-2 col-xl-2 mb-2">
-              <SelectComponent
-                id="drop-ano-letivo"
-                label="Ano Letivo"
-                lista={listaAnosLetivo}
-                valueOption="valor"
-                valueText="desc"
-                disabled={!consideraHistorico || listaAnosLetivo?.length === 1}
-                onChange={onChangeAnoLetivo}
-                valueSelect={anoLetivo}
-                placeholder="Ano letivo"
-              />
+              <Loader loading={carregandoAnosLetivos}>
+                <SelectComponent
+                  id="drop-ano-letivo"
+                  label="Ano Letivo"
+                  lista={listaAnosLetivo}
+                  valueOption="valor"
+                  valueText="desc"
+                  disabled={
+                    !consideraHistorico || listaAnosLetivo?.length === 1
+                  }
+                  onChange={onChangeAnoLetivo}
+                  valueSelect={anoLetivo}
+                  placeholder="Ano letivo"
+                />
+              </Loader>
             </div>
             <div className="col-sm-12 col-md-12 col-lg-5 col-xl-5 mb-2">
-              <SelectComponent
-                id="drop-dre"
-                label="Diretoria Regional de Educação (DRE)"
-                lista={listaDres}
-                valueOption="valor"
-                valueText="desc"
-                disabled={!anoLetivo || listaDres?.length === 1}
-                onChange={onChangeDre}
-                valueSelect={codigoDre}
-                placeholder="Diretoria Regional De Educação (DRE)"
-              />
+              <Loader loading={carregandoDres}>
+                <SelectComponent
+                  id="drop-dre"
+                  label="Diretoria Regional de Educação (DRE)"
+                  lista={listaDres}
+                  valueOption="valor"
+                  valueText="desc"
+                  disabled={!anoLetivo || listaDres?.length === 1}
+                  onChange={onChangeDre}
+                  valueSelect={codigoDre}
+                  placeholder="Diretoria Regional De Educação (DRE)"
+                />
+              </Loader>
             </div>
             <div className="col-sm-12 col-md-12 col-lg-5 col-xl-5 mb-2">
-              <SelectComponent
-                id="drop-ue"
-                label="Unidade Escolar (UE)"
-                lista={listaUes}
-                valueOption="valor"
-                valueText="desc"
-                disabled={!codigoDre || listaUes?.length === 1}
-                onChange={onChangeUe}
-                valueSelect={codigoUe}
-                placeholder="Unidade Escolar (UE)"
-              />
+              <Loader loading={carregandoUes}>
+                <SelectComponent
+                  id="drop-ue"
+                  label="Unidade Escolar (UE)"
+                  lista={listaUes}
+                  valueOption="valor"
+                  valueText="desc"
+                  disabled={!codigoDre || listaUes?.length === 1}
+                  onChange={onChangeUe}
+                  valueSelect={codigoUe}
+                  placeholder="Unidade Escolar (UE)"
+                />
+              </Loader>
             </div>
             <div className="col-sm-12 col-md-6 col-lg-6 col-xl-4 mb-2">
               <SelectComponent
@@ -792,17 +810,19 @@ const RelatorioLeitura = () => {
               />
             </div>
             <div className="col-sm-12 col-md-6 col-lg-4 col-xl-4 mb-2">
-              <SelectComponent
-                id="drop-modalidade"
-                label="Modalidade"
-                lista={listaModalidades}
-                valueOption="valor"
-                valueText="desc"
-                disabled={!codigoUe || listaModalidades?.length === 1}
-                onChange={onChangeModalidade}
-                valueSelect={modalidadeId}
-                placeholder="Modalidade"
-              />
+              <Loader loading={carregandoModalidade}>
+                <SelectComponent
+                  id="drop-modalidade"
+                  label="Modalidade"
+                  lista={listaModalidades}
+                  valueOption="valor"
+                  valueText="desc"
+                  disabled={!codigoUe || listaModalidades?.length === 1}
+                  onChange={onChangeModalidade}
+                  valueSelect={modalidadeId}
+                  placeholder="Modalidade"
+                />
+              </Loader>
             </div>
             <div className="col-sm-12 col-md-6 col-lg-2 col-xl-4 mb-2">
               <SelectComponent
@@ -822,34 +842,38 @@ const RelatorioLeitura = () => {
               />
             </div>
             <div className="col-sm-12 col-md-6 col-lg-6 col-xl-3 mb-2">
-              <SelectComponent
-                id="select-ano-escolar"
-                lista={listaAnosEscolares}
-                valueOption="valor"
-                valueText="descricao"
-                label="Ano"
-                disabled={!modalidadeId || listaAnosEscolares?.length === 1}
-                valueSelect={anosEscolares}
-                onChange={setAnosEscolares}
-                placeholder="Selecione o ano"
-              />
+              <Loader loading={carregandoAnosEscolares}>
+                <SelectComponent
+                  id="select-ano-escolar"
+                  lista={listaAnosEscolares}
+                  valueOption="valor"
+                  valueText="descricao"
+                  label="Ano"
+                  disabled={!modalidadeId || listaAnosEscolares?.length === 1}
+                  valueSelect={anosEscolares}
+                  onChange={setAnosEscolares}
+                  placeholder="Selecione o ano"
+                />
+              </Loader>
             </div>
             <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 mb-2">
-              <SelectComponent
-                id="drop-turma"
-                lista={listaTurmas}
-                valueOption="valor"
-                valueText="desc"
-                label="Turma"
-                disabled={
-                  !modalidadeId ||
-                  listaTurmas?.length === 1 ||
-                  codigoUe === OPCAO_TODOS
-                }
-                valueSelect={turmaId}
-                placeholder="Turma"
-                onChange={onChangeTurma}
-              />
+              <Loader loading={carregandoTurma}>
+                <SelectComponent
+                  id="drop-turma"
+                  lista={listaTurmas}
+                  valueOption="valor"
+                  valueText="desc"
+                  label="Turma"
+                  disabled={
+                    !modalidadeId ||
+                    listaTurmas?.length === 1 ||
+                    codigoUe === OPCAO_TODOS
+                  }
+                  valueSelect={turmaId}
+                  placeholder="Turma"
+                  onChange={onChangeTurma}
+                />
+              </Loader>
             </div>
             <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 pb-2">
               <CampoData
@@ -865,7 +889,7 @@ const RelatorioLeitura = () => {
             <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 pb-2">
               <CampoData
                 id="data-fim"
-                label=""
+                className="mt-4"
                 placeholder="Data final"
                 formatoData="DD/MM/YYYY"
                 onChange={setDataFim}
@@ -874,21 +898,23 @@ const RelatorioLeitura = () => {
               />
             </div>
             <div className="col-sm-12 col-md-6 col-lg-6 col-xl-6 mb-2">
-              <SelectAutocomplete
-                id="autocomplete-comunicados"
-                label="Comunicado"
-                showList
-                isHandleSearch
-                placeholder="Selecione um comunicado"
-                className="col-md-12"
-                lista={listaComunicado}
-                valueField="id"
-                textField="descricao"
-                onSelect={setComunicado}
-                onChange={setComunicado}
-                handleSearch={handleSearch}
-                value={comunicado}
-              />
+              <Loader loading={carregandoComunicados}>
+                <SelectAutocomplete
+                  id="autocomplete-comunicados"
+                  label="Comunicado"
+                  showList
+                  isHandleSearch
+                  placeholder="Selecione um comunicado"
+                  className="col-md-12"
+                  lista={listaComunicado}
+                  valueField="id"
+                  textField="descricao"
+                  onSelect={setComunicado}
+                  onChange={setComunicado}
+                  handleSearch={handleSearch}
+                  value={comunicado}
+                />
+              </Loader>
             </div>
             <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 mb-2">
               <RadioGroupButton
@@ -900,7 +926,10 @@ const RelatorioLeitura = () => {
                 }}
                 value={listarResponsaveisEstudantes}
                 desabilitado={
-                  codigoDre === OPCAO_TODOS && codigoUe === OPCAO_TODOS
+                  !codigoDre ||
+                  !codigoUe ||
+                  codigoDre === OPCAO_TODOS ||
+                  codigoUe === OPCAO_TODOS
                 }
               />
             </div>
