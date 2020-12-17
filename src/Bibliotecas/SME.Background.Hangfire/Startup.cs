@@ -19,7 +19,7 @@ namespace SME.Background.Hangfire
         public Startup(IConfiguration configuration)
         {
             this.configuration = configuration;
-            var paramConnectionString = this.configuration.GetConnectionString("SGP-Postgres");
+            var paramConnectionString = this.configuration.GetConnectionString("SGP_Postgres");
             this.connectionString = (!paramConnectionString.EndsWith(';') ? paramConnectionString + ";" : paramConnectionString) + "Application Name=SGP Worker Service Dashboard";
         }
 
