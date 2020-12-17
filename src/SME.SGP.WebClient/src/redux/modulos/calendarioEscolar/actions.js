@@ -49,11 +49,11 @@ export function salvarEventoCalendarioEdicao(
   };
 }
 
-export function temEventoCalendarioId(eventoCalendarioId) {
+export function setFiltroCalendarioEscolar(filtroCalendarioEscolar) {
   return {
-    type: '@calendarioEscolar/temEventoCalendarioId',
+    type: '@calendarioEscolar/filtroCalendarioEscolar',
     payload: {
-      eventoCalendarioId,
+      filtroCalendarioEscolar,
     },
   };
 }
