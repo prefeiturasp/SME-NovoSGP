@@ -5,9 +5,7 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioCache
     {
-        string Obter(string nomeChave, bool utilizarGZip = false);
-
-        T Obter<T>(string nomeChave, bool utilizarGZip = false);
+        string Obter(string nomeChave, bool utilizarGZip = false);        
 
         Task<T> Obter<T>(string nomeChave, Func<Task<T>> buscarDados, int minutosParaExpirar = 720, bool utilizarGZip = false);
 
