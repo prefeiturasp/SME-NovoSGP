@@ -197,9 +197,12 @@ namespace SME.SGP.Aplicacao
             foreach (var aluno in alunosDaTurma.Where(a => a.DeveMostrarNaChamada(aula.DataAula)).OrderBy(c => c.NomeAluno))
             {
                 // Apos o bimestre da inatividade o aluno não aparece mais na lista de frequencia ou
-                // se a matrícula foi ativada após a data da aula
+                // se a matrícula foi ativada após a data da aula                
                 if ((aluno.EstaInativo(aula.DataAula) && aluno.DataSituacao < bimestre.PeriodoInicio) ||
                     (aluno.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Ativo && aluno.DataSituacao > aula.DataAula))
+                    continue;
+
+                if (aluno.DataMatricula > aula.DataAula)
                     continue;
 
                 var registroFrequenciaAluno = new RegistroFrequenciaAlunoDto
