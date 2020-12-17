@@ -35,7 +35,7 @@ namespace SME.SGP.Worker.Rabbbit
             RegistrarHttpClients(services, configuration);
             services.AddApplicationInsightsTelemetry(configuration);
             var provider = services.BuildServiceProvider();
-            services.AdicionarRedis(configuration, provider.GetService<IServicoLog>());
+            //services.AdicionarRedis(configuration, provider.GetService<IServicoLog>());
 
             if (env.EnvironmentName != "teste-integrado")
             {
@@ -52,6 +52,7 @@ namespace SME.SGP.Worker.Rabbbit
             DapperExtensionMethods.Init(clientTelemetry);
 
             //
+            services.AddMemoryCache();
 
 
         }
