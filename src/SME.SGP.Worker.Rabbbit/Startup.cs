@@ -42,7 +42,7 @@ namespace SME.SGP.Worker.Rabbbit
                 services.AddRabbit();
             }
 
-            services.AddHostedService<WorkerRabbitMQ> ();
+            services.AddHostedService<WorkerRabbitMQ>();
 
 
             // Teste para injeção do client de telemetria em classe estática 
@@ -83,6 +83,14 @@ namespace SME.SGP.Worker.Rabbbit
                 c.DefaultRequestHeaders.Add("Accept", "application/json");
                 c.DefaultRequestHeaders.Add("x-api-eol-key", configuration.GetSection("ApiKeyEolApi").Value);
             });
+
+            services.AddHttpClient(name: "servicoEOL", c =>
+            {
+                c.BaseAddress = new Uri(configuration.GetSection("UrlApiEOL").Value);
+                c.DefaultRequestHeaders.Add("Accept", "application/json");
+                c.DefaultRequestHeaders.Add("x-api-eol-key", configuration.GetSection("ApiKeyEolApi").Value);
+            });
+
             services.AddHttpClient<IServicoAcompanhamentoEscolar, ServicoAcompanhamentoEscolar>(c =>
             {
                 c.BaseAddress = new Uri(configuration.GetSection("UrlApiAE").Value);
@@ -113,6 +121,17 @@ namespace SME.SGP.Worker.Rabbbit
                 return new JasperCookieHandler() { CookieContainer = cookieContainer };
             });
 
+            services.AddHttpClient<IServicoServidorRelatorios, ServicoServidorRelatorios>(c =>
+            {
+                c.BaseAddress = new Uri(configuration.GetSection("UrlServidorRelatorios").Value);
+                c.DefaultRequestHeaders.Add("Accept", "application/json");
+            });
+
+            services.AddHttpClient(name: "servicoServidorRelatorios", c =>
+            {
+                c.BaseAddress = new Uri(configuration.GetSection("UrlServidorRelatorios").Value);
+                c.DefaultRequestHeaders.Add("Accept", "application/json");
+            });
 
         }
 

@@ -2,7 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
@@ -43,6 +46,26 @@ namespace SME.SGP.Api.Controllers
         {
             await comandosUsuario.AlterarEmailUsuarioLogado(alterarEmailDto.NovoEmail);
             return Ok();
+        }
+
+        [HttpGet("situacoes")]
+        [ProducesResponseType(typeof(IEnumerable<KeyValuePair<int, string>>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.M_C, Policy = "Bearer")]
+        public async Task<IActionResult> ListarSituacoes([FromServices] IObterListaSituacoesUsuarioUseCase useCase)
+        {
+            return Ok(await useCase.Executar());
+        }
+
+        [HttpGet("perfis")]
+        [ProducesResponseType(typeof(IEnumerable<SituacaoUsuario>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.M_C, Policy = "Bearer")]
+        public async Task<IActionResult> ListarPerfis([FromServices] IObterHierarquiaPerfisUsuarioUseCase useCase)
+        {
+            return Ok(await useCase.Executar());
         }
 
         [Route("meus-dados")]

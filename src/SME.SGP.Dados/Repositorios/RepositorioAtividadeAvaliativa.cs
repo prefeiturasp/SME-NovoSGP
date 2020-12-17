@@ -479,5 +479,39 @@ namespace SME.SGP.Dados.Repositorios
         {
             query.AppendLine("AND aar.disciplina_contida_regencia_id = ANY(@disciplinasContidaId)");
         }
+
+        public async Task<IEnumerable<TurmaEComponenteDto>> ObterTurmaEComponenteSemAvaliacaoNoPeriodo(long ueId, long tipoCalendarioId, DateTime dataInicio, DateTime dataFim)
+        {
+            var query = @"select distinct a.turma_id as TurmaCodigo, t.id as TurmaId, a.disciplina_id as ComponenteCurricularId
+                           from aula a
+                          inner join turma t on t.turma_id = a.turma_id
+                         where not a.excluido
+                           and t.ue_id = @ueId
+                           and a.tipo_calendario_id = @tipoCalendarioId
+                           and a.data_aula between @dataInicio and @dataFim
+                           and not exists (
+   		                        select 1 
+		                        from atividade_avaliativa aa
+	                           inner join atividade_avaliativa_disciplina ad on ad.atividade_avaliativa_id = aa.id
+	                           where not aa.excluido
+                                 and aa.turma_id = a.turma_id
+	                             and ad.disciplina_id = a.disciplina_id
+	                             and aa.data_avaliacao between @dataInicio and @dataFim)";
+
+            return await database.Conexao.QueryAsync<TurmaEComponenteDto>(query, new { ueId, tipoCalendarioId, dataInicio, dataFim });
+        }
+
+        public async Task<IEnumerable<AvaliacoesPorTurmaComponenteDto>> ObterAvaliacoesTurmaComponentePorUeNoPeriodo(long ueId, DateTime dataInicio, DateTime dataFim)
+        {
+            var query = @"select t.id as TurmaId, ad.disciplina_id as DisciplinaId, count(distinct aa.id) QuantidadeAvaliacoes
+                            from turma t 
+                           inner join atividade_avaliativa aa on aa.turma_id = t.turma_id
+                           inner join atividade_avaliativa_disciplina ad on ad.atividade_avaliativa_id = aa.id
+                           where t.ue_id = @ueId
+                             and aa.data_avaliacao between @dataInicio and @dataFim
+                          group by t.id , ad.disciplina_id";
+
+            return await database.Conexao.QueryAsync<AvaliacoesPorTurmaComponenteDto>(query, new { ueId, dataInicio, dataFim });
+        }
     }
 }

@@ -129,6 +129,17 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new PlanejamentoAnualMap());
                config.AddMap(new PlanejamentoAnualObjetivosAprendizagemMap());
                config.AddMap(new PlanejamentoAnualPeriodoEscolarMap());
+               config.AddMap(new ArquivoMap());
+               config.AddMap(new HistoricoNotaMap());
+               config.AddMap(new HistoricoNotaFechamentoMap());
+               config.AddMap(new HistoricoNotaConselhoClasseMap());
+               config.AddMap(new ClassificacaoDocumentoMap());
+               config.AddMap(new TipoDocumentoMap());
+               config.AddMap(new DocumentoMap());
+               config.AddMap(new PendenciaUsuarioMap());
+               config.AddMap(new PendenciaCalendarioUeMap());
+               config.AddMap(new PendenciaParametroEventoMap());
+               config.AddMap(new PendenciaProfessorMap());
                config.ForDommel();
            });
         }

@@ -43,6 +43,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = $@"select
 	                        id as Codigo,
+                            permite_lancamento_nota as LancaNota,
                             case
 		                        when descricao_sgp is not null then descricao_sgp
 		                        else descricao

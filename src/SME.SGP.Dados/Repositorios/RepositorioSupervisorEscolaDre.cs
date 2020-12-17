@@ -5,6 +5,7 @@ using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -71,6 +72,17 @@ namespace SME.SGP.Dados.Repositorios
                 .FirstOrDefault();
         }
 
+        public async Task<IEnumerable<SupervisorEscolasDreDto>> ObtemSupervisoresPorDreAsync(string codigoDre)
+        {
+            StringBuilder query = new StringBuilder();
+
+            query.AppendLine("select id, dre_id as DreId, escola_id as UeId, supervisor_id as SupervisorId, criado_em as CriadoEm, criado_por as CriadoPor, alterado_em as AlteradoEm, alterado_por as AlteradoPor, criado_rf as CriadoRF, alterado_rf as AlteradoRF, excluido as Excluido");
+            query.AppendLine("from supervisor_escola_dre sed");
+            query.AppendLine("where dre_id = @codigoDre and excluido = false");
+
+            return await database.Conexao.QueryAsync<SupervisorEscolasDreDto>(query.ToString(), new { codigoDre });
+        }
+
         public IEnumerable<SupervisorEscolasDreDto> ObtemSupervisoresPorUe(string ueId)
         {
             StringBuilder query = new StringBuilder();
@@ -82,5 +94,17 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.Query<SupervisorEscolasDreDto>(query.ToString(), new { ueId })
                 .AsList();
         }
+
+        public Task<IEnumerable<SupervisorEscolasDreDto>> ObtemSupervisoresPorUeAsync(string ueId)
+        {
+            StringBuilder query = new StringBuilder();
+
+            query.AppendLine("select id, dre_id as DreId, escola_id as UeId, supervisor_id as SupervisorId, criado_em as CriadoEm, criado_por as CriadoPor, alterado_em as AlteradoEm, alterado_por as AlteradoPor, criado_rf as CriadoRF, alterado_rf as AlteradoRF, excluido as Excluido");
+            query.AppendLine("from supervisor_escola_dre sed");
+            query.AppendLine("where escola_id = @ueId and excluido = false");
+
+            return database.Conexao.QueryAsync<SupervisorEscolasDreDto>(query.ToString(), new { ueId });
+        }
+
     }
 }

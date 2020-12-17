@@ -127,5 +127,38 @@ namespace SME.SGP.Dados.Repositorios
                 }
                 , new { fechamentosTurmaDisciplinaId });
         }
+
+        public async Task<IEnumerable<AlunosFechamentoNotaDto>> ObterComNotaLancadaPorPeriodoEscolarUE(long ueId, long periodoEscolarId)
+        {
+            var query = @"select distinct 
+	                            ftd.disciplina_id as ComponenteCurricularId,
+	                            cc.descricao as ComponenteCurricularDescricao,
+	                            nota as Nota,
+	                            cv.valor as NotaConceito,
+                                cv.aprovado as NotaConceitoAprovado,
+                                case when nota is not null then false else true end as EhConceito,
+	                            fa.aluno_codigo as AlunoCodigo,
+                                ftd.criado_rf as ProfessorRf,
+                                ftd.criado_por as ProfessorNome,
+	                            ftd.justificativa as Justificativa,
+	                            t.id as TurmaId,
+	                            t.ue_id as UeId,
+	                            bimestre
+                            from fechamento_nota fn
+                            left join fechamento_aluno fa ON fn.fechamento_aluno_id = fa.id
+                            inner join fechamento_turma_disciplina ftd on fa.fechamento_turma_disciplina_id = ftd.id 
+                            inner join fechamento_turma ft on ftd.fechamento_turma_id = ft.id 
+                            inner join componente_curricular cc on ftd.disciplina_id = cc.id 
+                            left join conceito_valores cv on fn.conceito_id = cv.id 
+                            inner join periodo_escolar pe on periodo_escolar_id = pe.id 
+                            inner join turma t on ft.turma_id = t.id
+                            where 
+                            not ftd.excluido
+                            and cc.permite_lancamento_nota = true
+                            and periodo_escolar_id = @periodoEscolarId and 
+                            t.ue_id = @ueId";
+
+            return await database.Conexao.QueryAsync<AlunosFechamentoNotaDto>(query, new { ueId, periodoEscolarId });
+        }
     }
 }

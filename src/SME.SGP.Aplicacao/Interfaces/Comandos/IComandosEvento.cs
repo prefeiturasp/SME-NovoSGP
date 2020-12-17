@@ -11,7 +11,7 @@ namespace SME.SGP.Aplicacao
 
         Task<IEnumerable<RetornoCopiarEventoDto>> Criar(EventoDto eventoDto);
 
-        void Excluir(long[] idsEventos);
+        Task Excluir(long[] idsEventos);
 
         Task GravarRecorrencia(EventoDto eventoDto, Evento evento);
     }
