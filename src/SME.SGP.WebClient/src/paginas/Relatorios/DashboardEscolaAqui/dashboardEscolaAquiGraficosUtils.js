@@ -83,7 +83,7 @@ const mapearParaDtoDadosComunicadosGraficoBarras = (
   );
   if (temDados?.length) {
     const dadosMapeados = dados.map(item => {
-      const novo = {};
+      const novo = { ...item };
       if (
         item.naoReceberamComunicado ||
         item.receberamENaoVisualizaram ||

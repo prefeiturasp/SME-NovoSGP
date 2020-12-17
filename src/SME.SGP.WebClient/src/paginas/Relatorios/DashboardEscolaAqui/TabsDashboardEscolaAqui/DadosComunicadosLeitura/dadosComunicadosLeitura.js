@@ -1,6 +1,7 @@
 import * as moment from 'moment';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import {
   CampoData,
   Loader,
@@ -8,6 +9,10 @@ import {
   SelectComponent,
 } from '~/componentes';
 import { ModalidadeDTO } from '~/dtos';
+import {
+  limparDadosDashboardEscolaAqui,
+  setDadosDeLeituraDeComunicadosAgrupadosPorModalidade,
+} from '~/redux/modulos/dashboardEscolaAqui/actions';
 import { AbrangenciaServico, api, erros } from '~/servicos';
 import ServicoFiltroRelatorio from '~/servicos/Paginas/FiltroRelatorio/ServicoFiltroRelatorio';
 import ServicoDashboardEscolaAqui from '~/servicos/Paginas/Relatorios/EscolaAqui/DashboardEscolaAqui/ServicoDashboardEscolaAqui';
@@ -19,9 +24,13 @@ import DataUltimaAtualizacaoDashboardEscolaAqui from '../ComponentesDashboardEsc
 import GraficoPizzaDashboardEscolaAqui from '../ComponentesDashboardEscolaAqui/graficoPizzaDashboardEscolaAqui';
 import LeituraDeComunicadosAgrupadosPorDre from './leituraDeComunicadosAgrupadosPorDre';
 import LeituraDeComunicadosPorModalidades from './leituraDeComunicadosPorModalidades';
+import LeituraDeComunicadosPorModalidadesETurmas from './leituraDeComunicadosPorModalidadesETurmas';
+import LeituraDeComunicadosPorTurmas from './leituraDeComunicadosPorTurmas';
 
 const DadosComunicadosLeitura = props => {
   const { codigoDre, codigoUe } = props;
+
+  const dispatch = useDispatch();
 
   const [exibirLoader, setExibirLoader] = useState(false);
 
@@ -59,6 +68,8 @@ const DadosComunicadosLeitura = props => {
     dadosDeLeituraDeComunicados,
     setDadosDeLeituraDeComunicados,
   ] = useState([]);
+
+  const [timeoutCampoPesquisa, setTimeoutCampoPesquisa] = useState();
 
   // TODO Verificar no componente de gráficos outra forma de fazer!
   const chavesGrafico = [
@@ -277,7 +288,13 @@ const DadosComunicadosLeitura = props => {
 
   const handleSearch = descricao => {
     if (descricao.length > 3 || descricao.length === 0) {
-      setPesquisaComunicado(descricao);
+      if (timeoutCampoPesquisa) {
+        clearTimeout(timeoutCampoPesquisa);
+      }
+      const timeout = setTimeout(() => {
+        setPesquisaComunicado(descricao);
+      }, 500);
+      setTimeoutCampoPesquisa(timeout);
     }
   };
 
@@ -301,7 +318,6 @@ const DadosComunicadosLeitura = props => {
             : grupo;
 
         setCarrecandoComunicado(true);
-        setComunicado();
         const resposta = await ServicoDashboardEscolaAqui.obterComunicadosAutoComplete(
           anoLetivo || '',
           codigoDre === OPCAO_TODOS ? '' : codigoDre || '',
@@ -327,9 +343,12 @@ const DadosComunicadosLeitura = props => {
               )}`,
             };
           });
+          setListaComunicado([]);
           setListaComunicado(lista);
         } else {
           setListaComunicado([]);
+          setComunicado();
+          setPesquisaComunicado();
         }
       }
     })();
@@ -393,6 +412,7 @@ const DadosComunicadosLeitura = props => {
     if (dadosComunicado?.id) {
       setExibirLoader(true);
 
+      dispatch(setDadosDeLeituraDeComunicadosAgrupadosPorModalidade([]));
       const resposta = await ServicoDashboardEscolaAqui.obterDadosDeLeituraDeComunicados(
         dadosComunicado.codigoDre || '',
         dadosComunicado.codigoUe || '',
@@ -429,6 +449,13 @@ const DadosComunicadosLeitura = props => {
       setDadosDeLeituraDeComunicados([]);
     }
   }, [comunicado]);
+
+  useEffect(() => {
+    dispatch(limparDadosDashboardEscolaAqui([]));
+    return () => {
+      dispatch(limparDadosDashboardEscolaAqui([]));
+    };
+  }, [dispatch]);
 
   return (
     <Loader loading={exibirLoader}>
@@ -635,6 +662,26 @@ const DadosComunicadosLeitura = props => {
         )}
         {dadosDeLeituraDeComunicados?.length ? (
           <LeituraDeComunicadosPorModalidades
+            chavesGrafico={chavesGrafico}
+            modoVisualizacao={visualizacao}
+            comunicado={comunicado}
+            listaComunicado={listaComunicado}
+          />
+        ) : (
+          ''
+        )}
+        {dadosDeLeituraDeComunicados?.length ? (
+          <LeituraDeComunicadosPorModalidadesETurmas
+            chavesGrafico={chavesGrafico}
+            modoVisualizacao={visualizacao}
+            comunicado={comunicado}
+            listaComunicado={listaComunicado}
+          />
+        ) : (
+          ''
+        )}
+        {dadosDeLeituraDeComunicados?.length ? (
+          <LeituraDeComunicadosPorTurmas
             chavesGrafico={chavesGrafico}
             modoVisualizacao={visualizacao}
             comunicado={comunicado}
