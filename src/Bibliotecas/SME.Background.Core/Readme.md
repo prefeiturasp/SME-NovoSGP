@@ -15,7 +15,7 @@ Para configurar o cliente é necessário registrar o Processor responsável por 
         {
             // suas clausulas...
             SME.Background.Core.Orquestrador.Inicializar(services.BuildServiceProvider());
-            SME.Background.Core.Orquestrador.Registrar<SME.Background.Hangfire.Processor>(new Background.Hangfire.Processor(Configuration, "SGP-Postgres"));
+            SME.Background.Core.Orquestrador.Registrar<SME.Background.Hangfire.Processor>(new Background.Hangfire.Processor(Configuration, "SGP_Postgres"));
         }
 ```
 
@@ -27,7 +27,7 @@ Para configurar o cliente é necessário registrar o Processor responsável por 
             SME.Background.Core.Orquestrador.Inicializar(services.BuildServiceProvider());
 
             if (Configuration.GetValue<bool>("FF_BackgroundEnabled", false))
-                SME.Background.Core.Orquestrador.Registrar<SME.Background.Hangfire.Processor>(new Background.Hangfire.Processor(Configuration, "SGP-Postgres"));
+                SME.Background.Core.Orquestrador.Registrar<SME.Background.Hangfire.Processor>(new Background.Hangfire.Processor(Configuration, "SGP_Postgres"));
             else
                 SME.Background.Core.Orquestrador.Desativar();
         }
