@@ -79,6 +79,7 @@ import RelatorioUsuarios from '~/paginas/Relatorios/Gestao/Usuarios/relatorioUsu
 import AtribuicaoCJ from '~/paginas/Relatorios/Gestao/AtribuicaoCJ/atribuicaoCJ';
 import RelatorioHistoricoAlteracoesNotas from '~/paginas/Relatorios/Fechamento/HistoricoAlteracoesNotas/relatorioHistoricoAlteracoesNotas';
 import relatorioEscolaAquiAdesao from '~/paginas/Relatorios/EscolaAqui/Adesao/relatorioEscolaAquiAdesao';
+import RelatorioLeitura from '~/paginas/Relatorios/EscolaAqui/Leitura/relatorioLeitura';
 
 const rotas = new Map();
 
@@ -1069,6 +1070,17 @@ rotas.set(RotasDto.RELATORIO_ALTERACAO_NOTAS, {
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: false,
   chavePermissao: RotasDto.RELATORIO_ALTERACAO_NOTAS,
+});
+
+rotas.set(RotasDto.RELATORIO_LEITURA, {
+  breadcrumbName: 'Leitura',
+  menu: ['Relatórios', 'Escola aqui'],
+  parent: '/',
+  component: RelatorioLeitura,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.RELATORIO_LEITURA,
 });
 
 rotas.set(RotasDto.RELATORIO_ESCOLA_AQUI_ADESAO, {

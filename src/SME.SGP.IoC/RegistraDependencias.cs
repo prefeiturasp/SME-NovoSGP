@@ -617,6 +617,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRelatorioAEAdesaoUseCase, RelatorioAEAdesaoUseCase>();
 
 
+            services.TryAddScoped<IRelatorioLeituraComunicadosUseCase, RelatorioLeituraComunicadosUseCase>();
+
+            
         }
     }
 }
