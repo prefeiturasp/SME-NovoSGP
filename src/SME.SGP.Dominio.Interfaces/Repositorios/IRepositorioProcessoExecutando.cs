@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
@@ -11,8 +9,9 @@ namespace SME.SGP.Dominio.Interfaces
         void Remover(ProcessoExecutando processo);
         Task RemoverAsync(ProcessoExecutando processo);
         Task RemoverIdsAsync(long[] ids);
-        Task<ProcessoExecutando> ObterProcessoCalculoFrequencia(string turmaId, string disciplinaId, int bimestre);
+        Task<ProcessoExecutando> ObterProcessoCalculoFrequenciaAsync(string turmaId, string disciplinaId, int bimestre, TipoProcesso tipoProcesso);
         Task<bool> ObterAulaEmManutencaoAsync(long aulaId);
+        Task<IEnumerable<long>> ObterIdsPorFiltrosAsync(int bimestre, string disciplinaId, string turmaId);
         Task RemoverPorId(long id);
         Task<bool> ProcessoEstaEmExecucao(TipoProcesso tipoProcesso);
     }

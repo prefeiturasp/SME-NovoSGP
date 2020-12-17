@@ -137,7 +137,7 @@ namespace SME.SGP.Api
 
             if (Configuration.GetValue<bool>("FF_BackgroundEnabled", false))
             {
-                Orquestrador.Registrar(new Processor(Configuration, "SGP-Postgres"));
+                Orquestrador.Registrar(new Processor(Configuration, "SGP_Postgres"));
                 RegistraServicosRecorrentes.Registrar();
             }
             else
@@ -145,12 +145,12 @@ namespace SME.SGP.Api
 
             services.AddHealthChecks()
                    .AddRedis(
-                        Configuration.GetConnectionString("SGP-Redis"),
+                        Configuration.GetConnectionString("SGP_Redis"),
                         "Redis Cache",
                         null,
                         tags: new string[] { "db", "redis" })
                     .AddNpgSql(
-                        Configuration.GetConnectionString("SGP-Postgres"),
+                        Configuration.GetConnectionString("SGP_Postgres"),
                         name: "Postgres")
                     .AddCheck<ApiJuremaCheck>("API Jurema")
                     .AddCheck<ApiEolCheck>("API EOL");
