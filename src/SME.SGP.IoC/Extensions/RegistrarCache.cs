@@ -11,7 +11,7 @@ namespace SME.SGP.IoC
         public static void AdicionarRedis(this IServiceCollection services, IConfiguration configuration, IServicoLog servicoLog)
         {
             services.AddSingleton<IConnectionMultiplexerSME>(
-                new ConnectionMultiplexerSME(configuration.GetConnectionString("SGP-Redis"), servicoLog));
+                new ConnectionMultiplexerSME(configuration.GetConnectionString("SGP_Redis"), servicoLog));
         }
     }
 }
