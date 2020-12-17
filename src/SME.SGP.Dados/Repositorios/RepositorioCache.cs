@@ -216,18 +216,20 @@ namespace SME.SGP.Dados.Repositorios
 
             try
             {
-
-                if (utilizarGZip)
+                if (!string.IsNullOrWhiteSpace(valor) && valor != "[]")
                 {
-                    var valorComprimido = UtilGZip.Comprimir(valor);
-                    valor = Convert.ToBase64String(valorComprimido);
+
+                    if (utilizarGZip)
+                    {
+                        var valorComprimido = UtilGZip.Comprimir(valor);
+                        valor = Convert.ToBase64String(valorComprimido);
+                    }
+
+                    memoryCache.Set(nomeChave, valor, TimeSpan.FromMinutes(minutosParaExpirar));
+
+                    timer.Stop();
+                    servicoLog.RegistrarDependenciaAppInsights("Redis", nomeChave, "Remover async", inicioOperacao, timer.Elapsed, true);
                 }
-
-                memoryCache.Set(nomeChave, valor, TimeSpan.FromMinutes(minutosParaExpirar));
-
-                timer.Stop();
-                servicoLog.RegistrarDependenciaAppInsights("Redis", nomeChave, "Remover async", inicioOperacao, timer.Elapsed, true);
-
             }
             catch (Exception ex)
             {
