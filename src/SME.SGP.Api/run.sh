@@ -1,2 +1,15 @@
-export
-nohup redis-server --bind '0.0.0.0' &> redis.log & dotnet SME.SGP.Api.dll
+#!/bin/bash
+
+# screen -d -m -S Redis /usr/bin/redis-server && dotnet SME.SGP.API.dll
+# nohup redis-server && dotnet SME.SGP.API.dll
+
+# Start Redis
+/usr/bin/redis-server & 
+status=$?
+if [ $status -ne 0 ]; then
+  echo "Failed to start redis-server: $status"
+  exit $status
+fi
+
+# Start SGP
+dotnet SME.SGP.Api.dll
