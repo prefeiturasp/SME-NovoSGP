@@ -36,10 +36,19 @@ namespace SME.SGP.Aplicacao
             url.Append(@"&codigoUe=" + request.CodigoUe);
             url.Append(@"&notificacaoId=" + request.ComunicadoId);
             url.Append(@"&modoVisualizacao=" + request.ModoVisualizacao);
-            url.Append(@"&codigosTurmas=" + request.CodigosTurmas);
-            foreach (var item in request.Modalidades)
+            if (request.CodigosTurmas != null)
             {
-                url.Append(@"&modalidades=" + item);
+                foreach (var item in request.CodigosTurmas)
+                {                    
+                    url.Append(@"&codigosTurmas=" + item);
+                }
+            }
+            if (request.Modalidades != null)
+            {
+                foreach (var item in request.Modalidades)
+                {
+                    url.Append(@"&modalidades=" + item);
+                }
             }
 
             var resposta = await httpClient.GetAsync($"{url}", cancellationToken);
