@@ -44,7 +44,7 @@ namespace SME.SGP.Worker.Service
                 var provider = services.BuildServiceProvider();
 
                 services.AddSingleton<IConnectionMultiplexerSME>(
-                    new ConnectionMultiplexerSME(hostContext.Configuration.GetConnectionString("SGP-Redis"), provider.GetService<IServicoLog>()));
+                    new ConnectionMultiplexerSME(hostContext.Configuration.GetConnectionString("SGP_Redis"), provider.GetService<IServicoLog>()));
 
                 // Teste para injeção do client de telemetria em classe estática                 ,
 
