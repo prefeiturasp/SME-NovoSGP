@@ -1,13 +1,19 @@
 import * as moment from 'moment';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import {
   CampoData,
   Loader,
   SelectAutocomplete,
   SelectComponent,
 } from '~/componentes';
+import Alert from '~/componentes/alert';
 import { ModalidadeDTO } from '~/dtos';
+import {
+  limparDadosDashboardEscolaAqui,
+  setDadosDeLeituraDeComunicadosAgrupadosPorModalidade,
+} from '~/redux/modulos/dashboardEscolaAqui/actions';
 import { AbrangenciaServico, api, erros } from '~/servicos';
 import ServicoFiltroRelatorio from '~/servicos/Paginas/FiltroRelatorio/ServicoFiltroRelatorio';
 import ServicoDashboardEscolaAqui from '~/servicos/Paginas/Relatorios/EscolaAqui/DashboardEscolaAqui/ServicoDashboardEscolaAqui';
@@ -19,9 +25,13 @@ import DataUltimaAtualizacaoDashboardEscolaAqui from '../ComponentesDashboardEsc
 import GraficoPizzaDashboardEscolaAqui from '../ComponentesDashboardEscolaAqui/graficoPizzaDashboardEscolaAqui';
 import LeituraDeComunicadosAgrupadosPorDre from './leituraDeComunicadosAgrupadosPorDre';
 import LeituraDeComunicadosPorModalidades from './leituraDeComunicadosPorModalidades';
+import LeituraDeComunicadosPorModalidadesETurmas from './leituraDeComunicadosPorModalidadesETurmas';
+import LeituraDeComunicadosPorTurmas from './leituraDeComunicadosPorTurmas';
 
 const DadosComunicadosLeitura = props => {
   const { codigoDre, codigoUe } = props;
+
+  const dispatch = useDispatch();
 
   const [exibirLoader, setExibirLoader] = useState(false);
 
@@ -59,6 +69,8 @@ const DadosComunicadosLeitura = props => {
     dadosDeLeituraDeComunicados,
     setDadosDeLeituraDeComunicados,
   ] = useState([]);
+
+  const [timeoutCampoPesquisa, setTimeoutCampoPesquisa] = useState();
 
   // TODO Verificar no componente de gráficos outra forma de fazer!
   const chavesGrafico = [
@@ -277,7 +289,13 @@ const DadosComunicadosLeitura = props => {
 
   const handleSearch = descricao => {
     if (descricao.length > 3 || descricao.length === 0) {
-      setPesquisaComunicado(descricao);
+      if (timeoutCampoPesquisa) {
+        clearTimeout(timeoutCampoPesquisa);
+      }
+      const timeout = setTimeout(() => {
+        setPesquisaComunicado(descricao);
+      }, 500);
+      setTimeoutCampoPesquisa(timeout);
     }
   };
 
@@ -301,7 +319,6 @@ const DadosComunicadosLeitura = props => {
             : grupo;
 
         setCarrecandoComunicado(true);
-        setComunicado();
         const resposta = await ServicoDashboardEscolaAqui.obterComunicadosAutoComplete(
           anoLetivo || '',
           codigoDre === OPCAO_TODOS ? '' : codigoDre || '',
@@ -327,9 +344,12 @@ const DadosComunicadosLeitura = props => {
               )}`,
             };
           });
+          setListaComunicado([]);
           setListaComunicado(lista);
         } else {
           setListaComunicado([]);
+          setComunicado();
+          setPesquisaComunicado();
         }
       }
     })();
@@ -393,6 +413,7 @@ const DadosComunicadosLeitura = props => {
     if (dadosComunicado?.id) {
       setExibirLoader(true);
 
+      dispatch(setDadosDeLeituraDeComunicadosAgrupadosPorModalidade([]));
       const resposta = await ServicoDashboardEscolaAqui.obterDadosDeLeituraDeComunicados(
         dadosComunicado.codigoDre || '',
         dadosComunicado.codigoUe || '',
@@ -430,221 +451,264 @@ const DadosComunicadosLeitura = props => {
     }
   }, [comunicado]);
 
-  return (
-    <Loader loading={exibirLoader}>
-      <div className="row">
-        <div className="col-sm-12 col-md-6 col-lg-3 col-xl-2 mb-2">
-          <SelectComponent
-            id="select-ano-letivo"
-            label="Ano Letivo"
-            lista={listaAnosLetivo}
-            valueOption="valor"
-            valueText="desc"
-            disabled={listaAnosLetivo?.length === 1}
-            onChange={setAnoLetivo}
-            valueSelect={anoLetivo}
-            placeholder="Selecione o ano"
-            allowClear={false}
-          />
-        </div>
-        <div className="col-sm-12 col-md-6 col-lg-6 col-xl-4 mb-2">
-          <SelectComponent
-            id="select-grupo"
-            label="Grupo"
-            lista={listaGrupo}
-            valueOption="valor"
-            valueText="desc"
-            valueSelect={grupo}
-            placeholder="Selecione o grupo"
-            multiple
-            onChange={valores => {
-              const opcaoTodosJaSelecionado = grupo
-                ? grupo.includes(OPCAO_TODOS)
-                : false;
-              if (opcaoTodosJaSelecionado) {
-                const listaSemOpcaoTodos = valores.filter(
-                  v => v !== OPCAO_TODOS
-                );
-                setGrupo(listaSemOpcaoTodos);
-              } else if (valores.includes(OPCAO_TODOS)) {
-                setGrupo([OPCAO_TODOS]);
-              } else {
-                setGrupo(valores);
-              }
-            }}
-          />
-        </div>
-        <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3  mb-2">
-          <Loader loading={carregandoModalidades} tip="">
-            <SelectComponent
-              id="select-modalidade"
-              label="Modalidade"
-              lista={listaModalidades}
-              valueOption="valor"
-              valueText="desc"
-              onChange={setModalidadeId}
-              valueSelect={modalidadeId}
-              placeholder="Modalidade"
-              disabled={
-                codigoUe === OPCAO_TODOS || listaModalidades?.length === 1
-              }
-            />
-          </Loader>
-        </div>
-        <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 mb-2">
-          <Loader loading={carregandoSemestres} tip="">
-            <SelectComponent
-              id="select-semestre"
-              lista={listaSemestres}
-              valueOption="valor"
-              valueText="desc"
-              label="Semestre"
-              disabled={
-                !modalidadeId ||
-                (listaSemestres && listaSemestres.length === 1) ||
-                String(modalidadeId) !== String(ModalidadeDTO.EJA)
-              }
-              valueSelect={semestre}
-              onChange={setSemestre}
-              placeholder="Semestre"
-            />
-          </Loader>
-        </div>
-        <div className="col-sm-12 col-md-6 col-lg-6 col-xl-6 mb-2">
-          <Loader loading={carregandoAnosEscolares} tip="">
-            <SelectComponent
-              id="select-ano-escolar"
-              lista={listaAnosEscolares}
-              valueOption="valor"
-              valueText="descricao"
-              label="Ano"
-              disabled={
-                !modalidadeId ||
-                codigoUe === OPCAO_TODOS ||
-                listaAnosEscolares?.length === 1
-              }
-              valueSelect={anosEscolares}
-              onChange={setAnosEscolares}
-              placeholder="Selecione o ano"
-            />
-          </Loader>
-        </div>
-        <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 mb-2">
-          <Loader loading={carregandoTurmas} tip="">
-            <SelectComponent
-              id="select-turma"
-              lista={listaTurmas}
-              valueOption="valor"
-              valueText="desc"
-              label="Turma"
-              disabled={
-                codigoUe === OPCAO_TODOS ||
-                !modalidadeId ||
-                (listaTurmas && listaTurmas.length === 1)
-              }
-              valueSelect={codigoTurma}
-              onChange={setCodigoTurma}
-              placeholder="Turma"
-            />
-          </Loader>
-        </div>
+  useEffect(() => {
+    dispatch(limparDadosDashboardEscolaAqui([]));
+    return () => {
+      dispatch(limparDadosDashboardEscolaAqui([]));
+    };
+  }, [dispatch]);
 
-        <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 pb-2">
-          <CampoData
-            if="data-inicio"
-            label="Data de envio início"
-            placeholder="DD/MM/AAAA"
-            formatoData="DD/MM/YYYY"
-            onChange={setDataInicio}
-            desabilitarData={desabilitarData}
-            valor={dataInicio}
-          />
-        </div>
-        <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 pb-2">
-          <CampoData
-            id="data-fim"
-            label="Data de envio fim"
-            placeholder="DD/MM/AAAA"
-            formatoData="DD/MM/YYYY"
-            onChange={setDataFim}
-            desabilitarData={desabilitarData}
-            valor={dataFim}
-          />
-        </div>
-        <div className="col-sm-12 col-md-6 col-lg-6 col-xl-6 mb-2">
-          <Loader loading={carrecandoComunicado} tip="">
-            <SelectAutocomplete
-              id="autocomplete-comunicados"
-              label="Comunicado"
-              showList
-              isHandleSearch
-              placeholder="Selecione um comunicado"
-              className="col-md-12"
-              lista={listaComunicado}
-              valueField="id"
-              textField="descricao"
-              onSelect={setComunicado}
-              onChange={setComunicado}
-              handleSearch={handleSearch}
-              value={comunicado}
-            />
-          </Loader>
-        </div>
-        <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 mb-2">
-          <SelectComponent
-            lista={listaVisualizacao}
-            valueOption="valor"
-            valueText="descricao"
-            label="Visualização"
-            valueSelect={visualizacao}
-            onChange={setVisualizacao}
-            placeholder="Selecione a visualização"
-            allowClear={false}
-          />
-        </div>
-        {dadosDeLeituraDeComunicados?.length ? (
-          <div className="col-md-12 mt-5">
-            <DataUltimaAtualizacaoDashboardEscolaAqui
-              nomeConsulta="ConsolidarLeituraNotificacao"
-              tituloAdicional="Os dados estão considerando a situação atual dos estudantes e responsáveis"
+  return (
+    <>
+      {!comunicado ? (
+        <Alert
+          alerta={{
+            tipo: 'warning',
+            id: 'selecionar-comunicado',
+            mensagem:
+              'Você precisa selecionar um comunicado para visualizar os dados de leitura',
+            estiloTitulo: { fontSize: '18px' },
+          }}
+          className="mb-2"
+        />
+      ) : (
+        ''
+      )}
+      <Loader loading={exibirLoader}>
+        <div className="row">
+          <div className="col-sm-12 col-md-6 col-lg-3 col-xl-2 mb-2">
+            <SelectComponent
+              id="select-ano-letivo"
+              label="Ano Letivo"
+              lista={listaAnosLetivo}
+              valueOption="valor"
+              valueText="desc"
+              disabled={listaAnosLetivo?.length === 1}
+              onChange={setAnoLetivo}
+              valueSelect={anoLetivo}
+              placeholder="Selecione o ano"
+              allowClear={false}
             />
           </div>
-        ) : (
-          ''
-        )}
+          <div className="col-sm-12 col-md-6 col-lg-6 col-xl-4 mb-2">
+            <SelectComponent
+              id="select-grupo"
+              label="Grupo"
+              lista={listaGrupo}
+              valueOption="valor"
+              valueText="desc"
+              valueSelect={grupo}
+              placeholder="Selecione o grupo"
+              multiple
+              onChange={valores => {
+                const opcaoTodosJaSelecionado = grupo
+                  ? grupo.includes(OPCAO_TODOS)
+                  : false;
+                if (opcaoTodosJaSelecionado) {
+                  const listaSemOpcaoTodos = valores.filter(
+                    v => v !== OPCAO_TODOS
+                  );
+                  setGrupo(listaSemOpcaoTodos);
+                } else if (valores.includes(OPCAO_TODOS)) {
+                  setGrupo([OPCAO_TODOS]);
+                } else {
+                  setGrupo(valores);
+                }
+              }}
+            />
+          </div>
+          <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3  mb-2">
+            <Loader loading={carregandoModalidades} tip="">
+              <SelectComponent
+                id="select-modalidade"
+                label="Modalidade"
+                lista={listaModalidades}
+                valueOption="valor"
+                valueText="desc"
+                onChange={setModalidadeId}
+                valueSelect={modalidadeId}
+                placeholder="Modalidade"
+                disabled={
+                  codigoUe === OPCAO_TODOS || listaModalidades?.length === 1
+                }
+              />
+            </Loader>
+          </div>
+          <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 mb-2">
+            <Loader loading={carregandoSemestres} tip="">
+              <SelectComponent
+                id="select-semestre"
+                lista={listaSemestres}
+                valueOption="valor"
+                valueText="desc"
+                label="Semestre"
+                disabled={
+                  !modalidadeId ||
+                  (listaSemestres && listaSemestres.length === 1) ||
+                  String(modalidadeId) !== String(ModalidadeDTO.EJA)
+                }
+                valueSelect={semestre}
+                onChange={setSemestre}
+                placeholder="Semestre"
+              />
+            </Loader>
+          </div>
+          <div className="col-sm-12 col-md-6 col-lg-6 col-xl-6 mb-2">
+            <Loader loading={carregandoAnosEscolares} tip="">
+              <SelectComponent
+                id="select-ano-escolar"
+                lista={listaAnosEscolares}
+                valueOption="valor"
+                valueText="descricao"
+                label="Ano"
+                disabled={
+                  !modalidadeId ||
+                  codigoUe === OPCAO_TODOS ||
+                  listaAnosEscolares?.length === 1
+                }
+                valueSelect={anosEscolares}
+                onChange={setAnosEscolares}
+                placeholder="Selecione o ano"
+              />
+            </Loader>
+          </div>
+          <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 mb-2">
+            <Loader loading={carregandoTurmas} tip="">
+              <SelectComponent
+                id="select-turma"
+                lista={listaTurmas}
+                valueOption="valor"
+                valueText="desc"
+                label="Turma"
+                disabled={
+                  codigoUe === OPCAO_TODOS ||
+                  !modalidadeId ||
+                  (listaTurmas && listaTurmas.length === 1)
+                }
+                valueSelect={codigoTurma}
+                onChange={setCodigoTurma}
+                placeholder="Turma"
+              />
+            </Loader>
+          </div>
 
-        <div className="col-md-12">
+          <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 pb-2">
+            <CampoData
+              if="data-inicio"
+              label="Data de envio início"
+              placeholder="DD/MM/AAAA"
+              formatoData="DD/MM/YYYY"
+              onChange={setDataInicio}
+              desabilitarData={desabilitarData}
+              valor={dataInicio}
+            />
+          </div>
+          <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 pb-2">
+            <CampoData
+              id="data-fim"
+              label="Data de envio fim"
+              placeholder="DD/MM/AAAA"
+              formatoData="DD/MM/YYYY"
+              onChange={setDataFim}
+              desabilitarData={desabilitarData}
+              valor={dataFim}
+            />
+          </div>
+          <div className="col-sm-12 col-md-6 col-lg-6 col-xl-6 mb-2">
+            <Loader loading={carrecandoComunicado} tip="">
+              <SelectAutocomplete
+                id="autocomplete-comunicados"
+                label="Comunicado"
+                showList
+                isHandleSearch
+                placeholder="Selecione um comunicado"
+                className="col-md-12"
+                lista={listaComunicado}
+                valueField="id"
+                textField="descricao"
+                onSelect={setComunicado}
+                onChange={setComunicado}
+                handleSearch={handleSearch}
+                value={comunicado}
+              />
+            </Loader>
+          </div>
+          <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 mb-2">
+            <SelectComponent
+              lista={listaVisualizacao}
+              valueOption="valor"
+              valueText="descricao"
+              label="Visualização"
+              valueSelect={visualizacao}
+              onChange={setVisualizacao}
+              placeholder="Selecione a visualização"
+              allowClear={false}
+            />
+          </div>
           {dadosDeLeituraDeComunicados?.length ? (
-            <GraficoPizzaDashboardEscolaAqui
-              titulo="Dados de leitura"
-              dadosGrafico={dadosDeLeituraDeComunicados}
+            <div className="col-md-12 mt-5">
+              <DataUltimaAtualizacaoDashboardEscolaAqui
+                nomeConsulta="ConsolidarLeituraNotificacao"
+                tituloAdicional="Os dados estão considerando a situação atual dos estudantes e responsáveis"
+              />
+            </div>
+          ) : (
+            ''
+          )}
+
+          <div className="col-md-12">
+            {dadosDeLeituraDeComunicados?.length ? (
+              <GraficoPizzaDashboardEscolaAqui
+                titulo="Dados de leitura"
+                dadosGrafico={dadosDeLeituraDeComunicados}
+              />
+            ) : (
+              ''
+            )}
+          </div>
+          {dadosDeLeituraDeComunicados?.length ? (
+            <LeituraDeComunicadosAgrupadosPorDre
+              chavesGrafico={chavesGrafico}
+              modoVisualizacao={visualizacao}
+              comunicado={comunicado}
+              listaComunicado={listaComunicado}
+            />
+          ) : (
+            ''
+          )}
+          {dadosDeLeituraDeComunicados?.length ? (
+            <LeituraDeComunicadosPorModalidades
+              chavesGrafico={chavesGrafico}
+              modoVisualizacao={visualizacao}
+              comunicado={comunicado}
+              listaComunicado={listaComunicado}
+            />
+          ) : (
+            ''
+          )}
+          {dadosDeLeituraDeComunicados?.length ? (
+            <LeituraDeComunicadosPorModalidadesETurmas
+              chavesGrafico={chavesGrafico}
+              modoVisualizacao={visualizacao}
+              comunicado={comunicado}
+              listaComunicado={listaComunicado}
+            />
+          ) : (
+            ''
+          )}
+          {dadosDeLeituraDeComunicados?.length ? (
+            <LeituraDeComunicadosPorTurmas
+              chavesGrafico={chavesGrafico}
+              modoVisualizacao={visualizacao}
+              comunicado={comunicado}
+              listaComunicado={listaComunicado}
             />
           ) : (
             ''
           )}
         </div>
-        {dadosDeLeituraDeComunicados?.length ? (
-          <LeituraDeComunicadosAgrupadosPorDre
-            chavesGrafico={chavesGrafico}
-            modoVisualizacao={visualizacao}
-            comunicado={comunicado}
-            listaComunicado={listaComunicado}
-          />
-        ) : (
-          ''
-        )}
-        {dadosDeLeituraDeComunicados?.length ? (
-          <LeituraDeComunicadosPorModalidades
-            chavesGrafico={chavesGrafico}
-            modoVisualizacao={visualizacao}
-            comunicado={comunicado}
-            listaComunicado={listaComunicado}
-          />
-        ) : (
-          ''
-        )}
-      </div>
-    </Loader>
+      </Loader>
+    </>
   );
 };
 
