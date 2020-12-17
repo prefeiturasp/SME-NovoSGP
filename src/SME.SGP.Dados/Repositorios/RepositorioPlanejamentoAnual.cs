@@ -135,6 +135,7 @@ namespace SME.SGP.Dados.Repositorios
 	                        (select 1 from plano_anual where turma_id = t.turma_id::int8 limit 1) as possuiPlano
                         from
 	                        turma t
+
                         inner join abrangencia a on
 	                        a.turma_id = t.id
                         left join plano_anual p on

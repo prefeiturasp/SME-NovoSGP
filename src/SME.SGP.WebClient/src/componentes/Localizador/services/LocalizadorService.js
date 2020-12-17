@@ -21,9 +21,7 @@ class LocalizadorService {
 
   buscarAutocomplete({ anoLetivo, dreId, nome, incluirEmei }) {
     return api.get(
-      `${
-        this.urlProfessores
-      }/${anoLetivo}/autocomplete/${dreId}/${!!incluirEmei}`,
+      `${this.urlProfessores}/${anoLetivo}/autocomplete/${dreId}`,
       {
         params: {
           nomeProfessor: nome,
@@ -32,8 +30,10 @@ class LocalizadorService {
     );
   }
 
-  buscarPorRf({ anoLetivo, rf }) {
-    return api.get(`${this.urlProfessores}/${rf}/resumo/${anoLetivo}`);
+  buscarPorRf({ anoLetivo, rf, buscarOutrosCargos }) {
+    return api.get(
+      `${this.urlProfessores}/${rf}/resumo/${anoLetivo}?buscarOutrosCargos=${buscarOutrosCargos}`
+    );
   }
 
   buscarPessoa({ rf, nome }) {

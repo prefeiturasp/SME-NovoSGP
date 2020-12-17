@@ -67,8 +67,19 @@ import DevolutivasLista from '~/paginas/DiarioClasse/Devolutivas/devolutivasList
 import DevolutivasForm from '~/paginas/DiarioClasse/Devolutivas/devolutivasForm';
 import RelatorioNotasConceitosFinais from '~/paginas/Relatorios/NotasConceitosFinais/relatorioNotasConceitosFinais';
 import RelatorioCompensacaoAusencia from '~/paginas/Relatorios/CompensacaoAusencia/relatorioCompensacaoAusencia';
+import DashboardEscolaAqui from '~/paginas/Relatorios/DashboardEscolaAqui/dashboardEscolaAqui';
 import PocEditor from '~/paginas/PocEditor/pocEditor';
 import ControleGrade from '~/paginas/Relatorios/DiarioClasse/ControleGrade/controleGrade';
+import Sondagem from '~/paginas/Sondagem/sondagem';
+import PocUploadArquivos from '~/componentes-sgp/UploadArquivos/pocUploadArquivos';
+import DocumentosPlanosTrabalhoLista from '~/paginas/Gestao/DocumentosPlanosTrabalho/documentosPlanosTrabalhoLista';
+import DocumentosPlanosTrabalhoCadastro from '~/paginas/Gestao/DocumentosPlanosTrabalho/documentosPlanosTrabalhoCadastro';
+import HistoricoNotificacoes from '~/paginas/Relatorios/Notificacoes/HistoricoNotificacoes/historicoNotificacoes';
+import RelatorioUsuarios from '~/paginas/Relatorios/Gestao/Usuarios/relatorioUsuarios';
+import AtribuicaoCJ from '~/paginas/Relatorios/Gestao/AtribuicaoCJ/atribuicaoCJ';
+import RelatorioHistoricoAlteracoesNotas from '~/paginas/Relatorios/Fechamento/HistoricoAlteracoesNotas/relatorioHistoricoAlteracoesNotas';
+import relatorioEscolaAquiAdesao from '~/paginas/Relatorios/EscolaAqui/Adesao/relatorioEscolaAquiAdesao';
+import RelatorioLeitura from '~/paginas/Relatorios/EscolaAqui/Leitura/relatorioLeitura';
 
 const rotas = new Map();
 
@@ -940,6 +951,17 @@ rotas.set(RotasDto.RELATORIO_COMPENSACAO_AUSENCIA, {
   chavePermissao: RotasDto.RELATORIO_COMPENSACAO_AUSENCIA,
 });
 
+rotas.set(RotasDto.RELATORIO_ESCOLA_AQUI_DASHBOARD, {
+  breadcrumbName: 'Dashboard',
+  menu: ['Relatórios', 'Escola aqui '],
+  parent: '/',
+  component: DashboardEscolaAqui,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+  chavePermissao: RotasDto.RELATORIO_ESCOLA_AQUI_DASHBOARD,
+});
+
 rotas.set(RotasDto.CONTROLE_GRADE, {
   breadcrumbName: 'Controle de grade',
   menu: ['Relatórios', 'Diário de classe'],
@@ -959,8 +981,121 @@ rotas.set(RotasDto.POC_EDITOR, {
   tipo: RotasTipo.EstruturadaAutenticada,
 });
 
+rotas.set(RotasDto.SONDAGEM, {
+  breadcrumbName: 'Sistema Sondagem',
+  parent: '/',
+  component: Sondagem,
+  exact: false,
+  tipo: RotasTipo.EstruturadaAutenticada,
+});
+
+rotas.set(RotasDto.POC_UPLOAD_ARQUIVOS, {
+  breadcrumbName: 'Poc Upload Arquivos',
+  parent: '/',
+  component: PocUploadArquivos,
+  exact: false,
+  tipo: RotasTipo.EstruturadaAutenticada,
+});
+
+rotas.set(RotasDto.HISTORICO_NOTIFICACOES, {
+  breadcrumbName: 'Histórico de notificações',
+  menu: ['Relatórios', 'Notificações'],
+  parent: '/',
+  component: HistoricoNotificacoes,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.HISTORICO_NOTIFICACOES,
+});
+
+rotas.set(RotasDto.DOCUMENTOS_PLANOS_TRABALHO, {
+  breadcrumbName: 'Documentos e planos de trabalho',
+  menu: ['Gestão'],
+  parent: '/',
+  component: DocumentosPlanosTrabalhoLista,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.DOCUMENTOS_PLANOS_TRABALHO,
+});
+
+rotas.set(`${RotasDto.DOCUMENTOS_PLANOS_TRABALHO}/novo`, {
+  breadcrumbName: 'Upload do arquivo',
+  parent: RotasDto.DOCUMENTOS_PLANOS_TRABALHO,
+  component: DocumentosPlanosTrabalhoCadastro,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.DOCUMENTOS_PLANOS_TRABALHO,
+});
+
+rotas.set(`${RotasDto.DOCUMENTOS_PLANOS_TRABALHO}/editar/:id`, {
+  breadcrumbName: 'Upload do arquivo',
+  parent: RotasDto.DOCUMENTOS_PLANOS_TRABALHO,
+  component: DocumentosPlanosTrabalhoCadastro,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.DOCUMENTOS_PLANOS_TRABALHO,
+});
+
+rotas.set(RotasDto.RELATORIO_USUARIOS, {
+  breadcrumbName: 'usuários',
+  menu: ['Relatórios', 'Gestão', 'Usuários'],
+  parent: '/',
+  component: RelatorioUsuarios,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.RELATORIO_USUARIOS,
+});
+
+rotas.set(RotasDto.RELATORIO_ATRIBUICAO_CJ, {
+  breadcrumbName: 'Atribuições',
+  menu: ['Relatórios', 'Gestão'],
+  parent: '/',
+  component: AtribuicaoCJ,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+  chavePermissao: RotasDto.RELATORIO_ATRIBUICAO_CJ,
+});
+
+rotas.set(RotasDto.RELATORIO_ALTERACAO_NOTAS, {
+  breadcrumbName: 'Histórico de alterações de notas',
+  menu: ['Relatórios', 'Fechamento'],
+  parent: '/',
+  component: RelatorioHistoricoAlteracoesNotas,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+  chavePermissao: RotasDto.RELATORIO_ALTERACAO_NOTAS,
+});
+
+rotas.set(RotasDto.RELATORIO_LEITURA, {
+  breadcrumbName: 'Leitura',
+  menu: ['Relatórios', 'Escola aqui'],
+  parent: '/',
+  component: RelatorioLeitura,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.RELATORIO_LEITURA,
+});
+
+rotas.set(RotasDto.RELATORIO_ESCOLA_AQUI_ADESAO, {
+  breadcrumbName: 'Adesão',
+  menu: ['Relatórios', 'Escola aqui'],
+  parent: '/',
+  component: relatorioEscolaAquiAdesao,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+  chavePermissao: RotasDto.RELATORIO_ESCOLA_AQUI_ADESAO,
+});
+
 const rotasArray = [];
-for (var [key, value] of rotas) {
+for (const [key, value] of rotas) {
   const rota = value;
   rota.path = key;
   rotasArray.push(rota);

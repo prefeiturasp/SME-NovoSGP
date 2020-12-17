@@ -1,4 +1,5 @@
-﻿using SME.SGP.Aplicacao;
+﻿using MediatR;
+using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -21,13 +22,15 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioConselhoClasseNota repositorioConselhoClasseNota;
         private readonly IConsultasFrequencia consultasFrequencia;
         private readonly IServicoEol servicoEOL;
+        private readonly IMediator mediator;
 
         public ServicoCalculoParecerConclusivo(IRepositorioParametrosSistema repositorioParametrosSistema,
                                                IRepositorioFechamentoNota repositorioFechamentoNota,
                                                IRepositorioConceito repositorioConceito,
                                                IRepositorioConselhoClasseNota repositorioConselhoClasseNota,
                                                IConsultasFrequencia consultasFrequencia,
-                                               IServicoEol servicoEOL)
+                                               IServicoEol servicoEOL,
+                                               IMediator mediator)
         {
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
             this.repositorioFechamentoNota = repositorioFechamentoNota ?? throw new ArgumentNullException(nameof(repositorioFechamentoNota));
@@ -35,6 +38,7 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioConselhoClasseNota = repositorioConselhoClasseNota ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseNota));
             this.consultasFrequencia = consultasFrequencia ?? throw new ArgumentNullException(nameof(consultasFrequencia));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public bool Filtrar(IEnumerable<ConselhoClasseParecerConclusivo> pareceresDoServico, string nomeClasseCalculo)
@@ -96,8 +100,8 @@ namespace SME.SGP.Dominio.Servicos
             return await ValidarFrequenciaBaseNacionalAluno(alunoCodigo, turmaCodigo);
         }
         private async Task<bool> ValidarFrequenciaBaseNacionalAluno(string alunoCodigo, string turmaCodigo)
-        {
-            var parametroFrequenciaBaseNacional = double.Parse(await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.PercentualFrequenciaCriticoBaseNacional));
+        {            
+            var parametroFrequenciaBaseNacional = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.PercentualFrequenciaCriticoBaseNacional, DateTime.Today.Year)));
             var componentesCurriculares = await servicoEOL.ObterDisciplinasPorCodigoTurma(turmaCodigo);
             // Filtra componentes da Base Nacional
             var componentesCurricularesBaseNacional = componentesCurriculares.Where(c => c.BaseNacional);
@@ -114,8 +118,8 @@ namespace SME.SGP.Dominio.Servicos
         private async Task<bool> ValidarFrequenciaGeralAluno(string alunoCodigo, string turmaCodigo)
         {
             var frequenciaAluno = await consultasFrequencia.ObterFrequenciaGeralAluno(alunoCodigo, turmaCodigo);
-
-            var parametroFrequenciaGeral = double.Parse(await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.PercentualFrequenciaCritico));
+                       
+            var parametroFrequenciaGeral = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.PercentualFrequenciaCritico, DateTime.Today.Year)));
             return !(frequenciaAluno < parametroFrequenciaGeral);
         }
         #endregion
@@ -135,7 +139,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task<bool> ValidarParecerPorNota(IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno)
         {
-            var notaMedia = double.Parse(await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.MediaBimestre));
+            var notaMedia = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.MediaBimestre, DateTime.Today.Year)));
             foreach (var notaFechamentoAluno in notasFechamentoAluno)
                 if (notaFechamentoAluno.Nota < notaMedia)
                     return false;
@@ -171,8 +175,8 @@ namespace SME.SGP.Dominio.Servicos
         }
 
         private async Task<bool> ValidarParecerConselhoPorNota(IEnumerable<NotaConceitoBimestreComponenteDto> notasConselhoClasse)
-        {
-            var notaMedia = double.Parse(await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.MediaBimestre));
+        {           
+            var notaMedia = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.MediaBimestre, DateTime.Today.Year)));
             foreach (var notaConcelhoClasse in notasConselhoClasse)
                 if (notaConcelhoClasse.Nota < notaMedia)
                     return false;
