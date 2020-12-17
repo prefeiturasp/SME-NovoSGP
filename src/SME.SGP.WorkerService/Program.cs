@@ -44,7 +44,7 @@ namespace SME.SGP.Worker.Service
                 var provider = services.BuildServiceProvider();
 
                 services.AddSingleton<IConnectionMultiplexerSME>(
-                    new ConnectionMultiplexerSME(hostContext.Configuration.GetConnectionString("SGP-Redis"), provider.GetService<IServicoLog>()));
+                    new ConnectionMultiplexerSME(hostContext.Configuration.GetConnectionString("SGP_Redis"), provider.GetService<IServicoLog>()));
 
                 var telemetryConfiguration = new Microsoft.ApplicationInsights.Extensibility.TelemetryConfiguration(hostContext.Configuration.GetValue<string>("ApplicationInsights:InstrumentationKey"));
 
