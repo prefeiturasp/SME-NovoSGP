@@ -438,16 +438,18 @@ namespace SME.SGP.Dados.Repositorios
                 where.Append($" AND {comunicadoTumaAlias}.turma_codigo = @CodigoTurma");
 
             if (filtro.DataEnvioInicial != null)
-                where.Append($" AND {comunicadoAlias}.data_envio >= @DataEnvioInicial");
+                where.Append($" AND date({comunicadoAlias}.data_envio) >= @DataEnvioInicial");
 
             if (filtro.DataEnvioFinal != null)
-                where.Append($" AND {comunicadoAlias}.data_envio <= @DataEnvioFinal");
+                where.Append($" AND date({comunicadoAlias}.data_envio) <= @DataEnvioFinal");
 
             if (!string.IsNullOrWhiteSpace(filtro.Titulo))
             {
                 filtro.Titulo = filtro.Titulo.ToUpperInvariant();
                 where.Append($" AND lower(f_unaccent(cm.titulo)) LIKE lower(f_unaccent('%" + filtro.Titulo + "%'))");
             }
+
+            where.Append($" and not {comunicadoAlias}.excluido ");
 
             return where.ToString();
         }

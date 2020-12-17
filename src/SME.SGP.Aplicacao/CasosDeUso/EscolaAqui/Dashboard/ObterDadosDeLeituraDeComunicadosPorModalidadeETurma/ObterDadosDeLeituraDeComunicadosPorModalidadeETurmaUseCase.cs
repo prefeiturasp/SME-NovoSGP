@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.EscolaAqui.Dashboard.ObterDadosDeLeituraD
                                                                                                       filtroDadosDeLeituraDeComunicadosPorModalidadeDto.CodigoUe, 
                                                                                                       filtroDadosDeLeituraDeComunicadosPorModalidadeDto.NotificacaoId, 
                                                                                                       filtroDadosDeLeituraDeComunicadosPorModalidadeDto.Modalidades,
-                                                                                                      filtroDadosDeLeituraDeComunicadosPorModalidadeDto.CodigoTurma,
+                                                                                                      filtroDadosDeLeituraDeComunicadosPorModalidadeDto.CodigosTurmas,
                                                                                                       filtroDadosDeLeituraDeComunicadosPorModalidadeDto.ModoVisualizacao));
 
 

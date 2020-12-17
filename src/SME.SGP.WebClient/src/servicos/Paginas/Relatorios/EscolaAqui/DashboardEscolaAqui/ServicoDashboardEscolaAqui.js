@@ -127,6 +127,27 @@ class ServicoDashboardEscolaAqui {
     }
     return api.get(url);
   };
+
+  obterDadosDeLeituraDeComunicadosPorModalidadeETurmas = (
+    codigoDre,
+    codigoUe,
+    notificacaoId,
+    modoVisualizacao,
+    modalidades,
+    codigosTurmas
+  ) => {
+    let url = `${urlPadrao}/comunicados/leitura/turmas?codigoDre=${codigoDre}&codigoUe=${codigoUe}&notificacaoId=${notificacaoId}&modoVisualizacao=${modoVisualizacao}`;
+    if (modalidades?.length) {
+      url += `&modalidades=${modalidades.join('&modalidades=', modalidades)}`;
+    }
+    if (codigosTurmas?.length) {
+      url += `&codigosTurmas=${codigosTurmas.join(
+        '&codigosTurmas=',
+        codigosTurmas
+      )}`;
+    }
+    return api.get(url);
+  };
 }
 
 export default new ServicoDashboardEscolaAqui();
