@@ -28,5 +28,4 @@ RUN mkdir Imagens && \
     apt update && \ 
     apt install -y redis-server screen && \ 
     chmod a+x /app/run.sh
-# RUN nohup bash -c "/app/run.sh &" && sleep 4
 CMD ./run.sh
