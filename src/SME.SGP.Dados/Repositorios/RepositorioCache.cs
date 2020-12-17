@@ -170,13 +170,13 @@ namespace SME.SGP.Dados.Repositorios
                 memoryCache.Remove(nomeChave);
 
                 timer.Stop();
-                servicoLog.RegistrarDependenciaAppInsights("Redis", nomeChave, "Remover async", inicioOperacao, timer.Elapsed, true);
+                servicoLog.RegistrarDependenciaAppInsights("MemoryCache", nomeChave, "Remover async", inicioOperacao, timer.Elapsed, true);
             }
             catch (Exception ex)
             {
                 //Caso o cache esteja indisponível a aplicação precisa continuar funcionando mesmo sem o cache
                 timer.Stop();
-                servicoLog.RegistrarDependenciaAppInsights("Redis", nomeChave, "Remover async", inicioOperacao, timer.Elapsed, false);
+                servicoLog.RegistrarDependenciaAppInsights("MemoryCache", nomeChave, "Remover async", inicioOperacao, timer.Elapsed, false);
                 servicoLog.Registrar(ex);
             }
         }
@@ -198,13 +198,13 @@ namespace SME.SGP.Dados.Repositorios
                 memoryCache.Set(nomeChave, valor, TimeSpan.FromMinutes(minutosParaExpirar));
 
                 timer.Stop();
-                servicoLog.RegistrarDependenciaAppInsights("Redis", nomeChave, "Remover async", inicioOperacao, timer.Elapsed, true);
+                servicoLog.RegistrarDependenciaAppInsights("MemoryCache", nomeChave, "Remover async", inicioOperacao, timer.Elapsed, true);
 
             }
             catch (Exception ex)
             {
                 timer.Stop();
-                servicoLog.RegistrarDependenciaAppInsights("Redis", nomeChave, "Salvar", inicioOperacao, timer.Elapsed, false);
+                servicoLog.RegistrarDependenciaAppInsights("MemoryCache", nomeChave, "Salvar", inicioOperacao, timer.Elapsed, false);
                 servicoLog.Registrar(ex);
             }
         }
@@ -228,13 +228,13 @@ namespace SME.SGP.Dados.Repositorios
                     memoryCache.Set(nomeChave, valor, TimeSpan.FromMinutes(minutosParaExpirar));
 
                     timer.Stop();
-                    servicoLog.RegistrarDependenciaAppInsights("Redis", nomeChave, "Remover async", inicioOperacao, timer.Elapsed, true);
+                    servicoLog.RegistrarDependenciaAppInsights("MemoryCache", nomeChave, "Remover async", inicioOperacao, timer.Elapsed, true);
                 }
             }
             catch (Exception ex)
             {
                 timer.Stop();
-                servicoLog.RegistrarDependenciaAppInsights("Redis", nomeChave, "Salvar", inicioOperacao, timer.Elapsed, false);
+                servicoLog.RegistrarDependenciaAppInsights("MemoryCache", nomeChave, "Salvar", inicioOperacao, timer.Elapsed, false);
                 servicoLog.Registrar(ex);
             }
         }
