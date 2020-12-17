@@ -51,7 +51,7 @@ namespace SME.SGP.Dados
                              and bimestre = @bimestre";
 
 
-            using (var conexao = new NpgsqlConnection(configuration.GetConnectionString("SGP-Postgres")))
+            using (var conexao = new NpgsqlConnection(configuration.GetConnectionString("SGP_Postgres")))
             {
                 return await conexao.QueryFirstOrDefaultAsync<ProcessoExecutando>(query, new { turmaId, disciplinaId, bimestre, tipoProcesso = (int)tipoProcesso });
             }
