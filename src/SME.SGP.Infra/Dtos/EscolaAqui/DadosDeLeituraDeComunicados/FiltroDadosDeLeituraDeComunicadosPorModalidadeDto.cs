@@ -15,7 +15,7 @@ namespace SME.SGP.Infra.Dtos.EscolaAqui.DadosDeLeituraDeComunicados
 
         public short[] Modalidades { get; set; }
 
-        public long CodigoTurma { get; set; }
+        public long[] CodigosTurmas { get; set; }
 
         [Required(ErrorMessage = "O modo de visualização deve ser informado.")]
         public int ModoVisualizacao { get; set; }

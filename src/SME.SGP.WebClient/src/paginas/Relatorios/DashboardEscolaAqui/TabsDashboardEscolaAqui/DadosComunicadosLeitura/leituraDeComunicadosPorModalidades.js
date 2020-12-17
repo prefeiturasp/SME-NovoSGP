@@ -1,6 +1,8 @@
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { CoresGraficos, Loader } from '~/componentes';
+import { setDadosDeLeituraDeComunicadosAgrupadosPorModalidade } from '~/redux/modulos/dashboardEscolaAqui/actions';
 import { erros } from '~/servicos';
 import ServicoDashboardEscolaAqui from '~/servicos/Paginas/Relatorios/EscolaAqui/DashboardEscolaAqui/ServicoDashboardEscolaAqui';
 import {
@@ -19,12 +21,22 @@ const LeituraDeComunicadosPorModalidades = props => {
 
   const [exibirLoader, setExibirLoader] = useState(false);
 
-  const [
-    dadosDeLeituraDeComunicadosAgrupadosPorModalidade,
-    setDadosDeLeituraDeComunicadosAgrupadosPorModalidade,
-  ] = useState([]);
+  const dispatch = useDispatch();
+
+  const dadosDeLeituraDeComunicadosAgrupadosPorModalidade = useSelector(
+    state =>
+      state.dashboardEscolaAqui
+        .dadosDeLeituraDeComunicadosAgrupadosPorModalidade
+  );
 
   const [dadosLegendaGrafico, setDadosLegendaGrafico] = useState([]);
+
+  useEffect(() => {
+    dispatch(setDadosDeLeituraDeComunicadosAgrupadosPorModalidade([]));
+    return () => {
+      dispatch(setDadosDeLeituraDeComunicadosAgrupadosPorModalidade([]));
+    };
+  }, [dispatch]);
 
   const obterDadosDeLeituraDeComunicadosAgrupadosPorModalidade = useCallback(
     async dadosComunicado => {
@@ -49,16 +61,18 @@ const LeituraDeComunicadosPorModalidades = props => {
             setDadosLegendaGrafico(retornoDados.dadosLegendaGrafico);
           }
           if (retornoDados?.dadosComunicadosGraficoBarras?.length) {
-            setDadosDeLeituraDeComunicadosAgrupadosPorModalidade(
-              retornoDados.dadosComunicadosGraficoBarras
+            dispatch(
+              setDadosDeLeituraDeComunicadosAgrupadosPorModalidade(
+                retornoDados.dadosComunicadosGraficoBarras
+              )
             );
           }
         } else {
-          setDadosDeLeituraDeComunicadosAgrupadosPorModalidade([]);
+          dispatch(setDadosDeLeituraDeComunicadosAgrupadosPorModalidade([]));
         }
       }
     },
-    [modoVisualizacao, chavesGrafico]
+    [modoVisualizacao, chavesGrafico, dispatch]
   );
 
   useEffect(() => {
@@ -70,7 +84,8 @@ const LeituraDeComunicadosPorModalidades = props => {
       if (
         dadosComunicado?.id &&
         dadosComunicado.codigoDre &&
-        dadosComunicado.codigoUe
+        dadosComunicado.codigoUe &&
+        !dadosComunicado.turmasCodigo.length
       ) {
         obterDadosDeLeituraDeComunicadosAgrupadosPorModalidade(dadosComunicado);
       }
@@ -79,7 +94,7 @@ const LeituraDeComunicadosPorModalidades = props => {
     }
   }, [comunicado, listaComunicado]);
 
-  return (
+  return dadosDeLeituraDeComunicadosAgrupadosPorModalidade?.length ? (
     <div className="col-md-12">
       <Loader
         loading={exibirLoader}
@@ -108,6 +123,8 @@ const LeituraDeComunicadosPorModalidades = props => {
         )}
       </Loader>
     </div>
+  ) : (
+    ''
   );
 };
 
