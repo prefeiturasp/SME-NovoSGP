@@ -1,9 +1,9 @@
-FROM mcr.microsoft.com/dotnet/core/aspnet:2.2-stretch-slim AS base
+FROM mcr.microsoft.com/dotnet/core/aspnet:2.2-bionic AS base
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
-FROM mcr.microsoft.com/dotnet/core/sdk:2.2-stretch AS build
+FROM mcr.microsoft.com/dotnet/core/sdk:2.2-bionic AS build
 WORKDIR /src
 COPY ["src/SME.SGP.Api/SME.SGP.Api.csproj", "src/SME.SGP.Api/"]
 COPY ["src/SME.SGP.Infra/SME.SGP.Infra.csproj", "src/SME.SGP.Infra/"]
@@ -23,5 +23,9 @@ RUN dotnet publish "SME.SGP.Api.csproj" -c Release -o /app
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app .
-RUN mkdir Imagens
-ENTRYPOINT ["dotnet", "SME.SGP.Api.dll"]
+COPY ["src/SME.SGP.Api/run.sh", "/app/run.sh"]
+RUN mkdir Imagens && \ 
+    apt update && \ 
+    apt install -y redis-server screen && \ 
+    chmod a+x /app/run.sh
+CMD ./run.sh
