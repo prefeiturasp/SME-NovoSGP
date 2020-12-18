@@ -206,14 +206,7 @@ namespace SME.SGP.Aplicacao.Integracoes
         {
             var json = new StringContent(JsonConvert.SerializeObject(uesIds), Encoding.UTF8, "application/json");
 
-            var request = new HttpRequestMessage
-            {
-                Method = HttpMethod.Get,
-                RequestUri = new Uri(httpClient.BaseAddress.AbsoluteUri + "funcionarios/turmas"),
-                Content = json
-            };
-
-            var resposta = await httpClient.SendAsync(request);
+            var resposta = await httpClient.PostAsync("funcionarios/turmas", json);
 
             if (resposta.IsSuccessStatusCode)
             {
