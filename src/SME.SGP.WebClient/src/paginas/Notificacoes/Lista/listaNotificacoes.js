@@ -192,7 +192,7 @@ export default function NotificacoesLista() {
     setTituloSelecionado(titulo.target.value);
   }
 
-  const filtrarNotificacoes = useCallback(() => {
+  const onClickFiltrar = useCallback(() => {
     const paramsQuery = {
       categoria: categoriaSelecionada,
       codigo: codigoSelecionado || null,
@@ -213,11 +213,17 @@ export default function NotificacoesLista() {
       }
     }
     setFiltro(paramsQuery);
-  }, []);
-
-  const onClickFiltrar = useCallback(() => {
-    filtrarNotificacoes();
-  }, []);
+  }, [
+    categoriaSelecionada,
+    statusSelecionado,
+    codigoSelecionado,
+    tipoSelecionado,
+    tituloSelecionado,
+    usuario,
+    dropdownTurmaSelecionada,
+    turmaSelecionada,
+    desabilitarTurma,
+  ]);
 
   function onSearchCodigo() {
     onClickFiltrar();

@@ -110,7 +110,9 @@ const ListaPaginada = props => {
       .then(resposta => {
         setTotal(resposta.data.totalRegistros);
         setLinhas(resposta.data.items);
-        if (setLista) setLista(resposta.data.items);
+        if (setLista) {
+          setLista(resposta.data.items);
+        }
       })
       .catch(err => {
         if (
@@ -130,7 +132,14 @@ const ListaPaginada = props => {
     if (filtroEhValido) {
       filtrar();
     }
-  }, [filtroEhValido, filtro, paginaAtual]);
+  }, [filtroEhValido, paginaAtual]);
+
+  useEffect(() => {
+    const novaPagina = { ...paginaAtual };
+    novaPagina.current = 1;
+    setPaginaAtual(novaPagina);
+    defineUrlBusca(novaPagina);
+  }, [filtro]);
 
   const executaPaginacao = pagina => {
     const novaPagina = { ...paginaAtual, ...pagina };
