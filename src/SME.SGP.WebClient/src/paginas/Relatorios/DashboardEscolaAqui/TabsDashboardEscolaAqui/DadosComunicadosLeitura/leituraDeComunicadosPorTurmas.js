@@ -1,6 +1,8 @@
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { CoresGraficos, Loader } from '~/componentes';
+import { setDadosDeLeituraDeComunicadosPorTurmas } from '~/redux/modulos/dashboardEscolaAqui/actions';
 import { erros } from '~/servicos';
 import ServicoDashboardEscolaAqui from '~/servicos/Paginas/Relatorios/EscolaAqui/DashboardEscolaAqui/ServicoDashboardEscolaAqui';
 import {
@@ -19,12 +21,20 @@ const LeituraDeComunicadosPorTurmas = props => {
 
   const [exibirLoader, setExibirLoader] = useState(false);
 
-  const [
-    dadosDeLeituraDeComunicadosPorTurmas,
-    setDadosDeLeituraDeComunicadosPorTurmas,
-  ] = useState([]);
+  const dispatch = useDispatch();
+
+  const dadosDeLeituraDeComunicadosPorTurmas = useSelector(
+    state => state.dashboardEscolaAqui.dadosDeLeituraDeComunicadosPorTurmas
+  );
 
   const [dadosLegendaGrafico, setDadosLegendaGrafico] = useState([]);
+
+  useEffect(() => {
+    dispatch(setDadosDeLeituraDeComunicadosPorTurmas([]));
+    return () => {
+      dispatch(setDadosDeLeituraDeComunicadosPorTurmas([]));
+    };
+  }, [dispatch]);
 
   const obterDadosDeLeituraDeComunicadosPorTurmas = useCallback(
     async (dadosComunicado, turmasCodigo) => {
@@ -49,15 +59,17 @@ const LeituraDeComunicadosPorTurmas = props => {
           setDadosLegendaGrafico(retornoDados.dadosLegendaGrafico);
         }
         if (retornoDados?.dadosComunicadosGraficoBarras?.length) {
-          setDadosDeLeituraDeComunicadosPorTurmas(
-            retornoDados.dadosComunicadosGraficoBarras
+          dispatch(
+            setDadosDeLeituraDeComunicadosPorTurmas(
+              retornoDados.dadosComunicadosGraficoBarras
+            )
           );
         }
       } else {
-        setDadosDeLeituraDeComunicadosPorTurmas([]);
+        dispatch(setDadosDeLeituraDeComunicadosPorTurmas([]));
       }
     },
-    [modoVisualizacao, chavesGrafico]
+    [modoVisualizacao, chavesGrafico, dispatch]
   );
 
   useEffect(() => {
@@ -67,14 +79,14 @@ const LeituraDeComunicadosPorTurmas = props => {
         listaComunicado
       );
 
-      const turmasCodigo = dadosComunicado.turmasCodigo?.length
+      const turmasCodigo = dadosComunicado?.turmasCodigo?.length
         ? dadosComunicado.turmasCodigo.map(item => item.codigoTurma)
         : '';
 
       if (
-        dadosComunicado.id &&
-        dadosComunicado.codigoDre &&
-        dadosComunicado.codigoUe &&
+        dadosComunicado?.id &&
+        dadosComunicado?.codigoDre &&
+        dadosComunicado?.codigoUe &&
         turmasCodigo?.length
       ) {
         obterDadosDeLeituraDeComunicadosPorTurmas(
@@ -83,9 +95,9 @@ const LeituraDeComunicadosPorTurmas = props => {
         );
       }
     } else {
-      setDadosDeLeituraDeComunicadosPorTurmas([]);
+      dispatch(setDadosDeLeituraDeComunicadosPorTurmas([]));
     }
-  }, [comunicado, listaComunicado]);
+  }, [comunicado, listaComunicado, dispatch]);
 
   return dadosDeLeituraDeComunicadosPorTurmas.length ? (
     <div className="col-md-12">
