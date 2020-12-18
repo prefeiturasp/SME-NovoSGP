@@ -202,7 +202,7 @@ namespace SME.SGP.Aplicacao
                     (aluno.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Ativo && aluno.DataSituacao > aula.DataAula))
                     continue;
 
-                if (aluno.DataMatricula > aula.DataAula)
+                if (aula.DataAula < aluno.DataMatricula.Date)
                     continue;
 
                 var registroFrequenciaAluno = new RegistroFrequenciaAlunoDto
