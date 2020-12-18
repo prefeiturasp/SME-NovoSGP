@@ -24,6 +24,7 @@ import {
 import DataUltimaAtualizacaoDashboardEscolaAqui from '../ComponentesDashboardEscolaAqui/dataUltimaAtualizacaoDashboardEscolaAqui';
 import GraficoPizzaDashboardEscolaAqui from '../ComponentesDashboardEscolaAqui/graficoPizzaDashboardEscolaAqui';
 import LeituraDeComunicadosAgrupadosPorDre from './leituraDeComunicadosAgrupadosPorDre';
+import LeituraDeComunicadosPorAlunos from './leituraDeComunicadosPorAlunos';
 import LeituraDeComunicadosPorModalidades from './leituraDeComunicadosPorModalidades';
 import LeituraDeComunicadosPorModalidadesETurmas from './leituraDeComunicadosPorModalidadesETurmas';
 import LeituraDeComunicadosPorTurmas from './leituraDeComunicadosPorTurmas';
@@ -452,6 +453,10 @@ const DadosComunicadosLeitura = props => {
   }, [comunicado]);
 
   useEffect(() => {
+    setDadosDeLeituraDeComunicados([]);
+  }, [codigoUe, codigoUe]);
+
+  useEffect(() => {
     dispatch(limparDadosDashboardEscolaAqui([]));
     return () => {
       dispatch(limparDadosDashboardEscolaAqui([]));
@@ -706,6 +711,7 @@ const DadosComunicadosLeitura = props => {
           ) : (
             ''
           )}
+          <LeituraDeComunicadosPorAlunos />
         </div>
       </Loader>
     </>

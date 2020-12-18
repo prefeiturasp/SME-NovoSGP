@@ -67,8 +67,8 @@ const LeituraDeComunicadosAgrupadosPorDre = props => {
       );
       if (
         dadosComunicado?.id &&
-        !dadosComunicado.codigoDre &&
-        !dadosComunicado.codigoUe
+        !dadosComunicado?.codigoDre &&
+        !dadosComunicado?.codigoUe
       ) {
         obterDadosDeLeituraDeComunicadosAgrupadosPorDre(dadosComunicado);
       } else {
