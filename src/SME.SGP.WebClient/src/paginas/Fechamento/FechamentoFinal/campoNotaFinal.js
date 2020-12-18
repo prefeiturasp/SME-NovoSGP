@@ -22,7 +22,10 @@ const CampoNotaFinal = props => {
   const [notaAlterada, setNotaAlterada] = useState(false);
   const [abaixoDaMedia, setAbaixoDaMedia] = useState(false);
   const [valorIncremento] = useState(0.5);
-  const [carregandoValorArredondamento, setCarregandoValorArredondamento] = useState(false);
+  const [
+    carregandoValorArredondamento,
+    setCarregandoValorArredondamento,
+  ] = useState(false);
 
   const validaSeTeveAlteracao = useCallback(
     notaArredondada => {
@@ -61,7 +64,9 @@ const CampoNotaFinal = props => {
 
   useEffect(() => {
     if (notaBimestre) {
-      let nota = Number((notaBimestre.notaConceito.replace(',', '.')));
+      const notaConceitoParseada = String(notaBimestre.notaConceito);
+      const notaConceitoAlterada = notaConceitoParseada.replace(',', '.');
+      const nota = Number(notaConceitoAlterada);
       validaSeEstaAbaixoDaMedia(nota);
       validaSeTeveAlteracao(String(nota));
       setNotaValorAtual(nota);
@@ -84,7 +89,7 @@ const CampoNotaFinal = props => {
   const setarValorNovo = async valorNovo => {
     if (!desabilitarCampo && podeEditar) {
       setNotaValorAtual(valorNovo);
-      let resto = valorNovo % valorIncremento;
+      const resto = valorNovo % valorIncremento;
       let notaArredondada = valorNovo;
       if (resto > 0.0) {
         setCarregandoValorArredondamento(true);
@@ -105,7 +110,7 @@ const CampoNotaFinal = props => {
       validaSeEstaAbaixoDaMedia(notaArredondada);
       validaSeTeveAlteracao(notaArredondada);
       onChangeNotaConceitoFinal(notaBimestre, notaArredondada);
-      setNotaValorAtual(notaArredondada);      
+      setNotaValorAtual(notaArredondada);
     }
   };
 
@@ -117,9 +122,9 @@ const CampoNotaFinal = props => {
   return (
     <Tooltip placement="bottom" title={abaixoDaMedia ? 'Abaixo da Média' : ''}>
       <div>
-        <Loader loading={carregandoValorArredondamento} tip="" >
+        <Loader loading={carregandoValorArredondamento} tip="">
           <CampoNumero
-            label={label ? label : ''}
+            label={label || ''}
             onChange={valorNovo => {
               const invalido = valorInvalido(valorNovo);
               if (!invalido && editouCampo(notaValorAtual, valorNovo)) {
