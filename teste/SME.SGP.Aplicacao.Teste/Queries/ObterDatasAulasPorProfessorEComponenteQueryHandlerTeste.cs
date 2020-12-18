@@ -79,7 +79,7 @@ namespace SME.SGP.Aplicacao.Teste.Queries
             // Act
             var datasAulas = await query.Handle(new ObterDatasAulasPorProfessorEComponenteQuery("123", "123", "1105", false, false), new CancellationToken());
 
-            // Assert
+            //// Assert
             Assert.NotNull(datasAulas);
 
             Assert.True(datasAulas.Count() == 2, "O retorno deve conter duas datas");
