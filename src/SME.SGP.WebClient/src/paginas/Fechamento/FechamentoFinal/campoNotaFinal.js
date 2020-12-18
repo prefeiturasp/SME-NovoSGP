@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import CampoNumero from '~/componentes/campoNumero';
 import { erros } from '~/servicos/alertas';
 import api from '~/servicos/api';
+import { Loader } from '~/componentes';
 
 const CampoNotaFinal = props => {
   const {
@@ -20,6 +21,8 @@ const CampoNotaFinal = props => {
   const [notaValorAtual, setNotaValorAtual] = useState();
   const [notaAlterada, setNotaAlterada] = useState(false);
   const [abaixoDaMedia, setAbaixoDaMedia] = useState(false);
+  const [valorIncremento] = useState(0.5);
+  const [carregandoValorArredondamento, setCarregandoValorArredondamento] = useState(false);
 
   const validaSeTeveAlteracao = useCallback(
     notaArredondada => {
@@ -58,9 +61,10 @@ const CampoNotaFinal = props => {
 
   useEffect(() => {
     if (notaBimestre) {
-      validaSeEstaAbaixoDaMedia(notaBimestre.notaConceito);
-      validaSeTeveAlteracao(String(notaBimestre.notaConceito));
-      setNotaValorAtual(notaBimestre.notaConceito);
+      let nota = Number((notaBimestre.notaConceito.replace(',', '.')));
+      validaSeEstaAbaixoDaMedia(nota);
+      validaSeTeveAlteracao(String(nota));
+      setNotaValorAtual(nota);
     }
   }, [notaBimestre, validaSeTeveAlteracao, validaSeEstaAbaixoDaMedia]);
 
@@ -80,23 +84,28 @@ const CampoNotaFinal = props => {
   const setarValorNovo = async valorNovo => {
     if (!desabilitarCampo && podeEditar) {
       setNotaValorAtual(valorNovo);
-      const retorno = await api
-        .get(
-          `v1/avaliacoes/notas/${Number(
-            valorNovo
-          )}/arredondamento?data=${eventoData}`
-        )
-        .catch(e => erros(e));
-
+      let resto = valorNovo % valorIncremento;
       let notaArredondada = valorNovo;
-      if (retorno && retorno.data) {
-        notaArredondada = retorno.data;
+      if (resto > 0.0) {
+        setCarregandoValorArredondamento(true);
+        const retorno = await api
+          .get(
+            `v1/avaliacoes/notas/${Number(
+              valorNovo
+            )}/arredondamento?data=${eventoData}`
+          )
+          .catch(e => erros(e));
+
+        if (retorno && retorno.data) {
+          notaArredondada = retorno.data;
+        }
+        setCarregandoValorArredondamento(false);
       }
 
       validaSeEstaAbaixoDaMedia(notaArredondada);
       validaSeTeveAlteracao(notaArredondada);
       onChangeNotaConceitoFinal(notaBimestre, notaArredondada);
-      setNotaValorAtual(notaArredondada);
+      setNotaValorAtual(notaArredondada);      
     }
   };
 
@@ -108,27 +117,29 @@ const CampoNotaFinal = props => {
   return (
     <Tooltip placement="bottom" title={abaixoDaMedia ? 'Abaixo da Média' : ''}>
       <div>
-        <CampoNumero
-          label={label ? label : ''}
-          onChange={valorNovo => {
-            const invalido = valorInvalido(valorNovo);
-            if (!invalido && editouCampo(notaValorAtual, valorNovo)) {
-              setarValorNovo(valorNovo);
-            }
-          }}
-          value={notaValorAtual}
-          min={0}
-          max={10}
-          step={0.5}
-          disabled={desabilitarCampo || !podeEditar}
-          className={`tamanho-conceito-final ${
-            abaixoDaMedia
-              ? 'border-abaixo-media'
-              : notaAlterada
-              ? 'border-registro-alterado'
-              : ''
-          } `}
-        />
+        <Loader loading={carregandoValorArredondamento} tip="" >
+          <CampoNumero
+            label={label ? label : ''}
+            onChange={valorNovo => {
+              const invalido = valorInvalido(valorNovo);
+              if (!invalido && editouCampo(notaValorAtual, valorNovo)) {
+                setarValorNovo(valorNovo);
+              }
+            }}
+            value={notaValorAtual}
+            min={0}
+            max={10}
+            step={valorIncremento}
+            disabled={desabilitarCampo || !podeEditar}
+            className={`tamanho-conceito-final ${
+              abaixoDaMedia
+                ? 'border-abaixo-media'
+                : notaAlterada
+                ? 'border-registro-alterado'
+                : ''
+            } `}
+          />
+        </Loader>
       </div>
     </Tooltip>
   );
