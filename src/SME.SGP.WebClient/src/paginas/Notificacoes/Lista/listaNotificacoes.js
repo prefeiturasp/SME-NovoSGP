@@ -106,7 +106,7 @@ export default function NotificacoesLista() {
   );
   const [carregandoTela, setCarregandoTela] = useState(false);
   const [desabilitarTurma, setDesabilitarTurma] = useState(true);
-  const [colunasTabela, setColunasTabela] = useState([]);  
+  const [colunasTabela, setColunasTabela] = useState([]);
 
   const permissoesTela = usuario.permissoes[RotasDto.NOTIFICACOES];
 
@@ -139,10 +139,7 @@ export default function NotificacoesLista() {
   }, [turmaSelecionada]);
 
   useEffect(() => {
-    onClickFiltrar(statusSelecionado,
-                   categoriaSelecionada,
-                   tipoSelecionado,
-                   tituloSelecionado);
+    onClickFiltrar();
   }, [
     statusSelecionado,
     dropdownTurmaSelecionada,
@@ -195,15 +192,15 @@ export default function NotificacoesLista() {
     setTituloSelecionado(titulo.target.value);
   }
 
-  const filtrarNotificacoes = useCallback((situacao, categoria, tipo, titulo) => {
+  const onClickFiltrar = useCallback(() => {
     const paramsQuery = {
-      categoria: categoria,
+      categoria: categoriaSelecionada,
       codigo: codigoSelecionado || null,
-      status: situacao,
-      tipo: tipo,
-      titulo: titulo || null,
+      status: statusSelecionado,
+      tipo: tipoSelecionado,
+      titulo: tituloSelecionado || null,
       usuarioRf: usuario.rf || null,
-      anoLetivo: usuario.filtroAtual.anoLetivo    
+      anoLetivo: usuario.filtroAtual.anoLetivo,
     };
     if (dropdownTurmaSelecionada && dropdownTurmaSelecionada == '2') {
       if (turmaSelecionada) {
@@ -214,13 +211,19 @@ export default function NotificacoesLista() {
       if (turmaSelecionada && !desabilitarTurma) {
         paramsQuery.turmaId = turmaSelecionada.unidadeEscolar;
       }
-    }    
+    }
     setFiltro(paramsQuery);
-  }, []);
-
-  const onClickFiltrar = useCallback((situacao, categoria, tipo, titulo) => {
-    filtrarNotificacoes(situacao, categoria, tipo, titulo);
-  }, []);
+  }, [
+    categoriaSelecionada,
+    statusSelecionado,
+    codigoSelecionado,
+    tipoSelecionado,
+    tituloSelecionado,
+    usuario,
+    dropdownTurmaSelecionada,
+    turmaSelecionada,
+    desabilitarTurma,
+  ]);
 
   function onSearchCodigo() {
     onClickFiltrar();
@@ -439,7 +442,7 @@ export default function NotificacoesLista() {
                 onClick={permissoesTela.podeAlterar && onClickEditar}
                 multiSelecao
                 selecionarItems={onSelecionarItems}
-                filtroEhValido={validarFiltro()}                
+                filtroEhValido={validarFiltro()}
               />
             )}
           </div>
