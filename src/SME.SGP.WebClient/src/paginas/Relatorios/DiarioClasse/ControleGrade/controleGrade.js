@@ -13,6 +13,7 @@ import ServicoFiltroRelatorio from '~/servicos/Paginas/FiltroRelatorio/ServicoFi
 import ServicoRelatorioControleGrade from '~/servicos/Paginas/Relatorios/DiarioClasse/ControleGrade/ServicoRelatorioControleGrade';
 import ServicoComponentesCurriculares from '~/servicos/Paginas/ComponentesCurriculares/ServicoComponentesCurriculares';
 import FiltroHelper from '~componentes-sgp/filtro/helper';
+import { ordenarListaMaiorParaMenor } from '~/utils/funcoes/gerais';
 
 const ControleGrade = () => {
   const [exibirLoader, setExibirLoader] = useState(false);
@@ -293,7 +294,7 @@ const ControleGrade = () => {
       else setAnoLetivo(anosLetivos[0].valor);
     }
 
-    setListaAnosLetivo(anosLetivos);
+    setListaAnosLetivo(ordenarListaMaiorParaMenor(anosLetivos, 'valor'));
     setExibirLoader(false);
   }, [anoAtual]);
 
@@ -318,9 +319,11 @@ const ControleGrade = () => {
 
     if (componentes && componentes.data && componentes.data.length) {
       const lista = [];
+
       if (turmaId === '0' || componentes.data.length > 1) {
         lista.push({ valor: '0', desc: 'Todos' });
       }
+
       componentes.data.map(item =>
         lista.push({
           desc: item.nome,
