@@ -133,7 +133,9 @@ namespace SME.SGP.Api
 
             Orquestrador.Inicializar(serviceProvider);
 
-            services.AdicionarRedis(Configuration, serviceProvider.GetService<IServicoLog>());
+            
+
+            //services.AdicionarRedis(Configuration, serviceProvider.GetService<IServicoLog>());
 
             if (Configuration.GetValue<bool>("FF_BackgroundEnabled", false))
             {
@@ -144,11 +146,11 @@ namespace SME.SGP.Api
                 Orquestrador.Desativar();
 
             services.AddHealthChecks()
-                   .AddRedis(
-                        Configuration.GetConnectionString("SGP_Redis"),
-                        "Redis Cache",
-                        null,
-                        tags: new string[] { "db", "redis" })
+                   //.AddRedis(
+                   //     Configuration.GetConnectionString("SGP_Redis"),
+                   //     "Redis Cache",
+                   //     null,
+                   //     tags: new string[] { "db", "redis" })
                     .AddNpgSql(
                         Configuration.GetConnectionString("SGP_Postgres"),
                         name: "Postgres")
@@ -173,6 +175,8 @@ namespace SME.SGP.Api
             DapperExtensionMethods.Init(clientTelemetry);
 
             //
+
+            services.AddMemoryCache();
         }
     }
 }
