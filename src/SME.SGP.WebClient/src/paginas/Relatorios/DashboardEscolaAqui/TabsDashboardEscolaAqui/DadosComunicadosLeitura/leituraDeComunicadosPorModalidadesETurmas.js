@@ -87,10 +87,10 @@ const LeituraDeComunicadosPorModalidadesETurmas = props => {
         listaComunicado
       );
       if (
-        dadosComunicado.id &&
-        dadosComunicado.codigoDre &&
-        dadosComunicado.codigoUe &&
-        !dadosComunicado.turmasCodigo.length
+        dadosComunicado?.id &&
+        dadosComunicado?.codigoDre &&
+        dadosComunicado?.codigoUe &&
+        !dadosComunicado?.turmasCodigo.length
       ) {
         obterDadosDeLeituraDeComunicadosPorModalidadesETurmas(dadosComunicado);
       }

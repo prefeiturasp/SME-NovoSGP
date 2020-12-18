@@ -49,3 +49,10 @@ export const ContainerGraficoBarras = styled.div`
   height: 70vh;
   width: 70vw;
 `;
+
+export const MarcadorSituacaoAluno = styled.i`
+  color: ${Base.Roxo} !important;
+  font-size: 10px;
+  margin-left: 2px;
+  padding-top: 5px;
+`;

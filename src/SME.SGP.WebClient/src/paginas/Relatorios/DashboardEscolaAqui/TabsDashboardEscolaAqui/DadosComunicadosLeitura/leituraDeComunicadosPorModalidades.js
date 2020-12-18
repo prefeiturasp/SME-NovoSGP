@@ -83,9 +83,9 @@ const LeituraDeComunicadosPorModalidades = props => {
       );
       if (
         dadosComunicado?.id &&
-        dadosComunicado.codigoDre &&
-        dadosComunicado.codigoUe &&
-        !dadosComunicado.turmasCodigo.length
+        dadosComunicado?.codigoDre &&
+        dadosComunicado?.codigoUe &&
+        !dadosComunicado?.turmasCodigo?.length
       ) {
         obterDadosDeLeituraDeComunicadosAgrupadosPorModalidade(dadosComunicado);
       }

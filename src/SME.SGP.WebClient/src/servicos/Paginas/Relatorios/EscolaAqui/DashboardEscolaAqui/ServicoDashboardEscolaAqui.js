@@ -148,6 +148,46 @@ class ServicoDashboardEscolaAqui {
     }
     return api.get(url);
   };
+
+  obterDadosLeituraDeComunicadosPorAlunos = codigosTurmas => {
+    // TODO Remover mock!
+    // const url = `${urlPadrao}/comunicados/leitura/alunos?codigosTurmas=${codigosTurmas.join(
+    //   '&codigosTurmas=',
+    //   codigosTurmas
+    // )}`;
+
+    // return api.get(url);
+
+    const mock = [
+      {
+        id: 1,
+        numeroChamada: 1,
+        nome: 'Alvaro Ramos Grassi (1257845)',
+        responsavel: 'Maria Joaquina (Filiação 1)',
+        contatoResponsavel: '(11) 94455-4455',
+        possuiAplicativo: 'Sim',
+        leuMensagem: 'Não',
+        dataLeitura: new Date(),
+        marcador: { descricao: 'Estudante transferido em xx/xx/xxxx.' },
+      },
+      {
+        id: 2,
+        numeroChamada: 2,
+        nome: 'Aline Grassi (1257845)',
+        responsavel: 'João Grassi (Filiação 1)',
+        contatoResponsavel: '(11) 94455-4455',
+        possuiAplicativo: 'Sim',
+        leuMensagem: 'Sim',
+        dataLeitura: new Date(),
+        marcador: null,
+      },
+    ];
+    return new Promise(resolve => {
+      setTimeout(() => {
+        resolve({ status: 200, data: mock });
+      }, 2000);
+    });
+  };
 }
 
 export default new ServicoDashboardEscolaAqui();
