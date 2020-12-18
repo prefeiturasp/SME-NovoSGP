@@ -13,6 +13,7 @@ import ServicoRelatorioParecerConclusivo from '~/servicos/Paginas/Relatorios/Par
 import FiltroHelper from '~componentes-sgp/filtro/helper';
 import AlertaModalidadeInfantil from '~/componentes-sgp/AlertaModalidadeInfantil/alertaModalidadeInfantil';
 import { CorpoRelatorio } from './relatorioParecerConclusivo.css';
+import { ordenarListaMaiorParaMenor } from '~/utils/funcoes/gerais';
 
 const RelatorioParecerConclusivo = () => {
   const [carregandoGerar, setCarregandoGerar] = useState(false);
@@ -242,7 +243,7 @@ const RelatorioParecerConclusivo = () => {
       else setAnoLetivo(anosLetivos[0].valor);
     }
 
-    setListaAnosLetivo(anosLetivos);
+    setListaAnosLetivo(ordenarListaMaiorParaMenor(anosLetivos, 'valor'));
     setCarregandoAnosLetivos(false);
   }, [anoAtual]);
 
