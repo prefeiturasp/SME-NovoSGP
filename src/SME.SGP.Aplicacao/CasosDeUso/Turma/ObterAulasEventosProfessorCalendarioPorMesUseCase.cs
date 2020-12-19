@@ -57,6 +57,7 @@ namespace SME.SGP.Aplicacao
 
             return await mediator.Send(new ObterAulaEventoAvaliacaoCalendarioProfessorPorMesQuery()
             {
+                TurmaCodigo = filtroAulasEventosCalendarioDto.TurmaCodigo,
                 Aulas = aulasParaVisualizar,
                 EventosDaUeSME = eventosDaUeSME,
                 Avaliacoes = avaliacoes,
