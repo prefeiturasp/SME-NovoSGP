@@ -21,9 +21,10 @@ namespace SME.SGP.Aplicacao
         {
             var retorno = new List<EventoAulaDto>();
 
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(request.TurmaCodigo));
+
             if (request.Aulas.Any())
             {
-
                 foreach (var aulaParaVisualizar in request.Aulas)
                 {
                     var componenteCurricular = request.ComponentesCurricularesParaVisualizacao.FirstOrDefault(a => a.CodigoComponenteCurricular == long.Parse(aulaParaVisualizar.DisciplinaId));
@@ -59,8 +60,9 @@ namespace SME.SGP.Aplicacao
                     {
                         eventoAulaDto.MostrarBotaoFrequencia = componenteCurricular.RegistraFrequencia;
                         eventoAulaDto.PodeCadastrarAvaliacao = ObterPodeCadastrarAvaliacao(atividadesAvaliativasDaAula, componenteCurricular);
-                    }                    
-                    eventoAulaDto.Pendencias = await mediator.Send(new ObterPendenciasAulaPorAulaIdQuery(aulaParaVisualizar.Id));
+                    }
+
+                    eventoAulaDto.Pendencias = await mediator.Send(new ObterPendenciasAulaPorAulaIdQuery(aulaParaVisualizar.Id, turma.ModalidadeCodigo));
 
                     retorno.Add(eventoAulaDto);
                 }
