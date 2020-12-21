@@ -781,7 +781,7 @@ namespace SME.SGP.Aplicacao.Integracoes
                 return JsonConvert.DeserializeObject<List<PodePersistirNaDataRetornoEolDto>>(json);
             }
 
-            throw new NegocioException("Não foi possível validar datas para a atribuição do professor no EOL.");
+            throw new NegocioException($"Não foi possível validar datas para a atribuição do professor no EOL. -- (StatusCode: {resposta.StatusCode})");
         }
 
         public async Task<bool> ProfessorPodePersistirTurma(string professorRf, string codigoTurma, DateTime data)
