@@ -262,7 +262,7 @@ namespace SME.SGP.Aplicacao
             }
             else
             {
-                var datasAtribuicaoEOL = await servicoEOL.PodePersistirTurmaNasDatas(usuario.CodigoRf, turmaCodigo, datasValidas.Select(a => a.Date.ToString("s")).ToArray(), componenteCurricularCodigo);
+                var datasAtribuicaoEOL = await servicoEOL.PodePersistirTurmaNasDatas(usuario.CodigoRf, turmaCodigo, datasValidas.Select(a => a.Date).ToArray(), componenteCurricularCodigo);
                 if (datasAtribuicaoEOL == null || !datasAtribuicaoEOL.Any())
                     throw new NegocioException("Não foi possível validar datas para a atribuição do professor no EOL.");
                 else
