@@ -126,5 +126,103 @@ namespace SME.SGP.Dados.Repositorios
 
             return (await database.Conexao.QueryAsync<long>(sql.ToString(), new { aulas })).AsList().ToArray();
         }
+
+        public async Task<bool> PossuiPendenciasPorAulasId(long[] aulasId, bool ehInfantil)
+        {
+            var tabelaReferencia = ehInfantil ? "diario_bordo" : "plano_aula";
+
+           var sql = $@"select
+	                       1
+                        from
+	                        aula
+                        inner join turma on 
+	                        aula.turma_id = turma.turma_id
+	                    left join registro_frequencia rf on
+	                        aula.id = rf.aula_id
+                        left join {tabelaReferencia} tr on
+                            aula.id = tr.aula_id
+                        where
+	                        not aula.excluido
+	                        and aula.id = ANY(@aulas)
+                            and (rf.id is null or tr.id is null)
+	                        group by
+	                        1 ";
+
+            return (await database.Conexao.QuerySingleOrDefaultAsync<bool>(sql, new { aulas = aulasId }));
+        }
+
+        public async Task<bool> PossuiPendenciasAtividadeAvaliativaPorAulasId(long[] aulasId)
+        {
+           var sql = @"select
+	                       1
+                        from
+	                        atividade_avaliativa aa
+                        inner join atividade_avaliativa_disciplina aad on
+	                        aad.atividade_avaliativa_id = aa.id
+                        left join notas_conceito n on
+	                        aa.id = n.atividade_avaliativa
+                        inner join aula a on
+	                        aa.turma_id = a.turma_id
+	                        and aa.data_avaliacao::date = a.data_aula::date
+	                        and aad.disciplina_id = a.disciplina_id
+                        where
+	                        not a.excluido
+	                        and a.id = ANY(@aulas)
+	                        and n.id is null
+                        group by
+	                        1";
+
+            return (await database.Conexao.QuerySingleOrDefaultAsync<bool>(sql, new { aulas = aulasId }));
+        }
+
+        public async Task<PendenciaAulaDto> PossuiPendenciasPorAulaId(long aulaId, bool ehInfantil)
+        {
+            var tabelaReferencia = ehInfantil ? "diario_bordo" : "plano_aula";
+            var propriedadeReferencia = ehInfantil ? "PossuiPendenciaDiarioBordo" : "PossuiPendenciaPlanoAula";
+
+            var sql = $@"select
+	                          CASE WHEN rf.id is null THEN 1
+                                    ELSE 0
+                              END PossuiPendenciaFrequencia,
+                              CASE WHEN tr.id is null THEN 1
+                                    ELSE 0
+                               END {propriedadeReferencia} 
+                           from
+	                            aula
+                            inner join turma on 
+	                            aula.turma_id = turma.turma_id
+	                        left join registro_frequencia rf on
+	                            aula.id = rf.aula_id
+                            left join {tabelaReferencia} tr on
+                                aula.id =  tr.aula_id
+                            where
+	                            not aula.excluido
+	                            and aula.id = @aula
+                                and (rf.id is null or tr.id is null) ";
+
+            return (await database.Conexao.QueryFirstOrDefaultAsync<PendenciaAulaDto>(sql, new { aula = aulaId }));
+        }
+
+        public async Task<bool> PossuiPendenciasAtividadeAvaliativaPorAulaId(long aulaId)
+        {
+            var sql = @"select
+	                       1
+                        from
+	                        atividade_avaliativa aa
+                        inner join atividade_avaliativa_disciplina aad on
+	                        aad.atividade_avaliativa_id = aa.id
+                        left join notas_conceito n on
+	                        aa.id = n.atividade_avaliativa
+                        inner join aula a on
+	                        aa.turma_id = a.turma_id
+	                        and aa.data_avaliacao::date = a.data_aula::date
+	                        and aad.disciplina_id = a.disciplina_id
+                        where
+	                        not a.excluido
+	                        and a.id = @aula
+	                        and n.id is null";
+
+            return (await database.Conexao.QuerySingleOrDefaultAsync<bool>(sql, new { aula = aulaId }));
+        }
     }
 }

@@ -59,6 +59,8 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorIdsSemAgrupamento(long[] ids);
 
+        Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorIdsAgrupadas(long[] ids);
+
         IEnumerable<DreRespostaEolDto> ObterDres();
 
         IEnumerable<EscolasRetornoDto> ObterEscolasPorCodigo(string[] codigoUes);

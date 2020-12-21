@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Dommel;
+using Microsoft.Extensions.Configuration;
 using Npgsql;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
@@ -12,10 +13,12 @@ namespace SME.SGP.Dados
     public class RepositorioProcessoExecutando : IRepositorioProcessoExecutando
     {
         protected readonly ISgpContext database;
+        private readonly IConfiguration configuration;
 
-        public RepositorioProcessoExecutando(ISgpContext database)
+        public RepositorioProcessoExecutando(ISgpContext database, IConfiguration configuration)
         {
             this.database = database;
+            this.configuration = configuration;
         }
 
         public async Task<bool> ObterAulaEmManutencaoAsync(long aulaId)
@@ -48,7 +51,7 @@ namespace SME.SGP.Dados
                              and bimestre = @bimestre";
 
 
-            using (var conexao = new NpgsqlConnection(database.ConnectionString))
+            using (var conexao = new NpgsqlConnection(configuration.GetConnectionString("SGP_Postgres")))
             {
                 return await conexao.QueryFirstOrDefaultAsync<ProcessoExecutando>(query, new { turmaId, disciplinaId, bimestre, tipoProcesso = (int)tipoProcesso });
             }
