@@ -22,7 +22,7 @@ BEGIN
 				else 1
 			end
 		else 1
-	end as parecer from fechamento_turma ft inner join turma t on t.id = ft.turma_id where t.ano_letivo = 2020 and ft.periodo_escolar_id is null limit 5000
+	end as parecer from fechamento_turma ft inner join turma t on t.id = ft.turma_id where t.ano_letivo = 2020 and ft.periodo_escolar_id is null
 	loop
 		insert into conselho_classe (fechamento_turma_id , criado_em, criado_por, criado_rf, situacao) values(fechamentoTurma.id, now(), 'SISTEMA', '0', 2) returning id into conselhoClasseId;
 		for fechamentoAluno in select distinct fa.aluno_codigo as codigo from fechamento_turma_disciplina ftd inner join fechamento_aluno fa on ftd.id = fa.fechamento_turma_disciplina_id where ftd.fechamento_turma_id = fechamentoTurma.id
