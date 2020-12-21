@@ -160,8 +160,20 @@ const RelatorioPlanejamentoDiario = () => {
       desabilitar = true;
     }
 
+    if (!desabilitar && codigoDre && codigoUe && turmaId && !bimestre) {
+      desabilitar = true;
+    }
+
     setDesabilitarGerar(desabilitar);
-  }, [anoLetivo, codigoDre, codigoUe, turmaId, modalidadeId, semestre]);
+  }, [
+    anoLetivo,
+    codigoDre,
+    codigoUe,
+    turmaId,
+    modalidadeId,
+    semestre,
+    bimestre,
+  ]);
 
   useEffect(() => {
     setAnoLetivo(anoAtual);
@@ -235,36 +247,31 @@ const RelatorioPlanejamentoDiario = () => {
     }
   }, [anoLetivo, codigoUe]);
 
-  useEffect(() => {
-    const obterBimestres = async () => {
-      if (modalidadeId && anoLetivo) {
-        const bimestresResponse = await ServicoPeriodoEscolar.obterPeriodosPorAnoLetivoModalidade(
-          modalidadeId,
-          anoLetivo
-        );
-        if (bimestresResponse) {
-          const lista = bimestresResponse.data.map(v => {
-            return {
-              valor: v.bimestre,
-              desc: v.bimestre,
-            };
-          });
-          lista.unshift({ valor: OPCAO_TODOS, desc: 'Todos' });
-          setListaBimestres(lista);
-          setBimestres(bimestresResponse.data);
-        }
+  const obterBimestres = async () => {
+    if (modalidadeId && anoLetivo) {
+      const bimestresResponse = await ServicoPeriodoEscolar.obterPeriodosPorAnoLetivoModalidade(
+        modalidadeId,
+        anoLetivo
+      ).catch(e => erros(e));
+      if (bimestresResponse?.data) {
+        const lista = bimestresResponse.data.map(v => {
+          return {
+            valor: v.bimestre,
+            desc: v.bimestre,
+          };
+        });
+        lista.unshift({ valor: OPCAO_TODOS, desc: 'Todos' });
+        setListaBimestres(lista);
+        setBimestres(bimestresResponse.data);
       }
-    };
+    }
+  };
+
+  useEffect(() => {
     obterBimestres();
   }, [modalidadeId, anoLetivo]);
 
   const checarPeriodoEhMaior = data => {
-    console.log(
-      moment(moment(data).format('YYYY-MM-DD')).isAfter(
-        moment().format('YYYY-MM-DD')
-      )
-    );
-
     return moment(moment(data).format('YYYY-MM-DD')).isAfter(
       moment().format('YYYY-MM-DD')
     );
@@ -272,7 +279,7 @@ const RelatorioPlanejamentoDiario = () => {
 
   const checarPeriodoFinalBimestre = async () => {
     setHabilitarDatasFuturas(false);
-    if (bimestre !== '-99') {
+    if (bimestre !== OPCAO_TODOS && bimestre) {
       const bimestreSelecionado = bimestres.filter(
         b => b.id === Number(bimestre)
       );
