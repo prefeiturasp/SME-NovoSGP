@@ -102,7 +102,7 @@ namespace SME.SGP.Dados.Repositorios
 
             if (!string.IsNullOrEmpty(titulo))
             {
-                query.AppendLine("and lower(f_unaccent(n.titulo)) LIKE  @titulo");
+                query.AppendLine("and lower(f_unaccent(n.titulo)) LIKE lower(f_unaccent(@titulo))");
             }
         }
 
