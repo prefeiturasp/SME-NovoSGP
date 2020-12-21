@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterPendenciasAulaPorAulaIdsQueryHandler : IRequestHandler<ObterPendenciasAulaPorAulaIdsQuery, bool>
+    public class ObterPendenciasAulaPorAulaIdsQueryHandler : IRequestHandler<ObterPendenciasAulaPorAulaIdsQuery, long[]>
     {
         private readonly IRepositorioPendenciaAula repositorioPendenciaAula;
 
@@ -16,15 +16,11 @@ namespace SME.SGP.Aplicacao
         {
             this.repositorioPendenciaAula = repositorioPendenciaAula ?? throw new ArgumentNullException(nameof(repositorioPendenciaAula));
         }
-        public async Task<bool> Handle(ObterPendenciasAulaPorAulaIdsQuery request, CancellationToken cancellationToken)
+        public async Task<long[]> Handle(ObterPendenciasAulaPorAulaIdsQuery request, CancellationToken cancellationToken)
         {
-            var possuiPendencia = await repositorioPendenciaAula.PossuiPendenciasPorAulasId(request.AulasId, request.EhModalidadeInfantil);
+            var valor = await repositorioPendenciaAula.ListarPendenciasPorAulasId(request.AulasId);
 
-            if (!possuiPendencia) {
-                possuiPendencia = await repositorioPendenciaAula.PossuiPendenciasAtividadeAvaliativaPorAulasId(request.AulasId);
-            }
-
-            return possuiPendencia;
+            return valor;
         }
     }
 }
