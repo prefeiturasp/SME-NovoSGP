@@ -353,7 +353,7 @@ const RelatorioPlanejamentoDiario = () => {
       .catch(e => erros(e))
       .finally(() => setExibirLoader(false));
 
-    if (componentes && componentes.data && componentes.data.length) {
+    if (componentes?.data?.length) {
       const lista = [];
       if (turmaId === OPCAO_TODOS || componentes.data.length > 1) {
         lista.push({ valor: OPCAO_TODOS, desc: 'Todos' });
