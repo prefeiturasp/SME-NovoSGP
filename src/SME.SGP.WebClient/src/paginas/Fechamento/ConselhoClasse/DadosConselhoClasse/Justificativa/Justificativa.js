@@ -56,9 +56,10 @@ const Justificativa = props => {
 
   const [carregandoSessao, setCarregandoSessao] = useState(false);
 
-  const salvarJustificativa = () => {
+  const salvarJustificativa = async () => {
     setCarregandoSessao(true);
-    servicoSalvarConselhoClasse.salvarNotaPosConselho(turma);
+    await servicoSalvarConselhoClasse.salvarNotaPosConselho(turma);
+    setCarregandoSessao(false);
     dispatch(setSalvouJustificativa(true));
   };
 
