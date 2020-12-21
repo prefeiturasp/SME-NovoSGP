@@ -19,11 +19,9 @@ class LocalizadorService {
     });
   }
 
-  buscarAutocomplete({ anoLetivo, dreId, nome, incluirEmei }) {
+  buscarAutocomplete({ anoLetivo, dreId, nome }) {
     return api.get(
-      `${
-        this.urlProfessores
-      }/${anoLetivo}/autocomplete/${dreId}/${!!incluirEmei}`,
+      `${this.urlProfessores}/${anoLetivo}/autocomplete/${dreId}`,
       {
         params: {
           nomeProfessor: nome,
