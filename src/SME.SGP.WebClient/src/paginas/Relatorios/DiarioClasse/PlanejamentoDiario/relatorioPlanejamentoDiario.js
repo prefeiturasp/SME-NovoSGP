@@ -435,7 +435,7 @@ const RelatorioPlanejamentoDiario = () => {
   ) => {
     setExibirLoader(true);
     const retorno = await api.get(
-      `v1/abrangencias/false/semestres?anoLetivo=${anoLetivoSelecionado}&modalidade=${modalidadeSelecionada ||
+      `v1/abrangencias/${consideraHistorico}/semestres?anoLetivo=${anoLetivoSelecionado}&modalidade=${modalidadeSelecionada ||
         0}`
     );
     if (retorno && retorno.data) {
