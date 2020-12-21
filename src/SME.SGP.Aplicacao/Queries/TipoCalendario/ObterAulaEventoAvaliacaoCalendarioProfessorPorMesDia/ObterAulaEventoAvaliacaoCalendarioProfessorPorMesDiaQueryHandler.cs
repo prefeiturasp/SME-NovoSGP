@@ -62,7 +62,7 @@ namespace SME.SGP.Aplicacao
                         eventoAulaDto.PodeCadastrarAvaliacao = ObterPodeCadastrarAvaliacao(atividadesAvaliativasDaAula, componenteCurricular);
                     }
 
-                    eventoAulaDto.Pendencias = await mediator.Send(new ObterPendenciasAulaPorAulaIdQuery(aulaParaVisualizar.Id, turma.ModalidadeCodigo));
+                    eventoAulaDto.Pendencias = await mediator.Send(new ObterPendenciasAulaPorAulaIdQuery(aulaParaVisualizar.Id));
 
                     retorno.Add(eventoAulaDto);
                 }
