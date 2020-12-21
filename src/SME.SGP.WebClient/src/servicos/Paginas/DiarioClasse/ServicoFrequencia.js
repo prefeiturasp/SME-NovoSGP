@@ -31,22 +31,32 @@ class ServicoFrequencia {
 
     const { aulaId, componenteCurricular } = frequenciaPlanoAula;
 
-    dispatch(setExibirLoaderFrequenciaPlanoAula(true));
-    const frequenciaAlunos = await api
-      .get(`v1/calendarios/frequencias`, { params: { aulaId, componenteCurricularId: componenteCurricular.id > 0 ? componenteCurricular.id : componenteCurricular.codigoComponenteCurricular } })
-      .finally(() => dispatch(setExibirLoaderFrequenciaPlanoAula(false)))
-      .catch(e => erros(e));
+    if (aulaId) {
+      dispatch(setExibirLoaderFrequenciaPlanoAula(true));
+      const frequenciaAlunos = await api
+        .get(`v1/calendarios/frequencias`, {
+          params: {
+            aulaId,
+            componenteCurricularId:
+              componenteCurricular.id > 0
+                ? componenteCurricular.id
+                : componenteCurricular.codigoComponenteCurricular,
+          },
+        })
+        .finally(() => dispatch(setExibirLoaderFrequenciaPlanoAula(false)))
+        .catch(e => erros(e));
 
-    if (frequenciaAlunos && frequenciaAlunos.data) {
-      dispatch(setListaDadosFrequencia(frequenciaAlunos.data));
-      dispatch(
-        setTemPeriodoAbertoFrequenciaPlanoAula(
-          frequenciaAlunos.data.temPeriodoAberto
-        )
-      );
-    } else {
-      dispatch(setListaDadosFrequencia({}));
-      dispatch(setTemPeriodoAbertoFrequenciaPlanoAula(true));
+      if (frequenciaAlunos && frequenciaAlunos.data) {
+        dispatch(setListaDadosFrequencia(frequenciaAlunos.data));
+        dispatch(
+          setTemPeriodoAbertoFrequenciaPlanoAula(
+            frequenciaAlunos.data.temPeriodoAberto
+          )
+        );
+      } else {
+        dispatch(setListaDadosFrequencia({}));
+        dispatch(setTemPeriodoAbertoFrequenciaPlanoAula(true));
+      }
     }
   };
 
