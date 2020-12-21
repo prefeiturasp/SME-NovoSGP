@@ -18,6 +18,8 @@ import history from '~/servicos/history';
 import ServicoFiltroRelatorio from '~/servicos/Paginas/FiltroRelatorio/ServicoFiltroRelatorio';
 import ServicoComponentesCurriculares from '~/servicos/Paginas/ComponentesCurriculares/ServicoComponentesCurriculares';
 import ServicoRelatorioPlanejamentoDiario from '~/servicos/Paginas/Relatorios/DiarioClasse/PlanejamentoDiario/ServicoRelatorioPlanejamentoDiario';
+import ServicoPeriodoEscolar from '~/servicos/Paginas/Calendario/ServicoPeriodoEscolar';
+
 import FiltroHelper from '~componentes-sgp/filtro/helper';
 
 const RelatorioPlanejamentoDiario = () => {
@@ -34,17 +36,18 @@ const RelatorioPlanejamentoDiario = () => {
     setListaComponentesCurriculares,
   ] = useState([]);
   const [listaBimestres, setListaBimestres] = useState([]);
+  const [bimestres, setBimestres] = useState([]);
   const [anoLetivo, setAnoLetivo] = useState();
   const [codigoDre, setCodigoDre] = useState();
   const [codigoUe, setCodigoUe] = useState();
   const [modalidadeId, setModalidadeId] = useState();
   const [semestre, setSemestre] = useState();
   const [turmaId, setTurmaId] = useState();
+  const [habilitarDatasFuturas, setHabilitarDatasFuturas] = useState(false);
   const [listarDatasFuturas, setListarDatasFuturas] = useState(false);
   const [exibirDetalhamento, setExibirDetalhamento] = useState(false);
   const [componenteCurricularId, setComponenteCurricularId] = useState();
   const [bimestre, setBimestre] = useState();
-  
 
   const [consideraHistorico, setConsideraHistorico] = useState(false);
   const [desabilitarGerar, setDesabilitarGerar] = useState(true);
@@ -54,20 +57,6 @@ const RelatorioPlanejamentoDiario = () => {
   const opcoesRadioSimNao = [
     { label: 'Não', value: false },
     { label: 'Sim', value: true },
-  ];
-
-  const bimestresEja = [
-    { valor: OPCAO_TODOS, desc: 'Todos' },
-    { valor: '1', desc: '1' },
-    { valor: '2', desc: '2' },
-  ];
-
-  const bimestresFundMedio = [
-    { valor: OPCAO_TODOS, desc: 'Todos' },
-    { valor: '1', desc: '1' },
-    { valor: '2', desc: '2' },
-    { valor: '3', desc: '3' },
-    { valor: '4', desc: '4' },
   ];
 
   const onChangeAnoLetivo = async valor => {
@@ -247,13 +236,55 @@ const RelatorioPlanejamentoDiario = () => {
   }, [anoLetivo, codigoUe]);
 
   useEffect(() => {
-    if (String(modalidadeId) === String(ModalidadeDTO.EJA)) {
-      setListaBimestres(bimestresEja);
-    } else {
-      setListaBimestres(bimestresFundMedio);
+    const obterBimestres = async () => {
+      if (modalidadeId && anoLetivo) {
+        const bimestresResponse = await ServicoPeriodoEscolar.obterPeriodosPorAnoLetivoModalidade(
+          modalidadeId,
+          anoLetivo
+        );
+        if (bimestresResponse) {
+          const lista = bimestresResponse.data.map(v => {
+            return {
+              valor: v.bimestre,
+              desc: v.bimestre,
+            };
+          });
+          lista.unshift({ valor: OPCAO_TODOS, desc: 'Todos' });
+          setListaBimestres(lista);
+          setBimestres(bimestresResponse.data);
+        }
+      }
+    };
+    obterBimestres();
+  }, [modalidadeId, anoLetivo]);
+
+  const checarPeriodoEhMaior = data => {
+    console.log(
+      moment(moment(data).format('YYYY-MM-DD')).isAfter(
+        moment().format('YYYY-MM-DD')
+      )
+    );
+
+    return moment(moment(data).format('YYYY-MM-DD')).isAfter(
+      moment().format('YYYY-MM-DD')
+    );
+  };
+
+  const checarPeriodoFinalBimestre = async () => {
+    setHabilitarDatasFuturas(false);
+    if (bimestre !== '-99') {
+      const bimestreSelecionado = bimestres.filter(
+        b => b.id === Number(bimestre)
+      );
+      if (checarPeriodoEhMaior(bimestreSelecionado[0]?.periodoFim)) {
+        setHabilitarDatasFuturas(true);
+      }
     }
-    setBimestre();
-  }, [modalidadeId]);
+  };
+
+  useEffect(() => {
+    checarPeriodoFinalBimestre();
+  }, [bimestre]);
 
   const obterTurmas = useCallback(async () => {
     if (codigoDre && codigoUe && modalidadeId) {
@@ -300,8 +331,10 @@ const RelatorioPlanejamentoDiario = () => {
 
   const obterComponentesCurriculares = useCallback(async () => {
     let turmas = [];
-    if (turmaId === '0') {
-      turmas = listaTurmas.filter(item => item.valor !== '0').map(a => a.valor);
+    if (turmaId === OPCAO_TODOS) {
+      turmas = listaTurmas
+        .filter(item => item.valor !== OPCAO_TODOS)
+        .map(a => a.valor);
     } else {
       turmas = [turmaId];
     }
@@ -315,8 +348,8 @@ const RelatorioPlanejamentoDiario = () => {
 
     if (componentes && componentes.data && componentes.data.length) {
       const lista = [];
-      if (turmaId === '0' || componentes.data.length > 1) {
-        lista.push({ valor: '0', desc: 'Todos' });
+      if (turmaId === OPCAO_TODOS || componentes.data.length > 1) {
+        lista.push({ valor: OPCAO_TODOS, desc: 'Todos' });
       }
       componentes.data.map(item =>
         lista.push({
@@ -330,8 +363,8 @@ const RelatorioPlanejamentoDiario = () => {
         setComponenteCurricularId(lista[0].valor);
       }
 
-      if (turmaId === '0' || componentes.data.length > 1) {
-        setComponenteCurricularId('0');
+      if (turmaId === OPCAO_TODOS || componentes.data.length > 1) {
+        setComponenteCurricularId(OPCAO_TODOS);
       }
     } else {
       setListaComponentesCurriculares([]);
@@ -605,7 +638,7 @@ const RelatorioPlanejamentoDiario = () => {
                 disabled={
                   !modalidadeId ||
                   listaComponentesCurriculares?.length === 1 ||
-                  turmaId === '0'
+                  turmaId === OPCAO_TODOS
                 }
                 valueSelect={componenteCurricularId}
                 onChange={onChangeComponenteCurricular}
@@ -621,20 +654,7 @@ const RelatorioPlanejamentoDiario = () => {
                 label="Bimestre"
                 disabled={!modalidadeId}
                 valueSelect={bimestre}
-                multiple
-                onChange={valores => {
-                  const opcaoTodosJaSelecionado = bimestre
-                    ? bimestre.includes('0')
-                    : false;
-                  if (opcaoTodosJaSelecionado) {
-                    const listaSemOpcaoTodos = valores.filter(v => v !== '0');
-                    onChangeBimestre(listaSemOpcaoTodos);
-                  } else if (valores.includes('0')) {
-                    onChangeBimestre(['0']);
-                  } else {
-                    onChangeBimestre(valores);
-                  }
-                }}
+                onChange={onChangeBimestre}
                 placeholder="Bimestre"
               />
             </div>
@@ -646,6 +666,12 @@ const RelatorioPlanejamentoDiario = () => {
                 onChange={e => {
                   setListarDatasFuturas(e.target.value);
                 }}
+                desabilitado={
+                  !turmaId ||
+                  turmaId === OPCAO_TODOS ||
+                  bimestre === OPCAO_TODOS ||
+                  !habilitarDatasFuturas
+                }
                 value={listarDatasFuturas}
               />
             </div>
@@ -658,7 +684,7 @@ const RelatorioPlanejamentoDiario = () => {
                   setExibirDetalhamento(e.target.value);
                 }}
                 value={exibirDetalhamento}
-                desabilitado={!turmaId || turmaId === '-99'}
+                desabilitado={!turmaId || turmaId === OPCAO_TODOS}
               />
             </div>
           </div>
