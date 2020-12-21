@@ -429,13 +429,10 @@ const RelatorioPlanejamentoDiario = () => {
     obterAnosLetivos();
   }, [obterAnosLetivos]);
 
-  const obterSemestres = async (
-    modalidadeSelecionada,
-    anoLetivoSelecionado
-  ) => {
+  const obterSemestres = useCallback(async () => {
     setExibirLoader(true);
     const retorno = await api.get(
-      `v1/abrangencias/${consideraHistorico}/semestres?anoLetivo=${anoLetivoSelecionado}&modalidade=${modalidadeSelecionada ||
+      `v1/abrangencias/${consideraHistorico}/semestres?anoLetivo=${anoLetivo}&modalidade=${modalidadeId ||
         0}`
     );
     if (retorno && retorno.data) {
@@ -449,7 +446,7 @@ const RelatorioPlanejamentoDiario = () => {
       setListaSemestres(lista);
     }
     setExibirLoader(false);
-  };
+  }, [modalidadeId, anoLetivo, consideraHistorico]);
 
   useEffect(() => {
     if (
@@ -457,12 +454,12 @@ const RelatorioPlanejamentoDiario = () => {
       anoLetivo &&
       String(modalidadeId) === String(ModalidadeDTO.EJA)
     ) {
-      obterSemestres(modalidadeId, anoLetivo);
+      obterSemestres();
     } else {
       setSemestre();
       setListaSemestres([]);
     }
-  }, [obterAnosLetivos, modalidadeId, anoLetivo]);
+  }, [obterAnosLetivos, modalidadeId, anoLetivo, consideraHistorico]);
 
   const cancelar = async () => {
     await setCodigoUe();
@@ -470,7 +467,11 @@ const RelatorioPlanejamentoDiario = () => {
     await setTurmaId();
     await setSemestre();
     await setModalidadeId();
-    await setAnoLetivo();
+    await setTurmaId();
+    await setComponenteCurricularId();
+    await setBimestre();
+    await setListarDatasFuturas(false);
+    await setExibirDetalhamento(false);
     await setAnoLetivo(anoAtual);
   };
 
@@ -667,6 +668,7 @@ const RelatorioPlanejamentoDiario = () => {
             </div>
             <div className="col-sm-12 col-md-3 col-lg-3 col-xl-2 mb-2">
               <RadioGroupButton
+                id="radio-datas-futuras"
                 label="Listar datas futuras"
                 opcoes={opcoesRadioSimNao}
                 valorInicial
@@ -684,6 +686,7 @@ const RelatorioPlanejamentoDiario = () => {
             </div>
             <div className="col-sm-12 col-md-3 col-lg-3 col-xl-2 mb-2">
               <RadioGroupButton
+                id="radio-exibir-detalhamento"
                 label="Exibir detalhamento"
                 opcoes={opcoesRadioSimNao}
                 valorInicial
