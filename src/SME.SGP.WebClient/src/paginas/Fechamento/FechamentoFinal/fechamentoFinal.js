@@ -17,7 +17,6 @@ import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
 import { ContainerAuditoria, Lista } from './fechamentoFinal.css';
 import LinhaAluno from './linhaAluno';
 import { setExpandirLinha } from '~/redux/modulos/notasConceitos/actions';
-import Alert from '~/componentes/alert';
 
 const FechamentoFinal = forwardRef((props, ref) => {
   const {
@@ -38,9 +37,6 @@ const FechamentoFinal = forwardRef((props, ref) => {
   const [ehSintese, setEhSintese] = useState(false);
   const [disciplinaSelecionada, setDisciplinaSelecionada] = useState();
   const [listaConceitos, setListaConceitos] = useState([]);
-  const [exibirLista, setExibirLista] = useState(
-    (ehRegencia && !!disciplinaSelecionada) || !ehRegencia
-  );
 
   const [disciplinasRegencia, setDisciplinasRegencia] = useState([]);
   const [notasEmEdicao, setNotasEmEdicao] = useState([]);
@@ -48,10 +44,6 @@ const FechamentoFinal = forwardRef((props, ref) => {
   const [auditoria, setAuditoria] = useState();
   const [alunos, setAlunos] = useState([]);
   const [dadosFechamentoFinal, setDadosFechamentoFinal] = useState();
-
-  useEffect(() => {
-    setExibirLista((ehRegencia && !!disciplinaSelecionada) || !ehRegencia);
-  }, [disciplinaSelecionada, ehRegencia]);
 
   useEffect(() => {
     if (ehRegencia) {
@@ -181,6 +173,18 @@ const FechamentoFinal = forwardRef((props, ref) => {
   return (
     <>
       <Lista>
+        {alunos?.length && !ehSintese && ehRegencia ? (
+          <div>
+            <div className="row">
+              <div className="col-md-12 d-flex justify-content-end">
+                Selecione um componente para consultar as notas ou conceitos dos
+                bimestres
+              </div>
+            </div>
+          </div>
+        ) : (
+          ''
+        )}
         {alunos && alunos.length ? (
           <div className="row pb-4" style={{ alignItems: 'center' }}>
             <div className="col-sm-12 col-md-12 col-lg-2 col-xl-3 d-flex justify-content-start">
@@ -203,7 +207,7 @@ const FechamentoFinal = forwardRef((props, ref) => {
                       key={shortid.generate()}
                       className={`btn-disciplina ${
                         disciplina.ativa ? 'ativa' : ''
-                        }`}
+                      }`}
                       onClick={() => setDisciplinaAtiva(disciplina)}
                     >
                       {disciplina.nome}
@@ -214,96 +218,74 @@ const FechamentoFinal = forwardRef((props, ref) => {
             </div>
           </div>
         ) : (
-            ''
-          )}
-        {disciplinasRegencia &&
-        disciplinasRegencia.length &&
-        !disciplinaSelecionada ? (
-          <div className="col-md-12">
-            <Alert
-              alerta={{
-                tipo: 'warning',
-                id: 'AlertaTurmaFechamentoFinal',
-                mensagem:
-                  'Selecione um componente para consultar as notas ou conceitos dos bimestre',
-                estiloTitulo: { fontSize: '18px' },
-              }}
-              className="mb-2"
-            />
-          </div>
-        ) : null}
-        {exibirLista && (
-          <>
-            <div className="table-responsive">
-              <table className="table mt-4">
-                <thead className="tabela-fechamento-final-thead">
-                  <tr>
-                    <th className="col-nome-aluno" colSpan="2">
-                      Nome
-                    </th>
-                    <th>
-                      {ehSintese ? 'Síntese' : ehNota ? 'Nota' : 'Conceito'}
-                    </th>
-                    <th className="width-120">Total de Faltas</th>
-                    <th>Total de Ausências Compensadas</th>
-                    {ehSintese ? (
-                      ''
-                    ) : (
-                        <th className="head-conceito">
-                          {ehNota ? 'Nota Final' : 'Conceito Final'}
-                        </th>
-                      )}
-                    {registraFrequencia ? <th>%Freq.</th> : ''}
-                  </tr>
-                </thead>
-                <tbody className="tabela-fechamento-final-tbody">
-                  {alunos && alunos.length ? (
-                    alunos.map((aluno, i) => {
-                      return (
-                        <>
-                          <LinhaAluno
-                            aluno={aluno}
-                            ehRegencia={ehRegencia}
-                            ehNota={ehNota}
-                            disciplinaSelecionada={disciplinaSelecionada}
-                            listaConceitos={listaConceitos}
-                            onChange={onChangeNotaAluno}
-                            eventoData={dadosFechamentoFinal.eventoData}
-                            notaMedia={dadosFechamentoFinal.notaMedia}
-                            frequenciaMedia={dadosFechamentoFinal.frequenciaMedia}
-                            indexAluno={i}
-                            desabilitarCampo={desabilitarCampo}
-                            ehSintese={ehSintese}
-                            registraFrequencia={registraFrequencia}
-                          />
-                        </>
-                      );
-                    })
-                  ) : (
-                      <tr>
-                        <td colSpan="10" className="text-center">
-                          Sem dados
-                      </td>
-                      </tr>
-                    )}
-                </tbody>
-              </table>
-            </div>
-            {auditoria ? (
-              <div className="row mt-2 mb-2 mt-2">
-                <div className="col-md-12">
-                  <ContainerAuditoria style={{ float: 'left' }}>
-                    <span>
-                      <p>{auditoria.auditoriaInclusao || ''}</p>
-                      <p>{auditoria.auditoriaAlteracao || ''}</p>
-                    </span>
-                  </ContainerAuditoria>
-                </div>
-              </div>
-            ) : (
-                ''
+          ''
+        )}
+        <div className="table-responsive">
+          <table className="table mt-4">
+            <thead className="tabela-fechamento-final-thead">
+              <tr>
+                <th className="col-nome-aluno" colSpan="2">
+                  Nome
+                </th>
+                <th>{ehSintese ? 'Síntese' : ehNota ? 'Nota' : 'Conceito'}</th>
+                <th className="width-120">Total de Faltas</th>
+                <th>Total de Ausências Compensadas</th>
+                {ehSintese ? (
+                  ''
+                ) : (
+                  <th className="head-conceito">
+                    {ehNota ? 'Nota Final' : 'Conceito Final'}
+                  </th>
+                )}
+                {registraFrequencia ? <th>%Freq.</th> : ''}
+              </tr>
+            </thead>
+            <tbody className="tabela-fechamento-final-tbody">
+              {alunos && alunos.length ? (
+                alunos.map((aluno, i) => {
+                  return (
+                    <>
+                      <LinhaAluno
+                        aluno={aluno}
+                        ehRegencia={ehRegencia}
+                        ehNota={ehNota}
+                        disciplinaSelecionada={disciplinaSelecionada}
+                        listaConceitos={listaConceitos}
+                        onChange={onChangeNotaAluno}
+                        eventoData={dadosFechamentoFinal.eventoData}
+                        notaMedia={dadosFechamentoFinal.notaMedia}
+                        frequenciaMedia={dadosFechamentoFinal.frequenciaMedia}
+                        indexAluno={i}
+                        desabilitarCampo={desabilitarCampo}
+                        ehSintese={ehSintese}
+                        registraFrequencia={registraFrequencia}
+                      />
+                    </>
+                  );
+                })
+              ) : (
+                <tr>
+                  <td colSpan="10" className="text-center">
+                    Sem dados
+                  </td>
+                </tr>
               )}
-          </>
+            </tbody>
+          </table>
+        </div>
+        {auditoria ? (
+          <div className="row mt-2 mb-2 mt-2">
+            <div className="col-md-12">
+              <ContainerAuditoria style={{ float: 'left' }}>
+                <span>
+                  <p>{auditoria.auditoriaInclusao || ''}</p>
+                  <p>{auditoria.auditoriaAlteracao || ''}</p>
+                </span>
+              </ContainerAuditoria>
+            </div>
+          </div>
+        ) : (
+          ''
         )}
       </Lista>
     </>
