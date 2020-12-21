@@ -28,4 +28,10 @@
     <ProjectReference Include="..\SME.SGP.IoC\SME.SGP.IoC.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="files\job.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
