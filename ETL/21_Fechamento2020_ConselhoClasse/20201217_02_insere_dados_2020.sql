@@ -40,3 +40,4 @@ $$ LANGUAGE plpgsql;
 
 
 
+SELECT * FROM fechamento_turma
