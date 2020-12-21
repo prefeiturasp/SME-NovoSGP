@@ -770,7 +770,6 @@ namespace SME.SGP.Aplicacao.Integracoes
         public async Task<IEnumerable<PodePersistirNaDataRetornoEolDto>> PodePersistirTurmaNasDatas(string professorRf, string codigoTurma, string[] datas, long codigoDisciplina)
         {
             
-
             var datasParaEnvio = JsonConvert.SerializeObject(datas);
 
             var resposta = await httpClient.PostAsync($"professores/{professorRf}/turmas/{codigoTurma}/disciplinas/{codigoDisciplina}/atribuicao/recorrencia/verificar/datas", new StringContent(datasParaEnvio, Encoding.UTF8, "application/json-patch+json"));
@@ -780,8 +779,12 @@ namespace SME.SGP.Aplicacao.Integracoes
                 var json = await resposta.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<List<PodePersistirNaDataRetornoEolDto>>(json);
             }
-
-            throw new NegocioException($"Não foi possível validar datas para a atribuição do professor no EOL. -- (StatusCode: {resposta.StatusCode})");
+            else
+            {
+                string erro = $"Não foi possível validar datas para a atribuição do professor no EOL - HttpCode {resposta.StatusCode} - Body {resposta.Content?.ReadAsStringAsync()?.Result ?? string.Empty}";
+                SentrySdk.AddBreadcrumb(erro);
+                throw new NegocioException(erro);
+            }            
         }
 
         public async Task<bool> ProfessorPodePersistirTurma(string professorRf, string codigoTurma, DateTime data)
