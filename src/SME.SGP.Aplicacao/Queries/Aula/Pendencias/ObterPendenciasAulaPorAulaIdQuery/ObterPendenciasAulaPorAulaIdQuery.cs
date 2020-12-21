@@ -14,7 +14,6 @@ namespace SME.SGP.Aplicacao
         public ObterPendenciasAulaPorAulaIdQuery(long aulaId)
         {
             AulaId = aulaId;
-            EhModalidadeInfantil = modalidade == Modalidade.Infantil;
         }
 
         public long AulaId { get; set; }
