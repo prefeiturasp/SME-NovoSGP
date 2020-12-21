@@ -5,7 +5,13 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterPendenciasAulaPorAulaIdQuery : IRequest<long[]>
     {
-        public ObterPendenciasAulaPorAulaIdQuery(long aulaId, Modalidade modalidade)
+        //public ObterPendenciasAulaPorAulaIdQuery(long aulaId, Modalidade modalidade)
+        //{
+        //    AulaId = aulaId;
+        //    EhModalidadeInfantil = modalidade == Modalidade.Infantil;
+        //}
+
+        public ObterPendenciasAulaPorAulaIdQuery(long aulaId)
         {
             AulaId = aulaId;
             EhModalidadeInfantil = modalidade == Modalidade.Infantil;
