@@ -4,6 +4,7 @@ using SME.SGP.Aplicacao.Queries.ComponentesCurriculares.ObterComponentesCurricul
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,7 +20,7 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<IEnumerable<ObjetivoAprendizagemDto>> Executar(long ano, long componenteCurricularId, bool ensinoEspecial)
+        public async Task<IEnumerable<ObjetivoAprendizagemDto>> Executar(string ano, long componenteCurricularId, bool ensinoEspecial)
         {
             long[] ids;
 
@@ -47,7 +48,9 @@ namespace SME.SGP.Aplicacao
                 return objetivos.OrderBy(o => o.Ano).ThenBy(x => x.Codigo);
             }
 
-            objetivos = objetivos.Where(x => x.Ano == ((AnoTurma)ano).Name()).ToList();
+            var anoTurma = Convert.ToInt32(ano);
+
+            objetivos = objetivos.Where(x => x.Ano == ((AnoTurma)anoTurma).Name()).ToList();
             return objetivos.OrderBy(o => o.Codigo);
         }
     }
