@@ -10,6 +10,6 @@ namespace SME.SGP.Aplicacao.Interfaces.CasosDeUso
 {
     public interface IListarObjetivoAprendizagemPorAnoEComponenteCurricularUseCase
     {
-        Task<IEnumerable<ObjetivoAprendizagemDto>> Executar(long ano, long componenteCurricularId, bool ensinoEspecial);
+        Task<IEnumerable<ObjetivoAprendizagemDto>> Executar(string ano, long componenteCurricularId, bool ensinoEspecial);
     }
 }
