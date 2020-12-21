@@ -767,7 +767,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             return JsonConvert.DeserializeObject<bool>(json);
         }
 
-        public async Task<IEnumerable<PodePersistirNaDataRetornoEolDto>> PodePersistirTurmaNasDatas(string professorRf, string codigoTurma, string[] datas, long codigoDisciplina)
+        public async Task<IEnumerable<PodePersistirNaDataRetornoEolDto>> PodePersistirTurmaNasDatas(string professorRf, string codigoTurma, DateTime[] datas, long codigoDisciplina)
         {
             
 
