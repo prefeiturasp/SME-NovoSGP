@@ -1,11 +1,13 @@
 ﻿using Dapper;
 using Dommel;
+using Npgsql;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Text;
+
 
 namespace SME.SGP.Dados
 {
@@ -30,7 +32,7 @@ namespace SME.SGP.Dados
             foreach(var notificacaoCompensacao in ObterPorCompensacao(compensacaoAusenciaId))
             {
                 repositorioNotificacao.Remover(notificacaoCompensacao.NotificacaoId);
-                database.Conexao.Delete(notificacaoCompensacao);
+                database.Conexao.Delete(notificacaoCompensacao);                
             }
 
         }
