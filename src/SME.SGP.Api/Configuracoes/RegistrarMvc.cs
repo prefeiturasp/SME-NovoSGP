@@ -25,7 +25,7 @@ namespace SME.SGP.Api
                 options.EnableEndpointRouting = true;
                 options.Filters.Add(new ValidaDtoAttribute());
                 options.Filters.Add(new FiltroExcecoesAttribute(configuration));
-                //options.Filters.Add(new DisposeConnectionFilter(conexao));
+                options.Filters.Add(new DisposeConnectionFilter(conexao));
             })
                 .AddFluentValidation()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
