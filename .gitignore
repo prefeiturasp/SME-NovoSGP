@@ -275,3 +275,4 @@ src/SME.SGP.Api/healthchecksdb
 *.opencover.xml
 /src/SME.SGP.WebClient/local-storage.json
 /src/SME.SGP.Api/Imagens/*
+/src/SME.SGP.Api/Arquivos/*
