@@ -6,6 +6,7 @@ import {
   setListaComponentesCurricularesPlanejamento,
   setListaObjetivosComponenteCurricular,
   setDadosOriginaisPlanoAula,
+  setCheckedExibirEscolhaObjetivos,
 } from '~/redux/modulos/frequenciaPlanoAula/actions';
 import { erros } from '~/servicos/alertas';
 import api from '~/servicos/api';
@@ -74,13 +75,22 @@ class ServicoPlanoAula {
       dispatch(setExibirLoaderFrequenciaPlanoAula(true));
 
       const plano = await api
-        .get(`v1/planos/aulas/${aulaId}?turmaId=${turmaSelecionada.id}&componenteCurricularId=${componenteCurricular.id}`)
+        .get(
+          `v1/planos/aulas/${aulaId}?turmaId=${turmaSelecionada.id}&componenteCurricularId=${componenteCurricular.id}`
+        )
         .finally(() => dispatch(setExibirLoaderFrequenciaPlanoAula(false)))
         .catch(e => erros(e));
 
       if (plano && plano.data) {
         dispatch(setDadosPlanoAula({ ...plano.data }));
         setarDadosOriginaisPlanoAula({ ...plano.data });
+        dispatch(
+          setCheckedExibirEscolhaObjetivos(
+            plano.data?.objetivosAprendizagemComponente?.length &&
+              plano.data?.objetivosAprendizagemComponente[0]
+                .objetivosAprendizagem?.length > 0
+          )
+        );
         const ehMigrado = plano.data.migrado;
 
         // Quando for MIGRADO mostrar somente um tab com o componente curricular já selecionado!
