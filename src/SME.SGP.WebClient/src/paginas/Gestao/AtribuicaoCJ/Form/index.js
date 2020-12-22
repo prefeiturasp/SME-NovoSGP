@@ -281,7 +281,6 @@ function AtribuicaoCJForm({ match, location }) {
                         showLabel
                         form={form}
                         onChange={() => {}}
-                        incluirEmei
                       />
                     </Row>
                   </Grid>
