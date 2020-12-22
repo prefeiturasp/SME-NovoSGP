@@ -12,9 +12,11 @@ using Microsoft.Extensions.FileProviders;
 using Prometheus;
 using SME.Background.Core;
 using SME.Background.Hangfire;
+using SME.SGP.Api.Filtros;
 using SME.SGP.Api.HealthCheck;
 using SME.SGP.Background;
 using SME.SGP.Dados;
+using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.IoC;
@@ -97,7 +99,7 @@ namespace SME.SGP.Api
             {
                 Predicate = _ => true,
                 ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-            });
+            });  
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -176,7 +178,7 @@ namespace SME.SGP.Api
 
             //
 
-            services.AddMemoryCache();
+            services.AddMemoryCache();            
         }
     }
 }
