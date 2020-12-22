@@ -9,7 +9,6 @@ namespace SME.SGP.Infra
         [Range(0, 4, ErrorMessage = "O bimestre deve ser infomado entre 1 e 4")]
         public int Bimestre { get; set; }
 
-        [Required(ErrorMessage = "O código rf é obrigatório")]
         public string CodigoRf { get; set; }
 
         [Required(ErrorMessage = "É obrigatório informar o id da Dre")]
