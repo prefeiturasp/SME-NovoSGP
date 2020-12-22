@@ -1,23 +1,20 @@
 ﻿using FluentValidation;
 using MediatR;
-using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
     public class ListarObjetivoAprendizagemPorAnoEComponenteCurricularQuery : IRequest<IEnumerable<ObjetivoAprendizagemDto>>
     {
     
-        public ListarObjetivoAprendizagemPorAnoEComponenteCurricularQuery(long ano, long[] juremaIds)
+        public ListarObjetivoAprendizagemPorAnoEComponenteCurricularQuery(string ano, long[] juremaIds)
         {
             Ano = ano;
             JuremaIds = juremaIds;
         }
 
-        public long Ano { get; set; }
+        public string Ano { get; set; }
         public long[] JuremaIds { get; set; }
         
     }
