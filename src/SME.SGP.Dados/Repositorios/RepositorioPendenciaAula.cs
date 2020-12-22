@@ -1,7 +1,6 @@
 ﻿using Dapper;
 using Dommel;
 using Microsoft.AspNetCore.Mvc.TagHelpers.Cache;
-using Microsoft.Extensions.Configuration;
 using Npgsql;
 using NpgsqlTypes;
 using SME.SGP.Dominio;
@@ -9,6 +8,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -16,12 +16,10 @@ namespace SME.SGP.Dados.Repositorios
     public class RepositorioPendenciaAula : IRepositorioPendenciaAula
     {
         private readonly ISgpContext database;
-        private readonly string connectionString;
 
-        public RepositorioPendenciaAula(ISgpContext database, IConfiguration configuration)
+        public RepositorioPendenciaAula(ISgpContext database)
         {
             this.database = database;
-            this.connectionString = configuration.GetConnectionString("SGP_Postgres");
         }
 
         public async Task<IEnumerable<Aula>> ListarPendenciasPorTipo(TipoPendencia tipoPendenciaAula, string tabelaReferencia, long[] modalidades)
@@ -82,46 +80,19 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task Excluir(long pendenciaId, long aulaId)
         {
-            var query = $@"select id as Id, aula_id as AulaId, tipo as TipoPendenciaAula from pendencia_aula 
-                    WHERE tipo = @tipo AND aula_id = @aulaid";
-
-            return (await database.Conexao.QueryFirstOrDefaultAsync<PendenciaAula>(query, new { aulaid = aulaId, tipo = tipoPendenciaAula }));
-        }
-        public async Task<PendenciaAula> ObterPendenciaPorAulaIdETipo(TipoPendenciaAula tipoPendenciaAula, long aulaId)
-        {
-            var query = $@"select id as Id, aula_id as AulaId, tipo as TipoPendenciaAula from pendencia_aula 
-                    WHERE tipo = @tipo AND aula_id = @aulaid";
-
-            using (var conexao = new NpgsqlConnection(connectionString))
-            {
-                await conexao.OpenAsync();
-
-                var pendencia = (await database.Conexao.QueryFirstOrDefaultAsync<PendenciaAula>(query, new { aulaid = aulaId, tipo = tipoPendenciaAula }));
-
-                conexao.Close();
-
-                return pendencia;
-            }
-
-
+            await database.Conexao.ExecuteScalarAsync(@"delete from pendencia_aula 
+                                                    where aula_id = @aulaId and pendencia_id = @pendenciaId", new { aulaid = aulaId, pendenciaId });
         }
 
-        public async Task ExcluirPorIdAsync(long id)
-        {
-            using (var conexao = new NpgsqlConnection(connectionString))
-            {
-                await conexao.OpenAsync();
-
-                await database.Conexao.ExecuteAsync("delete from pendencia_aula where @id = @id", new { id });
         public async Task Salvar(long aulaId, string motivo, long pendenciaId)
         {
             await database.Conexao.InsertAsync(new PendenciaAula()
             {
                 AulaId = aulaId,
-                Motivo = motivo,                
+                Motivo = motivo,
                 PendenciaId = pendenciaId
-            });            
-        }      
+            });
+        }
 
         public void SalvarVarias(long pendenciaId, IEnumerable<long> aulas)
         {
