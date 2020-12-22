@@ -16,14 +16,15 @@ namespace SME.SGP.Dados.Contexto
         {
             conexao = new NpgsqlConnection(configuration.GetConnectionString("SGP_Postgres"));
             this.contextoAplicacao = contextoAplicacao ?? throw new ArgumentNullException(nameof(contextoAplicacao));
+            Open();
         }
 
         public IDbConnection Conexao
         {
             get
             {
-                if (conexao.State != ConnectionState.Open)
-                    Open();
+                //if (conexao.State != ConnectionState.Open)
+                //    Open();
                 return conexao;
             }
         }

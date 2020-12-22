@@ -65,7 +65,6 @@ export default function usuario(state = inicial, action) {
       case '@usuario/deslogar':
         draft = inicial;
         localStorage.clear();
-        window.location.reload(true);
         break;
       case '@usuario/deslogarSessaoExpirou':
         localStorage.clear();
