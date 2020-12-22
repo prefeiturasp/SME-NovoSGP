@@ -15,6 +15,7 @@ import FiltroHelper from '~componentes-sgp/filtro/helper';
 import ServicoFiltroRelatorio from '~/servicos/Paginas/FiltroRelatorio/ServicoFiltroRelatorio';
 import AlertaModalidadeInfantil from '~/componentes-sgp/AlertaModalidadeInfantil/alertaModalidadeInfantil';
 import ServicoRelatorioCompensacaoAusencia from '~/servicos/Paginas/Relatorios/CompensacaoAusencia/ServicoRelatorioCompensacaoAusencia';
+import { ordenarListaMaiorParaMenor } from '~/utils/funcoes/gerais';
 
 const RelatorioCompensacaoAusencia = () => {
   const [carregandoGerar, setCarregandoGerar] = useState(false);
@@ -293,7 +294,7 @@ const RelatorioCompensacaoAusencia = () => {
       else setAnoLetivo(anosLetivos[0].valor);
     }
 
-    setListaAnosLetivo(anosLetivos);
+    setListaAnosLetivo(ordenarListaMaiorParaMenor(anosLetivos, 'valor'));
     setCarregandoAnos(false);
   }, [anoAtual]);
 
