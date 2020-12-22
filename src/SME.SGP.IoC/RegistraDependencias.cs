@@ -587,6 +587,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IMigrarPlanoAulaUseCase, MigrarPlanoAulaUseCase>();
             services.TryAddScoped<ISalvarPlanoAulaUseCase, SalvarPlanoAulaUseCase>();
             
+            //Editor
+            services.TryAddScoped<IUploadArquivoEditorUseCase, UploadArquivoEditorUseCase>();
 
             // Relatórios
             services.TryAddScoped<IRelatorioPlanoAulaUseCase, RelatorioPlanoAulaUseCase>();
