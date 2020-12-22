@@ -223,6 +223,7 @@ namespace SME.SGP.Aplicacao
                 registroFrequenciaAluno.Marcador = servicoAluno.ObterMarcadorAluno(aluno, bimestre, turma.EhTurmaInfantil);
 
                 // Indicativo de frequencia do aluno
+                aluno.CodigoTurma = long.Parse(turma.CodigoTurma);
                 registroFrequenciaAluno.IndicativoFrequencia = ObterIndicativoFrequencia(aluno, aula.DisciplinaId, bimestre, percentualAlerta, percentualCritico);
 
                 if (!disciplinaAula.FirstOrDefault().RegistraFrequencia)
