@@ -89,10 +89,10 @@ namespace SME.SGP.Dados.Repositorios
             await database.Conexao.InsertAsync(new PendenciaAula()
             {
                 AulaId = aulaId,
-                Motivo = motivo,                
+                Motivo = motivo,
                 PendenciaId = pendenciaId
-            });            
-        }      
+            });
+        }
 
         public void SalvarVarias(long pendenciaId, IEnumerable<long> aulas)
         {
@@ -195,7 +195,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var tabelaReferencia = ehInfantil ? "diario_bordo" : "plano_aula";
 
-           var sql = $@"select
+            var sql = $@"select
 	                       1
                         from
 	                        aula
@@ -217,7 +217,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<bool> PossuiPendenciasAtividadeAvaliativaPorAulasId(long[] aulasId)
         {
-           var sql = @"select
+            var sql = @"select
 	                       1
                         from
 	                        atividade_avaliativa aa
