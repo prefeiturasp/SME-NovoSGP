@@ -139,7 +139,10 @@ export default function NotificacoesLista() {
   }, [turmaSelecionada]);
 
   useEffect(() => {
-    onClickFiltrar();
+    onClickFiltrar(statusSelecionado,
+                   categoriaSelecionada,
+                   tipoSelecionado,
+                   tituloSelecionado);
   }, [
     statusSelecionado,
     dropdownTurmaSelecionada,
@@ -200,7 +203,7 @@ export default function NotificacoesLista() {
       tipo: tipoSelecionado,
       titulo: tituloSelecionado || null,
       usuarioRf: usuario.rf || null,
-      anoLetivo: usuario.filtroAtual.anoLetivo,
+      anoLetivo: usuario.filtroAtual.anoLetivo
     };
     if (dropdownTurmaSelecionada && dropdownTurmaSelecionada == '2') {
       if (turmaSelecionada) {
