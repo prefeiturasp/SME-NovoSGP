@@ -77,6 +77,7 @@ const LeituraDeComunicadosPorModalidadesETurmas = props => {
   );
 
   useEffect(() => {
+    setDadosDeLeituraDeComunicadosPorModalidadesETurmas([]);
     if (
       dadosDeLeituraDeComunicadosAgrupadosPorModalidade?.length &&
       comunicado &&
@@ -94,8 +95,6 @@ const LeituraDeComunicadosPorModalidadesETurmas = props => {
       ) {
         obterDadosDeLeituraDeComunicadosPorModalidadesETurmas(dadosComunicado);
       }
-    } else {
-      setDadosDeLeituraDeComunicadosPorModalidadesETurmas([]);
     }
   }, [
     comunicado,

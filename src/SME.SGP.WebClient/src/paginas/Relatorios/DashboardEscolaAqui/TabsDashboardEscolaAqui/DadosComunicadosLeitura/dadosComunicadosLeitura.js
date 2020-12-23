@@ -4,10 +4,12 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import {
   CampoData,
+  CheckboxComponent,
   Loader,
   SelectAutocomplete,
   SelectComponent,
 } from '~/componentes';
+import { FiltroHelper } from '~/componentes-sgp';
 import Alert from '~/componentes/alert';
 import { ModalidadeDTO } from '~/dtos';
 import {
@@ -28,6 +30,8 @@ import LeituraDeComunicadosPorAlunos from './leituraDeComunicadosPorAlunos';
 import LeituraDeComunicadosPorModalidades from './leituraDeComunicadosPorModalidades';
 import LeituraDeComunicadosPorModalidadesETurmas from './leituraDeComunicadosPorModalidadesETurmas';
 import LeituraDeComunicadosPorTurmas from './leituraDeComunicadosPorTurmas';
+import FiltroHelperComunicados from '~/paginas/AcompanhamentoEscolar/Comunicados/Helper/helper';
+import ServicoComunicados from '~/servicos/Paginas/AcompanhamentoEscolar/Comunicados/ServicoComunicados';
 
 const DadosComunicadosLeitura = props => {
   const { codigoDre, codigoUe } = props;
@@ -60,8 +64,9 @@ const DadosComunicadosLeitura = props => {
   const [carregandoTurmas, setCarregandoTurmas] = useState(false);
   const [codigoTurma, setCodigoTurma] = useState();
   const [listaTurmas, setListaTurmas] = useState([]);
+  const [listaTurmasOriginal, setListaTurmasOriginal] = useState([]);
 
-  const [carrecandoComunicado, setCarrecandoComunicado] = useState(false);
+  const [carregandoComunicados, setCarregandoComunicados] = useState(false);
   const [listaComunicado, setListaComunicado] = useState([]);
   const [comunicado, setComunicado] = useState();
   const [pesquisaComunicado, setPesquisaComunicado] = useState('');
@@ -72,6 +77,8 @@ const DadosComunicadosLeitura = props => {
   ] = useState([]);
 
   const [timeoutCampoPesquisa, setTimeoutCampoPesquisa] = useState();
+
+  const [consideraHistorico, setConsideraHistorico] = useState(false);
 
   // TODO Verificar no componente de gráficos outra forma de fazer!
   const chavesGrafico = [
@@ -94,23 +101,45 @@ const DadosComunicadosLeitura = props => {
 
   const OPCAO_TODOS = '-99';
 
+  const [anoAtual] = useState(window.moment().format('YYYY'));
+
   const obterAnosLetivos = useCallback(async () => {
     setExibirLoader(true);
-    const anosLetivo = await AbrangenciaServico.buscarTodosAnosLetivos()
-      .catch(e => erros(e))
-      .finally(() => setExibirLoader(false));
+    let anosLetivos = [];
 
-    if (anosLetivo?.data?.length) {
-      const a = [];
-      anosLetivo.data.forEach(ano => {
-        a.push({ desc: ano, valor: ano });
+    const anosLetivoComHistorico = await FiltroHelper.obterAnosLetivos({
+      consideraHistorico: true,
+    });
+    const anosLetivoSemHistorico = await FiltroHelper.obterAnosLetivos({
+      consideraHistorico: false,
+    });
+
+    anosLetivos = anosLetivos.concat(anosLetivoComHistorico);
+
+    anosLetivoSemHistorico.forEach(ano => {
+      if (!anosLetivoComHistorico.find(a => a.valor === ano.valor)) {
+        anosLetivos.push(ano);
+      }
+    });
+
+    if (!anosLetivos.length) {
+      anosLetivos.push({
+        desc: anoAtual,
+        valor: anoAtual,
       });
-      setAnoLetivo(a[0].valor);
-      setListaAnosLetivo(a);
-    } else {
-      setListaAnosLetivo([]);
     }
-  }, []);
+
+    if (anosLetivos && anosLetivos.length) {
+      const temAnoAtualNaLista = anosLetivos.find(
+        item => String(item.valor) === String(anoAtual)
+      );
+      if (temAnoAtualNaLista) setAnoLetivo(anoAtual);
+      else setAnoLetivo(anosLetivos[0].valor);
+    }
+
+    setListaAnosLetivo(anosLetivos);
+    setExibirLoader(false);
+  }, [anoAtual]);
 
   const obterListaGrupos = async () => {
     const resposta = await api
@@ -146,69 +175,73 @@ const DadosComunicadosLeitura = props => {
   const obterModalidades = async (ue, ano) => {
     if (ue && ano) {
       setCarregandoModalidades(true);
-      const resposta = await api
-        .get(`/v1/ues/${ue}/modalidades?ano=${ano}`)
+      const resposta = await ServicoFiltroRelatorio.obterModalidadesPorAbrangencia(
+        ue
+      )
         .catch(e => erros(e))
         .finally(() => setCarregandoModalidades(false));
 
-      if (resposta?.data?.length) {
+      if (resposta?.data) {
         const lista = resposta.data.map(item => ({
-          desc: item.nome,
-          valor: String(item.id),
+          desc: item.descricao,
+          valor: String(item.valor),
         }));
 
         if (lista && lista.length && lista.length === 1) {
           setModalidadeId(lista[0].valor);
         }
         setListaModalidades(lista);
-      } else {
-        setListaModalidades([]);
       }
     }
   };
 
   useEffect(() => {
-    setModalidadeId();
-    if (anoLetivo && codigoUe && codigoUe !== OPCAO_TODOS) {
+    if (anoLetivo && codigoUe) {
       obterModalidades(codigoUe, anoLetivo);
     } else {
+      setModalidadeId();
       setListaModalidades([]);
     }
   }, [anoLetivo, codigoUe]);
 
-  const obterAnosEscolares = useCallback(async (mod, ue) => {
-    setCarregandoAnosEscolares(true);
-    const respota = await ServicoFiltroRelatorio.obterAnosEscolares(ue, mod)
+  const obterAnosEscolaresPorModalidade = useCallback(async () => {
+    const resposta = await ServicoComunicados.buscarAnosPorModalidade(
+      modalidadeId,
+      codigoUe
+    )
       .catch(e => erros(e))
       .finally(() => setCarregandoAnosEscolares(false));
 
-    if (respota?.data?.length) {
-      setListaAnosEscolares(respota.data);
-
-      if (respota.data && respota.data.length && respota.data.length === 1) {
-        setAnosEscolares(respota.data[0].valor);
-      }
+    if (resposta.data?.length) {
+      const dadosMap = resposta.data.map(item => {
+        return {
+          valor: item.ano,
+          descricao: item.ano,
+        };
+      });
+      setListaAnosEscolares(dadosMap);
     } else {
       setListaAnosEscolares([]);
     }
-  }, []);
+  }, [modalidadeId, codigoUe]);
 
   useEffect(() => {
-    if (modalidadeId && codigoUe && codigoUe !== OPCAO_TODOS) {
-      obterAnosEscolares(modalidadeId, codigoUe);
+    if (
+      modalidadeId &&
+      (modalidadeId == ModalidadeDTO.ENSINO_MEDIO ||
+        modalidadeId == ModalidadeDTO.FUNDAMENTAL)
+    ) {
+      obterAnosEscolaresPorModalidade();
     } else {
-      setAnosEscolares(undefined);
+      setAnosEscolares();
       setListaAnosEscolares([]);
     }
-  }, [modalidadeId, obterAnosEscolares]);
+  }, [modalidadeId]);
 
-  const obterSemestres = async (
-    modalidadeSelecionada,
-    anoLetivoSelecionado
-  ) => {
+  const obterSemestres = useCallback(async () => {
     setCarregandoSemestres(true);
     const retorno = await api.get(
-      `v1/abrangencias/false/semestres?anoLetivo=${anoLetivoSelecionado}&modalidade=${modalidadeSelecionada ||
+      `v1/abrangencias/${consideraHistorico}/semestres?anoLetivo=${anoLetivo}&modalidade=${modalidadeId ||
         0}`
     );
     if (retorno && retorno.data) {
@@ -222,7 +255,7 @@ const DadosComunicadosLeitura = props => {
       setListaSemestres(lista);
     }
     setCarregandoSemestres(false);
-  };
+  }, [modalidadeId, anoLetivo, consideraHistorico]);
 
   useEffect(() => {
     if (
@@ -230,47 +263,91 @@ const DadosComunicadosLeitura = props => {
       anoLetivo &&
       String(modalidadeId) === String(ModalidadeDTO.EJA)
     ) {
-      obterSemestres(modalidadeId, anoLetivo);
+      obterSemestres();
     } else {
       setSemestre();
       setListaSemestres([]);
     }
-  }, [modalidadeId, anoLetivo]);
+  }, [modalidadeId, anoLetivo, consideraHistorico, obterSemestres]);
 
-  const obterTurmas = useCallback(async (modalidadeSelecionada, ue, ano) => {
-    if (ue && modalidadeSelecionada) {
+  const obterTurmas = useCallback(async () => {
+    if (codigoDre && codigoUe && modalidadeId) {
       setCarregandoTurmas(true);
       const resultado = await AbrangenciaServico.buscarTurmas(
-        ue,
-        modalidadeSelecionada,
+        codigoUe,
+        modalidadeId,
         '',
-        ano
+        anoLetivo,
+        consideraHistorico
       )
         .catch(e => erros(e))
         .finally(() => setCarregandoTurmas(false));
 
-      if (resultado?.data?.length) {
-        const lista = resultado.data.map(item => ({
-          desc: item.nome,
-          valor: item.codigo,
-        }));
-        setListaTurmas(lista);
+      if (resultado?.data) {
+        const turmas = [];
 
-        if (lista && lista.length && lista.length === 1) {
-          setCodigoTurma(lista[0].valor);
+        resultado.data.map(item =>
+          turmas.push({
+            desc: item.nome,
+            valor: item.codigo,
+            id: item.id,
+            ano: item.ano,
+          })
+        );
+
+        setListaTurmas(turmas);
+        setListaTurmasOriginal(turmas);
+        if (turmas.length === 1) {
+          setCodigoTurma(turmas[0].valor);
         }
       }
+      setCarregandoTurmas(false);
     }
-  }, []);
+  }, [modalidadeId]);
+
+  const obterGruposIdPorModalidade = async mod => {
+    if (!mod) return;
+
+    const dados = await FiltroHelperComunicados.ObterGruposIdPorModalidade(mod);
+
+    if (dados?.length === 0) return;
+
+    setGrupo(dados);
+  };
 
   useEffect(() => {
-    if (codigoUe && codigoUe !== OPCAO_TODOS && modalidadeId && anoLetivo) {
-      obterTurmas(modalidadeId, codigoUe, anoLetivo);
+    if (modalidadeId) {
+      obterGruposIdPorModalidade(modalidadeId);
+    }
+  }, [modalidadeId]);
+
+  const filterTurmasAnoSelecionado = useCallback(() => {
+    if (anosEscolares === OPCAO_TODOS) {
+      setListaTurmas(listaTurmasOriginal);
+    } else {
+      const turmas = listaTurmasOriginal.filter(a => a.ano === anosEscolares);
+      setListaTurmas(turmas);
+    }
+  }, [anosEscolares, listaTurmasOriginal]);
+
+  useEffect(() => {
+    setCodigoTurma();
+    if (anosEscolares) {
+      filterTurmasAnoSelecionado();
+    } else {
+      setListaTurmas(listaTurmasOriginal);
+    }
+  }, [anosEscolares, listaTurmasOriginal]);
+
+  useEffect(() => {
+    if (modalidadeId && codigoUe && codigoDre) {
+      obterTurmas();
     } else {
       setCodigoTurma();
       setListaTurmas([]);
+      setListaTurmasOriginal([]);
     }
-  }, [modalidadeId, obterTurmas]);
+  }, [modalidadeId]);
 
   useEffect(() => {
     if (codigoUe === OPCAO_TODOS) {
@@ -319,39 +396,44 @@ const DadosComunicadosLeitura = props => {
                 .map(g => g.valor)
             : grupo;
 
-        setCarrecandoComunicado(true);
+        setCarregandoComunicados(true);
         const resposta = await ServicoDashboardEscolaAqui.obterComunicadosAutoComplete(
           anoLetivo || '',
           codigoDre === OPCAO_TODOS ? '' : codigoDre || '',
           codigoUe === OPCAO_TODOS ? '' : codigoUe || '',
           todosGrupos,
-          modalidadeId || '',
+          '',
           semestre || '',
-          anosEscolares === OPCAO_TODOS ? '' : anosEscolares || '',
-          codigoTurma || '',
+          anosEscolares || '',
+          codigoTurma === OPCAO_TODOS ? '' : codigoTurma || '',
           dataInicio || '',
           dataFim || '',
           pesquisaComunicado || ''
         )
           .catch(e => erros(e))
-          .finally(() => setCarrecandoComunicado(false));
+          .finally(() => setCarregandoComunicados(false));
 
         if (resposta?.data?.length) {
           const lista = resposta.data.map(item => {
             return {
               ...item,
-              descricao: `${item.titulo} - ${moment(item.dataEnvio).format(
-                'DD/MM/YYYY'
-              )}`,
+              descricao: `${item.id} - ${item.titulo} - ${moment(
+                item.dataEnvio
+              ).format('DD/MM/YYYY')}`,
             };
           });
           setListaComunicado([]);
           setListaComunicado(lista);
         } else {
           setListaComunicado([]);
-          setComunicado();
-          setPesquisaComunicado();
         }
+        if (!pesquisaComunicado) {
+          setComunicado();
+        }
+      } else {
+        setListaComunicado([]);
+        setComunicado();
+        setPesquisaComunicado();
       }
     })();
 
@@ -464,6 +546,31 @@ const DadosComunicadosLeitura = props => {
     };
   }, [dispatch]);
 
+  useEffect(() => {
+    setAnoLetivo(anoAtual);
+  }, [consideraHistorico, anoAtual]);
+
+  const onChangeModalidade = valor => {
+    setCodigoTurma();
+    setModalidadeId(valor);
+    setGrupo([]);
+  };
+
+  const onChangeSemestre = valor => {
+    setSemestre(valor);
+  };
+
+  const onChangeTurma = valor => {
+    setCodigoTurma(valor);
+  };
+
+  const onChangeAnoLetivo = async valor => {
+    setGrupo();
+    setModalidadeId();
+    setCodigoTurma();
+    setAnoLetivo(valor);
+  };
+
   return (
     <>
       {!comunicado ? (
@@ -482,6 +589,19 @@ const DadosComunicadosLeitura = props => {
       )}
       <Loader loading={exibirLoader}>
         <div className="row">
+          <div className="col-sm-12 col-md-6 col-lg-4 col-xl-4 mb-2">
+            <CheckboxComponent
+              label="Exibir histórico?"
+              onChangeCheckbox={e => {
+                setAnoLetivo();
+                setGrupo();
+                setConsideraHistorico(e.target.checked);
+              }}
+              checked={consideraHistorico}
+            />
+          </div>
+        </div>
+        <div className="row">
           <div className="col-sm-12 col-md-6 col-lg-3 col-xl-2 mb-2">
             <SelectComponent
               id="select-ano-letivo"
@@ -489,8 +609,8 @@ const DadosComunicadosLeitura = props => {
               lista={listaAnosLetivo}
               valueOption="valor"
               valueText="desc"
-              disabled={listaAnosLetivo?.length === 1}
-              onChange={setAnoLetivo}
+              disabled={!consideraHistorico || listaAnosLetivo?.length === 1}
+              onChange={onChangeAnoLetivo}
               valueSelect={anoLetivo}
               placeholder="Selecione o ano"
               allowClear={false}
@@ -521,22 +641,21 @@ const DadosComunicadosLeitura = props => {
                   setGrupo(valores);
                 }
               }}
+              disabled={modalidadeId}
             />
           </div>
           <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3  mb-2">
             <Loader loading={carregandoModalidades} tip="">
               <SelectComponent
-                id="select-modalidade"
+                id="drop-modalidade"
                 label="Modalidade"
                 lista={listaModalidades}
                 valueOption="valor"
                 valueText="desc"
-                onChange={setModalidadeId}
+                disabled={!codigoUe || listaModalidades?.length === 1}
+                onChange={onChangeModalidade}
                 valueSelect={modalidadeId}
                 placeholder="Modalidade"
-                disabled={
-                  codigoUe === OPCAO_TODOS || listaModalidades?.length === 1
-                }
               />
             </Loader>
           </div>
@@ -554,7 +673,7 @@ const DadosComunicadosLeitura = props => {
                   String(modalidadeId) !== String(ModalidadeDTO.EJA)
                 }
                 valueSelect={semestre}
-                onChange={setSemestre}
+                onChange={onChangeSemestre}
                 placeholder="Semestre"
               />
             </Loader>
@@ -567,11 +686,7 @@ const DadosComunicadosLeitura = props => {
                 valueOption="valor"
                 valueText="descricao"
                 label="Ano"
-                disabled={
-                  !modalidadeId ||
-                  codigoUe === OPCAO_TODOS ||
-                  listaAnosEscolares?.length === 1
-                }
+                disabled={!modalidadeId || listaAnosEscolares?.length === 1}
                 valueSelect={anosEscolares}
                 onChange={setAnosEscolares}
                 placeholder="Selecione o ano"
@@ -592,7 +707,7 @@ const DadosComunicadosLeitura = props => {
                   (listaTurmas && listaTurmas.length === 1)
                 }
                 valueSelect={codigoTurma}
-                onChange={setCodigoTurma}
+                onChange={onChangeTurma}
                 placeholder="Turma"
               />
             </Loader>
@@ -621,7 +736,7 @@ const DadosComunicadosLeitura = props => {
             />
           </div>
           <div className="col-sm-12 col-md-6 col-lg-6 col-xl-6 mb-2">
-            <Loader loading={carrecandoComunicado} tip="">
+            <Loader loading={carregandoComunicados} tip="">
               <SelectAutocomplete
                 id="autocomplete-comunicados"
                 label="Comunicado"
