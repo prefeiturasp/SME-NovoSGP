@@ -450,7 +450,8 @@ const DadosComunicadosLeitura = props => {
     if (!comunicado) {
       setDadosDeLeituraDeComunicados([]);
     }
-  }, [comunicado]);
+    dispatch(limparDadosDashboardEscolaAqui());
+  }, [comunicado, dispatch]);
 
   useEffect(() => {
     setDadosDeLeituraDeComunicados([]);
@@ -711,7 +712,15 @@ const DadosComunicadosLeitura = props => {
           ) : (
             ''
           )}
-          <LeituraDeComunicadosPorAlunos />
+
+          {dadosDeLeituraDeComunicados?.length && comunicado ? (
+            <LeituraDeComunicadosPorAlunos
+              comunicado={comunicado}
+              listaComunicado={listaComunicado}
+            />
+          ) : (
+            ''
+          )}
         </div>
       </Loader>
     </>

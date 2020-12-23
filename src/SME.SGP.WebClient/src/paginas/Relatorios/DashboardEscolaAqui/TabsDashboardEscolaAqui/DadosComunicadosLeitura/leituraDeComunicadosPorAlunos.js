@@ -1,16 +1,21 @@
 import { Tooltip } from 'antd';
 import * as moment from 'moment';
+import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { DataTable, Label, Loader, SelectComponent } from '~/componentes';
 import { erros } from '~/servicos';
 import ServicoDashboardEscolaAqui from '~/servicos/Paginas/Relatorios/EscolaAqui/DashboardEscolaAqui/ServicoDashboardEscolaAqui';
 import { MarcadorSituacaoAluno } from '../../dashboardEscolaAqui.css';
+import { obterDadosComunicadoSelecionado } from '../../dashboardEscolaAquiGraficosUtils';
 
-const LeituraDeComunicadosPorAlunos = () => {
+const LeituraDeComunicadosPorAlunos = props => {
+  const { comunicado, listaComunicado } = props;
+
   const [exibirLoader, setExibirLoader] = useState(false);
   const [listaAlunos, setListaAlunos] = useState(false);
   const [listaTurmas, setListaTurmas] = useState([]);
+  const [codigoTurmaSelecionado, setCodigoTurmaSelecionado] = useState();
 
   const dadosDeLeituraDeComunicadosPorTurmas = useSelector(
     state => state.dashboardEscolaAqui.dadosDeLeituraDeComunicadosPorTurmas
@@ -34,7 +39,10 @@ const LeituraDeComunicadosPorAlunos = () => {
   const montarSelectTurmas = () => {
     return (
       <>
-        <div className="d-flex align-items-center">
+        <div
+          className="d-flex align-items-center"
+          style={{ textTransform: 'none' }}
+        >
           <Label text="Selecione uma tuma" className="mr-1" />
           <SelectComponent
             style={{ width: '200px' }}
@@ -43,6 +51,9 @@ const LeituraDeComunicadosPorAlunos = () => {
             valueOption="codigo"
             valueText="nome"
             placeholder="Turma"
+            valueSelect={codigoTurmaSelecionado}
+            onChange={setCodigoTurmaSelecionado}
+            disabled={listaTurmas?.length === 1}
           />
         </div>
       </>
@@ -64,24 +75,24 @@ const LeituraDeComunicadosPorAlunos = () => {
         },
         {
           title: 'Nome',
-          dataIndex: 'nome',
+          dataIndex: 'nomeAluno',
           colSpan: 2,
         },
         {
           title: 'Responsável',
-          dataIndex: 'responsavel',
+          dataIndex: 'nomeResponsavel',
         },
         {
           title: 'Contato do responsável',
-          dataIndex: 'contatoResponsavel',
+          dataIndex: 'telefoneResponsavel',
         },
         {
           title: 'Possui Aplicativo',
-          dataIndex: 'possuiAplicativo',
+          dataIndex: 'possueApp',
         },
         {
           title: 'Leu a mensagem',
-          dataIndex: 'leuMensagem',
+          dataIndex: 'leuComunicado',
         },
         {
           title: 'Data da leitura',
@@ -95,22 +106,28 @@ const LeituraDeComunicadosPorAlunos = () => {
     },
   ];
 
-  const obterDadosLeituraDeComunicadosPorAlunos = useCallback(async () => {
-    const codigoTrumas = dadosDeLeituraDeComunicadosPorTurmas.map(
-      item => item.codigoTurma
-    );
+  const obterDadosLeituraDeComunicadosPorAlunos = useCallback(
+    async codigoTurma => {
+      setExibirLoader(true);
 
-    setExibirLoader(true);
-    const resposta = await ServicoDashboardEscolaAqui.obterDadosLeituraDeComunicadosPorAlunos(
-      codigoTrumas
-    )
-      .catch(e => erros(e))
-      .finally(() => setExibirLoader(false));
+      const dadosComunicado = obterDadosComunicadoSelecionado(
+        comunicado,
+        listaComunicado
+      );
 
-    if (resposta?.data) {
-      setListaAlunos(resposta.data);
-    }
-  }, [dadosDeLeituraDeComunicadosPorTurmas]);
+      const resposta = await ServicoDashboardEscolaAqui.obterDadosLeituraDeComunicadosPorAlunos(
+        codigoTurma,
+        dadosComunicado?.id
+      )
+        .catch(e => erros(e))
+        .finally(() => setExibirLoader(false));
+
+      if (resposta?.data) {
+        setListaAlunos(resposta.data);
+      }
+    },
+    [comunicado, listaComunicado]
+  );
 
   const obterTurmas = useCallback(async () => {
     const dados = dadosDeLeituraDeComunicadosPorTurmas.map(item => ({
@@ -118,19 +135,26 @@ const LeituraDeComunicadosPorAlunos = () => {
       nome: item.turma,
     }));
 
+    if (dados?.length === 1) {
+      setCodigoTurmaSelecionado(dados[0].codigo);
+    }
+
     setListaTurmas(dados);
   }, [dadosDeLeituraDeComunicadosPorTurmas]);
 
   useEffect(() => {
+    if (codigoTurmaSelecionado) {
+      obterDadosLeituraDeComunicadosPorAlunos(codigoTurmaSelecionado);
+    } else {
+      setListaAlunos([]);
+    }
+  }, [codigoTurmaSelecionado, obterDadosLeituraDeComunicadosPorAlunos]);
+
+  useEffect(() => {
     if (dadosDeLeituraDeComunicadosPorTurmas?.length) {
-      obterDadosLeituraDeComunicadosPorAlunos();
       obterTurmas();
     }
-  }, [
-    dadosDeLeituraDeComunicadosPorTurmas,
-    obterDadosLeituraDeComunicadosPorAlunos,
-    obterTurmas,
-  ]);
+  }, [dadosDeLeituraDeComunicadosPorTurmas, obterTurmas]);
 
   return dadosDeLeituraDeComunicadosPorTurmas.length ? (
     <div className="col-md-12 pt-2">
@@ -147,6 +171,16 @@ const LeituraDeComunicadosPorAlunos = () => {
   ) : (
     ''
   );
+};
+
+LeituraDeComunicadosPorAlunos.propTypes = {
+  comunicado: PropTypes.oneOfType([PropTypes.string]),
+  listaComunicado: PropTypes.oneOfType([PropTypes.array]),
+};
+
+LeituraDeComunicadosPorAlunos.defaultProps = {
+  comunicado: '',
+  listaComunicado: [],
 };
 
 export default LeituraDeComunicadosPorAlunos;
