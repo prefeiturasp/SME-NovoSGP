@@ -181,16 +181,11 @@ namespace SME.SGP.Worker.RabbitMQ
                 {
                     executar = ObterMetodo(itf, method);
                     if (executar != null)
-                        return executar;
+                        break;
                 }
             }
 
-            if(executar == null)
-            {
-                SentrySdk.CaptureMessage($"[ ERRO ] Método não encontrado ${method}");
-            }
-
-            return null;
+            return executar;
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
