@@ -4,6 +4,8 @@ namespace SME.SGP.Infra.Dtos.EscolaAqui.DadosDeLeituraDeComunicados
 {
     public class DadosLeituraAlunosComunicadoPorTurmaDto
     {
+        public Guid Id { get; set; }
+        public long CodigoAluno { get; set; }
         public short NumeroChamada { get; set; }
         public string NomeAluno { get; set; }
         public string NomeResponsavel { get; set; }
@@ -13,5 +15,11 @@ namespace SME.SGP.Infra.Dtos.EscolaAqui.DadosDeLeituraDeComunicados
         public DateTime? DataLeitura { get; set; }
         public DateTime? DataSituacaoAluno { get; set; }
         public string SituacaoAluno { get; set; }
+        public MarcadorFrequenciaDto Marcador { get; set; }
+
+        public DadosLeituraAlunosComunicadoPorTurmaDto()
+        {
+            Id = Guid.NewGuid();
+        }
     }
 }
