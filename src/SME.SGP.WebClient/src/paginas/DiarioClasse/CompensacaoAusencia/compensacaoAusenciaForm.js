@@ -10,7 +10,7 @@ import Alert from '~/componentes/alert';
 import Auditoria from '~/componentes/auditoria';
 import Button from '~/componentes/button';
 import Card from '~/componentes/card';
-import Editor from '~/componentes/editor/editor';
+import JoditEditor from '~/componentes/jodit-editor/joditEditor';
 import SelectComponent from '~/componentes/select';
 import modalidade from '~/dtos/modalidade';
 import RotasDto from '~/dtos/rotasDto';
@@ -1053,7 +1053,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
                   )}
 
                   <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
-                    <Editor
+                    <JoditEditor
                       form={form}
                       name="descricao"
                       onChange={onChangeCampos}
