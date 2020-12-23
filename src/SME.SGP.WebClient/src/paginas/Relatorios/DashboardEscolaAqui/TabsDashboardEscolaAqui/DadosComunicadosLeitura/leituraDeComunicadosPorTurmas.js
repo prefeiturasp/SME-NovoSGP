@@ -73,6 +73,7 @@ const LeituraDeComunicadosPorTurmas = props => {
   );
 
   useEffect(() => {
+    dispatch(setDadosDeLeituraDeComunicadosPorTurmas([]));
     if (comunicado && listaComunicado?.length) {
       const dadosComunicado = obterDadosComunicadoSelecionado(
         comunicado,
@@ -94,8 +95,6 @@ const LeituraDeComunicadosPorTurmas = props => {
           turmasCodigo
         );
       }
-    } else {
-      dispatch(setDadosDeLeituraDeComunicadosPorTurmas([]));
     }
   }, [comunicado, listaComunicado, dispatch]);
 
