@@ -60,6 +60,7 @@ const LeituraDeComunicadosAgrupadosPorDre = props => {
   );
 
   useEffect(() => {
+    setDadosDeLeituraDeComunicadosAgrupadosPorDre([]);
     if (comunicado && listaComunicado?.length) {
       const dadosComunicado = obterDadosComunicadoSelecionado(
         comunicado,
@@ -71,11 +72,7 @@ const LeituraDeComunicadosAgrupadosPorDre = props => {
         !dadosComunicado?.codigoUe
       ) {
         obterDadosDeLeituraDeComunicadosAgrupadosPorDre(dadosComunicado);
-      } else {
-        setDadosDeLeituraDeComunicadosAgrupadosPorDre([]);
       }
-    } else {
-      setDadosDeLeituraDeComunicadosAgrupadosPorDre([]);
     }
   }, [comunicado, listaComunicado]);
 
