@@ -69,7 +69,7 @@ const JoditEditor = forwardRef((props, ref) => {
     disabled: desabilitar,
     enableDragAndDropFileToEditor: true,
     uploader: {
-      url: `${url}/file/upload`,
+      url: `${url}/v1/arquivos/upload`, // 'http://localhost:5000/file/upload',
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -86,17 +86,13 @@ const JoditEditor = forwardRef((props, ref) => {
         };
       },
       defaultHandlerSuccess: dados => {
-        let i;
         const field = 'files';
         if (dados[field] && dados[field].length) {
-          for (i = 0; i < dados[field].length; i += 1) {
-            const file = dados.baseurl + dados[field][i];
-            if (dados.path.endsWith('mp4')) {
-              textArea.current.selection.insertHTML(
-                `<video width="600" height="240" controls><source src="${file}" type="video/mp4"></video>`
-              );
-            } else textArea.current.selection.insertImage(file);
-          }
+          if (dados.path.endsWith('mp4')) {
+            textArea.current.selection.insertHTML(
+              `<video width="600" height="240" controls><source src="${dados.path}" type="video/mp4"></video>`
+            );
+          } else textArea.current.selection.insertImage(dados.path);
         }
       },
       defaultHandlerError: e => {

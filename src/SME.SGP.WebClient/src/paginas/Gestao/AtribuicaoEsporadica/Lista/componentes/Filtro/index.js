@@ -86,7 +86,6 @@ const Filtro = memo(({ onFiltrar }) => {
               anoLetivo={anoAtual}
               form={form}
               onChange={valor => valor}
-              incluirEmei
             />
           </Linha>
         </Form>
