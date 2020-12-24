@@ -110,5 +110,12 @@ namespace SME.SGP.Api.Controllers
         {            
             return Ok(await relatorioUseCase.Executar(filtro));
         }
+
+        [HttpPost("diario-classe/planejamento-diario")]
+        public async Task<IActionResult> PlanejamentoDiario([FromBody] FiltroRelatorioPlanejamentoDiario filtro, [FromServices] IRelatorioPlanejamentoDiarioUseCase relatorioUseCase)
+        {
+            return Ok(await relatorioUseCase.Executar(filtro));
+        }
+
     }
 }
