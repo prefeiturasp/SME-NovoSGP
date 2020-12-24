@@ -76,6 +76,7 @@ const LeituraDeComunicadosPorModalidades = props => {
   );
 
   useEffect(() => {
+    dispatch(setDadosDeLeituraDeComunicadosAgrupadosPorModalidade([]));
     if (comunicado && listaComunicado?.length) {
       const dadosComunicado = obterDadosComunicadoSelecionado(
         comunicado,
@@ -89,8 +90,6 @@ const LeituraDeComunicadosPorModalidades = props => {
       ) {
         obterDadosDeLeituraDeComunicadosAgrupadosPorModalidade(dadosComunicado);
       }
-    } else {
-      setDadosDeLeituraDeComunicadosAgrupadosPorModalidade([]);
     }
   }, [comunicado, listaComunicado]);
 
