@@ -3,6 +3,7 @@ using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui.ObterDadosDeLeituraDeCo
 using SME.SGP.Infra.Dtos.EscolaAqui.DadosDeLeituraDeComunicados;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.CasosDeUso.EscolaAqui.Dashboard.ObterDadosDeLeituraDeComunicadosPorAlunosDaTurma
@@ -18,7 +19,9 @@ namespace SME.SGP.Aplicacao.CasosDeUso.EscolaAqui.Dashboard.ObterDadosDeLeituraD
 
         public async Task<IEnumerable<DadosLeituraAlunosComunicadoPorTurmaDto>> Executar(FiltroDadosDeLeituraDeComunicadosPorAlunosTurmaDto request)
         {
-            return await mediator.Send(new ObterDadosDeLeituraDeComunicadosPorAlunosDaTurmaQuery(request.ComunicadoId, request.CodigoTurma));
+            var retorno =  await mediator.Send(new ObterDadosDeLeituraDeComunicadosPorAlunosDaTurmaQuery(request.ComunicadoId, request.CodigoTurma));
+
+            return retorno.ToList().OrderBy(a => a.NomeAluno);
         }
     }
 }
