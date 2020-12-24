@@ -89,17 +89,34 @@ const LeituraDeComunicadosPorAlunos = props => {
         {
           title: 'Possui Aplicativo',
           dataIndex: 'possueApp',
+          render: possueApp => {
+            if (possueApp) {
+              return 'Sim';
+            }
+            return 'Não';
+          },
         },
         {
           title: 'Leu a mensagem',
           dataIndex: 'leuComunicado',
+          render: leuComunicado => {
+            if (leuComunicado) {
+              return 'Sim';
+            }
+            return 'Não';
+          },
         },
         {
           title: 'Data da leitura',
           dataIndex: 'dataLeitura',
-          render: data => {
-            const dataFormatada = moment(data).format('DD/MM/YYYY HH:mm:ss');
-            return <span>{dataFormatada}</span>;
+          render: dataLeitura => {
+            if (dataLeitura) {
+              const dataFormatada = moment(dataLeitura).format(
+                'DD/MM/YYYY HH:mm:ss'
+              );
+              return <span>{dataFormatada}</span>;
+            }
+            return '';
           },
         },
       ],
@@ -132,7 +149,7 @@ const LeituraDeComunicadosPorAlunos = props => {
   const obterTurmas = useCallback(async () => {
     const dados = dadosDeLeituraDeComunicadosPorTurmas.map(item => ({
       codigo: item.codigoTurma,
-      nome: item.turma,
+      nome: `${item.siglaModalidade} - ${item.turma}`,
     }));
 
     if (dados?.length === 1) {

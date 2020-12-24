@@ -82,7 +82,7 @@ const mapearParaDtoDadosComunicadosGraficoBarras = (
       item.visualizaramComunicado
   );
   if (temDados?.length) {
-    // TODO Contador para turmas duplicadas, componente gráfica precisa de valores únicos!
+    // TODO Contador para turmas duplicadas, componente gráfico precisa de valores únicos!
     let contador = '';
     const dadosMapeados = dados.map(item => {
       contador += ' ';
