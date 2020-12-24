@@ -38,6 +38,7 @@ const LeituraDeComunicadosPorTurmas = props => {
 
   const obterDadosDeLeituraDeComunicadosPorTurmas = useCallback(
     async (dadosComunicado, turmasCodigo) => {
+      setExibirLoader(true);
       const resposta = await ServicoDashboardEscolaAqui.obterDadosDeLeituraDeComunicadosPorModalidadeETurmas(
         dadosComunicado.codigoDre,
         dadosComunicado.codigoUe,
