@@ -70,7 +70,7 @@ const CampoRelatorioSemestral = props => {
             setarRelatorioSemestralEmEdicao(true);
           }}
           desabilitar={alunoDesabilitado || !dentroPeriodo || desabilitarCampos}
-          height="250px"
+          height="350px"
         />
       </CardCollapse>
     </div>
