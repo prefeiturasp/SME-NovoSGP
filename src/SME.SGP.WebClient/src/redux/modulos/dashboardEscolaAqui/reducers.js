@@ -2,6 +2,7 @@ import produce from 'immer';
 
 const inicial = {
   dadosDeLeituraDeComunicadosAgrupadosPorModalidade: [],
+  dadosDeLeituraDeComunicadosPorTurmas: [],
 };
 
 export default function dashboardEscolaAqui(state = inicial, action) {
@@ -13,10 +14,17 @@ export default function dashboardEscolaAqui(state = inicial, action) {
           dadosDeLeituraDeComunicadosAgrupadosPorModalidade: action.payload,
         };
       }
+      case '@dashboardEscolaAqui/setDadosDeLeituraDeComunicadosPorTurmas': {
+        return {
+          ...draft,
+          dadosDeLeituraDeComunicadosPorTurmas: action.payload,
+        };
+      }
       case '@dashboardEscolaAqui/limparDadosDashboardEscolaAqui': {
         return {
           ...draft,
           dadosDeLeituraDeComunicadosAgrupadosPorModalidade: [],
+          dadosDeLeituraDeComunicadosPorTurmas: [],
         };
       }
 
