@@ -10,9 +10,10 @@ namespace SME.SGP.Infra
         public Modalidade ModalidadeTurma { get; set; }
         public int Semestre { get; set; }
         public string CodigoTurma { get; set; }
-        public int ComponenteCurricular { get; set; }
+        public long ComponenteCurricular { get; set; }
         public int Bimestre { get; set; }
         public bool ListarDataFutura { get; set; }
         public bool ExibirDetalhamento { get; set; }
+        public string UsuarioNome { get; set; }
     }
 }
