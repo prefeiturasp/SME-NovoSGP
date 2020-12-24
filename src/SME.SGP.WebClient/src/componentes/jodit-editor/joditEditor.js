@@ -3,17 +3,18 @@ import { Jodit } from 'jodit';
 import 'jodit/build/jodit.min.css';
 import PropTypes from 'prop-types';
 import React, {
+  forwardRef,
   useEffect,
   useLayoutEffect,
   useRef,
   useState,
-  forwardRef,
 } from 'react';
 import styled from 'styled-components';
 import { store } from '~/redux';
 import { urlBase } from '~/servicos/variaveis';
 import { Base } from '../colors';
 import Label from '../label';
+import { erro } from '~/servicos/alertas';
 
 const Campo = styled.div`
   .campo-invalido {
@@ -46,6 +47,9 @@ const JoditEditor = forwardRef((props, ref) => {
 
   const [validacaoComErro, setValidacaoComErro] = useState(false);
 
+  const BOTOES_PADRAO =
+    'bold,ul,ol,outdent,indent,font,fontsize,brush,paragraph,file,video,table,link,align,undo,redo,fullsize';
+
   const changeHandler = valor => {
     if (onChange) {
       textArea.current.value = valor;
@@ -57,9 +61,7 @@ const JoditEditor = forwardRef((props, ref) => {
     events: {
       afterRemoveNode: node => {
         if (node.nodeName === 'IMG') {
-          console.log('Removendo imagem');
-          //TODO REQUEST REMOVENDO A IMAGEM, EX:
-          //fetch("delete.php", { image: node.src });
+          // TODO Aqui chamar endpoint para remover a imagem no servidor!
         }
       },
     },
@@ -69,13 +71,26 @@ const JoditEditor = forwardRef((props, ref) => {
     disabled: desabilitar,
     enableDragAndDropFileToEditor: true,
     uploader: {
-      url: `${url}/v1/arquivos/upload`, // 'http://localhost:5000/file/upload',
+      buildData: data => {
+        return new Promise((resolve, reject) => {
+          const arquivo = data.getAll('files[0]')[0];
+          if (
+            arquivo.type.substring(0, 5) === 'image' ||
+            arquivo.type.substring(0, 5) === 'video'
+          ) {
+            resolve(data);
+          } else {
+            const msg = 'Formato inválido';
+            erro(msg);
+            reject(new Error(msg));
+          }
+        });
+      },
+      url: `${url}/v1/arquivos/upload`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
-      isSuccess: resp => {
-        return resp;
-      },
+      isSuccess: resp => resp,
       process: resp => {
         return {
           files: resp.data.files,
@@ -86,8 +101,7 @@ const JoditEditor = forwardRef((props, ref) => {
         };
       },
       defaultHandlerSuccess: dados => {
-        const field = 'files';
-        if (dados[field] && dados[field].length) {
+        if (dados?.path) {
           if (dados.path.endsWith('mp4')) {
             textArea.current.selection.insertHTML(
               `<video width="600" height="240" controls><source src="${dados.path}" type="video/mp4"></video>`
@@ -103,8 +117,10 @@ const JoditEditor = forwardRef((props, ref) => {
     iframe: true,
     showWordsCounter: false,
     showXPathInStatusbar: false,
-    buttons:
-      '|,bold,ul,ol,|,outdent,indent,|,font,fontsize,brush,paragraph,|,file,video,table,link,|,align,undo,redo,\n,|',
+    buttons: BOTOES_PADRAO,
+    buttonsXS: BOTOES_PADRAO,
+    buttonsMD: BOTOES_PADRAO,
+    buttonsSM: BOTOES_PADRAO,
   };
 
   useLayoutEffect(() => {
@@ -186,10 +202,28 @@ const JoditEditor = forwardRef((props, ref) => {
   const editorSemValidacoes = () => {
     config.events.change = () => {
       const texto = textArea?.current?.text?.trim();
+
       if (validarSeTemErro) {
-        setValidacaoComErro(validarSeTemErro(texto));
+        let valorParaValidar = '';
+
+        if (
+          !texto ||
+          textArea.current.value.includes('<video') ||
+          textArea.current.value.includes('<img')
+        ) {
+          valorParaValidar = textArea.current.value;
+        } else if (texto) {
+          valorParaValidar = texto;
+        }
+
+        setValidacaoComErro(validarSeTemErro(valorParaValidar));
       }
-      if (texto) {
+
+      if (
+        texto ||
+        textArea.current.value.includes('<video') ||
+        textArea.current.value.includes('<img')
+      ) {
         changeHandler(textArea.current.value);
       } else {
         changeHandler('');
