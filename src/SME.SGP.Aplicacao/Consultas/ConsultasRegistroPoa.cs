@@ -23,6 +23,11 @@ namespace SME.SGP.Aplicacao.Consultas
 
         public async Task<PaginacaoResultadoDto<RegistroPoaDto>> ListarPaginado(RegistroPoaFiltroDto registroPoaFiltroDto)
         {
+            if (string.IsNullOrEmpty(registroPoaFiltroDto.CodigoRf))
+            {
+                return new PaginacaoResultadoDto<RegistroPoaDto>();
+            }
+
             PaginacaoResultadoDto<RegistroPoa> retornoquery =
                 await repositorioRegistroPoa.ListarPaginado(registroPoaFiltroDto.CodigoRf,
                     registroPoaFiltroDto.DreId,

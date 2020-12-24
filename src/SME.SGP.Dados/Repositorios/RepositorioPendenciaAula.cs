@@ -89,10 +89,10 @@ namespace SME.SGP.Dados.Repositorios
             await database.Conexao.InsertAsync(new PendenciaAula()
             {
                 AulaId = aulaId,
-                Motivo = motivo,                
+                Motivo = motivo,
                 PendenciaId = pendenciaId
-            });            
-        }      
+            });
+        }
 
         public void SalvarVarias(long pendenciaId, IEnumerable<long> aulas)
         {
@@ -195,7 +195,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var tabelaReferencia = ehInfantil ? "diario_bordo" : "plano_aula";
 
-           var sql = $@"select
+            var sql = $@"select
 	                       1
                         from
 	                        aula
@@ -217,7 +217,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<bool> PossuiPendenciasAtividadeAvaliativaPorAulasId(long[] aulasId)
         {
-           var sql = @"select
+            var sql = @"select
 	                       1
                         from
 	                        atividade_avaliativa aa
@@ -237,6 +237,28 @@ namespace SME.SGP.Dados.Repositorios
 	                        1";
 
             return (await database.Conexao.QuerySingleOrDefaultAsync<bool>(sql, new { aulas = aulasId }));
+        }
+
+        public async Task<bool> PossuiPendenciasAtividadeAvaliativaPorAulaId(long aulaId)
+        {
+            var sql = @"select
+	                       1
+                        from
+	                        atividade_avaliativa aa
+                        inner join atividade_avaliativa_disciplina aad on
+	                        aad.atividade_avaliativa_id = aa.id
+                        left join notas_conceito n on
+	                        aa.id = n.atividade_avaliativa
+                        inner join aula a on
+	                        aa.turma_id = a.turma_id
+	                        and aa.data_avaliacao::date = a.data_aula::date
+	                        and aad.disciplina_id = a.disciplina_id
+                        where
+	                        not a.excluido
+	                        and a.id = @aula
+	                        and n.id is null";
+
+            return (await database.Conexao.QuerySingleOrDefaultAsync<bool>(sql, new { aula = aulaId }));
         }
 
         public async Task<PendenciaAulaDto> PossuiPendenciasPorAulaId(long aulaId, bool ehInfantil)
@@ -265,28 +287,6 @@ namespace SME.SGP.Dados.Repositorios
                                 and (rf.id is null or tr.id is null) ";
 
             return (await database.Conexao.QueryFirstOrDefaultAsync<PendenciaAulaDto>(sql, new { aula = aulaId }));
-        }
-
-        public async Task<bool> PossuiPendenciasAtividadeAvaliativaPorAulaId(long aulaId)
-        {
-            var sql = @"select
-	                       1
-                        from
-	                        atividade_avaliativa aa
-                        inner join atividade_avaliativa_disciplina aad on
-	                        aad.atividade_avaliativa_id = aa.id
-                        left join notas_conceito n on
-	                        aa.id = n.atividade_avaliativa
-                        inner join aula a on
-	                        aa.turma_id = a.turma_id
-	                        and aa.data_avaliacao::date = a.data_aula::date
-	                        and aad.disciplina_id = a.disciplina_id
-                        where
-	                        not a.excluido
-	                        and a.id = @aula
-	                        and n.id is null";
-
-            return (await database.Conexao.QuerySingleOrDefaultAsync<bool>(sql, new { aula = aulaId }));
         }
     }
 }
