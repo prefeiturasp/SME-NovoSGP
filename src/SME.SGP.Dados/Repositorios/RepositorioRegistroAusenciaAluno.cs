@@ -40,7 +40,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             StringBuilder query = new StringBuilder();
             query.AppendLine("select ");
-            query.AppendLine("sum(a.quantidade) ");
+            query.AppendLine("COALESCE(SUM(a.quantidade),0) AS total");
             query.AppendLine("from ");
             query.AppendLine("aula a ");
             query.AppendLine("inner join registro_frequencia rf on ");
@@ -58,15 +58,9 @@ namespace SME.SGP.Dados.Repositorios
 
             query.AppendLine("and a.turma_id = @turmaId ");
 
-            try
-            {
-                return database.Conexao.QueryFirstOrDefault<int>(query.ToString(), new { dataAula, disciplinaId, turmaId });
-            }
-            catch
-            {
-                return 0;
-            }
-       }
+            return database.Conexao.QueryFirstOrDefault<int>(query.ToString(), new { dataAula, disciplinaId, turmaId });
+
+        }
 
         public AusenciaPorDisciplinaDto ObterTotalAusenciasPorAlunoETurma(DateTime dataAula, string codigoAluno, string disciplinaId, string turmaId)
         {
