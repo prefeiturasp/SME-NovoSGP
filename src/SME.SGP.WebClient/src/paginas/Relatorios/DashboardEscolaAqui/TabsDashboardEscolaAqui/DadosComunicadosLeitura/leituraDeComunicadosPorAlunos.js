@@ -36,6 +36,29 @@ const LeituraDeComunicadosPorAlunos = props => {
     );
   };
 
+  const obterDadosLeituraDeComunicadosPorAlunos = useCallback(
+    async codigoTurma => {
+      setExibirLoader(true);
+
+      const dadosComunicado = obterDadosComunicadoSelecionado(
+        comunicado,
+        listaComunicado
+      );
+
+      const resposta = await ServicoDashboardEscolaAqui.obterDadosLeituraDeComunicadosPorAlunos(
+        codigoTurma,
+        dadosComunicado?.id
+      )
+        .catch(e => erros(e))
+        .finally(() => setExibirLoader(false));
+
+      if (resposta?.data) {
+        setListaAlunos(resposta.data);
+      }
+    },
+    []
+  );
+
   const montarSelectTurmas = () => {
     return (
       <>
@@ -52,7 +75,14 @@ const LeituraDeComunicadosPorAlunos = props => {
             valueText="nome"
             placeholder="Turma"
             valueSelect={codigoTurmaSelecionado}
-            onChange={setCodigoTurmaSelecionado}
+            onChange={valor => {
+              if (valor) {
+                obterDadosLeituraDeComunicadosPorAlunos(valor);
+              } else {
+                setListaAlunos();
+              }
+              setCodigoTurmaSelecionado(valor);
+            }}
             disabled={listaTurmas?.length === 1}
           />
         </div>
@@ -87,7 +117,7 @@ const LeituraDeComunicadosPorAlunos = props => {
           dataIndex: 'telefoneResponsavel',
         },
         {
-          title: 'Possui Aplicativo',
+          title: 'Possui aplicativo',
           dataIndex: 'possueApp',
           render: possueApp => {
             if (possueApp) {
@@ -123,29 +153,6 @@ const LeituraDeComunicadosPorAlunos = props => {
     },
   ];
 
-  const obterDadosLeituraDeComunicadosPorAlunos = useCallback(
-    async codigoTurma => {
-      setExibirLoader(true);
-
-      const dadosComunicado = obterDadosComunicadoSelecionado(
-        comunicado,
-        listaComunicado
-      );
-
-      const resposta = await ServicoDashboardEscolaAqui.obterDadosLeituraDeComunicadosPorAlunos(
-        codigoTurma,
-        dadosComunicado?.id
-      )
-        .catch(e => erros(e))
-        .finally(() => setExibirLoader(false));
-
-      if (resposta?.data) {
-        setListaAlunos(resposta.data);
-      }
-    },
-    [comunicado, listaComunicado]
-  );
-
   const obterTurmas = useCallback(async () => {
     const dados = dadosDeLeituraDeComunicadosPorTurmas.map(item => ({
       codigo: item.codigoTurma,
@@ -154,18 +161,16 @@ const LeituraDeComunicadosPorAlunos = props => {
 
     if (dados?.length === 1) {
       setCodigoTurmaSelecionado(dados[0].codigo);
-    }
-
-    setListaTurmas(dados);
-  }, [dadosDeLeituraDeComunicadosPorTurmas]);
-
-  useEffect(() => {
-    if (codigoTurmaSelecionado) {
-      obterDadosLeituraDeComunicadosPorAlunos(codigoTurmaSelecionado);
+      obterDadosLeituraDeComunicadosPorAlunos(dados[0].codigo);
     } else {
-      setListaAlunos([]);
+      setCodigoTurmaSelecionado();
+      setListaAlunos();
     }
-  }, [codigoTurmaSelecionado, obterDadosLeituraDeComunicadosPorAlunos]);
+    setListaTurmas(dados);
+  }, [
+    dadosDeLeituraDeComunicadosPorTurmas,
+    obterDadosLeituraDeComunicadosPorAlunos,
+  ]);
 
   useEffect(() => {
     if (dadosDeLeituraDeComunicadosPorTurmas?.length) {
