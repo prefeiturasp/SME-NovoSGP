@@ -19,7 +19,6 @@ import {
   Label,
   momentSchema,
   Base,
-  Editor,
   SelectAutocomplete,
 } from '~/componentes';
 import ListaAlunos from '~/paginas/AcompanhamentoEscolar/Comunicados/Cadastro/Lista/ListaAlunos';
@@ -38,6 +37,7 @@ import FiltroHelper from '~/paginas/AcompanhamentoEscolar/Comunicados/Helper/hel
 import ListaAlunosSelecionados from './Lista/ListaAlunosSelecionados';
 import { ServicoCalendarios } from '~/servicos';
 import modalidade from '~/dtos/modalidade';
+import JoditEditor from '~/componentes/jodit-editor/joditEditor';
 
 const TODAS_UE_ID = '-99';
 const TODAS_DRE_ID = '-99';
@@ -112,6 +112,8 @@ const ComunicadosCadastro = ({ match }) => {
   const [modoEdicao, setModoEdicao] = useState(false);
 
   const [idComunicado, setIdComunicado] = useState();
+
+  const [carregouInformacoes, setCarregouInformacoes] = useState(false);
 
   const selecionaTipoCalendario = (descricao, form, tipoCalend, onChange) => {
     let tipo = '';
@@ -353,7 +355,7 @@ const ComunicadosCadastro = ({ match }) => {
   );
 
   const handleModoEdicao = () => {
-    if (!modoEdicao) setModoEdicao(true);
+    if (!modoEdicao && carregouInformacoes) setModoEdicao(true);
   };
 
   const [descricaoComunicado, setDescricaoComunicado] = useState('');
@@ -448,6 +450,8 @@ const ComunicadosCadastro = ({ match }) => {
           criadoPor: comunicado.criadoPor,
           criadoRF: comunicado.criadoRF,
         });
+
+        setCarregouInformacoes(true);
       }
     }
 
@@ -456,11 +460,14 @@ const ComunicadosCadastro = ({ match }) => {
       setInseridoAlterado({});
       setDescricaoComunicado('');
       setNovoRegistro(false);
+    } else {
+      setCarregouInformacoes(true);
     }
   }, [idComunicado]);
 
   const [validacoes] = useState(
     Yup.object({
+      descricao: Yup.string().required('Campo obrigatório'),
       anoLetivo: Yup.string().required('Campo obrigatório'),
       dataEnvio: momentSchema.required('Campo obrigatório'),
       CodigoDre: Yup.string().required('Campo obrigatório'),
@@ -529,8 +536,6 @@ const ComunicadosCadastro = ({ match }) => {
     })
   );
 
-  const [temErroDescricao, setTemErroDescricao] = useState(false);
-
   const validarAntesDeSalvar = form => {
     const arrayCampos = Object.keys(valoresIniciais);
 
@@ -546,14 +551,10 @@ const ComunicadosCadastro = ({ match }) => {
       return;
     }
 
-    const descricao = descricaoComunicado.replace('<p><br></p>', '');
-
     form.validateForm().then(() => {
-      setTemErroDescricao(!descricao.length);
       if (
         refForm &&
-        (!Object.entries(refForm.state.errors).length || form.isValid) &&
-        descricao.length
+        (!Object.entries(refForm.state.errors).length || form.isValid)
       ) {
         form.handleSubmit(form);
       }
@@ -1384,21 +1385,22 @@ const ComunicadosCadastro = ({ match }) => {
                 </Linha>
                 <Linha className="row mb-4">
                   <Grid cols={12}>
-                    <Label control="textEditor" text="Descrição" />
-                    <Editor
-                      form={form}
-                      name="descricao"
-                      inicial={descricaoComunicado}
-                      onChange={valor => {
-                        if (valor !== valoresIniciais.descricao) {
-                          onChangeDescricaoComunicado(valor);
-                        }
-                      }}
-                      desabilitar={somenteConsulta}
-                      temErro={temErroDescricao}
-                    />
-                    {temErroDescricao && (
-                      <ErroValidacao>Campo obrigatório</ErroValidacao>
+                    {carregouInformacoes ? (
+                      <JoditEditor
+                        label="Descrição"
+                        form={form}
+                        name="descricao"
+                        value={form.values.descricao}
+                        onChange={valor => {
+                          if (valor !== valoresIniciais.descricao) {
+                            onChangeDescricaoComunicado(valor);
+                          }
+                        }}
+                        desabilitar={somenteConsulta}
+                        permiteInserirArquivo={false}
+                      />
+                    ) : (
+                      ''
                     )}
                     <InseridoAlterado>
                       {inseridoAlterado &&
