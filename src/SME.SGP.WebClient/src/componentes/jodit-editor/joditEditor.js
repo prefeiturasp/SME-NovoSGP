@@ -2,19 +2,13 @@ import { Field } from 'formik';
 import { Jodit } from 'jodit';
 import 'jodit/build/jodit.min.css';
 import PropTypes from 'prop-types';
-import React, {
-  forwardRef,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from 'react';
+import React, { forwardRef, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { store } from '~/redux';
+import { erro } from '~/servicos/alertas';
 import { urlBase } from '~/servicos/variaveis';
 import { Base } from '../colors';
 import Label from '../label';
-import { erro } from '~/servicos/alertas';
 
 const Campo = styled.div`
   .campo-invalido {
@@ -60,9 +54,6 @@ const JoditEditor = forwardRef((props, ref) => {
 
   const changeHandler = valor => {
     if (onChange) {
-      if (!form) {
-        textArea.current.value = valor;
-      }
       onChange(valor);
     }
   };
@@ -207,7 +198,7 @@ const JoditEditor = forwardRef((props, ref) => {
   };
 
   const beforeOnChange = () => {
-    if (textArea.current.editorIsActive) {
+    if (textArea?.current?.editorIsActive) {
       if (CHANGE_DEBOUNCE_FLAG) clearTimeout(CHANGE_DEBOUNCE_FLAG);
 
       CHANGE_DEBOUNCE_FLAG = setTimeout(() => {
