@@ -40,6 +40,9 @@ const JoditEditor = forwardRef((props, ref) => {
     temErro,
     mensagemErro,
     validarSeTemErro,
+    permiteInserirArquivo,
+    readonly,
+    removerToolbar,
   } = props;
 
   const textArea = useRef(null);
@@ -49,8 +52,11 @@ const JoditEditor = forwardRef((props, ref) => {
 
   const [validacaoComErro, setValidacaoComErro] = useState(false);
 
-  const BOTOES_PADRAO =
-    'bold,ul,ol,outdent,indent,font,fontsize,brush,paragraph,file,video,table,link,align,undo,redo,fullsize';
+  const BOTOES_PADRAO = !removerToolbar
+    ? `bold,ul,ol,outdent,indent,font,fontsize,brush,paragraph,${
+        permiteInserirArquivo ? 'file,video,' : ''
+      }table,link,align,undo,redo,fullsize`
+    : '';
 
   const changeHandler = valor => {
     if (onChange) {
@@ -68,11 +74,29 @@ const JoditEditor = forwardRef((props, ref) => {
           // TODO Aqui chamar endpoint para remover a imagem no servidor!
         }
       },
+      validarSeTemErro: () => {
+        if (validarSeTemErro) {
+          const texto = textArea?.current?.text?.trim();
+          let valorParaValidar = '';
+
+          if (
+            !texto ||
+            textArea.current.value.includes('<video') ||
+            textArea.current.value.includes('<img')
+          ) {
+            valorParaValidar = textArea.current.value;
+          } else if (texto) {
+            valorParaValidar = texto;
+          }
+          setValidacaoComErro(validarSeTemErro(valorParaValidar));
+        }
+      },
     },
     disablePlugins: ['image-properties', 'inline-popup'],
     language: 'pt_br',
     height,
     disabled: desabilitar,
+    readonly,
     enableDragAndDropFileToEditor: true,
     uploader: {
       buildData: data => {
@@ -126,18 +150,7 @@ const JoditEditor = forwardRef((props, ref) => {
     buttonsMD: BOTOES_PADRAO,
     buttonsSM: BOTOES_PADRAO,
     placeholder: '',
-    autofocus: true,
   };
-
-  useLayoutEffect(() => {
-    if (ref) {
-      if (typeof ref === 'function') {
-        ref(textArea.current);
-      } else {
-        ref.current = textArea.current;
-      }
-    }
-  }, [textArea]);
 
   useEffect(() => {
     if (!url) {
@@ -213,6 +226,14 @@ const JoditEditor = forwardRef((props, ref) => {
       if (textArea?.current && config) {
         if (textArea?.current?.type === 'textarea') {
           textArea.current = Jodit.make(element, config);
+
+          if (ref) {
+            if (typeof ref === 'function') {
+              ref(textArea.current);
+            } else {
+              ref.current = textArea.current;
+            }
+          }
 
           textArea.current.events.on('change', () => {
             beforeOnChange();
@@ -305,6 +326,9 @@ JoditEditor.propTypes = {
   temErro: PropTypes.bool,
   mensagemErro: PropTypes.string,
   validarSeTemErro: PropTypes.func,
+  permiteInserirArquivo: PropTypes.bool,
+  readonly: PropTypes.bool,
+  removerToolbar: PropTypes.bool,
 };
 
 JoditEditor.defaultProps = {
@@ -320,6 +344,9 @@ JoditEditor.defaultProps = {
   temErro: false,
   mensagemErro: '',
   validarSeTemErro: null,
+  permiteInserirArquivo: true,
+  readonly: false,
+  removerToolbar: false,
 };
 
 export default JoditEditor;
