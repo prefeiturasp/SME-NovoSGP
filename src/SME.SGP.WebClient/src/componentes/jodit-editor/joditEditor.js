@@ -69,9 +69,9 @@ const JoditEditor = forwardRef((props, ref) => {
         }
       },
     },
+    disablePlugins: ['image-properties', 'inline-popup'],
     language: 'pt_br',
     height,
-    allowResizeY: false,
     disabled: desabilitar,
     enableDragAndDropFileToEditor: true,
     uploader: {
