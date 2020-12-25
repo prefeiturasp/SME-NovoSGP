@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Auditoria, Label } from '~/componentes';
-import Editor from '~/componentes/editor/editor';
+import JoditEditor from '~/componentes/jodit-editor/joditEditor';
 import {
   setDadosBimestresPlanoAnual,
   setPlanoAnualEmEdicao,
@@ -30,8 +30,7 @@ const DescricaoPlanejamento = React.memo(props => {
 
   const onChange = useCallback(
     valorNovo => {
-      // TODO Verificar para salvar dados editados no redux separada do atual para melhorar a performance!
-      const dados = { ...dadosBimestrePlanoAnual };
+      const dados = dadosBimestrePlanoAnual;
       dados.componentes.forEach(item => {
         if (
           String(item.componenteCurricularId) ===
@@ -92,11 +91,11 @@ const DescricaoPlanejamento = React.memo(props => {
               Itens autorais do professor
             </DescItensAutoraisProfessor>
           </span>
-          <Editor
+          <JoditEditor
             validarSeTemErro={validarSeTemErro}
             mensagemErro="Campo obrigatório"
             id={`bimestre-${bimestre}-editor`}
-            inicial={obterDadosComponenteAtual()?.descricao}
+            value={obterDadosComponenteAtual()?.descricao}
             onChange={v => {
               if (
                 !planoAnualSomenteConsulta &&
