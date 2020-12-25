@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Base } from '~/componentes';
 import CardCollapse from '~/componentes/cardCollapse';
-import Editor from '~/componentes/editor/editor';
+import JoditEditor from '~/componentes/jodit-editor/joditEditor';
 import {
   setModoEdicaoPlanoAula,
   setobjetivosEspecificosParaAulaValidarObrigatoriedade,
@@ -67,7 +67,7 @@ const ObjetivosEspecificosParaAula = () => {
   };
 
   const objetivosEspecificosParaAulaValidaObrigatoriedade = () => {
-    refForm.current.props.onChange(null, refForm.current.editor);
+    refForm.current.events.fire('validarSeTemErro');
   };
 
   useEffect(() => {
@@ -96,7 +96,7 @@ const ObjetivosEspecificosParaAula = () => {
           ) : (
             ''
           )}
-          <Editor
+          <JoditEditor
             ref={refForm}
             validarSeTemErro={valor =>
               !valor && !desabilitarCamposPlanoAula && temPeriodoAberto
@@ -108,7 +108,7 @@ const ObjetivosEspecificosParaAula = () => {
               validarSeEhObrigatorio()
             }
             onChange={onChangeObjetivosEspecificosParaAula}
-            inicial={dadosPlanoAula?.descricao}
+            value={dadosPlanoAula?.descricao}
           />
         </fieldset>
       </CardCollapse>

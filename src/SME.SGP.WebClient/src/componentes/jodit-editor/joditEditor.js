@@ -2,19 +2,13 @@ import { Field } from 'formik';
 import { Jodit } from 'jodit';
 import 'jodit/build/jodit.min.css';
 import PropTypes from 'prop-types';
-import React, {
-  forwardRef,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from 'react';
+import React, { forwardRef, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { store } from '~/redux';
+import { erro } from '~/servicos/alertas';
 import { urlBase } from '~/servicos/variaveis';
 import { Base } from '../colors';
 import Label from '../label';
-import { erro } from '~/servicos/alertas';
 
 const Campo = styled.div`
   .campo-invalido {
@@ -23,6 +17,8 @@ const Campo = styled.div`
     }
   }
 `;
+
+let CHANGE_DEBOUNCE_FLAG;
 
 const JoditEditor = forwardRef((props, ref) => {
   const {
@@ -38,6 +34,9 @@ const JoditEditor = forwardRef((props, ref) => {
     temErro,
     mensagemErro,
     validarSeTemErro,
+    permiteInserirArquivo,
+    readonly,
+    removerToolbar,
   } = props;
 
   const textArea = useRef(null);
@@ -47,12 +46,14 @@ const JoditEditor = forwardRef((props, ref) => {
 
   const [validacaoComErro, setValidacaoComErro] = useState(false);
 
-  const BOTOES_PADRAO =
-    'bold,ul,ol,outdent,indent,font,fontsize,brush,paragraph,file,video,table,link,align,undo,redo,fullsize';
+  const BOTOES_PADRAO = !removerToolbar
+    ? `bold,ul,ol,outdent,indent,font,fontsize,brush,paragraph,${
+        permiteInserirArquivo ? 'file,video,' : ''
+      }table,link,align,undo,redo,fullsize`
+    : '';
 
   const changeHandler = valor => {
     if (onChange) {
-      textArea.current.value = valor;
       onChange(valor);
     }
   };
@@ -64,11 +65,29 @@ const JoditEditor = forwardRef((props, ref) => {
           // TODO Aqui chamar endpoint para remover a imagem no servidor!
         }
       },
+      validarSeTemErro: () => {
+        if (validarSeTemErro) {
+          const texto = textArea?.current?.text?.trim();
+          let valorParaValidar = '';
+
+          if (
+            !texto ||
+            textArea.current.value.includes('<video') ||
+            textArea.current.value.includes('<img')
+          ) {
+            valorParaValidar = textArea.current.value;
+          } else if (texto) {
+            valorParaValidar = texto;
+          }
+          setValidacaoComErro(validarSeTemErro(valorParaValidar));
+        }
+      },
     },
     disablePlugins: ['image-properties', 'inline-popup'],
     language: 'pt_br',
     height,
     disabled: desabilitar,
+    readonly,
     enableDragAndDropFileToEditor: true,
     uploader: {
       buildData: data => {
@@ -121,17 +140,8 @@ const JoditEditor = forwardRef((props, ref) => {
     buttonsXS: BOTOES_PADRAO,
     buttonsMD: BOTOES_PADRAO,
     buttonsSM: BOTOES_PADRAO,
+    placeholder: '',
   };
-
-  useLayoutEffect(() => {
-    if (ref) {
-      if (typeof ref === 'function') {
-        ref(textArea.current);
-      } else {
-        ref.current = textArea.current;
-      }
-    }
-  }, [textArea]);
 
   useEffect(() => {
     if (!url) {
@@ -141,17 +151,96 @@ const JoditEditor = forwardRef((props, ref) => {
     }
   }, [url]);
 
+  const onChangePadrao = () => {
+    const texto = textArea?.current?.text?.trim();
+
+    if (validarSeTemErro) {
+      let valorParaValidar = '';
+
+      if (
+        !texto ||
+        textArea.current.value.includes('<video') ||
+        textArea.current.value.includes('<img')
+      ) {
+        valorParaValidar = textArea.current.value;
+      } else if (texto) {
+        valorParaValidar = texto;
+      }
+      setValidacaoComErro(validarSeTemErro(valorParaValidar));
+    }
+
+    if (
+      texto ||
+      textArea.current.value.includes('<video') ||
+      textArea.current.value.includes('<img')
+    ) {
+      changeHandler(textArea.current.value);
+    } else {
+      changeHandler('');
+    }
+  };
+
+  const onChangeComForm = () => {
+    const texto = textArea?.current?.text?.trim();
+    let valorAtual = '';
+
+    if (
+      texto ||
+      textArea.current.value.includes('<video') ||
+      textArea.current.value.includes('<img')
+    ) {
+      valorAtual = textArea.current.value;
+    }
+
+    changeHandler(valorAtual);
+    form.setFieldValue(name, valorAtual);
+    form.setFieldTouched(name, true, true);
+  };
+
+  const beforeOnChange = () => {
+    if (textArea?.current?.editorIsActive) {
+      if (CHANGE_DEBOUNCE_FLAG) clearTimeout(CHANGE_DEBOUNCE_FLAG);
+
+      CHANGE_DEBOUNCE_FLAG = setTimeout(() => {
+        if (form) {
+          onChangeComForm();
+        } else {
+          onChangePadrao();
+        }
+      }, 300);
+    }
+  };
+
   useEffect(() => {
     if (url) {
       const element = textArea.current || '';
       if (textArea?.current && config) {
         if (textArea?.current?.type === 'textarea') {
           textArea.current = Jodit.make(element, config);
+
+          if (ref) {
+            if (typeof ref === 'function') {
+              ref(textArea.current);
+            } else {
+              ref.current = textArea.current;
+            }
+          }
+
+          textArea.current.events.on('change', () => {
+            beforeOnChange();
+          });
+
           textArea.current.workplace.tabIndex = tabIndex;
         }
       }
     }
   }, [url]);
+
+  useEffect(() => {
+    if (textArea && textArea.current) {
+      textArea.current.value = value;
+    }
+  }, [textArea, value]);
 
   const possuiErro = () => {
     return (
@@ -162,34 +251,12 @@ const JoditEditor = forwardRef((props, ref) => {
   };
 
   const editorComValidacoes = () => {
-    config.events.change = () => {
-      const texto = textArea?.current?.text?.trim();
-
-      let valorAtual = '';
-      if (texto) {
-        valorAtual = textArea.current.value;
-      }
-      if (textArea.current.value !== form.values[name]) {
-        changeHandler(valorAtual);
-        form.setFieldValue(name, valorAtual || '');
-        form.setFieldTouched(name, true, true);
-      }
-    };
-
-    if (
-      form &&
-      textArea?.current &&
-      textArea.current.value !== form.values[name]
-    ) {
-      textArea.current.value = form.values[name] || '';
-    }
-
     return (
       <Campo>
         <div
           className={validacaoComErro || possuiErro() ? 'campo-invalido' : ''}
         >
-          <Field name={name} id={id}>
+          <Field name={name} id={id} value={value}>
             {() => (
               <textarea ref={textArea} hidden={!textArea?.current?.isJodit} />
             )}
@@ -200,36 +267,6 @@ const JoditEditor = forwardRef((props, ref) => {
   };
 
   const editorSemValidacoes = () => {
-    config.events.change = () => {
-      const texto = textArea?.current?.text?.trim();
-
-      if (validarSeTemErro) {
-        let valorParaValidar = '';
-
-        if (
-          !texto ||
-          textArea.current.value.includes('<video') ||
-          textArea.current.value.includes('<img')
-        ) {
-          valorParaValidar = textArea.current.value;
-        } else if (texto) {
-          valorParaValidar = texto;
-        }
-
-        setValidacaoComErro(validarSeTemErro(valorParaValidar));
-      }
-
-      if (
-        texto ||
-        textArea.current.value.includes('<video') ||
-        textArea.current.value.includes('<img')
-      ) {
-        changeHandler(textArea.current.value);
-      } else {
-        changeHandler('');
-      }
-    };
-
     return (
       <Campo>
         <div
@@ -260,7 +297,7 @@ const JoditEditor = forwardRef((props, ref) => {
 
   return (
     <>
-      {label ? <Label text={label} control={name} /> : ''}
+      {label ? <Label text={label} /> : ''}
       {form ? editorComValidacoes() : editorSemValidacoes()}
       {obterErros()}
     </>
@@ -280,6 +317,9 @@ JoditEditor.propTypes = {
   temErro: PropTypes.bool,
   mensagemErro: PropTypes.string,
   validarSeTemErro: PropTypes.func,
+  permiteInserirArquivo: PropTypes.bool,
+  readonly: PropTypes.bool,
+  removerToolbar: PropTypes.bool,
 };
 
 JoditEditor.defaultProps = {
@@ -295,6 +335,9 @@ JoditEditor.defaultProps = {
   temErro: false,
   mensagemErro: '',
   validarSeTemErro: null,
+  permiteInserirArquivo: true,
+  readonly: false,
+  removerToolbar: false,
 };
 
 export default JoditEditor;

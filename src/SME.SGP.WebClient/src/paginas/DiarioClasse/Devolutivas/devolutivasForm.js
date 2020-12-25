@@ -11,7 +11,7 @@ import Alert from '~/componentes/alert';
 import Button from '~/componentes/button';
 import Card from '~/componentes/card';
 import { Colors } from '~/componentes/colors';
-import Editor from '~/componentes/editor/editor';
+import JoditEditor from '~/componentes/jodit-editor/joditEditor';
 import SelectComponent from '~/componentes/select';
 import RotasDto from '~/dtos/rotasDto';
 import {
@@ -583,9 +583,10 @@ const DevolutivasForm = ({ match }) => {
                       </div>
                       {exibirCampoDescricao ? (
                         <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mt-3">
-                          <Editor
+                          <JoditEditor
                             label="Registre a sua devolutiva para este intervalo de datas"
                             form={form}
+                            value={form.values.descricao}
                             name="descricao"
                             id="editor-devolutiva"
                             onChange={v => {
