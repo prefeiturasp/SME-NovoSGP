@@ -126,6 +126,7 @@ const JoditEditor = forwardRef((props, ref) => {
     buttonsMD: BOTOES_PADRAO,
     buttonsSM: BOTOES_PADRAO,
     placeholder: '',
+    autofocus: true,
   };
 
   useLayoutEffect(() => {
@@ -193,15 +194,17 @@ const JoditEditor = forwardRef((props, ref) => {
   };
 
   const beforeOnChange = () => {
-    if (CHANGE_DEBOUNCE_FLAG) clearTimeout(CHANGE_DEBOUNCE_FLAG);
+    if (textArea.current.editorIsActive) {
+      if (CHANGE_DEBOUNCE_FLAG) clearTimeout(CHANGE_DEBOUNCE_FLAG);
 
-    CHANGE_DEBOUNCE_FLAG = setTimeout(() => {
-      if (form) {
-        onChangeComForm();
-      } else {
-        onChangePadrao();
-      }
-    }, 300);
+      CHANGE_DEBOUNCE_FLAG = setTimeout(() => {
+        if (form) {
+          onChangeComForm();
+        } else {
+          onChangePadrao();
+        }
+      }, 300);
+    }
   };
 
   useEffect(() => {
