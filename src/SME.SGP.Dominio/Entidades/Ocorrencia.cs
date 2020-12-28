@@ -10,8 +10,8 @@ namespace SME.SGP.Dominio.Entidades
         public string Descricao { get; set; }
         public bool Excluido { get; set; }
         public TimeSpan? HoraOcorrencia { get; set; }
-        public TipoOcorrencia TipoOcorrencia { get; set; }
-        public long TipoOcorrenciaId { get; set; }
+        public OcorrenciaTipo OcorrenciaTipo { get; set; }
+        public long OcorrenciaTipoId { get; set; }
         public string Titulo { get; set; }
 
         public Ocorrencia()
