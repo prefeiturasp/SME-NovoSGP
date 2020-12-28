@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Sentry;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
@@ -27,7 +28,16 @@ namespace SME.SGP.Aplicacao
             foreach(var ue in ues)
             {
                 if (!await ExistePeriodoFechamentoCadastrado(ue, request.PeriodoFechamentoBimestre))
-                    await NotificarUe(ue, request.ModalidadeTipoCalendario);
+                {
+                    try
+                    {
+                        await NotificarUe(ue, request.ModalidadeTipoCalendario);
+                    }
+                    catch (Exception e)
+                    {
+                        SentrySdk.CaptureException(e);
+                    }
+                }
             }
 
             return true;
