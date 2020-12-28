@@ -61,7 +61,7 @@ namespace SME.SGP.Api
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.DDB_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterPorAlunoData([FromServices] IObterRegistroIndividuailPorAlunoDataUseCase useCase, long turmaId, long alunoCodigo, long componenteCurricularId, DateTime data)
+        public async Task<IActionResult> ObterPorAlunoData([FromServices] IObterRegistroIndividualPorAlunoDataUseCase useCase, long turmaId, long alunoCodigo, long componenteCurricularId, DateTime data)
         {
             return Ok(await useCase.Executar(new FiltroRegistroIndividualAlunoData(turmaId, componenteCurricularId, alunoCodigo, data)));
         }
