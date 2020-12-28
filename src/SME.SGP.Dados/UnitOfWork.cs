@@ -38,7 +38,7 @@ namespace SME.SGP.Dados
         public void Rollback()
         {
             //TODO: Adicionada verificação do estado de conexão para que não dê exception. Verificar depois a implementação correta e remover a verificação
-            if (transacao != null && transacao.Connection != null && (transacao.Connection.State == ConnectionState.Fetching || transacao.Connection.State == ConnectionState.Executing))
+            if (transacao != null && transacao.Connection != null)
             {
                 transacao.Rollback();
             }
