@@ -68,7 +68,6 @@ import DevolutivasForm from '~/paginas/DiarioClasse/Devolutivas/devolutivasForm'
 import RelatorioNotasConceitosFinais from '~/paginas/Relatorios/NotasConceitosFinais/relatorioNotasConceitosFinais';
 import RelatorioCompensacaoAusencia from '~/paginas/Relatorios/CompensacaoAusencia/relatorioCompensacaoAusencia';
 import DashboardEscolaAqui from '~/paginas/Relatorios/DashboardEscolaAqui/dashboardEscolaAqui';
-import PocEditor from '~/paginas/PocEditor/pocEditor';
 import ControleGrade from '~/paginas/Relatorios/DiarioClasse/ControleGrade/controleGrade';
 import Sondagem from '~/paginas/Sondagem/sondagem';
 import PocUploadArquivos from '~/componentes-sgp/UploadArquivos/pocUploadArquivos';
@@ -971,14 +970,6 @@ rotas.set(RotasDto.CONTROLE_GRADE, {
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: false,
   chavePermissao: RotasDto.CONTROLE_GRADE,
-});
-
-rotas.set(RotasDto.POC_EDITOR, {
-  breadcrumbName: 'Poc Jodit Editor',
-  parent: '/',
-  component: PocEditor,
-  exact: false,
-  tipo: RotasTipo.EstruturadaAutenticada,
 });
 
 rotas.set(RotasDto.SONDAGEM, {

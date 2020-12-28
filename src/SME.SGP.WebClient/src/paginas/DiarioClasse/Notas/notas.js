@@ -7,7 +7,6 @@ import Avaliacao from '~/componentes-sgp/avaliacao/avaliacao';
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import Alert from '~/componentes/alert';
 import Card from '~/componentes/card';
-import Editor from '~/componentes/editor/editor';
 import Row from '~/componentes/row';
 import SelectComponent from '~/componentes/select';
 import { ContainerTabsCard } from '~/componentes/tabs/tabs.css';
@@ -33,6 +32,7 @@ import moment from 'moment';
 import AlertaModalidadeInfantil from '~/componentes-sgp/AlertaModalidadeInfantil/alertaModalidadeInfantil';
 import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 import ServicoNotaConceito from '~/servicos/Paginas/DiarioClasse/ServicoNotaConceito';
+import JoditEditor from '~/componentes/jodit-editor/joditEditor';
 
 const { TabPane } = Tabs;
 
@@ -1012,8 +1012,9 @@ const Notas = ({ match }) => {
               </div>
               <div className="col-md-12">
                 <fieldset className="mt-3">
-                  <Editor
+                  <JoditEditor
                     form={form}
+                    value={form.values.descricao}
                     onChange={onChangeJustificativa}
                     name="descricao"
                   />
