@@ -13,5 +13,6 @@ namespace SME.SGP.Infra
         public string Message { get; set; }
         public string Error { get; set; }
         public string Path { get; set; }
+        public string ContentType { get; set; }
     }
 }
