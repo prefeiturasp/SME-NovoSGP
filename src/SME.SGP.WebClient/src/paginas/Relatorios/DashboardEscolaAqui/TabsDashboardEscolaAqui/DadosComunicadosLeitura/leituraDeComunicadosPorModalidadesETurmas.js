@@ -77,6 +77,7 @@ const LeituraDeComunicadosPorModalidadesETurmas = props => {
   );
 
   useEffect(() => {
+    setDadosDeLeituraDeComunicadosPorModalidadesETurmas([]);
     if (
       dadosDeLeituraDeComunicadosAgrupadosPorModalidade?.length &&
       comunicado &&
@@ -87,15 +88,13 @@ const LeituraDeComunicadosPorModalidadesETurmas = props => {
         listaComunicado
       );
       if (
-        dadosComunicado.id &&
-        dadosComunicado.codigoDre &&
-        dadosComunicado.codigoUe &&
-        !dadosComunicado.turmasCodigo.length
+        dadosComunicado?.id &&
+        dadosComunicado?.codigoDre &&
+        dadosComunicado?.codigoUe &&
+        !dadosComunicado?.turmasCodigo.length
       ) {
         obterDadosDeLeituraDeComunicadosPorModalidadesETurmas(dadosComunicado);
       }
-    } else {
-      setDadosDeLeituraDeComunicadosPorModalidadesETurmas([]);
     }
   }, [
     comunicado,
