@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace SME.SGP.Api
 {
     [ApiController]
-    [Route("api/v1/registro-individual")]
+    [Route("api/v1/registros-individuais")]
     [Authorize("Bearer")]
     public class RegistroIndividualController : ControllerBase        
     {
