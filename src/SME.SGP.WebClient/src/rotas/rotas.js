@@ -64,6 +64,7 @@ import RelatorioPendencias from '~/paginas/Relatorios/Pendencias/relatorioPenden
 import CartaIntencoes from '~/paginas/Planejamento/CartaIntencoes/cartaIntencoes';
 import RelatorioParecerConclusivo from '~/paginas/Relatorios/ParecerConclusivo/relatorioParecerConclusivo';
 import DevolutivasLista from '~/paginas/DiarioClasse/Devolutivas/devolutivasLista';
+import RegistroIndividual from '~/paginas/DiarioClasse/RegistroIndividual/registroIndividual';
 import DevolutivasForm from '~/paginas/DiarioClasse/Devolutivas/devolutivasForm';
 import RelatorioNotasConceitosFinais from '~/paginas/Relatorios/NotasConceitosFinais/relatorioNotasConceitosFinais';
 import RelatorioCompensacaoAusencia from '~/paginas/Relatorios/CompensacaoAusencia/relatorioCompensacaoAusencia';
@@ -934,6 +935,17 @@ rotas.set(`${RotasDto.DEVOLUTIVAS}/editar/:id`, {
   breadcrumbName: 'Alterar Devolutiva',
   parent: RotasDto.DEVOLUTIVAS,
   component: DevolutivasForm,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.DEVOLUTIVAS,
+});
+
+rotas.set(RotasDto.REGISTRO_INDIVIDUAL, {
+  breadcrumbName: 'Registro individual',
+  menu: ['Diário de Classe '],
+  parent: '/',
+  component: RegistroIndividual,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: true,
