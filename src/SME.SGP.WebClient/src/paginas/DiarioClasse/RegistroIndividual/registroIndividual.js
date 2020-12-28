@@ -5,8 +5,8 @@ import { Card, Loader, SelectComponent } from '~/componentes';
 import { Cabecalho } from '~/componentes-sgp';
 
 import {
-  BotoesAcoes,
   BotaoOrdenarListaAlunos,
+  BotoesAcoes,
   DadosRegistroIndividual,
   Mensagens,
   ObjectCardRegistroIndividual,
@@ -14,45 +14,74 @@ import {
 } from './componentes';
 
 import {
-  setAlunosConselhoClasse,
-  setExibirLoaderGeralConselhoClasse,
-  limparDadosConselhoClasse,
+  limparDadosRegistroIndividual,
+  setAlunosRegistroIndividual,
   setDadosAlunoObjectCard,
-} from '~/redux/modulos/conselhoClasse/actions';
-import ServicoConselhoClasse from '~/servicos/Paginas/ConselhoClasse/ServicoConselhoClasse';
-import servicoSalvarConselhoClasse from '~/paginas/Fechamento/ConselhoClasse/servicoSalvarConselhoClasse';
+} from '~/redux/modulos/registroIndividual/actions';
 
-import { erros } from '~/servicos/alertas';
+import {
+  confirmar,
+  ehTurmaInfantil,
+  erros,
+  history,
+  ServicoDisciplina,
+  ServicoRegistroIndividual,
+} from '~/servicos';
+
+import { URL_HOME } from '~/constantes';
 
 const RegistroIndividual = () => {
+  const [auditoria, setAuditoria] = useState();
   const [carregandoGeral, setCarregandoGeral] = useState(false);
+  const [
+    componenteCurricularSelecionado,
+    setComponenteCurricularSelecionado,
+  ] = useState();
+  const [desabilitarCampos, setDesabilitarCampos] = useState(false);
   const [exibirListas, setExibirListas] = useState(false);
+  const [listaComponenteCurricular, setListaComponenteCurricular] = useState(
+    []
+  );
+  const [modoEdicao, setModoEdicao] = useState(false);
+  const [turmaInfantil, setTurmaInfantil] = useState(false);
 
   const { turmaSelecionada } = useSelector(state => state.usuario);
-  const { turma, anoLetivo, periodo } = turmaSelecionada;
+  const { turma } = turmaSelecionada;
+  const turmaId = turma || 0;
+
+  const modalidadesFiltroPrincipal = useSelector(
+    store => store.filtro.modalidades
+  );
 
   const dispatch = useDispatch();
 
   const obterListaAlunos = useCallback(async () => {
-    dispatch(setExibirLoaderGeralConselhoClasse(true));
-    const retorno = await ServicoConselhoClasse.obterListaAlunos(
-      turma,
-      anoLetivo,
-      periodo
-    );
-    if (retorno && retorno.data) {
-      dispatch(setAlunosConselhoClasse(retorno.data));
+    const retorno = await ServicoRegistroIndividual.obterListaAlunos({
+      componenteCurricularId: componenteCurricularSelecionado,
+      turmaId,
+    });
+    if (retorno?.data) {
+      dispatch(setAlunosRegistroIndividual(retorno.data));
       setExibirListas(true);
     }
-    dispatch(setExibirLoaderGeralConselhoClasse(false));
-  }, [dispatch, anoLetivo, turma, periodo]);
+  }, [dispatch, componenteCurricularSelecionado, turmaId]);
 
   useEffect(() => {
-    obterListaAlunos();
-  }, [obterListaAlunos]);
+    if (componenteCurricularSelecionado) {
+      obterListaAlunos();
+    }
+  }, [obterListaAlunos, componenteCurricularSelecionado]);
+
+  useEffect(() => {
+    const infantil = ehTurmaInfantil(
+      modalidadesFiltroPrincipal,
+      turmaSelecionada
+    );
+    setTurmaInfantil(infantil);
+  }, [modalidadesFiltroPrincipal, turmaSelecionada]);
 
   const resetarInfomacoes = useCallback(() => {
-    dispatch(limparDadosConselhoClasse());
+    dispatch(limparDadosRegistroIndividual());
   }, [dispatch]);
 
   const onChangeAlunoSelecionado = async aluno => {
@@ -61,44 +90,130 @@ const RegistroIndividual = () => {
   };
 
   const permiteOnChangeAluno = async () => {
-    const validouNotaConceitoPosConselho = await servicoSalvarConselhoClasse.validarNotaPosConselho();
-    if (validouNotaConceitoPosConselho) {
-      const validouAnotacaoRecomendacao = await servicoSalvarConselhoClasse.validarSalvarRecomendacoesAlunoFamilia();
-      if (validouNotaConceitoPosConselho && validouAnotacaoRecomendacao) {
-        return true;
-      }
-    }
-    return false;
+    // const validouNotaConceitoPosConselho = await servicoSalvarConselhoClasse.validarNotaPosConselho();
+    // const validouAnotacaoRecomendacao = validouNotaConceitoPosConselho
+    //   ? await servicoSalvarConselhoClasse.validarSalvarRecomendacoesAlunoFamilia()
+    //   : false;
+    return true;
   };
 
+  const obterComponentesCurriculares = useCallback(async () => {
+    setCarregandoGeral(true);
+    const { data } = await ServicoDisciplina.obterDisciplinasPorTurma(
+      turmaId
+    ).catch(e => erros(e));
+
+    if (data?.length) {
+      setListaComponenteCurricular(data);
+
+      if (data.length === 1) {
+        setComponenteCurricularSelecionado(
+          String(data[0].codigoComponenteCurricular)
+        );
+      }
+    }
+
+    setCarregandoGeral(false);
+  }, [turmaId]);
+
+  const resetarTela = useCallback(() => {
+    setModoEdicao(false);
+    setAuditoria();
+  }, []);
+
+  useEffect(() => {
+    if (turmaId && turmaInfantil) {
+      obterComponentesCurriculares();
+      return;
+    }
+
+    setListaComponenteCurricular([]);
+    setComponenteCurricularSelecionado(undefined);
+    resetarTela();
+  }, [turmaId, obterComponentesCurriculares, resetarTela, turmaInfantil]);
+
+  const onChangeComponenteCurricular = valor => {
+    setComponenteCurricularSelecionado(valor);
+  };
+
+  const pergutarParaSalvar = () => {
+    return confirmar(
+      'Atenção',
+      '',
+      'Suas alterações não foram salvas, deseja salvar agora?'
+    );
+  };
+
+  const cadastrarRegistroIndividual = async () => {
+    const confirmado = await pergutarParaSalvar();
+    if (confirmado) {
+      // const salvou = await validaAntesDoSubmit(form);
+      // if (salvou) {
+      //   return true;
+      // }
+      // return false;
+    }
+    return true;
+  };
+
+  const onClickVoltar = async (observacaoEmEdicao, novaObservacao) => {
+    let validouSalvarDiario = true;
+    if (modoEdicao && turmaInfantil && !desabilitarCampos) {
+      validouSalvarDiario = await cadastrarRegistroIndividual();
+    }
+
+    const validouSalvarObservacao = true;
+    if (novaObservacao) {
+      // validouSalvarObservacao = await salvarObservacao({
+      //   observacao: novaObservacao,
+      // });
+    } else if (observacaoEmEdicao) {
+      // validouSalvarObservacao = await salvarObservacao(observacaoEmEdicao);
+    }
+
+    if (validouSalvarDiario && validouSalvarObservacao) {
+      history.push(URL_HOME);
+    }
+  };
+
+  const onClickCancelar = () => {};
+  const onClickCadastrar = () => {};
+
   return (
-    <Loader loading={carregandoGeral} className="w-100 my-2">
-      <div className="mb-3">
-        <Mensagens />
-      </div>
+    <Loader loading={carregandoGeral} className="w-100">
+      <Mensagens />
       <Cabecalho pagina="Registro individual" />
       <Card>
         <div className="col-md-12 p-0">
           <div className="row">
             <div className="col-sm-12 col-md-4 col-lg-4 col-xl-4 mb-4">
               <SelectComponent
-                id="disciplina"
-                name="disciplinaId"
-                // lista={listaDisciplinas}
+                id="componenteCurricular"
+                name="ComponenteCurricularId"
+                lista={listaComponenteCurricular}
                 valueOption="codigoComponenteCurricular"
                 valueText="nome"
-                // valueSelect={disciplinaIdSelecionada}
-                // onChange={onChangeDisciplinas}
+                valueSelect={componenteCurricularSelecionado}
+                onChange={onChangeComponenteCurricular}
                 placeholder="Selecione um componente curricular"
-                disabled={!turmaSelecionada.turma}
+                disabled={
+                  !turmaInfantil || listaComponenteCurricular?.length === 1
+                }
               />
             </div>
             <div className="col-sm-12 col-lg-8 col-md-8 d-flex justify-content-end pb-4">
-              <BotoesAcoes />
+              <BotoesAcoes
+                onClickVoltar={onClickVoltar}
+                onClickCancelar={onClickCancelar}
+                onClickCadastrar={onClickCadastrar}
+                modoEdicao={modoEdicao}
+                desabilitarCampos={desabilitarCampos}
+                turmaInfantil={turmaInfantil}
+              />
             </div>
           </div>
           <div className="row">
-            {exibirListas && (
+            {exibirListas && turmaInfantil && (
               <>
                 <div className="col-md-12 mb-3 d-flex">
                   <BotaoOrdenarListaAlunos />
