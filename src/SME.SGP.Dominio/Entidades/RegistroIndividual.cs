@@ -4,7 +4,7 @@ namespace SME.SGP.Dominio
 {
     public class RegistroIndividual : EntidadeBase
     {
-        protected RegistroIndividual()
+        public RegistroIndividual()
         {
         }
 

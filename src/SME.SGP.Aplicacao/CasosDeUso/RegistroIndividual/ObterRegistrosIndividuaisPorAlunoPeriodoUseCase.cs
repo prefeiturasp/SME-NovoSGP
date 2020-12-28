@@ -1,15 +1,22 @@
-﻿using SME.SGP.Infra;
-using System.Collections.Generic;
+﻿using MediatR;
+using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterRegistrosIndividuaisPorAlunoPeriodoUseCase : IObterRegistrosIndividuaisPorAlunoPeriodoUseCase
+    public class ObterRegistrosIndividuaisPorAlunoPeriodoUseCase : AbstractUseCase, IObterRegistrosIndividuaisPorAlunoPeriodoUseCase
     {
-        public async Task<IEnumerable<RegistroIndividualDataDto>> Executar(FiltroRegistroIndividualAlunoPeriodo param)
+        public ObterRegistrosIndividuaisPorAlunoPeriodoUseCase(IMediator mediator) : base(mediator)
         {
-            return await Task.FromResult(Enumerable.Empty<RegistroIndividualDataDto>());
+        }
+
+        public async Task<RegistrosIndividuaisPeriodoDto> Executar(FiltroRegistroIndividualAlunoPeriodo filtro)
+        {
+            var registrosIndividuais = await mediator.Send(new ObterRegistrosIndividuaisPorAlunoPeriodoQuery(filtro.TurmaId, filtro.AlunoCodigo, filtro.ComponenteCurricularId, filtro.DataInicio, filtro.DataFim));
+
+            return registrosIndividuais;
         }
     }
 }
