@@ -8,6 +8,7 @@ namespace SME.SGP.Dados.Mapeamentos
         {
             ToTable("ocorrencia_tipo");
             Map(x => x.Descricao).ToColumn("descricao");
+            Map(x => x.Excluido).ToColumn("excluido");
         }
     }
 }

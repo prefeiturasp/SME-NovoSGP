@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS public.ocorrencia_tipo(
 	criado_rf varchar(200) NOT NULL,
 	criado_em timestamp NOT NULL,
 	descricao varchar(20) NOT NULL,
+	excluido boolean NOT NULL DEFAULT FALSE,
 	CONSTRAINT ocorrencia_tipo_pk PRIMARY KEY (id)
 );
 
