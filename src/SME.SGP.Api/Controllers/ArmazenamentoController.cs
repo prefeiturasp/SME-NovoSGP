@@ -16,7 +16,6 @@ namespace SME.SGP.Api.Controllers
     [Authorize("Bearer")]
     public class ArmazenamentoController : ControllerBase
     {
-        //TODO: Fazer listagem
         [HttpPost("upload")]
         [ProducesResponseType(200)]
         [ProducesResponseType(401)]
