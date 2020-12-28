@@ -88,7 +88,7 @@ namespace SME.SGP.Dominio.Teste
 
         private AtribuicaoEsporadica ObterObjeto()
         {
-            return new AtribuicaoEsporadica
+            var atribuicao = new AtribuicaoEsporadica
             {
                 UeId = "1",
                 ProfessorRf = "1",
@@ -97,6 +97,12 @@ namespace SME.SGP.Dominio.Teste
                 DataFim = DateTime.Now.AddDays(7),
                 Id = 1
             };
+
+            var anoAtual = DateTime.Now.Year;
+            if (atribuicao.DataFim.Year > anoAtual)
+                atribuicao.DataFim = new DateTime(anoAtual, 12, 31);
+
+            return atribuicao;
         }
     }
 }
