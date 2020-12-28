@@ -1,17 +1,13 @@
-﻿using SME.SGP.Infra;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio
 {
     public interface IRepositorioRegistroIndividual
     {
-        bool MarcarRegistrosAusenciaAlunoComoExcluidoPorRegistroFrequenciaId(long registroFrequenciaId);
+        Task<RegistroIndividual> ObterPorAlunoData(long turmaId, long componenteCurricularId, long alunoCodigo, DateTime data);
 
-        int ObterTotalAulasPorDisciplinaETurma(DateTime dataAula, string disciplinaId, string turmaId);
-
-        AusenciaPorDisciplinaDto ObterTotalAusenciasPorAlunoETurma(DateTime dataAula, string codigoAluno, string disciplinaId, string turmaId);
-
-        IEnumerable<RegistroAusenciaAluno> ObterRegistrosAusenciaPorAula(long aulaId);
+        Task<IEnumerable<RegistroIndividual>> ObterPorAlunoPeriodo(long turmaId, long componenteCurricularId, long alunoCodigo, DateTime dataInicio, DateTime dataFim);
     }
 }
