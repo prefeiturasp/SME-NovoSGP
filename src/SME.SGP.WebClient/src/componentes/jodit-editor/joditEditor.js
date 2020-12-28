@@ -49,7 +49,7 @@ const JoditEditor = forwardRef((props, ref) => {
   const BOTOES_PADRAO = !removerToolbar
     ? `bold,ul,ol,outdent,indent,font,fontsize,brush,paragraph,${
         permiteInserirArquivo ? 'file,video,' : ''
-      }table,link,align,undo,redo,fullsize`
+      }table,link,align,undo,redo`
     : '';
 
   const changeHandler = valor => {
@@ -117,13 +117,14 @@ const JoditEditor = forwardRef((props, ref) => {
           baseurl: resp.data.baseurl,
           error: resp.data.error,
           message: resp.data.message,
+          contentType: resp.data.contentType,
         };
       },
       defaultHandlerSuccess: dados => {
         if (dados?.path) {
-          if (dados.path.endsWith('mp4')) {
+          if (dados.contentType.startsWith('video')) {
             textArea.current.selection.insertHTML(
-              `<video width="600" height="240" controls><source src="${dados.path}" type="video/mp4"></video>`
+              `<video width="600" height="240" controls><source src="${dados.path}"></video>`
             );
           } else textArea.current.selection.insertImage(dados.path);
         }

@@ -31,7 +31,8 @@ namespace SME.SGP.Aplicacao
                     BaseUrl = $"{caminho}",
                     Message = "",
                     Error = "",
-                    Path = $"{caminho}{fileName}"
+                    Path = $"{caminho}{fileName}",
+                    ContentType = file.ContentType
                 }
             };
         }
