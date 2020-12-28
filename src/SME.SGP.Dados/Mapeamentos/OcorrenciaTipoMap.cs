@@ -2,11 +2,11 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class TipoOcorrenciaMap : BaseMap<TipoOcorrencia>
+    public class OcorrenciaTipoMap : BaseMap<OcorrenciaTipo>
     {
-        public TipoOcorrenciaMap()
+        public OcorrenciaTipoMap()
         {
-            ToTable("tipo_ocorrencia");
+            ToTable("ocorrencia_tipo");
             Map(x => x.Descricao).ToColumn("descricao");
         }
     }
