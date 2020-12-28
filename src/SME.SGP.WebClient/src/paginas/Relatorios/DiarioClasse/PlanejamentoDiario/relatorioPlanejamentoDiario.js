@@ -477,14 +477,17 @@ const RelatorioPlanejamentoDiario = () => {
 
   const gerar = async () => {
     const params = {
+      modalidadeTurma: modalidadeId,
       codigoDre,
+      bimestre,
       codigoUe,
       anoLetivo,
       semestre,
       ano: anoLetivo,
-      turma: turmaId,
+      codigoTurma: turmaId,
       listarDatasFuturas,
       exibirDetalhamento,
+      componenteCurricular: componenteCurricularId
     };
 
     setExibirLoader(true);
