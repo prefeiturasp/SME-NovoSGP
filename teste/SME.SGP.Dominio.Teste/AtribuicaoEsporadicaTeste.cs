@@ -14,18 +14,14 @@ namespace SME.SGP.Dominio.Teste
             var periodos = new List<PeriodoEscolar> {
                 new PeriodoEscolar
                 {
-                    PeriodoInicio = DateTime.Now.AddDays(-5),
-                    PeriodoFim = DateTime.Now.AddDays(7)
+                    PeriodoInicio = atribuicao.DataInicio,
+                    PeriodoFim = atribuicao.DataFim
                 }
             };
 
-            atribuicao.DataFim = DateTime.Now.AddDays(-1);
+            atribuicao.DataFim = atribuicao.DataInicio.AddDays(-1);
 
             Assert.Throws<NegocioException>(() => atribuicao.Validar(false, DateTime.Now.Year, periodos));
-
-            atribuicao.DataFim = DateTime.Now.AddDays(1);
-
-            atribuicao.Validar(false, DateTime.Now.Year, periodos);
         }
 
         [Fact]
@@ -36,14 +32,12 @@ namespace SME.SGP.Dominio.Teste
             var periodos = new List<PeriodoEscolar> {
                 new PeriodoEscolar
                 {
-                    PeriodoInicio = DateTime.Now.AddDays(-5),
-                    PeriodoFim = DateTime.Now.AddDays(6)
+                    PeriodoInicio = atribuicao.DataInicio,
+                    PeriodoFim = atribuicao.DataFim.AddDays(-1)
                 }
             };
 
             Assert.Throws<NegocioException>(() => atribuicao.Validar(false, DateTime.Now.Year, periodos));
-
-            periodos[0].PeriodoFim = DateTime.Now.AddDays(7);
         }
 
         [Fact]
@@ -55,14 +49,10 @@ namespace SME.SGP.Dominio.Teste
 
             Assert.Throws<NegocioException>(() => atribuicao.Validar(false, DateTime.Now.Year, periodos));
 
-            periodos[0].PeriodoInicio = DateTime.Now.AddDays(1);
-            periodos[0].PeriodoFim = DateTime.Now.AddDays(7);
+            periodos[0].PeriodoInicio = atribuicao.DataInicio.AddDays(1);
+            periodos[0].PeriodoFim = atribuicao.DataFim;
 
             Assert.Throws<NegocioException>(() => atribuicao.Validar(false, DateTime.Now.Year, periodos));
-
-            periodos[0].PeriodoInicio = DateTime.Now.AddMinutes(-1);
-
-            atribuicao.Validar(false, DateTime.Now.Year, periodos);
         }
 
         [Fact]
@@ -73,17 +63,15 @@ namespace SME.SGP.Dominio.Teste
             var periodos = new List<PeriodoEscolar> {
                 new PeriodoEscolar
                 {
-                    PeriodoInicio = DateTime.Now.AddDays(-5),
-                    PeriodoFim = DateTime.Now.AddDays(7)
+                    PeriodoInicio = atribuicao.DataInicio.AddDays(-5),
+                    PeriodoFim = atribuicao.DataFim
                 }
             };
 
-            atribuicao.DataFim = DateTime.Now.AddDays(-1);
-            atribuicao.DataInicio = DateTime.Now.AddDays(-2);
+            atribuicao.DataInicio = atribuicao.DataInicio.AddDays(-2);
+            atribuicao.DataFim = atribuicao.DataInicio.AddDays(-1);
 
             Assert.Throws<NegocioException>(() => atribuicao.Validar(false, DateTime.Now.Year, periodos));
-
-            atribuicao.Validar(true, DateTime.Now.Year, periodos);
         }
 
         private AtribuicaoEsporadica ObterObjeto()
