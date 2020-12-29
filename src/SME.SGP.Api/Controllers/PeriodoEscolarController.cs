@@ -75,5 +75,14 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(turmaId));
         }
+
+        [HttpGet("modalidades/{modalidade}/ano-letivo/{anoLetivo}/bimestres")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(IEnumerable<PeriodoEscolarDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ObterBimestresModalidadeEAno(int modalidade, int anoLetivo, [FromServices] IObterPeriodosEscolaresPorAnoEModalidadeTurmaUseCase useCase)
+        {
+            return Ok(await useCase.Executar((Dominio.Modalidade)modalidade, anoLetivo, 0));
+        }
     }
 }

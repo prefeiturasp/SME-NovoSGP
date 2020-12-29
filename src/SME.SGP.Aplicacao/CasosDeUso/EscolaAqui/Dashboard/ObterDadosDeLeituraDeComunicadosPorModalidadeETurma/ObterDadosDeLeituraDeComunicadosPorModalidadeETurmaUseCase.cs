@@ -45,7 +45,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.EscolaAqui.Dashboard.ObterDadosDeLeituraD
                 item.SiglaModalidade = turma.ModalidadeCodigo.ShortName();
                 dadosLeituraComunicados.Add(item);
             }
-            return dadosLeituraComunicados.OrderBy(d => d.Modalidade).ToList();
+            return dadosLeituraComunicados.OrderBy(d => d.Modalidade).ThenBy(d => d.Turma).ToList();
         }
     }
 }
