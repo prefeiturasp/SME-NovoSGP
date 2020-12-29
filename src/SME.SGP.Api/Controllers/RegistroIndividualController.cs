@@ -18,7 +18,7 @@ namespace SME.SGP.Api
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(RegistroIndividualDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.REI_C, Policy = "Bearer")]
+        //[Permissao(Permissao.REI_C, Policy = "Bearer")]
         public async Task<IActionResult> Obter([FromServices] IObterRegistroIndividualUseCase useCase, long id)
         {
             var result = await useCase.Executar(id);
@@ -31,7 +31,7 @@ namespace SME.SGP.Api
         [HttpPost]
         [ProducesResponseType(typeof(AuditoriaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.REI_I, Policy = "Bearer")]
+        //[Permissao(Permissao.REI_I, Policy = "Bearer")]
         public async Task<IActionResult> Salvar([FromServices] IInserirRegistroIndividualUseCase useCase, [FromBody] InserirRegistroIndividualDto registroIndividualDto)
         {
             return Ok(await useCase.Executar(registroIndividualDto));
@@ -40,7 +40,7 @@ namespace SME.SGP.Api
         [HttpPut("{id}")]
         [ProducesResponseType(typeof(AuditoriaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.REI_A, Policy = "Bearer")]
+       // [Permissao(Permissao.REI_A, Policy = "Bearer")]
         public async Task<IActionResult> Alterar([FromServices] IAlterarRegistroIndividualUseCase useCase, [FromBody] AlterarRegistroIndividualDto registroIndividualDto)
         {
             return Ok(await useCase.Executar(registroIndividualDto));
@@ -50,7 +50,7 @@ namespace SME.SGP.Api
         [ProducesResponseType(typeof(IEnumerable<AlunoDadosBasicosDto>), 200)]
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.REI_C, Policy = "Bearer")]
+       // [Permissao(Permissao.REI_C, Policy = "Bearer")]
         public async Task<IActionResult> ListarAlunosPorTurma([FromServices] IListarAlunosDaTurmaUseCase useCase, long turmaId, long componenteCurricularId)
         {
             return Ok(await useCase.Executar(new FiltroRegistroIndividualBase(turmaId, componenteCurricularId)));
@@ -60,7 +60,7 @@ namespace SME.SGP.Api
         [ProducesResponseType(typeof(RegistrosIndividuaisPeriodoDto), 200)]
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.REI_C, Policy = "Bearer")]
+       // [Permissao(Permissao.REI_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterPorAlunoData([FromServices] IObterRegistroIndividualPorAlunoDataUseCase useCase, long turmaId, long alunoCodigo, long componenteCurricularId, DateTime data)
         {
             return Ok(await useCase.Executar(new FiltroRegistroIndividualAlunoData(turmaId, componenteCurricularId, alunoCodigo, data)));
@@ -70,7 +70,7 @@ namespace SME.SGP.Api
         [ProducesResponseType(typeof(IEnumerable<RegistroIndividualDto>), 200)]
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.REI_C, Policy = "Bearer")]
+       // [Permissao(Permissao.REI_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterPorAlunoPeriodo([FromServices] IObterRegistrosIndividuaisPorAlunoPeriodoUseCase useCase, long turmaId, long alunoCodigo, long componenteCurricularId, DateTime dataInicio, DateTime dataFim)
         {
             return Ok(await useCase.Executar(new FiltroRegistroIndividualAlunoPeriodo(turmaId, componenteCurricularId, alunoCodigo, dataInicio, dataFim)));
@@ -79,7 +79,7 @@ namespace SME.SGP.Api
         [HttpDelete("{id}")]
         [ProducesResponseType(typeof(AuditoriaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.REI_E, Policy = "Bearer")]
+       // [Permissao(Permissao.REI_E, Policy = "Bearer")]
         public async Task<IActionResult> Excluir(long id, [FromServices] IExcluirRegistroIndividualUseCase excluirRegistroIndividualUseCase)
         {
             return Ok(await excluirRegistroIndividualUseCase.Executar(id));
