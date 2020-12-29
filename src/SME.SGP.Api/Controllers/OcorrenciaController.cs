@@ -4,6 +4,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.Ocorrencias.Detalhes;
 using SME.SGP.Infra.Dtos.Ocorrencias.Listagens;
+using SME.SGP.Infra.Dtos.Ocorrencias.Persistencias;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -60,6 +61,29 @@ namespace SME.SGP.Api.Controllers
             };
 
             return await Task.FromResult(Ok(resultado));
+        }
+
+        [HttpPost]
+        [ProducesResponseType(typeof(AuditoriaDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public async Task<IActionResult> Inserir([FromBody] InserirOcorrenciaDto dto)
+        {
+            if(dto is null)
+                throw new NegocioException("Os dados da ocorrência devem ser informados.");
+
+            var auditoria = new AuditoriaDto
+            {
+                AlteradoEm = DateTime.Now,
+                AlteradoPor = "Usuário que fez a alteração",
+                AlteradoRF = "999999",
+                CriadoEm = DateTime.Now.AddDays(-1),
+                CriadoPor = "Criador do registro",
+                CriadoRF = "999999",
+                Id = 1
+            };
+
+            return await Task.FromResult(Ok(auditoria));
         }
 
         [HttpDelete]
