@@ -15,5 +15,10 @@ namespace SME.SGP.Dominio
         public string Registro { get; set; }
         public bool Migrado { get; set; }
         public bool Excluido { get; set; }
+
+        public void Remover()
+        {
+            Excluido = true;
+        }
     }
 }
