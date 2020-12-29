@@ -65,6 +65,8 @@ const RelatorioPlanejamentoDiario = () => {
     setModalidadeId();
     setTurmaId();
     setAnoLetivo(valor);
+    setListarDatasFuturas(false);
+    setExibirDetalhamento(false);
   };
 
   const onChangeDre = valor => {
@@ -73,17 +75,23 @@ const RelatorioPlanejamentoDiario = () => {
     setModalidadeId();
     setTurmaId();
     setCodigoUe(undefined);
+    setListarDatasFuturas(false);
+    setExibirDetalhamento(false);
   };
 
   const onChangeUe = valor => {
     setModalidadeId();
     setTurmaId();
     setCodigoUe(valor);
+    setListarDatasFuturas(false);
+    setExibirDetalhamento(false);
   };
 
   const onChangeModalidade = valor => {
     setTurmaId();
     setModalidadeId(valor);
+    setListarDatasFuturas(false);
+    setExibirDetalhamento(false);
   };
 
   const onChangeComponenteCurricular = valor => {
@@ -100,6 +108,8 @@ const RelatorioPlanejamentoDiario = () => {
 
   const onChangeTurma = valor => {
     setTurmaId(valor);
+    setListarDatasFuturas(false);
+    setExibirDetalhamento(false);
   };
 
   const [anoAtual] = useState(moment().format('YYYY'));
