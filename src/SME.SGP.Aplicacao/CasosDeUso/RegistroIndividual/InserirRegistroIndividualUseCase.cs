@@ -10,9 +10,10 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<AuditoriaDto> Executar(InserirRegistroIndividualDto param)
+        public async Task<AuditoriaDto> Executar(InserirRegistroIndividualDto dto)
         {
-            return await Task.FromResult(new AuditoriaDto());
+            var auditoria = await mediator.Send(new InserirRegistroIndividualCommand(dto.TurmaId, dto.AlunoCodigo, dto.ComponenteCurricularId, dto.Data, dto.Registro));
+            return auditoria;
         }
     }
 }
