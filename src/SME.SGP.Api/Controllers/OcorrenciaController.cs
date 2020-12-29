@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.Ocorrencias.Listagens;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
@@ -18,7 +20,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<OcorrenciaListagemDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         // O permissionamento será adicionado em uma task separada
-        public async Task<IActionResult> Get(FiltroOcorrenciaListagemDto dto)
+        public async Task<IActionResult> Get([FromQuery] FiltroOcorrenciaListagemDto dto)
         {
             var resultado = new List<OcorrenciaListagemDto>
             {
@@ -28,6 +30,19 @@ namespace SME.SGP.Api.Controllers
             };
 
             return await Task.FromResult(Ok(resultado));
+        }
+
+        [HttpDelete]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        // O permissionamento será adicionado em uma task separada
+        public async Task<IActionResult> Excluir([FromBody] IEnumerable<long> ids)
+        {
+            if (!ids?.Any() ?? true)
+                throw new NegocioException("Selecione uma ou mais ocorrências para serem excluídas.");
+
+            return await Task.FromResult(Ok());
         }
     }
 }
