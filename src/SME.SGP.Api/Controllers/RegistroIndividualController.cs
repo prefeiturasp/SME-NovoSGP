@@ -75,6 +75,15 @@ namespace SME.SGP.Api
         {
             return Ok(await useCase.Executar(new FiltroRegistroIndividualAlunoPeriodo(turmaId, componenteCurricularId, alunoCodigo, dataInicio, dataFim)));
         }
+
+        [HttpDelete("{id}")]
+        [ProducesResponseType(typeof(AuditoriaDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.DDB_C, Policy = "Bearer")]
+        public async Task<IActionResult> Excluir(long id, [FromServices] IExcluirRegistroIndividualUseCase excluirRegistroIndividualUseCase)
+        {
+            return Ok(await excluirRegistroIndividualUseCase.Executar(id));
+        }
     }
 }
 

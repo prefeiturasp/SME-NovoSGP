@@ -7,7 +7,7 @@ namespace SME.SGP.Infra
     {
         public long TurmaId { get; set; }
         public long ComponenteCurricularId { get; set; }
-        public string AlunoCodigo { get; set; }
+        public long AlunoCodigo { get; set; }
         public string Registro { get; set; }
         public DateTime Data { get; set; }
     }
