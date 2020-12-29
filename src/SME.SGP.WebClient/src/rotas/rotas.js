@@ -981,7 +981,7 @@ rotas.set(RotasDto.RELATORIO_PLANEJAMENTO_DIARIO, {
   component: RelatorioPlanejamentoDiario,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  temPermissionamento: false,
+  temPermissionamento: true,
   chavePermissao: RotasDto.RELATORIO_PLANEJAMENTO_DIARIO,
 });
 
