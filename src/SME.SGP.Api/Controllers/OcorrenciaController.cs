@@ -33,7 +33,7 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpDelete]
-        [ProducesResponseType(typeof(string), 200)]
+        [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         // O permissionamento será adicionado em uma task separada
