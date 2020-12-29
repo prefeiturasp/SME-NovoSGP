@@ -13,7 +13,7 @@ namespace SME.SGP.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/ocorrencias")]
-    //[Authorize("Bearer")]
+    [Authorize("Bearer")]
     public class OcorrenciaController : ControllerBase
     {
         [HttpGet]
@@ -35,11 +35,12 @@ namespace SME.SGP.Api.Controllers
         [HttpDelete]
         [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         // O permissionamento será adicionado em uma task separada
         public async Task<IActionResult> Excluir([FromBody] IEnumerable<long> ids)
         {
             if (!ids?.Any() ?? true)
-                throw new NegocioException("Selecione uma ou mais ocorrências para serem excluídas.", System.Net.HttpStatusCode.InternalServerError);
+                throw new NegocioException("Selecione uma ou mais ocorrências para serem excluídas.");
 
             return await Task.FromResult(Ok());
         }
