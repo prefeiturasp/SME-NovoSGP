@@ -984,14 +984,6 @@ rotas.set(RotasDto.RELATORIO_PLANEJAMENTO_DIARIO, {
   chavePermissao: RotasDto.RELATORIO_PLANEJAMENTO_DIARIO,
 });
 
-rotas.set(RotasDto.POC_EDITOR, {
-  breadcrumbName: 'Poc Jodit Editor',
-  parent: '/',
-  component: PocEditor,
-  exact: false,
-  tipo: RotasTipo.EstruturadaAutenticada,
-});
-
 rotas.set(RotasDto.SONDAGEM, {
   breadcrumbName: 'Sistema Sondagem',
   parent: '/',
