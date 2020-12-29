@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos.Ocorrencias.Alteracoes;
 using SME.SGP.Infra.Dtos.Ocorrencias.Detalhes;
 using SME.SGP.Infra.Dtos.Ocorrencias.Listagens;
 using SME.SGP.Infra.Dtos.Ocorrencias.Persistencias;
@@ -70,6 +71,26 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> Inserir([FromBody] InserirOcorrenciaDto dto)
         {
             if(dto is null)
+                throw new NegocioException("Os dados da ocorrência devem ser informados.");
+
+            var auditoria = new AuditoriaDto
+            {
+                CriadoEm = DateTime.Now.AddDays(-1),
+                CriadoPor = "Criador do registro",
+                CriadoRF = "999999",
+                Id = 1
+            };
+
+            return await Task.FromResult(Ok(auditoria));
+        }
+
+        [HttpPut]
+        [ProducesResponseType(typeof(AuditoriaDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public async Task<IActionResult> Alterar([FromBody] AlterarOcorrenciaDto dto)
+        {
+            if (dto is null || dto.Id == default)
                 throw new NegocioException("Os dados da ocorrência devem ser informados.");
 
             var auditoria = new AuditoriaDto
