@@ -79,6 +79,7 @@ import AtribuicaoCJ from '~/paginas/Relatorios/Gestao/AtribuicaoCJ/atribuicaoCJ'
 import RelatorioHistoricoAlteracoesNotas from '~/paginas/Relatorios/Fechamento/HistoricoAlteracoesNotas/relatorioHistoricoAlteracoesNotas';
 import relatorioEscolaAquiAdesao from '~/paginas/Relatorios/EscolaAqui/Adesao/relatorioEscolaAquiAdesao';
 import RelatorioLeitura from '~/paginas/Relatorios/EscolaAqui/Leitura/relatorioLeitura';
+import RelatorioPlanejamentoDiario from '~/paginas/Relatorios/DiarioClasse/PlanejamentoDiario/relatorioPlanejamentoDiario';
 
 const rotas = new Map();
 
@@ -970,6 +971,25 @@ rotas.set(RotasDto.CONTROLE_GRADE, {
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: false,
   chavePermissao: RotasDto.CONTROLE_GRADE,
+});
+
+rotas.set(RotasDto.RELATORIO_PLANEJAMENTO_DIARIO, {
+  breadcrumbName: 'Controle de planejamento diário',
+  menu: ['Relatórios', 'Diário de classe'],
+  parent: '/',
+  component: RelatorioPlanejamentoDiario,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.RELATORIO_PLANEJAMENTO_DIARIO,
+});
+
+rotas.set(RotasDto.POC_EDITOR, {
+  breadcrumbName: 'Poc Jodit Editor',
+  parent: '/',
+  component: PocEditor,
+  exact: false,
+  tipo: RotasTipo.EstruturadaAutenticada,
 });
 
 rotas.set(RotasDto.SONDAGEM, {
