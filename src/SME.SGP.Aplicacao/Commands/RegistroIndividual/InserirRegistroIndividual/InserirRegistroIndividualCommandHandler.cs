@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
 
             var componenteCurricular = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { request.ComponenteCurricularId }));
 
-            if (componenteCurricular == null || componenteCurricular.Any())
+            if (componenteCurricular == null || !componenteCurricular.Any())
                 throw new NegocioException("O componente curricular não foi encontrado");
 
             var registroIndividual = MapearParaEntidade(request);
