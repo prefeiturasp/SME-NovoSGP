@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Aplicacao
 {
-    public interface IObterRegistroIndividualPorAlunoDataUseCase : IUseCase<FiltroRegistroIndividualAlunoData, RegistroIndividualDataDto>
+    public interface IObterRegistroIndividualPorAlunoDataUseCase : IUseCase<FiltroRegistroIndividualAlunoData, RegistroIndividualDto>
     {
     }
 }

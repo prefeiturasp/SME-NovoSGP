@@ -10,6 +10,7 @@ namespace SME.SGP.Dados
             Map(c => c.TurmaId).ToColumn("turma_id");
             Map(c => c.ComponenteCurricularId).ToColumn("componente_curricular_id");
             Map(c => c.AlunoCodigo).ToColumn("aluno_codigo");
+            Map(c => c.DataRegistro).ToColumn("data_registro");
         }
     }
 }
