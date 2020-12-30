@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
         {
             var registrosIndividuais = await repositorioRegistroIndividual.ObterPorAlunoPeriodo(request.TurmaId, request.ComponenteCurricularId, request.AlunoCodigo, request.DataInicio, request.DataFim);
 
-            if (registrosIndividuais == null || registrosIndividuais.Any())
+            if (registrosIndividuais == null || !registrosIndividuais.Any())
                 throw new NegocioException("Não foram encontrados registros dentro do período especificado");
 
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(request.TurmaId));
