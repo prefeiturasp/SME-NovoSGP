@@ -303,8 +303,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioClassificacaoDocumento, RepositorioClassificacaoDocumento>();
             services.TryAddScoped<IRepositorioTipoDocumento, RepositorioTipoDocumento>();
             services.TryAddScoped<IRepositorioRemoveConexaoIdle, RepositorioRemoveConexaoIdle>();
+            services.TryAddScoped<IRepositorioOcorrencia, RepositorioOcorrencia>();
 
-            
+
 
             // Pendencias
             services.TryAddScoped<IRepositorioPendencia, RepositorioPendencia>();
@@ -619,12 +620,15 @@ namespace SME.SGP.IoC
 
             services.TryAddScoped<IRelatorioAEAdesaoUseCase, RelatorioAEAdesaoUseCase>();
 
-
             services.TryAddScoped<IRelatorioLeituraComunicadosUseCase, RelatorioLeituraComunicadosUseCase>();
 
-            
-
             services.TryAddScoped<IRemoveConexaoIdleUseCase, RemoveConexaoIdleUseCase>();
+
+            services.TryAddScoped<IListarOcorrenciasUseCase, ListarOcorrenciasUseCase>();
+            services.TryAddScoped<IObterOcorrenciaUseCase, ObterOcorrenciaUseCase>();
+            services.TryAddScoped<IAlterarOcorrenciaUseCase, AlterarOcorrenciaUseCase>();
+            services.TryAddScoped<IExcluirOcorrenciaUseCase, ExcluirOcorrenciaUseCase>();
+            services.TryAddScoped<IInserirOcorrenciaUseCase, InserirOcorrenciaUseCase>();
         }
     }
 }
