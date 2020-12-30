@@ -12,6 +12,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.Http;
 
 namespace SME.SGP.Aplicacao.Integracoes
 {
@@ -781,7 +782,9 @@ namespace SME.SGP.Aplicacao.Integracoes
             }
             else
             {
-                string erro = $"Não foi possível validar datas para a atribuição do professor no EOL - HttpCode {resposta.StatusCode} - Body {resposta.Content?.ReadAsStringAsync()?.Result ?? string.Empty}";
+                string erro = $"Não foi possível validar datas para a atribuição do professor no EOL - HttpCode {(int)resposta.StatusCode} - {new HttpResponseException(resposta)}";
+
+                
                 SentrySdk.AddBreadcrumb(erro);
                 throw new NegocioException(erro);
             }            
