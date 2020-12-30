@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Api.Middlewares;
+using SME.SGP.Infra;
 
 namespace SME.SGP.Api
 {
@@ -15,12 +16,16 @@ namespace SME.SGP.Api
             {
                 options.SuppressModelStateInvalidFilter = true;
             });
+
+            var conexao = services.BuildServiceProvider().GetService<ISgpContext>();
+
             services.AddMvc(options =>
             {
                 options.AllowValidatingTopLevelNodes = false;
                 options.EnableEndpointRouting = true;
                 options.Filters.Add(new ValidaDtoAttribute());
                 options.Filters.Add(new FiltroExcecoesAttribute(configuration));
+                options.Filters.Add(new DisposeConnectionFilter(conexao));
             })
                 .AddFluentValidation()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);

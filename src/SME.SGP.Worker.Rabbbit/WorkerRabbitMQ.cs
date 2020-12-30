@@ -25,7 +25,6 @@ namespace SME.SGP.Worker.RabbitMQ
     public class WorkerRabbitMQ : IHostedService
     {
         private readonly IModel canalRabbit;
-        private readonly string sentryDSN;
         private readonly IConnection conexaoRabbit;
         private readonly IServiceScopeFactory serviceScopeFactory;
 
@@ -38,7 +37,6 @@ namespace SME.SGP.Worker.RabbitMQ
 
         public WorkerRabbitMQ(IConnection conexaoRabbit, IServiceScopeFactory serviceScopeFactory, IConfiguration configuration)
         {
-            sentryDSN = configuration.GetValue<string>("Sentry:DSN");
             this.conexaoRabbit = conexaoRabbit ?? throw new ArgumentNullException(nameof(conexaoRabbit));
             this.serviceScopeFactory = serviceScopeFactory ?? throw new ArgumentNullException(nameof(serviceScopeFactory));
             canalRabbit = conexaoRabbit.CreateModel();
@@ -75,7 +73,6 @@ namespace SME.SGP.Worker.RabbitMQ
             comandos.Add(RotasRabbit.RotaExecutaPendenciasAula, new ComandoRabbit("Verifica as pendências de aula e cria caso exista", typeof(IPendenciaAulaUseCase)));
             comandos.Add(RotasRabbit.RotaSincronizaComponetesCurricularesEol, new ComandoRabbit("Sincroniza os compoentes curriculares com o Eol", typeof(ISincronizarComponentesCurricularesUseCase)));
             comandos.Add(RotasRabbit.RotaCalculoFrequenciaPorTurmaComponente, new ComandoRabbit("Cálculo de frequência por Turma e Componente", typeof(ICalculoFrequenciaTurmaDisciplinaUseCase)));
-
         }
 
         private async Task TratarMensagem(BasicDeliverEventArgs ea)
@@ -84,51 +81,50 @@ namespace SME.SGP.Worker.RabbitMQ
             var rota = ea.RoutingKey;
             if (comandos.ContainsKey(rota))
             {
-                using (SentrySdk.Init(sentryDSN))
+                var mensagemRabbit = JsonConvert.DeserializeObject<MensagemRabbit>(mensagem);
+                SentrySdk.AddBreadcrumb($"Dados: {mensagemRabbit.Mensagem}");
+                var comandoRabbit = comandos[rota];
+                try
                 {
-                    var mensagemRabbit = JsonConvert.DeserializeObject<MensagemRabbit>(mensagem);
-                    SentrySdk.AddBreadcrumb($"Dados: {mensagemRabbit.Mensagem}");
-                    var comandoRabbit = comandos[rota];
-                    try
+                    using (var scope = serviceScopeFactory.CreateScope())
                     {
-                        using (var scope = serviceScopeFactory.CreateScope())
-                        {
+                        AtribuirContextoAplicacao(mensagemRabbit, scope);
 
-                            AtribuirContextoAplicacao(mensagemRabbit, scope);
+                        SentrySdk.CaptureMessage($"{mensagemRabbit.UsuarioLogadoRF} - {mensagemRabbit.CodigoCorrelacao.ToString().Substring(0, 3)} - EXECUTANDO - {ea.RoutingKey} - {DateTime.Now:dd/MM/yyyy HH:mm:ss}", SentryLevel.Debug);
+                        var casoDeUso = scope.ServiceProvider.GetService(comandoRabbit.TipoCasoUso);
 
-                            SentrySdk.CaptureMessage($"{mensagemRabbit.UsuarioLogadoRF} - {mensagemRabbit.CodigoCorrelacao.ToString().Substring(0, 3)} - EXECUTANDO - {ea.RoutingKey} - {DateTime.Now:dd/MM/yyyy HH:mm:ss}", SentryLevel.Debug);
-                            var casoDeUso = scope.ServiceProvider.GetService(comandoRabbit.TipoCasoUso);
+                        await ObterMetodo(comandoRabbit.TipoCasoUso, "Executar").InvokeAsync(casoDeUso, new object[] { mensagemRabbit });
 
-                            await ObterMetodo(comandoRabbit.TipoCasoUso, "Executar").InvokeAsync(casoDeUso, new object[] { mensagemRabbit });
-
-                            SentrySdk.CaptureMessage($"{mensagemRabbit.UsuarioLogadoRF} - {mensagemRabbit.CodigoCorrelacao.ToString().Substring(0, 3)} - SUCESSO - {ea.RoutingKey}", SentryLevel.Info);
-                            canalRabbit.BasicAck(ea.DeliveryTag, false);
-                        }
+                        SentrySdk.CaptureMessage($"{mensagemRabbit.UsuarioLogadoRF} - {mensagemRabbit.CodigoCorrelacao.ToString().Substring(0, 3)} - SUCESSO - {ea.RoutingKey}", SentryLevel.Info);
+                        canalRabbit.BasicAck(ea.DeliveryTag, false);
                     }
-                    catch (NegocioException nex)
-                    {
-                        canalRabbit.BasicReject(ea.DeliveryTag, false);
-                        SentrySdk.AddBreadcrumb($"Erros: {nex.Message}");
-                        RegistrarSentry(ea, mensagemRabbit, nex);
-                        if (mensagemRabbit.NotificarErroUsuario)
-                            NotificarErroUsuario(nex.Message, mensagemRabbit.UsuarioLogadoRF, comandoRabbit.NomeProcesso);
-                    }
-                    catch (ValidacaoException vex)
-                    {
-                        canalRabbit.BasicReject(ea.DeliveryTag, false);
-                        SentrySdk.AddBreadcrumb($"Erros: {JsonConvert.SerializeObject(vex.Mensagens())}");
-                        RegistrarSentry(ea, mensagemRabbit, vex);
-                        if (mensagemRabbit.NotificarErroUsuario)
-                            NotificarErroUsuario($"Ocorreu um erro interno, por favor tente novamente", mensagemRabbit.UsuarioLogadoRF, comandoRabbit.NomeProcesso);
-                    }
-                    catch (Exception ex)
-                    {
-                        canalRabbit.BasicReject(ea.DeliveryTag, false);
-                        SentrySdk.AddBreadcrumb($"Erros: {ex.Message}");
-                        RegistrarSentry(ea, mensagemRabbit, ex);
-                        if (mensagemRabbit.NotificarErroUsuario)
-                            NotificarErroUsuario($"Ocorreu um erro interno, por favor tente novamente", mensagemRabbit.UsuarioLogadoRF, comandoRabbit.NomeProcesso);
-                    }
+                }
+                catch (NegocioException nex)
+                {
+                    canalRabbit.BasicReject(ea.DeliveryTag, false);
+                    SentrySdk.AddBreadcrumb($"Erros: {nex.Message}");
+                    SentrySdk.CaptureException(nex);
+                    RegistrarSentry(ea, mensagemRabbit, nex);
+                    if (mensagemRabbit.NotificarErroUsuario)
+                        NotificarErroUsuario(nex.Message, mensagemRabbit.UsuarioLogadoRF, comandoRabbit.NomeProcesso);
+                }
+                catch (ValidacaoException vex)
+                {
+                    canalRabbit.BasicReject(ea.DeliveryTag, false);
+                    SentrySdk.AddBreadcrumb($"Erros: {JsonConvert.SerializeObject(vex.Mensagens())}");
+                    SentrySdk.CaptureException(vex);
+                    RegistrarSentry(ea, mensagemRabbit, vex);
+                    if (mensagemRabbit.NotificarErroUsuario)
+                        NotificarErroUsuario($"Ocorreu um erro interno, por favor tente novamente", mensagemRabbit.UsuarioLogadoRF, comandoRabbit.NomeProcesso);
+                }
+                catch (Exception ex)
+                {
+                    canalRabbit.BasicReject(ea.DeliveryTag, false);
+                    SentrySdk.AddBreadcrumb($"Erros: {ex.Message}");
+                    SentrySdk.CaptureException(ex);
+                    RegistrarSentry(ea, mensagemRabbit, ex);
+                    if (mensagemRabbit.NotificarErroUsuario)
+                        NotificarErroUsuario($"Ocorreu um erro interno, por favor tente novamente", mensagemRabbit.UsuarioLogadoRF, comandoRabbit.NomeProcesso);
                 }
             }
             else

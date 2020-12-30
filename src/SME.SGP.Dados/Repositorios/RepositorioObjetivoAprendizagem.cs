@@ -50,14 +50,14 @@ namespace SME.SGP.Dados.Repositorios
                         ano_turma as ano, componente_curricular_id as idComponenteCurricular, componente_curricular_id as ComponenteCurricularEolId 
                         from objetivo_aprendizagem 
                         where ano_turma = @ano and 
-                        componente_curricular_id = @componente", 
+                        componente_curricular_id = @componente",
                         new { ano = ano.Name(), componente = componenteCurricularId });
                 conexao.Close();
                 return objetivos;
             }
         }
 
-        public async Task<IEnumerable<ObjetivoAprendizagemDto>> ObterPorAnoEComponenteCurricularJuremaIds(AnoTurma ano, long[] juremaIds)
+        public async Task<IEnumerable<ObjetivoAprendizagemDto>> ObterPorAnoEComponenteCurricularJuremaIds(AnoTurma? ano, long[] juremaIds)
         {
             using (var conexao = new NpgsqlConnection(connectionString))
             {
@@ -65,9 +65,9 @@ namespace SME.SGP.Dados.Repositorios
                 var objetivos = await conexao.QueryAsync<ObjetivoAprendizagemDto>($@"select id, descricao, codigo, 
                         ano_turma as ano, componente_curricular_id as idComponenteCurricular, componente_curricular_id as ComponenteCurricularEolId 
                         from objetivo_aprendizagem 
-                        where ano_turma = @ano and 
-                        componente_curricular_id = ANY(@componentes)",
-                        new { ano = ano.Name(), componentes = juremaIds });
+                        where  componente_curricular_id = ANY(@componentes) 
+                       {(ano.HasValue ? " and ano_turma = @ano " : "")} ",
+                        new { ano = ano?.Name(), componentes = juremaIds });
                 conexao.Close();
                 return objetivos;
             }
