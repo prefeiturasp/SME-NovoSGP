@@ -7,7 +7,7 @@ namespace SME.SGP.Infra
     {
         public long TurmaId { get; set; }
         public long ComponenteCurricularId { get; set; }
-        public string AlunoCodigo { get; set; }
+        public long AlunoCodigo { get; set; }
         public string Registro { get; set; }
         public DateTime Data { get; set; }
     }
@@ -33,8 +33,8 @@ namespace SME.SGP.Infra
                   .WithMessage("A data deve ser informada!");
 
             RuleFor(a => a.Registro)
-                   .NotEmpty().WithMessage("A descrição é obrigatório para o registro individual!")
-                   .MinimumLength(200).WithMessage("A descrição deve conter no mínimo 200 caracteres!");
+                   .NotEmpty()
+                   .WithMessage("A descrição é obrigatório para o registro individual!");
         }
     }
 }
