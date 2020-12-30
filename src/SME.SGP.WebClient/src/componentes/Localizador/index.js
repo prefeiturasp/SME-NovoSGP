@@ -26,7 +26,6 @@ function Localizador({
   dreId,
   anoLetivo,
   desabilitado,
-  incluirEmei,
 }) {
   const usuario = useSelector(store => store.usuario);
   const [dataSource, setDataSource] = useState([]);
@@ -63,7 +62,6 @@ function Localizador({
       nome: valor,
       dreId,
       anoLetivo,
-      incluirEmei,
     });
 
     if (dados && dados.length > 0) {
@@ -79,7 +77,6 @@ function Localizador({
         const { data: dados } = await service.buscarPorRf({
           rf,
           anoLetivo,
-          incluirEmei,
         });
         if (!dados) throw new RFNaoEncontradoExcecao();
 
@@ -96,7 +93,7 @@ function Localizador({
         erros(error);
       }
     },
-    [anoLetivo, incluirEmei]
+    [anoLetivo]
   );
 
   const onChangeRF = valor => {

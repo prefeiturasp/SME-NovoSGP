@@ -8,6 +8,7 @@ namespace SME.SGP.Dados
     {
         private readonly ISgpContext sgpContext;
         private IDbTransaction transacao;
+        public bool TransacaoAberta { get; set; }
 
         public UnitOfWork(ISgpContext sgpContext)
         {
@@ -16,30 +17,36 @@ namespace SME.SGP.Dados
 
         public void Dispose()
         {
-            Rollback();
+            if (TransacaoAberta)
+                Rollback();
         }
 
         public IDbTransaction IniciarTransacao()
         {
-            if (transacao == null || transacao?.Connection?.State == null)
+            if (transacao == null || transacao?.Connection?.State == null && !TransacaoAberta)
+            {
                 transacao = sgpContext.BeginTransaction();
-
+                TransacaoAberta = true;
+            }
+                
             return transacao;
         }
 
         public void PersistirTransacao()
         {
-            if (transacao != null)
+            if (transacao != null && TransacaoAberta)
             {
                 transacao.Commit();
+                TransacaoAberta = false;
             }
         }
 
         public void Rollback()
         {
-            if (transacao != null && transacao.Connection != null)
+            if (transacao != null && transacao.Connection != null && TransacaoAberta)
             {
                 transacao.Rollback();
+                TransacaoAberta = false;
             }
         }
     }
