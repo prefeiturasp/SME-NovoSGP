@@ -37,7 +37,7 @@ namespace SME.SGP.Dominio.Teste
                 new PeriodoEscolar
                 {
                     PeriodoInicio = DateTime.Now.AddDays(-5),
-                    PeriodoFim = DateTime.Now.AddDays(6)
+                    PeriodoFim = DateTime.Now.AddDays(7) >= new DateTime(DateTime.Now.Year, 12, 31) ? new DateTime(DateTime.Now.Year, 12, 30) : DateTime.Now.AddDays(7),
                 }
             };
 
@@ -56,7 +56,7 @@ namespace SME.SGP.Dominio.Teste
             Assert.Throws<NegocioException>(() => atribuicao.Validar(false, DateTime.Now.Year, periodos));
 
             periodos[0].PeriodoInicio = DateTime.Now.AddDays(1);
-            periodos[0].PeriodoFim = DateTime.Now.AddDays(7);
+            periodos[0].PeriodoFim = DateTime.Now.AddDays(7) > new DateTime(DateTime.Now.Year, 12, 31) ? new DateTime(DateTime.Now.Year, 12, 31) : DateTime.Now.AddDays(7);
 
             Assert.Throws<NegocioException>(() => atribuicao.Validar(false, DateTime.Now.Year, periodos));
 
@@ -94,7 +94,7 @@ namespace SME.SGP.Dominio.Teste
                 ProfessorRf = "1",
                 DreId = "1",
                 DataInicio = DateTime.Now,
-                DataFim = DateTime.Now.AddDays(7),
+                DataFim = DateTime.Now.AddDays(7) > new DateTime(DateTime.Now.Year, 12, 31) ? new DateTime(DateTime.Now.Year, 12, 31) : DateTime.Now.AddDays(7),
                 Id = 1
             };
         }
