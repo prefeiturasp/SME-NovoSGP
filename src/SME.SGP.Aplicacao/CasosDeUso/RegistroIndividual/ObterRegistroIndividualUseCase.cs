@@ -1,13 +1,20 @@
-﻿using SME.SGP.Infra;
+﻿using MediatR;
+using SME.SGP.Infra;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterRegistroIndividualUseCase : IObterRegistroIndividualUseCase
+    public class ObterRegistroIndividualUseCase : AbstractUseCase, IObterRegistroIndividualUseCase
     {
-        public async Task<RegistroIndividualDto> Executar(long param)
+        public ObterRegistroIndividualUseCase(IMediator mediator) : base(mediator)
         {
-            return await Task.FromResult(new RegistroIndividualDto());
+        }
+
+        public async Task<RegistroIndividualDto> Executar(long id)
+        {
+            var registroIndividual = await mediator.Send(new ObterRegistroIndividualPorIdQuery(id));
+          
+            return registroIndividual;
         }
     }
 }
