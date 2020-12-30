@@ -29,6 +29,10 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<AlunoDadosBasicosDto>> Handle(ListarAlunosDaTurmaPorComponenteQuery request, CancellationToken cancellationToken)
         {
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(request.TurmaId));
+
+            if(turma == null)
+                throw new NegocioException("Não foi encontrado turma com o id informado");
+
             var periodosAberto = await repositorioEventoFechamento.ObterPeriodosFechamentoEmAberto(turma.UeId, DateTime.Now.Date);
 
             PeriodoEscolar periodoEscolar;
