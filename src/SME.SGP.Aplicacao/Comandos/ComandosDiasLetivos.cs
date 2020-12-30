@@ -92,8 +92,8 @@ namespace SME.SGP.Aplicacao
 
             //verificar se eh eja ou nao
             var diasLetivosPermitidos = Convert.ToInt32(tipoCalendario.Modalidade == ModalidadeTipoCalendario.EJA ?
-                repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.EjaDiasLetivos, anoLetivo) :
-                repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.FundamentalMedioDiasLetivos, anoLetivo));
+                await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.EjaDiasLetivos, anoLetivo) :
+                await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.FundamentalMedioDiasLetivos, anoLetivo));
 
             estaAbaixo = diasLetivos < diasLetivosPermitidos;
 
