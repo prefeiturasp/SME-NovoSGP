@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SME.SGP.Infra.Dtos.Ocorrencias.Listagens
+﻿namespace SME.SGP.Infra
 {
     public class OcorrenciaListagemDto
     {
