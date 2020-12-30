@@ -62,7 +62,7 @@ const ListaOcorrencias = () => {
             formatoData="DD/MM/YYYY"
           />
         </div>
-        <div className="col-sm-12 col-md-3 mt-4">
+        <div className="col-sm-12 col-md-3" style={{ marginTop: '25px' }}>
           <CampoData
             valor={dataInicial}
             onChange={onChangeDataFinal}
@@ -71,7 +71,10 @@ const ListaOcorrencias = () => {
           />
         </div>
         <div className="col-sm-12 col-md-6">
-          <LocalizadorCrianca />
+          <LocalizadorCrianca
+            label="Criança"
+            placeHolder="Procure pelo nome da criança"
+          />
         </div>
       </Card>
     </>
