@@ -3,21 +3,23 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { Ordenacao } from '~/componentes-sgp';
 
-// import { setAlunosConselhoClasse } from '~/redux/modulos/conselhoClasse/actions';
+import { setAlunosRegistroIndividual } from '~/redux/modulos/registroIndividual/actions';
 
 const BotaoOrdenarListaAlunos = () => {
-  const alunosConselhoClasse = useSelector(
-    store => store.conselhoClasse.alunosConselhoClasse
+  const alunosRegistroIndividual = useSelector(
+    store => store.registroIndividual.alunosRegistroIndividual
   );
 
   const dispatch = useDispatch();
 
   return (
     <Ordenacao
-      conteudoParaOrdenar={alunosConselhoClasse}
+      conteudoParaOrdenar={alunosRegistroIndividual}
       ordenarColunaNumero="numeroChamada"
       ordenarColunaTexto="nome"
-      // retornoOrdenado={retorno => dispatch(setAlunosConselhoClasse(retorno))}
+      retornoOrdenado={retorno =>
+        dispatch(setAlunosRegistroIndividual(retorno))
+      }
     />
   );
 };
