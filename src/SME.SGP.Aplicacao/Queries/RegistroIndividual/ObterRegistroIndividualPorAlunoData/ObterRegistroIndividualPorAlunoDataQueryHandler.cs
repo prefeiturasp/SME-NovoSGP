@@ -19,25 +19,27 @@ namespace SME.SGP.Aplicacao
         {
             var registroIndividual = await repositorioRegistroIndividual.ObterPorAlunoData(request.TurmaId, request.ComponenteCurricularId, request.AlunoCodigo, request.Data);
 
-            if (registroIndividual == null)
-                throw new NegocioException("Registro não foi encontrado!");
-
             return MapearParaDto(registroIndividual);
         }
 
         private RegistroIndividualDto MapearParaDto(RegistroIndividual registro)
         {
-            return new RegistroIndividualDto()
+            if (registro != null)
             {
-                AlunoCodigo = registro.AlunoCodigo,
-                Auditoria = (AuditoriaDto)registro,
-                ComponenteCurricularId = registro.ComponenteCurricularId,
-                Data = registro.DataRegistro,
-                Excluido = registro.Excluido,
-                Migrado = registro.Migrado,
-                Registro = registro.Registro,
-                TurmaId = registro.TurmaId
-            };
+                return new RegistroIndividualDto()
+                {
+                    AlunoCodigo = registro.AlunoCodigo,
+                    Auditoria = (AuditoriaDto)registro,
+                    ComponenteCurricularId = registro.ComponenteCurricularId,
+                    Data = registro.DataRegistro,
+                    Excluido = registro.Excluido,
+                    Migrado = registro.Migrado,
+                    Registro = registro.Registro,
+                    TurmaId = registro.TurmaId
+                };
+            }
+            else
+                return null;
         }
     }
 }
