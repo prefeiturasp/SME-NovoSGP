@@ -26,7 +26,6 @@ function Localizador({
   dreId,
   anoLetivo,
   desabilitado,
-  incluirEmei,
   rfEdicao,
   buscarOutrosCargos,
   buscandoDados,
@@ -85,7 +84,7 @@ function Localizador({
         const { data: dados } = await service.buscarPorRf({
           rf,
           anoLetivo,
-          incluirEmei,
+          buscarOutrosCargos,
         });
         if (!dados) throw new RFNaoEncontradoExcecao();
 
