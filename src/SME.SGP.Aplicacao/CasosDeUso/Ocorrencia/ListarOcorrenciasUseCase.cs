@@ -1,8 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Infra;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -13,9 +11,10 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public Task<IEnumerable<OcorrenciaListagemDto>> Executar(FiltroOcorrenciaListagemDto param)
+        public async Task<IEnumerable<OcorrenciaListagemDto>> Executar(FiltroOcorrenciaListagemDto dto)
         {
-            throw new NotImplementedException();
+            var retorno = await mediator.Send(new ListarOcorrenciasQuery(dto.DataOcorrenciaInicio, dto.DataOcorrenciaFim, dto.AlunoNome, dto.Titulo));
+            return retorno;
         }
     }
 }

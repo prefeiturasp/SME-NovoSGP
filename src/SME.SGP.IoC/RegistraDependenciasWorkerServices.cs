@@ -289,6 +289,8 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IRepositorioPendenciaProfessor, RepositorioPendenciaProfessor>();
             services.TryAddScopedWorkerService<IRepositorioRemoveConexaoIdle, RepositorioRemoveConexaoIdle>();
             services.TryAddScopedWorkerService<IRepositorioOcorrencia, RepositorioOcorrencia>();
+            services.TryAddScopedWorkerService<IRepositorioOcorrenciaAluno, RepositorioOcorrenciaAluno>();
+            services.TryAddScopedWorkerService<IRepositorioOcorrenciaTipo, RepositorioOcorrenciaTipo>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)

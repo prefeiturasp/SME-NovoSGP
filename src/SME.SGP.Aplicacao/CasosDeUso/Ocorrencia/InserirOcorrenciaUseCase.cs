@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using SME.SGP.Infra;
-using System;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -11,9 +10,10 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public Task<AuditoriaDto> Executar(InserirOcorrenciaDto param)
+        public async Task<AuditoriaDto> Executar(InserirOcorrenciaDto dto)
         {
-            throw new NotImplementedException();
+            var retorno = await mediator.Send(new InserirOcorrenciaCommand(dto.DataOcorrencia, dto.HoraOcorrencia, dto.Titulo, dto.Descricao, dto.OcorrenciaTipoId, dto.CodigosAlunos));
+            return retorno;
         }
     }
 }
