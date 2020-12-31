@@ -162,7 +162,7 @@ const ListaOcorrencias = () => {
         <div className="col-md-12 pt-4">
           <ListaPaginada
             url="v1/ocorrencias"
-            id="lista-eventos"
+            id="lista-ocorrencias"
             colunaChave="id"
             colunas={colunas}
             filtro={filtro}
