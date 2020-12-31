@@ -80,6 +80,7 @@ import AtribuicaoCJ from '~/paginas/Relatorios/Gestao/AtribuicaoCJ/atribuicaoCJ'
 import RelatorioHistoricoAlteracoesNotas from '~/paginas/Relatorios/Fechamento/HistoricoAlteracoesNotas/relatorioHistoricoAlteracoesNotas';
 import relatorioEscolaAquiAdesao from '~/paginas/Relatorios/EscolaAqui/Adesao/relatorioEscolaAquiAdesao';
 import RelatorioLeitura from '~/paginas/Relatorios/EscolaAqui/Leitura/relatorioLeitura';
+import ListaOcorrencias from '~/paginas/Gestao/Ocorrencia/ListaOcorrencias';
 
 const rotas = new Map();
 
@@ -1092,6 +1093,17 @@ rotas.set(RotasDto.RELATORIO_ESCOLA_AQUI_ADESAO, {
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: false,
   chavePermissao: RotasDto.RELATORIO_ESCOLA_AQUI_ADESAO,
+});
+
+rotas.set(RotasDto.OCORRENCIAS, {
+  breadcrumbName: 'Ocorrências',
+  menu: ['Gestão'],
+  parent: '/',
+  component: ListaOcorrencias,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+  chavePermissao: RotasDto.OCORRENCIAS,
 });
 
 const rotasArray = [];
