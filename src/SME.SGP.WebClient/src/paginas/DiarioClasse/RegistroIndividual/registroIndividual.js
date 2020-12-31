@@ -17,6 +17,7 @@ import {
   limparDadosRegistroIndividual,
   setAlunosRegistroIndividual,
   setDadosAlunoObjectCard,
+  setComponenteCurricularSelecionado,
 } from '~/redux/modulos/registroIndividual/actions';
 
 import {
@@ -33,10 +34,6 @@ import { URL_HOME } from '~/constantes';
 const RegistroIndividual = () => {
   const [auditoria, setAuditoria] = useState();
   const [carregandoGeral, setCarregandoGeral] = useState(false);
-  const [
-    componenteCurricularSelecionado,
-    setComponenteCurricularSelecionado,
-  ] = useState();
   const [desabilitarCampos, setDesabilitarCampos] = useState(false);
   const [exibirListas, setExibirListas] = useState(false);
   const [listaComponenteCurricular, setListaComponenteCurricular] = useState(
@@ -45,9 +42,10 @@ const RegistroIndividual = () => {
   const [modoEdicao, setModoEdicao] = useState(false);
   const [turmaInfantil, setTurmaInfantil] = useState(false);
 
+  const componenteCurricularSelecionado = useSelector(
+    state => state.registroIndividual.componenteCurricularSelecionado
+  );
   const { turmaSelecionada } = useSelector(state => state.usuario);
-  const { turma } = turmaSelecionada;
-  const turmaId = turma || 0;
 
   const modalidadesFiltroPrincipal = useSelector(
     store => store.filtro.modalidades
@@ -56,15 +54,16 @@ const RegistroIndividual = () => {
   const dispatch = useDispatch();
 
   const obterListaAlunos = useCallback(async () => {
+    const turmaId = turmaSelecionada?.id || 0;
     const retorno = await ServicoRegistroIndividual.obterListaAlunos({
       componenteCurricularId: componenteCurricularSelecionado,
       turmaId,
-    });
+    }).catch(e => erros(e));
     if (retorno?.data) {
       dispatch(setAlunosRegistroIndividual(retorno.data));
       setExibirListas(true);
     }
-  }, [dispatch, componenteCurricularSelecionado, turmaId]);
+  }, [dispatch, componenteCurricularSelecionado, turmaSelecionada]);
 
   useEffect(() => {
     if (componenteCurricularSelecionado) {
@@ -86,35 +85,36 @@ const RegistroIndividual = () => {
 
   const onChangeAlunoSelecionado = async aluno => {
     resetarInfomacoes();
-    dispatch(setDadosAlunoObjectCard(aluno));
+    if (!aluno.desabilitado) {
+      dispatch(setDadosAlunoObjectCard(aluno));
+    }
   };
 
   const permiteOnChangeAluno = async () => {
-    // const validouNotaConceitoPosConselho = await servicoSalvarConselhoClasse.validarNotaPosConselho();
-    // const validouAnotacaoRecomendacao = validouNotaConceitoPosConselho
-    //   ? await servicoSalvarConselhoClasse.validarSalvarRecomendacoesAlunoFamilia()
-    //   : false;
     return true;
   };
 
   const obterComponentesCurriculares = useCallback(async () => {
+    const turmaId = turmaSelecionada?.turma || 0;
     setCarregandoGeral(true);
-    const { data } = await ServicoDisciplina.obterDisciplinasPorTurma(
+    const resposta = await ServicoDisciplina.obterDisciplinasPorTurma(
       turmaId
     ).catch(e => erros(e));
 
-    if (data?.length) {
-      setListaComponenteCurricular(data);
+    if (resposta?.data?.length) {
+      setListaComponenteCurricular(resposta?.data);
 
-      if (data.length === 1) {
-        setComponenteCurricularSelecionado(
-          String(data[0].codigoComponenteCurricular)
+      if (resposta?.data.length === 1) {
+        dispatch(
+          setComponenteCurricularSelecionado(
+            String(resposta?.data[0].codigoComponenteCurricular)
+          )
         );
       }
     }
 
     setCarregandoGeral(false);
-  }, [turmaId]);
+  }, [dispatch, turmaSelecionada]);
 
   const resetarTela = useCallback(() => {
     setModoEdicao(false);
@@ -122,7 +122,7 @@ const RegistroIndividual = () => {
   }, []);
 
   useEffect(() => {
-    if (turmaId && turmaInfantil) {
+    if (turmaSelecionada?.turma && turmaInfantil) {
       obterComponentesCurriculares();
       return;
     }
@@ -130,10 +130,15 @@ const RegistroIndividual = () => {
     setListaComponenteCurricular([]);
     setComponenteCurricularSelecionado(undefined);
     resetarTela();
-  }, [turmaId, obterComponentesCurriculares, resetarTela, turmaInfantil]);
+  }, [
+    turmaSelecionada,
+    obterComponentesCurriculares,
+    resetarTela,
+    turmaInfantil,
+  ]);
 
   const onChangeComponenteCurricular = valor => {
-    setComponenteCurricularSelecionado(valor);
+    dispatch(setComponenteCurricularSelecionado(valor));
   };
 
   const pergutarParaSalvar = () => {
@@ -177,6 +182,7 @@ const RegistroIndividual = () => {
   };
 
   const onClickCancelar = () => {};
+
   const onClickCadastrar = () => {};
 
   return (
@@ -223,13 +229,15 @@ const RegistroIndividual = () => {
                     onChangeAlunoSelecionado={onChangeAlunoSelecionado}
                     permiteOnChangeAluno={permiteOnChangeAluno}
                   >
-                    <div className="mb-2">
-                      <ObjectCardRegistroIndividual />
-                    </div>
-                    <DadosRegistroIndividual
-                      turmaCodigo={turmaSelecionada.turma}
-                      modalidade={turmaSelecionada.modalidade}
-                    />
+                    <>
+                      <div className="mb-2">
+                        <ObjectCardRegistroIndividual />
+                      </div>
+                      <DadosRegistroIndividual
+                        turmaCodigo={turmaSelecionada.turma}
+                        modalidade={turmaSelecionada.modalidade}
+                      />
+                    </>
                   </TabelaRetratilRegistroIndividual>
                 </div>
               </>

@@ -3,8 +3,57 @@ import api from '~/servicos/api';
 class ServicoRegistroIndividual {
   obterListaAlunos = ({ componenteCurricularId, turmaId }) => {
     return api.get(
-      `/v1/registros-individuais/turmas/${turmaId}/componentes-curriculares/${componenteCurricularId}/alunos`
+      `/v1/registros-individuais/turmas/${turmaId}/componentes-curriculares/` +
+        `${componenteCurricularId}/alunos`
     );
+  };
+
+  obterRegistroIndividualPorData = ({
+    alunoCodigo,
+    componenteCurricular,
+    data,
+    turmaId,
+  }) => {
+    return api.get(
+      `/v1/registros-individuais/turmas/${turmaId}/alunos/${alunoCodigo}/` +
+        `componentes-curriculares/${componenteCurricular}/data/${data}`
+    );
+  };
+
+  obterRegistroIndividualPorPeriodo = ({
+    alunoCodigo,
+    componenteCurricular,
+    dataInicio,
+    dataFim,
+    turmaCodigo,
+  }) => {
+    return api.get(
+      `/v1/registros-individuais/turmas/${turmaCodigo}/alunos/${alunoCodigo}/componentes-curriculares/` +
+        `${componenteCurricular}/dataInicio/${dataInicio}/dataFim/${dataFim}`
+    );
+  };
+
+  obterRegistroIndividualPorId = ({ id }) => {
+    return api.get(`/v1/registros-individuais/${id}`);
+  };
+
+  salvarRegistroIndividual = params => {
+    // {
+    //   "turmaId": 0,
+    //   "componenteCurricularId": 0,
+    //   "alunoCodigo": 0,
+    //   "registro": "string",
+    //   "data": "2020-12-30T20:48:00.519Z"
+    // }
+    return api.post('/v1/registros-individuais', params);
+  };
+
+  editarRegistroIndividual = ({ id }) => {
+    return api.put(`/v1/registros-individuais/${id}`);
+  };
+
+  deletarRegistroIndividual = ({ id }) => {
+    return api.delete(`/v1/registros-individuais/${id}`);
   };
 }
 

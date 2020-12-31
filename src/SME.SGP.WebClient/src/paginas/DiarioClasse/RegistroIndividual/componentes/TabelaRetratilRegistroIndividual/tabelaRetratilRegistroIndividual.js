@@ -10,7 +10,7 @@ const TabelaRetratilRegistroIndividual = ({
   permiteOnChangeAluno,
 }) => {
   const alunos = useSelector(
-    store => store.conselhoClasse.alunosConselhoClasse
+    store => store.registroIndividual.alunosRegistroIndividual
   );
 
   return (

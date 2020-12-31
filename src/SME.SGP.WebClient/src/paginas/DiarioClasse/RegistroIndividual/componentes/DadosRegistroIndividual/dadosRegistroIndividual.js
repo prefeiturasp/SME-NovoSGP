@@ -1,25 +1,22 @@
 import React from 'react';
-import shortid from 'shortid';
+import { useSelector } from 'react-redux';
 
-import RegistroIndividualCollapse from './registroIndividualCollapse';
+import NovoRegistroIndividual from './novoRegistroIndividual/novoRegistroIndividual';
+import RegistrosAnteriores from './registrosAnteriores/registrosAnteriores';
 
 const DadosRegistroIndividual = () => {
-  const items = [
-    {
-      titulo: 'Novo registro individual',
-    },
-    {
-      titulo: 'Registros anteriores',
-    },
-  ];
+  const dadosAlunoObjectCard = useSelector(
+    store => store.registroIndividual.dadosAlunoObjectCard
+  );
 
   return (
     <>
-      {items.map(({ titulo }) => (
-        <div key={shortid.generate()} className="px-4 pt-4">
-          <RegistroIndividualCollapse titulo={titulo} />
-        </div>
-      ))}
+      {!!Object.keys(dadosAlunoObjectCard).length && (
+        <>
+          <NovoRegistroIndividual dadosAlunoObjectCard={dadosAlunoObjectCard} />
+          <RegistrosAnteriores />
+        </>
+      )}
     </>
   );
 };
