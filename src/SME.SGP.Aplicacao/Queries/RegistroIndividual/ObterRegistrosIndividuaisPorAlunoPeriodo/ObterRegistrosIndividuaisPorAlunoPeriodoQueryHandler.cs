@@ -23,36 +23,36 @@ namespace SME.SGP.Aplicacao
         {
             var registrosIndividuais = await repositorioRegistroIndividual.ObterPorAlunoPeriodo(request.TurmaId, request.ComponenteCurricularId, request.AlunoCodigo, request.DataInicio, request.DataFim);
 
+            IEnumerable<RegistroIndividualDto> registrosDto = null;
+
+            if (registrosDto != null && registrosDto.Any())
+                registrosDto = MapearParaDto(registrosIndividuais);
+
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(request.TurmaId));
 
             return new RegistrosIndividuaisPeriodoDto()
             {
                 PodeRealizarNovoRegistro = !turma.EhTurmaHistorica,
-                RegistrosIndividuais = MapearParaDto(registrosIndividuais)
+                RegistrosIndividuais = registrosDto
             };
         }
 
         private IEnumerable<RegistroIndividualDto> MapearParaDto(IEnumerable<RegistroIndividual> registros)
         {
-            if (registros != null && registros.Any())
+            foreach (var registro in registros)
             {
-                foreach (var registro in registros)
+                yield return new RegistroIndividualDto()
                 {
-                    yield return new RegistroIndividualDto()
-                    {
-                        AlunoCodigo = registro.AlunoCodigo,
-                        Auditoria = (AuditoriaDto)registro,
-                        ComponenteCurricularId = registro.ComponenteCurricularId,
-                        Data = registro.DataRegistro,
-                        Excluido = registro.Excluido,
-                        Migrado = registro.Migrado,
-                        Registro = registro.Registro,
-                        TurmaId = registro.TurmaId
-                    };
-                }
+                    AlunoCodigo = registro.AlunoCodigo,
+                    Auditoria = (AuditoriaDto)registro,
+                    ComponenteCurricularId = registro.ComponenteCurricularId,
+                    Data = registro.DataRegistro,
+                    Excluido = registro.Excluido,
+                    Migrado = registro.Migrado,
+                    Registro = registro.Registro,
+                    TurmaId = registro.TurmaId
+                };
             }
-            else
-               yield return null;
         }
     }
 }
