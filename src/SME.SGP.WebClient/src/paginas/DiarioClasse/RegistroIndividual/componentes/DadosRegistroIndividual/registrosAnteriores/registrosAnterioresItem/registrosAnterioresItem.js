@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { Auditoria, CampoData } from '~/componentes';
+import { Auditoria, CampoData, Label } from '~/componentes';
 import Editor from '~/componentes/editor/editor';
 
 import { ServicoRegistroIndividual } from '~/servicos';
@@ -9,7 +9,8 @@ import { ServicoRegistroIndividual } from '~/servicos';
 import { setDadosPrincipaisRegistroIndividual } from '~/redux/modulos/registroIndividual/actions';
 
 const RegistrosAnterioresItem = React.memo(() => {
-  const [data, setData] = useState();
+  const [dataInicio, setDataInicio] = useState();
+  const [dataFim, setDataFim] = useState();
 
   const componenteCurricularSelecionado = useSelector(
     state => state.registroIndividual.componenteCurricularSelecionado
@@ -22,20 +23,24 @@ const RegistrosAnterioresItem = React.memo(() => {
   );
   const { turmaSelecionada } = useSelector(state => state.usuario);
   const { turma } = turmaSelecionada;
-  const turmaId = turma || 0;
+  const turmaCodigo = turma || 0;
 
+  const auditoria =
+    dadosPrincipaisRegistroIndividual?.registroIndividual?.auditoria;
   const dispatch = useDispatch();
 
   const obterRegistroIndividualPorData = useCallback(async () => {
-    const dataFormatada = data?.format('MM-DD-YYYY');
+    const dataFormatadaInicio = dataInicio?.format('MM-DD-YYYY');
+    const dataFormatadaFim = dataFim?.format('MM-DD-YYYY');
 
-    if (dataFormatada) {
-      const retorno = await ServicoRegistroIndividual.obterRegistroIndividualPorData(
+    if (dataFormatadaInicio && dataFormatadaFim) {
+      const retorno = await ServicoRegistroIndividual.obterRegistroIndividualPorPeriodo(
         {
           alunoCodigo: dadosAlunoObjectCard.codigoEOL,
           componenteCurricular: componenteCurricularSelecionado,
-          data: dataFormatada,
-          turmaId,
+          dataInicio: dataFormatadaInicio,
+          dataFim: dataFormatadaFim,
+          turmaCodigo,
         }
       );
       if (retorno?.data) {
@@ -46,8 +51,9 @@ const RegistrosAnterioresItem = React.memo(() => {
     dispatch,
     componenteCurricularSelecionado,
     dadosAlunoObjectCard,
-    data,
-    turmaId,
+    dataInicio,
+    dataFim,
+    turmaCodigo,
   ]);
 
   useEffect(() => {
@@ -78,11 +84,63 @@ const RegistrosAnterioresItem = React.memo(() => {
     return false;
   };
 
-  const obterAuditoria = () => {
-    const auditoria =
-      dadosPrincipaisRegistroIndividual?.registroIndividual?.auditoria;
-    if (auditoria) {
-      return (
+  useEffect(() => {
+    if (!dataInicio) {
+      setDataInicio(window.moment().subtract(60, 'd'));
+    }
+  }, [dataInicio]);
+
+  useEffect(() => {
+    if (!dataFim) {
+      setDataFim(window.moment());
+    }
+  }, [dataFim]);
+
+  return (
+    <>
+      <div className="row px-3">
+        <div className="col-12 pl-0">
+          <Label text="Visualizar registros no período" />
+        </div>
+        <div className="col-3 p-0 pb-2 pr-3">
+          <CampoData
+            formatoData="DD/MM/YYYY"
+            name="dataInicio"
+            valor={dataInicio}
+            onChange={data => setDataInicio(data)}
+            placeholder="Data início"
+          />
+        </div>
+        <div className="col-3 p-0 pb-2 mb-4">
+          <CampoData
+            formatoData="DD/MM/YYYY"
+            name="dataFim"
+            valor={dataFim}
+            onChange={data => setDataFim(data)}
+            placeholder="Data fim"
+          />
+        </div>
+        <div className="p-0 col-12">
+          <Editor
+            validarSeTemErro={validarSeTemErro}
+            mensagemErro="Campo obrigatório"
+            id="editor"
+            inicial={
+              dadosPrincipaisRegistroIndividual?.registroIndividual || ''
+            }
+            onChange={v => {
+              // if (
+              //   !planoAnualSomenteConsulta &&
+              //   periodoAberto
+              // ) {
+              //   dispatch(setPlanoAnualEmEdicao(true));
+              //   onChange(v);
+              // }
+            }}
+          />
+        </div>
+      </div>
+      {auditoria && (
         <div className="row">
           <Auditoria
             criadoEm={auditoria.criadoEm}
@@ -93,46 +151,7 @@ const RegistrosAnterioresItem = React.memo(() => {
             alteradoRf={auditoria.alteradoRF}
           />
         </div>
-      );
-    }
-    return '';
-  };
-
-  useEffect(() => {
-    if (!data) {
-      setData(window.moment());
-    }
-  }, [data]);
-
-  return (
-    <>
-      <div className="col-3 p-0 pb-2">
-        <CampoData
-          name="data"
-          placeholder="Selecione"
-          valor={data}
-          formatoData="DD/MM/YYYY"
-          onChange={e => setData(e)}
-        />
-      </div>
-      <div className="pt-1">
-        <Editor
-          validarSeTemErro={validarSeTemErro}
-          mensagemErro="Campo obrigatório"
-          id="editor"
-          inicial={dadosPrincipaisRegistroIndividual?.registroIndividual || ''}
-          onChange={v => {
-            // if (
-            //   !planoAnualSomenteConsulta &&
-            //   periodoAberto
-            // ) {
-            //   dispatch(setPlanoAnualEmEdicao(true));
-            //   onChange(v);
-            // }
-          }}
-        />
-        {obterAuditoria()}
-      </div>
+      )}
     </>
   );
 });
