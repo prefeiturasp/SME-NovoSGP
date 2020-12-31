@@ -24,14 +24,20 @@ namespace SME.SGP.Api.Controllers
         // O permissionamento será adicionado em uma task separada
         public async Task<IActionResult> Get([FromQuery] FiltroOcorrenciaListagemDto dto)
         {
-            var resultado = new List<OcorrenciaListagemDto>
+            var lista = new List<OcorrenciaListagemDto>
             {
                 new OcorrenciaListagemDto { AlunoOcorrencia = "Carlos Augusto Ferreira Dias (1234567)", DataOcorrencia = DateTime.Today.ToString("dd/MM/yyyy"), Id = 1, Titulo = "Briga na escola"},
                 new OcorrenciaListagemDto { AlunoOcorrencia = "Marcos Lobo (1234567)", DataOcorrencia = DateTime.Today.ToString("dd/MM/yyyy"), Id = 2, Titulo = "Acidente em sala de aula"},
                 new OcorrenciaListagemDto { AlunoOcorrencia = "3 alunos envolvidos", DataOcorrencia = DateTime.Today.ToString("dd/MM/yyyy"), Id = 3, Titulo = "Vandalismo no pátio"},
             };
 
-            return await Task.FromResult(Ok(resultado));
+            var paginas = new PaginacaoResultadoDto<OcorrenciaListagemDto>() {
+                Items = lista,
+                TotalPaginas = 1,
+                TotalRegistros = lista.Count()
+            };
+
+            return await Task.FromResult(Ok(paginas));
         }
 
         [HttpGet("{id}")]

@@ -28,3 +28,4 @@ export { default as SelectAutocomplete } from './select-autocomplete';
 export { default as TabComponent } from './tabs/tabs';
 export { default as Tag } from './Tag';
 export { default as TextEditor } from './textEditor';
+export { default as InputBusca } from './InputBusca/InputBusca';
