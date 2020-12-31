@@ -1,3 +1,5 @@
+DROP TABLE if exists public.opcao_resposta;
+DROP TABLE if exists public.questao;
 DROP TABLE if exists public.questionario;
 
 CREATE table public.questionario (
@@ -15,7 +17,6 @@ CREATE table public.questionario (
 );
 
 
-DROP TABLE if exists public.questao;
 CREATE table public.questao (
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
 	questionario_id int8 not null,
@@ -41,7 +42,6 @@ CREATE INDEX questao_questionario_idx ON public.questao USING btree (questionari
 ALTER TABLE public.questao ADD CONSTRAINT questao_questionario_fk FOREIGN KEY (questionario_id) REFERENCES questionario(id);
 
 
-DROP TABLE if exists public.opcao_resposta;
 CREATE table public.opcao_resposta (
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
 	questao_id int8 not null,
