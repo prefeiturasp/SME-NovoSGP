@@ -1,8 +1,7 @@
-﻿namespace SME.SGP.Dominio.Entidades
+﻿namespace SME.SGP.Dominio
 {
-    public class OcorrenciaAluno
+    public class OcorrenciaAluno : EntidadeBase
     {
-        public long Id { get; set; }
         public long CodigoAluno { get; set; }
         public Ocorrencia Ocorrencia { get; set; }
         public long OcorrenciaId { get; set; }

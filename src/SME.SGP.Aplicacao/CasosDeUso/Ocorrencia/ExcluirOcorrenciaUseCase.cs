@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -11,9 +10,10 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public Task<bool> Executar(IEnumerable<long> param)
+        public async Task<bool> Executar(IEnumerable<long> lstIds)
         {
-            throw new NotImplementedException();
+            var retorno = await mediator.Send(new ExcluirOcorrenciaCommand(lstIds));
+            return retorno;
         }
     }
 }

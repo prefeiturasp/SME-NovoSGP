@@ -11,9 +11,10 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public Task<OcorrenciaDto> Executar(long param)
+        public async Task<OcorrenciaDto> Executar(long id)
         {
-            throw new NotImplementedException();
+            var retorno = await mediator.Send(new ObterOcorrenciaPorIdQuery(id));
+            return retorno;
         }
     }
 }

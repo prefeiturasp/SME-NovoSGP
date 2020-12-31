@@ -304,6 +304,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioTipoDocumento, RepositorioTipoDocumento>();
             services.TryAddScoped<IRepositorioRemoveConexaoIdle, RepositorioRemoveConexaoIdle>();
             services.TryAddScoped<IRepositorioOcorrencia, RepositorioOcorrencia>();
+            services.TryAddScoped<IRepositorioOcorrenciaAluno, RepositorioOcorrenciaAluno>();
+            services.TryAddScoped<IRepositorioOcorrenciaTipo, RepositorioOcorrenciaTipo>();
 
 
 

@@ -11,9 +11,10 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public Task<AuditoriaDto> Executar(AlterarOcorrenciaDto param)
+        public async Task<AuditoriaDto> Executar(AlterarOcorrenciaDto dto)
         {
-            throw new NotImplementedException();
+            var retorno = await mediator.Send(new AlterarOcorrenciaCommand(dto.Id, dto.DataOcorrencia, dto.HoraOcorrencia, dto.Titulo, dto.Descricao, dto.OcorrenciaTipoId, dto.CodigosAlunos));
+            return retorno;
         }
     }
 }
