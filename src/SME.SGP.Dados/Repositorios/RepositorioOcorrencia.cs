@@ -1,7 +1,10 @@
 ﻿using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados
@@ -10,21 +13,22 @@ namespace SME.SGP.Dados
     {
         public RepositorioOcorrencia(ISgpContext conexao) : base(conexao) { }
 
-		public async Task<IEnumerable<Ocorrencia>> Listar(long diarioBordoId, long usuarioLogadoId)
+		public async Task<IEnumerable<Ocorrencia>> Listar(string titulo, string alunoNome, DateTime? dataOcorrenciaInicio, DateTime? dataOcorrenciaFim)
 		{
-			var sql = @"select
+			StringBuilder query = new StringBuilder();
+			query.AppendLine(@"select
 							o.id,
-							titulo,
-							data_ocorrencia,
-							hora_ocorrencia,
-							descricao,
-							ocorrencia_tipo_id,
-							excluido,
-							criado_rf,
-							criado_em,
-							alterado_em,
-							alterado_por,
-							alterado_rf
+							o.titulo,
+							o.data_ocorrencia,
+							o.hora_ocorrencia,
+							o.descricao,
+							o.ocorrencia_tipo_id,
+							o.excluido,
+							o.criado_rf,
+							o.criado_em,
+							o.alterado_em,
+							o.alterado_por,
+							o.alterado_rf,
 							ot.id,
 							ot.descricao,
 							oa.id,
@@ -33,15 +37,33 @@ namespace SME.SGP.Dados
 							ocorrencia o
 						inner join ocorrencia_tipo ot on ot.id = o.ocorrencia_tipo_id 
 						inner join ocorrencia_aluno oa on oa.ocorrencia_id = o.id
-						where
-							diario_bordo_id = @diarioBordoId
-							and not excluido 
-                        order by criado_em desc";
+						where not excluido ");
 
-			return await database.Conexao.QueryAsync<Ocorrencia, OcorrenciaTipo, OcorrenciaAluno, Ocorrencia>(sql, (ocorrencia, tipo, aluno) =>
+			if (!string.IsNullOrEmpty(titulo))
+				query.AppendLine("and lower(f_unaccent(o.titulo)) LIKE lower(f_unaccent(@titulo))");
+
+			if (dataOcorrenciaInicio.HasValue)
+				query.AppendLine("and data_ocorrencia::date >= @dataOcorrenciaInicio  ");
+
+			if (dataOcorrenciaFim.HasValue)
+				query.AppendLine("and data_ocorrencia::date <= @dataOcorrenciaFim");
+
+
+			var lstOcorrencias = new Dictionary<long, Ocorrencia>();
+
+			await database.Conexao.QueryAsync<Ocorrencia, OcorrenciaTipo, OcorrenciaAluno, Ocorrencia>(query.ToString(), (ocorrencia, tipo, aluno) =>
 			{
-				
-			}, new { diarioBordoId }, splitOn: "id, id");
+                if (!lstOcorrencias.TryGetValue(ocorrencia.Id, out Ocorrencia ocorrenciaEntrada))
+                {
+                    ocorrenciaEntrada = ocorrencia;
+					ocorrenciaEntrada.OcorrenciaTipo = tipo;
+					lstOcorrencias.Add(ocorrenciaEntrada.Id, ocorrenciaEntrada);
+                }
+
+				ocorrenciaEntrada.Alunos.Add(aluno);
+			}, new { titulo, alunoNome, dataOcorrenciaInicio, dataOcorrenciaFim }, splitOn: "id, id");
+
+			return lstOcorrencias.Values.ToList();
 		}
 	}
 }

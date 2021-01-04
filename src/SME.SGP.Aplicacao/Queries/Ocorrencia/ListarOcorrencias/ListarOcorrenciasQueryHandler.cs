@@ -19,8 +19,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<OcorrenciaListagemDto>> Handle(ListarOcorrenciasQuery request, CancellationToken cancellationToken)
         {
-            var listagem = await repositorioOcorrencia.Listar(1, 1);
-            return default;
+            var listagem = await repositorioOcorrencia.Listar(request.Titulo, request.AlunoNome, request.DataOcorrenciaInicio, request.DataOcorrenciaFim);
+            return listagem;
         }
     }
 }
