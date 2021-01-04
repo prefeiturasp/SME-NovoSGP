@@ -81,6 +81,7 @@ import RelatorioHistoricoAlteracoesNotas from '~/paginas/Relatorios/Fechamento/H
 import relatorioEscolaAquiAdesao from '~/paginas/Relatorios/EscolaAqui/Adesao/relatorioEscolaAquiAdesao';
 import RelatorioLeitura from '~/paginas/Relatorios/EscolaAqui/Leitura/relatorioLeitura';
 import ListaOcorrencias from '~/paginas/Gestao/Ocorrencia/ListaOcorrencias';
+import CadastroOcorrencias from '~/paginas/Gestao/Ocorrencia/CadastroOcorrencias';
 
 const rotas = new Map();
 
@@ -1100,6 +1101,16 @@ rotas.set(RotasDto.OCORRENCIAS, {
   menu: ['Gestão'],
   parent: '/',
   component: ListaOcorrencias,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+  chavePermissao: RotasDto.OCORRENCIAS,
+});
+
+rotas.set(`${RotasDto.OCORRENCIAS}/novo`, {
+  breadcrumbName: 'Cadastro',
+  parent: RotasDto.OCORRENCIAS,
+  component: CadastroOcorrencias,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: false,
