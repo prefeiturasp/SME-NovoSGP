@@ -48,7 +48,7 @@ const JoditEditor = forwardRef((props, ref) => {
 
   const BOTOES_PADRAO = !removerToolbar
     ? `bold,ul,ol,outdent,indent,font,fontsize,brush,paragraph,${
-        permiteInserirArquivo ? 'file,video,' : ''
+        permiteInserirArquivo ? 'file,' : ''
       }table,link,align,undo,redo`
     : '';
 
