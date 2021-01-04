@@ -129,6 +129,7 @@ namespace SME.SGP.Worker.RabbitMQ
                     {
                         canalRabbit.BasicReject(ea.DeliveryTag, false);
                         SentrySdk.AddBreadcrumb($"Erros: {nex.Message}");
+                        SentrySdk.CaptureException(nex);
                         RegistrarSentry(ea, mensagemRabbit, nex);
                         if (mensagemRabbit.NotificarErroUsuario)
                             NotificarErroUsuario(nex.Message, mensagemRabbit.UsuarioLogadoRF, comandoRabbit.NomeProcesso);
@@ -137,6 +138,7 @@ namespace SME.SGP.Worker.RabbitMQ
                     {
                         canalRabbit.BasicReject(ea.DeliveryTag, false);
                         SentrySdk.AddBreadcrumb($"Erros: {JsonConvert.SerializeObject(vex.Mensagens())}");
+                        SentrySdk.CaptureException(vex);
                         RegistrarSentry(ea, mensagemRabbit, vex);
                         if (mensagemRabbit.NotificarErroUsuario)
                             NotificarErroUsuario($"Ocorreu um erro interno, por favor tente novamente", mensagemRabbit.UsuarioLogadoRF, comandoRabbit.NomeProcesso);
@@ -145,6 +147,7 @@ namespace SME.SGP.Worker.RabbitMQ
                     {
                         canalRabbit.BasicReject(ea.DeliveryTag, false);
                         SentrySdk.AddBreadcrumb($"Erros: {ex.Message}");
+                        SentrySdk.CaptureException(ex);
                         RegistrarSentry(ea, mensagemRabbit, ex);
                         if (mensagemRabbit.NotificarErroUsuario)
                             NotificarErroUsuario($"Ocorreu um erro interno, por favor tente novamente", mensagemRabbit.UsuarioLogadoRF, comandoRabbit.NomeProcesso);
