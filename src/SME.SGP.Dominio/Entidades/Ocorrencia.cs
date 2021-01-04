@@ -7,6 +7,8 @@ namespace SME.SGP.Dominio
     public class Ocorrencia : EntidadeBase
     {
         public ICollection<OcorrenciaAluno> Alunos { get; set; }
+        public long TurmaId { get; set; }
+        public Turma Turma { get; set; }
         public DateTime DataOcorrencia { get; set; }
         public string Descricao { get; set; }
         public bool Excluido { get; set; }
