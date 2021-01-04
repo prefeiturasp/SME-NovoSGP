@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.Ocorrencias.Alteracoes;
@@ -118,10 +119,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         // O permissionamento será adicionado em uma task separada
-        public async Task<IActionResult> Excluir([FromBody] IEnumerable<long> ids)
+        public async Task<IActionResult> Excluir([FromBody] IEnumerable<long> ids, [FromServices] IExcluirOcorrenciasPorCodigoUseCase excluirOcorrenciasPorCodigoUseCase)
         {
-            if (!ids?.Any() ?? true)
-                throw new NegocioException("Selecione uma ou mais ocorrências para serem excluídas.");
+            var retorno = await excluirOcorrenciasPorCodigoUseCase.Executar(ids);
 
             return await Task.FromResult(Ok());
         }
