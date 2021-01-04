@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
 
             IEnumerable<RegistroIndividualDto> registrosDto = null;
 
-            if (registrosDto != null && registrosDto.Any())
+            if (registrosIndividuais != null && registrosIndividuais.Any())
                 registrosDto = MapearParaDto(registrosIndividuais);
 
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(request.TurmaId));
