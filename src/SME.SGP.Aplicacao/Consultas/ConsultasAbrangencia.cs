@@ -87,7 +87,7 @@ namespace SME.SGP.Aplicacao
 
         public Task<IEnumerable<int>> ObterAnosLetivosTodos()
         {
-            var anos = Enumerable.Range(2014, 7).OrderByDescending(x => x).AsEnumerable();
+            var anos = Enumerable.Range(2014, 8).OrderByDescending(x => x).AsEnumerable();
 
             return Task.FromResult(anos);
         }
