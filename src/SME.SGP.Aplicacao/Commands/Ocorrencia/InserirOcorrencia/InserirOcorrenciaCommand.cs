@@ -48,7 +48,7 @@ namespace SME.SGP.Aplicacao
             RuleFor(x => x.HoraOcorrencia)
                 .Matches("^([01][0-9]|2[0-3]):([0-5][0-9])$")
                 .When(x => !string.IsNullOrWhiteSpace(x.HoraOcorrencia))
-                .WithMessage("A hora da ocorrência informada é invàlida.");
+                .WithMessage("A hora da ocorrência informada é inválida.");
 
             RuleFor(x => x.OcorrenciaTipoId)
                 .NotEmpty()
