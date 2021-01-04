@@ -13,11 +13,12 @@ namespace SME.SGP.Dados
     {
         public RepositorioOcorrencia(ISgpContext conexao) : base(conexao) { }
 
-		public async Task<IEnumerable<Ocorrencia>> Listar(string titulo, string alunoNome, DateTime? dataOcorrenciaInicio, DateTime? dataOcorrenciaFim)
-		{
-			StringBuilder query = new StringBuilder();
-			query.AppendLine(@"select
+        public async Task<IEnumerable<Ocorrencia>> Listar(long turmaId, string titulo, string alunoNome, DateTime? dataOcorrenciaInicio, DateTime? dataOcorrenciaFim, string[] codigosAluno)
+        {
+            StringBuilder query = new StringBuilder();
+            query.AppendLine(@"select
 							o.id,
+							o.turma_id,
 							o.titulo,
 							o.data_ocorrencia,
 							o.hora_ocorrencia,
@@ -39,32 +40,48 @@ namespace SME.SGP.Dados
 						inner join ocorrencia_aluno oa on oa.ocorrencia_id = o.id
 						where not excluido ");
 
-			if (!string.IsNullOrEmpty(titulo))
-				query.AppendLine("and lower(f_unaccent(o.titulo)) LIKE lower(f_unaccent(@titulo))");
+            if (!string.IsNullOrEmpty(titulo))
+                query.AppendLine("and lower(f_unaccent(o.titulo)) LIKE lower(f_unaccent(@titulo))");
 
-			if (dataOcorrenciaInicio.HasValue)
-				query.AppendLine("and data_ocorrencia::date >= @dataOcorrenciaInicio  ");
+            if (dataOcorrenciaInicio.HasValue)
+                query.AppendLine("and data_ocorrencia::date >= @dataOcorrenciaInicio  ");
 
-			if (dataOcorrenciaFim.HasValue)
-				query.AppendLine("and data_ocorrencia::date <= @dataOcorrenciaFim");
+            if (dataOcorrenciaFim.HasValue)
+                query.AppendLine("and data_ocorrencia::date <= @dataOcorrenciaFim");
+
+            if (codigosAluno != null)
+                query.AppendLine("and oa.codigo_aluno = ANY(@codigosAluno)");
 
 
-			var lstOcorrencias = new Dictionary<long, Ocorrencia>();
+            var lstOcorrencias = new Dictionary<long, Ocorrencia>();
 
-			await database.Conexao.QueryAsync<Ocorrencia, OcorrenciaTipo, OcorrenciaAluno, Ocorrencia>(query.ToString(), (ocorrencia, tipo, aluno) =>
-			{
+            await database.Conexao.QueryAsync<Ocorrencia, OcorrenciaTipo, OcorrenciaAluno, Ocorrencia>(query.ToString(), (ocorrencia, tipo, aluno) =>
+            {
                 if (!lstOcorrencias.TryGetValue(ocorrencia.Id, out Ocorrencia ocorrenciaEntrada))
                 {
                     ocorrenciaEntrada = ocorrencia;
-					ocorrenciaEntrada.OcorrenciaTipo = tipo;
-					lstOcorrencias.Add(ocorrenciaEntrada.Id, ocorrenciaEntrada);
+                    ocorrenciaEntrada.OcorrenciaTipo = tipo;
+                    lstOcorrencias.Add(ocorrenciaEntrada.Id, ocorrenciaEntrada);
                 }
 
-				ocorrenciaEntrada.Alunos.Add(aluno);
-				return ocorrenciaEntrada;
-			}, new { titulo, alunoNome, dataOcorrenciaInicio, dataOcorrenciaFim }, splitOn: "id, id");
+                ocorrenciaEntrada.Alunos.Add(aluno);
+                return ocorrenciaEntrada;
+            }, new { titulo, alunoNome, dataOcorrenciaInicio, dataOcorrenciaFim, codigosAluno }, splitOn: "id, id");
 
-			return lstOcorrencias.Values.ToList();
-		}
-	}
+            return lstOcorrencias.Values.ToList();
+        }
+
+        public async Task<IEnumerable<string>> ObterAlunosPorOcorrencia(long ocorrenciaId)
+        {
+            string query = @"select
+							oa.codigo_aluno
+						from
+							ocorrencia o
+						inner join ocorrencia_tipo ot on ot.id = o.ocorrencia_tipo_id 
+						inner join ocorrencia_aluno oa on oa.ocorrencia_id = o.id
+						where not excluido and o.id = @ocorrenciaId ";
+
+            return await database.Conexao.QueryAsync<string>(query.ToString(), new { ocorrenciaId });
+        }
+    }
 }
