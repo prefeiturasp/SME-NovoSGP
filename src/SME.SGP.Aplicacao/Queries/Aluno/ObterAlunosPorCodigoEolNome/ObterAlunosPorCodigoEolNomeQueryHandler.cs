@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao.Queries.Aluno.ObterAlunosPorCodigoEolNome
         {
             try
             {
-                var alunosEOL = await servicoEOL.ObterAlunosPorNomeCodigoEol(request.AnoLetivo, request.CodigoUe, request.Nome, request.CodigoEOL);
+                var alunosEOL = await servicoEOL.ObterAlunosPorNomeCodigoEol(request.AnoLetivo, request.CodigoUe, request.CodigoTurma, request.Nome, request.CodigoEOL);
                 alunosEOL = alunosEOL.OrderBy(a => a.NomeAluno);
                 return MapearParaDto(alunosEOL);
             }
