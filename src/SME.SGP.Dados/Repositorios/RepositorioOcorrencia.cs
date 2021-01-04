@@ -1,6 +1,5 @@
 ﻿using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Entidades;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -15,10 +14,10 @@ namespace SME.SGP.Dados
 		{
 			var sql = @"select
 							id,
-							observacao,
-							(usuario_id = @usuarioLogadoId) as Proprietario,
-							criado_em as CriadoEm,
-							criado_por as CriadoPor,
+							data_ocorrencia,
+							descricao,
+							excluido,
+							hora_ocorrencia,
 							criado_rf as CriadoRf,
 							alterado_em as AlteradoEm,
 							alterado_por as AlteradoPor,
