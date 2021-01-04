@@ -243,7 +243,7 @@ namespace SME.SGP.Aplicacao.Integracoes
         public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosAtivosPorTurma(long turmaId)
         {
             var alunos = new List<AlunoPorTurmaResposta>();
-            var resposta = await httpClient.GetAsync($"turmas/{turmaId}/alunos-ativos");
+            var resposta = await httpClient.GetAsync($"turmas/{turmaId}");
 
             if (!resposta.IsSuccessStatusCode)
                 throw new NegocioException($"Não foi encontrado alunos ativos para a turma {turmaId}");
