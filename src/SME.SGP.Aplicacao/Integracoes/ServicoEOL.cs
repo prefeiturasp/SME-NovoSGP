@@ -285,10 +285,10 @@ namespace SME.SGP.Aplicacao.Integracoes
         public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorNomeCodigoEol(string anoLetivo, string codigoUe, long codigoTurma, string nome, string codigoEol)
         {
             var alunos = new List<AlunoPorTurmaResposta>();
-            var url = $"alunos/ues/{codigoUe}/anosLetivos/{anoLetivo}/autocomplete" 
-                + (codigoTurma > 0 ? $"?codigoTurma={codigoTurma}" : 0) 
+            var url = $"alunos/ues/{codigoUe}/anosLetivos/{anoLetivo}/autocomplete"
+                + (codigoTurma > 0 ? $"?codigoTurma={codigoTurma}" : null)
                 + (codigoEol != null ? $"{(codigoTurma > 0 ? "&" : "?") + $"codigoEol={codigoEol}"}" : "")
-                + (codigoEol != null ? $"{(codigoTurma > 0 ? "&" : "?") + $"nome={nome}"}" : "");
+                + (nome != null ? $"{(codigoEol != null ? "&" : "?") + $"nome={nome}"}" : "");
 
             var resposta = await httpClient.GetAsync(url);
 

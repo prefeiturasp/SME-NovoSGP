@@ -16,7 +16,7 @@ namespace SME.SGP.Api.Controllers
     {
 
         [HttpPost]
-        [Route("alunos")]
+        [Route("pesquisa")]
         [ProducesResponseType(typeof(IEnumerable<AlunoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
