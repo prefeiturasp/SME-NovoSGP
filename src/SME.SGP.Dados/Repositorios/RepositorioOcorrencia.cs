@@ -61,6 +61,7 @@ namespace SME.SGP.Dados
                 }
 
 				ocorrenciaEntrada.Alunos.Add(aluno);
+				return ocorrenciaEntrada;
 			}, new { titulo, alunoNome, dataOcorrenciaInicio, dataOcorrenciaFim }, splitOn: "id, id");
 
 			return lstOcorrencias.Values.ToList();
