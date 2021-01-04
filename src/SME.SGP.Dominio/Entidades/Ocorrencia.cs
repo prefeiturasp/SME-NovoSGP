@@ -18,5 +18,7 @@ namespace SME.SGP.Dominio.Entidades
         {
             Alunos = new List<OcorrenciaAluno>();
         }
+
+        public void Excluir() => Excluido = true;
     }
 }
