@@ -44,7 +44,7 @@ namespace SME.SGP.Aplicacao
                 unitOfWork.PersistirTransacao();
                 return (AuditoriaDto)ocorrencia;
             }
-            catch(Exception ex)
+            catch
             {
                 unitOfWork.Rollback();
                 throw;
