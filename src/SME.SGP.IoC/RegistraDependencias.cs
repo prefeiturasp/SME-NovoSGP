@@ -306,7 +306,18 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioTipoDocumento, RepositorioTipoDocumento>();
             services.TryAddScoped<IRepositorioRemoveConexaoIdle, RepositorioRemoveConexaoIdle>();
 
-            
+            // Encaminhamento AEE
+            services.TryAddScoped<IRepositorioSecaoEncaminhamentoAEE, RepositorioSecaoEncaminhamentoAEE>();
+            services.TryAddScoped<IRepositorioEncaminhamentoAEE, RepositorioEncaminhamentoAEE>();
+            services.TryAddScoped<IRepositorioEncaminhamentoAEESecao, RepositorioEncaminhamentoAEESecao>();
+            services.TryAddScoped<IRepositorioQuestaoEncaminhamentoAEE, RepositorioQuestaoEncaminhamentoAEE>();
+            services.TryAddScoped<IRepositorioRespostaEncaminhamentoAEE, RepositorioRespostaEncaminhamentoAEE>();
+
+
+            // Questionario
+            services.TryAddScoped<IRepositorioQuestionario, RepositorioQuestionario>();
+            services.TryAddScoped<IRepositorioQuestao, RepositorioQuestao>();
+            services.TryAddScoped<IRepositorioOpcaoResposta, RepositorioOpcaoResposta>();
 
             // Pendencias
             services.TryAddScoped<IRepositorioPendencia, RepositorioPendencia>();
