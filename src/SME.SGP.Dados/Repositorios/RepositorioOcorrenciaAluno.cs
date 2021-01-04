@@ -1,6 +1,7 @@
 ﻿using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -43,10 +44,6 @@ namespace SME.SGP.Dados
                 Acao = acao
             });
         }
-    public class RepositorioOcorrenciaAluno : RepositorioBase<OcorrenciaAluno>, IRepositorioOcorrenciaAluno
-    {
-        public RepositorioOcorrenciaAluno(ISgpContext conexao) : base(conexao) { }
-
         public async Task<IEnumerable<string>> ObterAlunosPorOcorrencia(long ocorrenciaId)
         {
             string query = @"select
