@@ -767,7 +767,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             return JsonConvert.DeserializeObject<bool>(json);
         }
 
-        public async Task<IEnumerable<PodePersistirNaDataRetornoEolDto>> PodePersistirTurmaNasDatas(string professorRf, string codigoTurma, string[] datas, long codigoDisciplina)
+        public async Task<IEnumerable<PodePersistirNaDataRetornoEolDto>> PodePersistirTurmaNasDatas(string professorRf, string codigoTurma, DateTime[] datas, long codigoDisciplina)
         {
             
 
@@ -1004,6 +1004,22 @@ namespace SME.SGP.Aplicacao.Integracoes
             return JsonConvert.DeserializeObject<bool>(json);
         }
 
-      
+        public async Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorIdsAgrupadas(long[] ids)
+        {
+            var parametros = JsonConvert.SerializeObject(ids);
+            var resposta = await httpClient.PostAsync("disciplinas", new StringContent(parametros, Encoding.UTF8, "application/json-patch+json"));
+
+            if (!resposta.IsSuccessStatusCode || resposta.StatusCode == HttpStatusCode.NoContent)
+            {
+                await RegistrarLogSentryAsync(resposta, "obter as disciplinas", parametros);
+                return null;
+            }
+
+            var json = resposta.Content.ReadAsStringAsync().Result;
+
+            var retorno = JsonConvert.DeserializeObject<IEnumerable<RetornoDisciplinaDto>>(json);
+
+            return MapearParaDtoDisciplinas(retorno);
+        }
     }
 }
