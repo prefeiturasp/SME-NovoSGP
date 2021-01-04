@@ -21,7 +21,12 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<IEnumerable<ObjetivoAprendizagemDto>> Handle(ListarObjetivoAprendizagemPorAnoEComponenteCurricularQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioObjetivoAprendizagem.ObterPorAnoEComponenteCurricularJuremaIds((AnoTurma)request.Ano, request.JuremaIds);
+            int anoTurma;
+
+            if (!string.IsNullOrEmpty(request.Ano) && int.TryParse(request.Ano, out anoTurma))
+                return await repositorioObjetivoAprendizagem.ObterPorAnoEComponenteCurricularJuremaIds((AnoTurma)anoTurma, request.JuremaIds);
+            else
+                return await repositorioObjetivoAprendizagem.ObterPorAnoEComponenteCurricularJuremaIds(null, request.JuremaIds);
         }
     }
 }

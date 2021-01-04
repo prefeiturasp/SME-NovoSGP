@@ -1,4 +1,5 @@
-﻿using SME.Background.Core;
+﻿using MediatR;
+using SME.Background.Core;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Interfaces;
@@ -26,6 +27,8 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
         private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
+        private readonly IRepositorioProcessoExecutando repositorioProcessoExecutando;
+        private readonly IMediator mediator;
 
         public ServicoCompensacaoAusencia(IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia,
                                           IRepositorioCompensacaoAusenciaAluno repositorioCompensacaoAusenciaAluno,
@@ -39,7 +42,8 @@ namespace SME.SGP.Dominio.Servicos
                                           IRepositorioTurma repositorioTurma,
                                           IRepositorioComponenteCurricular repositorioComponenteCurricular,
                                           IRepositorioNotificacaoCompensacaoAusencia repositorioNotificacaoCompensacaoAusencia,
-                                          IUnitOfWork unitOfWork)
+                                          IUnitOfWork unitOfWork, IRepositorioProcessoExecutando repositorioProcessoExecutando,
+                                          IMediator mediator)
         {
             this.repositorioCompensacaoAusencia = repositorioCompensacaoAusencia ?? throw new System.ArgumentNullException(nameof(repositorioCompensacaoAusencia));
             this.repositorioCompensacaoAusenciaAluno = repositorioCompensacaoAusenciaAluno ?? throw new System.ArgumentNullException(nameof(repositorioCompensacaoAusenciaAluno));
@@ -53,6 +57,8 @@ namespace SME.SGP.Dominio.Servicos
             this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
             this.unitOfWork = unitOfWork ?? throw new System.ArgumentNullException(nameof(unitOfWork));
+            this.repositorioProcessoExecutando = repositorioProcessoExecutando ?? throw new ArgumentNullException(nameof(repositorioProcessoExecutando));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new System.ArgumentNullException(nameof(repositorioComponenteCurricular));
         }
 
@@ -104,7 +110,9 @@ namespace SME.SGP.Dominio.Servicos
             }
 
             if (codigosAlunosCompensacao.Any())
-                Cliente.Executar<IServicoCalculoFrequencia>(c => c.CalcularFrequenciaPorTurma(codigosAlunosCompensacao, periodo.PeriodoFim, compensacaoDto.TurmaId, compensacaoDto.DisciplinaId));
+            {
+                await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(codigosAlunosCompensacao, periodo.PeriodoFim, compensacaoDto.TurmaId, compensacaoDto.DisciplinaId, periodo.Bimestre));
+            }
 
             Cliente.Executar<IServicoNotificacaoFrequencia>(c => c.NotificarCompensacaoAusencia(compensacao.Id));
         }
@@ -343,7 +351,10 @@ namespace SME.SGP.Dominio.Servicos
                     var listaAlunos = alunosDaCompensacao.Select(a => a.CodigoAluno).ToList();
 
                     if (alunosDaCompensacao.Any())
-                        Cliente.Executar<IServicoCalculoFrequencia>(c => c.CalcularFrequenciaPorTurma(listaAlunos, periodo.PeriodoFim, turma.CodigoTurma, compensacaoExcluir.DisciplinaId));
+                    {
+                        await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(listaAlunos, periodo.PeriodoFim, turma.CodigoTurma, compensacaoExcluir.DisciplinaId, periodo.Bimestre));
+                    }
+
                 }
                 catch (Exception)
                 {
