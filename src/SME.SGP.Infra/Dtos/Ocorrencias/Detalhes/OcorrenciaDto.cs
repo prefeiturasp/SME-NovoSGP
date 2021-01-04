@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace SME.SGP.Infra.Dtos.Ocorrencias.Detalhes
+namespace SME.SGP.Infra
 {
     public class OcorrenciaDto : AuditoriaDto
     {
