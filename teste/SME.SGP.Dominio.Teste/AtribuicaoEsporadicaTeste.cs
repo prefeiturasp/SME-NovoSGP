@@ -36,8 +36,8 @@ namespace SME.SGP.Dominio.Teste
             var periodos = new List<PeriodoEscolar> {
                 new PeriodoEscolar
                 {
-                    PeriodoInicio = DateTime.Now.AddDays(-5),
-                    PeriodoFim = DateTime.Now.AddDays(7) >= new DateTime(DateTime.Now.Year, 12, 31) ? new DateTime(DateTime.Now.Year, 12, 30) : DateTime.Now.AddDays(7),
+                    PeriodoInicio = DateTime.Now.AddDays(-5).Date <= new DateTime(DateTime.Now.Year - 1, 12, 31) ? new DateTime(DateTime.Now.Year, 01, 01) : DateTime.Now.AddDays(-5).Date,
+                    PeriodoFim = DateTime.Now.AddDays(7).Date >= new DateTime(DateTime.Now.Year, 12, 31) ? new DateTime(DateTime.Now.Year, 12, 30) : DateTime.Now.AddDays(7).Date,
                 }
             };
 
