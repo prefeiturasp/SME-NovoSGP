@@ -1,7 +1,8 @@
-﻿using System;
+﻿using SME.SGP.Dominio.Entidades;
+using System;
 using System.Collections.Generic;
 
-namespace SME.SGP.Dominio.Entidades
+namespace SME.SGP.Dominio
 {
     public class Ocorrencia : EntidadeBase
     {
