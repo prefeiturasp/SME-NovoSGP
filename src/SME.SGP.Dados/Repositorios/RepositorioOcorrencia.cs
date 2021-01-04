@@ -13,23 +13,35 @@ namespace SME.SGP.Dados
 		public async Task<IEnumerable<Ocorrencia>> Listar(long diarioBordoId, long usuarioLogadoId)
 		{
 			var sql = @"select
-							id,
+							o.id,
+							titulo,
 							data_ocorrencia,
-							descricao,
-							excluido,
 							hora_ocorrencia,
-							criado_rf as CriadoRf,
-							alterado_em as AlteradoEm,
-							alterado_por as AlteradoPor,
-							alterado_rf as AlteradoRf
+							descricao,
+							ocorrencia_tipo_id,
+							excluido,
+							criado_rf,
+							criado_em,
+							alterado_em,
+							alterado_por,
+							alterado_rf
+							ot.id,
+							ot.descricao,
+							oa.id,
+							oa.codigo_aluno
 						from
-							diario_bordo_observacao
+							ocorrencia o
+						inner join ocorrencia_tipo ot on ot.id = o.ocorrencia_tipo_id 
+						inner join ocorrencia_aluno oa on oa.ocorrencia_id = o.id
 						where
 							diario_bordo_id = @diarioBordoId
 							and not excluido 
                         order by criado_em desc";
 
-			return await database.Conexao.QueryAsync<Ocorrencia>(sql, new { diarioBordoId, usuarioLogadoId });
+			return await database.Conexao.QueryAsync<Ocorrencia, OcorrenciaTipo, OcorrenciaAluno, Ocorrencia>(sql, (ocorrencia, tipo, aluno) =>
+			{
+				
+			}, new { diarioBordoId }, splitOn: "id, id");
 		}
 	}
 }
