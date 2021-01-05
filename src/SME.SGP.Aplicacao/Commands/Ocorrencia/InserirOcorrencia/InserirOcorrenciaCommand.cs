@@ -13,6 +13,7 @@ namespace SME.SGP.Aplicacao
         public string Titulo { get; set; }
         public string Descricao { get; set; }
         public long OcorrenciaTipoId { get; set; }
+        public long TurmaId { get; set; }
         public IEnumerable<long> CodigosAlunos { get; set; }
 
         public InserirOcorrenciaCommand()
@@ -21,7 +22,7 @@ namespace SME.SGP.Aplicacao
         }
 
         public InserirOcorrenciaCommand(DateTime dataOcorrencia, string horaOcorrencia, 
-                                        string titulo, string descricao, long ocorrenciaTipoId, 
+                                        string titulo, string descricao, long ocorrenciaTipoId, long turmaId, 
                                         IEnumerable<long> codigosAlunos)
         {
             DataOcorrencia = dataOcorrencia;
@@ -29,6 +30,7 @@ namespace SME.SGP.Aplicacao
             Titulo = titulo;
             Descricao = descricao;
             OcorrenciaTipoId = ocorrenciaTipoId;
+            TurmaId = turmaId;
             CodigosAlunos = codigosAlunos;
         }
     }
@@ -52,7 +54,11 @@ namespace SME.SGP.Aplicacao
 
             RuleFor(x => x.OcorrenciaTipoId)
                 .NotEmpty()
-                .WithMessage("P tipo da ocorrência deve ser informada.");
+                .WithMessage("O tipo da ocorrência deve ser informado.");
+
+            RuleFor(x => x.TurmaId)
+                .NotEmpty()
+                .WithMessage("A turma da ocorrência deve ser informada.");
 
             RuleFor(x => x.CodigosAlunos)
                 .NotEmpty()
