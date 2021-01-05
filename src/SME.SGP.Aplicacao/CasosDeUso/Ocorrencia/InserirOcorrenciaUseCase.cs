@@ -10,10 +10,7 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<AuditoriaDto> Executar(InserirOcorrenciaDto dto)
-        {
-            var retorno = await mediator.Send(new InserirOcorrenciaCommand(dto.DataOcorrencia, dto.HoraOcorrencia, dto.Titulo, dto.Descricao, dto.OcorrenciaTipoId, dto.CodigosAlunos));
-            return retorno;
-        }
+        public async Task<AuditoriaDto> Executar(InserirOcorrenciaDto dto) 
+            => await mediator.Send(new InserirOcorrenciaCommand(dto.DataOcorrencia, dto.HoraOcorrencia, dto.Titulo, dto.Descricao, dto.OcorrenciaTipoId, dto.TurmaId, dto.CodigosAlunos));
     }
 }

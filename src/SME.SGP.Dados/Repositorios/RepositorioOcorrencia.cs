@@ -1,5 +1,6 @@
 ﻿using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -97,6 +98,7 @@ namespace SME.SGP.Dados
 									o.data_ocorrencia as DataOcorrencia,
 									o.hora_ocorrencia as HoraOcorrencia,
 									o.ocorrencia_tipo_id as OcorrenciaTipoId,
+									o.turma_id as TurmaId,
 									o.titulo as Titulo,
 									o.descricao as Descricao,
 									o.excluido as Excluido,
