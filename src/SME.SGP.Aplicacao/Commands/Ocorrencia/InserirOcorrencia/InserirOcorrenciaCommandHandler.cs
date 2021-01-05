@@ -28,33 +28,35 @@ namespace SME.SGP.Aplicacao
 
         public async Task<AuditoriaDto> Handle(InserirOcorrenciaCommand request, CancellationToken cancellationToken)
         {
-            unitOfWork.IniciarTransacao();
-            try
+            using (var transacao = unitOfWork.IniciarTransacao())
             {
-                var turma = await mediator.Send(new ObterTurmaPorIdQuery(request.TurmaId));
-                if (turma is null)
-                    throw new NegocioException("A turma da ocorrência informada não foi encontrada.");
-
-                var ocorrenciaTipo = await repositorioOcorrenciaTipo.ObterPorIdAsync(request.OcorrenciaTipoId);
-                if (ocorrenciaTipo is null)
-                    throw new NegocioException("O tipo da ocorrência informado não foi encontrado.");
-
-                var ocorrencia = new Ocorrencia(request.DataOcorrencia, request.HoraOcorrencia, request.Titulo, request.Descricao, ocorrenciaTipo, turma);
-                ocorrencia.Id = await repositorioOcorrencia.SalvarAsync(ocorrencia);
-
-                ocorrencia.AdiconarAlunos(request.CodigosAlunos);
-                foreach (var ocorrenciaAluno in ocorrencia.Alunos)
+                try
                 {
-                    await repositorioOcorrenciaAluno.SalvarAsync(ocorrenciaAluno);
-                }
+                    var turma = await mediator.Send(new ObterTurmaPorIdQuery(request.TurmaId));
+                    if (turma is null)
+                        throw new NegocioException("A turma da ocorrência informada não foi encontrada.");
 
-                unitOfWork.PersistirTransacao();
-                return (AuditoriaDto)ocorrencia;
-            }
-            catch
-            {
-                unitOfWork.Rollback();
-                throw;
+                    var ocorrenciaTipo = await repositorioOcorrenciaTipo.ObterPorIdAsync(request.OcorrenciaTipoId);
+                    if (ocorrenciaTipo is null)
+                        throw new NegocioException("O tipo da ocorrência informado não foi encontrado.");
+
+                    var ocorrencia = new Ocorrencia(request.DataOcorrencia, request.HoraOcorrencia, request.Titulo, request.Descricao, ocorrenciaTipo, turma);
+                    ocorrencia.Id = await repositorioOcorrencia.SalvarAsync(ocorrencia);
+
+                    ocorrencia.AdiconarAlunos(request.CodigosAlunos);
+                    foreach (var ocorrenciaAluno in ocorrencia.Alunos)
+                    {
+                        await repositorioOcorrenciaAluno.SalvarAsync(ocorrenciaAluno);
+                    }
+
+                    unitOfWork.PersistirTransacao();
+                    return (AuditoriaDto)ocorrencia;
+                }
+                catch
+                {
+                    unitOfWork.Rollback();
+                    throw;
+                }
             }
         }
     }

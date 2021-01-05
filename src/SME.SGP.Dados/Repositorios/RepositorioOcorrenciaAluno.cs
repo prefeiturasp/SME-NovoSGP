@@ -21,6 +21,8 @@ namespace SME.SGP.Dados
 
         public async Task ExcluirAsync(IEnumerable<long> idsOcorrenciasAlunos)
         {
+            if (!idsOcorrenciasAlunos?.Any() ?? true) return;
+
             var sql = "delete from ocorrencia_aluno where id = any(@idsOcorrenciasAlunos)";
             await database.Conexao.ExecuteAsync(sql, new { idsOcorrenciasAlunos = idsOcorrenciasAlunos.ToList() });
             await AuditarAsync(idsOcorrenciasAlunos, "E");
