@@ -67,7 +67,7 @@ namespace SME.SGP.Dados.Repositorios
 	                          alterado_por,
 	                          alterado_rf,
 	                          excluido,
-	                          migrado {condicao} order by a.data_registro desc {offSet} ";
+	                          migrado {condicao} order by data_registro desc {offSet} ";
 
             return new PaginacaoResultadoDto<RegistroIndividual>()
             {
