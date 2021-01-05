@@ -60,7 +60,7 @@ namespace SME.SGP.Dados
 							ot.id,
 							ot.descricao,
 							oa.id,
-							oa.codigo_aluno {condicao} order by a.data_ocorrencia {offSet} ";
+							oa.codigo_aluno {condicao} order by o.data_ocorrencia desc {offSet} ";
 
 
             var lstOcorrencias = new Dictionary<long, Ocorrencia>();
@@ -78,7 +78,8 @@ namespace SME.SGP.Dados
                 ocorrenciaEntrada.Alunos.Add(aluno);
                 return ocorrenciaEntrada;
             }, new { 
-                titulo, alunoNome, 
+                titulo, 
+                alunoNome, 
                 dataOcorrenciaInicio, 
                 dataOcorrenciaFim, 
                 codigosAluno, 
