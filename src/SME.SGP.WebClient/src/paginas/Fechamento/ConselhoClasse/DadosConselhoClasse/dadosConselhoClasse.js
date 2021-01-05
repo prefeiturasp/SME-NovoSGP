@@ -262,7 +262,7 @@ const DadosConselhoClasse = props => {
               turmaId={turmaSelecionada.turma}
             />
             <AnotacoesRecomendacoes
-              bimestre={bimestreAtual.valor}
+              bimestre={bimestreAtual}
               codigoTurma={turmaCodigo}
             />
           </>
