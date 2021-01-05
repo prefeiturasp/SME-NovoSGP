@@ -19,9 +19,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var retorno = new PaginacaoResultadoDto<PendenciaFechamentoResumoDto>();
 
-            var query = new StringBuilder(MontaQuery(paginacao, bimestre, componenteCurricularId));
-            query.AppendLine("order by p.situacao");
-            query.AppendLine(";");
+            var query = new StringBuilder(MontaQuery(paginacao, bimestre, componenteCurricularId, ordenar: true));
             query.AppendLine(MontaQuery(paginacao, bimestre, componenteCurricularId, true));
 
             using (var multi = await database.Conexao.QueryMultipleAsync(query.ToString(), new { turmaCodigo, bimestre, componenteCurricularId }))
@@ -62,7 +60,7 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.QueryFirst<int>(query, new { fechamentoId }) > 0;
         }
 
-        private string MontaQuery(Paginacao paginacao, int bimestre, long componenteCurricularId, bool contador = false)
+        private string MontaQuery(Paginacao paginacao, int bimestre, long componenteCurricularId, bool contador = false, bool ordenar = false)
         {
             var fields = contador ? "count(p.id)" : "p.id as PendenciaId, p.titulo as descricao, p.situacao, ftd.disciplina_id as DisciplinaId";
             var query = new StringBuilder(string.Format(@"select {0}
@@ -79,8 +77,11 @@ namespace SME.SGP.Dados.Repositorios
             if (componenteCurricularId > 0)
                 query.AppendLine(" and ftd.disciplina_id = @componenteCurricularId");
 
+            if (ordenar)
+                query.AppendLine(" order by p.situacao");
+
             if (paginacao.QuantidadeRegistros > 0 && !contador)
-                query.AppendLine($"OFFSET {paginacao.QuantidadeRegistrosIgnorados} ROWS FETCH NEXT {paginacao.QuantidadeRegistros} ROWS ONLY");
+                query.AppendLine($"OFFSET {paginacao.QuantidadeRegistrosIgnorados} ROWS FETCH NEXT {paginacao.QuantidadeRegistros} ROWS ONLY;");
             
             return query.ToString();
         }

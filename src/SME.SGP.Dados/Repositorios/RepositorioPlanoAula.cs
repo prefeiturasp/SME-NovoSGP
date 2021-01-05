@@ -88,7 +88,8 @@ namespace SME.SGP.Dados.Repositorios
 
             var lookup = new Dictionary<long, PlanoAulaObjetivosAprendizagemDto>();
 
-            await database.Conexao.QueryAsync<PlanoAulaObjetivosAprendizagemDto, long?, ObjetivoAprendizagemDto, PlanoAulaObjetivosAprendizagemDto>(query, (planoAulaObjetivosAprendizagemDto, componenteId, objetivoAprendizagemDto) => {
+            await database.Conexao.QueryAsync<PlanoAulaObjetivosAprendizagemDto, long?, ObjetivoAprendizagemDto, PlanoAulaObjetivosAprendizagemDto>(query, (planoAulaObjetivosAprendizagemDto, componenteId, objetivoAprendizagemDto) =>
+            {
 
                 var retorno = new PlanoAulaObjetivosAprendizagemDto();
                 if (!lookup.TryGetValue(planoAulaObjetivosAprendizagemDto.Id, out retorno))
@@ -106,8 +107,10 @@ namespace SME.SGP.Dados.Repositorios
                     retorno.Adicionar(objetivoComponente);
                 }
 
-                if (objetivoAprendizagemDto != null)
+                if (objetivoComponente != null && objetivoAprendizagemDto != null)
+                {
                     objetivoComponente.ObjetivosAprendizagem.Add(objetivoAprendizagemDto);
+                }
 
                 return retorno;
             }, param: new
@@ -115,7 +118,7 @@ namespace SME.SGP.Dados.Repositorios
                 aulaId
             });
 
-            return lookup.Values.FirstOrDefault();            
+            return lookup.Values.FirstOrDefault();
         }
     }
 }
