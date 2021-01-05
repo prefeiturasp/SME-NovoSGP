@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -23,7 +24,6 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<OcorrenciaListagemDto>> Handle(ListarOcorrenciasQuery request, CancellationToken cancellationToken)
         {
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(request.TurmaId));
-
             if (turma == null)
                 throw new NegocioException("Turma não encontrada!");
 

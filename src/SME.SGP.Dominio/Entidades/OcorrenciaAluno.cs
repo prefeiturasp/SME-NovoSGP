@@ -13,6 +13,10 @@
             SetOcorrencia(ocorrencia);
         }
 
+        protected OcorrenciaAluno()
+        {
+        }
+
         private void SetOcorrencia(Ocorrencia ocorrencia)
         {
             if (ocorrencia is null)
