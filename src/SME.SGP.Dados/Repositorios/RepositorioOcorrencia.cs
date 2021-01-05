@@ -14,7 +14,7 @@ namespace SME.SGP.Dados
     {
         public RepositorioOcorrencia(ISgpContext conexao) : base(conexao) { }
 
-        public async Task<PaginacaoResultadoDto<Ocorrencia>> ListarPaginado(long turmaId, string titulo, string alunoNome, DateTime? dataOcorrenciaInicio, DateTime? dataOcorrenciaFim, string[] codigosAluno, Paginacao paginacao)
+        public async Task<PaginacaoResultadoDto<Ocorrencia>> ListarPaginado(long turmaId, string titulo, string alunoNome, DateTime? dataOcorrenciaInicio, DateTime? dataOcorrenciaFim, long[] codigosAluno, Paginacao paginacao)
         {
             StringBuilder condicao = new StringBuilder();
 
@@ -77,12 +77,13 @@ namespace SME.SGP.Dados
                 ocorrenciaEntrada.Alunos = ocorrenciaEntrada.Alunos ?? new List<OcorrenciaAluno>();
                 ocorrenciaEntrada.Alunos.Add(aluno);
                 return ocorrenciaEntrada;
-            }, new { 
-                titulo, 
-                alunoNome, 
-                dataOcorrenciaInicio, 
-                dataOcorrenciaFim, 
-                codigosAluno, 
+            }, new
+            {
+                titulo,
+                alunoNome,
+                dataOcorrenciaInicio,
+                dataOcorrenciaFim,
+                codigosAluno,
                 turmaId,
                 qtdeRegistrosIgnorados = paginacao.QuantidadeRegistrosIgnorados,
                 qtdeRegistros = paginacao.QuantidadeRegistros
