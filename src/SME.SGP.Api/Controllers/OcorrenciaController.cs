@@ -9,7 +9,7 @@ namespace SME.SGP.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/ocorrencias")]
-    [Authorize("Bearer")]
+    //[Authorize("Bearer")]
     public class OcorrenciaController : ControllerBase
     {
         [HttpGet]
@@ -60,8 +60,8 @@ namespace SME.SGP.Api.Controllers
         // O permissionamento será adicionado em uma task separada
         public async Task<IActionResult> Excluir([FromBody] IEnumerable<long> ids, [FromServices] IExcluirOcorrenciaUseCase excluirOcorrenciaUseCase)
         {
-            await excluirOcorrenciaUseCase.Executar(ids);
-            return Ok();
+            var retorno = await excluirOcorrenciaUseCase.Executar(ids);
+            return Ok(retorno);
         }
     }
 }
