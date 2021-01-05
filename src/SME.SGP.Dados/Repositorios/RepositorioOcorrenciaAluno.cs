@@ -1,7 +1,10 @@
-﻿using SME.SGP.Dados.Repositorios;
+﻿using Dapper;
+using Npgsql;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados
@@ -13,6 +16,13 @@ namespace SME.SGP.Dados
         public RepositorioOcorrenciaAluno(ISgpContext database)
         {
             this.database = database;
+        }
+
+        public async Task ExcluirAsync(IEnumerable<long> idsOcorrenciasAlunos)
+        {
+            var sql = "delete from ocorrencia_aluno where id = any(@idsOcorrenciasAlunos)";
+            await database.Conexao.ExecuteAsync(sql, new { idsOcorrenciasAlunos = idsOcorrenciasAlunos.ToList() });
+            await AuditarAsync(idsOcorrenciasAlunos, "E");
         }
 
         public async Task<long> SalvarAsync(OcorrenciaAluno entidade)
@@ -31,7 +41,7 @@ namespace SME.SGP.Dados
             return entidade.Id;
         }
 
-        protected async Task AuditarAsync(long identificador, string acao)
+        private async Task AuditarAsync(long identificador, string acao)
         {
             await database.Conexao.InsertAsync(new Auditoria()
             {
@@ -42,6 +52,35 @@ namespace SME.SGP.Dados
                 RF = database.UsuarioLogadoRF,
                 Acao = acao
             });
+        }
+
+        private async Task AuditarAsync(IEnumerable<long> identificadores, string acao)
+        {
+            const string sql = @"copy auditoria (
+                                        data,
+                                        entidade,
+                                        chave,
+                                        usuario,
+                                        rf,
+                                        acao
+                                        )
+                            from
+                            stdin (FORMAT binary)";
+
+            using (var writer = ((NpgsqlConnection)database.Conexao).BeginBinaryImport(sql))
+            {
+                foreach (var identificador in identificadores)
+                {
+                    writer.StartRow();
+                    writer.Write(DateTime.Now);
+                    writer.Write(nameof(OcorrenciaAluno).ToLower());
+                    writer.Write(identificador);
+                    writer.Write(database.UsuarioLogadoNomeCompleto);
+                    writer.Write(database.UsuarioLogadoRF);
+                    writer.Write(acao);
+                }
+                await writer.CompleteAsync();
+            }
         }
     }
 }
