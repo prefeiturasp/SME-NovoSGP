@@ -270,5 +270,30 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoEscolar>(query, new { modalidade = (int)modalidade, ano, dataFim });
         }
+
+        public async Task<PeriodoEscolar> ObterUltimoPeriodoEscolarPorData(int anoLetivo, ModalidadeTipoCalendario modalidade, DateTime dataAtual)
+        {
+            try
+            {
+                var query = new StringBuilder(@"select p.* 
+                            from tipo_calendario t
+                         inner join periodo_escolar p on p.tipo_calendario_id = t.id
+                          where t.excluido = false and t.situacao
+                            and t.ano_letivo = @anoLetivo
+                            and t.modalidade = @modalidade 
+                            and periodo_inicio <= @dataAtual ");
+                query.AppendLine("order by bimestre desc ");
+                query.AppendLine("limit 1");
+
+                return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoEscolar>(query.ToString(), new { anoLetivo, modalidade = (int)modalidade, dataAtual });
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+        }
+
+
     }
 }

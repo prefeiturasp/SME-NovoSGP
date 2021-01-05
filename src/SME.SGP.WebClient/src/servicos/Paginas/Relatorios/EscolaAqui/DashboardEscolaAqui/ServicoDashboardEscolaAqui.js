@@ -148,6 +148,11 @@ class ServicoDashboardEscolaAqui {
     }
     return api.get(url);
   };
+
+  obterDadosLeituraDeComunicadosPorAlunos = (codigoTurma, comunicadoId) => {
+    const url = `${urlPadrao}/comunicados/leitura/alunos?codigoTurma=${codigoTurma}&comunicadoId=${comunicadoId}`;
+    return api.get(url);
+  };
 }
 
 export default new ServicoDashboardEscolaAqui();

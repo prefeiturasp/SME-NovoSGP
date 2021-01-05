@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import CardCollapse from '~/componentes/cardCollapse';
-import Editor from '~/componentes/editor/editor';
+import JoditEditor from '~/componentes/jodit-editor/joditEditor';
 import {
   setDadosParaSalvarRelatorioSemestral,
   setRelatorioSemestralEmEdicao,
@@ -59,17 +59,18 @@ const CampoRelatorioSemestral = props => {
         alt={`secao-${idSecao}-estudante-alt`}
         show
       >
-        <Editor
+        <JoditEditor
           validarSeTemErro={validarSeTemErro}
           mensagemErro="Campo obrigatório"
           label={descricao}
           id={`secao-${idSecao}-estudante-editor`}
-          inicial={valor}
+          value={valor || ''}
           onChange={valorNovo => {
             onChange(valorNovo);
             setarRelatorioSemestralEmEdicao(true);
           }}
-          // desabilitar={alunoDesabilitado || !dentroPeriodo || desabilitarCampos}
+          desabilitar={alunoDesabilitado || !dentroPeriodo || desabilitarCampos}
+          height="350px"
         />
       </CardCollapse>
     </div>
