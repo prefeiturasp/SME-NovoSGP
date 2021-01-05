@@ -290,6 +290,7 @@ const RelatorioPlanejamentoDiario = () => {
 
   const checarPeriodoFinalBimestre = async () => {
     setHabilitarDatasFuturas(false);
+    setListarDataFutura(false);
     if (bimestre !== OPCAO_TODOS && bimestre) {
       const bimestreSelecionado = bimestres.filter(
         b => b.bimestre === Number(bimestre)
