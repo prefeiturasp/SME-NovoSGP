@@ -13,17 +13,17 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioOcorrencia repositorioOcorrencia;
         private readonly IRepositorioOcorrenciaTipo repositorioOcorrenciaTipo;
         private readonly IRepositorioOcorrenciaAluno repositorioOcorrenciaAluno;
-        private readonly IRepositorioTurma repositorioTurma;
+        private readonly IMediator mediator;
         private readonly IUnitOfWork unitOfWork;
 
         public InserirOcorrenciaCommandHandler(IRepositorioOcorrencia repositorioOcorrencia, IRepositorioOcorrenciaTipo repositorioOcorrenciaTipo,
-            IRepositorioOcorrenciaAluno repositorioOcorrenciaAluno, IRepositorioTurma repositorioTurma, IUnitOfWork unitOfWork)
+            IRepositorioOcorrenciaAluno repositorioOcorrenciaAluno, IMediator mediator, IUnitOfWork unitOfWork)
         {
             this.repositorioOcorrencia = repositorioOcorrencia ?? throw new ArgumentNullException(nameof(repositorioOcorrencia));
-            this.repositorioOcorrenciaTipo = repositorioOcorrenciaTipo ?? throw new ArgumentNullException(nameof(repositorioOcorrencia));
-            this.repositorioOcorrenciaAluno = repositorioOcorrenciaAluno ?? throw new ArgumentNullException(nameof(repositorioOcorrencia));
-            this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioOcorrencia));
-            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(repositorioOcorrencia));
+            this.repositorioOcorrenciaTipo = repositorioOcorrenciaTipo ?? throw new ArgumentNullException(nameof(repositorioOcorrenciaTipo));
+            this.repositorioOcorrenciaAluno = repositorioOcorrenciaAluno ?? throw new ArgumentNullException(nameof(repositorioOcorrenciaAluno));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
         public async Task<AuditoriaDto> Handle(InserirOcorrenciaCommand request, CancellationToken cancellationToken)
@@ -31,8 +31,8 @@ namespace SME.SGP.Aplicacao
             unitOfWork.IniciarTransacao();
             try
             {
-                var turma = await repositorioTurma.ObterPorId(request.TurmaId);
-                if(turma is null)
+                var turma = await mediator.Send(new ObterTurmaPorIdQuery(request.TurmaId));
+                if (turma is null)
                     throw new NegocioException("A turma da ocorrência informada não foi encontrada.");
 
                 var ocorrenciaTipo = await repositorioOcorrenciaTipo.ObterPorIdAsync(request.OcorrenciaTipoId);
@@ -43,7 +43,7 @@ namespace SME.SGP.Aplicacao
                 ocorrencia.Id = await repositorioOcorrencia.SalvarAsync(ocorrencia);
 
                 ocorrencia.AdiconarAlunos(request.CodigosAlunos);
-                foreach(var ocorrenciaAluno in ocorrencia.Alunos)
+                foreach (var ocorrenciaAluno in ocorrencia.Alunos)
                 {
                     await repositorioOcorrenciaAluno.SalvarAsync(ocorrenciaAluno);
                 }
