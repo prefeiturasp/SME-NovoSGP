@@ -30,10 +30,10 @@ namespace SME.SGP.Aplicacao
 
             var alunos = await mediator.Send(new ObterAlunosPorTurmaEAnoLetivoQuery(turma.CodigoTurma));
 
-            string[] codigosAlunosLike = null;
+            long[] codigosAlunosLike = null;
 
             if (!string.IsNullOrEmpty(request.AlunoNome))
-                codigosAlunosLike = alunos.Where(a => a.NomeAluno.IndexOf(request.AlunoNome, StringComparison.OrdinalIgnoreCase) != -1)?.Select(a => a.CodigoAluno)?.ToArray();
+                codigosAlunosLike = alunos.Where(a => a.NomeAluno.IndexOf(request.AlunoNome, StringComparison.OrdinalIgnoreCase) != -1)?.Select(a => Convert.ToInt64(a.CodigoAluno))?.ToArray();
 
             var lstOcorrencias = await repositorioOcorrencia.ListarPaginado(request.TurmaId, request.Titulo, request.AlunoNome, request.DataOcorrenciaInicio, request.DataOcorrenciaFim, codigosAlunosLike, Paginacao);
 
