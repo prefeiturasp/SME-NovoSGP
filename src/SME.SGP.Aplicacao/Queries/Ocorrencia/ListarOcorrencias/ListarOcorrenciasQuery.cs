@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ListarOcorrenciasQuery : IRequest<IEnumerable<OcorrenciaListagemDto>>
+    public class ListarOcorrenciasQuery : IRequest<PaginacaoResultadoDto<OcorrenciaListagemDto>>
     {
         public ListarOcorrenciasQuery(DateTime? dataOcorrenciaInicio, DateTime? dataOcorrenciaFim, string alunoNome, string titulo, long turmaId)
         {

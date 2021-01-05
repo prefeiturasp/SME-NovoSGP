@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,18 +11,18 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ListarOcorrenciasQueryHandler : IRequestHandler<ListarOcorrenciasQuery, IEnumerable<OcorrenciaListagemDto>>
+    public class ListarOcorrenciasQueryHandler : ConsultasBase, IRequestHandler<ListarOcorrenciasQuery, PaginacaoResultadoDto<OcorrenciaListagemDto>>
     {
         private readonly IRepositorioOcorrencia repositorioOcorrencia;
         private readonly IMediator mediator;
 
-        public ListarOcorrenciasQueryHandler(IRepositorioOcorrencia repositorioOcorrencia, IMediator mediator)
+        public ListarOcorrenciasQueryHandler(IContextoAplicacao contextoAplicacao, IRepositorioOcorrencia repositorioOcorrencia, IMediator mediator) : base(contextoAplicacao)
         {
             this.repositorioOcorrencia = repositorioOcorrencia ?? throw new ArgumentNullException(nameof(repositorioOcorrencia));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<IEnumerable<OcorrenciaListagemDto>> Handle(ListarOcorrenciasQuery request, CancellationToken cancellationToken)
+        public async Task<PaginacaoResultadoDto<OcorrenciaListagemDto>> Handle(ListarOcorrenciasQuery request, CancellationToken cancellationToken)
         {
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(request.TurmaId));
             if (turma == null)
@@ -34,28 +35,33 @@ namespace SME.SGP.Aplicacao
             if (!string.IsNullOrEmpty(request.AlunoNome))
                 codigosAlunosLike = alunos.Where(a => a.NomeAluno.IndexOf(request.AlunoNome, StringComparison.OrdinalIgnoreCase) != -1)?.Select(a => a.CodigoAluno)?.ToArray();
 
-            var lstOcorrencias = await repositorioOcorrencia.Listar(request.TurmaId, request.Titulo, request.AlunoNome, request.DataOcorrenciaInicio, request.DataOcorrenciaFim, codigosAlunosLike);
+            var lstOcorrencias = await repositorioOcorrencia.ListarPaginado(request.TurmaId, request.Titulo, request.AlunoNome, request.DataOcorrenciaInicio, request.DataOcorrenciaFim, codigosAlunosLike, Paginacao);
 
             return MapearParaDto(lstOcorrencias, alunos);
         }
 
-        private IEnumerable<OcorrenciaListagemDto> MapearParaDto(IEnumerable<Ocorrencia> ocorrencias, IEnumerable<AlunoPorTurmaResposta> alunos)
+        private PaginacaoResultadoDto<OcorrenciaListagemDto> MapearParaDto(PaginacaoResultadoDto<Ocorrencia> ocorrencias, IEnumerable<AlunoPorTurmaResposta> alunos)
         {
-            foreach (var ocorrencia in ocorrencias)
+            return new PaginacaoResultadoDto<OcorrenciaListagemDto>()
             {
-                var alunoOcorrencia = ocorrencia.Alunos.Count > 1
+                Items = ocorrencias.Items.Select(ocorrencia => 
+                {
+                    var alunoOcorrencia = ocorrencia.Alunos.Count > 1
                     ? $"{ocorrencia.Alunos.Count} crianças"
                     : DefinirDescricaoOcorrenciaAluno(alunos, ocorrencia);
 
-                yield return new OcorrenciaListagemDto()
-                {
-                    AlunoOcorrencia = alunoOcorrencia,
-                    DataOcorrencia = ocorrencia.DataOcorrencia.ToString("dd/MM/yyyy"),
-                    Id = ocorrencia.Id,
-                    Titulo = ocorrencia.Titulo,
-                    TurmaId = ocorrencia.TurmaId
-                };
-            }
+                    return new OcorrenciaListagemDto()
+                    {
+                        AlunoOcorrencia = alunoOcorrencia,
+                        DataOcorrencia = ocorrencia.DataOcorrencia.ToString("dd/MM/yyyy"),
+                        Id = ocorrencia.Id,
+                        Titulo = ocorrencia.Titulo,
+                        TurmaId = ocorrencia.TurmaId
+                    };
+                }),
+                TotalRegistros = ocorrencias.TotalRegistros,
+                TotalPaginas = ocorrencias.TotalPaginas
+            };
         }
 
         private string DefinirDescricaoOcorrenciaAluno(IEnumerable<AlunoPorTurmaResposta> alunos, Ocorrencia ocorrencia)
