@@ -1,12 +1,12 @@
-﻿using SME.SGP.Dominio.Entidades;
+﻿using SME.SGP.Dominio.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Dominio.Interfaces.Repositorios
+namespace SME.SGP.Dominio.Interfaces
 {
-    public interface IRepositorioOcorrencia
+    public interface IRepositorioOcorrencia : IRepositorioBase<Ocorrencia>
     {
-        Task<Ocorrencia> ObterPorIdAsync(long id);
-        Task<long> SalvarAsync(Ocorrencia ocorrencia);
+        Task<IEnumerable<Ocorrencia>> Listar(long turmaId, string titulo, string alunoNome, DateTime? dataOcorrenciaInicio, DateTime? dataOcorrenciaFim, string[] codigosAluno);
     }
 }

@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS public.ocorrencia(
 	hora_ocorrencia time NULL,
 	descricao varchar NOT NULL,
 	ocorrencia_tipo_id int8 NOT NULL,
+	turma_id int8 NOT NULL,
 	excluido boolean NOT NULL DEFAULT FALSE,
 	CONSTRAINT ocorrencia_pk PRIMARY KEY (id)
 );
@@ -37,6 +38,14 @@ select
 		'FOREIGN KEY (ocorrencia_tipo_id) REFERENCES ocorrencia_tipo (id)'
 	);
 	
+select
+	f_cria_fk_se_nao_existir(
+		'ocorrencia',
+		'ocorrencia_turma_fk',
+		'FOREIGN KEY (turma_id) REFERENCES turma (id)'
+	);
+
+CREATE INDEX ocorrencia_turma_idx ON public.ocorrencia USING btree (turma_id);
 CREATE INDEX ocorrencia_ocorrencia_tipo_idx ON public.ocorrencia USING btree (ocorrencia_tipo_id);
 CREATE INDEX ocorrencia_data_ocorrencia_idx ON public.ocorrencia USING btree (data_ocorrencia);
 CREATE INDEX ocorrencia_titulo_idx ON public.ocorrencia USING btree (titulo);
