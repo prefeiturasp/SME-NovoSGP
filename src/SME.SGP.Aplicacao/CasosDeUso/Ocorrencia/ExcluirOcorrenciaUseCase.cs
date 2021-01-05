@@ -12,7 +12,7 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<bool> Executar(IEnumerable<long> ids)
+        public async Task<RetornoBaseDto> Executar(IEnumerable<long> ids)
         {
             var retorno = new RetornoBaseDto();
             if (!ids?.Any() ?? true)
