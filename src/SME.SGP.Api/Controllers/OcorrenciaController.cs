@@ -58,10 +58,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         // O permissionamento será adicionado em uma task separada
-        public async Task<IActionResult> Excluir([FromBody] IEnumerable<long> ids, [FromServices] IExcluirOcorrenciasPorCodigoUseCase excluirOcorrenciasPorCodigoUseCase)
+        public async Task<IActionResult> Excluir([FromBody] IEnumerable<long> ids, [FromServices] IExcluirOcorrenciaUseCase excluirOcorrenciaUseCase)
         {
-            var retorno = await excluirOcorrenciasPorCodigoUseCase.Executar(ids);
-
+            await excluirOcorrenciaUseCase.Executar(ids);
             return await Task.FromResult(Ok());
         }
     }
