@@ -24,10 +24,10 @@ import {
   Campo,
 } from './situacaoFechamento.css';
 import ServicoPendenciasFechamento from '~/servicos/Paginas/Fechamento/ServicoPendenciasFechamento';
-import Editor from '~/componentes/editor/editor';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 import AlertaModalidadeInfantil from '~/componentes-sgp/AlertaModalidadeInfantil/alertaModalidadeInfantil';
 import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
+import JoditEditor from '~/componentes/jodit-editor/joditEditor';
 
 const PendenciasFechamentoForm = ({ match }) => {
   const usuario = useSelector(store => store.usuario);
@@ -314,9 +314,9 @@ const PendenciasFechamentoForm = ({ match }) => {
               />
             </Campo>
             <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
-              <Editor
+              <JoditEditor
                 label="Detalhamento"
-                inicial={detalhamento}
+                value={detalhamento}
                 removerToolbar
                 desabilitar
               />

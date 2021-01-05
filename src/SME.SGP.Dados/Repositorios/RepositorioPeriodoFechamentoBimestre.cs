@@ -57,6 +57,9 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<PeriodoFechamentoBimestre> ObterPeridoFechamentoBimestrePorDreUeEData(ModalidadeTipoCalendario modalidadeTipoCalendario, DateTime dataInicio, int bimestre, long? dreId, long? ueId)
         {
+            var filtroDre = dreId.HasValue ? "p.dre_id = @dreId" : "p.dre_id is null";
+            var filtroUe = ueId.HasValue ? "p.ue_id = @ueId" : "p.ue_id is null";
+
             var query = $@"select b.*, p.*, e.*
                       from periodo_fechamento p 
                      inner join periodo_fechamento_bimestre b on b.periodo_fechamento_id = p.Id
@@ -65,13 +68,9 @@ namespace SME.SGP.Dados.Repositorios
                      where not t.excluido
                        and e.bimestre = @bimestre
                        and t.modalidade = @modalidade
-                       and b.inicio_fechamento = @dataInicio ";
-
-            if (dreId.HasValue)
-                query += " and p.dre_id = @dreId ";
-
-            if (ueId.HasValue)
-                query += " and p.ue_id = @ueId ";
+                       and b.inicio_fechamento = @dataInicio 
+                       and {filtroDre} 
+                       and {filtroUe}";
 
             return (await database.Conexao.QueryAsync<PeriodoFechamentoBimestre, PeriodoFechamento, PeriodoEscolar, PeriodoFechamentoBimestre>(query, 
                 (periodoFechamentoBimestre, periodoFechamento, periodoEscolar) =>
