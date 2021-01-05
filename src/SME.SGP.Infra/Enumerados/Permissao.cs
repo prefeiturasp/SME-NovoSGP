@@ -554,6 +554,18 @@
         RACJ_C = 186,
 
         [PermissaoMenu(Menu = "Escola aqui", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = false, Url = "/relatorios/escola-aqui/adesao", EhSubMenu = true, OrdemSubMenu = 2, SubMenu = "Adesão")]
-        RDE_C = 187
+        RDE_C = 187,
+
+        [PermissaoMenu(Menu = "Ocorrências", Icone = "fas fa-user-cog", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 7, EhMenu = false, EhConsulta = true, Url = "/gestao/ocorrencias")]
+        OCO_C = 193,
+
+        [PermissaoMenu(Menu = "Ocorrências", Icone = "fas fa-user-cog", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 7, EhMenu = false, EhInclusao = true, Url = "/gestao/ocorrencias")]
+        OCO_I = 194,
+
+        [PermissaoMenu(Menu = "Ocorrências", Icone = "fas fa-user-cog", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 7, EhMenu = false, EhExclusao = true, Url = "/gestao/ocorrencias")]
+        OCO_E = 195,
+
+        [PermissaoMenu(Menu = "Ocorrências", Icone = "fas fa-user-cog", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 7, EhMenu = false, EhAlteracao = true, Url = "/gestao/ocorrencias")]
+        OCO_A = 196
     }
 }
