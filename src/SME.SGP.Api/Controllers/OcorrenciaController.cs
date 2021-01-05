@@ -10,7 +10,7 @@ namespace SME.SGP.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/ocorrencias")]
-    //[Authorize("Bearer")]
+    [Authorize("Bearer")]
     public class OcorrenciaController : ControllerBase
     {
         [HttpGet]

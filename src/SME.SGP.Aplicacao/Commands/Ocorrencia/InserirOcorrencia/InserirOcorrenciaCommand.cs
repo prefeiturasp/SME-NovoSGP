@@ -56,6 +56,10 @@ namespace SME.SGP.Aplicacao
                 .NotEmpty()
                 .WithMessage("O tipo da ocorrência deve ser informado.");
 
+            RuleFor(x => x.Titulo)
+                .NotEmpty()
+                .WithMessage("O título da ocorrência deve ser informado.");
+
             RuleFor(x => x.TurmaId)
                 .NotEmpty()
                 .WithMessage("A turma da ocorrência deve ser informada.");
