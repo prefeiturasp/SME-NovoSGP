@@ -38,30 +38,53 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<RegistroIndividual>(query, new { turmaId, componenteCurricularId, alunoCodigo, data });
         }
 
-        public async Task<IEnumerable<RegistroIndividual>> ObterPorAlunoPeriodo(long turmaId, long componenteCurricularId, long alunoCodigo, DateTime dataInicio, DateTime dataFim)
+        public async Task<PaginacaoResultadoDto<RegistroIndividual>> ObterPorAlunoPeriodoPaginado(long turmaId, long componenteCurricularId, long alunoCodigo, DateTime dataInicio, DateTime dataFim, Paginacao paginacao)
         {
-            var query = @"select id,
-	                            turma_id,
-	                            aluno_codigo,
-	                            componente_curricular_id,
-	                            data_registro,
-	                            registro,
-	                            criado_em,
-	                            criado_por,
-	                            criado_rf,
-	                            alterado_em,
-	                            alterado_por,
-	                            alterado_rf,
-	                            excluido,
-	                            migrado
-                        from registro_individual 
+            var condicao = @" from registro_individual 
                        where not excluido 
                         and turma_id = @turmaId
                         and componente_curricular_id = @componenteCurricularId
                         and aluno_codigo = @alunoCodigo
                         and data_registro::date between @dataInicio and @dataFim ";
 
-            return await database.Conexao.QueryAsync<RegistroIndividual>(query, new { turmaId, componenteCurricularId, alunoCodigo, dataInicio, dataFim });
+            var query = $"select count(0) {condicao}";
+
+            var totalRegistrosDaQuery = await database.Conexao.QueryFirstOrDefaultAsync<int>(query,
+                new { turmaId, componenteCurricularId, alunoCodigo, dataInicio, dataFim });
+
+            var offSet = "offset @qtdeRegistrosIgnorados rows fetch next @qtdeRegistros rows only";
+
+            query = $@"select id,
+                              turma_id,
+	                          aluno_codigo,
+	                          componente_curricular_id,
+	                          data_registro,
+	                          registro,
+	                          criado_em,
+	                          criado_por,
+	                          criado_rf,
+	                          alterado_em,
+	                          alterado_por,
+	                          alterado_rf,
+	                          excluido,
+	                          migrado {condicao} order by a.data_registro desc {offSet} ";
+
+            return new PaginacaoResultadoDto<RegistroIndividual>()
+            {
+                Items = await database.Conexao.QueryAsync<RegistroIndividual>(query,
+                                                  new
+                                                  {
+                                                      turmaId,
+                                                      componenteCurricularId,
+                                                      alunoCodigo,
+                                                      dataInicio,
+                                                      dataFim,
+                                                      qtdeRegistrosIgnorados = paginacao.QuantidadeRegistrosIgnorados,
+                                                      qtdeRegistros = paginacao.QuantidadeRegistros
+                                                  }),
+                TotalRegistros = totalRegistrosDaQuery,
+                TotalPaginas = (int)Math.Ceiling((double)totalRegistrosDaQuery / paginacao.QuantidadeRegistros)
+            };
         }
     }
 }
