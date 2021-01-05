@@ -1,8 +1,10 @@
 ﻿using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados
@@ -11,8 +13,79 @@ namespace SME.SGP.Dados
     {
         public RepositorioOcorrencia(ISgpContext conexao) : base(conexao) { }
 
-        public override async Task<Ocorrencia> ObterPorIdAsync(long id)
+        public async Task<IEnumerable<Ocorrencia>> Listar(long turmaId, string titulo, string alunoNome, DateTime? dataOcorrenciaInicio, DateTime? dataOcorrenciaFim, string[] codigosAluno)
         {
+            StringBuilder query = new StringBuilder();
+            query.AppendLine(@"select
+							o.id,
+							o.turma_id,
+							o.titulo,
+							o.data_ocorrencia,
+							o.hora_ocorrencia,
+							o.descricao,
+							o.ocorrencia_tipo_id,
+							o.excluido,
+							o.criado_rf,
+							o.criado_em,
+							o.alterado_em,
+							o.alterado_por,
+							o.alterado_rf,
+							ot.id,
+							ot.descricao,
+							oa.id,
+							oa.codigo_aluno
+						from
+							ocorrencia o
+						inner join ocorrencia_tipo ot on ot.id = o.ocorrencia_tipo_id 
+						inner join ocorrencia_aluno oa on oa.ocorrencia_id = o.id
+						where not excluido ");
+
+            if (!string.IsNullOrEmpty(titulo))
+                query.AppendLine("and lower(f_unaccent(o.titulo)) LIKE lower(f_unaccent(@titulo))");
+
+            if (dataOcorrenciaInicio.HasValue)
+                query.AppendLine("and data_ocorrencia::date >= @dataOcorrenciaInicio  ");
+
+            if (dataOcorrenciaFim.HasValue)
+                query.AppendLine("and data_ocorrencia::date <= @dataOcorrenciaFim");
+
+            if (codigosAluno != null)
+                query.AppendLine("and oa.codigo_aluno = ANY(@codigosAluno)");
+
+
+            var lstOcorrencias = new Dictionary<long, Ocorrencia>();
+
+            await database.Conexao.QueryAsync<Ocorrencia, OcorrenciaTipo, OcorrenciaAluno, Ocorrencia>(query.ToString(), (ocorrencia, tipo, aluno) =>
+            {
+                if (!lstOcorrencias.TryGetValue(ocorrencia.Id, out Ocorrencia ocorrenciaEntrada))
+                {
+                    ocorrenciaEntrada = ocorrencia;
+                    ocorrenciaEntrada.OcorrenciaTipo = tipo;
+                    lstOcorrencias.Add(ocorrenciaEntrada.Id, ocorrenciaEntrada);
+                }
+
+                ocorrenciaEntrada.Alunos.Add(aluno);
+                return ocorrenciaEntrada;
+            }, new { titulo, alunoNome, dataOcorrenciaInicio, dataOcorrenciaFim, codigosAluno }, splitOn: "id, id");
+
+            return lstOcorrencias.Values.ToList();
+        }
+
+        public async Task<IEnumerable<string>> ObterAlunosPorOcorrencia(long ocorrenciaId)
+        {
+            string query = @"select
+							oa.codigo_aluno
+						from
+							ocorrencia o
+						inner join ocorrencia_tipo ot on ot.id = o.ocorrencia_tipo_id 
+						inner join ocorrencia_aluno oa on oa.ocorrencia_id = o.id
+						where not excluido and o.id = @ocorrenciaId ";
+
+            return await database.Conexao.QueryAsync<string>(query.ToString(), new { ocorrenciaId });
+        }
+
+		public override async Task<Ocorrencia> ObterPorIdAsync(long id)
+		{
 			const string sql = @"select
 									o.id,
 									o.alterado_em as AlteradoEm,
@@ -58,7 +131,7 @@ namespace SME.SGP.Dados
 			return cache.Any() ? cache.First().Value : null;
 		}
 
-        public async Task<IEnumerable<Ocorrencia>> Listar(long diarioBordoId, long usuarioLogadoId)
+		public async Task<IEnumerable<Ocorrencia>> Listar(long diarioBordoId, long usuarioLogadoId)
 		{
 			var sql = @"select
 							id,
