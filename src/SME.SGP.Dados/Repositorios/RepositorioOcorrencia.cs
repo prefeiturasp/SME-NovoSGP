@@ -102,7 +102,6 @@ namespace SME.SGP.Dados
 									o.titulo as Titulo,
 									o.descricao as Descricao,
 									o.excluido as Excluido,
-									'-' as splitOn,
 									oa.id,
 									oa.codigo_aluno as CodigoAluno,
 									oa.ocorrencia_id as OcorrenciaId
@@ -114,45 +113,22 @@ namespace SME.SGP.Dados
 								WHERE
 									o.id = @id;";
 
-			var cache = new Dictionary<long, Ocorrencia>();
+			Ocorrencia resultado = null;
 			await database.Conexao.QueryAsync<Ocorrencia, OcorrenciaAluno, Ocorrencia>(sql,
 				(ocorrencia, ocorrenciaAluno) =>
 				{
-					if (!cache.ContainsKey(ocorrencia.Id))
+					if (resultado is null)
 					{
-						cache.Add(ocorrencia.Id, ocorrencia);
+						resultado = ocorrencia;
 					}
 
-					var cachedOcorrencia = cache[ocorrencia.Id];
-					cachedOcorrencia.Alunos = cachedOcorrencia.Alunos ?? new List<OcorrenciaAluno>();
-					cachedOcorrencia.Alunos.Add(ocorrenciaAluno);
-					return cachedOcorrencia;
+					resultado.Alunos = resultado.Alunos ?? new List<OcorrenciaAluno>();
+					resultado.Alunos.Add(ocorrenciaAluno);
+					return resultado;
 				},
-				new { id }, splitOn: "splitOn");
+				new { id });
 
-			return cache.Any() ? cache.First().Value : null;
-		}
-
-		public async Task<IEnumerable<Ocorrencia>> Listar(long diarioBordoId, long usuarioLogadoId)
-		{
-			var sql = @"select
-							id,
-							data_ocorrencia,
-							descricao,
-							excluido,
-							hora_ocorrencia,
-							criado_rf as CriadoRf,
-							alterado_em as AlteradoEm,
-							alterado_por as AlteradoPor,
-							alterado_rf as AlteradoRf
-						from
-							diario_bordo_observacao
-						where
-							diario_bordo_id = @diarioBordoId
-							and not excluido 
-                        order by criado_em desc";
-
-			return await database.Conexao.QueryAsync<Ocorrencia>(sql, new { diarioBordoId, usuarioLogadoId });
+			return resultado;
 		}
 	}
 }

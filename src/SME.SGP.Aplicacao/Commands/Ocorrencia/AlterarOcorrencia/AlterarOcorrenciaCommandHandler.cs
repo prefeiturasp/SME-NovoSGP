@@ -27,38 +27,40 @@ namespace SME.SGP.Aplicacao
 
         public async Task<AuditoriaDto> Handle(AlterarOcorrenciaCommand request, CancellationToken cancellationToken)
         {
-            unitOfWork.IniciarTransacao();
-            try
+            using (var transacao = unitOfWork.IniciarTransacao())
             {
-                var ocorrencia = await repositorioOcorrencia.ObterPorIdAsync(request.Id);
-                if (ocorrencia == null)
-                    throw new NegocioException($"Ocorrencia {request.Id} não encontrada!");
-
-                var ocorrenciaTipo = await repositorioOcorrenciaTipo.ObterPorIdAsync(request.OcorrenciaTipoId);
-                if (ocorrenciaTipo is null)
-                    throw new NegocioException("O tipo da ocorrência informado não foi encontrado.");
-
-                MapearAlteracoes(ocorrencia, request, ocorrenciaTipo);
-                await repositorioOcorrencia.SalvarAsync(ocorrencia);
-
-                var alunosParaSeremDeletados = ocorrencia.Alunos.Where(x => !request.CodigosAlunos.Contains(x.CodigoAluno)).Select(x => x.Id);
-                await repositorioOcorrenciaAluno.ExcluirAsync(alunosParaSeremDeletados);
-
-                var novosAlunos = request.CodigosAlunos.Where(x => !ocorrencia.Alunos.Any(y => y.CodigoAluno == x)).ToList();
-                ocorrencia.AdiconarAlunos(novosAlunos);
-                foreach(var novoAluno in novosAlunos)
+                try
                 {
-                    var ocorrenciaAluno = ocorrencia.Alunos.FirstOrDefault(x => x.CodigoAluno == novoAluno);
-                    await repositorioOcorrenciaAluno.SalvarAsync(ocorrenciaAluno);
-                }
+                    var ocorrencia = await repositorioOcorrencia.ObterPorIdAsync(request.Id);
+                    if (ocorrencia == null)
+                        throw new NegocioException($"Ocorrencia {request.Id} não encontrada!");
 
-                unitOfWork.PersistirTransacao();
-                return (AuditoriaDto)ocorrencia;
-            }
-            catch
-            {
-                unitOfWork.Rollback();
-                throw;
+                    var ocorrenciaTipo = await repositorioOcorrenciaTipo.ObterPorIdAsync(request.OcorrenciaTipoId);
+                    if (ocorrenciaTipo is null)
+                        throw new NegocioException("O tipo da ocorrência informado não foi encontrado.");
+
+                    MapearAlteracoes(ocorrencia, request, ocorrenciaTipo);
+                    await repositorioOcorrencia.SalvarAsync(ocorrencia);
+
+                    var alunosParaSeremDeletados = ocorrencia.Alunos.Where(x => !request.CodigosAlunos.Contains(x.CodigoAluno)).Select(x => x.Id);
+                    await repositorioOcorrenciaAluno.ExcluirAsync(alunosParaSeremDeletados);
+
+                    var novosAlunos = request.CodigosAlunos.Where(x => !ocorrencia.Alunos.Any(y => y.CodigoAluno == x)).ToList();
+                    ocorrencia.AdiconarAlunos(novosAlunos);
+                    foreach (var novoAluno in novosAlunos)
+                    {
+                        var ocorrenciaAluno = ocorrencia.Alunos.FirstOrDefault(x => x.CodigoAluno == novoAluno);
+                        await repositorioOcorrenciaAluno.SalvarAsync(ocorrenciaAluno);
+                    }
+
+                    unitOfWork.PersistirTransacao();
+                    return (AuditoriaDto)ocorrencia;
+                }
+                catch
+                {
+                    unitOfWork.Rollback();
+                    throw;
+                }
             }
         }
 
