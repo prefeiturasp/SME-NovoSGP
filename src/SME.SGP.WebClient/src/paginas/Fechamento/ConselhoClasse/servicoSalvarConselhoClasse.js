@@ -203,7 +203,7 @@ class ServicoSalvarConselhoClasse {
       notaDto,
       codigoTurma,
       bimestreAtual.valor
-    ).catch(e => erro(e));
+    ).catch(e => erros(e));
 
     if (retorno && retorno.status === 200) {
       dadosPrincipaisConselhoClasse.conselhoClasseId =
