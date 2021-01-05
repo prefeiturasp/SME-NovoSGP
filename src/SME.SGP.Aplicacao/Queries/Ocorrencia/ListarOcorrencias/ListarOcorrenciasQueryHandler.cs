@@ -45,7 +45,7 @@ namespace SME.SGP.Aplicacao
             {
                 var alunoOcorrencia = ocorrencia.Alunos.Count > 1
                     ? $"{ocorrencia.Alunos.Count} crianças"
-                    : GetDescricaoOcorrenciaAluno(alunos, ocorrencia);
+                    : DefinirDescricaoOcorrenciaAluno(alunos, ocorrencia);
 
                 yield return new OcorrenciaListagemDto()
                 {
@@ -58,7 +58,7 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private string GetDescricaoOcorrenciaAluno(IEnumerable<AlunoPorTurmaResposta> alunos, Ocorrencia ocorrencia)
+        private string DefinirDescricaoOcorrenciaAluno(IEnumerable<AlunoPorTurmaResposta> alunos, Ocorrencia ocorrencia)
         {
             var ocorrenciaAluno = ocorrencia.Alunos.FirstOrDefault();
             if (ocorrenciaAluno is null) return default;
