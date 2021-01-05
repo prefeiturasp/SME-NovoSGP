@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SME.SGP.Infra.Dtos.Ocorrencias.Listagens
+namespace SME.SGP.Infra
 {
     public class FiltroOcorrenciaListagemDto
     {
@@ -8,5 +8,6 @@ namespace SME.SGP.Infra.Dtos.Ocorrencias.Listagens
         public DateTime? DataOcorrenciaFim { get; set; }
         public string AlunoNome { get; set; }
         public string Titulo { get; set; }
+        public long TurmaId { get; set; }
     }
 }

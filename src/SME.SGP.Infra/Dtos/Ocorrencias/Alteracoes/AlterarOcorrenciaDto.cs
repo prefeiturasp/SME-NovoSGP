@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SME.SGP.Infra.Dtos.Ocorrencias.Alteracoes
+namespace SME.SGP.Infra
 {
     public class AlterarOcorrenciaDto
     {

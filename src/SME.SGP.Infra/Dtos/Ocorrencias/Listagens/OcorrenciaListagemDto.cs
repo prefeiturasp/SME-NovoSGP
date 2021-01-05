@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SME.SGP.Infra.Dtos.Ocorrencias.Listagens
+﻿namespace SME.SGP.Infra
 {
     public class OcorrenciaListagemDto
     {
@@ -8,5 +6,6 @@ namespace SME.SGP.Infra.Dtos.Ocorrencias.Listagens
         public string DataOcorrencia { get; set; }
         public string Titulo { get; set; }
         public string AlunoOcorrencia { get; set; }
+        public long TurmaId { get; set; }
     }
 }
