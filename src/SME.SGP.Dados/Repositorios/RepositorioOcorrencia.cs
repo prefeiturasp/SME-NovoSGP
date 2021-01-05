@@ -14,10 +14,36 @@ namespace SME.SGP.Dados
     {
         public RepositorioOcorrencia(ISgpContext conexao) : base(conexao) { }
 
-        public async Task<IEnumerable<Ocorrencia>> Listar(long turmaId, string titulo, string alunoNome, DateTime? dataOcorrenciaInicio, DateTime? dataOcorrenciaFim, string[] codigosAluno)
+        public async Task<PaginacaoResultadoDto<Ocorrencia>> ListarPaginado(long turmaId, string titulo, string alunoNome, DateTime? dataOcorrenciaInicio, DateTime? dataOcorrenciaFim, string[] codigosAluno, Paginacao paginacao)
         {
-            StringBuilder query = new StringBuilder();
-            query.AppendLine(@"select
+            StringBuilder condicao = new StringBuilder();
+
+            condicao.AppendLine(@" from
+							ocorrencia o
+						inner join ocorrencia_tipo ot on ot.id = o.ocorrencia_tipo_id 
+						inner join ocorrencia_aluno oa on oa.ocorrencia_id = o.id
+						where not o.excluido and turma_id = @turmaId ");
+
+            if (!string.IsNullOrEmpty(titulo))
+                condicao.AppendLine("and lower(f_unaccent(o.titulo)) LIKE lower(f_unaccent(@titulo))");
+
+            if (dataOcorrenciaInicio.HasValue)
+                condicao.AppendLine("and data_ocorrencia::date >= @dataOcorrenciaInicio  ");
+
+            if (dataOcorrenciaFim.HasValue)
+                condicao.AppendLine("and data_ocorrencia::date <= @dataOcorrenciaFim");
+
+            if (codigosAluno != null)
+                condicao.AppendLine("and oa.codigo_aluno = ANY(@codigosAluno)");
+
+            var query = $"select count(0) {condicao}";
+
+            var totalRegistrosDaQuery = await database.Conexao.QueryFirstOrDefaultAsync<int>(query,
+               new { titulo, alunoNome, dataOcorrenciaInicio, dataOcorrenciaFim, codigosAluno, turmaId });
+
+            var offSet = "offset @qtdeRegistrosIgnorados rows fetch next @qtdeRegistros rows only";
+
+            query = $@"select
 							o.id,
 							o.turma_id,
 							o.titulo,
@@ -34,24 +60,7 @@ namespace SME.SGP.Dados
 							ot.id,
 							ot.descricao,
 							oa.id,
-							oa.codigo_aluno
-						from
-							ocorrencia o
-						inner join ocorrencia_tipo ot on ot.id = o.ocorrencia_tipo_id 
-						inner join ocorrencia_aluno oa on oa.ocorrencia_id = o.id
-						where not o.excluido ");
-
-            if (!string.IsNullOrEmpty(titulo))
-                query.AppendLine("and lower(f_unaccent(o.titulo)) LIKE lower(f_unaccent(@titulo))");
-
-            if (dataOcorrenciaInicio.HasValue)
-                query.AppendLine("and data_ocorrencia::date >= @dataOcorrenciaInicio  ");
-
-            if (dataOcorrenciaFim.HasValue)
-                query.AppendLine("and data_ocorrencia::date <= @dataOcorrenciaFim");
-
-            if (codigosAluno != null)
-                query.AppendLine("and oa.codigo_aluno = ANY(@codigosAluno)");
+							oa.codigo_aluno {condicao} order by a.data_ocorrencia {offSet} ";
 
 
             var lstOcorrencias = new Dictionary<long, Ocorrencia>();
@@ -65,17 +74,22 @@ namespace SME.SGP.Dados
                     lstOcorrencias.Add(ocorrenciaEntrada.Id, ocorrenciaEntrada);
                 }
 
-				ocorrenciaEntrada.Alunos = ocorrenciaEntrada.Alunos ?? new List<OcorrenciaAluno>();
-				ocorrenciaEntrada.Alunos.Add(aluno);
+                ocorrenciaEntrada.Alunos = ocorrenciaEntrada.Alunos ?? new List<OcorrenciaAluno>();
+                ocorrenciaEntrada.Alunos.Add(aluno);
                 return ocorrenciaEntrada;
-            }, new { titulo, alunoNome, dataOcorrenciaInicio, dataOcorrenciaFim, codigosAluno }, splitOn: "id, id");
+            }, new { titulo, alunoNome, dataOcorrenciaInicio, dataOcorrenciaFim, codigosAluno, turmaId }, splitOn: "id, id");
 
-            return lstOcorrencias.Values.ToList();
+            return new PaginacaoResultadoDto<Ocorrencia>()
+            {
+                Items = lstOcorrencias.Values.ToList(),
+                TotalRegistros = totalRegistrosDaQuery,
+                TotalPaginas = (int)Math.Ceiling((double)totalRegistrosDaQuery / paginacao.QuantidadeRegistros)
+            };
         }
 
-		public override async Task<Ocorrencia> ObterPorIdAsync(long id)
-		{
-			const string sql = @"select
+        public override async Task<Ocorrencia> ObterPorIdAsync(long id)
+        {
+            const string sql = @"select
 									o.id,
 									o.alterado_em as AlteradoEm,
 									o.alterado_por as AlteradoPor,
@@ -102,22 +116,22 @@ namespace SME.SGP.Dados
 									o.id = @id
 									AND not o.excluido;";
 
-			Ocorrencia resultado = null;
-			await database.Conexao.QueryAsync<Ocorrencia, OcorrenciaAluno, Ocorrencia>(sql,
-				(ocorrencia, ocorrenciaAluno) =>
-				{
-					if (resultado is null)
-					{
-						resultado = ocorrencia;
-					}
+            Ocorrencia resultado = null;
+            await database.Conexao.QueryAsync<Ocorrencia, OcorrenciaAluno, Ocorrencia>(sql,
+                (ocorrencia, ocorrenciaAluno) =>
+                {
+                    if (resultado is null)
+                    {
+                        resultado = ocorrencia;
+                    }
 
-					resultado.Alunos = resultado.Alunos ?? new List<OcorrenciaAluno>();
-					resultado.Alunos.Add(ocorrenciaAluno);
-					return resultado;
-				},
-				new { id });
+                    resultado.Alunos = resultado.Alunos ?? new List<OcorrenciaAluno>();
+                    resultado.Alunos.Add(ocorrenciaAluno);
+                    return resultado;
+                },
+                new { id });
 
-			return resultado;
-		}
-	}
+            return resultado;
+        }
+    }
 }
