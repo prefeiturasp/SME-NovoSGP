@@ -554,6 +554,9 @@
         RACJ_C = 186,
 
         [PermissaoMenu(Menu = "Escola aqui", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = false, Url = "/relatorios/escola-aqui/adesao", EhSubMenu = true, OrdemSubMenu = 2, SubMenu = "Adesão")]
-        RDE_C = 187
+        RDE_C = 187,        
+
+        [PermissaoMenu(Menu = "Diario classe", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = false, Url = "/relatorios/diario-classe/planejamento-diario", EhSubMenu = true, OrdemSubMenu = 3, SubMenu = "Controle de planejamento diário")]
+        RCP_C = 188
     }
 }

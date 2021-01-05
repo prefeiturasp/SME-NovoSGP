@@ -20,4 +20,13 @@ namespace SME.SGP.Infra.Dtos.EscolaAqui.DadosDeLeituraDeComunicados
         [Required(ErrorMessage = "O modo de visualização deve ser informado.")]
         public int ModoVisualizacao { get; set; }
     }
+
+    public class FiltroDadosDeLeituraDeComunicadosPorAlunosTurmaDto
+    {
+        [Required(ErrorMessage = "O comunicado deve ser informado.")]
+        public long ComunicadoId { get; set; }
+
+        [Required(ErrorMessage = "O código da turma deve ser informado.")]
+        public long CodigoTurma { get; set; }
+    }
 }

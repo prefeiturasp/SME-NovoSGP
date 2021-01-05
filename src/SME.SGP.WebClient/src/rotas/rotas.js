@@ -68,7 +68,6 @@ import DevolutivasForm from '~/paginas/DiarioClasse/Devolutivas/devolutivasForm'
 import RelatorioNotasConceitosFinais from '~/paginas/Relatorios/NotasConceitosFinais/relatorioNotasConceitosFinais';
 import RelatorioCompensacaoAusencia from '~/paginas/Relatorios/CompensacaoAusencia/relatorioCompensacaoAusencia';
 import DashboardEscolaAqui from '~/paginas/Relatorios/DashboardEscolaAqui/dashboardEscolaAqui';
-import PocEditor from '~/paginas/PocEditor/pocEditor';
 import ControleGrade from '~/paginas/Relatorios/DiarioClasse/ControleGrade/controleGrade';
 import Sondagem from '~/paginas/Sondagem/sondagem';
 import PocUploadArquivos from '~/componentes-sgp/UploadArquivos/pocUploadArquivos';
@@ -82,6 +81,7 @@ import relatorioEscolaAquiAdesao from '~/paginas/Relatorios/EscolaAqui/Adesao/re
 import RelatorioLeitura from '~/paginas/Relatorios/EscolaAqui/Leitura/relatorioLeitura';
 import ListaOcorrencias from '~/paginas/Gestao/Ocorrencia/ListaOcorrencias';
 import CadastroOcorrencias from '~/paginas/Gestao/Ocorrencia/CadastroOcorrencias';
+import RelatorioPlanejamentoDiario from '~/paginas/Relatorios/DiarioClasse/PlanejamentoDiario/relatorioPlanejamentoDiario';
 
 const rotas = new Map();
 
@@ -975,12 +975,15 @@ rotas.set(RotasDto.CONTROLE_GRADE, {
   chavePermissao: RotasDto.CONTROLE_GRADE,
 });
 
-rotas.set(RotasDto.POC_EDITOR, {
-  breadcrumbName: 'Poc Jodit Editor',
+rotas.set(RotasDto.RELATORIO_PLANEJAMENTO_DIARIO, {
+  breadcrumbName: 'Controle de planejamento diário',
+  menu: ['Relatórios', 'Diário de classe'],
   parent: '/',
-  component: PocEditor,
-  exact: false,
+  component: RelatorioPlanejamentoDiario,
+  exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.RELATORIO_PLANEJAMENTO_DIARIO,
 });
 
 rotas.set(RotasDto.SONDAGEM, {
