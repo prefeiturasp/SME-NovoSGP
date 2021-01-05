@@ -9,6 +9,7 @@ namespace SME.SGP.Dominio
         public Questionario Questionario { get; set; }
         public long QuestionarioId { get; set; }
 
+        public string Nome { get; set; }
         public bool Excluido { get; set; }
     }
 }
