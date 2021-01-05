@@ -2,7 +2,7 @@ import * as moment from 'moment';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import shortid from 'shortid';
-import Editor from '~/componentes/editor/editor';
+import JoditEditor from '~/componentes/jodit-editor/joditEditor';
 import {
   EditorPlanejamento,
   ListaPlanejamentos,
@@ -42,11 +42,11 @@ const CardPlanejamento = React.memo(() => {
                     </thead>
                   </table>
                   <EditorPlanejamento>
-                    <Editor
+                    <JoditEditor
                       id="planejamento-diario-bordo"
-                      inicial={item.planejamento}
+                      value={item.planejamento}
                       removerToolbar
-                      desabilitar
+                      readonly
                     />
                   </EditorPlanejamento>
                 </Tabela>

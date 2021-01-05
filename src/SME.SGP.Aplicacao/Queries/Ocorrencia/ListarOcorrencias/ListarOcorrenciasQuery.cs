@@ -7,16 +7,18 @@ namespace SME.SGP.Aplicacao
 {
     public class ListarOcorrenciasQuery : IRequest<IEnumerable<OcorrenciaListagemDto>>
     {
-        public ListarOcorrenciasQuery(DateTime? dataOcorrenciaInicio, DateTime? dataOcorrenciaFim, string alunoNome, string titulo)
+        public ListarOcorrenciasQuery(DateTime? dataOcorrenciaInicio, DateTime? dataOcorrenciaFim, string alunoNome, string titulo, long turmaId)
         {
             DataOcorrenciaInicio = dataOcorrenciaInicio;
             DataOcorrenciaFim = dataOcorrenciaFim;
             AlunoNome = alunoNome;
             Titulo = titulo;
+            TurmaId = turmaId;
         }
 
         public DateTime? DataOcorrenciaInicio { get; set; }
         public DateTime? DataOcorrenciaFim { get; set; }
+        public long TurmaId { get; set; }
         public string AlunoNome { get; set; }
         public string Titulo { get; set; }
     }

@@ -8,5 +8,6 @@ namespace SME.SGP.Infra
         public DateTime? DataOcorrenciaFim { get; set; }
         public string AlunoNome { get; set; }
         public string Titulo { get; set; }
+        public long TurmaId { get; set; }
     }
 }
