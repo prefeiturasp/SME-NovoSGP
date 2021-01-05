@@ -61,7 +61,7 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> Excluir([FromBody] IEnumerable<long> ids, [FromServices] IExcluirOcorrenciaUseCase excluirOcorrenciaUseCase)
         {
             await excluirOcorrenciaUseCase.Executar(ids);
-            return await Task.FromResult(Ok());
+            return Ok();
         }
     }
 }
