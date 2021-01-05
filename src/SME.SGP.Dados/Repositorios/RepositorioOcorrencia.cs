@@ -77,7 +77,15 @@ namespace SME.SGP.Dados
                 ocorrenciaEntrada.Alunos = ocorrenciaEntrada.Alunos ?? new List<OcorrenciaAluno>();
                 ocorrenciaEntrada.Alunos.Add(aluno);
                 return ocorrenciaEntrada;
-            }, new { titulo, alunoNome, dataOcorrenciaInicio, dataOcorrenciaFim, codigosAluno, turmaId }, splitOn: "id, id");
+            }, new { 
+                titulo, alunoNome, 
+                dataOcorrenciaInicio, 
+                dataOcorrenciaFim, 
+                codigosAluno, 
+                turmaId,
+                qtdeRegistrosIgnorados = paginacao.QuantidadeRegistrosIgnorados,
+                qtdeRegistros = paginacao.QuantidadeRegistros
+            }, splitOn: "id, id");
 
             return new PaginacaoResultadoDto<Ocorrencia>()
             {
