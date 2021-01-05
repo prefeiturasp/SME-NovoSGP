@@ -1,5 +1,6 @@
 ﻿using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -83,5 +84,51 @@ namespace SME.SGP.Dados
 
             return await database.Conexao.QueryAsync<string>(query.ToString(), new { ocorrenciaId });
         }
-    }
+
+		public override async Task<Ocorrencia> ObterPorIdAsync(long id)
+		{
+			const string sql = @"select
+									o.id,
+									o.alterado_em as AlteradoEm,
+									o.alterado_por as AlteradoPor,
+									o.alterado_rf as AlteradoRf,
+									o.criado_em as CriadoEm,
+									o.criado_por as CriadoPor,
+									o.criado_rf as CriadoRf,
+									o.data_ocorrencia as DataOcorrencia,
+									o.hora_ocorrencia as HoraOcorrencia,
+									o.ocorrencia_tipo_id as OcorrenciaTipoId,
+									o.turma_id as TurmaId,
+									o.titulo as Titulo,
+									o.descricao as Descricao,
+									o.excluido as Excluido,
+									oa.id,
+									oa.codigo_aluno as CodigoAluno,
+									oa.ocorrencia_id as OcorrenciaId
+								FROM 
+									public.ocorrencia o
+								INNER JOIN
+									public.ocorrencia_aluno oa
+									ON o.id = oa.ocorrencia_id
+								WHERE
+									o.id = @id;";
+
+			Ocorrencia resultado = null;
+			await database.Conexao.QueryAsync<Ocorrencia, OcorrenciaAluno, Ocorrencia>(sql,
+				(ocorrencia, ocorrenciaAluno) =>
+				{
+					if (resultado is null)
+					{
+						resultado = ocorrencia;
+					}
+
+					resultado.Alunos = resultado.Alunos ?? new List<OcorrenciaAluno>();
+					resultado.Alunos.Add(ocorrenciaAluno);
+					return resultado;
+				},
+				new { id });
+
+			return resultado;
+		}
+	}
 }
