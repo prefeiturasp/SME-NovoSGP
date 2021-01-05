@@ -39,7 +39,7 @@ namespace SME.SGP.Dados
 							ocorrencia o
 						inner join ocorrencia_tipo ot on ot.id = o.ocorrencia_tipo_id 
 						inner join ocorrencia_aluno oa on oa.ocorrencia_id = o.id
-						where not excluido ");
+						where not o.excluido ");
 
             if (!string.IsNullOrEmpty(titulo))
                 query.AppendLine("and lower(f_unaccent(o.titulo)) LIKE lower(f_unaccent(@titulo))");
@@ -65,24 +65,12 @@ namespace SME.SGP.Dados
                     lstOcorrencias.Add(ocorrenciaEntrada.Id, ocorrenciaEntrada);
                 }
 
-                ocorrenciaEntrada.Alunos.Add(aluno);
+				ocorrenciaEntrada.Alunos = ocorrenciaEntrada.Alunos ?? new List<OcorrenciaAluno>();
+				ocorrenciaEntrada.Alunos.Add(aluno);
                 return ocorrenciaEntrada;
             }, new { titulo, alunoNome, dataOcorrenciaInicio, dataOcorrenciaFim, codigosAluno }, splitOn: "id, id");
 
             return lstOcorrencias.Values.ToList();
-        }
-
-        public async Task<IEnumerable<string>> ObterAlunosPorOcorrencia(long ocorrenciaId)
-        {
-            string query = @"select
-							oa.codigo_aluno
-						from
-							ocorrencia o
-						inner join ocorrencia_tipo ot on ot.id = o.ocorrencia_tipo_id 
-						inner join ocorrencia_aluno oa on oa.ocorrencia_id = o.id
-						where not excluido and o.id = @ocorrenciaId ";
-
-            return await database.Conexao.QueryAsync<string>(query.ToString(), new { ocorrenciaId });
         }
 
 		public override async Task<Ocorrencia> ObterPorIdAsync(long id)
@@ -111,7 +99,8 @@ namespace SME.SGP.Dados
 									public.ocorrencia_aluno oa
 									ON o.id = oa.ocorrencia_id
 								WHERE
-									o.id = @id;";
+									o.id = @id
+									AND not o.excluido;";
 
 			Ocorrencia resultado = null;
 			await database.Conexao.QueryAsync<Ocorrencia, OcorrenciaAluno, Ocorrencia>(sql,

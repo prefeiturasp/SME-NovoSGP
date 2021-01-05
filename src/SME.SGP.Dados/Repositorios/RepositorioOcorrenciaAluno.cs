@@ -64,7 +64,7 @@ namespace SME.SGP.Dados
 							ocorrencia o
 						inner join ocorrencia_tipo ot on ot.id = o.ocorrencia_tipo_id 
 						inner join ocorrencia_aluno oa on oa.ocorrencia_id = o.id
-						where not excluido and o.id = @ocorrenciaId ";
+						where not o.excluido and o.id = @ocorrenciaId ";
 
             return await database.Conexao.QueryAsync<string>(query.ToString(), new { ocorrenciaId });
         }

@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using FluentValidation;
+using MediatR;
 using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
@@ -11,5 +12,15 @@ namespace SME.SGP.Aplicacao
         }
 
         public long Id { get; set; }
+    }
+
+    public class ObterOcorrenciaPorIdQueryValidator : AbstractValidator<ObterOcorrenciaPorIdQuery>
+    {
+        public ObterOcorrenciaPorIdQueryValidator()
+        {
+            RuleFor(x => x.Id)
+                .NotEmpty()
+                .WithMessage("O identificador da ocorrência deve ser informado.");
+        }
     }
 }

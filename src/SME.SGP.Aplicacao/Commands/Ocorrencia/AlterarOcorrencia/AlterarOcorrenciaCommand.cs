@@ -60,6 +60,10 @@ namespace SME.SGP.Aplicacao
                 .NotEmpty()
                 .WithMessage("P tipo da ocorrência deve ser informada.");
 
+            RuleFor(x => x.Titulo)
+                .NotEmpty()
+                .WithMessage("O título da ocorrência deve ser informado.");
+
             RuleFor(x => x.CodigosAlunos)
                 .NotEmpty()
                 .WithMessage("Os alunos envolvidos na ocorrência devem ser informados.");

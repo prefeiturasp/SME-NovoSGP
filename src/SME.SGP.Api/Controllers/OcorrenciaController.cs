@@ -9,7 +9,7 @@ namespace SME.SGP.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/ocorrencias")]
-    //[Authorize("Bearer")]
+    [Authorize("Bearer")]
     public class OcorrenciaController : ControllerBase
     {
         [HttpGet]
@@ -26,7 +26,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         // O permissionamento será adicionado em uma task separada
-        public async Task<IActionResult> Get([FromServices] IObterOcorrenciaUseCase useCase, [FromQuery] long id)
+        public async Task<IActionResult> Get([FromServices] IObterOcorrenciaUseCase useCase, long id)
         {
             var result = await useCase.Executar(id);
             if (result == null)

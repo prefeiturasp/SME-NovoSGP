@@ -43,20 +43,30 @@ namespace SME.SGP.Aplicacao
         {
             foreach (var ocorrencia in ocorrencias)
             {
-                foreach (var aluno in ocorrencia.Alunos)
-                {
-                    var dadosAluno = alunos.FirstOrDefault(a => a.CodigoAluno == aluno.CodigoAluno.ToString());
+                var alunoOcorrencia = ocorrencia.Alunos.Count > 1
+                    ? $"{ocorrencia.Alunos.Count} crianças"
+                    : GetDescricaoOcorrenciaAluno(alunos, ocorrencia);
 
-                    yield return new OcorrenciaListagemDto()
-                    {
-                        AlunoOcorrencia = dadosAluno.NomeSocialAluno,
-                        DataOcorrencia = ocorrencia.DataOcorrencia.ToString("dd/MM/yyyy"),
-                        Id = ocorrencia.Id,
-                        Titulo = ocorrencia.Titulo,
-                        TurmaId = ocorrencia.TurmaId
-                    };
-                }
+                yield return new OcorrenciaListagemDto()
+                {
+                    AlunoOcorrencia = alunoOcorrencia,
+                    DataOcorrencia = ocorrencia.DataOcorrencia.ToString("dd/MM/yyyy"),
+                    Id = ocorrencia.Id,
+                    Titulo = ocorrencia.Titulo,
+                    TurmaId = ocorrencia.TurmaId
+                };
             }
+        }
+
+        private string GetDescricaoOcorrenciaAluno(IEnumerable<AlunoPorTurmaResposta> alunos, Ocorrencia ocorrencia)
+        {
+            var ocorrenciaAluno = ocorrencia.Alunos.FirstOrDefault();
+            if (ocorrenciaAluno is null) return default;
+
+            var alunoTurma = alunos.FirstOrDefault(a => a.CodigoAluno == ocorrenciaAluno.CodigoAluno.ToString());
+            if (alunoTurma is null) return default;
+
+            return alunoTurma.NomeSocialAluno;
         }
     }
 }
