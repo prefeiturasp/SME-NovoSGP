@@ -29,6 +29,8 @@ namespace SME.SGP.Aplicacao
                     return retorno;
                 }
 
+                if (ocorrencia.Excluido) return retorno;
+
                 ocorrencia.Excluir();
                 await repositorioOcorrencia.SalvarAsync(ocorrencia);
             }
