@@ -291,7 +291,7 @@ const RelatorioPlanejamentoDiario = () => {
     setHabilitarDatasFuturas(false);
     if (bimestre !== OPCAO_TODOS && bimestre) {
       const bimestreSelecionado = bimestres.filter(
-        b => b.id === Number(bimestre)
+        b => b.bimestre === Number(bimestre)
       );
       if (checarPeriodoEhMaior(bimestreSelecionado[0]?.periodoFim)) {
         setHabilitarDatasFuturas(true);
