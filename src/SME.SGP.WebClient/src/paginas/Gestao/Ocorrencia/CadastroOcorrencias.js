@@ -11,17 +11,13 @@ const CadastroOcorrencias = () => {
   const [tipoOcorrencia, setTipoOcorrencia] = useState();
   const [tituloOcorrencia, setTituloOcorrencia] = useState();
   const [descricao, setDescricao] = useState();
-  const refFormulario = useRef(null);
+  const [refForm, setRefForm] = useState({});
 
   const [valoresIniciais, setValoresIniciais] = useState({
     dataOcorrencia: window.moment(),
   });
 
-  const validacoes = () => {
-    return Yup.object({
-      dataOcorrencia: momentSchema.required('Campo obrigatório'),
-    });
-  };
+  const [validacoes, setValidacoes] = useState(undefined);
 
   const validaAntesDoSubmit = form => {
     const arrayCampos = Object.keys(valoresIniciais);
@@ -59,12 +55,13 @@ const CadastroOcorrencias = () => {
       <Cabecalho pagina="Cadastro de ocorrência" />
       <Card>
         <Formik
+          enableReinitialize
           initialValues={valoresIniciais}
           validationSchema={validacoes}
-          onSubmit={valores => onSubmitFormulario(valores)}
+          onSubmit={() => {}}
           validateOnBlur
           validateOnChange
-          ref={refFormulario}
+          ref={refFormik => setRefForm(refFormik)}
         >
           {form => (
             <Form className="col-md-12 mb-4">
@@ -133,7 +130,7 @@ const CadastroOcorrencias = () => {
                   formatoData="DD/MM/YYYY"
                 />
               </div>
-              {/* <div className="col-md-3 col-sm-12 col-lg-3 mt-3">
+              <div className="col-md-3 col-sm-12 col-lg-3 mt-3">
                 <CampoData
                   label="Hora da ocorrência"
                   name="horaOcorrencia"
@@ -144,7 +141,7 @@ const CadastroOcorrencias = () => {
                   formatoData="HH:mm"
                   somenteHora
                 />
-              </div> */}
+              </div>
             </Form>
           )}
         </Formik>
