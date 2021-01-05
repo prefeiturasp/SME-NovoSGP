@@ -30,33 +30,32 @@ namespace SME.SGP.Aplicacao
         public async Task<OcorrenciaDto> Handle(ObterOcorrenciaPorIdQuery request, CancellationToken cancellationToken)
         {
             var ocorrencia = await repositorioOcorrencia.ObterPorIdAsync(request.Id);
-            var ocorrenciaTipo = await repositorioOcorrenciaTipo.ObterPorIdAsync(ocorrencia.OcorrenciaTipoId);
-            var alunosOcorrencia = await repositorioOcorrenciaAluno.ObterAlunosPorOcorrencia(request.Id);
+            if (ocorrencia is null)
+                throw new NegocioException($"Não foi possível localizar a ocorrência {request.Id}.");
+
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(ocorrencia.TurmaId));
             var alunos = await mediator.Send(new ObterAlunosPorTurmaEAnoLetivoQuery(turma.CodigoTurma));
 
-            return MapearParaDto(ocorrencia, ocorrenciaTipo, alunosOcorrencia, turma, alunos);
+            return MapearParaDto(ocorrencia, alunos);
         }
 
-        private OcorrenciaDto MapearParaDto(Ocorrencia ocorrencia, OcorrenciaTipo ocorrenciaTipo,
-                                            IEnumerable<string> alunosOcorrencia, Turma turma, IEnumerable<AlunoPorTurmaResposta> alunos)
-        {
-            return new OcorrenciaDto()
+        private OcorrenciaDto MapearParaDto(Ocorrencia ocorrencia, IEnumerable<AlunoPorTurmaResposta> alunos) 
+            => new OcorrenciaDto()
             {
                 Auditoria = (AuditoriaDto)ocorrencia,
                 DataOcorrencia = ocorrencia.DataOcorrencia.ToString("dd/MM/yyyy"),
                 Descricao = ocorrencia.Descricao,
-                HoraOcorrencia = ocorrencia.HoraOcorrencia.HasValue ? ocorrencia.HoraOcorrencia.Value.ToString(@"hh\:mm\:ss") : "00:00:00",
+                HoraOcorrencia = ocorrencia.HoraOcorrencia?.ToString(@"hh\:mm") ?? string.Empty,
                 OcorrenciaTipoId = ocorrencia.OcorrenciaTipoId,
                 TurmaId = ocorrencia.TurmaId,
                 Titulo = ocorrencia.Titulo,
-                Alunos = alunosOcorrencia.Select(ao => new OcorrenciaAlunoDto()
+                Alunos = ocorrencia.Alunos.Select(ao => new OcorrenciaAlunoDto()
                 {
-                    CodigoAluno = Convert.ToInt64(ao),
-                    Nome = alunos.FirstOrDefault(a => a.CodigoAluno == ao)?.NomeSocialAluno
+                    Id = ao.Id,
+                    CodigoAluno = ao.CodigoAluno,
+                    Nome = alunos.FirstOrDefault(a => a.CodigoAluno == ao.CodigoAluno.ToString())?.NomeSocialAluno
                 })
             };
-        }
     }
 }
 
