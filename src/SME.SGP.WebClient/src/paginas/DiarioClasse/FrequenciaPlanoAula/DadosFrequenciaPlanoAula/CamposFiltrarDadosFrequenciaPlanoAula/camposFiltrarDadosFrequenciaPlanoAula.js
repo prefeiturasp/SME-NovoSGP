@@ -115,10 +115,14 @@ const CamposFiltrarDadosFrequenciaPlanoAula = () => {
 
   // Quando selecionar o componente curricular vai realizar a consulta das das que tem aulas cadastrada para essa turma!
   useEffect(() => {
-    if (codigoComponenteCurricular) {
+    if (codigoComponenteCurricular && turmaSelecionada?.turma) {
       obterDatasDeAulasDisponiveis();
     }
-  }, [codigoComponenteCurricular, obterDatasDeAulasDisponiveis]);
+  }, [
+    codigoComponenteCurricular,
+    obterDatasDeAulasDisponiveis,
+    turmaSelecionada,
+  ]);
 
   // Quando tem valor do componente curricular no redux vai setar o id no componente select!
   useEffect(() => {

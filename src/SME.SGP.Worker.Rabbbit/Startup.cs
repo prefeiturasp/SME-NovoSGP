@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Sentry;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dados;
 using SME.SGP.Infra;
@@ -35,25 +36,21 @@ namespace SME.SGP.Worker.Rabbbit
             RegistrarHttpClients(services, configuration);
             services.AddApplicationInsightsTelemetry(configuration);
             var provider = services.BuildServiceProvider();
-            services.AdicionarRedis(configuration, provider.GetService<IServicoLog>());
+            //services.AdicionarRedis(configuration, provider.GetService<IServicoLog>());
 
             if (env.EnvironmentName != "teste-integrado")
             {
                 services.AddRabbit();
             }
 
-            services.AddHostedService<WorkerRabbitMQ> ();
-
-
-            // Teste para injeção do client de telemetria em classe estática 
+            services.AddHostedService<WorkerRabbitMQ>();
 
             var serviceProvider = services.BuildServiceProvider();
             var clientTelemetry = serviceProvider.GetService<TelemetryClient>();
             DapperExtensionMethods.Init(clientTelemetry);
+            SentrySdk.Init(configuration.GetValue<string>("Sentry:DSN"));
 
-            //
-
-
+            services.AddMemoryCache();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

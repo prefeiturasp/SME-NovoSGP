@@ -78,7 +78,7 @@ namespace SME.SGP.Aplicacao
             if (aulasParaVisualizar.Any())
             {
 
-                componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(aulasParaVisualizar.Select(a => long.Parse(a.DisciplinaId)).ToArray()));
+                componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(aulasParaVisualizar.Select(a => long.Parse(a.DisciplinaId)).ToArray(), aulasParaVisualizar.Any(a => a.DisciplinaId.Length > 5)));
 
                 atividadesAvaliativas = await mediator.Send(new ObterAtividadesAvaliativasCalendarioProfessorPorMesDiaQuery()
                 {
@@ -93,6 +93,7 @@ namespace SME.SGP.Aplicacao
 
             retorno.EventosAulas = await mediator.Send(new ObterAulaEventoAvaliacaoCalendarioProfessorPorMesDiaQuery()
             {
+                TurmaCodigo = filtroAulasEventosCalendarioDto.TurmaCodigo,
                 UsuarioCodigoRf = usuarioLogado.CodigoRf,
                 Aulas = aulasParaVisualizar,
                 Avaliacoes = atividadesAvaliativas,
