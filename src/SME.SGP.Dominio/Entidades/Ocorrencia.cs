@@ -83,5 +83,7 @@ namespace SME.SGP.Dominio
             Turma = turma;
             TurmaId = turma.Id;
         }
+
+        public void Excluir() => Excluido = true;
     }
 }
