@@ -273,6 +273,7 @@ const RelatorioPlanejamentoDiario = () => {
         lista.unshift({ valor: OPCAO_TODOS, desc: 'Todos' });
         setListaBimestres(lista);
         setBimestres(bimestresResponse.data);
+        setBimestre();
       }
     }
   };
