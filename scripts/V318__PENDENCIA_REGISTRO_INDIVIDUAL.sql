@@ -9,8 +9,8 @@ CREATE TABLE IF NOT EXISTS public.pedencia_registro_individual(
 	titulo varchar(50) NOT NULL,
 	pendencia_id int8 NOT NULL,
 	turma_id int8 NOT NULL,
-	CONSTRAINT ocorrencia_pk PRIMARY KEY (id),
-	CONSTRAINT pendencia_uk UNIQUE KEY (pendencia_id)
+	CONSTRAINT pedencia_registro_individual_pk PRIMARY KEY (id),
+	CONSTRAINT pendencia_uk UNIQUE (pendencia_id)
 );
 
 select
@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS public.pedencia_registro_individual_aluno(
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
 	pedencia_registro_individual_id int8 NOT NULL,
 	codigo_aluno int8 NOT NULL,
-	CONSTRAINT ocorrencia_pk PRIMARY KEY (id)
+	CONSTRAINT pedencia_registro_individual_aluno_pk PRIMARY KEY (id)
 );
 
 select
