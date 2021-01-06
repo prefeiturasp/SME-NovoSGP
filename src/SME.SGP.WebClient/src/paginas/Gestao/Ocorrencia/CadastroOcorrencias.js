@@ -1,5 +1,6 @@
 import { Form, Formik } from 'formik';
 import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import shortid from 'shortid';
 import * as Yup from 'yup';
 import {
@@ -25,6 +26,10 @@ const CadastroOcorrencias = () => {
   const [refForm, setRefForm] = useState({});
   const [listaTiposOcorrencias, setListaTiposOcorrencias] = useState();
   const [modalCriancasVisivel, setModalCriancasVisivel] = useState(false);
+  const [listaCriancas, setListaCriancas] = useState([]);
+
+  const usuario = useSelector(state => state.usuario);
+  const { turmaSelecionada: turmaSelecionadaStore } = usuario;
 
   useEffect(() => {
     ServicoOcorrencias.buscarTiposOcorrencias().then(resp => {
@@ -32,6 +37,13 @@ const CadastroOcorrencias = () => {
         setListaTiposOcorrencias(resp.data);
       }
     });
+    ServicoOcorrencias.buscarCriancas(turmaSelecionadaStore?.turma).then(
+      resp => {
+        if (resp?.data) {
+          setListaCriancas(resp.data);
+        }
+      }
+    );
   }, []);
 
   const [valoresIniciais, setValoresIniciais] = useState({
@@ -94,7 +106,7 @@ const CadastroOcorrencias = () => {
       title: 'Criança',
       dataIndex: 'nome',
       width: '100%',
-    }
+    },
   ];
 
   return (
@@ -127,7 +139,7 @@ const CadastroOcorrencias = () => {
               onSelectRow={() => {}}
               onClickRow={() => {}}
               columns={colunas}
-              dataSource={[]}
+              dataSource={listaCriancas}
               selectMultipleRows
             />
           </div>
