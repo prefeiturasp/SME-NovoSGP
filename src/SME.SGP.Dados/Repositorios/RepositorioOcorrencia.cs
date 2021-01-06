@@ -36,6 +36,11 @@ namespace SME.SGP.Dados
             if (codigosAluno != null)
                 condicao.AppendLine("and oa.codigo_aluno = ANY(@codigosAluno)");
 
+            var orderBy = "order by o.data_ocorrencia desc";
+
+            if (paginacao == null || (paginacao.QuantidadeRegistros == 0 && paginacao.QuantidadeRegistrosIgnorados == 0))
+                paginacao = new Paginacao(1, 10);
+
             var query = $"select count(0) {condicao}";
 
             var totalRegistrosDaQuery = await database.Conexao.QueryFirstOrDefaultAsync<int>(query,
@@ -60,7 +65,7 @@ namespace SME.SGP.Dados
 							ot.id,
 							ot.descricao,
 							oa.id,
-							oa.codigo_aluno {condicao} order by o.data_ocorrencia desc {offSet} ";
+							oa.codigo_aluno {condicao} {orderBy} {offSet} ";
 
 
             var lstOcorrencias = new Dictionary<long, Ocorrencia>();
