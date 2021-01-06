@@ -4,11 +4,11 @@ namespace SME.SGP.Dominio.Entidades
 {
     public class PendenciaRegistroIndividual : EntidadeBase
     {
-        public Pendencia Pendencia { get; private set; }
-        public long PendenciaId { get; private set; }
-        public Turma Turma { get; private set; }
-        public long TurmaId { get; private set; }
-        public ICollection<PendenciaRegistroIndividualAluno> Alunos { get; private set; }
+        public Pendencia Pendencia { get; set; }
+        public long PendenciaId { get; set; }
+        public Turma Turma { get; set; }
+        public long TurmaId { get; set; }
+        public ICollection<PendenciaRegistroIndividualAluno> Alunos { get; set; }
 
         public PendenciaRegistroIndividual(Pendencia pendencia, Turma turma)
         {
