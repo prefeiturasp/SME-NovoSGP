@@ -53,7 +53,7 @@ namespace SME.SGP.Aplicacao
                 {
                     Id = ao.Id,
                     CodigoAluno = ao.CodigoAluno,
-                    Nome = alunos.FirstOrDefault(a => a.CodigoAluno == ao.CodigoAluno.ToString())?.NomeSocialAluno
+                    Nome = alunos.FirstOrDefault(a => a.CodigoAluno == ao.CodigoAluno.ToString())?.NomeAluno
                 })
             };
     }
