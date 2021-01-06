@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
 using System.Collections.Generic;
@@ -13,9 +14,9 @@ namespace SME.SGP.Api.Controllers
     public class OcorrenciaController : ControllerBase
     {
         [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<OcorrenciaListagemDto>), 200)]
+        [ProducesResponseType(typeof(PaginacaoResultadoDto<OcorrenciaListagemDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        // O permissionamento será adicionado em uma task separada
+        [Permissao(Permissao.OCO_C, Policy = "Bearer")]
         public async Task<IActionResult> Get([FromServices] IListarOcorrenciasUseCase useCase, [FromQuery] FiltroOcorrenciaListagemDto dto)
         {
             return Ok(await useCase.Executar(dto));
@@ -25,7 +26,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(OcorrenciaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        // O permissionamento será adicionado em uma task separada
+        [Permissao(Permissao.OCO_C, Policy = "Bearer")]
         public async Task<IActionResult> Get([FromServices] IObterOcorrenciaUseCase useCase, [FromQuery] long id)
         {
             var result = await useCase.Executar(id);
@@ -39,6 +40,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(AuditoriaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.OCO_I, Policy = "Bearer")]
         public async Task<IActionResult> Inserir([FromServices] IInserirOcorrenciaUseCase useCase, [FromBody] InserirOcorrenciaDto dto)
         {
             return Ok(await useCase.Executar(dto));
@@ -48,6 +50,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(AuditoriaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.OCO_A, Policy = "Bearer")]
         public async Task<IActionResult> Alterar([FromServices] IAlterarOcorrenciaUseCase useCase, [FromBody] AlterarOcorrenciaDto dto)
         {
             return Ok(await useCase.Executar(dto));
@@ -57,10 +60,11 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        // O permissionamento será adicionado em uma task separada
-        public async Task<IActionResult> Excluir([FromServices] IExcluirOcorrenciaUseCase useCase, [FromBody] IEnumerable<long> ids)
+        [Permissao(Permissao.OCO_E, Policy = "Bearer")]
+        public async Task<IActionResult> Excluir([FromBody] IEnumerable<long> ids, [FromServices] IExcluirOcorrenciaUseCase excluirOcorrenciaUseCase)
         {
-            return Ok(await useCase.Executar(ids));
+            var retorno = await excluirOcorrenciaUseCase.Executar(ids);
+            return Ok(retorno);
         }
     }
 }

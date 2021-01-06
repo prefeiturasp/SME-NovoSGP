@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using SME.SGP.Api.Filtros;
+using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos.Ocorrencias.Tipos;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
@@ -16,17 +17,14 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<OcorrenciaTipoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        // O permissionamento será adicionado em uma task separada
-        public async Task<IActionResult> Get()
+        [Permissao(Permissao.OCO_C, Policy = "Bearer")]
+        public async Task<IActionResult> Get([FromServices] IListarTiposOcorrenciaUseCase useCase)
         {
-            var resultado = new List<OcorrenciaTipoDto>
-            {
-                new OcorrenciaTipoDto { Descricao = "Briga", Id = 1},
-                new OcorrenciaTipoDto { Descricao = "Vandalismo", Id = 2},
-                new OcorrenciaTipoDto { Descricao = "Acidente", Id = 3}
-            };
+            var result = await useCase.Executar();
+            if (result == null || !result.Any())
+                return NoContent();
 
-            return await Task.FromResult(Ok(resultado));
+            return Ok(result);
         }
     }
 }

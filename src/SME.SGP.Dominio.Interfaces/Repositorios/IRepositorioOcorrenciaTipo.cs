@@ -1,7 +1,4 @@
-﻿using SME.SGP.Dominio.Entidades;
-using SME.SGP.Dominio.Interfaces;
-
-namespace SME.SGP.Dominio
+﻿namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioOcorrenciaTipo : IRepositorioBase<OcorrenciaTipo>
     {

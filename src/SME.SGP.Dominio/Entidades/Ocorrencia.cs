@@ -7,8 +7,6 @@ namespace SME.SGP.Dominio
     public class Ocorrencia : EntidadeBase
     {
         public ICollection<OcorrenciaAluno> Alunos { get; set; }
-        public long TurmaId { get; set; }
-        public Turma Turma { get; set; }
         public DateTime DataOcorrencia { get; set; }
         public string Descricao { get; set; }
         public bool Excluido { get; set; }
@@ -16,19 +14,26 @@ namespace SME.SGP.Dominio
         public OcorrenciaTipo OcorrenciaTipo { get; set; }
         public long OcorrenciaTipoId { get; set; }
         public string Titulo { get; set; }
+        public long TurmaId { get; set; }
+        public Turma Turma { get; set; }
 
-        public Ocorrencia(DateTime dataOcorrencia, string titulo, string descricao, OcorrenciaTipo ocorrenciaTipo)
+        public Ocorrencia(DateTime dataOcorrencia, string titulo, string descricao, OcorrenciaTipo ocorrenciaTipo, Turma turma)
         {
             DataOcorrencia = dataOcorrencia;
             Titulo = titulo;
             Descricao = descricao;
             SetOcorrenciaTipo(ocorrenciaTipo);
+            SetTurma(turma);
         }
 
-        public Ocorrencia(DateTime dataOcorrencia, string horaOcorrencia, string titulo, string descricao, OcorrenciaTipo ocorrenciaTipo)
-            : this(dataOcorrencia, titulo, descricao, ocorrenciaTipo)
+        public Ocorrencia(DateTime dataOcorrencia, string horaOcorrencia, string titulo, string descricao, OcorrenciaTipo ocorrenciaTipo, Turma turma)
+            : this(dataOcorrencia, titulo, descricao, ocorrenciaTipo, turma)
         {
             SetHoraOcorrencia(horaOcorrencia);
+        }
+
+        protected Ocorrencia()
+        {
         }
 
         public void AdicionarAluno(long codigoAluno)
@@ -48,7 +53,7 @@ namespace SME.SGP.Dominio
         {
             if (string.IsNullOrWhiteSpace(horaOcorrencia))
             {
-                horaOcorrencia = null;
+                HoraOcorrencia = null;
                 return;
             }
 
@@ -69,5 +74,16 @@ namespace SME.SGP.Dominio
             OcorrenciaTipo = ocorrenciaTipo;
             OcorrenciaTipoId = ocorrenciaTipo.Id;
         }
+
+        public void SetTurma(Turma turma)
+        {
+            if(turma is null)
+                throw new NegocioException("É necessário informar o tipo de ocorrência.");
+
+            Turma = turma;
+            TurmaId = turma.Id;
+        }
+
+        public void Excluir() => Excluido = true;
     }
 }
