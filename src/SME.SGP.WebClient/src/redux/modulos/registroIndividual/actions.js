@@ -18,6 +18,11 @@ export const setRegistroIndividualEmEdicao = payload => ({
   payload,
 });
 
+export const setRegistroAnteriorEmEdicao = payload => ({
+  type: '@registroIndividual/setRegistroAnteriorEmEdicao',
+  payload,
+});
+
 export const setDadosPrincipaisRegistroIndividual = payload => ({
   type: '@registroIndividual/setDadosPrincipaisRegistroIndividual',
   payload,
@@ -55,5 +60,10 @@ export const setAuditoriaNovoRegistro = payload => ({
 
 export const resetDataNovoRegistro = payload => ({
   type: '@registroIndividual/resetDataNovoRegistro',
+  payload,
+});
+
+export const excluirRegistroAnteriorId = payload => ({
+  type: '@registroIndividual/excluirRegistroAnteriorId',
   payload,
 });

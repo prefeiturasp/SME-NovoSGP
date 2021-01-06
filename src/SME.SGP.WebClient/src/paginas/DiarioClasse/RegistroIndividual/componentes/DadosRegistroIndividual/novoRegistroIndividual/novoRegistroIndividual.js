@@ -11,7 +11,6 @@ import {
 } from '~/componentes';
 
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
-// import NovoRegistroIndividualItem from './novoRegistroIndividualItem/novoRegistroIndividualItem';
 
 import { CONFIG_COLLAPSE_REGISTRO_INDIVIDUAL } from '~/constantes';
 import RotasDto from '~/dtos/rotasDto';
@@ -33,20 +32,29 @@ const NovoRegistroIndividual = () => {
   const [desabilitarNovoRegistro, setDesabilitarNovoRegistro] = useState(false);
   const [carregandoNovoRegistro, setCarregandoNovoRegistro] = useState(false);
 
-  const {
-    auditoriaNovoRegistroIndividual,
-    componenteCurricularSelecionado,
-    dadosAlunoObjectCard,
-    dadosPrincipaisRegistroIndividual,
-    dadosParaSalvarNovoRegistro,
-    resetDataNovoRegistroIndividual,
-  } = useSelector(store => store.registroIndividual);
+  const auditoriaNovoRegistroIndividual = useSelector(
+    store => store.registroIndividual.auditoriaNovoRegistroIndividual
+  );
+  const componenteCurricularSelecionado = useSelector(
+    store => store.registroIndividual.componenteCurricularSelecionado
+  );
+  const dadosAlunoObjectCard = useSelector(
+    store => store.registroIndividual.dadosAlunoObjectCard
+  );
+  const dadosPrincipaisRegistroIndividual = useSelector(
+    store => store.registroIndividual.dadosPrincipaisRegistroIndividual
+  );
+  const dadosParaSalvarNovoRegistro = useSelector(
+    store => store.registroIndividual.dadosParaSalvarNovoRegistro
+  );
+  const resetDataNovoRegistroIndividual = useSelector(
+    store => store.registroIndividual.resetDataNovoRegistroIndividual
+  );
 
   const { permissoes, turmaSelecionada } = useSelector(state => state.usuario);
   const permissoesTela = permissoes[RotasDto.RELATORIO_SEMESTRAL];
   const turmaId = turmaSelecionada?.id || 0;
   const alunoCodigo = dadosAlunoObjectCard?.codigoEOL;
-  const idSecao = alunoCodigo;
   const dataAtual = window.moment();
 
   const ehMesmoAluno = useMemo(
@@ -56,6 +64,10 @@ const NovoRegistroIndividual = () => {
   );
   const registro = useMemo(
     () => (ehMesmoAluno ? dadosParaSalvarNovoRegistro?.registro : ''),
+    [dadosParaSalvarNovoRegistro, ehMesmoAluno]
+  );
+  const idSecao = useMemo(
+    () => (ehMesmoAluno ? dadosParaSalvarNovoRegistro?.id : ''),
     [dadosParaSalvarNovoRegistro, ehMesmoAluno]
   );
   const auditoria = useMemo(
@@ -137,7 +149,7 @@ const NovoRegistroIndividual = () => {
 
         dispatch(
           setDadosParaSalvarNovoRegistro({
-            id: resposta?.alunoCodigo,
+            id: resposta?.id,
             registro: resposta?.registro,
             data: resposta?.data,
             alunoCodigo: resposta?.alunoCodigo,
@@ -187,6 +199,11 @@ const NovoRegistroIndividual = () => {
       validaPermissoes(temDadosNovosRegistros);
     }
   }, [validaPermissoes, dadosParaSalvarNovoRegistro]);
+
+  console.log(
+    'dadosParaSalvarNovoRegistro ========> ',
+    dadosParaSalvarNovoRegistro
+  );
 
   return (
     <>

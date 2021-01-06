@@ -7,10 +7,12 @@ import NovoRegistroIndividual from './novoRegistroIndividual/novoRegistroIndivid
 import RegistrosAnteriores from './registrosAnteriores/registrosAnteriores';
 
 const DadosRegistroIndividual = () => {
-  const {
-    dadosAlunoObjectCard,
-    exibirLoaderGeralRegistroIndividual,
-  } = useSelector(store => store.registroIndividual);
+  const dadosAlunoObjectCard = useSelector(
+    store => store.registroIndividual.dadosAlunoObjectCard
+  );
+  const exibirLoaderGeralRegistroIndividual = useSelector(
+    store => store.registroIndividual.exibirLoaderGeralRegistroIndividual
+  );
 
   return (
     <>

@@ -5,7 +5,7 @@ import { CardCollapse } from '~/componentes';
 
 import { CONFIG_COLLAPSE_REGISTRO_INDIVIDUAL } from '~/constantes';
 
-import RegistrosAnterioresItem from './registrosAnterioresItem/registrosAnterioresItem';
+import RegistrosAnterioresConteudo from './registrosAnterioresConteudo/registrosAnterioresConteudo';
 
 const RegistrosAnteriores = () => {
   const idCollapse = shortid.generate();
@@ -20,7 +20,7 @@ const RegistrosAnteriores = () => {
         indice={`${idCollapse}-collapse-indice`}
         alt={`${idCollapse}-alt`}
       >
-        <RegistrosAnterioresItem />
+        <RegistrosAnterioresConteudo />
       </CardCollapse>
     </div>
   );
