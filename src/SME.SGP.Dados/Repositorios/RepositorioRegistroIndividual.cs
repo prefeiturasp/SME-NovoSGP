@@ -46,6 +46,10 @@ namespace SME.SGP.Dados.Repositorios
                         and componente_curricular_id = @componenteCurricularId
                         and aluno_codigo = @alunoCodigo
                         and data_registro::date between @dataInicio and @dataFim ";
+            var orderBy = "order by data_registro desc";
+
+            if (paginacao == null || (paginacao.QuantidadeRegistros == 0 && paginacao.QuantidadeRegistrosIgnorados == 0))
+                paginacao = new Paginacao(1, 10);
 
             var query = $"select count(0) {condicao}";
 
@@ -67,7 +71,7 @@ namespace SME.SGP.Dados.Repositorios
 	                          alterado_por,
 	                          alterado_rf,
 	                          excluido,
-	                          migrado {condicao} order by data_registro desc {offSet} ";
+	                          migrado {condicao} {orderBy} {offSet} ";
 
             return new PaginacaoResultadoDto<RegistroIndividual>()
             {
