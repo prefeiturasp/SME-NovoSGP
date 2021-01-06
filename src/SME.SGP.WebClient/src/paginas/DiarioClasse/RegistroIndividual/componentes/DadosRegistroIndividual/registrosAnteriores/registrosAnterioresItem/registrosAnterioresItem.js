@@ -4,63 +4,79 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Auditoria, CampoData, Label } from '~/componentes';
 import Editor from '~/componentes/editor/editor';
 
-import { ServicoRegistroIndividual } from '~/servicos';
+import { erros, ServicoRegistroIndividual } from '~/servicos';
 
-import { setDadosPrincipaisRegistroIndividual } from '~/redux/modulos/registroIndividual/actions';
+import {
+  setDadosPrincipaisRegistroIndividual,
+  setExibirLoaderGeralRegistroIndividual,
+} from '~/redux/modulos/registroIndividual/actions';
 
 const RegistrosAnterioresItem = React.memo(() => {
   const [dataInicio, setDataInicio] = useState();
   const [dataFim, setDataFim] = useState();
 
-  const componenteCurricularSelecionado = useSelector(
-    state => state.registroIndividual.componenteCurricularSelecionado
-  );
-  const dadosAlunoObjectCard = useSelector(
-    store => store.registroIndividual.dadosAlunoObjectCard
-  );
-  const dadosPrincipaisRegistroIndividual = useSelector(
-    store => store.registroIndividual.dadosPrincipaisRegistroIndividual
-  );
+  const {
+    componenteCurricularSelecionado,
+    dadosPrincipaisRegistroIndividual,
+    dadosAlunoObjectCard,
+    exibirLoaderGeralRegistroIndividual,
+  } = useSelector(store => store.registroIndividual);
   const { turmaSelecionada } = useSelector(state => state.usuario);
-  const { turma } = turmaSelecionada;
-  const turmaCodigo = turma || 0;
+  const turmaCodigo = turmaSelecionada?.id || 0;
 
-  const auditoria =
-    dadosPrincipaisRegistroIndividual?.registroIndividual?.auditoria;
   const dispatch = useDispatch();
 
-  const obterRegistroIndividualPorData = useCallback(async () => {
-    const dataFormatadaInicio = dataInicio?.format('MM-DD-YYYY');
-    const dataFormatadaFim = dataFim?.format('MM-DD-YYYY');
-
-    if (dataFormatadaInicio && dataFormatadaFim) {
+  const obterRegistroIndividualPorData = useCallback(
+    async (dataFormatadaInicio, dataFormatadaFim, codigoEOL) => {
+      dispatch(setExibirLoaderGeralRegistroIndividual(true));
       const retorno = await ServicoRegistroIndividual.obterRegistroIndividualPorPeriodo(
         {
-          alunoCodigo: dadosAlunoObjectCard.codigoEOL,
+          alunoCodigo: codigoEOL,
           componenteCurricular: componenteCurricularSelecionado,
           dataInicio: dataFormatadaInicio,
           dataFim: dataFormatadaFim,
           turmaCodigo,
         }
-      );
+      )
+        .catch(e => erros(e))
+        .finally(() => dispatch(setExibirLoaderGeralRegistroIndividual(false)));
+
       if (retorno?.data) {
         dispatch(setDadosPrincipaisRegistroIndividual(retorno.data));
       }
+    },
+    [dispatch, componenteCurricularSelecionado, turmaCodigo]
+  );
+
+  useEffect(() => {
+    const dataFormatadaInicio = dataInicio?.format('MM-DD-YYYY');
+    const dataFormatadaFim = dataFim?.format('MM-DD-YYYY');
+    const temDadosAlunos = Object.keys(dadosAlunoObjectCard).length;
+    const { codigoEOL } = dadosAlunoObjectCard;
+    const temDadosRegistros = Object.keys(dadosPrincipaisRegistroIndividual)
+      .length;
+
+    if (
+      temDadosAlunos &&
+      !temDadosRegistros &&
+      !exibirLoaderGeralRegistroIndividual &&
+      dataInicio &&
+      dataFim
+    ) {
+      obterRegistroIndividualPorData(
+        dataFormatadaInicio,
+        dataFormatadaFim,
+        codigoEOL
+      );
     }
   }, [
-    dispatch,
-    componenteCurricularSelecionado,
+    obterRegistroIndividualPorData,
     dadosAlunoObjectCard,
     dataInicio,
     dataFim,
-    turmaCodigo,
+    dadosPrincipaisRegistroIndividual,
+    exibirLoaderGeralRegistroIndividual,
   ]);
-
-  useEffect(() => {
-    if (Object.keys(dadosAlunoObjectCard).length) {
-      obterRegistroIndividualPorData();
-    }
-  }, [obterRegistroIndividualPorData, dadosAlunoObjectCard]);
 
   const onChange = useCallback(valorNovo => {
     // TODO Verificar para salvar dados editados no redux separada do atual para melhorar a performance!
@@ -85,10 +101,25 @@ const RegistrosAnterioresItem = React.memo(() => {
   };
 
   useEffect(() => {
-    if (!dataInicio) {
-      setDataInicio(window.moment().subtract(60, 'd'));
+    if (!dataInicio && dataFim) {
+      const anoAtual = dataFim.format('YYYY');
+      const anoLetivo = turmaSelecionada?.anoLetivo;
+      const diferencaDias = dataFim.diff(`${anoAtual}-01-01`, 'days');
+
+      if (Number(diferencaDias) > 60) {
+        setDataInicio(window.moment().subtract(60, 'd'));
+        return;
+      }
+
+      if (Number(anoLetivo) !== Number(anoAtual)) {
+        setDataInicio(window.moment(`${anoLetivo}-01-01`));
+        setDataFim(window.moment(`${anoLetivo}-12-31`));
+        return;
+      }
+
+      setDataInicio(window.moment(`${anoAtual}-01-01`));
     }
-  }, [dataInicio]);
+  }, [dataInicio, dataFim, turmaSelecionada]);
 
   useEffect(() => {
     if (!dataFim) {
@@ -120,38 +151,38 @@ const RegistrosAnterioresItem = React.memo(() => {
             placeholder="Data fim"
           />
         </div>
-        <div className="p-0 col-12">
-          <Editor
-            validarSeTemErro={validarSeTemErro}
-            mensagemErro="Campo obrigatório"
-            id="editor"
-            inicial={
-              dadosPrincipaisRegistroIndividual?.registroIndividual || ''
-            }
-            onChange={v => {
-              // if (
-              //   !planoAnualSomenteConsulta &&
-              //   periodoAberto
-              // ) {
-              //   dispatch(setPlanoAnualEmEdicao(true));
-              //   onChange(v);
-              // }
-            }}
-          />
-        </div>
+        {dadosPrincipaisRegistroIndividual?.registrosIndividuais?.map(
+          ({ auditoria, data, registro }) => (
+            <>
+              <div className="p-0 col-12">
+                <Editor
+                  validarSeTemErro={validarSeTemErro}
+                  mensagemErro="Campo obrigatório"
+                  label={`Registro - ${window
+                    .moment(data)
+                    .format('DD/MM/YYYY')}`}
+                  id="editor"
+                  inicial={registro}
+                  onChange={onChange}
+                />
+              </div>
+              {auditoria && (
+                <div className="mt-1 ml-n3 mb-2">
+                  <Auditoria
+                    ignorarMarginTop
+                    criadoEm={auditoria.criadoEm}
+                    criadoPor={auditoria.criadoPor}
+                    criadoRf={auditoria.criadoRF}
+                    alteradoPor={auditoria.alteradoPor}
+                    alteradoEm={auditoria.alteradoEm}
+                    alteradoRf={auditoria.alteradoRF}
+                  />
+                </div>
+              )}
+            </>
+          )
+        )}
       </div>
-      {auditoria && (
-        <div className="row">
-          <Auditoria
-            criadoEm={auditoria.criadoEm}
-            criadoPor={auditoria.criadoPor}
-            criadoRf={auditoria.criadoRF}
-            alteradoPor={auditoria.alteradoPor}
-            alteradoEm={auditoria.alteradoEm}
-            alteradoRf={auditoria.alteradoRF}
-          />
-        </div>
-      )}
     </>
   );
 });

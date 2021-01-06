@@ -2,15 +2,16 @@ import produce from 'immer';
 
 const inicial = {
   alunosRegistroIndividual: [],
-  auditoriaAnotacaoRecomendacao: null,
+  auditoriaNovoRegistroIndividual: null,
   componenteCurricularSelecionado: '',
   dadosAlunoObjectCard: {},
+  dadosParaSalvarNovoRegistro: {},
   dadosPrincipaisRegistroIndividual: {},
   desabilitarCampos: false,
   exibirLoaderGeralRegistroIndividual: false,
   expandirLinha: [],
   registroIndividualEmEdicao: false,
-  salvouJustificativa: false,
+  resetDataNovoRegistroIndividual: false,
 };
 
 export default function RegistroIndividual(state = inicial, action) {
@@ -31,14 +32,14 @@ export default function RegistroIndividual(state = inicial, action) {
       case '@registroIndividual/limparDadosRegistroIndividual': {
         return {
           ...draft,
-          dadosAlunoObjectCard: {},
-          registroIndividualEmEdicao: false,
+          auditoriaNovoRegistroIndividual: null,
+          dadosParaSalvarNovoRegistro: {},
           dadosPrincipaisRegistroIndividual: {},
-          auditoriaAnotacaoRecomendacao: null,
-          expandirLinha: [],
           desabilitarCampos: false,
-          salvouJustificativa: false,
           exibirLoaderGeralRegistroIndividual: false,
+          expandirLinha: [],
+          registroIndividualEmEdicao: false,
+          salvouJustificativa: false,
         };
       }
       case '@registroIndividual/setRegistroIndividualEmEdicao': {
@@ -65,12 +66,6 @@ export default function RegistroIndividual(state = inicial, action) {
           desabilitarCampos: action.payload,
         };
       }
-      case '@registroIndividual/setSalvouJustificativa': {
-        return {
-          ...draft,
-          salvouJustificativa: action.payload,
-        };
-      }
       case '@registroIndividual/setExibirLoaderGeralRegistroIndividual': {
         return {
           ...draft,
@@ -81,6 +76,24 @@ export default function RegistroIndividual(state = inicial, action) {
         return {
           ...draft,
           componenteCurricularSelecionado: action.payload,
+        };
+      }
+      case '@registroIndividual/setDadosParaSalvarNovoRegistro': {
+        return {
+          ...draft,
+          dadosParaSalvarNovoRegistro: action.payload,
+        };
+      }
+      case '@registroIndividual/setAuditoriaNovoRegistro': {
+        return {
+          ...draft,
+          auditoriaNovoRegistroIndividual: action.payload,
+        };
+      }
+      case '@registroIndividual/resetDataNovoRegistro': {
+        return {
+          ...draft,
+          resetDataNovoRegistroIndividual: action.payload,
         };
       }
       default:

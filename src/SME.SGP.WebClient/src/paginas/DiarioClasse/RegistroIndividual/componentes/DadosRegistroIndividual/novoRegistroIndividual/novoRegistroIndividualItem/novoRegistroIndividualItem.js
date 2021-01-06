@@ -1,104 +1,121 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { Auditoria, CampoData, Editor } from '~/componentes';
-import { setRegistroIndividualEmEdicao } from '~/redux/modulos/registroIndividual/actions';
+import {
+  setRegistroIndividualEmEdicao,
+  setDadosParaSalvarNovoRegistro,
+} from '~/redux/modulos/registroIndividual/actions';
+import { erros, ServicoRegistroIndividual } from '~/servicos';
 
-const NovoRegistroIndividualItem = React.memo(
-  ({ dadosPrincipaisRegistroIndividual }) => {
-    const [data, setData] = useState();
+const NovoRegistroIndividualItem = React.memo(({ valorInicial, idSecao }) => {
+  const [data, setData] = useState();
 
-    const auditoria =
-      dadosPrincipaisRegistroIndividual?.registroIndividual?.auditoria;
+  const {
+    componenteCurricularSelecionado,
+    dadosAlunoObjectCard,
+    dadosPrincipaisRegistroIndividual,
+  } = useSelector(state => state.registroIndividual);
+  const { turmaSelecionada } = useSelector(state => state.usuario);
+  const turmaId = turmaSelecionada?.id || 0;
+  const auditoria =
+    dadosPrincipaisRegistroIndividual?.registroIndividual?.auditoria;
+  const dispatch = useDispatch();
 
-    const dispatch = useDispatch();
-
-    const onChange = useCallback(e => {
-      console.log('e ==>', e);
-      dispatch(setRegistroIndividualEmEdicao(true));
-
-      // TODO Verificar para salvar dados editados no redux separada do atual para melhorar a performance!
-      // const dados = { ...dadosBimestrePlanoAnual };
-      // dados.componentes.forEach(item => {
-      //   if (
-      //     String(item.componenteCurricularId) ===
-      //     String(tabAtualComponenteCurricular.codigoComponenteCurricular)
-      //   ) {
-      //     item.descricao = valorNovo;
-      //     item.emEdicao = true;
-      //   }
-      // });
-      // dispatch(setDadosBimestresPlanoAnual(dados));
-    }, []);
-
-    const validarSeTemErro = valorEditado => {
-      // const { planoAnualEmEdicao } = planoAnual;
-
-      const ehInvalido = false;
-      // if (planoAnualEmEdicao) {
-      //   if (!valorEditado) {
-      //     ehInvalido = true;
-      //   }
-      // }
-
-      return ehInvalido;
-    };
-
-    useEffect(() => {
-      if (!data) {
-        setData(window.moment());
+  const obterRegistroIndividualPorData = useCallback(async () => {
+    const dataAtual = data?.format('MM-DD-YYYY');
+    if (dataAtual) {
+      const retorno = await ServicoRegistroIndividual.obterRegistroIndividualPorData(
+        {
+          alunoCodigo: dadosAlunoObjectCard.codigoEOL,
+          componenteCurricular: componenteCurricularSelecionado,
+          data: dataAtual,
+          turmaId,
+        }
+      ).catch(e => erros(e));
+      if (retorno?.data) {
+        // dispatch(setDadosPrincipaisRegistroIndividual(retorno.data));
       }
-    }, [data]);
+    }
+  }, [
+    // dispatch,
+    componenteCurricularSelecionado,
+    dadosAlunoObjectCard,
+    turmaId,
+    data,
+  ]);
 
-    return (
-      <>
-        <div className="col-3 p-0 pb-2">
-          <CampoData
-            name="data"
-            placeholder="Selecione"
-            valor={data}
-            formatoData="DD/MM/YYYY"
-            onChange={e => setData(e)}
-          />
-        </div>
-        <div className="pt-1">
-          <Editor
-            validarSeTemErro={validarSeTemErro}
-            mensagemErro="Campo obrigatório"
-            id="editor"
-            inicial={
-              dadosPrincipaisRegistroIndividual?.registroIndividual || ''
-            }
-            onChange={e => onChange(e)}
-          />
-          {auditoria && (
-            <div className="row">
-              <Auditoria
-                criadoEm={auditoria.criadoEm}
-                criadoPor={auditoria.criadoPor}
-                criadoRf={auditoria.criadoRF}
-                alteradoPor={auditoria.alteradoPor}
-                alteradoEm={auditoria.alteradoEm}
-                alteradoRf={auditoria.alteradoRF}
-              />
-            </div>
-          )}
-        </div>
-      </>
-    );
-  }
-);
+  useEffect(() => {
+    const temDadosAlunos = Object.keys(dadosAlunoObjectCard).length;
+    if (
+      temDadosAlunos &&
+      !dadosPrincipaisRegistroIndividual?.podeRealizarNovoRegistro
+    ) {
+      obterRegistroIndividualPorData();
+    }
+  }, [
+    dadosAlunoObjectCard,
+    dadosPrincipaisRegistroIndividual,
+    obterRegistroIndividualPorData,
+  ]);
 
-NovoRegistroIndividualItem.propTypes = {
-  dadosPrincipaisRegistroIndividual: PropTypes.oneOfType([
-    PropTypes.object,
-    PropTypes.string,
-  ]),
-};
+  const onChange = useCallback(
+    valor => {
+      dispatch(
+        setDadosParaSalvarNovoRegistro({
+          id: idSecao,
+          valor,
+        })
+      );
+      dispatch(setRegistroIndividualEmEdicao(true));
+    },
+    [dispatch, idSecao]
+  );
 
-NovoRegistroIndividualItem.defaultProps = {
-  dadosPrincipaisRegistroIndividual: {},
-};
+  const validarSeTemErro = valorEditado => {
+    return !valorEditado;
+  };
+
+  useEffect(() => {
+    if (!data) {
+      setData(window.moment());
+    }
+  }, [data]);
+
+  return (
+    <>
+      <div className="col-3 p-0 pb-2">
+        <CampoData
+          name="data"
+          placeholder="Selecione"
+          valor={data}
+          formatoData="DD/MM/YYYY"
+          onChange={valor => setData(valor)}
+        />
+      </div>
+      <div className="pt-1">
+        <Editor
+          validarSeTemErro={validarSeTemErro}
+          mensagemErro="Campo obrigatório"
+          id={`secao-${idSecao}-editor`}
+          inicial={valorInicial}
+          onChange={onChange}
+        />
+        {auditoria && (
+          <div className="row">
+            <Auditoria
+              criadoEm={auditoria.criadoEm}
+              criadoPor={auditoria.criadoPor}
+              criadoRf={auditoria.criadoRF}
+              alteradoPor={auditoria.alteradoPor}
+              alteradoEm={auditoria.alteradoEm}
+              alteradoRf={auditoria.alteradoRF}
+            />
+          </div>
+        )}
+      </div>
+    </>
+  );
+});
 
 export default NovoRegistroIndividualItem;

@@ -27,7 +27,7 @@ const BotoesAcoes = ({
         border
         className="mr-2"
         onClick={onClickCancelar}
-        disabled={!modoEdicao || !turmaInfantil || desabilitarCampos}
+        disabled={!modoEdicao || !turmaInfantil || !desabilitarCampos}
       />
       <Button
         label="Cadastrar"
@@ -35,7 +35,7 @@ const BotoesAcoes = ({
         bold
         className="mr-2"
         onClick={onClickCadastrar}
-        disabled={!modoEdicao || !turmaInfantil || desabilitarCampos}
+        disabled={!modoEdicao || !turmaInfantil || !desabilitarCampos}
       />
     </>
   );

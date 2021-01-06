@@ -15,9 +15,12 @@ import {
 
 import {
   limparDadosRegistroIndividual,
+  resetDataNovoRegistro,
+  setAuditoriaNovoRegistro,
   setAlunosRegistroIndividual,
-  setDadosAlunoObjectCard,
   setComponenteCurricularSelecionado,
+  setDadosAlunoObjectCard,
+  setRegistroIndividualEmEdicao,
 } from '~/redux/modulos/registroIndividual/actions';
 
 import {
@@ -27,25 +30,27 @@ import {
   history,
   ServicoDisciplina,
   ServicoRegistroIndividual,
+  sucesso,
 } from '~/servicos';
 
 import { URL_HOME } from '~/constantes';
 
 const RegistroIndividual = () => {
-  const [auditoria, setAuditoria] = useState();
   const [carregandoGeral, setCarregandoGeral] = useState(false);
-  const [desabilitarCampos, setDesabilitarCampos] = useState(false);
   const [exibirListas, setExibirListas] = useState(false);
   const [listaComponenteCurricular, setListaComponenteCurricular] = useState(
     []
   );
-  const [modoEdicao, setModoEdicao] = useState(false);
   const [turmaInfantil, setTurmaInfantil] = useState(false);
 
-  const componenteCurricularSelecionado = useSelector(
-    state => state.registroIndividual.componenteCurricularSelecionado
-  );
+  const {
+    componenteCurricularSelecionado,
+    dadosParaSalvarNovoRegistro,
+    desabilitarCampos,
+    registroIndividualEmEdicao,
+  } = useSelector(state => state.registroIndividual);
   const { turmaSelecionada } = useSelector(state => state.usuario);
+  const turmaId = turmaSelecionada?.id || 0;
 
   const modalidadesFiltroPrincipal = useSelector(
     store => store.filtro.modalidades
@@ -54,7 +59,6 @@ const RegistroIndividual = () => {
   const dispatch = useDispatch();
 
   const obterListaAlunos = useCallback(async () => {
-    const turmaId = turmaSelecionada?.id || 0;
     const retorno = await ServicoRegistroIndividual.obterListaAlunos({
       componenteCurricularId: componenteCurricularSelecionado,
       turmaId,
@@ -63,7 +67,7 @@ const RegistroIndividual = () => {
       dispatch(setAlunosRegistroIndividual(retorno.data));
       setExibirListas(true);
     }
-  }, [dispatch, componenteCurricularSelecionado, turmaSelecionada]);
+  }, [dispatch, componenteCurricularSelecionado, turmaId]);
 
   useEffect(() => {
     if (componenteCurricularSelecionado) {
@@ -83,7 +87,32 @@ const RegistroIndividual = () => {
     dispatch(limparDadosRegistroIndividual());
   }, [dispatch]);
 
+  const salvarRegistroIndividual = async () => {
+    const { alunoCodigo, data, registro } = dadosParaSalvarNovoRegistro;
+    const retorno = await ServicoRegistroIndividual.salvarRegistroIndividual({
+      turmaId,
+      componenteCurricularId: componenteCurricularSelecionado,
+      alunoCodigo,
+      registro,
+      data,
+    }).catch(e => erros(e));
+    if (retorno?.status === 200) {
+      sucesso('Ocorrência cadastrada com sucesso.');
+      dispatch(setAuditoriaNovoRegistro(retorno.data));
+
+      const dataAtual = window.moment(window.moment().format('YYYY-MM-DD'));
+      const ehDataAnterior = window.moment(dataAtual).isAfter(data);
+      if (ehDataAnterior) {
+        resetarInfomacoes();
+        dispatch(resetDataNovoRegistro(true));
+      }
+    }
+  };
+
   const onChangeAlunoSelecionado = async aluno => {
+    if (registroIndividualEmEdicao) {
+      salvarRegistroIndividual();
+    }
     resetarInfomacoes();
     if (!aluno.desabilitado) {
       dispatch(setDadosAlunoObjectCard(aluno));
@@ -95,10 +124,10 @@ const RegistroIndividual = () => {
   };
 
   const obterComponentesCurriculares = useCallback(async () => {
-    const turmaId = turmaSelecionada?.turma || 0;
+    const turma = turmaSelecionada?.turma || 0;
     setCarregandoGeral(true);
     const resposta = await ServicoDisciplina.obterDisciplinasPorTurma(
-      turmaId
+      turma
     ).catch(e => erros(e));
 
     if (resposta?.data?.length) {
@@ -117,9 +146,9 @@ const RegistroIndividual = () => {
   }, [dispatch, turmaSelecionada]);
 
   const resetarTela = useCallback(() => {
-    setModoEdicao(false);
-    setAuditoria();
-  }, []);
+    dispatch(setRegistroIndividualEmEdicao(false));
+    dispatch(setAuditoriaNovoRegistro());
+  }, [dispatch]);
 
   useEffect(() => {
     if (turmaSelecionada?.turma && turmaInfantil) {
@@ -152,38 +181,31 @@ const RegistroIndividual = () => {
   const cadastrarRegistroIndividual = async () => {
     const confirmado = await pergutarParaSalvar();
     if (confirmado) {
-      // const salvou = await validaAntesDoSubmit(form);
-      // if (salvou) {
-      //   return true;
-      // }
-      // return false;
+      salvarRegistroIndividual();
     }
     return true;
   };
 
-  const onClickVoltar = async (observacaoEmEdicao, novaObservacao) => {
-    let validouSalvarDiario = true;
-    if (modoEdicao && turmaInfantil && !desabilitarCampos) {
-      validouSalvarDiario = await cadastrarRegistroIndividual();
+  const onClickVoltar = async () => {
+    let validouSalvarRegistro = true;
+    if (registroIndividualEmEdicao && turmaInfantil && desabilitarCampos) {
+      validouSalvarRegistro = await cadastrarRegistroIndividual();
     }
 
-    const validouSalvarObservacao = true;
-    if (novaObservacao) {
-      // validouSalvarObservacao = await salvarObservacao({
-      //   observacao: novaObservacao,
-      // });
-    } else if (observacaoEmEdicao) {
-      // validouSalvarObservacao = await salvarObservacao(observacaoEmEdicao);
-    }
-
-    if (validouSalvarDiario && validouSalvarObservacao) {
+    if (validouSalvarRegistro) {
       history.push(URL_HOME);
+      resetarInfomacoes();
+      dispatch(setDadosAlunoObjectCard({}));
     }
   };
 
-  const onClickCancelar = () => {};
+  const onClickCancelar = () => {
+    dispatch(limparDadosRegistroIndividual());
+  };
 
-  const onClickCadastrar = () => {};
+  const onClickCadastrar = () => {
+    salvarRegistroIndividual();
+  };
 
   return (
     <Loader loading={carregandoGeral} className="w-100">
@@ -212,7 +234,7 @@ const RegistroIndividual = () => {
                 onClickVoltar={onClickVoltar}
                 onClickCancelar={onClickCancelar}
                 onClickCadastrar={onClickCadastrar}
-                modoEdicao={modoEdicao}
+                modoEdicao={registroIndividualEmEdicao}
                 desabilitarCampos={desabilitarCampos}
                 turmaInfantil={turmaInfantil}
               />
