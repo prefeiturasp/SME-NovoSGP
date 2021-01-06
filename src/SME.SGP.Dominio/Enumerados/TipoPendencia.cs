@@ -52,7 +52,7 @@ namespace SME.SGP.Dominio
         [Display(Name = "Ausência de Fechamento", GroupName = "Fechamento")]
         AusenciaFechamento = 16,
 
-        [Display(Name = "Planejamento", GroupName = "Fechamento")]
-        Planejamento = 17,
+        [Display(Name = "Ausência de registro individual", GroupName = "Planejamento")]
+        AusenciaDeRegistroIndividual = 17,
     }
 }
