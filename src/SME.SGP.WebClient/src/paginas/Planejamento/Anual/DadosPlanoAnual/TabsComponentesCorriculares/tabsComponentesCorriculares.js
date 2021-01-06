@@ -1,18 +1,24 @@
 import { Tabs } from 'antd';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { ContainerTabsCard } from '~/componentes/tabs/tabs.css';
-import { setTabAtualComponenteCurricular } from '~/redux/modulos/anual/actions';
+import { setTabAtualComponenteCurricular,
+         setExibirLoaderPlanoAnual} from '~/redux/modulos/anual/actions';
 import ServicoPlanoAnual from '~/servicos/Paginas/ServicoPlanoAnual';
 import DescricaoPlanejamento from '../DescricaoPlanejamento/descricaoPlanejamento';
 import ListaObjetivos from '../ListaObjetivos/listaObjetivos';
-import { ContainerTabsComponentesCorriculares } from './tabsComponentesCorriculares.css';
+import {
+  ContainerTabsComponentesCorriculares,
+  AvisoComponenteCurricular,
+  DescricaoNomeTabComponenteCurricular,
+} from './tabsComponentesCorriculares.css';
 
 const { TabPane } = Tabs;
 
 const TabsComponentesCorriculares = props => {
   const dispatch = useDispatch();
+  const [componentesComObjetivos,setComponentesComObjetivos] = useState([]);
 
   const usuario = useSelector(store => store.usuario);
   const { turmaSelecionada } = usuario;
@@ -53,7 +59,7 @@ const TabsComponentesCorriculares = props => {
         />
       </div>
     );
-  };
+  };  
 
   const onChangeTab = useCallback(
     codigoComponente => {
@@ -82,7 +88,31 @@ const TabsComponentesCorriculares = props => {
       listaComponentesCurricularesPlanejamento,
       turmaSelecionada,
     ]
-  );
+  ); 
+
+  useEffect(() => {
+    async function verificarComponentesComObjetivos() {
+      try {                
+        if(listaComponentesCurricularesPlanejamento.length){                   
+          dispatch(setExibirLoaderPlanoAnual(true));          
+          listaComponentesCurricularesPlanejamento.map(async item => {
+            const { componentes } = await ServicoPlanoAnual.verificarDadosPlanoPorComponenteCurricular(
+              turmaSelecionada.id,
+              item.codigoComponenteCurricular,
+              dadosBimestre.id              
+            );
+            if(componentes[0]?.objetivosAprendizagemId?.length){    
+              let tempComponentesComObjetivos = componentesComObjetivos;
+              tempComponentesComObjetivos.push(item.codigoComponenteCurricular);
+              setComponentesComObjetivos(tempComponentesComObjetivos);
+            }                                    
+          });
+          dispatch(setExibirLoaderPlanoAnual(false));          
+        }
+      } catch (error) {}
+    }
+    verificarComponentesComObjetivos();
+  }, [listaComponentesCurricularesPlanejamento,dadosBimestre]);
 
   // Quando tiver somente uma tab(componente curricular) já selecionar!
   useEffect(() => {
@@ -93,13 +123,36 @@ const TabsComponentesCorriculares = props => {
       onChangeTab(
         listaComponentesCurricularesPlanejamento[0].codigoComponenteCurricular
       );
-    }
+    }    
   }, [onChangeTab, clicouNoBimestre, listaComponentesCurricularesPlanejamento]);
+
+  const obterDescricaoNomeTabComponenteCurricular = (
+    nome,
+    codigoComponenteCurricular
+  ) => {
+
+    if(componentesComObjetivos?.length){
+      if(componentesComObjetivos.filter(item => item == codigoComponenteCurricular).length){
+        return (
+          <DescricaoNomeTabComponenteCurricular
+            title={nome}
+            tabSelecionada={
+              String(tabAtualComponenteCurricular?.codigoComponenteCurricular) ===
+              String(codigoComponenteCurricular)
+            }
+          >
+            <span className="desc-nome">{nome}</span>
+            <i className="fas fa-check-circle ml-2" />
+          </DescricaoNomeTabComponenteCurricular>
+        );
+      }
+    }
+    return <span title={nome}>{nome}</span>;
+  };
 
   return (
     <>
-      {listaComponentesCurricularesPlanejamento &&
-      listaComponentesCurricularesPlanejamento.length ? (
+      {listaComponentesCurricularesPlanejamento?.length ? (
         <ContainerTabsComponentesCorriculares
           widthAntTabsNav={
             listaComponentesCurricularesPlanejamento.length > 4
@@ -107,6 +160,16 @@ const TabsComponentesCorriculares = props => {
               : '25%'
           }
         >
+          {!tabAtualComponenteCurricular?.codigoComponenteCurricular &&
+            componenteCurricular?.regencia && (
+              <AvisoComponenteCurricular>
+                <span>
+                  Selecione um componente curricular abaixo para visualizar o
+                  planejamento
+                </span>
+              </AvisoComponenteCurricular>
+            )}
+
           <ContainerTabsCard
             type="card"
             onChange={onChangeTab}
@@ -117,7 +180,10 @@ const TabsComponentesCorriculares = props => {
             {listaComponentesCurricularesPlanejamento.map(item => {
               return (
                 <TabPane
-                  tab={<span title={item.nome}>{item.nome}</span>}
+                  tab={obterDescricaoNomeTabComponenteCurricular(
+                    item.nome,
+                    item.codigoComponenteCurricular
+                  )}
                   key={String(item.codigoComponenteCurricular)}
                 >
                   {String(
