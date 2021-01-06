@@ -4,6 +4,8 @@ namespace SME.SGP.Infra
 {
     public class RegistroIndividualDto
     {
+        public long Id { get; set; }
+
         public long TurmaId { get; set; }
         public TurmaDto Turma { get; set; }
 

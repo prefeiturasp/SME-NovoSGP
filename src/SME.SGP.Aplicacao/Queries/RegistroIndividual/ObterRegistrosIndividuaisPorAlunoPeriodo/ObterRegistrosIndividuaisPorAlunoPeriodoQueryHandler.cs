@@ -42,9 +42,11 @@ namespace SME.SGP.Aplicacao
         {
             return new PaginacaoResultadoDto<RegistroIndividualDto>()
             {
-                Items = registros.Items.Select(registro => {
+                Items = registros.Items.Select(registro =>
+                {
                     return new RegistroIndividualDto()
                     {
+                        Id = registro.Id,
                         AlunoCodigo = registro.AlunoCodigo,
                         Auditoria = (AuditoriaDto)registro,
                         ComponenteCurricularId = registro.ComponenteCurricularId,
@@ -55,8 +57,8 @@ namespace SME.SGP.Aplicacao
                         TurmaId = registro.TurmaId
                     };
                 }),
-                 TotalPaginas = registros.TotalPaginas,
-                 TotalRegistros = registros.TotalRegistros
+                TotalPaginas = registros.TotalPaginas,
+                TotalRegistros = registros.TotalRegistros
             };
         }
     }
