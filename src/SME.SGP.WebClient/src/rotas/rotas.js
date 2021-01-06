@@ -1119,6 +1119,16 @@ rotas.set(`${RotasDto.OCORRENCIAS}/novo`, {
   chavePermissao: RotasDto.OCORRENCIAS,
 });
 
+rotas.set(`${RotasDto.OCORRENCIAS}/editar/:id`, {
+  breadcrumbName: 'Cadastro',
+  parent: RotasDto.OCORRENCIAS,
+  component: CadastroOcorrencias,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+  chavePermissao: RotasDto.OCORRENCIAS,
+});
+
 const rotasArray = [];
 for (const [key, value] of rotas) {
   const rota = value;

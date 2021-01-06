@@ -18,15 +18,29 @@ import {
 import { Cabecalho } from '~/componentes-sgp';
 import JoditEditor from '~/componentes/jodit-editor/joditEditor';
 import { RotasDto } from '~/dtos';
-import { ServicoOcorrencias, history } from '~/servicos';
+import {
+  ServicoOcorrencias,
+  history,
+  erros,
+  setBreadcrumbManual,
+} from '~/servicos';
 
-const CadastroOcorrencias = () => {
+const CadastroOcorrencias = ({ match }) => {
   const [dataOcorrencia, setDataOcorrencia] = useState();
   const [horaOcorrencia, setHoraOcorrencia] = useState();
+  const [tipoOcorrenciaId, setTipoOcorrenciaId] = useState();
   const [refForm, setRefForm] = useState({});
   const [listaTiposOcorrencias, setListaTiposOcorrencias] = useState();
   const [modalCriancasVisivel, setModalCriancasVisivel] = useState(false);
   const [listaCriancas, setListaCriancas] = useState([]);
+  const [criancasSelecionadas, setCriancasSelecionadas] = useState([]);
+  const [
+    codigosCriancasSelecionadas,
+    setCodigosCriancasSelecionadas,
+  ] = useState([]);
+  const [valoresIniciais, setValoresIniciais] = useState({
+    dataOcorrencia: window.moment(),
+  });
 
   const usuario = useSelector(state => state.usuario);
   const { turmaSelecionada: turmaSelecionadaStore } = usuario;
@@ -37,29 +51,46 @@ const CadastroOcorrencias = () => {
         setListaTiposOcorrencias(resp.data);
       }
     });
-    ServicoOcorrencias.buscarCriancas(turmaSelecionadaStore?.turma).then(
-      resp => {
-        if (resp?.data) {
-          setListaCriancas(resp.data);
-        }
+    ServicoOcorrencias.buscarCriancas(turmaSelecionadaStore?.id).then(resp => {
+      if (resp?.data) {
+        setListaCriancas(resp.data);
       }
-    );
+    });
   }, []);
 
-  const [valoresIniciais, setValoresIniciais] = useState({
-    dataOcorrencia: window.moment(),
-  });
+  useEffect(() => {
+    if (match?.params?.id) {
+      setBreadcrumbManual(
+        match?.url,
+        'Alterar ocorrência',
+        RotasDto.OCORRENCIAS
+      );
+      ServicoOcorrencias.buscarOcorrencia(match?.params?.id).then(resp => {
+        if (resp?.data) {
+          resp.data.dataOcorrencia = window.moment(
+            new Date(resp.data.dataOcorrencia)
+          );
+          setValoresIniciais(resp.data);
+          const criancas = resp.data.alunos.map(crianca => {
+            return {
+              nome: crianca.nome,
+              codigoEOL: crianca.codigoAluno.toString(),
+            };
+          });
+          setCriancasSelecionadas(criancas);
+        }
+      });
+    }
+  }, [match]);
 
-  const [validacoes, setValidacoes] = useState(
-    Yup.object({
-      dataOcorrencia: momentSchema.required('Campo obrigatório'),
-      tipo: Yup.string().required('Campo obrigatório'),
-      titulo: Yup.string()
-        .required('Campo obrigatório')
-        .min(10, 'O título deve ter pelo menos 10 caracteres'),
-      descricao: Yup.string().required('Campo obrigatório'),
-    })
-  );
+  const validacoes = Yup.object({
+    dataOcorrencia: momentSchema.required('Campo obrigatório'),
+    ocorrenciaTipoId: Yup.string().required('Campo obrigatório'),
+    titulo: Yup.string()
+      .required('Campo obrigatório')
+      .min(10, 'O título deve ter pelo menos 10 caracteres'),
+    descricao: Yup.string().required('Campo obrigatório'),
+  });
 
   const validaAntesDoSubmit = form => {
     const arrayCampos = Object.keys(valoresIniciais);
@@ -73,11 +104,29 @@ const CadastroOcorrencias = () => {
     });
   };
 
-  const onSubmitFormulario = async valores => {};
+  const onSubmitFormulario = valores => {
+    valores.turmaId = turmaSelecionadaStore.id;
+    valores.codigosAlunos = criancasSelecionadas.map(a => {
+      return a.codigoEOL;
+    });
+    ServicoOcorrencias.incluir(valores).catch(e => erros(e));
+  };
 
   const onClickExcluir = () => {};
 
   const onClickVoltar = () => history.push(RotasDto.OCORRENCIAS);
+
+  const onClickEditarCriancas = () => {
+    setModalCriancasVisivel(true);
+    setCodigosCriancasSelecionadas(
+      criancasSelecionadas?.length
+        ? criancasSelecionadas.map(c => {
+            return c.codigoEOL;
+          })
+        : []
+    );
+  };
+
   const onClickCancelar = () => {
     refForm.resetForm();
     setDataOcorrencia(window.moment());
@@ -100,14 +149,32 @@ const CadastroOcorrencias = () => {
     return false;
   };
 
-  const [criancasSelecionadas, setCriancasSelecionadas] = useState([]);
   const colunas = [
     {
       title: 'Criança',
       dataIndex: 'nome',
       width: '100%',
+      render: (text, row) => (
+        <span>
+          {row.nome} ({row.codigoEOL})
+        </span>
+      ),
     },
   ];
+
+  const onSelectLinhaAluno = codigos => {
+    setCodigosCriancasSelecionadas(codigos);
+  };
+
+  const onConfirmarModal = () => {
+    const criancas = [];
+    codigosCriancasSelecionadas.forEach(codigo => {
+      const crianca = listaCriancas.find(c => c.codigoEOL === codigo);
+      criancas.push(crianca);
+    });
+    setCriancasSelecionadas([...criancas]);
+    setModalCriancasVisivel(false);
+  };
 
   return (
     <>
@@ -123,7 +190,7 @@ const CadastroOcorrencias = () => {
             setModalCriancasVisivel(false);
           }}
           onConfirmacaoPrincipal={() => {
-            setModalCriancasVisivel(false);
+            onConfirmarModal();
           }}
           labelBotaoPrincipal="Confirmar"
           labelBotaoSecundario="Cancelar"
@@ -135,8 +202,9 @@ const CadastroOcorrencias = () => {
           <div className="col-md-12 pt-2">
             <DataTable
               id="lista-criancas"
-              selectedRowKeys={null}
-              onSelectRow={() => {}}
+              idLinha="codigoEOL"
+              selectedRowKeys={codigosCriancasSelecionadas}
+              onSelectRow={codigo => onSelectLinhaAluno(codigo)}
               onClickRow={() => {}}
               columns={colunas}
               dataSource={listaCriancas}
@@ -148,7 +216,7 @@ const CadastroOcorrencias = () => {
           enableReinitialize
           initialValues={valoresIniciais}
           validationSchema={validacoes}
-          onSubmit={() => {}}
+          onSubmit={valores => onSubmitFormulario(valores)}
           validateOnBlur
           validateOnChange
           ref={refFormik => setRefForm(refFormik)}
@@ -173,23 +241,25 @@ const CadastroOcorrencias = () => {
                   className="mr-2"
                   onClick={onClickCancelar}
                 />
+                {match?.params?.id ? (
+                  <Button
+                    id={shortid.generate()}
+                    label="Excluir"
+                    color={Colors.Vermelho}
+                    border
+                    className="mr-2"
+                    onClick={onClickExcluir}
+                  />
+                ) : null}
                 <Button
                   id={shortid.generate()}
-                  label="Excluir"
-                  color={Colors.Vermelho}
-                  border
-                  className="mr-2"
-                  onClick={onClickExcluir}
-                />
-                <Button
-                  id={shortid.generate()}
-                  label="Cadastrar"
+                  label={match?.params?.id ? 'Alterar' : 'Cadastrar'}
                   color={Colors.Roxo}
                   border
                   bold
                   className="mr-2"
                   onClick={() => validaAntesDoSubmit(form)}
-                  disabled={!form.isValid}
+                  disabled={!form.isValid || !criancasSelecionadas?.length > 0}
                 />
               </div>
               <div className="p-0 col-12 mb-3 font-weight-bold">
@@ -200,7 +270,7 @@ const CadastroOcorrencias = () => {
                   return (
                     <div className="mb-3" key={`crianca-${index}`}>
                       <span>
-                        {crianca.nome} ({crianca.rf})
+                        {crianca.nome} ({crianca.codigoEOL})
                       </span>
                       <br />
                     </div>
@@ -224,7 +294,7 @@ const CadastroOcorrencias = () => {
                   color={Colors.Azul}
                   border
                   className="mr-2"
-                  onClick={() => setModalCriancasVisivel(true)}
+                  onClick={() => onClickEditarCriancas()}
                   icon="user-edit"
                 />
               </div>
@@ -256,12 +326,13 @@ const CadastroOcorrencias = () => {
                 </div>
                 <div className="col-md-6 col-sm-12 col-lg-6">
                   <SelectComponent
-                    name="tipo"
+                    name="ocorrenciaTipoId"
                     id="tipoOcorrenciaId"
                     lista={listaTiposOcorrencias}
+                    valor={tipoOcorrenciaId}
                     valueOption="id"
+                    onChange={valor => setTipoOcorrenciaId(valor)}
                     valueText="descricao"
-                    onChange={() => {}}
                     placeholder="Situação"
                     label="Tipo de ocorrência"
                     form={form}
