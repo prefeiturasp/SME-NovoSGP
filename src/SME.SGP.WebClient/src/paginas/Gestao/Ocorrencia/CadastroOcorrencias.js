@@ -23,6 +23,7 @@ import {
   history,
   erros,
   setBreadcrumbManual,
+  sucesso,
 } from '~/servicos';
 
 const CadastroOcorrencias = ({ match }) => {
@@ -109,7 +110,20 @@ const CadastroOcorrencias = ({ match }) => {
     valores.codigosAlunos = criancasSelecionadas.map(a => {
       return a.codigoEOL;
     });
-    ServicoOcorrencias.incluir(valores).catch(e => erros(e));
+    if (match?.params?.id) {
+      valores.id = match?.parms?.id;
+      ServicoOcorrencias.alterar(valores)
+        .then(() => {
+          sucesso('Ocorrência alterada com sucesso');
+        })
+        .catch(e => erros(e));
+    } else {
+      ServicoOcorrencias.incluir(valores)
+        .then(() => {
+          sucesso('Ocorrência salva com sucesso');
+        })
+        .catch(e => erros(e));
+    }
   };
 
   const onClickExcluir = () => {};
