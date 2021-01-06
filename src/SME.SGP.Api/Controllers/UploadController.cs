@@ -19,7 +19,6 @@ namespace SME.SGP.Api.Controllers
     public class UploadController : ControllerBase
     {
         [HttpPost]
-        [HttpPost("upload")]
         [ProducesResponseType(typeof(RetornoBaseDto), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
