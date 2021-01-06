@@ -31,6 +31,7 @@ namespace SME.SGP.Aplicacao
         {
             return new RegistroIndividualDto()
             {
+                Id = registro.Id,
                 AlunoCodigo = registro.AlunoCodigo,
                 Auditoria = (AuditoriaDto)registro,
                 ComponenteCurricularId = registro.ComponenteCurricularId,

@@ -53,6 +53,7 @@ const RotasDto = {
   DEVOLUTIVAS: '/diario-classe/devolutiva',
   REGISTRO_INDIVIDUAL: '/diario-classe/registro-individual',
   CONTROLE_GRADE: '/relatorios/diario-classe/controle-grade',
+  RELATORIO_PLANEJAMENTO_DIARIO: '/relatorios/diario-classe/planejamento-diario',
   POC_EDITOR: '/editor',
   SONDAGEM: '/sondagem',
   POC_UPLOAD_ARQUIVOS: '/upload-arquivos',
