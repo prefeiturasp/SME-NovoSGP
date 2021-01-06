@@ -76,6 +76,7 @@ const LeituraDeComunicadosPorModalidades = props => {
   );
 
   useEffect(() => {
+    dispatch(setDadosDeLeituraDeComunicadosAgrupadosPorModalidade([]));
     if (comunicado && listaComunicado?.length) {
       const dadosComunicado = obterDadosComunicadoSelecionado(
         comunicado,
@@ -83,14 +84,12 @@ const LeituraDeComunicadosPorModalidades = props => {
       );
       if (
         dadosComunicado?.id &&
-        dadosComunicado.codigoDre &&
-        dadosComunicado.codigoUe &&
-        !dadosComunicado.turmasCodigo.length
+        dadosComunicado?.codigoDre &&
+        dadosComunicado?.codigoUe &&
+        !dadosComunicado?.turmasCodigo?.length
       ) {
         obterDadosDeLeituraDeComunicadosAgrupadosPorModalidade(dadosComunicado);
       }
-    } else {
-      setDadosDeLeituraDeComunicadosAgrupadosPorModalidade([]);
     }
   }, [comunicado, listaComunicado]);
 

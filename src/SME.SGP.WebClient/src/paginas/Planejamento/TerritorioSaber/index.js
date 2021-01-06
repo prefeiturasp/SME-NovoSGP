@@ -162,22 +162,12 @@ function TerritorioSaber() {
     ]
   );
 
-  const onChangeBimestre = useCallback(
-    (bimestre, dadosBimestre) => {
-      setDados(estadoAntigo => ({
-        bimestres: estadoAntigo.bimestres.map(item =>
-          item.bimestre === bimestre
-            ? {
-                ...dadosBimestre,
-                territorioExperienciaId: territorioSelecionado,
-              }
-            : item
-        ),
-      }));
+  const onChangeBimestre = dadosBimestre => {
+    if (!modoEdicao) {
       setModoEdicao(true);
-    },
-    [territorioSelecionado]
-  );
+    }
+    dadosBimestre.territorioExperienciaId = territorioSelecionado;
+  };
 
   const onClickCancelar = async () => {
     if (modoEdicao) {
