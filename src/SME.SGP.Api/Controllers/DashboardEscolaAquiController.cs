@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui.Dashboard.ObterDadosDeLeituraDeComunicados;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui.ObterDadosDeLeituraDeComunicadosPorAlunosDaTurma;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui.ObterDadosDeLeituraDeComunicadosPorModalidade;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui.ObterDadosDeLeituraDeComunicadosPorModalidadeETurma;
 using SME.SGP.Infra;
@@ -106,6 +107,16 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterDadosDeLeituraDeComunicadosPorModalidadeETurma([FromQuery] FiltroDadosDeLeituraDeComunicadosPorModalidadeDto filtroDadosDeLeituraDeComunicadosPorModalidadeDto, [FromServices] IObterDadosDeLeituraDeComunicadosPorModalidadeETurmaUseCase obterDadosDeLeituraDeComunicadosPorModalidadeETurmaUseCase)
         {
             return Ok(await obterDadosDeLeituraDeComunicadosPorModalidadeETurmaUseCase.Executar(filtroDadosDeLeituraDeComunicadosPorModalidadeDto));
+        }
+
+        [HttpGet("comunicados/leitura/alunos")]
+        [ProducesResponseType(typeof(IEnumerable<DadosLeituraAlunosComunicadoPorTurmaDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 400)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public async Task<IActionResult> ObterDadosDeLeituraDeComunicadosPorTurma([FromQuery] FiltroDadosDeLeituraDeComunicadosPorAlunosTurmaDto filtroDadosDeLeituraDeComunicadosPorAlunosTurmaDto, [FromServices] IObterDadosDeLeituraDeComunicadosPorAlunosDaTurmaUseCase obterDadosDeLeituraDeComunicadosPorAlunosDaTurmaUseCase)
+        {
+            return Ok(await obterDadosDeLeituraDeComunicadosPorAlunosDaTurmaUseCase.Executar(filtroDadosDeLeituraDeComunicadosPorAlunosTurmaDto));
         }
     }
 }

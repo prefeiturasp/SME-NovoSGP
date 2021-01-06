@@ -131,7 +131,7 @@ const CampoNotaFinal = props => {
                 setarValorNovo(valorNovo);
               }
             }}
-            value={notaValorAtual}
+            value={notaValorAtual ? notaValorAtual : ''}
             min={0}
             max={10}
             step={valorIncremento}
