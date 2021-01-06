@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import shortid from 'shortid';
 import * as Yup from 'yup';
 import {
+  Auditoria,
   Base,
   Button,
   CampoData,
@@ -24,12 +25,13 @@ import {
   erros,
   setBreadcrumbManual,
   sucesso,
+  confirmar,
+  erro,
 } from '~/servicos';
 
 const CadastroOcorrencias = ({ match }) => {
   const [dataOcorrencia, setDataOcorrencia] = useState();
   const [horaOcorrencia, setHoraOcorrencia] = useState();
-  const [tipoOcorrenciaId, setTipoOcorrenciaId] = useState();
   const [refForm, setRefForm] = useState({});
   const [listaTiposOcorrencias, setListaTiposOcorrencias] = useState();
   const [modalCriancasVisivel, setModalCriancasVisivel] = useState(false);
@@ -42,6 +44,8 @@ const CadastroOcorrencias = ({ match }) => {
   const [valoresIniciais, setValoresIniciais] = useState({
     dataOcorrencia: window.moment(),
   });
+  const [auditoria, setAuditoria] = useState();
+  const [idOcorrencia, setIdOcorrencia] = useState();
 
   const usuario = useSelector(state => state.usuario);
   const { turmaSelecionada: turmaSelecionadaStore } = usuario;
@@ -61,28 +65,51 @@ const CadastroOcorrencias = ({ match }) => {
 
   useEffect(() => {
     if (match?.params?.id) {
+      setIdOcorrencia(match?.params?.id);
+    }
+  }, [match]);
+
+  useEffect(() => {
+    async function obterPorId(id) {
       setBreadcrumbManual(
         match?.url,
         'Alterar ocorrência',
         RotasDto.OCORRENCIAS
       );
-      ServicoOcorrencias.buscarOcorrencia(match?.params?.id).then(resp => {
-        if (resp?.data) {
-          resp.data.dataOcorrencia = window.moment(
-            new Date(resp.data.dataOcorrencia)
-          );
-          setValoresIniciais(resp.data);
-          const criancas = resp.data.alunos.map(crianca => {
-            return {
-              nome: crianca.nome,
-              codigoEOL: crianca.codigoAluno.toString(),
-            };
-          });
-          setCriancasSelecionadas(criancas);
-        }
-      });
+      const ocorrencia = await ServicoOcorrencias.buscarOcorrencia(id);
+      if (ocorrencia && Object.entries(ocorrencia).length) {
+        ocorrencia.data.dataOcorrencia = window.moment(
+          new Date(ocorrencia.data.dataOcorrencia)
+        );
+        ocorrencia.data.horaOcorrencia = ocorrencia.data.horaOcorrencia
+          ? window.moment(
+              new Date(
+                `${window
+                  .moment()
+                  .format('DD/MM/YYYY')
+                  .toString()} ${ocorrencia.data.horaOcorrencia}:00`
+              )
+            )
+          : '';
+        setValoresIniciais(ocorrencia.data);
+        refForm.setFieldValue(
+          'ocorrenciaTipoId',
+          ocorrencia.data.ocorrenciaTipoId
+        );
+        const criancas = ocorrencia.data.alunos.map(crianca => {
+          return {
+            nome: crianca.nome,
+            codigoEOL: crianca.codigoAluno.toString(),
+          };
+        });
+        setAuditoria(ocorrencia.data.auditoria);
+        setCriancasSelecionadas(criancas);
+      }
     }
-  }, [match]);
+    if (idOcorrencia) {
+      obterPorId(idOcorrencia);
+    }
+  }, [idOcorrencia]);
 
   const validacoes = Yup.object({
     dataOcorrencia: momentSchema.required('Campo obrigatório'),
@@ -107,26 +134,46 @@ const CadastroOcorrencias = ({ match }) => {
 
   const onSubmitFormulario = valores => {
     valores.turmaId = turmaSelecionadaStore.id;
+    valores.horaOcorrencia = valores.horaOcorrencia
+      ? valores.horaOcorrencia.format('HH:mm').toString()
+      : null;
     valores.codigosAlunos = criancasSelecionadas.map(a => {
       return a.codigoEOL;
     });
     if (match?.params?.id) {
-      valores.id = match?.parms?.id;
+      valores.id = match?.params?.id;
       ServicoOcorrencias.alterar(valores)
         .then(() => {
           sucesso('Ocorrência alterada com sucesso');
+          history.push(RotasDto.OCORRENCIAS);
         })
         .catch(e => erros(e));
     } else {
       ServicoOcorrencias.incluir(valores)
         .then(() => {
           sucesso('Ocorrência salva com sucesso');
+          history.push(RotasDto.OCORRENCIAS);
         })
         .catch(e => erros(e));
     }
   };
 
-  const onClickExcluir = () => {};
+  const onClickExcluir = async () => {
+    const confirmado = await confirmar(
+      'Atenção',
+      'Você tem certeza que deseja excluir este registro?'
+    );
+    if (confirmado) {
+      const parametros = { data: [...match?.params?.id] };
+      const exclusao = await ServicoOcorrencias.excluir(parametros);
+      if (exclusao && exclusao.status === 200) {
+        sucesso('Registro excluído com sucesso');
+        history.push(RotasDto.OCORRENCIAS);
+      } else {
+        erro(exclusao);
+      }
+    }
+  };
 
   const onClickVoltar = () => history.push(RotasDto.OCORRENCIAS);
 
@@ -340,16 +387,15 @@ const CadastroOcorrencias = ({ match }) => {
                 </div>
                 <div className="col-md-6 col-sm-12 col-lg-6">
                   <SelectComponent
-                    name="ocorrenciaTipoId"
+                    form={form}
                     id="tipoOcorrenciaId"
-                    lista={listaTiposOcorrencias}
-                    valor={tipoOcorrenciaId}
-                    valueOption="id"
-                    onChange={valor => setTipoOcorrenciaId(valor)}
-                    valueText="descricao"
                     placeholder="Situação"
                     label="Tipo de ocorrência"
-                    form={form}
+                    name="ocorrenciaTipoId"
+                    valueOption="id"
+                    valueText="descricao"
+                    lista={listaTiposOcorrencias}
+                    value={form.values.ocorrenciaTipoId}
                   />
                 </div>
                 <div className="col-md-6 col-sm-12 col-lg-6 mt-2">
@@ -377,6 +423,16 @@ const CadastroOcorrencias = ({ match }) => {
             </Form>
           )}
         </Formik>
+        {auditoria?.criadoEm ? (
+          <Auditoria
+            criadoEm={auditoria.criadoEm}
+            criadoPor={auditoria.criadoPor}
+            criadoRf={auditoria.criadoRf}
+            alteradoPor={auditoria.alteradoPor}
+            alteradoEm={auditoria.alteradoEm}
+            alteradoRf={auditoria.alteradoRf}
+          />
+        ) : null}
       </Card>
     </>
   );

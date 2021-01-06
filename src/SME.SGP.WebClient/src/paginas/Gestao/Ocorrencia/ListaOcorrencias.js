@@ -13,7 +13,15 @@ import {
 import { Cabecalho } from '~/componentes-sgp';
 import AlertaPermiteSomenteTurmaInfantil from '~/componentes-sgp/AlertaPermiteSomenteTurmaInfantil/alertaPermiteSomenteTurmaInfantil';
 import { RotasDto } from '~/dtos';
-import { erros, ServicoOcorrencias, sucesso, history } from '~/servicos';
+import modalidade from '~/dtos/modalidade';
+import {
+  erros,
+  ServicoOcorrencias,
+  sucesso,
+  history,
+  confirmar,
+  erro,
+} from '~/servicos';
 import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 
 const ListaOcorrencias = () => {
@@ -26,18 +34,12 @@ const ListaOcorrencias = () => {
   const [ehFiltroValido, setEhFiltroValido] = useState(false);
 
   const usuario = useSelector(state => state.usuario);
-  const { turmaSelecionada: turmaSelecionadaStore } = usuario;
-
-  const modalidadesFiltroPrincipal = useSelector(
-    store => store.filtro.modalidades
-  );
+  const { turmaSelecionada } = usuario;
 
   const ehModalidadeInfantil = () => {
-    return turmaSelecionadaStore?.turma
-      ? !ehTurmaInfantil(
-          modalidadesFiltroPrincipal,
-          turmaSelecionadaStore.turma
-        )
+    return turmaSelecionada?.turma
+      ? turmaSelecionada.modalidade.toString() ===
+          modalidade.INFANTIL.toString()
       : false;
   };
 
@@ -60,13 +62,13 @@ const ListaOcorrencias = () => {
   ];
 
   const onSetFiltro = async () => {
-    if (turmaSelecionadaStore?.turma) {
+    if (turmaSelecionada?.turma) {
       setFiltro({
         DataOcorrenciaInicio: dataInicial?.format('DD/MM/YYYY') || '',
         DataOcorrenciaFim: dataFinal?.format('DD/MM/YYYY') || '',
         AlunoNome: nomeCrianca || '',
         titulo: tituloOcorrencia || '',
-        turmaId: turmaSelecionadaStore?.id || '',
+        turmaId: turmaSelecionada?.id || '',
       });
       setEhFiltroValido(true);
     } else setEhFiltroValido(false);
@@ -78,19 +80,31 @@ const ListaOcorrencias = () => {
 
   const onClickExcluir = async () => {
     if (itenSelecionados?.length) {
-      const parametros = { data: itenSelecionados };
-      const excluir = await ServicoOcorrencias.excluir(parametros).catch(e =>
-        erros(e)
+      const confirmado = await confirmar(
+        'Atenção',
+        itenSelecionados?.length > 1
+          ? 'Deseja realmente excluir estes registros?'
+          : 'Deseja realmente excluir este registro?'
       );
-      if (excluir && excluir.status === 200) {
-        const mensagemSucesso = `${
-          itenSelecionados.length > 1
-            ? 'Ocorrências excluídas'
-            : 'Ocorrência excluída'
-        } com sucesso.`;
-        sucesso(mensagemSucesso);
-        setItensSelecionados([]);
-        onSetFiltro();
+      if (confirmado) {
+        const parametros = { data: itenSelecionados };
+        const excluir = await ServicoOcorrencias.excluir(parametros)
+          .then(resp => {
+            if (resp.existemErros) {
+              erros(resp.mensagens);
+            }
+          })
+          .catch(e => erros(e));
+        if (excluir && excluir.status === 200) {
+          const mensagemSucesso = `${
+            itenSelecionados.length > 1
+              ? 'Ocorrências excluídas'
+              : 'Ocorrência excluída'
+          } com sucesso.`;
+          sucesso(mensagemSucesso);
+          setItensSelecionados([]);
+          onSetFiltro();
+        }
       }
     }
   };
@@ -116,10 +130,22 @@ const ListaOcorrencias = () => {
     }
   }, [dataInicial, dataFinal]);
 
+  useEffect(() => {
+    onSetFiltro();
+  }, []);
+
+  useEffect(() => {
+    onSetFiltro();
+  }, [turmaSelecionada]);
+
+  const desabilitarCampos = () => {
+    return !turmaSelecionada?.turma || !ehModalidadeInfantil();
+  };
+
   return (
     <>
-      {turmaSelecionadaStore.turma ? <AlertaPermiteSomenteTurmaInfantil /> : ''}
-      {turmaSelecionadaStore?.turma ? (
+      {turmaSelecionada.turma ? <AlertaPermiteSomenteTurmaInfantil /> : ''}
+      {turmaSelecionada?.turma ? (
         ''
       ) : (
         <Alert
@@ -143,6 +169,11 @@ const ListaOcorrencias = () => {
             border
             className="mr-2"
             onClick={onClickVoltar}
+            disabled={
+              desabilitarCampos ||
+              turmaSelecionada.anoLetivo.toString() !==
+                window.moment().format('YYYY')
+            }
           />
           <Button
             id={shortid.generate()}
@@ -151,7 +182,11 @@ const ListaOcorrencias = () => {
             border
             className="mr-2"
             onClick={onClickExcluir}
-            disabled={!itenSelecionados?.length}
+            disabled={
+              !itenSelecionados?.length ||
+              turmaSelecionada.anoLetivo.toString() !==
+                window.moment().format('YYYY')
+            }
           />
           <Button
             id={shortid.generate()}
@@ -159,7 +194,7 @@ const ListaOcorrencias = () => {
             color={Colors.Roxo}
             border
             bold
-            disabled={!turmaSelecionadaStore?.turma && !ehModalidadeInfantil()}
+            disabled={!turmaSelecionada?.turma && !ehModalidadeInfantil()}
             className="mr-2"
             onClick={onClickNovo}
           />
@@ -171,6 +206,7 @@ const ListaOcorrencias = () => {
             onChange={onChangeDataInicial}
             placeholder="Data inicial"
             formatoData="DD/MM/YYYY"
+            desabilitado={desabilitarCampos()}
           />
         </div>
         <div className="col-sm-12 col-md-3" style={{ marginTop: '25px' }}>
@@ -179,6 +215,7 @@ const ListaOcorrencias = () => {
             onChange={onChangeDataFinal}
             placeholder="Data final"
             formatoData="DD/MM/YYYY"
+            desabilitado={desabilitarCampos()}
           />
         </div>
         <div className="col-sm-12 col-md-6">
@@ -189,6 +226,7 @@ const ListaOcorrencias = () => {
             onClick={onSetFiltro}
             valor={nomeCrianca}
             onChange={valor => setNomeCrianca(valor.currentTarget.value)}
+            disabled={desabilitarCampos()}
           />
         </div>
         <div className="col-sm-12 col-md-6 mt-2">
@@ -199,6 +237,7 @@ const ListaOcorrencias = () => {
             onClick={onSetFiltro}
             valor={tituloOcorrencia}
             onChange={valor => setTituloOcorrencia(valor.currentTarget.value)}
+            disabled={desabilitarCampos()}
           />
         </div>
         <div className="col-md-12 pt-4">
@@ -214,6 +253,7 @@ const ListaOcorrencias = () => {
             multiSelecao
             selecionarItems={onSelecionarItems}
             filtroEhValido={ehFiltroValido}
+            desabilitado={desabilitarCampos()}
           />
         </div>
       </Card>
