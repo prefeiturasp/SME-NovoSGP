@@ -19,6 +19,10 @@ class ServicoOcorrencias {
     return api.post('v1/ocorrencias', parametros);
   };
 
+  alterar = parametros => {
+    return api.put('v1/ocorrencias', parametros);
+  };
+
   buscarOcorrencia = id => {
     return api.get(`v1/ocorrencias/${id}`);
   };
