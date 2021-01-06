@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
             if (turma == null)
                 throw new NegocioException("Turma não encontrada!");
 
-            var alunos = await mediator.Send(new ObterAlunosPorTurmaEAnoLetivoQuery(turma.CodigoTurma));
+            var alunos = await mediator.Send(new ObterAlunosPorTurmaQuery(turma.CodigoTurma));
 
             long[] codigosAlunosLike = null;
 
@@ -72,7 +72,8 @@ namespace SME.SGP.Aplicacao
             var alunoTurma = alunos.FirstOrDefault(a => a.CodigoAluno == ocorrenciaAluno.CodigoAluno.ToString());
             if (alunoTurma is null) return default;
 
-            return alunoTurma.NomeSocialAluno;
+            var nomeDoAluno = string.IsNullOrWhiteSpace(alunoTurma.NomeSocialAluno) ? alunoTurma.NomeAluno : alunoTurma.NomeSocialAluno;
+            return $"{nomeDoAluno} ({alunoTurma.CodigoAluno})";
         }
     }
 }

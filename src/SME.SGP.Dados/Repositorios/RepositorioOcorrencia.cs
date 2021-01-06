@@ -16,16 +16,15 @@ namespace SME.SGP.Dados
 
         public async Task<PaginacaoResultadoDto<Ocorrencia>> ListarPaginado(long turmaId, string titulo, string alunoNome, DateTime? dataOcorrenciaInicio, DateTime? dataOcorrenciaFim, long[] codigosAluno, Paginacao paginacao)
         {
-            StringBuilder condicao = new StringBuilder();
-
-            condicao.AppendLine(@" from
-							ocorrencia o
+            var tabelas = @" ocorrencia o
 						inner join ocorrencia_tipo ot on ot.id = o.ocorrencia_tipo_id 
-						inner join ocorrencia_aluno oa on oa.ocorrencia_id = o.id
-						where not o.excluido and turma_id = @turmaId ");
+						inner join ocorrencia_aluno oa on oa.ocorrencia_id = o.id ";
+
+            var condicao = new StringBuilder();
+            condicao.AppendLine(" where not o.excluido and turma_id = @turmaId ");
 
             if (!string.IsNullOrEmpty(titulo))
-                condicao.AppendLine("and lower(f_unaccent(o.titulo)) LIKE lower(f_unaccent(@titulo))");
+                condicao.AppendLine("and lower(f_unaccent(o.titulo)) LIKE ('%' || lower(f_unaccent(@titulo)) || '%')");
 
             if (dataOcorrenciaInicio.HasValue)
                 condicao.AppendLine("and data_ocorrencia::date >= @dataOcorrenciaInicio  ");
@@ -41,14 +40,22 @@ namespace SME.SGP.Dados
             if (paginacao == null || (paginacao.QuantidadeRegistros == 0 && paginacao.QuantidadeRegistrosIgnorados == 0))
                 paginacao = new Paginacao(1, 10);
 
-            var query = $"select count(0) {condicao}";
+            var query = $"select count(distinct o.id) from {tabelas} {condicao}";
 
             var totalRegistrosDaQuery = await database.Conexao.QueryFirstOrDefaultAsync<int>(query,
                new { titulo, alunoNome, dataOcorrenciaInicio, dataOcorrenciaFim, codigosAluno, turmaId });
 
             var offSet = "offset @qtdeRegistrosIgnorados rows fetch next @qtdeRegistros rows only";
 
-            query = $@"select
+            query = $@" drop table if exists tempOcorrenciasSelecionadas;
+
+                        select
+                            distinct o.id, o.data_ocorrencia
+                        into temp tempOcorrenciasSelecionadas
+                        from {tabelas}
+                        {condicao} {orderBy} {offSet};
+
+                        select
 							o.id,
 							o.turma_id,
 							o.titulo,
@@ -65,8 +72,11 @@ namespace SME.SGP.Dados
 							ot.id,
 							ot.descricao,
 							oa.id,
-							oa.codigo_aluno {condicao} {orderBy} {offSet} ";
-
+							oa.codigo_aluno
+                        from tempOcorrenciasSelecionadas tos
+                        inner join ocorrencia o on tos.id = o.id
+						inner join ocorrencia_tipo ot on ot.id = o.ocorrencia_tipo_id 
+						inner join ocorrencia_aluno oa on oa.ocorrencia_id = o.id;";
 
             var lstOcorrencias = new Dictionary<long, Ocorrencia>();
 
