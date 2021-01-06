@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { Pagination } from 'antd';
 
 import { Auditoria, CampoData, Label } from '~/componentes';
 import Editor from '~/componentes/editor/editor';
@@ -151,37 +152,44 @@ const RegistrosAnterioresItem = React.memo(() => {
             placeholder="Data fim"
           />
         </div>
-        {dadosPrincipaisRegistroIndividual?.registrosIndividuais?.map(
-          ({ auditoria, data, registro }) => (
-            <>
-              <div className="p-0 col-12">
-                <Editor
-                  validarSeTemErro={validarSeTemErro}
-                  mensagemErro="Campo obrigatório"
-                  label={`Registro - ${window
-                    .moment(data)
-                    .format('DD/MM/YYYY')}`}
-                  id="editor"
-                  inicial={registro}
-                  onChange={onChange}
-                />
-              </div>
-              {auditoria && (
-                <div className="mt-1 ml-n3 mb-2">
-                  <Auditoria
-                    ignorarMarginTop
-                    criadoEm={auditoria.criadoEm}
-                    criadoPor={auditoria.criadoPor}
-                    criadoRf={auditoria.criadoRF}
-                    alteradoPor={auditoria.alteradoPor}
-                    alteradoEm={auditoria.alteradoEm}
-                    alteradoRf={auditoria.alteradoRF}
+        <Pagination
+          showSizeChanger
+          onShowSizeChange={() => {}}
+          defaultCurrent={3}
+          total={500}
+        >
+          {dadosPrincipaisRegistroIndividual?.registrosIndividuais?.map(
+            ({ auditoria, data, registro }) => (
+              <>
+                <div className="p-0 col-12">
+                  <Editor
+                    validarSeTemErro={validarSeTemErro}
+                    mensagemErro="Campo obrigatório"
+                    label={`Registro - ${window
+                      .moment(data)
+                      .format('DD/MM/YYYY')}`}
+                    id="editor"
+                    inicial={registro}
+                    onChange={onChange}
                   />
                 </div>
-              )}
-            </>
-          )
-        )}
+                {auditoria && (
+                  <div className="mt-1 ml-n3 mb-2">
+                    <Auditoria
+                      ignorarMarginTop
+                      criadoEm={auditoria.criadoEm}
+                      criadoPor={auditoria.criadoPor}
+                      criadoRf={auditoria.criadoRF}
+                      alteradoPor={auditoria.alteradoPor}
+                      alteradoEm={auditoria.alteradoEm}
+                      alteradoRf={auditoria.alteradoRF}
+                    />
+                  </div>
+                )}
+              </>
+            )
+          )}
+        </Pagination>
       </div>
     </>
   );
