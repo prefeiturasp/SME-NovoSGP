@@ -53,7 +53,7 @@ namespace SME.SGP.Aplicacao
 
             var resposta = await httpClient.GetAsync($"{url}", cancellationToken);
             if (!resposta.IsSuccessStatusCode || resposta.StatusCode == HttpStatusCode.NoContent)
-                throw new NegocioException("Não foi possível obter dados de de leitura de comunicados pelo aplicativo.", HttpStatusCode.InternalServerError);
+                throw new NegocioException("Não foram encontrados dados de leitura de comunicados.", HttpStatusCode.InternalServerError);
 
             var json = await resposta.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<IEnumerable<DadosDeLeituraDoComunicadoPorModalidadeETurmaDto>>(json);

@@ -4,6 +4,11 @@ export const setDadosDeLeituraDeComunicadosAgrupadosPorModalidade = payload => (
   payload,
 });
 
+export const setDadosDeLeituraDeComunicadosPorTurmas = payload => ({
+  type: '@dashboardEscolaAqui/setDadosDeLeituraDeComunicadosPorTurmas',
+  payload,
+});
+
 export const limparDadosDashboardEscolaAqui = payload => ({
   type: '@dashboardEscolaAqui/limparDadosDashboardEscolaAqui',
   payload,
