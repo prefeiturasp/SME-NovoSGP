@@ -9,9 +9,8 @@ import AlertaPeriodoEncerrado from '~/componentes-sgp/Calendario/componentes/Mes
 import ObservacoesUsuario from '~/componentes-sgp/ObservacoesUsuario/observacoesUsuario';
 import ServicoObservacoesUsuario from '~/componentes-sgp/ObservacoesUsuario/ServicoObservacoesUsuario';
 import Alert from '~/componentes/alert';
-import CampoTexto from '~/componentes/campoTexto';
 import Card from '~/componentes/card';
-import Editor from '~/componentes/editor/editor';
+import JoditEditor from '~/componentes/jodit-editor/joditEditor';
 import ModalMultiLinhas from '~/componentes/modalMultiLinhas';
 import SelectComponent from '~/componentes/select';
 import { URL_HOME } from '~/constantes/url';
@@ -380,7 +379,7 @@ const DiarioBordo = () => {
   };
 
   const onChangeCampos = () => {
-    if (!modoEdicao && valoresIniciais && valoresIniciais.aulaId) {
+    if (!modoEdicao) {
       setModoEdicao(true);
     }
   };
@@ -626,8 +625,9 @@ const DiarioBordo = () => {
                               header="Planejamento"
                               key="1"
                             >
-                              <Editor
+                              <JoditEditor
                                 form={form}
+                                value={form.values.planejamento}
                                 name="planejamento"
                                 id="editor-planejamento"
                                 onChange={v => {
@@ -647,8 +647,9 @@ const DiarioBordo = () => {
                               header="Reflexões e Replanejamentos"
                               key="2"
                             >
-                              <Editor
+                              <JoditEditor
                                 form={form}
+                                value={form.values.reflexoesReplanejamento}
                                 name="reflexoesReplanejamento"
                                 id="editor-reflexoes-replanejamentos"
                                 onChange={v => {
@@ -667,9 +668,10 @@ const DiarioBordo = () => {
                           <PainelCollapse>
                             <PainelCollapse.Painel temBorda header="Devolutivas">
                               {form && form.values && form.values.devolutivas ? (
-                                <Editor
+                                <JoditEditor
                                   label="Somente leitura"
                                   form={form}
+                                  value={form.values.reflexoesReplanejamento}
                                   name="devolutivas"
                                   id="editor-devolutivas"
                                   removerToolbar
