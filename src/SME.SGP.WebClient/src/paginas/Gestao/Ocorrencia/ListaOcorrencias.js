@@ -11,6 +11,7 @@ import {
   Alert,
 } from '~/componentes';
 import { Cabecalho } from '~/componentes-sgp';
+import AlertaPermiteSomenteTurmaInfantil from '~/componentes-sgp/AlertaPermiteSomenteTurmaInfantil/alertaPermiteSomenteTurmaInfantil';
 import { RotasDto } from '~/dtos';
 import { erros, ServicoOcorrencias, sucesso, history } from '~/servicos';
 
@@ -103,6 +104,7 @@ const ListaOcorrencias = () => {
 
   return (
     <>
+      {turmaSelecionadaStore.turma ? <AlertaPermiteSomenteTurmaInfantil /> : ''}
       {turmaSelecionadaStore?.turma ? (
         ''
       ) : (
