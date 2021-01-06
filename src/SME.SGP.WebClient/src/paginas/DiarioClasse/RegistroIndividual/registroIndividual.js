@@ -15,11 +15,11 @@ import {
 
 import {
   limparDadosRegistroIndividual,
-  resetDataNovoRegistro,
   setAuditoriaNovoRegistro,
   setAlunosRegistroIndividual,
   setComponenteCurricularSelecionado,
   setDadosAlunoObjectCard,
+  setDesabilitarCampos,
   setRegistroIndividualEmEdicao,
 } from '~/redux/modulos/registroIndividual/actions';
 
@@ -83,11 +83,20 @@ const RegistroIndividual = () => {
     setTurmaInfantil(infantil);
   }, [modalidadesFiltroPrincipal, turmaSelecionada]);
 
-  const resetarInfomacoes = useCallback(() => {
-    dispatch(limparDadosRegistroIndividual());
-  }, [dispatch]);
+  const resetarInfomacoes = useCallback(
+    ehDataAnterior => {
+      if (ehDataAnterior) {
+        dispatch(limparDadosRegistroIndividual());
+        return;
+      }
+      dispatch(setRegistroIndividualEmEdicao(false));
+      dispatch(setDesabilitarCampos(false));
+    },
+    [dispatch]
+  );
 
-  const salvarRegistroIndividual = async () => {
+  const cadastrarRegistroIndividual = async () => {
+    setCarregandoGeral(true);
     const { alunoCodigo, data, registro } = dadosParaSalvarNovoRegistro;
     const retorno = await ServicoRegistroIndividual.salvarRegistroIndividual({
       turmaId,
@@ -95,17 +104,41 @@ const RegistroIndividual = () => {
       alunoCodigo,
       registro,
       data,
-    }).catch(e => erros(e));
+    })
+      .catch(e => erros(e))
+      .finally(() => setCarregandoGeral(false));
+
     if (retorno?.status === 200) {
       sucesso('Ocorrência cadastrada com sucesso.');
       dispatch(setAuditoriaNovoRegistro(retorno.data));
 
       const dataAtual = window.moment(window.moment().format('YYYY-MM-DD'));
       const ehDataAnterior = window.moment(dataAtual).isAfter(data);
-      if (ehDataAnterior) {
-        resetarInfomacoes();
-        dispatch(resetDataNovoRegistro(true));
-      }
+      resetarInfomacoes(ehDataAnterior);
+    }
+  };
+
+  const editarRegistroIndividual = async () => {
+    setCarregandoGeral(true);
+    const { id, alunoCodigo, data, registro } = dadosParaSalvarNovoRegistro;
+    const retorno = await ServicoRegistroIndividual.editarRegistroIndividual({
+      id,
+      turmaId,
+      componenteCurricularId: componenteCurricularSelecionado,
+      alunoCodigo,
+      registro,
+      data,
+    })
+      .catch(e => erros(e))
+      .finally(() => setCarregandoGeral(false));
+
+    if (retorno?.status === 200) {
+      sucesso('Ocorrência editada com sucesso.');
+      dispatch(setAuditoriaNovoRegistro(retorno.data));
+
+      const dataAtual = window.moment(window.moment().format('YYYY-MM-DD'));
+      const ehDataAnterior = window.moment(dataAtual).isAfter(data);
+      resetarInfomacoes(ehDataAnterior);
     }
   };
 
@@ -126,9 +159,9 @@ const RegistroIndividual = () => {
   const obterComponentesCurriculares = useCallback(async () => {
     const turma = turmaSelecionada?.turma || 0;
     setCarregandoGeral(true);
-    const resposta = await ServicoDisciplina.obterDisciplinasPorTurma(
-      turma
-    ).catch(e => erros(e));
+    const resposta = await ServicoDisciplina.obterDisciplinasPorTurma(turma)
+      .catch(e => erros(e))
+      .finally(() => setCarregandoGeral(false));
 
     if (resposta?.data?.length) {
       setListaComponenteCurricular(resposta?.data);
@@ -141,8 +174,6 @@ const RegistroIndividual = () => {
         );
       }
     }
-
-    setCarregandoGeral(false);
   }, [dispatch, turmaSelecionada]);
 
   const resetarTela = useCallback(() => {
@@ -178,10 +209,19 @@ const RegistroIndividual = () => {
     );
   };
 
-  const cadastrarRegistroIndividual = async () => {
+  const escolheCadastrar = () => {
+    const { id } = dadosParaSalvarNovoRegistro;
+    if (id) {
+      editarRegistroIndividual();
+      return;
+    }
+    cadastrarRegistroIndividual();
+  };
+
+  const salvarRegistroIndividual = async () => {
     const confirmado = await pergutarParaSalvar();
     if (confirmado) {
-      salvarRegistroIndividual();
+      escolheCadastrar();
     }
     return true;
   };
@@ -189,7 +229,7 @@ const RegistroIndividual = () => {
   const onClickVoltar = async () => {
     let validouSalvarRegistro = true;
     if (registroIndividualEmEdicao && turmaInfantil && desabilitarCampos) {
-      validouSalvarRegistro = await cadastrarRegistroIndividual();
+      validouSalvarRegistro = await salvarRegistroIndividual();
     }
 
     if (validouSalvarRegistro) {
@@ -204,7 +244,7 @@ const RegistroIndividual = () => {
   };
 
   const onClickCadastrar = () => {
-    salvarRegistroIndividual();
+    escolheCadastrar();
   };
 
   return (

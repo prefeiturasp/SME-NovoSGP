@@ -31,3 +31,4 @@ export { default as TextEditor } from './textEditor';
 export { default as DetalhesAluno } from './Alunos/Detalhes';
 export { default as TabelaRetratil } from './TabelaRetratil';
 export { default as CardCollapse } from './cardCollapse';
+export { default as JoditEditor } from './jodit-editor/joditEditor';

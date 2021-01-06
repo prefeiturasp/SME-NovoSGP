@@ -11,6 +11,7 @@ const inicial = {
   exibirLoaderGeralRegistroIndividual: false,
   expandirLinha: [],
   registroIndividualEmEdicao: false,
+  registroAnteriorEmEdicao: false,
   resetDataNovoRegistroIndividual: false,
 };
 
@@ -40,12 +41,19 @@ export default function RegistroIndividual(state = inicial, action) {
           expandirLinha: [],
           registroIndividualEmEdicao: false,
           salvouJustificativa: false,
+          resetDataNovoRegistroIndividual: true,
         };
       }
       case '@registroIndividual/setRegistroIndividualEmEdicao': {
         return {
           ...draft,
           registroIndividualEmEdicao: action.payload,
+        };
+      }
+      case '@registroIndividual/setRegistroAnteriorEmEdicao': {
+        return {
+          ...draft,
+          registroAnteriorEmEdicao: action.payload,
         };
       }
       case '@registroIndividual/setDadosPrincipaisRegistroIndividual': {
@@ -94,6 +102,21 @@ export default function RegistroIndividual(state = inicial, action) {
         return {
           ...draft,
           resetDataNovoRegistroIndividual: action.payload,
+        };
+      }
+      case '@registroIndividual/excluirRegistroAnteriorId': {
+        const items = state.dadosPrincipaisRegistroIndividual.registrosIndividuais.items.filter(
+          dados => dados.id !== action.payload
+        );
+        return {
+          ...draft,
+          dadosPrincipaisRegistroIndividual: {
+            ...state.dadosPrincipaisRegistroIndividual,
+            registrosIndividuais: {
+              ...state.dadosPrincipaisRegistroIndividual.registrosIndividuais,
+              items,
+            },
+          },
         };
       }
       default:

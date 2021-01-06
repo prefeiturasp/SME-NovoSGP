@@ -41,8 +41,8 @@ class ServicoRegistroIndividual {
     return api.post('/v1/registros-individuais', params);
   };
 
-  editarRegistroIndividual = ({ id }) => {
-    return api.put(`/v1/registros-individuais/${id}`);
+  editarRegistroIndividual = params => {
+    return api.put(`/v1/registros-individuais/${params.id}`, params);
   };
 
   deletarRegistroIndividual = ({ id }) => {
