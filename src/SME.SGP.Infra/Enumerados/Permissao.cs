@@ -569,6 +569,18 @@
         OCO_E = 195,
 
         [PermissaoMenu(Menu = "Ocorrências", Icone = "fas fa-user-cog", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 7, EhMenu = false, EhAlteracao = true, Url = "/gestao/ocorrencias")]
-        OCO_A = 196
+        OCO_A = 196,
+
+        [PermissaoMenu(Menu = "Registro Individual", Icone = "fas fa-file-alt", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 7, EhConsulta = true, Url = "/diario-classe/registro-individual")]
+        REI_C = 189,
+
+        [PermissaoMenu(Menu = "Registro Individual", Icone = "fas fa-file-alt", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 7, EhInclusao = true, Url = "/diario-classe/registro-individual")]
+        REI_I = 190,
+
+        [PermissaoMenu(Menu = "Registro Individual", Icone = "fas fa-file-alt", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 7, EhExclusao = true, Url = "/diario-classe/registro-individual")]
+        REI_E = 191,
+
+        [PermissaoMenu(Menu = "Registro Individual", Icone = "fas fa-file-alt", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 7, EhAlteracao = true, Url = "/diario-classe/registro-individual")]
+        REI_A = 192
     }
 }
