@@ -14,6 +14,7 @@ import { Cabecalho } from '~/componentes-sgp';
 import AlertaPermiteSomenteTurmaInfantil from '~/componentes-sgp/AlertaPermiteSomenteTurmaInfantil/alertaPermiteSomenteTurmaInfantil';
 import { RotasDto } from '~/dtos';
 import { erros, ServicoOcorrencias, sucesso, history } from '~/servicos';
+import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 
 const ListaOcorrencias = () => {
   const [dataInicial, setDataInicial] = useState();
@@ -26,6 +27,19 @@ const ListaOcorrencias = () => {
 
   const usuario = useSelector(state => state.usuario);
   const { turmaSelecionada: turmaSelecionadaStore } = usuario;
+
+  const modalidadesFiltroPrincipal = useSelector(
+    store => store.filtro.modalidades
+  );
+
+  const ehModalidadeInfantil = () => {
+    return turmaSelecionadaStore?.turma
+      ? !ehTurmaInfantil(
+          modalidadesFiltroPrincipal,
+          turmaSelecionadaStore.turma
+        )
+      : false;
+  };
 
   const colunas = [
     {
@@ -52,7 +66,7 @@ const ListaOcorrencias = () => {
         DataOcorrenciaFim: dataFinal?.format('DD/MM/YYYY') || '',
         AlunoNome: nomeCrianca || '',
         titulo: tituloOcorrencia || '',
-        turmaId: turmaSelecionadaStore?.turma || '',
+        turmaId: turmaSelecionadaStore?.id || '',
       });
       setEhFiltroValido(true);
     } else setEhFiltroValido(false);
@@ -145,7 +159,7 @@ const ListaOcorrencias = () => {
             color={Colors.Roxo}
             border
             bold
-            disabled={!turmaSelecionadaStore?.turma}
+            disabled={!turmaSelecionadaStore?.turma && !ehModalidadeInfantil()}
             className="mr-2"
             onClick={onClickNovo}
           />
@@ -194,7 +208,9 @@ const ListaOcorrencias = () => {
             colunaChave="id"
             colunas={colunas}
             filtro={filtro}
-            onClick={() => {}}
+            onClick={ocorrencia =>
+              history.push(`${RotasDto.OCORRENCIAS}/editar/${ocorrencia.id}`)
+            }
             multiSelecao
             selecionarItems={onSelecionarItems}
             filtroEhValido={ehFiltroValido}
