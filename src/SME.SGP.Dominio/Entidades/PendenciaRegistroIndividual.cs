@@ -23,7 +23,7 @@ namespace SME.SGP.Dominio.Entidades
         private void SetPendencia(Pendencia pendencia)
         {
             if (pendencia is null)
-                throw new NegocioException("");
+                throw new NegocioException("A pendência deve ser informada.");
 
             Pendencia = pendencia;
             PendenciaId = pendencia.Id;
@@ -32,7 +32,7 @@ namespace SME.SGP.Dominio.Entidades
         private void SetTurma(Turma turma)
         {
             if (turma is null)
-                throw new NegocioException("");
+                throw new NegocioException("A turma deve ser informada.");
 
             Turma = turma;
             TurmaId = turma.Id;
