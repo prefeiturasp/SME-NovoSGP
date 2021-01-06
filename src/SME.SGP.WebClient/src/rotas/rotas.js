@@ -949,7 +949,7 @@ rotas.set(RotasDto.REGISTRO_INDIVIDUAL, {
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: true,
-  chavePermissao: RotasDto.DEVOLUTIVAS,
+  chavePermissao: RotasDto.REGISTRO_INDIVIDUAL,
 });
 
 rotas.set(RotasDto.RELATORIO_COMPENSACAO_AUSENCIA, {

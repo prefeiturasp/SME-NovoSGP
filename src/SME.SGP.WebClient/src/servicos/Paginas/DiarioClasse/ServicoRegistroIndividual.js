@@ -38,13 +38,6 @@ class ServicoRegistroIndividual {
   };
 
   salvarRegistroIndividual = params => {
-    // {
-    //   "turmaId": 0,
-    //   "componenteCurricularId": 0,
-    //   "alunoCodigo": 0,
-    //   "registro": "string",
-    //   "data": "2020-12-30T20:48:00.519Z"
-    // }
     return api.post('/v1/registros-individuais', params);
   };
 

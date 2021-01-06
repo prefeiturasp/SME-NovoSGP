@@ -33,11 +33,6 @@ export const setDesabilitarCampos = payload => ({
   payload,
 });
 
-export const setSalvouJustificativa = payload => ({
-  type: '@registroIndividual/setSalvouJustificativa',
-  payload,
-});
-
 export const setExibirLoaderGeralRegistroIndividual = payload => ({
   type: '@registroIndividual/setExibirLoaderGeralRegistroIndividual',
   payload,
@@ -45,5 +40,20 @@ export const setExibirLoaderGeralRegistroIndividual = payload => ({
 
 export const setComponenteCurricularSelecionado = payload => ({
   type: '@registroIndividual/setComponenteCurricularSelecionado',
+  payload,
+});
+
+export const setDadosParaSalvarNovoRegistro = payload => ({
+  type: '@registroIndividual/setDadosParaSalvarNovoRegistro',
+  payload,
+});
+
+export const setAuditoriaNovoRegistro = payload => ({
+  type: '@registroIndividual/setAuditoriaNovoRegistro',
+  payload,
+});
+
+export const resetDataNovoRegistro = payload => ({
+  type: '@registroIndividual/resetDataNovoRegistro',
   payload,
 });

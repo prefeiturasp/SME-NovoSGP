@@ -1,74 +1,192 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import shortid from 'shortid';
 
 import { useDispatch, useSelector } from 'react-redux';
-import { CardCollapse } from '~/componentes';
+import {
+  CardCollapse,
+  Auditoria,
+  CampoData,
+  Editor,
+  Loader,
+} from '~/componentes';
 
-import { ServicoRegistroIndividual } from '~/servicos';
-
-import { setDadosPrincipaisRegistroIndividual } from '~/redux/modulos/registroIndividual/actions';
-
-import NovoRegistroIndividualItem from './novoRegistroIndividualItem/novoRegistroIndividualItem';
+import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
+// import NovoRegistroIndividualItem from './novoRegistroIndividualItem/novoRegistroIndividualItem';
 
 import { CONFIG_COLLAPSE_REGISTRO_INDIVIDUAL } from '~/constantes';
+import RotasDto from '~/dtos/rotasDto';
 
-const NovoRegistroIndividual = ({ dadosAlunoObjectCard }) => {
-  const idCollapse = shortid.generate();
+import {
+  setAuditoriaNovoRegistro,
+  setDesabilitarCampos,
+  setRegistroIndividualEmEdicao,
+  setDadosParaSalvarNovoRegistro,
+  resetDataNovoRegistro,
+} from '~/redux/modulos/registroIndividual/actions';
+
+import { erros, ServicoRegistroIndividual } from '~/servicos';
+
+const NovoRegistroIndividual = () => {
   const [expandir, setExpandir] = useState(false);
   const [exibirCollapse, setExibirCollapse] = useState(false);
+  const [data, setData] = useState();
+  const [desabilitarNovoRegistro, setDesabilitarNovoRegistro] = useState(false);
+  const [carregandoNovoRegistro, setCarregandoNovoRegistro] = useState(false);
 
-  const componenteCurricularSelecionado = useSelector(
-    state => state.registroIndividual.componenteCurricularSelecionado
-  );
-  const dadosPrincipaisRegistroIndividual = useSelector(
-    store => store.registroIndividual.dadosPrincipaisRegistroIndividual
-  );
-  const { turmaSelecionada } = useSelector(state => state.usuario);
-  const turmaId = turmaSelecionada?.id || 0;
-
-  const dispatch = useDispatch();
-
-  const obterRegistroIndividualPorData = useCallback(async () => {
-    const dataAtual = window.moment().format('MM-DD-YYYY');
-    if (dataAtual) {
-      const retorno = await ServicoRegistroIndividual.obterRegistroIndividualPorData(
-        {
-          alunoCodigo: dadosAlunoObjectCard.codigoEOL,
-          componenteCurricular: componenteCurricularSelecionado,
-          data: dataAtual,
-          turmaId,
-        }
-      );
-      if (retorno?.data) {
-        dispatch(setDadosPrincipaisRegistroIndividual(retorno.data));
-      }
-    }
-  }, [
-    dispatch,
+  const {
+    auditoriaNovoRegistroIndividual,
     componenteCurricularSelecionado,
     dadosAlunoObjectCard,
-    turmaId,
-  ]);
+    dadosPrincipaisRegistroIndividual,
+    dadosParaSalvarNovoRegistro,
+    resetDataNovoRegistroIndividual,
+  } = useSelector(store => store.registroIndividual);
 
-  useEffect(() => {
-    const temDadosAlunos = Object.keys(dadosAlunoObjectCard).length;
-    if (temDadosAlunos) {
-      obterRegistroIndividualPorData();
-    }
-  }, [dadosAlunoObjectCard, obterRegistroIndividualPorData]);
+  const { permissoes, turmaSelecionada } = useSelector(state => state.usuario);
+  const permissoesTela = permissoes[RotasDto.RELATORIO_SEMESTRAL];
+  const turmaId = turmaSelecionada?.id || 0;
+  const alunoCodigo = dadosAlunoObjectCard?.codigoEOL;
+  const idSecao = alunoCodigo;
+  const dataAtual = window.moment();
+
+  const ehMesmoAluno = useMemo(
+    () =>
+      String(alunoCodigo) === String(dadosParaSalvarNovoRegistro?.alunoCodigo),
+    [alunoCodigo, dadosParaSalvarNovoRegistro]
+  );
+  const registro = useMemo(
+    () => (ehMesmoAluno ? dadosParaSalvarNovoRegistro?.registro : ''),
+    [dadosParaSalvarNovoRegistro, ehMesmoAluno]
+  );
+  const auditoria = useMemo(
+    () => (ehMesmoAluno ? auditoriaNovoRegistroIndividual : null),
+    [auditoriaNovoRegistroIndividual, ehMesmoAluno]
+  );
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const temDadosRegistros = Object.keys(dadosPrincipaisRegistroIndividual)
       .length;
     if (temDadosRegistros) {
       setExpandir(true);
-      // retirar a exclamação para o funcionamento correto
       setExibirCollapse(
-        !dadosPrincipaisRegistroIndividual?.podeRealizarNovoRegistro
+        dadosPrincipaisRegistroIndividual?.podeRealizarNovoRegistro
       );
     }
   }, [setExibirCollapse, dadosPrincipaisRegistroIndividual]);
+
+  const validaPermissoes = useCallback(
+    temDadosNovosRegistros => {
+      const novoRegistro = verificaSomenteConsulta(permissoesTela);
+
+      const desabilitar = novoRegistro || temDadosNovosRegistros;
+
+      dispatch(setDesabilitarCampos(!!desabilitar));
+    },
+    [dispatch, permissoesTela]
+  );
+
+  const onChange = useCallback(
+    novoRegistro => {
+      dispatch(
+        setDadosParaSalvarNovoRegistro({
+          id: idSecao,
+          registro: novoRegistro,
+          data: data.set({ hour: 0, minute: 0, second: 0 }),
+          alunoCodigo,
+        })
+      );
+      dispatch(setRegistroIndividualEmEdicao(true));
+    },
+    [alunoCodigo, data, dispatch, idSecao]
+  );
+
+  const validarSeTemErro = valorEditado => {
+    return !valorEditado;
+  };
+
+  const obterRegistroIndividualPorData = useCallback(
+    async dataEscolhida => {
+      setCarregandoNovoRegistro(true);
+      const retorno = await ServicoRegistroIndividual.obterRegistroIndividualPorData(
+        {
+          alunoCodigo,
+          componenteCurricular: componenteCurricularSelecionado,
+          data: dataEscolhida,
+          turmaId,
+        }
+      )
+        .catch(e => erros(e))
+        .finally(() => setCarregandoNovoRegistro(false));
+
+      const resposta = retorno?.data;
+      const ehMesmoCodigo =
+        String(resposta?.alunoCodigo) === String(alunoCodigo);
+      const dataAtualFormatada = window.moment().format('YYYY-MM-DD');
+      const ehDataAnterior = window
+        .moment(dataAtualFormatada)
+        .isAfter(data.format('YYYY-MM-DD'));
+
+      setDesabilitarNovoRegistro(false);
+      if (resposta && ehMesmoCodigo) {
+        if (ehDataAnterior) {
+          setDesabilitarNovoRegistro(true);
+          return;
+        }
+
+        dispatch(
+          setDadosParaSalvarNovoRegistro({
+            id: resposta?.alunoCodigo,
+            registro: resposta?.registro,
+            data: resposta?.data,
+            alunoCodigo: resposta?.alunoCodigo,
+          })
+        );
+        dispatch(setAuditoriaNovoRegistro(resposta?.auditoria));
+      }
+    },
+    [componenteCurricularSelecionado, data, dispatch, alunoCodigo, turmaId]
+  );
+
+  useEffect(() => {
+    const dataEscolhida = data && data.format('MM-DD-YYYY');
+    const temDadosAlunos = Object.keys(dadosAlunoObjectCard).length;
+
+    if (
+      temDadosAlunos &&
+      dadosPrincipaisRegistroIndividual?.podeRealizarNovoRegistro &&
+      dataEscolhida
+    ) {
+      dispatch(setAuditoriaNovoRegistro(null));
+      dispatch(setDadosParaSalvarNovoRegistro({}));
+      obterRegistroIndividualPorData(dataEscolhida);
+    }
+  }, [
+    dispatch,
+    dadosAlunoObjectCard,
+    dadosPrincipaisRegistroIndividual,
+    data,
+    obterRegistroIndividualPorData,
+  ]);
+
+  useEffect(() => {
+    if (!data) {
+      setData(dataAtual);
+    }
+    if (resetDataNovoRegistroIndividual) {
+      dispatch(resetDataNovoRegistro(false));
+      setData(dataAtual);
+    }
+  }, [data, dispatch, dataAtual, resetDataNovoRegistroIndividual]);
+
+  useEffect(() => {
+    const temDadosNovosRegistros = Object.keys(dadosParaSalvarNovoRegistro)
+      .length;
+    if (temDadosNovosRegistros) {
+      validaPermissoes(temDadosNovosRegistros);
+    }
+  }, [validaPermissoes, dadosParaSalvarNovoRegistro]);
 
   return (
     <>
@@ -77,31 +195,52 @@ const NovoRegistroIndividual = ({ dadosAlunoObjectCard }) => {
           <CardCollapse
             configCabecalho={CONFIG_COLLAPSE_REGISTRO_INDIVIDUAL}
             styleCardBody={{ paddingTop: 12 }}
-            key={`${idCollapse}-collapse-key`}
+            key={`${idSecao}-collapse-key`}
             titulo="Novo registro individual"
-            indice={`${idCollapse}-collapse-indice`}
-            alt={`${idCollapse}-alt`}
+            indice={`${idSecao}-collapse-indice`}
+            alt={`${idSecao}-alt`}
             show={expandir}
+            onClick={() => setExpandir(!expandir)}
           >
-            <NovoRegistroIndividualItem
-              dadosAlunoObjectCard={dadosAlunoObjectCard}
-            />
+            <div className="col-3 p-0 pb-2">
+              <CampoData
+                name="data"
+                placeholder="Selecione"
+                valor={data}
+                formatoData="DD/MM/YYYY"
+                onChange={valor => setData(valor)}
+              />
+            </div>
+            <div className="pt-1">
+              <Loader ignorarTip loading={carregandoNovoRegistro}>
+                <Editor
+                  validarSeTemErro={validarSeTemErro}
+                  mensagemErro="Campo obrigatório"
+                  id={`secao-${idSecao}-editor`}
+                  inicial={registro}
+                  onChange={onChange}
+                  desabilitar={desabilitarNovoRegistro}
+                />
+              </Loader>
+              {auditoria && (
+                <div className="mt-1 ml-n3">
+                  <Auditoria
+                    ignorarMarginTop
+                    criadoEm={auditoria.criadoEm}
+                    criadoPor={auditoria.criadoPor}
+                    criadoRf={auditoria.criadoRF}
+                    alteradoPor={auditoria.alteradoPor}
+                    alteradoEm={auditoria.alteradoEm}
+                    alteradoRf={auditoria.alteradoRF}
+                  />
+                </div>
+              )}
+            </div>
           </CardCollapse>
         </div>
       )}
     </>
   );
-};
-
-NovoRegistroIndividual.propTypes = {
-  dadosAlunoObjectCard: PropTypes.oneOfType([
-    PropTypes.object,
-    PropTypes.string,
-  ]),
-};
-
-NovoRegistroIndividual.defaultProps = {
-  dadosAlunoObjectCard: {},
 };
 
 export default NovoRegistroIndividual;
