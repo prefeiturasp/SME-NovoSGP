@@ -87,7 +87,7 @@ const NovoRegistroIndividual = () => {
     [dispatch, permissoesTela]
   );
 
-  const onChange = useCallback(
+  const mudarEditor = useCallback(
     novoRegistro => {
       dispatch(
         setDadosParaSalvarNovoRegistro({
@@ -218,7 +218,7 @@ const NovoRegistroIndividual = () => {
                   mensagemErro="Campo obrigatório"
                   id={`secao-${idSecao}-editor`}
                   inicial={registro}
-                  onChange={onChange}
+                  onChange={mudarEditor}
                   desabilitar={desabilitarNovoRegistro}
                 />
               </Loader>
