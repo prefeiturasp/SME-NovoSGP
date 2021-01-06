@@ -27,7 +27,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.OCO_C, Policy = "Bearer")]
-        public async Task<IActionResult> Get([FromServices] IObterOcorrenciaUseCase useCase, [FromQuery] long id)
+        public async Task<IActionResult> Get([FromServices] IObterOcorrenciaUseCase useCase, long id)
         {
             var result = await useCase.Executar(id);
             if (result == null)
