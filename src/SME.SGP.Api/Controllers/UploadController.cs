@@ -31,7 +31,7 @@ namespace SME.SGP.Api.Controllers
                 var file = files.FirstOrDefault();
                 if (file.Length > 0)
                     return Ok(await useCase.Executar(files.FirstOrDefault(), 
-                        $"{Request.Scheme}://{Request.Host}{Request.PathBase}/Arquivos/Editor/", 
+                        $"{Request.Protocol.Split('/')[0].ToLower()}://{Request.Host}{Request.PathBase}/Arquivos/Editor/", 
                         Dominio.TipoArquivo.Editor));
             }
                 
