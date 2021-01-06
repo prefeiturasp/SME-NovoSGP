@@ -68,7 +68,7 @@ namespace SME.SGP.Api
         }
 
         [HttpGet("turmas/{turmaId}/alunos/{alunoCodigo}/componentes-curriculares/{componenteCurricularId}/dataInicio/{dataInicio}/dataFim/{dataFim}")]
-        [ProducesResponseType(typeof(IEnumerable<RegistroIndividualDto>), 200)]
+        [ProducesResponseType(typeof(PaginacaoResultadoDto<RegistroIndividualDto>), 200)]
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.REI_C, Policy = "Bearer")]
