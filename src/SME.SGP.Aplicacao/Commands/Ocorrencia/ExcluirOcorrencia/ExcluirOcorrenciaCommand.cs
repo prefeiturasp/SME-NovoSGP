@@ -1,15 +1,21 @@
-﻿using MediatR;
-using System.Collections.Generic;
+﻿using FluentValidation;
+using MediatR;
+using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ExcluirOcorrenciaCommand : IRequest<bool>
+    public class ExcluirOcorrenciaCommand : IRequest<RetornoBaseDto>
     {
-        public ExcluirOcorrenciaCommand(IEnumerable<long> ids)
-        {
-            Ids = ids;
-        }
+        public long Id { get; set; }
+    }
 
-        public IEnumerable<long> Ids { get; set; }
+    public class ExcluirOcorrenciaCommandValidator : AbstractValidator<ExcluirOcorrenciaCommand>
+    {
+        public ExcluirOcorrenciaCommandValidator()
+        {
+            RuleFor(x => x.Id)
+                .NotEmpty()
+                .WithMessage("A ocorrência deve ser informada para a exclusão.");
+        }
     }
 }

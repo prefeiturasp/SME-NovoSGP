@@ -1,4 +1,4 @@
-﻿namespace SME.SGP.Infra.Dtos.Ocorrencias.Tipos
+﻿namespace SME.SGP.Infra
 {
     public class OcorrenciaTipoDto
     {
