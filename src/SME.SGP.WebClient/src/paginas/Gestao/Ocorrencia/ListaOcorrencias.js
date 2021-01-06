@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import shortid from 'shortid';
 import {
   Button,
@@ -7,10 +8,11 @@ import {
   Colors,
   InputBusca,
   ListaPaginada,
+  Alert,
 } from '~/componentes';
 import { Cabecalho } from '~/componentes-sgp';
-import { erros, ServicoOcorrencias, sucesso } from '~/servicos';
-import history from '~/servicos/history';
+import { RotasDto } from '~/dtos';
+import { erros, ServicoOcorrencias, sucesso, history } from '~/servicos';
 
 const ListaOcorrencias = () => {
   const [dataInicial, setDataInicial] = useState();
@@ -19,6 +21,10 @@ const ListaOcorrencias = () => {
   const [tituloOcorrencia, setTituloOcorrencia] = useState();
   const [filtro, setFiltro] = useState();
   const [itenSelecionados, setItensSelecionados] = useState([]);
+  const [ehFiltroValido, setEhFiltroValido] = useState(false);
+
+  const usuario = useSelector(state => state.usuario);
+  const { turmaSelecionada: turmaSelecionadaStore } = usuario;
 
   const colunas = [
     {
@@ -39,12 +45,16 @@ const ListaOcorrencias = () => {
   ];
 
   const onSetFiltro = async () => {
-    setFiltro({
-      DataOcorrenciaInicio: dataInicial?.format('DD/MM/YYYY') || '',
-      DataOcorrenciaFim: dataFinal?.format('DD/MM/YYYY') || '',
-      AlunoNome: nomeCrianca || '',
-      titulo: tituloOcorrencia || '',
-    });
+    if (turmaSelecionadaStore?.turma) {
+      setFiltro({
+        DataOcorrenciaInicio: dataInicial?.format('DD/MM/YYYY') || '',
+        DataOcorrenciaFim: dataFinal?.format('DD/MM/YYYY') || '',
+        AlunoNome: nomeCrianca || '',
+        titulo: tituloOcorrencia || '',
+        turmaId: turmaSelecionadaStore?.turma || '',
+      });
+      setEhFiltroValido(true);
+    } else setEhFiltroValido(false);
   };
 
   const onClickVoltar = () => {
@@ -70,7 +80,9 @@ const ListaOcorrencias = () => {
     }
   };
 
-  const onClickNovo = () => {};
+  const onClickNovo = () => {
+    history.push(`${RotasDto.OCORRENCIAS}/novo`);
+  };
 
   const onSelecionarItems = items => {
     setItensSelecionados([...items.map(item => String(item.id))]);
@@ -91,6 +103,19 @@ const ListaOcorrencias = () => {
 
   return (
     <>
+      {turmaSelecionadaStore?.turma ? (
+        ''
+      ) : (
+        <Alert
+          alerta={{
+            tipo: 'warning',
+            id: 'plano-ciclo-selecione-turma',
+            mensagem: 'Você precisa escolher uma turma.',
+            estiloTitulo: { fontSize: '18px' },
+          }}
+          className="mb-0"
+        />
+      )}
       <Cabecalho pagina="Ocorrências" />
       <Card>
         <div className="col-md-12 d-flex justify-content-end pb-4">
@@ -118,6 +143,7 @@ const ListaOcorrencias = () => {
             color={Colors.Roxo}
             border
             bold
+            disabled={!turmaSelecionadaStore?.turma}
             className="mr-2"
             onClick={onClickNovo}
           />
@@ -169,6 +195,7 @@ const ListaOcorrencias = () => {
             onClick={() => {}}
             multiSelecao
             selecionarItems={onSelecionarItems}
+            filtroEhValido={ehFiltroValido}
           />
         </div>
       </Card>
