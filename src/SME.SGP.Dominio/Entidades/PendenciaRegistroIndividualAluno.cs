@@ -2,10 +2,10 @@
 {
     public class PendenciaRegistroIndividualAluno
     {
-        public long Id { get; private set; }
-        public long CodigoAluno { get; private set; }
-        public PendenciaRegistroIndividual PendenciaRegistroIndividual { get; private set; }
-        public long PendenciaRegistroIndividualId { get; private set; }
+        public long Id { get; set; }
+        public long CodigoAluno { get; set; }
+        public PendenciaRegistroIndividual PendenciaRegistroIndividual { get; set; }
+        public long PendenciaRegistroIndividualId { get; set; }
 
         public PendenciaRegistroIndividualAluno(long codigoAluno, PendenciaRegistroIndividual pendenciaRegistroIndividual)
         {
