@@ -140,6 +140,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new PendenciaCalendarioUeMap());
                config.AddMap(new PendenciaParametroEventoMap());
                config.AddMap(new PendenciaProfessorMap());
+               config.AddMap(new RegistroIndividualMap());
                config.AddMap(new OcorrenciaTipoMap());
                config.AddMap(new OcorrenciaMap());
                config.AddMap(new OcorrenciaAlunoMap());
