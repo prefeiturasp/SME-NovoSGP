@@ -67,3 +67,33 @@ export const excluirRegistroAnteriorId = payload => ({
   type: '@registroIndividual/excluirRegistroAnteriorId',
   payload,
 });
+
+export const setRegistroAnteriorId = payload => ({
+  type: '@registroIndividual/setRegistroAnteriorId',
+  payload,
+});
+
+export const alterarRegistroAnterior = payload => ({
+  type: '@registroIndividual/alterarRegistroAnterior',
+  payload,
+});
+
+export const atualizaDadosParaSalvarNovoRegistro = payload => ({
+  type: '@registroIndividual/atualizaDadosParaSalvarNovoRegistro',
+  payload,
+});
+
+export const setExibirLoaderGeralRegistroAnteriores = payload => ({
+  type: '@registroIndividual/setExibirLoaderGeralRegistroAnteriores',
+  payload,
+});
+
+export const setExibirLoaderConteudoRegistroAnteriores = payload => ({
+  type: '@registroIndividual/setExibirLoaderConteudoRegistroAnteriores',
+  payload,
+});
+
+export const setRecolherRegistrosAnteriores = payload => ({
+  type: '@registroIndividual/setRecolherRegistrosAnteriores',
+  payload,
+});
