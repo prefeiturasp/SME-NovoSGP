@@ -7,17 +7,15 @@ import NovoRegistroIndividual from './novoRegistroIndividual/novoRegistroIndivid
 import RegistrosAnteriores from './registrosAnteriores/registrosAnteriores';
 
 const DadosRegistroIndividual = () => {
-  const dadosAlunoObjectCard = useSelector(
-    store => store.registroIndividual.dadosAlunoObjectCard
-  );
-  const exibirLoaderGeralRegistroIndividual = useSelector(
-    store => store.registroIndividual.exibirLoaderGeralRegistroIndividual
-  );
+  const {
+    dadosAlunoObjectCard,
+    exibirLoaderGeralRegistroIndividual,
+  } = useSelector(store => store.registroIndividual);
 
   return (
     <>
       {!!Object.keys(dadosAlunoObjectCard).length && (
-        <Loader loading={exibirLoaderGeralRegistroIndividual}>
+        <Loader ignorarTip loading={exibirLoaderGeralRegistroIndividual}>
           <NovoRegistroIndividual dadosAlunoObjectCard={dadosAlunoObjectCard} />
           <RegistrosAnteriores />
         </Loader>

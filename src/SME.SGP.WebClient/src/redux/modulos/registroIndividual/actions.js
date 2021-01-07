@@ -67,3 +67,13 @@ export const excluirRegistroAnteriorId = payload => ({
   type: '@registroIndividual/excluirRegistroAnteriorId',
   payload,
 });
+
+export const setRegistroAnteriorId = payload => ({
+  type: '@registroIndividual/setRegistroAnteriorId',
+  payload,
+});
+
+export const alterarRegistroAnterior = payload => ({
+  type: '@registroIndividual/alterarRegistroAnterior',
+  payload,
+});

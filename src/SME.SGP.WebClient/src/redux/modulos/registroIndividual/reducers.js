@@ -13,6 +13,7 @@ const inicial = {
   registroIndividualEmEdicao: false,
   registroAnteriorEmEdicao: false,
   resetDataNovoRegistroIndividual: false,
+  registroAnteriorId: {},
 };
 
 export default function RegistroIndividual(state = inicial, action) {
@@ -117,6 +118,36 @@ export default function RegistroIndividual(state = inicial, action) {
               items,
             },
           },
+        };
+      }
+      case '@registroIndividual/alterarRegistroAnterior': {
+        const items = state.dadosPrincipaisRegistroIndividual.registrosIndividuais.items.map(
+          dados => {
+            if (dados.id === action.payload.id) {
+              return {
+                ...dados,
+                registro: action.payload.registro,
+                auditoria: action.payload.auditoria,
+              };
+            }
+            return dados;
+          }
+        );
+        return {
+          ...draft,
+          dadosPrincipaisRegistroIndividual: {
+            ...state.dadosPrincipaisRegistroIndividual,
+            registrosIndividuais: {
+              ...state.dadosPrincipaisRegistroIndividual.registrosIndividuais,
+              items,
+            },
+          },
+        };
+      }
+      case '@registroIndividual/setRegistroAnteriorId': {
+        return {
+          ...draft,
+          registroAnteriorId: action.payload,
         };
       }
       default:

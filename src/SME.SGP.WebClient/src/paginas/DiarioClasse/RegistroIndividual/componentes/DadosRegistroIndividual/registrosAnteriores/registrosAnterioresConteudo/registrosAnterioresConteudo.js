@@ -1,8 +1,8 @@
 import React, { memo, useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Pagination } from 'antd';
 
 import { CampoData, Label } from '~/componentes';
+import { Paginacao } from '~/componentes-sgp';
 
 import { erros, ServicoRegistroIndividual } from '~/servicos';
 
@@ -17,20 +17,14 @@ const RegistrosAnterioresConteudo = memo(() => {
   const [dataInicio, setDataInicio] = useState();
   const [dataFim, setDataFim] = useState();
 
-  const componenteCurricularSelecionado = useSelector(
-    store => store.registroIndividual.componenteCurricularSelecionado
-  );
-  const dadosPrincipaisRegistroIndividual = useSelector(
-    store => store.registroIndividual.dadosPrincipaisRegistroIndividual
-  );
-  const dadosAlunoObjectCard = useSelector(
-    store => store.registroIndividual.dadosAlunoObjectCard
-  );
-  const exibirLoaderGeralRegistroIndividual = useSelector(
-    store => store.registroIndividual.exibirLoaderGeralRegistroIndividual
-  );
+  const {
+    componenteCurricularSelecionado,
+    exibirLoaderGeralRegistroIndividual,
+    dadosAlunoObjectCard,
+    dadosPrincipaisRegistroIndividual,
+  } = useSelector(store => store.registroIndividual);
 
-  const turmaSelecionada = useSelector(state => state.usuario.turmaSelecionada);
+  const { turmaSelecionada } = useSelector(state => state.usuario);
   const turmaCodigo = turmaSelecionada?.id || 0;
 
   const dispatch = useDispatch();
@@ -55,6 +49,11 @@ const RegistrosAnterioresConteudo = memo(() => {
       }
     },
     [dispatch, componenteCurricularSelecionado, turmaCodigo]
+  );
+
+  console.log(
+    'dadosPrincipaisRegistroIndividual ====>',
+    dadosPrincipaisRegistroIndividual
   );
 
   useEffect(() => {
@@ -114,6 +113,15 @@ const RegistrosAnterioresConteudo = memo(() => {
     }
   }, [dataFim]);
 
+  const onChangePaginacao = pagina => {
+    console.log('pagina ===> ', pagina);
+  };
+
+  const onChangeNumeroLinhas = (paginaAtual, numeroLinhas) => {
+    console.log('paginaAtual ===> ', paginaAtual);
+    console.log('numeroLinhas ===> ', numeroLinhas);
+  };
+
   return (
     <>
       <div className="px-3">
@@ -142,30 +150,29 @@ const RegistrosAnterioresConteudo = memo(() => {
         </div>
         {dadosPrincipaisRegistroIndividual?.registrosIndividuais?.items.map(
           dados => (
-            <Item
-              key={`${dados.id}`}
-              dados={dados}
-              // emEdicao={registroAnteriorEmEdicao}
-              dadosPrincipaisRegistroIndividual={
-                dadosPrincipaisRegistroIndividual
-              }
-            />
+            <Item key={`${dados.id}`} dados={dados} />
           )
         )}
 
-        <div className="row">
-          <div className="col-12 d-flex justify-content-center mt-2">
-            <Pagination
-              showSizeChanger
-              onShowSizeChange={() => {}}
-              defaultCurrent={1}
-              total={
-                dadosPrincipaisRegistroIndividual?.registrosIndividuais
-                  ?.totalRegistros
-              }
-            />
+        {dadosPrincipaisRegistroIndividual?.registrosIndividuais?.items
+          .length && (
+          <div className="row">
+            <div className="col-12 d-flex justify-content-center mt-2">
+              <Paginacao
+                mostrarNumeroLinhas
+                numeroRegistros={
+                  dadosPrincipaisRegistroIndividual?.registrosIndividuais
+                    ?.totalRegistros
+                }
+                onChangePaginacao={onChangePaginacao}
+                onChangeNumeroLinhas={onChangeNumeroLinhas}
+                pageSize={5}
+                pageSizeOptions={['5', '10', '20', '50', '100']}
+                locale={{ items_per_page: '' }}
+              />
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </>
   );
