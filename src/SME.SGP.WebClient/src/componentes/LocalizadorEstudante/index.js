@@ -4,7 +4,6 @@ import { Label } from '~/componentes';
 import { erros, erro } from '~/servicos/alertas';
 import InputCodigo from './componentes/InputCodigo';
 import InputNome from './componentes/InputNome';
-import InputTurma from './componentes/InputTurma';
 import service from './services/LocalizadorAlunoService';
 import { store } from '~/redux';
 import { setAlunosCodigo } from '~/redux/modulos/localizadorEstudante/actions';
@@ -17,8 +16,7 @@ const LocalizadorEstudante = props => {
     desabilitado,
     ueId,
     anoLetivo,
-    exibirPesquisaCodigoAluno,
-    exibirPesquisaCodigoTurma,
+    codigoTurma,
   } = props;
 
   const [dataSource, setDataSource] = useState([]);
@@ -26,14 +24,12 @@ const LocalizadorEstudante = props => {
   const [desabilitarCampo, setDesabilitarCampo] = useState({
     codigo: false,
     nome: false,
-    turma: false,
   });
 
   useEffect(() => {
     setPessoaSelecionada({
       alunoCodigo: '',
       alunoNome: '',
-      turmaCodigo: '',
     });
   }, [ueId]);
 
@@ -57,10 +53,11 @@ const LocalizadorEstudante = props => {
     if (valor.length < 3) return;
 
     const retorno = await service
-      .buscarPorNomeAluno({
+      .buscarPorNome({
         nome: valor,
         codigoUe: ueId,
         anoLetivo,
+        codigoTurma,
       })
       .catch(() => {
         setDataSource([]);
@@ -77,57 +74,9 @@ const LocalizadorEstudante = props => {
     }
   };
 
-  const onBuscarPorCodigoTurma = async codigo => {
+  const onBuscarPorCodigo = async codigo => {
     const retorno = await service
-      .buscarPorCodigoTurma({
-        codigoTurma: codigo.codigo,
-        codigoUe: ueId,
-        anoLetivo,
-      })
-      .catch(e => {
-        if (e?.response?.status === 601) {
-          erro('Turma não encontrada no EOL');
-        } else {
-          erros(e);
-        }
-      });
-
-    if (retorno?.data?.items?.length > 0) {
-      const { codigo: cAluno, nome } = retorno.data.items[0];
-      setDataSource(
-        retorno.data.items.map(aluno => ({
-          alunoCodigo: aluno.codigo,
-          alunoNome: aluno.nome,
-        }))
-      );
-      setPessoaSelecionada({
-        alunoCodigo: parseInt(cAluno, 10),
-        alunoNome: nome,
-      });
-      setDesabilitarCampo(estado => ({
-        ...estado,
-        nome: true,
-      }));
-    }
-  };
-
-  const onChangeCodigoTurma = valor => {
-    if (valor.length === 0) {
-      setPessoaSelecionada({
-        alunoCodigo: '',
-        alunoNome: '',
-      });
-      setDesabilitarCampo(estado => ({
-        ...estado,
-        nome: false,
-      }));
-      onChange();
-    }
-  };
-
-  const onBuscarPorCodigoAluno = async codigo => {
-    const retorno = await service
-      .buscarPorCodigoAluno({
+      .buscarPorCodigo({
         codigo: codigo.codigo,
         codigoUe: ueId,
         anoLetivo,
@@ -159,7 +108,7 @@ const LocalizadorEstudante = props => {
     }
   };
 
-  const onChangeCodigoAluno = valor => {
+  const onChangeCodigo = valor => {
     if (valor.length === 0) {
       setPessoaSelecionada({
         alunoCodigo: '',
@@ -199,22 +148,6 @@ const LocalizadorEstudante = props => {
 
   return (
     <React.Fragment>
-      {exibirPesquisaCodigoTurma ? (
-        <>
-          <div className="col-sm-12 col-md-4 col-lg-2 col-xl-2">
-            {showLabel && <Label text="Código Turma" control="turmaCodigo" />}
-            <InputTurma
-              pessoaSelecionada={pessoaSelecionada}
-              onSelect={onBuscarPorCodigoTurma}
-              onChange={onChangeCodigoTurma}
-              name="turmaCodigo"
-              desabilitado={desabilitado || desabilitarCampo.turma}
-            />
-          </div>
-        </>
-      ) : (
-        <></>
-      )}
       <div className="col-sm-12 col-md-6 col-lg-8 col-xl-8">
         {showLabel && <Label text="Nome" control="alunoNome" />}
         <InputNome
@@ -227,22 +160,16 @@ const LocalizadorEstudante = props => {
           regexIgnore={/\d+/}
         />
       </div>
-      {exibirPesquisaCodigoAluno ? (
-        <>
-          <div className="col-sm-12 col-md-4 col-lg-2 col-xl-2">
-            {showLabel && <Label text="Código EOL" control="alunoCodigo" />}
-            <InputCodigo
-              pessoaSelecionada={pessoaSelecionada}
-              onSelect={onBuscarPorCodigoAluno}
-              onChange={onChangeCodigoAluno}
-              name="alunoCodigo"
-              desabilitado={desabilitado || desabilitarCampo.codigo}
-            />
-          </div>
-        </>
-      ) : (
-        <></>
-      )}
+      <div className="col-sm-12 col-md-6 col-lg-4 col-xl-4">
+        {showLabel && <Label text="Código EOL" control="alunoCodigo" />}
+        <InputCodigo
+          pessoaSelecionada={pessoaSelecionada}
+          onSelect={onBuscarPorCodigo}
+          onChange={onChangeCodigo}
+          name="alunoCodigo"
+          desabilitado={desabilitado || desabilitarCampo.codigo}
+        />
+      </div>
     </React.Fragment>
   );
 };
@@ -253,8 +180,7 @@ LocalizadorEstudante.propTypes = {
   desabilitado: PropTypes.bool,
   ueId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   anoLetivo: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-  exibirPesquisaCodigoAluno: PropTypes.bool,
-  exibirPesquisaCodigoTurma: PropTypes.bool,
+  codigoTurma: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 };
 
 LocalizadorEstudante.defaultProps = {
@@ -263,8 +189,7 @@ LocalizadorEstudante.defaultProps = {
   desabilitado: false,
   ueId: '',
   anoLetivo: '',
-  exibirPesquisaCodigoAluno: true,
-  exibirPesquisaCodigoTurma: false,
+  codigoTurma: 0,
 };
 
 export default LocalizadorEstudante;
