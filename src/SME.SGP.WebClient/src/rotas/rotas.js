@@ -14,7 +14,6 @@ import NotificacoesLista from '~/paginas/Notificacoes/Lista/listaNotificacoes';
 import RotasTipo from '~/constantes/rotasTipo';
 import MeusDados from '~/paginas/Perfil/meusDados';
 import PeriodosEscolares from '~/paginas/CalendarioEscolar/PeriodosEscolares/PeriodosEscolares';
-import ReiniciarSenha from '~/paginas/Configuracoes/Usuarios/reiniciarSenha';
 import TabsReiniciarSenha from '~/paginas/Configuracoes/Usuarios/TabsReiniciarSenha';
 import TipoCalendarioEscolarLista from '~/paginas/CalendarioEscolar/TipoCalendarioEscolar/tipoCalendarioEscolarLista';
 import TipoCalendarioEscolarForm from '~/paginas/CalendarioEscolar/TipoCalendarioEscolar/tipoCalendarioEscolarForm';
@@ -81,6 +80,7 @@ import RelatorioHistoricoAlteracoesNotas from '~/paginas/Relatorios/Fechamento/H
 import relatorioEscolaAquiAdesao from '~/paginas/Relatorios/EscolaAqui/Adesao/relatorioEscolaAquiAdesao';
 import RelatorioLeitura from '~/paginas/Relatorios/EscolaAqui/Leitura/relatorioLeitura';
 import ListaOcorrencias from '~/paginas/Gestao/Ocorrencia/ListaOcorrencias';
+import CadastroOcorrencias from '~/paginas/Gestao/Ocorrencia/CadastroOcorrencias';
 import RelatorioPlanejamentoDiario from '~/paginas/Relatorios/DiarioClasse/PlanejamentoDiario/relatorioPlanejamentoDiario';
 
 const rotas = new Map();
@@ -1115,6 +1115,26 @@ rotas.set(RotasDto.OCORRENCIAS, {
   menu: ['Gestão'],
   parent: '/',
   component: ListaOcorrencias,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+  chavePermissao: RotasDto.OCORRENCIAS,
+});
+
+rotas.set(`${RotasDto.OCORRENCIAS}/novo`, {
+  breadcrumbName: 'Cadastro',
+  parent: RotasDto.OCORRENCIAS,
+  component: CadastroOcorrencias,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+  chavePermissao: RotasDto.OCORRENCIAS,
+});
+
+rotas.set(`${RotasDto.OCORRENCIAS}/editar/:id`, {
+  breadcrumbName: 'Cadastro',
+  parent: RotasDto.OCORRENCIAS,
+  component: CadastroOcorrencias,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: false,
