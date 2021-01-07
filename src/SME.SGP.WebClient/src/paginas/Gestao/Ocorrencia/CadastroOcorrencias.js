@@ -47,6 +47,9 @@ const CadastroOcorrencias = ({ match }) => {
   ] = useState([]);
   const [valoresIniciais, setValoresIniciais] = useState({
     dataOcorrencia: window.moment(),
+    descricao: '',
+    ocorrenciaTipoId: 0,
+    titulo: '',
   });
   const [auditoria, setAuditoria] = useState();
   const [idOcorrencia, setIdOcorrencia] = useState();
@@ -182,10 +185,11 @@ const CadastroOcorrencias = ({ match }) => {
 
   const onClickVoltar = form => {
     let temValorAlterado = false;
-    if (form.values) {
+        if (form.values) {
       const campos = Object.keys(form.values);
-      campos.forEach(async key => {
-        if (valoresIniciais[key] && valoresIniciais[key] !== form.values[key]) {
+      campos.forEach(async key => {  
+        
+        if ( criancasSelecionadas.length > 0 || valoresIniciais[key] !== form.values[key]) {
           temValorAlterado = true;
           const confirmado = await confirmar(
             'Atenção',
