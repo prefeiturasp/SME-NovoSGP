@@ -4,6 +4,7 @@ import { Label } from '~/componentes';
 import { erros, erro } from '~/servicos/alertas';
 import InputCodigo from './componentes/InputCodigo';
 import InputNome from './componentes/InputNome';
+import InputTurma from './componentes/InputTurma';
 import service from './services/LocalizadorAlunoService';
 import { store } from '~/redux';
 import { setAlunosCodigo } from '~/redux/modulos/localizadorEstudante/actions';
@@ -32,6 +33,7 @@ const LocalizadorEstudante = props => {
     setPessoaSelecionada({
       alunoCodigo: '',
       alunoNome: '',
+      turmaCodigo: '',
     });
   }, [ueId]);
 
@@ -55,7 +57,7 @@ const LocalizadorEstudante = props => {
     if (valor.length < 3) return;
 
     const retorno = await service
-      .buscarPorNome({
+      .buscarPorNomeAluno({
         nome: valor,
         codigoUe: ueId,
         anoLetivo,
@@ -77,14 +79,14 @@ const LocalizadorEstudante = props => {
 
   const onBuscarPorCodigoTurma = async codigo => {
     const retorno = await service
-      .buscarPorCodigo({
-        codigo: codigo.codigo,
+      .buscarPorCodigoTurma({
+        codigoTurma: codigo.codigo,
         codigoUe: ueId,
         anoLetivo,
       })
       .catch(e => {
         if (e?.response?.status === 601) {
-          erro('Estudante não encontrado no EOL');
+          erro('Turma não encontrada no EOL');
         } else {
           erros(e);
         }
@@ -125,7 +127,7 @@ const LocalizadorEstudante = props => {
 
   const onBuscarPorCodigoAluno = async codigo => {
     const retorno = await service
-      .buscarPorCodigo({
+      .buscarPorCodigoAluno({
         codigo: codigo.codigo,
         codigoUe: ueId,
         anoLetivo,
@@ -201,7 +203,7 @@ const LocalizadorEstudante = props => {
         <>
           <div className="col-sm-12 col-md-4 col-lg-2 col-xl-2">
             {showLabel && <Label text="Código Turma" control="turmaCodigo" />}
-            <InputCodigo
+            <InputTurma
               pessoaSelecionada={pessoaSelecionada}
               onSelect={onBuscarPorCodigoTurma}
               onChange={onChangeCodigoTurma}
