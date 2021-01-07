@@ -140,6 +140,12 @@ const ListaOcorrencias = () => {
     return !turmaSelecionada?.turma || !ehModalidadeInfantil();
   };
 
+  const ehTurmaAnoAnterior = () => {
+    return (
+      turmaSelecionada.anoLetivo.toString() !== window.moment().format('YYYY')
+    );
+  };
+
   return (
     <>
       {turmaSelecionada.turma ? <AlertaPermiteSomenteTurmaInfantil /> : ''}
@@ -167,11 +173,7 @@ const ListaOcorrencias = () => {
             border
             className="mr-2"
             onClick={onClickVoltar}
-            disabled={
-              desabilitarCampos ||
-              turmaSelecionada.anoLetivo.toString() !==
-                window.moment().format('YYYY')
-            }
+            disabled={desabilitarCampos || ehTurmaAnoAnterior()}
           />
           <Button
             id={shortid.generate()}
@@ -180,11 +182,7 @@ const ListaOcorrencias = () => {
             border
             className="mr-2"
             onClick={onClickExcluir}
-            disabled={
-              !itenSelecionados?.length ||
-              turmaSelecionada.anoLetivo.toString() !==
-                window.moment().format('YYYY')
-            }
+            disabled={!itenSelecionados?.length || ehTurmaAnoAnterior()}
           />
           <Button
             id={shortid.generate()}
@@ -192,7 +190,11 @@ const ListaOcorrencias = () => {
             color={Colors.Roxo}
             border
             bold
-            disabled={!turmaSelecionada?.turma && !ehModalidadeInfantil()}
+            disabled={
+              !turmaSelecionada?.turma ||
+              !ehModalidadeInfantil() ||
+              ehTurmaAnoAnterior()
+            }
             className="mr-2"
             onClick={onClickNovo}
           />
