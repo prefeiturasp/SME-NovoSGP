@@ -64,8 +64,8 @@ const ListaOcorrencias = () => {
   const onSetFiltro = async () => {
     if (turmaSelecionada?.turma) {
       setFiltro({
-        DataOcorrenciaInicio: dataInicial?.format('DD/MM/YYYY') || '',
-        DataOcorrenciaFim: dataFinal?.format('DD/MM/YYYY') || '',
+        DataOcorrenciaInicio: dataInicial?.format('YYYY-MM-DD') || '',
+        DataOcorrenciaFim: dataFinal?.format('YYYY-MM-DD') || '',
         AlunoNome: nomeCrianca || '',
         titulo: tituloOcorrencia || '',
         turmaId: turmaSelecionada?.id || '',
@@ -88,23 +88,21 @@ const ListaOcorrencias = () => {
       );
       if (confirmado) {
         const parametros = { data: itenSelecionados };
-        const excluir = await ServicoOcorrencias.excluir(parametros)
+        ServicoOcorrencias.excluir(parametros)
           .then(resp => {
+            const mensagemSucesso = `${
+              itenSelecionados.length > 1
+                ? 'Registros excluídos'
+                : 'Registro excluído'
+            } com sucesso.`;
+            sucesso(mensagemSucesso);
+            setItensSelecionados([]);
+            onSetFiltro();
             if (resp.existemErros) {
               erros(resp.mensagens);
             }
           })
           .catch(e => erros(e));
-        if (excluir && excluir.status === 200) {
-          const mensagemSucesso = `${
-            itenSelecionados.length > 1
-              ? 'Ocorrências excluídas'
-              : 'Ocorrência excluída'
-          } com sucesso.`;
-          sucesso(mensagemSucesso);
-          setItensSelecionados([]);
-          onSetFiltro();
-        }
       }
     }
   };
