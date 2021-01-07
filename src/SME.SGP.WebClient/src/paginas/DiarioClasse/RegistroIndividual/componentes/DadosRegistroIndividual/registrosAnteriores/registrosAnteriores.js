@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import shortid from 'shortid';
 
 import { CardCollapse } from '~/componentes';
@@ -8,6 +8,8 @@ import { CONFIG_COLLAPSE_REGISTRO_INDIVIDUAL } from '~/constantes';
 import RegistrosAnterioresConteudo from './registrosAnterioresConteudo/registrosAnterioresConteudo';
 
 const RegistrosAnteriores = () => {
+  const [expandir, setExpandir] = useState(false);
+
   const idCollapse = shortid.generate();
 
   return (
@@ -19,6 +21,8 @@ const RegistrosAnteriores = () => {
         titulo="Registros anteriores"
         indice={`${idCollapse}-collapse-indice`}
         alt={`${idCollapse}-alt`}
+        show={expandir}
+        onClick={() => setExpandir(!expandir)}
       >
         <RegistrosAnterioresConteudo />
       </CardCollapse>

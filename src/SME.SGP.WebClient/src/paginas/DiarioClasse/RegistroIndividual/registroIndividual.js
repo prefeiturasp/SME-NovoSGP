@@ -109,7 +109,7 @@ const RegistroIndividual = () => {
       .finally(() => setCarregandoGeral(false));
 
     if (retorno?.status === 200) {
-      sucesso('Ocorrência cadastrada com sucesso.');
+      sucesso('Registro cadastrada com sucesso.');
       dispatch(setAuditoriaNovoRegistro(retorno.data));
 
       const dataAtual = window.moment(window.moment().format('YYYY-MM-DD'));
@@ -133,22 +133,12 @@ const RegistroIndividual = () => {
       .finally(() => setCarregandoGeral(false));
 
     if (retorno?.status === 200) {
-      sucesso('Ocorrência editada com sucesso.');
+      sucesso('Registro editada com sucesso.');
       dispatch(setAuditoriaNovoRegistro(retorno.data));
 
       const dataAtual = window.moment(window.moment().format('YYYY-MM-DD'));
       const ehDataAnterior = window.moment(dataAtual).isAfter(data);
       resetarInfomacoes(ehDataAnterior);
-    }
-  };
-
-  const onChangeAlunoSelecionado = async aluno => {
-    if (registroIndividualEmEdicao) {
-      salvarRegistroIndividual();
-    }
-    resetarInfomacoes();
-    if (!aluno.desabilitado) {
-      dispatch(setDadosAlunoObjectCard(aluno));
     }
   };
 
@@ -245,6 +235,16 @@ const RegistroIndividual = () => {
 
   const onClickCadastrar = () => {
     escolheCadastrar();
+  };
+
+  const onChangeAlunoSelecionado = async aluno => {
+    if (registroIndividualEmEdicao) {
+      salvarRegistroIndividual();
+    }
+    resetarInfomacoes(true);
+    if (!aluno.desabilitado) {
+      dispatch(setDadosAlunoObjectCard(aluno));
+    }
   };
 
   return (
