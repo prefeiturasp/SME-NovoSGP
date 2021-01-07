@@ -4,13 +4,20 @@ import { Label } from '~/componentes';
 import { erros, erro } from '~/servicos/alertas';
 import InputCodigo from './componentes/InputCodigo';
 import InputNome from './componentes/InputNome';
-import service from './services/LocalizadorService';
+import service from './services/LocalizadorEstudanteService';
 import { store } from '~/redux';
 import { setAlunosCodigo } from '~/redux/modulos/localizadorEstudante/actions';
 import { removerNumeros } from '~/utils/funcoes/gerais';
 
 const LocalizadorEstudante = props => {
-  const { onChange, showLabel, desabilitado, ueId, anoLetivo } = props;
+  const {
+    onChange,
+    showLabel,
+    desabilitado,
+    ueId,
+    anoLetivo,
+    codigoTurma,
+  } = props;
 
   const [dataSource, setDataSource] = useState([]);
   const [pessoaSelecionada, setPessoaSelecionada] = useState({});
@@ -24,7 +31,7 @@ const LocalizadorEstudante = props => {
       alunoCodigo: '',
       alunoNome: '',
     });
-  }, [ueId])
+  }, [ueId]);
 
   const onChangeNome = async valor => {
     valor = removerNumeros(valor);
@@ -50,6 +57,7 @@ const LocalizadorEstudante = props => {
         nome: valor,
         codigoUe: ueId,
         anoLetivo,
+        codigoTurma,
       })
       .catch(() => {
         setDataSource([]);
@@ -72,6 +80,7 @@ const LocalizadorEstudante = props => {
         codigo: codigo.codigo,
         codigoUe: ueId,
         anoLetivo,
+        codigoTurma,
       })
       .catch(e => {
         if (e?.response?.status === 601) {
@@ -172,6 +181,7 @@ LocalizadorEstudante.propTypes = {
   desabilitado: PropTypes.bool,
   ueId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   anoLetivo: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  codigoTurma: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 };
 
 LocalizadorEstudante.defaultProps = {
@@ -180,6 +190,7 @@ LocalizadorEstudante.defaultProps = {
   desabilitado: false,
   ueId: '',
   anoLetivo: '',
+  codigoTurma: 0,
 };
 
 export default LocalizadorEstudante;
