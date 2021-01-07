@@ -1,10 +1,12 @@
 import { Tabs } from 'antd';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { ContainerTabsCard } from '~/componentes/tabs/tabs.css';
 import { setTabAtualComponenteCurricular,
-         setExibirLoaderPlanoAnual} from '~/redux/modulos/anual/actions';
+         setExibirLoaderPlanoAnual,
+         setListaComponentesCheck
+        } from '~/redux/modulos/anual/actions';
 import ServicoPlanoAnual from '~/servicos/Paginas/ServicoPlanoAnual';
 import DescricaoPlanejamento from '../DescricaoPlanejamento/descricaoPlanejamento';
 import ListaObjetivos from '../ListaObjetivos/listaObjetivos';
@@ -18,7 +20,7 @@ const { TabPane } = Tabs;
 
 const TabsComponentesCorriculares = props => {
   const dispatch = useDispatch();
-  const [componentesComObjetivos,setComponentesComObjetivos] = useState([]);
+  const listaComponentesCheck = useSelector(store => store.planoAnual.listaComponentesCheck);
 
   const usuario = useSelector(store => store.usuario);
   const { turmaSelecionada } = usuario;
@@ -96,15 +98,18 @@ const TabsComponentesCorriculares = props => {
         if(listaComponentesCurricularesPlanejamento.length){                   
           dispatch(setExibirLoaderPlanoAnual(true));          
           listaComponentesCurricularesPlanejamento.map(async item => {
-            const { componentes } = await ServicoPlanoAnual.verificarDadosPlanoPorComponenteCurricular(
-              turmaSelecionada.id,
-              item.codigoComponenteCurricular,
-              dadosBimestre.id              
-            );
-            if(componentes[0]?.objetivosAprendizagemId?.length){    
-              let tempComponentesComObjetivos = componentesComObjetivos;
-              tempComponentesComObjetivos.push(item.codigoComponenteCurricular);
-              setComponentesComObjetivos(tempComponentesComObjetivos);
+            if(!listaComponentesCheck?.filter(f => f.componenteId == item.codigoComponenteCurricular && f.bimestreId == dadosBimestre.id).length){
+              const { componentes } = await ServicoPlanoAnual.verificarDadosPlanoPorComponenteCurricular(
+                turmaSelecionada.id,
+                item.codigoComponenteCurricular,
+                dadosBimestre.id              
+              );
+              if(componentes[0]?.objetivosAprendizagemId?.length || componentes[0]?.descricao){                 
+                let tempComponentesComObjetivos = listaComponentesCheck;
+                const novoItem = { componenteId : item.codigoComponenteCurricular, bimestreId: dadosBimestre.id}
+                tempComponentesComObjetivos.push(novoItem);                
+                dispatch(setListaComponentesCheck(tempComponentesComObjetivos));                                          
+              }
             }                                    
           });
           dispatch(setExibirLoaderPlanoAnual(false));          
@@ -131,8 +136,8 @@ const TabsComponentesCorriculares = props => {
     codigoComponenteCurricular
   ) => {
 
-    if(componentesComObjetivos?.length){
-      if(componentesComObjetivos.filter(item => item == codigoComponenteCurricular).length){
+    if(listaComponentesCheck?.length){
+      if(listaComponentesCheck.filter(item => item.componenteId == codigoComponenteCurricular && item.bimestreId == dadosBimestre.id).length){
         return (
           <DescricaoNomeTabComponenteCurricular
             title={nome}
