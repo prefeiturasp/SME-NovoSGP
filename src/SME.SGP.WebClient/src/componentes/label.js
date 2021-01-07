@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
+import { Base } from './colors';
 
 const Container = styled.div`
   label {
@@ -15,14 +16,26 @@ const Container = styled.div`
     color: #42474a;
     font-weight: bold;
   }
+
+  .campoOpcional {
+    font-size: 12px !important;
+    color: ${Base.CinzaBotao} !important;
+    margin-left: 2px;
+    font-weight: normal;
+  }
 `;
 
-const Label = ({ text, control, center, className }) => {
+const Label = ({ text, control, center, className, campoOpcional }) => {
   return (
     <Container className={center && 'text-center'}>
       <label htmlFor={control} id={text} className={className}>
         {text}
       </label>
+      {campoOpcional ? (
+        <label htmlFor={control} id={text} className="campoOpcional">
+          (opcional)
+        </label>
+      ) : null}
     </Container>
   );
 };

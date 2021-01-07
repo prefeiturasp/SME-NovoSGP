@@ -19,6 +19,7 @@ const Campo = styled.div`
 `;
 
 let CHANGE_DEBOUNCE_FLAG;
+const TAMANHO_MAXIMO_UPLOAD = 100;
 
 const JoditEditor = forwardRef((props, ref) => {
   const {
@@ -58,6 +59,11 @@ const JoditEditor = forwardRef((props, ref) => {
     }
   };
 
+  const excedeuLimiteMaximo = arquivo => {
+    const tamanhoArquivo = arquivo.size / 1024 / 1024;
+    return tamanhoArquivo > TAMANHO_MAXIMO_UPLOAD;
+  };
+
   const config = {
     events: {
       afterRemoveNode: node => {
@@ -92,6 +98,13 @@ const JoditEditor = forwardRef((props, ref) => {
       buildData: data => {
         return new Promise((resolve, reject) => {
           const arquivo = data.getAll('files[0]')[0];
+
+          if (excedeuLimiteMaximo(arquivo)) {
+            const msg = 'Tamanho máximo 100mb';
+            erro(msg);
+            reject(new Error(msg));
+          }
+
           if (
             arquivo.type.substring(0, 5) === 'image' ||
             arquivo.type.substring(0, 5) === 'video'
