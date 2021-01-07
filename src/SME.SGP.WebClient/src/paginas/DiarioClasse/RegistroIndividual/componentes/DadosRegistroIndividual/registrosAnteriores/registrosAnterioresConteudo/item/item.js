@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Tooltip } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { Auditoria, Button, Colors, Editor, Loader } from '~/componentes';
+import { Auditoria, Button, Colors, Editor } from '~/componentes';
 
 import {
   confirmar,
@@ -19,9 +19,11 @@ import {
   setRegistroAnteriorId,
 } from '~/redux/modulos/registroIndividual/actions';
 
+import { RotasDto } from '~/dtos';
+
 import { ContainerBotoes } from './item.css';
 
-const Item = memo(({ dados }) => {
+const Item = memo(({ dados, setCarregandoGeral }) => {
   const {
     alunoCodigo,
     auditoria,
@@ -33,12 +35,13 @@ const Item = memo(({ dados }) => {
   } = dados;
 
   const [editando, setEditando] = useState(false);
-  const [carregandoGeral, setCarregandoGeral] = useState(false);
   const [registroAlterado, setRegistroAlterado] = useState(registro);
 
   const { registroAnteriorEmEdicao, registroAnteriorId } = useSelector(
     store => store.registroIndividual
   );
+  const { permissoes } = useSelector(state => state.usuario);
+  const permissoesTela = permissoes[RotasDto.REGISTRO_INDIVIDUAL];
 
   const dispatch = useDispatch();
 
@@ -58,14 +61,17 @@ const Item = memo(({ dados }) => {
     );
 
     if (confirmado) {
+      setCarregandoGeral(true);
       const retorno = await ServicoRegistroIndividual.deletarRegistroIndividual(
         {
           id: idEscolhido,
         }
-      ).catch(e => erros(e));
+      )
+        .catch(e => erros(e))
+        .finally(() => setCarregandoGeral(false));
 
       if (retorno?.status === 200) {
-        sucesso('Registro excluída com sucesso.');
+        sucesso('Registro excluído com sucesso.');
         dispatch(excluirRegistroAnteriorId(idEscolhido));
       }
     }
@@ -100,7 +106,7 @@ const Item = memo(({ dados }) => {
       .finally(() => setCarregandoGeral(false));
 
     if (retorno?.status === 200) {
-      sucesso('Registro editada com sucesso.');
+      sucesso('Registro editado com sucesso.');
       dispatch(
         alterarRegistroAnterior({
           id,
@@ -120,103 +126,109 @@ const Item = memo(({ dados }) => {
   }, [registroAnteriorId, editando, id]);
 
   return (
-    <Loader ignorarTip loading={carregandoGeral} className="w-100">
-      <div className="row justify-content-between">
-        <div className="p-0 col-12">
-          <Editor
-            validarSeTemErro={validarSeTemErro}
-            mensagemErro="Campo obrigatório"
-            label={`Registro - ${window.moment(data).format('DD/MM/YYYY')}`}
-            id={`${id}-editor`}
-            inicial={registroAlterado}
-            onChange={onChange}
-            desabilitar={!editando}
+    <div className="row justify-content-between">
+      <div className="p-0 col-12">
+        <Editor
+          validarSeTemErro={validarSeTemErro}
+          mensagemErro="Campo obrigatório"
+          label={`Registro - ${window.moment(data).format('DD/MM/YYYY')}`}
+          id={`${id}-editor`}
+          inicial={registroAlterado}
+          onChange={onChange}
+          desabilitar={!editando}
+        />
+      </div>
+      {auditoria && (
+        <div className="mt-1 ml-n3 mb-2">
+          <Auditoria
+            ignorarMarginTop
+            criadoEm={auditoria.criadoEm}
+            criadoPor={auditoria.criadoPor}
+            criadoRf={auditoria.criadoRF}
+            alteradoPor={auditoria.alteradoPor}
+            alteradoEm={auditoria.alteradoEm}
+            alteradoRf={auditoria.alteradoRF}
           />
         </div>
-        {auditoria && (
-          <div className="mt-1 ml-n3 mb-2">
-            <Auditoria
-              ignorarMarginTop
-              criadoEm={auditoria.criadoEm}
-              criadoPor={auditoria.criadoPor}
-              criadoRf={auditoria.criadoRF}
-              alteradoPor={auditoria.alteradoPor}
-              alteradoEm={auditoria.alteradoEm}
-              alteradoRf={auditoria.alteradoRF}
+      )}
+      <ContainerBotoes className="d-flex">
+        {editando ? (
+          <div className="d-flex mt-2">
+            <Button
+              id="btn-cancelar-obs-novo"
+              label="Cancelar"
+              color={Colors.Roxo}
+              border
+              bold
+              className="mr-3"
+              onClick={onClickCancelar}
+              height="30px"
+            />
+            <Button
+              id="btn-salvar-obs-novo"
+              label="Salvar"
+              color={Colors.Roxo}
+              border
+              bold
+              onClick={onClickSalvar}
+              height="30px"
             />
           </div>
+        ) : (
+          <div className="d-flex mt-2">
+            <Tooltip title="Editar">
+              <span>
+                <Button
+                  id="btn-editar"
+                  icon="edit"
+                  iconType="far"
+                  color={Colors.Azul}
+                  border
+                  className="btn-acao mr-2"
+                  onClick={() => onClickEditar(id)}
+                  height="30px"
+                  width="30px"
+                  disabled={
+                    (registroAnteriorEmEdicao && !editando) ||
+                    (!editando && !permissoesTela.podeIncluir)
+                  }
+                />
+              </span>
+            </Tooltip>
+            <Tooltip title="Excluir">
+              <span>
+                <Button
+                  id="btn-excluir"
+                  icon="trash-alt"
+                  iconType="far"
+                  color={Colors.Azul}
+                  border
+                  className="btn-acao"
+                  onClick={() => onClickExcluir(id)}
+                  height="30px"
+                  width="30px"
+                  disabled={
+                    (registroAnteriorEmEdicao && !editando) ||
+                    (!editando && !permissoesTela.podeIncluir)
+                  }
+                />
+              </span>
+            </Tooltip>
+          </div>
         )}
-        <ContainerBotoes className="d-flex">
-          {editando ? (
-            <div className="d-flex mt-2">
-              <Button
-                id="btn-cancelar-obs-novo"
-                label="Cancelar"
-                color={Colors.Roxo}
-                border
-                bold
-                className="mr-3"
-                onClick={onClickCancelar}
-                height="30px"
-              />
-              <Button
-                id="btn-salvar-obs-novo"
-                label="Salvar"
-                color={Colors.Roxo}
-                border
-                bold
-                onClick={onClickSalvar}
-                height="30px"
-              />
-            </div>
-          ) : (
-            <div className="d-flex mt-2">
-              <Tooltip title="Editar">
-                <span>
-                  <Button
-                    id="btn-editar"
-                    icon="edit"
-                    iconType="far"
-                    color={Colors.Azul}
-                    border
-                    className="btn-acao mr-2"
-                    onClick={() => onClickEditar(id)}
-                    height="30px"
-                    width="30px"
-                    disabled={registroAnteriorEmEdicao && !editando}
-                  />
-                </span>
-              </Tooltip>
-              <Tooltip title="Excluir">
-                <span>
-                  <Button
-                    id="btn-excluir"
-                    icon="trash-alt"
-                    iconType="far"
-                    color={Colors.Azul}
-                    border
-                    className="btn-acao"
-                    onClick={() => onClickExcluir(id)}
-                    height="30px"
-                    width="30px"
-                    disabled={registroAnteriorEmEdicao && !editando}
-                  />
-                </span>
-              </Tooltip>
-            </div>
-          )}
-        </ContainerBotoes>
-      </div>
-    </Loader>
+      </ContainerBotoes>
+    </div>
   );
 });
 
 Item.propTypes = {
-  dados: PropTypes.instanceOf(PropTypes.object),
+  dados: PropTypes.checkPropTypes[PropTypes.any],
+  setCarregandoGeral: PropTypes.func,
 };
 
 Item.defaultProps = {
   dados: {},
+  setCarregandoGeral: () => {},
 };
 
 export default Item;
