@@ -10,20 +10,22 @@ import {
   Loader,
 } from '~/componentes';
 
-import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
-
 import { CONFIG_COLLAPSE_REGISTRO_INDIVIDUAL } from '~/constantes';
 import RotasDto from '~/dtos/rotasDto';
 
 import {
   setAuditoriaNovoRegistro,
-  setDesabilitarCampos,
   setRegistroIndividualEmEdicao,
   setDadosParaSalvarNovoRegistro,
   resetDataNovoRegistro,
+  setDesabilitarCampos,
 } from '~/redux/modulos/registroIndividual/actions';
 
-import { erros, ServicoRegistroIndividual } from '~/servicos';
+import {
+  erros,
+  ServicoRegistroIndividual,
+  verificaSomenteConsulta,
+} from '~/servicos';
 
 const NovoRegistroIndividual = () => {
   const [expandir, setExpandir] = useState(false);
@@ -32,27 +34,19 @@ const NovoRegistroIndividual = () => {
   const [desabilitarNovoRegistro, setDesabilitarNovoRegistro] = useState(false);
   const [carregandoNovoRegistro, setCarregandoNovoRegistro] = useState(false);
 
-  const auditoriaNovoRegistroIndividual = useSelector(
-    store => store.registroIndividual.auditoriaNovoRegistroIndividual
-  );
-  const componenteCurricularSelecionado = useSelector(
-    store => store.registroIndividual.componenteCurricularSelecionado
-  );
-  const dadosAlunoObjectCard = useSelector(
-    store => store.registroIndividual.dadosAlunoObjectCard
-  );
-  const dadosPrincipaisRegistroIndividual = useSelector(
-    store => store.registroIndividual.dadosPrincipaisRegistroIndividual
-  );
-  const dadosParaSalvarNovoRegistro = useSelector(
-    store => store.registroIndividual.dadosParaSalvarNovoRegistro
-  );
-  const resetDataNovoRegistroIndividual = useSelector(
-    store => store.registroIndividual.resetDataNovoRegistroIndividual
-  );
+  const {
+    auditoriaNovoRegistroIndividual,
+    componenteCurricularSelecionado,
+    dadosAlunoObjectCard,
+    dadosParaSalvarNovoRegistro,
+    dadosPrincipaisRegistroIndividual,
+    registroIndividualEmEdicao,
+    resetDataNovoRegistroIndividual,
+  } = useSelector(store => store.registroIndividual);
 
-  const { permissoes, turmaSelecionada } = useSelector(state => state.usuario);
-  const permissoesTela = permissoes[RotasDto.RELATORIO_SEMESTRAL];
+  const { turmaSelecionada, permissoes } = useSelector(state => state.usuario);
+  const permissoesTela = permissoes[RotasDto.REGISTRO_INDIVIDUAL];
+
   const turmaId = turmaSelecionada?.id || 0;
   const alunoCodigo = dadosAlunoObjectCard?.codigoEOL;
   const dataAtual = window.moment();
@@ -80,13 +74,17 @@ const NovoRegistroIndividual = () => {
   useEffect(() => {
     const temDadosRegistros = Object.keys(dadosPrincipaisRegistroIndividual)
       .length;
-    if (temDadosRegistros) {
+    if (temDadosRegistros && !registroIndividualEmEdicao) {
       setExpandir(true);
       setExibirCollapse(
         dadosPrincipaisRegistroIndividual?.podeRealizarNovoRegistro
       );
     }
-  }, [setExibirCollapse, dadosPrincipaisRegistroIndividual]);
+  }, [
+    dadosPrincipaisRegistroIndividual,
+    registroIndividualEmEdicao,
+    setExibirCollapse,
+  ]);
 
   const validaPermissoes = useCallback(
     temDadosNovosRegistros => {
@@ -200,14 +198,17 @@ const NovoRegistroIndividual = () => {
     }
   }, [validaPermissoes, dadosParaSalvarNovoRegistro]);
 
-  console.log(
-    'dadosParaSalvarNovoRegistro ========> ',
-    dadosParaSalvarNovoRegistro
-  );
+  const desabilitarData = dataCorrente => {
+    return dataCorrente && dataCorrente > window.moment();
+  };
+
+  const expandirAlternado = useCallback(() => setExpandir(!expandir), [
+    expandir,
+  ]);
 
   return (
     <>
-      {exibirCollapse && (
+      {exibirCollapse && permissoesTela.podeIncluir && (
         <div key={shortid.generate()} className="px-4 pt-4">
           <CardCollapse
             configCabecalho={CONFIG_COLLAPSE_REGISTRO_INDIVIDUAL}
@@ -217,7 +218,7 @@ const NovoRegistroIndividual = () => {
             indice={`${idSecao}-collapse-indice`}
             alt={`${idSecao}-alt`}
             show={expandir}
-            onClick={() => setExpandir(!expandir)}
+            onClick={expandirAlternado}
           >
             <div className="col-3 p-0 pb-2">
               <CampoData
@@ -226,6 +227,7 @@ const NovoRegistroIndividual = () => {
                 valor={data}
                 formatoData="DD/MM/YYYY"
                 onChange={valor => setData(valor)}
+                desabilitarData={desabilitarData}
               />
             </div>
             <div className="pt-1">

@@ -1,14 +1,14 @@
 import React, { memo, useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { CampoData, Label } from '~/componentes';
+import { CampoData, Label, Loader } from '~/componentes';
 import { Paginacao } from '~/componentes-sgp';
 
 import { erros, ServicoRegistroIndividual } from '~/servicos';
 
 import {
   setDadosPrincipaisRegistroIndividual,
-  setExibirLoaderGeralRegistroIndividual,
+  setExibirLoaderGeralRegistroAnteriores,
 } from '~/redux/modulos/registroIndividual/actions';
 
 import Item from './item/item';
@@ -16,10 +16,11 @@ import Item from './item/item';
 const RegistrosAnterioresConteudo = memo(() => {
   const [dataInicio, setDataInicio] = useState();
   const [dataFim, setDataFim] = useState();
+  const [carregandoGeral, setCarregandoGeral] = useState(false);
 
   const {
     componenteCurricularSelecionado,
-    exibirLoaderGeralRegistroIndividual,
+    exibirLoaderGeralRegistroAnteriores,
     dadosAlunoObjectCard,
     dadosPrincipaisRegistroIndividual,
   } = useSelector(store => store.registroIndividual);
@@ -30,19 +31,19 @@ const RegistrosAnterioresConteudo = memo(() => {
   const dispatch = useDispatch();
 
   const obterRegistroIndividualPorData = useCallback(
-    async (dataFormatadaInicio, dataFormatadaFim, codigoEOL) => {
-      dispatch(setExibirLoaderGeralRegistroIndividual(true));
+    async (dataFormatadaInicio, dataFimEscolhida, codigoEOL) => {
+      dispatch(setExibirLoaderGeralRegistroAnteriores(true));
       const retorno = await ServicoRegistroIndividual.obterRegistroIndividualPorPeriodo(
         {
           alunoCodigo: codigoEOL,
           componenteCurricular: componenteCurricularSelecionado,
           dataInicio: dataFormatadaInicio,
-          dataFim: dataFormatadaFim,
+          dataFim: dataFimEscolhida,
           turmaCodigo,
         }
       )
         .catch(e => erros(e))
-        .finally(() => dispatch(setExibirLoaderGeralRegistroIndividual(false)));
+        .finally(() => dispatch(setExibirLoaderGeralRegistroAnteriores(false)));
 
       if (retorno?.data) {
         dispatch(setDadosPrincipaisRegistroIndividual(retorno.data));
@@ -51,14 +52,7 @@ const RegistrosAnterioresConteudo = memo(() => {
     [dispatch, componenteCurricularSelecionado, turmaCodigo]
   );
 
-  console.log(
-    'dadosPrincipaisRegistroIndividual ====>',
-    dadosPrincipaisRegistroIndividual
-  );
-
   useEffect(() => {
-    const dataFormatadaInicio = dataInicio?.format('MM-DD-YYYY');
-    const dataFormatadaFim = dataFim?.format('MM-DD-YYYY');
     const temDadosAlunos = Object.keys(dadosAlunoObjectCard).length;
     const { codigoEOL } = dadosAlunoObjectCard;
     const temDadosRegistros = Object.keys(dadosPrincipaisRegistroIndividual)
@@ -67,13 +61,27 @@ const RegistrosAnterioresConteudo = memo(() => {
     if (
       temDadosAlunos &&
       !temDadosRegistros &&
-      !exibirLoaderGeralRegistroIndividual &&
+      !exibirLoaderGeralRegistroAnteriores &&
       dataInicio &&
       dataFim
     ) {
+      const dataFormatadaInicio = dataInicio?.format('MM-DD-YYYY');
+      const dataFormatadaFim = dataFim?.format('MM-DD-YYYY');
+
+      const dataAtual = window.moment().format('YYYY-MM-DD');
+      const dataFimComparativa = dataFim?.format('YYYY-MM-DD');
+      const ehMesmaData = window.moment(dataAtual).isSame(dataFimComparativa);
+
+      const dataFimMenosUmDia = dataFim
+        ?.subtract(1, 'days')
+        .format('MM-DD-YYYY');
+      const dataFimEscolhida = ehMesmaData
+        ? dataFimMenosUmDia
+        : dataFormatadaFim;
+
       obterRegistroIndividualPorData(
         dataFormatadaInicio,
-        dataFormatadaFim,
+        dataFimEscolhida,
         codigoEOL
       );
     }
@@ -83,7 +91,7 @@ const RegistrosAnterioresConteudo = memo(() => {
     dataInicio,
     dataFim,
     dadosPrincipaisRegistroIndividual,
-    exibirLoaderGeralRegistroIndividual,
+    exibirLoaderGeralRegistroAnteriores,
   ]);
 
   useEffect(() => {
@@ -123,7 +131,7 @@ const RegistrosAnterioresConteudo = memo(() => {
   };
 
   return (
-    <>
+    <Loader ignorarTip loading={carregandoGeral} className="w-100">
       <div className="px-3">
         <div className="row">
           <div className="col-12 pl-0">
@@ -150,7 +158,11 @@ const RegistrosAnterioresConteudo = memo(() => {
         </div>
         {dadosPrincipaisRegistroIndividual?.registrosIndividuais?.items.map(
           dados => (
-            <Item key={`${dados.id}`} dados={dados} />
+            <Item
+              key={`${dados.id}`}
+              dados={dados}
+              setCarregandoGeral={setCarregandoGeral}
+            />
           )
         )}
 
@@ -174,7 +186,7 @@ const RegistrosAnterioresConteudo = memo(() => {
           </div>
         )}
       </div>
-    </>
+    </Loader>
   );
 });
 
