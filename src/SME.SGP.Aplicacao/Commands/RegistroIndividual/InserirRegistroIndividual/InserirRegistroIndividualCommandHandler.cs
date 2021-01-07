@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao
             if (componenteCurricular == null || !componenteCurricular.Any())
                 throw new NegocioException("O componente curricular não foi encontrado");
 
-            var registroExistente = repositorioRegistroIndividual.ObterPorAlunoData(turma.Id, request.ComponenteCurricularId, request.AlunoCodigo, request.DataRegistro);
+            var registroExistente = await repositorioRegistroIndividual.ObterPorAlunoData(turma.Id, request.ComponenteCurricularId, request.AlunoCodigo, request.DataRegistro);
 
             if (registroExistente != null)
                 throw new NegocioException("Já existe um registro para o aluno da turma nessa data!");
