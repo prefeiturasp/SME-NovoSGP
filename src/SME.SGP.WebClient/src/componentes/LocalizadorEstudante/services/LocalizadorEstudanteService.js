@@ -1,6 +1,6 @@
 import api from '~/servicos/api';
 
-class LocalizadorAlunoService {
+class LocalizadorEstudanteService {
   buscarPorNome = async params => {
     return api.post('/v1/estudante/pesquisa', params);
   };
@@ -10,4 +10,4 @@ class LocalizadorAlunoService {
   };
 }
 
-export default new LocalizadorAlunoService();
+export default new LocalizadorEstudanteService();

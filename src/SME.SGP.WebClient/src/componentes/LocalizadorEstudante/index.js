@@ -4,7 +4,7 @@ import { Label } from '~/componentes';
 import { erros, erro } from '~/servicos/alertas';
 import InputCodigo from './componentes/InputCodigo';
 import InputNome from './componentes/InputNome';
-import service from './services/LocalizadorAlunoService';
+import service from './services/LocalizadorEstudanteService';
 import { store } from '~/redux';
 import { setAlunosCodigo } from '~/redux/modulos/localizadorEstudante/actions';
 import { removerNumeros } from '~/utils/funcoes/gerais';
