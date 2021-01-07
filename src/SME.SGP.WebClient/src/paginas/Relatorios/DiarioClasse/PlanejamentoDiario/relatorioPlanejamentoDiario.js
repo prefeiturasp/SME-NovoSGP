@@ -185,8 +185,23 @@ const RelatorioPlanejamentoDiario = () => {
     bimestre,
   ]);
 
+  const validarValorPadraoAnoLetivo = lista => {
+    if (lista?.length) {
+      const temAnoAtualNaLista = lista.find(
+        item => String(item.valor) === String(anoAtual)
+      );
+      if (temAnoAtualNaLista) {
+        setAnoLetivo(anoAtual);
+      } else {
+        setAnoLetivo(lista[0].valor);
+      }
+    } else {
+      setAnoLetivo();
+    }
+  };
+
   useEffect(() => {
-    setAnoLetivo(anoAtual);
+    validarValorPadraoAnoLetivo(listaAnosLetivo);
   }, [consideraHistorico, anoAtual]);
 
   const obterUes = useCallback(async () => {
@@ -425,13 +440,7 @@ const RelatorioPlanejamentoDiario = () => {
       });
     }
 
-    if (anosLetivos && anosLetivos.length) {
-      const temAnoAtualNaLista = anosLetivos.find(
-        item => String(item.valor) === String(anoAtual)
-      );
-      if (temAnoAtualNaLista) setAnoLetivo(anoAtual);
-      else setAnoLetivo(anosLetivos[0].valor);
-    }
+    validarValorPadraoAnoLetivo(anosLetivos);
 
     setListaAnosLetivo(anosLetivos);
     setExibirLoader(false);
@@ -484,7 +493,7 @@ const RelatorioPlanejamentoDiario = () => {
     await setBimestre();
     await setListarDataFutura(false);
     await setExibirDetalhamento(false);
-    await setAnoLetivo(anoAtual);
+    validarValorPadraoAnoLetivo(listaAnosLetivo);
   };
 
   const gerar = async () => {
