@@ -45,9 +45,10 @@ namespace SME.SGP.Aplicacao
 
         private async Task NotificarUe(Ue ue, ModalidadeTipoCalendario modalidadeTipoCalendario)
         {
+            var anoAtual = DateTime.Now.Year;
             var descricaoUe = $"{ue.TipoEscola.ShortName()} {ue.Nome} ({ue.Dre.Abreviacao})";
             var titulo = $"Cadastro de período de fechamento pendente {descricaoUe}";
-            var mensagem = $"O período de fechamento da <b>{descricaoUe}</b> ainda não foi cadastrado para o tipo de calendário <b>{modalidadeTipoCalendario.Name()}</b>.";
+            var mensagem = $"O período de fechamento da <b>{descricaoUe}</b> ainda não foi cadastrado para o tipo de calendário <b>{modalidadeTipoCalendario.Name()} {anoAtual}</b>.";
 
             await mediator.Send(new EnviarNotificacaoCommand(titulo, mensagem, NotificacaoCategoria.Aviso, NotificacaoTipo.Calendario, ObterCargosGestaoEscola(), ue.Dre.CodigoDre, ue.CodigoUe));
 
