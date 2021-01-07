@@ -27,6 +27,7 @@ import {
   sucesso,
   confirmar,
   erro,
+  verificaSomenteConsulta,
 } from '~/servicos';
 import { ordenarPor } from '~/utils/funcoes/gerais';
 
@@ -53,9 +54,19 @@ const CadastroOcorrencias = ({ match }) => {
   });
   const [auditoria, setAuditoria] = useState();
   const [idOcorrencia, setIdOcorrencia] = useState();
+  const [somenteConsulta, setSomenteConsulta] = useState(false);
 
   const usuario = useSelector(state => state.usuario);
-  const { turmaSelecionada } = usuario;
+  const { turmaSelecionada, permissoes } = usuario;
+  const { podeExcluir, podeAlterar, podeIncluir } = permissoes[
+    RotasDto.OCORRENCIAS
+  ];
+
+  useEffect(() => {
+    setSomenteConsulta(
+      verificaSomenteConsulta(permissoes[RotasDto.OCORRENCIAS])
+    );
+  }, [permissoes]);
 
   useEffect(() => {
     ServicoOcorrencias.buscarTiposOcorrencias().then(resp => {
@@ -185,11 +196,13 @@ const CadastroOcorrencias = ({ match }) => {
 
   const onClickVoltar = form => {
     let temValorAlterado = false;
-        if (form.values) {
+    if (form.values) {
       const campos = Object.keys(form.values);
-      campos.forEach(async key => {  
-        
-        if ( criancasSelecionadas.length > 0 || valoresIniciais[key] !== form.values[key]) {
+      campos.forEach(async key => {
+        if (
+          criancasSelecionadas.length > 0 ||
+          valoresIniciais[key] !== form.values[key]
+        ) {
           temValorAlterado = true;
           const confirmado = await confirmar(
             'Atenção',
@@ -280,6 +293,19 @@ const CadastroOcorrencias = ({ match }) => {
     return turmaSelecionada?.desc.split('-')[1].trim();
   };
 
+  const naoPodeIncluirOuAlterar = () => {
+    return idOcorrencia ? !podeAlterar : !podeIncluir;
+  };
+
+  const desabilitarCampos = () => {
+    return (
+      !criancasSelecionadas?.length > 0 ||
+      ehTurmaAnoAnterior() ||
+      somenteConsulta ||
+      naoPodeIncluirOuAlterar()
+    );
+  };
+
   return (
     <>
       <Cabecalho pagina="Cadastro de ocorrência" />
@@ -302,7 +328,9 @@ const CadastroOcorrencias = ({ match }) => {
           width="50%"
           fecharAoClicarFora
           fecharAoClicarEsc
-          desabilitarBotaoPrincipal={ehTurmaAnoAnterior()}
+          desabilitarBotaoPrincipal={
+            ehTurmaAnoAnterior() || somenteConsulta || naoPodeIncluirOuAlterar()
+          }
         >
           <div className="col-md-12 pt-2">
             <DataTable
@@ -310,7 +338,9 @@ const CadastroOcorrencias = ({ match }) => {
               idLinha="codigoEOL"
               selectedRowKeys={codigosCriancasSelecionadas}
               onSelectRow={codigo =>
-                ehTurmaAnoAnterior() ? {} : onSelectLinhaAluno(codigo)
+                ehTurmaAnoAnterior() || somenteConsulta
+                  ? {}
+                  : onSelectLinhaAluno(codigo)
               }
               onClickRow={() => {}}
               columns={colunas}
@@ -349,7 +379,11 @@ const CadastroOcorrencias = ({ match }) => {
                   border
                   className="mr-2"
                   onClick={onClickCancelar}
-                  disabled={ehTurmaAnoAnterior()}
+                  disabled={
+                    ehTurmaAnoAnterior() ||
+                    somenteConsulta ||
+                    naoPodeIncluirOuAlterar()
+                  }
                 />
                 {match?.params?.id ? (
                   <Button
@@ -359,12 +393,14 @@ const CadastroOcorrencias = ({ match }) => {
                     border
                     className="mr-2"
                     onClick={onClickExcluir}
-                    disabled={ehTurmaAnoAnterior()}
+                    disabled={
+                      ehTurmaAnoAnterior() || somenteConsulta || !podeExcluir
+                    }
                   />
                 ) : null}
                 <Button
                   id={shortid.generate()}
-                  label={match?.params?.id ? 'Alterar' : 'Cadastrar'}
+                  label={idOcorrencia ? 'Alterar' : 'Cadastrar'}
                   color={Colors.Roxo}
                   border
                   bold
@@ -373,7 +409,9 @@ const CadastroOcorrencias = ({ match }) => {
                   disabled={
                     !form.isValid ||
                     !criancasSelecionadas?.length > 0 ||
-                    ehTurmaAnoAnterior()
+                    ehTurmaAnoAnterior() ||
+                    somenteConsulta ||
+                    naoPodeIncluirOuAlterar()
                   }
                 />
               </div>
@@ -406,7 +444,9 @@ const CadastroOcorrencias = ({ match }) => {
                 <Button
                   id={shortid.generate()}
                   label={
-                    ehTurmaAnoAnterior()
+                    ehTurmaAnoAnterior() ||
+                    somenteConsulta ||
+                    naoPodeIncluirOuAlterar()
                       ? 'Consultar crianças envolvidas'
                       : 'Editar crianças envolvidas'
                   }
@@ -428,9 +468,7 @@ const CadastroOcorrencias = ({ match }) => {
                     placeholder="Selecione a data"
                     formatoData="DD/MM/YYYY"
                     desabilitarData={desabilitarData}
-                    desabilitado={
-                      !criancasSelecionadas?.length || ehTurmaAnoAnterior()
-                    }
+                    desabilitado={desabilitarCampos()}
                   />
                 </div>
                 <div className="col-md-3 col-sm-12 col-lg-3">
@@ -444,9 +482,7 @@ const CadastroOcorrencias = ({ match }) => {
                     formatoData="HH:mm"
                     somenteHora
                     campoOpcional
-                    desabilitado={
-                      !criancasSelecionadas?.length || ehTurmaAnoAnterior()
-                    }
+                    desabilitado={desabilitarCampos()}
                   />
                 </div>
                 <div className="col-md-6 col-sm-12 col-lg-6">
@@ -460,9 +496,7 @@ const CadastroOcorrencias = ({ match }) => {
                     valueText="descricao"
                     lista={listaTiposOcorrencias}
                     value={form.values.ocorrenciaTipoId}
-                    disabled={
-                      !criancasSelecionadas?.length || ehTurmaAnoAnterior()
-                    }
+                    disabled={desabilitarCampos()}
                   />
                 </div>
                 <div className="col-md-6 col-sm-12 col-lg-6 mt-2">
@@ -473,9 +507,7 @@ const CadastroOcorrencias = ({ match }) => {
                     label="Título da ocorrência"
                     placeholder="Situação"
                     maxLength={50}
-                    desabilitado={
-                      !criancasSelecionadas?.length || ehTurmaAnoAnterior()
-                    }
+                    desabilitado={desabilitarCampos()}
                   />
                 </div>
                 <div className="col-12 mt-2">
@@ -487,9 +519,7 @@ const CadastroOcorrencias = ({ match }) => {
                     id="descricao"
                     onChange={() => {}}
                     permiteInserirArquivo
-                    desabilitar={
-                      !criancasSelecionadas?.length > 0 || ehTurmaAnoAnterior()
-                    }
+                    desabilitar={desabilitarCampos()}
                   />
                 </div>
               </div>
