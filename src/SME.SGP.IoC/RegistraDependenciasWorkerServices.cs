@@ -288,7 +288,10 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IRepositorioComponenteCurricular, RepositorioComponenteCurricular>();
             services.TryAddScopedWorkerService<IRepositorioPendenciaProfessor, RepositorioPendenciaProfessor>();
             services.TryAddScopedWorkerService<IRepositorioRemoveConexaoIdle, RepositorioRemoveConexaoIdle>();
-
+            services.TryAddScoped<IRepositorioRegistroIndividual, RepositorioRegistroIndividual>();
+            services.TryAddScopedWorkerService<IRepositorioOcorrencia, RepositorioOcorrencia>();
+            services.TryAddScopedWorkerService<IRepositorioOcorrenciaAluno, RepositorioOcorrenciaAluno>();
+            services.TryAddScopedWorkerService<IRepositorioOcorrenciaTipo, RepositorioOcorrenciaTipo>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
@@ -459,6 +462,21 @@ namespace SME.SGP.IoC
 
             services.TryAddScopedWorkerService<ICalculoFrequenciaTurmaDisciplinaUseCase, CalculoFrequenciaTurmaDisciplinaUseCase>();
             services.TryAddScopedWorkerService<IRemoveConexaoIdleUseCase, RemoveConexaoIdleUseCase>();
+
+            services.TryAddScoped<IAlterarRegistroIndividualUseCase, AlterarRegistroIndividualUseCase>();
+            services.TryAddScoped<IInserirRegistroIndividualUseCase, InserirRegistroIndividualUseCase>();
+            services.TryAddScoped<IExcluirRegistroIndividualUseCase, ExcluirRegistroIndividualUseCase>();
+            services.TryAddScoped<IListarAlunosDaTurmaUseCase, ListarAlunosDaTurmaUseCase>();
+            services.TryAddScoped<IObterRegistroIndividualPorAlunoDataUseCase, ObterRegistroIndividualPorAlunoDataUseCase>();
+            services.TryAddScoped<IObterRegistroIndividualUseCase, ObterRegistroIndividualUseCase>();
+            services.TryAddScoped<IObterRegistrosIndividuaisPorAlunoPeriodoUseCase, ObterRegistrosIndividuaisPorAlunoPeriodoUseCase>();
+
+            services.TryAddScopedWorkerService<IListarOcorrenciasUseCase, ListarOcorrenciasUseCase>();
+            services.TryAddScopedWorkerService<IListarTiposOcorrenciaUseCase, ListarTiposOcorrenciaUseCase>();
+            services.TryAddScopedWorkerService<IObterOcorrenciaUseCase, ObterOcorrenciaUseCase>();
+            services.TryAddScopedWorkerService<IAlterarOcorrenciaUseCase, AlterarOcorrenciaUseCase>();
+            services.TryAddScopedWorkerService<IExcluirOcorrenciaUseCase, ExcluirOcorrenciaUseCase>();
+            services.TryAddScopedWorkerService<IInserirOcorrenciaUseCase, InserirOcorrenciaUseCase>();
         }
 
         private static void ResgistraDependenciaHttp(IServiceCollection services)
