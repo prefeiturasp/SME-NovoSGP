@@ -35,7 +35,7 @@ namespace SME.SGP.Infra
 
             RuleFor(a => a.Registro)
                    .NotEmpty()
-                   .WithMessage("A descrição é obrigatório para o registro individual!");
+                   .WithMessage("A descrição é obrigatória para o registro individual!");
         }
     }
 }

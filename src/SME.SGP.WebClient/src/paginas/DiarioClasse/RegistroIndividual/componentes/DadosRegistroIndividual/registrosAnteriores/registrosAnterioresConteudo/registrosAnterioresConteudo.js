@@ -1,14 +1,14 @@
 import React, { memo, useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Pagination } from 'antd';
 
-import { CampoData, Label } from '~/componentes';
+import { CampoData, Label, Loader } from '~/componentes';
+import { Paginacao } from '~/componentes-sgp';
 
 import { erros, ServicoRegistroIndividual } from '~/servicos';
 
 import {
   setDadosPrincipaisRegistroIndividual,
-  setExibirLoaderGeralRegistroIndividual,
+  setExibirLoaderGeralRegistroAnteriores,
 } from '~/redux/modulos/registroIndividual/actions';
 
 import Item from './item/item';
@@ -16,39 +16,34 @@ import Item from './item/item';
 const RegistrosAnterioresConteudo = memo(() => {
   const [dataInicio, setDataInicio] = useState();
   const [dataFim, setDataFim] = useState();
+  const [carregandoGeral, setCarregandoGeral] = useState(false);
 
-  const componenteCurricularSelecionado = useSelector(
-    store => store.registroIndividual.componenteCurricularSelecionado
-  );
-  const dadosPrincipaisRegistroIndividual = useSelector(
-    store => store.registroIndividual.dadosPrincipaisRegistroIndividual
-  );
-  const dadosAlunoObjectCard = useSelector(
-    store => store.registroIndividual.dadosAlunoObjectCard
-  );
-  const exibirLoaderGeralRegistroIndividual = useSelector(
-    store => store.registroIndividual.exibirLoaderGeralRegistroIndividual
-  );
+  const {
+    componenteCurricularSelecionado,
+    exibirLoaderGeralRegistroAnteriores,
+    dadosAlunoObjectCard,
+    dadosPrincipaisRegistroIndividual,
+  } = useSelector(store => store.registroIndividual);
 
-  const turmaSelecionada = useSelector(state => state.usuario.turmaSelecionada);
+  const { turmaSelecionada } = useSelector(state => state.usuario);
   const turmaCodigo = turmaSelecionada?.id || 0;
 
   const dispatch = useDispatch();
 
   const obterRegistroIndividualPorData = useCallback(
-    async (dataFormatadaInicio, dataFormatadaFim, codigoEOL) => {
-      dispatch(setExibirLoaderGeralRegistroIndividual(true));
+    async (dataFormatadaInicio, dataFimEscolhida, codigoEOL) => {
+      dispatch(setExibirLoaderGeralRegistroAnteriores(true));
       const retorno = await ServicoRegistroIndividual.obterRegistroIndividualPorPeriodo(
         {
           alunoCodigo: codigoEOL,
           componenteCurricular: componenteCurricularSelecionado,
           dataInicio: dataFormatadaInicio,
-          dataFim: dataFormatadaFim,
+          dataFim: dataFimEscolhida,
           turmaCodigo,
         }
       )
         .catch(e => erros(e))
-        .finally(() => dispatch(setExibirLoaderGeralRegistroIndividual(false)));
+        .finally(() => dispatch(setExibirLoaderGeralRegistroAnteriores(false)));
 
       if (retorno?.data) {
         dispatch(setDadosPrincipaisRegistroIndividual(retorno.data));
@@ -58,8 +53,6 @@ const RegistrosAnterioresConteudo = memo(() => {
   );
 
   useEffect(() => {
-    const dataFormatadaInicio = dataInicio?.format('MM-DD-YYYY');
-    const dataFormatadaFim = dataFim?.format('MM-DD-YYYY');
     const temDadosAlunos = Object.keys(dadosAlunoObjectCard).length;
     const { codigoEOL } = dadosAlunoObjectCard;
     const temDadosRegistros = Object.keys(dadosPrincipaisRegistroIndividual)
@@ -68,13 +61,27 @@ const RegistrosAnterioresConteudo = memo(() => {
     if (
       temDadosAlunos &&
       !temDadosRegistros &&
-      !exibirLoaderGeralRegistroIndividual &&
+      !exibirLoaderGeralRegistroAnteriores &&
       dataInicio &&
       dataFim
     ) {
+      const dataFormatadaInicio = dataInicio?.format('MM-DD-YYYY');
+      const dataFormatadaFim = dataFim?.format('MM-DD-YYYY');
+
+      const dataAtual = window.moment().format('YYYY-MM-DD');
+      const dataFimComparativa = dataFim?.format('YYYY-MM-DD');
+      const ehMesmaData = window.moment(dataAtual).isSame(dataFimComparativa);
+
+      const dataFimMenosUmDia = dataFim
+        ?.subtract(1, 'days')
+        .format('MM-DD-YYYY');
+      const dataFimEscolhida = ehMesmaData
+        ? dataFimMenosUmDia
+        : dataFormatadaFim;
+
       obterRegistroIndividualPorData(
         dataFormatadaInicio,
-        dataFormatadaFim,
+        dataFimEscolhida,
         codigoEOL
       );
     }
@@ -84,7 +91,7 @@ const RegistrosAnterioresConteudo = memo(() => {
     dataInicio,
     dataFim,
     dadosPrincipaisRegistroIndividual,
-    exibirLoaderGeralRegistroIndividual,
+    exibirLoaderGeralRegistroAnteriores,
   ]);
 
   useEffect(() => {
@@ -114,8 +121,17 @@ const RegistrosAnterioresConteudo = memo(() => {
     }
   }, [dataFim]);
 
+  const onChangePaginacao = pagina => {
+    console.log('pagina ===> ', pagina);
+  };
+
+  const onChangeNumeroLinhas = (paginaAtual, numeroLinhas) => {
+    console.log('paginaAtual ===> ', paginaAtual);
+    console.log('numeroLinhas ===> ', numeroLinhas);
+  };
+
   return (
-    <>
+    <Loader ignorarTip loading={carregandoGeral} className="w-100">
       <div className="px-3">
         <div className="row">
           <div className="col-12 pl-0">
@@ -145,29 +161,32 @@ const RegistrosAnterioresConteudo = memo(() => {
             <Item
               key={`${dados.id}`}
               dados={dados}
-              // emEdicao={registroAnteriorEmEdicao}
-              dadosPrincipaisRegistroIndividual={
-                dadosPrincipaisRegistroIndividual
-              }
+              setCarregandoGeral={setCarregandoGeral}
             />
           )
         )}
 
-        <div className="row">
-          <div className="col-12 d-flex justify-content-center mt-2">
-            <Pagination
-              showSizeChanger
-              onShowSizeChange={() => {}}
-              defaultCurrent={1}
-              total={
-                dadosPrincipaisRegistroIndividual?.registrosIndividuais
-                  ?.totalRegistros
-              }
-            />
+        {dadosPrincipaisRegistroIndividual?.registrosIndividuais?.items
+          .length && (
+          <div className="row">
+            <div className="col-12 d-flex justify-content-center mt-2">
+              <Paginacao
+                mostrarNumeroLinhas
+                numeroRegistros={
+                  dadosPrincipaisRegistroIndividual?.registrosIndividuais
+                    ?.totalRegistros
+                }
+                onChangePaginacao={onChangePaginacao}
+                onChangeNumeroLinhas={onChangeNumeroLinhas}
+                pageSize={5}
+                pageSizeOptions={['5', '10', '20', '50', '100']}
+                locale={{ items_per_page: '' }}
+              />
+            </div>
           </div>
-        </div>
+        )}
       </div>
-    </>
+    </Loader>
   );
 });
 
