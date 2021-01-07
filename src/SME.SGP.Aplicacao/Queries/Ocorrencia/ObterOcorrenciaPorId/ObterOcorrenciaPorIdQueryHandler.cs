@@ -43,10 +43,10 @@ namespace SME.SGP.Aplicacao
             => new OcorrenciaDto()
             {
                 Auditoria = (AuditoriaDto)ocorrencia,
-                DataOcorrencia = ocorrencia.DataOcorrencia.ToString("dd/MM/yyyy"),
+                DataOcorrencia = ocorrencia.DataOcorrencia,
                 Descricao = ocorrencia.Descricao,
                 HoraOcorrencia = ocorrencia.HoraOcorrencia?.ToString(@"hh\:mm") ?? string.Empty,
-                OcorrenciaTipoId = ocorrencia.OcorrenciaTipoId,
+                OcorrenciaTipoId = ocorrencia.OcorrenciaTipoId.ToString(),
                 TurmaId = ocorrencia.TurmaId,
                 Titulo = ocorrencia.Titulo,
                 Alunos = ocorrencia.Alunos.Select(ao => new OcorrenciaAlunoDto()
