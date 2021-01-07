@@ -1,15 +1,11 @@
 import api from '~/servicos/api';
 
 class LocalizadorAlunoService {
-  buscarPorNomeAluno = async params => {
+  buscarPorNome = async params => {
     return api.post('/v1/estudante/pesquisa', params);
   };
 
-  buscarPorCodigoAluno = async params => {
-    return api.post('/v1/estudante/pesquisa', params);
-  };
-
-  buscarPorCodigoTurma = async params => {
+  buscarPorCodigo = async params => {
     return api.post('/v1/estudante/pesquisa', params);
   };
 }
