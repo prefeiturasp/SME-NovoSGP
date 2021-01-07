@@ -19,9 +19,9 @@ import {
   ServicoOcorrencias,
   sucesso,
   history,
-  confirmar,  
+  confirmar,
+  verificaSomenteConsulta,
 } from '~/servicos';
-
 
 const ListaOcorrencias = () => {
   const [dataInicial, setDataInicial] = useState();
@@ -31,9 +31,17 @@ const ListaOcorrencias = () => {
   const [filtro, setFiltro] = useState();
   const [itenSelecionados, setItensSelecionados] = useState([]);
   const [ehFiltroValido, setEhFiltroValido] = useState(false);
+  const [somenteConsulta, setSomenteConsulta] = useState(false);
 
   const usuario = useSelector(state => state.usuario);
-  const { turmaSelecionada } = usuario;
+  const { turmaSelecionada, permissoes } = usuario;
+  const { podeExcluir, podeIncluir } = permissoes[RotasDto.OCORRENCIAS];
+
+  useEffect(() => {
+    setSomenteConsulta(
+      verificaSomenteConsulta(permissoes[RotasDto.OCORRENCIAS])
+    );
+  }, [permissoes]);
 
   const ehModalidadeInfantil = () => {
     return turmaSelecionada?.turma
@@ -65,7 +73,8 @@ const ListaOcorrencias = () => {
       setFiltro({
         DataOcorrenciaInicio:
           dataInicial !== '' ? dataInicial?.format('YYYY-MM-DD') : null || '',
-        DataOcorrenciaFim: dataFinal !== '' ? dataFinal?.format('YYYY-MM-DD') : null || '',
+        DataOcorrenciaFim:
+          dataFinal !== '' ? dataFinal?.format('YYYY-MM-DD') : null || '',
         AlunoNome: nomeCrianca || '',
         titulo: tituloOcorrencia || '',
         turmaId: turmaSelecionada?.id || '',
@@ -122,12 +131,11 @@ const ListaOcorrencias = () => {
     setDataFinal(valor);
   };
 
-  useEffect(() => {    
+  useEffect(() => {
     if (dataInicial && dataFinal) {
       onSetFiltro();
     }
-    if (!dataInicial && !dataFinal)
-    {
+    if (!dataInicial && !dataFinal) {
       onSetFiltro();
     }
   }, [dataInicial, dataFinal]);
@@ -186,7 +194,12 @@ const ListaOcorrencias = () => {
             border
             className="mr-2"
             onClick={onClickExcluir}
-            disabled={!itenSelecionados?.length || ehTurmaAnoAnterior()}
+            disabled={
+              !itenSelecionados?.length ||
+              ehTurmaAnoAnterior() ||
+              somenteConsulta ||
+              !podeExcluir
+            }
           />
           <Button
             id={shortid.generate()}
@@ -197,7 +210,9 @@ const ListaOcorrencias = () => {
             disabled={
               !turmaSelecionada?.turma ||
               !ehModalidadeInfantil() ||
-              ehTurmaAnoAnterior()
+              ehTurmaAnoAnterior() ||
+              somenteConsulta ||
+              !podeIncluir
             }
             className="mr-2"
             onClick={onClickNovo}
