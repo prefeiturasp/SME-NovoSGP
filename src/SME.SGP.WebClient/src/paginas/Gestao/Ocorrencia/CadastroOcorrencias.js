@@ -38,6 +38,9 @@ const CadastroOcorrencias = ({ match }) => {
   const [modalCriancasVisivel, setModalCriancasVisivel] = useState(false);
   const [listaCriancas, setListaCriancas] = useState([]);
   const [criancasSelecionadas, setCriancasSelecionadas] = useState([]);
+  const [criancasSelecionadasEdicao, setCriancasSelecionadasEdicao] = useState(
+    []
+  );
   const [
     codigosCriancasSelecionadas,
     setCodigosCriancasSelecionadas,
@@ -49,7 +52,7 @@ const CadastroOcorrencias = ({ match }) => {
   const [idOcorrencia, setIdOcorrencia] = useState();
 
   const usuario = useSelector(state => state.usuario);
-  const { turmaSelecionada: turmaSelecionadaStore } = usuario;
+  const { turmaSelecionada } = usuario;
 
   useEffect(() => {
     ServicoOcorrencias.buscarTiposOcorrencias().then(resp => {
@@ -57,7 +60,7 @@ const CadastroOcorrencias = ({ match }) => {
         setListaTiposOcorrencias(resp.data);
       }
     });
-    ServicoOcorrencias.buscarCriancas(turmaSelecionadaStore?.id).then(resp => {
+    ServicoOcorrencias.buscarCriancas(turmaSelecionada?.id).then(resp => {
       if (resp?.data) {
         setListaCriancas(resp.data);
       }
@@ -105,6 +108,7 @@ const CadastroOcorrencias = ({ match }) => {
         });
         setAuditoria(ocorrencia.data.auditoria);
         setCriancasSelecionadas(criancas);
+        setCriancasSelecionadasEdicao(criancas);
       }
     }
     if (idOcorrencia) {
@@ -134,7 +138,7 @@ const CadastroOcorrencias = ({ match }) => {
   };
 
   const onSubmitFormulario = valores => {
-    valores.turmaId = turmaSelecionadaStore.id;
+    valores.turmaId = turmaSelecionada.id;
     valores.horaOcorrencia = valores.horaOcorrencia
       ? valores.horaOcorrencia.format('HH:mm').toString()
       : null;
@@ -210,11 +214,10 @@ const CadastroOcorrencias = ({ match }) => {
   };
 
   const onClickCancelar = () => {
-    if (idOcorrencia) {
-      //TODO
-    } else {
-      refForm.resetForm();
-      setDataOcorrencia(window.moment());
+    refForm.resetForm();
+    setCriancasSelecionadas(criancasSelecionadasEdicao);
+    if (!idOcorrencia) {
+      setCriancasSelecionadas([]);
     }
   };
 
@@ -263,12 +266,22 @@ const CadastroOcorrencias = ({ match }) => {
     setModalCriancasVisivel(false);
   };
 
+  const ehTurmaAnoAnterior = () => {
+    return (
+      turmaSelecionada?.anoLetivo.toString() !== window.moment().format('YYYY')
+    );
+  };
+
+  const getNomeTurma = () => {
+    return turmaSelecionada?.desc.split('-')[1].trim();
+  };
+
   return (
     <>
       <Cabecalho pagina="Cadastro de ocorrência" />
       <Card>
         <ModalConteudoHtml
-          titulo="Selecione a(s) criança(s) envolvida(s) nesta ocorrência - "
+          titulo={`Selecione a(s) criança(s) envolvida(s) nesta ocorrência - ${getNomeTurma()}`}
           visivel={modalCriancasVisivel}
           onClose={() => {
             setModalCriancasVisivel(false);
@@ -285,13 +298,16 @@ const CadastroOcorrencias = ({ match }) => {
           width="50%"
           fecharAoClicarFora
           fecharAoClicarEsc
+          desabilitarBotaoPrincipal={ehTurmaAnoAnterior()}
         >
           <div className="col-md-12 pt-2">
             <DataTable
               id="lista-criancas"
               idLinha="codigoEOL"
               selectedRowKeys={codigosCriancasSelecionadas}
-              onSelectRow={codigo => onSelectLinhaAluno(codigo)}
+              onSelectRow={codigo =>
+                ehTurmaAnoAnterior() ? {} : onSelectLinhaAluno(codigo)
+              }
               onClickRow={() => {}}
               columns={colunas}
               dataSource={listaCriancas}
@@ -329,6 +345,7 @@ const CadastroOcorrencias = ({ match }) => {
                   border
                   className="mr-2"
                   onClick={onClickCancelar}
+                  disabled={ehTurmaAnoAnterior()}
                 />
                 {match?.params?.id ? (
                   <Button
@@ -338,6 +355,7 @@ const CadastroOcorrencias = ({ match }) => {
                     border
                     className="mr-2"
                     onClick={onClickExcluir}
+                    disabled={ehTurmaAnoAnterior()}
                   />
                 ) : null}
                 <Button
@@ -348,7 +366,11 @@ const CadastroOcorrencias = ({ match }) => {
                   bold
                   className="mr-2"
                   onClick={() => validaAntesDoSubmit(form)}
-                  disabled={!form.isValid || !criancasSelecionadas?.length > 0}
+                  disabled={
+                    !form.isValid ||
+                    !criancasSelecionadas?.length > 0 ||
+                    ehTurmaAnoAnterior()
+                  }
                 />
               </div>
               <div className="p-0 col-12 mb-3 font-weight-bold">
@@ -379,7 +401,11 @@ const CadastroOcorrencias = ({ match }) => {
               <div className="p-0 col-12 mt-3">
                 <Button
                   id={shortid.generate()}
-                  label="Editar crianças envolvidas"
+                  label={
+                    ehTurmaAnoAnterior()
+                      ? 'Consultar crianças envolvidas'
+                      : 'Editar crianças envolvidas'
+                  }
                   color={Colors.Azul}
                   border
                   className="mr-2"
@@ -398,7 +424,9 @@ const CadastroOcorrencias = ({ match }) => {
                     placeholder="Selecione a data"
                     formatoData="DD/MM/YYYY"
                     desabilitarData={desabilitarData}
-                    desabilitado={!criancasSelecionadas?.length}
+                    desabilitado={
+                      !criancasSelecionadas?.length || ehTurmaAnoAnterior()
+                    }
                   />
                 </div>
                 <div className="col-md-3 col-sm-12 col-lg-3">
@@ -412,7 +440,9 @@ const CadastroOcorrencias = ({ match }) => {
                     formatoData="HH:mm"
                     somenteHora
                     campoOpcional
-                    desabilitado={!criancasSelecionadas?.length}
+                    desabilitado={
+                      !criancasSelecionadas?.length || ehTurmaAnoAnterior()
+                    }
                   />
                 </div>
                 <div className="col-md-6 col-sm-12 col-lg-6">
@@ -426,7 +456,9 @@ const CadastroOcorrencias = ({ match }) => {
                     valueText="descricao"
                     lista={listaTiposOcorrencias}
                     value={form.values.ocorrenciaTipoId}
-                    disabled={!criancasSelecionadas?.length}
+                    disabled={
+                      !criancasSelecionadas?.length || ehTurmaAnoAnterior()
+                    }
                   />
                 </div>
                 <div className="col-md-6 col-sm-12 col-lg-6 mt-2">
@@ -437,7 +469,9 @@ const CadastroOcorrencias = ({ match }) => {
                     label="Título da ocorrência"
                     placeholder="Situação"
                     maxLength={50}
-                    desabilitado={!criancasSelecionadas?.length}
+                    desabilitado={
+                      !criancasSelecionadas?.length || ehTurmaAnoAnterior()
+                    }
                   />
                 </div>
                 <div className="col-12 mt-2">
@@ -449,7 +483,9 @@ const CadastroOcorrencias = ({ match }) => {
                     id="descricao"
                     onChange={() => {}}
                     permiteInserirArquivo
-                    // desabilitar={!criancasSelecionadas?.length > 0}
+                    desabilitar={
+                      !criancasSelecionadas?.length > 0 || ehTurmaAnoAnterior()
+                    }
                   />
                 </div>
               </div>
