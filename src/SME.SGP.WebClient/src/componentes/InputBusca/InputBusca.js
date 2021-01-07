@@ -4,7 +4,7 @@ import { Input, Button } from 'antd';
 import { InputEstilo } from './estilo';
 import { Label } from '~/componentes';
 
-const InputBusca = ({ label, placeholder, onClick, onPressEnter, valor, onChange }) => {
+const InputBusca = ({ label, placeholder, onClick, onPressEnter, valor, onChange, disabled }) => {
 
   return (
     <InputEstilo>
@@ -19,6 +19,7 @@ const InputBusca = ({ label, placeholder, onClick, onPressEnter, valor, onChange
             <i className="fa fa-search fa-lg" />
           </Button>
         }
+        disabled={disabled}
         allowClear
       />
     </InputEstilo>
@@ -31,6 +32,7 @@ InputBusca.propTypes = {
   onClick: PropTypes.func,
   onPressEnter: PropTypes.func,
   onChange: PropTypes.func,
+  disabled: PropTypes.bool,
   valor: PropTypes.string,
 };
 
@@ -39,6 +41,8 @@ InputBusca.defaultProps = {
   placeholder: '',
   onClick: null,
   onPressEnter: null,
+  onChange: null,
+  disabled: false,
   valor: '',
 };
 
