@@ -50,8 +50,7 @@ namespace SME.SGP.Aplicacao
                    .WithMessage("A data do registro deve ser informada!");
 
             RuleFor(a => a.Registro)
-                   .NotEmpty().WithMessage("O registro é obrigatório para o registro individual!")
-                   .MinimumLength(200).WithMessage("O registro deve conter no mínimo 200 caracteres!");
+                   .NotEmpty().WithMessage("O registro é obrigatório para o registro individual!");
         }
     }
 }

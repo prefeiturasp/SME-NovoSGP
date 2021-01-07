@@ -305,10 +305,10 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioClassificacaoDocumento, RepositorioClassificacaoDocumento>();
             services.TryAddScoped<IRepositorioTipoDocumento, RepositorioTipoDocumento>();
             services.TryAddScoped<IRepositorioRemoveConexaoIdle, RepositorioRemoveConexaoIdle>();
+            services.TryAddScoped<IRepositorioRegistroIndividual, RepositorioRegistroIndividual>();
             services.TryAddScoped<IRepositorioOcorrencia, RepositorioOcorrencia>();
             services.TryAddScoped<IRepositorioOcorrenciaAluno, RepositorioOcorrenciaAluno>();
             services.TryAddScoped<IRepositorioOcorrenciaTipo, RepositorioOcorrenciaTipo>();
-            services.TryAddScoped<IRepositorioRegistroIndividual, RepositorioRegistroIndividual>();
 
 
 
@@ -634,15 +634,6 @@ namespace SME.SGP.IoC
 
             services.TryAddScoped<IRemoveConexaoIdleUseCase, RemoveConexaoIdleUseCase>();
 
-            services.TryAddScoped<IListarOcorrenciasUseCase, ListarOcorrenciasUseCase>();
-            services.TryAddScoped<IListarTiposOcorrenciaUseCase, ListarTiposOcorrenciaUseCase>();
-            services.TryAddScoped<IObterOcorrenciaUseCase, ObterOcorrenciaUseCase>();
-            services.TryAddScoped<IAlterarOcorrenciaUseCase, AlterarOcorrenciaUseCase>();
-            services.TryAddScoped<IExcluirOcorrenciaUseCase, ExcluirOcorrenciaUseCase>();
-            services.TryAddScoped<IInserirOcorrenciaUseCase, InserirOcorrenciaUseCase>();
-
-            services.TryAddScoped<IRemoveConexaoIdleUseCase, RemoveConexaoIdleUseCase>();
-
             services.TryAddScoped<IAlterarRegistroIndividualUseCase, AlterarRegistroIndividualUseCase>();
             services.TryAddScoped<IInserirRegistroIndividualUseCase, InserirRegistroIndividualUseCase>();
             services.TryAddScoped<IExcluirRegistroIndividualUseCase, ExcluirRegistroIndividualUseCase>();
@@ -650,6 +641,13 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterRegistroIndividualPorAlunoDataUseCase, ObterRegistroIndividualPorAlunoDataUseCase>();
             services.TryAddScoped<IObterRegistroIndividualUseCase, ObterRegistroIndividualUseCase>();
             services.TryAddScoped<IObterRegistrosIndividuaisPorAlunoPeriodoUseCase, ObterRegistrosIndividuaisPorAlunoPeriodoUseCase>();
+
+            services.TryAddScoped<IListarOcorrenciasUseCase, ListarOcorrenciasUseCase>();
+            services.TryAddScoped<IListarTiposOcorrenciaUseCase, ListarTiposOcorrenciaUseCase>();
+            services.TryAddScoped<IObterOcorrenciaUseCase, ObterOcorrenciaUseCase>();
+            services.TryAddScoped<IAlterarOcorrenciaUseCase, AlterarOcorrenciaUseCase>();
+            services.TryAddScoped<IExcluirOcorrenciaUseCase, ExcluirOcorrenciaUseCase>();
+            services.TryAddScoped<IInserirOcorrenciaUseCase, InserirOcorrenciaUseCase>();
         }
     }
 }

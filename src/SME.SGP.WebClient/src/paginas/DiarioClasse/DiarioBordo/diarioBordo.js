@@ -379,7 +379,7 @@ const DiarioBordo = () => {
   };
 
   const onChangeCampos = () => {
-    if (!modoEdicao && valoresIniciais && valoresIniciais.aulaId) {
+    if (!modoEdicao) {
       setModoEdicao(true);
     }
   };

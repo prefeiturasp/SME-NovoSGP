@@ -48,7 +48,7 @@ const JoditEditor = forwardRef((props, ref) => {
 
   const BOTOES_PADRAO = !removerToolbar
     ? `bold,ul,ol,outdent,indent,font,fontsize,brush,paragraph,${
-        permiteInserirArquivo ? 'file,video,' : ''
+        permiteInserirArquivo ? 'file,' : ''
       }table,link,align,undo,redo`
     : '';
 
@@ -86,8 +86,7 @@ const JoditEditor = forwardRef((props, ref) => {
     disablePlugins: ['image-properties', 'inline-popup'],
     language: 'pt_br',
     height,
-    disabled: desabilitar,
-    readonly,
+    readonly: readonly || desabilitar,
     enableDragAndDropFileToEditor: true,
     uploader: {
       buildData: data => {
@@ -242,6 +241,12 @@ const JoditEditor = forwardRef((props, ref) => {
       textArea.current.value = value;
     }
   }, [textArea, value]);
+
+  useEffect(() => {
+    if (config && textArea?.current && textArea?.current?.type !== 'textarea') {
+      textArea.current.setReadOnly(desabilitar);
+    }
+  }, [desabilitar]);
 
   const possuiErro = () => {
     return (
