@@ -19,10 +19,9 @@ import {
   ServicoOcorrencias,
   sucesso,
   history,
-  confirmar,
-  erro,
+  confirmar,  
 } from '~/servicos';
-import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
+
 
 const ListaOcorrencias = () => {
   const [dataInicial, setDataInicial] = useState();
@@ -64,8 +63,9 @@ const ListaOcorrencias = () => {
   const onSetFiltro = async () => {
     if (turmaSelecionada?.turma) {
       setFiltro({
-        DataOcorrenciaInicio: dataInicial?.format('YYYY-MM-DD') || '',
-        DataOcorrenciaFim: dataFinal?.format('YYYY-MM-DD') || '',
+        DataOcorrenciaInicio:
+          dataInicial !== '' ? dataInicial?.format('YYYY-MM-DD') : null || '',
+        DataOcorrenciaFim: dataFinal !== '' ? dataFinal?.format('YYYY-MM-DD') : null || '',
         AlunoNome: nomeCrianca || '',
         titulo: tituloOcorrencia || '',
         turmaId: turmaSelecionada?.id || '',
@@ -122,8 +122,12 @@ const ListaOcorrencias = () => {
     setDataFinal(valor);
   };
 
-  useEffect(() => {
+  useEffect(() => {    
     if (dataInicial && dataFinal) {
+      onSetFiltro();
+    }
+    if (!dataInicial && !dataFinal)
+    {
       onSetFiltro();
     }
   }, [dataInicial, dataFinal]);
