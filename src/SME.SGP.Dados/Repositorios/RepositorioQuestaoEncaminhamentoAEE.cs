@@ -4,6 +4,7 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -11,6 +12,55 @@ namespace SME.SGP.Dados.Repositorios
     {
         public RepositorioQuestaoEncaminhamentoAEE(ISgpContext repositorio) : base(repositorio)
         {
+        }
+
+        public async Task<IEnumerable<QuestaoRespostaAeeDto>> ObterListaPorQuestionario(long questionarioId)
+        {
+            return await ObterListaPorQuestionarioEncaminhamento(questionarioId, null);
+        }
+
+        public async Task<IEnumerable<QuestaoRespostaAeeDto>> ObterListaPorQuestionarioEncaminhamento(long questionarioId, long? encaminhamentoId)
+        {
+			var joinRespostas = 
+				encaminhamentoId.HasValue ? "" : "and false";
+			var whereRespostas = 
+				encaminhamentoId.HasValue ? "and eas.encaminhamento_aee_id = @encaminhamentoId" : "";
+
+			var sql = 
+                $@"
+				select 
+					q.id QuestaoId,
+					q.ordem QuestaoOrder,
+					q.nome QuestaoNome,
+					q.observacao QuestaoObservacao,
+					q.obrigatorio QuestaoObrigatorio,
+					q.tipo QuestaoTipo,
+					q.opcionais QuestaoOpcionais,
+					opr.id OpcaoRespostaId,
+					opr.questao_complementar_id QuestaoComplementarId,
+					opr.ordem OpcaoRespostaOrdem,
+					opr.nome OpcaoRespostaNome,
+					rea.id RespostaId,
+					rea.texto RespostaTexto,
+					rea.arquivo_id RespostaArquivoId,
+					arq.nome ArquivoNome,
+					arq.tipo ArquivoTipo,
+					arq.codigo ArquivoCodigo,
+					arq.tipo_conteudo ArquivoTipoConteudo
+				from questao q
+				join opcao_resposta opr on opr.questao_id = q.id and not opr.excluido 
+				left join resposta_encaminhamento_aee rea on rea.resposta_id = opr.id and not rea.excluido {joinRespostas}
+				left join questao_encaminhamento_aee qea on qea.id = rea.questao_encaminhamento_id and not qea.excluido {joinRespostas}
+				left join encaminhamento_aee_secao eas on eas.id = qea.encaminhamento_aee_secao_id and not eas.excluido {joinRespostas}
+				left join arquivo arq on arq.id = rea.arquivo_id and true
+				where 
+					not q.excluido 
+				and q.questionario_id = @questionarioId	
+				{whereRespostas}
+                ";
+			return await database
+				.Conexao
+				.QueryAsync<QuestaoRespostaAeeDto>(sql, new { questionarioId, encaminhamentoId });
         }
     }
 }
