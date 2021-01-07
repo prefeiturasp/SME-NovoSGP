@@ -59,6 +59,7 @@ namespace SME.SGP.Aplicacao
                     {
                         var opcaoLista = value.First();
                         var arquivos = value
+                            .Where(v => v.RespostaArquivoId.HasValue)
                             .Select(v => new Arquivo
                             {
                                 Id = v.RespostaArquivoId.Value,
