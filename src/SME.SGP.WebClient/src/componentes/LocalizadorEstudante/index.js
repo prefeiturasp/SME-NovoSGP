@@ -80,6 +80,7 @@ const LocalizadorEstudante = props => {
         codigo: codigo.codigo,
         codigoUe: ueId,
         anoLetivo,
+        codigoTurma,
       })
       .catch(e => {
         if (e?.response?.status === 601) {
