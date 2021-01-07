@@ -14,12 +14,14 @@ import {
 } from './componentes';
 
 import {
+  atualizaDadosParaSalvarNovoRegistro,
   limparDadosRegistroIndividual,
-  setAuditoriaNovoRegistro,
   setAlunosRegistroIndividual,
+  setAuditoriaNovoRegistro,
   setComponenteCurricularSelecionado,
   setDadosAlunoObjectCard,
   setDesabilitarCampos,
+  setRecolherRegistrosAnteriores,
   setRegistroIndividualEmEdicao,
 } from '~/redux/modulos/registroIndividual/actions';
 
@@ -31,9 +33,11 @@ import {
   ServicoDisciplina,
   ServicoRegistroIndividual,
   sucesso,
+  verificaSomenteConsulta,
 } from '~/servicos';
 
 import { URL_HOME } from '~/constantes';
+import { RotasDto } from '~/dtos';
 
 const RegistroIndividual = () => {
   const [carregandoGeral, setCarregandoGeral] = useState(false);
@@ -45,12 +49,15 @@ const RegistroIndividual = () => {
 
   const {
     componenteCurricularSelecionado,
+    dadosAlunoObjectCard,
     dadosParaSalvarNovoRegistro,
+    dadosPrincipaisRegistroIndividual,
     desabilitarCampos,
     registroIndividualEmEdicao,
   } = useSelector(state => state.registroIndividual);
-  const { turmaSelecionada } = useSelector(state => state.usuario);
+  const { turmaSelecionada, permissoes } = useSelector(state => state.usuario);
   const turmaId = turmaSelecionada?.id || 0;
+  const permissoesTela = permissoes[RotasDto.REGISTRO_INDIVIDUAL];
 
   const modalidadesFiltroPrincipal = useSelector(
     store => store.filtro.modalidades
@@ -109,12 +116,15 @@ const RegistroIndividual = () => {
       .finally(() => setCarregandoGeral(false));
 
     if (retorno?.status === 200) {
-      sucesso('Ocorrência cadastrada com sucesso.');
-      dispatch(setAuditoriaNovoRegistro(retorno.data));
+      sucesso('Registro cadastrado com sucesso.');
 
       const dataAtual = window.moment(window.moment().format('YYYY-MM-DD'));
       const ehDataAnterior = window.moment(dataAtual).isAfter(data);
       resetarInfomacoes(ehDataAnterior);
+      if (!ehDataAnterior) {
+        dispatch(setAuditoriaNovoRegistro(retorno.data));
+        dispatch(atualizaDadosParaSalvarNovoRegistro(retorno.data.id));
+      }
     }
   };
 
@@ -133,22 +143,12 @@ const RegistroIndividual = () => {
       .finally(() => setCarregandoGeral(false));
 
     if (retorno?.status === 200) {
-      sucesso('Ocorrência editada com sucesso.');
+      sucesso('Registro editado com sucesso.');
       dispatch(setAuditoriaNovoRegistro(retorno.data));
 
       const dataAtual = window.moment(window.moment().format('YYYY-MM-DD'));
       const ehDataAnterior = window.moment(dataAtual).isAfter(data);
       resetarInfomacoes(ehDataAnterior);
-    }
-  };
-
-  const onChangeAlunoSelecionado = async aluno => {
-    if (registroIndividualEmEdicao) {
-      salvarRegistroIndividual();
-    }
-    resetarInfomacoes();
-    if (!aluno.desabilitado) {
-      dispatch(setDadosAlunoObjectCard(aluno));
     }
   };
 
@@ -246,6 +246,30 @@ const RegistroIndividual = () => {
   const onClickCadastrar = () => {
     escolheCadastrar();
   };
+
+  const onChangeAlunoSelecionado = async aluno => {
+    const temDadosRegistros = Object.keys(dadosPrincipaisRegistroIndividual)
+      .length;
+    if (registroIndividualEmEdicao) {
+      cadastrarRegistroIndividual();
+    }
+    resetarInfomacoes(true);
+    if (!aluno.desabilitado) {
+      dispatch(setDadosAlunoObjectCard(aluno));
+    }
+
+    if (temDadosRegistros) {
+      dispatch(setRecolherRegistrosAnteriores(true));
+    }
+  };
+
+  const validaSomenteConsulta = useCallback(() => {
+    verificaSomenteConsulta(permissoesTela);
+  }, [permissoesTela]);
+
+  useEffect(() => {
+    validaSomenteConsulta();
+  }, [turmaSelecionada, validaSomenteConsulta]);
 
   return (
     <Loader loading={carregandoGeral} className="w-100">
