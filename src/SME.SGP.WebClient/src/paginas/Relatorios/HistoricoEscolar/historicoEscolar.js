@@ -564,7 +564,6 @@ const HistoricoEscolar = () => {
                   onChange={onChangeLocalizadorEstudante}
                   anoLetivo={anoLetivo}
                   desabilitado={!dreId || !ueId}
-                  exibirPesquisaCodigoAluno
                 />
               </div>
             </div>
