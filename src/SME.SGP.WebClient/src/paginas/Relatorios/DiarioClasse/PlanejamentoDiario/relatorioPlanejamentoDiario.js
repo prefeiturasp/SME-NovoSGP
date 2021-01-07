@@ -44,7 +44,7 @@ const RelatorioPlanejamentoDiario = () => {
   const [semestre, setSemestre] = useState();
   const [turmaId, setTurmaId] = useState();
   const [habilitarDatasFuturas, setHabilitarDatasFuturas] = useState(false);
-  const [listarDatasFuturas, setListarDatasFuturas] = useState(false);
+  const [listarDataFutura, setListarDataFutura] = useState(false);
   const [exibirDetalhamento, setExibirDetalhamento] = useState(false);
   const [componenteCurricularId, setComponenteCurricularId] = useState();
   const [bimestre, setBimestre] = useState();
@@ -65,7 +65,7 @@ const RelatorioPlanejamentoDiario = () => {
     setModalidadeId();
     setTurmaId();
     setAnoLetivo(valor);
-    setListarDatasFuturas(false);
+    setListarDataFutura(false);
     setExibirDetalhamento(false);
   };
 
@@ -75,7 +75,7 @@ const RelatorioPlanejamentoDiario = () => {
     setModalidadeId();
     setTurmaId();
     setCodigoUe(undefined);
-    setListarDatasFuturas(false);
+    setListarDataFutura(false);
     setExibirDetalhamento(false);
   };
 
@@ -83,14 +83,14 @@ const RelatorioPlanejamentoDiario = () => {
     setModalidadeId();
     setTurmaId();
     setCodigoUe(valor);
-    setListarDatasFuturas(false);
+    setListarDataFutura(false);
     setExibirDetalhamento(false);
   };
 
   const onChangeModalidade = valor => {
     setTurmaId();
     setModalidadeId(valor);
-    setListarDatasFuturas(false);
+    setListarDataFutura(false);
     setExibirDetalhamento(false);
   };
 
@@ -108,7 +108,7 @@ const RelatorioPlanejamentoDiario = () => {
 
   const onChangeTurma = valor => {
     setTurmaId(valor);
-    setListarDatasFuturas(false);
+    setListarDataFutura(false);
     setExibirDetalhamento(false);
   };
 
@@ -273,6 +273,7 @@ const RelatorioPlanejamentoDiario = () => {
         lista.unshift({ valor: OPCAO_TODOS, desc: 'Todos' });
         setListaBimestres(lista);
         setBimestres(bimestresResponse.data);
+        setBimestre();
       }
     }
   };
@@ -289,9 +290,10 @@ const RelatorioPlanejamentoDiario = () => {
 
   const checarPeriodoFinalBimestre = async () => {
     setHabilitarDatasFuturas(false);
+    setListarDataFutura(false);
     if (bimestre !== OPCAO_TODOS && bimestre) {
       const bimestreSelecionado = bimestres.filter(
-        b => b.id === Number(bimestre)
+        b => b.bimestre === Number(bimestre)
       );
       if (checarPeriodoEhMaior(bimestreSelecionado[0]?.periodoFim)) {
         setHabilitarDatasFuturas(true);
@@ -480,7 +482,7 @@ const RelatorioPlanejamentoDiario = () => {
     await setTurmaId();
     await setComponenteCurricularId();
     await setBimestre();
-    await setListarDatasFuturas(false);
+    await setListarDataFutura(false);
     await setExibirDetalhamento(false);
     await setAnoLetivo(anoAtual);
   };
@@ -495,7 +497,7 @@ const RelatorioPlanejamentoDiario = () => {
       semestre,
       ano: anoLetivo,
       codigoTurma: turmaId,
-      listarDatasFuturas,
+      listarDataFutura,
       exibirDetalhamento,
       componenteCurricular: componenteCurricularId
     };
@@ -686,7 +688,7 @@ const RelatorioPlanejamentoDiario = () => {
                 opcoes={opcoesRadioSimNao}
                 valorInicial
                 onChange={e => {
-                  setListarDatasFuturas(e.target.value);
+                  setListarDataFutura(e.target.value);
                 }}
                 desabilitado={
                   !turmaId ||
@@ -694,7 +696,7 @@ const RelatorioPlanejamentoDiario = () => {
                   bimestre === OPCAO_TODOS ||
                   !habilitarDatasFuturas
                 }
-                value={listarDatasFuturas}
+                value={listarDataFutura}
               />
             </div>
             <div className="col-sm-12 col-md-3 col-lg-3 col-xl-2 mb-2">
