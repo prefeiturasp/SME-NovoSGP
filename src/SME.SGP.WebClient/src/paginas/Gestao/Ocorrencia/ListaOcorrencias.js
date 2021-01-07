@@ -122,8 +122,7 @@ const ListaOcorrencias = () => {
     setDataFinal(valor);
   };
 
-  useEffect(() => {
-    debugger;
+  useEffect(() => {    
     if (dataInicial && dataFinal) {
       onSetFiltro();
     }
