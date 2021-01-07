@@ -60,5 +60,7 @@
         public static string RotaNotificacaoPeriodoFechamento => "periodo.fechamento.notificar";
         public static string RotaNotificacaoFrequenciaUe => "frequencia.ue.notificar";
 
+        public static string RotaPendenciaAusenciaRegistroIndividual => "pendencias.professor.ausencia.registro.individual";
+
     }
 }
