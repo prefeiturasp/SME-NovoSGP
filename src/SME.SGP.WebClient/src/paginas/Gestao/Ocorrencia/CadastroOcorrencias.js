@@ -28,6 +28,7 @@ import {
   confirmar,
   erro,
 } from '~/servicos';
+import { ordenarPor } from '~/utils/funcoes/gerais';
 
 const CadastroOcorrencias = ({ match }) => {
   const [dataOcorrencia, setDataOcorrencia] = useState();
@@ -175,7 +176,27 @@ const CadastroOcorrencias = ({ match }) => {
     }
   };
 
-  const onClickVoltar = () => history.push(RotasDto.OCORRENCIAS);
+  const onClickVoltar = form => {
+    let temValorAlterado = false;
+    if (form.values) {
+      const campos = Object.keys(form.values);
+      campos.forEach(async key => {
+        if (valoresIniciais[key] && valoresIniciais[key] !== form.values[key]) {
+          temValorAlterado = true;
+          const confirmado = await confirmar(
+            'Atenção',
+            'Suas alterações não foram salvas, deseja salvar agora?'
+          );
+          if (confirmado) {
+            validaAntesDoSubmit(form);
+          } else {
+            history.push(RotasDto.OCORRENCIAS);
+          }
+        }
+      });
+    }
+    if (!temValorAlterado) history.push(RotasDto.OCORRENCIAS);
+  };
 
   const onClickEditarCriancas = () => {
     setModalCriancasVisivel(true);
@@ -189,8 +210,12 @@ const CadastroOcorrencias = ({ match }) => {
   };
 
   const onClickCancelar = () => {
-    refForm.resetForm();
-    setDataOcorrencia(window.moment());
+    if (idOcorrencia) {
+      //TODO
+    } else {
+      refForm.resetForm();
+      setDataOcorrencia(window.moment());
+    }
   };
 
   const onChangeDataOcorrencia = valor => {
@@ -233,7 +258,8 @@ const CadastroOcorrencias = ({ match }) => {
       const crianca = listaCriancas.find(c => c.codigoEOL === codigo);
       criancas.push(crianca);
     });
-    setCriancasSelecionadas([...criancas]);
+    const criancasOrdenadas = ordenarPor(criancas, 'nome');
+    setCriancasSelecionadas([...criancasOrdenadas]);
     setModalCriancasVisivel(false);
   };
 
@@ -270,6 +296,8 @@ const CadastroOcorrencias = ({ match }) => {
               columns={colunas}
               dataSource={listaCriancas}
               selectMultipleRows
+              pagination={false}
+              scroll={{ y: 500 }}
             />
           </div>
         </ModalConteudoHtml>
@@ -292,7 +320,7 @@ const CadastroOcorrencias = ({ match }) => {
                   color={Colors.Azul}
                   border
                   className="mr-2"
-                  onClick={onClickVoltar}
+                  onClick={() => onClickVoltar(form)}
                 />
                 <Button
                   id={shortid.generate()}
@@ -370,6 +398,7 @@ const CadastroOcorrencias = ({ match }) => {
                     placeholder="Selecione a data"
                     formatoData="DD/MM/YYYY"
                     desabilitarData={desabilitarData}
+                    desabilitado={!criancasSelecionadas?.length}
                   />
                 </div>
                 <div className="col-md-3 col-sm-12 col-lg-3">
@@ -383,6 +412,7 @@ const CadastroOcorrencias = ({ match }) => {
                     formatoData="HH:mm"
                     somenteHora
                     campoOpcional
+                    desabilitado={!criancasSelecionadas?.length}
                   />
                 </div>
                 <div className="col-md-6 col-sm-12 col-lg-6">
@@ -396,6 +426,7 @@ const CadastroOcorrencias = ({ match }) => {
                     valueText="descricao"
                     lista={listaTiposOcorrencias}
                     value={form.values.ocorrenciaTipoId}
+                    disabled={!criancasSelecionadas?.length}
                   />
                 </div>
                 <div className="col-md-6 col-sm-12 col-lg-6 mt-2">
@@ -406,6 +437,7 @@ const CadastroOcorrencias = ({ match }) => {
                     label="Título da ocorrência"
                     placeholder="Situação"
                     maxLength={50}
+                    desabilitado={!criancasSelecionadas?.length}
                   />
                 </div>
                 <div className="col-12 mt-2">
@@ -417,6 +449,7 @@ const CadastroOcorrencias = ({ match }) => {
                     id="descricao"
                     onChange={() => {}}
                     permiteInserirArquivo
+                    // desabilitar={!criancasSelecionadas?.length > 0}
                   />
                 </div>
               </div>
