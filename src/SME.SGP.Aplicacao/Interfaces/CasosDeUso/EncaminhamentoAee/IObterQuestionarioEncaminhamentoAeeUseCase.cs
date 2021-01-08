@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao
+namespace SME.SGP.Aplicacao.Interfaces.CasosDeUso
 {
     public interface IObterQuestionarioEncaminhamentoAeeUseCase
     {

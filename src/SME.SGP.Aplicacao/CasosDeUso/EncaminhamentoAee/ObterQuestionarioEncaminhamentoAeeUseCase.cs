@@ -1,8 +1,8 @@
 ﻿using MediatR;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<IEnumerable<QuestaoAeeDto>> Executar(long questionarioId, long? encaminhamentoId)
         {
-            return 
+            return
                 await mediator
                 .Send(new ObterQuestionarioEncaminhamentoAeeQuery(questionarioId, encaminhamentoId));
         }
