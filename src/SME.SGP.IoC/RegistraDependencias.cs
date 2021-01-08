@@ -649,6 +649,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterQuestionarioEncaminhamentoAeeUseCase, ObterQuestionarioEncaminhamentoAeeUseCase>();
 
             services.TryAddScoped<IObterInstrucoesModalUseCase, ObterInstrucoesModalUseCase>();
+            services.TryAddScoped<IObterEncaminhamentosAEEUseCase, ObterEncaminhamentosAEEUseCase>();
         }
     }
 }

@@ -73,5 +73,17 @@ namespace SME.SGP.Api.Controllers
                 throw;
             }
         }
+
+        [HttpGet]
+        [ProducesResponseType(typeof(PaginacaoResultadoDto<EncaminhamentosAEEResumoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public IActionResult ObterEncaminhamentos()
+        {
+            var situacoes = Enum.GetValues(typeof(SituacaoAEE))
+                        .Cast<SituacaoAEE>()
+                        .Select(d => new { codigo = (int)d, descricao = d.Name() })
+                        .ToList();
+            return Ok(situacoes);
+        }
     }
 }
