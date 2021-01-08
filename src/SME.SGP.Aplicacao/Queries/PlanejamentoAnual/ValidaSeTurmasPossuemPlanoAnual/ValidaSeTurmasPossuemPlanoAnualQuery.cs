@@ -7,11 +7,13 @@ namespace SME.SGP.Aplicacao
 {
     public class ValidaSeTurmasPossuemPlanoAnualQuery : IRequest<IEnumerable<TurmaParaCopiaPlanoAnualDto>>
     {
-        public ValidaSeTurmasPossuemPlanoAnualQuery(string[] turmasId)
+        public ValidaSeTurmasPossuemPlanoAnualQuery(string[] turmasId, bool consideraHistorico)
         {
             this.turmasId = turmasId;
+            ConsideraHistorico = consideraHistorico;
         }
         public string[] turmasId { get; set; }
+        public bool ConsideraHistorico { get; set; }
     }
 
     public class ValidaSeTurmasPossuemPlanoAnualQueryValidator : AbstractValidator<ValidaSeTurmasPossuemPlanoAnualQuery>
