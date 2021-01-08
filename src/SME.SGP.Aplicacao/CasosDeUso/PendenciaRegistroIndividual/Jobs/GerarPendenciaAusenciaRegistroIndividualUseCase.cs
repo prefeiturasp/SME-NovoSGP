@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
                 var turmasDoEnsinoInfantil = await mediator.Send(new ObterTurmasPorAnoModalidadeQuery(DateTime.Now.Year, Modalidade.Infantil));
                 if (!turmasDoEnsinoInfantil?.Any() ?? true)
                 {
-                    // TO DO log
+                    SentrySdk.AddBreadcrumb($"Não foram encontradas turmas para geração de pendências de ausência de registro individual .", $"Rabbit - {nameof(GerarPendenciaAusenciaRegistroIndividualUseCase)}");
                     return false;
                 }
 
@@ -47,13 +47,14 @@ namespace SME.SGP.Aplicacao
                 var retorno = await mediator.Send(new GerarPendenciaAusenciaRegistroIndividualTurmaCommand(turma.Id));
                 if (retorno is null)
                 {
-                    // TO DO LOG
+                    SentrySdk.AddBreadcrumb($"Não foi possível gerar a pendência de ausência de registro individual para a turma {turma.Id}.", $"Rabbit - {nameof(GerarPendenciaAusenciaRegistroIndividualUseCase)}");
                     return;
                 }
 
                 if (retorno.ExistemErros)
                 {
-                    // TO DO LOG
+                    var erros = string.Join(", ", retorno.Mensagens);
+                    SentrySdk.AddBreadcrumb($"Não foi possível gerar a pendência de ausência de registro individual para a turma {turma.Id}. {erros}", $"Rabbit - {nameof(GerarPendenciaAusenciaRegistroIndividualUseCase)}");
                     return;
                 }
             }
