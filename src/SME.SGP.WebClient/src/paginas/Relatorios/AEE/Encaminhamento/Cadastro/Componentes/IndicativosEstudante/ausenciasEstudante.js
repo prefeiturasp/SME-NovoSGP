@@ -4,25 +4,25 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   setDadosModalAnotacao,
   setExibirModalAnotacao,
-  setExpandirLinhaAusenciaAluno,
+  setExpandirLinhaAusenciaEstudante,
 } from '~/redux/modulos/encaminhamentoAEE/actions';
 import {
   BtnVisualizarAnotacao,
   TabelaColunasFixas,
-} from './informacoesEscolares.css';
+} from './indicativosEstudante.css';
 
-const AusenciasAluno = props => {
+const AusenciasEstudante = props => {
   const { indexLinha, dados } = props;
 
   const dispatch = useDispatch();
 
-  const expandirLinhaAusenciaAluno = useSelector(
-    store => store.encaminhamentoAEE.expandirLinhaAusenciaAluno
+  const expandirLinhaAusenciaEstudante = useSelector(
+    store => store.encaminhamentoAEE.expandirLinhaAusenciaEstudante
   );
 
   useEffect(() => {
     return () => {
-      dispatch(setExpandirLinhaAusenciaAluno([]));
+      dispatch(setExpandirLinhaAusenciaEstudante([]));
     };
   }, [dispatch]);
 
@@ -55,7 +55,7 @@ const AusenciasAluno = props => {
 
   return (
     <>
-      {expandirLinhaAusenciaAluno[indexLinha] ? (
+      {expandirLinhaAusenciaEstudante[indexLinha] ? (
         <tr>
           <td colSpan="4">
             <TabelaColunasFixas>
@@ -97,14 +97,14 @@ const AusenciasAluno = props => {
   );
 };
 
-AusenciasAluno.defaultProps = {
+AusenciasEstudante.defaultProps = {
   indexLinha: PropTypes.number,
   dados: PropTypes.oneOfType([PropTypes.array]),
 };
 
-AusenciasAluno.propTypes = {
+AusenciasEstudante.propTypes = {
   indexLinha: null,
   dados: [],
 };
 
-export default AusenciasAluno;
+export default AusenciasEstudante;

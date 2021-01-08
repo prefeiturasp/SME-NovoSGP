@@ -1,7 +1,7 @@
 import React from 'react';
-import AusenciasAluno from './ausenciasAluno';
-import BtnExpandirAusenciaAluno from './btnExpandirAusenciaAluno';
-import { TabelaColunasFixas } from './informacoesEscolares.css';
+import AusenciasEstudante from './ausenciasEstudante';
+import BtnExpandirAusenciaEstudante from './btnExpandirAusenciaEstudante';
+import { TabelaColunasFixas } from './indicativosEstudante.css';
 import ModalAnotacoesEncaminhamentoAEE from './modalAnotacoes';
 
 const InformacoesEscolares = () => {
@@ -100,10 +100,10 @@ const InformacoesEscolares = () => {
                         </td>
                         <td className="col-valor-linha-dois">
                           {data.frequencia}
-                          <BtnExpandirAusenciaAluno indexLinha={index} />
+                          <BtnExpandirAusenciaEstudante indexLinha={index} />
                         </td>
                       </tr>
-                      <AusenciasAluno indexLinha={index} dados={data} />
+                      <AusenciasEstudante indexLinha={index} dados={data} />
                     </>
                   );
                 })}
