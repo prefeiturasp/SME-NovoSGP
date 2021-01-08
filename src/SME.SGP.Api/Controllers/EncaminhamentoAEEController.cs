@@ -44,5 +44,13 @@ namespace SME.SGP.Api.Controllers
                         .ToList();
             return Ok(situacoes);
         }
+
+        [HttpGet("instrucoes-modal")]
+        [ProducesResponseType(typeof(string), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ObterInstrucoesModal([FromServices] IObterInstrucoesModalUseCase useCase)
+        {
+            return Ok(await useCase.Executar());
+        }
     }
 }
