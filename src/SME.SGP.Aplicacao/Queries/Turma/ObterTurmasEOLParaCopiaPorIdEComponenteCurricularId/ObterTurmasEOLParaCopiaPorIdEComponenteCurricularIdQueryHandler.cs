@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
             if (turmasEOL != null && turmasEOL.Any())
             {
                 var idsTurmas = turmasEOL.Select(c => c.TurmaId.ToString());
-                turmasEOL = await mediator.Send(new ValidaSeTurmasPossuemPlanoAnualQuery(idsTurmas.ToArray()));
+                turmasEOL = await mediator.Send(new ValidaSeTurmasPossuemPlanoAnualQuery(idsTurmas.ToArray(), request.ConsideraHistorico)); ;
             }
             return turmasEOL;
         }
