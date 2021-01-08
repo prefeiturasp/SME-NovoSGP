@@ -208,7 +208,7 @@ const NovoRegistroIndividual = () => {
 
   return (
     <>
-      {exibirCollapse && permissoesTela.podeIncluir && (
+      {exibirCollapse && (
         <div key={shortid.generate()} className="px-4 pt-4">
           <CardCollapse
             configCabecalho={CONFIG_COLLAPSE_REGISTRO_INDIVIDUAL}
@@ -238,7 +238,9 @@ const NovoRegistroIndividual = () => {
                   id={`secao-${idSecao}-editor`}
                   inicial={registro}
                   onChange={mudarEditor}
-                  desabilitar={desabilitarNovoRegistro}
+                  desabilitar={
+                    desabilitarNovoRegistro || !permissoesTela.podeIncluir
+                  }
                 />
               </Loader>
               {auditoria && (
