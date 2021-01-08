@@ -3,6 +3,7 @@ import { Card } from '~/componentes';
 import { Cabecalho } from '~/componentes-sgp';
 import BotoesAcoesEncaminhamentoAEE from './Componentes/botoesAcoesEncaminhamentoAEE';
 import LocalizarEstudanteCollapse from './Componentes/LocalizarEstudante/localizarEstudanteCollapse';
+import IndicativosEstudante from './Componentes/IndicativosEstudante/indicativosEstudante';
 
 const EncaminhamentoAEECadastro = () => {
   return (
@@ -16,6 +17,9 @@ const EncaminhamentoAEECadastro = () => {
             </div>
             <div className="col-md-12 mb-2">
               <LocalizarEstudanteCollapse />
+            </div>
+            <div className="col-md-12 mb-2">
+              <IndicativosEstudante />
             </div>
           </div>
         </div>
