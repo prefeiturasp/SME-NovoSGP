@@ -647,6 +647,8 @@ namespace SME.SGP.IoC
             // EncaminhamentoAEE
             services.TryAddScoped<IObterSecoesPorEtapaDeEncaminhamentoAEEUseCase, ObterSecoesPorEtapaDeEncaminhamentoAEEUseCase>();
             services.TryAddScoped<IObterQuestionarioEncaminhamentoAeeUseCase, ObterQuestionarioEncaminhamentoAeeUseCase>();
+
+            services.TryAddScoped<IObterInstrucoesModalUseCase, ObterInstrucoesModalUseCase>();
             services.TryAddScoped<IObterEncaminhamentosAEEUseCase, ObterEncaminhamentosAEEUseCase>();
         }
     }
