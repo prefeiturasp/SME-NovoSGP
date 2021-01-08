@@ -57,7 +57,8 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("upload")]
         [ProducesResponseType(200)]
         [ProducesResponseType(401)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]        
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        
         public async Task<IActionResult> Upload([FromForm] IFormFile file, [FromServices] IUploadDeArquivoUseCase useCase)
         {
             try
