@@ -227,10 +227,12 @@ const EncaminhamentoAEELista = () => {
   const obterTurmas = useCallback(async () => {
     if (ueId) {
       setCarregandoTurmas(true);
-      // TODO Trocar endpoint de turmas!
-      const resposta = await ServicoFiltroRelatorio.obterTurmasEspecificas(
+      const resposta = await AbrangenciaServico.buscarTurmas(
         ueId,
-        anoLetivo
+        0,
+        '',
+        anoLetivo,
+        consideraHistorico
       )
         .catch(e => erros(e))
         .finally(() => setCarregandoTurmas(false));
@@ -278,13 +280,12 @@ const EncaminhamentoAEELista = () => {
 
   const onChangeTurma = valor => {
     setTurmaId(valor);
+    setAlunoLocalizadorSelecionado();
   };
 
   const onChangeLocalizadorEstudante = aluno => {
     if (aluno?.alunoCodigo && aluno?.alunoNome) {
       setAlunoLocalizadorSelecionado(aluno);
-
-      setTurmaId();
     } else {
       setAlunoLocalizadorSelecionado();
     }
@@ -385,8 +386,8 @@ const EncaminhamentoAEELista = () => {
                 <SelectComponent
                   id="turma"
                   lista={listaTurmas}
-                  valueOption="valor"
-                  valueText="descricao"
+                  valueOption="codigo"
+                  valueText="modalidadeTurmaNome"
                   label="Turma"
                   disabled={listaTurmas?.length === 1}
                   valueSelect={turmaId}
@@ -405,6 +406,7 @@ const EncaminhamentoAEELista = () => {
                   anoLetivo={anoLetivo}
                   desabilitado={!dreId || !ueId}
                   exibirCodigoEOL={false}
+                  codigoTurma={turmaId}
                 />
               </div>
             </div>
@@ -414,8 +416,8 @@ const EncaminhamentoAEELista = () => {
                   id="situacao"
                   label="Situação"
                   lista={listaSituacao}
-                  valueOption="valor"
-                  valueText="desc"
+                  valueOption="codigo"
+                  valueText="descricao"
                   disabled={listaSituacao?.length === 1}
                   onChange={onChangeSituacao}
                   valueSelect={situacao}
