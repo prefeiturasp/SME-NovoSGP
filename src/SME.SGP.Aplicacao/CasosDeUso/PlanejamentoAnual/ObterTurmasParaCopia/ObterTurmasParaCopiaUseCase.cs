@@ -15,15 +15,15 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<IEnumerable<TurmaParaCopiaPlanoAnualDto>> Executar(int turmaId, long componenteCurricularId, bool ensinoEspecial)
+        public async Task<IEnumerable<TurmaParaCopiaPlanoAnualDto>> Executar(int turmaId, long componenteCurricularId, bool ensinoEspecial, bool consideraHistorico)
         {
             var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
 
             if (usuario.PerfilAtual == Dominio.Perfis.PERFIL_CP)
-                return await mediator.Send(new ObterTurmasParaCopiaPlanejamentoAnualUsuarioCPQuery(turmaId, ensinoEspecial));
+                return await mediator.Send(new ObterTurmasParaCopiaPlanejamentoAnualUsuarioCPQuery(turmaId, ensinoEspecial, consideraHistorico));
 
 
-            return await mediator.Send(new ObterTurmasEOLParaCopiaPorIdEComponenteCurricularIdQuery(turmaId, componenteCurricularId, usuario.CodigoRf));
+            return await mediator.Send(new ObterTurmasEOLParaCopiaPorIdEComponenteCurricularIdQuery(turmaId, componenteCurricularId, usuario.CodigoRf, consideraHistorico));
         }
     }
 }
