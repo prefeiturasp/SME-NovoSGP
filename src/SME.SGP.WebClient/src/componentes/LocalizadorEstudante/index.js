@@ -17,6 +17,7 @@ const LocalizadorEstudante = props => {
     ueId,
     anoLetivo,
     codigoTurma,
+    exibirCodigoEOL,
   } = props;
 
   const [dataSource, setDataSource] = useState([]);
@@ -149,7 +150,11 @@ const LocalizadorEstudante = props => {
 
   return (
     <React.Fragment>
-      <div className="col-sm-12 col-md-6 col-lg-8 col-xl-8">
+      <div
+        className={`${
+          exibirCodigoEOL ? 'col-sm-12 col-md-6 col-lg-8 col-xl-8' : 'col-md-12'
+        } `}
+      >
         {showLabel && <Label text="Nome" control="alunoNome" />}
         <InputNome
           dataSource={dataSource}
@@ -161,16 +166,20 @@ const LocalizadorEstudante = props => {
           regexIgnore={/\d+/}
         />
       </div>
-      <div className="col-sm-12 col-md-6 col-lg-4 col-xl-4">
-        {showLabel && <Label text="Código EOL" control="alunoCodigo" />}
-        <InputCodigo
-          pessoaSelecionada={pessoaSelecionada}
-          onSelect={onBuscarPorCodigo}
-          onChange={onChangeCodigo}
-          name="alunoCodigo"
-          desabilitado={desabilitado || desabilitarCampo.codigo}
-        />
-      </div>
+      {exibirCodigoEOL ? (
+        <div className="col-sm-12 col-md-6 col-lg-4 col-xl-4">
+          {showLabel && <Label text="Código EOL" control="alunoCodigo" />}
+          <InputCodigo
+            pessoaSelecionada={pessoaSelecionada}
+            onSelect={onBuscarPorCodigo}
+            onChange={onChangeCodigo}
+            name="alunoCodigo"
+            desabilitado={desabilitado || desabilitarCampo.codigo}
+          />
+        </div>
+      ) : (
+        ''
+      )}
     </React.Fragment>
   );
 };
@@ -182,6 +191,7 @@ LocalizadorEstudante.propTypes = {
   ueId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   anoLetivo: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   codigoTurma: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  exibirCodigoEOL: PropTypes.bool,
 };
 
 LocalizadorEstudante.defaultProps = {
@@ -191,6 +201,7 @@ LocalizadorEstudante.defaultProps = {
   ueId: '',
   anoLetivo: '',
   codigoTurma: 0,
+  exibirCodigoEOL: true,
 };
 
 export default LocalizadorEstudante;

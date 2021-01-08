@@ -643,8 +643,10 @@ namespace SME.SGP.IoC
 
             services.TryAddScoped<IRemoveConexaoIdleUseCase, RemoveConexaoIdleUseCase>();
 
+
             // EncaminhamentoAEE
             services.TryAddScoped<IObterSecoesPorEtapaDeEncaminhamentoAEEUseCase, ObterSecoesPorEtapaDeEncaminhamentoAEEUseCase>();
+            services.TryAddScoped<IObterQuestionarioEncaminhamentoAeeUseCase, ObterQuestionarioEncaminhamentoAeeUseCase>();
         }
     }
 }
