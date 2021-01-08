@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
@@ -42,6 +43,16 @@ namespace SME.SGP.Api.Controllers
                         .Select(d => new { codigo = (int)d, descricao = d.Name() })
                         .ToList();
             return Ok(situacoes);
+        }
+
+        [HttpDelete("arquivo")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
+        //[Permissao(Permissao.DPU_E, Policy = "Bearer")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ExcluirArquivo([FromQuery] long arquivoId, [FromServices] IExcluirArquivoAeeUseCase useCase)
+        {
+            return Ok(await useCase.Executar(arquivoId));
         }
     }
 }
