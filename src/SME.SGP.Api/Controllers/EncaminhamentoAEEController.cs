@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
@@ -42,6 +43,14 @@ namespace SME.SGP.Api.Controllers
                         .Select(d => new { codigo = (int)d, descricao = d.Name() })
                         .ToList();
             return Ok(situacoes);
+        }
+
+        [HttpGet("instrucoes-modal")]
+        [ProducesResponseType(typeof(string), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ObterInstrucoesModal([FromServices] IObterInstrucoesModalUseCase useCase)
+        {
+            return Ok(await useCase.Executar());
         }
     }
 }
