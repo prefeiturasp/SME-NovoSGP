@@ -1,7 +1,7 @@
 import produce from 'immer';
 
 const inicial = {
-  expandirLinhaAusenciaAluno: [],
+  expandirLinhaAusenciaEstudante: [],
   dadosModalAnotacao: null,
   exibirModalAnotacao: false,
 };
@@ -9,10 +9,10 @@ const inicial = {
 export default function EncaminhamentoAEE(state = inicial, action) {
   return produce(state, draft => {
     switch (action.type) {
-      case '@encaminhamentoAEE/setExpandirLinhaAusenciaAluno': {
+      case '@encaminhamentoAEE/setExpandirLinhaAusenciaEstudante': {
         return {
           ...draft,
-          expandirLinhaAusenciaAluno: action.payload,
+          expandirLinhaAusenciaEstudante: action.payload,
         };
       }
       case '@encaminhamentoAEE/setDadosModalAnotacao': {

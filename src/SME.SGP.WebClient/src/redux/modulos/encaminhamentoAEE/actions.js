@@ -1,5 +1,5 @@
-export const setExpandirLinhaAusenciaAluno = payload => ({
-  type: '@encaminhamentoAEE/setExpandirLinhaAusenciaAluno',
+export const setExpandirLinhaAusenciaEstudante = payload => ({
+  type: '@encaminhamentoAEE/setExpandirLinhaAusenciaEstudante',
   payload,
 });
 export const setDadosModalAnotacao = payload => ({
