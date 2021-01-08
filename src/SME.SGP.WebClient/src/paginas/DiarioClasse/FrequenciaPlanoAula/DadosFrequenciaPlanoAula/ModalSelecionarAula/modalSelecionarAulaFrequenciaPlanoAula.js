@@ -2,7 +2,7 @@ import { Form, Formik } from 'formik';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import * as Yup from 'yup';
-import { ModalConteudoHtml, RadioGroupButton } from '~/componentes';
+import { ModalConteudoHtml, SelectComponent } from '~/componentes';
 
 const ModalSelecionarAulaFrequenciaPlanoAula = props => {
   const {
@@ -12,27 +12,26 @@ const ModalSelecionarAulaFrequenciaPlanoAula = props => {
     onClickSelecionarAula,
   } = props;
 
-  const opcoesTipoAula = [
-    { label: 'Aula do titular', value: '1' },
-    { label: ' Aula CJ', value: '2' },
-  ];
+  const opcoesAulas = aulasParaSelecionar.sort((a, b) => a.aulaCJ ? 1:-1)
+    .map(item => {
+    const lbl = (item.aulaCJ ? 'Aula CJ - ' : 'Aula normal - ') + item.criadoPor + ` (${item.professorRf})`;
+    const aula = {label: lbl, value: item.aulaId};
+    return aula;
+  });
+
   const [refForm, setRefForm] = useState({});
   const inicial = {
-    tipoAula: '',
+    aula: '',
   };
   const [valoresIniciais, setValoresIniciais] = useState(inicial);
 
   const validacoes = Yup.object({
-    tipoAula: Yup.string().required('Campo obrigatório'),
+    aula: Yup.string().required('Campo obrigatório'),
   });
 
   const onClickConfirmar = valores => {
     let aula = null;
-    if (valores.tipoAula === '2') {
-      aula = aulasParaSelecionar.find(item => item.aulaCJ === true);
-    } else {
-      aula = aulasParaSelecionar.find(item => item.aulaCJ === false);
-    }
+    aula = aulasParaSelecionar.find(item => String(item.aulaId) === valores.aula);    
     onClickSelecionarAula(aula);
     refForm.resetForm();
     setValoresIniciais(inicial);
@@ -90,12 +89,15 @@ const ModalSelecionarAulaFrequenciaPlanoAula = props => {
                   qual aula você deseja visualizar o diário de bordo.
                 </p>
               </div>
-              <div className="col-md-12">
-                <RadioGroupButton
-                  id="tipo-aula"
-                  opcoes={opcoesTipoAula}
-                  name="tipoAula"
-                  form={form}
+              <div className="col-md-12">                
+                <SelectComponent
+                id="aula"
+                lista={opcoesAulas}
+                placeholder="Selecione uma aula"
+                valueText="label"
+                valueOption="value"
+                name="aula"
+                form={form}
                 />
               </div>
             </div>
