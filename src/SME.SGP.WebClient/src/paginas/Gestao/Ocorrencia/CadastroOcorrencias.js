@@ -49,8 +49,9 @@ const CadastroOcorrencias = ({ match }) => {
   const [valoresIniciais, setValoresIniciais] = useState({
     dataOcorrencia: window.moment(),
     descricao: '',
-    ocorrenciaTipoId: 0,
+    ocorrenciaTipoId: '',
     titulo: '',
+    alunos: [],
   });
   const [auditoria, setAuditoria] = useState();
   const [idOcorrencia, setIdOcorrencia] = useState();
@@ -194,25 +195,40 @@ const CadastroOcorrencias = ({ match }) => {
     }
   };
 
+  const confirmarAntesDeVoltar = async form => {
+    const confirmado = await confirmar(
+      'Atenção',
+      'Suas alterações não foram salvas, deseja salvar agora?'
+    );
+    if (confirmado) {
+      validaAntesDoSubmit(form);
+    } else {
+      history.push(RotasDto.OCORRENCIAS);
+    }
+  };
+
   const onClickVoltar = form => {
     let temValorAlterado = false;
+    if (idOcorrencia) {
+      valoresIniciais.alunos.forEach(aluno => {
+        const alunoExistente = criancasSelecionadas.find(
+          c => c.codigoEOL === aluno.codigoAluno
+        );
+        if (!alunoExistente) {
+          confirmarAntesDeVoltar(form);
+        }
+      });
+    }
+    if (criancasSelecionadas.length !== valoresIniciais.alunos.length) {
+      confirmarAntesDeVoltar(form);
+      return;
+    }
     if (form.values) {
       const campos = Object.keys(form.values);
       campos.forEach(async key => {
-        if (
-          criancasSelecionadas.length > 0 ||
-          valoresIniciais[key] !== form.values[key]
-        ) {
+        if (valoresIniciais[key] !== form.values[key]) {
           temValorAlterado = true;
-          const confirmado = await confirmar(
-            'Atenção',
-            'Suas alterações não foram salvas, deseja salvar agora?'
-          );
-          if (confirmado) {
-            validaAntesDoSubmit(form);
-          } else {
-            history.push(RotasDto.OCORRENCIAS);
-          }
+          confirmarAntesDeVoltar(form);
         }
       });
     }
