@@ -202,7 +202,7 @@ const RelatorioPlanejamentoDiario = () => {
 
   useEffect(() => {
     validarValorPadraoAnoLetivo(listaAnosLetivo);
-  }, [consideraHistorico, anoAtual]);
+  }, [consideraHistorico, listaAnosLetivo]);
 
   const obterUes = useCallback(async () => {
     if (codigoDre) {
@@ -416,21 +416,9 @@ const RelatorioPlanejamentoDiario = () => {
 
   const obterAnosLetivos = useCallback(async () => {
     setExibirLoader(true);
-    let anosLetivos = [];
 
-    const anosLetivoComHistorico = await FiltroHelper.obterAnosLetivos({
-      consideraHistorico: true,
-    });
-    const anosLetivoSemHistorico = await FiltroHelper.obterAnosLetivos({
-      consideraHistorico: false,
-    });
-
-    anosLetivos = anosLetivos.concat(anosLetivoComHistorico);
-
-    anosLetivoSemHistorico.forEach(ano => {
-      if (!anosLetivoComHistorico.find(a => a.valor === ano.valor)) {
-        anosLetivos.push(ano);
-      }
+    const anosLetivos = await FiltroHelper.obterAnosLetivos({
+      consideraHistorico,
     });
 
     if (!anosLetivos.length) {
@@ -444,11 +432,11 @@ const RelatorioPlanejamentoDiario = () => {
 
     setListaAnosLetivo(anosLetivos);
     setExibirLoader(false);
-  }, [anoAtual]);
+  }, [anoAtual, consideraHistorico]);
 
   useEffect(() => {
     obterAnosLetivos();
-  }, [obterAnosLetivos]);
+  }, [obterAnosLetivos, consideraHistorico]);
 
   const obterSemestres = useCallback(async () => {
     setExibirLoader(true);
@@ -508,7 +496,7 @@ const RelatorioPlanejamentoDiario = () => {
       codigoTurma: turmaId,
       listarDataFutura,
       exibirDetalhamento,
-      componenteCurricular: componenteCurricularId
+      componenteCurricular: componenteCurricularId,
     };
 
     setExibirLoader(true);
@@ -585,7 +573,7 @@ const RelatorioPlanejamentoDiario = () => {
                 lista={listaAnosLetivo}
                 valueOption="valor"
                 valueText="desc"
-                disabled={!consideraHistorico || listaAnosLetivo?.length === 1}
+                disabled={listaAnosLetivo?.length === 1}
                 onChange={onChangeAnoLetivo}
                 valueSelect={anoLetivo}
                 placeholder="Ano letivo"
