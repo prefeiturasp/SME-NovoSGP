@@ -82,5 +82,13 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(filtro));
         }
+
+        [HttpDelete("{encaminhamentoAeeId}")]
+        [ProducesResponseType(typeof(EncaminhamentoAEEDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ExcluirEncaminhamento(long encaminhamentoAeeId, [FromServices] IExcluirEncaminhamentoAEEUseCase useCase)
+        {
+            return Ok(await useCase.Executar(encaminhamentoAeeId));
+        }
     }
 }

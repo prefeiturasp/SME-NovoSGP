@@ -8,10 +8,10 @@ namespace SME.SGP.Dominio.Enumerados
     public enum SituacaoAEE
     {
         [Display(Name = "Rascunho")]
-        rascunho = 1,
+        Rascunho = 1,
         [Display(Name = "Encaminhado")]
-        encaminhado = 2,
+        Encaminhado = 2,
         [Display(Name = "Finalizado")]
-        finalizado = 3,
+        Finalizado = 3,
     }
 }
