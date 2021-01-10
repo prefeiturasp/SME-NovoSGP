@@ -95,5 +95,11 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine("and ea.situacao = @situacao");
         }
 
+        public async Task<SituacaoAEE> ObterSituacaoEncaminhamentoAEE(long encaminhamentoAEEId)
+        {
+            var query = "select situacao from encaminhamento_aee ea where id = @encaminhamentoAEEId";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<SituacaoAEE>(query, new { encaminhamentoAEEId });
+        }
     }
 }
