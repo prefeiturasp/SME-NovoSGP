@@ -59,7 +59,7 @@ const EncaminhamentoAEELista = () => {
   const colunas = [
     {
       title: 'Nº',
-      dataIndex: 'numeroChamada',
+      dataIndex: 'numero',
     },
     {
       title: 'Nome',
@@ -74,6 +74,31 @@ const EncaminhamentoAEELista = () => {
       dataIndex: 'situacao',
     },
   ];
+
+  const filtrar = (dre, ue, turma, aluno, situa) => {
+    if (anoLetivo && dre && listaDres?.length) {
+      const dreSelecionada = listaDres.find(
+        item => String(item.valor) === String(dre)
+      );
+
+      const ueSelecionada = listaUes.find(
+        item => String(item.valor) === String(ue)
+      );
+
+      const turmaSelecionada = listaTurmas.find(
+        item => String(item.codigo) === String(turma)
+      );
+
+      const params = {
+        dreId: dreSelecionada ? dreSelecionada.id : '',
+        ueId: ueSelecionada ? ueSelecionada.id : '',
+        turmaId: turmaSelecionada ? turmaSelecionada.id : '',
+        alunoCodigo: aluno,
+        situacao: situa,
+      };
+      setFiltro({ ...params });
+    }
+  };
 
   const validarValorPadraoAnoLetivo = lista => {
     if (lista?.length) {
@@ -90,23 +115,15 @@ const EncaminhamentoAEELista = () => {
     }
   };
 
+  useEffect(() => {
+    validarValorPadraoAnoLetivo(listaAnosLetivo);
+  }, [consideraHistorico, listaAnosLetivo]);
+
   const obterAnosLetivos = useCallback(async () => {
     setCarregandoAnos(true);
-    let anosLetivos = [];
 
-    const anosLetivoComHistorico = await FiltroHelper.obterAnosLetivos({
-      consideraHistorico: true,
-    });
-    const anosLetivoSemHistorico = await FiltroHelper.obterAnosLetivos({
-      consideraHistorico: false,
-    });
-
-    anosLetivos = anosLetivos.concat(anosLetivoComHistorico);
-
-    anosLetivoSemHistorico.forEach(ano => {
-      if (!anosLetivoComHistorico.find(a => a.valor === ano.valor)) {
-        anosLetivos.push(ano);
-      }
+    const anosLetivos = await FiltroHelper.obterAnosLetivos({
+      consideraHistorico,
     });
 
     if (!anosLetivos.length) {
@@ -120,7 +137,11 @@ const EncaminhamentoAEELista = () => {
 
     setListaAnosLetivo(anosLetivos);
     setCarregandoAnos(false);
-  }, [anoAtual]);
+  }, [anoAtual, consideraHistorico]);
+
+  useEffect(() => {
+    obterAnosLetivos();
+  }, [obterAnosLetivos, consideraHistorico]);
 
   const obterSituacoes = useCallback(async () => {
     setCarregandoSituacao(true);
@@ -135,14 +156,13 @@ const EncaminhamentoAEELista = () => {
   }, []);
 
   useEffect(() => {
-    obterAnosLetivos();
     obterSituacoes();
-  }, [obterAnosLetivos, obterSituacoes]);
+  }, [obterSituacoes]);
 
   const [carregandoUes, setCarregandoUes] = useState(false);
 
   const obterUes = useCallback(async () => {
-    if (dreId) {
+    if (anoLetivo && dreId) {
       setCarregandoUes(true);
       const resposta = await AbrangenciaServico.buscarUes(
         dreId,
@@ -156,6 +176,7 @@ const EncaminhamentoAEELista = () => {
         const lista = resposta.data.map(item => ({
           desc: item.nome,
           valor: String(item.codigo),
+          id: item.id,
         }));
 
         if (lista?.length === 1) {
@@ -186,6 +207,8 @@ const EncaminhamentoAEELista = () => {
 
     setListaTurmas([]);
     setTurmaId();
+
+    filtrar(dre, ueId, turmaId, alunoLocalizadorSelecionado, situacao);
   };
 
   const obterDres = useCallback(async () => {
@@ -203,6 +226,7 @@ const EncaminhamentoAEELista = () => {
             desc: item.nome,
             valor: String(item.codigo),
             abrev: item.abreviacao,
+            id: item.id,
           }))
           .sort(FiltroHelper.ordenarLista('desc'));
         setListaDres(lista);
@@ -224,7 +248,7 @@ const EncaminhamentoAEELista = () => {
   }, [anoLetivo, obterDres]);
 
   const obterTurmas = useCallback(async () => {
-    if (ueId) {
+    if (anoLetivo && ueId) {
       setCarregandoTurmas(true);
       const resposta = await AbrangenciaServico.buscarTurmas(
         ueId,
@@ -268,30 +292,50 @@ const EncaminhamentoAEELista = () => {
 
     setListaTurmas([]);
     setTurmaId();
+
+    filtrar(dreId, ue, turmaId, alunoLocalizadorSelecionado, situacao);
+  };
+
+  const limparFiltrosSelecionados = () => {
+    setDreId();
+    setListaDres([]);
+
+    setUeId();
+    setListaUes([]);
+
+    setListaTurmas([]);
+    setTurmaId();
+
+    setAlunoLocalizadorSelecionado();
+
+    setSituacao();
   };
 
   const onChangeAnoLetivo = ano => {
     setAnoLetivo(ano);
 
-    setListaTurmas([]);
-    setTurmaId();
+    limparFiltrosSelecionados();
   };
 
   const onChangeTurma = valor => {
     setTurmaId(valor);
     setAlunoLocalizadorSelecionado();
+    filtrar(dreId, ueId, valor, '', situacao);
   };
 
   const onChangeLocalizadorEstudante = aluno => {
     if (aluno?.alunoCodigo && aluno?.alunoNome) {
-      setAlunoLocalizadorSelecionado(aluno);
+      setAlunoLocalizadorSelecionado(aluno?.alunoCodigo);
+      filtrar(dreId, ueId, turmaId, aluno?.alunoCodigo, situacao);
     } else {
       setAlunoLocalizadorSelecionado();
+      filtrar(dreId, ueId, turmaId, '', situacao);
     }
   };
 
   const onChangeSituacao = valor => {
     setSituacao(valor);
+    filtrar(dreId, ueId, turmaId, alunoLocalizadorSelecionado, valor);
   };
 
   const onClickEditar = items => {
@@ -299,6 +343,7 @@ const EncaminhamentoAEELista = () => {
   };
 
   const onCheckedConsideraHistorico = e => {
+    limparFiltrosSelecionados();
     setConsideraHistorico(e.target.checked);
   };
 
@@ -424,18 +469,21 @@ const EncaminhamentoAEELista = () => {
                 />
               </Loader>
             </div>
-            <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
-              <ListaPaginada
-                url="v1/listapaginada"
-                id="lista-alunos"
-                idLinha="codigo"
-                colunaChave="codigo"
-                colunas={colunas}
-                filtro={filtro}
-                temPaginacao
-                onClick={onClickEditar}
-              />
-            </div>
+            {anoLetivo && dreId && listaDres?.length ? (
+              <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
+                <ListaPaginada
+                  url="v1/encaminhamento-aee"
+                  id="lista-alunos"
+                  colunas={colunas}
+                  filtro={filtro}
+                  filtroEhValido={!!(anoLetivo && dreId && listaDres?.length)}
+                  temPaginacao
+                  onClick={onClickEditar}
+                />
+              </div>
+            ) : (
+              ''
+            )}
           </div>
         </div>
       </Card>
