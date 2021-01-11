@@ -18,6 +18,7 @@ const LocalizadorEstudante = props => {
     anoLetivo,
     codigoTurma,
     exibirCodigoEOL,
+    valorInicialAlunoCodigo,
   } = props;
 
   const [dataSource, setDataSource] = useState([]);
@@ -26,6 +27,7 @@ const LocalizadorEstudante = props => {
     codigo: false,
     nome: false,
   });
+  const [timeoutBuscarPorCodigo, setTimeoutBuscarPorCodigo] = useState('');
 
   useEffect(() => {
     setPessoaSelecionada({
@@ -80,20 +82,23 @@ const LocalizadorEstudante = props => {
   };
 
   const onBuscarPorCodigo = async codigo => {
-    const retorno = await service
-      .buscarPorCodigo({
-        codigo: codigo.codigo,
-        codigoUe: ueId,
-        anoLetivo,
-        codigoTurma,
-      })
-      .catch(e => {
-        if (e?.response?.status === 601) {
-          erro('Estudante não encontrado no EOL');
-        } else {
-          erros(e);
-        }
-      });
+    const params = {
+      codigo: codigo.codigo,
+      codigoUe: ueId,
+      anoLetivo,
+    };
+
+    if (codigoTurma) {
+      params.codigoTurma = codigoTurma;
+    }
+
+    const retorno = await service.buscarPorCodigo(params).catch(e => {
+      if (e?.response?.status === 601) {
+        erro('Estudante não encontrado no EOL');
+      } else {
+        erros(e);
+      }
+    });
 
     if (retorno?.data?.items?.length > 0) {
       const { codigo: cAluno, nome } = retorno.data.items[0];
@@ -111,7 +116,23 @@ const LocalizadorEstudante = props => {
         ...estado,
         nome: true,
       }));
+      onChange({
+        alunoCodigo: parseInt(cAluno, 10),
+        alunoNome: nome,
+      });
     }
+  };
+
+  const validaAntesBuscarPorCodigo = valor => {
+    if (timeoutBuscarPorCodigo) {
+      clearTimeout(timeoutBuscarPorCodigo);
+    }
+
+    const timeout = setTimeout(() => {
+      onBuscarPorCodigo(valor);
+    }, 500);
+
+    setTimeoutBuscarPorCodigo(timeout);
   };
 
   const onChangeCodigo = valor => {
@@ -152,6 +173,16 @@ const LocalizadorEstudante = props => {
     }
   }, [pessoaSelecionada]);
 
+  useEffect(() => {
+    if (
+      valorInicialAlunoCodigo &&
+      !pessoaSelecionada?.alunoCodigo &&
+      !dataSource?.length
+    ) {
+      validaAntesBuscarPorCodigo({ codigo: valorInicialAlunoCodigo });
+    }
+  }, [valorInicialAlunoCodigo, dataSource, pessoaSelecionada]);
+
   return (
     <React.Fragment>
       <div
@@ -175,7 +206,7 @@ const LocalizadorEstudante = props => {
           {showLabel && <Label text="Código EOL" control="alunoCodigo" />}
           <InputCodigo
             pessoaSelecionada={pessoaSelecionada}
-            onSelect={onBuscarPorCodigo}
+            onSelect={validaAntesBuscarPorCodigo}
             onChange={onChangeCodigo}
             name="alunoCodigo"
             desabilitado={desabilitado || desabilitarCampo.codigo}
@@ -196,6 +227,10 @@ LocalizadorEstudante.propTypes = {
   anoLetivo: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   codigoTurma: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   exibirCodigoEOL: PropTypes.bool,
+  valorInicialAlunoCodigo: PropTypes.oneOfType([
+    PropTypes.number,
+    PropTypes.string,
+  ]),
 };
 
 LocalizadorEstudante.defaultProps = {
@@ -206,6 +241,7 @@ LocalizadorEstudante.defaultProps = {
   anoLetivo: '',
   codigoTurma: '',
   exibirCodigoEOL: true,
+  valorInicialAlunoCodigo: '',
 };
 
 export default LocalizadorEstudante;
