@@ -33,6 +33,11 @@ class ServicoEncaminhamentoAEE {
       dispatch(setExibirModalAviso(true));
     }
   };
+
+  obterDadosEstudante = (codigoAluno, anoLetivo) => {
+    const url = `v1/estudante/${codigoAluno}/anosLetivos/${anoLetivo}`;
+    return api.post(url);
+  };
 }
 
 export default new ServicoEncaminhamentoAEE();
