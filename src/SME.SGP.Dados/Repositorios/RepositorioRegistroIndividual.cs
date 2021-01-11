@@ -90,5 +90,23 @@ namespace SME.SGP.Dados.Repositorios
                 TotalPaginas = (int)Math.Ceiling((double)totalRegistrosDaQuery / paginacao.QuantidadeRegistros)
             };
         }
+
+        public async Task<IEnumerable<UltimoRegistroIndividualAlunoTurmaDto>> ObterUltimosRegistrosPorAlunoTurma(long turmaId)
+        {
+            const string query = @"select  
+                            turma_id AS TurmaId,
+                            aluno_codigo AS CodigoAluno,
+                            max(data_registro) AS DataRegistro
+                        from 
+                            public.registro_individual 
+                        where 
+                            turma_id = @turmaId
+                        and 
+                            not excluido
+                        group by 
+	                        turma_id , aluno_codigo ";
+
+            return await database.Conexao.QueryAsync<UltimoRegistroIndividualAlunoTurmaDto>(query, new { turmaId });
+        }
     }
 }

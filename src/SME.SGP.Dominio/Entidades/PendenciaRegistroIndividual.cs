@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace SME.SGP.Dominio.Entidades
+namespace SME.SGP.Dominio
 {
     public class PendenciaRegistroIndividual : EntidadeBase
     {
