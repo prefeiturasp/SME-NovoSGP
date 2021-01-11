@@ -13,7 +13,8 @@ export const IconeEstilizado = styled.i`
 
 export const CollapseEstilizado = styled(Collapse)`
   box-shadow: 0px 0px 4px -2px grey;
-  //margin: 0.4rem;
+  ${({ corFundo }) => corFundo && `background: ${Base.Branco}`}
+  ${({ altura }) => altura && `background: ${altura}px`}
 `;
 
 export const PainelEstilizado = styled(Collapse.Panel)`
@@ -27,7 +28,9 @@ export const PainelEstilizado = styled(Collapse.Panel)`
   color: ${Base.CinzaMako};
 
   .ant-collapse-header {
-    padding: 18px 40px 18px 18px !important;
+    ${({ espacoPadrao }) =>
+      !espacoPadrao && `padding: 18px 40px 18px 18px !important;`}
+
     ${props => props.temBorda && `border-radius: 4px !important`};
     ${props =>
       props.temBorda &&
@@ -39,7 +42,7 @@ export const PainelEstilizado = styled(Collapse.Panel)`
   &.ant-collapse-item-active {
     .ant-collapse-header {
       box-shadow: 0px 3px 4px -3px #42474a94;
-      padding: 18px 16px;
+      ${({ espacoPadrao }) => !espacoPadrao && ` padding: 18px 16px;`}
       padding-right: 40px;
     }
   }
