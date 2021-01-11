@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import shortid from 'shortid';
 
 import { useDispatch, useSelector } from 'react-redux';
@@ -61,11 +61,22 @@ const NovoRegistroIndividual = () => {
   const alunoCodigo = dadosAlunoObjectCard?.codigoEOL;
   const dataAtual = window.moment();
 
-  const ehMesmoAluno =
-    String(alunoCodigo) === String(dadosRegistroAtual?.alunoCodigo);
-  const registro = ehMesmoAluno ? dadosRegistroAtual?.registro : '';
-  const idSecao = ehMesmoAluno ? dadosRegistroAtual?.id : '';
-  const auditoria = ehMesmoAluno ? auditoriaNovoRegistroIndividual : null;
+  const ehMesmoAluno = useMemo(
+    () => String(alunoCodigo) === String(dadosRegistroAtual?.alunoCodigo),
+    [alunoCodigo, dadosRegistroAtual]
+  );
+  const registro = useMemo(
+    () => (ehMesmoAluno ? dadosRegistroAtual?.registro : ''),
+    [dadosRegistroAtual, ehMesmoAluno]
+  );
+  const idSecao = useMemo(() => (ehMesmoAluno ? dadosRegistroAtual?.id : ''), [
+    dadosRegistroAtual,
+    ehMesmoAluno,
+  ]);
+  const auditoria = useMemo(
+    () => (ehMesmoAluno ? auditoriaNovoRegistroIndividual : null),
+    [auditoriaNovoRegistroIndividual, ehMesmoAluno]
+  );
 
   const dispatch = useDispatch();
 

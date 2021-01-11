@@ -159,7 +159,7 @@ export default function RegistroIndividual(state = inicial, action) {
           ...draft,
           dadosRegistroAtual: {
             ...state.dadosRegistroAtual,
-            id: action.payload,
+            ...action.payload,
           },
         };
       }

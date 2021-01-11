@@ -102,7 +102,14 @@ class MetodosRegistroIndividual {
       this.resetarInfomacoes(ehDataAnterior);
       if (!ehDataAnterior) {
         this.dispatch(setAuditoriaNovoRegistro(retorno.data));
-        this.dispatch(atualizaDadosRegistroAtual(retorno.data.id));
+        this.dispatch(
+          atualizaDadosRegistroAtual({
+            id: retorno.data.id,
+            registro,
+            alunoCodigo,
+            data,
+          })
+        );
       }
     }
   };
@@ -137,6 +144,14 @@ class MetodosRegistroIndividual {
       const dataAtual = window.moment(window.moment().format('YYYY-MM-DD'));
       const ehDataAnterior = window.moment(dataAtual).isAfter(data);
       this.resetarInfomacoes(ehDataAnterior);
+      this.dispatch(
+        atualizaDadosRegistroAtual({
+          id: retorno.data.id,
+          registro,
+          alunoCodigo,
+          data,
+        })
+      );
     }
   };
 }

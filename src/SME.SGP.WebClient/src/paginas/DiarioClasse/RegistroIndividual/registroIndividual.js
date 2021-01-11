@@ -114,6 +114,9 @@ const RegistroIndividual = () => {
   const resetarTela = useCallback(() => {
     dispatch(setRegistroIndividualEmEdicao(false));
     dispatch(setAuditoriaNovoRegistro());
+    dispatch(setDadosAlunoObjectCard({}));
+    setListaComponenteCurricular([]);
+    setComponenteCurricularSelecionado(undefined);
   }, [dispatch]);
 
   useEffect(() => {
@@ -121,9 +124,6 @@ const RegistroIndividual = () => {
       obterComponentesCurriculares();
       return;
     }
-
-    setListaComponenteCurricular([]);
-    setComponenteCurricularSelecionado(undefined);
     resetarTela();
   }, [
     turmaSelecionada,
@@ -157,6 +157,9 @@ const RegistroIndividual = () => {
 
   useEffect(() => {
     validaSomenteConsulta();
+    return () => {
+      resetarTela();
+    };
   }, [turmaSelecionada, validaSomenteConsulta]);
 
   return (
