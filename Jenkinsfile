@@ -64,13 +64,12 @@ pipeline {
        }
        
         stage('Functional regression tests') {
-            agent {
-                   label 'master'
-                 } 
+             
             agent { docker {
                 image 'ppodgorsek/robot-framework:latest'
                 args '--shm-size=1g -u root' }
             }
+            
             environment {
                 ROBOT_TESTS_DIR = "$WORKSPACE/teste"
                 ROBOT_REPORTS_DIR = "$WORKSPACE/robot-reports"
