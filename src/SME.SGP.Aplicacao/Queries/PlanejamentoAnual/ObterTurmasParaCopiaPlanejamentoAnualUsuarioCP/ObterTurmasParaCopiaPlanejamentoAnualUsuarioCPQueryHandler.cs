@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<TurmaParaCopiaPlanoAnualDto>> Handle(ObterTurmasParaCopiaPlanejamentoAnualUsuarioCPQuery request, CancellationToken cancellationToken)
         {
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(request.TurmaId.ToString()));
-            var turmas = await repositorioPlanejamentoAnual.ObterTurmasParaCopiaPlanejamentoAnualCP(turma, turma.Ano, request.EnsinoEspecial);
+            var turmas = await repositorioPlanejamentoAnual.ObterTurmasParaCopiaPlanejamentoAnualCP(turma, turma.Ano, request.EnsinoEspecial, request.ConsideraHistorico);
 
             return turmas;
         }

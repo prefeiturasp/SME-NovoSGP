@@ -177,14 +177,14 @@ namespace SME.SGP.Aplicacao
             return listaPlanoAnual.OrderBy(c => c.Bimestre);
         }
 
-        public async Task<IEnumerable<TurmaParaCopiaPlanoAnualDto>> ObterTurmasParaCopia(int turmaId, long componenteCurricular)
+        public async Task<IEnumerable<TurmaParaCopiaPlanoAnualDto>> ObterTurmasParaCopia(int turmaId, long componenteCurricular, bool consideraHistorico)
         {
             var codigoRfUsuarioLogado = servicoUsuario.ObterRf();
             var turmasEOL = await servicoEOL.ObterTurmasParaCopiaPlanoAnual(codigoRfUsuarioLogado, componenteCurricular, turmaId);
             if (turmasEOL != null && turmasEOL.Any())
             {
                 var idsTurmas = turmasEOL.Select(c => c.TurmaId.ToString());                
-                turmasEOL = await mediator.Send(new ValidaSeTurmasPossuemPlanoAnualQuery(idsTurmas.ToArray()));
+                turmasEOL = await mediator.Send(new ValidaSeTurmasPossuemPlanoAnualQuery(idsTurmas.ToArray(), consideraHistorico));
             }
             return turmasEOL;
         }

@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<IEnumerable<TurmaParaCopiaPlanoAnualDto>> Handle(ValidaSeTurmasPossuemPlanoAnualQuery request, CancellationToken cancellationToken)
         {
-            var TurmaParaCopiaPlanoAnual = await repositorioPlanejamentoAnual.ValidaSeTurmasPossuemPlanoAnual(request.turmasId);
+            var TurmaParaCopiaPlanoAnual = await repositorioPlanejamentoAnual.ValidaSeTurmasPossuemPlanoAnual(request.turmasId, request.ConsideraHistorico);
 
             return TurmaParaCopiaPlanoAnual;
         }
