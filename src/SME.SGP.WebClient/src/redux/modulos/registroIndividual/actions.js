@@ -78,8 +78,8 @@ export const alterarRegistroAnterior = payload => ({
   payload,
 });
 
-export const atualizaDadosParaSalvarNovoRegistro = payload => ({
-  type: '@registroIndividual/atualizaDadosParaSalvarNovoRegistro',
+export const atualizaDadosRegistroAtual = payload => ({
+  type: '@registroIndividual/atualizaDadosRegistroAtual',
   payload,
 });
 
@@ -95,5 +95,10 @@ export const setExibirLoaderConteudoRegistroAnteriores = payload => ({
 
 export const setRecolherRegistrosAnteriores = payload => ({
   type: '@registroIndividual/setRecolherRegistrosAnteriores',
+  payload,
+});
+
+export const setDadosRegistroAtual = payload => ({
+  type: '@registroIndividual/setDadosRegistroAtual',
   payload,
 });
