@@ -18,12 +18,12 @@ namespace SME.SGP.Aplicacao
 
             var alunoReduzido = new AlunoReduzidoDto()
             {
-                NomeAluno = !string.IsNullOrEmpty(alunoPorTurmaResposta.NomeAluno) ? alunoPorTurmaResposta.NomeAluno : "",
+                Nome = !string.IsNullOrEmpty(alunoPorTurmaResposta.NomeAluno) ? alunoPorTurmaResposta.NomeAluno : alunoPorTurmaResposta.NomeSocialAluno,
                 NumeroAlunoChamada = alunoPorTurmaResposta.NumeroAlunoChamada,
-                DataNascimento = alunoPorTurmaResposta.DataNascimento.ToString("dd/MM/yyyy"),
+                DataNascimento = alunoPorTurmaResposta.DataNascimento,
                 DataSituacao = alunoPorTurmaResposta.DataSituacao,
                 CodigoAluno = alunoPorTurmaResposta.CodigoAluno,
-                SituacaoMatricula = $@"{alunoPorTurmaResposta.SituacaoMatricula} em {alunoPorTurmaResposta.DataSituacao.ToString("dd/MM/yyyy")}",
+                Situacao = alunoPorTurmaResposta.SituacaoMatricula,                
                 TurmaEscola = await OberterNomeTurmaFormatado(alunoPorTurmaResposta.CodigoTurma)
             };
 
