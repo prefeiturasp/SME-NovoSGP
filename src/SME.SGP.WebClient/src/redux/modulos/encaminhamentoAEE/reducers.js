@@ -1,9 +1,6 @@
 import produce from 'immer';
 
 const inicial = {
-  expandirLinhaAusenciaEstudante: [],
-  dadosModalAnotacao: null,
-  exibirModalAnotacao: false,
   dadosEstudanteObjectCardEncaminhamento: {
     nome: 'Estudante mock',
     numeroChamada: 1,
@@ -13,6 +10,10 @@ const inicial = {
     dataSituacao: new Date(),
     frequencia: '88%',
   },
+  expandirLinhaAusenciaEstudante: [],
+  dadosModalAnotacao: null,
+  exibirModalAnotacao: false,
+  exibirModalAviso: false,
 };
 
 export default function EncaminhamentoAEE(state = inicial, action) {
@@ -40,6 +41,18 @@ export default function EncaminhamentoAEE(state = inicial, action) {
         return {
           ...draft,
           dadosEstudanteObjectCardEncaminhamento: action.payload,
+        };
+      }
+      case '@encaminhamentoAEE/setExibirModalAviso': {
+        return {
+          ...draft,
+          exibirModalAviso: action.payload,
+        };
+      }
+      case '@encaminhamentoAEE/setDadosModalAviso': {
+        return {
+          ...draft,
+          dadosModalAviso: action.payload,
         };
       }
 

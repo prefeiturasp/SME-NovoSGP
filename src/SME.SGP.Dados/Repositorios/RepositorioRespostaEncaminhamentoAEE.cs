@@ -14,6 +14,23 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
+        public async Task<bool> RemoverPorArquivoId(long arquivoId)
+        {
+			await Task.CompletedTask;
+
+			var sql =
+				$@"
+					delete from resposta_encaminhamento_aee 
+					where arquivo_id = @arquivoId 
+                ";
+
+			return (
+				database
+				.Conexao
+				.Execute(sql, new { arquivoId })
+				) > 0;
+    		}
+        
         public async Task<IEnumerable<long>> ObterArquivosPorQuestaoId(long questaoEncaminhamentoAEEId)
         {
             var query = "select arquivo_id from resposta_encaminhamento_aee where questao_encaminhamento_id = @questaoEncaminhamentoAEEId and arquivo_id is not null";
