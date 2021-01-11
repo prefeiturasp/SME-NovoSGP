@@ -7,7 +7,7 @@ import { AbrangenciaServico, erros } from '~/servicos';
 import Button from '~/componentes/button';
 import { Colors } from '~/componentes/colors';
 
-const LocalizarEstudanteDados = () => {
+const SecaoLocalizarEstudanteDados = () => {
   // const dispatch = useDispatch();
 
   const codigosAlunosSelecionados = useSelector(
@@ -286,4 +286,4 @@ const LocalizarEstudanteDados = () => {
   );
 };
 
-export default LocalizarEstudanteDados;
+export default SecaoLocalizarEstudanteDados;
