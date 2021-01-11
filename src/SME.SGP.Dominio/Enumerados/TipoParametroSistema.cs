@@ -89,6 +89,9 @@
         DiasNotificacaoPeriodoFechamentoInicio = 43,
         DiasNotificacaoPeriodoFechamentoFim = 44,
 
+        // Pendência por ausência de Registro Individual
+        PendenciaPorAusenciaDeRegistroIndividual = 48,
+
         //Sistema
         HabilitarServicosEmBackground = 100
     }
