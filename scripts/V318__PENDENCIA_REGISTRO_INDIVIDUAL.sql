@@ -6,7 +6,6 @@ CREATE TABLE IF NOT EXISTS public.pendencia_registro_individual(
 	criado_por varchar(200) NOT NULL,
 	criado_rf varchar(200) NOT NULL,
 	criado_em timestamp NOT NULL,
-	titulo varchar(50) NOT NULL,
 	pendencia_id int8 NOT NULL,
 	turma_id int8 NOT NULL,
 	CONSTRAINT pendencia_registro_individual_pk PRIMARY KEY (id),

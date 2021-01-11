@@ -39,7 +39,7 @@ namespace SME.SGP.Dados.Repositorios
 	                                on pri.id = pria.pendencia_registro_individual_id
                                 where
 	                                pri.turma_id = @turmaId
-	                                and p.situacao  @situacao
+	                                and p.situacao = @situacao
 	                                and not p.excluido";
 
             PendenciaRegistroIndividual resultado = null;
