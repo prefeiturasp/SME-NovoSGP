@@ -76,14 +76,13 @@ pipeline {
           environment {
             BROWSER = 'chrome'
             SERVER = 'dev-novosgp.sme.prefeitura.sp.gov.br'
-            SGP_USER = '7944560'
-            SGP_PASS = 'Sgp@1234'
+            SGP_USER = "$SGP_TEST_USER"
+            SGP_PASS = "$SGP_TEST_PASS"
             ROBOT_TESTS_DIR = "$WORKSPACE/teste/SME.SGP.WebClient.RPA/src/"
             ROBOT_REPORTS_DIR = "$WORKSPACE/teste/SME.SGP.WebClient.RPA/reports/"
           }
           steps {
-            sh 'apk update && apk add tree && tree /opt/robotframework'
-            sh '/opt/robotframework/bin/run-tests-in-virtual-screen.sh'
+            sh "chmod -r 777 $WORKSPACE/teste && /opt/robotframework/bin/run-tests-in-virtual-screen.sh"
           }
         }
 
