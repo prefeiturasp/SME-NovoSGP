@@ -82,8 +82,9 @@ pipeline {
             ROBOT_REPORTS_DIR = "$WORKSPACE/teste/SME.SGP.WebClient.RPA/reports/"
           }
           steps {
-            sh "apk update && apk add tree && tree /opt/robotframework && tree $WORKSPACE/teste"
-            sh "chmod -R 755 $WORKSPACE/teste && /opt/robotframework/bin/run-tests-in-virtual-screen.sh"
+            sh "apk update && apk add tree && tree /opt/robotframework && tree $WORKSPACE/teste/SME.SGP.WebClient.RPA/src/"
+            sh "chmod -R 755 $WORKSPACE/teste"
+            sh "xvfb-run --server-args='-screen 0 1920x1080x32 -ac' robot --outputDir $WORKSPACE/teste/SME.SGP.WebClient.RPA/reports/ ${ROBOT_OPTIONS} $WORKSPACE/teste/SME.SGP.WebClient.RPA/src"
           }
         }
 
