@@ -55,7 +55,7 @@ namespace SME.SGP.Aplicacao
                     Situacao = encaminhamento.Situacao.Name(),
                     Turma = $"{encaminhamento.TurmaModalidade.ShortName()} - {encaminhamento.TurmaNome}",
                     Numero = aluno?.NumeroAlunoChamada ?? 0,
-                    Nome = encaminhamento.AlunoNome
+                    Nome = aluno?.NomeAluno
                 });
             }
 
