@@ -27,3 +27,8 @@ export const setDadosModalAviso = payload => ({
   type: '@encaminhamentoAEE/setDadosModalAviso',
   payload,
 });
+
+export const setDadosSecaoLocalizarEstudante = payload => ({
+  type: '@encaminhamentoAEE/setDadosSecaoLocalizarEstudante',
+  payload,
+});

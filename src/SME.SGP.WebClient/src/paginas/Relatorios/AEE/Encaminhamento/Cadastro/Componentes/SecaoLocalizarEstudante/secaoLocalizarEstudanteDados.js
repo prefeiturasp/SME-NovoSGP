@@ -1,21 +1,25 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Loader, SelectComponent } from '~/componentes';
 import { FiltroHelper } from '~/componentes-sgp';
 import LocalizadorEstudante from '~/componentes/LocalizadorEstudante';
 import { AbrangenciaServico, erros } from '~/servicos';
 import Button from '~/componentes/button';
 import { Colors } from '~/componentes/colors';
+import { setDadosSecaoLocalizarEstudante } from '~/redux/modulos/encaminhamentoAEE/actions';
 
 const SecaoLocalizarEstudanteDados = () => {
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
   const codigosAlunosSelecionados = useSelector(
     state => state.localizadorEstudante.codigosAluno
   );
 
-  const anoAtual = '2020';
-  // const [anoAtual] = useState(window.moment().format('YYYY'));
+  const dadosSecaoLocalizarEstudante = useSelector(
+    store => store.encaminhamentoAEE.dadosSecaoLocalizarEstudante
+  );
+
+  const [anoAtual] = useState(window.moment().format('YYYY'));
 
   const listaAnosLetivo = [
     {
@@ -28,32 +32,38 @@ const SecaoLocalizarEstudanteDados = () => {
   const [listaUes, setListaUes] = useState([]);
   const [listaTurmas, setListaTurmas] = useState([]);
 
-  const [dreId, setDreId] = useState();
-  const [ueId, setUeId] = useState();
-  const [turmaId, setTurmaId] = useState();
+  const [codigoDre, setCodigoDre] = useState(
+    dadosSecaoLocalizarEstudante?.codigoDre
+  );
+  const [codigoUe, setCodigoUe] = useState(
+    dadosSecaoLocalizarEstudante?.codigoUe
+  );
+  const [codigoTurma, setCodigoTurma] = useState(
+    dadosSecaoLocalizarEstudante?.codigoTurma
+  );
 
   const [
     alunoLocalizadorSelecionado,
     setAlunoLocalizadorSelecionado,
-  ] = useState();
+  ] = useState(dadosSecaoLocalizarEstudante?.codigoAluno);
 
   const [carregandoTurmas, setCarregandoTurmas] = useState(false);
   const [carregandoDres, setCarregandoDres] = useState(false);
 
   useEffect(() => {
     if (codigosAlunosSelecionados?.length > 0) {
-      setTurmaId();
+      setCodigoTurma();
     }
   }, [codigosAlunosSelecionados]);
 
   const [carregandoUes, setCarregandoUes] = useState(false);
 
   const obterUes = useCallback(async () => {
-    if (dreId) {
+    if (codigoDre) {
       setCarregandoUes(true);
       const resposta = await AbrangenciaServico.buscarUes(
-        dreId,
-        `v1/abrangencias/false/dres/${dreId}/ues?anoLetivo=${anoAtual}`,
+        codigoDre,
+        `v1/abrangencias/false/dres/${codigoDre}/ues?anoLetivo=${anoAtual}`,
         true
       )
         .catch(e => erros(e))
@@ -66,7 +76,7 @@ const SecaoLocalizarEstudanteDados = () => {
         }));
 
         if (lista?.length === 1) {
-          setUeId(lista[0].valor);
+          setCodigoUe(lista[0].valor);
         }
 
         setListaUes(lista);
@@ -74,25 +84,25 @@ const SecaoLocalizarEstudanteDados = () => {
         setListaUes([]);
       }
     }
-  }, [dreId, anoAtual]);
+  }, [codigoDre, anoAtual]);
 
   useEffect(() => {
-    if (dreId) {
+    if (codigoDre) {
       obterUes();
     } else {
-      setUeId();
+      setCodigoUe();
       setListaUes([]);
     }
-  }, [dreId, obterUes]);
+  }, [codigoDre, obterUes]);
 
   const onChangeDre = dre => {
-    setDreId(dre);
+    setCodigoDre(dre);
 
     setListaUes([]);
-    setUeId();
+    setCodigoUe();
 
     setListaTurmas([]);
-    setTurmaId();
+    setCodigoTurma();
   };
 
   const obterDres = useCallback(async () => {
@@ -115,11 +125,11 @@ const SecaoLocalizarEstudanteDados = () => {
         setListaDres(lista);
 
         if (lista && lista.length && lista.length === 1) {
-          setDreId(lista[0].valor);
+          setCodigoDre(lista[0].valor);
         }
       } else {
         setListaDres([]);
-        setDreId(undefined);
+        setCodigoDre();
       }
     }
   }, [anoAtual]);
@@ -131,10 +141,10 @@ const SecaoLocalizarEstudanteDados = () => {
   }, [anoAtual, obterDres]);
 
   const obterTurmas = useCallback(async () => {
-    if (ueId) {
+    if (codigoUe) {
       setCarregandoTurmas(true);
       const resposta = await AbrangenciaServico.buscarTurmas(
-        ueId,
+        codigoUe,
         0,
         '',
         anoAtual,
@@ -147,36 +157,36 @@ const SecaoLocalizarEstudanteDados = () => {
         setListaTurmas(resposta.data);
 
         if (resposta?.length === 1) {
-          setTurmaId(resposta[0].valor);
+          setCodigoTurma(resposta[0].valor);
         }
       }
     }
-  }, [anoAtual, ueId]);
+  }, [anoAtual, codigoUe]);
 
   useEffect(() => {
-    if (ueId) {
+    if (codigoUe) {
       obterTurmas();
     } else {
-      setTurmaId();
+      setCodigoTurma();
       setListaTurmas([]);
     }
-  }, [ueId, obterTurmas]);
+  }, [codigoUe, obterTurmas]);
 
   const onChangeUe = ue => {
-    setUeId(ue);
+    setCodigoUe(ue);
 
     setListaTurmas([]);
-    setTurmaId();
+    setCodigoTurma();
   };
 
   const onChangeTurma = valor => {
-    setTurmaId(valor);
+    setCodigoTurma(valor);
     setAlunoLocalizadorSelecionado();
   };
 
   const onChangeLocalizadorEstudante = aluno => {
     if (aluno?.alunoCodigo && aluno?.alunoNome) {
-      setAlunoLocalizadorSelecionado(aluno);
+      setAlunoLocalizadorSelecionado(aluno.alunoCodigo);
     } else {
       setAlunoLocalizadorSelecionado();
     }
@@ -185,6 +195,15 @@ const SecaoLocalizarEstudanteDados = () => {
   const onClickProximoPasso = async () => {
     // TODO
     console.log('onClickProximoPasso');
+
+    const params = {
+      anoLetivo: anoAtual,
+      codigoDre,
+      codigoUe,
+      codigoTurma,
+      codigoAluno: alunoLocalizadorSelecionado,
+    };
+    dispatch(setDadosSecaoLocalizarEstudante(params));
   };
 
   const onClickCancelar = async () => {
@@ -216,7 +235,7 @@ const SecaoLocalizarEstudanteDados = () => {
             valueText="desc"
             disabled={!anoAtual || listaDres?.length === 1}
             onChange={onChangeDre}
-            valueSelect={dreId}
+            valueSelect={codigoDre}
             placeholder="Diretoria Regional De Educação (DRE)"
           />
         </Loader>
@@ -229,9 +248,9 @@ const SecaoLocalizarEstudanteDados = () => {
             lista={listaUes}
             valueOption="valor"
             valueText="desc"
-            disabled={!dreId || listaUes?.length === 1}
+            disabled={!codigoDre || listaUes?.length === 1}
             onChange={onChangeUe}
-            valueSelect={ueId}
+            valueSelect={codigoUe}
             placeholder="Unidade Escolar (UE)"
           />
         </Loader>
@@ -245,7 +264,7 @@ const SecaoLocalizarEstudanteDados = () => {
             valueText="modalidadeTurmaNome"
             label="Turma"
             disabled={listaTurmas?.length === 1}
-            valueSelect={turmaId}
+            valueSelect={codigoTurma}
             onChange={onChangeTurma}
             placeholder="Turma"
           />
@@ -256,11 +275,12 @@ const SecaoLocalizarEstudanteDados = () => {
           <LocalizadorEstudante
             id="estudante"
             showLabel
-            ueId={ueId}
+            ueId={codigoUe}
             onChange={onChangeLocalizadorEstudante}
             anoLetivo={anoAtual}
-            desabilitado={!dreId || !ueId}
-            codigoTurma={turmaId}
+            desabilitado={!codigoDre || !codigoUe}
+            codigoTurma={codigoTurma}
+            valorInicialAlunoCodigo={alunoLocalizadorSelecionado}
           />
         </div>
       </div>
