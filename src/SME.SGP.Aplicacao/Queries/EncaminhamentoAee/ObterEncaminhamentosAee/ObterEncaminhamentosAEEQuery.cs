@@ -10,14 +10,13 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterEncaminhamentosAEEQuery : IRequest<PaginacaoResultadoDto<EncaminhamentosAEEResumoDto>>
     {
-        public ObterEncaminhamentosAEEQuery(long dreId, long ueId, long turmaId, string alunoCodigo, SituacaoAEE? situacao, TipoOrdenacaoEstudante ordenacao)
+        public ObterEncaminhamentosAEEQuery(long dreId, long ueId, long turmaId, string alunoCodigo, SituacaoAEE? situacao)
         {
             DreId = dreId;
             UeId = ueId;
             TurmaId = turmaId;
             AlunoCodigo = alunoCodigo;
             Situacao = situacao;
-            Ordenacao = ordenacao;
         }
 
         public long DreId { get; }
@@ -25,7 +24,6 @@ namespace SME.SGP.Aplicacao
         public long TurmaId { get; }
         public string AlunoCodigo { get; }
         public SituacaoAEE? Situacao { get; }
-        public TipoOrdenacaoEstudante Ordenacao { get; }
     }
 
     public class ObterEncaminhamentosAEEQueryValidator : AbstractValidator<ObterEncaminhamentosAEEQuery>

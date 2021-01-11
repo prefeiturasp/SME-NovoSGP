@@ -1,4 +1,4 @@
-﻿]using MediatR;
+﻿using MediatR;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interfaces;
@@ -28,7 +28,6 @@ namespace SME.SGP.Aplicacao
                                                                      request.TurmaId,
                                                                      request.AlunoCodigo,
                                                                      (int?)request.Situacao,
-                                                                     request.Ordenacao,
                                                                      Paginacao));
         }
 
@@ -56,7 +55,7 @@ namespace SME.SGP.Aplicacao
                     Situacao = encaminhamento.Situacao.Name(),
                     Turma = $"{encaminhamento.TurmaModalidade.ShortName()} - {encaminhamento.TurmaNome}",
                     Numero = aluno?.NumeroAlunoChamada ?? 0,
-                    Nome = aluno?.NomeAluno
+                    Nome = encaminhamento.AlunoNome
                 });
             }
 
