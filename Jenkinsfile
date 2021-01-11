@@ -67,23 +67,26 @@ pipeline {
           when {
             branch 'story/27640'
           }
-          agent { 
-            docker {
-              image 'ppodgorsek/robot-framework:latest'
-              args '--shm-size=1g -u jenkins' 
-            }
-          }
-          environment {
-            BROWSER = 'chrome'
-            SERVER = 'dev-novosgp.sme.prefeitura.sp.gov.br'
-            SGP_USER = "$SGP_TEST_USER"
-            SGP_PASS = "$SGP_TEST_PASS"
-            ROBOT_TESTS_DIR = "$WORKSPACE/teste/SME.SGP.WebClient.RPA/src/"
-            ROBOT_REPORTS_DIR = "$WORKSPACE/teste/SME.SGP.WebClient.RPA/reports/"
-          }
+          // agent { 
+          //   docker {
+          //     image 'ppodgorsek/robot-framework:latest'
+          //     args '--shm-size=1g -u root' 
+          //   }
+          // }
+          // environment {
+          //   BROWSER = 'chrome'
+          //   SERVER = 'dev-novosgp.sme.prefeitura.sp.gov.br'
+          //   SGP_USER = "$SGP_TEST_USER"
+          //   SGP_PASS = "$SGP_TEST_PASS"
+          //   ROBOT_TESTS_DIR = "$WORKSPACE/teste/SME.SGP.WebClient.RPA/src/"
+          //   ROBOT_REPORTS_DIR = "$WORKSPACE/teste/SME.SGP.WebClient.RPA/reports/"
+          // }
           steps {
-            sh "apk update && apk add tree && tree /opt/robotframework && tree $WORKSPACE && chmod -R 755 $WORKSPACE"
-            sh "xvfb-run --server-args='-screen 0 1920x1080x32 -ac' robot --outputDir $WORKSPACE/src/SME.SGP.WebClient.RPA/reports/ $WORKSPACE/src/SME.SGP.WebClient.RPA/src"
+            unstash 'scm'
+            docker.image('ppodgorsek/robot-framework:latest').inside{ 
+              sh "apk update && apk add tree && tree /opt/robotframework && tree $WORKSPACE && chmod -R 755 $WORKSPACE"
+              sh "xvfb-run --server-args='-screen 0 1920x1080x32 -ac' robot --outputDir $WORKSPACE/src/SME.SGP.WebClient.RPA/reports/ $WORKSPACE/src/SME.SGP.WebClient.RPA/src"
+            }
           }
         }
 
