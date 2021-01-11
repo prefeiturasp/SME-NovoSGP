@@ -16,9 +16,9 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<PaginacaoResultadoDto<EncaminhamentoAEEAlunoTurmaDto>> ListarPaginado(long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao, TipoOrdenacaoEstudante ordenacao, Paginacao paginacao)
+        public async Task<PaginacaoResultadoDto<EncaminhamentoAEEAlunoTurmaDto>> ListarPaginado(long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao, Paginacao paginacao)
         {
-            var query = MontaQueryCompleta(paginacao, dreId, ueId, turmaId, alunoCodigo, situacao, ordenacao);
+            var query = MontaQueryCompleta(paginacao, dreId, ueId, turmaId, alunoCodigo, situacao);
 
             var parametros = new { dreId, ueId, turmaId, alunoCodigo, situacao };
             var retorno = new PaginacaoResultadoDto<EncaminhamentoAEEAlunoTurmaDto>();
@@ -34,47 +34,30 @@ namespace SME.SGP.Dados.Repositorios
             return retorno;
         }
 
-        private static string MontaQueryCompleta(Paginacao paginacao, long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao, TipoOrdenacaoEstudante ordenacao)
+        private static string MontaQueryCompleta(Paginacao paginacao, long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao)
         {
             StringBuilder sql = new StringBuilder();
 
-            MontaQueryConsulta(paginacao, sql, contador: false, ueId, turmaId, alunoCodigo, situacao, ordenacao);
+            MontaQueryConsulta(paginacao, sql, contador: false, ueId, turmaId, alunoCodigo, situacao);
 
             sql.AppendLine(";");
 
-            MontaQueryConsulta(paginacao, sql, contador: true, ueId, turmaId, alunoCodigo, situacao, ordenacao);
+            MontaQueryConsulta(paginacao, sql, contador: true, ueId, turmaId, alunoCodigo, situacao);
 
             return sql.ToString();
         }
 
-        private static void MontaQueryConsulta(Paginacao paginacao, StringBuilder sql, bool contador, long ueId, long turmaId, string alunoCodigo, int? situacao, TipoOrdenacaoEstudante ordenacao)
+        private static void MontaQueryConsulta(Paginacao paginacao, StringBuilder sql, bool contador, long ueId, long turmaId, string alunoCodigo, int? situacao)
         {
             ObtenhaCabecalho(sql, contador);
 
             ObtenhaFiltro(sql, ueId, turmaId, alunoCodigo, situacao);
 
             if (!contador)
-                sql.AppendLine("order by "+ ObterOrdenacao(ordenacao));
+                sql.AppendLine("order by ea.aluno_nome");
 
             if (paginacao.QuantidadeRegistros > 0 && !contador)
                 sql.AppendLine($"OFFSET {paginacao.QuantidadeRegistrosIgnorados} ROWS FETCH NEXT {paginacao.QuantidadeRegistros} ROWS ONLY");
-        }
-
-        private static string ObterOrdenacao(TipoOrdenacaoEstudante ordenacao)
-        {
-            switch (ordenacao)
-            {
-                case TipoOrdenacaoEstudante.NumeroAsc:
-                    return "ea.aluno_codigo";
-                case TipoOrdenacaoEstudante.NumeroDesc:
-                    return "ea.aluno_codigo desc";
-                case TipoOrdenacaoEstudante.NomeAsc:
-                    return "ea.aluno_nome";
-                case TipoOrdenacaoEstudante.NomeDesc:
-                    return "ea.aluno_nome desc";
-                default:
-                    throw new NegocioException("Tipo de ordenação não identificado para a consulta de Encaminhamentos AEE");
-            }
         }
 
         private static void ObtenhaCabecalho(StringBuilder sql, bool contador)
@@ -86,6 +69,7 @@ namespace SME.SGP.Dados.Repositorios
             {
                 sql.AppendLine(" ea.id ");
                 sql.AppendLine(", ea.aluno_codigo as AlunoCodigo ");
+                sql.AppendLine(", ea.aluno_nome as AlunoNome ");
                 sql.AppendLine(", t.turma_id as TurmaCodigo");
                 sql.AppendLine(", t.nome as TurmaNome");
                 sql.AppendLine(", t.modalidade_codigo as TurmaModalidade");
