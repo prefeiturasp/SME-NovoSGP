@@ -68,6 +68,9 @@ pipeline {
             branch 'story/27640'
           }
           agent { 
+            node {
+              label 'master'
+            }
             docker {
               image 'ppodgorsek/robot-framework:latest'
               args '--shm-size=1g -u root -v $PWD:/opt/robotframework/test -w /opt/robotframework/test'
