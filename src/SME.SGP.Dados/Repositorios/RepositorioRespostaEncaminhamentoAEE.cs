@@ -20,7 +20,9 @@ namespace SME.SGP.Dados.Repositorios
 
 			var sql =
 				$@"
-					delete from resposta_encaminhamento_aee 
+					update resposta_encaminhamento_aee 
+                        set excluido = true,
+                            arquivo_id = null
 					where arquivo_id = @arquivoId 
                 ";
 
