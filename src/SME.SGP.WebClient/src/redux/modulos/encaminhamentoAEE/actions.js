@@ -17,3 +17,13 @@ export const setDadosEstudanteObjectCardEncaminhamento = payload => ({
   type: '@encaminhamentoAEE/setDadosEstudanteObjectCardEncaminhamento',
   payload,
 });
+
+export const setExibirModalAviso = payload => ({
+  type: '@encaminhamentoAEE/setExibirModalAviso',
+  payload,
+});
+
+export const setDadosModalAviso = payload => ({
+  type: '@encaminhamentoAEE/setDadosModalAviso',
+  payload,
+});

@@ -7,6 +7,7 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioRespostaEncaminhamentoAEE : IRepositorioBase<RespostaEncaminhamentoAEE>
     {
+        Task<bool> RemoverPorArquivoId(long arquivoId);
         Task<IEnumerable<long>> ObterArquivosPorQuestaoId(long questaoEncaminhamentoAEEId);
     }
 }
