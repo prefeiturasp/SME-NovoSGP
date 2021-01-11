@@ -9,7 +9,7 @@ import { confirmar } from '~/servicos/alertas';
 import { ContainerCampoObservacao } from './observacoesUsuario.css';
 
 const CampoObservacao = props => {
-  const { salvarObservacao } = props;
+  const { salvarObservacao, esconderCaixaExterna } = props;
 
   const dispatch = useDispatch();
 
@@ -45,7 +45,7 @@ const CampoObservacao = props => {
 
   return (
     <>
-      <div className="col-md-12 pb-2">
+      <div className={`col-md-12 pb-2 ${esconderCaixaExterna && 'p-0'}`}>
         <Label text="Escreva uma observação" />
         <ContainerCampoObservacao
           id="nova-observacao"
@@ -84,10 +84,12 @@ const CampoObservacao = props => {
 
 CampoObservacao.propTypes = {
   salvarObservacao: PropTypes.func,
+  esconderCaixaExterna: PropTypes.bool,
 };
 
 CampoObservacao.defaultProps = {
   salvarObservacao: () => {},
+  esconderCaixaExterna: false,
 };
 
 export default CampoObservacao;

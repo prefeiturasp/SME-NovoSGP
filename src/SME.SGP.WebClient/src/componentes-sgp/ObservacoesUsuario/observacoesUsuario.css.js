@@ -5,11 +5,15 @@ import { Base } from '~/componentes/colors';
 const { TextArea } = Input;
 
 export const ContainerObservacoesUsuario = styled.div`
-  background: #ffffff;
-  border: 1px solid #dadada;
-  box-sizing: border-box;
-  box-shadow: 0px 1px 4px rgba(8, 35, 48, 0.1);
-  border-radius: 4px;
+  ${({ esconderCaixaExterna }) =>
+    !esconderCaixaExterna &&
+    `
+      background: #ffffff;
+      border: 1px solid #dadada;
+      box-sizing: border-box;
+      box-shadow: 0px 1px 4px rgba(8, 35, 48, 0.1);
+      border-radius: 4px;
+  `};
 
   .btn-acao {
     background-color: ${Base.Azul} !important;
