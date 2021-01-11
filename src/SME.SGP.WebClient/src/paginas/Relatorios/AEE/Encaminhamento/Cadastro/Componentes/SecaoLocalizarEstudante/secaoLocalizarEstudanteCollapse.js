@@ -1,9 +1,9 @@
 import React from 'react';
 // import { useDispatch } from 'react-redux';
 import CardCollapse from '~/componentes/cardCollapse';
-import LocalizarEstudanteDados from './localizarEstudanteDados';
+import SecaoLocalizarEstudanteDados from './secaoLocalizarEstudanteDados';
 
-const LocalizarEstudanteCollapse = () => {
+const SecaoLocalizarEstudanteCollapse = () => {
   // const dispatch = useDispatch();
 
   const onClickCardCollapse = () => {
@@ -18,9 +18,9 @@ const LocalizarEstudanteCollapse = () => {
       alt="localizar-estudante-alt"
       onClick={onClickCardCollapse}
     >
-      <LocalizarEstudanteDados />
+      <SecaoLocalizarEstudanteDados />
     </CardCollapse>
   );
 };
 
-export default LocalizarEstudanteCollapse;
+export default SecaoLocalizarEstudanteCollapse;
