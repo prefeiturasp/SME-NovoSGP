@@ -82,6 +82,7 @@ pipeline {
             ROBOT_REPORTS_DIR = "$WORKSPACE/teste/SME.SGP.WebClient.RPA/reports/"
           }
           steps {
+            sh "apk update && apk add tree && tree /opt/robotframework && tree $WORKSPACE/teste"
             sh "chmod -R 755 $WORKSPACE/teste && /opt/robotframework/bin/run-tests-in-virtual-screen.sh"
           }
         }
