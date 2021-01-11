@@ -54,7 +54,7 @@ namespace SME.SGP.Dados.Repositorios
             ObtenhaFiltro(sql, ueId, turmaId, alunoCodigo, situacao);
 
             if (!contador)
-                sql.AppendLine("order by d.id");
+                sql.AppendLine("order by ea.aluno_codigo");
 
             if (paginacao.QuantidadeRegistros > 0 && !contador)
                 sql.AppendLine($"OFFSET {paginacao.QuantidadeRegistrosIgnorados} ROWS FETCH NEXT {paginacao.QuantidadeRegistros} ROWS ONLY");
@@ -90,10 +90,16 @@ namespace SME.SGP.Dados.Repositorios
             if (turmaId > 0)
                 sql.AppendLine("and t.id = @turmaId");
             if (!string.IsNullOrEmpty(alunoCodigo))
-                sql.AppendLine("and ea.aluno_codiog = @alunoCodigo");
+                sql.AppendLine("and ea.aluno_codigo = @alunoCodigo");
             if (situacao.HasValue && situacao > 0)
                 sql.AppendLine("and ea.situacao = @situacao");
         }
 
+        public async Task<SituacaoAEE> ObterSituacaoEncaminhamentoAEE(long encaminhamentoAEEId)
+        {
+            var query = "select situacao from encaminhamento_aee ea where id = @encaminhamentoAEEId";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<SituacaoAEE>(query, new { encaminhamentoAEEId });
+        }
     }
 }

@@ -288,7 +288,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             var url = $"alunos/ues/{codigoUe}/anosLetivos/{anoLetivo}/autocomplete"
                 + (codigoTurma > 0 ? $"?codigoTurma={codigoTurma}" : null)
                 + (codigoEol != null ? $"{(codigoTurma > 0 ? "&" : "?") + $"codigoEol={codigoEol}"}" : "")
-                + (nome != null ? $"{(codigoEol != null ? "&" : "?") + $"nome={nome}"}" : "");
+                + (nome != null ? $"{(codigoEol != null ? "&" : "?") + $"nomeAluno={nome}"}" : "");
 
             var resposta = await httpClient.GetAsync(url);
 
