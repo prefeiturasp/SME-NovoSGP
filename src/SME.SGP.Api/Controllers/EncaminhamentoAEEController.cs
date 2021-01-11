@@ -47,6 +47,16 @@ namespace SME.SGP.Api.Controllers
             return Ok(situacoes);
         }
 
+        [HttpDelete("arquivo")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
+        //[Permissao(Permissao.DPU_E, Policy = "Bearer")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ExcluirArquivo([FromQuery] long arquivoId, [FromServices] IExcluirArquivoAeeUseCase useCase)
+        {
+            return Ok(await useCase.Executar(arquivoId));
+        }
+        
         [HttpGet("instrucoes-modal")]
         [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
