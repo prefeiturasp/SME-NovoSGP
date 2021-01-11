@@ -4,6 +4,15 @@ const inicial = {
   expandirLinhaAusenciaEstudante: [],
   dadosModalAnotacao: null,
   exibirModalAnotacao: false,
+  dadosEstudanteObjectCardEncaminhamento: {
+    nome: 'Estudante mock',
+    numeroChamada: 1,
+    dataNascimento: new Date(),
+    codigoEOL: 123456,
+    situacao: 'Ativo',
+    dataSituacao: new Date(),
+    frequencia: '88%',
+  },
 };
 
 export default function EncaminhamentoAEE(state = inicial, action) {
@@ -25,6 +34,12 @@ export default function EncaminhamentoAEE(state = inicial, action) {
         return {
           ...draft,
           exibirModalAnotacao: action.payload,
+        };
+      }
+      case '@encaminhamentoAEE/setDadosEstudanteObjectCardEncaminhamento': {
+        return {
+          ...draft,
+          dadosEstudanteObjectCardEncaminhamento: action.payload,
         };
       }
 

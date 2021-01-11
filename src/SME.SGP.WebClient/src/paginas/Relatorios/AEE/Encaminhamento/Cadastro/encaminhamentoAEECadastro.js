@@ -2,8 +2,8 @@ import React from 'react';
 import { Card } from '~/componentes';
 import { Cabecalho } from '~/componentes-sgp';
 import BotoesAcoesEncaminhamentoAEE from './Componentes/botoesAcoesEncaminhamentoAEE';
+import SecaoEncaminhamentoCollapse from './Componentes/SecaoEncaminhamento/secaoEncaminhamentoCollapse';
 import SecaoLocalizarEstudanteCollapse from './Componentes/SecaoLocalizarEstudante/secaoLocalizarEstudanteCollapse';
-import IndicativosEstudante from './Componentes/IndicativosEstudante/indicativosEstudante';
 
 const EncaminhamentoAEECadastro = () => {
   return (
@@ -19,7 +19,7 @@ const EncaminhamentoAEECadastro = () => {
               <SecaoLocalizarEstudanteCollapse />
             </div>
             <div className="col-md-12 mb-2">
-              <IndicativosEstudante />
+              <SecaoEncaminhamentoCollapse />
             </div>
           </div>
         </div>
