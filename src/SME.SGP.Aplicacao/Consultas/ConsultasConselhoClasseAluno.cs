@@ -116,7 +116,7 @@ namespace SME.SGP.Aplicacao
                     ComponenteSinteses = new List<ConselhoDeClasseComponenteSinteseDto>()
                 };
 
-                foreach (var componenteCurricular in grupoDisiplinasMatriz)
+                foreach (var componenteCurricular in grupoDisiplinasMatriz.Where(x => x.LancaNota))
                 {
                     var componenteCurricularDto = await MapearDto(frequenciaAluno, componenteCurricular, bimestre);
                     grupoMatriz.ComponenteSinteses.Add(componenteCurricularDto);
@@ -312,12 +312,13 @@ namespace SME.SGP.Aplicacao
         {
             var frequenciaAluno = new FrequenciaAluno();
             if (periodoEscolar != null)
-            {
+            {                
                 // Frequencia do bimestre
                 frequenciaAluno = repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunoData(alunoCodigo,
                                                                                periodoEscolar.PeriodoFim,
                                                                                TipoFrequenciaAluno.PorDisciplina,
-                                                                               componenteCurricularCodigo.ToString());
+                                                                               componenteCurricularCodigo.ToString(),
+                                                                               turma.CodigoTurma);
                 if (frequenciaAluno != null)
                     return frequenciaAluno;
 

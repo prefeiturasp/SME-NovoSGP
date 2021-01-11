@@ -77,14 +77,31 @@ namespace SME.SGP.Aplicacao
             return frequenciaAluno.PercentualFrequencia;
         }
 
+        public async Task<FrequenciaAluno> ObterFrequenciaGeralAlunoPorTurmaEComponente(string alunoCodigo, string turmaCodigo, string componenteCurricularCodigo = "")
+        {
+            var frequenciaAlunoPeriodos = await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterFrequenciaGeralAluno(alunoCodigo, turmaCodigo, componenteCurricularCodigo);
+
+            if (frequenciaAlunoPeriodos == null || !frequenciaAlunoPeriodos.Any())
+                return null;
+
+            var frequenciaAluno = new FrequenciaAluno()
+            {
+                TotalAulas = frequenciaAlunoPeriodos.Sum(f => f.TotalAulas),
+                TotalAusencias = frequenciaAlunoPeriodos.Sum(f => f.TotalAusencias),
+                TotalCompensacoes = frequenciaAlunoPeriodos.Sum(f => f.TotalCompensacoes),
+            };
+
+            return frequenciaAluno;
+        }
+
         public async Task<double> ObterFrequenciaMedia(DisciplinaDto disciplina)
         {
             if (_mediaFrequencia == 0)
             {
                 if (disciplina.Regencia || !disciplina.LancaNota)
-                    _mediaFrequencia = double.Parse(await mediator.Send(new ObterParametroSistemaTipoEAnoQuery(TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse, DateTime.Today.Year)));                    
+                    _mediaFrequencia = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse, DateTime.Today.Year)));
                 else
-                    _mediaFrequencia = double.Parse(await mediator.Send(new ObterParametroSistemaTipoEAnoQuery(TipoParametroSistema.CompensacaoAusenciaPercentualFund2, DateTime.Today.Year)));                   
+                    _mediaFrequencia = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.CompensacaoAusenciaPercentualFund2, DateTime.Today.Year)));
             }
 
             return _mediaFrequencia;
@@ -106,9 +123,9 @@ namespace SME.SGP.Aplicacao
             var disciplinasEOL = await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { long.Parse(disciplinaId) });
             if (disciplinasEOL == null || !disciplinasEOL.Any())
                 throw new NegocioException("Disciplina informada não localizada no EOL.");
-            
-            var quantidadeMaximaCompensacoes = int.Parse(await mediator.Send(new ObterParametroSistemaTipoEAnoQuery(TipoParametroSistema.QuantidadeMaximaCompensacaoAusencia, DateTime.Today.Year)));
-            var percentualFrequenciaAlerta = int.Parse(await mediator.Send(new ObterParametroSistemaTipoEAnoQuery(disciplinasEOL.First().Regencia ? TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse : TipoParametroSistema.CompensacaoAusenciaPercentualFund2, DateTime.Today.Year)));
+
+            var quantidadeMaximaCompensacoes = int.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.QuantidadeMaximaCompensacaoAusencia, DateTime.Today.Year)));
+            var percentualFrequenciaAlerta = int.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(disciplinasEOL.First().Regencia ? TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse : TipoParametroSistema.CompensacaoAusenciaPercentualFund2, DateTime.Today.Year)));
 
             foreach (var alunoEOL in alunosEOL)
             {
@@ -132,16 +149,18 @@ namespace SME.SGP.Aplicacao
             return alunosAusentesDto;
         }
 
-        public async Task<FrequenciaDto> ObterListaFrequenciaPorAula(long aulaId)
+        public async Task<FrequenciaDto> ObterListaFrequenciaPorAula(long aulaId, long? disciplinaId = null)
         {
             var aula = repositorioAula.ObterPorId(aulaId);
             if (aula == null)
                 throw new NegocioException("Aula não encontrada.");
 
+
+
             var alunosDaTurma = await servicoEOL.ObterAlunosPorTurma(aula.TurmaId);
             if (alunosDaTurma == null || !alunosDaTurma.Any())
                 throw new NegocioException("Não foram encontrados alunos para a aula/turma informada.");
-            
+
             var turma = await repositorioTurma.ObterPorCodigo(aula.TurmaId);
             if (turma == null)
                 throw new NegocioException("Não foi encontrada uma turma com o id informado. Verifique se você possui abrangência para essa turma.");
@@ -170,7 +189,7 @@ namespace SME.SGP.Aplicacao
                                                     TipoParametroSistema.PercentualFrequenciaAlerta,
                                                     bimestre.PeriodoInicio.Year));
 
-            var disciplinaAula = await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { Convert.ToInt64(aula.DisciplinaId) });
+            var disciplinaAula = await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { disciplinaId.HasValue ? disciplinaId.Value : Convert.ToInt64(aula.DisciplinaId) });
 
             if (disciplinaAula == null || disciplinaAula.ToList().Count <= 0)
                 throw new NegocioException("Disciplina da aula não encontrada");
@@ -196,7 +215,11 @@ namespace SME.SGP.Aplicacao
                     DataNascimento = aluno.DataNascimento,
                     Desabilitado = aluno.EstaInativo(aula.DataAula) || aula.EhDataSelecionadaFutura,
                     PermiteAnotacao = aluno.EstaAtivo(aula.DataAula),
-                    PossuiAnotacao = anotacoesTurma.Any(a => a == aluno.CodigoAluno)
+                    PossuiAnotacao = anotacoesTurma.Any(a => a == aluno.CodigoAluno),
+                    NomeResponsavel = aluno.NomeResponsavel,
+                    TipoResponsavel = ObterTipoResponsavel(aluno.TipoResponsavel),
+                    CelularResponsavel = aluno.CelularResponsavel,
+                    DataAtualizacaoContato = aluno.DataAtualizacaoContato
                 };
 
                 // Marcador visual da situação
@@ -273,7 +296,7 @@ namespace SME.SGP.Aplicacao
 
         private IndicativoFrequenciaDto ObterIndicativoFrequencia(AlunoPorTurmaResposta aluno, string disciplinaId, PeriodoEscolar bimestre, int percentualAlerta, int percentualCritico)
         {
-            var frequenciaAluno = repositorioFrequenciaAlunoDisciplinaPeriodo.Obter(aluno.CodigoAluno, disciplinaId, bimestre.Id, TipoFrequenciaAluno.PorDisciplina);
+            var frequenciaAluno = repositorioFrequenciaAlunoDisciplinaPeriodo.Obter(aluno.CodigoAluno, disciplinaId, bimestre.Id, TipoFrequenciaAluno.PorDisciplina, aluno.CodigoTurma.ToString());
             // Frequencia não calculada
             if (frequenciaAluno == null)
             {
@@ -314,6 +337,30 @@ namespace SME.SGP.Aplicacao
                 Desabilitado = !aula.PermiteRegistroFrequencia(turma)
             };
             return registroFrequenciaDto;
+        }
+
+        private string ObterTipoResponsavel(string tipoResponsavel)
+        {
+            switch (tipoResponsavel)
+            {
+                case "1":
+                    {
+                        return TipoResponsavel.Filicacao1.Name();
+                    }
+                case "2":
+                    {
+                        return TipoResponsavel.Filiacao2.Name();
+                    }
+                case "3":
+                    {
+                        return TipoResponsavel.ResponsavelLegal.Name();
+                    }
+                case "4":
+                    {
+                        return TipoResponsavel.ProprioEstudante.Name();
+                    }
+            }
+            return TipoResponsavel.Filicacao1.ToString();
         }
     }
 }

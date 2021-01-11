@@ -4,7 +4,7 @@ using System.Text;
 
 namespace SME.SGP.Dominio
 {
-    public class PendenciaFechamento: EntidadeBase
+    public class PendenciaFechamento : EntidadeBase
     {
         protected PendenciaFechamento() { }
         public PendenciaFechamento(long fechamentoTurmaDisciplinaId, long pendenciaId)

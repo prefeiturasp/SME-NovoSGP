@@ -50,7 +50,7 @@ namespace SME.SGP.Aplicacao
 
             var fechamentoTurmaDisciplina = await TransformarDtoSalvarEmEntidade(fechamentoFinalSalvarDto, turma);
             
-            var mensagensDeErro = await servicoFechamentoFinal.SalvarAsync(fechamentoTurmaDisciplina);
+            var mensagensDeErro = await servicoFechamentoFinal.SalvarAsync(fechamentoTurmaDisciplina, turma);
 
             return mensagensDeErro.ToArray();
         }
@@ -91,8 +91,11 @@ namespace SME.SGP.Aplicacao
 
                     if(fechamentoNota != null)
                     {
-                        if (fechamentoItemDto.Nota.HasValue && (fechamentoNota.Nota.Value != fechamentoItemDto.Nota.Value))
-                            await mediator.Send(new SalvarHistoricoNotaFechamentoCommand(fechamentoNota.Nota.Value, fechamentoItemDto.Nota.Value, fechamentoNota.Id));
+                        if (fechamentoItemDto.Nota.HasValue)
+                        {
+                            if (fechamentoNota.Nota.Value != fechamentoItemDto.Nota.Value)
+                                await mediator.Send(new SalvarHistoricoNotaFechamentoCommand(fechamentoNota.Nota.Value, fechamentoItemDto.Nota.Value, fechamentoNota.Id));
+                        }
                         else
                         if (fechamentoNota.ConceitoId.Value != fechamentoItemDto.ConceitoId.Value)
                             await mediator.Send(new SalvarHistoricoConceitoFechamentoCommand(fechamentoNota.ConceitoId.Value, fechamentoItemDto.ConceitoId.Value, fechamentoNota.Id));

@@ -53,7 +53,15 @@ const RotasDto = {
   DEVOLUTIVAS: '/diario-classe/devolutiva',
   CONTROLE_GRADE: '/relatorios/diario-classe/controle-grade',
   POC_EDITOR: '/editor',
+  SONDAGEM: '/sondagem',
   POC_UPLOAD_ARQUIVOS: '/upload-arquivos',
+  HISTORICO_NOTIFICACOES: '/relatorios/notificacoes/historico-notificacoes',
+  DOCUMENTOS_PLANOS_TRABALHO: '/gestao/documentos-planos-trabalho',
+  RELATORIO_USUARIOS: '/relatorios/gestao/usuarios',
+  RELATORIO_ATRIBUICAO_CJ: '/relatorios/gestao/atribuicao-cj',
+  RELATORIO_ALTERACAO_NOTAS: '/relatorios/fechamento/historico-alteracao-notas',
+  RELATORIO_LEITURA: '/relatorios/escola-aqui/leitura',
+  RELATORIO_ESCOLA_AQUI_ADESAO: '/relatorios/escola-aqui/adesao',
 };
 
 export default RotasDto;

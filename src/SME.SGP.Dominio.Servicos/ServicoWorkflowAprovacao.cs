@@ -10,6 +10,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SME.SGP.Infra.Interfaces;
 
 namespace SME.SGP.Dominio.Servicos
 {
@@ -30,8 +31,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioEventoTipo repositorioEventoTipo;
         private readonly IServicoEol servicoEOL;
         private readonly IServicoNotificacao servicoNotificacao;
-        private readonly IServicoUsuario servicoUsuario;
-        private readonly IUnitOfWork unitOfWork;
+        private readonly IServicoUsuario servicoUsuario;        
         private readonly IRepositorioWorkflowAprovacaoNivel workflowAprovacaoNivel;
         private readonly IMediator mediator;
 
@@ -46,8 +46,7 @@ namespace SME.SGP.Dominio.Servicos
                                         IRepositorioAula repositorioAula,
                                         IRepositorioUe repositorioUe,
                                         IRepositorioTurma repositorioTurma,
-                                        IRepositorioWorkflowAprovacao repositorioWorkflowAprovacao,
-                                        IUnitOfWork unitOfWork,
+                                        IRepositorioWorkflowAprovacao repositorioWorkflowAprovacao,                                        
                                         IRepositorioFechamentoReabertura repositorioFechamentoReabertura,
                                         IRepositorioFechamentoNota repositorioFechamentoNota,
                                         IRepositorioUsuario repositorioUsuario,
@@ -66,8 +65,7 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioAula = repositorioAula ?? throw new ArgumentException(nameof(repositorioAula));
             this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
-            this.repositorioWorkflowAprovacao = repositorioWorkflowAprovacao ?? throw new ArgumentNullException(nameof(repositorioWorkflowAprovacao));
-            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+            this.repositorioWorkflowAprovacao = repositorioWorkflowAprovacao ?? throw new ArgumentNullException(nameof(repositorioWorkflowAprovacao));            
             this.repositorioFechamentoReabertura = repositorioFechamentoReabertura ?? throw new ArgumentNullException(nameof(repositorioFechamentoReabertura));
             this.repositorioFechamentoNota = repositorioFechamentoNota ?? throw new ArgumentNullException(nameof(repositorioFechamentoNota));
             this.repositorioUsuario = repositorioUsuario ?? throw new ArgumentNullException(nameof(repositorioUsuario));
@@ -80,17 +78,18 @@ namespace SME.SGP.Dominio.Servicos
         {
             WorkflowAprovacaoNivel nivel = workflow.ObterNivelPorNotificacaoId(notificacaoId);
 
+            var codigoDaNotificacao = nivel.Notificacoes.FirstOrDefault(a => a.Id == notificacaoId)?.Codigo;
+            if (codigoDaNotificacao == null)
+                throw new NegocioException("Não foi possível localizar a notificação.");
+
             nivel.PodeAprovar();
 
             var niveisParaPersistir = workflow.ModificarStatusPorNivel(aprovar ? WorkflowAprovacaoNivelStatus.Aprovado : WorkflowAprovacaoNivelStatus.Reprovado, nivel.Nivel, observacao);
             AtualizaNiveis(niveisParaPersistir);
 
-            var codigoDaNotificacao = nivel.Notificacoes
-                .FirstOrDefault(a => a.Id == notificacaoId).Codigo;
-
             if (aprovar)
-                await AprovarNivel(nivel, workflow, codigoDaNotificacao);
-            else await ReprovarNivel(workflow, codigoDaNotificacao, observacao, nivel.Cargo, nivel);
+                await AprovarNivel(nivel, workflow, (long)codigoDaNotificacao);
+            else await ReprovarNivel(workflow, (long)codigoDaNotificacao, observacao, nivel.Cargo, nivel);
         }
 
         public void ConfiguracaoInicial(WorkflowAprovacao workflowAprovacao, long idEntidadeParaAprovar)
@@ -141,7 +140,7 @@ namespace SME.SGP.Dominio.Servicos
             {
                 if (workflow.Tipo == WorkflowAprovacaoTipo.Evento_Liberacao_Excepcional)
                 {
-                    AprovarUltimoNivelEventoLiberacaoExcepcional(codigoDaNotificacao, workflow.Id);
+                    await AprovarUltimoNivelEventoLiberacaoExcepcional(codigoDaNotificacao, workflow.Id);
                 }
                 else if (workflow.Tipo == WorkflowAprovacaoTipo.ReposicaoAula)
                 {
@@ -156,30 +155,27 @@ namespace SME.SGP.Dominio.Servicos
                     AprovarUltimoNivelDeEventoFechamentoReabertura(codigoDaNotificacao, workflow.Id, nivel.Id);
                 }
                 else if (workflow.Tipo == WorkflowAprovacaoTipo.AlteracaoNotaFechamento)
-                    await AprovarAlteracaoNotaFechamento(codigoDaNotificacao, workflow.Id, workflow.TurmaId);
+                    await AprovarAlteracaoNotaFechamento(codigoDaNotificacao, workflow.Id, workflow.TurmaId, workflow.CriadoRF, workflow.CriadoPor);
             }
         }
 
-        private async Task AprovarAlteracaoNotaFechamento(long codigoDaNotificacao, long workFlowId, string turmaCodigo)
+        private async Task AprovarAlteracaoNotaFechamento(long codigoDaNotificacao, long workFlowId, string turmaCodigo, string criadoRF, string criadoPor)
         {
             var notasEmAprovacao = ObterNotasEmAprovacao(workFlowId);
             if (notasEmAprovacao != null && notasEmAprovacao.Any())
             {
-                await AtualizarNotasFechamento(notasEmAprovacao);
+                await AtualizarNotasFechamento(notasEmAprovacao, criadoRF, criadoPor, workFlowId);
 
                 await NotificarAprovacaoNotasFechamento(notasEmAprovacao, codigoDaNotificacao, turmaCodigo);
             }
         }
 
-        private async Task AtualizarNotasFechamento(IEnumerable<WfAprovacaoNotaFechamento> notasEmAprovacao)
+        private async Task AtualizarNotasFechamento(IEnumerable<WfAprovacaoNotaFechamento> notasEmAprovacao, string criadoRF, string criadoPor, long workFlowId)
         {
             var fechamentoTurmaDisciplinaId = notasEmAprovacao.First().FechamentoNota.FechamentoAluno.FechamentoTurmaDisciplinaId;
 
-            unitOfWork.IniciarTransacao();
-            try
-            {
-                // Resolve a pendencia de fechamento
-                repositorioPendencia.AtualizarPendencias(fechamentoTurmaDisciplinaId, SituacaoPendencia.Resolvida, TipoPendencia.AlteracaoNotaFechamento);
+            // Resolve a pendencia de fechamento
+            repositorioPendencia.AtualizarPendencias(fechamentoTurmaDisciplinaId, SituacaoPendencia.Resolvida, TipoPendencia.AlteracaoNotaFechamento);
 
                 foreach (var notaEmAprovacao in notasEmAprovacao)
                 {
@@ -188,31 +184,25 @@ namespace SME.SGP.Dominio.Servicos
                     if (notaEmAprovacao.Nota.HasValue)
                     {
                         if (notaEmAprovacao.Nota != fechamentoNota.Nota)
-                            await mediator.Send(new SalvarHistoricoNotaFechamentoCommand(notaEmAprovacao.Nota.Value, fechamentoNota.Nota.Value, notaEmAprovacao.Id));
+                            await mediator.Send(new SalvarHistoricoNotaFechamentoCommand(fechamentoNota.Nota.Value, notaEmAprovacao.Nota.Value, notaEmAprovacao.FechamentoNotaId, criadoRF, criadoPor, workFlowId));
 
                         fechamentoNota.Nota = notaEmAprovacao.Nota;
                     }
                     else
                     {
                         if (notaEmAprovacao.ConceitoId != fechamentoNota.ConceitoId)
-                            await mediator.Send(new SalvarHistoricoConceitoFechamentoCommand(notaEmAprovacao.ConceitoId.Value, fechamentoNota.ConceitoId.Value, notaEmAprovacao.Id));
+                            await mediator.Send(new SalvarHistoricoConceitoFechamentoCommand(fechamentoNota.ConceitoId.Value, notaEmAprovacao.ConceitoId.Value, notaEmAprovacao.FechamentoNotaId, criadoRF, criadoPor, workFlowId));
 
                         fechamentoNota.ConceitoId = notaEmAprovacao.ConceitoId;
                     }
 
                     repositorioFechamentoNota.Salvar(fechamentoNota);
                 }
-                unitOfWork.PersistirTransacao();
-            }
-            catch (Exception)
-            {
-                unitOfWork.Rollback();
-                throw;
-            }
         }
 
         private async Task AprovarUltimoNivelDaReposicaoAula(long codigoDaNotificacao, long workflowId)
-        {
+        {            
+
             Aula aula = repositorioAula.ObterPorWorkflowId(workflowId);
             if (aula == null)
                 throw new NegocioException("Não foi possível localizar a aula deste fluxo de aprovação.");
@@ -276,7 +266,7 @@ namespace SME.SGP.Dominio.Servicos
             repositorioEvento.Salvar(evento);
         }
 
-        private void AprovarUltimoNivelEventoLiberacaoExcepcional(long codigoDaNotificacao, long workflowId)
+        private async Task AprovarUltimoNivelEventoLiberacaoExcepcional(long codigoDaNotificacao, long workflowId)
         {
             Evento evento = repositorioEvento.ObterPorWorkflowId(workflowId);
             if (evento == null)
@@ -285,7 +275,18 @@ namespace SME.SGP.Dominio.Servicos
             evento.AprovarWorkflow();
             repositorioEvento.Salvar(evento);
 
+            await VerificaPendenciaDiasLetivosInsuficientes(evento);
             NotificarCriadorEventoLiberacaoExcepcionalAprovado(evento, codigoDaNotificacao);
+        }
+
+        private async Task VerificaPendenciaDiasLetivosInsuficientes(Evento evento)
+        {
+            if (evento.EhEventoLetivo())
+            {
+                var usuario = await servicoUsuario.ObterUsuarioLogado();
+
+                await mediator.Send(new IncluirFilaExcluirPendenciasDiasLetivosInsuficientesCommand(evento.TipoCalendarioId, evento.DreId, evento.UeId, usuario));
+            }
         }
 
         private void AtualizaNiveis(IEnumerable<WorkflowAprovacaoNivel> niveis)
@@ -797,7 +798,8 @@ namespace SME.SGP.Dominio.Servicos
         }
 
         private async Task TrataReprovacaoReposicaoAula(WorkflowAprovacao workflow, long codigoDaNotificacao, string motivo)
-        {
+        {            
+
             Aula aula = repositorioAula.ObterPorWorkflowId(workflow.Id);
             if (aula == null)
                 throw new NegocioException("Não foi possível localizar a aula deste fluxo de aprovação.");
@@ -807,5 +809,18 @@ namespace SME.SGP.Dominio.Servicos
 
             await NotificarAulaReposicaoQueFoiReprovada(aula, codigoDaNotificacao, motivo);
         }
+
+        public async Task<string> VerificaAulaReposicao(long workflowId, long codigoDaNotificacao)
+        {
+            if (!repositorioAula.VerificarAulaPorWorkflowId(workflowId))
+            {
+                Notificacao notificacao = servicoNotificacao.ObterPorCodigo(codigoDaNotificacao);
+                await servicoNotificacao.ExcluirPeloSistemaAsync(new long[notificacao.Id]);
+                await ExcluirWorkflowNotificacoes(workflowId);
+                return "Não existe aula para esse fluxo de aprovação. A notificação foi excluída.";                
+            }
+            return null;
+        }
+
     }
 }

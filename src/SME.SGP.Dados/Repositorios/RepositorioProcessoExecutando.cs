@@ -1,12 +1,11 @@
 ﻿using Dapper;
 using Dommel;
-using SME.SGP.Dados.Repositorios;
+using Microsoft.Extensions.Configuration;
+using Npgsql;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados
@@ -14,10 +13,12 @@ namespace SME.SGP.Dados
     public class RepositorioProcessoExecutando : IRepositorioProcessoExecutando
     {
         protected readonly ISgpContext database;
+        private readonly IConfiguration configuration;
 
-        public RepositorioProcessoExecutando(ISgpContext database)
+        public RepositorioProcessoExecutando(ISgpContext database, IConfiguration configuration)
         {
             this.database = database;
+            this.configuration = configuration;
         }
 
         public async Task<bool> ObterAulaEmManutencaoAsync(long aulaId)
@@ -30,16 +31,37 @@ namespace SME.SGP.Dados
             return await database.Conexao.QueryFirstOrDefaultAsync<int?>(query, new { aulaId }) != null;
         }
 
-        public async Task<ProcessoExecutando> ObterProcessoCalculoFrequencia(string turmaId, string disciplinaId, int bimestre)
+        public async Task<IEnumerable<long>> ObterIdsPorFiltrosAsync(int bimestre, string disciplinaId, string turmaId)
+        {
+            var query = @"select id from processo_executando where   
+                             turma_id = @turmaId
+                             and disciplina_id = @disciplinaId
+                             and bimestre = @bimestre ";
+
+            return await database.Conexao.QueryAsync<long>(query, new { turmaId, disciplinaId, bimestre });
+        }
+
+        public async Task<ProcessoExecutando> ObterProcessoCalculoFrequenciaAsync(string turmaId, string disciplinaId, int bimestre, TipoProcesso tipoProcesso)
         {
             var query = @"select * 
                             from processo_executando
-                           where tipo_processo = 1
+                           where tipo_processo = @tipoProcesso
                              and turma_id = @turmaId
                              and disciplina_id = @disciplinaId
                              and bimestre = @bimestre";
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<ProcessoExecutando>(query, new { turmaId, disciplinaId, bimestre });
+
+            using (var conexao = new NpgsqlConnection(configuration.GetConnectionString("SGP_Postgres")))
+            {
+                return await conexao.QueryFirstOrDefaultAsync<ProcessoExecutando>(query, new { turmaId, disciplinaId, bimestre, tipoProcesso = (int)tipoProcesso });
+            }
+        }
+
+        public async Task<bool> ProcessoEstaEmExecucao(TipoProcesso tipoProcesso)
+        {
+            var query = "select 1 from processo_executando where tipo_processo = @tipoProcesso";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { tipoProcesso = (int)tipoProcesso });
         }
 
         public void Remover(ProcessoExecutando processo)
@@ -50,12 +72,21 @@ namespace SME.SGP.Dados
 
         public async Task RemoverIdsAsync(long[] ids)
         {
-
             var query = @"delete
                             from processo_executando
                            where id IN (#ids)";
 
             await database.Conexao.ExecuteAsync(query.Replace("#ids", string.Join(",", ids)));
+        }
+
+
+        public async Task RemoverPorId(long id)
+        {
+            var query = @"delete
+                            from processo_executando
+                           where id = @id";
+
+            await database.Conexao.ExecuteAsync(query, new { id });
         }
 
         public async Task<long> SalvarAsync(ProcessoExecutando entidade)

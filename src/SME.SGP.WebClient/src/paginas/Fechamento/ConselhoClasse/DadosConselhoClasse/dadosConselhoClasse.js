@@ -55,6 +55,7 @@ const DadosConselhoClasse = props => {
 
   const [semDados, setSemDados] = useState(true);
   const [carregando, setCarregando] = useState(false);
+  const [turmaAtual, setTurmaAtual] = useState(0);
 
   const validaAbaFinal = useCallback(
     async (conselhoClasseId, fechamentoTurmaId, alunoCodigo, codigoTurma) => {
@@ -211,10 +212,19 @@ const DadosConselhoClasse = props => {
   );
 
   useEffect(() => {
-    if (codigoEOL && !bimestreAtual.valor) {
-      caregarInformacoes();
+    if (codigoEOL && turmaSelecionada.turma == turmaAtual) {
+      if (!bimestreAtual.valor) {
+        caregarInformacoes();
+      } else {
+        const ehFinal = bimestreAtual.valor === 'final';
+        caregarInformacoes(bimestreAtual.valor, ehFinal);
+      }
     }
-  }, [codigoEOL, bimestreAtual, caregarInformacoes]);
+    if (turmaSelecionada.turma != turmaAtual) {
+      dispatch(setBimestreAtual(''));
+      setTurmaAtual(turmaSelecionada.turma);
+    }
+  }, [codigoEOL, turmaSelecionada, turmaAtual]);
 
   const onChangeTab = async numeroBimestre => {
     let continuar = false;
@@ -234,24 +244,11 @@ const DadosConselhoClasse = props => {
     }
   };
 
-  const dadosPrincipaisConselhoClasse = useSelector(
-    store => store.conselhoClasse.dadosPrincipaisConselhoClasse
-  );
-
-  useEffect(() => {
-    dispatch(
-      setConselhoClasseEmEdicao(
-        !carregando &&
-          !semDados &&
-          !Object.entries(dadosPrincipaisConselhoClasse).length
-      )
-    );
-  }, [dispatch, carregando, semDados, dadosPrincipaisConselhoClasse]);
 
   const montarDados = () => {
     return (
       <Loader loading={carregando} className={carregando ? 'text-center' : ''}>
-        {!semDados ? (
+        {!semDados && turmaSelecionada.turma == turmaAtual ? (
           <>
             <AlertaDentroPeriodo />
             {bimestreAtual.valor === 'final' ? (

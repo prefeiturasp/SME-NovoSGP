@@ -128,9 +128,9 @@ namespace SME.SGP.Aplicacao
             var tipoAvaliacaoBimestral = await repositorioTipoAvaliacao.ObterTipoAvaliacaoBimestral();
 
             retorno.BimestreAtual = bimestre.Value;            
-            retorno.MediaAprovacaoBimestre = double.Parse(await mediator.Send(new ObterParametroSistemaTipoEAnoQuery(TipoParametroSistema.MediaBimestre, DateTime.Today.Year)));
+            retorno.MediaAprovacaoBimestre = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.MediaBimestre, DateTime.Today.Year)));
             retorno.MinimoAvaliacoesBimestrais = tipoAvaliacaoBimestral.AvaliacoesNecessariasPorBimestre;            
-            retorno.PercentualAlunosInsuficientes = double.Parse(await mediator.Send(new ObterParametroSistemaTipoEAnoQuery(TipoParametroSistema.PercentualAlunosInsuficientes, DateTime.Today.Year)));
+            retorno.PercentualAlunosInsuficientes = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.PercentualAlunosInsuficientes, DateTime.Today.Year)));
 
             DateTime? dataUltimaNotaConceitoInserida = null;
             DateTime? dataUltimaNotaConceitoAlterada = null;
@@ -178,14 +178,14 @@ namespace SME.SGP.Aplicacao
                     if (disciplinaEOL.Regencia)
                         disciplinasRegencia = await servicoEOL.ObterDisciplinasParaPlanejamento(long.Parse(filtro.TurmaCodigo), servicoUsuario.ObterLoginAtual(), servicoUsuario.ObterPerfilAtual());
 
-                    var fechamentoTurma = await consultasFechamentoTurmaDisciplina.ObterFechamentoTurmaDisciplina(filtro.TurmaCodigo, long.Parse(filtro.DisciplinaCodigo), valorBimestreAtual);
+                    var fechamentosTurma = await consultasFechamentoTurmaDisciplina.ObterFechamentosTurmaDisciplina(filtro.TurmaCodigo, filtro.DisciplinaCodigo, valorBimestreAtual);
 
                     var alunosForeach = from a in alunos
                                         where (a.EstaAtivo(periodoAtual.PeriodoFim)) ||
                                               (a.EstaInativo(periodoAtual.PeriodoFim) && a.DataSituacao.Date >= periodoAtual.PeriodoInicio.Date)
                                         orderby a.NomeValido(), a.NumeroAlunoChamada
-                                                
-                                        select a;                   
+
+                                        select a;
 
                     foreach (var aluno in alunosForeach)
                     {
@@ -244,9 +244,14 @@ namespace SME.SGP.Aplicacao
 
                         notaConceitoAluno.NotasAvaliacoes = notasAvaliacoes;
 
+                        var fechamentoTurma = (from ft in fechamentosTurma
+                                               from fa in ft.FechamentoAlunos
+                                               where fa.AlunoCodigo.Equals(aluno.CodigoAluno)
+                                               select ft).FirstOrDefault();
+
                         // Carrega Notas do Bimestre
                         if (fechamentoTurma != null)
-                        {
+                        {                            
                             bimestreParaAdicionar.FechamentoTurmaId = fechamentoTurma.Id;
                             bimestreParaAdicionar.Situacao = fechamentoTurma.Situacao;
 

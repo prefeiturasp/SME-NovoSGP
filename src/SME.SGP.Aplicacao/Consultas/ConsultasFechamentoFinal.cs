@@ -76,7 +76,8 @@ namespace SME.SGP.Aplicacao
             if (periodosEscolares == null || !periodosEscolares.Any())
                 throw new NegocioException("Não foi encontrado período Escolar para a modalidade informada.");
 
-            await VerificaSePodeFazerFechamentoFinal(periodosEscolares, turma);
+            if (turma.AnoLetivo != 2020)
+                await VerificaSePodeFazerFechamentoFinal(periodosEscolares, turma);
 
             var ultimoPeriodoEscolar = periodosEscolares.OrderByDescending(a => a.Bimestre).FirstOrDefault();
 
@@ -113,18 +114,14 @@ namespace SME.SGP.Aplicacao
 
             retorno.EhSintese = !disciplinaEOL.LancaNota;
 
-            var fechamentoTurmaDisciplina = await repositorioFechamentoTurmaDisciplina.ObterFechamentoTurmaDisciplina(turma.CodigoTurma, filtros.DisciplinaCodigo);
+            var fechamentosTurmaDisciplina = await repositorioFechamentoTurmaDisciplina.ObterFechamentosTurmaDisciplinas(turma.CodigoTurma, new long[] { filtros.DisciplinaCodigo });
             var notasFechamentosFinais = Enumerable.Empty<FechamentoNota>();
-            if (fechamentoTurmaDisciplina != null)
-            {
-                notasFechamentosFinais = await repositorioFechamentoNota.ObterPorFechamentoTurma(fechamentoTurmaDisciplina.Id);
-            }
+            if (fechamentosTurmaDisciplina != null && fechamentosTurmaDisciplina.Any())
+                notasFechamentosFinais = await repositorioFechamentoNota.ObterPorFechamentosTurma(fechamentosTurmaDisciplina.Select(ftd => ftd.Id).ToArray());
 
             var notasFechamentosBimestres = Enumerable.Empty<FechamentoNotaAlunoDto>();
             if (!retorno.EhSintese)
-            {
                 notasFechamentosBimestres = await ObterNotasFechamentosBimestres(filtros.DisciplinaCodigo, turma, periodosEscolares, retorno.EhNota);
-            }
 
             var usuarioEPeriodoPodeEditar = await PodeEditarNotaOuConceitoPeriodoUsuario(usuarioAtual, ultimoPeriodoEscolar, turma, filtros.DisciplinaCodigo.ToString(), retorno.EventoData);
 
@@ -182,10 +179,10 @@ namespace SME.SGP.Aplicacao
                 retorno.Alunos.Add(fechamentoFinalAluno);
             }
 
-            retorno.AuditoriaAlteracao = MontaTextoAuditoriaAlteracao(fechamentoTurmaDisciplina, retorno.EhNota);
-            retorno.AuditoriaInclusao = MontaTextoAuditoriaInclusao(fechamentoTurmaDisciplina, retorno.EhNota);
+            retorno.AuditoriaAlteracao = MontaTextoAuditoriaAlteracao(fechamentosTurmaDisciplina.FirstOrDefault(), retorno.EhNota);
+            retorno.AuditoriaInclusao = MontaTextoAuditoriaInclusao(fechamentosTurmaDisciplina.FirstOrDefault(), retorno.EhNota);
 
-            retorno.NotaMedia = double.Parse(await mediator.Send(new ObterParametroSistemaTipoEAnoQuery(TipoParametroSistema.MediaBimestre, DateTime.Today.Year)));
+            retorno.NotaMedia = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.MediaBimestre, DateTime.Today.Year)));
             retorno.FrequenciaMedia = await consultasFrequencia.ObterFrequenciaMedia(disciplinaEOL);
 
             return retorno;
@@ -201,8 +198,15 @@ namespace SME.SGP.Aplicacao
         private string MontaTextoAuditoriaInclusao(FechamentoTurmaDisciplina fechamentoTurmaDisciplina, bool EhNota)
         {
             if (fechamentoTurmaDisciplina != null)
-                return $"{(EhNota ? "Notas" : "Conceitos")} finais {(EhNota ? "incluídas" : "incluídos")} por {fechamentoTurmaDisciplina.CriadoPor}({fechamentoTurmaDisciplina.CriadoRF}) em {fechamentoTurmaDisciplina.CriadoEm.ToString("dd/MM/yyyy")},às {fechamentoTurmaDisciplina.CriadoEm.ToString("HH:mm")}.";
-            else return string.Empty;
+            {
+                var criadorRf = fechamentoTurmaDisciplina.CriadoRF != "0" && !string.IsNullOrEmpty(fechamentoTurmaDisciplina.CriadoRF) ?
+                        $"({fechamentoTurmaDisciplina.CriadoRF})" :
+                        "";
+
+                return $"{(EhNota ? "Notas" : "Conceitos")} finais {(EhNota ? "incluídas" : "incluídos")} por {fechamentoTurmaDisciplina.CriadoPor}{criadorRf} em {fechamentoTurmaDisciplina.CriadoEm.ToString("dd/MM/yyyy")},às {fechamentoTurmaDisciplina.CriadoEm.ToString("HH:mm")}.";
+            }
+            else 
+                return string.Empty;
         }
 
         private async Task<IEnumerable<FechamentoNotaAlunoDto>> ObterNotasFechamentosBimestres(long disciplinaCodigo, Turma turma, IEnumerable<PeriodoEscolar> periodosEscolares, bool ehNota)
@@ -212,9 +216,9 @@ namespace SME.SGP.Aplicacao
             //BIMESTRE / NOTA / DISCIPLINA ID / ALUNO CODIGO
             foreach (var periodo in periodosEscolares)
             {
-                var fechamentoTurmaDisciplina = await repositorioFechamentoTurmaDisciplina.ObterFechamentoTurmaDisciplina(turma.CodigoTurma, disciplinaCodigo, periodo.Bimestre);
+                var fechamentosTurmaDisciplina = await repositorioFechamentoTurmaDisciplina.ObterFechamentosTurmaDisciplinas(turma.CodigoTurma, new long[] { disciplinaCodigo }, periodo.Bimestre);
 
-                if (fechamentoTurmaDisciplina != null)
+                foreach (var fechamentoTurmaDisciplina in fechamentosTurmaDisciplina)
                 {
                     var notasDoBimestre = await repositorioFechamentoNota.ObterPorFechamentoTurma(fechamentoTurmaDisciplina.Id);
                     if (notasDoBimestre != null && notasDoBimestre.Any())
@@ -222,7 +226,6 @@ namespace SME.SGP.Aplicacao
                         foreach (var nota in notasDoBimestre)
                         {
                             var notaParaAdicionar = ehNota ? nota.Nota?.ToString() : nota.ConceitoId?.ToString();
-
                             listaRetorno.Add(new FechamentoNotaAlunoDto(periodo.Bimestre, notaParaAdicionar, nota.DisciplinaId, nota.FechamentoAluno.AlunoCodigo));
                         }
                     }
@@ -250,32 +253,14 @@ namespace SME.SGP.Aplicacao
 
         private async Task<FechamentoFinalConsultaRetornoAlunoDto> TrataFrequenciaAluno(FechamentoFinalConsultaFiltroDto filtros, IEnumerable<PeriodoEscolar> periodosEscolares, AlunoPorTurmaResposta aluno, Turma turma)
         {
-            var frequenciaAluno = new FrequenciaAluno();
-            foreach (var periodoEscolar in periodosEscolares)
-            {
-                var frequenciaAlunoPeriodo = await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunoBimestreAsync(aluno.CodigoAluno,
-                                                                                                         periodoEscolar.Bimestre,
-                                                                                                         TipoFrequenciaAluno.PorDisciplina,
-                                                                                                         filtros.DisciplinaCodigo.ToString());
-                if (frequenciaAlunoPeriodo != null)
-                {
-                    frequenciaAluno.TotalAulas += frequenciaAlunoPeriodo.TotalAulas;
-                    frequenciaAluno.TotalAusencias += frequenciaAlunoPeriodo.TotalAusencias;
-                    frequenciaAluno.TotalCompensacoes += frequenciaAlunoPeriodo.TotalCompensacoes;
-                }
-                else
-                    // Se não tem ausencia não vai ter registro de frequencia então soma apenas aulas do bimestre
-                    frequenciaAluno.TotalAulas += await consultasAulaPrevista.ObterAulasDadas(turma,
-                                                                                              filtros.DisciplinaCodigo.ToString(),
-                                                                                              periodoEscolar.Bimestre);
-            }
+            var frequenciaAluno = await consultasFrequencia.ObterFrequenciaGeralAlunoPorTurmaEComponente(aluno.CodigoAluno, turma.CodigoTurma, filtros.DisciplinaCodigo.ToString());
 
             var fechamentoFinalAluno = new FechamentoFinalConsultaRetornoAlunoDto
             {
                 Nome = aluno.NomeAluno,
-                TotalAusenciasCompensadas = frequenciaAluno.TotalCompensacoes,
-                Frequencia = frequenciaAluno.PercentualFrequencia,
-                TotalFaltas = frequenciaAluno.TotalAusencias,
+                TotalAusenciasCompensadas = frequenciaAluno?.TotalCompensacoes ?? 0,
+                Frequencia = frequenciaAluno?.PercentualFrequencia ?? 100,
+                TotalFaltas = frequenciaAluno?.TotalAusencias ?? 0,
                 NumeroChamada = aluno.NumeroAlunoChamada
             };
             return fechamentoFinalAluno;

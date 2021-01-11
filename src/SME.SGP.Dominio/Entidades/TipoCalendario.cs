@@ -16,5 +16,14 @@
                 return 2;
             else return 4;
         }
+
+        public Modalidade ObterModalidadeTurma()
+        {
+            return Modalidade == ModalidadeTipoCalendario.EJA ?
+                    Dominio.Modalidade.EJA :
+                    Modalidade == ModalidadeTipoCalendario.Infantil ?
+                        Dominio.Modalidade.Infantil :
+                        Dominio.Modalidade.Medio;
+        }
     }
 }

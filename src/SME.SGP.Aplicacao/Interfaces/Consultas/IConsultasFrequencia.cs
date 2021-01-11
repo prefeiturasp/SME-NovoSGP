@@ -8,7 +8,7 @@ namespace SME.SGP.Aplicacao
 {
     public interface IConsultasFrequencia
     {
-        Task<FrequenciaDto> ObterListaFrequenciaPorAula(long aulaId);
+        Task<FrequenciaDto> ObterListaFrequenciaPorAula(long aulaId, long? disciplinaId = null);
 
         Task<bool> FrequenciaAulaRegistrada(long aulaId);
 
@@ -21,5 +21,6 @@ namespace SME.SGP.Aplicacao
         Task<double> ObterFrequenciaMedia(DisciplinaDto disciplina);
 
         Task<double> ObterFrequenciaGeralAluno(string alunoCodigo, string turmaCodigo, string componenteCurricularCodigo = "");
+        Task<FrequenciaAluno> ObterFrequenciaGeralAlunoPorTurmaEComponente(string alunoCodigo, string turmaCodigo, string componenteCurricularCodigo = "");
     }
 }

@@ -12,24 +12,24 @@ namespace SME.SGP.Aplicacao
 {
     public class IncluirFilaExclusaoAulaRecorrenteCommandHandler : IRequestHandler<IncluirFilaExclusaoAulaRecorrenteCommand, bool>
     {
-        private readonly IServicoFila servicoFila;
+        private readonly IMediator mediator;
 
-        public IncluirFilaExclusaoAulaRecorrenteCommandHandler(IServicoFila servicoFila)
+        public IncluirFilaExclusaoAulaRecorrenteCommandHandler(IMediator mediator)
         {
-            this.servicoFila = servicoFila ?? throw new ArgumentNullException(nameof(servicoFila));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public Task<bool> Handle(IncluirFilaExclusaoAulaRecorrenteCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(IncluirFilaExclusaoAulaRecorrenteCommand request, CancellationToken cancellationToken)
         {
             var command = new ExcluirAulaRecorrenteCommand(request.AulaId,
                                                            request.Recorrencia,
                                                            request.ComponenteCurricularNome,
                                                            request.Usuario);
 
-            servicoFila.PublicaFilaWorkerSgp(new PublicaFilaSgpDto(RotasRabbit.RotaExcluirAulaRecorrencia, command, Guid.NewGuid(), request.Usuario, true));
+            await mediator.Send(new PublicaFilaWorkerSgpCommand(RotasRabbit.RotaExcluirAulaRecorrencia, command, Guid.NewGuid(), request.Usuario, true));
             SentrySdk.AddBreadcrumb($"Incluir fila exclusão de aula recorrente", "RabbitMQ");
 
-            return Task.FromResult(true);
+            return true;
         }
     }
 }

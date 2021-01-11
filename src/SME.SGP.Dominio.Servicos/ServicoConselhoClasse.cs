@@ -137,6 +137,7 @@ namespace SME.SGP.Dominio.Servicos
                 throw e;
             }
 
+            long conselhoClasseAlunoId = 0;
             try
             {
                 if (conselhoClasseId == 0)
@@ -150,7 +151,7 @@ namespace SME.SGP.Dominio.Servicos
 
                     conselhoClasseId = conselhoClasse.Id;
 
-                    long conselhoClasseAlunoId = await SalvarConselhoClasseAlunoResumido(conselhoClasse.Id, alunoCodigo);
+                    conselhoClasseAlunoId = await SalvarConselhoClasseAlunoResumido(conselhoClasse.Id, alunoCodigo);
 
                     conselhoClasseNota = ObterConselhoClasseNota(conselhoClasseNotaDto, conselhoClasseAlunoId);
 
@@ -162,7 +163,7 @@ namespace SME.SGP.Dominio.Servicos
                     var conselhoClasseAluno = await repositorioConselhoClasseAluno.ObterPorConselhoClasseAlunoCodigoAsync(conselhoClasseId, alunoCodigo);
                     unitOfWork.IniciarTransacao();
 
-                    var conselhoClasseAlunoId = conselhoClasseAluno != null ? conselhoClasseAluno.Id : await SalvarConselhoClasseAlunoResumido(conselhoClasseId, alunoCodigo);
+                    conselhoClasseAlunoId = conselhoClasseAluno != null ? conselhoClasseAluno.Id : await SalvarConselhoClasseAlunoResumido(conselhoClasseId, alunoCodigo);
 
                     conselhoClasseNota = await repositorioConselhoClasseNota.ObterPorConselhoClasseAlunoComponenteCurricularAsync(conselhoClasseAlunoId, conselhoClasseNotaDto.CodigoComponenteCurricular);
 
@@ -198,12 +199,19 @@ namespace SME.SGP.Dominio.Servicos
                     unitOfWork.PersistirTransacao();
                 }
             }
-
             catch (Exception e)
             {
                 unitOfWork.Rollback();
                 throw e;
             }
+
+            // TODO Verificar se o fechamentoTurma.Turma carregou UE
+            if (await VerificaNotasTodosComponentesCurriculares(alunoCodigo, fechamentoTurma.Turma, fechamentoTurma.PeriodoEscolarId))
+                await VerificaRecomendacoesAluno(conselhoClasseAlunoId);
+
+            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            await mediator.Send(new PublicaFilaAtualizacaoSituacaoConselhoClasseCommand(conselhoClasseId, usuarioLogado));
+
             var auditoria = (AuditoriaDto)conselhoClasseNota;
             var conselhoClasseNotaRetorno = new ConselhoClasseNotaRetornoDto()
             {
@@ -212,6 +220,21 @@ namespace SME.SGP.Dominio.Servicos
                 Auditoria = auditoria
             };
             return conselhoClasseNotaRetorno;
+        }
+
+        private async Task VerificaRecomendacoesAluno(long conselhoClasseAlunoId)
+        {
+            var conselhoClasseAluno = await repositorioConselhoClasseAluno.ObterPorIdAsync(conselhoClasseAlunoId);
+
+            if (string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesAluno) || string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesFamilia))
+            {
+                var recomendacoes = await mediator.Send(new ObterTextoRecomendacoesAlunoFamiliaQuery());
+
+                conselhoClasseAluno.RecomendacoesAluno = string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesAluno) ? recomendacoes.recomendacoesAluno : conselhoClasseAluno.RecomendacoesAluno;
+                conselhoClasseAluno.RecomendacoesFamilia = string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesFamilia) ? recomendacoes.recomendacoesFamilia : conselhoClasseAluno.RecomendacoesFamilia;
+
+                await repositorioConselhoClasseAluno.SalvarAsync(conselhoClasseAluno);
+            }
         }
 
         private async Task<long> SalvarConselhoClasseAlunoResumido(long conselhoClasseId, string alunoCodigo)

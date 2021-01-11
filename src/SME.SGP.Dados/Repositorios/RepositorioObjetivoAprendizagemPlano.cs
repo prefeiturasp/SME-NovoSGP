@@ -84,7 +84,11 @@ namespace SME.SGP.Dados.Repositorios
             inner join objetivo_aprendizagem oa on oa.Id = po.objetivo_aprendizagem_id
             where pa.turma_id = @turmaId
               and pe.bimestre = @bimestre
-              and pa.componente_curricular_id = @componenteCurricularId");
+              and pa.componente_curricular_id = @componenteCurricularId
+              and pa.excluido = false
+              and pc.excluido = false
+              and po.excluido = false
+              and ppe.excluido = false");
 
             if (ehRegencia)
                 query.AppendLine(" and cc.id = @disciplinaId");
