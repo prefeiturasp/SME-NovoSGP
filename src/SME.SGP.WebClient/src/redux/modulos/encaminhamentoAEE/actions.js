@@ -13,6 +13,11 @@ export const setExibirModalAnotacao = payload => ({
   payload,
 });
 
+export const setDadosEstudanteObjectCardEncaminhamento = payload => ({
+  type: '@encaminhamentoAEE/setDadosEstudanteObjectCardEncaminhamento',
+  payload,
+});
+
 export const setExibirModalAviso = payload => ({
   type: '@encaminhamentoAEE/setExibirModalAviso',
   payload,
@@ -20,5 +25,10 @@ export const setExibirModalAviso = payload => ({
 
 export const setDadosModalAviso = payload => ({
   type: '@encaminhamentoAEE/setDadosModalAviso',
+  payload,
+});
+
+export const setDadosSecaoLocalizarEstudante = payload => ({
+  type: '@encaminhamentoAEE/setDadosSecaoLocalizarEstudante',
   payload,
 });
