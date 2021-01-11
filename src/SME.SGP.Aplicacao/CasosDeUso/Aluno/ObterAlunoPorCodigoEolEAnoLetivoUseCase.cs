@@ -21,6 +21,7 @@ namespace SME.SGP.Aplicacao
                 NomeAluno = !string.IsNullOrEmpty(alunoPorTurmaResposta.NomeAluno) ? alunoPorTurmaResposta.NomeAluno : "",
                 NumeroAlunoChamada = alunoPorTurmaResposta.NumeroAlunoChamada,
                 DataNascimento = alunoPorTurmaResposta.DataNascimento.ToString("dd/MM/yyyy"),
+                DataSituacao = alunoPorTurmaResposta.DataSituacao,                
                 CodigoAluno = alunoPorTurmaResposta.CodigoAluno,
                 SituacaoMatricula = $@"{alunoPorTurmaResposta.SituacaoMatricula} em {alunoPorTurmaResposta.DataSituacao.ToString("dd/MM/yyyy")}",
                 TurmaEscola = await OberterNomeTurmaFormatado(alunoPorTurmaResposta.CodigoTurma)
