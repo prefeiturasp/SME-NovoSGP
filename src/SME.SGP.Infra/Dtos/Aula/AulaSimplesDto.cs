@@ -8,5 +8,7 @@ namespace SME.SGP.Infra
     {
         public long AulaId { get; set; }
         public bool AulaCJ { get; set; }
+        public string ProfessorRf { get; set; }
+        public string CriadoPor { get; set; }
     }
 }
