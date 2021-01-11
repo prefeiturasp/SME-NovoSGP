@@ -7,16 +7,17 @@ const inicial = {
   dadosAlunoObjectCard: {},
   dadosParaSalvarNovoRegistro: {},
   dadosPrincipaisRegistroIndividual: {},
+  dadosRegistroAtual: {},
   desabilitarCampos: false,
+  exibirLoaderConteudoRegistroAnteriores: false,
+  exibirLoaderGeralRegistroAnteriores: false,
   exibirLoaderGeralRegistroIndividual: false,
   expandirLinha: [],
-  registroIndividualEmEdicao: false,
-  registroAnteriorEmEdicao: false,
-  resetDataNovoRegistroIndividual: false,
-  registroAnteriorId: {},
-  exibirLoaderGeralRegistroAnteriores: false,
-  exibirLoaderConteudoRegistroAnteriores: false,
   recolherRegistrosAnteriores: false,
+  registroAnteriorEmEdicao: false,
+  registroAnteriorId: {},
+  registroIndividualEmEdicao: false,
+  resetDataNovoRegistroIndividual: false,
 };
 
 export default function RegistroIndividual(state = inicial, action) {
@@ -153,12 +154,12 @@ export default function RegistroIndividual(state = inicial, action) {
           registroAnteriorId: action.payload,
         };
       }
-      case '@registroIndividual/atualizaDadosParaSalvarNovoRegistro': {
+      case '@registroIndividual/atualizaDadosRegistroAtual': {
         return {
           ...draft,
-          dadosParaSalvarNovoRegistro: {
-            ...state.dadosParaSalvarNovoRegistro,
-            id: action.payload,
+          dadosRegistroAtual: {
+            ...state.dadosRegistroAtual,
+            ...action.payload,
           },
         };
       }
@@ -178,6 +179,12 @@ export default function RegistroIndividual(state = inicial, action) {
         return {
           ...draft,
           recolherRegistrosAnteriores: action.payload,
+        };
+      }
+      case '@registroIndividual/setDadosRegistroAtual': {
+        return {
+          ...draft,
+          dadosRegistroAtual: action.payload,
         };
       }
       default:
