@@ -222,9 +222,15 @@ namespace SME.SGP.Worker.RabbitMQ
             return Task.CompletedTask;
         }
 
-        public Task StartAsync(CancellationToken stoppingToken)
+        public async Task StartAsync(CancellationToken stoppingToken)
         {
             stoppingToken.ThrowIfCancellationRequested();
+            using (var scope = serviceScopeFactory.CreateScope())
+            {
+                var casoDeUso = scope.ServiceProvider.GetService<IGerarPendenciaAusenciaRegistroIndividualUseCase>();
+                var retorno = await casoDeUso.Executar(new MensagemRabbit(new { }, Guid.Empty, "", "", null));
+            }
+
             var consumer = new EventingBasicConsumer(canalRabbit);
             consumer.Received += async (ch, ea) =>
             {
@@ -233,7 +239,7 @@ namespace SME.SGP.Worker.RabbitMQ
             };
 
             canalRabbit.BasicConsume(RotasRabbit.FilaSgp, false, consumer);
-            return Task.CompletedTask;
+            return;// Task.CompletedTask;
         }
     }
 }
