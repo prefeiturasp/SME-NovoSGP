@@ -11,8 +11,7 @@ namespace SME.SGP.Infra.Dtos
         public string NomeSocialAluno { get; set; }
         public int NumeroAlunoChamada { get; set; }
         public string DataNascimento { get; set; }
-        public DateTime DataSituacao { get; set; }
-        public DateTime DataMatricula { get; set; }
+        public DateTime DataSituacao { get; set; }        
         public string SituacaoMatricula { get; set; }
         public string TurmaEscola { get; set; }
     }
