@@ -67,10 +67,26 @@ pipeline {
             agent {
                    label 'master'
                  }
+            stage('Functional regression tests') {
+            agent { docker {
+                image 'ppodgorsek/robot-framework:latest'
+                args '--shm-size=1g -u root' }
+            }
+            environment {
+                ROBOT_TESTS_DIR = "$WORKSPACE/teste"
+                ROBOT_REPORTS_DIR = "$WORKSPACE/robot-reports"
+                BROWSER = 'chrome'
+                SERVER = 'dev-novosgp.sme.prefeitura.sp.gov.br'
+                SGP_USER = '7944560'
+                SGP_PASS = 'Sgp@1234'
+            }
             steps {
                 checkout scm
-                sh "docker run --user=1001:1001 --shm-size=1g -e BROWSER='chrome' -e SERVER='dev-novosgp.sme.prefeitura.sp.gov.br' -e SGP_USER='7944560' -e SGP_PASS='Sgp@1234' -v $WORKSPACE/teste:/opt/robotframework/tests:Z -v $WORKSPACE/robot-reports:/opt/robotframework/reports:Z ppodgorsek/robot-framework:latest"
+                sh '''
+                    /opt/robotframework/bin/run-tests-in-virtual-screen.sh
+                '''
             }
+        }
         }
 
       stage('Deploy DEV') {
