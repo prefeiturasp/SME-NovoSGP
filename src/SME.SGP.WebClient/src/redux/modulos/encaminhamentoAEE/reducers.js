@@ -4,6 +4,7 @@ const inicial = {
   expandirLinhaAusenciaEstudante: [],
   dadosModalAnotacao: null,
   exibirModalAnotacao: false,
+  exibirModalAviso: false,
 };
 
 export default function EncaminhamentoAEE(state = inicial, action) {
@@ -25,6 +26,18 @@ export default function EncaminhamentoAEE(state = inicial, action) {
         return {
           ...draft,
           exibirModalAnotacao: action.payload,
+        };
+      }
+      case '@encaminhamentoAEE/setExibirModalAviso': {
+        return {
+          ...draft,
+          exibirModalAviso: action.payload,
+        };
+      }
+      case '@encaminhamentoAEE/setDadosModalAviso': {
+        return {
+          ...draft,
+          dadosModalAviso: action.payload,
         };
       }
 

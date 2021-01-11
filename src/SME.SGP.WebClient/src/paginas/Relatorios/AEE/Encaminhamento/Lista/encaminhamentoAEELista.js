@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   CheckboxComponent,
   ListaPaginada,
@@ -17,8 +17,15 @@ import { erros } from '~/servicos/alertas';
 import history from '~/servicos/history';
 import ServicoEncaminhamentoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoEncaminhamentoAEE';
 import FiltroHelper from '~componentes-sgp/filtro/helper';
+import {
+  setDadosModalAviso,
+  setExibirModalAviso,
+} from '~/redux/modulos/encaminhamentoAEE/actions';
+import ModalAvisoNovoEncaminhamentoAEE from './Componentes/AvisoCadastro/modalAvisoCadastro';
 
 const EncaminhamentoAEELista = () => {
+  const dispatch = useDispatch();
+
   const codigosAlunosSelecionados = useSelector(
     state => state.localizadorEstudante.codigosAluno
   );
@@ -260,7 +267,7 @@ const EncaminhamentoAEELista = () => {
   };
 
   const onClickNovo = () => {
-    console.log('onClickNovo');
+    ServicoEncaminhamentoAEE.obterAvisoModal();
   };
 
   const onChangeUe = ue => {
@@ -304,6 +311,7 @@ const EncaminhamentoAEELista = () => {
 
   return (
     <>
+      <ModalAvisoNovoEncaminhamentoAEE />
       <Cabecalho pagina="Encaminhamento AEE" />
       <Card>
         <div className="col-md-12">
