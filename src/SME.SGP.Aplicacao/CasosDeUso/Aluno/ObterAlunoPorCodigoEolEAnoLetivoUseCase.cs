@@ -13,7 +13,7 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<AlunoReduzidoDto> Executar(string codigoAluno, int anoLetivo)
-        {            
+        {
             var alunoPorTurmaResposta = await mediator.Send(new ObterAlunoPorCodigoEolQuery(codigoAluno, anoLetivo));
 
             var alunoReduzido = new AlunoReduzidoDto()
@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
                 NomeAluno = !string.IsNullOrEmpty(alunoPorTurmaResposta.NomeAluno) ? alunoPorTurmaResposta.NomeAluno : "",
                 NumeroAlunoChamada = alunoPorTurmaResposta.NumeroAlunoChamada,
                 DataNascimento = alunoPorTurmaResposta.DataNascimento.ToString("dd/MM/yyyy"),
-                DataSituacao = alunoPorTurmaResposta.DataSituacao,                
+                DataSituacao = alunoPorTurmaResposta.DataSituacao,
                 CodigoAluno = alunoPorTurmaResposta.CodigoAluno,
                 SituacaoMatricula = $@"{alunoPorTurmaResposta.SituacaoMatricula} em {alunoPorTurmaResposta.DataSituacao.ToString("dd/MM/yyyy")}",
                 TurmaEscola = await OberterNomeTurmaFormatado(alunoPorTurmaResposta.CodigoTurma)
@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
             var turmaNome = "";
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(turmaId));
 
-            if(turma != null)
+            if (turma != null)
                 turmaNome = $"{turma.ModalidadeCodigo.ShortName()} - {turma.Nome}";
 
             return turmaNome;
