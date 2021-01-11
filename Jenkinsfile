@@ -82,7 +82,7 @@ pipeline {
             ROBOT_REPORTS_DIR = "$WORKSPACE/teste/SME.SGP.WebClient.RPA/reports/"
           }
           steps {
-            sh "chmod -r 777 $WORKSPACE/teste && /opt/robotframework/bin/run-tests-in-virtual-screen.sh"
+            sh "chmod -R 755 $WORKSPACE/teste && /opt/robotframework/bin/run-tests-in-virtual-screen.sh"
           }
         }
 
