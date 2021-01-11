@@ -32,7 +32,8 @@ const LocalizadorEstudante = props => {
       alunoCodigo: '',
       alunoNome: '',
     });
-  }, [ueId]);
+    setDataSource([]);
+  }, [ueId, codigoTurma]);
 
   const onChangeNome = async valor => {
     valor = removerNumeros(valor);
@@ -53,16 +54,19 @@ const LocalizadorEstudante = props => {
 
     if (valor.length < 3) return;
 
-    const retorno = await service
-      .buscarPorNome({
-        nome: valor,
-        codigoUe: ueId,
-        anoLetivo,
-        codigoTurma,
-      })
-      .catch(() => {
-        setDataSource([]);
-      });
+    const params = {
+      nome: valor,
+      codigoUe: ueId,
+      anoLetivo,
+    };
+
+    if (codigoTurma) {
+      params.codigoTurma = codigoTurma;
+    }
+
+    const retorno = await service.buscarPorNome(params).catch(() => {
+      setDataSource([]);
+    });
 
     if (retorno && retorno?.data?.items?.length > 0) {
       setDataSource([]);
@@ -200,7 +204,7 @@ LocalizadorEstudante.defaultProps = {
   desabilitado: false,
   ueId: '',
   anoLetivo: '',
-  codigoTurma: 0,
+  codigoTurma: '',
   exibirCodigoEOL: true,
 };
 

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
@@ -87,13 +88,17 @@ namespace SME.SGP.Api.Controllers
         [HttpGet]
         [ProducesResponseType(typeof(PaginacaoResultadoDto<EncaminhamentosAEEResumoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public IActionResult ObterEncaminhamentos()
+        public async Task<IActionResult> ObterEncaminhamentos([FromBody] FiltroPesquisaEncaminhamentosAEEDto filtro, [FromServices] IObterEncaminhamentosAEEUseCase useCase)
         {
-            var situacoes = Enum.GetValues(typeof(SituacaoAEE))
-                        .Cast<SituacaoAEE>()
-                        .Select(d => new { codigo = (int)d, descricao = d.Name() })
-                        .ToList();
-            return Ok(situacoes);
+            return Ok(await useCase.Executar(filtro));
+        }
+
+        [HttpDelete("{encaminhamentoAeeId}")]
+        [ProducesResponseType(typeof(EncaminhamentoAEEDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ExcluirEncaminhamento(long encaminhamentoAeeId, [FromServices] IExcluirEncaminhamentoAEEUseCase useCase)
+        {
+            return Ok(await useCase.Executar(encaminhamentoAeeId));
         }
     }
 }
