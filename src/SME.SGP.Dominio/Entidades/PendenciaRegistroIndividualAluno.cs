@@ -1,4 +1,4 @@
-﻿namespace SME.SGP.Dominio.Entidades
+﻿namespace SME.SGP.Dominio
 {
     public class PendenciaRegistroIndividualAluno
     {
@@ -6,11 +6,13 @@
         public long CodigoAluno { get; set; }
         public PendenciaRegistroIndividual PendenciaRegistroIndividual { get; set; }
         public long PendenciaRegistroIndividualId { get; set; }
+        public SituacaoPendenciaRegistroIndividualAluno Situacao { get; set; }
 
         public PendenciaRegistroIndividualAluno(long codigoAluno, PendenciaRegistroIndividual pendenciaRegistroIndividual)
         {
             SetCodigoAluno(codigoAluno);
             SetPendenciaRegistroIndividual(pendenciaRegistroIndividual);
+            Situacao = SituacaoPendenciaRegistroIndividualAluno.Pendente;
         }
 
         protected PendenciaRegistroIndividualAluno()
