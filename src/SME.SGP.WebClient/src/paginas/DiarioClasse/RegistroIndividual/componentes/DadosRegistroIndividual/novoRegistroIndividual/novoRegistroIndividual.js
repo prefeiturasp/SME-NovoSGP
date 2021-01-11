@@ -175,6 +175,7 @@ const NovoRegistroIndividual = () => {
     ) {
       dispatch(setAuditoriaNovoRegistro(null));
       dispatch(setDadosParaSalvarNovoRegistro({}));
+      dispatch(setDadosRegistroAtual({}));
       obterRegistroIndividualPorData(dataEscolhida);
     }
   }, [
