@@ -27,8 +27,7 @@ namespace SME.SGP.Api.Controllers
             return Ok(await obterAlunosPorCodigoEolNomeUseCase.Executar(filtroBuscaAlunosDto));
         }
 
-        [HttpPost]
-        [Route("{codigoAluno}/anosLetivos/{anoLetivo}")]
+        [HttpGet("{codigoAluno}/anosLetivos/{anoLetivo}")]
         [ProducesResponseType(typeof(AlunoReduzidoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
