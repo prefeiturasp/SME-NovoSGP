@@ -103,7 +103,6 @@ namespace SME.SGP.Aplicacao
         private async Task AdicionarUsuariosDaPendenciaAsync(Pendencia pendencia, Turma turma, IEnumerable<string> professoresRfs)
         {
             var usuariosIds = await mediator.Send(new ObterUsuariosIdPorCodigosRfQuery(professoresRfs.ToList()));
-            usuariosIds = new List<long> { 47, 49 };
             if (!usuariosIds?.Any() ?? true)
                 throw new NegocioException($"Não foram encontrados usuários para os professores da turma {turma.CodigoTurma}.");
 
