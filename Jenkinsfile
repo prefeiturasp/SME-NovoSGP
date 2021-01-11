@@ -1,9 +1,5 @@
 pipeline {
-    agent {
-      node {
-        label 'dockerdotnet2'
-      }
-    }
+    agent none
 
     options {
       buildDiscarder(logRotator(numToKeepStr: '5', artifactNumToKeepStr: '5'))
@@ -11,9 +7,9 @@ pipeline {
       skipDefaultCheckout()
     }
 
-
     stages {
       stage('CheckOut') {
+        agent any
         steps {
           checkout scm
           stash name:'scm', includes:'*'
@@ -21,6 +17,9 @@ pipeline {
        }
 
       stage('Início Análise Código') {
+        agent {
+          label 'dockerdotnet2'
+        }
           when {
             branch 'development-NaoExecutar'
           }
@@ -39,21 +38,30 @@ pipeline {
        }
 
       stage('Build projeto') {
-            steps {
-            sh "echo executando build de projeto"
-            sh 'dotnet build'
-            }
+        agent {
+          label 'dockerdotnet2'
         }
+        steps {
+          sh "echo executando build de projeto"
+          sh 'dotnet build'
+        }
+      }
 
 
-            stage('Testes') {
+        stage('Testes') {
+          agent {
+            label 'dockerdotnet2'
+          }
             steps {
             //Executa os testes
              sh 'dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover'
             }
         }
 
-              stage('Fim Análise Código') {
+      stage('Fim Análise Código') {
+        agent {
+          label 'dockerdotnet2'
+        }
           when {
             branch 'development-NaoExecutar'
           }
@@ -68,9 +76,7 @@ pipeline {
             branch 'story/27640'
           }
           agent { 
-            node {
-              label 'master'
-            }
+            label 'master'
             docker {
               image 'ppodgorsek/robot-framework:latest'
               args '--shm-size=1g -u root -v $PWD:/opt/robotframework/test -w /opt/robotframework/test'
@@ -93,6 +99,9 @@ pipeline {
         }
 
       stage('Deploy DEV') {
+        agent {
+          label 'dockerdotnet2'
+        }
         when {
           branch 'development'
         }
@@ -144,6 +153,9 @@ pipeline {
         }
 
           stage('Deploy DEV-rc2') {
+            agent {
+              label 'dockerdotnet2'
+            }
             when {
                 branch 'development-r2'
             }
@@ -198,6 +210,9 @@ pipeline {
 
 
       stage('Deploy HOM') {
+        agent {
+          label 'dockerdotnet2'
+        }
             when {
                 branch 'release'
             }
@@ -255,6 +270,9 @@ pipeline {
         }
 
         stage('Deploy HOM-R2') {
+          agent {
+            label 'dockerdotnet2'
+          }
             when {
                 branch 'release-r2'
             }
@@ -313,7 +331,9 @@ pipeline {
 
 
         stage('Deploy PROD') {
-
+          agent {
+            label 'dockerdotnet2'
+          }
             when {
                 branch 'master'
             }
