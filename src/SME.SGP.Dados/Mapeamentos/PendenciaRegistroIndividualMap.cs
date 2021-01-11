@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dominio.Entidades;
+﻿using SME.SGP.Dominio;
+using SME.SGP.Dominio.Entidades;
 
 namespace SME.SGP.Dados.Mapeamentos
 {
@@ -6,7 +7,7 @@ namespace SME.SGP.Dados.Mapeamentos
     {
         public PendenciaRegistroIndividualMap()
         {
-            ToTable("pedencia_registro_individual");
+            ToTable("pendencia_registro_individual");
             Map(x => x.PendenciaId).ToColumn("pendencia_id");
             Map(x => x.TurmaId).ToColumn("turma_id");
         }
