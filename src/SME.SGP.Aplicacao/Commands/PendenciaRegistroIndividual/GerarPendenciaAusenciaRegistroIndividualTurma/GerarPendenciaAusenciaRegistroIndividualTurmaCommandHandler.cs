@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
         private readonly IMediator mediator;
         private readonly IUnitOfWork unitOfWork;
 
-        private const int DiasDeAusencia = 15; // Será feita parametrização desta constante em uma task separada
+        private const int DiasDeAusenciaPadrao = 15;
         private const string DescricaoBase = "As crianças abaixo estão sem registro individual a mais de 15 dias:";
 
         public GerarPendenciaAusenciaRegistroIndividualTurmaCommandHandler(IRepositorioPendencia repositorioPendencia, IRepositorioPendenciaUsuario repositorioPendenciaUsuario,
@@ -45,7 +45,8 @@ namespace SME.SGP.Aplicacao
                 return retorno;
             }
 
-            var query = new ListarAlunosTurmaComAusenciaRegistroIndividualPorDiasQuery(turma.Id, turma.CodigoTurma, DiasDeAusencia);
+            var diasDeAusencia = await ObterDiasDeAusenciaParaPendenciaRegistroIndividualAsync();
+            var query = new ListarAlunosTurmaComAusenciaRegistroIndividualPorDiasQuery(turma.Id, turma.CodigoTurma, diasDeAusencia);
             var alunosTurmaComAusenciaRegistroIndividualPorDias = await mediator.Send(query);
             if (!alunosTurmaComAusenciaRegistroIndividualPorDias?.Any() ?? true)
                 return retorno;
@@ -70,6 +71,13 @@ namespace SME.SGP.Aplicacao
             }
 
             return retorno;
+        }
+
+        private async Task<int> ObterDiasDeAusenciaParaPendenciaRegistroIndividualAsync()
+        {
+            var query = new ObterParametroSistemaPorTipoQuery(TipoParametroSistema.PendenciaPorAusenciaDeRegistroIndividual);
+            int.TryParse(await mediator.Send(query), out var parametroDiasDeAusencia);
+            return parametroDiasDeAusencia > 0 ? parametroDiasDeAusencia : DiasDeAusenciaPadrao;
         }
 
         private async Task CriarNovaPendenciaAusenciaRegistroIndividualAsync(Turma turma, IEnumerable<AlunoPorTurmaResposta> alunosTurmaComAusenciaRegistroIndividualPorDias)
