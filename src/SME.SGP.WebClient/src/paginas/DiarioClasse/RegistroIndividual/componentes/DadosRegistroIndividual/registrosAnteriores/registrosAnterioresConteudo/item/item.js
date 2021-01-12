@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Tooltip } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { Auditoria, Button, Colors, Editor } from '~/componentes';
+import { Auditoria, Button, Colors, JoditEditor } from '~/componentes';
 
 import {
   confirmar,
@@ -84,6 +84,7 @@ const Item = memo(({ dados, setCarregandoGeral }) => {
 
   const resetarInfomacoes = () => {
     setEditando(false);
+    setRegistroAlterado(registro);
     dispatch(setRegistroAnteriorEmEdicao(false));
     dispatch(setRegistroAnteriorId({}));
   };
@@ -128,12 +129,12 @@ const Item = memo(({ dados, setCarregandoGeral }) => {
   return (
     <div className="row justify-content-between">
       <div className="p-0 col-12">
-        <Editor
+        <JoditEditor
           validarSeTemErro={validarSeTemErro}
           mensagemErro="Campo obrigatório"
           label={`Registro - ${window.moment(data).format('DD/MM/YYYY')}`}
           id={`${id}-editor`}
-          inicial={registroAlterado}
+          value={registroAlterado}
           onChange={onChange}
           desabilitar={!editando}
         />

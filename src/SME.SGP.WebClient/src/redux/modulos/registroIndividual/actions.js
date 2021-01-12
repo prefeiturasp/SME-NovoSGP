@@ -102,3 +102,8 @@ export const setDadosRegistroAtual = payload => ({
   type: '@registroIndividual/setDadosRegistroAtual',
   payload,
 });
+
+export const setPodeRealizarNovoRegistro = payload => ({
+  type: '@registroIndividual/setPodeRealizarNovoRegistro',
+  payload,
+});

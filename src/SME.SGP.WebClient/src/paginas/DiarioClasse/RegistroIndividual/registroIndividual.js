@@ -45,8 +45,8 @@ const RegistroIndividual = () => {
     state => state.registroIndividual.componenteCurricularSelecionado
   );
 
-  const dadosPrincipaisRegistroIndividual = useSelector(
-    state => state.registroIndividual.dadosPrincipaisRegistroIndividual
+  const podeRealizarNovoRegistro = useSelector(
+    state => state.registroIndividual.podeRealizarNovoRegistro
   );
   const exibirLoaderGeralRegistroIndividual = useSelector(
     state => state.registroIndividual.exibirLoaderGeralRegistroIndividual
@@ -137,16 +137,13 @@ const RegistroIndividual = () => {
   };
 
   const onChangeAlunoSelecionado = async aluno => {
-    const temDadosRegistros = Object.keys(dadosPrincipaisRegistroIndividual)
-      .length;
-
     MetodosRegistroIndividual.verificarSalvarRegistroIndividual();
     MetodosRegistroIndividual.resetarInfomacoes(true);
     if (!aluno.desabilitado) {
       dispatch(setDadosAlunoObjectCard(aluno));
     }
 
-    if (temDadosRegistros) {
+    if (podeRealizarNovoRegistro) {
       dispatch(setRecolherRegistrosAnteriores(true));
     }
   };
@@ -160,7 +157,7 @@ const RegistroIndividual = () => {
     return () => {
       resetarTela();
     };
-  }, [turmaSelecionada, validaSomenteConsulta]);
+  }, [turmaSelecionada, validaSomenteConsulta, resetarTela]);
 
   return (
     <Loader loading={exibirLoaderGeralRegistroIndividual} className="w-100">
