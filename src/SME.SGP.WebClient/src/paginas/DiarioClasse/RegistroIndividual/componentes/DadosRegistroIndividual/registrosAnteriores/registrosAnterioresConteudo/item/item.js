@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Tooltip } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
@@ -23,7 +23,7 @@ import { RotasDto } from '~/dtos';
 
 import { ContainerBotoes } from './item.css';
 
-const Item = memo(({ dados, setCarregandoGeral }) => {
+const Item = ({ dados, setCarregandoGeral }) => {
   const {
     alunoCodigo,
     auditoria,
@@ -37,8 +37,8 @@ const Item = memo(({ dados, setCarregandoGeral }) => {
   const [editando, setEditando] = useState(false);
   const [registroAlterado, setRegistroAlterado] = useState(registro);
 
-  const { registroAnteriorEmEdicao, registroAnteriorId } = useSelector(
-    store => store.registroIndividual
+  const registroAnteriorEmEdicao = useSelector(
+    store => store.registroIndividual.registroAnteriorEmEdicao
   );
   const { permissoes } = useSelector(state => state.usuario);
   const permissoesTela = permissoes[RotasDto.REGISTRO_INDIVIDUAL];
@@ -77,9 +77,9 @@ const Item = memo(({ dados, setCarregandoGeral }) => {
     }
   };
 
-  const onClickEditar = async idEscolhido => {
+  const onClickEditar = async () => {
     dispatch(setRegistroAnteriorEmEdicao(true));
-    dispatch(setRegistroAnteriorId(idEscolhido));
+    setEditando(true);
   };
 
   const resetarInfomacoes = () => {
@@ -108,27 +108,20 @@ const Item = memo(({ dados, setCarregandoGeral }) => {
 
     if (retorno?.status === 200) {
       sucesso('Registro editado com sucesso.');
-      dispatch(
-        alterarRegistroAnterior({
-          id,
-          registro: registroAlterado,
-          auditoria: retorno.data,
-        })
-      );
+      const dadosPraSalvar = {
+        id,
+        registro: registroAlterado,
+        auditoria: retorno.data,
+      };
+      dispatch(alterarRegistroAnterior(dadosPraSalvar));
+      setRegistroAlterado(registroAlterado);
       resetarInfomacoes();
     }
   };
 
-  useEffect(() => {
-    const ehMesmoId = registroAnteriorId === id;
-    if (ehMesmoId && !editando) {
-      setEditando(true);
-    }
-  }, [registroAnteriorId, editando, id]);
-
   return (
     <div className="row justify-content-between">
-      <div className="p-0 col-12">
+      <div className="p-0 col-12" style={{ minHeight: 200 }}>
         <JoditEditor
           validarSeTemErro={validarSeTemErro}
           mensagemErro="Campo obrigatório"
@@ -152,78 +145,74 @@ const Item = memo(({ dados, setCarregandoGeral }) => {
           />
         </div>
       )}
-      <ContainerBotoes className="d-flex">
-        {editando ? (
-          <div className="d-flex mt-2">
-            <Button
-              id="btn-cancelar-obs-novo"
-              label="Cancelar"
-              color={Colors.Roxo}
-              border
-              bold
-              className="mr-3"
-              onClick={onClickCancelar}
-              height="30px"
-            />
-            <Button
-              id="btn-salvar-obs-novo"
-              label="Salvar"
-              color={Colors.Roxo}
-              border
-              bold
-              onClick={onClickSalvar}
-              height="30px"
-            />
-          </div>
-        ) : (
-          <div className="d-flex mt-2">
-            <Tooltip title="Editar">
-              <span>
-                <Button
-                  id="btn-editar"
-                  icon="edit"
-                  iconType="far"
-                  color={Colors.Azul}
-                  border
-                  className="btn-acao mr-2"
-                  onClick={() => onClickEditar(id)}
-                  height="30px"
-                  width="30px"
-                  disabled={
-                    (registroAnteriorEmEdicao && !editando) ||
-                    (!editando && !permissoesTela.podeIncluir)
-                  }
-                />
-              </span>
-            </Tooltip>
-            <Tooltip title="Excluir">
-              <span>
-                <Button
-                  id="btn-excluir"
-                  icon="trash-alt"
-                  iconType="far"
-                  color={Colors.Azul}
-                  border
-                  className="btn-acao"
-                  onClick={() => onClickExcluir(id)}
-                  height="30px"
-                  width="30px"
-                  disabled={
-                    (registroAnteriorEmEdicao && !editando) ||
-                    (!editando && !permissoesTela.podeIncluir)
-                  }
-                />
-              </span>
-            </Tooltip>
-          </div>
-        )}
-      </ContainerBotoes>
+      {permissoesTela.podeIncluir && (
+        <ContainerBotoes className="d-flex">
+          {editando ? (
+            <div className="d-flex mt-2">
+              <Button
+                id="btn-cancelar-obs-novo"
+                label="Cancelar"
+                color={Colors.Roxo}
+                border
+                bold
+                className="mr-3"
+                onClick={onClickCancelar}
+                height="30px"
+              />
+              <Button
+                id="btn-salvar-obs-novo"
+                label="Salvar"
+                color={Colors.Roxo}
+                border
+                bold
+                onClick={onClickSalvar}
+                height="30px"
+              />
+            </div>
+          ) : (
+            <div className="d-flex mt-2">
+              <Tooltip title="Editar">
+                <span>
+                  <Button
+                    id="btn-editar"
+                    icon="edit"
+                    iconType="far"
+                    color={Colors.Azul}
+                    border
+                    className="btn-acao mr-2"
+                    onClick={onClickEditar}
+                    height="30px"
+                    width="30px"
+                    disabled={registroAnteriorEmEdicao && !editando}
+                  />
+                </span>
+              </Tooltip>
+              <Tooltip title="Excluir">
+                <span>
+                  <Button
+                    id="btn-excluir"
+                    icon="trash-alt"
+                    iconType="far"
+                    color={Colors.Azul}
+                    border
+                    className="btn-acao"
+                    onClick={() => onClickExcluir(id)}
+                    height="30px"
+                    width="30px"
+                    disabled={registroAnteriorEmEdicao && !editando}
+                  />
+                </span>
+              </Tooltip>
+            </div>
+          )}
+        </ContainerBotoes>
+      )}
     </div>
   );
-});
+};
 
 Item.propTypes = {
-  dados: PropTypes.checkPropTypes[PropTypes.any],
+  dados: PropTypes.instanceOf(Object),
   setCarregandoGeral: PropTypes.func,
 };
 

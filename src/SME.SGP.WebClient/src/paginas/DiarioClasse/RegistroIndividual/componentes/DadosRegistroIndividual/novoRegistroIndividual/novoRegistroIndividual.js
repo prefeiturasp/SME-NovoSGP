@@ -109,6 +109,7 @@ const NovoRegistroIndividual = () => {
         })
       );
       dispatch(setRegistroIndividualEmEdicao(true));
+      dispatch(setDesabilitarCampos(true));
     },
     [alunoCodigo, data, dispatch, idSecao]
   );
@@ -202,6 +203,12 @@ const NovoRegistroIndividual = () => {
     expandir,
   ]);
 
+  const mudarData = valor => {
+    if (valor) {
+      setData(valor);
+    }
+  };
+
   return (
     <>
       {exibirCollapse && (
@@ -222,36 +229,38 @@ const NovoRegistroIndividual = () => {
                 placeholder="Selecione"
                 valor={data}
                 formatoData="DD/MM/YYYY"
-                onChange={valor => setData(valor)}
+                onChange={mudarData}
                 desabilitarData={desabilitarData}
               />
             </div>
             <div className="pt-1">
               <Loader ignorarTip loading={carregandoNovoRegistro}>
-                <JoditEditor
-                  validarSeTemErro={validarSeTemErro}
-                  mensagemErro="Campo obrigatório"
-                  id={`secao-${idSecao}-editor`}
-                  value={registro}
-                  onChange={mudarEditor}
-                  desabilitar={
-                    desabilitarNovoRegistro || !permissoesTela.podeIncluir
-                  }
-                />
-              </Loader>
-              {auditoria && (
-                <div className="mt-1 ml-n3">
-                  <Auditoria
-                    ignorarMarginTop
-                    criadoEm={auditoria.criadoEm}
-                    criadoPor={auditoria.criadoPor}
-                    criadoRf={auditoria.criadoRF}
-                    alteradoPor={auditoria.alteradoPor}
-                    alteradoEm={auditoria.alteradoEm}
-                    alteradoRf={auditoria.alteradoRF}
+                <div style={{ minHeight: 200 }}>
+                  <JoditEditor
+                    validarSeTemErro={validarSeTemErro}
+                    mensagemErro="Campo obrigatório"
+                    id={`secao-${idSecao}-editor`}
+                    value={registro}
+                    onChange={mudarEditor}
+                    desabilitar={
+                      desabilitarNovoRegistro || !permissoesTela.podeIncluir
+                    }
                   />
                 </div>
-              )}
+                {auditoria && (
+                  <div className="mt-1 ml-n3">
+                    <Auditoria
+                      ignorarMarginTop
+                      criadoEm={auditoria.criadoEm}
+                      criadoPor={auditoria.criadoPor}
+                      criadoRf={auditoria.criadoRF}
+                      alteradoPor={auditoria.alteradoPor}
+                      alteradoEm={auditoria.alteradoEm}
+                      alteradoRf={auditoria.alteradoRF}
+                    />
+                  </div>
+                )}
+              </Loader>
             </div>
           </CardCollapse>
         </div>
