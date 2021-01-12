@@ -3,7 +3,7 @@ import produce from 'immer';
 const inicial = {
   alunosRegistroIndividual: [],
   auditoriaNovoRegistroIndividual: null,
-  componenteCurricularSelecionado: '',
+  componenteCurricularSelecionado: undefined,
   dadosAlunoObjectCard: {},
   dadosParaSalvarNovoRegistro: {},
   dadosPrincipaisRegistroIndividual: {},
