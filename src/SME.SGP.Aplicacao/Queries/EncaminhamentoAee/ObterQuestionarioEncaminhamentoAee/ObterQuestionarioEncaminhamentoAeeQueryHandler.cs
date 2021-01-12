@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<QuestaoAeeDto>> Handle(ObterQuestionarioEncaminhamentoAeeQuery request, CancellationToken cancellationToken)
         {
             var dadosQuestionario =
-                request.EncaminhamentoId.HasValue
+                !request.EncaminhamentoId.HasValue
                 ? await repositorioQuestaoEncaminhamento.ObterListaPorQuestionario(request.QuestionarioId)
                 : await repositorioQuestaoEncaminhamento.ObterListaPorQuestionarioEncaminhamento(request.QuestionarioId, request.EncaminhamentoId);
 
@@ -36,6 +36,11 @@ namespace SME.SGP.Aplicacao
 
             var questao = dadosQuestionario
                 .Where(dq => !questaoComplementar.Contains(dq.QuestaoId))
+                .GroupBy(
+                    questaoKey => questaoKey.QuestaoId,
+                    questaoValue => questaoValue,
+                    (key, value) => value.First()
+                )               
                 .Select(dq => ObterQuestao(dq.QuestaoId, dadosQuestionario))
                 .OrderBy(q => q.Ordem)
                 .ToArray();
@@ -77,7 +82,7 @@ namespace SME.SGP.Aplicacao
                             Nome = opcaoLista.OpcaoRespostaNome,
                             Ordem = opcaoLista.OpcaoRespostaOrdem,
                             Texto = opcaoLista.RespostaTexto,
-                            RespostaId = opcaoLista.RespostaId,
+                            RespostaEncaminhamentoId = opcaoLista.RespostaEncaminhamentoId,
                             QuestaoComplementar = opcaoLista.QuestaoComplementarId.HasValue
                                 ? ObterQuestao(opcaoLista.QuestaoComplementarId.Value, dadosQuestionario)
                                 : null
