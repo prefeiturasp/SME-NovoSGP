@@ -36,6 +36,11 @@ namespace SME.SGP.Aplicacao
 
             var questao = dadosQuestionario
                 .Where(dq => !questaoComplementar.Contains(dq.QuestaoId))
+                .GroupBy(
+                    questaoKey => questaoKey.QuestaoId,
+                    questaoValue => questaoValue,
+                    (key, value) => value.First()
+                )               
                 .Select(dq => ObterQuestao(dq.QuestaoId, dadosQuestionario))
                 .OrderBy(q => q.Ordem)
                 .ToArray();
