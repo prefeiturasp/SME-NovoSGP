@@ -9,6 +9,7 @@ import { erros, ServicoRegistroIndividual } from '~/servicos';
 import {
   setDadosPrincipaisRegistroIndividual,
   setExibirLoaderGeralRegistroAnteriores,
+  setPodeRealizarNovoRegistro,
 } from '~/redux/modulos/registroIndividual/actions';
 
 import Item from './item/item';
@@ -17,22 +18,29 @@ const RegistrosAnterioresConteudo = memo(() => {
   const [dataInicio, setDataInicio] = useState();
   const [dataFim, setDataFim] = useState();
   const [carregandoGeral, setCarregandoGeral] = useState(false);
+  const [numeroPagina, setNumeroPagina] = useState(1);
+  const [numeroRegistros, setNumeroRegistros] = useState(10);
 
-  const {
-    componenteCurricularSelecionado,
-    exibirLoaderGeralRegistroAnteriores,
-    dadosAlunoObjectCard,
-    dadosPrincipaisRegistroIndividual,
-  } = useSelector(store => store.registroIndividual);
-
+  const componenteCurricularSelecionado = useSelector(
+    store => store.registroIndividual.componenteCurricularSelecionado
+  );
+  const exibirLoaderGeralRegistroAnteriores = useSelector(
+    store => store.registroIndividual.exibirLoaderGeralRegistroAnteriores
+  );
+  const dadosAlunoObjectCard = useSelector(
+    store => store.registroIndividual.dadosAlunoObjectCard
+  );
+  const dadosPrincipaisRegistroIndividual = useSelector(
+    store => store.registroIndividual.dadosPrincipaisRegistroIndividual
+  );
   const { turmaSelecionada } = useSelector(state => state.usuario);
   const turmaCodigo = turmaSelecionada?.id || 0;
+  const { codigoEOL } = dadosAlunoObjectCard;
 
   const dispatch = useDispatch();
 
   const obterRegistroIndividualPorData = useCallback(
-    async (dataFormatadaInicio, dataFimEscolhida, codigoEOL) => {
-      dispatch(setExibirLoaderGeralRegistroAnteriores(true));
+    async (dataFormatadaInicio, dataFimEscolhida, pagina, registros) => {
       const retorno = await ServicoRegistroIndividual.obterRegistroIndividualPorPeriodo(
         {
           alunoCodigo: codigoEOL,
@@ -40,21 +48,39 @@ const RegistrosAnterioresConteudo = memo(() => {
           dataInicio: dataFormatadaInicio,
           dataFim: dataFimEscolhida,
           turmaCodigo,
+          numeroPagina: pagina,
+          numeroRegistros: registros,
         }
-      )
-        .catch(e => erros(e))
-        .finally(() => dispatch(setExibirLoaderGeralRegistroAnteriores(false)));
+      ).catch(e => erros(e));
 
       if (retorno?.data) {
         dispatch(setDadosPrincipaisRegistroIndividual(retorno.data));
+        dispatch(
+          setPodeRealizarNovoRegistro(retorno.data.podeRealizarNovoRegistro)
+        );
       }
     },
-    [dispatch, componenteCurricularSelecionado, turmaCodigo]
+    [codigoEOL, componenteCurricularSelecionado, dispatch, turmaCodigo]
   );
+
+  const verificarData = useCallback(() => {
+    const dataFormatadaInicio = dataInicio?.format('MM-DD-YYYY');
+    const dataFormatadaFim = dataFim?.format('MM-DD-YYYY');
+
+    const dataAtual = window.moment();
+    const dataAtualCompartiva = dataAtual.format('YYYY-MM-DD');
+    const dataFimComparativa = dataFim?.format('YYYY-MM-DD');
+    const ehMesmaData = window
+      .moment(dataAtualCompartiva)
+      .isSame(dataFimComparativa);
+
+    const dataAtualUmDia = dataAtual.subtract(1, 'days').format('MM-DD-YYYY');
+    const dataFimEscolhida = ehMesmaData ? dataAtualUmDia : dataFormatadaFim;
+    return [dataFormatadaInicio, dataFimEscolhida];
+  }, [dataInicio, dataFim]);
 
   useEffect(() => {
     const temDadosAlunos = Object.keys(dadosAlunoObjectCard).length;
-    const { codigoEOL } = dadosAlunoObjectCard;
     const temDadosRegistros = Object.keys(dadosPrincipaisRegistroIndividual)
       .length;
 
@@ -63,35 +89,33 @@ const RegistrosAnterioresConteudo = memo(() => {
       !temDadosRegistros &&
       !exibirLoaderGeralRegistroAnteriores &&
       dataInicio &&
-      dataFim
+      dataFim &&
+      numeroPagina &&
+      numeroRegistros
     ) {
-      const dataFormatadaInicio = dataInicio?.format('MM-DD-YYYY');
-      const dataFormatadaFim = dataFim?.format('MM-DD-YYYY');
-
-      const dataAtual = window.moment().format('YYYY-MM-DD');
-      const dataFimComparativa = dataFim?.format('YYYY-MM-DD');
-      const ehMesmaData = window.moment(dataAtual).isSame(dataFimComparativa);
-
-      const dataFimMenosUmDia = dataFim
-        ?.subtract(1, 'days')
-        .format('MM-DD-YYYY');
-      const dataFimEscolhida = ehMesmaData
-        ? dataFimMenosUmDia
-        : dataFormatadaFim;
-
-      obterRegistroIndividualPorData(
-        dataFormatadaInicio,
-        dataFimEscolhida,
-        codigoEOL
-      );
+      (async () => {
+        dispatch(setExibirLoaderGeralRegistroAnteriores(true));
+        const [dataFormatadaInicio, dataFimEscolhida] = verificarData();
+        await obterRegistroIndividualPorData(
+          dataFormatadaInicio,
+          dataFimEscolhida,
+          numeroPagina,
+          numeroRegistros
+        );
+        dispatch(setExibirLoaderGeralRegistroAnteriores(false));
+      })();
     }
   }, [
-    obterRegistroIndividualPorData,
     dadosAlunoObjectCard,
-    dataInicio,
-    dataFim,
     dadosPrincipaisRegistroIndividual,
+    dataFim,
+    dataInicio,
+    dispatch,
     exibirLoaderGeralRegistroAnteriores,
+    numeroPagina,
+    numeroRegistros,
+    obterRegistroIndividualPorData,
+    verificarData,
   ]);
 
   useEffect(() => {
@@ -121,13 +145,31 @@ const RegistrosAnterioresConteudo = memo(() => {
     }
   }, [dataFim]);
 
-  const onChangePaginacao = pagina => {
-    console.log('pagina ===> ', pagina);
+  const onChangePaginacao = async pagina => {
+    setCarregandoGeral(true);
+    setNumeroPagina(pagina);
+    const [dataFormatadaInicio, dataFimEscolhida] = verificarData();
+    await obterRegistroIndividualPorData(
+      dataFormatadaInicio,
+      dataFimEscolhida,
+      pagina,
+      numeroRegistros
+    );
+    setCarregandoGeral(false);
   };
 
-  const onChangeNumeroLinhas = (paginaAtual, numeroLinhas) => {
-    console.log('paginaAtual ===> ', paginaAtual);
-    console.log('numeroLinhas ===> ', numeroLinhas);
+  const onChangeNumeroLinhas = async (paginaAtual, numeroLinhas) => {
+    setCarregandoGeral(true);
+    setNumeroPagina(paginaAtual);
+    setNumeroRegistros(numeroLinhas);
+    const [dataFormatadaInicio, dataFimEscolhida] = verificarData();
+    await obterRegistroIndividualPorData(
+      dataFormatadaInicio,
+      dataFimEscolhida,
+      paginaAtual,
+      numeroLinhas
+    );
+    setCarregandoGeral(false);
   };
 
   return (
@@ -178,8 +220,8 @@ const RegistrosAnterioresConteudo = memo(() => {
                 }
                 onChangePaginacao={onChangePaginacao}
                 onChangeNumeroLinhas={onChangeNumeroLinhas}
-                pageSize={5}
-                pageSizeOptions={['5', '10', '20', '50', '100']}
+                pageSize={numeroRegistros}
+                pageSizeOptions={['10', '20', '50', '100']}
                 locale={{ items_per_page: '' }}
               />
             </div>

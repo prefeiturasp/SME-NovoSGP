@@ -13,10 +13,12 @@ import RegistrosAnterioresConteudo from './registrosAnterioresConteudo/registros
 const RegistrosAnteriores = () => {
   const [expandir, setExpandir] = useState(false);
 
-  const {
-    exibirLoaderGeralRegistroAnteriores,
-    recolherRegistrosAnteriores,
-  } = useSelector(store => store.registroIndividual);
+  const recolherRegistrosAnteriores = useSelector(
+    store => store.registroIndividual.recolherRegistrosAnteriores
+  );
+  const exibirLoaderGeralRegistroAnteriores = useSelector(
+    store => store.registroIndividual.exibirLoaderGeralRegistroAnteriores
+  );
 
   const idCollapse = shortid.generate();
   const dispatch = useDispatch();

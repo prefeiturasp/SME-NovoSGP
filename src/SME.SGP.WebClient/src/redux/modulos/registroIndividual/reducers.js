@@ -18,6 +18,7 @@ const inicial = {
   registroAnteriorId: {},
   registroIndividualEmEdicao: false,
   resetDataNovoRegistroIndividual: false,
+  podeRealizarNovoRegistro: false,
 };
 
 export default function RegistroIndividual(state = inicial, action) {
@@ -185,6 +186,12 @@ export default function RegistroIndividual(state = inicial, action) {
         return {
           ...draft,
           dadosRegistroAtual: action.payload,
+        };
+      }
+      case '@registroIndividual/setPodeRealizarNovoRegistro': {
+        return {
+          ...draft,
+          podeRealizarNovoRegistro: action.payload,
         };
       }
       default:
