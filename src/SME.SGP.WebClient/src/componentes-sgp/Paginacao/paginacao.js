@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ContainerPaginacao } from './paginacao.css';
 
 const Paginacao = props => {
@@ -27,6 +27,13 @@ const Paginacao = props => {
     novaPagina.current = pagina;
     setPaginaAtual(novaPagina);
   };
+
+  useEffect(() => {
+    setPaginaAtual(estadoAntigo => ({
+      ...estadoAntigo,
+      total: numeroRegistros,
+    }));
+  }, [numeroRegistros]);
 
   return (
     <ContainerPaginacao

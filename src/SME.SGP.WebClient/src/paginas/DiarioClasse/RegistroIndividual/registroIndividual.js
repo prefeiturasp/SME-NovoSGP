@@ -14,13 +14,12 @@ import {
 } from './componentes';
 
 import {
+  resetarDadosRegistroIndividual,
   setAlunosRegistroIndividual,
-  setAuditoriaNovoRegistro,
   setComponenteCurricularSelecionado,
   setDadosAlunoObjectCard,
   setExibirLoaderGeralRegistroIndividual,
   setRecolherRegistrosAnteriores,
-  setRegistroIndividualEmEdicao,
 } from '~/redux/modulos/registroIndividual/actions';
 
 import {
@@ -112,11 +111,7 @@ const RegistroIndividual = () => {
   }, [dispatch, turmaSelecionada]);
 
   const resetarTela = useCallback(() => {
-    dispatch(setRegistroIndividualEmEdicao(false));
-    dispatch(setAuditoriaNovoRegistro());
-    dispatch(setDadosAlunoObjectCard({}));
-    setListaComponenteCurricular([]);
-    setComponenteCurricularSelecionado(undefined);
+    dispatch(resetarDadosRegistroIndividual());
   }, [dispatch]);
 
   useEffect(() => {
@@ -141,6 +136,8 @@ const RegistroIndividual = () => {
     MetodosRegistroIndividual.resetarInfomacoes(true);
     if (!aluno.desabilitado) {
       dispatch(setDadosAlunoObjectCard(aluno));
+    } else {
+      resetarTela();
     }
 
     if (podeRealizarNovoRegistro) {
