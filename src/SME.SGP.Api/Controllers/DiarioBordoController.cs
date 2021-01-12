@@ -34,6 +34,79 @@ namespace SME.SGP.Api.Controllers
             return Ok(result);
         }
 
+
+        [HttpGet("detalhes/{id}")]
+        [ProducesResponseType(typeof(DiarioBordoDetalhesDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.DDB_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterPorId([FromServices] IObterDiarioBordoPorIdUseCase useCase, long id)
+        {
+            return await Task.FromResult(Ok(new DiarioBordoDetalhesDto()
+            {
+                Id = 1,
+                AulaId = 1,
+                Auditoria = new AuditoriaDto()
+                {
+                    AlteradoEm = DateTime.Now,
+                    AlteradoPor = "Usuário Alterado",
+                    AlteradoRF = "8896512",
+                    CriadoEm = DateTime.Now.AddDays(-1),
+                    CriadoPor = "Usuário Criação",
+                    CriadoRF = "1569875",
+                    Id = 1
+                },
+                Excluido = false,
+                Migrado = false,
+                DevolutivaId = 1,
+                Devolutivas = @"<p>Leia um bom livro.<br><br>Assista a um bom filme, ou um programa educativo na tevê.
+                                  <br>Veja uma boa peça teatral, participe.<br><br>E como descobrir se o livro, o filme, 
+                                  o programa ou a peça são bons?<br>Só lendo, assistindo, vendo, procurando…<br>O bom do 
+                                  conhecimento é que ele não ocupa espaço.<br>Podemos carregar malas e malas de conhecimento.
+                                  <br>Sempre haverá uma língua nova para aprender.<br>Boas ideias não surgem do nada,<br>
+                                  surgem do que conhecemos.</p>",
+                Observacoes = new List<ObservacaoNotificacoesDiarioBordoDto>()
+                {
+                    new ObservacaoNotificacoesDiarioBordoDto(){
+                        Observacao = "Teste",
+                        QtdUsuariosNotificacao = 3,
+                        Auditoria = new AuditoriaDto()
+                        {
+                            AlteradoEm = DateTime.Now,
+                            AlteradoPor = "Usuário Alterado",
+                            AlteradoRF = "8896512",
+                            CriadoEm = DateTime.Now.AddDays(-1),
+                            CriadoPor = "Usuário Criação",
+                            CriadoRF = "1569875",
+                            Id = 1
+                        },
+                    },
+                     new ObservacaoNotificacoesDiarioBordoDto(){
+                        Observacao = "Teste2",
+                        QtdUsuariosNotificacao = 6,
+                        Auditoria = new AuditoriaDto()
+                        {
+                            AlteradoEm = DateTime.Now,
+                            AlteradoPor = "Usuário Alterado",
+                            AlteradoRF = "8896512",
+                            CriadoEm = DateTime.Now.AddDays(-1),
+                            CriadoPor = "Usuário Criação",
+                            CriadoRF = "1569875",
+                            Id = 1
+                        },
+                    }
+                },
+                Planejamento = @"<p>Acessar o sistema com o usuário de Professor de Ed. Infantil RF: 7226501&gt; Acessar o menu&gt; 
+                                 Diário de Classe&gt; Diário de bordo&gt; Digitar um texto pequeno &gt; Então deve ser permitido salvar, 
+                                 pois este campo não tem limite de caracteres</p><p>OBS: Validar este cenário para de Professor CJ Ed. 
+                                 Infantil RF: 8389411&nbsp;</p>",
+                ReflexoesReplanejamento = @"<p>Acessar o sistema com o usuário de Professor de Ed. Infantil RF: 7226501&gt; Acessar o menu&gt; 
+                                            Diário de Classe&gt; Diário de bordo&gt; Digitar um texto pequeno &gt; Então deve ser permitido salvar, 
+                                            pois este campo não tem limite de caracteres</p><p>OBS: Validar este cenário para de Professor CJ Ed. 
+                                            Infantil RF: 8389411&nbsp;</p>",
+                TemPeriodoAberto = false
+            }));
+        }
+
         [HttpPost]
         [ProducesResponseType(typeof(AuditoriaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
