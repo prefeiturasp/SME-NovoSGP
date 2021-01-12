@@ -340,6 +340,7 @@ namespace SME.SGP.Aplicacao.Servicos
                  Ano = z.Ano,
                  AnoLetivo = z.AnoLetivo,
                  CodigoTurma = z.Codigo,
+                 TipoTurma = z.TipoTurma,
                  ModalidadeCodigo = (Modalidade)Convert.ToInt32(z.CodigoModalidade),
                  QuantidadeDuracaoAula = z.DuracaoTurno,
                  Nome = z.NomeTurma,

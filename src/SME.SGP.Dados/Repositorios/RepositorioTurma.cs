@@ -330,6 +330,7 @@ namespace SME.SGP.Dados.Repositorios
                                   join l in armazenados on c.CodigoTurma equals l.CodigoTurma
                                   where c.Nome != l.Nome ||
                                         c.Ano != l.Ano ||
+                                        c.TipoTurma != l.TipoTurma ||
                                         c.AnoLetivo != l.AnoLetivo ||
                                         c.ModalidadeCodigo != l.ModalidadeCodigo ||
                                         c.Semestre != l.Semestre ||
@@ -347,6 +348,7 @@ namespace SME.SGP.Dados.Repositorios
                                       Ano = c.Ano,
                                       AnoLetivo = c.AnoLetivo,
                                       CodigoTurma = c.CodigoTurma,
+                                      TipoTurma = c.TipoTurma,
                                       DataAtualizacao = DateTime.Today,
                                       Id = l.Id,
                                       ModalidadeCodigo = c.ModalidadeCodigo,
@@ -370,6 +372,7 @@ namespace SME.SGP.Dados.Repositorios
                     {
                         nome = item.Nome,
                         ano = item.Ano,
+                        tipoTurma = item.TipoTurma,
                         anoLetivo = item.AnoLetivo,
                         modalidadeCodigo = item.ModalidadeCodigo,
                         semestre = item.Semestre,

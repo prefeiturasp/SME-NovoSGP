@@ -40,7 +40,7 @@ CREATE table public.encaminhamento_aee (
 );
 
 CREATE INDEX encaminhamento_aee_turma_idx ON public.encaminhamento_aee USING btree (turma_id);
-ALTER TABLE public.encaminhamento_aee ADD CONSTRAINT questao_turma_fk FOREIGN KEY (turma_id) REFERENCES questionario(id);
+ALTER TABLE public.encaminhamento_aee ADD CONSTRAINT encaminhamento_aee_turma_fk FOREIGN KEY (turma_id) REFERENCES turma(id);
 
 CREATE INDEX encaminhamento_aee_aluno_idx ON public.encaminhamento_aee USING btree (aluno_codigo);
 

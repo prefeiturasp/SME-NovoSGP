@@ -1,7 +1,7 @@
 import api from '~/servicos/api';
 
 const AbrangenciaServico = {
-  buscarDres(url = '', consideraHistorico = false) {    
+  buscarDres(url = '', consideraHistorico = false) {
     if (url) return api.get(url, consideraHistorico = false);
     return api.get(`/v1/abrangencias/${consideraHistorico}/dres`);
   },
@@ -22,7 +22,10 @@ const AbrangenciaServico = {
    * @param {String} periodo Periodo (opcional)
    */
   buscarTurmas(ue, modalidade = 0, periodo = '', anoLetivo = '', consideraHistorico = false) {
-    let params = { modalidade };
+    let params = {};
+    if (modalidade) {
+      params = { modalidade };
+    }
     if (periodo) {
       params = { ...params, periodo };
     }

@@ -12,6 +12,7 @@ namespace SME.SGP.Dados
             ToTable("encaminhamento_aee");
             Map(a => a.TurmaId).ToColumn("turma_id");
             Map(a => a.AlunoCodigo).ToColumn("aluno_codigo");
+            Map(a => a.AlunoNome).ToColumn("aluno_nome");
         }
     }
 }
