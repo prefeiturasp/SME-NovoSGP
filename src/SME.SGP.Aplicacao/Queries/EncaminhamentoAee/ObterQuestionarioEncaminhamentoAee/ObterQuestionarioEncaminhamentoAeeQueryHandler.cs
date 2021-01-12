@@ -77,7 +77,7 @@ namespace SME.SGP.Aplicacao
                             Nome = opcaoLista.OpcaoRespostaNome,
                             Ordem = opcaoLista.OpcaoRespostaOrdem,
                             Texto = opcaoLista.RespostaTexto,
-                            RespostaId = opcaoLista.RespostaId,
+                            RespostaEncaminhamentoId = opcaoLista.RespostaEncaminhamentoId,
                             QuestaoComplementar = opcaoLista.QuestaoComplementarId.HasValue
                                 ? ObterQuestao(opcaoLista.QuestaoComplementarId.Value, dadosQuestionario)
                                 : null
