@@ -1,6 +1,8 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.CasosDeUso
@@ -14,9 +16,15 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<ResultadoEncaminhamentoAeeDto> Executar(EncaminhamentoAeeDto encaminhamentoDto)
+        public async Task<ResultadoEncaminhamentoAEEDto> Executar(EncaminhamentoAEEDto encaminhamentoDto)
         {
-            // turma
+            var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(encaminhamentoDto.TurmaId));
+            if (turma == null)
+                throw new NegocioException("A turma informada não foi encontrada");
+
+            var aluno = await mediator.Send(new ObterAlunoPorCodigoEolQuery(encaminhamentoDto.AlunoCodigo, DateTime.Now.Year));
+            if (aluno == null)
+                throw new NegocioException("O aluno informado não foi encontrado");
 
             // encaminhamento_aee_secao
 
