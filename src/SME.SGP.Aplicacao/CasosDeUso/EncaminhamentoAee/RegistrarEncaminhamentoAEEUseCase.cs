@@ -16,21 +16,34 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<ResultadoEncaminhamentoAEEDto> Executar(EncaminhamentoAEEDto encaminhamentoDto)
+        public async Task<ResultadoEncaminhamentoAEEDto> Executar(EncaminhamentoAEEDto encaminhamentoAEEDto)
         {
-            var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(encaminhamentoDto.TurmaId));
+            var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(encaminhamentoAEEDto.TurmaId));
             if (turma == null)
                 throw new NegocioException("A turma informada não foi encontrada");
 
-            var aluno = await mediator.Send(new ObterAlunoPorCodigoEolQuery(encaminhamentoDto.AlunoCodigo, DateTime.Now.Year));
+            var aluno = await mediator.Send(new ObterAlunoPorCodigoEolQuery(encaminhamentoAEEDto.AlunoCodigo, DateTime.Now.Year));
             if (aluno == null)
                 throw new NegocioException("O aluno informado não foi encontrado");
 
-            var encaminhamentoAEE = await mediator.Send(new ObterEncaminhamentoAEEPorId());
+            if(encaminhamentoAEEDto.Id > 0)
+            {
+                var encaminhamentoAEE = await mediator.Send(new ObterEncaminhamentoAEEPorIdQuery(encaminhamentoAEEDto.Id));
+                if (encaminhamentoAEE != null)
+                {
+
+                }
+            }
+            
+
+            var resultadoEncaminhamento = new ResultadoEncaminhamentoAEEDto();
+
+            
+
             // encaminhamento_aee_secao
 
             // encaminhamento aee
-            var resultadoEncaminhamento = await mediator.Send(new RegistrarEncaminhamentoAeeCommand());
+            //var resultadoEncaminhamento = await mediator.Send(new RegistrarEncaminhamentoAeeCommand());
 
             // questao_encaminhamento_aee
 

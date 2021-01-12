@@ -6,6 +6,11 @@ namespace SME.SGP.Dominio
 {
     public class QuestaoEncaminhamentoAEE : EntidadeBase
     {
+        public QuestaoEncaminhamentoAEE()
+        {
+            Respostas = new List<RespostaEncaminhamentoAEE>();
+        }
+
         public EncaminhamentoAEESecao EncaminhamentoAEESecao { get; set; }
         public long EncaminhamentoAEESecaoId { get; set; }
 
@@ -13,5 +18,7 @@ namespace SME.SGP.Dominio
         public long QuestaoId { get; set; }
 
         public bool Excluido { get; set; }
+
+        public List<RespostaEncaminhamentoAEE> Respostas { get; set; }
     }
 }
