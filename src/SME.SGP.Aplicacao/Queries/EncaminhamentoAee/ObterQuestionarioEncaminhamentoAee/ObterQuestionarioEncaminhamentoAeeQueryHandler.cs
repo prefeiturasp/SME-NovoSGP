@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<QuestaoAeeDto>> Handle(ObterQuestionarioEncaminhamentoAeeQuery request, CancellationToken cancellationToken)
         {
             var dadosQuestionario =
-                request.EncaminhamentoId.HasValue
+                !request.EncaminhamentoId.HasValue
                 ? await repositorioQuestaoEncaminhamento.ObterListaPorQuestionario(request.QuestionarioId)
                 : await repositorioQuestaoEncaminhamento.ObterListaPorQuestionarioEncaminhamento(request.QuestionarioId, request.EncaminhamentoId);
 

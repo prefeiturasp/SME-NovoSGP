@@ -52,7 +52,7 @@ namespace SME.SGP.Dados.Repositorios
 				left join resposta_encaminhamento_aee rea on rea.resposta_id = opr.id and not rea.excluido {joinRespostas}
 				left join questao_encaminhamento_aee qea on qea.id = rea.questao_encaminhamento_id and not qea.excluido {joinRespostas}
 				left join encaminhamento_aee_secao eas on eas.id = qea.encaminhamento_aee_secao_id and not eas.excluido {joinRespostas}
-				left join arquivo arq on arq.id = rea.arquivo_id and true
+				left join arquivo arq on arq.id = rea.arquivo_id {joinRespostas}
 				where 
 					not q.excluido 
 				and q.questionario_id = @questionarioId	
