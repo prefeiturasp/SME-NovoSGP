@@ -1,6 +1,7 @@
 import React from 'react';
 // import { useDispatch } from 'react-redux';
 import CardCollapse from '~/componentes/cardCollapse';
+import DadosSecaoEncaminhamento from './DadosSecaoEncaminhamento/dadosSecaoEncaminhamento';
 import ObjectCardEncaminhamento from './objectCardEncaminhamento';
 
 const SecaoEncaminhamentoCollapse = () => {
@@ -19,6 +20,7 @@ const SecaoEncaminhamentoCollapse = () => {
       onClick={onClickCardCollapse}
     >
       <ObjectCardEncaminhamento />
+      <DadosSecaoEncaminhamento />
     </CardCollapse>
   );
 };
