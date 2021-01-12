@@ -166,7 +166,7 @@ const RegistrosAnterioresConteudo = memo(() => {
           )
         )}
 
-        {dadosPrincipaisRegistroIndividual?.registrosIndividuais?.items
+        {!!dadosPrincipaisRegistroIndividual?.registrosIndividuais?.items
           .length && (
           <div className="row">
             <div className="col-12 d-flex justify-content-center mt-2">
