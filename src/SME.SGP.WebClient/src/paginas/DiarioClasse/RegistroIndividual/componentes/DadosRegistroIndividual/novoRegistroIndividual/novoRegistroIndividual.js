@@ -81,11 +81,11 @@ const NovoRegistroIndividual = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (podeRealizarNovoRegistro) {
+    if (podeRealizarNovoRegistro && dadosAlunoObjectCard) {
       setExpandir(true);
       setExibirCollapse(podeRealizarNovoRegistro);
     }
-  }, [podeRealizarNovoRegistro, setExibirCollapse]);
+  }, [podeRealizarNovoRegistro, setExibirCollapse, dadosAlunoObjectCard]);
 
   const validaPermissoes = useCallback(
     temDadosNovosRegistros => {
