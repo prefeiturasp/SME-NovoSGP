@@ -4,7 +4,7 @@ using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class RegistrarEncaminhamentoAeeCommand : IRequest<ResultadoEncaminhamentoAeeDto>
+    public class RegistrarEncaminhamentoAeeCommand : IRequest<ResultadoEncaminhamentoAEEDto>
     {
         public long TurmaId { get; set; }
 
