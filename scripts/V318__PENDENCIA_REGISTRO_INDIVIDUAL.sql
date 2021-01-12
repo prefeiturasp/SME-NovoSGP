@@ -39,6 +39,6 @@ CREATE TABLE IF NOT EXISTS public.pendencia_registro_individual_aluno(
 select
 	f_cria_fk_se_nao_existir(
 		'pendencia_registro_individual_aluno',
-		'pendencia_registro_individual_aluno_pendencia_registro_individual_fk',
+		'pendencia_reg_individual_aluno_pendencia_reg_individual_fk',
 		'FOREIGN KEY (pendencia_registro_individual_id) REFERENCES pendencia_registro_individual (id)'
 	);

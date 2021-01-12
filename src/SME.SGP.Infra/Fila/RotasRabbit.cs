@@ -61,6 +61,6 @@
         public static string RotaNotificacaoFrequenciaUe => "frequencia.ue.notificar";
 
         public static string RotaPendenciaAusenciaRegistroIndividual => "pendencias.professor.ausencia.registro.individual";
-
+        public static string RotaAtualizarPendenciaAusenciaRegistroIndividual => "pendencias.professor.ausencia.registro.individual.atualizar";
     }
 }
