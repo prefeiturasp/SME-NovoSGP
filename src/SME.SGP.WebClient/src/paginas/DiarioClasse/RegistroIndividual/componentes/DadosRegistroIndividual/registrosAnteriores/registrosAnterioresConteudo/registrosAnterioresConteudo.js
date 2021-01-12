@@ -63,21 +63,28 @@ const RegistrosAnterioresConteudo = memo(() => {
     [codigoEOL, componenteCurricularSelecionado, dispatch, turmaCodigo]
   );
 
+  const ehMesmaData = useCallback(data => {
+    const dataAtualComparativa = window.moment().format('YYYY-MM-DD');
+    const dataFimComparativa = data?.format('YYYY-MM-DD');
+    const ehMesma = window
+      .moment(dataAtualComparativa)
+      .isSame(dataFimComparativa);
+
+    return ehMesma;
+  }, []);
+
   const verificarData = useCallback(() => {
     const dataFormatadaInicio = dataInicio?.format('MM-DD-YYYY');
     const dataFormatadaFim = dataFim?.format('MM-DD-YYYY');
-
-    const dataAtual = window.moment();
-    const dataAtualCompartiva = dataAtual.format('YYYY-MM-DD');
-    const dataFimComparativa = dataFim?.format('YYYY-MM-DD');
-    const ehMesmaData = window
-      .moment(dataAtualCompartiva)
-      .isSame(dataFimComparativa);
-
-    const dataAtualUmDia = dataAtual.subtract(1, 'days').format('MM-DD-YYYY');
-    const dataFimEscolhida = ehMesmaData ? dataAtualUmDia : dataFormatadaFim;
+    const dataAtualUmDia = window
+      .moment()
+      .subtract(1, 'days')
+      .format('MM-DD-YYYY');
+    const dataFimEscolhida = ehMesmaData(window.moment())
+      ? dataAtualUmDia
+      : dataFormatadaFim;
     return [dataFormatadaInicio, dataFimEscolhida];
-  }, [dataInicio, dataFim]);
+  }, [dataInicio, dataFim, ehMesmaData]);
 
   useEffect(() => {
     const temDadosAlunos = Object.keys(dadosAlunoObjectCard).length;
@@ -118,26 +125,29 @@ const RegistrosAnterioresConteudo = memo(() => {
     verificarData,
   ]);
 
+  const escolherData = useCallback(() => {
+    const anoAtual = dataFim?.format('YYYY');
+    const anoLetivo = turmaSelecionada?.anoLetivo;
+    const diferencaDias = dataFim?.diff(`${anoAtual}-01-01`, 'days');
+    let dataInicioSelecionada = window.moment(`${anoAtual}-01-01`);
+
+    if (Number(diferencaDias) > 60) {
+      dataInicioSelecionada = window.moment().subtract(60, 'd');
+    }
+
+    if (Number(anoLetivo) !== Number(anoAtual)) {
+      dataInicioSelecionada = window.moment(`${anoLetivo}-01-01`);
+      setDataFim(window.moment(`${anoLetivo}-12-31`));
+    }
+
+    setDataInicio(dataInicioSelecionada);
+  }, [dataFim, turmaSelecionada]);
+
   useEffect(() => {
     if (!dataInicio && dataFim) {
-      const anoAtual = dataFim.format('YYYY');
-      const anoLetivo = turmaSelecionada?.anoLetivo;
-      const diferencaDias = dataFim.diff(`${anoAtual}-01-01`, 'days');
-
-      if (Number(diferencaDias) > 60) {
-        setDataInicio(window.moment().subtract(60, 'd'));
-        return;
-      }
-
-      if (Number(anoLetivo) !== Number(anoAtual)) {
-        setDataInicio(window.moment(`${anoLetivo}-01-01`));
-        setDataFim(window.moment(`${anoLetivo}-12-31`));
-        return;
-      }
-
-      setDataInicio(window.moment(`${anoAtual}-01-01`));
+      escolherData();
     }
-  }, [dataInicio, dataFim, turmaSelecionada]);
+  }, [dataInicio, dataFim, escolherData]);
 
   useEffect(() => {
     if (!dataFim) {
@@ -172,6 +182,51 @@ const RegistrosAnterioresConteudo = memo(() => {
     setCarregandoGeral(false);
   };
 
+  const desabilitarDataFim = dataCorrente => {
+    return dataCorrente && dataCorrente > window.moment();
+  };
+
+  const mudarDataInicio = async data => {
+    if (data) {
+      setCarregandoGeral(true);
+      setDataInicio(data);
+
+      const [, dataFimEscolhida] = verificarData();
+      const dataFormatada = data?.format('MM-DD-YYYY');
+      const dataFormatadaFim = dataFim?.format('MM-DD-YYYY');
+      const dataEscolhida = ehMesmaData(dataFim)
+        ? dataFimEscolhida
+        : dataFormatadaFim;
+      await obterRegistroIndividualPorData(
+        dataFormatada,
+        dataEscolhida,
+        numeroPagina,
+        numeroRegistros
+      );
+      setCarregandoGeral(false);
+    }
+  };
+
+  const mudarDataFim = async data => {
+    if (data) {
+      setCarregandoGeral(true);
+      setDataFim(data);
+
+      const [dataFormatadaInicio, dataFimEscolhida] = verificarData();
+      const dataFormatada = data?.format('MM-DD-YYYY');
+      const dataEscolhida = ehMesmaData(data)
+        ? dataFimEscolhida
+        : dataFormatada;
+      await obterRegistroIndividualPorData(
+        dataFormatadaInicio,
+        dataEscolhida,
+        numeroPagina,
+        numeroRegistros
+      );
+      setCarregandoGeral(false);
+    }
+  };
+
   return (
     <Loader ignorarTip loading={carregandoGeral} className="w-100">
       <div className="px-3">
@@ -184,7 +239,7 @@ const RegistrosAnterioresConteudo = memo(() => {
               formatoData="DD/MM/YYYY"
               name="dataInicio"
               valor={dataInicio}
-              onChange={data => setDataInicio(data)}
+              onChange={mudarDataInicio}
               placeholder="Data início"
             />
           </div>
@@ -193,8 +248,9 @@ const RegistrosAnterioresConteudo = memo(() => {
               formatoData="DD/MM/YYYY"
               name="dataFim"
               valor={dataFim}
-              onChange={data => setDataFim(data)}
+              onChange={mudarDataFim}
               placeholder="Data fim"
+              desabilitarData={desabilitarDataFim}
             />
           </div>
         </div>

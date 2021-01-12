@@ -12,7 +12,6 @@ const inicial = {
   exibirLoaderConteudoRegistroAnteriores: false,
   exibirLoaderGeralRegistroAnteriores: false,
   exibirLoaderGeralRegistroIndividual: false,
-  expandirLinha: [],
   recolherRegistrosAnteriores: false,
   registroAnteriorEmEdicao: false,
   registroAnteriorId: {},
@@ -44,9 +43,7 @@ export default function RegistroIndividual(state = inicial, action) {
           dadosPrincipaisRegistroIndividual: {},
           desabilitarCampos: false,
           exibirLoaderGeralRegistroIndividual: false,
-          expandirLinha: [],
           registroIndividualEmEdicao: false,
-          salvouJustificativa: false,
           resetDataNovoRegistroIndividual: true,
         };
       }
@@ -192,6 +189,16 @@ export default function RegistroIndividual(state = inicial, action) {
         return {
           ...draft,
           podeRealizarNovoRegistro: action.payload,
+        };
+      }
+      case '@registroIndividual/resetarDadosRegistroIndividual': {
+        return {
+          ...draft,
+          registroIndividualEmEdicao: false,
+          auditoriaNovoRegistro: null,
+          dadosAlunoObjectCard: {},
+          dadosRegistroAtual: {},
+          dadosPrincipaisRegistroIndividual: {},
         };
       }
       default:
