@@ -19,6 +19,8 @@
         {
         }
 
+        public void ResolverPendenciaDoAluno() => Situacao = SituacaoPendenciaRegistroIndividualAluno.Resolvido;
+
         private void SetCodigoAluno(long codigoAluno)
         {
             if (codigoAluno == default)
