@@ -26,6 +26,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             if (aluno == null)
                 throw new NegocioException("O aluno informado não foi encontrado");
 
+            var encaminhamentoAEE = await mediator.Send(new ObterEncaminhamentoAEEPorId());
             // encaminhamento_aee_secao
 
             // encaminhamento aee
