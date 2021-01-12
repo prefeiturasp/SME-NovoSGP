@@ -25,7 +25,7 @@ namespace SME.SGP.Infra
         public int Ordem { get; set; }
         public string Nome { get; set; }
         // resposta
-        public long? RespostaId { get; set; }
+        public long? RespostaEncaminhamentoId { get; set; }
         public Arquivo[] Arquivos { get; set; }
         public string Texto { get; set; }
     }

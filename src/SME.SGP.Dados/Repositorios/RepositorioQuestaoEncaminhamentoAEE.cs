@@ -40,7 +40,7 @@ namespace SME.SGP.Dados.Repositorios
 					opr.questao_complementar_id QuestaoComplementarId,
 					opr.ordem OpcaoRespostaOrdem,
 					opr.nome OpcaoRespostaNome,
-					rea.id RespostaId,
+					rea.id RespostaEncaminhamentoId,
 					rea.texto RespostaTexto,
 					rea.arquivo_id RespostaArquivoId,
 					arq.nome ArquivoNome,
