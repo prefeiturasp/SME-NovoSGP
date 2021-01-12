@@ -106,22 +106,14 @@ namespace SME.SGP.Api.Controllers
             return Ok(await excluirObservacaoDiarioBordoUseCase.Executar(observacaoId));
         }
 
-        [HttpGet("titulos/turmas/{turmaCodigo}/componentes-curriculares/{componenteCurricularId}")]
+        [HttpGet("titulos/turmas/{turmaId}/componentes-curriculares/{componenteCurricularId}")]
         [ProducesResponseType(typeof(PaginacaoResultadoDto<DiarioBordoTituloDto>), 200)]
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.DDB_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterTitulosPorIntervalo([FromServices] IObterDiariosDeBordoPorPeriodoUseCase useCase, string turmaCodigo, long componenteCurricularId, DateTime dataInicio, DateTime dataFim)
+        public async Task<IActionResult> ObterTitulosPorIntervalo([FromServices] IObterListagemDiariosDeBordoPorPeriodoUseCase useCase, long turmaId, long componenteCurricularId, DateTime dataInicio, DateTime dataFim)
         {
-            return await Task.FromResult(Ok(new PaginacaoResultadoDto<DiarioBordoTituloDto>()
-            {
-                Items = new List<DiarioBordoTituloDto>(){
-                    new DiarioBordoTituloDto(1, "10/01/2021"),
-                    new DiarioBordoTituloDto(2, "10/02/2021")
-                },
-                TotalPaginas = 2,
-                TotalRegistros = 2
-            }));
+            return Ok(await useCase.Executar(new FiltroListagemDiarioBordoDto(turmaId, componenteCurricularId, dataInicio, dataFim)));
         }
     }
 }
