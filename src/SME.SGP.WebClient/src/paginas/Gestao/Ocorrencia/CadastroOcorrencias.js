@@ -56,6 +56,7 @@ const CadastroOcorrencias = ({ match }) => {
   const [auditoria, setAuditoria] = useState();
   const [idOcorrencia, setIdOcorrencia] = useState();
   const [somenteConsulta, setSomenteConsulta] = useState(false);
+  const [modoEdicao, setModoEdicao] = useState(false);
 
   const usuario = useSelector(state => state.usuario);
   const { turmaSelecionada, permissoes } = usuario;
@@ -87,6 +88,10 @@ const CadastroOcorrencias = ({ match }) => {
       setIdOcorrencia(match?.params?.id);
     }
   }, [match]);
+
+  useEffect(() => {
+    if (criancasSelecionadas) setModoEdicao(modificouCriancasSelecionadas());
+  }, [criancasSelecionadas]);
 
   useEffect(() => {
     async function obterPorId(id) {
@@ -207,32 +212,41 @@ const CadastroOcorrencias = ({ match }) => {
     }
   };
 
-  const onClickVoltar = form => {
-    let temValorAlterado = false;
+  const modificouCriancasSelecionadas = () => {
+    let modificou = false;
     if (idOcorrencia) {
       valoresIniciais.alunos.forEach(aluno => {
         const alunoExistente = criancasSelecionadas.find(
-          c => c.codigoEOL === aluno.codigoAluno
+          c => c.codigoEOL.toString() === aluno.codigoAluno.toString()
         );
         if (!alunoExistente) {
-          confirmarAntesDeVoltar(form);
+          modificou = true;
         }
       });
     }
     if (criancasSelecionadas.length !== valoresIniciais.alunos.length) {
+      modificou = true;
+    } else {
+      modificou = false;
+    }
+    return modificou;
+  };
+
+  const onClickVoltar = async form => {
+    let existeDivergencia = modificouCriancasSelecionadas();
+    if (existeDivergencia) {
       confirmarAntesDeVoltar(form);
-      return;
     }
     if (form.values) {
       const campos = Object.keys(form.values);
-      campos.forEach(async key => {
+      campos.forEach(key => {
         if (valoresIniciais[key] !== form.values[key]) {
-          temValorAlterado = true;
+          existeDivergencia = true;
           confirmarAntesDeVoltar(form);
         }
       });
     }
-    if (!temValorAlterado) history.push(RotasDto.OCORRENCIAS);
+    if (!existeDivergencia) history.push(RotasDto.OCORRENCIAS);
   };
 
   const onClickEditarCriancas = () => {
@@ -252,14 +266,17 @@ const CadastroOcorrencias = ({ match }) => {
     if (!idOcorrencia) {
       setCriancasSelecionadas([]);
     }
+    setModoEdicao(false);
   };
 
   const onChangeDataOcorrencia = valor => {
     setDataOcorrencia(valor);
+    setModoEdicao(true);
   };
 
   const onChangeHoraOcorrencia = valor => {
     setHoraOcorrencia(valor);
+    setModoEdicao(true);
   };
 
   const desabilitarData = current => {
@@ -288,13 +305,13 @@ const CadastroOcorrencias = ({ match }) => {
     setCodigosCriancasSelecionadas(codigos);
   };
 
-  const onConfirmarModal = () => {
+  const onConfirmarModal = async () => {
     const criancas = [];
     codigosCriancasSelecionadas.forEach(codigo => {
       const crianca = listaCriancas.find(c => c.codigoEOL === codigo);
       criancas.push(crianca);
     });
-    const criancasOrdenadas = ordenarPor(criancas, 'nome');
+    const criancasOrdenadas = await ordenarPor(criancas, 'nome');
     setCriancasSelecionadas([...criancasOrdenadas]);
     setModalCriancasVisivel(false);
   };
@@ -396,6 +413,7 @@ const CadastroOcorrencias = ({ match }) => {
                   className="mr-2"
                   onClick={onClickCancelar}
                   disabled={
+                    !modoEdicao ||
                     ehTurmaAnoAnterior() ||
                     somenteConsulta ||
                     naoPodeIncluirOuAlterar()
@@ -423,7 +441,7 @@ const CadastroOcorrencias = ({ match }) => {
                   className="mr-2"
                   onClick={() => validaAntesDoSubmit(form)}
                   disabled={
-                    !form.isValid ||
+                    !modoEdicao ||
                     !criancasSelecionadas?.length > 0 ||
                     ehTurmaAnoAnterior() ||
                     somenteConsulta ||
@@ -512,6 +530,7 @@ const CadastroOcorrencias = ({ match }) => {
                     valueText="descricao"
                     lista={listaTiposOcorrencias}
                     value={form.values.ocorrenciaTipoId}
+                    onChange={() => setModoEdicao(true)}
                     disabled={desabilitarCampos()}
                   />
                 </div>
@@ -524,6 +543,7 @@ const CadastroOcorrencias = ({ match }) => {
                     placeholder="Situação"
                     maxLength={50}
                     desabilitado={desabilitarCampos()}
+                    onChange={() => setModoEdicao(true)}
                   />
                 </div>
                 <div className="col-12 mt-2">
@@ -533,9 +553,9 @@ const CadastroOcorrencias = ({ match }) => {
                     value={form.values.descricao}
                     name="descricao"
                     id="descricao"
-                    onChange={() => {}}
                     permiteInserirArquivo
                     desabilitar={desabilitarCampos()}
+                    onChange={() => setModoEdicao(true)}
                   />
                 </div>
               </div>
