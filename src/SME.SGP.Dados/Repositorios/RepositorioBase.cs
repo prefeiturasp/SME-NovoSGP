@@ -11,10 +11,12 @@ namespace SME.SGP.Dados.Repositorios
     public abstract class RepositorioBase<T> : IRepositorioBase<T> where T : EntidadeBase
     {
         protected readonly ISgpContext database;
+        private readonly TimeZoneInfo horaBrasilia;
 
         protected RepositorioBase(ISgpContext database)
         {
             this.database = database;
+            horaBrasilia = TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time");
         }
 
         public virtual IEnumerable<T> Listar()
@@ -49,7 +51,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             if (entidade.Id > 0)
             {
-                entidade.AlteradoEm = DateTime.Now;                
+                entidade.AlteradoEm = TimeZoneInfo.ConvertTime(DateTime.UtcNow, horaBrasilia);
                 entidade.AlteradoPor = database.UsuarioLogadoNomeCompleto;
                 entidade.AlteradoRF = database.UsuarioLogadoRF;
                 database.Conexao.Update(entidade);
@@ -69,8 +71,8 @@ namespace SME.SGP.Dados.Repositorios
         public virtual async Task<long> SalvarAsync(T entidade)
         {
             if (entidade.Id > 0)
-            {
-                entidade.AlteradoEm = DateTime.Now;
+            {                
+                entidade.AlteradoEm = TimeZoneInfo.ConvertTime(DateTime.UtcNow, horaBrasilia);
                 entidade.AlteradoPor = database.UsuarioLogadoNomeCompleto;
                 entidade.AlteradoRF = database.UsuarioLogadoRF;
                 await database.Conexao.UpdateAsync(entidade);
@@ -105,12 +107,14 @@ namespace SME.SGP.Dados.Repositorios
                               , alterado_rf = @alteradoRF 
                               , alterado_em = @alteradoEm
                         where {columName}=@id RETURNING id";
-    
+
             return await database.Conexao.ExecuteScalarAsync<long>(query
-                , new { id, 
-                        alteradoPor = database.UsuarioLogadoNomeCompleto,
-                        alteradoRF = database.UsuarioLogadoRF,
-                        alteradoEm = DateTime.Now
+                , new
+                {
+                    id,
+                    alteradoPor = database.UsuarioLogadoNomeCompleto,
+                    alteradoRF = database.UsuarioLogadoRF,
+                    alteradoEm = TimeZoneInfo.ConvertTime(DateTime.UtcNow, horaBrasilia)
                 });
         }
 
@@ -118,7 +122,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             database.Conexao.Insert<Auditoria>(new Auditoria()
             {
-                Data = DateTime.Now,
+                Data = TimeZoneInfo.ConvertTime(DateTime.UtcNow, horaBrasilia),
                 Entidade = typeof(T).Name.ToLower(),
                 Chave = identificador,
                 Usuario = database.UsuarioLogadoNomeCompleto,
@@ -131,7 +135,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             await database.Conexao.InsertAsync<Auditoria>(new Auditoria()
             {
-                Data = DateTime.Now,
+                Data = TimeZoneInfo.ConvertTime(DateTime.UtcNow, horaBrasilia),
                 Entidade = typeof(T).Name.ToLower(),
                 Chave = identificador,
                 Usuario = database.UsuarioLogadoNomeCompleto,
@@ -139,5 +143,5 @@ namespace SME.SGP.Dados.Repositorios
                 Acao = acao
             });
         }
-   }
+    }
 }
