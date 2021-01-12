@@ -28,7 +28,21 @@ namespace SME.SGP.Dados.Repositorios
 	                                pri.turma_id,
 	                                pria.id,
 	                                pria.codigo_aluno,
-	                                pria.pendencia_registro_individual_id 
+	                                pria.pendencia_registro_individual_id,
+									p.id, 
+									p.titulo, 
+									p.descricao, 
+									p.situacao, 
+									p.tipo, 
+									p.excluido, 
+									p.migrado, 
+									p.criado_em, 
+									p.criado_por, 
+									p.alterado_em, 
+									p.alterado_por, 
+									p.criado_rf, 
+									p.alterado_rf, 
+									p.instrucao
                                 FROM 
 	                                public.pendencia_registro_individual pri 
                                 inner join
@@ -43,12 +57,13 @@ namespace SME.SGP.Dados.Repositorios
 	                                and not p.excluido";
 
             PendenciaRegistroIndividual resultado = null;
-            await database.Conexao.QueryAsync<PendenciaRegistroIndividual, PendenciaRegistroIndividualAluno, PendenciaRegistroIndividual>(sql,
-                (pendenciaRegistroIndividual, pendenciaRegistroIndividualAluno) =>
+            await database.Conexao.QueryAsync<PendenciaRegistroIndividual, PendenciaRegistroIndividualAluno, Pendencia, PendenciaRegistroIndividual>(sql,
+                (pendenciaRegistroIndividual, pendenciaRegistroIndividualAluno, pendencia) =>
                 {
                     if(resultado is null)
                     {
                         resultado = pendenciaRegistroIndividual;
+						resultado.Pendencia = pendencia;
                     }
 
                     resultado.Alunos = resultado.Alunos ?? new List<PendenciaRegistroIndividualAluno>();
