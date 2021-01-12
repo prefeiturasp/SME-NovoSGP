@@ -170,7 +170,7 @@ const RegistroIndividual = () => {
               <SelectComponent
                 id="componenteCurricular"
                 name="ComponenteCurricularId"
-                lista={listaComponenteCurricular}
+                lista={listaComponenteCurricular || []}
                 valueOption="codigoComponenteCurricular"
                 valueText="nome"
                 valueSelect={componenteCurricularSelecionado}
