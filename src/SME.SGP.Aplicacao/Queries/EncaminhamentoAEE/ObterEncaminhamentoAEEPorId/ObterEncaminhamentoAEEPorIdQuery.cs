@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
@@ -8,31 +9,23 @@ using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterEncaminhamentoAEEPorAlunoEAnoQuery : IRequest<EncaminhamentosAEEResumoDto>
+    public class ObterEncaminhamentoAEEPorIdQuery : IRequest<EncaminhamentoAEE>
     {
-        public ObterEncaminhamentoAEEPorAlunoEAnoQuery(long dreId, long ueId, long turmaId, string alunoCodigo, SituacaoAEE? situacao)
+        public ObterEncaminhamentoAEEPorIdQuery(long id)
         {
-            DreId = dreId;
-            UeId = ueId;
-            TurmaId = turmaId;
-            AlunoCodigo = alunoCodigo;
-            Situacao = situacao;
+            Id = id;
         }
 
-        public long DreId { get; }
-        public long UeId { get; }
-        public long TurmaId { get; }
-        public string AlunoCodigo { get; }
-        public SituacaoAEE? Situacao { get; }
+        public long Id { get; }
     }
 
-    public class ObterEncaminhamentosAEEQueryValidator : AbstractValidator<ObterEncaminhamentosAEEQuery>
+    public class ObterEncaminhamentoAEEPorIdQueryValidator : AbstractValidator<ObterEncaminhamentoAEEPorIdQuery>
     {
-        public ObterEncaminhamentosAEEQueryValidator()
+        public ObterEncaminhamentoAEEPorIdQueryValidator()
         {
-            RuleFor(c => c.DreId)
+            RuleFor(c => c.Id)
             .NotEmpty()
-            .WithMessage("A DRE deve ser informada para pesquisa de Encaminhamentos AEE");
+            .WithMessage("O Id do encaminhamento deve ser informado");
 
         }
     }
