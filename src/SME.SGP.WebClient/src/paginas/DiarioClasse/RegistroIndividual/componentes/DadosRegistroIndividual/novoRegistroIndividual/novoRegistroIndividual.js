@@ -44,8 +44,8 @@ const NovoRegistroIndividual = () => {
   const dadosAlunoObjectCard = useSelector(
     store => store.registroIndividual.dadosAlunoObjectCard
   );
-  const dadosPrincipaisRegistroIndividual = useSelector(
-    store => store.registroIndividual.dadosPrincipaisRegistroIndividual
+  const podeRealizarNovoRegistro = useSelector(
+    store => store.registroIndividual.podeRealizarNovoRegistro
   );
   const resetDataNovoRegistroIndividual = useSelector(
     store => store.registroIndividual.resetDataNovoRegistroIndividual
@@ -81,15 +81,11 @@ const NovoRegistroIndividual = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const temDadosRegistros = Object.keys(dadosPrincipaisRegistroIndividual)
-      .length;
-    if (temDadosRegistros) {
+    if (podeRealizarNovoRegistro && dadosAlunoObjectCard) {
       setExpandir(true);
-      setExibirCollapse(
-        dadosPrincipaisRegistroIndividual?.podeRealizarNovoRegistro
-      );
+      setExibirCollapse(podeRealizarNovoRegistro);
     }
-  }, [dadosPrincipaisRegistroIndividual, setExibirCollapse]);
+  }, [podeRealizarNovoRegistro, setExibirCollapse, dadosAlunoObjectCard]);
 
   const validaPermissoes = useCallback(
     temDadosNovosRegistros => {
@@ -168,22 +164,18 @@ const NovoRegistroIndividual = () => {
     const dataEscolhida = data && data.format('MM-DD-YYYY');
     const temDadosAlunos = Object.keys(dadosAlunoObjectCard).length;
 
-    if (
-      temDadosAlunos &&
-      dadosPrincipaisRegistroIndividual?.podeRealizarNovoRegistro &&
-      dataEscolhida
-    ) {
+    if (temDadosAlunos && podeRealizarNovoRegistro && dataEscolhida) {
       dispatch(setAuditoriaNovoRegistro(null));
       dispatch(setDadosParaSalvarNovoRegistro({}));
       dispatch(setDadosRegistroAtual({}));
       obterRegistroIndividualPorData(dataEscolhida);
     }
   }, [
-    dispatch,
     dadosAlunoObjectCard,
-    dadosPrincipaisRegistroIndividual,
     data,
+    dispatch,
     obterRegistroIndividualPorData,
+    podeRealizarNovoRegistro,
   ]);
 
   useEffect(() => {
@@ -197,13 +189,10 @@ const NovoRegistroIndividual = () => {
   }, [data, dispatch, dataAtual, resetDataNovoRegistroIndividual]);
 
   useEffect(() => {
-    const temDadosNovosRegistros = Object.keys(
-      dadosPrincipaisRegistroIndividual
-    ).length;
-    if (temDadosNovosRegistros) {
-      validaPermissoes(temDadosNovosRegistros);
+    if (podeRealizarNovoRegistro) {
+      validaPermissoes(podeRealizarNovoRegistro);
     }
-  }, [validaPermissoes, dadosPrincipaisRegistroIndividual]);
+  }, [validaPermissoes, podeRealizarNovoRegistro]);
 
   const desabilitarData = dataCorrente => {
     return dataCorrente && dataCorrente > window.moment();
