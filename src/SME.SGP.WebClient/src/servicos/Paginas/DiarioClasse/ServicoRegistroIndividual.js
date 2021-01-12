@@ -26,10 +26,12 @@ class ServicoRegistroIndividual {
     dataInicio,
     dataFim,
     turmaCodigo,
+    numeroPagina,
+    numeroRegistros,
   }) => {
     return api.get(
       `/v1/registros-individuais/turmas/${turmaCodigo}/alunos/${alunoCodigo}/componentes-curriculares/` +
-        `${componenteCurricular}/dataInicio/${dataInicio}/dataFim/${dataFim}`
+        `${componenteCurricular}/dataInicio/${dataInicio}/dataFim/${dataFim}?NumeroPagina=${numeroPagina}&NumeroRegistros=${numeroRegistros}`
     );
   };
 
