@@ -30,14 +30,14 @@ class MetodosRegistroIndividual {
     };
   };
 
-  escolheCadastrar = () => {
+  escolheCadastrar = (mostrarMsg = true) => {
     const { registroIndividual, turmaId } = this.obterDados();
     const { id } = registroIndividual.dadosParaSalvarNovoRegistro;
     if (id) {
-      this.editarRegistroIndividual(registroIndividual, turmaId);
+      this.editarRegistroIndividual(registroIndividual, turmaId, mostrarMsg);
       return;
     }
-    this.cadastrarRegistroIndividual(registroIndividual, turmaId);
+    this.cadastrarRegistroIndividual(registroIndividual, turmaId, mostrarMsg);
   };
 
   pergutarParaSalvar = () => {
@@ -51,16 +51,16 @@ class MetodosRegistroIndividual {
   salvarRegistroIndividual = async () => {
     const confirmado = await this.pergutarParaSalvar();
     if (confirmado) {
-      this.escolheCadastrar();
+      this.escolheCadastrar(false);
     }
     return true;
   };
 
   verificarSalvarRegistroIndividual = () => {
-    const { registroIndividualEmEdicao } = this.obterDados();
+    const { registroIndividual } = this.obterDados();
 
-    if (registroIndividualEmEdicao) {
-      this.cadastrarRegistroIndividual();
+    if (registroIndividual.registroIndividualEmEdicao) {
+      this.escolheCadastrar(false);
     }
   };
 
@@ -73,7 +73,11 @@ class MetodosRegistroIndividual {
     this.dispatch(setDesabilitarCampos(false));
   };
 
-  cadastrarRegistroIndividual = async (registroIndividual, turmaId) => {
+  cadastrarRegistroIndividual = async (
+    registroIndividual,
+    turmaId,
+    mostrarMsg
+  ) => {
     this.dispatch(setExibirLoaderGeralRegistroIndividual(true));
     const {
       alunoCodigo,
@@ -95,12 +99,13 @@ class MetodosRegistroIndividual {
       );
 
     if (retorno?.status === 200) {
-      sucesso('Registro cadastrado com sucesso.');
-
+      if (mostrarMsg) {
+        sucesso('Registro cadastrado com sucesso.');
+      }
       const dataAtual = window.moment(window.moment().format('YYYY-MM-DD'));
       const ehDataAnterior = window.moment(dataAtual).isAfter(data);
       this.resetarInfomacoes(ehDataAnterior);
-      if (!ehDataAnterior) {
+      if (!ehDataAnterior && mostrarMsg) {
         this.dispatch(setAuditoriaNovoRegistro(retorno.data));
         this.dispatch(
           atualizaDadosRegistroAtual({
@@ -114,7 +119,11 @@ class MetodosRegistroIndividual {
     }
   };
 
-  editarRegistroIndividual = async (registroIndividual, turmaId) => {
+  editarRegistroIndividual = async (
+    registroIndividual,
+    turmaId,
+    mostrarMsg
+  ) => {
     this.dispatch(setExibirLoaderGeralRegistroIndividual(true));
 
     const {
@@ -138,20 +147,21 @@ class MetodosRegistroIndividual {
       );
 
     if (retorno?.status === 200) {
-      sucesso('Registro editado com sucesso.');
+      if (mostrarMsg) {
+        sucesso('Registro editado com sucesso.');
+        this.dispatch(
+          atualizaDadosRegistroAtual({
+            id: retorno.data.id,
+            registro,
+            alunoCodigo,
+            data,
+          })
+        );
+      }
       this.dispatch(setAuditoriaNovoRegistro(retorno.data));
-
       const dataAtual = window.moment(window.moment().format('YYYY-MM-DD'));
       const ehDataAnterior = window.moment(dataAtual).isAfter(data);
       this.resetarInfomacoes(ehDataAnterior);
-      this.dispatch(
-        atualizaDadosRegistroAtual({
-          id: retorno.data.id,
-          registro,
-          alunoCodigo,
-          data,
-        })
-      );
     }
   };
 }
