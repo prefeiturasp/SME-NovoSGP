@@ -5,8 +5,9 @@ namespace SME.SGP.Dominio
     public abstract class EntidadeBase
     {
         protected EntidadeBase()
-        {
-            CriadoEm = DateTime.Now;
+        {            
+            CriadoEm = TimeZoneInfo.ConvertTime(DateTime.UtcNow, 
+                TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time"));
         }
 
         public DateTime? AlteradoEm { get; set; }
