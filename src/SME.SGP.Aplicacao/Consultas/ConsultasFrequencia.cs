@@ -365,5 +365,17 @@ namespace SME.SGP.Aplicacao
             }
             return TipoResponsavel.Filicacao1.ToString();
         }
+
+
+        public async Task<IEnumerable<AusenciaMotivoDto>> ObterAusenciaMotivoPorAlunoTurmaBimestreAno(string codigoAluno, string codigoTurma, short bimestre, short anoLetivo)
+        => await mediator
+            .Send(
+                new ObterAusenciaMotivoPorAlunoTurmaBimestreAnoQuery(
+                    codigoAluno,
+                    codigoTurma,
+                    bimestre,
+                    anoLetivo
+                    )
+            );
     }
 }
