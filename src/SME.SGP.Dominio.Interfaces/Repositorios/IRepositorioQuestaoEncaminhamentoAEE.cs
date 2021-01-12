@@ -10,5 +10,6 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task<IEnumerable<QuestaoRespostaAeeDto>> ObterListaPorQuestionario(long questionarioId);
         Task<IEnumerable<QuestaoRespostaAeeDto>> ObterListaPorQuestionarioEncaminhamento(long questionarioId, long? encaminhamentoId);
+        Task<IEnumerable<long>> ObterQuestoesPorSecaoId(long encaminhamentoAEESecaoId);
     }
 }

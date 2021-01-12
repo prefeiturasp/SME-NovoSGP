@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using SME.SGP.Infra.Dtos.Relatorios;
 using SME.SGP.Infra.Dtos.Relatorios.HistoricoEscolar;
 using System;
@@ -23,6 +25,15 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterAlunos(FiltroBuscaEstudanteDto filtroBuscaAlunosDto, [FromServices] IObterAlunosPorCodigoEolNomeUseCase obterAlunosPorCodigoEolNomeUseCase)
         {
             return Ok(await obterAlunosPorCodigoEolNomeUseCase.Executar(filtroBuscaAlunosDto));
+        }
+
+        [HttpGet("{codigoAluno}/anosLetivos/{anoLetivo}")]
+        [ProducesResponseType(typeof(AlunoReduzidoDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public async Task<IActionResult> ObterAlunosPorCodigo(string codigoAluno, int anoLetivo, [FromServices] IObterAlunoPorCodigoEolEAnoLetivoUseCase useCase)
+        {
+            return Ok(await useCase.Executar(codigoAluno, anoLetivo));
         }
     }
 }

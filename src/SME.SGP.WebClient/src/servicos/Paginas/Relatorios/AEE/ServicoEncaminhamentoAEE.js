@@ -1,22 +1,42 @@
-// import api from '~/servicos/api';
+import { store } from '~/redux';
+import {
+  setDadosModalAviso,
+  setExibirModalAviso,
+} from '~/redux/modulos/encaminhamentoAEE/actions';
+import api from '~/servicos/api';
 
-// const urlPadrao = 'v1/relatorios/aee';
+const urlPadrao = 'v1/encaminhamento-aee';
 
 class ServicoEncaminhamentoAEE {
   obterSituacoes = () => {
-    // TODO
-    // return api.get(`${urlPadrao}/situacao`);
+    return api.get(`${urlPadrao}/situacoes`);
+  };
 
-    return new Promise(resolve => {
-      setTimeout(() => {
-        resolve({
-          data: [
-            { valor: 1, desc: 'Sit 01' },
-            { valor: 2, desc: 'Sit 02' },
-          ],
-        });
-      }, 3000);
-    });
+  obterAvisoModal = async () => {
+    const { dispatch } = store;
+
+    const state = store.getState();
+    const { encaminhamentoAEE } = state;
+
+    const { dadosModalAviso } = encaminhamentoAEE;
+
+    if (!dadosModalAviso) {
+      const retorno = await api.get(`${urlPadrao}/instrucoes-modal`);
+      if (retorno?.data) {
+        dispatch(setDadosModalAviso(retorno.data));
+        dispatch(setExibirModalAviso(true));
+      } else {
+        dispatch(setDadosModalAviso());
+        dispatch(setExibirModalAviso(false));
+      }
+    } else {
+      dispatch(setExibirModalAviso(true));
+    }
+  };
+
+  obterDadosEstudante = (codigoAluno, anoLetivo) => {
+    const url = `v1/estudante/${codigoAluno}/anosLetivos/${anoLetivo}`;
+    return api.post(url);
   };
 }
 

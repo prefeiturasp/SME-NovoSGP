@@ -7,6 +7,7 @@ namespace SME.SGP.Dominio
     public enum TipoArquivo
     {
         Geral = 1,
-        Editor = 2
+        Editor = 2,
+        EncaminhamentoAEE = 3
     }
 }

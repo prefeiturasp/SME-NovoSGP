@@ -62,5 +62,12 @@ namespace SME.SGP.Dados.Repositorios
 				.Conexao
 				.QueryAsync<QuestaoRespostaAeeDto>(sql, new { questionarioId, encaminhamentoId });
         }
+
+        public async Task<IEnumerable<long>> ObterQuestoesPorSecaoId(long encaminhamentoAEESecaoId)
+        {
+            var query = "select id from questao_encaminhamento_aee qea where encaminhamento_aee_secao_id = @encaminhamentoAEESecaoId";
+
+            return await database.Conexao.QueryAsync<long>(query, new { encaminhamentoAEESecaoId });
+        }
     }
 }

@@ -80,7 +80,8 @@ import RelatorioHistoricoAlteracoesNotas from '~/paginas/Relatorios/Fechamento/H
 import relatorioEscolaAquiAdesao from '~/paginas/Relatorios/EscolaAqui/Adesao/relatorioEscolaAquiAdesao';
 import RelatorioLeitura from '~/paginas/Relatorios/EscolaAqui/Leitura/relatorioLeitura';
 import RelatorioPlanejamentoDiario from '~/paginas/Relatorios/DiarioClasse/PlanejamentoDiario/relatorioPlanejamentoDiario';
-import EncaminhamentoAEELista from '~/paginas/Relatorios/AEE/Encaminhamento/encaminhamentoAEELista';
+import EncaminhamentoAEELista from '~/paginas/Relatorios/AEE/Encaminhamento/Lista/encaminhamentoAEELista';
+import EncaminhamentoAEECadastro from '~/paginas/Relatorios/AEE/Encaminhamento/Cadastro/encaminhamentoAEECadastro';
 
 const rotas = new Map();
 
@@ -1103,6 +1104,17 @@ rotas.set(RotasDto.RELATORIO_AEE_ENCAMINHAMENTO, {
   menu: ['Relatórios', 'AEE'],
   parent: '/',
   component: EncaminhamentoAEELista,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+  chavePermissao: RotasDto.RELATORIO_AEE_ENCAMINHAMENTO,
+});
+
+rotas.set(`${RotasDto.RELATORIO_AEE_ENCAMINHAMENTO}/novo`, {
+  breadcrumbName: 'Encaminhamento',
+  menu: ['Relatórios', 'AEE'],
+  parent: '/',
+  component: EncaminhamentoAEECadastro,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: false,
