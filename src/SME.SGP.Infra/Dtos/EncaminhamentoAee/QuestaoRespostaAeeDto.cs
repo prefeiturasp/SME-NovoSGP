@@ -17,7 +17,7 @@ namespace SME.SGP.Infra
         public long? QuestaoComplementarId { get; set; }
         public int OpcaoRespostaOrdem { get; set; }
         public string OpcaoRespostaNome { get; set; }
-        public long? RespostaId { get; set; }
+        public long? RespostaEncaminhamentoId { get; set; }
         public string RespostaTexto { get; set; }
         public long? RespostaArquivoId { get; set; }
         public string ArquivoNome { get; set; }
