@@ -10,14 +10,14 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ListarAlunosDaTurmaPorComponenteQueryHandler : IRequestHandler<ListarAlunosDaTurmaPorComponenteQuery, IEnumerable<AlunoDadosBasicosDto>>
+    public class ListarAlunosDaTurmaPorComponenteRegistroIndividualQueryHandler : IRequestHandler<ListarAlunosDaTurmaPorComponenteRegistroIndividualQuery, IEnumerable<AlunoDadosBasicosDto>>
     {
         private readonly IMediator mediator;
         private readonly IRepositorioRegistroIndividual repositorioRegistroIndividual;
         private readonly IRepositorioEventoFechamento repositorioEventoFechamento;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
 
-        public ListarAlunosDaTurmaPorComponenteQueryHandler(IRepositorioRegistroIndividual repositorioRegistroIndividual, IMediator mediator,
+        public ListarAlunosDaTurmaPorComponenteRegistroIndividualQueryHandler(IRepositorioRegistroIndividual repositorioRegistroIndividual, IMediator mediator,
                                                             IRepositorioEventoFechamento repositorioEventoFechamento, IRepositorioTipoCalendario repositorioTipoCalendario)
         {
             this.repositorioRegistroIndividual = repositorioRegistroIndividual ?? throw new System.ArgumentNullException(nameof(repositorioRegistroIndividual));
@@ -26,14 +26,11 @@ namespace SME.SGP.Aplicacao
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
         }
 
-        public async Task<IEnumerable<AlunoDadosBasicosDto>> Handle(ListarAlunosDaTurmaPorComponenteQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<AlunoDadosBasicosDto>> Handle(ListarAlunosDaTurmaPorComponenteRegistroIndividualQuery request, CancellationToken cancellationToken)
         {
-            var turma = await mediator.Send(new ObterTurmaPorIdQuery(request.TurmaId));
 
-            if(turma == null)
-                throw new NegocioException("Não foi encontrado turma com o id informado");
 
-            var periodosAberto = await repositorioEventoFechamento.ObterPeriodosFechamentoEmAberto(turma.UeId, DateTime.Now.Date);
+            var periodosAberto = await repositorioEventoFechamento.ObterPeriodosFechamentoEmAberto(request.Turma.UeId, DateTime.Now.Date);
 
             PeriodoEscolar periodoEscolar;
             if (periodosAberto != null && periodosAberto.Any())
@@ -44,7 +41,7 @@ namespace SME.SGP.Aplicacao
             else
             {
                 // Caso não esteja em periodo de fechamento ou escolar busca o ultimo existente
-                var tipoCalendario =   await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre);
+                var tipoCalendario =   await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(request.Turma.AnoLetivo, request.Turma.ModalidadeTipoCalendario, request.Turma.Semestre);
                 if (tipoCalendario == null)
                     throw new NegocioException("Não foi encontrado calendário cadastrado para a turma");
                 var periodosEscolares = await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioIdQuery(tipoCalendario.Id));
@@ -56,7 +53,8 @@ namespace SME.SGP.Aplicacao
                     periodoEscolar = periodosEscolares.OrderByDescending(o => o.PeriodoInicio).FirstOrDefault(p => p.PeriodoFim <= DateTime.Today);
             }
 
-            var dadosAlunos = await mediator.Send(new ObterDadosAlunosQuery(turma.CodigoTurma, turma.AnoLetivo, periodoEscolar));
+            var dadosAlunos = await mediator.Send(new ObterDadosAlunosQuery(request.Turma.CodigoTurma, request.Turma.AnoLetivo, periodoEscolar));
+
             return dadosAlunos.OrderBy(w => w.Nome);
         }
     }

@@ -60,7 +60,7 @@ namespace SME.SGP.Dados.Repositorios
             await database.Conexao.QueryAsync<PendenciaRegistroIndividual, PendenciaRegistroIndividualAluno, Pendencia, PendenciaRegistroIndividual>(sql,
                 (pendenciaRegistroIndividual, pendenciaRegistroIndividualAluno, pendencia) =>
                 {
-                    if(resultado is null)
+                    if (resultado is null)
                     {
                         resultado = pendenciaRegistroIndividual;
 						resultado.Pendencia = pendencia;
@@ -73,6 +73,24 @@ namespace SME.SGP.Dados.Repositorios
                 new { turmaId, situacao = (short)situacaoPendencia });
 
             return resultado;
+        }
+
+        public async Task<IEnumerable<long>> ObterAlunosCodigosComPendenciaAtivosDaTurmaAsync(long turmaId)
+        {
+            const string sql = @"
+                                select
+	                                pria.codigo_aluno
+                                from
+	                                pendencia_registro_individual_aluno pria
+                                inner join pendencia_registro_individual pri on
+	                                pria.pendencia_registro_individual_id = pri.id
+                                where
+	                                pria.situacao = 1
+                                and pri.turma_id = @turmaId";
+
+
+            return await database.Conexao.QueryAsync<long>(sql, new { turmaId });
+
         }
     }
 }
