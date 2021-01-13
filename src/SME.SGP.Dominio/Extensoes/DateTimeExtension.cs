@@ -14,6 +14,15 @@ namespace SME.SGP.Dominio
             //else
             return data;
         }
+       
+        /// <summary>
+        /// Método improvisado para aplicar o GMT de Brasília manualmente, enquanto o problema de reagionalização do servidor não é resolvido;
+        /// </summary>
+        /// <returns>Retorna data e hora aplicando GMT -3:00 de Brasília.</returns>
+        public static DateTime HorarioBrasilia()
+        {
+            return DateTime.UtcNow.AddHours(-3);
+        }
 
         public static DateTime ObterDomingo(this DateTime data)
         {
