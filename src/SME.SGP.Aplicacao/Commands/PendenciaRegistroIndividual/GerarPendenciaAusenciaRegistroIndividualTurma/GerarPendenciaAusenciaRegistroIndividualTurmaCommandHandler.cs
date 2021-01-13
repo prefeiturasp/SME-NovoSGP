@@ -92,7 +92,16 @@ namespace SME.SGP.Aplicacao
             var pendencia = new Pendencia(TipoPendencia.AusenciaDeRegistroIndividual, titulo, DescricaoBase);
             pendencia.Id = await repositorioPendencia.SalvarAsync(pendencia);
 
-            await AdicionarUsuariosDaPendenciaAsync(pendencia, turma, professoresDaTurma);
+
+            var professoresRfsParaBusca = new List<string>();
+            foreach (var professores in professoresDaTurma)
+            {
+                var listaProfessorComVirgulas = professores.Split(',');
+                professoresRfsParaBusca.AddRange(listaProfessorComVirgulas.Select( a => a.Trim()));
+            }
+
+
+            await AdicionarUsuariosDaPendenciaAsync(pendencia, turma, professoresRfsParaBusca);
             await AdicionarPendenciaRegistroIndividualAsync(pendencia, turma, alunosTurmaComAusenciaRegistroIndividualPorDias);
         }
 
