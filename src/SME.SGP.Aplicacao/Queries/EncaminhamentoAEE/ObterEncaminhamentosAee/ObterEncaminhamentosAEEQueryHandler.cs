@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterEncaminhamentosAEEQueryHandler : ConsultasBase, IRequestHandler<ObterEncaminhamentosAEEQuery, PaginacaoResultadoDto<EncaminhamentosAEEResumoDto>>
+    public class ObterEncaminhamentosAEEQueryHandler : ConsultasBase, IRequestHandler<ObterEncaminhamentosAEEQuery, PaginacaoResultadoDto<EncaminhamentoAEEResumoDto>>
     {
         public IMediator mediator { get; }
         public IRepositorioEncaminhamentoAEE repositorioEncaminhamentoAEE { get; }
@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioEncaminhamentoAEE = repositorioEncaminhamentoAEE ?? throw new ArgumentNullException(nameof(repositorioEncaminhamentoAEE));
         }
 
-        public async Task<PaginacaoResultadoDto<EncaminhamentosAEEResumoDto>> Handle(ObterEncaminhamentosAEEQuery request, CancellationToken cancellationToken)
+        public async Task<PaginacaoResultadoDto<EncaminhamentoAEEResumoDto>> Handle(ObterEncaminhamentosAEEQuery request, CancellationToken cancellationToken)
         {
             return await MapearParaDto(await repositorioEncaminhamentoAEE.ListarPaginado(request.DreId,
                                                                      request.UeId,
@@ -31,9 +31,9 @@ namespace SME.SGP.Aplicacao
                                                                      Paginacao));
         }
 
-        private async Task<PaginacaoResultadoDto<EncaminhamentosAEEResumoDto>> MapearParaDto(PaginacaoResultadoDto<EncaminhamentoAEEAlunoTurmaDto> resultadoDto)
+        private async Task<PaginacaoResultadoDto<EncaminhamentoAEEResumoDto>> MapearParaDto(PaginacaoResultadoDto<EncaminhamentoAEEAlunoTurmaDto> resultadoDto)
         {
-            return new PaginacaoResultadoDto<EncaminhamentosAEEResumoDto>()
+            return new PaginacaoResultadoDto<EncaminhamentoAEEResumoDto>()
             {
                 TotalPaginas = resultadoDto.TotalPaginas,
                 TotalRegistros = resultadoDto.TotalRegistros,
@@ -41,15 +41,15 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        private async Task<IEnumerable<EncaminhamentosAEEResumoDto>> MapearParaDto(IEnumerable<EncaminhamentoAEEAlunoTurmaDto> encaminhamentos)
+        private async Task<IEnumerable<EncaminhamentoAEEResumoDto>> MapearParaDto(IEnumerable<EncaminhamentoAEEAlunoTurmaDto> encaminhamentos)
         {
-            var listaEncaminhamentos = new List<EncaminhamentosAEEResumoDto>();
+            var listaEncaminhamentos = new List<EncaminhamentoAEEResumoDto>();
 
             foreach (var encaminhamento in encaminhamentos)
             {
                 var aluno = await mediator.Send(new ObterAlunoPorCodigoEolQuery(encaminhamento.AlunoCodigo, encaminhamento.TurmaAno));
 
-                listaEncaminhamentos.Add(new EncaminhamentosAEEResumoDto()
+                listaEncaminhamentos.Add(new EncaminhamentoAEEResumoDto()
                 {
                     Id = encaminhamento.Id,
                     Situacao = encaminhamento.Situacao.Name(),
