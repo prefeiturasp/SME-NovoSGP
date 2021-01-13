@@ -35,7 +35,7 @@ const Item = ({ dados, setCarregandoGeral }) => {
   } = dados;
 
   const [editando, setEditando] = useState(false);
-  const [registroAlterado, setRegistroAlterado] = useState(registro);
+  const [registroAlterado, setRegistroAlterado] = useState();
 
   const registroAnteriorEmEdicao = useSelector(
     store => store.registroIndividual.registroAnteriorEmEdicao
@@ -82,15 +82,15 @@ const Item = ({ dados, setCarregandoGeral }) => {
     setEditando(true);
   };
 
-  const resetarInfomacoes = () => {
+  const resetarInfomacoes = texto => {
     setEditando(false);
-    setRegistroAlterado(registro);
+    setRegistroAlterado(texto);
     dispatch(setRegistroAnteriorEmEdicao(false));
     dispatch(setRegistroAnteriorId({}));
   };
 
   const onClickCancelar = () => {
-    resetarInfomacoes();
+    resetarInfomacoes(registro);
   };
 
   const onClickSalvar = async () => {
@@ -115,9 +115,15 @@ const Item = ({ dados, setCarregandoGeral }) => {
       };
       dispatch(alterarRegistroAnterior(dadosPraSalvar));
       setRegistroAlterado(registroAlterado);
-      resetarInfomacoes();
+      resetarInfomacoes(registroAlterado);
     }
   };
+
+  useEffect(() => {
+    if (registro) {
+      setRegistroAlterado(registro);
+    }
+  }, [registro]);
 
   return (
     <div className="row justify-content-between">
