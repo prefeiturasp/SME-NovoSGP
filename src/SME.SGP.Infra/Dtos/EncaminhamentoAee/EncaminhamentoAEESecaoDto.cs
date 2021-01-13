@@ -11,6 +11,7 @@ namespace SME.SGP.Infra
             Questoes = new List<EncaminhamentoAEESecaoQuestao>();
         }
         public long SecaoId { get; set; }
+        public bool Concluido { get; set; }
         public List<EncaminhamentoAEESecaoQuestao> Questoes { get; set; }
     }
 }

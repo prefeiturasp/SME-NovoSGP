@@ -21,9 +21,9 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("salvar")]
         [ProducesResponseType(typeof(IEnumerable<ResultadoEncaminhamentoAEEDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> RegistrarEncaminhamento([FromQuery] EncaminhamentoAEEDto encaminhamentoAlunoDto, [FromServices] IRegistrarEncaminhamentoAEEUseCase registrarEncaminhamentoAEEUseCase)
+        public async Task<IActionResult> RegistrarEncaminhamento([FromBody] EncaminhamentoAEEDto encaminhamentoAEEDto, [FromServices] IRegistrarEncaminhamentoAEEUseCase registrarEncaminhamentoAEEUseCase)
         {
-            return Ok(await registrarEncaminhamentoAEEUseCase.Executar(encaminhamentoAlunoDto));
+            return Ok(await registrarEncaminhamentoAEEUseCase.Executar(encaminhamentoAEEDto));
         }
 
         [HttpGet("secoes")]
