@@ -1033,5 +1033,21 @@ namespace SME.SGP.Aplicacao.Integracoes
 
             return MapearParaDtoDisciplinas(retorno);
         }
+
+        public async Task<InformacoesEscolaresAlunoDto> ObterNecessidadesEspeciaisAluno(long codigoAluno)
+        {
+
+            var url = $@"alunos/{codigoAluno}/necessidades-especiais";
+
+            var resposta = await httpClient.GetAsync(url);
+
+            if (!resposta.IsSuccessStatusCode)
+                throw new NegocioException("Não foram encontrados dados de necessidades especiais para o aluno no EOL");
+
+            
+            var json = await resposta.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<InformacoesEscolaresAlunoDto>(json);
+                        
+        }
     }
 }
