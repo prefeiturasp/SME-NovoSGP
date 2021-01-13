@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
                     return false;
                 }
 
-                foreach (var turma in turmasDoEnsinoInfantil)
+                foreach (var turma in turmasDoEnsinoInfantil.Where(a => a.CodigoTurma == "2252164").ToList())
                     await GerarPendenciaAusenciaRegistroIndividualTurmaAsync(turma);
 
                 return true;
