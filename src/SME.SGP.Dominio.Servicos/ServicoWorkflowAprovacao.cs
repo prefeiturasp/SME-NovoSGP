@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SME.SGP.Infra.Interfaces;
+using Sentry;
 
 namespace SME.SGP.Dominio.Servicos
 {
@@ -326,7 +327,16 @@ namespace SME.SGP.Dominio.Servicos
                 var funcionariosRetorno = servicoNotificacao.ObterFuncionariosPorNivel(nivel.Workflow.UeId, nivel.Cargo);
 
                 foreach (var funcionario in funcionariosRetorno)
-                    usuarios.Add(servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(funcionario.Id));
+                {
+                    try
+                    {
+                        usuarios.Add(servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(string.Empty, funcionario.Id, buscaLogin: true));
+                    }
+                    catch (Exception e)
+                    {
+                        SentrySdk.CaptureException(e);
+                    }
+                }
             }
 
             foreach (var usuario in usuarios)

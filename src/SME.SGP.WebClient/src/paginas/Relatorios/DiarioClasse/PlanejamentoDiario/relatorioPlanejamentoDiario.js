@@ -185,9 +185,24 @@ const RelatorioPlanejamentoDiario = () => {
     bimestre,
   ]);
 
+  const validarValorPadraoAnoLetivo = lista => {
+    if (lista?.length) {
+      const temAnoAtualNaLista = lista.find(
+        item => String(item.valor) === String(anoAtual)
+      );
+      if (temAnoAtualNaLista) {
+        setAnoLetivo(anoAtual);
+      } else {
+        setAnoLetivo(lista[0].valor);
+      }
+    } else {
+      setAnoLetivo();
+    }
+  };
+
   useEffect(() => {
-    setAnoLetivo(anoAtual);
-  }, [consideraHistorico, anoAtual]);
+    validarValorPadraoAnoLetivo(listaAnosLetivo);
+  }, [consideraHistorico, listaAnosLetivo]);
 
   const obterUes = useCallback(async () => {
     if (codigoDre) {
@@ -401,21 +416,9 @@ const RelatorioPlanejamentoDiario = () => {
 
   const obterAnosLetivos = useCallback(async () => {
     setExibirLoader(true);
-    let anosLetivos = [];
 
-    const anosLetivoComHistorico = await FiltroHelper.obterAnosLetivos({
-      consideraHistorico: true,
-    });
-    const anosLetivoSemHistorico = await FiltroHelper.obterAnosLetivos({
-      consideraHistorico: false,
-    });
-
-    anosLetivos = anosLetivos.concat(anosLetivoComHistorico);
-
-    anosLetivoSemHistorico.forEach(ano => {
-      if (!anosLetivoComHistorico.find(a => a.valor === ano.valor)) {
-        anosLetivos.push(ano);
-      }
+    const anosLetivos = await FiltroHelper.obterAnosLetivos({
+      consideraHistorico,
     });
 
     if (!anosLetivos.length) {
@@ -425,21 +428,15 @@ const RelatorioPlanejamentoDiario = () => {
       });
     }
 
-    if (anosLetivos && anosLetivos.length) {
-      const temAnoAtualNaLista = anosLetivos.find(
-        item => String(item.valor) === String(anoAtual)
-      );
-      if (temAnoAtualNaLista) setAnoLetivo(anoAtual);
-      else setAnoLetivo(anosLetivos[0].valor);
-    }
+    validarValorPadraoAnoLetivo(anosLetivos);
 
     setListaAnosLetivo(anosLetivos);
     setExibirLoader(false);
-  }, [anoAtual]);
+  }, [anoAtual, consideraHistorico]);
 
   useEffect(() => {
     obterAnosLetivos();
-  }, [obterAnosLetivos]);
+  }, [obterAnosLetivos, consideraHistorico]);
 
   const obterSemestres = useCallback(async () => {
     setExibirLoader(true);
@@ -484,7 +481,7 @@ const RelatorioPlanejamentoDiario = () => {
     await setBimestre();
     await setListarDataFutura(false);
     await setExibirDetalhamento(false);
-    await setAnoLetivo(anoAtual);
+    validarValorPadraoAnoLetivo(listaAnosLetivo);
   };
 
   const gerar = async () => {
@@ -499,7 +496,7 @@ const RelatorioPlanejamentoDiario = () => {
       codigoTurma: turmaId,
       listarDataFutura,
       exibirDetalhamento,
-      componenteCurricular: componenteCurricularId
+      componenteCurricular: componenteCurricularId,
     };
 
     setExibirLoader(true);
@@ -576,7 +573,7 @@ const RelatorioPlanejamentoDiario = () => {
                 lista={listaAnosLetivo}
                 valueOption="valor"
                 valueText="desc"
-                disabled={!consideraHistorico || listaAnosLetivo?.length === 1}
+                disabled={listaAnosLetivo?.length === 1}
                 onChange={onChangeAnoLetivo}
                 valueSelect={anoLetivo}
                 placeholder="Ano letivo"
