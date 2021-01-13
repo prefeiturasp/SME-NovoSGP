@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
             //TODO: Modificar para mediatr
             var parametroDiasSemRegistroIndividual = await ObterDiasDeAusenciaParaPendenciaRegistroIndividualAsync();
 
-            var alunosDaTurmaComPendencia = (await mediator.Send(new ListarAlunosCodigosPorTurmaComponeteComPendenciaQuery(turma.Id, filtro.ComponenteCurricularId))).ToList() ;            
+            var alunosDaTurmaComPendencia = (await mediator.Send(new ListarAlunosCodigosPorTurmaComponenteComPendenciaQuery(turma.Id, filtro.ComponenteCurricularId))).ToList() ;            
 
             if (alunosDaTurmaComPendencia.Any())
             {
