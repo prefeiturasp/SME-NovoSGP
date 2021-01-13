@@ -15,5 +15,6 @@ namespace SME.SGP.Infra
         public TipoQuestao TipoQuestao { get; set; }
         public string Opcionais { get; set; }
         public OpcaoRespostaAeeDto[] OpcaoResposta { get; set; }
+        public RespostaAeeDto[] Resposta { get; set; }
     }
 }
