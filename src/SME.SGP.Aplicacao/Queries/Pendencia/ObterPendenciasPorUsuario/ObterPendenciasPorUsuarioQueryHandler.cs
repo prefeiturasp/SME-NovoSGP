@@ -154,14 +154,14 @@ namespace SME.SGP.Aplicacao
 
         private async Task<string> ObterDescricaoPendenciaAusenciaRegistroIndividualAsync(Pendencia pendencia)
         {
-            var pendenciasAulas = await mediator.Send(new ObterPendenciasAulasPorPendenciaQuery(pendencia.Id));
+            var alunos = await mediator.Send(new ObterPendenciaRegistroIndividualCodigosAlunosPorPendenciaQuery(pendencia.Id));
 
             var descricao = new StringBuilder(pendencia.Descricao);
             descricao.AppendLine("<br /><ul>");
 
-            foreach (var pendenciaAula in pendenciasAulas)
+            foreach (var aluno in alunos)
             {
-                descricao.AppendLine($"<li>{pendenciaAula.DataAula:dd/MM} - {pendenciaAula.Motivo}</li>");
+                descricao.AppendLine($"<li>{aluno.NomeValido()} ({aluno.CodigoAluno})</li>");
             }
             descricao.AppendLine("</ul>");
             descricao.AppendLine($"<br/><b>{pendencia.Instrucao}</b>");

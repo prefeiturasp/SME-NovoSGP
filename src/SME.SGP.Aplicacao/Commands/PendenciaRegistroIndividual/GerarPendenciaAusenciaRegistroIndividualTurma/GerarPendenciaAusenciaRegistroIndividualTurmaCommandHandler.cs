@@ -124,16 +124,17 @@ namespace SME.SGP.Aplicacao
         private async Task AlterarPendenciaAusenciaRegistroIndividualAsync(PendenciaRegistroIndividual pendenciaRegistroIndividual, IEnumerable<AlunoPorTurmaResposta> alunosTurmaComAusenciaRegistroIndividualPorDias)
         {
             var alunosParaSeremAdicionadosNaPendencia = alunosTurmaComAusenciaRegistroIndividualPorDias
-                .Where(x => !pendenciaRegistroIndividual.Alunos.Any(y => y.CodigoAluno.ToString() == x.CodigoAluno
-                            && y.Situacao == SituacaoPendenciaRegistroIndividualAluno.Pendente));
+                .Where(x => !pendenciaRegistroIndividual.Alunos.Any(y => y.CodigoAluno.ToString() == x.CodigoAluno && y.Situacao == SituacaoPendenciaRegistroIndividualAluno.Pendente))
+                .ToList();
 
             if (!alunosParaSeremAdicionadosNaPendencia.Any()) return;
 
             var codigosDosAlunos = alunosParaSeremAdicionadosNaPendencia.Select(x => long.Parse(x.CodigoAluno));
             pendenciaRegistroIndividual.AdicionarAlunos(codigosDosAlunos);
 
-            foreach (var pendenciaRegistroIndividualAluno in pendenciaRegistroIndividual.Alunos)
+            foreach (var codigoAluno in codigosDosAlunos)
             {
+                var pendenciaRegistroIndividualAluno = pendenciaRegistroIndividual.Alunos.First(x => x.CodigoAluno == codigoAluno);
                 pendenciaRegistroIndividualAluno.Id = await repositorioPendenciaRegistroIndividualAluno.SalvarAsync(pendenciaRegistroIndividualAluno);
             }
         }

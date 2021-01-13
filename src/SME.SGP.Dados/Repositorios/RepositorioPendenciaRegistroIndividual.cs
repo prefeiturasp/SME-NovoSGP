@@ -8,14 +8,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioPendenciaRegistroIndividual : RepositorioBase<PendenciaRegistroIndividual>, IRepositorioPendenciaRegistroIndividual
     {
-        public RepositorioPendenciaRegistroIndividual(ISgpContext database)
-            : base(database)
-        {
-        }
-
-        public async Task<PendenciaRegistroIndividual> ObterPendenciaRegistroIndividualPorTurmaESituacao(long turmaId, SituacaoPendencia situacaoPendencia)
-        {
-            const string sql = @"SELECT 
+		private const string SelectCompletoPadrao = @"SELECT 
 	                                pri.id, 
 	                                pri.alterado_por, 
 	                                pri.alterado_rf, 
@@ -50,11 +43,50 @@ namespace SME.SGP.Dados.Repositorios
 	                                on pri.pendencia_id = p.id
                                 left join
 	                                public.pendencia_registro_individual_aluno pria 
-	                                on pri.id = pria.pendencia_registro_individual_id
-                                where
-	                                pri.turma_id = @turmaId
-	                                and p.situacao = @situacao
-	                                and not p.excluido";
+	                                on pri.id = pria.pendencia_registro_individual_id ";
+
+        public RepositorioPendenciaRegistroIndividual(ISgpContext database)
+            : base(database)
+        {
+        }
+
+		public async Task<PendenciaRegistroIndividual> ObterPendenciaRegistroIndividualPorPendenciaESituacao(long pendenciaId, SituacaoPendencia situacaoPendencia, 
+			SituacaoPendenciaRegistroIndividualAluno situacaoAluno)
+        {
+			var sql = $@"{SelectCompletoPadrao}
+                        where
+	                        pri.pendencia_id = @pendenciaId
+	                        and p.situacao = @situacao
+							and pria.situacao = @situacaoAluno
+	                        and not p.excluido";
+
+            PendenciaRegistroIndividual resultado = null;
+            await database.Conexao.QueryAsync<PendenciaRegistroIndividual, PendenciaRegistroIndividualAluno, Pendencia, PendenciaRegistroIndividual>(sql,
+                (pendenciaRegistroIndividual, pendenciaRegistroIndividualAluno, pendencia) =>
+                {
+                    if (resultado is null)
+                    {
+                        resultado = pendenciaRegistroIndividual;
+                        resultado.Pendencia = pendencia;
+                    }
+
+                    resultado.Alunos = resultado.Alunos ?? new List<PendenciaRegistroIndividualAluno>();
+                    resultado.Alunos.Add(pendenciaRegistroIndividualAluno);
+                    return resultado;
+                },
+                new { pendenciaId, situacao = (short)situacaoPendencia, situacaoAluno = (short)situacaoAluno });
+
+            return resultado;
+        }
+
+
+		public async Task<PendenciaRegistroIndividual> ObterPendenciaRegistroIndividualPorTurmaESituacao(long turmaId, SituacaoPendencia situacaoPendencia)
+        {
+            var sql = $@"{SelectCompletoPadrao}
+                        where
+	                        pri.turma_id = @turmaId
+	                        and p.situacao = @situacao
+	                        and not p.excluido";
 
             PendenciaRegistroIndividual resultado = null;
             await database.Conexao.QueryAsync<PendenciaRegistroIndividual, PendenciaRegistroIndividualAluno, Pendencia, PendenciaRegistroIndividual>(sql,
@@ -90,7 +122,6 @@ namespace SME.SGP.Dados.Repositorios
 
 
             return await database.Conexao.QueryAsync<long>(sql, new { turmaId });
-
         }
     }
 }
