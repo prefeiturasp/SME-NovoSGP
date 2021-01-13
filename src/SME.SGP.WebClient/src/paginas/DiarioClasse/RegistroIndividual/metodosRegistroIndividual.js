@@ -32,12 +32,7 @@ class MetodosRegistroIndividual {
     };
   };
 
-  escolheCadastrar = (
-    atualizarDados = true,
-    registroIndividual,
-    turmaId,
-    id
-  ) => {
+  escolheCadastrar = (atualizarDados, registroIndividual, turmaId, id) => {
     if (id) {
       this.editarRegistroIndividual(
         atualizarDados,
@@ -71,12 +66,12 @@ class MetodosRegistroIndividual {
     return true;
   };
 
-  verificarSalvarRegistroIndividual = () => {
+  verificarSalvarRegistroIndividual = atualizarDados => {
     const { registroIndividual, turmaId } = this.obterDados();
     const { id } = registroIndividual.dadosParaSalvarNovoRegistro;
 
     if (registroIndividual.registroIndividualEmEdicao) {
-      this.escolheCadastrar(false, registroIndividual, turmaId, id);
+      this.escolheCadastrar(atualizarDados, registroIndividual, turmaId, id);
     }
   };
 
