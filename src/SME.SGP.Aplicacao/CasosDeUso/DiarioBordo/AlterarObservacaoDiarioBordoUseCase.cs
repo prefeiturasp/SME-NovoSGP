@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Infra;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -13,10 +14,10 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<AuditoriaDto> Executar(string observacao, long observacaoId)
+        public async Task<AuditoriaDto> Executar(string observacao, long observacaoId, IEnumerable<long> usuariosIdNotificacao)
         {
             var usuarioId = await mediator.Send(new ObterUsuarioLogadoIdQuery());
-            return await mediator.Send(new AlterarObservacaoDiarioBordoCommand(observacao, observacaoId, usuarioId));
+            return await mediator.Send(new AlterarObservacaoDiarioBordoCommand(observacao, observacaoId, usuarioId, usuariosIdNotificacao));
         }
     }
 }
