@@ -11,6 +11,11 @@ export const TabelaEstilo = styled.div`
     transition: width 1s linear;
     width: auto !important;
   }
+
+  .icone-ausencia {
+    background: none !important;
+    color: ${Base.LaranjaAlerta} !important;
+  }
 `;
 
 export const Tabela = styled.table`
