@@ -18,6 +18,7 @@ const inicial = {
   ehRegistroMigrado: false,
   planejamentoAnualId: 0,
   planoAnualSomenteConsulta: false,
+  listaComponentesCheck: [],
 };
 
 export default function planoAnual(state = inicial, action) {
@@ -157,6 +158,13 @@ export default function planoAnual(state = inicial, action) {
           ...draft,
           planoAnualSomenteConsulta: action.payload,
         };
+      }
+
+      case '@planoAnual/setListaComponentesCheck':{
+        return{
+          ...draft,
+          listaComponentesCheck: action.payload,
+        }
       }
 
       default:
