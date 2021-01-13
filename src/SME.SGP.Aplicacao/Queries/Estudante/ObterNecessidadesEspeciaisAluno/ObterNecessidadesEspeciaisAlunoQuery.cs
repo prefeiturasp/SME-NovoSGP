@@ -5,11 +5,13 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterNecessidadesEspeciaisAlunoQuery : IRequest<InformacoesEscolaresAlunoDto>
     {
-        public int CodigoAluno { get; set; }
 
-        public ObterNecessidadesEspeciaisAlunoQuery(int codigoAluno)
+        public ObterNecessidadesEspeciaisAlunoQuery(int codigoAluno, string turmaId)
         {
             CodigoAluno = codigoAluno;
+            TurmaId = turmaId;
         }
+        public int CodigoAluno { get; set; }
+        public string TurmaId { get; set; }
     }
 }

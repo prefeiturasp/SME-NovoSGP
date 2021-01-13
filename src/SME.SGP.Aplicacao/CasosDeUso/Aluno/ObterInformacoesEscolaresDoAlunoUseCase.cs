@@ -11,9 +11,9 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<InformacoesEscolaresAlunoDto> Executar(int codigoAluno)
+        public async Task<InformacoesEscolaresAlunoDto> Executar(int codigoAluno, string turmaId)
         {
-            var informacoesEscolaresAluno = await mediator.Send(new ObterNecessidadesEspeciaisAlunoQuery(codigoAluno));
+            var informacoesEscolaresAluno = await mediator.Send(new ObterNecessidadesEspeciaisAlunoQuery(codigoAluno, turmaId));
 
             return informacoesEscolaresAluno;
         }
