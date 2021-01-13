@@ -6,6 +6,6 @@
         public int Bimestre { get; set; }
         public int QuantidadeAusencias { get; set; }
         public int QuantidadeCompensacoes { get; set; }
-        public int Frequencia { get; set; }
+        public double Frequencia { get; set; }
     }
 }
