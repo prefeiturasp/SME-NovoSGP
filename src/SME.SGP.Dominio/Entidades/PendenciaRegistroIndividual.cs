@@ -50,5 +50,11 @@ namespace SME.SGP.Dominio
             Alunos = Alunos ?? new List<PendenciaRegistroIndividualAluno>();
             Alunos.Add(aluno);
         }
+
+        public void ResolverPendencia()
+        {
+            Pendencia.Situacao = SituacaoPendencia.Resolvida;
+            Pendencia.Excluido = true;
+        }
     }
 }

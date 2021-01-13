@@ -84,6 +84,8 @@ namespace SME.SGP.Aplicacao
                 return await ObterDescricaoPendenciaEvento(pendencia);
             if (pendencia.EhPendenciaAusenciaAvaliacaoCP())
                 return await ObterDescricaoPendenciaAusenciaAvaliacaoCP(pendencia);
+            if (pendencia.EhPendenciaAusenciaDeRegistroIndividual())
+                return await ObterDescricaoPendenciaAusenciaRegistroIndividualAsync(pendencia);
 
             return ObterDescricaoPendenciaGeral(pendencia);
         }
@@ -143,6 +145,23 @@ namespace SME.SGP.Aplicacao
             foreach (var pendenciaAula in pendenciasAulas)
             {
                 descricao.AppendLine($"<li>{pendenciaAula.DataAula:dd/MM} - {pendenciaAula.Motivo}</li>");
+            }
+            descricao.AppendLine("</ul>");
+            descricao.AppendLine($"<br/><b>{pendencia.Instrucao}</b>");
+
+            return descricao.ToString();
+        }
+
+        private async Task<string> ObterDescricaoPendenciaAusenciaRegistroIndividualAsync(Pendencia pendencia)
+        {
+            var alunos = await mediator.Send(new ObterPendenciaRegistroIndividualCodigosAlunosPorPendenciaQuery(pendencia.Id));
+
+            var descricao = new StringBuilder(pendencia.Descricao);
+            descricao.AppendLine("<br /><ul>");
+
+            foreach (var aluno in alunos)
+            {
+                descricao.AppendLine($"<li>{aluno.NomeValido()} ({aluno.CodigoAluno})</li>");
             }
             descricao.AppendLine("</ul>");
             descricao.AppendLine($"<br/><b>{pendencia.Instrucao}</b>");
