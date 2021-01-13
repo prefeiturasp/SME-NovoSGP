@@ -32,12 +32,25 @@ class MetodosRegistroIndividual {
     };
   };
 
-  escolheCadastrar = (mostrarMsg = true, registroIndividual, turmaId, id) => {
+  escolheCadastrar = (
+    atualizarDados = true,
+    registroIndividual,
+    turmaId,
+    id
+  ) => {
     if (id) {
-      this.editarRegistroIndividual(mostrarMsg, registroIndividual, turmaId);
+      this.editarRegistroIndividual(
+        atualizarDados,
+        registroIndividual,
+        turmaId
+      );
       return;
     }
-    this.cadastrarRegistroIndividual(mostrarMsg, registroIndividual, turmaId);
+    this.cadastrarRegistroIndividual(
+      atualizarDados,
+      registroIndividual,
+      turmaId
+    );
   };
 
   pergutarParaSalvar = () => {
@@ -77,7 +90,7 @@ class MetodosRegistroIndividual {
   };
 
   cadastrarRegistroIndividual = async (
-    mostrarMsg,
+    atualizarDados,
     registroIndividual,
     turmaId
   ) => {
@@ -102,13 +115,12 @@ class MetodosRegistroIndividual {
       );
 
     if (retorno?.status === 200) {
-      if (mostrarMsg) {
-        sucesso('Registro cadastrado com sucesso.');
-      }
+      sucesso('Registro cadastrado com sucesso.');
+
       const dataAtual = window.moment(window.moment().format('YYYY-MM-DD'));
       const ehDataAnterior = window.moment(dataAtual).isAfter(data);
       this.resetarInfomacoes(ehDataAnterior);
-      if (!ehDataAnterior && mostrarMsg) {
+      if (!ehDataAnterior && atualizarDados) {
         this.dispatch(setAuditoriaNovoRegistro(retorno.data));
         this.dispatch(
           atualizaDadosRegistroAtual({
@@ -123,7 +135,7 @@ class MetodosRegistroIndividual {
   };
 
   editarRegistroIndividual = async (
-    mostrarMsg,
+    atualizarDados,
     registroIndividual,
     turmaId
   ) => {
@@ -150,8 +162,8 @@ class MetodosRegistroIndividual {
       );
 
     if (retorno?.status === 200) {
-      if (mostrarMsg) {
-        sucesso('Registro editado com sucesso.');
+      sucesso('Registro editado com sucesso.');
+      if (atualizarDados) {
         this.dispatch(
           atualizaDadosRegistroAtual({
             id: retorno.data.id,

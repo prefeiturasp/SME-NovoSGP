@@ -40,7 +40,7 @@ const Item = ({ dados, setCarregandoGeral }) => {
   const registroAnteriorEmEdicao = useSelector(
     store => store.registroIndividual.registroAnteriorEmEdicao
   );
-  const { permissoes } = useSelector(state => state.usuario);
+  const permissoes = useSelector(state => state.usuario.permissoes);
   const permissoesTela = permissoes[RotasDto.REGISTRO_INDIVIDUAL];
 
   const dispatch = useDispatch();
