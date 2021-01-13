@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.Queries.RegistroIndividual.ListarAlunosDaTurmaComAusenciaDeRegistroIndividualPorDias
+namespace SME.SGP.Aplicacao.Queries
 {
     public class ListarAlunosTurmaComAusenciaRegistroIndividualPorDiasQueryHandler : IRequestHandler<ListarAlunosTurmaComAusenciaRegistroIndividualPorDiasQuery, IEnumerable<AlunoPorTurmaResposta>>
     {

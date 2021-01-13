@@ -75,9 +75,11 @@ namespace SME.SGP.Aplicacao
 
         private async Task<int> ObterDiasDeAusenciaParaPendenciaRegistroIndividualAsync()
         {
-            var query = new ObterParametroSistemaPorTipoQuery(TipoParametroSistema.PendenciaPorAusenciaDeRegistroIndividual);
-            int.TryParse(await mediator.Send(query), out var parametroDiasDeAusencia);
-            return parametroDiasDeAusencia > 0 ? parametroDiasDeAusencia : DiasDeAusenciaPadrao;
+            var parametroDiasSemRegistroIndividual = await mediator.Send(new ObterParametroSistemaPorTipoQuery(TipoParametroSistema.PendenciaPorAusenciaDeRegistroIndividual));
+            if (string.IsNullOrEmpty(parametroDiasSemRegistroIndividual))
+                throw new NegocioException($"Não foi possível obter o parâmetro de dias {TipoParametroSistema.PendenciaPorAusenciaDeRegistroIndividual.Name()} ");
+
+            return int.Parse(parametroDiasSemRegistroIndividual);
         }
 
         private async Task CriarNovaPendenciaAusenciaRegistroIndividualAsync(Turma turma, IEnumerable<AlunoPorTurmaResposta> alunosTurmaComAusenciaRegistroIndividualPorDias)
