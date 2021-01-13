@@ -56,35 +56,23 @@ namespace SME.SGP.Aplicacao
 
             if (!questaoLista.Any()) return null;
 
-            var opcoesRespostas = questaoLista
+            var opcoeResposta = questaoLista
+                .Where(or => or.OpcaoRespostaId.HasValue)
+                .Where(or => !or.RespostaEncaminhamentoId.HasValue)
                 .GroupBy(
-                    questaoKey => questaoKey.OpcaoRespostaId,
+                    questaoKey => questaoKey.OpcaoRespostaId.Value,
                     questaoValue => questaoValue,
                     (key, value) =>
                     {
-                        var opcaoLista = value.First();
-                        var arquivos = value
-                            .Where(v => v.RespostaArquivoId.HasValue)
-                            .Select(v => new Arquivo
-                            {
-                                Id = v.RespostaArquivoId.Value,
-                                Nome = v.ArquivoNome,
-                                Codigo = Guid.Parse(v.ArquivoCodigo),
-                                Tipo = (TipoArquivo)v.ArquivoTipo,
-                                TipoConteudo = v.ArquivoTipoConteudo
-                            })
-                            .ToArray();
+                        var questaoResposta = value.First();
 
                         var opcao = new OpcaoRespostaAeeDto
                         {
-                            Id = opcaoLista.OpcaoRespostaId,
-                            Arquivos = arquivos,
-                            Nome = opcaoLista.OpcaoRespostaNome,
-                            Ordem = opcaoLista.OpcaoRespostaOrdem,
-                            Texto = opcaoLista.RespostaTexto,
-                            RespostaEncaminhamentoId = opcaoLista.RespostaEncaminhamentoId,
-                            QuestaoComplementar = opcaoLista.QuestaoComplementarId.HasValue
-                                ? ObterQuestao(opcaoLista.QuestaoComplementarId.Value, dadosQuestionario)
+                            Id = questaoResposta.OpcaoRespostaId.Value,
+                            Nome = questaoResposta.OpcaoRespostaNome,
+                            Ordem = questaoResposta.OpcaoRespostaOrdem.Value,
+                            QuestaoComplementar = questaoResposta.QuestaoComplementarId.HasValue
+                                ? ObterQuestao(questaoResposta.QuestaoComplementarId.Value, dadosQuestionario)
                                 : null
                         };
 
@@ -93,6 +81,83 @@ namespace SME.SGP.Aplicacao
                 )
                 .OrderBy(q => q.Ordem)
                 .ToArray();
+
+            var respostaLista = questaoLista
+                .Where(or => !or.OpcaoRespostaId.HasValue)
+                .Where(or => or.RespostaEncaminhamentoId.HasValue)
+                .ToArray();
+
+            var respostaArquivos = respostaLista
+                .Where(or => or.RespostaArquivoId.HasValue)
+                .GroupBy(
+                    questaoKey => questaoKey.RespostaArquivoId.Value,
+                    questaoValue => questaoValue,
+                    (key, value) =>
+                    {
+                        var questaoResposta = value.First();
+
+                        var arquivo = new Arquivo
+                        {
+                            Id = questaoResposta.RespostaArquivoId.Value,
+                            Nome = questaoResposta.ArquivoNome,
+                            Codigo = Guid.Parse(questaoResposta.ArquivoCodigo),
+                            Tipo = (TipoArquivo)questaoResposta.ArquivoTipo,
+                            TipoConteudo = questaoResposta.ArquivoTipoConteudo
+                        };
+
+                        var resposta = new RespostaAeeDto
+                        {
+                            Id = questaoResposta.RespostaEncaminhamentoId,
+                            Arquivo = arquivo,
+                            OpcaoRespostaId = null,
+                            Texto = null
+                        };
+
+                        return resposta;
+                    }
+                );
+
+            var respostaOpcoes = respostaLista
+                .Where(or => or.RespostaEncaminhamentoOpcaoRespostaId.HasValue)
+                .GroupBy(
+                    questaoKey => questaoKey.RespostaEncaminhamentoOpcaoRespostaId.Value,
+                    questaoValue => questaoValue,
+                    (key, value) =>
+                    {
+                        var questaoResposta = value.First();
+
+                        var resposta = new RespostaAeeDto
+                        {
+                            Id = questaoResposta.RespostaEncaminhamentoId,
+                            Arquivo = null,
+                            OpcaoRespostaId = questaoResposta.RespostaEncaminhamentoOpcaoRespostaId.Value,
+                            Texto = null
+                        };
+
+                        return resposta;
+                    }
+                );
+
+            var respostaTexto = respostaLista
+                .Where(or => !string.IsNullOrEmpty(or.RespostaTexto))
+                .GroupBy(
+                    questaoKey => questaoKey.RespostaTexto,
+                    questaoValue => questaoValue,
+                    (key, value) =>
+                    {
+                        var questaoResposta = value.First();
+
+                        var resposta = new RespostaAeeDto
+                        {
+                            Id = questaoResposta.RespostaEncaminhamentoId,
+                            Arquivo = null,
+                            OpcaoRespostaId = null,
+                            Texto = questaoResposta.RespostaTexto
+                        };
+
+                        return resposta;
+                    }
+                );
 
             var questao = 
                 new QuestaoAeeDto
@@ -104,7 +169,12 @@ namespace SME.SGP.Aplicacao
                     Opcionais = questaoLista.First().QuestaoOpcionais,
                     Ordem = questaoLista.First().QuestaoOrder,
                     TipoQuestao = (TipoQuestao)questaoLista.First().QuestaoTipo,
-                    OpcaoResposta = opcoesRespostas
+                    OpcaoResposta = opcoeResposta,
+                    Resposta = 
+                        respostaOpcoes
+                        .Union(respostaArquivos)
+                        .Union(respostaTexto)
+                        .ToArray()
                 };
 
             return questao;
