@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿
+using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -35,7 +36,10 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("A turma não foi encontrada.");
 
             var alunosDaTurma = await mediator.Send(new ObterAlunosPorTurmaQuery(turma.CodigoTurma));
-            return alunosDaTurma.Where(x => pendenciaRegistroIndividual.Alunos.Any(y => y.CodigoAluno.ToString() == x.CodigoAluno)).ToList();
+            return alunosDaTurma
+                .Where(x => pendenciaRegistroIndividual.Alunos.Any(y => y.CodigoAluno.ToString() == x.CodigoAluno))
+                .OrderBy(x => x.NomeAluno)
+                .ToList();
         }
     }
 }
