@@ -11,6 +11,12 @@ namespace SME.SGP.Aplicacao
             AnoLetivo = anoLetivo;
             Modalidades = modalidades;
         }
+
+        public ObterTurmasPorAnoModalidadeQuery(int anoLetido, Modalidade modalidade)
+            : this(anoLetido, new Modalidade[] { modalidade })
+        {
+        }
+
         public int AnoLetivo { get; set; }
         public Modalidade[] Modalidades { get; set; }
 
