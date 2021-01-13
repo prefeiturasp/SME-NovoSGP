@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ListarAlunosCodigosPorTurmaComponeteComPendenciaQuery : IRequest<IEnumerable<long>>
+    public class ListarAlunosCodigosPorTurmaComponenteComPendenciaQuery : IRequest<IEnumerable<long>>
     {
-        public ListarAlunosCodigosPorTurmaComponeteComPendenciaQuery(long turmaId, long componenteCurricularId)
+        public ListarAlunosCodigosPorTurmaComponenteComPendenciaQuery(long turmaId, long componenteCurricularId)
         {
             TurmaId = turmaId;
             ComponenteCurricularId = componenteCurricularId;
