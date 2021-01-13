@@ -43,23 +43,21 @@ namespace SME.SGP.Aplicacao
             if (!alunosTurmaComAusenciaRegistroIndividualPorDias?.Any() ?? true)
                 return retorno;
 
-            using (var transacao = unitOfWork.IniciarTransacao())
+            var pendenciaRegistroIndividual = await repositorioPendenciaRegistroIndividual.ObterPendenciaRegistroIndividualPorTurmaESituacao(request.Turma.Id, SituacaoPendencia.Pendente);
+            unitOfWork.IniciarTransacao();
+            try
             {
-                try
-                {
-                    var pendenciaRegistroIndividual = await repositorioPendenciaRegistroIndividual.ObterPendenciaRegistroIndividualPorTurmaESituacao(request.Turma.Id, SituacaoPendencia.Pendente);
-                    if (pendenciaRegistroIndividual is null)
-                        await CriarNovaPendenciaAusenciaRegistroIndividualAsync(request.Turma, alunosTurmaComAusenciaRegistroIndividualPorDias);
-                    else
-                        await AlterarPendenciaAusenciaRegistroIndividualAsync(pendenciaRegistroIndividual, alunosTurmaComAusenciaRegistroIndividualPorDias);
+                if (pendenciaRegistroIndividual is null)
+                    await CriarNovaPendenciaAusenciaRegistroIndividualAsync(request.Turma, alunosTurmaComAusenciaRegistroIndividualPorDias);
+                else
+                    await AlterarPendenciaAusenciaRegistroIndividualAsync(pendenciaRegistroIndividual, alunosTurmaComAusenciaRegistroIndividualPorDias);
 
-                    unitOfWork.PersistirTransacao();
-                }
-                catch (Exception ex)
-                {
-                    unitOfWork.Rollback();
-                    retorno.Mensagens.Add(ex?.InnerException.Message ?? ex.Message);
-                }
+                unitOfWork.PersistirTransacao();
+            }
+            catch (Exception ex)
+            {
+                unitOfWork.Rollback();
+                retorno.Mensagens.Add(ex?.InnerException.Message ?? ex.Message);
             }
 
             return retorno;
