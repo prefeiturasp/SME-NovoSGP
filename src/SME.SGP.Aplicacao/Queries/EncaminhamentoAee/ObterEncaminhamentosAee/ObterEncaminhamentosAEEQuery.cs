@@ -8,7 +8,7 @@ using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterEncaminhamentosAEEQuery : IRequest<PaginacaoResultadoDto<EncaminhamentosAEEResumoDto>>
+    public class ObterEncaminhamentosAEEQuery : IRequest<PaginacaoResultadoDto<EncaminhamentoAEEResumoDto>>
     {
         public ObterEncaminhamentosAEEQuery(long dreId, long ueId, long turmaId, string alunoCodigo, SituacaoAEE? situacao)
         {
