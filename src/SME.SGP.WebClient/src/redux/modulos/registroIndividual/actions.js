@@ -67,3 +67,8 @@ export const excluirRegistroAnteriorId = payload => ({
   type: '@registroIndividual/excluirRegistroAnteriorId',
   payload,
 });
+
+export const atualizarMarcadorDiasSemRegistroExibir = payload => ({
+  type: '@registroIndividual/atualizarMarcadorDiasSemRegistroExibir',
+  payload,
+});

@@ -21,6 +21,7 @@ import {
   setDadosAlunoObjectCard,
   setDesabilitarCampos,
   setRegistroIndividualEmEdicao,
+  atualizarMarcadorDiasSemRegistroExibir,
 } from '~/redux/modulos/registroIndividual/actions';
 
 import {
@@ -111,6 +112,7 @@ const RegistroIndividual = () => {
     if (retorno?.status === 200) {
       sucesso('Ocorrência cadastrada com sucesso.');
       dispatch(setAuditoriaNovoRegistro(retorno.data));
+      dispatch(atualizarMarcadorDiasSemRegistroExibir(alunoCodigo));
 
       const dataAtual = window.moment(window.moment().format('YYYY-MM-DD'));
       const ehDataAnterior = window.moment(dataAtual).isAfter(data);
@@ -135,6 +137,7 @@ const RegistroIndividual = () => {
     if (retorno?.status === 200) {
       sucesso('Ocorrência editada com sucesso.');
       dispatch(setAuditoriaNovoRegistro(retorno.data));
+      dispatch(atualizarMarcadorDiasSemRegistroExibir(alunoCodigo));
 
       const dataAtual = window.moment(window.moment().format('YYYY-MM-DD'));
       const ehDataAnterior = window.moment(dataAtual).isAfter(data);
