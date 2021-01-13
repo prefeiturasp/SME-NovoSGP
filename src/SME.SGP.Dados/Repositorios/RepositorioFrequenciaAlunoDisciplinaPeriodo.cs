@@ -121,13 +121,14 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<FrequenciaAluno>(query, parametros);
         }
 
-        public async Task<FrequenciaAluno> ObterPorAlunoBimestreAsync(string codigoAluno, int bimestre, TipoFrequenciaAluno tipoFrequencia, string disciplinaId = "")
+        public async Task<FrequenciaAluno> ObterPorAlunoBimestreAsync(string codigoAluno, int bimestre, TipoFrequenciaAluno tipoFrequencia, string codigoTurma, string disciplinaId = "")
         {
             var query = new StringBuilder(@"select *
                         from frequencia_aluno
                         where codigo_aluno = @codigoAluno
 	                        and tipo = @tipoFrequencia
-	                        and bimestre = @bimestre ");
+	                        and bimestre = @bimestre 
+                            and turma_id = @codigoTurma ");
 
             if (!string.IsNullOrEmpty(disciplinaId))
                 query.AppendLine("and disciplina_id = @disciplinaId");
@@ -138,7 +139,8 @@ namespace SME.SGP.Dados.Repositorios
                 codigoAluno,
                 bimestre,
                 tipoFrequencia,
-                disciplinaId
+                disciplinaId,
+                codigoTurma
             });
         }
 
