@@ -3,6 +3,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -33,7 +34,8 @@ namespace SME.SGP.Aplicacao
             if (turma is null)
                 throw new NegocioException("A turma não foi encontrada.");
 
-            return await mediator.Send(new ObterAlunosPorTurmaQuery(turma.CodigoTurma));
+            var alunosDaTurma = await mediator.Send(new ObterAlunosPorTurmaQuery(turma.CodigoTurma));
+            return alunosDaTurma.Where(x => pendenciaRegistroIndividual.Alunos.Any(y => y.CodigoAluno.ToString() == x.CodigoAluno)).ToList();
         }
     }
 }
