@@ -84,6 +84,8 @@ namespace SME.SGP.Aplicacao
                 return await ObterDescricaoPendenciaEvento(pendencia);
             if (pendencia.EhPendenciaAusenciaAvaliacaoCP())
                 return await ObterDescricaoPendenciaAusenciaAvaliacaoCP(pendencia);
+            if (pendencia.EhPendenciaAusenciaDeRegistroIndividual())
+                return await ObterDescricaoPendenciaAusenciaRegistroIndividualAsync(pendencia);
 
             return ObterDescricaoPendenciaGeral(pendencia);
         }
@@ -134,6 +136,23 @@ namespace SME.SGP.Aplicacao
         }
 
         private async Task<string> ObterDescricaoPendenciaAula(Pendencia pendencia)
+        {
+            var pendenciasAulas = await mediator.Send(new ObterPendenciasAulasPorPendenciaQuery(pendencia.Id));
+
+            var descricao = new StringBuilder(pendencia.Descricao);
+            descricao.AppendLine("<br /><ul>");
+
+            foreach (var pendenciaAula in pendenciasAulas)
+            {
+                descricao.AppendLine($"<li>{pendenciaAula.DataAula:dd/MM} - {pendenciaAula.Motivo}</li>");
+            }
+            descricao.AppendLine("</ul>");
+            descricao.AppendLine($"<br/><b>{pendencia.Instrucao}</b>");
+
+            return descricao.ToString();
+        }
+
+        private async Task<string> ObterDescricaoPendenciaAusenciaRegistroIndividualAsync(Pendencia pendencia)
         {
             var pendenciasAulas = await mediator.Send(new ObterPendenciasAulasPorPendenciaQuery(pendencia.Id));
 
