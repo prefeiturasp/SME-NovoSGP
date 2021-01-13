@@ -20,15 +20,18 @@ namespace SME.SGP.Aplicacao.Commands
         public async Task<ResultadoEncaminhamentoAEEDto> Handle(RegistrarEncaminhamentoAeeCommand request, CancellationToken cancellationToken)
         {
             var encaminhamento = MapearParaEntidade(request);
-            await repositorioEncaminhamentoAEE.SalvarAsync(encaminhamento);
-            var resultado = new ResultadoEncaminhamentoAEEDto();
+            var id = await repositorioEncaminhamentoAEE.SalvarAsync(encaminhamento);
+            var resultado = new ResultadoEncaminhamentoAEEDto(id);
             return resultado;
         }
 
         private EncaminhamentoAEE MapearParaEntidade(RegistrarEncaminhamentoAeeCommand request)
             => new EncaminhamentoAEE()
             {
-                TurmaId = request.TurmaId
+                TurmaId = request.TurmaId,
+                Situacao = request.Situacao,
+                AlunoCodigo = request.AlunoCodigo,
+                AlunoNome = request.AlunoNome
             };
     }
 }

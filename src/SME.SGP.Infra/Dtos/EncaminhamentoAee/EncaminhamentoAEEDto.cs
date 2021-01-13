@@ -11,10 +11,9 @@ namespace SME.SGP.Infra
         {
             Secoes = new List<EncaminhamentoAEESecaoDto>();
         }
-        public long Id { get; set; }
+        public long? Id { get; set; }
         public long TurmaId { get; set; }
         public string AlunoCodigo { get; set; }
-        public AuditoriaDto Auditoria { get; set; }
         public List<EncaminhamentoAEESecaoDto> Secoes { get; set; }
     }
 }
