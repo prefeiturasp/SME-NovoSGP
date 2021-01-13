@@ -13,11 +13,12 @@ namespace SME.SGP.Infra
         public bool QuestaoObrigatorio { get; set; }
         public int QuestaoTipo { get; set; }
         public string QuestaoOpcionais { get; set; }
-        public long OpcaoRespostaId { get; set; }
+        public long? OpcaoRespostaId { get; set; }
         public long? QuestaoComplementarId { get; set; }
-        public int OpcaoRespostaOrdem { get; set; }
+        public int? OpcaoRespostaOrdem { get; set; }
         public string OpcaoRespostaNome { get; set; }
         public long? RespostaEncaminhamentoId { get; set; }
+        public long? RespostaEncaminhamentoOpcaoRespostaId { get; set; }
         public string RespostaTexto { get; set; }
         public long? RespostaArquivoId { get; set; }
         public string ArquivoNome { get; set; }
