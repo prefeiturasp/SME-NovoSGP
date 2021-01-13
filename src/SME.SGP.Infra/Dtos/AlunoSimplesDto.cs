@@ -5,6 +5,6 @@
         public string Codigo { get; set; }
         public int NumeroChamada { get; set; }
         public string Nome { get; set; }
-        public string TurmaCodigo { get; set; }
+        public string CodigoTurma { get; set; }
     }
 }

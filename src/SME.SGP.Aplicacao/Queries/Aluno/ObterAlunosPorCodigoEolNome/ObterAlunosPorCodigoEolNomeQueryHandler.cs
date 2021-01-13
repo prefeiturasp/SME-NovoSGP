@@ -12,11 +12,11 @@ namespace SME.SGP.Aplicacao.Queries.Aluno.ObterAlunosPorCodigoEolNome
 {
     public class ObterAlunosPorCodigoEolNomeQueryHandler : IRequestHandler<ObterAlunosPorCodigoEolNomeQuery, IEnumerable<AlunoSimplesDto>>
     {
-        private readonly IServicoEol servicoEOL;
+        private readonly IServicoEol servicoEOL;        
 
         public ObterAlunosPorCodigoEolNomeQueryHandler(IServicoEol servicoEOL)
         {
-            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
+            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));            
         }
 
         public async Task<IEnumerable<AlunoSimplesDto>> Handle(ObterAlunosPorCodigoEolNomeQuery request, CancellationToken cancellationToken)
@@ -24,26 +24,28 @@ namespace SME.SGP.Aplicacao.Queries.Aluno.ObterAlunosPorCodigoEolNome
             try
             {
                 var alunosEOL = await servicoEOL.ObterAlunosPorNomeCodigoEol(request.AnoLetivo, request.CodigoUe, request.CodigoTurma, request.Nome, request.CodigoEOL);
-                alunosEOL = alunosEOL.OrderBy(a => a.NomeAluno);
-                return MapearParaDto(alunosEOL, request.CodigoTurma);
+
+                var alunoSimplesDto = new List<AlunoSimplesDto>();
+
+                foreach (var alunoEOL in alunosEOL.OrderBy(a => a.NomeAluno))
+                {
+                    var alunoPorTurmaResposta = await servicoEOL.ObterDadosAluno(alunoEOL.CodigoAluno, int.Parse(request.AnoLetivo));
+
+                    var alunoSimples = new AlunoSimplesDto()
+                    {
+                        Codigo = alunoEOL.CodigoAluno,
+                        Nome = alunoEOL.NomeAluno,
+                        CodigoTurma = alunoPorTurmaResposta.Where(e => e.CodigoAluno == alunoEOL.CodigoAluno).FirstOrDefault().CodigoTurma.ToString()
+                    };
+                    alunoSimplesDto.Add(alunoSimples);
+                }
+
+                return alunoSimplesDto;
             }
             catch (Exception e)
             {
                 throw e;
             }
-        }
-
-        private IEnumerable<AlunoSimplesDto> MapearParaDto(IEnumerable<AlunoPorTurmaResposta> alunosEOL, long codigoTurma)
-        {
-            foreach (var alunoEOL in alunosEOL)
-            {
-                yield return new AlunoSimplesDto()
-                {
-                    Codigo = alunoEOL.CodigoAluno,
-                    Nome = alunoEOL.NomeAluno,
-                    TurmaCodigo = Convert.ToString(codigoTurma)
-                };
-            }
-        }
+        }        
     }
 }
