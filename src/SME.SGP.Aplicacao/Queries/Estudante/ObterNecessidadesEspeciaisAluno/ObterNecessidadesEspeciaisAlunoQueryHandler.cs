@@ -1,5 +1,6 @@
 using MediatR;
 using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,11 +20,18 @@ namespace SME.SGP.Aplicacao
 
         public async Task<InformacoesEscolaresAlunoDto> Handle(ObterNecessidadesEspeciaisAlunoQuery request, CancellationToken cancellationToken)
         {
-            var informacoesEscolaresAlunoDto = await servicoEOL.ObterNecessidadesEspeciaisAluno(request.CodigoAluno);
+            var informacoesEscolaresAluno = new InformacoesEscolaresAlunoDto();
 
-            informacoesEscolaresAlunoDto.FrequenciaGlobal = await mediator.Send(new ObterFrequenciaGeralAlunoQuery(request.CodigoAluno, request.TurmaId));
+            var necessidadesEspeciaisAluno = await servicoEOL.ObterNecessidadesEspeciaisAluno(request.CodigoAluno);
 
-            return informacoesEscolaresAlunoDto;
+            if (necessidadesEspeciaisAluno != null)
+                informacoesEscolaresAluno = necessidadesEspeciaisAluno;
+
+            informacoesEscolaresAluno.FrequenciaAlunoPorBimestres = await mediator.Send(new ObterFrequenciaBimestresQuery(request.CodigoAluno, 0, request.TurmaId, TipoFrequenciaAluno.Geral));
+
+            informacoesEscolaresAluno.FrequenciaGlobal = await mediator.Send(new ObterFrequenciaGeralAlunoQuery(request.CodigoAluno, request.TurmaId));
+
+            return informacoesEscolaresAluno;
         }
     }
 }
