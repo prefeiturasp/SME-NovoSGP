@@ -10,13 +10,11 @@ namespace SME.SGP.Dados.Repositorios
 {
     public abstract class RepositorioBase<T> : IRepositorioBase<T> where T : EntidadeBase
     {
-        protected readonly ISgpContext database;
-        private readonly TimeZoneInfo horaBrasilia;
+        protected readonly ISgpContext database;       
 
         protected RepositorioBase(ISgpContext database)
         {
-            this.database = database;
-            horaBrasilia = TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time");
+            this.database = database;            
         }
 
         public virtual IEnumerable<T> Listar()
@@ -51,7 +49,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             if (entidade.Id > 0)
             {
-                entidade.AlteradoEm = TimeZoneInfo.ConvertTime(DateTime.UtcNow, horaBrasilia);
+                entidade.AlteradoEm = DateTimeExtension.HorarioBrasilia();
                 entidade.AlteradoPor = database.UsuarioLogadoNomeCompleto;
                 entidade.AlteradoRF = database.UsuarioLogadoRF;
                 database.Conexao.Update(entidade);
@@ -72,7 +70,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             if (entidade.Id > 0)
             {                
-                entidade.AlteradoEm = TimeZoneInfo.ConvertTime(DateTime.UtcNow, horaBrasilia);
+                entidade.AlteradoEm = DateTimeExtension.HorarioBrasilia();
                 entidade.AlteradoPor = database.UsuarioLogadoNomeCompleto;
                 entidade.AlteradoRF = database.UsuarioLogadoRF;
                 await database.Conexao.UpdateAsync(entidade);
@@ -114,7 +112,7 @@ namespace SME.SGP.Dados.Repositorios
                     id,
                     alteradoPor = database.UsuarioLogadoNomeCompleto,
                     alteradoRF = database.UsuarioLogadoRF,
-                    alteradoEm = TimeZoneInfo.ConvertTime(DateTime.UtcNow, horaBrasilia)
+                    alteradoEm = DateTimeExtension.HorarioBrasilia()
                 });
         }
 
@@ -122,7 +120,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             database.Conexao.Insert<Auditoria>(new Auditoria()
             {
-                Data = TimeZoneInfo.ConvertTime(DateTime.UtcNow, horaBrasilia),
+                Data = DateTimeExtension.HorarioBrasilia(),
                 Entidade = typeof(T).Name.ToLower(),
                 Chave = identificador,
                 Usuario = database.UsuarioLogadoNomeCompleto,
@@ -135,7 +133,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             await database.Conexao.InsertAsync<Auditoria>(new Auditoria()
             {
-                Data = TimeZoneInfo.ConvertTime(DateTime.UtcNow, horaBrasilia),
+                Data = DateTimeExtension.HorarioBrasilia(),
                 Entidade = typeof(T).Name.ToLower(),
                 Chave = identificador,
                 Usuario = database.UsuarioLogadoNomeCompleto,
