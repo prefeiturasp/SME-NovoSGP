@@ -196,11 +196,11 @@ const DadosComunicadosLeitura = props => {
   };
 
   useEffect(() => {
+    setModalidadeId();
+    setListaModalidades([]);
+    setGrupo([]);
     if (anoLetivo && codigoUe) {
       obterModalidades(codigoUe, anoLetivo);
-    } else {
-      setModalidadeId();
-      setListaModalidades([]);
     }
   }, [anoLetivo, codigoUe]);
 
