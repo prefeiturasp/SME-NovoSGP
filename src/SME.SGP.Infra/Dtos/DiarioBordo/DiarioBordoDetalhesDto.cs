@@ -20,6 +20,6 @@ namespace SME.SGP.Infra
 
         public AuditoriaDto Auditoria { get; set; }
 
-        public List<ObservacaoNotificacoesDiarioBordoDto> Observacoes { get; set; }
+        public IEnumerable<ObservacaoNotificacoesDiarioBordoDto> Observacoes { get; set; }
     }
 }

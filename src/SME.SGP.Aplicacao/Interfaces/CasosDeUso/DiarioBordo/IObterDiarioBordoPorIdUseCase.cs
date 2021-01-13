@@ -1,8 +1,8 @@
-﻿using SME.SGP.Infra.Dtos;
+﻿using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public interface IObterDiarioBordoPorIdUseCase : IUseCase<long, DiarioBordoDto>
+    public interface IObterDiarioBordoPorIdUseCase : IUseCase<long, DiarioBordoDetalhesDto>
     {
     }
 }
