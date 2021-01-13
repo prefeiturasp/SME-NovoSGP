@@ -40,7 +40,7 @@ const BotoesAcoes = ({ turmaInfantil }) => {
   };
 
   const onClickCadastrar = () => {
-    MetodosRegistroIndividual.verificarSalvarRegistroIndividual();
+    MetodosRegistroIndividual.verificarSalvarRegistroIndividual(true);
   };
 
   return (

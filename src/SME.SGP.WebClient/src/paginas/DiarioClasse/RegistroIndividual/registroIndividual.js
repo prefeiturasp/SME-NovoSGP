@@ -133,7 +133,7 @@ const RegistroIndividual = () => {
   };
 
   const onChangeAlunoSelecionado = async aluno => {
-    MetodosRegistroIndividual.verificarSalvarRegistroIndividual();
+    MetodosRegistroIndividual.verificarSalvarRegistroIndividual(false);
     MetodosRegistroIndividual.resetarInfomacoes(true);
     if (!aluno.desabilitado) {
       dispatch(setDadosAlunoObjectCard(aluno));

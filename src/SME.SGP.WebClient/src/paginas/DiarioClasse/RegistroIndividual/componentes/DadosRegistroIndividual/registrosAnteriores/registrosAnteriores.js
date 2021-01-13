@@ -8,7 +8,7 @@ import { CONFIG_COLLAPSE_REGISTRO_INDIVIDUAL } from '~/constantes';
 
 import { setRecolherRegistrosAnteriores } from '~/redux/modulos/registroIndividual/actions';
 
-import RegistrosAnterioresConteudo from './registrosAnterioresConteudo/registrosAnterioresConteudo';
+import { RegistrosAnterioresConteudo } from './registrosAnterioresConteudo';
 
 const RegistrosAnteriores = () => {
   const [expandir, setExpandir] = useState(false);
