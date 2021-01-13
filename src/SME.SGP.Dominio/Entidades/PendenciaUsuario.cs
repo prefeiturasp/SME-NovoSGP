@@ -8,7 +8,6 @@ namespace SME.SGP.Dominio
     {
         public long PendenciaId { get; set; }
         public Pendencia Pendencia { get; set; }
-
         public long UsuarioId { get; set; }
         public Usuario Usuario { get; set; }
     }

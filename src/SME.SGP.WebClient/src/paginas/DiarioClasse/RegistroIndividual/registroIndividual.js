@@ -18,6 +18,9 @@ import {
   setAlunosRegistroIndividual,
   setComponenteCurricularSelecionado,
   setDadosAlunoObjectCard,
+  setDesabilitarCampos,
+  setRegistroIndividualEmEdicao,
+  atualizarMarcadorDiasSemRegistroExibir,
   setExibirLoaderGeralRegistroIndividual,
   setRecolherRegistrosAnteriores,
 } from '~/redux/modulos/registroIndividual/actions';
@@ -86,6 +89,77 @@ const RegistroIndividual = () => {
     );
     setTurmaInfantil(infantil);
   }, [modalidadesFiltroPrincipal, turmaSelecionada]);
+
+  const resetarInfomacoes = useCallback(
+    ehDataAnterior => {
+      if (ehDataAnterior) {
+        dispatch(limparDadosRegistroIndividual());
+        return;
+      }
+      dispatch(setRegistroIndividualEmEdicao(false));
+      dispatch(setDesabilitarCampos(false));
+    },
+    [dispatch]
+  );
+
+  const cadastrarRegistroIndividual = async () => {
+    setCarregandoGeral(true);
+    const { alunoCodigo, data, registro } = dadosParaSalvarNovoRegistro;
+    const retorno = await ServicoRegistroIndividual.salvarRegistroIndividual({
+      turmaId,
+      componenteCurricularId: componenteCurricularSelecionado,
+      alunoCodigo,
+      registro,
+      data,
+    })
+      .catch(e => erros(e))
+      .finally(() => setCarregandoGeral(false));
+
+    if (retorno?.status === 200) {
+      sucesso('Ocorrência cadastrada com sucesso.');
+      dispatch(setAuditoriaNovoRegistro(retorno.data));
+      dispatch(atualizarMarcadorDiasSemRegistroExibir(alunoCodigo));
+
+      const dataAtual = window.moment(window.moment().format('YYYY-MM-DD'));
+      const ehDataAnterior = window.moment(dataAtual).isAfter(data);
+      resetarInfomacoes(ehDataAnterior);
+    }
+  };
+
+  const editarRegistroIndividual = async () => {
+    setCarregandoGeral(true);
+    const { id, alunoCodigo, data, registro } = dadosParaSalvarNovoRegistro;
+    const retorno = await ServicoRegistroIndividual.editarRegistroIndividual({
+      id,
+      turmaId,
+      componenteCurricularId: componenteCurricularSelecionado,
+      alunoCodigo,
+      registro,
+      data,
+    })
+      .catch(e => erros(e))
+      .finally(() => setCarregandoGeral(false));
+
+    if (retorno?.status === 200) {
+      sucesso('Ocorrência editada com sucesso.');
+      dispatch(setAuditoriaNovoRegistro(retorno.data));
+      dispatch(atualizarMarcadorDiasSemRegistroExibir(alunoCodigo));
+
+      const dataAtual = window.moment(window.moment().format('YYYY-MM-DD'));
+      const ehDataAnterior = window.moment(dataAtual).isAfter(data);
+      resetarInfomacoes(ehDataAnterior);
+    }
+  };
+
+  const onChangeAlunoSelecionado = async aluno => {
+    if (registroIndividualEmEdicao) {
+      salvarRegistroIndividual();
+    }
+    resetarInfomacoes();
+    if (!aluno.desabilitado) {
+      dispatch(setDadosAlunoObjectCard(aluno));
+    }
+  };
 
   const permiteOnChangeAluno = async () => {
     return true;
