@@ -54,7 +54,8 @@ const NovoRegistroIndividual = () => {
     store => store.registroIndividual.dadosRegistroAtual
   );
 
-  const { turmaSelecionada, permissoes } = useSelector(state => state.usuario);
+  const turmaSelecionada = useSelector(state => state.usuario.turmaSelecionada);
+  const permissoes = useSelector(state => state.usuario.permissoes);
   const permissoesTela = permissoes[RotasDto.REGISTRO_INDIVIDUAL];
 
   const turmaId = turmaSelecionada?.id || 0;

@@ -51,7 +51,8 @@ const RegistroIndividual = () => {
     state => state.registroIndividual.exibirLoaderGeralRegistroIndividual
   );
 
-  const { turmaSelecionada, permissoes } = useSelector(state => state.usuario);
+  const turmaSelecionada = useSelector(state => state.usuario.turmaSelecionada);
+  const permissoes = useSelector(state => state.usuario.permissoes);
   const turmaId = turmaSelecionada?.id || 0;
   const permissoesTela = permissoes[RotasDto.REGISTRO_INDIVIDUAL];
 

@@ -25,7 +25,7 @@ const RegistrosAnterioresConteudo = memo(() => {
   const dadosPrincipaisRegistroIndividual = useSelector(
     store => store.registroIndividual.dadosPrincipaisRegistroIndividual
   );
-  const { turmaSelecionada } = useSelector(state => state.usuario);
+  const turmaSelecionada = useSelector(state => state.usuario.turmaSelecionada);
 
   const dispatch = useDispatch();
 
