@@ -161,6 +161,13 @@ export default function RegistroIndividual(state = inicial, action) {
           },
         };
       }
+      case '@registroIndividual/atualizarMarcadorDiasSemRegistroExibir': {
+        const aluno = state.alunosRegistroIndividual.find(
+          a => a.codigoEOL === action.payload
+        );
+        aluno.marcadorDiasSemRegistroExibir = false;
+        break;
+      }
       case '@registroIndividual/setExibirLoaderGeralRegistroAnteriores': {
         return {
           ...draft,
