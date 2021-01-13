@@ -1,8 +1,10 @@
 ﻿using SME.SGP.Infra;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Interfaces.CasosDeUso
 {
-    public interface IObterInformacoesEscolaresDoAlunoUseCase : IUseCase<int, InformacoesEscolaresAlunoDto>
+    public interface IObterInformacoesEscolaresDoAlunoUseCase
     {
+        Task<InformacoesEscolaresAlunoDto> Executar(int codigoAluno, string turmaId);
     }
 }

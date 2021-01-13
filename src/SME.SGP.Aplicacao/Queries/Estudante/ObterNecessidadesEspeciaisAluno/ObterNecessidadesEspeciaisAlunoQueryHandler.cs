@@ -9,14 +9,21 @@ namespace SME.SGP.Aplicacao
     public class ObterNecessidadesEspeciaisAlunoQueryHandler : IRequestHandler<ObterNecessidadesEspeciaisAlunoQuery, InformacoesEscolaresAlunoDto>
     {
         private readonly IServicoEol servicoEOL;
+        private readonly IMediator mediator;
 
-        public ObterNecessidadesEspeciaisAlunoQueryHandler(IServicoEol servicoEOL)
+        public ObterNecessidadesEspeciaisAlunoQueryHandler(IServicoEol servicoEOL, IMediator mediator)
         {
             this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
+            this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
 
         public async Task<InformacoesEscolaresAlunoDto> Handle(ObterNecessidadesEspeciaisAlunoQuery request, CancellationToken cancellationToken)
-                    => await servicoEOL.ObterNecessidadesEspeciaisAluno(request.CodigoAluno);
+        {
+            var informacoesEscolaresAlunoDto = await servicoEOL.ObterNecessidadesEspeciaisAluno(request.CodigoAluno);
 
+            informacoesEscolaresAlunoDto.FrequenciaGlobal = await mediator.Send(new ObterFrequenciaGeralAlunoQuery(request.CodigoAluno, request.TurmaId));
+
+            return informacoesEscolaresAlunoDto;
+        }
     }
 }

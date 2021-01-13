@@ -5,14 +5,11 @@ namespace SME.SGP.Infra
     public class InformacoesEscolaresAlunoDto
     {
         public string CodigoAluno { get; set; }
-
-        public string indicativoDeficiencia { get; set; }
-
-        public string RecursosUtilizados { get; set; }
-
-        public string FrequenciaGlobal { get; set; }
-
+        public int TipoNecessidadeEspecial { get; set; }
+        public string DescricaoNecessidadeEspecial { get; set; }
+        public int TipoRecurso { get; set; }
+        public string DescricaoRecurso { get; set; }
+        public double FrequenciaGlobal { get; set; }
         public List<FrequenciaBimestreAlunoDto> FrequenciaAlunoPorBimestres { get; set; }
-
     }
 }
