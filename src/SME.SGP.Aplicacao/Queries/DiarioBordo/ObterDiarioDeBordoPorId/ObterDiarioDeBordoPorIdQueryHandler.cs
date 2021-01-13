@@ -3,6 +3,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -31,7 +32,26 @@ namespace SME.SGP.Aplicacao
 
         private DiarioBordoDetalhesDto MapearParaDto(Dominio.DiarioBordo diarioBordo, IEnumerable<ListarObservacaoDiarioBordoDto> observacoes)
         {
-            throw new NotImplementedException();
+            return new DiarioBordoDetalhesDto()
+            {
+                Auditoria = (AuditoriaDto)diarioBordo,
+                AulaId = diarioBordo.AulaId,
+                DevolutivaId = diarioBordo.DevolutivaId,
+                Excluido = diarioBordo.Excluido,
+                Id = diarioBordo.Id,
+                Migrado = diarioBordo.Migrado,
+                Planejamento = diarioBordo.Planejamento,
+                ReflexoesReplanejamento = diarioBordo.ReflexoesReplanejamento,
+                Observacoes = observacoes.Select(obs =>
+                {
+                    return new ObservacaoNotificacoesDiarioBordoDto()
+                    {
+                        Auditoria = obs.Auditoria,
+                        Observacao = obs.Observacao,
+                        QtdUsuariosNotificacao = obs.QtdUsuariosNotificados
+                    };
+                })
+            };
         }
     }
 }
