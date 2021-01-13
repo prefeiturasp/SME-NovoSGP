@@ -83,7 +83,7 @@ pipeline {
                 sh '''
                     /opt/robotframework/bin/run-tests-in-virtual-screen.sh
                 '''
-                step([$class: 'SeleniumHtmlReportPublisher', testResultsDir: './robot-reports'])
+                step([$class: 'RobotPublisher', disableArchiveOutput: true, enableCache: true, logFileName: '**/log*.html', onlyCritical: false, otherFiles: '', outputFileName: '**/output*.xml', outputPath: './robot-reports', passThreshold: 80.0, reportFileName: '**/report*.html', unstableThreshold: 50.0])
             }
         }
         
