@@ -44,7 +44,7 @@ namespace SME.SGP.Aplicacao
 
             try
             {
-                var retorno = await mediator.Send(new GerarPendenciaAusenciaRegistroIndividualTurmaCommand(turma.Id));
+                var retorno = await mediator.Send(new GerarPendenciaAusenciaRegistroIndividualTurmaCommand(turma));
                 if (retorno is null)
                 {
                     SentrySdk.AddBreadcrumb($"Não foi possível gerar a pendência de ausência de registro individual para a turma {turma.Id}.", $"Rabbit - {nameof(GerarPendenciaAusenciaRegistroIndividualUseCase)}");
