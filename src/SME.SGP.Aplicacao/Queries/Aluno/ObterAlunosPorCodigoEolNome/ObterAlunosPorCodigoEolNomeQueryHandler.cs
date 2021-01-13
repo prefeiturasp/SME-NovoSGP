@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao.Queries.Aluno.ObterAlunosPorCodigoEolNome
             {
                 var alunosEOL = await servicoEOL.ObterAlunosPorNomeCodigoEol(request.AnoLetivo, request.CodigoUe, request.CodigoTurma, request.Nome, request.CodigoEOL);
                 alunosEOL = alunosEOL.OrderBy(a => a.NomeAluno);
-                return MapearParaDto(alunosEOL);
+                return MapearParaDto(alunosEOL, request.CodigoTurma);
             }
             catch (Exception e)
             {
@@ -33,14 +33,15 @@ namespace SME.SGP.Aplicacao.Queries.Aluno.ObterAlunosPorCodigoEolNome
             }
         }
 
-        private IEnumerable<AlunoSimplesDto> MapearParaDto(IEnumerable<AlunoPorTurmaResposta> alunosEOL)
+        private IEnumerable<AlunoSimplesDto> MapearParaDto(IEnumerable<AlunoPorTurmaResposta> alunosEOL, long codigoTurma)
         {
             foreach (var alunoEOL in alunosEOL)
             {
                 yield return new AlunoSimplesDto()
                 {
                     Codigo = alunoEOL.CodigoAluno,
-                    Nome = alunoEOL.NomeAluno
+                    Nome = alunoEOL.NomeAluno,
+                    TurmaCodigo = Convert.ToString(codigoTurma)
                 };
             }
         }
