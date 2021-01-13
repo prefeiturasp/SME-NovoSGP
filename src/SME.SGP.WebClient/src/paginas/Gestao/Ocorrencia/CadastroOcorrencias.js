@@ -189,7 +189,7 @@ const CadastroOcorrencias = ({ match }) => {
       'Você tem certeza que deseja excluir este registro?'
     );
     if (confirmado) {
-      const parametros = { data: [...match?.params?.id] };
+      const parametros = { data: [match?.params?.id] };
       const exclusao = await ServicoOcorrencias.excluir(parametros);
       if (exclusao && exclusao.status === 200) {
         sucesso('Registro excluído com sucesso');
