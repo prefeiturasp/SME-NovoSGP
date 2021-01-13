@@ -87,7 +87,6 @@ const RegistrosAnterioresConteudo = memo(() => {
     exibirLoaderGeralRegistroAnteriores,
     numeroPagina,
     numeroRegistros,
-    // obterRegistroIndividualPorData,
     verificarData,
   ]);
 
