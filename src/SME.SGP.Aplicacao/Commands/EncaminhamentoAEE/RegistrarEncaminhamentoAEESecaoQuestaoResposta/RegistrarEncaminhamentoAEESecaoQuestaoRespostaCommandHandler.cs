@@ -25,10 +25,28 @@ namespace SME.SGP.Aplicacao.Commands
         }
 
         private RespostaEncaminhamentoAEE MapearParaEntidade(RegistrarEncaminhamentoAEESecaoQuestaoRespostaCommand request)
-            => new RespostaEncaminhamentoAEE()
+        {
+            var resposta = new RespostaEncaminhamentoAEE()
             {
-                QuestaoEncaminhamentoId = request.QuestaoId,
-                RespostaId = request.RespostaId
+                QuestaoEncaminhamentoId = request.QuestaoId
             };
+
+            if (EnumExtension.EhUmDosValores(request.TipoQuestao, new Enum[] { TipoQuestao.Radio, TipoQuestao.Combo, TipoQuestao.Checkbox }))
+            {
+                resposta.RespostaId = long.Parse(request.Resposta);
+            }
+
+            if (EnumExtension.EhUmDosValores(request.TipoQuestao, new Enum[] { TipoQuestao.Frase, TipoQuestao.Texto }))
+            {
+                resposta.Texto = request.Resposta;
+            }
+
+            if (EnumExtension.EhUmDosValores(request.TipoQuestao, new Enum[] { TipoQuestao.Upload }))
+            {
+                resposta.ArquivoId = long.Parse(request.Resposta);
+            }
+
+            return resposta;
+        }
     }
 }

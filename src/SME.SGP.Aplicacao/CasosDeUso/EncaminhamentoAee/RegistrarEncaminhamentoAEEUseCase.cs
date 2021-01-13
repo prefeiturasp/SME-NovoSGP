@@ -56,7 +56,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                 foreach (var questao in secao.Questoes)
                 {
                     var resultadoEncaminhamentoQuestao = await mediator.Send(new RegistrarEncaminhamentoAEESecaoQuestaoCommand(resultadoEncaminhamentoSecao, questao.QuestaoId));
-                    var resultadoEncaminhamentoResposta = await mediator.Send(new RegistrarEncaminhamentoAEESecaoQuestaoRespostaCommand(long.Parse(questao.Resposta), resultadoEncaminhamentoQuestao));
+                    var resultadoEncaminhamentoResposta = await mediator.Send(new RegistrarEncaminhamentoAEESecaoQuestaoRespostaCommand(questao.Resposta, resultadoEncaminhamentoQuestao, questao.TipoQuestao));
                 }
             }
 
