@@ -41,6 +41,7 @@ namespace SME.SGP.Dados.Repositorios
 					opr.ordem OpcaoRespostaOrdem,
 					opr.nome OpcaoRespostaNome,
 					rea.id RespostaEncaminhamentoId,
+					rea.resposta_id RespostaEncaminhamentoOpcaoRespostaId,
 					rea.texto RespostaTexto,
 					rea.arquivo_id RespostaArquivoId,
 					arq.nome ArquivoNome,
@@ -48,14 +49,13 @@ namespace SME.SGP.Dados.Repositorios
 					arq.codigo ArquivoCodigo,
 					arq.tipo_conteudo ArquivoTipoConteudo
 				from questao q
-				join opcao_resposta opr on opr.questao_id = q.id and not opr.excluido 
-				left join resposta_encaminhamento_aee rea on rea.resposta_id = opr.id and not rea.excluido {joinRespostas}
-				left join questao_encaminhamento_aee qea on qea.id = rea.questao_encaminhamento_id and not qea.excluido {joinRespostas}
+				left join opcao_resposta opr on opr.questao_id = q.id and not opr.excluido 
+				left join questao_encaminhamento_aee qea on qea.questao_id = q.id and not qea.excluido {joinRespostas}
+				left join resposta_encaminhamento_aee rea on rea.questao_encaminhamento_id = qea.id and not rea.excluido {joinRespostas}
 				left join encaminhamento_aee_secao eas on eas.id = qea.encaminhamento_aee_secao_id and not eas.excluido {joinRespostas}
 				left join arquivo arq on arq.id = rea.arquivo_id {joinRespostas}
-				where 
-					not q.excluido 
-				and q.questionario_id = @questionarioId	
+				where not q.excluido 
+				and q.questionario_id = @questionarioId
 				{whereRespostas}
                 ";
 			return await database
