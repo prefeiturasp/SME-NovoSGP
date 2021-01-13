@@ -5,7 +5,7 @@ using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.CasosDeUso.EscolaAqui.Anos
+namespace SME.SGP.Aplicacao.CasosDeUso
 {
     public class ObterSecoesPorEtapaDeEncaminhamentoAEEUseCase : IObterSecoesPorEtapaDeEncaminhamentoAEEUseCase
     {

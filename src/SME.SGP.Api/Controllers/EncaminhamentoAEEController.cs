@@ -17,6 +17,15 @@ namespace SME.SGP.Api.Controllers
     [Route("api/v1/encaminhamento-aee")]
     public class EncaminhamentoAEEController : ControllerBase
     {
+
+        [HttpPost("salvar")]
+        [ProducesResponseType(typeof(IEnumerable<ResultadoEncaminhamentoAEEDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> RegistrarEncaminhamento([FromBody] EncaminhamentoAEEDto encaminhamentoAEEDto, [FromServices] IRegistrarEncaminhamentoAEEUseCase registrarEncaminhamentoAEEUseCase)
+        {
+            return Ok(await registrarEncaminhamentoAEEUseCase.Executar(encaminhamentoAEEDto));
+        }
+
         [HttpGet("secoes")]
         [ProducesResponseType(typeof(IEnumerable<SecaoQuestionarioDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
@@ -86,7 +95,7 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(PaginacaoResultadoDto<EncaminhamentosAEEResumoDto>), 200)]
+        [ProducesResponseType(typeof(PaginacaoResultadoDto<EncaminhamentoAEEResumoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> ObterEncaminhamentos([FromQuery] FiltroPesquisaEncaminhamentosAEEDto filtro, [FromServices] IObterEncaminhamentosAEEUseCase useCase)
         {

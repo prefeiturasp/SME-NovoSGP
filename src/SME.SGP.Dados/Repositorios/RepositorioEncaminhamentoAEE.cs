@@ -5,6 +5,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -103,5 +104,48 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<SituacaoAEE>(query, new { encaminhamentoAEEId });
         }
 
+        public async Task<EncaminhamentoAEE> ObterEncaminhamentoPorId(long id)
+        {
+            var query = @"select ea.*, eas.*, qea.*, rea.*
+                        from encaminhamento_aee ea
+                        inner join encaminhamento_aee_secao eas on eas.encaminhamento_aee_id = ea.id
+                        inner join questao_encaminhamento_aee qea on qea.encaminhamento_aee_secao_id = eas.id
+                        inner join resposta_encaminhamento_aee rea on rea.qustao_encaminhamento_id = qea.id
+                        where ea.id = @id";
+
+            var encaminhamento = new EncaminhamentoAEE();
+
+            await database.Conexao.QueryAsync<EncaminhamentoAEE, EncaminhamentoAEESecao, QuestaoEncaminhamentoAEE, RespostaEncaminhamentoAEE, EncaminhamentoAEE>(query.ToString()
+                , (encaminhamentoAEE, secaoEncaminhamento, questaoEncaminhamentoAEE, respostaEncaminhamento) =>
+            {
+                if (encaminhamento.Id == 0)
+                    encaminhamento = encaminhamentoAEE;
+
+                var secao = encaminhamento.Secoes.FirstOrDefault(c => c.Id == secaoEncaminhamento.Id);
+                if (secao == null)
+                {
+                    secao = secaoEncaminhamento;
+                    encaminhamento.Secoes.Add(secao);
+                }
+
+                var questao = secao.Questoes.FirstOrDefault(c => c.Id == questaoEncaminhamentoAEE.Id);
+                if (questao == null)
+                {
+                    questao = questaoEncaminhamentoAEE;
+                    secao.Questoes.Add(questao);
+                }
+
+                var resposta = questao.Respostas.FirstOrDefault(c => c.Id == respostaEncaminhamento.Id);
+                if (resposta == null)
+                {
+                    resposta = respostaEncaminhamento;
+                    questao.Respostas.Add(resposta);
+                }
+
+                return encaminhamento;
+            }, new { id });
+
+            return encaminhamento;
+        }
     }
 }
