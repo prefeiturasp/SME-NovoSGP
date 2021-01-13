@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { CampoData, Label, Loader } from '~/componentes';
@@ -9,9 +9,9 @@ import { setExibirLoaderGeralRegistroAnteriores } from '~/redux/modulos/registro
 import Item from './item/item';
 import MetodosRegistroIndividual from '~/paginas/DiarioClasse/RegistroIndividual/metodosRegistroIndividual';
 
-const RegistrosAnterioresConteudo = memo(() => {
+const RegistrosAnterioresConteudo = () => {
   const [dataInicio, setDataInicio] = useState();
-  const [dataFim, setDataFim] = useState();
+  const [dataFim, setDataFim] = useState(window.moment());
   const [carregandoGeral, setCarregandoGeral] = useState(false);
   const [numeroPagina, setNumeroPagina] = useState(1);
   const [numeroRegistros, setNumeroRegistros] = useState(10);
@@ -39,18 +39,21 @@ const RegistrosAnterioresConteudo = memo(() => {
     return ehMesma;
   }, []);
 
-  const verificarData = useCallback(() => {
-    const dataFormatadaInicio = dataInicio?.format('MM-DD-YYYY');
-    const dataFormatadaFim = dataFim?.format('MM-DD-YYYY');
-    const dataAtualUmDia = window
-      .moment()
-      .subtract(1, 'days')
-      .format('MM-DD-YYYY');
-    const dataFimEscolhida = ehMesmaData(window.moment())
-      ? dataAtualUmDia
-      : dataFormatadaFim;
-    return [dataFormatadaInicio, dataFimEscolhida];
-  }, [dataInicio, dataFim, ehMesmaData]);
+  const verificarData = useCallback(
+    (dataInicial = dataInicio, dataFinal = dataFim) => {
+      const dataFormatadaInicio = dataInicial?.format('MM-DD-YYYY');
+      const dataFormatadaFim = dataFinal?.format('MM-DD-YYYY');
+      const dataAtualUmDia = window
+        .moment()
+        .subtract(1, 'days')
+        .format('MM-DD-YYYY');
+      const dataFimEscolhida = ehMesmaData(window.moment())
+        ? dataAtualUmDia
+        : dataFormatadaFim;
+      return [dataFormatadaInicio, dataFimEscolhida];
+    },
+    [dataInicio, dataFim, ehMesmaData]
+  );
 
   useEffect(() => {
     const temDadosAlunos = Object.keys(dadosAlunoObjectCard).length;
@@ -114,12 +117,6 @@ const RegistrosAnterioresConteudo = memo(() => {
     }
   }, [dataInicio, dataFim, escolherData]);
 
-  useEffect(() => {
-    if (!dataFim) {
-      setDataFim(window.moment());
-    }
-  }, [dataFim]);
-
   const onChangePaginacao = async pagina => {
     setCarregandoGeral(true);
     setNumeroPagina(pagina);
@@ -152,11 +149,10 @@ const RegistrosAnterioresConteudo = memo(() => {
   };
 
   const mudarDataInicio = async data => {
-    if (data) {
+    if (data && dataFim) {
       setCarregandoGeral(true);
-      setDataInicio(data);
 
-      const [, dataFimEscolhida] = verificarData();
+      const [, dataFimEscolhida] = verificarData(data, dataFim);
       const dataFormatada = data?.format('MM-DD-YYYY');
       const dataFormatadaFim = dataFim?.format('MM-DD-YYYY');
       const dataEscolhida = ehMesmaData(dataFim)
@@ -169,15 +165,19 @@ const RegistrosAnterioresConteudo = memo(() => {
         numeroRegistros
       );
       setCarregandoGeral(false);
+      return;
     }
+    setDataInicio(data);
   };
 
   const mudarDataFim = async data => {
-    if (data) {
+    if (data && dataInicio) {
       setCarregandoGeral(true);
-      setDataFim(data);
 
-      const [dataFormatadaInicio, dataFimEscolhida] = verificarData();
+      const [dataFormatadaInicio, dataFimEscolhida] = verificarData(
+        dataInicio,
+        data
+      );
       const dataFormatada = data?.format('MM-DD-YYYY');
       const dataEscolhida = ehMesmaData(data)
         ? dataFimEscolhida
@@ -190,6 +190,7 @@ const RegistrosAnterioresConteudo = memo(() => {
       );
       setCarregandoGeral(false);
     }
+    setDataFim(data);
   };
 
   return (
@@ -206,6 +207,7 @@ const RegistrosAnterioresConteudo = memo(() => {
               valor={dataInicio}
               onChange={mudarDataInicio}
               placeholder="Data início"
+              desabilitarData={desabilitarDataFim}
             />
           </div>
           <div className="col-3 p-0 pb-2 mb-4">
@@ -251,6 +253,6 @@ const RegistrosAnterioresConteudo = memo(() => {
       </div>
     </Loader>
   );
-});
+};
 
 export default RegistrosAnterioresConteudo;
