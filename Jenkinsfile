@@ -83,6 +83,9 @@ pipeline {
                 sh '''
                     /opt/robotframework/bin/run-tests-in-virtual-screen.sh
                 '''
+                script {
+                    step([$class: 'SeleniumHtmlReportPublisher', testResultsDir: '$WORKSPACE/robot-reports'])
+                }    
             }
         }
         
