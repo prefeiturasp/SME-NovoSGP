@@ -145,21 +145,17 @@ function TabelaRetratil({
                         item.marcadorDiasSemRegistroExibir ? 'col-11' : 'col-12'
                       }
                     >
-                      {exibirProcessoConcluido ? (
+                      {exibirProcessoConcluido && (
                         <i className="icone-concluido fa fa-check-circle" />
-                      ) : (
-                        ''
                       )}
                       {item.nome}
                     </div>
-                    {item.marcadorDiasSemRegistroExibir ? (
+                    {item.marcadorDiasSemRegistroExibir && (
                       <div className="col-1">
                         <Tooltip title={item.marcadorDiasSemRegistroTexto}>
                           <i className="fas fa-exclamation icone-ausencia" />
                         </Tooltip>
                       </div>
-                    ) : (
-                      ''
                     )}
                   </div>
                 </td>
