@@ -70,7 +70,8 @@ namespace SME.SGP.Dados.Repositorios
                                 inner join pendencia_registro_individual pri on
 	                                pria.pendencia_registro_individual_id = pri.id
                                 where
-	                                pria.situacao = 1";
+	                                pria.situacao = 1
+                                and pri.turma_id = @turmaId";
 
 
             return await database.Conexao.QueryAsync<long>(sql, new { turmaId });
