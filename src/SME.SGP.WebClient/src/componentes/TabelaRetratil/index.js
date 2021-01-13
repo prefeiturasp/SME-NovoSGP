@@ -18,6 +18,7 @@ function TabelaRetratil({
   permiteOnChangeAluno,
   codigoAlunoSelecionado,
   exibirProcessoConcluido,
+  tituloCabecalho,
 }) {
   const [retraido, setRetraido] = useState(false);
   const [alunoSelecionado, setAlunoSelecionado] = useState(null);
@@ -154,7 +155,7 @@ function TabelaRetratil({
       </div>
       <DetalhesAluno>
         <Cabecalho
-          titulo="Detalhes do Estudante"
+          titulo={tituloCabecalho}
           retraido={retraido}
           onClickCollapse={() => setRetraido(!retraido)}
           onClickAnterior={anteriorAlunoHandler}
@@ -175,6 +176,7 @@ TabelaRetratil.propTypes = {
   permiteOnChangeAluno: t.func,
   codigoAlunoSelecionado: t.oneOfType([t.any]),
   exibirProcessoConcluido: t.bool,
+  tituloCabecalho: t.string,
 };
 
 TabelaRetratil.defaultProps = {
@@ -184,6 +186,7 @@ TabelaRetratil.defaultProps = {
   permiteOnChangeAluno: () => true,
   codigoAlunoSelecionado: null,
   exibirProcessoConcluido: false,
+  tituloCabecalho: 'Detalhes do estudante',
 };
 
 export default TabelaRetratil;

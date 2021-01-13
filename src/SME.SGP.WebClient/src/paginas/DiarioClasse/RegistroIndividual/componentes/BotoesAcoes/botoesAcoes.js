@@ -1,16 +1,48 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { Button, Colors } from '~/componentes';
 
-const BotoesAcoes = ({
-  desabilitarCampos,
-  modoEdicao,
-  onClickCancelar,
-  onClickCadastrar,
-  onClickVoltar,
-  turmaInfantil,
-}) => {
+import { history } from '~/servicos';
+import { URL_HOME } from '~/constantes';
+
+import { setDadosAlunoObjectCard } from '~/redux/modulos/conselhoClasse/actions';
+import { limparDadosRegistroIndividual } from '~/redux/modulos/registroIndividual/actions';
+
+import MetodosRegistroIndividual from '../../metodosRegistroIndividual';
+
+const BotoesAcoes = ({ turmaInfantil }) => {
+  const registroIndividualEmEdicao = useSelector(
+    state => state.registroIndividual.registroIndividualEmEdicao
+  );
+  const desabilitarCampos = useSelector(
+    state => state.registroIndividual.desabilitarCampos
+  );
+
+  const dispatch = useDispatch();
+
+  const onClickVoltar = async () => {
+    let validouSalvarRegistro = true;
+    if (registroIndividualEmEdicao && turmaInfantil && desabilitarCampos) {
+      validouSalvarRegistro = await MetodosRegistroIndividual.salvarRegistroIndividual();
+    }
+
+    if (validouSalvarRegistro) {
+      history.push(URL_HOME);
+      MetodosRegistroIndividual.resetarInfomacoes();
+      dispatch(setDadosAlunoObjectCard({}));
+    }
+  };
+
+  const onClickCancelar = () => {
+    dispatch(limparDadosRegistroIndividual());
+  };
+
+  const onClickCadastrar = () => {
+    MetodosRegistroIndividual.verificarSalvarRegistroIndividual();
+  };
+
   return (
     <>
       <Button
@@ -27,7 +59,9 @@ const BotoesAcoes = ({
         border
         className="mr-2"
         onClick={onClickCancelar}
-        disabled={!modoEdicao || !turmaInfantil || !desabilitarCampos}
+        disabled={
+          !registroIndividualEmEdicao || !turmaInfantil || !desabilitarCampos
+        }
       />
       <Button
         label="Cadastrar"
@@ -35,27 +69,19 @@ const BotoesAcoes = ({
         bold
         className="mr-2"
         onClick={onClickCadastrar}
-        disabled={!modoEdicao || !turmaInfantil || !desabilitarCampos}
+        disabled={
+          !registroIndividualEmEdicao || !turmaInfantil || !desabilitarCampos
+        }
       />
     </>
   );
 };
 
 BotoesAcoes.propTypes = {
-  onClickVoltar: PropTypes.func,
-  onClickCancelar: PropTypes.func,
-  onClickCadastrar: PropTypes.func,
-  modoEdicao: PropTypes.bool,
-  desabilitarCampos: PropTypes.bool,
   turmaInfantil: PropTypes.bool,
 };
 
 BotoesAcoes.defaultProps = {
-  onClickVoltar: () => {},
-  onClickCancelar: () => {},
-  onClickCadastrar: () => {},
-  modoEdicao: false,
-  desabilitarCampos: false,
   turmaInfantil: false,
 };
 export default BotoesAcoes;

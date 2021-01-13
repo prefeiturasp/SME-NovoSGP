@@ -3,20 +3,21 @@ import produce from 'immer';
 const inicial = {
   alunosRegistroIndividual: [],
   auditoriaNovoRegistroIndividual: null,
-  componenteCurricularSelecionado: '',
+  componenteCurricularSelecionado: undefined,
   dadosAlunoObjectCard: {},
   dadosParaSalvarNovoRegistro: {},
   dadosPrincipaisRegistroIndividual: {},
+  dadosRegistroAtual: {},
   desabilitarCampos: false,
-  exibirLoaderGeralRegistroIndividual: false,
-  expandirLinha: [],
-  registroIndividualEmEdicao: false,
-  registroAnteriorEmEdicao: false,
-  resetDataNovoRegistroIndividual: false,
-  registroAnteriorId: {},
-  exibirLoaderGeralRegistroAnteriores: false,
   exibirLoaderConteudoRegistroAnteriores: false,
+  exibirLoaderGeralRegistroAnteriores: false,
+  exibirLoaderGeralRegistroIndividual: false,
   recolherRegistrosAnteriores: false,
+  registroAnteriorEmEdicao: false,
+  registroAnteriorId: {},
+  registroIndividualEmEdicao: false,
+  resetDataNovoRegistroIndividual: false,
+  podeRealizarNovoRegistro: false,
 };
 
 export default function RegistroIndividual(state = inicial, action) {
@@ -42,9 +43,7 @@ export default function RegistroIndividual(state = inicial, action) {
           dadosPrincipaisRegistroIndividual: {},
           desabilitarCampos: false,
           exibirLoaderGeralRegistroIndividual: false,
-          expandirLinha: [],
           registroIndividualEmEdicao: false,
-          salvouJustificativa: false,
           resetDataNovoRegistroIndividual: true,
         };
       }
@@ -153,12 +152,12 @@ export default function RegistroIndividual(state = inicial, action) {
           registroAnteriorId: action.payload,
         };
       }
-      case '@registroIndividual/atualizaDadosParaSalvarNovoRegistro': {
+      case '@registroIndividual/atualizaDadosRegistroAtual': {
         return {
           ...draft,
-          dadosParaSalvarNovoRegistro: {
-            ...state.dadosParaSalvarNovoRegistro,
-            id: action.payload,
+          dadosRegistroAtual: {
+            ...state.dadosRegistroAtual,
+            ...action.payload,
           },
         };
       }
@@ -178,6 +177,28 @@ export default function RegistroIndividual(state = inicial, action) {
         return {
           ...draft,
           recolherRegistrosAnteriores: action.payload,
+        };
+      }
+      case '@registroIndividual/setDadosRegistroAtual': {
+        return {
+          ...draft,
+          dadosRegistroAtual: action.payload,
+        };
+      }
+      case '@registroIndividual/setPodeRealizarNovoRegistro': {
+        return {
+          ...draft,
+          podeRealizarNovoRegistro: action.payload,
+        };
+      }
+      case '@registroIndividual/resetarDadosRegistroIndividual': {
+        return {
+          ...draft,
+          registroIndividualEmEdicao: false,
+          auditoriaNovoRegistro: null,
+          dadosAlunoObjectCard: {},
+          dadosRegistroAtual: {},
+          dadosPrincipaisRegistroIndividual: {},
         };
       }
       default:

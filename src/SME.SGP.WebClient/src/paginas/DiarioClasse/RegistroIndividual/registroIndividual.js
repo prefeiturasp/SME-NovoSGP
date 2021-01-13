@@ -14,48 +14,45 @@ import {
 } from './componentes';
 
 import {
-  atualizaDadosParaSalvarNovoRegistro,
-  limparDadosRegistroIndividual,
+  resetarDadosRegistroIndividual,
   setAlunosRegistroIndividual,
-  setAuditoriaNovoRegistro,
   setComponenteCurricularSelecionado,
   setDadosAlunoObjectCard,
-  setDesabilitarCampos,
+  setExibirLoaderGeralRegistroIndividual,
   setRecolherRegistrosAnteriores,
-  setRegistroIndividualEmEdicao,
 } from '~/redux/modulos/registroIndividual/actions';
 
 import {
-  confirmar,
   ehTurmaInfantil,
   erros,
-  history,
   ServicoDisciplina,
   ServicoRegistroIndividual,
-  sucesso,
   verificaSomenteConsulta,
 } from '~/servicos';
 
-import { URL_HOME } from '~/constantes';
 import { RotasDto } from '~/dtos';
+import MetodosRegistroIndividual from './metodosRegistroIndividual';
 
 const RegistroIndividual = () => {
-  const [carregandoGeral, setCarregandoGeral] = useState(false);
   const [exibirListas, setExibirListas] = useState(false);
   const [listaComponenteCurricular, setListaComponenteCurricular] = useState(
     []
   );
   const [turmaInfantil, setTurmaInfantil] = useState(false);
 
-  const {
-    componenteCurricularSelecionado,
-    dadosAlunoObjectCard,
-    dadosParaSalvarNovoRegistro,
-    dadosPrincipaisRegistroIndividual,
-    desabilitarCampos,
-    registroIndividualEmEdicao,
-  } = useSelector(state => state.registroIndividual);
-  const { turmaSelecionada, permissoes } = useSelector(state => state.usuario);
+  const componenteCurricularSelecionado = useSelector(
+    state => state.registroIndividual.componenteCurricularSelecionado
+  );
+
+  const podeRealizarNovoRegistro = useSelector(
+    state => state.registroIndividual.podeRealizarNovoRegistro
+  );
+  const exibirLoaderGeralRegistroIndividual = useSelector(
+    state => state.registroIndividual.exibirLoaderGeralRegistroIndividual
+  );
+
+  const turmaSelecionada = useSelector(state => state.usuario.turmaSelecionada);
+  const permissoes = useSelector(state => state.usuario.permissoes);
   const turmaId = turmaSelecionada?.id || 0;
   const permissoesTela = permissoes[RotasDto.REGISTRO_INDIVIDUAL];
 
@@ -90,78 +87,16 @@ const RegistroIndividual = () => {
     setTurmaInfantil(infantil);
   }, [modalidadesFiltroPrincipal, turmaSelecionada]);
 
-  const resetarInfomacoes = useCallback(
-    ehDataAnterior => {
-      if (ehDataAnterior) {
-        dispatch(limparDadosRegistroIndividual());
-        return;
-      }
-      dispatch(setRegistroIndividualEmEdicao(false));
-      dispatch(setDesabilitarCampos(false));
-    },
-    [dispatch]
-  );
-
-  const cadastrarRegistroIndividual = async () => {
-    setCarregandoGeral(true);
-    const { alunoCodigo, data, registro } = dadosParaSalvarNovoRegistro;
-    const retorno = await ServicoRegistroIndividual.salvarRegistroIndividual({
-      turmaId,
-      componenteCurricularId: componenteCurricularSelecionado,
-      alunoCodigo,
-      registro,
-      data,
-    })
-      .catch(e => erros(e))
-      .finally(() => setCarregandoGeral(false));
-
-    if (retorno?.status === 200) {
-      sucesso('Registro cadastrado com sucesso.');
-
-      const dataAtual = window.moment(window.moment().format('YYYY-MM-DD'));
-      const ehDataAnterior = window.moment(dataAtual).isAfter(data);
-      resetarInfomacoes(ehDataAnterior);
-      if (!ehDataAnterior) {
-        dispatch(setAuditoriaNovoRegistro(retorno.data));
-        dispatch(atualizaDadosParaSalvarNovoRegistro(retorno.data.id));
-      }
-    }
-  };
-
-  const editarRegistroIndividual = async () => {
-    setCarregandoGeral(true);
-    const { id, alunoCodigo, data, registro } = dadosParaSalvarNovoRegistro;
-    const retorno = await ServicoRegistroIndividual.editarRegistroIndividual({
-      id,
-      turmaId,
-      componenteCurricularId: componenteCurricularSelecionado,
-      alunoCodigo,
-      registro,
-      data,
-    })
-      .catch(e => erros(e))
-      .finally(() => setCarregandoGeral(false));
-
-    if (retorno?.status === 200) {
-      sucesso('Registro editado com sucesso.');
-      dispatch(setAuditoriaNovoRegistro(retorno.data));
-
-      const dataAtual = window.moment(window.moment().format('YYYY-MM-DD'));
-      const ehDataAnterior = window.moment(dataAtual).isAfter(data);
-      resetarInfomacoes(ehDataAnterior);
-    }
-  };
-
   const permiteOnChangeAluno = async () => {
     return true;
   };
 
   const obterComponentesCurriculares = useCallback(async () => {
     const turma = turmaSelecionada?.turma || 0;
-    setCarregandoGeral(true);
+    dispatch(setExibirLoaderGeralRegistroIndividual(true));
     const resposta = await ServicoDisciplina.obterDisciplinasPorTurma(turma)
       .catch(e => erros(e))
-      .finally(() => setCarregandoGeral(false));
+      .finally(() => dispatch(setExibirLoaderGeralRegistroIndividual(false)));
 
     if (resposta?.data?.length) {
       setListaComponenteCurricular(resposta?.data);
@@ -177,8 +112,7 @@ const RegistroIndividual = () => {
   }, [dispatch, turmaSelecionada]);
 
   const resetarTela = useCallback(() => {
-    dispatch(setRegistroIndividualEmEdicao(false));
-    dispatch(setAuditoriaNovoRegistro());
+    dispatch(resetarDadosRegistroIndividual());
   }, [dispatch]);
 
   useEffect(() => {
@@ -186,9 +120,6 @@ const RegistroIndividual = () => {
       obterComponentesCurriculares();
       return;
     }
-
-    setListaComponenteCurricular([]);
-    setComponenteCurricularSelecionado(undefined);
     resetarTela();
   }, [
     turmaSelecionada,
@@ -201,64 +132,16 @@ const RegistroIndividual = () => {
     dispatch(setComponenteCurricularSelecionado(valor));
   };
 
-  const pergutarParaSalvar = () => {
-    return confirmar(
-      'Atenção',
-      '',
-      'Suas alterações não foram salvas, deseja salvar agora?'
-    );
-  };
-
-  const escolheCadastrar = () => {
-    const { id } = dadosParaSalvarNovoRegistro;
-    if (id) {
-      editarRegistroIndividual();
-      return;
-    }
-    cadastrarRegistroIndividual();
-  };
-
-  const salvarRegistroIndividual = async () => {
-    const confirmado = await pergutarParaSalvar();
-    if (confirmado) {
-      escolheCadastrar();
-    }
-    return true;
-  };
-
-  const onClickVoltar = async () => {
-    let validouSalvarRegistro = true;
-    if (registroIndividualEmEdicao && turmaInfantil && desabilitarCampos) {
-      validouSalvarRegistro = await salvarRegistroIndividual();
-    }
-
-    if (validouSalvarRegistro) {
-      history.push(URL_HOME);
-      resetarInfomacoes();
-      dispatch(setDadosAlunoObjectCard({}));
-    }
-  };
-
-  const onClickCancelar = () => {
-    dispatch(limparDadosRegistroIndividual());
-  };
-
-  const onClickCadastrar = () => {
-    escolheCadastrar();
-  };
-
   const onChangeAlunoSelecionado = async aluno => {
-    const temDadosRegistros = Object.keys(dadosPrincipaisRegistroIndividual)
-      .length;
-    if (registroIndividualEmEdicao) {
-      cadastrarRegistroIndividual();
-    }
-    resetarInfomacoes(true);
+    MetodosRegistroIndividual.verificarSalvarRegistroIndividual();
+    MetodosRegistroIndividual.resetarInfomacoes(true);
     if (!aluno.desabilitado) {
       dispatch(setDadosAlunoObjectCard(aluno));
+    } else {
+      resetarTela();
     }
 
-    if (temDadosRegistros) {
+    if (podeRealizarNovoRegistro) {
       dispatch(setRecolherRegistrosAnteriores(true));
     }
   };
@@ -269,10 +152,13 @@ const RegistroIndividual = () => {
 
   useEffect(() => {
     validaSomenteConsulta();
-  }, [turmaSelecionada, validaSomenteConsulta]);
+    return () => {
+      resetarTela();
+    };
+  }, [turmaSelecionada, validaSomenteConsulta, resetarTela]);
 
   return (
-    <Loader loading={carregandoGeral} className="w-100">
+    <Loader loading={exibirLoaderGeralRegistroIndividual} className="w-100">
       <Mensagens />
       <Cabecalho pagina="Registro individual" />
       <Card>
@@ -282,7 +168,7 @@ const RegistroIndividual = () => {
               <SelectComponent
                 id="componenteCurricular"
                 name="ComponenteCurricularId"
-                lista={listaComponenteCurricular}
+                lista={listaComponenteCurricular || []}
                 valueOption="codigoComponenteCurricular"
                 valueText="nome"
                 valueSelect={componenteCurricularSelecionado}
@@ -294,14 +180,7 @@ const RegistroIndividual = () => {
               />
             </div>
             <div className="col-sm-12 col-lg-8 col-md-8 d-flex justify-content-end pb-4">
-              <BotoesAcoes
-                onClickVoltar={onClickVoltar}
-                onClickCancelar={onClickCancelar}
-                onClickCadastrar={onClickCadastrar}
-                modoEdicao={registroIndividualEmEdicao}
-                desabilitarCampos={desabilitarCampos}
-                turmaInfantil={turmaInfantil}
-              />
+              <BotoesAcoes turmaInfantil={turmaInfantil} />
             </div>
           </div>
           <div className="row">
@@ -319,10 +198,7 @@ const RegistroIndividual = () => {
                       <div className="mb-2">
                         <ObjectCardRegistroIndividual />
                       </div>
-                      <DadosRegistroIndividual
-                        turmaCodigo={turmaSelecionada.turma}
-                        modalidade={turmaSelecionada.modalidade}
-                      />
+                      <DadosRegistroIndividual />
                     </>
                   </TabelaRetratilRegistroIndividual>
                 </div>
