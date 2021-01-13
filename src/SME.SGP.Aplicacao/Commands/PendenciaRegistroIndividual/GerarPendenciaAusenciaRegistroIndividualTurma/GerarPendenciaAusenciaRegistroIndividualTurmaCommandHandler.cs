@@ -19,7 +19,6 @@ namespace SME.SGP.Aplicacao
         private readonly IMediator mediator;
         private readonly IUnitOfWork unitOfWork;
 
-        private const int DiasDeAusenciaPadrao = 15;
         private const string DescricaoBase = "As crianças abaixo estão sem registro individual a mais de 15 dias:";
 
         public GerarPendenciaAusenciaRegistroIndividualTurmaCommandHandler(IRepositorioPendencia repositorioPendencia, IRepositorioPendenciaUsuario repositorioPendenciaUsuario,
@@ -38,15 +37,8 @@ namespace SME.SGP.Aplicacao
         {
             var retorno = new RetornoBaseDto();
 
-            var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(request.TurmaId));
-            if (turma is null)
-            {
-                retorno.Mensagens.Add($"A turma {request.TurmaId} não foi encontrada.");
-                return retorno;
-            }
-
             var diasDeAusencia = await ObterDiasDeAusenciaParaPendenciaRegistroIndividualAsync();
-            var query = new ListarAlunosTurmaComAusenciaRegistroIndividualPorDiasQuery(turma.Id, turma.CodigoTurma, diasDeAusencia);
+            var query = new ListarAlunosTurmaComAusenciaRegistroIndividualPorDiasQuery(request.Turma.Id, request.Turma.CodigoTurma, diasDeAusencia);
             var alunosTurmaComAusenciaRegistroIndividualPorDias = await mediator.Send(query);
             if (!alunosTurmaComAusenciaRegistroIndividualPorDias?.Any() ?? true)
                 return retorno;
@@ -55,9 +47,9 @@ namespace SME.SGP.Aplicacao
             {
                 try
                 {
-                    var pendenciaRegistroIndividual = await repositorioPendenciaRegistroIndividual.ObterPendenciaRegistroIndividualPorTurmaESituacao(turma.Id, SituacaoPendencia.Pendente);
+                    var pendenciaRegistroIndividual = await repositorioPendenciaRegistroIndividual.ObterPendenciaRegistroIndividualPorTurmaESituacao(request.Turma.Id, SituacaoPendencia.Pendente);
                     if (pendenciaRegistroIndividual is null)
-                        await CriarNovaPendenciaAusenciaRegistroIndividualAsync(turma, alunosTurmaComAusenciaRegistroIndividualPorDias);
+                        await CriarNovaPendenciaAusenciaRegistroIndividualAsync(request.Turma, alunosTurmaComAusenciaRegistroIndividualPorDias);
                     else
                         await AlterarPendenciaAusenciaRegistroIndividualAsync(pendenciaRegistroIndividual, alunosTurmaComAusenciaRegistroIndividualPorDias);
 

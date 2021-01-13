@@ -1,16 +1,17 @@
 ﻿using FluentValidation;
 using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
     public class GerarPendenciaAusenciaRegistroIndividualTurmaCommand : IRequest<RetornoBaseDto>
     {
-        public long TurmaId { get; set; }
+        public Turma Turma { get; set; }
 
-        public GerarPendenciaAusenciaRegistroIndividualTurmaCommand(long turmaId)
+        public GerarPendenciaAusenciaRegistroIndividualTurmaCommand(Turma turma)
         {
-            TurmaId = turmaId;
+            Turma = turma;
         }
     }
 
@@ -18,7 +19,7 @@ namespace SME.SGP.Aplicacao
     {
         public GerarPendenciaAusenciaRegistroIndividualTurmaCommandValidator()
         {
-            RuleFor(x => x.TurmaId)
+            RuleFor(x => x.Turma)
                 .NotEmpty()
                 .WithMessage("A turma deve ser informada para geração de pendência de registro individual.");
         }
