@@ -26,10 +26,10 @@ namespace SME.SGP.Aplicacao
                     return false;
                 }
 
-                //TODO: Remover antes de ir para dev
-                //foreach (var turma in turmasDoEnsinoInfantil.Where(a => a.CodigoTurma == "2252164").ToList()) PARA TESTAR
                 foreach (var turma in turmasDoEnsinoInfantil)
+                {
                     await GerarPendenciaAusenciaRegistroIndividualTurmaAsync(turma);
+                }
 
                 return true;
             }
