@@ -77,7 +77,7 @@ namespace SME.SGP.Aplicacao
         {
             var parametroDiasSemRegistroIndividual = await mediator.Send(new ObterParametroSistemaPorTipoQuery(TipoParametroSistema.PendenciaPorAusenciaDeRegistroIndividual));
             if (string.IsNullOrEmpty(parametroDiasSemRegistroIndividual))
-                throw new NegocioException($"Não foi possível obter o parâmetro de dias {TipoParametroSistema.PendenciaPorAusenciaDeRegistroIndividual.Name()} ");
+                throw new NegocioException($"Não foi possível obter o parâmetro {TipoParametroSistema.PendenciaPorAusenciaDeRegistroIndividual.Name()} ");
 
             return int.Parse(parametroDiasSemRegistroIndividual);
         }
