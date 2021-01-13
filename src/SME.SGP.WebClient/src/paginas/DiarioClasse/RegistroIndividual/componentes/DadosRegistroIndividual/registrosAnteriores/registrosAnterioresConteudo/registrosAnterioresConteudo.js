@@ -191,7 +191,7 @@ const RegistrosAnterioresConteudo = memo(() => {
       setCarregandoGeral(false);
     }
   };
-
+  console.log('resete');
   return (
     <Loader ignorarTip loading={carregandoGeral} className="w-100">
       <div className="px-3">
