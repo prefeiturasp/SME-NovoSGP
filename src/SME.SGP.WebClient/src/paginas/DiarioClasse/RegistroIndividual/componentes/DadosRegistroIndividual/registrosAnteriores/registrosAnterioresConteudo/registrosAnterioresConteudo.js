@@ -4,15 +4,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { CampoData, Label, Loader } from '~/componentes';
 import { Paginacao } from '~/componentes-sgp';
 
-import { erros, ServicoRegistroIndividual } from '~/servicos';
-
-import {
-  setDadosPrincipaisRegistroIndividual,
-  setExibirLoaderGeralRegistroAnteriores,
-  setPodeRealizarNovoRegistro,
-} from '~/redux/modulos/registroIndividual/actions';
+import { setExibirLoaderGeralRegistroAnteriores } from '~/redux/modulos/registroIndividual/actions';
 
 import Item from './item/item';
+import MetodosRegistroIndividual from '~/paginas/DiarioClasse/RegistroIndividual/metodosRegistroIndividual';
 
 const RegistrosAnterioresConteudo = memo(() => {
   const [dataInicio, setDataInicio] = useState();
@@ -21,9 +16,6 @@ const RegistrosAnterioresConteudo = memo(() => {
   const [numeroPagina, setNumeroPagina] = useState(1);
   const [numeroRegistros, setNumeroRegistros] = useState(10);
 
-  const componenteCurricularSelecionado = useSelector(
-    store => store.registroIndividual.componenteCurricularSelecionado
-  );
   const exibirLoaderGeralRegistroAnteriores = useSelector(
     store => store.registroIndividual.exibirLoaderGeralRegistroAnteriores
   );
@@ -33,35 +25,9 @@ const RegistrosAnterioresConteudo = memo(() => {
   const dadosPrincipaisRegistroIndividual = useSelector(
     store => store.registroIndividual.dadosPrincipaisRegistroIndividual
   );
-  const { turmaSelecionada } = useSelector(state => state.usuario);
-  const turmaCodigo = turmaSelecionada?.id || 0;
-  const { codigoEOL } = dadosAlunoObjectCard;
+  const turmaSelecionada = useSelector(state => state.usuario.turmaSelecionada);
 
   const dispatch = useDispatch();
-
-  const obterRegistroIndividualPorData = useCallback(
-    async (dataFormatadaInicio, dataFimEscolhida, pagina, registros) => {
-      const retorno = await ServicoRegistroIndividual.obterRegistroIndividualPorPeriodo(
-        {
-          alunoCodigo: codigoEOL,
-          componenteCurricular: componenteCurricularSelecionado,
-          dataInicio: dataFormatadaInicio,
-          dataFim: dataFimEscolhida,
-          turmaCodigo,
-          numeroPagina: pagina,
-          numeroRegistros: registros,
-        }
-      ).catch(e => erros(e));
-
-      if (retorno?.data) {
-        dispatch(setDadosPrincipaisRegistroIndividual(retorno.data));
-        dispatch(
-          setPodeRealizarNovoRegistro(retorno.data.podeRealizarNovoRegistro)
-        );
-      }
-    },
-    [codigoEOL, componenteCurricularSelecionado, dispatch, turmaCodigo]
-  );
 
   const ehMesmaData = useCallback(data => {
     const dataAtualComparativa = window.moment().format('YYYY-MM-DD');
@@ -103,7 +69,7 @@ const RegistrosAnterioresConteudo = memo(() => {
       (async () => {
         dispatch(setExibirLoaderGeralRegistroAnteriores(true));
         const [dataFormatadaInicio, dataFimEscolhida] = verificarData();
-        await obterRegistroIndividualPorData(
+        await MetodosRegistroIndividual.obterRegistroIndividualPorData(
           dataFormatadaInicio,
           dataFimEscolhida,
           numeroPagina,
@@ -121,7 +87,6 @@ const RegistrosAnterioresConteudo = memo(() => {
     exibirLoaderGeralRegistroAnteriores,
     numeroPagina,
     numeroRegistros,
-    obterRegistroIndividualPorData,
     verificarData,
   ]);
 
@@ -159,7 +124,7 @@ const RegistrosAnterioresConteudo = memo(() => {
     setCarregandoGeral(true);
     setNumeroPagina(pagina);
     const [dataFormatadaInicio, dataFimEscolhida] = verificarData();
-    await obterRegistroIndividualPorData(
+    await MetodosRegistroIndividual.obterRegistroIndividualPorData(
       dataFormatadaInicio,
       dataFimEscolhida,
       pagina,
@@ -173,7 +138,7 @@ const RegistrosAnterioresConteudo = memo(() => {
     setNumeroPagina(paginaAtual);
     setNumeroRegistros(numeroLinhas);
     const [dataFormatadaInicio, dataFimEscolhida] = verificarData();
-    await obterRegistroIndividualPorData(
+    MetodosRegistroIndividual.obterRegistroIndividualPorData(
       dataFormatadaInicio,
       dataFimEscolhida,
       paginaAtual,
@@ -197,7 +162,7 @@ const RegistrosAnterioresConteudo = memo(() => {
       const dataEscolhida = ehMesmaData(dataFim)
         ? dataFimEscolhida
         : dataFormatadaFim;
-      await obterRegistroIndividualPorData(
+      await MetodosRegistroIndividual.obterRegistroIndividualPorData(
         dataFormatada,
         dataEscolhida,
         numeroPagina,
@@ -217,7 +182,7 @@ const RegistrosAnterioresConteudo = memo(() => {
       const dataEscolhida = ehMesmaData(data)
         ? dataFimEscolhida
         : dataFormatada;
-      await obterRegistroIndividualPorData(
+      await MetodosRegistroIndividual.obterRegistroIndividualPorData(
         dataFormatadaInicio,
         dataEscolhida,
         numeroPagina,

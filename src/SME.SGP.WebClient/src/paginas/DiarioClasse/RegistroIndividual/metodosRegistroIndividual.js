@@ -5,7 +5,9 @@ import {
   atualizaDadosRegistroAtual,
   limparDadosRegistroIndividual,
   setAuditoriaNovoRegistro,
+  setDadosPrincipaisRegistroIndividual,
   setExibirLoaderGeralRegistroIndividual,
+  setPodeRealizarNovoRegistro,
   setRegistroIndividualEmEdicao,
 } from '~/redux/modulos/registroIndividual/actions';
 
@@ -30,14 +32,25 @@ class MetodosRegistroIndividual {
     };
   };
 
-  escolheCadastrar = (mostrarMsg = true) => {
-    const { registroIndividual, turmaId } = this.obterDados();
-    const { id } = registroIndividual.dadosParaSalvarNovoRegistro;
+  escolheCadastrar = (
+    atualizarDados = true,
+    registroIndividual,
+    turmaId,
+    id
+  ) => {
     if (id) {
-      this.editarRegistroIndividual(registroIndividual, turmaId, mostrarMsg);
+      this.editarRegistroIndividual(
+        atualizarDados,
+        registroIndividual,
+        turmaId
+      );
       return;
     }
-    this.cadastrarRegistroIndividual(registroIndividual, turmaId, mostrarMsg);
+    this.cadastrarRegistroIndividual(
+      atualizarDados,
+      registroIndividual,
+      turmaId
+    );
   };
 
   pergutarParaSalvar = () => {
@@ -50,17 +63,20 @@ class MetodosRegistroIndividual {
 
   salvarRegistroIndividual = async () => {
     const confirmado = await this.pergutarParaSalvar();
+    const { registroIndividual, turmaId } = this.obterDados();
+    const { id } = registroIndividual.dadosParaSalvarNovoRegistro;
     if (confirmado) {
-      this.escolheCadastrar(false);
+      this.escolheCadastrar(false, registroIndividual, turmaId, id);
     }
     return true;
   };
 
   verificarSalvarRegistroIndividual = () => {
-    const { registroIndividual } = this.obterDados();
+    const { registroIndividual, turmaId } = this.obterDados();
+    const { id } = registroIndividual.dadosParaSalvarNovoRegistro;
 
     if (registroIndividual.registroIndividualEmEdicao) {
-      this.escolheCadastrar(false);
+      this.escolheCadastrar(false, registroIndividual, turmaId, id);
     }
   };
 
@@ -74,9 +90,9 @@ class MetodosRegistroIndividual {
   };
 
   cadastrarRegistroIndividual = async (
+    atualizarDados,
     registroIndividual,
-    turmaId,
-    mostrarMsg
+    turmaId
   ) => {
     this.dispatch(setExibirLoaderGeralRegistroIndividual(true));
     const {
@@ -99,13 +115,12 @@ class MetodosRegistroIndividual {
       );
 
     if (retorno?.status === 200) {
-      if (mostrarMsg) {
-        sucesso('Registro cadastrado com sucesso.');
-      }
+      sucesso('Registro cadastrado com sucesso.');
+
       const dataAtual = window.moment(window.moment().format('YYYY-MM-DD'));
       const ehDataAnterior = window.moment(dataAtual).isAfter(data);
       this.resetarInfomacoes(ehDataAnterior);
-      if (!ehDataAnterior && mostrarMsg) {
+      if (!ehDataAnterior && atualizarDados) {
         this.dispatch(setAuditoriaNovoRegistro(retorno.data));
         this.dispatch(
           atualizaDadosRegistroAtual({
@@ -120,9 +135,9 @@ class MetodosRegistroIndividual {
   };
 
   editarRegistroIndividual = async (
+    atualizarDados,
     registroIndividual,
-    turmaId,
-    mostrarMsg
+    turmaId
   ) => {
     this.dispatch(setExibirLoaderGeralRegistroIndividual(true));
 
@@ -147,8 +162,8 @@ class MetodosRegistroIndividual {
       );
 
     if (retorno?.status === 200) {
-      if (mostrarMsg) {
-        sucesso('Registro editado com sucesso.');
+      sucesso('Registro editado com sucesso.');
+      if (atualizarDados) {
         this.dispatch(
           atualizaDadosRegistroAtual({
             id: retorno.data.id,
@@ -162,6 +177,35 @@ class MetodosRegistroIndividual {
       const dataAtual = window.moment(window.moment().format('YYYY-MM-DD'));
       const ehDataAnterior = window.moment(dataAtual).isAfter(data);
       this.resetarInfomacoes(ehDataAnterior);
+    }
+  };
+
+  obterRegistroIndividualPorData = async (
+    dataFormatadaInicio,
+    dataFimEscolhida,
+    pagina,
+    registros
+  ) => {
+    const { registroIndividual, turmaId } = this.obterDados();
+
+    const retorno = await ServicoRegistroIndividual.obterRegistroIndividualPorPeriodo(
+      {
+        alunoCodigo: registroIndividual.dadosAlunoObjectCard.codigoEOL,
+        componenteCurricular:
+          registroIndividual.componenteCurricularSelecionado,
+        dataInicio: dataFormatadaInicio,
+        dataFim: dataFimEscolhida,
+        turmaCodigo: turmaId,
+        numeroPagina: pagina,
+        numeroRegistros: registros,
+      }
+    ).catch(e => erros(e));
+
+    if (retorno?.data) {
+      this.dispatch(setDadosPrincipaisRegistroIndividual(retorno.data));
+      this.dispatch(
+        setPodeRealizarNovoRegistro(retorno.data.podeRealizarNovoRegistro)
+      );
     }
   };
 }
