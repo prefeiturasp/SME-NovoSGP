@@ -357,10 +357,9 @@ const DadosComunicadosLeitura = props => {
   }, [codigoUe]);
 
   const desabilitarData = current => {
-    if (current) {
-      return (
-        current < moment().startOf('year') || current > moment().endOf('year')
-      );
+    if (current && anoLetivo) {
+      const ano = moment(`${anoLetivo}-01-01`);
+      return current < ano.startOf('year') || current > ano.endOf('year');
     }
     return false;
   };
@@ -595,6 +594,8 @@ const DadosComunicadosLeitura = props => {
               onChangeCheckbox={e => {
                 setAnoLetivo();
                 setGrupo();
+                setDataFim();
+                setDataInicio();
                 setConsideraHistorico(e.target.checked);
               }}
               checked={consideraHistorico}
