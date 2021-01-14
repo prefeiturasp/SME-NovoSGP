@@ -6,14 +6,23 @@ import { ContainerObservacoesUsuario } from './observacoesUsuario.css';
 import ObservacoesUsuarioMontarDados from './observacoesUsuarioMontarDados';
 
 const ObservacoesUsuario = props => {
-  const { salvarObservacao, editarObservacao, excluirObservacao } = props;
+  const {
+    salvarObservacao,
+    editarObservacao,
+    excluirObservacao,
+    esconderLabel,
+    esconderCaixaExterna,
+  } = props;
 
   return (
     <div className="col-sm-12 mb-2 mt-4">
-      <Label text="Observações" />
-      <ContainerObservacoesUsuario>
-        <div style={{ margin: '15px' }}>
-          <CampoObservacao salvarObservacao={salvarObservacao} />
+      {!esconderLabel && <Label text="Observações" />}
+      <ContainerObservacoesUsuario esconderCaixaExterna={esconderCaixaExterna}>
+        <div style={{ margin: `${esconderCaixaExterna ? 0 : 15}px` }}>
+          <CampoObservacao
+            salvarObservacao={salvarObservacao}
+            esconderCaixaExterna={esconderCaixaExterna}
+          />
           <ObservacoesUsuarioMontarDados
             onClickSalvarEdicao={editarObservacao}
             onClickExcluir={excluirObservacao}
@@ -28,12 +37,16 @@ ObservacoesUsuario.propTypes = {
   editarObservacao: PropTypes.func,
   salvarObservacao: PropTypes.func,
   excluirObservacao: PropTypes.func,
+  esconderLabel: PropTypes.bool,
+  esconderCaixaExterna: PropTypes.bool,
 };
 
 ObservacoesUsuario.defaultProps = {
   editarObservacao: () => {},
   salvarObservacao: () => {},
   excluirObservacao: () => {},
+  esconderLabel: false,
+  esconderCaixaExterna: false,
 };
 
 export default ObservacoesUsuario;
