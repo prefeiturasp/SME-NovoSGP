@@ -12,5 +12,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<PaginacaoResultadoDto<EncaminhamentoAEEAlunoTurmaDto>> ListarPaginado(long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao, Paginacao paginacao);
         Task<SituacaoAEE> ObterSituacaoEncaminhamentoAEE(long encaminhamentoAEEId);
         Task<EncaminhamentoAEE> ObterEncaminhamentoPorId(long id);
+        Task<EncaminhamentoAEE> ObterEncaminhamentoComTurmaPorId(long encaminhamentoId);
     }
 }

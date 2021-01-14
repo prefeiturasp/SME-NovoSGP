@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
 
         public RegistrarEncaminhamentoAEESecaoQuestaoRespostaCommand(string resposta, long questaoId, TipoQuestao tipoQuestao)
         {
-            Resposta = Resposta;
+            Resposta = resposta;
             QuestaoId = questaoId;
             TipoQuestao = tipoQuestao;
         }
@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
         public RegistrarEncaminhamentoAEESecaoQuestaoRespostaCommandValidator()
         {
             RuleFor(x => x.Resposta)
-                   .Empty()
+                   .NotEmpty()
                    .WithMessage("A Resposta do Encaminhamento deve ser informada!");
             RuleFor(x => x.QuestaoId)
                    .GreaterThan(0)
