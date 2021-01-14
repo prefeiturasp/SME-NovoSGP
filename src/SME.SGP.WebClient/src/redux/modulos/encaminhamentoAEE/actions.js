@@ -42,3 +42,13 @@ export const setFormsSecoesEncaminhamentoAEE = payload => ({
   type: '@encaminhamentoAEE/setFormsSecoesEncaminhamentoAEE',
   payload,
 });
+
+export const setEncaminhamentoAEEEmEdicao = payload => ({
+  type: '@encaminhamentoAEE/setEncaminhamentoAEEEmEdicao',
+  payload,
+});
+
+export const setExibirLoaderEncaminhamentoAEE = payload => ({
+  type: '@encaminhamentoAEE/setExibirLoaderEncaminhamentoAEE',
+  payload,
+});

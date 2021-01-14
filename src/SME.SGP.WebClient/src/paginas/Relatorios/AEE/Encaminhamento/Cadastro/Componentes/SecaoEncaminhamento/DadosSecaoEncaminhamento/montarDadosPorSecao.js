@@ -1,13 +1,18 @@
 import { Form, Formik } from 'formik';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { CampoTexto, RadioGroupButton, SelectComponent } from '~/componentes';
+import { RotasDto } from '~/dtos';
 import tipoQuestao from '~/dtos/tipoQuestao';
-import { erros } from '~/servicos';
+import { setEncaminhamentoAEEEmEdicao } from '~/redux/modulos/encaminhamentoAEE/actions';
+import { erros, setBreadcrumbManual } from '~/servicos';
 import ServicoEncaminhamentoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoEncaminhamentoAEE';
 import InformacoesEscolares from '../../IndicativosEstudante/indicativosEstudante';
 
 const MontarDadosPorSecao = props => {
+  const dispatch = useDispatch();
+
   const { dados, match } = props;
 
   const [dadosQuestionarioAtual, setDadosQuestionarioAtual] = useState();
@@ -15,8 +20,20 @@ const MontarDadosPorSecao = props => {
 
   const [refForm, setRefForm] = useState({});
 
+  useEffect(() => {
+    const encaminhamentoId = match?.params?.id;
+    if (encaminhamentoId) {
+      setBreadcrumbManual(
+        match.url,
+        'Editar Encaminhamento',
+        `${RotasDto.RELATORIO_AEE_ENCAMINHAMENTO}`
+      );
+    }
+  }, [match]);
+
   const obterQuestionario = useCallback(async questionarioId => {
     const encaminhamentoId = match?.params?.id;
+    dispatch(setEncaminhamentoAEEEmEdicao(false));
     const resposta = await ServicoEncaminhamentoAEE.obterQuestionario(
       questionarioId,
       encaminhamentoId
@@ -96,6 +113,9 @@ const MontarDadosPorSecao = props => {
           label={label}
           form={form}
           opcoes={opcoes}
+          onChange={() => {
+            dispatch(setEncaminhamentoAEEEmEdicao(true));
+          }}
         />
       </div>
     );
@@ -120,6 +140,9 @@ const MontarDadosPorSecao = props => {
             lista={lista}
             valueOption="valor"
             valueText="desc"
+            onChange={() => {
+              dispatch(setEncaminhamentoAEEEmEdicao(true));
+            }}
           />
         </div>
       </>
@@ -137,6 +160,9 @@ const MontarDadosPorSecao = props => {
           label={label}
           form={form}
           type="textarea"
+          onChange={() => {
+            dispatch(setEncaminhamentoAEEEmEdicao(true));
+          }}
         />
       </div>
     );
