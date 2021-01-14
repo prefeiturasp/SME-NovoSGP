@@ -49,6 +49,8 @@ namespace SME.SGP.Aplicacao
                 mensagem.AppendLine($"<br/><br/>Observação: {dadosMensagem.Observacao.TrimEnd('.').Trim()}.");
             }
 
+            var titulo = $"Nova observação no Diário de bordo da turma {diarioBordo.Aula.Turma.Nome} ({dataAtual})";
+
             if (dadosMensagem.UsuariosNotificacao != null && dadosMensagem.UsuariosNotificacao.Any())
             {
                 foreach (var usuario in dadosMensagem.UsuariosNotificacao)
@@ -60,7 +62,7 @@ namespace SME.SGP.Aplicacao
                         //if (usuario != null)
                         {
                             unitOfWork.IniciarTransacao();
-                            var notificacaoId = await mediator.Send(new NotificarUsuarioCommand($"Nova observação no Diário de bordo da turma {diarioBordo.Aula.Turma.Nome} ({dataAtual})",
+                            var notificacaoId = await mediator.Send(new NotificarUsuarioCommand(titulo,
                                                                              mensagem.ToString(),
                                                                              codigoRf,
                                                                              NotificacaoCategoria.Aviso,
@@ -96,7 +98,7 @@ namespace SME.SGP.Aplicacao
                         //if (usuario != null)
                         {
                             unitOfWork.IniciarTransacao();
-                            var notificacaoId = await mediator.Send(new NotificarUsuarioCommand($"Nova observação no Diário de bordo da turma {diarioBordo.Aula.Turma.Nome} ({dataAtual})",
+                            var notificacaoId = await mediator.Send(new NotificarUsuarioCommand(titulo,
                                                                              mensagem.ToString(),
                                                                              codigoRf,
                                                                              NotificacaoCategoria.Aviso,
