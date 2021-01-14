@@ -75,9 +75,8 @@ pipeline {
                 ROBOT_REPORTS_DIR = "$WORKSPACE/robot-reports"
                 BROWSER = 'chrome'
                 SERVER = 'dev-novosgp.sme.prefeitura.sp.gov.br'
-                SGPAUTH = credentials('selenium-sgp-dev')
-                SGP_USER = '$SGPAUTH_USR'
-                SGP_PASS = '$SGPAUTH_PSW'
+                SGP_USER = credentials('selenium-sgp-usr')
+                SGP_PASS = credentials('selenium-sgp-psw')
             }
             steps {
                 checkout scm
