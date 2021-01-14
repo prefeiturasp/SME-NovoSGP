@@ -75,7 +75,7 @@ InputNome.propTypes = {
   onSelect: PropTypes.func,
   onChange: PropTypes.func,
   desabilitado: PropTypes.bool,
-  regexIgnore: PropTypes.string,
+  regexIgnore: PropTypes.objectOf(PropTypes.any),
 };
 
 InputNome.defaultProps = {
