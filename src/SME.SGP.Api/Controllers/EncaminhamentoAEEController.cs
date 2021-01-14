@@ -3,8 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -108,6 +110,14 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ExcluirEncaminhamento(long encaminhamentoAeeId, [FromServices] IExcluirEncaminhamentoAEEUseCase useCase)
         {
             return Ok(await useCase.Executar(encaminhamentoAeeId));
+        }
+
+        [HttpGet("{encaminhamentoId}")]
+        [ProducesResponseType(typeof(EncaminhamentoAEERespostaDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ObterQuestionario(long encaminhamentoId, [FromServices] IObterEncaminhamentoPorIdUseCase useCase)
+        {
+            return Ok(await useCase.Executar(encaminhamentoId));
         }
     }
 }
