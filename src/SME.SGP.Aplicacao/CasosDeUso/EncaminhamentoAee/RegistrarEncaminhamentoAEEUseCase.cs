@@ -52,7 +52,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             return resultadoEncaminhamento;
         }
 
-        public async Task AlterarEncaminhamento(EncaminhamentoAEEDto encaminhamentoAEEDto, EncaminhamentoAEE encaminhamentoAEE, bool encaminhamentoConcluido)
+        public async Task AlterarEncaminhamento(EncaminhamentoAeeDto encaminhamentoAEEDto, EncaminhamentoAEE encaminhamentoAEE, bool encaminhamentoConcluido)
         {
             foreach (var secao in encaminhamentoAEEDto.Secoes)
             {
@@ -98,7 +98,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             }
         }
 
-        public async Task SalvarEncaminhamento(EncaminhamentoAEEDto encaminhamentoAEEDto, ResultadoEncaminhamentoAEEDto resultadoEncaminhamento)
+        public async Task SalvarEncaminhamento(EncaminhamentoAeeDto encaminhamentoAEEDto, ResultadoEncaminhamentoAEEDto resultadoEncaminhamento)
         {
             foreach (var secao in encaminhamentoAEEDto.Secoes)
             {
