@@ -65,19 +65,13 @@ pipeline {
        
         stage('Functional regression tests') {
              
-            agent { docker {
-                image 'ppodgorsek/robot-framework:latest'
-                args '--shm-size=1g -u root' }
+            agent {
+                node {
+                    label 'selenium-teste'
+                }
             }
             
-            environment {
-                ROBOT_TESTS_DIR = "$WORKSPACE/teste"
-                ROBOT_REPORTS_DIR = "$WORKSPACE/robot-reports"
-                BROWSER = 'chrome'
-                SERVER = 'dev-novosgp.sme.prefeitura.sp.gov.br'
-                SGP_USER = '7944560'
-                SGP_PASS = 'Sgp@1234'
-            }
+            
             steps {
                 checkout scm
                 sh '''
