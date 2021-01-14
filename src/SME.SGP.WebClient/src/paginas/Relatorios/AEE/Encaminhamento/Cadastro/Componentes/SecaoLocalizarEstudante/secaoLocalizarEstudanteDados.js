@@ -11,10 +11,6 @@ import { setDadosSecaoLocalizarEstudante } from '~/redux/modulos/encaminhamentoA
 const SecaoLocalizarEstudanteDados = () => {
   const dispatch = useDispatch();
 
-  const codigosAlunosSelecionados = useSelector(
-    state => state.localizadorEstudante.codigosAluno
-  );
-
   const dadosSecaoLocalizarEstudante = useSelector(
     store => store.encaminhamentoAEE.dadosSecaoLocalizarEstudante
   );
@@ -49,12 +45,6 @@ const SecaoLocalizarEstudanteDados = () => {
 
   const [carregandoTurmas, setCarregandoTurmas] = useState(false);
   const [carregandoDres, setCarregandoDres] = useState(false);
-
-  useEffect(() => {
-    if (codigosAlunosSelecionados?.length > 0) {
-      setCodigoTurma();
-    }
-  }, [codigosAlunosSelecionados]);
 
   const [carregandoUes, setCarregandoUes] = useState(false);
 

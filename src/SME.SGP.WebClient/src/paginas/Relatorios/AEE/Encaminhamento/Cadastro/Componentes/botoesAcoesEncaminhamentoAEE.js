@@ -1,13 +1,17 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import Button from '~/componentes/button';
 import { Colors } from '~/componentes/colors';
 import { RotasDto } from '~/dtos';
+import { confirmar, erros, sucesso } from '~/servicos';
 import history from '~/servicos/history';
+import ServicoEncaminhamentoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoEncaminhamentoAEE';
 
-const BotoesAcoesEncaminhamentoAEE = () => {
+const BotoesAcoesEncaminhamentoAEE = props => {
+  const { match } = props;
+
   const onClickSalvar = async () => {
-    // TODO
-    console.log('onClickSalvar');
+    ServicoEncaminhamentoAEE.salvarEncaminhamento();
   };
 
   const onClickVoltar = async () => {
@@ -22,8 +26,25 @@ const BotoesAcoesEncaminhamentoAEE = () => {
   };
 
   const onClickExcluir = async () => {
-    // TODO
-    console.log('onClickExcluir');
+    const encaminhamentoId = match?.params?.id;
+    if (encaminhamentoId) {
+      const confirmado = await confirmar(
+        'Excluir',
+        '',
+        'Você tem certeza que deseja excluir este registro?'
+      );
+
+      if (confirmado) {
+        const resposta = await ServicoEncaminhamentoAEE.excluirEncaminhamento(
+          encaminhamentoId
+        ).catch(e => erros(e));
+
+        if (resposta?.status === 200) {
+          sucesso('Registro excluído com sucesso');
+          history.push(RotasDto.RELATORIO_AEE_ENCAMINHAMENTO);
+        }
+      }
+    }
   };
 
   const onClickEnviar = async () => {
@@ -57,6 +78,7 @@ const BotoesAcoesEncaminhamentoAEE = () => {
         border
         className="mr-3"
         onClick={onClickExcluir}
+        disabled={!match?.params?.id}
       />
       <Button
         id="btn-salvar"
@@ -77,6 +99,14 @@ const BotoesAcoesEncaminhamentoAEE = () => {
       />
     </>
   );
+};
+
+BotoesAcoesEncaminhamentoAEE.propTypes = {
+  match: PropTypes.oneOfType([PropTypes.object]),
+};
+
+BotoesAcoesEncaminhamentoAEE.defaultProps = {
+  match: {},
 };
 
 export default BotoesAcoesEncaminhamentoAEE;
