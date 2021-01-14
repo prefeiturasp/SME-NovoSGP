@@ -1,5 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
@@ -12,10 +14,12 @@ namespace SME.SGP.Aplicacao.Queries.DiarioBordo.ObterUsuariosNotificarDiarioBord
 {
     public class ObterUsuarioNotificarDiarioBordoObservacaoQueryHandler : IRequestHandler<ObterUsuarioNotificarDiarioBordoObservacaoQuery, IEnumerable<UsuarioNotificarDiarioBordoObservacaoDto>>
     {
+        private readonly IRepositorioDiarioBordoObservacaoNotificacao repositorioDiarioBordoObservacaoNotificacao;
         private readonly IMediator mediator;
 
-        public ObterUsuarioNotificarDiarioBordoObservacaoQueryHandler(IMediator mediator)
+        public ObterUsuarioNotificarDiarioBordoObservacaoQueryHandler(IRepositorioDiarioBordoObservacaoNotificacao repositorioDiarioBordoObservacaoNotificacao, IMediator mediator)
         {
+            this.repositorioDiarioBordoObservacaoNotificacao = repositorioDiarioBordoObservacaoNotificacao;
             this.mediator = mediator;
         }
 
@@ -29,16 +33,31 @@ namespace SME.SGP.Aplicacao.Queries.DiarioBordo.ObterUsuariosNotificarDiarioBord
             if(!professores?.Any() ?? true)
                 throw new NegocioException("Nenhum professor para a turma informada foi encontrada.");
 
-            var usuariosDiarioDeBordoRf = professores.Select(x => x.ProfessorRf).ToList();
-            if (request.ObservacaoId != null)
-                await ObterUsuariosAdicionadosNaObservacaoParaSeremNotificadosAsync(request.ObservacaoId.GetValueOrDefault(), usuariosDiarioDeBordoRf);
-
-            return await 
+            return request.ObservacaoId != null
+                ? await ObterUsuariosAdicionadosNaObservacaoParaSeremNotificadosAsync(request.ObservacaoId.GetValueOrDefault(), professores)
+                : await ObterUsuariosDosProfessoresDaTurmaAsync(professores);
         }
 
-        private Task ObterUsuariosAdicionadosNaObservacaoParaSeremNotificadosAsync(long v, List<string> usuariosDiarioDeBordoRf)
+        private async Task<IEnumerable<UsuarioNotificarDiarioBordoObservacaoDto>> ObterUsuariosDosProfessoresDaTurmaAsync(IEnumerable<ProfessorTitularDisciplinaEol> professores)
         {
-            throw new NotImplementedException();
+            var professoresRf = professores.Select(x => x.ProfessorRf).ToList();
+            var usuarios = await mediator.Send(new ObterUsuariosPorCodigosRfQuery(professoresRf));
+            if(!usuarios?.Any () ?? true)
+                throw new NegocioException("Os usuários dos professores da turma não foram encontrados.");
+
+            return professores
+                .Select(x => new UsuarioNotificarDiarioBordoObservacaoDto
+                {
+                    Nome = $"{x.ProfessorNome} ({x.ProfessorRf})",
+                    PodeRemover = false,
+                    UsuarioId = usuarios.FirstOrDefault(y => y.CodigoRf == x.ProfessorRf).Id
+                })
+                .ToList();
+        }
+
+        private Task<IEnumerable<UsuarioNotificarDiarioBordoObservacaoDto>> ObterUsuariosAdicionadosNaObservacaoParaSeremNotificadosAsync(long observacaoId, IEnumerable<ProfessorTitularDisciplinaEol> professores)
+        {
+            var usuarios = await repositorioDiarioBordoObservacaoNotificacao.ObterObservacaoPorId
         }
     }
 }
