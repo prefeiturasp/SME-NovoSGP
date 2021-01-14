@@ -6,6 +6,7 @@ import { CampoTexto, RadioGroupButton, SelectComponent } from '~/componentes';
 import tipoQuestao from '~/dtos/tipoQuestao';
 import { erros } from '~/servicos';
 import ServicoEncaminhamentoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoEncaminhamentoAEE';
+import AtendimentoClinicoTabela from '~/paginas/Relatorios/AEE/Encaminhamento/Cadastro/Componentes/AtendimentoClinico/atendimentoClinicoTabela';
 
 const MontarDadosPorSecao = props => {
   const { dados, match } = props;
@@ -142,6 +143,21 @@ const MontarDadosPorSecao = props => {
     );
   };
 
+  const campoAtendimentoClinico = params => {
+    const { questaoAtual, form, label } = params;
+
+    return (
+      <div className="col-md-12 mb-3">
+        <AtendimentoClinicoTabela
+          name={String(questaoAtual.id)}
+          label={label}
+          form={form}
+          id={questaoAtual.id}
+        />
+      </div>
+    );
+  };
+
   const montarCampos = (questaoAtual, form, ordemAnterior) => {
     const ordemLabel = ordemAnterior
       ? `${ordemAnterior}.${questaoAtual.ordem}`
@@ -183,6 +199,9 @@ const MontarDadosPorSecao = props => {
         break;
       case tipoQuestao.Texto:
         campoAtual = campoTexto(params);
+        break;
+      case tipoQuestao.AtendimentoClinico:
+        campoAtual = campoAtendimentoClinico(params);
         break;
       default:
         break;
