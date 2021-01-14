@@ -23,161 +23,63 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<QuestaoAeeDto>> Handle(ObterQuestionarioEncaminhamentoAeeQuery request, CancellationToken cancellationToken)
         {
-            var dadosQuestionario =
-                !request.EncaminhamentoId.HasValue
-                ? await repositorioQuestaoEncaminhamento.ObterListaPorQuestionario(request.QuestionarioId)
-                : await repositorioQuestaoEncaminhamento.ObterListaPorQuestionarioEncaminhamento(request.QuestionarioId, request.EncaminhamentoId);
+            var dadosQuestionario = await repositorioQuestaoEncaminhamento.ObterListaPorQuestionario(request.QuestionarioId);
 
-            var questaoComplementar = dadosQuestionario
-                .Where(dq => dq.QuestaoComplementarId.HasValue)
-                .Select(dq => dq.QuestaoComplementarId.Value)
-                .Distinct()
-                .ToArray();
+            var questoesComplementares = dadosQuestionario
+                .Where(dq => dq.OpcoesRespostas.Any(a => a.QuestaoComplementarId.HasValue))
+                .SelectMany(dq => dq.OpcoesRespostas.Where(c => c.QuestaoComplementarId.HasValue).Select(a => a.QuestaoComplementarId))
+                .Distinct();
+
+            var respostasEncaminhamento = request.EncaminhamentoId.HasValue ?
+                await repositorioQuestaoEncaminhamento.ObterRespostasEncaminhamento(request.EncaminhamentoId.Value) :
+                Enumerable.Empty<RespostaQuestaoEncaminhamentoAEEDto>();
 
             var questao = dadosQuestionario
-                .Where(dq => !questaoComplementar.Contains(dq.QuestaoId))
-                .GroupBy(
-                    questaoKey => questaoKey.QuestaoId,
-                    questaoValue => questaoValue,
-                    (key, value) => value.First()
-                )               
-                .Select(dq => ObterQuestao(dq.QuestaoId, dadosQuestionario))
+                .Where(dq => !questoesComplementares.Contains(dq.Id))
+                .Select(dq => ObterQuestao(dq.Id, dadosQuestionario, respostasEncaminhamento))
                 .OrderBy(q => q.Ordem)
                 .ToArray();
 
             return questao;
         }
 
-        QuestaoAeeDto ObterQuestao(long questaoId, IEnumerable<QuestaoRespostaAeeDto> dadosQuestionario)
+        QuestaoAeeDto ObterQuestao(long questaoId, IEnumerable<Questao> dadosQuestionario, IEnumerable<RespostaQuestaoEncaminhamentoAEEDto> respostasEncaminhamento)
         {
-            var questaoLista = dadosQuestionario
-                .Where(q => q.QuestaoId == questaoId)
-                .ToArray();
+            var questao = dadosQuestionario.FirstOrDefault(c => c.Id == questaoId);
 
-            if (!questaoLista.Any()) return null;
-
-            var opcoeResposta = questaoLista
-                .Where(or => or.OpcaoRespostaId.HasValue)
-                .Where(or => !or.RespostaEncaminhamentoId.HasValue)
-                .GroupBy(
-                    questaoKey => questaoKey.OpcaoRespostaId.Value,
-                    questaoValue => questaoValue,
-                    (key, value) =>
-                    {
-                        var questaoResposta = value.First();
-
-                        var opcao = new OpcaoRespostaAeeDto
-                        {
-                            Id = questaoResposta.OpcaoRespostaId.Value,
-                            Nome = questaoResposta.OpcaoRespostaNome,
-                            Ordem = questaoResposta.OpcaoRespostaOrdem.Value,
-                            QuestaoComplementar = questaoResposta.QuestaoComplementarId.HasValue
-                                ? ObterQuestao(questaoResposta.QuestaoComplementarId.Value, dadosQuestionario)
-                                : null
-                        };
-
-                        return opcao;
-                    }
-                )
-                .OrderBy(q => q.Ordem)
-                .ToArray();
-
-            var respostaLista = questaoLista
-                .Where(or => !or.OpcaoRespostaId.HasValue)
-                .Where(or => or.RespostaEncaminhamentoId.HasValue)
-                .ToArray();
-
-            var respostaArquivos = respostaLista
-                .Where(or => or.RespostaArquivoId.HasValue)
-                .GroupBy(
-                    questaoKey => questaoKey.RespostaArquivoId.Value,
-                    questaoValue => questaoValue,
-                    (key, value) =>
-                    {
-                        var questaoResposta = value.First();
-
-                        var arquivo = new Arquivo
-                        {
-                            Id = questaoResposta.RespostaArquivoId.Value,
-                            Nome = questaoResposta.ArquivoNome,
-                            Codigo = Guid.Parse(questaoResposta.ArquivoCodigo),
-                            Tipo = (TipoArquivo)questaoResposta.ArquivoTipo,
-                            TipoConteudo = questaoResposta.ArquivoTipoConteudo
-                        };
-
-                        var resposta = new RespostaAeeDto
-                        {
-                            Id = questaoResposta.RespostaEncaminhamentoId,
-                            Arquivo = arquivo,
-                            OpcaoRespostaId = null,
-                            Texto = null
-                        };
-
-                        return resposta;
-                    }
-                );
-
-            var respostaOpcoes = respostaLista
-                .Where(or => or.RespostaEncaminhamentoOpcaoRespostaId.HasValue)
-                .GroupBy(
-                    questaoKey => questaoKey.RespostaEncaminhamentoOpcaoRespostaId.Value,
-                    questaoValue => questaoValue,
-                    (key, value) =>
-                    {
-                        var questaoResposta = value.First();
-
-                        var resposta = new RespostaAeeDto
-                        {
-                            Id = questaoResposta.RespostaEncaminhamentoId,
-                            Arquivo = null,
-                            OpcaoRespostaId = questaoResposta.RespostaEncaminhamentoOpcaoRespostaId.Value,
-                            Texto = null
-                        };
-
-                        return resposta;
-                    }
-                );
-
-            var respostaTexto = respostaLista
-                .Where(or => !string.IsNullOrEmpty(or.RespostaTexto))
-                .GroupBy(
-                    questaoKey => questaoKey.RespostaTexto,
-                    questaoValue => questaoValue,
-                    (key, value) =>
-                    {
-                        var questaoResposta = value.First();
-
-                        var resposta = new RespostaAeeDto
-                        {
-                            Id = questaoResposta.RespostaEncaminhamentoId,
-                            Arquivo = null,
-                            OpcaoRespostaId = null,
-                            Texto = questaoResposta.RespostaTexto
-                        };
-
-                        return resposta;
-                    }
-                );
-
-            var questao = 
-                new QuestaoAeeDto
+            return new QuestaoAeeDto()
+            {
+                Id = questao.Id,
+                Ordem = questao.Ordem,
+                Nome = questao.Nome,
+                TipoQuestao = questao.TipoQuestao,
+                Obrigatorio = questao.Obrigatorio,
+                Observacao = questao.Observacao,
+                Opcionais = questao.Opcionais,
+                OpcaoResposta = questao.OpcoesRespostas.Select(opcaoResposta =>
                 {
-                    Id = questaoLista.First().QuestaoId,
-                    Nome = questaoLista.First().QuestaoNome,
-                    Obrigatorio = questaoLista.First().QuestaoObrigatorio,
-                    Observacao = questaoLista.First().QuestaoObservacao,
-                    Opcionais = questaoLista.First().QuestaoOpcionais,
-                    Ordem = questaoLista.First().QuestaoOrder,
-                    TipoQuestao = (TipoQuestao)questaoLista.First().QuestaoTipo,
-                    OpcaoResposta = opcoeResposta,
-                    Resposta = 
-                        respostaOpcoes
-                        .Union(respostaArquivos)
-                        .Union(respostaTexto)
-                        .ToArray()
-                };
+                    return new OpcaoRespostaAeeDto()
+                    {
+                        Id = opcaoResposta.Id,
+                        Nome = opcaoResposta.Nome,
+                        Ordem = opcaoResposta.Ordem,
+                        QuestaoComplementar = opcaoResposta.QuestaoComplementarId.HasValue ?
+                            ObterQuestao(opcaoResposta.QuestaoComplementarId.Value, dadosQuestionario, respostasEncaminhamento) :
+                            null
+                    };
+                }).ToArray(),
+                Resposta = respostasEncaminhamento.Where(c => c.QuestaoId == questaoId).Select(respostaEncaminhamento =>
+                {
+                    return new RespostaAeeDto()
+                    {
+                        Id = respostaEncaminhamento.Id,
+                        OpcaoRespostaId = respostaEncaminhamento.RespostaId,
+                        Texto = respostaEncaminhamento.Texto,
+                        Arquivo = respostaEncaminhamento.Arquivo
+                    };
+                }).ToArray()
+            };
 
-            return questao;
         }
     }
 }
