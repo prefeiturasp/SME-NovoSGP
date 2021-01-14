@@ -1121,6 +1121,17 @@ rotas.set(`${RotasDto.RELATORIO_AEE_ENCAMINHAMENTO}/novo`, {
   chavePermissao: RotasDto.RELATORIO_AEE_ENCAMINHAMENTO,
 });
 
+rotas.set(`${RotasDto.RELATORIO_AEE_ENCAMINHAMENTO}/editar/:id`, {
+  breadcrumbName: 'Encaminhamento',
+  menu: ['Relatórios', 'AEE'],
+  parent: '/',
+  component: EncaminhamentoAEECadastro,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+  chavePermissao: RotasDto.RELATORIO_AEE_ENCAMINHAMENTO,
+});
+
 const rotasArray = [];
 for (const [key, value] of rotas) {
   const rota = value;

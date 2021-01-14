@@ -12,20 +12,15 @@ import Card from '~/componentes/card';
 import { Colors } from '~/componentes/colors';
 import LocalizadorEstudante from '~/componentes/LocalizadorEstudante';
 import { URL_HOME } from '~/constantes/url';
+import { RotasDto } from '~/dtos';
 import AbrangenciaServico from '~/servicos/Abrangencia';
 import { erros } from '~/servicos/alertas';
 import history from '~/servicos/history';
 import ServicoEncaminhamentoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoEncaminhamentoAEE';
 import FiltroHelper from '~componentes-sgp/filtro/helper';
-import {
-  setDadosModalAviso,
-  setExibirModalAviso,
-} from '~/redux/modulos/encaminhamentoAEE/actions';
 import ModalAvisoNovoEncaminhamentoAEE from './Componentes/AvisoCadastro/modalAvisoCadastro';
 
 const EncaminhamentoAEELista = () => {
-  const dispatch = useDispatch();
-
   const codigosAlunosSelecionados = useSelector(
     state => state.localizadorEstudante.codigosAluno
   );
@@ -345,8 +340,8 @@ const EncaminhamentoAEELista = () => {
     filtrar(dreId, ueId, turmaId, alunoLocalizadorSelecionado, valor);
   };
 
-  const onClickEditar = items => {
-    console.log(items);
+  const onClickEditar = item => {
+    history.push(`${RotasDto.RELATORIO_AEE_ENCAMINHAMENTO}/editar/${item.id}`);
   };
 
   const onCheckedConsideraHistorico = e => {

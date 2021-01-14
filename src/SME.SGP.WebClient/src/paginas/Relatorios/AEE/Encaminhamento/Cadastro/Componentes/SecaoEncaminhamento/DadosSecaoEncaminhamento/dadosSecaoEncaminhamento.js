@@ -1,4 +1,5 @@
 import { Steps } from 'antd';
+import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import shortid from 'shortid';
@@ -10,7 +11,9 @@ import DadosPorSecaoCollapse from './dadosPorSecaoCollapse';
 
 const { Step } = Steps;
 
-const DadosSecaoEncaminhamento = () => {
+const DadosSecaoEncaminhamento = props => {
+  const { match } = props;
+
   const dispatch = useDispatch();
 
   const dadosSecaoLocalizarEstudante = useSelector(
@@ -53,9 +56,14 @@ const DadosSecaoEncaminhamento = () => {
       {dadosSecoesPorEtapaDeEncaminhamentoAEE.map(item => {
         return (
           <Step
+            key={shortid.generate()}
             status="process"
             title={
-              <DadosPorSecaoCollapse dados={item} index={shortid.generate()} />
+              <DadosPorSecaoCollapse
+                dados={item}
+                index={shortid.generate()}
+                match={match}
+              />
             }
           />
         );
@@ -64,6 +72,14 @@ const DadosSecaoEncaminhamento = () => {
   ) : (
     ''
   );
+};
+
+DadosSecaoEncaminhamento.propTypes = {
+  match: PropTypes.oneOfType([PropTypes.object]),
+};
+
+DadosSecaoEncaminhamento.defaultProps = {
+  match: {},
 };
 
 export default DadosSecaoEncaminhamento;
