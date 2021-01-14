@@ -169,16 +169,28 @@ function TabelaRetratil({
                 </td>
                 <td>
                   <div
+                    className="d-flex align-items-center"
                     style={{
                       marginLeft: '-9px',
                     }}
                   >
-                    {exibirProcessoConcluido ? (
-                      <i className="icone-concluido fa fa-check-circle" />
-                    ) : (
-                      ''
+                    <div
+                      className={
+                        item.marcadorDiasSemRegistroExibir ? 'col-11' : 'col-12'
+                      }
+                    >
+                      {exibirProcessoConcluido && (
+                        <i className="icone-concluido fa fa-check-circle" />
+                      )}
+                      {item.nome}
+                    </div>
+                    {item.marcadorDiasSemRegistroExibir && (
+                      <div className="col-1">
+                        <Tooltip title={item.marcadorDiasSemRegistroTexto}>
+                          <i className="fas fa-exclamation icone-ausencia" />
+                        </Tooltip>
+                      </div>
                     )}
-                    {item.nome}
                   </div>
                 </td>
               </LinhaTabela>
