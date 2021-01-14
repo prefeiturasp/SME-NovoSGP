@@ -188,7 +188,7 @@ const SecaoLocalizarEstudanteDados = () => {
       anoLetivo: anoAtual,
       codigoDre,
       codigoUe,
-      codigoTurma,
+      codigoTurma: dadosSecaoLocalizarEstudante.turmaId,
       codigoAluno: alunoLocalizadorSelecionado,
     };
     dispatch(setDadosSecaoLocalizarEstudante(params));
