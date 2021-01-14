@@ -19,6 +19,7 @@ import ObservacoesUsuario from '~/componentes-sgp/ObservacoesUsuario/observacoes
 import { RotasDto } from '~/dtos';
 
 import { ehTurmaInfantil, erros, history, ServicoDisciplina } from '~/servicos';
+import ServicoDiarioBordo from '~/servicos/Paginas/DiarioClasse/ServicoDiarioBordo';
 
 import { BotoesAcoes, Mensagens, ModalNotificarUsuarios } from './componentes';
 
@@ -36,17 +37,21 @@ const NovoDiarioBordo = () => {
   const [dataInicial, setDataInicial] = useState();
   const [dataFinal, setDataFinal] = useState();
   const [modalVisivel, setModalVisivel] = useState(false);
+  const [numeroPagina, setNumeroPagina] = useState(1);
+  const numeroRegistros = 10;
 
   const { turmaSelecionada } = useSelector(state => state.usuario);
-  const turmaId = turmaSelecionada?.turma || 0;
+  const turmaId = turmaSelecionada?.id || 0;
+  const turma = turmaSelecionada?.turma || 0;
   const modalidadesFiltroPrincipal = useSelector(
     store => store.filtro.modalidades
   );
+  const [listaTitulos, setListaTitulos] = useState();
 
   const obterComponentesCurriculares = useCallback(async () => {
     setCarregandoGeral(true);
     const componentes = await ServicoDisciplina.obterDisciplinasPorTurma(
-      turmaId
+      turma
     ).catch(e => erros(e));
 
     if (componentes?.data?.length) {
@@ -61,39 +66,21 @@ const NovoDiarioBordo = () => {
     }
 
     setCarregandoGeral(false);
-  }, [turmaId]);
+  }, [turma]);
 
-  const headers = [];
-  // eslint-disable-next-line no-plusplus
-  for (let i = 0; i < 5; i++) {
-    const arr = [
-      {
-        id: shortid.generate(),
-        header: '23/11/2020 - VERA LUCIA DA SILVA SOUZA',
-        planejamento: `<p>teste VERA LUCIA ${i}</p>`,
-      },
-      {
-        id: shortid.generate(),
-        header: '17/11/2020 - CARMEN FERREIRA MENDES',
-        planejamento: `<p>teste CARMEN FERREIRA ${i}</p>`,
-      },
-    ];
-    headers.push(...arr);
-  }
-
-  const ehMostrarPaginacao = headers.length === 10;
+  const ehMostrarPaginacao = listaTitulos?.length === 10;
 
   const resetarTela = useCallback(() => {}, []);
 
   useEffect(() => {
-    if (turmaId && turmaInfantil) {
+    if (turma && turmaInfantil) {
       obterComponentesCurriculares();
-    } else {
-      setListaComponenteCurriculares([]);
-      setComponenteCurricularSelecionado(undefined);
-      resetarTela();
+      return;
     }
-  }, [turmaId, obterComponentesCurriculares, resetarTela, turmaInfantil]);
+    setListaComponenteCurriculares([]);
+    setComponenteCurricularSelecionado(undefined);
+    resetarTela();
+  }, [turma, obterComponentesCurriculares, resetarTela, turmaInfantil]);
 
   useEffect(() => {
     const infantil = ehTurmaInfantil(
@@ -113,22 +100,51 @@ const NovoDiarioBordo = () => {
   ]);
 
   const onChangeComponenteCurricular = valor => {
-    if (!valor) {
-      // setDiasParaHabilitar([]);
-    }
-    // setDataSelecionada('');
     setComponenteCurricularSelecionado(valor);
-  };
-
-  const onChangePaginacao = pagina => {
-    // eslint-disable-next-line no-console
-    console.log('pagina ===> ', pagina);
   };
 
   const onClickNotificarUsuarios = () => setModalVisivel(true);
 
   const onClickConsultarDiario = () => {
     history.push(`${RotasDto.DIARIO_BORDO}/detalhes`);
+  };
+
+  const obterTitulos = useCallback(
+    async (dataInicio, dataFim) => {
+      const retorno = await ServicoDiarioBordo.obterTitulosDiarioBordo({
+        turmaId,
+        componenteCurricularId: componenteCurricularSelecionado,
+        dataInicio,
+        dataFim,
+        numeroPagina,
+        numeroRegistros,
+      }).catch(e => erros(e));
+
+      if (retorno?.status === 200) {
+        setListaTitulos(retorno.data);
+      }
+    },
+    [componenteCurricularSelecionado, turmaId, numeroPagina, numeroRegistros]
+  );
+
+  useEffect(() => {
+    if (componenteCurricularSelecionado) {
+      obterTitulos();
+    }
+  }, [componenteCurricularSelecionado, obterTitulos]);
+
+  useEffect(() => {
+    if (dataInicial && dataFinal) {
+      const dataIncialFormatada = dataInicial?.format('MM-DD-YYYY');
+      const dataFinalFormatada = dataFinal?.format('MM-DD-YYYY');
+      obterTitulos(dataIncialFormatada, dataFinalFormatada);
+    }
+  }, [dataInicial, dataFinal, obterTitulos]);
+
+  const onChangePaginacao = pagina => {
+    // eslint-disable-next-line no-console
+    console.log('pagina ===> ', pagina);
+    setNumeroPagina(pagina);
   };
 
   return (
@@ -194,16 +210,17 @@ const NovoDiarioBordo = () => {
             </div>
           </div>
           <div className="row">
-            {headers.map(({ header, id, planejamento }) => (
-              <div className="col-sm-12 mb-3" key={id}>
-                <PainelCollapse corFundo={Base.Branco}>
+            <div className="col-sm-12 mb-3">
+              <PainelCollapse accordion>
+                {listaTitulos?.items?.map(({ header, id, planejamento }) => (
                   <PainelCollapse.Painel
                     key={id}
+                    accordion
                     espacoPadrao
                     corBorda={Base.AzulBordaCollapse}
                     temBorda
                     header={header}
-                    altura={44}
+                    // altura={44}
                   >
                     <div className="row ">
                       <div className="col-sm-12 mb-3">
@@ -248,9 +265,9 @@ const NovoDiarioBordo = () => {
                       </div>
                     </div>
                   </PainelCollapse.Painel>
-                </PainelCollapse>
-              </div>
-            ))}
+                ))}
+              </PainelCollapse>
+            </div>
           </div>
           {ehMostrarPaginacao && (
             <div className="row">
