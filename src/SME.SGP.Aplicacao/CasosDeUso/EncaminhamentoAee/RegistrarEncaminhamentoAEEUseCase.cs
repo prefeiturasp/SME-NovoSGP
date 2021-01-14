@@ -91,6 +91,12 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                         await mediator.Send(new ExcluirRespostaEncaminhamentoAEEPorQuestaoIdCommand(questoesExistentes.Id));
                         await SalvarRespostas(questoes, questoesExistentes.Id);
                     }
+
+                    foreach (var q in secaoExistente.Questoes.Where(x => !secao.Questoes.Any(s => s.QuestaoId == x.Id)))
+                    {
+                        await mediator.Send(new ExcluirRespostaEncaminhamentoAEEPorQuestaoIdCommand(q.Id));
+                        await mediator.Send(new ExcluirQuesta(q.Id));
+                    }
                 }
             }
         }
