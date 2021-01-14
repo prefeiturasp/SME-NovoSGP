@@ -1,16 +1,12 @@
-﻿using MediatR;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json.Linq;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
@@ -20,7 +16,6 @@ namespace SME.SGP.Api.Controllers
     [Authorize("Bearer")]
     public class DiarioBordoController : ControllerBase
     {
-
         [HttpGet("{aulaId}")]
         [ProducesResponseType(typeof(DiarioBordoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
@@ -33,7 +28,6 @@ namespace SME.SGP.Api.Controllers
 
             return Ok(result);
         }
-
 
         [HttpGet("detalhes/{id}")]
         [ProducesResponseType(typeof(DiarioBordoDetalhesDto), 200)]
@@ -121,9 +115,27 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.DDB_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterTitulosPorIntervalo([FromServices] IObterListagemDiariosDeBordoPorPeriodoUseCase useCase, long turmaId, long componenteCurricularId, DateTime dataInicio, DateTime dataFim)
+        public async Task<IActionResult> ObterTitulosPorIntervalo([FromServices] IObterListagemDiariosDeBordoPorPeriodoUseCase useCase, long turmaId, long componenteCurricularId, DateTime? dataInicio, DateTime? dataFim)
         {
             return Ok(await useCase.Executar(new FiltroListagemDiarioBordoDto(turmaId, componenteCurricularId, dataInicio, dataFim)));
+        }
+
+        [HttpGet("notificacoes/usuarios")]
+        [ProducesResponseType(typeof(IEnumerable<UsuarioNotificarDiarioBordoObservacaoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.DDB_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterUsuariosParaNotificar([FromQuery] ObterUsuarioNotificarDiarioBordoObservacaoDto dto)
+        {
+            var resultado = new List<UsuarioNotificarDiarioBordoObservacaoDto>
+            {
+                new UsuarioNotificarDiarioBordoObservacaoDto { UsuarioId = 1, Nome = "Carlos Dias (123456)", PodeRemover = true },
+                new UsuarioNotificarDiarioBordoObservacaoDto { UsuarioId = 2, Nome = "Marcos Lobo (789012)", PodeRemover = false },
+                new UsuarioNotificarDiarioBordoObservacaoDto { UsuarioId = 3, Nome = "Jefferson (345678)", PodeRemover = true },
+                new UsuarioNotificarDiarioBordoObservacaoDto { UsuarioId = 4, Nome = "Natasha (901234)", PodeRemover = false },
+                new UsuarioNotificarDiarioBordoObservacaoDto { UsuarioId = 5, Nome = "AMCOM (567789)", PodeRemover = true },
+            };
+
+            return await Task.FromResult(Ok(resultado));
         }
     }
 }
