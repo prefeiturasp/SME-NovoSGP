@@ -5,7 +5,7 @@ import CardCollapse from '~/componentes/cardCollapse';
 import MontarDadosPorSecao from './montarDadosPorSecao';
 
 const DadosPorSecaoCollapse = props => {
-  const { dados, index } = props;
+  const { dados, index, match } = props;
   const { nome } = dados;
 
   const configCabecalho = {
@@ -25,7 +25,7 @@ const DadosPorSecaoCollapse = props => {
         onClick={onClickCardCollapse}
         configCabecalho={configCabecalho}
       >
-        <MontarDadosPorSecao dados={dados} />
+        <MontarDadosPorSecao dados={dados} match={match} />
       </CardCollapse>
     </div>
   );
@@ -34,11 +34,13 @@ const DadosPorSecaoCollapse = props => {
 DadosPorSecaoCollapse.propTypes = {
   dados: PropTypes.oneOfType([PropTypes.object]),
   index: PropTypes.oneOfType([PropTypes.any]),
+  match: PropTypes.oneOfType([PropTypes.object]),
 };
 
 DadosPorSecaoCollapse.defaultProps = {
   dados: '',
   index: null,
+  match: {},
 };
 
 export default DadosPorSecaoCollapse;
