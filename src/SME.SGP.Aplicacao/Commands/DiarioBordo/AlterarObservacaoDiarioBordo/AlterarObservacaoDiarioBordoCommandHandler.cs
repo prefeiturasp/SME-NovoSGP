@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioDiarioBordoObservacaoNotificacao repositorioDiarioBordoObservacaoNotificacao;
         private readonly IMediator mediator;
 
-        public AlterarObservacaoDiarioBordoCommandHandler(IRepositorioDiarioBordoObservacao repositorioDiarioBordoObservacao, IMediator mediator, 
+        public AlterarObservacaoDiarioBordoCommandHandler(IRepositorioDiarioBordoObservacao repositorioDiarioBordoObservacao, IMediator mediator,
                                                           IRepositorioDiarioBordoObservacaoNotificacao repositorioDiarioBordoObservacaoNotificacao)
         {
             this.repositorioDiarioBordoObservacao = repositorioDiarioBordoObservacao ?? throw new System.ArgumentNullException(nameof(repositorioDiarioBordoObservacao));
@@ -33,9 +33,19 @@ namespace SME.SGP.Aplicacao
 
             diarioBordoObservacao.ValidarUsuarioAlteracao(request.UsuarioId);
 
-            diarioBordoObservacao.Observacao = request.Observacao;            
+            diarioBordoObservacao.Observacao = request.Observacao;
 
             await repositorioDiarioBordoObservacao.SalvarAsync(diarioBordoObservacao);
+
+            if (request.Observacao.Trim().Length < 200)
+            {
+                // Excluir Notificação Especifica
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaExcluirNotificacaoDiarioBordo,
+                      new ExcluirNotificacaoDiarioBordoDto(request.ObservacaoId), Guid.NewGuid(), null));
+
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaNotificacaoNovaObservacaoDiarioBordo,
+                new NotificarDiarioBordoObservacaoDto(diarioBordoObservacao.DiarioBordoId, request.Observacao, usuario, request.ObservacaoId), Guid.NewGuid(), null));
+            }
 
             var notificacoes = await repositorioDiarioBordoObservacaoNotificacao.ObterPorDiarioBordoObservacaoId(request.ObservacaoId);
 
@@ -53,18 +63,8 @@ namespace SME.SGP.Aplicacao
             foreach (var usuarioExcluido in usuariosExcluidos)
             {
                 // Excluir Notificação Especifica
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit. RotaNotificacaoAlterarObservacaoDiarioBordo,
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaNotificacaoAlterarObservacaoDiarioBordo,
                       new AlterarNotificacaoDiarioBordoDto(request.ObservacaoId, usuarioExcluido), Guid.NewGuid(), null));
-            }
-
-            if (request.Observacao.Trim().Length < 200)
-            {
-                // Excluir Notificação Especifica
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaExcluirNotificacaoDiarioBordo,
-                      new ExcluirNotificacaoDiarioBordoDto(request.ObservacaoId), Guid.NewGuid(), null));
-
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaNotificacaoNovaObservacaoDiarioBordo,
-                new NotificarDiarioBordoObservacaoDto(diarioBordoObservacao.DiarioBordoId, request.Observacao, usuario, request.ObservacaoId), Guid.NewGuid(), null));
             }
 
             return (AuditoriaDto)diarioBordoObservacao;

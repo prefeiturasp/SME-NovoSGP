@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Aplicacao
 {
-    public interface IAlterarNotificacaoObservacaoDiarioBordoUseCase : IUseCase<AlterarNotificacaoDiarioBordoDto, AuditoriaDto>
+    public interface IAlterarNotificacaoObservacaoDiarioBordoUseCase : IUseCase<MensagemRabbit, bool>
     {
     }
 }

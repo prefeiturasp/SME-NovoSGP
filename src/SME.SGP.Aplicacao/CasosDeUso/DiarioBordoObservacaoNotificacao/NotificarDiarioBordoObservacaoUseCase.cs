@@ -42,6 +42,8 @@ namespace SME.SGP.Aplicacao
 
             if (titulares != null)
             {
+                titulares = titulares.Where(t => !string.IsNullOrEmpty(t));
+
                 var mensagem = new StringBuilder($"O usuário {usuarioLogado.Nome} ({usuarioLogado.CodigoRf}) inseriu uma nova observação no Diário de bordo do dia {dataAtual} da turma <strong>{diarioBordo.Aula.Turma.Nome}</strong> da <strong>{diarioBordo.Aula.Turma.Ue.TipoEscola}-{diarioBordo.Aula.Turma.Ue.Nome}</strong> ({diarioBordo.Aula.Turma.Ue.Dre.Abreviacao}).");
                 
                 if (dadosMensagem.Observacao.Length > 200)
