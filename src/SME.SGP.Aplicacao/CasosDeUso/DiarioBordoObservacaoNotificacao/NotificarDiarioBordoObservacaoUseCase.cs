@@ -74,7 +74,7 @@ namespace SME.SGP.Aplicacao
                                                                              NotificacaoTipo.Planejamento));
 
 
-                            var diarioBordoObservacaoNotificacao = new DiarioBordoObservacaoNotificacao(dadosMensagem.ObservacaoId, notificacaoId);
+                            var diarioBordoObservacaoNotificacao = new DiarioBordoObservacaoNotificacao(dadosMensagem.ObservacaoId, notificacaoId, usuario.Id);
 
                             await repositorioDiarioBordoObservacaoNotificacao.Salvar(diarioBordoObservacaoNotificacao);
                             unitOfWork.PersistirTransacao();
