@@ -3,12 +3,13 @@ import React from 'react';
 import { Card } from '~/componentes';
 import { Cabecalho } from '~/componentes-sgp';
 import BotoesAcoesEncaminhamentoAEE from './Componentes/botoesAcoesEncaminhamentoAEE';
+import LoaderEncaminhamento from './Componentes/LoaderEncaminhamento/loaderEncaminhamento';
 import SecaoEncaminhamentoCollapse from './Componentes/SecaoEncaminhamento/secaoEncaminhamentoCollapse';
 import SecaoLocalizarEstudanteCollapse from './Componentes/SecaoLocalizarEstudante/secaoLocalizarEstudanteCollapse';
 
 const EncaminhamentoAEECadastro = ({ match }) => {
   return (
-    <>
+    <LoaderEncaminhamento>
       <Cabecalho pagina="Encaminhamento AEE" />
       <Card>
         <div className="col-md-12">
@@ -25,7 +26,7 @@ const EncaminhamentoAEECadastro = ({ match }) => {
           </div>
         </div>
       </Card>
-    </>
+    </LoaderEncaminhamento>
   );
 };
 
