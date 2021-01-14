@@ -2,7 +2,6 @@ import { Steps } from 'antd';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import shortid from 'shortid';
 import { setDadosSecoesPorEtapaDeEncaminhamentoAEE } from '~/redux/modulos/encaminhamentoAEE/actions';
 import { erros } from '~/servicos';
 import ServicoEncaminhamentoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoEncaminhamentoAEE';
@@ -56,12 +55,12 @@ const DadosSecaoEncaminhamento = props => {
       {dadosSecoesPorEtapaDeEncaminhamentoAEE.map(item => {
         return (
           <Step
-            key={shortid.generate()}
+            key={item?.questionarioId}
             status="process"
             title={
               <DadosPorSecaoCollapse
                 dados={item}
-                index={shortid.generate()}
+                index={item?.questionarioId}
                 match={match}
               />
             }

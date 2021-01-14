@@ -11,7 +11,8 @@ const BotoesAcoesEncaminhamentoAEE = props => {
   const { match } = props;
 
   const onClickSalvar = async () => {
-    ServicoEncaminhamentoAEE.salvarEncaminhamento();
+    const encaminhamentoId = match?.params?.id;
+    ServicoEncaminhamentoAEE.salvarEncaminhamento(encaminhamentoId);
   };
 
   const onClickVoltar = async () => {

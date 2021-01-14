@@ -1,11 +1,11 @@
 import { Form, Formik } from 'formik';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
-import shortid from 'shortid';
 import { CampoTexto, RadioGroupButton, SelectComponent } from '~/componentes';
 import tipoQuestao from '~/dtos/tipoQuestao';
 import { erros } from '~/servicos';
 import ServicoEncaminhamentoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoEncaminhamentoAEE';
+import InformacoesEscolares from '../../IndicativosEstudante/indicativosEstudante';
 
 const MontarDadosPorSecao = props => {
   const { dados, match } = props;
@@ -56,10 +56,10 @@ const MontarDadosPorSecao = props => {
       if (resposta?.length) {
         switch (questaoAtual?.tipoQuestao) {
           case tipoQuestao.Radio:
-            valores[questaoAtual.id] = resposta.opcaoRespostaId;
+            valores[questaoAtual.id] = resposta[0].opcaoRespostaId;
             break;
           case tipoQuestao.Combo:
-            valores[questaoAtual.id] = String(resposta.texto || '');
+            valores[questaoAtual.id] = String(resposta[0].texto || '');
             break;
           case tipoQuestao.Texto:
             valores[questaoAtual.id] = resposta[0].texto;
@@ -184,6 +184,13 @@ const MontarDadosPorSecao = props => {
       case tipoQuestao.Texto:
         campoAtual = campoTexto(params);
         break;
+      case tipoQuestao.InformacoesEscolares:
+        campoAtual = (
+          <div className="col-md-12 mb-3">
+            <InformacoesEscolares dados={params} />
+          </div>
+        );
+        break;
       default:
         break;
     }
@@ -211,7 +218,7 @@ const MontarDadosPorSecao = props => {
         <Form className="col-md-12">
           {dadosQuestionarioAtual.map(questaoAtual => {
             return (
-              <div className="row" key={shortid.generate()}>
+              <div className="row" key={questaoAtual.id}>
                 {montarCampos(questaoAtual, form)}
               </div>
             );
