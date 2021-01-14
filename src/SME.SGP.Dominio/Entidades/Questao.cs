@@ -6,6 +6,11 @@ namespace SME.SGP.Dominio
 {
     public class Questao : EntidadeBase
     {
+        public Questao()
+        {
+            OpcoesRespostas = new List<OpcaoResposta>();
+        }
+
         public Questionario Questionario { get; set; }
         public long QuestionarioId { get; set; }
 
@@ -15,5 +20,7 @@ namespace SME.SGP.Dominio
         public bool Obrigatorio { get; set; }
         public TipoQuestao TipoQuestao { get; set; }
         public string Opcionais { get; set; }
+
+        public List<OpcaoResposta> OpcoesRespostas { get; set; }
     }
 }
