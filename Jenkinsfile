@@ -76,8 +76,8 @@ pipeline {
                 BROWSER = 'chrome'
                 SERVER = 'dev-novosgp.sme.prefeitura.sp.gov.br'
                 SGPAUTH = credentials('selenium-sgp-dev')
-                SGP_USER = $SGPAUTH_USR
-                SGP_PASS = $SGPAUTH_PSW
+                SGP_USER = '$SGPAUTH_USR'
+                SGP_PASS = '$SGPAUTH_PSW'
             }
             steps {
                 checkout scm
