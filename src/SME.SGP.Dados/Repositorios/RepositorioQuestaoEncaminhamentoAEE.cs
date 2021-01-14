@@ -38,7 +38,7 @@ namespace SME.SGP.Dados.Repositorios
                     }
 
                     return q;
-                });
+                }, new { questionarioId });
 
             return lookup.Values;
         }
@@ -60,6 +60,7 @@ namespace SME.SGP.Dados.Repositorios
                           from encaminhamento_aee_secao eas 
                          inner join questao_encaminhamento_aee qea on qea.encaminhamento_aee_secao_id = eas.id
                          inner join resposta_encaminhamento_aee rea on rea.questao_encaminhamento_id = qea.id
+                          left join arquivo a on a.id = rea.arquivo_id 
                          where eas.encaminhamento_aee_id = @encaminhamentoId ";
 
             return await database.Conexao.QueryAsync<RespostaQuestaoEncaminhamentoAEEDto, Arquivo, RespostaQuestaoEncaminhamentoAEEDto>(query,
@@ -67,7 +68,7 @@ namespace SME.SGP.Dados.Repositorios
                 {
                     resposta.Arquivo = arquivo;
                     return resposta;
-                });
+                }, new { encaminhamentoId });
         }
     }
 }

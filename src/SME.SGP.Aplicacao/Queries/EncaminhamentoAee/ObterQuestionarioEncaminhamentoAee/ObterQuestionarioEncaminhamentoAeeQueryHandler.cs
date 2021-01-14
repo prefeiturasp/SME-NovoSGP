@@ -52,7 +52,7 @@ namespace SME.SGP.Aplicacao
                 Id = questao.Id,
                 Ordem = questao.Ordem,
                 Nome = questao.Nome,
-                TipoQuestao = questao.TipoQuestao,
+                TipoQuestao = questao.Tipo,
                 Obrigatorio = questao.Obrigatorio,
                 Observacao = questao.Observacao,
                 Opcionais = questao.Opcionais,
@@ -67,7 +67,8 @@ namespace SME.SGP.Aplicacao
                             ObterQuestao(opcaoResposta.QuestaoComplementarId.Value, dadosQuestionario, respostasEncaminhamento) :
                             null
                     };
-                }).ToArray(),
+                })
+                .OrderBy(a => a.Ordem).ToArray(),
                 Resposta = respostasEncaminhamento.Where(c => c.QuestaoId == questaoId).Select(respostaEncaminhamento =>
                 {
                     return new RespostaAeeDto()
