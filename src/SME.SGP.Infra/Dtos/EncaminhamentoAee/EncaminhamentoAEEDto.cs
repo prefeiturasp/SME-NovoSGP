@@ -5,9 +5,9 @@ using System.Text;
 
 namespace SME.SGP.Infra
 {
-    public class EncaminhamentoAEEDto
+    public class EncaminhamentoAeeDto
     {
-        public EncaminhamentoAEEDto()
+        public EncaminhamentoAeeDto()
         {
             Secoes = new List<EncaminhamentoAEESecaoDto>();
         }

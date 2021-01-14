@@ -23,7 +23,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("salvar")]
         [ProducesResponseType(typeof(IEnumerable<ResultadoEncaminhamentoAEEDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> RegistrarEncaminhamento([FromBody] EncaminhamentoAEEDto encaminhamentoAEEDto, [FromServices] IRegistrarEncaminhamentoAEEUseCase registrarEncaminhamentoAEEUseCase)
+        public async Task<IActionResult> RegistrarEncaminhamento([FromBody] EncaminhamentoAeeDto encaminhamentoAEEDto, [FromServices] IRegistrarEncaminhamentoAEEUseCase registrarEncaminhamentoAEEUseCase)
         {
             return Ok(await registrarEncaminhamentoAEEUseCase.Executar(encaminhamentoAEEDto));
         }
@@ -105,7 +105,7 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpDelete("{encaminhamentoAeeId}")]
-        [ProducesResponseType(typeof(EncaminhamentoAEEDto), 200)]
+        [ProducesResponseType(typeof(EncaminhamentoAeeDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> ExcluirEncaminhamento(long encaminhamentoAeeId, [FromServices] IExcluirEncaminhamentoAEEUseCase useCase)
         {
