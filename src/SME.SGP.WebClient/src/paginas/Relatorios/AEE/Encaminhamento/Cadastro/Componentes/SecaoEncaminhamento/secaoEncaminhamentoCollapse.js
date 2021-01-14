@@ -1,10 +1,12 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 // import { useDispatch } from 'react-redux';
 import CardCollapse from '~/componentes/cardCollapse';
 import DadosSecaoEncaminhamento from './DadosSecaoEncaminhamento/dadosSecaoEncaminhamento';
 import ObjectCardEncaminhamento from './objectCardEncaminhamento';
 
-const SecaoEncaminhamentoCollapse = () => {
+const SecaoEncaminhamentoCollapse = props => {
+  const { match } = props;
   // const dispatch = useDispatch();
 
   const onClickCardCollapse = () => {
@@ -20,9 +22,17 @@ const SecaoEncaminhamentoCollapse = () => {
       onClick={onClickCardCollapse}
     >
       <ObjectCardEncaminhamento />
-      <DadosSecaoEncaminhamento />
+      <DadosSecaoEncaminhamento match={match} />
     </CardCollapse>
   );
+};
+
+SecaoEncaminhamentoCollapse.propTypes = {
+  match: PropTypes.oneOfType([PropTypes.object]),
+};
+
+SecaoEncaminhamentoCollapse.defaultProps = {
+  match: {},
 };
 
 export default SecaoEncaminhamentoCollapse;

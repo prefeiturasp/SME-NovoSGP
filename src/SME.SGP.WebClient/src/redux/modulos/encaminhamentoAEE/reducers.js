@@ -6,7 +6,16 @@ const inicial = {
   exibirModalAnotacao: false,
   exibirModalAviso: false,
   dadosEstudanteObjectCardEncaminhamento: {},
-  dadosSecaoLocalizarEstudante: null,
+  dadosSecaoLocalizarEstudante: {
+    anoLetivo: '2021',
+    codigoAluno: 4766480,
+    codigoDre: '108100',
+    codigoUe: '092819',
+    codigoTurma: '',
+    turmaId: 614004,
+  },
+  dadosSecoesPorEtapaDeEncaminhamentoAEE: [],
+  formsSecoesEncaminhamentoAEE: null,
 };
 
 export default function EncaminhamentoAEE(state = inicial, action) {
@@ -52,6 +61,18 @@ export default function EncaminhamentoAEE(state = inicial, action) {
         return {
           ...draft,
           dadosSecaoLocalizarEstudante: action.payload,
+        };
+      }
+      case '@encaminhamentoAEE/setDadosSecoesPorEtapaDeEncaminhamentoAEE': {
+        return {
+          ...draft,
+          dadosSecoesPorEtapaDeEncaminhamentoAEE: action.payload,
+        };
+      }
+      case '@encaminhamentoAEE/setFormsSecoesEncaminhamentoAEE': {
+        return {
+          ...draft,
+          formsSecoesEncaminhamentoAEE: action.payload,
         };
       }
 

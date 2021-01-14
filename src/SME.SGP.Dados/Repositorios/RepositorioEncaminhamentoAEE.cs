@@ -85,7 +85,7 @@ namespace SME.SGP.Dados.Repositorios
 
         private static void ObtenhaFiltro(StringBuilder sql, long ueId, long turmaId, string alunoCodigo, int? situacao)
         {
-            sql.AppendLine("where ue.dre_id = @dreId ");
+            sql.AppendLine("where ue.dre_id = @dreId and not ea.excluido");
 
             if (ueId > 0)
                 sql.AppendLine("and ue.id = @ueId");
