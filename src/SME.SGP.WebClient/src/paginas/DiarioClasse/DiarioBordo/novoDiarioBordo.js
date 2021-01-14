@@ -212,14 +212,14 @@ const NovoDiarioBordo = () => {
           <div className="row">
             <div className="col-sm-12 mb-3">
               <PainelCollapse accordion>
-                {listaTitulos?.items?.map(({ header, id, planejamento }) => (
+                {listaTitulos?.items?.map(({ id, titulo }) => (
                   <PainelCollapse.Painel
                     key={id}
                     accordion
                     espacoPadrao
                     corBorda={Base.AzulBordaCollapse}
                     temBorda
-                    header={header}
+                    header={titulo}
                     // altura={44}
                   >
                     <div className="row ">
@@ -227,7 +227,7 @@ const NovoDiarioBordo = () => {
                         <JoditEditor
                           id={`${id}-editor-planejamento`}
                           name="planejamento"
-                          value={planejamento}
+                          // value={planejamento}
                           desabilitar
                         />
                       </div>
