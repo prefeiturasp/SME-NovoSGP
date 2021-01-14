@@ -5,6 +5,8 @@ import { Base } from '~/componentes/colors';
 export const Container = styled.div``;
 
 export const TabelaColunasFixas = styled.div`
+  font-size: 14px !important;
+
   table {
     border-collapse: separate;
     border-spacing: 0;
@@ -134,9 +136,11 @@ export const ContainerColunaMotivoAusencia = styled.i`
 export const BtnVisualizarAnotacao = styled.div`
   font-size: 12px;
   border-radius: 3px;
-  padding: 7px;
   color: #a4a4a4;
   border: solid 1px #f5f6f8;
   background-color: #f5f6f8;
   cursor: pointer;
+  height: 32px;
+  width: 32px;
+  text-align: center;
 `;
