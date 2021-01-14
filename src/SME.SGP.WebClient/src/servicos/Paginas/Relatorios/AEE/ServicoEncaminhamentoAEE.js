@@ -76,7 +76,7 @@ class ServicoEncaminhamentoAEE {
     }
   };
 
-  salvarEncaminhamento = async () => {
+  salvarEncaminhamento = async encaminhamentoId => {
     const state = store.getState();
     const { encaminhamentoAEE } = state;
     const {
@@ -114,7 +114,7 @@ class ServicoEncaminhamentoAEE {
       // });
 
       const valoresParaSalvar = {
-        id: 0,
+        id: encaminhamentoId || 0,
         turmaId: dadosSecaoLocalizarEstudante.turmaId,
         alunoCodigo: dadosSecaoLocalizarEstudante.codigoAluno,
       };
