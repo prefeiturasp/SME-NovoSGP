@@ -38,7 +38,6 @@ const NovoDiarioBordo = () => {
   const [dataFinal, setDataFinal] = useState();
   const [modalVisivel, setModalVisivel] = useState(false);
   const [numeroPagina, setNumeroPagina] = useState(1);
-  const numeroRegistros = 10;
 
   const { turmaSelecionada } = useSelector(state => state.usuario);
   const turmaId = turmaSelecionada?.id || 0;
@@ -68,7 +67,9 @@ const NovoDiarioBordo = () => {
     setCarregandoGeral(false);
   }, [turma]);
 
-  const ehMostrarPaginacao = listaTitulos?.length === 10;
+  const numeroTotalRegistros = listaTitulos?.totalRegistros;
+  const mostrarPaginacao = numeroTotalRegistros > 10;
+  const numeroRegistros = 10;
 
   const resetarTela = useCallback(() => {}, []);
 
@@ -111,6 +112,7 @@ const NovoDiarioBordo = () => {
 
   const obterTitulos = useCallback(
     async (dataInicio, dataFim) => {
+      setCarregandoGeral(true);
       const retorno = await ServicoDiarioBordo.obterTitulosDiarioBordo({
         turmaId,
         componenteCurricularId: componenteCurricularSelecionado,
@@ -118,20 +120,22 @@ const NovoDiarioBordo = () => {
         dataFim,
         numeroPagina,
         numeroRegistros,
-      }).catch(e => erros(e));
+      })
+        .catch(e => erros(e))
+        .finally(() => setCarregandoGeral(false));
 
       if (retorno?.status === 200) {
         setListaTitulos(retorno.data);
       }
     },
-    [componenteCurricularSelecionado, turmaId, numeroPagina, numeroRegistros]
+    [componenteCurricularSelecionado, turmaId, numeroPagina]
   );
 
   useEffect(() => {
-    if (componenteCurricularSelecionado) {
+    if (componenteCurricularSelecionado && numeroPagina) {
       obterTitulos();
     }
-  }, [componenteCurricularSelecionado, obterTitulos]);
+  }, [componenteCurricularSelecionado, obterTitulos, numeroPagina]);
 
   useEffect(() => {
     if (dataInicial && dataFinal) {
@@ -212,14 +216,14 @@ const NovoDiarioBordo = () => {
           <div className="row">
             <div className="col-sm-12 mb-3">
               <PainelCollapse accordion>
-                {listaTitulos?.items?.map(({ header, id, planejamento }) => (
+                {listaTitulos?.items?.map(({ id, titulo }) => (
                   <PainelCollapse.Painel
                     key={id}
                     accordion
                     espacoPadrao
                     corBorda={Base.AzulBordaCollapse}
                     temBorda
-                    header={header}
+                    header={titulo}
                     // altura={44}
                   >
                     <div className="row ">
@@ -227,7 +231,7 @@ const NovoDiarioBordo = () => {
                         <JoditEditor
                           id={`${id}-editor-planejamento`}
                           name="planejamento"
-                          value={planejamento}
+                          // value={planejamento}
                           desabilitar
                         />
                       </div>
@@ -269,11 +273,11 @@ const NovoDiarioBordo = () => {
               </PainelCollapse>
             </div>
           </div>
-          {ehMostrarPaginacao && (
+          {mostrarPaginacao && (
             <div className="row">
               <div className="col-12 d-flex justify-content-center mt-4">
                 <Paginacao
-                  numeroRegistros={10}
+                  numeroRegistros={numeroTotalRegistros}
                   pageSize={10}
                   onChangePaginacao={onChangePaginacao}
                 />
