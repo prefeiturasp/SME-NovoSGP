@@ -2,6 +2,7 @@ import { RotasDto } from '~/dtos';
 import { store } from '~/redux';
 import {
   setDadosModalAviso,
+  setExibirLoaderEncaminhamentoAEE,
   setExibirModalAviso,
   setFormsSecoesEncaminhamentoAEE,
 } from '~/redux/modulos/encaminhamentoAEE/actions';
@@ -76,7 +77,9 @@ class ServicoEncaminhamentoAEE {
     }
   };
 
-  salvarEncaminhamento = async () => {
+  salvarEncaminhamento = async encaminhamentoId => {
+    const { dispatch } = store;
+
     const state = store.getState();
     const { encaminhamentoAEE } = state;
     const {
@@ -114,7 +117,7 @@ class ServicoEncaminhamentoAEE {
       // });
 
       const valoresParaSalvar = {
-        id: 0,
+        id: encaminhamentoId || 0,
         turmaId: dadosSecaoLocalizarEstudante.turmaId,
         alunoCodigo: dadosSecaoLocalizarEstudante.codigoAluno,
       };
@@ -144,9 +147,12 @@ class ServicoEncaminhamentoAEE {
         .filter(b => b.questoes?.length);
 
       if (valoresParaSalvar?.secoes?.length) {
+        dispatch(setExibirLoaderEncaminhamentoAEE(true));
+
         const resposta = await api
           .post(`${urlPadrao}/salvar`, valoresParaSalvar)
-          .catch(e => erros(e));
+          .catch(e => erros(e))
+          .finally(() => dispatch(setExibirLoaderEncaminhamentoAEE(false)));
 
         if (resposta?.status === 200) {
           sucesso('Registro salvo com sucesso');
