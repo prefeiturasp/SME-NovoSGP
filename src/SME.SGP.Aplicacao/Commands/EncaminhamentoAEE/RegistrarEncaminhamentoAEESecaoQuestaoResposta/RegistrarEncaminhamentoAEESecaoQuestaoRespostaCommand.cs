@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
 
         public RegistrarEncaminhamentoAEESecaoQuestaoRespostaCommand(string resposta, long questaoId, TipoQuestao tipoQuestao)
         {
-            Resposta = Resposta;
+            Resposta = resposta;
             QuestaoId = questaoId;
             TipoQuestao = tipoQuestao;
         }

@@ -28,24 +28,40 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             if (aluno == null)
                 throw new NegocioException("O aluno informado não foi encontrado");
 
-            if (encaminhamentoAEEDto.Id.GetValueOrDefault() > 0)
-            {
-                var encaminhamentoAEE = await mediator.Send(new ObterEncaminhamentoAEEPorIdQuery(encaminhamentoAEEDto.Id.GetValueOrDefault()));
-                if (encaminhamentoAEE != null)
-                {
-
-                }
-            }
-
             if (!encaminhamentoAEEDto.Secoes.Any())
                 throw new NegocioException("Nenhuma seção foi encontrada");
 
             var encaminhamentoConcluido = encaminhamentoAEEDto.Secoes.Where(c => !c.Concluido).Any();
 
+            if (encaminhamentoAEEDto.Id.GetValueOrDefault() > 0)
+            {
+                var encaminhamentoAEE = await mediator.Send(new ObterEncaminhamentoAEEPorIdQuery(encaminhamentoAEEDto.Id.GetValueOrDefault()));
+                if (encaminhamentoAEE != null)
+                {
+                    await AlterarEncaminhamento(encaminhamentoAEE, encaminhamentoConcluido);
+                }
+            }
+           
             var resultadoEncaminhamento = await mediator.Send(new RegistrarEncaminhamentoAeeCommand(
                 encaminhamentoAEEDto.TurmaId, aluno.NomeAluno, aluno.CodigoAluno,
                 encaminhamentoConcluido ? SituacaoAEE.Rascunho : SituacaoAEE.Encaminhado));
 
+
+            await SalvarEncaminhamento(encaminhamentoAEEDto, resultadoEncaminhamento);
+            // TODO: Atualiza a situação da seção no encaminhamento, quando todas as questões obrigatórias forem respondidas
+
+            // TODO: Retornar para o front a situação da seção salva
+
+            return resultadoEncaminhamento;
+        }
+        
+        public async Task AlterarEncaminhamento(EncaminhamentoAEE encaminhamentoAEE, bool encaminhamentoConcluido)
+        {
+
+        }
+
+        public async Task SalvarEncaminhamento(EncaminhamentoAEEDto encaminhamentoAEEDto, ResultadoEncaminhamentoAEEDto resultadoEncaminhamento)
+        {
             foreach (var secao in encaminhamentoAEEDto.Secoes)
             {
                 if (!secao.Questoes.Any())
@@ -53,18 +69,20 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
                 var resultadoEncaminhamentoSecao = await mediator.Send(new RegistrarEncaminhamentoAEESecaoCommand(resultadoEncaminhamento.Id, secao.SecaoId, secao.Concluido));
 
-                foreach (var questao in secao.Questoes)
+                foreach (var questoes in secao.Questoes.GroupBy(q => q.QuestaoId))
                 {
-                    var resultadoEncaminhamentoQuestao = await mediator.Send(new RegistrarEncaminhamentoAEESecaoQuestaoCommand(resultadoEncaminhamentoSecao, questao.QuestaoId));
-                    var resultadoEncaminhamentoResposta = await mediator.Send(new RegistrarEncaminhamentoAEESecaoQuestaoRespostaCommand(questao.Resposta, resultadoEncaminhamentoQuestao, questao.TipoQuestao));
+                    var resultadoEncaminhamentoQuestao = await mediator.Send(new RegistrarEncaminhamentoAEESecaoQuestaoCommand(resultadoEncaminhamentoSecao, questoes.FirstOrDefault().QuestaoId));
+                    await SalvarRespostas(questoes, resultadoEncaminhamentoQuestao);
                 }
             }
+        }
 
-            // TODO: Atualiza a situação da seção no encaminhamento, quando todas as questões obrigatórias forem respondidas
-
-            // TODO: Retornar para o front a situação da seção salva
-
-            return resultadoEncaminhamento;
+        private async Task SalvarRespostas(IGrouping<long, EncaminhamentoAEESecaoQuestao> questoes, long resultadoEncaminhamentoQuestao)
+        {
+            foreach (var q in questoes)
+            {
+                await mediator.Send(new RegistrarEncaminhamentoAEESecaoQuestaoRespostaCommand(q.Resposta, resultadoEncaminhamentoQuestao, q.TipoQuestao));
+            }
         }
     }
 }
