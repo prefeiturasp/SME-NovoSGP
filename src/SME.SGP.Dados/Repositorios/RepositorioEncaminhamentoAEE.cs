@@ -107,11 +107,11 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<EncaminhamentoAEE> ObterEncaminhamentoPorId(long id)
         {
             var query = @"select ea.*, eas.*, qea.*, rea.*
-                            from encaminhamento_aee ea
-                           inner join encaminhamento_aee_secao eas on eas.encaminhamento_aee_id = ea.id
-                           inner join questao_encaminhamento_aee qea on qea.encaminhamento_aee_secao_id = eas.id
-                           inner join resposta_encaminhamento_aee rea on rea.qustao_encaminhamento_id = qea.id                                
-                           where ea.id = @id";
+                        from encaminhamento_aee ea
+                        inner join encaminhamento_aee_secao eas on eas.encaminhamento_aee_id = ea.id
+                        inner join questao_encaminhamento_aee qea on qea.encaminhamento_aee_secao_id = eas.id
+                        inner join resposta_encaminhamento_aee rea on rea.questao_encaminhamento_id = qea.id
+                        where ea.id = @id";
 
             var encaminhamento = new EncaminhamentoAEE();
 
