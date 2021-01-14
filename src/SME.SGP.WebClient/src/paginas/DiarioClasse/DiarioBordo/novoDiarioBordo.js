@@ -67,9 +67,9 @@ const NovoDiarioBordo = () => {
     setCarregandoGeral(false);
   }, [turma]);
 
-  const numeroTotalRegistros = listaTitulos?.totalRegistros;
-  const mostrarPaginacao = numeroTotalRegistros > 10;
   const numeroRegistros = 10;
+  const numeroTotalRegistros = listaTitulos?.totalRegistros;
+  const mostrarPaginacao = numeroTotalRegistros > numeroRegistros;
 
   const resetarTela = useCallback(() => {}, []);
 
