@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { useSelector } from 'react-redux';
 import Button from '~/componentes/button';
 import { Colors } from '~/componentes/colors';
 import { RotasDto } from '~/dtos';
@@ -10,14 +11,26 @@ import ServicoEncaminhamentoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoE
 const BotoesAcoesEncaminhamentoAEE = props => {
   const { match } = props;
 
+  const encaminhamentoAEEEmEdicao = useSelector(
+    store => store.encaminhamentoAEE.encaminhamentoAEEEmEdicao
+  );
+
   const onClickSalvar = async () => {
-    ServicoEncaminhamentoAEE.salvarEncaminhamento();
+    const encaminhamentoId = match?.params?.id;
+    ServicoEncaminhamentoAEE.salvarEncaminhamento(encaminhamentoId);
   };
 
   const onClickVoltar = async () => {
-    // TODO
-    console.log('onClickVoltar');
-    history.push(RotasDto.RELATORIO_AEE_ENCAMINHAMENTO);
+    if (encaminhamentoAEEEmEdicao) {
+      const confirmou = await confirmar(
+        'Atenção',
+        'Você não salvou as informações preenchidas.',
+        'Deseja voltar para tela de listagem agora?'
+      );
+      if (confirmou) history.push(RotasDto.RELATORIO_AEE_ENCAMINHAMENTO);
+    } else {
+      history.push(RotasDto.RELATORIO_AEE_ENCAMINHAMENTO);
+    }
   };
 
   const onClickCancelar = async () => {
@@ -70,6 +83,7 @@ const BotoesAcoesEncaminhamentoAEE = props => {
         border
         className="mr-3"
         onClick={onClickCancelar}
+        disabled={!encaminhamentoAEEEmEdicao}
       />
       <Button
         id="btn-excluir"
@@ -88,6 +102,7 @@ const BotoesAcoesEncaminhamentoAEE = props => {
         bold
         className="mr-3"
         onClick={onClickSalvar}
+        disabled={!encaminhamentoAEEEmEdicao}
       />
       <Button
         id="btn-enviar"
@@ -96,6 +111,7 @@ const BotoesAcoesEncaminhamentoAEE = props => {
         border
         bold
         onClick={onClickEnviar}
+        disabled
       />
     </>
   );

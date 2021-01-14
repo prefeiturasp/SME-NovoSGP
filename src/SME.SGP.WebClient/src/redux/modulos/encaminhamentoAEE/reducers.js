@@ -17,6 +17,8 @@ const inicial = {
   },
   dadosSecoesPorEtapaDeEncaminhamentoAEE: [],
   formsSecoesEncaminhamentoAEE: null,
+  encaminhamentoAEEEmEdicao: false,
+  exibirLoaderEncaminhamentoAEE: false,
   dadosAtendimentoClinicoAEE: [],
 };
 
@@ -75,6 +77,18 @@ export default function EncaminhamentoAEE(state = inicial, action) {
         return {
           ...draft,
           formsSecoesEncaminhamentoAEE: action.payload,
+        };
+      }
+      case '@encaminhamentoAEE/setEncaminhamentoAEEEmEdicao': {
+        return {
+          ...draft,
+          encaminhamentoAEEEmEdicao: action.payload,
+        };
+      }
+      case '@encaminhamentoAEE/setExibirLoaderEncaminhamentoAEE': {
+        return {
+          ...draft,
+          exibirLoaderEncaminhamentoAEE: action.payload,
         };
       }
       case '@encaminhamentoAEE/setExibirModalCadastroAtendimentoClinicoAEE': {

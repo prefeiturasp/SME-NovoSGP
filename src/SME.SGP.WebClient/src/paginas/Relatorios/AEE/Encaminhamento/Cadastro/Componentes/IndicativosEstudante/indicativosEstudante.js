@@ -19,7 +19,7 @@ const InformacoesEscolares = () => {
           registradoPor: '33 Amaral dos Santos',
           motivo: 'Atestado médico do estudante',
           anotacao:
-            '<strong>AOSUDHÇOU ASHD 18273 HASD0871 23HA0S8YD H12093 YHANSD09 1Y23 GAS09DY 2</strong> 123',
+            '<strong>Atestado médico do estudante Atestado médico do estudante Atestado médico do estudante Atestado médico do estudante</strong> Amaral dos Santos',
         },
       ],
       compensacoes: 1,
