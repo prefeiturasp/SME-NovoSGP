@@ -53,12 +53,10 @@ namespace SME.SGP.Aplicacao
 
             var usuariosExcluidos = usuariosNotificados.Where(u => !request.UsuariosIdNotificacao.Contains(u) && u != usuario.Id);
 
-            foreach (var usuarioIdNotificacao in request.UsuariosIdNotificacao)
-            {
-                var usuarioNotificacao = await mediator.Send(new ObterUsuarioPorIdQuery(usuarioIdNotificacao));
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaNotificacaoNovaObservacaoDiarioBordo,
-                    new NotificarDiarioBordoObservacaoDto(diarioBordoObservacao.DiarioBordoId, request.Observacao, usuarioNotificacao, request.ObservacaoId), Guid.NewGuid(), null));
-            }
+            var usuariosNotificacao = request.UsuariosIdNotificacao?.Select(async u => await mediator.Send(new ObterUsuarioPorIdQuery(u)))?.Select(t => t.Result);
+
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaNotificacaoNovaObservacaoDiarioBordo,
+                new NotificarDiarioBordoObservacaoDto(diarioBordoObservacao.DiarioBordoId, request.Observacao, usuario, request.ObservacaoId, usuariosNotificacao), Guid.NewGuid(), null));
 
             foreach (var usuarioExcluido in usuariosExcluidos)
             {
