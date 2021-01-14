@@ -203,6 +203,54 @@ namespace SME.SGP.Dados.Repositorios
                 diarioBordo.AdicionarAula(aula);
                 return diarioBordo;
             }, new { diarioBordoId }, splitOn: "DevolutivaId, AulaPaiId, turma_id, ue_id, dre_id")).FirstOrDefault();
-        }       
+        }
+
+        public async Task<PaginacaoResultadoDto<DiarioBordoResumoDto>> ObterListagemDiarioBordoPorPeriodoPaginado(long turmaId, long componenteCurricularCodigo, DateTime? periodoInicio, DateTime? periodoFim, Paginacao paginacao)
+        {
+            StringBuilder condicao = new StringBuilder();
+
+            condicao.AppendLine(@"from diario_bordo db 
+                         inner join aula a on a.id = db.aula_id
+                         inner join turma t on a.turma_id = t.turma_id
+                         where not db.excluido
+                           and db.devolutiva_id is null
+                           and t.id = @turmaId
+                           and a.disciplina_id = @componenteCurricularCodigo ");
+
+
+            if (periodoInicio.HasValue)
+                condicao.AppendLine(" and a.data_aula::date >= @periodoInicio ");
+
+            if (periodoFim.HasValue)
+                condicao.AppendLine(" and a.data_aula::date <= @periodoFim ");
+
+            if (paginacao == null || (paginacao.QuantidadeRegistros == 0 && paginacao.QuantidadeRegistrosIgnorados == 0))
+                paginacao = new Paginacao(1, 10);
+
+            var query = $"select count(0) {condicao}";
+
+            var totalRegistrosDaQuery = await database.Conexao.QueryFirstOrDefaultAsync<int>(query,
+                new { turmaId, componenteCurricularCodigo = componenteCurricularCodigo.ToString(), periodoInicio, periodoFim });
+
+            var offSet = "offset @qtdeRegistrosIgnorados rows fetch next @qtdeRegistros rows only";
+
+            query = $"select a.id, a.data_aula DataAula, db.criado_rf CodigoRf, db.criado_por Nome {condicao} order by a.data_aula desc {offSet} ";
+
+            return new PaginacaoResultadoDto<DiarioBordoResumoDto>()
+            {
+                Items = await database.Conexao.QueryAsync<DiarioBordoResumoDto>(query,
+                                                    new
+                                                    {
+                                                        turmaId,
+                                                        componenteCurricularCodigo = componenteCurricularCodigo.ToString(),
+                                                        periodoInicio,
+                                                        periodoFim,
+                                                        qtdeRegistrosIgnorados = paginacao.QuantidadeRegistrosIgnorados,
+                                                        qtdeRegistros = paginacao.QuantidadeRegistros
+                                                    }),
+                TotalRegistros = totalRegistrosDaQuery,
+                TotalPaginas = (int)Math.Ceiling((double)totalRegistrosDaQuery / paginacao.QuantidadeRegistros)
+            };
+        }
     }
 }
