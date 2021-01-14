@@ -147,5 +147,20 @@ namespace SME.SGP.Dados.Repositorios
 
             return encaminhamento;
         }
+
+        public async Task<EncaminhamentoAEE> ObterEncaminhamentoComTurmaPorId(long encaminhamentoId)
+        {
+            var query = @"select ea.*, t.*
+                            from encaminhamento_aee ea
+                           inner join turma t on t.id = ea.turma_id     
+                           where ea.id = @encaminhamentoId";
+
+            return (await database.Conexao.QueryAsync<EncaminhamentoAEE, Turma, EncaminhamentoAEE>(query,
+                (encaminhamentoAEE, turma) =>
+                {
+                    encaminhamentoAEE.Turma = turma;
+                    return encaminhamentoAEE;
+                }, new { encaminhamentoId })).FirstOrDefault();
+        }
     }
 }
