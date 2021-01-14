@@ -34,9 +34,7 @@ const SecaoLocalizarEstudanteDados = () => {
   const [codigoUe, setCodigoUe] = useState(
     dadosSecaoLocalizarEstudante?.codigoUe
   );
-  const [codigoTurma, setCodigoTurma] = useState(
-    dadosSecaoLocalizarEstudante?.codigoTurma
-  );
+  const [codigoTurma, setCodigoTurma] = useState();
 
   const [
     alunoLocalizadorSelecionado,
