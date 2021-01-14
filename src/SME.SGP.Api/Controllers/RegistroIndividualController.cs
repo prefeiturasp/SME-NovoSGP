@@ -52,7 +52,7 @@ namespace SME.SGP.Api
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.REI_C, Policy = "Bearer")]
-        public async Task<IActionResult> ListarAlunosPorTurma([FromServices] IListarAlunosDaTurmaUseCase useCase, long turmaId, long componenteCurricularId)
+        public async Task<IActionResult> ListarAlunosPorTurma([FromServices] IListarAlunosDaTurmaRegistroIndividualUseCase useCase, long turmaId, long componenteCurricularId)
         {
             return Ok(await useCase.Executar(new FiltroRegistroIndividualBase(turmaId, componenteCurricularId)));
         }
