@@ -96,6 +96,40 @@ class ServicoDiarioBordo {
       1}&NumeroRegistros=4`;
     return api.get(url);
   };
+
+  obterTitulosDiarioBordo = ({
+    turmaId,
+    componenteCurricularId,
+    dataInicio,
+    dataFim,
+    numeroPagina,
+    numeroRegistros,
+  }) => {
+    const dataBusca =
+      dataInicio && dataFim
+        ? `dataInicio=${dataInicio}&dataFim=${dataFim}&`
+        : '';
+    return api.get(
+      `${urlPadrao}/titulos/turmas/${turmaId}/componentes-curriculares/${componenteCurricularId}?` +
+        `${dataBusca}numeroPagina=${numeroPagina}&numeroRegistros=${numeroRegistros}`
+    );
+  };
+
+  obterDiarioBordoPorData = ({
+    turmaCodigo,
+    componenteCurricularId,
+    dataInicio,
+    dataFim,
+  }) => {
+    return api.get(
+      `${urlPadrao}/turmas/${turmaCodigo}/componentes-curriculares/${componenteCurricularId}` +
+        `/inicio/${dataInicio}/fim/${dataFim}`
+    );
+  };
+
+  obterDiarioBordoDetalhes = diarioBordoId => {
+    return api.get(`${urlPadrao}/detalhes/${diarioBordoId}`);
+  };
 }
 
 export default new ServicoDiarioBordo();
