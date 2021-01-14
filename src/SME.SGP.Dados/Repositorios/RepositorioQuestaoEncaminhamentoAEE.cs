@@ -14,53 +14,33 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<IEnumerable<QuestaoRespostaAeeDto>> ObterListaPorQuestionario(long questionarioId)
+        public async Task<IEnumerable<Questao>> ObterListaPorQuestionario(long questionarioId)
         {
-            return await ObterListaPorQuestionarioEncaminhamento(questionarioId, null);
-        }
+            var query = @"select q.*, op.*
+                          from questao q 
+                          left join opcao_resposta op on op.questao_id = q.id
+                         where q.questionario_id = @questionarioId ";
 
-        public async Task<IEnumerable<QuestaoRespostaAeeDto>> ObterListaPorQuestionarioEncaminhamento(long questionarioId, long? encaminhamentoId)
-        {
-			var joinRespostas = 
-				encaminhamentoId.HasValue ? "" : "and false";
-			var whereRespostas = 
-				encaminhamentoId.HasValue ? "and eas.encaminhamento_aee_id = @encaminhamentoId" : "";
+            var lookup = new Dictionary<long, Questao>();
+            await database.Conexao.QueryAsync<Questao, OpcaoResposta, Questao>(query,
+                (questao, opcaoResposta) =>
+                {
+                    var q = new Questao();
+                    if (!lookup.TryGetValue(questao.Id, out q))
+                    {
+                        q = questao;
+                        lookup.Add(q.Id, q);
+                    }
 
-			var sql = 
-                $@"
-				select 
-					q.id QuestaoId,
-					q.ordem QuestaoOrder,
-					q.nome QuestaoNome,
-					q.observacao QuestaoObservacao,
-					q.obrigatorio QuestaoObrigatorio,
-					q.tipo QuestaoTipo,
-					q.opcionais QuestaoOpcionais,
-					opr.id OpcaoRespostaId,
-					opr.questao_complementar_id QuestaoComplementarId,
-					opr.ordem OpcaoRespostaOrdem,
-					opr.nome OpcaoRespostaNome,
-					rea.id RespostaEncaminhamentoId,
-					rea.resposta_id RespostaEncaminhamentoOpcaoRespostaId,
-					rea.texto RespostaTexto,
-					rea.arquivo_id RespostaArquivoId,
-					arq.nome ArquivoNome,
-					arq.tipo ArquivoTipo,
-					arq.codigo ArquivoCodigo,
-					arq.tipo_conteudo ArquivoTipoConteudo
-				from questao q
-				left join opcao_resposta opr on opr.questao_id = q.id and not opr.excluido 
-				left join questao_encaminhamento_aee qea on qea.questao_id = q.id and not qea.excluido {joinRespostas}
-				left join resposta_encaminhamento_aee rea on rea.questao_encaminhamento_id = qea.id and not rea.excluido {joinRespostas}
-				left join encaminhamento_aee_secao eas on eas.id = qea.encaminhamento_aee_secao_id and not eas.excluido {joinRespostas}
-				left join arquivo arq on arq.id = rea.arquivo_id {joinRespostas}
-				where not q.excluido 
-				and q.questionario_id = @questionarioId
-				{whereRespostas}
-                ";
-			return await database
-				.Conexao
-				.QueryAsync<QuestaoRespostaAeeDto>(sql, new { questionarioId, encaminhamentoId });
+                    if (opcaoResposta != null)
+                    {
+                        q.OpcoesRespostas.Add(opcaoResposta);
+                    }
+
+                    return q;
+                });
+
+            return lookup.Values;
         }
 
         public async Task<IEnumerable<long>> ObterQuestoesPorSecaoId(long encaminhamentoAEESecaoId)
@@ -68,6 +48,26 @@ namespace SME.SGP.Dados.Repositorios
             var query = "select id from questao_encaminhamento_aee qea where encaminhamento_aee_secao_id = @encaminhamentoAEESecaoId";
 
             return await database.Conexao.QueryAsync<long>(query, new { encaminhamentoAEESecaoId });
+        }
+
+        public async Task<IEnumerable<RespostaQuestaoEncaminhamentoAEEDto>> ObterRespostasEncaminhamento(long encaminhamentoId)
+        {
+            var query = @"select rea.Id
+                            , qea.questao_id as QuestaoId
+	                        , rea.resposta_id as RespostaId
+	                        , rea.texto 
+	                        , a.*
+                          from encaminhamento_aee_secao eas 
+                         inner join questao_encaminhamento_aee qea on qea.encaminhamento_aee_secao_id = eas.id
+                         inner join resposta_encaminhamento_aee rea on rea.questao_encaminhamento_id = qea.id
+                         where eas.encaminhamento_aee_id = @encaminhamentoId ";
+
+            return await database.Conexao.QueryAsync<RespostaQuestaoEncaminhamentoAEEDto, Arquivo, RespostaQuestaoEncaminhamentoAEEDto>(query,
+                (resposta, arquivo) =>
+                {
+                    resposta.Arquivo = arquivo;
+                    return resposta;
+                });
         }
     }
 }
