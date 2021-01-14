@@ -514,7 +514,7 @@ const DadosComunicadosLeitura = props => {
     } else {
       setDadosDeLeituraDeComunicados([]);
     }
-  }, [codigoDre, codigoUe, visualizacao, comunicado, listaComunicado]);
+  }, [visualizacao, comunicado, listaComunicado]);
 
   useEffect(() => {
     if (visualizacao && comunicado && listaComunicado.length) {
@@ -536,7 +536,7 @@ const DadosComunicadosLeitura = props => {
 
   useEffect(() => {
     setDadosDeLeituraDeComunicados([]);
-  }, [codigoUe, codigoUe]);
+  }, [codigoUe]);
 
   useEffect(() => {
     dispatch(limparDadosDashboardEscolaAqui([]));
