@@ -14,9 +14,12 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<AuditoriaDto> Executar(AlterarNotificacaoDiarioBordoDto dto)
+        public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
-            return await mediator.Send(new AlterarNotificacaoDiarioBordoCommand(dto.ObservacaoId, dto.UsuarioId));
+            var dto = mensagemRabbit.ObterObjetoMensagem<AlterarNotificacaoDiarioBordoDto>();
+            await mediator.Send(new AlterarNotificacaoDiarioBordoCommand(dto.ObservacaoId, dto.UsuarioId));
+
+            return true;
         }
     }
 }
