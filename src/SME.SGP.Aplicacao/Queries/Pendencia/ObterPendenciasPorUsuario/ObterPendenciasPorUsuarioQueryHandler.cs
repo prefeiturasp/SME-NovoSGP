@@ -157,11 +157,11 @@ namespace SME.SGP.Aplicacao
             var alunos = await mediator.Send(new ObterPendenciaRegistroIndividualCodigosAlunosPorPendenciaQuery(pendencia.Id));
 
             var descricao = new StringBuilder(pendencia.Descricao);
-            descricao.AppendLine("<br /><ul>");
+            descricao.AppendLine("<br /><ul style='padding-top: 20px; padding-left: 20px';>");
 
             foreach (var aluno in alunos)
             {
-                descricao.AppendLine($"<li>{aluno.NomeValido()} ({aluno.CodigoAluno})</li>");
+                descricao.AppendLine($"<li style='padding-top: 2px;'>{aluno.NomeValido()} ({aluno.CodigoAluno})</li>");
             }
             descricao.AppendLine("</ul>");
             descricao.AppendLine($"<br/><b>{pendencia.Instrucao}</b>");
