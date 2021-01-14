@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 // Ant
 import { Collapse } from 'antd';
@@ -12,9 +12,16 @@ export const IconeEstilizado = styled.i`
 `;
 
 export const CollapseEstilizado = styled(Collapse)`
-  box-shadow: 0px 0px 4px -2px grey;
-  ${({ corFundo }) => corFundo && `background: ${Base.Branco}`}
-  ${({ altura }) => altura && `background: ${altura}px`}
+  ${({ accordion }) =>
+    accordion
+      ? css`
+          background: transparent;
+          border: 0;
+        `
+      : css`
+          box-shadow: 0px 0px 4px -2px grey;
+          background: ${Base.Branco};
+        `}
 `;
 
 export const PainelEstilizado = styled(Collapse.Panel)`
@@ -37,6 +44,12 @@ export const PainelEstilizado = styled(Collapse.Panel)`
       `border-left: 7px solid ${
         props.corBorda ? props.corBorda : Base.AzulBreadcrumb
       }`};
+
+    ${({ accordion }) =>
+      accordion &&
+      css`
+        height: 44px;
+      `}
   }
 
   &.ant-collapse-item-active {
@@ -45,5 +58,16 @@ export const PainelEstilizado = styled(Collapse.Panel)`
       ${({ espacoPadrao }) => !espacoPadrao && ` padding: 18px 16px;`}
       padding-right: 40px;
     }
+  }
+
+  &.ant-collapse-item {
+    ${({ accordion }) =>
+      accordion &&
+      css`
+        box-shadow: 0px 0px 4px -2px grey;
+        min-height: 44px;
+        margin-bottom: 16px;
+        border-radius: 4px;
+      `}
   }
 `;
