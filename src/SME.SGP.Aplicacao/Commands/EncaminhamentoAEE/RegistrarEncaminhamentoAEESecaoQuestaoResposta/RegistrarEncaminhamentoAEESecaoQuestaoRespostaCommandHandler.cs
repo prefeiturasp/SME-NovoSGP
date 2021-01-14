@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao.Commands
                 QuestaoEncaminhamentoId = request.QuestaoId
             };
 
-            if (EnumExtension.EhUmDosValores(request.TipoQuestao, new Enum[] { TipoQuestao.Radio, TipoQuestao.Combo, TipoQuestao.Checkbox }))
+            if (!String.IsNullOrEmpty(request.Resposta) && EnumExtension.EhUmDosValores(request.TipoQuestao, new Enum[] { TipoQuestao.Radio, TipoQuestao.Combo, TipoQuestao.Checkbox }))
             {
                 resposta.RespostaId = long.Parse(request.Resposta);
             }
@@ -41,7 +41,7 @@ namespace SME.SGP.Aplicacao.Commands
                 resposta.Texto = request.Resposta;
             }
 
-            if (EnumExtension.EhUmDosValores(request.TipoQuestao, new Enum[] { TipoQuestao.Upload }))
+            if (!String.IsNullOrEmpty(request.Resposta) && EnumExtension.EhUmDosValores(request.TipoQuestao, new Enum[] { TipoQuestao.Upload }))
             {
                 resposta.ArquivoId = long.Parse(request.Resposta);
             }
