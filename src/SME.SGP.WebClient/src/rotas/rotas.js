@@ -1111,9 +1111,8 @@ rotas.set(RotasDto.RELATORIO_AEE_ENCAMINHAMENTO, {
 });
 
 rotas.set(`${RotasDto.RELATORIO_AEE_ENCAMINHAMENTO}/novo`, {
-  breadcrumbName: 'Encaminhamento',
-  menu: ['Relatórios', 'AEE'],
-  parent: '/',
+  breadcrumbName: 'Cadastrar Encaminhamento',
+  parent: `${RotasDto.RELATORIO_AEE_ENCAMINHAMENTO}`,
   component: EncaminhamentoAEECadastro,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
@@ -1122,9 +1121,8 @@ rotas.set(`${RotasDto.RELATORIO_AEE_ENCAMINHAMENTO}/novo`, {
 });
 
 rotas.set(`${RotasDto.RELATORIO_AEE_ENCAMINHAMENTO}/editar/:id`, {
-  breadcrumbName: 'Encaminhamento',
-  menu: ['Relatórios', 'AEE'],
-  parent: '/',
+  breadcrumbName: 'Editar Encaminhamento',
+  parent: `${RotasDto.RELATORIO_AEE_ENCAMINHAMENTO}`,
   component: EncaminhamentoAEECadastro,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
