@@ -22,10 +22,7 @@ namespace SME.SGP.Aplicacao
     public class RegistrarEncaminhamentoAEESecaoQuestaoRespostaCommandValidator : AbstractValidator<RegistrarEncaminhamentoAEESecaoQuestaoRespostaCommand>
     {
         public RegistrarEncaminhamentoAEESecaoQuestaoRespostaCommandValidator()
-        {
-            RuleFor(x => x.Resposta)
-                   .NotEmpty()
-                   .WithMessage("A Resposta do Encaminhamento deve ser informada!");
+        {           
             RuleFor(x => x.QuestaoId)
                    .GreaterThan(0)
                    .WithMessage("O Id da Questão do Encaminhamento deve ser informada!");
