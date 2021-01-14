@@ -38,26 +38,61 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                 var encaminhamentoAEE = await mediator.Send(new ObterEncaminhamentoAEEPorIdQuery(encaminhamentoAEEDto.Id.GetValueOrDefault()));
                 if (encaminhamentoAEE != null)
                 {
-                    await AlterarEncaminhamento(encaminhamentoAEE, encaminhamentoConcluido);
+                    await AlterarEncaminhamento(encaminhamentoAEEDto, encaminhamentoAEE, encaminhamentoConcluido);
+                    return new ResultadoEncaminhamentoAEEDto() { Id = encaminhamentoAEE.Id };
                 }
             }
-           
+
             var resultadoEncaminhamento = await mediator.Send(new RegistrarEncaminhamentoAeeCommand(
-                encaminhamentoAEEDto.TurmaId, aluno.NomeAluno, aluno.CodigoAluno,
-                encaminhamentoConcluido ? SituacaoAEE.Rascunho : SituacaoAEE.Encaminhado));
+            encaminhamentoAEEDto.TurmaId, aluno.NomeAluno, aluno.CodigoAluno,
+            encaminhamentoConcluido ? SituacaoAEE.Rascunho : SituacaoAEE.Encaminhado));
 
 
             await SalvarEncaminhamento(encaminhamentoAEEDto, resultadoEncaminhamento);
-            // TODO: Atualiza a situação da seção no encaminhamento, quando todas as questões obrigatórias forem respondidas
-
-            // TODO: Retornar para o front a situação da seção salva
-
             return resultadoEncaminhamento;
         }
-        
-        public async Task AlterarEncaminhamento(EncaminhamentoAEE encaminhamentoAEE, bool encaminhamentoConcluido)
-        {
 
+        public async Task AlterarEncaminhamento(EncaminhamentoAEEDto encaminhamentoAEEDto, EncaminhamentoAEE encaminhamentoAEE, bool encaminhamentoConcluido)
+        {
+            foreach (var secao in encaminhamentoAEEDto.Secoes)
+            {
+                if (!secao.Questoes.Any())
+                    throw new NegocioException($"Nenhuma questão foi encontrada na Seção {secao.SecaoId}");
+
+                var secaoExistente = encaminhamentoAEE.Secoes.FirstOrDefault(s => s.SecaoEncaminhamentoAEEId == secao.SecaoId);
+
+                long resultadoEncaminhamentoSecao = 0;
+                if (secaoExistente == null)
+                {
+                    resultadoEncaminhamentoSecao = await mediator.Send(new RegistrarEncaminhamentoAEESecaoCommand(encaminhamentoAEE.Id, secao.SecaoId, secao.Concluido));
+                }
+                else
+                {
+                    if (secaoExistente.Concluido != secao.Concluido)
+                    {
+                        secaoExistente.Concluido = secao.Concluido;
+                        await mediator.Send(new AlterarEncaminhamentoAEESecaoCommand(secaoExistente));
+                        resultadoEncaminhamentoSecao = secaoExistente.Id;
+                    }
+                }
+
+
+
+                foreach (var questoes in secao.Questoes.GroupBy(q => q.QuestaoId))
+                {
+                    var questoesExistentes = secaoExistente.Questoes.FirstOrDefault(q => q.QuestaoId == questoes.FirstOrDefault().QuestaoId);
+                    if (questoesExistentes == null)
+                    {
+                        var resultadoEncaminhamentoQuestao = await mediator.Send(new RegistrarEncaminhamentoAEESecaoQuestaoCommand(resultadoEncaminhamentoSecao, questoes.FirstOrDefault().QuestaoId));
+                        await SalvarRespostas(questoes, resultadoEncaminhamentoQuestao);
+                    }
+                    else
+                    {
+                        await mediator.Send(new ExcluirRespostaEncaminhamentoAEEPorQuestaoIdCommand(questoesExistentes.Id));
+                        await SalvarRespostas(questoes, questoesExistentes.Id);
+                    }
+                }
+            }
         }
 
         public async Task SalvarEncaminhamento(EncaminhamentoAEEDto encaminhamentoAEEDto, ResultadoEncaminhamentoAEEDto resultadoEncaminhamento)
