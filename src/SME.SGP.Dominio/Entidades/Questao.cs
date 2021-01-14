@@ -18,7 +18,7 @@ namespace SME.SGP.Dominio
         public string Nome { get; set; }
         public string Observacao { get; set; }
         public bool Obrigatorio { get; set; }
-        public TipoQuestao TipoQuestao { get; set; }
+        public TipoQuestao Tipo { get; set; }
         public string Opcionais { get; set; }
 
         public List<OpcaoResposta> OpcoesRespostas { get; set; }
