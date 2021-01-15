@@ -4,6 +4,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -27,6 +28,16 @@ namespace SME.SGP.Aplicacao
             var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaNotificacaoNovaObservacaoDiarioBordo,
                 new NotificarDiarioBordoObservacaoDto(request.DiarioBordoId, request.Observacao, usuario, observacaoId), Guid.NewGuid(), null));
+
+            if(request.UsuariosIdNotificacao != null && request.UsuariosIdNotificacao.Any())
+            {
+                foreach (var usuarioId in request.UsuariosIdNotificacao)
+                {
+                    var usuarioNotificacao = await mediator.Send(new ObterUsuarioPorIdQuery(usuarioId));
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaNotificacaoNovaObservacaoDiarioBordo,
+                            new NotificarDiarioBordoObservacaoDto(request.DiarioBordoId, request.Observacao, usuarioNotificacao, observacaoId), Guid.NewGuid(), null));
+                }
+            }
 
             return (AuditoriaDto)diarioBordoObservacao;
         }
