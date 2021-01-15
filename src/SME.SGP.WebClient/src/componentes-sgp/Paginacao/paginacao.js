@@ -32,8 +32,9 @@ const Paginacao = props => {
     setPaginaAtual(estadoAntigo => ({
       ...estadoAntigo,
       total: numeroRegistros,
+      pageSize,
     }));
-  }, [numeroRegistros]);
+  }, [numeroRegistros, pageSize]);
 
   return (
     <ContainerPaginacao
