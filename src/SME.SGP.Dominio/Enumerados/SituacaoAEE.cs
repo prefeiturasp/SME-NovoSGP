@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace SME.SGP.Dominio.Enumerados
 {
@@ -13,5 +10,7 @@ namespace SME.SGP.Dominio.Enumerados
         Encaminhado = 2,
         [Display(Name = "Finalizado")]
         Finalizado = 3,
+        [Display(Name = "Encerrado")]
+        Encerrado = 4,
     }
 }
