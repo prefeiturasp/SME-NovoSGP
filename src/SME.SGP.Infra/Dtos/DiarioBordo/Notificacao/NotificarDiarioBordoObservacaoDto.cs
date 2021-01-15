@@ -8,17 +8,19 @@ namespace SME.SGP.Infra.Dtos
 {
     public class NotificarDiarioBordoObservacaoDto
     {
-        public NotificarDiarioBordoObservacaoDto(long diarioBordoId, string observacao, Usuario usuario, long observacaoId)
+        public NotificarDiarioBordoObservacaoDto(long diarioBordoId, string observacao, Usuario usuario, long observacaoId, IEnumerable<Usuario> usuariosNotificacao = null)
         {
             DiarioBordoId = diarioBordoId;
             Observacao = observacao;
             Usuario = usuario;
             ObservacaoId = observacaoId;
+            UsuariosNotificacao = usuariosNotificacao;
         }
         public long ObservacaoId { get; set; }
         public string Observacao { get; set; }
         public long DiarioBordoId { get; set; }
         public Usuario Usuario { get; set; }
+        public IEnumerable<Usuario> UsuariosNotificacao { get; set; }
     }
 
     public class NotificarDiarioBordoObservacaoDtoValidator : AbstractValidator<NotificarDiarioBordoObservacaoDto>
