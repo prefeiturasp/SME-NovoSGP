@@ -1,5 +1,6 @@
+import { data } from 'jquery';
 import React, { useCallback, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import shortid from 'shortid';
 
 import {
@@ -17,6 +18,7 @@ import { Cabecalho, Paginacao } from '~/componentes-sgp';
 import ObservacoesUsuario from '~/componentes-sgp/ObservacoesUsuario/observacoesUsuario';
 
 import { RotasDto } from '~/dtos';
+import { setDadosObservacoesUsuario } from '~/redux/modulos/observacoesUsuario/actions';
 
 import { ehTurmaInfantil, erros, history, ServicoDisciplina } from '~/servicos';
 import ServicoDiarioBordo from '~/servicos/Paginas/DiarioClasse/ServicoDiarioBordo';
@@ -46,6 +48,8 @@ const NovoDiarioBordo = () => {
     store => store.filtro.modalidades
   );
   const [listaTitulos, setListaTitulos] = useState();
+  const [diarioBordoAtual, setDiarioBordoAtual] = useState();
+  const dispatch = useDispatch();
 
   const obterComponentesCurriculares = useCallback(async () => {
     setCarregandoGeral(true);
@@ -151,6 +155,16 @@ const NovoDiarioBordo = () => {
     setNumeroPagina(pagina);
   };
 
+  const onColapse = async id => {
+    const dados = await ServicoDiarioBordo.obterDiarioBordoDetalhes(id);
+    if (dados?.data) {
+      setDiarioBordoAtual(dados.data);
+      if (dados.data.observacoes.length) {
+        dispatch(setDadosObservacoesUsuario(dados.data.observacoes));
+      }
+    }
+  };
+
   return (
     <Loader loading={carregandoGeral} className="w-100">
       <Mensagens />
@@ -215,7 +229,7 @@ const NovoDiarioBordo = () => {
           </div>
           <div className="row">
             <div className="col-sm-12 mb-3">
-              <PainelCollapse accordion>
+              <PainelCollapse accordion onChange={onColapse}>
                 {listaTitulos?.items?.map(({ id, titulo }) => (
                   <PainelCollapse.Painel
                     key={id}
@@ -231,7 +245,7 @@ const NovoDiarioBordo = () => {
                         <JoditEditor
                           id={`${id}-editor-planejamento`}
                           name="planejamento"
-                          // value={planejamento}
+                          value={diarioBordoAtual?.planejamento}
                           desabilitar
                         />
                       </div>
@@ -255,9 +269,10 @@ const NovoDiarioBordo = () => {
                         />
                         <div
                           className="position-absolute"
-                          style={{ left: 16, bottom: 24 }}
+                          style={{ left: 16, bottom: 332 }}
                         >
                           <Button
+                            height="30px"
                             id={shortid.generate()}
                             label="Notificar usuários (2)"
                             icon="bell"

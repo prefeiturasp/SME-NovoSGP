@@ -342,6 +342,7 @@ const CartaIntencoes = () => {
               salvarObservacao={obs => salvarEditarObservacao(obs)}
               editarObservacao={obs => salvarEditarObservacao(obs)}
               excluirObservacao={obs => excluirObservacao(obs)}
+              verificaProprietario
             />
           ) : (
             ''
