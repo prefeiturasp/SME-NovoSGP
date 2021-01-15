@@ -85,7 +85,9 @@ const NovoRegistroIndividual = () => {
     if (podeRealizarNovoRegistro && dadosAlunoObjectCard) {
       setExpandir(true);
       setExibirCollapse(podeRealizarNovoRegistro);
+      return;
     }
+    setExibirCollapse(false);
   }, [podeRealizarNovoRegistro, setExibirCollapse, dadosAlunoObjectCard]);
 
   const validaPermissoes = useCallback(
