@@ -97,7 +97,7 @@ const LeituraDeComunicadosPorTurmas = props => {
         );
       }
     }
-  }, [comunicado, listaComunicado, dispatch]);
+  }, [comunicado, modoVisualizacao, listaComunicado, dispatch]);
 
   return dadosDeLeituraDeComunicadosPorTurmas.length ? (
     <div className="col-md-12">
