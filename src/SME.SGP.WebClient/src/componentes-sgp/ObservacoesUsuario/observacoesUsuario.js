@@ -12,6 +12,7 @@ const ObservacoesUsuario = props => {
     excluirObservacao,
     esconderLabel,
     esconderCaixaExterna,
+    verificaProprietario,
   } = props;
 
   return (
@@ -26,6 +27,7 @@ const ObservacoesUsuario = props => {
           <ObservacoesUsuarioMontarDados
             onClickSalvarEdicao={editarObservacao}
             onClickExcluir={excluirObservacao}
+            verificaProprietario={verificaProprietario}
           />
         </div>
       </ContainerObservacoesUsuario>
@@ -39,6 +41,7 @@ ObservacoesUsuario.propTypes = {
   excluirObservacao: PropTypes.func,
   esconderLabel: PropTypes.bool,
   esconderCaixaExterna: PropTypes.bool,
+  verificaProprietario: PropTypes.bool,
 };
 
 ObservacoesUsuario.defaultProps = {
@@ -47,6 +50,7 @@ ObservacoesUsuario.defaultProps = {
   excluirObservacao: () => {},
   esconderLabel: false,
   esconderCaixaExterna: false,
+  verificaProprietario: false,
 };
 
 export default ObservacoesUsuario;
