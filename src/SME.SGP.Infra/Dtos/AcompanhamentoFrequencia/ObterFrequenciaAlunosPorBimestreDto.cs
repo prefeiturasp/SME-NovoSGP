@@ -1,4 +1,5 @@
 ﻿namespace SME.SGP.Infra
+{
     public class ObterFrequenciaAlunosPorBimestreDto
     {
         public long ComponenteCurricularId { get; set; }
