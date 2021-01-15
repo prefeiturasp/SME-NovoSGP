@@ -24,7 +24,7 @@ begin
 		values(questionarioId, 2, 'Além do professor de classe comum, o encaminhamento do estudante ao AEE foi discutido com outros profissionais da unidade educacional?', '', true, 3, '', NOW(), 'SISTEMA', '0')
 		RETURNING id INTO questaoId;
 
-    -- 2.2.1 - Quais profissionais participaram desta discussão e quais as contribuições de cada um?
+    -- 2.1 - Quais profissionais participaram desta discussão e quais as contribuições de cada um?
 	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf)
 		values(questionarioId, 0, 'Quais profissionais participaram desta discussão e quais as contribuições de cada um?', '', true, 2, '', NOW(), 'SISTEMA', '0')
 		RETURNING id INTO questaoComplementarId;	
