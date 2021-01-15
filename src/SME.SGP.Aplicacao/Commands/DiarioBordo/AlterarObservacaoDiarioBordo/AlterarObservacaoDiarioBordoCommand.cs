@@ -1,22 +1,24 @@
 ﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Infra;
+using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
     public class AlterarObservacaoDiarioBordoCommand : IRequest<AuditoriaDto>
     {
-        public AlterarObservacaoDiarioBordoCommand(string observacao, long observacaoId, long usuarioId)
+        public AlterarObservacaoDiarioBordoCommand(string observacao, long observacaoId, long usuarioId, IEnumerable<long> usuariosIdNotificacao)
         {
             Observacao = observacao;
             ObservacaoId = observacaoId;
             UsuarioId = usuarioId;
+            UsuariosIdNotificacao = usuariosIdNotificacao;
         }
 
         public string Observacao { get; set; }
         public long ObservacaoId { get; set; }
-
         public long UsuarioId { get; set; }
+        public IEnumerable<long> UsuariosIdNotificacao { get; set; }
     }
 
 
