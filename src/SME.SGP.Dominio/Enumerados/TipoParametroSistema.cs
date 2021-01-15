@@ -1,4 +1,7 @@
-﻿namespace SME.SGP.Dominio
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+
+namespace SME.SGP.Dominio
 {
     public enum TipoParametroSistema
     {
@@ -88,6 +91,9 @@
         //Notificacao Periodo Fechamento
         DiasNotificacaoPeriodoFechamentoInicio = 43,
         DiasNotificacaoPeriodoFechamentoFim = 44,
+
+        [Display(Name = "Pendência por ausência de registro individual")]        
+        PendenciaPorAusenciaDeRegistroIndividual = 48,
 
         //Sistema
         HabilitarServicosEmBackground = 100
