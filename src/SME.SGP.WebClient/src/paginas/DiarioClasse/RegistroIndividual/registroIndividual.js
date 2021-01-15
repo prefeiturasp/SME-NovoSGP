@@ -15,6 +15,7 @@ import {
 
 import {
   resetarDadosRegistroIndividual,
+  resetDataNovoRegistro,
   setAlunosRegistroIndividual,
   setComponenteCurricularSelecionado,
   setDadosAlunoObjectCard,
@@ -135,11 +136,9 @@ const RegistroIndividual = () => {
   const onChangeAlunoSelecionado = async aluno => {
     MetodosRegistroIndividual.verificarSalvarRegistroIndividual(false);
     MetodosRegistroIndividual.resetarInfomacoes(true);
-    if (!aluno.desabilitado) {
-      dispatch(setDadosAlunoObjectCard(aluno));
-    } else {
-      resetarTela();
-    }
+    resetarTela();
+    dispatch(resetDataNovoRegistro(false));
+    dispatch(setDadosAlunoObjectCard(aluno));
 
     if (podeRealizarNovoRegistro) {
       dispatch(setRecolherRegistrosAnteriores(true));
