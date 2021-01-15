@@ -1,17 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import shortid from 'shortid';
-
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  CardCollapse,
-  Auditoria,
-  CampoData,
-  JoditEditor,
-  Loader,
-} from '~/componentes';
 
-import { CONFIG_COLLAPSE_REGISTRO_INDIVIDUAL } from '~/constantes';
-import RotasDto from '~/dtos/rotasDto';
+import { Auditoria, CampoData, JoditEditor, Loader } from '~/componentes';
+import { RotasDto } from '~/dtos';
 
 import {
   resetDataNovoRegistro,
@@ -21,20 +12,17 @@ import {
   setDesabilitarCampos,
   setRegistroIndividualEmEdicao,
 } from '~/redux/modulos/registroIndividual/actions';
-
 import {
   erros,
   ServicoRegistroIndividual,
   verificaSomenteConsulta,
 } from '~/servicos';
 
-const NovoRegistroIndividual = () => {
+const NovoRegistroIndividualConteudo = () => {
   const dataAtual = window.moment();
-  const [expandir, setExpandir] = useState(false);
-  const [exibirCollapse, setExibirCollapse] = useState(false);
-  const [data, setData] = useState(dataAtual);
   const [desabilitarNovoRegistro, setDesabilitarNovoRegistro] = useState(false);
   const [carregandoNovoRegistro, setCarregandoNovoRegistro] = useState(false);
+  const [data, setData] = useState(dataAtual);
 
   const auditoriaNovoRegistroIndividual = useSelector(
     store => store.registroIndividual.auditoriaNovoRegistroIndividual
@@ -74,19 +62,12 @@ const NovoRegistroIndividual = () => {
     dadosRegistroAtual,
     ehMesmoAluno,
   ]);
+
   const auditoria = useMemo(
     () => (ehMesmoAluno ? auditoriaNovoRegistroIndividual : null),
     [auditoriaNovoRegistroIndividual, ehMesmoAluno]
   );
-
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    if (podeRealizarNovoRegistro && dadosAlunoObjectCard) {
-      setExpandir(true);
-      setExibirCollapse(podeRealizarNovoRegistro);
-    }
-  }, [podeRealizarNovoRegistro, setExibirCollapse, dadosAlunoObjectCard]);
 
   const validaPermissoes = useCallback(
     temDadosNovosRegistros => {
@@ -98,26 +79,6 @@ const NovoRegistroIndividual = () => {
     },
     [dispatch, permissoesTela]
   );
-
-  const mudarEditor = useCallback(
-    novoRegistro => {
-      dispatch(
-        setDadosParaSalvarNovoRegistro({
-          id: idSecao,
-          registro: novoRegistro,
-          data: data.set({ hour: 0, minute: 0, second: 0 }),
-          alunoCodigo,
-        })
-      );
-      dispatch(setRegistroIndividualEmEdicao(true));
-      dispatch(setDesabilitarCampos(true));
-    },
-    [alunoCodigo, data, dispatch, idSecao]
-  );
-
-  const validarSeTemErro = valorEditado => {
-    return !valorEditado;
-  };
 
   const obterRegistroIndividualPorData = useCallback(
     async dataEscolhida => {
@@ -185,7 +146,7 @@ const NovoRegistroIndividual = () => {
       dispatch(resetDataNovoRegistro(false));
       setData(dataAtual);
     }
-  }, [data, dispatch, dataAtual, resetDataNovoRegistroIndividual]);
+  }, [dispatch, dataAtual, resetDataNovoRegistroIndividual]);
 
   useEffect(() => {
     if (podeRealizarNovoRegistro) {
@@ -193,100 +154,77 @@ const NovoRegistroIndividual = () => {
     }
   }, [validaPermissoes, podeRealizarNovoRegistro]);
 
+  const mudarEditor = useCallback(
+    novoRegistro => {
+      dispatch(
+        setDadosParaSalvarNovoRegistro({
+          id: idSecao,
+          registro: novoRegistro,
+          data: data.set({ hour: 0, minute: 0, second: 0 }),
+          alunoCodigo,
+        })
+      );
+      dispatch(setRegistroIndividualEmEdicao(true));
+      dispatch(setDesabilitarCampos(true));
+    },
+    [alunoCodigo, data, dispatch, idSecao]
+  );
+
+  const validarSeTemErro = valorEditado => {
+    return !valorEditado;
+  };
+
   const desabilitarData = dataCorrente => {
     return dataCorrente && dataCorrente > window.moment();
   };
 
-  const expandirAlternado = useCallback(() => setExpandir(!expandir), [
-    expandir,
-  ]);
-
-  const resetarDados = () => {
-    dispatch(setRegistroIndividualEmEdicao(false));
-    dispatch(setDesabilitarCampos(false));
-  };
-
   const mudarData = valor => {
-    if (valor) {
-      setData(valor);
-      resetarDados();
-    }
+    setData(valor);
   };
-
-  useEffect(() => {
-    const elementos = document.getElementsByClassName(
-      'ant-calendar-picker-clear'
-    );
-    const setarDataVazia = () => {
-      setData('');
-    };
-
-    if (elementos.length) {
-      elementos[0].addEventListener('click', setarDataVazia, false);
-    }
-    return () => {
-      elementos[0].removeEventListener('click', setarDataVazia);
-    };
-  });
 
   return (
     <>
-      {exibirCollapse && !dadosAlunoObjectCard.desabilitado && (
-        <div key={shortid.generate()} className="px-4 pt-4">
-          <CardCollapse
-            configCabecalho={CONFIG_COLLAPSE_REGISTRO_INDIVIDUAL}
-            styleCardBody={{ paddingTop: 12 }}
-            key={`${idSecao}-collapse-key`}
-            titulo="Novo registro individual"
-            indice={`${idSecao}-collapse-indice`}
-            alt={`${idSecao}-alt`}
-            show={expandir}
-            onClick={expandirAlternado}
-          >
-            <div className="col-3 p-0 pb-2">
-              <CampoData
-                name="data"
-                placeholder="Selecione"
-                valor={data}
-                formatoData="DD/MM/YYYY"
-                onChange={mudarData}
-                desabilitarData={desabilitarData}
+      <div className="col-3 p-0 pb-2">
+        <CampoData
+          name="data"
+          placeholder="Selecione"
+          valor={data}
+          formatoData="DD/MM/YYYY"
+          onChange={mudarData}
+          desabilitarData={desabilitarData}
+        />
+      </div>
+      <div className="pt-1">
+        <Loader ignorarTip loading={carregandoNovoRegistro}>
+          <div style={{ minHeight: 200 }}>
+            <JoditEditor
+              validarSeTemErro={validarSeTemErro}
+              mensagemErro="Campo obrigatório"
+              id={`secao-${idSecao}-editor`}
+              value={registro}
+              onChange={mudarEditor}
+              desabilitar={
+                desabilitarNovoRegistro || !permissoesTela.podeIncluir
+              }
+            />
+          </div>
+          {auditoria && (
+            <div className="mt-1 ml-n3">
+              <Auditoria
+                ignorarMarginTop
+                criadoEm={auditoria.criadoEm}
+                criadoPor={auditoria.criadoPor}
+                criadoRf={auditoria.criadoRF}
+                alteradoPor={auditoria.alteradoPor}
+                alteradoEm={auditoria.alteradoEm}
+                alteradoRf={auditoria.alteradoRF}
               />
             </div>
-            <div className="pt-1">
-              <Loader ignorarTip loading={carregandoNovoRegistro}>
-                <div style={{ minHeight: 200 }}>
-                  <JoditEditor
-                    validarSeTemErro={validarSeTemErro}
-                    mensagemErro="Campo obrigatório"
-                    id={`secao-${idSecao}-editor`}
-                    value={registro}
-                    onChange={mudarEditor}
-                    desabilitar={
-                      desabilitarNovoRegistro || !permissoesTela.podeIncluir
-                    }
-                  />
-                </div>
-                {auditoria && (
-                  <div className="mt-1 ml-n3">
-                    <Auditoria
-                      ignorarMarginTop
-                      criadoEm={auditoria.criadoEm}
-                      criadoPor={auditoria.criadoPor}
-                      criadoRf={auditoria.criadoRF}
-                      alteradoPor={auditoria.alteradoPor}
-                      alteradoEm={auditoria.alteradoEm}
-                      alteradoRf={auditoria.alteradoRF}
-                    />
-                  </div>
-                )}
-              </Loader>
-            </div>
-          </CardCollapse>
-        </div>
-      )}
+          )}
+        </Loader>
+      </div>
     </>
   );
 };
 
-export default NovoRegistroIndividual;
+export default NovoRegistroIndividualConteudo;

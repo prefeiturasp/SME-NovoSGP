@@ -20,7 +20,8 @@ const TabelaRetratilRegistroIndividual = ({
           onChangeAlunoSelecionado={onChangeAlunoSelecionado}
           permiteOnChangeAluno={permiteOnChangeAluno}
           alunos={alunos}
-          tituloCabecalho='Detalhes da criança'
+          tituloCabecalho="Detalhes da criança"
+          pularDesabilitados
         >
           {children}
         </TabelaRetratil>
