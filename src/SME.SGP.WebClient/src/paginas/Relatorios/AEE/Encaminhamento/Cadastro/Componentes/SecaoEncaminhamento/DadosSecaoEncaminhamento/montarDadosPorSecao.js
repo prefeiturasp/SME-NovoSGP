@@ -207,6 +207,16 @@ const MontarDadosPorSecao = props => {
           ordemLabel
         );
       }
+    } else {
+      const opcaoAtual = questaoAtual?.opcaoResposta[0];
+
+      if (opcaoAtual?.questaoComplementar) {
+        campoQuestaoComplementar = montarCampos(
+          opcaoAtual.questaoComplementar,
+          form,
+          ordemLabel
+        );
+      }
     }
 
     const params = {
