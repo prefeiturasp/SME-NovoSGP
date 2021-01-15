@@ -342,6 +342,7 @@ namespace SME.SGP.Aplicacao
                     var frequenciaAlunoPeriodo = await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunoBimestreAsync(alunoCodigo,
                                                                                                              periodoEscolarTurma.Bimestre,
                                                                                                              TipoFrequenciaAluno.PorDisciplina,
+                                                                                                             turma.CodigoTurma,
                                                                                                              componenteCurricularCodigo.ToString());
                     if (frequenciaAlunoPeriodo != null)
                     {
