@@ -30,13 +30,13 @@ namespace SME.SGP.Aplicacao
                     AulaId = aulaId
                 };
 
-                return MapearParaDto(diarioBordo, aberto);
+                return MapearParaDto(diarioBordo);
             }
 
             if (diarioBordo.DevolutivaId != null)
                 diarioBordo.Devolutiva = await mediator.Send(new ObterDevolutivaPorIdQuery(diarioBordo.DevolutivaId.GetValueOrDefault()));
 
-            var dto = MapearParaDto(diarioBordo, aberto);
+            var dto = MapearParaDto(diarioBordo);
 
             return dto;
         }
@@ -57,18 +57,15 @@ namespace SME.SGP.Aplicacao
             return await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, bimestreAula, mesmoAnoLetivo));
         }
 
-        private DiarioBordoDto MapearParaDto(DiarioBordo diarioBordo, bool aberto)
+        private DiarioBordoDto MapearParaDto(DiarioBordo diarioBordo)
         {
             return new DiarioBordoDto
             {
                 AulaId = diarioBordo.AulaId,
                 DevolutivaId = diarioBordo.DevolutivaId,
                 Devolutivas = diarioBordo.Devolutiva?.Descricao,
-                Excluido = diarioBordo.Excluido,
-                Migrado = diarioBordo.Migrado,
                 Planejamento = diarioBordo.Planejamento,
                 ReflexoesReplanejamento = diarioBordo.ReflexoesReplanejamento,
-                TemPeriodoAberto = aberto,
                 Auditoria = (AuditoriaDto)diarioBordo
             };
         }
