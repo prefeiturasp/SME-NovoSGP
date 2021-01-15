@@ -6,7 +6,7 @@ namespace SME.SGP.Infra.Dtos
     public class DiarioBordoDto
     {
 
-        public DateTime Data { get; set; }
+        public DateTime? Data { get; set; }
         public long AulaId { get; set; }
         public AulaDto Aula { get; set; }
         public long? DevolutivaId { get; set; }

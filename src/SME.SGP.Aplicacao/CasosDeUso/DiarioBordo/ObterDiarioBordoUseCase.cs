@@ -14,29 +14,28 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<DiarioBordoDto> Executar(long aulaId)
+        public async Task<DiarioBordoDto> Executar(long id)
         {
-            Aula aula = await mediator.Send(new ObterAulaPorIdQuery(aulaId));
-            if (aula == null || aula.Excluido)
+            var diarioBordo = await mediator.Send(new ObterDiarioDeBordoPorIdQuery(id));
+            if (diarioBordo == null)
                 throw new NegocioException($"Diário de bordo não encontrado", 204);
 
-            var aberto = await AulaDentroDoPeriodo(mediator, aula.TurmaId, aula.DataAula);
-
-            DiarioBordo diarioBordo = await mediator.Send(new ObterDiarioBordoPorAulaIdQuery(aulaId));
-            if (diarioBordo == null || diarioBordo.Excluido)
+            if (diarioBordo.DevolutivaId != null)
             {
-                diarioBordo = new DiarioBordo
-                {
-                    AulaId = aulaId
-                };
+                var devolutiva = await mediator.Send(new ObterDevolutivaPorIdQuery(diarioBordo.DevolutivaId.GetValueOrDefault()));
 
-                return MapearParaDto(diarioBordo);
+                if (devolutiva != null)
+                    diarioBordo.Devolutivas = devolutiva.Descricao;
             }
 
-            if (diarioBordo.DevolutivaId != null)
-                diarioBordo.Devolutiva = await mediator.Send(new ObterDevolutivaPorIdQuery(diarioBordo.DevolutivaId.GetValueOrDefault()));
+            Aula aula = null;
 
-            var dto = MapearParaDto(diarioBordo);
+            if (diarioBordo.AulaId > 0)
+            {
+                aula = await mediator.Send(new ObterAulaPorIdQuery(diarioBordo.AulaId));
+            }
+
+            var dto = MapearParaDto(diarioBordo, aula);
 
             return dto;
         }
@@ -57,16 +56,40 @@ namespace SME.SGP.Aplicacao
             return await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, bimestreAula, mesmoAnoLetivo));
         }
 
-        private DiarioBordoDto MapearParaDto(DiarioBordo diarioBordo)
+        private DiarioBordoDto MapearParaDto(DiarioBordoDetalhesDto diarioBordo, Aula aula)
         {
+            AulaDto aulaDto = MapearAulaDto(aula);
+
             return new DiarioBordoDto
             {
                 AulaId = diarioBordo.AulaId,
                 DevolutivaId = diarioBordo.DevolutivaId,
-                Devolutivas = diarioBordo.Devolutiva?.Descricao,
+                Devolutivas = diarioBordo.Devolutivas,
                 Planejamento = diarioBordo.Planejamento,
                 ReflexoesReplanejamento = diarioBordo.ReflexoesReplanejamento,
-                Auditoria = (AuditoriaDto)diarioBordo
+                Auditoria = diarioBordo.Auditoria,
+                Aula = aulaDto,
+                Data = aulaDto?.DataAula,
+                Observacoes = diarioBordo.Observacoes
+            };
+        }
+
+        private AulaDto MapearAulaDto(Aula aula)
+        {
+            return new AulaDto()
+            {
+                AulaCJ = aula.AulaCJ,
+                DataAula = aula.DataAula,
+                DisciplinaCompartilhadaId = aula.DisciplinaCompartilhadaId,
+                DisciplinaId = aula.DisciplinaId,
+                DisciplinaNome = aula.DisciplinaNome,
+                Id = Convert.ToInt32(aula.Id),
+                Quantidade = aula.Quantidade,
+                RecorrenciaAula = aula.RecorrenciaAula,
+                TipoAula = aula.TipoAula,
+                TipoCalendarioId = aula.TipoCalendarioId,
+                TurmaId = aula.TurmaId,
+                UeId = aula.UeId
             };
         }
     }
