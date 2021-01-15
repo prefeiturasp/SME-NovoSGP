@@ -139,6 +139,6 @@ namespace SME.SGP.Aplicacao
         }
 
         private static string DefinirTituloDaPendenciaPorAusenciaDeRegistroIndividual(Turma turma)
-            => $"Crianças com registro individual pendente - {turma.Nome} - {turma.Ue?.Nome} ({turma.Ue?.Dre?.Abreviacao})";
+            => $"Crianças com registro individual pendente - {turma.Nome} - {turma.Ue?.TipoEscola.ShortName()} {turma.Ue?.Nome} ({turma.Ue?.Dre?.Abreviacao})";
     }
 }
