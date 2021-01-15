@@ -30,8 +30,8 @@ const RegistrosAnteriores = () => {
   useEffect(() => {
     if (recolherRegistrosAnteriores && expandir) {
       expandirAlternado();
-      dispatch(setRecolherRegistrosAnteriores(false));
     }
+    dispatch(setRecolherRegistrosAnteriores(false));
   }, [recolherRegistrosAnteriores, expandirAlternado, expandir, dispatch]);
 
   return (

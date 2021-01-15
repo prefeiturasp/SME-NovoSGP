@@ -182,25 +182,31 @@ class MetodosRegistroIndividual {
     registros
   ) => {
     const { registroIndividual, turmaId } = this.obterDados();
+    const {
+      dadosAlunoObjectCard,
+      componenteCurricularSelecionado,
+    } = registroIndividual;
+    const alunoCodigo = dadosAlunoObjectCard.codigoEOL;
 
-    const retorno = await ServicoRegistroIndividual.obterRegistroIndividualPorPeriodo(
-      {
-        alunoCodigo: registroIndividual.dadosAlunoObjectCard.codigoEOL,
-        componenteCurricular:
-          registroIndividual.componenteCurricularSelecionado,
-        dataInicio: dataFormatadaInicio,
-        dataFim: dataFimEscolhida,
-        turmaCodigo: turmaId,
-        numeroPagina: pagina,
-        numeroRegistros: registros,
+    if (alunoCodigo) {
+      const retorno = await ServicoRegistroIndividual.obterRegistroIndividualPorPeriodo(
+        {
+          alunoCodigo,
+          componenteCurricular: componenteCurricularSelecionado,
+          dataInicio: dataFormatadaInicio,
+          dataFim: dataFimEscolhida,
+          turmaCodigo: turmaId,
+          numeroPagina: pagina,
+          numeroRegistros: registros,
+        }
+      ).catch(e => erros(e));
+
+      if (retorno?.data) {
+        this.dispatch(setDadosPrincipaisRegistroIndividual(retorno.data));
+        this.dispatch(
+          setPodeRealizarNovoRegistro(retorno.data.podeRealizarNovoRegistro)
+        );
       }
-    ).catch(e => erros(e));
-
-    if (retorno?.data) {
-      this.dispatch(setDadosPrincipaisRegistroIndividual(retorno.data));
-      this.dispatch(
-        setPodeRealizarNovoRegistro(retorno.data.podeRealizarNovoRegistro)
-      );
     }
   };
 }
