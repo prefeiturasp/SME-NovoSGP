@@ -40,22 +40,6 @@ namespace SME.SGP.Aplicacao
             return dto;
         }
 
-        private async Task<bool> AulaDentroDoPeriodo(IMediator mediator, string turmaCodigo, DateTime dataAula)
-        {
-            var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(turmaCodigo));
-            if (turma == null)
-                throw new NegocioException($"Turma de codigo [{turmaCodigo}] não localizada!");
-
-            var bimestreAula = await mediator.Send(new ObterBimestreAtualQuery()
-            {
-                Turma = turma,
-                DataReferencia = dataAula
-            });
-
-            var mesmoAnoLetivo = DateTime.Today.Year == dataAula.Year;
-            return await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, bimestreAula, mesmoAnoLetivo));
-        }
-
         private DiarioBordoDto MapearParaDto(DiarioBordoDetalhesDto diarioBordo, Aula aula)
         {
             AulaDto aulaDto = MapearAulaDto(aula);
