@@ -195,7 +195,7 @@ namespace SME.SGP.Aplicacao
 
             //verificar se tem para essa atividade
             if (!aula.Any())
-                throw new NegocioException("Não existe aula cadastrada para esse data.");
+                throw new NegocioException("Não existe aula cadastrada nesta data.");
 
             var tipoCalendarioId = aula.FirstOrDefault().TipoCalendarioId;
             var periodoEscolar = await repositorioPeriodoEscolar.ObterPorTipoCalendarioData(tipoCalendarioId, dataAvaliacao);

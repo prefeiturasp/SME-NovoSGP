@@ -104,7 +104,9 @@ const ModalCopiarConteudoPlanoAnual = () => {
 
   const onChangeTurmasSelecionadas = turmas => {
     const turmasComPlano = listaTurmasParaCopiar.filter(
-      c => turmas.includes(c.codTurma.toString()) && c.possuiPlano
+      c => turmas.includes(c.codTurma.toString()) && 
+           c.codigoComponenteCurricular === componenteCurricular.codigoComponenteCurricular &&
+           c.possuiPlano
     );
     if (turmasComPlano && turmasComPlano.length > 0) {
       setConfirmacaoTurmasComPlano(

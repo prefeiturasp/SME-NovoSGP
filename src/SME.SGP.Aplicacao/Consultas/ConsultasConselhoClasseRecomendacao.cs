@@ -71,11 +71,14 @@ namespace SME.SGP.Aplicacao
 
             if (!bimestre.HasValue)
             {
-                var validacaoConselhoFinal = await consultasConselhoClasse.ValidaConselhoClasseUltimoBimestre(turma);
-                if (!validacaoConselhoFinal.Item2)
-                    throw new NegocioException($"Para acessar este aba você precisa registrar o conselho de classe do {validacaoConselhoFinal.Item1}º bimestre");
-                
+                if (fechamentoTurma.Turma.AnoLetivo != 2020)
+                {
+                    var validacaoConselhoFinal = await consultasConselhoClasse.ValidaConselhoClasseUltimoBimestre(turma);
+                    if (!validacaoConselhoFinal.Item2)
+                        throw new NegocioException($"Para acessar este aba você precisa registrar o conselho de classe do {validacaoConselhoFinal.Item1}º bimestre");
+                }
                 emFechamento = await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamento(turma.CodigoTurma, DateTime.Today);
+                
             }
             else
             {
