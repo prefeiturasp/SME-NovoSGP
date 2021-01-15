@@ -74,6 +74,23 @@ class FiltroHelper {
     }
   }
 
+  async obterModalidadesAnoLetivo(ue, anoLetivo){
+    try {
+      const retorno = await ServicoFiltroRelatorio.obterModalidadesAnoLetivo(ue, anoLetivo);
+
+      var dados = retorno.data.map(x => {
+        return { id: x.valor, nome: x.descricao };
+      });
+
+      if (dados.length > 1) dados.unshift({ id: ID_TODOS, nome: 'Todas' });
+
+      return dados;
+    } catch (error) {
+      erros('Não foi possivel obter as Modalidades');
+      return [];
+    }
+  }
+
   async ObterTurmas(anoLetivo, codigoUe, modalidade, semestre) {
     try {
       var retorno = await ServicoFiltroRelatorio.obterTurmasPorCodigoUeModalidadeSemestre(
