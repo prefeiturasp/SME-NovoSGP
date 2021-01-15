@@ -7,10 +7,10 @@ namespace SME.SGP.Dominio
         [Display(Name = "relatorios/alunos", ShortName = "RelatorioExemplo.pdf")]
         RelatorioExemplo = 1,
 
-        [Display(Name = "relatorio/conselhoclassealuno", ShortName = "RelatorioConselhoClasse", Description = "Relatório de conselho de classe")]
+        [Display(Name = "relatorio/conselhoclassealuno", ShortName = "Ata de conselho de classe", Description = "Ata de conselho de classe")]
         ConselhoClasseAluno = 2,
 
-        [Display(Name = "relatorio/conselhoclasseturma", ShortName = "RelatorioConselhoTurma", Description = "Relatório de conselho de classe")]
+        [Display(Name = "relatorio/conselhoclasseturma", ShortName = "Ata de conselho de classe", Description = "Ata de conselho de classe")]
         ConselhoClasseTurma = 3,
 
         [Display(Name = "relatorios/boletimescolar", ShortName = "BoletimEscolar", Description = "Boletim escolar")]

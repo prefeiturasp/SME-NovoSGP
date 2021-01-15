@@ -208,8 +208,7 @@ const AvaliacaoForm = ({ match, location }) => {
           } else {
             setCarregandoTela(false);
             sucesso(
-              `Avaliação ${
-                idAvaliacao ? 'atualizada' : 'cadastrada'
+              `Avaliação ${idAvaliacao ? 'atualizada' : 'cadastrada'
               } com sucesso.`
             );
           }
@@ -482,10 +481,7 @@ const AvaliacaoForm = ({ match, location }) => {
       listaDisciplinasRegencia.forEach((item, indice) => {
         const disciplina = dadosAvaliacao.atividadesRegencia.filter(
           atividade => {
-            return (
-              atividade.disciplinaContidaRegenciaId ===
-              item.codigoComponenteCurricular.toString()
-            );
+            return (atividade.disciplinaContidaRegenciaId == item.codigoComponenteCurricular);
           }
         );
         if (disciplina && disciplina.length)
@@ -536,8 +532,8 @@ const AvaliacaoForm = ({ match, location }) => {
               className="mb-2"
             />
           ) : (
-            ''
-          )}
+              ''
+            )}
         </div>
         {mostrarModalCopiarAvaliacao ? (
           <ModalCopiarAvaliacao
@@ -550,8 +546,8 @@ const AvaliacaoForm = ({ match, location }) => {
             }}
           />
         ) : (
-          ''
-        )}
+            ''
+          )}
         <AlertaModalidadeInfantil />
         <Grid cols={12} className="mb-1 p-0">
           <Titulo className="font-weight-bold">
@@ -668,48 +664,48 @@ const AvaliacaoForm = ({ match, location }) => {
                     {!temRegencia && (
                       <Grid cols={4} className="mb-4">
                         {listaDisciplinas.length > 1 &&
-                        form.values.categoriaId ===
+                          form.values.categoriaId ===
                           categorias.INTERDISCIPLINAR ? (
-                          <SelectComponent
-                            id="disciplinasId"
-                            name="disciplinasId"
-                            label="Componente curricular"
-                            lista={listaDisciplinas}
-                            valueOption="codigoComponenteCurricular"
-                            valueText="nome"
-                            disabled={
-                              desabilitarCampos ||
-                              !dentroPeriodo ||
-                              disciplinaDesabilitada
-                            }
-                            placeholder="Selecione um componente curricular"
-                            valueSelect={listaDisciplinasSelecionadas}
-                            form={form}
-                            multiple
-                            onChange={onChangeDisciplina}
-                          />
-                        ) : (
-                          <SelectComponent
-                            id="disciplinasId"
-                            name="disciplinasId"
-                            label="Componente curricular"
-                            lista={listaDisciplinas}
-                            valueOption="codigoComponenteCurricular"
-                            valueText="nome"
-                            disabled={
-                              desabilitarCampos ||
-                              !dentroPeriodo ||
-                              disciplinaDesabilitada
-                            }
-                            placeholder="Selecione um componente curricular"
-                            form={form}
-                            onChange={valor => {
-                              setDisciplinaSelecionada(valor);
-                              onChangeDisciplina(valor);
-                            }}
-                            valueSelect={disciplinaSelecionada}
-                          />
-                        )}
+                            <SelectComponent
+                              id="disciplinasId"
+                              name="disciplinasId"
+                              label="Componente curricular"
+                              lista={listaDisciplinas}
+                              valueOption="codigoComponenteCurricular"
+                              valueText="nome"
+                              disabled={
+                                desabilitarCampos ||
+                                !dentroPeriodo ||
+                                disciplinaDesabilitada
+                              }
+                              placeholder="Selecione um componente curricular"
+                              valueSelect={listaDisciplinasSelecionadas}
+                              form={form}
+                              multiple
+                              onChange={onChangeDisciplina}
+                            />
+                          ) : (
+                            <SelectComponent
+                              id="disciplinasId"
+                              name="disciplinasId"
+                              label="Componente curricular"
+                              lista={listaDisciplinas}
+                              valueOption="codigoComponenteCurricular"
+                              valueText="nome"
+                              disabled={
+                                desabilitarCampos ||
+                                !dentroPeriodo ||
+                                disciplinaDesabilitada
+                              }
+                              placeholder="Selecione um componente curricular"
+                              form={form}
+                              onChange={valor => {
+                                setDisciplinaSelecionada(valor);
+                                onChangeDisciplina(valor);
+                              }}
+                              valueSelect={disciplinaSelecionada}
+                            />
+                          )}
                       </Grid>
                     )}
                     <Grid cols={!temRegencia ? 4 : 6} className="mb-4">
@@ -798,24 +794,24 @@ const AvaliacaoForm = ({ match, location }) => {
                   <Grid cols={12}>
                     <InseridoAlterado className="mt-4">
                       {inseridoAlterado.criadoPor &&
-                      inseridoAlterado.criadoEm ? (
-                        <p className="pt-2">
-                          INSERIDO por {inseridoAlterado.criadoPor} em{' '}
-                          {window.moment(inseridoAlterado.criadoEm).format()}
-                        </p>
-                      ) : (
-                        ''
-                      )}
+                        inseridoAlterado.criadoEm ? (
+                          <p className="pt-2">
+                            INSERIDO por {inseridoAlterado.criadoPor} em{' '}
+                            {window.moment(inseridoAlterado.criadoEm).format()}
+                          </p>
+                        ) : (
+                          ''
+                        )}
 
                       {inseridoAlterado.alteradoPor &&
-                      inseridoAlterado.alteradoEm ? (
-                        <p>
-                          ALTERADO por {inseridoAlterado.alteradoPor} em{' '}
-                          {window.moment(inseridoAlterado.alteradoEm).format()}
-                        </p>
-                      ) : (
-                        ''
-                      )}
+                        inseridoAlterado.alteradoEm ? (
+                          <p>
+                            ALTERADO por {inseridoAlterado.alteradoPor} em{' '}
+                            {window.moment(inseridoAlterado.alteradoEm).format()}
+                          </p>
+                        ) : (
+                          ''
+                        )}
                     </InseridoAlterado>
                   </Grid>
                 </Div>

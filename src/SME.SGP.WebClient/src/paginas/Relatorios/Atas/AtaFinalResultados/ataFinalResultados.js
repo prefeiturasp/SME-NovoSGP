@@ -314,7 +314,7 @@ const AtaFinalResultados = () => {
   const onChangeAnoLetivo = ano => {
     setAnoLetivo(ano);
     setDreId();
-    
+
     setListaModalidades([]);
     setModalidadeId(undefined);
 
@@ -348,8 +348,8 @@ const AtaFinalResultados = () => {
   };
   const onChangeFormato = valor => setFormato(valor);
 
-  function onCheckedConsideraHistorico(e){   
-    setConsideraHistorico(e.target.checked);    
+  function onCheckedConsideraHistorico(e) {
+    setConsideraHistorico(e.target.checked);
   }
 
   return (
