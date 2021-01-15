@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dominio;
+﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -11,8 +12,9 @@ namespace SME.SGP.Aplicacao
     public class ComandosFechamentoTurmaDisciplina : IComandosFechamentoTurmaDisciplina
     {
         private readonly IServicoFechamentoTurmaDisciplina servicoFechamentoTurmaDisciplina;
+        private readonly IMediator mediator;
 
-        public ComandosFechamentoTurmaDisciplina(IServicoFechamentoTurmaDisciplina servicoFechamentoTurmaDisciplina)
+        public ComandosFechamentoTurmaDisciplina(IServicoFechamentoTurmaDisciplina servicoFechamentoTurmaDisciplina, IMediator mediator)
         {
             this.servicoFechamentoTurmaDisciplina = servicoFechamentoTurmaDisciplina ?? throw new ArgumentNullException(nameof(servicoFechamentoTurmaDisciplina));
         }

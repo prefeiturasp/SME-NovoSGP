@@ -16,9 +16,10 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<long[]> Handle(ObterPendenciasAulaPorAulaIdQuery request, CancellationToken cancellationToken)
         {
-            var valor = await repositorioPendenciaAula.ListarPendenciasPorAulaId(request.AulaId);
-
-            return valor;
+            var pendencias = await repositorioPendenciaAula.PossuiPendenciasPorAulaId(request.AulaId, request.EhModalidadeInfantil);
+            pendencias.PossuiPendenciaAtividadeAvaliativa = await repositorioPendenciaAula.PossuiPendenciasAtividadeAvaliativaPorAulaId(request.AulaId);
+            
+            return pendencias.RetornarTipoPendecias();
         }
     }
 }

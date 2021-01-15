@@ -51,17 +51,6 @@ namespace SME.SGP.Aplicacao
                 {
                     erros.Append($"<li>{id} - comunicado não encontrado</li>");
                 }
-                else
-                {
-                    if (comunicado.EventoId.HasValue)
-                    {
-                        var evento = _repositorioEvento.ObterPorId(comunicado.EventoId.Value);
-                        if (evento != null && !evento.Excluido)
-                        {
-                            erros.Append($"<li>{id} - {comunicado.Titulo} - Comunicado com evento vinculado</li>");
-                        }
-                    }
-                }
                 return comunicado;
             });
 

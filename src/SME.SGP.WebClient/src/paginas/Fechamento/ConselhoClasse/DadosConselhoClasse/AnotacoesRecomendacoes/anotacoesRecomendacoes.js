@@ -117,7 +117,7 @@ const AnotacoesRecomendacoes = props => {
       fechamentoTurmaId,
       alunoCodigo,
       codigoTurma,
-      bimestre
+      bimestre.valor
     ).catch(e => erros(e));
 
     if (resposta && resposta.data) {
@@ -145,6 +145,7 @@ const AnotacoesRecomendacoes = props => {
     setarAuditoria,
     setarDentroDoPeriodo,
     alunoDesabilitado,
+    bimestre,
   ]);
 
   useEffect(() => {

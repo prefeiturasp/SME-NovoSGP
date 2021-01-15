@@ -66,5 +66,18 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryFirstOrDefaultAsync<FechamentoTurma>(query.ToString(), new { turmaId, periodoId });
         }
+
+        public async Task<bool> VerificaExistePorTurmaCCPeriodoEscolar(long turmaId, long componenteCurricularId, long? periodoEscolarId)
+        {
+            var query = new StringBuilder(@"select 1 from fechamento_turma ft
+                    inner join fechamento_turma_disciplina ftd on
+                    ft.id = ftd.fechamento_turma_id 
+                    where 
+                        not ft.excluido and ft.turma_id = @turmaId and 
+                        ftd.disciplina_id = @componenteCurricularId and 
+                        ft.periodo_escolar_id = @periodoEscolarId  ");
+            
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query.ToString(), new { turmaId, componenteCurricularId, periodoEscolarId });
+        }
     }
 }

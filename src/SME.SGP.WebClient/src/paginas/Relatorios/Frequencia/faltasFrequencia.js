@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Loader, SelectComponent } from '~/componentes';
+import { Loader, RadioGroupButton, SelectComponent } from '~/componentes';
 import { Cabecalho } from '~/componentes-sgp';
 import Button from '~/componentes/button';
 import CampoNumero from '~/componentes/campoNumero';
@@ -7,7 +7,6 @@ import Card from '~/componentes/card';
 import { Colors } from '~/componentes/colors';
 import { URL_HOME } from '~/constantes/url';
 import modalidade from '~/dtos/modalidade';
-import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
 import AbrangenciaServico from '~/servicos/Abrangencia';
 import { erros, sucesso } from '~/servicos/alertas';
 import api from '~/servicos/api';
@@ -15,7 +14,6 @@ import history from '~/servicos/history';
 import ServicoFaltasFrequencia from '~/servicos/Paginas/Relatorios/FaltasFrequencia/ServicoFaltasFrequencia';
 import ServicoFiltroRelatorio from '~/servicos/Paginas/FiltroRelatorio/ServicoFiltroRelatorio';
 import ServicoComponentesCurriculares from '~/servicos/Paginas/ComponentesCurriculares/ServicoComponentesCurriculares';
-import FiltroHelper from '~/componentes-sgp/filtro/helper';
 import tipoDeRelatorio from '~/dtos/tipoDeRelatorio';
 
 const FaltasFrequencia = () => {
@@ -49,11 +47,15 @@ const FaltasFrequencia = () => {
   ]);
   const [tipoRelatorio, setTipoRelatorio] = useState(undefined);
 
+  const OPCAO_TODOS_ESTUDANTES = '4';
+
   const [listaCondicao] = useState([
     { valor: '1', desc: 'Igual' },
     { valor: '2', desc: 'Maior ' },
     { valor: '3', desc: 'Menor' },
+    { valor: OPCAO_TODOS_ESTUDANTES, desc: 'Todos os estudantes' },
   ]);
+  
   const [condicao, setCondicao] = useState(undefined);
 
   const listaFormatos = [
@@ -64,6 +66,12 @@ const FaltasFrequencia = () => {
 
   const [carregandoGeral, setCarregandoGeral] = useState(false);
   const [desabilitarBtnGerar, setDesabilitarBtnGerar] = useState(true);
+
+  const opcoesListarTurmasDePrograma = [
+    { label: 'Sim', value: true },
+    { label: 'Não', value: false },
+  ];
+  const [turmasPrograma, setTurmasPrograma] = useState(false); 
 
   const obterAnosLetivos = useCallback(async () => {
     setCarregandoGeral(true);
@@ -244,9 +252,22 @@ const FaltasFrequencia = () => {
     }
   }, [modalidadeId, codigoUe, obterAnosEscolares]);
 
+  useEffect(() => {
+    if (condicao === OPCAO_TODOS_ESTUDANTES) {
+      setValorCondicao();
+    }
+  }, [condicao]);
+
+  useEffect(() => {
+    const selecionouTodos = anosEscolares?.find(ano => ano === '-99');
+    if (!selecionouTodos) {
+      setTurmasPrograma(false);
+    }
+  }, [anosEscolares]);
+
   const obterCodigoTodosAnosEscolares = useCallback(() => {
     let todosAnosEscolares = anosEscolares;
-    const selecionouTodos = anosEscolares.find(ano => ano === '-99');
+    const selecionouTodos = anosEscolares?.find(ano => ano === '-99');
     if (selecionouTodos) {
       todosAnosEscolares = listaAnosEscolares.map(item => item.valor);
     }
@@ -272,7 +293,8 @@ const FaltasFrequencia = () => {
         codigoUe,
         modalidadeId,
         anoLetivo,
-        codigoTodosAnosEscolares
+        codigoTodosAnosEscolares,
+        turmasPrograma
       ).catch(e => {
         erros(e);
         setCarregandoGeral(false);
@@ -291,7 +313,13 @@ const FaltasFrequencia = () => {
       }
       setCarregandoGeral(false);
     }
-  }, [modalidadeId, anoLetivo, obterCodigoTodosAnosEscolares, codigoUe]);
+  }, [
+    modalidadeId,
+    anoLetivo,
+    obterCodigoTodosAnosEscolares,
+    codigoUe,
+    turmasPrograma,
+  ]);
 
   useEffect(() => {
     if (anosEscolares && anosEscolares.length) {
@@ -300,7 +328,7 @@ const FaltasFrequencia = () => {
       setComponentesCurriculares(undefined);
       setListaComponenteCurricular([]);
     }
-  }, [anosEscolares, obterComponenteCurricular]);
+  }, [anosEscolares, turmasPrograma, obterComponenteCurricular]);
 
   const obterBimestres = useCallback(() => {
     const bi = [];
@@ -341,19 +369,21 @@ const FaltasFrequencia = () => {
   }, [modalidadeId, anoLetivo]);
 
   useEffect(() => {
-    const desabilitar =
+    let desabilitar =
       !anoLetivo ||
-      !codigoDre ||
-      !codigoUe ||
-      !modalidadeId ||
-      !anosEscolares ||
-      !componentesCurriculares ||
-      !bimestres ||
-      !tipoRelatorio ||
-      !condicao ||
-      valorCondicao === undefined ||
-      valorCondicao === '' ||
-      !formato;
+        !codigoDre ||
+        !codigoUe ||
+        !modalidadeId ||
+        !anosEscolares ||
+        !componentesCurriculares ||
+        !bimestres ||
+        !tipoRelatorio ||
+        !condicao ||        
+        !formato;
+
+    if (!desabilitar && condicao !== OPCAO_TODOS_ESTUDANTES) {
+      desabilitar = !valorCondicao;
+    }   
 
     if (modalidadeId == modalidade.EJA) {
       setDesabilitarBtnGerar(!semestre || desabilitar);
@@ -373,6 +403,7 @@ const FaltasFrequencia = () => {
     condicao,
     valorCondicao,
     formato,
+    turmasPrograma,
   ]);
 
   useEffect(() => {
@@ -418,6 +449,7 @@ const FaltasFrequencia = () => {
       condicao,
       valorCondicao,
       tipoFormatoRelatorio: formato,
+      turmasPrograma,
     };
     setCarregandoGeral(true);
     const retorno = await ServicoFaltasFrequencia.gerar(params).catch(e => {
@@ -674,7 +706,7 @@ const FaltasFrequencia = () => {
                   placeholder="Selecione o bimestre"
                 />
               </div>
-              <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 mb-2">
+              <div className="col-sm-12 col-md-6 col-lg-3 col-xl-2 mb-2">
                 <SelectComponent
                   lista={listaTipoRelatorio}
                   valueOption="valor"
@@ -695,7 +727,7 @@ const FaltasFrequencia = () => {
                     ''
                   )}
               </div>
-              <div className="col-sm-12 col-md-6 col-lg-3 col-xl-2 mb-2">
+              <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 mb-2">
                 <SelectComponent
                   lista={listaCondicao}
                   valueOption="valor"
@@ -716,6 +748,7 @@ const FaltasFrequencia = () => {
                   className="w-100"
                   placeholder="Digite o valor"
                   ehDecimal={false}
+                  disabled={condicao === OPCAO_TODOS_ESTUDANTES}
                 />
               </div>
               <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 mb-2">
@@ -727,6 +760,22 @@ const FaltasFrequencia = () => {
                   valueSelect={formato}
                   onChange={onChangeFormato}
                   placeholder="Selecione o formato"
+                />
+              </div>
+              <div className="col-sm-6 col-md-6 col-lg-4 col-xl-3 mb-2">
+                <RadioGroupButton
+                  label="Listar turmas de programa"
+                  opcoes={opcoesListarTurmasDePrograma}
+                  valorInicial
+                  onChange={e => {
+                    setTurmasPrograma(e.target.value);
+                  }}
+                  value={turmasPrograma}
+                  desabilitado={
+                    !anosEscolares ||
+                    (anosEscolares.length &&
+                      !!anosEscolares?.find(ano => ano !== '-99'))
+                  }
                 />
               </div>
             </div>

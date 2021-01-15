@@ -1,14 +1,15 @@
 import t from 'prop-types';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 // Componentes
-import { Auditoria, Editor, Grid } from '~/componentes';
+import { Auditoria, Grid } from '~/componentes';
 // Estilos
 import { Linha } from '~/componentes/EstilosGlobais';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 import RotasDto from '~/dtos/rotasDto';
+import JoditEditor from '~/componentes/jodit-editor/joditEditor';
 
-function DesenvolvimentoReflexao({ bimestre, dadosBimestre, onChange }) {
+function DesenvolvimentoReflexao({ dadosBimestre, onChange }) {
   const usuario = useSelector(store => store.usuario);
   const permissoesTela = usuario.permissoes[RotasDto.TERRITORIO_SABER];
 
@@ -24,34 +25,27 @@ function DesenvolvimentoReflexao({ bimestre, dadosBimestre, onChange }) {
     setDesabilitarCampos(desabilitar);
   }, [permissoesTela, dadosBimestre]);
 
-  const onChangeBimestre = useCallback(
-    (bimestreAtual, campo, valor) => {
-      onChange(bimestreAtual, {
-        ...dadosBimestre,
-        [campo]: valor,
-      });
-    },
-    [dadosBimestre, onChange]
-  );
+  const onChangeBimestre = (campo, valor) => {
+    dadosBimestre[campo] = valor;
+    onChange(dadosBimestre);
+  };
 
   return (
     <>
       <Linha className="row ml-1 mr-1">
         <Grid cols={6}>
-          <Editor
-            onChange={valor =>
-              onChangeBimestre(bimestre, 'desenvolvimento', valor)
-            }
+          <JoditEditor
+            onChange={valor => onChangeBimestre('desenvolvimento', valor)}
             label="Desenvolvimento das atividades"
-            inicial={dadosBimestre.desenvolvimento}
+            value={dadosBimestre.desenvolvimento}
             desabilitar={desabilitarCampos}
           />
         </Grid>
         <Grid cols={6}>
-          <Editor
-            onChange={valor => onChangeBimestre(bimestre, 'reflexao', valor)}
+          <JoditEditor
+            onChange={valor => onChangeBimestre('reflexao', valor)}
             label="Reflexões sobre a participação dos estudantes, parcerias e avaliação"
-            inicial={dadosBimestre.reflexao}
+            value={dadosBimestre.reflexao}
             desabilitar={desabilitarCampos}
           />
         </Grid>

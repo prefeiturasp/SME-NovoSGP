@@ -11,6 +11,7 @@ namespace SME.SGP.Aplicacao
 {
     public class ComandosEvento : IComandosEvento
     {
+        private readonly IRepositorioComunicado repositorioComunicado;
         private readonly IRepositorioEvento repositorioEvento;
         private readonly IRepositorioEventoTipo repositorioEventoTipo;
         private readonly IServicoEvento servicoEvento;
@@ -23,10 +24,12 @@ namespace SME.SGP.Aplicacao
                               IServicoEvento servicoEvento,
                               IServicoWorkflowAprovacao servicoWorkflowAprovacao,
                               IServicoUsuario servicoUsuario,
-                              IServicoAbrangencia servicoAbrangencia)
+                              IServicoAbrangencia servicoAbrangencia,
+                              IRepositorioComunicado repositorioComunicado)
         {
             this.repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));
             this.repositorioEventoTipo = repositorioEventoTipo ?? throw new ArgumentNullException(nameof(repositorioEventoTipo));
+            this.repositorioComunicado = repositorioComunicado ?? throw new ArgumentNullException(nameof(repositorioComunicado));
             this.servicoEvento = servicoEvento ?? throw new ArgumentNullException(nameof(servicoEvento));
             this.servicoWorkflowAprovacao = servicoWorkflowAprovacao ?? throw new ArgumentNullException(nameof(servicoWorkflowAprovacao));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
@@ -69,7 +72,7 @@ namespace SME.SGP.Aplicacao
             return await SalvarEvento(eventoDto, evento);
         }
 
-        public void Excluir(long[] idsEventos)
+        public async Task Excluir(long[] idsEventos)
         {
             List<long> idsComErroAoExcluir = new List<long>();
             IList<string> eventoSemPemissaoExclusao = new List<string>();
@@ -79,11 +82,14 @@ namespace SME.SGP.Aplicacao
                 try
                 {
                     var evento = repositorioEvento.ObterPorId(idEvento);
+                    var existeComunicadoParaEvento = await repositorioComunicado.VerificaExistenciaComunicadoParaEvento(idEvento);
+                    if (existeComunicadoParaEvento)
+                        throw new NegocioException($"Existem comunicados vigentes vinculados para o evento ID: {idEvento}");
 
                     ValidacaoPermissaoEdicaoExclusaoPorPerfilUsuarioTipoEevento(evento);
 
                     if (evento.WorkflowAprovacaoId.HasValue)
-                        servicoWorkflowAprovacao.ExcluirWorkflowNotificacoes(evento.WorkflowAprovacaoId.Value);
+                        await servicoWorkflowAprovacao.ExcluirWorkflowNotificacoes(evento.WorkflowAprovacaoId.Value);
 
                     evento.Excluir();
 
@@ -102,7 +108,7 @@ namespace SME.SGP.Aplicacao
             var mensagensErroRetorno = new StringBuilder();
 
             if (eventoSemPemissaoExclusao.Any())
-                mensagensErroRetorno.AppendLine($"O seu perfil de usuário não permite a exclusão do(s) evento(s): { string.Join(", ", eventoSemPemissaoExclusao) }");
+                mensagensErroRetorno.AppendLine($"Não foi permitida a exclusão do(s) evento(s): { string.Join(", ", eventoSemPemissaoExclusao) }");
 
             if (idsComErroAoExcluir.Any())
                 mensagensErroRetorno.AppendLine($"Não foi possível excluir os eventos de ids {string.Join(",", idsComErroAoExcluir)}");
@@ -170,6 +176,8 @@ namespace SME.SGP.Aplicacao
 
         private async Task<IEnumerable<RetornoCopiarEventoDto>> SalvarEvento(EventoDto eventoDto, Evento evento)
         {
+            evento.ValidarDescricaoEvento();
+
             var retornoCadasradoEvento = await servicoEvento.Salvar(evento, eventoDto.AlterarARecorrenciaCompleta, eventoDto.DataConfirmada);
             var mensagens = new List<RetornoCopiarEventoDto>
             {

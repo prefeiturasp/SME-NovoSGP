@@ -4,7 +4,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dto;
 using System.Collections.Generic;
 
-namespace SME.SGP.Aplicacao.Queries.Relatorios.ObterFiltroRelatoriosDresPorAbrangencia
+namespace SME.SGP.Aplicacao
 {
     public class ObterFiltroRelatoriosDresPorAbrangenciaQuery : IRequest<IEnumerable<AbrangenciaDreRetorno>>
     {

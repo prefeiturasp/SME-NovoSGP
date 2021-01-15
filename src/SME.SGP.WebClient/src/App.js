@@ -20,7 +20,6 @@ import RotaAutenticadaDesestruturada from './rotas/rotaAutenticadaDesestruturada
 import { rotaAtiva } from './redux/modulos/navegacao/actions';
 import CapturaErros from './captura-erros';
 import { Deslogar } from '~/redux/modulos/usuario/actions';
-
 import VersaoSistema from '~/componentes-sgp/VersaoSistema';
 
 obterTrackingID().then(id => ReactGA.initialize(id));

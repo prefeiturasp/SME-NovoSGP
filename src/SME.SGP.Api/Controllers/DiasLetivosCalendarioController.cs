@@ -28,9 +28,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Route("dias-letivos")]
         [Permissao(Permissao.C_C, Permissao.CP_C, Policy = "Bearer")]
-        public async Task<IActionResult> CalcularDiasLetivos(FiltroDiasLetivosDTO filtro)
+        public async Task<IActionResult> CalcularDiasLetivos(FiltroDiasLetivosDTO filtro, [FromServices] IObterDiasLetivosPorCalendarioUseCase useCase)
         {
-            return Ok(await comandosDiasLetivos.CalcularDiasLetivos(filtro));
+            return Ok(await useCase.Executar(filtro));
         }
     }
 }

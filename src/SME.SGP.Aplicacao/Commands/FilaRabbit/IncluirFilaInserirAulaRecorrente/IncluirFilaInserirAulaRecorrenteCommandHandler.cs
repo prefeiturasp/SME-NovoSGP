@@ -10,14 +10,14 @@ namespace SME.SGP.Aplicacao.Commands.FilaRabbit.IncluirFilaInserirAulaRecorrente
 {
     public class IncluirFilaInserirAulaRecorrenteCommandHandler : IRequestHandler<IncluirFilaInserirAulaRecorrenteCommand, bool>
     {
-        private readonly IServicoFila servicoFila;
+        private readonly IMediator mediator;
 
-        public IncluirFilaInserirAulaRecorrenteCommandHandler(IServicoFila servicoFila)
+        public IncluirFilaInserirAulaRecorrenteCommandHandler(IMediator mediator)
         {
-            this.servicoFila = servicoFila ?? throw new ArgumentNullException(nameof(servicoFila));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public Task<bool> Handle(IncluirFilaInserirAulaRecorrenteCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(IncluirFilaInserirAulaRecorrenteCommand request, CancellationToken cancellationToken)
         {
             var command = new InserirAulaRecorrenteCommand(request.Usuario,
                                                            request.DataAula,
@@ -31,10 +31,10 @@ namespace SME.SGP.Aplicacao.Commands.FilaRabbit.IncluirFilaInserirAulaRecorrente
                                                            request.EhRegencia,
                                                            request.RecorrenciaAula);
 
-            servicoFila.PublicaFilaWorkerSgp(new PublicaFilaSgpDto(RotasRabbit.RotaInserirAulaRecorrencia, command, Guid.NewGuid(), request.Usuario, true));
+            await mediator.Send(new PublicaFilaWorkerSgpCommand(RotasRabbit.RotaInserirAulaRecorrencia, command, Guid.NewGuid(), request.Usuario, true));
             SentrySdk.AddBreadcrumb($"Incluir fila inserção de aula recorrente", "RabbitMQ");
 
-            return Task.FromResult(true);
+            return true;
         }
     }
 }

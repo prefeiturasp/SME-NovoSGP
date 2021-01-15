@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using SME.SGP.Infra;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -49,6 +50,49 @@ namespace SME.SGP.Dados.Repositorios
 
             return database.Conexao.Query<Usuario>(query.ToString(), new { token })
                 .FirstOrDefault();
+        }
+
+        public async Task<ProfessorDto> ObterProfessorDaTurmaPorAulaId(long aulaId)
+        {
+            var query = @"select u.id, 
+                                 u.rf_codigo as codigoRf, 
+                                 u.nome 
+                            from aula a
+                          inner join usuario u on a.professor_rf = u.rf_codigo 
+                          where a.id = @aulaId";
+            return await database.Conexao.QueryFirstOrDefaultAsync<ProfessorDto>(query.ToString(), new { aulaId });
+        }
+
+        public async Task<IEnumerable<long>> ObterUsuariosIdPorCodigoRf(IList<string> codigoRf)
+        {
+            var query = new StringBuilder();
+            query.Append("select id from usuario ");
+            query.Append("where rf_codigo in ");
+            query.Append("(");
+            foreach(var rf in codigoRf)
+            {
+                query.Append($"'{rf}',");
+            }
+            query.Append("'0')");
+            return await database.Conexao.QueryAsync<long>(query.ToString());
+        }
+
+        public async Task<long> ObterUsuarioIdPorCodigoRfAsync(string codigoRf)
+        {
+            var query = @"select id 
+                            from usuario 
+                           where rf_codigo = @codigoRf";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<long>(query, new { codigoRf });
+        }
+
+        public async Task<long> ObterUsuarioIdPorLoginAsync(string login)
+        {
+            var query = @"select id 
+                            from usuario 
+                           where login = @login";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<long>(query, new { login });
         }
     }
 }

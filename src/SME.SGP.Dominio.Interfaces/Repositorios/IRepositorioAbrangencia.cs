@@ -1,7 +1,6 @@
 ﻿using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -23,7 +22,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<AbrangenciaFiltroRetorno>> ObterAbrangenciaPorFiltro(string texto, string login, Guid perfil, bool consideraHistorico);
 
         Task<IEnumerable<AbrangenciaSinteticaDto>> ObterAbrangenciaSintetica(string login, Guid perfil, string turmaId = "", bool consideraHistorico = false);
-
+        Task<bool> ObterUsuarioPossuiAbrangenciaAcessoSondagemTiposEscola(string usuarioRF, Guid UsuarioPerfil);        
         Task<IEnumerable<AbrangenciaHistoricaDto>> ObterAbrangenciaHistoricaPorLogin(string login);
 
         Task<AbrangenciaFiltroRetorno> ObterAbrangenciaTurma(string turma, string login, Guid perfil, bool consideraHistorico = false, bool abrangenciaPermitida = false);
@@ -41,7 +40,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<int>> ObterSemestres(string login, Guid perfil, Modalidade modalidade, bool consideraHistorico, int anoLetivo = 0);
 
         Task<IEnumerable<AbrangenciaTurmaRetorno>> ObterTurmas(string codigoUe, string login, Guid perfil, Modalidade modalidade, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0);
-        Task<IEnumerable<Modalidade>> ObterModalidadesPorUeAbrangencia(string codigoUe, string login, Guid perfilAtual);        
+        Task<IEnumerable<Modalidade>> ObterModalidadesPorUeAbrangencia(string codigoUe, string login, Guid perfilAtual);
         Task<AbrangenciaUeRetorno> ObterUe(string codigo, string login, Guid perfil);
 
         Task<bool> UsuarioPossuiAbrangenciaAdm(long usuarioId);
