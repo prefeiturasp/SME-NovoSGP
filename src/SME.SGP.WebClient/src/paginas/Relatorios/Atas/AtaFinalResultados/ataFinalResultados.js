@@ -8,7 +8,6 @@ import { Colors } from '~/componentes/colors';
 import { URL_HOME } from '~/constantes/url';
 import modalidade from '~/dtos/modalidade';
 import RotasDto from '~/dtos/rotasDto';
-import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
 import AbrangenciaServico from '~/servicos/Abrangencia';
 import { erros, sucesso } from '~/servicos/alertas';
 import api from '~/servicos/api';
@@ -231,7 +230,12 @@ const AtaFinalResultados = () => {
 
   useEffect(() => {
     const desabilitar =
-      !anoLetivo || !dreId || !ueId || !modalidadeId || !turmaId || !formato;
+      !anoLetivo ||
+      !dreId ||
+      !ueId ||
+      !modalidadeId ||
+      !turmaId?.length ||
+      !formato;
 
     if (modalidadeId === modalidade.EJA) {
       setDesabilitarBtnGerar(!semestre || desabilitar);
@@ -267,10 +271,10 @@ const AtaFinalResultados = () => {
   const onClickGerar = async () => {
     if (permissoesTela.podeConsultar) {
       const params = { turmasCodigos: [], tipoFormatoRelatorio: formato };
-      if (turmaId === '-99') {
+      if (turmaId.find(t => t === '-99')) {
         params.turmasCodigos = listaTurmas.map(item => String(item.valor));
       } else {
-        params.turmasCodigos = [String(turmaId)];
+        params.turmasCodigos = turmaId;
       }
       const retorno = await ServicoConselhoAtaFinal.gerar(params).catch(e =>
         erros(e)
@@ -336,7 +340,10 @@ const AtaFinalResultados = () => {
 
   const onChangeSemestre = valor => setSemestre(valor);
   const onChangeTurma = valor => {
-    setTurmaId(valor);
+    const todosSetado = turmaId?.find(a => a === '-99');
+    const todos = valor.find(a => a === '-99' && !todosSetado);
+    const novoValor = todosSetado && valor.length === 2 ? [valor[1]] : valor;
+    setTurmaId(todos ? [todos] : novoValor);
     habilitarSelecaoFormato(valor);
   };
   const onChangeFormato = valor => setFormato(valor);
@@ -351,7 +358,7 @@ const AtaFinalResultados = () => {
         exibir={String(modalidadeId) === String(modalidade.INFANTIL)}
         validarModalidadeFiltroPrincipal={false}
       />
-      <Cabecalho pagina="Ata de resultados finais" />
+      <Cabecalho pagina="Ata final de resultados" />
       <Card>
         <div className="col-md-12">
           <div className="row">
@@ -470,7 +477,7 @@ const AtaFinalResultados = () => {
                 disabled={
                   !permissoesTela.podeConsultar ||
                   !modalidadeId ||
-                  modalidadeId != modalidade.EJA ||
+                  modalidadeId !== modalidade.EJA ||
                   (listaSemestre && listaSemestre.length === 1)
                 }
                 valueSelect={semestre}
@@ -490,6 +497,7 @@ const AtaFinalResultados = () => {
                 }
                 valueSelect={turmaId}
                 onChange={onChangeTurma}
+                multiple
               />
             </div>
             <div className="col-sm-12 col-md-3 col-lg-2 col-xl-2 mb-2">

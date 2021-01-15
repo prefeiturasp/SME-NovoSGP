@@ -65,20 +65,23 @@ namespace SME.SGP.Aplicacao
         {
             foreach (var componenteSgp in componentesSgp)
             {
-                var componenteEol = componentesCurricularesEol.First(c => c.Codigo == componenteSgp.Id);
+                var componenteEol = componentesCurricularesEol.FirstOrDefault(c => componenteSgp.Id == (c.TerritorioSaber ? c.CodigoComponenteTerritorioSaber : c.Codigo));
 
-                if (componenteEol.TerritorioSaber)
-                    yield return new DisciplinaNomeDto()
-                    {
-                        Codigo = componenteEol.CodigoComponenteTerritorioSaber.ToString(),
-                        Nome = componenteEol.Descricao
-                    };
-                else
-                    yield return new DisciplinaNomeDto()
-                    {
-                        Codigo = componenteSgp.Id.ToString(),
-                        Nome = componenteSgp.Nome
-                    };
+                if (componenteEol != null)
+                {
+                    if (componenteEol.TerritorioSaber)
+                        yield return new DisciplinaNomeDto()
+                        {
+                            Codigo = componenteEol.CodigoComponenteTerritorioSaber.ToString(),
+                            Nome = componenteEol.Descricao
+                        };
+                    else
+                        yield return new DisciplinaNomeDto()
+                        {
+                            Codigo = componenteSgp.Id.ToString(),
+                            Nome = componenteSgp.Nome
+                        };
+                }
             }
         }
 

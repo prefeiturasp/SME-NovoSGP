@@ -129,7 +129,7 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
-        private async Task AuditarAsync(long identificador, string acao)
+        protected async Task AuditarAsync(long identificador, string acao)
         {
             await database.Conexao.InsertAsync<Auditoria>(new Auditoria()
             {

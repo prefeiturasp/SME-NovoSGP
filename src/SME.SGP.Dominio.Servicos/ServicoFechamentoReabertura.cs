@@ -219,7 +219,7 @@ namespace SME.SGP.Dominio.Servicos
                 if (eventosParaExcluir != null && eventosParaExcluir.Any())
                 {
                     var eventoParaExcluir = eventosParaExcluir.FirstOrDefault();
-                    servicoEvento.Excluir(eventoParaExcluir);
+                    await servicoEvento.Excluir(eventoParaExcluir);
                 }
             }
         }

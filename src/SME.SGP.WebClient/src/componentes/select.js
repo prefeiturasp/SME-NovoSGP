@@ -32,6 +32,7 @@ const SelectComponent = React.forwardRef((props, ref) => {
     color,
     allowClear,
     defaultValue,
+    style,
   } = props;
 
   const Container = styled.div`
@@ -192,6 +193,7 @@ const SelectComponent = React.forwardRef((props, ref) => {
       showSearch={showSearch}
       size={size || 'default'}
       defaultValue={defaultValue}
+      style={style}
     >
       {opcoesLista()}
     </Select>
@@ -227,10 +229,12 @@ SelectComponent.propTypes = {
   border: PropTypes.string,
   color: PropTypes.string,
   allowClear: PropTypes.bool,
+  style: PropTypes.oneOfType([PropTypes.object]),
 };
 
 SelectComponent.defaultProps = {
   allowClear: true,
+  style: null,
 };
 
 export default SelectComponent;

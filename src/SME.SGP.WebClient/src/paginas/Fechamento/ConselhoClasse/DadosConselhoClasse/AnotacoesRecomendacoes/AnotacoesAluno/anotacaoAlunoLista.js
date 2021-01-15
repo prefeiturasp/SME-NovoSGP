@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import shortid from 'shortid';
 import { Base } from '~/componentes';
-import Editor from '~/componentes/editor/editor';
+import JoditEditor from '~/componentes/jodit-editor/joditEditor';
 import { ListaAnotacao, Tabela } from './anotacaoAluno.css';
 
 const AnotacoesAlunoLista = props => {
@@ -72,9 +72,9 @@ const AnotacoesAlunoLista = props => {
                 <tbody>
                   <tr>
                     <td colSpan="4">
-                      <Editor
+                      <JoditEditor
                         id="anotacao-aluno"
-                        inicial={item.anotacao}
+                        value={item.anotacao}
                         removerToolbar
                         desabilitar
                       />

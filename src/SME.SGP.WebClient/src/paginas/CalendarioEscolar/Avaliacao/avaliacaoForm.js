@@ -23,6 +23,7 @@ import Alert from '~/componentes/alert';
 import { valorNuloOuVazio } from '~/utils/funcoes/gerais';
 import AlertaModalidadeInfantil from '~/componentes-sgp/AlertaModalidadeInfantil/alertaModalidadeInfantil';
 import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
+import JoditEditor from '~/componentes/jodit-editor/joditEditor';
 
 const AvaliacaoForm = ({ match, location }) => {
   const [
@@ -741,15 +742,15 @@ const AvaliacaoForm = ({ match, location }) => {
                   </Div>
                   <Div className="row">
                     <Grid cols={12}>
-                      <Label text="Descrição" />
-                      <Editor
-                        ref={textEditorRef}
+                      <JoditEditor
+                        label="Descrição"
                         form={form}
+                        value={form.values.descricao}
                         name="descricao"
                         id="descricao"
                         onChange={aoTrocarTextEditor}
-                        maxlength={500}
                         desabilitar={desabilitarCampos || !dentroPeriodo}
+                        permiteInserirArquivo={false}
                       />
                     </Grid>
                   </Div>

@@ -209,7 +209,8 @@ namespace SME.SGP.Aplicacao
                     EhProfessorCj = usuario.EhProfessorCj(),
                     EhProfessorPoa = usuario.EhProfessorPoa(),
                     EhProfessorInfantil = usuario.EhProfessorInfantil(),
-                    EhProfessorCjInfantil = usuario.EhProfessorCjInfantil()
+                    EhProfessorCjInfantil = usuario.EhProfessorCjInfantil(),
+                    EhPerfilProfessor = usuario.EhPerfilProfessor()
                 };
             }
         }

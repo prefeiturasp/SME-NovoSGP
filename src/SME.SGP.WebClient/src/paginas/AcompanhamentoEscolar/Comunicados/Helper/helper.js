@@ -3,11 +3,13 @@ import { erros } from '~/servicos/alertas';
 import ServicoFiltroRelatorio from '~/servicos/Paginas/FiltroRelatorio/ServicoFiltroRelatorio';
 import ServicoComunicados from '~/servicos/Paginas/AcompanhamentoEscolar/Comunicados/ServicoComunicados';
 
+const ID_TODOS = '-99';
+
 class FiltroHelper {
   async mapearParaSelect(array, todas, ue) {
     return array.map(x => {
-      var id = x.codigo == '-99' ? todas : x.codigo;
-      var nome = x.codigo == '-99' ? x.nomeSimples : x.nome;
+      var id = x.codigo == ID_TODOS ? todas : x.codigo;
+      var nome = x.codigo == ID_TODOS ? x.nomeSimples : x.nome;
       return { id, nome: ue ? nome : x.nome };
     });
   }
@@ -33,7 +35,7 @@ class FiltroHelper {
         erros(e);
       });
 
-      var dados = await this.mapearParaSelect(retorno.data, 'todas');
+      var dados = await this.mapearParaSelect(retorno.data, ID_TODOS);
 
       return dados;
     } catch (error) {
@@ -46,7 +48,7 @@ class FiltroHelper {
     try {
       const retorno = await ServicoFiltroRelatorio.obterUes(dre);
 
-      var dados = await this.mapearParaSelect(retorno.data, 'todas', true);
+      var dados = await this.mapearParaSelect(retorno.data, ID_TODOS, true);
 
       return dados;
     } catch (error) {
@@ -63,7 +65,7 @@ class FiltroHelper {
         return { id: x.valor, nome: x.descricao };
       });
 
-      if (dados.length > 1) dados.unshift({ id: '-99', nome: 'Todas' });
+      if (dados.length > 1) dados.unshift({ id: ID_TODOS, nome: 'Todas' });
 
       return dados;
     } catch (error) {
@@ -85,7 +87,7 @@ class FiltroHelper {
         return { id: x.valor, nome: x.descricao };
       });
 
-      dados.unshift({ id: '-99', nome: 'Todas' });
+      dados.unshift({ id: ID_TODOS, nome: 'Todas' });
 
       return dados;
     } catch (error) {
@@ -132,7 +134,16 @@ class FiltroHelper {
   async obterAnosPorModalidade(modalidade, codigoUe) {
     try {
       const response = await ServicoComunicados.buscarAnosPorModalidade(modalidade, codigoUe);
-      return response.data;
+      let dados = response.data;
+
+      if(dados && dados.length == 0) {
+        dados.unshift({
+          modalidade: +modalidade,
+          ano: 'Todos'
+        });
+      }
+
+      return dados;
     } catch (error) {
       erros('Não foi possivel obter anos de modalidade');
       return [];

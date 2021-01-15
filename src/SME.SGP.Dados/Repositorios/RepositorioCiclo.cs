@@ -48,7 +48,7 @@ namespace SME.SGP.Dados.Repositorios
             var anos = "'" + string.Join("','", filtroCicloDto.Anos) + "'";
 
             StringBuilder query = new StringBuilder();
-            query.AppendLine("SELECT");
+            query.AppendLine("SELECT distinct");
             query.AppendLine("	tc.id,");
             query.AppendLine("	tc.descricao,");
             query.AppendLine("	1 AS Selecionado");
@@ -61,7 +61,7 @@ namespace SME.SGP.Dados.Repositorios
             var cicloSelecionado = database.Conexao.QueryFirstOrDefault<CicloDto>(query.ToString());
 
             query.Clear();
-            query.AppendLine("SELECT");
+            query.AppendLine("SELECT distinct");
             query.AppendLine("	tc.id,");
             query.AppendLine("	tc.descricao,");
             query.AppendLine("	0 AS Selecionado");

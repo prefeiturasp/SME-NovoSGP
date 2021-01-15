@@ -1,4 +1,7 @@
-﻿namespace SME.SGP.Dominio
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+
+namespace SME.SGP.Dominio
 {
     public enum TipoParametroSistema
     {
@@ -57,6 +60,40 @@
         //PAP        
         PAPInicioAnoLetivo = 28,
         DataInicioSGP = 29,
+
+        //Pendencias Gerais
+        QuantidadeEventosConselhoClasse = 30,
+        QuantidadeEventosAPM = 31,
+        QuantidadeEventosConselhoEscolar = 32,
+        QuantidadeEventosPedagogicos = 33,
+        DataInicioGeracaoPendencias = 34,
+        GerarPendenciaAulasDiasNaoLetivos = 35,
+        GerarPendenciaDiasLetivosInsuficientes = 36,
+
+        // Pendencias Fechamento
+        DiasGeracaoPendenciaAvaliacao = 37,
+        DiasGeracaoPendenciaAusenciaFechamento = 38,
+        
+        // Notificacao Andamento do Fechamento
+        DiasNotificacaoAndamentoFechamento = 39,
+
+        DiasNotificacaoResultadoInsatisfatorio = 40,
+
+        // Notificação UE fechamentos insuficientes
+        DiasNotificacaoFechamentoPendente = 41,
+        PercentualFechamentosInsuficientesNotificacao = 42,
+
+        DiasNotificacaoReuniaoPedagogica = 45,
+
+        DiasNotificacaoPeriodoFechamentoUe = 46,
+        DiasNotificacaoPeriodoFechamentoDre = 47,
+
+        //Notificacao Periodo Fechamento
+        DiasNotificacaoPeriodoFechamentoInicio = 43,
+        DiasNotificacaoPeriodoFechamentoFim = 44,
+
+        [Display(Name = "Pendência por ausência de registro individual")]        
+        PendenciaPorAusenciaDeRegistroIndividual = 48,
 
         //Sistema
         HabilitarServicosEmBackground = 100

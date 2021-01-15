@@ -41,17 +41,15 @@ namespace SME.SGP.Dados.Repositorios
             try
             {
                 var query = new StringBuilder(@"select distinct tca.modalidade, tca.ano from tipo_ciclo tc 
-                                                inner join tipo_ciclo_ano tca on tca.tipo_ciclo_id = tc.id 
-                                                inner join turma t on t.ano = tca.ano 
-                                                inner join ue ue on t.ue_id = ue.id 
-                                                inner join v_abrangencia_usuario vau
-                                                on vau.turma_id = t.turma_id
-                                                where tc.descricao is not null 
+                                                    inner join tipo_ciclo_ano tca on tca.tipo_ciclo_id = tc.id
+                                                    inner join turma t on t.ano = tca.ano
+                                                    inner join ue ue on t.ue_id = ue.id
+                                                    where tc.descricao is not null
                                                     and tca.modalidade = @modalidadeId ");
 
                 if (!String.IsNullOrEmpty(codigoUe))
-                    query.AppendLine("and ue.ue_id = @codigoUe");
-
+                    query.AppendLine(" and ue.ue_id = @codigoUe");
+                query.AppendLine(" order by tca.ano ");
 
                 return await database.Conexao.QueryAsync<AnosPorCodigoUeModalidadeEscolaAquiResult>(query.ToString(), new { codigoUe, modalidadeId = (int)modalidade });
             }

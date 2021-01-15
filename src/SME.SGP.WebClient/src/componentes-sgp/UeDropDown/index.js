@@ -21,10 +21,15 @@ function UeDropDown({
   opcaoTodas,
   temParametros,
   modalidade,
+  onChangeListaUes,
 }) {
   const [carregando, setCarregando] = useState(false);
   const [listaUes, setListaUes] = useState([]);
   const [forcaDesabilitado, setForcaDesabilitado] = useState(false);
+
+  useEffect(() => {
+    onChangeListaUes(listaUes);
+  }, [listaUes, onChangeListaUes]);
 
   useEffect(() => {
     async function buscarUes() {
@@ -40,6 +45,7 @@ function UeDropDown({
         lista = data.map(item => ({
           desc: item.nome,
           valor: item.codigo,
+          id: item.id,
         }));
       }
       if (lista.length > 1) {
@@ -83,7 +89,7 @@ function UeDropDown({
         name="ueId"
         className="fonte-14"
         label={!label ? null : label}
-        onChange={onChange}
+        onChange={a => onChange(a, listaUes, true)}
         lista={listaUes}
         valueOption="valor"
         valueText="desc"
@@ -111,6 +117,7 @@ UeDropDown.propTypes = {
   opcaoTodas: PropTypes.bool,
   temParametros: PropTypes.bool,
   modalidade: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  onChangeListaUes: PropTypes.func,
 };
 
 UeDropDown.defaultProps = {
@@ -123,6 +130,7 @@ UeDropDown.defaultProps = {
   opcaoTodas: false,
   temParametros: false,
   modalidade: '',
+  onChangeListaUes: () => {},
 };
 
 export default UeDropDown;

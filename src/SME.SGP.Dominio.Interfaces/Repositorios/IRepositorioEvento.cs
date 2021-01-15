@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -12,7 +13,8 @@ namespace SME.SGP.Dominio.Interfaces
         List<Evento> EhEventoLetivoPorLiberacaoExcepcional(long tipoCalendarioId, DateTime dataAula, string ueId);
 
         bool EhEventoLetivoPorTipoDeCalendarioDataDreUe(long tipoCalendarioId, DateTime data, string dreId, string ueId);
-
+        Task<IEnumerable<Evento>> ObterEventosPorTipoEData(TipoEvento tipoEvento, DateTime data);
+        Task<IEnumerable<Evento>> ObterEventosPorTipoECalendarioUe(long tipoCalendarioId, string ueCodigo, TipoEvento tipoEvento);
         Task<IEnumerable<Evento>> EventosNosDiasETipo(DateTime dataInicio, DateTime dataFim, TipoEvento tipoEventoCodigo, long tipoCalendarioId, string UeId, string DreId, bool utilizarRangeDatas = true);        
         bool ExisteEventoPorEventoTipoId(long eventoTipoId);
 
@@ -48,6 +50,7 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<bool> DataPossuiEventoLiberacaoExcepcionalAsync(long tipoCalendarioId, DateTime dataAula, string ueId);
         Task<IEnumerable<Evento>> ObterEventosPorTipoDeCalendarioAsync(long tipoCalendarioId);
-        Task<IEnumerable<Evento>> ObterEventosPorTipoDeCalendarioDreUeModalidadeAsync(long tipoCalendario, int anoLetivo, string codigoDre, string codigoUe, int? modalidade);
+        Task<IEnumerable<ListarEventosPorCalendarioRetornoDto>> ObterEventosPorTipoDeCalendarioDreUeModalidadeAsync(long tipoCalendario, int anoLetivo, string codigoDre, string codigoUe, int? modalidade);
+        Task<IEnumerable<Evento>> ObterEventosPorTipoCalendarioIdEPeriodoInicioEFim(long tipoCalendarioId, DateTime periodoInicio, DateTime periodoFim, long? turmaId = null);
     }
 }

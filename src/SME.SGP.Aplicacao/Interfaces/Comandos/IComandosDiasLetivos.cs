@@ -11,8 +11,6 @@ namespace SME.SGP.Aplicacao
     {
         Task<List<DateTime>> BuscarDiasLetivos(long tipoCalendarioId);
 
-        Task<DiasLetivosDto> CalcularDiasLetivos(FiltroDiasLetivosDTO filtro);
-
         List<DateTime> ObterDias(IEnumerable<Evento> eventos, List<DateTime> dias, EventoLetivo eventoTipo);
 
         bool VerificarSeDataLetiva(IEnumerable<Evento> eventos, DateTime data);

@@ -26,6 +26,14 @@ function Localizador({
   dreId,
   anoLetivo,
   desabilitado,
+  rfEdicao,
+  buscarOutrosCargos,
+  buscandoDados,
+  labelRF,
+  placeholderRF,
+  placeholderNome,
+  labelNome,
+  classesRF,
 }) {
   const usuario = useSelector(store => store.usuario);
   const [dataSource, setDataSource] = useState([]);
@@ -34,20 +42,14 @@ function Localizador({
     rf: false,
     nome: false,
   });
-  const {
-    ehProfessor,
-    ehProfessorCj,
-    ehProfessorPoa,
-    rf,
-    ehProfessorInfantil,
-    ehProfessorCjInfantil,
-  } = usuario;
+  const { ehPerfilProfessor, rf } = usuario;
 
   const onChangeInput = async valor => {
     if (valor.length === 0) {
       setPessoaSelecionada({
         professorRf: '',
         professorNome: '',
+        usuarioId: '',
       });
       setTimeout(() => {
         setDesabilitarCampo(() => ({
@@ -66,7 +68,11 @@ function Localizador({
 
     if (dados && dados.length > 0) {
       setDataSource(
-        dados.map(x => ({ professorRf: x.codigoRF, professorNome: x.nome }))
+        dados.map(x => ({
+          professorRf: x.codigoRF,
+          professorNome: x.nome,
+          usuarioId: x.usuarioId,
+        }))
       );
     }
   };
@@ -74,26 +80,36 @@ function Localizador({
   const onBuscarPorRF = useCallback(
     async ({ rf }) => {
       try {
+        buscandoDados(true);
         const { data: dados } = await service.buscarPorRf({
           rf,
           anoLetivo,
+          buscarOutrosCargos,
         });
         if (!dados) throw new RFNaoEncontradoExcecao();
 
         setPessoaSelecionada({
           professorRf: dados.codigoRF,
           professorNome: dados.nome,
+          usuarioId: dados.usuarioId,
         });
 
         setDesabilitarCampo(estado => ({
           ...estado,
           nome: true,
         }));
+        buscandoDados(false);
       } catch (error) {
         erros(error);
+        buscandoDados(false);
+        setPessoaSelecionada({
+          professorRf: '',
+          professorNome: '',
+          usuarioId: '',
+        });
       }
     },
-    [anoLetivo]
+    [anoLetivo, buscarOutrosCargos]
   );
 
   const onChangeRF = valor => {
@@ -101,6 +117,7 @@ function Localizador({
       setPessoaSelecionada({
         professorRf: '',
         professorNome: '',
+        usuarioId: '',
       });
       setDesabilitarCampo(estado => ({
         ...estado,
@@ -121,67 +138,73 @@ function Localizador({
   };
 
   useEffect(() => {
+    if (rfEdicao && !pessoaSelecionada?.professorRf) {
+      onBuscarPorRF({ rf: rfEdicao });
+    } else if (!form && !rfEdicao) {
+      setPessoaSelecionada({
+        professorRf: '',
+        professorNome: '',
+        usuarioId: '',
+      });
+    }
+  }, [rfEdicao]);
+
+  useEffect(() => {
     onChange(pessoaSelecionada);
-    form.setValues({
-      ...form.values,
-      ...pessoaSelecionada,
-    });
+    if (form) {
+      form.setValues({
+        ...form.values,
+        ...pessoaSelecionada,
+      });
+    }
   }, [pessoaSelecionada]);
 
   useEffect(() => {
-    if (validaSeObjetoEhNuloOuVazio(form.initialValues)) return;
-    if (form.initialValues) {
-      setPessoaSelecionada(form.initialValues);
+    if (form) {
+      if (validaSeObjetoEhNuloOuVazio(form.initialValues)) return;
+      if (form.initialValues) {
+        setPessoaSelecionada(form.initialValues);
+      }
     }
-  }, [form.initialValues]);
+  }, [form?.initialValues]);
 
   useEffect(() => {
-    if (
-      dreId &&
-      (ehProfessor ||
-        ehProfessorCj ||
-        ehProfessorPoa ||
-        ehProfessorInfantil ||
-        ehProfessorCjInfantil)
-    ) {
+    if (dreId && ehPerfilProfessor) {
       onBuscarPorRF({ rf });
     }
-  }, [
-    dreId,
-    ehProfessor,
-    ehProfessorCj,
-    ehProfessorPoa,
-    ehProfessorInfantil,
-    ehProfessorCjInfantil,
-    rf,
-    onBuscarPorRF,
-  ]);
+  }, [dreId, ehPerfilProfessor, rf, onBuscarPorRF]);
+
+  useEffect(() => {
+    if (form) {
+      const { values: valores } = form;
+      if (valores && !valores.professorRf && pessoaSelecionada.professorRf) {
+        setPessoaSelecionada({
+          professorRf: '',
+          professorNome: '',
+          usuarioId: '',
+        });
+      }
+    }
+  }, [form?.values]);
 
   return (
     <>
-      <Grid cols={4}>
-        {showLabel && (
-          <Label text="Registro Funcional (RF)" control="professorRf" />
-        )}
+      <Grid cols={4} className={classesRF}>
+        {showLabel && <Label text={labelRF} control="professorRf" />}
         <InputRF
           pessoaSelecionada={pessoaSelecionada}
           onSelect={onBuscarPorRF}
           onChange={onChangeRF}
           name="professorRf"
+          placeholderRF={placeholderRF}
           form={form}
           desabilitado={
-            desabilitado ||
-            usuario.ehProfessor ||
-            usuario.ehProfessorCj ||
-            usuario.ehProfessorInfantil ||
-            usuario.ehProfessorCjInfantil ||
-            usuario.ehProfessorPoa ||
-            desabilitarCampo.rf
+            desabilitado || ehPerfilProfessor || desabilitarCampo.rf
           }
         />
       </Grid>
       <Grid className="pr-0" cols={8}>
-        {showLabel && <Label text="Nome" control="professorNome" />}
+        {showLabel && <Label text={labelNome} control="professorNome" />}
         <InputNome
           dataSource={dataSource}
           onSelect={onSelectPessoa}
@@ -189,14 +212,9 @@ function Localizador({
           pessoaSelecionada={pessoaSelecionada}
           form={form}
           name="professorNome"
+          placeholderNome={placeholderNome}
           desabilitado={
-            desabilitado ||
-            usuario.ehProfessor ||
-            usuario.ehProfessorCj ||
-            usuario.ehProfessorInfantil ||
-            usuario.ehProfessorCjInfantil ||
-            usuario.ehProfessorPoa ||
-            desabilitarCampo.nome
+            desabilitado || ehPerfilProfessor || desabilitarCampo.nome
           }
         />
       </Grid>
@@ -214,15 +232,31 @@ Localizador.propTypes = {
   dreId: PropTypes.string,
   anoLetivo: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   desabilitado: PropTypes.bool,
+  rfEdicao: PropTypes.string,
+  buscarOutrosCargos: PropTypes.bool,
+  buscandoDados: PropTypes.func,
+  labelRF: PropTypes.string,
+  labelNome: PropTypes.string,
+  placeholderRF: PropTypes.string,
+  placeholderNome: PropTypes.string,
+  classesRF: PropTypes.string,
 };
 
 Localizador.defaultProps = {
   onChange: PropTypes.func,
-  form: {},
+  form: null,
   showLabel: false,
   dreId: null,
   anoLetivo: null,
   desabilitado: false,
+  rfEdicao: '',
+  buscarOutrosCargos: false,
+  buscandoDados: () => {},
+  labelRF: 'Registro Funcional (RF)',
+  labelNome: 'Nome',
+  placeholderRF: 'Digite o RF',
+  placeholderNome: 'Digite o nome da pessoa',
+  classesRF: '',
 };
 
 export default Localizador;

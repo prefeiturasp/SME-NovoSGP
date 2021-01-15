@@ -50,7 +50,7 @@ namespace SME.SGP.Aplicacao
             var aula = await mediator.Send(new ObterAulaPorComponenteCurricularIdTurmaIdEDataQuery(notaConceitoLista.DisciplinaId, notaConceitoLista.TurmaId, atividadeAvaliativa.DataAvaliacao));
 
             if(aula != null)
-                await mediator.Send(new ExcluirPendenciaAulaCommand(aula.Id, TipoPendenciaAula.Avaliacao));
+                await mediator.Send(new ExcluirPendenciaAulaCommand(aula.Id, TipoPendencia.Avaliacao));
         }
 
         private async Task IncluirTodasNotas(IEnumerable<NotaConceitoDto> notasConceitosDto, string professorRf, string turmaId, string disiplinaId)
