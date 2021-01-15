@@ -31,6 +31,11 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await obterFiltroRelatoriosModalidadesPorUeUseCase.Executar(codigoUe, anoLetivo, consideraHistorico));
         }
+        [HttpGet("ues/{codigoUe}/{anoLetivo}/modalidades")]
+        public async Task<IActionResult> ObterModalidadesPorUeAnoLetivo(string codigoUe, int anoLetivo, bool consideraHistorico, [FromServices] IObterFiltroRelatoriosModalidadesPorUeUseCase obterFiltroRelatoriosModalidadesPorUeUseCase)
+        {
+            return Ok(await obterFiltroRelatoriosModalidadesPorUeUseCase.Executar(codigoUe, anoLetivo, consideraHistorico));
+        }
         [HttpGet("ues/{codigoUe}/modalidades/abrangencias")]
         public async Task<IActionResult> ObterModalidadesPorUeAbrangencia(string codigoUe, [FromServices] IObterFiltroRelatoriosModalidadesPorUeAbrangenciaUseCase obterFiltroRelatoriosModalidadesPorUeAbrangenciaUseCase)
         {
