@@ -1,5 +1,7 @@
 ﻿using FluentValidation;
 using MediatR;
+using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System.Collections.Generic;
 
@@ -7,16 +9,18 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterUsuarioNotificarDiarioBordoObservacaoQuery : IRequest<IEnumerable<UsuarioNotificarDiarioBordoObservacaoDto>>
     {
-        public long TurmaId { get; set; }
+        public Turma Turma { get; set; }
+        public IEnumerable<ProfessorTitularDisciplinaEol> ProfessoresDaTurma { get; set; }
         public long? ObservacaoId { get; set; }
 
-        public ObterUsuarioNotificarDiarioBordoObservacaoQuery(long turmaId)
+        public ObterUsuarioNotificarDiarioBordoObservacaoQuery(Turma turma, IEnumerable<ProfessorTitularDisciplinaEol> professoresDaTurma)
         {
-            TurmaId = turmaId;
+            Turma = turma;
+            ProfessoresDaTurma = professoresDaTurma;
         }
 
-        public ObterUsuarioNotificarDiarioBordoObservacaoQuery(long turmaId, long? observacaoId)
-            : this(turmaId)
+        public ObterUsuarioNotificarDiarioBordoObservacaoQuery(Turma turma, IEnumerable<ProfessorTitularDisciplinaEol> professoresDaTurma, long? observacaoId)
+            : this(turma, professoresDaTurma)
         {
             ObservacaoId = observacaoId;
         }
@@ -26,9 +30,13 @@ namespace SME.SGP.Aplicacao
     {
         public ObterUsuarioNotificarDiarioBordoObservacaoQueryValidator()
         {
-            RuleFor(x => x.TurmaId)
+            RuleFor(x => x.Turma)
                 .NotEmpty()
                 .WithMessage("A turma deve ser informada.");
+
+            RuleForEach(x => x.ProfessoresDaTurma)
+                .NotEmpty()
+                .WithMessage("Todos os professores da turma devem ser informados.");
 
             RuleFor(x => x.ObservacaoId)
                 .NotEmpty()
