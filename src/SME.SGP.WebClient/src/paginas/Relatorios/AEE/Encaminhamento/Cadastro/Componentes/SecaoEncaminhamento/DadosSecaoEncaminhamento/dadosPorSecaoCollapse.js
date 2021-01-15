@@ -24,6 +24,7 @@ const DadosPorSecaoCollapse = props => {
         alt={`secao-${index}-alt`}
         onClick={onClickCardCollapse}
         configCabecalho={configCabecalho}
+        show
       >
         <MontarDadosPorSecao dados={dados} match={match} />
       </CardCollapse>
