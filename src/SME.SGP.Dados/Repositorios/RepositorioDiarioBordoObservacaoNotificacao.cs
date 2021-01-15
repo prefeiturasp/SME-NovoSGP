@@ -34,6 +34,25 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<long>(query, new { diarioBordoId });
         }
 
+        public async Task<IEnumerable<UsuarioNotificacaoDto>> ObterUsuariosIdNotificadosPorObservacaoId(long observacaoId)
+        {
+            var query = @"select 
+	                        u.id,
+	                        u.rf_codigo as CodigoRf
+                        from 	
+	                        public.diario_bordo_observacao_notificacao dbon 
+                        inner join
+	                        public.notificacao n 
+	                        on dbon.notificacao_id = n.id 
+                        inner join
+                            public.usuario u
+                            on n.usuario_id = u.id
+                        where 
+	                        dbon.observacao_id = @observacaoId";
+
+            return await database.Conexao.QueryAsync<UsuarioNotificacaoDto>(query, new { observacaoId });
+        }
+
         public async Task Excluir(DiarioBordoObservacaoNotificacao notificacao)
         {
             await database.Conexao.DeleteAsync(notificacao);

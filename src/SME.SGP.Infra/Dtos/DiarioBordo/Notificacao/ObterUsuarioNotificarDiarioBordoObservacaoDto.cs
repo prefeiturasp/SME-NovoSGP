@@ -2,7 +2,7 @@
 {
     public class ObterUsuarioNotificarDiarioBordoObservacaoDto
     {
-        public long DiarioBordoId { get; set; }
+        public long TurmaId { get; set; }
         public long? ObservacaoId { get; set; }
     }
 }
