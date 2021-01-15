@@ -14,5 +14,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<long> ObterUsuarioIdPorLoginAsync(string login);
         Task<ProfessorDto> ObterProfessorDaTurmaPorAulaId(long aulaId);
         Task<IEnumerable<long>> ObterUsuariosIdPorCodigoRf(IList<string> codigoRf);
+        Task<IEnumerable<Usuario>> ObterUsuariosPorCodigoRf(IList<string> codigoRf);
     }
 }
