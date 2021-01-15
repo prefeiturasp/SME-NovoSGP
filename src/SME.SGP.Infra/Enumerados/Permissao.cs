@@ -539,7 +539,7 @@
         RDE_A = 181,
 
         [PermissaoMenu(Menu = "Gestão", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = false, Url = "/relatorios/gestao/usuarios", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Usuários")]
-        RDU_C = 182,        
+        RDU_C = 182,
 
         [PermissaoMenu(Menu = "Notificações ", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = false, Url = "/relatorios/notificacoes/historico-notificacoes", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Histórico de notificações")]
         RDN_C = 183,
@@ -571,16 +571,16 @@
         [PermissaoMenu(Menu = "Diario classe", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = false, Url = "/relatorios/diario-classe/planejamento-diario", EhSubMenu = true, OrdemSubMenu = 3, SubMenu = "Controle de planejamento diário")]
         RCP_C = 188,
 
-        [PermissaoMenu(Menu = "Ocorrências", Icone = "fas fa-user-cog", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 7, EhMenu = false, EhConsulta = true, Url = "/gestao/ocorrencias")]
+        [PermissaoMenu(Menu = "Ocorrências", Icone = "fas fa-user-cog", Agrupamento = "Gestão", OrdemAgrupamento = 6, EhConsulta = true, Url = "/gestao/ocorrencias")]
         OCO_C = 193,
 
-        [PermissaoMenu(Menu = "Ocorrências", Icone = "fas fa-user-cog", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 7, EhMenu = false, EhInclusao = true, Url = "/gestao/ocorrencias")]
+        [PermissaoMenu(Menu = "Ocorrências", Icone = "fas fa-user-cog", Agrupamento = "Gestão", OrdemAgrupamento = 6, EhInclusao = true, Url = "/gestao/ocorrencias")]
         OCO_I = 194,
 
-        [PermissaoMenu(Menu = "Ocorrências", Icone = "fas fa-user-cog", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 7, EhMenu = false, EhExclusao = true, Url = "/gestao/ocorrencias")]
+        [PermissaoMenu(Menu = "Ocorrências", Icone = "fas fa-user-cog", Agrupamento = "Gestão", OrdemAgrupamento = 6, EhExclusao = true, Url = "/gestao/ocorrencias")]
         OCO_E = 195,
 
-        [PermissaoMenu(Menu = "Ocorrências", Icone = "fas fa-user-cog", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 7, EhMenu = false, EhAlteracao = true, Url = "/gestao/ocorrencias")]
+        [PermissaoMenu(Menu = "Ocorrências", Icone = "fas fa-user-cog", Agrupamento = "Gestão", OrdemAgrupamento = 6, EhAlteracao = true, Url = "/gestao/ocorrencias")]
         OCO_A = 196
     }
 }
