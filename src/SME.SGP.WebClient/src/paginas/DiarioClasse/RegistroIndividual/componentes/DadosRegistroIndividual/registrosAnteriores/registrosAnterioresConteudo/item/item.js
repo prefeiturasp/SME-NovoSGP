@@ -40,6 +40,9 @@ const Item = ({ dados, setCarregandoGeral }) => {
   const registroAnteriorEmEdicao = useSelector(
     store => store.registroIndividual.registroAnteriorEmEdicao
   );
+  const dadosAlunoObjectCard = useSelector(
+    store => store.registroIndividual.dadosAlunoObjectCard
+  );
   const permissoes = useSelector(state => state.usuario.permissoes);
   const permissoesTela = permissoes[RotasDto.REGISTRO_INDIVIDUAL];
 
@@ -151,7 +154,7 @@ const Item = ({ dados, setCarregandoGeral }) => {
           />
         </div>
       )}
-      {permissoesTela.podeIncluir && (
+      {permissoesTela.podeIncluir && !dadosAlunoObjectCard.desabilitado && (
         <ContainerBotoes className="d-flex">
           {editando ? (
             <div className="d-flex mt-2">
