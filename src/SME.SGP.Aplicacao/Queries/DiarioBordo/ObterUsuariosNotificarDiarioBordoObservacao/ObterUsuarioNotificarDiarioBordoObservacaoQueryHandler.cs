@@ -3,10 +3,8 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -23,26 +21,16 @@ namespace SME.SGP.Aplicacao.Queries.DiarioBordo.ObterUsuariosNotificarDiarioBord
             this.mediator = mediator;
         }
 
-        public async Task<IEnumerable<UsuarioNotificarDiarioBordoObservacaoDto>> Handle(ObterUsuarioNotificarDiarioBordoObservacaoQuery request, CancellationToken cancellationToken)
-        {
-            var turma = await mediator.Send(new ObterTurmaPorIdQuery(request.TurmaId));
-            if (turma is null)
-                throw new NegocioException("A turma informada não foi encontrada.");
-
-            var professores = await mediator.Send(new ObterProfessoresTitularesDaTurmaCompletosQuery(turma.CodigoTurma));
-            if(!professores?.Any() ?? true)
-                throw new NegocioException("Nenhum professor para a turma informada foi encontrada.");
-
-            return request.ObservacaoId != null
-                ? await ObterUsuariosAdicionadosNaObservacaoParaSeremNotificadosAsync(request.ObservacaoId.GetValueOrDefault(), professores)
-                : await ObterUsuariosDosProfessoresDaTurmaAsync(professores);
-        }
+        public async Task<IEnumerable<UsuarioNotificarDiarioBordoObservacaoDto>> Handle(ObterUsuarioNotificarDiarioBordoObservacaoQuery request, CancellationToken cancellationToken) 
+            => request.ObservacaoId != null
+                ? await ObterUsuariosAdicionadosNaObservacaoParaSeremNotificadosAsync(request.ObservacaoId.GetValueOrDefault(), request.ProfessoresDaTurma)
+                : await ObterUsuariosDosProfessoresDaTurmaAsync(request.ProfessoresDaTurma);
 
         private async Task<IEnumerable<UsuarioNotificarDiarioBordoObservacaoDto>> ObterUsuariosDosProfessoresDaTurmaAsync(IEnumerable<ProfessorTitularDisciplinaEol> professores)
         {
             var professoresRf = professores.Select(x => x.ProfessorRf).ToList();
             var usuarios = await mediator.Send(new ObterUsuariosPorCodigosRfQuery(professoresRf));
-            if(!usuarios?.Any () ?? true)
+            if (!usuarios?.Any() ?? true)
                 throw new NegocioException("Os usuários dos professores da turma não foram encontrados.");
 
             return professores
@@ -55,9 +43,25 @@ namespace SME.SGP.Aplicacao.Queries.DiarioBordo.ObterUsuariosNotificarDiarioBord
                 .ToList();
         }
 
-        private Task<IEnumerable<UsuarioNotificarDiarioBordoObservacaoDto>> ObterUsuariosAdicionadosNaObservacaoParaSeremNotificadosAsync(long observacaoId, IEnumerable<ProfessorTitularDisciplinaEol> professores)
+        private async Task<IEnumerable<UsuarioNotificarDiarioBordoObservacaoDto>> ObterUsuariosAdicionadosNaObservacaoParaSeremNotificadosAsync(long observacaoId, IEnumerable<ProfessorTitularDisciplinaEol> professores)
         {
-            var usuarios = await repositorioDiarioBordoObservacaoNotificacao.ObterObservacaoPorId
+            var usuariosNotificacao = await repositorioDiarioBordoObservacaoNotificacao.ObterUsuariosIdNotificadosPorObservacaoId(observacaoId);
+            if (!usuariosNotificacao?.Any() ?? true)
+                return await ObterUsuariosDosProfessoresDaTurmaAsync(professores);
+
+            var usuariosNotificacaoEol = await mediator.Send(new ObterListaNomePorListaRFQuery(usuariosNotificacao.Select(x => x.CodigoRf)));
+            if (!usuariosNotificacaoEol?.Any() ?? true)
+                throw new NegocioException("Os usuários das notificações enviadas não foram encontrados.");
+
+            return usuariosNotificacaoEol
+                .Select(x => new UsuarioNotificarDiarioBordoObservacaoDto
+                {
+                    Nome = $"{x.Nome} ({x.CodigoRF})",
+                    PodeRemover = !professores.Any(y => y.ProfessorRf == x.CodigoRF),
+                    UsuarioId = usuariosNotificacao.FirstOrDefault(y => y.CodigoRf == x.CodigoRF).Id
+                })
+                .OrderBy(x => x.PodeRemover)
+                .ToList();
         }
     }
 }
