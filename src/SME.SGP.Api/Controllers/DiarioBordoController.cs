@@ -124,18 +124,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<UsuarioNotificarDiarioBordoObservacaoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.DDB_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterUsuariosParaNotificar([FromQuery] ObterUsuarioNotificarDiarioBordoObservacaoDto dto)
+        public async Task<IActionResult> ObterUsuariosParaNotificar([FromQuery] ObterUsuarioNotificarDiarioBordoObservacaoDto dto, [FromServices] IObterUsuarioNotificarDiarioBordoObservacaoUseCase obterUsuarioNotificarDiarioBordoObservacaoUseCase)
         {
-            var resultado = new List<UsuarioNotificarDiarioBordoObservacaoDto>
-            {
-                new UsuarioNotificarDiarioBordoObservacaoDto { UsuarioId = 1, Nome = "Carlos Dias (123456)", PodeRemover = true },
-                new UsuarioNotificarDiarioBordoObservacaoDto { UsuarioId = 2, Nome = "Marcos Lobo (789012)", PodeRemover = false },
-                new UsuarioNotificarDiarioBordoObservacaoDto { UsuarioId = 3, Nome = "Jefferson (345678)", PodeRemover = true },
-                new UsuarioNotificarDiarioBordoObservacaoDto { UsuarioId = 4, Nome = "Natasha (901234)", PodeRemover = false },
-                new UsuarioNotificarDiarioBordoObservacaoDto { UsuarioId = 5, Nome = "AMCOM (567789)", PodeRemover = true },
-            };
-
-            return await Task.FromResult(Ok(resultado));
+            return Ok(await obterUsuarioNotificarDiarioBordoObservacaoUseCase.Executar(dto));
         }
     }
 }
