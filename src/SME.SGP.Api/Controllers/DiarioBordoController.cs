@@ -89,7 +89,7 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.DDB_C, Policy = "Bearer")]
         public async Task<IActionResult> AdicionarObservacao(long diarioBordoId, [FromBody] ObservacaoDiarioBordoDto dto, [FromServices] IAdicionarObservacaoDiarioBordoUseCase adicionarObservacaoDiarioBordoUseCase)
         {
-            return Ok(await adicionarObservacaoDiarioBordoUseCase.Executar(dto.Observacao, diarioBordoId));
+            return Ok(await adicionarObservacaoDiarioBordoUseCase.Executar(dto.Observacao, diarioBordoId, dto.UsuariosIdNotificacao));
         }
 
         [HttpPut("observacoes/{observacaoId}")]
@@ -98,7 +98,7 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.DDB_C, Policy = "Bearer")]
         public async Task<IActionResult> AlterarrObservacao(long observacaoId, [FromBody] ObservacaoDiarioBordoDto dto, [FromServices] IAlterarObservacaoDiarioBordoUseCase alterarObservacaoDiarioBordoUseCase)
         {
-            return Ok(await alterarObservacaoDiarioBordoUseCase.Executar(dto.Observacao, observacaoId));
+            return Ok(await alterarObservacaoDiarioBordoUseCase.Executar(dto.Observacao, observacaoId, dto.UsuariosIdNotificacao));
         }
 
         [HttpDelete("observacoes/{observacaoId}")]
@@ -115,7 +115,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.DDB_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterTitulosPorIntervalo([FromServices] IObterListagemDiariosDeBordoPorPeriodoUseCase useCase, long turmaId, long componenteCurricularId, DateTime dataInicio, DateTime dataFim)
+        public async Task<IActionResult> ObterTitulosPorIntervalo([FromServices] IObterListagemDiariosDeBordoPorPeriodoUseCase useCase, long turmaId, long componenteCurricularId, DateTime? dataInicio, DateTime? dataFim)
         {
             return Ok(await useCase.Executar(new FiltroListagemDiarioBordoDto(turmaId, componenteCurricularId, dataInicio, dataFim)));
         }
