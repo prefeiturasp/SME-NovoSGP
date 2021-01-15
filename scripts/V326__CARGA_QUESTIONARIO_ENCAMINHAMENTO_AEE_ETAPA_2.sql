@@ -34,7 +34,7 @@ begin
     
     -- 2.1  - Justifique o motivo de não haver envolvimento de outros profissionais
     insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf)
-		values(questionarioId, 0, 'Justifique o motivo de não haver envolvimento de outros profissionais', '', true, 2, '', NOW(), 'SISTEMA', '0')
+		values(questionarioId, 1, 'Justifique o motivo de não haver envolvimento de outros profissionais', '', true, 2, '', NOW(), 'SISTEMA', '0')
 		RETURNING id INTO questaoComplementarId;
 
 	insert into opcao_resposta (questao_id, questao_complementar_id, ordem, nome, criado_em, criado_por, criado_rf)
