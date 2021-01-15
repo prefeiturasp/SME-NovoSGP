@@ -47,6 +47,7 @@ namespace SME.SGP.Aplicacao
                     return new ObservacaoNotificacoesDiarioBordoDto()
                     {
                         Auditoria = obs.Auditoria,
+                        Id = obs.Id,
                         Observacao = obs.Observacao,
                         QtdUsuariosNotificacao = obs.QtdUsuariosNotificados
                     };

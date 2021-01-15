@@ -1,6 +1,6 @@
 import { data } from 'jquery';
 import React, { useCallback, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import shortid from 'shortid';
 
 import {
@@ -18,6 +18,7 @@ import { Cabecalho, Paginacao } from '~/componentes-sgp';
 import ObservacoesUsuario from '~/componentes-sgp/ObservacoesUsuario/observacoesUsuario';
 
 import { RotasDto } from '~/dtos';
+import { setDadosObservacoesUsuario } from '~/redux/modulos/observacoesUsuario/actions';
 
 import { ehTurmaInfantil, erros, history, ServicoDisciplina } from '~/servicos';
 import ServicoDiarioBordo from '~/servicos/Paginas/DiarioClasse/ServicoDiarioBordo';
@@ -48,6 +49,7 @@ const NovoDiarioBordo = () => {
   );
   const [listaTitulos, setListaTitulos] = useState();
   const [diarioBordoAtual, setDiarioBordoAtual] = useState();
+  const dispatch = useDispatch();
 
   const obterComponentesCurriculares = useCallback(async () => {
     setCarregandoGeral(true);
@@ -158,7 +160,7 @@ const NovoDiarioBordo = () => {
     if (dados?.data) {
       setDiarioBordoAtual(dados.data);
       if (dados.data.observacoes.length) {
-        console.log(dados.data.observacoes);
+        dispatch(setDadosObservacoesUsuario(dados.data.observacoes));
       }
     }
   };
@@ -267,9 +269,10 @@ const NovoDiarioBordo = () => {
                         />
                         <div
                           className="position-absolute"
-                          style={{ left: 16, bottom: 24 }}
+                          style={{ left: 16, bottom: 332 }}
                         >
                           <Button
+                            height="30px"
                             id={shortid.generate()}
                             label="Notificar usuários (2)"
                             icon="bell"
@@ -279,21 +282,6 @@ const NovoDiarioBordo = () => {
                           />
                         </div>
                       </div>
-                      {diarioBordoAtual?.observacoes && (
-                        <div className="col-sm-12 p-0 position-relative">
-                          {diarioBordoAtual.observacoes.map(observacao => {
-                            return (
-                              <ObservacoesUsuario
-                                esconderLabel
-                                esconderCaixaExterna
-                                salvarObservacao={() => {}}
-                                editarObservacao={() => {}}
-                                excluirObservacao={() => {}}
-                              />
-                            );
-                          })}
-                        </div>
-                      )}
                     </div>
                   </PainelCollapse.Painel>
                 ))}
