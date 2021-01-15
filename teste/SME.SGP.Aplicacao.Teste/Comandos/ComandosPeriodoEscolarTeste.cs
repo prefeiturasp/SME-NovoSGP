@@ -44,26 +44,26 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
                     new PeriodoEscolarDto
                     {
                         Bimestre = 1,
-                        PeriodoInicio = DateTime.Now,
-                        PeriodoFim = DateTime.Now.AddMinutes(1),
+                        PeriodoInicio = DateTimeExtension.HorarioBrasilia(),
+                        PeriodoFim = DateTimeExtension.HorarioBrasilia().AddMinutes(1),
                     },
                     new PeriodoEscolarDto
                     {
                         Bimestre = 2,
-                        PeriodoInicio = DateTime.Now.AddMinutes(2),
-                        PeriodoFim = DateTime.Now.AddMinutes(3),
+                        PeriodoInicio = DateTimeExtension.HorarioBrasilia().AddMinutes(2),
+                        PeriodoFim = DateTimeExtension.HorarioBrasilia().AddMinutes(3),
                     },
                     new PeriodoEscolarDto
                     {
                         Bimestre = 3,
-                        PeriodoInicio = DateTime.Now.AddMinutes(4),
-                        PeriodoFim = DateTime.Now.AddMinutes(5),
+                        PeriodoInicio = DateTimeExtension.HorarioBrasilia().AddMinutes(4),
+                        PeriodoFim = DateTimeExtension.HorarioBrasilia().AddMinutes(5),
                     },
                     new PeriodoEscolarDto
                     {
                         Bimestre = 4,
-                        PeriodoInicio = DateTime.Now.AddMinutes(6),
-                        PeriodoFim = DateTime.Now.AddMinutes(7),
+                        PeriodoInicio = DateTimeExtension.HorarioBrasilia().AddMinutes(6),
+                        PeriodoFim = DateTimeExtension.HorarioBrasilia().AddMinutes(7),
                     }
                 }
             });
@@ -83,26 +83,26 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
                     new PeriodoEscolarDto
                     {
                         Bimestre = 1,
-                        PeriodoInicio = DateTime.Now,
-                        PeriodoFim = DateTime.Now.AddMinutes(1),
+                        PeriodoInicio = DateTimeExtension.HorarioBrasilia(),
+                        PeriodoFim = DateTimeExtension.HorarioBrasilia().AddMinutes(1),
                     },
                     new PeriodoEscolarDto
                     {
                         Bimestre = 2,
-                        PeriodoInicio = DateTime.Now.AddMinutes(2),
-                        PeriodoFim = DateTime.Now.AddMinutes(3),
+                        PeriodoInicio = DateTimeExtension.HorarioBrasilia().AddMinutes(2),
+                        PeriodoFim = DateTimeExtension.HorarioBrasilia().AddMinutes(3),
                     },
                     new PeriodoEscolarDto
                     {
                         Bimestre = 3,
-                        PeriodoInicio = DateTime.Now.AddMinutes(4),
-                        PeriodoFim = DateTime.Now.AddMinutes(5),
+                        PeriodoInicio = DateTimeExtension.HorarioBrasilia().AddMinutes(4),
+                        PeriodoFim = DateTimeExtension.HorarioBrasilia().AddMinutes(5),
                     },
                     new PeriodoEscolarDto
                     {
                         Bimestre = 4,
-                        PeriodoInicio = DateTime.Now.AddMinutes(6),
-                        PeriodoFim = DateTime.Now.AddMinutes(7),
+                        PeriodoInicio = DateTimeExtension.HorarioBrasilia().AddMinutes(6),
+                        PeriodoFim = DateTimeExtension.HorarioBrasilia().AddMinutes(7),
                     }
                  }
              }));

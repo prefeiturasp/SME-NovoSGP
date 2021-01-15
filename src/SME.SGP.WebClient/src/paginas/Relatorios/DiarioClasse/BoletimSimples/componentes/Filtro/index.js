@@ -164,9 +164,15 @@ function Filtro({ onFiltrar, resetForm }) {
     setAnoLetivo(ano);    
   }
 
-  function onCheckedConsideraHistorico(e){     
+  function onCheckedConsideraHistorico(e){
+    refForm.setFieldValue('modalidadeId', undefined);
+    refForm.setFieldValue('semestre', undefined);
+    refForm.setFieldValue('dreId', undefined);
+    refForm.setFieldValue('ueId', undefined);
+    refForm.setFieldValue('turmaId', undefined);
+    refForm.setFieldValue('opcaoAlunoId', '0');
     setConsideraHistorico(e.target.checked);
-    refForm.setFieldValue('consideraHistorico', e.target.checked);    
+    refForm.setFieldValue('consideraHistorico', e.target.checked);
   }
 
   return (

@@ -128,11 +128,12 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<long>(sql, new { turmaId, componenteCurricularId });
         }
 
-        public async Task<IEnumerable<TurmaParaCopiaPlanoAnualDto>> ValidaSeTurmasPossuemPlanoAnual(string[] turmasId)
+        public async Task<IEnumerable<TurmaParaCopiaPlanoAnualDto>> ValidaSeTurmasPossuemPlanoAnual(string[] turmasId, bool consideraHistorico)
         {
-            var query = @"select
+            var query = $@"select
 	                        t.*,
-	                        (select 1 from plano_anual where turma_id = t.turma_id::int8 limit 1) as possuiPlano
+	                        (select 1 from plano_anual where turma_id = t.turma_id::int8 limit 1) as possuiPlano,
+                            (select componente_curricular_eol_id from plano_anual where turma_id = t.turma_id::int8 limit 1) as codigoComponenteCurricular
                         from
 	                        turma t
                         inner join abrangencia a on
@@ -140,7 +141,7 @@ namespace SME.SGP.Dados.Repositorios
                         left join plano_anual p on
 	                        p.turma_id = a.turma_id
                         where
-	                        t.turma_id = Any(@turmasId) and not a.historico group by t.id";
+	                        t.turma_id = Any(@turmasId) and {(consideraHistorico ? string.Empty : "not")} a.historico group by t.id";
 
             return await database.Conexao.QueryAsync<TurmaParaCopiaPlanoAnualDto>(query, new { turmasId });
         }
@@ -196,7 +197,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<TurmaParaCopiaPlanoAnualDto>(query, new { turmaId = turma.Id, ueId = turma.UeId, componenteCurricularId = componenteCurricularId.ToString(), ano, rf });
         }
 
-        public async Task<IEnumerable<TurmaParaCopiaPlanoAnualDto>> ObterTurmasParaCopiaPlanejamentoAnualCP(Turma turma, string ano, bool ensinoEspecial)
+        public async Task<IEnumerable<TurmaParaCopiaPlanoAnualDto>> ObterTurmasParaCopiaPlanejamentoAnualCP(Turma turma, string ano, bool ensinoEspecial, bool consideraHistorico)
         {
             var query = $@"select
 	                        t.id,
@@ -217,7 +218,7 @@ namespace SME.SGP.Dados.Repositorios
                         left join planejamento_anual p on
 	                        p.turma_id = ab.turma_id
                         where
-	                        not ab.historico and t.id <> @turmaId and t.ue_id = @ueId and p.excluido = false
+	                        {(consideraHistorico ? string.Empty : "not")} ab.historico and t.id <> @turmaId and t.ue_id = @ueId and p.excluido = false
                             {(!ensinoEspecial ? " and t.ano = @ano " : "")}  
                         group by t.id order by t.nome  ";
 

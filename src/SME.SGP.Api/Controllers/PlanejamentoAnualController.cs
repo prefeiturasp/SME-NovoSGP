@@ -57,9 +57,9 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("turmas/copia")]
         [ProducesResponseType(typeof(IEnumerable<TurmaParaCopiaPlanoAnualDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterTurmasParaCopia([FromQuery] int turmaId, [FromQuery] long componenteCurricular, [FromQuery] bool ensinoEspecial, [FromServices] IObterTurmasParaCopiaUseCase useCase)
+        public async Task<IActionResult> ObterTurmasParaCopia([FromQuery] int turmaId, [FromQuery] long componenteCurricular, [FromQuery] bool ensinoEspecial, [FromQuery] bool consideraHistorico, [FromServices] IObterTurmasParaCopiaUseCase useCase)
         {
-            return Ok(await useCase.Executar(turmaId, componenteCurricular, ensinoEspecial ));
+            return Ok(await useCase.Executar(turmaId, componenteCurricular, ensinoEspecial, consideraHistorico ));
         }
 
         [HttpGet("{planejamentoAnualId}/periodos-escolares/copia")]

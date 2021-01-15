@@ -73,7 +73,8 @@ const DadosPlanoAnual = () => {
     ServicoPlanoAnual.obterTurmasParaCopia(
       turmaSelecionada.turma,
       componenteCurricular.codigoComponenteCurricular,
-      turmaSelecionada.ensinoEspecial
+      turmaSelecionada.ensinoEspecial, 
+      turmaSelecionada.consideraHistorico
     )
       .then(resposta => {
         dispatch(setListaTurmasParaCopiar(resposta.data));
