@@ -234,7 +234,7 @@ namespace SME.SGP.Dados.Repositorios
 
             var offSet = "offset @qtdeRegistrosIgnorados rows fetch next @qtdeRegistros rows only";
 
-            query = $"select a.id, a.data_aula DataAula, db.criado_rf CodigoRf, db.criado_por Nome {condicao} order by a.data_aula desc {offSet} ";
+            query = $"select db.id, a.data_aula DataAula, db.criado_rf CodigoRf, db.criado_por Nome {condicao} order by a.data_aula desc {offSet} ";
 
             return new PaginacaoResultadoDto<DiarioBordoResumoDto>()
             {
