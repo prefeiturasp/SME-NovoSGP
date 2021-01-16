@@ -20,7 +20,13 @@ import ObservacoesUsuario from '~/componentes-sgp/ObservacoesUsuario/observacoes
 import { RotasDto } from '~/dtos';
 import { setDadosObservacoesUsuario } from '~/redux/modulos/observacoesUsuario/actions';
 
-import { ehTurmaInfantil, erros, history, ServicoDisciplina } from '~/servicos';
+import {
+  ehTurmaInfantil,
+  erros,
+  history,
+  ServicoDisciplina,
+  sucesso,
+} from '~/servicos';
 import ServicoDiarioBordo from '~/servicos/Paginas/DiarioClasse/ServicoDiarioBordo';
 
 import { BotoesAcoes, Mensagens, ModalNotificarUsuarios } from './componentes';
@@ -165,6 +171,17 @@ const NovoDiarioBordo = () => {
     }
   };
 
+  const salvarEditarObservacao = async valor => {
+    const params = { observacao: valor.observacao, usuariosIdNotificacao: [] };
+    const salvou = await ServicoDiarioBordo.salvarEditarObservacao(
+      diarioBordoAtual?.id,
+      params
+    );
+    if (salvou?.status === 200) {
+      sucesso(`Observacao ${valor.id ? 'alterada' : 'inserida'} com sucesso`);
+    }
+  };
+
   return (
     <Loader loading={carregandoGeral} className="w-100">
       <Mensagens />
@@ -263,7 +280,7 @@ const NovoDiarioBordo = () => {
                         <ObservacoesUsuario
                           esconderLabel
                           esconderCaixaExterna
-                          // salvarObservacao={obs => salvarEditarObservacao(obs)}
+                          salvarObservacao={obs => salvarEditarObservacao(obs)}
                           // editarObservacao={obs => salvarEditarObservacao(obs)}
                           // excluirObservacao={obs => excluirObservacao(obs)}
                         />
