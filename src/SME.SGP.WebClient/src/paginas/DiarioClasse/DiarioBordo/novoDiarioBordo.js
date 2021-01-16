@@ -1,4 +1,3 @@
-import { data } from 'jquery';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import shortid from 'shortid';
@@ -36,19 +35,21 @@ const NovoDiarioBordo = () => {
     componenteCurricularSelecionado,
     setComponenteCurricularSelecionado,
   ] = useState();
-  const [dataInicial, setDataInicial] = useState();
   const [dataFinal, setDataFinal] = useState();
+  const [dataInicial, setDataInicial] = useState();
+  const [diarioBordoAtual, setDiarioBordoAtual] = useState();
+  const [listaTitulos, setListaTitulos] = useState();
+  const [listaUsuarios, setListaUsuarios] = useState([]);
   const [modalVisivel, setModalVisivel] = useState(false);
   const [numeroPagina, setNumeroPagina] = useState(1);
 
-  const { turmaSelecionada } = useSelector(state => state.usuario);
+  const turmaSelecionada = useSelector(state => state.usuario.turmaSelecionada);
   const turmaId = turmaSelecionada?.id || 0;
   const turma = turmaSelecionada?.turma || 0;
   const modalidadesFiltroPrincipal = useSelector(
     store => store.filtro.modalidades
   );
-  const [listaTitulos, setListaTitulos] = useState();
-  const [diarioBordoAtual, setDiarioBordoAtual] = useState();
+
   const dispatch = useDispatch();
 
   const obterComponentesCurriculares = useCallback(async () => {
@@ -150,8 +151,6 @@ const NovoDiarioBordo = () => {
   }, [dataInicial, dataFinal, obterTitulos]);
 
   const onChangePaginacao = pagina => {
-    // eslint-disable-next-line no-console
-    console.log('pagina ===> ', pagina);
     setNumeroPagina(pagina);
   };
 
@@ -164,6 +163,22 @@ const NovoDiarioBordo = () => {
       }
     }
   };
+
+  const obterNofiticarUsuarios = useCallback(async () => {
+    const retorno = await ServicoDiarioBordo.obterNofiticarUsuarios({
+      turmaId,
+    }).catch(e => erros(e));
+
+    if (retorno?.status === 200) {
+      setListaUsuarios(retorno.data);
+    }
+  }, [turmaId]);
+
+  useEffect(() => {
+    if (turmaId && !listaUsuarios?.length) {
+      obterNofiticarUsuarios();
+    }
+  }, [turmaId, obterNofiticarUsuarios, listaUsuarios]);
 
   return (
     <Loader loading={carregandoGeral} className="w-100">
@@ -269,12 +284,12 @@ const NovoDiarioBordo = () => {
                         />
                         <div
                           className="position-absolute"
-                          style={{ left: 16, bottom: 332 }}
+                          style={{ left: 16, top: 145 }}
                         >
                           <Button
                             height="30px"
                             id={shortid.generate()}
-                            label="Notificar usuários (2)"
+                            label={`Notificar usuários (${listaUsuarios?.length})`}
                             icon="bell"
                             color={Colors.Azul}
                             border
@@ -300,10 +315,14 @@ const NovoDiarioBordo = () => {
             </div>
           )}
         </div>
-        <ModalNotificarUsuarios
-          modalVisivel={modalVisivel}
-          setModalVisivel={setModalVisivel}
-        />
+        {modalVisivel && (
+          <ModalNotificarUsuarios
+            modalVisivel={modalVisivel}
+            setModalVisivel={setModalVisivel}
+            listaUsuarios={listaUsuarios}
+            setListaUsuarios={setListaUsuarios}
+          />
+        )}
       </Card>
     </Loader>
   );
