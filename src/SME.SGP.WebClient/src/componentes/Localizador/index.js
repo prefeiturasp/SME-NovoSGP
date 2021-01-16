@@ -34,6 +34,7 @@ function Localizador({
   placeholderNome,
   labelNome,
   classesRF,
+  limparCamposAposPesquisa,
 }) {
   const usuario = useSelector(store => store.usuario);
   const [dataSource, setDataSource] = useState([]);
@@ -187,6 +188,16 @@ function Localizador({
     }
   }, [form?.values]);
 
+  useEffect(() => {
+    if (Object.keys(pessoaSelecionada).length && limparCamposAposPesquisa) {
+      setPessoaSelecionada({});
+      setDesabilitarCampo({
+        rf: false,
+        nome: false,
+      });
+    }
+  }, [pessoaSelecionada, limparCamposAposPesquisa]);
+
   return (
     <>
       <Grid cols={4} className={classesRF}>
@@ -240,6 +251,7 @@ Localizador.propTypes = {
   placeholderRF: PropTypes.string,
   placeholderNome: PropTypes.string,
   classesRF: PropTypes.string,
+  limparCamposAposPesquisa: PropTypes.bool,
 };
 
 Localizador.defaultProps = {
@@ -257,6 +269,7 @@ Localizador.defaultProps = {
   placeholderRF: 'Digite o RF',
   placeholderNome: 'Digite o nome da pessoa',
   classesRF: '',
+  limparCamposAposPesquisa: false,
 };
 
 export default Localizador;
