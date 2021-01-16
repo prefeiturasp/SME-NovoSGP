@@ -1,33 +1,85 @@
-import React from 'react';
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 
 import { Colors, Localizador, ModalConteudoHtml } from '~/componentes';
 
+import { confirmar } from '~/servicos';
+
 import { BotaoEstilizado, TextoEstilizado } from './modalNotificarUsuarios.css';
 
-// eslint-disable-next-line react/prop-types
-const ModalNotificarUsuarios = ({ modalVisivel, setModalVisivel }) => {
+const ModalNotificarUsuarios = ({
+  modalVisivel,
+  setModalVisivel,
+  listaUsuarios,
+  setListaUsuarios,
+}) => {
+  const [usuariosSelecionados, setUsuariosSelecionados] = useState(
+    listaUsuarios
+  );
+  const anoAtual = window.moment().format('YYYY');
+
+  const mudarLocalizador = valores => {
+    if (valores?.professorRf) {
+      setUsuariosSelecionados(estadoAntigo => {
+        const usuario = estadoAntigo.find(
+          item => item.usuarioId === valores.usuarioId
+        );
+        if (usuario) {
+          return estadoAntigo;
+        }
+        return [
+          ...estadoAntigo,
+          {
+            usuarioId: valores.usuarioId,
+            nome: `${valores.professorNome} (${valores?.professorRf})`,
+            podeRemover: true,
+          },
+        ];
+      });
+    }
+  };
+
+  const removerUsuario = usuarioId => {
+    setUsuariosSelecionados(estadoAntigo =>
+      estadoAntigo.filter(item => item.usuarioId !== usuarioId)
+    );
+  };
+
+  const esconderModal = () => setModalVisivel(false);
+
+  const perguntarSalvarListaUsuario = async () => {
+    const resposta = await confirmar(
+      'Atenção',
+      'Suas alterações não foram salvas, deseja salvar agora?'
+    );
+    return resposta;
+  };
+
+  const onConfirmarModal = () => {
+    setListaUsuarios(usuariosSelecionados);
+    esconderModal();
+  };
+
+  const fecharModal = async () => {
+    esconderModal();
+    const ehPraSalvar = await perguntarSalvarListaUsuario();
+    if (ehPraSalvar) {
+      onConfirmarModal();
+    }
+  };
+
   return (
     <ModalConteudoHtml
       titulo="Selecionar usuários para notificar"
       visivel={modalVisivel}
       esconderBotaoSecundario
-      onClose={() => {
-        setModalVisivel(false);
-      }}
-      onConfirmacaoSecundaria={() => {
-        setModalVisivel(false);
-      }}
-      // onConfirmacaoPrincipal={() => {
-      //   onConfirmarModal();
-      // }}
+      onClose={fecharModal}
+      onConfirmacaoPrincipal={onConfirmarModal}
       labelBotaoPrincipal="Confirmar"
       closable
       width="50%"
       fecharAoClicarFora
       fecharAoClicarEsc
-      // desabilitarBotaoPrincipal={
-      //   ehTurmaAnoAnterior() || somenteConsulta || naoPodeIncluirOuAlterar()
-      // }
     >
       <div className="col-md-12 d-flex mb-4">
         <Localizador
@@ -35,40 +87,52 @@ const ModalNotificarUsuarios = ({ modalVisivel, setModalVisivel }) => {
           placeholderRF="Procure pelo RF do usuário"
           placeholderNome="Procure pelo nome do usuário"
           labelNome="Nome"
-          // rfEdicao={usuarioRf}
-          // buscandoDados={setCarregandoGeral}
-          // dreId={dreCodigo}
-          // anoLetivo={anoAtual}
           showLabel
-          onChange={valores => {
-            // if (valores && valores.professorRf) {
-            //   setUsuarioRf(valores.professorRf);
-            // } else {
-            //   setUsuarioRf(undefined);
-            // }
-          }}
+          onChange={mudarLocalizador}
           buscarOutrosCargos
           classesRF="p-0"
+          anoLetivo={anoAtual}
+          limparCamposAposPesquisa
+          desabilitado={false}
         />
       </div>
-      <div className="col-md-12 d-flex justify-content-between">
-        <span>Asi Peláez (1254698)</span>
-        <TextoEstilizado>Professor</TextoEstilizado>
-      </div>
-      <div className="col-md-12 d-flex justify-content-between">
-        <span>Cândido Castaño (1254698)</span>
-        <BotaoEstilizado
-          id="btn-excluir"
-          icon="trash-alt"
-          iconType="far"
-          color={Colors.CinzaBotao}
-          onClick={() => {}}
-          height="13px"
-          width="13px"
-        />
-      </div>
+      {usuariosSelecionados?.map(({ usuarioId, nome, podeRemover }) => (
+        <div
+          className="col-md-12 d-flex justify-content-between mb-4"
+          key={`${usuarioId}`}
+        >
+          <span>{nome}</span>
+          {podeRemover ? (
+            <BotaoEstilizado
+              id="btn-excluir"
+              icon="trash-alt"
+              iconType="far"
+              color={Colors.CinzaBotao}
+              onClick={() => removerUsuario(usuarioId)}
+              height="13px"
+              width="13px"
+            />
+          ) : (
+            <TextoEstilizado>Professor</TextoEstilizado>
+          )}
+        </div>
+      ))}
     </ModalConteudoHtml>
   );
+};
+
+ModalNotificarUsuarios.defaultProps = {
+  listaUsuarios: [],
+  modalVisivel: false,
+  setListaUsuarios: () => {},
+  setModalVisivel: () => {},
+};
+
+ModalNotificarUsuarios.propTypes = {
+  listaUsuarios: PropTypes.oneOfType([PropTypes.any]),
+  modalVisivel: PropTypes.bool,
+  setListaUsuarios: PropTypes.func,
+  setModalVisivel: PropTypes.func,
 };
 
 export default ModalNotificarUsuarios;
