@@ -130,6 +130,12 @@ class ServicoDiarioBordo {
   obterDiarioBordoDetalhes = diarioBordoId => {
     return api.get(`${urlPadrao}/detalhes/${diarioBordoId}`);
   };
+
+  obterNofiticarUsuarios = ({ turmaId, observacaoId = '' }) => {
+    return api.get(
+      `${urlPadrao}/notificacoes/usuarios?turmaId=${turmaId}&observacaoId=${observacaoId}`
+    );
+  };
 }
 
 export default new ServicoDiarioBordo();
