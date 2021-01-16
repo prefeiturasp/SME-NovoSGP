@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import shortid from 'shortid';
-
 import {
   Base,
   Button,
@@ -15,11 +14,10 @@ import {
 } from '~/componentes';
 import { Cabecalho, Paginacao } from '~/componentes-sgp';
 import ObservacoesUsuario from '~/componentes-sgp/ObservacoesUsuario/observacoesUsuario';
-
 import { RotasDto } from '~/dtos';
 import { setDadosObservacoesUsuario } from '~/redux/modulos/observacoesUsuario/actions';
-
 import {
+  confirmar,
   ehTurmaInfantil,
   erros,
   history,
@@ -27,8 +25,8 @@ import {
   sucesso,
 } from '~/servicos';
 import ServicoDiarioBordo from '~/servicos/Paginas/DiarioClasse/ServicoDiarioBordo';
-
 import { BotoesAcoes, Mensagens, ModalNotificarUsuarios } from './componentes';
+import ServicoObservacoesUsuario from '~/componentes-sgp/ObservacoesUsuario/ServicoObservacoesUsuario';
 
 const NovoDiarioBordo = () => {
   const [carregandoGeral, setCarregandoGeral] = useState(false);
@@ -172,12 +170,51 @@ const NovoDiarioBordo = () => {
 
   const salvarEditarObservacao = async valor => {
     const params = { observacao: valor.observacao, usuariosIdNotificacao: [] };
-    const salvou = await ServicoDiarioBordo.salvarEditarObservacao(
+    if (listaUsuarios?.length) {
+      params.usuariosIdNotificacao = listaUsuarios.map(u => {
+        return u.usuarioId;
+      });
+    }
+    setCarregandoGeral(true);
+    const resultado = await ServicoDiarioBordo.salvarEditarObservacao(
       diarioBordoAtual?.id,
       params
-    );
-    if (salvou?.status === 200) {
+    ).catch(e => {
+      erros(e);
+      setCarregandoGeral(false);
+    });
+    if (resultado?.status === 200) {
       sucesso(`Observacao ${valor.id ? 'alterada' : 'inserida'} com sucesso`);
+      ServicoObservacoesUsuario.atualizarSalvarEditarDadosObservacao(
+        valor,
+        resultado.data
+      );
+      setCarregandoGeral(false);
+      return resultado;
+    }
+    setCarregandoGeral(false);
+  };
+
+  const excluirObservacao = async obs => {
+    const confirmado = await confirmar(
+      'Excluir',
+      '',
+      'Você tem certeza que deseja excluir este registro?'
+    );
+
+    if (confirmado) {
+      setCarregandoGeral(true);
+      const resultado = await ServicoDiarioBordo.excluirObservacao(obs).catch(
+        e => {
+          erros(e);
+          setCarregandoGeral(false);
+        }
+      );
+      if (resultado && resultado.status === 200) {
+        sucesso('Registro excluído com sucesso');
+        ServicoDiarioBordo.atualizarExcluirDadosObservacao(obs, resultado.data);
+      }
+      setCarregandoGeral(false);
     }
   };
 
@@ -296,8 +333,8 @@ const NovoDiarioBordo = () => {
                           esconderLabel
                           esconderCaixaExterna
                           salvarObservacao={obs => salvarEditarObservacao(obs)}
-                          // editarObservacao={obs => salvarEditarObservacao(obs)}
-                          // excluirObservacao={obs => excluirObservacao(obs)}
+                          editarObservacao={obs => salvarEditarObservacao(obs)}
+                          excluirObservacao={obs => excluirObservacao(obs)}
                         />
                         <div
                           className="position-absolute"
