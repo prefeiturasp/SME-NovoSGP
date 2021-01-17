@@ -6,9 +6,9 @@ namespace SME.SGP.Aplicacao.Queries.Evento.ObterDataPossuiEventoLiberacaoExcepci
     {
         public ObterSecoesPorEtapaDeEncaminhamentoQueryValidator()
         {
-            RuleFor(c => c.Etapa)
+            RuleFor(c => c.Etapas)
             .NotEmpty()
-            .WithMessage("A Etapa deve ser informada.");
+            .WithMessage("As Etapas devem ser informadas.");
         }
     }
 
