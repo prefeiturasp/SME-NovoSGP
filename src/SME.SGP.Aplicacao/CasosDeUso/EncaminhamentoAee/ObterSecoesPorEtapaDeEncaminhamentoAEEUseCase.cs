@@ -21,10 +21,13 @@ namespace SME.SGP.Aplicacao.CasosDeUso
         {
             var listaEtapas = new List<int>() { (int)EtapaEncaminhamentoAEE.PrimeiraEtapa };
 
-            var situacaoEncaminhamento = await mediator.Send(new ObterSituacaoEncaminhamentoAEEPorIdQuery(encaminhamentoAeeId));
+            if(encaminhamentoAeeId > 0)
+            {
+                var situacaoEncaminhamento = await mediator.Send(new ObterSituacaoEncaminhamentoAEEPorIdQuery(encaminhamentoAeeId));
 
-            if (situacaoEncaminhamento != SituacaoAEE.Rascunho)
-                listaEtapas.Add((int)EtapaEncaminhamentoAEE.SegundaEtapa);
+                if (situacaoEncaminhamento != SituacaoAEE.Rascunho)
+                    listaEtapas.Add((int)EtapaEncaminhamentoAEE.SegundaEtapa);
+            }           
 
             return await mediator.Send(new ObterSecoesPorEtapaDeEncaminhamentoQuery(listaEtapas));
         }

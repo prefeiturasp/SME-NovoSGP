@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao.Commands
             var situacaoEncaminhamento = await repositorioEncaminhamentoAEE.ObterSituacaoEncaminhamentoAEE(request.EncaminhamentoAeeId);
 
             if (situacaoEncaminhamento == Dominio.Enumerados.SituacaoAEE.Encaminhado)
-                throw new NegocioException("Encaminhamentos em situação 'Encaminhado' não podem ser exclídos.");
+                throw new NegocioException("Encaminhamentos em situação 'Encaminhado' não podem ser excluídos.");
 
 
             var idEntidadeExcluida = await ExcluirEncaminhamentoAEE(request.EncaminhamentoAeeId);
