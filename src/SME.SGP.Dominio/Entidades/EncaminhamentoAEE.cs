@@ -16,7 +16,7 @@ namespace SME.SGP.Dominio
         public string AlunoNome { get; set; }
         public SituacaoAEE Situacao { get; set; }
         public bool Excluido { get; set; }
-        public string JustificativaEncerramento { get; set; }
+        public string MotivoEncerramento { get; set; }
         public List<EncaminhamentoAEESecao> Secoes { get; set; }
 
     }
