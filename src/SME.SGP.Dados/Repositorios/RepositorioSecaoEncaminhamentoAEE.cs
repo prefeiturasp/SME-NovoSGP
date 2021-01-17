@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
@@ -12,7 +13,7 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<IEnumerable<SecaoQuestionarioDto>> ObterSecaoEncaminhamentoPorEtapa(long etapa)
+        public async Task<IEnumerable<SecaoQuestionarioDto>> ObterSecaoEncaminhamentoPorEtapa(List<int> etapas)
         {
             var query = @"SELECT sea.id
 	                            , sea.nome
@@ -20,10 +21,10 @@ namespace SME.SGP.Dados.Repositorios
 	                            , sea.excluido as situacao
                          FROM secao_encaminhamento_aee sea
                          WHERE not sea.excluido 
-                           AND sea.etapa = @etapa
+                           AND sea.etapa = ANY(@etapas)
                          ORDER BY sea.ordem ";
 
-            return await database.Conexao.QueryAsync<SecaoQuestionarioDto>(query, new { etapa });
+            return await database.Conexao.QueryAsync<SecaoQuestionarioDto>(query, new { etapas });
         }
     }
 }

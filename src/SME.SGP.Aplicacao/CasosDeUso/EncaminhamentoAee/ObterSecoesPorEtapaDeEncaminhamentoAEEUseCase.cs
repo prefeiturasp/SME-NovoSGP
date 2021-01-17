@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Aplicacao.Queries;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -18,7 +19,14 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
         public async Task<IEnumerable<SecaoQuestionarioDto>> Executar(long encaminhamentoAeeId)
         {
-            return await mediator.Send(new ObterSecoesPorEtapaDeEncaminhamentoQuery(encaminhamentoAeeId));
+            var listaEtapas = new List<int>() { (int)EtapaEncaminhamentoAEE.PrimeiraEtapa };
+
+            var situacaoEncaminhamento = await mediator.Send(new ObterSituacaoEncaminhamentoAEEPorIdQuery(encaminhamentoAeeId));
+
+            if (situacaoEncaminhamento != SituacaoAEE.Rascunho)
+                listaEtapas.Add((int)EtapaEncaminhamentoAEE.SegundaEtapa);
+
+            return await mediator.Send(new ObterSecoesPorEtapaDeEncaminhamentoQuery(listaEtapas));
         }
     }
 }
