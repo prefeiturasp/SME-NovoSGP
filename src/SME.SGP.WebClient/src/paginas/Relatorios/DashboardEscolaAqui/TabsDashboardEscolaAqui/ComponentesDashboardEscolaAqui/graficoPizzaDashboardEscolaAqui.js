@@ -15,6 +15,7 @@ const GraficoPizzaDashboardEscolaAqui = props => {
           <Graficos.Pie
             data={dadosGrafico}
             style={{ fontSize: '14px !important' }}
+            enableRadialLabels={false}
           />
         </div>
         <div className="col-md-6 d-flex align-items-center">
