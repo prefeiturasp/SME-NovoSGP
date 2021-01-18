@@ -1,9 +1,12 @@
 ﻿using MediatR;
 using Moq;
 using SME.SGP.Aplicacao.CasosDeUso;
+using SME.SGP.Dominio.Enumerados;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -23,11 +26,31 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
         [Fact]
         public async Task Obter_Secoes_Primeira_Etapa()
         {
+            //Arrange
+            mediator.Setup(a => a.Send(It.IsAny<ObterSituacaoEncaminhamentoAEEPorIdQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(SituacaoAEE.Rascunho);
+
+            var encaminhamentoId = 0;
             //Act
-            var dto = await obterSecoesPorEtapaDeEncaminhamentoAEEUseCase.Executar(1);
+            var dto = await obterSecoesPorEtapaDeEncaminhamentoAEEUseCase.Executar(encaminhamentoId);
 
             //Asert
-            Assert.NotNull(dto);
-        }        
+            Assert.True(dto.Count() == 2);
+        }
+
+        [Fact]
+        public async Task Obter_Secoes_Primeira_E_Segunda_Etapa()
+        {
+            //Arrange
+            mediator.Setup(a => a.Send(It.IsAny<ObterSituacaoEncaminhamentoAEEPorIdQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(SituacaoAEE.Encaminhado);
+
+            var encaminhamentoId = 6;
+            //Act
+            var dto = await obterSecoesPorEtapaDeEncaminhamentoAEEUseCase.Executar(encaminhamentoId);
+
+            //Asert
+            Assert.True(dto.Count() == 3);
+        }
     }
 }
