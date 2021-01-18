@@ -5,11 +5,11 @@ import { useDispatch } from 'react-redux';
 import { CampoTexto, RadioGroupButton, SelectComponent } from '~/componentes';
 import { RotasDto } from '~/dtos';
 import tipoQuestao from '~/dtos/tipoQuestao';
+import AtendimentoClinicoTabela from '~/paginas/Relatorios/AEE/Encaminhamento/Cadastro/Componentes/AtendimentoClinico/atendimentoClinicoTabela';
 import { setEncaminhamentoAEEEmEdicao } from '~/redux/modulos/encaminhamentoAEE/actions';
 import { erros, setBreadcrumbManual } from '~/servicos';
 import ServicoEncaminhamentoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoEncaminhamentoAEE';
 import InformacoesEscolares from '../../IndicativosEstudante/indicativosEstudante';
-import AtendimentoClinicoTabela from '~/paginas/Relatorios/AEE/Encaminhamento/Cadastro/Componentes/AtendimentoClinico/atendimentoClinicoTabela';
 
 const MontarDadosPorSecao = props => {
   const dispatch = useDispatch();
@@ -18,6 +18,7 @@ const MontarDadosPorSecao = props => {
 
   const [dadosQuestionarioAtual, setDadosQuestionarioAtual] = useState();
   const [valoresIniciais, setValoresIniciais] = useState();
+  const tiposQuestaoPorIdQuestao = {};
 
   const [refForm, setRefForm] = useState({});
 
@@ -62,7 +63,8 @@ const MontarDadosPorSecao = props => {
       ServicoEncaminhamentoAEE.addFormsSecoesEncaminhamentoAEE(
         () => obterForm(),
         dados.questionarioId,
-        dadosQuestionarioAtual
+        dadosQuestionarioAtual,
+        tiposQuestaoPorIdQuestao
       );
     }
   }, [refForm]);
@@ -225,6 +227,8 @@ const MontarDadosPorSecao = props => {
       label,
     };
 
+    tiposQuestaoPorIdQuestao[questaoAtual.id] = questaoAtual.tipoQuestao;
+
     let campoAtual = null;
     switch (questaoAtual?.tipoQuestao) {
       case tipoQuestao.Radio:
@@ -258,6 +262,18 @@ const MontarDadosPorSecao = props => {
     );
   };
 
+  const montarQuestionarioAtual = (data, form) => {
+    const campos = data.map(questaoAtual => {
+      return (
+        <div className="row" key={questaoAtual.id}>
+          {montarCampos(questaoAtual, form, '')}
+        </div>
+      );
+    });
+
+    return campos;
+  };
+
   return dados?.questionarioId &&
     dadosQuestionarioAtual?.length &&
     valoresIniciais ? (
@@ -271,13 +287,7 @@ const MontarDadosPorSecao = props => {
     >
       {form => (
         <Form className="col-md-12">
-          {dadosQuestionarioAtual.map(questaoAtual => {
-            return (
-              <div className="row" key={questaoAtual.id}>
-                {montarCampos(questaoAtual, form)}
-              </div>
-            );
-          })}
+          {montarQuestionarioAtual(dadosQuestionarioAtual, form)}
         </Form>
       )}
     </Formik>
