@@ -61,7 +61,10 @@ namespace SME.SGP.Dados.Repositorios
                          inner join questao_encaminhamento_aee qea on qea.encaminhamento_aee_secao_id = eas.id
                          inner join resposta_encaminhamento_aee rea on rea.questao_encaminhamento_id = qea.id
                           left join arquivo a on a.id = rea.arquivo_id 
-                         where eas.encaminhamento_aee_id = @encaminhamentoId ";
+                         where not eas.excluido 
+                           and not qea.excluido 
+                           and not rea.excluido 
+                           and eas.encaminhamento_aee_id = @encaminhamentoId ";
 
             return await database.Conexao.QueryAsync<RespostaQuestaoEncaminhamentoAEEDto, Arquivo, RespostaQuestaoEncaminhamentoAEEDto>(query,
                 (resposta, arquivo) =>
