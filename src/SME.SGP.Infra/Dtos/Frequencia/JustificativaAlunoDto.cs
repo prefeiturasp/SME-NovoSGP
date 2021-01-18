@@ -4,14 +4,14 @@ namespace SME.SGP.Infra
 {
     public class JustificativaAlunoDto
     {
-        public JustificativaAlunoDto(DateTime data, string motivo, long id)
+        public JustificativaAlunoDto(long id, string motivo, DateTime dataAnotacao)
         {
-            Data = data;
+            DataAnotacao = dataAnotacao;
             Motivo = motivo;
             Id = id;
         }
 
-        public DateTime Data { get; set; }
+        public DateTime DataAnotacao { get; set; }
         public string Motivo { get; set; }
         public long Id { get; set; }
     }

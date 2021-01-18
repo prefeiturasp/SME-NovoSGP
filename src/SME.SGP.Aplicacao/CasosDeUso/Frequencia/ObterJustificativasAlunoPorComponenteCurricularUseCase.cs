@@ -12,9 +12,10 @@ namespace SME.SGP.Aplicacao
 
         }
 
-        public Task<IEnumerable<JustificativaAlunoDto>> Executar(FiltroJustificativasAlunoPorComponenteCurricular param)
+        public async Task<IEnumerable<JustificativaAlunoDto>> Executar(FiltroJustificativasAlunoPorComponenteCurricular dto)
         {
-            throw new System.NotImplementedException();
+            var justificativas = await mediator.Send(new ObterMotivoPorTurmaAlunoComponenteCurricularQuery(dto.TurmaId, dto.ComponenteCurricularCodigo, dto.AlunoCodigo));
+            return justificativas;
         }
     }
 }
