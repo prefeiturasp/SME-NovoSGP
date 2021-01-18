@@ -358,7 +358,7 @@ const AtaFinalResultados = () => {
         exibir={String(modalidadeId) === String(modalidade.INFANTIL)}
         validarModalidadeFiltroPrincipal={false}
       />
-      <Cabecalho pagina="Ata final de resultados" />
+      <Cabecalho pagina="Ata de resultados finais" />
       <Card>
         <div className="col-md-12">
           <div className="row">
