@@ -19,11 +19,20 @@ namespace SME.SGP.Aplicacao
         public async Task<EncaminhamentoAEERespostaDto> Executar(long id)
         {
             var encaminhamentoAee = await mediator.Send(new ObterEncaminhamentoAEEComTurmaPorIdQuery(id));
+            var podeEditar = false;
 
-            if(encaminhamentoAee == null)
+            if (encaminhamentoAee == null)
                 throw new NegocioException("Encaminhamento não localizado");
 
             var aluno = await mediator.Send(new ObterAlunoPorCodigoEAnoQuery(encaminhamentoAee.AlunoCodigo, encaminhamentoAee.Turma.AnoLetivo));
+
+            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            
+            if (encaminhamentoAee.Situacao == Dominio.Enumerados.SituacaoAEE.Rascunho && usuarioLogado.EhPerfilProfessor())
+                podeEditar = true;
+
+            if (encaminhamentoAee.Situacao != Dominio.Enumerados.SituacaoAEE.Rascunho && !usuarioLogado.EhPerfilProfessor())
+                podeEditar = true;
 
             return new EncaminhamentoAEERespostaDto()
             {
@@ -35,6 +44,7 @@ namespace SME.SGP.Aplicacao
                     AnoLetivo = encaminhamentoAee.Turma.AnoLetivo
                 },
                 Situacao = encaminhamentoAee.Situacao,
+                PodeEditar = podeEditar,
                 Auditoria = (AuditoriaDto)encaminhamentoAee
             };
         }
