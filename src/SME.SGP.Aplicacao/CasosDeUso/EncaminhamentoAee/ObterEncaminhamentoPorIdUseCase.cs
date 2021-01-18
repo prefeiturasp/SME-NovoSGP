@@ -24,14 +24,14 @@ namespace SME.SGP.Aplicacao
             if (encaminhamentoAee == null)
                 throw new NegocioException("Encaminhamento não localizado");
 
-            var aluno = await mediator.Send(new ObterAlunoPorCodigoEAnoQuery(encaminhamentoAee.AlunoCodigo, encaminhamentoAee.Turma.AnoLetivo));            
+            var aluno = await mediator.Send(new ObterAlunoPorCodigoEAnoQuery(encaminhamentoAee.AlunoCodigo, encaminhamentoAee.Turma.AnoLetivo));
 
-            var perfilAtual = await mediator.Send(new ObterPerfilAtualQuery());
-
-            if (encaminhamentoAee.Situacao == Dominio.Enumerados.SituacaoAEE.Rascunho && perfilAtual == Perfis.PERFIL_PROFESSOR)
+            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            
+            if (encaminhamentoAee.Situacao == Dominio.Enumerados.SituacaoAEE.Rascunho && usuarioLogado.EhPerfilProfessor())
                 podeEditar = true;
 
-            if (encaminhamentoAee.Situacao != Dominio.Enumerados.SituacaoAEE.Rascunho && perfilAtual == Perfis.PERFIL_CP)
+            if (encaminhamentoAee.Situacao != Dominio.Enumerados.SituacaoAEE.Rascunho && !usuarioLogado.EhPerfilProfessor())
                 podeEditar = true;
 
             return new EncaminhamentoAEERespostaDto()
