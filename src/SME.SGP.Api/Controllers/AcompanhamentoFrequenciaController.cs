@@ -74,14 +74,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 602)]
         public async Task<IActionResult> ObterJustificativasAlunoPorComponenteCurricular(long turmaId, long alunoCodigo, long componenteCurricularId, [FromServices] IObterJustificativasAlunoPorComponenteCurricularUseCase useCase)
         {
-            var justificativasAlunos = new List<JustificativaAlunoDto>
-            {
-                new JustificativaAlunoDto(DateTime.Now, "Atestado Médico do Aluno", 1),
-                new JustificativaAlunoDto(DateTime.Now.AddDays(-1), "Atestado Médico de pessoa da Família", 2),
-                new JustificativaAlunoDto(DateTime.Now.AddDays(-2), "Doença na Família, sem atestado", 3)
-,            };
-
-            return Ok(await Task.FromResult(justificativasAlunos));
+            return Ok(await useCase.Executar(new FiltroJustificativasAlunoPorComponenteCurricular(turmaId, componenteCurricularId, alunoCodigo)));
         }
     }
 }
