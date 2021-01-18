@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
 
             RuleFor(c => c.EncaminhamentoAeeId)
             .NotEmpty()
-            .WithMessage("O id do encaminhamento AEE deve ser informado para exclusão.");
+            .WithMessage("O id do encaminhamento AEE deve ser informado para obter a situação");
 
         }
     }
