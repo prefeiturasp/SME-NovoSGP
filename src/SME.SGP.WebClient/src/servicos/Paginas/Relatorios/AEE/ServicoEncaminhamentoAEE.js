@@ -60,7 +60,8 @@ class ServicoEncaminhamentoAEE {
   addFormsSecoesEncaminhamentoAEE = (
     obterForm,
     questionarioId,
-    dadosQuestionarioAtual
+    dadosQuestionarioAtual,
+    tiposQuestaoPorIdQuestao
   ) => {
     const { dispatch } = store;
     const state = store.getState();
@@ -68,11 +69,19 @@ class ServicoEncaminhamentoAEE {
     const { formsSecoesEncaminhamentoAEE } = encaminhamentoAEE;
     if (!formsSecoesEncaminhamentoAEE) {
       const param = [];
-      param[questionarioId] = { form: obterForm, dadosQuestionarioAtual };
+      param[questionarioId] = {
+        form: obterForm,
+        dadosQuestionarioAtual,
+        tiposQuestaoPorIdQuestao,
+      };
       dispatch(setFormsSecoesEncaminhamentoAEE(param));
     } else if (formsSecoesEncaminhamentoAEE?.length) {
       const param = formsSecoesEncaminhamentoAEE;
-      param[questionarioId] = { form: obterForm, dadosQuestionarioAtual };
+      param[questionarioId] = {
+        form: obterForm,
+        dadosQuestionarioAtual,
+        tiposQuestaoPorIdQuestao,
+      };
       dispatch(setFormsSecoesEncaminhamentoAEE(param));
     }
   };
@@ -126,13 +135,10 @@ class ServicoEncaminhamentoAEE {
           const form = item.form();
           const campos = form.state.values;
           const questoes = Object.keys(campos).map(key => {
-            const questao = item.dadosQuestionarioAtual.find(
-              q => String(q.id) === String(key)
-            );
             return {
               questaoId: key,
-              resposta: String(campos[key]),
-              tipoQuestao: questao?.tipoQuestao,
+              resposta: campos[key] || '',
+              tipoQuestao: item?.tiposQuestaoPorIdQuestao[key],
             };
           });
           return {
