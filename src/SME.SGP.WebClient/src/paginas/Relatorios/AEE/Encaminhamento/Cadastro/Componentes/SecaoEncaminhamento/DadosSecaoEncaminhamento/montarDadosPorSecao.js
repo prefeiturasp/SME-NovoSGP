@@ -71,25 +71,43 @@ const MontarDadosPorSecao = props => {
 
   const montarValoresIniciais = useCallback(() => {
     const valores = {};
-    dadosQuestionarioAtual.forEach(questaoAtual => {
+
+    const montarDados = questaoAtual => {
       const resposta = questaoAtual?.resposta;
+
+      let valorRespostaAtual = '';
+
       if (resposta?.length) {
         switch (questaoAtual?.tipoQuestao) {
           case tipoQuestao.Radio:
-            valores[questaoAtual.id] = resposta[0].opcaoRespostaId;
+            valorRespostaAtual = resposta[0].opcaoRespostaId;
             break;
           case tipoQuestao.Combo:
-            valores[questaoAtual.id] = String(resposta[0].texto || '');
+            valorRespostaAtual = String(resposta[0].opcaoRespostaId || '');
             break;
           case tipoQuestao.Texto:
-            valores[questaoAtual.id] = resposta[0].texto;
+            valorRespostaAtual = resposta[0].texto;
             break;
           default:
             break;
         }
-      } else {
-        valores[questaoAtual.id] = '';
       }
+
+      if (valorRespostaAtual) {
+        const opcaoAtual = questaoAtual?.opcaoResposta.find(
+          item => String(item.id) === String(valorRespostaAtual)
+        );
+
+        if (opcaoAtual?.questaoComplementar) {
+          montarDados(opcaoAtual.questaoComplementar);
+        }
+      }
+
+      valores[questaoAtual.id] = valorRespostaAtual;
+    };
+
+    dadosQuestionarioAtual.forEach(questaoAtual => {
+      montarDados(questaoAtual);
     });
 
     setValoresIniciais({ ...valores });
