@@ -32,6 +32,7 @@ import LeituraDeComunicadosPorModalidadesETurmas from './leituraDeComunicadosPor
 import LeituraDeComunicadosPorTurmas from './leituraDeComunicadosPorTurmas';
 import FiltroHelperComunicados from '~/paginas/AcompanhamentoEscolar/Comunicados/Helper/helper';
 import ServicoComunicados from '~/servicos/Paginas/AcompanhamentoEscolar/Comunicados/ServicoComunicados';
+import { ordenarListaMaiorParaMenor } from '~/utils/funcoes/gerais';
 
 const DadosComunicadosLeitura = props => {
   const { codigoDre, codigoUe } = props;
@@ -136,8 +137,7 @@ const DadosComunicadosLeitura = props => {
       if (temAnoAtualNaLista) setAnoLetivo(anoAtual);
       else setAnoLetivo(anosLetivos[0].valor);
     }
-
-    setListaAnosLetivo(anosLetivos);
+    setListaAnosLetivo(ordenarListaMaiorParaMenor(anosLetivos, 'valor'));
     setExibirLoader(false);
   }, [anoAtual]);
 
