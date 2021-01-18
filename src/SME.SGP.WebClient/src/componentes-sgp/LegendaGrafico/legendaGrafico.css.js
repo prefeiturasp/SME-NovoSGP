@@ -28,7 +28,7 @@ export const ContainerLegendaGrafico = styled.div`
     list-style: none;
     margin-left: 0;
     line-height: 18px;
-    margin-bottom: 2px;
+    margin-bottom: 18px;
   }
 
   .legenda-labels {
@@ -38,9 +38,14 @@ export const ContainerLegendaGrafico = styled.div`
   ul.legenda-labels li span {
     display: block;
     float: left;
-    height: 16px;
+    height: 30px;
     width: 30px;
     margin-right: 5px;
     margin-left: 0;
+  }
+
+  .label-valor-porcentagem {
+    color: gray;
+    font-style: italic;
   }
 `;
