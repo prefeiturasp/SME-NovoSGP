@@ -1,9 +1,7 @@
 ﻿using MediatR;
 using Moq;
+using SME.SGP.Dominio;
 using SME.SGP.Infra.Dtos;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -21,12 +19,30 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             useCase = new ObterEncaminhamentoPorIdUseCase(mediator.Object);
         }
 
-        
+        [Fact]
         public async Task Deve_Listar_Encaminhamento()
         {
-            //Arrange
+            mediator.Setup(a => a.Send(It.IsAny<ObterEncaminhamentoAEEComTurmaPorIdQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new EncaminhamentoAEE()
+                {
+                    Id = 6,
+                    TurmaId = 1,
+                    Situacao = Dominio.Enumerados.SituacaoAEE.Encaminhado,
+                    AlunoCodigo = "1234567",
+                    Turma = new Turma()
+                    {
+                        AnoLetivo = 2021
+                    }
+                });
+
             mediator.Setup(a => a.Send(It.IsAny<ObterAlunoPorCodigoEAnoQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new AlunoReduzidoDto() { CodigoAluno = "" });
+               .ReturnsAsync(new AlunoReduzidoDto()
+               {
+                   CodigoAluno = "1234567"
+               });
+
+            mediator.Setup(a => a.Send(It.IsAny<ObterUsuarioLogadoQuery>(), It.IsAny<CancellationToken>()))
+             .ReturnsAsync(new Usuario() { PerfilAtual = Perfis.PERFIL_PROFESSOR });
 
             var encaminhamentoId = 6;
 
@@ -34,19 +50,147 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             var retorno = await useCase.Executar(encaminhamentoId);
 
             //Asert
-            Assert.True(retorno != null);
-        }
+            Assert.NotNull(retorno);
+        }        
 
-        public async Task Nao_Deve_Listar_Encaminhamento()
+        [Fact]
+        public async Task Pode_Editar_Encaminhamento_CP()
         {
-            
-            var encaminhamentoId = -99;
+            mediator.Setup(a => a.Send(It.IsAny<ObterEncaminhamentoAEEComTurmaPorIdQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new EncaminhamentoAEE()
+                {
+                    Id = 6,
+                    TurmaId = 1,
+                    Situacao = Dominio.Enumerados.SituacaoAEE.Encaminhado,
+                    AlunoCodigo = "1234567",
+                    Turma = new Turma()
+                    {
+                        AnoLetivo = 2021
+                    }
+                });
+
+            mediator.Setup(a => a.Send(It.IsAny<ObterAlunoPorCodigoEAnoQuery>(), It.IsAny<CancellationToken>()))
+               .ReturnsAsync(new AlunoReduzidoDto()
+               {
+                   CodigoAluno = "1234567"
+               });
+
+            mediator.Setup(a => a.Send(It.IsAny<ObterUsuarioLogadoQuery>(), It.IsAny<CancellationToken>()))
+               .ReturnsAsync(new Usuario() { PerfilAtual = Perfis.PERFIL_CP });            
+
+            var encaminhamentoId = 6;
 
             //Act
             var retorno = await useCase.Executar(encaminhamentoId);
 
             //Asert
-            Assert.Null(retorno);            
+            Assert.NotNull(retorno);
+            Assert.True(retorno.PodeEditar);
+        }
+
+        [Fact]
+        public async Task Nao_Pode_Editar_Encaminhamento_CP()
+        {
+            mediator.Setup(a => a.Send(It.IsAny<ObterEncaminhamentoAEEComTurmaPorIdQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new EncaminhamentoAEE()
+                {
+                    Id = 6,
+                    TurmaId = 1,
+                    Situacao = Dominio.Enumerados.SituacaoAEE.Rascunho,
+                    AlunoCodigo = "1234567",
+                    Turma = new Turma()
+                    {
+                        AnoLetivo = 2021
+                    }
+                });
+
+            mediator.Setup(a => a.Send(It.IsAny<ObterAlunoPorCodigoEAnoQuery>(), It.IsAny<CancellationToken>()))
+               .ReturnsAsync(new AlunoReduzidoDto()
+               {
+                   CodigoAluno = "1234567"
+               });
+
+            mediator.Setup(a => a.Send(It.IsAny<ObterUsuarioLogadoQuery>(), It.IsAny<CancellationToken>()))
+              .ReturnsAsync(new Usuario() { PerfilAtual = Perfis.PERFIL_CP });
+
+            var encaminhamentoId = 6;
+
+            //Act
+            var retorno = await useCase.Executar(encaminhamentoId);
+
+            //Asert
+            Assert.NotNull(retorno);
+            Assert.True(!retorno.PodeEditar);
+        }
+
+        [Fact]
+        public async Task Pode_Editar_Encaminhamento_Professor()
+        {
+            mediator.Setup(a => a.Send(It.IsAny<ObterEncaminhamentoAEEComTurmaPorIdQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new EncaminhamentoAEE()
+                {
+                    Id = 6,
+                    TurmaId = 1,
+                    AlunoCodigo = "1234567",
+                    Situacao = Dominio.Enumerados.SituacaoAEE.Rascunho,
+                    Turma = new Turma()
+                    {
+                        AnoLetivo = 2021
+                    }
+                });
+
+            mediator.Setup(a => a.Send(It.IsAny<ObterAlunoPorCodigoEAnoQuery>(), It.IsAny<CancellationToken>()))
+               .ReturnsAsync(new AlunoReduzidoDto()
+               {
+                   CodigoAluno = "1234567"
+               });
+
+            mediator.Setup(a => a.Send(It.IsAny<ObterUsuarioLogadoQuery>(), It.IsAny<CancellationToken>()))
+              .ReturnsAsync(new Usuario() { PerfilAtual = Perfis.PERFIL_PROFESSOR });
+
+            var encaminhamentoId = 6;
+
+            //Act
+            var retorno = await useCase.Executar(encaminhamentoId);
+
+            //Asert
+            Assert.NotNull(retorno);
+            Assert.True(retorno.PodeEditar);
+        }
+
+        [Fact]
+        public async Task Nao_Pode_Editar_Encaminhamento_Professor()
+        {
+            mediator.Setup(a => a.Send(It.IsAny<ObterEncaminhamentoAEEComTurmaPorIdQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new EncaminhamentoAEE()
+                {
+                    Id = 6,
+                    TurmaId = 1,
+                    AlunoCodigo = "1234567",
+                    Situacao = Dominio.Enumerados.SituacaoAEE.Encaminhado,
+                    Turma = new Turma()
+                    {
+                        AnoLetivo = 2021
+                    }
+                });
+
+            mediator.Setup(a => a.Send(It.IsAny<ObterAlunoPorCodigoEAnoQuery>(), It.IsAny<CancellationToken>()))
+               .ReturnsAsync(new AlunoReduzidoDto()
+               {
+                   CodigoAluno = "1234567"
+               });
+
+            mediator.Setup(a => a.Send(It.IsAny<ObterUsuarioLogadoQuery>(), It.IsAny<CancellationToken>()))
+              .ReturnsAsync(new Usuario() { PerfilAtual = Perfis.PERFIL_PROFESSOR });
+
+            var encaminhamentoId = 6;
+
+            //Act
+            var retorno = await useCase.Executar(encaminhamentoId);
+
+            //Asert
+            Assert.NotNull(retorno);
+            Assert.True(!retorno.PodeEditar);
         }
     }
 }
