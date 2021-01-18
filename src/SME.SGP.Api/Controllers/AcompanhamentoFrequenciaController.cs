@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -65,6 +66,22 @@ namespace SME.SGP.Api.Controllers
             };
 
             return Ok(await Task.FromResult(frequenciaBimestre));
+        }
+
+        [HttpGet("turmas/{turmaId}/componentes-curriculares/{componenteCurricularId}/alunos/{alunoCodigo}/justificativas")]
+        [ProducesResponseType(typeof(IEnumerable<JustificativaAlunoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 602)]
+        public async Task<IActionResult> ObterJustificativasAlunoPorComponenteCurricular(long turmaId, long alunoCodigo, long componenteCurricularId, [FromServices] IObterJustificativasAlunoPorComponenteCurricularUseCase useCase)
+        {
+            var justificativasAlunos = new List<JustificativaAlunoDto>
+            {
+                new JustificativaAlunoDto(DateTime.Now, "Atestado Médico do Aluno", 1),
+                new JustificativaAlunoDto(DateTime.Now.AddDays(-1), "Atestado Médico de pessoa da Família", 2),
+                new JustificativaAlunoDto(DateTime.Now.AddDays(-2), "Doença na Família, sem atestado", 3)
+,            };
+
+            return Ok(await Task.FromResult(justificativasAlunos));
         }
     }
 }
