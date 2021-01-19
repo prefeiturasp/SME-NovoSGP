@@ -1,7 +1,8 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import shortid from 'shortid';
-import { Colors, ModalConteudoHtml } from '~/componentes';
+import { Card } from 'antd';
+import { Colors, DetalhesAluno, ModalConteudoHtml } from '~/componentes';
 import Button from '~/componentes/button';
 import JoditEditor from '~/componentes/jodit-editor/joditEditor';
 import {
@@ -29,13 +30,22 @@ const ModalAnotacoesAcompanhamentoFrequencia = () => {
       id={shortid.generate()}
       key="anotacao"
       visivel={exibirModalAnotacao}
-      titulo="Anotações"
+      titulo="Anotações do Aluno"
       onClose={onClose}
       esconderBotaoPrincipal
       esconderBotaoSecundario
       width={750}
       closable
     >
+      <DetalhesAluno className="mb-2" />
+      <Card
+        type="inner"
+        className="rounded mt-3 mb-3"
+        headStyle={{ borderBottomRightRadius: 0 }}
+        bodyStyle={{ borderTopRightRadius: 0 }}
+      >
+        <strong>{dadosModalAnotacao?.motivo}</strong>
+      </Card>
       <JoditEditor
         value={dadosModalAnotacao?.anotacao}
         readonly

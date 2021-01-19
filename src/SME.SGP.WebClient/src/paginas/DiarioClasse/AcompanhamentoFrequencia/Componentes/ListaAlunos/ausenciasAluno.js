@@ -1,15 +1,17 @@
 import PropTypes from 'prop-types';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   setDadosModalAnotacao,
   setExibirModalAnotacao,
-  setExpandirLinhaFrequenciaAluno,
 } from '~/redux/modulos/acompanhamentoFrequencia/actions';
+import { erros } from '~/servicos';
+import ServicoAcompanhamentoFrequencia from '~/servicos/Paginas/DiarioClasse/ServicoAcompanhamentoFrequencia';
 import { BtnVisualizarAnotacao, TabelaColunasFixas } from './listaAlunos.css';
 
 const AusenciasAluno = props => {
-  const { indexLinha, dados } = props;
+  const { indexLinha, componenteCurricularId, codigoAluno, turmaId } = props;
+  const [dados, setDados] = useState([]);
 
   const dispatch = useDispatch();
 
@@ -17,11 +19,31 @@ const AusenciasAluno = props => {
     store => store.acompanhamentoFrequencia.expandirLinhaFrequenciaAluno
   );
 
+  const frequenciaAlunoCodigo = useSelector(
+    store => store.acompanhamentoFrequencia.frequenciaAlunoCodigo
+  );
+
   useEffect(() => {
-    return () => {
-      dispatch(setExpandirLinhaFrequenciaAluno([]));
+    const obterMotivos = async () => {
+      if (
+        expandirLinhaFrequenciaAluno.includes(true) &&
+        codigoAluno === frequenciaAlunoCodigo
+      ) {
+        const retorno = await ServicoAcompanhamentoFrequencia.obterJustificativaAcompanhamentoFrequencia(
+          turmaId,
+          componenteCurricularId,
+          codigoAluno
+        ).catch(e => erros(e));
+
+        if (retorno?.data) {
+          setDados(retorno.data);
+        }
+      } else {
+        setDados([]);
+      }
     };
-  }, [dispatch]);
+    obterMotivos();
+  }, [frequenciaAlunoCodigo]);
 
   const onClickAnotacao = item => {
     dispatch(setDadosModalAnotacao(item));
@@ -44,7 +66,7 @@ const AusenciasAluno = props => {
             }
           }}
         >
-          <i className="fas fa-eye" />
+          <i className="fas fa-eye" style={{ marginTop: '9px' }} />
         </BtnVisualizarAnotacao>
       </div>
     );
@@ -93,13 +115,17 @@ const AusenciasAluno = props => {
 };
 
 AusenciasAluno.defaultProps = {
+  componenteCurricularId: PropTypes.string,
+  turmaId: PropTypes.string,
+  codigoAluno: PropTypes.string,
   indexLinha: PropTypes.number,
-  dados: PropTypes.oneOfType([PropTypes.array]),
 };
 
 AusenciasAluno.propTypes = {
+  componenteCurricularId: PropTypes.string,
+  turmaId: PropTypes.string,
+  codigoAluno: PropTypes.string,
   indexLinha: null,
-  dados: PropTypes.oneOfType([PropTypes.array]),
 };
 
 export default AusenciasAluno;
