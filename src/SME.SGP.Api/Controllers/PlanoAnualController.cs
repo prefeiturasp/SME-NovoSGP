@@ -67,9 +67,9 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("turmas/copia")]
         [ProducesResponseType(typeof(PlanoAnualCompletoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterTurmasParaCopia([FromQuery] int turmaId, [FromQuery] long componenteCurricular, [FromServices]IConsultasPlanoAnual consultasPlanoAnual)
+        public async Task<IActionResult> ObterTurmasParaCopia([FromQuery] int turmaId, [FromQuery] long componenteCurricular, bool consideraHistorico, [FromServices]IConsultasPlanoAnual consultasPlanoAnual)
         {
-            var retorno = await consultasPlanoAnual.ObterTurmasParaCopia(turmaId, componenteCurricular);
+            var retorno = await consultasPlanoAnual.ObterTurmasParaCopia(turmaId, componenteCurricular, consideraHistorico);
 
             if (retorno == null || !retorno.Any())
                 return NoContent();
