@@ -5,7 +5,6 @@ const inicial = {
   dadosModalAnotacao: null,
   exibirModalAnotacao: false,
   exibirModalAviso: false,
-  exibirModalCadastroAtendimentoClinicoAEE: false,
   dadosEstudanteObjectCardEncaminhamento: {},
   dadosSecaoLocalizarEstudante: {
     anoLetivo: '2021',
@@ -19,7 +18,6 @@ const inicial = {
   formsSecoesEncaminhamentoAEE: null,
   encaminhamentoAEEEmEdicao: false,
   exibirLoaderEncaminhamentoAEE: false,
-  dadosAtendimentoClinicoAEE: [],
 };
 
 export default function EncaminhamentoAEE(state = inicial, action) {
@@ -89,18 +87,6 @@ export default function EncaminhamentoAEE(state = inicial, action) {
         return {
           ...draft,
           exibirLoaderEncaminhamentoAEE: action.payload,
-        };
-      }
-      case '@encaminhamentoAEE/setExibirModalCadastroAtendimentoClinicoAEE': {
-        return {
-          ...draft,
-          exibirModalCadastroAtendimentoClinicoAEE: action.payload,
-        };
-      }
-      case '@encaminhamentoAEE/setDadosAtendimentoClinicoAEE': {
-        return {
-          ...draft,
-          dadosAtendimentoClinicoAEE: action.payload,
         };
       }
 
