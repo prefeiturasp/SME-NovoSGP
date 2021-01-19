@@ -26,13 +26,12 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await obterAlunosPorCodigoEolNomeUseCase.Executar(filtroBuscaAlunosDto));
         }
-
-        [HttpGet]
-        [Route("informacoes-escolares")]
+                
+        [HttpGet("informacoes-escolares")]
         [ProducesResponseType(typeof(IEnumerable<AlunoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        public async Task<IActionResult> ObterInformacoesEscolaresDoAluno(int codigoAluno, string turmaId, [FromServices] IObterInformacoesEscolaresDoAlunoUseCase ObterInformacoesEscolaresDoAlunoUseCase)
+        public async Task<IActionResult> ObterInformacoesEscolaresDoAluno([FromQuery] int codigoAluno, [FromQuery] string turmaId, [FromServices] IObterInformacoesEscolaresDoAlunoUseCase ObterInformacoesEscolaresDoAlunoUseCase)
         {
             return Ok(await ObterInformacoesEscolaresDoAlunoUseCase.Executar(codigoAluno, turmaId));
         }
