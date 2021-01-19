@@ -6,7 +6,7 @@ namespace SME.SGP.Dominio
     {
         protected EntidadeBase()
         {
-            CriadoEm = DateTime.Now;
+            CriadoEm = DateTimeExtension.HorarioBrasilia();
         }
 
         public DateTime? AlteradoEm { get; set; }

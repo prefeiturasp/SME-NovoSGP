@@ -7,16 +7,17 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterTurmasEOLParaCopiaPorIdEComponenteCurricularIdQuery : IRequest<IEnumerable<TurmaParaCopiaPlanoAnualDto>>
     {
-        public ObterTurmasEOLParaCopiaPorIdEComponenteCurricularIdQuery(int turmaId, long componenteCurricularId, string codigoRF)
+        public ObterTurmasEOLParaCopiaPorIdEComponenteCurricularIdQuery(int turmaId, long componenteCurricularId, string codigoRF, bool consideraHistorico)
         {
             TurmaId = turmaId;
             ComponenteCurricularId = componenteCurricularId;
             CodigoRF = codigoRF;
+            ConsideraHistorico = consideraHistorico;
         }
         public long ComponenteCurricularId { get; set; }
         public int TurmaId { get; set; }
         public string CodigoRF { get; set; }
-
+        public bool ConsideraHistorico { get; set; }
     }
 
     public class ObterTurmasEOLParaCopiaPorIdEComponenteCurricularIdQueryValidator : AbstractValidator<ObterTurmasEOLParaCopiaPorIdEComponenteCurricularIdQuery>

@@ -13,5 +13,7 @@ namespace SME.SGP.Infra
         public long TurmaId { get; set; }
 
         public long Id { get; set; }
+
+        public int CodigoComponenteCurricular { get; set; }
     }
 }
