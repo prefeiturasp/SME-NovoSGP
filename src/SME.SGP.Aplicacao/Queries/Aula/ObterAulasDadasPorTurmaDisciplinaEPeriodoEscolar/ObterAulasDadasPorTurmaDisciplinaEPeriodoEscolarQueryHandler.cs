@@ -3,7 +3,7 @@ using SME.SGP.Dominio.Interfaces;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.Queries.Aula.ObterAulasDadasPorTurmaDisciplinaEPeriodoEscolar
+namespace SME.SGP.Aplicacao
 {
     public class ObterAulasDadasPorTurmaDisciplinaEPeriodoEscolarQueryHandler : IRequestHandler<ObterAulasDadasPorTurmaDisciplinaEPeriodoEscolarQuery, int>
     {

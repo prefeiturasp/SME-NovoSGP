@@ -9,6 +9,8 @@ namespace SME.SGP.Aplicacao.Queries.Frequencia.ObterMarcadorFrequenciaAluno
 {
     public class ObterMarcadorFrequenciaAlunoQueryHandler : IRequestHandler<ObterMarcadorFrequenciaAlunoQuery, MarcadorFrequenciaDto>
     {
+        private const int DiasDesdeInicioBimestreParaMarcadorNovo = 15;
+
         public Task<MarcadorFrequenciaDto> Handle(ObterMarcadorFrequenciaAlunoQuery request, CancellationToken cancellationToken)
         {
             MarcadorFrequenciaDto marcador = null;
@@ -19,7 +21,7 @@ namespace SME.SGP.Aplicacao.Queries.Frequencia.ObterMarcadorFrequenciaAluno
             switch (request.Aluno.CodigoSituacaoMatricula)
             {
                 case SituacaoMatriculaAluno.Ativo:
-                    if ((request.Aluno.DataSituacao > request.PeriodoEscolar.PeriodoInicio) && (request.Aluno.DataSituacao.AddDays(15) >= DateTime.Now.Date))
+                    if ((request.Aluno.DataSituacao > request.PeriodoEscolar.PeriodoInicio) && (request.Aluno.DataSituacao.AddDays(DiasDesdeInicioBimestreParaMarcadorNovo) >= DateTime.Now.Date))
                         marcador = new MarcadorFrequenciaDto()
                         {
                             Tipo = TipoMarcadorFrequencia.Novo,
