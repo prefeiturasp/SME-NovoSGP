@@ -1,4 +1,5 @@
 import { RotasDto } from '~/dtos';
+import tipoQuestao from '~/dtos/tipoQuestao';
 import { store } from '~/redux';
 import {
   setDadosModalAviso,
@@ -134,12 +135,41 @@ class ServicoEncaminhamentoAEE {
         (item, secaoId) => {
           const form = item.form();
           const campos = form.state.values;
-          const questoes = Object.keys(campos).map(key => {
-            return {
+          const questoes = [];
+
+          Object.keys(campos).forEach(key => {
+            const questao = {
               questaoId: key,
-              resposta: campos[key] || '',
               tipoQuestao: item?.tiposQuestaoPorIdQuestao[key],
             };
+
+            switch (questao.tipoQuestao) {
+              case tipoQuestao.AtendimentoClinico:
+                questao.resposta = JSON.stringify(campos[key] || '');
+                break;
+              case tipoQuestao.Upload:
+                if (campos[key]?.length) {
+                  const arquivosId = campos[key].map(a => a.xhr);
+                  questao.resposta = arquivosId;
+                } else {
+                  questao.resposta = '';
+                }
+                break;
+              default:
+                questao.resposta = campos[key] || '';
+                break;
+            }
+
+            if (
+              questao.tipoQuestao === tipoQuestao.Upload &&
+              questao?.resposta?.length
+            ) {
+              questao.resposta.forEach(b => {
+                questoes.push({ ...questao, resposta: b });
+              });
+            } else {
+              questoes.push(questao);
+            }
           });
           return {
             questoes,
@@ -171,6 +201,25 @@ class ServicoEncaminhamentoAEE {
   excluirEncaminhamento = encaminhamentoId => {
     const url = `${urlPadrao}/${encaminhamentoId}`;
     return api.delete(url);
+  };
+
+  obterInformacoesEscolaresDoAluno = (codigoAluno, codigoTurma) => {
+    const url = `v1/estudante/informacoes-escolares?codigoAluno=${codigoAluno}&codigoTurma=${codigoTurma}`;
+    return api.get(url);
+  };
+
+  obterAusenciaMotivoPorAlunoTurmaBimestreAno = (
+    codigoAluno,
+    bimestre,
+    codigoTurma,
+    anoLetivo
+  ) => {
+    const url = `v1/calendarios/frequencias/ausencias-motivos?codigoAluno=${codigoAluno}&codigoTurma=${codigoTurma}&bimestre=${bimestre}&anoLetivo=${anoLetivo}`;
+    return api.get(url);
+  };
+
+  removerArquivo = arquivoCodigo => {
+    return api.delete(`${urlPadrao}/arquivo?arquivoCodigo=${arquivoCodigo}`);
   };
 }
 

@@ -37,7 +37,7 @@ const ModalAnotacoesEncaminhamentoAEE = () => {
       closable
     >
       <JoditEditor
-        value={dadosModalAnotacao?.anotacao}
+        value={dadosModalAnotacao?.justificativaAusencia}
         readonly
         removerToolbar
       />

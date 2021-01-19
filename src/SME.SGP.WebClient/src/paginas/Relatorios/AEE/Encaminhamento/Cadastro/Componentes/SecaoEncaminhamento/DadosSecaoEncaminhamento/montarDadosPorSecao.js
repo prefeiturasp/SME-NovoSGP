@@ -10,6 +10,7 @@ import { setEncaminhamentoAEEEmEdicao } from '~/redux/modulos/encaminhamentoAEE/
 import { erros, setBreadcrumbManual } from '~/servicos';
 import ServicoEncaminhamentoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoEncaminhamentoAEE';
 import InformacoesEscolares from '../../IndicativosEstudante/indicativosEstudante';
+import UploadArquivosEncaminhamento from '../../UploadArquivosEncaminhamento/uploadArquivosEncaminhamento';
 
 const MontarDadosPorSecao = props => {
   const dispatch = useDispatch();
@@ -88,12 +89,37 @@ const MontarDadosPorSecao = props => {
           case tipoQuestao.Texto:
             valorRespostaAtual = resposta[0].texto;
             break;
+          case tipoQuestao.Upload:
+            if (resposta?.length) {
+              valorRespostaAtual = resposta
+                ?.map(item => {
+                  const { arquivo } = item;
+                  if (arquivo) {
+                    return {
+                      uid: arquivo.codigo,
+                      xhr: arquivo.codigo,
+                      name: arquivo.nome,
+                      status: 'done',
+                      arquivoId: arquivo.id,
+                    };
+                  }
+                  return '';
+                })
+                .filter(a => !!a);
+            } else {
+              valorRespostaAtual = [];
+            }
+            break;
           default:
             break;
         }
       }
 
-      if (valorRespostaAtual) {
+      if (
+        valorRespostaAtual &&
+        questaoAtual?.tipoQuestao !== tipoQuestao.Upload &&
+        questaoAtual?.tipoQuestao !== tipoQuestao.Texto
+      ) {
         const opcaoAtual = questaoAtual?.opcaoResposta.find(
           item => String(item.id) === String(valorRespostaAtual)
         );
@@ -181,6 +207,7 @@ const MontarDadosPorSecao = props => {
           label={label}
           form={form}
           type="textarea"
+          maxLength={99999}
           onChange={() => {
             dispatch(setEncaminhamentoAEEEmEdicao(true));
           }}
@@ -190,15 +217,14 @@ const MontarDadosPorSecao = props => {
   };
 
   const campoAtendimentoClinico = params => {
-    const { questaoAtual, form, label } = params;
+    const { questaoAtual, label, form } = params;
 
     return (
       <div className="col-md-12 mb-3">
         <AtendimentoClinicoTabela
-          name={String(questaoAtual.id)}
           label={label}
           form={form}
-          id={questaoAtual.id}
+          questaoAtual={questaoAtual}
         />
       </div>
     );
@@ -267,6 +293,9 @@ const MontarDadosPorSecao = props => {
         break;
       case tipoQuestao.AtendimentoClinico:
         campoAtual = campoAtendimentoClinico(params);
+        break;
+      case tipoQuestao.Upload:
+        campoAtual = <UploadArquivosEncaminhamento dados={params} />;
         break;
       default:
         break;
