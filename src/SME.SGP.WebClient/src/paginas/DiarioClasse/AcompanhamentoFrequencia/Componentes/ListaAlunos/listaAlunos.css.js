@@ -4,6 +4,28 @@ import { Base } from '~/componentes/colors';
 
 export const Container = styled.div``;
 
+export const Marcadores = styled.div`
+  vertical-align: bottom;
+`;
+
+export const MarcadorAulas = styled.div`
+  background-color: ${Base.Roxo};
+  color: ${Base.Branco};
+  height: 22px;
+  min-width: 123px;
+  display: 'flex';
+  align-items: 'center';
+  justify-content: 'center';
+  font-size: 12px;
+  text-align: center;
+  border-radius: 4px;
+  margin-top: 15px;
+
+  .numero {
+    font-weight: bold;
+  }
+`;
+
 export const TabelaColunasFixas = styled.div`
   font-size: 14px !important;
   table {
