@@ -17,7 +17,12 @@ const LegendaGrafico = props => {
                   <div>
                     <span style={{ backgroundColor: item.color }} />
                   </div>
-                  <div>{item.label}</div>
+                  <div>
+                    <div className="label-valor-porcentagem">
+                      {item.radialLabel}
+                    </div>
+                    {item.label}
+                  </div>
                 </div>
               </li>
             );
