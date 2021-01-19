@@ -83,6 +83,7 @@ export const TabelaColunasFixas = styled.div`
     align-items: center;
     width: 5%;
     z-index: 2;
+    padding-top: 18px;
   }
   .col-valor-linha-quatro {
     text-align: left;

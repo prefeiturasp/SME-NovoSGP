@@ -44,7 +44,7 @@ const AusenciasAluno = props => {
             }
           }}
         >
-          <i className="fas fa-eye" />
+          <i className="fas fa-eye" style={{ marginTop: '9px' }} />
         </BtnVisualizarAnotacao>
       </div>
     );
