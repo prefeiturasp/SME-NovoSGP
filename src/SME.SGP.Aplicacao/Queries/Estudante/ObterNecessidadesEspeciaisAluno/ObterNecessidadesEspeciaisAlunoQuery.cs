@@ -9,9 +9,9 @@ namespace SME.SGP.Aplicacao
         public ObterNecessidadesEspeciaisAlunoQuery(int codigoAluno, string turmaId)
         {
             CodigoAluno = codigoAluno;
-            TurmaId = turmaId;
+            TurmaCodigo = turmaId;
         }
         public int CodigoAluno { get; set; }
-        public string TurmaId { get; set; }
+        public string TurmaCodigo { get; set; }
     }
 }
