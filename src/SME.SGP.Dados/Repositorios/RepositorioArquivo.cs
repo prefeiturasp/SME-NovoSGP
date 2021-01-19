@@ -35,5 +35,14 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.ExecuteScalarAsync<bool>(query, new { id });
         }
+
+        public async Task<long> ObterIdPorCodigo(Guid arquivoCodigo)
+        {
+            var query = @"select id
+                            from arquivo 
+                           where codigo = @arquivoCodigo";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<long>(query, new { arquivoCodigo });
+        }
     }
 }
