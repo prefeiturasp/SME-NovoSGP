@@ -9,7 +9,14 @@ import { confirmar } from '~/servicos/alertas';
 import { ContainerCampoObservacao } from './observacoesUsuario.css';
 
 const LinhaObservacaoProprietario = props => {
-  const { dados, onClickSalvarEdicao, onClickExcluir, children } = props;
+  const {
+    dados,
+    onClickSalvarEdicao,
+    onClickExcluir,
+    children,
+    podeAlterar,
+    podeExcluir,
+  } = props;
 
   const dispatch = useDispatch();
 
@@ -93,7 +100,8 @@ const LinhaObservacaoProprietario = props => {
               width="30px"
               disabled={
                 !!(observacaoEmEdicao && observacaoEmEdicao.id !== dados.id) ||
-                !!novaObservacao
+                !!novaObservacao ||
+                !podeAlterar
               }
             />
           </span>
@@ -112,7 +120,8 @@ const LinhaObservacaoProprietario = props => {
               width="30px"
               disabled={
                 !!(observacaoEmEdicao && observacaoEmEdicao.id !== dados.id) ||
-                !!novaObservacao
+                !!novaObservacao ||
+                !podeExcluir
               }
             />
           </span>
@@ -160,6 +169,8 @@ LinhaObservacaoProprietario.propTypes = {
   onClickSalvarEdicao: PropTypes.func,
   onClickExcluir: PropTypes.func,
   children: PropTypes.node,
+  podeAlterar: PropTypes.bool,
+  podeExcluir: PropTypes.bool,
 };
 
 LinhaObservacaoProprietario.defaultProps = {
@@ -167,6 +178,8 @@ LinhaObservacaoProprietario.defaultProps = {
   onClickSalvarEdicao: () => {},
   onClickExcluir: () => {},
   children: () => {},
+  podeAlterar: true,
+  podeExcluir: true,
 };
 
 export default LinhaObservacaoProprietario;

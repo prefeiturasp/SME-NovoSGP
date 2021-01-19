@@ -14,6 +14,7 @@ import {
 } from '~/componentes';
 import { Cabecalho, Paginacao } from '~/componentes-sgp';
 import ObservacoesUsuario from '~/componentes-sgp/ObservacoesUsuario/observacoesUsuario';
+import ServicoObservacoesUsuario from '~/componentes-sgp/ObservacoesUsuario/ServicoObservacoesUsuario';
 import { RotasDto } from '~/dtos';
 import { setDadosObservacoesUsuario } from '~/redux/modulos/observacoesUsuario/actions';
 import {
@@ -23,12 +24,12 @@ import {
   history,
   ServicoDisciplina,
   sucesso,
+  verificaSomenteConsulta,
 } from '~/servicos';
 import ServicoDiarioBordo from '~/servicos/Paginas/DiarioClasse/ServicoDiarioBordo';
-import { BotoesAcoes, Mensagens, ModalNotificarUsuarios } from './componentes';
-import ServicoObservacoesUsuario from '~/componentes-sgp/ObservacoesUsuario/ServicoObservacoesUsuario';
+import { Mensagens } from './componentes';
 
-const NovoDiarioBordo = () => {
+const ListaDiarioBordo = () => {
   const [carregandoGeral, setCarregandoGeral] = useState(false);
   const [turmaInfantil, setTurmaInfantil] = useState(false);
   const [
@@ -43,15 +44,17 @@ const NovoDiarioBordo = () => {
   const [dataInicial, setDataInicial] = useState();
   const [diarioBordoAtual, setDiarioBordoAtual] = useState();
   const [listaTitulos, setListaTitulos] = useState();
-  const [listaUsuarios, setListaUsuarios] = useState([]);
-  const [modalVisivel, setModalVisivel] = useState(false);
   const [numeroPagina, setNumeroPagina] = useState(1);
-
-  const turmaSelecionada = useSelector(state => state.usuario.turmaSelecionada);
+  const usuario = useSelector(state => state.usuario);
+  const { turmaSelecionada } = usuario;
+  const permissoesTela = usuario.permissoes[RotasDto.DIARIO_BORDO];
   const turmaId = turmaSelecionada?.id || 0;
   const turma = turmaSelecionada?.turma || 0;
   const modalidadesFiltroPrincipal = useSelector(
     store => store.filtro.modalidades
+  );
+  const listaUsuarios = useSelector(
+    store => store.observacoesUsuario.listaUsuariosNotificacao
   );
 
   const dispatch = useDispatch();
@@ -75,6 +78,14 @@ const NovoDiarioBordo = () => {
 
     setCarregandoGeral(false);
   }, [turma]);
+
+  useEffect(() => {
+    const naoSetarSomenteConsultaNoStore = !ehTurmaInfantil(
+      modalidadesFiltroPrincipal,
+      turmaSelecionada
+    );
+    verificaSomenteConsulta(permissoesTela, naoSetarSomenteConsultaNoStore);
+  }, [permissoesTela, turmaSelecionada]);
 
   const numeroRegistros = 10;
   const numeroTotalRegistros = listaTitulos?.totalRegistros;
@@ -113,10 +124,10 @@ const NovoDiarioBordo = () => {
     setComponenteCurricularSelecionado(valor);
   };
 
-  const onClickNotificarUsuarios = () => setModalVisivel(true);
-
   const onClickConsultarDiario = () => {
-    history.push(`${RotasDto.DIARIO_BORDO}/detalhes`);
+    history.push(
+      `${RotasDto.DIARIO_BORDO}/detalhes/${diarioBordoAtual?.aulaId}`
+    );
   };
 
   const obterTitulos = useCallback(
@@ -159,17 +170,23 @@ const NovoDiarioBordo = () => {
   };
 
   const onColapse = async id => {
-    const dados = await ServicoDiarioBordo.obterDiarioBordoDetalhes(id);
-    if (dados?.data) {
-      setDiarioBordoAtual(dados.data);
-      if (dados.data.observacoes.length) {
-        dispatch(setDadosObservacoesUsuario(dados.data.observacoes));
+    if (id) {
+      const dados = await ServicoDiarioBordo.obterDiarioBordoDetalhes(id);
+      if (dados?.data) {
+        setDiarioBordoAtual(dados.data);
+        if (dados.data.observacoes.length) {
+          dispatch(setDadosObservacoesUsuario(dados.data.observacoes));
+        }
       }
     }
   };
 
   const salvarEditarObservacao = async valor => {
-    const params = { observacao: valor.observacao, usuariosIdNotificacao: [] };
+    const params = {
+      observacao: valor.observacao,
+      usuariosIdNotificacao: [],
+      id: valor.id,
+    };
     if (listaUsuarios?.length) {
       params.usuariosIdNotificacao = listaUsuarios.map(u => {
         return u.usuarioId;
@@ -218,21 +235,12 @@ const NovoDiarioBordo = () => {
     }
   };
 
-  const obterNofiticarUsuarios = useCallback(async () => {
-    const retorno = await ServicoDiarioBordo.obterNofiticarUsuarios({
-      turmaId,
-    }).catch(e => erros(e));
-
-    if (retorno?.status === 200) {
-      setListaUsuarios(retorno.data);
-    }
-  }, [turmaId]);
-
-  useEffect(() => {
-    if (turmaId && !listaUsuarios?.length) {
-      obterNofiticarUsuarios();
-    }
-  }, [turmaId, obterNofiticarUsuarios, listaUsuarios]);
+  const onClickVoltar = () => {
+    history.push('/');
+  };
+  const onClickNovo = () => {
+    history.push(`${RotasDto.DIARIO_BORDO}/novo`);
+  };
 
   return (
     <Loader loading={carregandoGeral} className="w-100">
@@ -259,7 +267,26 @@ const NovoDiarioBordo = () => {
               />
             </div>
             <div className="col-sm-12 col-lg-8 col-md-8 d-flex justify-content-end pb-4">
-              <BotoesAcoes turmaInfantil={turmaInfantil} />
+              <Button
+                label="Voltar"
+                icon="arrow-left"
+                color={Colors.Azul}
+                border
+                className="mr-2"
+                onClick={onClickVoltar}
+              />
+              <Button
+                label="Novo"
+                color={Colors.Roxo}
+                bold
+                className="mr-2"
+                onClick={onClickNovo}
+                disabled={
+                  !turmaInfantil ||
+                  !listaComponenteCurriculares ||
+                  !componenteCurricularSelecionado
+                }
+              />
             </div>
           </div>
           <div className="row">
@@ -274,9 +301,7 @@ const NovoDiarioBordo = () => {
                   !turmaInfantil ||
                   !listaComponenteCurriculares ||
                   !componenteCurricularSelecionado
-                  // || !diasParaHabilitar
                 }
-                // diasParaHabilitar={diasParaHabilitar}
               />
             </div>
             <div className="col-sm-12 col-md-4 col-lg-3 col-xl-3 mb-4">
@@ -290,9 +315,7 @@ const NovoDiarioBordo = () => {
                   !turmaInfantil ||
                   !listaComponenteCurriculares ||
                   !componenteCurricularSelecionado
-                  // ||  !diasParaHabilitar
                 }
-                // diasParaHabilitar={diasParaHabilitar}
               />
             </div>
           </div>
@@ -335,21 +358,8 @@ const NovoDiarioBordo = () => {
                           salvarObservacao={obs => salvarEditarObservacao(obs)}
                           editarObservacao={obs => salvarEditarObservacao(obs)}
                           excluirObservacao={obs => excluirObservacao(obs)}
+                          permissoes={permissoesTela}
                         />
-                        <div
-                          className="position-absolute"
-                          style={{ left: 16, top: 145 }}
-                        >
-                          <Button
-                            height="30px"
-                            id={shortid.generate()}
-                            label={`Notificar usuários (${listaUsuarios?.length})`}
-                            icon="bell"
-                            color={Colors.Azul}
-                            border
-                            onClick={onClickNotificarUsuarios}
-                          />
-                        </div>
                       </div>
                     </div>
                   </PainelCollapse.Painel>
@@ -369,17 +379,9 @@ const NovoDiarioBordo = () => {
             </div>
           )}
         </div>
-        {modalVisivel && (
-          <ModalNotificarUsuarios
-            modalVisivel={modalVisivel}
-            setModalVisivel={setModalVisivel}
-            listaUsuarios={listaUsuarios}
-            setListaUsuarios={setListaUsuarios}
-          />
-        )}
       </Card>
     </Loader>
   );
 };
 
-export default NovoDiarioBordo;
+export default ListaDiarioBordo;

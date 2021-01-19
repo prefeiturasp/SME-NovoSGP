@@ -22,73 +22,7 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.DDB_C, Policy = "Bearer")]
         public async Task<IActionResult> Obter([FromServices] IObterDiarioBordoUseCase useCase, long id)
         {
-            return await  Task.FromResult(Ok(new DiarioBordoDto()
-            {
-                Auditoria = new AuditoriaDto()
-                {
-                    AlteradoEm = DateTime.Now,
-                    AlteradoPor = "João",
-                    AlteradoRF = "794563",
-                    CriadoEm = DateTime.Now.AddDays(-1),
-                    CriadoPor = "Maria",
-                    CriadoRF = "7985698",
-                    Id = id
-                },
-                Aula = new AulaDto()
-                {
-                    Id = 1,
-                    DataAula = DateTime.Now.AddDays(-2),
-                    DisciplinaId = "512",
-                    AulaCJ = false,
-                    DisciplinaNome = "Regência Infantil",
-                    Quantidade = 1,
-                    RecorrenciaAula = Dominio.RecorrenciaAula.AulaUnica,
-                    TipoAula = Dominio.TipoAula.Normal,
-                    TipoCalendarioId = 1,
-                    TurmaId = "125896321",
-                    UeId = "1258963"
-                },
-                AulaId = 1,
-                Data = new DateTime(2021, 01, 01),
-                DevolutivaId = 3,
-                Devolutivas = "<p>Acessar o sistema com o usuário de CP RF: 8279250&gt; &lt;Acessar o menu&gt; &lt;Diário de Classe&gt; &lt;Devolutivas&gt; &lt;Selecionar um período no calendário de acordo com o período que foi inserida a devolutiva &gt; Então deverá ser apresentado a data em que o CP realizou o cadastro da devolutiva.&nbsp;</p>",
-                Observacoes = new List<ObservacaoNotificacoesDiarioBordoDto>()
-                {
-                     new ObservacaoNotificacoesDiarioBordoDto()
-                     {
-                          Auditoria =  new AuditoriaDto()
-                          {
-                            AlteradoEm = DateTime.Now,
-                            AlteradoPor = "João",
-                            AlteradoRF = "794563",
-                            CriadoEm = DateTime.Now.AddDays(-1),
-                            CriadoPor = "Maria",
-                            CriadoRF = "7985698",
-                            Id = id
-                          },
-                           Observacao = "Acessar o sistema com o usuário de Professor de Ed. Infantil RF: 7226501 > Acessar o menu > Diário de Classe > Diário de bordo > Então deve exibir uma nova seção para inclusão de observações",
-                          QtdUsuariosNotificacao = 2
-                     },
-                     new ObservacaoNotificacoesDiarioBordoDto()
-                     {
-                          Auditoria =  new AuditoriaDto()
-                          {
-                            AlteradoEm = DateTime.Now,
-                            AlteradoPor = "João",
-                            AlteradoRF = "794563",
-                            CriadoEm = DateTime.Now.AddDays(-1),
-                            CriadoPor = "Maria",
-                            CriadoRF = "7985698",
-                            Id = id
-                          },
-                           Observacao = "CT001 – Validar as regras do campo <Observação> dentro do <Diário de Bordo> q edição de campo (ALTERAÇÃO DE TEXTO)",
-                          QtdUsuariosNotificacao = 3
-                     },
-
-                },
-                Planejamento = "Planejamento",
-                ReflexoesReplanejamento = "Refelxoes"
-            }));
+            return await  Task.FromResult(Ok(useCase.Executar(id)));
         }
 
         [HttpGet("detalhes/{id}")]
