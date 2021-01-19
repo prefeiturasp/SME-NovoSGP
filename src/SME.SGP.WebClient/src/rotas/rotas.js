@@ -82,6 +82,7 @@ import RelatorioLeitura from '~/paginas/Relatorios/EscolaAqui/Leitura/relatorioL
 import ListaOcorrencias from '~/paginas/Gestao/Ocorrencia/ListaOcorrencias';
 import CadastroOcorrencias from '~/paginas/Gestao/Ocorrencia/CadastroOcorrencias';
 import RelatorioPlanejamentoDiario from '~/paginas/Relatorios/DiarioClasse/PlanejamentoDiario/relatorioPlanejamentoDiario';
+import AcompanhamentoFrequencia from '~/paginas/DiarioClasse/AcompanhamentoFrequencia/acompanhamentoFrequencia';
 
 const rotas = new Map();
 
@@ -571,6 +572,18 @@ rotas.set(`${RotasDto.FREQUENCIA_PLANO_AULA}`, {
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: true,
   chavePermissao: RotasDto.FREQUENCIA_PLANO_AULA,
+});
+
+rotas.set(`${RotasDto.ACOMPANHAMENTO_FREQUENCIA}`, {
+  breadcrumbName: 'Acompanhamento de Frequência',
+  menu: ['Diário de Classe'],
+  parent: '/',
+  component: AcompanhamentoFrequencia,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  // TODO: Adicionar permissionamento
+  // temPermissionamento: true,
+  // chavePermissao: RotasDto.ACOMPANHAMENTO_FREQUENCIA,
 });
 
 rotas.set(`${RotasDto.NOTAS}/:disciplinaId/:bimestre`, {

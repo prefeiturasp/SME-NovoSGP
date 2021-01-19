@@ -4,6 +4,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -186,6 +187,22 @@ namespace SME.SGP.Dados.Repositorios
                 disciplinaId,
                 dataAtual,
             });
+        }
+
+        public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolar(string codigoTurma, string componenteCurricularId, TipoFrequenciaAluno tipoFrequencia, IEnumerable<long> periodosEscolaresIds)
+        {
+            const string sql = @"select 
+	                                fa.*
+                                from 
+	                                frequencia_aluno fa 
+                                where
+	                                turma_id = @codigoTurma and 
+	                                disciplina_id = @componenteCurricularId and 
+	                                tipo = @tipoFrequencia and
+	                                periodo_escolar_id = any(@periodosEscolaresIds)";
+
+            var parametros = new { codigoTurma, componenteCurricularId, tipoFrequencia = (short)tipoFrequencia, periodosEscolaresIds = periodosEscolaresIds.ToList() };
+            return await database.Conexao.QueryAsync<FrequenciaAluno>(sql, parametros);
         }
     }
 }

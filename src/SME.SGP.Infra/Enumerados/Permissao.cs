@@ -581,6 +581,9 @@
         OCO_E = 195,
 
         [PermissaoMenu(Menu = "Ocorrências", Icone = "fas fa-user-cog", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 7, EhMenu = false, EhAlteracao = true, Url = "/gestao/ocorrencias")]
-        OCO_A = 196
+        OCO_A = 196,
+
+        [PermissaoMenu(Menu = "Acompanhamento de frequência", Icone = "fas fa-user-cog", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 7, EhConsulta = true, Url = "/diario-classe/acompanhamento-frequencia")]
+        AFQ_C = 197,
     }
 }
