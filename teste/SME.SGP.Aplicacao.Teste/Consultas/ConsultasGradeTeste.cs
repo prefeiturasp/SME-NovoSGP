@@ -47,8 +47,8 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         //[Fact]
         //public async Task DeveRetornarQuatroAulasGradeParaSRMEAEE()
         //{
-        //    var semana = (DateTime.Now.DayOfYear / 7) + 1;
-        //    var aulasGrade = await consultasGrade.ObterGradeAulasTurmaProfessor("123", 1030, semana, DateTime.Now);
+        //    var semana = (DateTimeExtension.HorarioBrasilia().DayOfYear / 7) + 1;
+        //    var aulasGrade = await consultasGrade.ObterGradeAulasTurmaProfessor("123", 1030, semana, DateTimeExtension.HorarioBrasilia());
 
         //    Assert.True(aulasGrade.QuantidadeAulasGrade == 4);
         //}

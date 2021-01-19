@@ -30,9 +30,9 @@ class ServicoPlanoAnual {
     return api.post('v1/planos/anual', planoAnual);
   };
 
-  obterTurmasParaCopia = (turmaId, componenteCurricularId, ensinoEspecial) => {
+  obterTurmasParaCopia = (turmaId, componenteCurricularId, ensinoEspecial, consideraHistorico = false) => {
     return api.get(
-      `v1/planejamento/anual/turmas/copia?turmaId=${turmaId}&componenteCurricular=${componenteCurricularId}&ensinoEspecial=${ensinoEspecial}`
+      `v1/planejamento/anual/turmas/copia?turmaId=${turmaId}&componenteCurricular=${componenteCurricularId}&ensinoEspecial=${ensinoEspecial}&consideraHistorico=${consideraHistorico}`
     );
   };
 
