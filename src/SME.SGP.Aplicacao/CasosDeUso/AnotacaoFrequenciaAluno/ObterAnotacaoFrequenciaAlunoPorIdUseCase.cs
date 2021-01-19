@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System.Threading.Tasks;
 
@@ -6,11 +7,69 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterAnotacaoFrequenciaAlunoPorIdUseCase : AbstractUseCase, IObterAnotacaoFrequenciaAlunoPorIdUseCase
     {
-        public ObterAnotacaoFrequenciaAlunoPorIdUseCase(IMediator mediator) : base(mediator) {}
+        public ObterAnotacaoFrequenciaAlunoPorIdUseCase(IMediator mediator) : base(mediator) { }
 
-        public Task<AnotacaoFrequenciaAlunoCompletoDto> Executar(long id)
+        public async Task<AnotacaoFrequenciaAlunoCompletoDto> Executar(long id)
         {
-            throw new System.NotImplementedException();
+            var anotacao = await mediator.Send(new ObterAnotacaoFrequenciaAlunoPorIdQuery(id));
+
+            if (anotacao == null)
+                throw new NegocioException("Anotação não encontrada!");
+
+            MotivoAusencia motivoAusencia = null;
+
+            if (anotacao.MotivoAusenciaId.HasValue)
+                motivoAusencia = await mediator.Send(new ObterMotivoAusenciaPorIdQuery(anotacao.MotivoAusenciaId.Value));
+
+            var aula = await mediator.Send(new ObterAulaPorIdQuery(anotacao.AulaId));
+
+            if (aula == null)
+                throw new NegocioException("Aula vinculada a anotação não encontrada");
+
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(aula.TurmaId));
+
+            if (turma == null)
+                throw new NegocioException("Turma não encontrada");
+
+            var aluno = await mediator.Send(new ObterAlunoPorCodigoEolQuery(anotacao.CodigoAluno, turma.AnoLetivo));
+
+            if (aluno == null)
+                throw new NegocioException("Aluno não encontrado");
+
+            return MapearParaDto(anotacao, motivoAusencia, aluno);
+        }
+
+        private AnotacaoFrequenciaAlunoCompletoDto MapearParaDto(Dominio.AnotacaoFrequenciaAluno anotacao, Dominio.MotivoAusencia motivoAusencia, AlunoPorTurmaResposta aluno)
+        {
+            return new AnotacaoFrequenciaAlunoCompletoDto()
+            {
+                Aluno = new AlunoDadosBasicosDto()
+                {
+                    CelularResponsavel = aluno.CelularResponsavel,
+                    CodigoEOL = aluno.CodigoAluno,
+                    DataAtualizacaoContato = aluno.DataAtualizacaoContato,
+                    DataNascimento = aluno.DataNascimento,
+                    DataSituacao = aluno.DataSituacao,
+                    Nome = aluno.NomeAluno,
+                    NomeResponsavel = aluno.NomeResponsavel,
+                    NumeroChamada = aluno.NumeroAlunoChamada,
+                    Situacao = aluno.SituacaoMatricula,
+                    SituacaoCodigo = aluno.CodigoSituacaoMatricula,
+                    TipoResponsavel = aluno.TipoResponsavel
+                },
+                Anotacao = anotacao.Anotacao,
+                Auditoria = (AuditoriaDto)anotacao,
+                AulaId = anotacao.AulaId,
+                CodigoAluno = anotacao.CodigoAluno,
+                Id = anotacao.Id,
+                MotivoAusencia = motivoAusencia == null ? null :
+                    new MotivoAusenciaDto()
+                    {
+                        Id = motivoAusencia.Id,
+                        Descricao = motivoAusencia.Descricao
+                    },
+                MotivoAusenciaId = anotacao.MotivoAusenciaId.Value,
+            };
         }
     }
 }
