@@ -13,7 +13,10 @@ const ObservacoesUsuario = props => {
     esconderLabel,
     esconderCaixaExterna,
     verificaProprietario,
+    permissoes,
   } = props;
+
+  const { podeIncluir, podeAlterar, podeExcluir } = permissoes;
 
   return (
     <div className="col-sm-12 mb-2 mt-4">
@@ -23,11 +26,14 @@ const ObservacoesUsuario = props => {
           <CampoObservacao
             salvarObservacao={salvarObservacao}
             esconderCaixaExterna={esconderCaixaExterna}
+            podeIncluir={podeIncluir}
           />
           <ObservacoesUsuarioMontarDados
             onClickSalvarEdicao={editarObservacao}
             onClickExcluir={excluirObservacao}
             verificaProprietario={verificaProprietario}
+            podeAlterar={podeAlterar}
+            podeExcluir={podeExcluir}
           />
         </div>
       </ContainerObservacoesUsuario>
@@ -42,6 +48,7 @@ ObservacoesUsuario.propTypes = {
   esconderLabel: PropTypes.bool,
   esconderCaixaExterna: PropTypes.bool,
   verificaProprietario: PropTypes.bool,
+  permissoes: PropTypes.objectOf(PropTypes.object),
 };
 
 ObservacoesUsuario.defaultProps = {
@@ -51,6 +58,7 @@ ObservacoesUsuario.defaultProps = {
   esconderLabel: false,
   esconderCaixaExterna: false,
   verificaProprietario: false,
+  permissoes: { podeAlterar: true, podeIncluir: true, podeExcluir: true },
 };
 
 export default ObservacoesUsuario;
