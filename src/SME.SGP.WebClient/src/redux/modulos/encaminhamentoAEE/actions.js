@@ -52,13 +52,3 @@ export const setExibirLoaderEncaminhamentoAEE = payload => ({
   type: '@encaminhamentoAEE/setExibirLoaderEncaminhamentoAEE',
   payload,
 });
-
-export const setExibirModalCadastroAtendimentoClinicoAEE = payload => ({
-  type: '@encaminhamentoAEE/setExibirModalCadastroAtendimentoClinicoAEE',
-  payload,
-});
-
-export const setDadosAtendimentoClinicoAEE = payload => ({
-  type: '@encaminhamentoAEE/setDadosAtendimentoClinicoAEE',
-  payload,
-});

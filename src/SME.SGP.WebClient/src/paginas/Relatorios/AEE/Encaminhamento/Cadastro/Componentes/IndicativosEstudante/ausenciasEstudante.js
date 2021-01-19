@@ -1,11 +1,14 @@
+import * as moment from 'moment';
 import PropTypes from 'prop-types';
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   setDadosModalAnotacao,
   setExibirModalAnotacao,
   setExpandirLinhaAusenciaEstudante,
 } from '~/redux/modulos/encaminhamentoAEE/actions';
+import { erros } from '~/servicos';
+import ServicoEncaminhamentoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoEncaminhamentoAEE';
 import {
   BtnVisualizarAnotacao,
   TabelaColunasFixas,
@@ -20,11 +23,46 @@ const AusenciasEstudante = props => {
     store => store.encaminhamentoAEE.expandirLinhaAusenciaEstudante
   );
 
+  const dadosSecaoLocalizarEstudante = useSelector(
+    store => store.encaminhamentoAEE.dadosSecaoLocalizarEstudante
+  );
+
+  const [ausencias, setAusencias] = useState([]);
+
   useEffect(() => {
     return () => {
       dispatch(setExpandirLinhaAusenciaEstudante([]));
     };
   }, [dispatch]);
+
+  const obterAusenciaMotivoPorAlunoTurmaBimestreAno = useCallback(async () => {
+    // TODO lOADER!
+    const retorno = await ServicoEncaminhamentoAEE.obterAusenciaMotivoPorAlunoTurmaBimestreAno(
+      dados.codigoAluno,
+      dados.bimestre,
+      dadosSecaoLocalizarEstudante.codigoTurma,
+      dadosSecaoLocalizarEstudante.anoLetivo
+    ).catch(e => erros(e));
+
+    if (retorno?.data) {
+      setAusencias(retorno.data);
+    } else {
+      setAusencias([]);
+    }
+  }, [dados, dadosSecaoLocalizarEstudante]);
+
+  useEffect(() => {
+    if (expandirLinhaAusenciaEstudante && dados) {
+      obterAusenciaMotivoPorAlunoTurmaBimestreAno();
+    } else {
+      setAusencias([]);
+    }
+  }, [
+    dados,
+    dadosSecaoLocalizarEstudante,
+    expandirLinhaAusenciaEstudante,
+    obterAusenciaMotivoPorAlunoTurmaBimestreAno,
+  ]);
 
   const onClickAnotacao = item => {
     dispatch(setDadosModalAnotacao(item));
@@ -37,12 +75,12 @@ const AusenciasEstudante = props => {
         className="d-flex"
         style={{ alignItems: 'center', justifyContent: 'space-between' }}
       >
-        <div>{item.motivo}</div>
+        <div>{item.motivoAusencia}</div>
 
         <BtnVisualizarAnotacao
-          className={item.anotacao ? 'btn-com-anotacao' : ''}
+          className={item.justificativaAusencia ? 'btn-com-anotacao' : ''}
           onClick={() => {
-            if (item.anotacao) {
+            if (item.justificativaAusencia) {
               onClickAnotacao(item);
             }
           }}
@@ -70,10 +108,12 @@ const AusenciasEstudante = props => {
                       </tr>
                     </thead>
                     <tbody className="tabela-dois-tbody">
-                      {dados?.ausencias.map(item => {
+                      {ausencias.map(item => {
                         return (
                           <tr>
-                            <td className="col-valor-linha-um">{item.data}</td>
+                            <td className="col-valor-linha-um">
+                              {moment(item.dataAusencia).format('DD/MM/YYYY')}
+                            </td>
                             <td className="col-valor-linha-um">
                               {item.registradoPor}
                             </td>

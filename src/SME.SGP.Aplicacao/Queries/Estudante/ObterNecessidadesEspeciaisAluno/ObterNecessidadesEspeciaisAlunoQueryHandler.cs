@@ -27,9 +27,9 @@ namespace SME.SGP.Aplicacao
             if (necessidadesEspeciaisAluno != null)
                 informacoesEscolaresAluno = necessidadesEspeciaisAluno;
 
-            informacoesEscolaresAluno.FrequenciaAlunoPorBimestres = await mediator.Send(new ObterFrequenciaBimestresQuery(request.CodigoAluno, 0, request.TurmaId, TipoFrequenciaAluno.Geral));
+            informacoesEscolaresAluno.FrequenciaAlunoPorBimestres = await mediator.Send(new ObterFrequenciaBimestresQuery(request.CodigoAluno, 0, request.TurmaCodigo, TipoFrequenciaAluno.Geral));
 
-            informacoesEscolaresAluno.FrequenciaGlobal = await mediator.Send(new ObterFrequenciaGeralAlunoQuery(request.CodigoAluno, request.TurmaId));
+            informacoesEscolaresAluno.FrequenciaGlobal = await mediator.Send(new ObterFrequenciaGeralAlunoQuery(request.CodigoAluno, request.TurmaCodigo));
 
             return informacoesEscolaresAluno;
         }

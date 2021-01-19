@@ -39,7 +39,7 @@ const SecaoLocalizarEstudanteDados = () => {
   const [
     alunoLocalizadorSelecionado,
     setAlunoLocalizadorSelecionado,
-  ] = useState(dadosSecaoLocalizarEstudante?.codigoAluno);
+  ] = useState({ codigoAluno: dadosSecaoLocalizarEstudante?.codigoAluno });
 
   const [carregandoTurmas, setCarregandoTurmas] = useState(false);
   const [carregandoDres, setCarregandoDres] = useState(false);
@@ -174,9 +174,12 @@ const SecaoLocalizarEstudanteDados = () => {
 
   const onChangeLocalizadorEstudante = aluno => {
     if (aluno?.alunoCodigo && aluno?.alunoNome) {
-      setAlunoLocalizadorSelecionado(aluno.alunoCodigo);
+      setAlunoLocalizadorSelecionado({
+        codigoAluno: aluno?.alunoCodigo,
+        codigoTurma: aluno?.codigoTurma,
+      });
     } else {
-      setAlunoLocalizadorSelecionado();
+      setAlunoLocalizadorSelecionado({});
     }
   };
 
@@ -188,8 +191,9 @@ const SecaoLocalizarEstudanteDados = () => {
       anoLetivo: anoAtual,
       codigoDre,
       codigoUe,
-      codigoTurma: dadosSecaoLocalizarEstudante.turmaId,
-      codigoAluno: alunoLocalizadorSelecionado,
+      codigoTurma: alunoLocalizadorSelecionado.codigoTurma,
+      codigoAluno: alunoLocalizadorSelecionado.codigoAluno,
+      turmaId: dadosSecaoLocalizarEstudante.turmaId,
     };
     dispatch(setDadosSecaoLocalizarEstudante(params));
   };
@@ -268,7 +272,7 @@ const SecaoLocalizarEstudanteDados = () => {
             anoLetivo={anoAtual}
             desabilitado={!codigoDre || !codigoUe}
             codigoTurma={codigoTurma}
-            valorInicialAlunoCodigo={alunoLocalizadorSelecionado}
+            valorInicialAlunoCodigo={alunoLocalizadorSelecionado?.codigoAluno}
           />
         </div>
       </div>

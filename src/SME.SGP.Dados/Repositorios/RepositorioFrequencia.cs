@@ -200,7 +200,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var sql = @"
                 select
-	                afa.criado_em dataAusencia,
+	                a.data_aula dataAusencia,
 	                afa.criado_por registradoPor,
 	                ma.descricao motivoAusencia,
 	                afa.anotacao justificativaAusencia
@@ -209,7 +209,7 @@ namespace SME.SGP.Dados.Repositorios
                 inner join aula a on a.id = afa.aula_id 
                 inner join tipo_calendario tc on tc.id = a.tipo_calendario_id 
                 inner join periodo_escolar pe on pe.tipo_calendario_id = tc.id
-                inner join motivo_ausencia ma on afa.motivo_ausencia_id = ma.id 
+                 left join motivo_ausencia ma on afa.motivo_ausencia_id = ma.id 
                 where 
 	                not afa.excluido and not a.excluido and 
 	                afa.codigo_aluno = @codigoAluno and

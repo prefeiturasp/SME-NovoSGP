@@ -1,88 +1,100 @@
+import * as moment from 'moment';
 import PropTypes from 'prop-types';
-import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { TabelaColunasFixas } from './atendimentoClinicoTabela.css';
+import React, { useState } from 'react';
+import { DataTable } from '~/componentes';
 import Button from '~/componentes/button';
 import { Colors } from '~/componentes/colors';
 import Label from '~/componentes/label';
-import { setExibirModalCadastroAtendimentoClinicoAEE } from '~/redux/modulos/encaminhamentoAEE/actions';
 import ModalCadastroAtendimentoClinico from './modalCadastroAtendimentoClinico';
 
 const AtendimentoClinicoTabela = props => {
-  const { label } = props;
+  const { label, questaoAtual, form } = props;
 
-  const dispatch = useDispatch();
+  const [exibirModal, setExibirModal] = useState(false);
 
-  const dados = [
+  const onClickNovoDetalhamento = () => {
+    setExibirModal(true);
+  };
+
+  const onCloseModal = novosDados => {
+    setExibirModal(false);
+
+    if (novosDados) {
+      const dadosAtuais = form?.values?.[questaoAtual.id]?.length
+        ? form?.values?.[questaoAtual.id]
+        : [];
+      novosDados.id = dadosAtuais.length + 1;
+      dadosAtuais.push(novosDados);
+      if (form) {
+        form.setFieldValue(questaoAtual.id, dadosAtuais);
+      }
+    }
+  };
+
+  const formatarCampoTabela = data => {
+    let dataFormatada = '';
+    if (data) {
+      dataFormatada = moment(data).format('HH:mm');
+    }
+    return <span> {dataFormatada}</span>;
+  };
+
+  const colunas = [
     {
-      diaSemana: 'Quinta',
-      atendimentoAtividade: 'Academia estudantil de letras (AEL)',
-      localRealizacao: 'Escola',
-      horarioInicio: '09:00',
-      horarioTermino: '09:30',
+      title: 'Dia da Semana',
+      dataIndex: 'diaSemana',
     },
     {
-      diaSemana: 'Sexta',
-      atendimentoAtividade: 'Academia estudantil de letras (AEL)',
-      localRealizacao: 'Escola',
-      horarioInicio: '09:00',
-      horarioTermino: '09:30',
+      title: 'Atendimento/Atividade',
+      dataIndex: 'atendimentoAtividade',
+    },
+    {
+      title: 'Local de realização',
+      dataIndex: 'localRealizacao',
+    },
+    {
+      title: 'Horário de início',
+      dataIndex: 'horarioInicio',
+      render: data => formatarCampoTabela(data),
+    },
+    {
+      title: 'Horário de término',
+      dataIndex: 'horarioTermino',
+      render: data => formatarCampoTabela(data),
+    },
+    {
+      title: 'Ação',
+      dataIndex: 'acaoRemover',
+      render: (texto, linha) => {
+        return <div>BOTAO</div>;
+      },
     },
   ];
 
-  const onClickNovoDetalhamento = () => {
-    dispatch(setExibirModalCadastroAtendimentoClinicoAEE(true));
-  };
-
   return (
     <>
-      <ModalCadastroAtendimentoClinico />
+      <ModalCadastroAtendimentoClinico
+        onClose={onCloseModal}
+        exibirModal={exibirModal}
+      />
       <Label text={label} />
-      <TabelaColunasFixas>
-        <div className="wrapper">
-          <div className="header-fixo">
-            <table className="table">
-              <thead className="tabela-dois-thead">
-                <tr>
-                  <th className="col-linha-um">Dia da Semana</th>
-                  <th className="col-linha-um">Atendimento/Atividade</th>
-                  <th className="col-linha-um">Local de realização</th>
-                  <th className="col-linha-um">Horário de início</th>
-                  <th className="col-linha-um">Horário de término</th>
-                </tr>
-              </thead>
-              <tbody className="tabela-dois-tbody">
-                {dados.map((data, index) => {
-                  return (
-                    <tr id={index}>
-                      <td className="col-valor-linha-um">{data.diaSemana}</td>
-                      <td className="col-valor-linha-um">
-                        {data.atendimentoAtividade}
-                      </td>
-                      <td className="col-valor-linha-um">
-                        {data.localRealizacao}
-                      </td>
-                      <td className="col-valor-linha-um">
-                        {data.horarioInicio}
-                      </td>
-                      <td className="col-valor-linha-um">
-                        {data.horarioTermino}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </TabelaColunasFixas>
+      <DataTable
+        rowKey="id"
+        columns={colunas}
+        dataSource={
+          form?.values?.[questaoAtual.id]?.length
+            ? form?.values?.[questaoAtual.id]
+            : []
+        }
+        pagination={false}
+      />
       <Button
         id="btn-novo-detalhamento"
         label="Novo detalhamento"
         icon="plus"
         color={Colors.Azul}
         border
-        className="mr-3"
+        className="mr-3 mt-2"
         onClick={onClickNovoDetalhamento}
       />
     </>
@@ -90,14 +102,15 @@ const AtendimentoClinicoTabela = props => {
 };
 
 AtendimentoClinicoTabela.propTypes = {
-  name: PropTypes.string,
-  id: PropTypes.string,
+  questaoAtual: PropTypes.oneOfType([PropTypes.any]),
+  form: PropTypes.oneOfType([PropTypes.any]),
   label: PropTypes.string,
 };
 
 AtendimentoClinicoTabela.defaultProps = {
-  indexLinha: PropTypes.number,
-  dados: PropTypes.oneOfType([PropTypes.array]),
+  label: '',
+  questaoAtual: null,
+  form: null,
 };
 
 export default AtendimentoClinicoTabela;
