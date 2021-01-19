@@ -23,40 +23,7 @@ namespace SME.SGP.Api.Controllers
 
         public async Task<IActionResult> ObterJustificativaCompleto(long id, [FromServices] IObterAnotacaoFrequenciaAlunoPorIdUseCase useCase)
         {
-            return await Task.FromResult(Ok(new AnotacaoFrequenciaAlunoCompletoDto()
-            {
-                Aluno = new AlunoDadosBasicosDto()
-                {
-                    Nome = "JULIANA MENDES",
-                    NumeroChamada = 12,
-                    CodigoEOL = "56987452",
-                    Situacao = "TRANSFERIDO",
-                    SituacaoCodigo = Dominio.SituacaoMatriculaAluno.Transferido,
-                    NomeResponsavel = "THAIS MENDES",
-                    CelularResponsavel = "985693214",
-                    TipoResponsavel = "MÃE",
-                    DataAtualizacaoContato = DateTime.Now,
-                    DataNascimento = DateTime.Now.AddYears(-30),
-                    DataSituacao = DateTime.Now.AddDays(-3)
-                },
-                Anotacao = "<p>Posso adicionar uma nota futura</p>",
-                Auditoria = new AuditoriaDto()
-                {
-                    CriadoEm = DateTime.Now,
-                    CriadoPor = "ADALGISA GONCALVES",
-                    CriadoRF = "7944560",
-                    Id = id
-                },
-                AulaId = 234554,
-                CodigoAluno = "5896541",
-                Id = id,
-                MotivoAusencia = new MotivoAusenciaDto()
-                {
-                    Id = 1,
-                    Descricao = "Atestado Médico do Aluno"
-                },
-                MotivoAusenciaId = 1
-            }));
+            return Ok(await useCase.Executar(id));
         }
 
         [HttpGet("{codigoAluno}/aulas/{aulaId}")]
