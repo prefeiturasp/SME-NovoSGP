@@ -11,15 +11,15 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<bool> Executar(long arquivoId)
+        public async Task<bool> Executar(Guid arquivoCodigo)
         {
-            var entidadeArquivo = await mediator.Send(new ObterArquivoPorIdQuery(arquivoId));
+            var entidadeArquivo = await mediator.Send(new ObterArquivoPorCodigoQuery(arquivoCodigo));
 
             if (entidadeArquivo == null)
                 throw new NegocioException("O arquivo informado não foi encontrado");
 
-            await mediator.Send(new ExcluirReferenciaArquivoAeePorArquivoIdCommand(arquivoId));
-            await mediator.Send(new ExcluirArquivoRepositorioPorIdCommand(arquivoId));
+            await mediator.Send(new ExcluirReferenciaArquivoAeePorArquivoIdCommand(entidadeArquivo.Id));
+            await mediator.Send(new ExcluirArquivoRepositorioPorIdCommand(entidadeArquivo.Id));
             await mediator.Send(new ExcluirArquivoFisicoCommand(entidadeArquivo.Codigo, entidadeArquivo.Tipo, entidadeArquivo.Nome));
 
             return true;
