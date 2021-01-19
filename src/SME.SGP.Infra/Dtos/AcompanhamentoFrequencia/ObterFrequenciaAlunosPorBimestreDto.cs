@@ -4,6 +4,6 @@
     {
         public long ComponenteCurricularId { get; set; }
         public long TurmaId { get; set; }
-        public short? Bimestre { get; set; }
+        public int? Bimestre { get; set; }
     }
 }
