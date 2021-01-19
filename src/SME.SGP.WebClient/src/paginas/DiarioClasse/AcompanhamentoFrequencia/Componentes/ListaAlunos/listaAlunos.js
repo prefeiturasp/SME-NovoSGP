@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import BtnExpandirFrequenciaAluno from './btnExpandirFrequenciaAluno';
 import AusenciasAluno from './ausenciasAluno';
@@ -11,78 +11,52 @@ import {
   Marcadores,
   MarcadorAulas,
 } from './listaAlunos.css';
+import ModalAnotacoesAcompanhamentoFrequencia from './modalAnotacoesAcompanhamentoFrequencia';
+
+import ServicoAcompanhamentoFrequencia from '~/servicos/Paginas/DiarioClasse/ServicoAcompanhamentoFrequencia';
+import { erros } from '~/servicos';
 
 const ListaAlunos = props => {
-  const { bimestreSelecionado } = props;
+  const usuario = useSelector(store => store.usuario);
+  const { turmaSelecionada } = usuario;
+
+  const { bimestreSelecionado, componenteCurricularId } = props;
   const dispatch = useDispatch();
 
-  const [dadosBimestres, setDadosBimestres] = useState([]);
   const [dadosBimestre, setDadosBimestre] = useState([]);
 
-  const dados = [
-    {
-      bimestreId: 1,
-      totalAulasPrevistas: 10,
-      totalAulasDadas: 5,
-      alunos: [
-        {
-          numeroChamada: 1,
-          nome: 'Aluno com um nome grande',
-          compensacoes: 1,
-          frequencia: '90%',
-          ausencias: [
-            {
-              data: '12/10/2020',
-              motivo: 'Atestado médico do estudante',
-            },
-          ],
-        },
-        {
-          numeroChamada: 2,
-          nome: 'Aluno com um nome grande 2 ',
-          compensacoes: 1,
-          frequencia: '90%',
-          ausencias: [
-            {
-              data: '12/10/2020',
-              motivo: 'Atestado médico do estudante',
-              anotacao:
-                '<strong>Atestado médico do estudante Atestado médico do estudante Atestado médico do estudante Atestado médico do estudante</strong> Amaral dos Santos',
-            },
-          ],
-        },
-      ],
-    },
-  ];
-
   useEffect(() => {
-    setDadosBimestres(dados);
-    setDadosBimestre(dados.find(a => a.bimestreId === bimestreSelecionado));
+    const obterAlunos = async () => {
+      const retorno = await ServicoAcompanhamentoFrequencia.obterAcompanhamentoFrequenciaPorBimestre(
+        turmaSelecionada?.id,
+        componenteCurricularId,
+        bimestreSelecionado
+      ).catch(e => erros(e));
+
+      if (retorno?.data) {
+        setDadosBimestre(retorno?.data);
+      }
+    };
+
+    obterAlunos();
+    // setDadosBimestres(dados);
+    // setDadosBimestre(dados.find(a => a.bimestreId === bimestreSelecionado));
   }, []);
 
   const onChangeOrdenacao = alunosOrdenados => {
     dispatch(setExpandirLinhaFrequenciaAluno([]));
-    setDadosBimestres({
-      bimestreId: bimestreSelecionado,
-      alunos: alunosOrdenados,
-    });
-    // const bimestre = dados.findIndex(
-    //   obj => obj.bimestreId === bimestreSelecionado
-    // );
-    // dados[bimestre].alunos = alunosOrdenados;
-    // setDadosBimestres(dados);
+    setDadosBimestre({ ...dadosBimestre, frequenciaAlunos: alunosOrdenados });
   };
-
-  // onChangeOrdenacao={onChangeOrdenacao}
 
   return (
     <>
+      <ModalAnotacoesAcompanhamentoFrequencia />
       <TabelaColunasFixas>
         <div className="row">
           <div className="col-md-6 col-sm-12">
             <Ordenacao
               className="mb-2"
-              conteudoParaOrdenar={dadosBimestre?.alunos}
+              conteudoParaOrdenar={dadosBimestre?.frequenciaAlunos}
               ordenarColunaNumero="numeroChamada"
               ordenarColunaTexto="nome"
               retornoOrdenado={retorno => {
@@ -124,7 +98,7 @@ const ListaAlunos = props => {
                 </tr>
               </thead>
               <tbody className="tabela-um-tbody">
-                {dadosBimestre?.alunos?.map((data, index) => {
+                {dadosBimestre?.frequenciaAlunos?.map((data, index) => {
                   return (
                     <>
                       <tr id={index}>
@@ -133,19 +107,29 @@ const ListaAlunos = props => {
                         </td>
                         <td className="col-valor-linha-quatro">{data.nome}</td>
                         <td className="col-valor-linha-dois">
-                          {data.ausencias.length}
+                          {data.ausencias}
                         </td>
                         <td className="col-valor-linha-dois">
                           {data.compensacoes}
                         </td>
                         <td className="col-valor-linha-dois">
-                          {data.frequencia}
-                          <BtnExpandirFrequenciaAluno indexLinha={index} />
+                          {data.frequencia}%
+                          {data.ausencias > 0 ? (
+                            <BtnExpandirFrequenciaAluno
+                              indexLinha={index}
+                              codigoAluno={data.alunoRf}
+                            />
+                          ) : (
+                            <></>
+                          )}
                         </td>
                       </tr>
                       <AusenciasAluno
                         indexLinha={index}
                         dados={data.ausencias}
+                        turmaId={turmaSelecionada?.id}
+                        componenteCurricularId={componenteCurricularId}
+                        codigoAluno={data.alunoRf}
                       />
                     </>
                   );
@@ -160,10 +144,12 @@ const ListaAlunos = props => {
 };
 
 ListaAlunos.propTypes = {
+  componenteCurricularId: PropTypes.string,
   bimestreSelecionado: PropTypes.number,
 };
 
 ListaAlunos.defaultProps = {
+  componenteCurricularId: PropTypes.string,
   bimestreSelecionado: PropTypes.number,
 };
 
