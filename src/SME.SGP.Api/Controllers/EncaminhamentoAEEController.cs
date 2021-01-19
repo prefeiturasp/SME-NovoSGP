@@ -63,9 +63,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(401)]
         //[Permissao(Permissao.DPU_E, Policy = "Bearer")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ExcluirArquivo([FromQuery] long arquivoId, [FromServices] IExcluirArquivoAeeUseCase useCase)
+        public async Task<IActionResult> ExcluirArquivo([FromQuery] Guid arquivoCodigo, [FromServices] IExcluirArquivoAeeUseCase useCase)
         {
-            return Ok(await useCase.Executar(arquivoId));
+            return Ok(await useCase.Executar(arquivoCodigo));
         }
         
         [HttpGet("instrucoes-modal")]

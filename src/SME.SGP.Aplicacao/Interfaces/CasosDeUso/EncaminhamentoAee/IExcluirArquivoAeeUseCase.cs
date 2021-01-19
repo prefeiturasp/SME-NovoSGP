@@ -4,7 +4,7 @@ using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public interface IExcluirArquivoAeeUseCase : IUseCase<long , bool>
+    public interface IExcluirArquivoAeeUseCase : IUseCase<Guid, bool>
     {
 
     }
