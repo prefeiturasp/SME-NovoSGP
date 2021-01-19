@@ -4,6 +4,8 @@ const inicial = {
   expandirLinhaFrequenciaAluno: [],
   dadosModalAnotacao: null,
   exibirModalAnotacao: false,
+  frequenciaAlunoCodigo: null,
+  dadosFrequenciaAlunoObter: {},
 };
 
 export default function AcompanhamentoFrequencia(state = inicial, action) {
@@ -25,6 +27,18 @@ export default function AcompanhamentoFrequencia(state = inicial, action) {
         return {
           ...draft,
           exibirModalAnotacao: action.payload,
+        };
+      }
+      case '@acompanhamentoFrequencia/setDadosFrequenciaAlunoObter': {
+        return {
+          ...draft,
+          dadosFrequenciaAlunoObter: action.payload,
+        };
+      }
+      case '@acompanhamentoFrequencia/setFrequenciaAlunoCodigo': {
+        return {
+          ...draft,
+          frequenciaAlunoCodigo: action.payload,
         };
       }
       default:

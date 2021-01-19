@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
