@@ -78,7 +78,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             servicoConselhoClasse.Setup(a => a.VerificaNotasTodosComponentesCurriculares(It.IsAny<string>(), It.IsAny<Turma>(), It.IsAny<long>())).Returns(Task.FromResult(true));
             servicoUsuario.Setup(a => a.ObterUsuarioLogado()).Returns(Task.FromResult(new Usuario()));
             servicoEOL.Setup(a => a.ObterDisciplinasPorCodigoTurma(It.IsAny<string>())).Returns(Task.FromResult(Enumerable.Empty<DisciplinaResposta>()));
-            repositorioFrequenciaAlunoDisciplinaPeriodo.Setup(a => a.ObterFrequenciaBimestresAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<string>())).Returns(Task.FromResult(Enumerable.Empty<FrequenciaAluno>()));
+            repositorioFrequenciaAlunoDisciplinaPeriodo.Setup(a => a.ObterFrequenciaBimestresAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<TipoFrequenciaAluno>())).Returns(Task.FromResult(Enumerable.Empty<FrequenciaAluno>()));
             Assert.NotNull(consultasConselhoClasseAluno.ObterListagemDeSinteses(0, 0, "", "", 0));
         }
 
