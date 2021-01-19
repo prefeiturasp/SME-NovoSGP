@@ -48,7 +48,7 @@ const ListaBimestres = props => {
         {bimestres.map(bimestre => {
           return (
             <TabPane tab={bimestre.descricao} key={bimestre.id}>
-              <ListaAlunos />
+              <ListaAlunos bimestreSelecionado={bimestre.id} />
             </TabPane>
           );
         })}
