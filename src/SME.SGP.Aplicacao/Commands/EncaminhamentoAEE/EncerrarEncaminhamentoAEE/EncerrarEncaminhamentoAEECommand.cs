@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
                     .WithMessage("O Id do Encaminhamento deve ser informado!");
             RuleFor(x => x.MotivoEncerramento)
                    .GreaterThan(string.Empty)
-                   .WithMessage("O Motivo do Encaminhamento deve ser informada!");
+                   .WithMessage("O Motivo do Encerramento deve ser informado!");
         }
     }
 }
