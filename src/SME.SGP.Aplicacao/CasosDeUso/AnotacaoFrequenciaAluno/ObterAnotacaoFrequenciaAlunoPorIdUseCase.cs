@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -13,7 +14,7 @@ namespace SME.SGP.Aplicacao
         {
             var anotacao = await mediator.Send(new ObterAnotacaoFrequenciaAlunoPorIdQuery(id));
 
-            if (anotacao == null)
+            if (anotacao == null || anotacao.Excluido)
                 throw new NegocioException("Anotação não encontrada!");
 
             MotivoAusencia motivoAusencia = null;
@@ -31,7 +32,12 @@ namespace SME.SGP.Aplicacao
             if (turma == null)
                 throw new NegocioException("Turma não encontrada");
 
-            var aluno = await mediator.Send(new ObterAlunoPorCodigoEolQuery(anotacao.CodigoAluno, turma.AnoLetivo));
+            var alunos = await mediator.Send(new ObterAlunosPorTurmaEAnoLetivoQuery(turma.CodigoTurma));
+
+            if (alunos == null && !alunos.Any())
+                throw new NegocioException("Alunos da turma não encontrado");
+
+            var aluno = alunos.FirstOrDefault(a => a.CodigoAluno.Equals(anotacao.CodigoAluno));
 
             if (aluno == null)
                 throw new NegocioException("Aluno não encontrado");
@@ -55,7 +61,7 @@ namespace SME.SGP.Aplicacao
                     NumeroChamada = aluno.NumeroAlunoChamada,
                     Situacao = aluno.SituacaoMatricula,
                     SituacaoCodigo = aluno.CodigoSituacaoMatricula,
-                    TipoResponsavel = aluno.TipoResponsavel
+                    TipoResponsavel = ObterTipoResponsavel(aluno.TipoResponsavel)
                 },
                 Anotacao = anotacao.Anotacao,
                 Auditoria = (AuditoriaDto)anotacao,
@@ -70,6 +76,30 @@ namespace SME.SGP.Aplicacao
                     },
                 MotivoAusenciaId = anotacao.MotivoAusenciaId.Value,
             };
+        }
+
+        private string ObterTipoResponsavel(string tipoResponsavel)
+        {
+            switch (tipoResponsavel)
+            {
+                case "1":
+                    {
+                        return TipoResponsavel.Filicacao1.Name();
+                    }
+                case "2":
+                    {
+                        return TipoResponsavel.Filiacao2.Name();
+                    }
+                case "3":
+                    {
+                        return TipoResponsavel.ResponsavelLegal.Name();
+                    }
+                case "4":
+                    {
+                        return TipoResponsavel.ProprioEstudante.Name();
+                    }
+            }
+            return TipoResponsavel.Filicacao1.ToString();
         }
     }
 }
