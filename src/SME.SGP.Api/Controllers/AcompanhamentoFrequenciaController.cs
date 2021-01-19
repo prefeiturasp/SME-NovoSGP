@@ -8,7 +8,7 @@ namespace SME.SGP.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/acompanhamento-frequencia")]
-    //[Authorize("Bearer")]
+    [Authorize("Bearer")]
     public class AcompanhamentoFrequenciaController : ControllerBase
     {
         [HttpGet("")]
