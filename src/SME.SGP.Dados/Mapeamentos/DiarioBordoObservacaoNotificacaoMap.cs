@@ -14,6 +14,7 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.Id).ToColumn("id");
             Map(c => c.IdObservacao).ToColumn("observacao_id");
             Map(c => c.IdNotificacao).ToColumn("notificacao_id");
+            Map(c => c.IdUsuario).Ignore();
         }
     }    
 }
