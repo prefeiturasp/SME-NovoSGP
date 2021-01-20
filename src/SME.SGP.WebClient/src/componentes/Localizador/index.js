@@ -35,6 +35,7 @@ function Localizador({
   labelNome,
   classesRF,
   limparCamposAposPesquisa,
+  validaPerfilProfessor,
 }) {
   const usuario = useSelector(store => store.usuario);
   const [dataSource, setDataSource] = useState([]);
@@ -44,6 +45,10 @@ function Localizador({
     nome: false,
   });
   const { ehPerfilProfessor, rf } = usuario;
+
+  const validacaoDesabilitaPerfilProfessor = () => {
+    return validaPerfilProfessor && ehPerfilProfessor;
+  };
 
   const onChangeInput = async valor => {
     if (valor.length === 0) {
@@ -170,7 +175,7 @@ function Localizador({
   }, [form?.initialValues]);
 
   useEffect(() => {
-    if (dreId && ehPerfilProfessor) {
+    if (dreId && validacaoDesabilitaPerfilProfessor()) {
       onBuscarPorRF({ rf });
     }
   }, [dreId, ehPerfilProfessor, rf, onBuscarPorRF]);
@@ -210,7 +215,9 @@ function Localizador({
           placeholderRF={placeholderRF}
           form={form}
           desabilitado={
-            desabilitado || ehPerfilProfessor || desabilitarCampo.rf
+            desabilitado ||
+            validacaoDesabilitaPerfilProfessor() ||
+            desabilitarCampo.rf
           }
         />
       </Grid>
@@ -225,7 +232,9 @@ function Localizador({
           name="professorNome"
           placeholderNome={placeholderNome}
           desabilitado={
-            desabilitado || ehPerfilProfessor || desabilitarCampo.nome
+            desabilitado ||
+            validacaoDesabilitaPerfilProfessor() ||
+            desabilitarCampo.nome
           }
         />
       </Grid>
@@ -252,6 +261,7 @@ Localizador.propTypes = {
   placeholderNome: PropTypes.string,
   classesRF: PropTypes.string,
   limparCamposAposPesquisa: PropTypes.bool,
+  validaPerfilProfessor: PropTypes.bool,
 };
 
 Localizador.defaultProps = {
@@ -270,6 +280,7 @@ Localizador.defaultProps = {
   placeholderNome: 'Digite o nome da pessoa',
   classesRF: '',
   limparCamposAposPesquisa: false,
+  validaPerfilProfessor: true,
 };
 
 export default Localizador;
