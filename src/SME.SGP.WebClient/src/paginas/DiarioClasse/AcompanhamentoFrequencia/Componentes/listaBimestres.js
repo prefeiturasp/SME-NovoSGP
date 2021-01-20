@@ -1,13 +1,17 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { Tabs } from 'antd';
 import PropTypes from 'prop-types';
 import { ContainerTabsCard } from '~/componentes/tabs/tabs.css';
 import { Loader } from '~/componentes';
 import ListaAlunos from './ListaAlunos/listaAlunos';
+import { setExpandirLinhaFrequenciaAluno } from '~/redux/modulos/acompanhamentoFrequencia/actions';
 
 const { TabPane } = Tabs;
 
 const ListaBimestres = props => {
+  const dispatch = useDispatch();
+
   const { bimestres, componenteCurricularIdSelecionado } = props;
 
   const [bimestreCorrente, setBimestreCorrente] = useState(1);
@@ -33,6 +37,7 @@ const ListaBimestres = props => {
 
   const onChangeTab = async numeroBimestre => {
     if (componenteCurricularIdSelecionado) {
+      dispatch(setExpandirLinhaFrequenciaAluno([]));
       await obterDadosBimestres(numeroBimestre);
     }
   };
@@ -42,6 +47,7 @@ const ListaBimestres = props => {
       <Loader loading={carregandoListaBimestres} />
       <ContainerTabsCard
         type="card"
+        width="20%"
         onChange={onChangeTab}
         activeKey={String(bimestreCorrente)}
       >

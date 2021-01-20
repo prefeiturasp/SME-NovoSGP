@@ -4,7 +4,6 @@ import { Tabs } from 'antd';
 import { Base } from '../colors';
 
 export const ContainerTabsCard = styled(Tabs)`
-
   width: 100% !important;
 
   .ant-tabs-tab-next {
@@ -16,7 +15,7 @@ export const ContainerTabsCard = styled(Tabs)`
   }
 
   .ant-tabs-nav {
-    width: 25%;
+    width: ${props => (props.width ? props.width : '25%')};
   }
 
   .ant-tabs-tab {

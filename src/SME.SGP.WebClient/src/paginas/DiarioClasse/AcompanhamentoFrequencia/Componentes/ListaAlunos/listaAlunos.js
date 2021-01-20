@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { Tooltip } from 'antd';
 import PropTypes from 'prop-types';
 import BtnExpandirFrequenciaAluno from './btnExpandirFrequenciaAluno';
 import AusenciasAluno from './ausenciasAluno';
+import { Base } from '~/componentes/colors';
 import Ordenacao from '~/componentes-sgp/Ordenacao/ordenacao';
 import { setExpandirLinhaFrequenciaAluno } from '~/redux/modulos/acompanhamentoFrequencia/actions';
-
+import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 import {
   TabelaColunasFixas,
   Marcadores,
@@ -22,6 +24,10 @@ const ListaAlunos = props => {
   const { turmaSelecionada } = usuario;
 
   const { bimestreSelecionado, componenteCurricularId } = props;
+  const modalidadesFiltroPrincipal = useSelector(
+    store => store.filtro.modalidades
+  );
+
   const dispatch = useDispatch();
 
   const [carregandoListaAlunos, setCarregandoListaAlunos] = useState(false);
@@ -43,8 +49,6 @@ const ListaAlunos = props => {
     };
 
     obterAlunos();
-    // setDadosBimestres(dados);
-    // setDadosBimestre(dados.find(a => a.bimestreId === bimestreSelecionado));
   }, []);
 
   const onChangeOrdenacao = alunosOrdenados => {
@@ -73,14 +77,21 @@ const ListaAlunos = props => {
               </div>
 
               <Marcadores className="col-md-6 col-sm-12 d-flex justify-content-end">
-                <MarcadorAulas className="ml-2">
-                  <span>Aulas previstas </span>
-                  <span className="numero">
-                    {dadosBimestre && dadosBimestre.totalAulasPrevistas
-                      ? dadosBimestre.totalAulasPrevistas
-                      : 0}
-                  </span>
-                </MarcadorAulas>
+                {!ehTurmaInfantil(
+                  modalidadesFiltroPrincipal,
+                  turmaSelecionada
+                ) ? (
+                  <MarcadorAulas className="ml-2">
+                    <span>Aulas previstas </span>
+                    <span className="numero">
+                      {dadosBimestre && dadosBimestre.totalAulasPrevistas
+                        ? dadosBimestre.totalAulasPrevistas
+                        : 0}
+                    </span>
+                  </MarcadorAulas>
+                ) : (
+                  <></>
+                )}
                 <MarcadorAulas className="ml-2">
                   <span>Aulas dadas </span>
                   <span className="numero">
@@ -100,9 +111,16 @@ const ListaAlunos = props => {
                         Nome
                       </th>
                       <th className="col-linha-dois">Ausências no Bimestre</th>
-                      <th className="col-linha-dois">
-                        Compensações de ausência
-                      </th>
+                      {!ehTurmaInfantil(
+                        modalidadesFiltroPrincipal,
+                        turmaSelecionada
+                      ) ? (
+                        <th className="col-linha-dois">
+                          Compensações de ausência
+                        </th>
+                      ) : (
+                        <></>
+                      )}
                       <th className="col-linha-dois">Frequência</th>
                     </tr>
                   </thead>
@@ -110,19 +128,81 @@ const ListaAlunos = props => {
                     {dadosBimestre?.frequenciaAlunos?.map((data, index) => {
                       return (
                         <>
-                          <tr id={index}>
-                            <td className="col-valor-linha-tres">
-                              <strong>{data.numeroChamada}</strong>
+                          <tr
+                            id={index}
+                            style={{
+                              background: data?.marcadorFrequencia
+                                ? Base.CinzaDesabilitado
+                                : '',
+                              borderRight: data?.marcadorFrequencia
+                                ? `solid 1px ${Base.CinzaBotao}`
+                                : `solid 1px ${Base.CinzaDesabilitado}`,
+                            }}
+                          >
+                            <td
+                              className="col-valor-linha-tres"
+                              style={{
+                                borderRight: data?.marcadorFrequencia
+                                  ? `solid 1px ${Base.CinzaBotao}`
+                                  : `solid 1px ${Base.CinzaDesabilitado}`,
+                              }}
+                            >
+                              <strong>{data?.numeroChamada}</strong>
+                              {data?.marcadorFrequencia ? (
+                                <div
+                                  className={
+                                    data?.numeroChamada > 9
+                                      ? 'divIconeSituacaoMaior'
+                                      : 'divIconeSituacaoDefault'
+                                  }
+                                >
+                                  <Tooltip
+                                    title={data.marcadorFrequencia?.descricao}
+                                  >
+                                    <span className="iconeSituacao" />
+                                  </Tooltip>
+                                </div>
+                              ) : (
+                                ''
+                              )}
                             </td>
-                            <td className="col-valor-linha-quatro">
+                            <td
+                              className="col-valor-linha-quatro"
+                              style={{
+                                borderRight: data?.marcadorFrequencia
+                                  ? `solid 1px ${Base.CinzaBotao}`
+                                  : `solid 1px ${Base.CinzaDesabilitado}`,
+                              }}
+                            >
                               {data.nome}
                             </td>
-                            <td className="col-valor-linha-dois">
+                            <td
+                              className="col-valor-linha-dois"
+                              style={{
+                                borderRight: data?.marcadorFrequencia
+                                  ? `solid 1px ${Base.CinzaBotao}`
+                                  : `solid 1px ${Base.CinzaDesabilitado}`,
+                              }}
+                            >
                               {data.ausencias}
                             </td>
-                            <td className="col-valor-linha-dois">
-                              {data.compensacoes}
-                            </td>
+                            {!ehTurmaInfantil(
+                              modalidadesFiltroPrincipal,
+                              turmaSelecionada
+                            ) ? (
+                              <td
+                                className="col-valor-linha-dois"
+                                style={{
+                                  borderRight: data?.marcadorFrequencia
+                                    ? `solid 1px ${Base.CinzaBotao}`
+                                    : `solid 1px ${Base.CinzaDesabilitado}`,
+                                }}
+                              >
+                                {data.compensacoes}
+                              </td>
+                            ) : (
+                              <></>
+                            )}
                             <td className="col-valor-linha-dois">
                               {data.frequencia}%
                               {data.ausencias > 0 ? (
