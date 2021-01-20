@@ -8,15 +8,17 @@ import { CONFIG_COLLAPSE_REGISTRO_INDIVIDUAL } from '~/constantes';
 
 import { setRecolherRegistrosAnteriores } from '~/redux/modulos/registroIndividual/actions';
 
-import RegistrosAnterioresConteudo from './registrosAnterioresConteudo/registrosAnterioresConteudo';
+import { RegistrosAnterioresConteudo } from './registrosAnterioresConteudo';
 
 const RegistrosAnteriores = () => {
   const [expandir, setExpandir] = useState(false);
 
-  const {
-    exibirLoaderGeralRegistroAnteriores,
-    recolherRegistrosAnteriores,
-  } = useSelector(store => store.registroIndividual);
+  const recolherRegistrosAnteriores = useSelector(
+    store => store.registroIndividual.recolherRegistrosAnteriores
+  );
+  const exibirLoaderGeralRegistroAnteriores = useSelector(
+    store => store.registroIndividual.exibirLoaderGeralRegistroAnteriores
+  );
 
   const idCollapse = shortid.generate();
   const dispatch = useDispatch();
@@ -28,8 +30,8 @@ const RegistrosAnteriores = () => {
   useEffect(() => {
     if (recolherRegistrosAnteriores && expandir) {
       expandirAlternado();
-      dispatch(setRecolherRegistrosAnteriores(false));
     }
+    dispatch(setRecolherRegistrosAnteriores(false));
   }, [recolherRegistrosAnteriores, expandirAlternado, expandir, dispatch]);
 
   return (

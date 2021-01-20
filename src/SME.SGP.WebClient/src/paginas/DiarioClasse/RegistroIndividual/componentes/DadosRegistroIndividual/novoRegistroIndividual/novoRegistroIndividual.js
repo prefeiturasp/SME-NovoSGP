@@ -6,7 +6,7 @@ import {
   CardCollapse,
   Auditoria,
   CampoData,
-  Editor,
+  JoditEditor,
   Loader,
 } from '~/componentes';
 
@@ -14,11 +14,12 @@ import { CONFIG_COLLAPSE_REGISTRO_INDIVIDUAL } from '~/constantes';
 import RotasDto from '~/dtos/rotasDto';
 
 import {
-  setAuditoriaNovoRegistro,
-  setRegistroIndividualEmEdicao,
-  setDadosParaSalvarNovoRegistro,
   resetDataNovoRegistro,
+  setAuditoriaNovoRegistro,
+  setDadosParaSalvarNovoRegistro,
+  setDadosRegistroAtual,
   setDesabilitarCampos,
+  setRegistroIndividualEmEdicao,
 } from '~/redux/modulos/registroIndividual/actions';
 
 import {
@@ -28,42 +29,51 @@ import {
 } from '~/servicos';
 
 const NovoRegistroIndividual = () => {
+  const dataAtual = window.moment();
   const [expandir, setExpandir] = useState(false);
   const [exibirCollapse, setExibirCollapse] = useState(false);
-  const [data, setData] = useState();
+  const [data, setData] = useState(dataAtual);
   const [desabilitarNovoRegistro, setDesabilitarNovoRegistro] = useState(false);
   const [carregandoNovoRegistro, setCarregandoNovoRegistro] = useState(false);
 
-  const {
-    auditoriaNovoRegistroIndividual,
-    componenteCurricularSelecionado,
-    dadosAlunoObjectCard,
-    dadosParaSalvarNovoRegistro,
-    dadosPrincipaisRegistroIndividual,
-    registroIndividualEmEdicao,
-    resetDataNovoRegistroIndividual,
-  } = useSelector(store => store.registroIndividual);
+  const auditoriaNovoRegistroIndividual = useSelector(
+    store => store.registroIndividual.auditoriaNovoRegistroIndividual
+  );
+  const componenteCurricularSelecionado = useSelector(
+    store => store.registroIndividual.componenteCurricularSelecionado
+  );
+  const dadosAlunoObjectCard = useSelector(
+    store => store.registroIndividual.dadosAlunoObjectCard
+  );
+  const podeRealizarNovoRegistro = useSelector(
+    store => store.registroIndividual.podeRealizarNovoRegistro
+  );
+  const resetDataNovoRegistroIndividual = useSelector(
+    store => store.registroIndividual.resetDataNovoRegistroIndividual
+  );
+  const dadosRegistroAtual = useSelector(
+    store => store.registroIndividual.dadosRegistroAtual
+  );
 
-  const { turmaSelecionada, permissoes } = useSelector(state => state.usuario);
+  const turmaSelecionada = useSelector(state => state.usuario.turmaSelecionada);
+  const permissoes = useSelector(state => state.usuario.permissoes);
   const permissoesTela = permissoes[RotasDto.REGISTRO_INDIVIDUAL];
 
   const turmaId = turmaSelecionada?.id || 0;
   const alunoCodigo = dadosAlunoObjectCard?.codigoEOL;
-  const dataAtual = window.moment();
 
   const ehMesmoAluno = useMemo(
-    () =>
-      String(alunoCodigo) === String(dadosParaSalvarNovoRegistro?.alunoCodigo),
-    [alunoCodigo, dadosParaSalvarNovoRegistro]
+    () => String(alunoCodigo) === String(dadosRegistroAtual?.alunoCodigo),
+    [alunoCodigo, dadosRegistroAtual]
   );
   const registro = useMemo(
-    () => (ehMesmoAluno ? dadosParaSalvarNovoRegistro?.registro : ''),
-    [dadosParaSalvarNovoRegistro, ehMesmoAluno]
+    () => (ehMesmoAluno ? dadosRegistroAtual?.registro : ''),
+    [dadosRegistroAtual, ehMesmoAluno]
   );
-  const idSecao = useMemo(
-    () => (ehMesmoAluno ? dadosParaSalvarNovoRegistro?.id : ''),
-    [dadosParaSalvarNovoRegistro, ehMesmoAluno]
-  );
+  const idSecao = useMemo(() => (ehMesmoAluno ? dadosRegistroAtual?.id : ''), [
+    dadosRegistroAtual,
+    ehMesmoAluno,
+  ]);
   const auditoria = useMemo(
     () => (ehMesmoAluno ? auditoriaNovoRegistroIndividual : null),
     [auditoriaNovoRegistroIndividual, ehMesmoAluno]
@@ -72,19 +82,13 @@ const NovoRegistroIndividual = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const temDadosRegistros = Object.keys(dadosPrincipaisRegistroIndividual)
-      .length;
-    if (temDadosRegistros && !registroIndividualEmEdicao) {
+    if (podeRealizarNovoRegistro && dadosAlunoObjectCard) {
       setExpandir(true);
-      setExibirCollapse(
-        dadosPrincipaisRegistroIndividual?.podeRealizarNovoRegistro
-      );
+      setExibirCollapse(podeRealizarNovoRegistro);
+      return;
     }
-  }, [
-    dadosPrincipaisRegistroIndividual,
-    registroIndividualEmEdicao,
-    setExibirCollapse,
-  ]);
+    setExibirCollapse(false);
+  }, [podeRealizarNovoRegistro, setExibirCollapse, dadosAlunoObjectCard]);
 
   const validaPermissoes = useCallback(
     temDadosNovosRegistros => {
@@ -108,6 +112,7 @@ const NovoRegistroIndividual = () => {
         })
       );
       dispatch(setRegistroIndividualEmEdicao(true));
+      dispatch(setDesabilitarCampos(true));
     },
     [alunoCodigo, data, dispatch, idSecao]
   );
@@ -146,7 +151,7 @@ const NovoRegistroIndividual = () => {
         }
 
         dispatch(
-          setDadosParaSalvarNovoRegistro({
+          setDadosRegistroAtual({
             id: resposta?.id,
             registro: resposta?.registro,
             data: resposta?.data,
@@ -163,27 +168,21 @@ const NovoRegistroIndividual = () => {
     const dataEscolhida = data && data.format('MM-DD-YYYY');
     const temDadosAlunos = Object.keys(dadosAlunoObjectCard).length;
 
-    if (
-      temDadosAlunos &&
-      dadosPrincipaisRegistroIndividual?.podeRealizarNovoRegistro &&
-      dataEscolhida
-    ) {
+    if (temDadosAlunos && podeRealizarNovoRegistro && dataEscolhida) {
       dispatch(setAuditoriaNovoRegistro(null));
       dispatch(setDadosParaSalvarNovoRegistro({}));
+      dispatch(setDadosRegistroAtual({}));
       obterRegistroIndividualPorData(dataEscolhida);
     }
   }, [
-    dispatch,
     dadosAlunoObjectCard,
-    dadosPrincipaisRegistroIndividual,
     data,
+    dispatch,
     obterRegistroIndividualPorData,
+    podeRealizarNovoRegistro,
   ]);
 
   useEffect(() => {
-    if (!data) {
-      setData(dataAtual);
-    }
     if (resetDataNovoRegistroIndividual) {
       dispatch(resetDataNovoRegistro(false));
       setData(dataAtual);
@@ -191,12 +190,10 @@ const NovoRegistroIndividual = () => {
   }, [data, dispatch, dataAtual, resetDataNovoRegistroIndividual]);
 
   useEffect(() => {
-    const temDadosNovosRegistros = Object.keys(dadosParaSalvarNovoRegistro)
-      .length;
-    if (temDadosNovosRegistros) {
-      validaPermissoes(temDadosNovosRegistros);
+    if (podeRealizarNovoRegistro) {
+      validaPermissoes(podeRealizarNovoRegistro);
     }
-  }, [validaPermissoes, dadosParaSalvarNovoRegistro]);
+  }, [validaPermissoes, podeRealizarNovoRegistro]);
 
   const desabilitarData = dataCorrente => {
     return dataCorrente && dataCorrente > window.moment();
@@ -206,9 +203,37 @@ const NovoRegistroIndividual = () => {
     expandir,
   ]);
 
+  const resetarDados = () => {
+    dispatch(setRegistroIndividualEmEdicao(false));
+    dispatch(setDesabilitarCampos(false));
+  };
+
+  const mudarData = valor => {
+    if (valor) {
+      setData(valor);
+      resetarDados();
+    }
+  };
+
+  useEffect(() => {
+    const elementos = document.getElementsByClassName(
+      'ant-calendar-picker-clear'
+    );
+    const setarDataVazia = () => {
+      setData('');
+    };
+
+    if (elementos.length) {
+      elementos[0].addEventListener('click', setarDataVazia, false);
+    }
+    return () => {
+      elementos[0].removeEventListener('click', setarDataVazia);
+    };
+  });
+
   return (
     <>
-      {exibirCollapse && permissoesTela.podeIncluir && (
+      {exibirCollapse && !dadosAlunoObjectCard.desabilitado && (
         <div key={shortid.generate()} className="px-4 pt-4">
           <CardCollapse
             configCabecalho={CONFIG_COLLAPSE_REGISTRO_INDIVIDUAL}
@@ -226,34 +251,38 @@ const NovoRegistroIndividual = () => {
                 placeholder="Selecione"
                 valor={data}
                 formatoData="DD/MM/YYYY"
-                onChange={valor => setData(valor)}
+                onChange={mudarData}
                 desabilitarData={desabilitarData}
               />
             </div>
             <div className="pt-1">
               <Loader ignorarTip loading={carregandoNovoRegistro}>
-                <Editor
-                  validarSeTemErro={validarSeTemErro}
-                  mensagemErro="Campo obrigatório"
-                  id={`secao-${idSecao}-editor`}
-                  inicial={registro}
-                  onChange={mudarEditor}
-                  desabilitar={desabilitarNovoRegistro}
-                />
-              </Loader>
-              {auditoria && (
-                <div className="mt-1 ml-n3">
-                  <Auditoria
-                    ignorarMarginTop
-                    criadoEm={auditoria.criadoEm}
-                    criadoPor={auditoria.criadoPor}
-                    criadoRf={auditoria.criadoRF}
-                    alteradoPor={auditoria.alteradoPor}
-                    alteradoEm={auditoria.alteradoEm}
-                    alteradoRf={auditoria.alteradoRF}
+                <div style={{ minHeight: 200 }}>
+                  <JoditEditor
+                    validarSeTemErro={validarSeTemErro}
+                    mensagemErro="Campo obrigatório"
+                    id={`secao-${idSecao}-editor`}
+                    value={registro}
+                    onChange={mudarEditor}
+                    desabilitar={
+                      desabilitarNovoRegistro || !permissoesTela.podeIncluir
+                    }
                   />
                 </div>
-              )}
+                {auditoria && (
+                  <div className="mt-1 ml-n3">
+                    <Auditoria
+                      ignorarMarginTop
+                      criadoEm={auditoria.criadoEm}
+                      criadoPor={auditoria.criadoPor}
+                      criadoRf={auditoria.criadoRF}
+                      alteradoPor={auditoria.alteradoPor}
+                      alteradoEm={auditoria.alteradoEm}
+                      alteradoRf={auditoria.alteradoRF}
+                    />
+                  </div>
+                )}
+              </Loader>
             </div>
           </CardCollapse>
         </div>

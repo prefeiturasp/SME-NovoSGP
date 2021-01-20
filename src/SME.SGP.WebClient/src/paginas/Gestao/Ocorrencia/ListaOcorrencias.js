@@ -185,7 +185,6 @@ const ListaOcorrencias = () => {
             border
             className="mr-2"
             onClick={onClickVoltar}
-            disabled={desabilitarCampos || ehTurmaAnoAnterior()}
           />
           <Button
             id={shortid.generate()}
