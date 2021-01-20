@@ -84,8 +84,11 @@ const CampoObservacao = props => {
           disabled={!!observacaoEmEdicao || !podeIncluir}
         />
       </div>
-      <div className="row pb-4 d-flex">
-        <div className="col-md-6 d-flex justify-content-start">
+      <div
+        className="row pb-4 d-flex"
+        style={{ margin: `${esconderCaixaExterna ? 0 : 15}px` }}
+      >
+        <div className="p-0 col-md-6 d-flex justify-content-start">
           <Button
             height="30px"
             id={shortid.generate()}
@@ -96,7 +99,7 @@ const CampoObservacao = props => {
             onClick={() => setModalVisivel(true)}
           />
         </div>
-        <div className="col-md-6 d-flex justify-content-end">
+        <div className="p-0 col-md-6 d-flex justify-content-end">
           <Button
             id="btn-cancelar-obs-novo"
             label="Cancelar"
@@ -126,6 +129,7 @@ const CampoObservacao = props => {
           setModalVisivel={setModalVisivel}
           listaUsuarios={listaUsuarios}
           somenteConsulta={!podeIncluir}
+          desabilitado={!novaObservacao || !podeIncluir}
         />
       )}
     </>
