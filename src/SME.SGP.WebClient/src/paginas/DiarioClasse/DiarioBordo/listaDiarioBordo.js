@@ -282,6 +282,7 @@ const ListaDiarioBordo = () => {
                 className="mr-2"
                 onClick={onClickNovo}
                 disabled={
+                  !permissoesTela.podeIncluir ||
                   !turmaInfantil ||
                   !listaComponenteCurriculares ||
                   !componenteCurricularSelecionado

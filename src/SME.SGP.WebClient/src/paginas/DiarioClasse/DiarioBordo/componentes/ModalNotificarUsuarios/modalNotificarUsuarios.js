@@ -86,7 +86,6 @@ const ModalNotificarUsuarios = ({
       width="50%"
       fecharAoClicarFora
       fecharAoClicarEsc
-      desabilitarBotaoPrincipal={desabilitado}
     >
       <div className="col-md-12 d-flex mb-4">
         <Localizador
@@ -101,7 +100,6 @@ const ModalNotificarUsuarios = ({
           anoLetivo={anoAtual}
           limparCamposAposPesquisa
           validaPerfilProfessor={false}
-          desabilitado={desabilitado}
         />
       </div>
       {usuariosSelecionados?.map(({ usuarioId, nome, podeRemover }) => (
