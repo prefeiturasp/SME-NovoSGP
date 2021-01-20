@@ -26,17 +26,18 @@ namespace SME.SGP.Aplicacao
             var diarioBordoObservacao = new DiarioBordoObservacao(request.Observacao, request.DiarioBordoId, request.UsuarioId);
             var observacaoId = await repositorioDiarioBordoObservacao.SalvarAsync(diarioBordoObservacao);
             var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaNotificacaoNovaObservacaoDiarioBordo,
-                new NotificarDiarioBordoObservacaoDto(request.DiarioBordoId, request.Observacao, usuario, observacaoId), Guid.NewGuid(), null));
 
-            if(request.UsuariosIdNotificacao != null && request.UsuariosIdNotificacao.Any())
+            if (request.UsuariosIdNotificacao != null && request.UsuariosIdNotificacao.Any())
             {
-                foreach (var usuarioId in request.UsuariosIdNotificacao)
-                {
-                    var usuarioNotificacao = await mediator.Send(new ObterUsuarioPorIdQuery(usuarioId));
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaNotificacaoNovaObservacaoDiarioBordo,
-                            new NotificarDiarioBordoObservacaoDto(request.DiarioBordoId, request.Observacao, usuarioNotificacao, observacaoId), Guid.NewGuid(), null));
-                }
+                var usuariosNotificacao = request.UsuariosIdNotificacao?.Select(async u => await mediator.Send(new ObterUsuarioPorIdQuery(u)))?.Select(t => t.Result);
+
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaNotificacaoNovaObservacaoDiarioBordo,
+                  new NotificarDiarioBordoObservacaoDto(request.DiarioBordoId, request.Observacao, usuario, observacaoId, usuariosNotificacao), Guid.NewGuid(), null));
+            }
+            else
+            {
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaNotificacaoNovaObservacaoDiarioBordo,
+                  new NotificarDiarioBordoObservacaoDto(request.DiarioBordoId, request.Observacao, usuario, observacaoId), Guid.NewGuid(), null));
             }
 
             return (AuditoriaDto)diarioBordoObservacao;
