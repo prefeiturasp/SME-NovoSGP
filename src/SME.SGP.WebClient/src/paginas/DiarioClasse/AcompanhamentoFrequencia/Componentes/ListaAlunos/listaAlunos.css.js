@@ -80,11 +80,33 @@ export const TabelaColunasFixas = styled.div`
     z-index: 2;
   }
   .col-valor-linha-tres {
-    align-items: center;
+    text-align: center;
     width: 5%;
     z-index: 2;
     padding-top: 18px;
   }
+
+  .divIconeSituacaoDefault {
+    position: absolute;
+    margin-top: -21px;
+    margin-left: 16px;
+  }
+
+  .divIconeSituacaoMaior {
+    position: absolute;
+    margin-top: -21px;
+    margin-left: 20px;
+  }
+
+  .iconeSituacao {
+    background: ${Base.Roxo};
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-left: 0.2rem;
+  }
+
   .col-valor-linha-quatro {
     text-align: left;
     width: 35%;
@@ -96,6 +118,7 @@ export const TabelaColunasFixas = styled.div`
     top: 0;
     z-index: 5;
   }
+
   .tabela-um-thead {
     background: ${Base.CinzaFundo} !important;
     text-align: center;
@@ -135,6 +158,15 @@ export const TabelaColunasFixas = styled.div`
     tr td {
       border-right: solid 1px ${Base.CinzaDesabilitado};
       border-bottom: 1px solid ${Base.CinzaDesabilitado};
+
+      .iconeSituacao {
+        background: ${Base.Roxo};
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-left: 0.2rem;
+      }
     }
     .border-right-none {
       border-right: none !important;
