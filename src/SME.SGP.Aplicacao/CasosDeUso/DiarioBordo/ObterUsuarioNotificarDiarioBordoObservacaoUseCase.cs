@@ -20,11 +20,18 @@ namespace SME.SGP.Aplicacao
             if (turma is null)
                 throw new NegocioException("A turma informada não foi encontrada.");
 
-            var professoresDaTurma = await mediator.Send(new ObterProfessoresTitularesDaTurmaCompletosQuery(turma.CodigoTurma));
-            if (!professoresDaTurma?.Any() ?? true)
+            var professoresTurmaObrigatoriosReceberNotificacao = await mediator.Send(new ObterProfessoresTitularesDaTurmaCompletosQuery(turma.CodigoTurma));
+            if (!professoresTurmaObrigatoriosReceberNotificacao?.Any() ?? true)
                 throw new NegocioException("Nenhum professor para a turma informada foi encontrada.");
 
-            return await mediator.Send(new ObterUsuarioNotificarDiarioBordoObservacaoQuery(turma, professoresDaTurma, dto.ObservacaoId));
+            // Caso um dos professores da turma for o usuário logado, ele não deve aparecer na listagem
+            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            if(usuarioLogado != null && professoresTurmaObrigatoriosReceberNotificacao.Any(x => x.ProfessorRf == usuarioLogado.CodigoRf))
+            {
+                professoresTurmaObrigatoriosReceberNotificacao = professoresTurmaObrigatoriosReceberNotificacao.Where(x => x.ProfessorRf != usuarioLogado.CodigoRf).ToList();
+            }
+
+            return await mediator.Send(new ObterUsuarioNotificarDiarioBordoObservacaoQuery(turma, professoresTurmaObrigatoriosReceberNotificacao, dto.ObservacaoId));
         }
     }
 }
