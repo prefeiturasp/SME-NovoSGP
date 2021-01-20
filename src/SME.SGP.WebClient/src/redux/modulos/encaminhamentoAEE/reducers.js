@@ -7,17 +7,18 @@ const inicial = {
   exibirModalAviso: false,
   dadosEstudanteObjectCardEncaminhamento: {},
   dadosSecaoLocalizarEstudante: {
-    anoLetivo: '2021',
-    codigoAluno: 4766480,
-    codigoDre: '108100',
-    codigoUe: '092819',
-    codigoTurma: '',
-    turmaId: 614004,
+    // anoLetivo: '2021',
+    // codigoAluno: 4766480,
+    // codigoDre: '108100',
+    // codigoUe: '092819',
+    // codigoTurma: '',
+    // turmaId: 614004,
   },
   dadosSecoesPorEtapaDeEncaminhamentoAEE: [],
   formsSecoesEncaminhamentoAEE: null,
   encaminhamentoAEEEmEdicao: false,
   exibirLoaderEncaminhamentoAEE: false,
+  dadosEncaminhamento: null,
 };
 
 export default function EncaminhamentoAEE(state = inicial, action) {
@@ -87,6 +88,12 @@ export default function EncaminhamentoAEE(state = inicial, action) {
         return {
           ...draft,
           exibirLoaderEncaminhamentoAEE: action.payload,
+        };
+      }
+      case '@encaminhamentoAEE/setDadosEncaminhamento': {
+        return {
+          ...draft,
+          dadosEncaminhamento: action.payload,
         };
       }
 
