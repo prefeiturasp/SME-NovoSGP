@@ -50,10 +50,18 @@ const CampoObservacao = props => {
     }
   };
 
-  const onClickSalvar = () => {
-    salvarObservacao({ observacao: novaObservacao }).then(() => {
+  const onClickSalvar = async () => {
+    const retorno = await salvarObservacao({ observacao: novaObservacao });
+    if (retorno?.status === 200) {
       dispatch(setNovaObservacao(''));
-    });
+      const retornoUsuarios = await ServicoDiarioBordo.obterNofiticarUsuarios({
+        turmaId,
+      }).catch(e => erros(e));
+
+      if (retornoUsuarios?.status === 200) {
+        dispatch(setListaUsuariosNotificacao(retornoUsuarios.data));
+      }
+    }
   };
 
   const obterNofiticarUsuarios = useCallback(async () => {
