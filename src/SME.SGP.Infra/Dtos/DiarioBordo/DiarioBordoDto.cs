@@ -12,6 +12,11 @@ namespace SME.SGP.Infra.Dtos
         public long? DevolutivaId { get; set; }
         public string Devolutivas { get; set; }
 
+        public bool Excluido { get; set; }
+        public bool Migrado { get; set; }
+
+        public bool TemPeriodoAberto { get; set; }
+
         public string Planejamento { get; set; }
         public string ReflexoesReplanejamento { get; set; }
 
