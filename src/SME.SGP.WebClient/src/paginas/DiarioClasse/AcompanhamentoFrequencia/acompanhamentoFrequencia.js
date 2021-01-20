@@ -15,6 +15,7 @@ import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
 import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 import { erros } from '~/servicos';
 import ListaBimestres from './Componentes/listaBimestres';
+import modalidade from '~/dtos/modalidade';
 
 const AcompanhamentoFrequencia = () => {
   const usuario = useSelector(store => store.usuario);
@@ -28,22 +29,36 @@ const AcompanhamentoFrequencia = () => {
     {
       id: 1,
       descricao: '1° Bimestre',
-      alunos: [],
     },
     {
       id: 2,
       descricao: '2° Bimestre',
-      alunos: [],
     },
     {
       id: 3,
       descricao: '3° Bimestre',
-      alunos: [],
     },
     {
       id: 4,
       descricao: '4° Bimestre',
-      alunos: [],
+    },
+    {
+      id: 0,
+      descricao: 'Final',
+    },
+  ];
+  const listagemBimestresEJA = [
+    {
+      id: 1,
+      descricao: '1° Bimestre',
+    },
+    {
+      id: 2,
+      descricao: '2° Bimestre',
+    },
+    {
+      id: 0,
+      descricao: 'Final',
     },
   ];
 
@@ -137,10 +152,12 @@ const AcompanhamentoFrequencia = () => {
               String(item.codigoComponenteCurricular) === componenteCurricularId
           )
         : componenteCurricularSelecionado;
-
     setPodeLancarNota(componenteCurriular?.lancaNota);
-    setBimestres(listagemBimestres);
-    // await obterDadosBimestres(1);
+    if (turmaSelecionada.modalidade === String(modalidade.EJA)) {
+      setBimestres(listagemBimestresEJA);
+    } else {
+      setBimestres(listagemBimestres);
+    }
   };
 
   return (

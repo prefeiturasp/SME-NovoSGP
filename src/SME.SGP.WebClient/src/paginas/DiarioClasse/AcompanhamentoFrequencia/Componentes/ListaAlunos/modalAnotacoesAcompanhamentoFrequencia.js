@@ -10,10 +10,15 @@ import {
   setDadosModalAnotacao,
   setExibirModalAnotacao,
 } from '~/redux/modulos/acompanhamentoFrequencia/actions';
-import { erros } from '~/servicos';
+import { ehTurmaInfantil, erros } from '~/servicos';
+import usuario from '~/redux/modulos/usuario/reducers';
 
 const ModalAnotacoesAcompanhamentoFrequencia = () => {
   const dispatch = useDispatch();
+  const { turmaSelecionada } = usuario;
+  const modalidadesFiltroPrincipal = useSelector(
+    store => store.filtro.modalidades
+  );
 
   const [dados, setDados] = useState({});
 
@@ -51,7 +56,11 @@ const ModalAnotacoesAcompanhamentoFrequencia = () => {
       id={shortid.generate()}
       key="anotacao"
       visivel={exibirModalAnotacao}
-      titulo="Anotações do Aluno"
+      titulo={
+        !ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada)
+          ? 'Anotações do Estudante'
+          : 'Anotações da Criança'
+      }
       onClose={onClose}
       esconderBotaoPrincipal
       esconderBotaoSecundario
