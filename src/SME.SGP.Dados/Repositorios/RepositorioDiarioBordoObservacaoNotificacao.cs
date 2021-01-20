@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -16,7 +17,7 @@ namespace SME.SGP.Dados.Repositorios
             this.database = database;
         }
 
-        public async Task<IEnumerable<DiarioBordoObservacaoNotificacao>> ObterPorDiarioBordoObservacaoId(long diarioBordoObservacaoId)
+        public async Task<IEnumerable<DiarioBordoObservacaoNotificacaoUsuarioDto>> ObterPorDiarioBordoObservacaoId(long diarioBordoObservacaoId)
         {
             var query = @"select dbon.id, dbon.observacao_id IdObservacao, 
                             dbon.notificacao_id IdNotificacao, n.usuario_id IdUsuario 
@@ -24,7 +25,7 @@ namespace SME.SGP.Dados.Repositorios
                           inner join notificacao n on dbon.notificacao_id = n.id  
                           where observacao_id = @diarioBordoObservacaoId";
 
-            return (await database.Conexao.QueryAsync<DiarioBordoObservacaoNotificacao>(query, new { diarioBordoObservacaoId }));
+            return (await database.Conexao.QueryAsync<DiarioBordoObservacaoNotificacaoUsuarioDto>(query, new { diarioBordoObservacaoId }));
         }
 
         public async Task<IEnumerable<long>> ObterObservacaoPorId(long diarioBordoId)
