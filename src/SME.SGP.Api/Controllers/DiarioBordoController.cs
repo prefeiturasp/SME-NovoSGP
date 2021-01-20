@@ -22,7 +22,7 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.DDB_C, Policy = "Bearer")]
         public async Task<IActionResult> Obter([FromServices] IObterDiarioBordoUseCase useCase, long id)
         {
-            return await  Task.FromResult(Ok(useCase.Executar(id)));
+            return Ok(await useCase.Executar(id));
         }
 
         [HttpGet("detalhes/{id}")]

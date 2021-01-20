@@ -354,7 +354,6 @@ const ListaDiarioBordo = () => {
                       <div className="col-sm-12 p-0 position-relative">
                         <ObservacoesUsuario
                           esconderLabel
-                          esconderCaixaExterna
                           salvarObservacao={obs => salvarEditarObservacao(obs)}
                           editarObservacao={obs => salvarEditarObservacao(obs)}
                           excluirObservacao={obs => excluirObservacao(obs)}
