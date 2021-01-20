@@ -7,7 +7,13 @@ import LinhaObservacaoProprietario from './linhaObservacaoProprietario';
 import { ContainerCampoObservacao } from './observacoesUsuario.css';
 
 const ObservacoesUsuarioMontarDados = props => {
-  const { onClickSalvarEdicao, onClickExcluir, verificaProprietario } = props;
+  const {
+    onClickSalvarEdicao,
+    onClickExcluir,
+    verificaProprietario,
+    podeAlterar,
+    podeExcluir,
+  } = props;
 
   const dadosObservacoes = useSelector(
     store => store.observacoesUsuario.dadosObservacoes
@@ -53,6 +59,8 @@ const ObservacoesUsuarioMontarDados = props => {
             onClickSalvarEdicao={onClickSalvarEdicao}
             onClickExcluir={onClickExcluir}
             index={index}
+            podeAlterar={podeAlterar}
+            podeExcluir={podeExcluir}
           >
             {obs.auditoria ? auditoria(obs) : ''}
           </LinhaObservacaoProprietario>
@@ -77,12 +85,16 @@ ObservacoesUsuarioMontarDados.propTypes = {
   onClickSalvarEdicao: PropTypes.func,
   onClickExcluir: PropTypes.func,
   verificaProprietario: PropTypes.bool,
+  podeAlterar: PropTypes.bool,
+  podeExcluir: PropTypes.bool,
 };
 
 ObservacoesUsuarioMontarDados.defaultProps = {
   onClickSalvarEdicao: () => {},
   onClickExcluir: () => {},
   verificaProprietario: false,
+  podeAlterar: true,
+  podeExcluir: true,
 };
 
 export default ObservacoesUsuarioMontarDados;

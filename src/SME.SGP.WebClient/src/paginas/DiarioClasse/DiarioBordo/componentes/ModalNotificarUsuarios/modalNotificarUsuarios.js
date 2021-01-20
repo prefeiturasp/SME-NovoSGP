@@ -1,22 +1,23 @@
-import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-
+import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { Colors, Localizador, ModalConteudoHtml } from '~/componentes';
-
+import { setListaUsuariosNotificacao } from '~/redux/modulos/observacoesUsuario/actions';
 import { confirmar } from '~/servicos';
-
 import { BotaoEstilizado, TextoEstilizado } from './modalNotificarUsuarios.css';
 
 const ModalNotificarUsuarios = ({
   modalVisivel,
   setModalVisivel,
   listaUsuarios,
-  setListaUsuarios,
+  desabilitado,
 }) => {
   const [usuariosSelecionados, setUsuariosSelecionados] = useState(
     listaUsuarios
   );
   const anoAtual = window.moment().format('YYYY');
+  const [modoEdicao, setModoEdicao] = useState(false);
+  const dispatch = useDispatch();
 
   const mudarLocalizador = valores => {
     if (valores?.professorRf) {
@@ -36,6 +37,7 @@ const ModalNotificarUsuarios = ({
           },
         ];
       });
+      setModoEdicao(true);
     }
   };
 
@@ -43,6 +45,7 @@ const ModalNotificarUsuarios = ({
     setUsuariosSelecionados(estadoAntigo =>
       estadoAntigo.filter(item => item.usuarioId !== usuarioId)
     );
+    setModoEdicao(true);
   };
 
   const esconderModal = () => setModalVisivel(false);
@@ -56,15 +59,18 @@ const ModalNotificarUsuarios = ({
   };
 
   const onConfirmarModal = () => {
-    setListaUsuarios(usuariosSelecionados);
+    dispatch(setListaUsuariosNotificacao(usuariosSelecionados));
+    setModoEdicao(false);
     esconderModal();
   };
 
   const fecharModal = async () => {
     esconderModal();
-    const ehPraSalvar = await perguntarSalvarListaUsuario();
-    if (ehPraSalvar) {
-      onConfirmarModal();
+    if (modoEdicao) {
+      const ehPraSalvar = await perguntarSalvarListaUsuario();
+      if (ehPraSalvar) {
+        onConfirmarModal();
+      }
     }
   };
 
@@ -93,7 +99,7 @@ const ModalNotificarUsuarios = ({
           classesRF="p-0"
           anoLetivo={anoAtual}
           limparCamposAposPesquisa
-          desabilitado={false}
+          validaPerfilProfessor={false}
         />
       </div>
       {usuariosSelecionados?.map(({ usuarioId, nome, podeRemover }) => (
@@ -124,15 +130,15 @@ const ModalNotificarUsuarios = ({
 ModalNotificarUsuarios.defaultProps = {
   listaUsuarios: [],
   modalVisivel: false,
-  setListaUsuarios: () => {},
   setModalVisivel: () => {},
+  desabilitado: false,
 };
 
 ModalNotificarUsuarios.propTypes = {
   listaUsuarios: PropTypes.oneOfType([PropTypes.any]),
   modalVisivel: PropTypes.bool,
-  setListaUsuarios: PropTypes.func,
   setModalVisivel: PropTypes.func,
+  desabilitado: PropTypes.bool,
 };
 
 export default ModalNotificarUsuarios;

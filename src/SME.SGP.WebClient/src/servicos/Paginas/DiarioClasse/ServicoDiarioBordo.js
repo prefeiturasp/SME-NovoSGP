@@ -13,11 +13,11 @@ class ServicoDiarioBordo {
     const observacaoId = dados.id;
     if (observacaoId) {
       const url = `${urlPadrao}/observacoes/${observacaoId}`;
-      return api.put(url, { observacao: dados.observacao });
+      return api.put(url, dados);
     }
 
     const url = `${urlPadrao}/${diarioBordoId}/observacoes`;
-    return api.post(url, { observacao: dados.observacao });
+    return api.post(url, dados);
   };
 
   atualizarSalvarEditarDadosObservacao = (dados, dadosAposSalvar) => {
