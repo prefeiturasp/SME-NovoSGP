@@ -121,7 +121,10 @@ namespace SME.SGP.Aplicacao.Consultas
             var tipoCalendario = await ObterTipoCalendario(modalidade, data.Year, semestre);
             var periodosEscolares = await ObterPeriodosEscolares(tipoCalendario.Id);
 
-            return periodosEscolares.FirstOrDefault(x => x.PeriodoInicio <= data && x.PeriodoFim >= data);
+            var dataString = data.ToString("dd-MM-yyyy");
+            var dataFormatada = Convert.ToDateTime(dataString);
+
+            return periodosEscolares.FirstOrDefault(x => x.PeriodoInicio <= dataFormatada && x.PeriodoFim >= dataFormatada);
         }
 
         public async Task<IEnumerable<PeriodoEscolar>> ObterPeriodosEscolares(long tipoCalendarioId)
