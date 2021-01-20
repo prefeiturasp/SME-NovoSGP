@@ -57,9 +57,9 @@ class FiltroHelper {
     }
   }
 
-  async ObterModalidades(ue) {
+  async ObterModalidades(ue, anoLetivo, consideraHistorico) {
     try {
-      const retorno = await ServicoFiltroRelatorio.obterModalidades(ue);
+      const retorno = await ServicoFiltroRelatorio.obterModalidades(ue, anoLetivo, consideraHistorico);
 
       var dados = retorno.data.map(x => {
         return { id: x.valor, nome: x.descricao };
