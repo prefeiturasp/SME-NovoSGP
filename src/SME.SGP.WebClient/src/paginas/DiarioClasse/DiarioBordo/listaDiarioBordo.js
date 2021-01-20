@@ -152,18 +152,22 @@ const ListaDiarioBordo = () => {
   );
 
   useEffect(() => {
-    if (componenteCurricularSelecionado && numeroPagina) {
-      obterTitulos();
-    }
-  }, [componenteCurricularSelecionado, obterTitulos, numeroPagina]);
-
-  useEffect(() => {
-    if (dataInicial && dataFinal) {
+    if (
+      ((dataInicial && dataFinal) || (!dataInicial && !dataFinal)) &&
+      componenteCurricularSelecionado &&
+      numeroPagina
+    ) {
       const dataIncialFormatada = dataInicial?.format('MM-DD-YYYY');
       const dataFinalFormatada = dataFinal?.format('MM-DD-YYYY');
       obterTitulos(dataIncialFormatada, dataFinalFormatada);
     }
-  }, [dataInicial, dataFinal, obterTitulos]);
+  }, [
+    dataInicial,
+    dataFinal,
+    componenteCurricularSelecionado,
+    obterTitulos,
+    numeroPagina,
+  ]);
 
   const onChangePaginacao = pagina => {
     setNumeroPagina(pagina);
@@ -235,6 +239,19 @@ const ListaDiarioBordo = () => {
     }
   };
 
+  const desabilitarData = current => {
+    const dataInicioAnoAtual = window.moment(
+      new Date(`${turmaSelecionada.anoLetivo}-01-01 00:00:00`)
+    );
+    const dataFimAnoAtual = window.moment(
+      new Date(`${turmaSelecionada.anoLetivo}-12-31 00:00:00`)
+    );
+    if (current) {
+      return current < dataInicioAnoAtual || current >= dataFimAnoAtual;
+    }
+    return false;
+  };
+
   const onClickVoltar = () => {
     history.push('/');
   };
@@ -260,6 +277,7 @@ const ListaDiarioBordo = () => {
                 onChange={onChangeComponenteCurricular}
                 placeholder="Selecione um componente curricular"
                 disabled={
+                  !turmaId ||
                   !turmaInfantil ||
                   (listaComponenteCurriculares &&
                     listaComponenteCurriculares.length === 1)
@@ -303,6 +321,7 @@ const ListaDiarioBordo = () => {
                   !listaComponenteCurriculares ||
                   !componenteCurricularSelecionado
                 }
+                desabilitarData={desabilitarData}
               />
             </div>
             <div className="col-sm-12 col-md-4 col-lg-3 col-xl-3 mb-4">
@@ -317,6 +336,7 @@ const ListaDiarioBordo = () => {
                   !listaComponenteCurriculares ||
                   !componenteCurricularSelecionado
                 }
+                desabilitarData={desabilitarData}
               />
             </div>
           </div>
