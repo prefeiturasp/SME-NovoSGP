@@ -55,7 +55,7 @@ namespace SME.SGP.Aplicacao
             {
                 foreach (var usuario in dadosMensagem.UsuariosNotificacao)
                 {
-                    var codigoRf = usuario.CodigoRf ;
+                    var codigoRf = usuario.CodigoRf;
 
                     if (codigoRf != usuarioLogado.CodigoRf)
                     {
