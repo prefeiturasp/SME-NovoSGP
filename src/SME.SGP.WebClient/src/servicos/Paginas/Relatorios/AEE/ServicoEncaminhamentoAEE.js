@@ -58,6 +58,10 @@ class ServicoEncaminhamentoAEE {
     return api.get(url);
   };
 
+  obterEncaminhamentoPorId = encaminhamentoId => {
+    return api.get(`${urlPadrao}/${encaminhamentoId}`);
+  };
+
   addFormsSecoesEncaminhamentoAEE = (
     obterForm,
     questionarioId,

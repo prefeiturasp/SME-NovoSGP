@@ -52,3 +52,8 @@ export const setExibirLoaderEncaminhamentoAEE = payload => ({
   type: '@encaminhamentoAEE/setExibirLoaderEncaminhamentoAEE',
   payload,
 });
+
+export const setDadosEncaminhamento = payload => ({
+  type: '@encaminhamentoAEE/setDadosEncaminhamento',
+  payload,
+});
