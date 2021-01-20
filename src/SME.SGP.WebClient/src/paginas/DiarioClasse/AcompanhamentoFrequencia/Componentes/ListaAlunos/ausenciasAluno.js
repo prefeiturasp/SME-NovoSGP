@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
+import * as moment from 'moment';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   setDadosModalAnotacao,
@@ -8,10 +9,14 @@ import {
 import { erros } from '~/servicos';
 import ServicoAcompanhamentoFrequencia from '~/servicos/Paginas/DiarioClasse/ServicoAcompanhamentoFrequencia';
 import { BtnVisualizarAnotacao, TabelaColunasFixas } from './listaAlunos.css';
+import { Loader } from '~/componentes';
 
 const AusenciasAluno = props => {
   const { indexLinha, componenteCurricularId, codigoAluno, turmaId } = props;
   const [dados, setDados] = useState([]);
+  const [carregandoListaAusencias, setCarregandoListaAusencias] = useState(
+    false
+  );
 
   const dispatch = useDispatch();
 
@@ -29,6 +34,7 @@ const AusenciasAluno = props => {
         expandirLinhaFrequenciaAluno.includes(true) &&
         codigoAluno === frequenciaAlunoCodigo
       ) {
+        setCarregandoListaAusencias(true);
         const retorno = await ServicoAcompanhamentoFrequencia.obterJustificativaAcompanhamentoFrequencia(
           turmaId,
           componenteCurricularId,
@@ -41,6 +47,7 @@ const AusenciasAluno = props => {
       } else {
         setDados([]);
       }
+      setCarregandoListaAusencias(false);
     };
     obterMotivos();
   }, [frequenciaAlunoCodigo]);
@@ -59,9 +66,9 @@ const AusenciasAluno = props => {
         <div>{item.motivo}</div>
 
         <BtnVisualizarAnotacao
-          className={item.anotacao ? 'btn-com-anotacao' : ''}
+          className={item.id ? 'btn-com-anotacao' : ''}
           onClick={() => {
-            if (item.anotacao) {
+            if (item.id) {
               onClickAnotacao(item);
             }
           }}
@@ -77,34 +84,47 @@ const AusenciasAluno = props => {
       {expandirLinhaFrequenciaAluno[indexLinha] ? (
         <tr>
           <td colSpan="5">
-            <TabelaColunasFixas>
-              <div className="wrapper">
-                <div className="header-fixo">
-                  <table className="table">
-                    <thead className="tabela-dois-thead">
-                      <tr>
-                        <th className="col-linha-tres">Data</th>
-                        <th className="col-linha-quatro">Motivo</th>
-                      </tr>
-                    </thead>
-                    <tbody className="tabela-dois-tbody">
-                      {dados.map((item, index) => {
-                        return (
-                          <tr id={index}>
-                            <td className="col-valor-linha-tres">
-                              {item.data}
-                            </td>
-                            <td className="col-valor-linha-quatro">
-                              {visualizarAnotacao(item)}
-                            </td>
+            <Loader loading={carregandoListaAusencias} />
+            {dados.length ? (
+              <>
+                <TabelaColunasFixas>
+                  <div className="wrapper">
+                    <div className="header-fixo">
+                      <table className="table">
+                        <thead className="tabela-dois-thead">
+                          <tr>
+                            <th className="col-linha-tres">Data</th>
+                            <th className="col-linha-quatro">Motivo</th>
                           </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </TabelaColunasFixas>
+                        </thead>
+                        <tbody className="tabela-dois-tbody">
+                          {dados.map((item, index) => {
+                            return (
+                              <tr id={index}>
+                                <td className="col-valor-linha-tres">
+                                  {moment(item.data).format('L')}
+                                </td>
+                                <td className="col-valor-linha-quatro">
+                                  {visualizarAnotacao(item)}
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </TabelaColunasFixas>
+              </>
+            ) : (
+              <>
+                <p>
+                  {carregandoListaAusencias
+                    ? ''
+                    : 'Não foram encontrados os motivos de ausência do aluno.'}
+                </p>
+              </>
+            )}
           </td>
         </tr>
       ) : (
