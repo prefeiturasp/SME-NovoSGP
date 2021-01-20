@@ -69,7 +69,7 @@ namespace SME.SGP.Aplicacao
                                                                              NotificacaoTipo.Planejamento));
 
 
-                            var diarioBordoObservacaoNotificacao = new DiarioBordoObservacaoNotificacao(dadosMensagem.ObservacaoId, notificacaoId, usuario.Id);
+                            var diarioBordoObservacaoNotificacao = new DiarioBordoObservacaoNotificacao(dadosMensagem.ObservacaoId, notificacaoId);
 
                             await repositorioDiarioBordoObservacaoNotificacao.Salvar(diarioBordoObservacaoNotificacao);
                             unitOfWork.PersistirTransacao();
@@ -105,7 +105,7 @@ namespace SME.SGP.Aplicacao
                                                                              NotificacaoTipo.Planejamento));
 
 
-                            var diarioBordoObservacaoNotificacao = new DiarioBordoObservacaoNotificacao(dadosMensagem.ObservacaoId, notificacaoId, usuario.Id);
+                            var diarioBordoObservacaoNotificacao = new DiarioBordoObservacaoNotificacao(dadosMensagem.ObservacaoId, notificacaoId);
 
                             await repositorioDiarioBordoObservacaoNotificacao.Salvar(diarioBordoObservacaoNotificacao);
                             unitOfWork.PersistirTransacao();

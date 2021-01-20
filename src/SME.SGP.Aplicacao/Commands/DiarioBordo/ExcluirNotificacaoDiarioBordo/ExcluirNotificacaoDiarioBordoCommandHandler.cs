@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -31,7 +32,8 @@ namespace SME.SGP.Aplicacao
             {
                 foreach (var notificacaoObservacao in notificacoesObservacao)
                 {
-                    await repositorioDiarioBordoObservacaoNotificacao.Excluir(notificacaoObservacao);
+                    var notificacaoObservacaoDominio = MapearParaDominio(notificacaoObservacao);
+                    await repositorioDiarioBordoObservacaoNotificacao.Excluir(notificacaoObservacaoDominio);
                     await repositorioNotificacao.RemoverLogico(notificacaoObservacao.IdNotificacao);
                 }
 
@@ -44,6 +46,16 @@ namespace SME.SGP.Aplicacao
             }
 
             return true;
+        }
+
+        private DiarioBordoObservacaoNotificacao MapearParaDominio(DiarioBordoObservacaoNotificacaoUsuarioDto dto)
+        {
+            return new DiarioBordoObservacaoNotificacao()
+            {
+                Id = dto.Id,
+                IdNotificacao = dto.IdNotificacao,
+                IdObservacao = dto.IdObservacao
+            };
         }
     }
 }
