@@ -37,7 +37,7 @@ namespace SME.Background.Hangfire
 
         public void ExecutarPeriodicamente<T>(Expression<Action<T>> metodo, string cron)
         {
-            //RecurringJob.AddOrUpdate(metodo, cron);
+            RecurringJob.AddOrUpdate(metodo, cron);
         }
 
         public void Registrar()
