@@ -92,9 +92,9 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                     }
                 }
 
-                foreach (var q in secaoExistente.Questoes.Where(x => !secao.Questoes.Any(s => s.QuestaoId == x.QuestaoId)))
+                foreach (var questao in secaoExistente.Questoes.Where(x => !secao.Questoes.Any(s => s.QuestaoId == x.QuestaoId)))
                 {
-                    await mediator.Send(new ExcluirQuestaoEncaminhamentoAEEPorIdCommand(q.Id));
+                    await mediator.Send(new ExcluirQuestaoEncaminhamentoAEEPorIdCommand(questao.Id));
                 }
             }
         }

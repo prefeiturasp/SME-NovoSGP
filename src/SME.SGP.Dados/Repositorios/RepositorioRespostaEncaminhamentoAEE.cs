@@ -39,5 +39,12 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<long>(query, new { questaoEncaminhamentoAEEId });
         }
+
+        public async Task<IEnumerable<RespostaEncaminhamentoAEE>> ObterPorQuestaoEncaminhamentoId(long questaoEncaminhamentoAEEId)
+        {
+            var query = "select * from resposta_encaminhamento_aee where not excluido and questao_encaminhamento_id = @questaoEncaminhamentoAEEId";
+
+            return await database.Conexao.QueryAsync<RespostaEncaminhamentoAEE>(query, new { questaoEncaminhamentoAEEId });
+        }
     }
 }
