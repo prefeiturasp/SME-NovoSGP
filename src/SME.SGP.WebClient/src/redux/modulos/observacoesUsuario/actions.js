@@ -17,3 +17,13 @@ export const limparDadosObservacoesUsuario = payload => ({
   type: '@observacoesUsuario/limparDadosObservacoesUsuario',
   payload,
 });
+
+export const setListaUsuariosNotificacao = payload => ({
+  type: '@observacoesUsuario/setListaUsuariosNotificacao',
+  payload,
+});
+
+export const setModoEdicao = payload => ({
+  type: '@observacoesUsuario/setModoEdicao',
+  payload,
+});
