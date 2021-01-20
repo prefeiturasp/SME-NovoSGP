@@ -739,6 +739,7 @@ const DiarioBordo = ({ match }) => {
             salvarObservacao={obs => salvarEditarObservacao(obs)}
             editarObservacao={obs => salvarEditarObservacao(obs)}
             excluirObservacao={obs => excluirObservacao(obs)}
+            permissoes={permissoesTela}
           />
         ) : (
           ''
