@@ -581,9 +581,8 @@ rotas.set(`${RotasDto.ACOMPANHAMENTO_FREQUENCIA}`, {
   component: AcompanhamentoFrequencia,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  // TODO: Adicionar permissionamento
-  // temPermissionamento: true,
-  // chavePermissao: RotasDto.ACOMPANHAMENTO_FREQUENCIA,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.ACOMPANHAMENTO_FREQUENCIA,
 });
 
 rotas.set(`${RotasDto.NOTAS}/:disciplinaId/:bimestre`, {
