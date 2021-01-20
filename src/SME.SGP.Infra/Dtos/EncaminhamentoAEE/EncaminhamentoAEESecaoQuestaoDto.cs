@@ -6,8 +6,9 @@ using System.Text;
 
 namespace SME.SGP.Infra
 {
-    public class EncaminhamentoAEESecaoQuestao
+    public class EncaminhamentoAEESecaoQuestaoDto
     {
+        public long RespostaEncaminhamentoId { get; set; }
         public long QuestaoId { get; set; }
         public TipoQuestao TipoQuestao { get; set; } //resposta, texto, arquivo
         public string Resposta { get; set; }
