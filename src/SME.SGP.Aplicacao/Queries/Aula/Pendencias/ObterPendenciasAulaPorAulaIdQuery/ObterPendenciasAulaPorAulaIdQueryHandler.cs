@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Threading;
@@ -17,6 +18,10 @@ namespace SME.SGP.Aplicacao
         public async Task<long[]> Handle(ObterPendenciasAulaPorAulaIdQuery request, CancellationToken cancellationToken)
         {
             var pendencias = await repositorioPendenciaAula.PossuiPendenciasPorAulaId(request.AulaId, request.EhModalidadeInfantil);
+
+            if (pendencias == null)
+                return null;
+
             pendencias.PossuiPendenciaAtividadeAvaliativa = await repositorioPendenciaAula.PossuiPendenciasAtividadeAvaliativaPorAulaId(request.AulaId);
             
             return pendencias.RetornarTipoPendecias();
