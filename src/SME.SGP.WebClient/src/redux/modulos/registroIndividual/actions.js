@@ -28,11 +28,6 @@ export const setDadosPrincipaisRegistroIndividual = payload => ({
   payload,
 });
 
-export const setExpandirLinha = payload => ({
-  type: '@registroIndividual/setExpandirLinha',
-  payload,
-});
-
 export const setDesabilitarCampos = payload => ({
   type: '@registroIndividual/setDesabilitarCampos',
   payload,
@@ -68,6 +63,11 @@ export const excluirRegistroAnteriorId = payload => ({
   payload,
 });
 
+export const atualizarMarcadorDiasSemRegistroExibir = payload => ({
+  type: '@registroIndividual/atualizarMarcadorDiasSemRegistroExibir',
+  payload,
+});
+
 export const setRegistroAnteriorId = payload => ({
   type: '@registroIndividual/setRegistroAnteriorId',
   payload,
@@ -78,8 +78,8 @@ export const alterarRegistroAnterior = payload => ({
   payload,
 });
 
-export const atualizaDadosParaSalvarNovoRegistro = payload => ({
-  type: '@registroIndividual/atualizaDadosParaSalvarNovoRegistro',
+export const atualizaDadosRegistroAtual = payload => ({
+  type: '@registroIndividual/atualizaDadosRegistroAtual',
   payload,
 });
 
@@ -95,5 +95,20 @@ export const setExibirLoaderConteudoRegistroAnteriores = payload => ({
 
 export const setRecolherRegistrosAnteriores = payload => ({
   type: '@registroIndividual/setRecolherRegistrosAnteriores',
+  payload,
+});
+
+export const setDadosRegistroAtual = payload => ({
+  type: '@registroIndividual/setDadosRegistroAtual',
+  payload,
+});
+
+export const setPodeRealizarNovoRegistro = payload => ({
+  type: '@registroIndividual/setPodeRealizarNovoRegistro',
+  payload,
+});
+
+export const resetarDadosRegistroIndividual = payload => ({
+  type: '@registroIndividual/resetarDadosRegistroIndividual',
   payload,
 });

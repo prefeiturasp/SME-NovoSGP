@@ -97,6 +97,7 @@ const LeituraDeComunicadosPorModalidadesETurmas = props => {
       }
     }
   }, [
+    modoVisualizacao,
     comunicado,
     listaComunicado,
     dadosDeLeituraDeComunicadosAgrupadosPorModalidade,

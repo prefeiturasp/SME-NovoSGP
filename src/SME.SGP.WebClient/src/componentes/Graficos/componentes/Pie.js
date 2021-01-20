@@ -1,8 +1,9 @@
 import React from 'react';
+import t from 'prop-types';
 
 import { ResponsivePie } from '@nivo/pie';
 
-const Pie = ({ data }) => (
+const Pie = ({ data, enableRadialLabels }) => (
   <div style={{ height: 400 }}>
     <ResponsivePie
       style={{ height: 400 }}
@@ -21,8 +22,17 @@ const Pie = ({ data }) => (
         color: '#42474a',
       }}
       isInteractive={false}
+      enableRadialLabels={enableRadialLabels}
     />
   </div>
 );
+
+Pie.propTypes = {
+  enableRadialLabels: t.bool,
+};
+
+Pie.defaultProps = {
+  enableRadialLabels: true,
+};
 
 export default Pie;

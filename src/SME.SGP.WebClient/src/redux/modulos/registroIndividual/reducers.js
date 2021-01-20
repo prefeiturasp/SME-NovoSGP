@@ -3,20 +3,21 @@ import produce from 'immer';
 const inicial = {
   alunosRegistroIndividual: [],
   auditoriaNovoRegistroIndividual: null,
-  componenteCurricularSelecionado: '',
+  componenteCurricularSelecionado: undefined,
   dadosAlunoObjectCard: {},
   dadosParaSalvarNovoRegistro: {},
   dadosPrincipaisRegistroIndividual: {},
+  dadosRegistroAtual: {},
   desabilitarCampos: false,
-  exibirLoaderGeralRegistroIndividual: false,
-  expandirLinha: [],
-  registroIndividualEmEdicao: false,
-  registroAnteriorEmEdicao: false,
-  resetDataNovoRegistroIndividual: false,
-  registroAnteriorId: {},
-  exibirLoaderGeralRegistroAnteriores: false,
   exibirLoaderConteudoRegistroAnteriores: false,
+  exibirLoaderGeralRegistroAnteriores: false,
+  exibirLoaderGeralRegistroIndividual: false,
   recolherRegistrosAnteriores: false,
+  registroAnteriorEmEdicao: false,
+  registroAnteriorId: {},
+  registroIndividualEmEdicao: false,
+  resetDataNovoRegistroIndividual: false,
+  podeRealizarNovoRegistro: false,
 };
 
 export default function RegistroIndividual(state = inicial, action) {
@@ -40,11 +41,10 @@ export default function RegistroIndividual(state = inicial, action) {
           auditoriaNovoRegistroIndividual: null,
           dadosParaSalvarNovoRegistro: {},
           dadosPrincipaisRegistroIndividual: {},
+          dadosRegistroAtual: {},
           desabilitarCampos: false,
           exibirLoaderGeralRegistroIndividual: false,
-          expandirLinha: [],
           registroIndividualEmEdicao: false,
-          salvouJustificativa: false,
           resetDataNovoRegistroIndividual: true,
         };
       }
@@ -112,6 +112,13 @@ export default function RegistroIndividual(state = inicial, action) {
         const items = state.dadosPrincipaisRegistroIndividual.registrosIndividuais.items.filter(
           dados => dados.id !== action.payload
         );
+        if (!items?.length) {
+          return {
+            ...draft,
+            dadosPrincipaisRegistroIndividual: {},
+            resetDataNovoRegistroIndividual: true,
+          };
+        }
         return {
           ...draft,
           dadosPrincipaisRegistroIndividual: {
@@ -153,14 +160,21 @@ export default function RegistroIndividual(state = inicial, action) {
           registroAnteriorId: action.payload,
         };
       }
-      case '@registroIndividual/atualizaDadosParaSalvarNovoRegistro': {
+      case '@registroIndividual/atualizaDadosRegistroAtual': {
         return {
           ...draft,
-          dadosParaSalvarNovoRegistro: {
-            ...state.dadosParaSalvarNovoRegistro,
-            id: action.payload,
+          dadosRegistroAtual: {
+            ...state.dadosRegistroAtual,
+            ...action.payload,
           },
         };
+      }
+      case '@registroIndividual/atualizarMarcadorDiasSemRegistroExibir': {
+        const aluno = state.alunosRegistroIndividual.find(
+          a => a.codigoEOL === action.payload
+        );
+        aluno.marcadorDiasSemRegistroExibir = false;
+        break;
       }
       case '@registroIndividual/setExibirLoaderGeralRegistroAnteriores': {
         return {
@@ -178,6 +192,29 @@ export default function RegistroIndividual(state = inicial, action) {
         return {
           ...draft,
           recolherRegistrosAnteriores: action.payload,
+        };
+      }
+      case '@registroIndividual/setDadosRegistroAtual': {
+        return {
+          ...draft,
+          dadosRegistroAtual: action.payload,
+        };
+      }
+      case '@registroIndividual/setPodeRealizarNovoRegistro': {
+        return {
+          ...draft,
+          podeRealizarNovoRegistro: action.payload,
+        };
+      }
+      case '@registroIndividual/resetarDadosRegistroIndividual': {
+        return {
+          ...draft,
+          registroIndividualEmEdicao: false,
+          auditoriaNovoRegistro: null,
+          dadosAlunoObjectCard: {},
+          dadosRegistroAtual: {},
+          dadosPrincipaisRegistroIndividual: {},
+          resetDataNovoRegistroIndividual: true,
         };
       }
       default:
