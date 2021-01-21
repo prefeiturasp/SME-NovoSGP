@@ -119,9 +119,9 @@ namespace SME.SGP.Aplicacao.Consultas
         public async Task<PeriodoEscolar> ObterPeriodoPorModalidade(Modalidade modalidade, DateTime data, int semestre = 0)
         {
             var tipoCalendario = await ObterTipoCalendario(modalidade, data.Year, semestre);
-            var periodosEscolares = await ObterPeriodosEscolares(tipoCalendario.Id);
+            var periodosEscolares = await ObterPeriodosEscolares(tipoCalendario.Id);            
 
-            return periodosEscolares.FirstOrDefault(x => x.PeriodoInicio <= data && x.PeriodoFim >= data);
+            return periodosEscolares.FirstOrDefault(x => x.PeriodoInicio <= data.Date && x.PeriodoFim >= data.Date);
         }
 
         public async Task<IEnumerable<PeriodoEscolar>> ObterPeriodosEscolares(long tipoCalendarioId)
