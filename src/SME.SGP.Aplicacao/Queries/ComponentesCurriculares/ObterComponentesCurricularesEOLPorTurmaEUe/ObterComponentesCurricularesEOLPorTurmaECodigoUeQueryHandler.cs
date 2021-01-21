@@ -11,16 +11,16 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterComponentesCurricularesPorTurmaECodigoUeQueryHandler : IRequestHandler<ObterComponentesCurricularesPorTurmaECodigoUeQuery, IEnumerable<ComponenteCurricularDto>>
+    public class ObterComponentesCurricularesEOLPorTurmaECodigoUeQueryHandler : IRequestHandler<ObterComponentesCurricularesEOLPorTurmaECodigoUeQuery, IEnumerable<ComponenteCurricularDto>>
     {
         private readonly IHttpClientFactory httpClientFactory;
 
-        public ObterComponentesCurricularesPorTurmaECodigoUeQueryHandler(IHttpClientFactory httpClientFactory)
+        public ObterComponentesCurricularesEOLPorTurmaECodigoUeQueryHandler(IHttpClientFactory httpClientFactory)
         {
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
         }
 
-        public async Task<IEnumerable<ComponenteCurricularDto>> Handle(ObterComponentesCurricularesPorTurmaECodigoUeQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<ComponenteCurricularDto>> Handle(ObterComponentesCurricularesEOLPorTurmaECodigoUeQuery request, CancellationToken cancellationToken)
         {
             var httpClient = httpClientFactory.CreateClient("servicoEOL");
 
