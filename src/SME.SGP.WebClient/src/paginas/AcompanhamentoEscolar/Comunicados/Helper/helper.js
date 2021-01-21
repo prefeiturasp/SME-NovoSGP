@@ -80,7 +80,7 @@ class FiltroHelper {
         return { id: x.valor, nome: x.descricao };
       });
 
-      if (dados.length > 1) dados.unshift({ id: ID_TODOS, nome: 'Todas' });
+      if (dados.length > 1) dados.unshift({ id: '-99', nome: 'Todas' });
 
       return dados;
     } catch (error) {
