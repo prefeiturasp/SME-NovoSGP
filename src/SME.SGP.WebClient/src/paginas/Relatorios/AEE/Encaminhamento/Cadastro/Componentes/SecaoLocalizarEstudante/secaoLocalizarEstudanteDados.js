@@ -1,19 +1,15 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Loader, SelectComponent } from '~/componentes';
 import { FiltroHelper } from '~/componentes-sgp';
-import LocalizadorEstudante from '~/componentes/LocalizadorEstudante';
-import { AbrangenciaServico, erros } from '~/servicos';
 import Button from '~/componentes/button';
 import { Colors } from '~/componentes/colors';
+import LocalizadorEstudante from '~/componentes/LocalizadorEstudante';
 import { setDadosSecaoLocalizarEstudante } from '~/redux/modulos/encaminhamentoAEE/actions';
+import { AbrangenciaServico, erros } from '~/servicos';
 
 const SecaoLocalizarEstudanteDados = () => {
   const dispatch = useDispatch();
-
-  const dadosSecaoLocalizarEstudante = useSelector(
-    store => store.encaminhamentoAEE.dadosSecaoLocalizarEstudante
-  );
 
   const [anoAtual] = useState(window.moment().format('YYYY'));
 
@@ -28,18 +24,14 @@ const SecaoLocalizarEstudanteDados = () => {
   const [listaUes, setListaUes] = useState([]);
   const [listaTurmas, setListaTurmas] = useState([]);
 
-  const [codigoDre, setCodigoDre] = useState(
-    dadosSecaoLocalizarEstudante?.codigoDre
-  );
-  const [codigoUe, setCodigoUe] = useState(
-    dadosSecaoLocalizarEstudante?.codigoUe
-  );
+  const [codigoDre, setCodigoDre] = useState();
+  const [codigoUe, setCodigoUe] = useState();
   const [codigoTurma, setCodigoTurma] = useState();
 
   const [
     alunoLocalizadorSelecionado,
     setAlunoLocalizadorSelecionado,
-  ] = useState({ codigoAluno: dadosSecaoLocalizarEstudante?.codigoAluno });
+  ] = useState();
 
   const [carregandoTurmas, setCarregandoTurmas] = useState(false);
   const [carregandoDres, setCarregandoDres] = useState(false);
@@ -91,6 +83,8 @@ const SecaoLocalizarEstudanteDados = () => {
 
     setListaTurmas([]);
     setCodigoTurma();
+
+    setAlunoLocalizadorSelecionado();
   };
 
   const obterDres = useCallback(async () => {
@@ -143,10 +137,6 @@ const SecaoLocalizarEstudanteDados = () => {
 
       if (resposta?.data) {
         setListaTurmas(resposta.data);
-
-        if (resposta?.length === 1) {
-          setCodigoTurma(resposta[0].valor);
-        }
       }
     }
   }, [anoAtual, codigoUe]);
@@ -165,6 +155,8 @@ const SecaoLocalizarEstudanteDados = () => {
 
     setListaTurmas([]);
     setCodigoTurma();
+
+    setAlunoLocalizadorSelecionado();
   };
 
   const onChangeTurma = valor => {
@@ -179,28 +171,36 @@ const SecaoLocalizarEstudanteDados = () => {
         codigoTurma: aluno?.codigoTurma,
       });
     } else {
-      setAlunoLocalizadorSelecionado({});
+      setAlunoLocalizadorSelecionado();
     }
   };
 
   const onClickProximoPasso = async () => {
-    // TODO
-    console.log('onClickProximoPasso');
-
     const params = {
       anoLetivo: anoAtual,
       codigoDre,
       codigoUe,
       codigoTurma: alunoLocalizadorSelecionado.codigoTurma,
       codigoAluno: alunoLocalizadorSelecionado.codigoAluno,
-      turmaId: dadosSecaoLocalizarEstudante.turmaId,
+      turmaId: 614004,
     };
     dispatch(setDadosSecaoLocalizarEstudante(params));
   };
 
   const onClickCancelar = async () => {
-    // TODO
-    console.log('onClickCancelar');
+    setCodigoDre();
+    setListaDres([]);
+
+    setCodigoUe();
+    setListaUes([]);
+
+    setListaTurmas([]);
+    setCodigoTurma();
+
+    setAlunoLocalizadorSelecionado();
+    dispatch(setDadosSecaoLocalizarEstudante({}));
+
+    obterDres();
   };
 
   return (
@@ -255,7 +255,6 @@ const SecaoLocalizarEstudanteDados = () => {
             valueOption="codigo"
             valueText="modalidadeTurmaNome"
             label="Turma"
-            disabled={listaTurmas?.length === 1}
             valueSelect={codigoTurma}
             onChange={onChangeTurma}
             placeholder="Turma"
@@ -267,11 +266,11 @@ const SecaoLocalizarEstudanteDados = () => {
           <LocalizadorEstudante
             id="estudante"
             showLabel
-            ueId={codigoUe}
+            ueId={codigoDre ? codigoUe : ''}
             onChange={onChangeLocalizadorEstudante}
             anoLetivo={anoAtual}
             desabilitado={!codigoDre || !codigoUe}
-            codigoTurma={codigoTurma}
+            codigoTurma={codigoDre ? codigoTurma : ''}
             valorInicialAlunoCodigo={alunoLocalizadorSelecionado?.codigoAluno}
           />
         </div>
@@ -292,6 +291,7 @@ const SecaoLocalizarEstudanteDados = () => {
           border
           bold
           onClick={onClickProximoPasso}
+          disabled={!alunoLocalizadorSelecionado?.codigoAluno}
         />
       </div>
     </div>

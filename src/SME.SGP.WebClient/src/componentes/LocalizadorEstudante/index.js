@@ -33,6 +33,7 @@ const LocalizadorEstudante = props => {
     setPessoaSelecionada({
       alunoCodigo: '',
       alunoNome: '',
+      codigoTurma: '',
     });
     setDataSource([]);
   }, [ueId, codigoTurma]);
@@ -43,6 +44,7 @@ const LocalizadorEstudante = props => {
       setPessoaSelecionada({
         alunoCodigo: '',
         alunoNome: '',
+        codigoTurma: '',
       });
       setTimeout(() => {
         setDesabilitarCampo(() => ({
@@ -67,7 +69,13 @@ const LocalizadorEstudante = props => {
     }
 
     const retorno = await service.buscarPorNome(params).catch(() => {
+      onChange();
       setDataSource([]);
+      setPessoaSelecionada({
+        alunoCodigo: '',
+        alunoNome: '',
+        codigoTurma: '',
+      });
     });
 
     if (retorno && retorno?.data?.items?.length > 0) {
@@ -76,6 +84,7 @@ const LocalizadorEstudante = props => {
         retorno.data.items.map(aluno => ({
           alunoCodigo: aluno.codigo,
           alunoNome: aluno.nome,
+          codigoTurma: aluno.codigoTurma,
         }))
       );
     }
@@ -98,19 +107,28 @@ const LocalizadorEstudante = props => {
       } else {
         erros(e);
       }
+      onChange();
+      setDataSource([]);
+      setPessoaSelecionada({
+        alunoCodigo: '',
+        alunoNome: '',
+        codigoTurma: '',
+      });
     });
 
     if (retorno?.data?.items?.length > 0) {
-      const { codigo: cAluno, nome } = retorno.data.items[0];
+      const { codigo: cAluno, nome, codigoTurma } = retorno.data.items[0];
       setDataSource(
         retorno.data.items.map(aluno => ({
           alunoCodigo: aluno.codigo,
           alunoNome: aluno.nome,
+          codigoTurma: aluno.codigoTurma,
         }))
       );
       setPessoaSelecionada({
         alunoCodigo: parseInt(cAluno, 10),
         alunoNome: nome,
+        codigoTurma,
       });
       setDesabilitarCampo(estado => ({
         ...estado,
@@ -119,6 +137,7 @@ const LocalizadorEstudante = props => {
       onChange({
         alunoCodigo: parseInt(cAluno, 10),
         alunoNome: nome,
+        codigoTurma,
       });
     }
   };
@@ -128,11 +147,13 @@ const LocalizadorEstudante = props => {
       clearTimeout(timeoutBuscarPorCodigo);
     }
 
-    const timeout = setTimeout(() => {
-      onBuscarPorCodigo(valor);
-    }, 500);
+    if (ueId) {
+      const timeout = setTimeout(() => {
+        onBuscarPorCodigo(valor);
+      }, 500);
 
-    setTimeoutBuscarPorCodigo(timeout);
+      setTimeoutBuscarPorCodigo(timeout);
+    }
   };
 
   const onChangeCodigo = valor => {
@@ -140,6 +161,7 @@ const LocalizadorEstudante = props => {
       setPessoaSelecionada({
         alunoCodigo: '',
         alunoNome: '',
+        codigoTurma: '',
       });
       setDesabilitarCampo(estado => ({
         ...estado,

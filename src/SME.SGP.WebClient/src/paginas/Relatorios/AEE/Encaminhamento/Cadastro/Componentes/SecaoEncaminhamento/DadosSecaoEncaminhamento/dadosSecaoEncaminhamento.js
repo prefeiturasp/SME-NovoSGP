@@ -50,7 +50,8 @@ const DadosSecaoEncaminhamento = props => {
     obterSecoesPorEtapaDeEncaminhamentoAEE,
   ]);
 
-  return dadosSecoesPorEtapaDeEncaminhamentoAEE?.length ? (
+  return dadosSecaoLocalizarEstudante?.codigoAluno &&
+    dadosSecoesPorEtapaDeEncaminhamentoAEE?.length ? (
     <ContainerStepsEncaminhamento direction="vertical" current={1}>
       {dadosSecoesPorEtapaDeEncaminhamentoAEE.map(item => {
         return (
