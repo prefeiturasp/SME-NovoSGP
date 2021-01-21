@@ -77,33 +77,36 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
                 foreach (var questoes in secao.Questoes.GroupBy(q => q.QuestaoId))
                 {
-                    var questoesExistentes = secaoExistente.Questoes.FirstOrDefault(q => q.QuestaoId == questoes.FirstOrDefault().QuestaoId);
+                    var questaoExistente = secaoExistente.Questoes.FirstOrDefault(q => q.QuestaoId == questoes.FirstOrDefault().QuestaoId);
 
-                    if (questoesExistentes == null)
+                    if (questaoExistente == null)
                     {
                         var resultadoEncaminhamentoQuestao = await mediator.Send(new RegistrarEncaminhamentoAEESecaoQuestaoCommand(resultadoEncaminhamentoSecao, questoes.FirstOrDefault().QuestaoId));
                         await RegistrarRespostaEncaminhamento(questoes, resultadoEncaminhamentoQuestao);
                     }
                     else
                     {
-                        await ExcluirRespostasEncaminhamento(questoesExistentes, questoes);
+                        await ExcluirRespostasEncaminhamento(questaoExistente, questoes);
 
-                        await AlterarRespostasEncaminhamento(questoesExistentes, questoes);
+                        await AlterarRespostasEncaminhamento(questaoExistente, questoes);
+
+                        await IncluirRespostasEncaminhamento(questaoExistente, questoes);
                     }
                 }
 
                 foreach (var questao in secaoExistente.Questoes.Where(x => !secao.Questoes.Any(s => s.QuestaoId == x.QuestaoId)))
-                {
                     await mediator.Send(new ExcluirQuestaoEncaminhamentoAEEPorIdCommand(questao.Id));
-                }
             }
         }
 
-        private async Task RegistrarRespostaEncaminhamento(IGrouping<long, EncaminhamentoAEESecaoQuestaoDto> questoes, long resultadoEncaminhamentoQuestao)
+        private async Task IncluirRespostasEncaminhamento(QuestaoEncaminhamentoAEE questaoExistente, IGrouping<long, EncaminhamentoAEESecaoQuestaoDto> respostas)
+            => await RegistrarRespostaEncaminhamento(ObterRespostasAIncluir(questaoExistente, respostas), questaoExistente.Id);
+
+        private async Task RegistrarRespostaEncaminhamento(IEnumerable<EncaminhamentoAEESecaoQuestaoDto> questoes, long questaoEncaminhamentoId)
         {
-            foreach (var q in questoes)
+            foreach (var questao in questoes)
             {
-                await mediator.Send(new RegistrarEncaminhamentoAEESecaoQuestaoRespostaCommand(q.Resposta, resultadoEncaminhamentoQuestao, q.TipoQuestao));
+                await mediator.Send(new RegistrarEncaminhamentoAEESecaoQuestaoRespostaCommand(questao.Resposta, questaoEncaminhamentoId, questao.TipoQuestao));
             }
         }
 
@@ -113,11 +116,14 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                 await mediator.Send(new AlterarEncaminhamentoAEESecaoQuestaoRespostaCommand(respostaAlterar, respostas.FirstOrDefault(c => c.RespostaEncaminhamentoId == respostaAlterar.Id)));
         }
 
-        private async Task ExcluirRespostasEncaminhamento(QuestaoEncaminhamentoAEE questoesExistentes, IGrouping<long, EncaminhamentoAEESecaoQuestaoDto> questoes)
+        private async Task ExcluirRespostasEncaminhamento(QuestaoEncaminhamentoAEE questoesExistentes, IGrouping<long, EncaminhamentoAEESecaoQuestaoDto> respostas)
         {
-            foreach (var respostasExcluir in ObterRespostasAExcluir(questoesExistentes, questoes))
-                await mediator.Send(new ExcluirRespostaEncaminhamentoAEEPorQuestaoIdCommand(questoesExistentes.Id));
+            foreach (var respostasExcluir in ObterRespostasAExcluir(questoesExistentes, respostas))
+                await mediator.Send(new ExcluirRespostaEncaminhamentoAEECommand(respostasExcluir));
         }
+
+        private IEnumerable<EncaminhamentoAEESecaoQuestaoDto> ObterRespostasAIncluir(QuestaoEncaminhamentoAEE questaoExistente, IGrouping<long, EncaminhamentoAEESecaoQuestaoDto> respostas)
+            => respostas.Where(c => c.RespostaEncaminhamentoId == 0);
 
         private IEnumerable<RespostaEncaminhamentoAEE> ObterRespostasAExcluir(QuestaoEncaminhamentoAEE questaoExistente, IGrouping<long, EncaminhamentoAEESecaoQuestaoDto> respostasEncaminhamento)
             => questaoExistente.Respostas.Where(s => !respostasEncaminhamento.Any(c => c.RespostaEncaminhamentoId == s.Id));
