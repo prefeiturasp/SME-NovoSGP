@@ -131,17 +131,22 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<TurmaParaCopiaPlanoAnualDto>> ValidaSeTurmasPossuemPlanoAnual(string[] turmasId, bool consideraHistorico)
         {
             var query = $@"select
-	                        t.*,
-	                        (select 1 from plano_anual where turma_id = t.turma_id::int8 limit 1) as possuiPlano,
-                            (select componente_curricular_eol_id from plano_anual where turma_id = t.turma_id::int8 limit 1) as codigoComponenteCurricular
-                        from
-	                        turma t
-                        inner join abrangencia a on
-	                        a.turma_id = t.id
-                        left join plano_anual p on
-	                        p.turma_id = a.turma_id
-                        where
-	                        t.turma_id = Any(@turmasId) and {(consideraHistorico ? string.Empty : "not")} a.historico group by t.id";
+                            t.*,
+                            case when p.turma_id is not null then true else false end as possuiPlano,
+                            p.componente_curricular_id as codigoComponenteCurricular,
+                            p.bimestre
+                            from turma t
+                            inner join abrangencia a on a.turma_id = t.id
+                            left join (select t.id turma_id, pa.componente_curricular_id, pe.bimestre 
+                            from planejamento_anual pa
+                            inner join planejamento_anual_periodo_escolar pap on pap.planejamento_anual_id = pa.id and pap.excluido = false
+                            inner join planejamento_anual_componente pac on pac.planejamento_anual_periodo_escolar_id = pap.id and pac.excluido = false
+                            inner join turma t on pa.turma_id = t.id
+                            inner join periodo_escolar pe on pap.periodo_escolar_id = pe.id
+                            where pa.excluido = false 
+                            and t.turma_id = Any(@turmasId)) p on p.turma_id = t.id
+                            where t.turma_id = Any(@turmasId) 
+                            and {(consideraHistorico ? string.Empty : "not")} a.historico;";
 
             return await database.Conexao.QueryAsync<TurmaParaCopiaPlanoAnualDto>(query, new { turmasId });
         }
