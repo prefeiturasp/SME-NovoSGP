@@ -6,5 +6,6 @@
         public int NumeroChamada { get; set; }
         public string Nome { get; set; }
         public string CodigoTurma { get; set; }
+        public long TurmaId { get; set; }
     }
 }
