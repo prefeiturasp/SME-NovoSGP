@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
+import { Base } from './colors';
 
 const Container = styled.div`
   label {
@@ -15,13 +16,19 @@ const Container = styled.div`
     color: #42474a;
     font-weight: bold;
   }
+
+  span {
+    color: ${Base.CinzaBotao};
+    font-weight: normal;
+  }
 `;
 
-const Label = ({ text, control, center, className }) => {
+const Label = ({ text, control, center, className, observacaoText }) => {
   return (
     <Container className={center && 'text-center'}>
       <label htmlFor={control} id={text} className={className}>
         {text}
+        {observacaoText ? <span> {` ${observacaoText}`}</span> : ''}
       </label>
     </Container>
   );
@@ -30,12 +37,16 @@ Label.propTypes = {
   text: PropTypes.string,
   control: PropTypes.string,
   center: PropTypes.bool,
+  className: PropTypes.string,
+  observacaoText: PropTypes.string,
 };
 
 Label.defaultProps = {
   text: PropTypes.string,
   control: null,
   center: false,
+  className: '',
+  observacaoText: '',
 };
 
 export default Label;
