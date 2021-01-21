@@ -20,6 +20,11 @@ const BotoesAcoesEncaminhamentoAEE = props => {
     ServicoEncaminhamentoAEE.salvarEncaminhamento(encaminhamentoId);
   };
 
+  const onClickEnviar = async () => {
+    const encaminhamentoId = match?.params?.id;
+    ServicoEncaminhamentoAEE.salvarEncaminhamento(encaminhamentoId, true);
+  };
+
   const onClickVoltar = async () => {
     if (encaminhamentoAEEEmEdicao) {
       const confirmou = await confirmar(
@@ -58,11 +63,6 @@ const BotoesAcoesEncaminhamentoAEE = props => {
         }
       }
     }
-  };
-
-  const onClickEnviar = async () => {
-    // TODO
-    console.log('onClickEnviar');
   };
 
   return (
@@ -111,7 +111,7 @@ const BotoesAcoesEncaminhamentoAEE = props => {
         border
         bold
         onClick={onClickEnviar}
-        disabled
+        disabled={!encaminhamentoAEEEmEdicao}
       />
     </>
   );

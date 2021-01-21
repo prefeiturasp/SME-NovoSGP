@@ -66,7 +66,8 @@ class ServicoEncaminhamentoAEE {
     obterForm,
     questionarioId,
     dadosQuestionarioAtual,
-    tiposQuestaoPorIdQuestao
+    tiposQuestaoPorIdQuestao,
+    idsRespostasPorIdQuestao
   ) => {
     const { dispatch } = store;
     const state = store.getState();
@@ -78,6 +79,7 @@ class ServicoEncaminhamentoAEE {
         form: obterForm,
         dadosQuestionarioAtual,
         tiposQuestaoPorIdQuestao,
+        idsRespostasPorIdQuestao,
       };
       dispatch(setFormsSecoesEncaminhamentoAEE(param));
     } else if (formsSecoesEncaminhamentoAEE?.length) {
@@ -86,12 +88,13 @@ class ServicoEncaminhamentoAEE {
         form: obterForm,
         dadosQuestionarioAtual,
         tiposQuestaoPorIdQuestao,
+        idsRespostasPorIdQuestao,
       };
       dispatch(setFormsSecoesEncaminhamentoAEE(param));
     }
   };
 
-  salvarEncaminhamento = async encaminhamentoId => {
+  salvarEncaminhamento = async (encaminhamentoId, enviarEcaminhamento) => {
     const { dispatch } = store;
 
     const state = store.getState();
@@ -101,102 +104,112 @@ class ServicoEncaminhamentoAEE {
       dadosSecaoLocalizarEstudante,
     } = encaminhamentoAEE;
 
-    // TODO REFAZER ASYNC
-    // let contadorFormsValidos = 0;
+    let contadorFormsValidos = 0;
 
-    // const validaAntesDoSubmit = refForm => {
-    //   let arrayCampos = [];
+    const validaAntesDoSubmit = refForm => {
+      let arrayCampos = [];
 
-    //   if (refForm?.fields && Object.keys(refForm?.fields)?.length) {
-    //     arrayCampos = Object.keys(refForm.fields);
-    //   }
+      if (refForm?.fields && Object.keys(refForm?.fields)?.length) {
+        arrayCampos = Object.keys(refForm.fields);
+      }
 
-    //   arrayCampos.forEach(campo => {
-    //     refForm.setFieldTouched(campo, true, true);
-    //   });
-    //   refForm.validateForm().then(() => {
-    //     if (
-    //       refForm.getFormikContext().isValid ||
-    //       Object.keys(refForm.getFormikContext().errors).length === 0
-    //     ) {
-    //       contadorFormsValidos += 1;
-    //     }
-    //   });
-    // };
+      arrayCampos.forEach(campo => {
+        refForm.setFieldTouched(campo, true, true);
+      });
+      return refForm.validateForm().then(() => {
+        if (
+          refForm.getFormikContext().isValid ||
+          Object.keys(refForm.getFormikContext().errors).length === 0
+        ) {
+          contadorFormsValidos += 1;
+        }
+      });
+    };
 
     if (formsSecoesEncaminhamentoAEE?.length) {
-      // formsSecoesEncaminhamentoAEE.forEach(item => {
-      //   const form = item.form();
-      //   validaAntesDoSubmit(form);
-      // });
+      let todosOsFormsEstaoValidos = !enviarEcaminhamento;
 
-      const valoresParaSalvar = {
-        id: encaminhamentoId || 0,
-        turmaId: dadosSecaoLocalizarEstudante.turmaId,
-        alunoCodigo: dadosSecaoLocalizarEstudante.codigoAluno,
-      };
-      valoresParaSalvar.secoes = formsSecoesEncaminhamentoAEE.map(
-        (item, secaoId) => {
-          const form = item.form();
-          const campos = form.state.values;
-          const questoes = [];
+      if (enviarEcaminhamento) {
+        const promises = formsSecoesEncaminhamentoAEE.map(async item =>
+          validaAntesDoSubmit(item.form())
+        );
 
-          Object.keys(campos).forEach(key => {
-            const questao = {
-              questaoId: key,
-              tipoQuestao: item?.tiposQuestaoPorIdQuestao[key],
+        await Promise.all(promises);
+
+        todosOsFormsEstaoValidos =
+          contadorFormsValidos === formsSecoesEncaminhamentoAEE.length;
+      }
+
+      if (todosOsFormsEstaoValidos) {
+        const valoresParaSalvar = {
+          id: encaminhamentoId || 0,
+          turmaId: dadosSecaoLocalizarEstudante.turmaId,
+          alunoCodigo: dadosSecaoLocalizarEstudante.codigoAluno,
+        };
+        valoresParaSalvar.secoes = formsSecoesEncaminhamentoAEE.map(
+          (item, secaoId) => {
+            const form = item.form();
+            const campos = form.state.values;
+            const questoes = [];
+
+            Object.keys(campos).forEach(key => {
+              const questao = {
+                questaoId: key,
+                tipoQuestao: item?.tiposQuestaoPorIdQuestao[key],
+                respostaEncaminhamentoId: item?.idsRespostasPorIdQuestao[key],
+              };
+
+              switch (questao.tipoQuestao) {
+                case tipoQuestao.AtendimentoClinico:
+                  questao.resposta = JSON.stringify(campos[key] || '');
+                  break;
+                case tipoQuestao.Upload:
+                  if (campos[key]?.length) {
+                    const arquivosId = campos[key].map(a => a.xhr);
+                    questao.resposta = arquivosId;
+                  } else {
+                    questao.resposta = '';
+                  }
+                  break;
+                default:
+                  questao.resposta = campos[key] || '';
+                  break;
+              }
+
+              if (
+                questao.tipoQuestao === tipoQuestao.Upload &&
+                questao?.resposta?.length
+              ) {
+                questao.resposta.forEach(b => {
+                  questoes.push({ ...questao, resposta: b });
+                });
+              } else {
+                questoes.push(questao);
+              }
+            });
+            return {
+              questoes,
+              secaoId,
             };
+          }
+        );
 
-            switch (questao.tipoQuestao) {
-              case tipoQuestao.AtendimentoClinico:
-                questao.resposta = JSON.stringify(campos[key] || '');
-                break;
-              case tipoQuestao.Upload:
-                if (campos[key]?.length) {
-                  const arquivosId = campos[key].map(a => a.xhr);
-                  questao.resposta = arquivosId;
-                } else {
-                  questao.resposta = '';
-                }
-                break;
-              default:
-                questao.resposta = campos[key] || '';
-                break;
-            }
+        valoresParaSalvar.secoes = valoresParaSalvar.secoes
+          .filter(a => a)
+          .filter(b => b.questoes?.length);
 
-            if (
-              questao.tipoQuestao === tipoQuestao.Upload &&
-              questao?.resposta?.length
-            ) {
-              questao.resposta.forEach(b => {
-                questoes.push({ ...questao, resposta: b });
-              });
-            } else {
-              questoes.push(questao);
-            }
-          });
-          return {
-            questoes,
-            secaoId,
-          };
-        }
-      );
+        if (valoresParaSalvar?.secoes?.length) {
+          dispatch(setExibirLoaderEncaminhamentoAEE(true));
 
-      valoresParaSalvar.secoes = valoresParaSalvar.secoes
-        .filter(a => a)
-        .filter(b => b.questoes?.length);
+          const resposta = await api
+            .post(`${urlPadrao}/salvar`, valoresParaSalvar)
+            .catch(e => erros(e))
+            .finally(() => dispatch(setExibirLoaderEncaminhamentoAEE(false)));
 
-      if (valoresParaSalvar?.secoes?.length) {
-        dispatch(setExibirLoaderEncaminhamentoAEE(true));
-
-        const resposta = await api
-          .post(`${urlPadrao}/salvar`, valoresParaSalvar)
-          .catch(e => erros(e))
-          .finally(() => dispatch(setExibirLoaderEncaminhamentoAEE(false)));
-
-        if (resposta?.status === 200) {
-          sucesso('Registro salvo com sucesso');
-          history.push(RotasDto.RELATORIO_AEE_ENCAMINHAMENTO);
+          if (resposta?.status === 200) {
+            sucesso('Registro salvo com sucesso');
+            history.push(RotasDto.RELATORIO_AEE_ENCAMINHAMENTO);
+          }
         }
       }
     }
