@@ -33,6 +33,7 @@ const LocalizadorEstudante = props => {
     setPessoaSelecionada({
       alunoCodigo: '',
       alunoNome: '',
+      codigoTurma: '',
     });
     setDataSource([]);
   }, [ueId, codigoTurma]);
@@ -43,6 +44,7 @@ const LocalizadorEstudante = props => {
       setPessoaSelecionada({
         alunoCodigo: '',
         alunoNome: '',
+        codigoTurma: '',
       });
       setTimeout(() => {
         setDesabilitarCampo(() => ({
@@ -76,6 +78,7 @@ const LocalizadorEstudante = props => {
         retorno.data.items.map(aluno => ({
           alunoCodigo: aluno.codigo,
           alunoNome: aluno.nome,
+          codigoTurma: aluno.codigoTurma,
         }))
       );
     }
@@ -101,16 +104,18 @@ const LocalizadorEstudante = props => {
     });
 
     if (retorno?.data?.items?.length > 0) {
-      const { codigo: cAluno, nome } = retorno.data.items[0];
+      const { codigo: cAluno, nome, codigoTurma } = retorno.data.items[0];
       setDataSource(
         retorno.data.items.map(aluno => ({
           alunoCodigo: aluno.codigo,
           alunoNome: aluno.nome,
+          codigoTurma: aluno.codigoTurma,
         }))
       );
       setPessoaSelecionada({
         alunoCodigo: parseInt(cAluno, 10),
         alunoNome: nome,
+        codigoTurma,
       });
       setDesabilitarCampo(estado => ({
         ...estado,
@@ -119,6 +124,7 @@ const LocalizadorEstudante = props => {
       onChange({
         alunoCodigo: parseInt(cAluno, 10),
         alunoNome: nome,
+        codigoTurma,
       });
     }
   };
@@ -140,6 +146,7 @@ const LocalizadorEstudante = props => {
       setPessoaSelecionada({
         alunoCodigo: '',
         alunoNome: '',
+        codigoTurma: '',
       });
       setDesabilitarCampo(estado => ({
         ...estado,
@@ -150,6 +157,7 @@ const LocalizadorEstudante = props => {
   };
 
   const onSelectPessoa = objeto => {
+    debugger
     setPessoaSelecionada({
       alunoCodigo: parseInt(objeto.key, 10),
       alunoNome: objeto.props.value,
