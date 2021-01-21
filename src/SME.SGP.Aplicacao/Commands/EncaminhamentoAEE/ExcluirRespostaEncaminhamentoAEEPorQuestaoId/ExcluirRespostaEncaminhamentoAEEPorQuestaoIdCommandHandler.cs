@@ -24,23 +24,9 @@ namespace SME.SGP.Aplicacao
             var respostas = await repositorioRespostaEncaminhamentoAEE.ObterPorQuestaoEncaminhamentoId(request.QuestaoEncaminhamentoAEEId);
 
             foreach(var resposta in respostas)
-            {
-                resposta.Excluido = true;
-                var arquivoId = resposta.ArquivoId;
-                resposta.ArquivoId = null;
-
-                await repositorioRespostaEncaminhamentoAEE.SalvarAsync(resposta);
-
-                if (arquivoId.HasValue)
-                    await RemoverArquivo(arquivoId);
-            }
+                await mediator.Send(new ExcluirRespostaEncaminhamentoAEECommand(resposta));
 
             return true;
-        }
-
-        private async Task RemoverArquivo(long? arquivoId)
-        {
-            await mediator.Send(new ExcluirArquivoPorIdCommand(arquivoId.Value));
         }
     }
 }
