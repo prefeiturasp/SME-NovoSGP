@@ -153,6 +153,16 @@ const MontarDadosPorSecao = props => {
         }
       }
 
+      // TODO!
+      // if (!valorRespostaAtual) {
+      //   if (questaoAtual?.opcaoResposta?.length) {
+      //     questaoAtual.opcaoResposta.forEach(opcaoAtual => {
+      //       if (opcaoAtual?.questaoComplementar) {
+      //         montarDados(opcaoAtual.questaoComplementar);
+      //       }
+      //     });
+      //   }
+      // }
       valores[questaoAtual.id] = valorRespostaAtual;
     };
 

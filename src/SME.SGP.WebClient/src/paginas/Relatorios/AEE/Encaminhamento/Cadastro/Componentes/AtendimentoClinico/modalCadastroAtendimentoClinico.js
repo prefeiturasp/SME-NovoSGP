@@ -133,6 +133,7 @@ const ModalCadastroAtendimentoClinico = props => {
           onChange={onChangeAtendimentoAtividade}
           label="Atendimento/Atividade"
           value={atendimentoAtividade}
+          maxLength={100}
         />
       </div>
       <div className="col-md-12 mb-2">
@@ -140,6 +141,7 @@ const ModalCadastroAtendimentoClinico = props => {
           onChange={onChangeLocalRealizacao}
           label="Local de realização"
           value={localRealizacao}
+          maxLength={100}
         />
       </div>
       <div className="col-md-12 mb-2">

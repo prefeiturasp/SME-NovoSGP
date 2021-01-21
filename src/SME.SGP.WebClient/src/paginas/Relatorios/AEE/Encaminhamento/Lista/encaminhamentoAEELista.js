@@ -265,8 +265,8 @@ const EncaminhamentoAEELista = () => {
       if (resposta?.data) {
         setListaTurmas(resposta.data);
 
-        if (resposta?.length === 1) {
-          setTurmaId(resposta[0].valor);
+        if (resposta?.data?.length === 1) {
+          setTurmaId(resposta.data[0].codigo);
         }
       }
     }

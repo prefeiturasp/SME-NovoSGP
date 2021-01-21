@@ -39,8 +39,16 @@ const BotoesAcoesEncaminhamentoAEE = props => {
   };
 
   const onClickCancelar = async () => {
-    // TODO
-    console.log('onClickCancelar');
+    if (encaminhamentoAEEEmEdicao) {
+      const confirmou = await confirmar(
+        'Atenção',
+        'Você não salvou as informações preenchidas.',
+        'Deseja realmente cancelar as alterações?'
+      );
+      if (confirmou) {
+        ServicoEncaminhamentoAEE.resetarTelaDadosOriginais();
+      }
+    }
   };
 
   const onClickExcluir = async () => {
