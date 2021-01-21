@@ -4,6 +4,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -12,12 +13,15 @@ namespace SME.SGP.Aplicacao
     public class AlterarObservacaoDiarioBordoCommandHandler : IRequestHandler<AlterarObservacaoDiarioBordoCommand, AuditoriaDto>
     {
         private readonly IRepositorioDiarioBordoObservacao repositorioDiarioBordoObservacao;
+        private readonly IRepositorioDiarioBordoObservacaoNotificacao repositorioDiarioBordoObservacaoNotificacao;
         private readonly IMediator mediator;
 
-        public AlterarObservacaoDiarioBordoCommandHandler(IRepositorioDiarioBordoObservacao repositorioDiarioBordoObservacao, IMediator mediator)
+        public AlterarObservacaoDiarioBordoCommandHandler(IRepositorioDiarioBordoObservacao repositorioDiarioBordoObservacao, IMediator mediator,
+                                                          IRepositorioDiarioBordoObservacaoNotificacao repositorioDiarioBordoObservacaoNotificacao)
         {
             this.repositorioDiarioBordoObservacao = repositorioDiarioBordoObservacao ?? throw new System.ArgumentNullException(nameof(repositorioDiarioBordoObservacao));
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
+            this.repositorioDiarioBordoObservacaoNotificacao = repositorioDiarioBordoObservacaoNotificacao ?? throw new ArgumentNullException(nameof(repositorioDiarioBordoObservacaoNotificacao));
         }
 
         public async Task<AuditoriaDto> Handle(AlterarObservacaoDiarioBordoCommand request, CancellationToken cancellationToken)
@@ -29,17 +33,38 @@ namespace SME.SGP.Aplicacao
 
             diarioBordoObservacao.ValidarUsuarioAlteracao(request.UsuarioId);
 
-            diarioBordoObservacao.Observacao = request.Observacao;            
+            diarioBordoObservacao.Observacao = request.Observacao;
 
             await repositorioDiarioBordoObservacao.SalvarAsync(diarioBordoObservacao);
-            if(request.Observacao.Trim().Length < 200)
+
+            if (request.Observacao.Trim().Length < 200 && (request.UsuariosIdNotificacao == null || !request.UsuariosIdNotificacao.Any()))
             {
                 // Excluir Notificação Especifica
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaExcluirNotificacaoDiarioBordo,
                       new ExcluirNotificacaoDiarioBordoDto(request.ObservacaoId), Guid.NewGuid(), null));
 
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaNotificacaoNovaObservacaoDiarioBordo,
-                new NotificarDiarioBordoObservacaoDto(diarioBordoObservacao.DiarioBordoId, request.Observacao, usuario, request.ObservacaoId), Guid.NewGuid(), null));
+                      new NotificarDiarioBordoObservacaoDto(diarioBordoObservacao.DiarioBordoId, request.Observacao, usuario, request.ObservacaoId), Guid.NewGuid(), null));
+            }
+            else if (request.UsuariosIdNotificacao != null && request.UsuariosIdNotificacao.Any())
+            {
+                var notificacoes = await repositorioDiarioBordoObservacaoNotificacao.ObterPorDiarioBordoObservacaoId(request.ObservacaoId);
+
+                var usuariosNotificados = notificacoes.Select(n => n.IdUsuario);
+
+                var usuariosExcluidos = usuariosNotificados.Where(u => !request.UsuariosIdNotificacao.Contains(u) && u != usuario.Id);
+
+                var usuariosNotificacao = request.UsuariosIdNotificacao?.Select(async u => await mediator.Send(new ObterUsuarioPorIdQuery(u)))?.Select(t => t.Result);
+
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaNotificacaoNovaObservacaoDiarioBordo,
+                        new NotificarDiarioBordoObservacaoDto(diarioBordoObservacao.DiarioBordoId, request.Observacao, usuario, request.ObservacaoId, usuariosNotificacao), Guid.NewGuid(), null));
+
+                foreach (var usuarioExcluido in usuariosExcluidos)
+                {
+                    // Excluir Notificação Especifica
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaNotificacaoAlterarObservacaoDiarioBordo,
+                          new AlterarNotificacaoDiarioBordoDto(request.ObservacaoId, usuarioExcluido), Guid.NewGuid(), null));
+                }
             }
 
             return (AuditoriaDto)diarioBordoObservacao;

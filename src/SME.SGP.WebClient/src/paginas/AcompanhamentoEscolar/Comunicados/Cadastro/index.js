@@ -45,6 +45,7 @@ const TODAS_MODALIDADES_ID = '-99';
 const TODAS_TURMAS_ID = '-99';
 const MODALIDADE_EJA_ID = '3';
 
+
 const ComunicadosCadastro = ({ match }) => {
   const ErroValidacao = styled.span`
     color: ${Base.Vermelho};
@@ -114,6 +115,7 @@ const ComunicadosCadastro = ({ match }) => {
   const [idComunicado, setIdComunicado] = useState();
 
   const [carregouInformacoes, setCarregouInformacoes] = useState(false);
+  const [refForm, setRefForm] = useState({});
 
   const selecionaTipoCalendario = (descricao, form, tipoCalend, onChange) => {
     let tipo = '';
@@ -326,8 +328,11 @@ const ComunicadosCadastro = ({ match }) => {
   }, [match]);
 
   useEffect(() => {
-    ObterModalidades(TODAS_MODALIDADES_ID);
-  }, []);
+    const anoLetivo = refForm?.state?.values?.anoLetivo;
+    if (anoLetivo){
+      ObterModalidades(TODAS_MODALIDADES_ID, anoLetivo);
+    }
+  }, [refForm?.state?.values?.anoLetivo]);
 
   const valoresIniciaisImutaveis = {
     id: 0,
@@ -427,7 +432,7 @@ const ComunicadosCadastro = ({ match }) => {
         setDescricaoComunicado(comunicado.descricao);
 
         ObterUes(String(comunicado.codigoDre));
-        ObterModalidades(String(comunicado.codigoUe));
+        ObterModalidades(String(comunicado.codigoUe), comunicado.anoLetivo);
 
         if (modoEdicaoConsulta) {
           ObterTurmas(
@@ -561,7 +566,7 @@ const ComunicadosCadastro = ({ match }) => {
     });
   };
 
-  const [refForm, setRefForm] = useState({});
+  
 
   const [gruposLista, setGruposLista] = useState([]);
 
@@ -656,14 +661,15 @@ const ComunicadosCadastro = ({ match }) => {
 
     if (dados.length === 1) {
       refForm.setFieldValue('CodigoUe', dados[0].id);
-      ObterModalidades(dados[0].id);
+      const anoLetivo = refForm?.state?.values?.anoLetivo;
+      ObterModalidades(dados[0].id, anoLetivo);
     }
 
     setUes(dados);
   };
 
-  const ObterModalidades = async ue => {
-    const dados = await FiltroHelper.ObterModalidades(ue);
+  const ObterModalidades = async (ue, anoLetivo) => {
+    const dados = await FiltroHelper.obterModalidadesAnoLetivo(ue, anoLetivo);
 
     if (!dados || dados.length === 0) return;
 
@@ -826,11 +832,12 @@ const ComunicadosCadastro = ({ match }) => {
   };
 
   const onChangeDre = async dre => {
+    const anoLetivo = refForm?.state?.values?.anoLetivo;
     handleModoEdicao();
     refForm.setFieldValue('CodigoUe', TODAS_UE_ID);
     onChangeUe(TODAS_UE_ID);
     resetarTurmas();
-    ObterModalidades(TODAS_MODALIDADES_ID);
+    ObterModalidades(TODAS_MODALIDADES_ID, anoLetivo);
     setUnidadeEscolarUE(false);
 
     if (dre === TODAS_DRE_ID) {
@@ -843,6 +850,7 @@ const ComunicadosCadastro = ({ match }) => {
   };
 
   const onChangeUe = async ue => {
+    const anoLetivo = refForm?.state?.values?.anoLetivo;
     handleModoEdicao();
     resetarTurmas();
     ResetarModalidade();
@@ -853,7 +861,7 @@ const ComunicadosCadastro = ({ match }) => {
 
     setUnidadeEscolarUE(true);
     onChangeModalidade('');
-    ObterModalidades(ue);
+    ObterModalidades(ue, anoLetivo);
     loadTiposCalendarioEffect();
   };
 
