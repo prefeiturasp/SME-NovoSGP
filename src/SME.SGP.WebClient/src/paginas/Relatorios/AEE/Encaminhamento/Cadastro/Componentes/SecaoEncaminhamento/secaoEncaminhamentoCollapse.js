@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { useSelector } from 'react-redux';
 // import { useDispatch } from 'react-redux';
 import CardCollapse from '~/componentes/cardCollapse';
 import DadosSecaoEncaminhamento from './DadosSecaoEncaminhamento/dadosSecaoEncaminhamento';
@@ -13,6 +14,10 @@ const SecaoEncaminhamentoCollapse = props => {
     // dispatch(setClicouNoBimestre({ bimestre }));
   };
 
+  const dadosSecaoLocalizarEstudante = useSelector(
+    store => store.encaminhamentoAEE.dadosSecaoLocalizarEstudante
+  );
+
   return (
     <CardCollapse
       key="secao-encaminhamento-collapse-key"
@@ -21,8 +26,14 @@ const SecaoEncaminhamentoCollapse = props => {
       alt="secao-encaminhamento-alt"
       onClick={onClickCardCollapse}
     >
-      <ObjectCardEncaminhamento />
-      <DadosSecaoEncaminhamento match={match} />
+      {dadosSecaoLocalizarEstudante?.codigoAluno ? (
+        <>
+          <ObjectCardEncaminhamento />
+          <DadosSecaoEncaminhamento match={match} />
+        </>
+      ) : (
+        ''
+      )}
     </CardCollapse>
   );
 };
