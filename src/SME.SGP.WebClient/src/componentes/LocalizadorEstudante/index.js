@@ -69,7 +69,13 @@ const LocalizadorEstudante = props => {
     }
 
     const retorno = await service.buscarPorNome(params).catch(() => {
+      onChange();
       setDataSource([]);
+      setPessoaSelecionada({
+        alunoCodigo: '',
+        alunoNome: '',
+        codigoTurma: '',
+      });
     });
 
     if (retorno && retorno?.data?.items?.length > 0) {
@@ -101,6 +107,13 @@ const LocalizadorEstudante = props => {
       } else {
         erros(e);
       }
+      onChange();
+      setDataSource([]);
+      setPessoaSelecionada({
+        alunoCodigo: '',
+        alunoNome: '',
+        codigoTurma: '',
+      });
     });
 
     if (retorno?.data?.items?.length > 0) {
@@ -134,11 +147,13 @@ const LocalizadorEstudante = props => {
       clearTimeout(timeoutBuscarPorCodigo);
     }
 
-    const timeout = setTimeout(() => {
-      onBuscarPorCodigo(valor);
-    }, 500);
+    if (ueId) {
+      const timeout = setTimeout(() => {
+        onBuscarPorCodigo(valor);
+      }, 500);
 
-    setTimeoutBuscarPorCodigo(timeout);
+      setTimeoutBuscarPorCodigo(timeout);
+    }
   };
 
   const onChangeCodigo = valor => {
@@ -157,7 +172,6 @@ const LocalizadorEstudante = props => {
   };
 
   const onSelectPessoa = objeto => {
-    debugger
     setPessoaSelecionada({
       alunoCodigo: parseInt(objeto.key, 10),
       alunoNome: objeto.props.value,
