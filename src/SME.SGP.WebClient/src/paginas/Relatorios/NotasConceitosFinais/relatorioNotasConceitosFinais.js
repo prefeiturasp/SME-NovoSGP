@@ -87,7 +87,7 @@ const RelatorioNotasConceitosFinais = () => {
   const obterModalidades = async ue => {
     if (ue) {
       setCarregandoGeral(true);
-      const retorno = await ServicoFiltroRelatorio.obterModalidades(ue).catch(
+      const retorno = await ServicoFiltroRelatorio.obterModalidadesAnoLetivo(ue,anoLetivo).catch(
         e => {
           erros(e);
           setCarregandoGeral(false);

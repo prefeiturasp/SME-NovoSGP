@@ -615,8 +615,7 @@ const DiarioBordo = ({ match }) => {
                       disabled={
                         !turmaInfantil ||
                         (listaComponenteCurriculare &&
-                          listaComponenteCurriculare.length === 1) ||
-                        diarioBordoIdSelecionado
+                          listaComponenteCurriculare.length === 1)
                       }
                     />
                   </div>
@@ -631,8 +630,7 @@ const DiarioBordo = ({ match }) => {
                           !turmaInfantil ||
                           !listaComponenteCurriculare ||
                           !componenteCurricularSelecionado ||
-                          !diasParaHabilitar ||
-                          diarioBordoIdSelecionado
+                          !diasParaHabilitar 
                         }
                         diasParaHabilitar={diasParaHabilitar}
                       />
