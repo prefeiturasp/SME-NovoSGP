@@ -16,7 +16,11 @@ import { Cabecalho, Paginacao } from '~/componentes-sgp';
 import ObservacoesUsuario from '~/componentes-sgp/ObservacoesUsuario/observacoesUsuario';
 import ServicoObservacoesUsuario from '~/componentes-sgp/ObservacoesUsuario/ServicoObservacoesUsuario';
 import { RotasDto } from '~/dtos';
-import { setDadosObservacoesUsuario } from '~/redux/modulos/observacoesUsuario/actions';
+import {
+  limparDadosObservacoesUsuario,
+  setDadosObservacoesUsuario,
+  setListaUsuariosNotificacao,
+} from '~/redux/modulos/observacoesUsuario/actions';
 import {
   confirmar,
   ehTurmaInfantil,
@@ -125,6 +129,7 @@ const ListaDiarioBordo = () => {
   };
 
   const onClickConsultarDiario = () => {
+    dispatch(limparDadosObservacoesUsuario());
     history.push(
       `${RotasDto.DIARIO_BORDO}/detalhes/${diarioBordoAtual?.aulaId}`
     );
@@ -157,8 +162,9 @@ const ListaDiarioBordo = () => {
       componenteCurricularSelecionado &&
       numeroPagina
     ) {
-      const dataIncialFormatada = dataInicial?.format('MM-DD-YYYY');
-      const dataFinalFormatada = dataFinal?.format('MM-DD-YYYY');
+      const dataIncialFormatada =
+        dataInicial && dataInicial.format('MM-DD-YYYY');
+      const dataFinalFormatada = dataFinal && dataFinal.format('MM-DD-YYYY');
       obterTitulos(dataIncialFormatada, dataFinalFormatada);
     }
   }, [
@@ -174,6 +180,7 @@ const ListaDiarioBordo = () => {
   };
 
   const onColapse = async id => {
+    dispatch(limparDadosObservacoesUsuario());
     if (id) {
       const dados = await ServicoDiarioBordo.obterDiarioBordoDetalhes(id);
       if (dados?.data) {
@@ -181,6 +188,13 @@ const ListaDiarioBordo = () => {
         if (dados.data.observacoes.length) {
           dispatch(setDadosObservacoesUsuario(dados.data.observacoes));
         }
+      }
+      const retorno = await ServicoDiarioBordo.obterNofiticarUsuarios({
+        turmaId,
+      }).catch(e => erros(e));
+
+      if (retorno?.status === 200) {
+        dispatch(setListaUsuariosNotificacao(retorno.data));
       }
     }
   };
@@ -205,7 +219,7 @@ const ListaDiarioBordo = () => {
       setCarregandoGeral(false);
     });
     if (resultado?.status === 200) {
-      sucesso(`Observacao ${valor.id ? 'alterada' : 'inserida'} com sucesso`);
+      sucesso(`Observação ${valor.id ? 'alterada' : 'inserida'} com sucesso`);
       ServicoObservacoesUsuario.atualizarSalvarEditarDadosObservacao(
         valor,
         resultado.data
