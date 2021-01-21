@@ -5,10 +5,11 @@ import UploadArquivos from '~/componentes-sgp/UploadArquivos/uploadArquivos';
 import { setEncaminhamentoAEEEmEdicao } from '~/redux/modulos/encaminhamentoAEE/actions';
 import { erros, sucesso } from '~/servicos';
 import ServicoEncaminhamentoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoEncaminhamentoAEE';
+import { Label } from '~/componentes';
 
 const UploadArquivosEncaminhamento = props => {
   const { dados } = props;
-  const { form, questaoAtual } = dados;
+  const { form, questaoAtual, label } = dados;
 
   const dispatch = useDispatch();
 
@@ -46,26 +47,29 @@ const UploadArquivosEncaminhamento = props => {
   };
 
   return (
-    <div className="col-md-12 mt-2">
-      <UploadArquivos
-        form={form}
-        name={String(questaoAtual?.id)}
-        id={String(questaoAtual?.id)}
-        // desabilitarGeral={desabilitarCampos}
-        // tiposArquivosPermitidos=".pdf"
-        desabilitarUpload={form?.values?.[questaoAtual?.id]?.length > 9}
-        onRemove={onRemoveFile}
-        urlUpload="v1/encaminhamento-aee/upload"
-        defaultFileList={
-          form?.values?.[questaoAtual?.id]?.length
-            ? form?.values?.[questaoAtual?.id]
-            : []
-        }
-        onChangeListaArquivos={() => {
-          dispatch(setEncaminhamentoAEEEmEdicao(true));
-        }}
-      />
-    </div>
+    <>
+      <div className="col-md-12 mt-2">
+        {questaoAtual?.nome ? <Label text={label} /> : ''}
+        <UploadArquivos
+          form={form}
+          name={String(questaoAtual?.id)}
+          id={String(questaoAtual?.id)}
+          // desabilitarGeral={desabilitarCampos}
+          // tiposArquivosPermitidos=".pdf"
+          desabilitarUpload={form?.values?.[questaoAtual?.id]?.length > 9}
+          onRemove={onRemoveFile}
+          urlUpload="v1/encaminhamento-aee/upload"
+          defaultFileList={
+            form?.values?.[questaoAtual?.id]?.length
+              ? form?.values?.[questaoAtual?.id]
+              : []
+          }
+          onChangeListaArquivos={() => {
+            dispatch(setEncaminhamentoAEEEmEdicao(true));
+          }}
+        />
+      </div>
+    </>
   );
 };
 

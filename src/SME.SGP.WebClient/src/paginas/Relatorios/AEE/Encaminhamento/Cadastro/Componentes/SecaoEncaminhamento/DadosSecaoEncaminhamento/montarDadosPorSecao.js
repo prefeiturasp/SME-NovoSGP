@@ -2,7 +2,13 @@ import { Form, Formik } from 'formik';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { CampoTexto, RadioGroupButton, SelectComponent } from '~/componentes';
+import * as Yup from 'yup';
+import {
+  CampoTexto,
+  Label,
+  RadioGroupButton,
+  SelectComponent,
+} from '~/componentes';
 import { RotasDto } from '~/dtos';
 import tipoQuestao from '~/dtos/tipoQuestao';
 import AtendimentoClinicoTabela from '~/paginas/Relatorios/AEE/Encaminhamento/Cadastro/Componentes/AtendimentoClinico/atendimentoClinicoTabela';
@@ -19,9 +25,12 @@ const MontarDadosPorSecao = props => {
 
   const [dadosQuestionarioAtual, setDadosQuestionarioAtual] = useState();
   const [valoresIniciais, setValoresIniciais] = useState();
+
   const tiposQuestaoPorIdQuestao = {};
+  const [idsRespostasPorIdQuestao, setIdsRespostasPorIdQuestao] = useState({});
 
   const [refForm, setRefForm] = useState({});
+  const [validacoes, setValidacoes] = useState({});
 
   useEffect(() => {
     const encaminhamentoId = match?.params?.id;
@@ -42,7 +51,7 @@ const MontarDadosPorSecao = props => {
       encaminhamentoId
     ).catch(e => erros(e));
 
-    if (resposta?.data) {
+    if (!dadosQuestionarioAtual?.length && resposta?.data) {
       setDadosQuestionarioAtual(resposta.data);
     } else {
       setDadosQuestionarioAtual();
@@ -53,7 +62,7 @@ const MontarDadosPorSecao = props => {
     if (dados?.questionarioId) {
       obterQuestionario(dados?.questionarioId);
     } else {
-      setDadosQuestionarioAtual();
+      setDadosQuestionarioAtual([]);
     }
   }, [dados, obterQuestionario]);
 
@@ -65,13 +74,15 @@ const MontarDadosPorSecao = props => {
         () => obterForm(),
         dados.questionarioId,
         dadosQuestionarioAtual,
-        tiposQuestaoPorIdQuestao
+        tiposQuestaoPorIdQuestao,
+        idsRespostasPorIdQuestao
       );
     }
   }, [refForm]);
 
   const montarValoresIniciais = useCallback(() => {
     const valores = {};
+    const idsRespostas = {};
 
     const montarDados = questaoAtual => {
       const resposta = questaoAtual?.resposta;
@@ -82,12 +93,21 @@ const MontarDadosPorSecao = props => {
         switch (questaoAtual?.tipoQuestao) {
           case tipoQuestao.Radio:
             valorRespostaAtual = resposta[0].opcaoRespostaId;
+            idsRespostas[questaoAtual.id] = resposta[0].id;
             break;
           case tipoQuestao.Combo:
             valorRespostaAtual = String(resposta[0].opcaoRespostaId || '');
+            idsRespostas[questaoAtual.id] = resposta[0].id;
             break;
           case tipoQuestao.Texto:
             valorRespostaAtual = resposta[0].texto;
+            idsRespostas[questaoAtual.id] = resposta[0].id;
+            break;
+          case tipoQuestao.AtendimentoClinico:
+            valorRespostaAtual = resposta[0].texto
+              ? JSON.parse(resposta[0].texto)
+              : '';
+            idsRespostas[questaoAtual.id] = resposta[0].id;
             break;
           case tipoQuestao.Upload:
             if (resposta?.length) {
@@ -106,6 +126,10 @@ const MontarDadosPorSecao = props => {
                   return '';
                 })
                 .filter(a => !!a);
+
+              resposta.forEach(r => {
+                idsRespostas[questaoAtual.id] = r.id;
+              });
             } else {
               valorRespostaAtual = [];
             }
@@ -137,6 +161,7 @@ const MontarDadosPorSecao = props => {
     });
 
     setValoresIniciais({ ...valores });
+    setIdsRespostasPorIdQuestao({ ...idsRespostas });
   }, [dadosQuestionarioAtual]);
 
   useEffect(() => {
@@ -144,6 +169,40 @@ const MontarDadosPorSecao = props => {
       montarValoresIniciais();
     }
   }, [dadosQuestionarioAtual, montarValoresIniciais]);
+
+  const onChangeCamposComOpcaoResposta = (
+    questaoAtual,
+    opcoes,
+    form,
+    valorAtualSelecionado
+  ) => {
+    opcoes.forEach(item => {
+      if (String(valorAtualSelecionado) !== String(item.value)) {
+        const opcaoAtual = questaoAtual?.opcaoResposta.find(
+          c => String(c.id) === String(item.value)
+        );
+        const campoParaRemover = opcaoAtual?.questaoComplementar?.id;
+        if (campoParaRemover) {
+          // TODO Não limpar e sim manter o valor que estava no campo anterior!
+          form.setFieldValue(String(campoParaRemover), '');
+          delete form.values[campoParaRemover];
+          form.unregisterField(campoParaRemover);
+        }
+      }
+    });
+
+    const questaoRespostaId = questaoAtual?.resposta?.[0]?.id;
+    if (questaoRespostaId) {
+      const opcaoAtual = questaoAtual?.opcaoResposta.find(
+        c => String(c.id) === String(valorAtualSelecionado)
+      );
+
+      idsRespostasPorIdQuestao[opcaoAtual.id] = questaoRespostaId;
+    }
+    setIdsRespostasPorIdQuestao(idsRespostasPorIdQuestao);
+
+    dispatch(setEncaminhamentoAEEEmEdicao(true));
+  };
 
   const campoRadio = params => {
     const { questaoAtual, form, label } = params;
@@ -154,14 +213,20 @@ const MontarDadosPorSecao = props => {
 
     return (
       <div className="col-md-12 mb-3">
+        {label}
         <RadioGroupButton
           id={String(questaoAtual.id)}
           name={String(questaoAtual.id)}
-          label={label}
           form={form}
           opcoes={opcoes}
-          onChange={() => {
-            dispatch(setEncaminhamentoAEEEmEdicao(true));
+          onChange={e => {
+            const valorAtualSelecionado = e.target.value;
+            onChangeCamposComOpcaoResposta(
+              questaoAtual,
+              opcoes,
+              form,
+              valorAtualSelecionado
+            );
           }}
         />
       </div>
@@ -172,23 +237,28 @@ const MontarDadosPorSecao = props => {
     const { questaoAtual, form, label } = params;
 
     const lista = questaoAtual?.opcaoResposta.map(item => {
-      return { desc: item.nome, valor: item.id };
+      return { label: item.nome, value: item.id };
     });
 
     return (
       <>
         <div className="col-sm-12 col-md-12 col-lg-6 col-xl-6 mb-3">
+          {label}
           <SelectComponent
             id={String(questaoAtual.id)}
             name={String(questaoAtual.id)}
-            label={label}
             placeholder={questaoAtual.nome}
             form={form}
             lista={lista}
-            valueOption="valor"
-            valueText="desc"
-            onChange={() => {
-              dispatch(setEncaminhamentoAEEEmEdicao(true));
+            valueOption="value"
+            valueText="label"
+            onChange={valorAtualSelecionado => {
+              onChangeCamposComOpcaoResposta(
+                questaoAtual,
+                lista,
+                form,
+                valorAtualSelecionado
+              );
             }}
           />
         </div>
@@ -201,13 +271,13 @@ const MontarDadosPorSecao = props => {
 
     return (
       <div className="col-md-12 mb-3">
+        {label}
         <CampoTexto
           id={String(questaoAtual.id)}
           name={String(questaoAtual.id)}
-          label={label}
           form={form}
           type="textarea"
-          maxLength={99999}
+          maxLength={999999}
           onChange={() => {
             dispatch(setEncaminhamentoAEEEmEdicao(true));
           }}
@@ -230,12 +300,17 @@ const MontarDadosPorSecao = props => {
     );
   };
 
+  const labelPersonalizado = (textolabel, observacaoText) => (
+    <Label text={textolabel} observacaoText={observacaoText} />
+  );
+
   const montarCampos = (questaoAtual, form, ordemAnterior) => {
     const ordemLabel = ordemAnterior
       ? `${ordemAnterior}.${questaoAtual.ordem}`
       : questaoAtual.ordem;
 
-    const label = `${ordemLabel} - ${questaoAtual.nome}`;
+    const textoLabel = `${ordemLabel} - ${questaoAtual.nome}`;
+    const label = labelPersonalizado(textoLabel, questaoAtual?.observacao);
 
     let campoQuestaoComplementar = null;
 
@@ -309,6 +384,50 @@ const MontarDadosPorSecao = props => {
     );
   };
 
+  const montaValidacoes = (questaoAtual, form, camposObrigatorios) => {
+    if (questaoAtual?.opcaoResposta?.length) {
+      questaoAtual.opcaoResposta.forEach(opcaoAtual => {
+        if (opcaoAtual?.questaoComplementar) {
+          montaValidacoes(
+            opcaoAtual.questaoComplementar,
+            form,
+            camposObrigatorios
+          );
+        }
+      });
+    }
+
+    camposObrigatorios[questaoAtual.id] = questaoAtual.obrigatorio;
+  };
+
+  const obterValidacoes = (data, form) => {
+    const camposObrigatorios = [];
+
+    data.forEach(questaoAtual => {
+      montaValidacoes(questaoAtual, form, camposObrigatorios);
+    });
+
+    if (camposObrigatorios?.length) {
+      const camposComValidacao = {};
+
+      camposObrigatorios.forEach((obrigatorio, questaoAtualId) => {
+        if (obrigatorio) {
+          camposComValidacao[questaoAtualId] = Yup.string().required(
+            'Campo obrigatório'
+          );
+        }
+      });
+
+      setValidacoes(Yup.object(camposComValidacao));
+    }
+  };
+
+  useEffect(() => {
+    if (dadosQuestionarioAtual?.length && refForm?.state?.values) {
+      obterValidacoes(dadosQuestionarioAtual, refForm);
+    }
+  }, [dadosQuestionarioAtual, refForm]);
+
   const montarQuestionarioAtual = (data, form) => {
     const campos = data.map(questaoAtual => {
       return (
@@ -327,7 +446,7 @@ const MontarDadosPorSecao = props => {
     <Formik
       enableReinitialize
       initialValues={valoresIniciais}
-      validationSchema={{}}
+      validationSchema={validacoes}
       validateOnChange
       validateOnBlur
       ref={refFormik => setRefForm(refFormik)}
