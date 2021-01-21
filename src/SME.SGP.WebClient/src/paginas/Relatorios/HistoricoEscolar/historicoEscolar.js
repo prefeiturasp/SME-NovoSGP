@@ -215,7 +215,8 @@ const HistoricoEscolar = () => {
         modalidadeSelecionada,
         '',
         ano,
-        consideraHistorico
+        consideraHistorico,
+        true
       );
       if (data) {
         const lista = data.map(item => ({
