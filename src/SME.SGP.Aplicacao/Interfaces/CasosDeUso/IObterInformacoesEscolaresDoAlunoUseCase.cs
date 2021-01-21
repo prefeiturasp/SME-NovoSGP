@@ -5,6 +5,6 @@ namespace SME.SGP.Aplicacao.Interfaces.CasosDeUso
 {
     public interface IObterInformacoesEscolaresDoAlunoUseCase
     {
-        Task<InformacoesEscolaresAlunoDto> Executar(int codigoAluno, string turmaId);
+        Task<InformacoesEscolaresAlunoDto> Executar(string codigoAluno, string turmaId);
     }
 }

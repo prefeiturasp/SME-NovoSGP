@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<double> Handle(ObterFrequenciaGeralAlunoQuery request, CancellationToken cancellationToken)
         {
-            var frequenciaAlunoPeriodos = await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterFrequenciaGeralAluno(request.CodigoAluno.ToString(), request.CodigoTurma);
+            var frequenciaAlunoPeriodos = await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterFrequenciaGeralAluno(request.CodigoAluno, request.CodigoTurma);
 
             if (frequenciaAlunoPeriodos == null || !frequenciaAlunoPeriodos.Any())
                 return 100;

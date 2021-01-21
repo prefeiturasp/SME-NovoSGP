@@ -1034,7 +1034,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             return MapearParaDtoDisciplinas(retorno);
         }
 
-        public async Task<InformacoesEscolaresAlunoDto> ObterNecessidadesEspeciaisAluno(long codigoAluno)
+        public async Task<InformacoesEscolaresAlunoDto> ObterNecessidadesEspeciaisAluno(string codigoAluno)
         {
 
             var url = $@"alunos/{codigoAluno}/necessidades-especiais";

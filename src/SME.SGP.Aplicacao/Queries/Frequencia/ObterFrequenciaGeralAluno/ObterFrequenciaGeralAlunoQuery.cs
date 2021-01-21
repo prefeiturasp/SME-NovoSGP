@@ -5,13 +5,13 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterFrequenciaGeralAlunoQuery : IRequest<double>
     {
-        public ObterFrequenciaGeralAlunoQuery(int codigoAluno, string codigoTurma)
+        public ObterFrequenciaGeralAlunoQuery(string codigoAluno, string codigoTurma)
         {
             CodigoAluno = codigoAluno;
             CodigoTurma = codigoTurma;
         }
 
-        public int CodigoAluno { get; set; }
+        public string CodigoAluno { get; set; }
         public string CodigoTurma { get; set; }        
     }
 

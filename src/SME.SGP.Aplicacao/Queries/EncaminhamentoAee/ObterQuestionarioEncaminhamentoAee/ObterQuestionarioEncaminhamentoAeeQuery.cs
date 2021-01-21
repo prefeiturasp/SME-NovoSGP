@@ -9,14 +9,18 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterQuestionarioEncaminhamentoAeeQuery : IRequest<IEnumerable<QuestaoAeeDto>>
     {
-        public ObterQuestionarioEncaminhamentoAeeQuery(long questionarioId, long? encaminhamentoId)
+        public ObterQuestionarioEncaminhamentoAeeQuery(long questionarioId, long? encaminhamentoId, string codigoAluno, string codigoTurma)
         {
             QuestionarioId = questionarioId;
             EncaminhamentoId = encaminhamentoId;
+            CodigoAluno = codigoAluno;
+            CodigoTurma = codigoTurma;
         }
 
         public long QuestionarioId { get; }
         public long? EncaminhamentoId { get; }
+        public string CodigoAluno { get; }
+        public string CodigoTurma { get; }
     }
 
     public class ObterQuestionarioEncaminhamentoAeeQueryValidator : AbstractValidator<ObterQuestionarioEncaminhamentoAeeQuery>
@@ -26,6 +30,14 @@ namespace SME.SGP.Aplicacao
             RuleFor(c => c.QuestionarioId)
             .NotEmpty()
             .WithMessage("O ID do questionário deve ser informado.");
+
+            RuleFor(c => c.CodigoAluno)
+            .NotEmpty()
+            .WithMessage("O código do aluno deve ser informado para consulta de sua frequência.");
+
+            RuleFor(c => c.CodigoTurma)
+            .NotEmpty()
+            .WithMessage("O código da turma do aluno deve ser informado para consulta de sua frequência.");
         }
     }
 }

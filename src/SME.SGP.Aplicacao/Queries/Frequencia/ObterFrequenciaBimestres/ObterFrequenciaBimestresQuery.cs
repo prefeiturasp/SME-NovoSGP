@@ -8,7 +8,7 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterFrequenciaBimestresQuery : IRequest<IEnumerable<FrequenciaBimestreAlunoDto>>
     {
-        public ObterFrequenciaBimestresQuery(int codigoAluno, int bimestre, string codigoTurma, TipoFrequenciaAluno tipoFrequencia)
+        public ObterFrequenciaBimestresQuery(string codigoAluno, int bimestre, string codigoTurma, TipoFrequenciaAluno tipoFrequencia)
         {
             CodigoAluno = codigoAluno;
             Bimestre = bimestre;
@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
             TipoFrequencia = tipoFrequencia;
         }
 
-        public int CodigoAluno { get; set; }
+        public string CodigoAluno { get; set; }
         public int Bimestre { get; set; }
         public string CodigoTurma { get; set; }
         public TipoFrequenciaAluno TipoFrequencia { get; set; }
