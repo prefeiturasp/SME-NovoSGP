@@ -35,6 +35,8 @@ export default function ObservacoesUsuario(state = inicial, action) {
           dadosObservacoes: [],
           observacaoEmEdicao: null,
           novaObservacao: '',
+          listaUsuariosNotificacao: [],
+          modoEdicao: false,
         };
       }
       case '@observacoesUsuario/setListaUsuariosNotificacao': {
