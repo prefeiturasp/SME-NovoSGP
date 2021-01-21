@@ -22,20 +22,22 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorIds(long[] ids)
         {
             var query = $@"select
-                            id,
-	                        id as CodigoComponenteCurricular,
-                            area_conhecimento_id as AreaConhecimentoId,
-                            componente_curricular_pai_id as CdComponenteCurricularPai,
-                            coalesce(descricao_sgp,descricao) as Nome,
-                            eh_base_nacional as EhBaseNacional,
-                            eh_compartilhada as Compartilhada,
-                            eh_regencia as Regencia,
-                            eh_territorio as TerritorioSaber,
-                            grupo_matriz_id as GrupoMatrizId,
-                            permite_lancamento_nota as LancaNota,
-                            permite_registro_frequencia as RegistraFrequencia
-                        from
-	                        componente_curricular WHERE id = ANY(@ids)";
+                                cc.id,
+                                cc.id as CodigoComponenteCurricular,
+                                cc.area_conhecimento_id as AreaConhecimentoId,
+                                cc.componente_curricular_pai_id as CdComponenteCurricularPai,
+                                coalesce(cc.descricao_sgp,cc.descricao) as Nome,
+                                cc.eh_base_nacional as EhBaseNacional,
+                                cc.eh_compartilhada as Compartilhada,
+                                cc.eh_regencia as Regencia,
+                                cc.eh_territorio as TerritorioSaber,
+                                cc.grupo_matriz_id as GrupoMatrizId,
+                                ccgm.nome as GrupoMatrizNome,
+                                cc.permite_lancamento_nota as LancaNota,
+                                cc.permite_registro_frequencia as RegistraFrequencia
+                           from componente_curricular cc 
+                           left join componente_curricular_grupo_matriz ccgm on ccgm.id = cc.grupo_matriz_id 
+                          WHERE cc.id = ANY(@ids)";
             return (await database.Conexao.QueryAsync<DisciplinaDto>(query, new { ids }));
         }
 
