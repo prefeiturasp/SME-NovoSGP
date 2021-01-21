@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao.Commands
                 resposta.RespostaId = long.Parse(request.Resposta);
             }
 
-            if (EnumExtension.EhUmDosValores(request.TipoQuestao, new Enum[] { TipoQuestao.Frase, TipoQuestao.Texto }))
+            if (EnumExtension.EhUmDosValores(request.TipoQuestao, new Enum[] { TipoQuestao.Frase, TipoQuestao.Texto, TipoQuestao.AtendimentoClinico }))
             {
                 resposta.Texto = request.Resposta;
             }
