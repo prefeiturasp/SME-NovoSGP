@@ -155,6 +155,22 @@ namespace SME.SGP.Api.Controllers
             return Ok(turmas);
         }
 
+
+        [HttpGet("dres/ues/{codigoUe}/turmas-regulares")]
+        [ProducesResponseType(typeof(IEnumerable<AbrangenciaTurmaRetorno>), 200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public async Task<IActionResult> ObterTurmasRegulares(string codigoUe, [FromQuery] Modalidade modalidade, int periodo = 0, [FromQuery] int anoLetivo = 0)
+        {
+            var turmas = await consultasAbrangencia.ObterTurmasRegulares(codigoUe, modalidade, periodo, ConsideraHistorico, anoLetivo);
+
+            if (!turmas.Any())
+                return NoContent();
+
+            return Ok(turmas);
+        }
+
         [HttpGet("dres/{codigoDre}/ues")]
         [ProducesResponseType(typeof(IEnumerable<AbrangenciaUeRetorno>), 200)]
         [ProducesResponseType(401)]
