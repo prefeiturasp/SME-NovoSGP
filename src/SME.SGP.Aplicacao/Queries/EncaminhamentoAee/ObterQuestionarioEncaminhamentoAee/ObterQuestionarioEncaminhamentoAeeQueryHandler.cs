@@ -13,13 +13,14 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterQuestionarioEncaminhamentoAeeQueryHandler : IRequestHandler<ObterQuestionarioEncaminhamentoAeeQuery, IEnumerable<QuestaoAeeDto>>
     {
+        private readonly IMediator mediator;
         private readonly IRepositorioQuestaoEncaminhamentoAEE repositorioQuestaoEncaminhamento;
 
-        public ObterQuestionarioEncaminhamentoAeeQueryHandler(IRepositorioQuestaoEncaminhamentoAEE repositorioQuestaoEncaminhamento)
+        public ObterQuestionarioEncaminhamentoAeeQueryHandler(IMediator mediator, IRepositorioQuestaoEncaminhamentoAEE repositorioQuestaoEncaminhamento)
         {
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioQuestaoEncaminhamento = repositorioQuestaoEncaminhamento ?? throw new ArgumentNullException(nameof(repositorioQuestaoEncaminhamento));
         }
-
 
         public async Task<IEnumerable<QuestaoAeeDto>> Handle(ObterQuestionarioEncaminhamentoAeeQuery request, CancellationToken cancellationToken)
         {
@@ -34,13 +35,36 @@ namespace SME.SGP.Aplicacao
                 await repositorioQuestaoEncaminhamento.ObterRespostasEncaminhamento(request.EncaminhamentoId.Value) :
                 Enumerable.Empty<RespostaQuestaoEncaminhamentoAEEDto>();
 
-            var questao = dadosQuestionario
+            var questoes = dadosQuestionario
                 .Where(dq => !questoesComplementares.Contains(dq.Id))
                 .Select(dq => ObterQuestao(dq.Id, dadosQuestionario, respostasEncaminhamento))
                 .OrderBy(q => q.Ordem)
                 .ToArray();
 
-            return questao;
+            await AplicarRegrasEncaminhamento(request.QuestionarioId, questoes, request.CodigoAluno, request.CodigoTurma);
+
+            return questoes;
+        }
+
+        private async Task AplicarRegrasEncaminhamento(long questionarioId, QuestaoAeeDto[] questoes, string codigoAluno, string codigoTurma)
+        {
+            if (questionarioId == 1 && await ValidarFrequenciaGlobalAlunoInsuficiente(codigoAluno, codigoTurma))
+            {
+                var questaoJustificativa = ObterQuestaoJustificativa(questoes);
+                questaoJustificativa.Obrigatorio = true;
+            }
+        }
+
+        private QuestaoAeeDto ObterQuestaoJustificativa(QuestaoAeeDto[] questoes)
+            => questoes.FirstOrDefault(c => c.Id == 2);
+
+        private async Task<bool> ValidarFrequenciaGlobalAlunoInsuficiente(string codigoAluno, string codigoTurma)
+        {
+            var frequenciaGlobal = await mediator.Send(new ObterFrequenciaGeralAlunoQuery(codigoAluno, codigoTurma));
+            var parametroPercentualFrequenciaCritico = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.PercentualFrequenciaCritico, DateTime.Now.Year));
+            var percentualFrequenciaCritico = double.Parse(parametroPercentualFrequenciaCritico.Valor);
+
+            return frequenciaGlobal < percentualFrequenciaCritico;
         }
 
         QuestaoAeeDto ObterQuestao(long questaoId, IEnumerable<Questao> dadosQuestionario, IEnumerable<RespostaQuestaoEncaminhamentoAEEDto> respostasEncaminhamento)
