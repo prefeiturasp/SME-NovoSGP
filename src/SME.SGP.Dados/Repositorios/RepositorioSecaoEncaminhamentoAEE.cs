@@ -24,7 +24,7 @@ namespace SME.SGP.Dados.Repositorios
                            AND sea.etapa = @etapa
                          ORDER BY sea.ordem ";
 
-            return await database.Conexao.QueryAsync<SecaoQuestionarioDto>(query, new { etapa });
+            return await database.Conexao.QueryAsync<SecaoQuestionarioDto>(query, new { etapa, encaminhamentoAeeId });
         }
     }
 }

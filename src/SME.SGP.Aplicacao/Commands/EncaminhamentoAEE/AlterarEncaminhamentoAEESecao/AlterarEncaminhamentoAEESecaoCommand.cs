@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
         public AlterarEncaminhamentoAEESecaoCommandValidator()
         {
             RuleFor(a => a.Secao)
-                   .Empty()
+                   .NotEmpty()
                    .WithMessage("A seção deve ser informada!");
         }
     }

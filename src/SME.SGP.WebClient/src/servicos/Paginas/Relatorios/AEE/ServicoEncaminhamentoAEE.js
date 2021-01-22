@@ -1,5 +1,6 @@
 import * as Yup from 'yup';
 import { RotasDto } from '~/dtos';
+import situacaoAEE from '~/dtos/situacaoAEE';
 import tipoQuestao from '~/dtos/tipoQuestao';
 import { store } from '~/redux';
 import {
@@ -50,8 +51,11 @@ class ServicoEncaminhamentoAEE {
     return api.get(url);
   };
 
-  obterSecoesPorEtapaDeEncaminhamentoAEE = etapa => {
-    const url = `${urlPadrao}/secoes?etapa=${etapa}`;
+  obterSecoesPorEtapaDeEncaminhamentoAEE = (etapa, encaminhamentoAeeId) => {
+    let url = `${urlPadrao}/secoes?etapa=${etapa}`;
+    if (encaminhamentoAeeId) {
+      url += `&encaminhamentoAeeId=${encaminhamentoAeeId}`;
+    }
     return api.get(url);
   };
 
@@ -89,7 +93,8 @@ class ServicoEncaminhamentoAEE {
   addFormsSecoesEncaminhamentoAEE = (
     obterForm,
     questionarioId,
-    dadosQuestionarioAtual
+    dadosQuestionarioAtual,
+    secaoId
   ) => {
     const { dispatch } = store;
     const state = store.getState();
@@ -100,6 +105,7 @@ class ServicoEncaminhamentoAEE {
       param[questionarioId] = {
         form: obterForm,
         dadosQuestionarioAtual,
+        secaoId,
       };
       dispatch(setFormsSecoesEncaminhamentoAEE(param));
     } else if (formsSecoesEncaminhamentoAEE?.length) {
@@ -107,9 +113,28 @@ class ServicoEncaminhamentoAEE {
       param[questionarioId] = {
         form: obterForm,
         dadosQuestionarioAtual,
+        secaoId,
       };
       dispatch(setFormsSecoesEncaminhamentoAEE(param));
     }
+  };
+
+  // TODO
+  secaoEstaConcluida = secaoId => {
+    const state = store.getState();
+    const { encaminhamentoAEE } = state;
+    const { formsSecoesEncaminhamentoAEE } = encaminhamentoAEE;
+
+    if (formsSecoesEncaminhamentoAEE?.length) {
+      const form = formsSecoesEncaminhamentoAEE.find(
+        d => d.secaoId === secaoId
+      );
+      if (form && form()) {
+        return form().getFormikContext().isValid;
+      }
+    }
+
+    return false;
   };
 
   obterQuestaoPorId = (dados, idPesquisa) => {
@@ -291,6 +316,9 @@ class ServicoEncaminhamentoAEE {
           id: encaminhamentoId || 0,
           turmaId: dadosSecaoLocalizarEstudante.turmaId,
           alunoCodigo: dadosSecaoLocalizarEstudante.codigoAluno,
+          situacao: enviarEcaminhamento
+            ? situacaoAEE.Encaminhado
+            : situacaoAEE.Rascunho,
         };
         valoresParaSalvar.secoes = formsSecoesEncaminhamentoAEE.map(
           (item, secaoId) => {
@@ -378,7 +406,7 @@ class ServicoEncaminhamentoAEE {
             return {
               questoes,
               secaoId,
-              // concluido: !!enviarEcaminhamento,
+              concluido: form?.getFormikContext()?.isValid,
             };
           }
         );
