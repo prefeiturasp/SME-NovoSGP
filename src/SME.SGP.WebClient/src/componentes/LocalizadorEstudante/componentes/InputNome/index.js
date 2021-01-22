@@ -39,7 +39,12 @@ const InputNome = props => {
   const options =
     sugestoes &&
     sugestoes.map(item => (
-      <AutoComplete.Option key={item.alunoCodigo} value={item.alunoNome}>
+      <AutoComplete.Option
+        key={item.alunoCodigo}
+        value={item.alunoNome}
+        codigoTurma={item.codigoTurma}
+        turmaId={item.turmaId}
+      >
         {item.alunoNome}
       </AutoComplete.Option>
     ));
