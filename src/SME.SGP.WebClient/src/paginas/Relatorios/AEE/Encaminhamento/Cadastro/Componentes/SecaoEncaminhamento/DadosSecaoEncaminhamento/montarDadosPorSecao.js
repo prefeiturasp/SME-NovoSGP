@@ -296,6 +296,8 @@ const MontarDadosPorSecao = props => {
     const textoLabel = `${ordemLabel} - ${questaoAtual.nome}`;
     const label = labelPersonalizado(textoLabel, questaoAtual?.observacao);
 
+    ServicoEncaminhamentoAEE.guardarLabelCampo(questaoAtual, textoLabel);
+
     let campoQuestaoComplementar = null;
 
     const valorAtualSelecionado = form.values[questaoAtual.id];
