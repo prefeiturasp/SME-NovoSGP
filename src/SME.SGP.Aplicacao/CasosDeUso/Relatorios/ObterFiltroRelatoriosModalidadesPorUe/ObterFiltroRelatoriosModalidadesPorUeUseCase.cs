@@ -13,9 +13,9 @@ namespace SME.SGP.Aplicacao
         {
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
-        public async Task<IEnumerable<OpcaoDropdownDto>> Executar(string codigoUe)
+        public async Task<IEnumerable<OpcaoDropdownDto>> Executar(string codigoUe, int anoLetivo, bool consideraHistorico)
         {
-            return await mediator.Send(new ObterFiltroRelatoriosModalidadesPorUeQuery(codigoUe));
+            return await mediator.Send(new ObterFiltroRelatoriosModalidadesPorUeQuery(codigoUe, anoLetivo, consideraHistorico));
         }
 
     }

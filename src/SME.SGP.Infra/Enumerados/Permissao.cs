@@ -539,7 +539,7 @@
         RDE_A = 181,
 
         [PermissaoMenu(Menu = "Gestão", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = false, Url = "/relatorios/gestao/usuarios", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Usuários")]
-        RDU_C = 182,        
+        RDU_C = 182,
 
         [PermissaoMenu(Menu = "Notificações ", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = false, Url = "/relatorios/notificacoes/historico-notificacoes", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Histórico de notificações")]
         RDN_C = 183,
@@ -554,11 +554,35 @@
         RACJ_C = 186,
 
         [PermissaoMenu(Menu = "Escola aqui", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = false, Url = "/relatorios/escola-aqui/adesao", EhSubMenu = true, OrdemSubMenu = 2, SubMenu = "Adesão")]
-        RDE_C = 187,        
+        RDE_C = 187,
+
+        [PermissaoMenu(Menu = "Registro Individual", Icone = "fas fa-file-alt", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 7, EhConsulta = true, Url = "/diario-classe/registro-individual")]
+        REI_C = 189,
+
+        [PermissaoMenu(Menu = "Registro Individual", Icone = "fas fa-file-alt", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 7, EhInclusao = true, Url = "/diario-classe/registro-individual")]
+        REI_I = 190,
+
+        [PermissaoMenu(Menu = "Registro Individual", Icone = "fas fa-file-alt", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 7, EhExclusao = true, Url = "/diario-classe/registro-individual")]
+        REI_E = 191,
+
+        [PermissaoMenu(Menu = "Registro Individual", Icone = "fas fa-file-alt", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 7, EhAlteracao = true, Url = "/diario-classe/registro-individual")]
+        REI_A = 192,
 
         [PermissaoMenu(Menu = "Diario classe", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = false, Url = "/relatorios/diario-classe/planejamento-diario", EhSubMenu = true, OrdemSubMenu = 3, SubMenu = "Controle de planejamento diário")]
         RCP_C = 188,
+ 
+        [PermissaoMenu(Menu = "Ocorrências", Icone = "fas fa-user-cog", Agrupamento = "Gestão", OrdemAgrupamento = 6, EhConsulta = true, Url = "/gestao/ocorrencias")]
+        OCO_C = 193,
 
+        [PermissaoMenu(Menu = "Ocorrências", Icone = "fas fa-user-cog", Agrupamento = "Gestão", OrdemAgrupamento = 6, EhInclusao = true, Url = "/gestao/ocorrencias")]
+        OCO_I = 194,
+
+        [PermissaoMenu(Menu = "Ocorrências", Icone = "fas fa-user-cog", Agrupamento = "Gestão", OrdemAgrupamento = 6, EhExclusao = true, Url = "/gestao/ocorrencias")]
+        OCO_E = 195,
+
+        [PermissaoMenu(Menu = "Ocorrências", Icone = "fas fa-user-cog", Agrupamento = "Gestão", OrdemAgrupamento = 6, EhAlteracao = true, Url = "/gestao/ocorrencias")]
+        OCO_A = 196,
+        
         [PermissaoMenu(Menu = "AEE", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = false, Url = "/relatorios/aee/encaminhamento", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Encaminhamento")]
         AEE_C = 197,
 

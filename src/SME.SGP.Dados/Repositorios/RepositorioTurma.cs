@@ -515,6 +515,25 @@ namespace SME.SGP.Dados.Repositorios
 
         }
 
+        public async Task<IEnumerable<Turma>> ObterTurmasCompletasPorAnoLetivoModalidade(int anoLetivo, Modalidade[] modalidades)
+        {
+            var query = @"select turma.*, ue.*, dre.* 
+                            from turma
+                        inner join ue on ue.id = turma.ue_id
+                        inner join dre on dre.id = ue.dre_id
+                        where 
+                            turma.ano_letivo = @anoLetivo
+                            and turma.modalidade_codigo = any(@modalidades) ";
+
+            return await contexto.QueryAsync<Turma, Ue, Dre, Turma>(query, (turma, ue, dre) =>
+            {
+                ue.AdicionarDre(dre);
+                turma.AdicionarUe(ue);
+                return turma;
+            }, new { modalidades = modalidades.Cast<int>().ToArray(), anoLetivo });
+
+        }
+
         public async Task<IEnumerable<Turma>> ObterTurmasComFechamentoOuConselhoNaoFinalizados(long ueId, int anoLetivo, long? periodoEscolarId, int[] modalidades, int semestre)
         {
             var joinFechamentoTurma = periodoEscolarId.HasValue ?

@@ -27,9 +27,14 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpGet("ues/{codigoUe}/modalidades")]
-        public async Task<IActionResult> ObterModalidadesPorUe(string codigoUe, [FromServices] IObterFiltroRelatoriosModalidadesPorUeUseCase obterFiltroRelatoriosModalidadesPorUeUseCase)
+        public async Task<IActionResult> ObterModalidadesPorUe(string codigoUe, int anoLetivo, bool consideraHistorico, [FromServices] IObterFiltroRelatoriosModalidadesPorUeUseCase obterFiltroRelatoriosModalidadesPorUeUseCase)
         {
-            return Ok(await obterFiltroRelatoriosModalidadesPorUeUseCase.Executar(codigoUe));
+            return Ok(await obterFiltroRelatoriosModalidadesPorUeUseCase.Executar(codigoUe, anoLetivo, consideraHistorico));
+        }
+        [HttpGet("ues/{codigoUe}/{anoLetivo}/modalidades")]
+        public async Task<IActionResult> ObterModalidadesPorUeAnoLetivo(string codigoUe, int anoLetivo, bool consideraHistorico, [FromServices] IObterFiltroRelatoriosModalidadesPorUeUseCase obterFiltroRelatoriosModalidadesPorUeUseCase)
+        {
+            return Ok(await obterFiltroRelatoriosModalidadesPorUeUseCase.Executar(codigoUe, anoLetivo, consideraHistorico));
         }
         [HttpGet("ues/{codigoUe}/modalidades/abrangencias")]
         public async Task<IActionResult> ObterModalidadesPorUeAbrangencia(string codigoUe, [FromServices] IObterFiltroRelatoriosModalidadesPorUeAbrangenciaUseCase obterFiltroRelatoriosModalidadesPorUeAbrangenciaUseCase)

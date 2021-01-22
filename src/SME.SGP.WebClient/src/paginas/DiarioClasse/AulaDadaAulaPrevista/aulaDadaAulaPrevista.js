@@ -160,7 +160,7 @@ const AulaDadaAulaPrevista = () => {
   const salvar = async () => {
     const bimestresQuantidade = [];
     dadoslista.bimestres.forEach(item => {
-      if (Date.now() <= new Date(item.fim)) {
+      if (item?.previstas?.quantidade && item?.previstas?.quantidade > 0) {
         const dados = {
           bimestre: item.bimestre,
           quantidade: item.previstas.quantidade,

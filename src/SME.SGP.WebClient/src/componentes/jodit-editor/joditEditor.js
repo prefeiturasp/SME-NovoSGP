@@ -19,6 +19,7 @@ const Campo = styled.div`
 `;
 
 let CHANGE_DEBOUNCE_FLAG;
+const TAMANHO_MAXIMO_UPLOAD = 100;
 
 const JoditEditor = forwardRef((props, ref) => {
   const {
@@ -48,7 +49,7 @@ const JoditEditor = forwardRef((props, ref) => {
 
   const BOTOES_PADRAO = !removerToolbar
     ? `bold,ul,ol,outdent,indent,font,fontsize,brush,paragraph,${
-        permiteInserirArquivo ? 'file,video,' : ''
+        permiteInserirArquivo ? 'file,' : ''
       }table,link,align,undo,redo`
     : '';
 
@@ -56,6 +57,11 @@ const JoditEditor = forwardRef((props, ref) => {
     if (onChange) {
       onChange(valor);
     }
+  };
+
+  const excedeuLimiteMaximo = arquivo => {
+    const tamanhoArquivo = arquivo.size / 1024 / 1024;
+    return tamanhoArquivo > TAMANHO_MAXIMO_UPLOAD;
   };
 
   const config = {
@@ -86,13 +92,19 @@ const JoditEditor = forwardRef((props, ref) => {
     disablePlugins: ['image-properties', 'inline-popup'],
     language: 'pt_br',
     height,
-    disabled: desabilitar,
-    readonly,
+    readonly: readonly || desabilitar,
     enableDragAndDropFileToEditor: true,
     uploader: {
       buildData: data => {
         return new Promise((resolve, reject) => {
           const arquivo = data.getAll('files[0]')[0];
+
+          if (excedeuLimiteMaximo(arquivo)) {
+            const msg = 'Tamanho máximo 100mb';
+            erro(msg);
+            reject(new Error(msg));
+          }
+
           if (
             arquivo.type.substring(0, 5) === 'image' ||
             arquivo.type.substring(0, 5) === 'video'
@@ -242,6 +254,12 @@ const JoditEditor = forwardRef((props, ref) => {
       textArea.current.value = value;
     }
   }, [textArea, value]);
+
+  useEffect(() => {
+    if (config && textArea?.current && textArea?.current?.type !== 'textarea') {
+      textArea.current.setReadOnly(desabilitar);
+    }
+  }, [desabilitar]);
 
   const possuiErro = () => {
     return (

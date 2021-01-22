@@ -39,7 +39,7 @@ import {
   verificaSomenteConsulta,
 } from '~/servicos';
 
-import { temEventoCalendarioId } from '~/redux/modulos/calendarioEscolar/actions';
+import { setFiltroCalendarioEscolar } from '~/redux/modulos/calendarioEscolar/actions';
 
 const EventosLista = ({ match }) => {
   const usuario = useSelector(store => store.usuario);
@@ -108,13 +108,13 @@ const EventosLista = ({ match }) => {
     })
   );
 
-  const { eventoCalendarioId } = useSelector(
-    state => state.calendarioEscolar.eventoCalendarioId
+  const { filtroCalendarioEscolar } = useSelector(
+    state => state.calendarioEscolar.filtroCalendarioEscolar
   );
 
   const dispatch = useDispatch();
-  const setTemEventoCalendarioId = useCallback(
-    value => dispatch(temEventoCalendarioId(value)),
+  const setFiltroCalendario = useCallback(
+    value => dispatch(setFiltroCalendarioEscolar(value)),
     [dispatch]
   );
 
@@ -209,19 +209,70 @@ const EventosLista = ({ match }) => {
     usuario.possuiPerfilSmeOuDre,
   ]);
 
+  const selecionaTipoCalendario = useCallback(
+    descricao => {
+      const tipo = listaCalendario?.find(t => t.descricao === descricao);
+      const filtroAtual = filtro;
+
+      if (tipo?.id) {
+        const dreId = filtroCalendarioEscolar?.dreId;
+        const ueId = filtroCalendarioEscolar?.ueId;
+        filtroAtual.dreId = dreId;
+        filtroAtual.ueId = ueId;
+        filtroAtual.ehTodasDres = false;
+        filtroAtual.ehTodasUes = false;
+        filtroAtual.tipoCalendarioId = tipo.id;
+
+        setSelecionouCalendario(true);
+        setDreSelecionada(dreId);
+        setCampoUeDesabilitado(!dreId);
+        refForm.setFieldValue('dreId', dreId);
+        refForm.setFieldValue('ueId', ueId);
+
+        validarFiltrar();
+        setFiltro({ ...filtroAtual });
+        setBreadcrumbManual(
+          `${match.url}/${tipo.id}`,
+          '',
+          '/calendario-escolar/eventos'
+        );
+      } else {
+        setFiltroValido(false);
+        setSelecionouCalendario(false);
+        setDreSelecionada([]);
+        setListaUe([]);
+        setCampoUeDesabilitado(true);
+        setTipoEvento('');
+        setNomeEvento('');
+        refForm.resetForm();
+        setFiltro({});
+      }
+      setValorTipoCalendario(descricao);
+      setTipoCalendarioSelecionado(tipo?.id);
+      setFiltroCalendario({ ...filtroAtual });
+    },
+    [
+      filtro,
+      listaCalendario,
+      match.url,
+      refForm,
+      validarFiltrar,
+      setFiltroCalendario,
+      filtroCalendarioEscolar,
+    ]
+  );
+
   useEffect(() => {
     if (
       refForm &&
-      listaCalendario &&
-      listaCalendario.length &&
-      eventoCalendarioId &&
-      match &&
-      match.params &&
-      match.params.tipoCalendarioId
+      listaCalendario?.length &&
+      filtroCalendarioEscolar?.eventoCalendarioId &&
+      match?.params?.tipoCalendarioId
     ) {
       const { tipoCalendarioId } = match.params;
+      const tipoCalendarioIdParseado = Number(tipoCalendarioId);
       const temTipoParaSetar = listaCalendario.find(
-        item => item.id === tipoCalendarioId
+        item => item.id === tipoCalendarioIdParseado
       );
 
       const valorDescricao = temTipoParaSetar
@@ -232,20 +283,28 @@ const EventosLista = ({ match }) => {
         setPesquisaTipoCalendario(valorDescricao);
       }
 
-      setTemEventoCalendarioId(false);
-      refForm.setFieldValue('tipoCalendarioId', tipoCalendarioId);
+      refForm.setFieldValue('tipoCalendarioId', tipoCalendarioIdParseado);
       setValorTipoCalendario(valorDescricao);
       setSelecionouCalendario(true);
-      filtrar('tipoCalendarioId', tipoCalendarioId);
+      selecionaTipoCalendario(valorDescricao, refForm);
+      filtrar('tipoCalendarioId', tipoCalendarioIdParseado);
     }
   }, [
     match,
+    filtro,
     listaCalendario,
     refForm,
     filtrar,
-    setTemEventoCalendarioId,
-    eventoCalendarioId,
+    selecionaTipoCalendario,
+    filtroCalendarioEscolar,
+    setFiltroCalendario,
   ]);
+
+  useEffect(() => {
+    if (!match?.params?.tipoCalendarioId) {
+      setFiltroCalendario({});
+    }
+  }, [match, setFiltroCalendario]);
 
   useEffect(() => {
     const obterListaEventos = async () => {
@@ -339,6 +398,7 @@ const EventosLista = ({ match }) => {
     filtroAtual.ueId = ueId === '0' ? '' : ueId;
     filtroAtual.ehTodasUes = ueId === '0';
     setFiltro({ ...filtroAtual });
+    setFiltroCalendario({ ...filtroAtual });
     validarFiltrar();
   };
 
@@ -353,6 +413,7 @@ const EventosLista = ({ match }) => {
     form.setFieldValue('ueId', undefined);
     form.setFieldValue('ehTodasDres', dreId === '0');
     setFiltro({ ...filtroAtual });
+    setFiltroCalendario({ ...filtroAtual });
     validarFiltrar();
 
     if (dreId) {
@@ -399,7 +460,10 @@ const EventosLista = ({ match }) => {
   };
 
   const onClickNovo = () => {
-    setTemEventoCalendarioId(true);
+    setFiltroCalendario({
+      ...filtroCalendarioEscolar,
+      eventoCalendarioId: true,
+    });
     history.push(
       `/calendario-escolar/eventos/novo/${tipoCalendarioSelecionado}`
     );
@@ -442,7 +506,10 @@ const EventosLista = ({ match }) => {
   };
 
   const onClickEditar = evento => {
-    setTemEventoCalendarioId(true);
+    setFiltroCalendario({
+      ...filtroCalendarioEscolar,
+      eventoCalendarioId: true,
+    });
     history.push(
       `/calendario-escolar/eventos/editar/${evento.id}/${filtro.tipoCalendarioId}`
     );
@@ -460,48 +527,6 @@ const EventosLista = ({ match }) => {
           item.criadoRF === usuario.rf
       ).length
     );
-  };
-
-  const selecionaTipoCalendario = (descricao, form) => {
-    const tipo = listaCalendario?.find(t => t.descricao === descricao);
-    if (tipo?.id) {
-      setSelecionouCalendario(true);
-      const filtroAtual = filtro;
-      filtroAtual.tipoCalendarioId = tipo.id;
-      if (listaDre && listaDre.length > 1) {
-        form.setFieldValue('dreId', undefined);
-        form.setFieldValue('ueId', undefined);
-        setDreSelecionada(undefined);
-        filtroAtual.dreId = '';
-        filtroAtual.ueId = '';
-      } else {
-        filtroAtual.dreId = form.values.dreId;
-        filtroAtual.ueId = form.values.ueId;
-        setDreSelecionada(form.values.dreId);
-      }
-      filtroAtual.ehTodasDres = false;
-      filtroAtual.ehTodasUes = false;
-      filtroAtual.tipoCalendarioId = tipo.id;
-      validarFiltrar();
-      setFiltro({ ...filtroAtual });
-      setBreadcrumbManual(
-        `${match.url}/${tipo.id}`,
-        '',
-        '/calendario-escolar/eventos'
-      );
-    } else {
-      setFiltroValido(false);
-      setSelecionouCalendario(false);
-      setDreSelecionada([]);
-      setListaUe([]);
-      setCampoUeDesabilitado(true);
-      setTipoEvento('');
-      setNomeEvento('');
-      refForm.resetForm();
-      setFiltro({});
-    }
-    setValorTipoCalendario(descricao);
-    setTipoCalendarioSelecionado(tipo?.id);
   };
 
   const handleSearch = descricao => {
@@ -614,8 +639,8 @@ const EventosLista = ({ match }) => {
                       lista={listaCalendario}
                       valueField="id"
                       textField="descricao"
-                      onSelect={valor => selecionaTipoCalendario(valor, form)}
-                      onChange={valor => selecionaTipoCalendario(valor, form)}
+                      onSelect={valor => selecionaTipoCalendario(valor)}
+                      onChange={valor => selecionaTipoCalendario(valor)}
                       handleSearch={handleSearch}
                       value={valorTipoCalendario}
                       form={form}
@@ -626,7 +651,8 @@ const EventosLista = ({ match }) => {
                 <div className="col-sm-12 col-md-4 col-lg-4 col-xl-4 pb-2">
                   <SelectComponent
                     name="dreId"
-                    id="select-dre"
+                    id="select-ue"
+                    u
                     lista={listaDre}
                     valueOption="codigo"
                     valueText="nome"

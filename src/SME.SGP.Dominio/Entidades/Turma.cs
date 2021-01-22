@@ -65,6 +65,8 @@ namespace SME.SGP.Dominio
         public bool EhTurmaEnsinoMedio => ModalidadeCodigo == Modalidade.Medio;
         public bool EhTurmaInfantil => ModalidadeCodigo == Modalidade.Infantil;
 
+        public bool EhTurmaHistorica => AnoLetivo < DateTime.Now.Year;
+
         public bool EnsinoEspecial { get; set; }
         public DateTime? DataInicio { get; set; }
         public DateTime? DataFim { get; set; }

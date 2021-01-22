@@ -6,3 +6,5 @@ export { default as Ordenacao } from './Ordenacao/ordenacao';
 export { default as AlertaSelecionarTurma } from './AlertaSelecionarTurma';
 export { default as Calendario } from './Calendario';
 export { default as FiltroHelper } from './filtro/helper';
+export { default as AlertaPermiteSomenteTurmaInfantil } from './AlertaPermiteSomenteTurmaInfantil/alertaPermiteSomenteTurmaInfantil';
+export { default as Paginacao } from './Paginacao/paginacao';

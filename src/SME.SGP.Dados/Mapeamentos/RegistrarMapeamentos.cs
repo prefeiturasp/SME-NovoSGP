@@ -148,6 +148,12 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new EncaminhamentoAEESecaoMap());
                config.AddMap(new QuestaoEncaminhamentoAEEMap());
                config.AddMap(new RespostaEncaminhamentoAEEMap());
+               config.AddMap(new RegistroIndividualMap());
+               config.AddMap(new OcorrenciaTipoMap());
+               config.AddMap(new OcorrenciaMap());
+               config.AddMap(new OcorrenciaAlunoMap());
+               config.AddMap(new PendenciaRegistroIndividualMap());
+               config.AddMap(new PendenciaRegistroIndividualAlunoMap());
                config.ForDommel();
            });
         }

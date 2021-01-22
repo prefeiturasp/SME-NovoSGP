@@ -67,6 +67,7 @@ namespace SME.SGP.Worker.RabbitMQ
             comandos.Add(RotasRabbit.RotaCriarAulasInfatilAutomaticamente, new ComandoRabbit("Criar aulas da modalidade Infantil automaticamente", typeof(ICriarAulasInfantilUseCase)));
             comandos.Add(RotasRabbit.RotaNotificacaoExclusaoAulasComFrequencia, new ComandoRabbit("Notificar usuário sobre a exclusão de aulas com frequência registrada", typeof(INotificarExclusaoAulaComFrequenciaUseCase)));
             comandos.Add(RotasRabbit.RotaNotificacaoNovaObservacaoDiarioBordo, new ComandoRabbit("Notificar usuário sobre nova observação no diário de bordo", typeof(INotificarDiarioBordoObservacaoUseCase)));
+            comandos.Add(RotasRabbit.RotaNotificacaoAlterarObservacaoDiarioBordo, new ComandoRabbit("Alterar as notificações dos usuários excluídos das observação no diário de bordo", typeof(IAlterarNotificacaoObservacaoDiarioBordoUseCase)));
             comandos.Add(RotasRabbit.RotaNovaNotificacaoObservacaoCartaIntencoes, new ComandoRabbit("Notificar usuário sobre nova observação na carta de intenções", typeof(ISalvarNotificacaoCartaIntencoesObservacaoUseCase)));
             comandos.Add(RotasRabbit.RotaExcluirNotificacaoObservacaoCartaIntencoes, new ComandoRabbit("Excluir uma notificação sobre observação na carta de intenções", typeof(IExcluirNotificacaoCartaIntencoesObservacaoUseCase)));
             comandos.Add(RotasRabbit.RotaNovaNotificacaoDevolutiva, new ComandoRabbit("Notificar usuário sobre a criação de uma devolutiva", typeof(ISalvarNotificacaoDevolutivaUseCase)));
@@ -96,7 +97,8 @@ namespace SME.SGP.Worker.RabbitMQ
             comandos.Add(RotasRabbit.RotaNotificacaoFrequenciaUe, new ComandoRabbit("Notificar frequências dos alunos no bimestre para UE", typeof(INotificacaoFrequenciaUeUseCase)));
             
             comandos.Add(RotasRabbit.RotaTrataNotificacoesNiveis, new ComandoRabbit("Trata Níveis e Cargos das notificações aguardando ação", typeof(ITrataNotificacoesNiveisCargosUseCase)));
-
+            comandos.Add(RotasRabbit.RotaPendenciaAusenciaRegistroIndividual, new ComandoRabbit("Gerar as pendências por ausência de registro individual", typeof(IGerarPendenciaAusenciaRegistroIndividualUseCase)));
+            comandos.Add(RotasRabbit.RotaAtualizarPendenciaAusenciaRegistroIndividual, new ComandoRabbit("Atualizar pendência por ausência de registro individual", typeof(IAtualizarPendenciaRegistroIndividualUseCase)));
         }
 
         private async Task TratarMensagem(BasicDeliverEventArgs ea)
@@ -129,6 +131,7 @@ namespace SME.SGP.Worker.RabbitMQ
                     {
                         canalRabbit.BasicReject(ea.DeliveryTag, false);
                         SentrySdk.AddBreadcrumb($"Erros: {nex.Message}");
+                        SentrySdk.CaptureException(nex);
                         RegistrarSentry(ea, mensagemRabbit, nex);
                         if (mensagemRabbit.NotificarErroUsuario)
                             NotificarErroUsuario(nex.Message, mensagemRabbit.UsuarioLogadoRF, comandoRabbit.NomeProcesso);
@@ -137,6 +140,7 @@ namespace SME.SGP.Worker.RabbitMQ
                     {
                         canalRabbit.BasicReject(ea.DeliveryTag, false);
                         SentrySdk.AddBreadcrumb($"Erros: {JsonConvert.SerializeObject(vex.Mensagens())}");
+                        SentrySdk.CaptureException(vex);
                         RegistrarSentry(ea, mensagemRabbit, vex);
                         if (mensagemRabbit.NotificarErroUsuario)
                             NotificarErroUsuario($"Ocorreu um erro interno, por favor tente novamente", mensagemRabbit.UsuarioLogadoRF, comandoRabbit.NomeProcesso);
@@ -145,6 +149,7 @@ namespace SME.SGP.Worker.RabbitMQ
                     {
                         canalRabbit.BasicReject(ea.DeliveryTag, false);
                         SentrySdk.AddBreadcrumb($"Erros: {ex.Message}");
+                        SentrySdk.CaptureException(ex);
                         RegistrarSentry(ea, mensagemRabbit, ex);
                         if (mensagemRabbit.NotificarErroUsuario)
                             NotificarErroUsuario($"Ocorreu um erro interno, por favor tente novamente", mensagemRabbit.UsuarioLogadoRF, comandoRabbit.NomeProcesso);

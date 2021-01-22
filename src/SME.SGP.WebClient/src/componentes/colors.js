@@ -12,6 +12,7 @@ const Base = {
   Azul: '#086397',
   AzulAnakiwa: '#A4DAFB',
   AzulBordaCard: '#0A3DA3',
+  AzulBordaCollapse: '#4072D6',
   AzulBreadcrumb: '#0C6598',
   AzulCalendario: '#10A3FB',
   Branco: '#FFF',

@@ -8,6 +8,10 @@ namespace SME.SGP.Infra
 {
     public class AlunoDadosBasicosDto
     {
+        public AlunoDadosBasicosDto()
+        {
+            MarcadorDiasSemRegistroExibir = false;
+        }
         public string Nome { get; set; }
         public int NumeroChamada { get; set; }
         public DateTime DataNascimento { get; set; }
@@ -22,6 +26,9 @@ namespace SME.SGP.Infra
         public string CelularResponsavel { get; set; }
         public DateTime DataAtualizacaoContato { get; set; }
 
+        public bool MarcadorDiasSemRegistroExibir { get; set; }
+        public string MarcadorDiasSemRegistroTexto { get; set; }
+
         /// <summary>
         /// Refere-se ao processo que a tela executa, se já foi realizado ou não
         /// </summary>
@@ -34,6 +41,12 @@ namespace SME.SGP.Infra
                 (new[] { TipoMarcadorFrequencia.Transferido,
                         TipoMarcadorFrequencia.Remanejado,
                         TipoMarcadorFrequencia.Inativo}).Contains(Marcador.Tipo);
+
+        public void MarcaComoSemRegistroPorDias(int parametroDiasSemRegistro)
+        {
+            MarcadorDiasSemRegistroExibir = true;
+            MarcadorDiasSemRegistroTexto = $"Mais de {parametroDiasSemRegistro} dias sem registro individual";
+        }
 
         public bool EstaInativo()
             => !(new[] { SituacaoMatriculaAluno.Ativo,

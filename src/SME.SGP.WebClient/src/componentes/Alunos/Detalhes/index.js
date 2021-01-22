@@ -14,6 +14,7 @@ const DetalhesAluno = props => {
     onClickImprimir,
     exibirBotaoImprimir,
     exibirFrequencia,
+    exibirResponsavel,
   } = props;
 
   const {
@@ -31,6 +32,22 @@ const DetalhesAluno = props => {
     dataAtualizacaoContato,
   } = dados;
 
+  const numeroLinhas = () => {
+    if (
+      nomeResponsavel &&
+      exibirResponsavel &&
+      (exibirBotaoImprimir || exibirFrequencia)
+    ) {
+      return 6;
+    }
+
+    if (!exibirResponsavel) {
+      return 12;
+    }
+
+    return 8;
+  };
+
   return (
     <Container>
       <Card
@@ -41,17 +58,12 @@ const DetalhesAluno = props => {
       >
         <DadosAluno className="row">
           <div
-            className={`col-md-${
-              nomeResponsavel
-                ? exibirBotaoImprimir || exibirFrequencia
-                  ? '6'
-                  : '8'
-                : '8'
-            } d-flex justify-content-start`}
+            className={`col-md-${numeroLinhas()} d-flex justify-content-start`}
             style={{
-              borderRight: nomeResponsavel
-                ? `1px solid ${Base.CinzaDesabilitado}`
-                : 'none',
+              borderRight:
+                nomeResponsavel && exibirResponsavel
+                  ? `1px solid ${Base.CinzaDesabilitado}`
+                  : 'none',
             }}
           >
             <Avatar
@@ -77,7 +89,7 @@ const DetalhesAluno = props => {
               </p>
             </div>
           </div>
-          {nomeResponsavel ? (
+          {nomeResponsavel && exibirResponsavel ? (
             <div className="col-md-4">
               <div>
                 <p>
@@ -143,6 +155,7 @@ DetalhesAluno.propTypes = {
   onClickImprimir: PropTypes.oneOfType([PropTypes.func]),
   exibirBotaoImprimir: PropTypes.oneOfType([PropTypes.bool]),
   exibirFrequencia: PropTypes.oneOfType([PropTypes.bool]),
+  exibirResponsavel: PropTypes.bool,
 };
 
 DetalhesAluno.defaultProps = {
@@ -151,6 +164,7 @@ DetalhesAluno.defaultProps = {
   onClickImprimir: () => {},
   exibirBotaoImprimir: true,
   exibirFrequencia: true,
+  exibirResponsavel: true,
 };
 
 export default DetalhesAluno;

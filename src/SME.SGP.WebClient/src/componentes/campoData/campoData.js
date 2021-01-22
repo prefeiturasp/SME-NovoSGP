@@ -90,6 +90,7 @@ const CampoData = ({
   mensagemErro,
   carregando,
   array,
+  campoOpcional,
 }) => {
   const habilitarDatas = dataAtual => {
     let retorno = true;
@@ -264,7 +265,11 @@ const CampoData = ({
   return (
     <>
       <Campo>
-        {label ? <Label text={label} control={name} /> : ''}
+        {label ? (
+          <Label text={label} control={name} campoOpcional={campoOpcional} />
+        ) : (
+          ''
+        )}
         {validaTipoCampo()}
         {obterErros()}
       </Campo>
@@ -290,6 +295,7 @@ CampoData.propTypes = {
   mensagemErro: PropTypes.string,
   carregando: PropTypes.bool,
   array: PropTypes.bool,
+  campoOpcional: PropTypes.bool,
 };
 
 CampoData.defaultProps = {
@@ -310,6 +316,7 @@ CampoData.defaultProps = {
   mensagemErro: null,
   carregando: false,
   array: false,
+  campoOpcional: false,
 };
 
 const momentSchema = new MomentSchema();

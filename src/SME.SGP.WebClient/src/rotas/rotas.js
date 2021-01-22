@@ -14,7 +14,6 @@ import NotificacoesLista from '~/paginas/Notificacoes/Lista/listaNotificacoes';
 import RotasTipo from '~/constantes/rotasTipo';
 import MeusDados from '~/paginas/Perfil/meusDados';
 import PeriodosEscolares from '~/paginas/CalendarioEscolar/PeriodosEscolares/PeriodosEscolares';
-import ReiniciarSenha from '~/paginas/Configuracoes/Usuarios/reiniciarSenha';
 import TabsReiniciarSenha from '~/paginas/Configuracoes/Usuarios/TabsReiniciarSenha';
 import TipoCalendarioEscolarLista from '~/paginas/CalendarioEscolar/TipoCalendarioEscolar/tipoCalendarioEscolarLista';
 import TipoCalendarioEscolarForm from '~/paginas/CalendarioEscolar/TipoCalendarioEscolar/tipoCalendarioEscolarForm';
@@ -59,11 +58,13 @@ import AtaFinalResultados from '~/paginas/Relatorios/Atas/AtaFinalResultados/ata
 
 import BoletimSimples from '~/paginas/Relatorios/DiarioClasse/BoletimSimples';
 import FaltasFrequencia from '~/paginas/Relatorios/Frequencia/faltasFrequencia';
+import ListaDiarioBordo from '~/paginas/DiarioClasse/DiarioBordo/listaDiarioBordo';
 import DiarioBordo from '~/paginas/DiarioClasse/DiarioBordo/diarioBordo';
 import RelatorioPendencias from '~/paginas/Relatorios/Pendencias/relatorioPendencias';
 import CartaIntencoes from '~/paginas/Planejamento/CartaIntencoes/cartaIntencoes';
 import RelatorioParecerConclusivo from '~/paginas/Relatorios/ParecerConclusivo/relatorioParecerConclusivo';
 import DevolutivasLista from '~/paginas/DiarioClasse/Devolutivas/devolutivasLista';
+import RegistroIndividual from '~/paginas/DiarioClasse/RegistroIndividual/registroIndividual';
 import DevolutivasForm from '~/paginas/DiarioClasse/Devolutivas/devolutivasForm';
 import RelatorioNotasConceitosFinais from '~/paginas/Relatorios/NotasConceitosFinais/relatorioNotasConceitosFinais';
 import RelatorioCompensacaoAusencia from '~/paginas/Relatorios/CompensacaoAusencia/relatorioCompensacaoAusencia';
@@ -79,6 +80,8 @@ import AtribuicaoCJ from '~/paginas/Relatorios/Gestao/AtribuicaoCJ/atribuicaoCJ'
 import RelatorioHistoricoAlteracoesNotas from '~/paginas/Relatorios/Fechamento/HistoricoAlteracoesNotas/relatorioHistoricoAlteracoesNotas';
 import relatorioEscolaAquiAdesao from '~/paginas/Relatorios/EscolaAqui/Adesao/relatorioEscolaAquiAdesao';
 import RelatorioLeitura from '~/paginas/Relatorios/EscolaAqui/Leitura/relatorioLeitura';
+import ListaOcorrencias from '~/paginas/Gestao/Ocorrencia/ListaOcorrencias';
+import CadastroOcorrencias from '~/paginas/Gestao/Ocorrencia/CadastroOcorrencias';
 import RelatorioPlanejamentoDiario from '~/paginas/Relatorios/DiarioClasse/PlanejamentoDiario/relatorioPlanejamentoDiario';
 import EncaminhamentoAEELista from '~/paginas/Relatorios/AEE/Encaminhamento/Lista/encaminhamentoAEELista';
 import EncaminhamentoAEECadastro from '~/paginas/Relatorios/AEE/Encaminhamento/Cadastro/encaminhamentoAEECadastro';
@@ -860,6 +863,28 @@ rotas.set(RotasDto.DIARIO_BORDO, {
   breadcrumbName: 'Diário de Bordo',
   menu: ['Diário de Classe'],
   parent: '/',
+  component: ListaDiarioBordo,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.DIARIO_BORDO,
+});
+
+rotas.set(`${RotasDto.DIARIO_BORDO}/novo`, {
+  breadcrumbName: 'Cadastrar',
+  menu: [],
+  parent: RotasDto.DIARIO_BORDO,
+  component: DiarioBordo,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.DIARIO_BORDO,
+});
+
+rotas.set(`${RotasDto.DIARIO_BORDO}/detalhes/:aulaId`, {
+  breadcrumbName: 'Diário de Bordo',
+  menu: ['Diário de Classe'],
+  parent: '/',
   component: DiarioBordo,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
@@ -940,6 +965,17 @@ rotas.set(`${RotasDto.DEVOLUTIVAS}/editar/:id`, {
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: true,
   chavePermissao: RotasDto.DEVOLUTIVAS,
+});
+
+rotas.set(RotasDto.REGISTRO_INDIVIDUAL, {
+  breadcrumbName: 'Registro individual',
+  menu: ['Diário de Classe '],
+  parent: '/',
+  component: RegistroIndividual,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.REGISTRO_INDIVIDUAL,
 });
 
 rotas.set(RotasDto.RELATORIO_COMPENSACAO_AUSENCIA, {
@@ -1128,6 +1164,37 @@ rotas.set(`${RotasDto.RELATORIO_AEE_ENCAMINHAMENTO}/editar/:id`, {
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: false,
   chavePermissao: RotasDto.RELATORIO_AEE_ENCAMINHAMENTO,
+});
+
+rotas.set(RotasDto.OCORRENCIAS, {
+  breadcrumbName: 'Ocorrências',
+  menu: ['Gestão'],
+  parent: '/',
+  component: ListaOcorrencias,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+  chavePermissao: RotasDto.OCORRENCIAS,
+});
+
+rotas.set(`${RotasDto.OCORRENCIAS}/novo`, {
+  breadcrumbName: 'Cadastro',
+  parent: RotasDto.OCORRENCIAS,
+  component: CadastroOcorrencias,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+  chavePermissao: RotasDto.OCORRENCIAS,
+});
+
+rotas.set(`${RotasDto.OCORRENCIAS}/editar/:id`, {
+  breadcrumbName: 'Cadastro',
+  parent: RotasDto.OCORRENCIAS,
+  component: CadastroOcorrencias,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+  chavePermissao: RotasDto.OCORRENCIAS,
 });
 
 const rotasArray = [];

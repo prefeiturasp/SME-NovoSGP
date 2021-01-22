@@ -19,7 +19,6 @@ namespace SME.SGP.Api.Controllers
     public class UploadController : ControllerBase
     {
         [HttpPost]
-        [HttpPost("upload")]
         [ProducesResponseType(typeof(RetornoBaseDto), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
@@ -28,10 +27,12 @@ namespace SME.SGP.Api.Controllers
             var files = Request.Form.Files;
             if (files != null)
             {
+                //Foi adicionado fixo o valor https pois será discutido com a infra o problema de SSL
+                //Depois que corrigir, colocar: {Request.Protocol.Split('/')[0].ToLower()}
                 var file = files.FirstOrDefault();
                 if (file.Length > 0)
                     return Ok(await useCase.Executar(files.FirstOrDefault(), 
-                        $"{Request.Scheme}://{Request.Host}{Request.PathBase}/Arquivos/Editor/", 
+                        $"https://{Request.Host}{Request.PathBase}/Arquivos/Editor/", 
                         Dominio.TipoArquivo.Editor));
             }
                 

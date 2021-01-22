@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Sentry;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dados;
 using SME.SGP.Infra;
@@ -50,11 +51,9 @@ namespace SME.SGP.Worker.Rabbbit
             var serviceProvider = services.BuildServiceProvider();
             var clientTelemetry = serviceProvider.GetService<TelemetryClient>();
             DapperExtensionMethods.Init(clientTelemetry);
+            SentrySdk.Init(configuration.GetValue<string>("Sentry:DSN"));
 
-            //
             services.AddMemoryCache();
-
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -32,8 +32,8 @@ namespace SME.SGP.Dominio.Teste
             var periodos = new List<PeriodoEscolar> {
                 new PeriodoEscolar
                 {
-                    PeriodoInicio = atribuicao.DataInicio,
-                    PeriodoFim = atribuicao.DataFim.AddDays(-1)
+                    PeriodoInicio = DateTime.Now.AddDays(-5).Date <= new DateTime(DateTime.Now.Year - 1, 12, 31) ? new DateTime(DateTime.Now.Year, 01, 01) : DateTime.Now.AddDays(-5).Date,
+                    PeriodoFim = DateTime.Now.AddDays(7).Date >= new DateTime(DateTime.Now.Year, 12, 31) ? new DateTime(DateTime.Now.Year, 12, 30) : DateTime.Now.AddDays(7).Date,
                 }
             };
 
@@ -49,8 +49,8 @@ namespace SME.SGP.Dominio.Teste
 
             Assert.Throws<NegocioException>(() => atribuicao.Validar(false, DateTime.Now.Year, periodos));
 
-            periodos[0].PeriodoInicio = atribuicao.DataInicio.AddDays(1);
-            periodos[0].PeriodoFim = atribuicao.DataFim;
+            periodos[0].PeriodoInicio = DateTime.Now.AddDays(1);
+            periodos[0].PeriodoFim = DateTime.Now.AddDays(7) > new DateTime(DateTime.Now.Year, 12, 31) ? new DateTime(DateTime.Now.Year, 12, 31) : DateTime.Now.AddDays(7);
 
             Assert.Throws<NegocioException>(() => atribuicao.Validar(false, DateTime.Now.Year, periodos));
         }
@@ -82,7 +82,7 @@ namespace SME.SGP.Dominio.Teste
                 ProfessorRf = "1",
                 DreId = "1",
                 DataInicio = DateTime.Now,
-                DataFim = DateTime.Now.AddDays(7),
+                DataFim = DateTime.Now.AddDays(7) > new DateTime(DateTime.Now.Year, 12, 31) ? new DateTime(DateTime.Now.Year, 12, 31) : DateTime.Now.AddDays(7),
                 Id = 1
             };
 

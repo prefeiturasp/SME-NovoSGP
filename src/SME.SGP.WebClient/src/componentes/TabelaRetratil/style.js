@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 // Componentes
-import { Base } from '~/componentes';
+import { Base } from '~/componentes/colors';
 
 export const TabelaEstilo = styled.div`
   display: flex;
@@ -10,6 +10,11 @@ export const TabelaEstilo = styled.div`
   .tabelaCollapse {
     transition: width 1s linear;
     width: auto !important;
+  }
+
+  .icone-ausencia {
+    background: none !important;
+    color: ${Base.LaranjaAlerta} !important;
   }
 `;
 
