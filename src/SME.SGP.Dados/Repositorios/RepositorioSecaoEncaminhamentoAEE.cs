@@ -17,7 +17,6 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"SELECT sea.id
 	                            , sea.nome
 	                            , sea.questionario_id
-	                            , sea.concluido
                          FROM secao_encaminhamento_aee sea
                          WHERE not sea.excluido 
                            AND sea.etapa = @etapa
