@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dominio;
+﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -9,14 +10,16 @@ namespace SME.SGP.Aplicacao
 {
     public class ComandosTipoCalendario : IComandosTipoCalendario
     {
+        private readonly IMediator mediator;
         private readonly IRepositorioTipoCalendario repositorio;
         private readonly IRepositorioEvento repositorioEvento;
         private readonly IServicoEvento servicoEvento;
         private readonly IServicoFeriadoCalendario servicoFeriadoCalendario;
 
         public ComandosTipoCalendario(IRepositorioTipoCalendario repositorio, IServicoFeriadoCalendario servicoFeriadoCalendario, IServicoEvento servicoEvento,
-            IRepositorioEvento repositorioEvento)
+            IRepositorioEvento repositorioEvento, IMediator mediator)
         {
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
             this.servicoFeriadoCalendario = servicoFeriadoCalendario ?? throw new ArgumentNullException(nameof(servicoFeriadoCalendario));
             this.servicoEvento = servicoEvento ?? throw new ArgumentNullException(nameof(servicoEvento));
@@ -37,12 +40,19 @@ namespace SME.SGP.Aplicacao
             SME.Background.Core.Cliente.Executar<IComandosTipoCalendario>(x => x.ExecutarMetodosAsync(dto, false, tipoCalendario));
         }
 
-        public void ExecutarMetodosAsync(TipoCalendarioDto dto, bool inclusao, TipoCalendario tipoCalendario)
+        public async Task ExecutarMetodosAsync(TipoCalendarioDto dto, bool inclusao, TipoCalendario tipoCalendario)
         {
             servicoFeriadoCalendario.VerficaSeExisteFeriadosMoveisEInclui(dto.AnoLetivo);
 
             if (inclusao)
+            {
                 servicoEvento.SalvarEventoFeriadosAoCadastrarTipoCalendario(tipoCalendario);
+
+                var existeParametro = await mediator.Send(new VerificaSeExisteParametroSistemaPorAnoQuery(dto.AnoLetivo));
+
+                if (!existeParametro)
+                    await mediator.Send(new ReplicarParametrosAnoAnteriorCommand(dto.AnoLetivo));
+            }
         }
 
         public async Task Incluir(TipoCalendarioDto dto)
@@ -116,7 +126,7 @@ namespace SME.SGP.Aplicacao
                 else
                     throw new NegocioException($"Houve um erro ao excluir o tipo de calendário ids '{erroIds}'. O tipo de calendário não existe");
             }
-            
+
             if (!string.IsNullOrEmpty(tiposInvalidos.ToString()))
             {
                 string erroTipos = tiposInvalidos.ToString().TrimEnd(',');

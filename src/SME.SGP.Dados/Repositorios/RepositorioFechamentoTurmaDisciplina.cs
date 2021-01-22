@@ -111,5 +111,17 @@ namespace SME.SGP.Dados.Repositorios
                 , new { id }).FirstOrDefault();
 
         }
+
+        public async Task<SituacaoFechamento> ObterSituacaoFechamento(long turmaId, long componenteCurricularId, long periodoEscolarId)
+        {
+            var query = @"select ftd.situacao
+                         from fechamento_turma_disciplina ftd
+                        inner join fechamento_turma ft on ft.id = ftd.fechamento_turma_id
+                        where ftd.disciplina_id = @componenteCurricularId
+                          and ft.turma_id = @turmaId
+                          and ft.periodo_escolar_id = @periodoEscolarId ";
+
+            return (SituacaoFechamento)await database.Conexao.QueryFirstOrDefaultAsync<int>(query, new { turmaId, componenteCurricularId, periodoEscolarId });
+        }
     }
 }

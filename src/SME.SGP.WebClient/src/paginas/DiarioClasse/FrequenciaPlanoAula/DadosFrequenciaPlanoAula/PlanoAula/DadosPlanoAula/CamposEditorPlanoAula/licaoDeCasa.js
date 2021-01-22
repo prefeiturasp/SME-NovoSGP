@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import CardCollapse from '~/componentes/cardCollapse';
-import Editor from '~/componentes/editor/editor';
+import JoditEditor from '~/componentes/jodit-editor/joditEditor';
 import { setModoEdicaoPlanoAula } from '~/redux/modulos/frequenciaPlanoAula/actions';
 import ServicoPlanoAula from '~/servicos/Paginas/DiarioClasse/ServicoPlanoAula';
 
@@ -39,10 +39,10 @@ const LicaoDeCasa = () => {
         configCabecalho={configCabecalho}
       >
         <fieldset className="mt-3">
-          <Editor
+          <JoditEditor
             desabilitar={desabilitarCamposPlanoAula || !temPeriodoAberto}
             onChange={onChangeLicaoCasa}
-            inicial={dadosPlanoAula.licaoCasa}
+            value={dadosPlanoAula.licaoCasa}
           />
         </fieldset>
       </CardCollapse>

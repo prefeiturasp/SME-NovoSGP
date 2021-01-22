@@ -29,7 +29,6 @@ namespace SME.SGP.Aplicacao
                 SentrySdk.CaptureMessage($"{DateTime.Now:dd/MM/yyyy HH:mm:ss} - Rotina de manutenção de aulas do Infantil não iniciada pois seu parâmetro está marcado como não executar", SentryLevel.Warning);
                 return false;
             }
-                
 
             var anoAtual = DateTime.Now.Year;
             var tipoCalendarioId = await mediator.Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(Modalidade.Infantil, anoAtual, null));

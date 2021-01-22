@@ -26,5 +26,6 @@ namespace SME.SGP.Dto
         public IEnumerable<string> Turmas { get; set; }
         public int? Semestre { get; set; }
         public TipoComunicado TipoComunicado { get; set; }
+        public string Modalidades { get; set; }
     }
 }

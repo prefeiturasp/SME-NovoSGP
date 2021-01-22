@@ -15,14 +15,14 @@ namespace SME.SGP.Api.Controllers
     [Authorize("Bearer")]
     public class ComponentesCurricularesController : ControllerBase
     {
-        [HttpGet("ues/{codigoUe}/modalidades/{modalidade}/anos/{anoLetivo}/anos-escolares")]
+        [HttpGet("ues/{codigoUe}/modalidades/{modalidade}/anos/{anoLetivo}/anos-escolares")]        
         [ProducesResponseType(typeof(IEnumerable<ComponenteCurricularEol>), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        public async Task<IActionResult> ObterDresAtribuicoes(string codigoUe, Modalidade modalidade, [FromQuery] string[] anosEscolares, int anoLetivo, [FromServices] IObterComponentesCurricularesPorAnoEscolarUseCase obterComponentesCurricularesPorAnoEscolarUseCase)
+        public async Task<IActionResult> ObterDresAtribuicoes(string codigoUe, Modalidade modalidade, [FromQuery] string[] anosEscolares, int anoLetivo, [FromQuery] bool turmasPrograma, [FromServices] IObterComponentesCurricularesPorAnoEscolarUseCase obterComponentesCurricularesPorAnoEscolarUseCase)
         {
-            return Ok(await obterComponentesCurricularesPorAnoEscolarUseCase.Executar(codigoUe, modalidade, anoLetivo, anosEscolares));
+            return Ok(await obterComponentesCurricularesPorAnoEscolarUseCase.Executar(codigoUe, modalidade, anoLetivo, anosEscolares, turmasPrograma));
         }
 
         [HttpPost("ues/{ueId}/turmas")]

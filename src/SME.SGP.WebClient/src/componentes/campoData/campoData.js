@@ -90,6 +90,7 @@ const CampoData = ({
   mensagemErro,
   carregando,
   array,
+  campoOpcional,
 }) => {
   const habilitarDatas = dataAtual => {
     let retorno = true;
@@ -136,8 +137,8 @@ const CampoData = ({
   const Icone = carregando ? (
     <Icon style={{ fontSize: '16px', lineHeight: 0 }} type="loading" spin />
   ) : (
-      <Icon style={{ fontSize: '16px', lineHeight: 0 }} type="calendar" />
-    );
+    <Icon style={{ fontSize: '16px', lineHeight: 0 }} type="calendar" />
+  );
 
   const campoDataAntComValidacoes = () => {
     return (
@@ -146,34 +147,34 @@ const CampoData = ({
           field: { value },
           form: { setFieldValue, setFieldTouched, errors },
         }) => (
+          <div>
             <div>
-              <div>
-                <DatePicker
-                  disabled={desabilitado}
-                  format={formatoData}
-                  locale={locale}
-                  placeholder={placeholder}
-                  suffixIcon={Icone}
-                  name={name}
-                  id={id || name}
-                  onBlur={executaOnBlur}
-                  className={
-                    form
-                      ? `${possuiErro() ? 'is-invalid' : ''} ${className || ''}`
-                      : ''
-                  }
-                  onChange={valorData => {
-                    setFieldValue(name, valorData || '');
-                    onChange(valorData);
-                    setFieldTouched(name, true, true);
-                  }}
-                  disabledDate={habilitarDatas}
-                  showToday={false}
-                  value={value || null}
-                />
-              </div>
+              <DatePicker
+                disabled={desabilitado}
+                format={formatoData}
+                locale={locale}
+                placeholder={placeholder}
+                suffixIcon={Icone}
+                name={name}
+                id={id || name}
+                onBlur={executaOnBlur}
+                className={
+                  form
+                    ? `${possuiErro() ? 'is-invalid' : ''} ${className || ''}`
+                    : ''
+                }
+                onChange={valorData => {
+                  setFieldValue(name, valorData || '');
+                  onChange(valorData);
+                  setFieldTouched(name, true, true);
+                }}
+                disabledDate={habilitarDatas}
+                showToday={false}
+                value={value || null}
+              />
             </div>
-          )}
+          </div>
+        )}
       </Field>
     );
   };
@@ -237,14 +238,18 @@ const CampoData = ({
     return (form && form.touched[name] && form.errors[name]) || temErro ? (
       <span>{(form && form.errors[name]) || mensagemErro}</span>
     ) : (
-        ''
-      );
+      ''
+    );
   };
 
   return (
     <>
       <Campo>
-        {label ? <Label text={label} control={name} /> : ''}
+        {label ? (
+          <Label text={label} control={name} campoOpcional={campoOpcional} />
+        ) : (
+          ''
+        )}
         {validaTipoCampo()}
         {obterErros()}
       </Campo>
@@ -270,6 +275,7 @@ CampoData.propTypes = {
   mensagemErro: PropTypes.string,
   carregando: PropTypes.bool,
   array: PropTypes.bool,
+  campoOpcional: PropTypes.bool,
 };
 
 CampoData.defaultProps = {
@@ -279,7 +285,7 @@ CampoData.defaultProps = {
   label: '',
   desabilitado: false,
   somenteHora: false,
-  onChange: () => { },
+  onChange: () => {},
   valor: null,
   form: null,
   name: null,
@@ -290,6 +296,7 @@ CampoData.defaultProps = {
   mensagemErro: null,
   carregando: false,
   array: false,
+  campoOpcional: false,
 };
 
 const momentSchema = new MomentSchema();
@@ -298,9 +305,9 @@ Yup.addMethod(
   Yup.mixed,
   'dataMenorIgualQue',
   // eslint-disable-next-line func-names
-  function (nomeDataInicial, nomeDataFinal, mensagem) {
+  function(nomeDataInicial, nomeDataFinal, mensagem) {
     // eslint-disable-next-line func-names
-    return this.test('dataMenorIgualQue', mensagem, function () {
+    return this.test('dataMenorIgualQue', mensagem, function() {
       let dataValida = true;
       const dataInicial = this.parent[nomeDataInicial];
       const dataFinal = this.parent[nomeDataFinal];
@@ -321,9 +328,9 @@ Yup.addMethod(
   Yup.mixed,
   'dataMenorQue',
   // eslint-disable-next-line func-names
-  function (nomeDataInicial, nomeDataFinal, mensagem) {
+  function(nomeDataInicial, nomeDataFinal, mensagem) {
     // eslint-disable-next-line func-names
-    return this.test('dataMenorQue', mensagem, function () {
+    return this.test('dataMenorQue', mensagem, function() {
       let dataValida = true;
       const dataInicial = this.parent[nomeDataInicial];
       const dataFinal = this.parent[nomeDataFinal];

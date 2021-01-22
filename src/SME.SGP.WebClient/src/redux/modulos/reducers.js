@@ -23,6 +23,8 @@ import devolutivas from './devolutivas/reducers';
 import dashboard from './dashboard/reducers';
 import planoAnual from './anual/reducers';
 import frequenciaPlanoAula from './frequenciaPlanoAula/reducers';
+import dashboardEscolaAqui from './dashboardEscolaAqui/reducers';
+import registroIndividual from './registroIndividual/reducers';
 
 const reducers = combineReducers({
   navegacao,
@@ -48,6 +50,8 @@ const reducers = combineReducers({
   dashboard,
   planoAnual,
   frequenciaPlanoAula,
+  dashboardEscolaAqui,
+  registroIndividual,
 });
 
 const rootReducer = (state, action) => {

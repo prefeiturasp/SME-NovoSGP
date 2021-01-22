@@ -14,18 +14,14 @@ namespace SME.SGP.Dominio.Teste
             var periodos = new List<PeriodoEscolar> {
                 new PeriodoEscolar
                 {
-                    PeriodoInicio = DateTime.Now.AddDays(-5),
-                    PeriodoFim = DateTime.Now.AddDays(7)
+                    PeriodoInicio = atribuicao.DataInicio,
+                    PeriodoFim = atribuicao.DataFim
                 }
             };
 
-            atribuicao.DataFim = DateTime.Now.AddDays(-1);
+            atribuicao.DataFim = atribuicao.DataInicio.AddDays(-1);
 
             Assert.Throws<NegocioException>(() => atribuicao.Validar(false, DateTime.Now.Year, periodos));
-
-            atribuicao.DataFim = DateTime.Now.AddDays(1);
-
-            atribuicao.Validar(false, DateTime.Now.Year, periodos);
         }
 
         [Fact]
@@ -42,8 +38,6 @@ namespace SME.SGP.Dominio.Teste
             };
 
             Assert.Throws<NegocioException>(() => atribuicao.Validar(false, DateTime.Now.Year, periodos));
-
-            periodos[0].PeriodoFim = DateTime.Now.AddDays(7);
         }
 
         [Fact]
@@ -59,10 +53,6 @@ namespace SME.SGP.Dominio.Teste
             periodos[0].PeriodoFim = DateTime.Now.AddDays(7) > new DateTime(DateTime.Now.Year, 12, 31) ? new DateTime(DateTime.Now.Year, 12, 31) : DateTime.Now.AddDays(7);
 
             Assert.Throws<NegocioException>(() => atribuicao.Validar(false, DateTime.Now.Year, periodos));
-
-            periodos[0].PeriodoInicio = DateTime.Now.AddMinutes(-1);
-
-            atribuicao.Validar(false, DateTime.Now.Year, periodos);
         }
 
         [Fact]
@@ -73,22 +63,20 @@ namespace SME.SGP.Dominio.Teste
             var periodos = new List<PeriodoEscolar> {
                 new PeriodoEscolar
                 {
-                    PeriodoInicio = DateTime.Now.AddDays(-5),
-                    PeriodoFim = DateTime.Now.AddDays(7)
+                    PeriodoInicio = atribuicao.DataInicio.AddDays(-5),
+                    PeriodoFim = atribuicao.DataFim
                 }
             };
 
-            atribuicao.DataFim = DateTime.Now.AddDays(-1);
-            atribuicao.DataInicio = DateTime.Now.AddDays(-2);
+            atribuicao.DataInicio = atribuicao.DataInicio.AddDays(-2);
+            atribuicao.DataFim = atribuicao.DataInicio.AddDays(-1);
 
             Assert.Throws<NegocioException>(() => atribuicao.Validar(false, DateTime.Now.Year, periodos));
-
-            atribuicao.Validar(true, DateTime.Now.Year, periodos);
         }
 
         private AtribuicaoEsporadica ObterObjeto()
         {
-            return new AtribuicaoEsporadica
+            var atribuicao = new AtribuicaoEsporadica
             {
                 UeId = "1",
                 ProfessorRf = "1",
@@ -97,6 +85,12 @@ namespace SME.SGP.Dominio.Teste
                 DataFim = DateTime.Now.AddDays(7) > new DateTime(DateTime.Now.Year, 12, 31) ? new DateTime(DateTime.Now.Year, 12, 31) : DateTime.Now.AddDays(7),
                 Id = 1
             };
+
+            var anoAtual = DateTime.Now.Year;
+            if (atribuicao.DataFim.Year > anoAtual)
+                atribuicao.DataFim = new DateTime(anoAtual, 12, 31);
+
+            return atribuicao;
         }
     }
 }

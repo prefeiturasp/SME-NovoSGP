@@ -64,10 +64,10 @@ namespace SME.SGP.Aplicacao
                 AulaId = diarioBordo.AulaId,
                 DevolutivaId = diarioBordo.DevolutivaId,
                 Devolutivas = diarioBordo.Devolutiva?.Descricao,
-                Excluido = diarioBordo.Excluido,
-                Migrado = diarioBordo.Migrado,
                 Planejamento = diarioBordo.Planejamento,
                 ReflexoesReplanejamento = diarioBordo.ReflexoesReplanejamento,
+                Excluido = diarioBordo.Excluido,
+                Migrado = diarioBordo.Migrado,
                 TemPeriodoAberto = aberto,
                 Auditoria = (AuditoriaDto)diarioBordo
             };

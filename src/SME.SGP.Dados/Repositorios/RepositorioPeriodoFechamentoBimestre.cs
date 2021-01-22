@@ -5,6 +5,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -52,6 +53,44 @@ namespace SME.SGP.Dados.Repositorios
                     return periodoFechamentoBimestre;
                 }
                 , new { periodoEscolarId, dreId, inicioDoFechamento, finalDoFechamento });
+        }
+
+        public async Task<PeriodoFechamentoBimestre> ObterPeridoFechamentoBimestrePorDreUeEData(ModalidadeTipoCalendario modalidadeTipoCalendario, DateTime dataInicio, int bimestre, long? dreId, long? ueId)
+        {
+            var filtroDre = dreId.HasValue ? "p.dre_id = @dreId" : "p.dre_id is null";
+            var filtroUe = ueId.HasValue ? "p.ue_id = @ueId" : "p.ue_id is null";
+
+            var query = $@"select b.*, p.*, e.*
+                      from periodo_fechamento p 
+                     inner join periodo_fechamento_bimestre b on b.periodo_fechamento_id = p.Id
+                     inner join periodo_escolar e on e.id = b.periodo_escolar_id
+                     inner join tipo_calendario t on t.id = e.tipo_calendario_id
+                     where not t.excluido
+                       and e.bimestre = @bimestre
+                       and t.modalidade = @modalidade
+                       and b.inicio_fechamento = @dataInicio 
+                       and {filtroDre} 
+                       and {filtroUe}";
+
+            return (await database.Conexao.QueryAsync<PeriodoFechamentoBimestre, PeriodoFechamento, PeriodoEscolar, PeriodoFechamentoBimestre>(query, 
+                (periodoFechamentoBimestre, periodoFechamento, periodoEscolar) =>
+                {
+                    periodoFechamentoBimestre.PeriodoFechamento = periodoFechamento;
+                    periodoFechamentoBimestre.PeriodoEscolar = periodoEscolar;
+
+                    return periodoFechamentoBimestre;
+                }, new { modalidade = (int)modalidadeTipoCalendario, dataInicio, bimestre, dreId, ueId })).FirstOrDefault();
+        }
+
+        public async Task<bool> ExistePeriodoFechamentoPorUePeriodoEscolar(long ueId, long periodoEscolarId)
+        {
+            var query = @"select 1
+                          from periodo_fechamento p 
+                         inner join periodo_fechamento_bimestre b on b.periodo_fechamento_id = p.Id
+                        where p.ue_id = @ueId
+                          and b.periodo_escolar_id = @periodoEscolarId";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { ueId, periodoEscolarId });
         }
     }
 }

@@ -68,16 +68,23 @@ const ComunicadosLista = () => {
   };
 
   const onChangeFiltro = valoresFiltro => {
-    setFiltro([]);
-    setFiltro({
-      ...valoresFiltro,
-      dataEnvio: valoresFiltro.dataEnvio
-        ? valoresFiltro.dataEnvio.format('YYYY-MM-DD')
-        : '',
-      dataExpiracao: valoresFiltro.dataExpiracao
-        ? valoresFiltro.dataExpiracao.format('YYYY-MM-DD')
-        : '',
-    });
+    if (
+      valoresFiltro.anoLetivo &&
+      valoresFiltro.CodigoDre &&
+      valoresFiltro.CodigoUe
+    ) {
+      setFiltro({
+        ...valoresFiltro,
+        dataEnvio: valoresFiltro.dataEnvio
+          ? valoresFiltro.dataEnvio.format('YYYY-MM-DD')
+          : '',
+        dataExpiracao: valoresFiltro.dataExpiracao
+          ? valoresFiltro.dataExpiracao.format('YYYY-MM-DD')
+          : '',
+      });
+    } else {
+      setFiltro({});
+    }
   };
 
   const colunas = [
@@ -148,7 +155,14 @@ const ComunicadosLista = () => {
               filtro={filtro}
               paramArrayFormat="repeat"
               selecionarItems={onSelecionarItems}
-              filtroEhValido
+              filtroEhValido={
+                !!(
+                  filtro &&
+                  filtro.CodigoDre &&
+                  filtro.CodigoUe &&
+                  filtro.anoLetivo
+                )
+              }
             />
           </div>
         </Card>

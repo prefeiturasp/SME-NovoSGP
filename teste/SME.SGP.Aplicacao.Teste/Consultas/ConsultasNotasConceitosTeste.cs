@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿using MediatR;
+using Moq;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Interfaces;
 using System;
@@ -35,7 +36,8 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         private readonly Mock<IRepositorioEvento> repositorioEvento;
         private readonly Mock<IRepositorioAtividadeAvaliativaRegencia> repositorioAtividadeAvaliativaRegencia;
         private readonly Mock<IRepositorioComponenteCurricular> repositorioComponenteCurricular;
-        
+        private readonly Mock<IMediator> mediator;
+
 
         public ConsultasNotasConceitosTeste()
         {
@@ -64,6 +66,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             repositorioEvento = new Mock<IRepositorioEvento>();
             repositorioAtividadeAvaliativaRegencia = new Mock<IRepositorioAtividadeAvaliativaRegencia>();
             repositorioComponenteCurricular = new Mock<IRepositorioComponenteCurricular>();
+            mediator = new Mock<IMediator>();
             
 
             consultasNotasConceito = new ConsultasNotasConceitos(servicoEOL.Object,
@@ -90,7 +93,8 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
                     repositorioDre.Object,
                     repositorioEvento.Object,
                     repositorioAtividadeAvaliativaRegencia.Object,
-                    repositorioComponenteCurricular.Object);
+                    repositorioComponenteCurricular.Object,
+                    mediator.Object);
         }
 
         [Theory]
