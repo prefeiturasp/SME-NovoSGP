@@ -1,7 +1,7 @@
 import { Form, Formik } from 'formik';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   CampoTexto,
   Label,
@@ -9,6 +9,7 @@ import {
   SelectComponent,
 } from '~/componentes';
 import { RotasDto } from '~/dtos';
+import situacaoAEE from '~/dtos/situacaoAEE';
 import tipoQuestao from '~/dtos/tipoQuestao';
 import AtendimentoClinicoTabela from '~/paginas/Relatorios/AEE/Encaminhamento/Cadastro/Componentes/AtendimentoClinico/atendimentoClinicoTabela';
 import { setEncaminhamentoAEEEmEdicao } from '~/redux/modulos/encaminhamentoAEE/actions';
@@ -21,6 +22,10 @@ const MontarDadosPorSecao = props => {
   const dispatch = useDispatch();
 
   const { dados, match, codigoAluno, codigoTurma } = props;
+
+  const dadosEncaminhamento = useSelector(
+    store => store.encaminhamentoAEE.dadosEncaminhamento
+  );
 
   const [dadosQuestionarioAtual, setDadosQuestionarioAtual] = useState();
   const [valoresIniciais, setValoresIniciais] = useState();
@@ -70,7 +75,8 @@ const MontarDadosPorSecao = props => {
       ServicoEncaminhamentoAEE.addFormsSecoesEncaminhamentoAEE(
         () => obterForm(),
         dados.questionarioId,
-        dadosQuestionarioAtual
+        dadosQuestionarioAtual,
+        dados.id
       );
     }
   }, [refForm]);
@@ -205,6 +211,9 @@ const MontarDadosPorSecao = props => {
           name={String(questaoAtual.id)}
           form={form}
           opcoes={opcoes}
+          desabilitado={
+            dadosEncaminhamento?.situacao === situacaoAEE.Encaminhado
+          }
           onChange={e => {
             const valorAtualSelecionado = e.target.value;
             onChangeCamposComOpcaoResposta(
@@ -232,11 +241,11 @@ const MontarDadosPorSecao = props => {
           <SelectComponent
             id={String(questaoAtual.id)}
             name={String(questaoAtual.id)}
-            placeholder={questaoAtual.nome}
             form={form}
             lista={lista}
             valueOption="value"
             valueText="label"
+            disabled={dadosEncaminhamento?.situacao === situacaoAEE.Encaminhado}
             onChange={valorAtualSelecionado => {
               onChangeCamposComOpcaoResposta(
                 questaoAtual,
@@ -262,6 +271,9 @@ const MontarDadosPorSecao = props => {
           form={form}
           type="textarea"
           maxLength={999999}
+          desabilitado={
+            dadosEncaminhamento?.situacao === situacaoAEE.Encaminhado
+          }
           onChange={() => {
             dispatch(setEncaminhamentoAEEEmEdicao(true));
           }}
@@ -276,6 +288,9 @@ const MontarDadosPorSecao = props => {
     return (
       <div className="col-md-12 mb-3">
         <AtendimentoClinicoTabela
+          desabilitado={
+            dadosEncaminhamento?.situacao === situacaoAEE.Encaminhado
+          }
           label={label}
           form={form}
           questaoAtual={questaoAtual}

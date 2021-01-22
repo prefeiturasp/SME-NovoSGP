@@ -369,7 +369,7 @@ const EncaminhamentoAEELista = () => {
               <Button
                 id="btn-novo"
                 label="Novo"
-                color={Colors.Azul}
+                color={Colors.Roxo}
                 border
                 bold
                 onClick={onClickNovo}

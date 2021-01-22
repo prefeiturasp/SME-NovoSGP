@@ -111,7 +111,7 @@ const ModalCadastroAtendimentoClinico = props => {
       id={shortid.generate()}
       key="detalhamento-atendimento-clinico"
       visivel={exibirModal}
-      titulo="Detalhamento de atendimento clínico"
+      titulo="Detalhamento de Atendimento Clínico"
       onClose={fecharModal}
       esconderBotaoPrincipal
       esconderBotaoSecundario

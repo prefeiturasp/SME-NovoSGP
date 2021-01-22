@@ -25,8 +25,10 @@ const DadosSecaoEncaminhamento = props => {
 
   const obterSecoesPorEtapaDeEncaminhamentoAEE = useCallback(async () => {
     // TODO FAZER ENUM PARA NAO FIXAR O VALOR NA CONSULTA!
+    const encaminhamentoId = match?.params?.id;
     const resposta = await ServicoEncaminhamentoAEE.obterSecoesPorEtapaDeEncaminhamentoAEE(
-      1
+      1,
+      encaminhamentoId
     ).catch(e => erros(e));
 
     if (resposta?.data) {
@@ -34,7 +36,7 @@ const DadosSecaoEncaminhamento = props => {
     } else {
       dispatch(setDadosSecoesPorEtapaDeEncaminhamentoAEE([]));
     }
-  }, [dispatch]);
+  }, [dispatch, match]);
 
   useEffect(() => {
     if (
@@ -58,7 +60,7 @@ const DadosSecaoEncaminhamento = props => {
         return (
           <Step
             key={item?.questionarioId}
-            status="process"
+            status={item?.concluido ? 'finish' : 'process'}
             title={
               <DadosPorSecaoCollapse
                 dados={item}

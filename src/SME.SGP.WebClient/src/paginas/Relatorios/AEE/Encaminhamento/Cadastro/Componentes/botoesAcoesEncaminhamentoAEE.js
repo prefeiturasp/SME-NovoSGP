@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import Button from '~/componentes/button';
 import { Colors } from '~/componentes/colors';
 import { RotasDto } from '~/dtos';
+import situacaoAEE from '~/dtos/situacaoAEE';
 import { confirmar, erros, sucesso } from '~/servicos';
 import history from '~/servicos/history';
 import ServicoEncaminhamentoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoEncaminhamentoAEE';
@@ -13,6 +14,10 @@ const BotoesAcoesEncaminhamentoAEE = props => {
 
   const encaminhamentoAEEEmEdicao = useSelector(
     store => store.encaminhamentoAEE.encaminhamentoAEEEmEdicao
+  );
+
+  const dadosEncaminhamento = useSelector(
+    store => store.encaminhamentoAEE.dadosEncaminhamento
   );
 
   const onClickSalvar = async () => {
@@ -105,17 +110,23 @@ const BotoesAcoesEncaminhamentoAEE = props => {
         border
         className="mr-3"
         onClick={onClickExcluir}
-        disabled={!match?.params?.id}
+        disabled={
+          !match?.params?.id ||
+          dadosEncaminhamento?.situacao === situacaoAEE.Encaminhado
+        }
       />
       <Button
         id="btn-salvar"
-        label="Salvar"
+        label={match?.params?.id ? 'Alterar' : 'Salvar'}
         color={Colors.Azul}
         border
         bold
         className="mr-3"
         onClick={onClickSalvar}
-        disabled={!encaminhamentoAEEEmEdicao}
+        disabled={
+          !encaminhamentoAEEEmEdicao ||
+          dadosEncaminhamento?.situacao === situacaoAEE.Encaminhado
+        }
       />
       <Button
         id="btn-enviar"
@@ -124,7 +135,10 @@ const BotoesAcoesEncaminhamentoAEE = props => {
         border
         bold
         onClick={onClickEnviar}
-        disabled={!encaminhamentoAEEEmEdicao}
+        disabled={
+          !encaminhamentoAEEEmEdicao ||
+          dadosEncaminhamento?.situacao === situacaoAEE.Encaminhado
+        }
       />
     </>
   );
