@@ -41,6 +41,7 @@ export default function RegistroIndividual(state = inicial, action) {
           auditoriaNovoRegistroIndividual: null,
           dadosParaSalvarNovoRegistro: {},
           dadosPrincipaisRegistroIndividual: {},
+          dadosRegistroAtual: {},
           desabilitarCampos: false,
           exibirLoaderGeralRegistroIndividual: false,
           registroIndividualEmEdicao: false,
@@ -111,6 +112,13 @@ export default function RegistroIndividual(state = inicial, action) {
         const items = state.dadosPrincipaisRegistroIndividual.registrosIndividuais.items.filter(
           dados => dados.id !== action.payload
         );
+        if (!items?.length) {
+          return {
+            ...draft,
+            dadosPrincipaisRegistroIndividual: {},
+            resetDataNovoRegistroIndividual: true,
+          };
+        }
         return {
           ...draft,
           dadosPrincipaisRegistroIndividual: {
@@ -206,6 +214,7 @@ export default function RegistroIndividual(state = inicial, action) {
           dadosAlunoObjectCard: {},
           dadosRegistroAtual: {},
           dadosPrincipaisRegistroIndividual: {},
+          resetDataNovoRegistroIndividual: true,
         };
       }
       default:

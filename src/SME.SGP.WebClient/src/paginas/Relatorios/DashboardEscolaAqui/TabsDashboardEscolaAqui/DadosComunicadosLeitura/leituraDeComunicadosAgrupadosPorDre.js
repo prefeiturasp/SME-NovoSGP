@@ -74,7 +74,7 @@ const LeituraDeComunicadosAgrupadosPorDre = props => {
         obterDadosDeLeituraDeComunicadosAgrupadosPorDre(dadosComunicado);
       }
     }
-  }, [comunicado, listaComunicado]);
+  }, [comunicado, modoVisualizacao, listaComunicado]);
 
   return (
     <div className="col-md-12">

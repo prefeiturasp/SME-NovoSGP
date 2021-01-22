@@ -32,12 +32,7 @@ class MetodosRegistroIndividual {
     };
   };
 
-  escolheCadastrar = (
-    atualizarDados = true,
-    registroIndividual,
-    turmaId,
-    id
-  ) => {
+  escolheCadastrar = (atualizarDados, registroIndividual, turmaId, id) => {
     if (id) {
       this.editarRegistroIndividual(
         atualizarDados,
@@ -71,12 +66,12 @@ class MetodosRegistroIndividual {
     return true;
   };
 
-  verificarSalvarRegistroIndividual = () => {
+  verificarSalvarRegistroIndividual = atualizarDados => {
     const { registroIndividual, turmaId } = this.obterDados();
     const { id } = registroIndividual.dadosParaSalvarNovoRegistro;
 
     if (registroIndividual.registroIndividualEmEdicao) {
-      this.escolheCadastrar(false, registroIndividual, turmaId, id);
+      this.escolheCadastrar(atualizarDados, registroIndividual, turmaId, id);
     }
   };
 
@@ -187,25 +182,31 @@ class MetodosRegistroIndividual {
     registros
   ) => {
     const { registroIndividual, turmaId } = this.obterDados();
+    const {
+      dadosAlunoObjectCard,
+      componenteCurricularSelecionado,
+    } = registroIndividual;
+    const alunoCodigo = dadosAlunoObjectCard.codigoEOL;
 
-    const retorno = await ServicoRegistroIndividual.obterRegistroIndividualPorPeriodo(
-      {
-        alunoCodigo: registroIndividual.dadosAlunoObjectCard.codigoEOL,
-        componenteCurricular:
-          registroIndividual.componenteCurricularSelecionado,
-        dataInicio: dataFormatadaInicio,
-        dataFim: dataFimEscolhida,
-        turmaCodigo: turmaId,
-        numeroPagina: pagina,
-        numeroRegistros: registros,
+    if (alunoCodigo) {
+      const retorno = await ServicoRegistroIndividual.obterRegistroIndividualPorPeriodo(
+        {
+          alunoCodigo,
+          componenteCurricular: componenteCurricularSelecionado,
+          dataInicio: dataFormatadaInicio,
+          dataFim: dataFimEscolhida,
+          turmaCodigo: turmaId,
+          numeroPagina: pagina,
+          numeroRegistros: registros,
+        }
+      ).catch(e => erros(e));
+
+      if (retorno?.data) {
+        this.dispatch(setDadosPrincipaisRegistroIndividual(retorno.data));
+        this.dispatch(
+          setPodeRealizarNovoRegistro(retorno.data.podeRealizarNovoRegistro)
+        );
       }
-    ).catch(e => erros(e));
-
-    if (retorno?.data) {
-      this.dispatch(setDadosPrincipaisRegistroIndividual(retorno.data));
-      this.dispatch(
-        setPodeRealizarNovoRegistro(retorno.data.podeRealizarNovoRegistro)
-      );
     }
   };
 }

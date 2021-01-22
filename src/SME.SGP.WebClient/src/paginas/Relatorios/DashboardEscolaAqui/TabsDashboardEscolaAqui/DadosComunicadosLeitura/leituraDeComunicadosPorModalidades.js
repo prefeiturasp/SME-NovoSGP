@@ -91,7 +91,7 @@ const LeituraDeComunicadosPorModalidades = props => {
         obterDadosDeLeituraDeComunicadosAgrupadosPorModalidade(dadosComunicado);
       }
     }
-  }, [comunicado, listaComunicado]);
+  }, [comunicado, modoVisualizacao, listaComunicado]);
 
   return dadosDeLeituraDeComunicadosAgrupadosPorModalidade?.length ? (
     <div className="col-md-12">

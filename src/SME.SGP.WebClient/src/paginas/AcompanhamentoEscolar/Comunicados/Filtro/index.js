@@ -327,8 +327,9 @@ function Filtro({ onFiltrar }) {
     setUes(dados);
   };
 
-  async function ObterModalidades(ue) {
-    const dados = await FiltroHelper.ObterModalidades(ue);
+  async function ObterModalidades(ue) {    
+    const anoForm = refForm?.state?.values?.anoLetivo ? refForm.state.values.anoLetivo : moment().year();
+    const dados = await FiltroHelper.obterModalidadesAnoLetivo(ue, anoForm);
     if (!dados || dados.length === 0) return;
     if (dados.length === 1) refForm.setFieldValue('modalidade', dados[0].id);
     setModalidades(dados);

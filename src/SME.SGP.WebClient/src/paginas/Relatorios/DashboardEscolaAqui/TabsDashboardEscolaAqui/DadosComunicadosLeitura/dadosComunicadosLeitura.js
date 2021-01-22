@@ -32,6 +32,7 @@ import LeituraDeComunicadosPorModalidadesETurmas from './leituraDeComunicadosPor
 import LeituraDeComunicadosPorTurmas from './leituraDeComunicadosPorTurmas';
 import FiltroHelperComunicados from '~/paginas/AcompanhamentoEscolar/Comunicados/Helper/helper';
 import ServicoComunicados from '~/servicos/Paginas/AcompanhamentoEscolar/Comunicados/ServicoComunicados';
+import { ordenarListaMaiorParaMenor } from '~/utils/funcoes/gerais';
 
 const DadosComunicadosLeitura = props => {
   const { codigoDre, codigoUe } = props;
@@ -136,8 +137,7 @@ const DadosComunicadosLeitura = props => {
       if (temAnoAtualNaLista) setAnoLetivo(anoAtual);
       else setAnoLetivo(anosLetivos[0].valor);
     }
-
-    setListaAnosLetivo(anosLetivos);
+    setListaAnosLetivo(ordenarListaMaiorParaMenor(anosLetivos, 'valor'));
     setExibirLoader(false);
   }, [anoAtual]);
 
@@ -196,11 +196,11 @@ const DadosComunicadosLeitura = props => {
   };
 
   useEffect(() => {
+    setModalidadeId();
+    setListaModalidades([]);
+    setGrupo([]);
     if (anoLetivo && codigoUe) {
       obterModalidades(codigoUe, anoLetivo);
-    } else {
-      setModalidadeId();
-      setListaModalidades([]);
     }
   }, [anoLetivo, codigoUe]);
 
@@ -514,7 +514,7 @@ const DadosComunicadosLeitura = props => {
     } else {
       setDadosDeLeituraDeComunicados([]);
     }
-  }, [codigoDre, codigoUe, visualizacao, comunicado, listaComunicado]);
+  }, [visualizacao, comunicado, listaComunicado]);
 
   useEffect(() => {
     if (visualizacao && comunicado && listaComunicado.length) {
@@ -536,7 +536,7 @@ const DadosComunicadosLeitura = props => {
 
   useEffect(() => {
     setDadosDeLeituraDeComunicados([]);
-  }, [codigoUe, codigoUe]);
+  }, [codigoUe]);
 
   useEffect(() => {
     dispatch(limparDadosDashboardEscolaAqui([]));

@@ -2,7 +2,7 @@
 {
     public class DiarioBordoObservacaoNotificacao
     {
-        protected DiarioBordoObservacaoNotificacao() { }
+        public DiarioBordoObservacaoNotificacao() { }
 
         public DiarioBordoObservacaoNotificacao(long idObservacao, long idNotificacao)
         {

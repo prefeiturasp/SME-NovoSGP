@@ -35,11 +35,16 @@ const Item = ({ dados, setCarregandoGeral }) => {
   } = dados;
 
   const [editando, setEditando] = useState(false);
+  const [mostrarBotoes, setMostrarBotoes] = useState(false);
   const [registroAlterado, setRegistroAlterado] = useState();
 
   const registroAnteriorEmEdicao = useSelector(
     store => store.registroIndividual.registroAnteriorEmEdicao
   );
+  const dadosAlunoObjectCard = useSelector(
+    store => store.registroIndividual.dadosAlunoObjectCard
+  );
+  const turmaSelecionada = useSelector(state => state.usuario.turmaSelecionada);
   const permissoes = useSelector(state => state.usuario.permissoes);
   const permissoesTela = permissoes[RotasDto.REGISTRO_INDIVIDUAL];
 
@@ -125,6 +130,22 @@ const Item = ({ dados, setCarregandoGeral }) => {
     }
   }, [registro]);
 
+  useEffect(() => {
+    if (
+      permissoesTela.podeIncluir &&
+      !dadosAlunoObjectCard.desabilitado &&
+      !turmaSelecionada.consideraHistorico
+    ) {
+      setMostrarBotoes(true);
+      return;
+    }
+    setMostrarBotoes(false);
+  }, [
+    dadosAlunoObjectCard.desabilitado,
+    permissoesTela.podeIncluir,
+    turmaSelecionada.consideraHistorico,
+  ]);
+
   return (
     <div className="row justify-content-between">
       <div className="p-0 col-12" style={{ minHeight: 200 }}>
@@ -151,7 +172,7 @@ const Item = ({ dados, setCarregandoGeral }) => {
           />
         </div>
       )}
-      {permissoesTela.podeIncluir && (
+      {mostrarBotoes && (
         <ContainerBotoes className="d-flex">
           {editando ? (
             <div className="d-flex mt-2">

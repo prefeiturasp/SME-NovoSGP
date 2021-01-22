@@ -29,9 +29,10 @@ import {
 } from '~/servicos';
 
 const NovoRegistroIndividual = () => {
+  const dataAtual = window.moment();
   const [expandir, setExpandir] = useState(false);
   const [exibirCollapse, setExibirCollapse] = useState(false);
-  const [data, setData] = useState();
+  const [data, setData] = useState(dataAtual);
   const [desabilitarNovoRegistro, setDesabilitarNovoRegistro] = useState(false);
   const [carregandoNovoRegistro, setCarregandoNovoRegistro] = useState(false);
 
@@ -60,7 +61,6 @@ const NovoRegistroIndividual = () => {
 
   const turmaId = turmaSelecionada?.id || 0;
   const alunoCodigo = dadosAlunoObjectCard?.codigoEOL;
-  const dataAtual = window.moment();
 
   const ehMesmoAluno = useMemo(
     () => String(alunoCodigo) === String(dadosRegistroAtual?.alunoCodigo),
@@ -85,7 +85,9 @@ const NovoRegistroIndividual = () => {
     if (podeRealizarNovoRegistro && dadosAlunoObjectCard) {
       setExpandir(true);
       setExibirCollapse(podeRealizarNovoRegistro);
+      return;
     }
+    setExibirCollapse(false);
   }, [podeRealizarNovoRegistro, setExibirCollapse, dadosAlunoObjectCard]);
 
   const validaPermissoes = useCallback(
@@ -181,9 +183,6 @@ const NovoRegistroIndividual = () => {
   ]);
 
   useEffect(() => {
-    if (!data) {
-      setData(dataAtual);
-    }
     if (resetDataNovoRegistroIndividual) {
       dispatch(resetDataNovoRegistro(false));
       setData(dataAtual);
@@ -204,15 +203,37 @@ const NovoRegistroIndividual = () => {
     expandir,
   ]);
 
+  const resetarDados = () => {
+    dispatch(setRegistroIndividualEmEdicao(false));
+    dispatch(setDesabilitarCampos(false));
+  };
+
   const mudarData = valor => {
     if (valor) {
       setData(valor);
+      resetarDados();
     }
   };
 
+  useEffect(() => {
+    const elementos = document.getElementsByClassName(
+      'ant-calendar-picker-clear'
+    );
+    const setarDataVazia = () => {
+      setData('');
+    };
+
+    if (elementos.length) {
+      elementos[0].addEventListener('click', setarDataVazia, false);
+    }
+    return () => {
+      elementos[0].removeEventListener('click', setarDataVazia);
+    };
+  });
+
   return (
     <>
-      {exibirCollapse && (
+      {exibirCollapse && !dadosAlunoObjectCard.desabilitado && (
         <div key={shortid.generate()} className="px-4 pt-4">
           <CardCollapse
             configCabecalho={CONFIG_COLLAPSE_REGISTRO_INDIVIDUAL}
