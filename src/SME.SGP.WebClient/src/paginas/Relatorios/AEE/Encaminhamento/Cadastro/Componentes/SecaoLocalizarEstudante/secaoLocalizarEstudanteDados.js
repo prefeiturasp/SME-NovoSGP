@@ -5,7 +5,10 @@ import { FiltroHelper } from '~/componentes-sgp';
 import Button from '~/componentes/button';
 import { Colors } from '~/componentes/colors';
 import LocalizadorEstudante from '~/componentes/LocalizadorEstudante';
-import { setDadosSecaoLocalizarEstudante } from '~/redux/modulos/encaminhamentoAEE/actions';
+import {
+  setDadosSecaoLocalizarEstudante,
+  setLimparDadosEncaminhamento,
+} from '~/redux/modulos/encaminhamentoAEE/actions';
 import { AbrangenciaServico, erros } from '~/servicos';
 
 const SecaoLocalizarEstudanteDados = () => {
@@ -85,6 +88,7 @@ const SecaoLocalizarEstudanteDados = () => {
     setCodigoTurma();
 
     setAlunoLocalizadorSelecionado();
+    dispatch(setLimparDadosEncaminhamento());
   };
 
   const obterDres = useCallback(async () => {
@@ -157,11 +161,13 @@ const SecaoLocalizarEstudanteDados = () => {
     setCodigoTurma();
 
     setAlunoLocalizadorSelecionado();
+    dispatch(setLimparDadosEncaminhamento());
   };
 
   const onChangeTurma = valor => {
     setCodigoTurma(valor);
     setAlunoLocalizadorSelecionado();
+    dispatch(setLimparDadosEncaminhamento());
   };
 
   const onChangeLocalizadorEstudante = aluno => {
@@ -169,25 +175,27 @@ const SecaoLocalizarEstudanteDados = () => {
       setAlunoLocalizadorSelecionado({
         codigoAluno: aluno?.alunoCodigo,
         codigoTurma: aluno?.codigoTurma,
+        turmaId: aluno?.turmaId,
       });
     } else {
       setAlunoLocalizadorSelecionado();
+      dispatch(setLimparDadosEncaminhamento());
     }
   };
 
-  const onClickProximoPasso = async () => {
+  const onClickProximoPasso = () => {
     const params = {
       anoLetivo: anoAtual,
       codigoDre,
       codigoUe,
       codigoTurma: alunoLocalizadorSelecionado.codigoTurma,
       codigoAluno: alunoLocalizadorSelecionado.codigoAluno,
-      turmaId: 614004,
+      turmaId: alunoLocalizadorSelecionado.turmaId,
     };
     dispatch(setDadosSecaoLocalizarEstudante(params));
   };
 
-  const onClickCancelar = async () => {
+  const onClickCancelar = () => {
     setCodigoDre();
     setListaDres([]);
 
@@ -198,7 +206,7 @@ const SecaoLocalizarEstudanteDados = () => {
     setCodigoTurma();
 
     setAlunoLocalizadorSelecionado();
-    dispatch(setDadosSecaoLocalizarEstudante({}));
+    dispatch(setLimparDadosEncaminhamento());
 
     obterDres();
   };

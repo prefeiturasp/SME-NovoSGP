@@ -2,7 +2,6 @@ import { Form, Formik } from 'formik';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import * as Yup from 'yup';
 import {
   CampoTexto,
   Label,
@@ -21,16 +20,12 @@ import UploadArquivosEncaminhamento from '../../UploadArquivosEncaminhamento/upl
 const MontarDadosPorSecao = props => {
   const dispatch = useDispatch();
 
-  const { dados, match } = props;
+  const { dados, match, codigoAluno, codigoTurma } = props;
 
   const [dadosQuestionarioAtual, setDadosQuestionarioAtual] = useState();
   const [valoresIniciais, setValoresIniciais] = useState();
 
-  const tiposQuestaoPorIdQuestao = {};
-  const [idsRespostasPorIdQuestao, setIdsRespostasPorIdQuestao] = useState({});
-
   const [refForm, setRefForm] = useState({});
-  const [validacoes, setValidacoes] = useState({});
 
   useEffect(() => {
     const encaminhamentoId = match?.params?.id;
@@ -48,7 +43,9 @@ const MontarDadosPorSecao = props => {
     dispatch(setEncaminhamentoAEEEmEdicao(false));
     const resposta = await ServicoEncaminhamentoAEE.obterQuestionario(
       questionarioId,
-      encaminhamentoId
+      encaminhamentoId,
+      codigoAluno,
+      codigoTurma
     ).catch(e => erros(e));
 
     if (!dadosQuestionarioAtual?.length && resposta?.data) {
@@ -59,12 +56,12 @@ const MontarDadosPorSecao = props => {
   }, []);
 
   useEffect(() => {
-    if (dados?.questionarioId) {
+    if (dados?.questionarioId && codigoAluno && codigoTurma) {
       obterQuestionario(dados?.questionarioId);
     } else {
       setDadosQuestionarioAtual([]);
     }
-  }, [dados, obterQuestionario]);
+  }, [dados, codigoAluno, codigoTurma, obterQuestionario]);
 
   const obterForm = () => refForm;
 
@@ -73,16 +70,13 @@ const MontarDadosPorSecao = props => {
       ServicoEncaminhamentoAEE.addFormsSecoesEncaminhamentoAEE(
         () => obterForm(),
         dados.questionarioId,
-        dadosQuestionarioAtual,
-        tiposQuestaoPorIdQuestao,
-        idsRespostasPorIdQuestao
+        dadosQuestionarioAtual
       );
     }
   }, [refForm]);
 
   const montarValoresIniciais = useCallback(() => {
     const valores = {};
-    const idsRespostas = {};
 
     const montarDados = questaoAtual => {
       const resposta = questaoAtual?.resposta;
@@ -93,21 +87,17 @@ const MontarDadosPorSecao = props => {
         switch (questaoAtual?.tipoQuestao) {
           case tipoQuestao.Radio:
             valorRespostaAtual = resposta[0].opcaoRespostaId;
-            idsRespostas[questaoAtual.id] = resposta[0].id;
             break;
           case tipoQuestao.Combo:
             valorRespostaAtual = String(resposta[0].opcaoRespostaId || '');
-            idsRespostas[questaoAtual.id] = resposta[0].id;
             break;
           case tipoQuestao.Texto:
             valorRespostaAtual = resposta[0].texto;
-            idsRespostas[questaoAtual.id] = resposta[0].id;
             break;
           case tipoQuestao.AtendimentoClinico:
             valorRespostaAtual = resposta[0].texto
               ? JSON.parse(resposta[0].texto)
               : '';
-            idsRespostas[questaoAtual.id] = resposta[0].id;
             break;
           case tipoQuestao.Upload:
             if (resposta?.length) {
@@ -126,10 +116,6 @@ const MontarDadosPorSecao = props => {
                   return '';
                 })
                 .filter(a => !!a);
-
-              resposta.forEach(r => {
-                idsRespostas[questaoAtual.id] = r.id;
-              });
             } else {
               valorRespostaAtual = [];
             }
@@ -153,16 +139,6 @@ const MontarDadosPorSecao = props => {
         }
       }
 
-      // TODO!
-      // if (!valorRespostaAtual) {
-      //   if (questaoAtual?.opcaoResposta?.length) {
-      //     questaoAtual.opcaoResposta.forEach(opcaoAtual => {
-      //       if (opcaoAtual?.questaoComplementar) {
-      //         montarDados(opcaoAtual.questaoComplementar);
-      //       }
-      //     });
-      //   }
-      // }
       valores[questaoAtual.id] = valorRespostaAtual;
     };
 
@@ -171,7 +147,6 @@ const MontarDadosPorSecao = props => {
     });
 
     setValoresIniciais({ ...valores });
-    setIdsRespostasPorIdQuestao({ ...idsRespostas });
   }, [dadosQuestionarioAtual]);
 
   useEffect(() => {
@@ -182,34 +157,35 @@ const MontarDadosPorSecao = props => {
 
   const onChangeCamposComOpcaoResposta = (
     questaoAtual,
-    opcoes,
     form,
     valorAtualSelecionado
   ) => {
-    opcoes.forEach(item => {
-      if (String(valorAtualSelecionado) !== String(item.value)) {
-        const opcaoAtual = questaoAtual?.opcaoResposta.find(
-          c => String(c.id) === String(item.value)
+    const valoreAnteriorSelecionado = form.values[questaoAtual.id] || '';
+
+    const opcaoAtual = questaoAtual?.opcaoResposta.find(
+      c => String(c.id) === String(valorAtualSelecionado || '')
+    );
+
+    const opcaoAnterior = questaoAtual?.opcaoResposta.find(
+      c => String(c.id) === String(valoreAnteriorSelecionado || '')
+    );
+
+    const questaoComplementarIdAtual = opcaoAtual?.questaoComplementar?.id;
+    const questaoComplementarIdAnterior =
+      opcaoAnterior?.questaoComplementar?.id;
+
+    if (questaoComplementarIdAtual !== questaoComplementarIdAnterior) {
+      if (questaoComplementarIdAtual) {
+        form.setFieldValue(
+          questaoComplementarIdAtual,
+          form.values[questaoComplementarIdAnterior]
         );
-        const campoParaRemover = opcaoAtual?.questaoComplementar?.id;
-        if (campoParaRemover) {
-          // TODO Não limpar e sim manter o valor que estava no campo anterior!
-          form.setFieldValue(String(campoParaRemover), '');
-          delete form.values[campoParaRemover];
-          form.unregisterField(campoParaRemover);
-        }
+        form.values[questaoComplementarIdAtual] =
+          form.values[questaoComplementarIdAnterior];
       }
-    });
-
-    const questaoRespostaId = questaoAtual?.resposta?.[0]?.id;
-    if (questaoRespostaId) {
-      const opcaoAtual = questaoAtual?.opcaoResposta.find(
-        c => String(c.id) === String(valorAtualSelecionado)
-      );
-
-      idsRespostasPorIdQuestao[opcaoAtual.id] = questaoRespostaId;
+      delete form.values[questaoComplementarIdAnterior];
+      form.unregisterField(questaoComplementarIdAnterior);
     }
-    setIdsRespostasPorIdQuestao(idsRespostasPorIdQuestao);
 
     dispatch(setEncaminhamentoAEEEmEdicao(true));
   };
@@ -233,7 +209,6 @@ const MontarDadosPorSecao = props => {
             const valorAtualSelecionado = e.target.value;
             onChangeCamposComOpcaoResposta(
               questaoAtual,
-              opcoes,
               form,
               valorAtualSelecionado
             );
@@ -265,7 +240,6 @@ const MontarDadosPorSecao = props => {
             onChange={valorAtualSelecionado => {
               onChangeCamposComOpcaoResposta(
                 questaoAtual,
-                lista,
                 form,
                 valorAtualSelecionado
               );
@@ -322,6 +296,8 @@ const MontarDadosPorSecao = props => {
     const textoLabel = `${ordemLabel} - ${questaoAtual.nome}`;
     const label = labelPersonalizado(textoLabel, questaoAtual?.observacao);
 
+    ServicoEncaminhamentoAEE.guardarLabelCampo(questaoAtual, textoLabel);
+
     let campoQuestaoComplementar = null;
 
     const valorAtualSelecionado = form.values[questaoAtual.id];
@@ -338,16 +314,6 @@ const MontarDadosPorSecao = props => {
           ordemLabel
         );
       }
-    } else {
-      const opcaoAtual = questaoAtual?.opcaoResposta[0];
-
-      if (opcaoAtual?.questaoComplementar) {
-        campoQuestaoComplementar = montarCampos(
-          opcaoAtual.questaoComplementar,
-          form,
-          ordemLabel
-        );
-      }
     }
 
     const params = {
@@ -355,8 +321,6 @@ const MontarDadosPorSecao = props => {
       form,
       label,
     };
-
-    tiposQuestaoPorIdQuestao[questaoAtual.id] = questaoAtual.tipoQuestao;
 
     let campoAtual = null;
     switch (questaoAtual?.tipoQuestao) {
@@ -394,50 +358,6 @@ const MontarDadosPorSecao = props => {
     );
   };
 
-  const montaValidacoes = (questaoAtual, form, camposObrigatorios) => {
-    if (questaoAtual?.opcaoResposta?.length) {
-      questaoAtual.opcaoResposta.forEach(opcaoAtual => {
-        if (opcaoAtual?.questaoComplementar) {
-          montaValidacoes(
-            opcaoAtual.questaoComplementar,
-            form,
-            camposObrigatorios
-          );
-        }
-      });
-    }
-
-    camposObrigatorios[questaoAtual.id] = questaoAtual.obrigatorio;
-  };
-
-  const obterValidacoes = (data, form) => {
-    const camposObrigatorios = [];
-
-    data.forEach(questaoAtual => {
-      montaValidacoes(questaoAtual, form, camposObrigatorios);
-    });
-
-    if (camposObrigatorios?.length) {
-      const camposComValidacao = {};
-
-      camposObrigatorios.forEach((obrigatorio, questaoAtualId) => {
-        if (obrigatorio) {
-          camposComValidacao[questaoAtualId] = Yup.string().required(
-            'Campo obrigatório'
-          );
-        }
-      });
-
-      setValidacoes(Yup.object(camposComValidacao));
-    }
-  };
-
-  useEffect(() => {
-    if (dadosQuestionarioAtual?.length && refForm?.state?.values) {
-      obterValidacoes(dadosQuestionarioAtual, refForm);
-    }
-  }, [dadosQuestionarioAtual, refForm]);
-
   const montarQuestionarioAtual = (data, form) => {
     const campos = data.map(questaoAtual => {
       return (
@@ -456,7 +376,12 @@ const MontarDadosPorSecao = props => {
     <Formik
       enableReinitialize
       initialValues={valoresIniciais}
-      validationSchema={validacoes}
+      validationSchema={() =>
+        ServicoEncaminhamentoAEE.obterValidationSchema(
+          dadosQuestionarioAtual,
+          refForm
+        )
+      }
       validateOnChange
       validateOnBlur
       ref={refFormik => setRefForm(refFormik)}
@@ -475,11 +400,15 @@ const MontarDadosPorSecao = props => {
 MontarDadosPorSecao.propTypes = {
   dados: PropTypes.oneOfType([PropTypes.object]),
   match: PropTypes.oneOfType([PropTypes.object]),
+  codigoAluno: PropTypes.string,
+  codigoTurma: PropTypes.string,
 };
 
 MontarDadosPorSecao.defaultProps = {
   dados: {},
   match: {},
+  codigoAluno: '',
+  codigoTurma: '',
 };
 
 export default MontarDadosPorSecao;

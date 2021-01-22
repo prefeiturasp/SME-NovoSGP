@@ -19,6 +19,9 @@ const inicial = {
   encaminhamentoAEEEmEdicao: false,
   exibirLoaderEncaminhamentoAEE: false,
   dadosEncaminhamento: null,
+  labelCamposEncaminhamento: {},
+  exibirModalErrosEncaminhamento: false,
+  errosModalEncaminhamento: [],
 };
 
 export default function EncaminhamentoAEE(state = inicial, action) {
@@ -94,6 +97,39 @@ export default function EncaminhamentoAEE(state = inicial, action) {
         return {
           ...draft,
           dadosEncaminhamento: action.payload,
+        };
+      }
+      case '@encaminhamentoAEE/setLabelCamposEncaminhamento': {
+        return {
+          ...draft,
+          labelCamposEncaminhamento: action.payload,
+        };
+      }
+      case '@encaminhamentoAEE/setErrosModalEncaminhamento': {
+        return {
+          ...draft,
+          errosModalEncaminhamento: action.payload,
+        };
+      }
+      case '@encaminhamentoAEE/setExibirModalErrosEncaminhamento': {
+        return {
+          ...draft,
+          exibirModalErrosEncaminhamento: action.payload,
+        };
+      }
+      case '@encaminhamentoAEE/setLimparDadosEncaminhamento': {
+        return {
+          ...draft,
+          dadosEstudanteObjectCardEncaminhamento: {},
+          dadosSecaoLocalizarEstudante: {},
+          dadosSecoesPorEtapaDeEncaminhamentoAEE: [],
+          formsSecoesEncaminhamentoAEE: null,
+          encaminhamentoAEEEmEdicao: false,
+          exibirLoaderEncaminhamentoAEE: false,
+          dadosEncaminhamento: null,
+          labelCamposEncaminhamento: {},
+          exibirModalErrosEncaminhamento: false,
+          errosModalEncaminhamento: [],
         };
       }
 

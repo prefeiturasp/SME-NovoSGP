@@ -34,6 +34,7 @@ const LocalizadorEstudante = props => {
       alunoCodigo: '',
       alunoNome: '',
       codigoTurma: '',
+      turmaId: '',
     });
     setDataSource([]);
   }, [ueId, codigoTurma]);
@@ -45,6 +46,7 @@ const LocalizadorEstudante = props => {
         alunoCodigo: '',
         alunoNome: '',
         codigoTurma: '',
+        turmaId: '',
       });
       setTimeout(() => {
         setDesabilitarCampo(() => ({
@@ -75,6 +77,7 @@ const LocalizadorEstudante = props => {
         alunoCodigo: '',
         alunoNome: '',
         codigoTurma: '',
+        turmaId: '',
       });
     });
 
@@ -85,6 +88,7 @@ const LocalizadorEstudante = props => {
           alunoCodigo: aluno.codigo,
           alunoNome: aluno.nome,
           codigoTurma: aluno.codigoTurma,
+          turmaId: aluno.turmaId,
         }))
       );
     }
@@ -113,22 +117,30 @@ const LocalizadorEstudante = props => {
         alunoCodigo: '',
         alunoNome: '',
         codigoTurma: '',
+        turmaId: '',
       });
     });
 
     if (retorno?.data?.items?.length > 0) {
-      const { codigo: cAluno, nome, codigoTurma } = retorno.data.items[0];
+      const {
+        codigo: cAluno,
+        nome,
+        codigoTurma,
+        turmaId,
+      } = retorno.data.items[0];
       setDataSource(
         retorno.data.items.map(aluno => ({
           alunoCodigo: aluno.codigo,
           alunoNome: aluno.nome,
           codigoTurma: aluno.codigoTurma,
+          turmaId: aluno.turmaId,
         }))
       );
       setPessoaSelecionada({
         alunoCodigo: parseInt(cAluno, 10),
         alunoNome: nome,
         codigoTurma,
+        turmaId,
       });
       setDesabilitarCampo(estado => ({
         ...estado,
@@ -138,6 +150,7 @@ const LocalizadorEstudante = props => {
         alunoCodigo: parseInt(cAluno, 10),
         alunoNome: nome,
         codigoTurma,
+        turmaId,
       });
     }
   };
@@ -162,6 +175,7 @@ const LocalizadorEstudante = props => {
         alunoCodigo: '',
         alunoNome: '',
         codigoTurma: '',
+        turmaId: '',
       });
       setDesabilitarCampo(estado => ({
         ...estado,
@@ -172,18 +186,18 @@ const LocalizadorEstudante = props => {
   };
 
   const onSelectPessoa = objeto => {
-    setPessoaSelecionada({
+    const pessoa = {
       alunoCodigo: parseInt(objeto.key, 10),
       alunoNome: objeto.props.value,
-    });
+      codigoTurma: objeto.props.codigoTurma,
+      turmaId: objeto.props.turmaId,
+    };
+    setPessoaSelecionada(pessoa);
+    onChange(pessoa);
     setDesabilitarCampo(estado => ({
       ...estado,
       codigo: true,
     }));
-    onChange({
-      alunoCodigo: parseInt(objeto.key, 10),
-      alunoNome: objeto.props.value,
-    });
   };
 
   useEffect(() => {

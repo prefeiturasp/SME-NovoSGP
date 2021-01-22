@@ -16,7 +16,6 @@ const UploadArquivosEncaminhamento = props => {
   const onRemoveFile = async arquivo => {
     const codigoArquivo = arquivo.xhr;
 
-    // TODO TESTAR!
     if (arquivo.arquivoId) {
       if (
         form &&
@@ -24,14 +23,18 @@ const UploadArquivosEncaminhamento = props => {
         form?.values?.[questaoAtual?.id]?.length
       ) {
         const novoMap = form?.values?.[questaoAtual?.id];
-        const indice = novoMap.findIndex(item => arquivo.arquivoId === item);
+        const indice = novoMap.findIndex(
+          item => arquivo.arquivoId === item.arquivoId
+        );
 
-        novoMap.splice(indice, 1);
+        if (indice !== -1) {
+          novoMap.splice(indice, 1);
 
-        form.setFieldValue(String(questaoAtual?.id), novoMap);
-        form.setFieldTouched(String(questaoAtual?.id), true);
+          form.setFieldValue(String(questaoAtual?.id), novoMap);
+          form.setFieldTouched(String(questaoAtual?.id), true);
+          sucesso(`Arquivo ${arquivo.name} removido com sucesso`);
+        }
       }
-      sucesso(`Arquivo ${arquivo.name} removido com sucesso`);
       return true;
     }
 
@@ -54,8 +57,7 @@ const UploadArquivosEncaminhamento = props => {
           form={form}
           name={String(questaoAtual?.id)}
           id={String(questaoAtual?.id)}
-          // desabilitarGeral={desabilitarCampos}
-          // tiposArquivosPermitidos=".pdf"
+          tiposArquivosPermitidos={questaoAtual.opcionais || ''}
           desabilitarUpload={form?.values?.[questaoAtual?.id]?.length > 9}
           onRemove={onRemoveFile}
           urlUpload="v1/encaminhamento-aee/upload"

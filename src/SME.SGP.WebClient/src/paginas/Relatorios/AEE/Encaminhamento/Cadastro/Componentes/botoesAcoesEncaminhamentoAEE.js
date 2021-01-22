@@ -29,10 +29,15 @@ const BotoesAcoesEncaminhamentoAEE = props => {
     if (encaminhamentoAEEEmEdicao) {
       const confirmou = await confirmar(
         'Atenção',
-        'Você não salvou as informações preenchidas.',
-        'Deseja voltar para tela de listagem agora?'
+        '',
+        'Suas alterações não foram salvas, deseja salvar agora?'
       );
-      if (confirmou) history.push(RotasDto.RELATORIO_AEE_ENCAMINHAMENTO);
+      if (confirmou) {
+        const encaminhamentoId = match?.params?.id;
+        ServicoEncaminhamentoAEE.salvarEncaminhamento(encaminhamentoId);
+      } else {
+        history.push(RotasDto.RELATORIO_AEE_ENCAMINHAMENTO);
+      }
     } else {
       history.push(RotasDto.RELATORIO_AEE_ENCAMINHAMENTO);
     }

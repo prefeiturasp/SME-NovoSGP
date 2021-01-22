@@ -24,6 +24,7 @@ const DadosSecaoEncaminhamento = props => {
   );
 
   const obterSecoesPorEtapaDeEncaminhamentoAEE = useCallback(async () => {
+    // TODO FAZER ENUM PARA NAO FIXAR O VALOR NA CONSULTA!
     const resposta = await ServicoEncaminhamentoAEE.obterSecoesPorEtapaDeEncaminhamentoAEE(
       1
     ).catch(e => erros(e));
@@ -63,6 +64,8 @@ const DadosSecaoEncaminhamento = props => {
                 dados={item}
                 index={item?.questionarioId}
                 match={match}
+                codigoAluno={dadosSecaoLocalizarEstudante?.codigoAluno}
+                codigoTurma={dadosSecaoLocalizarEstudante?.codigoTurma}
               />
             }
           />
