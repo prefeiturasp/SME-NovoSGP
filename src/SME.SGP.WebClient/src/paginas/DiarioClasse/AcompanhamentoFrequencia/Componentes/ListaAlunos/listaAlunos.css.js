@@ -86,16 +86,10 @@ export const TabelaColunasFixas = styled.div`
     padding-top: 18px;
   }
 
-  .divIconeSituacaoDefault {
+  .divIconeSituacao {
+    display: inline-flex;
     position: absolute;
-    margin-top: -21px;
-    margin-left: 16px;
-  }
-
-  .divIconeSituacaoMaior {
-    position: absolute;
-    margin-top: -21px;
-    margin-left: 20px;
+    margin-top: 5px;
   }
 
   .iconeSituacao {
