@@ -9,10 +9,11 @@ import Button from '~/componentes/button';
 import { Base, Colors } from '~/componentes/colors';
 import Label from '~/componentes/label';
 import { setEncaminhamentoAEEEmEdicao } from '~/redux/modulos/encaminhamentoAEE/actions';
+import { confirmar } from '~/servicos';
 import ModalCadastroAtendimentoClinico from './modalCadastroAtendimentoClinico';
 
 const AtendimentoClinicoTabela = props => {
-  const { label, questaoAtual, form } = props;
+  const { label, questaoAtual, form, desabilitado } = props;
 
   const dispatch = useDispatch();
 
@@ -83,17 +84,29 @@ const AtendimentoClinicoTabela = props => {
                 color={Colors.Azul}
                 border
                 className="btn-excluir-atendimento-clinico"
-                onClick={() => {
-                  const dadosAtuais = form?.values?.[questaoAtual.id]?.length
-                    ? form?.values?.[questaoAtual.id]
-                    : [];
+                disabled={desabilitado}
+                onClick={async () => {
+                  if (!desabilitado) {
+                    const confirmado = await confirmar(
+                      'Excluir',
+                      '',
+                      'Você tem certeza que deseja excluir este registro?'
+                    );
 
-                  const indice = dadosAtuais.findIndex(
-                    item => item.id === linha.id
-                  );
-                  if (indice !== -1) {
-                    dadosAtuais.splice(indice, 1);
-                    form.setFieldValue(questaoAtual.id, dadosAtuais);
+                    if (confirmado) {
+                      const dadosAtuais = form?.values?.[questaoAtual.id]
+                        ?.length
+                        ? form?.values?.[questaoAtual.id]
+                        : [];
+
+                      const indice = dadosAtuais.findIndex(
+                        item => item.id === linha.id
+                      );
+                      if (indice !== -1) {
+                        dadosAtuais.splice(indice, 1);
+                        form.setFieldValue(questaoAtual.id, dadosAtuais);
+                      }
+                    }
                   }
                 }}
                 height="30px"
@@ -156,6 +169,7 @@ const AtendimentoClinicoTabela = props => {
         border
         className="mr-3 mt-2"
         onClick={onClickNovoDetalhamento}
+        disabled={desabilitado}
       />
     </>
   );
@@ -165,12 +179,14 @@ AtendimentoClinicoTabela.propTypes = {
   questaoAtual: PropTypes.oneOfType([PropTypes.any]),
   form: PropTypes.oneOfType([PropTypes.any]),
   label: PropTypes.string,
+  desabilitado: PropTypes.bool,
 };
 
 AtendimentoClinicoTabela.defaultProps = {
   label: '',
   questaoAtual: null,
   form: null,
+  desabilitado: false,
 };
 
 export default AtendimentoClinicoTabela;
