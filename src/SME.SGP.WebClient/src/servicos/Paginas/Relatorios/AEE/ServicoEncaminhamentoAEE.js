@@ -304,7 +304,7 @@ class ServicoEncaminhamentoAEE {
                 key
               );
 
-              const questao = {
+              let questao = {
                 questaoId: key,
                 tipoQuestao: questaoAtual.tipoQuestao,
               };
@@ -331,28 +331,30 @@ class ServicoEncaminhamentoAEE {
                 questao?.resposta?.length
               ) {
                 questao.resposta.forEach(codigo => {
-                  if (questaoAtual?.resposta?.length) {
-                    const arquivoResposta = questaoAtual.resposta.find(
-                      a => a?.arquivo?.codigo === codigo
-                    );
+                  if (codigo) {
+                    if (questaoAtual?.resposta?.length) {
+                      const arquivoResposta = questaoAtual.resposta.find(
+                        a => a?.arquivo?.codigo === codigo
+                      );
 
-                    if (arquivoResposta) {
-                      questoes.push({
-                        ...questao,
-                        resposta: codigo,
-                        respostaEncaminhamentoId: arquivoResposta.id,
-                      });
+                      if (arquivoResposta) {
+                        questoes.push({
+                          ...questao,
+                          resposta: codigo,
+                          respostaEncaminhamentoId: arquivoResposta.id,
+                        });
+                      } else {
+                        questoes.push({
+                          ...questao,
+                          resposta: codigo,
+                        });
+                      }
                     } else {
                       questoes.push({
                         ...questao,
                         resposta: codigo,
                       });
                     }
-                  } else {
-                    questoes.push({
-                      ...questao,
-                      resposta: codigo,
-                    });
                   }
                 });
               } else {
@@ -360,7 +362,17 @@ class ServicoEncaminhamentoAEE {
                   questao.respostaEncaminhamentoId =
                     questaoAtual.resposta[0].id;
                 }
-                questoes.push(questao);
+
+                if (
+                  questao.tipoQuestao === tipoQuestao.Upload &&
+                  !questao.resposta
+                ) {
+                  questao = null;
+                }
+
+                if (questao) {
+                  questoes.push(questao);
+                }
               }
             });
             return {
