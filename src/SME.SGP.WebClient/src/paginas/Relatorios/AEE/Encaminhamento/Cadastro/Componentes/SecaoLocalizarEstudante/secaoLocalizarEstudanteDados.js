@@ -169,25 +169,26 @@ const SecaoLocalizarEstudanteDados = () => {
       setAlunoLocalizadorSelecionado({
         codigoAluno: aluno?.alunoCodigo,
         codigoTurma: aluno?.codigoTurma,
+        turmaId: aluno?.turmaId,
       });
     } else {
       setAlunoLocalizadorSelecionado();
     }
   };
 
-  const onClickProximoPasso = async () => {
+  const onClickProximoPasso = () => {
     const params = {
       anoLetivo: anoAtual,
       codigoDre,
       codigoUe,
       codigoTurma: alunoLocalizadorSelecionado.codigoTurma,
       codigoAluno: alunoLocalizadorSelecionado.codigoAluno,
-      turmaId: 614004,
+      turmaId: alunoLocalizadorSelecionado.turmaId,
     };
     dispatch(setDadosSecaoLocalizarEstudante(params));
   };
 
-  const onClickCancelar = async () => {
+  const onClickCancelar = () => {
     setCodigoDre();
     setListaDres([]);
 
