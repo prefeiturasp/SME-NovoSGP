@@ -32,28 +32,26 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             if (!encaminhamentoAEEDto.Secoes.Any())
                 throw new NegocioException("Nenhuma seção foi encontrada");
 
-            var encaminhamentoConcluido = encaminhamentoAEEDto.Secoes.Where(c => !c.Concluido).Any();
-
             if (encaminhamentoAEEDto.Id.GetValueOrDefault() > 0)
             {
                 var encaminhamentoAEE = await mediator.Send(new ObterEncaminhamentoAEEPorIdQuery(encaminhamentoAEEDto.Id.GetValueOrDefault()));
                 if (encaminhamentoAEE != null)
                 {
-                    await AlterarEncaminhamento(encaminhamentoAEEDto, encaminhamentoAEE, encaminhamentoConcluido);
+                    await AlterarEncaminhamento(encaminhamentoAEEDto, encaminhamentoAEE);
                     return new ResultadoEncaminhamentoAEEDto() { Id = encaminhamentoAEE.Id };
                 }
             }
 
             var resultadoEncaminhamento = await mediator.Send(new RegistrarEncaminhamentoAeeCommand(
             encaminhamentoAEEDto.TurmaId, aluno.NomeAluno, aluno.CodigoAluno,
-            encaminhamentoConcluido ? SituacaoAEE.Rascunho : SituacaoAEE.Encaminhado));
+            encaminhamentoAEEDto.Situacao));
 
 
             await SalvarEncaminhamento(encaminhamentoAEEDto, resultadoEncaminhamento);
             return resultadoEncaminhamento;
         }
 
-        public async Task AlterarEncaminhamento(EncaminhamentoAeeDto encaminhamentoAEEDto, EncaminhamentoAEE encaminhamentoAEE, bool encaminhamentoConcluido)
+        public async Task AlterarEncaminhamento(EncaminhamentoAeeDto encaminhamentoAEEDto, EncaminhamentoAEE encaminhamentoAEE)
         {
             foreach (var secao in encaminhamentoAEEDto.Secoes)
             {
