@@ -4,6 +4,8 @@ const inicial = {
   dadosObservacoes: [],
   observacaoEmEdicao: null,
   novaObservacao: '',
+  listaUsuariosNotificacao: [],
+  modoEdicao: false,
 };
 
 export default function ObservacoesUsuario(state = inicial, action) {
@@ -33,6 +35,20 @@ export default function ObservacoesUsuario(state = inicial, action) {
           dadosObservacoes: [],
           observacaoEmEdicao: null,
           novaObservacao: '',
+          listaUsuariosNotificacao: [],
+          modoEdicao: false,
+        };
+      }
+      case '@observacoesUsuario/setListaUsuariosNotificacao': {
+        return {
+          ...draft,
+          listaUsuariosNotificacao: action.payload,
+        };
+      }
+      case '@observacoesUsuario/setModoEdicao': {
+        return {
+          ...draft,
+          modoEdicao: action.payload,
         };
       }
 

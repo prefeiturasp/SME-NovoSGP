@@ -3,7 +3,6 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra.Dtos;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -25,9 +24,7 @@ namespace SME.SGP.Aplicacao.Queries.Evento.ObterDataPossuiEventoLiberacaoExcepci
             {
                 modalidade = (int)((Modalidade)request.Modalidade).ObterModalidadeTipoCalendario();
             }
-            var eventos = await repositorioEvento.ObterEventosPorTipoDeCalendarioDreUeModalidadeAsync(request.TipoCalendario, request.AnoLetivo, request.CodigoDre, request.CodigoUe, modalidade);
-            return eventos
-                .Select(e => new ListarEventosPorCalendarioRetornoDto { Id = e.Id, Nome = e.Nome });
+            return await repositorioEvento.ObterEventosPorTipoDeCalendarioDreUeModalidadeAsync(request.TipoCalendario, request.AnoLetivo, request.CodigoDre, request.CodigoUe, modalidade);
         }
     }
 }

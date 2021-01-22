@@ -18,6 +18,7 @@ namespace SME.SGP.Aplicacao
         {
             this.repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));
         }
+
         public async Task<List<DiaLetivoDto>> Handle(ObterDiasPorPeriodosEscolaresComEventosLetivosENaoLetivosQuery request, CancellationToken cancellationToken)
         {
             var datasDosPeriodosEscolares = new List<DiaLetivoDto>();
@@ -31,20 +32,50 @@ namespace SME.SGP.Aplicacao
             }
 
             var eventos = (await repositorioEvento.ObterEventosPorTipoDeCalendarioAsync(request.TipoCalendarioId))?.Where(c => (c.EhEventoUE() || c.EhEventoSME()));
-
             if (eventos != null)
             {
-                var datasComEventos = eventos.SelectMany(evento => evento.ObterIntervaloDatas().Select(data => new DiaLetivoDto
+                datasDosPeriodosEscolares.AddRange(ObtemEventoLetivosFimDeSemana(eventos));
+
+                datasDosPeriodosEscolares.AddRange(ObtemEventosNaoLetivos(datasDosPeriodosEscolares, eventos));
+            }
+
+            return datasDosPeriodosEscolares;
+        }
+
+        private IEnumerable<DiaLetivoDto> ObtemEventosNaoLetivos(List<DiaLetivoDto> datasDosPeriodosEscolares, IEnumerable<Evento> eventos)
+        {
+            var datasComEventosNaoLetivos = eventos.Where(c => c.EhEventoNaoLetivo())
+                .SelectMany(evento => evento.ObterIntervaloDatas()
+                .Where(c => !c.FimDeSemana())
+                .Select(data => new DiaLetivoDto
                 {
                     Data = data,
-                    EhLetivo = evento.EhEventoLetivo(),
+                    EhLetivo = false,
+                    EhNaoLetivo = true,
+                    Motivo = evento.Nome,
                     UesIds = string.IsNullOrWhiteSpace(evento.UeId) ? new List<string>() : new List<string> { evento.UeId },
+                    DreIds = string.IsNullOrWhiteSpace(evento.DreId) ? new List<string>() : new List<string> { evento.DreId },
+                    PossuiEvento = true
+                }));;
+
+            return datasComEventosNaoLetivos;
+        }
+
+        private IEnumerable<DiaLetivoDto> ObtemEventoLetivosFimDeSemana(IEnumerable<Evento> eventos)
+        {
+            var datasComEventosFimDeSemana = eventos.Where(c => c.EhEventoLetivo())
+                .SelectMany(evento => evento.ObterIntervaloDatas()
+                .Where(c => c.FimDeSemana())
+                .Select(data => new DiaLetivoDto
+                {
+                    Data = data,
+                    EhLetivo = true,
+                    UesIds = string.IsNullOrWhiteSpace(evento.UeId) ? new List<string>() : new List<string> { evento.UeId },
+                    DreIds = string.IsNullOrWhiteSpace(evento.DreId) ? new List<string>() : new List<string> { evento.DreId },
                     PossuiEvento = true
                 }));
 
-                datasDosPeriodosEscolares.AddRange(datasComEventos);
-            }
-            return datasDosPeriodosEscolares;
+            return datasComEventosFimDeSemana;
         }
     }
 }

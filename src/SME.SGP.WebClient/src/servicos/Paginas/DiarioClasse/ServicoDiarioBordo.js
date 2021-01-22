@@ -13,11 +13,11 @@ class ServicoDiarioBordo {
     const observacaoId = dados.id;
     if (observacaoId) {
       const url = `${urlPadrao}/observacoes/${observacaoId}`;
-      return api.put(url, { observacao: dados.observacao });
+      return api.put(url, dados);
     }
 
     const url = `${urlPadrao}/${diarioBordoId}/observacoes`;
-    return api.post(url, { observacao: dados.observacao });
+    return api.post(url, dados);
   };
 
   atualizarSalvarEditarDadosObservacao = (dados, dadosAposSalvar) => {
@@ -95,6 +95,46 @@ class ServicoDiarioBordo {
     const url = `${urlPadrao}/devolutivas/${idDevolutiva}?numeroPagina=${numeroPagina ||
       1}&NumeroRegistros=4`;
     return api.get(url);
+  };
+
+  obterTitulosDiarioBordo = ({
+    turmaId,
+    componenteCurricularId,
+    dataInicio,
+    dataFim,
+    numeroPagina,
+    numeroRegistros,
+  }) => {
+    const dataBusca =
+      dataInicio && dataFim
+        ? `dataInicio=${dataInicio}&dataFim=${dataFim}&`
+        : '';
+    return api.get(
+      `${urlPadrao}/titulos/turmas/${turmaId}/componentes-curriculares/${componenteCurricularId}?` +
+        `${dataBusca}numeroPagina=${numeroPagina}&numeroRegistros=${numeroRegistros}`
+    );
+  };
+
+  obterDiarioBordoPorData = ({
+    turmaCodigo,
+    componenteCurricularId,
+    dataInicio,
+    dataFim,
+  }) => {
+    return api.get(
+      `${urlPadrao}/turmas/${turmaCodigo}/componentes-curriculares/${componenteCurricularId}` +
+        `/inicio/${dataInicio}/fim/${dataFim}`
+    );
+  };
+
+  obterDiarioBordoDetalhes = diarioBordoId => {
+    return api.get(`${urlPadrao}/detalhes/${diarioBordoId}`);
+  };
+
+  obterNofiticarUsuarios = ({ turmaId, observacaoId = '' }) => {
+    return api.get(
+      `${urlPadrao}/notificacoes/usuarios?turmaId=${turmaId}&observacaoId=${observacaoId}`
+    );
   };
 }
 

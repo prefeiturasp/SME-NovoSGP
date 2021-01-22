@@ -22,5 +22,6 @@ namespace SME.SGP.Infra
         }
 
         public List<string> Mensagens { get; set; }
+        public bool ExistemErros => Mensagens?.Any() ?? false;
     }
 }

@@ -55,6 +55,31 @@ namespace SME.SGP.Dominio
         RelatorioMatetimaticaConsolidado = 17,
 
         [Display(Name = "relatorios/controle-grade", ShortName = "ControleGrade", Description = "Relatório Controle de Grade")]
-        ControleGrade = 18
+        ControleGrade = 18,
+
+        [Display(Name = "relatorios/notificacoes", ShortName = "Notificacoes", Description = "Relatório de Notificações")]
+        Notificacoes = 19,        
+
+        [Display(Name = "relatorios/usuarios", ShortName = "Usuarios", Description = "Relatório de Usuários")]
+        Usuarios = 20,
+
+        [Display(Name = "relatorios/atribuicoes-cj", ShortName = "Atribuição CJ", Description = "Relatório de Atribuições de CJ")]
+        AtribuicaoCJ = 22,
+        
+        [Display(Name = "relatorios/graficopap", ShortName = "GraficoPAP", Description = "Relatório de acompanhamento PAP - Gráficos")]
+        GraficoPAP = 23,
+
+        [Display(Name = "relatorios/alteracao-notas", ShortName = "AlteracaoNotas", Description = "Relatório de alterações de notas")]
+        AlteracaoNotasBimestre = 24,
+
+        [Display(Name = "relatorios/ae/adesao", ShortName = "RelatorioDeAdesao", Description = "Relatório de Adesão do Escola Aqui")]
+        AEAdesao = 25,
+
+        [Display(Name = "relatorios/dados-leitura", ShortName = "DadosLeitura", Description = "Relatório de Leitura")]
+        Leitura = 26,
+
+        [Display(Name = "relatorios/planejamento-diario", ShortName = "Planejamento Diario", Description = "Relatório de controle de planejamento diário")]
+        PlanejamentoDiario = 27
+
     }
 }

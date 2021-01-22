@@ -38,21 +38,52 @@ namespace SME.SGP.Aplicacao
             long diarioBordoId = (long)dadosMensagem.DiarioBordoId;
             var diarioBordo = await mediator.Send(new ObterDiarioBordoComAulaETurmaPorCodigoQuery(diarioBordoId));
 
+            var mensagem = new StringBuilder($"O usuário {usuarioLogado.Nome} ({usuarioLogado.CodigoRf}) inseriu uma nova observação no Diário de bordo do dia {dataAtual} da turma <strong>{diarioBordo.Aula.Turma.Nome}</strong> da <strong>{diarioBordo.Aula.Turma.Ue.TipoEscola}-{diarioBordo.Aula.Turma.Ue.Nome}</strong> ({diarioBordo.Aula.Turma.Ue.Dre.Abreviacao}).");
+
+            if (dadosMensagem.Observacao.Length > 200)
+            {
+                mensagem.AppendLine($"<br/><br/>Observação: Acesse o Diário de bordo de uma das aulas para consultar a observação.");
+            }
+            else
+            {
+                mensagem.AppendLine($"<br/><br/>Observação: {dadosMensagem.Observacao.TrimEnd('.').Trim()}.");
+            }
+
+            var titulo = $"Nova observação no Diário de bordo da turma {diarioBordo.Aula.Turma.Nome} ({dataAtual})";
+
+            if (dadosMensagem.UsuariosNotificacao != null && dadosMensagem.UsuariosNotificacao.Any())
+            {
+                foreach (var usuario in dadosMensagem.UsuariosNotificacao)
+                {
+                    var codigoRf = usuario.CodigoRf;
+
+                    if (codigoRf != usuarioLogado.CodigoRf)
+                    {
+                        //if (usuario != null)
+                        {
+                            unitOfWork.IniciarTransacao();
+                            var notificacaoId = await mediator.Send(new NotificarUsuarioCommand(titulo,
+                                                                             mensagem.ToString(),
+                                                                             codigoRf,
+                                                                             NotificacaoCategoria.Aviso,
+                                                                             NotificacaoTipo.Planejamento));
+
+
+                            var diarioBordoObservacaoNotificacao = new DiarioBordoObservacaoNotificacao(dadosMensagem.ObservacaoId, notificacaoId);
+
+                            await repositorioDiarioBordoObservacaoNotificacao.Salvar(diarioBordoObservacaoNotificacao);
+                            unitOfWork.PersistirTransacao();
+                        }
+                    }
+                }
+                return true;
+            }
+
             var titulares = await mediator.Send(new ObterProfessoresTitularesDaTurmaQuery(diarioBordo.Aula.Turma.CodigoTurma));
 
             if (titulares != null)
             {
-                var mensagem = new StringBuilder($"O usuário {usuarioLogado.Nome} ({usuarioLogado.CodigoRf}) inseriu uma nova observação no Diário de bordo do dia {dataAtual} da turma <strong>{diarioBordo.Aula.Turma.Nome}</strong> da <strong>{diarioBordo.Aula.Turma.Ue.TipoEscola}-{diarioBordo.Aula.Turma.Ue.Nome}</strong> ({diarioBordo.Aula.Turma.Ue.Dre.Abreviacao}).");
-                
-                if (dadosMensagem.Observacao.Length > 200)
-                {
-                    mensagem.AppendLine($"<br/><br/>Observação: Acesse o Diário de bordo de uma das aulas para consultar a observação.");
-                }
-                else
-                {
-                    mensagem.AppendLine($"<br/><br/>Observação: {dadosMensagem.Observacao.TrimEnd('.').Trim()}.");
-                }
-
+                titulares = titulares.Where(t => !string.IsNullOrEmpty(t));
 
                 if (titulares.Count() == 1)
                     titulares = titulares.FirstOrDefault().Split(',');
@@ -67,7 +98,7 @@ namespace SME.SGP.Aplicacao
                         //if (usuario != null)
                         {
                             unitOfWork.IniciarTransacao();
-                            var notificacaoId = await mediator.Send(new NotificarUsuarioCommand($"Nova observação no Diário de bordo da turma {diarioBordo.Aula.Turma.Nome} ({dataAtual})",
+                            var notificacaoId = await mediator.Send(new NotificarUsuarioCommand(titulo,
                                                                              mensagem.ToString(),
                                                                              codigoRf,
                                                                              NotificacaoCategoria.Aviso,

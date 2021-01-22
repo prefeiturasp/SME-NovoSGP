@@ -6,7 +6,7 @@ import * as Yup from 'yup';
 import { Auditoria, Colors, Loader, ModalConteudoHtml } from '~/componentes';
 import DetalhesAluno from '~/componentes/Alunos/Detalhes';
 import Button from '~/componentes/button';
-import Editor from '~/componentes/editor/editor';
+import JoditEditor from '~/componentes/jodit-editor/joditEditor';
 import SelectComponent from '~/componentes/select';
 import { confirmar, erros, sucesso } from '~/servicos/alertas';
 import ServicoAnotacaoFrequenciaAluno from '~/servicos/Paginas/DiarioClasse/ServicoAnotacaoFrequenciaAluno';
@@ -90,13 +90,11 @@ const ModalAnotacoesFrequencia = props => {
 
   const montarDadosAluno = useCallback(() => {
     const aluno = {
+      ...dadosModalAnotacao,
       nome: dadosModalAnotacao.nomeAluno,
       numeroChamada: dadosModalAnotacao.numeroAlunoChamada,
       dataNascimento: dadosModalAnotacao.dataNascimento,
       codigoEOL: dadosModalAnotacao.codigoAluno,
-      frequencia: 89,
-      situacao: dadosModalAnotacao.situacaoMatricula,
-      dataSituacao: dadosModalAnotacao.dataSituacao,
     };
     setDadosEstudanteOuCrianca(aluno);
   }, [dadosModalAnotacao]);
@@ -280,15 +278,16 @@ const ModalAnotacoesFrequencia = props => {
             </div>
             <div className="col-md-12 mt-2">
               <EditorAnotacao>
-                <Editor
+                <JoditEditor
                   form={form}
+                  value={form.values.anotacao}
                   name="anotacao"
                   onChange={v => {
                     if (valoresIniciais.anotacao !== v) {
                       onChangeCampos();
                     }
                   }}
-                  desabilitar={desabilitarCampos}
+                  readonly={desabilitarCampos}
                 />
               </EditorAnotacao>
             </div>

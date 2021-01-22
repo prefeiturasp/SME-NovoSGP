@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import CardCollapse from '~/componentes/cardCollapse';
-import Editor from '~/componentes/editor/editor';
+import JoditEditor from '~/componentes/jodit-editor/joditEditor';
 import {
   setDesenvolvimentoDaAulaValidaObrigatoriedade,
   setModoEdicaoPlanoAula,
@@ -31,7 +31,7 @@ const DesenvolvimentoDaAula = () => {
   };
 
   const desenvolvimentoDaAulaValidaObrigatoriedade = () => {
-    refForm.current.props.onChange(null, refForm.current.editor);
+    refForm.current.events.fire('validarSeTemErro');
   };
 
   useEffect(() => {
@@ -57,7 +57,7 @@ const DesenvolvimentoDaAula = () => {
         show
       >
         <fieldset className="mt-3">
-          <Editor
+          <JoditEditor
             ref={refForm}
             validarSeTemErro={valor =>
               !valor && !desabilitarCamposPlanoAula && temPeriodoAberto
@@ -65,7 +65,7 @@ const DesenvolvimentoDaAula = () => {
             mensagemErro="Campo obrigatório"
             desabilitar={desabilitarCamposPlanoAula || !temPeriodoAberto}
             onChange={onChangeDesenvolvimentoAula}
-            inicial={dadosPlanoAula.desenvolvimentoAula}
+            value={dadosPlanoAula.desenvolvimentoAula}
           />
         </fieldset>
       </CardCollapse>

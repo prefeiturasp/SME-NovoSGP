@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 
@@ -26,8 +26,6 @@ import {
   Card,
   ButtonGroup,
   Grid,
-  TextEditor,
-  Label,
   CampoTexto,
   Localizador,
   Loader,
@@ -42,10 +40,10 @@ import { Row } from './styles';
 import { validaSeObjetoEhNuloOuVazio } from '~/utils/funcoes/gerais';
 import AlertaModalidadeInfantil from '~/componentes-sgp/AlertaModalidadeInfantil/alertaModalidadeInfantil';
 import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
+import JoditEditor from '~/componentes/jodit-editor/joditEditor';
 
 function RegistroPOAForm({ match }) {
   const dispatch = useDispatch();
-  const textEditorRef = useRef(null);
   const carregando = useSelector(store => store.loader.loaderSecao);
   const permissoesTela = useSelector(store => store.usuario.permissoes);
   const anoLetivo =
@@ -64,7 +62,6 @@ function RegistroPOAForm({ match }) {
   const [auditoria, setAuditoria] = useState({});
   const [valoresCarregados, setValoresCarregados] = useState(null);
   const [refForm, setRefForm] = useState({});
-  const [descricao, setDescricao] = useState('');
   const ehEdicaoRegistro = match && match.params && match.params.id > 0;
   const [valoresIniciais, setValoresIniciais] = useState({
     bimestre: '',
@@ -87,13 +84,13 @@ function RegistroPOAForm({ match }) {
     );
     if (naoSetarSomenteConsultaNoStore && refForm.resetForm) {
       refForm.resetForm();
-      setDescricao('');
       setModoEdicao(false);
     }
   }, [turmaSelecionada, permissoesTela, modalidadesFiltroPrincipal]);
 
   const validacoes = () => {
     return Yup.object({
+      descricao: Yup.string().required('Campo obrigatório!'),
       bimestre: Yup.number().required('Campo obrigatório!'),
       titulo: Yup.string().required('O campo "Título" é obrigatório!'),
       professorRf: Yup.number()
@@ -125,7 +122,6 @@ function RegistroPOAForm({ match }) {
       ...form,
       values: {
         ...form.values,
-        descricao: textEditorRef.current.state.value,
         anoLetivo,
       },
     };
@@ -140,7 +136,6 @@ function RegistroPOAForm({ match }) {
           ...valores,
           codigoRf: valores.professorRf,
           nome: valores.professorNome,
-          descricao,
           anoLetivo,
         },
         valores.id || null
@@ -182,7 +177,6 @@ function RegistroPOAForm({ match }) {
     );
     if (confirmou) {
       form.resetForm();
-      setDescricao('');
       setModoEdicao(false);
     }
   };
@@ -219,7 +213,6 @@ function RegistroPOAForm({ match }) {
           professorNome: registro.data.nome,
           titulo: registro.data.titulo,
         });
-        setDescricao(registro.data.descricao);
         setAuditoria({
           criadoPor: registro.data.criadoPor,
           criadoRf: registro.data.criadoRF > 0 ? registro.data.criadoRF : '',
@@ -357,18 +350,14 @@ function RegistroPOAForm({ match }) {
                     </Row>
                     <Row className="row">
                       <Grid cols={12}>
-                        <Label text="Registro das atividades realizadas junto aos professores ao longo do bimestre, considerando a análise e o acompanhamento do planejamento docente" />
-                        <TextEditor
-                          className="form-control w-100"
-                          ref={textEditorRef}
+                        <JoditEditor
+                          label="Registro das atividades realizadas junto aos professores ao longo do bimestre, considerando a análise e o acompanhamento do planejamento docente"
+                          form={form}
                           id="descricao"
                           alt="Registro das atividades realizadas junto aos professores ao longo do bimestre, considerando a análise e o acompanhamento do planejamento docente"
                           name="descricao"
-                          onBlur={valor => setDescricao(valor)}
-                          value={descricao}
-                          maxlength={500}
-                          toolbar
-                          disabled={somenteConsulta}
+                          value={valoresIniciais.descricao}
+                          desabilitado={somenteConsulta}
                         />
                       </Grid>
                     </Row>

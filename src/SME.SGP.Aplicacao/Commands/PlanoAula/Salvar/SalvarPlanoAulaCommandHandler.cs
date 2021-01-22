@@ -93,7 +93,7 @@ namespace SME.SGP.Aplicacao
 
                 await repositorioPlanoAula.SalvarAsync(planoAula);
 
-                await mediator.Send(new ExcluirPendenciaAulaCommand(planoAula.AulaId, Dominio.TipoPendenciaAula.PlanoAula));
+                await mediator.Send(new ExcluirPendenciaAulaCommand(planoAula.AulaId, Dominio.TipoPendencia.PlanoAula));
 
                 // Salvar Objetivos
                 await repositorioObjetivosAula.LimparObjetivosAula(planoAula.Id);

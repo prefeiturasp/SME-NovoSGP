@@ -48,7 +48,6 @@ namespace SME.SGP.Worker.Service
 
                 // Teste para injeção do client de telemetria em classe estática                 ,
 
-
                 var telemetryConfiguration = new Microsoft.ApplicationInsights.Extensibility.TelemetryConfiguration(hostContext.Configuration.GetValue<string>("ApplicationInsights:InstrumentationKey"));
 
                 var telemetryClient = new TelemetryClient(telemetryConfiguration);

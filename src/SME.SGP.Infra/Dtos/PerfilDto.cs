@@ -6,5 +6,6 @@ namespace SME.SGP.Infra
     {
         public Guid CodigoPerfil { get; set; }
         public string NomePerfil { get; set; }
+        public int OrdemPerfil { get; set; }
     }
 }

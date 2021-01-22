@@ -28,6 +28,10 @@ const ResumosGraficosPAPServico = {
   gerarResumosPap(payload) {
     return api.post('v1/relatorios/resumopap/impressao', payload);
   },
+
+  gerarGraficosPap(payload) {
+    return api.post('v1/relatorios/graficopap/impressao', payload);
+  },
 };
 
 export default ResumosGraficosPAPServico;

@@ -2,6 +2,7 @@ using Dapper;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -140,7 +141,16 @@ namespace SME.SGP.Dados.Repositorios
         {
             await database.Conexao.ExecuteAsync("DELETE FROM NOTIFICACAO WHERE ID = ANY(@ids)", new { ids });
         }
+        public async Task ExcluirLogicamentePorIdsAsync(long[] ids)
+        {
+            var query = @"UPDATE NOTIFICACAO SET 
+                            EXCLUIDA = true, 
+                            ALTERADO_EM = @dataAlteracao, 
+                            ALTERADO_POR = 'Sistema'
+                         WHERE ID = ANY(@ids)";
 
+            await database.Conexao.ExecuteAsync(query, new { ids, dataAlteracao = DateTime.Now });
+        }
         public IEnumerable<Notificacao> ObterNotificacoesPorAnoLetivoERf(int anoLetivo, string usuarioRf, int limite)
         {
             var query = new StringBuilder();
@@ -302,7 +312,30 @@ namespace SME.SGP.Dados.Repositorios
                     alteradoRF = database.UsuarioLogadoRF,
                     alteradoEm = DateTime.Now
                 });
-        }        
+        }
+
+        public async Task<IEnumerable<NotificacoesParaTratamentoCargosNiveisDto>> ObterNotificacoesParaTratamentoCargosNiveis()
+        {
+            var query = @"select 
+                            wan.cargo,                                                         
+                            n.ue_id as UECodigo,
+                            n.dre_id as DRECodigo,                            
+                            n.id as NotificacaoId,
+                            wan.wf_aprovacao_id as WorkflowId
+                            from wf_aprovacao_nivel wan
+	                            inner join wf_aprovacao_nivel_notificacao wann 
+		                            on wann.wf_aprovacao_nivel_id  = wan.id
+                                inner join notificacao n 
+    	                            on wann.notificacao_id  = n.id                            
+                                inner join usuario u 
+    	                            on n.usuario_id  = u.id 
+	                            where n.status = 1
+    	                            and n.excluida = false
+                                    and n.tipo in (1,2)";
+
+            return await database.Conexao.QueryAsync<NotificacoesParaTratamentoCargosNiveisDto>(query);
+        }
+                
 
         public async Task ExcluirPeloSistemaAsync(long[] ids)
         {
@@ -311,4 +344,6 @@ namespace SME.SGP.Dados.Repositorios
         }
 
     }
+
+
 }

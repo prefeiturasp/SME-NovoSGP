@@ -32,8 +32,6 @@ const ListaAlunosSelecionados = props => {
     },
   ];
 
-  console.log(alunosSelecionados);
-
   const ObterAlunos = useCallback(() => {
     if (!dadosAlunos || dadosAlunos.length === 0) return;
 

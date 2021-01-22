@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SME.SGP.Aplicacao;
+using SME.SGP.Infra;
 using System;
 using System.IO;
 using System.Linq;
@@ -8,46 +11,32 @@ using System.Threading.Tasks;
 namespace SME.SGP.Api.Controllers
 {
     /// <summary>
-    /// Controller de exemplo apenas para Poc e demonstração de upload com o componente de editor de texto Jodit
+    /// Controller para upload de arquivos do Jodit
     /// </summary>
     [ApiController]
-    [Route("api/file/upload")]
+    [Route("api/v1/arquivos/upload")]
     [Authorize("Bearer")]
     public class UploadController : ControllerBase
     {
         [HttpPost]
-        public async Task<IActionResult> Editor()
+        [ProducesResponseType(typeof(RetornoBaseDto), 200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> Editor([FromServices] IUploadArquivoEditorUseCase useCase)
         {
-            var filess = Request.Form.Files;
-            var theFile = filess.FirstOrDefault();
-
-            var nomeArquivo = $"{Guid.NewGuid()}-{theFile.FileName}";
-            var caminhoArquivo = Path.Combine("Imagens", nomeArquivo);
-
-            FileInfo dir = new FileInfo(caminhoArquivo);
-            if (!dir.Exists)
+            var files = Request.Form.Files;
+            if (files != null)
             {
-                dir.Directory.Create();
+                //Foi adicionado fixo o valor https pois será discutido com a infra o problema de SSL
+                //Depois que corrigir, colocar: {Request.Protocol.Split('/')[0].ToLower()}
+                var file = files.FirstOrDefault();
+                if (file.Length > 0)
+                    return Ok(await useCase.Executar(files.FirstOrDefault(), 
+                        $"https://{Request.Host}{Request.PathBase}/Arquivos/Editor/", 
+                        Dominio.TipoArquivo.Editor));
             }
-            using (var stream = new FileStream(caminhoArquivo, FileMode.Create))
-            {
-                await theFile.CopyToAsync(stream);
-            }
-
-            string AppBaseUrl = $"{Request.Scheme}://{Request.Host}{Request.PathBase}";
-
-            return Ok(new
-            {
-                success = true,
-                data = new
-                {
-                    files = new[] { nomeArquivo },
-                    baseurl = $"{AppBaseUrl}/imagens/",
-                    message = "",
-                    error = "",
-                    path = $"{AppBaseUrl}/imagens/{nomeArquivo}"
-                }
-            });
+                
+            return BadRequest();
         }
     }
 }
