@@ -6,6 +6,6 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioSecaoEncaminhamentoAEE : IRepositorioBase<SecaoEncaminhamentoAEE>
     {
-        Task<IEnumerable<SecaoQuestionarioDto>> ObterSecaoEncaminhamentoPorEtapa(long etapa);
+        Task<IEnumerable<SecaoQuestionarioDto>> ObterSecaoEncaminhamentoPorEtapa(long etapa, long encaminhamentoAeeId = 0);
     }
 }

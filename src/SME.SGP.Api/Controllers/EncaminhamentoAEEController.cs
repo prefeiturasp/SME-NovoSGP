@@ -31,9 +31,9 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("secoes")]
         [ProducesResponseType(typeof(IEnumerable<SecaoQuestionarioDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterSecoesPorEtapaDeEncaminhamentoAEE([FromQuery] long etapa, [FromServices] IObterSecoesPorEtapaDeEncaminhamentoAEEUseCase obterSecoesPorEtapaDeEncaminhamentoAEEUseCase)
+        public async Task<IActionResult> ObterSecoesPorEtapaDeEncaminhamentoAEE([FromQuery] long etapa, [FromQuery] long encaminhamentoAeeId, [FromServices] IObterSecoesPorEtapaDeEncaminhamentoAEEUseCase obterSecoesPorEtapaDeEncaminhamentoAEEUseCase)
         {
-            return Ok(await obterSecoesPorEtapaDeEncaminhamentoAEEUseCase.Executar(etapa));
+            return Ok(await obterSecoesPorEtapaDeEncaminhamentoAEEUseCase.Executar(etapa, encaminhamentoAeeId));
         }
 
         [HttpGet("questionario")]
@@ -115,7 +115,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("{encaminhamentoId}")]
         [ProducesResponseType(typeof(EncaminhamentoAEERespostaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterQuestionario(long encaminhamentoId, [FromServices] IObterEncaminhamentoPorIdUseCase useCase)
+        public async Task<IActionResult> ObterEncaminhamento(long encaminhamentoId, [FromServices] IObterEncaminhamentoPorIdUseCase useCase)
         {
             return Ok(await useCase.Executar(encaminhamentoId));
         }
