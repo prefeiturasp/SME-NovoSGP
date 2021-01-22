@@ -79,10 +79,6 @@ const AcompanhamentoFrequencia = () => {
     setComponenteCurricularIdSelecionado,
   ] = useState(undefined);
   const [
-    componenteCurricularSelecionado,
-    setComponenteCurricularSelecionado,
-  ] = useState(undefined);
-  const [
     desabilitarComponenteCurricular,
     setDesabilitarComponenteCurricular,
   ] = useState(false);
@@ -95,7 +91,6 @@ const AcompanhamentoFrequencia = () => {
     setDesabilitarComponenteCurricular(false);
     setPodeLancarNota(false);
     setListaComponentesCurriculares([]);
-    setComponenteCurricularSelecionado(undefined);
     setComponenteCurricularIdSelecionado(undefined);
   };
 
@@ -124,41 +119,40 @@ const AcompanhamentoFrequencia = () => {
         setComponenteCurricularIdSelecionado(
           String(componenteCurricular.codigoComponenteCurricular)
         );
-        setComponenteCurricularSelecionado(componenteCurricular);
         setDesabilitarComponenteCurricular(true);
       }
       setCarregandoComponentesCurriculares(false);
     };
 
-    if (
-      turmaSelecionada.turma &&
-      !ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada)
-    ) {
+    if (turmaSelecionada.turma) {
       resetarFiltro();
       obterComponentesCurriculares();
     } else {
       resetarFiltro();
+      setDesabilitarComponenteCurricular(true);
     }
   }, [turmaSelecionada, modalidadesFiltroPrincipal]);
 
   const onChangeComponenteCurricular = async componenteCurricularId => {
     setComponenteCurricularIdSelecionado(componenteCurricularId);
     setPodeLancarNota(false);
-
-    const componenteCurriular =
-      listaComponentesCurriculares.length > 1
-        ? listaComponentesCurriculares.find(
-            item =>
-              String(item.codigoComponenteCurricular) === componenteCurricularId
-          )
-        : componenteCurricularSelecionado;
-    setPodeLancarNota(componenteCurriular?.lancaNota);
-    if (turmaSelecionada.modalidade === String(modalidade.EJA)) {
-      setBimestres(listagemBimestresEJA);
-    } else {
-      setBimestres(listagemBimestres);
-    }
   };
+
+  useEffect(() => {
+    if (componenteCurricularIdSelecionado) {
+      const componenteCurriular = listaComponentesCurriculares.find(
+        item =>
+          String(item.codigoComponenteCurricular) ===
+          String(componenteCurricularIdSelecionado)
+      );
+      setPodeLancarNota(componenteCurriular?.lancaNota);
+      if (turmaSelecionada.modalidade === String(modalidade.EJA)) {
+        setBimestres(listagemBimestresEJA);
+      } else {
+        setBimestres(listagemBimestres);
+      }
+    }
+  }, [componenteCurricularIdSelecionado]);
 
   return (
     <>
@@ -177,7 +171,7 @@ const AcompanhamentoFrequencia = () => {
         ) : (
           ''
         )}
-        {!podeLancarNota && componenteCurricularIdSelecionado ? (
+        {!podeLancarNota && componenteCurricularIdSelecionado && (
           <Alert
             alerta={{
               tipo: 'warning',
@@ -188,8 +182,6 @@ const AcompanhamentoFrequencia = () => {
             }}
             className="mb-2"
           />
-        ) : (
-          ''
         )}
         <Cabecalho pagina="Acompanhamento de Frequência" />
         <Card>

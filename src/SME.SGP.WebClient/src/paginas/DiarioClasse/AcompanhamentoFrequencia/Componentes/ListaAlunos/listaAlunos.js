@@ -28,6 +28,8 @@ const ListaAlunos = props => {
     store => store.filtro.modalidades
   );
 
+  const { id: turmaId } = turmaSelecionada;
+
   const dispatch = useDispatch();
 
   const [carregandoListaAlunos, setCarregandoListaAlunos] = useState(false);
@@ -47,9 +49,10 @@ const ListaAlunos = props => {
       }
       setCarregandoListaAlunos(false);
     };
-
-    obterAlunos();
-  }, []);
+    if (componenteCurricularId && turmaId) {
+      obterAlunos();
+    }
+  }, [componenteCurricularId, turmaId]);
 
   const onChangeOrdenacao = alunosOrdenados => {
     dispatch(setExpandirLinhaFrequenciaAluno([]));
@@ -149,13 +152,7 @@ const ListaAlunos = props => {
                             >
                               <strong>{data?.numeroChamada}</strong>
                               {data?.marcadorFrequencia ? (
-                                <div
-                                  className={
-                                    data?.numeroChamada > 9
-                                      ? 'divIconeSituacaoMaior'
-                                      : 'divIconeSituacaoDefault'
-                                  }
-                                >
+                                <div className="divIconeSituacao">
                                   <Tooltip
                                     title={data.marcadorFrequencia?.descricao}
                                   >
