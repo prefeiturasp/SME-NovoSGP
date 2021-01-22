@@ -1,3 +1,4 @@
+import * as Yup from 'yup';
 import { RotasDto } from '~/dtos';
 import tipoQuestao from '~/dtos/tipoQuestao';
 import { store } from '~/redux';
@@ -51,8 +52,13 @@ class ServicoEncaminhamentoAEE {
     return api.get(url);
   };
 
-  obterQuestionario = (questionarioId, encaminhamentoId) => {
-    let url = `${urlPadrao}/questionario?questionarioId=${questionarioId}`;
+  obterQuestionario = (
+    questionarioId,
+    encaminhamentoId,
+    codigoAluno,
+    codigoTurma
+  ) => {
+    let url = `${urlPadrao}/questionario?questionarioId=${questionarioId}&codigoAluno=${codigoAluno}&codigoTurma=${codigoTurma}`;
     if (encaminhamentoId) {
       url = `${url}&encaminhamentoId=${encaminhamentoId}`;
     }
@@ -80,9 +86,7 @@ class ServicoEncaminhamentoAEE {
   addFormsSecoesEncaminhamentoAEE = (
     obterForm,
     questionarioId,
-    dadosQuestionarioAtual,
-    tiposQuestaoPorIdQuestao,
-    idsRespostasPorIdQuestao
+    dadosQuestionarioAtual
   ) => {
     const { dispatch } = store;
     const state = store.getState();
@@ -93,8 +97,6 @@ class ServicoEncaminhamentoAEE {
       param[questionarioId] = {
         form: obterForm,
         dadosQuestionarioAtual,
-        tiposQuestaoPorIdQuestao,
-        idsRespostasPorIdQuestao,
       };
       dispatch(setFormsSecoesEncaminhamentoAEE(param));
     } else if (formsSecoesEncaminhamentoAEE?.length) {
@@ -102,11 +104,74 @@ class ServicoEncaminhamentoAEE {
       param[questionarioId] = {
         form: obterForm,
         dadosQuestionarioAtual,
-        tiposQuestaoPorIdQuestao,
-        idsRespostasPorIdQuestao,
       };
       dispatch(setFormsSecoesEncaminhamentoAEE(param));
     }
+  };
+
+  obterQuestaoPorId = (dados, idPesquisa) => {
+    let questaoAtual = '';
+
+    const obterQuestao = item => {
+      if (!questaoAtual) {
+        if (String(item.id) === String(idPesquisa)) {
+          questaoAtual = item;
+        } else if (item?.opcaoResposta?.length) {
+          item.opcaoResposta.forEach(opcaoResposta => {
+            if (opcaoResposta.questaoComplementar) {
+              obterQuestao(opcaoResposta.questaoComplementar);
+            }
+          });
+        }
+      }
+    };
+
+    dados.forEach(item => {
+      obterQuestao(item);
+    });
+
+    return questaoAtual;
+  };
+
+  obterValidationSchema = (dadosQuestionarioAtual, form) => {
+    if (dadosQuestionarioAtual?.length && form?.state?.values) {
+      const camposComValidacao = {};
+
+      let arrayCampos = [];
+
+      const camposValidar = form?.state?.values;
+      if (camposValidar && Object.keys(camposValidar)?.length) {
+        arrayCampos = Object.keys(camposValidar);
+      }
+
+      const montaValidacoes = questaoAtual => {
+        if (questaoAtual?.opcaoResposta?.length) {
+          questaoAtual.opcaoResposta.forEach(opcaoAtual => {
+            if (opcaoAtual?.questaoComplementar) {
+              montaValidacoes(opcaoAtual.questaoComplementar);
+            }
+          });
+        }
+
+        if (
+          questaoAtual.obrigatorio &&
+          arrayCampos.find(questaoId => questaoId === String(questaoAtual.id))
+        ) {
+          camposComValidacao[questaoAtual.id] = Yup.string()
+            .nullable()
+            .required('Campo obrigatório');
+        }
+      };
+
+      if (arrayCampos?.length) {
+        dadosQuestionarioAtual.forEach(questaoAtual => {
+          montaValidacoes(questaoAtual);
+        });
+
+        return Yup.object(camposComValidacao);
+      }
+    }
+    return {};
   };
 
   salvarEncaminhamento = async (encaminhamentoId, enviarEcaminhamento) => {
@@ -124,8 +189,9 @@ class ServicoEncaminhamentoAEE {
     const validaAntesDoSubmit = refForm => {
       let arrayCampos = [];
 
-      if (refForm?.fields && Object.keys(refForm?.fields)?.length) {
-        arrayCampos = Object.keys(refForm.fields);
+      const camposValidar = refForm?.state?.values;
+      if (camposValidar && Object.keys(camposValidar)?.length) {
+        arrayCampos = Object.keys(camposValidar);
       }
 
       arrayCampos.forEach(campo => {
@@ -152,7 +218,8 @@ class ServicoEncaminhamentoAEE {
         await Promise.all(promises);
 
         todosOsFormsEstaoValidos =
-          contadorFormsValidos === formsSecoesEncaminhamentoAEE.length;
+          contadorFormsValidos ===
+          formsSecoesEncaminhamentoAEE?.filter(a => a)?.length;
       }
 
       if (todosOsFormsEstaoValidos) {
@@ -168,10 +235,14 @@ class ServicoEncaminhamentoAEE {
             const questoes = [];
 
             Object.keys(campos).forEach(key => {
+              const questaoAtual = this.obterQuestaoPorId(
+                item.dadosQuestionarioAtual,
+                key
+              );
+
               const questao = {
                 questaoId: key,
-                tipoQuestao: item?.tiposQuestaoPorIdQuestao[key],
-                respostaEncaminhamentoId: item?.idsRespostasPorIdQuestao[key],
+                tipoQuestao: questaoAtual.tipoQuestao,
               };
 
               switch (questao.tipoQuestao) {
@@ -195,10 +266,36 @@ class ServicoEncaminhamentoAEE {
                 questao.tipoQuestao === tipoQuestao.Upload &&
                 questao?.resposta?.length
               ) {
-                questao.resposta.forEach(b => {
-                  questoes.push({ ...questao, resposta: b });
+                questao.resposta.forEach(codigo => {
+                  if (questaoAtual?.resposta?.length) {
+                    const arquivoResposta = questaoAtual.resposta.find(
+                      a => a?.arquivo?.codigo === codigo
+                    );
+
+                    if (arquivoResposta) {
+                      questoes.push({
+                        ...questao,
+                        resposta: codigo,
+                        respostaEncaminhamentoId: arquivoResposta.id,
+                      });
+                    } else {
+                      questoes.push({
+                        ...questao,
+                        resposta: codigo,
+                      });
+                    }
+                  } else {
+                    questoes.push({
+                      ...questao,
+                      resposta: codigo,
+                    });
+                  }
                 });
               } else {
+                if (questaoAtual?.resposta[0]?.id) {
+                  questao.respostaEncaminhamentoId =
+                    questaoAtual.resposta[0].id;
+                }
                 questoes.push(questao);
               }
             });
@@ -222,7 +319,13 @@ class ServicoEncaminhamentoAEE {
             .finally(() => dispatch(setExibirLoaderEncaminhamentoAEE(false)));
 
           if (resposta?.status === 200) {
-            sucesso('Registro salvo com sucesso');
+            let mensagem = 'Registro salvo com sucesso';
+            if (enviarEcaminhamento) {
+              mensagem = 'Encaminhamento enviado para validação do CP';
+            } else if (encaminhamentoId) {
+              mensagem = 'Registro alterado com sucesso';
+            }
+            sucesso(mensagem);
             history.push(RotasDto.RELATORIO_AEE_ENCAMINHAMENTO);
           }
         }
