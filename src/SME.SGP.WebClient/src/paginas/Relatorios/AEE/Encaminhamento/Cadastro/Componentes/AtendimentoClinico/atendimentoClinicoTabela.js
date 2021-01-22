@@ -1,14 +1,20 @@
+import { Tooltip } from 'antd';
 import * as moment from 'moment';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import styled from 'styled-components';
 import { DataTable } from '~/componentes';
 import Button from '~/componentes/button';
-import { Colors } from '~/componentes/colors';
+import { Base, Colors } from '~/componentes/colors';
 import Label from '~/componentes/label';
+import { setEncaminhamentoAEEEmEdicao } from '~/redux/modulos/encaminhamentoAEE/actions';
 import ModalCadastroAtendimentoClinico from './modalCadastroAtendimentoClinico';
 
 const AtendimentoClinicoTabela = props => {
   const { label, questaoAtual, form } = props;
+
+  const dispatch = useDispatch();
 
   const [exibirModal, setExibirModal] = useState(false);
 
@@ -27,6 +33,7 @@ const AtendimentoClinicoTabela = props => {
       dadosAtuais.push(novosDados);
       if (form) {
         form.setFieldValue(questaoAtual.id, dadosAtuais);
+        dispatch(setEncaminhamentoAEEEmEdicao(true));
       }
     }
   };
@@ -66,10 +73,60 @@ const AtendimentoClinicoTabela = props => {
       title: 'Ação',
       dataIndex: 'acaoRemover',
       render: (texto, linha) => {
-        return <div>BOTAO</div>;
+        return (
+          <Tooltip title="Excluir">
+            <span>
+              <Button
+                id="btn-excluir"
+                icon="trash-alt"
+                iconType="far"
+                color={Colors.Azul}
+                border
+                className="btn-excluir-atendimento-clinico"
+                onClick={() => {
+                  const dadosAtuais = form?.values?.[questaoAtual.id]?.length
+                    ? form?.values?.[questaoAtual.id]
+                    : [];
+
+                  const indice = dadosAtuais.findIndex(
+                    item => item.id === linha.id
+                  );
+                  if (indice !== -1) {
+                    dadosAtuais.splice(indice, 1);
+                    form.setFieldValue(questaoAtual.id, dadosAtuais);
+                  }
+                }}
+                height="30px"
+                width="30px"
+              />
+            </span>
+          </Tooltip>
+        );
       },
     },
   ];
+
+  const Erro = styled.span`
+    color: ${Base.Vermelho};
+  `;
+
+  const possuiErro = () => {
+    return (
+      form &&
+      form.errors[String(questaoAtual.id)] &&
+      form.touched[String(questaoAtual.id)]
+    );
+  };
+
+  const obterErros = () => {
+    return form &&
+      form.touched[String(questaoAtual.id)] &&
+      form.errors[String(questaoAtual.id)] ? (
+      <Erro>{form.errors[String(questaoAtual.id)]}</Erro>
+    ) : (
+      ''
+    );
+  };
 
   return (
     <>
@@ -78,16 +135,19 @@ const AtendimentoClinicoTabela = props => {
         exibirModal={exibirModal}
       />
       <Label text={label} />
-      <DataTable
-        rowKey="id"
-        columns={colunas}
-        dataSource={
-          form?.values?.[questaoAtual.id]?.length
-            ? form?.values?.[questaoAtual.id]
-            : []
-        }
-        pagination={false}
-      />
+      <div className={possuiErro() ? 'tabela-invalida' : ''}>
+        <DataTable
+          rowKey="id"
+          columns={colunas}
+          dataSource={
+            form?.values?.[questaoAtual.id]?.length
+              ? form?.values?.[questaoAtual.id]
+              : []
+          }
+          pagination={false}
+        />
+      </div>
+      {form ? obterErros() : ''}
       <Button
         id="btn-novo-detalhamento"
         label="Novo detalhamento"
