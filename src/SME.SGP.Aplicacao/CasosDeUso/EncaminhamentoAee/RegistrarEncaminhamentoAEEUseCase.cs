@@ -86,6 +86,9 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                     }
                     else
                     {
+                        if (questaoExistente.Excluido)
+                            await AlterarQuestaoExcluida(questaoExistente);
+
                         await ExcluirRespostasEncaminhamento(questaoExistente, questoes);
 
                         await AlterarRespostasEncaminhamento(questaoExistente, questoes);
@@ -97,6 +100,12 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                 foreach (var questao in secaoExistente.Questoes.Where(x => !secao.Questoes.Any(s => s.QuestaoId == x.QuestaoId)))
                     await mediator.Send(new ExcluirQuestaoEncaminhamentoAEEPorIdCommand(questao.Id));
             }
+        }
+
+        private async Task AlterarQuestaoExcluida(QuestaoEncaminhamentoAEE questao)
+        {
+            questao.Excluido = false;
+            await mediator.Send(new AlterarQuestaoEncaminhamentoAEECommand(questao));
         }
 
         private async Task IncluirRespostasEncaminhamento(QuestaoEncaminhamentoAEE questaoExistente, IGrouping<long, EncaminhamentoAEESecaoQuestaoDto> respostas)
