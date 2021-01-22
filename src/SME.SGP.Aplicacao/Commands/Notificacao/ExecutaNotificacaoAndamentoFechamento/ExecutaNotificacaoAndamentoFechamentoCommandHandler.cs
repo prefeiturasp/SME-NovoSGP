@@ -101,6 +101,6 @@ namespace SME.SGP.Aplicacao
         }
 
         private async Task<IEnumerable<ComponenteCurricularDto>> ObterComponentesDaTurma(Turma turma, Ue ue)
-            => await mediator.Send(new ObterComponentesCurricularesPorTurmaECodigoUeQuery(new[] { turma.CodigoTurma }, ue.CodigoUe));
+            => await mediator.Send(new ObterComponentesCurricularesEOLPorTurmaECodigoUeQuery(new[] { turma.CodigoTurma }, ue.CodigoUe));
     }
 }

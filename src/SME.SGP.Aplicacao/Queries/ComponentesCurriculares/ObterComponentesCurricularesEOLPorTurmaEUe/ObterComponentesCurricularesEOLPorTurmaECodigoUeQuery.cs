@@ -4,9 +4,9 @@ using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterComponentesCurricularesPorTurmaECodigoUeQuery : IRequest<IEnumerable<ComponenteCurricularDto>>
+    public class ObterComponentesCurricularesEOLPorTurmaECodigoUeQuery : IRequest<IEnumerable<ComponenteCurricularDto>>
     {
-        public ObterComponentesCurricularesPorTurmaECodigoUeQuery(string[] codigosDeTurmas, string codigoUe)
+        public ObterComponentesCurricularesEOLPorTurmaECodigoUeQuery(string[] codigosDeTurmas, string codigoUe)
         {
             CodigosDeTurmas = codigosDeTurmas;
             CodigoUe = codigoUe;

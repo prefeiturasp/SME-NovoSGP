@@ -314,7 +314,7 @@ const AtaFinalResultados = () => {
   const onChangeAnoLetivo = ano => {
     setAnoLetivo(ano);
     setDreId();
-    
+
     setListaModalidades([]);
     setModalidadeId(undefined);
 
@@ -348,8 +348,8 @@ const AtaFinalResultados = () => {
   };
   const onChangeFormato = valor => setFormato(valor);
 
-  function onCheckedConsideraHistorico(e){   
-    setConsideraHistorico(e.target.checked);    
+  function onCheckedConsideraHistorico(e) {
+    setConsideraHistorico(e.target.checked);
   }
 
   return (
@@ -358,7 +358,7 @@ const AtaFinalResultados = () => {
         exibir={String(modalidadeId) === String(modalidade.INFANTIL)}
         validarModalidadeFiltroPrincipal={false}
       />
-      <Cabecalho pagina="Ata final de resultados" />
+      <Cabecalho pagina="Ata de resultados finais" />
       <Card>
         <div className="col-md-12">
           <div className="row">

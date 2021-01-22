@@ -125,9 +125,12 @@ namespace SME.SGP.Dominio.Servicos
                 else
                 {
                     // Fechamento Final
-                    var validacaoConselhoFinal = await consultasConselhoClasse.ValidaConselhoClasseUltimoBimestre(fechamentoTurma.Turma);
-                    if (!validacaoConselhoFinal.Item2 && fechamentoTurma.Turma.AnoLetivo == DateTime.Today.Year)
-                        throw new NegocioException($"Para acessar este aba você precisa registrar o conselho de classe do {validacaoConselhoFinal.Item1}º bimestre");
+                    if(fechamentoTurma.Turma.AnoLetivo != 2020)
+                    {
+                        var validacaoConselhoFinal = await consultasConselhoClasse.ValidaConselhoClasseUltimoBimestre(fechamentoTurma.Turma);
+                        if (!validacaoConselhoFinal.Item2 && fechamentoTurma.Turma.AnoLetivo == DateTime.Today.Year)
+                            throw new NegocioException($"Para acessar este aba você precisa registrar o conselho de classe do {validacaoConselhoFinal.Item1}º bimestre");
+                    }                    
                 }
                 unitOfWork.PersistirTransacao();
             }
@@ -154,6 +157,9 @@ namespace SME.SGP.Dominio.Servicos
                     conselhoClasseAlunoId = await SalvarConselhoClasseAlunoResumido(conselhoClasse.Id, alunoCodigo);
 
                     conselhoClasseNota = ObterConselhoClasseNota(conselhoClasseNotaDto, conselhoClasseAlunoId);
+
+                    if (fechamentoTurma.Turma.AnoLetivo == 2020)
+                        ValidarNotasFechamentoConselhoClasse2020(conselhoClasseNota);
 
                     await repositorioConselhoClasseNota.SalvarAsync(conselhoClasseNota);
                     unitOfWork.PersistirTransacao();
@@ -193,6 +199,9 @@ namespace SME.SGP.Dominio.Servicos
                             conselhoClasseNota.ConceitoId = conselhoClasseNotaDto.Conceito.Value;
                         }
                     }
+
+                    if (fechamentoTurma.Turma.AnoLetivo == 2020)
+                        ValidarNotasFechamentoConselhoClasse2020(conselhoClasseNota);
 
                     await repositorioConselhoClasseNota.SalvarAsync(conselhoClasseNota);
 
@@ -278,9 +287,12 @@ namespace SME.SGP.Dominio.Servicos
             else
             {
                 // Fechamento Final
-                var validacaoConselhoFinal = await consultasConselhoClasse.ValidaConselhoClasseUltimoBimestre(fechamentoTurma.Turma);
-                if (!validacaoConselhoFinal.Item2)
-                    throw new NegocioException($"Para acessar este aba você precisa registrar o conselho de classe do {validacaoConselhoFinal.Item1}º bimestre");
+                if (fechamentoTurma.Turma.AnoLetivo != 2020)
+                {
+                    var validacaoConselhoFinal = await consultasConselhoClasse.ValidaConselhoClasseUltimoBimestre(fechamentoTurma.Turma);
+                    if (!validacaoConselhoFinal.Item2)
+                        throw new NegocioException($"Para acessar este aba você precisa registrar o conselho de classe do {validacaoConselhoFinal.Item1}º bimestre");
+                }
             }
 
             await repositorioConselhoClasse.SalvarAsync(conselhoClasse);
@@ -400,6 +412,16 @@ namespace SME.SGP.Dominio.Servicos
                 throw new NegocioException("Fechamento da turma não localizado");
 
             return fechamentoTurma;
+        }
+
+        private void ValidarNotasFechamentoConselhoClasse2020(ConselhoClasseNota conselhoClasseNota)
+        {
+            if (conselhoClasseNota.ConceitoId.HasValue && conselhoClasseNota.ConceitoId.Value == 3)
+                throw new NegocioException("Não é possível atribuir conceito NS (Não Satisfatório) pois em 2020 não há retenção dos estudantes conforme o Art 5º da LEI Nº 17.437 DE 12 DE AGOSTO DE 2020.");
+            else
+            if (conselhoClasseNota.Nota < 5)
+                throw new NegocioException("Não é possível atribuir uma nota menor que 5 pois em 2020 não há retenção dos estudantes conforme o Art 5º da LEI Nº 17.437 DE 12 DE AGOSTO DE 2020.");
+
         }
     }
 }

@@ -57,15 +57,49 @@ class FiltroHelper {
     }
   }
 
-  async ObterModalidades(ue) {
+  async ObterModalidades(ue, anoLetivo, consideraHistorico) {
     try {
-      const retorno = await ServicoFiltroRelatorio.obterModalidades(ue);
+      const retorno = await ServicoFiltroRelatorio.obterModalidades(ue, anoLetivo, consideraHistorico);
 
       var dados = retorno.data.map(x => {
         return { id: x.valor, nome: x.descricao };
       });
 
       if (dados.length > 1) dados.unshift({ id: ID_TODOS, nome: 'Todas' });
+
+      return dados;
+    } catch (error) {
+      erros('Não foi possivel obter as Modalidades');
+      return [];
+    }
+  }
+
+  async obterModalidadesAnoLetivo(ue, anoLetivo){
+    try {
+      const retorno = await ServicoFiltroRelatorio.obterModalidadesAnoLetivo(ue, anoLetivo);
+
+      var dados = retorno.data.map(x => {
+        return { id: x.valor, nome: x.descricao };
+      });
+
+      if (dados.length > 1) dados.unshift({ id: ID_TODOS, nome: 'Todas' });
+
+      return dados;
+    } catch (error) {
+      erros('Não foi possivel obter as Modalidades');
+      return [];
+    }
+  }
+
+  async obterModalidadesAnoLetivo(ue, anoLetivo){
+    try {
+      const retorno = await ServicoFiltroRelatorio.obterModalidadesAnoLetivo(ue, anoLetivo);
+
+      var dados = retorno.data.map(x => {
+        return { id: x.valor, nome: x.descricao };
+      });
+
+      if (dados.length > 1) dados.unshift({ id: '-99', nome: 'Todas' });
 
       return dados;
     } catch (error) {
