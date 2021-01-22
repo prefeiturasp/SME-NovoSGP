@@ -302,6 +302,7 @@ class ServicoEncaminhamentoAEE {
             return {
               questoes,
               secaoId,
+              // concluido: !!enviarEcaminhamento,
             };
           }
         );

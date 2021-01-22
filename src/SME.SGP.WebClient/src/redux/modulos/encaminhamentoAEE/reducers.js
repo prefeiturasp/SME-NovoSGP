@@ -96,6 +96,18 @@ export default function EncaminhamentoAEE(state = inicial, action) {
           dadosEncaminhamento: action.payload,
         };
       }
+      case '@encaminhamentoAEE/setLimparDadosEncaminhamento': {
+        return {
+          ...draft,
+          dadosEstudanteObjectCardEncaminhamento: {},
+          dadosSecaoLocalizarEstudante: {},
+          dadosSecoesPorEtapaDeEncaminhamentoAEE: [],
+          formsSecoesEncaminhamentoAEE: null,
+          encaminhamentoAEEEmEdicao: false,
+          exibirLoaderEncaminhamentoAEE: false,
+          dadosEncaminhamento: null,
+        };
+      }
 
       default:
         return draft;
