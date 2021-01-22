@@ -57,3 +57,8 @@ export const setDadosEncaminhamento = payload => ({
   type: '@encaminhamentoAEE/setDadosEncaminhamento',
   payload,
 });
+
+export const setLimparDadosEncaminhamento = payload => ({
+  type: '@encaminhamentoAEE/setLimparDadosEncaminhamento',
+  payload,
+});
