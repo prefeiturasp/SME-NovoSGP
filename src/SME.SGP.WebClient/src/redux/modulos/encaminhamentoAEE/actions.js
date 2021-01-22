@@ -62,3 +62,18 @@ export const setLimparDadosEncaminhamento = payload => ({
   type: '@encaminhamentoAEE/setLimparDadosEncaminhamento',
   payload,
 });
+
+export const setErrosModalEncaminhamento = payload => ({
+  type: '@encaminhamentoAEE/setErrosModalEncaminhamento',
+  payload,
+});
+
+export const setExibirModalErrosEncaminhamento = payload => ({
+  type: '@encaminhamentoAEE/setExibirModalErrosEncaminhamento',
+  payload,
+});
+
+export const setLabelCamposEncaminhamento = payload => ({
+  type: '@encaminhamentoAEE/setLabelCamposEncaminhamento',
+  payload,
+});
