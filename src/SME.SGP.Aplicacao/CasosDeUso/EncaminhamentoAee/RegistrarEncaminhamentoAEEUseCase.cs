@@ -46,13 +46,15 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             encaminhamentoAEEDto.TurmaId, aluno.NomeAluno, aluno.CodigoAluno,
             encaminhamentoAEEDto.Situacao));
 
-
             await SalvarEncaminhamento(encaminhamentoAEEDto, resultadoEncaminhamento);
             return resultadoEncaminhamento;
         }
 
         public async Task AlterarEncaminhamento(EncaminhamentoAeeDto encaminhamentoAEEDto, EncaminhamentoAEE encaminhamentoAEE)
         {
+            encaminhamentoAEE.Situacao = encaminhamentoAEEDto.Situacao;
+            await mediator.Send(new SalvarEncaminhamentoAEECommand(encaminhamentoAEE));
+
             foreach (var secao in encaminhamentoAEEDto.Secoes)
             {
                 if (!secao.Questoes.Any())
