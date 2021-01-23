@@ -8,10 +8,10 @@ namespace SME.SGP.Infra
     {
         public EncaminhamentoAEESecaoDto()
         {
-            Questoes = new List<EncaminhamentoAEESecaoQuestao>();
+            Questoes = new List<EncaminhamentoAEESecaoQuestaoDto>();
         }
         public long SecaoId { get; set; }
         public bool Concluido { get; set; }
-        public List<EncaminhamentoAEESecaoQuestao> Questoes { get; set; }
+        public List<EncaminhamentoAEESecaoQuestaoDto> Questoes { get; set; }
     }
 }

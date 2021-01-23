@@ -1,103 +1,192 @@
+import { Tooltip } from 'antd';
+import * as moment from 'moment';
 import PropTypes from 'prop-types';
-import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { TabelaColunasFixas } from './atendimentoClinicoTabela.css';
+import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import styled from 'styled-components';
+import { DataTable } from '~/componentes';
 import Button from '~/componentes/button';
-import { Colors } from '~/componentes/colors';
+import { Base, Colors } from '~/componentes/colors';
 import Label from '~/componentes/label';
-import { setExibirModalCadastroAtendimentoClinicoAEE } from '~/redux/modulos/encaminhamentoAEE/actions';
+import { setEncaminhamentoAEEEmEdicao } from '~/redux/modulos/encaminhamentoAEE/actions';
+import { confirmar } from '~/servicos';
 import ModalCadastroAtendimentoClinico from './modalCadastroAtendimentoClinico';
 
 const AtendimentoClinicoTabela = props => {
-  const { label } = props;
+  const { label, questaoAtual, form, desabilitado } = props;
 
   const dispatch = useDispatch();
 
-  const dados = [
+  const [exibirModal, setExibirModal] = useState(false);
+
+  const onClickNovoDetalhamento = () => {
+    setExibirModal(true);
+  };
+
+  const onCloseModal = novosDados => {
+    setExibirModal(false);
+
+    if (novosDados) {
+      const dadosAtuais = form?.values?.[questaoAtual.id]?.length
+        ? form?.values?.[questaoAtual.id]
+        : [];
+      novosDados.id = dadosAtuais.length + 1;
+      dadosAtuais.push(novosDados);
+      if (form) {
+        form.setFieldValue(questaoAtual.id, dadosAtuais);
+        dispatch(setEncaminhamentoAEEEmEdicao(true));
+      }
+    }
+  };
+
+  const formatarCampoTabela = data => {
+    let dataFormatada = '';
+    if (data) {
+      dataFormatada = moment(data).format('HH:mm');
+    }
+    return <span> {dataFormatada}</span>;
+  };
+
+  const colunas = [
     {
-      diaSemana: 'Quinta',
-      atendimentoAtividade: 'Academia estudantil de letras (AEL)',
-      localRealizacao: 'Escola',
-      horarioInicio: '09:00',
-      horarioTermino: '09:30',
+      title: 'Dia da Semana',
+      dataIndex: 'diaSemana',
     },
     {
-      diaSemana: 'Sexta',
-      atendimentoAtividade: 'Academia estudantil de letras (AEL)',
-      localRealizacao: 'Escola',
-      horarioInicio: '09:00',
-      horarioTermino: '09:30',
+      title: 'Atendimento/Atividade',
+      dataIndex: 'atendimentoAtividade',
+    },
+    {
+      title: 'Local de realização',
+      dataIndex: 'localRealizacao',
+    },
+    {
+      title: 'Horário de início',
+      dataIndex: 'horarioInicio',
+      render: data => formatarCampoTabela(data),
+    },
+    {
+      title: 'Horário de término',
+      dataIndex: 'horarioTermino',
+      render: data => formatarCampoTabela(data),
+    },
+    {
+      title: 'Ação',
+      dataIndex: 'acaoRemover',
+      render: (texto, linha) => {
+        return (
+          <Tooltip title="Excluir">
+            <span>
+              <Button
+                id="btn-excluir"
+                icon="trash-alt"
+                iconType="far"
+                color={Colors.Azul}
+                border
+                className="btn-excluir-atendimento-clinico"
+                disabled={desabilitado}
+                onClick={async () => {
+                  if (!desabilitado) {
+                    const confirmado = await confirmar(
+                      'Excluir',
+                      '',
+                      'Você tem certeza que deseja excluir este registro?'
+                    );
+
+                    if (confirmado) {
+                      const dadosAtuais = form?.values?.[questaoAtual.id]
+                        ?.length
+                        ? form?.values?.[questaoAtual.id]
+                        : [];
+
+                      const indice = dadosAtuais.findIndex(
+                        item => item.id === linha.id
+                      );
+                      if (indice !== -1) {
+                        dadosAtuais.splice(indice, 1);
+                        form.setFieldValue(questaoAtual.id, dadosAtuais);
+                      }
+                    }
+                  }
+                }}
+                height="30px"
+                width="30px"
+              />
+            </span>
+          </Tooltip>
+        );
+      },
     },
   ];
 
-  const onClickNovoDetalhamento = () => {
-    dispatch(setExibirModalCadastroAtendimentoClinicoAEE(true));
+  const Erro = styled.span`
+    color: ${Base.Vermelho};
+  `;
+
+  const possuiErro = () => {
+    return (
+      form &&
+      form.errors[String(questaoAtual.id)] &&
+      form.touched[String(questaoAtual.id)]
+    );
+  };
+
+  const obterErros = () => {
+    return form &&
+      form.touched[String(questaoAtual.id)] &&
+      form.errors[String(questaoAtual.id)] ? (
+      <Erro>{form.errors[String(questaoAtual.id)]}</Erro>
+    ) : (
+      ''
+    );
   };
 
   return (
     <>
-      <ModalCadastroAtendimentoClinico />
+      <ModalCadastroAtendimentoClinico
+        onClose={onCloseModal}
+        exibirModal={exibirModal}
+      />
       <Label text={label} />
-      <TabelaColunasFixas>
-        <div className="wrapper">
-          <div className="header-fixo">
-            <table className="table">
-              <thead className="tabela-dois-thead">
-                <tr>
-                  <th className="col-linha-um">Dia da Semana</th>
-                  <th className="col-linha-um">Atendimento/Atividade</th>
-                  <th className="col-linha-um">Local de realização</th>
-                  <th className="col-linha-um">Horário de início</th>
-                  <th className="col-linha-um">Horário de término</th>
-                </tr>
-              </thead>
-              <tbody className="tabela-dois-tbody">
-                {dados.map((data, index) => {
-                  return (
-                    <tr id={index}>
-                      <td className="col-valor-linha-um">{data.diaSemana}</td>
-                      <td className="col-valor-linha-um">
-                        {data.atendimentoAtividade}
-                      </td>
-                      <td className="col-valor-linha-um">
-                        {data.localRealizacao}
-                      </td>
-                      <td className="col-valor-linha-um">
-                        {data.horarioInicio}
-                      </td>
-                      <td className="col-valor-linha-um">
-                        {data.horarioTermino}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </TabelaColunasFixas>
+      <div className={possuiErro() ? 'tabela-invalida' : ''}>
+        <DataTable
+          rowKey="id"
+          columns={colunas}
+          dataSource={
+            form?.values?.[questaoAtual.id]?.length
+              ? form?.values?.[questaoAtual.id]
+              : []
+          }
+          pagination={false}
+        />
+      </div>
+      {form ? obterErros() : ''}
       <Button
         id="btn-novo-detalhamento"
         label="Novo detalhamento"
         icon="plus"
         color={Colors.Azul}
         border
-        className="mr-3"
+        className="mr-3 mt-2"
         onClick={onClickNovoDetalhamento}
+        disabled={desabilitado}
       />
     </>
   );
 };
 
 AtendimentoClinicoTabela.propTypes = {
-  name: PropTypes.string,
-  id: PropTypes.string,
+  questaoAtual: PropTypes.oneOfType([PropTypes.any]),
+  form: PropTypes.oneOfType([PropTypes.any]),
   label: PropTypes.string,
+  desabilitado: PropTypes.bool,
 };
 
 AtendimentoClinicoTabela.defaultProps = {
-  indexLinha: PropTypes.number,
-  dados: PropTypes.oneOfType([PropTypes.array]),
+  label: '',
+  questaoAtual: null,
+  form: null,
+  desabilitado: false,
 };
 
 export default AtendimentoClinicoTabela;

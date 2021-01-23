@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                     listaEtapas.Add((int)EtapaEncaminhamentoAEE.SegundaEtapa);
             }           
 
-            return await mediator.Send(new ObterSecoesPorEtapaDeEncaminhamentoQuery(listaEtapas));
+            return await mediator.Send(new ObterSecoesPorEtapaDeEncaminhamentoQuery(listaEtapas, encaminhamentoAeeId));
         }
     }
 }

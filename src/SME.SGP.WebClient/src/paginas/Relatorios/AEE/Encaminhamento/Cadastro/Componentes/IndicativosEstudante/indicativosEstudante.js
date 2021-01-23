@@ -1,48 +1,36 @@
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { erros } from '~/servicos';
+import ServicoEncaminhamentoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoEncaminhamentoAEE';
 import AusenciasEstudante from './ausenciasEstudante';
 import BtnExpandirAusenciaEstudante from './btnExpandirAusenciaEstudante';
 import { TabelaColunasFixas } from './indicativosEstudante.css';
 import ModalAnotacoesEncaminhamentoAEE from './modalAnotacoes';
 
 const InformacoesEscolares = () => {
-  const dados = [
-    {
-      bimestre: 1,
-      ausencias: [
-        {
-          data: '20/10/2020',
-          registradoPor: '123 Amaral dos Santos',
-          motivo: 'Atestado médico do estudante',
-        },
-        {
-          data: '12/10/2020',
-          registradoPor: '33 Amaral dos Santos',
-          motivo: 'Atestado médico do estudante',
-          anotacao:
-            '<strong>Atestado médico do estudante Atestado médico do estudante Atestado médico do estudante Atestado médico do estudante</strong> Amaral dos Santos',
-        },
-      ],
-      compensacoes: 1,
-      frequencia: '90%',
-    },
-    {
-      bimestre: 1,
-      ausencias: [
-        {
-          data: '20/10/2020',
-          registradoPor: 'Fernanda Amaral dos Santos',
-          motivo: 'Atestado médico do estudante',
-        },
-        {
-          data: '12/10/2020',
-          registradoPor: 'Fernanda Amaral dos Santos',
-          motivo: 'Atestado médico do estudante',
-        },
-      ],
-      compensacoes: 1,
-      frequencia: '90%',
-    },
-  ];
+  const [dados, setDados] = useState([]);
+
+  const dadosSecaoLocalizarEstudante = useSelector(
+    store => store.encaminhamentoAEE.dadosSecaoLocalizarEstudante
+  );
+
+  const obterInformacoesEscolaresDoAluno = useCallback(async () => {
+    // TODO Loader e trocar mock!
+    const resposta = await ServicoEncaminhamentoAEE.obterInformacoesEscolaresDoAluno(
+      dadosSecaoLocalizarEstudante?.codigoAluno,
+      dadosSecaoLocalizarEstudante?.codigoTurma
+    ).catch(e => erros(e));
+
+    if (resposta?.data) {
+      setDados(resposta.data);
+    } else {
+      setDados([]);
+    }
+  }, [dadosSecaoLocalizarEstudante]);
+
+  useEffect(() => {
+    obterInformacoesEscolaresDoAluno();
+  }, [obterInformacoesEscolaresDoAluno]);
 
   return (
     <>
@@ -62,9 +50,15 @@ const InformacoesEscolares = () => {
               </thead>
               <tbody className="tabela-um-tbody">
                 <tr>
-                  <td className="col-valor-linha-um">Baixa Visão</td>
-                  <td className="col-valor-linha-um">Auxílio Ledor</td>
-                  <td className="col-valor-linha-um">97%</td>
+                  <td className="col-valor-linha-um">
+                    {dados.descricaoNecessidadeEspecial}
+                  </td>
+                  <td className="col-valor-linha-um">
+                    {dados.descricaoRecurso}
+                  </td>
+                  <td className="col-valor-linha-um">
+                    {dados.frequenciaGlobal}
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -85,7 +79,7 @@ const InformacoesEscolares = () => {
                 </tr>
               </thead>
               <tbody className="tabela-um-tbody">
-                {dados.map((data, index) => {
+                {dados?.frequenciaAlunoPorBimestres?.map((data, index) => {
                   return (
                     <>
                       <tr id={index}>
@@ -93,10 +87,10 @@ const InformacoesEscolares = () => {
                           {data.bimestre}°
                         </td>
                         <td className="col-valor-linha-dois">
-                          {data.ausencias.length}
+                          {data.quantidadeAusencias}
                         </td>
                         <td className="col-valor-linha-dois">
-                          {data.compensacoes}
+                          {data.quantidadeCompensacoes}
                         </td>
                         <td className="col-valor-linha-dois">
                           {data.frequencia}

@@ -13,18 +13,19 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<IEnumerable<SecaoQuestionarioDto>> ObterSecaoEncaminhamentoPorEtapa(List<int> etapas)
+        public async Task<IEnumerable<SecaoQuestionarioDto>> ObterSecaoEncaminhamentoPorEtapa(List<int> etapas, long encaminhamentoAeeId = 0)
         {
             var query = @"SELECT sea.id
 	                            , sea.nome
 	                            , sea.questionario_id
-	                            , sea.excluido as situacao
+	                            , eas.concluido
                          FROM secao_encaminhamento_aee sea
+                        left join encaminhamento_aee_secao eas on eas.encaminhamento_aee_id = @encaminhamentoAeeId and eas.secao_encaminhamento_id = sea.id
                          WHERE not sea.excluido 
                            AND sea.etapa = ANY(@etapas)
                          ORDER BY sea.ordem ";
 
-            return await database.Conexao.QueryAsync<SecaoQuestionarioDto>(query, new { etapas });
+            return await database.Conexao.QueryAsync<SecaoQuestionarioDto>(query, new { etapas, encaminhamentoAeeId });
         }
     }
 }

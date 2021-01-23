@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao.Queries.Evento.ObterDataPossuiEventoLiberacaoExcepci
         }
 
         public async Task<IEnumerable<SecaoQuestionarioDto>> Handle(ObterSecoesPorEtapaDeEncaminhamentoQuery request, CancellationToken cancellationToken)
-                => await repositorioSecaoEncaminhamentoAEE.ObterSecaoEncaminhamentoPorEtapa(request.Etapas);       
+            => await repositorioSecaoEncaminhamentoAEE.ObterSecaoEncaminhamentoPorEtapa(request.Etapas, request.EncaminhamentoAeeId); 
         
     }
 }

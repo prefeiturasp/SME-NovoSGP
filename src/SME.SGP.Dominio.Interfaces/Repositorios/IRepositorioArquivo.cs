@@ -10,5 +10,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<Arquivo> ObterPorCodigo(Guid codigo);
         Task<bool> ExcluirArquivoPorCodigo(Guid codigoArquivo);
         Task<bool> ExcluirArquivoPorId(long id);
+        Task<long> ObterIdPorCodigo(Guid arquivoCodigo);
     }
 }

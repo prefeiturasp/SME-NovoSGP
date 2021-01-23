@@ -15,11 +15,11 @@ namespace SME.SGP.Aplicacao
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
-        public async Task<IEnumerable<QuestaoAeeDto>> Executar(long questionarioId, long? encaminhamentoId)
+        public async Task<IEnumerable<QuestaoAeeDto>> Executar(long questionarioId, long? encaminhamentoId, string codigoAluno, string codigoTurma)
         {
             return
                 await mediator
-                .Send(new ObterQuestionarioEncaminhamentoAeeQuery(questionarioId, encaminhamentoId));
+                .Send(new ObterQuestionarioEncaminhamentoAeeQuery(questionarioId, encaminhamentoId, codigoAluno, codigoTurma));
         }
     }
 }

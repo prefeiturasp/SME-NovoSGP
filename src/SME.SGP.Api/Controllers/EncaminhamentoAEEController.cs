@@ -30,17 +30,17 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("secoes")]
         [ProducesResponseType(typeof(IEnumerable<SecaoQuestionarioDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterSecoesPorEtapaDeEncaminhamentoAEE([FromQuery] long encaminhamentoAeeId, [FromServices] IObterSecoesPorEtapaDeEncaminhamentoAEEUseCase obterSecoesPorEtapaDeEncaminhamentoAEEUseCase)
+        public async Task<IActionResult> ObterSecoesPorEtapaDeEncaminhamentoAEE([FromQuery] long etapa, [FromQuery] long encaminhamentoAeeId, [FromServices] IObterSecoesPorEtapaDeEncaminhamentoAEEUseCase obterSecoesPorEtapaDeEncaminhamentoAEEUseCase)
         {
-            return Ok(await obterSecoesPorEtapaDeEncaminhamentoAEEUseCase.Executar(encaminhamentoAeeId));
+            return Ok(await obterSecoesPorEtapaDeEncaminhamentoAEEUseCase.Executar(etapa, encaminhamentoAeeId));
         }
 
         [HttpGet("questionario")]
         [ProducesResponseType(typeof(IEnumerable<QuestaoAeeDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterQuestionario([FromQuery] long questionarioId, [FromQuery] long? encaminhamentoId, [FromServices] IObterQuestionarioEncaminhamentoAeeUseCase useCase)
+        public async Task<IActionResult> ObterQuestionario([FromQuery] long questionarioId, [FromQuery] long? encaminhamentoId, [FromQuery] string codigoAluno, [FromQuery] string codigoTurma, [FromServices] IObterQuestionarioEncaminhamentoAeeUseCase useCase)
         {
-            return Ok(await useCase.Executar(questionarioId, encaminhamentoId));
+            return Ok(await useCase.Executar(questionarioId, encaminhamentoId, codigoAluno, codigoTurma));
         }
 
         [HttpGet]
@@ -62,9 +62,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(401)]
         //[Permissao(Permissao.DPU_E, Policy = "Bearer")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ExcluirArquivo([FromQuery] long arquivoId, [FromServices] IExcluirArquivoAeeUseCase useCase)
+        public async Task<IActionResult> ExcluirArquivo([FromQuery] Guid arquivoCodigo, [FromServices] IExcluirArquivoAeeUseCase useCase)
         {
-            return Ok(await useCase.Executar(arquivoId));
+            return Ok(await useCase.Executar(arquivoCodigo));
         }
 
         [HttpGet("instrucoes-modal")]
@@ -114,7 +114,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("{encaminhamentoId}")]
         [ProducesResponseType(typeof(EncaminhamentoAEERespostaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterQuestionario(long encaminhamentoId, [FromServices] IObterEncaminhamentoPorIdUseCase useCase)
+        public async Task<IActionResult> ObterEncaminhamento(long encaminhamentoId, [FromServices] IObterEncaminhamentoPorIdUseCase useCase)
         {
             return Ok(await useCase.Executar(encaminhamentoId));
         }

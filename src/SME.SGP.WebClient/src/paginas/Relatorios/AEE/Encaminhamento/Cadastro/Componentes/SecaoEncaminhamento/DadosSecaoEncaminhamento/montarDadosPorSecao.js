@@ -1,20 +1,31 @@
 import { Form, Formik } from 'formik';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { CampoTexto, RadioGroupButton, SelectComponent } from '~/componentes';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  CampoTexto,
+  Label,
+  RadioGroupButton,
+  SelectComponent,
+} from '~/componentes';
 import { RotasDto } from '~/dtos';
+import situacaoAEE from '~/dtos/situacaoAEE';
 import tipoQuestao from '~/dtos/tipoQuestao';
+import AtendimentoClinicoTabela from '~/paginas/Relatorios/AEE/Encaminhamento/Cadastro/Componentes/AtendimentoClinico/atendimentoClinicoTabela';
 import { setEncaminhamentoAEEEmEdicao } from '~/redux/modulos/encaminhamentoAEE/actions';
 import { erros, setBreadcrumbManual } from '~/servicos';
 import ServicoEncaminhamentoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoEncaminhamentoAEE';
 import InformacoesEscolares from '../../IndicativosEstudante/indicativosEstudante';
-import AtendimentoClinicoTabela from '~/paginas/Relatorios/AEE/Encaminhamento/Cadastro/Componentes/AtendimentoClinico/atendimentoClinicoTabela';
+import UploadArquivosEncaminhamento from '../../UploadArquivosEncaminhamento/uploadArquivosEncaminhamento';
 
 const MontarDadosPorSecao = props => {
   const dispatch = useDispatch();
 
-  const { dados, match } = props;
+  const { dados, match, codigoAluno, codigoTurma } = props;
+
+  const dadosEncaminhamento = useSelector(
+    store => store.encaminhamentoAEE.dadosEncaminhamento
+  );
 
   const [dadosQuestionarioAtual, setDadosQuestionarioAtual] = useState();
   const [valoresIniciais, setValoresIniciais] = useState();
@@ -37,10 +48,12 @@ const MontarDadosPorSecao = props => {
     dispatch(setEncaminhamentoAEEEmEdicao(false));
     const resposta = await ServicoEncaminhamentoAEE.obterQuestionario(
       questionarioId,
-      encaminhamentoId
+      encaminhamentoId,
+      codigoAluno,
+      codigoTurma
     ).catch(e => erros(e));
 
-    if (resposta?.data) {
+    if (!dadosQuestionarioAtual?.length && resposta?.data) {
       setDadosQuestionarioAtual(resposta.data);
     } else {
       setDadosQuestionarioAtual();
@@ -48,12 +61,12 @@ const MontarDadosPorSecao = props => {
   }, []);
 
   useEffect(() => {
-    if (dados?.questionarioId) {
+    if (dados?.questionarioId && codigoAluno && codigoTurma) {
       obterQuestionario(dados?.questionarioId);
     } else {
-      setDadosQuestionarioAtual();
+      setDadosQuestionarioAtual([]);
     }
-  }, [dados, obterQuestionario]);
+  }, [dados, codigoAluno, codigoTurma, obterQuestionario]);
 
   const obterForm = () => refForm;
 
@@ -62,32 +75,81 @@ const MontarDadosPorSecao = props => {
       ServicoEncaminhamentoAEE.addFormsSecoesEncaminhamentoAEE(
         () => obterForm(),
         dados.questionarioId,
-        dadosQuestionarioAtual
+        dadosQuestionarioAtual,
+        dados.id
       );
     }
   }, [refForm]);
 
   const montarValoresIniciais = useCallback(() => {
     const valores = {};
-    dadosQuestionarioAtual.forEach(questaoAtual => {
+
+    const montarDados = questaoAtual => {
       const resposta = questaoAtual?.resposta;
+
+      let valorRespostaAtual = '';
+
       if (resposta?.length) {
         switch (questaoAtual?.tipoQuestao) {
           case tipoQuestao.Radio:
-            valores[questaoAtual.id] = resposta[0].opcaoRespostaId;
+            valorRespostaAtual = resposta[0].opcaoRespostaId;
             break;
           case tipoQuestao.Combo:
-            valores[questaoAtual.id] = String(resposta[0].texto || '');
+            valorRespostaAtual = String(resposta[0].opcaoRespostaId || '');
             break;
           case tipoQuestao.Texto:
-            valores[questaoAtual.id] = resposta[0].texto;
+            valorRespostaAtual = resposta[0].texto;
+            break;
+          case tipoQuestao.AtendimentoClinico:
+            valorRespostaAtual = resposta[0].texto
+              ? JSON.parse(resposta[0].texto)
+              : '';
+            break;
+          case tipoQuestao.Upload:
+            if (resposta?.length) {
+              valorRespostaAtual = resposta
+                ?.map(item => {
+                  const { arquivo } = item;
+                  if (arquivo) {
+                    return {
+                      uid: arquivo.codigo,
+                      xhr: arquivo.codigo,
+                      name: arquivo.nome,
+                      status: 'done',
+                      arquivoId: arquivo.id,
+                    };
+                  }
+                  return '';
+                })
+                .filter(a => !!a);
+            } else {
+              valorRespostaAtual = [];
+            }
             break;
           default:
             break;
         }
-      } else {
-        valores[questaoAtual.id] = '';
       }
+
+      if (
+        valorRespostaAtual &&
+        questaoAtual?.tipoQuestao !== tipoQuestao.Upload &&
+        questaoAtual?.tipoQuestao !== tipoQuestao.Texto
+      ) {
+        const opcaoAtual = questaoAtual?.opcaoResposta.find(
+          item => String(item.id) === String(valorRespostaAtual)
+        );
+
+        if (opcaoAtual?.questaoComplementar) {
+          montarDados(opcaoAtual.questaoComplementar);
+        }
+      }
+
+      valores[questaoAtual.id] = valorRespostaAtual;
+    };
+
+    dadosQuestionarioAtual.forEach(questaoAtual => {
+      montarDados(questaoAtual);
     });
 
     setValoresIniciais({ ...valores });
@@ -99,6 +161,41 @@ const MontarDadosPorSecao = props => {
     }
   }, [dadosQuestionarioAtual, montarValoresIniciais]);
 
+  const onChangeCamposComOpcaoResposta = (
+    questaoAtual,
+    form,
+    valorAtualSelecionado
+  ) => {
+    const valoreAnteriorSelecionado = form.values[questaoAtual.id] || '';
+
+    const opcaoAtual = questaoAtual?.opcaoResposta.find(
+      c => String(c.id) === String(valorAtualSelecionado || '')
+    );
+
+    const opcaoAnterior = questaoAtual?.opcaoResposta.find(
+      c => String(c.id) === String(valoreAnteriorSelecionado || '')
+    );
+
+    const questaoComplementarIdAtual = opcaoAtual?.questaoComplementar?.id;
+    const questaoComplementarIdAnterior =
+      opcaoAnterior?.questaoComplementar?.id;
+
+    if (questaoComplementarIdAtual !== questaoComplementarIdAnterior) {
+      if (questaoComplementarIdAtual) {
+        form.setFieldValue(
+          questaoComplementarIdAtual,
+          form.values[questaoComplementarIdAnterior]
+        );
+        form.values[questaoComplementarIdAtual] =
+          form.values[questaoComplementarIdAnterior];
+      }
+      delete form.values[questaoComplementarIdAnterior];
+      form.unregisterField(questaoComplementarIdAnterior);
+    }
+
+    dispatch(setEncaminhamentoAEEEmEdicao(true));
+  };
+
   const campoRadio = params => {
     const { questaoAtual, form, label } = params;
 
@@ -108,14 +205,22 @@ const MontarDadosPorSecao = props => {
 
     return (
       <div className="col-md-12 mb-3">
+        {label}
         <RadioGroupButton
           id={String(questaoAtual.id)}
           name={String(questaoAtual.id)}
-          label={label}
           form={form}
           opcoes={opcoes}
-          onChange={() => {
-            dispatch(setEncaminhamentoAEEEmEdicao(true));
+          desabilitado={
+            dadosEncaminhamento?.situacao === situacaoAEE.Encaminhado
+          }
+          onChange={e => {
+            const valorAtualSelecionado = e.target.value;
+            onChangeCamposComOpcaoResposta(
+              questaoAtual,
+              form,
+              valorAtualSelecionado
+            );
           }}
         />
       </div>
@@ -126,23 +231,27 @@ const MontarDadosPorSecao = props => {
     const { questaoAtual, form, label } = params;
 
     const lista = questaoAtual?.opcaoResposta.map(item => {
-      return { desc: item.nome, valor: item.id };
+      return { label: item.nome, value: item.id };
     });
 
     return (
       <>
         <div className="col-sm-12 col-md-12 col-lg-6 col-xl-6 mb-3">
+          {label}
           <SelectComponent
             id={String(questaoAtual.id)}
             name={String(questaoAtual.id)}
-            label={label}
-            placeholder={questaoAtual.nome}
             form={form}
             lista={lista}
-            valueOption="valor"
-            valueText="desc"
-            onChange={() => {
-              dispatch(setEncaminhamentoAEEEmEdicao(true));
+            valueOption="value"
+            valueText="label"
+            disabled={dadosEncaminhamento?.situacao === situacaoAEE.Encaminhado}
+            onChange={valorAtualSelecionado => {
+              onChangeCamposComOpcaoResposta(
+                questaoAtual,
+                form,
+                valorAtualSelecionado
+              );
             }}
           />
         </div>
@@ -155,12 +264,16 @@ const MontarDadosPorSecao = props => {
 
     return (
       <div className="col-md-12 mb-3">
+        {label}
         <CampoTexto
           id={String(questaoAtual.id)}
           name={String(questaoAtual.id)}
-          label={label}
           form={form}
           type="textarea"
+          maxLength={999999}
+          desabilitado={
+            dadosEncaminhamento?.situacao === situacaoAEE.Encaminhado
+          }
           onChange={() => {
             dispatch(setEncaminhamentoAEEEmEdicao(true));
           }}
@@ -170,26 +283,35 @@ const MontarDadosPorSecao = props => {
   };
 
   const campoAtendimentoClinico = params => {
-    const { questaoAtual, form, label } = params;
+    const { questaoAtual, label, form } = params;
 
     return (
       <div className="col-md-12 mb-3">
         <AtendimentoClinicoTabela
-          name={String(questaoAtual.id)}
+          desabilitado={
+            dadosEncaminhamento?.situacao === situacaoAEE.Encaminhado
+          }
           label={label}
           form={form}
-          id={questaoAtual.id}
+          questaoAtual={questaoAtual}
         />
       </div>
     );
   };
+
+  const labelPersonalizado = (textolabel, observacaoText) => (
+    <Label text={textolabel} observacaoText={observacaoText} />
+  );
 
   const montarCampos = (questaoAtual, form, ordemAnterior) => {
     const ordemLabel = ordemAnterior
       ? `${ordemAnterior}.${questaoAtual.ordem}`
       : questaoAtual.ordem;
 
-    const label = `${ordemLabel} - ${questaoAtual.nome}`;
+    const textoLabel = `${ordemLabel} - ${questaoAtual.nome}`;
+    const label = labelPersonalizado(textoLabel, questaoAtual?.observacao);
+
+    ServicoEncaminhamentoAEE.guardarLabelCampo(questaoAtual, textoLabel);
 
     let campoQuestaoComplementar = null;
 
@@ -236,6 +358,9 @@ const MontarDadosPorSecao = props => {
       case tipoQuestao.AtendimentoClinico:
         campoAtual = campoAtendimentoClinico(params);
         break;
+      case tipoQuestao.Upload:
+        campoAtual = <UploadArquivosEncaminhamento dados={params} />;
+        break;
       default:
         break;
     }
@@ -248,26 +373,37 @@ const MontarDadosPorSecao = props => {
     );
   };
 
+  const montarQuestionarioAtual = (data, form) => {
+    const campos = data.map(questaoAtual => {
+      return (
+        <div className="row" key={questaoAtual.id}>
+          {montarCampos(questaoAtual, form, '')}
+        </div>
+      );
+    });
+
+    return campos;
+  };
+
   return dados?.questionarioId &&
     dadosQuestionarioAtual?.length &&
     valoresIniciais ? (
     <Formik
       enableReinitialize
       initialValues={valoresIniciais}
-      validationSchema={{}}
+      validationSchema={() =>
+        ServicoEncaminhamentoAEE.obterValidationSchema(
+          dadosQuestionarioAtual,
+          refForm
+        )
+      }
       validateOnChange
       validateOnBlur
       ref={refFormik => setRefForm(refFormik)}
     >
       {form => (
         <Form className="col-md-12">
-          {dadosQuestionarioAtual.map(questaoAtual => {
-            return (
-              <div className="row" key={questaoAtual.id}>
-                {montarCampos(questaoAtual, form)}
-              </div>
-            );
-          })}
+          {montarQuestionarioAtual(dadosQuestionarioAtual, form)}
         </Form>
       )}
     </Formik>
@@ -279,11 +415,15 @@ const MontarDadosPorSecao = props => {
 MontarDadosPorSecao.propTypes = {
   dados: PropTypes.oneOfType([PropTypes.object]),
   match: PropTypes.oneOfType([PropTypes.object]),
+  codigoAluno: PropTypes.string,
+  codigoTurma: PropTypes.string,
 };
 
 MontarDadosPorSecao.defaultProps = {
   dados: {},
   match: {},
+  codigoAluno: '',
+  codigoTurma: '',
 };
 
 export default MontarDadosPorSecao;
