@@ -6,6 +6,7 @@
         public int AnoLetivo { get; set; }
         public string Codigo { get; set; }
         public int CodigoModalidade { get; set; }
+        public string ModalidadeTurmaNome { get; set; }
         public string Nome { get; set; }
         public int Semestre { get; set; }
         public bool EnsinoEspecial { get; set; }

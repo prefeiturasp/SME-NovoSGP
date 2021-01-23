@@ -39,7 +39,12 @@ const InputNome = props => {
   const options =
     sugestoes &&
     sugestoes.map(item => (
-      <AutoComplete.Option key={item.alunoCodigo} value={item.alunoNome}>
+      <AutoComplete.Option
+        key={item.alunoCodigo}
+        value={item.alunoNome}
+        codigoTurma={item.codigoTurma}
+        turmaId={item.turmaId}
+      >
         {item.alunoNome}
       </AutoComplete.Option>
     ));
@@ -75,7 +80,7 @@ InputNome.propTypes = {
   onSelect: PropTypes.func,
   onChange: PropTypes.func,
   desabilitado: PropTypes.bool,
-  regexIgnore: PropTypes.string,
+  regexIgnore: PropTypes.objectOf(PropTypes.any),
 };
 
 InputNome.defaultProps = {

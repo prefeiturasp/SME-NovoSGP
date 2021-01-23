@@ -97,5 +97,13 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterFrequenciaGeralAluno(string alunoCodigo, string turmaCodigo, [FromServices] IConsultasFrequencia consultasFrequencia)
              => Ok(await consultasFrequencia.ObterFrequenciaGeralAluno(alunoCodigo, turmaCodigo));
 
+        [AllowAnonymous]
+        [HttpGet("frequencias/ausencias-motivos")]
+        [ProducesResponseType(typeof(IEnumerable<AusenciaMotivoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public async Task<IActionResult> ObterAusenciaMotivoPorAlunoTurmaBimestreAno([FromQuery] string codigoAluno, [FromQuery] string codigoTurma, [FromQuery] short bimestre, [FromQuery] short anoLetivo, [FromServices] IConsultasFrequencia consultasFrequencia)
+             => Ok(await consultasFrequencia.ObterAusenciaMotivoPorAlunoTurmaBimestreAno(codigoAluno, codigoTurma, bimestre, anoLetivo));
+
     }
 }
