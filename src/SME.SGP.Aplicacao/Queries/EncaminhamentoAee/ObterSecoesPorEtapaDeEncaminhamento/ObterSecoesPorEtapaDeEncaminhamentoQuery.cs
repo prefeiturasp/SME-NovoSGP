@@ -9,6 +9,7 @@ namespace SME.SGP.Aplicacao.Queries
         public ObterSecoesPorEtapaDeEncaminhamentoQuery(List<int> etapas, long encaminhamentoAeeId)
         {
             Etapas = etapas;
+            EncaminhamentoAeeId = encaminhamentoAeeId;
         }
 
         public List<int> Etapas { get; set; }

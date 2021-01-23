@@ -30,9 +30,9 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("secoes")]
         [ProducesResponseType(typeof(IEnumerable<SecaoQuestionarioDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterSecoesPorEtapaDeEncaminhamentoAEE([FromQuery] long etapa, [FromQuery] long encaminhamentoAeeId, [FromServices] IObterSecoesPorEtapaDeEncaminhamentoAEEUseCase obterSecoesPorEtapaDeEncaminhamentoAEEUseCase)
+        public async Task<IActionResult> ObterSecoesPorEtapaDeEncaminhamentoAEE([FromQuery] long encaminhamentoAeeId, [FromServices] IObterSecoesPorEtapaDeEncaminhamentoAEEUseCase obterSecoesPorEtapaDeEncaminhamentoAEEUseCase)
         {
-            return Ok(await obterSecoesPorEtapaDeEncaminhamentoAEEUseCase.Executar(etapa, encaminhamentoAeeId));
+            return Ok(await obterSecoesPorEtapaDeEncaminhamentoAEEUseCase.Executar(encaminhamentoAeeId));
         }
 
         [HttpGet("questionario")]
