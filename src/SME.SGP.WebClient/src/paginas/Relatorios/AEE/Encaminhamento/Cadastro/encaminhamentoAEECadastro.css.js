@@ -51,4 +51,17 @@ export const ContainerStepsEncaminhamento = styled(Steps)`
     > .ant-steps-item-tail::after {
     background-color: ${Base.Roxo};
   }
+
+  .btn-excluir-atendimento-clinico {
+    background-color: ${Base.Azul} !important;
+    color: ${Base.Branco} !important;
+    i {
+      margin-right: 0px !important;
+      font-size: 11px;
+    }
+  }
+
+  .tabela-invalida {
+    border: 1px solid #dc3545;
+  }
 `;

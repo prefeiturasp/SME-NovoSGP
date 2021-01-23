@@ -1,5 +1,5 @@
+import PropTypes from 'prop-types';
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import shortid from 'shortid';
 import {
   CampoData,
@@ -9,51 +9,43 @@ import {
   SelectComponent,
 } from '~/componentes';
 import Button from '~/componentes/button';
-import {
-  setExibirModalCadastroAtendimentoClinicoAEE,
-  setDadosAtendimentoClinicoAEE,
-} from '~/redux/modulos/encaminhamentoAEE/actions';
 
-const ModalCadastroAtendimentoClinico = () => {
-  const dispatch = useDispatch();
+const ModalCadastroAtendimentoClinico = props => {
+  const { onClose, exibirModal } = props;
 
-  const exibirModalCadastroAtendimentoClinicoAEE = useSelector(
-    store => store.encaminhamentoAEE.exibirModalCadastroAtendimentoClinicoAEE
-  );
-
-  const [diaSemana, setDiaSemana] = useState('dom');
-  const [atendimentoAtividade, setAtendimentoAtividade] = useState('');
-  const [localRealizacao, setLocalRealizacao] = useState('');
+  const [diaSemana, setDiaSemana] = useState();
+  const [atendimentoAtividade, setAtendimentoAtividade] = useState();
+  const [localRealizacao, setLocalRealizacao] = useState();
   const [horarioInicio, setHorarioInicio] = useState();
   const [horarioTermino, setHorarioTermino] = useState();
 
   const listaDiasSemana = [
     {
-      valor: 'dom',
+      valor: 'Domingo',
       desc: 'Domingo',
     },
     {
-      valor: 'seg',
+      valor: 'Segunda',
       desc: 'Segunda',
     },
     {
-      valor: 'ter',
-      vadesclor: 'Terça',
+      valor: 'Terça',
+      desc: 'Terça',
     },
     {
-      valor: 'qua',
+      valor: 'Quarta',
       desc: 'Quarta',
     },
     {
-      valor: 'qui',
+      valor: 'Quinta',
       desc: 'Quinta',
     },
     {
-      valor: 'sex',
+      valor: 'Sexta',
       desc: 'Sexta',
     },
     {
-      valor: 'sab',
+      valor: 'Sábado',
       desc: 'Sábado',
     },
   ];
@@ -78,32 +70,49 @@ const ModalCadastroAtendimentoClinico = () => {
     setHorarioTermino(valor);
   };
 
-  const onClose = () => {
-    dispatch(setExibirModalCadastroAtendimentoClinicoAEE(false));
+  const limparDadosModal = () => {
+    setDiaSemana();
+    setAtendimentoAtividade();
+    setLocalRealizacao();
+    setHorarioInicio();
+    setHorarioTermino();
+  };
+
+  const fecharModal = () => {
+    limparDadosModal();
+    onClose();
   };
 
   const onSalvar = () => {
-    dispatch(
-      setDadosAtendimentoClinicoAEE([
-        {
-          diaSemana,
-          atendimentoAtividade,
-          localRealizacao,
-          horarioInicio,
-          horarioTermino,
-        },
-      ])
-    );
-    onClose();
+    const params = {};
+
+    if (diaSemana) {
+      params.diaSemana = diaSemana;
+    }
+    if (atendimentoAtividade) {
+      params.atendimentoAtividade = atendimentoAtividade;
+    }
+    if (localRealizacao) {
+      params.localRealizacao = localRealizacao;
+    }
+    if (horarioInicio) {
+      params.horarioInicio = horarioInicio;
+    }
+    if (horarioTermino) {
+      params.horarioTermino = horarioTermino;
+    }
+
+    limparDadosModal();
+    onClose(params);
   };
 
   return (
     <ModalConteudoHtml
       id={shortid.generate()}
       key="detalhamento-atendimento-clinico"
-      visivel={exibirModalCadastroAtendimentoClinicoAEE}
-      titulo="Detalhamento de atendimento clínico"
-      onClose={onClose}
+      visivel={exibirModal}
+      titulo="Detalhamento de Atendimento Clínico"
+      onClose={fecharModal}
       esconderBotaoPrincipal
       esconderBotaoSecundario
       width={750}
@@ -124,6 +133,7 @@ const ModalCadastroAtendimentoClinico = () => {
           onChange={onChangeAtendimentoAtividade}
           label="Atendimento/Atividade"
           value={atendimentoAtividade}
+          maxLength={100}
         />
       </div>
       <div className="col-md-12 mb-2">
@@ -131,13 +141,14 @@ const ModalCadastroAtendimentoClinico = () => {
           onChange={onChangeLocalRealizacao}
           label="Local de realização"
           value={localRealizacao}
+          maxLength={100}
         />
       </div>
       <div className="col-md-12 mb-2">
         <CampoData
           onChange={onChangeHorarioInicio}
           label="Horário de início"
-          value={horarioInicio}
+          valor={horarioInicio}
           placeholder="09:00"
           formatoData="HH:mm"
           somenteHora
@@ -146,7 +157,7 @@ const ModalCadastroAtendimentoClinico = () => {
       <div className="col-md-12 mb-2">
         <CampoData
           onChange={onChangeHorarioTermino}
-          value={horarioTermino}
+          valor={horarioTermino}
           label="Horário término"
           placeholder="09:30"
           formatoData="HH:mm"
@@ -161,7 +172,7 @@ const ModalCadastroAtendimentoClinico = () => {
           label="Cancelar"
           color={Colors.Azul}
           border
-          onClick={onClose}
+          onClick={fecharModal}
           className="mt-2 mr-2"
         />
         <Button
@@ -176,6 +187,16 @@ const ModalCadastroAtendimentoClinico = () => {
       </div>
     </ModalConteudoHtml>
   );
+};
+
+ModalCadastroAtendimentoClinico.propTypes = {
+  onClose: PropTypes.func,
+  exibirModal: PropTypes.bool,
+};
+
+ModalCadastroAtendimentoClinico.defaultProps = {
+  onClose: () => {},
+  exibirModal: false,
 };
 
 export default ModalCadastroAtendimentoClinico;

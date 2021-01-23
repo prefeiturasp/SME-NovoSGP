@@ -4,6 +4,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -31,29 +32,29 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             if (!encaminhamentoAEEDto.Secoes.Any())
                 throw new NegocioException("Nenhuma seção foi encontrada");
 
-            var encaminhamentoConcluido = encaminhamentoAEEDto.Secoes.Where(c => !c.Concluido).Any();
-
             if (encaminhamentoAEEDto.Id.GetValueOrDefault() > 0)
             {
                 var encaminhamentoAEE = await mediator.Send(new ObterEncaminhamentoAEEPorIdQuery(encaminhamentoAEEDto.Id.GetValueOrDefault()));
                 if (encaminhamentoAEE != null)
                 {
-                    await AlterarEncaminhamento(encaminhamentoAEEDto, encaminhamentoAEE, encaminhamentoConcluido);
+                    await AlterarEncaminhamento(encaminhamentoAEEDto, encaminhamentoAEE);
                     return new ResultadoEncaminhamentoAEEDto() { Id = encaminhamentoAEE.Id };
                 }
             }
 
             var resultadoEncaminhamento = await mediator.Send(new RegistrarEncaminhamentoAeeCommand(
             encaminhamentoAEEDto.TurmaId, aluno.NomeAluno, aluno.CodigoAluno,
-            encaminhamentoConcluido ? SituacaoAEE.Rascunho : SituacaoAEE.Encaminhado));
-
+            encaminhamentoAEEDto.Situacao));
 
             await SalvarEncaminhamento(encaminhamentoAEEDto, resultadoEncaminhamento);
             return resultadoEncaminhamento;
         }
 
-        public async Task AlterarEncaminhamento(EncaminhamentoAeeDto encaminhamentoAEEDto, EncaminhamentoAEE encaminhamentoAEE, bool encaminhamentoConcluido)
+        public async Task AlterarEncaminhamento(EncaminhamentoAeeDto encaminhamentoAEEDto, EncaminhamentoAEE encaminhamentoAEE)
         {
+            encaminhamentoAEE.Situacao = encaminhamentoAEEDto.Situacao;
+            await mediator.Send(new SalvarEncaminhamentoAEECommand(encaminhamentoAEE));
+
             foreach (var secao in encaminhamentoAEEDto.Secoes)
             {
                 if (!secao.Questoes.Any())
@@ -63,9 +64,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
                 long resultadoEncaminhamentoSecao = 0;
                 if (secaoExistente == null)
-                {
                     resultadoEncaminhamentoSecao = await mediator.Send(new RegistrarEncaminhamentoAEESecaoCommand(encaminhamentoAEE.Id, secao.SecaoId, secao.Concluido));
-                }
                 else
                 {
                     resultadoEncaminhamentoSecao = secaoExistente.Id;
@@ -78,25 +77,68 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
                 foreach (var questoes in secao.Questoes.GroupBy(q => q.QuestaoId))
                 {
-                    var questoesExistentes = secaoExistente.Questoes.FirstOrDefault(q => q.QuestaoId == questoes.FirstOrDefault().QuestaoId);
-                    if (questoesExistentes == null)
+                    var questaoExistente = secaoExistente.Questoes.FirstOrDefault(q => q.QuestaoId == questoes.FirstOrDefault().QuestaoId);
+
+                    if (questaoExistente == null)
                     {
                         var resultadoEncaminhamentoQuestao = await mediator.Send(new RegistrarEncaminhamentoAEESecaoQuestaoCommand(resultadoEncaminhamentoSecao, questoes.FirstOrDefault().QuestaoId));
-                        await SalvarRespostas(questoes, resultadoEncaminhamentoQuestao);
+                        await RegistrarRespostaEncaminhamento(questoes, resultadoEncaminhamentoQuestao);
                     }
                     else
                     {
-                        await mediator.Send(new ExcluirRespostaEncaminhamentoAEEPorQuestaoIdCommand(questoesExistentes.Id));
-                        await SalvarRespostas(questoes, questoesExistentes.Id);
+                        if (questaoExistente.Excluido)
+                            await AlterarQuestaoExcluida(questaoExistente);
+
+                        await ExcluirRespostasEncaminhamento(questaoExistente, questoes);
+
+                        await AlterarRespostasEncaminhamento(questaoExistente, questoes);
+
+                        await IncluirRespostasEncaminhamento(questaoExistente, questoes);
                     }
                 }
 
-                foreach (var q in secaoExistente.Questoes.Where(x => !secao.Questoes.Any(s => s.QuestaoId == x.QuestaoId)))
-                {
-                    await mediator.Send(new ExcluirQuestaoEncaminhamentoAEEPorIdCommand(q.Id));
-                }
+                foreach (var questao in secaoExistente.Questoes.Where(x => !secao.Questoes.Any(s => s.QuestaoId == x.QuestaoId)))
+                    await mediator.Send(new ExcluirQuestaoEncaminhamentoAEEPorIdCommand(questao.Id));
             }
         }
+
+        private async Task AlterarQuestaoExcluida(QuestaoEncaminhamentoAEE questao)
+        {
+            questao.Excluido = false;
+            await mediator.Send(new AlterarQuestaoEncaminhamentoAEECommand(questao));
+        }
+
+        private async Task IncluirRespostasEncaminhamento(QuestaoEncaminhamentoAEE questaoExistente, IGrouping<long, EncaminhamentoAEESecaoQuestaoDto> respostas)
+            => await RegistrarRespostaEncaminhamento(ObterRespostasAIncluir(questaoExistente, respostas), questaoExistente.Id);
+
+        private async Task RegistrarRespostaEncaminhamento(IEnumerable<EncaminhamentoAEESecaoQuestaoDto> questoes, long questaoEncaminhamentoId)
+        {
+            foreach (var questao in questoes)
+            {
+                await mediator.Send(new RegistrarEncaminhamentoAEESecaoQuestaoRespostaCommand(questao.Resposta, questaoEncaminhamentoId, questao.TipoQuestao));
+            }
+        }
+
+        private async Task AlterarRespostasEncaminhamento(QuestaoEncaminhamentoAEE questaoExistente, IGrouping<long, EncaminhamentoAEESecaoQuestaoDto> respostas)
+        {
+            foreach (var respostaAlterar in ObterRespostasAAlterar(questaoExistente, respostas))
+                await mediator.Send(new AlterarEncaminhamentoAEESecaoQuestaoRespostaCommand(respostaAlterar, respostas.FirstOrDefault(c => c.RespostaEncaminhamentoId == respostaAlterar.Id)));
+        }
+
+        private async Task ExcluirRespostasEncaminhamento(QuestaoEncaminhamentoAEE questoesExistentes, IGrouping<long, EncaminhamentoAEESecaoQuestaoDto> respostas)
+        {
+            foreach (var respostasExcluir in ObterRespostasAExcluir(questoesExistentes, respostas))
+                await mediator.Send(new ExcluirRespostaEncaminhamentoAEECommand(respostasExcluir));
+        }
+
+        private IEnumerable<EncaminhamentoAEESecaoQuestaoDto> ObterRespostasAIncluir(QuestaoEncaminhamentoAEE questaoExistente, IGrouping<long, EncaminhamentoAEESecaoQuestaoDto> respostas)
+            => respostas.Where(c => c.RespostaEncaminhamentoId == 0);
+
+        private IEnumerable<RespostaEncaminhamentoAEE> ObterRespostasAExcluir(QuestaoEncaminhamentoAEE questaoExistente, IGrouping<long, EncaminhamentoAEESecaoQuestaoDto> respostasEncaminhamento)
+            => questaoExistente.Respostas.Where(s => !respostasEncaminhamento.Any(c => c.RespostaEncaminhamentoId == s.Id));
+
+        private IEnumerable<RespostaEncaminhamentoAEE> ObterRespostasAAlterar(QuestaoEncaminhamentoAEE questaoExistente, IGrouping<long, EncaminhamentoAEESecaoQuestaoDto> respostasEncaminhamento)
+            => questaoExistente.Respostas.Where(s => respostasEncaminhamento.Any(c => c.RespostaEncaminhamentoId == s.Id));
 
         public async Task SalvarEncaminhamento(EncaminhamentoAeeDto encaminhamentoAEEDto, ResultadoEncaminhamentoAEEDto resultadoEncaminhamento)
         {
@@ -110,16 +152,8 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                 foreach (var questoes in secao.Questoes.GroupBy(q => q.QuestaoId))
                 {
                     var resultadoEncaminhamentoQuestao = await mediator.Send(new RegistrarEncaminhamentoAEESecaoQuestaoCommand(resultadoEncaminhamentoSecao, questoes.FirstOrDefault().QuestaoId));
-                    await SalvarRespostas(questoes, resultadoEncaminhamentoQuestao);
+                    await RegistrarRespostaEncaminhamento(questoes, resultadoEncaminhamentoQuestao);
                 }
-            }
-        }
-
-        private async Task SalvarRespostas(IGrouping<long, EncaminhamentoAEESecaoQuestao> questoes, long resultadoEncaminhamentoQuestao)
-        {
-            foreach (var q in questoes)
-            {
-                await mediator.Send(new RegistrarEncaminhamentoAEESecaoQuestaoRespostaCommand(q.Resposta, resultadoEncaminhamentoQuestao, q.TipoQuestao));
             }
         }
     }

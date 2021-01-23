@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import Button from '~/componentes/button';
 import { Colors } from '~/componentes/colors';
 import { RotasDto } from '~/dtos';
+import situacaoAEE from '~/dtos/situacaoAEE';
 import { confirmar, erros, sucesso } from '~/servicos';
 import history from '~/servicos/history';
 import ServicoEncaminhamentoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoEncaminhamentoAEE';
@@ -15,27 +16,49 @@ const BotoesAcoesEncaminhamentoAEE = props => {
     store => store.encaminhamentoAEE.encaminhamentoAEEEmEdicao
   );
 
+  const dadosEncaminhamento = useSelector(
+    store => store.encaminhamentoAEE.dadosEncaminhamento
+  );
+
   const onClickSalvar = async () => {
     const encaminhamentoId = match?.params?.id;
     ServicoEncaminhamentoAEE.salvarEncaminhamento(encaminhamentoId);
+  };
+
+  const onClickEnviar = async () => {
+    const encaminhamentoId = match?.params?.id;
+    ServicoEncaminhamentoAEE.salvarEncaminhamento(encaminhamentoId, true);
   };
 
   const onClickVoltar = async () => {
     if (encaminhamentoAEEEmEdicao) {
       const confirmou = await confirmar(
         'Atenção',
-        'Você não salvou as informações preenchidas.',
-        'Deseja voltar para tela de listagem agora?'
+        '',
+        'Suas alterações não foram salvas, deseja salvar agora?'
       );
-      if (confirmou) history.push(RotasDto.RELATORIO_AEE_ENCAMINHAMENTO);
+      if (confirmou) {
+        const encaminhamentoId = match?.params?.id;
+        ServicoEncaminhamentoAEE.salvarEncaminhamento(encaminhamentoId);
+      } else {
+        history.push(RotasDto.RELATORIO_AEE_ENCAMINHAMENTO);
+      }
     } else {
       history.push(RotasDto.RELATORIO_AEE_ENCAMINHAMENTO);
     }
   };
 
   const onClickCancelar = async () => {
-    // TODO
-    console.log('onClickCancelar');
+    if (encaminhamentoAEEEmEdicao) {
+      const confirmou = await confirmar(
+        'Atenção',
+        'Você não salvou as informações preenchidas.',
+        'Deseja realmente cancelar as alterações?'
+      );
+      if (confirmou) {
+        ServicoEncaminhamentoAEE.resetarTelaDadosOriginais();
+      }
+    }
   };
 
   const onClickExcluir = async () => {
@@ -58,11 +81,6 @@ const BotoesAcoesEncaminhamentoAEE = props => {
         }
       }
     }
-  };
-
-  const onClickEnviar = async () => {
-    // TODO
-    console.log('onClickEnviar');
   };
 
   return (
@@ -92,17 +110,23 @@ const BotoesAcoesEncaminhamentoAEE = props => {
         border
         className="mr-3"
         onClick={onClickExcluir}
-        disabled={!match?.params?.id}
+        disabled={
+          !match?.params?.id ||
+          dadosEncaminhamento?.situacao === situacaoAEE.Encaminhado
+        }
       />
       <Button
         id="btn-salvar"
-        label="Salvar"
+        label={match?.params?.id ? 'Alterar' : 'Salvar'}
         color={Colors.Azul}
         border
         bold
         className="mr-3"
         onClick={onClickSalvar}
-        disabled={!encaminhamentoAEEEmEdicao}
+        disabled={
+          !encaminhamentoAEEEmEdicao ||
+          dadosEncaminhamento?.situacao === situacaoAEE.Encaminhado
+        }
       />
       <Button
         id="btn-enviar"
@@ -111,7 +135,10 @@ const BotoesAcoesEncaminhamentoAEE = props => {
         border
         bold
         onClick={onClickEnviar}
-        disabled
+        disabled={
+          !encaminhamentoAEEEmEdicao ||
+          dadosEncaminhamento?.situacao === situacaoAEE.Encaminhado
+        }
       />
     </>
   );

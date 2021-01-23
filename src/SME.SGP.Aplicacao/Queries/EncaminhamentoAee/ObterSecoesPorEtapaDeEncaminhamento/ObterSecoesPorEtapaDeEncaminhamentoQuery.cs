@@ -6,12 +6,13 @@ namespace SME.SGP.Aplicacao.Queries
 {
     public class ObterSecoesPorEtapaDeEncaminhamentoQuery : IRequest<IEnumerable<SecaoQuestionarioDto>>
     {
-        public ObterSecoesPorEtapaDeEncaminhamentoQuery(List<int> etapas)
+        public ObterSecoesPorEtapaDeEncaminhamentoQuery(List<int> etapas, long encaminhamentoAeeId)
         {
             Etapas = etapas;
         }
 
         public List<int> Etapas { get; set; }
+        public long EncaminhamentoAeeId { get; }
 
     }
 

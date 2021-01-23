@@ -102,11 +102,13 @@ namespace SME.SGP.Dados.Repositorios
                 });
         }
 
-        public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaBimestresAsync(string codigoAluno, int bimestre, string codigoTurma)
+        public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaBimestresAsync(string codigoAluno, int bimestre, string codigoTurma, TipoFrequenciaAluno tipoFrequencia = TipoFrequenciaAluno.PorDisciplina)
         {
-            var query = @"select * from frequencia_aluno fa 
-                            where fa.codigo_aluno = @codigoAluno
-                            and fa.turma_id = @turmaId and fa.tipo = 1";
+            var query = @"select * 
+                            from frequencia_aluno fa 
+                           where fa.codigo_aluno = @codigoAluno
+                             and fa.turma_id = @turmaId 
+                             and fa.tipo = @tipoFrequencia";
 
             if (bimestre > 0)
                 query += " and fa.bimestre = @bimestre";
@@ -115,7 +117,8 @@ namespace SME.SGP.Dados.Repositorios
             {
                 codigoAluno,
                 bimestre,
-                turmaId = codigoTurma
+                turmaId = codigoTurma,
+                tipoFrequencia,
             };
 
             return await database.Conexao.QueryAsync<FrequenciaAluno>(query, parametros);

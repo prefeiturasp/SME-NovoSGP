@@ -5,21 +5,16 @@ const inicial = {
   dadosModalAnotacao: null,
   exibirModalAnotacao: false,
   exibirModalAviso: false,
-  exibirModalCadastroAtendimentoClinicoAEE: false,
   dadosEstudanteObjectCardEncaminhamento: {},
-  dadosSecaoLocalizarEstudante: {
-    anoLetivo: '2021',
-    codigoAluno: 4766480,
-    codigoDre: '108100',
-    codigoUe: '092819',
-    codigoTurma: '',
-    turmaId: 614004,
-  },
+  dadosSecaoLocalizarEstudante: {},
   dadosSecoesPorEtapaDeEncaminhamentoAEE: [],
   formsSecoesEncaminhamentoAEE: null,
   encaminhamentoAEEEmEdicao: false,
   exibirLoaderEncaminhamentoAEE: false,
-  dadosAtendimentoClinicoAEE: [],
+  dadosEncaminhamento: null,
+  labelCamposEncaminhamento: {},
+  exibirModalErrosEncaminhamento: false,
+  errosModalEncaminhamento: [],
 };
 
 export default function EncaminhamentoAEE(state = inicial, action) {
@@ -91,16 +86,43 @@ export default function EncaminhamentoAEE(state = inicial, action) {
           exibirLoaderEncaminhamentoAEE: action.payload,
         };
       }
-      case '@encaminhamentoAEE/setExibirModalCadastroAtendimentoClinicoAEE': {
+      case '@encaminhamentoAEE/setDadosEncaminhamento': {
         return {
           ...draft,
-          exibirModalCadastroAtendimentoClinicoAEE: action.payload,
+          dadosEncaminhamento: action.payload,
         };
       }
-      case '@encaminhamentoAEE/setDadosAtendimentoClinicoAEE': {
+      case '@encaminhamentoAEE/setLabelCamposEncaminhamento': {
         return {
           ...draft,
-          dadosAtendimentoClinicoAEE: action.payload,
+          labelCamposEncaminhamento: action.payload,
+        };
+      }
+      case '@encaminhamentoAEE/setErrosModalEncaminhamento': {
+        return {
+          ...draft,
+          errosModalEncaminhamento: action.payload,
+        };
+      }
+      case '@encaminhamentoAEE/setExibirModalErrosEncaminhamento': {
+        return {
+          ...draft,
+          exibirModalErrosEncaminhamento: action.payload,
+        };
+      }
+      case '@encaminhamentoAEE/setLimparDadosEncaminhamento': {
+        return {
+          ...draft,
+          dadosEstudanteObjectCardEncaminhamento: {},
+          dadosSecaoLocalizarEstudante: {},
+          dadosSecoesPorEtapaDeEncaminhamentoAEE: [],
+          formsSecoesEncaminhamentoAEE: null,
+          encaminhamentoAEEEmEdicao: false,
+          exibirLoaderEncaminhamentoAEE: false,
+          dadosEncaminhamento: null,
+          labelCamposEncaminhamento: {},
+          exibirModalErrosEncaminhamento: false,
+          errosModalEncaminhamento: [],
         };
       }
 
