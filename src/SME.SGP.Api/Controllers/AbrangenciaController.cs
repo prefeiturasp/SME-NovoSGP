@@ -195,6 +195,16 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar());
         }
+        [HttpGet("/api/v1/abrangencias/{usuarioRF}/perfis/{usuarioPerfil}/acesso-sondagem")]
+        [ProducesResponseType(typeof(bool), 200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [AllowAnonymous]
+        public async Task<IActionResult> PodeAcessarSondagem(string usuarioRF, Guid usuarioPerfil, [FromServices] IUsuarioPossuiAbrangenciaAcessoSondagemUseCase useCase)
+        {
+            return Ok(await useCase.Executar(usuarioRF, usuarioPerfil));
+        }
 
     }
 }

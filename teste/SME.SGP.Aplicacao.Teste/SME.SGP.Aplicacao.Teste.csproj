@@ -33,4 +33,17 @@
     <ProjectReference Include="..\..\src\SME.SGP.Dominio\SME.SGP.Dominio.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="ArquivosTestes\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="ArquivosTestes\arquivo_teste.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ArquivosTestes\plano_de_aula.pdf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

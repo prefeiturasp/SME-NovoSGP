@@ -4,6 +4,9 @@ namespace SME.SGP.Dominio
 {
     public static class Perfis
     {
+        public readonly static Guid PERFIL_ADMSME = Guid.Parse("5ae1e074-37d6-e911-abd6-f81654fe895d");
+        public readonly static Guid PERFIL_ADMCOTIC = Guid.Parse("5be1e074-37d6-e911-abd6-f81654fe895d");
+        public readonly static Guid PERFIL_ADMDRE = Guid.Parse("48e1e074-37d6-e911-abd6-f81654fe895d");
         public readonly static Guid PERFIL_AD = Guid.Parse("45E1E074-37D6-E911-ABD6-F81654FE895D");
         public readonly static Guid PERFIL_ADMUE = Guid.Parse("42e1e074-37d6-e911-abd6-f81654fe895d");
         public readonly static Guid PERFIL_CJ = Guid.Parse("41e1e074-37d6-e911-abd6-f81654fe895d");

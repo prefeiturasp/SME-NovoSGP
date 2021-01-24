@@ -10,6 +10,7 @@ namespace SME.SGP.Infra
             Perfis = new List<PerfilDto>();
         }
 
+        public bool EhPerfilProfessor { get; set; }
         public bool EhProfessor { get; set; }
         public bool EhProfessorCj { get; set; }
         public bool EhProfessorCjInfantil { get; set; }

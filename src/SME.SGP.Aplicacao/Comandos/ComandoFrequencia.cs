@@ -42,7 +42,7 @@ namespace SME.SGP.Aplicacao
 
             await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(alunos, aula.DataAula, aula.TurmaId, aula.DisciplinaId, bimestre));            
 
-            await mediator.Send(new ExcluirPendenciaAulaCommand(aula.Id, TipoPendenciaAula.Frequencia));
+            await mediator.Send(new ExcluirPendenciaAulaCommand(aula.Id, TipoPendencia.Frequencia));
         }
 
         private static List<RegistroAusenciaAluno> ObtemListaDeAusencias(FrequenciaDto frequenciaDto)

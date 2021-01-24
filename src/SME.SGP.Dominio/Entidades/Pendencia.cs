@@ -1,19 +1,17 @@
-﻿namespace SME.SGP.Dominio
+﻿using System;
+using System.Linq;
+
+namespace SME.SGP.Dominio
 {
     public class Pendencia : EntidadeBase
     {
-        public Pendencia(string titulo, string descricao, TipoPendencia tipo)
+        public Pendencia(TipoPendencia tipo, string titulo = "", string descricao = "", string instrucao = "")
         {
-            if (string.IsNullOrWhiteSpace(titulo))
-                throw new NegocioException("O título é obrigatório.");
-
-            if (string.IsNullOrWhiteSpace(descricao))
-                throw new NegocioException("A descrição é obrigatória.");
-
-            Descricao = descricao;
             Situacao = SituacaoPendencia.Pendente;
             Tipo = tipo;
             Titulo = titulo;
+            Descricao = descricao;
+            Instrucao = instrucao;
         }
 
         protected Pendencia()
@@ -24,5 +22,53 @@
         public SituacaoPendencia Situacao { get; set; }
         public TipoPendencia Tipo { get; set; }
         public string Titulo { get; set; }
+        public string Instrucao { get; set; }
+        public bool Excluido { get; set; }
+
+        public bool EhPendenciaFechamento()
+            => new TipoPendencia[] {
+                TipoPendencia.AvaliacaoSemNotaParaNenhumAluno,
+                TipoPendencia.AulasReposicaoPendenteAprovacao,
+                TipoPendencia.AulasSemPlanoAulaNaDataDoFechamento,
+                TipoPendencia.AulasSemFrequenciaNaDataDoFechamento,
+                TipoPendencia.ResultadosFinaisAbaixoDaMedia,
+                TipoPendencia.AlteracaoNotaFechamento
+            }.Contains(Tipo);
+
+        public bool EhPendenciaAula()
+            => new TipoPendencia[] {
+                TipoPendencia.Frequencia,
+                TipoPendencia.PlanoAula,
+                TipoPendencia.DiarioBordo,
+                TipoPendencia.Avaliacao,
+                TipoPendencia.AulaNaoLetivo
+            }.Contains(Tipo);
+
+        public bool EhPendenciaProfessor()
+            => new TipoPendencia[] {
+                TipoPendencia.AusenciaDeAvaliacaoProfessor,
+                TipoPendencia.AusenciaDeAvaliacaoCP,
+                TipoPendencia.AusenciaFechamento
+            }.Contains(Tipo);
+
+        public bool EhPendenciaCalendarioUe()
+            => new TipoPendencia[] {
+                TipoPendencia.CalendarioLetivoInsuficiente
+            }.Contains(Tipo);
+
+        public bool EhPendenciaCadastroEvento()
+            => new TipoPendencia[] {
+                TipoPendencia.CadastroEventoPendente
+            }.Contains(Tipo);
+
+        public bool EhPendenciaAusenciaAvaliacaoCP()
+            => new TipoPendencia[] {
+                TipoPendencia.AusenciaDeAvaliacaoCP
+            }.Contains(Tipo);
+
+        public bool EhPendenciaAusenciaDeRegistroIndividual()
+            => new TipoPendencia[] {
+                TipoPendencia.AusenciaDeRegistroIndividual
+            }.Contains(Tipo);
     }
 }

@@ -8,7 +8,6 @@ import Button from '../../../componentes/button';
 import Card from '../../../componentes/card';
 import { Colors } from '../../../componentes/colors';
 import SelectComponent from '../../../componentes/select';
-import TextEditor from '../../../componentes/textEditor';
 import { erro, sucesso, confirmar } from '../../../servicos/alertas';
 import api from '../../../servicos/api';
 import history from '../../../servicos/history';
@@ -31,6 +30,7 @@ import { Loader } from '~/componentes';
 import { RegistroMigrado } from '~/componentes-sgp/registro-migrado';
 import AlertaModalidadeInfantil from '~/componentes-sgp/AlertaModalidadeInfantil/alertaModalidadeInfantil';
 import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
+import JoditEditor from '~/componentes/jodit-editor/joditEditor';
 
 export default function PlanoCiclo() {
   const urlPrefeitura = 'https://curriculo.sme.prefeitura.sp.gov.br';
@@ -49,10 +49,6 @@ export default function PlanoCiclo() {
   const [eventoTrocarCiclo, setEventoTrocarCiclo] = useState(false);
   const [registroMigrado, setRegistroMigrado] = useState(false);
   const [cicloParaTrocar, setCicloParaTrocar] = useState('');
-  const [estadoAdicionalTextEditor, setEstadoAdicionalTextEditor] = useState({
-    focado: false,
-    ultimoFoco: null,
-  });
   const [inseridoAlterado, setInseridoAlterado] = useState({
     alteradoEm: '',
     alteradoPor: '',
@@ -330,13 +326,9 @@ export default function PlanoCiclo() {
     setInseridoAlterado({});
   }
 
-  const onClickTextEditor = ultimoFoco => {
+  const onChangeTextEditor = () => {
     if (!somenteConsulta && !modoEdicao) {
       setModoEdicao(true);
-      setEstadoAdicionalTextEditor({
-        focado: true,
-        ultimoFoco,
-      });
     }
   };
 
@@ -405,18 +397,14 @@ export default function PlanoCiclo() {
     const anoLetivo = String(turmaSelecionada.anoLetivo);
     const codEscola = String(turmaSelecionada.unidadeEscolar);
 
-    const textoReal = textEditorRef.current.state.value
-      .replace(/<[^>]*>/g, '')
-      .trim();
-
-    if (!textoReal) {
+    if (!textEditorRef.current.value) {
       erro('A descrição deve ser informada');
       return;
     }
     const params = {
       ano: anoLetivo,
       cicloId: cicloSelecionado,
-      descricao: textEditorRef.current.state.value,
+      descricao: textEditorRef.current.value,
       escolaId: codEscola,
       id: planoCicloId || 0,
       idsMatrizesSaber,
@@ -627,15 +615,13 @@ export default function PlanoCiclo() {
               </div>
               <div className="row mb-3">
                 <div className="col-md-6">
-                  <TextEditor
+                  <JoditEditor
                     ref={textEditorRef}
                     id="textEditor"
-                    height="500px"
-                    maxHeight="calc(100vh)"
+                    height="620px"
                     value={descricaoCiclo}
-                    disabled={somenteConsulta}
-                    onClick={onClickTextEditor}
-                    estadoAdicional={estadoAdicionalTextEditor}
+                    desabilitar={somenteConsulta}
+                    onChange={onChangeTextEditor}
                   />
                   <InseridoAlterado>
                     {inseridoAlterado.criadoPor && inseridoAlterado.criadoEm ? (

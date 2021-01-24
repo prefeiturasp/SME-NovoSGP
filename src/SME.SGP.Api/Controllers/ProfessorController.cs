@@ -62,10 +62,10 @@ namespace SME.SGP.Api.Controllers
             return Ok(retorno);
         }
 
-        [HttpGet("disciplinas/turmas")]
+        [HttpPost("disciplinas/turmas")]
         [ProducesResponseType(typeof(IEnumerable<DisciplinaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterDisciplinas(string[] codigosTurmas, [FromServices]IObterComponentesCurricularesPorProfessorETurmasCodigosUseCase useCase)
+        public async Task<IActionResult> ObterDisciplinas([FromBody] string[] codigosTurmas, [FromServices]IObterComponentesCurricularesPorProfessorETurmasCodigosUseCase useCase)
         {
             var retorno = await useCase.Executar(codigosTurmas);
 
@@ -94,9 +94,9 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("{codigoRF}/resumo/{anoLetivo}")]
         [ProducesResponseType(typeof(ProfessorResumoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> Resumo(string codigoRF, int anoLetivo)
+        public async Task<IActionResult> Resumo(string codigoRF, int anoLetivo, [FromQuery] bool buscarOutrosCargos = false)
         {
-            var retorno = await consultasProfessor.ObterResumoPorRFAnoLetivo(codigoRF, anoLetivo);
+            var retorno = await consultasProfessor.ObterResumoPorRFAnoLetivo(codigoRF, anoLetivo, buscarOutrosCargos);
 
             return Ok(retorno);
         }

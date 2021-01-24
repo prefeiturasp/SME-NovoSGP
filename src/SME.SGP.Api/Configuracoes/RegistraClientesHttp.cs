@@ -73,6 +73,12 @@ namespace SME.SGP.Api
                 c.BaseAddress = new Uri(configuration.GetSection("UrlServidorRelatorios").Value);
                 c.DefaultRequestHeaders.Add("Accept", "application/json");
             });
+
+            services.AddHttpClient(name: "servicoServidorRelatorios", c =>
+            {
+                c.BaseAddress = new Uri(configuration.GetSection("UrlServidorRelatorios").Value);
+                c.DefaultRequestHeaders.Add("Accept", "application/json");
+            });
         }
     }
 }

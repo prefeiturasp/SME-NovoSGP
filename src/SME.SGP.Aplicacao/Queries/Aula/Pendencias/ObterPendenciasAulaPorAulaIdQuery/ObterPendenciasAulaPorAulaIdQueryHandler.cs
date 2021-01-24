@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Threading;
@@ -16,9 +17,14 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<long[]> Handle(ObterPendenciasAulaPorAulaIdQuery request, CancellationToken cancellationToken)
         {
-            var valor = await repositorioPendenciaAula.ListarPendenciasPorAulaId(request.AulaId);
+            var pendencias = await repositorioPendenciaAula.PossuiPendenciasPorAulaId(request.AulaId, request.EhModalidadeInfantil);
 
-            return valor;
+            if (pendencias == null)
+                return null;
+
+            pendencias.PossuiPendenciaAtividadeAvaliativa = await repositorioPendenciaAula.PossuiPendenciasAtividadeAvaliativaPorAulaId(request.AulaId);
+            
+            return pendencias.RetornarTipoPendecias();
         }
     }
 }

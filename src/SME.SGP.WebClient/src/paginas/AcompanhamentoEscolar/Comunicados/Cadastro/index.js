@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import PropTypes, { object } from 'prop-types';
+import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
 import { Form, Formik } from 'formik';
@@ -19,7 +19,6 @@ import {
   Label,
   momentSchema,
   Base,
-  Editor,
   SelectAutocomplete,
 } from '~/componentes';
 import ListaAlunos from '~/paginas/AcompanhamentoEscolar/Comunicados/Cadastro/Lista/ListaAlunos';
@@ -31,13 +30,21 @@ import RotasDto from '~/dtos/rotasDto';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 import ServicoComunicados from '~/servicos/Paginas/AcompanhamentoEscolar/Comunicados/ServicoComunicados';
 import ServicoComunicadoEvento from '~/servicos/Paginas/AcompanhamentoEscolar/ComunicadoEvento/ServicoComunicadoEvento';
-import { confirmar, erro, sucesso, erros } from '~/servicos/alertas';
+import { confirmar, erro, sucesso } from '~/servicos/alertas';
 import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
 
 import FiltroHelper from '~/paginas/AcompanhamentoEscolar/Comunicados/Helper/helper.js';
 import ListaAlunosSelecionados from './Lista/ListaAlunosSelecionados';
 import { ServicoCalendarios } from '~/servicos';
-import { forEach } from 'lodash';
+import modalidade from '~/dtos/modalidade';
+import JoditEditor from '~/componentes/jodit-editor/joditEditor';
+
+const TODAS_UE_ID = '-99';
+const TODAS_DRE_ID = '-99';
+const TODAS_MODALIDADES_ID = '-99';
+const TODAS_TURMAS_ID = '-99';
+const MODALIDADE_EJA_ID = '3';
+
 
 const ComunicadosCadastro = ({ match }) => {
   const ErroValidacao = styled.span`
@@ -55,8 +62,8 @@ const ComunicadosCadastro = ({ match }) => {
     }
   `;
 
-  const todos = [{ id: 'todas', nome: 'Todas' }];
-  const todosTurmasModalidade = [{ id: '-99', nome: 'Todas' }];
+  const todos = [{ id: TODAS_UE_ID, nome: 'Todas' }];
+  const todosTurmasModalidade = [{ id: TODAS_TURMAS_ID, nome: 'Todas' }];
   const semestresLista = [
     { id: '1', nome: '1º Semestre' },
     { id: '2', nome: '2º Semestre' },
@@ -91,8 +98,9 @@ const ComunicadosCadastro = ({ match }) => {
   const [carregandoTipos, setCarregandoTipos] = useState(false);
   const [listaCalendario, setListaCalendario] = useState([]);
   const [valorTipoCalendario, setValorTipoCalendario] = useState('');
-  const [selecionouCalendario, setSelecionouCalendario] = useState(false);
-  const [tipoCalendarioSelecionado, setTipoCalendarioSelecionado] = useState('');
+  const [tipoCalendarioSelecionado, setTipoCalendarioSelecionado] = useState(
+    ''
+  );
   const [pesquisaTipoCalendario, setPesquisaTipoCalendario] = useState('');
 
   const [carregandoEventos, setCarregandoEventos] = useState(false);
@@ -101,51 +109,101 @@ const ComunicadosCadastro = ({ match }) => {
   const [valorEvento, setValorEvento] = useState('');
   const [eventoSelecionado, setEventoSelecionado] = useState('');
   const [pesquisaEvento, setPesquisaEvento] = useState('');
+  const [novoRegistro, setNovoRegistro] = useState(true);
+  const [modoEdicao, setModoEdicao] = useState(false);
 
-  const selecionaTipoCalendario = (descricao, form) => {
-    const tipo = listaCalendario?.find(t => {
-      return t.descricao === descricao;
-    });
+  const [idComunicado, setIdComunicado] = useState();
+
+  const [carregouInformacoes, setCarregouInformacoes] = useState(false);
+  const [refForm, setRefForm] = useState({});
+
+  const selecionaTipoCalendario = (descricao, form, tipoCalend, onChange) => {
+    let tipo = '';
+
+    if (tipoCalend) {
+      tipo = tipoCalend;
+    } else {
+      tipo = listaCalendario?.find(t => {
+        return t.descricao === descricao;
+      });
+    }
 
     if (tipo?.id) {
-      setSelecionouCalendario(true);
-      setValorTipoCalendario(descricao);
+      setValorTipoCalendario(tipo.descricao);
       setTipoCalendarioSelecionado(tipo.id);
+      if (form && form.setFieldValue) {
+        form.setFieldValue('tipoCalendarioId', tipo.descricao);
+      }
+    } else {
+      setValorTipoCalendario('');
+      setTipoCalendarioSelecionado();
+      if (form && form.setFieldValue) {
+        form.setFieldValue('tipoCalendarioId', '');
+      }
+    }
+
+    if (onChange) {
+      selecionaEvento('', form);
     }
   };
 
-  const selecionaEvento = (nome, form) => {
-    const evento = listaEvento?.find(t => {
-      return t.nome === nome;
-    });
+  const selecionaEvento = (nome, form, onChange, tipoEvento) => {
+    let evento = '';
+
+    if (tipoEvento) {
+      evento = tipoEvento;
+    } else {
+      evento = listaEvento?.find(t => {
+        return t.nome === nome;
+      });
+    }
 
     if (evento?.id) {
       setSelecionouEvento(true);
       setValorEvento(evento.nome);
       setEventoSelecionado(evento);
+      if (form && form.setFieldValue) {
+        form.setFieldValue('eventoId', evento.nome);
+      }
+    } else if (!onChange) {
+      setSelecionouEvento(false);
+      setValorEvento('');
+      setEventoSelecionado('');
+      if (form && form.setFieldValue) {
+        form.setFieldValue('eventoId', '');
+      }
+    }
+
+    if (onChange && !evento) {
+      setValorEvento(nome);
     }
   };
 
   const modalidadeTurmaCalendarioRelation = {
-    "1": "3",
-    "3": "2",
-    "5": "1",
-    "6": "1"
+    '1': '3',
+    '3': '2',
+    '5': '1',
+    '6': '1',
   };
 
-  const hasAnoLetivoClause = (t) => (refForm?.state?.values?.anoLetivo ?? false) 
-      ? (t.anoLetivo == refForm.state.values.anoLetivo) 
+  const hasAnoLetivoClause = t =>
+    refForm?.state?.values?.anoLetivo ?? false
+      ? t.anoLetivo == refForm.state.values.anoLetivo
       : true;
 
-  const hasModalidadeSelecionadaClause = (t) => modalidadeSelecionada && modalidadeSelecionada != '-99'
-      ? (modalidadeTurmaCalendarioRelation[modalidadeSelecionada] 
-          && modalidadeTurmaCalendarioRelation[modalidadeSelecionada] == t.modalidade) 
+  const hasModalidadeSelecionadaClause = t =>
+    modalidadeSelecionada && modalidadeSelecionada != TODAS_MODALIDADES_ID
+      ? modalidadeTurmaCalendarioRelation[modalidadeSelecionada] &&
+        modalidadeTurmaCalendarioRelation[modalidadeSelecionada] == t.modalidade
       : true;
 
-  const filterAllowedCalendarTypes = (data) => {
+  const hasActiveSituation = t => t.situacao;
+
+  const filterAllowedCalendarTypes = data => {
     return data
       .filter(hasAnoLetivoClause)
-      .filter(hasModalidadeSelecionadaClause);
+      .filter(hasModalidadeSelecionadaClause)
+      .filter(hasActiveSituation);
   };
 
   const loadTiposCalendarioEffect = () => {
@@ -153,22 +211,38 @@ const ComunicadosCadastro = ({ match }) => {
 
     (async () => {
       setCarregandoTipos(true);
-  
+
       const {
         data,
       } = await ServicoCalendarios.obterTiposCalendarioAutoComplete(
         pesquisaTipoCalendario
       );
 
-      if(isSubscribed) {
+      if (isSubscribed) {
         let allowedList = filterAllowedCalendarTypes(data);
         setListaCalendario(allowedList);
-        selecionaTipoCalendario(
-          allowedList.length > 0 
-            ? allowedList[0].descricao
-            : '', 
-          refForm
-        );
+
+        if (idComunicado) {
+          selecionaTipoCalendario(
+            allowedList.length > 0 ? allowedList[0].descricao : '',
+            refForm,
+            allowedList.length > 0
+              ? allowedList?.find(t => {
+                  return t.id === valoresIniciais.tipoCalendarioId;
+                })
+              : ''
+          );
+        } else {
+          selecionaTipoCalendario(
+            allowedList.length > 0 ? allowedList[0].descricao : '',
+            refForm,
+            allowedList.length > 0
+              ? allowedList?.find(t => {
+                  return t.descricao === allowedList[0].descricao;
+                })
+              : ''
+          );
+        }
         setCarregandoTipos(false);
       }
     })();
@@ -189,21 +263,44 @@ const ComunicadosCadastro = ({ match }) => {
         tipoCalendario: +(tipoCalendarioSelecionado ?? null),
         anoLetivo: +(_form?.anoLetivo ?? null),
         modalidade: +(_form?.modalidade ?? null),
-        codigoDre: _form?.CodigoDre && _form?.CodigoDre != 'todas' ? null : _form?.CodigoDre,
-        codigoUe: _form?.CodigoUe && _form?.CodigoUe != 'todas' ? null : _form?.codigoUe,
+        codigoDre:
+          _form?.CodigoDre && _form?.CodigoDre != TODAS_DRE_ID
+            ? null
+            : _form?.CodigoDre,
+        codigoUe:
+          _form?.CodigoUe && _form?.CodigoUe != TODAS_UE_ID
+            ? null
+            : _form?.codigoUe,
       };
 
-      Object.keys(filter).forEach((key) => {
-        if(filter[key] == null || filter[key] == 'todas')
+      Object.keys(filter).forEach(key => {
+        if (filter[key] == null || filter[key] == TODAS_DRE_ID)
           delete filter[key];
       });
 
       let data = await ServicoComunicadoEvento.listarPor(filter);
-      
-      if(isSubscribed) {
-        if(data && data.length > 0) {
-          data.forEach(item => item.nome = `${item.id} - ${item.nome}`);
+
+      if (isSubscribed) {
+        if (data && data.length > 0) {
+          data.forEach(
+            item =>
+              (item.nome = `${item.id} - ${item.nome} (${item.tipoEvento})`)
+          );
         }
+
+        if (idComunicado) {
+          selecionaEvento(
+            '',
+            refForm,
+            false,
+            data.length > 0
+              ? data?.find(t => {
+                  return t.id === valoresIniciais.eventoId;
+                })
+              : ''
+          );
+        }
+
         setListaEvento(data);
         setCarregandoEventos(false);
       }
@@ -223,11 +320,6 @@ const ComunicadosCadastro = ({ match }) => {
     );
   }, [permissoesTela]);
 
-  const [novoRegistro, setNovoRegistro] = useState(true);
-  const [modoEdicao, setModoEdicao] = useState(false);
-
-  const [idComunicado, setIdComunicado] = useState();
-
   useEffect(() => {
     if (match && match.params && match.params.id) {
       setIdComunicado(match.params.id);
@@ -236,8 +328,11 @@ const ComunicadosCadastro = ({ match }) => {
   }, [match]);
 
   useEffect(() => {
-    ObterModalidades('-99');
-  }, []);
+    const anoLetivo = refForm?.state?.values?.anoLetivo;
+    if (anoLetivo){
+      ObterModalidades(TODAS_MODALIDADES_ID, anoLetivo);
+    }
+  }, [refForm?.state?.values?.anoLetivo]);
 
   const valoresIniciaisImutaveis = {
     id: 0,
@@ -249,15 +344,15 @@ const ComunicadosCadastro = ({ match }) => {
     titulo: '',
     descricao: '',
     anoLetivo: moment().year(),
-    CodigoDre: 'todas',
-    CodigoUe: 'todas',
+    CodigoDre: TODAS_DRE_ID,
+    CodigoUe: TODAS_UE_ID,
     alunosEspecificados: false,
-    modalidade: '-99',
+    modalidade: TODAS_MODALIDADES_ID,
     semestre: '',
-    turmas: ['-99'],
+    turmas: [TODAS_TURMAS_ID],
     alunos: '1',
     tipoCalendarioId: '',
-    eventoId: ''
+    eventoId: '',
   };
 
   const [valoresIniciais, setValoresIniciais] = useState(
@@ -265,7 +360,7 @@ const ComunicadosCadastro = ({ match }) => {
   );
 
   const handleModoEdicao = () => {
-    if (!modoEdicao) setModoEdicao(true);
+    if (!modoEdicao && carregouInformacoes) setModoEdicao(true);
   };
 
   const [descricaoComunicado, setDescricaoComunicado] = useState('');
@@ -294,11 +389,13 @@ const ComunicadosCadastro = ({ match }) => {
           gruposId: [...comunicado.grupos.map(grupo => String(grupo.id))],
           CodigoDre: comunicado.codigoDre
             ? String(comunicado.codigoDre)
-            : 'todas',
-          CodigoUe: comunicado.codigoUe ? String(comunicado.codigoUe) : 'todas',
+            : TODAS_DRE_ID,
+          CodigoUe: comunicado.codigoUe
+            ? String(comunicado.codigoUe)
+            : TODAS_UE_ID,
           modalidade:
             String(comunicado.modalidade) === '0'
-              ? '-99'
+              ? TODAS_MODALIDADES_ID
               : String(comunicado.modalidade),
           semestre:
             String(comunicado.semestre) === '0'
@@ -308,7 +405,7 @@ const ComunicadosCadastro = ({ match }) => {
           turmas:
             comunicado.turmas.length > 0
               ? [...comunicado.turmas.map(turma => String(turma.codigoTurma))]
-              : ['-99'],
+              : [TODAS_TURMAS_ID],
           dataEnvio: comunicado.dataEnvio
             ? window.moment(comunicado.dataEnvio)
             : '',
@@ -335,13 +432,17 @@ const ComunicadosCadastro = ({ match }) => {
         setDescricaoComunicado(comunicado.descricao);
 
         ObterUes(String(comunicado.codigoDre));
-        ObterModalidades(String(comunicado.codigoUe));
+        ObterModalidades(String(comunicado.codigoUe), comunicado.anoLetivo);
 
         if (modoEdicaoConsulta) {
           ObterTurmas(
             String(comunicado.anoLetivo),
             String(comunicado.codigoUe ? comunicado.codigoUe : '-99'),
-            String(comunicado.modalidade ? comunicado.modalidade : '-99'),
+            String(
+              comunicado.modalidade
+                ? comunicado.modalidade
+                : TODAS_MODALIDADES_ID
+            ),
             String(comunicado.semestre)
           );
         }
@@ -354,6 +455,8 @@ const ComunicadosCadastro = ({ match }) => {
           criadoPor: comunicado.criadoPor,
           criadoRF: comunicado.criadoRF,
         });
+
+        setCarregouInformacoes(true);
       }
     }
 
@@ -362,24 +465,43 @@ const ComunicadosCadastro = ({ match }) => {
       setInseridoAlterado({});
       setDescricaoComunicado('');
       setNovoRegistro(false);
+    } else {
+      setCarregouInformacoes(true);
     }
   }, [idComunicado]);
 
   const [validacoes] = useState(
     Yup.object({
+      descricao: Yup.string().required('Campo obrigatório'),
       anoLetivo: Yup.string().required('Campo obrigatório'),
       dataEnvio: momentSchema.required('Campo obrigatório'),
       CodigoDre: Yup.string().required('Campo obrigatório'),
       CodigoUe: Yup.string().required('Campo obrigatório'),
+      gruposId: Yup.string().required('Campo obrigatório'),
+      eventoId: Yup.string().test(
+        'validaEventoId',
+        'Campo obrigatório',
+        function validar() {
+          const { CodigoUe, eventoId } = this.parent;
+          if (CodigoUe !== '-99' && !eventoId) {
+            return false;
+          }
+          return true;
+        }
+      ),
+      tipoCalendarioId: Yup.string().test(
+        'validaTipoCalendarioId',
+        'Campo obrigatório',
+        function validar() {
+          const { CodigoUe, tipoCalendarioId } = this.parent;
+          if (CodigoUe !== '-99' && !tipoCalendarioId) {
+            return false;
+          }
+          return true;
+        }
+      ),
       dataExpiracao: momentSchema
         .required('Campo obrigatório')
-        // .test(
-        //   'validaUeSelecionada',
-        //   'Unidade Escolar (UE) for selecionada campo Ano deve ser obrigátorio',
-        //   function valida() {
-        //     const { ue } = this.parent;
-        //   }
-        // )
         .test(
           'validaDataMaiorQueEnvio',
           'Data de expiração deve ser maior que a data de envio',
@@ -419,8 +541,6 @@ const ComunicadosCadastro = ({ match }) => {
     })
   );
 
-  const [temErroDescricao, setTemErroDescricao] = useState(false);
-
   const validarAntesDeSalvar = form => {
     const arrayCampos = Object.keys(valoresIniciais);
 
@@ -436,21 +556,17 @@ const ComunicadosCadastro = ({ match }) => {
       return;
     }
 
-    const descricao = descricaoComunicado.replace('<p><br></p>', '');
-
     form.validateForm().then(() => {
-      setTemErroDescricao(!descricao.length);
       if (
         refForm &&
-        (!Object.entries(refForm.state.errors).length || form.isValid) &&
-        descricao.length
+        (!Object.entries(refForm.state.errors).length || form.isValid)
       ) {
         form.handleSubmit(form);
       }
     });
   };
 
-  const [refForm, setRefForm] = useState({});
+  
 
   const [gruposLista, setGruposLista] = useState([]);
 
@@ -463,33 +579,35 @@ const ComunicadosCadastro = ({ match }) => {
   }, [ues]);
 
   const modalidadeDesabilitada = useMemo(() => {
-    return modalidades.length <= 1;
-  }, [modalidades]);
+    return modalidades.length <= 1 || gruposId?.length != 0;
+  }, [refForm, modalidades, ues, dres, gruposId]);
 
   const semestreDesabilitado = useMemo(() => {
     return modalidadeSelecionada !== '3' ?? true;
   }, [modalidadeSelecionada]);
 
-  const anosModalidadeDesabilita = useMemo(() => {
-    return false;
-  }, [modalidadeSelecionada]);
-
   const turmasDesabilitada = useMemo(() => {
-    return turmas.length === 0;
-  }, [turmas]);
+    return (
+      turmas.length <= 1 ||
+      modalidadeSelecionada === TODAS_MODALIDADES_ID ||
+      modalidadeSelecionada === 'Todas' ||
+      modalidadeSelecionada === ''
+    );
+  }, [modalidadeSelecionada, anosModalidade, turmas]);
 
   const gruposDesabilitados = useMemo(() => {
     return (
       (!!modalidadeSelecionada &&
         modalidadeSelecionada !== '' &&
-        modalidadeSelecionada !== '-99') ||
+        modalidadeSelecionada !== TODAS_MODALIDADES_ID) ||
       unidadeEscolarUE
     );
   }, [modalidadeSelecionada]);
 
   const estudantesDesabilitados = useMemo(() => {
     return (
-      (turmasSelecionadas?.length !== 1 || turmasSelecionadas[0] === '-99') ??
+      (turmasSelecionadas?.length !== 1 ||
+        turmasSelecionadas[0] === TODAS_TURMAS_ID) ??
       true
     );
   }, [turmasSelecionadas]);
@@ -497,6 +615,7 @@ const ComunicadosCadastro = ({ match }) => {
   const estudantesVisiveis = useMemo(() => {
     return alunoEspecificado;
   }, [alunoEspecificado]);
+
 
   useEffect(() => {
     if (!refForm?.setFieldValue) return;
@@ -510,7 +629,7 @@ const ComunicadosCadastro = ({ match }) => {
     obterListaGrupos();
     ObterAnoLetivo();
 
-    return () => isSubscribed = false;
+    return () => (isSubscribed = false);
   }, [refForm]);
 
   const ObterAnoLetivo = async () => {
@@ -519,6 +638,7 @@ const ComunicadosCadastro = ({ match }) => {
     if (!dados || dados.length === 0) return;
 
     setAnosLetivos(dados);
+    await ObterDres();
   };
 
   const ObterDres = async () => {
@@ -541,14 +661,15 @@ const ComunicadosCadastro = ({ match }) => {
 
     if (dados.length === 1) {
       refForm.setFieldValue('CodigoUe', dados[0].id);
-      ObterModalidades(dados[0].id);
+      const anoLetivo = refForm?.state?.values?.anoLetivo;
+      ObterModalidades(dados[0].id, anoLetivo);
     }
 
     setUes(dados);
   };
 
-  const ObterModalidades = async ue => {
-    const dados = await FiltroHelper.ObterModalidades(ue);
+  const ObterModalidades = async (ue, anoLetivo) => {
+    const dados = await FiltroHelper.obterModalidadesAnoLetivo(ue, anoLetivo);
 
     if (!dados || dados.length === 0) return;
 
@@ -561,10 +682,10 @@ const ComunicadosCadastro = ({ match }) => {
         ObterTurmas(refForm.state.values.anoLetivo, ue, dados[0].id, 0);
     }
 
-    if (ue !== '-99' && dados.length > 1) {
+    if (ue !== TODAS_MODALIDADES_ID && dados.length > 1) {
       const data = [];
       dados.forEach(value => {
-        if (value.id !== '-99') {
+        if (value.id !== TODAS_MODALIDADES_ID) {
           const dataItem = gruposLista.filter(item => item.nome === value.nome);
           data.push(...dataItem);
         }
@@ -600,17 +721,40 @@ const ComunicadosCadastro = ({ match }) => {
     refForm.setFieldValue('gruposId', dados);
   };
 
-  const obeterAnosPorModalidade = async (modalidade, codigoUe = 0) => {
+  const chainTodosAnos = (dados, modalidade) => {
+    if (
+      dados.length == 1 ||
+      modalidade == TODAS_MODALIDADES_ID ||
+      modalidade == MODALIDADE_EJA_ID
+    ) {
+      refForm.setFieldValue('ano', 'Todos');
+      return;
+    }
+  };
+
+  const chainLimpaAnos = (dados, modalidade) => {
+    if (modalidade != TODAS_MODALIDADES_ID && modalidade != MODALIDADE_EJA_ID) {
+      refForm.setFieldValue('ano', '');
+      return;
+    }
+  };
+
+  const ObterAnosPorModalidade = async (modalidade, codigoUe = TODAS_UE_ID) => {
     if (!modalidade || modalidade === '') return;
 
-    setLoaderSecao(true);
     const dados = await FiltroHelper.obterAnosPorModalidade(
       modalidade,
       codigoUe
     );
-    setLoaderSecao(false);
+
+    if (!dados) {
+      setAnosModalidade([]);
+      return;
+    }
 
     setAnosModalidade(dados);
+    chainTodosAnos(dados, modalidade);
+    chainLimpaAnos(dados, modalidade);
   };
 
   const ObterGruposIdPorModalidadeFiltro = async modalidade => {
@@ -625,6 +769,7 @@ const ComunicadosCadastro = ({ match }) => {
 
   const obterTurmasEspecificas = async anos => {
     refForm.setFieldValue('turmas', []);
+
     setAlunosLoader(true);
     const response = await FiltroHelper.obterTurmasEspecificas(
       refForm.state.values.CodigoUe,
@@ -633,14 +778,19 @@ const ComunicadosCadastro = ({ match }) => {
       refForm.state.values.modalidade,
       anos
     );
+
     setAlunosLoader(false);
     const dados = response.map(x => {
       return { id: x.valor, nome: x.descricao };
     });
 
-    dados.unshift({ id: '-99', nome: 'Todas' });
+    dados.unshift({ id: TODAS_TURMAS_ID, nome: 'Todas' });
+    if (dados.length == 1) {
+      refForm.setFieldValue('turmas', [TODAS_TURMAS_ID]);
+    }
+
     setTurmas(dados);
-    refForm.setFieldValue('seriesResumidas', anos.toString());
+    refForm.setFieldValue('seriesResumidas', anos?.join(',') ?? '');
   };
 
   const ObterAlunos = async (codigoTurma, anoLetivo) => {
@@ -658,17 +808,17 @@ const ComunicadosCadastro = ({ match }) => {
   const ResetarModalidade = async () => {
     setGruposId([]);
     setModalidades(todosTurmasModalidade);
-    setModalidadeSelecionada('-99');
+    setModalidadeSelecionada(TODAS_MODALIDADES_ID);
     refForm.setFieldValue('gruposId', []);
-    refForm.setFieldValue('modalidade', '-99');
+    refForm.setFieldValue('modalidade', TODAS_MODALIDADES_ID);
     refForm.setFieldValue('semestre', '');
   };
 
   const onChangeAnoLetivo = async ano => {
     handleModoEdicao();
-    refForm.setFieldValue('CodigoDre', 'todas');
+    refForm.setFieldValue('CodigoDre', TODAS_DRE_ID);
     refForm.setFieldValue('tipoCalendarioId', '');
-    onChangeDre('todas');
+    onChangeDre(TODAS_DRE_ID);
     resetarTurmas();
     ResetarModalidade();
 
@@ -682,14 +832,15 @@ const ComunicadosCadastro = ({ match }) => {
   };
 
   const onChangeDre = async dre => {
+    const anoLetivo = refForm?.state?.values?.anoLetivo;
     handleModoEdicao();
-    refForm.setFieldValue('CodigoUe', 'todas');
-    onChangeUe('todas');
+    refForm.setFieldValue('CodigoUe', TODAS_UE_ID);
+    onChangeUe(TODAS_UE_ID);
     resetarTurmas();
-    ObterModalidades('-99');
+    ObterModalidades(TODAS_MODALIDADES_ID, anoLetivo);
     setUnidadeEscolarUE(false);
 
-    if (dre === 'todas') {
+    if (dre === TODAS_DRE_ID) {
       setUes(todos);
       return;
     }
@@ -699,21 +850,32 @@ const ComunicadosCadastro = ({ match }) => {
   };
 
   const onChangeUe = async ue => {
+    const anoLetivo = refForm?.state?.values?.anoLetivo;
     handleModoEdicao();
-    refForm.setFieldValue('modalidade', '');
     resetarTurmas();
     ResetarModalidade();
 
-    if (ue === 'todas') {
-      setModalidades(todosTurmasModalidade);
+    if (ue === TODAS_UE_ID) {
       setTurmas(todosTurmasModalidade);
-      return;
     }
+
     setUnidadeEscolarUE(true);
     onChangeModalidade('');
-    ObterModalidades(ue);
+    ObterModalidades(ue, anoLetivo);
     loadTiposCalendarioEffect();
   };
+
+  useEffect(() => {
+    if (
+      modalidadeSelecionada == modalidade.ENSINO_MEDIO ||
+      modalidadeSelecionada == modalidade.FUNDAMENTAL
+    ) {
+      ObterAnosPorModalidade(
+        modalidadeSelecionada,
+        refForm?.state?.values.CodigoUe ?? null
+      );
+    }
+  }, [modalidadeSelecionada]);
 
   const onChangeModalidade = async modalidade => {
     handleModoEdicao();
@@ -721,24 +883,20 @@ const ComunicadosCadastro = ({ match }) => {
     refForm.setFieldValue('semestre', '');
     refForm.setFieldValue('gruposId', []);
 
+    refForm.setFieldValue('anosModalidade', []);
+
     setModalidadeSelecionada(modalidade);
     loadTiposCalendarioEffect();
 
-    if (modalidade !== '-99') {
-      ObterGruposIdPorModalidade(modalidade);
-      obeterAnosPorModalidade(modalidade, '-99');
+    if (modalidade !== TODAS_MODALIDADES_ID) {
+      await ObterGruposIdPorModalidade(modalidade);
+      await ObterAnosPorModalidade(
+        modalidade,
+        refForm?.state?.values.CodigoUe ?? null
+      );
     }
 
-    if (
-      !refForm.state.values.CodigoUe ||
-      refForm.state.values.CodigoUe === 'todas'
-    ) {
-      setGruposId([]);
-      refForm.setFieldValue('gruposId', []);
-      return;
-    }
-
-    if (modalidade !== '3' && modalidade !== '-99')
+    if (modalidade !== MODALIDADE_EJA_ID && modalidade !== TODAS_MODALIDADES_ID)
       ObterTurmas(
         refForm.state.values.anoLetivo,
         refForm.state.values.CodigoUe,
@@ -749,8 +907,8 @@ const ComunicadosCadastro = ({ match }) => {
 
   const resetarTurmas = () => {
     setTurmas(todosTurmasModalidade);
-    refForm.setFieldValue('turmas', ['-99']);
-    setTurmasSelecionadas(['-99']);
+    refForm.setFieldValue('turmas', [TODAS_TURMAS_ID]);
+    setTurmasSelecionadas([TODAS_TURMAS_ID]);
     refForm.setFieldValue('alunos', '1');
     setAlunoEspecificado(false);
     refForm.setFieldValue('alunosEspecificados', false);
@@ -824,15 +982,27 @@ const ComunicadosCadastro = ({ match }) => {
       descricao: descricaoComunicado,
       alunos: alunosSelecionados,
       alunosEspecificados: alunoEspecificado,
-      turmas: valores.turmas.filter(x => x !== '-99'),
-      modalidade: valores.modalidade === '-99' ? '' : valores.modalidade,
+      turmas: valores.turmas.filter(x => x !== TODAS_TURMAS_ID),
+      modalidade: null,
+      seriesResumidas: valores.anosModalidade?.join(',') ?? '',
+      CodigoUe: valores.CodigoUe == TODAS_UE_ID ? 'todas' : valores.CodigoUe,
+      CodigoDre:
+        valores.CodigoDre == TODAS_DRE_ID ? 'todas' : valores.CodigoDre,
+      dataEnvio: valores?.dataEnvio?.set({ hour: 0, minute: 0, second: 0 }),
+      dataExpiracao: valores?.dataExpiracao?.set({
+        hour: 23,
+        minute: 59,
+        second: 59,
+      }),
     };
 
+    dadosSalvar.anosModalidade = null;
     dadosSalvar.tipoCalendarioId = tipoCalendarioSelecionado ?? null;
     dadosSalvar.eventoId = eventoSelecionado?.id ?? null;
     dadosSalvar.semestre =
       dadosSalvar.semestre === '' ? 0 : dadosSalvar.semestre;
 
+    setLoaderSecao(true);
     const salvou = await ServicoComunicados.salvar(dadosSalvar);
     if (salvou && salvou.data) {
       history.push(RotasDto.ACOMPANHAMENTO_COMUNICADOS);
@@ -840,6 +1010,7 @@ const ComunicadosCadastro = ({ match }) => {
     } else {
       erro(salvou);
     }
+    setLoaderSecao(false);
   };
 
   const resetarTela = form => {
@@ -863,6 +1034,8 @@ const ComunicadosCadastro = ({ match }) => {
 
   const onChangeGruposId = gruposId => {
     setGruposId(gruposId);
+    refForm.setFieldValue('modalidade', TODAS_MODALIDADES_ID);
+    setModalidadeSelecionada(TODAS_MODALIDADES_ID);
     handleModoEdicao();
   };
 
@@ -873,18 +1046,18 @@ const ComunicadosCadastro = ({ match }) => {
     let turmasSalvar = turmas;
 
     if (turmas.length > 0) {
-      todasSelecionado = turmas[turmas.length - 1] === '-99';
+      todasSelecionado = turmas[turmas.length - 1] === TODAS_TURMAS_ID;
 
       turmasSalvar = todasSelecionado
-        ? ['-99']
-        : turmas.filter(x => x !== '-99');
+        ? [TODAS_TURMAS_ID]
+        : turmas.filter(x => x !== TODAS_TURMAS_ID);
     }
 
     handleModoEdicao();
 
     if (turmas.length <= 0) {
       todasSelecionado = true;
-      turmasSalvar.push('-99');
+      turmasSalvar.push(TODAS_TURMAS_ID);
     }
 
     setTurmasSelecionadas(turmasSalvar);
@@ -896,19 +1069,21 @@ const ComunicadosCadastro = ({ match }) => {
       refForm.setFieldValue('alunosEspecificados', false);
     }
   };
-  
+
   useEffect(loadTiposCalendarioEffect, [
-    pesquisaTipoCalendario, 
+    pesquisaTipoCalendario,
     modalidadeSelecionada,
-    refForm
+    refForm,
+    valoresIniciais,
   ]);
 
   useEffect(loadEventosEffect, [
-    pesquisaEvento, 
+    pesquisaEvento,
     tipoCalendarioSelecionado,
     valorTipoCalendario,
     modalidadeSelecionada,
     refForm,
+    valoresIniciais,
   ]);
 
   return (
@@ -1014,7 +1189,7 @@ const ComunicadosCadastro = ({ match }) => {
                       value={form.values.modalidade}
                       lista={modalidades}
                       allowClear
-                      disabled={modoEdicaoConsulta || gruposId.length > 0}
+                      disabled={modalidadeDesabilitada || modoEdicaoConsulta}
                       onChange={x => {
                         onChangeModalidade(x);
                       }}
@@ -1051,7 +1226,19 @@ const ComunicadosCadastro = ({ match }) => {
                       lista={anosModalidade}
                       multiple
                       allowClear
-                      disabled={anosModalidadeDesabilita || modoEdicaoConsulta}
+                      disabled={
+                        modoEdicaoConsulta ||
+                        anosModalidade?.length <= 1 ||
+                        (refForm &&
+                          refForm.state &&
+                          refForm.state.values &&
+                          (refForm.state.values.modalidade ===
+                            TODAS_MODALIDADES_ID ||
+                            refForm.state.values.modalidade ===
+                              MODALIDADE_EJA_ID ||
+                            refForm.state.values.modalidade ===
+                              String(modalidade.INFANTIL)))
+                      }
                       onChange={value => {
                         onChangeAnosModalidades(value);
                       }}
@@ -1136,9 +1323,14 @@ const ComunicadosCadastro = ({ match }) => {
                 </Linha>
                 <Linha className="row mb-2">
                   <Grid cols={6}>
-                    <Label control="tipoCalendarioId" text="Tipo de Calendário" />
+                    <Label
+                      control="tipoCalendarioId"
+                      text="Tipo de Calendário"
+                    />
                     <Loader loading={carregandoTipos} tip="">
                       <SelectAutocomplete
+                        disabled={idComunicado}
+                        form={form}
                         hideLabel
                         showList
                         isHandleSearch
@@ -1149,10 +1341,13 @@ const ComunicadosCadastro = ({ match }) => {
                         lista={listaCalendario}
                         valueField="id"
                         textField="descricao"
-                        onSelect={valor => selecionaTipoCalendario(valor, form)}
+                        onSelect={valor =>
+                          selecionaTipoCalendario(valor, form, '', true)
+                        }
+                        onChange={valor =>
+                          selecionaTipoCalendario(valor, form, '', true)
+                        }
                         value={valorTipoCalendario}
-                        form={form}
-                        allowClear={false}
                       />
                     </Loader>
                   </Grid>
@@ -1160,6 +1355,7 @@ const ComunicadosCadastro = ({ match }) => {
                     <Label control="evento" text="Evento" />
                     <Loader loading={carregandoEventos} tip="">
                       <SelectAutocomplete
+                        disabled={idComunicado}
                         hideLabel
                         showList
                         isHandleSearch
@@ -1168,13 +1364,16 @@ const ComunicadosCadastro = ({ match }) => {
                         name="eventoId"
                         id="select-evento"
                         key="select-evento-key"
-                        lista={listaEvento}
+                        lista={listaEvento.filter(
+                          item =>
+                            item.nome.toLowerCase().indexOf(valorEvento) > -1
+                        )}
                         valueField="id"
                         textField="nome"
                         onSelect={valor => selecionaEvento(valor, form)}
+                        onChange={valor => selecionaEvento(valor, form, true)}
                         value={valorEvento}
                         form={form}
-                        allowClear={false}
                       />
                     </Loader>
                   </Grid>
@@ -1194,45 +1393,50 @@ const ComunicadosCadastro = ({ match }) => {
                 </Linha>
                 <Linha className="row mb-4">
                   <Grid cols={12}>
-                    <Label control="textEditor" text="Descrição" />
-                    <Editor
-                      form={form}
-                      name="descricao"
-                      inicial={descricaoComunicado}
-                      onChange={onChangeDescricaoComunicado}
-                      desabilitar={somenteConsulta}
-                      temErro={temErroDescricao}
-                    />
-                    {temErroDescricao && (
-                      <ErroValidacao>Campo obrigatório</ErroValidacao>
+                    {carregouInformacoes ? (
+                      <JoditEditor
+                        label="Descrição"
+                        form={form}
+                        name="descricao"
+                        value={form.values.descricao}
+                        onChange={valor => {
+                          if (valor !== valoresIniciais.descricao) {
+                            onChangeDescricaoComunicado(valor);
+                          }
+                        }}
+                        desabilitar={somenteConsulta}
+                        permiteInserirArquivo={false}
+                      />
+                    ) : (
+                      ''
                     )}
                     <InseridoAlterado>
                       {inseridoAlterado &&
-                        inseridoAlterado.criadoPor &&
-                        inseridoAlterado.criadoPor.length ? (
-                          <p className="pt-2">
-                            INSERIDO por {inseridoAlterado.criadoPor} (
-                            {inseridoAlterado.criadoRF}) em{' '}
-                            {window
-                              .moment(inseridoAlterado.criadoEm)
-                              .format('DD/MM/YYYY HH:mm:ss')}
-                          </p>
-                        ) : (
-                          ''
-                        )}
+                      inseridoAlterado.criadoPor &&
+                      inseridoAlterado.criadoPor.length ? (
+                        <p className="pt-2">
+                          INSERIDO por {inseridoAlterado.criadoPor} (
+                          {inseridoAlterado.criadoRF}) em{' '}
+                          {window
+                            .moment(inseridoAlterado.criadoEm)
+                            .format('DD/MM/YYYY HH:mm:ss')}
+                        </p>
+                      ) : (
+                        ''
+                      )}
                       {inseridoAlterado &&
-                        inseridoAlterado.alteradoPor &&
-                        inseridoAlterado.alteradoPor.length ? (
-                          <p>
-                            ALTERADO por {inseridoAlterado.alteradoPor} (
-                            {inseridoAlterado.alteradoRF}) em{' '}
-                            {window
-                              .moment(inseridoAlterado.alteradoEm)
-                              .format('DD/MM/YYYY HH:mm:ss')}
-                          </p>
-                        ) : (
-                          ''
-                        )}
+                      inseridoAlterado.alteradoPor &&
+                      inseridoAlterado.alteradoPor.length ? (
+                        <p>
+                          ALTERADO por {inseridoAlterado.alteradoPor} (
+                          {inseridoAlterado.alteradoRF}) em{' '}
+                          {window
+                            .moment(inseridoAlterado.alteradoEm)
+                            .format('DD/MM/YYYY HH:mm:ss')}
+                        </p>
+                      ) : (
+                        ''
+                      )}
                     </InseridoAlterado>
                   </Grid>
                 </Linha>
@@ -1265,8 +1469,8 @@ const ComunicadosCadastro = ({ match }) => {
                     />
                   </>
                 ) : (
-                    ''
-                  )}
+                  ''
+                )}
               </Form>
             )}
           </Formik>

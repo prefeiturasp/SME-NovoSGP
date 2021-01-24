@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import shortid from 'shortid';
-import { Loader, ModalConteudoHtml, Colors, Auditoria } from '~/componentes';
+import { ModalConteudoHtml, Colors, Auditoria } from '~/componentes';
 import api from '~/servicos/api';
 import { erros, sucesso, erro, confirmar } from '~/servicos/alertas';
-import Editor from '~/componentes/editor/editor';
 import Button from '~/componentes/button';
 import * as Yup from 'yup';
 import { Formik, Form } from 'formik';
 import { DadosAlunoModal, EditorAnotacao } from './modal-anotacao-aluno.css';
+import JoditEditor from '~/componentes/jodit-editor/joditEditor';
 
 const ModalAnotacaoAluno = props => {
   const {
@@ -166,7 +166,12 @@ const ModalAnotacaoAluno = props => {
             </div>
             <div className="col-md-12">
               <EditorAnotacao className="mt-3">
-                <Editor form={form} name="anotacao" onChange={onChangeCampos} />
+                <JoditEditor
+                  form={form}
+                  value={form.values.anotacao}
+                  name="anotacao"
+                  onChange={onChangeCampos}
+                />
               </EditorAnotacao>
             </div>
             <div className="row">

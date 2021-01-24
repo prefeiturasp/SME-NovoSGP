@@ -81,6 +81,7 @@ namespace SME.SGP.Api.Controllers
             return Ok(consultasNotificacao.ObterStatus());
         }
 
+
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<EnumeradoRetornoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]

@@ -10,7 +10,7 @@ import Alert from '~/componentes/alert';
 import Auditoria from '~/componentes/auditoria';
 import Button from '~/componentes/button';
 import Card from '~/componentes/card';
-import Editor from '~/componentes/editor/editor';
+import JoditEditor from '~/componentes/jodit-editor/joditEditor';
 import SelectComponent from '~/componentes/select';
 import modalidade from '~/dtos/modalidade';
 import RotasDto from '~/dtos/rotasDto';
@@ -99,7 +99,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
 
   const [validacoes] = useState(
     Yup.object({
-      descricao: Yup.string().required('Disciplina obrigatória'),
+      descricao: Yup.string().required('Descrição obrigatória'),
       disciplinaId: Yup.string().required('Disciplina obrigatória'),
       bimestre: Yup.string().required('Bimestre obrigatório'),
       atividade: Yup.string()
@@ -594,11 +594,16 @@ const CompensacaoAusenciaForm = ({ match }) => {
   };
 
   const resetarTelaEdicaoComId = async form => {
+    setCarregouInformacoes(false);
+    setCarregandoDados(true);
     const dadosEdicao = await ServicoCompensacaoAusencia.obterPorId(
       match.params.id
-    ).catch(e => {
-      erros(e);
-    });
+    )
+      .catch(e => {
+        erros(e);
+      })
+      .finally(() => setCarregandoDados(false));
+
     if (dadosEdicao && dadosEdicao.status === 200) {
       setIdsAlunos([]);
       setIdsAlunosAusenciaCompensadas([]);
@@ -627,6 +632,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
       );
       form.resetForm();
       setModoEdicao(false);
+      setCarregouInformacoes(true);
     }
   };
 
@@ -641,6 +647,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
         if (match && match.params && match.params.id) {
           resetarTelaEdicaoComId(form);
         } else {
+          setCarregouInformacoes(false);
           setIdsAlunos([]);
           setAlunosAusenciaTurma([]);
           setAlunosAusenciaTurmaOriginal([]);
@@ -648,6 +655,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
           setAlunosAusenciaCompensada([]);
           form.resetForm();
           setModoEdicao(false);
+          setCarregouInformacoes(true);
         }
       }
     }
@@ -1053,13 +1061,18 @@ const CompensacaoAusenciaForm = ({ match }) => {
                   )}
 
                   <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
-                    <Editor
-                      form={form}
-                      name="descricao"
-                      onChange={onChangeCampos}
-                      label="Detalhamento da atividade"
-                      desabilitar={desabilitarCampos}
-                    />
+                    {carregouInformacoes ? (
+                      <JoditEditor
+                        form={form}
+                        name="descricao"
+                        onChange={onChangeCampos}
+                        label="Detalhamento da atividade"
+                        desabilitar={desabilitarCampos}
+                        value={form.values.descricao}
+                      />
+                    ) : (
+                      ''
+                    )}
                   </div>
                 </div>
                 <div className="row">

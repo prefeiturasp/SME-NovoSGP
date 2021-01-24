@@ -13,6 +13,7 @@ function InputNome({
   onChange,
   pessoaSelecionada,
   desabilitado,
+  placeholderNome,
 }) {
   const [sugestoes, setSugestoes] = useState([]);
   const [valor, setValor] = useState('');
@@ -49,7 +50,7 @@ function InputNome({
         allowClear
       >
         <Input
-          placeholder="Digite o nome da pessoa"
+          placeholder={placeholderNome}
           prefix={<i className="fa fa-search fa-lg" />}
           disabled={desabilitado}
           allowClear
@@ -68,6 +69,7 @@ InputNome.propTypes = {
   onSelect: PropTypes.func,
   onChange: PropTypes.func,
   desabilitado: PropTypes.bool,
+  placeholderNome: PropTypes.string.isRequired,
 };
 
 InputNome.defaultProps = {

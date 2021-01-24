@@ -11,5 +11,6 @@ namespace SME.SGP.Infra
         public string Token { get; set; }
         public bool EhProfessorCjInfantil { get; set; }
         public bool EhProfessorInfantil { get; set; }
+        public bool EhPerfilProfessor{ get; set; }
     }
 }
