@@ -23,7 +23,7 @@ namespace SME.SGP.Dados.Repositorios
                         left join encaminhamento_aee_secao eas on eas.encaminhamento_aee_id = @encaminhamentoAeeId and eas.secao_encaminhamento_id = sea.id
                          WHERE not sea.excluido 
                            AND sea.etapa = ANY(@etapas)
-                         ORDER BY sea.ordem ";
+                         ORDER BY sea.etapa, sea.ordem ";
 
             return await database.Conexao.QueryAsync<SecaoQuestionarioDto>(query, new { etapas, encaminhamentoAeeId });
         }
