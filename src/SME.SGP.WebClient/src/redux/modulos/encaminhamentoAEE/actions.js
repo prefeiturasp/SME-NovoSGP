@@ -77,3 +77,8 @@ export const setLabelCamposEncaminhamento = payload => ({
   type: '@encaminhamentoAEE/setLabelCamposEncaminhamento',
   payload,
 });
+
+export const setExibirModalEncerramentoEncaminhamentoAEE = payload => ({
+  type: '@encaminhamentoAEE/setExibirModalEncerramentoEncaminhamentoAEE',
+  payload,
+});

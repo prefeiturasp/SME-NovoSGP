@@ -3,6 +3,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import CardCollapse from '~/componentes/cardCollapse';
 import AuditoriaEncaminhamento from '../AuditoriaEncaminhamento/auditoriaEncaminhamento';
+import ModalEncerramentoEncaminhamentoAEE from '../ModalEncerramentoEncaminhamentoAEE/modalEncerramentoEncaminhamentoAEE';
 import ModalErrosEncaminhamento from '../ModalErrosEncaminhamento/modalErrosEncaminhamento';
 import DadosSecaoEncaminhamento from './DadosSecaoEncaminhamento/dadosSecaoEncaminhamento';
 import ObjectCardEncaminhamento from './objectCardEncaminhamento';
@@ -27,6 +28,7 @@ const SecaoEncaminhamentoCollapse = props => {
           <DadosSecaoEncaminhamento match={match} />
           <AuditoriaEncaminhamento />
           <ModalErrosEncaminhamento />
+          <ModalEncerramentoEncaminhamentoAEE match={match} />
         </>
       ) : (
         ''
