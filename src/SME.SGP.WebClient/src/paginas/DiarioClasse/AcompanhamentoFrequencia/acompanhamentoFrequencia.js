@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import history from '~/servicos/history';
 import { URL_HOME } from '~/constantes/url';
 import Alert from '~/componentes/alert';
@@ -16,10 +16,13 @@ import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 import { erros } from '~/servicos';
 import ListaBimestres from './Componentes/listaBimestres';
 import modalidade from '~/dtos/modalidade';
+import { setBimestreSelecionado } from '~/redux/modulos/acompanhamentoFrequencia/actions';
+import ServicoConselhoClasse from '~/servicos/Paginas/ConselhoClasse/ServicoConselhoClasse';
 
 const AcompanhamentoFrequencia = () => {
   const usuario = useSelector(store => store.usuario);
   const { turmaSelecionada } = usuario;
+  const dispatch = useDispatch();
 
   const modalidadesFiltroPrincipal = useSelector(
     store => store.filtro.modalidades
@@ -120,6 +123,18 @@ const AcompanhamentoFrequencia = () => {
           String(componenteCurricular.codigoComponenteCurricular)
         );
         setDesabilitarComponenteCurricular(true);
+      }
+      if (turmaSelecionada.anoLetivo === new Date().getFullYear()) {
+        const bimestreSelecionado = await ServicoConselhoClasse.obterBimestreAtual(
+          turmaSelecionada.modalidade
+        );
+        if (bimestreSelecionado?.data) {
+          dispatch(setBimestreSelecionado(bimestreSelecionado.data));
+        } else {
+          dispatch(setBimestreSelecionado(1));
+        }
+      } else {
+        dispatch(setBimestreSelecionado(1));
       }
       setCarregandoComponentesCurriculares(false);
     };

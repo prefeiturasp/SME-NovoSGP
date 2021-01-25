@@ -18,3 +18,7 @@ export const setFrequenciaAlunoCodigo = payload => ({
   type: '@acompanhamentoFrequencia/setFrequenciaAlunoCodigo',
   payload,
 });
+export const setBimestreSelecionado = payload => ({
+  type: '@acompanhamentoFrequencia/setBimestreSelecionado',
+  payload,
+});
