@@ -461,6 +461,10 @@ class ServicoEncaminhamentoAEE {
   removerArquivo = arquivoCodigo => {
     return api.delete(`${urlPadrao}/arquivo?arquivoCodigo=${arquivoCodigo}`);
   };
+
+  encerramentoEncaminhamentoAEE = params => {
+    return api.post(`${urlPadrao}/encerrar`, params);
+  };
 }
 
 export default new ServicoEncaminhamentoAEE();
