@@ -68,7 +68,7 @@ const AcompanhamentoFrequencia = () => {
     carregandoComponentesCurriculares,
     setCarregandoComponentesCurriculares,
   ] = useState(false);
-  const [podeLancarNota, setPodeLancarNota] = useState(false);
+  const [podeLancarFrequencia, setPodeLancarFrequencia] = useState(false);
 
   const [
     listaComponentesCurriculares,
@@ -89,7 +89,7 @@ const AcompanhamentoFrequencia = () => {
 
   const resetarFiltro = () => {
     setDesabilitarComponenteCurricular(false);
-    setPodeLancarNota(false);
+    setPodeLancarFrequencia(false);
     setListaComponentesCurriculares([]);
     setComponenteCurricularIdSelecionado(undefined);
   };
@@ -135,7 +135,7 @@ const AcompanhamentoFrequencia = () => {
 
   const onChangeComponenteCurricular = async componenteCurricularId => {
     setComponenteCurricularIdSelecionado(componenteCurricularId);
-    setPodeLancarNota(false);
+    setPodeLancarFrequencia(false);
   };
 
   useEffect(() => {
@@ -145,7 +145,7 @@ const AcompanhamentoFrequencia = () => {
           String(item.codigoComponenteCurricular) ===
           String(componenteCurricularIdSelecionado)
       );
-      setPodeLancarNota(componenteCurriular?.lancaNota);
+      setPodeLancarFrequencia(componenteCurriular?.registraFrequencia);
       if (turmaSelecionada.modalidade === String(modalidade.EJA)) {
         setBimestres(listagemBimestresEJA);
       } else {
@@ -171,7 +171,7 @@ const AcompanhamentoFrequencia = () => {
         ) : (
           ''
         )}
-        {!podeLancarNota && componenteCurricularIdSelecionado && (
+        {!podeLancarFrequencia && componenteCurricularIdSelecionado && (
           <Alert
             alerta={{
               tipo: 'warning',
@@ -216,7 +216,7 @@ const AcompanhamentoFrequencia = () => {
               </div>
             </div>
 
-            {componenteCurricularIdSelecionado && podeLancarNota ? (
+            {componenteCurricularIdSelecionado && podeLancarFrequencia ? (
               <>
                 <div className="row">
                   <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
