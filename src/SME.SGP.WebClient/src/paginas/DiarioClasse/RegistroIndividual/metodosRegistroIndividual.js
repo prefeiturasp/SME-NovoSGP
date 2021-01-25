@@ -3,6 +3,7 @@ import { setDesabilitarCampos } from '~/redux/modulos/conselhoClasse/actions';
 
 import {
   atualizaDadosRegistroAtual,
+  atualizarMarcadorDiasSemRegistroExibir,
   limparDadosRegistroIndividual,
   setAuditoriaNovoRegistro,
   setDadosPrincipaisRegistroIndividual,
@@ -91,10 +92,10 @@ class MetodosRegistroIndividual {
   ) => {
     this.dispatch(setExibirLoaderGeralRegistroIndividual(true));
     const {
-      alunoCodigo,
-      data,
-      registro,
-    } = registroIndividual.dadosParaSalvarNovoRegistro;
+      dadosAlunoObjectCard,
+      dadosParaSalvarNovoRegistro,
+    } = registroIndividual;
+    const { alunoCodigo, data, registro } = dadosParaSalvarNovoRegistro;
 
     const retorno = await ServicoRegistroIndividual.salvarRegistroIndividual({
       turmaId,
@@ -126,6 +127,9 @@ class MetodosRegistroIndividual {
           })
         );
       }
+      if (dadosAlunoObjectCard?.marcadorDiasSemRegistroExibir) {
+        this.dispatch(atualizarMarcadorDiasSemRegistroExibir(alunoCodigo));
+      }
     }
   };
 
@@ -137,16 +141,15 @@ class MetodosRegistroIndividual {
     this.dispatch(setExibirLoaderGeralRegistroIndividual(true));
 
     const {
-      id,
-      alunoCodigo,
-      data,
-      registro,
-    } = registroIndividual.dadosParaSalvarNovoRegistro;
+      componenteCurricularSelecionado,
+      dadosAlunoObjectCard,
+      dadosParaSalvarNovoRegistro,
+    } = registroIndividual;
+    const { id, alunoCodigo, data, registro } = dadosParaSalvarNovoRegistro;
     const retorno = await ServicoRegistroIndividual.editarRegistroIndividual({
       id,
       turmaId,
-      componenteCurricularId:
-        registroIndividual.componenteCurricularSelecionado,
+      componenteCurricularId: componenteCurricularSelecionado,
       alunoCodigo,
       registro,
       data,
@@ -167,6 +170,9 @@ class MetodosRegistroIndividual {
             data,
           })
         );
+      }
+      if (dadosAlunoObjectCard?.marcadorDiasSemRegistroExibir) {
+        this.dispatch(atualizarMarcadorDiasSemRegistroExibir(alunoCodigo));
       }
       this.dispatch(setAuditoriaNovoRegistro(retorno.data));
       const dataAtual = window.moment(window.moment().format('YYYY-MM-DD'));
