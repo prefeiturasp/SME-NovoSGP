@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
@@ -19,7 +20,6 @@ namespace SME.SGP.Aplicacao
         public async Task<EncaminhamentoAEERespostaDto> Executar(long id)
         {
             var encaminhamentoAee = await mediator.Send(new ObterEncaminhamentoAEEComTurmaPorIdQuery(id));
-            var podeEditar = false;
 
             if (encaminhamentoAee == null)
                 throw new NegocioException("Encaminhamento não localizado");
@@ -27,13 +27,8 @@ namespace SME.SGP.Aplicacao
             var aluno = await mediator.Send(new ObterAlunoPorCodigoEAnoQuery(encaminhamentoAee.AlunoCodigo, encaminhamentoAee.Turma.AnoLetivo));
 
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
-            
-            if (encaminhamentoAee.Situacao == Dominio.Enumerados.SituacaoAEE.Rascunho && usuarioLogado.EhPerfilProfessor())
-                podeEditar = true;
 
-            // TODO alterar regra para perfis CP, AD, Diretor
-            if (encaminhamentoAee.Situacao != Dominio.Enumerados.SituacaoAEE.Rascunho && !usuarioLogado.EhPerfilProfessor())
-                podeEditar = true;
+            var podeEditar = VerificaPodeEditar(encaminhamentoAee.Situacao, usuarioLogado);
 
             return new EncaminhamentoAEERespostaDto()
             {
@@ -49,6 +44,23 @@ namespace SME.SGP.Aplicacao
                 MotivoEncerramento = encaminhamentoAee.MotivoEncerramento,
                 Auditoria = (AuditoriaDto)encaminhamentoAee
             };
+        }
+
+        private bool VerificaPodeEditar(SituacaoAEE situacao, Usuario usuarioLogado)
+        {
+            switch (situacao)
+            {
+                case SituacaoAEE.Rascunho:
+                    return usuarioLogado.EhPerfilProfessor();
+                case SituacaoAEE.Encaminhado:
+                case SituacaoAEE.Analise:
+                    return usuarioLogado.EhGestorEscolar();
+                case SituacaoAEE.Finalizado:
+                case SituacaoAEE.Encerrado:
+                    return false;
+                default:
+                    return false;
+            }
         }
     }
 }
