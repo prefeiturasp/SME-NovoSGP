@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterQuestionarioEncaminhamentoAeeQueryHandler : IRequestHandler<ObterQuestionarioEncaminhamentoAeeQuery, IEnumerable<QuestaoAeeDto>>
+    public class ObterQuestionarioEncaminhamentoAeeQueryHandler : IRequestHandler<ObterQuestionarioEncaminhamentoAeeQuery, IEnumerable<QuestaoDto>>
     {
         private readonly IMediator mediator;
         private readonly IRepositorioQuestaoEncaminhamentoAEE repositorioQuestaoEncaminhamento;
@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioQuestaoEncaminhamento = repositorioQuestaoEncaminhamento ?? throw new ArgumentNullException(nameof(repositorioQuestaoEncaminhamento));
         }
 
-        public async Task<IEnumerable<QuestaoAeeDto>> Handle(ObterQuestionarioEncaminhamentoAeeQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<QuestaoDto>> Handle(ObterQuestionarioEncaminhamentoAeeQuery request, CancellationToken cancellationToken)
         {
             var dadosQuestionario = await repositorioQuestaoEncaminhamento.ObterListaPorQuestionario(request.QuestionarioId);
 
@@ -46,7 +46,7 @@ namespace SME.SGP.Aplicacao
             return questoes;
         }
 
-        private async Task AplicarRegrasEncaminhamento(long questionarioId, QuestaoAeeDto[] questoes, string codigoAluno, string codigoTurma)
+        private async Task AplicarRegrasEncaminhamento(long questionarioId, QuestaoDto[] questoes, string codigoAluno, string codigoTurma)
         {
             if (questionarioId == 1 && await ValidarFrequenciaGlobalAlunoInsuficiente(codigoAluno, codigoTurma))
             {
@@ -55,7 +55,7 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private QuestaoAeeDto ObterQuestaoJustificativa(QuestaoAeeDto[] questoes)
+        private QuestaoDto ObterQuestaoJustificativa(QuestaoDto[] questoes)
             => questoes.FirstOrDefault(c => c.Id == 2);
 
         private async Task<bool> ValidarFrequenciaGlobalAlunoInsuficiente(string codigoAluno, string codigoTurma)
@@ -67,11 +67,11 @@ namespace SME.SGP.Aplicacao
             return frequenciaGlobal < percentualFrequenciaCritico;
         }
 
-        QuestaoAeeDto ObterQuestao(long questaoId, IEnumerable<Questao> dadosQuestionario, IEnumerable<RespostaQuestaoEncaminhamentoAEEDto> respostasEncaminhamento)
+        QuestaoDto ObterQuestao(long questaoId, IEnumerable<Questao> dadosQuestionario, IEnumerable<RespostaQuestaoEncaminhamentoAEEDto> respostasEncaminhamento)
         {
             var questao = dadosQuestionario.FirstOrDefault(c => c.Id == questaoId);
 
-            return new QuestaoAeeDto()
+            return new QuestaoDto()
             {
                 Id = questao.Id,
                 Ordem = questao.Ordem,
@@ -82,7 +82,7 @@ namespace SME.SGP.Aplicacao
                 Opcionais = questao.Opcionais,
                 OpcaoResposta = questao.OpcoesRespostas.Select(opcaoResposta =>
                 {
-                    return new OpcaoRespostaAeeDto()
+                    return new OpcaoRespostaDto()
                     {
                         Id = opcaoResposta.Id,
                         Nome = opcaoResposta.Nome,
@@ -95,7 +95,7 @@ namespace SME.SGP.Aplicacao
                 .OrderBy(a => a.Ordem).ToArray(),
                 Resposta = respostasEncaminhamento.Where(c => c.QuestaoId == questaoId).Select(respostaEncaminhamento =>
                 {
-                    return new RespostaAeeDto()
+                    return new RespostaQuestaoDto()
                     {
                         Id = respostaEncaminhamento.Id,
                         OpcaoRespostaId = respostaEncaminhamento.RespostaId,

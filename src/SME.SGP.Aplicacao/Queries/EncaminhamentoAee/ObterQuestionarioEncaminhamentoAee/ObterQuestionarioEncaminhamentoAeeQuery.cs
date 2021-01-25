@@ -7,7 +7,7 @@ using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterQuestionarioEncaminhamentoAeeQuery : IRequest<IEnumerable<QuestaoAeeDto>>
+    public class ObterQuestionarioEncaminhamentoAeeQuery : IRequest<IEnumerable<QuestaoDto>>
     {
         public ObterQuestionarioEncaminhamentoAeeQuery(long questionarioId, long? encaminhamentoId, string codigoAluno, string codigoTurma)
         {
