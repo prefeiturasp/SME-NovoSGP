@@ -8,6 +8,6 @@ namespace SME.SGP.Aplicacao.Interfaces.CasosDeUso
 {
     public interface IObterQuestionarioEncaminhamentoAeeUseCase
     {
-        Task<IEnumerable<QuestaoAeeDto>> Executar(long questionarioId, long? encaminhamentoId, string codigoAluno, string codigoTurma);
+        Task<IEnumerable<QuestaoDto>> Executar(long questionarioId, long? encaminhamentoId, string codigoAluno, string codigoTurma);
     }
 }

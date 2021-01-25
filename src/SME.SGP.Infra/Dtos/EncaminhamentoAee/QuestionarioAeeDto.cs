@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SME.SGP.Infra
 {
-    public class QuestaoAeeDto
+    public class QuestaoDto
     {
         public long Id { get; set; }
         public int Ordem { get; set; }
@@ -14,7 +14,7 @@ namespace SME.SGP.Infra
         public bool Obrigatorio { get; set; }
         public TipoQuestao TipoQuestao { get; set; }
         public string Opcionais { get; set; }
-        public OpcaoRespostaAeeDto[] OpcaoResposta { get; set; }
-        public RespostaAeeDto[] Resposta { get; set; }
+        public OpcaoRespostaDto[] OpcaoResposta { get; set; }
+        public RespostaQuestaoDto[] Resposta { get; set; }
     }
 }

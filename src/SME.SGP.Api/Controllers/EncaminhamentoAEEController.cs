@@ -39,7 +39,7 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpGet("questionario")]
-        [ProducesResponseType(typeof(IEnumerable<QuestaoAeeDto>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<QuestaoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.AEE_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterQuestionario([FromQuery] long questionarioId, [FromQuery] long? encaminhamentoId, [FromQuery] string codigoAluno, [FromQuery] string codigoTurma, [FromServices] IObterQuestionarioEncaminhamentoAeeUseCase useCase)

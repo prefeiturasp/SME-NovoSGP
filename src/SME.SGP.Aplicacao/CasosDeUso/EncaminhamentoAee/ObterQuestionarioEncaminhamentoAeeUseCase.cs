@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
-        public async Task<IEnumerable<QuestaoAeeDto>> Executar(long questionarioId, long? encaminhamentoId, string codigoAluno, string codigoTurma)
+        public async Task<IEnumerable<QuestaoDto>> Executar(long questionarioId, long? encaminhamentoId, string codigoAluno, string codigoTurma)
         {
             return
                 await mediator
