@@ -133,8 +133,8 @@ namespace SME.SGP.Aplicacao
 
             result.ToList().ForEach(a =>
             {
-                var modalidade = (Modalidade)a.CodigoModalidade;
-                a.ModalidadeTurmaNome = $"{modalidade.ShortName()} - {a.Nome}";
+                var modalidadeEnum = (Modalidade)a.CodigoModalidade;
+                a.ModalidadeTurmaNome = $"{modalidadeEnum.ShortName()} - {a.Nome}";
             });
 
             return result;
