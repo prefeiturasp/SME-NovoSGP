@@ -13,7 +13,6 @@ import Card from '~/componentes/card';
 import JoditEditor from '~/componentes/jodit-editor/joditEditor';
 import ModalMultiLinhas from '~/componentes/modalMultiLinhas';
 import SelectComponent from '~/componentes/select';
-import { URL_HOME } from '~/constantes/url';
 import RotasDto from '~/dtos/rotasDto';
 import {
   limparDadosObservacoesUsuario,
@@ -495,7 +494,7 @@ const DiarioBordo = ({ match }) => {
     }
 
     if (validouSalvarDiario && validouSalvarObservacao) {
-      history.push(URL_HOME);
+      history.push(RotasDto.DIARIO_BORDO);
     }
   };
 
@@ -630,7 +629,7 @@ const DiarioBordo = ({ match }) => {
                           !turmaInfantil ||
                           !listaComponenteCurriculare ||
                           !componenteCurricularSelecionado ||
-                          !diasParaHabilitar 
+                          !diasParaHabilitar
                         }
                         diasParaHabilitar={diasParaHabilitar}
                       />
