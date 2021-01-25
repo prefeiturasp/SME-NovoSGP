@@ -31,6 +31,7 @@ namespace SME.SGP.Aplicacao
             if (encaminhamentoAee.Situacao == Dominio.Enumerados.SituacaoAEE.Rascunho && usuarioLogado.EhPerfilProfessor())
                 podeEditar = true;
 
+            // TODO alterar regra para perfis CP, AD, Diretor
             if (encaminhamentoAee.Situacao != Dominio.Enumerados.SituacaoAEE.Rascunho && !usuarioLogado.EhPerfilProfessor())
                 podeEditar = true;
 
@@ -45,6 +46,7 @@ namespace SME.SGP.Aplicacao
                 },
                 Situacao = encaminhamentoAee.Situacao,
                 PodeEditar = podeEditar,
+                MotivoEncerramento = encaminhamentoAee.MotivoEncerramento,
                 Auditoria = (AuditoriaDto)encaminhamentoAee
             };
         }

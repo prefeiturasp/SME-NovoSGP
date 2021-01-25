@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
                 if (situacaoEncaminhamento != SituacaoAEE.Rascunho)
                     listaEtapas.Add((int)EtapaEncaminhamentoAEE.SegundaEtapa);
-            }           
+            }
 
             return await mediator.Send(new ObterSecoesPorEtapaDeEncaminhamentoQuery(listaEtapas, encaminhamentoAeeId));
         }
