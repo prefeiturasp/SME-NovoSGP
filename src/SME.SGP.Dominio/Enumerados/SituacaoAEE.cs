@@ -4,13 +4,15 @@ namespace SME.SGP.Dominio.Enumerados
 {
     public enum SituacaoAEE
     {
-        [Display(Name = "Rascunho")]
+        [Display(Name = "Em digitação")]
         Rascunho = 1,
-        [Display(Name = "Encaminhado")]
+        [Display(Name = "Aguardando validação da coordenação")]
         Encaminhado = 2,
+        [Display(Name = "Aguardando análise do AEE")]
+        Analise = 3,
         [Display(Name = "Finalizado")]
-        Finalizado = 3,
+        Finalizado = 4,
         [Display(Name = "Encerrado")]
-        Encerrado = 4,
+        Encerrado = 5
     }
 }
