@@ -286,11 +286,17 @@ const DiarioBordo = ({ match }) => {
       }
     }
   };
-
   const salvarDiarioDeBordo = async (valores, form, clicouBtnSalvar) => {
     setCarregandoGeral(true);
+    let aulaId = aulaSelecionada?.aulaId;
+    let voltarParaListagem = false;
+    if (!aulaId && match?.params?.aulaId) {
+      aulaId = match?.params?.aulaId;
+      voltarParaListagem = true;
+    }
+
     const params = {
-      aulaId: aulaSelecionada.aulaId,
+      aulaId,
       planejamento: valores.planejamento,
       reflexoesReplanejamento: valores.reflexoesReplanejamento,
     };
@@ -305,6 +311,9 @@ const DiarioBordo = ({ match }) => {
       if (clicouBtnSalvar) {
         setModoEdicao(false);
         resetarTela();
+      }
+      if (voltarParaListagem) {
+        history.push(RotasDto.DIARIO_BORDO);
       }
       salvouComSucesso = true;
     }
@@ -568,7 +577,7 @@ const DiarioBordo = ({ match }) => {
         onClickFecharModal={onClickFecharModal}
         onClickSelecionarAula={onClickSelecionarAula}
       />
-      <Cabecalho pagina="Diário de bordo" />
+      <Cabecalho pagina="Diário de bordo (Intencionalidade docente)" />
       <Card>
         <div className="col-md-12 mb-3">
           <Formik
