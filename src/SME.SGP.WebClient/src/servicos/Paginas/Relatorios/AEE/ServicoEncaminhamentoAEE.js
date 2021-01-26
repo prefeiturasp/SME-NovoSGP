@@ -246,7 +246,11 @@ class ServicoEncaminhamentoAEE {
     dispatch(setLabelCamposEncaminhamento(labelCamposEncaminhamento));
   };
 
-  salvarEncaminhamento = async (encaminhamentoId, enviarEcaminhamento) => {
+  salvarEncaminhamento = async (
+    encaminhamentoId,
+    situacao,
+    enviarEcaminhamento
+  ) => {
     const { dispatch } = store;
 
     const state = store.getState();
@@ -316,9 +320,7 @@ class ServicoEncaminhamentoAEE {
           id: encaminhamentoId || 0,
           turmaId: dadosSecaoLocalizarEstudante.turmaId,
           alunoCodigo: dadosSecaoLocalizarEstudante.codigoAluno,
-          situacao: enviarEcaminhamento
-            ? situacaoAEE.Encaminhado
-            : situacaoAEE.Rascunho,
+          situacao,
         };
         valoresParaSalvar.secoes = formsSecoesEncaminhamentoAEE.map(
           (item, secaoId) => {
@@ -406,7 +408,8 @@ class ServicoEncaminhamentoAEE {
             return {
               questoes,
               secaoId,
-              concluido: form?.getFormikContext()?.isValid,
+              concluido:
+                Object.keys(form.getFormikContext().errors)?.length === 0,
             };
           }
         );
@@ -462,8 +465,14 @@ class ServicoEncaminhamentoAEE {
     return api.delete(`${urlPadrao}/arquivo?arquivoCodigo=${arquivoCodigo}`);
   };
 
-  encerramentoEncaminhamentoAEE = params => {
-    return api.post(`${urlPadrao}/encerrar`, params);
+  encerramentoEncaminhamentoAEE = (encaminhamentoId, motivoEncerramento) => {
+    return api.post(
+      `${urlPadrao}/encerrar/${encaminhamentoId}/motivo/${motivoEncerramento}`
+    );
+  };
+
+  enviarParaAnaliseEncaminhamento = encaminhamentoId => {
+    return api.post(`${urlPadrao}/enviar-analise/${encaminhamentoId}`);
   };
 }
 
