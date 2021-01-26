@@ -183,6 +183,13 @@ const EncaminhamentoAEELista = () => {
 
         if (lista?.length === 1) {
           setUeId(lista[0].valor);
+          filtrar(
+            dreId,
+            lista[0].valor,
+            turmaId,
+            alunoLocalizadorSelecionado,
+            situacao
+          );
         }
 
         setListaUes(lista);
@@ -235,6 +242,13 @@ const EncaminhamentoAEELista = () => {
 
         if (lista && lista.length && lista.length === 1) {
           setDreId(lista[0].valor);
+          filtrar(
+            lista[0].valor,
+            ueId,
+            turmaId,
+            alunoLocalizadorSelecionado,
+            situacao
+          );
         }
       } else {
         setListaDres([]);
@@ -479,7 +493,9 @@ const EncaminhamentoAEELista = () => {
                   id="lista-alunos"
                   colunas={colunas}
                   filtro={filtro}
-                  filtroEhValido={!!(anoLetivo && dreId && listaDres?.length)}
+                  filtroEhValido={
+                    !!(anoLetivo && dreId && filtro.dreId && listaDres?.length)
+                  }
                   temPaginacao
                   onClick={onClickEditar}
                 />
