@@ -82,3 +82,8 @@ export const setExibirModalEncerramentoEncaminhamentoAEE = payload => ({
   type: '@encaminhamentoAEE/setExibirModalEncerramentoEncaminhamentoAEE',
   payload,
 });
+
+export const setDesabilitarCamposEncaminhamentoAEE = payload => ({
+  type: '@encaminhamentoAEE/setDesabilitarCamposEncaminhamentoAEE',
+  payload,
+});

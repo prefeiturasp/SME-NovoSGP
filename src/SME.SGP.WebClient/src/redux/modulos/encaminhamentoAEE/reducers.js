@@ -16,6 +16,7 @@ const inicial = {
   exibirModalErrosEncaminhamento: false,
   errosModalEncaminhamento: [],
   exibirModalEncerramentoEncaminhamentoAEE: false,
+  desabilitarCamposEncaminhamentoAEE: false,
 };
 
 export default function EncaminhamentoAEE(state = inicial, action) {
@@ -115,6 +116,12 @@ export default function EncaminhamentoAEE(state = inicial, action) {
         return {
           ...draft,
           exibirModalEncerramentoEncaminhamentoAEE: action.payload,
+        };
+      }
+      case '@encaminhamentoAEE/setDesabilitarCamposEncaminhamentoAEE': {
+        return {
+          ...draft,
+          desabilitarCamposEncaminhamentoAEE: action.payload,
         };
       }
       case '@encaminhamentoAEE/setLimparDadosEncaminhamento': {

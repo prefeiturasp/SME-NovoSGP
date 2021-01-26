@@ -26,6 +26,14 @@ const BotoesAcoesEncaminhamentoAEE = props => {
     store => store.encaminhamentoAEE.dadosEncaminhamento
   );
 
+  const desabilitarCamposEncaminhamentoAEE = useSelector(
+    store => store.encaminhamentoAEE.desabilitarCamposEncaminhamentoAEE
+  );
+
+  const usuario = useSelector(store => store.usuario);
+  const permissoesTela =
+    usuario.permissoes[RotasDto.RELATORIO_AEE_ENCAMINHAMENTO];
+
   const onClickSalvar = async () => {
     const encaminhamentoId = match?.params?.id;
     let situacao = situacaoAEE.Rascunho;
@@ -74,7 +82,7 @@ const BotoesAcoesEncaminhamentoAEE = props => {
   };
 
   const onClickCancelar = async () => {
-    if (encaminhamentoAEEEmEdicao) {
+    if (!desabilitarCamposEncaminhamentoAEE && encaminhamentoAEEEmEdicao) {
       const confirmou = await confirmar(
         'Atenção',
         'Você não salvou as informações preenchidas.',
@@ -88,7 +96,7 @@ const BotoesAcoesEncaminhamentoAEE = props => {
 
   const onClickExcluir = async () => {
     const encaminhamentoId = match?.params?.id;
-    if (encaminhamentoId) {
+    if (permissoesTela.podeExcluir && encaminhamentoId) {
       const confirmado = await confirmar(
         'Excluir',
         '',
@@ -112,22 +120,26 @@ const BotoesAcoesEncaminhamentoAEE = props => {
   };
 
   const onClickEncerrar = () => {
-    dispatch(setExibirModalEncerramentoEncaminhamentoAEE(true));
+    if (!desabilitarCamposEncaminhamentoAEE) {
+      dispatch(setExibirModalEncerramentoEncaminhamentoAEE(true));
+    }
   };
 
   const onClickEncaminharAEE = async () => {
-    const encaminhamentoId = match?.params?.id;
+    if (!desabilitarCamposEncaminhamentoAEE) {
+      const encaminhamentoId = match?.params?.id;
 
-    dispatch(setExibirLoaderEncaminhamentoAEE(true));
-    const resposta = await ServicoEncaminhamentoAEE.enviarParaAnaliseEncaminhamento(
-      encaminhamentoId
-    )
-      .catch(e => erros(e))
-      .finally(() => dispatch(setExibirLoaderEncaminhamentoAEE(false)));
+      dispatch(setExibirLoaderEncaminhamentoAEE(true));
+      const resposta = await ServicoEncaminhamentoAEE.enviarParaAnaliseEncaminhamento(
+        encaminhamentoId
+      )
+        .catch(e => erros(e))
+        .finally(() => dispatch(setExibirLoaderEncaminhamentoAEE(false)));
 
-    if (resposta?.status === 200) {
-      sucesso('Encaminhamento enviado para a AEE');
-      history.push(RotasDto.RELATORIO_AEE_ENCAMINHAMENTO);
+      if (resposta?.status === 200) {
+        sucesso('Encaminhamento enviado para a AEE');
+        history.push(RotasDto.RELATORIO_AEE_ENCAMINHAMENTO);
+      }
     }
   };
 
@@ -149,7 +161,9 @@ const BotoesAcoesEncaminhamentoAEE = props => {
         border
         className="mr-3"
         onClick={onClickCancelar}
-        disabled={!encaminhamentoAEEEmEdicao}
+        disabled={
+          !encaminhamentoAEEEmEdicao || desabilitarCamposEncaminhamentoAEE
+        }
       />
       <Button
         id="btn-excluir"
@@ -159,6 +173,7 @@ const BotoesAcoesEncaminhamentoAEE = props => {
         className="mr-3"
         onClick={onClickExcluir}
         disabled={
+          !permissoesTela.podeExcluir ||
           !match?.params?.id ||
           (match?.params?.id && !dadosEncaminhamento?.podeEditar)
         }
@@ -171,6 +186,7 @@ const BotoesAcoesEncaminhamentoAEE = props => {
         bold
         onClick={onClickSalvar}
         disabled={
+          desabilitarCamposEncaminhamentoAEE ||
           !encaminhamentoAEEEmEdicao ||
           (match?.params?.id && !dadosEncaminhamento?.podeEditar)
         }
@@ -184,7 +200,9 @@ const BotoesAcoesEncaminhamentoAEE = props => {
         className="ml-3"
         onClick={onClickEnviar}
         hidden={dadosEncaminhamento?.situacao !== situacaoAEE.Rascunho}
-        disabled={!encaminhamentoAEEEmEdicao}
+        disabled={
+          desabilitarCamposEncaminhamentoAEE || !encaminhamentoAEEEmEdicao
+        }
       />
       <Button
         id="btn-encerrar"
@@ -196,6 +214,7 @@ const BotoesAcoesEncaminhamentoAEE = props => {
         onClick={onClickEncerrar}
         hidden={dadosEncaminhamento?.situacao === situacaoAEE.Rascunho}
         disabled={
+          desabilitarCamposEncaminhamentoAEE ||
           encaminhamentoAEEEmEdicao ||
           !dadosEncaminhamento?.podeEditar ||
           dadosEncaminhamento?.situacao === situacaoAEE.Analise
@@ -211,6 +230,7 @@ const BotoesAcoesEncaminhamentoAEE = props => {
         onClick={onClickEncaminharAEE}
         hidden={dadosEncaminhamento?.situacao === situacaoAEE.Rascunho}
         disabled={
+          desabilitarCamposEncaminhamentoAEE ||
           encaminhamentoAEEEmEdicao ||
           !dadosEncaminhamento?.podeEditar ||
           dadosEncaminhamento?.situacao === situacaoAEE.Analise
