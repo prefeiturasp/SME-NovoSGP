@@ -27,6 +27,10 @@ const MontarDadosPorSecao = props => {
     store => store.encaminhamentoAEE.dadosEncaminhamento
   );
 
+  const desabilitarCamposEncaminhamentoAEE = useSelector(
+    store => store.encaminhamentoAEE.desabilitarCamposEncaminhamentoAEE
+  );
+
   const [dadosQuestionarioAtual, setDadosQuestionarioAtual] = useState();
   const [valoresIniciais, setValoresIniciais] = useState();
 
@@ -200,6 +204,7 @@ const MontarDadosPorSecao = props => {
     const encaminhamentoId = match?.params?.id;
 
     return (
+      desabilitarCamposEncaminhamentoAEE ||
       (encaminhamentoId && !dadosEncaminhamento.podeEditar) ||
       dadosEncaminhamento?.situacao === situacaoAEE.Finalizado ||
       dadosEncaminhamento?.situacao === situacaoAEE.Encerrado ||

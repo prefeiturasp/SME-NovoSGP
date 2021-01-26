@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import {
   CheckboxComponent,
   ListaPaginada,
@@ -13,6 +13,7 @@ import { Colors } from '~/componentes/colors';
 import LocalizadorEstudante from '~/componentes/LocalizadorEstudante';
 import { URL_HOME } from '~/constantes/url';
 import { RotasDto } from '~/dtos';
+import { verificaSomenteConsulta } from '~/servicos';
 import AbrangenciaServico from '~/servicos/Abrangencia';
 import { erros } from '~/servicos/alertas';
 import history from '~/servicos/history';
@@ -24,6 +25,12 @@ const EncaminhamentoAEELista = () => {
   const codigosAlunosSelecionados = useSelector(
     state => state.localizadorEstudante.codigosAluno
   );
+
+  const usuario = useSelector(store => store.usuario);
+  const permissoesTela =
+    usuario.permissoes[RotasDto.RELATORIO_AEE_ENCAMINHAMENTO];
+
+  const somenteConsulta = useSelector(store => store.navegacao.somenteConsulta);
 
   const [consideraHistorico, setConsideraHistorico] = useState(false);
   const [anoAtual] = useState(window.moment().format('YYYY'));
@@ -51,6 +58,10 @@ const EncaminhamentoAEELista = () => {
   const [carregandoDres, setCarregandoDres] = useState(false);
   const [carregandoAnos, setCarregandoAnos] = useState(false);
   const [carregandoSituacao, setCarregandoSituacao] = useState(false);
+
+  useEffect(() => {
+    verificaSomenteConsulta(permissoesTela);
+  }, [permissoesTela]);
 
   useEffect(() => {
     if (codigosAlunosSelecionados?.length > 0) {
@@ -300,7 +311,9 @@ const EncaminhamentoAEELista = () => {
   };
 
   const onClickNovo = () => {
-    ServicoEncaminhamentoAEE.obterAvisoModal();
+    if (!somenteConsulta && permissoesTela.podeIncluir) {
+      ServicoEncaminhamentoAEE.obterAvisoModal();
+    }
   };
 
   const onChangeUe = ue => {
@@ -387,6 +400,7 @@ const EncaminhamentoAEELista = () => {
                 border
                 bold
                 onClick={onClickNovo}
+                disabled={somenteConsulta || !permissoesTela.podeIncluir}
               />
             </div>
             <div className="col-sm-12 mb-4">
