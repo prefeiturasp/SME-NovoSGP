@@ -71,14 +71,11 @@ const ModalEncerramentoEncaminhamentoAEE = props => {
     const { motivoEncerramento } = valores;
     const encaminhamentoId = match?.params?.id;
 
-    const params = {
-      motivoEncerramento,
-      encaminhamentoId,
-    };
     setExibirLoader(true);
 
     const retorno = await ServicoEncaminhamentoAEE.encerramentoEncaminhamentoAEE(
-      params
+      encaminhamentoId,
+      motivoEncerramento
     )
       .catch(e => erros(e))
       .finally(() => setExibirLoader(false));
