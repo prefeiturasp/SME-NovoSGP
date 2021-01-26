@@ -198,7 +198,7 @@ const BotoesAcoesEncaminhamentoAEE = props => {
         disabled={
           encaminhamentoAEEEmEdicao ||
           !dadosEncaminhamento?.podeEditar ||
-          situacaoAEE.Analise
+          dadosEncaminhamento?.situacao === situacaoAEE.Analise
         }
       />
       <Button
@@ -213,7 +213,7 @@ const BotoesAcoesEncaminhamentoAEE = props => {
         disabled={
           encaminhamentoAEEEmEdicao ||
           !dadosEncaminhamento?.podeEditar ||
-          situacaoAEE.Analise
+          dadosEncaminhamento?.situacao === situacaoAEE.Analise
         }
       />
     </>
