@@ -196,6 +196,17 @@ const MontarDadosPorSecao = props => {
     dispatch(setEncaminhamentoAEEEmEdicao(true));
   };
 
+  const validaSeDesabilitarCampo = () => {
+    const encaminhamentoId = match?.params?.id;
+
+    return (
+      (encaminhamentoId && !dadosEncaminhamento.podeEditar) ||
+      dadosEncaminhamento?.situacao === situacaoAEE.Finalizado ||
+      dadosEncaminhamento?.situacao === situacaoAEE.Encerrado ||
+      dadosEncaminhamento?.situacao === situacaoAEE.Analise
+    );
+  };
+
   const campoRadio = params => {
     const { questaoAtual, form, label } = params;
 
@@ -211,9 +222,7 @@ const MontarDadosPorSecao = props => {
           name={String(questaoAtual.id)}
           form={form}
           opcoes={opcoes}
-          desabilitado={
-            dadosEncaminhamento?.situacao === situacaoAEE.Encaminhado
-          }
+          desabilitado={validaSeDesabilitarCampo()}
           onChange={e => {
             const valorAtualSelecionado = e.target.value;
             onChangeCamposComOpcaoResposta(
@@ -245,7 +254,7 @@ const MontarDadosPorSecao = props => {
             lista={lista}
             valueOption="value"
             valueText="label"
-            disabled={dadosEncaminhamento?.situacao === situacaoAEE.Encaminhado}
+            disabled={validaSeDesabilitarCampo()}
             onChange={valorAtualSelecionado => {
               onChangeCamposComOpcaoResposta(
                 questaoAtual,
@@ -271,12 +280,11 @@ const MontarDadosPorSecao = props => {
           form={form}
           type="textarea"
           maxLength={999999}
-          desabilitado={
-            dadosEncaminhamento?.situacao === situacaoAEE.Encaminhado
-          }
+          desabilitado={validaSeDesabilitarCampo()}
           onChange={() => {
             dispatch(setEncaminhamentoAEEEmEdicao(true));
           }}
+          minRowsTextArea="4"
         />
       </div>
     );
@@ -288,9 +296,7 @@ const MontarDadosPorSecao = props => {
     return (
       <div className="col-md-12 mb-3">
         <AtendimentoClinicoTabela
-          desabilitado={
-            dadosEncaminhamento?.situacao === situacaoAEE.Encaminhado
-          }
+          desabilitado={validaSeDesabilitarCampo()}
           label={label}
           form={form}
           questaoAtual={questaoAtual}
@@ -359,7 +365,12 @@ const MontarDadosPorSecao = props => {
         campoAtual = campoAtendimentoClinico(params);
         break;
       case tipoQuestao.Upload:
-        campoAtual = <UploadArquivosEncaminhamento dados={params} />;
+        campoAtual = (
+          <UploadArquivosEncaminhamento
+            dados={params}
+            desabilitado={validaSeDesabilitarCampo()}
+          />
+        );
         break;
       default:
         break;
