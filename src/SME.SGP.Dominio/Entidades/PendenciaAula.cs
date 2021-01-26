@@ -6,13 +6,13 @@
         {
 
         }
-        public PendenciaAula(long aulaId, TipoPendenciaAula tipoPendenciaAula)
+        public PendenciaAula(long aulaId)
         {
             AulaId = aulaId;
-            TipoPendenciaAula = tipoPendenciaAula;
         }
         public long Id { get; set; }
         public long AulaId { get; set; }
-        public TipoPendenciaAula TipoPendenciaAula { get; set; }
+        public long PendenciaId { get; set; }
+        public string Motivo { get; set; }        
     }
 }

@@ -155,6 +155,22 @@ namespace SME.SGP.Api.Controllers
             return Ok(turmas);
         }
 
+
+        [HttpGet("dres/ues/{codigoUe}/turmas-regulares")]
+        [ProducesResponseType(typeof(IEnumerable<AbrangenciaTurmaRetorno>), 200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public async Task<IActionResult> ObterTurmasRegulares(string codigoUe, [FromQuery] Modalidade modalidade, int periodo = 0, [FromQuery] int anoLetivo = 0)
+        {
+            var turmas = await consultasAbrangencia.ObterTurmasRegulares(codigoUe, modalidade, periodo, ConsideraHistorico, anoLetivo);
+
+            if (!turmas.Any())
+                return NoContent();
+
+            return Ok(turmas);
+        }
+
         [HttpGet("dres/{codigoDre}/ues")]
         [ProducesResponseType(typeof(IEnumerable<AbrangenciaUeRetorno>), 200)]
         [ProducesResponseType(401)]
@@ -178,6 +194,16 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> UsuarioAdm([FromServices] IUsuarioPossuiAbrangenciaAdmUseCase useCase)
         {
             return Ok(await useCase.Executar());
+        }
+        [HttpGet("/api/v1/abrangencias/{usuarioRF}/perfis/{usuarioPerfil}/acesso-sondagem")]
+        [ProducesResponseType(typeof(bool), 200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [AllowAnonymous]
+        public async Task<IActionResult> PodeAcessarSondagem(string usuarioRF, Guid usuarioPerfil, [FromServices] IUsuarioPossuiAbrangenciaAcessoSondagemUseCase useCase)
+        {
+            return Ok(await useCase.Executar(usuarioRF, usuarioPerfil));
         }
 
     }

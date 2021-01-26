@@ -12,6 +12,7 @@ const Base = {
   Azul: '#086397',
   AzulAnakiwa: '#A4DAFB',
   AzulBordaCard: '#0A3DA3',
+  AzulBordaCollapse: '#4072D6',
   AzulBreadcrumb: '#0C6598',
   AzulCalendario: '#10A3FB',
   Branco: '#FFF',
@@ -60,4 +61,28 @@ const Hover = {
   Vermelho: '#AD0007',
 };
 
-export { Colors, Base, Active, Hover };
+const CoresGraficos = [
+  '#F98F84',
+  '#57CDBC',
+  '#EFB971',
+  '#3982AC',
+  '#EECDB6',
+  '#F5E68D',
+  '#B15832',
+  '#A6CEE1',
+  '#B1DF94',
+  '#CAB2D3',
+  '#2179AF',
+  '#30A041',
+  '#FF7E2F',
+  '#6B3E94',
+  '#086397',
+  Base.Azul,
+  Base.LaranjaAlerta,
+  Base.AzulCalendario,
+  Base.CinzaBarras,
+  Base.RoxoClaro,
+  Base.VerdeBorda,
+];
+
+export { Colors, Base, Active, Hover, CoresGraficos };

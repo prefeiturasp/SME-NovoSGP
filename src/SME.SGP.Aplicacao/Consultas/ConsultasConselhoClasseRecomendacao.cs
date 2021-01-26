@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dominio;
+﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -20,11 +21,12 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasTurma consultasTurma;
         private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
         private readonly IConsultasConselhoClasse consultasConselhoClasse;
+        private readonly IMediator mediator;
 
         public ConsultasConselhoClasseRecomendacao(IRepositorioConselhoClasseRecomendacao repositorioConselhoClasseRecomendacao,
             IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno, IConsultasPeriodoEscolar consultasPeriodoEscolar, IConsultasTurma consultasTurma,
             IConsultasFechamentoAluno consultasFechamentoAluno, IConsultasFechamentoTurma consultasFechamentoTurma, IConsultasPeriodoFechamento consultasPeriodoFechamento,
-            IConsultasConselhoClasse consultasConselhoClasse, IRepositorioTipoCalendario repositorioTipoCalendario)
+            IConsultasConselhoClasse consultasConselhoClasse, IRepositorioTipoCalendario repositorioTipoCalendario, IMediator mediator)
         {
             this.repositorioConselhoClasseAluno = repositorioConselhoClasseAluno ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAluno));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
@@ -35,19 +37,7 @@ namespace SME.SGP.Aplicacao
             this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));
             this.consultasConselhoClasse = consultasConselhoClasse ?? throw new ArgumentNullException(nameof(consultasConselhoClasse));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
-        }
-
-        public string MontaTextUlLis(IEnumerable<string> textos)
-        {
-            var str = new StringBuilder("<ul>");
-
-            foreach (var item in textos)
-            {
-                str.AppendFormat("<li>{0}</li>", item);
-            }
-            str.AppendLine("</ul>");
-
-            return str.ToString().Trim();
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
         
         public async Task<ConsultasConselhoClasseRecomendacaoConsultaDto> ObterRecomendacoesAlunoFamilia(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, string codigoTurma, int? bimestre)
@@ -98,14 +88,14 @@ namespace SME.SGP.Aplicacao
 
         private async Task<ConsultasConselhoClasseRecomendacaoConsultaDto> ObterRecomendacoesIniciais(ConselhoClasseAluno conselhoClasseAluno, IEnumerable<FechamentoAlunoAnotacaoConselhoDto> anotacoesAluno, bool emFechamento)
         {
-            var recomendacoes = await repositorioConselhoClasseRecomendacao.ObterTodosAsync();
-            if (!recomendacoes.Any())
-                throw new NegocioException("Não foi possível localizar as recomendações da família e aluno.");
+            (string recomendacoesAluno, string recomendacoesFamilia) recomendacoes = (string.Empty, string.Empty);
+            if (conselhoClasseAluno == null || string.IsNullOrEmpty(conselhoClasseAluno?.RecomendacoesAluno) || string.IsNullOrEmpty(conselhoClasseAluno?.RecomendacoesFamilia))
+                recomendacoes = await mediator.Send(new ObterTextoRecomendacoesAlunoFamiliaQuery());
 
             return new ConsultasConselhoClasseRecomendacaoConsultaDto()
             {
-                RecomendacaoAluno = conselhoClasseAluno?.RecomendacoesAluno ?? MontaTextUlLis(recomendacoes.Where(a => a.Tipo == ConselhoClasseRecomendacaoTipo.Aluno).Select(b => b.Recomendacao)),
-                RecomendacaoFamilia = conselhoClasseAluno?.RecomendacoesFamilia ?? MontaTextUlLis(recomendacoes.Where(a => a.Tipo == ConselhoClasseRecomendacaoTipo.Familia).Select(b => b.Recomendacao)),
+                RecomendacaoAluno = conselhoClasseAluno?.RecomendacoesAluno ?? recomendacoes.recomendacoesAluno,
+                RecomendacaoFamilia = conselhoClasseAluno?.RecomendacoesFamilia ?? recomendacoes.recomendacoesFamilia,
                 AnotacoesAluno = anotacoesAluno,
                 SomenteLeitura = !emFechamento,
                 Auditoria = conselhoClasseAluno != null ? (AuditoriaDto)conselhoClasseAluno : null

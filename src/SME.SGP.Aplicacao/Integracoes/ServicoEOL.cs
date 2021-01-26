@@ -207,14 +207,7 @@ namespace SME.SGP.Aplicacao.Integracoes
         {
             var json = new StringContent(JsonConvert.SerializeObject(uesIds), Encoding.UTF8, "application/json");
 
-            var request = new HttpRequestMessage
-            {
-                Method = HttpMethod.Get,
-                RequestUri = new Uri(httpClient.BaseAddress.AbsoluteUri + "funcionarios/turmas"),
-                Content = json
-            };
-
-            var resposta = await httpClient.SendAsync(request);
+            var resposta = await httpClient.PostAsync("funcionarios/turmas", json);
 
             if (resposta.IsSuccessStatusCode)
             {
@@ -654,9 +647,9 @@ namespace SME.SGP.Aplicacao.Integracoes
             return JsonConvert.DeserializeObject<UsuarioResumoCoreDto>(json);
         }
 
-        public async Task<ProfessorResumoDto> ObterResumoProfessorPorRFAnoLetivo(string codigoRF, int anoLetivo)
+        public async Task<ProfessorResumoDto> ObterResumoProfessorPorRFAnoLetivo(string codigoRF, int anoLetivo, bool buscarOutrosCargos = false)
         {
-            var resposta = await httpClient.GetAsync($"professores/{codigoRF}/BuscarPorRf/{anoLetivo}");
+            var resposta = await httpClient.GetAsync($"professores/{codigoRF}/BuscarPorRf/{anoLetivo}?buscarOutrosCargos={buscarOutrosCargos}");
 
             if (!resposta.IsSuccessStatusCode)
                 throw new NegocioException("Ocorreu uma falha ao consultar o professor");
@@ -982,6 +975,22 @@ namespace SME.SGP.Aplicacao.Integracoes
             return Enumerable.Empty<ComponenteCurricularEol>();
         }
 
+        public async Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesTurmasProgramaPorAnoEModalidade(string codigoUe, Modalidade modalidade, int anoLetivo)
+        {
+
+            var url = $@"v1/componentes-curriculares/ues/{codigoUe}/modalidades/{modalidade}/anos/{anoLetivo}";
+
+            var resposta = await httpClient.GetAsync(url);
+
+            if (resposta.IsSuccessStatusCode)
+            {
+                var json = await resposta.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<IEnumerable<ComponenteCurricularEol>>(json);
+
+            }
+            return Enumerable.Empty<ComponenteCurricularEol>();
+        }
+
         public async Task AtribuirPerfil(string codigoRf, Guid perfil)
         {
             var resposta = await httpClient.GetAsync($"perfis/servidores/{codigoRf}/perfil/{perfil}/atribuirPerfil");
@@ -1026,6 +1035,22 @@ namespace SME.SGP.Aplicacao.Integracoes
             var retorno = JsonConvert.DeserializeObject<IEnumerable<RetornoDisciplinaDto>>(json);
 
             return MapearParaDtoDisciplinas(retorno);
+        }
+
+        public async Task<IEnumerable<string>> DefinirTurmasRegulares(string[] codigosTurmas)
+        {
+            var parametros = JsonConvert.SerializeObject(codigosTurmas);
+            var resposta = await httpClient.PostAsync("turmas/turmas-regulares", new StringContent(parametros, Encoding.UTF8, "application/json-patch+json"));
+
+            if (!resposta.IsSuccessStatusCode || resposta.StatusCode == HttpStatusCode.NoContent)
+            {
+                await RegistrarLogSentryAsync(resposta, "definir turmas regulares", parametros);
+                return Enumerable.Empty<string>();
+            }
+
+            var json = await resposta.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<IEnumerable<string>>(json);            
         }
     }
 }

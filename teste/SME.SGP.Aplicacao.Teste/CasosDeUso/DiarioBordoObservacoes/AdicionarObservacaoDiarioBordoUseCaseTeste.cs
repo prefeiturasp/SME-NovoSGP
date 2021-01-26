@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
                 });
 
             //Act
-            var auditoriaDto = await adicionarObservacaoDiarioBordoUseCase.Executar("observacao", 1);
+            var auditoriaDto = await adicionarObservacaoDiarioBordoUseCase.Executar("observacao", 1, null);
 
             //Asert
             mediator.Verify(x => x.Send(It.IsAny<AdicionarObservacaoDiarioBordoCommand>(), It.IsAny<CancellationToken>()), Times.Once);
