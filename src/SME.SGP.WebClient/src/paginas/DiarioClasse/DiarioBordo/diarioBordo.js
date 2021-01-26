@@ -287,12 +287,13 @@ const DiarioBordo = ({ match }) => {
       }
     }
   };
-
   const salvarDiarioDeBordo = async (valores, form, clicouBtnSalvar) => {
     setCarregandoGeral(true);
     let aulaId = aulaSelecionada?.aulaId;
+    let voltarParaListagem = false;
     if (!aulaId && match?.params?.aulaId) {
       aulaId = match?.params?.aulaId;
+      voltarParaListagem = true;
     }
 
     const params = {
@@ -311,6 +312,9 @@ const DiarioBordo = ({ match }) => {
       if (clicouBtnSalvar) {
         setModoEdicao(false);
         resetarTela();
+      }
+      if (voltarParaListagem) {
+        history.push(RotasDto.DIARIO_BORDO);
       }
       salvouComSucesso = true;
     }
