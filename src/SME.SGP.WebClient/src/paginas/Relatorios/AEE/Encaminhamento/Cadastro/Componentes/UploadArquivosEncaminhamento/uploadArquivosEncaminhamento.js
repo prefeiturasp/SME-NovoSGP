@@ -1,22 +1,17 @@
-import React from 'react';
 import PropTypes from 'prop-types';
-import { useDispatch, useSelector } from 'react-redux';
+import React from 'react';
+import { useDispatch } from 'react-redux';
+import { Label } from '~/componentes';
 import UploadArquivos from '~/componentes-sgp/UploadArquivos/uploadArquivos';
 import { setEncaminhamentoAEEEmEdicao } from '~/redux/modulos/encaminhamentoAEE/actions';
 import { erros, sucesso } from '~/servicos';
 import ServicoEncaminhamentoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoEncaminhamentoAEE';
-import { Label } from '~/componentes';
-import situacaoAEE from '~/dtos/situacaoAEE';
 
 const UploadArquivosEncaminhamento = props => {
-  const { dados } = props;
+  const { dados, desabilitado } = props;
   const { form, questaoAtual, label } = dados;
 
   const dispatch = useDispatch();
-
-  const dadosEncaminhamento = useSelector(
-    store => store.encaminhamentoAEE.dadosEncaminhamento
-  );
 
   const onRemoveFile = async arquivo => {
     const codigoArquivo = arquivo.xhr;
@@ -59,9 +54,7 @@ const UploadArquivosEncaminhamento = props => {
       <div className="col-md-12 mt-2 mb-3">
         {questaoAtual?.nome ? <Label text={label} /> : ''}
         <UploadArquivos
-          desabilitarGeral={
-            dadosEncaminhamento?.situacao === situacaoAEE.Encaminhado
-          }
+          desabilitarGeral={desabilitado}
           form={form}
           name={String(questaoAtual?.id)}
           id={String(questaoAtual?.id)}
@@ -85,10 +78,12 @@ const UploadArquivosEncaminhamento = props => {
 
 UploadArquivosEncaminhamento.propTypes = {
   dados: PropTypes.oneOfType([PropTypes.object]),
+  desabilitado: PropTypes.bool,
 };
 
 UploadArquivosEncaminhamento.defaultProps = {
   dados: {},
+  desabilitado: false,
 };
 
 export default UploadArquivosEncaminhamento;
