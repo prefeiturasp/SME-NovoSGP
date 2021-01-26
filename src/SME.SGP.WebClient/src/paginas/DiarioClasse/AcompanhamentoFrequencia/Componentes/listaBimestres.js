@@ -1,6 +1,6 @@
 import { Tabs } from 'antd';
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { ContainerTabsCard } from '~/componentes/tabs/tabs.css';
 import {
