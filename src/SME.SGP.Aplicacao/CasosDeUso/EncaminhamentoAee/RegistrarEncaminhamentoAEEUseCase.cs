@@ -64,15 +64,13 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
                 long resultadoEncaminhamentoSecao = 0;
                 if (secaoExistente == null)
-                    resultadoEncaminhamentoSecao = await mediator.Send(new RegistrarEncaminhamentoAEESecaoCommand(encaminhamentoAEE.Id, secao.SecaoId, secao.Concluido));
-                else
+                    secaoExistente = await mediator.Send(new RegistrarEncaminhamentoAEESecaoCommand(encaminhamentoAEE.Id, secao.SecaoId, secao.Concluido));
+
+                resultadoEncaminhamentoSecao = secaoExistente.Id;
+                if (secaoExistente.Concluido != secao.Concluido)
                 {
-                    resultadoEncaminhamentoSecao = secaoExistente.Id;
-                    if (secaoExistente.Concluido != secao.Concluido)
-                    {
-                        secaoExistente.Concluido = secao.Concluido;
-                        await mediator.Send(new AlterarEncaminhamentoAEESecaoCommand(secaoExistente));
-                    }
+                    secaoExistente.Concluido = secao.Concluido;
+                    await mediator.Send(new AlterarEncaminhamentoAEESecaoCommand(secaoExistente));
                 }
 
                 foreach (var questoes in secao.Questoes.GroupBy(q => q.QuestaoId))
@@ -147,11 +145,11 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                 if (!secao.Questoes.Any())
                     throw new NegocioException($"Nenhuma questão foi encontrada na Seção {secao.SecaoId}");
 
-                var resultadoEncaminhamentoSecao = await mediator.Send(new RegistrarEncaminhamentoAEESecaoCommand(resultadoEncaminhamento.Id, secao.SecaoId, secao.Concluido));
+                var secaoEncaminhamento = await mediator.Send(new RegistrarEncaminhamentoAEESecaoCommand(resultadoEncaminhamento.Id, secao.SecaoId, secao.Concluido));
 
                 foreach (var questoes in secao.Questoes.GroupBy(q => q.QuestaoId))
                 {
-                    var resultadoEncaminhamentoQuestao = await mediator.Send(new RegistrarEncaminhamentoAEESecaoQuestaoCommand(resultadoEncaminhamentoSecao, questoes.FirstOrDefault().QuestaoId));
+                    var resultadoEncaminhamentoQuestao = await mediator.Send(new RegistrarEncaminhamentoAEESecaoQuestaoCommand(secaoEncaminhamento.Id, questoes.FirstOrDefault().QuestaoId));
                     await RegistrarRespostaEncaminhamento(questoes, resultadoEncaminhamentoQuestao);
                 }
             }

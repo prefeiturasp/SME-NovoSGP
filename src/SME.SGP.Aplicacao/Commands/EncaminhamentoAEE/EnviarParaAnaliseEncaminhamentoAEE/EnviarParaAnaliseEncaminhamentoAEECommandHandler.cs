@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
             if (encaminhamentoAEE == null)
                 throw new NegocioException("O encaminhamento informado não foi encontrado");
 
-            encaminhamentoAEE.Situacao = Dominio.Enumerados.SituacaoAEE.Encaminhado;
+            encaminhamentoAEE.Situacao = Dominio.Enumerados.SituacaoAEE.Analise;
 
             var idEntidadeEncaminhamento = await repositorioEncaminhamentoAEE.SalvarAsync(encaminhamentoAEE);
 
