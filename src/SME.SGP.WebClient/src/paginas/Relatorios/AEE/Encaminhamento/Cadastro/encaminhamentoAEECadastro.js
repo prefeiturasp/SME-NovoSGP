@@ -8,9 +8,11 @@ import {
   setDadosEstudanteObjectCardEncaminhamento,
   setDadosSecaoLocalizarEstudante,
   setExibirLoaderEncaminhamentoAEE,
+  setLimparDadosEncaminhamento,
 } from '~/redux/modulos/encaminhamentoAEE/actions';
 import { erros } from '~/servicos';
 import ServicoEncaminhamentoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoEncaminhamentoAEE';
+import AlertaEncaminhamentoEncerrado from './Componentes/AlertaEncaminhamentoEncerrado/alertaEncaminhamentoEncerrado';
 import BotoesAcoesEncaminhamentoAEE from './Componentes/botoesAcoesEncaminhamentoAEE';
 import LoaderEncaminhamento from './Componentes/LoaderEncaminhamento/loaderEncaminhamento';
 import SecaoEncaminhamentoCollapse from './Componentes/SecaoEncaminhamento/secaoEncaminhamentoCollapse';
@@ -61,8 +63,15 @@ const EncaminhamentoAEECadastro = ({ match }) => {
     }
   }, [match, obterEncaminhamentoPorId, dispatch]);
 
+  useEffect(() => {
+    return () => {
+      dispatch(setLimparDadosEncaminhamento());
+    };
+  }, [dispatch]);
+
   return (
     <LoaderEncaminhamento>
+      <AlertaEncaminhamentoEncerrado />
       <Cabecalho pagina="Encaminhamento AEE" />
       <Card>
         <div className="col-md-12">
