@@ -21,14 +21,14 @@ namespace SME.SGP.Infra
         public char? ParecerConclusivo { get; set; }
         public bool PossuiDeficiencia { get; set; }
         public string SituacaoMatricula { get; set; }
-
         public bool Transferencia_Interna { get; set; }
-
         public string TurmaEscola { get; set; }
-
         public string TurmaRemanejamento { get; set; }
-
         public string TurmaTransferencia { get; set; }
+        public string NomeResponsavel { get; set; }
+        public string TipoResponsavel { get; set; }
+        public string CelularResponsavel { get; set; }
+        public DateTime DataAtualizacaoContato { get; set; }
 
         private SituacaoMatriculaAluno[] SituacoesAtiva => new[] { SituacaoMatriculaAluno.Ativo,
                         SituacaoMatriculaAluno.Rematriculado,

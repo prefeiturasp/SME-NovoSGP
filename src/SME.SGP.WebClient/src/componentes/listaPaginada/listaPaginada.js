@@ -83,9 +83,9 @@ const ListaPaginada = props => {
     selecionaItems(selecionadas);
   };
 
-  const clicarLinha = row => {
+  const clicarLinha = (row, colunaClicada) => {
     if (onClick) {
-      onClick(row);
+      onClick(row, colunaClicada);
     }
   };
 
@@ -112,7 +112,7 @@ const ListaPaginada = props => {
         setLinhas(resposta.data.items);
         if (setLista) {
           setLista(resposta.data.items);
-        };
+        }
       })
       .catch(err => {
         if (
@@ -132,7 +132,14 @@ const ListaPaginada = props => {
     if (filtroEhValido) {
       filtrar();
     }
-  }, [filtroEhValido, filtro, paginaAtual]);
+  }, [filtroEhValido, paginaAtual]);
+
+  useEffect(() => {
+    const novaPagina = { ...paginaAtual };
+    novaPagina.current = 1;
+    setPaginaAtual(novaPagina);
+    defineUrlBusca(novaPagina);
+  }, [filtro]);
 
   const executaPaginacao = pagina => {
     const novaPagina = { ...paginaAtual, ...pagina };
@@ -160,7 +167,7 @@ const ListaPaginada = props => {
             ) {
               selecionarLinha(row);
             } else {
-              clicarLinha(row);
+              clicarLinha(row, colunaClicada);
             }
           },
         })}

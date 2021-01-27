@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import CardCollapse from '~/componentes/cardCollapse';
-import Editor from '~/componentes/editor/editor';
+import JoditEditor from '~/componentes/jodit-editor/joditEditor';
 
 const AnotacoesPedagogicas = props => {
   const { onChange, dadosIniciais, alunoDesabilitado } = props;
@@ -31,9 +31,9 @@ const AnotacoesPedagogicas = props => {
         alt="anotacoes-pedagogicas"
       >
         {exibirCardAnotacao ? (
-          <Editor
+          <JoditEditor
             id="anotacoes-pedagogicas-editor"
-            inicial={dadosIniciais.anotacoesPedagogicas}
+            value={dadosIniciais.anotacoesPedagogicas}
             onChange={onChange}
             desabilitar={
               alunoDesabilitado || desabilitarCampos || !dentroPeriodo

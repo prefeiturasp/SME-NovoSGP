@@ -65,6 +65,21 @@ namespace SME.SGP.Dados.Repositorios
             return contexto.QueryFirstOrDefault<Ue>("select * from ue where ue_id = @ueId", new { ueId });
         }
 
+        public async Task<Ue> ObterUeComDrePorCodigo(string ueCodigo)
+        {
+            var query = @"select ue.*, dre.* 
+                            from ue 
+                           inner join dre on dre.id = ue.dre_id
+                           where ue_id = @ueCodigo";
+
+            return (await contexto.Conexao.QueryAsync<Ue, Dre, Ue>(query, (ue, dre) =>
+            {
+                ue.AdicionarDre(dre);
+                return ue;
+            }, 
+            new { ueCodigo })).FirstOrDefault();
+        }
+
         public IEnumerable<Ue> ObterTodas()
         {
             var query = @"select
@@ -175,5 +190,81 @@ namespace SME.SGP.Dados.Repositorios
 
             return resultado;
         }
+
+        public async Task<bool> ValidarUeEducacaoInfantil(long ueId)
+        {
+            var query = @"select 1 
+                          from ue
+                         where ue.Id = @ueId
+                           and ue.tipo_escola in (2, 17, 28, 30, 31)";
+
+            return await contexto.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { ueId });
+        }
+
+        public async Task<IEnumerable<Ue>> ObterUesPorModalidade(int[] modalidades, int anoLetivo = 0)
+        {
+            var query = @"select distinct ue.*, dre.*
+                          from turma t
+                         inner join ue on ue.id = t.ue_id
+                         inner join dre on dre.id = ue.dre_id
+                         where t.modalidade_codigo = ANY(@modalidades) ";
+
+            if (anoLetivo > 0)
+                query += "and ano_letivo = @anoLetivo";
+
+            return await contexto.Conexao.QueryAsync<Ue, Dre, Ue>(query, (ue, dre) =>
+            {
+                ue.Dre = dre;
+
+                return ue;
+            }, new { modalidades, anoLetivo });
+
+        }
+
+        public async Task<IEnumerable<Ue>> ObterUesComDrePorDreEModalidade(string dreCodigo, Modalidade modalidade)
+        {
+            var query = @"select ue.*, dre.* 
+                            from ue 
+                           inner join dre on dre.id = ue.dre_id
+                           where dre_id = @dreCodigo
+                             and exists (select 1 from turma where modalidade_codigo = @modalidade)";
+
+            return (await contexto.Conexao.QueryAsync<Ue, Dre, Ue>(query, (ue, dre) =>
+            {
+                ue.AdicionarDre(dre);
+                return ue;
+            },
+            new { dreCodigo, modalidade }));
+        }
+
+        public async Task<IEnumerable<Ue>> ObterUEsSemPeriodoFechamento(long periodoEscolarId, int ano, int[] modalidades)
+        {
+            var query = @" select distinct ue.*, dre.*
+                               from ue 
+                              inner join dre on dre.id = ue.dre_id
+                              inner join turma t on t.ue_id = ue.id
+                              where t.modalidade_codigo = any(@modalidades)
+                                and t.ano_letivo = @ano
+                                and not exists (select 1
+    		                            from periodo_fechamento pf
+    		                            inner join periodo_fechamento_bimestre pb on pb.periodo_fechamento_id = pf.id
+    		                            where pf.ue_id = ue.id
+    		                             and pb.periodo_escolar_id = @periodoEscolarId)";
+
+            return await contexto.Conexao.QueryAsync<Ue, Dre, Ue>(query,
+                (ue, dre) =>
+                {
+                    ue.AdicionarDre(dre);
+
+                    return ue;
+                }, new { periodoEscolarId, ano, modalidades });
+        }
+
+        public async Task<int> ObterQuantidadeTurmasSeriadas(long ueId, int ano)
+        {
+            var query = @"select count(id) from turma where ano between '1' and '9' and ue_id = @ueId and ano_letivo = @ano";
+
+            return await contexto.Conexao.QueryFirstOrDefaultAsync<int>(query, new { ueId, ano });
+       }
     }
 }

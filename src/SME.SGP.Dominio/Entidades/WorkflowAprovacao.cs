@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace SME.SGP.Dominio
@@ -36,11 +37,13 @@ namespace SME.SGP.Dominio
                 niveis.Add(nivel);
         }
 
-        public void Adicionar(long nivelId, Notificacao notificacao)
+        public void Adicionar(long nivelId, Notificacao notificacao, Usuario usuario)
         {
             var nivel = niveis.FirstOrDefault(a => a.Id == nivelId);
             if (nivel == null)
                 throw new NegocioException($"Não foi possível localizar o nível de Id {nivelId}");
+
+            notificacao.Usuario = usuario;
 
             nivel.Adicionar(notificacao);
         }
@@ -68,6 +71,12 @@ namespace SME.SGP.Dominio
 
                 yield return nivel;
             }
+        }
+
+        public WorkflowAprovacaoNivel ObterPrimeiroNivelPorCargo(Cargo cargo)
+        {
+            return niveis.Where(a => a.Cargo == cargo)
+                .OrderBy(a => a.Nivel).FirstOrDefault();
         }
 
         public IEnumerable<WorkflowAprovacaoNivel> ObtemNiveis(long nivel)

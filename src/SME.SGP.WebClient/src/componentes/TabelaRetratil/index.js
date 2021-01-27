@@ -18,6 +18,8 @@ function TabelaRetratil({
   permiteOnChangeAluno,
   codigoAlunoSelecionado,
   exibirProcessoConcluido,
+  tituloCabecalho,
+  pularDesabilitados,
 }) {
   const [retraido, setRetraido] = useState(false);
   const [alunoSelecionado, setAlunoSelecionado] = useState(null);
@@ -50,13 +52,29 @@ function TabelaRetratil({
     return alunoSelecionado && aluno.codigoEOL === alunoSelecionado.codigoEOL;
   };
 
+  const proximoAlunoHabilitado = aluno => {
+    const indexProximo = alunos.indexOf(aluno) + 1;
+    if (indexProximo !== alunos.length) {
+      const proximoAluno = alunos[indexProximo];
+      if (proximoAluno.desabilitado) {
+        return proximoAlunoHabilitado(proximoAluno);
+      }
+      return proximoAluno;
+    }
+    return false;
+  };
+
   const proximoAlunoHandler = useCallback(async () => {
     const permite = await permiteSelecionarAluno();
     if (permite) {
       if (alunos.indexOf(alunoSelecionado) === alunos.length - 1) return;
-      const aluno = alunos[alunos.indexOf(alunoSelecionado) + 1];
-      setAlunoSelecionado(aluno);
-      onChangeAlunoSelecionado(aluno);
+      const aluno = pularDesabilitados
+        ? proximoAlunoHabilitado(alunoSelecionado)
+        : alunos[alunos.indexOf(alunoSelecionado) + 1];
+      if (aluno) {
+        setAlunoSelecionado(aluno);
+        onChangeAlunoSelecionado(aluno);
+      }
     }
   }, [
     alunoSelecionado,
@@ -65,13 +83,29 @@ function TabelaRetratil({
     permiteSelecionarAluno,
   ]);
 
+  const anteriorAlunoHabilitado = aluno => {
+    const indexAnterior = alunos.indexOf(aluno) - 1;
+    if (indexAnterior >= 0) {
+      const alunoAnterior = alunos[indexAnterior];
+      if (alunoAnterior.desabilitado) {
+        return anteriorAlunoHabilitado(alunoAnterior);
+      }
+      return alunoAnterior;
+    }
+    return false;
+  };
+
   const anteriorAlunoHandler = useCallback(async () => {
     const permite = await permiteSelecionarAluno();
     if (permite) {
       if (alunos.indexOf(alunoSelecionado) === 0) return;
-      const aluno = alunos[alunos.indexOf(alunoSelecionado) - 1];
-      setAlunoSelecionado(aluno);
-      onChangeAlunoSelecionado(aluno);
+      const aluno = pularDesabilitados
+        ? anteriorAlunoHabilitado(alunoSelecionado)
+        : alunos[alunos.indexOf(alunoSelecionado) - 1];
+      if (aluno) {
+        setAlunoSelecionado(aluno);
+        onChangeAlunoSelecionado(aluno);
+      }
     }
   }, [
     alunoSelecionado,
@@ -135,16 +169,28 @@ function TabelaRetratil({
                 </td>
                 <td>
                   <div
+                    className="d-flex align-items-center"
                     style={{
                       marginLeft: '-9px',
                     }}
                   >
-                    {exibirProcessoConcluido ? (
-                      <i className="icone-concluido fa fa-check-circle" />
-                    ) : (
-                      ''
+                    <div
+                      className={
+                        item.marcadorDiasSemRegistroExibir ? 'col-11' : 'col-12'
+                      }
+                    >
+                      {exibirProcessoConcluido && (
+                        <i className="icone-concluido fa fa-check-circle" />
+                      )}
+                      {item.nome}
+                    </div>
+                    {item.marcadorDiasSemRegistroExibir && (
+                      <div className="col-1">
+                        <Tooltip title={item.marcadorDiasSemRegistroTexto}>
+                          <i className="fas fa-exclamation icone-ausencia" />
+                        </Tooltip>
+                      </div>
                     )}
-                    {item.nome}
                   </div>
                 </td>
               </LinhaTabela>
@@ -154,7 +200,7 @@ function TabelaRetratil({
       </div>
       <DetalhesAluno>
         <Cabecalho
-          titulo="Detalhes do Estudante"
+          titulo={tituloCabecalho}
           retraido={retraido}
           onClickCollapse={() => setRetraido(!retraido)}
           onClickAnterior={anteriorAlunoHandler}
@@ -175,6 +221,8 @@ TabelaRetratil.propTypes = {
   permiteOnChangeAluno: t.func,
   codigoAlunoSelecionado: t.oneOfType([t.any]),
   exibirProcessoConcluido: t.bool,
+  tituloCabecalho: t.string,
+  pularDesabilitados: t.bool,
 };
 
 TabelaRetratil.defaultProps = {
@@ -184,6 +232,8 @@ TabelaRetratil.defaultProps = {
   permiteOnChangeAluno: () => true,
   codigoAlunoSelecionado: null,
   exibirProcessoConcluido: false,
+  tituloCabecalho: 'Detalhes do estudante',
+  pularDesabilitados: false,
 };
 
 export default TabelaRetratil;

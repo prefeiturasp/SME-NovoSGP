@@ -49,10 +49,12 @@ namespace SME.SGP.Aplicacao
                     .Select(x => new DatasAulasDto()
                     {
                         Data = x.Key,
-                        Aulas = x.Select(a => new AulaSimplesDto()
+                        Aulas = x.OrderBy(a => a.AulaCJ).Select(a => new AulaSimplesDto()
                         {
                             AulaId = a.IdAula,
-                            AulaCJ = a.AulaCJ
+                            AulaCJ = a.AulaCJ,
+                            ProfessorRf = a.ProfessorRf,
+                            CriadoPor = a.CriadoPor
                         })
                     });
         }
@@ -95,7 +97,9 @@ namespace SME.SGP.Aplicacao
                         Data = aula.DataAula,
                         IdAula = aula.Id,
                         AulaCJ = aula.AulaCJ,
-                        Bimestre = periodoEscolar.Bimestre
+                        Bimestre = periodoEscolar.Bimestre,
+                        ProfessorRf = aula.ProfessorRf,
+                        CriadoPor = aula.CriadoPor
                     };
                 }
             }

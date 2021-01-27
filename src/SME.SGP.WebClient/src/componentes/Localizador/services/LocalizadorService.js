@@ -30,8 +30,10 @@ class LocalizadorService {
     );
   }
 
-  buscarPorRf({ anoLetivo, rf }) {
-    return api.get(`${this.urlProfessores}/${rf}/resumo/${anoLetivo}`);
+  buscarPorRf({ anoLetivo, rf, buscarOutrosCargos }) {
+    return api.get(
+      `${this.urlProfessores}/${rf}/resumo/${anoLetivo}?buscarOutrosCargos=${buscarOutrosCargos}`
+    );
   }
 
   buscarPessoa({ rf, nome }) {

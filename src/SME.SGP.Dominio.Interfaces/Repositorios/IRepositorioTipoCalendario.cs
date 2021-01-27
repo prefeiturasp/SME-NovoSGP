@@ -18,6 +18,8 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<IEnumerable<TipoCalendario>> BuscarPorAnoLetivo(int anoLetivo);
 
+        Task<string> ObterNomePorId(long tipoCalendarioId);
+
         Task<IEnumerable<TipoCalendario>> ObterTiposCalendario();
 
         Task<bool> VerificarRegistroExistente(long id, string nome);

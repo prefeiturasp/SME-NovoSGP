@@ -38,6 +38,7 @@ namespace SME.SGP.Dados
             {
                 transacao.Commit();
                 TransacaoAberta = false;
+                transacao = null;
             }
         }
 

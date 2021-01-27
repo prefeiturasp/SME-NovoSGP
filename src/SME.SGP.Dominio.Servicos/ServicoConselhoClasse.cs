@@ -1,4 +1,5 @@
-﻿using SME.SGP.Aplicacao;
+﻿using MediatR;
+using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -27,7 +28,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IConsultasDisciplina consultasDisciplina;
         private readonly IUnitOfWork unitOfWork;
         private readonly IServicoCalculoParecerConclusivo servicoCalculoParecerConclusivo;
-        private readonly IServicoEol servicoEOL;
+        private readonly IMediator mediator;
 
         public ServicoConselhoClasse(IRepositorioConselhoClasse repositorioConselhoClasse,
                                      IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno,
@@ -45,7 +46,7 @@ namespace SME.SGP.Dominio.Servicos
                                      IRepositorioConselhoClasseNota repositorioConselhoClasseNota,
                                      IUnitOfWork unitOfWork,
                                      IServicoCalculoParecerConclusivo servicoCalculoParecerConclusivo,
-                                     IServicoEol servicoEOL)
+                                     IMediator mediator)
 
         {
             this.repositorioConselhoClasse = repositorioConselhoClasse ?? throw new ArgumentNullException(nameof(repositorioConselhoClasse));
@@ -64,7 +65,7 @@ namespace SME.SGP.Dominio.Servicos
             this.consultasDisciplina = consultasDisciplina ?? throw new ArgumentNullException(nameof(consultasDisciplina));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.servicoCalculoParecerConclusivo = servicoCalculoParecerConclusivo ?? throw new ArgumentNullException(nameof(servicoCalculoParecerConclusivo));
-            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<ConselhoClasseNotaRetornoDto> SalvarConselhoClasseAlunoNotaAsync(ConselhoClasseNotaDto conselhoClasseNotaDto, string alunoCodigo, long conselhoClasseId, long fechamentoTurmaId, string codigoTurma, int bimestre)
@@ -124,9 +125,12 @@ namespace SME.SGP.Dominio.Servicos
                 else
                 {
                     // Fechamento Final
-                    var validacaoConselhoFinal = await consultasConselhoClasse.ValidaConselhoClasseUltimoBimestre(fechamentoTurma.Turma);
-                    if (!validacaoConselhoFinal.Item2 && fechamentoTurma.Turma.AnoLetivo == DateTime.Today.Year)
-                        throw new NegocioException($"Para acessar este aba você precisa registrar o conselho de classe do {validacaoConselhoFinal.Item1}º bimestre");
+                    if(fechamentoTurma.Turma.AnoLetivo != 2020)
+                    {
+                        var validacaoConselhoFinal = await consultasConselhoClasse.ValidaConselhoClasseUltimoBimestre(fechamentoTurma.Turma);
+                        if (!validacaoConselhoFinal.Item2 && fechamentoTurma.Turma.AnoLetivo == DateTime.Today.Year)
+                            throw new NegocioException($"Para acessar este aba você precisa registrar o conselho de classe do {validacaoConselhoFinal.Item1}º bimestre");
+                    }                    
                 }
                 unitOfWork.PersistirTransacao();
             }
@@ -136,6 +140,7 @@ namespace SME.SGP.Dominio.Servicos
                 throw e;
             }
 
+            long conselhoClasseAlunoId = 0;
             try
             {
                 if (conselhoClasseId == 0)
@@ -149,9 +154,12 @@ namespace SME.SGP.Dominio.Servicos
 
                     conselhoClasseId = conselhoClasse.Id;
 
-                    long conselhoClasseAlunoId = await SalvarConselhoClasseAlunoResumido(conselhoClasse.Id, alunoCodigo);
+                    conselhoClasseAlunoId = await SalvarConselhoClasseAlunoResumido(conselhoClasse.Id, alunoCodigo);
 
                     conselhoClasseNota = ObterConselhoClasseNota(conselhoClasseNotaDto, conselhoClasseAlunoId);
+
+                    if (fechamentoTurma.Turma.AnoLetivo == 2020)
+                        ValidarNotasFechamentoConselhoClasse2020(conselhoClasseNota);
 
                     await repositorioConselhoClasseNota.SalvarAsync(conselhoClasseNota);
                     unitOfWork.PersistirTransacao();
@@ -161,7 +169,7 @@ namespace SME.SGP.Dominio.Servicos
                     var conselhoClasseAluno = await repositorioConselhoClasseAluno.ObterPorConselhoClasseAlunoCodigoAsync(conselhoClasseId, alunoCodigo);
                     unitOfWork.IniciarTransacao();
 
-                    var conselhoClasseAlunoId = conselhoClasseAluno != null ? conselhoClasseAluno.Id : await SalvarConselhoClasseAlunoResumido(conselhoClasseId, alunoCodigo);
+                    conselhoClasseAlunoId = conselhoClasseAluno != null ? conselhoClasseAluno.Id : await SalvarConselhoClasseAlunoResumido(conselhoClasseId, alunoCodigo);
 
                     conselhoClasseNota = await repositorioConselhoClasseNota.ObterPorConselhoClasseAlunoComponenteCurricularAsync(conselhoClasseAlunoId, conselhoClasseNotaDto.CodigoComponenteCurricular);
 
@@ -173,23 +181,46 @@ namespace SME.SGP.Dominio.Servicos
                     {
                         conselhoClasseNota.Justificativa = conselhoClasseNotaDto.Justificativa;
                         if (conselhoClasseNotaDto.Nota.HasValue)
+                        {
+                            // Gera histórico de alteração
+                            if (conselhoClasseNota.Nota != conselhoClasseNotaDto.Nota.Value)
+                                await mediator.Send(new SalvarHistoricoNotaConselhoClasseCommand(conselhoClasseNota.Id, conselhoClasseNota.Nota.Value, conselhoClasseNotaDto.Nota.Value));
+
                             conselhoClasseNota.Nota = conselhoClasseNotaDto.Nota.Value;
+                        }
                         else conselhoClasseNota.Nota = null;
+
                         if (conselhoClasseNotaDto.Conceito.HasValue)
+                        {
+                            // Gera histórico de alteração
+                            if (conselhoClasseNota.ConceitoId != conselhoClasseNotaDto.Conceito.Value)
+                                await mediator.Send(new SalvarHistoricoConceitoConselhoClasseCommand(conselhoClasseNota.Id, conselhoClasseNota.ConceitoId.Value, conselhoClasseNotaDto.Conceito.Value));
+
                             conselhoClasseNota.ConceitoId = conselhoClasseNotaDto.Conceito.Value;
+                        }
                     }
+
+                    if (fechamentoTurma.Turma.AnoLetivo == 2020)
+                        ValidarNotasFechamentoConselhoClasse2020(conselhoClasseNota);
 
                     await repositorioConselhoClasseNota.SalvarAsync(conselhoClasseNota);
 
                     unitOfWork.PersistirTransacao();
                 }
             }
-
             catch (Exception e)
             {
                 unitOfWork.Rollback();
                 throw e;
             }
+
+            // TODO Verificar se o fechamentoTurma.Turma carregou UE
+            if (await VerificaNotasTodosComponentesCurriculares(alunoCodigo, fechamentoTurma.Turma, fechamentoTurma.PeriodoEscolarId))
+                await VerificaRecomendacoesAluno(conselhoClasseAlunoId);
+
+            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            await mediator.Send(new PublicaFilaAtualizacaoSituacaoConselhoClasseCommand(conselhoClasseId, usuarioLogado));
+
             var auditoria = (AuditoriaDto)conselhoClasseNota;
             var conselhoClasseNotaRetorno = new ConselhoClasseNotaRetornoDto()
             {
@@ -198,6 +229,21 @@ namespace SME.SGP.Dominio.Servicos
                 Auditoria = auditoria
             };
             return conselhoClasseNotaRetorno;
+        }
+
+        private async Task VerificaRecomendacoesAluno(long conselhoClasseAlunoId)
+        {
+            var conselhoClasseAluno = await repositorioConselhoClasseAluno.ObterPorIdAsync(conselhoClasseAlunoId);
+
+            if (string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesAluno) || string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesFamilia))
+            {
+                var recomendacoes = await mediator.Send(new ObterTextoRecomendacoesAlunoFamiliaQuery());
+
+                conselhoClasseAluno.RecomendacoesAluno = string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesAluno) ? recomendacoes.recomendacoesAluno : conselhoClasseAluno.RecomendacoesAluno;
+                conselhoClasseAluno.RecomendacoesFamilia = string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesFamilia) ? recomendacoes.recomendacoesFamilia : conselhoClasseAluno.RecomendacoesFamilia;
+
+                await repositorioConselhoClasseAluno.SalvarAsync(conselhoClasseAluno);
+            }
         }
 
         private async Task<long> SalvarConselhoClasseAlunoResumido(long conselhoClasseId, string alunoCodigo)
@@ -241,9 +287,12 @@ namespace SME.SGP.Dominio.Servicos
             else
             {
                 // Fechamento Final
-                var validacaoConselhoFinal = await consultasConselhoClasse.ValidaConselhoClasseUltimoBimestre(fechamentoTurma.Turma);
-                if (!validacaoConselhoFinal.Item2)
-                    throw new NegocioException($"Para acessar este aba você precisa registrar o conselho de classe do {validacaoConselhoFinal.Item1}º bimestre");
+                if (fechamentoTurma.Turma.AnoLetivo != 2020)
+                {
+                    var validacaoConselhoFinal = await consultasConselhoClasse.ValidaConselhoClasseUltimoBimestre(fechamentoTurma.Turma);
+                    if (!validacaoConselhoFinal.Item2)
+                        throw new NegocioException($"Para acessar este aba você precisa registrar o conselho de classe do {validacaoConselhoFinal.Item1}º bimestre");
+                }
             }
 
             await repositorioConselhoClasse.SalvarAsync(conselhoClasse);
@@ -363,6 +412,16 @@ namespace SME.SGP.Dominio.Servicos
                 throw new NegocioException("Fechamento da turma não localizado");
 
             return fechamentoTurma;
+        }
+
+        private void ValidarNotasFechamentoConselhoClasse2020(ConselhoClasseNota conselhoClasseNota)
+        {
+            if (conselhoClasseNota.ConceitoId.HasValue && conselhoClasseNota.ConceitoId.Value == 3)
+                throw new NegocioException("Não é possível atribuir conceito NS (Não Satisfatório) pois em 2020 não há retenção dos estudantes conforme o Art 5º da LEI Nº 17.437 DE 12 DE AGOSTO DE 2020.");
+            else
+            if (conselhoClasseNota.Nota < 5)
+                throw new NegocioException("Não é possível atribuir uma nota menor que 5 pois em 2020 não há retenção dos estudantes conforme o Art 5º da LEI Nº 17.437 DE 12 DE AGOSTO DE 2020.");
+
         }
     }
 }

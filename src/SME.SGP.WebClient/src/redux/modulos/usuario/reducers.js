@@ -25,6 +25,7 @@ const inicial = {
   sessaoExpirou: false,
   ehProfessorCjInfantil: false,
   ehProfessorInfantil: false,
+  ehPerfilProfessor: false,
 };
 
 export default function usuario(state = inicial, action) {
@@ -54,6 +55,7 @@ export default function usuario(state = inicial, action) {
         draft.sessaoExpirou = false;
         draft.ehProfessorInfantil = action.payload.ehProfessorInfantil;
         draft.ehProfessorCjInfantil = action.payload.ehProfessorCjInfantil;
+        draft.ehPerfilProfessor = action.payload.ehPerfilProfessor;
         break;
       case '@usuario/salvarLoginRevalidado':
         draft.token = action.payload.token;

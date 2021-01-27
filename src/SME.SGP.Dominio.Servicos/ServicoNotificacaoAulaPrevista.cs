@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using MediatR;
+using Microsoft.Extensions.Configuration;
+using SME.SGP.Aplicacao;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -16,13 +18,15 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IConfiguration configuration;
+        private readonly IMediator mediator;
 
         public ServicoNotificacaoAulaPrevista(IRepositorioParametrosSistema repositorioParametrosSistema,
                                             IRepositorioNotificacaoAulaPrevista repositorioNotificacaoAulaPrevista,
                                             IRepositorioAulaPrevista repositorioAulaPrevista,
                                             IServicoNotificacao servicoNotificacao,
                                             IServicoUsuario servicoUsuario,
-                                            IConfiguration configuration)
+                                            IConfiguration configuration,
+                                            IMediator mediator)
         {
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
             this.repositorioNotificacaoAulaPrevista = repositorioNotificacaoAulaPrevista ?? throw new ArgumentNullException(nameof(repositorioNotificacaoAulaPrevista));
@@ -30,10 +34,11 @@ namespace SME.SGP.Dominio.Servicos
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
 
         public async Task ExecutaNotificacaoAulaPrevista()
-        {
+        {            
             var qtdDiasBimestreNotificacao = await QuantidadeDiasFimBimestreParaNotificacao();
 
             // Busca registro de aula sem frequencia e sem notificação do tipo
@@ -54,9 +59,9 @@ namespace SME.SGP.Dominio.Servicos
 
             }
         }
-
+        
         private async Task<int> QuantidadeDiasFimBimestreParaNotificacao()
-            => int.Parse(await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.QuantidadeDiasNotificarProfessor));
+            => int.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.QuantidadeDiasNotificarProfessor, DateTime.Today.Year)));
 
         private IEnumerable<Usuario> BuscaProfessorAula(RegistroAulaPrevistaDivergenteDto turma)
         {

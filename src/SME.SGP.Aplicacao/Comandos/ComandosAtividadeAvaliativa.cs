@@ -23,6 +23,7 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
+        private readonly IMediator mediator;
 
         public ComandosAtividadeAvaliativa(
             IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
@@ -35,7 +36,8 @@ namespace SME.SGP.Aplicacao
             IUnitOfWork unitOfWork,
             IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia,
             IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina,
-            IRepositorioComponenteCurricular repositorioComponenteCurricular)
+            IRepositorioComponenteCurricular repositorioComponenteCurricular,
+            IMediator mediator)
 
         {
             this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativa));
@@ -49,6 +51,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioAtividadeAvaliativaRegencia = repositorioAtividadeAvaliativaRegencia ?? throw new ArgumentException(nameof(repositorioAtividadeAvaliativaRegencia));
             this.repositorioAtividadeAvaliativaDisciplina = repositorioAtividadeAvaliativaDisciplina ?? throw new ArgumentException(nameof(repositorioAtividadeAvaliativaDisciplina));
             this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentException(nameof(repositorioAtribuicaoCJ));         
+            this.mediator = mediator ?? throw new ArgumentException(nameof(mediator));         
         }
 
         public async Task<IEnumerable<RetornoCopiarAtividadeAvaliativaDto>> Alterar(AtividadeAvaliativaDto dto, long id)
@@ -195,7 +198,7 @@ namespace SME.SGP.Aplicacao
 
             //verificar se tem para essa atividade
             if (!aula.Any())
-                throw new NegocioException("Não existe aula cadastrada para esse data.");
+                throw new NegocioException("Não existe aula cadastrada nesta data.");
 
             var tipoCalendarioId = aula.FirstOrDefault().TipoCalendarioId;
             var periodoEscolar = await repositorioPeriodoEscolar.ObterPorTipoCalendarioData(tipoCalendarioId, dataAvaliacao);
@@ -350,9 +353,10 @@ namespace SME.SGP.Aplicacao
         {
             var mensagens = new List<RetornoCopiarAtividadeAvaliativaDto>();
 
+            var usuario = await servicoUsuario.ObterUsuarioLogado();
             foreach (var id in dto.DisciplinasId)
             {
-                await VerificaSeProfessorPodePersistirTurma(atividadeAvaliativa.ProfessorRf, atividadeAvaliativa.TurmaId, id, atividadeAvaliativa.DataAvaliacao.Date);
+                await VerificaSeProfessorPodePersistirTurma(atividadeAvaliativa.ProfessorRf, atividadeAvaliativa.TurmaId, id, atividadeAvaliativa.DataAvaliacao.Date, usuario);
             }
 
             unitOfWork.IniciarTransacao();
@@ -385,6 +389,9 @@ namespace SME.SGP.Aplicacao
             }
 
             unitOfWork.PersistirTransacao();
+
+            // Verifica Pendencia de avaliação para o professor
+            await mediator.Send(new PublicaFilaExcluirPendenciaAusenciaAvaliacaoCommand(dto.TurmaId, dto.DisciplinasId, usuario, dto.DataAvaliacao));
 
             if (!ehCopia)
                 mensagens.Add(new RetornoCopiarAtividadeAvaliativaDto("Atividade Avaliativa criada com sucesso", true));

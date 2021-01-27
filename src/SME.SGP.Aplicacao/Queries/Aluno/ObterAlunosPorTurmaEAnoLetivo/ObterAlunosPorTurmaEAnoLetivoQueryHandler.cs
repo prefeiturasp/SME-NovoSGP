@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
             var alunos = await _servicoEol.ObterAlunosPorTurma(request.CodigoTurma);
 
             if (alunos == null || !alunos.Any())
-                throw new NegocioException($"Não foi encontrado alunos para a turma {request.CodigoTurma} e ano letivo {request.AnoLetivo}");
+                throw new NegocioException($"Não foi encontrado alunos para a turma {request.CodigoTurma}");
 
             return alunos.Where(x => x.DeveMostrarNaChamada(DateTime.Now)).OrderBy(x => x.NumeroAlunoChamada);
         }

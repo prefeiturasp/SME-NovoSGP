@@ -8,7 +8,6 @@ import { Colors } from '~/componentes/colors';
 import { URL_HOME } from '~/constantes/url';
 import modalidade from '~/dtos/modalidade';
 import RotasDto from '~/dtos/rotasDto';
-import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
 import AbrangenciaServico from '~/servicos/Abrangencia';
 import { erros, sucesso } from '~/servicos/alertas';
 import api from '~/servicos/api';
@@ -217,7 +216,7 @@ const AtaFinalResultados = () => {
 
   useEffect(() => {
     if (modalidadeId && anoLetivo) {
-      if (modalidadeId == modalidade.EJA) {
+      if (modalidadeId === modalidade.EJA) {
         obterSemestres(modalidadeId, anoLetivo);
       } else {
         setSemestre(undefined);
@@ -231,9 +230,14 @@ const AtaFinalResultados = () => {
 
   useEffect(() => {
     const desabilitar =
-      !anoLetivo || !dreId || !ueId || !modalidadeId || !turmaId || !formato;
+      !anoLetivo ||
+      !dreId ||
+      !ueId ||
+      !modalidadeId ||
+      !turmaId?.length ||
+      !formato;
 
-    if (modalidadeId == modalidade.EJA) {
+    if (modalidadeId === modalidade.EJA) {
       setDesabilitarBtnGerar(!semestre || desabilitar);
     } else {
       setDesabilitarBtnGerar(desabilitar);
@@ -267,10 +271,10 @@ const AtaFinalResultados = () => {
   const onClickGerar = async () => {
     if (permissoesTela.podeConsultar) {
       const params = { turmasCodigos: [], tipoFormatoRelatorio: formato };
-      if (turmaId === '-99') {
+      if (turmaId.find(t => t === '-99')) {
         params.turmasCodigos = listaTurmas.map(item => String(item.valor));
       } else {
-        params.turmasCodigos = [String(turmaId)];
+        params.turmasCodigos = turmaId;
       }
       const retorno = await ServicoConselhoAtaFinal.gerar(params).catch(e =>
         erros(e)
@@ -310,7 +314,7 @@ const AtaFinalResultados = () => {
   const onChangeAnoLetivo = ano => {
     setAnoLetivo(ano);
     setDreId();
-    
+
     setListaModalidades([]);
     setModalidadeId(undefined);
 
@@ -336,13 +340,16 @@ const AtaFinalResultados = () => {
 
   const onChangeSemestre = valor => setSemestre(valor);
   const onChangeTurma = valor => {
-    setTurmaId(valor);
+    const todosSetado = turmaId?.find(a => a === '-99');
+    const todos = valor.find(a => a === '-99' && !todosSetado);
+    const novoValor = todosSetado && valor.length === 2 ? [valor[1]] : valor;
+    setTurmaId(todos ? [todos] : novoValor);
     habilitarSelecaoFormato(valor);
   };
   const onChangeFormato = valor => setFormato(valor);
 
-  function onCheckedConsideraHistorico(e){   
-    setConsideraHistorico(e.target.checked);    
+  function onCheckedConsideraHistorico(e) {
+    setConsideraHistorico(e.target.checked);
   }
 
   return (
@@ -351,7 +358,7 @@ const AtaFinalResultados = () => {
         exibir={String(modalidadeId) === String(modalidade.INFANTIL)}
         validarModalidadeFiltroPrincipal={false}
       />
-      <Cabecalho pagina="Ata de Conselho" />
+      <Cabecalho pagina="Ata de resultados finais" />
       <Card>
         <div className="col-md-12">
           <div className="row">
@@ -470,7 +477,7 @@ const AtaFinalResultados = () => {
                 disabled={
                   !permissoesTela.podeConsultar ||
                   !modalidadeId ||
-                  modalidadeId != modalidade.EJA ||
+                  modalidadeId !== modalidade.EJA ||
                   (listaSemestre && listaSemestre.length === 1)
                 }
                 valueSelect={semestre}
@@ -490,6 +497,7 @@ const AtaFinalResultados = () => {
                 }
                 valueSelect={turmaId}
                 onChange={onChangeTurma}
+                multiple
               />
             </div>
             <div className="col-sm-12 col-md-3 col-lg-2 col-xl-2 mb-2">

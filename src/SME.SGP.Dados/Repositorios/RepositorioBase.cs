@@ -10,11 +10,11 @@ namespace SME.SGP.Dados.Repositorios
 {
     public abstract class RepositorioBase<T> : IRepositorioBase<T> where T : EntidadeBase
     {
-        protected readonly ISgpContext database;
+        protected readonly ISgpContext database;       
 
         protected RepositorioBase(ISgpContext database)
         {
-            this.database = database;
+            this.database = database;            
         }
 
         public virtual IEnumerable<T> Listar()
@@ -49,7 +49,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             if (entidade.Id > 0)
             {
-                entidade.AlteradoEm = DateTime.Now;                
+                entidade.AlteradoEm = DateTimeExtension.HorarioBrasilia();
                 entidade.AlteradoPor = database.UsuarioLogadoNomeCompleto;
                 entidade.AlteradoRF = database.UsuarioLogadoRF;
                 database.Conexao.Update(entidade);
@@ -69,8 +69,8 @@ namespace SME.SGP.Dados.Repositorios
         public virtual async Task<long> SalvarAsync(T entidade)
         {
             if (entidade.Id > 0)
-            {
-                entidade.AlteradoEm = DateTime.Now;
+            {                
+                entidade.AlteradoEm = DateTimeExtension.HorarioBrasilia();
                 entidade.AlteradoPor = database.UsuarioLogadoNomeCompleto;
                 entidade.AlteradoRF = database.UsuarioLogadoRF;
                 await database.Conexao.UpdateAsync(entidade);
@@ -105,12 +105,14 @@ namespace SME.SGP.Dados.Repositorios
                               , alterado_rf = @alteradoRF 
                               , alterado_em = @alteradoEm
                         where {columName}=@id RETURNING id";
-    
+
             return await database.Conexao.ExecuteScalarAsync<long>(query
-                , new { id, 
-                        alteradoPor = database.UsuarioLogadoNomeCompleto,
-                        alteradoRF = database.UsuarioLogadoRF,
-                        alteradoEm = DateTime.Now
+                , new
+                {
+                    id,
+                    alteradoPor = database.UsuarioLogadoNomeCompleto,
+                    alteradoRF = database.UsuarioLogadoRF,
+                    alteradoEm = DateTimeExtension.HorarioBrasilia()
                 });
         }
 
@@ -118,7 +120,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             database.Conexao.Insert<Auditoria>(new Auditoria()
             {
-                Data = DateTime.Now,
+                Data = DateTimeExtension.HorarioBrasilia(),
                 Entidade = typeof(T).Name.ToLower(),
                 Chave = identificador,
                 Usuario = database.UsuarioLogadoNomeCompleto,
@@ -127,11 +129,11 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
-        private async Task AuditarAsync(long identificador, string acao)
+        protected async Task AuditarAsync(long identificador, string acao)
         {
             await database.Conexao.InsertAsync<Auditoria>(new Auditoria()
             {
-                Data = DateTime.Now,
+                Data = DateTimeExtension.HorarioBrasilia(),
                 Entidade = typeof(T).Name.ToLower(),
                 Chave = identificador,
                 Usuario = database.UsuarioLogadoNomeCompleto,
@@ -139,5 +141,5 @@ namespace SME.SGP.Dados.Repositorios
                 Acao = acao
             });
         }
-   }
+    }
 }

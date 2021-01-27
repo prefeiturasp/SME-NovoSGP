@@ -36,6 +36,7 @@ class LoginHelper {
           autenticacao.dados.perfisUsuario.ehProfessorInfantil,
         ehProfessorCjInfantil:
           autenticacao.dados.perfisUsuario.ehProfessorCjInfantil,
+        ehPerfilProfessor: autenticacao.dados.perfisUsuario.ehPerfilProfessor,
         ehProfessorPoa: autenticacao.dados.perfisUsuario.ehProfessorPoa,
         dataHoraExpiracao: autenticacao.dados.dataHoraExpiracao,
       })

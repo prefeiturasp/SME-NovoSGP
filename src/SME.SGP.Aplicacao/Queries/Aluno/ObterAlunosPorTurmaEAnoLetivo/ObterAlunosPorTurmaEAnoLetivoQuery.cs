@@ -6,14 +6,11 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterAlunosPorTurmaEAnoLetivoQuery : IRequest<IEnumerable<AlunoPorTurmaResposta>>
     {
-        public int AnoLetivo { get; set; }
-
         public string CodigoTurma { get; set; }
 
-        public ObterAlunosPorTurmaEAnoLetivoQuery(string codigoTurma, int anoLetivo)
+        public ObterAlunosPorTurmaEAnoLetivoQuery(string codigoTurma)
         {
             CodigoTurma = codigoTurma;
-            AnoLetivo = anoLetivo;
         }
     }
 }

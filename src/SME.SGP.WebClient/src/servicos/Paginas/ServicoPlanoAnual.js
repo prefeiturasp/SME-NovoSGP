@@ -51,7 +51,7 @@ class ServicoPlanoAnual {
   ) => {
     const url = `v1/objetivos-aprendizagem/${ano}/${componenteCurricularId}?ensinoEspecial=${ensinoEspecial}`;
     return api.get(url);
-  };
+  };  
 
   carregarDadosPlanoAnualPorComponenteCurricular = async (
     turmaId,
@@ -67,7 +67,6 @@ class ServicoPlanoAnual {
     const { dispatch } = store;
     const state = store.getState();
     const { planoAnual } = state;
-
     const { dadosBimestresPlanoAnual } = planoAnual;
 
     const dadosBimestre = { ...dadosBimestresPlanoAnual[bimestre] };
@@ -149,7 +148,7 @@ class ServicoPlanoAnual {
     ano,
     ensinoEspecial,
     codigoComponenteCurricular
-  ) => {
+  ) => {    
     const { dispatch } = store;
     const state = store.getState();
     const { planoAnual } = state;
@@ -208,6 +207,44 @@ class ServicoPlanoAnual {
   obterPeriodosEscolaresParaCopia = planejamentoAnualId => {
     const url = `v1/planejamento/anual/${planejamentoAnualId}/periodos-escolares/copia`;
     return api.get(url);
+  };
+
+  temObjetivosSelecionadosTabComponenteCurricular = codigoComponenteCurricular => {
+    const { planoAnual } = store.getState();
+
+    if (planoAnual?.objetivosAprendizagemComponente?.length) {
+      const tabAtual = planoAnual.objetivosAprendizagemComponente.find(
+        item =>
+          String(item.componenteCurricularId) ===
+          String(codigoComponenteCurricular)
+      );
+
+      if (
+        tabAtual &&
+        tabAtual.objetivosAprendizagem &&
+        tabAtual.objetivosAprendizagem.length
+      ) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  verificarDadosPlanoPorComponenteCurricular = async(
+    turmaId,
+    componenteCurricularId,
+    periodoEscolarId    
+  )=>{
+    const obterDados = () => {
+      const url = `v1/planejamento/anual/turmas/${turmaId}/componentes-curriculares/${componenteCurricularId}/periodos-escolares/${periodoEscolarId}`;
+      return api.get(url);
+    };
+
+    const resultado = await obterDados()
+        .catch(e => erros(e))
+        .finally(() => {});
+    
+    return resultado?.data;    
   };
 }
 
