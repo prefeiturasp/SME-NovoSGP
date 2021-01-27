@@ -34,6 +34,17 @@ namespace SME.SGP.Aplicacao
 
             url.Append(@"?notificacaoId=" + request.ComunicadoId);
             url.Append(@"&modoVisualizacao=" + request.ModoVisualizacao);
+
+            if (request.AgruparModalidade)
+            {
+                url.Append(@"&modalidade=" + 1);
+            }
+            else
+            {
+                url.Append(@"&modalidade=" + 0);
+            }
+
+
             if (!string.IsNullOrEmpty(request.CodigoDre))
             {
                 url.Append(@"&codigoDre=" + request.CodigoDre);
