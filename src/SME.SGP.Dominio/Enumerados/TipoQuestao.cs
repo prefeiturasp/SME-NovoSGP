@@ -10,6 +10,6 @@
         Upload = 6,
         InformacoesEscolares = 7,
         AtendimentoClinico = 8,
-        MultiplaEscolha = 9
+        ComboMultiplaEscolha = 9
     }
 }
