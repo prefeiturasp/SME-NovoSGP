@@ -76,7 +76,7 @@ const LocalizadorEstudante = props => {
       setDataSource([]);
       setPessoaSelecionada({
         alunoCodigo: '',
-        alunoNome: '',
+        alunoNome: valor,
         codigoTurma: '',
         turmaId: '',
       });
