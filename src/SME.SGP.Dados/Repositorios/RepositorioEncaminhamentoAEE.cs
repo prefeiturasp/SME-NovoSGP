@@ -55,46 +55,46 @@ namespace SME.SGP.Dados.Repositorios
             ObtenhaFiltro(sql, ueId, turmaId, alunoCodigo, situacao);
 
             if (!contador)
-                sql.AppendLine("order by ea.aluno_nome");
+                sql.AppendLine(" order by ea.aluno_nome ");
 
             if (paginacao.QuantidadeRegistros > 0 && !contador)
-                sql.AppendLine($"OFFSET {paginacao.QuantidadeRegistrosIgnorados} ROWS FETCH NEXT {paginacao.QuantidadeRegistros} ROWS ONLY");
+                sql.AppendLine($" OFFSET {paginacao.QuantidadeRegistrosIgnorados} ROWS FETCH NEXT {paginacao.QuantidadeRegistros} ROWS ONLY ");
         }
 
         private static void ObtenhaCabecalho(StringBuilder sql, bool contador)
         {
             sql.AppendLine("select ");
             if (contador)
-                sql.AppendLine("count(ea.id)");
+                sql.AppendLine(" count(ea.id) ");
             else
             {
                 sql.AppendLine(" ea.id ");
                 sql.AppendLine(", ea.aluno_codigo as AlunoCodigo ");
                 sql.AppendLine(", ea.aluno_nome as AlunoNome ");
-                sql.AppendLine(", t.turma_id as TurmaCodigo");
-                sql.AppendLine(", t.nome as TurmaNome");
-                sql.AppendLine(", t.modalidade_codigo as TurmaModalidade");
-                sql.AppendLine(", t.ano_letivo as TurmaAno");
-                sql.AppendLine(", ea.situacao");
+                sql.AppendLine(", t.turma_id as TurmaCodigo ");
+                sql.AppendLine(", t.nome as TurmaNome ");
+                sql.AppendLine(", t.modalidade_codigo as TurmaModalidade ");
+                sql.AppendLine(", t.ano_letivo as TurmaAno ");
+                sql.AppendLine(", ea.situacao ");
             }
 
-            sql.AppendLine("from encaminhamento_aee ea ");
-            sql.AppendLine("inner join turma t on t.id = ea.turma_id");
-            sql.AppendLine("inner join ue on t.ue_id = ue.id");
+            sql.AppendLine(" from encaminhamento_aee ea ");
+            sql.AppendLine(" inner join turma t on t.id = ea.turma_id");
+            sql.AppendLine(" inner join ue on t.ue_id = ue.id");
         }
 
         private static void ObtenhaFiltro(StringBuilder sql, long ueId, long turmaId, string alunoCodigo, int? situacao)
         {
-            sql.AppendLine("where ue.dre_id = @dreId and not ea.excluido");
+            sql.AppendLine(" where ue.dre_id = @dreId and not ea.excluido ");
 
             if (ueId > 0)
-                sql.AppendLine("and ue.id = @ueId");
+                sql.AppendLine(" and ue.id = @ueId ");
             if (turmaId > 0)
-                sql.AppendLine("and t.id = @turmaId");
+                sql.AppendLine(" and t.id = @turmaId ");
             if (!string.IsNullOrEmpty(alunoCodigo))
-                sql.AppendLine("and ea.aluno_codigo = @alunoCodigo");
+                sql.AppendLine(" and ea.aluno_codigo = @alunoCodigo ");
             if (situacao.HasValue && situacao > 0)
-                sql.AppendLine("and ea.situacao = @situacao");
+                sql.AppendLine(" and ea.situacao = @situacao ");
         }
 
         public async Task<SituacaoAEE> ObterSituacaoEncaminhamentoAEE(long encaminhamentoAEEId)
