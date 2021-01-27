@@ -8,5 +8,5 @@
 
 
   update questao 
-     set tipo = 10
+     set tipo = 9
    where nome like 'Selecione os tipos de atendimento';
