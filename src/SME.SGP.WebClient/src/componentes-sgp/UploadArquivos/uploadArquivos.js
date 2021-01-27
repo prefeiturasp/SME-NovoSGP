@@ -63,6 +63,7 @@ const UploadArquivos = props => {
   } = props;
 
   const [listaDeArquivos, setListaDeArquivos] = useState([...defaultFileList]);
+  const [timeoutMsgSucesso, setTimeoutMsgSucesso] = useState('');
 
   useEffect(() => {
     if (defaultFileList?.length) {
@@ -149,7 +150,14 @@ const UploadArquivos = props => {
     }
 
     if (status === 'done') {
-      sucesso(`${file.name} arquivo carregado com sucesso`);
+      if (timeoutMsgSucesso) {
+        clearTimeout(timeoutMsgSucesso);
+      }
+      const timeout = setTimeout(() => {
+        sucesso(`${file.name} arquivo carregado com sucesso`);
+      }, 400);
+
+      setTimeoutMsgSucesso(timeout);
     } else if (status === 'error') {
       atualizaListaArquivos(fileList, file);
       return;
