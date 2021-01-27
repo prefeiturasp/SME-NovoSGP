@@ -19,7 +19,6 @@ import { RotasDto } from '~/dtos';
 import {
   limparDadosObservacoesUsuario,
   setDadosObservacoesUsuario,
-  setListaUsuariosNotificacao,
 } from '~/redux/modulos/observacoesUsuario/actions';
 import {
   confirmar,
@@ -179,22 +178,41 @@ const ListaDiarioBordo = () => {
     setNumeroPagina(pagina);
   };
 
+  const obterUsuarioPorObservacao = dadosObservacoes => {
+    const promises = dadosObservacoes.map(async observacao => {
+      const retorno = await ServicoDiarioBordo.obterNofiticarUsuarios({
+        turmaId,
+        observacaoId: observacao.id,
+      }).catch(e => erros(e));
+
+      if (retorno?.data) {
+        return {
+          ...observacao,
+          usuariosNotificacao: retorno.data,
+          listagemDiario: true,
+        };
+      }
+      return observacao;
+    });
+    return Promise.all(promises);
+  };
+
   const onColapse = async id => {
     dispatch(limparDadosObservacoesUsuario());
     if (id) {
       const dados = await ServicoDiarioBordo.obterDiarioBordoDetalhes(id);
       if (dados?.data) {
-        setDiarioBordoAtual(dados.data);
         if (dados.data.observacoes.length) {
-          dispatch(setDadosObservacoesUsuario(dados.data.observacoes));
-        }
-      }
-      const retorno = await ServicoDiarioBordo.obterNofiticarUsuarios({
-        turmaId,
-      }).catch(e => erros(e));
+          const dadosObservacoes = await obterUsuarioPorObservacao(
+            dados.data.observacoes
+          );
+          setDiarioBordoAtual({
+            ...dados.data,
+            observacoes: dadosObservacoes,
+          });
 
-      if (retorno?.status === 200) {
-        dispatch(setListaUsuariosNotificacao(retorno.data));
+          dispatch(setDadosObservacoesUsuario(dadosObservacoes));
+        }
       }
     }
   };
@@ -389,6 +407,7 @@ const ListaDiarioBordo = () => {
                       <div className="col-sm-12 p-0 position-relative">
                         <ObservacoesUsuario
                           esconderLabel
+                          mostrarListaNotificacao
                           salvarObservacao={obs => salvarEditarObservacao(obs)}
                           editarObservacao={obs => salvarEditarObservacao(obs)}
                           excluirObservacao={obs => excluirObservacao(obs)}
