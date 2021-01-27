@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interfaces;
@@ -52,7 +53,7 @@ namespace SME.SGP.Aplicacao
                 listaEncaminhamentos.Add(new EncaminhamentoAEEResumoDto()
                 {
                     Id = encaminhamento.Id,
-                    Situacao = encaminhamento.Situacao != 0 ? encaminhamento.Situacao.Name() : "Erro ao cadastrar situação",
+                    Situacao = encaminhamento.Situacao != 0 ? encaminhamento.Situacao.Name() : SituacaoAEE.Rascunho.Name(),
                     Turma = $"{encaminhamento.TurmaModalidade.ShortName()} - {encaminhamento.TurmaNome}",
                     Numero = aluno?.NumeroAlunoChamada ?? 0,
                     Nome = aluno?.NomeAluno
