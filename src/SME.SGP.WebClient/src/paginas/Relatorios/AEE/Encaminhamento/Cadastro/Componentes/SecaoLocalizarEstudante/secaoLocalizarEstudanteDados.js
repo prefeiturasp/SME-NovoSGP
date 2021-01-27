@@ -1,11 +1,12 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Loader, SelectComponent } from '~/componentes';
 import { FiltroHelper } from '~/componentes-sgp';
 import Button from '~/componentes/button';
 import { Colors } from '~/componentes/colors';
 import LocalizadorEstudante from '~/componentes/LocalizadorEstudante';
 import {
+  setDadosIniciaisEncaminhamentoAEE,
   setDadosSecaoLocalizarEstudante,
   setLimparDadosEncaminhamento,
 } from '~/redux/modulos/encaminhamentoAEE/actions';
@@ -13,6 +14,10 @@ import { AbrangenciaServico, erros } from '~/servicos';
 
 const SecaoLocalizarEstudanteDados = () => {
   const dispatch = useDispatch();
+
+  const dadosIniciais = useSelector(
+    store => store.encaminhamentoAEE.dadosIniciaisEncaminhamentoAEE
+  );
 
   const [anoAtual] = useState(window.moment().format('YYYY'));
 
@@ -27,8 +32,8 @@ const SecaoLocalizarEstudanteDados = () => {
   const [listaUes, setListaUes] = useState([]);
   const [listaTurmas, setListaTurmas] = useState([]);
 
-  const [codigoDre, setCodigoDre] = useState();
-  const [codigoUe, setCodigoUe] = useState();
+  const [codigoDre, setCodigoDre] = useState(dadosIniciais?.dreId);
+  const [codigoUe, setCodigoUe] = useState(dadosIniciais?.ueId);
   const [codigoTurma, setCodigoTurma] = useState();
 
   const [
@@ -77,6 +82,10 @@ const SecaoLocalizarEstudanteDados = () => {
       setListaUes([]);
     }
   }, [codigoDre, obterUes]);
+
+  useEffect(() => {
+    return () => dispatch(setDadosIniciaisEncaminhamentoAEE({}));
+  });
 
   const onChangeDre = dre => {
     setCodigoDre(dre);
