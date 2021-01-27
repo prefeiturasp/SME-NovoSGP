@@ -23,9 +23,13 @@ const ListaAlunos = props => {
   const usuario = useSelector(store => store.usuario);
   const { turmaSelecionada } = usuario;
 
-  const { bimestreSelecionado, componenteCurricularId } = props;
+  const { componenteCurricularId, bimestreLista } = props;
   const modalidadesFiltroPrincipal = useSelector(
     store => store.filtro.modalidades
+  );
+
+  const { bimestreSelecionado } = useSelector(
+    store => store.acompanhamentoFrequencia
   );
 
   const { id: turmaId } = turmaSelecionada;
@@ -49,10 +53,16 @@ const ListaAlunos = props => {
       }
       setCarregandoListaAlunos(false);
     };
-    if (componenteCurricularId && turmaId) {
+    if (
+      componenteCurricularId &&
+      turmaId &&
+      bimestreSelecionado &&
+      String(bimestreLista) === String(bimestreSelecionado)
+    ) {
+      dispatch(setExpandirLinhaFrequenciaAluno([]));
       obterAlunos();
     }
-  }, [componenteCurricularId, turmaId]);
+  }, [componenteCurricularId, turmaId, bimestreSelecionado]);
 
   const onChangeOrdenacao = alunosOrdenados => {
     dispatch(setExpandirLinhaFrequenciaAluno([]));
@@ -87,8 +97,8 @@ const ListaAlunos = props => {
                   <MarcadorAulas className="ml-2">
                     <span>Aulas previstas </span>
                     <span className="numero">
-                      {dadosBimestre && dadosBimestre.totalAulasPrevistas
-                        ? dadosBimestre.totalAulasPrevistas
+                      {dadosBimestre?.aulasPrevistas
+                        ? dadosBimestre.aulasPrevistas
                         : 0}
                     </span>
                   </MarcadorAulas>
@@ -98,9 +108,7 @@ const ListaAlunos = props => {
                 <MarcadorAulas className="ml-2">
                   <span>Aulas dadas </span>
                   <span className="numero">
-                    {dadosBimestre && dadosBimestre.totalAulasDadas
-                      ? dadosBimestre.totalAulasDadas
-                      : 0}
+                    {dadosBimestre?.aulasDadas ? dadosBimestre.aulasDadas : 0}
                   </span>
                 </MarcadorAulas>
               </Marcadores>
@@ -202,14 +210,13 @@ const ListaAlunos = props => {
                             )}
                             <td className="col-valor-linha-dois">
                               {data.frequencia}%
-                              {data.ausencias > 0 ? (
-                                <BtnExpandirFrequenciaAluno
-                                  indexLinha={index}
-                                  codigoAluno={data.alunoRf}
-                                />
-                              ) : (
-                                <></>
-                              )}
+                              {data.ausencias > 0 &&
+                                bimestreSelecionado > 0 && (
+                                  <BtnExpandirFrequenciaAluno
+                                    indexLinha={index}
+                                    codigoAluno={data.alunoRf}
+                                  />
+                                )}
                             </td>
                           </tr>
                           <AusenciasAluno
@@ -237,12 +244,12 @@ const ListaAlunos = props => {
 
 ListaAlunos.propTypes = {
   componenteCurricularId: PropTypes.string,
-  bimestreSelecionado: PropTypes.number,
+  bimestreLista: PropTypes.number,
 };
 
 ListaAlunos.defaultProps = {
   componenteCurricularId: PropTypes.string,
-  bimestreSelecionado: PropTypes.number,
+  bimestreLista: '1',
 };
 
 export default ListaAlunos;

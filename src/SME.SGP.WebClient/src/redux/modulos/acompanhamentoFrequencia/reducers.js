@@ -6,6 +6,7 @@ const inicial = {
   exibirModalAnotacao: false,
   frequenciaAlunoCodigo: null,
   dadosFrequenciaAlunoObter: {},
+  bimestreSelecionado: null,
 };
 
 export default function AcompanhamentoFrequencia(state = inicial, action) {
@@ -39,6 +40,12 @@ export default function AcompanhamentoFrequencia(state = inicial, action) {
         return {
           ...draft,
           frequenciaAlunoCodigo: action.payload,
+        };
+      }
+      case '@acompanhamentoFrequencia/setBimestreSelecionado': {
+        return {
+          ...draft,
+          bimestreSelecionado: action.payload,
         };
       }
       default:

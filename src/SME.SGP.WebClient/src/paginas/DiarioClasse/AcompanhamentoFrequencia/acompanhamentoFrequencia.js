@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import history from '~/servicos/history';
 import { URL_HOME } from '~/constantes/url';
 import Alert from '~/componentes/alert';
@@ -16,10 +16,13 @@ import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 import { erros } from '~/servicos';
 import ListaBimestres from './Componentes/listaBimestres';
 import modalidade from '~/dtos/modalidade';
+import { setBimestreSelecionado } from '~/redux/modulos/acompanhamentoFrequencia/actions';
+import ServicoConselhoClasse from '~/servicos/Paginas/ConselhoClasse/ServicoConselhoClasse';
 
 const AcompanhamentoFrequencia = () => {
   const usuario = useSelector(store => store.usuario);
   const { turmaSelecionada } = usuario;
+  const dispatch = useDispatch();
 
   const modalidadesFiltroPrincipal = useSelector(
     store => store.filtro.modalidades
@@ -68,7 +71,7 @@ const AcompanhamentoFrequencia = () => {
     carregandoComponentesCurriculares,
     setCarregandoComponentesCurriculares,
   ] = useState(false);
-  const [podeLancarNota, setPodeLancarNota] = useState(false);
+  const [podeLancarFrequencia, setPodeLancarFrequencia] = useState(false);
 
   const [
     listaComponentesCurriculares,
@@ -89,7 +92,7 @@ const AcompanhamentoFrequencia = () => {
 
   const resetarFiltro = () => {
     setDesabilitarComponenteCurricular(false);
-    setPodeLancarNota(false);
+    setPodeLancarFrequencia(false);
     setListaComponentesCurriculares([]);
     setComponenteCurricularIdSelecionado(undefined);
   };
@@ -121,6 +124,18 @@ const AcompanhamentoFrequencia = () => {
         );
         setDesabilitarComponenteCurricular(true);
       }
+      if (turmaSelecionada.anoLetivo === new Date().getFullYear()) {
+        const bimestreSelecionado = await ServicoConselhoClasse.obterBimestreAtual(
+          turmaSelecionada.modalidade
+        );
+        if (bimestreSelecionado?.data) {
+          dispatch(setBimestreSelecionado(bimestreSelecionado.data));
+        } else {
+          dispatch(setBimestreSelecionado(1));
+        }
+      } else {
+        dispatch(setBimestreSelecionado(1));
+      }
       setCarregandoComponentesCurriculares(false);
     };
 
@@ -135,7 +150,7 @@ const AcompanhamentoFrequencia = () => {
 
   const onChangeComponenteCurricular = async componenteCurricularId => {
     setComponenteCurricularIdSelecionado(componenteCurricularId);
-    setPodeLancarNota(false);
+    setPodeLancarFrequencia(false);
   };
 
   useEffect(() => {
@@ -145,7 +160,7 @@ const AcompanhamentoFrequencia = () => {
           String(item.codigoComponenteCurricular) ===
           String(componenteCurricularIdSelecionado)
       );
-      setPodeLancarNota(componenteCurriular?.lancaNota);
+      setPodeLancarFrequencia(componenteCurriular?.registraFrequencia);
       if (turmaSelecionada.modalidade === String(modalidade.EJA)) {
         setBimestres(listagemBimestresEJA);
       } else {
@@ -171,7 +186,7 @@ const AcompanhamentoFrequencia = () => {
         ) : (
           ''
         )}
-        {!podeLancarNota && componenteCurricularIdSelecionado && (
+        {!podeLancarFrequencia && componenteCurricularIdSelecionado && (
           <Alert
             alerta={{
               tipo: 'warning',
@@ -216,7 +231,7 @@ const AcompanhamentoFrequencia = () => {
               </div>
             </div>
 
-            {componenteCurricularIdSelecionado && podeLancarNota ? (
+            {componenteCurricularIdSelecionado && podeLancarFrequencia ? (
               <>
                 <div className="row">
                   <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">

@@ -1,11 +1,13 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import { Tabs } from 'antd';
 import PropTypes from 'prop-types';
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { ContainerTabsCard } from '~/componentes/tabs/tabs.css';
-import { Loader } from '~/componentes';
+import {
+  setBimestreSelecionado,
+  setExpandirLinhaFrequenciaAluno,
+} from '~/redux/modulos/acompanhamentoFrequencia/actions';
 import ListaAlunos from './ListaAlunos/listaAlunos';
-import { setExpandirLinhaFrequenciaAluno } from '~/redux/modulos/acompanhamentoFrequencia/actions';
 
 const { TabPane } = Tabs;
 
@@ -14,49 +16,31 @@ const ListaBimestres = props => {
 
   const { bimestres, componenteCurricularIdSelecionado } = props;
 
-  const [bimestreCorrente, setBimestreCorrente] = useState(1);
-  const [carregandoListaBimestres, setCarregandoListaBimestres] = useState(
-    false
+  const { bimestreSelecionado } = useSelector(
+    store => store.acompanhamentoFrequencia
   );
 
-  const obterDadosBimestres = useCallback(
-    async numeroBimestre => {
-      if (componenteCurricularIdSelecionado > 0) {
-        setCarregandoListaBimestres(true);
-        setBimestreCorrente(numeroBimestre);
-
-        setCarregandoListaBimestres(false);
-      }
-    },
-    [componenteCurricularIdSelecionado]
-  );
-
-  useEffect(() => {
-    obterDadosBimestres(1);
-  }, [componenteCurricularIdSelecionado, obterDadosBimestres]);
-
-  const onChangeTab = async numeroBimestre => {
+  const onChangeTab = numeroBimestre => {
     if (componenteCurricularIdSelecionado) {
       dispatch(setExpandirLinhaFrequenciaAluno([]));
-      await obterDadosBimestres(numeroBimestre);
+      dispatch(setBimestreSelecionado(numeroBimestre));
     }
   };
 
   return (
     <>
-      <Loader loading={carregandoListaBimestres} />
       <ContainerTabsCard
         type="card"
         width="20%"
         onChange={onChangeTab}
-        activeKey={String(bimestreCorrente)}
+        activeKey={String(bimestreSelecionado)}
       >
         {bimestres.map(bimestre => {
           return (
             <TabPane tab={bimestre.descricao} key={bimestre.id}>
               <ListaAlunos
-                bimestreSelecionado={bimestre.id}
                 componenteCurricularId={componenteCurricularIdSelecionado}
+                bimestreLista={bimestre.id}
               />
             </TabPane>
           );
