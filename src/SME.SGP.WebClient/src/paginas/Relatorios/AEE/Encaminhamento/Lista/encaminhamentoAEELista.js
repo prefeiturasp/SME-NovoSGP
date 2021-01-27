@@ -482,6 +482,7 @@ const EncaminhamentoAEELista = () => {
                   desabilitado={!dreId || !ueId}
                   exibirCodigoEOL={false}
                   codigoTurma={turmaId}
+                  placeholder="Procure pelo nome da Criança/Estudante"
                 />
               </div>
             </div>

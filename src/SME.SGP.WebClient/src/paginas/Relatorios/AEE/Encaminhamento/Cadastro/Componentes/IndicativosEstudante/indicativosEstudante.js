@@ -51,10 +51,10 @@ const InformacoesEscolares = () => {
               <tbody className="tabela-um-tbody">
                 <tr>
                   <td className="col-valor-linha-um">
-                    {dados.descricaoNecessidadeEspecial}
+                    {dados.descricaoNecessidadeEspecial || '-'}
                   </td>
                   <td className="col-valor-linha-um">
-                    {dados.descricaoRecurso}
+                    {dados.descricaoRecurso || '-'}
                   </td>
                   <td className="col-valor-linha-um">
                     {dados.frequenciaGlobal}
@@ -79,28 +79,34 @@ const InformacoesEscolares = () => {
                 </tr>
               </thead>
               <tbody className="tabela-um-tbody">
-                {dados?.frequenciaAlunoPorBimestres?.map((data, index) => {
-                  return (
-                    <>
-                      <tr id={index}>
-                        <td className="col-valor-linha-dois">
-                          {data.bimestre}°
-                        </td>
-                        <td className="col-valor-linha-dois">
-                          {data.quantidadeAusencias}
-                        </td>
-                        <td className="col-valor-linha-dois">
-                          {data.quantidadeCompensacoes}
-                        </td>
-                        <td className="col-valor-linha-dois">
-                          {data.frequencia}
-                          <BtnExpandirAusenciaEstudante indexLinha={index} />
-                        </td>
-                      </tr>
-                      <AusenciasEstudante indexLinha={index} dados={data} />
-                    </>
-                  );
-                })}
+                {dados?.frequenciaAlunoPorBimestres?.length ? (
+                  dados?.frequenciaAlunoPorBimestres?.map((data, index) => {
+                    return (
+                      <>
+                        <tr id={index}>
+                          <td className="col-valor-linha-dois">
+                            {data.bimestre}°
+                          </td>
+                          <td className="col-valor-linha-dois">
+                            {data.quantidadeAusencias}
+                          </td>
+                          <td className="col-valor-linha-dois">
+                            {data.quantidadeCompensacoes}
+                          </td>
+                          <td className="col-valor-linha-dois">
+                            {data.frequencia}
+                            <BtnExpandirAusenciaEstudante indexLinha={index} />
+                          </td>
+                        </tr>
+                        <AusenciasEstudante indexLinha={index} dados={data} />
+                      </>
+                    );
+                  })
+                ) : (
+                  <tr>
+                    <td colSpan="4">Sem dados</td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
