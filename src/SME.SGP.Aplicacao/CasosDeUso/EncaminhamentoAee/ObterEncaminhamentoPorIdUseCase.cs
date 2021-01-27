@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
 
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-            var podeEditar = VerificaPodeEditar(encaminhamentoAee.Situacao, usuarioLogado);
+            var podeEditar = await VerificaPodeEditar(encaminhamentoAee, usuarioLogado);
 
             return new EncaminhamentoAEERespostaDto()
             {
@@ -46,21 +46,30 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        private bool VerificaPodeEditar(SituacaoAEE situacao, Usuario usuarioLogado)
+        private async Task<bool> VerificaPodeEditar(EncaminhamentoAEE encaminhamento, Usuario usuarioLogado)
         {
-            switch (situacao)
+            switch (encaminhamento.Situacao)
             {
                 case SituacaoAEE.Rascunho:
-                    return usuarioLogado.EhPerfilProfessor();
+                    return usuarioLogado.CodigoRf == encaminhamento.CriadoRF;
                 case SituacaoAEE.Encaminhado:
+                    return usuarioLogado.EhGestorEscolar() && await EhGestorDaEscolaDaTurma(usuarioLogado, encaminhamento.Turma);
                 case SituacaoAEE.Analise:
-                    return usuarioLogado.EhGestorEscolar();
                 case SituacaoAEE.Finalizado:
                 case SituacaoAEE.Encerrado:
                     return false;
                 default:
                     return false;
             }
+        }
+
+        private async Task<bool> EhGestorDaEscolaDaTurma(Usuario usuarioLogado, Turma turma)
+        {
+            var ue = await mediator.Send(new ObterUEPorTurmaCodigoQuery(turma.CodigoTurma));
+            if (ue == null)
+                throw new NegocioException($"Escola da turma [{turma.CodigoTurma}] não localizada.");
+
+            return await mediator.Send(new EhGestorDaEscolaQuery(usuarioLogado.CodigoRf, ue.CodigoUe, usuarioLogado.PerfilAtual));
         }
     }
 }
