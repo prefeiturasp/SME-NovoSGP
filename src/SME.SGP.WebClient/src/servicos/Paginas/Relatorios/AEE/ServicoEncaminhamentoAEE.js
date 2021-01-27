@@ -249,7 +249,8 @@ class ServicoEncaminhamentoAEE {
   salvarEncaminhamento = async (
     encaminhamentoId,
     situacao,
-    enviarEcaminhamento
+    enviarEncaminhamento,
+    somenteExecutarValidacao
   ) => {
     const { dispatch } = store;
 
@@ -296,9 +297,9 @@ class ServicoEncaminhamentoAEE {
     };
 
     if (formsSecoesEncaminhamentoAEE?.length) {
-      let todosOsFormsEstaoValidos = !enviarEcaminhamento;
+      let todosOsFormsEstaoValidos = !enviarEncaminhamento;
 
-      if (enviarEcaminhamento) {
+      if (enviarEncaminhamento) {
         const promises = formsSecoesEncaminhamentoAEE.map(async item =>
           validaAntesDoSubmit(item.form())
         );
@@ -313,6 +314,10 @@ class ServicoEncaminhamentoAEE {
         todosOsFormsEstaoValidos =
           contadorFormsValidos ===
           formsSecoesEncaminhamentoAEE?.filter(a => a)?.length;
+      }
+
+      if (somenteExecutarValidacao) {
+        return todosOsFormsEstaoValidos;
       }
 
       if (todosOsFormsEstaoValidos) {
@@ -428,17 +433,18 @@ class ServicoEncaminhamentoAEE {
 
           if (resposta?.status === 200) {
             let mensagem = 'Registro salvo com sucesso';
-            if (enviarEcaminhamento) {
+            if (enviarEncaminhamento) {
               mensagem = 'Encaminhamento enviado para validação do CP';
             } else if (encaminhamentoId) {
               mensagem = 'Registro alterado com sucesso';
             }
             sucesso(mensagem);
-            history.push(RotasDto.RELATORIO_AEE_ENCAMINHAMENTO);
+            return true;
           }
         }
       }
     }
+    return false;
   };
 
   excluirEncaminhamento = encaminhamentoId => {

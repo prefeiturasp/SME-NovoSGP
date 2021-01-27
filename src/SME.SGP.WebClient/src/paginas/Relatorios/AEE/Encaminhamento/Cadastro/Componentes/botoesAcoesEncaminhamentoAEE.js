@@ -47,20 +47,26 @@ const BotoesAcoesEncaminhamentoAEE = props => {
       validarCamposObrigatorios = true;
     }
 
-    ServicoEncaminhamentoAEE.salvarEncaminhamento(
+    const salvou = await ServicoEncaminhamentoAEE.salvarEncaminhamento(
       encaminhamentoId,
       situacao,
       validarCamposObrigatorios
     );
+    if (salvou) {
+      history.push(RotasDto.RELATORIO_AEE_ENCAMINHAMENTO);
+    }
   };
 
   const onClickEnviar = async () => {
     const encaminhamentoId = match?.params?.id;
-    ServicoEncaminhamentoAEE.salvarEncaminhamento(
+    const salvou = await ServicoEncaminhamentoAEE.salvarEncaminhamento(
       encaminhamentoId,
       situacaoAEE.Encaminhado,
       true
     );
+    if (salvou) {
+      history.push(RotasDto.RELATORIO_AEE_ENCAMINHAMENTO);
+    }
   };
 
   const onClickVoltar = async () => {
@@ -72,7 +78,20 @@ const BotoesAcoesEncaminhamentoAEE = props => {
       );
       if (confirmou) {
         const encaminhamentoId = match?.params?.id;
-        ServicoEncaminhamentoAEE.salvarEncaminhamento(encaminhamentoId);
+        let situacao = situacaoAEE.Rascunho;
+
+        if (encaminhamentoId) {
+          situacao = dadosEncaminhamento?.situacao;
+        }
+        const salvou = await ServicoEncaminhamentoAEE.salvarEncaminhamento(
+          encaminhamentoId,
+          situacao,
+          false,
+          false
+        );
+        if (salvou) {
+          history.push(RotasDto.RELATORIO_AEE_ENCAMINHAMENTO);
+        }
       } else {
         history.push(RotasDto.RELATORIO_AEE_ENCAMINHAMENTO);
       }
@@ -119,26 +138,42 @@ const BotoesAcoesEncaminhamentoAEE = props => {
     }
   };
 
-  const onClickEncerrar = () => {
+  const onClickEncerrar = async () => {
     if (!desabilitarCamposEncaminhamentoAEE) {
-      dispatch(setExibirModalEncerramentoEncaminhamentoAEE(true));
+      const encaminhamentoId = match?.params?.id;
+      const salvou = await ServicoEncaminhamentoAEE.salvarEncaminhamento(
+        encaminhamentoId,
+        situacaoAEE.Encaminhado,
+        true,
+        true
+      );
+      if (salvou) {
+        dispatch(setExibirModalEncerramentoEncaminhamentoAEE(true));
+      }
     }
   };
 
   const onClickEncaminharAEE = async () => {
     if (!desabilitarCamposEncaminhamentoAEE) {
       const encaminhamentoId = match?.params?.id;
+      const salvou = await ServicoEncaminhamentoAEE.salvarEncaminhamento(
+        encaminhamentoId,
+        situacaoAEE.Encaminhado,
+        true,
+        true
+      );
+      if (salvou) {
+        dispatch(setExibirLoaderEncaminhamentoAEE(true));
+        const resposta = await ServicoEncaminhamentoAEE.enviarParaAnaliseEncaminhamento(
+          encaminhamentoId
+        )
+          .catch(e => erros(e))
+          .finally(() => dispatch(setExibirLoaderEncaminhamentoAEE(false)));
 
-      dispatch(setExibirLoaderEncaminhamentoAEE(true));
-      const resposta = await ServicoEncaminhamentoAEE.enviarParaAnaliseEncaminhamento(
-        encaminhamentoId
-      )
-        .catch(e => erros(e))
-        .finally(() => dispatch(setExibirLoaderEncaminhamentoAEE(false)));
-
-      if (resposta?.status === 200) {
-        sucesso('Encaminhamento enviado para a AEE');
-        history.push(RotasDto.RELATORIO_AEE_ENCAMINHAMENTO);
+        if (resposta?.status === 200) {
+          sucesso('Encaminhamento enviado para a AEE');
+          history.push(RotasDto.RELATORIO_AEE_ENCAMINHAMENTO);
+        }
       }
     }
   };
