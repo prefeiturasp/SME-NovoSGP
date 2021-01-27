@@ -102,7 +102,7 @@ const AusenciasAluno = props => {
                             return (
                               <tr id={index}>
                                 <td className="col-valor-linha-tres">
-                                  {moment(item.data).format('L')}
+                                  {moment(item.dataAnotacao).format('L')}
                                 </td>
                                 <td className="col-valor-linha-quatro">
                                   {visualizarAnotacao(item)}
