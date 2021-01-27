@@ -583,16 +583,16 @@
         [PermissaoMenu(Menu = "Ocorrências", Icone = "fas fa-user-cog", Agrupamento = "Gestão", OrdemAgrupamento = 6, EhAlteracao = true, Url = "/gestao/ocorrencias")]
         OCO_A = 196,
         
-        [PermissaoMenu(Menu = "AEE", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = false, Url = "/relatorios/aee/encaminhamento", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Encaminhamento")]
+        [PermissaoMenu(Menu = "AEE", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhConsulta = true, Url = "/relatorios/aee/encaminhamento", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Encaminhamento")]
         AEE_C = 197,
 
-        [PermissaoMenu(Menu = "AEE", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = false, Url = "/relatorios/aee/encaminhamento", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Encaminhamento")]
+        [PermissaoMenu(Menu = "AEE", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhInclusao = true, Url = "/relatorios/aee/encaminhamento", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Encaminhamento")]
         AEE_I = 198,
 
-        [PermissaoMenu(Menu = "AEE", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = false, Url = "/relatorios/aee/encaminhamento", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Encaminhamento")]
+        [PermissaoMenu(Menu = "AEE", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhExclusao = true, Url = "/relatorios/aee/encaminhamento", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Encaminhamento")]
         AEE_E = 199,
 
-        [PermissaoMenu(Menu = "AEE", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = false, Url = "/relatorios/aee/encaminhamento", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Encaminhamento")]
+        [PermissaoMenu(Menu = "AEE", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = true, Url = "/relatorios/aee/encaminhamento", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Encaminhamento")]
         AEE_A = 200
     }
 }

@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
-using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
@@ -23,6 +23,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("salvar")]
         [ProducesResponseType(typeof(IEnumerable<ResultadoEncaminhamentoAEEDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.AEE_I, Policy = "Bearer")]
         public async Task<IActionResult> RegistrarEncaminhamento([FromBody] EncaminhamentoAeeDto encaminhamentoAEEDto, [FromServices] IRegistrarEncaminhamentoAEEUseCase registrarEncaminhamentoAEEUseCase)
         {
             return Ok(await registrarEncaminhamentoAEEUseCase.Executar(encaminhamentoAEEDto));
@@ -31,14 +32,16 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("secoes")]
         [ProducesResponseType(typeof(IEnumerable<SecaoQuestionarioDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterSecoesPorEtapaDeEncaminhamentoAEE([FromQuery] long etapa, [FromQuery] long encaminhamentoAeeId, [FromServices] IObterSecoesPorEtapaDeEncaminhamentoAEEUseCase obterSecoesPorEtapaDeEncaminhamentoAEEUseCase)
+        [Permissao(Permissao.AEE_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterSecoesPorEtapaDeEncaminhamentoAEE([FromQuery] long encaminhamentoAeeId, [FromServices] IObterSecoesPorEtapaDeEncaminhamentoAEEUseCase obterSecoesPorEtapaDeEncaminhamentoAEEUseCase)
         {
-            return Ok(await obterSecoesPorEtapaDeEncaminhamentoAEEUseCase.Executar(etapa, encaminhamentoAeeId));
+            return Ok(await obterSecoesPorEtapaDeEncaminhamentoAEEUseCase.Executar(encaminhamentoAeeId));
         }
 
         [HttpGet("questionario")]
-        [ProducesResponseType(typeof(IEnumerable<QuestaoAeeDto>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<QuestaoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.AEE_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterQuestionario([FromQuery] long questionarioId, [FromQuery] long? encaminhamentoId, [FromQuery] string codigoAluno, [FromQuery] string codigoTurma, [FromServices] IObterQuestionarioEncaminhamentoAeeUseCase useCase)
         {
             return Ok(await useCase.Executar(questionarioId, encaminhamentoId, codigoAluno, codigoTurma));
@@ -49,6 +52,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<AlunoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.AEE_C, Policy = "Bearer")]
         public IActionResult ObterSituacoes()
         {
             var situacoes = Enum.GetValues(typeof(SituacaoAEE))
@@ -61,8 +65,8 @@ namespace SME.SGP.Api.Controllers
         [HttpDelete("arquivo")]
         [ProducesResponseType(200)]
         [ProducesResponseType(401)]
-        //[Permissao(Permissao.DPU_E, Policy = "Bearer")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.AEE_E, Policy = "Bearer")]
         public async Task<IActionResult> ExcluirArquivo([FromQuery] Guid arquivoCodigo, [FromServices] IExcluirArquivoAeeUseCase useCase)
         {
             return Ok(await useCase.Executar(arquivoCodigo));
@@ -71,6 +75,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("instrucoes-modal")]
         [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.AEE_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterInstrucoesModal([FromServices] IObterInstrucoesModalUseCase useCase)
         {
             return Ok(await useCase.Executar());
@@ -80,7 +85,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        
+        [Permissao(Permissao.AEE_I, Policy = "Bearer")]
         public async Task<IActionResult> Upload([FromForm] IFormFile file, [FromServices] IUploadDeArquivoUseCase useCase)
         {
             try
@@ -99,6 +104,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet]
         [ProducesResponseType(typeof(PaginacaoResultadoDto<EncaminhamentoAEEResumoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.AEE_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterEncaminhamentos([FromQuery] FiltroPesquisaEncaminhamentosAEEDto filtro, [FromServices] IObterEncaminhamentosAEEUseCase useCase)
         {
             return Ok(await useCase.Executar(filtro));
@@ -107,6 +113,7 @@ namespace SME.SGP.Api.Controllers
         [HttpDelete("{encaminhamentoAeeId}")]
         [ProducesResponseType(typeof(EncaminhamentoAeeDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.AEE_E, Policy = "Bearer")]
         public async Task<IActionResult> ExcluirEncaminhamento(long encaminhamentoAeeId, [FromServices] IExcluirEncaminhamentoAEEUseCase useCase)
         {
             return Ok(await useCase.Executar(encaminhamentoAeeId));
@@ -115,7 +122,26 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("{encaminhamentoId}")]
         [ProducesResponseType(typeof(EncaminhamentoAEERespostaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.AEE_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterEncaminhamento(long encaminhamentoId, [FromServices] IObterEncaminhamentoPorIdUseCase useCase)
+        {
+            return Ok(await useCase.Executar(encaminhamentoId));
+        }
+
+        [HttpPost("encerrar/{encaminhamentoId}/motivo/{motivoEncerramento}")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.AEE_A, Policy = "Bearer")]
+        public async Task<IActionResult> EncerrarEncaminhamento(long encaminhamentoId, string motivoEncerramento, [FromServices] IEncerrarEncaminhamentoAEEUseCase useCase)
+        {
+            return Ok(await useCase.Executar(encaminhamentoId, motivoEncerramento));
+        }
+
+        [HttpPost("enviar-analise/{encaminhamentoId}")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.AEE_A, Policy = "Bearer")]
+        public async Task<IActionResult> EnviarParaAnaliseEncaminhamento(long encaminhamentoId, [FromServices] IEnviarParaAnaliseEncaminhamentoAEEUseCase useCase)
         {
             return Ok(await useCase.Executar(encaminhamentoId));
         }

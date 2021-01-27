@@ -1,11 +1,12 @@
 ﻿using FluentValidation;
 using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class RegistrarEncaminhamentoAEESecaoCommand : IRequest<long>
+    public class RegistrarEncaminhamentoAEESecaoCommand : IRequest<EncaminhamentoAEESecao>
     {
         public long EncaminhamentoAEEId { get; set; }
         public long SecaoId { get; set; }

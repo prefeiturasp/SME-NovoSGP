@@ -1,8 +1,3 @@
-drop table if exists resposta_encaminhamento_aee;
-drop table if exists questao_encaminhamento_aee;
-drop table if exists encaminhamento_aee_secao;
-drop table if exists encaminhamento_aee;
-drop table if exists secao_encaminhamento_aee;
 DROP TABLE if exists public.opcao_resposta;
 DROP TABLE if exists public.questao;
 DROP TABLE if exists public.questionario;

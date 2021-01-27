@@ -1,16 +1,20 @@
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Card } from '~/componentes';
 import { Cabecalho } from '~/componentes-sgp';
+import { RotasDto } from '~/dtos';
 import {
   setDadosEncaminhamento,
   setDadosEstudanteObjectCardEncaminhamento,
   setDadosSecaoLocalizarEstudante,
+  setDesabilitarCamposEncaminhamentoAEE,
   setExibirLoaderEncaminhamentoAEE,
+  setLimparDadosEncaminhamento,
 } from '~/redux/modulos/encaminhamentoAEE/actions';
-import { erros } from '~/servicos';
+import { erros, verificaSomenteConsulta } from '~/servicos';
 import ServicoEncaminhamentoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoEncaminhamentoAEE';
+import AlertaEncaminhamentoEncerrado from './Componentes/AlertaEncaminhamentoEncerrado/alertaEncaminhamentoEncerrado';
 import BotoesAcoesEncaminhamentoAEE from './Componentes/botoesAcoesEncaminhamentoAEE';
 import LoaderEncaminhamento from './Componentes/LoaderEncaminhamento/loaderEncaminhamento';
 import SecaoEncaminhamentoCollapse from './Componentes/SecaoEncaminhamento/secaoEncaminhamentoCollapse';
@@ -18,6 +22,25 @@ import SecaoLocalizarEstudanteCollapse from './Componentes/SecaoLocalizarEstudan
 
 const EncaminhamentoAEECadastro = ({ match }) => {
   const dispatch = useDispatch();
+
+  const usuario = useSelector(store => store.usuario);
+  const permissoesTela =
+    usuario.permissoes[RotasDto.RELATORIO_AEE_ENCAMINHAMENTO];
+
+  useEffect(() => {
+    verificaSomenteConsulta(permissoesTela);
+  }, [permissoesTela]);
+
+  useEffect(() => {
+    const encaminhamentoId = match?.params?.id || 0;
+
+    const soConsulta = verificaSomenteConsulta(permissoesTela);
+    const desabilitar =
+      encaminhamentoId > 0
+        ? soConsulta || !permissoesTela.podeAlterar
+        : soConsulta || !permissoesTela.podeIncluir;
+    dispatch(setDesabilitarCamposEncaminhamentoAEE(desabilitar));
+  }, [match, permissoesTela, dispatch]);
 
   const obterEncaminhamentoPorId = useCallback(async () => {
     const encaminhamentoId = match?.params?.id;
@@ -61,8 +84,15 @@ const EncaminhamentoAEECadastro = ({ match }) => {
     }
   }, [match, obterEncaminhamentoPorId, dispatch]);
 
+  useEffect(() => {
+    return () => {
+      dispatch(setLimparDadosEncaminhamento());
+    };
+  }, [dispatch]);
+
   return (
     <LoaderEncaminhamento>
+      <AlertaEncaminhamentoEncerrado />
       <Cabecalho pagina="Encaminhamento AEE" />
       <Card>
         <div className="col-md-12">
