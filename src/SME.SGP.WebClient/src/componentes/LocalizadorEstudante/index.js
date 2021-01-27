@@ -19,6 +19,7 @@ const LocalizadorEstudante = props => {
     codigoTurma,
     exibirCodigoEOL,
     valorInicialAlunoCodigo,
+    placeholder,
   } = props;
 
   const [dataSource, setDataSource] = useState([]);
@@ -228,6 +229,7 @@ const LocalizadorEstudante = props => {
       >
         {showLabel && <Label text="Nome" control="alunoNome" />}
         <InputNome
+          placeholder={placeholder}
           dataSource={dataSource}
           onSelect={onSelectPessoa}
           onChange={onChangeNome}
@@ -267,6 +269,7 @@ LocalizadorEstudante.propTypes = {
     PropTypes.number,
     PropTypes.string,
   ]),
+  placeholder: PropTypes.string,
 };
 
 LocalizadorEstudante.defaultProps = {
@@ -278,6 +281,7 @@ LocalizadorEstudante.defaultProps = {
   codigoTurma: '',
   exibirCodigoEOL: true,
   valorInicialAlunoCodigo: '',
+  placeholder: '',
 };
 
 export default LocalizadorEstudante;
