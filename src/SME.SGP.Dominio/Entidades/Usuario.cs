@@ -144,6 +144,19 @@ namespace SME.SGP.Dominio
                 || PerfilAtual == Dominio.Perfis.PERFIL_CJ_INFANTIL;
         }
 
+        public bool EhGestorEscolar()
+            => EhCP()
+            || EhAD()
+            || EhDiretor();
+
+        private bool EhCP()
+            => PerfilAtual == Dominio.Perfis.PERFIL_CP;
+
+        private bool EhAD()
+            => PerfilAtual == Dominio.Perfis.PERFIL_AD;
+
+        private bool EhDiretor()
+            => PerfilAtual == Dominio.Perfis.PERFIL_DIRETOR;
 
         public bool EhProfessorPoa()
         {
