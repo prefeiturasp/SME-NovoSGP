@@ -12,6 +12,11 @@ class ServicoAnotacaoFrequenciaAluno {
     return api.get(url);
   };
 
+  obterAnotacaoPorId = id => {
+    const url = `${urlPadrao}/${id}`;
+    return api.get(url);
+  };
+
   salvarAnotacao = params => {
     return api.post(urlPadrao, params);
   };

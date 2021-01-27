@@ -33,5 +33,23 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryFirstOrDefaultAsync<AnotacaoFrequenciaAluno>(query, new { codigoAluno, aulaId });
         }
+
+        public async Task<IEnumerable<JustificativaAlunoDto>> ObterPorTurmaAlunoComponenteCurricular(long turmaId, long codigoAluno, long componenteCurricularId)
+        {
+            var query = @"select an.id, ma.descricao Motivo, a.data_aula DataAnotacao 
+                        from anotacao_frequencia_aluno an
+                          left join motivo_ausencia ma on an.motivo_ausencia_id = ma.id  
+                          inner join aula a on a.id = an.aula_id 
+                          inner join turma t on t.turma_id = a.turma_id
+                        where not an.excluido and t.id = @turmaId and an.codigo_aluno = @codigoAluno 
+                              and a.disciplina_id = @componenteCurricularId ";
+
+            return await database.Conexao.QueryAsync<JustificativaAlunoDto>(query, new
+            {
+                turmaId,
+                codigoAluno = codigoAluno.ToString(),
+                componenteCurricularId = componenteCurricularId.ToString()
+            });
+        }
     }
 }

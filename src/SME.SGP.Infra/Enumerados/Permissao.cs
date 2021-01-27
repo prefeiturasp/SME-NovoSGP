@@ -593,6 +593,9 @@
         AEE_E = 199,
 
         [PermissaoMenu(Menu = "AEE", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = true, Url = "/relatorios/aee/encaminhamento", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Encaminhamento")]
-        AEE_A = 200
+        AEE_A = 200,
+		
+        [PermissaoMenu(Menu = "Acompanhamento de frequência", Icone = "fas fa-user-cog", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 7, EhConsulta = true, Url = "/diario-classe/acompanhamento-frequencia")]
+        AFQ_C = 201
     }
 }
