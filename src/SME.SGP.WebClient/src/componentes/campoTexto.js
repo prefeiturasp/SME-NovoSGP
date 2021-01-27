@@ -44,6 +44,7 @@ const CampoTexto = React.forwardRef((props, ref) => {
     style,
     iconeBusca,
     allowClear,
+    minRowsTextArea,
   } = props;
 
   const possuiErro = () => {
@@ -88,6 +89,7 @@ const CampoTexto = React.forwardRef((props, ref) => {
             style={style}
             prefix={iconeBusca ? <i className="fa fa-search fa-lg" /> : ''}
             value={value || form.values[name]}
+            rows={minRowsTextArea}
           />
           {!semMensagem && form && form.touched[name] ? (
             <span>{form.errors[name]}</span>
@@ -130,6 +132,7 @@ CampoTexto.propTypes = {
   style: PropTypes.oneOfType([PropTypes.any]),
   iconeBusca: PropTypes.bool,
   allowClear: PropTypes.bool,
+  minRowsTextArea: PropTypes.string,
 };
 
 CampoTexto.defaultProps = {
@@ -151,6 +154,7 @@ CampoTexto.defaultProps = {
   style: {},
   iconeBusca: false,
   allowClear: true,
+  minRowsTextArea: '2',
 };
 
 export default CampoTexto;

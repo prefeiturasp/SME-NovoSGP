@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
@@ -25,6 +26,10 @@ namespace SME.SGP.Aplicacao
 
             var aluno = await mediator.Send(new ObterAlunoPorCodigoEAnoQuery(encaminhamentoAee.AlunoCodigo, encaminhamentoAee.Turma.AnoLetivo));
 
+            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+
+            var podeEditar = VerificaPodeEditar(encaminhamentoAee.Situacao, usuarioLogado);
+
             return new EncaminhamentoAEERespostaDto()
             {
                 Aluno = aluno,
@@ -35,8 +40,27 @@ namespace SME.SGP.Aplicacao
                     AnoLetivo = encaminhamentoAee.Turma.AnoLetivo
                 },
                 Situacao = encaminhamentoAee.Situacao,
+                PodeEditar = podeEditar,
+                MotivoEncerramento = encaminhamentoAee.MotivoEncerramento,
                 Auditoria = (AuditoriaDto)encaminhamentoAee
             };
+        }
+
+        private bool VerificaPodeEditar(SituacaoAEE situacao, Usuario usuarioLogado)
+        {
+            switch (situacao)
+            {
+                case SituacaoAEE.Rascunho:
+                    return usuarioLogado.EhPerfilProfessor();
+                case SituacaoAEE.Encaminhado:
+                case SituacaoAEE.Analise:
+                    return usuarioLogado.EhGestorEscolar();
+                case SituacaoAEE.Finalizado:
+                case SituacaoAEE.Encerrado:
+                    return false;
+                default:
+                    return false;
+            }
         }
     }
 }

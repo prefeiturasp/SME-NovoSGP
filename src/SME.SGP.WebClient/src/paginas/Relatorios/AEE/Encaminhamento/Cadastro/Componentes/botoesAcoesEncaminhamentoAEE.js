@@ -1,16 +1,22 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Button from '~/componentes/button';
 import { Colors } from '~/componentes/colors';
 import { RotasDto } from '~/dtos';
 import situacaoAEE from '~/dtos/situacaoAEE';
+import {
+  setExibirLoaderEncaminhamentoAEE,
+  setExibirModalEncerramentoEncaminhamentoAEE,
+} from '~/redux/modulos/encaminhamentoAEE/actions';
 import { confirmar, erros, sucesso } from '~/servicos';
 import history from '~/servicos/history';
 import ServicoEncaminhamentoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoEncaminhamentoAEE';
 
 const BotoesAcoesEncaminhamentoAEE = props => {
   const { match } = props;
+
+  const dispatch = useDispatch();
 
   const encaminhamentoAEEEmEdicao = useSelector(
     store => store.encaminhamentoAEE.encaminhamentoAEEEmEdicao
@@ -20,14 +26,41 @@ const BotoesAcoesEncaminhamentoAEE = props => {
     store => store.encaminhamentoAEE.dadosEncaminhamento
   );
 
+  const desabilitarCamposEncaminhamentoAEE = useSelector(
+    store => store.encaminhamentoAEE.desabilitarCamposEncaminhamentoAEE
+  );
+
+  const usuario = useSelector(store => store.usuario);
+  const permissoesTela =
+    usuario.permissoes[RotasDto.RELATORIO_AEE_ENCAMINHAMENTO];
+
   const onClickSalvar = async () => {
     const encaminhamentoId = match?.params?.id;
-    ServicoEncaminhamentoAEE.salvarEncaminhamento(encaminhamentoId);
+    let situacao = situacaoAEE.Rascunho;
+
+    if (encaminhamentoId) {
+      situacao = dadosEncaminhamento?.situacao;
+    }
+
+    let validarCamposObrigatorios = false;
+    if (dadosEncaminhamento?.situacao === situacaoAEE.Encaminhado) {
+      validarCamposObrigatorios = true;
+    }
+
+    ServicoEncaminhamentoAEE.salvarEncaminhamento(
+      encaminhamentoId,
+      situacao,
+      validarCamposObrigatorios
+    );
   };
 
   const onClickEnviar = async () => {
     const encaminhamentoId = match?.params?.id;
-    ServicoEncaminhamentoAEE.salvarEncaminhamento(encaminhamentoId, true);
+    ServicoEncaminhamentoAEE.salvarEncaminhamento(
+      encaminhamentoId,
+      situacaoAEE.Encaminhado,
+      true
+    );
   };
 
   const onClickVoltar = async () => {
@@ -49,7 +82,7 @@ const BotoesAcoesEncaminhamentoAEE = props => {
   };
 
   const onClickCancelar = async () => {
-    if (encaminhamentoAEEEmEdicao) {
+    if (!desabilitarCamposEncaminhamentoAEE && encaminhamentoAEEEmEdicao) {
       const confirmou = await confirmar(
         'Atenção',
         'Você não salvou as informações preenchidas.',
@@ -63,7 +96,7 @@ const BotoesAcoesEncaminhamentoAEE = props => {
 
   const onClickExcluir = async () => {
     const encaminhamentoId = match?.params?.id;
-    if (encaminhamentoId) {
+    if (permissoesTela.podeExcluir && encaminhamentoId) {
       const confirmado = await confirmar(
         'Excluir',
         '',
@@ -71,14 +104,41 @@ const BotoesAcoesEncaminhamentoAEE = props => {
       );
 
       if (confirmado) {
+        dispatch(setExibirLoaderEncaminhamentoAEE(true));
         const resposta = await ServicoEncaminhamentoAEE.excluirEncaminhamento(
           encaminhamentoId
-        ).catch(e => erros(e));
+        )
+          .catch(e => erros(e))
+          .finally(() => dispatch(setExibirLoaderEncaminhamentoAEE(false)));
 
         if (resposta?.status === 200) {
           sucesso('Registro excluído com sucesso');
           history.push(RotasDto.RELATORIO_AEE_ENCAMINHAMENTO);
         }
+      }
+    }
+  };
+
+  const onClickEncerrar = () => {
+    if (!desabilitarCamposEncaminhamentoAEE) {
+      dispatch(setExibirModalEncerramentoEncaminhamentoAEE(true));
+    }
+  };
+
+  const onClickEncaminharAEE = async () => {
+    if (!desabilitarCamposEncaminhamentoAEE) {
+      const encaminhamentoId = match?.params?.id;
+
+      dispatch(setExibirLoaderEncaminhamentoAEE(true));
+      const resposta = await ServicoEncaminhamentoAEE.enviarParaAnaliseEncaminhamento(
+        encaminhamentoId
+      )
+        .catch(e => erros(e))
+        .finally(() => dispatch(setExibirLoaderEncaminhamentoAEE(false)));
+
+      if (resposta?.status === 200) {
+        sucesso('Encaminhamento enviado para a AEE');
+        history.push(RotasDto.RELATORIO_AEE_ENCAMINHAMENTO);
       }
     }
   };
@@ -101,7 +161,9 @@ const BotoesAcoesEncaminhamentoAEE = props => {
         border
         className="mr-3"
         onClick={onClickCancelar}
-        disabled={!encaminhamentoAEEEmEdicao}
+        disabled={
+          !encaminhamentoAEEEmEdicao || desabilitarCamposEncaminhamentoAEE
+        }
       />
       <Button
         id="btn-excluir"
@@ -111,8 +173,9 @@ const BotoesAcoesEncaminhamentoAEE = props => {
         className="mr-3"
         onClick={onClickExcluir}
         disabled={
+          !permissoesTela.podeExcluir ||
           !match?.params?.id ||
-          dadosEncaminhamento?.situacao === situacaoAEE.Encaminhado
+          (match?.params?.id && !dadosEncaminhamento?.podeEditar)
         }
       />
       <Button
@@ -121,11 +184,11 @@ const BotoesAcoesEncaminhamentoAEE = props => {
         color={Colors.Azul}
         border
         bold
-        className="mr-3"
         onClick={onClickSalvar}
         disabled={
+          desabilitarCamposEncaminhamentoAEE ||
           !encaminhamentoAEEEmEdicao ||
-          dadosEncaminhamento?.situacao === situacaoAEE.Encaminhado
+          (match?.params?.id && !dadosEncaminhamento?.podeEditar)
         }
       />
       <Button
@@ -134,10 +197,43 @@ const BotoesAcoesEncaminhamentoAEE = props => {
         color={Colors.Roxo}
         border
         bold
+        className="ml-3"
         onClick={onClickEnviar}
+        hidden={dadosEncaminhamento?.situacao !== situacaoAEE.Rascunho}
         disabled={
-          !encaminhamentoAEEEmEdicao ||
-          dadosEncaminhamento?.situacao === situacaoAEE.Encaminhado
+          desabilitarCamposEncaminhamentoAEE || !encaminhamentoAEEEmEdicao
+        }
+      />
+      <Button
+        id="btn-encerrar"
+        label="Encerrar"
+        color={Colors.Azul}
+        border
+        bold
+        className="ml-3"
+        onClick={onClickEncerrar}
+        hidden={dadosEncaminhamento?.situacao === situacaoAEE.Rascunho}
+        disabled={
+          desabilitarCamposEncaminhamentoAEE ||
+          encaminhamentoAEEEmEdicao ||
+          !dadosEncaminhamento?.podeEditar ||
+          dadosEncaminhamento?.situacao === situacaoAEE.Analise
+        }
+      />
+      <Button
+        id="btn-encaminhar-aee"
+        label="Encaminhar AEE"
+        color={Colors.Roxo}
+        border
+        bold
+        className="ml-3"
+        onClick={onClickEncaminharAEE}
+        hidden={dadosEncaminhamento?.situacao === situacaoAEE.Rascunho}
+        disabled={
+          desabilitarCamposEncaminhamentoAEE ||
+          encaminhamentoAEEEmEdicao ||
+          !dadosEncaminhamento?.podeEditar ||
+          dadosEncaminhamento?.situacao === situacaoAEE.Analise
         }
       />
     </>

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Commands
 {
-    public class RegistrarEncaminhamentoAEESecaoCommandHandler : IRequestHandler<RegistrarEncaminhamentoAEESecaoCommand, long>
+    public class RegistrarEncaminhamentoAEESecaoCommandHandler : IRequestHandler<RegistrarEncaminhamentoAEESecaoCommand, EncaminhamentoAEESecao>
     {
         private readonly IRepositorioEncaminhamentoAEESecao repositorioEncaminhamentoAEESecao;
 
@@ -17,11 +17,11 @@ namespace SME.SGP.Aplicacao.Commands
             this.repositorioEncaminhamentoAEESecao = repositorioEncaminhamentoAEESecao ?? throw new ArgumentNullException(nameof(repositorioEncaminhamentoAEESecao));
         }
 
-        public async Task<long> Handle(RegistrarEncaminhamentoAEESecaoCommand request, CancellationToken cancellationToken)
+        public async Task<EncaminhamentoAEESecao> Handle(RegistrarEncaminhamentoAEESecaoCommand request, CancellationToken cancellationToken)
         {
             var secao = MapearParaEntidade(request);
             var id = await repositorioEncaminhamentoAEESecao.SalvarAsync(secao);
-            return id;
+            return secao;
         }
 
         private EncaminhamentoAEESecao MapearParaEntidade(RegistrarEncaminhamentoAEESecaoCommand request)
