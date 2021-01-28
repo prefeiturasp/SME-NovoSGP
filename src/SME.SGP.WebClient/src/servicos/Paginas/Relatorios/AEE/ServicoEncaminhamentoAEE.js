@@ -472,9 +472,8 @@ class ServicoEncaminhamentoAEE {
   };
 
   encerramentoEncaminhamentoAEE = (encaminhamentoId, motivoEncerramento) => {
-    return api.post(
-      `${urlPadrao}/encerrar/${encaminhamentoId}/motivo/${motivoEncerramento}`
-    );
+    const parametro = { encaminhamentoId, motivoEncerramento };
+    return api.post(`${urlPadrao}/encerrar`, parametro);
   };
 
   enviarParaAnaliseEncaminhamento = encaminhamentoId => {
