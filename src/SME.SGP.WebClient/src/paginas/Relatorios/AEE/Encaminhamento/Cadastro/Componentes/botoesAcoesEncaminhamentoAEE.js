@@ -26,6 +26,10 @@ const BotoesAcoesEncaminhamentoAEE = props => {
     store => store.encaminhamentoAEE.dadosEncaminhamento
   );
 
+  const dadosSecaoLocalizarEstudante = useSelector(
+    store => store.encaminhamentoAEE.dadosSecaoLocalizarEstudante
+  );
+
   const desabilitarCamposEncaminhamentoAEE = useSelector(
     store => store.encaminhamentoAEE.desabilitarCamposEncaminhamentoAEE
   );
@@ -245,8 +249,14 @@ const BotoesAcoesEncaminhamentoAEE = props => {
         bold
         className="ml-3"
         onClick={onClickEnviar}
-        hidden={dadosEncaminhamento?.situacao !== situacaoAEE.Rascunho}
-        disabled={desabilitarCamposEncaminhamentoAEE}
+        hidden={
+          dadosEncaminhamento?.situacao &&
+          dadosEncaminhamento?.situacao !== situacaoAEE.Rascunho
+        }
+        disabled={
+          !dadosSecaoLocalizarEstudante?.codigoAluno ||
+          desabilitarCamposEncaminhamentoAEE
+        }
       />
       <Button
         id="btn-encerrar"
