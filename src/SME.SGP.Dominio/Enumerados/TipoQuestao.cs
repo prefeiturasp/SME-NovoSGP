@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SME.SGP.Dominio
+﻿namespace SME.SGP.Dominio
 {
     public enum TipoQuestao
     {
@@ -13,6 +9,7 @@ namespace SME.SGP.Dominio
         Checkbox = 5,
         Upload = 6,
         InformacoesEscolares = 7,
-        AtendimentoClinico = 8
+        AtendimentoClinico = 8,
+        ComboMultiplaEscolha = 9
     }
 }

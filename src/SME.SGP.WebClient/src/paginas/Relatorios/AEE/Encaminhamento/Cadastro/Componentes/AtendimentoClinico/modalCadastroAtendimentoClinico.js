@@ -1,11 +1,14 @@
+import { Form, Formik } from 'formik';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import shortid from 'shortid';
+import * as Yup from 'yup';
 import {
   CampoData,
   CampoTexto,
   Colors,
   ModalConteudoHtml,
+  momentSchema,
   SelectComponent,
 } from '~/componentes';
 import Button from '~/componentes/button';
@@ -13,11 +16,29 @@ import Button from '~/componentes/button';
 const ModalCadastroAtendimentoClinico = props => {
   const { onClose, exibirModal } = props;
 
-  const [diaSemana, setDiaSemana] = useState();
-  const [atendimentoAtividade, setAtendimentoAtividade] = useState();
-  const [localRealizacao, setLocalRealizacao] = useState();
-  const [horarioInicio, setHorarioInicio] = useState();
-  const [horarioTermino, setHorarioTermino] = useState();
+  const [refForm, setRefForm] = useState({});
+
+  const valoresIniciais = {
+    diaSemana: '',
+    atendimentoAtividade: '',
+    localRealizacao: '',
+    horarioInicio: '',
+    horarioTermino: '',
+  };
+
+  const validacoes = Yup.object().shape({
+    diaSemana: Yup.string()
+      .nullable()
+      .required('Campo obrigatório'),
+    atendimentoAtividade: Yup.string()
+      .nullable()
+      .required('Campo obrigatório'),
+    localRealizacao: Yup.string()
+      .nullable()
+      .required('Campo obrigatório'),
+    horarioInicio: momentSchema.required('Campo obrigatório'),
+    horarioTermino: momentSchema.required('Campo obrigatório'),
+  });
 
   const listaDiasSemana = [
     {
@@ -50,60 +71,26 @@ const ModalCadastroAtendimentoClinico = props => {
     },
   ];
 
-  const onChangeDiaSemana = valor => {
-    setDiaSemana(valor);
-  };
-
-  const onChangeAtendimentoAtividade = e => {
-    setAtendimentoAtividade(e.target.value);
-  };
-
-  const onChangeLocalRealizacao = e => {
-    setLocalRealizacao(e.target.value);
-  };
-
-  const onChangeHorarioInicio = valor => {
-    setHorarioInicio(valor);
-  };
-
-  const onChangeHorarioTermino = valor => {
-    setHorarioTermino(valor);
-  };
-
-  const limparDadosModal = () => {
-    setDiaSemana();
-    setAtendimentoAtividade();
-    setLocalRealizacao();
-    setHorarioInicio();
-    setHorarioTermino();
-  };
-
   const fecharModal = () => {
-    limparDadosModal();
+    refForm.resetForm();
     onClose();
   };
 
-  const onSalvar = () => {
-    const params = {};
+  const onSalvar = valores => {
+    refForm.resetForm();
+    onClose(valores);
+  };
 
-    if (diaSemana) {
-      params.diaSemana = diaSemana;
-    }
-    if (atendimentoAtividade) {
-      params.atendimentoAtividade = atendimentoAtividade;
-    }
-    if (localRealizacao) {
-      params.localRealizacao = localRealizacao;
-    }
-    if (horarioInicio) {
-      params.horarioInicio = horarioInicio;
-    }
-    if (horarioTermino) {
-      params.horarioTermino = horarioTermino;
-    }
-
-    limparDadosModal();
-    onClose(params);
+  const validaAntesDoSubmit = form => {
+    const arrayCampos = Object.keys(valoresIniciais);
+    arrayCampos.forEach(campo => {
+      form.setFieldTouched(campo, true, true);
+    });
+    form.validateForm().then(() => {
+      if (form.isValid || Object.keys(form.errors).length === 0) {
+        form.handleSubmit(e => e);
+      }
+    });
   };
 
   return (
@@ -118,73 +105,89 @@ const ModalCadastroAtendimentoClinico = props => {
       width={750}
       closable
     >
-      <div className="col-md-12 mb-2">
-        <SelectComponent
-          label="Dias da Semana"
-          lista={listaDiasSemana}
-          valueOption="valor"
-          valueText="desc"
-          valueSelect={diaSemana}
-          onChange={onChangeDiaSemana}
-        />
-      </div>
-      <div className="col-md-12 mb-2">
-        <CampoTexto
-          onChange={onChangeAtendimentoAtividade}
-          label="Atendimento/Atividade"
-          value={atendimentoAtividade}
-          maxLength={100}
-        />
-      </div>
-      <div className="col-md-12 mb-2">
-        <CampoTexto
-          onChange={onChangeLocalRealizacao}
-          label="Local de realização"
-          value={localRealizacao}
-          maxLength={100}
-        />
-      </div>
-      <div className="col-md-12 mb-2">
-        <CampoData
-          onChange={onChangeHorarioInicio}
-          label="Horário de início"
-          valor={horarioInicio}
-          placeholder="09:00"
-          formatoData="HH:mm"
-          somenteHora
-        />
-      </div>
-      <div className="col-md-12 mb-2">
-        <CampoData
-          onChange={onChangeHorarioTermino}
-          valor={horarioTermino}
-          label="Horário término"
-          placeholder="09:30"
-          formatoData="HH:mm"
-          somenteHora
-        />
-      </div>
+      <Formik
+        ref={f => setRefForm(f)}
+        enableReinitialize
+        initialValues={valoresIniciais}
+        validationSchema={validacoes}
+        onSubmit={valores => {
+          onSalvar(valores);
+        }}
+        validateOnChange
+        validateOnBlur
+      >
+        {form => (
+          <Form>
+            <div className="col-md-12 mb-2">
+              <SelectComponent
+                label="Dias da Semana"
+                lista={listaDiasSemana}
+                valueOption="valor"
+                valueText="desc"
+                form={form}
+                name="diaSemana"
+              />
+            </div>
+            <div className="col-md-12 mb-2">
+              <CampoTexto
+                form={form}
+                name="atendimentoAtividade"
+                label="Atendimento/Atividade"
+                maxLength={100}
+              />
+            </div>
+            <div className="col-md-12 mb-2">
+              <CampoTexto
+                form={form}
+                name="localRealizacao"
+                label="Local de realização"
+                maxLength={100}
+              />
+            </div>
+            <div className="col-md-12 mb-2">
+              <CampoData
+                form={form}
+                name="horarioInicio"
+                label="Horário de início"
+                placeholder="09:00"
+                formatoData="HH:mm"
+                somenteHora
+              />
+            </div>
+            <div className="col-md-12 mb-2">
+              <CampoData
+                form={form}
+                name="horarioTermino"
+                label="Horário término"
+                placeholder="09:30"
+                formatoData="HH:mm"
+                somenteHora
+              />
+            </div>
 
-      <div className="col-md-12 mt-2 p-0 d-flex justify-content-end">
-        <Button
-          key="btn-voltar"
-          id="btn-voltar"
-          label="Cancelar"
-          color={Colors.Azul}
-          border
-          onClick={fecharModal}
-          className="mt-2 mr-2"
-        />
-        <Button
-          key="btn-salvar"
-          id="btn-salvar"
-          label="Adicionar Registro"
-          color={Colors.Roxo}
-          border
-          onClick={onSalvar}
-          className="mt-2"
-        />
-      </div>
+            <div className="col-md-12 mt-2 d-flex justify-content-end">
+              <Button
+                key="btn-voltar"
+                id="btn-voltar"
+                label="Cancelar"
+                color={Colors.Azul}
+                border
+                onClick={fecharModal}
+                className="mt-2 mr-2"
+              />
+              <Button
+                key="btn-salvar"
+                id="btn-salvar"
+                label="Adicionar Registro"
+                color={Colors.Roxo}
+                border
+                onClick={() => validaAntesDoSubmit(form)}
+                className="mt-2"
+              />
+            </div>
+          </Form>
+        )}
+      </Formik>
     </ModalConteudoHtml>
   );
 };
