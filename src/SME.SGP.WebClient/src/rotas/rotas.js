@@ -860,7 +860,7 @@ rotas.set(RotasDto.FALTAS_FREQUENCIA, {
 });
 
 rotas.set(RotasDto.DIARIO_BORDO, {
-  breadcrumbName: 'Diário de Bordo',
+  breadcrumbName: 'Diário de Bordo (Intencionalidade docente)',
   menu: ['Diário de Classe'],
   parent: '/',
   component: ListaDiarioBordo,
@@ -882,7 +882,7 @@ rotas.set(`${RotasDto.DIARIO_BORDO}/novo`, {
 });
 
 rotas.set(`${RotasDto.DIARIO_BORDO}/detalhes/:aulaId`, {
-  breadcrumbName: 'Diário de Bordo',
+  breadcrumbName: 'Diário de Bordo (Intencionalidade docente)',
   menu: ['Diário de Classe'],
   parent: '/',
   component: DiarioBordo,

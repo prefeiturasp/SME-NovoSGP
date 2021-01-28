@@ -97,9 +97,10 @@ class ServicoDashboardEscolaAqui {
     codigoDre,
     codigoUe,
     notificacaoId,
+    agruparModalidade,
     modoVisualizacao
   ) => {
-    const url = `${urlPadrao}/comunicados/leitura?codigoDre=${codigoDre}&codigoUe=${codigoUe}&notificacaoId=${notificacaoId}&modoVisualizacao=${modoVisualizacao}`;
+    const url = `${urlPadrao}/comunicados/leitura?codigoDre=${codigoDre}&codigoUe=${codigoUe}&notificacaoId=${notificacaoId}&agruparModalidade=${agruparModalidade}&modoVisualizacao=${modoVisualizacao}`;
     return api.get(url);
   };
 

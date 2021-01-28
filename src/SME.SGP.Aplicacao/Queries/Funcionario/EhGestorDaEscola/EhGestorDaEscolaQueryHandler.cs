@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
 using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
@@ -28,14 +29,14 @@ namespace SME.SGP.Aplicacao
 
             using (var httpClient = httpClientFactory.CreateClient("servicoEOL"))
             {
-                var resposta = await httpClient.GetAsync($"/api/escolas/{request.UeCodigo}/funcionarios/cargos?cargos={cargo}");
+                var resposta = await httpClient.GetAsync($"/api/escolas/{request.UeCodigo}/funcionarios/cargos/{cargo}");
 
                 if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
                 {
                     var json = await resposta.Content.ReadAsStringAsync();
-                    var funcionariosEOL = JsonConvert.DeserializeObject<IEnumerable<FuncionarioCargoDTO>>(json) as List<FuncionarioCargoDTO>;
+                    var funcionariosEOL = JsonConvert.DeserializeObject<IEnumerable<UsuarioEolRetornoDto>>(json);
 
-                    return funcionariosEOL.Any(c => c.FuncionarioRF == request.UsuarioRf);
+                    return funcionariosEOL.Any(c => c.CodigoRf == request.UsuarioRf);
                 }
             }
 
