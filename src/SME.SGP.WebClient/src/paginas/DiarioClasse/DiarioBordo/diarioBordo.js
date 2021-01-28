@@ -241,6 +241,24 @@ const DiarioBordo = ({ match }) => {
     );
   };
 
+  const obterUsuarioPorObservacao = dadosObservacoes => {
+    const promises = dadosObservacoes.map(async observacao => {
+      const retorno = await ServicoDiarioBordo.obterNofiticarUsuarios({
+        turmaId: turmaSelecionada?.id,
+        observacaoId: observacao.id,
+      }).catch(e => erros(e));
+
+      if (retorno?.data) {
+        return {
+          ...observacao,
+          usuariosNotificacao: retorno.data,
+        };
+      }
+      return observacao;
+    });
+    return Promise.all(promises);
+  };
+
   const obterDadosObservacoes = useCallback(
     async diarioBordoId => {
       dispatch(limparDadosObservacoesUsuario());
@@ -253,7 +271,8 @@ const DiarioBordo = ({ match }) => {
       });
 
       if (retorno && retorno.data) {
-        dispatch(setDadosObservacoesUsuario([...retorno.data]));
+        const dadosObservacoes = await obterUsuarioPorObservacao(retorno.data);
+        dispatch(setDadosObservacoesUsuario([...dadosObservacoes]));
       } else {
         dispatch(setDadosObservacoesUsuario([]));
       }
@@ -742,6 +761,7 @@ const DiarioBordo = ({ match }) => {
         </div>
         {auditoria && auditoria.id ? (
           <ObservacoesUsuario
+            mostrarListaNotificacao
             salvarObservacao={obs => salvarEditarObservacao(obs)}
             editarObservacao={obs => salvarEditarObservacao(obs)}
             excluirObservacao={obs => excluirObservacao(obs)}
