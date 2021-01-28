@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import {
   CheckboxComponent,
   ListaPaginada,
@@ -13,6 +13,7 @@ import { Colors } from '~/componentes/colors';
 import LocalizadorEstudante from '~/componentes/LocalizadorEstudante';
 import { URL_HOME } from '~/constantes/url';
 import { RotasDto } from '~/dtos';
+import { setDadosIniciaisEncaminhamentoAEE } from '~/redux/modulos/encaminhamentoAEE/actions';
 import { verificaSomenteConsulta } from '~/servicos';
 import AbrangenciaServico from '~/servicos/Abrangencia';
 import { erros } from '~/servicos/alertas';
@@ -22,6 +23,8 @@ import FiltroHelper from '~componentes-sgp/filtro/helper';
 import ModalAvisoNovoEncaminhamentoAEE from './Componentes/AvisoCadastro/modalAvisoCadastro';
 
 const EncaminhamentoAEELista = () => {
+  const dispatch = useDispatch();
+
   const codigosAlunosSelecionados = useSelector(
     state => state.localizadorEstudante.codigosAluno
   );
@@ -214,6 +217,7 @@ const EncaminhamentoAEELista = () => {
 
   const onChangeDre = dre => {
     setDreId(dre);
+    dispatch(setDadosIniciaisEncaminhamentoAEE({ ueId, dreId: dre }));
 
     setListaUes([]);
     setUeId();
@@ -304,7 +308,7 @@ const EncaminhamentoAEELista = () => {
 
   const onChangeUe = ue => {
     setUeId(ue);
-
+    dispatch(setDadosIniciaisEncaminhamentoAEE({ ueId: ue, dreId }));
     setListaTurmas([]);
     setTurmaId();
 

@@ -77,3 +77,8 @@ export const setDesabilitarCamposEncaminhamentoAEE = payload => ({
   type: '@encaminhamentoAEE/setDesabilitarCamposEncaminhamentoAEE',
   payload,
 });
+
+export const setDadosIniciaisEncaminhamentoAEE = payload => ({
+  type: '@encaminhamentoAEE/setDadosIniciaisEncaminhamentoAEE',
+  payload,
+});
