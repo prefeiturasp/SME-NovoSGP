@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 namespace SME.SGP.Api.Controllers
 {
     [ApiController]
-    [Route("api/v1/acompanhamentos-frequencia")]
+    [Route("api/v1/frequencias/acompanhamentos")]
     [Authorize("Bearer")]
-    public class AcompanhamentoFrequenciaController : ControllerBase
+    public class FrequenciaAcompanhamentoController : ControllerBase
     {
         [HttpGet("")]
         [ProducesResponseType(typeof(FrequenciaAlunosPorBimestreDto), 200)]

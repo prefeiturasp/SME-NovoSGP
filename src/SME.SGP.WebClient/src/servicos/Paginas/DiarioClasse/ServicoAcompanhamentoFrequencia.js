@@ -1,6 +1,6 @@
 import api from '~/servicos/api';
 
-const urlPadrao = '/v1/acompanhamentos-frequencia';
+const urlPadrao = '/v1/frequencias/acompanhamentos';
 
 class ServicoAcompanhamentoFrequencia {
   obterAcompanhamentoFrequenciaPorBimestre = async (
