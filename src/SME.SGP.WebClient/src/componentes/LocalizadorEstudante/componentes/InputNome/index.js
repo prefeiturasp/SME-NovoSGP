@@ -11,6 +11,7 @@ const InputNome = props => {
     pessoaSelecionada,
     desabilitado,
     regexIgnore,
+    placeholder,
   } = props;
 
   const [sugestoes, setSugestoes] = useState([]);
@@ -39,7 +40,12 @@ const InputNome = props => {
   const options =
     sugestoes &&
     sugestoes.map(item => (
-      <AutoComplete.Option key={item.alunoCodigo} value={item.alunoNome}>
+      <AutoComplete.Option
+        key={item.alunoCodigo}
+        value={item.alunoNome}
+        codigoTurma={item.codigoTurma}
+        turmaId={item.turmaId}
+      >
         {item.alunoNome}
       </AutoComplete.Option>
     ));
@@ -56,7 +62,7 @@ const InputNome = props => {
         allowClear
       >
         <Input
-          placeholder="Digite o nome"
+          placeholder={placeholder !== '' ? placeholder : 'Digite o nome'}
           prefix={<i className="fa fa-search fa-lg" />}
           disabled={desabilitado}
           allowClear
@@ -75,7 +81,8 @@ InputNome.propTypes = {
   onSelect: PropTypes.func,
   onChange: PropTypes.func,
   desabilitado: PropTypes.bool,
-  regexIgnore: PropTypes.string,
+  regexIgnore: PropTypes.objectOf(PropTypes.any),
+  placeholder: PropTypes.string,
 };
 
 InputNome.defaultProps = {
@@ -85,6 +92,7 @@ InputNome.defaultProps = {
   onChange: {},
   desabilitado: false,
   regexIgnore: '',
+  placeholder: '',
 };
 
 export default InputNome;

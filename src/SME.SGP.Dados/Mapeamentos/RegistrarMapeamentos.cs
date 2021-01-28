@@ -140,12 +140,14 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new PendenciaCalendarioUeMap());
                config.AddMap(new PendenciaParametroEventoMap());
                config.AddMap(new PendenciaProfessorMap());
-               config.AddMap(new RegistroIndividualMap());
-               config.AddMap(new OcorrenciaTipoMap());
-               config.AddMap(new OcorrenciaMap());
-               config.AddMap(new OcorrenciaAlunoMap());
-               config.AddMap(new PendenciaRegistroIndividualMap());
-               config.AddMap(new PendenciaRegistroIndividualAlunoMap());
+               config.AddMap(new QuestionarioMap());
+               config.AddMap(new QuestaoMap());
+               config.AddMap(new OpcaoRespostaMap());
+               config.AddMap(new SecaoEncaminhamentoAEEMap());
+               config.AddMap(new EncaminhamentoAEEMap());
+               config.AddMap(new EncaminhamentoAEESecaoMap());
+               config.AddMap(new QuestaoEncaminhamentoAEEMap());
+               config.AddMap(new RespostaEncaminhamentoAEEMap());
                config.ForDommel();
            });
         }

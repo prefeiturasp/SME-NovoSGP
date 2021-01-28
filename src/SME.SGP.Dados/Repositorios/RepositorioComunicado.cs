@@ -378,7 +378,12 @@ namespace SME.SGP.Dados.Repositorios
                                             {comunicadoAlias}.data_envio AS DataEnvio,
                                             {comunicadoAlias}.codigo_dre AS CodigoDre,
                                             {comunicadoAlias}.codigo_ue AS CodigoUe,
-                                            {comunicadoAlias}.modalidade AS Modalidade
+                                            {comunicadoAlias}.modalidade AS Modalidade,
+                                            CASE
+                                               WHEN (select count(id) from comunidado_grupo where comunicado_id = {comunicadoAlias}.id) = 0 THEN 0
+                                               WHEN (select count(id) from comunidado_grupo where comunicado_id = {comunicadoAlias}.id) = 1 THEN 0
+                                               WHEN (select count(id) from comunidado_grupo where comunicado_id = {comunicadoAlias}.id) > 1 THEN 1
+                                            END agruparModalidade
                                         FROM comunicado {comunicadoAlias} ");
 
             if (!string.IsNullOrWhiteSpace(filtro.CodigoTurma))

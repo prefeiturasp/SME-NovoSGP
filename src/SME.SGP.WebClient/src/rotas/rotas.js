@@ -83,6 +83,8 @@ import RelatorioLeitura from '~/paginas/Relatorios/EscolaAqui/Leitura/relatorioL
 import ListaOcorrencias from '~/paginas/Gestao/Ocorrencia/ListaOcorrencias';
 import CadastroOcorrencias from '~/paginas/Gestao/Ocorrencia/CadastroOcorrencias';
 import RelatorioPlanejamentoDiario from '~/paginas/Relatorios/DiarioClasse/PlanejamentoDiario/relatorioPlanejamentoDiario';
+import EncaminhamentoAEELista from '~/paginas/Relatorios/AEE/Encaminhamento/Lista/encaminhamentoAEELista';
+import EncaminhamentoAEECadastro from '~/paginas/Relatorios/AEE/Encaminhamento/Cadastro/encaminhamentoAEECadastro';
 
 const rotas = new Map();
 
@@ -1131,6 +1133,37 @@ rotas.set(RotasDto.RELATORIO_ESCOLA_AQUI_ADESAO, {
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: false,
   chavePermissao: RotasDto.RELATORIO_ESCOLA_AQUI_ADESAO,
+});
+
+rotas.set(RotasDto.RELATORIO_AEE_ENCAMINHAMENTO, {
+  breadcrumbName: 'Encaminhamento',
+  menu: ['Relatórios', 'AEE'],
+  parent: '/',
+  component: EncaminhamentoAEELista,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+  chavePermissao: RotasDto.RELATORIO_AEE_ENCAMINHAMENTO,
+});
+
+rotas.set(`${RotasDto.RELATORIO_AEE_ENCAMINHAMENTO}/novo`, {
+  breadcrumbName: 'Cadastrar Encaminhamento',
+  parent: `${RotasDto.RELATORIO_AEE_ENCAMINHAMENTO}`,
+  component: EncaminhamentoAEECadastro,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+  chavePermissao: RotasDto.RELATORIO_AEE_ENCAMINHAMENTO,
+});
+
+rotas.set(`${RotasDto.RELATORIO_AEE_ENCAMINHAMENTO}/editar/:id`, {
+  breadcrumbName: 'Editar Encaminhamento',
+  parent: `${RotasDto.RELATORIO_AEE_ENCAMINHAMENTO}`,
+  component: EncaminhamentoAEECadastro,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+  chavePermissao: RotasDto.RELATORIO_AEE_ENCAMINHAMENTO,
 });
 
 rotas.set(RotasDto.OCORRENCIAS, {

@@ -195,5 +195,34 @@ namespace SME.SGP.Dados.Repositorios
 
             return database.Conexao.QueryFirstOrDefault<RegistroFrequencia>(query, new { aulaId });
         }        
+
+        public async Task<IEnumerable<AusenciaMotivoDto>> ObterAusenciaMotivoPorAlunoTurmaBimestreAno(string codigoAluno, string turma, short bimestre, short anoLetivo)
+        {
+            var sql = @"
+                select
+	                a.data_aula dataAusencia,
+	                afa.criado_por registradoPor,
+	                ma.descricao motivoAusencia,
+	                afa.anotacao justificativaAusencia
+                from 
+	                anotacao_frequencia_aluno afa 
+                inner join aula a on a.id = afa.aula_id 
+                inner join tipo_calendario tc on tc.id = a.tipo_calendario_id 
+                inner join periodo_escolar pe on pe.tipo_calendario_id = tc.id
+                 left join motivo_ausencia ma on afa.motivo_ausencia_id = ma.id 
+                where 
+	                not afa.excluido and not a.excluido and 
+	                afa.codigo_aluno = @codigoAluno and
+	                a.turma_id = @turma and
+	                tc.ano_letivo = @anoLetivo and 
+	                pe.bimestre = @bimestre
+                order by a.data_aula desc
+                limit 5
+            ";
+
+            return await database
+                .Conexao
+                .QueryAsync<AusenciaMotivoDto>(sql, new { codigoAluno, turma, bimestre, anoLetivo });
+        }
     }
 }

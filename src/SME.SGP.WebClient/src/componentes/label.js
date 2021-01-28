@@ -17,6 +17,11 @@ const Container = styled.div`
     font-weight: bold;
   }
 
+  span {
+    color: ${Base.CinzaBotao};
+    font-weight: normal;
+  }
+
   .campoOpcional {
     font-size: 12px !important;
     color: ${Base.CinzaBotao} !important;
@@ -25,11 +30,12 @@ const Container = styled.div`
   }
 `;
 
-const Label = ({ text, control, center, className, campoOpcional }) => {
+const Label = ({ text, control, center, className, campoOpcional, observacaoText }) => {
   return (
     <Container className={center && 'text-center'}>
       <label htmlFor={control} id={text} className={className}>
         {text}
+        {observacaoText ? <span> {` ${observacaoText}`}</span> : ''}
       </label>
       {campoOpcional ? (
         <label htmlFor={control} id={text} className="campoOpcional">
@@ -43,12 +49,16 @@ Label.propTypes = {
   text: PropTypes.string,
   control: PropTypes.string,
   center: PropTypes.bool,
+  className: PropTypes.string,
+  observacaoText: PropTypes.string,
 };
 
 Label.defaultProps = {
   text: PropTypes.string,
   control: null,
   center: false,
+  className: '',
+  observacaoText: '',
 };
 
 export default Label;

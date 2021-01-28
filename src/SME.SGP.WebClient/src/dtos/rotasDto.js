@@ -64,6 +64,7 @@ const RotasDto = {
   RELATORIO_ALTERACAO_NOTAS: '/relatorios/fechamento/historico-alteracao-notas',
   RELATORIO_LEITURA: '/relatorios/escola-aqui/leitura',
   RELATORIO_ESCOLA_AQUI_ADESAO: '/relatorios/escola-aqui/adesao',
+  RELATORIO_AEE_ENCAMINHAMENTO: '/relatorios/aee/encaminhamento',
   OCORRENCIAS: '/gestao/ocorrencias',
 };
 

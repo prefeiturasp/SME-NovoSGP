@@ -13,19 +13,35 @@ namespace SME.SGP.Aplicacao.Queries.Aluno.ObterAlunosPorCodigoEolNome
     public class ObterAlunosPorCodigoEolNomeQueryHandler : IRequestHandler<ObterAlunosPorCodigoEolNomeQuery, IEnumerable<AlunoSimplesDto>>
     {
         private readonly IServicoEol servicoEOL;
+        private readonly IMediator mediator;
 
-        public ObterAlunosPorCodigoEolNomeQueryHandler(IServicoEol servicoEOL)
+        public ObterAlunosPorCodigoEolNomeQueryHandler(IServicoEol servicoEOL, IMediator mediator)
         {
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<IEnumerable<AlunoSimplesDto>> Handle(ObterAlunosPorCodigoEolNomeQuery request, CancellationToken cancellationToken)
         {
             try
             {
-                var alunosEOL = await servicoEOL.ObterAlunosPorNomeCodigoEol(request.AnoLetivo, request.CodigoUe, request.Nome, request.CodigoEOL);
-                alunosEOL = alunosEOL.OrderBy(a => a.NomeAluno);
-                return MapearParaDto(alunosEOL);
+                var alunosEOL = await servicoEOL.ObterAlunosPorNomeCodigoEol(request.AnoLetivo, request.CodigoUe, request.CodigoTurma, request.Nome, request.CodigoEOL);
+
+                var alunoSimplesDto = new List<AlunoSimplesDto>();
+
+                foreach (var alunoEOL in alunosEOL.OrderBy(a => a.NomeAluno))
+                {
+                    var alunoSimples = new AlunoSimplesDto()
+                    {
+                        Codigo = alunoEOL.CodigoAluno,
+                        Nome = alunoEOL.NomeAluno,
+                        CodigoTurma = alunoEOL.CodigoTurma.ToString(),
+                        TurmaId = await ObterTurmaId(alunoEOL.CodigoTurma)
+                };
+                    alunoSimplesDto.Add(alunoSimples);
+                }
+
+                return alunoSimplesDto;
             }
             catch (Exception e)
             {
@@ -33,16 +49,7 @@ namespace SME.SGP.Aplicacao.Queries.Aluno.ObterAlunosPorCodigoEolNome
             }
         }
 
-        private IEnumerable<AlunoSimplesDto> MapearParaDto(IEnumerable<AlunoPorTurmaResposta> alunosEOL)
-        {
-            foreach (var alunoEOL in alunosEOL)
-            {
-                yield return new AlunoSimplesDto()
-                {
-                    Codigo = alunoEOL.CodigoAluno,
-                    Nome = alunoEOL.NomeAluno
-                };
-            }
-        }
+        private async Task<long> ObterTurmaId(long codigoTurma)
+            => await mediator.Send(new ObterTurmaIdPorCodigoQuery(codigoTurma.ToString()));
     }
 }

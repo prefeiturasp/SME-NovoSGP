@@ -227,9 +227,29 @@ const CampoData = ({
     );
   };
 
+  const campoHoraAntSemValidacoes = () => {
+    return (
+      <TimePicker
+        disabled={desabilitado}
+        locale={locale}
+        format={formatoData}
+        placeholder={placeholder}
+        name={name}
+        id={id || name}
+        onBlur={executaOnBlur}
+        className={`${possuiErro() ? 'is-invalid' : ''} ${className || ''}`}
+        onChange={valorHora => {
+          onChange(valorHora);
+        }}
+        value={valor || null}
+        showToday={false}
+      />
+    );
+  };
+
   const validaTipoCampo = () => {
     if (somenteHora) {
-      return form ? campoHoraAntComValidacoes() : 'CRIAR COMPONENTE!!';
+      return form ? campoHoraAntComValidacoes() : campoHoraAntSemValidacoes();
     }
     return form ? campoDataAntComValidacoes() : campoDataAntSemValidacoes();
   };

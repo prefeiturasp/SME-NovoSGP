@@ -4,13 +4,23 @@ import { Label } from '~/componentes';
 import { erros, erro } from '~/servicos/alertas';
 import InputCodigo from './componentes/InputCodigo';
 import InputNome from './componentes/InputNome';
-import service from './services/LocalizadorService';
+import service from './services/LocalizadorEstudanteService';
 import { store } from '~/redux';
 import { setAlunosCodigo } from '~/redux/modulos/localizadorEstudante/actions';
 import { removerNumeros } from '~/utils/funcoes/gerais';
 
 const LocalizadorEstudante = props => {
-  const { onChange, showLabel, desabilitado, ueId, anoLetivo } = props;
+  const {
+    onChange,
+    showLabel,
+    desabilitado,
+    ueId,
+    anoLetivo,
+    codigoTurma,
+    exibirCodigoEOL,
+    valorInicialAlunoCodigo,
+    placeholder,
+  } = props;
 
   const [dataSource, setDataSource] = useState([]);
   const [pessoaSelecionada, setPessoaSelecionada] = useState({});
@@ -18,13 +28,17 @@ const LocalizadorEstudante = props => {
     codigo: false,
     nome: false,
   });
+  const [timeoutBuscarPorCodigo, setTimeoutBuscarPorCodigo] = useState('');
 
   useEffect(() => {
     setPessoaSelecionada({
       alunoCodigo: '',
       alunoNome: '',
+      codigoTurma: '',
+      turmaId: '',
     });
-  }, [ueId])
+    setDataSource([]);
+  }, [ueId, codigoTurma]);
 
   const onChangeNome = async valor => {
     valor = removerNumeros(valor);
@@ -32,6 +46,8 @@ const LocalizadorEstudante = props => {
       setPessoaSelecionada({
         alunoCodigo: '',
         alunoNome: '',
+        codigoTurma: '',
+        turmaId: '',
       });
       setTimeout(() => {
         setDesabilitarCampo(() => ({
@@ -45,15 +61,26 @@ const LocalizadorEstudante = props => {
 
     if (valor.length < 3) return;
 
-    const retorno = await service
-      .buscarPorNome({
-        nome: valor,
-        codigoUe: ueId,
-        anoLetivo,
-      })
-      .catch(() => {
-        setDataSource([]);
+    const params = {
+      nome: valor,
+      codigoUe: ueId,
+      anoLetivo,
+    };
+
+    if (codigoTurma) {
+      params.codigoTurma = codigoTurma;
+    }
+
+    const retorno = await service.buscarPorNome(params).catch(() => {
+      onChange();
+      setDataSource([]);
+      setPessoaSelecionada({
+        alunoCodigo: '',
+        alunoNome: valor,
+        codigoTurma: '',
+        turmaId: '',
       });
+    });
 
     if (retorno && retorno?.data?.items?.length > 0) {
       setDataSource([]);
@@ -61,42 +88,85 @@ const LocalizadorEstudante = props => {
         retorno.data.items.map(aluno => ({
           alunoCodigo: aluno.codigo,
           alunoNome: aluno.nome,
+          codigoTurma: aluno.codigoTurma,
+          turmaId: aluno.turmaId,
         }))
       );
     }
   };
 
   const onBuscarPorCodigo = async codigo => {
-    const retorno = await service
-      .buscarPorCodigo({
-        codigo: codigo.codigo,
-        codigoUe: ueId,
-        anoLetivo,
-      })
-      .catch(e => {
-        if (e?.response?.status === 601) {
-          erro('Estudante não encontrado no EOL');
-        } else {
-          erros(e);
-        }
+    const params = {
+      codigo: codigo.codigo,
+      codigoUe: ueId,
+      anoLetivo,
+    };
+
+    if (codigoTurma) {
+      params.codigoTurma = codigoTurma;
+    }
+
+    const retorno = await service.buscarPorCodigo(params).catch(e => {
+      if (e?.response?.status === 601) {
+        erro('Estudante não encontrado no EOL');
+      } else {
+        erros(e);
+      }
+      onChange();
+      setDataSource([]);
+      setPessoaSelecionada({
+        alunoCodigo: '',
+        alunoNome: '',
+        codigoTurma: '',
+        turmaId: '',
       });
+    });
 
     if (retorno?.data?.items?.length > 0) {
-      const { codigo: cAluno, nome } = retorno.data.items[0];
+      const {
+        codigo: cAluno,
+        nome,
+        codigoTurma,
+        turmaId,
+      } = retorno.data.items[0];
       setDataSource(
         retorno.data.items.map(aluno => ({
           alunoCodigo: aluno.codigo,
           alunoNome: aluno.nome,
+          codigoTurma: aluno.codigoTurma,
+          turmaId: aluno.turmaId,
         }))
       );
       setPessoaSelecionada({
         alunoCodigo: parseInt(cAluno, 10),
         alunoNome: nome,
+        codigoTurma,
+        turmaId,
       });
       setDesabilitarCampo(estado => ({
         ...estado,
         nome: true,
       }));
+      onChange({
+        alunoCodigo: parseInt(cAluno, 10),
+        alunoNome: nome,
+        codigoTurma,
+        turmaId,
+      });
+    }
+  };
+
+  const validaAntesBuscarPorCodigo = valor => {
+    if (timeoutBuscarPorCodigo) {
+      clearTimeout(timeoutBuscarPorCodigo);
+    }
+
+    if (ueId) {
+      const timeout = setTimeout(() => {
+        onBuscarPorCodigo(valor);
+      }, 500);
+
+      setTimeoutBuscarPorCodigo(timeout);
     }
   };
 
@@ -105,6 +175,8 @@ const LocalizadorEstudante = props => {
       setPessoaSelecionada({
         alunoCodigo: '',
         alunoNome: '',
+        codigoTurma: '',
+        turmaId: '',
       });
       setDesabilitarCampo(estado => ({
         ...estado,
@@ -115,18 +187,18 @@ const LocalizadorEstudante = props => {
   };
 
   const onSelectPessoa = objeto => {
-    setPessoaSelecionada({
+    const pessoa = {
       alunoCodigo: parseInt(objeto.key, 10),
       alunoNome: objeto.props.value,
-    });
+      codigoTurma: objeto.props.codigoTurma,
+      turmaId: objeto.props.turmaId,
+    };
+    setPessoaSelecionada(pessoa);
+    onChange(pessoa);
     setDesabilitarCampo(estado => ({
       ...estado,
       codigo: true,
     }));
-    onChange({
-      alunoCodigo: parseInt(objeto.key, 10),
-      alunoNome: objeto.props.value,
-    });
   };
 
   useEffect(() => {
@@ -138,11 +210,26 @@ const LocalizadorEstudante = props => {
     }
   }, [pessoaSelecionada]);
 
+  useEffect(() => {
+    if (
+      valorInicialAlunoCodigo &&
+      !pessoaSelecionada?.alunoCodigo &&
+      !dataSource?.length
+    ) {
+      validaAntesBuscarPorCodigo({ codigo: valorInicialAlunoCodigo });
+    }
+  }, [valorInicialAlunoCodigo, dataSource, pessoaSelecionada]);
+
   return (
     <React.Fragment>
-      <div className="col-sm-12 col-md-6 col-lg-8 col-xl-8">
+      <div
+        className={`${
+          exibirCodigoEOL ? 'col-sm-12 col-md-6 col-lg-8 col-xl-8' : 'col-md-12'
+        } `}
+      >
         {showLabel && <Label text="Nome" control="alunoNome" />}
         <InputNome
+          placeholder={placeholder}
           dataSource={dataSource}
           onSelect={onSelectPessoa}
           onChange={onChangeNome}
@@ -152,16 +239,20 @@ const LocalizadorEstudante = props => {
           regexIgnore={/\d+/}
         />
       </div>
-      <div className="col-sm-12 col-md-6 col-lg-4 col-xl-4">
-        {showLabel && <Label text="Código EOL" control="alunoCodigo" />}
-        <InputCodigo
-          pessoaSelecionada={pessoaSelecionada}
-          onSelect={onBuscarPorCodigo}
-          onChange={onChangeCodigo}
-          name="alunoCodigo"
-          desabilitado={desabilitado || desabilitarCampo.codigo}
-        />
-      </div>
+      {exibirCodigoEOL ? (
+        <div className="col-sm-12 col-md-6 col-lg-4 col-xl-4">
+          {showLabel && <Label text="Código EOL" control="alunoCodigo" />}
+          <InputCodigo
+            pessoaSelecionada={pessoaSelecionada}
+            onSelect={validaAntesBuscarPorCodigo}
+            onChange={onChangeCodigo}
+            name="alunoCodigo"
+            desabilitado={desabilitado || desabilitarCampo.codigo}
+          />
+        </div>
+      ) : (
+        ''
+      )}
     </React.Fragment>
   );
 };
@@ -172,6 +263,13 @@ LocalizadorEstudante.propTypes = {
   desabilitado: PropTypes.bool,
   ueId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   anoLetivo: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  codigoTurma: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  exibirCodigoEOL: PropTypes.bool,
+  valorInicialAlunoCodigo: PropTypes.oneOfType([
+    PropTypes.number,
+    PropTypes.string,
+  ]),
+  placeholder: PropTypes.string,
 };
 
 LocalizadorEstudante.defaultProps = {
@@ -180,6 +278,10 @@ LocalizadorEstudante.defaultProps = {
   desabilitado: false,
   ueId: '',
   anoLetivo: '',
+  codigoTurma: '',
+  exibirCodigoEOL: true,
+  valorInicialAlunoCodigo: '',
+  placeholder: '',
 };
 
 export default LocalizadorEstudante;
