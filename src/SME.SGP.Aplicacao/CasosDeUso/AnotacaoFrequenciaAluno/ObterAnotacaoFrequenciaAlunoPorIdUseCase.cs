@@ -74,7 +74,7 @@ namespace SME.SGP.Aplicacao
                         Id = motivoAusencia.Id,
                         Descricao = motivoAusencia.Descricao
                     },
-                MotivoAusenciaId = anotacao.MotivoAusenciaId.Value,
+                MotivoAusenciaId = anotacao.MotivoAusenciaId != null ? anotacao.MotivoAusenciaId.Value : 0,
             };
         }
 

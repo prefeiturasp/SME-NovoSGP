@@ -63,7 +63,10 @@ const AusenciasAluno = props => {
         className="d-flex"
         style={{ alignItems: 'center', justifyContent: 'space-between' }}
       >
-        <div>{item.motivo}</div>
+        <div>
+          {item.motivo.substr(0, 100)}
+          {item.motivo.length > 100 ? '...' : ''}
+        </div>
 
         <BtnVisualizarAnotacao
           className={item.id ? 'btn-com-anotacao' : ''}
