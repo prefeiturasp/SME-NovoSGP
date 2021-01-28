@@ -432,13 +432,6 @@ class ServicoEncaminhamentoAEE {
             .finally(() => dispatch(setExibirLoaderEncaminhamentoAEE(false)));
 
           if (resposta?.status === 200) {
-            let mensagem = 'Registro salvo com sucesso';
-            if (enviarEncaminhamento) {
-              mensagem = 'Encaminhamento enviado para validação do CP';
-            } else if (encaminhamentoId) {
-              mensagem = 'Registro alterado com sucesso';
-            }
-            sucesso(mensagem);
             return true;
           }
         }
