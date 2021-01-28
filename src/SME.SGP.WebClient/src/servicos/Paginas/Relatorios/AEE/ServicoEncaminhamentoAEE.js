@@ -251,6 +251,9 @@ class ServicoEncaminhamentoAEE {
       }
 
       if (somenteExecutarValidacao) {
+        if (!todosOsFormsEstaoValidos) {
+          dispatch(setExibirModalErrosEncaminhamento(true));
+        }
         return todosOsFormsEstaoValidos;
       }
 
