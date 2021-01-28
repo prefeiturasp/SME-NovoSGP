@@ -266,7 +266,10 @@ const BotoesAcoesEncaminhamentoAEE = props => {
         bold
         className="ml-3"
         onClick={onClickEncerrar}
-        hidden={dadosEncaminhamento?.situacao === situacaoAEE.Rascunho}
+        hidden={
+          !dadosEncaminhamento?.situacao ||
+          dadosEncaminhamento?.situacao === situacaoAEE.Rascunho
+        }
         disabled={
           desabilitarCamposEncaminhamentoAEE ||
           encaminhamentoAEEEmEdicao ||
@@ -282,7 +285,10 @@ const BotoesAcoesEncaminhamentoAEE = props => {
         bold
         className="ml-3"
         onClick={onClickEncaminharAEE}
-        hidden={dadosEncaminhamento?.situacao === situacaoAEE.Rascunho}
+        hidden={
+          !dadosEncaminhamento?.situacao ||
+          dadosEncaminhamento?.situacao === situacaoAEE.Rascunho
+        }
         disabled={
           desabilitarCamposEncaminhamentoAEE ||
           encaminhamentoAEEEmEdicao ||
