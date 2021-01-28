@@ -7,6 +7,7 @@ const tipoQuestao = {
   Upload: 6,
   InformacoesEscolares: 7,
   AtendimentoClinico: 8,
+  ComboMultiplaEscolha: 9,
 };
 
 export default tipoQuestao;
