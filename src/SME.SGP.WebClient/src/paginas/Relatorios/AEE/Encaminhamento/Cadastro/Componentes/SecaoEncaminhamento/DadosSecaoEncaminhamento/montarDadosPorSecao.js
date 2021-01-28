@@ -247,7 +247,7 @@ const MontarDadosPorSecao = props => {
         valor
       );
 
-      if (opcaoResposta.questaoComplementar?.obrigatorio) {
+      if (opcaoResposta?.questaoComplementar?.obrigatorio) {
         return false;
       }
       return true;

@@ -439,7 +439,8 @@ class ServicoEncaminhamentoAEE {
                 }
 
                 if (
-                  questao.tipoQuestao === tipoQuestao.Upload &&
+                  (questao.tipoQuestao === tipoQuestao.Upload ||
+                    questao.tipoQuestao === tipoQuestao.ComboMultiplaEscolha) &&
                   !questao.resposta
                 ) {
                   questao = null;
