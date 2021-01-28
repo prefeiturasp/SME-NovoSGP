@@ -25,6 +25,10 @@ class ServicoRegistroItineranciaAEE {
     }
     return api.post(urlPadrao, itinerancia);
   };
+
+  obterSituacoes = () => {
+    return api.get(`${urlPadrao}/situacoes`);
+  };
 }
 
 export default new ServicoRegistroItineranciaAEE();
