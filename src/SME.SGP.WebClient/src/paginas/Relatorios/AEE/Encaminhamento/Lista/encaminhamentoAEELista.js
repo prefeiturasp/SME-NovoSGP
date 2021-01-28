@@ -103,9 +103,9 @@ const EncaminhamentoAEELista = () => {
       );
 
       const params = {
-        dreId: dreSelecionada ? dreSelecionada.id : '',
-        ueId: ueSelecionada ? ueSelecionada.id : '',
-        turmaId: turmaSelecionada ? turmaSelecionada.id : '',
+        dreId: dreSelecionada ? dreSelecionada?.id : '',
+        ueId: ueSelecionada ? ueSelecionada?.id : '',
+        turmaId: turmaSelecionada ? turmaSelecionada?.id : '',
         alunoCodigo: aluno,
         situacao: situa,
       };
@@ -194,13 +194,6 @@ const EncaminhamentoAEELista = () => {
 
         if (lista?.length === 1) {
           setUeId(lista[0].valor);
-          filtrar(
-            dreId,
-            lista[0].valor,
-            turmaId,
-            alunoLocalizadorSelecionado,
-            situacao
-          );
         }
 
         setListaUes(lista);
@@ -253,13 +246,6 @@ const EncaminhamentoAEELista = () => {
 
         if (lista && lista.length && lista.length === 1) {
           setDreId(lista[0].valor);
-          filtrar(
-            lista[0].valor,
-            ueId,
-            turmaId,
-            alunoLocalizadorSelecionado,
-            situacao
-          );
         }
       } else {
         setListaDres([]);
@@ -375,6 +361,18 @@ const EncaminhamentoAEELista = () => {
     limparFiltrosSelecionados();
     setConsideraHistorico(e.target.checked);
   };
+
+  useEffect(() => {
+    if (dreId && listaDres.length && listaUes.length) {
+      filtrar(
+        dreId,
+        ueId,
+        turmaId,
+        alunoLocalizadorSelecionado?.alunoCodigo,
+        situacao
+      );
+    }
+  }, [dreId, ueId, listaDres, listaUes]);
 
   return (
     <>
