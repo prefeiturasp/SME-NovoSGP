@@ -128,13 +128,13 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(encaminhamentoId));
         }
 
-        [HttpPost("encerrar/{encaminhamentoId}/motivo/{motivoEncerramento}")]
+        [HttpPost("encerrar")]
         [ProducesResponseType(typeof(RetornoBaseDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.AEE_A, Policy = "Bearer")]
-        public async Task<IActionResult> EncerrarEncaminhamento(long encaminhamentoId, string motivoEncerramento, [FromServices] IEncerrarEncaminhamentoAEEUseCase useCase)
+        public async Task<IActionResult> EncerrarEncaminhamento([FromBody] EncarramentoEncaminhamentoDto parametros, [FromServices] IEncerrarEncaminhamentoAEEUseCase useCase)
         {
-            return Ok(await useCase.Executar(encaminhamentoId, motivoEncerramento));
+            return Ok(await useCase.Executar(parametros.EncaminhamentoId, parametros.MotivoEncerramento));
         }
 
         [HttpPost("enviar-analise/{encaminhamentoId}")]

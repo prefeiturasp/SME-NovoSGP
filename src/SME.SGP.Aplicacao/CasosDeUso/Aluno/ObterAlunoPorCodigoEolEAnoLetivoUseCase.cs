@@ -28,16 +28,16 @@ namespace SME.SGP.Aplicacao
                 DataSituacao = alunoPorTurmaResposta.DataSituacao,
                 CodigoAluno = alunoPorTurmaResposta.CodigoAluno,
                 Situacao = alunoPorTurmaResposta.SituacaoMatricula,                
-                TurmaEscola = await OberterNomeTurmaFormatado(alunoPorTurmaResposta.CodigoTurma)
+                TurmaEscola = await OberterNomeTurmaFormatado(alunoPorTurmaResposta.CodigoTurma.ToString())
             };
 
             return alunoReduzido;
         }
 
-        private async Task<string> OberterNomeTurmaFormatado(long turmaId)
+        private async Task<string> OberterNomeTurmaFormatado(string turmaId)
         {
             var turmaNome = "";
-            var turma = await mediator.Send(new ObterTurmaPorIdQuery(turmaId));
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaId));
 
             if (turma != null)
                 turmaNome = $"{turma.ModalidadeCodigo.ShortName()} - {turma.Nome}";

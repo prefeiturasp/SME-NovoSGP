@@ -160,6 +160,8 @@ namespace SME.SGP.Aplicacao.Servicos
                 if (ehSupervisor)
                 {
                     var uesIds = ObterAbrangenciaEolSupervisor(login);
+                    if (!uesIds.Any())
+                        return;
                     var abrangenciaSupervisor = await servicoEOL.ObterAbrangenciaParaSupervisor(uesIds.ToArray());
                     abrangenciaEol = new AbrangenciaCompactaVigenteRetornoEOLDTO()
                     {

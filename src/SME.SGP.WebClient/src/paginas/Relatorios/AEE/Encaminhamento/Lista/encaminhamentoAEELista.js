@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import {
   CheckboxComponent,
   ListaPaginada,
@@ -13,6 +13,7 @@ import { Colors } from '~/componentes/colors';
 import LocalizadorEstudante from '~/componentes/LocalizadorEstudante';
 import { URL_HOME } from '~/constantes/url';
 import { RotasDto } from '~/dtos';
+import { setDadosIniciaisEncaminhamentoAEE } from '~/redux/modulos/encaminhamentoAEE/actions';
 import { verificaSomenteConsulta } from '~/servicos';
 import AbrangenciaServico from '~/servicos/Abrangencia';
 import { erros } from '~/servicos/alertas';
@@ -22,6 +23,8 @@ import FiltroHelper from '~componentes-sgp/filtro/helper';
 import ModalAvisoNovoEncaminhamentoAEE from './Componentes/AvisoCadastro/modalAvisoCadastro';
 
 const EncaminhamentoAEELista = () => {
+  const dispatch = useDispatch();
+
   const codigosAlunosSelecionados = useSelector(
     state => state.localizadorEstudante.codigosAluno
   );
@@ -103,9 +106,9 @@ const EncaminhamentoAEELista = () => {
       );
 
       const params = {
-        dreId: dreSelecionada ? dreSelecionada.id : '',
-        ueId: ueSelecionada ? ueSelecionada.id : '',
-        turmaId: turmaSelecionada ? turmaSelecionada.id : '',
+        dreId: dreSelecionada ? dreSelecionada?.id : '',
+        ueId: ueSelecionada ? ueSelecionada?.id : '',
+        turmaId: turmaSelecionada ? turmaSelecionada?.id : '',
         alunoCodigo: aluno,
         situacao: situa,
       };
@@ -194,13 +197,6 @@ const EncaminhamentoAEELista = () => {
 
         if (lista?.length === 1) {
           setUeId(lista[0].valor);
-          filtrar(
-            dreId,
-            lista[0].valor,
-            turmaId,
-            alunoLocalizadorSelecionado,
-            situacao
-          );
         }
 
         setListaUes(lista);
@@ -221,6 +217,7 @@ const EncaminhamentoAEELista = () => {
 
   const onChangeDre = dre => {
     setDreId(dre);
+    dispatch(setDadosIniciaisEncaminhamentoAEE({ ueId, dreId: dre }));
 
     setListaUes([]);
     setUeId();
@@ -253,13 +250,6 @@ const EncaminhamentoAEELista = () => {
 
         if (lista && lista.length && lista.length === 1) {
           setDreId(lista[0].valor);
-          filtrar(
-            lista[0].valor,
-            ueId,
-            turmaId,
-            alunoLocalizadorSelecionado,
-            situacao
-          );
         }
       } else {
         setListaDres([]);
@@ -318,7 +308,7 @@ const EncaminhamentoAEELista = () => {
 
   const onChangeUe = ue => {
     setUeId(ue);
-
+    dispatch(setDadosIniciaisEncaminhamentoAEE({ ueId: ue, dreId }));
     setListaTurmas([]);
     setTurmaId();
 
@@ -375,6 +365,18 @@ const EncaminhamentoAEELista = () => {
     limparFiltrosSelecionados();
     setConsideraHistorico(e.target.checked);
   };
+
+  useEffect(() => {
+    if (dreId && listaDres.length && listaUes.length) {
+      filtrar(
+        dreId,
+        ueId,
+        turmaId,
+        alunoLocalizadorSelecionado?.alunoCodigo,
+        situacao
+      );
+    }
+  }, [dreId, ueId, listaDres, listaUes]);
 
   return (
     <>
@@ -482,6 +484,7 @@ const EncaminhamentoAEELista = () => {
                   desabilitado={!dreId || !ueId}
                   exibirCodigoEOL={false}
                   codigoTurma={turmaId}
+                  placeholder="Procure pelo nome da Criança/Estudante"
                 />
               </div>
             </div>

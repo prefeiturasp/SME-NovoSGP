@@ -26,6 +26,10 @@ const BotoesAcoesEncaminhamentoAEE = props => {
     store => store.encaminhamentoAEE.dadosEncaminhamento
   );
 
+  const dadosSecaoLocalizarEstudante = useSelector(
+    store => store.encaminhamentoAEE.dadosSecaoLocalizarEstudante
+  );
+
   const desabilitarCamposEncaminhamentoAEE = useSelector(
     store => store.encaminhamentoAEE.desabilitarCamposEncaminhamentoAEE
   );
@@ -47,20 +51,32 @@ const BotoesAcoesEncaminhamentoAEE = props => {
       validarCamposObrigatorios = true;
     }
 
-    ServicoEncaminhamentoAEE.salvarEncaminhamento(
+    const salvou = await ServicoEncaminhamentoAEE.salvarEncaminhamento(
       encaminhamentoId,
       situacao,
       validarCamposObrigatorios
     );
+    if (salvou) {
+      let mensagem = 'Registro salvo com sucesso';
+      if (encaminhamentoId) {
+        mensagem = 'Registro alterado com sucesso';
+      }
+      sucesso(mensagem);
+      history.push(RotasDto.RELATORIO_AEE_ENCAMINHAMENTO);
+    }
   };
 
   const onClickEnviar = async () => {
     const encaminhamentoId = match?.params?.id;
-    ServicoEncaminhamentoAEE.salvarEncaminhamento(
+    const salvou = await ServicoEncaminhamentoAEE.salvarEncaminhamento(
       encaminhamentoId,
       situacaoAEE.Encaminhado,
       true
     );
+    if (salvou) {
+      sucesso('Encaminhamento enviado para validação do CP');
+      history.push(RotasDto.RELATORIO_AEE_ENCAMINHAMENTO);
+    }
   };
 
   const onClickVoltar = async () => {
@@ -72,7 +88,24 @@ const BotoesAcoesEncaminhamentoAEE = props => {
       );
       if (confirmou) {
         const encaminhamentoId = match?.params?.id;
-        ServicoEncaminhamentoAEE.salvarEncaminhamento(encaminhamentoId);
+        let situacao = situacaoAEE.Rascunho;
+
+        if (encaminhamentoId) {
+          situacao = dadosEncaminhamento?.situacao;
+        }
+        const salvou = await ServicoEncaminhamentoAEE.salvarEncaminhamento(
+          encaminhamentoId,
+          situacao,
+          false
+        );
+        if (salvou) {
+          let mensagem = 'Registro salvo com sucesso';
+          if (encaminhamentoId) {
+            mensagem = 'Registro alterado com sucesso';
+          }
+          sucesso(mensagem);
+          history.push(RotasDto.RELATORIO_AEE_ENCAMINHAMENTO);
+        }
       } else {
         history.push(RotasDto.RELATORIO_AEE_ENCAMINHAMENTO);
       }
@@ -119,26 +152,40 @@ const BotoesAcoesEncaminhamentoAEE = props => {
     }
   };
 
-  const onClickEncerrar = () => {
+  const onClickEncerrar = async () => {
     if (!desabilitarCamposEncaminhamentoAEE) {
-      dispatch(setExibirModalEncerramentoEncaminhamentoAEE(true));
+      const encaminhamentoId = match?.params?.id;
+      const salvou = await ServicoEncaminhamentoAEE.salvarEncaminhamento(
+        encaminhamentoId,
+        situacaoAEE.Encaminhado,
+        true
+      );
+      if (salvou) {
+        dispatch(setExibirModalEncerramentoEncaminhamentoAEE(true));
+      }
     }
   };
 
   const onClickEncaminharAEE = async () => {
     if (!desabilitarCamposEncaminhamentoAEE) {
       const encaminhamentoId = match?.params?.id;
+      const salvou = await ServicoEncaminhamentoAEE.salvarEncaminhamento(
+        encaminhamentoId,
+        situacaoAEE.Encaminhado,
+        true
+      );
+      if (salvou) {
+        dispatch(setExibirLoaderEncaminhamentoAEE(true));
+        const resposta = await ServicoEncaminhamentoAEE.enviarParaAnaliseEncaminhamento(
+          encaminhamentoId
+        )
+          .catch(e => erros(e))
+          .finally(() => dispatch(setExibirLoaderEncaminhamentoAEE(false)));
 
-      dispatch(setExibirLoaderEncaminhamentoAEE(true));
-      const resposta = await ServicoEncaminhamentoAEE.enviarParaAnaliseEncaminhamento(
-        encaminhamentoId
-      )
-        .catch(e => erros(e))
-        .finally(() => dispatch(setExibirLoaderEncaminhamentoAEE(false)));
-
-      if (resposta?.status === 200) {
-        sucesso('Encaminhamento enviado para a AEE');
-        history.push(RotasDto.RELATORIO_AEE_ENCAMINHAMENTO);
+        if (resposta?.status === 200) {
+          sucesso('Encaminhamento enviado para a AEE');
+          history.push(RotasDto.RELATORIO_AEE_ENCAMINHAMENTO);
+        }
       }
     }
   };
@@ -172,11 +219,7 @@ const BotoesAcoesEncaminhamentoAEE = props => {
         border
         className="mr-3"
         onClick={onClickExcluir}
-        disabled={
-          !permissoesTela.podeExcluir ||
-          !match?.params?.id ||
-          (match?.params?.id && !dadosEncaminhamento?.podeEditar)
-        }
+        disabled={!permissoesTela.podeExcluir || !match?.params?.id}
       />
       <Button
         id="btn-salvar"
@@ -199,9 +242,13 @@ const BotoesAcoesEncaminhamentoAEE = props => {
         bold
         className="ml-3"
         onClick={onClickEnviar}
-        hidden={dadosEncaminhamento?.situacao !== situacaoAEE.Rascunho}
+        hidden={
+          dadosEncaminhamento?.situacao &&
+          dadosEncaminhamento?.situacao !== situacaoAEE.Rascunho
+        }
         disabled={
-          desabilitarCamposEncaminhamentoAEE || !encaminhamentoAEEEmEdicao
+          !dadosSecaoLocalizarEstudante?.codigoAluno ||
+          desabilitarCamposEncaminhamentoAEE
         }
       />
       <Button
@@ -212,10 +259,12 @@ const BotoesAcoesEncaminhamentoAEE = props => {
         bold
         className="ml-3"
         onClick={onClickEncerrar}
-        hidden={dadosEncaminhamento?.situacao === situacaoAEE.Rascunho}
+        hidden={
+          !dadosEncaminhamento?.situacao ||
+          dadosEncaminhamento?.situacao === situacaoAEE.Rascunho
+        }
         disabled={
           desabilitarCamposEncaminhamentoAEE ||
-          encaminhamentoAEEEmEdicao ||
           !dadosEncaminhamento?.podeEditar ||
           dadosEncaminhamento?.situacao === situacaoAEE.Analise
         }
@@ -228,10 +277,12 @@ const BotoesAcoesEncaminhamentoAEE = props => {
         bold
         className="ml-3"
         onClick={onClickEncaminharAEE}
-        hidden={dadosEncaminhamento?.situacao === situacaoAEE.Rascunho}
+        hidden={
+          !dadosEncaminhamento?.situacao ||
+          dadosEncaminhamento?.situacao === situacaoAEE.Rascunho
+        }
         disabled={
           desabilitarCamposEncaminhamentoAEE ||
-          encaminhamentoAEEEmEdicao ||
           !dadosEncaminhamento?.podeEditar ||
           dadosEncaminhamento?.situacao === situacaoAEE.Analise
         }

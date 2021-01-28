@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
         {
             var resposta = request.RespostaEncaminhamento;
 
-            if (!string.IsNullOrEmpty(request.RespostaQuestaoDto.Resposta) && EnumExtension.EhUmDosValores(request.RespostaQuestaoDto.TipoQuestao, new Enum[] { TipoQuestao.Radio, TipoQuestao.Combo, TipoQuestao.Checkbox }))
+            if (!string.IsNullOrEmpty(request.RespostaQuestaoDto.Resposta) && EnumExtension.EhUmDosValores(request.RespostaQuestaoDto.TipoQuestao, new Enum[] { TipoQuestao.Radio, TipoQuestao.Combo, TipoQuestao.Checkbox , TipoQuestao.ComboMultiplaEscolha }))
             {
                 resposta.RespostaId = long.Parse(request.RespostaQuestaoDto.Resposta);
             }

@@ -500,6 +500,7 @@ const DadosComunicadosLeitura = props => {
         dadosComunicado.codigoDre || '',
         dadosComunicado.codigoUe || '',
         dadosComunicado.id,
+        dadosComunicado.agruparModalidade,
         visualizacao
       )
         .catch(e => erros(e))

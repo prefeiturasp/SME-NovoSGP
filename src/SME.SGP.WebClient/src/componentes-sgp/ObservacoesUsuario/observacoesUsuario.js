@@ -14,6 +14,7 @@ const ObservacoesUsuario = props => {
     esconderCaixaExterna,
     verificaProprietario,
     permissoes,
+    mostrarListaNotificacao,
   } = props;
 
   const { podeIncluir, podeAlterar, podeExcluir } = permissoes;
@@ -34,6 +35,7 @@ const ObservacoesUsuario = props => {
             verificaProprietario={verificaProprietario}
             podeAlterar={podeAlterar}
             podeExcluir={podeExcluir}
+            mostrarListaNotificacao={mostrarListaNotificacao}
           />
         </div>
       </ContainerObservacoesUsuario>
@@ -49,6 +51,7 @@ ObservacoesUsuario.propTypes = {
   esconderCaixaExterna: PropTypes.bool,
   verificaProprietario: PropTypes.bool,
   permissoes: PropTypes.objectOf(PropTypes.object),
+  mostrarListaNotificacao: PropTypes.bool,
 };
 
 ObservacoesUsuario.defaultProps = {
@@ -59,6 +62,7 @@ ObservacoesUsuario.defaultProps = {
   esconderCaixaExterna: false,
   verificaProprietario: false,
   permissoes: { podeAlterar: true, podeIncluir: true, podeExcluir: true },
+  mostrarListaNotificacao: false,
 };
 
 export default ObservacoesUsuario;

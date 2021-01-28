@@ -1,21 +1,16 @@
 import * as Yup from 'yup';
-import { RotasDto } from '~/dtos';
-import situacaoAEE from '~/dtos/situacaoAEE';
 import tipoQuestao from '~/dtos/tipoQuestao';
 import { store } from '~/redux';
 import {
   setDadosModalAviso,
   setEncaminhamentoAEEEmEdicao,
-  setErrosModalEncaminhamento,
   setExibirLoaderEncaminhamentoAEE,
   setExibirModalAviso,
   setExibirModalErrosEncaminhamento,
   setFormsSecoesEncaminhamentoAEE,
-  setLabelCamposEncaminhamento,
 } from '~/redux/modulos/encaminhamentoAEE/actions';
-import { erros, sucesso } from '~/servicos/alertas';
+import { erros } from '~/servicos/alertas';
 import api from '~/servicos/api';
-import history from '~/servicos/history';
 
 const urlPadrao = 'v1/encaminhamento-aee';
 
@@ -202,54 +197,10 @@ class ServicoEncaminhamentoAEE {
     return {};
   };
 
-  guardarLabelCampo = (questaoAtual, label) => {
-    const { dispatch } = store;
-
-    const state = store.getState();
-    const { encaminhamentoAEE } = state;
-    const { labelCamposEncaminhamento } = encaminhamentoAEE;
-
-    let textoLabel = label;
-
-    if (!questaoAtual.nome) {
-      let descNomeCampo = '';
-      switch (questaoAtual.tipoQuestao) {
-        case tipoQuestao.Frase:
-          descNomeCampo = 'Campo Frase';
-          break;
-        case tipoQuestao.Texto:
-          descNomeCampo = 'Campo Texto';
-          break;
-        case tipoQuestao.Combo:
-          descNomeCampo = 'Campo Radio';
-          break;
-        case tipoQuestao.Checkbox:
-          descNomeCampo = 'Campo Checkbox';
-          break;
-        case tipoQuestao.Upload:
-          descNomeCampo = 'Campo Upload';
-          break;
-        case tipoQuestao.InformacoesEscolares:
-          descNomeCampo = 'Campo Informacoes Escolares';
-          break;
-        case tipoQuestao.AtendimentoClinico:
-          descNomeCampo = 'Campo Atendimento Clinico';
-          break;
-
-        default:
-          break;
-      }
-      textoLabel = `${label} ${descNomeCampo}`;
-    }
-
-    labelCamposEncaminhamento[questaoAtual.id] = textoLabel;
-    dispatch(setLabelCamposEncaminhamento(labelCamposEncaminhamento));
-  };
-
   salvarEncaminhamento = async (
     encaminhamentoId,
     situacao,
-    enviarEcaminhamento
+    enviarEncaminhamento
   ) => {
     const { dispatch } = store;
 
@@ -258,12 +209,9 @@ class ServicoEncaminhamentoAEE {
     const {
       formsSecoesEncaminhamentoAEE,
       dadosSecaoLocalizarEstudante,
-      labelCamposEncaminhamento,
     } = encaminhamentoAEE;
 
     let contadorFormsValidos = 0;
-
-    const errosValidacaoEncaminhamento = [];
 
     const validaAntesDoSubmit = refForm => {
       let arrayCampos = [];
@@ -283,32 +231,18 @@ class ServicoEncaminhamentoAEE {
         ) {
           contadorFormsValidos += 1;
         }
-
-        if (refForm.getFormikContext().errors) {
-          Object.keys(refForm.getFormikContext().errors).forEach(campo => {
-            const label = labelCamposEncaminhamento[campo];
-            if (label) {
-              errosValidacaoEncaminhamento.push(label);
-            }
-          });
-        }
       });
     };
 
     if (formsSecoesEncaminhamentoAEE?.length) {
-      let todosOsFormsEstaoValidos = !enviarEcaminhamento;
+      let todosOsFormsEstaoValidos = !enviarEncaminhamento;
 
-      if (enviarEcaminhamento) {
+      if (enviarEncaminhamento) {
         const promises = formsSecoesEncaminhamentoAEE.map(async item =>
           validaAntesDoSubmit(item.form())
         );
 
         await Promise.all(promises);
-
-        if (errosValidacaoEncaminhamento?.length) {
-          dispatch(setErrosModalEncaminhamento(errosValidacaoEncaminhamento));
-          dispatch(setExibirModalErrosEncaminhamento(true));
-        }
 
         todosOsFormsEstaoValidos =
           contadorFormsValidos ===
@@ -351,6 +285,13 @@ class ServicoEncaminhamentoAEE {
                     questao.resposta = '';
                   }
                   break;
+                case tipoQuestao.ComboMultiplaEscolha:
+                  if (campos[key]?.length) {
+                    questao.resposta = campos[key];
+                  } else {
+                    questao.resposta = '';
+                  }
+                  break;
                 default:
                   questao.resposta = campos[key] || '';
                   break;
@@ -387,6 +328,39 @@ class ServicoEncaminhamentoAEE {
                     }
                   }
                 });
+              } else if (
+                questao.tipoQuestao === tipoQuestao.ComboMultiplaEscolha &&
+                questao?.resposta?.length
+              ) {
+                questao.resposta.forEach(valorSelecionado => {
+                  if (valorSelecionado) {
+                    if (questaoAtual?.resposta?.length) {
+                      const temResposta = questaoAtual.resposta.find(
+                        a =>
+                          String(a?.opcaoRespostaId) ===
+                          String(valorSelecionado)
+                      );
+
+                      if (temResposta) {
+                        questoes.push({
+                          ...questao,
+                          resposta: valorSelecionado,
+                          respostaEncaminhamentoId: temResposta.id,
+                        });
+                      } else {
+                        questoes.push({
+                          ...questao,
+                          resposta: valorSelecionado,
+                        });
+                      }
+                    } else {
+                      questoes.push({
+                        ...questao,
+                        resposta: valorSelecionado,
+                      });
+                    }
+                  }
+                });
               } else {
                 if (questaoAtual?.resposta[0]?.id) {
                   questao.respostaEncaminhamentoId =
@@ -394,7 +368,8 @@ class ServicoEncaminhamentoAEE {
                 }
 
                 if (
-                  questao.tipoQuestao === tipoQuestao.Upload &&
+                  (questao.tipoQuestao === tipoQuestao.Upload ||
+                    questao.tipoQuestao === tipoQuestao.ComboMultiplaEscolha) &&
                   !questao.resposta
                 ) {
                   questao = null;
@@ -427,18 +402,14 @@ class ServicoEncaminhamentoAEE {
             .finally(() => dispatch(setExibirLoaderEncaminhamentoAEE(false)));
 
           if (resposta?.status === 200) {
-            let mensagem = 'Registro salvo com sucesso';
-            if (enviarEcaminhamento) {
-              mensagem = 'Encaminhamento enviado para validação do CP';
-            } else if (encaminhamentoId) {
-              mensagem = 'Registro alterado com sucesso';
-            }
-            sucesso(mensagem);
-            history.push(RotasDto.RELATORIO_AEE_ENCAMINHAMENTO);
+            return true;
           }
         }
+      } else {
+        dispatch(setExibirModalErrosEncaminhamento(true));
       }
     }
+    return false;
   };
 
   excluirEncaminhamento = encaminhamentoId => {
@@ -466,9 +437,8 @@ class ServicoEncaminhamentoAEE {
   };
 
   encerramentoEncaminhamentoAEE = (encaminhamentoId, motivoEncerramento) => {
-    return api.post(
-      `${urlPadrao}/encerrar/${encaminhamentoId}/motivo/${motivoEncerramento}`
-    );
+    const parametro = { encaminhamentoId, motivoEncerramento };
+    return api.post(`${urlPadrao}/encerrar`, parametro);
   };
 
   enviarParaAnaliseEncaminhamento = encaminhamentoId => {
