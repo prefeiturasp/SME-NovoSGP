@@ -356,6 +356,13 @@ class ServicoEncaminhamentoAEE {
                     questao.resposta = '';
                   }
                   break;
+                case tipoQuestao.ComboMultiplaEscolha:
+                  if (campos[key]?.length) {
+                    questao.resposta = campos[key];
+                  } else {
+                    questao.resposta = '';
+                  }
+                  break;
                 default:
                   questao.resposta = campos[key] || '';
                   break;
@@ -388,6 +395,39 @@ class ServicoEncaminhamentoAEE {
                       questoes.push({
                         ...questao,
                         resposta: codigo,
+                      });
+                    }
+                  }
+                });
+              } else if (
+                questao.tipoQuestao === tipoQuestao.ComboMultiplaEscolha &&
+                questao?.resposta?.length
+              ) {
+                questao.resposta.forEach(valorSelecionado => {
+                  if (valorSelecionado) {
+                    if (questaoAtual?.resposta?.length) {
+                      const temResposta = questaoAtual.resposta.find(
+                        a =>
+                          String(a?.opcaoRespostaId) ===
+                          String(valorSelecionado)
+                      );
+
+                      if (temResposta) {
+                        questoes.push({
+                          ...questao,
+                          resposta: valorSelecionado,
+                          respostaEncaminhamentoId: temResposta.id,
+                        });
+                      } else {
+                        questoes.push({
+                          ...questao,
+                          resposta: valorSelecionado,
+                        });
+                      }
+                    } else {
+                      questoes.push({
+                        ...questao,
+                        resposta: valorSelecionado,
                       });
                     }
                   }

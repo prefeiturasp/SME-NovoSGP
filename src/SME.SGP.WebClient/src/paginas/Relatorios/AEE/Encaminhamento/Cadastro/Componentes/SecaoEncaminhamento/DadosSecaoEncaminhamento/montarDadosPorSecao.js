@@ -101,6 +101,9 @@ const MontarDadosPorSecao = props => {
           case tipoQuestao.Combo:
             valorRespostaAtual = String(resposta[0].opcaoRespostaId || '');
             break;
+          case tipoQuestao.ComboMultiplaEscolha:
+            valorRespostaAtual = resposta.map(r => String(r.opcaoRespostaId));
+            break;
           case tipoQuestao.Texto:
             valorRespostaAtual = resposta[0].texto;
             break;
@@ -136,6 +139,30 @@ const MontarDadosPorSecao = props => {
       }
 
       if (
+        valorRespostaAtual?.length &&
+        questaoAtual?.tipoQuestao === tipoQuestao.ComboMultiplaEscolha
+      ) {
+        const idQuestaoComResposta = valorRespostaAtual.find(valorSalvo => {
+          const opcaoResposta = questaoAtual?.opcaoResposta.find(
+            q => String(q.id) === String(valorSalvo)
+          );
+
+          if (opcaoResposta?.questaoComplementar?.resposta?.length) {
+            return true;
+          }
+          return false;
+        });
+
+        if (idQuestaoComResposta) {
+          const questaoComplmentarComResposta = questaoAtual?.opcaoResposta.find(
+            q => String(q.id) === String(idQuestaoComResposta)
+          );
+
+          if (questaoComplmentarComResposta?.questaoComplementar) {
+            montarDados(questaoComplmentarComResposta.questaoComplementar);
+          }
+        }
+      } else if (
         valorRespostaAtual &&
         questaoAtual?.tipoQuestao !== tipoQuestao.Upload &&
         questaoAtual?.tipoQuestao !== tipoQuestao.Texto
@@ -198,6 +225,217 @@ const MontarDadosPorSecao = props => {
     }
 
     dispatch(setEncaminhamentoAEEEmEdicao(true));
+  };
+
+  const obterOpcaoRespostaPorId = (opcoesResposta, idComparacao) => {
+    if (opcoesResposta?.length) {
+      const opcaoResposta = opcoesResposta.find(
+        item => String(item.id) === String(idComparacao)
+      );
+      return opcaoResposta;
+    }
+    return null;
+  };
+
+  const obterIdOpcaoRespostaComComplementarNaoObrigatoria = (
+    valorAtualSelecionado,
+    questaoAtual
+  ) => {
+    return valorAtualSelecionado.find(valor => {
+      const opcaoResposta = obterOpcaoRespostaPorId(
+        questaoAtual?.opcaoResposta,
+        valor
+      );
+
+      if (opcaoResposta.questaoComplementar?.obrigatorio) {
+        return false;
+      }
+      return true;
+    });
+  };
+
+  const obterIdOpcaoRespostaComComplementarObrigatoria = (
+    valorAtualSelecionado,
+    questaoAtual
+  ) => {
+    return valorAtualSelecionado.find(valor => {
+      const opcaoAtual = questaoAtual?.opcaoResposta.find(
+        item => String(item.id) === String(valor)
+      );
+
+      if (opcaoAtual?.questaoComplementar?.obrigatorio) {
+        return true;
+      }
+      return false;
+    });
+  };
+
+  const obterValorCampoComplementarComboMultiplaEscolha = (
+    form,
+    valoresAnterioresSelecionado,
+    questaoAtual
+  ) => {
+    const camposEmTela = Object.keys(form.values);
+
+    let valorDigitadoCampoComplementar = '';
+
+    const idOpcaoRespostaComValorDigitado = valoresAnterioresSelecionado.find(
+      idCampo => {
+        const opcaoResposta = obterOpcaoRespostaPorId(
+          questaoAtual?.opcaoResposta,
+          idCampo
+        );
+
+        if (opcaoResposta?.questaoComplementar) {
+          const temCampo = camposEmTela.find(
+            c => String(c) === String(opcaoResposta?.questaoComplementar?.id)
+          );
+          return !!temCampo;
+        }
+
+        return null;
+      }
+    );
+
+    if (idOpcaoRespostaComValorDigitado) {
+      const opcaoRespostaComValorDigitado = obterOpcaoRespostaPorId(
+        questaoAtual?.opcaoResposta,
+        idOpcaoRespostaComValorDigitado
+      );
+      valorDigitadoCampoComplementar =
+        form.values[opcaoRespostaComValorDigitado?.questaoComplementar?.id];
+    }
+
+    return valorDigitadoCampoComplementar;
+  };
+
+  const removerAddCampoComplementarComboMultiplaEscolha = (
+    questaoAtual,
+    form,
+    idOpcaoComplementarAdicionar,
+    idOpcaoComplementarRemover,
+    valorDigitadoCampoComplementar
+  ) => {
+    const opcaoRespostaAdicionar = obterOpcaoRespostaPorId(
+      questaoAtual?.opcaoResposta,
+      idOpcaoComplementarAdicionar
+    );
+
+    const questaoComplementarAdicionarId =
+      opcaoRespostaAdicionar?.questaoComplementar?.id;
+
+    if (questaoComplementarAdicionarId) {
+      form.setFieldValue(
+        questaoComplementarAdicionarId,
+        valorDigitadoCampoComplementar
+      );
+      form.values[
+        questaoComplementarAdicionarId
+      ] = valorDigitadoCampoComplementar;
+    }
+
+    const opcaoRespostaRemover = obterOpcaoRespostaPorId(
+      questaoAtual?.opcaoResposta,
+      idOpcaoComplementarRemover
+    );
+
+    const questaoComplementarRemoverId =
+      opcaoRespostaRemover?.questaoComplementar?.id;
+
+    if (questaoComplementarRemoverId) {
+      delete form.values[questaoComplementarRemoverId];
+      form.unregisterField(questaoComplementarRemoverId);
+    }
+  };
+
+  const onChangeCampoComboMultiplaEscolha = (
+    questaoAtual,
+    form,
+    valoresAtuaisSelecionados
+  ) => {
+    dispatch(setEncaminhamentoAEEEmEdicao(true));
+
+    if (
+      !valoresAtuaisSelecionados?.length &&
+      questaoAtual?.opcaoResposta?.length
+    ) {
+      questaoAtual.opcaoResposta.forEach(a => {
+        if (a?.questaoComplementar) {
+          delete form.values[a.questaoComplementar.id];
+          form.unregisterField(a.questaoComplementar.id);
+        }
+      });
+
+      return;
+    }
+
+    const valoresAnterioresSelecionado = form.values[questaoAtual.id]?.length
+      ? form.values[questaoAtual.id]
+      : [];
+
+    if (valoresAnterioresSelecionado?.length) {
+      const valorDigitadoCampoComplementar = obterValorCampoComplementarComboMultiplaEscolha(
+        form,
+        valoresAnterioresSelecionado,
+        questaoAtual
+      );
+
+      const idOpcaoRespostaAnteriorComplementarObrigatoria = obterIdOpcaoRespostaComComplementarObrigatoria(
+        valoresAnterioresSelecionado,
+        questaoAtual
+      );
+
+      const idOpcaoRespostaAtualComplementarObrigatoria = obterIdOpcaoRespostaComComplementarObrigatoria(
+        valoresAtuaisSelecionados,
+        questaoAtual
+      );
+
+      const idOpcaoRespostaAnteriorComplementarNaoObrigatoria = obterIdOpcaoRespostaComComplementarNaoObrigatoria(
+        valoresAnterioresSelecionado,
+        questaoAtual
+      );
+
+      const idOpcaoRespostaAtualComplementarNaoObrigatoria = obterIdOpcaoRespostaComComplementarNaoObrigatoria(
+        valoresAtuaisSelecionados,
+        questaoAtual
+      );
+
+      if (
+        idOpcaoRespostaAnteriorComplementarObrigatoria &&
+        idOpcaoRespostaAtualComplementarObrigatoria
+      ) {
+        removerAddCampoComplementarComboMultiplaEscolha(
+          questaoAtual,
+          form,
+          idOpcaoRespostaAnteriorComplementarObrigatoria,
+          idOpcaoRespostaAnteriorComplementarNaoObrigatoria ||
+            idOpcaoRespostaAtualComplementarNaoObrigatoria,
+          valorDigitadoCampoComplementar
+        );
+      } else if (
+        idOpcaoRespostaAnteriorComplementarObrigatoria &&
+        !idOpcaoRespostaAtualComplementarObrigatoria
+      ) {
+        removerAddCampoComplementarComboMultiplaEscolha(
+          questaoAtual,
+          form,
+          idOpcaoRespostaAtualComplementarNaoObrigatoria,
+          idOpcaoRespostaAnteriorComplementarObrigatoria,
+          valorDigitadoCampoComplementar
+        );
+      } else if (
+        !idOpcaoRespostaAnteriorComplementarObrigatoria &&
+        idOpcaoRespostaAtualComplementarObrigatoria
+      ) {
+        removerAddCampoComplementarComboMultiplaEscolha(
+          questaoAtual,
+          form,
+          idOpcaoRespostaAtualComplementarObrigatoria,
+          idOpcaoRespostaAnteriorComplementarNaoObrigatoria,
+          valorDigitadoCampoComplementar
+        );
+      }
+    }
   };
 
   const validaSeDesabilitarCampo = () => {
@@ -273,6 +511,39 @@ const MontarDadosPorSecao = props => {
     );
   };
 
+  const campoComboMultiplaEscolha = params => {
+    const { questaoAtual, form, label } = params;
+
+    const lista = questaoAtual?.opcaoResposta.map(item => {
+      return { label: item.nome, value: item.id };
+    });
+
+    return (
+      <>
+        <div className="col-sm-12 col-md-12 col-lg-6 col-xl-6 mb-3">
+          {label}
+          <SelectComponent
+            multiple
+            id={String(questaoAtual.id)}
+            name={String(questaoAtual.id)}
+            form={form}
+            lista={lista}
+            valueOption="value"
+            valueText="label"
+            disabled={validaSeDesabilitarCampo()}
+            onChange={valorAtualSelecionado => {
+              onChangeCampoComboMultiplaEscolha(
+                questaoAtual,
+                form,
+                valorAtualSelecionado
+              );
+            }}
+          />
+        </div>
+      </>
+    );
+  };
+
   const campoTexto = params => {
     const { questaoAtual, form, label } = params;
 
@@ -328,14 +599,56 @@ const MontarDadosPorSecao = props => {
 
     const valorAtualSelecionado = form.values[questaoAtual.id];
 
-    if (valorAtualSelecionado) {
-      const opcaoAtual = questaoAtual?.opcaoResposta.find(
-        item => String(item.id) === String(valorAtualSelecionado)
+    if (questaoAtual?.tipoQuestao === tipoQuestao.ComboMultiplaEscolha) {
+      if (valorAtualSelecionado?.length) {
+        const idOpcaoRespostaComComplementarObrigatoria = obterIdOpcaoRespostaComComplementarObrigatoria(
+          valorAtualSelecionado,
+          questaoAtual
+        );
+
+        if (idOpcaoRespostaComComplementarObrigatoria) {
+          const opcaoResposta = questaoAtual?.opcaoResposta.find(
+            item =>
+              String(item.id) ===
+              String(idOpcaoRespostaComComplementarObrigatoria)
+          );
+
+          if (opcaoResposta?.questaoComplementar) {
+            campoQuestaoComplementar = montarCampos(
+              opcaoResposta.questaoComplementar,
+              form,
+              ordemLabel
+            );
+          }
+        } else {
+          const idOpcaoRespostaComComplementarNaoObrigatoria = obterIdOpcaoRespostaComComplementarNaoObrigatoria(
+            valorAtualSelecionado,
+            questaoAtual
+          );
+
+          const opcaoResposta = obterOpcaoRespostaPorId(
+            questaoAtual?.opcaoResposta,
+            idOpcaoRespostaComComplementarNaoObrigatoria
+          );
+
+          if (opcaoResposta?.questaoComplementar) {
+            campoQuestaoComplementar = montarCampos(
+              opcaoResposta.questaoComplementar,
+              form,
+              ordemLabel
+            );
+          }
+        }
+      }
+    } else if (valorAtualSelecionado) {
+      const opcaoResposta = obterOpcaoRespostaPorId(
+        questaoAtual?.opcaoResposta,
+        valorAtualSelecionado
       );
 
-      if (opcaoAtual?.questaoComplementar) {
+      if (opcaoResposta?.questaoComplementar) {
         campoQuestaoComplementar = montarCampos(
-          opcaoAtual.questaoComplementar,
+          opcaoResposta.questaoComplementar,
           form,
           ordemLabel
         );
@@ -355,6 +668,9 @@ const MontarDadosPorSecao = props => {
         break;
       case tipoQuestao.Combo:
         campoAtual = campoCombo(params);
+        break;
+      case tipoQuestao.ComboMultiplaEscolha:
+        campoAtual = campoComboMultiplaEscolha(params);
         break;
       case tipoQuestao.Texto:
         campoAtual = campoTexto(params);
