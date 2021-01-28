@@ -172,8 +172,7 @@ const AcompanhamentoFrequencia = () => {
   return (
     <>
       <div className="col-12">
-        {!turmaSelecionada.turma &&
-        !ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada) ? (
+        {!turmaSelecionada.turma ? (
           <Alert
             alerta={{
               tipo: 'warning',

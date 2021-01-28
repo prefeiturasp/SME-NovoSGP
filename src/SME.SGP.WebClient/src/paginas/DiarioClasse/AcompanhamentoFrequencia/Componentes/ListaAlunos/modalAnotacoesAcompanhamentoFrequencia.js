@@ -78,7 +78,7 @@ const ModalAnotacoesAcompanhamentoFrequencia = () => {
         headStyle={{ borderBottomRightRadius: 0 }}
         bodyStyle={{ borderTopRightRadius: 0 }}
       >
-        <strong>{dadosModalAnotacao?.motivo}</strong>
+        <strong>{dados?.motivoAusencia?.descricao}</strong>
       </Card>
       <JoditEditor value={dados?.anotacao} readonly removerToolbar />
       <div className="col-md-12 mt-2 p-0 d-flex justify-content-end">
