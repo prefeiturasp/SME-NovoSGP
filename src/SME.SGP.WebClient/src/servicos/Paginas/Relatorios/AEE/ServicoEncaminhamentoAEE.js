@@ -1,21 +1,16 @@
 import * as Yup from 'yup';
-import { RotasDto } from '~/dtos';
-import situacaoAEE from '~/dtos/situacaoAEE';
 import tipoQuestao from '~/dtos/tipoQuestao';
 import { store } from '~/redux';
 import {
   setDadosModalAviso,
   setEncaminhamentoAEEEmEdicao,
-  setErrosModalEncaminhamento,
   setExibirLoaderEncaminhamentoAEE,
   setExibirModalAviso,
   setExibirModalErrosEncaminhamento,
   setFormsSecoesEncaminhamentoAEE,
-  setLabelCamposEncaminhamento,
 } from '~/redux/modulos/encaminhamentoAEE/actions';
-import { erros, sucesso } from '~/servicos/alertas';
+import { erros } from '~/servicos/alertas';
 import api from '~/servicos/api';
-import history from '~/servicos/history';
 
 const urlPadrao = 'v1/encaminhamento-aee';
 
@@ -202,50 +197,6 @@ class ServicoEncaminhamentoAEE {
     return {};
   };
 
-  guardarLabelCampo = (questaoAtual, label) => {
-    const { dispatch } = store;
-
-    const state = store.getState();
-    const { encaminhamentoAEE } = state;
-    const { labelCamposEncaminhamento } = encaminhamentoAEE;
-
-    let textoLabel = label;
-
-    if (!questaoAtual.nome) {
-      let descNomeCampo = '';
-      switch (questaoAtual.tipoQuestao) {
-        case tipoQuestao.Frase:
-          descNomeCampo = 'Campo Frase';
-          break;
-        case tipoQuestao.Texto:
-          descNomeCampo = 'Campo Texto';
-          break;
-        case tipoQuestao.Combo:
-          descNomeCampo = 'Campo Radio';
-          break;
-        case tipoQuestao.Checkbox:
-          descNomeCampo = 'Campo Checkbox';
-          break;
-        case tipoQuestao.Upload:
-          descNomeCampo = 'Campo Upload';
-          break;
-        case tipoQuestao.InformacoesEscolares:
-          descNomeCampo = 'Campo Informacoes Escolares';
-          break;
-        case tipoQuestao.AtendimentoClinico:
-          descNomeCampo = 'Campo Atendimento Clinico';
-          break;
-
-        default:
-          break;
-      }
-      textoLabel = `${label} ${descNomeCampo}`;
-    }
-
-    labelCamposEncaminhamento[questaoAtual.id] = textoLabel;
-    dispatch(setLabelCamposEncaminhamento(labelCamposEncaminhamento));
-  };
-
   salvarEncaminhamento = async (
     encaminhamentoId,
     situacao,
@@ -259,12 +210,9 @@ class ServicoEncaminhamentoAEE {
     const {
       formsSecoesEncaminhamentoAEE,
       dadosSecaoLocalizarEstudante,
-      labelCamposEncaminhamento,
     } = encaminhamentoAEE;
 
     let contadorFormsValidos = 0;
-
-    const errosValidacaoEncaminhamento = [];
 
     const validaAntesDoSubmit = refForm => {
       let arrayCampos = [];
@@ -284,15 +232,6 @@ class ServicoEncaminhamentoAEE {
         ) {
           contadorFormsValidos += 1;
         }
-
-        if (refForm.getFormikContext().errors) {
-          Object.keys(refForm.getFormikContext().errors).forEach(campo => {
-            const label = labelCamposEncaminhamento[campo];
-            if (label) {
-              errosValidacaoEncaminhamento.push(label);
-            }
-          });
-        }
       });
     };
 
@@ -305,11 +244,6 @@ class ServicoEncaminhamentoAEE {
         );
 
         await Promise.all(promises);
-
-        if (errosValidacaoEncaminhamento?.length) {
-          dispatch(setErrosModalEncaminhamento(errosValidacaoEncaminhamento));
-          dispatch(setExibirModalErrosEncaminhamento(true));
-        }
 
         todosOsFormsEstaoValidos =
           contadorFormsValidos ===
@@ -435,6 +369,8 @@ class ServicoEncaminhamentoAEE {
             return true;
           }
         }
+      } else {
+        dispatch(setExibirModalErrosEncaminhamento(true));
       }
     }
     return false;
