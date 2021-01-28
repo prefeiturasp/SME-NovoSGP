@@ -13,7 +13,6 @@ import Card from '~/componentes/card';
 import JoditEditor from '~/componentes/jodit-editor/joditEditor';
 import ModalMultiLinhas from '~/componentes/modalMultiLinhas';
 import SelectComponent from '~/componentes/select';
-import { URL_HOME } from '~/constantes/url';
 import RotasDto from '~/dtos/rotasDto';
 import {
   limparDadosObservacoesUsuario,
@@ -242,6 +241,24 @@ const DiarioBordo = ({ match }) => {
     );
   };
 
+  const obterUsuarioPorObservacao = dadosObservacoes => {
+    const promises = dadosObservacoes.map(async observacao => {
+      const retorno = await ServicoDiarioBordo.obterNofiticarUsuarios({
+        turmaId: turmaSelecionada?.id,
+        observacaoId: observacao.id,
+      }).catch(e => erros(e));
+
+      if (retorno?.data) {
+        return {
+          ...observacao,
+          usuariosNotificacao: retorno.data,
+        };
+      }
+      return observacao;
+    });
+    return Promise.all(promises);
+  };
+
   const obterDadosObservacoes = useCallback(
     async diarioBordoId => {
       dispatch(limparDadosObservacoesUsuario());
@@ -254,7 +271,8 @@ const DiarioBordo = ({ match }) => {
       });
 
       if (retorno && retorno.data) {
-        dispatch(setDadosObservacoesUsuario([...retorno.data]));
+        const dadosObservacoes = await obterUsuarioPorObservacao(retorno.data);
+        dispatch(setDadosObservacoesUsuario([...dadosObservacoes]));
       } else {
         dispatch(setDadosObservacoesUsuario([]));
       }
@@ -287,11 +305,17 @@ const DiarioBordo = ({ match }) => {
       }
     }
   };
-
   const salvarDiarioDeBordo = async (valores, form, clicouBtnSalvar) => {
     setCarregandoGeral(true);
+    let aulaId = aulaSelecionada?.aulaId;
+    let voltarParaListagem = false;
+    if (!aulaId && match?.params?.aulaId) {
+      aulaId = match?.params?.aulaId;
+      voltarParaListagem = true;
+    }
+
     const params = {
-      aulaId: aulaSelecionada.aulaId,
+      aulaId,
       planejamento: valores.planejamento,
       reflexoesReplanejamento: valores.reflexoesReplanejamento,
     };
@@ -306,6 +330,9 @@ const DiarioBordo = ({ match }) => {
       if (clicouBtnSalvar) {
         setModoEdicao(false);
         resetarTela();
+      }
+      if (voltarParaListagem) {
+        history.push(RotasDto.DIARIO_BORDO);
       }
       salvouComSucesso = true;
     }
@@ -495,7 +522,7 @@ const DiarioBordo = ({ match }) => {
     }
 
     if (validouSalvarDiario && validouSalvarObservacao) {
-      history.push(URL_HOME);
+      history.push(RotasDto.DIARIO_BORDO);
     }
   };
 
@@ -569,7 +596,7 @@ const DiarioBordo = ({ match }) => {
         onClickFecharModal={onClickFecharModal}
         onClickSelecionarAula={onClickSelecionarAula}
       />
-      <Cabecalho pagina="Diário de bordo" />
+      <Cabecalho pagina="Diário de bordo (Intencionalidade docente)" />
       <Card>
         <div className="col-md-12 mb-3">
           <Formik
@@ -630,7 +657,7 @@ const DiarioBordo = ({ match }) => {
                           !turmaInfantil ||
                           !listaComponenteCurriculare ||
                           !componenteCurricularSelecionado ||
-                          !diasParaHabilitar 
+                          !diasParaHabilitar
                         }
                         diasParaHabilitar={diasParaHabilitar}
                       />
@@ -734,6 +761,7 @@ const DiarioBordo = ({ match }) => {
         </div>
         {auditoria && auditoria.id ? (
           <ObservacoesUsuario
+            mostrarListaNotificacao
             salvarObservacao={obs => salvarEditarObservacao(obs)}
             editarObservacao={obs => salvarEditarObservacao(obs)}
             excluirObservacao={obs => excluirObservacao(obs)}
