@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 namespace SME.SGP.Api.Controllers
 {
     [ApiController]
-    [Route("api/v1/acompanhamento-frequencia")]
+    [Route("api/v1/acompanhamentos-frequencia")]
     [Authorize("Bearer")]
     public class AcompanhamentoFrequenciaController : ControllerBase
     {
