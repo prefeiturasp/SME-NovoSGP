@@ -53,6 +53,11 @@ const BotoesAcoesEncaminhamentoAEE = props => {
       validarCamposObrigatorios
     );
     if (salvou) {
+      let mensagem = 'Registro salvo com sucesso';
+      if (encaminhamentoId) {
+        mensagem = 'Registro alterado com sucesso';
+      }
+      sucesso(mensagem);
       history.push(RotasDto.RELATORIO_AEE_ENCAMINHAMENTO);
     }
   };
@@ -65,6 +70,7 @@ const BotoesAcoesEncaminhamentoAEE = props => {
       true
     );
     if (salvou) {
+      sucesso('Encaminhamento enviado para validação do CP');
       history.push(RotasDto.RELATORIO_AEE_ENCAMINHAMENTO);
     }
   };
@@ -90,6 +96,11 @@ const BotoesAcoesEncaminhamentoAEE = props => {
           false
         );
         if (salvou) {
+          let mensagem = 'Registro salvo com sucesso';
+          if (encaminhamentoId) {
+            mensagem = 'Registro alterado com sucesso';
+          }
+          sucesso(mensagem);
           history.push(RotasDto.RELATORIO_AEE_ENCAMINHAMENTO);
         }
       } else {
@@ -235,9 +246,7 @@ const BotoesAcoesEncaminhamentoAEE = props => {
         className="ml-3"
         onClick={onClickEnviar}
         hidden={dadosEncaminhamento?.situacao !== situacaoAEE.Rascunho}
-        disabled={
-          desabilitarCamposEncaminhamentoAEE || !encaminhamentoAEEEmEdicao
-        }
+        disabled={desabilitarCamposEncaminhamentoAEE}
       />
       <Button
         id="btn-encerrar"
