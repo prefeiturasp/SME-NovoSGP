@@ -20,6 +20,7 @@ const LocalizadorEstudante = props => {
     exibirCodigoEOL,
     valorInicialAlunoCodigo,
     placeholder,
+    labelAlunoNome,
   } = props;
 
   const [dataSource, setDataSource] = useState([]);
@@ -227,7 +228,7 @@ const LocalizadorEstudante = props => {
           exibirCodigoEOL ? 'col-sm-12 col-md-6 col-lg-8 col-xl-8' : 'col-md-12'
         } `}
       >
-        {showLabel && <Label text="Nome" control="alunoNome" />}
+        {showLabel && <Label text={labelAlunoNome} control="alunoNome" />}
         <InputNome
           placeholder={placeholder}
           dataSource={dataSource}
@@ -270,6 +271,7 @@ LocalizadorEstudante.propTypes = {
     PropTypes.string,
   ]),
   placeholder: PropTypes.string,
+  labelAlunoNome: PropTypes.string,
 };
 
 LocalizadorEstudante.defaultProps = {
@@ -282,6 +284,7 @@ LocalizadorEstudante.defaultProps = {
   exibirCodigoEOL: true,
   valorInicialAlunoCodigo: '',
   placeholder: '',
+  labelAlunoNome: 'Nome',
 };
 
 export default LocalizadorEstudante;
