@@ -96,7 +96,6 @@ const BotoesAcoesEncaminhamentoAEE = props => {
         const salvou = await ServicoEncaminhamentoAEE.salvarEncaminhamento(
           encaminhamentoId,
           situacao,
-          false,
           false
         );
         if (salvou) {
@@ -159,7 +158,6 @@ const BotoesAcoesEncaminhamentoAEE = props => {
       const salvou = await ServicoEncaminhamentoAEE.salvarEncaminhamento(
         encaminhamentoId,
         situacaoAEE.Encaminhado,
-        true,
         true
       );
       if (salvou) {
@@ -174,7 +172,6 @@ const BotoesAcoesEncaminhamentoAEE = props => {
       const salvou = await ServicoEncaminhamentoAEE.salvarEncaminhamento(
         encaminhamentoId,
         situacaoAEE.Encaminhado,
-        true,
         true
       );
       if (salvou) {
@@ -222,11 +219,7 @@ const BotoesAcoesEncaminhamentoAEE = props => {
         border
         className="mr-3"
         onClick={onClickExcluir}
-        disabled={
-          !permissoesTela.podeExcluir ||
-          !match?.params?.id ||
-          (match?.params?.id && !dadosEncaminhamento?.podeEditar)
-        }
+        disabled={!permissoesTela.podeExcluir || !match?.params?.id}
       />
       <Button
         id="btn-salvar"
@@ -272,7 +265,6 @@ const BotoesAcoesEncaminhamentoAEE = props => {
         }
         disabled={
           desabilitarCamposEncaminhamentoAEE ||
-          encaminhamentoAEEEmEdicao ||
           !dadosEncaminhamento?.podeEditar ||
           dadosEncaminhamento?.situacao === situacaoAEE.Analise
         }
@@ -291,7 +283,6 @@ const BotoesAcoesEncaminhamentoAEE = props => {
         }
         disabled={
           desabilitarCamposEncaminhamentoAEE ||
-          encaminhamentoAEEEmEdicao ||
           !dadosEncaminhamento?.podeEditar ||
           dadosEncaminhamento?.situacao === situacaoAEE.Analise
         }

@@ -200,8 +200,7 @@ class ServicoEncaminhamentoAEE {
   salvarEncaminhamento = async (
     encaminhamentoId,
     situacao,
-    enviarEncaminhamento,
-    somenteExecutarValidacao
+    enviarEncaminhamento
   ) => {
     const { dispatch } = store;
 
@@ -248,13 +247,6 @@ class ServicoEncaminhamentoAEE {
         todosOsFormsEstaoValidos =
           contadorFormsValidos ===
           formsSecoesEncaminhamentoAEE?.filter(a => a)?.length;
-      }
-
-      if (somenteExecutarValidacao) {
-        if (!todosOsFormsEstaoValidos) {
-          dispatch(setExibirModalErrosEncaminhamento(true));
-        }
-        return todosOsFormsEstaoValidos;
       }
 
       if (todosOsFormsEstaoValidos) {

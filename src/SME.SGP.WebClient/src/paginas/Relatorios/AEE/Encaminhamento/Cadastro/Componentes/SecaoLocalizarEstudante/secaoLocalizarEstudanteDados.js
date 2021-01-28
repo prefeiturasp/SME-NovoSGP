@@ -85,7 +85,7 @@ const SecaoLocalizarEstudanteDados = () => {
 
   useEffect(() => {
     return () => dispatch(setDadosIniciaisEncaminhamentoAEE({}));
-  });
+  }, [dispatch]);
 
   const onChangeDre = dre => {
     setCodigoDre(dre);
