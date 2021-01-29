@@ -33,5 +33,45 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryFirstOrDefaultAsync<AnotacaoFrequenciaAluno>(query, new { codigoAluno, aulaId });
         }
+
+        public async Task<IEnumerable<JustificativaAlunoDto>> ObterPorTurmaAlunoComponenteCurricular(long turmaId, long codigoAluno, long componenteCurricularId)
+        {
+            var query = @"select n.* from (
+                            (
+                            select an.id,case when ma.descricao is not null then ma.descricao else an.anotacao end as Motivo, a.data_aula DataAnotacao 
+                            from anotacao_frequencia_aluno an
+                            left join motivo_ausencia ma on an.motivo_ausencia_id = ma.id  
+                            inner join aula a on a.id = an.aula_id 
+                            inner join turma t on t.turma_id = a.turma_id
+                            where not an.excluido 
+                            and t.id = @turmaId 
+                            and an.codigo_aluno = @codigoAluno
+                            and a.disciplina_id = @componenteCurricularId
+                            )
+                            union
+                            (
+                            select 0 as id, '' as Motivo, a.data_aula as DataAnotacao 
+                            from registro_ausencia_aluno raa 
+                            inner join registro_frequencia rf on rf.id = raa.registro_frequencia_id 
+                            inner join aula a on a.id = rf.aula_id 
+                            left join anotacao_frequencia_aluno an on an.aula_id = a.id and an.codigo_aluno = @codigoAluno
+                            left join turma t on t.turma_id = a.turma_id 
+                            where t.id = @turmaId
+                            and raa.codigo_aluno = @codigoAluno
+                            and a.disciplina_id = @componenteCurricularId
+                            and not a.excluido 
+                            and not raa.excluido
+                            and an.id is null
+                            )
+                            ) n
+                            order by n.DataAnotacao desc";
+
+            return await database.Conexao.QueryAsync<JustificativaAlunoDto>(query, new
+            {
+                turmaId,
+                codigoAluno = codigoAluno.ToString(),
+                componenteCurricularId = componenteCurricularId.ToString()
+            });
+        }
     }
 }

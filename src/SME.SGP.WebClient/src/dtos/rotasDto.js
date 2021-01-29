@@ -21,6 +21,7 @@ const RotasDto = {
   CADASTRO_DE_AVALIACAO:
     '/calendario-escolar/calendario-professor/cadastro-avaliacao',
   FREQUENCIA_PLANO_AULA: '/diario-classe/frequencia-plano-aula',
+  ACOMPANHAMENTO_FREQUENCIA: '/diario-classe/acompanhamento-frequencia',
   TIPO_AVALIACAO: '/configuracoes/tipo-avaliacao',
   NOTAS: '/diario-classe/notas',
   AULA_DADA_AULA_PREVISTA: '/diario-classe/aula-dada-aula-prevista',

@@ -52,6 +52,10 @@ export const PainelEstilizado = styled(Collapse.Panel)`
       `}
   }
 
+  .ant-collapse-content {
+    height: 100% !important;
+  }
+
   &.ant-collapse-item-active {
     .ant-collapse-header {
       box-shadow: 0px 3px 4px -3px #42474a94;
