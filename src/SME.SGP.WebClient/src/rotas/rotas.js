@@ -85,6 +85,7 @@ import CadastroOcorrencias from '~/paginas/Gestao/Ocorrencia/CadastroOcorrencias
 import RelatorioPlanejamentoDiario from '~/paginas/Relatorios/DiarioClasse/PlanejamentoDiario/relatorioPlanejamentoDiario';
 import EncaminhamentoAEELista from '~/paginas/Relatorios/AEE/Encaminhamento/Lista/encaminhamentoAEELista';
 import EncaminhamentoAEECadastro from '~/paginas/Relatorios/AEE/Encaminhamento/Cadastro/encaminhamentoAEECadastro';
+import RegistroItineranciaAEECadastro from '~/paginas/Relatorios/AEE/RegistroItinerancia/Cadastro/registroItineranciaAEECadastro';
 
 const rotas = new Map();
 
@@ -1164,6 +1165,16 @@ rotas.set(`${RotasDto.RELATORIO_AEE_ENCAMINHAMENTO}/editar/:id`, {
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: false,
   chavePermissao: RotasDto.RELATORIO_AEE_ENCAMINHAMENTO,
+});
+
+rotas.set(`${RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA}/novo`, {
+  breadcrumbName: 'Registro de itinerância',
+  parent: `${RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA}`,
+  component: RegistroItineranciaAEECadastro,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+  chavePermissao: RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA,
 });
 
 rotas.set(RotasDto.OCORRENCIAS, {
