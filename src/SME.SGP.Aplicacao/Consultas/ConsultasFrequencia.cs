@@ -74,6 +74,26 @@ namespace SME.SGP.Aplicacao
                 TotalCompensacoes = frequenciaAlunoPeriodos.Sum(f => f.TotalCompensacoes),
             };
 
+            var turma = await repositorioTurma.ObterPorCodigo(turmaCodigo);
+
+            //Particularidade de cálculo de frequência para 2020.
+            if (turma.AnoLetivo.Equals(2020))
+            {
+                var tipoCalendario = await consultasTipoCalendario.ObterPorTurma(turma);
+                var periodos = await consultasPeriodoEscolar.ObterPeriodosEscolares(tipoCalendario.Id);
+
+                periodos.ToList().ForEach(p =>
+                {
+                    var frequenciaAlunoPeriodo = repositorioFrequenciaAlunoDisciplinaPeriodo
+                        .ObterPorAlunoBimestreAsync(alunoCodigo, p.Bimestre, TipoFrequenciaAluno.Geral, turma.CodigoTurma).Result;
+
+                    frequenciaAluno.AdicionarFrequenciaBimestre(p.Bimestre, frequenciaAlunoPeriodo != null ? frequenciaAlunoPeriodo.PercentualFrequencia : 100);
+                });
+
+
+                return frequenciaAluno.PercentualFrequenciaFinal;
+            }
+
             return frequenciaAluno.PercentualFrequencia;
         }
 
