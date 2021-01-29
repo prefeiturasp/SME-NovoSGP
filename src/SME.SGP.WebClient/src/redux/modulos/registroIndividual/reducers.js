@@ -170,11 +170,20 @@ export default function RegistroIndividual(state = inicial, action) {
         };
       }
       case '@registroIndividual/atualizarMarcadorDiasSemRegistroExibir': {
-        const aluno = state.alunosRegistroIndividual.find(
-          a => a.codigoEOL === action.payload
-        );
-        aluno.marcadorDiasSemRegistroExibir = false;
-        break;
+        const alunos = state.alunosRegistroIndividual.map(aluno => {
+          if (aluno.codigoEOL === action.payload) {
+            return {
+              ...aluno,
+              marcadorDiasSemRegistroExibir: false,
+              marcadorDiasSemRegistroTexto: null,
+            };
+          }
+          return aluno;
+        });
+        return {
+          ...draft,
+          alunosRegistroIndividual: alunos,
+        };
       }
       case '@registroIndividual/setExibirLoaderGeralRegistroAnteriores': {
         return {

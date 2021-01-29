@@ -24,9 +24,9 @@ namespace SME.SGP.Aplicacao
             if (!professoresTurmaObrigatoriosReceberNotificacao?.Any() ?? true)
                 throw new NegocioException("Nenhum professor para a turma informada foi encontrada.");
 
-            // Caso um dos professores da turma for o usuário logado, ele não deve aparecer na listagem
+            // Caso um dos professores da turma for o usuário logado e for uma nova observação, ele não deve aparecer na listagem
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
-            if(usuarioLogado != null && professoresTurmaObrigatoriosReceberNotificacao.Any(x => x.ProfessorRf == usuarioLogado.CodigoRf))
+            if (usuarioLogado != null && dto.ObservacaoId is null && professoresTurmaObrigatoriosReceberNotificacao.Any(x => x.ProfessorRf == usuarioLogado.CodigoRf))
             {
                 professoresTurmaObrigatoriosReceberNotificacao = professoresTurmaObrigatoriosReceberNotificacao.Where(x => x.ProfessorRf != usuarioLogado.CodigoRf).ToList();
             }
