@@ -252,11 +252,16 @@ namespace SME.SGP.Aplicacao
         {
             var frequenciaAluno = await consultasFrequencia.ObterFrequenciaGeralAlunoPorTurmaEComponente(aluno.CodigoAluno, turma.CodigoTurma, filtros.DisciplinaCodigo.ToString());
 
+            var percentualFrequencia = frequenciaAluno?.PercentualFrequencia ?? 100;
+
+            if (frequenciaAluno != null && turma.AnoLetivo.Equals(2020))
+                percentualFrequencia = frequenciaAluno.PercentualFrequenciaFinal;
+
             var fechamentoFinalAluno = new FechamentoFinalConsultaRetornoAlunoDto
             {
                 Nome = aluno.NomeAluno,
                 TotalAusenciasCompensadas = frequenciaAluno?.TotalCompensacoes ?? 0,
-                Frequencia = frequenciaAluno?.PercentualFrequencia ?? 100,
+                Frequencia = percentualFrequencia,
                 TotalFaltas = frequenciaAluno?.TotalAusencias ?? 0,
                 NumeroChamada = aluno.NumeroAlunoChamada
             };

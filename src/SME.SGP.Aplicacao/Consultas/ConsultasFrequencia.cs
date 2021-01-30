@@ -100,7 +100,7 @@ namespace SME.SGP.Aplicacao
         public async Task<FrequenciaAluno> ObterFrequenciaGeralAlunoPorTurmaEComponente(string alunoCodigo, string turmaCodigo, string componenteCurricularCodigo = "")
         {
             var frequenciaAlunoPeriodos = await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterFrequenciaGeralAluno(alunoCodigo, turmaCodigo, componenteCurricularCodigo);
-
+            
             if (frequenciaAlunoPeriodos == null || !frequenciaAlunoPeriodos.Any())
                 return null;
 
@@ -110,6 +110,16 @@ namespace SME.SGP.Aplicacao
                 TotalAusencias = frequenciaAlunoPeriodos.Sum(f => f.TotalAusencias),
                 TotalCompensacoes = frequenciaAlunoPeriodos.Sum(f => f.TotalCompensacoes),
             };
+
+            var turma = await repositorioTurma.ObterPorCodigo(turmaCodigo);
+            var tipoCalendario = await consultasTipoCalendario.ObterPorTurma(turma);
+            var periodos = await consultasPeriodoEscolar.ObterPeriodosEscolares(tipoCalendario.Id);
+
+            periodos.ToList().ForEach(p =>
+            {
+                var frequenciaCorrespondente = frequenciaAlunoPeriodos.SingleOrDefault(f => f.Bimestre == p.Bimestre);
+                frequenciaAluno.AdicionarFrequenciaBimestre(p.Bimestre, frequenciaCorrespondente != null ? frequenciaCorrespondente.PercentualFrequencia : 100);
+            });
 
             return frequenciaAluno;
         }
