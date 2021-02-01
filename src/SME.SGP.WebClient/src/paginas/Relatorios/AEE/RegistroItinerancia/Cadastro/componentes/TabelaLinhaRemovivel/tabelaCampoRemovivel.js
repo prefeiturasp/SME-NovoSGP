@@ -11,6 +11,7 @@ import {
 } from './tabelaCampoRemovivel.css';
 
 const TabelaLinhaRemovivel = ({
+  botaoAdicionar,
   dadosTabela,
   dataIndex,
   labelBotao,
@@ -69,7 +70,7 @@ const TabelaLinhaRemovivel = ({
           color={Colors.Azul}
           border
           className="mr-2"
-          // onClick={() => onClickEditarCriancas()}
+          onClick={botaoAdicionar}
           icon="plus"
         />
       </div>
@@ -78,6 +79,7 @@ const TabelaLinhaRemovivel = ({
 };
 
 TabelaLinhaRemovivel.propTypes = {
+  botaoAdicionar: PropTypes.func,
   dadosTabela: PropTypes.oneOfType([PropTypes.array]),
   dataIndex: PropTypes.string,
   labelBotao: PropTypes.string,
@@ -87,6 +89,7 @@ TabelaLinhaRemovivel.propTypes = {
 };
 
 TabelaLinhaRemovivel.defaultProps = {
+  botaoAdicionar: () => {},
   dadosTabela: [],
   dataIndex: '',
   labelBotao: '',
