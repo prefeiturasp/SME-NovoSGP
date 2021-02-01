@@ -117,7 +117,7 @@ const JoditEditor = forwardRef((props, ref) => {
               reject(new Error(msg));
             }
           } else {
-            reject(new Error('Não é pessível inserir arquivo'));
+            reject(new Error('Não é possível inserir arquivo'));
           }
         });
       },
