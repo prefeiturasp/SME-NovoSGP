@@ -94,7 +94,34 @@ const UploadArquivos = props => {
     return false;
   };
 
+  const permiteInserirFormato = arquivo => {
+    if (tiposArquivosPermitidos?.trim()) {
+      const listaPermitidos = tiposArquivosPermitidos
+        .split(',')
+        .map(tipo => tipo?.trim()?.toLowerCase());
+
+      const tamanhoNome = arquivo?.name?.length;
+      const nomeTipoAtual = arquivo.name.substring(
+        tamanhoNome,
+        tamanhoNome - 4
+      );
+
+      if (nomeTipoAtual) {
+        const permiteTipo = listaPermitidos.includes(
+          nomeTipoAtual?.toLowerCase()
+        );
+        return permiteTipo;
+      }
+    }
+    return true;
+  };
+
   const beforeUploadDefault = arquivo => {
+    if (!permiteInserirFormato(arquivo)) {
+      erro('Formato não permitido');
+      return false;
+    }
+
     if (excedeuLimiteMaximo(arquivo)) {
       erro('Tamanho máximo 100mb');
       return false;
@@ -145,6 +172,11 @@ const UploadArquivos = props => {
     const { status } = file;
 
     if (excedeuLimiteMaximo(file)) {
+      atualizaListaArquivos(fileList, file);
+      return;
+    }
+
+    if (!permiteInserirFormato(file)) {
       atualizaListaArquivos(fileList, file);
       return;
     }
@@ -201,7 +233,14 @@ const UploadArquivos = props => {
           <InboxOutlined />
         </p>
         <p className="ant-upload-text">{textoUpload}</p>
-        <p className="ant-upload-hint">{textoFormatoUpload}</p>
+        <p className="ant-upload-hint">
+          {tiposArquivosPermitidos
+            ? textoFormatoUpload.replace(
+                'Todos os formatos',
+                `Os formatos ${tiposArquivosPermitidos}`
+              )
+            : textoFormatoUpload}
+        </p>
       </ContainerDragger>
     );
   };
