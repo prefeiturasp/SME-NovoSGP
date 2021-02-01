@@ -17,6 +17,7 @@ namespace SME.SGP.Dominio
         public SituacaoAEE Situacao { get; set; }
         public bool Excluido { get; set; }
         public string MotivoEncerramento { get; set; }
+        public long UsuarioId { get; set; }
         public List<EncaminhamentoAEESecao> Secoes { get; set; }
 
     }
