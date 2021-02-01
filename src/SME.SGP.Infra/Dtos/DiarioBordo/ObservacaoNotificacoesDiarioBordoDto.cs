@@ -7,6 +7,8 @@
 
         public int QtdUsuariosNotificacao { get; set; }
 
+        public bool Proprietario { get; set; }
+
         public AuditoriaDto Auditoria { get; set; }
     }
 }
