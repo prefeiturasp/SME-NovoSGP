@@ -11,6 +11,7 @@ namespace SME.SGP.Dados
             Map(a => a.AlunoCodigo).ToColumn("aluno_codigo");
             Map(a => a.AlunoNome).ToColumn("aluno_nome");
             Map(a => a.MotivoEncerramento).ToColumn("motivo_encerramento");
+            Map(a => a.ResponsavelId).ToColumn("responsavel_id");
         }
     }
 }
