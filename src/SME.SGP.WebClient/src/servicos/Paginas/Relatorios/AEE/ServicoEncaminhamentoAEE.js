@@ -432,6 +432,10 @@ class ServicoEncaminhamentoAEE {
     return api.get(url);
   };
 
+  podeCadastrarEncaminhamentoEstudante = codigoEstudante => {
+    return api.get(`${urlPadrao}/estudante/${codigoEstudante}/pode-cadastrar`);
+  };
+
   removerArquivo = arquivoCodigo => {
     return api.delete(`${urlPadrao}/arquivo?arquivoCodigo=${arquivoCodigo}`);
   };
