@@ -12,23 +12,15 @@ import {
   TabelaLinhaRemovivel,
 } from './componentes';
 import ModalUE from './componentes/ModalUE/modalUE';
+import ModalObjetivos from './componentes/ModalObjetivos/modalObjetivos';
 
 const RegistroItineranciaAEECadastro = ({ match }) => {
   const [carregandoGeral, setCarregandoGeral] = useState(false);
   const [dataVisita, setDataVisita] = useState();
   const [dataRetorno, setDataRetorno] = useState();
   const [modalVisivelUES, setModalVisivelUES] = useState(false);
-  const [objetivosSelecionados, setObjetivosSelecionados] = useState([
-    {
-      key: '1',
-      objetivosSelecionados:
-        'Mapeamento dos estudantes público da educação especial',
-    },
-    {
-      key: '2',
-      objetivosSelecionados: 'Reunião',
-    },
-  ]);
+  const [modalVisivelObjetivos, setModalVisivelObjetivos] = useState(false);
+  const [objetivosSelecionados, setObjetivosSelecionados] = useState();
   const [unEscolaresSelecionados, setUnEscolaresSelecionados] = useState([
     {
       key: '1',
@@ -122,7 +114,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
             <div className="row mb-4">
               <TabelaLinhaRemovivel
                 bordered
-                dataIndex="objetivosSelecionados"
+                dataIndex="objetivo"
                 labelTabela="Objetivos da itinerância"
                 tituloTabela="Objetivos selecionados"
                 labelBotao="Novo objetivo"
@@ -131,7 +123,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
                 removerUsuario={text =>
                   removerItemSelecionado(text, setObjetivosSelecionados)
                 }
-                botaoAdicionar={() => setModalVisivelUES(true)}
+                botaoAdicionar={() => setModalVisivelObjetivos(true)}
               />
             </div>
             <div className="row mb-4">
@@ -187,6 +179,14 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
           setModalVisivel={setModalVisivelUES}
           unEscolaresSelecionados={unEscolaresSelecionados}
           setUnEscolaresSelecionados={setUnEscolaresSelecionados}
+        />
+      )}
+      {modalVisivelObjetivos && (
+        <ModalObjetivos
+          modalVisivel={modalVisivelObjetivos}
+          setModalVisivel={setModalVisivelObjetivos}
+          objetivosSelecionados={objetivosSelecionados}
+          setObjetivosSelecionados={setObjetivosSelecionados}
         />
       )}
     </>
