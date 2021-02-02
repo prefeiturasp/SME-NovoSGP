@@ -13,6 +13,8 @@ namespace SME.SGP.Dominio.Enumerados
         [Display(Name = "Finalizado")]
         Finalizado = 4,
         [Display(Name = "Encerrado")]
-        Encerrado = 5
+        Encerrado = 5,
+        [Display(Name = "Aguardando atribuição de responsável")]
+        AtribuicaoResponsavel = 6
     }
 }
