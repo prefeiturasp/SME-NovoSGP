@@ -1,3 +1,4 @@
+--ITINERANCIA
 DROP TABLE if exists public.registro_itinerancia;
 CREATE TABLE public.registro_itinerancia (
 	id int8 NOT NULL GENERATED ALWAYS AS identity,
@@ -15,6 +16,7 @@ CREATE TABLE public.registro_itinerancia (
     CONSTRAINT registro_itinerancia_pk PRIMARY KEY (id)
 );
 
+--ITINERANCIA OBJETIVO BASE
 DROP TABLE if exists public.registro_itinerancia_objetivo_base;
 CREATE TABLE public.registro_itinerancia_objetivo_base (
 	id int8 NOT NULL GENERATED ALWAYS AS identity,
@@ -25,6 +27,7 @@ CREATE TABLE public.registro_itinerancia_objetivo_base (
     CONSTRAINT registro_itinerancia_objetivo_base_pk PRIMARY KEY (id)
 );
 
+--ITINERANCIA OBJETIVO
 DROP TABLE if exists public.registro_itinerancia_objetivo;
 CREATE TABLE public.registro_itinerancia_objetivo (
 	id int8 NOT NULL GENERATED ALWAYS AS identity,
@@ -45,6 +48,7 @@ CREATE TABLE public.registro_itinerancia_objetivo (
 ALTER TABLE public.registro_itinerancia_objetivo ADD CONSTRAINT registro_itinerancia_objetivo_base_fk FOREIGN KEY (registro_itinerancia_base_id) REFERENCES registro_itinerancia_objetivo_base(id);
 ALTER TABLE public.registro_itinerancia_objetivo ADD CONSTRAINT registro_itinerancia_objetivo_itinerancia_fk FOREIGN KEY (registro_itinerancia_id) REFERENCES registro_itinerancia(id);
 
+--ITINERANCIA UE
 DROP TABLE if exists public.registro_itinerancia_ue;
 CREATE TABLE public.registro_itinerancia_ue (
 	id int8 NOT NULL GENERATED ALWAYS AS identity,
@@ -64,6 +68,7 @@ CREATE TABLE public.registro_itinerancia_ue (
 ALTER TABLE public.registro_itinerancia_ue ADD CONSTRAINT registro_itinerancia_ue_fk FOREIGN KEY (ue_id) REFERENCES ue(id);
 ALTER TABLE public.registro_itinerancia_ue ADD CONSTRAINT registro_itinerancia_ue_itinerancia_fk FOREIGN KEY (registro_itinerancia_id) REFERENCES registro_itinerancia(id);
 
+--ITINERANCIA QUESTAO
 DROP TABLE if exists public.registro_itinerancia_questao;
 CREATE TABLE public.registro_itinerancia_questao (
 	id int8 NOT NULL GENERATED ALWAYS AS identity,
@@ -84,6 +89,7 @@ CREATE TABLE public.registro_itinerancia_questao (
 ALTER TABLE public.registro_itinerancia_questao ADD CONSTRAINT registro_itinerancia_questao_fk FOREIGN KEY (questao_id) REFERENCES questao(id);
 ALTER TABLE public.registro_itinerancia_questao ADD CONSTRAINT registro_itinerancia_questao_itinerancia_fk FOREIGN KEY (registro_itinerancia_id) REFERENCES registro_itinerancia(id);
 
+--ALUNO
 DROP TABLE if exists public.registro_itinerancia_aluno;
 CREATE TABLE public.registro_itinerancia_aluno (
 	id int8 NOT NULL GENERATED ALWAYS AS identity,
@@ -102,6 +108,7 @@ CREATE TABLE public.registro_itinerancia_aluno (
 
 ALTER TABLE public.registro_itinerancia_aluno ADD CONSTRAINT registro_itinerancia_aluno_itinerancia_fk FOREIGN KEY (registro_itinerancia_id) REFERENCES registro_itinerancia(id);
 
+--ALUNO QUESTAO
 DROP TABLE if exists public.registro_itinerancia_aluno_questao;
 CREATE TABLE public.registro_itinerancia_aluno_questao (
 	id int8 NOT NULL GENERATED ALWAYS AS identity,
@@ -122,12 +129,31 @@ CREATE TABLE public.registro_itinerancia_aluno_questao (
 ALTER TABLE public.registro_itinerancia_questao ADD CONSTRAINT registro_itinerancia_aluno_questao_fk FOREIGN KEY (questao_id) REFERENCES questao(id);
 ALTER TABLE public.registro_itinerancia_aluno_questao ADD CONSTRAINT registro_itinerancia_aluno_itinerancia_fk FOREIGN KEY (registro_itinerancia_aluno_id) REFERENCES registro_itinerancia_aluno(id);
 
+--INSERT OBJETIVOS BASE
 DELETE FROM public.registro_itinerancia_objetivo_base WHERE 1=1;
-INSERT INTO public.registro_itinerancia_objetivo_base (nome, tem_descricao, permite_varias_ues) VALUES ('Mapeamento dos estudantes p˙blico da EducaÁ„o Especial', FALSE, FALSE);
-INSERT INTO public.registro_itinerancia_objetivo_base (nome, tem_descricao, permite_varias_ues) VALUES ('ReorganizaÁ„o e/ou remanejamento de apoios e serviÁos', FALSE, FALSE);
-INSERT INTO public.registro_itinerancia_objetivo_base (nome, tem_descricao, permite_varias_ues) VALUES ('Atendimento de solicitaÁ„o da U.E', TRUE, FALSE);
+INSERT INTO public.registro_itinerancia_objetivo_base (nome, tem_descricao, permite_varias_ues) VALUES ('Mapeamento dos estudantes p√∫blico da Educa√ß√£o Especial', FALSE, FALSE);
+INSERT INTO public.registro_itinerancia_objetivo_base (nome, tem_descricao, permite_varias_ues) VALUES ('Reorganiza√ß√£o e/ou remanejamento de apoios e servi√ßos', FALSE, FALSE);
+INSERT INTO public.registro_itinerancia_objetivo_base (nome, tem_descricao, permite_varias_ues) VALUES ('Atendimento de solicita√ß√£o da U.E', TRUE, FALSE);
 INSERT INTO public.registro_itinerancia_objetivo_base (nome, tem_descricao, permite_varias_ues) VALUES ('Acompanhamento professor de sala regular', FALSE, TRUE);
 INSERT INTO public.registro_itinerancia_objetivo_base (nome, tem_descricao, permite_varias_ues) VALUES ('Acompanhamento professor de SRM', FALSE, TRUE);
-INSERT INTO public.registro_itinerancia_objetivo_base (nome, tem_descricao, permite_varias_ues) VALUES ('AÁ„o Formativa em JEIF', FALSE, TRUE);
-INSERT INTO public.registro_itinerancia_objetivo_base (nome, tem_descricao, permite_varias_ues) VALUES ('Reuni„o', FALSE, TRUE);
+INSERT INTO public.registro_itinerancia_objetivo_base (nome, tem_descricao, permite_varias_ues) VALUES ('A√ß√£o Formativa em JEIF', FALSE, TRUE);
+INSERT INTO public.registro_itinerancia_objetivo_base (nome, tem_descricao, permite_varias_ues) VALUES ('Reuni√£o', FALSE, TRUE);
 INSERT INTO public.registro_itinerancia_objetivo_base (nome, tem_descricao, permite_varias_ues) VALUES ('Outros', TRUE, FALSE);
+
+--INSERT QUESTIONARIO
+insert into public.questionario (nome, tipo, criado_em, criado_por, criado_rf) values ('Question√°rio Registro Itiner√¢ncia', 2, now(),'Carga Inicial','Carga Inicial');
+insert into public.questionario (nome, tipo, criado_em, criado_por, criado_rf) values ('Question√°rio Registro Itiner√¢ncia do Aluno', 3, now(),'Carga Inicial','Carga Inicial');
+
+--INSET QUESTAO ITINERANCIA
+insert into public.questao(questionario_id, ordem, nome, obrigatorio, tipo, criado_em, criado_por, criado_rf) values(
+	(select id from public.questionario where tipo = 2), 0, 'Acompanhamento da situa√ß√£o', false, 2, now(),'Carga Inicial','Carga Inicial'); 
+insert into public.questao(questionario_id, ordem, nome, obrigatorio, tipo, criado_em, criado_por, criado_rf) values(
+	(select id from public.questionario where tipo = 2), 1, 'Encaminhamentos', false, 2, now(),'Carga Inicial','Carga Inicial'); 
+
+--INSERT QUESTAO ITINERANCIA ALUNO
+insert into public.questao(questionario_id, ordem, nome, obrigatorio, tipo, criado_em, criado_por, criado_rf) values(
+	(select id from public.questionario where tipo = 3), 0, 'Descritivo do estudante', false, 2, now(),'Carga Inicial','Carga Inicial'); 
+insert into public.questao(questionario_id, ordem, nome, obrigatorio, tipo, criado_em, criado_por, criado_rf) values(
+	(select id from public.questionario where tipo = 3), 1, 'Acompanhamento da situa√ß√£o', false, 2, now(),'Carga Inicial','Carga Inicial'); 
+insert into public.questao(questionario_id, ordem, nome, obrigatorio, tipo, criado_em, criado_por, criado_rf) values(
+	(select id from public.questionario where tipo = 3), 2, 'Encaminhamentos', false, 2, now(),'Carga Inicial','Carga Inicial'); 
