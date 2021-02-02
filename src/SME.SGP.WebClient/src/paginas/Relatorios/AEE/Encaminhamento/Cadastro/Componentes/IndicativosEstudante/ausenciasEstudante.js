@@ -23,7 +23,7 @@ const AusenciasEstudante = props => {
     store => store.encaminhamentoAEE.expandirLinhaAusenciaEstudante
   );
 
-  const dadosSecaoLocalizarEstudante = useSelector(
+  const dadosCollapseLocalizarEstudante = useSelector(
     store => store.collapseLocalizarEstudante.dadosCollapseLocalizarEstudante
   );
 
@@ -40,8 +40,8 @@ const AusenciasEstudante = props => {
     const retorno = await ServicoEncaminhamentoAEE.obterAusenciaMotivoPorAlunoTurmaBimestreAno(
       dados.codigoAluno,
       dados.bimestre,
-      dadosSecaoLocalizarEstudante.codigoTurma,
-      dadosSecaoLocalizarEstudante.anoLetivo
+      dadosCollapseLocalizarEstudante.codigoTurma,
+      dadosCollapseLocalizarEstudante.anoLetivo
     ).catch(e => erros(e));
 
     if (retorno?.data) {
@@ -49,7 +49,7 @@ const AusenciasEstudante = props => {
     } else {
       setAusencias([]);
     }
-  }, [dados, dadosSecaoLocalizarEstudante]);
+  }, [dados, dadosCollapseLocalizarEstudante]);
 
   useEffect(() => {
     if (expandirLinhaAusenciaEstudante && dados) {
@@ -59,7 +59,7 @@ const AusenciasEstudante = props => {
     }
   }, [
     dados,
-    dadosSecaoLocalizarEstudante,
+    dadosCollapseLocalizarEstudante,
     expandirLinhaAusenciaEstudante,
     obterAusenciaMotivoPorAlunoTurmaBimestreAno,
   ]);

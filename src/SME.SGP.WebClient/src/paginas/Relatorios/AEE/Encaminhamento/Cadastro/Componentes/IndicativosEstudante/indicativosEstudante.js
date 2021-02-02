@@ -10,15 +10,15 @@ import ModalAnotacoesEncaminhamentoAEE from './modalAnotacoes';
 const InformacoesEscolares = () => {
   const [dados, setDados] = useState([]);
 
-  const dadosSecaoLocalizarEstudante = useSelector(
+  const dadosCollapseLocalizarEstudante = useSelector(
     store => store.collapseLocalizarEstudante.dadosCollapseLocalizarEstudante
   );
 
   const obterInformacoesEscolaresDoAluno = useCallback(async () => {
     // TODO Loader e trocar mock!
     const resposta = await ServicoEncaminhamentoAEE.obterInformacoesEscolaresDoAluno(
-      dadosSecaoLocalizarEstudante?.codigoAluno,
-      dadosSecaoLocalizarEstudante?.codigoTurma
+      dadosCollapseLocalizarEstudante?.codigoAluno,
+      dadosCollapseLocalizarEstudante?.codigoTurma
     ).catch(e => erros(e));
 
     if (resposta?.data) {
@@ -26,7 +26,7 @@ const InformacoesEscolares = () => {
     } else {
       setDados([]);
     }
-  }, [dadosSecaoLocalizarEstudante]);
+  }, [dadosCollapseLocalizarEstudante]);
 
   useEffect(() => {
     obterInformacoesEscolaresDoAluno();

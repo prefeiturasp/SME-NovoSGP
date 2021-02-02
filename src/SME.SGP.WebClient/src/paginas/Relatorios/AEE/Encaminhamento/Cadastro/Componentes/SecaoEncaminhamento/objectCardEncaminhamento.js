@@ -9,7 +9,7 @@ import { setDadosEstudanteObjectCardEncaminhamento } from '~/redux/modulos/encam
 const ObjectCardEncaminhamento = () => {
   const dispatch = useDispatch();
 
-  const dadosSecaoLocalizarEstudante = useSelector(
+  const dadosCollapseLocalizarEstudante = useSelector(
     store => store.collapseLocalizarEstudante.dadosCollapseLocalizarEstudante
   );
 
@@ -20,7 +20,7 @@ const ObjectCardEncaminhamento = () => {
   const [exibirLoader, setExibirLoader] = useState(false);
 
   const obterDadosEstudante = useCallback(async () => {
-    const { codigoAluno, anoLetivo } = dadosSecaoLocalizarEstudante;
+    const { codigoAluno, anoLetivo } = dadosCollapseLocalizarEstudante;
 
     setExibirLoader(true);
     const resultado = await ServicoEncaminhamentoAEE.obterDadosEstudante(
@@ -39,18 +39,18 @@ const ObjectCardEncaminhamento = () => {
       };
       dispatch(setDadosEstudanteObjectCardEncaminhamento(aluno));
     }
-  }, [dispatch, dadosSecaoLocalizarEstudante]);
+  }, [dispatch, dadosCollapseLocalizarEstudante]);
 
   useEffect(() => {
     if (
-      dadosSecaoLocalizarEstudante?.codigoAluno &&
-      dadosSecaoLocalizarEstudante?.anoLetivo
+      dadosCollapseLocalizarEstudante?.codigoAluno &&
+      dadosCollapseLocalizarEstudante?.anoLetivo
     ) {
       obterDadosEstudante();
     } else {
       dispatch(setDadosEstudanteObjectCardEncaminhamento());
     }
-  }, [dispatch, dadosSecaoLocalizarEstudante, obterDadosEstudante]);
+  }, [dispatch, dadosCollapseLocalizarEstudante, obterDadosEstudante]);
 
   return (
     <Loader loading={exibirLoader}>

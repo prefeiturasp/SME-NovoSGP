@@ -64,14 +64,14 @@ const EncaminhamentoAEECadastro = ({ match }) => {
       };
       dispatch(setDadosEstudanteObjectCardEncaminhamento(dadosObjectCard));
 
-      const dadosSecaoLocalizarEstudante = {
+      const dadosCollapseLocalizarEstudante = {
         anoLetivo: turma.anoLetivo,
         codigoAluno: aluno.codigoAluno,
         codigoTurma: turma.codigo,
         turmaId: turma.id,
       };
       dispatch(
-        setDadosCollapseLocalizarEstudante(dadosSecaoLocalizarEstudante)
+        setDadosCollapseLocalizarEstudante(dadosCollapseLocalizarEstudante)
       );
 
       dispatch(setDadosEncaminhamento(resultado?.data));

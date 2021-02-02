@@ -12,7 +12,7 @@ import ObjectCardEncaminhamento from './objectCardEncaminhamento';
 const SecaoEncaminhamentoCollapse = props => {
   const { match } = props;
 
-  const dadosSecaoLocalizarEstudante = useSelector(
+  const dadosCollapseLocalizarEstudante = useSelector(
     store => store.collapseLocalizarEstudante.dadosCollapseLocalizarEstudante
   );
 
@@ -23,7 +23,7 @@ const SecaoEncaminhamentoCollapse = props => {
       indice="secao-encaminhamento-collapse-indice"
       alt="secao-encaminhamento-alt"
     >
-      {dadosSecaoLocalizarEstudante?.codigoAluno ? (
+      {dadosCollapseLocalizarEstudante?.codigoAluno ? (
         <>
           <ObjectCardEncaminhamento />
           <MotivoEncerramento />

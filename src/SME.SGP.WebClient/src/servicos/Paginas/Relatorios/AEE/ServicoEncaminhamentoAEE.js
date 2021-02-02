@@ -208,7 +208,7 @@ class ServicoEncaminhamentoAEE {
     const { encaminhamentoAEE } = state;
     const {
       formsSecoesEncaminhamentoAEE,
-      dadosSecaoLocalizarEstudante,
+      dadosCollapseLocalizarEstudante,
     } = encaminhamentoAEE;
 
     let contadorFormsValidos = 0;
@@ -252,8 +252,8 @@ class ServicoEncaminhamentoAEE {
       if (todosOsFormsEstaoValidos) {
         const valoresParaSalvar = {
           id: encaminhamentoId || 0,
-          turmaId: dadosSecaoLocalizarEstudante.turmaId,
-          alunoCodigo: dadosSecaoLocalizarEstudante.codigoAluno,
+          turmaId: dadosCollapseLocalizarEstudante.turmaId,
+          alunoCodigo: dadosCollapseLocalizarEstudante.codigoAluno,
           situacao,
         };
         valoresParaSalvar.secoes = formsSecoesEncaminhamentoAEE.map(

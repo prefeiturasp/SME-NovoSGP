@@ -26,7 +26,7 @@ const BotoesAcoesEncaminhamentoAEE = props => {
     store => store.encaminhamentoAEE.dadosEncaminhamento
   );
 
-  const dadosSecaoLocalizarEstudante = useSelector(
+  const dadosCollapseLocalizarEstudante = useSelector(
     store => store.collapseLocalizarEstudante.dadosCollapseLocalizarEstudante
   );
 
@@ -247,7 +247,7 @@ const BotoesAcoesEncaminhamentoAEE = props => {
           dadosEncaminhamento?.situacao !== situacaoAEE.Rascunho
         }
         disabled={
-          !dadosSecaoLocalizarEstudante?.codigoAluno ||
+          !dadosCollapseLocalizarEstudante?.codigoAluno ||
           desabilitarCamposEncaminhamentoAEE
         }
       />
