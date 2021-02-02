@@ -28,6 +28,7 @@
 
   <ItemGroup>
     <Folder Include="Interfaces\CasosDeUso\Aluno\" />
+    <Folder Include="Queries\AcompanhamentoFrequencia\" />
     <Folder Include="Servicos\Interfaces\" />
   </ItemGroup>
 </Project>
