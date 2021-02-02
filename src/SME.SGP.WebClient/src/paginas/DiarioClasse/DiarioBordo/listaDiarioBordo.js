@@ -202,17 +202,15 @@ const ListaDiarioBordo = () => {
     if (id) {
       const dados = await ServicoDiarioBordo.obterDiarioBordoDetalhes(id);
       if (dados?.data) {
+        let observacoes = [];
         if (dados.data.observacoes.length) {
-          const dadosObservacoes = await obterUsuarioPorObservacao(
-            dados.data.observacoes
-          );
-          setDiarioBordoAtual({
-            ...dados.data,
-            observacoes: dadosObservacoes,
-          });
-
-          dispatch(setDadosObservacoesUsuario(dadosObservacoes));
+          observacoes = await obterUsuarioPorObservacao(dados.data.observacoes);
+          dispatch(setDadosObservacoesUsuario(observacoes));
         }
+        setDiarioBordoAtual({
+          ...dados.data,
+          observacoes,
+        });
       }
     }
   };
@@ -223,11 +221,28 @@ const ListaDiarioBordo = () => {
       usuariosIdNotificacao: [],
       id: valor.id,
     };
-    if (listaUsuarios?.length) {
+    let observacaoId = valor.id;
+    let usuariosNotificacao = [];
+
+    if (observacaoId) {
+      const retorno = await ServicoDiarioBordo.obterNofiticarUsuarios({
+        turmaId,
+        observacaoId,
+      }).catch(e => erros(e));
+
+      usuariosNotificacao = retorno.data;
+      params.usuariosIdNotificacao = retorno.data.map(u => {
+        return u.usuarioId;
+      });
+    }
+
+    if (listaUsuarios?.length && !observacaoId) {
+      usuariosNotificacao = listaUsuarios;
       params.usuariosIdNotificacao = listaUsuarios.map(u => {
         return u.usuarioId;
       });
     }
+
     setCarregandoGeral(true);
     const resultado = await ServicoDiarioBordo.salvarEditarObservacao(
       diarioBordoAtual?.id,
@@ -238,10 +253,35 @@ const ListaDiarioBordo = () => {
     });
     if (resultado?.status === 200) {
       sucesso(`Observação ${valor.id ? 'alterada' : 'inserida'} com sucesso`);
+      if (!observacaoId) {
+        observacaoId = resultado.data.id;
+      }
+
       ServicoObservacoesUsuario.atualizarSalvarEditarDadosObservacao(
         valor,
         resultado.data
       );
+
+      setDiarioBordoAtual(estadoAntigo => {
+        const observacoes = estadoAntigo.observacoes.map(estado => {
+          if (estado.id === observacaoId) {
+            return {
+              ...estado,
+              usuariosNotificacao,
+              listagemDiario: true,
+            };
+          }
+          return estado;
+        });
+
+        dispatch(setDadosObservacoesUsuario(observacoes));
+
+        return {
+          ...estadoAntigo,
+          observacoes,
+        };
+      });
+
       setCarregandoGeral(false);
       return resultado;
     }
