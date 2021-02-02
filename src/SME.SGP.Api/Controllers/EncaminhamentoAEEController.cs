@@ -145,5 +145,14 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(encaminhamentoId));
         }
+
+        [HttpPost("atribuir-responsavel")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.AEE_A, Policy = "Bearer")]
+        public async Task<IActionResult> AtribuirResponsavelEncaminhamento([FromBody] AtribuirResponsavelEncaminhamentoDto parametros, [FromServices] IAtribuirResponsavelEncaminhamentoAEEUseCase useCase)
+        {
+            return Ok(await useCase.Executar(parametros.EncaminhamentoId, parametros.RfResponsavel));
+        }
     }
 }
