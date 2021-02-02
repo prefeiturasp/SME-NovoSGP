@@ -30,14 +30,17 @@ const LocalizadorEstudante = props => {
   const classeCodigo = semMargin
     ? 'col-sm-12 col-md-6 col-lg-4 col-xl-4 p-0 pl-4'
     : 'col-sm-12 col-md-6 col-lg-4 col-xl-4';
+  
   const [dataSource, setDataSource] = useState([]);
   const [pessoaSelecionada, setPessoaSelecionada] = useState({});
   const [desabilitarCampo, setDesabilitarCampo] = useState({
     codigo: false,
     nome: false,
   });
-
-  const [timeoutBuscarPorCodigo, setTimeoutBuscarPorCodigo] = useState('');
+  const [timeoutBuscarPorCodigoNome, setTimeoutBuscarPorCodigoNome] = useState(
+    ''
+  );
+  const [exibirLoader, setExibirLoader] = useState(false);
 
   useEffect(() => {
     setPessoaSelecionada({
@@ -59,23 +62,28 @@ const LocalizadorEstudante = props => {
     }
   }, [pessoaSelecionada, limparCamposAposPesquisa]);
 
+  const limparDados = () => {
+    onChange();
+    setDataSource([]);
+    setPessoaSelecionada({
+      alunoCodigo: '',
+      alunoNome: '',
+      codigoTurma: '',
+      turmaId: '',
+    });
+    setTimeout(() => {
+      setDesabilitarCampo(() => ({
+        codigo: false,
+        nome: false,
+      }));
+    }, 200);
+  };
+
   const onChangeNome = async valor => {
     valor = removerNumeros(valor);
     if (valor.length === 0) {
-      setPessoaSelecionada({
-        alunoCodigo: '',
-        alunoNome: '',
-        codigoTurma: '',
-        turmaId: '',
-      });
-      setTimeout(() => {
-        setDesabilitarCampo(() => ({
-          codigo: false,
-          nome: false,
-        }));
-      }, 200);
-      setDataSource([]);
-      onChange();
+      limparDados();
+      return;
     }
 
     if (valor.length < 3) return;
@@ -89,18 +97,12 @@ const LocalizadorEstudante = props => {
     if (codigoTurma) {
       params.codigoTurma = codigoTurma;
     }
-
+    setExibirLoader(true);
     const retorno = await service.buscarPorNome(params).catch(() => {
-      onChange();
-      setDataSource([]);
-      setPessoaSelecionada({
-        alunoCodigo: '',
-        alunoNome: valor,
-        codigoTurma: '',
-        turmaId: '',
-      });
+      setExibirLoader(false);
+      limparDados();
     });
-
+    setExibirLoader(false);
     if (retorno && retorno?.data?.items?.length > 0) {
       setDataSource([]);
       setDataSource(
@@ -115,6 +117,10 @@ const LocalizadorEstudante = props => {
   };
 
   const onBuscarPorCodigo = async codigo => {
+    if (!codigo) {
+      limparDados();
+      return;
+    }
     const params = {
       codigo: codigo.codigo,
       codigoUe: ueId,
@@ -125,21 +131,18 @@ const LocalizadorEstudante = props => {
       params.codigoTurma = codigoTurma;
     }
 
+    setExibirLoader(true);
     const retorno = await service.buscarPorCodigo(params).catch(e => {
+      setExibirLoader(false);
       if (e?.response?.status === 601) {
         erro('Estudante não encontrado no EOL');
       } else {
         erros(e);
       }
-      onChange();
-      setDataSource([]);
-      setPessoaSelecionada({
-        alunoCodigo: '',
-        alunoNome: '',
-        codigoTurma: '',
-        turmaId: '',
-      });
+      limparDados();
     });
+
+    setExibirLoader(false);
 
     if (retorno?.data?.items?.length > 0) {
       const {
@@ -176,8 +179,8 @@ const LocalizadorEstudante = props => {
   };
 
   const validaAntesBuscarPorCodigo = valor => {
-    if (timeoutBuscarPorCodigo) {
-      clearTimeout(timeoutBuscarPorCodigo);
+    if (timeoutBuscarPorCodigoNome) {
+      clearTimeout(timeoutBuscarPorCodigoNome);
     }
 
     if (ueId) {
@@ -185,23 +188,27 @@ const LocalizadorEstudante = props => {
         onBuscarPorCodigo(valor);
       }, 500);
 
-      setTimeoutBuscarPorCodigo(timeout);
+      setTimeoutBuscarPorCodigoNome(timeout);
+    }
+  };
+
+  const validaAntesBuscarPorNome = valor => {
+    if (timeoutBuscarPorCodigoNome) {
+      clearTimeout(timeoutBuscarPorCodigoNome);
+    }
+
+    if (ueId) {
+      const timeout = setTimeout(() => {
+        onChangeNome(valor);
+      }, 500);
+
+      setTimeoutBuscarPorCodigoNome(timeout);
     }
   };
 
   const onChangeCodigo = valor => {
     if (valor.length === 0) {
-      setPessoaSelecionada({
-        alunoCodigo: '',
-        alunoNome: '',
-        codigoTurma: '',
-        turmaId: '',
-      });
-      setDesabilitarCampo(estado => ({
-        ...estado,
-        nome: false,
-      }));
-      onChange();
+      limparDados();
     }
   };
 
@@ -247,11 +254,12 @@ const LocalizadorEstudante = props => {
           placeholder={placeholder}
           dataSource={dataSource}
           onSelect={onSelectPessoa}
-          onChange={onChangeNome}
+          onChange={validaAntesBuscarPorNome}
           pessoaSelecionada={pessoaSelecionada}
           name="alunoNome"
           desabilitado={desabilitado || desabilitarCampo.nome}
           regexIgnore={/\d+/}
+          exibirLoader={exibirLoader}
         />
       </div>
       {exibirCodigoEOL ? (
@@ -263,6 +271,7 @@ const LocalizadorEstudante = props => {
             onChange={onChangeCodigo}
             name="alunoCodigo"
             desabilitado={desabilitado || desabilitarCampo.codigo}
+            exibirLoader={exibirLoader}
           />
         </div>
       ) : (
