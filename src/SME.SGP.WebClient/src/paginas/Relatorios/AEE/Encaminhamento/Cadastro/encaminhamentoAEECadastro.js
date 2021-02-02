@@ -5,7 +5,7 @@ import { Card } from '~/componentes';
 import { Cabecalho } from '~/componentes-sgp';
 import CollapseLocalizarEstudante from '~/componentes-sgp/CollapseLocalizarEstudante/collapseLocalizarEstudante';
 import { RotasDto } from '~/dtos';
-import { setDadosCollapseLocalizarEstudante } from '~/redux/modulos/collapseLocalizarEstudante/actions';
+import { setDadosCollapseLocalizarEstudante, setLimparDadosLocalizarEstudante } from '~/redux/modulos/collapseLocalizarEstudante/actions';
 import {
   setDadosEncaminhamento,
   setDadosEstudanteObjectCardEncaminhamento,
@@ -85,15 +85,16 @@ const EncaminhamentoAEECadastro = ({ match }) => {
     }
   }, [match, obterEncaminhamentoPorId, dispatch]);
 
-  useEffect(() => {
-    return () => {
-      dispatch(setLimparDadosEncaminhamento());
-    };
+  const limparDadosEncaminhamento = useCallback(() => {
+    dispatch(setLimparDadosEncaminhamento());
   }, [dispatch]);
 
-  const limparDadosEncaminhamento = () => {
-    dispatch(setLimparDadosEncaminhamento());
-  };
+  useEffect(() => {
+    return () => {
+      limparDadosEncaminhamento();
+      dispatch(setLimparDadosLocalizarEstudante());
+    };
+  }, [dispatch, limparDadosEncaminhamento]);
 
   return (
     <LoaderEncaminhamento>

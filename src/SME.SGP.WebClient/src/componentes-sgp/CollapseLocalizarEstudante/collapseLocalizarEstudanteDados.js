@@ -25,7 +25,7 @@ const CollapseLocalizarEstudanteDados = props => {
   const dispatch = useDispatch();
 
   const dadosIniciais = useSelector(
-    store => store.encaminhamentoAEE.dadosIniciaisEncaminhamentoAEE
+    store => store.collapseLocalizarEstudante.dadosIniciaisLocalizarEstudante
   );
 
   const [anoAtual] = useState(window.moment().format('YYYY'));

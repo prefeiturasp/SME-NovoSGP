@@ -42,15 +42,22 @@ const ObjectCardEncaminhamento = () => {
   }, [dispatch, dadosCollapseLocalizarEstudante]);
 
   useEffect(() => {
-    if (
-      dadosCollapseLocalizarEstudante?.codigoAluno &&
-      dadosCollapseLocalizarEstudante?.anoLetivo
-    ) {
-      obterDadosEstudante();
-    } else {
-      dispatch(setDadosEstudanteObjectCardEncaminhamento());
+    if (!dadosEstudanteObjectCardEncaminhamento?.codigoEOL) {
+      if (
+        dadosCollapseLocalizarEstudante?.codigoAluno &&
+        dadosCollapseLocalizarEstudante?.anoLetivo
+      ) {
+        obterDadosEstudante();
+      } else {
+        dispatch(setDadosEstudanteObjectCardEncaminhamento());
+      }
     }
-  }, [dispatch, dadosCollapseLocalizarEstudante, obterDadosEstudante]);
+  }, [
+    dispatch,
+    dadosCollapseLocalizarEstudante,
+    dadosEstudanteObjectCardEncaminhamento,
+    obterDadosEstudante,
+  ]);
 
   return (
     <Loader loading={exibirLoader}>

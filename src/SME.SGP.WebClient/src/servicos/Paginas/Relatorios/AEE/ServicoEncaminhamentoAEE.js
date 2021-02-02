@@ -205,11 +205,10 @@ class ServicoEncaminhamentoAEE {
     const { dispatch } = store;
 
     const state = store.getState();
-    const { encaminhamentoAEE } = state;
-    const {
-      formsSecoesEncaminhamentoAEE,
-      dadosCollapseLocalizarEstudante,
-    } = encaminhamentoAEE;
+    const { encaminhamentoAEE, collapseLocalizarEstudante } = state;
+    const { formsSecoesEncaminhamentoAEE } = encaminhamentoAEE;
+
+    const { dadosCollapseLocalizarEstudante } = collapseLocalizarEstudante;
 
     let contadorFormsValidos = 0;
 
