@@ -9,10 +9,11 @@ import { setBreadcrumbManual } from '~/servicos';
 import {
   CollapseAluno,
   EditoresTexto,
+  ModalAlunos,
+  ModalObjetivos,
+  ModalUE,
   TabelaLinhaRemovivel,
 } from './componentes';
-import ModalUE from './componentes/ModalUE/modalUE';
-import ModalObjetivos from './componentes/ModalObjetivos/modalObjetivos';
 
 const RegistroItineranciaAEECadastro = ({ match }) => {
   const [carregandoGeral, setCarregandoGeral] = useState(false);
@@ -20,21 +21,10 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
   const [dataRetorno, setDataRetorno] = useState();
   const [modalVisivelUES, setModalVisivelUES] = useState(false);
   const [modalVisivelObjetivos, setModalVisivelObjetivos] = useState(false);
+  const [modalVisivelAlunos, setModalVisivelAlunos] = useState(false);
   const [objetivosSelecionados, setObjetivosSelecionados] = useState();
-  const [unEscolaresSelecionados, setUnEscolaresSelecionados] = useState([
-    {
-      key: '1',
-      unidadeEscolar: 'CEU EMEF CESAR ARRUMADA CANTANHO, DEP.',
-      podeRemover: true,
-    },
-    {
-      key: '2',
-      unidadeEscolar: 'CEU EMEF CESAR ARRUMADA CANTANHO, DEP. 2',
-      podeRemover: true,
-    },
-  ]);
-
-  const idRegistroItinerancia = match?.params?.id;
+  const [alunosSelecionados, setAlunosSelecionados] = useState();
+  const [unEscolaresSelecionados, setUnEscolaresSelecionados] = useState();
 
   const onClickVoltar = () => {};
   const onClickCancelar = () => {};
@@ -53,13 +43,19 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
   };
 
   useEffect(() => {
-    if (idRegistroItinerancia)
+    if (match?.url)
       setBreadcrumbManual(
         match?.url,
         'Alterar',
         RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA
       );
-  }, [match, idRegistroItinerancia]);
+  }, [match]);
+
+  const removerAlunos = alunoCodigo => {
+    setAlunosSelecionados(estadoAntigo =>
+      estadoAntigo.filter(item => item.alunoCodigo !== alunoCodigo)
+    );
+  };
 
   return (
     <>
@@ -152,12 +148,22 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
                   color={Colors.Azul}
                   border
                   className="mr-2"
-                  // onClick={() => onClickEditarCriancas()}
+                  onClick={() => setModalVisivelAlunos(true)}
                   icon="user-plus"
                 />
               </div>
             </div>
-            {idRegistroItinerancia ? <CollapseAluno /> : <EditoresTexto />}
+            {alunosSelecionados?.length ? (
+              alunosSelecionados.map(aluno => (
+                <CollapseAluno
+                  key={aluno.alunoCodigo}
+                  aluno={aluno}
+                  removerAlunos={() => removerAlunos(aluno.alunoCodigo)}
+                />
+              ))
+            ) : (
+              <EditoresTexto />
+            )}
             <div className="row mb-4">
               <div className="col-3">
                 <CampoData
@@ -187,6 +193,17 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
           setModalVisivel={setModalVisivelObjetivos}
           objetivosSelecionados={objetivosSelecionados}
           setObjetivosSelecionados={setObjetivosSelecionados}
+        />
+      )}
+      {modalVisivelAlunos && (
+        <ModalAlunos
+          modalVisivel={modalVisivelAlunos}
+          setModalVisivel={setModalVisivelAlunos}
+          alunosSelecionados={alunosSelecionados}
+          setAlunosSelecionados={setAlunosSelecionados}
+          codigoUe={
+            unEscolaresSelecionados && unEscolaresSelecionados[0].codigoUe
+          }
         />
       )}
     </>

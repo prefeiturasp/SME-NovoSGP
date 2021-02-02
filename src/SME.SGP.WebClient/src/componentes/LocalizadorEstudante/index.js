@@ -20,8 +20,17 @@ const LocalizadorEstudante = props => {
     exibirCodigoEOL,
     valorInicialAlunoCodigo,
     placeholder,
+    semMargin,
+    limparCamposAposPesquisa,
   } = props;
 
+  const classeNome = semMargin
+    ? 'col-sm-12 col-md-6 col-lg-8 col-xl-8 p-0'
+    : 'col-sm-12 col-md-6 col-lg-8 col-xl-8';
+  const classeCodigo = semMargin
+    ? 'col-sm-12 col-md-6 col-lg-4 col-xl-4 p-0 pl-4'
+    : 'col-sm-12 col-md-6 col-lg-4 col-xl-4';
+  
   const [dataSource, setDataSource] = useState([]);
   const [pessoaSelecionada, setPessoaSelecionada] = useState({});
   const [desabilitarCampo, setDesabilitarCampo] = useState({
@@ -42,6 +51,16 @@ const LocalizadorEstudante = props => {
     });
     setDataSource([]);
   }, [ueId, codigoTurma]);
+
+  useEffect(() => {
+    if (Object.keys(pessoaSelecionada).length && limparCamposAposPesquisa) {
+      setPessoaSelecionada({});
+      setDesabilitarCampo({
+        codigo: false,
+        nome: false,
+      });
+    }
+  }, [pessoaSelecionada, limparCamposAposPesquisa]);
 
   const limparDados = () => {
     onChange();
@@ -229,11 +248,7 @@ const LocalizadorEstudante = props => {
 
   return (
     <React.Fragment>
-      <div
-        className={`${
-          exibirCodigoEOL ? 'col-sm-12 col-md-6 col-lg-8 col-xl-8' : 'col-md-12'
-        } `}
-      >
+      <div className={`${exibirCodigoEOL ? classeNome : 'col-md-12'} `}>
         {showLabel && <Label text="Nome" control="alunoNome" />}
         <InputNome
           placeholder={placeholder}
@@ -248,7 +263,7 @@ const LocalizadorEstudante = props => {
         />
       </div>
       {exibirCodigoEOL ? (
-        <div className="col-sm-12 col-md-6 col-lg-4 col-xl-4">
+        <div className={classeCodigo}>
           {showLabel && <Label text="Código EOL" control="alunoCodigo" />}
           <InputCodigo
             pessoaSelecionada={pessoaSelecionada}
@@ -279,6 +294,8 @@ LocalizadorEstudante.propTypes = {
     PropTypes.string,
   ]),
   placeholder: PropTypes.string,
+  semMargin: PropTypes.bool,
+  limparCamposAposPesquisa: PropTypes.bool,
 };
 
 LocalizadorEstudante.defaultProps = {
@@ -291,6 +308,8 @@ LocalizadorEstudante.defaultProps = {
   exibirCodigoEOL: true,
   valorInicialAlunoCodigo: '',
   placeholder: '',
+  semMargin: false,
+  limparCamposAposPesquisa: false,
 };
 
 export default LocalizadorEstudante;

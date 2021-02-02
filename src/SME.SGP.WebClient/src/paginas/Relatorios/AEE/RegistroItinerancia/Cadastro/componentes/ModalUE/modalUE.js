@@ -95,6 +95,7 @@ const ModalUE = ({
           {
             key: ueSelecionada.valor,
             unidadeEscolar: ueSelecionada.desc,
+            codigoUe: ue,
             podeRemover: true,
           },
         ];

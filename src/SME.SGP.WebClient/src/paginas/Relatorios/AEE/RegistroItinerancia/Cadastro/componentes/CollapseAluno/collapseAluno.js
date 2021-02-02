@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Divider } from 'antd';
 import shortid from 'shortid';
+import PropTypes from 'prop-types';
+
 import {
   Base,
   Button,
@@ -9,7 +11,7 @@ import {
   PainelCollapse,
 } from '~/componentes';
 
-const CollapseAluno = () => {
+const CollapseAluno = ({ aluno, removerAlunos }) => {
   const [acompanhamentoSituacao, setAcompanhamentoSituacao] = useState();
   const [descritivoEstudante, setDescritivoEstudante] = useState();
   const [encaminhamentos, setEncaminhamentos] = useState();
@@ -25,7 +27,7 @@ const CollapseAluno = () => {
             espacoPadrao
             corBorda={Base.AzulBordaCollapse}
             temBorda
-            header="Aluno"
+            header={aluno.alunoNome}
           >
             <div className="row mb-4 mt-n2">
               <div className="col-12">
@@ -71,7 +73,7 @@ const CollapseAluno = () => {
                   icon="user-minus"
                   color={Colors.Azul}
                   border
-                  onClick={() => {}}
+                  onClick={removerAlunos}
                 />
               </div>
             </div>
@@ -80,6 +82,16 @@ const CollapseAluno = () => {
       </div>
     </div>
   );
+};
+
+CollapseAluno.defaultProps = {
+  aluno: [],
+  removerAlunos: () => {},
+};
+
+CollapseAluno.propTypes = {
+  aluno: PropTypes.instanceOf(PropTypes.any),
+  removerAlunos: PropTypes.func,
 };
 
 export default CollapseAluno;
