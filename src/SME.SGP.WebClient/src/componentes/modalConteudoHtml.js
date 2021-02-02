@@ -27,7 +27,8 @@ const Container = styled(Modal)`
   .ant-modal-title {
     border-bottom: solid 1.5px rgba(0, 0, 0, 0.12);
     color: #42474a;
-    font-size: 25px;
+    font-size: ${({ tamanhoFonteTitulo }) =>
+      tamanhoFonteTitulo ? `${tamanhoFonteTitulo}px !important` : '25px'};
     padding-bottom: 7px;
   }
 
@@ -79,6 +80,7 @@ const ModalConteudoHtml = props => {
     fecharAoClicarEsc,
     esconderBotaoPrincipal,
     esconderBotaoSecundario,
+    tamanhoFonteTitulo,
   } = props;
   return (
     <Container
@@ -91,6 +93,7 @@ const ModalConteudoHtml = props => {
       centered
       confirmLoading={loader}
       width={width}
+      tamanhoFonteTitulo={tamanhoFonteTitulo}
       footer={
         tituloAtencao || perguntaAtencao ? (
           <>
@@ -166,12 +169,13 @@ const ModalConteudoHtml = props => {
 };
 
 ModalConteudoHtml.propTypes = {
-  width: PropTypes.number,
+  width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   desabilitarBotaoPrincipal: PropTypes.bool,
   fecharAoClicarFora: PropTypes.bool,
   fecharAoClicarEsc: PropTypes.bool,
   esconderBotaoPrincipal: PropTypes.bool,
   esconderBotaoSecundario: PropTypes.bool,
+  tamanhoFonteTitulo: PropTypes.string,
 };
 
 ModalConteudoHtml.defaultProps = {
@@ -181,6 +185,7 @@ ModalConteudoHtml.defaultProps = {
   fecharAoClicarEsc: true,
   esconderBotaoPrincipal: false,
   esconderBotaoSecundario: false,
+  tamanhoFonteTitulo: '',
 };
 
 export default ModalConteudoHtml;

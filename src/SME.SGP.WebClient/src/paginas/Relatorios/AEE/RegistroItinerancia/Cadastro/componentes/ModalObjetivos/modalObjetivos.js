@@ -172,7 +172,7 @@ const ModalObjetivos = ({
               : '(uma ou mais unidades)';
 
             return (
-              <>
+              <React.Fragment key={item.key}>
                 <CheckboxComponent
                   key={item.key}
                   className="mb-3 ml-n2"
@@ -193,7 +193,7 @@ const ModalObjetivos = ({
                     />
                   </div>
                 )}
-              </>
+              </React.Fragment>
             );
           })}
       </div>
