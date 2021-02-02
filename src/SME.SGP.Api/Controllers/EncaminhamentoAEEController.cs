@@ -140,7 +140,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("enviar-analise/{encaminhamentoId}")]
         [ProducesResponseType(typeof(RetornoBaseDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.AEE_A, Policy = "Bearer")]
+        //[Permissao(Permissao.AEE_A, Policy = "Bearer")]
         public async Task<IActionResult> EnviarParaAnaliseEncaminhamento(long encaminhamentoId, [FromServices] IEnviarParaAnaliseEncaminhamentoAEEUseCase useCase)
         {
             return Ok(await useCase.Executar(encaminhamentoId));

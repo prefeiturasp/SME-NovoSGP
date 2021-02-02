@@ -4,6 +4,8 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -32,24 +34,21 @@ namespace SME.SGP.Aplicacao
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(encaminhamentoAEE.TurmaId));
 
             if (turma == null)
-                throw new NegocioException("turma não encontrada");
-
-            FiltroFuncionarioDto filtro = new FiltroFuncionarioDto()
-            {
-                CodigoUE = turma.UeId.ToString()
-            };
+                throw new NegocioException("turma não encontrada");           
 
             if (encaminhamentoAEE == null)
                 throw new NegocioException("O encaminhamento informado não foi encontrado");
 
             encaminhamentoAEE.Situacao = Dominio.Enumerados.SituacaoAEE.AtribuicaoResponsavel;
-            
-            var funciorarioPAEE = await servicoEol.ObterFuncionariosPorDre(Perfis.PERFIL_PAEE, filtro);
+
+            IEnumerable<Guid> perfis = new List<Guid>() { Perfis.PERFIL_PAEE };
+
+            var funciorarioPAEE = await servicoEol.ObterFuncionariosDreUePorPerfis(turma.UeId.ToString(), perfis);
 
             if (funciorarioPAEE != null && funciorarioPAEE.Count() == 1)
             {
                 encaminhamentoAEE.Situacao = Dominio.Enumerados.SituacaoAEE.Analise;
-                encaminhamentoAEE.ResponsavelId = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(funciorarioPAEE.FirstOrDefault().CodigoRf));
+                encaminhamentoAEE.ResponsavelId = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(funciorarioPAEE.FirstOrDefault()));
             }            
 
             var idEntidadeEncaminhamento = await repositorioEncaminhamentoAEE.SalvarAsync(encaminhamentoAEE);
