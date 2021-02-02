@@ -16,7 +16,7 @@ const DadosSecaoEncaminhamento = props => {
   const dispatch = useDispatch();
 
   const dadosSecaoLocalizarEstudante = useSelector(
-    store => store.encaminhamentoAEE.dadosSecaoLocalizarEstudante
+    store => store.collapseLocalizarEstudante.dadosCollapseLocalizarEstudante
   );
 
   const dadosSecoesPorEtapaDeEncaminhamentoAEE = useSelector(

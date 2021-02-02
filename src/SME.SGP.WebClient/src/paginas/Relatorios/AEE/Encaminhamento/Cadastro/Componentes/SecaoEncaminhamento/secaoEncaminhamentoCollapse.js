@@ -13,7 +13,7 @@ const SecaoEncaminhamentoCollapse = props => {
   const { match } = props;
 
   const dadosSecaoLocalizarEstudante = useSelector(
-    store => store.encaminhamentoAEE.dadosSecaoLocalizarEstudante
+    store => store.collapseLocalizarEstudante.dadosCollapseLocalizarEstudante
   );
 
   return (

@@ -11,7 +11,7 @@ const InformacoesEscolares = () => {
   const [dados, setDados] = useState([]);
 
   const dadosSecaoLocalizarEstudante = useSelector(
-    store => store.encaminhamentoAEE.dadosSecaoLocalizarEstudante
+    store => store.collapseLocalizarEstudante.dadosCollapseLocalizarEstudante
   );
 
   const obterInformacoesEscolaresDoAluno = useCallback(async () => {

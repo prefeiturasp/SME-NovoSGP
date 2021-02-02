@@ -3,11 +3,12 @@ import React, { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Card } from '~/componentes';
 import { Cabecalho } from '~/componentes-sgp';
+import CollapseLocalizarEstudante from '~/componentes-sgp/CollapseLocalizarEstudante/collapseLocalizarEstudante';
 import { RotasDto } from '~/dtos';
+import { setDadosCollapseLocalizarEstudante } from '~/redux/modulos/collapseLocalizarEstudante/actions';
 import {
   setDadosEncaminhamento,
   setDadosEstudanteObjectCardEncaminhamento,
-  setDadosSecaoLocalizarEstudante,
   setDesabilitarCamposEncaminhamentoAEE,
   setExibirLoaderEncaminhamentoAEE,
   setLimparDadosEncaminhamento,
@@ -17,7 +18,6 @@ import ServicoEncaminhamentoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoE
 import BotoesAcoesEncaminhamentoAEE from './Componentes/botoesAcoesEncaminhamentoAEE';
 import LoaderEncaminhamento from './Componentes/LoaderEncaminhamento/loaderEncaminhamento';
 import SecaoEncaminhamentoCollapse from './Componentes/SecaoEncaminhamento/secaoEncaminhamentoCollapse';
-import SecaoLocalizarEstudanteCollapse from './Componentes/SecaoLocalizarEstudante/secaoLocalizarEstudanteCollapse';
 
 const EncaminhamentoAEECadastro = ({ match }) => {
   const dispatch = useDispatch();
@@ -70,7 +70,9 @@ const EncaminhamentoAEECadastro = ({ match }) => {
         codigoTurma: turma.codigo,
         turmaId: turma.id,
       };
-      dispatch(setDadosSecaoLocalizarEstudante(dadosSecaoLocalizarEstudante));
+      dispatch(
+        setDadosCollapseLocalizarEstudante(dadosSecaoLocalizarEstudante)
+      );
 
       dispatch(setDadosEncaminhamento(resultado?.data));
     }
@@ -89,6 +91,10 @@ const EncaminhamentoAEECadastro = ({ match }) => {
     };
   }, [dispatch]);
 
+  const limparDadosEncaminhamento = () => {
+    dispatch(setLimparDadosEncaminhamento());
+  };
+
   return (
     <LoaderEncaminhamento>
       <Cabecalho pagina="Encaminhamento AEE" />
@@ -102,7 +108,13 @@ const EncaminhamentoAEECadastro = ({ match }) => {
               ''
             ) : (
               <div className="col-md-12 mb-2">
-                <SecaoLocalizarEstudanteCollapse />
+                <CollapseLocalizarEstudante
+                  changeDre={limparDadosEncaminhamento}
+                  changeUe={limparDadosEncaminhamento}
+                  changeTurma={limparDadosEncaminhamento}
+                  changeLocalizadorEstudante={limparDadosEncaminhamento}
+                  clickCancelar={limparDadosEncaminhamento}
+                />
               </div>
             )}
             <div className="col-md-12 mb-2">

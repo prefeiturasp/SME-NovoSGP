@@ -27,7 +27,7 @@ const BotoesAcoesEncaminhamentoAEE = props => {
   );
 
   const dadosSecaoLocalizarEstudante = useSelector(
-    store => store.encaminhamentoAEE.dadosSecaoLocalizarEstudante
+    store => store.collapseLocalizarEstudante.dadosCollapseLocalizarEstudante
   );
 
   const desabilitarCamposEncaminhamentoAEE = useSelector(

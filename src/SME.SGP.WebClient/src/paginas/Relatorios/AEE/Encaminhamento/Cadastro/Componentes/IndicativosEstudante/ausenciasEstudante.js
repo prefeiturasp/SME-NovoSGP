@@ -24,7 +24,7 @@ const AusenciasEstudante = props => {
   );
 
   const dadosSecaoLocalizarEstudante = useSelector(
-    store => store.encaminhamentoAEE.dadosSecaoLocalizarEstudante
+    store => store.collapseLocalizarEstudante.dadosCollapseLocalizarEstudante
   );
 
   const [ausencias, setAusencias] = useState([]);

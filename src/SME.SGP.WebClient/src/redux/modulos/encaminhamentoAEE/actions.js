@@ -28,11 +28,6 @@ export const setDadosModalAviso = payload => ({
   payload,
 });
 
-export const setDadosSecaoLocalizarEstudante = payload => ({
-  type: '@encaminhamentoAEE/setDadosSecaoLocalizarEstudante',
-  payload,
-});
-
 export const setDadosSecoesPorEtapaDeEncaminhamentoAEE = payload => ({
   type: '@encaminhamentoAEE/setDadosSecoesPorEtapaDeEncaminhamentoAEE',
   payload,
