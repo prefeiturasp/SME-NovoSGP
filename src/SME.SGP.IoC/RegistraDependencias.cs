@@ -673,6 +673,7 @@ namespace SME.SGP.IoC
 			services.TryAddScoped<IEncerrarEncaminhamentoAEEUseCase, EncerrarEncaminhamentoAEEUseCase>();
             services.TryAddScoped<IEnviarParaAnaliseEncaminhamentoAEEUseCase, EnviarParaAnaliseEncaminhamentoAEEUseCase>();
             services.TryAddScoped<IAtribuirResponsavelEncaminhamentoAEEUseCase, AtribuirResponsavelEncaminhamentoAEEUseCase>();
+            services.TryAddScoped<IRemoverResponsavelEncaminhamentoAEEUseCase, RemoverResponsavelEncaminhamentoAEEUseCase>();
 
 
             services.TryAddScoped<IAlterarRegistroIndividualUseCase, AlterarRegistroIndividualUseCase>();
