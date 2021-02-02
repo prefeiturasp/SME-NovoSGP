@@ -1054,23 +1054,6 @@ namespace SME.SGP.Aplicacao.Integracoes
             var json = await resposta.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<InformacoesEscolaresAlunoDto>(json);
                         
-        }
-
-        public async Task<IEnumerable<string>> ObterFuncionariosDreUePorPerfis(string codigoDreUe, IEnumerable<Guid> perfis)
-        {
-            var resposta = await httpClient.PostAsync($"funcionarios/unidade/{codigoDreUe}",
-               new StringContent(JsonConvert.SerializeObject(perfis),
-               Encoding.UTF8, "application/json-patch+json"));
-
-            if (!resposta.IsSuccessStatusCode)
-                return null;
-
-            if (resposta.StatusCode == HttpStatusCode.NoContent)
-                return null;
-
-            var json = await resposta.Content.ReadAsStringAsync();
-
-            return JsonConvert.DeserializeObject<IEnumerable<string>>(json);
-        }
+        }        
     }
 }
