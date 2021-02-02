@@ -43,7 +43,7 @@ namespace SME.SGP.Aplicacao
 
             IEnumerable<Guid> perfis = new List<Guid>() { Perfis.PERFIL_PAEE };
 
-            var funciorarioPAEE = await servicoEol.ObterFuncionariosDreUePorPerfis(turma.UeId.ToString(), perfis);
+            var funciorarioPAEE = await servicoEol.ObterFuncionariosDreUePorPerfis(turma.Ue.CodigoUe, perfis);
 
             if (funciorarioPAEE != null && funciorarioPAEE.Count() == 1)
             {
