@@ -11,6 +11,7 @@ import {
   setLimparDadosEncaminhamento,
 } from '~/redux/modulos/encaminhamentoAEE/actions';
 import { AbrangenciaServico, erros } from '~/servicos';
+import ServicoEncaminhamentoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoEncaminhamentoAEE';
 
 const SecaoLocalizarEstudanteDados = () => {
   const dispatch = useDispatch();
@@ -193,15 +194,22 @@ const SecaoLocalizarEstudanteDados = () => {
   };
 
   const onClickProximoPasso = () => {
-    const params = {
-      anoLetivo: anoAtual,
-      codigoDre,
-      codigoUe,
-      codigoTurma: alunoLocalizadorSelecionado.codigoTurma,
-      codigoAluno: alunoLocalizadorSelecionado.codigoAluno,
-      turmaId: alunoLocalizadorSelecionado.turmaId,
-    };
-    dispatch(setDadosSecaoLocalizarEstudante(params));
+    ServicoEncaminhamentoAEE.podeCadastrarEncaminhamentoEstudante(
+      alunoLocalizadorSelecionado.codigoAluno
+    )
+      .then(() => {
+        const params = {
+          anoLetivo: anoAtual,
+          codigoDre,
+          codigoUe,
+          codigoTurma: alunoLocalizadorSelecionado.codigoTurma,
+          codigoAluno: alunoLocalizadorSelecionado.codigoAluno,
+          turmaId: alunoLocalizadorSelecionado.turmaId,
+        };
+
+        dispatch(setDadosSecaoLocalizarEstudante(params));
+      })
+      .catch(e => erros(e));
   };
 
   const onClickCancelar = () => {
