@@ -16,7 +16,7 @@ CREATE TABLE public.registro_itinerancia (
 );
 
 DROP TABLE if exists public.registro_itinerancia_objetivo_base;
-CREATE TABLE public.registro_itinerancia (
+CREATE TABLE public.registro_itinerancia_objetivo_base (
 	id int8 NOT NULL GENERATED ALWAYS AS identity,
 	nome varchar(200)  NOT NULL,
 	tem_descricao boolean  NOT NULL,
@@ -26,7 +26,7 @@ CREATE TABLE public.registro_itinerancia (
 );
 
 DROP TABLE if exists public.registro_itinerancia_objetivo;
-CREATE TABLE public.registro_itinerancia_objetivos (
+CREATE TABLE public.registro_itinerancia_objetivo (
 	id int8 NOT NULL GENERATED ALWAYS AS identity,
 	registro_itinerancia_base_id int8 NOT NULL,
 	registro_itinerancia_id int8 NOT NULL,
@@ -70,7 +70,6 @@ CREATE TABLE public.registro_itinerancia_questao (
 	questao_id int8 NOT NULL,
 	registro_itinerancia_id int8 NOT NULL,
 	resposta varchar NOT NULL,
-    excluido boolean not null default false,
 	criado_em timestamp  NOT NULL,
     criado_por varchar(200) NOT NULL,
     alterado_em timestamp ,
@@ -82,7 +81,7 @@ CREATE TABLE public.registro_itinerancia_questao (
     CONSTRAINT registro_itinerancia_questao_pk PRIMARY KEY (id)
 );
 
-ALTER TABLE public.registro_itinerancia_questao ADD CONSTRAINT registro_itinerancia_questao_fk FOREIGN KEY (questai_id) REFERENCES questao(id);
+ALTER TABLE public.registro_itinerancia_questao ADD CONSTRAINT registro_itinerancia_questao_fk FOREIGN KEY (questao_id) REFERENCES questao(id);
 ALTER TABLE public.registro_itinerancia_questao ADD CONSTRAINT registro_itinerancia_questao_itinerancia_fk FOREIGN KEY (registro_itinerancia_id) REFERENCES registro_itinerancia(id);
 
 DROP TABLE if exists public.registro_itinerancia_aluno;
@@ -120,15 +119,15 @@ CREATE TABLE public.registro_itinerancia_aluno_questao (
     CONSTRAINT registro_itinerancia_aluno_questao_pk PRIMARY KEY (id)
 );
 
-ALTER TABLE public.registro_itinerancia_questao ADD CONSTRAINT registro_itinerancia_aluno_questao_fk FOREIGN KEY (questai_id) REFERENCES questao(id);
+ALTER TABLE public.registro_itinerancia_questao ADD CONSTRAINT registro_itinerancia_aluno_questao_fk FOREIGN KEY (questao_id) REFERENCES questao(id);
 ALTER TABLE public.registro_itinerancia_aluno_questao ADD CONSTRAINT registro_itinerancia_aluno_itinerancia_fk FOREIGN KEY (registro_itinerancia_aluno_id) REFERENCES registro_itinerancia_aluno(id);
 
 DELETE FROM public.registro_itinerancia_objetivo_base WHERE 1=1;
-INSERT INTO public.registro_itinerancia_objetivo_base (nome, tem_descricao, permite_varias_ues) VALUES ("Mapeamento dos estudantes público da Educação Especial", FALSE, FALSE);
-INSERT INTO public.registro_itinerancia_objetivo_base (nome, tem_descricao, permite_varias_ues) VALUES ("Reorganização e/ou remanejamento de apoios e serviços", FALSE, FALSE);
-INSERT INTO public.registro_itinerancia_objetivo_base (nome, tem_descricao, permite_varias_ues) VALUES ("Atendimento de solicitação da U.E", TRUE, FALSE);
-INSERT INTO public.registro_itinerancia_objetivo_base (nome, tem_descricao, permite_varias_ues) VALUES ("Acompanhamento professor de sala regular", FALSE, TRUE);
-INSERT INTO public.registro_itinerancia_objetivo_base (nome, tem_descricao, permite_varias_ues) VALUES ("Acompanhamento professor de SRM", FALSE, TRUE);
-INSERT INTO public.registro_itinerancia_objetivo_base (nome, tem_descricao, permite_varias_ues) VALUES ("Ação Formativa em JEIF", FALSE, TRUE);
-INSERT INTO public.registro_itinerancia_objetivo_base (nome, tem_descricao, permite_varias_ues) VALUES ("Reunião", FALSE, TRUE);
-INSERT INTO public.registro_itinerancia_objetivo_base (nome, tem_descricao, permite_varias_ues) VALUES ("Outros", TRUE, FALSE);
+INSERT INTO public.registro_itinerancia_objetivo_base (nome, tem_descricao, permite_varias_ues) VALUES ('Mapeamento dos estudantes público da Educação Especial', FALSE, FALSE);
+INSERT INTO public.registro_itinerancia_objetivo_base (nome, tem_descricao, permite_varias_ues) VALUES ('Reorganização e/ou remanejamento de apoios e serviços', FALSE, FALSE);
+INSERT INTO public.registro_itinerancia_objetivo_base (nome, tem_descricao, permite_varias_ues) VALUES ('Atendimento de solicitação da U.E', TRUE, FALSE);
+INSERT INTO public.registro_itinerancia_objetivo_base (nome, tem_descricao, permite_varias_ues) VALUES ('Acompanhamento professor de sala regular', FALSE, TRUE);
+INSERT INTO public.registro_itinerancia_objetivo_base (nome, tem_descricao, permite_varias_ues) VALUES ('Acompanhamento professor de SRM', FALSE, TRUE);
+INSERT INTO public.registro_itinerancia_objetivo_base (nome, tem_descricao, permite_varias_ues) VALUES ('Ação Formativa em JEIF', FALSE, TRUE);
+INSERT INTO public.registro_itinerancia_objetivo_base (nome, tem_descricao, permite_varias_ues) VALUES ('Reunião', FALSE, TRUE);
+INSERT INTO public.registro_itinerancia_objetivo_base (nome, tem_descricao, permite_varias_ues) VALUES ('Outros', TRUE, FALSE);
