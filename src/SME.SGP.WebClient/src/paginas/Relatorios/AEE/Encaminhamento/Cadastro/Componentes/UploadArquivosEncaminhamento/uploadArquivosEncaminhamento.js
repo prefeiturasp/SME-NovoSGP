@@ -3,7 +3,7 @@ import React from 'react';
 import { useDispatch } from 'react-redux';
 import { Label } from '~/componentes';
 import UploadArquivos from '~/componentes-sgp/UploadArquivos/uploadArquivos';
-import { setEncaminhamentoAEEEmEdicao } from '~/redux/modulos/encaminhamentoAEE/actions';
+import { setQuestionarioDinamicoEmEdicao } from '~/redux/modulos/questionarioDinamico/actions';
 import { erros, sucesso } from '~/servicos';
 import ServicoEncaminhamentoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoEncaminhamentoAEE';
 
@@ -68,7 +68,7 @@ const UploadArquivosEncaminhamento = props => {
               : []
           }
           onChangeListaArquivos={() => {
-            dispatch(setEncaminhamentoAEEEmEdicao(true));
+            dispatch(setQuestionarioDinamicoEmEdicao(true));
           }}
         />
       </div>

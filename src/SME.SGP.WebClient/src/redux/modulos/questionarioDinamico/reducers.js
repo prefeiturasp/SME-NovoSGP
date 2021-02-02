@@ -2,6 +2,7 @@ import produce from 'immer';
 
 const inicial = {
   formsQuestionarioDinamico: null,
+  questionarioDinamicoEmEdicao: false,
 };
 
 export default function questionarioDinamico(state = inicial, action) {
@@ -13,10 +14,17 @@ export default function questionarioDinamico(state = inicial, action) {
           formsQuestionarioDinamico: action.payload,
         };
       }
+      case '@questionarioDinamico/setQuestionarioDinamicoEmEdicao': {
+        return {
+          ...draft,
+          questionarioDinamicoEmEdicao: action.payload,
+        };
+      }
       case '@questionarioDinamico/setLimparDadosQuestionarioDinamico': {
         return {
           ...draft,
           formsQuestionarioDinamico: null,
+          questionarioDinamicoEmEdicao: false,
         };
       }
       default:

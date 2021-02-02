@@ -3,7 +3,6 @@ import tipoQuestao from '~/dtos/tipoQuestao';
 import { store } from '~/redux';
 import {
   setDadosModalAviso,
-  setEncaminhamentoAEEEmEdicao,
   setExibirLoaderEncaminhamentoAEE,
   setExibirModalAviso,
   setExibirModalErrosEncaminhamento,
@@ -64,22 +63,6 @@ class ServicoEncaminhamentoAEE {
   obterEncaminhamentoPorId = encaminhamentoId => {
     return api.get(`${urlPadrao}/${encaminhamentoId}`);
   };
-
-  resetarTelaDadosOriginais = () => {
-    const { dispatch } = store;
-    const state = store.getState();
-    const { encaminhamentoAEE } = state;
-    const { formsSecoesEncaminhamentoAEE } = encaminhamentoAEE;
-    if (formsSecoesEncaminhamentoAEE?.length) {
-      formsSecoesEncaminhamentoAEE.forEach(item => {
-        const form = item.form();
-        form.resetForm();
-      });
-      dispatch(setEncaminhamentoAEEEmEdicao(false));
-    }
-  };
-
-
 
   // TODO
   // secaoEstaConcluida = secaoId => {

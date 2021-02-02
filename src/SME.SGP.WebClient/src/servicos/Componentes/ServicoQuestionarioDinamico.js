@@ -1,5 +1,8 @@
 import { store } from '~/redux';
-import { setFormsQuestionarioDinamico } from '~/redux/modulos/questionarioDinamico/actions';
+import {
+  setFormsQuestionarioDinamico,
+  setQuestionarioDinamicoEmEdicao,
+} from '~/redux/modulos/questionarioDinamico/actions';
 
 class ServicoQuestionarioDinamico {
   adicionarFormsQuestionarioDinamico = (
@@ -28,6 +31,20 @@ class ServicoQuestionarioDinamico {
         secaoId,
       };
       dispatch(setFormsQuestionarioDinamico(param));
+    }
+  };
+
+  resetarTelaDadosOriginais = () => {
+    const { dispatch } = store;
+    const state = store.getState();
+    const { questionarioDinamico } = state;
+    const { formsQuestionarioDinamico } = questionarioDinamico;
+    if (formsQuestionarioDinamico?.length) {
+      formsQuestionarioDinamico.forEach(item => {
+        const form = item.form();
+        form.resetForm();
+      });
+      dispatch(setQuestionarioDinamicoEmEdicao(false));
     }
   };
 }

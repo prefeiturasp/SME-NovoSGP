@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import QuestionarioDinamico from '~/componentes-sgp/QuestionarioDinamico/questionarioDinamico';
 import { RotasDto } from '~/dtos';
 import situacaoAEE from '~/dtos/situacaoAEE';
-import { setEncaminhamentoAEEEmEdicao } from '~/redux/modulos/encaminhamentoAEE/actions';
+import { setQuestionarioDinamicoEmEdicao } from '~/redux/modulos/questionarioDinamico/actions';
 import { erros, setBreadcrumbManual } from '~/servicos';
 import ServicoEncaminhamentoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoEncaminhamentoAEE';
 
@@ -36,7 +36,7 @@ const MontarDadosPorSecao = props => {
 
   const obterQuestionario = useCallback(async questionarioId => {
     const encaminhamentoId = match?.params?.id;
-    dispatch(setEncaminhamentoAEEEmEdicao(false));
+    dispatch(setQuestionarioDinamicoEmEdicao(false));
     const resposta = await ServicoEncaminhamentoAEE.obterQuestionario(
       questionarioId,
       encaminhamentoId,

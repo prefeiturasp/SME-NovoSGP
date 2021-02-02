@@ -10,6 +10,7 @@ import {
   setExibirModalEncerramentoEncaminhamentoAEE,
 } from '~/redux/modulos/encaminhamentoAEE/actions';
 import { confirmar, erros, sucesso } from '~/servicos';
+import ServicoQuestionarioDinamico from '~/servicos/Componentes/ServicoQuestionarioDinamico';
 import history from '~/servicos/history';
 import ServicoEncaminhamentoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoEncaminhamentoAEE';
 
@@ -18,8 +19,8 @@ const BotoesAcoesEncaminhamentoAEE = props => {
 
   const dispatch = useDispatch();
 
-  const encaminhamentoAEEEmEdicao = useSelector(
-    store => store.encaminhamentoAEE.encaminhamentoAEEEmEdicao
+  const questionarioDinamicoEmEdicao = useSelector(
+    store => store.questionarioDinamico.questionarioDinamicoEmEdicao
   );
 
   const dadosEncaminhamento = useSelector(
@@ -80,7 +81,7 @@ const BotoesAcoesEncaminhamentoAEE = props => {
   };
 
   const onClickVoltar = async () => {
-    if (encaminhamentoAEEEmEdicao) {
+    if (questionarioDinamicoEmEdicao) {
       const confirmou = await confirmar(
         'Atenção',
         '',
@@ -115,14 +116,14 @@ const BotoesAcoesEncaminhamentoAEE = props => {
   };
 
   const onClickCancelar = async () => {
-    if (!desabilitarCamposEncaminhamentoAEE && encaminhamentoAEEEmEdicao) {
+    if (!desabilitarCamposEncaminhamentoAEE && questionarioDinamicoEmEdicao) {
       const confirmou = await confirmar(
         'Atenção',
         'Você não salvou as informações preenchidas.',
         'Deseja realmente cancelar as alterações?'
       );
       if (confirmou) {
-        ServicoEncaminhamentoAEE.resetarTelaDadosOriginais();
+        ServicoQuestionarioDinamico.resetarTelaDadosOriginais();
       }
     }
   };
@@ -209,7 +210,7 @@ const BotoesAcoesEncaminhamentoAEE = props => {
         className="mr-3"
         onClick={onClickCancelar}
         disabled={
-          !encaminhamentoAEEEmEdicao || desabilitarCamposEncaminhamentoAEE
+          !questionarioDinamicoEmEdicao || desabilitarCamposEncaminhamentoAEE
         }
       />
       <Button
@@ -230,7 +231,7 @@ const BotoesAcoesEncaminhamentoAEE = props => {
         onClick={onClickSalvar}
         disabled={
           desabilitarCamposEncaminhamentoAEE ||
-          !encaminhamentoAEEEmEdicao ||
+          !questionarioDinamicoEmEdicao ||
           (match?.params?.id && !dadosEncaminhamento?.podeEditar)
         }
       />

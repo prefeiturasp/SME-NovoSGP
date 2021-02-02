@@ -12,7 +12,7 @@ import tipoQuestao from '~/dtos/tipoQuestao';
 import AtendimentoClinicoTabela from '~/paginas/Relatorios/AEE/Encaminhamento/Cadastro/Componentes/AtendimentoClinico/atendimentoClinicoTabela';
 import InformacoesEscolares from '~/paginas/Relatorios/AEE/Encaminhamento/Cadastro/Componentes/IndicativosEstudante/indicativosEstudante';
 import UploadArquivosEncaminhamento from '~/paginas/Relatorios/AEE/Encaminhamento/Cadastro/Componentes/UploadArquivosEncaminhamento/uploadArquivosEncaminhamento';
-import { setEncaminhamentoAEEEmEdicao } from '~/redux/modulos/encaminhamentoAEE/actions';
+import { setQuestionarioDinamicoEmEdicao } from '~/redux/modulos/questionarioDinamico/actions';
 import ServicoQuestionarioDinamico from '~/servicos/Componentes/ServicoQuestionarioDinamico';
 import ServicoEncaminhamentoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoEncaminhamentoAEE';
 
@@ -177,7 +177,7 @@ const QuestionarioDinamico = props => {
       form.unregisterField(questaoComplementarIdAnterior);
     }
 
-    dispatch(setEncaminhamentoAEEEmEdicao(true));
+    dispatch(setQuestionarioDinamicoEmEdicao(true));
   };
 
   const obterOpcaoRespostaPorId = (opcoesResposta, idComparacao) => {
@@ -306,7 +306,7 @@ const QuestionarioDinamico = props => {
     form,
     valoresAtuaisSelecionados
   ) => {
-    dispatch(setEncaminhamentoAEEEmEdicao(true));
+    dispatch(setQuestionarioDinamicoEmEdicao(true));
 
     if (
       !valoresAtuaisSelecionados?.length &&
@@ -499,7 +499,7 @@ const QuestionarioDinamico = props => {
           maxLength={999999}
           desabilitado={desabilitarCampos}
           onChange={() => {
-            dispatch(setEncaminhamentoAEEEmEdicao(true));
+            dispatch(setQuestionarioDinamicoEmEdicao(true));
           }}
           minRowsTextArea="4"
         />
