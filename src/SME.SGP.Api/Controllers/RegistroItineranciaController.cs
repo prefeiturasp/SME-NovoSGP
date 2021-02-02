@@ -31,5 +31,15 @@ namespace SME.SGP.Api
             };
             return Ok(objetivos);
         }
+
+        [HttpGet("/{id}")]
+        [ProducesResponseType(typeof(RegistroIndividualDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        //[Permissao(Permissao.REI_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterRegistroItinerancia()
+        {
+            var itinerancia = new List<RegistroItineranciaDto>();
+            return Ok(itinerancia);
+        }
     }
 }

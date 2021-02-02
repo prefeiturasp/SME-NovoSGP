@@ -11,7 +11,7 @@ namespace SME.SGP.Dominio
         public IEnumerable<RegistroItineranciaUe> Ues { get; set; }
         public IEnumerable<RegistroItineranciaAluno> Alunos { get; set; }
         public DateTime DataRetornoVerificacao { get; set; }
-        public IEnumerable<RegistroItineranciaQuestao> MyProperty { get; set; }
+        public IEnumerable<RegistroItineranciaQuestao> Questoes { get; set; }
 
     }
 }
