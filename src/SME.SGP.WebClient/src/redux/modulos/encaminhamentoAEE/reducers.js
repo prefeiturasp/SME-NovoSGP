@@ -6,7 +6,6 @@ const inicial = {
   exibirModalAnotacao: false,
   exibirModalAviso: false,
   dadosSecoesPorEtapaDeEncaminhamentoAEE: [],
-  formsSecoesEncaminhamentoAEE: null,
   encaminhamentoAEEEmEdicao: false,
   exibirLoaderEncaminhamentoAEE: false,
   dadosEncaminhamento: null,
@@ -55,12 +54,6 @@ export default function EncaminhamentoAEE(state = inicial, action) {
           dadosSecoesPorEtapaDeEncaminhamentoAEE: action.payload,
         };
       }
-      case '@encaminhamentoAEE/setFormsSecoesEncaminhamentoAEE': {
-        return {
-          ...draft,
-          formsSecoesEncaminhamentoAEE: action.payload,
-        };
-      }
       case '@encaminhamentoAEE/setEncaminhamentoAEEEmEdicao': {
         return {
           ...draft,
@@ -101,7 +94,6 @@ export default function EncaminhamentoAEE(state = inicial, action) {
         return {
           ...draft,
           dadosSecoesPorEtapaDeEncaminhamentoAEE: [],
-          formsSecoesEncaminhamentoAEE: null,
           encaminhamentoAEEEmEdicao: false,
           exibirLoaderEncaminhamentoAEE: false,
           dadosEncaminhamento: null,

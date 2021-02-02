@@ -7,7 +7,6 @@ import {
   setExibirLoaderEncaminhamentoAEE,
   setExibirModalAviso,
   setExibirModalErrosEncaminhamento,
-  setFormsSecoesEncaminhamentoAEE,
 } from '~/redux/modulos/encaminhamentoAEE/actions';
 import { erros } from '~/servicos/alertas';
 import api from '~/servicos/api';
@@ -80,52 +79,25 @@ class ServicoEncaminhamentoAEE {
     }
   };
 
-  addFormsSecoesEncaminhamentoAEE = (
-    obterForm,
-    questionarioId,
-    dadosQuestionarioAtual,
-    secaoId
-  ) => {
-    const { dispatch } = store;
-    const state = store.getState();
-    const { encaminhamentoAEE } = state;
-    const { formsSecoesEncaminhamentoAEE } = encaminhamentoAEE;
-    if (!formsSecoesEncaminhamentoAEE) {
-      const param = [];
-      param[questionarioId] = {
-        form: obterForm,
-        dadosQuestionarioAtual,
-        secaoId,
-      };
-      dispatch(setFormsSecoesEncaminhamentoAEE(param));
-    } else if (formsSecoesEncaminhamentoAEE?.length) {
-      const param = formsSecoesEncaminhamentoAEE;
-      param[questionarioId] = {
-        form: obterForm,
-        dadosQuestionarioAtual,
-        secaoId,
-      };
-      dispatch(setFormsSecoesEncaminhamentoAEE(param));
-    }
-  };
+
 
   // TODO
-  secaoEstaConcluida = secaoId => {
-    const state = store.getState();
-    const { encaminhamentoAEE } = state;
-    const { formsSecoesEncaminhamentoAEE } = encaminhamentoAEE;
+  // secaoEstaConcluida = secaoId => {
+  //   const state = store.getState();
+  //   const { encaminhamentoAEE } = state;
+  //   const { formsSecoesEncaminhamentoAEE } = encaminhamentoAEE;
 
-    if (formsSecoesEncaminhamentoAEE?.length) {
-      const form = formsSecoesEncaminhamentoAEE.find(
-        d => d.secaoId === secaoId
-      );
-      if (form && form()) {
-        return form().getFormikContext().isValid;
-      }
-    }
+  //   if (formsSecoesEncaminhamentoAEE?.length) {
+  //     const form = formsSecoesEncaminhamentoAEE.find(
+  //       d => d.secaoId === secaoId
+  //     );
+  //     if (form && form()) {
+  //       return form().getFormikContext().isValid;
+  //     }
+  //   }
 
-    return false;
-  };
+  //   return false;
+  // };
 
   obterQuestaoPorId = (dados, idPesquisa) => {
     let questaoAtual = '';
@@ -200,8 +172,8 @@ class ServicoEncaminhamentoAEE {
     const { dispatch } = store;
 
     const state = store.getState();
-    const { encaminhamentoAEE, collapseLocalizarEstudante } = state;
-    const { formsSecoesEncaminhamentoAEE } = encaminhamentoAEE;
+    const { questionarioDinamico, collapseLocalizarEstudante } = state;
+    const { formsQuestionarioDinamico } = questionarioDinamico;
 
     const { dadosCollapseLocalizarEstudante } = collapseLocalizarEstudante;
 
@@ -228,11 +200,11 @@ class ServicoEncaminhamentoAEE {
       });
     };
 
-    if (formsSecoesEncaminhamentoAEE?.length) {
+    if (formsQuestionarioDinamico?.length) {
       let todosOsFormsEstaoValidos = !enviarEncaminhamento;
 
       if (enviarEncaminhamento) {
-        const promises = formsSecoesEncaminhamentoAEE.map(async item =>
+        const promises = formsQuestionarioDinamico.map(async item =>
           validaAntesDoSubmit(item.form())
         );
 
@@ -240,7 +212,7 @@ class ServicoEncaminhamentoAEE {
 
         todosOsFormsEstaoValidos =
           contadorFormsValidos ===
-          formsSecoesEncaminhamentoAEE?.filter(a => a)?.length;
+          formsQuestionarioDinamico?.filter(a => a)?.length;
       }
 
       if (todosOsFormsEstaoValidos) {
@@ -250,7 +222,7 @@ class ServicoEncaminhamentoAEE {
           alunoCodigo: dadosCollapseLocalizarEstudante.codigoAluno,
           situacao,
         };
-        valoresParaSalvar.secoes = formsSecoesEncaminhamentoAEE.map(
+        valoresParaSalvar.secoes = formsQuestionarioDinamico.map(
           (item, secaoId) => {
             const form = item.form();
             const campos = form.state.values;

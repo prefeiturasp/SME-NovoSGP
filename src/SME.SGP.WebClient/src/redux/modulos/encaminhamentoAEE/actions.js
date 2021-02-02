@@ -28,11 +28,6 @@ export const setDadosSecoesPorEtapaDeEncaminhamentoAEE = payload => ({
   payload,
 });
 
-export const setFormsSecoesEncaminhamentoAEE = payload => ({
-  type: '@encaminhamentoAEE/setFormsSecoesEncaminhamentoAEE',
-  payload,
-});
-
 export const setEncaminhamentoAEEEmEdicao = payload => ({
   type: '@encaminhamentoAEE/setEncaminhamentoAEEEmEdicao',
   payload,

@@ -16,6 +16,7 @@ import {
   setLimparDadosEncaminhamento,
 } from '~/redux/modulos/encaminhamentoAEE/actions';
 import { setDadosObjectCardEstudante } from '~/redux/modulos/objectCardEstudante/actions';
+import { setLimparDadosQuestionarioDinamico } from '~/redux/modulos/questionarioDinamico/actions';
 import { erros, verificaSomenteConsulta } from '~/servicos';
 import ServicoEncaminhamentoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoEncaminhamentoAEE';
 import BotoesAcoesEncaminhamentoAEE from './Componentes/botoesAcoesEncaminhamentoAEE';
@@ -90,6 +91,7 @@ const EncaminhamentoAEECadastro = ({ match }) => {
 
   const limparDadosEncaminhamento = useCallback(() => {
     dispatch(setLimparDadosEncaminhamento());
+    dispatch(setLimparDadosQuestionarioDinamico());
   }, [dispatch]);
 
   useEffect(() => {
