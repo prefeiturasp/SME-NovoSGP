@@ -87,6 +87,7 @@ import EncaminhamentoAEELista from '~/paginas/Relatorios/AEE/Encaminhamento/List
 import EncaminhamentoAEECadastro from '~/paginas/Relatorios/AEE/Encaminhamento/Cadastro/encaminhamentoAEECadastro';
 import AcompanhamentoFrequencia from '~/paginas/DiarioClasse/AcompanhamentoFrequencia/acompanhamentoFrequencia';
 import PlanoAEELista from '~/paginas/Relatorios/AEE/Plano/Lista/planoAEELista';
+import PlanoAEECadastro from '~/paginas/Relatorios/AEE/Plano/Cadastro/planoAEECadastro';
 
 const rotas = new Map();
 
@@ -1184,6 +1185,17 @@ rotas.set(RotasDto.RELATORIO_AEE_PLANO, {
   menu: ['Relatórios', 'AEE'],
   parent: '/',
   component: PlanoAEELista,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  // temPermissionamento: false,
+  // chavePermissao: RotasDto.RELATORIO_AEE_ENCAMINHAMENTO,
+});
+
+rotas.set(`${RotasDto.RELATORIO_AEE_PLANO}/novo`, {
+  breadcrumbName: 'Plano',
+  menu: ['Relatórios', 'AEE'],
+  parent: '/',
+  component: PlanoAEECadastro,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
   // temPermissionamento: false,

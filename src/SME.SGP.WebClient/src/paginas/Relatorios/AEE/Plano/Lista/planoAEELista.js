@@ -144,9 +144,7 @@ const PlanoAEELista = () => {
   };
 
   const onClickNovo = () => {
-    // if (!somenteConsulta && permissoesTela.podeIncluir) {
-    //   ServicoEncaminhamentoAEE.obterAvisoModal();
-    // }
+    history.push(`${RotasDto.RELATORIO_AEE_PLANO}/novo`);
   };
 
   const onCheckedConsideraHistorico = e => {
