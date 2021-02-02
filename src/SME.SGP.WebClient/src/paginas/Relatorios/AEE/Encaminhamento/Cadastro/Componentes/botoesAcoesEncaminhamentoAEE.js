@@ -10,9 +10,9 @@ import {
   setExibirModalEncerramentoEncaminhamentoAEE,
 } from '~/redux/modulos/encaminhamentoAEE/actions';
 import { confirmar, erros, sucesso } from '~/servicos';
-import ServicoQuestionarioDinamico from '~/servicos/Componentes/ServicoQuestionarioDinamico';
 import history from '~/servicos/history';
 import ServicoEncaminhamentoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoEncaminhamentoAEE';
+import QuestionarioDinamicoFuncoes from '~/componentes-sgp/QuestionarioDinamico/Funcoes/questionarioDinamicoFuncoes';
 
 const BotoesAcoesEncaminhamentoAEE = props => {
   const { match } = props;
@@ -123,7 +123,7 @@ const BotoesAcoesEncaminhamentoAEE = props => {
         'Deseja realmente cancelar as alterações?'
       );
       if (confirmou) {
-        ServicoQuestionarioDinamico.resetarTelaDadosOriginais();
+        QuestionarioDinamicoFuncoes.limparDadosOriginaisQuestionarioDinamico();
       }
     }
   };
