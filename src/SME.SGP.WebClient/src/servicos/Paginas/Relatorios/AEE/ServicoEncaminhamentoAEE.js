@@ -41,11 +41,6 @@ class ServicoEncaminhamentoAEE {
     }
   };
 
-  obterDadosEstudante = (codigoAluno, anoLetivo) => {
-    const url = `v1/estudante/${codigoAluno}/anosLetivos/${anoLetivo}`;
-    return api.get(url);
-  };
-
   obterSecoesPorEtapaDeEncaminhamentoAEE = (etapa, encaminhamentoAeeId) => {
     let url = `${urlPadrao}/secoes?etapa=${etapa}`;
     if (encaminhamentoAeeId) {

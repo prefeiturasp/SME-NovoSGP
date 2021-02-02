@@ -5,14 +5,17 @@ import { Card } from '~/componentes';
 import { Cabecalho } from '~/componentes-sgp';
 import CollapseLocalizarEstudante from '~/componentes-sgp/CollapseLocalizarEstudante/collapseLocalizarEstudante';
 import { RotasDto } from '~/dtos';
-import { setDadosCollapseLocalizarEstudante, setLimparDadosLocalizarEstudante } from '~/redux/modulos/collapseLocalizarEstudante/actions';
+import {
+  setDadosCollapseLocalizarEstudante,
+  setLimparDadosLocalizarEstudante,
+} from '~/redux/modulos/collapseLocalizarEstudante/actions';
 import {
   setDadosEncaminhamento,
-  setDadosEstudanteObjectCardEncaminhamento,
   setDesabilitarCamposEncaminhamentoAEE,
   setExibirLoaderEncaminhamentoAEE,
   setLimparDadosEncaminhamento,
 } from '~/redux/modulos/encaminhamentoAEE/actions';
+import { setDadosObjectCardEstudante } from '~/redux/modulos/objectCardEstudante/actions';
 import { erros, verificaSomenteConsulta } from '~/servicos';
 import ServicoEncaminhamentoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoEncaminhamentoAEE';
 import BotoesAcoesEncaminhamentoAEE from './Componentes/botoesAcoesEncaminhamentoAEE';
@@ -62,7 +65,7 @@ const EncaminhamentoAEECadastro = ({ match }) => {
         situacao: aluno.situacao,
         dataSituacao: aluno.dataSituacao,
       };
-      dispatch(setDadosEstudanteObjectCardEncaminhamento(dadosObjectCard));
+      dispatch(setDadosObjectCardEstudante(dadosObjectCard));
 
       const dadosCollapseLocalizarEstudante = {
         anoLetivo: turma.anoLetivo,

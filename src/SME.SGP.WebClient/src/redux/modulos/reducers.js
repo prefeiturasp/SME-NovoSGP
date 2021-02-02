@@ -28,6 +28,7 @@ import encaminhamentoAEE from './encaminhamentoAEE/reducers';
 import registroIndividual from './registroIndividual/reducers';
 import collapseLocalizarEstudante from './collapseLocalizarEstudante/reducers';
 import acompanhamentoFrequencia from './acompanhamentoFrequencia/reducers';
+import objectCardEstudante from './objectCardEstudante/reducers';
 
 const reducers = combineReducers({
   navegacao,
@@ -58,6 +59,7 @@ const reducers = combineReducers({
   registroIndividual,
   collapseLocalizarEstudante,
   acompanhamentoFrequencia,
+  objectCardEstudante,
 });
 
 const rootReducer = (state, action) => {
