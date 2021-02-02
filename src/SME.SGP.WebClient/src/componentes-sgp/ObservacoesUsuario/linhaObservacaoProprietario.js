@@ -16,6 +16,7 @@ const LinhaObservacaoProprietario = props => {
     children,
     podeAlterar,
     podeExcluir,
+    proprietario,
   } = props;
 
   const dispatch = useDispatch();
@@ -95,7 +96,8 @@ const LinhaObservacaoProprietario = props => {
     return (
       !!(observacaoEmEdicao && observacaoEmEdicao.id !== dados.id) ||
       !!novaObservacao ||
-      !podeAlterar
+      !podeAlterar ||
+      !proprietario
     );
   };
 
@@ -103,7 +105,8 @@ const LinhaObservacaoProprietario = props => {
     return (
       !!(observacaoEmEdicao && observacaoEmEdicao.id !== dados.id) ||
       !!novaObservacao ||
-      !podeExcluir
+      !podeExcluir ||
+      !proprietario
     );
   };
 
@@ -187,6 +190,7 @@ LinhaObservacaoProprietario.propTypes = {
   children: PropTypes.node,
   podeAlterar: PropTypes.bool,
   podeExcluir: PropTypes.bool,
+  proprietario: PropTypes.bool,
 };
 
 LinhaObservacaoProprietario.defaultProps = {
@@ -196,6 +200,7 @@ LinhaObservacaoProprietario.defaultProps = {
   children: () => {},
   podeAlterar: true,
   podeExcluir: true,
+  proprietario: true,
 };
 
 export default LinhaObservacaoProprietario;
