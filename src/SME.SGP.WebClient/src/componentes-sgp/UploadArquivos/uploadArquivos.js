@@ -76,7 +76,7 @@ const UploadArquivos = props => {
   }, [defaultFileList]);
 
   const excedeuLimiteMaximo = arquivo => {
-    const tamanhoArquivo = arquivo.size / 2024 / 2024;
+    const tamanhoArquivo = arquivo.size / 1024 / 1024;
     return tamanhoArquivo > TAMANHO_MAXIMO_UPLOAD;
   };
 
