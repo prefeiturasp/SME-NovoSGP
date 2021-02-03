@@ -301,8 +301,15 @@ class ServicoEncaminhamentoAEE {
     return api.delete(url);
   };
 
-  podeCadastrarEncaminhamentoEstudante = codigoEstudante => {
-    return api.get(`${urlPadrao}/estudante/${codigoEstudante}/pode-cadastrar`);
+  podeCadastrarEncaminhamentoEstudante = async codigoEstudante => {
+    const resultado = await api
+      .get(`${urlPadrao}/estudante/${codigoEstudante}/pode-cadastrar`)
+      .catch(e => erros(e));
+
+    if (resultado?.data) {
+      return true;
+    }
+    return false;
   };
 
   removerArquivo = arquivoCodigo => {

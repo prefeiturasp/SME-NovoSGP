@@ -10,6 +10,7 @@ const CollapseLocalizarEstudante = props => {
     changeTurma,
     changeLocalizadorEstudante,
     clickCancelar,
+    validarSePermiteProximoPasso,
   } = props;
 
   return (
@@ -26,6 +27,7 @@ const CollapseLocalizarEstudante = props => {
         changeTurma={changeTurma}
         changeLocalizadorEstudante={changeLocalizadorEstudante}
         clickCancelar={clickCancelar}
+        validarSePermiteProximoPasso={validarSePermiteProximoPasso}
       />
     </CardCollapse>
   );
@@ -37,6 +39,7 @@ CollapseLocalizarEstudante.propTypes = {
   changeTurma: PropTypes.func,
   changeLocalizadorEstudante: PropTypes.func,
   clickCancelar: PropTypes.func,
+  validarSePermiteProximoPasso: PropTypes.func,
 };
 
 CollapseLocalizarEstudante.defaultProps = {
@@ -45,6 +48,7 @@ CollapseLocalizarEstudante.defaultProps = {
   changeTurma: () => {},
   changeLocalizadorEstudante: () => {},
   clickCancelar: () => {},
+  validarSePermiteProximoPasso: null,
 };
 
 export default CollapseLocalizarEstudante;

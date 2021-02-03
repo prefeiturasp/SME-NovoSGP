@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Loader, SelectComponent } from '~/componentes';
 import { FiltroHelper } from '~/componentes-sgp';
@@ -10,9 +10,7 @@ import {
   setDadosCollapseLocalizarEstudante,
   setLimparDadosLocalizarEstudante,
 } from '~/redux/modulos/collapseLocalizarEstudante/actions';
-
 import { AbrangenciaServico, erros } from '~/servicos';
-import ServicoEncaminhamentoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoEncaminhamentoAEE';
 
 const CollapseLocalizarEstudanteDados = props => {
   const {
@@ -21,6 +19,7 @@ const CollapseLocalizarEstudanteDados = props => {
     changeTurma,
     changeLocalizadorEstudante,
     clickCancelar,
+    validarSePermiteProximoPasso,
   } = props;
   const dispatch = useDispatch();
 
@@ -206,23 +205,26 @@ const CollapseLocalizarEstudanteDados = props => {
     }
   };
 
-  const onClickProximoPasso = () => {
-    ServicoEncaminhamentoAEE.podeCadastrarEncaminhamentoEstudante(
-      alunoLocalizadorSelecionado.codigoAluno
-    )
-      .then(() => {
-        const params = {
-          anoLetivo: anoAtual,
-          codigoDre,
-          codigoUe,
-          codigoTurma: alunoLocalizadorSelecionado.codigoTurma,
-          codigoAluno: alunoLocalizadorSelecionado.codigoAluno,
-          turmaId: alunoLocalizadorSelecionado.turmaId,
-        };
+  const onClickProximoPasso = async () => {
+    let continuar = true;
+    if (validarSePermiteProximoPasso) {
+      continuar = await validarSePermiteProximoPasso(
+        alunoLocalizadorSelecionado.codigoAluno
+      );
+    }
 
-        dispatch(setDadosCollapseLocalizarEstudante(params));
-      })
-      .catch(e => erros(e));
+    if (continuar) {
+      const params = {
+        anoLetivo: anoAtual,
+        codigoDre,
+        codigoUe,
+        codigoTurma: alunoLocalizadorSelecionado.codigoTurma,
+        codigoAluno: alunoLocalizadorSelecionado.codigoAluno,
+        turmaId: alunoLocalizadorSelecionado.turmaId,
+      };
+
+      dispatch(setDadosCollapseLocalizarEstudante(params));
+    }
   };
 
   const onClickCancelar = () => {
@@ -343,6 +345,7 @@ CollapseLocalizarEstudanteDados.propTypes = {
   changeTurma: PropTypes.func,
   changeLocalizadorEstudante: PropTypes.func,
   clickCancelar: PropTypes.func,
+  validarSePermiteProximoPasso: PropTypes.func,
 };
 
 CollapseLocalizarEstudanteDados.defaultProps = {
@@ -351,6 +354,7 @@ CollapseLocalizarEstudanteDados.defaultProps = {
   changeTurma: () => {},
   changeLocalizadorEstudante: () => {},
   clickCancelar: () => {},
+  validarSePermiteProximoPasso: null,
 };
 
 export default CollapseLocalizarEstudanteDados;
