@@ -5,13 +5,12 @@ import { useDispatch } from 'react-redux';
 import { Label } from '~/componentes';
 import tipoQuestao from '~/dtos/tipoQuestao';
 import AtendimentoClinicoTabela from '~/paginas/Relatorios/AEE/Encaminhamento/Cadastro/Componentes/AtendimentoClinico/atendimentoClinicoTabela';
-import UploadArquivosEncaminhamento from '~/paginas/Relatorios/AEE/Encaminhamento/Cadastro/Componentes/UploadArquivosEncaminhamento/uploadArquivosEncaminhamento';
 import { setQuestionarioDinamicoEmEdicao } from '~/redux/modulos/questionarioDinamico/actions';
-import ServicoQuestionarioDinamico from '~/servicos/Componentes/ServicoQuestionarioDinamico';
 import CampoDinamicoCombo from './Componentes/campoDinamicoCombo';
 import CampoDinamicoComboMultiplaEscolha from './Componentes/campoDinamicoComboMultiplaEscolha';
 import CampoDinamicoRadio from './Componentes/campoDinamicoRadio';
 import CampoDinamicoTexto from './Componentes/campoDinamicoTexto';
+import CampoDinamicoUploadArquivos from './Componentes/campoDinamicoUploadArquivos';
 import InformacoesEscolares from './Componentes/InformacoesEscolares/informacoesEscolares';
 import QuestionarioDinamicoFuncoes from './Funcoes/QuestionarioDinamicoFuncoes';
 import QuestionarioDinamicoValidacoes from './Validacoes/QuestionarioDinamicoValidacoes';
@@ -26,6 +25,8 @@ const QuestionarioDinamico = props => {
     codigoAluno,
     codigoTurma,
     anoLetivo,
+    urlUpload,
+    funcaoRemoverArquivoCampoUpload,
   } = props;
 
   const [valoresIniciais, setValoresIniciais] = useState();
@@ -36,7 +37,7 @@ const QuestionarioDinamico = props => {
 
   useEffect(() => {
     if (refForm) {
-      ServicoQuestionarioDinamico.adicionarFormsQuestionarioDinamico(
+      QuestionarioDinamicoFuncoes.adicionarFormsQuestionarioDinamico(
         () => obterForm(),
         dados.questionarioId,
         dadosQuestionarioAtual,
@@ -327,9 +328,11 @@ const QuestionarioDinamico = props => {
         break;
       case tipoQuestao.Upload:
         campoAtual = (
-          <UploadArquivosEncaminhamento
+          <CampoDinamicoUploadArquivos
             dados={params}
             desabilitado={desabilitarCampos}
+            urlUpload={urlUpload}
+            funcaoRemoverArquivoCampoUpload={funcaoRemoverArquivoCampoUpload}
           />
         );
         break;
@@ -391,6 +394,8 @@ QuestionarioDinamico.propTypes = {
   codigoAluno: PropTypes.oneOfType([PropTypes.any]),
   codigoTurma: PropTypes.oneOfType([PropTypes.any]),
   anoLetivo: PropTypes.oneOfType([PropTypes.any]),
+  urlUpload: PropTypes.string,
+  funcaoRemoverArquivoCampoUpload: PropTypes.func,
 };
 
 QuestionarioDinamico.defaultProps = {
@@ -400,6 +405,8 @@ QuestionarioDinamico.defaultProps = {
   codigoAluno: '',
   codigoTurma: '',
   anoLetivo: null,
+  urlUpload: '',
+  funcaoRemoverArquivoCampoUpload: () => {},
 };
 
 export default QuestionarioDinamico;
