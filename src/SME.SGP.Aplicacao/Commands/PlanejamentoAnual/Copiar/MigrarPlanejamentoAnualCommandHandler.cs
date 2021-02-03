@@ -71,7 +71,7 @@ namespace SME.SGP.Aplicacao
 
                     if (!excessoes.Any())
                     {
-                        await mediator.Send(new ExcluirPlanejamentoAnualPorTurmaIdEComponenteCurricularIdCommand(checarTurma.Id, comando.Planejamento.ComponenteCurricularId));
+                        await mediator.Send(new ExcluirPlanejamentoAnualPorTurmaIdEComponenteCurricularIdCommand(checarTurma.Id, comando.Planejamento.ComponenteCurricularId, comando.Planejamento.PlanejamentoPeriodosEscolaresIds.ToArray()));
                         await mediator.Send(new SalvarCopiaPlanejamentoAnualCommand(planejamentoCopiado));
                     }
 
