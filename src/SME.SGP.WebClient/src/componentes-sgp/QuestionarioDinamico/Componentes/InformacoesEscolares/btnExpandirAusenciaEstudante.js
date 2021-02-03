@@ -1,14 +1,16 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setExpandirLinhaAusenciaEstudante } from '~/redux/modulos/encaminhamentoAEE/actions';
-import { ContainerColunaMotivoAusencia } from './indicativosEstudante.css';
+import { setQuestionarioDinamicoExpandirLinhaAusenciaEstudante } from '~/redux/modulos/questionarioDinamico/actions';
+import { ContainerColunaMotivoAusencia } from './informacoesEscolares.css';
 
 const BtnExpandirAusenciaEstudante = props => {
   const dispatch = useDispatch();
 
   const expandirLinhaAusenciaEstudante = useSelector(
-    store => store.encaminhamentoAEE.expandirLinhaAusenciaEstudante
+    store =>
+      store.questionarioDinamico
+        .questionarioDinamicoExpandirLinhaAusenciaEstudante
   );
 
   const { indexLinha } = props;
@@ -22,7 +24,9 @@ const BtnExpandirAusenciaEstudante = props => {
       novaLinha[index] = true;
     }
 
-    dispatch(setExpandirLinhaAusenciaEstudante([...novaLinha]));
+    dispatch(
+      setQuestionarioDinamicoExpandirLinhaAusenciaEstudante([...novaLinha])
+    );
   };
 
   return (
