@@ -22,7 +22,7 @@ const CampoDinamicoCombo = props => {
           valueText="label"
           disabled={desabilitado}
           onChange={valorAtualSelecionado => {
-            onChange(questaoAtual, form, valorAtualSelecionado);
+            onChange(valorAtualSelecionado);
           }}
         />
       </div>

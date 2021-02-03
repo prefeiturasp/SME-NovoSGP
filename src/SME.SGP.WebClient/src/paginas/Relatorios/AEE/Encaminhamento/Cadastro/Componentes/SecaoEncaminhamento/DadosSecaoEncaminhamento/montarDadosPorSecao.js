@@ -65,12 +65,7 @@ const MontarDadosPorSecao = props => {
     } else {
       setDadosQuestionarioAtual([]);
     }
-  }, [
-    dados,
-    dadosCollapseLocalizarEstudante?.codigoAluno,
-    dadosCollapseLocalizarEstudante?.codigoTurma,
-    obterQuestionario,
-  ]);
+  }, [dados, dadosCollapseLocalizarEstudante, obterQuestionario]);
 
   const validaSeDesabilitarCampo = () => {
     const encaminhamentoId = match?.params?.id;
@@ -92,6 +87,8 @@ const MontarDadosPorSecao = props => {
       dados={dados}
       dadosQuestionarioAtual={dadosQuestionarioAtual}
       desabilitarCampos={validaSeDesabilitarCampo()}
+      funcaoRemoverArquivoCampoUpload={ServicoEncaminhamentoAEE.removerArquivo}
+      urlUpload="v1/encaminhamento-aee/upload"
     />
   ) : (
     ''

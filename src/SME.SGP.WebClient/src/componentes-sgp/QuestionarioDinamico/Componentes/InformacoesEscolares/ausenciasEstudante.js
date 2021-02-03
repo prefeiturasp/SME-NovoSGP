@@ -33,7 +33,6 @@ const AusenciasEstudante = props => {
   }, [dispatch]);
 
   const obterAusenciaMotivoPorAlunoTurmaBimestreAno = useCallback(async () => {
-    // TODO lOADER!
     const retorno = await ServicoCalendarios.obterAusenciaMotivoPorAlunoTurmaBimestreAno(
       dados.codigoAluno,
       dados.bimestre,
@@ -46,7 +45,7 @@ const AusenciasEstudante = props => {
     } else {
       setAusencias([]);
     }
-  }, [dados]);
+  }, [dados, codigoTurma, anoLetivo]);
 
   useEffect(() => {
     if (expandirLinhaAusenciaEstudante && dados) {

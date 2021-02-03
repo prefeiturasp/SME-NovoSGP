@@ -12,7 +12,6 @@ const InformacoesEscolares = props => {
   const { codigoAluno, codigoTurma, anoLetivo } = props;
 
   const obterInformacoesEscolaresDoAluno = useCallback(async () => {
-    // TODO Loader e trocar mock!
     const resposta = await ServicoEstudante.obterInformacoesEscolaresDoAluno(
       codigoAluno,
       codigoTurma
@@ -23,7 +22,7 @@ const InformacoesEscolares = props => {
     } else {
       setDados([]);
     }
-  }, []);
+  }, [codigoAluno, codigoTurma]);
 
   useEffect(() => {
     obterInformacoesEscolaresDoAluno();
