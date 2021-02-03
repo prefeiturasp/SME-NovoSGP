@@ -1,6 +1,6 @@
 ﻿namespace SME.SGP.Dominio
 {
-    public class RegistroItineranciaUe : EntidadeBase
+    public class ItineranciaUe : EntidadeBase
     {
         public long UeId { get; set; }
         public long RegistroItineranciaId { get; set; }

@@ -1,8 +1,12 @@
-﻿namespace SME.SGP.Infra
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace SME.SGP.Infra
 {
-    public class RegistroItineranciaObjetivoDto
+    public class ItineranciaObjetivosBaseDto
     {
-        public RegistroItineranciaObjetivoDto(long id, string nome, bool temDescricao, bool permiteVariasUes)
+        public ItineranciaObjetivosBaseDto(long id, string nome, bool temDescricao, bool permiteVariasUes)
         {
             Id = id;
             Nome = nome;
