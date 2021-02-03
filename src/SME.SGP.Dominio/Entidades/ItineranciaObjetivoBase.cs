@@ -10,6 +10,7 @@ namespace SME.SGP.Dominio
         public string Nome { get; set; }
         public bool TemDescricao { get; set; }
         public bool PermiteVariasUes { get; set; }
+        public int Ordem { get; set; }
         public bool Excluido { get; set; }
     }
 }

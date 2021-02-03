@@ -3,8 +3,7 @@ DROP TABLE if exists public.itinerancia;
 CREATE TABLE public.itinerancia (
 	id int8 NOT NULL GENERATED ALWAYS AS identity,
 	data_visita timestamp  NOT NULL,
-	data_retorno_verificacao timestamp  NOT NULL,
-	
+	data_retorno_verificacao timestamp  NOT NULL,	
 	criado_em timestamp  NOT NULL,
     criado_por varchar(200) NOT NULL,
     alterado_em timestamp ,
@@ -23,6 +22,7 @@ CREATE TABLE public.itinerancia_objetivo_base (
 	nome varchar(200)  NOT NULL,
 	tem_descricao boolean  NOT NULL,
 	permite_varias_ues boolean  NOT NULL,
+	ordem int4 NOT NULL,
     excluido boolean not null default false,    
     CONSTRAINT itinerancia_objetivo_base_pk PRIMARY KEY (id)
 );
@@ -131,14 +131,14 @@ ALTER TABLE public.itinerancia_aluno_questao ADD CONSTRAINT itinerancia_aluno_it
 
 --INSERT OBJETIVOS BASE
 DELETE FROM public.itinerancia_objetivo_base WHERE 1=1;
-INSERT INTO public.itinerancia_objetivo_base (nome, tem_descricao, permite_varias_ues) VALUES ('Mapeamento dos estudantes público da Educação Especial', FALSE, FALSE);
-INSERT INTO public.itinerancia_objetivo_base (nome, tem_descricao, permite_varias_ues) VALUES ('Reorganização e/ou remanejamento de apoios e serviços', FALSE, FALSE);
-INSERT INTO public.itinerancia_objetivo_base (nome, tem_descricao, permite_varias_ues) VALUES ('Atendimento de solicitação da U.E', TRUE, FALSE);
-INSERT INTO public.itinerancia_objetivo_base (nome, tem_descricao, permite_varias_ues) VALUES ('Acompanhamento professor de sala regular', FALSE, TRUE);
-INSERT INTO public.itinerancia_objetivo_base (nome, tem_descricao, permite_varias_ues) VALUES ('Acompanhamento professor de SRM', FALSE, TRUE);
-INSERT INTO public.itinerancia_objetivo_base (nome, tem_descricao, permite_varias_ues) VALUES ('Ação Formativa em JEIF', FALSE, TRUE);
-INSERT INTO public.itinerancia_objetivo_base (nome, tem_descricao, permite_varias_ues) VALUES ('Reunião', FALSE, TRUE);
-INSERT INTO public.itinerancia_objetivo_base (nome, tem_descricao, permite_varias_ues) VALUES ('Outros', TRUE, FALSE);
+INSERT INTO public.itinerancia_objetivo_base (nome, tem_descricao, permite_varias_ues, ordem) VALUES ('Mapeamento dos estudantes público da Educação Especial', FALSE, FALSE, 0);
+INSERT INTO public.itinerancia_objetivo_base (nome, tem_descricao, permite_varias_ues, ordem) VALUES ('Reorganização e/ou remanejamento de apoios e serviços', FALSE, FALSE, 10);
+INSERT INTO public.itinerancia_objetivo_base (nome, tem_descricao, permite_varias_ues, ordem) VALUES ('Atendimento de solicitação da U.E', TRUE, FALSE, 20);
+INSERT INTO public.itinerancia_objetivo_base (nome, tem_descricao, permite_varias_ues, ordem) VALUES ('Acompanhamento professor de sala regular', FALSE, TRUE, 30);
+INSERT INTO public.itinerancia_objetivo_base (nome, tem_descricao, permite_varias_ues, ordem) VALUES ('Acompanhamento professor de SRM', FALSE, TRUE, 40);
+INSERT INTO public.itinerancia_objetivo_base (nome, tem_descricao, permite_varias_ues, ordem) VALUES ('Ação Formativa em JEIF', FALSE, TRUE, 50);
+INSERT INTO public.itinerancia_objetivo_base (nome, tem_descricao, permite_varias_ues, ordem) VALUES ('Reunião', FALSE, TRUE, 60);
+INSERT INTO public.itinerancia_objetivo_base (nome, tem_descricao, permite_varias_ues, ordem) VALUES ('Outros', TRUE, FALSE, 70);
 
 --INSERT QUESTIONARIO
 insert into public.questionario (nome, tipo, criado_em, criado_por, criado_rf) values ('Questionário Registro Itinerância', 2, now(),'Carga Inicial','Carga Inicial');
