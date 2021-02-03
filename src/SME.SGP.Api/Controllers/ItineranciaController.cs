@@ -7,27 +7,27 @@ using System.Threading.Tasks;
 namespace SME.SGP.Api
 {
     [ApiController]
-    [Route("api/v1/registros-itinerancias")]
+    [Route("api/v1/itinerancias")]
     //[Authorize("Bearer")]
-    public class RegistroItineranciaController : ControllerBase
+    public class ItineranciaController : ControllerBase
     {
 
-        [HttpGet("obetivos")]
+        [HttpGet("objetivos")]
         [ProducesResponseType(typeof(RegistroIndividualDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         //[Permissao(Permissao.REI_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterObjetivos()
         {
-            var objetivos = new List<RegistroItineranciaObjetivosBaseDto>()
+            var objetivos = new List<ItineranciaObjetivosBaseDto>()
             {
-                new RegistroItineranciaObjetivosBaseDto(1, "Mapeamento dos estudantes público da Educação Especial", false, false),
-                new RegistroItineranciaObjetivosBaseDto(2, "Reorganização e/ou remanejamento de apoios e serviços", false, false),
-                new RegistroItineranciaObjetivosBaseDto(3, "Atendimento de solicitação da U.E", true, false),
-                new RegistroItineranciaObjetivosBaseDto(4, "Acompanhamento professor de sala regular", false, true),
-                new RegistroItineranciaObjetivosBaseDto(5, "Acompanhamento professor de SRM", false, true),
-                new RegistroItineranciaObjetivosBaseDto(6, "Ação Formativa em JEIF", false, true),
-                new RegistroItineranciaObjetivosBaseDto(7, "Reunião", false, true),
-                new RegistroItineranciaObjetivosBaseDto(8, "Outros", true, false),
+                new ItineranciaObjetivosBaseDto(1, "Mapeamento dos estudantes público da Educação Especial", false, false),
+                new ItineranciaObjetivosBaseDto(2, "Reorganização e/ou remanejamento de apoios e serviços", false, false),
+                new ItineranciaObjetivosBaseDto(3, "Atendimento de solicitação da U.E", true, false),
+                new ItineranciaObjetivosBaseDto(4, "Acompanhamento professor de sala regular", false, true),
+                new ItineranciaObjetivosBaseDto(5, "Acompanhamento professor de SRM", false, true),
+                new ItineranciaObjetivosBaseDto(6, "Ação Formativa em JEIF", false, true),
+                new ItineranciaObjetivosBaseDto(7, "Reunião", false, true),
+                new ItineranciaObjetivosBaseDto(8, "Outros", true, false),
             };
             return Ok(objetivos);
         }
@@ -38,20 +38,20 @@ namespace SME.SGP.Api
         //[Permissao(Permissao.REI_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterRegistroItinerancia(long id)
         {
-            var itinerancia = new RegistroItineranciaDto()
+            var itinerancia = new ItineranciaDto()
             {
                 DataRetornoVerificacao = new DateTime(),
                 DataVisita = new DateTime(),
-                Alunos = new List<RegistroItineranciaAlunoDto>()
+                Alunos = new List<ItineranciaAlunoDto>()
                 {
-                    new RegistroItineranciaAlunoDto()
+                    new ItineranciaAlunoDto()
                     {
                         CodigoAluno = "123456",
                         Id = 1,
                         Nome = "João Carlos Almeida",
-                        Questoes = new List<RegistroItineranciaAlunoQuestaoDto>()
+                        Questoes = new List<ItineranciaAlunoQuestaoDto>()
                         {
-                            new RegistroItineranciaAlunoQuestaoDto() {
+                            new ItineranciaAlunoQuestaoDto() {
                                 Id=1,
                                 QuestaoId = 1,
                                 Descricao = "Descritivo do estudante",
@@ -59,7 +59,7 @@ namespace SME.SGP.Api
                                 Resposta = "Teste",
                                 Obrigatorio =  true,
                             } ,
-                            new RegistroItineranciaAlunoQuestaoDto() {
+                            new ItineranciaAlunoQuestaoDto() {
                                 Id=2,
                                 QuestaoId = 2,
                                 Descricao = "Acompanhamento da situação",
@@ -67,7 +67,7 @@ namespace SME.SGP.Api
                                 Resposta = "Teste",
                                 Obrigatorio =  false,
                             } ,
-                            new RegistroItineranciaAlunoQuestaoDto() {
+                            new ItineranciaAlunoQuestaoDto() {
                                 Id = 3,
                                 QuestaoId = 3,
                                 Descricao = "Encaminhamentos",
@@ -77,15 +77,15 @@ namespace SME.SGP.Api
                             } ,
                         }
                     },
-                    new RegistroItineranciaAlunoDto()
+                    new ItineranciaAlunoDto()
                     {
                         CodigoAluno = "654321",
                         Id = 1,
                         Nome = "Aline Oliveira"
                         ,
-                        Questoes = new List<RegistroItineranciaAlunoQuestaoDto>()
+                        Questoes = new List<ItineranciaAlunoQuestaoDto>()
                         {
-                            new RegistroItineranciaAlunoQuestaoDto() {
+                            new ItineranciaAlunoQuestaoDto() {
                                 Id=1,
                                 QuestaoId = 1,
                                 Descricao = "Descritivo do estudante",
@@ -93,7 +93,7 @@ namespace SME.SGP.Api
                                 Resposta = "Teste",
                                 Obrigatorio =  true,
                             } ,
-                            new RegistroItineranciaAlunoQuestaoDto() {
+                            new ItineranciaAlunoQuestaoDto() {
                                 Id=2,
                                 QuestaoId = 2,
                                 Descricao = "Acompanhamento da situação",
@@ -101,7 +101,7 @@ namespace SME.SGP.Api
                                 Resposta = "Teste",
                                 Obrigatorio =  false,
                             } ,
-                            new RegistroItineranciaAlunoQuestaoDto() {
+                            new ItineranciaAlunoQuestaoDto() {
                                 Id = 3,
                                 QuestaoId = 3,
                                 Descricao = "Encaminhamentos",
@@ -112,13 +112,13 @@ namespace SME.SGP.Api
                         }
                     }
                 },
-                ObjetivosVisita = new List<RegistroItineranciaObjetivoDto> {
-                    new RegistroItineranciaObjetivoDto(1, "Mapeamento dos estudantes público da Educação Especial", false, false, true, "Teste"),
-                    new RegistroItineranciaObjetivoDto(2, "Reorganização e/ou remanejamento de apoios e serviços", false, false, true, "teste 1"),
-                    new RegistroItineranciaObjetivoDto(3, "Atendimento de solicitação da U.E", true, false, true, "teste 2"),
+                ObjetivosVisita = new List<ItineranciaObjetivoDto> {
+                    new ItineranciaObjetivoDto(1, "Mapeamento dos estudantes público da Educação Especial", false, false, true, "Teste"),
+                    new ItineranciaObjetivoDto(2, "Reorganização e/ou remanejamento de apoios e serviços", false, false, true, "teste 1"),
+                    new ItineranciaObjetivoDto(3, "Atendimento de solicitação da U.E", true, false, true, "teste 2"),
                 },
-                Questoes = new List<RegistroItineranciaQuestaoDto>() { 
-                    new RegistroItineranciaQuestaoDto() { 
+                Questoes = new List<ItineranciaQuestaoDto>() { 
+                    new ItineranciaQuestaoDto() { 
                         Id=1,
                         QuestaoId = 1,
                         Descricao = "Acompanhamento da situação",
@@ -126,7 +126,7 @@ namespace SME.SGP.Api
                         Resposta = "Teste",
                         Obrigatorio = true,
                     } ,
-                    new RegistroItineranciaQuestaoDto() {
+                    new ItineranciaQuestaoDto() {
                         Id = 2,
                         QuestaoId = 2,
                         Descricao = "Encaminhamentos",
@@ -135,15 +135,15 @@ namespace SME.SGP.Api
                         Obrigatorio = false,
                     } ,
                 },
-                Ues = new List<RegistroItineranciaUeDto>()
+                Ues = new List<ItineranciaUeDto>()
                 {
-                    new RegistroItineranciaUeDto()
+                    new ItineranciaUeDto()
                     {
                         Id = 1,
                         UeId = 1,
                         Descricao = "JT - Máximo de Moura"
                     },
-                    new RegistroItineranciaUeDto()
+                    new ItineranciaUeDto()
                     {
                         Id = 1,
                         UeId = 1,

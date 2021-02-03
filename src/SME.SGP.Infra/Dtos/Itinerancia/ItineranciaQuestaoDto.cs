@@ -1,6 +1,6 @@
 ﻿namespace SME.SGP.Infra
 {
-    public class RegistroItineranciaQuestaoDto
+    public class ItineranciaQuestaoDto
     {
         public long Id { get; set; }
         public long QuestaoId { get; set; }

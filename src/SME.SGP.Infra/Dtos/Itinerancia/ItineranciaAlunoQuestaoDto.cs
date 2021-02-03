@@ -4,7 +4,7 @@ using System.Text;
 
 namespace SME.SGP.Infra
 {
-    public class RegistroItineranciaAlunoQuestaoDto
+    public class ItineranciaAlunoQuestaoDto
     {
         public long Id { get; set; }
         public long QuestaoId { get; set; }

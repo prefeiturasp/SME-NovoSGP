@@ -2,11 +2,11 @@
 
 namespace SME.SGP.Infra
 {
-    public class RegistroItineranciaAlunoDto
+    public class ItineranciaAlunoDto
     {
         public long Id { get; set; }
         public string CodigoAluno { get; set; }
         public string Nome { get; set; }
-        public IEnumerable<RegistroItineranciaAlunoQuestaoDto> Questoes { get; set; }
+        public IEnumerable<ItineranciaAlunoQuestaoDto> Questoes { get; set; }
     }
 }
