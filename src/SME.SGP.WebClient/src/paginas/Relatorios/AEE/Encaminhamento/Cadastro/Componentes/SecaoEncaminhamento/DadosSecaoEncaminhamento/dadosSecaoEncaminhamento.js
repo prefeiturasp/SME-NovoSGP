@@ -15,8 +15,8 @@ const DadosSecaoEncaminhamento = props => {
 
   const dispatch = useDispatch();
 
-  const dadosSecaoLocalizarEstudante = useSelector(
-    store => store.encaminhamentoAEE.dadosSecaoLocalizarEstudante
+  const dadosCollapseLocalizarEstudante = useSelector(
+    store => store.collapseLocalizarEstudante.dadosCollapseLocalizarEstudante
   );
 
   const dadosSecoesPorEtapaDeEncaminhamentoAEE = useSelector(
@@ -40,8 +40,8 @@ const DadosSecaoEncaminhamento = props => {
 
   useEffect(() => {
     if (
-      dadosSecaoLocalizarEstudante?.codigoAluno &&
-      dadosSecaoLocalizarEstudante?.anoLetivo
+      dadosCollapseLocalizarEstudante?.codigoAluno &&
+      dadosCollapseLocalizarEstudante?.anoLetivo
     ) {
       obterSecoesPorEtapaDeEncaminhamentoAEE();
     } else {
@@ -49,11 +49,11 @@ const DadosSecaoEncaminhamento = props => {
     }
   }, [
     dispatch,
-    dadosSecaoLocalizarEstudante,
+    dadosCollapseLocalizarEstudante,
     obterSecoesPorEtapaDeEncaminhamentoAEE,
   ]);
 
-  return dadosSecaoLocalizarEstudante?.codigoAluno &&
+  return dadosCollapseLocalizarEstudante?.codigoAluno &&
     dadosSecoesPorEtapaDeEncaminhamentoAEE?.length ? (
     <ContainerStepsEncaminhamento direction="vertical" current={1}>
       {dadosSecoesPorEtapaDeEncaminhamentoAEE.map(item => {
@@ -66,8 +66,6 @@ const DadosSecaoEncaminhamento = props => {
                 dados={item}
                 index={item?.questionarioId}
                 match={match}
-                codigoAluno={dadosSecaoLocalizarEstudante?.codigoAluno}
-                codigoTurma={dadosSecaoLocalizarEstudante?.codigoTurma}
               />
             }
           />
