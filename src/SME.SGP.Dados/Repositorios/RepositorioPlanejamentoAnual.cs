@@ -289,7 +289,19 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task RemoverLogicamenteAsync(long id)
         {
-            var sql = "UPDATE planejamento_anual SET EXCLUIDO = TRUE WHERE ID = @id";
+            var sql = @"UPDATE planejamento_anual pa
+                        SET EXCLUIDO = TRUE
+                        WHERE ID = @id and
+                        not exists(select 1
+                                    from planejamento_anual_periodo_escolar pape
+                                        inner join planejamento_anual_componente pac
+                                            on pape.id = pac.planejamento_anual_periodo_escolar_id
+                                        inner join planejamento_anual_objetivos_aprendizagem paoa
+			                                on pac.id = paoa.planejamento_anual_componente_id
+                                   where pape.planejamento_anual_id = pa.id and
+                                  		 not pape.excluido and
+                                  		 not pac.excluido and
+                                  		 not paoa.excluido);";
             await database.Conexao.ExecuteAsync(sql, new { id });
         }
     }

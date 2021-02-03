@@ -35,6 +35,16 @@ namespace SME.SGP.Aplicacao
 
             var planejamentoAnualPeriodosEscolares = await repositorioPlanejamentoAnualPeriodoEscolar.ObterPorPlanejamentoAnualId(planejamentoAnual);
 
+            if (comando.IdsPlanejamentoAnualPeriodoEscolar != null && comando.IdsPlanejamentoAnualPeriodoEscolar.Any())
+            {
+                var periodosEscolaresConsiderados = (from id in comando.IdsPlanejamentoAnualPeriodoEscolar
+                                                     select repositorioPlanejamentoAnualPeriodoEscolar.ObterPorId(id).PeriodoEscolarId);
+
+                var bimestresConsiderados = (from id in periodosEscolaresConsiderados
+                                             select mediator.Send(new ObterPeriodoEscolarePorIdQuery(id)).Result.Bimestre);
+
+                planejamentoAnualPeriodosEscolares = planejamentoAnualPeriodosEscolares.Where(pape => bimestresConsiderados.Contains(pape.Bimestre));
+            }
 
             foreach (var pape in planejamentoAnualPeriodosEscolares)
             {
