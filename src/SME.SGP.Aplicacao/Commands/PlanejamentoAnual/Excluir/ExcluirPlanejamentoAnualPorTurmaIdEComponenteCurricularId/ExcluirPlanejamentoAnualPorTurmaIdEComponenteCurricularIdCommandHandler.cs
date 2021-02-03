@@ -48,15 +48,16 @@ namespace SME.SGP.Aplicacao
 
             foreach (var pape in planejamentoAnualPeriodosEscolares)
             {
-                var planejamentoAnualComponente = await repositorioPlanejamentoAnualComponente.ObterPorPlanejamentoAnualPeriodoEscolarId(comando.ComponenteCurricularId, pape.Id);
-                var planejamentoAnualObjetivosAprendizagem = await repositorioPlanejamentoAnualObjetivosAprendizagem.ObterPorPlanejamentoAnualComponenteId(planejamentoAnualComponente.Id);
+                var planejamentoAnualComponente = await repositorioPlanejamentoAnualComponente
+                    .ObterListaPorPlanejamentoAnualPeriodoEscolarId(comando.TurmaId, comando.ComponenteCurricularId, pape.Bimestre);
+
+                var planejamentoAnualObjetivosAprendizagem = await repositorioPlanejamentoAnualObjetivosAprendizagem
+                    .ObterPorPlanejamentoAnualComponenteId(planejamentoAnualComponente.Select(pc => pc.Id).ToArray());
 
                 foreach (var paoa in planejamentoAnualObjetivosAprendizagem)
-                {
                     await repositorioPlanejamentoAnualObjetivosAprendizagem.RemoverLogicamenteAsync(paoa.Id);
-                }
 
-                await repositorioPlanejamentoAnualComponente.RemoverLogicamenteAsync(planejamentoAnualComponente.Id);
+                await repositorioPlanejamentoAnualComponente.RemoverLogicamenteAsync(planejamentoAnualComponente.Select(pc => pc.Id).ToArray());
 
                 await repositorioPlanejamentoAnualPeriodoEscolar.RemoverLogicamenteAsync(pape.Id);
             }
