@@ -49,7 +49,8 @@ namespace SME.SGP.Aplicacao
                         Auditoria = obs.Auditoria,
                         Id = obs.Id,
                         Observacao = obs.Observacao,
-                        QtdUsuariosNotificacao = obs.QtdUsuariosNotificados
+                        QtdUsuariosNotificacao = obs.QtdUsuariosNotificados,
+                        Proprietario = obs.Proprietario
                     };
                 })
             };
