@@ -122,7 +122,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("{encaminhamentoId}")]
         [ProducesResponseType(typeof(EncaminhamentoAEERespostaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        //[Permissao(Permissao.AEE_C, Policy = "Bearer")]
+        [Permissao(Permissao.AEE_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterEncaminhamento(long encaminhamentoId, [FromServices] IObterEncaminhamentoPorIdUseCase useCase)
         {
             return Ok(await useCase.Executar(encaminhamentoId));

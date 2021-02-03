@@ -10,6 +10,6 @@ namespace SME.SGP.Infra.Dtos
         public AlunoReduzidoDto Aluno { get; set; }
         public TurmaAnoDto Turma { get; set; }
         public AuditoriaDto Auditoria { get; set; }
-        public ResponsavelEncaminhamentoAEEDto responsavelEncaminhamentoAEEDto { get; set; }
+        public ResponsavelEncaminhamentoAEEDto responsavelEncaminhamentoAEE { get; set; }
     }
 }
