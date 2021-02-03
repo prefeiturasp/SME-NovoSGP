@@ -94,8 +94,6 @@ const ListaDiarioBordo = () => {
   const numeroTotalRegistros = listaTitulos?.totalRegistros;
   const mostrarPaginacao = numeroTotalRegistros > numeroRegistros;
 
-  const resetarTela = useCallback(() => {}, []);
-
   useEffect(() => {
     if (turma && turmaInfantil) {
       obterComponentesCurriculares();
@@ -103,8 +101,7 @@ const ListaDiarioBordo = () => {
     }
     setListaComponenteCurriculares([]);
     setComponenteCurricularSelecionado(undefined);
-    resetarTela();
-  }, [turma, obterComponentesCurriculares, resetarTela, turmaInfantil]);
+  }, [turma, obterComponentesCurriculares, turmaInfantil]);
 
   useEffect(() => {
     const infantil = ehTurmaInfantil(
@@ -112,16 +109,7 @@ const ListaDiarioBordo = () => {
       turmaSelecionada
     );
     setTurmaInfantil(infantil);
-
-    if (!turmaInfantil) {
-      resetarTela();
-    }
-  }, [
-    turmaSelecionada,
-    modalidadesFiltroPrincipal,
-    resetarTela,
-    turmaInfantil,
-  ]);
+  }, [turmaSelecionada, modalidadesFiltroPrincipal, turmaInfantil]);
 
   const onChangeComponenteCurricular = valor => {
     setComponenteCurricularSelecionado(valor);
