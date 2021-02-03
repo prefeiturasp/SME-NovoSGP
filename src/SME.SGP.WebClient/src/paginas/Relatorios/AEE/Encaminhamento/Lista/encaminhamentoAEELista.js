@@ -13,7 +13,7 @@ import { Colors } from '~/componentes/colors';
 import LocalizadorEstudante from '~/componentes/LocalizadorEstudante';
 import { URL_HOME } from '~/constantes/url';
 import { RotasDto } from '~/dtos';
-import { setDadosIniciaisEncaminhamentoAEE } from '~/redux/modulos/encaminhamentoAEE/actions';
+import { setDadosIniciaisLocalizarEstudante } from '~/redux/modulos/collapseLocalizarEstudante/actions';
 import { verificaSomenteConsulta } from '~/servicos';
 import AbrangenciaServico from '~/servicos/Abrangencia';
 import { erros } from '~/servicos/alertas';
@@ -217,7 +217,7 @@ const EncaminhamentoAEELista = () => {
 
   const onChangeDre = dre => {
     setDreId(dre);
-    dispatch(setDadosIniciaisEncaminhamentoAEE({ ueId, dreId: dre }));
+    dispatch(setDadosIniciaisLocalizarEstudante({ ueId, dreId: dre }));
 
     setListaUes([]);
     setUeId();
@@ -308,7 +308,7 @@ const EncaminhamentoAEELista = () => {
 
   const onChangeUe = ue => {
     setUeId(ue);
-    dispatch(setDadosIniciaisEncaminhamentoAEE({ ueId: ue, dreId }));
+    dispatch(setDadosIniciaisLocalizarEstudante({ ueId: ue, dreId }));
     setListaTurmas([]);
     setTurmaId();
 
@@ -336,10 +336,10 @@ const EncaminhamentoAEELista = () => {
     limparFiltrosSelecionados();
   };
 
-  const onChangeTurma = valor => {
-    setTurmaId(valor);
+  const onChangeTurma = turma => {
+    setTurmaId(turma);
     setAlunoLocalizadorSelecionado();
-    filtrar(dreId, ueId, valor, '', situacao);
+    filtrar(dreId, ueId, turma, '', situacao);
   };
 
   const onChangeLocalizadorEstudante = aluno => {
