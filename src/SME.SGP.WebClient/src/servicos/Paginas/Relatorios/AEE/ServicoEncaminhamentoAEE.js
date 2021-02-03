@@ -1,4 +1,4 @@
-import * as Yup from 'yup';
+import QuestionarioDinamicoFuncoes from '~/componentes-sgp/QuestionarioDinamico/Funcoes/QuestionarioDinamicoFuncoes';
 import tipoQuestao from '~/dtos/tipoQuestao';
 import { store } from '~/redux';
 import {
@@ -82,71 +82,6 @@ class ServicoEncaminhamentoAEE {
   //   return false;
   // };
 
-  obterQuestaoPorId = (dados, idPesquisa) => {
-    let questaoAtual = '';
-
-    const obterQuestao = item => {
-      if (!questaoAtual) {
-        if (String(item.id) === String(idPesquisa)) {
-          questaoAtual = item;
-        } else if (item?.opcaoResposta?.length) {
-          item.opcaoResposta.forEach(opcaoResposta => {
-            if (opcaoResposta.questaoComplementar) {
-              obterQuestao(opcaoResposta.questaoComplementar);
-            }
-          });
-        }
-      }
-    };
-
-    dados.forEach(item => {
-      obterQuestao(item);
-    });
-
-    return questaoAtual;
-  };
-
-  obterValidationSchema = (dadosQuestionarioAtual, form) => {
-    if (dadosQuestionarioAtual?.length && form?.state?.values) {
-      const camposComValidacao = {};
-
-      let arrayCampos = [];
-
-      const camposValidar = form?.state?.values;
-      if (camposValidar && Object.keys(camposValidar)?.length) {
-        arrayCampos = Object.keys(camposValidar);
-      }
-
-      const montaValidacoes = questaoAtual => {
-        if (questaoAtual?.opcaoResposta?.length) {
-          questaoAtual.opcaoResposta.forEach(opcaoAtual => {
-            if (opcaoAtual?.questaoComplementar) {
-              montaValidacoes(opcaoAtual.questaoComplementar);
-            }
-          });
-        }
-
-        if (
-          questaoAtual.obrigatorio &&
-          arrayCampos.find(questaoId => questaoId === String(questaoAtual.id))
-        ) {
-          camposComValidacao[questaoAtual.id] = Yup.string()
-            .nullable()
-            .required('Campo obrigatório');
-        }
-      };
-
-      if (arrayCampos?.length) {
-        dadosQuestionarioAtual.forEach(questaoAtual => {
-          montaValidacoes(questaoAtual);
-        });
-
-        return Yup.object(camposComValidacao);
-      }
-    }
-    return {};
-  };
-
   salvarEncaminhamento = async (
     encaminhamentoId,
     situacao,
@@ -212,7 +147,7 @@ class ServicoEncaminhamentoAEE {
             const questoes = [];
 
             Object.keys(campos).forEach(key => {
-              const questaoAtual = this.obterQuestaoPorId(
+              const questaoAtual = QuestionarioDinamicoFuncoes.obterQuestaoPorId(
                 item.dadosQuestionarioAtual,
                 key
               );

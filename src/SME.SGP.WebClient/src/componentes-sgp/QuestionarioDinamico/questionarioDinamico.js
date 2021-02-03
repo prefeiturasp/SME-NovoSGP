@@ -5,16 +5,16 @@ import { useDispatch } from 'react-redux';
 import { Label } from '~/componentes';
 import tipoQuestao from '~/dtos/tipoQuestao';
 import AtendimentoClinicoTabela from '~/paginas/Relatorios/AEE/Encaminhamento/Cadastro/Componentes/AtendimentoClinico/atendimentoClinicoTabela';
-
 import UploadArquivosEncaminhamento from '~/paginas/Relatorios/AEE/Encaminhamento/Cadastro/Componentes/UploadArquivosEncaminhamento/uploadArquivosEncaminhamento';
 import { setQuestionarioDinamicoEmEdicao } from '~/redux/modulos/questionarioDinamico/actions';
 import ServicoQuestionarioDinamico from '~/servicos/Componentes/ServicoQuestionarioDinamico';
-import ServicoEncaminhamentoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoEncaminhamentoAEE';
 import CampoDinamicoCombo from './Componentes/campoDinamicoCombo';
 import CampoDinamicoComboMultiplaEscolha from './Componentes/campoDinamicoComboMultiplaEscolha';
 import CampoDinamicoRadio from './Componentes/campoDinamicoRadio';
 import CampoDinamicoTexto from './Componentes/campoDinamicoTexto';
 import InformacoesEscolares from './Componentes/InformacoesEscolares/informacoesEscolares';
+import QuestionarioDinamicoFuncoes from './Funcoes/QuestionarioDinamicoFuncoes';
+import QuestionarioDinamicoValidacoes from './Validacoes/QuestionarioDinamicoValidacoes';
 
 const QuestionarioDinamico = props => {
   const dispatch = useDispatch();
@@ -152,252 +152,6 @@ const QuestionarioDinamico = props => {
     }
   }, [dadosQuestionarioAtual, montarValoresIniciais]);
 
-  const onChangeCamposComOpcaoResposta = (
-    questaoAtual,
-    form,
-    valorAtualSelecionado
-  ) => {
-    const valoreAnteriorSelecionado = form.values[questaoAtual.id] || '';
-
-    const opcaoAtual = questaoAtual?.opcaoResposta.find(
-      c => String(c.id) === String(valorAtualSelecionado || '')
-    );
-
-    const opcaoAnterior = questaoAtual?.opcaoResposta.find(
-      c => String(c.id) === String(valoreAnteriorSelecionado || '')
-    );
-
-    const questaoComplementarIdAtual = opcaoAtual?.questaoComplementar?.id;
-    const questaoComplementarIdAnterior =
-      opcaoAnterior?.questaoComplementar?.id;
-
-    if (questaoComplementarIdAtual !== questaoComplementarIdAnterior) {
-      if (questaoComplementarIdAtual) {
-        form.setFieldValue(
-          questaoComplementarIdAtual,
-          form.values[questaoComplementarIdAnterior]
-        );
-        form.values[questaoComplementarIdAtual] =
-          form.values[questaoComplementarIdAnterior];
-      }
-      delete form.values[questaoComplementarIdAnterior];
-      form.unregisterField(questaoComplementarIdAnterior);
-    }
-
-    dispatch(setQuestionarioDinamicoEmEdicao(true));
-  };
-
-  const obterOpcaoRespostaPorId = (opcoesResposta, idComparacao) => {
-    if (opcoesResposta?.length) {
-      const opcaoResposta = opcoesResposta.find(
-        item => String(item.id) === String(idComparacao)
-      );
-      return opcaoResposta;
-    }
-    return null;
-  };
-
-  const obterIdOpcaoRespostaComComplementarNaoObrigatoria = (
-    valorAtualSelecionado,
-    questaoAtual
-  ) => {
-    return valorAtualSelecionado.find(valor => {
-      const opcaoResposta = obterOpcaoRespostaPorId(
-        questaoAtual?.opcaoResposta,
-        valor
-      );
-
-      if (opcaoResposta?.questaoComplementar?.obrigatorio) {
-        return false;
-      }
-      return true;
-    });
-  };
-
-  const obterIdOpcaoRespostaComComplementarObrigatoria = (
-    valorAtualSelecionado,
-    questaoAtual
-  ) => {
-    return valorAtualSelecionado.find(valor => {
-      const opcaoAtual = questaoAtual?.opcaoResposta.find(
-        item => String(item.id) === String(valor)
-      );
-
-      if (opcaoAtual?.questaoComplementar?.obrigatorio) {
-        return true;
-      }
-      return false;
-    });
-  };
-
-  const obterValorCampoComplementarComboMultiplaEscolha = (
-    form,
-    valoresAnterioresSelecionado,
-    questaoAtual
-  ) => {
-    const camposEmTela = Object.keys(form.values);
-
-    let valorDigitadoCampoComplementar = '';
-
-    const idOpcaoRespostaComValorDigitado = valoresAnterioresSelecionado.find(
-      idCampo => {
-        const opcaoResposta = obterOpcaoRespostaPorId(
-          questaoAtual?.opcaoResposta,
-          idCampo
-        );
-
-        if (opcaoResposta?.questaoComplementar) {
-          const temCampo = camposEmTela.find(
-            c => String(c) === String(opcaoResposta?.questaoComplementar?.id)
-          );
-          return !!temCampo;
-        }
-
-        return null;
-      }
-    );
-
-    if (idOpcaoRespostaComValorDigitado) {
-      const opcaoRespostaComValorDigitado = obterOpcaoRespostaPorId(
-        questaoAtual?.opcaoResposta,
-        idOpcaoRespostaComValorDigitado
-      );
-      valorDigitadoCampoComplementar =
-        form.values[opcaoRespostaComValorDigitado?.questaoComplementar?.id];
-    }
-
-    return valorDigitadoCampoComplementar;
-  };
-
-  const removerAddCampoComplementarComboMultiplaEscolha = (
-    questaoAtual,
-    form,
-    idOpcaoComplementarAdicionar,
-    idOpcaoComplementarRemover,
-    valorDigitadoCampoComplementar
-  ) => {
-    const opcaoRespostaAdicionar = obterOpcaoRespostaPorId(
-      questaoAtual?.opcaoResposta,
-      idOpcaoComplementarAdicionar
-    );
-
-    const questaoComplementarAdicionarId =
-      opcaoRespostaAdicionar?.questaoComplementar?.id;
-
-    if (questaoComplementarAdicionarId) {
-      form.setFieldValue(
-        questaoComplementarAdicionarId,
-        valorDigitadoCampoComplementar
-      );
-      form.values[
-        questaoComplementarAdicionarId
-      ] = valorDigitadoCampoComplementar;
-    }
-
-    const opcaoRespostaRemover = obterOpcaoRespostaPorId(
-      questaoAtual?.opcaoResposta,
-      idOpcaoComplementarRemover
-    );
-
-    const questaoComplementarRemoverId =
-      opcaoRespostaRemover?.questaoComplementar?.id;
-
-    if (questaoComplementarRemoverId) {
-      delete form.values[questaoComplementarRemoverId];
-      form.unregisterField(questaoComplementarRemoverId);
-    }
-  };
-
-  const onChangeCampoComboMultiplaEscolha = (
-    questaoAtual,
-    form,
-    valoresAtuaisSelecionados
-  ) => {
-    dispatch(setQuestionarioDinamicoEmEdicao(true));
-
-    if (
-      !valoresAtuaisSelecionados?.length &&
-      questaoAtual?.opcaoResposta?.length
-    ) {
-      questaoAtual.opcaoResposta.forEach(a => {
-        if (a?.questaoComplementar) {
-          delete form.values[a.questaoComplementar.id];
-          form.unregisterField(a.questaoComplementar.id);
-        }
-      });
-
-      return;
-    }
-
-    const valoresAnterioresSelecionado = form.values[questaoAtual.id]?.length
-      ? form.values[questaoAtual.id]
-      : [];
-
-    if (valoresAnterioresSelecionado?.length) {
-      const valorDigitadoCampoComplementar = obterValorCampoComplementarComboMultiplaEscolha(
-        form,
-        valoresAnterioresSelecionado,
-        questaoAtual
-      );
-
-      const idOpcaoRespostaAnteriorComplementarObrigatoria = obterIdOpcaoRespostaComComplementarObrigatoria(
-        valoresAnterioresSelecionado,
-        questaoAtual
-      );
-
-      const idOpcaoRespostaAtualComplementarObrigatoria = obterIdOpcaoRespostaComComplementarObrigatoria(
-        valoresAtuaisSelecionados,
-        questaoAtual
-      );
-
-      const idOpcaoRespostaAnteriorComplementarNaoObrigatoria = obterIdOpcaoRespostaComComplementarNaoObrigatoria(
-        valoresAnterioresSelecionado,
-        questaoAtual
-      );
-
-      const idOpcaoRespostaAtualComplementarNaoObrigatoria = obterIdOpcaoRespostaComComplementarNaoObrigatoria(
-        valoresAtuaisSelecionados,
-        questaoAtual
-      );
-
-      if (
-        idOpcaoRespostaAnteriorComplementarObrigatoria &&
-        idOpcaoRespostaAtualComplementarObrigatoria
-      ) {
-        removerAddCampoComplementarComboMultiplaEscolha(
-          questaoAtual,
-          form,
-          idOpcaoRespostaAnteriorComplementarObrigatoria,
-          idOpcaoRespostaAnteriorComplementarNaoObrigatoria ||
-            idOpcaoRespostaAtualComplementarNaoObrigatoria,
-          valorDigitadoCampoComplementar
-        );
-      } else if (
-        idOpcaoRespostaAnteriorComplementarObrigatoria &&
-        !idOpcaoRespostaAtualComplementarObrigatoria
-      ) {
-        removerAddCampoComplementarComboMultiplaEscolha(
-          questaoAtual,
-          form,
-          idOpcaoRespostaAtualComplementarNaoObrigatoria,
-          idOpcaoRespostaAnteriorComplementarObrigatoria,
-          valorDigitadoCampoComplementar
-        );
-      } else if (
-        !idOpcaoRespostaAnteriorComplementarObrigatoria &&
-        idOpcaoRespostaAtualComplementarObrigatoria
-      ) {
-        removerAddCampoComplementarComboMultiplaEscolha(
-          questaoAtual,
-          form,
-          idOpcaoRespostaAtualComplementarObrigatoria,
-          idOpcaoRespostaAnteriorComplementarNaoObrigatoria,
-          valorDigitadoCampoComplementar
-        );
-      }
-    }
-  };
-
   const campoAtendimentoClinico = params => {
     const { questaoAtual, label, form } = params;
 
@@ -431,7 +185,7 @@ const QuestionarioDinamico = props => {
 
     if (questaoAtual?.tipoQuestao === tipoQuestao.ComboMultiplaEscolha) {
       if (valorAtualSelecionado?.length) {
-        const idOpcaoRespostaComComplementarObrigatoria = obterIdOpcaoRespostaComComplementarObrigatoria(
+        const idOpcaoRespostaComComplementarObrigatoria = QuestionarioDinamicoFuncoes.obterIdOpcaoRespostaComComplementarObrigatoria(
           valorAtualSelecionado,
           questaoAtual
         );
@@ -451,12 +205,12 @@ const QuestionarioDinamico = props => {
             );
           }
         } else {
-          const idOpcaoRespostaComComplementarNaoObrigatoria = obterIdOpcaoRespostaComComplementarNaoObrigatoria(
+          const idOpcaoRespostaComComplementarNaoObrigatoria = QuestionarioDinamicoFuncoes.obterIdOpcaoRespostaComComplementarNaoObrigatoria(
             valorAtualSelecionado,
             questaoAtual
           );
 
-          const opcaoResposta = obterOpcaoRespostaPorId(
+          const opcaoResposta = QuestionarioDinamicoFuncoes.obterOpcaoRespostaPorId(
             questaoAtual?.opcaoResposta,
             idOpcaoRespostaComComplementarNaoObrigatoria
           );
@@ -471,7 +225,7 @@ const QuestionarioDinamico = props => {
         }
       }
     } else if (valorAtualSelecionado) {
-      const opcaoResposta = obterOpcaoRespostaPorId(
+      const opcaoResposta = QuestionarioDinamicoFuncoes.obterOpcaoRespostaPorId(
         questaoAtual?.opcaoResposta,
         valorAtualSelecionado
       );
@@ -500,7 +254,14 @@ const QuestionarioDinamico = props => {
             form={form}
             label={label}
             desabilitado={desabilitarCampos}
-            onChange={onChangeCamposComOpcaoResposta}
+            onChange={valorAtual => {
+              QuestionarioDinamicoFuncoes.onChangeCamposComOpcaoResposta(
+                questaoAtual,
+                form,
+                valorAtual
+              );
+              dispatch(setQuestionarioDinamicoEmEdicao(true));
+            }}
           />
         );
         break;
@@ -511,7 +272,14 @@ const QuestionarioDinamico = props => {
             form={form}
             label={label}
             desabilitado={desabilitarCampos}
-            onChange={onChangeCamposComOpcaoResposta}
+            onChange={valorAtual => {
+              QuestionarioDinamicoFuncoes.onChangeCamposComOpcaoResposta(
+                questaoAtual,
+                form,
+                valorAtual
+              );
+              dispatch(setQuestionarioDinamicoEmEdicao(true));
+            }}
           />
         );
         break;
@@ -522,7 +290,14 @@ const QuestionarioDinamico = props => {
             form={form}
             label={label}
             desabilitado={desabilitarCampos}
-            onChange={onChangeCampoComboMultiplaEscolha}
+            onChange={valoresSelecionados => {
+              QuestionarioDinamicoFuncoes.onChangeCampoComboMultiplaEscolha(
+                questaoAtual,
+                form,
+                valoresSelecionados
+              );
+              dispatch(setQuestionarioDinamicoEmEdicao(true));
+            }}
           />
         );
         break;
@@ -589,7 +364,7 @@ const QuestionarioDinamico = props => {
       enableReinitialize
       initialValues={valoresIniciais}
       validationSchema={() =>
-        ServicoEncaminhamentoAEE.obterValidationSchema(
+        QuestionarioDinamicoValidacoes.obterValidationSchema(
           dadosQuestionarioAtual,
           refForm
         )
