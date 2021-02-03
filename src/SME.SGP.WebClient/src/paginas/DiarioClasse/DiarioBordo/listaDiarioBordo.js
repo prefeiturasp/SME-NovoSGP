@@ -334,7 +334,7 @@ const ListaDiarioBordo = () => {
   return (
     <Loader loading={carregandoGeral} className="w-100">
       <Mensagens />
-      <Cabecalho pagina="Diário de bordo" />
+      <Cabecalho pagina="Diário de bordo (Intencionalidade docente)" />
       <Card>
         <div className="col-md-12 p-0">
           <div className="row">

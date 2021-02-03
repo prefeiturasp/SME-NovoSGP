@@ -1,6 +1,9 @@
 ﻿using MediatR;
 using Moq;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -26,6 +29,25 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
                 .ReturnsAsync(new AuditoriaDto()
                 {
                     Id = 1
+                });
+
+            mediator.Setup(a => a.Send(It.IsAny<ObterTurmaDiarioBordoAulaPorObservacaoIdQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new Turma()
+                {
+                    Id = 1,
+                    CodigoTurma = "123456"
+                });
+
+            mediator.Setup(a => a.Send(It.IsAny<ObterProfessoresTitularesDaTurmaCompletosQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new List<ProfessorTitularDisciplinaEol>()
+                {
+                    new ProfessorTitularDisciplinaEol()
+                });
+
+            mediator.Setup(a => a.Send(It.IsAny<ObterUsuarioNotificarDiarioBordoObservacaoQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new List<UsuarioNotificarDiarioBordoObservacaoDto>()
+                {
+                    new UsuarioNotificarDiarioBordoObservacaoDto()
                 });
 
             //Act
