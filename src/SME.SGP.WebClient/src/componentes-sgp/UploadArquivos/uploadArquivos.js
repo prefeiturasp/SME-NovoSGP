@@ -63,7 +63,6 @@ const UploadArquivos = props => {
   } = props;
 
   const [listaDeArquivos, setListaDeArquivos] = useState([...defaultFileList]);
-  const [timeoutMsgSucesso, setTimeoutMsgSucesso] = useState('');
 
   useEffect(() => {
     if (defaultFileList?.length) {
@@ -77,7 +76,7 @@ const UploadArquivos = props => {
   }, [defaultFileList]);
 
   const excedeuLimiteMaximo = arquivo => {
-    const tamanhoArquivo = arquivo.size / 1024 / 1024;
+    const tamanhoArquivo = arquivo.size / 2024 / 2024;
     return tamanhoArquivo > TAMANHO_MAXIMO_UPLOAD;
   };
 
@@ -170,6 +169,11 @@ const UploadArquivos = props => {
     const novoMap = [...novaLista];
     setListaDeArquivos(novoMap);
     onChangeListaArquivos(novoMap);
+
+    if (form && form.setFieldValue) {
+      form.setFieldValue(name, novoMap);
+      form.setFieldTouched(name, true);
+    }
   };
 
   const onChange = ({ file, fileList }) => {
@@ -185,27 +189,23 @@ const UploadArquivos = props => {
       return;
     }
 
-    if (status === 'done') {
-      if (timeoutMsgSucesso) {
-        clearTimeout(timeoutMsgSucesso);
-      }
-      const timeout = setTimeout(() => {
-        sucesso(`${file.name} arquivo carregado com sucesso`);
-      }, 400);
+    const novoMap = [...fileList];
 
-      setTimeoutMsgSucesso(timeout);
+    if (status === 'done') {
+      sucesso(`${file.name} arquivo carregado com sucesso`);
     } else if (status === 'error') {
       atualizaListaArquivos(fileList, file);
       return;
     }
-    const novoMap = [...fileList];
+    if (status === 'done' || status === 'removed') {
+      if (form && form.setFieldValue) {
+        form.setFieldValue(name, novoMap);
+        form.setFieldTouched(name, true);
+      }
+    }
+
     setListaDeArquivos(novoMap);
     onChangeListaArquivos(novoMap);
-
-    if (form && form.setFieldValue) {
-      form.setFieldValue(name, novoMap);
-      form.setFieldTouched(name, true);
-    }
   };
 
   const possuiErro = () => {
