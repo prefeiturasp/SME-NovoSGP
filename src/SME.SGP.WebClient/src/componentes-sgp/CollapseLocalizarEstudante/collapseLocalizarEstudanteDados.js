@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { Loader, SelectComponent } from '~/componentes';
 import { FiltroHelper } from '~/componentes-sgp';
@@ -6,17 +7,25 @@ import Button from '~/componentes/button';
 import { Colors } from '~/componentes/colors';
 import LocalizadorEstudante from '~/componentes/LocalizadorEstudante';
 import {
-  setDadosIniciaisEncaminhamentoAEE,
-  setDadosSecaoLocalizarEstudante,
-  setLimparDadosEncaminhamento,
-} from '~/redux/modulos/encaminhamentoAEE/actions';
-import { AbrangenciaServico, erros } from '~/servicos';
+  setDadosCollapseLocalizarEstudante,
+  setLimparDadosLocalizarEstudante,
+} from '~/redux/modulos/collapseLocalizarEstudante/actions';
 
-const SecaoLocalizarEstudanteDados = () => {
+import { AbrangenciaServico, erros } from '~/servicos';
+import ServicoEncaminhamentoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoEncaminhamentoAEE';
+
+const CollapseLocalizarEstudanteDados = props => {
+  const {
+    changeDre,
+    changeUe,
+    changeTurma,
+    changeLocalizadorEstudante,
+    clickCancelar,
+  } = props;
   const dispatch = useDispatch();
 
   const dadosIniciais = useSelector(
-    store => store.encaminhamentoAEE.dadosIniciaisEncaminhamentoAEE
+    store => store.collapseLocalizarEstudante.dadosIniciaisLocalizarEstudante
   );
 
   const [anoAtual] = useState(window.moment().format('YYYY'));
@@ -84,7 +93,7 @@ const SecaoLocalizarEstudanteDados = () => {
   }, [codigoDre, obterUes]);
 
   useEffect(() => {
-    return () => dispatch(setDadosIniciaisEncaminhamentoAEE({}));
+    return () => dispatch(setLimparDadosLocalizarEstudante({}));
   }, [dispatch]);
 
   const onChangeDre = dre => {
@@ -97,7 +106,9 @@ const SecaoLocalizarEstudanteDados = () => {
     setCodigoTurma();
 
     setAlunoLocalizadorSelecionado();
-    dispatch(setLimparDadosEncaminhamento());
+    dispatch(setLimparDadosLocalizarEstudante());
+
+    changeDre(dre);
   };
 
   const obterDres = useCallback(async () => {
@@ -170,13 +181,15 @@ const SecaoLocalizarEstudanteDados = () => {
     setCodigoTurma();
 
     setAlunoLocalizadorSelecionado();
-    dispatch(setLimparDadosEncaminhamento());
+    dispatch(setLimparDadosLocalizarEstudante());
+    changeUe(ue);
   };
 
-  const onChangeTurma = valor => {
-    setCodigoTurma(valor);
+  const onChangeTurma = turma => {
+    setCodigoTurma(turma);
     setAlunoLocalizadorSelecionado();
-    dispatch(setLimparDadosEncaminhamento());
+    dispatch(setLimparDadosLocalizarEstudante());
+    changeTurma(turma);
   };
 
   const onChangeLocalizadorEstudante = aluno => {
@@ -188,20 +201,28 @@ const SecaoLocalizarEstudanteDados = () => {
       });
     } else {
       setAlunoLocalizadorSelecionado();
-      dispatch(setLimparDadosEncaminhamento());
+      dispatch(setLimparDadosLocalizarEstudante());
+      changeLocalizadorEstudante(aluno);
     }
   };
 
   const onClickProximoPasso = () => {
-    const params = {
-      anoLetivo: anoAtual,
-      codigoDre,
-      codigoUe,
-      codigoTurma: alunoLocalizadorSelecionado.codigoTurma,
-      codigoAluno: alunoLocalizadorSelecionado.codigoAluno,
-      turmaId: alunoLocalizadorSelecionado.turmaId,
-    };
-    dispatch(setDadosSecaoLocalizarEstudante(params));
+    ServicoEncaminhamentoAEE.podeCadastrarEncaminhamentoEstudante(
+      alunoLocalizadorSelecionado.codigoAluno
+    )
+      .then(() => {
+        const params = {
+          anoLetivo: anoAtual,
+          codigoDre,
+          codigoUe,
+          codigoTurma: alunoLocalizadorSelecionado.codigoTurma,
+          codigoAluno: alunoLocalizadorSelecionado.codigoAluno,
+          turmaId: alunoLocalizadorSelecionado.turmaId,
+        };
+
+        dispatch(setDadosCollapseLocalizarEstudante(params));
+      })
+      .catch(e => erros(e));
   };
 
   const onClickCancelar = () => {
@@ -215,9 +236,10 @@ const SecaoLocalizarEstudanteDados = () => {
     setCodigoTurma();
 
     setAlunoLocalizadorSelecionado();
-    dispatch(setLimparDadosEncaminhamento());
+    dispatch(setLimparDadosLocalizarEstudante());
 
     obterDres();
+    clickCancelar();
   };
 
   return (
@@ -315,4 +337,20 @@ const SecaoLocalizarEstudanteDados = () => {
   );
 };
 
-export default SecaoLocalizarEstudanteDados;
+CollapseLocalizarEstudanteDados.propTypes = {
+  changeDre: PropTypes.func,
+  changeUe: PropTypes.func,
+  changeTurma: PropTypes.func,
+  changeLocalizadorEstudante: PropTypes.func,
+  clickCancelar: PropTypes.func,
+};
+
+CollapseLocalizarEstudanteDados.defaultProps = {
+  changeDre: () => {},
+  changeUe: () => {},
+  changeTurma: () => {},
+  changeLocalizadorEstudante: () => {},
+  clickCancelar: () => {},
+};
+
+export default CollapseLocalizarEstudanteDados;

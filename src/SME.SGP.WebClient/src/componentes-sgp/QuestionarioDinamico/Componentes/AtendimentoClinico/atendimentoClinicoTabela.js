@@ -8,7 +8,7 @@ import { DataTable } from '~/componentes';
 import Button from '~/componentes/button';
 import { Base, Colors } from '~/componentes/colors';
 import Label from '~/componentes/label';
-import { setEncaminhamentoAEEEmEdicao } from '~/redux/modulos/encaminhamentoAEE/actions';
+import { setQuestionarioDinamicoEmEdicao } from '~/redux/modulos/questionarioDinamico/actions';
 import { confirmar } from '~/servicos';
 import ModalCadastroAtendimentoClinico from './modalCadastroAtendimentoClinico';
 
@@ -34,7 +34,7 @@ const AtendimentoClinicoTabela = props => {
       dadosAtuais.push(novosDados);
       if (form) {
         form.setFieldValue(questaoAtual.id, dadosAtuais);
-        dispatch(setEncaminhamentoAEEEmEdicao(true));
+        dispatch(setQuestionarioDinamicoEmEdicao(true));
       }
     }
   };
