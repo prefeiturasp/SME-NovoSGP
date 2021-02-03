@@ -76,23 +76,9 @@ namespace SME.SGP.Aplicacao
 
             var turma = await repositorioTurma.ObterPorCodigo(turmaCodigo);
 
-            //Particularidade de cálculo de frequência para 2020.
+            //Particularidade de 2020
             if (turma.AnoLetivo.Equals(2020))
-            {
-                var tipoCalendario = await consultasTipoCalendario.ObterPorTurma(turma);
-                var periodos = await consultasPeriodoEscolar.ObterPeriodosEscolares(tipoCalendario.Id);
-
-                periodos.ToList().ForEach(p =>
-                {
-                    var frequenciaAlunoPeriodo = repositorioFrequenciaAlunoDisciplinaPeriodo
-                        .ObterPorAlunoBimestreAsync(alunoCodigo, p.Bimestre, TipoFrequenciaAluno.Geral, turma.CodigoTurma).Result;
-
-                    frequenciaAluno.AdicionarFrequenciaBimestre(p.Bimestre, frequenciaAlunoPeriodo != null ? frequenciaAlunoPeriodo.PercentualFrequencia : 100);
-                });
-
-
-                return frequenciaAluno.PercentualFrequenciaFinal;
-            }
+                return await CalculoFrequenciaGlobal2020(alunoCodigo, turma);
 
             return frequenciaAluno.PercentualFrequencia;
         }
@@ -100,7 +86,7 @@ namespace SME.SGP.Aplicacao
         public async Task<FrequenciaAluno> ObterFrequenciaGeralAlunoPorTurmaEComponente(string alunoCodigo, string turmaCodigo, string componenteCurricularCodigo = "")
         {
             var frequenciaAlunoPeriodos = await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterFrequenciaGeralAluno(alunoCodigo, turmaCodigo, componenteCurricularCodigo);
-            
+
             if (frequenciaAlunoPeriodos == null || !frequenciaAlunoPeriodos.Any())
                 return null;
 
@@ -395,6 +381,38 @@ namespace SME.SGP.Aplicacao
                     }
             }
             return TipoResponsavel.Filicacao1.ToString();
+        }
+
+
+        private async Task<double> CalculoFrequenciaGlobal2020(string alunoCodigo, Turma turma)
+        {
+            var tipoCalendario = await consultasTipoCalendario.ObterPorTurma(turma);
+            var periodos = await consultasPeriodoEscolar.ObterPeriodosEscolares(tipoCalendario.Id);
+            var disciplinasDaTurmaEol = await servicoEOL.ObterDisciplinasPorCodigoTurma(turma.CodigoTurma);
+            var disciplinasDaTurma = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(disciplinasDaTurmaEol.Select(x => x.CodigoComponenteCurricular).Distinct().ToArray()));
+            var gruposMatrizes = disciplinasDaTurma.Where(c => c.LancaNota && c.GrupoMatrizNome != null).GroupBy(c => c.GrupoMatrizNome).ToList();
+            var somaFrequenciaFinal = 0.0;
+            var totalDisciplinas = 0;
+
+            foreach (var grupoDisiplinasMatriz in gruposMatrizes.OrderBy(k => k.Key))
+            {
+                foreach (var disciplina in grupoDisiplinasMatriz)
+                {
+                    var somaPercentualFrequenciaDisciplinaBimestre = 0.0;
+                    periodos.ToList().ForEach(p =>
+                    {
+                        var frequenciaAlunoPeriodo = repositorioFrequenciaAlunoDisciplinaPeriodo
+                            .ObterPorAlunoBimestreAsync(alunoCodigo, p.Bimestre, TipoFrequenciaAluno.PorDisciplina, turma.CodigoTurma, disciplina.CodigoComponenteCurricular.ToString()).Result;
+
+                        somaPercentualFrequenciaDisciplinaBimestre += frequenciaAlunoPeriodo?.PercentualFrequencia ?? 100;
+                    });
+                    var mediaFinalFrequenciaDiscipina = Math.Round(somaPercentualFrequenciaDisciplinaBimestre / periodos.Count(), 2);
+                    somaFrequenciaFinal += mediaFinalFrequenciaDiscipina;
+                }
+                totalDisciplinas += grupoDisiplinasMatriz.Count();
+            }
+
+            return Math.Round(somaFrequenciaFinal / totalDisciplinas, 2);
         }
     }
 }
