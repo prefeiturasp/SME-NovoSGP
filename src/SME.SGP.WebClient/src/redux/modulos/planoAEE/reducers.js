@@ -2,10 +2,10 @@ import produce from 'immer';
 
 const inicial = {
   dadosIniciaisPlanoAEE: {},
-  dadosSecaoLocalizarEstudante: {},
   dadosPlanoAEE: null,
   desabilitarCamposPlanoAEE: false,
   planoAEEEmEdicao: false,
+  planoAEEDadosSecoesPorEtapa: [],
 };
 
 export default function PlanoAEE(state = inicial, action) {
@@ -15,12 +15,6 @@ export default function PlanoAEE(state = inicial, action) {
         return {
           ...draft,
           dadosIniciaisPlanoAEE: action.payload,
-        };
-      }
-      case '@encaminhamentoAEE/setDadosSecaoLocalizarEstudante': {
-        return {
-          ...draft,
-          dadosSecaoLocalizarEstudante: action.payload,
         };
       }
       case '@planoAEE/setDadosPlanoAEE': {
@@ -41,13 +35,19 @@ export default function PlanoAEE(state = inicial, action) {
           planoAEEEmEdicao: action.payload,
         };
       }
-      case '@planoAEE/setLimparDadosPlanoAEE': {
+      case '@planoAEE/setPlanoAEEDadosSecoesPorEtapa': {
+        return {
+          ...draft,
+          planoAEEDadosSecoesPorEtapa: action.payload,
+        };
+      }
+      case '@planoAEE/setPlanoAEELimparDados': {
         return {
           ...draft,
           dadosIniciaisPlanoAEE: {},
-          dadosSecaoLocalizarEstudante: {},
           dadosPlanoAEE: null,
           desabilitarCamposPlanoAEE: false,
+          planoAEEDadosSecoesPorEtapa: [],
         };
       }
       default:
