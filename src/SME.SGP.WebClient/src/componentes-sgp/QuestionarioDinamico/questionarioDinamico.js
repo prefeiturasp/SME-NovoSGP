@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Label } from '~/componentes';
 import tipoQuestao from '~/dtos/tipoQuestao';
-import AtendimentoClinicoTabela from '~/paginas/Relatorios/AEE/Encaminhamento/Cadastro/Componentes/AtendimentoClinico/atendimentoClinicoTabela';
+import AtendimentoClinicoTabela from './Componentes/AtendimentoClinico/atendimentoClinicoTabela';
 import { setQuestionarioDinamicoEmEdicao } from '~/redux/modulos/questionarioDinamico/actions';
 import CampoDinamicoCombo from './Componentes/campoDinamicoCombo';
 import CampoDinamicoComboMultiplaEscolha from './Componentes/campoDinamicoComboMultiplaEscolha';
