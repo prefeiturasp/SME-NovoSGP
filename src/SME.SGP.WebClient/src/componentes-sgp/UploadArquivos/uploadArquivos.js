@@ -101,17 +101,21 @@ const UploadArquivos = props => {
         .map(tipo => tipo?.trim()?.toLowerCase());
 
       const tamanhoNome = arquivo?.name?.length;
-      const nomeTipoAtual = arquivo.name.substring(
-        tamanhoNome,
-        tamanhoNome - 4
-      );
 
-      if (nomeTipoAtual) {
-        const permiteTipo = listaPermitidos.includes(
-          nomeTipoAtual?.toLowerCase()
+      const permiteTipo = listaPermitidos.find(tipo => {
+        const nomeTipoAtual = arquivo.name.substring(
+          tamanhoNome,
+          tamanhoNome - tipo.length
         );
-        return permiteTipo;
-      }
+
+        if (nomeTipoAtual) {
+          return tipo?.toLowerCase() === nomeTipoAtual?.toLowerCase();
+        }
+
+        return false;
+      });
+
+      return !!permiteTipo;
     }
     return true;
   };
