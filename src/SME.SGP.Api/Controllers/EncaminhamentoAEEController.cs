@@ -145,5 +145,14 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(encaminhamentoId));
         }
+
+        [HttpGet("estudante/{codigoEstudante}/pode-cadastrar")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.AEE_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterEncaminhamento(string codigoEstudante, [FromServices] IVerificaPodeCadstrarEncaminhamentoAEEParaEstudanteUseCase useCase)
+        {
+            return Ok(await useCase.Executar(codigoEstudante));
+        }
     }
 }

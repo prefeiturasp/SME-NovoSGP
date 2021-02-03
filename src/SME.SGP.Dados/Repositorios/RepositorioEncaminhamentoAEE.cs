@@ -162,5 +162,25 @@ namespace SME.SGP.Dados.Repositorios
                     return encaminhamentoAEE;
                 }, new { encaminhamentoId })).FirstOrDefault();
         }
+
+        public async Task<EncaminhamentoAEEAlunoTurmaDto> ObterEncaminhamentoPorEstudante(string codigoEstudante)
+        {
+            var sql = @"select ea.id 
+                            , ea.aluno_codigo as AlunoCodigo 
+                            , ea.aluno_nome as AlunoNome 
+                            , t.turma_id as TurmaCodigo 
+                            , t.nome as TurmaNome 
+                            , t.modalidade_codigo as TurmaModalidade 
+                            , t.ano_letivo as TurmaAno 
+                            , ea.situacao 
+                         from encaminhamento_aee ea 
+                         inner join turma t on t.id = ea.turma_id
+                         inner join ue on t.ue_id = ue.id 
+                     where not ea.excluido 
+                       and ea.situacao not in (4, 5)
+                       and ea.aluno_codigo = @codigoEstudante ";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<EncaminhamentoAEEAlunoTurmaDto>(sql, new { codigoEstudante });
+        }
     }
 }

@@ -64,6 +64,7 @@ const ObservacoesUsuarioMontarDados = props => {
             index={index}
             podeAlterar={podeAlterar}
             podeExcluir={podeExcluir}
+            proprietario={obs.proprietario}
           >
             {obs.auditoria ? auditoria(obs) : ''}
             {mostrarListaNotificacao && <ListaNotificacoes obs={obs} />}

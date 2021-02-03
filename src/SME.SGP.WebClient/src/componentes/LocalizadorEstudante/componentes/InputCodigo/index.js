@@ -1,10 +1,17 @@
 import { Button, Input } from 'antd';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
+import Loader from '~/componentes/loader';
 import { InputRFEstilo } from './styles';
 
 const InputCodigo = props => {
-  const { pessoaSelecionada, onSelect, onChange, desabilitado } = props;
+  const {
+    pessoaSelecionada,
+    onSelect,
+    onChange,
+    desabilitado,
+    exibirLoader,
+  } = props;
 
   const [valor, setValor] = useState('');
 
@@ -23,8 +30,10 @@ const InputCodigo = props => {
   );
 
   const onChangeCodigo = e => {
-    setValor(e.target.value);
-    onChange(e.target.value);
+    if (!exibirLoader) {
+      setValor(e.target.value);
+      onChange(e.target.value);
+    }
   };
 
   useEffect(() => {
@@ -32,19 +41,23 @@ const InputCodigo = props => {
   }, [pessoaSelecionada]);
 
   return (
-    <>
+    <Loader loading={exibirLoader}>
       <InputRFEstilo>
         <Input
           value={valor}
           placeholder="Digite o Código EOL"
           onChange={onChangeCodigo}
-          onPressEnter={onSubmitCodigo}
+          onPressEnter={e => {
+            if (!exibirLoader && e.target.value) {
+              onSubmitCodigo(e.target.value);
+            }
+          }}
           suffix={botao}
           disabled={desabilitado}
           allowClear
         />
       </InputRFEstilo>
-    </>
+    </Loader>
   );
 };
 
@@ -56,6 +69,7 @@ InputCodigo.propTypes = {
   onSelect: PropTypes.func,
   onChange: PropTypes.func,
   desabilitado: PropTypes.bool,
+  exibirLoader: PropTypes.bool,
 };
 
 InputCodigo.defaultProps = {
@@ -63,6 +77,7 @@ InputCodigo.defaultProps = {
   onSelect: () => {},
   onChange: () => {},
   desabilitado: false,
+  exibirLoader: false,
 };
 
 export default InputCodigo;
