@@ -3,45 +3,42 @@ import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  setDadosModalAnotacao,
-  setExibirModalAnotacao,
-  setExpandirLinhaAusenciaEstudante,
-} from '~/redux/modulos/encaminhamentoAEE/actions';
-import { erros } from '~/servicos';
-import ServicoEncaminhamentoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoEncaminhamentoAEE';
+  setQuestionarioDinamicoDadosModalAnotacao,
+  setQuestionarioDinamicoExibirModalAnotacao,
+  setQuestionarioDinamicoExpandirLinhaAusenciaEstudante,
+} from '~/redux/modulos/questionarioDinamico/actions';
+import { erros, ServicoCalendarios } from '~/servicos';
 import {
   BtnVisualizarAnotacao,
   TabelaColunasFixas,
-} from './indicativosEstudante.css';
+} from './informacoesEscolares.css';
 
 const AusenciasEstudante = props => {
-  const { indexLinha, dados } = props;
+  const { indexLinha, dados, anoLetivo, codigoTurma } = props;
 
   const dispatch = useDispatch();
 
   const expandirLinhaAusenciaEstudante = useSelector(
-    store => store.encaminhamentoAEE.expandirLinhaAusenciaEstudante
-  );
-
-  const dadosCollapseLocalizarEstudante = useSelector(
-    store => store.collapseLocalizarEstudante.dadosCollapseLocalizarEstudante
+    store =>
+      store.questionarioDinamico
+        .questionarioDinamicoExpandirLinhaAusenciaEstudante
   );
 
   const [ausencias, setAusencias] = useState([]);
 
   useEffect(() => {
     return () => {
-      dispatch(setExpandirLinhaAusenciaEstudante([]));
+      dispatch(setQuestionarioDinamicoExpandirLinhaAusenciaEstudante([]));
     };
   }, [dispatch]);
 
   const obterAusenciaMotivoPorAlunoTurmaBimestreAno = useCallback(async () => {
     // TODO lOADER!
-    const retorno = await ServicoEncaminhamentoAEE.obterAusenciaMotivoPorAlunoTurmaBimestreAno(
+    const retorno = await ServicoCalendarios.obterAusenciaMotivoPorAlunoTurmaBimestreAno(
       dados.codigoAluno,
       dados.bimestre,
-      dadosCollapseLocalizarEstudante.codigoTurma,
-      dadosCollapseLocalizarEstudante.anoLetivo
+      codigoTurma,
+      anoLetivo
     ).catch(e => erros(e));
 
     if (retorno?.data) {
@@ -49,7 +46,7 @@ const AusenciasEstudante = props => {
     } else {
       setAusencias([]);
     }
-  }, [dados, dadosCollapseLocalizarEstudante]);
+  }, [dados]);
 
   useEffect(() => {
     if (expandirLinhaAusenciaEstudante && dados) {
@@ -59,14 +56,13 @@ const AusenciasEstudante = props => {
     }
   }, [
     dados,
-    dadosCollapseLocalizarEstudante,
     expandirLinhaAusenciaEstudante,
     obterAusenciaMotivoPorAlunoTurmaBimestreAno,
   ]);
 
   const onClickAnotacao = item => {
-    dispatch(setDadosModalAnotacao(item));
-    dispatch(setExibirModalAnotacao(true));
+    dispatch(setQuestionarioDinamicoDadosModalAnotacao(item));
+    dispatch(setQuestionarioDinamicoExibirModalAnotacao(true));
   };
 
   const visualizarAnotacao = item => {
@@ -140,11 +136,15 @@ const AusenciasEstudante = props => {
 AusenciasEstudante.defaultProps = {
   indexLinha: PropTypes.number,
   dados: PropTypes.oneOfType([PropTypes.array]),
+  codigoTurma: PropTypes.oneOfType([PropTypes.any]),
+  anoLetivo: PropTypes.oneOfType([PropTypes.any]),
 };
 
 AusenciasEstudante.propTypes = {
   indexLinha: null,
   dados: [],
+  codigoTurma: '',
+  anoLetivo: null,
 };
 
 export default AusenciasEstudante;

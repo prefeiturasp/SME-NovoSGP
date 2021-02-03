@@ -366,21 +366,6 @@ class ServicoEncaminhamentoAEE {
     return api.delete(url);
   };
 
-  obterInformacoesEscolaresDoAluno = (codigoAluno, codigoTurma) => {
-    const url = `v1/estudante/informacoes-escolares?codigoAluno=${codigoAluno}&codigoTurma=${codigoTurma}`;
-    return api.get(url);
-  };
-
-  obterAusenciaMotivoPorAlunoTurmaBimestreAno = (
-    codigoAluno,
-    bimestre,
-    codigoTurma,
-    anoLetivo
-  ) => {
-    const url = `v1/calendarios/frequencias/ausencias-motivos?codigoAluno=${codigoAluno}&codigoTurma=${codigoTurma}&bimestre=${bimestre}&anoLetivo=${anoLetivo}`;
-    return api.get(url);
-  };
-
   podeCadastrarEncaminhamentoEstudante = codigoEstudante => {
     return api.get(`${urlPadrao}/estudante/${codigoEstudante}/pode-cadastrar`);
   };

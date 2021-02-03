@@ -1,8 +1,11 @@
 import produce from 'immer';
 
 const inicial = {
+  questionarioDinamicoExpandirLinhaAusenciaEstudante: [],
   formsQuestionarioDinamico: null,
   questionarioDinamicoEmEdicao: false,
+  questionarioDinamicoDadosModalAnotacao: null,
+  questionarioDinamicoExibirModalAnotacao: false,
 };
 
 export default function questionarioDinamico(state = inicial, action) {
@@ -20,11 +23,32 @@ export default function questionarioDinamico(state = inicial, action) {
           questionarioDinamicoEmEdicao: action.payload,
         };
       }
+      case '@questionarioDinamico/setQuestionarioDinamicoDadosModalAnotacao': {
+        return {
+          ...draft,
+          questionarioDinamicoDadosModalAnotacao: action.payload,
+        };
+      }
+      case '@questionarioDinamico/setQuestionarioDinamicoExibirModalAnotacao': {
+        return {
+          ...draft,
+          questionarioDinamicoExibirModalAnotacao: action.payload,
+        };
+      }
+      case '@questionarioDinamico/setQuestionarioDinamicoExpandirLinhaAusenciaEstudante': {
+        return {
+          ...draft,
+          questionarioDinamicoExpandirLinhaAusenciaEstudante: action.payload,
+        };
+      }
       case '@questionarioDinamico/setLimparDadosQuestionarioDinamico': {
         return {
           ...draft,
           formsQuestionarioDinamico: null,
           questionarioDinamicoEmEdicao: false,
+          questionarioDinamicoDadosModalAnotacao: null,
+          questionarioDinamicoExpandirLinhaAusenciaEstudante: [],
+          questionarioDinamicoExibirModalAnotacao: false,
         };
       }
       default:

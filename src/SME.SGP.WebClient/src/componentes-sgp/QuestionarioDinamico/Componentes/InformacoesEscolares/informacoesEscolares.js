@@ -1,24 +1,21 @@
+import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
 import { erros } from '~/servicos';
-import ServicoEncaminhamentoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoEncaminhamentoAEE';
+import ServicoEstudante from '~/servicos/Paginas/Estudante/ServicoEstudante';
 import AusenciasEstudante from './ausenciasEstudante';
 import BtnExpandirAusenciaEstudante from './btnExpandirAusenciaEstudante';
-import { TabelaColunasFixas } from './indicativosEstudante.css';
-import ModalAnotacoesEncaminhamentoAEE from './modalAnotacoes';
+import { TabelaColunasFixas } from './informacoesEscolares.css';
+import ModalAnotacoesQuestionarioDinamico from './modalAnotacoesQuestionarioDinamico';
 
-const InformacoesEscolares = () => {
+const InformacoesEscolares = props => {
   const [dados, setDados] = useState([]);
-
-  const dadosCollapseLocalizarEstudante = useSelector(
-    store => store.collapseLocalizarEstudante.dadosCollapseLocalizarEstudante
-  );
+  const { codigoAluno, codigoTurma, anoLetivo } = props;
 
   const obterInformacoesEscolaresDoAluno = useCallback(async () => {
     // TODO Loader e trocar mock!
-    const resposta = await ServicoEncaminhamentoAEE.obterInformacoesEscolaresDoAluno(
-      dadosCollapseLocalizarEstudante?.codigoAluno,
-      dadosCollapseLocalizarEstudante?.codigoTurma
+    const resposta = await ServicoEstudante.obterInformacoesEscolaresDoAluno(
+      codigoAluno,
+      codigoTurma
     ).catch(e => erros(e));
 
     if (resposta?.data) {
@@ -26,7 +23,7 @@ const InformacoesEscolares = () => {
     } else {
       setDados([]);
     }
-  }, [dadosCollapseLocalizarEstudante]);
+  }, []);
 
   useEffect(() => {
     obterInformacoesEscolaresDoAluno();
@@ -34,7 +31,7 @@ const InformacoesEscolares = () => {
 
   return (
     <>
-      <ModalAnotacoesEncaminhamentoAEE />
+      <ModalAnotacoesQuestionarioDinamico />
       <TabelaColunasFixas>
         <div className="wrapper">
           <div className="header-fixo">
@@ -98,7 +95,12 @@ const InformacoesEscolares = () => {
                             <BtnExpandirAusenciaEstudante indexLinha={index} />
                           </td>
                         </tr>
-                        <AusenciasEstudante indexLinha={index} dados={data} />
+                        <AusenciasEstudante
+                          indexLinha={index}
+                          dados={data}
+                          codigoTurma={codigoTurma}
+                          anoLetivo={anoLetivo}
+                        />
                       </>
                     );
                   })
@@ -114,6 +116,18 @@ const InformacoesEscolares = () => {
       </TabelaColunasFixas>
     </>
   );
+};
+
+InformacoesEscolares.propTypes = {
+  codigoAluno: PropTypes.oneOfType([PropTypes.any]),
+  codigoTurma: PropTypes.oneOfType([PropTypes.any]),
+  anoLetivo: PropTypes.oneOfType([PropTypes.any]),
+};
+
+InformacoesEscolares.defaultProps = {
+  codigoAluno: '',
+  codigoTurma: '',
+  anoLetivo: null,
 };
 
 export default InformacoesEscolares;

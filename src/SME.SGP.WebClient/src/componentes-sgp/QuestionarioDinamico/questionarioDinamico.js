@@ -2,24 +2,31 @@ import { Form, Formik } from 'formik';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import {
-  CampoTexto,
-  Label,
-  RadioGroupButton,
-  SelectComponent,
-} from '~/componentes';
+import { Label } from '~/componentes';
 import tipoQuestao from '~/dtos/tipoQuestao';
 import AtendimentoClinicoTabela from '~/paginas/Relatorios/AEE/Encaminhamento/Cadastro/Componentes/AtendimentoClinico/atendimentoClinicoTabela';
-import InformacoesEscolares from '~/paginas/Relatorios/AEE/Encaminhamento/Cadastro/Componentes/IndicativosEstudante/indicativosEstudante';
+
 import UploadArquivosEncaminhamento from '~/paginas/Relatorios/AEE/Encaminhamento/Cadastro/Componentes/UploadArquivosEncaminhamento/uploadArquivosEncaminhamento';
 import { setQuestionarioDinamicoEmEdicao } from '~/redux/modulos/questionarioDinamico/actions';
 import ServicoQuestionarioDinamico from '~/servicos/Componentes/ServicoQuestionarioDinamico';
 import ServicoEncaminhamentoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoEncaminhamentoAEE';
+import CampoDinamicoCombo from './Componentes/campoDinamicoCombo';
+import CampoDinamicoComboMultiplaEscolha from './Componentes/campoDinamicoComboMultiplaEscolha';
+import CampoDinamicoRadio from './Componentes/campoDinamicoRadio';
+import CampoDinamicoTexto from './Componentes/campoDinamicoTexto';
+import InformacoesEscolares from './Componentes/InformacoesEscolares/informacoesEscolares';
 
 const QuestionarioDinamico = props => {
   const dispatch = useDispatch();
 
-  const { dados, dadosQuestionarioAtual, desabilitarCampos } = props;
+  const {
+    dados,
+    dadosQuestionarioAtual,
+    desabilitarCampos,
+    codigoAluno,
+    codigoTurma,
+    anoLetivo,
+  } = props;
 
   const [valoresIniciais, setValoresIniciais] = useState();
 
@@ -391,122 +398,6 @@ const QuestionarioDinamico = props => {
     }
   };
 
-  const campoRadio = params => {
-    const { questaoAtual, form, label } = params;
-
-    const opcoes = questaoAtual?.opcaoResposta.map(item => {
-      return { label: item.nome, value: item.id };
-    });
-
-    return (
-      <div className="col-md-12 mb-3">
-        {label}
-        <RadioGroupButton
-          id={String(questaoAtual.id)}
-          name={String(questaoAtual.id)}
-          form={form}
-          opcoes={opcoes}
-          desabilitado={desabilitarCampos}
-          onChange={e => {
-            const valorAtualSelecionado = e.target.value;
-            onChangeCamposComOpcaoResposta(
-              questaoAtual,
-              form,
-              valorAtualSelecionado
-            );
-          }}
-        />
-      </div>
-    );
-  };
-
-  const campoCombo = params => {
-    const { questaoAtual, form, label } = params;
-
-    const lista = questaoAtual?.opcaoResposta.map(item => {
-      return { label: item.nome, value: item.id };
-    });
-
-    return (
-      <>
-        <div className="col-sm-12 col-md-12 col-lg-6 col-xl-6 mb-3">
-          {label}
-          <SelectComponent
-            id={String(questaoAtual.id)}
-            name={String(questaoAtual.id)}
-            form={form}
-            lista={lista}
-            valueOption="value"
-            valueText="label"
-            disabled={desabilitarCampos}
-            onChange={valorAtualSelecionado => {
-              onChangeCamposComOpcaoResposta(
-                questaoAtual,
-                form,
-                valorAtualSelecionado
-              );
-            }}
-          />
-        </div>
-      </>
-    );
-  };
-
-  const campoComboMultiplaEscolha = params => {
-    const { questaoAtual, form, label } = params;
-
-    const lista = questaoAtual?.opcaoResposta.map(item => {
-      return { label: item.nome, value: item.id };
-    });
-
-    return (
-      <>
-        <div className="col-sm-12 col-md-12 col-lg-6 col-xl-6 mb-3">
-          {label}
-          <SelectComponent
-            multiple
-            id={String(questaoAtual.id)}
-            name={String(questaoAtual.id)}
-            form={form}
-            lista={lista}
-            valueOption="value"
-            valueText="label"
-            disabled={desabilitarCampos}
-            onChange={valorAtualSelecionado => {
-              onChangeCampoComboMultiplaEscolha(
-                questaoAtual,
-                form,
-                valorAtualSelecionado
-              );
-            }}
-          />
-        </div>
-      </>
-    );
-  };
-
-  const campoTexto = params => {
-    const { questaoAtual, form, label } = params;
-
-    return (
-      <div className="col-md-12 mb-3">
-        {label}
-        <CampoTexto
-          id={String(questaoAtual.id)}
-          name={String(questaoAtual.id)}
-          form={form}
-          type="textarea"
-          maxLength={999999}
-          desabilitado={desabilitarCampos}
-          onChange={() => {
-            dispatch(setQuestionarioDinamicoEmEdicao(true));
-          }}
-          minRowsTextArea="4"
-        />
-      </div>
-    );
-  };
-
   const campoAtendimentoClinico = params => {
     const { questaoAtual, label, form } = params;
 
@@ -603,21 +494,56 @@ const QuestionarioDinamico = props => {
     let campoAtual = null;
     switch (questaoAtual?.tipoQuestao) {
       case tipoQuestao.Radio:
-        campoAtual = campoRadio(params);
+        campoAtual = (
+          <CampoDinamicoRadio
+            questaoAtual={questaoAtual}
+            form={form}
+            label={label}
+            desabilitado={desabilitarCampos}
+            onChange={onChangeCamposComOpcaoResposta}
+          />
+        );
         break;
       case tipoQuestao.Combo:
-        campoAtual = campoCombo(params);
+        campoAtual = (
+          <CampoDinamicoCombo
+            questaoAtual={questaoAtual}
+            form={form}
+            label={label}
+            desabilitado={desabilitarCampos}
+            onChange={onChangeCamposComOpcaoResposta}
+          />
+        );
         break;
       case tipoQuestao.ComboMultiplaEscolha:
-        campoAtual = campoComboMultiplaEscolha(params);
+        campoAtual = (
+          <CampoDinamicoComboMultiplaEscolha
+            questaoAtual={questaoAtual}
+            form={form}
+            label={label}
+            desabilitado={desabilitarCampos}
+            onChange={onChangeCampoComboMultiplaEscolha}
+          />
+        );
         break;
       case tipoQuestao.Texto:
-        campoAtual = campoTexto(params);
+        campoAtual = (
+          <CampoDinamicoTexto
+            questaoAtual={questaoAtual}
+            form={form}
+            label={label}
+            desabilitado={desabilitarCampos}
+          />
+        );
         break;
       case tipoQuestao.InformacoesEscolares:
         campoAtual = (
           <div className="col-md-12 mb-3">
-            <InformacoesEscolares dados={params} />
+            <InformacoesEscolares
+              codigoAluno={codigoAluno}
+              codigoTurma={codigoTurma}
+              anoLetivo={anoLetivo}
+            />
           </div>
         );
         break;
@@ -685,14 +611,20 @@ const QuestionarioDinamico = props => {
 
 QuestionarioDinamico.propTypes = {
   dados: PropTypes.oneOfType([PropTypes.object]),
-  dadosQuestionarioAtual: PropTypes.oneOfType([PropTypes.object]),
+  dadosQuestionarioAtual: PropTypes.oneOfType([PropTypes.any]),
   desabilitarCampos: PropTypes.bool,
+  codigoAluno: PropTypes.oneOfType([PropTypes.any]),
+  codigoTurma: PropTypes.oneOfType([PropTypes.any]),
+  anoLetivo: PropTypes.oneOfType([PropTypes.any]),
 };
 
 QuestionarioDinamico.defaultProps = {
   dados: {},
   dadosQuestionarioAtual: {},
   desabilitarCampos: false,
+  codigoAluno: '',
+  codigoTurma: '',
+  anoLetivo: null,
 };
 
 export default QuestionarioDinamico;

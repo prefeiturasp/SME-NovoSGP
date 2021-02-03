@@ -11,10 +11,14 @@ import ServicoEncaminhamentoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoE
 const MontarDadosPorSecao = props => {
   const dispatch = useDispatch();
 
-  const { dados, match, codigoAluno, codigoTurma } = props;
+  const { dados, match } = props;
 
   const dadosEncaminhamento = useSelector(
     store => store.encaminhamentoAEE.dadosEncaminhamento
+  );
+
+  const dadosCollapseLocalizarEstudante = useSelector(
+    store => store.collapseLocalizarEstudante.dadosCollapseLocalizarEstudante
   );
 
   const desabilitarCamposEncaminhamentoAEE = useSelector(
@@ -40,8 +44,8 @@ const MontarDadosPorSecao = props => {
     const resposta = await ServicoEncaminhamentoAEE.obterQuestionario(
       questionarioId,
       encaminhamentoId,
-      codigoAluno,
-      codigoTurma
+      dadosCollapseLocalizarEstudante?.codigoAluno,
+      dadosCollapseLocalizarEstudante?.codigoTurma
     ).catch(e => erros(e));
 
     if (!dadosQuestionarioAtual?.length && resposta?.data) {
@@ -52,12 +56,21 @@ const MontarDadosPorSecao = props => {
   }, []);
 
   useEffect(() => {
-    if (dados?.questionarioId && codigoAluno && codigoTurma) {
+    if (
+      dados?.questionarioId &&
+      dadosCollapseLocalizarEstudante?.codigoAluno &&
+      dadosCollapseLocalizarEstudante?.codigoTurma
+    ) {
       obterQuestionario(dados?.questionarioId);
     } else {
       setDadosQuestionarioAtual([]);
     }
-  }, [dados, codigoAluno, codigoTurma, obterQuestionario]);
+  }, [
+    dados,
+    dadosCollapseLocalizarEstudante?.codigoAluno,
+    dadosCollapseLocalizarEstudante?.codigoTurma,
+    obterQuestionario,
+  ]);
 
   const validaSeDesabilitarCampo = () => {
     const encaminhamentoId = match?.params?.id;
@@ -73,6 +86,9 @@ const MontarDadosPorSecao = props => {
 
   return dados?.questionarioId && dadosQuestionarioAtual?.length ? (
     <QuestionarioDinamico
+      codigoAluno={dadosCollapseLocalizarEstudante?.codigoAluno}
+      codigoTurma={dadosCollapseLocalizarEstudante?.codigoTurma}
+      anoLetivo={dadosCollapseLocalizarEstudante?.anoLetivo}
       dados={dados}
       dadosQuestionarioAtual={dadosQuestionarioAtual}
       desabilitarCampos={validaSeDesabilitarCampo()}
@@ -85,15 +101,11 @@ const MontarDadosPorSecao = props => {
 MontarDadosPorSecao.propTypes = {
   dados: PropTypes.oneOfType([PropTypes.object]),
   match: PropTypes.oneOfType([PropTypes.object]),
-  codigoAluno: PropTypes.string,
-  codigoTurma: PropTypes.string,
 };
 
 MontarDadosPorSecao.defaultProps = {
   dados: {},
   match: {},
-  codigoAluno: '',
-  codigoTurma: '',
 };
 
 export default MontarDadosPorSecao;

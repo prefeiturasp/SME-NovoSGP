@@ -66,8 +66,6 @@ const DadosSecaoEncaminhamento = props => {
                 dados={item}
                 index={item?.questionarioId}
                 match={match}
-                codigoAluno={dadosCollapseLocalizarEstudante?.codigoAluno}
-                codigoTurma={dadosCollapseLocalizarEstudante?.codigoTurma}
               />
             }
           />
