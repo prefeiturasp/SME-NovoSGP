@@ -11,13 +11,14 @@ import { FiltroHelper } from '~/componentes-sgp';
 
 import { AbrangenciaServico, confirmar, erros } from '~/servicos';
 
-import { BotaoEstilizado } from './modalUE.css';
+import { BotaoEstilizado, TextoEstilizado } from './modalUE.css';
 
 const ModalUE = ({
   modalVisivel,
+  permiteApenasUmaUe,
   setModalVisivel,
-  unEscolaresSelecionados,
   setUnEscolaresSelecionados,
+  unEscolaresSelecionados,
 }) => {
   const [anoLetivo] = useState(window.moment().format('YYYY'));
   const [uesSelecionadas, setUESSelecionadas] = useState(
@@ -30,6 +31,7 @@ const ModalUE = ({
   const [ueId, setUeId] = useState();
   const [carregandoDres, setCarregandoDres] = useState(false);
   const [carregandoUes, setCarregandoUes] = useState(false);
+  const [inputsDesabilitado, setInputsDesabilitado] = useState(false);
 
   const removerUES = key => {
     setUESSelecionadas(estadoAntigo =>
@@ -179,6 +181,15 @@ const ModalUE = ({
     setListaUes([]);
   }, [dreId, obterUes]);
 
+  useEffect(() => {
+    if (!inputsDesabilitado && uesSelecionadas.length && permiteApenasUmaUe) {
+      setInputsDesabilitado(true);
+    }
+    if (!uesSelecionadas.length) {
+      setInputsDesabilitado(false);
+    }
+  }, [inputsDesabilitado, permiteApenasUmaUe, uesSelecionadas]);
+
   return (
     <ModalConteudoHtml
       titulo="Selecione a(s) Unidade(s) Escolar(es)"
@@ -192,7 +203,11 @@ const ModalUE = ({
       fecharAoClicarFora
       fecharAoClicarEsc
     >
-      <div className="col-md-12 d-flex mb-4 p-0">
+      <div
+        className={`col-md-12 position-relative d-flex mb-${
+          permiteApenasUmaUe ? 5 : 4
+        } p-0`}
+      >
         <div className="col-6 p-0">
           <Loader loading={carregandoDres} tip="">
             <SelectComponent
@@ -201,7 +216,7 @@ const ModalUE = ({
               lista={listaDres}
               valueOption="valor"
               valueText="desc"
-              disabled={listaDres?.length === 1}
+              disabled={listaDres?.length === 1 || inputsDesabilitado}
               onChange={onChangeDre}
               valueSelect={dreId}
               placeholder="Diretoria Regional De Educação (DRE)"
@@ -216,17 +231,24 @@ const ModalUE = ({
               lista={listaUes}
               valueOption="valor"
               valueText="desc"
-              disabled={!dreId || listaUes?.length === 1}
+              disabled={!dreId || listaUes?.length === 1 || inputsDesabilitado}
               onChange={onChangeUe}
               valueSelect={ueId}
               placeholder="Unidade Escolar (UE)"
             />
           </Loader>
         </div>
+        {permiteApenasUmaUe && (
+          <TextoEstilizado>
+            De acordo com os objetivos selecionados você pode selecionar apenas
+            uma Unidade Escolar. Edite os objetivos caso precise selecionar mais
+            de uma unidade.
+          </TextoEstilizado>
+        )}
       </div>
       {uesSelecionadas?.map(({ key, unidadeEscolar, podeRemover }) => (
         <div
-          className="col-md-12 d-flex justify-content-between mb-4"
+          className="col-md-12 d-flex justify-content-between mb-4 p-0"
           key={`${key}`}
         >
           <span>{unidadeEscolar}</span>
@@ -248,17 +270,19 @@ const ModalUE = ({
 };
 
 ModalUE.defaultProps = {
-  unEscolaresSelecionados: [],
   modalVisivel: false,
+  permiteApenasUmaUe: false,
   setModalVisivel: () => {},
   setUnEscolaresSelecionados: () => {},
+  unEscolaresSelecionados: [],
 };
 
 ModalUE.propTypes = {
-  unEscolaresSelecionados: PropTypes.oneOfType([PropTypes.any]),
   modalVisivel: PropTypes.bool,
+  permiteApenasUmaUe: PropTypes.bool,
   setModalVisivel: PropTypes.func,
   setUnEscolaresSelecionados: PropTypes.func,
+  unEscolaresSelecionados: PropTypes.oneOfType([PropTypes.any]),
 };
 
 export default ModalUE;

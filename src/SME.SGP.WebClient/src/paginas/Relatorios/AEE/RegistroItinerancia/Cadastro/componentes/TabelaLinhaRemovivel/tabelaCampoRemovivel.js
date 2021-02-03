@@ -10,12 +10,15 @@ import {
   LabelEstilizado,
 } from './tabelaCampoRemovivel.css';
 
+import { ordenarPor } from '~/utils/funcoes/gerais';
+
 const TabelaLinhaRemovivel = ({
   botaoAdicionar,
   dadosTabela,
   dataIndex,
   labelBotao,
   labelTabela,
+  ordenacao,
   removerUsuario,
   tituloTabela,
   ...rest
@@ -23,10 +26,13 @@ const TabelaLinhaRemovivel = ({
   const [dadosSelecionados, setDadosSelecionados] = useState();
 
   useEffect(() => {
-    if (!dadosSelecionados) {
-      setDadosSelecionados(dadosTabela);
+    if (dadosTabela) {
+      const dadosTabelaOrdadenados = ordenacao
+        ? ordenarPor(dadosTabela, dataIndex)
+        : dadosTabela;
+      setDadosSelecionados(dadosTabelaOrdadenados);
     }
-  }, [dadosTabela, dadosSelecionados]);
+  }, [dadosTabela, dataIndex, ordenacao]);
 
   const montarBotaoRemover = text => {
     return (
@@ -61,7 +67,11 @@ const TabelaLinhaRemovivel = ({
         <LabelEstilizado>{labelTabela}</LabelEstilizado>
       </div>
       <div className="col-8 mb-3">
-        <CustomTable {...rest} dataSource={dadosTabela} columns={colunas} />
+        <CustomTable
+          {...rest}
+          dataSource={dadosSelecionados}
+          columns={colunas}
+        />
       </div>
       <div className="col-8">
         <Button
@@ -84,6 +94,7 @@ TabelaLinhaRemovivel.propTypes = {
   dataIndex: PropTypes.string,
   labelBotao: PropTypes.string,
   labelTabela: PropTypes.string,
+  ordenacao: PropTypes.bool,
   removerUsuario: PropTypes.func,
   tituloTabela: PropTypes.string,
 };
@@ -94,6 +105,7 @@ TabelaLinhaRemovivel.defaultProps = {
   dataIndex: '',
   labelBotao: '',
   labelTabela: '',
+  ordenacao: false,
   removerUsuario: () => {},
   tituloTabela: '',
 };

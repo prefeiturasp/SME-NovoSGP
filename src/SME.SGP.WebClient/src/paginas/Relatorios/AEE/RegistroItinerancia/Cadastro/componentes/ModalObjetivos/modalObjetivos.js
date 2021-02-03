@@ -7,7 +7,8 @@ import {
   ModalConteudoHtml,
 } from '~/componentes';
 
-import { confirmar } from '~/servicos';
+import { aviso, confirmar, erros } from '~/servicos';
+import ServicoRegistroItineranciaAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoRegistroItineranciaAEE';
 
 import { TituloEstilizado } from './modalObjetivos.css';
 
@@ -16,60 +17,9 @@ const ModalObjetivos = ({
   setModalVisivel,
   objetivosSelecionados,
   setObjetivosSelecionados,
+  variasUesSelecionadas,
 }) => {
-  const [listaObjetivos, setListaObjetivos] = useState([
-    {
-      key: '1',
-      objetivo: 'Mapeamento dos estudantes público da educação especial',
-      detalhamento: false,
-      apenasUmaUe: true,
-    },
-    {
-      key: '2',
-      objetivo: 'Reorganização e/ou remanejamento de apoios e serviços',
-      detalhamento: false,
-      apenasUmaUe: true,
-    },
-    {
-      key: '3',
-      objetivo: 'Atendimento de solicitação da U.E',
-      detalhamento: true,
-      apenasUmaUe: true,
-    },
-    {
-      key: '4',
-      objetivo: 'Acompanhamento professor de sala regular',
-      detalhamento: false,
-      apenasUmaUe: false,
-    },
-    {
-      key: '5',
-      objetivo: 'Acompanhamento professor de SRM',
-      detalhamento: false,
-      apenasUmaUe: false,
-    },
-    {
-      key: '6',
-      objetivo: 'Ação Formativa em JEIF',
-      detalhamento: false,
-      apenasUmaUe: false,
-    },
-    {
-      key: '7',
-      objetivo: 'Reunião',
-      detalhamento: false,
-      apenasUmaUe: false,
-    },
-    {
-      key: '8',
-      objetivo: 'Outros',
-      detalhamento: true,
-      apenasUmaUe: true,
-    },
-  ]);
-  const [objetivosSelecionadosModal, setObjetivosSelecionadosModal] = useState(
-    listaObjetivos
-  );
+  const [listaObjetivos, setListaObjetivos] = useState();
   const [modoEdicao, setModoEdicao] = useState(false);
 
   const esconderModal = () => setModalVisivel(false);
@@ -83,9 +33,7 @@ const ModalObjetivos = ({
   };
 
   const onConfirmarModal = () => {
-    const arraySelecionados = objetivosSelecionadosModal.filter(
-      item => item.checked
-    );
+    const arraySelecionados = listaObjetivos.filter(item => item.checked);
     setObjetivosSelecionados(arraySelecionados);
     setModoEdicao(false);
     esconderModal();
@@ -102,9 +50,17 @@ const ModalObjetivos = ({
   };
 
   const onChangeCheckbox = item => {
-    setObjetivosSelecionadosModal(estadoAntigo =>
+    setListaObjetivos(estadoAntigo =>
       estadoAntigo.map(objetivo => {
-        if (objetivo.key === item.key) {
+        if (!objetivo.permiteVariasUes && variasUesSelecionadas) {
+          aviso(
+            'Este objetivo só pode ser selecionado quando o registro é de uma unidade apenas e você está' +
+              ' com mais de uma unidade selecionada.'
+          );
+          return objetivo;
+        }
+
+        if (objetivo.id === item.id) {
           return {
             ...objetivo,
             checked: !objetivo.checked,
@@ -118,9 +74,9 @@ const ModalObjetivos = ({
 
   const onChangeCampoTexto = (evento, item) => {
     const texto = evento.target?.value;
-    setObjetivosSelecionadosModal(estadoAntigo =>
+    setListaObjetivos(estadoAntigo =>
       estadoAntigo.map(objetivo => {
-        if (objetivo.key === item.key) {
+        if (objetivo.id === item.id) {
           return {
             ...objetivo,
             detalhamentoTexto: texto,
@@ -135,9 +91,9 @@ const ModalObjetivos = ({
   useEffect(() => {
     if (Object.keys(objetivosSelecionados).length) {
       objetivosSelecionados.map(objetivo =>
-        setObjetivosSelecionadosModal(estadoAntigo =>
+        setListaObjetivos(estadoAntigo =>
           estadoAntigo.map(estado => {
-            if (estado.key === objetivo.key) {
+            if (estado.id === objetivo.id) {
               return objetivo;
             }
             return estado;
@@ -146,6 +102,23 @@ const ModalObjetivos = ({
       );
     }
   }, [objetivosSelecionados]);
+
+  const obterObjetivos = async () => {
+    const retorno = await ServicoRegistroItineranciaAEE.obterObjetivos().catch(
+      e => erros(e)
+    );
+    if (retorno?.data) {
+      const dadosAlterados = retorno.data.map(item => ({
+        ...item,
+        key: item.id,
+      }));
+      setListaObjetivos(dadosAlterados);
+    }
+  };
+
+  useEffect(() => {
+    obterObjetivos();
+  }, []);
 
   return (
     <ModalConteudoHtml
@@ -165,24 +138,24 @@ const ModalObjetivos = ({
         <div className="row mb-3">
           <TituloEstilizado>Selecione os objetivos</TituloEstilizado>
         </div>
-        {objetivosSelecionadosModal &&
-          objetivosSelecionadosModal.map(item => {
-            const textoUe = item.apenasUmaUe
-              ? '(apenas uma unidade)'
-              : '(uma ou mais unidades)';
+        {listaObjetivos &&
+          listaObjetivos.map(item => {
+            const textoUe = item.permiteVariasUes
+              ? '(uma ou mais unidades)'
+              : '(apenas uma unidade)';
 
             return (
-              <React.Fragment key={item.key}>
+              <React.Fragment key={item.id}>
                 <CheckboxComponent
-                  key={item.key}
+                  key={item.id}
                   className="mb-3 ml-n2"
-                  label={`${item.objetivo} ${textoUe}`}
-                  name={`objetivo-${item.key}`}
+                  label={`${item.nome} ${textoUe}`}
+                  name={`objetivo-${item.id}`}
                   onChangeCheckbox={() => onChangeCheckbox(item)}
                   disabled={false}
                   checked={item.checked}
                 />
-                {item.detalhamento && (
+                {item.temDescricao && (
                   <div className="mb-3 pl-3 mr-n3">
                     <CampoTexto
                       height="76"
@@ -206,6 +179,7 @@ ModalObjetivos.defaultProps = {
   objetivosSelecionados: [],
   setModalVisivel: () => {},
   setObjetivosSelecionados: () => {},
+  variasUesSelecionadas: false,
 };
 
 ModalObjetivos.propTypes = {
@@ -213,6 +187,7 @@ ModalObjetivos.propTypes = {
   objetivosSelecionados: PropTypes.oneOfType([PropTypes.any]),
   setModalVisivel: PropTypes.func,
   setObjetivosSelecionados: PropTypes.func,
+  variasUesSelecionadas: PropTypes.bool,
 };
 
 export default ModalObjetivos;
