@@ -101,6 +101,12 @@ const EncaminhamentoAEECadastro = ({ match }) => {
     };
   }, [dispatch, limparDadosEncaminhamento]);
 
+  const validarSePermiteProximoPasso = codigoEstudante => {
+    return ServicoEncaminhamentoAEE.podeCadastrarEncaminhamentoEstudante(
+      codigoEstudante
+    );
+  };
+
   return (
     <LoaderEncaminhamento>
       <Cabecalho pagina="Encaminhamento AEE" />
@@ -120,6 +126,7 @@ const EncaminhamentoAEECadastro = ({ match }) => {
                   changeTurma={limparDadosEncaminhamento}
                   changeLocalizadorEstudante={limparDadosEncaminhamento}
                   clickCancelar={limparDadosEncaminhamento}
+                  validarSePermiteProximoPasso={validarSePermiteProximoPasso}
                 />
               </div>
             )}
