@@ -30,6 +30,12 @@ namespace SME.SGP.Aplicacao
 
             var podeEditar = await VerificaPodeEditar(encaminhamentoAee, usuarioLogado);
 
+
+            Usuario responsavelEncaminhamento = null;
+
+            if(encaminhamentoAee.ResponsavelId > 0)
+                responsavelEncaminhamento = await mediator.Send(new ObterUsuarioPorIdQuery(encaminhamentoAee.ResponsavelId));
+
             return new EncaminhamentoAEERespostaDto()
             {
                 Aluno = aluno,
@@ -42,7 +48,14 @@ namespace SME.SGP.Aplicacao
                 Situacao = encaminhamentoAee.Situacao,
                 PodeEditar = podeEditar,
                 MotivoEncerramento = encaminhamentoAee.MotivoEncerramento,
-                Auditoria = (AuditoriaDto)encaminhamentoAee
+                Auditoria = (AuditoriaDto)encaminhamentoAee,
+                responsavelEncaminhamentoAEEDto = new ResponsavelEncaminhamentoAEEDto()
+                {
+                    ResponsavelId = responsavelEncaminhamento == null ? 0 : responsavelEncaminhamento.Id,
+                    Nome = responsavelEncaminhamento == null ? "" 
+                    :
+                    string.IsNullOrEmpty(responsavelEncaminhamento.Nome) ? "" : responsavelEncaminhamento.Nome,
+                }
             };
         }
 

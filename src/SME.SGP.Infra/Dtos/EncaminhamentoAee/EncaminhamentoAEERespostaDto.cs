@@ -1,8 +1,4 @@
-﻿using SME.SGP.Dominio;
-using SME.SGP.Dominio.Enumerados;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using SME.SGP.Dominio.Enumerados;
 
 namespace SME.SGP.Infra.Dtos
 {
@@ -14,5 +10,6 @@ namespace SME.SGP.Infra.Dtos
         public AlunoReduzidoDto Aluno { get; set; }
         public TurmaAnoDto Turma { get; set; }
         public AuditoriaDto Auditoria { get; set; }
+        public ResponsavelEncaminhamentoAEEDto responsavelEncaminhamentoAEEDto { get; set; }
     }
 }
