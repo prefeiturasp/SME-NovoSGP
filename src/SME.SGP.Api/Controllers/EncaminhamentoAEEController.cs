@@ -163,5 +163,14 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(codigoEstudante));
         }
+
+        [HttpPost("remover-responsavel/{encaminhamentoId}")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+       // [Permissao(Permissao.AEE_A, Policy = "Bearer")]
+        public async Task<IActionResult> AtribuirResponsavelEncaminhamento(long encaminhamentoId, [FromServices] IRemoverResponsavelEncaminhamentoAEEUseCase useCase)
+        {
+            return Ok(await useCase.Executar(encaminhamentoId));
+        }
     }
 }
