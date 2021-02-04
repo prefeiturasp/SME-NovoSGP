@@ -150,16 +150,17 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<EncaminhamentoAEE> ObterEncaminhamentoComTurmaPorId(long encaminhamentoId)
         {
-            var query = @" select ea.*, u.*, t.*
+            var query = @" select ea.*, t.*, u.*
                             from encaminhamento_aee ea
                            inner join turma t on t.id = ea.turma_id
                             left join usuario u on u.id = ea.responsavel_id 
                            where ea.id = @encaminhamentoId";
 
-            return (await database.Conexao.QueryAsync<EncaminhamentoAEE, Turma, EncaminhamentoAEE>(query,
-                (encaminhamentoAEE, turma) =>
+            return (await database.Conexao.QueryAsync<EncaminhamentoAEE, Turma, Usuario, EncaminhamentoAEE>(query,
+                (encaminhamentoAEE, turma, usuario) =>
                 {
                     encaminhamentoAEE.Turma = turma;
+                    encaminhamentoAEE.Responsavel = usuario;
                     return encaminhamentoAEE;
                 }, new { encaminhamentoId })).FirstOrDefault();
         }
