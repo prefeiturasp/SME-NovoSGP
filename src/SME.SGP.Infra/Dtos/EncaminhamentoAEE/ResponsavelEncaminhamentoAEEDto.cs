@@ -2,7 +2,9 @@
 {
     public class ResponsavelEncaminhamentoAEEDto
     {
-        public long? ResponsavelId { get; set; }
+        public long? Id { get; set; }
         public string Nome { get; set; }
+        public string Rf { get; set; }
+
     }
 }
