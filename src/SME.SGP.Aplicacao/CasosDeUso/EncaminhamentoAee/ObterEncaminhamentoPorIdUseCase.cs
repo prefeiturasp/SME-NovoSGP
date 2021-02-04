@@ -43,15 +43,12 @@ namespace SME.SGP.Aplicacao
                 PodeEditar = podeEditar,
                 MotivoEncerramento = encaminhamentoAee.MotivoEncerramento,
                 Auditoria = (AuditoriaDto)encaminhamentoAee,
-                responsavelEncaminhamentoAEE = new ResponsavelEncaminhamentoAEEDto()
+                responsavelEncaminhamentoAEE = encaminhamentoAee.Responsavel == null ? null :
+                new ResponsavelEncaminhamentoAEEDto()
                 {
-                    Id = encaminhamentoAee.ResponsavelId == null ? 0 : encaminhamentoAee.ResponsavelId,
-                    Nome = encaminhamentoAee.ResponsavelNome == null ? "" 
-                    :
-                    string.IsNullOrEmpty(encaminhamentoAee.ResponsavelNome) ? "" : encaminhamentoAee.ResponsavelNome,
-                    Rf = encaminhamentoAee.ResponsavelRf == null ? ""
-                    :
-                    string.IsNullOrEmpty(encaminhamentoAee.ResponsavelRf) ? "" : encaminhamentoAee.ResponsavelRf,
+                    Id = encaminhamentoAee.Responsavel.Id,
+                    Nome = encaminhamentoAee.Responsavel.Nome,
+                    Rf = encaminhamentoAee.Responsavel.CodigoRf
                 }
             };
         }
