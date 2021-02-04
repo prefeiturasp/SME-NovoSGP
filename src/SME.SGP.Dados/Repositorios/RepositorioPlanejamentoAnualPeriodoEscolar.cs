@@ -142,9 +142,11 @@ namespace SME.SGP.Dados.Repositorios
 	                    planejamento_anual_periodo_escolar pape
                     inner join periodo_escolar pe on
 	                    pape.periodo_escolar_id = pe.id
-                    where planejamento_anual_id = @planejamentoAnualId and pape.excluido = false";
+                    where planejamento_anual_id = @planejamentoAnualId and pape.excluido = false;";
+
             return await database.Conexao.QueryAsync<PlanejamentoAnualPeriodoEscolarResumoDto>(sql, new { planejamentoAnualId });
         }
+        
         public async Task<bool> PlanejamentoPossuiObjetivos(long planejamentoAnualPeriodoId)
         {
             var query = @"select pc.id
@@ -158,6 +160,49 @@ namespace SME.SGP.Dados.Repositorios
         {
             var sql = "UPDATE planejamento_anual_periodo_escolar SET EXCLUIDO = TRUE WHERE ID = @id";
             await database.Conexao.ExecuteAsync(sql, new { id });
+        }
+
+        public async Task RemoverLogicamentePorTurmaBimestreAsync(long idTurma, int bimestre)
+        {
+            var sql = @"update planejamento_anual_periodo_escolar pape
+                        set excluido = true
+                        where pape.id in (select pape2.id
+                                            from planejamento_anual pa
+                                                inner join planejamento_anual_periodo_escolar pape2
+                                                    on pa.id = pape2.planejamento_anual_id
+                                                inner join periodo_escolar pe
+                                                    on pape2.periodo_escolar_id = pe.id
+                                          where pa.turma_id = @idTurma and
+                                                pe.bimestre = @bimestre and
+                                                not pa.excluido and
+                                                not pape2.excluido);";
+            await database.Conexao.ExecuteAsync(sql, new { idTurma, bimestre });
+        }
+
+        public async Task<IEnumerable<PlanejamentoAnualPeriodoEscolarResumoDto>> ObterPlanejamentosAnuaisPeriodosTurmaPorPlanejamentoAnualId(long planejamentoAnualId)
+        {
+            var sql = @"select distinct pape.id,
+                        	            pe.bimestre
+                        	from planejamento_anual_periodo_escolar pape
+                        		inner join planejamento_anual pa
+                        			on pape.planejamento_anual_id = pa.id
+                        		inner join periodo_escolar pe
+                        			on pape.periodo_escolar_id = pe.id
+                        		inner join (select pa2.turma_id,
+                        						   pa2.componente_curricular_id
+                        						from planejamento_anual_periodo_escolar pape2
+                        							inner join planejamento_anual pa2
+                        								on pape2.planejamento_anual_id = pa2.id
+                        					where pape2.planejamento_anual_id = @planejamentoAnualId and
+                        						  not pape2.excluido and
+                        						  not pa2.excluido) tc
+                        			on pa.turma_id = tc.turma_id and
+                        			   pa.componente_curricular_id = tc.componente_curricular_id
+                        where not pape.excluido and
+                        	  not pape.excluido and
+                        	  not pa.excluido
+                        order by pe.bimestre;";
+            return await database.Conexao.QueryAsync<PlanejamentoAnualPeriodoEscolarResumoDto>(sql, new { planejamentoAnualId });
         }
     }
 }
