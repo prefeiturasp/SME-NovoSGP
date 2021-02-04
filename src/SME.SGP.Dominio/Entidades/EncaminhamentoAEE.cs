@@ -18,8 +18,6 @@ namespace SME.SGP.Dominio
         public bool Excluido { get; set; }
         public string MotivoEncerramento { get; set; }
         public long? ResponsavelId { get; set; }
-        public string ResponsavelNome { get; set; }        
-        public string ResponsavelRf { get; set; }        
         public List<EncaminhamentoAEESecao> Secoes { get; set; }
 
     }
