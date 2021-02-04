@@ -27,13 +27,14 @@ namespace SME.SGP.Aplicacao
         {
             var encaminhamentoAEE = await mediator.Send(new ObterEncaminhamentoAEEComTurmaPorIdQuery(request.EncaminhamentoId));
 
+            if (encaminhamentoAEE == null)
+                throw new NegocioException("O encaminhamento informado não foi encontrado");
+
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(encaminhamentoAEE.TurmaId));
 
             if (turma == null)
                 throw new NegocioException("turma não encontrada");           
 
-            if (encaminhamentoAEE == null)
-                throw new NegocioException("O encaminhamento informado não foi encontrado");
 
             encaminhamentoAEE.Situacao = Dominio.Enumerados.SituacaoAEE.AtribuicaoResponsavel;
 
