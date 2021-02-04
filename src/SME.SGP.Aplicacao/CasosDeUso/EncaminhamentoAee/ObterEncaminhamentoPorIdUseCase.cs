@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
 
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-            var podeEditar = await VerificaPodeEditar(encaminhamentoAee, usuarioLogado);
+            var podeEditar = await VerificaPodeEditar(encaminhamentoAee, usuarioLogado);            
 
             return new EncaminhamentoAEERespostaDto()
             {
@@ -43,7 +43,14 @@ namespace SME.SGP.Aplicacao
                 Situacao = encaminhamentoAee.Situacao,
                 PodeEditar = podeEditar,
                 MotivoEncerramento = encaminhamentoAee.MotivoEncerramento,
-                Auditoria = (AuditoriaDto)encaminhamentoAee
+                Auditoria = (AuditoriaDto)encaminhamentoAee,
+                responsavelEncaminhamentoAEE = encaminhamentoAee.Responsavel == null ? null :
+                new ResponsavelEncaminhamentoAEEDto()
+                {
+                    Id = encaminhamentoAee.Responsavel.Id,
+                    Nome = encaminhamentoAee.Responsavel.Nome,
+                    Rf = encaminhamentoAee.Responsavel.CodigoRf
+                }
             };
         }
 
