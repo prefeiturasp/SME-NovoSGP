@@ -150,7 +150,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<EncaminhamentoAEE> ObterEncaminhamentoComTurmaPorId(long encaminhamentoId)
         {
-            var query = @" select ea.*, u.nome as ResponsavelNome, U.rf_codigo as ResponsavelRf, t.*
+            var query = @" select ea.*, u.*, t.*
                             from encaminhamento_aee ea
                            inner join turma t on t.id = ea.turma_id
                             left join usuario u on u.id = ea.responsavel_id 
