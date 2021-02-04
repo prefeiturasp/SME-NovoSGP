@@ -2,7 +2,12 @@ import produce from 'immer';
 
 const inicial = {
   dadosIniciaisPlanoAEE: {},
-  dadosPlanoAEE: null,
+  planoAEEDados: {
+    encaminhamento: {
+      encaminhamentoId: 1,
+      situacao: 'Aguardando validação CP',
+    },
+  },
   desabilitarCamposPlanoAEE: false,
   planoAEEEmEdicao: false,
   planoAEEDadosSecoesPorEtapa: [],
@@ -17,10 +22,10 @@ export default function PlanoAEE(state = inicial, action) {
           dadosIniciaisPlanoAEE: action.payload,
         };
       }
-      case '@planoAEE/setDadosPlanoAEE': {
+      case '@planoAEE/setPlanoAEEDados': {
         return {
           ...draft,
-          dadosPlanoAEE: action.payload,
+          planoAEEDados: action.payload,
         };
       }
       case '@planoAEE/setDesabilitarCamposPlanoAEE': {
@@ -45,7 +50,7 @@ export default function PlanoAEE(state = inicial, action) {
         return {
           ...draft,
           dadosIniciaisPlanoAEE: {},
-          dadosPlanoAEE: null,
+          planoAEEDados: null,
           desabilitarCamposPlanoAEE: false,
           planoAEEDadosSecoesPorEtapa: [],
         };

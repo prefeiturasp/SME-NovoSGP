@@ -1,20 +1,23 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { useSelector } from 'react-redux';
 import { Tabs } from 'antd';
 import { ContainerTabsCard } from '~/componentes/tabs/tabs.css';
-import SecaoInformacoesPlanoCollapse from '../SecaoInformacoesPlano/secaoInformacoesPlanoCollapse';
-import SecaoDevolutivasPlanoCollapse from '../SecaoDevolutivasPlano/secaoDevolutivasPlanoCollapse';
+import SecaoPlanoCollapse from '../SecaoPlanoCollapse/secaoPlanoCollapse';
 
 const { TabPane } = Tabs;
 
-const TabCadastroPasso = ({ match }) => {
+const TabCadastroPasso = props => {
+  const { match } = props;
+  const planoAEEDados = useSelector(store => store.planoAEE.planoAEEDados);
+
   return (
     <ContainerTabsCard type="card" width="20%">
       <TabPane tab="Cadastro do Plano" key="1">
-        <SecaoInformacoesPlanoCollapse />
+        {planoAEEDados?.secao ? <SecaoPlanoCollapse match={match} /> : ''}
       </TabPane>
-      <TabPane tab="Devolutivas" key="2">
-        <SecaoDevolutivasPlanoCollapse />
+      <TabPane tab="Devolutivas" disabled key="2">
+        <></>
       </TabPane>
     </ContainerTabsCard>
   );

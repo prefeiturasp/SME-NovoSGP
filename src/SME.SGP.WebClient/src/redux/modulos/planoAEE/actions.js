@@ -8,8 +8,8 @@ export const setDadosIniciaisPlanoAEE = payload => ({
   payload,
 });
 
-export const setDadosPlanoAEE = payload => ({
-  type: '@planoAEE/setDadosPlanoAEE',
+export const setPlanoAEEDados = payload => ({
+  type: '@planoAEE/setPlanoAEEDados',
   payload,
 });
 
