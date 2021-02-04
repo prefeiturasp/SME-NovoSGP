@@ -3,21 +3,25 @@ import React, { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Card } from '~/componentes';
 import { Cabecalho } from '~/componentes-sgp';
+import CollapseLocalizarEstudante from '~/componentes-sgp/CollapseLocalizarEstudante/collapseLocalizarEstudante';
 import { RotasDto } from '~/dtos';
 import {
+  setDadosCollapseLocalizarEstudante,
+  setLimparDadosLocalizarEstudante,
+} from '~/redux/modulos/collapseLocalizarEstudante/actions';
+import {
   setDadosEncaminhamento,
-  setDadosEstudanteObjectCardEncaminhamento,
-  setDadosSecaoLocalizarEstudante,
   setDesabilitarCamposEncaminhamentoAEE,
   setExibirLoaderEncaminhamentoAEE,
   setLimparDadosEncaminhamento,
 } from '~/redux/modulos/encaminhamentoAEE/actions';
+import { setDadosObjectCardEstudante } from '~/redux/modulos/objectCardEstudante/actions';
+import { setLimparDadosQuestionarioDinamico } from '~/redux/modulos/questionarioDinamico/actions';
 import { erros, verificaSomenteConsulta } from '~/servicos';
 import ServicoEncaminhamentoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoEncaminhamentoAEE';
 import BotoesAcoesEncaminhamentoAEE from './Componentes/botoesAcoesEncaminhamentoAEE';
 import LoaderEncaminhamento from './Componentes/LoaderEncaminhamento/loaderEncaminhamento';
 import SecaoEncaminhamentoCollapse from './Componentes/SecaoEncaminhamento/secaoEncaminhamentoCollapse';
-import SecaoLocalizarEstudanteCollapse from './Componentes/SecaoLocalizarEstudante/secaoLocalizarEstudanteCollapse';
 
 const EncaminhamentoAEECadastro = ({ match }) => {
   const dispatch = useDispatch();
@@ -62,15 +66,17 @@ const EncaminhamentoAEECadastro = ({ match }) => {
         situacao: aluno.situacao,
         dataSituacao: aluno.dataSituacao,
       };
-      dispatch(setDadosEstudanteObjectCardEncaminhamento(dadosObjectCard));
+      dispatch(setDadosObjectCardEstudante(dadosObjectCard));
 
-      const dadosSecaoLocalizarEstudante = {
+      const dadosCollapseLocalizarEstudante = {
         anoLetivo: turma.anoLetivo,
         codigoAluno: aluno.codigoAluno,
         codigoTurma: turma.codigo,
         turmaId: turma.id,
       };
-      dispatch(setDadosSecaoLocalizarEstudante(dadosSecaoLocalizarEstudante));
+      dispatch(
+        setDadosCollapseLocalizarEstudante(dadosCollapseLocalizarEstudante)
+      );
 
       dispatch(setDadosEncaminhamento(resultado?.data));
     }
@@ -83,11 +89,23 @@ const EncaminhamentoAEECadastro = ({ match }) => {
     }
   }, [match, obterEncaminhamentoPorId, dispatch]);
 
+  const limparDadosEncaminhamento = useCallback(() => {
+    dispatch(setLimparDadosEncaminhamento());
+    dispatch(setLimparDadosQuestionarioDinamico());
+  }, [dispatch]);
+
   useEffect(() => {
     return () => {
-      dispatch(setLimparDadosEncaminhamento());
+      limparDadosEncaminhamento();
+      dispatch(setLimparDadosLocalizarEstudante());
     };
-  }, [dispatch]);
+  }, [dispatch, limparDadosEncaminhamento]);
+
+  const validarSePermiteProximoPasso = codigoEstudante => {
+    return ServicoEncaminhamentoAEE.podeCadastrarEncaminhamentoEstudante(
+      codigoEstudante
+    );
+  };
 
   return (
     <LoaderEncaminhamento>
@@ -102,7 +120,14 @@ const EncaminhamentoAEECadastro = ({ match }) => {
               ''
             ) : (
               <div className="col-md-12 mb-2">
-                <SecaoLocalizarEstudanteCollapse />
+                <CollapseLocalizarEstudante
+                  changeDre={limparDadosEncaminhamento}
+                  changeUe={limparDadosEncaminhamento}
+                  changeTurma={limparDadosEncaminhamento}
+                  changeLocalizadorEstudante={limparDadosEncaminhamento}
+                  clickCancelar={limparDadosEncaminhamento}
+                  validarSePermiteProximoPasso={validarSePermiteProximoPasso}
+                />
               </div>
             )}
             <div className="col-md-12 mb-2">

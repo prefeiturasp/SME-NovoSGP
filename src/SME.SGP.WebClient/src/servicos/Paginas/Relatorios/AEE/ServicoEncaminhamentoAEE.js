@@ -1,13 +1,11 @@
-import * as Yup from 'yup';
+import QuestionarioDinamicoFuncoes from '~/componentes-sgp/QuestionarioDinamico/Funcoes/QuestionarioDinamicoFuncoes';
 import tipoQuestao from '~/dtos/tipoQuestao';
 import { store } from '~/redux';
 import {
   setDadosModalAviso,
-  setEncaminhamentoAEEEmEdicao,
   setExibirLoaderEncaminhamentoAEE,
   setExibirModalAviso,
   setExibirModalErrosEncaminhamento,
-  setFormsSecoesEncaminhamentoAEE,
 } from '~/redux/modulos/encaminhamentoAEE/actions';
 import { erros } from '~/servicos/alertas';
 import api from '~/servicos/api';
@@ -41,11 +39,6 @@ class ServicoEncaminhamentoAEE {
     }
   };
 
-  obterDadosEstudante = (codigoAluno, anoLetivo) => {
-    const url = `v1/estudante/${codigoAluno}/anosLetivos/${anoLetivo}`;
-    return api.get(url);
-  };
-
   obterSecoesPorEtapaDeEncaminhamentoAEE = (etapa, encaminhamentoAeeId) => {
     let url = `${urlPadrao}/secoes?etapa=${etapa}`;
     if (encaminhamentoAeeId) {
@@ -71,131 +64,23 @@ class ServicoEncaminhamentoAEE {
     return api.get(`${urlPadrao}/${encaminhamentoId}`);
   };
 
-  resetarTelaDadosOriginais = () => {
-    const { dispatch } = store;
-    const state = store.getState();
-    const { encaminhamentoAEE } = state;
-    const { formsSecoesEncaminhamentoAEE } = encaminhamentoAEE;
-    if (formsSecoesEncaminhamentoAEE?.length) {
-      formsSecoesEncaminhamentoAEE.forEach(item => {
-        const form = item.form();
-        form.resetForm();
-      });
-      dispatch(setEncaminhamentoAEEEmEdicao(false));
-    }
-  };
-
-  addFormsSecoesEncaminhamentoAEE = (
-    obterForm,
-    questionarioId,
-    dadosQuestionarioAtual,
-    secaoId
-  ) => {
-    const { dispatch } = store;
-    const state = store.getState();
-    const { encaminhamentoAEE } = state;
-    const { formsSecoesEncaminhamentoAEE } = encaminhamentoAEE;
-    if (!formsSecoesEncaminhamentoAEE) {
-      const param = [];
-      param[questionarioId] = {
-        form: obterForm,
-        dadosQuestionarioAtual,
-        secaoId,
-      };
-      dispatch(setFormsSecoesEncaminhamentoAEE(param));
-    } else if (formsSecoesEncaminhamentoAEE?.length) {
-      const param = formsSecoesEncaminhamentoAEE;
-      param[questionarioId] = {
-        form: obterForm,
-        dadosQuestionarioAtual,
-        secaoId,
-      };
-      dispatch(setFormsSecoesEncaminhamentoAEE(param));
-    }
-  };
-
   // TODO
-  secaoEstaConcluida = secaoId => {
-    const state = store.getState();
-    const { encaminhamentoAEE } = state;
-    const { formsSecoesEncaminhamentoAEE } = encaminhamentoAEE;
+  // secaoEstaConcluida = secaoId => {
+  //   const state = store.getState();
+  //   const { encaminhamentoAEE } = state;
+  //   const { formsSecoesEncaminhamentoAEE } = encaminhamentoAEE;
 
-    if (formsSecoesEncaminhamentoAEE?.length) {
-      const form = formsSecoesEncaminhamentoAEE.find(
-        d => d.secaoId === secaoId
-      );
-      if (form && form()) {
-        return form().getFormikContext().isValid;
-      }
-    }
+  //   if (formsSecoesEncaminhamentoAEE?.length) {
+  //     const form = formsSecoesEncaminhamentoAEE.find(
+  //       d => d.secaoId === secaoId
+  //     );
+  //     if (form && form()) {
+  //       return form().getFormikContext().isValid;
+  //     }
+  //   }
 
-    return false;
-  };
-
-  obterQuestaoPorId = (dados, idPesquisa) => {
-    let questaoAtual = '';
-
-    const obterQuestao = item => {
-      if (!questaoAtual) {
-        if (String(item.id) === String(idPesquisa)) {
-          questaoAtual = item;
-        } else if (item?.opcaoResposta?.length) {
-          item.opcaoResposta.forEach(opcaoResposta => {
-            if (opcaoResposta.questaoComplementar) {
-              obterQuestao(opcaoResposta.questaoComplementar);
-            }
-          });
-        }
-      }
-    };
-
-    dados.forEach(item => {
-      obterQuestao(item);
-    });
-
-    return questaoAtual;
-  };
-
-  obterValidationSchema = (dadosQuestionarioAtual, form) => {
-    if (dadosQuestionarioAtual?.length && form?.state?.values) {
-      const camposComValidacao = {};
-
-      let arrayCampos = [];
-
-      const camposValidar = form?.state?.values;
-      if (camposValidar && Object.keys(camposValidar)?.length) {
-        arrayCampos = Object.keys(camposValidar);
-      }
-
-      const montaValidacoes = questaoAtual => {
-        if (questaoAtual?.opcaoResposta?.length) {
-          questaoAtual.opcaoResposta.forEach(opcaoAtual => {
-            if (opcaoAtual?.questaoComplementar) {
-              montaValidacoes(opcaoAtual.questaoComplementar);
-            }
-          });
-        }
-
-        if (
-          questaoAtual.obrigatorio &&
-          arrayCampos.find(questaoId => questaoId === String(questaoAtual.id))
-        ) {
-          camposComValidacao[questaoAtual.id] = Yup.string()
-            .nullable()
-            .required('Campo obrigatório');
-        }
-      };
-
-      if (arrayCampos?.length) {
-        dadosQuestionarioAtual.forEach(questaoAtual => {
-          montaValidacoes(questaoAtual);
-        });
-
-        return Yup.object(camposComValidacao);
-      }
-    }
-    return {};
-  };
+  //   return false;
+  // };
 
   salvarEncaminhamento = async (
     encaminhamentoId,
@@ -205,11 +90,10 @@ class ServicoEncaminhamentoAEE {
     const { dispatch } = store;
 
     const state = store.getState();
-    const { encaminhamentoAEE } = state;
-    const {
-      formsSecoesEncaminhamentoAEE,
-      dadosSecaoLocalizarEstudante,
-    } = encaminhamentoAEE;
+    const { questionarioDinamico, collapseLocalizarEstudante } = state;
+    const { formsQuestionarioDinamico } = questionarioDinamico;
+
+    const { dadosCollapseLocalizarEstudante } = collapseLocalizarEstudante;
 
     let contadorFormsValidos = 0;
 
@@ -234,11 +118,11 @@ class ServicoEncaminhamentoAEE {
       });
     };
 
-    if (formsSecoesEncaminhamentoAEE?.length) {
+    if (formsQuestionarioDinamico?.length) {
       let todosOsFormsEstaoValidos = !enviarEncaminhamento;
 
       if (enviarEncaminhamento) {
-        const promises = formsSecoesEncaminhamentoAEE.map(async item =>
+        const promises = formsQuestionarioDinamico.map(async item =>
           validaAntesDoSubmit(item.form())
         );
 
@@ -246,24 +130,24 @@ class ServicoEncaminhamentoAEE {
 
         todosOsFormsEstaoValidos =
           contadorFormsValidos ===
-          formsSecoesEncaminhamentoAEE?.filter(a => a)?.length;
+          formsQuestionarioDinamico?.filter(a => a)?.length;
       }
 
       if (todosOsFormsEstaoValidos) {
         const valoresParaSalvar = {
           id: encaminhamentoId || 0,
-          turmaId: dadosSecaoLocalizarEstudante.turmaId,
-          alunoCodigo: dadosSecaoLocalizarEstudante.codigoAluno,
+          turmaId: dadosCollapseLocalizarEstudante.turmaId,
+          alunoCodigo: dadosCollapseLocalizarEstudante.codigoAluno,
           situacao,
         };
-        valoresParaSalvar.secoes = formsSecoesEncaminhamentoAEE.map(
+        valoresParaSalvar.secoes = formsQuestionarioDinamico.map(
           (item, secaoId) => {
             const form = item.form();
             const campos = form.state.values;
             const questoes = [];
 
             Object.keys(campos).forEach(key => {
-              const questaoAtual = this.obterQuestaoPorId(
+              const questaoAtual = QuestionarioDinamicoFuncoes.obterQuestaoPorId(
                 item.dadosQuestionarioAtual,
                 key
               );
@@ -417,23 +301,15 @@ class ServicoEncaminhamentoAEE {
     return api.delete(url);
   };
 
-  obterInformacoesEscolaresDoAluno = (codigoAluno, codigoTurma) => {
-    const url = `v1/estudante/informacoes-escolares?codigoAluno=${codigoAluno}&codigoTurma=${codigoTurma}`;
-    return api.get(url);
-  };
+  podeCadastrarEncaminhamentoEstudante = async codigoEstudante => {
+    const resultado = await api
+      .get(`${urlPadrao}/estudante/${codigoEstudante}/pode-cadastrar`)
+      .catch(e => erros(e));
 
-  obterAusenciaMotivoPorAlunoTurmaBimestreAno = (
-    codigoAluno,
-    bimestre,
-    codigoTurma,
-    anoLetivo
-  ) => {
-    const url = `v1/calendarios/frequencias/ausencias-motivos?codigoAluno=${codigoAluno}&codigoTurma=${codigoTurma}&bimestre=${bimestre}&anoLetivo=${anoLetivo}`;
-    return api.get(url);
-  };
-
-  podeCadastrarEncaminhamentoEstudante = codigoEstudante => {
-    return api.get(`${urlPadrao}/estudante/${codigoEstudante}/pode-cadastrar`);
+    if (resultado?.data) {
+      return true;
+    }
+    return false;
   };
 
   removerArquivo = arquivoCodigo => {
