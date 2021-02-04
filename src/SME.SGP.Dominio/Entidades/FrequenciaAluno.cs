@@ -29,7 +29,7 @@ namespace SME.SGP.Dominio
             TotalAulas = totalAulas;
             TotalCompensacoes = totalCompensacoes;
             Tipo = tipo;
-            TotalAusencias = totalAusencias;           
+            TotalAusencias = totalAusencias;
         }
 
         public FrequenciaAluno()
@@ -41,14 +41,15 @@ namespace SME.SGP.Dominio
         public string CodigoAluno { get; set; }
         public string DisciplinaId { get; set; }
         public int NumeroFaltasNaoCompensadas { get => TotalAusencias - TotalCompensacoes; }
-        public double PercentualFrequencia {
+        public double PercentualFrequencia
+        {
             get
             {
                 if (TotalAulas == 0)
                     return 0;
 
                 var porcentagem = 100 - ((double)NumeroFaltasNaoCompensadas / TotalAulas) * 100;
-                
+
                 return Math.Round(porcentagem > 100 ? 100 : porcentagem, 2);
             }
         }
@@ -69,12 +70,12 @@ namespace SME.SGP.Dominio
         /// <summary>
         /// Cálculo de percentual final específico para 2020.
         /// </summary>
-        public double PercentualFrequenciaFinal 
-        { 
-            get 
-            { 
-                return PercentuaisFrequenciaPorBimestre.Any() ? Math.Round(PercentuaisFrequenciaPorBimestre.Sum(p => p.Item2) / PercentuaisFrequenciaPorBimestre.Count, 2) : 100; 
-            } 
+        public double PercentualFrequenciaFinal
+        {
+            get
+            {
+                return PercentuaisFrequenciaPorBimestre.Any() ? Math.Round(PercentuaisFrequenciaPorBimestre.Sum(p => p.Item2) / PercentuaisFrequenciaPorBimestre.Count, 2) : 100;
+            }
         }
 
         public FrequenciaAluno DefinirFrequencia(int totalAusencias, int totalAulas, int totalCompensacoes, TipoFrequenciaAluno tipoFrequencia)
