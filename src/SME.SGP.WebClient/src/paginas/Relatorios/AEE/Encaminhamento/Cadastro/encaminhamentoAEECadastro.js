@@ -22,6 +22,7 @@ import ServicoEncaminhamentoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoE
 import BotoesAcoesEncaminhamentoAEE from './Componentes/botoesAcoesEncaminhamentoAEE';
 import LoaderEncaminhamento from './Componentes/LoaderEncaminhamento/loaderEncaminhamento';
 import SecaoEncaminhamentoCollapse from './Componentes/SecaoEncaminhamento/secaoEncaminhamentoCollapse';
+import SecaoParecerAEECollapse from './Componentes/SecaoParecerAEE/secaoParecerAEECollapse';
 
 const EncaminhamentoAEECadastro = ({ match }) => {
   const dispatch = useDispatch();
@@ -125,6 +126,9 @@ const EncaminhamentoAEECadastro = ({ match }) => {
             )}
             <div className="col-md-12 mb-2">
               <SecaoEncaminhamentoCollapse match={match} />
+            </div>
+            <div className="col-md-12 mb-2">
+              <SecaoParecerAEECollapse match={match} />
             </div>
           </div>
         </div>

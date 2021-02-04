@@ -1,7 +1,10 @@
 import produce from 'immer';
 
 const inicial = {
-  dadosCollapseAtribuicaoResponsavel: {},
+  dadosCollapseAtribuicaoResponsavel: {
+    rf: 123456,
+    nome: 'Nome teste',
+  },
 };
 
 export default function collapseAtribuicaoResponsavel(state = inicial, action) {
