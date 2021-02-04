@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import QuestionarioDinamicoFuncoes from '~/componentes-sgp/QuestionarioDinamico/Funcoes/QuestionarioDinamicoFuncoes';
 import Button from '~/componentes/button';
 import { Colors } from '~/componentes/colors';
 import { RotasDto } from '~/dtos';
@@ -18,16 +19,16 @@ const BotoesAcoesEncaminhamentoAEE = props => {
 
   const dispatch = useDispatch();
 
-  const encaminhamentoAEEEmEdicao = useSelector(
-    store => store.encaminhamentoAEE.encaminhamentoAEEEmEdicao
+  const questionarioDinamicoEmEdicao = useSelector(
+    store => store.questionarioDinamico.questionarioDinamicoEmEdicao
   );
 
   const dadosEncaminhamento = useSelector(
     store => store.encaminhamentoAEE.dadosEncaminhamento
   );
 
-  const dadosSecaoLocalizarEstudante = useSelector(
-    store => store.encaminhamentoAEE.dadosSecaoLocalizarEstudante
+  const dadosCollapseLocalizarEstudante = useSelector(
+    store => store.collapseLocalizarEstudante.dadosCollapseLocalizarEstudante
   );
 
   const desabilitarCamposEncaminhamentoAEE = useSelector(
@@ -80,7 +81,7 @@ const BotoesAcoesEncaminhamentoAEE = props => {
   };
 
   const onClickVoltar = async () => {
-    if (encaminhamentoAEEEmEdicao) {
+    if (questionarioDinamicoEmEdicao) {
       const confirmou = await confirmar(
         'Atenção',
         '',
@@ -115,14 +116,14 @@ const BotoesAcoesEncaminhamentoAEE = props => {
   };
 
   const onClickCancelar = async () => {
-    if (!desabilitarCamposEncaminhamentoAEE && encaminhamentoAEEEmEdicao) {
+    if (!desabilitarCamposEncaminhamentoAEE && questionarioDinamicoEmEdicao) {
       const confirmou = await confirmar(
         'Atenção',
         'Você não salvou as informações preenchidas.',
         'Deseja realmente cancelar as alterações?'
       );
       if (confirmou) {
-        ServicoEncaminhamentoAEE.resetarTelaDadosOriginais();
+        QuestionarioDinamicoFuncoes.limparDadosOriginaisQuestionarioDinamico();
       }
     }
   };
@@ -209,7 +210,7 @@ const BotoesAcoesEncaminhamentoAEE = props => {
         className="mr-3"
         onClick={onClickCancelar}
         disabled={
-          !encaminhamentoAEEEmEdicao || desabilitarCamposEncaminhamentoAEE
+          !questionarioDinamicoEmEdicao || desabilitarCamposEncaminhamentoAEE
         }
       />
       <Button
@@ -230,7 +231,7 @@ const BotoesAcoesEncaminhamentoAEE = props => {
         onClick={onClickSalvar}
         disabled={
           desabilitarCamposEncaminhamentoAEE ||
-          !encaminhamentoAEEEmEdicao ||
+          !questionarioDinamicoEmEdicao ||
           (match?.params?.id && !dadosEncaminhamento?.podeEditar)
         }
       />
@@ -247,7 +248,7 @@ const BotoesAcoesEncaminhamentoAEE = props => {
           dadosEncaminhamento?.situacao !== situacaoAEE.Rascunho
         }
         disabled={
-          !dadosSecaoLocalizarEstudante?.codigoAluno ||
+          !dadosCollapseLocalizarEstudante?.codigoAluno ||
           desabilitarCamposEncaminhamentoAEE
         }
       />

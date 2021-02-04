@@ -5,24 +5,24 @@ import { Colors, ModalConteudoHtml } from '~/componentes';
 import Button from '~/componentes/button';
 import JoditEditor from '~/componentes/jodit-editor/joditEditor';
 import {
-  setDadosModalAnotacao,
-  setExibirModalAnotacao,
-} from '~/redux/modulos/encaminhamentoAEE/actions';
+  setQuestionarioDinamicoDadosModalAnotacao,
+  setQuestionarioDinamicoExibirModalAnotacao,
+} from '~/redux/modulos/questionarioDinamico/actions';
 
-const ModalAnotacoesEncaminhamentoAEE = () => {
+const ModalAnotacoesQuestionarioDinamico = () => {
   const dispatch = useDispatch();
 
   const dadosModalAnotacao = useSelector(
-    store => store.encaminhamentoAEE.dadosModalAnotacao
+    store => store.questionarioDinamico.questionarioDinamicoDadosModalAnotacao
   );
 
   const exibirModalAnotacao = useSelector(
-    store => store.encaminhamentoAEE.exibirModalAnotacao
+    store => store.questionarioDinamico.questionarioDinamicoExibirModalAnotacao
   );
 
   const onClose = () => {
-    dispatch(setDadosModalAnotacao());
-    dispatch(setExibirModalAnotacao(false));
+    dispatch(setQuestionarioDinamicoDadosModalAnotacao());
+    dispatch(setQuestionarioDinamicoExibirModalAnotacao(false));
   };
   return (
     <ModalConteudoHtml
@@ -57,4 +57,4 @@ const ModalAnotacoesEncaminhamentoAEE = () => {
   );
 };
 
-export default ModalAnotacoesEncaminhamentoAEE;
+export default ModalAnotacoesQuestionarioDinamico;

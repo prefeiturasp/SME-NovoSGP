@@ -3,12 +3,16 @@ import React from 'react';
 import { useDispatch } from 'react-redux';
 import { Label } from '~/componentes';
 import UploadArquivos from '~/componentes-sgp/UploadArquivos/uploadArquivos';
-import { setEncaminhamentoAEEEmEdicao } from '~/redux/modulos/encaminhamentoAEE/actions';
+import { setQuestionarioDinamicoEmEdicao } from '~/redux/modulos/questionarioDinamico/actions';
 import { erros, sucesso } from '~/servicos';
-import ServicoEncaminhamentoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoEncaminhamentoAEE';
 
-const UploadArquivosEncaminhamento = props => {
-  const { dados, desabilitado } = props;
+const CampoDinamicoUploadArquivos = props => {
+  const {
+    dados,
+    desabilitado,
+    urlUpload,
+    funcaoRemoverArquivoCampoUpload,
+  } = props;
   const { form, questaoAtual, label } = dados;
 
   const dispatch = useDispatch();
@@ -38,7 +42,7 @@ const UploadArquivosEncaminhamento = props => {
       return true;
     }
 
-    const resposta = await ServicoEncaminhamentoAEE.removerArquivo(
+    const resposta = await funcaoRemoverArquivoCampoUpload(
       codigoArquivo
     ).catch(e => erros(e));
 
@@ -61,14 +65,14 @@ const UploadArquivosEncaminhamento = props => {
           tiposArquivosPermitidos={questaoAtual.opcionais || ''}
           desabilitarUpload={form?.values?.[questaoAtual?.id]?.length > 9}
           onRemove={onRemoveFile}
-          urlUpload="v1/encaminhamento-aee/upload"
+          urlUpload={urlUpload}
           defaultFileList={
             form?.values?.[questaoAtual?.id]?.length
               ? form?.values?.[questaoAtual?.id]
               : []
           }
           onChangeListaArquivos={() => {
-            dispatch(setEncaminhamentoAEEEmEdicao(true));
+            dispatch(setQuestionarioDinamicoEmEdicao(true));
           }}
         />
       </div>
@@ -76,14 +80,18 @@ const UploadArquivosEncaminhamento = props => {
   );
 };
 
-UploadArquivosEncaminhamento.propTypes = {
+CampoDinamicoUploadArquivos.propTypes = {
   dados: PropTypes.oneOfType([PropTypes.object]),
   desabilitado: PropTypes.bool,
+  urlUpload: PropTypes.string,
+  funcaoRemoverArquivoCampoUpload: PropTypes.func,
 };
 
-UploadArquivosEncaminhamento.defaultProps = {
+CampoDinamicoUploadArquivos.defaultProps = {
   dados: {},
   desabilitado: false,
+  urlUpload: '',
+  funcaoRemoverArquivoCampoUpload: () => {},
 };
 
-export default UploadArquivosEncaminhamento;
+export default CampoDinamicoUploadArquivos;
