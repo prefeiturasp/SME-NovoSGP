@@ -25,6 +25,9 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
   const [objetivosSelecionados, setObjetivosSelecionados] = useState();
   const [alunosSelecionados, setAlunosSelecionados] = useState();
   const [unEscolaresSelecionados, setUnEscolaresSelecionados] = useState();
+  const [desabilitarCampos, setDesabilitarCampos] = useState(false);
+  const [apenasUmaUe, setApenasUmaUe] = useState(false);
+  const [variasUesSelecionadas, setVariasUesSelecionadas] = useState(false);
 
   const onClickVoltar = () => {};
   const onClickCancelar = () => {};
@@ -57,6 +60,49 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
     );
   };
 
+  const desabilitarData = dataCorrente => {
+    return (
+      dataCorrente > window.moment() ||
+      dataCorrente < window.moment().startOf('year')
+    );
+  };
+
+  useEffect(() => {
+    if (dataVisita && objetivosSelecionados?.length) {
+      setDesabilitarCampos(true);
+    }
+  }, [dataVisita, objetivosSelecionados]);
+
+  useEffect(() => {
+    if (objetivosSelecionados?.length) {
+      let umaUe = false;
+      objetivosSelecionados.map(objetivo => {
+        if (!objetivo.permiteVariasUes) {
+          umaUe = true;
+        }
+      });
+      setApenasUmaUe(umaUe);
+    }
+    if (!objetivosSelecionados?.length) {
+      setApenasUmaUe(false);
+    }
+  }, [objetivosSelecionados]);
+
+  useEffect(() => {
+    if (unEscolaresSelecionados?.length) {
+      let variasUes = false;
+      unEscolaresSelecionados.map(objetivo => {
+        if (!objetivo.permiteVariasUes) {
+          variasUes = true;
+        }
+      });
+      setVariasUesSelecionadas(variasUes);
+    }
+    if (!unEscolaresSelecionados?.length) {
+      setVariasUesSelecionadas(false);
+    }
+  }, [unEscolaresSelecionados]);
+
   return (
     <>
       <Loader loading={carregandoGeral} className="w-100">
@@ -82,7 +128,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
                   bold
                   className="mr-3"
                   onClick={onClickCancelar}
-                  // disabled={!modoEdicao || desabilitarCampos}
+                  disabled={!desabilitarCampos}
                 />
                 <Button
                   id="btn-gerar-ata-diario-bordo"
@@ -91,7 +137,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
                   border
                   bold
                   onClick={onClickSalvar}
-                  // disabled={!modoEdicao || !turmaInfantil || desabilitarCampos}
+                  disabled={!desabilitarCampos}
                 />
               </div>
             </div>
@@ -104,13 +150,15 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
                   label="Data da visita"
                   placeholder="Selecione a data"
                   onChange={mudarDataVisita}
+                  desabilitarData={desabilitarData}
                 />
               </div>
             </div>
             <div className="row mb-4">
               <TabelaLinhaRemovivel
                 bordered
-                dataIndex="objetivo"
+                ordenacao
+                dataIndex="nome"
                 labelTabela="Objetivos da itinerância"
                 tituloTabela="Objetivos selecionados"
                 labelBotao="Novo objetivo"
@@ -137,22 +185,24 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
                 botaoAdicionar={() => setModalVisivelUES(true)}
               />
             </div>
-            <div className="row mb-4">
-              <div className="col-12 font-weight-bold mb-2">
-                <span style={{ color: Base.CinzaMako }}>Estudantes</span>
+            {unEscolaresSelecionados?.length === 1 && (
+              <div className="row mb-4">
+                <div className="col-12 font-weight-bold mb-2">
+                  <span style={{ color: Base.CinzaMako }}>Estudantes</span>
+                </div>
+                <div className="col-12">
+                  <Button
+                    id={shortid.generate()}
+                    label="Adicionar novo estudante"
+                    color={Colors.Azul}
+                    border
+                    className="mr-2"
+                    onClick={() => setModalVisivelAlunos(true)}
+                    icon="user-plus"
+                  />
+                </div>
               </div>
-              <div className="col-12">
-                <Button
-                  id={shortid.generate()}
-                  label="Adicionar novo estudante"
-                  color={Colors.Azul}
-                  border
-                  className="mr-2"
-                  onClick={() => setModalVisivelAlunos(true)}
-                  icon="user-plus"
-                />
-              </div>
-            </div>
+            )}
             {alunosSelecionados?.length ? (
               alunosSelecionados.map(aluno => (
                 <CollapseAluno
@@ -185,6 +235,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
           setModalVisivel={setModalVisivelUES}
           unEscolaresSelecionados={unEscolaresSelecionados}
           setUnEscolaresSelecionados={setUnEscolaresSelecionados}
+          permiteApenasUmaUe={apenasUmaUe}
         />
       )}
       {modalVisivelObjetivos && (
@@ -193,6 +244,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
           setModalVisivel={setModalVisivelObjetivos}
           objetivosSelecionados={objetivosSelecionados}
           setObjetivosSelecionados={setObjetivosSelecionados}
+          variasUesSelecionadas={variasUesSelecionadas}
         />
       )}
       {modalVisivelAlunos && (
@@ -202,7 +254,8 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
           alunosSelecionados={alunosSelecionados}
           setAlunosSelecionados={setAlunosSelecionados}
           codigoUe={
-            unEscolaresSelecionados && unEscolaresSelecionados[0].codigoUe
+            unEscolaresSelecionados.length &&
+            unEscolaresSelecionados[0].codigoUe
           }
         />
       )}

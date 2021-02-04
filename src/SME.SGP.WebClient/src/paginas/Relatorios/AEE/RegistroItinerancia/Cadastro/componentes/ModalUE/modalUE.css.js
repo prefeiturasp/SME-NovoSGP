@@ -24,3 +24,11 @@ export const BotaoEstilizado = styled(Button)`
     }
   }
 `;
+
+export const TextoEstilizado = styled.span`
+  font-size: 9px;
+  font-weight: bold;
+  color: ${Base.CinzaMako};
+  position: absolute;
+  bottom: -24px;
+`;
