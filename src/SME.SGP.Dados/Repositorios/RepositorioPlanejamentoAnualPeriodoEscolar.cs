@@ -162,6 +162,23 @@ namespace SME.SGP.Dados.Repositorios
             await database.Conexao.ExecuteAsync(sql, new { id });
         }
 
+        public async Task RemoverLogicamentePorTurmaBimestreAsync(long idTurma, int bimestre)
+        {
+            var sql = @"update planejamento_anual_periodo_escolar pape
+                        set excluido = true
+                        where pape.id in (select pape2.id
+                                            from planejamento_anual pa
+                                                inner join planejamento_anual_periodo_escolar pape2
+                                                    on pa.id = pape2.planejamento_anual_id
+                                                inner join periodo_escolar pe
+                                                    on pape2.periodo_escolar_id = pe.id
+                                          where pa.turma_id = @idTurma and
+                                                pe.bimestre = @bimestre and
+                                                not pa.excluido and
+                                                not pape2.excluido);";
+            await database.Conexao.ExecuteAsync(sql, new { idTurma, bimestre });
+        }
+
         public async Task<IEnumerable<PlanejamentoAnualPeriodoEscolarResumoDto>> ObterPlanejamentosAnuaisPeriodosTurmaPorPlanejamentoAnualId(long planejamentoAnualId)
         {
             var sql = @"select distinct pape.id,

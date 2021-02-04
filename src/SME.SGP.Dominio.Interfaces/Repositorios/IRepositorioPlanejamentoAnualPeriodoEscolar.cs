@@ -14,5 +14,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<PlanejamentoAnualPeriodoEscolar>> ObterCompletoPorIdAsync(long[] ids);
         Task<bool> PlanejamentoPossuiObjetivos(long planejamentoAnualPeriodoId);
         Task RemoverLogicamenteAsync(long id);
+        Task RemoverLogicamentePorTurmaBimestreAsync(long idTurma, int bimestre);
     }
 }

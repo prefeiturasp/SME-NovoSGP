@@ -15,7 +15,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<PlanejamentoAnualComponente>> ObterListaPorPlanejamentoAnualPeriodoEscolarId(long turmaId, long componenteCurricularId, int bimestre)
         {
-            var sql = @"select pac.* 
+            var sql = @"select pac.*                             
                             from planejamento_anual_componente pac
                                 inner join planejamento_anual_periodo_escolar pape
                                     on pac.planejamento_anual_periodo_escolar_id = pape.id
@@ -23,9 +23,10 @@ namespace SME.SGP.Dados.Repositorios
                                     on pape.periodo_escolar_id = pe.id
                                 inner join planejamento_anual pa
                                     on pape.planejamento_anual_id = pa.id
-                        where pa.turma_id = @turmaId and
+                        where not pa.excluido and
+                              pa.turma_id = @turmaId and
                               pe.bimestre = @bimestre and 
-                              pac.componente_curricular_id = @componenteCurricularId and 
+                              pac.componente_curricular_id = @componenteCurricularId and                                 
                               pac.excluido = false;";
             return  await database.Conexao.QueryAsync<PlanejamentoAnualComponente>(sql, new { turmaId, bimestre, componenteCurricularId });
         }

@@ -59,7 +59,7 @@ namespace SME.SGP.Aplicacao
 
                 await repositorioPlanejamentoAnualComponente.RemoverLogicamenteAsync(planejamentoAnualComponente.Select(pc => pc.Id).ToArray());
 
-                await repositorioPlanejamentoAnualPeriodoEscolar.RemoverLogicamenteAsync(pape.Id);
+                await repositorioPlanejamentoAnualPeriodoEscolar.RemoverLogicamentePorTurmaBimestreAsync(comando.TurmaId, pape.Bimestre);
             }
 
             await repositorioPlanejamentoAnual.RemoverLogicamenteAsync(planejamentoAnual);
