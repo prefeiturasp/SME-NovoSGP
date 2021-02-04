@@ -30,7 +30,9 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(SalvarCopiaPlanejamentoAnualCommand request, CancellationToken cancellationToken)
         {
-            var planejamentoAnualId = await repositorioPlanejamentoAnual.SalvarAsync(request.PlanejamentoAnual);
+            var planejamentoAnualId = await repositorioPlanejamentoAnual.ObterIdPorTurmaEComponenteCurricular(request.PlanejamentoAnual.TurmaId, request.PlanejamentoAnual.ComponenteCurricularId);
+            if (planejamentoAnualId == 0)
+                planejamentoAnualId = await repositorioPlanejamentoAnual.SalvarAsync(request.PlanejamentoAnual);
 
             foreach(var periodo in request.PlanejamentoAnual.PeriodosEscolares)
             {

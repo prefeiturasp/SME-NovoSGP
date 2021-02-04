@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -10,6 +11,24 @@ namespace SME.SGP.Dados.Repositorios
     {
         public RepositorioPlanejamentoAnualComponente(ISgpContext database) : base(database)
         {
+        }
+
+        public async Task<IEnumerable<PlanejamentoAnualComponente>> ObterListaPorPlanejamentoAnualPeriodoEscolarId(long turmaId, long componenteCurricularId, int bimestre)
+        {
+            var sql = @"select pac.*                             
+                            from planejamento_anual_componente pac
+                                inner join planejamento_anual_periodo_escolar pape
+                                    on pac.planejamento_anual_periodo_escolar_id = pape.id
+                                inner join periodo_escolar pe
+                                    on pape.periodo_escolar_id = pe.id
+                                inner join planejamento_anual pa
+                                    on pape.planejamento_anual_id = pa.id
+                        where not pa.excluido and
+                              pa.turma_id = @turmaId and
+                              pe.bimestre = @bimestre and 
+                              pac.componente_curricular_id = @componenteCurricularId and                                 
+                              pac.excluido = false;";
+            return  await database.Conexao.QueryAsync<PlanejamentoAnualComponente>(sql, new { turmaId, bimestre, componenteCurricularId });
         }
 
         public async Task<PlanejamentoAnualComponente> ObterPorPlanejamentoAnualPeriodoEscolarId(long componenteCurricularId, long id)
@@ -25,5 +44,10 @@ namespace SME.SGP.Dados.Repositorios
             await database.Conexao.ExecuteAsync(sql, new { id });
         }
 
+        public async Task RemoverLogicamenteAsync(long[] ids)
+        {
+            var sql = "UPDATE planejamento_anual_componente SET EXCLUIDO = TRUE WHERE ID = any(@ids)";
+            await database.Conexao.ExecuteAsync(sql, new { ids });
+        }
     }
 }
