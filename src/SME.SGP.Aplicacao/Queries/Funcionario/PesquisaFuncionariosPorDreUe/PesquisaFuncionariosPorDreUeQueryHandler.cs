@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
 
             var filtroCodigos = await ObterCodigosFiltros(request.CodigoDRE, request.CodigoUE, request.CodigoTurma);
 
-            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuario = request.Usuario ?? await mediator.Send(new ObterUsuarioLogadoQuery());
 
             FiltroFuncionarioDto filtro = new FiltroFuncionarioDto()
             {
