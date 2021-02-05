@@ -17,7 +17,8 @@ begin
 
 	-- 1 - Quais barreiras foram identificadas no contexto escolar que justificam a necessidade da oferta do AEE? 
 	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf)
-		values(questionarioId, 1, 'Quais barreiras foram identificadas no contexto escolar que justificam a necessidade da oferta do AEE?', '', true, 5, '', NOW(), 'SISTEMA', '0');
+		values(questionarioId, 1, 'Quais barreiras foram identificadas no contexto escolar que justificam a necessidade da oferta do AEE?', '', true, 5, '', NOW(), 'SISTEMA', '0')
+		RETURNING id INTO questaoId;
 
     -- 1.1 - Barreiras arquitetônicas (Exemplifique)
 	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf)
@@ -61,7 +62,7 @@ begin
 		values(questionarioId, 2, 'A criança necessita do Atendimento Educacional Especializado?', '', true, 3, '', NOW(), 'SISTEMA', '0')
 		RETURNING id INTO questaoId;
 
-	insert into opcao_resposta (questao_id, questao_complementar_id, ordem, nome, criado_em, criado_por, criado_rf)
+	insert into opcao_resposta (questao_id, ordem, nome, criado_em, criado_por, criado_rf)
 		values(questaoId, 1, 'Sim', NOW(), 'SISTEMA', '0')
 		RETURNING id INTO opcaoRespostaId;
 	
@@ -74,7 +75,7 @@ begin
 		values (opcaoRespostaId, questaoComplementarId, NOW(), 'SISTEMA', '0');
 	
 	
-	insert into opcao_resposta (questao_id, questao_complementar_id, ordem, nome, criado_em, criado_por, criado_rf)
+	insert into opcao_resposta (questao_id, ordem, nome, criado_em, criado_por, criado_rf)
 		values(questaoId, 2, 'Não', NOW(), 'SISTEMA', '0')
 		RETURNING id INTO opcaoRespostaId;
 
