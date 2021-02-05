@@ -3,7 +3,6 @@ declare
 	questionarioId bigint;
 	questaoId bigint;
 	questaoComplementarId bigint;
-	questaoComplementar2Id bigint;
 	opcaoRespostaId bigint;
 	
 begin
