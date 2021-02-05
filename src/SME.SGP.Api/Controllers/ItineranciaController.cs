@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -16,20 +17,9 @@ namespace SME.SGP.Api
         [ProducesResponseType(typeof(RegistroIndividualDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         //[Permissao(Permissao.REI_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterObjetivos()
+        public async Task<IActionResult> ObterObjetivos([FromServices] IObterObjetivosBaseUseCase useCase)
         {
-            var objetivos = new List<ItineranciaObjetivosBaseDto>()
-            {
-                new ItineranciaObjetivosBaseDto(1, "Mapeamento dos estudantes público da Educação Especial", false, false),
-                new ItineranciaObjetivosBaseDto(2, "Reorganização e/ou remanejamento de apoios e serviços", false, false),
-                new ItineranciaObjetivosBaseDto(3, "Atendimento de solicitação da U.E", true, false),
-                new ItineranciaObjetivosBaseDto(4, "Acompanhamento professor de sala regular", false, true),
-                new ItineranciaObjetivosBaseDto(5, "Acompanhamento professor de SRM", false, true),
-                new ItineranciaObjetivosBaseDto(6, "Ação Formativa em JEIF", false, true),
-                new ItineranciaObjetivosBaseDto(7, "Reunião", false, true),
-                new ItineranciaObjetivosBaseDto(8, "Outros", true, false),
-            };
-            return Ok(objetivos);
+            return Ok(await useCase.Executar());            
         }
 
         [HttpGet("{id}")]

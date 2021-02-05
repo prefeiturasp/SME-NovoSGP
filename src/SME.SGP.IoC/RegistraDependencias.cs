@@ -334,6 +334,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioPendenciaProfessor, RepositorioPendenciaProfessor>();
             services.TryAddScoped<IRepositorioPendenciaRegistroIndividual, RepositorioPendenciaRegistroIndividual>();
             services.TryAddScoped<IRepositorioPendenciaRegistroIndividualAluno, RepositorioPendenciaRegistroIndividualAluno>();
+
+            // Itinerancia
+            services.TryAddScoped<IRepositorioItinerancia, RepositorioItinerancia>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
@@ -690,6 +693,10 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IInserirOcorrenciaUseCase, InserirOcorrenciaUseCase>();
 
             services.TryAddScoped<IObterInformacoesDeFrequenciaAlunosPorBimestreUseCase, ObterInformacoesDeFrequenciaAlunosPorBimestreUseCase>();
+
+            // Itinerancia
+            services.TryAddScoped<IObterObjetivosBaseUseCase, ObterObjetivosBaseUseCase>();
+
 
         }
     }
