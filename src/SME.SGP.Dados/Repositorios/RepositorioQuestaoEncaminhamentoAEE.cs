@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Dominio;
+using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -16,14 +17,15 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<Questao>> ObterListaPorQuestionario(long questionarioId)
         {
-            var query = @"select q.*, op.*
+            var query = @"select q.*, op.*, oqc.*
                           from questao q 
                           left join opcao_resposta op on op.questao_id = q.id
+                          left join opcao_questao_complementar oqc on oqc.opcao_resposta_id = op.id
                          where q.questionario_id = @questionarioId ";
 
             var lookup = new Dictionary<long, Questao>();
-            await database.Conexao.QueryAsync<Questao, OpcaoResposta, Questao>(query,
-                (questao, opcaoResposta) =>
+            await database.Conexao.QueryAsync<Questao, OpcaoResposta, OpcaoQuestaoComplementar, Questao>(query,
+                (questao, opcaoResposta, OpcaoQuestaoComplementar) =>
                 {
                     var q = new Questao();
                     if (!lookup.TryGetValue(questao.Id, out q))
@@ -35,6 +37,11 @@ namespace SME.SGP.Dados.Repositorios
                     if (opcaoResposta != null)
                     {
                         q.OpcoesRespostas.Add(opcaoResposta);
+                    }
+
+                    if(OpcaoQuestaoComplementar != null)
+                    {
+                        opcaoResposta.QuestoesComplementares.Add(OpcaoQuestaoComplementar);
                     }
 
                     return q;

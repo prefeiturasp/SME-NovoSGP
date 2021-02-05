@@ -10,8 +10,7 @@ namespace SME.SGP.Dados
         public OpcaoRespostaMap()
         {
             ToTable("opcao_resposta");
-            Map(a => a.QuestaoId).ToColumn("questao_id");
-            Map(a => a.QuestaoComplementarId).ToColumn("questao_complementar_id");
+            Map(a => a.QuestaoId).ToColumn("questao_id");            
         }
     }
 }
