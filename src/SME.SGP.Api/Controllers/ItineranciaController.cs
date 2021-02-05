@@ -155,11 +155,11 @@ namespace SME.SGP.Api
             return Ok(itinerancia);
         }
 
-        [HttpPost("salvar")]
+        [HttpPost]
         [ProducesResponseType(typeof(RetornoBaseDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         //[Permissao(Permissao.AEE_A, Policy = "Bearer")]
-        public async Task<IActionResult> SalvarItinerancia([FromBody] ItineranciaDto parametros)
+        public async Task<IActionResult> Salvar([FromBody] ItineranciaDto parametros)
         {
             return Ok(new AuditoriaDto() 
             { Id = 1, 
