@@ -84,9 +84,9 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaGeralAluno(string alunoCodigo, string turmaCodigo, string componenteCurricularCodigo = "")
         {
-            var query = new StringBuilder(@"select * 
+            var query = new StringBuilder($@"select * 
                             from frequencia_aluno
-                           where tipo = 2
+                           where tipo = {(string.IsNullOrWhiteSpace(componenteCurricularCodigo) ? "2" : "1")}
 	                        and codigo_aluno = @alunoCodigo
                             and turma_id = @turmaCodigo ");
 
