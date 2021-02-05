@@ -154,5 +154,19 @@ namespace SME.SGP.Api
 
             return Ok(itinerancia);
         }
+
+        [HttpPost]
+        [ProducesResponseType(typeof(RetornoBaseDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        //[Permissao(Permissao.AEE_A, Policy = "Bearer")]
+        public async Task<IActionResult> Salvar([FromBody] ItineranciaDto parametros)
+        {
+            return Ok(new AuditoriaDto() 
+            { Id = 1, 
+              CriadoPor = "ALINE LIMA CARVALHO",
+              CriadoEm = DateTime.Now,
+              CriadoRF = "8240787"
+            });
+        }
     }
 }
