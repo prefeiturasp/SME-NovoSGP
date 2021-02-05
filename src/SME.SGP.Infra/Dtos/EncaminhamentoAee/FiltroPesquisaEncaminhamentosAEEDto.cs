@@ -12,5 +12,6 @@ namespace SME.SGP.Infra
         public long TurmaId { get; set; }
         public string AlunoCodigo { get; set; }
         public SituacaoAEE? Situacao { get; set; }
+        public string ResponsavelRf { get; set; }
     }
 }
