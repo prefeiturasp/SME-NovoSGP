@@ -28,6 +28,7 @@ namespace SME.SGP.Aplicacao
                                                                      request.TurmaId,
                                                                      request.AlunoCodigo,
                                                                      (int?)request.Situacao,
+                                                                     request.ResponsavelRf,
                                                                      Paginacao));
         }
 
