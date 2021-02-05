@@ -168,5 +168,35 @@ namespace SME.SGP.Api
               CriadoRF = "8240787"
             });
         }
+
+        [HttpGet("{itineranciaAlunoId}")]
+        [ProducesResponseType(typeof(RegistroIndividualDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        //[Permissao(Permissao.REI_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterRegistroItineranciaAluno(long itineranciaAlunoId)
+        {
+            var questoes = new List<ItineranciaAlunoQuestaoDto>()
+                        {
+                            new ItineranciaAlunoQuestaoDto() {
+                                Id=1,
+                                QuestaoId = 1,
+                                Descricao = "Descritivo do estudante",
+                                Resposta = "Teste",
+                            } ,
+                            new ItineranciaAlunoQuestaoDto() {
+                                Id=2,
+                                QuestaoId = 2,
+                                Descricao = "Acompanhamento da situação",
+                                Resposta = "Teste",
+                            } ,
+                            new ItineranciaAlunoQuestaoDto() {
+                                Id = 3,
+                                QuestaoId = 3,
+                                Descricao = "Encaminhamentos",
+                                Resposta = "Teste",
+                            } ,
+                        };
+            return Ok(questoes);
+        }
     }
 }
