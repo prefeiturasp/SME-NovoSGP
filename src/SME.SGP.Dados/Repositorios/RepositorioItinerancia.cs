@@ -18,7 +18,8 @@ namespace SME.SGP.Dados.Repositorios
 	                             tem_descricao as TemDescricao,
 	                             permite_varias_ues as PermiteVariasUes
                             from itinerancia_objetivo_base iob  
-                           order by ordem ";
+                           where not excluido 
+                           order by ordem  ";
 
             return await database.Conexao.QueryAsync<ItineranciaObjetivosBaseDto>(query);
         }
