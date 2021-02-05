@@ -1,7 +1,5 @@
-import { Card } from 'antd';
 import PropTypes from 'prop-types';
 import React from 'react';
-
 import styled from 'styled-components';
 import { Base } from '~/componentes/colors';
 
@@ -34,7 +32,7 @@ const DetalhesResponsavel = props => {
   const { rf, nome } = props;
 
   return (
-    <div className="row">
+    <div className="col-md-12">
       <CabecalhoDetalhesResponsavel className="col-md-12">
         <span>PAEE/PAAI resposável</span>
       </CabecalhoDetalhesResponsavel>

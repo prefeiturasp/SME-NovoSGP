@@ -14,6 +14,7 @@ import CampoDinamicoUploadArquivos from './Componentes/campoDinamicoUploadArquiv
 import InformacoesEscolares from './Componentes/InformacoesEscolares/informacoesEscolares';
 import QuestionarioDinamicoFuncoes from './Funcoes/QuestionarioDinamicoFuncoes';
 import QuestionarioDinamicoValidacoes from './Validacoes/QuestionarioDinamicoValidacoes';
+import CampoDinamicoCheckbox from './Componentes/campoDinamicoCheckbox';
 
 const QuestionarioDinamico = props => {
   const dispatch = useDispatch();
@@ -251,6 +252,24 @@ const QuestionarioDinamico = props => {
       case tipoQuestao.Radio:
         campoAtual = (
           <CampoDinamicoRadio
+            questaoAtual={questaoAtual}
+            form={form}
+            label={label}
+            desabilitado={desabilitarCampos}
+            onChange={valorAtual => {
+              QuestionarioDinamicoFuncoes.onChangeCamposComOpcaoResposta(
+                questaoAtual,
+                form,
+                valorAtual
+              );
+              dispatch(setQuestionarioDinamicoEmEdicao(true));
+            }}
+          />
+        );
+        break;
+      case tipoQuestao.Checkbox:
+        campoAtual = (
+          <CampoDinamicoCheckbox
             questaoAtual={questaoAtual}
             form={form}
             label={label}
