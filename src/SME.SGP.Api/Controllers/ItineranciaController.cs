@@ -154,5 +154,14 @@ namespace SME.SGP.Api
 
             return Ok(itinerancia);
         }
+
+        [HttpPost("salvar")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        //[Permissao(Permissao.AEE_A, Policy = "Bearer")]
+        public async Task<IActionResult> SalvarItinerancia([FromBody] ItineranciaDto parametros)
+        {
+            return Ok(true);
+        }
     }
 }
