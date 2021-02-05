@@ -169,11 +169,11 @@ namespace SME.SGP.Api
             });
         }
 
-        [HttpGet("{itineranciaAlunoId}")]
+        [HttpGet("questoes-aluno/{idItineranciaAlunoId}")]
         [ProducesResponseType(typeof(RegistroIndividualDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         //[Permissao(Permissao.REI_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterRegistroItineranciaAluno(long itineranciaAlunoId)
+        public async Task<IActionResult> ObterQuestoesItineranciaAluno(long itineranciaAlunoId)
         {
             var questoes = new List<ItineranciaAlunoQuestaoDto>()
                         {
