@@ -105,6 +105,9 @@ namespace SME.SGP.Dominio
             return Perfis.Any(c => c.Tipo == TipoPerfil.UE && c.CodigoPerfil == PerfilAtual);
         }
 
+        public bool EhCoordenadorCEFAI()
+            => PerfilAtual == Dominio.Perfis.PERFIL_CEFAI;
+
         public bool EhPerfilProfessor()
             => EhProfessor()
             || EhProfessorCj()

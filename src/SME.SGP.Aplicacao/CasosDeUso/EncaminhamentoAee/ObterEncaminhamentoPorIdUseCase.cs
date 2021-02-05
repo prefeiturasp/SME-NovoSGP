@@ -29,7 +29,8 @@ namespace SME.SGP.Aplicacao
 
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-            var podeEditar = await VerificaPodeEditar(encaminhamentoAee, usuarioLogado);            
+            var podeEditar = await VerificaPodeEditar(encaminhamentoAee, usuarioLogado);
+            var podeAtribuirResponsavel = await VerificaPodeAtribuirResponsavel(encaminhamentoAee, usuarioLogado);
 
             return new EncaminhamentoAEERespostaDto()
             {
@@ -42,6 +43,7 @@ namespace SME.SGP.Aplicacao
                 },
                 Situacao = encaminhamentoAee.Situacao,
                 PodeEditar = podeEditar,
+                PodeAtribuirResponsavel = podeAtribuirResponsavel,
                 MotivoEncerramento = encaminhamentoAee.MotivoEncerramento,
                 Auditoria = (AuditoriaDto)encaminhamentoAee,
                 responsavelEncaminhamentoAEE = encaminhamentoAee.Responsavel == null ? null :
@@ -54,6 +56,40 @@ namespace SME.SGP.Aplicacao
             };
         }
 
+        private async Task<bool> VerificaPodeAtribuirResponsavel(EncaminhamentoAEE encaminhamentoAee, Usuario usuarioLogado)
+        {
+            switch (encaminhamentoAee.Situacao)
+            {
+                case SituacaoAEE.AtribuicaoResponsavel:
+                    return await EhGestorDaEscolaDaTurma(usuarioLogado, encaminhamentoAee.Turma) 
+                        || await EhCoordenadorCEFAI(usuarioLogado, encaminhamentoAee.Turma);
+                case SituacaoAEE.Analise:
+                    return await EhCoordenadorCEFAI(usuarioLogado, encaminhamentoAee.Turma);
+                default:
+                    return false;
+            }
+        }
+
+        private async Task<bool> EhCoordenadorCEFAI(Usuario usuarioLogado, Turma turma)
+        {
+            if (!usuarioLogado.EhCoordenadorCEFAI())
+                return false;
+
+            var codigoDre = await mediator.Send(new ObterCodigoDREPorUeIdQuery(turma.UeId));
+            if (string.IsNullOrEmpty(codigoDre))
+                return false;
+
+            return await UsuarioTemFuncaoCEFAINaDRE(usuarioLogado, codigoDre);
+        }
+
+        private async Task<bool> UsuarioTemFuncaoCEFAINaDRE(Usuario usuarioLogado, string codigoDre)
+        {
+            var funcaoAtividadeCEFAI = 29;
+
+            var funcionarios = await mediator.Send(new PesquisaFuncionariosPorDreUeQuery(usuarioLogado.CodigoRf, string.Empty, codigoDre, usuario: usuarioLogado));
+            return funcionarios.Any(c => c.CodigoFuncaoAtividade == funcaoAtividadeCEFAI);
+        }
+
         private async Task<bool> VerificaPodeEditar(EncaminhamentoAEE encaminhamento, Usuario usuarioLogado)
         {
             switch (encaminhamento.Situacao)
@@ -63,13 +99,14 @@ namespace SME.SGP.Aplicacao
                 case SituacaoAEE.Encaminhado:
                     return await EhGestorDaEscolaDaTurma(usuarioLogado, encaminhamento.Turma);
                 case SituacaoAEE.Analise:
-                case SituacaoAEE.Finalizado:
-                case SituacaoAEE.Encerrado:
-                    return false;
+                    return await EhUsuarioResponsavelPeloEncaminhamento(usuarioLogado, encaminhamento.ResponsavelId);
                 default:
                     return false;
             }
         }
+
+        private Task<bool> EhUsuarioResponsavelPeloEncaminhamento(Usuario usuarioLogado, long? responsavelId)
+            => Task.FromResult(responsavelId.HasValue && usuarioLogado.Id == responsavelId.Value);
 
         private async Task<bool> EhProfessorDaTurma(Usuario usuarioLogado, Turma turma)
         {

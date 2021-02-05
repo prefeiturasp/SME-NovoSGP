@@ -26,7 +26,7 @@ insert into opcao_questao_complementar
 		   (opcao_resposta_id, questao_complementar_id, criado_em, criado_por, criado_rf)
      select id, questao_complementar_id, now(), 'SISTEMA', 0  
        from opcao_resposta 
-      where questao_complementar_id is not null
+      where questao_complementar_id is not null;
 
 -- EXCLUIR QUESTAO_COMPLEMENTAR_ID DA TABELA OPCAO_RESPOSTA
 alter table opcao_resposta drop if exists questao_complementar_id;
