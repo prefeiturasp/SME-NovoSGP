@@ -17,14 +17,13 @@ const LocalizadorFuncionario = props => {
     exibirCampoRf,
     valorInicial,
     placeholder,
-    idPerfil,
   } = props;
 
   const [dataSource, setDataSource] = useState([]);
   const [funcionarioSelecionado, setFuncionarioSelecionado] = useState({});
   const [desabilitarCampo, setDesabilitarCampo] = useState({
-    rf: false,
-    nome: false,
+    codigoRF: false,
+    nomeServidor: false,
   });
   const [timeoutBuscarPorCodigoNome, setTimeoutBuscarPorCodigoNome] = useState(
     ''
@@ -33,23 +32,23 @@ const LocalizadorFuncionario = props => {
 
   useEffect(() => {
     setFuncionarioSelecionado({
-      nome: '',
-      rf: '',
+      nomeServidor: '',
+      codigoRF: '',
     });
     setDataSource([]);
-  }, [codigoUe, codigoTurma]);
+  }, [codigoDre, codigoUe, codigoTurma]);
 
   const limparDados = useCallback(() => {
     onChange();
     setDataSource([]);
     setFuncionarioSelecionado({
-      nome: '',
-      rf: '',
+      nomeServidor: '',
+      codigoRF: '',
     });
     setTimeout(() => {
       setDesabilitarCampo(() => ({
-        rf: false,
-        nome: false,
+        codigoRF: false,
+        nomeServidor: false,
       }));
     }, 200);
   }, [onChange]);
@@ -65,44 +64,62 @@ const LocalizadorFuncionario = props => {
 
     const params = {
       nome: valor,
-      codigoUe,
     };
 
+    if (codigoDre) {
+      params.codigoDre = codigoDre;
+    }
+    if (codigoUe) {
+      params.codigoUe = codigoUe;
+    }
     if (codigoTurma) {
       params.codigoTurma = codigoTurma;
     }
     setExibirLoader(true);
-    const retorno = await ServicoLocalizadorFuncionario.buscarPorNome(
-      params
-    ).catch(() => {
-      setExibirLoader(false);
-      limparDados();
-    });
-    setExibirLoader(false);
-    if (retorno && retorno?.data?.items?.length > 0) {
+    const retorno = await ServicoLocalizadorFuncionario.buscarPorNome(params)
+      .catch(e => {
+        erros(e);
+        limparDados();
+      })
+      .finally(() => setExibirLoader(false));
+
+    if (retorno?.data?.items?.length > 0) {
       setDataSource([]);
       setDataSource(
-        retorno.data.items.map(aluno => ({
-          alunoCodigo: aluno.codigo,
-          alunoNome: aluno.nome,
-          codigoTurma: aluno.codigoTurma,
-          turmaId: aluno.turmaId,
+        retorno.data.items.map(funcionario => ({
+          codigoRF: funcionario.codigoRf,
+          nomeServidor: funcionario.nomeServidor,
         }))
       );
+    } else {
+      setDataSource([]);
+      setDesabilitarCampo(() => ({
+        codigoRF: false,
+        nomeServidor: false,
+      }));
+      setFuncionarioSelecionado({
+        codigoRF: '',
+        nomeServidor: valor,
+      });
     }
   };
 
   const onBuscarPorCodigo = useCallback(
-    async codigo => {
-      if (!codigo) {
+    async valor => {
+      if (!valor) {
         limparDados();
         return;
       }
       const params = {
-        codigo: codigo.codigo,
-        codigoUe,
+        codigoRF: valor,
       };
 
+      if (codigoDre) {
+        params.codigoDre = codigoDre;
+      }
+      if (codigoUe) {
+        params.codigoUe = codigoUe;
+      }
       if (codigoTurma) {
         params.codigoTurma = codigoTurma;
       }
@@ -110,42 +127,49 @@ const LocalizadorFuncionario = props => {
       setExibirLoader(true);
       const retorno = await ServicoLocalizadorFuncionario.buscarPorCodigo(
         params
-      ).catch(e => {
-        setExibirLoader(false);
-        if (e?.response?.status === 601) {
-          erro('Funcionário não encontrado no EOL');
-        } else {
-          erros(e);
-        }
-        limparDados();
-      });
-
-      setExibirLoader(false);
+      )
+        .catch(e => {
+          if (e?.response?.status === 601) {
+            erro('Funcionário não encontrado no EOL');
+          } else {
+            erros(e);
+          }
+          limparDados();
+        })
+        .finally(() => setExibirLoader(false));
 
       if (retorno?.data?.items?.length > 0) {
-        const { rf, nome } = retorno.data.items[0];
+        const { codigoRf, nomeServidor } = retorno.data.items[0];
 
+        const funcionarioRetorno = {
+          codigoRF: codigoRf,
+          nomeServidor,
+        };
         setDataSource(
           retorno.data.items.map(funcionario => ({
-            rf: funcionario.rf,
-            nome: funcionario.nome,
+            codigoRF: funcionario.codigoRf,
+            nomeServidor: funcionario.nomeServidor,
           }))
         );
-        setFuncionarioSelecionado({
-          rf,
-          nome,
-        });
+        setFuncionarioSelecionado(funcionarioRetorno);
         setDesabilitarCampo(estado => ({
           ...estado,
-          nome: true,
+          nomeServidor: true,
         }));
-        onChange({
-          rf,
-          nome,
+        onChange(funcionarioRetorno);
+      } else {
+        setDataSource([]);
+        setDesabilitarCampo(() => ({
+          codigoRF: false,
+          nomeServidor: false,
+        }));
+        setFuncionarioSelecionado({
+          codigoRF: valor,
+          nomeServidor: '',
         });
       }
     },
-    [codigoTurma, codigoUe, limparDados, onChange]
+    [codigoDre, codigoTurma, codigoUe, limparDados, onChange]
   );
 
   const validaAntesBuscarPorCodigo = useCallback(
@@ -154,15 +178,13 @@ const LocalizadorFuncionario = props => {
         clearTimeout(timeoutBuscarPorCodigoNome);
       }
 
-      if (codigoUe) {
-        const timeout = setTimeout(() => {
-          onBuscarPorCodigo(valor);
-        }, 500);
+      const timeout = setTimeout(() => {
+        onBuscarPorCodigo(valor);
+      }, 500);
 
-        setTimeoutBuscarPorCodigoNome(timeout);
-      }
+      setTimeoutBuscarPorCodigoNome(timeout);
     },
-    [codigoUe, onBuscarPorCodigo, timeoutBuscarPorCodigoNome]
+    [onBuscarPorCodigo, timeoutBuscarPorCodigoNome]
   );
 
   const validaAntesBuscarPorNome = valor => {
@@ -170,13 +192,11 @@ const LocalizadorFuncionario = props => {
       clearTimeout(timeoutBuscarPorCodigoNome);
     }
 
-    if (codigoUe) {
-      const timeout = setTimeout(() => {
-        onChangeNome(valor);
-      }, 500);
+    const timeout = setTimeout(() => {
+      onChangeNome(valor);
+    }, 500);
 
-      setTimeoutBuscarPorCodigoNome(timeout);
-    }
+    setTimeoutBuscarPorCodigoNome(timeout);
   };
 
   const onChangeCodigo = valor => {
@@ -186,25 +206,25 @@ const LocalizadorFuncionario = props => {
   };
 
   const onSelectFuncionario = objeto => {
-    const pessoa = {
-      rf: objeto.key,
-      nome: objeto.props.value,
+    const funcionario = {
+      codigoRF: objeto.key,
+      nomeServidor: objeto.props.value,
     };
-    setFuncionarioSelecionado(pessoa);
-    onChange(pessoa);
+    setFuncionarioSelecionado(funcionario);
+    onChange(funcionario);
     setDesabilitarCampo(estado => ({
       ...estado,
-      rf: true,
+      codigoRF: true,
     }));
   };
 
   useEffect(() => {
     if (
       valorInicial &&
-      !funcionarioSelecionado?.alunoCodigo &&
+      !funcionarioSelecionado?.codigoRF &&
       !dataSource?.length
     ) {
-      validaAntesBuscarPorCodigo({ codigo: valorInicial });
+      validaAntesBuscarPorCodigo(valorInicial);
     }
   }, [
     valorInicial,
@@ -227,8 +247,8 @@ const LocalizadorFuncionario = props => {
           onSelect={onSelectFuncionario}
           onChange={validaAntesBuscarPorNome}
           funcionarioSelecionado={funcionarioSelecionado}
-          name="nome"
-          desabilitado={desabilitado || desabilitarCampo.nome}
+          name="nomeServidor"
+          desabilitado={desabilitado || desabilitarCampo.nomeServidor}
           regexIgnore={/\d+/}
           exibirLoader={exibirLoader}
         />
@@ -240,8 +260,8 @@ const LocalizadorFuncionario = props => {
             funcionarioSelecionado={funcionarioSelecionado}
             onSelect={validaAntesBuscarPorCodigo}
             onChange={onChangeCodigo}
-            name="rf"
-            desabilitado={desabilitado || desabilitarCampo.rf}
+            name="codigoRF"
+            desabilitado={desabilitado || desabilitarCampo.codigoRF}
             exibirLoader={exibirLoader}
           />
         </div>
@@ -261,7 +281,6 @@ LocalizadorFuncionario.propTypes = {
   exibirCampoRf: PropTypes.bool,
   valorInicial: PropTypes.oneOfType([PropTypes.any]),
   placeholder: PropTypes.string,
-  idPerfil: PropTypes.string,
 };
 
 LocalizadorFuncionario.defaultProps = {
@@ -273,7 +292,6 @@ LocalizadorFuncionario.defaultProps = {
   exibirCampoRf: true,
   valorInicial: '',
   placeholder: '',
-  idPerfil: '',
 };
 
 export default LocalizadorFuncionario;

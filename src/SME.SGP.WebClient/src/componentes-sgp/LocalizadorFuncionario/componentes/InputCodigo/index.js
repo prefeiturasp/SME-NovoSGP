@@ -6,7 +6,7 @@ import { InputRFEstilo } from './styles';
 
 const InputCodigo = props => {
   const {
-    pessoaSelecionada,
+    funcionarioSelecionado,
     onSelect,
     onChange,
     desabilitado,
@@ -16,7 +16,7 @@ const InputCodigo = props => {
   const [valor, setValor] = useState('');
 
   const onSubmitCodigo = codigo => {
-    onSelect({ codigo });
+    onSelect(codigo);
   };
 
   const botao = (
@@ -37,8 +37,8 @@ const InputCodigo = props => {
   };
 
   useEffect(() => {
-    setValor(pessoaSelecionada && pessoaSelecionada.rf);
-  }, [pessoaSelecionada]);
+    setValor(funcionarioSelecionado?.codigoRF);
+  }, [funcionarioSelecionado]);
 
   return (
     <Loader loading={exibirLoader}>
@@ -62,7 +62,7 @@ const InputCodigo = props => {
 };
 
 InputCodigo.propTypes = {
-  pessoaSelecionada: PropTypes.oneOfType([
+  funcionarioSelecionado: PropTypes.oneOfType([
     PropTypes.objectOf(PropTypes.object),
     PropTypes.any,
   ]),
@@ -73,7 +73,7 @@ InputCodigo.propTypes = {
 };
 
 InputCodigo.defaultProps = {
-  pessoaSelecionada: {},
+  funcionarioSelecionado: {},
   onSelect: () => {},
   onChange: () => {},
   desabilitado: false,

@@ -36,14 +36,14 @@ const InputNome = props => {
   }, [dataSource]);
 
   useEffect(() => {
-    setValor(funcionarioSelecionado && funcionarioSelecionado.nome);
+    setValor(funcionarioSelecionado?.nomeServidor);
   }, [funcionarioSelecionado]);
 
   const options =
     sugestoes &&
     sugestoes.map(item => (
-      <AutoComplete.Option key={item.rf} value={item.nome}>
-        {item.nome}
+      <AutoComplete.Option key={item.codigoRF} value={item.nomeServidor}>
+        {item.nomeServidor}
       </AutoComplete.Option>
     ));
 

@@ -1,13 +1,12 @@
 import api from '~/servicos/api';
 
 class ServicoLocalizadorFuncionario {
-  // TODO Trocar endpoint
   buscarPorNome = async params => {
-    return api.post('/v1/funcionarios', params);
+    return api.post('/v1/funcionarios/pesquisa', params);
   };
 
   buscarPorCodigo = async params => {
-    return api.post('/v1/funcionarios', params);
+    return api.post('/v1/funcionarios/pesquisa', params);
   };
 }
 
