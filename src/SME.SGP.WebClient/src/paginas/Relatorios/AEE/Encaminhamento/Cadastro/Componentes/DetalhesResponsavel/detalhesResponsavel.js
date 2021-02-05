@@ -29,7 +29,7 @@ const CabecalhoDetalhesResponsavel = styled.div`
 `;
 
 const DetalhesResponsavel = props => {
-  const { rf, nome } = props;
+  const { codigoRF, nomeServidor } = props;
 
   return (
     <div className="col-md-12">
@@ -37,21 +37,21 @@ const DetalhesResponsavel = props => {
         <span>PAEE/PAAI resposável</span>
       </CabecalhoDetalhesResponsavel>
       <DadosAluno className="col-md-12">
-        <p>{nome}</p>
-        <p>RF: {rf}</p>
+        <p>{nomeServidor}</p>
+        <p>RF: {codigoRF}</p>
       </DadosAluno>
     </div>
   );
 };
 
 DetalhesResponsavel.propTypes = {
-  rf: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-  nome: PropTypes.oneOfType([PropTypes.string]),
+  codigoRF: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  nomeServidor: PropTypes.oneOfType([PropTypes.string]),
 };
 
 DetalhesResponsavel.defaultProps = {
-  rf: '',
-  nome: '',
+  codigoRF: '',
+  nomeServidor: '',
 };
 
 export default DetalhesResponsavel;
