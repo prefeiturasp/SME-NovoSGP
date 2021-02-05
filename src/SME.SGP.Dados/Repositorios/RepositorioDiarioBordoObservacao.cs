@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dominio;
+﻿using Dapper;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
@@ -41,6 +42,27 @@ namespace SME.SGP.Dados.Repositorios
                         order by criado_em desc";
 
             return await database.Conexao.QueryAsync<ListarObservacaoDiarioBordoDto>(sql, new { diarioBordoId, usuarioLogadoId });
+        }
+
+        public async Task<Turma> ObterTurmaDiarioBordoAulaPorObservacaoId(long observacaoId)
+        {
+			const string sql = @"select
+									t.*
+								from
+									diario_bordo_observacao dbob
+								inner join
+									diario_bordo db
+									on dbob.diario_bordo_id = db.id
+								inner join
+									aula a
+									on db.aula_id = a.id
+								inner join
+									turma t
+									on a.turma_id = t.turma_id
+								where
+									dbob.id = @observacaoId";
+
+			return await database.Conexao.QuerySingleOrDefaultAsync<Turma>(sql, new { observacaoId });
         }
     }
 }
