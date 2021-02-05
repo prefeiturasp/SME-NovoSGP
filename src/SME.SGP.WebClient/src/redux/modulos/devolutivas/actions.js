@@ -12,3 +12,13 @@ export const limparDadosPlanejamento = payload => ({
   type: '@devolutivas/limparDadosPlanejamento',
   payload,
 });
+
+export const setNumeroRegistros = payload => ({
+  type: '@devolutivas/setNumeroRegistros',
+  payload,
+});
+
+export const setAlterouCaixaSelecao = payload => ({
+  type: '@devolutivas/setAlterouCaixaSelecao',
+  payload,
+});

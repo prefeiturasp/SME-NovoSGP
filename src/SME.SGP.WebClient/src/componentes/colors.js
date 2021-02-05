@@ -23,6 +23,7 @@ const Base = {
   CinzaCalendario: '#F7F9FA',
   CinzaDesabilitado: '#DADADA',
   CinzaFundo: '#F5F6F8',
+  CinzaFundoEditor: '#F1F1F1',
   CinzaIconeNotificacao: '#707683',
   CinzaMako: '#42474A',
   CinzaMenu: '#EEEEEE',

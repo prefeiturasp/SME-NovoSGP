@@ -3,6 +3,8 @@ import produce from 'immer';
 const inicial = {
   dadosPlanejamentos: {},
   paginaAtiva: null,
+  numeroRegistros: null,
+  alterouCaixaSelecao: false,
 };
 
 export default function devolutivas(state = inicial, action) {
@@ -27,7 +29,20 @@ export default function devolutivas(state = inicial, action) {
           paginaAtiva: null,
         };
       }
+      case '@devolutivas/setNumeroRegistros': {
+        return {
+          ...draft,
+          numeroRegistros: action.payload,
+        };
+      }
 
+      case '@devolutivas/setAlterouCaixaSelecao': {
+        console.log(action.payload);
+        return {
+          ...draft,
+          alterouCaixaSelecao: action.payload,
+        };
+      }
       default:
         return draft;
     }

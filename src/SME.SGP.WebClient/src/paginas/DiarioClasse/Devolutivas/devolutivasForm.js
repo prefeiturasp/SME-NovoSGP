@@ -16,7 +16,9 @@ import SelectComponent from '~/componentes/select';
 import RotasDto from '~/dtos/rotasDto';
 import {
   limparDadosPlanejamento,
+  setAlterouCaixaSelecao,
   setDadosPlanejamentos,
+  setNumeroRegistros,
 } from '~/redux/modulos/devolutivas/actions';
 import { confirmar, erros, sucesso } from '~/servicos/alertas';
 import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
@@ -38,6 +40,10 @@ const DevolutivasForm = ({ match }) => {
     store => store.filtro.modalidades
   );
   const turmaCodigo = turmaSelecionada ? turmaSelecionada.turma : 0;
+
+  const numeroRegistros = useSelector(
+    store => store.devolutivas.numeroRegistros
+  );
 
   const [
     listaComponenteCurriculare,
@@ -295,31 +301,45 @@ const DevolutivasForm = ({ match }) => {
     setModoEdicao(true);
   };
 
-  const obterDadosPlanejamento = async (periodoFim, form, pagina) => {
-    const { periodoInicio, codigoComponenteCurricular } = form.values;
-    setCarregandoGeral(true);
-    const retorno = await ServicoDiarioBordo.obterPlanejamentosPorIntervalo(
-      turmaCodigo,
-      codigoComponenteCurricular,
-      periodoInicio.format('YYYY-MM-DD'),
-      periodoFim.format('YYYY-MM-DD'),
-      pagina || 1
-    ).catch(e => erros(e));
-    setCarregandoGeral(false);
-    if (retorno && retorno.data && retorno.data.totalRegistros) {
-      setExibirCampoDescricao(true);
-      dispatch(setDadosPlanejamentos(retorno.data));
-    } else {
-      setExibirCampoDescricao(false);
-      dispatch(setDadosPlanejamentos({}));
+  const obterDadosPlanejamento = useCallback(
+    async (periodoFim, form, pagina, numero) => {
+      const { periodoInicio, codigoComponenteCurricular } = form.values;
+      setCarregandoGeral(true);
+      const numeroEscolhido = numero || numeroRegistros || 4;
+      const retorno = await ServicoDiarioBordo.obterPlanejamentosPorIntervalo(
+        turmaCodigo,
+        codigoComponenteCurricular,
+        periodoInicio.format('YYYY-MM-DD'),
+        periodoFim.format('YYYY-MM-DD'),
+        pagina || 1,
+        numeroEscolhido
+      ).catch(e => erros(e));
+      setCarregandoGeral(false);
+      if (retorno && retorno.data && retorno.data.totalRegistros) {
+        setExibirCampoDescricao(true);
+        dispatch(setDadosPlanejamentos(retorno.data));
+      } else {
+        setExibirCampoDescricao(false);
+        dispatch(setDadosPlanejamentos({}));
+      }
+    },
+    [dispatch, numeroRegistros, turmaCodigo]
+  );
+
+  useEffect(() => {
+    if (numeroRegistros) {
+      const { state } = refForm;
+      obterDadosPlanejamento(state?.values?.periodoFim, state);
     }
-  };
+  }, [numeroRegistros, obterDadosPlanejamento, refForm]);
 
   const onChangeDataFim = (data, form) => {
     form.setFieldValue('descricao', '');
     if (data) {
-      obterDadosPlanejamento(data, form);
+      obterDadosPlanejamento(data, form, null, 4);
     }
+    dispatch(setAlterouCaixaSelecao(false));
+    dispatch(setNumeroRegistros(null));
     dispatch(limparDadosPlanejamento());
     setModoEdicao(true);
   };
