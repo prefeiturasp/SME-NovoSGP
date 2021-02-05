@@ -39,10 +39,10 @@ class ServicoEncaminhamentoAEE {
     }
   };
 
-  obterSecoesPorEtapaDeEncaminhamentoAEE = (etapa, encaminhamentoAeeId) => {
-    let url = `${urlPadrao}/secoes?etapa=${etapa}`;
+  obterSecoesPorEtapaDeEncaminhamentoAEE = encaminhamentoAeeId => {
+    let url = `${urlPadrao}/secoes`;
     if (encaminhamentoAeeId) {
-      url += `&encaminhamentoAeeId=${encaminhamentoAeeId}`;
+      url += `?encaminhamentoAeeId=${encaminhamentoAeeId}`;
     }
     return api.get(url);
   };
