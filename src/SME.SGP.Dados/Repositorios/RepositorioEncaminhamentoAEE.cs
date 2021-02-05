@@ -17,11 +17,11 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<PaginacaoResultadoDto<EncaminhamentoAEEAlunoTurmaDto>> ListarPaginado(long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao, Paginacao paginacao)
+        public async Task<PaginacaoResultadoDto<EncaminhamentoAEEAlunoTurmaDto>> ListarPaginado(long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao, string responsavelRf, Paginacao paginacao)
         {
-            var query = MontaQueryCompleta(paginacao, dreId, ueId, turmaId, alunoCodigo, situacao);
+            var query = MontaQueryCompleta(paginacao, dreId, ueId, turmaId, alunoCodigo, situacao, responsavelRf);
 
-            var parametros = new { dreId, ueId, turmaId, alunoCodigo, situacao };
+            var parametros = new { dreId, ueId, turmaId, alunoCodigo, situacao, responsavelRf };
             var retorno = new PaginacaoResultadoDto<EncaminhamentoAEEAlunoTurmaDto>();
 
             using (var multi = await database.Conexao.QueryMultipleAsync(query, parametros))
@@ -35,24 +35,24 @@ namespace SME.SGP.Dados.Repositorios
             return retorno;
         }
 
-        private static string MontaQueryCompleta(Paginacao paginacao, long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao)
+        private static string MontaQueryCompleta(Paginacao paginacao, long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao, string responsavelRf)
         {
             StringBuilder sql = new StringBuilder();
 
-            MontaQueryConsulta(paginacao, sql, contador: false, ueId, turmaId, alunoCodigo, situacao);
+            MontaQueryConsulta(paginacao, sql, contador: false, ueId, turmaId, alunoCodigo, situacao, responsavelRf);
 
             sql.AppendLine(";");
 
-            MontaQueryConsulta(paginacao, sql, contador: true, ueId, turmaId, alunoCodigo, situacao);
+            MontaQueryConsulta(paginacao, sql, contador: true, ueId, turmaId, alunoCodigo, situacao, responsavelRf);
 
             return sql.ToString();
         }
 
-        private static void MontaQueryConsulta(Paginacao paginacao, StringBuilder sql, bool contador, long ueId, long turmaId, string alunoCodigo, int? situacao)
+        private static void MontaQueryConsulta(Paginacao paginacao, StringBuilder sql, bool contador, long ueId, long turmaId, string alunoCodigo, int? situacao, string responsavelRf)
         {
             ObtenhaCabecalho(sql, contador);
 
-            ObtenhaFiltro(sql, ueId, turmaId, alunoCodigo, situacao);
+            ObtenhaFiltro(sql, ueId, turmaId, alunoCodigo, situacao, responsavelRf);
 
             if (!contador)
                 sql.AppendLine(" order by ea.aluno_nome ");
@@ -81,9 +81,10 @@ namespace SME.SGP.Dados.Repositorios
             sql.AppendLine(" from encaminhamento_aee ea ");
             sql.AppendLine(" inner join turma t on t.id = ea.turma_id");
             sql.AppendLine(" inner join ue on t.ue_id = ue.id");
+            sql.AppendLine("  left join usuario u on u.id = ea.responsavel_id");
         }
 
-        private static void ObtenhaFiltro(StringBuilder sql, long ueId, long turmaId, string alunoCodigo, int? situacao)
+        private static void ObtenhaFiltro(StringBuilder sql, long ueId, long turmaId, string alunoCodigo, int? situacao, string responsavelRf)
         {
             sql.AppendLine(" where ue.dre_id = @dreId and not ea.excluido ");
 
@@ -95,6 +96,9 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine(" and ea.aluno_codigo = @alunoCodigo ");
             if (situacao.HasValue && situacao > 0)
                 sql.AppendLine(" and ea.situacao = @situacao ");
+            if (!string.IsNullOrEmpty(responsavelRf))
+                sql.AppendLine(" and u.rf_codigo = @responsavelRf ");
+
         }
 
         public async Task<SituacaoAEE> ObterSituacaoEncaminhamentoAEE(long encaminhamentoAEEId)
