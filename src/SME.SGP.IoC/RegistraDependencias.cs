@@ -334,6 +334,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioPendenciaProfessor, RepositorioPendenciaProfessor>();
             services.TryAddScoped<IRepositorioPendenciaRegistroIndividual, RepositorioPendenciaRegistroIndividual>();
             services.TryAddScoped<IRepositorioPendenciaRegistroIndividualAluno, RepositorioPendenciaRegistroIndividualAluno>();
+
+            // PlanoAEE
+            services.TryAddScoped<IRepositorioPlanoAEE, RepositorioPlanoAEE>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
