@@ -161,7 +161,12 @@ namespace SME.SGP.Api
         //[Permissao(Permissao.AEE_A, Policy = "Bearer")]
         public async Task<IActionResult> SalvarItinerancia([FromBody] ItineranciaDto parametros)
         {
-            return Ok(true);
+            return Ok(new AuditoriaDto() 
+            { Id = 1, 
+              CriadoPor = "ALINE LIMA CARVALHO",
+              CriadoEm = DateTime.Now,
+              CriadoRF = "8240787"
+            });
         }
     }
 }
