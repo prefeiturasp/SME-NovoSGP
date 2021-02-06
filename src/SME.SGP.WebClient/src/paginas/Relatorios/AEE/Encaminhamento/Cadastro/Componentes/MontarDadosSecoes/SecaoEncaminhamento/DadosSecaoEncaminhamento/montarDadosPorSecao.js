@@ -2,10 +2,9 @@ import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import QuestionarioDinamico from '~/componentes-sgp/QuestionarioDinamico/questionarioDinamico';
-import { RotasDto } from '~/dtos';
 import situacaoAEE from '~/dtos/situacaoAEE';
 import { setQuestionarioDinamicoEmEdicao } from '~/redux/modulos/questionarioDinamico/actions';
-import { erros, setBreadcrumbManual } from '~/servicos';
+import { erros } from '~/servicos';
 import ServicoEncaminhamentoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoEncaminhamentoAEE';
 
 const MontarDadosPorSecao = props => {
@@ -26,17 +25,6 @@ const MontarDadosPorSecao = props => {
   );
 
   const [dadosQuestionarioAtual, setDadosQuestionarioAtual] = useState();
-
-  useEffect(() => {
-    const encaminhamentoId = match?.params?.id;
-    if (encaminhamentoId) {
-      setBreadcrumbManual(
-        match.url,
-        'Editar Encaminhamento',
-        `${RotasDto.RELATORIO_AEE_ENCAMINHAMENTO}`
-      );
-    }
-  }, [match]);
 
   const obterQuestionario = useCallback(async questionarioId => {
     const encaminhamentoId = match?.params?.id;

@@ -2,8 +2,8 @@ import produce from 'immer';
 
 const inicial = {
   dadosCollapseAtribuicaoResponsavel: {
-    rf: 123456,
-    nome: 'Nome teste',
+    codigoRF: 123456,
+    nomeServidor: 'Nome teste',
   },
 };
 

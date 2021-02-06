@@ -4,7 +4,7 @@ import CardCollapse from '~/componentes/cardCollapse';
 import CollapseAtribuicaoResponsavelDados from './collapseAtribuicaoResponsavelDados';
 
 const CollapseAtribuicaoResponsavel = props => {
-  const { changeLocalizadorResponsavel, clickCancelar } = props;
+  const { changeLocalizadorResponsavel, clickCancelar, codigoTurma } = props;
 
   return (
     <CardCollapse
@@ -17,6 +17,7 @@ const CollapseAtribuicaoResponsavel = props => {
       <CollapseAtribuicaoResponsavelDados
         changeLocalizadorResponsavel={changeLocalizadorResponsavel}
         clickCancelar={clickCancelar}
+        codigoTurma={codigoTurma}
       />
     </CardCollapse>
   );
@@ -25,11 +26,13 @@ const CollapseAtribuicaoResponsavel = props => {
 CollapseAtribuicaoResponsavel.propTypes = {
   changeLocalizadorResponsavel: PropTypes.func,
   clickCancelar: PropTypes.func,
+  codigoTurma: PropTypes.string,
 };
 
 CollapseAtribuicaoResponsavel.defaultProps = {
   changeLocalizadorResponsavel: () => {},
   clickCancelar: () => {},
+  codigoTurma: '',
 };
 
 export default CollapseAtribuicaoResponsavel;

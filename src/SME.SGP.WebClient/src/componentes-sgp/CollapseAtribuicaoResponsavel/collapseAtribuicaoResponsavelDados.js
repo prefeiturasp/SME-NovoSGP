@@ -10,7 +10,7 @@ import {
 import LocalizadorFuncionario from '../LocalizadorFuncionario';
 
 const CollapseAtribuicaoResponsavelDados = props => {
-  const { changeLocalizadorResponsavel, clickCancelar } = props;
+  const { changeLocalizadorResponsavel, clickCancelar, codigoTurma } = props;
   const dispatch = useDispatch();
 
   const [
@@ -24,10 +24,10 @@ const CollapseAtribuicaoResponsavelDados = props => {
 
   const onChangeLocalizador = funcionario => {
     // TODO
-    if (funcionario?.rf && funcionario?.nome) {
+    if (funcionario?.codigoRF && funcionario?.nomeServidor) {
       setFuncionarioLocalizadorSelecionado({
-        rf: funcionario?.rf,
-        nome: funcionario?.nome,
+        codigoRF: funcionario?.codigoRF,
+        nomeServidor: funcionario?.nomeServidor,
       });
     } else {
       setFuncionarioLocalizadorSelecionado();
@@ -38,8 +38,8 @@ const CollapseAtribuicaoResponsavelDados = props => {
 
   const onClickProximoPasso = () => {
     const params = {
-      rf: funcionarioLocalizadorSelecionado.rf,
-      nome: funcionarioLocalizadorSelecionado.nome,
+      codigoRF: funcionarioLocalizadorSelecionado.codigoRF,
+      nomeServidor: funcionarioLocalizadorSelecionado.nomeServidor,
     };
 
     dispatch(setDadosCollapseAtribuicaoResponsavel(params));
@@ -54,12 +54,13 @@ const CollapseAtribuicaoResponsavelDados = props => {
 
   return (
     <div className="row">
-      <div className="col-sm-12 col-md-12 col-lg-12 col-xl-9 mb-2">
+      <div className="col-md-12 mb-2">
         <div className="row">
           <LocalizadorFuncionario
             id="funcionario"
             onChange={onChangeLocalizador}
-            valorInicial={funcionarioLocalizadorSelecionado?.codigoAluno}
+            // valorInicial={funcionarioLocalizadorSelecionado?.codigoRF}
+            codigoTurma="2257361"
           />
         </div>
       </div>
@@ -79,7 +80,7 @@ const CollapseAtribuicaoResponsavelDados = props => {
           border
           bold
           onClick={onClickProximoPasso}
-          disabled={!funcionarioLocalizadorSelecionado?.codigoAluno}
+          disabled={!funcionarioLocalizadorSelecionado?.codigoRF}
         />
       </div>
     </div>
@@ -89,11 +90,13 @@ const CollapseAtribuicaoResponsavelDados = props => {
 CollapseAtribuicaoResponsavelDados.propTypes = {
   changeLocalizadorResponsavel: PropTypes.func,
   clickCancelar: PropTypes.func,
+  codigoTurma: PropTypes.string,
 };
 
 CollapseAtribuicaoResponsavelDados.defaultProps = {
   changeLocalizadorResponsavel: () => {},
   clickCancelar: () => {},
+  codigoTurma: '2257361',
 };
 
 export default CollapseAtribuicaoResponsavelDados;

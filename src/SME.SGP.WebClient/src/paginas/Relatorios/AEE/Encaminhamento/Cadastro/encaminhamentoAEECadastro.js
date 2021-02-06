@@ -17,12 +17,15 @@ import {
 } from '~/redux/modulos/encaminhamentoAEE/actions';
 import { setDadosObjectCardEstudante } from '~/redux/modulos/objectCardEstudante/actions';
 import { setLimparDadosQuestionarioDinamico } from '~/redux/modulos/questionarioDinamico/actions';
-import { erros, verificaSomenteConsulta } from '~/servicos';
+import {
+  erros,
+  setBreadcrumbManual,
+  verificaSomenteConsulta,
+} from '~/servicos';
 import ServicoEncaminhamentoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoEncaminhamentoAEE';
 import BotoesAcoesEncaminhamentoAEE from './Componentes/botoesAcoesEncaminhamentoAEE';
 import LoaderEncaminhamento from './Componentes/LoaderEncaminhamento/loaderEncaminhamento';
-import SecaoEncaminhamentoCollapse from './Componentes/SecaoEncaminhamento/secaoEncaminhamentoCollapse';
-import SecaoParecerAEECollapse from './Componentes/SecaoParecerAEE/secaoParecerAEECollapse';
+import MontarDadosSecoes from './Componentes/MontarDadosSecoes/montarDadosSecoes';
 
 const EncaminhamentoAEECadastro = ({ match }) => {
   const dispatch = useDispatch();
@@ -102,6 +105,17 @@ const EncaminhamentoAEECadastro = ({ match }) => {
     };
   }, [dispatch, limparDadosEncaminhamento]);
 
+  useEffect(() => {
+    const encaminhamentoId = match?.params?.id;
+    if (encaminhamentoId) {
+      setBreadcrumbManual(
+        match.url,
+        'Editar Encaminhamento',
+        `${RotasDto.RELATORIO_AEE_ENCAMINHAMENTO}`
+      );
+    }
+  }, [match]);
+
   return (
     <LoaderEncaminhamento>
       <Cabecalho pagina="Encaminhamento AEE" />
@@ -124,12 +138,7 @@ const EncaminhamentoAEECadastro = ({ match }) => {
                 />
               </div>
             )}
-            <div className="col-md-12 mb-2">
-              <SecaoEncaminhamentoCollapse match={match} />
-            </div>
-            <div className="col-md-12 mb-2">
-              <SecaoParecerAEECollapse match={match} />
-            </div>
+            <MontarDadosSecoes />
           </div>
         </div>
       </Card>
