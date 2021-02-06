@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -163,30 +164,9 @@ namespace SME.SGP.Api
         [ProducesResponseType(typeof(RegistroIndividualDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         //[Permissao(Permissao.REI_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterQuestoesItineranciaAluno(long id)
+        public async Task<IActionResult> ObterQuestoesItineranciaAluno(long id, [FromServices] IObterQuestoesItineranciaAlunoUseCase useCase)
         {
-            var questoes = new List<ItineranciaAlunoQuestaoDto>()
-                        {
-                            new ItineranciaAlunoQuestaoDto() {
-                                Id=1,
-                                QuestaoId = 1,
-                                Descricao = "Descritivo do estudante",
-                                Resposta = "Teste",
-                            } ,
-                            new ItineranciaAlunoQuestaoDto() {
-                                Id=2,
-                                QuestaoId = 2,
-                                Descricao = "Acompanhamento da situação",
-                                Resposta = "Teste",
-                            } ,
-                            new ItineranciaAlunoQuestaoDto() {
-                                Id = 3,
-                                QuestaoId = 3,
-                                Descricao = "Encaminhamentos",
-                                Resposta = "Teste",
-                            } ,
-                        };
-            return Ok(questoes);
+            return Ok(await useCase.Executar(id));            
         }
     }
 }

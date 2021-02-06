@@ -9,5 +9,6 @@ namespace SME.SGP.Dados.Repositorios
     public interface IRepositorioItinerancia : IRepositorioBase<Itinerancia>
     {
         Task<IEnumerable<ItineranciaObjetivosBaseDto>> ObterObjetivosBase();
+        Task<IEnumerable<ItineranciaAlunoQuestaoDto>> ObterQuestoesItineranciaAluno(long id);
     }
 }

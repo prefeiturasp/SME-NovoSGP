@@ -23,5 +23,17 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<ItineranciaObjetivosBaseDto>(query);
         }
+
+        public async Task<IEnumerable<ItineranciaAlunoQuestaoDto>> ObterQuestoesItineranciaAluno(long id)
+        {
+            var query = @"select iaq.id,
+                                 iaq.questao_id as QuestaoId,       
+                                 iaq.resposta as Resposta
+                            from itinerancia_aluno_questao iaq 
+                           where iaq.itinerancia_aluno_id = @id
+                             and not iaq.excluido ";
+
+            return await database.Conexao.QueryAsync<ItineranciaAlunoQuestaoDto>(query, new { id });
+        }
     }
 }
