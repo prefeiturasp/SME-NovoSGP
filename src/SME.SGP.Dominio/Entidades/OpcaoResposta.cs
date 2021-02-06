@@ -15,6 +15,7 @@ namespace SME.SGP.Dominio
         public int Ordem { get; set; }
         public string Nome { get; set; }
 
+        public string Observacao { get; set; }
         public bool Excluido { get; set; }
     }
 }

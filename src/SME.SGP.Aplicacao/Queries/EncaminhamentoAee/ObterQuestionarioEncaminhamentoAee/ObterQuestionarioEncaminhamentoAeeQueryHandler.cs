@@ -87,6 +87,7 @@ namespace SME.SGP.Aplicacao
                         Id = opcaoResposta.Id,
                         Nome = opcaoResposta.Nome,
                         Ordem = opcaoResposta.Ordem,
+                        Observacao = opcaoResposta.Observacao,
                         QuestaoComplementar = opcaoResposta.QuestaoComplementarId.HasValue ?
                             ObterQuestao(opcaoResposta.QuestaoComplementarId.Value, dadosQuestionario, respostasEncaminhamento) :
                             null
