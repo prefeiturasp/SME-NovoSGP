@@ -17,28 +17,20 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<PaginacaoResultadoDto<PlanoAEEAlunoTurmaDto>> ListarPaginado(long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao, Paginacao paginacao)
         {
-            try
+            var query = MontaQueryCompleta(paginacao, dreId, ueId, turmaId, alunoCodigo, situacao);
+
+            var parametros = new { dreId, ueId, turmaId, alunoCodigo, situacao };
+            var retorno = new PaginacaoResultadoDto<PlanoAEEAlunoTurmaDto>();
+
+            using (var multi = await database.Conexao.QueryMultipleAsync(query, parametros))
             {
-                var query = MontaQueryCompleta(paginacao, dreId, ueId, turmaId, alunoCodigo, situacao);
-
-                var parametros = new { dreId, ueId, turmaId, alunoCodigo, situacao };
-                var retorno = new PaginacaoResultadoDto<PlanoAEEAlunoTurmaDto>();
-
-                using (var multi = await database.Conexao.QueryMultipleAsync(query, parametros))
-                {
-                    retorno.Items = multi.Read<PlanoAEEAlunoTurmaDto>();
-                    retorno.TotalRegistros = multi.ReadFirst<int>();
-                }
-
-                retorno.TotalPaginas = (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros);
-
-                return retorno;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
+                retorno.Items = multi.Read<PlanoAEEAlunoTurmaDto>();
+                retorno.TotalRegistros = multi.ReadFirst<int>();
             }
 
+            retorno.TotalPaginas = (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros);
+
+            return retorno;
         }
 
         private static string MontaQueryCompleta(Paginacao paginacao, long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao)
@@ -82,10 +74,15 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine(", t.nome as TurmaNome ");
                 sql.AppendLine(", t.modalidade_codigo as TurmaModalidade ");
                 sql.AppendLine(", t.ano_letivo as TurmaAno ");
+                sql.AppendLine(", CASE ");
+                sql.AppendLine("    WHEN ea.id = 0 THEN 0 ");
+                sql.AppendLine("    WHEN ea.id > 0  THEN 1 ");
+                sql.AppendLine("  END as PossuiEncaminhamentoAEE ");
                 sql.AppendLine(", pa.situacao ");
             }
 
             sql.AppendLine(" from plano_aee pa ");
+            sql.AppendLine(" left join encaminhamento_aee ea on ea.aluno_codigo = pa.aluno_codigo");
             sql.AppendLine(" inner join turma t on t.id = pa.turma_id");
             sql.AppendLine(" inner join ue on t.ue_id = ue.id");
         }

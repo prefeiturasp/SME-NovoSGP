@@ -12,6 +12,7 @@ namespace SME.SGP.Infra
         public string TurmaCodigo { get; set; }
         public string TurmaNome { get; set; }
         public int TurmaAno { get; set; }
+        public bool PossuiEncaminhamentoAEE { get; set; }
         public Modalidade TurmaModalidade { get; set; }
         public SituacaoPlanoAEE Situacao { get; set; }
     }
