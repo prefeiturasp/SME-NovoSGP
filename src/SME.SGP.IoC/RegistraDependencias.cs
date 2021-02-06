@@ -323,6 +323,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioQuestionario, RepositorioQuestionario>();
             services.TryAddScoped<IRepositorioQuestao, RepositorioQuestao>();
             services.TryAddScoped<IRepositorioOpcaoResposta, RepositorioOpcaoResposta>();
+            services.TryAddScoped<IRepositorioOpcaoQuestaoComplementar, RepositorioOpcaoQuestaoComplementar>();
 
             // Pendencias
             services.TryAddScoped<IRepositorioPendencia, RepositorioPendencia>();
