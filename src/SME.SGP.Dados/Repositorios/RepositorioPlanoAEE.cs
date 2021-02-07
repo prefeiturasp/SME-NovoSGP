@@ -1,4 +1,4 @@
-﻿using Dapper;
+using Dapper;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -99,36 +99,6 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine(" and pa.aluno_codigo = @alunoCodigo ");
             if (situacao.HasValue && situacao > 0)
                 sql.AppendLine(" and pa.situacao = @situacao ");
-        }
-
-        public void Remover(PlanoAEE entidade)
-        {
-            throw new NotImplementedException();
-        }
-
-        public long Salvar(PlanoAEE entidade)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<long> SalvarAsync(PlanoAEE entidade)
-        {
-            throw new NotImplementedException();
-        }
-
-        IEnumerable<PlanoAEE> IRepositorioBase<PlanoAEE>.Listar()
-        {
-            throw new NotImplementedException();
-        }
-
-        PlanoAEE IRepositorioBase<PlanoAEE>.ObterPorId(long id)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<PlanoAEE> IRepositorioBase<PlanoAEE>.ObterPorIdAsync(long id)
-        {
-            throw new NotImplementedException();
         }
     }
 }

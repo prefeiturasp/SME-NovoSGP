@@ -1,11 +1,13 @@
-﻿namespace SME.SGP.Infra
+﻿using System.Collections.Generic;
+
+namespace SME.SGP.Infra
 {
     public class OpcaoRespostaDto
     {
-
-        public QuestaoDto QuestaoComplementar { get; set; }
+        public List<QuestaoDto> QuestoesComplementares { get; set; }
         public long Id { get; set; }
         public int Ordem { get; set; }
         public string Nome { get; set; }
+        public string Observacao { get; set; }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -27,8 +28,8 @@ namespace SME.SGP.Aplicacao
             var dadosQuestionario = await repositorioQuestaoEncaminhamento.ObterListaPorQuestionario(request.QuestionarioId);
 
             var questoesComplementares = dadosQuestionario
-                .Where(dq => dq.OpcoesRespostas.Any(a => a.QuestaoComplementarId.HasValue))
-                .SelectMany(dq => dq.OpcoesRespostas.Where(c => c.QuestaoComplementarId.HasValue).Select(a => a.QuestaoComplementarId))
+                .Where(dq => dq.OpcoesRespostas.Any(a => a.QuestoesComplementares.Any()))
+                .SelectMany(dq => dq.OpcoesRespostas.Where(c => c.QuestoesComplementares.Any()).SelectMany(a => a.QuestoesComplementares.Select(q => q.QuestaoComplementarId)))
                 .Distinct();
 
             var respostasEncaminhamento = request.EncaminhamentoId.HasValue ?
@@ -87,8 +88,9 @@ namespace SME.SGP.Aplicacao
                         Id = opcaoResposta.Id,
                         Nome = opcaoResposta.Nome,
                         Ordem = opcaoResposta.Ordem,
-                        QuestaoComplementar = opcaoResposta.QuestaoComplementarId.HasValue ?
-                            ObterQuestao(opcaoResposta.QuestaoComplementarId.Value, dadosQuestionario, respostasEncaminhamento) :
+                        Observacao = opcaoResposta.Observacao,
+                        QuestoesComplementares = opcaoResposta.QuestoesComplementares != null ?
+                            ObterQuestoes(opcaoResposta.QuestoesComplementares, dadosQuestionario, respostasEncaminhamento).ToList() :
                             null
                     };
                 })
@@ -105,6 +107,12 @@ namespace SME.SGP.Aplicacao
                 }).ToArray()
             };
 
+        }
+
+        private IEnumerable<QuestaoDto> ObterQuestoes(List<OpcaoQuestaoComplementar> questoesComplementares, IEnumerable<Questao> dadosQuestionario, IEnumerable<RespostaQuestaoEncaminhamentoAEEDto> respostasEncaminhamento)
+        {
+            foreach (var questaoComplementar in questoesComplementares)
+                yield return ObterQuestao(questaoComplementar.QuestaoComplementarId, dadosQuestionario, respostasEncaminhamento);
         }
     }
 }
