@@ -5,6 +5,7 @@ import { Card } from '~/componentes';
 import { Cabecalho } from '~/componentes-sgp';
 import CollapseLocalizarEstudante from '~/componentes-sgp/CollapseLocalizarEstudante/collapseLocalizarEstudante';
 import { RotasDto } from '~/dtos';
+import { setDadosCollapseAtribuicaoResponsavel } from '~/redux/modulos/collapseAtribuicaoResponsavel/actions';
 import {
   setDadosCollapseLocalizarEstudante,
   setLimparDadosLocalizarEstudante,
@@ -17,11 +18,15 @@ import {
 } from '~/redux/modulos/encaminhamentoAEE/actions';
 import { setDadosObjectCardEstudante } from '~/redux/modulos/objectCardEstudante/actions';
 import { setLimparDadosQuestionarioDinamico } from '~/redux/modulos/questionarioDinamico/actions';
-import { erros, verificaSomenteConsulta } from '~/servicos';
+import {
+  erros,
+  setBreadcrumbManual,
+  verificaSomenteConsulta,
+} from '~/servicos';
 import ServicoEncaminhamentoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoEncaminhamentoAEE';
 import BotoesAcoesEncaminhamentoAEE from './Componentes/botoesAcoesEncaminhamentoAEE';
 import LoaderEncaminhamento from './Componentes/LoaderEncaminhamento/loaderEncaminhamento';
-import SecaoEncaminhamentoCollapse from './Componentes/SecaoEncaminhamento/secaoEncaminhamentoCollapse';
+import MontarDadosSecoes from './Componentes/MontarDadosSecoes/montarDadosSecoes';
 
 const EncaminhamentoAEECadastro = ({ match }) => {
   const dispatch = useDispatch();
@@ -56,7 +61,7 @@ const EncaminhamentoAEECadastro = ({ match }) => {
       .finally(() => dispatch(setExibirLoaderEncaminhamentoAEE(false)));
 
     if (resultado?.data) {
-      const { aluno, turma } = resultado?.data;
+      const { aluno, turma, responsavelEncaminhamentoAEE } = resultado?.data;
 
       const dadosObjectCard = {
         nome: aluno.nome,
@@ -77,6 +82,13 @@ const EncaminhamentoAEECadastro = ({ match }) => {
       dispatch(
         setDadosCollapseLocalizarEstudante(dadosCollapseLocalizarEstudante)
       );
+
+      const dadosResponsavel = {
+        codigoRF: responsavelEncaminhamentoAEE?.rf,
+        nomeServidor: responsavelEncaminhamentoAEE?.nome,
+        id: responsavelEncaminhamentoAEE?.id,
+      };
+      dispatch(setDadosCollapseAtribuicaoResponsavel(dadosResponsavel));
 
       dispatch(setDadosEncaminhamento(resultado?.data));
     }
@@ -101,6 +113,17 @@ const EncaminhamentoAEECadastro = ({ match }) => {
     };
   }, [dispatch, limparDadosEncaminhamento]);
 
+  useEffect(() => {
+    const encaminhamentoId = match?.params?.id;
+    if (encaminhamentoId) {
+      setBreadcrumbManual(
+        match.url,
+        'Editar Encaminhamento',
+        `${RotasDto.RELATORIO_AEE_ENCAMINHAMENTO}`
+      );
+    }
+  }, [match]);
+
   return (
     <LoaderEncaminhamento>
       <Cabecalho pagina="Encaminhamento AEE" />
@@ -123,9 +146,7 @@ const EncaminhamentoAEECadastro = ({ match }) => {
                 />
               </div>
             )}
-            <div className="col-md-12 mb-2">
-              <SecaoEncaminhamentoCollapse match={match} />
-            </div>
+            <MontarDadosSecoes match={match} />
           </div>
         </div>
       </Card>

@@ -19,6 +19,7 @@ namespace SME.SGP.Dados.Repositorios
 	                            , sea.nome
 	                            , sea.questionario_id
 	                            , eas.concluido
+	                            , sea.etapa
                          FROM secao_encaminhamento_aee sea
                         left join encaminhamento_aee_secao eas on eas.encaminhamento_aee_id = @encaminhamentoAeeId and eas.secao_encaminhamento_id = sea.id
                          WHERE not sea.excluido 
