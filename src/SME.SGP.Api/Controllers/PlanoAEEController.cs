@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
@@ -35,6 +36,27 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterPlanosAEE([FromQuery] FiltroPlanosAEEDto filtro, [FromServices] IObterPlanosAEEUseCase useCase)
         {
             return Ok(await useCase.Executar(filtro));
+        }
+
+
+        [HttpGet]
+        [Route("{planoAeeId}")]
+        [ProducesResponseType(typeof(PlanoAEEDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public IActionResult ObterPlanoAee(long? planoAeeId, [FromServices] IObterPlanoAEEPorIdUseCase useCase)
+        {
+            return Ok(useCase.Executar(planoAeeId));
+        }
+
+        [HttpGet]
+        [Route("versao/{versaoPlanoId}")]
+        [ProducesResponseType(typeof(IEnumerable<QuestaoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public IActionResult ObterPlanoAeePorVersao(long versaoPlanoId, [FromServices] IObterQuestoesPlanoAEEPorVersaoUseCase useCase)
+        {
+            return Ok(useCase.Executar(versaoPlanoId));
         }
 
         [HttpPost("salvar")]
