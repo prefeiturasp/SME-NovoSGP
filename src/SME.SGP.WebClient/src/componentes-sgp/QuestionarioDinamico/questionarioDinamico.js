@@ -66,6 +66,9 @@ const QuestionarioDinamico = props => {
           case tipoQuestao.ComboMultiplaEscolha:
             valorRespostaAtual = resposta.map(r => String(r.opcaoRespostaId));
             break;
+          case tipoQuestao.Checkbox:
+            valorRespostaAtual = resposta.map(r => Number(r.opcaoRespostaId));
+            break;
           case tipoQuestao.Texto:
             valorRespostaAtual = resposta[0].texto;
             break;
@@ -102,7 +105,8 @@ const QuestionarioDinamico = props => {
 
       if (
         valorRespostaAtual?.length &&
-        questaoAtual?.tipoQuestao === tipoQuestao.ComboMultiplaEscolha
+        (questaoAtual?.tipoQuestao === tipoQuestao.ComboMultiplaEscolha ||
+          questaoAtual?.tipoQuestao === tipoQuestao.Checkbox)
       ) {
         const idQuestaoComResposta = valorRespostaAtual.find(valorSalvo => {
           const opcaoResposta = questaoAtual?.opcaoResposta.find(
@@ -120,9 +124,11 @@ const QuestionarioDinamico = props => {
             q => String(q.id) === String(idQuestaoComResposta)
           );
 
-          if (questaoComplmentarComResposta?.questoesComplementares[0]) {
-            montarDados(
-              questaoComplmentarComResposta.questoesComplementares[0]
+          if (questaoComplmentarComResposta?.questoesComplementares?.length) {
+            questaoComplmentarComResposta.questoesComplementares.forEach(
+              questao => {
+                montarDados(questao);
+              }
             );
           }
         }
@@ -135,7 +141,6 @@ const QuestionarioDinamico = props => {
           item => String(item.id) === String(valorRespostaAtual)
         );
 
-        // TODO TESTAR!
         if (opcaoAtual?.questoesComplementares?.length) {
           opcaoAtual.questoesComplementares.forEach(q => {
             montarDados(q);
