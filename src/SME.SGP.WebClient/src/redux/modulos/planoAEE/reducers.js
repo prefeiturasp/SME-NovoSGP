@@ -5,6 +5,8 @@ const inicial = {
   planoAEEDados: {},
   desabilitarCamposPlanoAEE: false,
   planoAEEEmEdicao: false,
+  exibirLoaderPlanoAEE: false,
+  planoAEESituacaoEncaminhamentoAEE: {},
   planoAEEDadosSecoesPorEtapa: [],
 };
 
@@ -17,10 +19,22 @@ export default function PlanoAEE(state = inicial, action) {
           dadosIniciaisPlanoAEE: action.payload,
         };
       }
+      case '@planoAEE/setExibirLoaderPlanoAEE': {
+        return {
+          ...draft,
+          exibirLoaderPlanoAEE: action.payload,
+        };
+      }
       case '@planoAEE/setPlanoAEEDados': {
         return {
           ...draft,
           planoAEEDados: action.payload,
+        };
+      }
+      case '@planoAEE/setPlanoAEESituacaoEncaminhamentoAEE': {
+        return {
+          ...draft,
+          planoAEESituacaoEncaminhamentoAEE: action.payload,
         };
       }
       case '@planoAEE/setDesabilitarCamposPlanoAEE': {
@@ -45,7 +59,9 @@ export default function PlanoAEE(state = inicial, action) {
         return {
           ...draft,
           dadosIniciaisPlanoAEE: {},
+          planoAEESituacaoEncaminhamentoAEE: {},
           planoAEEDados: null,
+          exibirLoaderPlanoAEE: false,
           desabilitarCamposPlanoAEE: false,
           planoAEEDadosSecoesPorEtapa: [],
         };

@@ -2,15 +2,21 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { Colors } from '~/componentes';
 import Button from '~/componentes/button';
+import { RotasDto } from '~/dtos';
+import { history } from '~/servicos';
 
 const BotaoVerSituacaoEncaminhamentoAEE = () => {
-  const planoAEEDados = useSelector(store => store.planoAEE.planoAEEDados);
+  const planoAEESituacaoEncaminhamentoAEE = useSelector(
+    store => store.planoAEE.planoAEESituacaoEncaminhamentoAEE
+  );
 
   const onClick = () => {
-    return '';
+    history.push(
+      `${RotasDto.RELATORIO_AEE_ENCAMINHAMENTO}/editar/${planoAEESituacaoEncaminhamentoAEE?.id}`
+    );
   };
 
-  return planoAEEDados?.encaminhamento ? (
+  return planoAEESituacaoEncaminhamentoAEE?.id ? (
     <>
       <Button
         id="btn-voltar"

@@ -37,15 +37,14 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(filtro));
         }
 
-
         [HttpGet]
         [Route("{planoAeeId}")]
         [ProducesResponseType(typeof(PlanoAEEDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        public IActionResult ObterPlanoAee(long? planoAeeId, [FromServices] IObterPlanoAEEPorIdUseCase useCase)
+        public async Task<IActionResult> ObterPlanoAee(long? planoAeeId, [FromServices] IObterPlanoAEEPorIdUseCase useCase)
         {
-            return Ok(useCase.Executar(planoAeeId));
+            return Ok(await useCase.Executar(planoAeeId));
         }
 
         [HttpGet]

@@ -8,14 +8,24 @@ import LoaderPlano from './Componentes/LoaderPlano/loaderPlano';
 import TabCadastroPasso from './Componentes/TabCadastroPlano/tabCadastroPlano';
 import { setLimparDadosQuestionarioDinamico } from '~/redux/modulos/questionarioDinamico/actions';
 import {
+  setExibirLoaderPlanoAEE,
   setPlanoAEEDados,
   setPlanoAEELimparDados,
+  setPlanoAEESituacaoEncaminhamentoAEE,
 } from '~/redux/modulos/planoAEE/actions';
 import CollapseLocalizarEstudante from '~/componentes-sgp/CollapseLocalizarEstudante/collapseLocalizarEstudante';
 import ObjectCardEstudantePlanoAEE from './Componentes/ObjectCardEstudantePlanoAEE/objectCardEstudantePlanoAEE';
 import SituacaoEncaminhamentoAEE from './Componentes/SituacaoEncaminhamentoAEE/situacaoEncaminhamentoAEE';
 import BotaoVerSituacaoEncaminhamentoAEE from './Componentes/BotaoVerSituacaoEncaminhamentoAEE/botaoVerSituacaoEncaminhamentoAEE';
-import { setLimparDadosLocalizarEstudante } from '~/redux/modulos/collapseLocalizarEstudante/actions';
+import {
+  setDadosCollapseLocalizarEstudante,
+  setLimparDadosLocalizarEstudante,
+} from '~/redux/modulos/collapseLocalizarEstudante/actions';
+import ServicoEncaminhamentoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoEncaminhamentoAEE';
+import { erros, setBreadcrumbManual } from '~/servicos';
+import ServicoPlanoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoPlanoAEE';
+import { setDadosObjectCardEstudante } from '~/redux/modulos/objectCardEstudante/actions';
+import { RotasDto } from '~/dtos';
 
 const PlanoAEECadastro = ({ match }) => {
   const dispatch = useDispatch();
@@ -25,37 +35,83 @@ const PlanoAEECadastro = ({ match }) => {
     dispatch(setLimparDadosQuestionarioDinamico());
   }, [dispatch]);
 
-  const validarSePermiteProximoPasso = codigoEstudante => {
-    dispatch(
-      setPlanoAEEDados({
-        encaminhamento: {
-          situação: 'Aguardando validação CP',
-          encaminhamentoId: 1,
-        },
-        secao: {
-          id: 1,
-          nome: 'Informações do Plano',
-          questionarioId: 4,
-        },
-        planosAnteriores: [
-          {
-            id: 2,
-            nome: 'Informações do Plano - v1',
-            questionarioId: 4,
-          },
-          {
-            id: 3,
-            nome: 'Informações do Plano - v2',
-            questionarioId: 4,
-          },
-        ],
-      })
+  const validarSePermiteProximoPasso = async codigoEstudante => {
+    const retorno = await ServicoEncaminhamentoAEE.obterAlunoSituacaoEncaminhamentoAEE(
+      codigoEstudante
     );
+
+    if (retorno.data) {
+      dispatch(setPlanoAEESituacaoEncaminhamentoAEE(retorno.data));
+    }
     return true;
-    // return ServicoEncaminhamentoAEE.podeCadastrarEncaminhamentoEstudante(
-    //   codigoEstudante
-    // );
   };
+
+  useEffect(() => {
+    const planoId = match?.params?.id;
+    if (planoId) {
+      setBreadcrumbManual(
+        match.url,
+        'Editar Plano',
+        `${RotasDto.RELATORIO_AEE_PLANO}`
+      );
+    }
+  }, [match]);
+
+  // TODO PERMISSAO
+  // useEffect(() => {
+  //   const encaminhamentoId = match?.params?.id || 0;
+
+  //   const soConsulta = verificaSomenteConsulta(permissoesTela);
+  //   const desabilitar =
+  //     encaminhamentoId > 0
+  //       ? soConsulta || !permissoesTela.podeAlterar
+  //       : soConsulta || !permissoesTela.podeIncluir;
+  //   dispatch(setDesabilitarCamposEncaminhamentoAEE(desabilitar));
+  // }, [match, permissoesTela, dispatch]);
+
+  const obterPlanoPorId = useCallback(async () => {
+    const planoId = match?.params?.id ? match?.params?.id : 0;
+
+    dispatch(setExibirLoaderPlanoAEE(true));
+    const resultado = await ServicoPlanoAEE.obterPlanoPorId(planoId)
+      .catch(e => erros(e))
+      .finally(() => dispatch(setExibirLoaderPlanoAEE(false)));
+
+    if (resultado?.data) {
+      if (resultado?.data?.aluno) {
+        const { aluno } = resultado?.data;
+
+        const dadosObjectCard = {
+          nome: aluno.nome,
+          numeroChamada: aluno.numeroAlunoChamada,
+          dataNascimento: aluno.dataNascimento,
+          codigoEOL: aluno.codigoAluno,
+          situacao: aluno.situacao,
+          dataSituacao: aluno.dataSituacao,
+        };
+        dispatch(setDadosObjectCardEstudante(dadosObjectCard));
+      }
+      if (resultado?.data?.turma) {
+        const { aluno, turma } = resultado?.data;
+        const dadosCollapseLocalizarEstudante = {
+          anoLetivo: turma.anoLetivo,
+          codigoAluno: aluno.codigoAluno,
+          codigoTurma: turma.codigo,
+          turmaId: turma.id,
+        };
+
+        dispatch(
+          setDadosCollapseLocalizarEstudante(dadosCollapseLocalizarEstudante)
+        );
+      }
+
+      dispatch(setPlanoAEEDados(resultado?.data));
+    }
+  }, [match, dispatch]);
+
+  useEffect(() => {
+    obterPlanoPorId();
+  }, [obterPlanoPorId]);
 
   useEffect(() => {
     return () => {

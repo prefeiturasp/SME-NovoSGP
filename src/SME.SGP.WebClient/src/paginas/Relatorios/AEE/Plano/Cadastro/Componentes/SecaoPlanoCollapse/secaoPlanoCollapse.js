@@ -2,40 +2,44 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import CardCollapse from '~/componentes/cardCollapse';
-import MontarDadosPorSecao from '~/paginas/Relatorios/AEE/Encaminhamento/Cadastro/Componentes/SecaoEncaminhamento/DadosSecaoEncaminhamento/montarDadosPorSecao';
 import DadosSecaoPlano from './DadosSecaoPlano/dadosSecaoPlano';
+import MontarDadosPorSecao from './DadosSecaoPlano/montarDadosPorSecao';
 
 const SecaoPlanoCollapse = props => {
   const { match } = props;
+
   const planoAEEDados = useSelector(store => store.planoAEE.planoAEEDados);
 
   return (
     <>
-      {planoAEEDados?.secao ? (
+      {planoAEEDados?.questoes.length ? (
         <CardCollapse
           key="secao-informacoes-plano-collapse-key"
-          titulo={planoAEEDados?.secao.nome}
+          titulo="Informações do Plano"
           indice="secao-informacoes-plano--collapse-indice"
           alt="secao-informacoes-plano--alt"
         >
-          <>
-            <MontarDadosPorSecao dados={planoAEEDados?.secao} match={match} />
-          </>
+          <MontarDadosPorSecao
+            dados={{ id: 0, questionarioId: planoAEEDados?.questionarioId }}
+            dadosQuestionarioAtual={planoAEEDados?.questoes}
+            match={match}
+          />
         </CardCollapse>
       ) : (
         ''
       )}
-      {planoAEEDados?.planosAnteriores ? (
+      {planoAEEDados?.versoes ? (
         <>
           <div className="col-md-12 mb-2">
             <strong>Planos anteriores para consulta</strong>
           </div>
-          {planoAEEDados?.planosAnteriores.map((plano, index) => (
+          {planoAEEDados?.versoes.map(plano => (
+            // colocar em um outro arquivo
             <CardCollapse
-              key={`secao-informacoes-plano-${index}-collapse-key`}
-              titulo={plano.nome}
-              indice={`secao-informacoes-plano-${index}-collapse-indice`}
-              alt={`secao-informacoes-plano-${index}-alt`}
+              key={`secao-informacoes-plano-${plano.id}-collapse-key`}
+              titulo={`Informações do Plano - v${plano.numero}`}
+              indice={`secao-informacoes-plano-${plano.id}-collapse-indice`}
+              alt={`secao-informacoes-plano-${plano.id}-alt`}
             >
               <>
                 <DadosSecaoPlano match={match} />
