@@ -72,8 +72,8 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
 
   const desabilitarCamposPorPermissao = () => {
     return match?.params?.id
-      ? !permissoesTela.podeAlterar
-      : !permissoesTela.podeIncluir;
+      ? !permissoesTela?.podeAlterar
+      : !permissoesTela?.podeIncluir;
   };
 
   useEffect(() => {
