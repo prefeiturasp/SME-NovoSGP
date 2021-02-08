@@ -191,6 +191,30 @@ const BotoesAcoesEncaminhamentoAEE = props => {
     }
   };
 
+  const onClickConcluirParecer = async () => {
+    if (!desabilitarCamposEncaminhamentoAEE) {
+      const encaminhamentoId = match?.params?.id;
+      const salvou = await ServicoEncaminhamentoAEE.salvarEncaminhamento(
+        encaminhamentoId,
+        situacaoAEE.Analise,
+        true
+      );
+      if (salvou) {
+        dispatch(setExibirLoaderEncaminhamentoAEE(true));
+        const resposta = await ServicoEncaminhamentoAEE.concluirParecer(
+          encaminhamentoId
+        )
+          .catch(e => erros(e))
+          .finally(() => dispatch(setExibirLoaderEncaminhamentoAEE(false)));
+
+        if (resposta?.status === 200) {
+          sucesso('Encaminhamento concluído');
+          history.push(RotasDto.RELATORIO_AEE_ENCAMINHAMENTO);
+        }
+      }
+    }
+  };
+
   return (
     <>
       <Button
@@ -279,6 +303,22 @@ const BotoesAcoesEncaminhamentoAEE = props => {
         hidden={
           !dadosEncaminhamento?.situacao ||
           dadosEncaminhamento?.situacao !== situacaoAEE.Encaminhado
+        }
+        disabled={
+          desabilitarCamposEncaminhamentoAEE || !dadosEncaminhamento?.podeEditar
+        }
+      />
+      <Button
+        id="btn-concluir-parecer"
+        label="Concluir parecer"
+        color={Colors.Roxo}
+        border
+        bold
+        className="ml-3"
+        onClick={onClickConcluirParecer}
+        hidden={
+          !dadosEncaminhamento?.situacao ||
+          dadosEncaminhamento?.situacao !== situacaoAEE.Analise
         }
         disabled={
           desabilitarCamposEncaminhamentoAEE || !dadosEncaminhamento?.podeEditar
