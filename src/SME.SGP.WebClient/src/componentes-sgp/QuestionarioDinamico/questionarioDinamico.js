@@ -14,6 +14,8 @@ import CampoDinamicoUploadArquivos from './Componentes/campoDinamicoUploadArquiv
 import InformacoesEscolares from './Componentes/InformacoesEscolares/informacoesEscolares';
 import QuestionarioDinamicoFuncoes from './Funcoes/QuestionarioDinamicoFuncoes';
 import QuestionarioDinamicoValidacoes from './Validacoes/QuestionarioDinamicoValidacoes';
+import DiasHorariosTabela from './Componentes/DiasHorariosTabela/diasHorariosTabela';
+import CampoDinamicoPeriodo from './Componentes/campoDinamicoPeriodo';
 
 const QuestionarioDinamico = props => {
   const dispatch = useDispatch();
@@ -334,6 +336,28 @@ const QuestionarioDinamico = props => {
             urlUpload={urlUpload}
             funcaoRemoverArquivoCampoUpload={funcaoRemoverArquivoCampoUpload}
           />
+        );
+        break;
+      case tipoQuestao.Periodo:
+        campoAtual = (
+          <CampoDinamicoPeriodo
+            questaoAtual={questaoAtual}
+            form={form}
+            label={label}
+            desabilitado={desabilitarCampos}
+          />
+        );
+        break;
+      case tipoQuestao.FrequenciaEstudanteAEE:
+        campoAtual = (
+          <div className="col-md-12 mb-3">
+            <DiasHorariosTabela
+              desabilitado={desabilitarCampos}
+              label={label}
+              form={form}
+              questaoAtual={questaoAtual}
+            />
+          </div>
         );
         break;
       default:

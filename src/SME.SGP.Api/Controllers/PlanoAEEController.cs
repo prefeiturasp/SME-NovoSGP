@@ -1,12 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using SME.SGP.Api.Filtros;
+﻿using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Aplicacao;
-using SME.SGP.Aplicacao.Interfaces;
-using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,25 +30,11 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(PaginacaoResultadoDto<EncaminhamentoAEEResumoDto>), 200)]
+        [ProducesResponseType(typeof(PaginacaoResultadoDto<PlanoAEEResumoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public IActionResult ObterEncaminhamentos([FromQuery] FiltroPesquisaEncaminhamentosAEEDto filtro)
+        public async Task<IActionResult> ObterPlanosAEE([FromQuery] FiltroPlanosAEEDto filtro, [FromServices] IObterPlanosAEEUseCase useCase)
         {
-            var items = new List<PlanoAEEResumoDto>()
-            {
-                new PlanoAEEResumoDto() {
-                    Id = 1,
-                    Numero = 1,
-                    Nome = "Aluno 1",
-                    Turma = "EF - 1A",
-                    Situacao = "Em Andamento"
-                }
-            };
-            var paginacao = new PaginacaoResultadoDto<EncaminhamentoAEEResumoDto>()
-            {
-                Items = (IEnumerable<EncaminhamentoAEEResumoDto>)items,
-            };
-            return Ok(paginacao);
+            return Ok(await useCase.Executar(filtro));
         }
 
         [HttpGet]

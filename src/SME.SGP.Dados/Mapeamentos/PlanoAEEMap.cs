@@ -8,7 +8,7 @@ namespace SME.SGP.Dados
         {
             ToTable("plano_aee");
             Map(a => a.TurmaId).ToColumn("turma_id");
-            Map(a => a.AlunoCodigo).ToColumn("aluno_numero");
+            Map(a => a.AlunoNumero).ToColumn("aluno_numero");
             Map(a => a.AlunoCodigo).ToColumn("aluno_codigo");
             Map(a => a.AlunoNome).ToColumn("aluno_nome");
             Map(a => a.Situacao).ToColumn("situacao");

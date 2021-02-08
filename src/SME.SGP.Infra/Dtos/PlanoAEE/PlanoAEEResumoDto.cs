@@ -1,9 +1,4 @@
-﻿using SME.SGP.Dominio.Enumerados;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SME.SGP.Infra
+﻿namespace SME.SGP.Infra
 {
     public class PlanoAEEResumoDto
     {
@@ -11,6 +6,7 @@ namespace SME.SGP.Infra
         public int Numero { get; set; }
         public string Nome { get; set; }
         public string Turma { get; set; }
+        public bool PossuiEncaminhamentoAEE { get; set; }
         public string Situacao { get; set; }
     }
 }

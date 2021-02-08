@@ -2,12 +2,7 @@ import produce from 'immer';
 
 const inicial = {
   dadosIniciaisPlanoAEE: {},
-  planoAEEDados: {
-    encaminhamento: {
-      encaminhamentoId: 1,
-      situacao: 'Aguardando validação CP',
-    },
-  },
+  planoAEEDados: {},
   desabilitarCamposPlanoAEE: false,
   planoAEEEmEdicao: false,
   planoAEEDadosSecoesPorEtapa: [],

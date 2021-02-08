@@ -35,18 +35,18 @@ const PlanoAEECadastro = ({ match }) => {
         secao: {
           id: 1,
           nome: 'Informações do Plano',
-          questionarioId: 1,
+          questionarioId: 4,
         },
         planosAnteriores: [
           {
             id: 2,
             nome: 'Informações do Plano - v1',
-            questionarioId: 1,
+            questionarioId: 4,
           },
           {
             id: 3,
             nome: 'Informações do Plano - v2',
-            questionarioId: 1,
+            questionarioId: 4,
           },
         ],
       })
