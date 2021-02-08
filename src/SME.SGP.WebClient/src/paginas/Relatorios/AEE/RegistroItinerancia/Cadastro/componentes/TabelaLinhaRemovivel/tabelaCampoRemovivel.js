@@ -21,6 +21,8 @@ const TabelaLinhaRemovivel = ({
   ordenacao,
   removerUsuario,
   tituloTabela,
+  desabilitadoIncluir,
+  desabilitadoExcluir,
   ...rest
 }) => {
   const [dadosSelecionados, setDadosSelecionados] = useState();
@@ -44,6 +46,7 @@ const TabelaLinhaRemovivel = ({
         onClick={() => removerUsuario(text)}
         height="13px"
         width="13px"
+        disabled={desabilitadoIncluir}
       />
     );
   };
@@ -82,6 +85,7 @@ const TabelaLinhaRemovivel = ({
           className="mr-2"
           onClick={botaoAdicionar}
           icon="plus"
+          disabled={desabilitadoIncluir}
         />
       </div>
     </>
@@ -97,6 +101,8 @@ TabelaLinhaRemovivel.propTypes = {
   ordenacao: PropTypes.bool,
   removerUsuario: PropTypes.func,
   tituloTabela: PropTypes.string,
+  desabilitadoIncluir: PropTypes.bool,
+  desabilitadoExcluir: PropTypes.bool,
 };
 
 TabelaLinhaRemovivel.defaultProps = {
@@ -108,6 +114,8 @@ TabelaLinhaRemovivel.defaultProps = {
   ordenacao: false,
   removerUsuario: () => {},
   tituloTabela: '',
+  desabilitadoIncluir: false,
+  desabilitadoExcluir: false,
 };
 
 export default TabelaLinhaRemovivel;

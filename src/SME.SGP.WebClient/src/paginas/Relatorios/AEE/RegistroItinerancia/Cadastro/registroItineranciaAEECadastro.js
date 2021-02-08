@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import shortid from 'shortid';
-
+import { useSelector } from 'react-redux';
 import { Base, Button, CampoData, Card, Colors, Loader } from '~/componentes';
 import { Cabecalho } from '~/componentes-sgp';
 import { RotasDto } from '~/dtos';
@@ -28,6 +28,9 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
   const [desabilitarCampos, setDesabilitarCampos] = useState(false);
   const [apenasUmaUe, setApenasUmaUe] = useState(false);
   const [variasUesSelecionadas, setVariasUesSelecionadas] = useState(false);
+  const usuario = useSelector(store => store.usuario);
+  const permissoesTela =
+    usuario.permissoes[RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA];
 
   const onClickVoltar = () => {};
   const onClickCancelar = () => {};
@@ -65,6 +68,12 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
       dataCorrente > window.moment() ||
       dataCorrente < window.moment().startOf('year')
     );
+  };
+
+  const desabilitarCamposPorPermissao = () => {
+    return match?.params?.id
+      ? !permissoesTela?.podeAlterar
+      : !permissoesTela?.podeIncluir;
   };
 
   useEffect(() => {
@@ -150,7 +159,9 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
                   label="Data da visita"
                   placeholder="Selecione a data"
                   onChange={mudarDataVisita}
-                  desabilitarData={desabilitarData}
+                  desabilitarData={
+                    desabilitarData || desabilitarCamposPorPermissao()
+                  }
                 />
               </div>
             </div>
@@ -162,6 +173,8 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
                 labelTabela="Objetivos da itinerância"
                 tituloTabela="Objetivos selecionados"
                 labelBotao="Novo objetivo"
+                desabilitadoIncluir={permissoesTela?.podeIncluir}
+                desabilitadoExcluir={permissoesTela?.podeExcluir}
                 pagination={false}
                 dadosTabela={objetivosSelecionados}
                 removerUsuario={text =>
@@ -178,6 +191,8 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
                 tituloTabela="Unidades Escolares selecionadas"
                 labelBotao="Adicionar nova unidade escolar"
                 pagination={false}
+                desabilitadoIncluir={permissoesTela?.podeIncluir}
+                desabilitadoExcluir={permissoesTela?.podeExcluir}
                 dadosTabela={unEscolaresSelecionados}
                 removerUsuario={text =>
                   removerItemSelecionado(text, setUnEscolaresSelecionados)
@@ -199,6 +214,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
                     className="mr-2"
                     onClick={() => setModalVisivelAlunos(true)}
                     icon="user-plus"
+                    disabled={desabilitarCamposPorPermissao()}
                   />
                 </div>
               </div>
@@ -209,6 +225,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
                   key={aluno.alunoCodigo}
                   aluno={aluno}
                   removerAlunos={() => removerAlunos(aluno.alunoCodigo)}
+                  desabilitar={desabilitarCamposPorPermissao()}
                 />
               ))
             ) : (
@@ -223,6 +240,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
                   label="Data para retorno/verificação"
                   placeholder="Selecione a data"
                   onChange={mudarDataRetorno}
+                  disabled={desabilitarCamposPorPermissao()}
                 />
               </div>
             </div>

@@ -11,7 +11,7 @@ import {
   PainelCollapse,
 } from '~/componentes';
 
-const CollapseAluno = ({ aluno, removerAlunos }) => {
+const CollapseAluno = ({ aluno, removerAlunos, desabilitar }) => {
   const [acompanhamentoSituacao, setAcompanhamentoSituacao] = useState();
   const [descritivoEstudante, setDescritivoEstudante] = useState();
   const [encaminhamentos, setEncaminhamentos] = useState();
@@ -37,6 +37,7 @@ const CollapseAluno = ({ aluno, removerAlunos }) => {
                   name="descritivoEstudante"
                   value={descritivoEstudante}
                   onChange={e => setDescritivoEstudante(e)}
+                  desabilitar={desabilitar}
                 />
               </div>
             </div>
@@ -48,6 +49,7 @@ const CollapseAluno = ({ aluno, removerAlunos }) => {
                   name="acompanhamentoSituacao"
                   id="acompanhamentoSituacao"
                   onChange={e => setAcompanhamentoSituacao(e)}
+                  desabilitar={desabilitar}
                 />
               </div>
             </div>
@@ -59,6 +61,7 @@ const CollapseAluno = ({ aluno, removerAlunos }) => {
                   name="encaminhamentos"
                   id="encaminhamentos"
                   onChange={e => setEncaminhamentos(e)}
+                  desabilitar={desabilitar}
                 />
               </div>
             </div>
@@ -74,6 +77,7 @@ const CollapseAluno = ({ aluno, removerAlunos }) => {
                   color={Colors.Azul}
                   border
                   onClick={removerAlunos}
+                  disabled={desabilitar}
                 />
               </div>
             </div>
@@ -87,11 +91,13 @@ const CollapseAluno = ({ aluno, removerAlunos }) => {
 CollapseAluno.defaultProps = {
   aluno: [],
   removerAlunos: () => {},
+  desabilitar: false,
 };
 
 CollapseAluno.propTypes = {
   aluno: PropTypes.instanceOf(PropTypes.any),
   removerAlunos: PropTypes.func,
+  desabilitar: PropTypes.bool,
 };
 
 export default CollapseAluno;
