@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-
+﻿using SME.SGP.Dominio;
 namespace SME.SGP.Infra
 {
     public class PlanoAEEVersaoDto
