@@ -2,12 +2,14 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 
 const SituacaoEncaminhamentoAEE = () => {
-  const planoAEEDados = useSelector(store => store.planoAEE.planoAEEDados);
+  const planoAEESituacaoEncaminhamentoAEE = useSelector(
+    store => store.planoAEE.planoAEESituacaoEncaminhamentoAEE
+  );
 
-  return planoAEEDados?.encaminhamento ? (
+  return planoAEESituacaoEncaminhamentoAEE?.situacao ? (
     <>
       <strong>Encaminhamento AEE: </strong>
-      {planoAEEDados?.encaminhamento?.situacao}
+      {planoAEESituacaoEncaminhamentoAEE?.situacao}
     </>
   ) : (
     ''

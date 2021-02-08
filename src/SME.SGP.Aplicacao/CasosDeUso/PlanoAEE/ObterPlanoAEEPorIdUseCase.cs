@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
             var plano = new PlanoAEEDto();
             var respostasPlano = Enumerable.Empty<RespostaQuestaoDto>();
 
-            if (planoAEEId.HasValue)
+            if (planoAEEId.HasValue && planoAEEId > 0)
             {
                 var entidadePlano = await repositorioPlanoAEE.ObterPorIdAsync(planoAEEId.Value);
 
@@ -40,6 +40,8 @@ namespace SME.SGP.Aplicacao
 
             plano.Questoes = await mediator.Send(new ObterQuestoesPorQuestionarioPorIdQuery(questionarioId, questaoId =>
                respostasPlano.Where(c => c.QuestaoId == questaoId)));
+
+            plano.QuestionarioId = questionarioId;
 
             return plano;
         }
