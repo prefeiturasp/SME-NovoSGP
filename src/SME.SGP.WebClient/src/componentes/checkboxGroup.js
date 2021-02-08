@@ -18,18 +18,8 @@ const Container = styled.div`
   }
 `;
 
-const CheckboxComponent = props => {
-  const {
-    label,
-    onChangeCheckbox,
-    defaultChecked,
-    className,
-    disabled,
-    checked,
-    name,
-    id,
-    form,
-  } = props;
+const CheckboxGroup = props => {
+  const { onChange, defaultValue, disabled, options, name, id, form } = props;
 
   const Error = styled.span`
     color: ${Base.Vermelho};
@@ -50,36 +40,32 @@ const CheckboxComponent = props => {
       <Field
         name={name}
         id={id || name}
-        component={Checkbox}
-        onChange={e => {
-          form.setFieldValue(name, e.target.checked);
-          onChangeCheckbox(e);
+        component={Checkbox.Group}
+        options={options}
+        defaultValue={form.values[name]}
+        disabled={disabled}
+        onChange={checkedValues => {
+          form.setFieldValue(name, checkedValues);
+          onChange(checkedValues);
           form.setFieldTouched(name, true, true);
         }}
-        defaultChecked={defaultChecked}
-        disabled={disabled}
-        checked={form.values[name]}
-      >
-        {label}
-      </Field>
+      />
     );
   };
 
   const campoSemValidacoes = () => {
     return (
-      <Checkbox
-        onChange={onChangeCheckbox}
-        defaultChecked={defaultChecked}
+      <Checkbox.Group
+        options={options}
+        defaultValue={defaultValue}
+        onChange={onChange}
         disabled={disabled}
-        checked={checked}
-      >
-        {label}
-      </Checkbox>
+      />
     );
   };
 
   return (
-    <Container className={className}>
+    <Container>
       {form ? campoComValidacoes() : campoSemValidacoes()}
       <br />
       {obterErros()}
@@ -87,28 +73,24 @@ const CheckboxComponent = props => {
   );
 };
 
-CheckboxComponent.propTypes = {
-  label: PropTypes.string,
-  onChangeCheckbox: PropTypes.func,
-  defaultChecked: PropTypes.bool,
-  className: PropTypes.string,
+CheckboxGroup.propTypes = {
+  onChange: PropTypes.func,
+  defaultValue: PropTypes.oneOfType([PropTypes.array]),
+  options: PropTypes.oneOfType([PropTypes.array]),
   disabled: PropTypes.bool,
-  checked: PropTypes.bool,
   name: PropTypes.string,
   id: PropTypes.string,
   form: PropTypes.oneOfType([PropTypes.any]),
 };
 
-CheckboxComponent.defaultProps = {
-  label: 'Checkbox Component',
-  onChangeCheckbox: () => {},
-  defaultChecked: false,
-  className: '',
+CheckboxGroup.defaultProps = {
+  onChange: () => {},
+  defaultValue: [],
+  options: [],
   disabled: false,
-  checked: false,
   name: '',
   id: '',
   form: null,
 };
 
-export default CheckboxComponent;
+export default CheckboxGroup;

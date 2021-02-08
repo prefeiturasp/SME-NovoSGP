@@ -39,10 +39,10 @@ class ServicoEncaminhamentoAEE {
     }
   };
 
-  obterSecoesPorEtapaDeEncaminhamentoAEE = (etapa, encaminhamentoAeeId) => {
-    let url = `${urlPadrao}/secoes?etapa=${etapa}`;
+  obterSecoesPorEtapaDeEncaminhamentoAEE = encaminhamentoAeeId => {
+    let url = `${urlPadrao}/secoes`;
     if (encaminhamentoAeeId) {
-      url += `&encaminhamentoAeeId=${encaminhamentoAeeId}`;
+      url += `?encaminhamentoAeeId=${encaminhamentoAeeId}`;
     }
     return api.get(url);
   };
@@ -213,7 +213,8 @@ class ServicoEncaminhamentoAEE {
                   }
                 });
               } else if (
-                questao.tipoQuestao === tipoQuestao.ComboMultiplaEscolha &&
+                (questao.tipoQuestao === tipoQuestao.ComboMultiplaEscolha ||
+                  questao.tipoQuestao === tipoQuestao.Checkbox) &&
                 questao?.resposta?.length
               ) {
                 questao.resposta.forEach(valorSelecionado => {
@@ -323,6 +324,14 @@ class ServicoEncaminhamentoAEE {
       codigoRF,
       codigoDRE,
     });
+  };
+
+  atribuirResponsavelEncaminhamento = (rfResponsavel, encaminhamentoId) => {
+    const params = {
+      rfResponsavel,
+      encaminhamentoId,
+    };
+    return api.post(`${urlPadrao}/atribuir-responsavel`, params);
   };
 }
 
