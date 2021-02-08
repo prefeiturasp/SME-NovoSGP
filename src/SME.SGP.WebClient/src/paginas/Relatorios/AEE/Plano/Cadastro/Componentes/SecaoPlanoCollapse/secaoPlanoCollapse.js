@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { useSelector } from 'react-redux';
-import DiasHorariosTabela from '~/componentes-sgp/QuestionarioDinamico/Componentes/DiasHorariosTabela/diasHorariosTabela';
 import CardCollapse from '~/componentes/cardCollapse';
 import MontarDadosPorSecao from '~/paginas/Relatorios/AEE/Encaminhamento/Cadastro/Componentes/SecaoEncaminhamento/DadosSecaoEncaminhamento/montarDadosPorSecao';
 import DadosSecaoPlano from './DadosSecaoPlano/dadosSecaoPlano';
@@ -20,7 +19,6 @@ const SecaoPlanoCollapse = props => {
           alt="secao-informacoes-plano--alt"
         >
           <>
-            <DiasHorariosTabela />
             <MontarDadosPorSecao dados={planoAEEDados?.secao} match={match} />
           </>
         </CardCollapse>

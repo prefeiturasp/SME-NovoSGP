@@ -6,6 +6,7 @@ import * as Yup from 'yup';
 import {
   CampoData,
   Colors,
+  Label,
   ModalConteudoHtml,
   momentSchema,
   SelectComponent,
@@ -16,6 +17,7 @@ const ModalCadastroDiasHorario = props => {
   const { onClose, exibirModal } = props;
 
   const [refForm, setRefForm] = useState({});
+  const [diasSemanaSelecionado, setDiasSemanaSelecionado] = useState([]);
 
   const valoresIniciais = {
     diaSemana: '',
@@ -63,11 +65,13 @@ const ModalCadastroDiasHorario = props => {
   ];
 
   const fecharModal = () => {
+    setDiasSemanaSelecionado([]);
     refForm.resetForm();
     onClose();
   };
 
   const onSalvar = valores => {
+    setDiasSemanaSelecionado([]);
     refForm.resetForm();
     onClose(valores);
   };
@@ -119,27 +123,33 @@ const ModalCadastroDiasHorario = props => {
                 name="diaSemana"
               />
             </div>
-            <div className="col-md-6 mb-2">
-              <CampoData
-                form={form}
-                name="horarioInicio"
-                label="Horário"
-                placeholder="09:00"
-                formatoData="HH:mm"
-                somenteHora
-              />
+            <div className="col-md-12 mb-2">
+              <div className="row">
+                <div className="col-md-12 mt-2">
+                  <Label text="Horário" />
+                </div>
+                <div className="col-md-6 mb-2">
+                  <CampoData
+                    form={form}
+                    name="horarioInicio"
+                    placeholder="09:00"
+                    formatoData="HH:mm"
+                    somenteHora
+                    label=""
+                  />
+                </div>
+                <div className="col-md-6 mb-2">
+                  <CampoData
+                    form={form}
+                    name="horarioTermino"
+                    placeholder="09:30"
+                    formatoData="HH:mm"
+                    somenteHora
+                    label=""
+                  />
+                </div>
+              </div>
             </div>
-            <div className="col-md-6 mb-2">
-              <CampoData
-                form={form}
-                name="horarioTermino"
-                label="Horário término"
-                placeholder="09:30"
-                formatoData="HH:mm"
-                somenteHora
-              />
-            </div>
-
             <div className="col-md-12 mt-2 d-flex justify-content-end">
               <Button
                 key="btn-voltar"

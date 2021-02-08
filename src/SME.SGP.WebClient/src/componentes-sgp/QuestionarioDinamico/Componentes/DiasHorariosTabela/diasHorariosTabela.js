@@ -10,7 +10,7 @@ import { Base, Colors } from '~/componentes/colors';
 import Label from '~/componentes/label';
 import { setQuestionarioDinamicoEmEdicao } from '~/redux/modulos/questionarioDinamico/actions';
 import { confirmar } from '~/servicos';
-import ModalCadastroAtendimentoClinico from './modalCadastroAtendimentoClinico';
+import ModalCadastroDiasHorario from './modalCadastroDiasHorarios';
 
 const DiasHorariosTabela = props => {
   const { label, questaoAtual, form, desabilitado } = props;
@@ -135,7 +135,7 @@ const DiasHorariosTabela = props => {
 
   return (
     <>
-      <ModalCadastroAtendimentoClinico
+      <ModalCadastroDiasHorario
         onClose={onCloseModal}
         exibirModal={exibirModal}
       />
