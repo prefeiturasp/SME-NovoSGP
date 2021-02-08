@@ -43,12 +43,14 @@ const EncaminhamentoAEELista = () => {
   const [listaUes, setListaUes] = useState([]);
   const [listaTurmas, setListaTurmas] = useState([]);
   const [listaSituacao, setListaSituacao] = useState([]);
+  const [listaResponsavel, setListaResponsavel] = useState([]);
 
   const [anoLetivo, setAnoLetivo] = useState();
   const [dreId, setDreId] = useState();
   const [ueId, setUeId] = useState();
   const [turmaId, setTurmaId] = useState();
   const [situacao, setSituacao] = useState();
+  const [responsavel, setResponsavel] = useState();
 
   const [
     alunoLocalizadorSelecionado,
@@ -61,6 +63,7 @@ const EncaminhamentoAEELista = () => {
   const [carregandoDres, setCarregandoDres] = useState(false);
   const [carregandoAnos, setCarregandoAnos] = useState(false);
   const [carregandoSituacao, setCarregandoSituacao] = useState(false);
+  const [carregandoResponsavel, setCarregandoResponsavel] = useState(false);
 
   useEffect(() => {
     verificaSomenteConsulta(permissoesTela);
@@ -91,7 +94,7 @@ const EncaminhamentoAEELista = () => {
     },
   ];
 
-  const filtrar = (dre, ue, turma, aluno, situa) => {
+  const filtrar = (dre, ue, turma, aluno, situa, responsa) => {
     if (anoLetivo && dre && listaDres?.length) {
       const dreSelecionada = listaDres.find(
         item => String(item.valor) === String(dre)
@@ -111,6 +114,7 @@ const EncaminhamentoAEELista = () => {
         turmaId: turmaSelecionada ? turmaSelecionada?.id : '',
         alunoCodigo: aluno,
         situacao: situa,
+        responsavel: responsa,
       };
       setFiltro({ ...params });
     }
@@ -175,6 +179,28 @@ const EncaminhamentoAEELista = () => {
     obterSituacoes();
   }, [obterSituacoes]);
 
+  console.log('cgs', carregandoSituacao);
+  const obterResponsaveis = useCallback(async () => {
+    setCarregandoResponsavel(true);
+    const resposta = await ServicoEncaminhamentoAEE.obterResponsaveis(
+      usuario.rf,
+      dreId
+    )
+      .catch(e => erros(e))
+      .finally(() => setCarregandoResponsavel(false));
+    if (resposta?.data?.length) {
+      setListaResponsavel(resposta.data);
+      return;
+    }
+    setListaSituacao([]);
+  }, [dreId, usuario.rf]);
+
+  useEffect(() => {
+    if (dreId) {
+      obterResponsaveis();
+    }
+  }, [dreId, obterResponsaveis]);
+
   const [carregandoUes, setCarregandoUes] = useState(false);
 
   const obterUes = useCallback(async () => {
@@ -225,7 +251,14 @@ const EncaminhamentoAEELista = () => {
     setListaTurmas([]);
     setTurmaId();
 
-    filtrar(dre, ueId, turmaId, alunoLocalizadorSelecionado, situacao);
+    filtrar(
+      dre,
+      ueId,
+      turmaId,
+      alunoLocalizadorSelecionado,
+      situacao,
+      responsavel
+    );
   };
 
   const obterDres = useCallback(async () => {
@@ -312,7 +345,14 @@ const EncaminhamentoAEELista = () => {
     setListaTurmas([]);
     setTurmaId();
 
-    filtrar(dreId, ue, turmaId, alunoLocalizadorSelecionado, situacao);
+    filtrar(
+      dreId,
+      ue,
+      turmaId,
+      alunoLocalizadorSelecionado,
+      situacao,
+      responsavel
+    );
   };
 
   const limparFiltrosSelecionados = () => {
@@ -339,22 +379,34 @@ const EncaminhamentoAEELista = () => {
   const onChangeTurma = turma => {
     setTurmaId(turma);
     setAlunoLocalizadorSelecionado();
-    filtrar(dreId, ueId, turma, '', situacao);
+    filtrar(dreId, ueId, turma, '', situacao, responsavel);
   };
 
   const onChangeLocalizadorEstudante = aluno => {
     if (aluno?.alunoCodigo && aluno?.alunoNome) {
       setAlunoLocalizadorSelecionado(aluno?.alunoCodigo);
-      filtrar(dreId, ueId, turmaId, aluno?.alunoCodigo, situacao);
+      filtrar(dreId, ueId, turmaId, aluno?.alunoCodigo, situacao, responsavel);
     } else {
       setAlunoLocalizadorSelecionado();
-      filtrar(dreId, ueId, turmaId, '', situacao);
+      filtrar(dreId, ueId, turmaId, '', situacao, responsavel);
     }
   };
 
   const onChangeSituacao = valor => {
     setSituacao(valor);
-    filtrar(dreId, ueId, turmaId, alunoLocalizadorSelecionado, valor);
+    filtrar(
+      dreId,
+      ueId,
+      turmaId,
+      alunoLocalizadorSelecionado,
+      valor,
+      responsavel
+    );
+  };
+
+  const onChangeResponsavel = valor => {
+    setResponsavel(valor);
+    filtrar(dreId, ueId, turmaId, alunoLocalizadorSelecionado, situacao, valor);
   };
 
   const onClickEditar = item => {
@@ -373,7 +425,8 @@ const EncaminhamentoAEELista = () => {
         ueId,
         turmaId,
         alunoLocalizadorSelecionado?.alunoCodigo,
-        situacao
+        situacao,
+        responsavel
       );
     }
   }, [dreId, ueId, listaDres, listaUes]);
@@ -458,7 +511,7 @@ const EncaminhamentoAEELista = () => {
                 />
               </Loader>
             </div>
-            <div className="col-sm-12 col-md-4 col-lg-3 col-xl-3 mb-2">
+            <div className="col-sm-12 col-md-6 col-lg-6 col-xl-6 mb-2">
               <Loader loading={carregandoTurmas} tip="">
                 <SelectComponent
                   id="turma"
@@ -473,7 +526,7 @@ const EncaminhamentoAEELista = () => {
                 />
               </Loader>
             </div>
-            <div className="col-sm-12 col-md-8 col-lg-6 col-xl-6 mb-2">
+            <div className="col-sm-12 col-md-6 col-lg-6 col-xl-6 mb-2">
               <div className="row">
                 <LocalizadorEstudante
                   id="estudante"
@@ -488,7 +541,7 @@ const EncaminhamentoAEELista = () => {
                 />
               </div>
             </div>
-            <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 mb-2">
+            <div className="col-sm-12 col-md-6 col-lg-6 col-xl-6 mb-2">
               <Loader loading={carregandoSituacao} tip="">
                 <SelectComponent
                   id="situacao"
@@ -500,6 +553,21 @@ const EncaminhamentoAEELista = () => {
                   onChange={onChangeSituacao}
                   valueSelect={situacao}
                   placeholder="Situação"
+                />
+              </Loader>
+            </div>
+            <div className="col-sm-12 col-md-6 col-lg-6 col-xl-6 mb-4">
+              <Loader loading={carregandoResponsavel} tip="">
+                <SelectComponent
+                  id="responsavel"
+                  label="Responsável"
+                  lista={listaResponsavel}
+                  valueOption="codigo"
+                  valueText="descricao"
+                  disabled={listaResponsavel?.length === 1}
+                  onChange={onChangeResponsavel}
+                  valueSelect={responsavel}
+                  placeholder="Responsável"
                 />
               </Loader>
             </div>

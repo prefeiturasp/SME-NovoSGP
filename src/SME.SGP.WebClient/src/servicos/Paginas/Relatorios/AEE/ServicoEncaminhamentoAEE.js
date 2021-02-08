@@ -317,6 +317,13 @@ class ServicoEncaminhamentoAEE {
   enviarParaAnaliseEncaminhamento = encaminhamentoId => {
     return api.post(`${urlPadrao}/enviar-analise/${encaminhamentoId}`);
   };
+
+  obterResponsaveis = (codigoRF, codigoDRE) => {
+    return api.post(`${urlPadrao}/responsavel/pesquisa`, {
+      codigoRF,
+      codigoDRE,
+    });
+  };
 }
 
 export default new ServicoEncaminhamentoAEE();
