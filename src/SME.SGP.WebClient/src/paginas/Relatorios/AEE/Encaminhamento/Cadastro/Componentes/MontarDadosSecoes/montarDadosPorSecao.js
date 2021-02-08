@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import QuestionarioDinamico from '~/componentes-sgp/QuestionarioDinamico/questionarioDinamico';
-import situacaoAEE from '~/dtos/situacaoAEE';
 import { setQuestionarioDinamicoEmEdicao } from '~/redux/modulos/questionarioDinamico/actions';
 import { erros } from '~/servicos';
 import ServicoEncaminhamentoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoEncaminhamentoAEE';
@@ -60,10 +59,7 @@ const MontarDadosPorSecao = props => {
 
     return (
       desabilitarCamposEncaminhamentoAEE ||
-      (encaminhamentoId && !dadosEncaminhamento.podeEditar) ||
-      dadosEncaminhamento?.situacao === situacaoAEE.Finalizado ||
-      dadosEncaminhamento?.situacao === situacaoAEE.Encerrado ||
-      dadosEncaminhamento?.situacao === situacaoAEE.Analise
+      (encaminhamentoId && !dadosEncaminhamento.podeEditar)
     );
   };
 

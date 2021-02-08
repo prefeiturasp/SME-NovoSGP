@@ -32,7 +32,7 @@ const DetalhesResponsavel = props => {
   const { codigoRF, nomeServidor } = props;
 
   return (
-    <div className="col-md-12">
+    <div className="col-md-12 mb-4">
       <CabecalhoDetalhesResponsavel className="col-md-12">
         <span>PAEE/PAAI resposável</span>
       </CabecalhoDetalhesResponsavel>

@@ -213,7 +213,8 @@ class ServicoEncaminhamentoAEE {
                   }
                 });
               } else if (
-                questao.tipoQuestao === tipoQuestao.ComboMultiplaEscolha &&
+                (questao.tipoQuestao === tipoQuestao.ComboMultiplaEscolha ||
+                  questao.tipoQuestao === tipoQuestao.Checkbox) &&
                 questao?.resposta?.length
               ) {
                 questao.resposta.forEach(valorSelecionado => {
@@ -316,6 +317,14 @@ class ServicoEncaminhamentoAEE {
 
   enviarParaAnaliseEncaminhamento = encaminhamentoId => {
     return api.post(`${urlPadrao}/enviar-analise/${encaminhamentoId}`);
+  };
+
+  atribuirResponsavelEncaminhamento = (rfResponsavel, encaminhamentoId) => {
+    const params = {
+      rfResponsavel,
+      encaminhamentoId,
+    };
+    return api.post(`${urlPadrao}/atribuir-responsavel`, params);
   };
 }
 

@@ -5,6 +5,7 @@ import { Card } from '~/componentes';
 import { Cabecalho } from '~/componentes-sgp';
 import CollapseLocalizarEstudante from '~/componentes-sgp/CollapseLocalizarEstudante/collapseLocalizarEstudante';
 import { RotasDto } from '~/dtos';
+import { setDadosCollapseAtribuicaoResponsavel } from '~/redux/modulos/collapseAtribuicaoResponsavel/actions';
 import {
   setDadosCollapseLocalizarEstudante,
   setLimparDadosLocalizarEstudante,
@@ -60,7 +61,7 @@ const EncaminhamentoAEECadastro = ({ match }) => {
       .finally(() => dispatch(setExibirLoaderEncaminhamentoAEE(false)));
 
     if (resultado?.data) {
-      const { aluno, turma } = resultado?.data;
+      const { aluno, turma, responsavelEncaminhamentoAEE } = resultado?.data;
 
       const dadosObjectCard = {
         nome: aluno.nome,
@@ -81,6 +82,13 @@ const EncaminhamentoAEECadastro = ({ match }) => {
       dispatch(
         setDadosCollapseLocalizarEstudante(dadosCollapseLocalizarEstudante)
       );
+
+      const dadosResponsavel = {
+        codigoRF: responsavelEncaminhamentoAEE?.rf,
+        nomeServidor: responsavelEncaminhamentoAEE?.nome,
+        id: responsavelEncaminhamentoAEE?.id,
+      };
+      dispatch(setDadosCollapseAtribuicaoResponsavel(dadosResponsavel));
 
       dispatch(setDadosEncaminhamento(resultado?.data));
     }
@@ -138,7 +146,7 @@ const EncaminhamentoAEECadastro = ({ match }) => {
                 />
               </div>
             )}
-            <MontarDadosSecoes />
+            <MontarDadosSecoes match={match} />
           </div>
         </div>
       </Card>

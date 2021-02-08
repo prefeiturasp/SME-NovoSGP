@@ -1,10 +1,7 @@
 import produce from 'immer';
 
 const inicial = {
-  dadosCollapseAtribuicaoResponsavel: {
-    codigoRF: 123456,
-    nomeServidor: 'Nome teste',
-  },
+  dadosCollapseAtribuicaoResponsavel: {},
 };
 
 export default function collapseAtribuicaoResponsavel(state = inicial, action) {
@@ -13,7 +10,7 @@ export default function collapseAtribuicaoResponsavel(state = inicial, action) {
       case '@collapseAtribuicaoResponsavel/setDadosCollapseAtribuicaoResponsavel': {
         return {
           ...draft,
-          dadosCollapseLocalizarEstudante: action.payload,
+          dadosCollapseAtribuicaoResponsavel: action.payload,
         };
       }
       case '@collapseAtribuicaoResponsavel/setLimparDadosAtribuicaoResponsavel': {

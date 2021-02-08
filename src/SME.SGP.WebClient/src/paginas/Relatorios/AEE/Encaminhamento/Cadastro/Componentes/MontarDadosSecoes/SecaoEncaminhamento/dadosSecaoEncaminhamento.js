@@ -2,8 +2,8 @@ import { Steps } from 'antd';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { ContainerStepsEncaminhamento } from '../../../../encaminhamentoAEECadastro.css';
-import DadosPorSecaoCollapse from './dadosPorSecaoCollapse';
+import { ContainerStepsEncaminhamento } from '../../../encaminhamentoAEECadastro.css';
+import DadosPorSecaoCollapse from '../dadosPorSecaoCollapse';
 
 const { Step } = Steps;
 
@@ -21,21 +21,23 @@ const DadosSecaoEncaminhamento = props => {
   return dadosCollapseLocalizarEstudante?.codigoAluno &&
     dadosSecoesPorEtapaDeEncaminhamentoAEE?.length ? (
     <ContainerStepsEncaminhamento direction="vertical" current={1}>
-      {dadosSecoesPorEtapaDeEncaminhamentoAEE.map(item => {
-        return (
-          <Step
-            key={item?.questionarioId}
-            status={item?.concluido ? 'finish' : 'process'}
-            title={
-              <DadosPorSecaoCollapse
-                dados={item}
-                index={item?.questionarioId}
-                match={match}
-              />
-            }
-          />
-        );
-      })}
+      {dadosSecoesPorEtapaDeEncaminhamentoAEE
+        .filter(d => d.etapa === 1 || d.etapa === 2)
+        .map(item => {
+          return (
+            <Step
+              key={item?.questionarioId}
+              status={item?.concluido ? 'finish' : 'process'}
+              title={
+                <DadosPorSecaoCollapse
+                  dados={item}
+                  index={item?.questionarioId}
+                  match={match}
+                />
+              }
+            />
+          );
+        })}
     </ContainerStepsEncaminhamento>
   ) : (
     ''
