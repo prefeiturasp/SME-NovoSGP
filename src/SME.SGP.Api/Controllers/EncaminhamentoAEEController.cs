@@ -154,5 +154,15 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(codigoEstudante));
         }
+
+        [HttpGet]
+        [Route("estudante/{codigoEstudante}/situacao")]
+        [ProducesResponseType(typeof(SituacaoEncaminhamentoPorEstudanteDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.AEE_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterSituacaoEncaminhamentoPorEstudante(string codigoEstudante, [FromServices] IObterSituacaoEncaminhamentoPorEstudanteUseCase useCase)
+        {
+            return Ok(await useCase.Executar(codigoEstudante));
+        }
     }
 }
