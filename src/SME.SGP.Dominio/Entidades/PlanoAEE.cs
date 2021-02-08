@@ -7,7 +7,7 @@ namespace SME.SGP.Dominio
     {
         public PlanoAEE()
         {
-            Questoes = new List<QuestaoEncaminhamentoAEE>();
+            Questoes = new List<PlanoAEEQuestao>();
         }
 
         public Turma Turma { get; set; }
@@ -17,6 +17,6 @@ namespace SME.SGP.Dominio
         public string AlunoNome { get; set; }
         public SituacaoPlanoAEE Situacao { get; set; }
 
-        public List<QuestaoEncaminhamentoAEE> Questoes { get; set; }
+        public List<PlanoAEEQuestao> Questoes { get; set; }
     }
 }
