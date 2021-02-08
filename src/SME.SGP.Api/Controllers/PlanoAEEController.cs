@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AlunoDto = SME.SGP.Infra.Dtos.Relatorios.HistoricoEscolar.AlunoDto;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -62,7 +61,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("salvar")]
         [ProducesResponseType(typeof(bool), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> Salvar([FromBody] PlanoAeeDto planoAeeDto, [FromServices] ISalvarPlanoAEEUseCase usecase)
+        public async Task<IActionResult> Salvar([FromBody] PlanoAEEPersistenciaDto planoAeeDto, [FromServices] ISalvarPlanoAEEUseCase usecase)
         {
             return Ok(await usecase.Executar(planoAeeDto));
         }

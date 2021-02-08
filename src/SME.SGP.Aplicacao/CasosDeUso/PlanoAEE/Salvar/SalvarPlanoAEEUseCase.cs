@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<long> Executar(PlanoAeeDto planoAeeDto)
+        public async Task<long> Executar(PlanoAEEPersistenciaDto planoAeeDto)
         {
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(planoAeeDto.TurmaId));
             if (turma == null)
