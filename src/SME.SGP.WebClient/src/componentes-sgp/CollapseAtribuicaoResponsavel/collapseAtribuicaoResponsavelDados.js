@@ -10,7 +10,13 @@ import {
 import LocalizadorFuncionario from '../LocalizadorFuncionario';
 
 const CollapseAtribuicaoResponsavelDados = props => {
-  const { changeLocalizadorResponsavel, clickCancelar, codigoTurma } = props;
+  const {
+    validarAntesProximoPasso,
+    changeLocalizadorResponsavel,
+    clickCancelar,
+    codigoTurma,
+    url,
+  } = props;
   const dispatch = useDispatch();
 
   const [
@@ -23,7 +29,6 @@ const CollapseAtribuicaoResponsavelDados = props => {
   }, [dispatch]);
 
   const onChangeLocalizador = funcionario => {
-    // TODO
     if (funcionario?.codigoRF && funcionario?.nomeServidor) {
       setFuncionarioLocalizadorSelecionado({
         codigoRF: funcionario?.codigoRF,
@@ -36,13 +41,20 @@ const CollapseAtribuicaoResponsavelDados = props => {
     }
   };
 
-  const onClickProximoPasso = () => {
+  const onClickProximoPasso = async () => {
     const params = {
       codigoRF: funcionarioLocalizadorSelecionado.codigoRF,
       nomeServidor: funcionarioLocalizadorSelecionado.nomeServidor,
     };
 
-    dispatch(setDadosCollapseAtribuicaoResponsavel(params));
+    let continuar = true;
+    if (validarAntesProximoPasso) {
+      continuar = await validarAntesProximoPasso(params);
+    }
+
+    if (continuar) {
+      dispatch(setDadosCollapseAtribuicaoResponsavel(params));
+    }
   };
 
   const onClickCancelar = () => {
@@ -59,8 +71,8 @@ const CollapseAtribuicaoResponsavelDados = props => {
           <LocalizadorFuncionario
             id="funcionario"
             onChange={onChangeLocalizador}
-            // valorInicial={funcionarioLocalizadorSelecionado?.codigoRF}
-            codigoTurma="2257361"
+            codigoTurma={codigoTurma}
+            url={url}
           />
         </div>
       </div>
@@ -88,15 +100,19 @@ const CollapseAtribuicaoResponsavelDados = props => {
 };
 
 CollapseAtribuicaoResponsavelDados.propTypes = {
+  validarAntesProximoPasso: PropTypes.func,
   changeLocalizadorResponsavel: PropTypes.func,
   clickCancelar: PropTypes.func,
   codigoTurma: PropTypes.string,
+  url: PropTypes.string,
 };
 
 CollapseAtribuicaoResponsavelDados.defaultProps = {
+  validarAntesProximoPasso: null,
   changeLocalizadorResponsavel: () => {},
   clickCancelar: () => {},
-  codigoTurma: '2257361',
+  codigoTurma: '',
+  url: '',
 };
 
 export default CollapseAtribuicaoResponsavelDados;
