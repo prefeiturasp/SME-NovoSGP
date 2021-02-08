@@ -17,7 +17,6 @@ namespace SME.SGP.Api.Controllers
 
         [HttpGet]
         [Route("situacoes")]
-        [ProducesResponseType(typeof(IEnumerable<AlunoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         public IActionResult ObterSituacoes()
