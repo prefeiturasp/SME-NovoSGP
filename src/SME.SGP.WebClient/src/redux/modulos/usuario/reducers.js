@@ -101,6 +101,9 @@ export default function usuario(state = inicial, action) {
       case '@usuario/setPermissoes':
         draft.permissoes = action.payload;
         break;
+      case '@usuario/setModificarSenha':
+        draft.modificarSenha = action.payload;
+        break;
       default:
         break;
     }
