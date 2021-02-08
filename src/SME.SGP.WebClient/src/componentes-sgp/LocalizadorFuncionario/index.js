@@ -17,6 +17,7 @@ const LocalizadorFuncionario = props => {
     exibirCampoRf,
     valorInicial,
     placeholder,
+    url,
   } = props;
 
   const [dataSource, setDataSource] = useState([]);
@@ -76,7 +77,10 @@ const LocalizadorFuncionario = props => {
       params.codigoTurma = codigoTurma;
     }
     setExibirLoader(true);
-    const retorno = await ServicoLocalizadorFuncionario.buscarPorNome(params)
+    const retorno = await ServicoLocalizadorFuncionario.buscarPorNome(
+      params,
+      url
+    )
       .catch(e => {
         erros(e);
         limparDados();
@@ -126,7 +130,8 @@ const LocalizadorFuncionario = props => {
 
       setExibirLoader(true);
       const retorno = await ServicoLocalizadorFuncionario.buscarPorCodigo(
-        params
+        params,
+        url
       )
         .catch(e => {
           if (e?.response?.status === 601) {
@@ -281,6 +286,7 @@ LocalizadorFuncionario.propTypes = {
   exibirCampoRf: PropTypes.bool,
   valorInicial: PropTypes.oneOfType([PropTypes.any]),
   placeholder: PropTypes.string,
+  url: PropTypes.string,
 };
 
 LocalizadorFuncionario.defaultProps = {
@@ -292,6 +298,7 @@ LocalizadorFuncionario.defaultProps = {
   exibirCampoRf: true,
   valorInicial: '',
   placeholder: '',
+  url: '',
 };
 
 export default LocalizadorFuncionario;
