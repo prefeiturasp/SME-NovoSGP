@@ -3,7 +3,6 @@ import { useSelector } from 'react-redux';
 import { Colors } from '~/componentes';
 import Button from '~/componentes/button';
 import { RotasDto } from '~/dtos';
-import { history } from '~/servicos';
 
 const BotaoVerSituacaoEncaminhamentoAEE = () => {
   const planoAEESituacaoEncaminhamentoAEE = useSelector(
@@ -11,9 +10,10 @@ const BotaoVerSituacaoEncaminhamentoAEE = () => {
   );
 
   const onClick = () => {
-    history.push(
+    const win = window.open(
       `${RotasDto.RELATORIO_AEE_ENCAMINHAMENTO}/editar/${planoAEESituacaoEncaminhamentoAEE?.id}`
     );
+    win.focus();
   };
 
   return planoAEESituacaoEncaminhamentoAEE?.id ? (
