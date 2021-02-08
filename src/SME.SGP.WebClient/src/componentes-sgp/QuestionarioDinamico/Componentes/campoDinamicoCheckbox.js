@@ -1,22 +1,23 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { CheckboxComponent } from '~/componentes';
+import CheckboxGroup from '~/componentes/checkboxGroup';
 
 const CampoDinamicoCheckbox = props => {
-  const { questaoAtual, form, label, desabilitado, onChange } = props;
+  const { questaoAtual, form, label, desabilitado } = props;
+
+  const options = questaoAtual?.opcaoResposta.map(item => {
+    return { label: item.nome, value: item.id };
+  });
 
   return (
     <div className="col-md-12 mb-3">
-      <CheckboxComponent
-        label={label}
+      {label}
+      <CheckboxGroup
+        options={options}
         disabled={desabilitado}
         id={String(questaoAtual?.id)}
         name={String(questaoAtual?.id)}
         form={form}
-        onChangeCheckbox={e => {
-          const valorAtualSelecionado = e.target.checked;
-          onChange(valorAtualSelecionado);
-        }}
       />
     </div>
   );
@@ -27,7 +28,6 @@ CampoDinamicoCheckbox.propTypes = {
   form: PropTypes.oneOfType([PropTypes.any]),
   label: PropTypes.oneOfType([PropTypes.any]),
   desabilitado: PropTypes.bool,
-  onChange: PropTypes.oneOfType([PropTypes.any]),
 };
 
 CampoDinamicoCheckbox.defaultProps = {
@@ -35,7 +35,6 @@ CampoDinamicoCheckbox.defaultProps = {
   form: null,
   label: '',
   desabilitado: false,
-  onChange: () => {},
 };
 
 export default CampoDinamicoCheckbox;
