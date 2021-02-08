@@ -5,6 +5,53 @@ import {
 } from '~/redux/modulos/questionarioDinamico/actions';
 
 class QuestionarioDinamicoFuncoes {
+  onChangeCampoCheckbox = (questaoAtual, form, valorAtualSelecionado) => {
+    const valoreAnteriorSelecionado = form.values[questaoAtual.id] || [];
+
+    const estaAdicionandoNovos =
+      valorAtualSelecionado?.length > valoreAnteriorSelecionado?.length;
+
+    if (estaAdicionandoNovos) {
+      const checkboxNovosMarcados = valorAtualSelecionado.filter(
+        idCampo => !valoreAnteriorSelecionado.includes(idCampo)
+      );
+
+      if (checkboxNovosMarcados?.length) {
+        checkboxNovosMarcados.forEach(n => {
+          const opcaoAtual = questaoAtual?.opcaoResposta.find(
+            c => String(c.id) === String(n || '')
+          );
+
+          if (opcaoAtual?.questoesComplementares?.length) {
+            opcaoAtual.questoesComplementares.forEach(questaoComplementar => {
+              form.setFieldValue(questaoComplementar.id, '');
+              form.values[questaoComplementar.id] = '';
+            });
+          }
+        });
+      }
+    } else if (!estaAdicionandoNovos) {
+      const checkboxDesmarcados = valoreAnteriorSelecionado.filter(
+        idCampo => !valorAtualSelecionado.includes(idCampo)
+      );
+
+      if (checkboxDesmarcados?.length) {
+        checkboxDesmarcados.forEach(n => {
+          const opcaoAtual = questaoAtual?.opcaoResposta.find(
+            c => String(c.id) === String(n || '')
+          );
+
+          if (opcaoAtual?.questoesComplementares?.length) {
+            opcaoAtual.questoesComplementares.forEach(questaoComplementar => {
+              delete form.values[questaoComplementar.id];
+              form.unregisterField(questaoComplementar.id);
+            });
+          }
+        });
+      }
+    }
+  };
+
   onChangeCamposComOpcaoResposta = (
     questaoAtual,
     form,
@@ -276,8 +323,10 @@ class QuestionarioDinamicoFuncoes {
           questaoAtual = item;
         } else if (item?.opcaoResposta?.length) {
           item.opcaoResposta.forEach(opcaoResposta => {
-            if (opcaoResposta.questoesComplementares[0]) {
-              obterQuestao(opcaoResposta.questoesComplementares[0]);
+            if (opcaoResposta?.questoesComplementares?.length) {
+              opcaoResposta.questoesComplementares.forEach(questao => {
+                obterQuestao(questao);
+              });
             }
           });
         }

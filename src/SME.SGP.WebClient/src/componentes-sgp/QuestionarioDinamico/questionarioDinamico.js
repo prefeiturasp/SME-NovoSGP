@@ -108,29 +108,33 @@ const QuestionarioDinamico = props => {
         (questaoAtual?.tipoQuestao === tipoQuestao.ComboMultiplaEscolha ||
           questaoAtual?.tipoQuestao === tipoQuestao.Checkbox)
       ) {
-        const idQuestaoComResposta = valorRespostaAtual.find(valorSalvo => {
+        const idsQuestoesComResposta = valorRespostaAtual.filter(valorSalvo => {
           const opcaoResposta = questaoAtual?.opcaoResposta.find(
             q => String(q.id) === String(valorSalvo)
           );
 
-          if (opcaoResposta?.questoesComplementares[0]?.resposta?.length) {
+          if (
+            opcaoResposta?.questoesComplementares?.find(q => q.resposta?.length)
+          ) {
             return true;
           }
           return false;
         });
 
-        if (idQuestaoComResposta) {
-          const questaoComplmentarComResposta = questaoAtual?.opcaoResposta.find(
-            q => String(q.id) === String(idQuestaoComResposta)
-          );
-
-          if (questaoComplmentarComResposta?.questoesComplementares?.length) {
-            questaoComplmentarComResposta.questoesComplementares.forEach(
-              questao => {
-                montarDados(questao);
-              }
+        if (idsQuestoesComResposta?.length) {
+          idsQuestoesComResposta.forEach(idQuestao => {
+            const questaoComplmentarComResposta = questaoAtual?.opcaoResposta.find(
+              q => String(q.id) === String(idQuestao)
             );
-          }
+
+            if (questaoComplmentarComResposta?.questoesComplementares?.length) {
+              questaoComplmentarComResposta.questoesComplementares.forEach(
+                questao => {
+                  montarDados(questao);
+                }
+              );
+            }
+          });
         }
       } else if (
         valorRespostaAtual &&
@@ -282,6 +286,14 @@ const QuestionarioDinamico = props => {
             form={form}
             label={label}
             desabilitado={desabilitarCampos}
+            onChange={valorAtual => {
+              QuestionarioDinamicoFuncoes.onChangeCampoCheckbox(
+                questaoAtual,
+                form,
+                valorAtual
+              );
+              dispatch(setQuestionarioDinamicoEmEdicao(true));
+            }}
           />
         );
         break;

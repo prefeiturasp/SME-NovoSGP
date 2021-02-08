@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import CollapseAtribuicaoResponsavel from '~/componentes-sgp/CollapseAtribuicaoResponsavel/collapseAtribuicaoResponsavel';
-import situacaoAEE from '~/dtos/situacaoAEE';
 import { erros } from '~/servicos';
 import ServicoEncaminhamentoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoEncaminhamentoAEE';
 
@@ -30,7 +29,7 @@ const AtribuicaoResponsavel = props => {
     },
   };
 
-  return dadosEncaminhamento?.situacao === situacaoAEE.AtribuicaoResponsavel ? (
+  return dadosEncaminhamento?.podeAtribuirResponsavel ? (
     <CollapseAtribuicaoResponsavel {...params} />
   ) : (
     ''

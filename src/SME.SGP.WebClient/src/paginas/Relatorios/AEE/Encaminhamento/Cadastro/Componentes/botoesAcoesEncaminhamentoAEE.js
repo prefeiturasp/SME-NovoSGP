@@ -262,12 +262,10 @@ const BotoesAcoesEncaminhamentoAEE = props => {
         onClick={onClickEncerrar}
         hidden={
           !dadosEncaminhamento?.situacao ||
-          dadosEncaminhamento?.situacao === situacaoAEE.Rascunho
+          dadosEncaminhamento?.situacao !== situacaoAEE.Encaminhado
         }
         disabled={
-          desabilitarCamposEncaminhamentoAEE ||
-          !dadosEncaminhamento?.podeEditar ||
-          dadosEncaminhamento?.situacao === situacaoAEE.Analise
+          desabilitarCamposEncaminhamentoAEE || !dadosEncaminhamento?.podeEditar
         }
       />
       <Button
@@ -280,12 +278,10 @@ const BotoesAcoesEncaminhamentoAEE = props => {
         onClick={onClickEncaminharAEE}
         hidden={
           !dadosEncaminhamento?.situacao ||
-          dadosEncaminhamento?.situacao === situacaoAEE.Rascunho
+          dadosEncaminhamento?.situacao !== situacaoAEE.Encaminhado
         }
         disabled={
-          desabilitarCamposEncaminhamentoAEE ||
-          !dadosEncaminhamento?.podeEditar ||
-          dadosEncaminhamento?.situacao === situacaoAEE.Analise
+          desabilitarCamposEncaminhamentoAEE || !dadosEncaminhamento?.podeEditar
         }
       />
     </>
