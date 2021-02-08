@@ -9,5 +9,6 @@ namespace SME.SGP.Infra
         public bool AulaCj { get; set; }
         public DateTime Data { get; set; }
         public string Planejamento { get; set; }
+        public string PlanejamentoSimples { get; set; }
     }
 }
