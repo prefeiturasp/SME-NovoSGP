@@ -1,18 +1,39 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import styled from 'styled-components';
 import { RadioGroupButton } from '~/componentes';
+import Label from '~/componentes/label';
+
+const ContainerRadioGroupButton = styled.div`
+  .ant-radio-group {
+    display: flex;
+
+    .ant-radio-wrapper {
+      display: flex;
+      align-items: center;
+    }
+  }
+
+  label {
+    margin-bottom: 0;
+  }
+`;
 
 const CampoDinamicoRadio = props => {
   const { questaoAtual, form, label, desabilitado, onChange } = props;
 
   const opcoes = questaoAtual?.opcaoResposta.map(item => {
-    return { label: item.nome, value: item.id };
+    return {
+      label: <Label text={item.nome} observacaoText={item.observacao} />,
+      value: item.id,
+    };
   });
 
   return (
-    <div className="col-md-12 mb-3">
+    <ContainerRadioGroupButton className="col-md-12 mb-3">
       {label}
       <RadioGroupButton
+        className="mt-2"
         id={String(questaoAtual?.id)}
         name={String(questaoAtual?.id)}
         form={form}
@@ -23,7 +44,7 @@ const CampoDinamicoRadio = props => {
           onChange(valorAtualSelecionado);
         }}
       />
-    </div>
+    </ContainerRadioGroupButton>
   );
 };
 
