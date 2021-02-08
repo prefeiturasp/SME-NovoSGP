@@ -15,41 +15,6 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<IEnumerable<Questao>> ObterListaPorQuestionario(long questionarioId)
-        {
-            var query = @"select q.*, op.*, oqc.*
-                          from questao q 
-                          left join opcao_resposta op on op.questao_id = q.id
-                          left join opcao_questao_complementar oqc on oqc.opcao_resposta_id = op.id
-                         where q.questionario_id = @questionarioId ";
-
-            var lookup = new Dictionary<long, Questao>();
-            await database.Conexao.QueryAsync<Questao, OpcaoResposta, OpcaoQuestaoComplementar, Questao>(query,
-                (questao, opcaoResposta, OpcaoQuestaoComplementar) =>
-                {
-                    var q = new Questao();
-                    if (!lookup.TryGetValue(questao.Id, out q))
-                    {
-                        q = questao;
-                        lookup.Add(q.Id, q);
-                    }
-
-                    if (opcaoResposta != null)
-                    {
-                        q.OpcoesRespostas.Add(opcaoResposta);
-                    }
-
-                    if(OpcaoQuestaoComplementar != null)
-                    {
-                        opcaoResposta.QuestoesComplementares.Add(OpcaoQuestaoComplementar);
-                    }
-
-                    return q;
-                }, new { questionarioId });
-
-            return lookup.Values;
-        }
-
         public async Task<IEnumerable<long>> ObterQuestoesPorSecaoId(long encaminhamentoAEESecaoId)
         {
             var query = "select id from questao_encaminhamento_aee qea where encaminhamento_aee_secao_id = @encaminhamentoAEESecaoId";

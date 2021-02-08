@@ -55,5 +55,26 @@ namespace SME.SGP.Api.Controllers
             };
             return Ok(paginacao);
         }
+
+        [HttpGet]
+        [Route("{planoAeeId}")]
+        [ProducesResponseType(typeof(PlanoAEEDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public IActionResult ObterPlanoAee(long? planoAeeId, [FromServices] IObterPlanoAEEPorIdUseCase useCase)
+        {
+            return Ok(useCase.Executar(planoAeeId));
+        }
+
+        [HttpGet]
+        [Route("versao/{versaoPlanoId}")]
+        [ProducesResponseType(typeof(IEnumerable<QuestaoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public IActionResult ObterPlanoAeePorVersao(long versaoPlanoId, [FromServices] IObterQuestoesPlanoAEEPorVersaoUseCase useCase)
+        {
+            return Ok(useCase.Executar(versaoPlanoId));
+        }
+
     }
 }
