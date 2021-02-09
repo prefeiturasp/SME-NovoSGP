@@ -134,11 +134,7 @@ const LocalizadorFuncionario = props => {
         url
       )
         .catch(e => {
-          if (e?.response?.status === 601) {
-            erro('Funcionário não encontrado no EOL');
-          } else {
-            erros(e);
-          }
+          erros(e);
           limparDados();
         })
         .finally(() => setExibirLoader(false));
@@ -163,6 +159,7 @@ const LocalizadorFuncionario = props => {
         }));
         onChange(funcionarioRetorno);
       } else {
+        erro('Funcionário não encontrado');
         setDataSource([]);
         setDesabilitarCampo(() => ({
           codigoRF: false,

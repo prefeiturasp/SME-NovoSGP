@@ -4,9 +4,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setDadosSecoesPorEtapaDeEncaminhamentoAEE } from '~/redux/modulos/encaminhamentoAEE/actions';
 import { erros } from '~/servicos';
 import ServicoEncaminhamentoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoEncaminhamentoAEE';
+import MarcadorSituacaoAEE from '../MarcadorSituacaoAEE/marcadorSituacaoAEE';
+import AtribuicaoResponsavel from './atribuicaoResponsavel';
 import SecaoEncaminhamentoCollapse from './SecaoEncaminhamento/secaoEncaminhamentoCollapse';
 import SecaoParecerAEECollapse from './SecaoParecerAEE/secaoParecerAEECollapse';
-import AtribuicaoResponsavel from './atribuicaoResponsavel';
 
 const MontarDadosSecoes = ({ match }) => {
   const dispatch = useDispatch();
@@ -45,6 +46,9 @@ const MontarDadosSecoes = ({ match }) => {
 
   return (
     <>
+      <div className="col-md-12 mb-2 d-flex justify-content-end">
+        <MarcadorSituacaoAEE />
+      </div>
       <div className="col-md-12 mb-2">
         <SecaoEncaminhamentoCollapse match={match} />
       </div>

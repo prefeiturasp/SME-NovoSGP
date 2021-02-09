@@ -5,24 +5,14 @@ import { Card } from '~/componentes';
 import { Cabecalho } from '~/componentes-sgp';
 import CollapseLocalizarEstudante from '~/componentes-sgp/CollapseLocalizarEstudante/collapseLocalizarEstudante';
 import { RotasDto } from '~/dtos';
-import { setDadosCollapseAtribuicaoResponsavel } from '~/redux/modulos/collapseAtribuicaoResponsavel/actions';
+import { setLimparDadosAtribuicaoResponsavel } from '~/redux/modulos/collapseAtribuicaoResponsavel/actions';
+import { setLimparDadosLocalizarEstudante } from '~/redux/modulos/collapseLocalizarEstudante/actions';
 import {
-  setDadosCollapseLocalizarEstudante,
-  setLimparDadosLocalizarEstudante,
-} from '~/redux/modulos/collapseLocalizarEstudante/actions';
-import {
-  setDadosEncaminhamento,
   setDesabilitarCamposEncaminhamentoAEE,
-  setExibirLoaderEncaminhamentoAEE,
   setLimparDadosEncaminhamento,
 } from '~/redux/modulos/encaminhamentoAEE/actions';
-import { setDadosObjectCardEstudante } from '~/redux/modulos/objectCardEstudante/actions';
 import { setLimparDadosQuestionarioDinamico } from '~/redux/modulos/questionarioDinamico/actions';
-import {
-  erros,
-  setBreadcrumbManual,
-  verificaSomenteConsulta,
-} from '~/servicos';
+import { setBreadcrumbManual, verificaSomenteConsulta } from '~/servicos';
 import ServicoEncaminhamentoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoEncaminhamentoAEE';
 import BotoesAcoesEncaminhamentoAEE from './Componentes/botoesAcoesEncaminhamentoAEE';
 import LoaderEncaminhamento from './Componentes/LoaderEncaminhamento/loaderEncaminhamento';
@@ -53,46 +43,8 @@ const EncaminhamentoAEECadastro = ({ match }) => {
   const obterEncaminhamentoPorId = useCallback(async () => {
     const encaminhamentoId = match?.params?.id;
 
-    dispatch(setExibirLoaderEncaminhamentoAEE(true));
-    const resultado = await ServicoEncaminhamentoAEE.obterEncaminhamentoPorId(
-      encaminhamentoId
-    )
-      .catch(e => erros(e))
-      .finally(() => dispatch(setExibirLoaderEncaminhamentoAEE(false)));
-
-    if (resultado?.data) {
-      const { aluno, turma, responsavelEncaminhamentoAEE } = resultado?.data;
-
-      const dadosObjectCard = {
-        nome: aluno.nome,
-        numeroChamada: aluno.numeroAlunoChamada,
-        dataNascimento: aluno.dataNascimento,
-        codigoEOL: aluno.codigoAluno,
-        situacao: aluno.situacao,
-        dataSituacao: aluno.dataSituacao,
-      };
-      dispatch(setDadosObjectCardEstudante(dadosObjectCard));
-
-      const dadosCollapseLocalizarEstudante = {
-        anoLetivo: turma.anoLetivo,
-        codigoAluno: aluno.codigoAluno,
-        codigoTurma: turma.codigo,
-        turmaId: turma.id,
-      };
-      dispatch(
-        setDadosCollapseLocalizarEstudante(dadosCollapseLocalizarEstudante)
-      );
-
-      const dadosResponsavel = {
-        codigoRF: responsavelEncaminhamentoAEE?.rf,
-        nomeServidor: responsavelEncaminhamentoAEE?.nome,
-        id: responsavelEncaminhamentoAEE?.id,
-      };
-      dispatch(setDadosCollapseAtribuicaoResponsavel(dadosResponsavel));
-
-      dispatch(setDadosEncaminhamento(resultado?.data));
-    }
-  }, [match, dispatch]);
+    ServicoEncaminhamentoAEE.obterEncaminhamentoPorId(encaminhamentoId);
+  }, [match]);
 
   useEffect(() => {
     const encaminhamentoId = match?.params?.id;
@@ -110,6 +62,7 @@ const EncaminhamentoAEECadastro = ({ match }) => {
     return () => {
       limparDadosEncaminhamento();
       dispatch(setLimparDadosLocalizarEstudante());
+      dispatch(setLimparDadosAtribuicaoResponsavel());
     };
   }, [dispatch, limparDadosEncaminhamento]);
 
@@ -130,7 +83,7 @@ const EncaminhamentoAEECadastro = ({ match }) => {
       <Card>
         <div className="col-md-12">
           <div className="row">
-            <div className="col-md-12 d-flex justify-content-end pb-4">
+            <div className="col-md-12 d-flex justify-content-end mb-3">
               <BotoesAcoesEncaminhamentoAEE match={match} />
             </div>
             {match?.params?.id ? (

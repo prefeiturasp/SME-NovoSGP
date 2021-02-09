@@ -19,6 +19,7 @@ const SecaoParecerAEECollapse = props => {
       titulo="Parecer AEE"
       indice="secao-parecer-aee-collapse-indice"
       alt="secao-parecer-aee-alt"
+      show={dadosCollapseAtribuicaoResponsavel?.codigoRF}
     >
       <DetalhesResponsavel
         codigoRF={dadosCollapseAtribuicaoResponsavel?.codigoRF}

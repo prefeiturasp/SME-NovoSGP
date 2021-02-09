@@ -1,12 +1,16 @@
 import QuestionarioDinamicoFuncoes from '~/componentes-sgp/QuestionarioDinamico/Funcoes/QuestionarioDinamicoFuncoes';
 import tipoQuestao from '~/dtos/tipoQuestao';
 import { store } from '~/redux';
+import { setDadosCollapseAtribuicaoResponsavel } from '~/redux/modulos/collapseAtribuicaoResponsavel/actions';
+import { setDadosCollapseLocalizarEstudante } from '~/redux/modulos/collapseLocalizarEstudante/actions';
 import {
+  setDadosEncaminhamento,
   setDadosModalAviso,
   setExibirLoaderEncaminhamentoAEE,
   setExibirModalAviso,
   setExibirModalErrosEncaminhamento,
 } from '~/redux/modulos/encaminhamentoAEE/actions';
+import { setDadosObjectCardEstudante } from '~/redux/modulos/objectCardEstudante/actions';
 import { erros } from '~/servicos/alertas';
 import api from '~/servicos/api';
 
@@ -60,8 +64,48 @@ class ServicoEncaminhamentoAEE {
     return api.get(url);
   };
 
-  obterEncaminhamentoPorId = encaminhamentoId => {
-    return api.get(`${urlPadrao}/${encaminhamentoId}`);
+  obterEncaminhamentoPorId = async encaminhamentoId => {
+    const { dispatch } = store;
+
+    dispatch(setExibirLoaderEncaminhamentoAEE(true));
+
+    const resultado = await api
+      .get(`${urlPadrao}/${encaminhamentoId}`)
+      .catch(e => erros(e))
+      .finally(() => dispatch(setExibirLoaderEncaminhamentoAEE(false)));
+
+    if (resultado?.data) {
+      const { aluno, turma, responsavelEncaminhamentoAEE } = resultado?.data;
+
+      const dadosObjectCard = {
+        nome: aluno.nome,
+        numeroChamada: aluno.numeroAlunoChamada,
+        dataNascimento: aluno.dataNascimento,
+        codigoEOL: aluno.codigoAluno,
+        situacao: aluno.situacao,
+        dataSituacao: aluno.dataSituacao,
+      };
+      dispatch(setDadosObjectCardEstudante(dadosObjectCard));
+
+      const dadosCollapseLocalizarEstudante = {
+        anoLetivo: turma.anoLetivo,
+        codigoAluno: aluno.codigoAluno,
+        codigoTurma: turma.codigo,
+        turmaId: turma.id,
+      };
+      dispatch(
+        setDadosCollapseLocalizarEstudante(dadosCollapseLocalizarEstudante)
+      );
+
+      const dadosResponsavel = {
+        codigoRF: responsavelEncaminhamentoAEE?.rf,
+        nomeServidor: responsavelEncaminhamentoAEE?.nome,
+        id: responsavelEncaminhamentoAEE?.id,
+      };
+      dispatch(setDadosCollapseAtribuicaoResponsavel(dadosResponsavel));
+
+      dispatch(setDadosEncaminhamento(resultado?.data));
+    }
   };
 
   // TODO
@@ -333,6 +377,10 @@ class ServicoEncaminhamentoAEE {
       encaminhamentoId,
     };
     return api.post(`${urlPadrao}/atribuir-responsavel`, params);
+  };
+
+  concluirParecer = encaminhamentoId => {
+    return new Promise(resolve => resolve({ status: 200, data: true }));
   };
 }
 
