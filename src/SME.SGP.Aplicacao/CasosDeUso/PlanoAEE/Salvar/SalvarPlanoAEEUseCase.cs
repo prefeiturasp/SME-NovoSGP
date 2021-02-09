@@ -32,10 +32,10 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             foreach (var questao in planoAeeDto.Questoes)
             {
                 // TODO: retornar o ID questão
-                var planoAEEQuestaoId = await mediator.Send(new SalvarPlanoAEEQuestaoCommand(planoAeePersistidoDto.PlanoId, questao.Id, planoAeePersistidoDto.PlanoVersaoId));
+                var planoAEEQuestaoId = await mediator.Send(new SalvarPlanoAEEQuestaoCommand(planoAeePersistidoDto.PlanoId, questao.QuestaoId, planoAeePersistidoDto.PlanoVersaoId));
 
 
-                await mediator.Send(new SalvarPlanoAEERespostaCommand(planoAEEQuestaoId, questao.Resposta.FirstOrDefault().Texto, questao.TipoQuestao));
+                await mediator.Send(new SalvarPlanoAEERespostaCommand(planoAEEQuestaoId, questao.Resposta, questao.TipoQuestao));
             }
 
             return planoAeePersistidoDto;

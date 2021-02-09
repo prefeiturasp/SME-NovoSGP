@@ -11,6 +11,10 @@ class ServicoPlanoAEE {
     return api.get(`${urlPadrao}/${planoId}`);
   };
 
+  obterPlanoPorCodigoEstudante = codigoEstudante => {
+    return api.get(`${urlPadrao}/estudante/${codigoEstudante}`);
+  };
+
   obterVersaoPlanoPorId = versaoPlanoId => {
     return api.get(`${urlPadrao}/versao/${versaoPlanoId}`);
   };

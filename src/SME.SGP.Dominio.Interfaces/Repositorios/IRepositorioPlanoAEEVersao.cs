@@ -11,6 +11,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<PlanoAEEVersaoDto>> ObterVersoesPorPlanoId(long planoId);
 
         Task<int> ObterMaiorVersaoPlanoPorAlunoCodigo(string codigoAluno);
-
+        Task<IEnumerable<PlanoAEEVersaoDto>> ObterVersoesPorCodigoEstudante(string codigoEstudante);
     }
 }

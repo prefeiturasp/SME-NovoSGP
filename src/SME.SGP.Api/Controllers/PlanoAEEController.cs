@@ -37,6 +37,16 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpGet]
+        [Route("estudante/{codigoEstudante}")]
+        [ProducesResponseType(typeof(PlanoAEEDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public async Task<IActionResult> ObterPlanoAeeEstudante(string codigoEstudante, [FromServices] IObterPlanoAEEPorCodigoEstudanteUseCase useCase)
+        {
+            return Ok(await useCase.Executar(codigoEstudante));
+        }
+
+        [HttpGet]
         [Route("{planoAeeId}")]
         [ProducesResponseType(typeof(PlanoAEEDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]

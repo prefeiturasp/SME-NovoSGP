@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import CardCollapse from '~/componentes/cardCollapse';
+import SecaoVersaoPlanoCollapse from '../SecaoVersaoPlano/secaoVersaoPlanoCollapse';
 import DadosSecaoPlano from './DadosSecaoPlano/dadosSecaoPlano';
 import MontarDadosPorSecao from './DadosSecaoPlano/montarDadosPorSecao';
 
@@ -29,24 +30,7 @@ const SecaoPlanoCollapse = props => {
         ''
       )}
       {planoAEEDados?.versoes ? (
-        <>
-          <div className="col-md-12 mb-2">
-            <strong>Planos anteriores para consulta</strong>
-          </div>
-          {planoAEEDados?.versoes.map(plano => (
-            // colocar em um outro arquivo
-            <CardCollapse
-              key={`secao-informacoes-plano-${plano.id}-collapse-key`}
-              titulo={`Informações do Plano - v${plano.numero}`}
-              indice={`secao-informacoes-plano-${plano.id}-collapse-indice`}
-              alt={`secao-informacoes-plano-${plano.id}-alt`}
-            >
-              <>
-                <DadosSecaoPlano match={match} />
-              </>
-            </CardCollapse>
-          ))}
-        </>
+        <SecaoVersaoPlanoCollapse versoes={planoAEEDados?.versoes} />
       ) : (
         ''
       )}
