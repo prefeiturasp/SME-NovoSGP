@@ -154,6 +154,10 @@ const JoditEditor = forwardRef((props, ref) => {
     buttonsMD: BOTOES_PADRAO,
     buttonsSM: BOTOES_PADRAO,
     placeholder: '',
+    style: {
+      font: '16px Arial',
+      overflow: 'none',
+    },
   };
 
   useEffect(() => {
@@ -230,6 +234,16 @@ const JoditEditor = forwardRef((props, ref) => {
       if (textArea?.current && config) {
         if (textArea?.current?.type === 'textarea') {
           textArea.current = Jodit.make(element, config);
+
+          if (
+            textArea?.current?.editorDocument?.getElementsByClassName(
+              'jodit'
+            )?.[0]?.style
+          ) {
+            textArea.current.editorDocument.getElementsByClassName(
+              'jodit'
+            )[0].style.cssText = 'overflow: auto;';
+          }
 
           if (ref) {
             if (typeof ref === 'function') {
