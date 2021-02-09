@@ -22,6 +22,7 @@ const SecaoEncaminhamentoCollapse = props => {
       titulo="Encaminhamento"
       indice="secao-encaminhamento-collapse-indice"
       alt="secao-encaminhamento-alt"
+      show={dadosCollapseLocalizarEstudante?.codigoAluno}
     >
       {dadosCollapseLocalizarEstudante?.codigoAluno ? (
         <>

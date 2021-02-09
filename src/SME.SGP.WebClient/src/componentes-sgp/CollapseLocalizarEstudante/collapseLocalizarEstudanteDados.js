@@ -21,6 +21,7 @@ const CollapseLocalizarEstudanteDados = props => {
     changeTurma,
     changeLocalizadorEstudante,
     clickCancelar,
+    clickProximoPasso,
   } = props;
   const dispatch = useDispatch();
 
@@ -221,6 +222,7 @@ const CollapseLocalizarEstudanteDados = props => {
         };
 
         dispatch(setDadosCollapseLocalizarEstudante(params));
+        clickProximoPasso(true);
       })
       .catch(e => erros(e));
   };
@@ -343,6 +345,7 @@ CollapseLocalizarEstudanteDados.propTypes = {
   changeTurma: PropTypes.func,
   changeLocalizadorEstudante: PropTypes.func,
   clickCancelar: PropTypes.func,
+  clickProximoPasso: PropTypes.func,
 };
 
 CollapseLocalizarEstudanteDados.defaultProps = {
@@ -351,6 +354,7 @@ CollapseLocalizarEstudanteDados.defaultProps = {
   changeTurma: () => {},
   changeLocalizadorEstudante: () => {},
   clickCancelar: () => {},
+  clickProximoPasso: () => {},
 };
 
 export default CollapseLocalizarEstudanteDados;
