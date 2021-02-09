@@ -89,6 +89,10 @@ const EncaminhamentoAEELista = () => {
       dataIndex: 'turma',
     },
     {
+      title: 'Responsável',
+      dataIndex: 'responsavel',
+    },
+    {
       title: 'Situação',
       dataIndex: 'situacao',
     },
@@ -114,7 +118,7 @@ const EncaminhamentoAEELista = () => {
         turmaId: turmaSelecionada ? turmaSelecionada?.id : '',
         alunoCodigo: aluno,
         situacao: situa,
-        responsavel: responsa,
+        responsavelRf: responsa,
       };
       setFiltro({ ...params });
     }
@@ -179,27 +183,40 @@ const EncaminhamentoAEELista = () => {
     obterSituacoes();
   }, [obterSituacoes]);
 
-  console.log('cgs', carregandoSituacao);
   const obterResponsaveis = useCallback(async () => {
     setCarregandoResponsavel(true);
-    const resposta = await ServicoEncaminhamentoAEE.obterResponsaveis(
+    const respostaSemUE = await ServicoEncaminhamentoAEE.obterResponsaveis(
       usuario.rf,
       dreId
     )
       .catch(e => erros(e))
       .finally(() => setCarregandoResponsavel(false));
-    if (resposta?.data?.length) {
-      setListaResponsavel(resposta.data);
-      return;
+
+    let respostas = [];
+    if (!respostaSemUE?.data?.items?.length) {
+      const respostaComUE = await ServicoEncaminhamentoAEE.obterResponsaveis(
+        usuario.rf,
+        dreId,
+        ueId
+      )
+        .catch(e => erros(e))
+        .finally(() => setCarregandoResponsavel(false));
+
+      if (respostaComUE?.data?.items?.length) {
+        respostas = respostaComUE.data.items;
+      }
     }
-    setListaSituacao([]);
-  }, [dreId, usuario.rf]);
+    if (respostaSemUE?.data?.items?.length) {
+      respostas = respostaSemUE.data.items;
+    }
+    setListaResponsavel(respostas);
+  }, [dreId, usuario.rf, ueId]);
 
   useEffect(() => {
-    if (dreId) {
+    if (dreId && ueId) {
       obterResponsaveis();
     }
-  }, [dreId, obterResponsaveis]);
+  }, [dreId, obterResponsaveis, ueId]);
 
   const [carregandoUes, setCarregandoUes] = useState(false);
 
@@ -562,9 +579,8 @@ const EncaminhamentoAEELista = () => {
                   id="responsavel"
                   label="Responsável"
                   lista={listaResponsavel}
-                  valueOption="codigo"
-                  valueText="descricao"
-                  disabled={listaResponsavel?.length === 1}
+                  valueOption="codigoRf"
+                  valueText="nomeServidor"
                   onChange={onChangeResponsavel}
                   valueSelect={responsavel}
                   placeholder="Responsável"
