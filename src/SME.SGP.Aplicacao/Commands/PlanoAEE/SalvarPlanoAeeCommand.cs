@@ -11,13 +11,15 @@ namespace SME.SGP.Aplicacao
         public int AlunoNumero { get; set; }
         public string AlunoNome { get; set; }
         public string AlunoCodigo { get; set; }
-       
+        public long PlanoAEEId { get; set; }
+
         public SalvarPlanoAeeCommand()
         {
         }
 
-        public SalvarPlanoAeeCommand(long turmaId, string alunoNome, string alunoCodigo, int alunoNumero)
+        public SalvarPlanoAeeCommand(long planoAEEId, long turmaId, string alunoNome, string alunoCodigo, int alunoNumero)
         {
+            PlanoAEEId = planoAEEId;
             TurmaId = turmaId;
             AlunoNome = alunoNome;
             AlunoCodigo = alunoCodigo;

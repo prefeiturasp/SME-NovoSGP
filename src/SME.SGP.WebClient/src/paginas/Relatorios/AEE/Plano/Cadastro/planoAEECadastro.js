@@ -40,14 +40,6 @@ const PlanoAEECadastro = ({ match }) => {
       codigoEstudante
     );
 
-    const retornoQuestionario = await ServicoPlanoAEE.obterPlanoPorCodigoEstudante(
-      codigoEstudante
-    );
-
-    if (retornoQuestionario.data) {
-      dispatch(setPlanoAEEDados(retornoQuestionario?.data));
-    }
-
     if (retorno.data) {
       dispatch(setPlanoAEESituacaoEncaminhamentoAEE(retorno.data));
     }

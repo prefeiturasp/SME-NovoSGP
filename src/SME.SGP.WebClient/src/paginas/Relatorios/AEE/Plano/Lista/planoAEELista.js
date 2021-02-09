@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Cabecalho } from '~/componentes-sgp';
 import AbrangenciaServico from '~/servicos/Abrangencia';
+import IconeAee from '~/recursos/IconeAee.png';
 import {
   CheckboxComponent,
   ListaPaginada,
@@ -59,6 +60,18 @@ const PlanoAEELista = () => {
     {
       title: 'Nome',
       dataIndex: 'nome',
+      render: value => {
+        return (
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <span>{value.split('|')[0]} </span>
+            {value.split('|')[1] === 'True' ? (
+              <img src={IconeAee} style={{ height: 18 }} alt="aee" />
+            ) : (
+              ''
+            )}
+          </div>
+        );
+      },
     },
     {
       title: 'Turma',

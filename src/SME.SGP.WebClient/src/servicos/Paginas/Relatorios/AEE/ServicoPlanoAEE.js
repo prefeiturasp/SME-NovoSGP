@@ -1,3 +1,4 @@
+import * as moment from 'moment';
 import api from '~/servicos/api';
 import { store } from '~/redux';
 import situacaoPlanoAEE from '~/dtos/situacaoPlanoAEE';
@@ -77,7 +78,7 @@ class ServicoPlanoAEE {
       todosOsFormsEstaoValidos =
         contadorFormsValidos ===
         formsQuestionarioDinamico?.filter(a => a)?.length;
-      
+
       if (todosOsFormsEstaoValidos) {
         let questoesSalvar = formsQuestionarioDinamico.map(item => {
           const form = item.form();
@@ -95,6 +96,17 @@ class ServicoPlanoAEE {
             };
 
             switch (questao.tipoQuestao) {
+              case tipoQuestao.Periodo:
+                if (campos[key]?.length) {
+                  questao.resposta = JSON.stringify(
+                    campos[key].map(data =>
+                      moment(data).format('DD/MM/YYYY')
+                    ) || ''
+                  );
+                } else {
+                  questao.resposta = '';
+                }
+                break;
               case tipoQuestao.FrequenciaEstudanteAEE:
                 questao.resposta = JSON.stringify(campos[key] || '');
                 break;
