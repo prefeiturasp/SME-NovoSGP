@@ -111,40 +111,46 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<EncaminhamentoAEE> ObterEncaminhamentoPorId(long id)
         {
-            var query = @"select ea.*, eas.*, qea.*, rea.*
+            var query = @"select ea.*, eas.*, qea.*, rea.*, sea.*, q.*, op.*
                         from encaminhamento_aee ea
                         inner join encaminhamento_aee_secao eas on eas.encaminhamento_aee_id = ea.id
+                        inner join secao_encaminhamento_aee sea on sea.id = eas.secao_encaminhamento_id 
                         inner join questao_encaminhamento_aee qea on qea.encaminhamento_aee_secao_id = eas.id
+                        inner join questao q on q.id = qea.questao_id
                         inner join resposta_encaminhamento_aee rea on rea.questao_encaminhamento_id = qea.id
+                         left join opcao_resposta op on op.id = rea.resposta_id
                         where ea.id = @id";
 
             var encaminhamento = new EncaminhamentoAEE();
 
-            await database.Conexao.QueryAsync<EncaminhamentoAEE, EncaminhamentoAEESecao, QuestaoEncaminhamentoAEE, RespostaEncaminhamentoAEE, EncaminhamentoAEE>(query.ToString()
-                , (encaminhamentoAEE, secaoEncaminhamento, questaoEncaminhamentoAEE, respostaEncaminhamento) =>
+            await database.Conexao.QueryAsync<EncaminhamentoAEE, EncaminhamentoAEESecao, QuestaoEncaminhamentoAEE, RespostaEncaminhamentoAEE, SecaoEncaminhamentoAEE, Questao, OpcaoResposta, EncaminhamentoAEE>(query.ToString()
+                , (encaminhamentoAEE, encaminhamentoSecao, questaoEncaminhamentoAEE, respostaEncaminhamento, secaoEncaminhamento, questao, opcaoResposta) =>
             {
                 if (encaminhamento.Id == 0)
                     encaminhamento = encaminhamentoAEE;
 
-                var secao = encaminhamento.Secoes.FirstOrDefault(c => c.Id == secaoEncaminhamento.Id);
+                var secao = encaminhamento.Secoes.FirstOrDefault(c => c.Id == encaminhamentoSecao.Id);
                 if (secao == null)
                 {
-                    secao = secaoEncaminhamento;
+                    encaminhamentoSecao.SecaoEncaminhamentoAEE = secaoEncaminhamento;
+                    secao = encaminhamentoSecao;
                     encaminhamento.Secoes.Add(secao);
                 }
 
-                var questao = secao.Questoes.FirstOrDefault(c => c.Id == questaoEncaminhamentoAEE.Id);
-                if (questao == null)
+                var questaoEncaminhamento = secao.Questoes.FirstOrDefault(c => c.Id == questaoEncaminhamentoAEE.Id);
+                if (questaoEncaminhamento == null)
                 {
-                    questao = questaoEncaminhamentoAEE;
-                    secao.Questoes.Add(questao);
+                    questaoEncaminhamento = questaoEncaminhamentoAEE;
+                    questaoEncaminhamento.Questao = questao;
+                    secao.Questoes.Add(questaoEncaminhamento);
                 }
 
-                var resposta = questao.Respostas.FirstOrDefault(c => c.Id == respostaEncaminhamento.Id);
+                var resposta = questaoEncaminhamento.Respostas.FirstOrDefault(c => c.Id == respostaEncaminhamento.Id);
                 if (resposta == null)
                 {
                     resposta = respostaEncaminhamento;
-                    questao.Respostas.Add(resposta);
+                    resposta.Resposta = opcaoResposta;
+                    questaoEncaminhamento.Respostas.Add(resposta);
                 }
 
                 return encaminhamento;

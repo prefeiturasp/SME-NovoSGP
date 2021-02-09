@@ -182,5 +182,15 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(filtro));
         }
+
+
+        [HttpPost("concluir/{encaminhamentoId}")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.AEE_A, Policy = "Bearer")]
+        public async Task<IActionResult> ConcluirEncaminhamento(long encaminhamentoId, [FromServices] IConcluirEncaminhamentoAEEUseCase useCase)
+        {
+            return Ok(await useCase.Executar(encaminhamentoId));
+        }
     }
 }
