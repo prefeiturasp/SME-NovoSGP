@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 
 import { JoditEditor } from '~/componentes';
 import ServicoRegistroItineranciaAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoRegistroItineranciaAEE';
 
-const EditoresTexto = ({dados}) => {
+const EditoresTexto = () => {
   const [acompanhamentoSituacao, setAcompanhamentoSituacao] = useState();
   const [encaminhamentos, setEncaminhamentos] = useState();
+
+  const dados = useSelector(store => store.itinerancia.questoesItinerancia);
 
   return (
     <>

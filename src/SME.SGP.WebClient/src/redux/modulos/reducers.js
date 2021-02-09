@@ -27,6 +27,7 @@ import dashboardEscolaAqui from './dashboardEscolaAqui/reducers';
 import encaminhamentoAEE from './encaminhamentoAEE/reducers';
 import registroIndividual from './registroIndividual/reducers';
 import acompanhamentoFrequencia from './acompanhamentoFrequencia/reducers';
+import itinerancia from './itinerancia/reducers';
 
 const reducers = combineReducers({
   navegacao,
@@ -56,6 +57,7 @@ const reducers = combineReducers({
   encaminhamentoAEE,
   registroIndividual,
   acompanhamentoFrequencia,
+  itinerancia,
 });
 
 const rootReducer = (state, action) => {

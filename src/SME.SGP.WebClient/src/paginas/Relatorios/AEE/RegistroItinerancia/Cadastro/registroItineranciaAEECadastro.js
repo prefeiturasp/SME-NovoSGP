@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import shortid from 'shortid';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Base, Button, CampoData, Card, Colors, Loader } from '~/componentes';
 import { Cabecalho } from '~/componentes-sgp';
 import { RotasDto } from '~/dtos';
@@ -15,8 +15,13 @@ import {
   TabelaLinhaRemovivel,
 } from './componentes';
 import ServicoRegistroItineranciaAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoRegistroItineranciaAEE';
+import {
+  setQuestoesItinerancia,
+  setQuestoesItineranciaAluno,
+} from '~/redux/modulos/itinerancia/action';
 
 const RegistroItineranciaAEECadastro = ({ match }) => {
+  const dispatch = useDispatch();
   const [carregandoGeral, setCarregandoGeral] = useState(false);
   const [dataVisita, setDataVisita] = useState();
   const [dataRetorno, setDataRetorno] = useState();
@@ -29,8 +34,6 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
   const [desabilitarCampos, setDesabilitarCampos] = useState(false);
   const [apenasUmaUe, setApenasUmaUe] = useState(false);
   const [variasUesSelecionadas, setVariasUesSelecionadas] = useState(false);
-  const [questoesItinerancia, setQuestoesItinerancia] = useState([]);
-  const [questoesItineranciaAluno, setQuestoesItineranciaAluno] = useState([]);
   const usuario = useSelector(store => store.usuario);
   const permissoesTela =
     usuario.permissoes[RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA];
@@ -83,8 +86,10 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
     const buscarQuestoes = async () => {
       const result = await ServicoRegistroItineranciaAEE.obterQuestoesItinerancia();
       if (result?.status === 200) {
-        setQuestoesItinerancia(result?.data?.questoesItinerancia);
-        setQuestoesItineranciaAluno(result?.data?.questoesItineranciaAluno);
+        dispatch(setQuestoesItinerancia(result?.data?.itineranciaQuestao));
+        dispatch(
+          setQuestoesItineranciaAluno(result?.data?.itineranciaAlunoQuestao)
+        );
       }
     };
     buscarQuestoes();
@@ -243,7 +248,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
                 />
               ))
             ) : (
-              <EditoresTexto dados={questoesItinerancia} />
+              <EditoresTexto />
             )}
             <div className="row mb-4">
               <div className="col-3">
