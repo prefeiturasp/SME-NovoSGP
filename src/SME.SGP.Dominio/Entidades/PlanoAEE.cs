@@ -12,7 +12,7 @@ namespace SME.SGP.Dominio
 
         public Turma Turma { get; set; }
         public long TurmaId { get; set; }
-        public string AlunoNumero { get; set; }
+        public int AlunoNumero { get; set; }
         public string AlunoCodigo { get; set; }
         public string AlunoNome { get; set; }
         public SituacaoPlanoAEE Situacao { get; set; }
