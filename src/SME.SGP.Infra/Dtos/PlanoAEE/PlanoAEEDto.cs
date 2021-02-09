@@ -4,7 +4,8 @@ namespace SME.SGP.Infra
 {
     public class PlanoAEEDto
     {
-        public long? Id { get; set; }
+        public long Id { get; set; }
+        public long QuestionarioId { get; set; }
         public AuditoriaDto Auditoria { get; set; }
         public IEnumerable<QuestaoDto> Questoes { get; set; }
         public IEnumerable<PlanoAEEVersaoDto> Versoes { get; set; }

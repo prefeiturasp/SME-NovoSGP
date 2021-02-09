@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AlunoDto = SME.SGP.Infra.Dtos.Relatorios.HistoricoEscolar.AlunoDto;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -18,7 +17,6 @@ namespace SME.SGP.Api.Controllers
 
         [HttpGet]
         [Route("situacoes")]
-        [ProducesResponseType(typeof(IEnumerable<AlunoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         public IActionResult ObterSituacoes()
@@ -38,15 +36,14 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(filtro));
         }
 
-
         [HttpGet]
         [Route("{planoAeeId}")]
         [ProducesResponseType(typeof(PlanoAEEDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        public IActionResult ObterPlanoAee(long? planoAeeId, [FromServices] IObterPlanoAEEPorIdUseCase useCase)
+        public async Task<IActionResult> ObterPlanoAee(long? planoAeeId, [FromServices] IObterPlanoAEEPorIdUseCase useCase)
         {
-            return Ok(useCase.Executar(planoAeeId));
+            return Ok(await useCase.Executar(planoAeeId));
         }
 
         [HttpGet]

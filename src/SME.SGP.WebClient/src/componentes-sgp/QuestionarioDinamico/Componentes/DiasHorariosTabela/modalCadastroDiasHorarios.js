@@ -12,12 +12,14 @@ import {
   SelectComponent,
 } from '~/componentes';
 import Button from '~/componentes/button';
+import { confirmar } from '~/servicos';
 
 const ModalCadastroDiasHorario = props => {
   const { onClose, exibirModal } = props;
 
   const [refForm, setRefForm] = useState({});
-  const [diasSemanaSelecionado, setDiasSemanaSelecionado] = useState([]);
+
+  const [emEdicao, setEmEdicao] = useState(false);
 
   const valoresIniciais = {
     diaSemana: '',
@@ -64,15 +66,28 @@ const ModalCadastroDiasHorario = props => {
     },
   ];
 
-  const fecharModal = () => {
-    setDiasSemanaSelecionado([]);
-    refForm.resetForm();
-    onClose();
+  const fecharModal = async () => {
+    if (emEdicao) {
+      const confirmou = await confirmar(
+        'Atenção',
+        'Você não salvou as informações preenchidas.',
+        'Deseja realmente cancelar as alterações?'
+      );
+      if (confirmou) {
+        setEmEdicao(false);
+        refForm.resetForm();
+        onClose();
+      }
+    } else {
+      setEmEdicao(false);
+      refForm.resetForm();
+      onClose();
+    }
   };
 
   const onSalvar = valores => {
-    setDiasSemanaSelecionado([]);
     refForm.resetForm();
+    setEmEdicao(false);
     onClose(valores);
   };
 
@@ -121,6 +136,7 @@ const ModalCadastroDiasHorario = props => {
                 valueText="desc"
                 form={form}
                 name="diaSemana"
+                onChange={() => setEmEdicao(true)}
               />
             </div>
             <div className="col-md-12 mb-2">
@@ -135,6 +151,7 @@ const ModalCadastroDiasHorario = props => {
                     placeholder="09:00"
                     formatoData="HH:mm"
                     somenteHora
+                    onChange={() => setEmEdicao(true)}
                     label=""
                   />
                 </div>
@@ -145,6 +162,7 @@ const ModalCadastroDiasHorario = props => {
                     placeholder="09:30"
                     formatoData="HH:mm"
                     somenteHora
+                    onChange={() => setEmEdicao(true)}
                     label=""
                   />
                 </div>

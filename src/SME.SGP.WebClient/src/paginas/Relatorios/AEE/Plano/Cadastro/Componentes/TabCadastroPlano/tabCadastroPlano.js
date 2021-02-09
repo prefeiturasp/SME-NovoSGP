@@ -9,12 +9,18 @@ const { TabPane } = Tabs;
 
 const TabCadastroPasso = props => {
   const { match } = props;
-  const planoAEEDados = useSelector(store => store.planoAEE.planoAEEDados);
+  const dadosCollapseLocalizarEstudante = useSelector(
+    store => store.collapseLocalizarEstudante.dadosCollapseLocalizarEstudante
+  );
 
   return (
     <ContainerTabsCard type="card" width="20%">
       <TabPane tab="Cadastro do Plano" key="1">
-        {planoAEEDados?.secao ? <SecaoPlanoCollapse match={match} /> : ''}
+        {dadosCollapseLocalizarEstudante?.codigoAluno ? (
+          <SecaoPlanoCollapse match={match} />
+        ) : (
+          ''
+        )}
       </TabPane>
       <TabPane tab="Devolutivas" disabled key="2">
         <></>

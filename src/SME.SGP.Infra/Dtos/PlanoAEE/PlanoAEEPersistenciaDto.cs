@@ -7,12 +7,13 @@ namespace SME.SGP.Infra
     {
         public PlanoAEEPersistenciaDto()
         {
-            Questoes = new List<QuestaoDto>();
+            Questoes = new List<PlanoAEEQuestaoDto>();
         }
+
         public long? Id { get; set; }
         public long TurmaId { get; set; }
         public string AlunoCodigo { get; set; }
-        public List<QuestaoDto> Questoes { get; set; }
+        public SituacaoPlanoAEE Situacao { get; set; }
+        public List<PlanoAEEQuestaoDto> Questoes { get; set; }
     }
-        
 }

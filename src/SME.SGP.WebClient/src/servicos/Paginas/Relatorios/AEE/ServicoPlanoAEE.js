@@ -7,6 +7,22 @@ class ServicoPlanoAEE {
     return api.get(`${urlPadrao}/situacoes`);
   };
 
+  obterPlanoPorId = planoId => {
+    return api.get(`${urlPadrao}/${planoId}`);
+  };
+
+  obterVersaoPlanoPorId = versaoPlanoId => {
+    return api.get(`${urlPadrao}/versao/${versaoPlanoId}`);
+  };
+
+  obterQuestionario = (questionarioId, planoId, codigoAluno, codigoTurma) => {
+    let url = `${urlPadrao}/questionario?questionarioId=${questionarioId}&codigoAluno=${codigoAluno}&codigoTurma=${codigoTurma}`;
+    if (planoId) {
+      url = `${url}&planoId=${planoId}`;
+    }
+    return api.get(url);
+  };
+
   obterQuestionario = () => {
     return {
       data: [

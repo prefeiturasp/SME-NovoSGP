@@ -13,6 +13,16 @@ export const setPlanoAEEDados = payload => ({
   payload,
 });
 
+export const setPlanoAEESituacaoEncaminhamentoAEE = payload => ({
+  type: '@planoAEE/setPlanoAEESituacaoEncaminhamentoAEE',
+  payload,
+});
+
+export const setExibirLoaderPlanoAEE = payload => ({
+  type: '@planoAEE/setExibirLoaderPlanoAEE',
+  payload,
+});
+
 export const setDesabilitarCamposPlanoAEE = payload => ({
   type: '@planoAEE/setDesabilitarCamposPlanoAEE',
   payload,
