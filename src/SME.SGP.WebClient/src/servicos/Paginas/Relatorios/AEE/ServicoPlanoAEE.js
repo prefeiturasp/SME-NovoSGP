@@ -14,6 +14,17 @@ class ServicoPlanoAEE {
     return api.get(`${urlPadrao}/situacoes`);
   };
 
+  existePlanoAEEEstudante = async codigoEstudante => {
+    const resultado = await api
+      .get(`${urlPadrao}/estudante/${codigoEstudante}/existe`)
+      .catch(e => erros(e));
+
+    if (resultado?.data) {
+      return true;
+    }
+    return false;
+  };
+
   obterPlanoPorId = planoId => {
     return api.get(`${urlPadrao}/${planoId}`);
   };

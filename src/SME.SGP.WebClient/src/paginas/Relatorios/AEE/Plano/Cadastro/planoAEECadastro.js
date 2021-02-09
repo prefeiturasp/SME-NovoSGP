@@ -21,7 +21,6 @@ import {
   setDadosCollapseLocalizarEstudante,
   setLimparDadosLocalizarEstudante,
 } from '~/redux/modulos/collapseLocalizarEstudante/actions';
-import ServicoEncaminhamentoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoEncaminhamentoAEE';
 import { erros, setBreadcrumbManual } from '~/servicos';
 import ServicoPlanoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoPlanoAEE';
 import { setDadosObjectCardEstudante } from '~/redux/modulos/objectCardEstudante/actions';
@@ -36,14 +35,7 @@ const PlanoAEECadastro = ({ match }) => {
   }, [dispatch]);
 
   const validarSePermiteProximoPasso = async codigoEstudante => {
-    const retorno = await ServicoEncaminhamentoAEE.obterAlunoSituacaoEncaminhamentoAEE(
-      codigoEstudante
-    );
-
-    if (retorno.data) {
-      dispatch(setPlanoAEESituacaoEncaminhamentoAEE(retorno.data));
-    }
-    return true;
+    return ServicoPlanoAEE.existePlanoAEEEstudante(codigoEstudante);
   };
 
   useEffect(() => {

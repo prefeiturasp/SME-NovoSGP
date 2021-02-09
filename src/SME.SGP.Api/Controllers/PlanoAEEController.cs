@@ -74,7 +74,7 @@ namespace SME.SGP.Api.Controllers
             return Ok(await usecase.Executar(planoAeeDto));
         }
 
-        [HttpGet("estudande/{codigoEstudante}/existe")]
+        [HttpGet("estudante/{codigoEstudante}/existe")]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> VerificarExistenciaPlanoAEEPorEstudante(string codigoEstudante, [FromServices] IVerificarExistenciaPlanoAEEPorEstudanteUseCase useCase)

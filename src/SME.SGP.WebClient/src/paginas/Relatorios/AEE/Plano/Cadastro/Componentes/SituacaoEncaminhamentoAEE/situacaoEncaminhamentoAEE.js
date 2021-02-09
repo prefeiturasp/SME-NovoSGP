@@ -1,15 +1,32 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import ServicoEncaminhamentoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoEncaminhamentoAEE';
 
 const SituacaoEncaminhamentoAEE = () => {
-  const planoAEESituacaoEncaminhamentoAEE = useSelector(
-    store => store.planoAEE.planoAEESituacaoEncaminhamentoAEE
+  const dadosCollapseLocalizarEstudante = useSelector(
+    store => store.collapseLocalizarEstudante.dadosCollapseLocalizarEstudante
   );
 
-  return planoAEESituacaoEncaminhamentoAEE?.situacao ? (
+  const [situacao, setSituacao] = useState({});
+
+  const obtemSituacaoEncaminhamento = async () => {
+    const retorno = await ServicoEncaminhamentoAEE.obterAlunoSituacaoEncaminhamentoAEE(
+      dadosCollapseLocalizarEstudante?.codigoEstudante
+    );
+
+    if (retorno.data) {
+      setSituacao(retorno.data);
+    }
+  };
+
+  useEffect(() => {
+    return obtemSituacaoEncaminhamento();
+  });
+
+  return situacao?.situacao ? (
     <>
       <strong>Encaminhamento AEE: </strong>
-      {planoAEESituacaoEncaminhamentoAEE?.situacao}
+      {situacao?.situacao}
     </>
   ) : (
     ''
