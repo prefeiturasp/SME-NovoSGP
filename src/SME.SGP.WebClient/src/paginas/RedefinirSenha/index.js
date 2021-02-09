@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
+import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { Form } from 'formik';
@@ -47,11 +48,10 @@ const RedefinirSenha = props => {
   const [tokenValidado, setTokenValidado] = useState(false);
   const [erroGeral, setErroGeral] = useState('');
   const [tokenExpirado, setTokenExpirado] = useState(false);
+  const [carregandoContinuar, setCarregandoContinuar] = useState(false);
 
   const { senha, confirmarSenha } = senhas;
-  const token = props.match && props.match.params && props.match.params.token;
-
-  const primeiroAcesso = useSelector(state => state.usuario.modificarSenha);
+  const token = props.match && props.match.params && props.match.params.token;  
 
   const [validacoes, setValidacoes] = useState({
     maiuscula: '',
@@ -135,7 +135,7 @@ const RedefinirSenha = props => {
       espacoBranco: !espacoBranco,
       tamanho: !!tamanho,
       iguais: !!iguais,
-    });
+    });    
   };
 
   const aoMudarSenha = e => {
@@ -165,6 +165,7 @@ const RedefinirSenha = props => {
   };
 
   const alterarSenha = async () => {
+    setCarregandoContinuar(true);
     if (!logado) {      
       const requisicao = await RedefinirSenhaServico.redefinirSenha(
         {
@@ -217,17 +218,16 @@ const RedefinirSenha = props => {
           })
         );
         ServicoDashboard.obterDadosDashboard();
+        setCarregandoContinuar(false);
         history.push(URL_HOME);
       } else {
+        setCarregandoContinuar(false);
         setErroGeral(requisicao.erro);
       }
     }
-  };
+  };  
 
-  const [carregandoContinuar, setCarregandoContinuar] = useState(false);
-
-  const aoClicarContinuar = () => {
-    setCarregandoContinuar(true);
+  const aoClicarContinuar = () => {        
     realizarValidacoes(inputSenhaRef.current.value);
     setErroGeral('');
 
@@ -236,8 +236,8 @@ const RedefinirSenha = props => {
       return;
     }
 
-    if (!validarSeFormularioTemErro()) alterarSenha();
-    setCarregandoContinuar(false);
+    if (!validarSeFormularioTemErro()) 
+      alterarSenha();    
   };
 
   const aoClicarContinuarExpirado = () => {
@@ -403,6 +403,14 @@ const RedefinirSenha = props => {
       </Container>
     </>
   );
+};
+
+RedefinirSenha.propTypes = {
+  match: PropTypes.oneOfType([PropTypes.any]),
+};
+
+RedefinirSenha.defaultProps = {
+  match: {},
 };
 
 export default RedefinirSenha;
