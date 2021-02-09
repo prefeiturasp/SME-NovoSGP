@@ -9,5 +9,8 @@ namespace SME.SGP.Dominio.Interfaces
     public interface IRepositorioPlanoAEEVersao : IRepositorioBase<PlanoAEEVersao>
     {
         Task<IEnumerable<PlanoAEEVersaoDto>> ObterVersoesPorPlanoId(long planoId);
+
+        Task<int> ObterMaiorVersaoPlanoPorAlunoCodigo(string codigoAluno);
+
     }
 }

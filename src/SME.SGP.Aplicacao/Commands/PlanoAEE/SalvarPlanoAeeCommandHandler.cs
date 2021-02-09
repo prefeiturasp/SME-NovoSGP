@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao.Commands
             var planoAEEEntidade = await repositorioPlanoAEE.ObterPorIdAsync(planoId);
 
             // Última versão plano
-            int ultimaVersaoPlanoAee = await ObterUltimaVersaoPlanoAEE(planoId);
+            int ultimaVersaoPlanoAee = await ObterUltimaVersaoPlanoAEE(plano.AlunoCodigo);
 
             // Salva Versao
             var planoAEEVersaoId = await SalvarPlanoAEEVersao(planoId, planoAEEEntidade, ultimaVersaoPlanoAee);
@@ -49,14 +49,14 @@ namespace SME.SGP.Aplicacao.Commands
             return await repositorioPlanoAEEVersao.SalvarAsync(planoVersaoEntidade);
         }
 
-        private async Task<int> ObterUltimaVersaoPlanoAEE(long planoId)
+        private async Task<int> ObterUltimaVersaoPlanoAEE(string alunoCodigo)
         {
             int ultimaVersaoPlanoAee = 0;
-         
-            var versoesPlano = await repositorioPlanoAEEVersao.ObterVersoesPorPlanoId(planoId);
-            
-            if (versoesPlano != null && versoesPlano.Any())
-                ultimaVersaoPlanoAee = versoesPlano.ToList().Max(v => v.Numero);
+
+            var maiorNumeroPlano = await repositorioPlanoAEEVersao.ObterMaiorVersaoPlanoPorAlunoCodigo(alunoCodigo);
+
+            if (maiorNumeroPlano > 0)
+                ultimaVersaoPlanoAee = maiorNumeroPlano;
             return ultimaVersaoPlanoAee + 1;
         }
 

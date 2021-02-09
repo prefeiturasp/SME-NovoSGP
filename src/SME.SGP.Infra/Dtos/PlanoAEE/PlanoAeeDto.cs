@@ -1,19 +1,13 @@
-﻿using SME.SGP.Dominio.Enumerados;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace SME.SGP.Infra
 {
-    public class PlanoAeeDto
+    public class PlanoAEEDto
     {
-        public PlanoAeeDto()
-        {
-            Questoes = new List<PlanoAEEQuestaoDto>();
-        }
-
         public long? Id { get; set; }
-        public long TurmaId { get; set; }
-        public string AlunoCodigo { get; set; }
-        public SituacaoPlanoAEE Situacao { get; set; }
-        public List<PlanoAEEQuestaoDto> Questoes { get; set; }
+        public AuditoriaDto Auditoria { get; set; }
+        public IEnumerable<QuestaoDto> Questoes { get; set; }
+        public IEnumerable<PlanoAEEVersaoDto> Versoes { get; set; }
     }
+        
 }
