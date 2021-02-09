@@ -59,8 +59,8 @@ namespace SME.SGP.Aplicacao
 
         private void ValidaFiltros(PesquisaFuncionariosPorDreUeQuery request)
         {
-            if (string.IsNullOrEmpty(request.CodigoRF) && string.IsNullOrEmpty(request.Nome))
-                throw new NegocioException("O código RF ou nome do servidor deve ser informado.");
+            //if (string.IsNullOrEmpty(request.CodigoRF) && string.IsNullOrEmpty(request.Nome))
+            //    throw new NegocioException("O código RF ou nome do servidor deve ser informado.");
 
             if (string.IsNullOrEmpty(request.CodigoTurma) && string.IsNullOrEmpty(request.CodigoDRE) && string.IsNullOrEmpty(request.CodigoUE))
                 throw new NegocioException("O código DRE/UE ou código da turma deve ser informado para pesquisa de servidores");

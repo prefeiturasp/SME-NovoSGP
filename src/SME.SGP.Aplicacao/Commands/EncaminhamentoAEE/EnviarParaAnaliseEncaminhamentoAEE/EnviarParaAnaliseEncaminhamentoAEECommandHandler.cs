@@ -39,18 +39,26 @@ namespace SME.SGP.Aplicacao
             encaminhamentoAEE.Situacao = Dominio.Enumerados.SituacaoAEE.AtribuicaoResponsavel;
 
             IEnumerable<Guid> perfis = new List<Guid>() { Perfis.PERFIL_PAEE };
-            
-            var funciorarioPAEE = await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(turma.Ue.CodigoUe, perfis));
+
+            var funciorarioPAEE = await ObterPAEETurma(turma);
 
             if (funciorarioPAEE != null && funciorarioPAEE.Count() == 1)
             {
                 encaminhamentoAEE.Situacao = Dominio.Enumerados.SituacaoAEE.Analise;
-                encaminhamentoAEE.ResponsavelId = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(funciorarioPAEE.FirstOrDefault()));
+                encaminhamentoAEE.ResponsavelId = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(funciorarioPAEE.FirstOrDefault().CodigoRf));
             }            
 
             var idEntidadeEncaminhamento = await repositorioEncaminhamentoAEE.SalvarAsync(encaminhamentoAEE);
 
             return idEntidadeEncaminhamento != 0;
+        }
+
+        private async Task<IEnumerable<UsuarioEolRetornoDto>> ObterPAEETurma(Turma turma)
+        {
+            var funcionariosUe = await mediator.Send(new PesquisaFuncionariosPorDreUeQuery("", "", turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe));
+
+            var atividadeFuncaoPAEE = 6;
+            return funcionariosUe.Where(c => c.CodigoFuncaoAtividade == atividadeFuncaoPAEE);
         }
     }
 }
