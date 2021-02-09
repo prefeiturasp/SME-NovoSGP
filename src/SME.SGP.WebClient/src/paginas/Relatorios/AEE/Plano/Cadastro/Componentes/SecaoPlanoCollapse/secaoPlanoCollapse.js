@@ -3,7 +3,6 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import CardCollapse from '~/componentes/cardCollapse';
 import SecaoVersaoPlanoCollapse from '../SecaoVersaoPlano/secaoVersaoPlanoCollapse';
-import DadosSecaoPlano from './DadosSecaoPlano/dadosSecaoPlano';
 import MontarDadosPorSecao from './DadosSecaoPlano/montarDadosPorSecao';
 
 const SecaoPlanoCollapse = props => {
