@@ -43,12 +43,14 @@ const EncaminhamentoAEELista = () => {
   const [listaUes, setListaUes] = useState([]);
   const [listaTurmas, setListaTurmas] = useState([]);
   const [listaSituacao, setListaSituacao] = useState([]);
+  const [listaResponsavel, setListaResponsavel] = useState([]);
 
   const [anoLetivo, setAnoLetivo] = useState();
   const [dreId, setDreId] = useState();
   const [ueId, setUeId] = useState();
   const [turmaId, setTurmaId] = useState();
   const [situacao, setSituacao] = useState();
+  const [responsavel, setResponsavel] = useState();
 
   const [
     alunoLocalizadorSelecionado,
@@ -61,6 +63,7 @@ const EncaminhamentoAEELista = () => {
   const [carregandoDres, setCarregandoDres] = useState(false);
   const [carregandoAnos, setCarregandoAnos] = useState(false);
   const [carregandoSituacao, setCarregandoSituacao] = useState(false);
+  const [carregandoResponsavel, setCarregandoResponsavel] = useState(false);
 
   useEffect(() => {
     verificaSomenteConsulta(permissoesTela);
@@ -86,12 +89,16 @@ const EncaminhamentoAEELista = () => {
       dataIndex: 'turma',
     },
     {
+      title: 'Responsável',
+      dataIndex: 'responsavel',
+    },
+    {
       title: 'Situação',
       dataIndex: 'situacao',
     },
   ];
 
-  const filtrar = (dre, ue, turma, aluno, situa) => {
+  const filtrar = (dre, ue, turma, aluno, situa, responsa) => {
     if (anoLetivo && dre && listaDres?.length) {
       const dreSelecionada = listaDres.find(
         item => String(item.valor) === String(dre)
@@ -111,6 +118,7 @@ const EncaminhamentoAEELista = () => {
         turmaId: turmaSelecionada ? turmaSelecionada?.id : '',
         alunoCodigo: aluno,
         situacao: situa,
+        responsavelRf: responsa,
       };
       setFiltro({ ...params });
     }
@@ -175,6 +183,41 @@ const EncaminhamentoAEELista = () => {
     obterSituacoes();
   }, [obterSituacoes]);
 
+  const obterResponsaveis = useCallback(async () => {
+    setCarregandoResponsavel(true);
+    const respostaSemUE = await ServicoEncaminhamentoAEE.obterResponsaveis(
+      usuario.rf,
+      dreId
+    )
+      .catch(e => erros(e))
+      .finally(() => setCarregandoResponsavel(false));
+
+    let respostas = [];
+    if (!respostaSemUE?.data?.items?.length) {
+      const respostaComUE = await ServicoEncaminhamentoAEE.obterResponsaveis(
+        usuario.rf,
+        dreId,
+        ueId
+      )
+        .catch(e => erros(e))
+        .finally(() => setCarregandoResponsavel(false));
+
+      if (respostaComUE?.data?.items?.length) {
+        respostas = respostaComUE.data.items;
+      }
+    }
+    if (respostaSemUE?.data?.items?.length) {
+      respostas = respostaSemUE.data.items;
+    }
+    setListaResponsavel(respostas);
+  }, [dreId, usuario.rf, ueId]);
+
+  useEffect(() => {
+    if (dreId && ueId) {
+      obterResponsaveis();
+    }
+  }, [dreId, obterResponsaveis, ueId]);
+
   const [carregandoUes, setCarregandoUes] = useState(false);
 
   const obterUes = useCallback(async () => {
@@ -225,7 +268,14 @@ const EncaminhamentoAEELista = () => {
     setListaTurmas([]);
     setTurmaId();
 
-    filtrar(dre, ueId, turmaId, alunoLocalizadorSelecionado, situacao);
+    filtrar(
+      dre,
+      ueId,
+      turmaId,
+      alunoLocalizadorSelecionado,
+      situacao,
+      responsavel
+    );
   };
 
   const obterDres = useCallback(async () => {
@@ -312,7 +362,14 @@ const EncaminhamentoAEELista = () => {
     setListaTurmas([]);
     setTurmaId();
 
-    filtrar(dreId, ue, turmaId, alunoLocalizadorSelecionado, situacao);
+    filtrar(
+      dreId,
+      ue,
+      turmaId,
+      alunoLocalizadorSelecionado,
+      situacao,
+      responsavel
+    );
   };
 
   const limparFiltrosSelecionados = () => {
@@ -339,22 +396,34 @@ const EncaminhamentoAEELista = () => {
   const onChangeTurma = turma => {
     setTurmaId(turma);
     setAlunoLocalizadorSelecionado();
-    filtrar(dreId, ueId, turma, '', situacao);
+    filtrar(dreId, ueId, turma, '', situacao, responsavel);
   };
 
   const onChangeLocalizadorEstudante = aluno => {
     if (aluno?.alunoCodigo && aluno?.alunoNome) {
       setAlunoLocalizadorSelecionado(aluno?.alunoCodigo);
-      filtrar(dreId, ueId, turmaId, aluno?.alunoCodigo, situacao);
+      filtrar(dreId, ueId, turmaId, aluno?.alunoCodigo, situacao, responsavel);
     } else {
       setAlunoLocalizadorSelecionado();
-      filtrar(dreId, ueId, turmaId, '', situacao);
+      filtrar(dreId, ueId, turmaId, '', situacao, responsavel);
     }
   };
 
   const onChangeSituacao = valor => {
     setSituacao(valor);
-    filtrar(dreId, ueId, turmaId, alunoLocalizadorSelecionado, valor);
+    filtrar(
+      dreId,
+      ueId,
+      turmaId,
+      alunoLocalizadorSelecionado,
+      valor,
+      responsavel
+    );
+  };
+
+  const onChangeResponsavel = valor => {
+    setResponsavel(valor);
+    filtrar(dreId, ueId, turmaId, alunoLocalizadorSelecionado, situacao, valor);
   };
 
   const onClickEditar = item => {
@@ -373,7 +442,8 @@ const EncaminhamentoAEELista = () => {
         ueId,
         turmaId,
         alunoLocalizadorSelecionado?.alunoCodigo,
-        situacao
+        situacao,
+        responsavel
       );
     }
   }, [dreId, ueId, listaDres, listaUes]);
@@ -458,7 +528,7 @@ const EncaminhamentoAEELista = () => {
                 />
               </Loader>
             </div>
-            <div className="col-sm-12 col-md-4 col-lg-3 col-xl-3 mb-2">
+            <div className="col-sm-12 col-md-6 col-lg-6 col-xl-6 mb-2">
               <Loader loading={carregandoTurmas} tip="">
                 <SelectComponent
                   id="turma"
@@ -473,7 +543,7 @@ const EncaminhamentoAEELista = () => {
                 />
               </Loader>
             </div>
-            <div className="col-sm-12 col-md-8 col-lg-6 col-xl-6 mb-2">
+            <div className="col-sm-12 col-md-6 col-lg-6 col-xl-6 mb-2">
               <div className="row">
                 <LocalizadorEstudante
                   id="estudante"
@@ -488,7 +558,7 @@ const EncaminhamentoAEELista = () => {
                 />
               </div>
             </div>
-            <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 mb-2">
+            <div className="col-sm-12 col-md-6 col-lg-6 col-xl-6 mb-2">
               <Loader loading={carregandoSituacao} tip="">
                 <SelectComponent
                   id="situacao"
@@ -500,6 +570,20 @@ const EncaminhamentoAEELista = () => {
                   onChange={onChangeSituacao}
                   valueSelect={situacao}
                   placeholder="Situação"
+                />
+              </Loader>
+            </div>
+            <div className="col-sm-12 col-md-6 col-lg-6 col-xl-6 mb-4">
+              <Loader loading={carregandoResponsavel} tip="">
+                <SelectComponent
+                  id="responsavel"
+                  label="Responsável"
+                  lista={listaResponsavel}
+                  valueOption="codigoRf"
+                  valueText="nomeServidor"
+                  onChange={onChangeResponsavel}
+                  valueSelect={responsavel}
+                  placeholder="Responsável"
                 />
               </Loader>
             </div>

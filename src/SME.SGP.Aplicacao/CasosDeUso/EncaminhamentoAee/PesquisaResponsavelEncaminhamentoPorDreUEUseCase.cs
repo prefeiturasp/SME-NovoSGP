@@ -20,11 +20,10 @@ namespace SME.SGP.Aplicacao
         public async Task<PaginacaoResultadoDto<UsuarioEolRetornoDto>> Executar(FiltroPesquisaFuncionarioDto request)
         {
             var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
-            var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(request.CodigoTurma));
+            var codigoDRE = await ObterCodigos(request.CodigoTurma, request.CodigoDRE);
             var funcaoAtividadePesquisa = ObterFuncaoAtividadeAPesquisarPorPerfil(usuario.PerfilAtual);
-            var codigoUe = ObterUePesquisaPorPerfil(usuario.PerfilAtual, turma);
 
-            var funcionarios = await mediator.Send(new PesquisaFuncionariosPorDreUeQuery(request.CodigoRF, request.Nome, turma.Ue.Dre.CodigoDre, usuario: usuario));
+            var funcionarios = await mediator.Send(new PesquisaFuncionariosPorDreUeQuery(request.CodigoRF, request.Nome, codigoDRE, usuario: usuario));
             var limite = request.Limite > 0 ? request.Limite : 10;
 
             return new PaginacaoResultadoDto<UsuarioEolRetornoDto>()
@@ -38,9 +37,16 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        // CEFAI não filtra UE na pesquisa
-        private string ObterUePesquisaPorPerfil(Guid perfilAtual, Turma turma)
-            => perfilAtual == Perfis.PERFIL_CEFAI ? string.Empty : turma.Ue.CodigoUe;
+        private async Task<string> ObterCodigos(string codigoTurma, string codigoDRE)
+        {
+            if (!string.IsNullOrEmpty(codigoTurma))
+            {
+                var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(codigoTurma));
+                return turma.Ue.Dre.CodigoDre;
+            }
+
+            return codigoDRE;
+        }
 
         // CEFAI Pesquisa por perfil PAAI pois a abrangencia é DRE, outros perfis pesquisa PAEE com abrangencia UE
         private int ObterFuncaoAtividadeAPesquisarPorPerfil(Guid perfilAtual)

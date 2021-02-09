@@ -363,6 +363,14 @@ class ServicoEncaminhamentoAEE {
     return api.post(`${urlPadrao}/enviar-analise/${encaminhamentoId}`);
   };
 
+  obterResponsaveis = (codigoRF, codigoDRE, codigoUE) => {
+    return api.post('/v1/funcionarios/pesquisa', {
+      codigoRF,
+      codigoDRE,
+      codigoUE,
+    });
+  };
+
   atribuirResponsavelEncaminhamento = (rfResponsavel, encaminhamentoId) => {
     const params = {
       rfResponsavel,
