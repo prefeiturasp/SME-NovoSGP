@@ -60,6 +60,12 @@ const LeituraDeComunicadosAgrupadosPorDre = props => {
   );
 
   useEffect(() => {
+    return () => {
+      setDadosDeLeituraDeComunicadosAgrupadosPorDre([]);
+    };
+  }, []);
+
+  useEffect(() => {
     setDadosDeLeituraDeComunicadosAgrupadosPorDre([]);
     if (comunicado && listaComunicado?.length) {
       const dadosComunicado = obterDadosComunicadoSelecionado(

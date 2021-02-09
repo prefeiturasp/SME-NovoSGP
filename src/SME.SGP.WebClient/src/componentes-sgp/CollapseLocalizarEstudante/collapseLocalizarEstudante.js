@@ -11,6 +11,7 @@ const CollapseLocalizarEstudante = props => {
     changeLocalizadorEstudante,
     clickCancelar,
     clickProximoPasso,
+    validarSePermiteProximoPasso,
   } = props;
 
   return (
@@ -35,6 +36,7 @@ const CollapseLocalizarEstudante = props => {
             .click();
           clickProximoPasso();
         }}
+        validarSePermiteProximoPasso={validarSePermiteProximoPasso}
       />
     </CardCollapse>
   );
@@ -47,6 +49,7 @@ CollapseLocalizarEstudante.propTypes = {
   changeLocalizadorEstudante: PropTypes.func,
   clickCancelar: PropTypes.func,
   clickProximoPasso: PropTypes.func,
+  validarSePermiteProximoPasso: PropTypes.func,
 };
 
 CollapseLocalizarEstudante.defaultProps = {
@@ -56,6 +59,7 @@ CollapseLocalizarEstudante.defaultProps = {
   changeLocalizadorEstudante: () => {},
   clickCancelar: () => {},
   clickProximoPasso: () => {},
+  validarSePermiteProximoPasso: null,
 };
 
 export default CollapseLocalizarEstudante;
