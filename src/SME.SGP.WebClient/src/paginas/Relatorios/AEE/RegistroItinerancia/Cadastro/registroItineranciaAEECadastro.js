@@ -14,6 +14,7 @@ import {
   ModalUE,
   TabelaLinhaRemovivel,
 } from './componentes';
+import ServicoRegistroItineranciaAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoRegistroItineranciaAEE';
 
 const RegistroItineranciaAEECadastro = ({ match }) => {
   const [carregandoGeral, setCarregandoGeral] = useState(false);
@@ -28,6 +29,8 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
   const [desabilitarCampos, setDesabilitarCampos] = useState(false);
   const [apenasUmaUe, setApenasUmaUe] = useState(false);
   const [variasUesSelecionadas, setVariasUesSelecionadas] = useState(false);
+  const [questoesItinerancia, setQuestoesItinerancia] = useState([]);
+  const [questoesItineranciaAluno, setQuestoesItineranciaAluno] = useState([]);
   const usuario = useSelector(store => store.usuario);
   const permissoesTela =
     usuario.permissoes[RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA];
@@ -75,6 +78,17 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
       ? !permissoesTela?.podeAlterar
       : !permissoesTela?.podeIncluir;
   };
+
+  useEffect(() => {
+    const buscarQuestoes = async () => {
+      const result = await ServicoRegistroItineranciaAEE.obterQuestoesItinerancia();
+      if (result?.status === 200) {
+        setQuestoesItinerancia(result?.data?.questoesItinerancia);
+        setQuestoesItineranciaAluno(result?.data?.questoesItineranciaAluno);
+      }
+    };
+    buscarQuestoes();
+  }, []);
 
   useEffect(() => {
     if (dataVisita && objetivosSelecionados?.length) {
@@ -229,7 +243,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
                 />
               ))
             ) : (
-              <EditoresTexto />
+              <EditoresTexto dados={questoesItinerancia} />
             )}
             <div className="row mb-4">
               <div className="col-3">
