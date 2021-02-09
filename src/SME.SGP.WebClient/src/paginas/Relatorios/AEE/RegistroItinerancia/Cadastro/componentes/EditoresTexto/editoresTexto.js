@@ -1,35 +1,33 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 
 import { JoditEditor } from '~/componentes';
+import ServicoRegistroItineranciaAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoRegistroItineranciaAEE';
 
 const EditoresTexto = () => {
   const [acompanhamentoSituacao, setAcompanhamentoSituacao] = useState();
   const [encaminhamentos, setEncaminhamentos] = useState();
 
+  const dados = useSelector(store => store.itinerancia.questoesItinerancia);
+
   return (
     <>
-      <div className="row mb-4">
-        <div className="col-12">
-          <JoditEditor
-            label="Acompanhamento da situação"
-            value={acompanhamentoSituacao}
-            name="acompanhamentoSituacao"
-            id="acompanhamentoSituacao"
-            onChange={e => setAcompanhamentoSituacao(e)}
-          />
-        </div>
-      </div>
-      <div className="row mb-4">
-        <div className="col-12">
-          <JoditEditor
-            label="Encaminhamentos"
-            value={encaminhamentos}
-            name="encaminhamentos"
-            id="encaminhamentos"
-            onChange={e => setEncaminhamentos(e)}
-          />
-        </div>
-      </div>
+      {dados &&
+        dados.map(questao => {
+          return (
+            <div className="row mb-4">
+              <div className="col-12">
+                <JoditEditor
+                  label={questao.descricao}
+                  value=""
+                  name={questao.descricao + questao.questaoId}
+                  id={questao.questaoId}
+                  onChange={e => setAcompanhamentoSituacao(e)}
+                />
+              </div>
+            </div>
+          );
+        })}
     </>
   );
 };

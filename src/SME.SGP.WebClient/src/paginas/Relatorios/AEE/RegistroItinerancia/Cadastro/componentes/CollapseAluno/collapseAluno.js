@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Divider } from 'antd';
 import shortid from 'shortid';
 import PropTypes from 'prop-types';
-
+import { useSelector } from 'react-redux';
 import {
   Base,
   Button,
@@ -15,6 +15,9 @@ const CollapseAluno = ({ aluno, removerAlunos, desabilitar }) => {
   const [acompanhamentoSituacao, setAcompanhamentoSituacao] = useState();
   const [descritivoEstudante, setDescritivoEstudante] = useState();
   const [encaminhamentos, setEncaminhamentos] = useState();
+  const dados = useSelector(
+    store => store.itinerancia.questoesItineranciaAluno
+  );
 
   const id = 'collapseAluno';
 
@@ -29,42 +32,22 @@ const CollapseAluno = ({ aluno, removerAlunos, desabilitar }) => {
             temBorda
             header={aluno.alunoNome}
           >
-            <div className="row mb-4 mt-n2">
-              <div className="col-12">
-                <JoditEditor
-                  id="descritivoEstudante"
-                  label="Descritivo do estudante"
-                  name="descritivoEstudante"
-                  value={descritivoEstudante}
-                  onChange={e => setDescritivoEstudante(e)}
-                  desabilitar={desabilitar}
-                />
-              </div>
-            </div>
-            <div className="row mb-4">
-              <div className="col-12">
-                <JoditEditor
-                  label="Acompanhamento da situação"
-                  value={acompanhamentoSituacao}
-                  name="acompanhamentoSituacao"
-                  id="acompanhamentoSituacao"
-                  onChange={e => setAcompanhamentoSituacao(e)}
-                  desabilitar={desabilitar}
-                />
-              </div>
-            </div>
-            <div className="row">
-              <div className="col-12">
-                <JoditEditor
-                  label="Encaminhamentos"
-                  value={encaminhamentos}
-                  name="encaminhamentos"
-                  id="encaminhamentos"
-                  onChange={e => setEncaminhamentos(e)}
-                  desabilitar={desabilitar}
-                />
-              </div>
-            </div>
+            {dados &&
+              dados.map(questao => {
+                return (
+                  <div className="row mb-4">
+                    <div className="col-12">
+                      <JoditEditor
+                        label={questao.descricao}
+                        value=""
+                        name={questao.descricao + questao.questaoId}
+                        id={questao.questaoId}
+                        onChange={e => setAcompanhamentoSituacao(e)}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
             <div className="row mt-n2">
               <Divider />
             </div>

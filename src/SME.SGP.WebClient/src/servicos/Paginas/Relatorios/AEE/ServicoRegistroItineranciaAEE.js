@@ -10,6 +10,10 @@ class ServicoRegistroItineranciaAEE {
   obterItineranciaPorId = id => {
     return api.get(`${urlPadrao}/${id}`);
   };
+
+  obterQuestoesItinerancia = () => {
+    return api.get(`${urlPadrao}/questoes`);
+  };
 }
 
 export default new ServicoRegistroItineranciaAEE();

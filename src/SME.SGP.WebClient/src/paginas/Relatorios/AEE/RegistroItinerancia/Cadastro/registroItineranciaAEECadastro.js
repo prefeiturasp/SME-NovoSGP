@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import shortid from 'shortid';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Base, Button, CampoData, Card, Colors, Loader } from '~/componentes';
 import { Cabecalho } from '~/componentes-sgp';
 import { RotasDto } from '~/dtos';
@@ -14,8 +14,14 @@ import {
   ModalUE,
   TabelaLinhaRemovivel,
 } from './componentes';
+import ServicoRegistroItineranciaAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoRegistroItineranciaAEE';
+import {
+  setQuestoesItinerancia,
+  setQuestoesItineranciaAluno,
+} from '~/redux/modulos/itinerancia/action';
 
 const RegistroItineranciaAEECadastro = ({ match }) => {
+  const dispatch = useDispatch();
   const [carregandoGeral, setCarregandoGeral] = useState(false);
   const [dataVisita, setDataVisita] = useState();
   const [dataRetorno, setDataRetorno] = useState();
@@ -75,6 +81,19 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
       ? !permissoesTela?.podeAlterar
       : !permissoesTela?.podeIncluir;
   };
+
+  useEffect(() => {
+    const buscarQuestoes = async () => {
+      const result = await ServicoRegistroItineranciaAEE.obterQuestoesItinerancia();
+      if (result?.status === 200) {
+        dispatch(setQuestoesItinerancia(result?.data?.itineranciaQuestao));
+        dispatch(
+          setQuestoesItineranciaAluno(result?.data?.itineranciaAlunoQuestao)
+        );
+      }
+    };
+    buscarQuestoes();
+  }, []);
 
   useEffect(() => {
     if (dataVisita && objetivosSelecionados?.length) {
