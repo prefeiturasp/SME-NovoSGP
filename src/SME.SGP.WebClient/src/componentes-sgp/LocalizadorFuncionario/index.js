@@ -223,17 +223,13 @@ const LocalizadorFuncionario = props => {
   useEffect(() => {
     if (
       valorInicial &&
+      valorInicial?.codigoRF &&
       !funcionarioSelecionado?.codigoRF &&
       !dataSource?.length
     ) {
-      validaAntesBuscarPorCodigo(valorInicial);
+      validaAntesBuscarPorCodigo(valorInicial.codigoRF);
     }
-  }, [
-    valorInicial,
-    dataSource,
-    funcionarioSelecionado,
-    validaAntesBuscarPorCodigo,
-  ]);
+  }, [valorInicial, dataSource, funcionarioSelecionado]);
 
   return (
     <>
