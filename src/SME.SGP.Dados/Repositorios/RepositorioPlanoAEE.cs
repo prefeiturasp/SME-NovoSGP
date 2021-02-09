@@ -100,5 +100,21 @@ namespace SME.SGP.Dados.Repositorios
             if (situacao.HasValue && situacao > 0)
                 sql.AppendLine(" and pa.situacao = @situacao ");
         }
+
+        public async Task<PlanoAEEResumoDto> ObterPlanoPorEstudante(string codigoEstudante)
+        {
+            var query = @"select distinct   pa.Id,
+	                                        pa.aluno_numero as numero,
+	                                        pa.aluno_nome as nome,
+	                                        tu.nome as turma,
+	                                        pa.situacao 
+                                        from plano_aee pa
+                                        inner join turma tu on tu.id = pa.turma_id 
+                                        where pa.aluno_codigo = @codigoEstudante 
+                                        and pa.situacao = 1
+                                        limit 1";
+
+            return await database.Conexao.QueryFirstAsync<PlanoAEEResumoDto>(query, new { codigoEstudante });
+        }
     }
 }
