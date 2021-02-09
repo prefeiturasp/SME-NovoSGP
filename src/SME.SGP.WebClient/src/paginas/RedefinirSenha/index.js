@@ -23,7 +23,7 @@ import {
 } from './index.css';
 import { URL_LOGIN, URL_RECUPERARSENHA, URL_HOME } from '~/constantes/url';
 import ServicoPrimeiroAcesso from '~/servicos/Paginas/ServicoPrimeiroAcesso';
-import { salvarDadosLogin, Deslogar, setModificarSenha } from '~/redux/modulos/usuario/actions';
+import { salvarDadosLogin, Deslogar, setModificarSenha, setLogado } from '~/redux/modulos/usuario/actions';
 import { store } from '~/redux';
 import Erro from '../RecuperarSenha/erro';
 import { setMenusPermissoes } from '~/servicos/servico-navegacao';
@@ -50,6 +50,8 @@ const RedefinirSenha = props => {
 
   const { senha, confirmarSenha } = senhas;
   const token = props.match && props.match.params && props.match.params.token;
+
+  const primeiroAcesso = useSelector(state => state.usuario.modificarSenha);
 
   const [validacoes, setValidacoes] = useState({
     maiuscula: '',
@@ -157,6 +159,7 @@ const RedefinirSenha = props => {
     if (modificarSenha){
       store.dispatch(Deslogar());
       store.dispatch(setModificarSenha(false));
+      store.dispatch(setLogado(false));      
     }     
     history.push(URL_LOGIN);    
   };
