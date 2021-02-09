@@ -83,7 +83,7 @@ const EncaminhamentoAEECadastro = ({ match }) => {
       <Card>
         <div className="col-md-12">
           <div className="row">
-            <div className="col-md-12 d-flex justify-content-end pb-4">
+            <div className="col-md-12 d-flex justify-content-end mb-3">
               <BotoesAcoesEncaminhamentoAEE match={match} />
             </div>
             {match?.params?.id ? (
