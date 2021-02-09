@@ -5,9 +5,9 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterQuestoesItineranciaAlunoQuery : IRequest<IEnumerable<ItineranciaAlunoQuestaoDto>>
+    public class ObterQuestoesItineranciaAlunoPorIdQuery : IRequest<IEnumerable<ItineranciaAlunoQuestaoDto>>
     {
-        public ObterQuestoesItineranciaAlunoQuery(long id)
+        public ObterQuestoesItineranciaAlunoPorIdQuery(long id)
         {
             Id = id;
         }
@@ -15,9 +15,9 @@ namespace SME.SGP.Aplicacao
         public long Id { get; set; }
     }
 
-    public class ObterQuestoesItineranciaAlunoQueryValidator : AbstractValidator<ObterQuestoesItineranciaAlunoQuery>
+    public class ObterQuestoesItineranciaAlunoPorIdQueryValidator : AbstractValidator<ObterQuestoesItineranciaAlunoPorIdQuery>
     {
-        public ObterQuestoesItineranciaAlunoQueryValidator()
+        public ObterQuestoesItineranciaAlunoPorIdQueryValidator()
         {
             RuleFor(c => c.Id)
             .NotEmpty()
