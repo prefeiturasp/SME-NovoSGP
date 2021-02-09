@@ -42,6 +42,7 @@ namespace SME.SGP.Aplicacao
                     AnoLetivo = encaminhamentoAee.Turma.AnoLetivo
                 },
                 Situacao = encaminhamentoAee.Situacao,
+                SituacaoDescricao = encaminhamentoAee.Situacao.Name(),
                 PodeEditar = podeEditar,
                 PodeAtribuirResponsavel = podeAtribuirResponsavel,
                 MotivoEncerramento = encaminhamentoAee.MotivoEncerramento,
