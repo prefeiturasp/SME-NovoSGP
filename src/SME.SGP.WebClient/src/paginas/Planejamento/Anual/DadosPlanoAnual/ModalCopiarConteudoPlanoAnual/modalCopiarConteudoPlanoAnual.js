@@ -146,7 +146,10 @@ const ModalCopiarConteudoPlanoAnual = () => {
       c => turmas.includes(c.codTurma.toString()) &&
            c.codigoComponenteCurricular === componenteCurricular.codigoComponenteCurricular &&
            c.possuiPlano &&
-           bimestresSelecionados.filter(b => b.bimestre == c.bimestre).length > 0
+           bimestresSelecionados &&
+           bimestresSelecionados.length > 0 &&
+           (bimestresSelecionados.filter(b => b.bimestre == c.bimestre).length > 0 ||
+            bimestresSelecionados[0].valor === '0')
     );      
     
     if (turmasComPlano && turmasComPlano.length > 0) {
