@@ -35,5 +35,16 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<ItineranciaAlunoQuestaoDto>(query, new { id });
         }
+
+        public async Task<IEnumerable<ItineranciaQuestaoBaseDto>> ObterItineranciaQuestaoBase()
+        {
+            var query = @"select q.id, q.nome, q.ordem, q1.tipo 
+                            from questao q
+                           inner join questionario q1 on q1.id = q.questionario_id 
+                           where q1.tipo in (2,3)
+                             and not q.excluido";
+
+            return await database.Conexao.QueryAsync<ItineranciaQuestaoBaseDto>(query);
+        }
     }
 }

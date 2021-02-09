@@ -168,5 +168,14 @@ namespace SME.SGP.Api
         {
             return Ok(await useCase.Executar(id));            
         }
+
+        [HttpGet("questoes")]
+        [ProducesResponseType(typeof(RegistroIndividualDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        //[Permissao(Permissao.REI_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterQuestoes([FromServices] IObterQuestoesBaseUseCase useCase)
+        {
+            return Ok(await useCase.Executar());
+        }
     }
 }
