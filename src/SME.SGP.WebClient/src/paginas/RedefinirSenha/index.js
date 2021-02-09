@@ -23,7 +23,7 @@ import {
 } from './index.css';
 import { URL_LOGIN, URL_RECUPERARSENHA, URL_HOME } from '~/constantes/url';
 import ServicoPrimeiroAcesso from '~/servicos/Paginas/ServicoPrimeiroAcesso';
-import { salvarDadosLogin, Deslogar } from '~/redux/modulos/usuario/actions';
+import { salvarDadosLogin, Deslogar, setModificarSenha } from '~/redux/modulos/usuario/actions';
 import { store } from '~/redux';
 import Erro from '../RecuperarSenha/erro';
 import { setMenusPermissoes } from '~/servicos/servico-navegacao';
@@ -154,12 +154,15 @@ const RedefinirSenha = props => {
     Object.entries(validacoes).filter(validacao => !validacao[1]).length > 0;
 
   const onClickSair = () => {
-    if (modificarSenha) store.dispatch(Deslogar());
-    history.push(URL_LOGIN);
+    if (modificarSenha){
+      store.dispatch(Deslogar());
+      store.dispatch(setModificarSenha(false));
+    }     
+    history.push(URL_LOGIN);    
   };
 
   const alterarSenha = async () => {
-    if (!logado) {
+    if (!logado) {      
       const requisicao = await RedefinirSenhaServico.redefinirSenha(
         {
           token,
@@ -186,7 +189,7 @@ const RedefinirSenha = props => {
       });
       if (requisicao.sucesso) {
         obterMeusDados();
-        setMenusPermissoes();
+        setMenusPermissoes();        
 
         store.dispatch(
           salvarDadosLogin({
@@ -206,7 +209,7 @@ const RedefinirSenha = props => {
               requisicao.resposta.data.perfisUsuario.ehProfessorInfantil,
             ehProfessorCjInfantil:
               requisicao.resposta.data.perfisUsuario.ehProfessorCjInfantil,
-            ehPerfilProfessor: requisicao.data.perfisUsuario.ehPerfilProfessor,
+            ehPerfilProfessor: requisicao.resposta.data.perfisUsuario.ehPerfilProfessor,
             dataHoraExpiracao: requisicao.resposta.data.dataHoraExpiracao,
           })
         );

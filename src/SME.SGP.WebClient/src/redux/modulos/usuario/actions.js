@@ -99,3 +99,10 @@ export function setPermissoes(permissoes) {
     payload: permissoes,
   };
 }
+
+export function setModificarSenha(modificarSenha) {
+  return {
+    type: '@usuario/setModificarSenha',
+    payload: modificarSenha,
+  };
+}
