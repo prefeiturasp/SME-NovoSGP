@@ -76,6 +76,7 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine(", t.modalidade_codigo as TurmaModalidade ");
                 sql.AppendLine(", t.ano_letivo as TurmaAno ");
                 sql.AppendLine(", ea.situacao ");
+                sql.AppendLine(", u.nome as Responsavel ");
             }
 
             sql.AppendLine(" from encaminhamento_aee ea ");
