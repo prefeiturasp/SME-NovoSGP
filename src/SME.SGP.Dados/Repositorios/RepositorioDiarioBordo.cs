@@ -55,7 +55,12 @@ namespace SME.SGP.Dados.Repositorios
 
             var offSet = "offset @qtdeRegistrosIgnorados rows fetch next @qtdeRegistros rows only";
 
-            query = $"select db.planejamento, a.aula_cj as AulaCj, a.data_aula as Data {condicao} order by a.data_aula {offSet} ";
+            query = $@"select db.planejamento
+                            , regexp_replace(db.planejamento, E'<[^>]+>', ' ', 'gi') as PlanejamentoSimples
+                            , a.aula_cj as AulaCj
+                            , a.data_aula as Data 
+                            {condicao} 
+                            order by a.data_aula {offSet} ";
 
             return new PaginacaoResultadoDto<DiarioBordoDevolutivaDto>()
             {
