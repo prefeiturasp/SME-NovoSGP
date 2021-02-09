@@ -34,7 +34,7 @@ const DetalhesResponsavel = props => {
   return (
     <div className="col-md-12 mb-4">
       <CabecalhoDetalhesResponsavel className="col-md-12">
-        <span>PAEE/PAAI resposável</span>
+        <span>PAEE/PAAI responsável</span>
       </CabecalhoDetalhesResponsavel>
       <DadosAluno className="col-md-12">
         <p>{nomeServidor}</p>
