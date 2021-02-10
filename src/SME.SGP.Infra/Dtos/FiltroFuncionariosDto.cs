@@ -1,4 +1,6 @@
-﻿namespace SME.SGP.Infra
+﻿using System;
+
+namespace SME.SGP.Infra
 {
     public class FiltroFuncionarioDto
     {

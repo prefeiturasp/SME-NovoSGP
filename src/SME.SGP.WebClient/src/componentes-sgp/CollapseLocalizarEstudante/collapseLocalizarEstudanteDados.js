@@ -19,6 +19,7 @@ const CollapseLocalizarEstudanteDados = props => {
     changeTurma,
     changeLocalizadorEstudante,
     clickCancelar,
+    clickProximoPasso,
     validarSePermiteProximoPasso,
   } = props;
   const dispatch = useDispatch();
@@ -223,8 +224,10 @@ const CollapseLocalizarEstudanteDados = props => {
         turmaId: alunoLocalizadorSelecionado.turmaId,
       };
 
-      dispatch(setDadosCollapseLocalizarEstudante(params));
-    }
+        dispatch(setDadosCollapseLocalizarEstudante(params));
+        clickProximoPasso(true);
+      })
+      .catch(e => erros(e));
   };
 
   const onClickCancelar = () => {
@@ -345,6 +348,7 @@ CollapseLocalizarEstudanteDados.propTypes = {
   changeTurma: PropTypes.func,
   changeLocalizadorEstudante: PropTypes.func,
   clickCancelar: PropTypes.func,
+  clickProximoPasso: PropTypes.func,
   validarSePermiteProximoPasso: PropTypes.func,
 };
 
@@ -354,6 +358,7 @@ CollapseLocalizarEstudanteDados.defaultProps = {
   changeTurma: () => {},
   changeLocalizadorEstudante: () => {},
   clickCancelar: () => {},
+  clickProximoPasso: () => {},
   validarSePermiteProximoPasso: null,
 };
 

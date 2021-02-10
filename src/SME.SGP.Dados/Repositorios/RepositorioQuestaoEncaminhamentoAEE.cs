@@ -1,8 +1,10 @@
 ﻿using SME.SGP.Dominio;
+using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -16,14 +18,16 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<Questao>> ObterListaPorQuestionario(long questionarioId)
         {
-            var query = @"select q.*, op.*
+            var query = @"select q.*, op.*, oqc.*
                           from questao q 
                           left join opcao_resposta op on op.questao_id = q.id
-                         where q.questionario_id = @questionarioId ";
+                          left join opcao_questao_complementar oqc on oqc.opcao_resposta_id = op.id
+                         where q.questionario_id = @questionarioId 
+                        order by q.id, op.id";
 
             var lookup = new Dictionary<long, Questao>();
-            await database.Conexao.QueryAsync<Questao, OpcaoResposta, Questao>(query,
-                (questao, opcaoResposta) =>
+            await database.Conexao.QueryAsync<Questao, OpcaoResposta, OpcaoQuestaoComplementar, Questao>(query,
+                (questao, opcaoResposta, OpcaoQuestaoComplementar) =>
                 {
                     var q = new Questao();
                     if (!lookup.TryGetValue(questao.Id, out q))
@@ -32,9 +36,16 @@ namespace SME.SGP.Dados.Repositorios
                         lookup.Add(q.Id, q);
                     }
 
-                    if (opcaoResposta != null)
+                    var entidadeOpcaoResposta = q.OpcoesRespostas.FirstOrDefault(a => a.Id == opcaoResposta.Id);
+                    if (entidadeOpcaoResposta == null && opcaoResposta != null)
                     {
                         q.OpcoesRespostas.Add(opcaoResposta);
+                        entidadeOpcaoResposta = opcaoResposta;
+                    }
+
+                    if(OpcaoQuestaoComplementar != null)
+                    {
+                        entidadeOpcaoResposta.QuestoesComplementares.Add(OpcaoQuestaoComplementar);
                     }
 
                     return q;

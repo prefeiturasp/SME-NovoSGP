@@ -14,6 +14,7 @@ import CampoDinamicoUploadArquivos from './Componentes/campoDinamicoUploadArquiv
 import InformacoesEscolares from './Componentes/InformacoesEscolares/informacoesEscolares';
 import QuestionarioDinamicoFuncoes from './Funcoes/QuestionarioDinamicoFuncoes';
 import QuestionarioDinamicoValidacoes from './Validacoes/QuestionarioDinamicoValidacoes';
+import CampoDinamicoCheckbox from './Componentes/campoDinamicoCheckbox';
 
 const QuestionarioDinamico = props => {
   const dispatch = useDispatch();
@@ -65,6 +66,9 @@ const QuestionarioDinamico = props => {
           case tipoQuestao.ComboMultiplaEscolha:
             valorRespostaAtual = resposta.map(r => String(r.opcaoRespostaId));
             break;
+          case tipoQuestao.Checkbox:
+            valorRespostaAtual = resposta.map(r => Number(r.opcaoRespostaId));
+            break;
           case tipoQuestao.Texto:
             valorRespostaAtual = resposta[0].texto;
             break;
@@ -101,27 +105,36 @@ const QuestionarioDinamico = props => {
 
       if (
         valorRespostaAtual?.length &&
-        questaoAtual?.tipoQuestao === tipoQuestao.ComboMultiplaEscolha
+        (questaoAtual?.tipoQuestao === tipoQuestao.ComboMultiplaEscolha ||
+          questaoAtual?.tipoQuestao === tipoQuestao.Checkbox)
       ) {
-        const idQuestaoComResposta = valorRespostaAtual.find(valorSalvo => {
+        const idsQuestoesComResposta = valorRespostaAtual.filter(valorSalvo => {
           const opcaoResposta = questaoAtual?.opcaoResposta.find(
             q => String(q.id) === String(valorSalvo)
           );
 
-          if (opcaoResposta?.questaoComplementar?.resposta?.length) {
+          if (
+            opcaoResposta?.questoesComplementares?.find(q => q.resposta?.length)
+          ) {
             return true;
           }
           return false;
         });
 
-        if (idQuestaoComResposta) {
-          const questaoComplmentarComResposta = questaoAtual?.opcaoResposta.find(
-            q => String(q.id) === String(idQuestaoComResposta)
-          );
+        if (idsQuestoesComResposta?.length) {
+          idsQuestoesComResposta.forEach(idQuestao => {
+            const questaoComplmentarComResposta = questaoAtual?.opcaoResposta.find(
+              q => String(q.id) === String(idQuestao)
+            );
 
-          if (questaoComplmentarComResposta?.questaoComplementar) {
-            montarDados(questaoComplmentarComResposta.questaoComplementar);
-          }
+            if (questaoComplmentarComResposta?.questoesComplementares?.length) {
+              questaoComplmentarComResposta.questoesComplementares.forEach(
+                questao => {
+                  montarDados(questao);
+                }
+              );
+            }
+          });
         }
       } else if (
         valorRespostaAtual &&
@@ -132,11 +145,12 @@ const QuestionarioDinamico = props => {
           item => String(item.id) === String(valorRespostaAtual)
         );
 
-        if (opcaoAtual?.questaoComplementar) {
-          montarDados(opcaoAtual.questaoComplementar);
+        if (opcaoAtual?.questoesComplementares?.length) {
+          opcaoAtual.questoesComplementares.forEach(q => {
+            montarDados(q);
+          });
         }
       }
-
       valores[questaoAtual.id] = valorRespostaAtual;
     };
 
@@ -173,14 +187,27 @@ const QuestionarioDinamico = props => {
   );
 
   const montarCampos = (questaoAtual, form, ordemAnterior) => {
+    const campoQuestaoComplementar = [];
+
+    const montarCampoComplementarPadrao = (vAtual, label) => {
+      const opcaoResposta = QuestionarioDinamicoFuncoes.obterOpcaoRespostaPorId(
+        questaoAtual?.opcaoResposta,
+        vAtual
+      );
+
+      if (opcaoResposta?.questoesComplementares?.length) {
+        opcaoResposta.questoesComplementares.forEach(q => {
+          campoQuestaoComplementar.push(montarCampos(q, form, label));
+        });
+      }
+    };
+
     const ordemLabel = ordemAnterior
       ? `${ordemAnterior}.${questaoAtual.ordem}`
       : questaoAtual.ordem;
 
     const textoLabel = `${ordemLabel} - ${questaoAtual.nome}`;
     const label = labelPersonalizado(textoLabel, questaoAtual?.observacao);
-
-    let campoQuestaoComplementar = null;
 
     const valorAtualSelecionado = form.values[questaoAtual.id];
 
@@ -198,12 +225,10 @@ const QuestionarioDinamico = props => {
               String(idOpcaoRespostaComComplementarObrigatoria)
           );
 
-          if (opcaoResposta?.questaoComplementar) {
-            campoQuestaoComplementar = montarCampos(
-              opcaoResposta.questaoComplementar,
-              form,
-              ordemLabel
-            );
+          if (opcaoResposta?.questoesComplementares?.length) {
+            opcaoResposta.questoesComplementares.forEach(q => {
+              campoQuestaoComplementar.push(montarCampos(q, form, ordemLabel));
+            });
           }
         } else {
           const idOpcaoRespostaComComplementarNaoObrigatoria = QuestionarioDinamicoFuncoes.obterIdOpcaoRespostaComComplementarNaoObrigatoria(
@@ -211,33 +236,21 @@ const QuestionarioDinamico = props => {
             questaoAtual
           );
 
-          const opcaoResposta = QuestionarioDinamicoFuncoes.obterOpcaoRespostaPorId(
-            questaoAtual?.opcaoResposta,
-            idOpcaoRespostaComComplementarNaoObrigatoria
+          montarCampoComplementarPadrao(
+            idOpcaoRespostaComComplementarNaoObrigatoria,
+            ordemLabel
           );
-
-          if (opcaoResposta?.questaoComplementar) {
-            campoQuestaoComplementar = montarCampos(
-              opcaoResposta.questaoComplementar,
-              form,
-              ordemLabel
-            );
-          }
         }
       }
+    } else if (
+      valorAtualSelecionado?.length &&
+      questaoAtual?.tipoQuestao === tipoQuestao.Checkbox
+    ) {
+      valorAtualSelecionado.forEach(vAtual => {
+        montarCampoComplementarPadrao(vAtual, ordemLabel);
+      });
     } else if (valorAtualSelecionado) {
-      const opcaoResposta = QuestionarioDinamicoFuncoes.obterOpcaoRespostaPorId(
-        questaoAtual?.opcaoResposta,
-        valorAtualSelecionado
-      );
-
-      if (opcaoResposta?.questaoComplementar) {
-        campoQuestaoComplementar = montarCampos(
-          opcaoResposta.questaoComplementar,
-          form,
-          ordemLabel
-        );
-      }
+      montarCampoComplementarPadrao(valorAtualSelecionado, ordemLabel);
     }
 
     const params = {
@@ -257,6 +270,24 @@ const QuestionarioDinamico = props => {
             desabilitado={desabilitarCampos}
             onChange={valorAtual => {
               QuestionarioDinamicoFuncoes.onChangeCamposComOpcaoResposta(
+                questaoAtual,
+                form,
+                valorAtual
+              );
+              dispatch(setQuestionarioDinamicoEmEdicao(true));
+            }}
+          />
+        );
+        break;
+      case tipoQuestao.Checkbox:
+        campoAtual = (
+          <CampoDinamicoCheckbox
+            questaoAtual={questaoAtual}
+            form={form}
+            label={label}
+            desabilitado={desabilitarCampos}
+            onChange={valorAtual => {
+              QuestionarioDinamicoFuncoes.onChangeCampoCheckbox(
                 questaoAtual,
                 form,
                 valorAtual
@@ -343,7 +374,7 @@ const QuestionarioDinamico = props => {
     return (
       <>
         {campoAtual || ''}
-        {campoQuestaoComplementar || ''}
+        {campoQuestaoComplementar?.length ? campoQuestaoComplementar : ''}
       </>
     );
   };

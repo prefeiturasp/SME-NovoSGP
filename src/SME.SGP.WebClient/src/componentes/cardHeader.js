@@ -57,6 +57,7 @@ const CardHeader = props => {
           className="text-decoration-none ml-auto"
           data-toggle="collapse"
           href={`#${indice}`}
+          id={`expandir-retrair-${indice}`}
           role="button"
           aria-expanded={show && true}
           aria-controls={`${indice}`}

@@ -28,6 +28,7 @@ namespace SME.SGP.Aplicacao
                                                                      request.TurmaId,
                                                                      request.AlunoCodigo,
                                                                      (int?)request.Situacao,
+                                                                     request.ResponsavelRf,
                                                                      Paginacao));
         }
 
@@ -55,7 +56,8 @@ namespace SME.SGP.Aplicacao
                     Situacao = encaminhamento.Situacao != 0 ? encaminhamento.Situacao.Name() : "",
                     Turma = $"{encaminhamento.TurmaModalidade.ShortName()} - {encaminhamento.TurmaNome}",
                     Numero = aluno?.NumeroAlunoChamada ?? 0,
-                    Nome = aluno?.NomeAluno
+                    Nome = aluno?.NomeAluno,
+                    Responsavel = encaminhamento.Responsavel
                 });
             }
 
