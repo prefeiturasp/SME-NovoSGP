@@ -71,7 +71,7 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(arquivoCodigo));
         }
-        
+
         [HttpGet("instrucoes-modal")]
         [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
@@ -172,6 +172,8 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterSituacaoEncaminhamentoPorEstudante(string codigoEstudante, [FromServices] IObterSituacaoEncaminhamentoPorEstudanteUseCase useCase)
         {
             return Ok(await useCase.Executar(codigoEstudante));
+        }
+
         [HttpPost("remover-responsavel/{encaminhamentoId}")]
         [ProducesResponseType(typeof(RetornoBaseDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
