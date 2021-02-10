@@ -163,7 +163,19 @@ const ModalUE = ({
         }));
 
         if (lista?.length === 1) {
-          setUeId(lista[0].valor);
+          const ue = lista[0].valor;
+          setUeId(ue);
+          const ueSelecionada = lista.find(
+            item => String(item.valor) === String(ue)
+          );
+          setUESSelecionadas([
+            {
+              key: ueSelecionada.valor,
+              unidadeEscolar: ueSelecionada.desc,
+              codigoUe: ue,
+              podeRemover: false,
+            },
+          ]);
         }
         setListaUes(lista);
         return;

@@ -11,3 +11,10 @@ export function setQuestoesItineranciaAluno(payload) {
     payload,
   };
 }
+
+export function setObjetivosItinerancia(payload) {
+  return {
+    type: '@itinerancia/setObjetivosItinerancia',
+    payload,
+  };
+}

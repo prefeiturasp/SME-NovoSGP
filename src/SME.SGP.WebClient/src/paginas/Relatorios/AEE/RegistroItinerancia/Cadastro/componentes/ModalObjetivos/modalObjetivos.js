@@ -1,15 +1,13 @@
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
-
+import { useDispatch, useSelector } from 'react-redux';
 import {
   CampoTexto,
   CheckboxComponent,
   ModalConteudoHtml,
 } from '~/componentes';
-
-import { aviso, confirmar, erros } from '~/servicos';
-import ServicoRegistroItineranciaAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoRegistroItineranciaAEE';
-
+import { setObjetivosItinerancia } from '~/redux/modulos/itinerancia/action';
+import { aviso, confirmar } from '~/servicos';
 import { TituloEstilizado } from './modalObjetivos.css';
 
 const ModalObjetivos = ({
@@ -19,7 +17,8 @@ const ModalObjetivos = ({
   setObjetivosSelecionados,
   variasUesSelecionadas,
 }) => {
-  const [listaObjetivos, setListaObjetivos] = useState();
+  const dispatch = useDispatch();
+  const listaObjetivos = useSelector(store => store.itinerancia.objetivos);
   const [modoEdicao, setModoEdicao] = useState(false);
 
   const esconderModal = () => setModalVisivel(false);
@@ -50,75 +49,36 @@ const ModalObjetivos = ({
   };
 
   const onChangeCheckbox = item => {
-    setListaObjetivos(estadoAntigo =>
-      estadoAntigo.map(objetivo => {
-        if (!objetivo.permiteVariasUes && variasUesSelecionadas) {
-          aviso(
-            'Este objetivo só pode ser selecionado quando o registro é de uma unidade apenas e você está' +
-              ' com mais de uma unidade selecionada.'
-          );
-          return objetivo;
-        }
-
-        if (objetivo.id === item.id) {
-          return {
-            ...objetivo,
-            checked: !objetivo.checked,
-          };
-        }
-        return objetivo;
-      })
-    );
+    const objetivo = listaObjetivos.find(o => o.id === item.id);
+    if (objetivo) {
+      if (
+        !objetivo.permiteVariasUes &&
+        variasUesSelecionadas &&
+        !objetivo.checked
+      ) {
+        aviso(
+          'Este objetivo só pode ser selecionado quando o registro é de uma unidade apenas e você está' +
+            ' com mais de uma unidade selecionada.'
+        );
+      } else {
+        objetivo.checked = !objetivo.checked;
+      }
+    }
+    dispatch(setObjetivosItinerancia([...listaObjetivos]));
     setModoEdicao(true);
   };
 
   const onChangeCampoTexto = (evento, item) => {
     const texto = evento.target?.value;
-    setListaObjetivos(estadoAntigo =>
-      estadoAntigo.map(objetivo => {
-        if (objetivo.id === item.id) {
-          return {
-            ...objetivo,
-            detalhamentoTexto: texto,
-          };
-        }
-        return objetivo;
-      })
-    );
+    const objetivo = listaObjetivos.find(o => o.id === item.id);
+    if (objetivo) {
+      objetivo.descricao = texto;
+    }
+    dispatch(setObjetivosItinerancia([...listaObjetivos]));
     setModoEdicao(true);
   };
 
-  useEffect(() => {
-    if (Object.keys(objetivosSelecionados).length) {
-      objetivosSelecionados.map(objetivo =>
-        setListaObjetivos(estadoAntigo =>
-          estadoAntigo.map(estado => {
-            if (estado.id === objetivo.id) {
-              return objetivo;
-            }
-            return estado;
-          })
-        )
-      );
-    }
-  }, [objetivosSelecionados]);
-
-  const obterObjetivos = async () => {
-    const retorno = await ServicoRegistroItineranciaAEE.obterObjetivos().catch(
-      e => erros(e)
-    );
-    if (retorno?.data) {
-      const dadosAlterados = retorno.data.map(item => ({
-        ...item,
-        key: item.id,
-      }));
-      setListaObjetivos(dadosAlterados);
-    }
-  };
-
-  useEffect(() => {
-    obterObjetivos();
-  }, []);
+  useEffect(() => {}, [objetivosSelecionados]);
 
   return (
     <ModalConteudoHtml
@@ -138,7 +98,7 @@ const ModalObjetivos = ({
         <div className="row mb-3">
           <TituloEstilizado>Selecione os objetivos</TituloEstilizado>
         </div>
-        {listaObjetivos &&
+        {listaObjetivos?.length &&
           listaObjetivos.map(item => {
             const textoUe = item.permiteVariasUes
               ? '(uma ou mais unidades)'
@@ -161,7 +121,7 @@ const ModalObjetivos = ({
                       height="76"
                       onChange={evento => onChangeCampoTexto(evento, item)}
                       type="textarea"
-                      value={item.detalhamentoTexto}
+                      value={item.descricao}
                       desabilitado={!item.checked}
                     />
                   </div>

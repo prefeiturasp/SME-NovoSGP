@@ -1181,7 +1181,8 @@ rotas.set(`${RotasDto.RELATORIO_AEE_ENCAMINHAMENTO}/editar/:id`, {
 
 rotas.set(`${RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA}/novo`, {
   breadcrumbName: 'Registro de itinerância',
-  parent: `${RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA}`,
+  menu: ['Relatórios', 'AEE'],
+  parent: '/',
   component: RegistroItineranciaAEECadastro,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,

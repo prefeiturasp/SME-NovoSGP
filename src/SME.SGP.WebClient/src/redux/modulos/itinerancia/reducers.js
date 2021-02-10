@@ -3,6 +3,7 @@ import produce from 'immer';
 const inicial = {
   questoesItinerancia: [],
   questoesItineranciaAluno: {},
+  objetivos: [],
 };
 
 export default function frequenciaPlanoAula(state = inicial, action) {
@@ -18,6 +19,13 @@ export default function frequenciaPlanoAula(state = inicial, action) {
         return {
           ...draft,
           questoesItineranciaAluno: action.payload,
+        };
+      }
+
+      case '@itinerancia/setObjetivosItinerancia': {
+        return {
+          ...draft,
+          objetivos: action.payload,
         };
       }
       default:
