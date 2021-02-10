@@ -1,20 +1,14 @@
-import * as moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import shortid from 'shortid';
 import { SelectComponent } from '~/componentes';
-import { CaixaTextoExpandivel } from './componentes';
-import JoditEditor from '~/componentes/jodit-editor/joditEditor';
+import { MontarEditor } from './componentes';
 import {
   setAlterouCaixaSelecao,
   setNumeroRegistros,
   setPaginaAtiva,
+  setPlanejamentoExpandido,
+  setPlanejamentoSelecionado,
 } from '~/redux/modulos/devolutivas/actions';
-import {
-  EditorPlanejamento,
-  ListaPlanejamentos,
-  Tabela,
-} from './cardPlanejamento.css';
 
 const CardPlanejamento = React.memo(() => {
   const dadosPlanejamentos = useSelector(
@@ -58,6 +52,8 @@ const CardPlanejamento = React.memo(() => {
       setTotalRegistrosSelecionado(valor);
       dispatch(setNumeroRegistros(valor));
       dispatch(setPaginaAtiva(null));
+      dispatch(setPlanejamentoSelecionado([]));
+      dispatch(setPlanejamentoExpandido(false));
     }
   };
 
@@ -74,64 +70,26 @@ const CardPlanejamento = React.memo(() => {
       setTotalRegistrosSelecionado('4');
       setListaRegistrosPorPaginas(listaRegistros);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dadosPlanejamentos, alterouCaixaSelecao]);
 
   return (
     <div style={{ border: '1px solid #DADADA' }}>
-      <div className="col-md-3 col-sm-12 col-xl-3 col-lg-3 mt-3">
-        <SelectComponent
-          id="registrosPorPagina"
-          lista={listaRegistrosPorPaginas}
-          valueOption="valor"
-          valueText="descricao"
-          onChange={onChangeTotalPaginas}
-          valueSelect={totalRegistrosSelecionado}
-        />
-      </div>
-
       {dadosPlanejamentos?.items?.length ? (
-        <ListaPlanejamentos className="row mt-3 p-3">
-          {/* {dadosPlanejamentos.items.map(item => {
-            return (
-              <div className="col-md-6" key={shortid.generate()}>
-                <Tabela
-                  className="table-responsive mb-3"
-                  key={`planejamento-diario-bordo-${shortid.generate()}`}
-                >
-                  <table className="table">
-                    <thead>
-                      <tr>
-                        <th>
-                          <span className="titulo">Planejamento</span> (somente
-                          leitura)
-                        </th>
-                        {item.aulaCj ? <th className="cj">CJ</th> : null}
-                        <th>
-                          {item.data ? moment(item.data).format('L') : ''}
-                        </th>
-                      </tr>
-                    </thead>
-                  </table> */}
-
-          <CaixaTextoExpandivel
-            dadosPlanejamentos={dadosPlanejamentos}
-            totalRegistrosSelecionado={totalRegistrosSelecionado}
-          />
-
-          {/* <EditorPlanejamento>
-                    <JoditEditor
-                      id="planejamento-diario-bordo"
-                      value={item.planejamento}
-                      removerToolbar
-                      readonly
-                    />
-                  </EditorPlanejamento>
-                </Tabela>
-              </div>
-            );
-          })} */}
-        </ListaPlanejamentos>
+        <>
+          <div className="col-md-3 col-sm-12 col-xl-3 col-lg-3 mt-3">
+            <SelectComponent
+              id="registrosPorPagina"
+              lista={listaRegistrosPorPaginas}
+              valueOption="valor"
+              valueText="descricao"
+              onChange={onChangeTotalPaginas}
+              valueSelect={totalRegistrosSelecionado}
+            />
+          </div>
+          <div className="row mt-3 p-3">
+            <MontarEditor />
+          </div>
+        </>
       ) : (
         <div className="text-center p-2"> Sem dados</div>
       )}

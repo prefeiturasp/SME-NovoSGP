@@ -22,3 +22,13 @@ export const setAlterouCaixaSelecao = payload => ({
   type: '@devolutivas/setAlterouCaixaSelecao',
   payload,
 });
+
+export const setPlanejamentoExpandido = payload => ({
+  type: '@devolutivas/setPlanejamentoExpandido',
+  payload,
+});
+
+export const setPlanejamentoSelecionado = payload => ({
+  type: '@devolutivas/setPlanejamentoSelecionado',
+  payload,
+});

@@ -19,6 +19,8 @@ import {
   setAlterouCaixaSelecao,
   setDadosPlanejamentos,
   setNumeroRegistros,
+  setPlanejamentoExpandido,
+  setPlanejamentoSelecionado,
 } from '~/redux/modulos/devolutivas/actions';
 import { confirmar, erros, sucesso } from '~/servicos/alertas';
 import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
@@ -113,13 +115,20 @@ const DevolutivasForm = ({ match }) => {
         RotasDto.DEVOLUTIVAS
       );
       setIdDevolutiva(match.params.id);
+
+      dispatch(setPlanejamentoExpandido(false));
+      dispatch(setPlanejamentoSelecionado([]));
     } else {
       setIdDevolutiva(0);
     }
-  }, [match]);
+  }, [dispatch, match]);
 
   const resetarTela = useCallback(() => {
     dispatch(limparDadosPlanejamento());
+    dispatch(setNumeroRegistros(null));
+    dispatch(setPlanejamentoExpandido(false));
+    dispatch(setPlanejamentoSelecionado([]));
+    dispatch(setAlterouCaixaSelecao(false));
     if (refForm && refForm.resetForm) {
       refForm.resetForm();
     }
@@ -224,11 +233,13 @@ const DevolutivasForm = ({ match }) => {
   );
 
   const obterPlanejamentosPorDevolutiva = useCallback(
-    async pagina => {
+    async (pagina, numero) => {
       setCarregandoGeral(true);
+      const numeroEscolhido = numero || numeroRegistros || 4;
       const retorno = await ServicoDiarioBordo.obterPlanejamentosPorDevolutiva(
         idDevolutiva,
-        pagina || 1
+        pagina || 1,
+        numeroEscolhido
       ).catch(e => erros(e));
       setCarregandoGeral(false);
       if (retorno && retorno.data && retorno.data.totalRegistros) {
@@ -239,14 +250,14 @@ const DevolutivasForm = ({ match }) => {
         dispatch(limparDadosPlanejamento());
       }
     },
-    [idDevolutiva, dispatch]
+    [idDevolutiva, numeroRegistros, dispatch]
   );
 
   useEffect(() => {
-    if (idDevolutiva) {
+    if (idDevolutiva || (idDevolutiva && numeroRegistros)) {
       obterPlanejamentosPorDevolutiva();
     }
-  }, [idDevolutiva, obterPlanejamentosPorDevolutiva]);
+  }, [idDevolutiva, numeroRegistros, obterPlanejamentosPorDevolutiva]);
 
   useEffect(() => {
     if (listaComponenteCurriculare && listaComponenteCurriculare.length) {
@@ -327,11 +338,18 @@ const DevolutivasForm = ({ match }) => {
   );
 
   useEffect(() => {
-    if (numeroRegistros) {
-      const { state } = refForm;
+    const { state } = refForm;
+    if (!match?.params?.id && numeroRegistros && state?.values) {
       obterDadosPlanejamento(state?.values?.periodoFim, state);
     }
-  }, [numeroRegistros, obterDadosPlanejamento, refForm]);
+  }, [
+    dispatch,
+    idDevolutiva,
+    match,
+    numeroRegistros,
+    obterDadosPlanejamento,
+    refForm,
+  ]);
 
   const onChangeDataFim = (data, form) => {
     form.setFieldValue('descricao', '');

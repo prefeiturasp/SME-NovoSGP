@@ -45,13 +45,19 @@ export const EditorPlanejamento = styled.fieldset`
   }
   .jodit {
     &-container {
-      border: 0 !important;
       background: ${Base.CinzaFundoEditor} !important;
+      border-radius: 0 !important;
+      border: 0 !important;
+      border-top: 1px solid ${Base.CinzaDesabilitado} !important;
+      box-shadow: 0px 1px 4px rgba(8, 35, 48, 0.1);
       padding: 0 8px 20px 6px;
     }
     &-status-bar,
     &-editor__resize {
       display: none;
+    }
+    &-toolbar__box {
+      border: 0 !important;
     }
     iframe {
       margin-top: 16px;
@@ -67,7 +73,7 @@ export const IframeStyle = css`
     width: 8px;
   }
   ::-webkit-scrollbar-track {
-    background: #ffffff;
+    background: #fff;
     border-radius: 10px;
   }
   ::-webkit-scrollbar-thumb {
@@ -76,4 +82,39 @@ export const IframeStyle = css`
     background-clip: padding-box;
     border-radius: 10px;
   }
+`;
+
+export const TextoSimples = styled.div`
+  height: 260px;
+  background: ${Base.CinzaFundoEditor};
+  padding-top: 20px;
+  padding-right: 8px;
+  border-top: 1px solid ${Base.CinzaDesabilitado};
+  box-sizing: border-box;
+  box-shadow: 0px 1px 4px rgba(8, 35, 48, 0.1);
+
+  div {
+    background: ${Base.CinzaFundoEditor};
+    padding: 8px 20px 14px 16px;
+    height: 220px;
+    overflow: auto;
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: ${Base.Branco};
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: ${Base.CinzaBotao};
+      border: 2px ${Base.Branco} solid;
+      background-clip: padding-box;
+      border-radius: 10px;
+    }
+  }
+`;
+
+export const FundoEditor = styled.div`
+  height: 560px;
+  background: ${Base.CinzaFundoEditor};
 `;

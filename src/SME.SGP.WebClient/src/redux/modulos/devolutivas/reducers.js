@@ -5,6 +5,8 @@ const inicial = {
   paginaAtiva: null,
   numeroRegistros: null,
   alterouCaixaSelecao: false,
+  planejamentoExpandido: false,
+  planejamentoSelecionado: null,
 };
 
 export default function devolutivas(state = inicial, action) {
@@ -35,12 +37,22 @@ export default function devolutivas(state = inicial, action) {
           numeroRegistros: action.payload,
         };
       }
-
       case '@devolutivas/setAlterouCaixaSelecao': {
-        console.log(action.payload);
         return {
           ...draft,
           alterouCaixaSelecao: action.payload,
+        };
+      }
+      case '@devolutivas/setPlanejamentoExpandido': {
+        return {
+          ...draft,
+          planejamentoExpandido: action.payload,
+        };
+      }
+      case '@devolutivas/setPlanejamentoSelecionado': {
+        return {
+          ...draft,
+          planejamentoSelecionado: action.payload,
         };
       }
       default:
