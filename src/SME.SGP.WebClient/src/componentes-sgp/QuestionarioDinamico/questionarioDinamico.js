@@ -186,10 +186,10 @@ const QuestionarioDinamico = props => {
     <Label text={textolabel} observacaoText={observacaoText} />
   );
 
-  const montarCampos = (questaoAtual, form, ordemAnterior) => {
+  const montarCampos = (questaoAtual, form, ordemAnterior, ordemSequencial) => {
     const campoQuestaoComplementar = [];
 
-    const montarCampoComplementarPadrao = (vAtual, label) => {
+    const montarCampoComplementarPadrao = (vAtual, label, ordemSeq) => {
       const opcaoResposta = QuestionarioDinamicoFuncoes.obterOpcaoRespostaPorId(
         questaoAtual?.opcaoResposta,
         vAtual
@@ -197,13 +197,13 @@ const QuestionarioDinamico = props => {
 
       if (opcaoResposta?.questoesComplementares?.length) {
         opcaoResposta.questoesComplementares.forEach(q => {
-          campoQuestaoComplementar.push(montarCampos(q, form, label));
+          campoQuestaoComplementar.push(montarCampos(q, form, label, ordemSeq));
         });
       }
     };
 
     const ordemLabel = ordemAnterior
-      ? `${ordemAnterior}.${questaoAtual.ordem}`
+      ? `${ordemAnterior}.${ordemSequencial || questaoAtual.ordem}`
       : questaoAtual.ordem;
 
     const textoLabel = `${ordemLabel} - ${questaoAtual.nome}`;
@@ -246,8 +246,8 @@ const QuestionarioDinamico = props => {
       valorAtualSelecionado?.length &&
       questaoAtual?.tipoQuestao === tipoQuestao.Checkbox
     ) {
-      valorAtualSelecionado.forEach(vAtual => {
-        montarCampoComplementarPadrao(vAtual, ordemLabel);
+      valorAtualSelecionado.forEach((vAtual, index) => {
+        montarCampoComplementarPadrao(vAtual, ordemLabel, index + 1);
       });
     } else if (valorAtualSelecionado) {
       montarCampoComplementarPadrao(valorAtualSelecionado, ordemLabel);

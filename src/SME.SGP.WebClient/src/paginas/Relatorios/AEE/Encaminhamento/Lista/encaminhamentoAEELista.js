@@ -267,15 +267,6 @@ const EncaminhamentoAEELista = () => {
 
     setListaTurmas([]);
     setTurmaId();
-
-    filtrar(
-      dre,
-      ueId,
-      turmaId,
-      alunoLocalizadorSelecionado,
-      situacao,
-      responsavel
-    );
   };
 
   const obterDres = useCallback(async () => {
@@ -436,7 +427,7 @@ const EncaminhamentoAEELista = () => {
   };
 
   useEffect(() => {
-    if (dreId && listaDres.length && listaUes.length) {
+    if (dreId && listaDres.length && ueId && listaUes.length) {
       filtrar(
         dreId,
         ueId,
@@ -587,7 +578,11 @@ const EncaminhamentoAEELista = () => {
                 />
               </Loader>
             </div>
-            {anoLetivo && dreId && listaDres?.length ? (
+            {anoLetivo &&
+            dreId &&
+            listaDres?.length &&
+            ueId &&
+            listaUes?.length ? (
               <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
                 <ListaPaginada
                   url="v1/encaminhamento-aee"
@@ -595,7 +590,15 @@ const EncaminhamentoAEELista = () => {
                   colunas={colunas}
                   filtro={filtro}
                   filtroEhValido={
-                    !!(anoLetivo && dreId && filtro.dreId && listaDres?.length)
+                    !!(
+                      anoLetivo &&
+                      dreId &&
+                      filtro.dreId &&
+                      listaDres?.length &&
+                      ueId &&
+                      filtro.ueId &&
+                      listaUes?.length
+                    )
                   }
                   temPaginacao
                   onClick={onClickEditar}
