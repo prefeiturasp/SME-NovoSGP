@@ -18,16 +18,8 @@ namespace SME.SGP.Aplicacao.Commands
 
         public async Task<long> Handle(SalvarPlanoAEEQuestaoCommand request, CancellationToken cancellationToken)
         {
-            try
-            {
-                var planoAEEQuestao = MapearParaEntidade(request);
-                return await repositorioPlanoAEEQuestao.SalvarAsync(planoAEEQuestao);
-
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            var planoAEEQuestao = MapearParaEntidade(request);
+            return await repositorioPlanoAEEQuestao.SalvarAsync(planoAEEQuestao);
         }
 
         private PlanoAEEQuestao MapearParaEntidade(SalvarPlanoAEEQuestaoCommand request)
