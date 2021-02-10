@@ -115,10 +115,12 @@ const ModalCopiarConteudoPlanoAnual = () => {
   };
 
   useEffect(() =>{
-    const lstTurma = listaTurmasParaCopiar.map(item => {
-      return ({nomeTurma :item.nomeTurma ,codTurma :item.codTurma});
-    });    
-    setListaTurmasParaCopiarAgrupada(agruparListaTurmas(lstTurma));
+    if (listaTurmasParaCopiar){
+      const lstTurma = listaTurmasParaCopiar.map(item => {
+        return ({nomeTurma :item.nomeTurma ,codTurma :item.codTurma});
+      });    
+      setListaTurmasParaCopiarAgrupada(agruparListaTurmas(lstTurma));
+    }    
   },[listaTurmasParaCopiar]); 
 
   const onChangeTurmasSelecionadas = turmas => {};
