@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Base, Button, CampoData, Card, Colors, Loader } from '~/componentes';
 import { Cabecalho } from '~/componentes-sgp';
 import { RotasDto } from '~/dtos';
-import { setBreadcrumbManual } from '~/servicos';
+import { erros, setBreadcrumbManual, sucesso } from '~/servicos';
 import {
   CollapseAluno,
   EditoresTexto,
@@ -18,36 +18,54 @@ import ServicoRegistroItineranciaAEE from '~/servicos/Paginas/Relatorios/AEE/Ser
 import {
   setQuestoesItinerancia,
   setQuestoesItineranciaAluno,
+  setObjetivosItinerancia,
 } from '~/redux/modulos/itinerancia/action';
 
 const RegistroItineranciaAEECadastro = ({ match }) => {
   const dispatch = useDispatch();
   const [carregandoGeral, setCarregandoGeral] = useState(false);
   const [dataVisita, setDataVisita] = useState();
-  const [dataRetorno, setDataRetorno] = useState();
+  const [dataRetornoVerificacao, setDataRetornoVerificacao] = useState();
   const [modalVisivelUES, setModalVisivelUES] = useState(false);
   const [modalVisivelObjetivos, setModalVisivelObjetivos] = useState(false);
   const [modalVisivelAlunos, setModalVisivelAlunos] = useState(false);
   const [objetivosSelecionados, setObjetivosSelecionados] = useState();
   const [alunosSelecionados, setAlunosSelecionados] = useState();
-  const [unEscolaresSelecionados, setUnEscolaresSelecionados] = useState();
+  const [uesSelecionados, setUesSelecionados] = useState();
   const [desabilitarCampos, setDesabilitarCampos] = useState(false);
   const [apenasUmaUe, setApenasUmaUe] = useState(false);
-  const [variasUesSelecionadas, setVariasUesSelecionadas] = useState(false);
   const usuario = useSelector(store => store.usuario);
   const permissoesTela =
     usuario.permissoes[RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA];
+  const questoesItinerancia = useSelector(
+    store => store.itinerancia.questoesItinerancia
+  );
 
   const onClickVoltar = () => {};
   const onClickCancelar = () => {};
-  const onClickSalvar = () => {};
+  const onClickSalvar = async () => {
+    const itinerancia = {
+      dataVisita,
+      dataRetornoVerificacao,
+      objetivosVisita: objetivosSelecionados,
+      ues: uesSelecionados,
+      alunos: alunosSelecionados,
+      questoes: alunosSelecionados?.length ? [] : questoesItinerancia,
+    };
+    const salvar = await ServicoRegistroItineranciaAEE.salvarItinerancia(
+      itinerancia
+    ).catch(e => erros(e));
+    if (salvar.status === 200) {
+      sucesso('Registro salvo com sucesso');
+    }
+  };
 
   const mudarDataVisita = data => {
     setDataVisita(data);
   };
 
   const mudarDataRetorno = data => {
-    setDataRetorno(data);
+    setDataRetornoVerificacao(data);
   };
 
   const removerItemSelecionado = (text, funcao) => {
@@ -55,7 +73,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
   };
 
   useEffect(() => {
-    if (match?.url)
+    if (match?.params?.id)
       setBreadcrumbManual(
         match?.url,
         'Alterar',
@@ -82,6 +100,19 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
       : !permissoesTela?.podeIncluir;
   };
 
+  const obterObjetivos = async () => {
+    const retorno = await ServicoRegistroItineranciaAEE.obterObjetivos().catch(
+      e => erros(e)
+    );
+    if (retorno?.data) {
+      const dadosAlterados = retorno.data.map(item => ({
+        ...item,
+        key: item.id,
+      }));
+      dispatch(setObjetivosItinerancia(dadosAlterados));
+    }
+  };
+
   useEffect(() => {
     const buscarQuestoes = async () => {
       const result = await ServicoRegistroItineranciaAEE.obterQuestoesItinerancia();
@@ -93,6 +124,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
       }
     };
     buscarQuestoes();
+    obterObjetivos();
   }, []);
 
   useEffect(() => {
@@ -115,21 +147,6 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
       setApenasUmaUe(false);
     }
   }, [objetivosSelecionados]);
-
-  useEffect(() => {
-    if (unEscolaresSelecionados?.length) {
-      let variasUes = false;
-      unEscolaresSelecionados.map(objetivo => {
-        if (!objetivo.permiteVariasUes) {
-          variasUes = true;
-        }
-      });
-      setVariasUesSelecionadas(variasUes);
-    }
-    if (!unEscolaresSelecionados?.length) {
-      setVariasUesSelecionadas(false);
-    }
-  }, [unEscolaresSelecionados]);
 
   return (
     <>
@@ -212,14 +229,14 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
                 pagination={false}
                 desabilitadoIncluir={permissoesTela?.podeIncluir}
                 desabilitadoExcluir={permissoesTela?.podeExcluir}
-                dadosTabela={unEscolaresSelecionados}
+                dadosTabela={uesSelecionados}
                 removerUsuario={text =>
-                  removerItemSelecionado(text, setUnEscolaresSelecionados)
+                  removerItemSelecionado(text, setUesSelecionados)
                 }
                 botaoAdicionar={() => setModalVisivelUES(true)}
               />
             </div>
-            {unEscolaresSelecionados?.length === 1 && (
+            {uesSelecionados?.length === 1 && (
               <div className="row mb-4">
                 <div className="col-12 font-weight-bold mb-2">
                   <span style={{ color: Base.CinzaMako }}>Estudantes</span>
@@ -233,7 +250,6 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
                     className="mr-2"
                     onClick={() => setModalVisivelAlunos(true)}
                     icon="user-plus"
-                    disabled={desabilitarCamposPorPermissao()}
                   />
                 </div>
               </div>
@@ -244,7 +260,6 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
                   key={aluno.alunoCodigo}
                   aluno={aluno}
                   removerAlunos={() => removerAlunos(aluno.alunoCodigo)}
-                  desabilitar={desabilitarCamposPorPermissao()}
                 />
               ))
             ) : (
@@ -255,7 +270,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
                 <CampoData
                   name="dataRetorno"
                   formatoData="DD/MM/YYYY"
-                  valor={dataRetorno}
+                  valor={dataRetornoVerificacao}
                   label="Data para retorno/verificação"
                   placeholder="Selecione a data"
                   onChange={mudarDataRetorno}
@@ -270,8 +285,8 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
         <ModalUE
           modalVisivel={modalVisivelUES}
           setModalVisivel={setModalVisivelUES}
-          unEscolaresSelecionados={unEscolaresSelecionados}
-          setUnEscolaresSelecionados={setUnEscolaresSelecionados}
+          unEscolaresSelecionados={uesSelecionados}
+          setUnEscolaresSelecionados={setUesSelecionados}
           permiteApenasUmaUe={apenasUmaUe}
         />
       )}
@@ -281,7 +296,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
           setModalVisivel={setModalVisivelObjetivos}
           objetivosSelecionados={objetivosSelecionados}
           setObjetivosSelecionados={setObjetivosSelecionados}
-          variasUesSelecionadas={variasUesSelecionadas}
+          variasUesSelecionadas={uesSelecionados?.length > 1}
         />
       )}
       {modalVisivelAlunos && (
@@ -290,10 +305,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
           setModalVisivel={setModalVisivelAlunos}
           alunosSelecionados={alunosSelecionados}
           setAlunosSelecionados={setAlunosSelecionados}
-          codigoUe={
-            unEscolaresSelecionados.length &&
-            unEscolaresSelecionados[0].codigoUe
-          }
+          codigoUe={uesSelecionados.length && uesSelecionados[0].codigoUe}
         />
       )}
     </>

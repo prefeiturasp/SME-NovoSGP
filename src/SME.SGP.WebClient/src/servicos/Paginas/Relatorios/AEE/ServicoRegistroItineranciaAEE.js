@@ -14,6 +14,14 @@ class ServicoRegistroItineranciaAEE {
   obterQuestoesItinerancia = () => {
     return api.get(`${urlPadrao}/questoes`);
   };
+
+  obterQuestoesItineranciaPorId = id => {
+    return api.get(`${urlPadrao}/alunos/questoes/${id}`);
+  };
+
+  salvarItinerancia = itinerancia => {
+    return api.post(urlPadrao, itinerancia);
+  }
 }
 
 export default new ServicoRegistroItineranciaAEE();
