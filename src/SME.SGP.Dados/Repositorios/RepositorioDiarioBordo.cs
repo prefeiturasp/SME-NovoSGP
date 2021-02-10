@@ -56,7 +56,11 @@ namespace SME.SGP.Dados.Repositorios
             var offSet = "offset @qtdeRegistrosIgnorados rows fetch next @qtdeRegistros rows only";
 
             query = $@"select db.planejamento
-                            , regexp_replace(db.planejamento, E'<[^>]+>', ' [arquivo indisponível nesta visualização]', 'gi') as PlanejamentoSimples
+                            , regexp_replace(
+		                        regexp_replace(
+		                        regexp_replace(db.planejamento, E'<img[^>]+>', ' [arquivo indisponível nesta visualização]', 'gi')
+		                        , E'<video[^>]+>', ' [arquivo indisponível nesta visualização]', 'gi')
+		                        , E'<[^>]+>', ' ', 'gi') as PlanejamentoSimples
                             , a.aula_cj as AulaCj
                             , a.data_aula as Data 
                             {condicao} 
@@ -134,7 +138,11 @@ namespace SME.SGP.Dados.Repositorios
                 new { devolutivaId });
 
             query = $@"select db.planejamento
-                            , regexp_replace(db.planejamento, E'<[^>]+>', ' [arquivo indisponível nesta visualização]', 'gi') as PlanejamentoSimples
+                            , regexp_replace(
+		                        regexp_replace(
+		                        regexp_replace(db.planejamento, E'<img[^>]+>', ' [arquivo indisponível nesta visualização]', 'gi')
+		                        , E'<video[^>]+>', ' [arquivo indisponível nesta visualização]', 'gi')
+		                        , E'<[^>]+>', ' ', 'gi') as PlanejamentoSimples
                             , a.aula_cj as AulaCj
                             , a.data_aula as Data
                         from diario_bordo db
