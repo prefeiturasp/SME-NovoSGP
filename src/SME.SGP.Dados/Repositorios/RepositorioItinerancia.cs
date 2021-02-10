@@ -1,6 +1,7 @@
 ﻿using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -117,5 +118,41 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<ItineranciaUeDto>(query, new { id });
         }
+        //public async Task<ItineranciaDto> ObterEntidadeCompleta(long id)
+        //{
+        //    var query = @"select i.*, ia.*, iaq.*, iq.* , io.*, iob.*, iu.*
+        //                    from itinerancia i 
+        //                   inner join itinerancia_aluno ia on ia.itinerancia_id = i.id
+        //                   inner join itinerancia_aluno_questao iaq on iaq.itinerancia_aluno_id = ia.id    
+        //                   inner join itinerancia_questao iq on iq.itinerancia_id = i.id 
+        //                   inner join itinerancia_objetivo io on io.itinerancia_id = i.id   
+        //                   inner join itinerancia_objetivo_base iob on iob.id = io.itinerancia_base_id
+        //                   inner join itinerancia_ue iu on iu.itinerancia_id = i.id 
+        //                   where i.id = @id
+        //                     and not i.excluido";
+
+        //    var lookup = new Dictionary<long, Itinerancia>();
+
+        //    database.Conexao.Query<Itinerancia, ItineranciaAluno, ItineranciaAlunoQuestao, ItineranciaObjetivo, ItineranciaUe, Itinerancia>(query,
+        //         (registroItinerancia, itineranciaAluno, itineranciaAlunoQuestao, itineranciaObjetivo, itineranciaUe) =>
+        //         {
+        //             Itinerancia itinerancia;
+        //             if (!lookup.TryGetValue(workflow.Id, out workflowAprovacao))
+        //             {
+        //                 workflowAprovacao = workflow;
+        //                 lookup.Add(workflow.Id, workflowAprovacao);
+        //             }
+        //             workflowAprovacao.Adicionar(workflowNivel);
+
+        //             if (notificacao != null)
+        //                 workflowAprovacao.Adicionar(workflowNivel.Id, notificacao, usuario);
+
+        //             return workflowAprovacao;
+        //         }, param: new { workflowId, notificacaoId });
+
+        //    return lookup.Values.FirstOrDefault();
+
+        //    //return await database.Conexao.QueryFirstOrDefaultAsync<ItineranciaDto>(query, new { id });
+        //}
     }
 }
