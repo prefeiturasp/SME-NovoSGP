@@ -9,18 +9,17 @@ const SituacaoEncaminhamentoAEE = () => {
 
   const [situacao, setSituacao] = useState({});
 
-  const obtemSituacaoEncaminhamento = async () => {
-    const retorno = await ServicoEncaminhamentoAEE.obterAlunoSituacaoEncaminhamentoAEE(
-      dadosCollapseLocalizarEstudante?.codigoEstudante
-    );
-
-    if (retorno.data) {
-      setSituacao(retorno.data);
-    }
-  };
-
   useEffect(() => {
-    return obtemSituacaoEncaminhamento();
+    const obtemSituacaoEncaminhamento = async () => {
+      const retorno = await ServicoEncaminhamentoAEE.obterAlunoSituacaoEncaminhamentoAEE(
+        dadosCollapseLocalizarEstudante?.codigoEstudante
+      );
+
+      if (retorno.data) {
+        setSituacao(retorno.data);
+      }
+    };
+    obtemSituacaoEncaminhamento();
   });
 
   return situacao?.situacao ? (

@@ -3,7 +3,8 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { Loader } from '~/componentes';
 
-const LoaderPlano = ({ children }) => {
+const LoaderPlano = props => {
+  const { children } = props;
   const exibirLoaderPlanoAEE = useSelector(
     store => store.planoAEE.exibirLoaderPlanoAEE
   );
@@ -12,7 +13,7 @@ const LoaderPlano = ({ children }) => {
 };
 
 LoaderPlano.propTypes = {
-  children: PropTypes.oneOfType([PropTypes.element, PropTypes.func]),
+  children: PropTypes.node,
 };
 
 LoaderPlano.defaultProps = {

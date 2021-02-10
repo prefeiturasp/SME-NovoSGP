@@ -11,7 +11,6 @@ import {
   setExibirLoaderPlanoAEE,
   setPlanoAEEDados,
   setPlanoAEELimparDados,
-  setPlanoAEESituacaoEncaminhamentoAEE,
 } from '~/redux/modulos/planoAEE/actions';
 import CollapseLocalizarEstudante from '~/componentes-sgp/CollapseLocalizarEstudante/collapseLocalizarEstudante';
 import ObjectCardEstudantePlanoAEE from './Componentes/ObjectCardEstudantePlanoAEE/objectCardEstudantePlanoAEE';

@@ -91,6 +91,7 @@ const CampoData = ({
   carregando,
   periodo,
   array,
+  separator,
   campoOpcional,
 }) => {
   const { RangePicker } = DatePicker;
@@ -267,6 +268,7 @@ const CampoData = ({
                 placeholder={placeholder}
                 suffixIcon={Icone}
                 name={name}
+                separator={separator}
                 id={id || name}
                 onBlur={executaOnBlur}
                 className={
@@ -369,6 +371,7 @@ CampoData.propTypes = {
   array: PropTypes.bool,
   campoOpcional: PropTypes.bool,
   periodo: PropTypes.bool,
+  separator: PropTypes.string,
 };
 
 CampoData.defaultProps = {
@@ -391,6 +394,7 @@ CampoData.defaultProps = {
   array: false,
   campoOpcional: false,
   periodo: false,
+  separator: 'à',
 };
 
 const momentSchema = new MomentSchema();
