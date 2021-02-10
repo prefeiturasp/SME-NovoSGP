@@ -1198,7 +1198,7 @@ rotas.set(`${RotasDto.RELATORIO_AEE_PLANO}/novo`, {
   component: PlanoAEECadastro,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  temPermissionamento: false,
+  temPermissionamento: true,
   chavePermissao: RotasDto.RELATORIO_AEE_PLANO,
 });
 
