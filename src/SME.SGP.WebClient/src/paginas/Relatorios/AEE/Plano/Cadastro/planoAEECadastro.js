@@ -29,7 +29,6 @@ const PlanoAEECadastro = ({ match }) => {
   const dispatch = useDispatch();
 
   const limparDadosPlano = useCallback(() => {
-    dispatch(setPlanoAEELimparDados());
     dispatch(setLimparDadosQuestionarioDinamico());
   }, [dispatch]);
 
@@ -62,7 +61,7 @@ const PlanoAEECadastro = ({ match }) => {
 
   const obterPlanoPorId = useCallback(async () => {
     const planoId = match?.params?.id ? match?.params?.id : 0;
-
+    dispatch(setPlanoAEELimparDados());
     dispatch(setExibirLoaderPlanoAEE(true));
     const resultado = await ServicoPlanoAEE.obterPlanoPorId(planoId)
       .catch(e => erros(e))
@@ -95,7 +94,6 @@ const PlanoAEECadastro = ({ match }) => {
           setDadosCollapseLocalizarEstudante(dadosCollapseLocalizarEstudante)
         );
       }
-
       dispatch(setPlanoAEEDados(resultado?.data));
     }
   }, [match, dispatch]);

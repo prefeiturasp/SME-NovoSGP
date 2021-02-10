@@ -207,6 +207,7 @@ class ServicoPlanoAEE {
         const valoresParaSalvar = {
           id: planoAEEDados?.id ? planoAEEDados?.id : 0,
           turmaId: dadosCollapseLocalizarEstudante.turmaId,
+          turmaCodigo: dadosCollapseLocalizarEstudante.turmaCodigo,
           alunoCodigo: dadosCollapseLocalizarEstudante.codigoAluno,
           situacao: situacaoPlanoAEE.EmAndamento,
           questoes: questoesSalvar[0],
