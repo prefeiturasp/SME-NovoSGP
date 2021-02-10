@@ -201,7 +201,7 @@ const BotoesAcoesEncaminhamentoAEE = props => {
       );
       if (salvou) {
         dispatch(setExibirLoaderEncaminhamentoAEE(true));
-        const resposta = await ServicoEncaminhamentoAEE.concluirParecer(
+        const resposta = await ServicoEncaminhamentoAEE.concluirEncaminhamento(
           encaminhamentoId
         )
           .catch(e => erros(e))

@@ -5,9 +5,10 @@ import CollapseAtribuicaoResponsavelDados from './collapseAtribuicaoResponsavelD
 
 const CollapseAtribuicaoResponsavel = props => {
   const {
-    validarAntesProximoPasso,
+    validarAntesAtribuirResponsavel,
     changeLocalizadorResponsavel,
     clickCancelar,
+    clickRemoverResponsavel,
     codigoTurma,
     url,
   } = props;
@@ -21,28 +22,31 @@ const CollapseAtribuicaoResponsavel = props => {
       show
     >
       <CollapseAtribuicaoResponsavelDados
-        validarAntesProximoPasso={validarAntesProximoPasso}
+        validarAntesAtribuirResponsavel={validarAntesAtribuirResponsavel}
         changeLocalizadorResponsavel={changeLocalizadorResponsavel}
         clickCancelar={clickCancelar}
         codigoTurma={codigoTurma}
         url={url}
+        clickRemoverResponsavel={clickRemoverResponsavel}
       />
     </CardCollapse>
   );
 };
 
 CollapseAtribuicaoResponsavel.propTypes = {
-  validarAntesProximoPasso: PropTypes.func,
+  validarAntesAtribuirResponsavel: PropTypes.func,
   changeLocalizadorResponsavel: PropTypes.func,
   clickCancelar: PropTypes.func,
+  clickRemoverResponsavel: PropTypes.func,
   codigoTurma: PropTypes.string,
   url: PropTypes.string,
 };
 
 CollapseAtribuicaoResponsavel.defaultProps = {
-  validarAntesProximoPasso: () => {},
+  validarAntesAtribuirResponsavel: () => {},
   changeLocalizadorResponsavel: () => {},
   clickCancelar: () => {},
+  clickRemoverResponsavel: () => {},
   codigoTurma: '',
   url: '',
 };

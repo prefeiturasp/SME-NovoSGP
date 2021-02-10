@@ -1,14 +1,21 @@
 import QuestionarioDinamicoFuncoes from '~/componentes-sgp/QuestionarioDinamico/Funcoes/QuestionarioDinamicoFuncoes';
 import tipoQuestao from '~/dtos/tipoQuestao';
 import { store } from '~/redux';
-import { setDadosCollapseAtribuicaoResponsavel } from '~/redux/modulos/collapseAtribuicaoResponsavel/actions';
-import { setDadosCollapseLocalizarEstudante } from '~/redux/modulos/collapseLocalizarEstudante/actions';
+import {
+  setDadosCollapseAtribuicaoResponsavel,
+  setLimparDadosAtribuicaoResponsavel,
+} from '~/redux/modulos/collapseAtribuicaoResponsavel/actions';
+import {
+  setDadosCollapseLocalizarEstudante,
+  setLimparDadosLocalizarEstudante,
+} from '~/redux/modulos/collapseLocalizarEstudante/actions';
 import {
   setDadosEncaminhamento,
   setDadosModalAviso,
   setExibirLoaderEncaminhamentoAEE,
   setExibirModalAviso,
   setExibirModalErrosEncaminhamento,
+  setLimparDadosEncaminhamento,
 } from '~/redux/modulos/encaminhamentoAEE/actions';
 import { setDadosObjectCardEstudante } from '~/redux/modulos/objectCardEstudante/actions';
 import { erros } from '~/servicos/alertas';
@@ -105,6 +112,10 @@ class ServicoEncaminhamentoAEE {
       dispatch(setDadosCollapseAtribuicaoResponsavel(dadosResponsavel));
 
       dispatch(setDadosEncaminhamento(resultado?.data));
+    } else {
+      dispatch(setLimparDadosAtribuicaoResponsavel());
+      dispatch(setLimparDadosLocalizarEstudante());
+      dispatch(setLimparDadosEncaminhamento());
     }
   };
 
@@ -386,8 +397,12 @@ class ServicoEncaminhamentoAEE {
     return api.post(`${urlPadrao}/atribuir-responsavel`, params);
   };
 
-  concluirParecer = encaminhamentoId => {
-    return new Promise(resolve => resolve({ status: 200, data: true }));
+  concluirEncaminhamento = encaminhamentoId => {
+    return api.post(`${urlPadrao}/concluir/${encaminhamentoId}`);
+  };
+
+  removerResponsavel = encaminhamentoId => {
+    return api.post(`${urlPadrao}/remover-responsavel/${encaminhamentoId}`);
   };
 }
 
