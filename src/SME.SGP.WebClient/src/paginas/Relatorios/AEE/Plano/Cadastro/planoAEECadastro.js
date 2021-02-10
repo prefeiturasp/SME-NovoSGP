@@ -24,12 +24,12 @@ import { erros, setBreadcrumbManual } from '~/servicos';
 import ServicoPlanoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoPlanoAEE';
 import { setDadosObjectCardEstudante } from '~/redux/modulos/objectCardEstudante/actions';
 import { RotasDto } from '~/dtos';
+import MarcadorSituacaoPlanoAEE from './Componentes/MarcadorSituacaoPlanoAEE/marcadorSituacaoPlanoAEE';
 
 const PlanoAEECadastro = ({ match }) => {
   const dispatch = useDispatch();
 
   const limparDadosPlano = useCallback(() => {
-    dispatch(setPlanoAEELimparDados());
     dispatch(setLimparDadosQuestionarioDinamico());
   }, [dispatch]);
 
@@ -62,7 +62,7 @@ const PlanoAEECadastro = ({ match }) => {
 
   const obterPlanoPorId = useCallback(async () => {
     const planoId = match?.params?.id ? match?.params?.id : 0;
-
+    dispatch(setPlanoAEELimparDados());
     dispatch(setExibirLoaderPlanoAEE(true));
     const resultado = await ServicoPlanoAEE.obterPlanoPorId(planoId)
       .catch(e => erros(e))
@@ -95,7 +95,6 @@ const PlanoAEECadastro = ({ match }) => {
           setDadosCollapseLocalizarEstudante(dadosCollapseLocalizarEstudante)
         );
       }
-
       dispatch(setPlanoAEEDados(resultado?.data));
     }
   }, [match, dispatch]);
@@ -119,6 +118,9 @@ const PlanoAEECadastro = ({ match }) => {
           <div className="row">
             <div className="col-md-12 d-flex justify-content-end pb-4">
               <BotoesAcoesPlanoAEE match={match} />
+            </div>
+            <div className="col-md-12 mb-2 d-flex justify-content-end">
+              <MarcadorSituacaoPlanoAEE />
             </div>
             {match?.params?.id ? (
               ''

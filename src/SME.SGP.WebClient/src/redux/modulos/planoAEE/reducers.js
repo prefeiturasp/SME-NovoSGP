@@ -1,24 +1,25 @@
 import produce from 'immer';
 
 const inicial = {
-  dadosIniciaisPlanoAEE: {},
   planoAEEDados: {},
   desabilitarCamposPlanoAEE: false,
   planoAEEEmEdicao: false,
   exibirLoaderPlanoAEE: false,
   planoAEESituacaoEncaminhamentoAEE: {},
   planoAEEDadosSecoesPorEtapa: [],
+  exibirModalErrosPlano: false,
 };
 
 export default function PlanoAEE(state = inicial, action) {
   return produce(state, draft => {
     switch (action.type) {
-      case '@planoAEE/setDadosIniciaisPlanoAEE': {
+      case '@planoAEE/setExibirModalErrosPlano': {
         return {
           ...draft,
-          dadosIniciaisPlanoAEE: action.payload,
+          exibirModalErrosPlano: action.payload,
         };
       }
+
       case '@planoAEE/setExibirLoaderPlanoAEE': {
         return {
           ...draft,
@@ -58,12 +59,12 @@ export default function PlanoAEE(state = inicial, action) {
       case '@planoAEE/setPlanoAEELimparDados': {
         return {
           ...draft,
-          dadosIniciaisPlanoAEE: {},
           planoAEESituacaoEncaminhamentoAEE: {},
           planoAEEDados: null,
           exibirLoaderPlanoAEE: false,
           desabilitarCamposPlanoAEE: false,
           planoAEEDadosSecoesPorEtapa: [],
+          exibirModalErrosPlano: false,
         };
       }
       default:

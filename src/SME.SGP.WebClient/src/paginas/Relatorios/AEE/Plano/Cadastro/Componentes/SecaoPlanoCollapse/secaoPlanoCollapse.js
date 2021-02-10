@@ -1,9 +1,11 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import * as moment from 'moment';
 import { useSelector } from 'react-redux';
 import CardCollapse from '~/componentes/cardCollapse';
 import SecaoVersaoPlanoCollapse from '../SecaoVersaoPlano/secaoVersaoPlanoCollapse';
 import MontarDadosPorSecao from './DadosSecaoPlano/montarDadosPorSecao';
+import ModalErrosPlano from '../ModalErrosPlano/modalErrosPlano';
 
 const SecaoPlanoCollapse = props => {
   const { match } = props;
@@ -12,15 +14,25 @@ const SecaoPlanoCollapse = props => {
 
   return (
     <>
-      {planoAEEDados?.questoes.length ? (
+      <ModalErrosPlano />
+      {planoAEEDados?.questoes?.length ? (
         <CardCollapse
           key="secao-informacoes-plano-collapse-key"
-          titulo="Informações do Plano"
-          indice="secao-informacoes-plano--collapse-indice"
-          alt="secao-informacoes-plano--alt"
+          titulo={
+            planoAEEDados?.versoes === null
+              ? 'Informações do Plano'
+              : `Informações do Plano - v${
+                  planoAEEDados?.versoes?.[0]?.numero
+                } (${moment(planoAEEDados?.versoes?.[0]?.criadoEm).format(
+                  'DD/MM/YYYY'
+                )})`
+          }
+          show
+          indice="secao-informacoes-plano-collapse-indice"
+          alt="secao-informacoes-plano-alt"
         >
           <MontarDadosPorSecao
-            dados={{ id: 0, questionarioId: planoAEEDados?.questionarioId }}
+            dados={{ questionarioId: 0 }}
             dadosQuestionarioAtual={planoAEEDados?.questoes}
             match={match}
           />
@@ -28,8 +40,12 @@ const SecaoPlanoCollapse = props => {
       ) : (
         ''
       )}
-      {planoAEEDados?.versoes ? (
-        <SecaoVersaoPlanoCollapse versoes={planoAEEDados?.versoes} />
+      {planoAEEDados?.versoes?.length > 1 ? (
+        <SecaoVersaoPlanoCollapse
+          questionarioId={planoAEEDados?.questionarioId}
+          planoId={planoAEEDados?.id}
+          versoes={planoAEEDados?.versoes}
+        />
       ) : (
         ''
       )}

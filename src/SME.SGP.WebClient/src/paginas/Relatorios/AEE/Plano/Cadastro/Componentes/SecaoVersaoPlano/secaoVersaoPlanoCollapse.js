@@ -1,17 +1,24 @@
 import * as moment from 'moment';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import CardCollapse from '~/componentes/cardCollapse';
+import MontarDadosPorSecaoVersao from './montarDadosPorSecaoVersao';
 
 const SecaoVersaoPlanoCollapse = props => {
   const { versoes } = props;
+  const [versoesMapeado, setVersoesMapeado] = useState([]);
+
+  useEffect(() => {
+    versoes.shift();
+    setVersoesMapeado(versoes);
+  }, [versoes]);
+
   return (
     <>
       <div className="col-md-12 mb-2">
         <strong>Planos anteriores para consulta</strong>
       </div>
-      {versoes.map(plano => (
-        // colocar em um outro arquivo
+      {versoesMapeado.map(plano => (
         <CardCollapse
           key={`secao-informacoes-plano-${plano.id}-collapse-key`}
           titulo={`Informações do Plano - v${plano.numero} (${moment(
@@ -20,7 +27,12 @@ const SecaoVersaoPlanoCollapse = props => {
           indice={`secao-informacoes-plano-${plano.id}-collapse-indice`}
           alt={`secao-informacoes-plano-${plano.id}-alt`}
         >
-          <></>
+          <MontarDadosPorSecaoVersao
+            dados={{
+              questionarioId: plano.id,
+            }}
+            versao={plano.id}
+          />
         </CardCollapse>
       ))}
     </>

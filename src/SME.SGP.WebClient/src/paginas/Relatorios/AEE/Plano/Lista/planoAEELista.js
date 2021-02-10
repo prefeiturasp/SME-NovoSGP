@@ -16,10 +16,10 @@ import { URL_HOME } from '~/constantes/url';
 import history from '~/servicos/history';
 import FiltroHelper from '~componentes-sgp/filtro/helper';
 import LocalizadorEstudante from '~/componentes/LocalizadorEstudante';
-import { setDadosIniciaisPlanoAEE } from '~/redux/modulos/planoAEE/actions';
 import { erros } from '~/servicos';
 import { RotasDto } from '~/dtos';
 import ServicoPlanoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoPlanoAEE';
+import { setDadosIniciaisLocalizarEstudante } from '~/redux/modulos/collapseLocalizarEstudante/actions';
 
 const PlanoAEELista = () => {
   const dispatch = useDispatch();
@@ -255,7 +255,7 @@ const PlanoAEELista = () => {
 
   const onChangeDre = dre => {
     setDreId(dre);
-    dispatch(setDadosIniciaisPlanoAEE({ ueId, dreId: dre }));
+    dispatch(setDadosIniciaisLocalizarEstudante({ ueId, dreId: dre }));
 
     setListaUes([]);
     setUeId();
@@ -273,12 +273,13 @@ const PlanoAEELista = () => {
   }, [anoLetivo, obterDres]);
 
   const onChangeUe = ue => {
-    setUeId(ue);
-    dispatch(setDadosIniciaisPlanoAEE({ ueId: ue, dreId }));
-    setListaTurmas([]);
     setTurmaId();
+    setListaTurmas([]);
 
-    filtrar(dreId, ue, turmaId, alunoLocalizadorSelecionado, situacao);
+    setUeId(ue);
+    dispatch(setDadosIniciaisLocalizarEstudante({ ueId: ue, dreId }));
+
+    filtrar(dreId, ue, undefined, alunoLocalizadorSelecionado, situacao);
   };
 
   const onChangeTurma = valor => {

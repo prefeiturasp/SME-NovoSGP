@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import Button from '~/componentes/button';
@@ -6,7 +7,9 @@ import { history, sucesso } from '~/servicos';
 import { RotasDto } from '~/dtos';
 import ServicoPlanoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoPlanoAEE';
 
-const BotoesAcoesPlanoAEE = () => {
+const BotoesAcoesPlanoAEE = props => {
+  const { match } = props;
+
   const questionarioDinamicoEmEdicao = useSelector(
     store => store.questionarioDinamico.questionarioDinamicoEmEdicao
   );
@@ -25,9 +28,14 @@ const BotoesAcoesPlanoAEE = () => {
 
   const onClickSalvar = async () => {
     const salvou = await ServicoPlanoAEE.salvarPlano();
+    const planoId = match?.params?.id;
 
     if (salvou) {
-      sucesso('Registro salvo com sucesso');
+      let mensagem = 'Registro salvo com sucesso';
+      if (planoId) {
+        mensagem = 'Registro alterado com sucesso';
+      }
+      sucesso(mensagem);
       history.push(RotasDto.RELATORIO_AEE_PLANO);
     }
   };
@@ -53,7 +61,7 @@ const BotoesAcoesPlanoAEE = () => {
       />
       <Button
         id="btn-salvar"
-        label="Salvar"
+        label={match?.params?.id ? 'Alterar' : 'Salvar'}
         color={Colors.Azul}
         border
         bold
@@ -62,6 +70,14 @@ const BotoesAcoesPlanoAEE = () => {
       />
     </>
   );
+};
+
+BotoesAcoesPlanoAEE.propTypes = {
+  match: PropTypes.oneOfType([PropTypes.object]),
+};
+
+BotoesAcoesPlanoAEE.defaultProps = {
+  match: {},
 };
 
 export default BotoesAcoesPlanoAEE;

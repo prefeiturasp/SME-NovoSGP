@@ -13,7 +13,7 @@ const TabCadastroPasso = props => {
     store => store.collapseLocalizarEstudante.dadosCollapseLocalizarEstudante
   );
 
-  return (
+  return dadosCollapseLocalizarEstudante?.codigoAluno ? (
     <ContainerTabsCard type="card" width="20%">
       <TabPane tab="Cadastro do Plano" key="1">
         {dadosCollapseLocalizarEstudante?.codigoAluno ? (
@@ -26,6 +26,8 @@ const TabCadastroPasso = props => {
         <></>
       </TabPane>
     </ContainerTabsCard>
+  ) : (
+    ''
   );
 };
 

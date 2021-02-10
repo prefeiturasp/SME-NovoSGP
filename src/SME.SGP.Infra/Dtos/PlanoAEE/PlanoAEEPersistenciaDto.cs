@@ -12,6 +12,7 @@ namespace SME.SGP.Infra
 
         public long? Id { get; set; }
         public long TurmaId { get; set; }
+        public string TurmaCodigo { get; set; }
         public string AlunoCodigo { get; set; }
         public SituacaoPlanoAEE Situacao { get; set; }
         public List<PlanoAEEQuestaoDto> Questoes { get; set; }

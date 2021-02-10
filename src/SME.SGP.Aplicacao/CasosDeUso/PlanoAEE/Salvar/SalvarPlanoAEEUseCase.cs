@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
         public async Task<RetornoPlanoAEEDto> Executar(PlanoAEEPersistenciaDto planoAeeDto)
         {
-            var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(planoAeeDto.TurmaId));
+            var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(planoAeeDto.TurmaCodigo));
             if (turma == null)
                 throw new NegocioException("A turma informada não foi encontrada");
 

@@ -1,4 +1,5 @@
 import { Form, Formik } from 'formik';
+import * as moment from 'moment';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -44,7 +45,7 @@ const QuestionarioDinamico = props => {
         () => obterForm(),
         dados.questionarioId,
         dadosQuestionarioAtual,
-        dados.id
+        dados?.id
       );
     }
   }, [refForm]);
@@ -75,8 +76,14 @@ const QuestionarioDinamico = props => {
             valorRespostaAtual = resposta[0].texto;
             break;
           case tipoQuestao.Periodo:
-            valorRespostaAtual = {};
+            valorRespostaAtual = [
+              resposta[0].periodoInicio
+                ? moment(resposta[0].periodoInicio)
+                : '',
+              resposta[0].periodoFim ? moment(resposta[0].periodoFim) : '',
+            ];
             break;
+          case tipoQuestao.FrequenciaEstudanteAEE:
           case tipoQuestao.AtendimentoClinico:
             valorRespostaAtual = resposta[0].texto
               ? JSON.parse(resposta[0].texto)
@@ -418,7 +425,7 @@ const QuestionarioDinamico = props => {
     return campos;
   };
 
-  return dados?.questionarioId &&
+  return dados?.questionarioId > -1 &&
     dadosQuestionarioAtual?.length &&
     valoresIniciais ? (
     <Formik

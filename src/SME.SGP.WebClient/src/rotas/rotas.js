@@ -1187,8 +1187,8 @@ rotas.set(RotasDto.RELATORIO_AEE_PLANO, {
   component: PlanoAEELista,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  // temPermissionamento: false,
-  // chavePermissao: RotasDto.RELATORIO_AEE_ENCAMINHAMENTO,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.RELATORIO_AEE_PLANO,
 });
 
 rotas.set(`${RotasDto.RELATORIO_AEE_PLANO}/novo`, {
@@ -1198,8 +1198,8 @@ rotas.set(`${RotasDto.RELATORIO_AEE_PLANO}/novo`, {
   component: PlanoAEECadastro,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  // temPermissionamento: false,
-  // chavePermissao: RotasDto.RELATORIO_AEE_ENCAMINHAMENTO,
+  temPermissionamento: false,
+  chavePermissao: RotasDto.RELATORIO_AEE_PLANO,
 });
 
 rotas.set(`${RotasDto.RELATORIO_AEE_PLANO}/editar/:id`, {
@@ -1208,8 +1208,8 @@ rotas.set(`${RotasDto.RELATORIO_AEE_PLANO}/editar/:id`, {
   component: PlanoAEECadastro,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  // temPermissionamento: false,
-  // chavePermissao: RotasDto.RELATORIO_AEE_PLANO,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.RELATORIO_AEE_PLANO,
 });
 
 rotas.set(RotasDto.OCORRENCIAS, {

@@ -61,9 +61,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<QuestaoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        public IActionResult ObterPlanoAeePorVersao(long versaoPlanoId, [FromServices] IObterQuestoesPlanoAEEPorVersaoUseCase useCase)
+        public async Task<IActionResult> ObterPlanoAeePorVersao(long versaoPlanoId, [FromServices] IObterQuestoesPlanoAEEPorVersaoUseCase useCase)
         {
-            return Ok(useCase.Executar(versaoPlanoId));
+            return Ok(await useCase.Executar(versaoPlanoId));
         }
 
         [HttpPost("salvar")]

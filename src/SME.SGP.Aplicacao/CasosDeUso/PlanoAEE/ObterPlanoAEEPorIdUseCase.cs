@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -23,11 +24,22 @@ namespace SME.SGP.Aplicacao
 
             if (planoAEEId.HasValue && planoAEEId > 0)
             {
-                var entidadePlano = await repositorioPlanoAEE.ObterPorIdAsync(planoAEEId.Value);
+                var entidadePlano = await repositorioPlanoAEE.ObterPlanoComTurmaPorId(planoAEEId.Value);
 
+                var aluno = await mediator.Send(new ObterAlunoPorCodigoEAnoQuery(entidadePlano.AlunoCodigo, entidadePlano.Turma.AnoLetivo));
+
+                plano.Id = planoAEEId.Value;
                 plano.Auditoria = (AuditoriaDto)entidadePlano;
                 plano.Versoes = await mediator.Send(new ObterVersoesPlanoAEEQuery(planoAEEId.Value));
-
+                plano.Aluno = aluno;
+                plano.SituacaoDescricao = entidadePlano.Situacao.Name();
+                plano.Turma = new TurmaAnoDto()
+                {
+                    Id = entidadePlano.Turma.Id,
+                    Codigo = entidadePlano.Turma.CodigoTurma,
+                    AnoLetivo = entidadePlano.Turma.AnoLetivo
+                };
+                
                 var ultimaVersaoId = plano.Versoes
                     .OrderByDescending(a => a.Numero)
                     .Select(a => a.Id)

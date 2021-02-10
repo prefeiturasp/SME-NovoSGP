@@ -8,5 +8,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<PaginacaoResultadoDto<PlanoAEEAlunoTurmaDto>> ListarPaginado(long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao, Paginacao paginacao);
 
         Task<PlanoAEEResumoDto> ObterPlanoPorEstudante(string codigoEstudante);
+
+        Task<PlanoAEE> ObterPlanoComTurmaPorId(long planoId);
     }
 }
