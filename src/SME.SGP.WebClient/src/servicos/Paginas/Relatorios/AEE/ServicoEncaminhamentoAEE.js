@@ -381,12 +381,20 @@ class ServicoEncaminhamentoAEE {
     return api.post(`${urlPadrao}/enviar-analise/${encaminhamentoId}`);
   };
 
-  obterResponsaveis = (codigoRF, codigoDRE, codigoUE) => {
-    return api.post('/v1/funcionarios/pesquisa', {
-      codigoRF,
-      codigoDRE,
-      codigoUE,
-    });
+  obterResponsaveis = (dreId, ueId, turmaId, alunoCodigo, situacao) => {
+    let url = `${urlPadrao}/responsaveis?dreId=${dreId}&ueId=${ueId}`;
+
+    if (turmaId) {
+      url += `&turmaId=${turmaId}`;
+    }
+    if (alunoCodigo) {
+      url += `&alunoCodigo=${alunoCodigo}`;
+    }
+    if (situacao) {
+      url += `&situacao=${situacao}`;
+    }
+
+    return api.get(url);
   };
 
   atribuirResponsavelEncaminhamento = (rfResponsavel, encaminhamentoId) => {
