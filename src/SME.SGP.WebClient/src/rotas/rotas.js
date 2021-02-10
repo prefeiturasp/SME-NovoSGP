@@ -1202,6 +1202,16 @@ rotas.set(`${RotasDto.RELATORIO_AEE_PLANO}/novo`, {
   // chavePermissao: RotasDto.RELATORIO_AEE_ENCAMINHAMENTO,
 });
 
+rotas.set(`${RotasDto.RELATORIO_AEE_PLANO}/editar/:id`, {
+  breadcrumbName: 'Editar Plano AEE',
+  parent: `${RotasDto.RELATORIO_AEE_PLANO}`,
+  component: PlanoAEECadastro,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  // temPermissionamento: false,
+  // chavePermissao: RotasDto.RELATORIO_AEE_PLANO,
+});
+
 rotas.set(RotasDto.OCORRENCIAS, {
   breadcrumbName: 'Ocorrências',
   menu: ['Gestão'],
