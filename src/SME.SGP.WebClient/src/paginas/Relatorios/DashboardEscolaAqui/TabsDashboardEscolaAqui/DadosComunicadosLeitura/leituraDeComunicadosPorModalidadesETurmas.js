@@ -77,6 +77,12 @@ const LeituraDeComunicadosPorModalidadesETurmas = props => {
   );
 
   useEffect(() => {
+    return () => {
+      setDadosDeLeituraDeComunicadosPorModalidadesETurmas([]);
+    };
+  }, []);
+
+  useEffect(() => {
     setDadosDeLeituraDeComunicadosPorModalidadesETurmas([]);
     if (
       dadosDeLeituraDeComunicadosAgrupadosPorModalidade?.length &&

@@ -5,6 +5,53 @@ import {
 } from '~/redux/modulos/questionarioDinamico/actions';
 
 class QuestionarioDinamicoFuncoes {
+  onChangeCampoCheckbox = (questaoAtual, form, valorAtualSelecionado) => {
+    const valoreAnteriorSelecionado = form.values[questaoAtual.id] || [];
+
+    const estaAdicionandoNovos =
+      valorAtualSelecionado?.length > valoreAnteriorSelecionado?.length;
+
+    if (estaAdicionandoNovos) {
+      const checkboxNovosMarcados = valorAtualSelecionado.filter(
+        idCampo => !valoreAnteriorSelecionado.includes(idCampo)
+      );
+
+      if (checkboxNovosMarcados?.length) {
+        checkboxNovosMarcados.forEach(n => {
+          const opcaoAtual = questaoAtual?.opcaoResposta.find(
+            c => String(c.id) === String(n || '')
+          );
+
+          if (opcaoAtual?.questoesComplementares?.length) {
+            opcaoAtual.questoesComplementares.forEach(questaoComplementar => {
+              form.setFieldValue(questaoComplementar.id, '');
+              form.values[questaoComplementar.id] = '';
+            });
+          }
+        });
+      }
+    } else if (!estaAdicionandoNovos) {
+      const checkboxDesmarcados = valoreAnteriorSelecionado.filter(
+        idCampo => !valorAtualSelecionado.includes(idCampo)
+      );
+
+      if (checkboxDesmarcados?.length) {
+        checkboxDesmarcados.forEach(n => {
+          const opcaoAtual = questaoAtual?.opcaoResposta.find(
+            c => String(c.id) === String(n || '')
+          );
+
+          if (opcaoAtual?.questoesComplementares?.length) {
+            opcaoAtual.questoesComplementares.forEach(questaoComplementar => {
+              delete form.values[questaoComplementar.id];
+              form.unregisterField(questaoComplementar.id);
+            });
+          }
+        });
+      }
+    }
+  };
+
   onChangeCamposComOpcaoResposta = (
     questaoAtual,
     form,
@@ -20,9 +67,12 @@ class QuestionarioDinamicoFuncoes {
       c => String(c.id) === String(valoreAnteriorSelecionado || '')
     );
 
-    const questaoComplementarIdAtual = opcaoAtual?.questaoComplementar?.id;
+    // TODO - Ajustar para quando tiver mais de um questão complementar!
+    const questaoComplementarIdAtual =
+      opcaoAtual?.questoesComplementares?.[0]?.id;
+
     const questaoComplementarIdAnterior =
-      opcaoAnterior?.questaoComplementar?.id;
+      opcaoAnterior?.questoesComplementares?.[0]?.id;
 
     if (questaoComplementarIdAtual !== questaoComplementarIdAnterior) {
       if (questaoComplementarIdAtual) {
@@ -78,9 +128,10 @@ class QuestionarioDinamicoFuncoes {
           idCampo
         );
 
-        if (opcaoResposta?.questaoComplementar) {
+        if (opcaoResposta?.questoesComplementares[0]) {
           const temCampo = camposEmTela.find(
-            c => String(c) === String(opcaoResposta?.questaoComplementar?.id)
+            c =>
+              String(c) === String(opcaoResposta?.questoesComplementares[0]?.id)
           );
           return !!temCampo;
         }
@@ -95,7 +146,9 @@ class QuestionarioDinamicoFuncoes {
         idOpcaoRespostaComValorDigitado
       );
       valorDigitadoCampoComplementar =
-        form.values[opcaoRespostaComValorDigitado?.questaoComplementar?.id];
+        form.values[
+          opcaoRespostaComValorDigitado?.questoesComplementares[0]?.id
+        ];
     }
 
     return valorDigitadoCampoComplementar;
@@ -110,7 +163,7 @@ class QuestionarioDinamicoFuncoes {
         item => String(item.id) === String(valor)
       );
 
-      if (opcaoAtual?.questaoComplementar?.obrigatorio) {
+      if (opcaoAtual?.questoesComplementares[0]?.obrigatorio) {
         return true;
       }
       return false;
@@ -127,7 +180,7 @@ class QuestionarioDinamicoFuncoes {
         valor
       );
 
-      if (opcaoResposta?.questaoComplementar?.obrigatorio) {
+      if (opcaoResposta?.questoesComplementares[0]?.obrigatorio) {
         return false;
       }
       return true;
@@ -147,7 +200,7 @@ class QuestionarioDinamicoFuncoes {
     );
 
     const questaoComplementarAdicionarId =
-      opcaoRespostaAdicionar?.questaoComplementar?.id;
+      opcaoRespostaAdicionar?.questoesComplementares[0]?.id;
 
     if (questaoComplementarAdicionarId) {
       form.setFieldValue(
@@ -165,7 +218,7 @@ class QuestionarioDinamicoFuncoes {
     );
 
     const questaoComplementarRemoverId =
-      opcaoRespostaRemover?.questaoComplementar?.id;
+      opcaoRespostaRemover?.questoesComplementares[0]?.id;
 
     if (questaoComplementarRemoverId) {
       delete form.values[questaoComplementarRemoverId];
@@ -183,9 +236,9 @@ class QuestionarioDinamicoFuncoes {
       questaoAtual?.opcaoResposta?.length
     ) {
       questaoAtual.opcaoResposta.forEach(a => {
-        if (a?.questaoComplementar) {
-          delete form.values[a.questaoComplementar.id];
-          form.unregisterField(a.questaoComplementar.id);
+        if (a?.questoesComplementares[0]) {
+          delete form.values[a.questoesComplementares[0].id];
+          form.unregisterField(a.questoesComplementares[0].id);
         }
       });
 
@@ -270,8 +323,10 @@ class QuestionarioDinamicoFuncoes {
           questaoAtual = item;
         } else if (item?.opcaoResposta?.length) {
           item.opcaoResposta.forEach(opcaoResposta => {
-            if (opcaoResposta.questaoComplementar) {
-              obterQuestao(opcaoResposta.questaoComplementar);
+            if (opcaoResposta?.questoesComplementares?.length) {
+              opcaoResposta.questoesComplementares.forEach(questao => {
+                obterQuestao(questao);
+              });
             }
           });
         }

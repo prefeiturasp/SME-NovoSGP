@@ -25,6 +25,13 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<QuestaoDto>> Handle(ObterQuestionarioEncaminhamentoAeeQuery request, CancellationToken cancellationToken)
         {
+            var dadosQuestionario = await repositorioQuestaoEncaminhamento.ObterListaPorQuestionario(request.QuestionarioId);
+
+            var questoesComplementares = dadosQuestionario
+                .Where(dq => dq.OpcoesRespostas.Any(a => a.QuestoesComplementares.Any()))
+                .SelectMany(dq => dq.OpcoesRespostas.Where(c => c.QuestoesComplementares.Any()).SelectMany(a => a.QuestoesComplementares.Select(q => q.QuestaoComplementarId)))
+                .Distinct();
+
             var respostasEncaminhamento = request.EncaminhamentoId.HasValue ?
                 await repositorioQuestaoEncaminhamento.ObterRespostasEncaminhamento(request.EncaminhamentoId.Value) :
                 Enumerable.Empty<RespostaQuestaoEncaminhamentoAEEDto>();
@@ -66,6 +73,52 @@ namespace SME.SGP.Aplicacao
             var percentualFrequenciaCritico = double.Parse(parametroPercentualFrequenciaCritico.Valor);
 
             return frequenciaGlobal < percentualFrequenciaCritico;
+        }
+
+        QuestaoDto ObterQuestao(long questaoId, IEnumerable<Questao> dadosQuestionario, IEnumerable<RespostaQuestaoEncaminhamentoAEEDto> respostasEncaminhamento)
+        {
+            var questao = dadosQuestionario.FirstOrDefault(c => c.Id == questaoId);
+
+            return new QuestaoDto()
+            {
+                Id = questao.Id,
+                Ordem = questao.Ordem,
+                Nome = questao.Nome,
+                TipoQuestao = questao.Tipo,
+                Obrigatorio = questao.Obrigatorio,
+                Observacao = questao.Observacao,
+                Opcionais = questao.Opcionais,
+                OpcaoResposta = questao.OpcoesRespostas.Select(opcaoResposta =>
+                {
+                    return new OpcaoRespostaDto()
+                    {
+                        Id = opcaoResposta.Id,
+                        Nome = opcaoResposta.Nome,
+                        Ordem = opcaoResposta.Ordem,
+                        QuestoesComplementares = opcaoResposta.QuestoesComplementares != null ?
+                            ObterQuestoes(opcaoResposta.QuestoesComplementares, dadosQuestionario, respostasEncaminhamento).ToList() :
+                            null
+                    };
+                })
+                .OrderBy(a => a.Ordem).ToArray(),
+                Resposta = respostasEncaminhamento.Where(c => c.QuestaoId == questaoId).Select(respostaEncaminhamento =>
+                {
+                    return new RespostaQuestaoDto()
+                    {
+                        Id = respostaEncaminhamento.Id,
+                        OpcaoRespostaId = respostaEncaminhamento.RespostaId,
+                        Texto = respostaEncaminhamento.Texto,
+                        Arquivo = respostaEncaminhamento.Arquivo
+                    };
+                }).ToArray()
+            };
+
+        }
+
+        private IEnumerable<QuestaoDto> ObterQuestoes(List<OpcaoQuestaoComplementar> questoesComplementares, IEnumerable<Questao> dadosQuestionario, IEnumerable<RespostaQuestaoEncaminhamentoAEEDto> respostasEncaminhamento)
+        {
+            foreach (var questaoComplementar in questoesComplementares)
+                yield return ObterQuestao(questaoComplementar.QuestaoComplementarId, dadosQuestionario, respostasEncaminhamento);
         }
     }
 }

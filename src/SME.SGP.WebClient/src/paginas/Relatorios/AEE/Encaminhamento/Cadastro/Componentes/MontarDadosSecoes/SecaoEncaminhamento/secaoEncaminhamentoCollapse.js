@@ -3,11 +3,11 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import ObjectCardEstudante from '~/componentes-sgp/ObjectCardEstudante/objectCardEstudante';
 import CardCollapse from '~/componentes/cardCollapse';
-import AuditoriaEncaminhamento from '../AuditoriaEncaminhamento/auditoriaEncaminhamento';
-import ModalEncerramentoEncaminhamentoAEE from '../ModalEncerramentoEncaminhamentoAEE/modalEncerramentoEncaminhamentoAEE';
-import ModalErrosEncaminhamento from '../ModalErrosEncaminhamento/modalErrosEncaminhamento';
-import MotivoEncerramento from '../MotivoEncerramento/MotivoEncerramento';
-import DadosSecaoEncaminhamento from './DadosSecaoEncaminhamento/dadosSecaoEncaminhamento';
+import AuditoriaEncaminhamento from '../../AuditoriaEncaminhamento/auditoriaEncaminhamento';
+import ModalEncerramentoEncaminhamentoAEE from '../../ModalEncerramentoEncaminhamentoAEE/modalEncerramentoEncaminhamentoAEE';
+import ModalErrosEncaminhamento from '../../ModalErrosEncaminhamento/modalErrosEncaminhamento';
+import MotivoEncerramento from '../../MotivoEncerramento/MotivoEncerramento';
+import DadosSecaoEncaminhamento from './dadosSecaoEncaminhamento';
 
 const SecaoEncaminhamentoCollapse = props => {
   const { match } = props;
@@ -22,6 +22,7 @@ const SecaoEncaminhamentoCollapse = props => {
       titulo="Encaminhamento"
       indice="secao-encaminhamento-collapse-indice"
       alt="secao-encaminhamento-alt"
+      show={dadosCollapseLocalizarEstudante?.codigoAluno}
     >
       {dadosCollapseLocalizarEstudante?.codigoAluno ? (
         <>

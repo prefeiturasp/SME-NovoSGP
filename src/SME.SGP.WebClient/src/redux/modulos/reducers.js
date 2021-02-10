@@ -31,6 +31,7 @@ import collapseLocalizarEstudante from './collapseLocalizarEstudante/reducers';
 import acompanhamentoFrequencia from './acompanhamentoFrequencia/reducers';
 import objectCardEstudante from './objectCardEstudante/reducers';
 import questionarioDinamico from './questionarioDinamico/reducers';
+import collapseAtribuicaoResponsavel from './collapseAtribuicaoResponsavel/reducers';
 
 const reducers = combineReducers({
   navegacao,
@@ -64,6 +65,7 @@ const reducers = combineReducers({
   acompanhamentoFrequencia,
   objectCardEstudante,
   questionarioDinamico,
+  collapseAtribuicaoResponsavel,
 });
 
 const rootReducer = (state, action) => {
