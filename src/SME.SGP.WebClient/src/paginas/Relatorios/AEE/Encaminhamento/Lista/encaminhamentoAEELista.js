@@ -185,38 +185,45 @@ const EncaminhamentoAEELista = () => {
 
   const obterResponsaveis = useCallback(async () => {
     setCarregandoResponsavel(true);
-    const respostaSemUE = await ServicoEncaminhamentoAEE.obterResponsaveis(
-      usuario.rf,
-      dreId
+
+    const dreAtual = listaDres.find(dre => dre.valor === dreId);
+    const ueAtual = listaUes.find(ue => ue.valor === ueId);
+    const turmaAtual = listaTurmas?.find(turma => turma.codigo === turmaId);
+
+    const resposta = await ServicoEncaminhamentoAEE.obterResponsaveis(
+      dreAtual?.id,
+      ueAtual?.id,
+      turmaAtual?.id,
+      alunoLocalizadorSelecionado,
+      situacao
     )
       .catch(e => erros(e))
       .finally(() => setCarregandoResponsavel(false));
 
-    let respostas = [];
-    if (!respostaSemUE?.data?.items?.length) {
-      const respostaComUE = await ServicoEncaminhamentoAEE.obterResponsaveis(
-        usuario.rf,
-        dreId,
-        ueId
-      )
-        .catch(e => erros(e))
-        .finally(() => setCarregandoResponsavel(false));
-
-      if (respostaComUE?.data?.items?.length) {
-        respostas = respostaComUE.data.items;
-      }
+    if (resposta?.data?.length) {
+      const lista = resposta.data.map(item => {
+        return { ...item, codigoRf: String(item.codigoRf) };
+      });
+      setListaResponsavel(lista);
+    } else {
+      setListaResponsavel([]);
     }
-    if (respostaSemUE?.data?.items?.length) {
-      respostas = respostaSemUE.data.items;
-    }
-    setListaResponsavel(respostas);
-  }, [dreId, usuario.rf, ueId]);
+  }, [
+    dreId,
+    ueId,
+    turmaId,
+    alunoLocalizadorSelecionado,
+    situacao,
+    listaDres,
+    listaUes,
+    listaTurmas,
+  ]);
 
   useEffect(() => {
-    if (dreId && ueId) {
+    if (ueId && listaUes.length) {
       obterResponsaveis();
     }
-  }, [dreId, obterResponsaveis, ueId]);
+  }, [obterResponsaveis, ueId, listaUes]);
 
   const [carregandoUes, setCarregandoUes] = useState(false);
 
