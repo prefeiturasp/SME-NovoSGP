@@ -45,7 +45,7 @@ const QuestionarioDinamico = props => {
         () => obterForm(),
         dados.questionarioId,
         dadosQuestionarioAtual,
-        dados.id
+        dados?.id
       );
     }
   }, [refForm]);
@@ -425,7 +425,7 @@ const QuestionarioDinamico = props => {
     return campos;
   };
 
-  return dados?.questionarioId &&
+  return dados?.questionarioId > -1 &&
     dadosQuestionarioAtual?.length &&
     valoresIniciais ? (
     <Formik
