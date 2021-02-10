@@ -224,10 +224,8 @@ const CollapseLocalizarEstudanteDados = props => {
         turmaId: alunoLocalizadorSelecionado.turmaId,
       };
 
-        dispatch(setDadosCollapseLocalizarEstudante(params));
-        clickProximoPasso(true);
-      })
-      .catch(e => erros(e));
+      dispatch(setDadosCollapseLocalizarEstudante(params));
+    }
   };
 
   const onClickCancelar = () => {
