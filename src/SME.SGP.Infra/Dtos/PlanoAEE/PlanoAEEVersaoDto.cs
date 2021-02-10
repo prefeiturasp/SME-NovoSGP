@@ -8,5 +8,6 @@ namespace SME.SGP.Infra
     {
         public long Id { get; set; }
         public int Numero { get; set; }
+        public DateTime CriadoEm { get; set; }
     }
 }

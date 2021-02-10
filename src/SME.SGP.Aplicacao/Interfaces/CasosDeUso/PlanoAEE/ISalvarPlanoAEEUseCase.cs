@@ -5,6 +5,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface ISalvarPlanoAEEUseCase
     {
-        Task<long> Executar(PlanoAEEPersistenciaDto planoDto);
+        Task<RetornoPlanoAEEDto> Executar(PlanoAEEPersistenciaDto planoDto);
     }
 }

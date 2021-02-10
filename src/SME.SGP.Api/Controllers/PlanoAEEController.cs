@@ -37,6 +37,16 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpGet]
+        [Route("estudante/{codigoEstudante}")]
+        [ProducesResponseType(typeof(PlanoAEEDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public async Task<IActionResult> ObterPlanoAeeEstudante(string codigoEstudante, [FromServices] IObterPlanoAEEPorCodigoEstudanteUseCase useCase)
+        {
+            return Ok(await useCase.Executar(codigoEstudante));
+        }
+
+        [HttpGet]
         [Route("{planoAeeId}")]
         [ProducesResponseType(typeof(PlanoAEEDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
@@ -64,7 +74,7 @@ namespace SME.SGP.Api.Controllers
             return Ok(await usecase.Executar(planoAeeDto));
         }
 
-        [HttpGet("estudande/{codigoEstudante}/existe")]
+        [HttpGet("estudante/{codigoEstudante}/existe")]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> VerificarExistenciaPlanoAEEPorEstudante(string codigoEstudante, [FromServices] IVerificarExistenciaPlanoAEEPorEstudanteUseCase useCase)

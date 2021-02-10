@@ -70,6 +70,9 @@ const QuestionarioDinamico = props => {
           case tipoQuestao.Texto:
             valorRespostaAtual = resposta[0].texto;
             break;
+          case tipoQuestao.Periodo:
+            valorRespostaAtual = {};
+            break;
           case tipoQuestao.AtendimentoClinico:
             valorRespostaAtual = resposta[0].texto
               ? JSON.parse(resposta[0].texto)

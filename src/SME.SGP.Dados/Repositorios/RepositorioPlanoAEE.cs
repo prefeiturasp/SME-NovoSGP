@@ -114,7 +114,7 @@ namespace SME.SGP.Dados.Repositorios
                                         and pa.situacao = 1
                                         limit 1";
 
-            return await database.Conexao.QueryFirstAsync<PlanoAEEResumoDto>(query, new { codigoEstudante });
+            return await database.Conexao.QueryFirstOrDefaultAsync<PlanoAEEResumoDto>(query, new { codigoEstudante });
         }
     }
 }

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace SME.SGP.Infra
 {
@@ -12,4 +10,5 @@ namespace SME.SGP.Infra
         public IEnumerable<QuestaoDto> Questoes { get; set; }
         public IEnumerable<PlanoAEEVersaoDto> Versoes { get; set; }
     }
+        
 }

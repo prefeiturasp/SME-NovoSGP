@@ -12,10 +12,10 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
         public SalvarPlanoAEEUseCase(IMediator mediator)
         {
-            this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<long> Executar(PlanoAEEPersistenciaDto planoAeeDto)
+        public async Task<RetornoPlanoAEEDto> Executar(PlanoAEEPersistenciaDto planoAeeDto)
         {
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(planoAeeDto.TurmaId));
             if (turma == null)
@@ -25,23 +25,17 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             if (aluno == null)
                 throw new NegocioException("O aluno informado não foi encontrado");
 
-            var resultado = await mediator.Send(new SalvarPlanoAeeCommand(planoAeeDto.TurmaId, aluno.NomeAluno, aluno.CodigoAluno, aluno.NumeroAlunoChamada.ToString(), planoAeeDto.Situacao));
-
+            var planoAeePersistidoDto = await mediator.Send(new SalvarPlanoAeeCommand(planoAeeDto.Id.GetValueOrDefault(), planoAeeDto.TurmaId, aluno.NomeAluno, aluno.CodigoAluno, aluno.NumeroAlunoChamada));
 
             // Questoes
+            foreach (var questao in planoAeeDto.Questoes)
+            {
+                var planoAEEQuestaoId = await mediator.Send(new SalvarPlanoAEEQuestaoCommand(planoAeePersistidoDto.PlanoId, questao.QuestaoId, planoAeePersistidoDto.PlanoVersaoId));
 
-            // Respostas
+                await mediator.Send(new SalvarPlanoAEERespostaCommand(planoAEEQuestaoId, questao.Resposta, questao.TipoQuestao));
+            }
 
-            // Versao
-            //foreach (var questoes in secao.Questoes.GroupBy(q => q.QuestaoId))
-            //{
-            //    var resultadoEncaminhamentoQuestao = await mediator.Send(new RegistrarEncaminhamentoAEESecaoQuestaoCommand(secaoEncaminhamento.Id, questoes.FirstOrDefault().QuestaoId));
-            //    await RegistrarRespostaEncaminhamento(questoes, resultadoEncaminhamentoQuestao);
-            //}
-
-            return resultado;
+            return planoAeePersistidoDto;
         }
     }
 }
-
-

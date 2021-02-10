@@ -89,9 +89,14 @@ const CampoData = ({
   temErro,
   mensagemErro,
   carregando,
+  periodo,
   array,
+  separator,
   campoOpcional,
 }) => {
+  const { RangePicker } = DatePicker;
+  const data = new Date();
+
   const habilitarDatas = dataAtual => {
     let retorno = true;
     const ehParaHabilitar =
@@ -247,9 +252,78 @@ const CampoData = ({
     );
   };
 
+  const campoPeriodoAntComValidacoes = () => {
+    return (
+      <Field name={name} id={name}>
+        {({
+          field: { value },
+          form: { setFieldValue, setFieldTouched, errors },
+        }) => (
+          <div>
+            <div>
+              <RangePicker
+                disabled={desabilitado}
+                format={formatoData}
+                locale={locale}
+                placeholder={placeholder}
+                suffixIcon={Icone}
+                name={name}
+                separator={separator}
+                id={id || name}
+                onBlur={executaOnBlur}
+                className={
+                  form
+                    ? `${possuiErro() ? 'is-invalid' : ''} ${className || ''}`
+                    : ''
+                }
+                onChange={valorData => {
+                  setFieldValue(name, valorData || '');
+                  onChange(valorData);
+                  setFieldTouched(name, true, true);
+                }}
+                disabledDate={habilitarDatas}
+                showToday={false}
+                value={value || null}
+              />
+            </div>
+          </div>
+        )}
+      </Field>
+    );
+  };
+
+  const campoPeriodoAntSemValidacoes = () => {
+    return (
+      <RangePicker
+        disabled={desabilitado}
+        format={formatoData}
+        locale={locale}
+        placeholder={placeholder}
+        suffixIcon={Icone}
+        name={name}
+        id={id || name}
+        onBlur={executaOnBlur}
+        className={
+          form ? `${possuiErro() ? 'is-invalid' : ''} ${className || ''}` : ''
+        }
+        onChange={valorData => {
+          onChange(valorData);
+        }}
+        disabledDate={habilitarDatas}
+        showToday={false}
+        defaultValue={[moment(data, formatoData), moment(data, formatoData)]}
+      />
+    );
+  };
+
   const validaTipoCampo = () => {
     if (somenteHora) {
       return form ? campoHoraAntComValidacoes() : campoHoraAntSemValidacoes();
+    }
+    if (periodo) {
+      return form
+        ? campoPeriodoAntComValidacoes()
+        : campoPeriodoAntSemValidacoes();
     }
     return form ? campoDataAntComValidacoes() : campoDataAntSemValidacoes();
   };
@@ -296,6 +370,8 @@ CampoData.propTypes = {
   carregando: PropTypes.bool,
   array: PropTypes.bool,
   campoOpcional: PropTypes.bool,
+  periodo: PropTypes.bool,
+  separator: PropTypes.string,
 };
 
 CampoData.defaultProps = {
@@ -317,6 +393,8 @@ CampoData.defaultProps = {
   carregando: false,
   array: false,
   campoOpcional: false,
+  periodo: false,
+  separator: 'à',
 };
 
 const momentSchema = new MomentSchema();

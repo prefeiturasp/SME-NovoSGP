@@ -54,7 +54,7 @@ namespace SME.SGP.Aplicacao
                     Situacao = planoAEE.Situacao != 0 ? planoAEE.Situacao.Name() : "",
                     Turma = $"{planoAEE.TurmaModalidade.ShortName()} - {planoAEE.TurmaNome}",
                     Numero = aluno?.NumeroAlunoChamada ?? 0,
-                    Nome = aluno?.NomeAluno,
+                    Nome = $"{aluno?.NomeAluno}|{planoAEE.PossuiEncaminhamentoAEE}",
                     PossuiEncaminhamentoAEE = planoAEE.PossuiEncaminhamentoAEE
                 });
             }
