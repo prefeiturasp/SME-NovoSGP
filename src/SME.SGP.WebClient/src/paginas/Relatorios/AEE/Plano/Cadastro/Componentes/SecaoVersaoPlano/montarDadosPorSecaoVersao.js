@@ -23,7 +23,7 @@ const MontarDadosPorSecaoVersao = props => {
 
   useEffect(() => {
     obterDadosPorVersaoId();
-  });
+  }, []);
 
   return dadosQuestionarioAtual?.length ? (
     <QuestionarioDinamico

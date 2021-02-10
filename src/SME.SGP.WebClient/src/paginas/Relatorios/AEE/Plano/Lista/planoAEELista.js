@@ -273,12 +273,13 @@ const PlanoAEELista = () => {
   }, [anoLetivo, obterDres]);
 
   const onChangeUe = ue => {
+    setTurmaId();
+    setListaTurmas([]);
+
     setUeId(ue);
     dispatch(setDadosIniciaisPlanoAEE({ ueId: ue, dreId }));
-    setListaTurmas([]);
-    setTurmaId();
 
-    filtrar(dreId, ue, turmaId, alunoLocalizadorSelecionado, situacao);
+    filtrar(dreId, ue, undefined, alunoLocalizadorSelecionado, situacao);
   };
 
   const onChangeTurma = valor => {

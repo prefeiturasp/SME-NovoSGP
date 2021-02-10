@@ -10,6 +10,7 @@ namespace SME.SGP.Infra
         public long QuestionarioId { get; set; }
         public AlunoReduzidoDto Aluno { get; set; }
         public TurmaAnoDto Turma { get; set; }
+        public string SituacaoDescricao { get; set; }
         public AuditoriaDto Auditoria { get; set; }
         public IEnumerable<QuestaoDto> Questoes { get; set; }
         public IEnumerable<PlanoAEEVersaoDto> Versoes { get; set; }

@@ -25,6 +25,7 @@ const SecaoPlanoCollapse = props => {
                   'DD/MM/YYYY'
                 )})`
           }
+          show
           indice="secao-informacoes-plano--collapse-indice"
           alt="secao-informacoes-plano--alt"
         >
