@@ -27,8 +27,12 @@ namespace SME.SGP.Aplicacao
                 DataNascimento = alunoPorTurmaResposta.DataNascimento,
                 DataSituacao = alunoPorTurmaResposta.DataSituacao,
                 CodigoAluno = alunoPorTurmaResposta.CodigoAluno,
-                Situacao = alunoPorTurmaResposta.SituacaoMatricula,                
-                TurmaEscola = await OberterNomeTurmaFormatado(alunoPorTurmaResposta.CodigoTurma.ToString())
+                Situacao = alunoPorTurmaResposta.SituacaoMatricula,
+                TurmaEscola = await OberterNomeTurmaFormatado(alunoPorTurmaResposta.CodigoTurma.ToString()),
+                NomeResponsavel = alunoPorTurmaResposta.NomeResponsavel,
+                TipoResponsavel = alunoPorTurmaResposta.TipoResponsavel,
+                CelularResponsavel = alunoPorTurmaResposta.CelularResponsavel,
+                DataAtualizacaoContato = alunoPorTurmaResposta.DataAtualizacaoContato
             };
 
             return alunoReduzido;
