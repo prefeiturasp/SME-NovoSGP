@@ -219,8 +219,7 @@ namespace SME.SGP.Dados.Repositorios
                         where
 	                        turma_id = @turmaCodigo";
 
-            if (contexto.State == ConnectionState.Closed)
-                contexto.AbrirConexao();
+            contexto.AbrirConexao();
 
             return (await contexto.QueryAsync<Turma, Ue, Dre, Turma>(query, (turma, ue, dre) =>
              {
