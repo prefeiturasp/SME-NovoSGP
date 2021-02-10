@@ -47,6 +47,53 @@ const DiasHorariosTabela = props => {
     return <span> {dataFormatada}</span>;
   };
 
+  const acoes = {
+    title: 'Ação',
+    dataIndex: 'acaoRemover',
+    render: (texto, linha) => {
+      return (
+        <Tooltip title="Excluir">
+          <span>
+            <Button
+              id="btn-excluir"
+              icon="trash-alt"
+              iconType="far"
+              color={Colors.Azul}
+              border
+              className="btn-excluir-atendimento-clinico"
+              disabled={desabilitado}
+              onClick={async () => {
+                if (!desabilitado) {
+                  const confirmado = await confirmar(
+                    'Excluir',
+                    '',
+                    'Você tem certeza que deseja excluir este registro?'
+                  );
+
+                  if (confirmado) {
+                    const dadosAtuais = form?.values?.[questaoAtual.id]?.length
+                      ? form?.values?.[questaoAtual.id]
+                      : [];
+
+                    const indice = dadosAtuais.findIndex(
+                      item => item.id === linha.id
+                    );
+                    if (indice !== -1) {
+                      dadosAtuais.splice(indice, 1);
+                      form.setFieldValue(questaoAtual.id, dadosAtuais);
+                    }
+                  }
+                }
+              }}
+              height="30px"
+              width="30px"
+            />
+          </span>
+        </Tooltip>
+      );
+    },
+  };
+
   const colunas = [
     {
       title: 'Dia da Semana',
@@ -62,54 +109,11 @@ const DiasHorariosTabela = props => {
       dataIndex: 'horarioTermino',
       render: data => formatarCampoTabela(data),
     },
-    {
-      title: 'Ação',
-      dataIndex: 'acaoRemover',
-      render: (texto, linha) => {
-        return (
-          <Tooltip title="Excluir">
-            <span>
-              <Button
-                id="btn-excluir"
-                icon="trash-alt"
-                iconType="far"
-                color={Colors.Azul}
-                border
-                className="btn-excluir-atendimento-clinico"
-                disabled={desabilitado}
-                onClick={async () => {
-                  if (!desabilitado) {
-                    const confirmado = await confirmar(
-                      'Excluir',
-                      '',
-                      'Você tem certeza que deseja excluir este registro?'
-                    );
-
-                    if (confirmado) {
-                      const dadosAtuais = form?.values?.[questaoAtual.id]
-                        ?.length
-                        ? form?.values?.[questaoAtual.id]
-                        : [];
-
-                      const indice = dadosAtuais.findIndex(
-                        item => item.id === linha.id
-                      );
-                      if (indice !== -1) {
-                        dadosAtuais.splice(indice, 1);
-                        form.setFieldValue(questaoAtual.id, dadosAtuais);
-                      }
-                    }
-                  }
-                }}
-                height="30px"
-                width="30px"
-              />
-            </span>
-          </Tooltip>
-        );
-      },
-    },
   ];
+
+  if (!desabilitado) {
+    colunas.push(acoes);
+  }
 
   const Erro = styled.span`
     color: ${Base.Vermelho};
@@ -153,16 +157,20 @@ const DiasHorariosTabela = props => {
         />
       </div>
       {form ? obterErros() : ''}
-      <Button
-        id="btn-novo-dia-horario"
-        label="Novo horário"
-        icon="plus"
-        color={Colors.Azul}
-        border
-        className="mr-3 mt-2"
-        onClick={onClickNovoDiaHorario}
-        disabled={desabilitado}
-      />
+      {!desabilitado ? (
+        <Button
+          id="btn-novo-dia-horario"
+          label="Novo horário"
+          icon="plus"
+          color={Colors.Azul}
+          border
+          className="mr-3 mt-2"
+          onClick={onClickNovoDiaHorario}
+          disabled={desabilitado}
+        />
+      ) : (
+        ''
+      )}
     </>
   );
 };

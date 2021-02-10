@@ -29,6 +29,10 @@ class ServicoPlanoAEE {
     return api.get(`${urlPadrao}/${planoId}`);
   };
 
+  obterVersaoPlanoPorId = versaoPlanoId => {
+    return api.get(`${urlPadrao}/versao/${versaoPlanoId}`);
+  };
+
   obterPlanoPorCodigoEstudante = codigoEstudante => {
     return api.get(`${urlPadrao}/estudante/${codigoEstudante}`);
   };
@@ -49,10 +53,15 @@ class ServicoPlanoAEE {
     const { dispatch } = store;
 
     const state = store.getState();
-    const { questionarioDinamico, collapseLocalizarEstudante } = state;
+    const {
+      questionarioDinamico,
+      collapseLocalizarEstudante,
+      planoAEE,
+    } = state;
     const { formsQuestionarioDinamico } = questionarioDinamico;
 
     const { dadosCollapseLocalizarEstudante } = collapseLocalizarEstudante;
+    const { planoAEEDados } = planoAEE;
 
     let contadorFormsValidos = 0;
 
@@ -196,7 +205,7 @@ class ServicoPlanoAEE {
 
         questoesSalvar = questoesSalvar.filter(q => q !== null);
         const valoresParaSalvar = {
-          id: 0,
+          id: planoAEEDados?.id ? planoAEEDados?.id : 0,
           turmaId: dadosCollapseLocalizarEstudante.turmaId,
           alunoCodigo: dadosCollapseLocalizarEstudante.codigoAluno,
           situacao: situacaoPlanoAEE.EmAndamento,

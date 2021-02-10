@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import * as moment from 'moment';
 import { useSelector } from 'react-redux';
 import CardCollapse from '~/componentes/cardCollapse';
 import SecaoVersaoPlanoCollapse from '../SecaoVersaoPlano/secaoVersaoPlanoCollapse';
@@ -12,10 +13,18 @@ const SecaoPlanoCollapse = props => {
 
   return (
     <>
-      {planoAEEDados?.questoes.length ? (
+      {planoAEEDados?.questoes?.length ? (
         <CardCollapse
           key="secao-informacoes-plano-collapse-key"
-          titulo="Informações do Plano"
+          titulo={
+            planoAEEDados?.versoes === null
+              ? 'Informações do Plano'
+              : `Informações do Plano - v${
+                  planoAEEDados?.versoes?.[0]?.numero
+                } (${moment(planoAEEDados?.versoes?.[0]?.criadoEm).format(
+                  'DD/MM/YYYY'
+                )})`
+          }
           indice="secao-informacoes-plano--collapse-indice"
           alt="secao-informacoes-plano--alt"
         >
@@ -28,8 +37,12 @@ const SecaoPlanoCollapse = props => {
       ) : (
         ''
       )}
-      {planoAEEDados?.versoes ? (
-        <SecaoVersaoPlanoCollapse versoes={planoAEEDados?.versoes} />
+      {planoAEEDados?.versoes?.length > 1 ? (
+        <SecaoVersaoPlanoCollapse
+          questionarioId={planoAEEDados?.questionarioId}
+          planoId={planoAEEDados?.id}
+          versoes={planoAEEDados?.versoes}
+        />
       ) : (
         ''
       )}

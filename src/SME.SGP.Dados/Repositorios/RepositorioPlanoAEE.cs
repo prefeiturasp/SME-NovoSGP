@@ -4,6 +4,7 @@ using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -115,6 +116,21 @@ namespace SME.SGP.Dados.Repositorios
                                         limit 1";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<PlanoAEEResumoDto>(query, new { codigoEstudante });
+        }
+
+        public async Task<PlanoAEE> ObterPlanoComTurmaPorId(long planoId)
+        {
+            var query = @" select pa.*, t.*
+                            from plano_aee pa
+                           inner join turma t on t.id = pa.turma_id
+                           where pa.id = @planoId";
+
+            return (await database.Conexao.QueryAsync<PlanoAEE, Turma, PlanoAEE>(query,
+                (planoAEEDto, turma) =>
+                {
+                    planoAEEDto.Turma = turma;
+                    return planoAEEDto;
+                }, new { planoId })).FirstOrDefault();
         }
     }
 }
