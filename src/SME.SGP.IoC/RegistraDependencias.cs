@@ -673,6 +673,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IEnviarParaAnaliseEncaminhamentoAEEUseCase, EnviarParaAnaliseEncaminhamentoAEEUseCase>();
             services.TryAddScoped<IVerificaPodeCadstrarEncaminhamentoAEEParaEstudanteUseCase, VerificaPodeCadstrarEncaminhamentoAEEParaEstudanteUseCase>();
             services.TryAddScoped<IConcluirEncaminhamentoAEEUseCase, ConcluirEncaminhamentoAEEUseCase>();
+            services.TryAddScoped<IObterResponsaveisEncaminhamentosAEE, ObterResponsaveisEncaminhamentosAEE>();
 
             services.TryAddScoped<IObterAlunoPorCodigoEolEAnoLetivoUseCase, ObterAlunoPorCodigoEolEAnoLetivoUseCase>();
             services.TryAddScoped<IRegistrarEncaminhamentoAEEUseCase, RegistrarEncaminhamentoAEEUseCase>();
