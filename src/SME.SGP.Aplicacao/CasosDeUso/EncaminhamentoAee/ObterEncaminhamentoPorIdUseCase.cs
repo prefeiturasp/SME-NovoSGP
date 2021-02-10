@@ -4,6 +4,7 @@ using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -85,10 +86,8 @@ namespace SME.SGP.Aplicacao
 
         private async Task<bool> UsuarioTemFuncaoCEFAINaDRE(Usuario usuarioLogado, string codigoDre)
         {
-            var funcaoAtividadeCEFAI = 29;
-
-            var funcionarios = await mediator.Send(new PesquisaFuncionariosPorDreUeQuery(usuarioLogado.CodigoRf, string.Empty, codigoDre, usuario: usuarioLogado));
-            return funcionarios.Any(c => c.CodigoFuncaoAtividade == funcaoAtividadeCEFAI);
+            var funcionarios = await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(codigoDre, new List<Guid>() { Perfis.PERFIL_CEFAI }));
+            return funcionarios.Any(c => c == usuarioLogado.CodigoRf);
         }
 
         private async Task<bool> VerificaPodeEditar(EncaminhamentoAEE encaminhamento, Usuario usuarioLogado)
