@@ -56,7 +56,7 @@ namespace SME.SGP.Dados.Repositorios
             var offSet = "offset @qtdeRegistrosIgnorados rows fetch next @qtdeRegistros rows only";
 
             query = $@"select db.planejamento
-                            , regexp_replace(db.planejamento, E'<[^>]+>', ' ', 'gi') as PlanejamentoSimples
+                            , regexp_replace(db.planejamento, E'<[^>]+>', ' [arquivo indisponível nesta visualização]', 'gi') as PlanejamentoSimples
                             , a.aula_cj as AulaCj
                             , a.data_aula as Data 
                             {condicao} 
@@ -133,7 +133,10 @@ namespace SME.SGP.Dados.Repositorios
             var totalRegistrosDaQuery = await database.Conexao.QueryFirstOrDefaultAsync<int>(query,
                 new { devolutivaId });
 
-            query = $@"select db.planejamento, a.aula_cj as AulaCj, a.data_aula as Data
+            query = $@"select db.planejamento
+                            , regexp_replace(db.planejamento, E'<[^>]+>', ' [arquivo indisponível nesta visualização]', 'gi') as PlanejamentoSimples
+                            , a.aula_cj as AulaCj
+                            , a.data_aula as Data
                         from diario_bordo db
                        inner join aula a on a.id = db.aula_id
                        where db.devolutiva_id = @devolutivaId
