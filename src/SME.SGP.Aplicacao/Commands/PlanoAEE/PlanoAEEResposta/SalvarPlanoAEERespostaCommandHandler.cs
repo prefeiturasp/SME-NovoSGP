@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Newtonsoft.Json;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
@@ -40,11 +41,9 @@ namespace SME.SGP.Aplicacao.Commands
             };
 
             if (EnumExtension.EhUmDosValores(request.TipoQuestao, new Enum[] { TipoQuestao.Periodo }))
-            { 
-                // TODO: Validar se vigência maior que 3 meses
+            {
+                ConveterRespostaPeriodoEmDatas(request, resposta);
             }
-
-            // TODO: O intervalo de datas deve estar dentro do ano letivo da turma regular do estudante.
 
             if (!String.IsNullOrEmpty(request.Resposta) && EnumExtension.EhUmDosValores(request.TipoQuestao, new Enum[] { TipoQuestao.Radio, TipoQuestao.Combo, TipoQuestao.Checkbox, TipoQuestao.ComboMultiplaEscolha }))
             {
@@ -63,6 +62,14 @@ namespace SME.SGP.Aplicacao.Commands
             }
 
             return resposta;
+        }
+
+        private static void ConveterRespostaPeriodoEmDatas(SalvarPlanoAEERespostaCommand request, PlanoAEEResposta resposta)
+        {
+            var respostaRetorno = request.Resposta.Replace("\\", "").Replace("\"", "").Replace("[", "").Replace("]", "");
+            string[] periodos = respostaRetorno.ToString().Split(',');
+            resposta.PeriodoInicio = DateTime.Parse(periodos[0]).Date;
+            resposta.PeriodoFim = DateTime.Parse(periodos[1]).Date;
         }
     }
 }

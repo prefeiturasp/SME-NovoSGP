@@ -2,7 +2,6 @@
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.CasosDeUso
@@ -26,15 +25,12 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             if (aluno == null)
                 throw new NegocioException("O aluno informado não foi encontrado");
 
-
             var planoAeePersistidoDto = await mediator.Send(new SalvarPlanoAeeCommand(planoAeeDto.Id.GetValueOrDefault(), planoAeeDto.TurmaId, aluno.NomeAluno, aluno.CodigoAluno, aluno.NumeroAlunoChamada));
 
             // Questoes
             foreach (var questao in planoAeeDto.Questoes)
             {
-                // TODO: retornar o ID questão
                 var planoAEEQuestaoId = await mediator.Send(new SalvarPlanoAEEQuestaoCommand(planoAeePersistidoDto.PlanoId, questao.QuestaoId, planoAeePersistidoDto.PlanoVersaoId));
-
 
                 await mediator.Send(new SalvarPlanoAEERespostaCommand(planoAEEQuestaoId, questao.Resposta, questao.TipoQuestao));
             }
