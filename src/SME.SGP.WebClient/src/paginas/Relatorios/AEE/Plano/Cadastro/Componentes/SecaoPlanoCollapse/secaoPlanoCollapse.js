@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import CardCollapse from '~/componentes/cardCollapse';
 import SecaoVersaoPlanoCollapse from '../SecaoVersaoPlano/secaoVersaoPlanoCollapse';
 import MontarDadosPorSecao from './DadosSecaoPlano/montarDadosPorSecao';
+import ModalErrosPlano from '../ModalErrosPlano/modalErrosPlano';
 
 const SecaoPlanoCollapse = props => {
   const { match } = props;
@@ -13,6 +14,7 @@ const SecaoPlanoCollapse = props => {
 
   return (
     <>
+      <ModalErrosPlano />
       {planoAEEDados?.questoes?.length ? (
         <CardCollapse
           key="secao-informacoes-plano-collapse-key"
@@ -26,11 +28,11 @@ const SecaoPlanoCollapse = props => {
                 )})`
           }
           show
-          indice="secao-informacoes-plano--collapse-indice"
-          alt="secao-informacoes-plano--alt"
+          indice="secao-informacoes-plano-collapse-indice"
+          alt="secao-informacoes-plano-alt"
         >
           <MontarDadosPorSecao
-            dados={{ id: 0, questionarioId: planoAEEDados?.questionarioId }}
+            dados={{ questionarioId: 0 }}
             dadosQuestionarioAtual={planoAEEDados?.questoes}
             match={match}
           />

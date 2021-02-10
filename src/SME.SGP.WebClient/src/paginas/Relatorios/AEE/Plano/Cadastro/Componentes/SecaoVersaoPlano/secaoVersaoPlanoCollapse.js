@@ -5,7 +5,7 @@ import CardCollapse from '~/componentes/cardCollapse';
 import MontarDadosPorSecaoVersao from './montarDadosPorSecaoVersao';
 
 const SecaoVersaoPlanoCollapse = props => {
-  const { versoes, questionarioId, planoId } = props;
+  const { versoes } = props;
   const [versoesMapeado, setVersoesMapeado] = useState([]);
 
   useEffect(() => {
@@ -19,7 +19,6 @@ const SecaoVersaoPlanoCollapse = props => {
         <strong>Planos anteriores para consulta</strong>
       </div>
       {versoesMapeado.map(plano => (
-        // colocar em um outro arquivo
         <CardCollapse
           key={`secao-informacoes-plano-${plano.id}-collapse-key`}
           titulo={`Informações do Plano - v${plano.numero} (${moment(
@@ -30,8 +29,7 @@ const SecaoVersaoPlanoCollapse = props => {
         >
           <MontarDadosPorSecaoVersao
             dados={{
-              id: planoId,
-              questionarioId,
+              questionarioId: plano.id,
             }}
             versao={plano.id}
           />
@@ -43,14 +41,10 @@ const SecaoVersaoPlanoCollapse = props => {
 
 SecaoVersaoPlanoCollapse.propTypes = {
   versoes: PropTypes.oneOfType([PropTypes.object]),
-  questionarioId: PropTypes.oneOfType([PropTypes.number]),
-  planoId: PropTypes.oneOfType([PropTypes.number]),
 };
 
 SecaoVersaoPlanoCollapse.defaultProps = {
   versoes: [],
-  questionarioId: 0,
-  planoId: 0,
 };
 
 export default SecaoVersaoPlanoCollapse;

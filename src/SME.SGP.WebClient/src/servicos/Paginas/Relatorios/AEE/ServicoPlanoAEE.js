@@ -1,11 +1,14 @@
 import * as moment from 'moment';
-import api from '~/servicos/api';
-import { store } from '~/redux';
-import situacaoPlanoAEE from '~/dtos/situacaoPlanoAEE';
 import QuestionarioDinamicoFuncoes from '~/componentes-sgp/QuestionarioDinamico/Funcoes/QuestionarioDinamicoFuncoes';
+import situacaoPlanoAEE from '~/dtos/situacaoPlanoAEE';
 import tipoQuestao from '~/dtos/tipoQuestao';
-import { setExibirLoaderPlanoAEE } from '~/redux/modulos/planoAEE/actions';
+import { store } from '~/redux';
+import {
+  setExibirLoaderPlanoAEE,
+  setExibirModalErrosPlano,
+} from '~/redux/modulos/planoAEE/actions';
 import { erros } from '~/servicos/alertas';
+import api from '~/servicos/api';
 
 const urlPadrao = 'v1/plano-aee';
 
@@ -86,21 +89,22 @@ class ServicoPlanoAEE {
       });
     };
 
-    if (formsQuestionarioDinamico?.length) {
+    const formPlanoAEE = [formsQuestionarioDinamico?.[0]];
+
+    if (formPlanoAEE?.length) {
       let todosOsFormsEstaoValidos = false;
 
-      const promises = formsQuestionarioDinamico.map(async item =>
+      const promises = formPlanoAEE.map(async item =>
         validaAntesDoSubmit(item.form())
       );
 
       await Promise.all(promises);
 
       todosOsFormsEstaoValidos =
-        contadorFormsValidos ===
-        formsQuestionarioDinamico?.filter(a => a)?.length;
+        contadorFormsValidos === formPlanoAEE?.filter(a => a)?.length;
 
       if (todosOsFormsEstaoValidos) {
-        let questoesSalvar = formsQuestionarioDinamico.map(item => {
+        let questoesSalvar = formPlanoAEE.map(item => {
           const form = item.form();
           const campos = form.state.values;
           const questoes = [];
@@ -221,10 +225,9 @@ class ServicoPlanoAEE {
         if (resposta?.status === 200) {
           return true;
         }
+      } else {
+        dispatch(setExibirModalErrosPlano(true));
       }
-      // } else {
-      //   // dispatch(setExibirModalErrosEncaminhamento(true));
-      // }
     }
     return false;
   };

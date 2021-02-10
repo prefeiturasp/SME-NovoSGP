@@ -3,11 +3,6 @@ export const setPlanoAEELimparDados = payload => ({
   payload,
 });
 
-export const setDadosIniciaisPlanoAEE = payload => ({
-  type: '@planoAEE/setDadosIniciaisPlanoAEE',
-  payload,
-});
-
 export const setPlanoAEEDados = payload => ({
   type: '@planoAEE/setPlanoAEEDados',
   payload,
@@ -35,5 +30,10 @@ export const setPlanoAEEDadosSecoesPorEtapa = payload => ({
 
 export const setPlanoAEEEmEdicao = payload => ({
   type: '@planoAEE/setPlanoAEEEmEdicao',
+  payload,
+});
+
+export const setExibirModalErrosPlano = payload => ({
+  type: '@planoAEE/setExibirModalErrosPlano',
   payload,
 });
