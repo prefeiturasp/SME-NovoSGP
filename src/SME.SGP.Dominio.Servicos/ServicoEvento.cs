@@ -135,8 +135,11 @@ namespace SME.SGP.Dominio.Servicos
             }
 
             // Verifica existencia de pendencia de calendario com dias letivos insuficientes
-            await VerificaPendenciaDiasLetivosInsuficientes(ehAlteracao, enviarParaWorkflow, evento, usuario);
-            await VerificaPendenciaParametroEvento(evento, usuario);
+            if (evento.EhEventoDRE() && evento.EhEventoUE())
+                await VerificaPendenciaDiasLetivosInsuficientes(ehAlteracao, enviarParaWorkflow, evento, usuario);
+
+            if (evento.EhEventoUE())
+                await VerificaPendenciaParametroEvento(evento, usuario);
 
             if (ehAlteracao)
             {
@@ -154,7 +157,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task VerificaPendenciaParametroEvento(Evento evento, Usuario usuario)
         {
-            if ( evento.GeraPendenciaParametroEvento())
+            if (evento.GeraPendenciaParametroEvento())
                 await mediator.Send(new IncluirFilaVerificaExclusaoPendenciasParametroEventoCommand(evento.TipoCalendarioId, evento.UeId, (TipoEvento)evento.TipoEventoId, usuario));
         }
 
