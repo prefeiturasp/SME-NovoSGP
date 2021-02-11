@@ -79,7 +79,12 @@ const LocalizadorEstudante = props => {
       params.codigoTurma = codigoTurma;
     }
     setExibirLoader(true);
-    const retorno = await service.buscarPorNome(params).catch(() => {
+    const retorno = await service.buscarPorNome(params).catch(e => {
+      if (e?.response?.status === 601) {
+        erro('Estudante/Criança não encontrado no EOL');
+      } else {
+        erros(e);
+      }
       setExibirLoader(false);
       limparDados();
     });
@@ -132,7 +137,7 @@ const LocalizadorEstudante = props => {
     const retorno = await service.buscarPorCodigo(params).catch(e => {
       setExibirLoader(false);
       if (e?.response?.status === 601) {
-        erro('Estudante não encontrado no EOL');
+        erro('Estudante/Criança não encontrado no EOL');
       } else {
         erros(e);
       }
