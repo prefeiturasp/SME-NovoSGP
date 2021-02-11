@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
         private readonly IMediator mediator;
         private readonly IRepositorioQuestaoEncaminhamentoAEE repositorioQuestaoEncaminhamento;
 
-        public ObterQuestionarioEncaminhamentoAeeQueryHandler(IMediator mediator, IRepositorioQuestaoEncaminhamentoAEE repositorioQuestaoEncaminhamento)
+        public ObterQuestionarioEncaminhamentoAeeQueryHandler(IMediator mediator, IRepositorioQuestaoEncaminhamentoAEE repositorioQuestaoEncaminhamento, IRepositorioQuestionario repositorioQuestionario)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioQuestaoEncaminhamento = repositorioQuestaoEncaminhamento ?? throw new ArgumentNullException(nameof(repositorioQuestaoEncaminhamento));
@@ -36,18 +36,25 @@ namespace SME.SGP.Aplicacao
                 await repositorioQuestaoEncaminhamento.ObterRespostasEncaminhamento(request.EncaminhamentoId.Value) :
                 Enumerable.Empty<RespostaQuestaoEncaminhamentoAEEDto>();
 
-            var questoes = dadosQuestionario
-                .Where(dq => !questoesComplementares.Contains(dq.Id))
-                .Select(dq => ObterQuestao(dq.Id, dadosQuestionario, respostasEncaminhamento))
-                .OrderBy(q => q.Ordem)
-                .ToArray();
+            var questoes = await mediator.Send(new ObterQuestoesPorQuestionarioPorIdQuery(request.QuestionarioId , questaoId =>
+                respostasEncaminhamento.Where(c => c.QuestaoId == questaoId)
+                .Select(respostaEncaminhamento =>
+                {
+                    return new RespostaQuestaoDto()
+                    {
+                        Id = respostaEncaminhamento.Id,
+                        OpcaoRespostaId = respostaEncaminhamento.RespostaId,
+                        Texto = respostaEncaminhamento.Texto,
+                        Arquivo = respostaEncaminhamento.Arquivo
+                    };
+                })));
 
             await AplicarRegrasEncaminhamento(request.QuestionarioId, questoes, request.CodigoAluno, request.CodigoTurma);
 
             return questoes;
         }
 
-        private async Task AplicarRegrasEncaminhamento(long questionarioId, QuestaoDto[] questoes, string codigoAluno, string codigoTurma)
+        private async Task AplicarRegrasEncaminhamento(long questionarioId, IEnumerable<QuestaoDto> questoes, string codigoAluno, string codigoTurma)
         {
             if (questionarioId == 1 && await ValidarFrequenciaGlobalAlunoInsuficiente(codigoAluno, codigoTurma))
             {
@@ -56,7 +63,7 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private QuestaoDto ObterQuestaoJustificativa(QuestaoDto[] questoes)
+        private QuestaoDto ObterQuestaoJustificativa(IEnumerable<QuestaoDto> questoes)
             => questoes.FirstOrDefault(c => c.Id == 2);
 
         private async Task<bool> ValidarFrequenciaGlobalAlunoInsuficiente(string codigoAluno, string codigoTurma)

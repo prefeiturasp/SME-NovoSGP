@@ -225,6 +225,7 @@ const CollapseLocalizarEstudanteDados = props => {
       };
 
       dispatch(setDadosCollapseLocalizarEstudante(params));
+      clickProximoPasso(true);
     }
   };
 

@@ -1,4 +1,5 @@
 import * as Yup from 'yup';
+import tipoQuestao from '~/dtos/tipoQuestao';
 
 class QuestionarioDinamicoValidacoes {
   obterValidationSchema = (dadosQuestionarioAtual, form) => {
@@ -27,9 +28,19 @@ class QuestionarioDinamicoValidacoes {
           questaoAtual.obrigatorio &&
           arrayCampos.find(questaoId => questaoId === String(questaoAtual.id))
         ) {
-          camposComValidacao[questaoAtual.id] = Yup.string()
-            .nullable()
-            .required('Campo obrigatório');
+          if (questaoAtual.tipoQuestao === tipoQuestao.Periodo) {
+            // TODO Fazer validação para campos datas!
+            //   camposComValidacao[
+            //     questaoAtual.id
+            //   ].periodoInicio = momentSchema.required('Campo obrigatório');
+            //   camposComValidacao[
+            //     questaoAtual.id
+            //   ].periodoFim = momentSchema.required('Campo obrigatório');
+          } else {
+            camposComValidacao[questaoAtual.id] = Yup.string()
+              .nullable()
+              .required('Campo obrigatório');
+          }
         }
       };
 

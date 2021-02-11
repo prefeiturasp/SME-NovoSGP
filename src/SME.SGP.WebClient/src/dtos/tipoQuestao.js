@@ -8,6 +8,8 @@ const tipoQuestao = {
   InformacoesEscolares: 7,
   AtendimentoClinico: 8,
   ComboMultiplaEscolha: 9,
+  Periodo: 10,
+  FrequenciaEstudanteAEE: 11,
 };
 
 export default tipoQuestao;
