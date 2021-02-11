@@ -8,17 +8,15 @@ const AuditoriaEncaminhamento = () => {
   );
 
   return dadosEncaminhamento?.auditoria?.id > 0 ? (
-    <div className="col-md-12 ml-3">
-      <Auditoria
-        className="mt-2"
-        alteradoEm={dadosEncaminhamento?.auditoria.alteradoEm}
-        alteradoPor={dadosEncaminhamento?.auditoria.alteradoPor}
-        alteradoRf={dadosEncaminhamento?.auditoria.alteradoRf}
-        criadoEm={dadosEncaminhamento?.auditoria.criadoEm}
-        criadoPor={dadosEncaminhamento?.auditoria.criadoPor}
-        criadoRf={dadosEncaminhamento?.auditoria.criadoRf}
-      />
-    </div>
+    <Auditoria
+      className="mt-2"
+      alteradoEm={dadosEncaminhamento?.auditoria.alteradoEm}
+      alteradoPor={dadosEncaminhamento?.auditoria.alteradoPor}
+      alteradoRf={dadosEncaminhamento?.auditoria.alteradoRf}
+      criadoEm={dadosEncaminhamento?.auditoria.criadoEm}
+      criadoPor={dadosEncaminhamento?.auditoria.criadoPor}
+      criadoRf={dadosEncaminhamento?.auditoria.criadoRf}
+    />
   ) : (
     ''
   );

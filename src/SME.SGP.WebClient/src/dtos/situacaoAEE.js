@@ -14,6 +14,10 @@ const situacaoAEE = {
   Encerrado: 5,
   /** Aguardando atribuição de responsável */
   AtribuicaoResponsavel: 6,
+  /** Deferido */
+  Deferido: 7,
+  /** Indeferido */
+  Indeferido: 8,
 };
 
 export default situacaoAEE;

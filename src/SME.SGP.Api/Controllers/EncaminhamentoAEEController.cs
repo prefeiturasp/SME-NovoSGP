@@ -49,7 +49,6 @@ namespace SME.SGP.Api.Controllers
 
         [HttpGet]
         [Route("situacoes")]
-        [ProducesResponseType(typeof(IEnumerable<AlunoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.AEE_C, Policy = "Bearer")]
@@ -106,6 +105,15 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.AEE_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterEncaminhamentos([FromQuery] FiltroPesquisaEncaminhamentosAEEDto filtro, [FromServices] IObterEncaminhamentosAEEUseCase useCase)
+        {
+            return Ok(await useCase.Executar(filtro));
+        }
+
+        [HttpGet("responsaveis")]
+        [ProducesResponseType(typeof(IEnumerable<UsuarioEolRetornoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.AEE_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterResponsaveis([FromQuery] FiltroPesquisaEncaminhamentosAEEDto filtro, [FromServices] IObterResponsaveisEncaminhamentosAEE useCase)
         {
             return Ok(await useCase.Executar(filtro));
         }

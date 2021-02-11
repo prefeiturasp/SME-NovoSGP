@@ -119,6 +119,7 @@ const EncaminhamentoAEELista = () => {
         alunoCodigo: aluno,
         situacao: situa,
         responsavelRf: responsa,
+        anoLetivo
       };
       setFiltro({ ...params });
     }
@@ -185,38 +186,46 @@ const EncaminhamentoAEELista = () => {
 
   const obterResponsaveis = useCallback(async () => {
     setCarregandoResponsavel(true);
-    const respostaSemUE = await ServicoEncaminhamentoAEE.obterResponsaveis(
-      usuario.rf,
-      dreId
+
+    const dreAtual = listaDres.find(dre => dre.valor === dreId);
+    const ueAtual = listaUes.find(ue => ue.valor === ueId);
+    const turmaAtual = listaTurmas?.find(turma => turma.codigo === turmaId);
+
+    const resposta = await ServicoEncaminhamentoAEE.obterResponsaveis(
+      dreAtual?.id,
+      ueAtual?.id,
+      turmaAtual?.id,
+      alunoLocalizadorSelecionado,
+      situacao,
+      anoLetivo
     )
       .catch(e => erros(e))
       .finally(() => setCarregandoResponsavel(false));
 
-    let respostas = [];
-    if (!respostaSemUE?.data?.items?.length) {
-      const respostaComUE = await ServicoEncaminhamentoAEE.obterResponsaveis(
-        usuario.rf,
-        dreId,
-        ueId
-      )
-        .catch(e => erros(e))
-        .finally(() => setCarregandoResponsavel(false));
-
-      if (respostaComUE?.data?.items?.length) {
-        respostas = respostaComUE.data.items;
-      }
+    if (resposta?.data?.length) {
+      const lista = resposta.data.map(item => {
+        return { ...item, codigoRf: String(item.codigoRf) };
+      });
+      setListaResponsavel(lista);
+    } else {
+      setListaResponsavel([]);
     }
-    if (respostaSemUE?.data?.items?.length) {
-      respostas = respostaSemUE.data.items;
-    }
-    setListaResponsavel(respostas);
-  }, [dreId, usuario.rf, ueId]);
+  }, [
+    dreId,
+    ueId,
+    turmaId,
+    alunoLocalizadorSelecionado,
+    situacao,
+    listaDres,
+    listaUes,
+    listaTurmas,
+  ]);
 
   useEffect(() => {
-    if (dreId && ueId) {
+    if (ueId && listaUes.length) {
       obterResponsaveis();
     }
-  }, [dreId, obterResponsaveis, ueId]);
+  }, [obterResponsaveis, ueId, listaUes]);
 
   const [carregandoUes, setCarregandoUes] = useState(false);
 
@@ -267,15 +276,6 @@ const EncaminhamentoAEELista = () => {
 
     setListaTurmas([]);
     setTurmaId();
-
-    filtrar(
-      dre,
-      ueId,
-      turmaId,
-      alunoLocalizadorSelecionado,
-      situacao,
-      responsavel
-    );
   };
 
   const obterDres = useCallback(async () => {
@@ -436,7 +436,7 @@ const EncaminhamentoAEELista = () => {
   };
 
   useEffect(() => {
-    if (dreId && listaDres.length && listaUes.length) {
+    if (dreId && listaDres.length && ueId && listaUes.length) {
       filtrar(
         dreId,
         ueId,
@@ -587,7 +587,11 @@ const EncaminhamentoAEELista = () => {
                 />
               </Loader>
             </div>
-            {anoLetivo && dreId && listaDres?.length ? (
+            {anoLetivo &&
+            dreId &&
+            listaDres?.length &&
+            ueId &&
+            listaUes?.length ? (
               <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
                 <ListaPaginada
                   url="v1/encaminhamento-aee"
@@ -595,7 +599,15 @@ const EncaminhamentoAEELista = () => {
                   colunas={colunas}
                   filtro={filtro}
                   filtroEhValido={
-                    !!(anoLetivo && dreId && filtro.dreId && listaDres?.length)
+                    !!(
+                      anoLetivo &&
+                      dreId &&
+                      filtro.dreId &&
+                      listaDres?.length &&
+                      ueId &&
+                      filtro.ueId &&
+                      listaUes?.length
+                    )
                   }
                   temPaginacao
                   onClick={onClickEditar}

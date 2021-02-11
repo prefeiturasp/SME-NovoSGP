@@ -3,7 +3,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import ObjectCardEstudante from '~/componentes-sgp/ObjectCardEstudante/objectCardEstudante';
 import CardCollapse from '~/componentes/cardCollapse';
-import AuditoriaEncaminhamento from '../../AuditoriaEncaminhamento/auditoriaEncaminhamento';
+import situacaoAEE from '~/dtos/situacaoAEE';
 import ModalEncerramentoEncaminhamentoAEE from '../../ModalEncerramentoEncaminhamentoAEE/modalEncerramentoEncaminhamentoAEE';
 import ModalErrosEncaminhamento from '../../ModalErrosEncaminhamento/modalErrosEncaminhamento';
 import MotivoEncerramento from '../../MotivoEncerramento/MotivoEncerramento';
@@ -16,13 +16,22 @@ const SecaoEncaminhamentoCollapse = props => {
     store => store.collapseLocalizarEstudante.dadosCollapseLocalizarEstudante
   );
 
+  const dadosEncaminhamento = useSelector(
+    store => store.encaminhamentoAEE.dadosEncaminhamento
+  );
+
   return (
     <CardCollapse
       key="secao-encaminhamento-collapse-key"
       titulo="Encaminhamento"
       indice="secao-encaminhamento-collapse-indice"
       alt="secao-encaminhamento-alt"
-      show={dadosCollapseLocalizarEstudante?.codigoAluno}
+      show={
+        dadosEncaminhamento?.situacao === situacaoAEE.AtribuicaoResponsavel ||
+        dadosEncaminhamento?.situacao === situacaoAEE.Analise
+          ? false
+          : !!dadosCollapseLocalizarEstudante?.codigoAluno
+      }
     >
       {dadosCollapseLocalizarEstudante?.codigoAluno ? (
         <>
@@ -34,7 +43,6 @@ const SecaoEncaminhamentoCollapse = props => {
           />
           <MotivoEncerramento />
           <DadosSecaoEncaminhamento match={match} />
-          <AuditoriaEncaminhamento />
           <ModalErrosEncaminhamento />
           <ModalEncerramentoEncaminhamentoAEE match={match} />
         </>
