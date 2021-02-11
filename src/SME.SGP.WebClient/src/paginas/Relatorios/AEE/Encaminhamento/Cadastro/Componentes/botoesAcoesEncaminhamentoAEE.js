@@ -244,7 +244,11 @@ const BotoesAcoesEncaminhamentoAEE = props => {
         border
         className="mr-3"
         onClick={onClickExcluir}
-        disabled={!permissoesTela.podeExcluir || !match?.params?.id}
+        hidden={
+          (dadosEncaminhamento?.situacao !== situacaoAEE.Encaminhado &&
+            dadosEncaminhamento?.situacao !== situacaoAEE.Rascunho) ||
+          !(permissoesTela.podeExcluir && dadosEncaminhamento?.podeEditar)
+        }
       />
       <Button
         id="btn-salvar"
