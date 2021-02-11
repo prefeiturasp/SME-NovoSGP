@@ -11,5 +11,22 @@ namespace SME.SGP.Infra.Utilitarios
 
             return dfi.Calendar.GetWeekOfYear(data, dfi.CalendarWeekRule, dfi.FirstDayOfWeek);
         }
+
+        public static int ObterDiferencaDeMeses(DateTime dataInicial, DateTime dataFinal) 
+        {
+            int incremento = 0;
+            int meses = 0;
+            if ((dataInicial.Month + meses) > dataFinal.Month)
+            {
+                meses = (dataFinal.Month + 12) - (dataInicial.Month + incremento);
+                incremento = 1;
+            }
+            else
+            {
+                meses = (dataFinal.Month) - (dataInicial.Month + incremento);
+                incremento = 0;
+            }
+            return meses;
+        }
     }
 }
