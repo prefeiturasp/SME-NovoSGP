@@ -2,6 +2,7 @@
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,16 +17,16 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<ItineranciaDto> Executar(long id)
-        {            
-            var itinerancia = await mediator.Send(new ObterItineranciaPorIdQuery(id));            
-            
+        {
+            var itinerancia = await mediator.Send(new ObterItineranciaPorIdQuery(id));
+
 
             if (itinerancia == null)
-                throw new NegocioException($"Não foi possível localizar a itinerância de Id {id}");            
+                throw new NegocioException($"Não foi possível localizar a itinerância de Id {id}");
 
-            var CodigosAluno = itinerancia.Alunos.Select(a => a.CodigoAluno).ToArray();           
+            var CodigosAluno = itinerancia.Alunos.Select(a => a.CodigoAluno).ToArray();
 
-            var alunosEol = await mediator.Send(new ObterAlunosEolPorCodigosEAnoQuery(CodigosAluno.Select(long.Parse).ToArray() , DateTime.Now.Year));
+            var alunosEol = await mediator.Send(new ObterAlunosEolPorCodigosEAnoQuery(CodigosAluno.Select(long.Parse).ToArray(), DateTime.Now.Year));
 
             var turmas = await mediator.Send(new ObterTurmasPorCodigosQuery(alunosEol.Select(al => al.CodigoTurma.ToString()).ToArray()));
 
@@ -37,113 +38,105 @@ namespace SME.SGP.Aplicacao
             {
                 DataVisita = itinerancia.DataVisita,
                 DataRetornoVerificacao = itinerancia.DataRetornoVerificacao,
-                Alunos = itinerancia.Alunos.Select(aluno => 
-                {
-                    return new ItineranciaAlunoDto
-                    {
-                        Id = aluno.Id,
-                        CodigoAluno = aluno.CodigoAluno,
-                        Nome = @$"{alunosEol
-                                       .Where(a => a.CodigoAluno == int.Parse(aluno.CodigoAluno))
-                                       .Select(a => a.NomeAluno)
-                                       .FirstOrDefault()}{OberterNomeTurmaFormatado(turmas
-                                                                                      .Where(t => t.CodigoTurma == alunosEol
-                                                                                                                    .Where(a => a.CodigoAluno == int.Parse(aluno.CodigoAluno))
-                                                                                                                    .Select(a => a.CodigoTurma.ToString())
-                                                                                                                    .FirstOrDefault())
-                                                                 .FirstOrDefault())}",
-                        Questoes = aluno.AlunosQuestoes.Select(questao => 
-                        {
-                            return new ItineranciaAlunoQuestaoDto
-                            {
-                                Id = questao.Id,
-                                QuestaoId = questao.QuestaoId,
-                                Descricao = questoesBase.ItineranciaAlunoQuestao
-                                                .Where(q => q.Id == questao.QuestaoId)
-                                                .Select(q => q.Descricao)
-                                                .FirstOrDefault(),
-                                ItineranciaAlunoId = questao.ItineranciaAlunoId,
-                                Resposta = questao.Resposta,
-                                Obrigatorio = questoesBase.ItineranciaAlunoQuestao
-                                                .Where(q => q.Id == questao.QuestaoId)
-                                                .Select(q => q.Obrigatorio)
-                                                .FirstOrDefault(),
-                            };
-                        })
-
-                    };
-                }),
-
-                ObjetivosVisita = itinerancia.ObjetivosVisita.Select(o => 
-                {
-                    return new ItineranciaObjetivoDto
-                    {
-                        Id = o.Id,
-                        ItineranciaObjetivoId = 0,
-                        Nome = itinerancia.ObjetivosBase
-                                  .Where(ob => ob.Id == o.ItineranciaObjetivosBaseId)
-                                  .Select(ob => ob.Nome)
-                                  .FirstOrDefault(),
-                        TemDescricao = itinerancia.ObjetivosBase
-                                         .Where(ob => ob.Id == o.ItineranciaObjetivosBaseId)
-                                         .Select(ob => ob.TemDescricao)
-                                         .FirstOrDefault(),
-                        PermiteVariasUes = itinerancia.ObjetivosBase
-                                              .Where(ob => ob.Id == o.ItineranciaObjetivosBaseId)
-                                              .Select(ob => ob.PermiteVariasUes)
-                                              .FirstOrDefault(),
-                        Descricao = string.IsNullOrEmpty(o.Descricao) ? "" : o.Descricao
-                    };
-                }),
-
-                Questoes = itinerancia.Questoes.Select(questao => 
-                {
-                    return new ItineranciaQuestaoDto
-                    {
-                        Id = questao.Id,
-                        QuestaoId = questao.QuestaoId,
-                        Descricao = questoesBase.ItineranciaQuestao
-                                        .Where(q => q.Id == questao.QuestaoId)
-                                        .Select(q => q.Descricao)
-                                        .FirstOrDefault(),
-                        ItineranciaId = questao.ItineranciaId,
-                        Resposta = questao.Resposta,
-                        Obrigatorio = questoesBase.ItineranciaQuestao
-                                        .Where(q => q.Id == questao.QuestaoId)
-                                        .Select(q => q.Obrigatorio)
-                                        .FirstOrDefault(),
-                    };
-                }),
-
-                Ues = ues.Select(ue =>
-                {
-                    return new ItineranciaUeDto
-                    {
-                        Id = itinerancia.Ues
-                                .Where(i => i.UeId == ue.Id)
-                                .Select(i => i.Id)
-                                .FirstOrDefault(),
-                        UeId = ue.Id,
-                        Descricao = ues
-                                     .Where(u => u.Id == ue.Id)
-                                     .Select(u => u.Nome)
-                                     .FirstOrDefault()
-                    };
-                })         
+                Alunos = MontarAlunosItinerancia(itinerancia, alunosEol, questoesBase, turmas),
+                ObjetivosVisita = MontarObjetivosItinerancia(itinerancia),
+                Questoes = MontarQuestoesItinerancia(itinerancia, questoesBase),
+                Ues = MontarUes(ues, itinerancia)
             };
 
             return itineranciaDto;
         }
 
-         private string OberterNomeTurmaFormatado(Turma turma)
+
+        private IEnumerable<ItineranciaUeDto> MontarUes(IEnumerable<Ue> ues, Itinerancia itinerancia)
+        {
+            return ues.Select(ue =>
+             {
+                 return new ItineranciaUeDto
+                 {
+                     Id = itinerancia.Ues
+                              .Where(i => i.UeId == ue.Id)
+                              .Select(i => i.Id)
+                              .FirstOrDefault(),
+                     UeId = ue.Id,
+                     Descricao = ues.FirstOrDefault(u => u.Id == ue.Id).Nome
+                 };
+             });
+        }
+
+        private IEnumerable<ItineranciaQuestaoDto> MontarQuestoesItinerancia(Itinerancia itinerancia, ItineranciaQuestoesBaseDto questoesBase)
+        {
+            return itinerancia.Questoes.Select(questao =>
+            {
+                return new ItineranciaQuestaoDto
+                {
+                    Id = questao.Id,
+                    QuestaoId = questao.QuestaoId,
+                    Descricao = questoesBase.ItineranciaQuestao.FirstOrDefault(q => q.Id == questao.QuestaoId).Descricao,
+                    ItineranciaId = questao.ItineranciaId,
+                    Resposta = questao.Resposta,
+                    Obrigatorio = questoesBase.ItineranciaQuestao.FirstOrDefault(q => q.Id == questao.QuestaoId).Obrigatorio
+
+                };
+            });
+        }
+
+        private IEnumerable<ItineranciaObjetivoDto> MontarObjetivosItinerancia(Itinerancia itinerancia)
+        {
+            return itinerancia.ObjetivosVisita.Select(o =>
+            {
+                return new ItineranciaObjetivoDto
+                {
+                    Id = o.Id,
+                    ItineranciaObjetivoId = 0,
+                    Nome = itinerancia.ObjetivosBase.FirstOrDefault(ob => ob.Id == o.ItineranciaObjetivosBaseId).Nome,
+                    TemDescricao = itinerancia.ObjetivosBase.FirstOrDefault(ob => ob.Id == o.ItineranciaObjetivosBaseId).TemDescricao,
+                    PermiteVariasUes = itinerancia.ObjetivosBase.FirstOrDefault(ob => ob.Id == o.ItineranciaObjetivosBaseId).PermiteVariasUes,
+                    Descricao = string.IsNullOrEmpty(o.Descricao) ? "" : o.Descricao
+                };
+            });
+        }
+
+        private IEnumerable<ItineranciaAlunoDto> MontarAlunosItinerancia(Itinerancia itinerancia, IEnumerable<TurmasDoAlunoDto> alunosEol, ItineranciaQuestoesBaseDto questoesBase, IEnumerable<Turma> turmas)
+        {
+            return itinerancia.Alunos.Select(aluno =>
+            {
+                return new ItineranciaAlunoDto
+                {
+                    Id = aluno.Id,
+                    CodigoAluno = aluno.CodigoAluno,                    
+                    Nome = @$"{alunosEol
+                                 .FirstOrDefault(a => a.CodigoAluno == int.Parse(aluno.CodigoAluno)).NomeAluno} - {OberterNomeTurmaFormatado(turmas.FirstOrDefault(t => t.CodigoTurma == alunosEol.FirstOrDefault(a => a.CodigoAluno == int.Parse(aluno.CodigoAluno)).CodigoTurma.ToString()))}",
+                    Questoes = MontarQuestoesItineranciaAluno(aluno, questoesBase)
+                };
+            });
+        }
+
+        private IEnumerable<ItineranciaAlunoQuestaoDto> MontarQuestoesItineranciaAluno(ItineranciaAluno aluno, ItineranciaQuestoesBaseDto questoesBase)
+        {
+            return aluno.AlunosQuestoes.Select(questao =>
+            {
+                return new ItineranciaAlunoQuestaoDto
+                {
+                    Id = questao.Id,
+                    QuestaoId = questao.QuestaoId,
+                    Descricao = questoesBase.ItineranciaAlunoQuestao.FirstOrDefault(q => q.Id == questao.QuestaoId).Descricao,
+                    ItineranciaAlunoId = questao.ItineranciaAlunoId,
+                    Resposta = questao.Resposta,
+                    Obrigatorio = questoesBase.ItineranciaAlunoQuestao.FirstOrDefault(q => q.Id == questao.QuestaoId).Obrigatorio
+                };
+            });
+        }
+
+        private string OberterNomeTurmaFormatado(Turma turma)
         {
             var turmaNome = "";
 
             if (turma != null)
-                turmaNome = $" - {turma.ModalidadeCodigo.ShortName()} - {turma.Nome}";
+                turmaNome = $"{turma.ModalidadeCodigo.ShortName()} - {turma.Nome}";
 
             return turmaNome;
-        }       
+        }
 
     }
 }

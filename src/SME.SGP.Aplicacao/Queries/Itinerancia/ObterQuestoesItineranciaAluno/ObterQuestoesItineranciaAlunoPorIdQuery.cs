@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
         {
             RuleFor(c => c.Id)
             .NotEmpty()
-            .WithMessage("O id da itinerancia do aluno deve ser informado.");
+            .WithMessage("O id da itinerância do aluno deve ser informado.");
 
         }
     }
