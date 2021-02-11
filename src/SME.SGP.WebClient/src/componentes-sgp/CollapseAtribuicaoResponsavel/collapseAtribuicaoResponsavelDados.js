@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
-import React, { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import Button from '~/componentes/button';
 import { Colors } from '~/componentes/colors';
 import {
@@ -11,22 +11,24 @@ import LocalizadorFuncionario from '../LocalizadorFuncionario';
 
 const CollapseAtribuicaoResponsavelDados = props => {
   const {
-    validarAntesProximoPasso,
+    validarAntesAtribuirResponsavel,
     changeLocalizadorResponsavel,
     clickCancelar,
     codigoTurma,
     url,
+    clickRemoverResponsavel,
   } = props;
   const dispatch = useDispatch();
+
+  const dadosCollapseAtribuicaoResponsavel = useSelector(
+    store =>
+      store.collapseAtribuicaoResponsavel.dadosCollapseAtribuicaoResponsavel
+  );
 
   const [
     funcionarioLocalizadorSelecionado,
     setFuncionarioLocalizadorSelecionado,
   ] = useState();
-
-  useEffect(() => {
-    return () => dispatch(setLimparDadosAtribuicaoResponsavel({}));
-  }, [dispatch]);
 
   const onChangeLocalizador = funcionario => {
     if (funcionario?.codigoRF && funcionario?.nomeServidor) {
@@ -41,15 +43,15 @@ const CollapseAtribuicaoResponsavelDados = props => {
     }
   };
 
-  const onClickProximoPasso = async () => {
+  const onClickAtribuirResponsavel = async () => {
     const params = {
       codigoRF: funcionarioLocalizadorSelecionado.codigoRF,
       nomeServidor: funcionarioLocalizadorSelecionado.nomeServidor,
     };
 
     let continuar = true;
-    if (validarAntesProximoPasso) {
-      continuar = await validarAntesProximoPasso(params);
+    if (validarAntesAtribuirResponsavel) {
+      continuar = await validarAntesAtribuirResponsavel(params);
     }
 
     if (continuar) {
@@ -64,6 +66,12 @@ const CollapseAtribuicaoResponsavelDados = props => {
     clickCancelar();
   };
 
+  const onClickRemover = () => {
+    if (clickRemoverResponsavel) {
+      clickRemoverResponsavel(funcionarioLocalizadorSelecionado);
+    }
+  };
+
   return (
     <div className="row">
       <div className="col-md-12 mb-2">
@@ -73,6 +81,10 @@ const CollapseAtribuicaoResponsavelDados = props => {
             onChange={onChangeLocalizador}
             codigoTurma={codigoTurma}
             url={url}
+            valorInicial={{
+              codigoRF: dadosCollapseAtribuicaoResponsavel?.codigoRF,
+            }}
+            desabilitado={!!dadosCollapseAtribuicaoResponsavel?.codigoRF}
           />
         </div>
       </div>
@@ -84,15 +96,32 @@ const CollapseAtribuicaoResponsavelDados = props => {
           border
           className="mr-3"
           onClick={onClickCancelar}
+          disabled={
+            !!dadosCollapseAtribuicaoResponsavel?.codigoRF ||
+            !funcionarioLocalizadorSelecionado?.codigoRF
+          }
         />
         <Button
-          id="btn-proximo-passo"
-          label="Próximo passo"
+          id="btn-atribuir"
+          label="Atribuir responsável"
           color={Colors.Roxo}
           border
           bold
-          onClick={onClickProximoPasso}
-          disabled={!funcionarioLocalizadorSelecionado?.codigoRF}
+          onClick={onClickAtribuirResponsavel}
+          disabled={
+            !!dadosCollapseAtribuicaoResponsavel?.codigoRF ||
+            !funcionarioLocalizadorSelecionado?.codigoRF
+          }
+        />
+        <Button
+          id="btn-remover"
+          label="Remover responsável"
+          color={Colors.Roxo}
+          border
+          bold
+          className="ml-3"
+          onClick={onClickRemover}
+          disabled={!dadosCollapseAtribuicaoResponsavel?.codigoRF}
         />
       </div>
     </div>
@@ -100,19 +129,21 @@ const CollapseAtribuicaoResponsavelDados = props => {
 };
 
 CollapseAtribuicaoResponsavelDados.propTypes = {
-  validarAntesProximoPasso: PropTypes.func,
+  validarAntesAtribuirResponsavel: PropTypes.func,
   changeLocalizadorResponsavel: PropTypes.func,
   clickCancelar: PropTypes.func,
   codigoTurma: PropTypes.string,
   url: PropTypes.string,
+  clickRemoverResponsavel: PropTypes.func,
 };
 
 CollapseAtribuicaoResponsavelDados.defaultProps = {
-  validarAntesProximoPasso: null,
+  validarAntesAtribuirResponsavel: null,
   changeLocalizadorResponsavel: () => {},
   clickCancelar: () => {},
   codigoTurma: '',
   url: '',
+  clickRemoverResponsavel: null,
 };
 
 export default CollapseAtribuicaoResponsavelDados;

@@ -2,9 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import CollapseAtribuicaoResponsavel from '~/componentes-sgp/CollapseAtribuicaoResponsavel/collapseAtribuicaoResponsavel';
-import { setLimparDadosAtribuicaoResponsavel } from '~/redux/modulos/collapseAtribuicaoResponsavel/actions';
-import { setLimparDadosLocalizarEstudante } from '~/redux/modulos/collapseLocalizarEstudante/actions';
-import { setLimparDadosEncaminhamento } from '~/redux/modulos/encaminhamentoAEE/actions';
+import { setExibirLoaderEncaminhamentoAEE } from '~/redux/modulos/encaminhamentoAEE/actions';
 import { erros } from '~/servicos';
 import ServicoEncaminhamentoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoEncaminhamentoAEE';
 
@@ -17,10 +15,15 @@ const AtribuicaoResponsavel = props => {
     store => store.encaminhamentoAEE.dadosEncaminhamento
   );
 
+  const limparAtualizarDados = () => {
+    const encaminhamentoId = match?.params?.id;
+    ServicoEncaminhamentoAEE.obterEncaminhamentoPorId(encaminhamentoId);
+  };
+
   const params = {
     url: 'v1/encaminhamento-aee/responsavel/pesquisa',
     codigoTurma: dadosEncaminhamento?.turma?.codigo,
-    validarAntesProximoPasso: async funcionario => {
+    validarAntesAtribuirResponsavel: async funcionario => {
       const encaminhamentoId = match?.params?.id;
       const resposta = await ServicoEncaminhamentoAEE.atribuirResponsavelEncaminhamento(
         funcionario.codigoRF,
@@ -28,13 +31,24 @@ const AtribuicaoResponsavel = props => {
       ).catch(e => erros(e));
 
       if (resposta?.data) {
-        dispatch(setLimparDadosAtribuicaoResponsavel());
-        dispatch(setLimparDadosLocalizarEstudante());
-        dispatch(setLimparDadosEncaminhamento());
-        ServicoEncaminhamentoAEE.obterEncaminhamentoPorId(encaminhamentoId);
+        limparAtualizarDados();
         return true;
       }
       return false;
+    },
+    clickRemoverResponsavel: async () => {
+      const encaminhamentoId = match?.params?.id;
+      if (encaminhamentoId) {
+        dispatch(setExibirLoaderEncaminhamentoAEE(true));
+        const retorno = await ServicoEncaminhamentoAEE.removerResponsavel(
+          encaminhamentoId
+        )
+          .catch(e => erros(e))
+          .finally(() => dispatch(setExibirLoaderEncaminhamentoAEE(false)));
+        if (retorno?.status === 200) {
+          limparAtualizarDados();
+        }
+      }
     },
   };
 

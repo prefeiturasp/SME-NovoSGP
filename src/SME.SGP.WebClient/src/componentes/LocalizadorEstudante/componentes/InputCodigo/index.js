@@ -29,10 +29,10 @@ const InputCodigo = props => {
     </Button>
   );
 
-  const onChangeCodigo = e => {
+  const onChangeCodigo = value => {
     if (!exibirLoader) {
-      setValor(e.target.value);
-      onChange(e.target.value);
+      setValor(value);
+      onChange(value);
     }
   };
 
@@ -40,16 +40,24 @@ const InputCodigo = props => {
     setValor(pessoaSelecionada && pessoaSelecionada.alunoCodigo);
   }, [pessoaSelecionada]);
 
+  const someteNumero = v => {
+    return String(v).replace(/\D/g, '');
+  };
+
   return (
     <Loader loading={exibirLoader}>
       <InputRFEstilo>
         <Input
           value={valor}
           placeholder="Digite o Código EOL"
-          onChange={onChangeCodigo}
+          onChange={e => {
+            const valorSomenteNumero = someteNumero(e.target.value);
+            onChangeCodigo(valorSomenteNumero);
+          }}
           onPressEnter={e => {
             if (!exibirLoader && e.target.value) {
-              onSubmitCodigo(e.target.value);
+              const valorSomenteNumero = someteNumero(e.target.value);
+              onSubmitCodigo(valorSomenteNumero);
             }
           }}
           suffix={botao}

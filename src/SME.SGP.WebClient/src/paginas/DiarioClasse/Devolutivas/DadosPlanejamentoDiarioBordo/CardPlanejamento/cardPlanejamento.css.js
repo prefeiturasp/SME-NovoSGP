@@ -45,4 +45,7 @@ export const EditorPlanejamento = styled.fieldset`
   .ck-editor__editable_inline {
     max-height: 180px !important;
   }
+  .jodit-container {
+    border: 0;
+  }
 `;

@@ -29,6 +29,7 @@ namespace SME.SGP.Aplicacao
                                                                      request.AlunoCodigo,
                                                                      (int?)request.Situacao,
                                                                      request.ResponsavelRf,
+                                                                     request.AnoLetivo,
                                                                      Paginacao));
         }
 

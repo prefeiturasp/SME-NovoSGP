@@ -119,7 +119,7 @@ const LocalizadorEstudante = props => {
   };
 
   const onBuscarPorCodigo = async codigo => {
-    if (!codigo) {
+    if (!codigo.codigo) {
       limparDados();
       return;
     }
