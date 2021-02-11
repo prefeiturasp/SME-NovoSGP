@@ -18,6 +18,7 @@ const LocalizadorFuncionario = props => {
     valorInicial,
     placeholder,
     url,
+    limparCampos,
   } = props;
 
   const [dataSource, setDataSource] = useState([]);
@@ -231,6 +232,12 @@ const LocalizadorFuncionario = props => {
     }
   }, [valorInicial, dataSource, funcionarioSelecionado]);
 
+  useEffect(() => {
+    if (limparCampos) {
+      limparDados();
+    }
+  }, [limparCampos, limparDados]);
+
   return (
     <>
       <div
@@ -280,6 +287,7 @@ LocalizadorFuncionario.propTypes = {
   valorInicial: PropTypes.oneOfType([PropTypes.any]),
   placeholder: PropTypes.string,
   url: PropTypes.string,
+  limparCampos: PropTypes.bool,
 };
 
 LocalizadorFuncionario.defaultProps = {
@@ -292,6 +300,7 @@ LocalizadorFuncionario.defaultProps = {
   valorInicial: '',
   placeholder: '',
   url: '',
+  limparCampos: false,
 };
 
 export default LocalizadorFuncionario;
