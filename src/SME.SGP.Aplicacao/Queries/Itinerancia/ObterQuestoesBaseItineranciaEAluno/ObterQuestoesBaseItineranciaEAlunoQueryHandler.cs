@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
             var questoesBase = await repositorioItinerancia.ObterItineranciaQuestaoBase();
 
             if (questoesBase == null || !questoesBase.Any())
-                throw new NegocioException("Não foi possível obter as questões base da itinerancia");
+                throw new NegocioException("Não foi possível obter as questões base da itinerância");
 
 
             var itineranciaQuestoesBase = new ItineranciaQuestoesBaseDto();

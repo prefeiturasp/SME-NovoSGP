@@ -6,7 +6,7 @@
         public long QuestaoId { get; set; }
         public string Descricao { get; set; }
         public string Resposta { get; set; }
-        public long RegistroItineranciaId { get; set; }
+        public long ItineranciaId { get; set; }
         public bool Obrigatorio { get; set; }
     }
 }

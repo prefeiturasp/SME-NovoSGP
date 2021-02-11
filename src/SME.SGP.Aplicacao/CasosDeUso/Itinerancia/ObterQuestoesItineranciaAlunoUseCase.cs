@@ -13,6 +13,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<IEnumerable<ItineranciaAlunoQuestaoDto>> Executar(long id)
-                => await mediator.Send(new ObterQuestoesItineranciaAlunoQuery(id));
+                => await mediator.Send(new ObterQuestoesItineranciaAlunoPorIdQuery(id));
     }
 }

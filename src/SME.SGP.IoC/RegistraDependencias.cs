@@ -698,6 +698,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterObjetivosBaseUseCase, ObterObjetivosBaseUseCase>();
             services.TryAddScoped<IObterQuestoesItineranciaAlunoUseCase, ObterQuestoesItineranciaAlunoUseCase>();
             services.TryAddScoped<IObterQuestoesBaseUseCase, ObterQuestoesBaseUseCase>();
+            services.TryAddScoped<IObterItineranciaPorIdUseCase, ObterItineranciaPorIdUseCase>();
 
 
         }
