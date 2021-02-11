@@ -763,7 +763,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         public async Task<IEnumerable<PodePersistirNaDataRetornoEolDto>> PodePersistirTurmaNasDatas(string professorRf, string codigoTurma, DateTime[] datas, long codigoDisciplina)
         {            
-            var datasParaEnvio = JsonConvert.SerializeObject(new DateTime[]);
+            var datasParaEnvio = JsonConvert.SerializeObject(new DateTime[0]);
 
             var resposta = await httpClient.PostAsync($"professores/{professorRf}/turmas/{codigoTurma}/disciplinas/{codigoDisciplina}/atribuicao/recorrencia/verificar/datas", new StringContent(datasParaEnvio, Encoding.UTF8, "application/json-patch+json"));
 
