@@ -23,6 +23,7 @@ namespace SME.SGP.Aplicacao
                                                                     request.UeId,
                                                                     request.TurmaId,
                                                                     request.AlunoCodigo,
+                                                                    request.AnoLetivo,
                                                                     (int?)request.Situacao);
     }
 }
