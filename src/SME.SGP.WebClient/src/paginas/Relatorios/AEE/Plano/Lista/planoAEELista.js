@@ -276,23 +276,18 @@ const PlanoAEELista = () => {
 
     setUeId(ue);
     dispatch(setDadosIniciaisLocalizarEstudante({ ueId: ue, dreId }));
-
-    filtrar(dreId, ue, undefined, alunoLocalizadorSelecionado, situacao);
   };
 
   const onChangeTurma = valor => {
     setTurmaId(valor);
     setAlunoLocalizadorSelecionado();
-    filtrar(dreId, ueId, valor, '', situacao);
   };
 
   const onChangeLocalizadorEstudante = aluno => {
     if (aluno?.alunoCodigo && aluno?.alunoNome) {
       setAlunoLocalizadorSelecionado(aluno?.alunoCodigo);
-      filtrar(dreId, ueId, turmaId, aluno?.alunoCodigo, situacao);
     } else {
       setAlunoLocalizadorSelecionado();
-      filtrar(dreId, ueId, turmaId, '', situacao);
     }
   };
 
@@ -346,12 +341,24 @@ const PlanoAEELista = () => {
 
   const onChangeSituacao = valor => {
     setSituacao(valor);
-    filtrar(dreId, ueId, turmaId, alunoLocalizadorSelecionado, valor);
   };
 
   const onClickEditar = item => {
     history.push(`${RotasDto.RELATORIO_AEE_PLANO}/editar/${item.id}`);
   };
+
+  useEffect(() => {
+    if (dreId && ueId && listaDres?.length && listaUes?.length) {      
+      filtrar(dreId, ueId, turmaId, alunoLocalizadorSelecionado, situacao);
+    }
+  }, [
+    ueId,
+    listaDres,
+    listaUes,
+    turmaId,
+    alunoLocalizadorSelecionado,
+    situacao,
+  ]);
 
   return (
     <>

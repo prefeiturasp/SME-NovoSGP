@@ -217,6 +217,7 @@ class ServicoPlanoAEE {
           questoes: questoesSalvar[0],
         };
 
+        dispatch(setExibirLoaderPlanoAEE(true));
         const resposta = await api
           .post(`${urlPadrao}/salvar`, valoresParaSalvar)
           .catch(e => erros(e))

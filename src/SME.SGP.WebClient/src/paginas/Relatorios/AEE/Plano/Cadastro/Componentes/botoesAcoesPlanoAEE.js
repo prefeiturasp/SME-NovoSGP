@@ -3,9 +3,10 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import Button from '~/componentes/button';
 import { Colors } from '~/componentes';
-import { history, sucesso } from '~/servicos';
+import { confirmar, history, sucesso } from '~/servicos';
 import { RotasDto } from '~/dtos';
 import ServicoPlanoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoPlanoAEE';
+import QuestionarioDinamicoFuncoes from '~/componentes-sgp/QuestionarioDinamico/Funcoes/QuestionarioDinamicoFuncoes';
 
 const BotoesAcoesPlanoAEE = props => {
   const { match } = props;
@@ -19,11 +20,43 @@ const BotoesAcoesPlanoAEE = props => {
   );
 
   const onClickVoltar = async () => {
-    history.push(RotasDto.RELATORIO_AEE_PLANO);
+    if (questionarioDinamicoEmEdicao) {
+      const confirmou = await confirmar(
+        'Atenção',
+        '',
+        'Suas alterações não foram salvas, deseja salvar agora?'
+      );
+      if (confirmou) {
+        const salvou = await ServicoPlanoAEE.salvarPlano();
+        const planoId = match?.params?.id;
+
+        if (salvou) {
+          let mensagem = 'Registro salvo com sucesso';
+          if (planoId) {
+            mensagem = 'Registro alterado com sucesso';
+          }
+          sucesso(mensagem);
+          history.push(RotasDto.RELATORIO_AEE_PLANO);
+        }
+      } else {
+        history.push(RotasDto.RELATORIO_AEE_PLANO);
+      }
+    } else {
+      history.push(RotasDto.RELATORIO_AEE_PLANO);
+    }
   };
 
   const onClickCancelar = async () => {
-    history.push(RotasDto.RELATORIO_AEE_PLANO);
+    if (!desabilitarCamposPlanoAEE && questionarioDinamicoEmEdicao) {
+      const confirmou = await confirmar(
+        'Atenção',
+        'Você não salvou as informações preenchidas.',
+        'Deseja realmente cancelar as alterações?'
+      );
+      if (confirmou) {
+        QuestionarioDinamicoFuncoes.limparDadosOriginaisQuestionarioDinamico();
+      }
+    }
   };
 
   const onClickSalvar = async () => {
@@ -58,6 +91,7 @@ const BotoesAcoesPlanoAEE = props => {
         border
         className="mr-3"
         onClick={onClickCancelar}
+        disabled={desabilitarCamposPlanoAEE || !questionarioDinamicoEmEdicao}
       />
       <Button
         id="btn-salvar"
