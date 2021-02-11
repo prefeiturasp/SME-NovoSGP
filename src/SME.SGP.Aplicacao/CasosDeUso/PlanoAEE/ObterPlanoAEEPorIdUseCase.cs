@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
@@ -25,8 +26,26 @@ namespace SME.SGP.Aplicacao
             if (planoAEEId.HasValue && planoAEEId > 0)
             {
                 var entidadePlano = await repositorioPlanoAEE.ObterPlanoComTurmaPorId(planoAEEId.Value);
+                var alunoPorTurmaResposta = await mediator.Send(new ObterAlunoPorCodigoEolQuery(entidadePlano.AlunoCodigo, entidadePlano.Turma.AnoLetivo));
 
-                var aluno = await mediator.Send(new ObterAlunoPorCodigoEAnoQuery(entidadePlano.AlunoCodigo, entidadePlano.Turma.AnoLetivo));
+                if (alunoPorTurmaResposta == null)
+                    throw new NegocioException("Aluno não localizado");
+
+                var aluno = new AlunoReduzidoDto()
+                {
+                    Nome = !string.IsNullOrEmpty(alunoPorTurmaResposta.NomeAluno) ? alunoPorTurmaResposta.NomeAluno : alunoPorTurmaResposta.NomeSocialAluno,
+                    NumeroAlunoChamada = alunoPorTurmaResposta.NumeroAlunoChamada,
+                    DataNascimento = alunoPorTurmaResposta.DataNascimento,
+                    DataSituacao = alunoPorTurmaResposta.DataSituacao,
+                    CodigoAluno = alunoPorTurmaResposta.CodigoAluno,
+                    Situacao = alunoPorTurmaResposta.SituacaoMatricula,
+                    TurmaEscola = await OberterNomeTurmaFormatado(alunoPorTurmaResposta.CodigoTurma.ToString()),
+                    NomeResponsavel = alunoPorTurmaResposta.NomeResponsavel,
+                    TipoResponsavel = alunoPorTurmaResposta.TipoResponsavel,
+                    CelularResponsavel = alunoPorTurmaResposta.CelularResponsavel,
+                    DataAtualizacaoContato = alunoPorTurmaResposta.DataAtualizacaoContato
+                };
+
 
                 plano.Id = planoAEEId.Value;
                 plano.Auditoria = (AuditoriaDto)entidadePlano;
@@ -39,7 +58,7 @@ namespace SME.SGP.Aplicacao
                     Codigo = entidadePlano.Turma.CodigoTurma,
                     AnoLetivo = entidadePlano.Turma.AnoLetivo
                 };
-                
+
                 var ultimaVersaoId = plano.Versoes
                     .OrderByDescending(a => a.Numero)
                     .Select(a => a.Id)
@@ -56,6 +75,17 @@ namespace SME.SGP.Aplicacao
             plano.QuestionarioId = questionarioId;
 
             return plano;
+        }
+
+        private async Task<string> OberterNomeTurmaFormatado(string turmaId)
+        {
+            var turmaNome = "";
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaId));
+
+            if (turma != null)
+                turmaNome = $"{turma.ModalidadeCodigo.ShortName()} - {turma.Nome}";
+
+            return turmaNome;
         }
     }
 }
