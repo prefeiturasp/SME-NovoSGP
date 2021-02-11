@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<PaginacaoResultadoDto<EncaminhamentoAEEResumoDto>> Executar(FiltroPesquisaEncaminhamentosAEEDto filtros)
         {
-            return await mediator.Send(new ObterEncaminhamentosAEEQuery(filtros.DreId, filtros.UeId, filtros.TurmaId, filtros.AlunoCodigo, filtros.Situacao));
+            return await mediator.Send(new ObterEncaminhamentosAEEQuery(filtros.DreId, filtros.UeId, filtros.TurmaId, filtros.AlunoCodigo, filtros.Situacao, filtros.ResponsavelRf, filtros.AnoLetivo));
         }
     }
 }

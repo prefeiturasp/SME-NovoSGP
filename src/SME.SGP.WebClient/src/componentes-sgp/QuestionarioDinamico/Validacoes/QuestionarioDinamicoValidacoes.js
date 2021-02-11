@@ -15,8 +15,10 @@ class QuestionarioDinamicoValidacoes {
       const montaValidacoes = questaoAtual => {
         if (questaoAtual?.opcaoResposta?.length) {
           questaoAtual.opcaoResposta.forEach(opcaoAtual => {
-            if (opcaoAtual?.questaoComplementar) {
-              montaValidacoes(opcaoAtual.questaoComplementar);
+            if (opcaoAtual?.questoesComplementares?.length) {
+              opcaoAtual.questoesComplementares.forEach(q => {
+                montaValidacoes(q);
+              });
             }
           });
         }

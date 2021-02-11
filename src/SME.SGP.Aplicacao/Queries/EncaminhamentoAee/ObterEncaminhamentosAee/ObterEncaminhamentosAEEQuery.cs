@@ -10,13 +10,15 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterEncaminhamentosAEEQuery : IRequest<PaginacaoResultadoDto<EncaminhamentoAEEResumoDto>>
     {
-        public ObterEncaminhamentosAEEQuery(long dreId, long ueId, long turmaId, string alunoCodigo, SituacaoAEE? situacao)
+        public ObterEncaminhamentosAEEQuery(long dreId, long ueId, long turmaId, string alunoCodigo, SituacaoAEE? situacao, string responsavelRf, int anoLetivo)
         {
             DreId = dreId;
             UeId = ueId;
             TurmaId = turmaId;
             AlunoCodigo = alunoCodigo;
             Situacao = situacao;
+            ResponsavelRf = responsavelRf;
+            AnoLetivo = anoLetivo;
         }
 
         public long DreId { get; }
@@ -24,6 +26,8 @@ namespace SME.SGP.Aplicacao
         public long TurmaId { get; }
         public string AlunoCodigo { get; }
         public SituacaoAEE? Situacao { get; }
+        public string ResponsavelRf { get; }
+        public int AnoLetivo { get; }
     }
 
     public class ObterEncaminhamentosAEEQueryValidator : AbstractValidator<ObterEncaminhamentosAEEQuery>
@@ -33,7 +37,6 @@ namespace SME.SGP.Aplicacao
             RuleFor(c => c.DreId)
             .NotEmpty()
             .WithMessage("A DRE deve ser informada para pesquisa de Encaminhamentos AEE");
-
         }
     }
 }

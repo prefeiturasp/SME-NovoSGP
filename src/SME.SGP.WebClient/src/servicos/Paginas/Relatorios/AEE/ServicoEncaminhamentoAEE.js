@@ -2,11 +2,22 @@ import QuestionarioDinamicoFuncoes from '~/componentes-sgp/QuestionarioDinamico/
 import tipoQuestao from '~/dtos/tipoQuestao';
 import { store } from '~/redux';
 import {
+  setDadosCollapseAtribuicaoResponsavel,
+  setLimparDadosAtribuicaoResponsavel,
+} from '~/redux/modulos/collapseAtribuicaoResponsavel/actions';
+import {
+  setDadosCollapseLocalizarEstudante,
+  setLimparDadosLocalizarEstudante,
+} from '~/redux/modulos/collapseLocalizarEstudante/actions';
+import {
+  setDadosEncaminhamento,
   setDadosModalAviso,
   setExibirLoaderEncaminhamentoAEE,
   setExibirModalAviso,
   setExibirModalErrosEncaminhamento,
+  setLimparDadosEncaminhamento,
 } from '~/redux/modulos/encaminhamentoAEE/actions';
+import { setDadosObjectCardEstudante } from '~/redux/modulos/objectCardEstudante/actions';
 import { erros } from '~/servicos/alertas';
 import api from '~/servicos/api';
 
@@ -39,10 +50,10 @@ class ServicoEncaminhamentoAEE {
     }
   };
 
-  obterSecoesPorEtapaDeEncaminhamentoAEE = (etapa, encaminhamentoAeeId) => {
-    let url = `${urlPadrao}/secoes?etapa=${etapa}`;
+  obterSecoesPorEtapaDeEncaminhamentoAEE = encaminhamentoAeeId => {
+    let url = `${urlPadrao}/secoes`;
     if (encaminhamentoAeeId) {
-      url += `&encaminhamentoAeeId=${encaminhamentoAeeId}`;
+      url += `?encaminhamentoAeeId=${encaminhamentoAeeId}`;
     }
     return api.get(url);
   };
@@ -60,8 +71,52 @@ class ServicoEncaminhamentoAEE {
     return api.get(url);
   };
 
-  obterEncaminhamentoPorId = encaminhamentoId => {
-    return api.get(`${urlPadrao}/${encaminhamentoId}`);
+  obterEncaminhamentoPorId = async encaminhamentoId => {
+    const { dispatch } = store;
+
+    dispatch(setExibirLoaderEncaminhamentoAEE(true));
+
+    const resultado = await api
+      .get(`${urlPadrao}/${encaminhamentoId}`)
+      .catch(e => erros(e))
+      .finally(() => dispatch(setExibirLoaderEncaminhamentoAEE(false)));
+
+    if (resultado?.data) {
+      const { aluno, turma, responsavelEncaminhamentoAEE } = resultado?.data;
+
+      const dadosObjectCard = {
+        nome: aluno.nome,
+        numeroChamada: aluno.numeroAlunoChamada,
+        dataNascimento: aluno.dataNascimento,
+        codigoEOL: aluno.codigoAluno,
+        situacao: aluno.situacao,
+        dataSituacao: aluno.dataSituacao,
+      };
+      dispatch(setDadosObjectCardEstudante(dadosObjectCard));
+
+      const dadosCollapseLocalizarEstudante = {
+        anoLetivo: turma.anoLetivo,
+        codigoAluno: aluno.codigoAluno,
+        codigoTurma: turma.codigo,
+        turmaId: turma.id,
+      };
+      dispatch(
+        setDadosCollapseLocalizarEstudante(dadosCollapseLocalizarEstudante)
+      );
+
+      const dadosResponsavel = {
+        codigoRF: responsavelEncaminhamentoAEE?.rf,
+        nomeServidor: responsavelEncaminhamentoAEE?.nome,
+        id: responsavelEncaminhamentoAEE?.id,
+      };
+      dispatch(setDadosCollapseAtribuicaoResponsavel(dadosResponsavel));
+
+      dispatch(setDadosEncaminhamento(resultado?.data));
+    } else {
+      dispatch(setLimparDadosAtribuicaoResponsavel());
+      dispatch(setLimparDadosLocalizarEstudante());
+      dispatch(setLimparDadosEncaminhamento());
+    }
   };
 
   // TODO
@@ -213,7 +268,8 @@ class ServicoEncaminhamentoAEE {
                   }
                 });
               } else if (
-                questao.tipoQuestao === tipoQuestao.ComboMultiplaEscolha &&
+                (questao.tipoQuestao === tipoQuestao.ComboMultiplaEscolha ||
+                  questao.tipoQuestao === tipoQuestao.Checkbox) &&
                 questao?.resposta?.length
               ) {
                 questao.resposta.forEach(valorSelecionado => {
@@ -323,6 +379,38 @@ class ServicoEncaminhamentoAEE {
 
   enviarParaAnaliseEncaminhamento = encaminhamentoId => {
     return api.post(`${urlPadrao}/enviar-analise/${encaminhamentoId}`);
+  };
+
+  obterResponsaveis = (dreId, ueId, turmaId, alunoCodigo, situacao, anoLetivo) => {
+    let url = `${urlPadrao}/responsaveis?dreId=${dreId}&ueId=${ueId}&anoLetivo=${anoLetivo}`;
+
+    if (turmaId) {
+      url += `&turmaId=${turmaId}`;
+    }
+    if (alunoCodigo) {
+      url += `&alunoCodigo=${alunoCodigo}`;
+    }
+    if (situacao) {
+      url += `&situacao=${situacao}`;
+    }
+
+    return api.get(url);
+  };
+
+  atribuirResponsavelEncaminhamento = (rfResponsavel, encaminhamentoId) => {
+    const params = {
+      rfResponsavel,
+      encaminhamentoId,
+    };
+    return api.post(`${urlPadrao}/atribuir-responsavel`, params);
+  };
+
+  concluirEncaminhamento = encaminhamentoId => {
+    return api.post(`${urlPadrao}/concluir/${encaminhamentoId}`);
+  };
+
+  removerResponsavel = encaminhamentoId => {
+    return api.post(`${urlPadrao}/remover-responsavel/${encaminhamentoId}`);
   };
 }
 

@@ -49,7 +49,6 @@ namespace SME.SGP.Api.Controllers
 
         [HttpGet]
         [Route("situacoes")]
-        [ProducesResponseType(typeof(IEnumerable<AlunoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.AEE_C, Policy = "Bearer")]
@@ -110,6 +109,15 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(filtro));
         }
 
+        [HttpGet("responsaveis")]
+        [ProducesResponseType(typeof(IEnumerable<UsuarioEolRetornoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.AEE_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterResponsaveis([FromQuery] FiltroPesquisaEncaminhamentosAEEDto filtro, [FromServices] IObterResponsaveisEncaminhamentosAEE useCase)
+        {
+            return Ok(await useCase.Executar(filtro));
+        }
+
         [HttpDelete("{encaminhamentoAeeId}")]
         [ProducesResponseType(typeof(EncaminhamentoAeeDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
@@ -146,6 +154,15 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(encaminhamentoId));
         }
 
+        [HttpPost("atribuir-responsavel")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.AEE_A, Policy = "Bearer")]
+        public async Task<IActionResult> AtribuirResponsavelEncaminhamento([FromBody] AtribuirResponsavelEncaminhamentoDto parametros, [FromServices] IAtribuirResponsavelEncaminhamentoAEEUseCase useCase)
+        {
+            return Ok(await useCase.Executar(parametros.EncaminhamentoId, parametros.RfResponsavel));
+        }
+
         [HttpGet("estudante/{codigoEstudante}/pode-cadastrar")]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
@@ -153,6 +170,35 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterEncaminhamento(string codigoEstudante, [FromServices] IVerificaPodeCadstrarEncaminhamentoAEEParaEstudanteUseCase useCase)
         {
             return Ok(await useCase.Executar(codigoEstudante));
+        }
+
+        [HttpPost("remover-responsavel/{encaminhamentoId}")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.AEE_A, Policy = "Bearer")]
+        public async Task<IActionResult> AtribuirResponsavelEncaminhamento(long encaminhamentoId, [FromServices] IRemoverResponsavelEncaminhamentoAEEUseCase useCase)
+        {
+            return Ok(await useCase.Executar(encaminhamentoId));
+        }
+
+        [HttpPost]
+        [Route("responsavel/pesquisa")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(PaginacaoResultadoDto<UsuarioEolRetornoDto>), 200)]
+        [Permissao(Permissao.AEE_A, Policy = "Bearer")]
+        public async Task<IActionResult> PesquisaResponsavel([FromBody] FiltroPesquisaFuncionarioDto filtro, [FromServices] IPesquisaResponsavelEncaminhamentoPorDreUEUseCase useCase)
+        {
+            return Ok(await useCase.Executar(filtro));
+        }
+
+
+        [HttpPost("concluir/{encaminhamentoId}")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.AEE_A, Policy = "Bearer")]
+        public async Task<IActionResult> ConcluirEncaminhamento(long encaminhamentoId, [FromServices] IConcluirEncaminhamentoAEEUseCase useCase)
+        {
+            return Ok(await useCase.Executar(encaminhamentoId));
         }
     }
 }

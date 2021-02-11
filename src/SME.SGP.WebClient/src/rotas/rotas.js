@@ -1154,7 +1154,7 @@ rotas.set(RotasDto.RELATORIO_AEE_ENCAMINHAMENTO, {
   component: EncaminhamentoAEELista,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  temPermissionamento: false,
+  temPermissionamento: true,
   chavePermissao: RotasDto.RELATORIO_AEE_ENCAMINHAMENTO,
 });
 
@@ -1164,7 +1164,7 @@ rotas.set(`${RotasDto.RELATORIO_AEE_ENCAMINHAMENTO}/novo`, {
   component: EncaminhamentoAEECadastro,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  temPermissionamento: false,
+  temPermissionamento: true,
   chavePermissao: RotasDto.RELATORIO_AEE_ENCAMINHAMENTO,
 });
 
@@ -1174,7 +1174,7 @@ rotas.set(`${RotasDto.RELATORIO_AEE_ENCAMINHAMENTO}/editar/:id`, {
   component: EncaminhamentoAEECadastro,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  temPermissionamento: false,
+  temPermissionamento: true,
   chavePermissao: RotasDto.RELATORIO_AEE_ENCAMINHAMENTO,
 });
 

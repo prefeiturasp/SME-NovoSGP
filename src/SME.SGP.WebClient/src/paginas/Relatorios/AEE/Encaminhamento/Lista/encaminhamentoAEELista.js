@@ -43,12 +43,14 @@ const EncaminhamentoAEELista = () => {
   const [listaUes, setListaUes] = useState([]);
   const [listaTurmas, setListaTurmas] = useState([]);
   const [listaSituacao, setListaSituacao] = useState([]);
+  const [listaResponsavel, setListaResponsavel] = useState([]);
 
   const [anoLetivo, setAnoLetivo] = useState();
   const [dreId, setDreId] = useState();
   const [ueId, setUeId] = useState();
   const [turmaId, setTurmaId] = useState();
   const [situacao, setSituacao] = useState();
+  const [responsavel, setResponsavel] = useState();
 
   const [
     alunoLocalizadorSelecionado,
@@ -61,6 +63,7 @@ const EncaminhamentoAEELista = () => {
   const [carregandoDres, setCarregandoDres] = useState(false);
   const [carregandoAnos, setCarregandoAnos] = useState(false);
   const [carregandoSituacao, setCarregandoSituacao] = useState(false);
+  const [carregandoResponsavel, setCarregandoResponsavel] = useState(false);
 
   useEffect(() => {
     verificaSomenteConsulta(permissoesTela);
@@ -86,12 +89,16 @@ const EncaminhamentoAEELista = () => {
       dataIndex: 'turma',
     },
     {
+      title: 'Responsável',
+      dataIndex: 'responsavel',
+    },
+    {
       title: 'Situação',
       dataIndex: 'situacao',
     },
   ];
 
-  const filtrar = (dre, ue, turma, aluno, situa) => {
+  const filtrar = (dre, ue, turma, aluno, situa, responsa) => {
     if (anoLetivo && dre && listaDres?.length) {
       const dreSelecionada = listaDres.find(
         item => String(item.valor) === String(dre)
@@ -111,6 +118,8 @@ const EncaminhamentoAEELista = () => {
         turmaId: turmaSelecionada ? turmaSelecionada?.id : '',
         alunoCodigo: aluno,
         situacao: situa,
+        responsavelRf: responsa,
+        anoLetivo
       };
       setFiltro({ ...params });
     }
@@ -175,6 +184,49 @@ const EncaminhamentoAEELista = () => {
     obterSituacoes();
   }, [obterSituacoes]);
 
+  const obterResponsaveis = useCallback(async () => {
+    setCarregandoResponsavel(true);
+
+    const dreAtual = listaDres.find(dre => dre.valor === dreId);
+    const ueAtual = listaUes.find(ue => ue.valor === ueId);
+    const turmaAtual = listaTurmas?.find(turma => turma.codigo === turmaId);
+
+    const resposta = await ServicoEncaminhamentoAEE.obterResponsaveis(
+      dreAtual?.id,
+      ueAtual?.id,
+      turmaAtual?.id,
+      alunoLocalizadorSelecionado,
+      situacao,
+      anoLetivo
+    )
+      .catch(e => erros(e))
+      .finally(() => setCarregandoResponsavel(false));
+
+    if (resposta?.data?.length) {
+      const lista = resposta.data.map(item => {
+        return { ...item, codigoRf: String(item.codigoRf) };
+      });
+      setListaResponsavel(lista);
+    } else {
+      setListaResponsavel([]);
+    }
+  }, [
+    dreId,
+    ueId,
+    turmaId,
+    alunoLocalizadorSelecionado,
+    situacao,
+    listaDres,
+    listaUes,
+    listaTurmas,
+  ]);
+
+  useEffect(() => {
+    if (ueId && listaUes.length) {
+      obterResponsaveis();
+    }
+  }, [obterResponsaveis, ueId, listaUes]);
+
   const [carregandoUes, setCarregandoUes] = useState(false);
 
   const obterUes = useCallback(async () => {
@@ -224,8 +276,6 @@ const EncaminhamentoAEELista = () => {
 
     setListaTurmas([]);
     setTurmaId();
-
-    filtrar(dre, ueId, turmaId, alunoLocalizadorSelecionado, situacao);
   };
 
   const obterDres = useCallback(async () => {
@@ -312,7 +362,14 @@ const EncaminhamentoAEELista = () => {
     setListaTurmas([]);
     setTurmaId();
 
-    filtrar(dreId, ue, turmaId, alunoLocalizadorSelecionado, situacao);
+    filtrar(
+      dreId,
+      ue,
+      turmaId,
+      alunoLocalizadorSelecionado,
+      situacao,
+      responsavel
+    );
   };
 
   const limparFiltrosSelecionados = () => {
@@ -339,22 +396,34 @@ const EncaminhamentoAEELista = () => {
   const onChangeTurma = turma => {
     setTurmaId(turma);
     setAlunoLocalizadorSelecionado();
-    filtrar(dreId, ueId, turma, '', situacao);
+    filtrar(dreId, ueId, turma, '', situacao, responsavel);
   };
 
   const onChangeLocalizadorEstudante = aluno => {
     if (aluno?.alunoCodigo && aluno?.alunoNome) {
       setAlunoLocalizadorSelecionado(aluno?.alunoCodigo);
-      filtrar(dreId, ueId, turmaId, aluno?.alunoCodigo, situacao);
+      filtrar(dreId, ueId, turmaId, aluno?.alunoCodigo, situacao, responsavel);
     } else {
       setAlunoLocalizadorSelecionado();
-      filtrar(dreId, ueId, turmaId, '', situacao);
+      filtrar(dreId, ueId, turmaId, '', situacao, responsavel);
     }
   };
 
   const onChangeSituacao = valor => {
     setSituacao(valor);
-    filtrar(dreId, ueId, turmaId, alunoLocalizadorSelecionado, valor);
+    filtrar(
+      dreId,
+      ueId,
+      turmaId,
+      alunoLocalizadorSelecionado,
+      valor,
+      responsavel
+    );
+  };
+
+  const onChangeResponsavel = valor => {
+    setResponsavel(valor);
+    filtrar(dreId, ueId, turmaId, alunoLocalizadorSelecionado, situacao, valor);
   };
 
   const onClickEditar = item => {
@@ -367,13 +436,14 @@ const EncaminhamentoAEELista = () => {
   };
 
   useEffect(() => {
-    if (dreId && listaDres.length && listaUes.length) {
+    if (dreId && listaDres.length && ueId && listaUes.length) {
       filtrar(
         dreId,
         ueId,
         turmaId,
         alunoLocalizadorSelecionado?.alunoCodigo,
-        situacao
+        situacao,
+        responsavel
       );
     }
   }, [dreId, ueId, listaDres, listaUes]);
@@ -458,7 +528,7 @@ const EncaminhamentoAEELista = () => {
                 />
               </Loader>
             </div>
-            <div className="col-sm-12 col-md-4 col-lg-3 col-xl-3 mb-2">
+            <div className="col-sm-12 col-md-6 col-lg-6 col-xl-6 mb-2">
               <Loader loading={carregandoTurmas} tip="">
                 <SelectComponent
                   id="turma"
@@ -473,7 +543,7 @@ const EncaminhamentoAEELista = () => {
                 />
               </Loader>
             </div>
-            <div className="col-sm-12 col-md-8 col-lg-6 col-xl-6 mb-2">
+            <div className="col-sm-12 col-md-6 col-lg-6 col-xl-6 mb-2">
               <div className="row">
                 <LocalizadorEstudante
                   id="estudante"
@@ -488,7 +558,7 @@ const EncaminhamentoAEELista = () => {
                 />
               </div>
             </div>
-            <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 mb-2">
+            <div className="col-sm-12 col-md-6 col-lg-6 col-xl-6 mb-2">
               <Loader loading={carregandoSituacao} tip="">
                 <SelectComponent
                   id="situacao"
@@ -503,7 +573,25 @@ const EncaminhamentoAEELista = () => {
                 />
               </Loader>
             </div>
-            {anoLetivo && dreId && listaDres?.length ? (
+            <div className="col-sm-12 col-md-6 col-lg-6 col-xl-6 mb-4">
+              <Loader loading={carregandoResponsavel} tip="">
+                <SelectComponent
+                  id="responsavel"
+                  label="Responsável"
+                  lista={listaResponsavel}
+                  valueOption="codigoRf"
+                  valueText="nomeServidor"
+                  onChange={onChangeResponsavel}
+                  valueSelect={responsavel}
+                  placeholder="Responsável"
+                />
+              </Loader>
+            </div>
+            {anoLetivo &&
+            dreId &&
+            listaDres?.length &&
+            ueId &&
+            listaUes?.length ? (
               <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
                 <ListaPaginada
                   url="v1/encaminhamento-aee"
@@ -511,7 +599,15 @@ const EncaminhamentoAEELista = () => {
                   colunas={colunas}
                   filtro={filtro}
                   filtroEhValido={
-                    !!(anoLetivo && dreId && filtro.dreId && listaDres?.length)
+                    !!(
+                      anoLetivo &&
+                      dreId &&
+                      filtro.dreId &&
+                      listaDres?.length &&
+                      ueId &&
+                      filtro.ueId &&
+                      listaUes?.length
+                    )
                   }
                   temPaginacao
                   onClick={onClickEditar}

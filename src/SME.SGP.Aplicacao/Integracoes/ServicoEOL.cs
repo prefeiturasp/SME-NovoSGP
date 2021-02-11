@@ -1054,6 +1054,6 @@ namespace SME.SGP.Aplicacao.Integracoes
             var json = await resposta.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<InformacoesEscolaresAlunoDto>(json);
                         
-        }
+        }        
     }
 }
