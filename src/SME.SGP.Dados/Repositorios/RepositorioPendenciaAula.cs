@@ -1,6 +1,4 @@
 ﻿using Dapper;
-using Dommel;
-using Microsoft.AspNetCore.Mvc.TagHelpers.Cache;
 using Npgsql;
 using NpgsqlTypes;
 using SME.SGP.Dominio;
@@ -8,7 +6,6 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -208,11 +205,12 @@ namespace SME.SGP.Dados.Repositorios
                         where
 	                        not aula.excluido
 	                        and aula.id = ANY(@aulas)
+                            and aula.data_aula::date < @hoje
                             and (rf.id is null or tr.id is null)
 	                        group by
 	                        1 ";
 
-            return (await database.Conexao.QuerySingleOrDefaultAsync<bool>(sql, new { aulas = aulasId }));
+            return (await database.Conexao.QuerySingleOrDefaultAsync<bool>(sql, new { aulas = aulasId, hoje = DateTime.Today.Date }));
         }
 
         public async Task<bool> PossuiPendenciasAtividadeAvaliativaPorAulasId(long[] aulasId)
@@ -232,11 +230,12 @@ namespace SME.SGP.Dados.Repositorios
                         where
 	                        not a.excluido
 	                        and a.id = ANY(@aulas)
+                            and a.data_aula::date < @hoje
 	                        and n.id is null
                         group by
 	                        1";
 
-            return (await database.Conexao.QuerySingleOrDefaultAsync<bool>(sql, new { aulas = aulasId }));
+            return (await database.Conexao.QuerySingleOrDefaultAsync<bool>(sql, new { aulas = aulasId, hoje = DateTime.Today.Date }));
         }
 
         public async Task<bool> PossuiPendenciasAtividadeAvaliativaPorAulaId(long aulaId)
@@ -256,9 +255,10 @@ namespace SME.SGP.Dados.Repositorios
                         where
 	                        not a.excluido
 	                        and a.id = @aula
+                            and a.data_aula::date < @hoje
 	                        and n.id is null";
 
-            return (await database.Conexao.QuerySingleOrDefaultAsync<bool>(sql, new { aula = aulaId }));
+            return (await database.Conexao.QuerySingleOrDefaultAsync<bool>(sql, new { aula = aulaId, hoje = DateTime.Today.Date }));
         }
 
         public async Task<PendenciaAulaDto> PossuiPendenciasPorAulaId(long aulaId, bool ehInfantil)
@@ -284,9 +284,10 @@ namespace SME.SGP.Dados.Repositorios
                             where
 	                            not aula.excluido
 	                            and aula.id = @aula
+                                and aula.data_aula::date < @hoje
                                 and (rf.id is null or tr.id is null) ";
 
-            return (await database.Conexao.QueryFirstOrDefaultAsync<PendenciaAulaDto>(sql, new { aula = aulaId }));
+            return (await database.Conexao.QueryFirstOrDefaultAsync<PendenciaAulaDto>(sql, new { aula = aulaId, hoje = DateTime.Today.Date }));
         }
     }
 }
