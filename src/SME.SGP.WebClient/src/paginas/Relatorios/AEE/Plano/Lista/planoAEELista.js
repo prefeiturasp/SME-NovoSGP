@@ -262,8 +262,6 @@ const PlanoAEELista = () => {
 
     setListaTurmas([]);
     setTurmaId();
-
-    filtrar(dre, ueId, turmaId, alunoLocalizadorSelecionado, situacao);
   };
 
   useEffect(() => {
@@ -479,7 +477,11 @@ const PlanoAEELista = () => {
                 />
               </Loader>
             </div>
-            {anoLetivo && dreId && listaDres?.length ? (
+            {anoLetivo &&
+            dreId &&
+            listaDres?.length &&
+            ueId &&
+            listaUes?.length ? (
               <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
                 <ListaPaginada
                   url="v1/plano-aee"
@@ -487,7 +489,15 @@ const PlanoAEELista = () => {
                   colunas={colunas}
                   filtro={filtro}
                   filtroEhValido={
-                    !!(anoLetivo && dreId && filtro.dreId && listaDres?.length)
+                    !!(
+                      anoLetivo &&
+                      dreId &&
+                      filtro.dreId &&
+                      listaDres?.length &&
+                      filtro.ueId &&
+                      ueId &&
+                      listaUes?.length
+                    )
                   }
                   temPaginacao
                   onClick={onClickEditar}
