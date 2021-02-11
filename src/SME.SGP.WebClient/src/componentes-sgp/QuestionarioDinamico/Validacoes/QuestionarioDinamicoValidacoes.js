@@ -1,5 +1,4 @@
 import * as Yup from 'yup';
-import { momentSchema } from '~/componentes/campoData/campoData';
 import tipoQuestao from '~/dtos/tipoQuestao';
 
 class QuestionarioDinamicoValidacoes {
@@ -30,12 +29,13 @@ class QuestionarioDinamicoValidacoes {
           arrayCampos.find(questaoId => questaoId === String(questaoAtual.id))
         ) {
           if (questaoAtual.tipoQuestao === tipoQuestao.Periodo) {
-            camposComValidacao[
-              questaoAtual.id
-            ].periodoInicio = momentSchema.required('Campo obrigatório');
-            camposComValidacao[
-              questaoAtual.id
-            ].periodoFim = momentSchema.required('Campo obrigatório');
+            // TODO Fazer validação para campos datas!
+            //   camposComValidacao[
+            //     questaoAtual.id
+            //   ].periodoInicio = momentSchema.required('Campo obrigatório');
+            //   camposComValidacao[
+            //     questaoAtual.id
+            //   ].periodoFim = momentSchema.required('Campo obrigatório');
           } else {
             camposComValidacao[questaoAtual.id] = Yup.string()
               .nullable()
