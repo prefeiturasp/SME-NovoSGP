@@ -39,15 +39,10 @@ namespace SME.SGP.Aplicacao
 
         private async Task<(string codigoDRE, string codigoUE)> ObterCodigos(string codigoTurma, string codigoDRE, Usuario usuario)
         {
-            return usuario.EhCoordenadorCEFAI() ?
-                (codigoDRE, "") :
-                await ObterDREUePorTurma(codigoTurma);
-        }
-
-        private async Task<(string codigoDRE, string codigoUE)> ObterDREUePorTurma(string codigoTurma)
-        {
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(codigoTurma));
-            return (turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe);
+            return usuario.EhCoordenadorCEFAI() ?
+                (turma.Ue.Dre.CodigoDre, "") :
+                (turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe);
         }
 
         // CEFAI Pesquisa por perfil PAAI pois a abrangencia é DRE, outros perfis pesquisa PAEE com abrangencia UE
