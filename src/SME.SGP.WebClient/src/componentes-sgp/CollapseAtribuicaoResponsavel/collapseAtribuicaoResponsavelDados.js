@@ -30,7 +30,10 @@ const CollapseAtribuicaoResponsavelDados = props => {
     setFuncionarioLocalizadorSelecionado,
   ] = useState();
 
+  const [limparCampos, setLimparCampos] = useState(false);
+
   const onChangeLocalizador = funcionario => {
+    setLimparCampos(false);
     if (funcionario?.codigoRF && funcionario?.nomeServidor) {
       setFuncionarioLocalizadorSelecionado({
         codigoRF: funcionario?.codigoRF,
@@ -62,7 +65,7 @@ const CollapseAtribuicaoResponsavelDados = props => {
   const onClickCancelar = () => {
     setFuncionarioLocalizadorSelecionado();
     dispatch(setLimparDadosAtribuicaoResponsavel());
-
+    setLimparCampos(true);
     clickCancelar();
   };
 
@@ -80,6 +83,7 @@ const CollapseAtribuicaoResponsavelDados = props => {
             id="funcionario"
             onChange={onChangeLocalizador}
             codigoTurma={codigoTurma}
+            limparCampos={limparCampos}
             url={url}
             valorInicial={{
               codigoRF: dadosCollapseAtribuicaoResponsavel?.codigoRF,
