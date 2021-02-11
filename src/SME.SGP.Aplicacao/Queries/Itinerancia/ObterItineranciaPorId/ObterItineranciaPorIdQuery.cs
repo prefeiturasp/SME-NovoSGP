@@ -1,10 +1,10 @@
 ﻿using FluentValidation;
 using MediatR;
-using SME.SGP.Infra;
+using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterItineranciaPorIdQuery : IRequest<ItineranciaDto>
+    public class ObterItineranciaPorIdQuery : IRequest<Itinerancia>
     {
         public ObterItineranciaPorIdQuery(long id)
         {

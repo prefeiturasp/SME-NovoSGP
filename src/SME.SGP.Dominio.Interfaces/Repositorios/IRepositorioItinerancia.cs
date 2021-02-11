@@ -16,5 +16,6 @@ namespace SME.SGP.Dados.Repositorios
         Task<IEnumerable<ItineranciaObjetivoDto>> ObterObjetivosItineranciaPorId(long id);
         Task<IEnumerable<ItineranciaQuestaoDto>> ObterQuestoesItineranciaPorId(long id);
         Task<IEnumerable<ItineranciaUeDto>> ObterUesItineranciaPorId(long id);
+        Task<Itinerancia> ObterEntidadeCompleta(long id);
     }
 }

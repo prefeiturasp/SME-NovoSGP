@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Infra
 {
@@ -8,7 +7,10 @@ namespace SME.SGP.Infra
     {
         public ItineranciaDto()
         {
-
+            ObjetivosVisita = new List<ItineranciaObjetivoDto>();
+            Ues = new List<ItineranciaUeDto>();
+            Alunos = new List<ItineranciaAlunoDto>();
+            Questoes = new List<ItineranciaQuestaoDto>();
         }
         public DateTime DataVisita { get; set; }
         public DateTime DataRetornoVerificacao { get; set; }

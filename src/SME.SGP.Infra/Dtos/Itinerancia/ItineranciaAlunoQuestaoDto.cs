@@ -10,7 +10,7 @@ namespace SME.SGP.Infra
         public long QuestaoId { get; set; }
         public string Descricao { get; set; }
         public string Resposta { get; set; }
-        public long RegistroItineranciaAlunoId { get; set; }
+        public long ItineranciaAlunoId { get; set; }
         public bool Obrigatorio { get; set; }
     }
 }

@@ -39,7 +39,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<ItineranciaQuestaoBaseDto>> ObterItineranciaQuestaoBase()
         {
-            var query = @"select q.id, q.nome, q.ordem, q1.tipo 
+            var query = @"select q.id, q.nome, q.ordem, q1.tipo, q.obrigatorio 
                             from questao q
                            inner join questionario q1 on q1.id = q.questionario_id 
                            where q1.tipo in (2,3)
@@ -118,41 +118,51 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<ItineranciaUeDto>(query, new { id });
         }
-        //public async Task<ItineranciaDto> ObterEntidadeCompleta(long id)
-        //{
-        //    var query = @"select i.*, ia.*, iaq.*, iq.* , io.*, iob.*, iu.*
-        //                    from itinerancia i 
-        //                   inner join itinerancia_aluno ia on ia.itinerancia_id = i.id
-        //                   inner join itinerancia_aluno_questao iaq on iaq.itinerancia_aluno_id = ia.id    
-        //                   inner join itinerancia_questao iq on iq.itinerancia_id = i.id 
-        //                   inner join itinerancia_objetivo io on io.itinerancia_id = i.id   
-        //                   inner join itinerancia_objetivo_base iob on iob.id = io.itinerancia_base_id
-        //                   inner join itinerancia_ue iu on iu.itinerancia_id = i.id 
-        //                   where i.id = @id
-        //                     and not i.excluido";
+        public async Task<Itinerancia> ObterEntidadeCompleta(long id)
+        {
+            var query = @"select i.*, ia.*, iaq.*, iq.* , io.*, iob.*, iu.*
+                            from itinerancia i 
+                           inner join itinerancia_aluno ia on ia.itinerancia_id = i.id
+                           inner join itinerancia_aluno_questao iaq on iaq.itinerancia_aluno_id = ia.id    
+                           inner join itinerancia_questao iq on iq.itinerancia_id = i.id 
+                           inner join itinerancia_objetivo io on io.itinerancia_id = i.id   
+                           inner join itinerancia_objetivo_base iob on iob.id = io.itinerancia_base_id
+                           inner join itinerancia_ue iu on iu.itinerancia_id = i.id                           
+                           where i.id = @id
+                             and not i.excluido";
 
-        //    var lookup = new Dictionary<long, Itinerancia>();
+            var lookup = new Dictionary<long, Itinerancia>();
 
-        //    database.Conexao.Query<Itinerancia, ItineranciaAluno, ItineranciaAlunoQuestao, ItineranciaObjetivo, ItineranciaUe, Itinerancia>(query,
-        //         (registroItinerancia, itineranciaAluno, itineranciaAlunoQuestao, itineranciaObjetivo, itineranciaUe) =>
-        //         {
-        //             Itinerancia itinerancia;
-        //             if (!lookup.TryGetValue(workflow.Id, out workflowAprovacao))
-        //             {
-        //                 workflowAprovacao = workflow;
-        //                 lookup.Add(workflow.Id, workflowAprovacao);
-        //             }
-        //             workflowAprovacao.Adicionar(workflowNivel);
+             database.Conexao.Query<Itinerancia, ItineranciaAluno, ItineranciaAlunoQuestao, ItineranciaQuestao, ItineranciaObjetivo, ItineranciaObjetivoBase, ItineranciaUe, Itinerancia>(query,
+                 (registroItinerancia, itineranciaAluno, itineranciaAlunoquestao, itineranciaQuestao, itineranciaObjetivo, itineranciaObjetivoBase, itineranciaUe) =>
+                 {
+                     Itinerancia itinerancia;
+                     if (!lookup.TryGetValue(registroItinerancia.Id, out itinerancia))
+                     {
+                         itinerancia = registroItinerancia;
+                         lookup.Add(registroItinerancia.Id, itinerancia);
+                     }
+                     itinerancia.AdicionarAluno(itineranciaAluno);
 
-        //             if (notificacao != null)
-        //                 workflowAprovacao.Adicionar(workflowNivel.Id, notificacao, usuario);
+                     if (itineranciaAlunoquestao != null)
+                         itinerancia.AdicionarQuestaoAluno(itineranciaAluno.Id, itineranciaAlunoquestao);
 
-        //             return workflowAprovacao;
-        //         }, param: new { workflowId, notificacaoId });
+                     if (itineranciaQuestao != null)
+                         itinerancia.AdicionarQuestao(itineranciaQuestao);
 
-        //    return lookup.Values.FirstOrDefault();
+                     if (itineranciaObjetivo != null)
+                         itinerancia.AdicionarObjetivo(itineranciaObjetivo);
 
-        //    //return await database.Conexao.QueryFirstOrDefaultAsync<ItineranciaDto>(query, new { id });
-        //}
+                     if (itineranciaObjetivoBase != null)
+                         itinerancia.AdicionarObjetivoBase(itineranciaObjetivoBase);
+
+                     if (itineranciaUe != null)
+                         itinerancia.AdicionarUe(itineranciaUe);
+
+                     return itinerancia;
+                 }, param: new { id });
+
+            return lookup.Values.FirstOrDefault();            
+        }
     }
 }
