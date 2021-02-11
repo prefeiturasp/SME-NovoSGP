@@ -381,8 +381,8 @@ class ServicoEncaminhamentoAEE {
     return api.post(`${urlPadrao}/enviar-analise/${encaminhamentoId}`);
   };
 
-  obterResponsaveis = (dreId, ueId, turmaId, alunoCodigo, situacao) => {
-    let url = `${urlPadrao}/responsaveis?dreId=${dreId}&ueId=${ueId}`;
+  obterResponsaveis = (dreId, ueId, turmaId, alunoCodigo, situacao, anoLetivo) => {
+    let url = `${urlPadrao}/responsaveis?dreId=${dreId}&ueId=${ueId}&anoLetivo=${anoLetivo}`;
 
     if (turmaId) {
       url += `&turmaId=${turmaId}`;

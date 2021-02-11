@@ -119,6 +119,7 @@ const EncaminhamentoAEELista = () => {
         alunoCodigo: aluno,
         situacao: situa,
         responsavelRf: responsa,
+        anoLetivo
       };
       setFiltro({ ...params });
     }
@@ -195,7 +196,8 @@ const EncaminhamentoAEELista = () => {
       ueAtual?.id,
       turmaAtual?.id,
       alunoLocalizadorSelecionado,
-      situacao
+      situacao,
+      anoLetivo
     )
       .catch(e => erros(e))
       .finally(() => setCarregandoResponsavel(false));
