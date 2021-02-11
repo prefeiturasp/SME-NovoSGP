@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Infra
 {
-    public class PlanoAEEDto
+    public class PlanoAEED2to
     {
         public long Id { get; set; }
         public long QuestionarioId { get; set; }
