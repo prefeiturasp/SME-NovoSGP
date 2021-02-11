@@ -121,12 +121,15 @@ class ServicoPlanoAEE {
 
             switch (questao.tipoQuestao) {
               case tipoQuestao.Periodo:
-                if (campos[key]?.length) {
-                  questao.resposta = JSON.stringify(
-                    campos[key].map(data =>
-                      moment(data).format('DD/MM/YYYY')
-                    ) || ''
-                  );
+                if (campos[key]?.periodoInicio && campos[key]?.periodoFim) {
+                  questao.resposta = JSON.stringify([
+                    campos[key].periodoInicio
+                      ? moment(campos[key].periodoInicio).format('DD/MM/YYYY')
+                      : '',
+                    campos[key].periodoFim
+                      ? moment(campos[key].periodoFim).format('DD/MM/YYYY')
+                      : '',
+                  ]);
                 } else {
                   questao.resposta = '';
                 }
@@ -217,6 +220,7 @@ class ServicoPlanoAEE {
           questoes: questoesSalvar[0],
         };
 
+        dispatch(setExibirLoaderPlanoAEE(true));
         const resposta = await api
           .post(`${urlPadrao}/salvar`, valoresParaSalvar)
           .catch(e => erros(e))

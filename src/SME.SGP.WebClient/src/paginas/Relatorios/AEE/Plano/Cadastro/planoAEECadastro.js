@@ -74,11 +74,16 @@ const PlanoAEECadastro = ({ match }) => {
 
         const dadosObjectCard = {
           nome: aluno.nome,
-          numeroChamada: aluno.numeroAlunoChamada,
           dataNascimento: aluno.dataNascimento,
-          codigoEOL: aluno.codigoAluno,
           situacao: aluno.situacao,
           dataSituacao: aluno.dataSituacao,
+          nomeResponsavel: aluno.nomeResponsavel,
+          tipoResponsavel: aluno.tipoResponsavel,
+          celularResponsavel: aluno.celularResponsavel,
+          dataAtualizacaoContato: aluno.dataAtualizacaoContato,
+          codigoEOL: aluno.codigoAluno,
+          turma: aluno.turmaEscola,
+          numeroChamada: aluno.numeroAlunoChamada,
         };
         dispatch(setDadosObjectCardEstudante(dadosObjectCard));
       }
@@ -142,7 +147,7 @@ const PlanoAEECadastro = ({ match }) => {
             <div className="col-md-12 mt-2 mb-2">
               <SituacaoEncaminhamentoAEE />
             </div>
-            <div className="col-md-12 mb-4">
+            <div className="col-md-4 mb-4">
               <BotaoVerSituacaoEncaminhamentoAEE />
             </div>
             <div className="col-md-12 mt-2 mb-2">

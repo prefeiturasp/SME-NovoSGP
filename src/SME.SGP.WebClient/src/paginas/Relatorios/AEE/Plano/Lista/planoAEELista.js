@@ -262,8 +262,6 @@ const PlanoAEELista = () => {
 
     setListaTurmas([]);
     setTurmaId();
-
-    filtrar(dre, ueId, turmaId, alunoLocalizadorSelecionado, situacao);
   };
 
   useEffect(() => {
@@ -278,23 +276,18 @@ const PlanoAEELista = () => {
 
     setUeId(ue);
     dispatch(setDadosIniciaisLocalizarEstudante({ ueId: ue, dreId }));
-
-    filtrar(dreId, ue, undefined, alunoLocalizadorSelecionado, situacao);
   };
 
   const onChangeTurma = valor => {
     setTurmaId(valor);
     setAlunoLocalizadorSelecionado();
-    filtrar(dreId, ueId, valor, '', situacao);
   };
 
   const onChangeLocalizadorEstudante = aluno => {
     if (aluno?.alunoCodigo && aluno?.alunoNome) {
       setAlunoLocalizadorSelecionado(aluno?.alunoCodigo);
-      filtrar(dreId, ueId, turmaId, aluno?.alunoCodigo, situacao);
     } else {
       setAlunoLocalizadorSelecionado();
-      filtrar(dreId, ueId, turmaId, '', situacao);
     }
   };
 
@@ -348,12 +341,24 @@ const PlanoAEELista = () => {
 
   const onChangeSituacao = valor => {
     setSituacao(valor);
-    filtrar(dreId, ueId, turmaId, alunoLocalizadorSelecionado, valor);
   };
 
   const onClickEditar = item => {
     history.push(`${RotasDto.RELATORIO_AEE_PLANO}/editar/${item.id}`);
   };
+
+  useEffect(() => {
+    if (dreId && ueId && listaDres?.length && listaUes?.length) {      
+      filtrar(dreId, ueId, turmaId, alunoLocalizadorSelecionado, situacao);
+    }
+  }, [
+    ueId,
+    listaDres,
+    listaUes,
+    turmaId,
+    alunoLocalizadorSelecionado,
+    situacao,
+  ]);
 
   return (
     <>
@@ -479,7 +484,11 @@ const PlanoAEELista = () => {
                 />
               </Loader>
             </div>
-            {anoLetivo && dreId && listaDres?.length ? (
+            {anoLetivo &&
+            dreId &&
+            listaDres?.length &&
+            ueId &&
+            listaUes?.length ? (
               <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
                 <ListaPaginada
                   url="v1/plano-aee"
@@ -487,7 +496,15 @@ const PlanoAEELista = () => {
                   colunas={colunas}
                   filtro={filtro}
                   filtroEhValido={
-                    !!(anoLetivo && dreId && filtro.dreId && listaDres?.length)
+                    !!(
+                      anoLetivo &&
+                      dreId &&
+                      filtro.dreId &&
+                      listaDres?.length &&
+                      filtro.ueId &&
+                      ueId &&
+                      listaUes?.length
+                    )
                   }
                   temPaginacao
                   onClick={onClickEditar}

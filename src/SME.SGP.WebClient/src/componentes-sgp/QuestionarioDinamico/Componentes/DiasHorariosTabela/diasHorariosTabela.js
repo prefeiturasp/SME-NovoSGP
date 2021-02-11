@@ -8,6 +8,7 @@ import { DataTable } from '~/componentes';
 import Button from '~/componentes/button';
 import { Base, Colors } from '~/componentes/colors';
 import Label from '~/componentes/label';
+import { BtnExcluirDiasHorario } from '~/paginas/Relatorios/AEE/Plano/Cadastro/planoAEECadastro.css';
 import { setQuestionarioDinamicoEmEdicao } from '~/redux/modulos/questionarioDinamico/actions';
 import { confirmar } from '~/servicos';
 import ModalCadastroDiasHorario from './modalCadastroDiasHorarios';
@@ -53,14 +54,14 @@ const DiasHorariosTabela = props => {
     render: (texto, linha) => {
       return (
         <Tooltip title="Excluir">
-          <span>
+          <BtnExcluirDiasHorario>
             <Button
               id="btn-excluir"
               icon="trash-alt"
               iconType="far"
               color={Colors.Azul}
               border
-              className="btn-excluir-atendimento-clinico"
+              className="btn-excluir-dias-horario"
               disabled={desabilitado}
               onClick={async () => {
                 if (!desabilitado) {
@@ -88,7 +89,7 @@ const DiasHorariosTabela = props => {
               height="30px"
               width="30px"
             />
-          </span>
+          </BtnExcluirDiasHorario>
         </Tooltip>
       );
     },
