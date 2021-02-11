@@ -1,7 +1,5 @@
 ﻿using SME.SGP.Dominio;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Infra
 {
@@ -15,6 +13,6 @@ namespace SME.SGP.Infra
         public TipoQuestao TipoQuestao { get; set; }
         public string Opcionais { get; set; }
         public OpcaoRespostaDto[] OpcaoResposta { get; set; }
-        public RespostaQuestaoDto[] Resposta { get; set; }
+        public IEnumerable<RespostaQuestaoDto> Resposta { get; set; }
     }
 }

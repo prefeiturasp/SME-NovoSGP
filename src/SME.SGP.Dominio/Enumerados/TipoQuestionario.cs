@@ -7,5 +7,6 @@ namespace SME.SGP.Dominio
     public enum TipoQuestionario
     {
         EncaminhamentoAEE = 1,
+        PlanoAEE = 2,
     }
 }

@@ -1,4 +1,5 @@
 import { Form, Formik } from 'formik';
+import * as moment from 'moment';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -14,6 +15,8 @@ import CampoDinamicoUploadArquivos from './Componentes/campoDinamicoUploadArquiv
 import InformacoesEscolares from './Componentes/InformacoesEscolares/informacoesEscolares';
 import QuestionarioDinamicoFuncoes from './Funcoes/QuestionarioDinamicoFuncoes';
 import QuestionarioDinamicoValidacoes from './Validacoes/QuestionarioDinamicoValidacoes';
+import DiasHorariosTabela from './Componentes/DiasHorariosTabela/diasHorariosTabela';
+import CampoDinamicoPeriodo from './Componentes/campoDinamicoPeriodo';
 import CampoDinamicoCheckbox from './Componentes/campoDinamicoCheckbox';
 
 const QuestionarioDinamico = props => {
@@ -42,7 +45,7 @@ const QuestionarioDinamico = props => {
         () => obterForm(),
         dados.questionarioId,
         dadosQuestionarioAtual,
-        dados.id
+        dados?.id
       );
     }
   }, [refForm]);
@@ -72,6 +75,13 @@ const QuestionarioDinamico = props => {
           case tipoQuestao.Texto:
             valorRespostaAtual = resposta[0].texto;
             break;
+          case tipoQuestao.Periodo:
+            valorRespostaAtual = {
+              periodoInicio: moment(resposta[0].periodoInicio),
+              periodoFim: moment(resposta[0].periodoFim),
+            };
+            break;
+          case tipoQuestao.FrequenciaEstudanteAEE:
           case tipoQuestao.AtendimentoClinico:
             valorRespostaAtual = resposta[0].texto
               ? JSON.parse(resposta[0].texto)
@@ -367,6 +377,28 @@ const QuestionarioDinamico = props => {
           />
         );
         break;
+      case tipoQuestao.Periodo:
+        campoAtual = (
+          <CampoDinamicoPeriodo
+            questaoAtual={questaoAtual}
+            form={form}
+            label={label}
+            desabilitado={desabilitarCampos}
+          />
+        );
+        break;
+      case tipoQuestao.FrequenciaEstudanteAEE:
+        campoAtual = (
+          <div className="col-md-12 mb-3">
+            <DiasHorariosTabela
+              desabilitado={desabilitarCampos}
+              label={label}
+              form={form}
+              questaoAtual={questaoAtual}
+            />
+          </div>
+        );
+        break;
       default:
         break;
     }
@@ -391,7 +423,7 @@ const QuestionarioDinamico = props => {
     return campos;
   };
 
-  return dados?.questionarioId &&
+  return dados?.questionarioId > -1 &&
     dadosQuestionarioAtual?.length &&
     valoresIniciais ? (
     <Formik

@@ -28,6 +28,10 @@ class ServicoEncaminhamentoAEE {
     return api.get(`${urlPadrao}/situacoes`);
   };
 
+  obterAlunoSituacaoEncaminhamentoAEE = codigoAluno => {
+    return api.get(`${urlPadrao}/estudante/${codigoAluno}/situacao`);
+  };
+
   obterAvisoModal = async () => {
     const { dispatch } = store;
 

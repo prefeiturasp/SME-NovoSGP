@@ -151,6 +151,10 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new RegistroIndividualMap());
                config.AddMap(new PendenciaRegistroIndividualMap());
                config.AddMap(new PendenciaRegistroIndividualAlunoMap());
+               config.AddMap(new PlanoAEEMap());
+               config.AddMap(new PlanoAEEVersaoMap());
+               config.AddMap(new PlanoAEEQuestaoMap());
+               config.AddMap(new PlanoAEERespostaMap());
                config.ForDommel();
            });
         }
