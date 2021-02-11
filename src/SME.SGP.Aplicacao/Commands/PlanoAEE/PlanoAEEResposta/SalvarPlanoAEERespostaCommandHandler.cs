@@ -1,7 +1,7 @@
 ﻿using MediatR;
-using Newtonsoft.Json;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra.Utilitarios;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -21,15 +21,8 @@ namespace SME.SGP.Aplicacao.Commands
 
         public async Task<long> Handle(SalvarPlanoAEERespostaCommand request, CancellationToken cancellationToken)
         {
-            try
-            {
-                var planoAEEQuestao = await MapearParaEntidade(request);
-                return await repositorioPlanoAEEResposta.SalvarAsync(planoAEEQuestao);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            var planoAEEQuestao = await MapearParaEntidade(request);
+            return await repositorioPlanoAEEResposta.SalvarAsync(planoAEEQuestao);
         }
 
         private async Task<PlanoAEEResposta> MapearParaEntidade(SalvarPlanoAEERespostaCommand request)
@@ -43,6 +36,8 @@ namespace SME.SGP.Aplicacao.Commands
             if (EnumExtension.EhUmDosValores(request.TipoQuestao, new Enum[] { TipoQuestao.Periodo }))
             {
                 ConveterRespostaPeriodoEmDatas(request, resposta);
+
+                ValidarIntervaloDeDatas(resposta);
             }
 
             if (!String.IsNullOrEmpty(request.Resposta) && EnumExtension.EhUmDosValores(request.TipoQuestao, new Enum[] { TipoQuestao.Radio, TipoQuestao.Combo, TipoQuestao.Checkbox, TipoQuestao.ComboMultiplaEscolha }))
@@ -70,6 +65,19 @@ namespace SME.SGP.Aplicacao.Commands
             string[] periodos = respostaRetorno.ToString().Split(',');
             resposta.PeriodoInicio = DateTime.Parse(periodos[0]).Date;
             resposta.PeriodoFim = DateTime.Parse(periodos[1]).Date;
+        }
+        private void ValidarIntervaloDeDatas(PlanoAEEResposta resposta)
+        {
+            // Data inicial deve ser menor que a data final
+            if (resposta.PeriodoInicio.Value > resposta.PeriodoFim.Value)
+                throw new NegocioException("Período inicial deve ser menor que o período final");
+
+            if (resposta.PeriodoInicio.Value.Year != DateTime.Now.Year || resposta.PeriodoFim.Value.Year != DateTime.Now.Year)
+                throw new NegocioException("Não é permitido cadastrar plano AEE para outro Ano Letivo!");
+
+            // Data inicial deve ser menor que a data final
+            if (UtilData.ObterDiferencaDeMesesEntreDatas(resposta.PeriodoInicio.Value, resposta.PeriodoFim.Value) > 3)
+                throw new NegocioException("Não é permitido cadastrar plano AEE com período com intervalo maior que 3 meses!");
         }
     }
 }
