@@ -54,10 +54,7 @@ namespace SME.SGP.Aplicacao
              {
                  return new ItineranciaUeDto
                  {
-                     Id = itinerancia.Ues
-                              .Where(i => i.UeId == ue.Id)
-                              .Select(i => i.Id)
-                              .FirstOrDefault(),
+                     Id = itinerancia.Ues.FirstOrDefault(i => i.UeId == ue.Id).Id,                              
                      UeId = ue.Id,
                      Descricao = ues.FirstOrDefault(u => u.Id == ue.Id).Nome
                  };
