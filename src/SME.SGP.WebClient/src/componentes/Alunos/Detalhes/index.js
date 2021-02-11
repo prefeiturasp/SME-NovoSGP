@@ -30,6 +30,7 @@ const DetalhesAluno = props => {
     tipoResponsavel,
     celularResponsavel,
     dataAtualizacaoContato,
+    turma,
   } = dados;
 
   const numeroLinhas = () => {
@@ -87,6 +88,7 @@ const DetalhesAluno = props => {
                 {dataSituacao ? moment(dataSituacao).format('L') : ''}{' '}
                 {dataSituacao ? moment(dataSituacao).format('LT') : ''}
               </p>
+              {turma ? <p>Turma: {turma}</p> : ''}
             </div>
           </div>
           {nomeResponsavel && exibirResponsavel ? (
