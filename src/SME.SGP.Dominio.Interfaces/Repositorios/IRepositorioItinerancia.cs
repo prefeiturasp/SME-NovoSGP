@@ -1,10 +1,8 @@
-﻿using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra;
+﻿using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Dados.Repositorios
+namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioItinerancia : IRepositorioBase<Itinerancia>
     {

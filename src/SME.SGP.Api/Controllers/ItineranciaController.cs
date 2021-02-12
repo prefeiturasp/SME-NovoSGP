@@ -35,15 +35,19 @@ namespace SME.SGP.Api
         [HttpPost]
         [ProducesResponseType(typeof(RetornoBaseDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        //[Permissao(Permissao.AEE_A, Policy = "Bearer")]
-        public async Task<IActionResult> Salvar([FromBody] ItineranciaDto parametros)
+        //[Permissao(Permissao.REI_I, Policy = "Bearer")]
+        public async Task<IActionResult> Salvar([FromBody] ItineranciaDto itineranciaDto, [FromServices] ISalvarItineranciaUseCase useCase)
         {
-            return Ok(new AuditoriaDto() 
-            { Id = 1, 
-              CriadoPor = "ALINE LIMA CARVALHO",
-              CriadoEm = DateTime.Now,
-              CriadoRF = "8240787"
-            });
+            return Ok(await useCase.Executar(itineranciaDto));
+        }
+
+        [HttpPut]
+        [ProducesResponseType(typeof(AuditoriaDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        //[Permissao(Permissao.REI_A, Policy = "Bearer")]
+        public async Task<IActionResult> Alterar([FromServices] IAlterarItineranciaUseCase useCase, [FromBody] ItineranciaDto itineranciaDto)
+        {            
+            return Ok(await useCase.Executar(itineranciaDto));
         }
 
         [HttpGet("alunos/questoes/{id}")]
