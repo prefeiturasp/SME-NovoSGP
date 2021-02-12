@@ -7,5 +7,6 @@
         public string Nome { get; set; }
         public string CodigoTurma { get; set; }
         public long TurmaId { get; set; }
+        public string NomeComModalidadeTurma { get; set; }
     }
 }
