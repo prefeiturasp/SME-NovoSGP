@@ -3,6 +3,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -25,9 +26,12 @@ namespace SME.SGP.Aplicacao
 
             var itineranciaAlunoId = await repositorioItineranciaAluno.SalvarAsync(itineranciaAluno);
 
-            if (itineranciaAlunoId > 0)
-                foreach (var questão in request.Aluno.Questoes)
-                    await mediator.Send(new SalvarItineranciaAlunoQuestaoCommand(questão.QuestaoId, itineranciaAlunoId, questão.Resposta));
+            if (itineranciaAlunoId < 0)
+                throw new NegocioException($"Não foi possível salvar a itinerância do aluno");
+
+            if (request.Aluno.Questoes == null || request.Aluno.Questoes.Any())
+                    foreach (var questão in request.Aluno.Questoes)
+                        await mediator.Send(new SalvarItineranciaAlunoQuestaoCommand(questão.QuestaoId, itineranciaAlunoId, questão.Resposta));
 
             return (AuditoriaDto)itineranciaAluno;
         }

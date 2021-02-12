@@ -41,13 +41,13 @@ namespace SME.SGP.Api
             return Ok(await useCase.Executar(itineranciaDto));
         }
 
-        [HttpDelete("{id}")]
-        [ProducesResponseType(typeof(RetornoBaseDto), 200)]
+        [HttpPut]
+        [ProducesResponseType(typeof(AuditoriaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         //[Permissao(Permissao.REI_A, Policy = "Bearer")]
-        public async Task<IActionResult> Excluir(long id, [FromServices] IExcluirItineranciaUseCase useCase)
-        {
-            return Ok(await useCase.Executar(id));
+        public async Task<IActionResult> Alterar([FromServices] IAlterarItineranciaUseCase useCase, [FromBody] ItineranciaDto itineranciaDto)
+        {            
+            return Ok(await useCase.Executar(itineranciaDto));
         }
 
         [HttpGet("alunos/questoes/{id}")]

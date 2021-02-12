@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
                         throw new NegocioException($"Não foi possível excluir a itinerância de Id {itinerancia.Id}");
 
                     foreach (var aluno in itinerancia.Alunos)                    
-                        if(!await mediator.Send(new ExcluirItineranciaAlunoCommand(aluno.Id)))
+                        if(!await mediator.Send(new ExcluirItineranciaAlunoCommand(aluno)))
                             throw new NegocioException($"Não foi possível excluir a itinerância do aluno de Id {aluno.Id}");
 
                     foreach (var objetivo in itinerancia.ObjetivosVisita)

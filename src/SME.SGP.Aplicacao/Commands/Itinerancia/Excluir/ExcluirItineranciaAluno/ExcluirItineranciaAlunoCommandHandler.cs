@@ -21,21 +21,13 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(ExcluirItineranciaAlunoCommand request, CancellationToken cancellationToken)
         {
-            var id = await repositorioItineranciaAluno.RemoverLogico(request.Id);
+            if (request.Aluno.AlunosQuestoes == null || request.Aluno.AlunosQuestoes.Any())
+                foreach (var questao in request.Aluno.AlunosQuestoes)
+                    await mediator.Send(new ExcluirItineranciaAlunoQuestaoCommand(questao.Id));
 
-            if (id == 0)
-                throw new NegocioException($"Não foi possível excluir o aluno da itinerância do id {id}");
+            repositorioItineranciaAluno.Remover(request.Aluno.Id);
 
-
-            var questoesAluno = await mediator.Send(new ObterQuestoesItineranciaAlunoPorIdQuery(id));
-            if (questoesAluno == null || !questoesAluno.Any())
-                throw new NegocioException($"Não foi possível obter as questoes do aluno para o id {id}");
-
-            foreach (var questao in questoesAluno)
-                await mediator.Send(new ExcluirItineranciaAlunoQuestaoCommand(questao.Id));
-
-
-            return id != 0;
+            return true;
         }
     }
 }

@@ -1,23 +1,24 @@
 ﻿using FluentValidation;
 using MediatR;
+using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao
 {
     public class ExcluirItineranciaAlunoCommand : IRequest<bool>
     {
-        public ExcluirItineranciaAlunoCommand(long id)
+        public ExcluirItineranciaAlunoCommand(ItineranciaAluno aluno)
         {
-            Id = id;
+            Aluno = aluno;
         }
 
-        public long Id { get; set; }
+        public ItineranciaAluno Aluno { get; set; }
     }
     public class ExcluirItineranciaAlunoCommandValidator : AbstractValidator<ExcluirItineranciaAlunoCommand>
     {
         public ExcluirItineranciaAlunoCommandValidator()
         {
-            RuleFor(c => c.Id)
-            .GreaterThan(0)
+            RuleFor(c => c.Aluno)
+            .NotEmpty()
             .WithMessage("O id da itinerância do aluno deve ser informado para exclusão.");
         }
     }

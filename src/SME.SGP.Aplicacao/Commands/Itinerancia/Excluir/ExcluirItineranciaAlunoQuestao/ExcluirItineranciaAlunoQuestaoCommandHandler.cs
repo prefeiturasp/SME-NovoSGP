@@ -17,9 +17,9 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(ExcluirItineranciaAlunoQuestaoCommand request, CancellationToken cancellationToken)
         {
-            var id = await repositorioItineranciaAlunoQuestao.RemoverLogico(request.Id);
+            repositorioItineranciaAlunoQuestao.Remover(request.Id);
 
-            return id != 0;
+            return true;
         }
     }
 }

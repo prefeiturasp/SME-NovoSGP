@@ -3,6 +3,7 @@ using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -16,7 +17,7 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<AuditoriaDto> Executar(ItineranciaDto itineranciaDto)
-        {            
+        {
             return await SalvarItinerancia(itineranciaDto);
         }
 
@@ -29,18 +30,22 @@ namespace SME.SGP.Aplicacao
             using (var transacao = unitOfWork.IniciarTransacao())
             {
                 try
-                {   
-                    foreach (var aluno in itineranciaDto.Alunos)
-                        await mediator.Send(new SalvarItineranciaAlunoCommand(aluno, itinerancia.Id));
-                    
-                    foreach (var objetivo in itineranciaDto.ObjetivosVisita)
-                        await mediator.Send(new SalvarItineranciaObjetivoCommand(objetivo.ItineranciaObjetivoId, itinerancia.Id, objetivo.Descricao));
-                                        
-                    foreach (var questao in itineranciaDto.Questoes)
-                        await mediator.Send(new SalvarItineranciaQuestaoCommand(questao.QuestaoId, itinerancia.Id, questao.Resposta));
-                                       
-                    foreach (var ue in itineranciaDto.Ues)
-                        await mediator.Send(new SalvarItineranciaUeCommand(ue.UeId, itinerancia.Id));
+                {
+                    if (itineranciaDto.Alunos == null || itineranciaDto.Alunos.Any())
+                        foreach (var aluno in itineranciaDto.Alunos)
+                            await mediator.Send(new SalvarItineranciaAlunoCommand(aluno, itinerancia.Id));
+
+                    if (itineranciaDto.ObjetivosVisita == null || itineranciaDto.ObjetivosVisita.Any())
+                        foreach (var objetivo in itineranciaDto.ObjetivosVisita)
+                            await mediator.Send(new SalvarItineranciaObjetivoCommand(objetivo.ItineranciaObjetivoId, itinerancia.Id, objetivo.Descricao));
+
+                    if (itineranciaDto.Questoes == null || itineranciaDto.Questoes.Any())
+                        foreach (var questao in itineranciaDto.Questoes)
+                            await mediator.Send(new SalvarItineranciaQuestaoCommand(questao.QuestaoId, itinerancia.Id, questao.Resposta));
+
+                    if (itineranciaDto.Ues == null || itineranciaDto.Ues.Any())
+                        foreach (var ue in itineranciaDto.Ues)
+                            await mediator.Send(new SalvarItineranciaUeCommand(ue.UeId, itinerancia.Id));
 
                     unitOfWork.PersistirTransacao();
 
