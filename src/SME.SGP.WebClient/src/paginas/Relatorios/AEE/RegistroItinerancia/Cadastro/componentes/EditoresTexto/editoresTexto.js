@@ -18,7 +18,7 @@ const EditoresTexto = props => {
       {dados &&
         dados.map(questao => {
           return (
-            <div className="row mb-4" key={questao.id}>
+            <div className="row mb-4" key={questao.questaoId}>
               <div className="col-12">
                 <JoditEditor
                   form={form}

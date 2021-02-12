@@ -38,12 +38,12 @@ namespace SME.SGP.Aplicacao
             {
                 if (questaoBase.Tipo == TipoQuestionario.RegistroItinerancia)
                 {
-                    var questao = new ItineranciaQuestaoDto() { Id = questaoBase.Id, Descricao = questaoBase.Nome };
+                    var questao = new ItineranciaQuestaoDto() { QuestaoId = questaoBase.Id, Descricao = questaoBase.Nome };
                     listaQuestao.Add(questao);
                 }
                 else
                 {
-                    var questaoAluno = new ItineranciaAlunoQuestaoDto() { Id = questaoBase.Id, Descricao = questaoBase.Nome };
+                    var questaoAluno = new ItineranciaAlunoQuestaoDto() { QuestaoId = questaoBase.Id, Descricao = questaoBase.Nome };
                     listaQuestaoAluno.Add(questaoAluno);
                 }
             }

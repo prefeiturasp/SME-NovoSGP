@@ -80,7 +80,7 @@ namespace SME.SGP.Aplicacao.Interfaces
 
             if (itineranciaDto.ObjetivosVisita == null || itineranciaDto.ObjetivosVisita.Any())
                 foreach (var objetivo in itineranciaDto.ObjetivosVisita)
-                    await mediator.Send(new SalvarItineranciaObjetivoCommand(objetivo.ItineranciaObjetivoId, itinerancia.Id, objetivo.Descricao));
+                    await mediator.Send(new SalvarItineranciaObjetivoCommand(objetivo.ItineranciaObjetivoBaseId, itinerancia.Id, objetivo.Descricao));
 
             if (itineranciaDto.Questoes == null || itineranciaDto.Questoes.Any())
                 foreach (var questao in itineranciaDto.Questoes)

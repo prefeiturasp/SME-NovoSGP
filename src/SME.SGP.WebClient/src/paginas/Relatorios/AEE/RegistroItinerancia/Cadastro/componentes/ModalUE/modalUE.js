@@ -89,6 +89,7 @@ const ModalUE = ({
           ...estadoAntigo,
           {
             key: ueSelecionada.valor,
+            ueId: ueSelecionada.id,
             unidadeEscolar: ueSelecionada.desc,
             codigoUe: ue,
             podeRemover: true,

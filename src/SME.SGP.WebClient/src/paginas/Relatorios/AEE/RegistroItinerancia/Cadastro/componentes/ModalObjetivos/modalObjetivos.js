@@ -34,11 +34,12 @@ const ModalObjetivos = ({
     if (listaObjetivos?.length) {
       listaObjetivos.forEach(objetivo => {
         if (objetivo.temDescricao) {
-          valores[NOME_CAMPO_TEXTO + objetivo.id] = '';
+          valores[NOME_CAMPO_TEXTO + objetivo.itineranciaObjetivoBaseId] = '';
           setValoresIniciais(valores);
         }
         const objetivoSelecionado = objetivosSelecionados?.find(
-          o => o.id === objetivo.id
+          o =>
+            o.itineranciaObjetivoBaseId === objetivo.itineranciaObjetivoBaseId
         );
         if (objetivoSelecionado) {
           objetivo.checked = objetivoSelecionado.checked;
@@ -77,8 +78,10 @@ const ModalObjetivos = ({
   };
 
   const onChangeCheckbox = (item, form) => {
-    form.resetForm();
-    const objetivo = listaObjetivos.find(o => o.id === item.id);
+    refForm.resetForm();
+    const objetivo = listaObjetivos.find(
+      o => o.itineranciaObjetivoBaseId === item.itineranciaObjetivoBaseId
+    );
     if (objetivo) {
       if (
         !objetivo.permiteVariasUes &&
@@ -98,7 +101,7 @@ const ModalObjetivos = ({
     listaObjetivos.forEach(objetivoItem => {
       if (objetivoItem.temDescricao && objetivoItem.checked) {
         validacoesCamposComDescricao[
-          NOME_CAMPO_TEXTO + objetivoItem.id
+          NOME_CAMPO_TEXTO + objetivoItem.itineranciaObjetivoBaseId
         ] = Yup.string().required('Campo obrigatório');
       } else {
         objetivo.descricao = '';
@@ -113,7 +116,9 @@ const ModalObjetivos = ({
 
   const onChangeCampoTexto = (evento, item) => {
     const texto = evento.target?.value;
-    const objetivo = listaObjetivos.find(o => o.id === item.id);
+    const objetivo = listaObjetivos.find(
+      o => o.itineranciaObjetivoBaseId === item.itineranciaObjetivoBaseId
+    );
     if (objetivo) {
       objetivo.descricao = texto;
     }
@@ -170,12 +175,12 @@ const ModalObjetivos = ({
                     : '(apenas uma unidade)';
 
                   return (
-                    <React.Fragment key={item.id}>
+                    <React.Fragment key={item.itineranciaObjetivoBaseId}>
                       <CheckboxComponent
-                        key={item.id}
+                        key={item.itineranciaObjetivoBaseId}
                         className="mb-3 ml-n2"
                         label={`${item.nome} ${textoUe}`}
-                        name={`objetivo-${item.id}`}
+                        name={`objetivo-${item.itineranciaObjetivoBaseId}`}
                         onChangeCheckbox={() => onChangeCheckbox(item, form)}
                         disabled={false}
                         checked={item.checked}
@@ -183,7 +188,9 @@ const ModalObjetivos = ({
                       {item.temDescricao && (
                         <div className="mb-3 pl-3 mr-n3">
                           <CampoTexto
-                            name={NOME_CAMPO_TEXTO + item.id}
+                            name={
+                              NOME_CAMPO_TEXTO + item.itineranciaObjetivoBaseId
+                            }
                             height="76"
                             onChange={evento =>
                               onChangeCampoTexto(evento, item)

@@ -85,7 +85,7 @@ namespace SME.SGP.Aplicacao
                 return new ItineranciaObjetivoDto
                 {
                     Id = o.Id,
-                    ItineranciaObjetivoId = 0,
+                    ItineranciaObjetivoBaseId = 0,
                     Nome = itinerancia.ObjetivosBase.FirstOrDefault(ob => ob.Id == o.ItineranciaObjetivosBaseId).Nome,
                     TemDescricao = itinerancia.ObjetivosBase.FirstOrDefault(ob => ob.Id == o.ItineranciaObjetivosBaseId).TemDescricao,
                     PermiteVariasUes = itinerancia.ObjetivosBase.FirstOrDefault(ob => ob.Id == o.ItineranciaObjetivosBaseId).PermiteVariasUes,
@@ -115,12 +115,11 @@ namespace SME.SGP.Aplicacao
             {
                 return new ItineranciaAlunoQuestaoDto
                 {
-                    Id = questao.Id,
                     QuestaoId = questao.QuestaoId,
-                    Descricao = questoesBase.ItineranciaAlunoQuestao.FirstOrDefault(q => q.Id == questao.QuestaoId).Descricao,
+                    Descricao = questoesBase.ItineranciaAlunoQuestao.FirstOrDefault(q => q.QuestaoId == questao.QuestaoId).Descricao,
                     ItineranciaAlunoId = questao.ItineranciaAlunoId,
                     Resposta = questao.Resposta,
-                    Obrigatorio = questoesBase.ItineranciaAlunoQuestao.FirstOrDefault(q => q.Id == questao.QuestaoId).Obrigatorio
+                    Obrigatorio = questoesBase.ItineranciaAlunoQuestao.FirstOrDefault(q => q.QuestaoId == questao.QuestaoId).Obrigatorio
                 };
             });
         }

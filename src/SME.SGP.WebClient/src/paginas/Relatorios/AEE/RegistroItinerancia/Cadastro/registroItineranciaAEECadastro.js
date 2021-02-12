@@ -75,7 +75,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
     const salvar = await ServicoRegistroItineranciaAEE.salvarItinerancia(
       itinerancia
     ).catch(e => erros(e));
-    if (salvar.status === 200) {
+    if (salvar?.status === 200) {
       sucesso('Registro salvo com sucesso');
     }
   };
