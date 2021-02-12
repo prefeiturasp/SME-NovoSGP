@@ -4,6 +4,7 @@ const inicial = {
   questoesItinerancia: [],
   questoesItineranciaAluno: {},
   objetivos: [],
+  objetivosOriginal: [],
 };
 
 export default function frequenciaPlanoAula(state = inicial, action) {

@@ -68,15 +68,8 @@ const ModalUE = ({
 
   const onChangeDre = dre => {
     setDreId(dre);
-    // dispatch(setDadosIniciaisEncaminhamentoAEE({ ueId, dreId: dre }));
-
     setListaUes([]);
     setUeId();
-
-    // setListaTurmas([]);
-    // setTurmaId();
-
-    // filtrar(dre, ueId, turmaId, alunoLocalizadorSelecionado, situacao);
   };
 
   const onChangeUe = ue => {
@@ -104,7 +97,6 @@ const ModalUE = ({
       });
       setModoEdicao(true);
       setUeId();
-      setDreId();
     }
   };
 
