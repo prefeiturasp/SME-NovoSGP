@@ -8,7 +8,6 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioQuestaoEncaminhamentoAEE : IRepositorioBase<QuestaoEncaminhamentoAEE>
     {
-        Task<IEnumerable<Questao>> ObterListaPorQuestionario(long questionarioId);
         Task<IEnumerable<long>> ObterQuestoesPorSecaoId(long encaminhamentoAEESecaoId);
         Task<IEnumerable<RespostaQuestaoEncaminhamentoAEEDto>> ObterRespostasEncaminhamento(long encaminhamentoId);
     }
