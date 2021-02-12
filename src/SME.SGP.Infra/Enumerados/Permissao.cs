@@ -598,16 +598,16 @@
         [PermissaoMenu(Menu = "Acompanhamento de frequência", Icone = "fas fa-user-cog", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 7, EhConsulta = true, Url = "/diario-classe/acompanhamento-frequencia")]
         AFQ_C = 201,
 
-        [PermissaoMenu(Menu = "AEE", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhConsulta = true, Url = "/relatorios/aee/registro-itinerancia", EhSubMenu = true, OrdemSubMenu = 2, SubMenu = "Registro de itinerância")]
+        [PermissaoMenu(Menu = "AEE", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhConsulta = true, Url = "/relatorios/aee/registro-itinerancia", EhSubMenu = true, OrdemSubMenu = 3, SubMenu = "Registro de itinerância")]
         RI_C = 206,
 
-        [PermissaoMenu(Menu = "AEE", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhInclusao = true, Url = "/relatorios/aee/registro-itinerancia", EhSubMenu = true, OrdemSubMenu = 2, SubMenu = "Registro de itinerância")]
+        [PermissaoMenu(Menu = "AEE", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhInclusao = true, Url = "/relatorios/aee/registro-itinerancia", EhSubMenu = true, OrdemSubMenu = 3, SubMenu = "Registro de itinerância")]
         RI_I = 207,
 
-        [PermissaoMenu(Menu = "AEE", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhExclusao = true, Url = "/relatorios/aee/registro-itinerancia", EhSubMenu = true, OrdemSubMenu = 2, SubMenu = "Registro de itinerância")]
+        [PermissaoMenu(Menu = "AEE", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhExclusao = true, Url = "/relatorios/aee/registro-itinerancia", EhSubMenu = true, OrdemSubMenu = 3, SubMenu = "Registro de itinerância")]
         RI_E = 208,
 
-        [PermissaoMenu(Menu = "AEE", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = true, Url = "/relatorios/aee/registro-itinerancia", EhSubMenu = true, OrdemSubMenu = 2, SubMenu = "Registro de itinerância")]
+        [PermissaoMenu(Menu = "AEE", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = true, Url = "/relatorios/aee/registro-itinerancia", EhSubMenu = true, OrdemSubMenu = 3, SubMenu = "Registro de itinerância")]
         RI_A = 209
     }
 }
