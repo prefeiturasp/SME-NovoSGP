@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -29,6 +30,8 @@ namespace SME.SGP.Aplicacao.Queries.Aluno.ObterAlunosPorCodigoEolNome
 
                 var alunoSimplesDto = new List<AlunoSimplesDto>();
 
+                var turmas = await mediator.Send(new ObterTurmasPorCodigosQuery(alunosEOL.Select(al => al.CodigoTurma.ToString()).ToArray()));
+
                 foreach (var alunoEOL in alunosEOL.OrderBy(a => a.NomeAluno))
                 {
                     var alunoSimples = new AlunoSimplesDto()
@@ -36,8 +39,10 @@ namespace SME.SGP.Aplicacao.Queries.Aluno.ObterAlunosPorCodigoEolNome
                         Codigo = alunoEOL.CodigoAluno,
                         Nome = alunoEOL.NomeAluno,
                         CodigoTurma = alunoEOL.CodigoTurma.ToString(),
-                        TurmaId = await ObterTurmaId(alunoEOL.CodigoTurma)
-                };
+                        TurmaId = turmas == null ? 0 : turmas.FirstOrDefault(t => t.CodigoTurma == alunoEOL.CodigoTurma.ToString()).Id,
+                        NomeComModalidadeTurma = @$"{alunoEOL.NomeAluno} - {OberterNomeTurmaFormatado(turmas
+                                                                                                        .FirstOrDefault(t => t.CodigoTurma == alunoEOL.CodigoTurma.ToString()))}"
+                    };
                     alunoSimplesDto.Add(alunoSimples);
                 }
 
@@ -47,9 +52,16 @@ namespace SME.SGP.Aplicacao.Queries.Aluno.ObterAlunosPorCodigoEolNome
             {
                 throw e;
             }
-        }
+        }        
 
-        private async Task<long> ObterTurmaId(long codigoTurma)
-            => await mediator.Send(new ObterTurmaIdPorCodigoQuery(codigoTurma.ToString()));
+        private string OberterNomeTurmaFormatado(Turma turma)
+        {
+            var turmaNome = "";
+
+            if (turma != null)
+                turmaNome = $"{turma.ModalidadeCodigo.ShortName()} - {turma.Nome}";
+
+            return turmaNome;
+        }
     }
 }
