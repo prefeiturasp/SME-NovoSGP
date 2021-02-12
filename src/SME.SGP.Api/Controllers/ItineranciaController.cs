@@ -35,7 +35,7 @@ namespace SME.SGP.Api
         [HttpPost]
         [ProducesResponseType(typeof(RetornoBaseDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        //[Permissao(Permissao.AEE_A, Policy = "Bearer")]
+        //[Permissao(Permissao.REI_I, Policy = "Bearer")]
         public async Task<IActionResult> Salvar([FromBody] ItineranciaDto itineranciaDto, [FromServices] ISalvarItineranciaUseCase useCase)
         {
             return Ok(await useCase.Executar(itineranciaDto));
@@ -44,10 +44,10 @@ namespace SME.SGP.Api
         [HttpDelete("{id}")]
         [ProducesResponseType(typeof(RetornoBaseDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        //[Permissao(Permissao.AEE_A, Policy = "Bearer")]
-        public async Task<IActionResult> Excluir(long id)
+        //[Permissao(Permissao.REI_A, Policy = "Bearer")]
+        public async Task<IActionResult> Excluir(long id, [FromServices] IExcluirItineranciaUseCase useCase)
         {
-            return Ok();
+            return Ok(await useCase.Executar(id));
         }
 
         [HttpGet("alunos/questoes/{id}")]

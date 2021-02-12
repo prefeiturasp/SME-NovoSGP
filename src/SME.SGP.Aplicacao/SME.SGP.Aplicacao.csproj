@@ -27,7 +27,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Commands\Itinerancia\Excluir\" />
     <Folder Include="Commands\Itinerancia\Alterar\" />
     <Folder Include="Interfaces\CasosDeUso\Aluno\" />
     <Folder Include="Queries\AcompanhamentoFrequencia\" />
