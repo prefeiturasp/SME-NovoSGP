@@ -25,13 +25,6 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<QuestaoDto>> Handle(ObterQuestionarioEncaminhamentoAeeQuery request, CancellationToken cancellationToken)
         {
-            var dadosQuestionario = await repositorioQuestaoEncaminhamento.ObterListaPorQuestionario(request.QuestionarioId);
-
-            var questoesComplementares = dadosQuestionario
-                .Where(dq => dq.OpcoesRespostas.Any(a => a.QuestoesComplementares.Any()))
-                .SelectMany(dq => dq.OpcoesRespostas.Where(c => c.QuestoesComplementares.Any()).SelectMany(a => a.QuestoesComplementares.Select(q => q.QuestaoComplementarId)))
-                .Distinct();
-
             var respostasEncaminhamento = request.EncaminhamentoId.HasValue ?
                 await repositorioQuestaoEncaminhamento.ObterRespostasEncaminhamento(request.EncaminhamentoId.Value) :
                 Enumerable.Empty<RespostaQuestaoEncaminhamentoAEEDto>();
