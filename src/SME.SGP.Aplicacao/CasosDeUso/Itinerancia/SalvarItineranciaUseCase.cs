@@ -23,14 +23,14 @@ namespace SME.SGP.Aplicacao
 
         public async Task<AuditoriaDto> SalvarItinerancia(ItineranciaDto itineranciaDto)
         {
-            var itinerancia = await mediator.Send(new SalvarItineranciaCommand(itineranciaDto.DataVisita, itineranciaDto.DataRetornoVerificacao));
-            if (itinerancia == null)
-                throw new NegocioException("Erro ao Salvar a itinerancia");
-
             using (var transacao = unitOfWork.IniciarTransacao())
             {
                 try
                 {
+                    var itinerancia = await mediator.Send(new SalvarItineranciaCommand(itineranciaDto.DataVisita, itineranciaDto.DataRetornoVerificacao));
+                    if (itinerancia == null)
+                        throw new NegocioException("Erro ao Salvar a itinerancia");
+
                     if (itineranciaDto.Alunos == null || itineranciaDto.Alunos.Any())
                         foreach (var aluno in itineranciaDto.Alunos)
                             await mediator.Send(new SalvarItineranciaAlunoCommand(aluno, itinerancia.Id));
