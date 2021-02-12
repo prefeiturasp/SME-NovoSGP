@@ -19,6 +19,7 @@ const DiasHorariosTabela = props => {
   const dispatch = useDispatch();
 
   const [exibirModal, setExibirModal] = useState(false);
+  const [dadosIniciais, setDadosIniciais] = useState({});
 
   const onClickNovoDiaHorario = () => {
     setExibirModal(true);
@@ -26,18 +27,32 @@ const DiasHorariosTabela = props => {
 
   const onCloseModal = novosDados => {
     setExibirModal(false);
+    setDadosIniciais({});
 
     if (novosDados) {
       const dadosAtuais = form?.values?.[questaoAtual.id]?.length
         ? form?.values?.[questaoAtual.id]
         : [];
-      novosDados.id = dadosAtuais.length + 1;
-      dadosAtuais.push(novosDados);
+      if (novosDados?.id) {
+        const indexItemAnterior = dadosAtuais.findIndex(
+          x => x.id === novosDados.id
+        );
+        dadosAtuais[indexItemAnterior] = novosDados;
+      } else {
+        novosDados.id = dadosAtuais.length + 1;
+        dadosAtuais.push(novosDados);
+      }
+
       if (form) {
         form.setFieldValue(questaoAtual.id, dadosAtuais);
         dispatch(setQuestionarioDinamicoEmEdicao(true));
       }
     }
+  };
+
+  const onClickRow = row => {
+    setDadosIniciais(row);
+    setExibirModal(true);
   };
 
   const formatarCampoTabela = data => {
@@ -143,6 +158,7 @@ const DiasHorariosTabela = props => {
       <ModalCadastroDiasHorario
         onClose={onCloseModal}
         exibirModal={exibirModal}
+        dadosIniciais={dadosIniciais}
       />
       <Label text={label} />
       <div className={possuiErro() ? 'tabela-invalida' : ''}>
@@ -155,6 +171,7 @@ const DiasHorariosTabela = props => {
               : []
           }
           pagination={false}
+          onClickRow={onClickRow}
         />
       </div>
       {form ? obterErros() : ''}
