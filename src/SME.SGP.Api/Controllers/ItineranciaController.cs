@@ -36,14 +36,18 @@ namespace SME.SGP.Api
         [ProducesResponseType(typeof(RetornoBaseDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         //[Permissao(Permissao.AEE_A, Policy = "Bearer")]
-        public async Task<IActionResult> Salvar([FromBody] ItineranciaDto parametros)
+        public async Task<IActionResult> Salvar([FromBody] ItineranciaDto itineranciaDto, [FromServices] ISalvarItineranciaUseCase useCase)
         {
-            return Ok(new AuditoriaDto() 
-            { Id = 1, 
-              CriadoPor = "ALINE LIMA CARVALHO",
-              CriadoEm = DateTime.Now,
-              CriadoRF = "8240787"
-            });
+            return Ok(await useCase.Executar(itineranciaDto));
+        }
+
+        [HttpDelete("{id}")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        //[Permissao(Permissao.AEE_A, Policy = "Bearer")]
+        public async Task<IActionResult> Excluir(long id)
+        {
+            return Ok();
         }
 
         [HttpGet("alunos/questoes/{id}")]
