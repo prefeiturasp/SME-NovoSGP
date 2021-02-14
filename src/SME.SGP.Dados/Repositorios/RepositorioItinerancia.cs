@@ -123,12 +123,12 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select i.*, ia.*, iaq.*, iq.* , io.*, iob.*, iu.*
                             from itinerancia i 
-                           inner join itinerancia_aluno ia on ia.itinerancia_id = i.id
-                           inner join itinerancia_aluno_questao iaq on iaq.itinerancia_aluno_id = ia.id    
-                           inner join itinerancia_questao iq on iq.itinerancia_id = i.id 
-                           inner join itinerancia_objetivo io on io.itinerancia_id = i.id   
-                           inner join itinerancia_objetivo_base iob on iob.id = io.itinerancia_base_id
-                           inner join itinerancia_ue iu on iu.itinerancia_id = i.id                           
+                           left join itinerancia_aluno ia on ia.itinerancia_id = i.id
+                           left join itinerancia_aluno_questao iaq on iaq.itinerancia_aluno_id = ia.id    
+                           left join itinerancia_questao iq on iq.itinerancia_id = i.id 
+                           left join itinerancia_objetivo io on io.itinerancia_id = i.id   
+                           left join itinerancia_objetivo_base iob on iob.id = io.itinerancia_base_id
+                           left join itinerancia_ue iu on iu.itinerancia_id = i.id                           
                            where i.id = @id
                              and not i.excluido";
 
@@ -143,7 +143,8 @@ namespace SME.SGP.Dados.Repositorios
                          itinerancia = registroItinerancia;
                          lookup.Add(registroItinerancia.Id, itinerancia);
                      }
-                     itinerancia.AdicionarAluno(itineranciaAluno);
+                     if(itineranciaAluno != null)
+                        itinerancia.AdicionarAluno(itineranciaAluno);
 
                      if (itineranciaAlunoquestao != null)
                          itinerancia.AdicionarQuestaoAluno(itineranciaAluno.Id, itineranciaAlunoquestao);

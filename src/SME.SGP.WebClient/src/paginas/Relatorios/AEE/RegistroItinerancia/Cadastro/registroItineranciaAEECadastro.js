@@ -54,6 +54,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
   const [uesSelecionados, setUesSelecionados] = useState();
   const [desabilitarCampos, setDesabilitarCampos] = useState(false);
   const [objetivosBase, setObjetivosBase] = useState([]);
+  const [itineranciaId, setItineranciaId] = useState();
   const usuario = useSelector(store => store.usuario);
   const permissoesTela =
     usuario.permissoes[RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA];
@@ -93,13 +94,81 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
   };
 
   useEffect(() => {
-    if (match?.params?.id)
+    if (match?.params?.id) {
       setBreadcrumbManual(
         match?.url,
         'Alterar',
         RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA
       );
+      setItineranciaId(match.params.id);
+    }
   }, [match]);
+
+  const obterObjetivos = async () => {
+    const retorno = await ServicoRegistroItineranciaAEE.obterObjetivos().catch(
+      e => erros(e)
+    );
+    if (retorno?.data) {
+      const dadosAlterados = retorno.data.map(item => ({
+        ...item,
+        key: item.id,
+      }));
+      setObjetivosBase(dadosAlterados);
+    }
+  };
+
+  const obterQuestoes = async () => {
+    const result = await ServicoRegistroItineranciaAEE.obterQuestoesItinerancia();
+    if (result?.status === 200) {
+      dispatch(setQuestoesItinerancia(result?.data?.itineranciaQuestao));
+      dispatch(
+        setQuestoesItineranciaAluno(result?.data?.itineranciaAlunoQuestao)
+      );
+    }
+  };
+
+  useEffect(() => {
+    obterObjetivos();
+    obterQuestoes();
+  }, []);
+
+  useEffect(() => {
+    async function obterItinerancia(id) {
+      const result = await ServicoRegistroItineranciaAEE.obterItineranciaPorId(
+        id
+      ).catch(e => erros(e));
+      if (result.data && result?.status === 200) {
+        const itinerancia = result.data;
+        setDataVisita(itinerancia.dataVisita);
+        setDataRetornoVerificacao(itinerancia.dataRetornoVerificacao);
+        valoresIniciais.dataVisita = window.moment(itinerancia.dataVisita);
+        valoresIniciais.dataRetornoVerificacao = window.moment(
+          itinerancia.dataRetornoVerificacao
+        );
+        if (itinerancia.objetivosVisita?.length) {
+          setObjetivosSelecionados(itinerancia.objetivosVisita);
+          itinerancia.objetivosVisita.forEach(objetivo => {
+            let objetivoBase = objetivosBase.find(
+              o =>
+                o.itineranciaObjetivosBaseId ===
+                objetivo.itineranciaObjetivosBaseId
+            );
+            objetivoBase = objetivo;
+            objetivoBase.checked = true;
+          });
+        }
+        if (itinerancia.ues?.length) {
+          setUesSelecionados(itinerancia.ues);
+        }
+        if (itinerancia.questoes?.length) {
+          dispatch(setQuestoesItinerancia(itinerancia.questoes));
+        }
+      }
+    }
+    if (itineranciaId) {
+      obterItinerancia(itineranciaId);
+    }
+  }, [itineranciaId]);
 
   const removerAlunos = alunoCodigo => {
     setAlunosSelecionados(estadoAntigo =>
@@ -119,33 +188,6 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
       ? !permissoesTela?.podeAlterar
       : !permissoesTela?.podeIncluir;
   };
-
-  const obterObjetivos = async () => {
-    const retorno = await ServicoRegistroItineranciaAEE.obterObjetivos().catch(
-      e => erros(e)
-    );
-    if (retorno?.data) {
-      const dadosAlterados = retorno.data.map(item => ({
-        ...item,
-        key: item.id,
-      }));
-      setObjetivosBase(dadosAlterados);
-    }
-  };
-
-  useEffect(() => {
-    const buscarQuestoes = async () => {
-      const result = await ServicoRegistroItineranciaAEE.obterQuestoesItinerancia();
-      if (result?.status === 200) {
-        dispatch(setQuestoesItinerancia(result?.data?.itineranciaQuestao));
-        dispatch(
-          setQuestoesItineranciaAluno(result?.data?.itineranciaAlunoQuestao)
-        );
-      }
-    };
-    buscarQuestoes();
-    obterObjetivos();
-  }, []);
 
   useEffect(() => {
     if (dataVisita && objetivosSelecionados?.length) {
@@ -252,7 +294,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
                   <div className="row mb-4">
                     <TabelaLinhaRemovivel
                       bordered
-                      dataIndex="unidadeEscolar"
+                      dataIndex="descricao"
                       labelTabela="Selecione as Unidades Escolares"
                       tituloTabela="Unidades Escolares selecionadas"
                       labelBotao="Adicionar nova unidade escolar"
@@ -301,7 +343,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
                     <div className="col-3">
                       <CampoData
                         form={form}
-                        name="dataRetorno"
+                        name="dataRetornoVerificacao"
                         formatoData="DD/MM/YYYY"
                         valor={dataRetornoVerificacao}
                         label="Data para retorno/verificação"

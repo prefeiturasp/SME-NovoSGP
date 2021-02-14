@@ -10,6 +10,7 @@ import {
 } from '~/componentes';
 import { setObjetivosItinerancia } from '~/redux/modulos/itinerancia/action';
 import { aviso, confirmar } from '~/servicos';
+import { NOME_CAMPO_OBJETIVO } from '../ConstantesCamposDinâmicos';
 import { TituloEstilizado } from './modalObjetivos.css';
 
 const ModalObjetivos = ({
@@ -21,7 +22,6 @@ const ModalObjetivos = ({
   variasUesSelecionadas,
 }) => {
   const dispatch = useDispatch();
-  const NOME_CAMPO_TEXTO = 'campo-texto-';
   const [modoEdicao, setModoEdicao] = useState(false);
   const [valoresIniciais, setValoresIniciais] = useState({});
   const [validacoes, setValidacoes] = useState({});
@@ -34,7 +34,8 @@ const ModalObjetivos = ({
     if (listaObjetivos?.length) {
       listaObjetivos.forEach(objetivo => {
         if (objetivo.temDescricao) {
-          valores[NOME_CAMPO_TEXTO + objetivo.itineranciaObjetivoBaseId] = '';
+          valores[NOME_CAMPO_OBJETIVO + objetivo.itineranciaObjetivoBaseId] =
+            '';
           setValoresIniciais(valores);
         }
         const objetivoSelecionado = objetivosSelecionados?.find(
@@ -78,7 +79,7 @@ const ModalObjetivos = ({
   };
 
   const onChangeCheckbox = (item, form) => {
-    refForm.resetForm();
+    form.resetForm();
     const objetivo = listaObjetivos.find(
       o => o.itineranciaObjetivoBaseId === item.itineranciaObjetivoBaseId
     );
@@ -101,7 +102,7 @@ const ModalObjetivos = ({
     listaObjetivos.forEach(objetivoItem => {
       if (objetivoItem.temDescricao && objetivoItem.checked) {
         validacoesCamposComDescricao[
-          NOME_CAMPO_TEXTO + objetivoItem.itineranciaObjetivoBaseId
+          NOME_CAMPO_OBJETIVO + objetivoItem.itineranciaObjetivoBaseId
         ] = Yup.string().required('Campo obrigatório');
       } else {
         objetivo.descricao = '';
@@ -189,7 +190,8 @@ const ModalObjetivos = ({
                         <div className="mb-3 pl-3 mr-n3">
                           <CampoTexto
                             name={
-                              NOME_CAMPO_TEXTO + item.itineranciaObjetivoBaseId
+                              NOME_CAMPO_OBJETIVO +
+                              item.itineranciaObjetivoBaseId
                             }
                             height="76"
                             onChange={evento =>
