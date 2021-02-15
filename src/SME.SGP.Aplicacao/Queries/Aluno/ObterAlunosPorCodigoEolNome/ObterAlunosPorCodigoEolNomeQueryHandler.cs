@@ -5,7 +5,6 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -39,9 +38,9 @@ namespace SME.SGP.Aplicacao.Queries.Aluno.ObterAlunosPorCodigoEolNome
                         Codigo = alunoEOL.CodigoAluno,
                         Nome = alunoEOL.NomeAluno,
                         CodigoTurma = alunoEOL.CodigoTurma.ToString(),
-                        TurmaId = turmas == null ? 0 : turmas.FirstOrDefault(t => t.CodigoTurma == alunoEOL.CodigoTurma.ToString()).Id,
-                        NomeComModalidadeTurma = turmas == null ? "" 
-                        : @$"{alunoEOL.NomeAluno} - {OberterNomeTurmaFormatado(turmas.FirstOrDefault(t => t.CodigoTurma == alunoEOL.CodigoTurma.ToString()))}"
+                        TurmaId = turmas != null && turmas.Any() ? turmas.FirstOrDefault(t => t.CodigoTurma == alunoEOL.CodigoTurma.ToString()).Id : 0,
+                        NomeComModalidadeTurma = turmas != null && turmas.Any() ?
+                        @$"{alunoEOL.NomeAluno} - {OberterNomeTurmaFormatado(turmas.FirstOrDefault(t => t.CodigoTurma == alunoEOL.CodigoTurma.ToString()))}" : ""
                     };
                     alunoSimplesDto.Add(alunoSimples);
                 }
@@ -52,7 +51,7 @@ namespace SME.SGP.Aplicacao.Queries.Aluno.ObterAlunosPorCodigoEolNome
             {
                 throw e;
             }
-        }        
+        }
 
         private string OberterNomeTurmaFormatado(Turma turma)
         {

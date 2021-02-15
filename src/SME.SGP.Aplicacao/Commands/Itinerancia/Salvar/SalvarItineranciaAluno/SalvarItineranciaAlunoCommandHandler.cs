@@ -39,7 +39,7 @@ namespace SME.SGP.Aplicacao
         private ItineranciaAluno MapearParaEntidade(SalvarItineranciaAlunoCommand request)
             => new ItineranciaAluno()
             {
-                CodigoAluno = request.Aluno.CodigoAluno,
+                CodigoAluno = request.Aluno.AlunoCodigo,
                 ItineranciaId = request.ItineranciaId
             };
     }

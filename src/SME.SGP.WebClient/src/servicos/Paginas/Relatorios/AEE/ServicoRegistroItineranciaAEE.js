@@ -20,8 +20,11 @@ class ServicoRegistroItineranciaAEE {
   };
 
   salvarItinerancia = itinerancia => {
+    if (itinerancia.id) {
+      return api.put(urlPadrao, itinerancia);
+    }
     return api.post(urlPadrao, itinerancia);
-  }
+  };
 }
 
 export default new ServicoRegistroItineranciaAEE();

@@ -24,12 +24,6 @@ namespace SME.SGP.Aplicacao
             if (itinerancia == null)
                 throw new NegocioException($"Não foi possível localizar a itinerância de Id {id}");
 
-            var CodigosAluno = itinerancia.Alunos.Select(a => a.CodigoAluno).ToArray();
-
-            var alunosEol = await mediator.Send(new ObterAlunosEolPorCodigosEAnoQuery(CodigosAluno.Select(long.Parse).ToArray(), DateTime.Now.Year));
-
-            var turmas = await mediator.Send(new ObterTurmasPorCodigosQuery(alunosEol.Select(al => al.CodigoTurma.ToString()).ToArray()));
-
             var ues = await mediator.Send(new ObterUesPorIdsQuery(itinerancia.Ues.Select(u => u.UeId).ToArray()));
 
             var questoesBase = await mediator.Send(new ObterQuestoesBaseItineranciaEAlunoQuery());
@@ -38,11 +32,21 @@ namespace SME.SGP.Aplicacao
             {
                 DataVisita = itinerancia.DataVisita,
                 DataRetornoVerificacao = itinerancia.DataRetornoVerificacao,
-                Alunos = MontarAlunosItinerancia(itinerancia, alunosEol, questoesBase, turmas),
                 ObjetivosVisita = MontarObjetivosItinerancia(itinerancia),
                 Questoes = MontarQuestoesItinerancia(itinerancia, questoesBase),
                 Ues = MontarUes(ues, itinerancia)
             };
+
+            if(itinerancia.Alunos != null && itinerancia.Alunos.Any())
+            {
+                var CodigosAluno = itinerancia.Alunos.Select(a => a.CodigoAluno).ToArray();
+
+                var alunosEol = await mediator.Send(new ObterAlunosEolPorCodigosEAnoQuery(CodigosAluno.Select(long.Parse).ToArray(), DateTime.Now.Year));
+
+                var turmas = await mediator.Send(new ObterTurmasPorCodigosQuery(alunosEol.Select(al => al.CodigoTurma.ToString()).ToArray()));
+
+                itineranciaDto.Alunos = MontarAlunosItinerancia(itinerancia, alunosEol, questoesBase, turmas);
+            }
 
             return itineranciaDto;
         }
@@ -65,14 +69,16 @@ namespace SME.SGP.Aplicacao
         {
             return itinerancia.Questoes.Select(questao =>
             {
+                var descricao = questoesBase.ItineranciaQuestao.FirstOrDefault(q => q.QuestaoId == questao.QuestaoId)?.Descricao;
+                var obrigatorio = questoesBase.ItineranciaQuestao.FirstOrDefault(q => q.QuestaoId == questao.QuestaoId)?.Obrigatorio;
                 return new ItineranciaQuestaoDto
                 {
                     Id = questao.Id,
                     QuestaoId = questao.QuestaoId,
-                    Descricao = questoesBase.ItineranciaQuestao.FirstOrDefault(q => q.Id == questao.QuestaoId).Descricao,
+                    Descricao = descricao,
                     ItineranciaId = questao.ItineranciaId,
                     Resposta = questao.Resposta,
-                    Obrigatorio = questoesBase.ItineranciaQuestao.FirstOrDefault(q => q.Id == questao.QuestaoId).Obrigatorio
+                    Obrigatorio = obrigatorio
 
                 };
             });
@@ -85,7 +91,7 @@ namespace SME.SGP.Aplicacao
                 return new ItineranciaObjetivoDto
                 {
                     Id = o.Id,
-                    ItineranciaObjetivoId = 0,
+                    ItineranciaObjetivoBaseId = o.ItineranciaObjetivosBaseId,
                     Nome = itinerancia.ObjetivosBase.FirstOrDefault(ob => ob.Id == o.ItineranciaObjetivosBaseId).Nome,
                     TemDescricao = itinerancia.ObjetivosBase.FirstOrDefault(ob => ob.Id == o.ItineranciaObjetivosBaseId).TemDescricao,
                     PermiteVariasUes = itinerancia.ObjetivosBase.FirstOrDefault(ob => ob.Id == o.ItineranciaObjetivosBaseId).PermiteVariasUes,
@@ -101,7 +107,7 @@ namespace SME.SGP.Aplicacao
                 return new ItineranciaAlunoDto
                 {
                     Id = aluno.Id,
-                    CodigoAluno = aluno.CodigoAluno,                    
+                    AlunoCodigo = aluno.CodigoAluno,                    
                     Nome = @$"{alunosEol
                                  .FirstOrDefault(a => a.CodigoAluno == int.Parse(aluno.CodigoAluno)).NomeAluno} - {OberterNomeTurmaFormatado(turmas.FirstOrDefault(t => t.CodigoTurma == alunosEol.FirstOrDefault(a => a.CodigoAluno == int.Parse(aluno.CodigoAluno)).CodigoTurma.ToString()))}",
                     Questoes = MontarQuestoesItineranciaAluno(aluno, questoesBase)
@@ -115,12 +121,11 @@ namespace SME.SGP.Aplicacao
             {
                 return new ItineranciaAlunoQuestaoDto
                 {
-                    Id = questao.Id,
                     QuestaoId = questao.QuestaoId,
-                    Descricao = questoesBase.ItineranciaAlunoQuestao.FirstOrDefault(q => q.Id == questao.QuestaoId).Descricao,
+                    Descricao = questoesBase.ItineranciaAlunoQuestao.FirstOrDefault(q => q.QuestaoId == questao.QuestaoId).Descricao,
                     ItineranciaAlunoId = questao.ItineranciaAlunoId,
                     Resposta = questao.Resposta,
-                    Obrigatorio = questoesBase.ItineranciaAlunoQuestao.FirstOrDefault(q => q.Id == questao.QuestaoId).Obrigatorio
+                    Obrigatorio = questoesBase.ItineranciaAlunoQuestao.FirstOrDefault(q => q.QuestaoId == questao.QuestaoId).Obrigatorio
                 };
             });
         }

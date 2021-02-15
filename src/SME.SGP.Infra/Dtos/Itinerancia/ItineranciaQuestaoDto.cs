@@ -7,6 +7,6 @@
         public string Descricao { get; set; }
         public string Resposta { get; set; }
         public long ItineranciaId { get; set; }
-        public bool Obrigatorio { get; set; }
+        public bool ?Obrigatorio { get; set; }
     }
 }

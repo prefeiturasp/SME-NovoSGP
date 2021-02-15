@@ -68,15 +68,8 @@ const ModalUE = ({
 
   const onChangeDre = dre => {
     setDreId(dre);
-    // dispatch(setDadosIniciaisEncaminhamentoAEE({ ueId, dreId: dre }));
-
     setListaUes([]);
     setUeId();
-
-    // setListaTurmas([]);
-    // setTurmaId();
-
-    // filtrar(dre, ueId, turmaId, alunoLocalizadorSelecionado, situacao);
   };
 
   const onChangeUe = ue => {
@@ -87,7 +80,7 @@ const ModalUE = ({
       );
       setUESSelecionadas(estadoAntigo => {
         const unidade = estadoAntigo.find(
-          item => item.key === ueSelecionada.valor
+          item => item.ueId === ueSelecionada.id
         );
         if (unidade) {
           return estadoAntigo;
@@ -96,7 +89,8 @@ const ModalUE = ({
           ...estadoAntigo,
           {
             key: ueSelecionada.valor,
-            unidadeEscolar: ueSelecionada.desc,
+            ueId: ueSelecionada.id,
+            descricao: ueSelecionada.desc,
             codigoUe: ue,
             podeRemover: true,
           },
@@ -104,7 +98,6 @@ const ModalUE = ({
       });
       setModoEdicao(true);
       setUeId();
-      setDreId();
     }
   };
 
@@ -171,9 +164,8 @@ const ModalUE = ({
           setUESSelecionadas([
             {
               key: ueSelecionada.valor,
-              unidadeEscolar: ueSelecionada.desc,
+              descricao: ueSelecionada.desc,
               codigoUe: ue,
-              podeRemover: false,
             },
           ]);
         }
@@ -258,13 +250,13 @@ const ModalUE = ({
           </TextoEstilizado>
         )}
       </div>
-      {uesSelecionadas?.map(({ key, unidadeEscolar, podeRemover }) => (
+      {uesSelecionadas?.map(({ key, descricao }) => (
         <div
           className="col-md-12 d-flex justify-content-between mb-4 p-0"
           key={`${key}`}
         >
-          <span>{unidadeEscolar}</span>
-          {podeRemover && (
+          <span>{descricao}</span>
+          {listaUes?.length > 1 && (
             <BotaoEstilizado
               id="btn-excluir"
               icon="trash-alt"
