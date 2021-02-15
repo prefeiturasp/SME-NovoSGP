@@ -100,7 +100,7 @@ namespace SME.SGP.Dados.Repositorios
                            inner join questionario q1 on q1.id = q.questionario_id
                            inner join itinerancia_questao iq on iq.questao_id = q.id 
                            where iq.itinerancia_id = @Id
-                             and q1.tipo = @tipo
+                             and q1.tipo = @tipoQuestionario
                              and not q.excluido
                            order by q.ordem";
 
