@@ -54,9 +54,12 @@ namespace SME.SGP.Aplicacao.Commands
                     // Salva Questoes
                     foreach (var questao in planoAeeDto.Questoes)
                     {
-                        var planoAEEQuestaoId = await mediator.Send(new SalvarPlanoAEEQuestaoCommand(planoId, questao.QuestaoId, planoAEEVersaoId));
+                        if (await ValidaPersistenciaResposta(questao.Resposta, questao.QuestaoId))
+                        {
+                            var planoAEEQuestaoId = await mediator.Send(new SalvarPlanoAEEQuestaoCommand(planoId, questao.QuestaoId, planoAEEVersaoId));
 
-                        await mediator.Send(new SalvarPlanoAEERespostaCommand(planoAEEQuestaoId, questao.Resposta, questao.TipoQuestao));
+                            await mediator.Send(new SalvarPlanoAEERespostaCommand(planoAEEQuestaoId, questao.Resposta, questao.TipoQuestao));
+                        }
                     }
 
                     transacao.Commit();
@@ -68,6 +71,22 @@ namespace SME.SGP.Aplicacao.Commands
                     throw ex;
                 }
             }
+        }
+
+        private async Task<bool> ValidaPersistenciaResposta(string resposta, long questaoId)
+        {
+            return !string.IsNullOrEmpty(resposta) ||
+                await VerificaObrigatoriedadeQuestao(questaoId);
+        }
+
+        private async Task<bool> VerificaObrigatoriedadeQuestao(long questaoId)
+        {
+            var questaoObrigatoria = await mediator.Send(new VerificaObrigatoriedadeQuestaoQuery(questaoId));
+
+            if (questaoObrigatoria)
+                throw new NegocioException($"Questão Obrigatória [{questaoId}] não respondida.");
+
+            return false;
         }
 
         private async Task<long> SalvarPlanoAEEVersao(long planoId, int ultimaVersaoPlanoAee)
