@@ -1,26 +1,30 @@
 import React from 'react';
 import { CardCollapse } from '~/componentes';
+import ReestruturacaoTabela from '../ReestruturacaoTabela/reestruturacaoTabela';
 
 const SecaoReesturutracaoPlano = () => {
+  const keyPrimeiroSemestre = 'secao-1-semestre-plano-collapse';
+  const keySegundoSemestre = 'secao-2-semestre-plano-collapse';
+
   return (
     <>
       <CardCollapse
-        key="secao-1-semestre-plano-collapse-key"
+        key={`${keyPrimeiroSemestre}-key`}
         titulo="Reestruturações do 1º Semestre"
         show
-        indice="secao-1-semestre-plano-collapse-indice"
+        indice={`${keyPrimeiroSemestre}-indice`}
         alt="secao-informacoes-plano-alt"
       >
-        Reestruturações do 1º Semestre
+        <ReestruturacaoTabela key={keyPrimeiroSemestre} />
       </CardCollapse>
       <CardCollapse
-        key="secao-2-semestre-plano-collapse-key"
+        key={`${keySegundoSemestre}-key`}
         titulo="Reestruturações do 2º Semestre"
         show
-        indice="secao-2-semestre-plano-collapse-indice"
+        indice={`${keySegundoSemestre}-indice`}
         alt="secao-informacoes-plano-alt"
       >
-        Reestruturações do 2º Semestre
+        <ReestruturacaoTabela key={keySegundoSemestre} />
       </CardCollapse>
     </>
   );
