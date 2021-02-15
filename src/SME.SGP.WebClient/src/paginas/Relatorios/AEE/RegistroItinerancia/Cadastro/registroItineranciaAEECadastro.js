@@ -1,43 +1,38 @@
-import React, { useEffect, useState } from 'react';
+import { Form, Formik } from 'formik';
 import PropTypes from 'prop-types';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import shortid from 'shortid';
 import * as Yup from 'yup';
-import { useDispatch, useSelector } from 'react-redux';
-import { Formik, Form } from 'formik';
 import {
   Base,
   Button,
   CampoData,
   Card,
   Colors,
+  JoditEditor,
   Loader,
   momentSchema,
 } from '~/componentes';
 import { Cabecalho } from '~/componentes-sgp';
 import { RotasDto } from '~/dtos';
+import { setQuestoesItineranciaAluno } from '~/redux/modulos/itinerancia/action';
 import { erros, setBreadcrumbManual, sucesso } from '~/servicos';
+import ServicoRegistroItineranciaAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoRegistroItineranciaAEE';
 import {
   CollapseAluno,
-  EditoresTexto,
   ModalAlunos,
   ModalObjetivos,
   ModalUE,
   TabelaLinhaRemovivel,
 } from './componentes';
-import ServicoRegistroItineranciaAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoRegistroItineranciaAEE';
-import {
-  setQuestoesItinerancia,
-  setQuestoesItineranciaAluno,
-  setObjetivosItinerancia,
-} from '~/redux/modulos/itinerancia/action';
+import { NOME_CAMPO_QUESTAO } from './componentes/ConstantesCamposDinâmicos';
 
 const RegistroItineranciaAEECadastro = ({ match }) => {
   const dispatch = useDispatch();
   const [refForm, setRefForm] = useState({});
-  const [valoresIniciais, setValoresIniciais] = useState({
-    dataVisita: null,
-    dataRetornoVerificacao: null,
-  });
+  const valoresIniciaisFixos = { dataVisita: '', dataRetornoVerificacao: '' };
+  const [valoresIniciais, setValoresIniciais] = useState(valoresIniciaisFixos);
   const validacoesFixas = {
     dataVisita: momentSchema.required('Campo obrigatório'),
     dataRetornoVerificacao: momentSchema.required('Campo obrigatório'),
@@ -58,14 +53,13 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
   const usuario = useSelector(store => store.usuario);
   const permissoesTela =
     usuario.permissoes[RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA];
-  const questoesItinerancia = useSelector(
-    store => store.itinerancia.questoesItinerancia
-  );
+  const [questoesItinerancia, setQuestoesItinerancia] = useState([]);
 
   const onClickVoltar = () => {};
   const onClickCancelar = () => {};
   const onClickSalvar = async () => {
     const itinerancia = {
+      id: itineranciaId,
       dataVisita,
       dataRetornoVerificacao,
       objetivosVisita: objetivosSelecionados,
@@ -73,11 +67,14 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
       alunos: alunosSelecionados,
       questoes: alunosSelecionados?.length ? [] : questoesItinerancia,
     };
+    setCarregandoGeral(true);
     const salvar = await ServicoRegistroItineranciaAEE.salvarItinerancia(
       itinerancia
-    ).catch(e => erros(e));
+    )
+      .catch(e => erros(e))
+      .finally(setCarregandoGeral(false));
     if (salvar?.status === 200) {
-      sucesso('Registro salvo com sucesso');
+      sucesso(`Registro ${itineranciaId ? 'alterado' : 'salvo'} com sucesso`);
     }
   };
 
@@ -117,20 +114,49 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
     }
   };
 
+  const montarValidacoesValoresQuestoes = questoes => {
+    const validacoesQuestoes = validacoesFixas;
+    const valoresIniciaisQuestoes = valoresIniciaisFixos;
+    valoresIniciaisQuestoes.dataVisita = dataVisita;
+    valoresIniciaisQuestoes.dataRetornoVerificacao = dataRetornoVerificacao;
+    questoes.forEach(questao => {
+      validacoesQuestoes[
+        NOME_CAMPO_QUESTAO + questao.questaoId
+      ] = Yup.string().required('Campo obrigatório');
+      valoresIniciais[NOME_CAMPO_QUESTAO + questao.questaoId] =
+        questao.resposta || '';
+    });
+    setValidacoes(Yup.object(validacoesQuestoes));
+    setValoresIniciais(valoresIniciaisQuestoes);
+  };
+
   const obterQuestoes = async () => {
     const result = await ServicoRegistroItineranciaAEE.obterQuestoesItinerancia();
     if (result?.status === 200) {
-      dispatch(setQuestoesItinerancia(result?.data?.itineranciaQuestao));
+      setQuestoesItinerancia(result?.data?.itineranciaQuestao);
       dispatch(
         setQuestoesItineranciaAluno(result?.data?.itineranciaAlunoQuestao)
       );
+      montarValidacoesValoresQuestoes(result.data.itineranciaQuestao);
     }
   };
 
   useEffect(() => {
+    setCarregandoGeral(true);
     obterObjetivos();
     obterQuestoes();
+    setCarregandoGeral(false);
   }, []);
+
+  useEffect(() => {
+    if (alunosSelecionados?.length) {
+      montarValidacoesValoresQuestoes([]);
+    } else {
+      montarValidacoesValoresQuestoes(
+        questoesItinerancia?.length ? questoesItinerancia : []
+      );
+    }
+  }, [alunosSelecionados]);
 
   useEffect(() => {
     async function obterItinerancia(id) {
@@ -161,7 +187,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
           setUesSelecionados(itinerancia.ues);
         }
         if (itinerancia.questoes?.length) {
-          dispatch(setQuestoesItinerancia(itinerancia.questoes));
+          setQuestoesItinerancia(itinerancia.questoes);
         }
       }
     }
@@ -208,17 +234,35 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
     return false;
   };
 
+  const validaAntesDoSubmit = form => {
+    if (Object.keys(valoresIniciais).length) {
+      const arrayCampos = Object.keys(valoresIniciais);
+      arrayCampos.forEach(campo => {
+        form.setFieldTouched(campo, true, true);
+      });
+      form.validateForm().then(() => {
+        if (form.isValid || Object.keys(form.errors).length === 0) {
+          form.submitForm(form);
+        }
+      });
+    }
+  };
+
+  const setQuestao = (valor, questao) => {
+    questao.resposta = valor;
+  };
+
   return (
     <>
-      <Loader loading={carregandoGeral} className="w-100">
-        <Cabecalho pagina="Registro de itinerância" />
+      <Cabecalho pagina="Registro de itinerância" />
+      <Loader loading={carregandoGeral}>
         <Card>
           <Formik
             enableReinitialize
             initialValues={valoresIniciais}
             validationSchema={validacoes}
             ref={refFormik => setRefForm(refFormik)}
-            onSubmit={valores => onClickSalvar(valores)}
+            onSubmit={() => onClickSalvar()}
             validateOnBlur
             validateOnChange
           >
@@ -252,7 +296,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
                         color={Colors.Roxo}
                         border
                         bold
-                        onClick={onClickSalvar}
+                        onClick={() => validaAntesDoSubmit(form)}
                         disabled={!desabilitarCampos}
                       />
                     </div>
@@ -328,17 +372,31 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
                       </div>
                     </div>
                   )}
-                  {alunosSelecionados?.length ? (
-                    alunosSelecionados.map(aluno => (
-                      <CollapseAluno
-                        key={aluno.alunoCodigo}
-                        aluno={aluno}
-                        removerAlunos={() => removerAlunos(aluno.alunoCodigo)}
-                      />
-                    ))
-                  ) : (
-                    <EditoresTexto form={form} />
-                  )}
+                  {alunosSelecionados?.length
+                    ? alunosSelecionados.map(aluno => (
+                        <CollapseAluno
+                          key={aluno.alunoCodigo}
+                          aluno={aluno}
+                          removerAlunos={() => removerAlunos(aluno.alunoCodigo)}
+                        />
+                      ))
+                    : questoesItinerancia?.length &&
+                      questoesItinerancia.map(questao => {
+                        return (
+                          <div className="row mb-4" key={questao.questaoId}>
+                            <div className="col-12">
+                              <JoditEditor
+                                form={form}
+                                label={questao.descricao}
+                                value={questao.resposta}
+                                name={NOME_CAMPO_QUESTAO + questao.questaoId}
+                                id={questao.questaoId}
+                                onChange={e => setQuestao(e, questao)}
+                              />
+                            </div>
+                          </div>
+                        );
+                      })}
                   <div className="row mb-4">
                     <div className="col-3">
                       <CampoData

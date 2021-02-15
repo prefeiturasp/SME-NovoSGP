@@ -107,7 +107,7 @@ namespace SME.SGP.Aplicacao
                 return new ItineranciaAlunoDto
                 {
                     Id = aluno.Id,
-                    CodigoAluno = aluno.CodigoAluno,                    
+                    AlunoCodigo = aluno.CodigoAluno,                    
                     Nome = @$"{alunosEol
                                  .FirstOrDefault(a => a.CodigoAluno == int.Parse(aluno.CodigoAluno)).NomeAluno} - {OberterNomeTurmaFormatado(turmas.FirstOrDefault(t => t.CodigoTurma == alunosEol.FirstOrDefault(a => a.CodigoAluno == int.Parse(aluno.CodigoAluno)).CodigoTurma.ToString()))}",
                     Questoes = MontarQuestoesItineranciaAluno(aluno, questoesBase)
