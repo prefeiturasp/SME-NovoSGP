@@ -69,6 +69,7 @@ const RotasDto = {
   RELATORIO_AEE_ENCAMINHAMENTO: '/relatorios/aee/encaminhamento',
   OCORRENCIAS: '/gestao/ocorrencias',
   RELATORIO_AEE_PLANO: '/relatorios/aee/plano',
+  RELATORIO_AEE_REGISTRO_ITINERANCIA: '/relatorios/aee/registro-itinerancia',
 };
 
 export default RotasDto;

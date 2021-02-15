@@ -81,5 +81,7 @@ namespace SME.SGP.Dominio
                    (EhTurmaFund2 || (EhEJA() && (anoTurma == 3 || anoTurma == 4))) ||
                    (EhTurmaEnsinoMedio && quantidadeAulasExistentesNoDia > 2);
         }
+        public string NomeComModalidade() 
+                 => $"{ModalidadeCodigo} - {Nome}";
     }
 }

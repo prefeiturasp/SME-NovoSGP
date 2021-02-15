@@ -341,6 +341,14 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioPlanoAEEVersao, RepositorioPlanoAEEVersao>();
             services.TryAddScoped<IRepositorioPlanoAEEQuestao, RepositorioPlanoAEEQuestao>();
             services.TryAddScoped<IRepositorioPlanoAEEResposta, RepositorioPlanoAEEResposta>();
+
+            // Itinerancia
+            services.TryAddScoped<IRepositorioItinerancia, RepositorioItinerancia>();
+            services.TryAddScoped<IRepositorioItineranciaAluno, RepositorioItineranciaAluno>();
+            services.TryAddScoped<IRepositorioItineranciaAlunoQuestao, RepositorioItineranciaAlunoQuestao>();
+            services.TryAddScoped<IRepositorioItineranciaQuestao, RepositorioItineranciaQuestao>();
+            services.TryAddScoped<IRepositorioItineranciaObjetivo, RepositorioItineranciaObjetivo>();
+            services.TryAddScoped<IRepositorioItineranciaUe, RepositorioItineranciaUe>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
@@ -726,6 +734,17 @@ namespace SME.SGP.IoC
 
 
             services.TryAddScoped<IObterInformacoesDeFrequenciaAlunosPorBimestreUseCase, ObterInformacoesDeFrequenciaAlunosPorBimestreUseCase>();
+
+            // Itinerancia
+            services.TryAddScoped<IObterObjetivosBaseUseCase, ObterObjetivosBaseUseCase>();
+            services.TryAddScoped<IObterQuestoesItineranciaAlunoUseCase, ObterQuestoesItineranciaAlunoUseCase>();
+            services.TryAddScoped<IObterQuestoesBaseUseCase, ObterQuestoesBaseUseCase>();
+            services.TryAddScoped<IObterItineranciaPorIdUseCase, ObterItineranciaPorIdUseCase>();
+            services.TryAddScoped<ISalvarItineranciaUseCase, SalvarItineranciaUseCase>();
+            services.TryAddScoped<IExcluirItineranciaUseCase, ExcluirItineranciaUseCase>();
+            services.TryAddScoped<IAlterarItineranciaUseCase, AlterarItineranciaUseCase>();
+
+
         }
     }
 }

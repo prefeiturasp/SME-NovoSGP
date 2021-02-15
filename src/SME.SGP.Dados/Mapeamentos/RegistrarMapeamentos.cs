@@ -155,6 +155,12 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new PlanoAEEVersaoMap());
                config.AddMap(new PlanoAEEQuestaoMap());
                config.AddMap(new PlanoAEERespostaMap());
+               config.AddMap(new ItineranciaMap());
+               config.AddMap(new ItineranciaAlunoMap());
+               config.AddMap(new ItineranciaAlunoQuestaoMap());
+               config.AddMap(new ItineranciaQuestaoMap());
+               config.AddMap(new ItineranciaObjetivoMap());
+               config.AddMap(new ItineranciaUeMap());
                config.ForDommel();
            });
         }
