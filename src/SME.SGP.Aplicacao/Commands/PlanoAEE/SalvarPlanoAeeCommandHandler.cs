@@ -14,39 +14,66 @@ namespace SME.SGP.Aplicacao.Commands
 
         private readonly IRepositorioPlanoAEE repositorioPlanoAEE;
         private readonly IRepositorioPlanoAEEVersao repositorioPlanoAEEVersao;
+        private readonly IMediator mediator;
+        private readonly IUnitOfWork unitOfWork;
 
-        public SalvarPlanoAeeCommandHandler(IRepositorioPlanoAEE repositorioPlanoAEE, IRepositorioPlanoAEEVersao repositorioPlanoAEEVersao)
+        public SalvarPlanoAeeCommandHandler(
+            IRepositorioPlanoAEE repositorioPlanoAEE,
+            IRepositorioPlanoAEEVersao repositorioPlanoAEEVersao,
+            IMediator mediator,
+            IUnitOfWork unitOfWork)
         {
             this.repositorioPlanoAEE = repositorioPlanoAEE ?? throw new ArgumentNullException(nameof(repositorioPlanoAEE));
             this.repositorioPlanoAEEVersao = repositorioPlanoAEEVersao ?? throw new ArgumentNullException(nameof(repositorioPlanoAEEVersao));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
         public async Task<RetornoPlanoAEEDto> Handle(SalvarPlanoAeeCommand request, CancellationToken cancellationToken)
         {
             var plano = MapearParaEntidade(request);
 
-            var planoId = request.PlanoAEEId;
-
-            if (planoId == 0)
-                planoId = await repositorioPlanoAEE.SalvarAsync(plano);
-
-            // PlanoAEE
-            var planoAEEEntidade = await repositorioPlanoAEE.ObterPorIdAsync(planoId);
+            var planoAeeDto = request.PlanoAEEDto;
+            var planoId = planoAeeDto.Id.GetValueOrDefault();
 
             // Última versão plano
-            int ultimaVersaoPlanoAee = await ObterUltimaVersaoPlanoAEE(planoId);
+            int ultimaVersaoPlanoAee = planoId != 0 ? await ObterUltimaVersaoPlanoAEE(planoId) : 1;
 
-            // Salva Versao
-            var planoAEEVersaoId = await SalvarPlanoAEEVersao(planoId, planoAEEEntidade, ultimaVersaoPlanoAee);
+            using (var transacao = unitOfWork.IniciarTransacao())
+            {
+                try
+                {
+                    // Salva Plano
+                    if (planoId == 0)
+                        planoId = await repositorioPlanoAEE.SalvarAsync(plano);
 
-            return new RetornoPlanoAEEDto(planoId, planoAEEVersaoId);
+                    // Salva Versao
+                    var planoAEEVersaoId = await SalvarPlanoAEEVersao(planoId, ultimaVersaoPlanoAee);
+
+
+                    // Salva Questoes
+                    foreach (var questao in planoAeeDto.Questoes)
+                    {
+                        var planoAEEQuestaoId = await mediator.Send(new SalvarPlanoAEEQuestaoCommand(planoId, questao.QuestaoId, planoAEEVersaoId));
+
+                        await mediator.Send(new SalvarPlanoAEERespostaCommand(planoAEEQuestaoId, questao.Resposta, questao.TipoQuestao));
+                    }
+
+                    transacao.Commit();
+                    return new RetornoPlanoAEEDto(planoId, planoAEEVersaoId);
+                }
+                catch (Exception ex)
+                {
+                    transacao.Rollback();
+                    throw ex;
+                }
+            }
         }
 
-        private async Task<long> SalvarPlanoAEEVersao(long planoId, PlanoAEE planoAEEEntidade, int ultimaVersaoPlanoAee)
+        private async Task<long> SalvarPlanoAEEVersao(long planoId, int ultimaVersaoPlanoAee)
         {
             var planoVersaoEntidade = new PlanoAEEVersao
             {
-                PlanoAEE = planoAEEEntidade,
                 PlanoAEEId = planoId,
                 Numero = ultimaVersaoPlanoAee
             };
@@ -55,13 +82,10 @@ namespace SME.SGP.Aplicacao.Commands
 
         private async Task<int> ObterUltimaVersaoPlanoAEE(long planoId)
         {
-            int ultimaVersaoPlanoAee = 0;
+            var versaoPlano = await repositorioPlanoAEEVersao.ObterUltimaVersaoPorPlanoId(planoId);
 
-            var versoesPlano = await repositorioPlanoAEEVersao.ObterVersoesPorPlanoId(planoId);
-
-            if (versoesPlano != null && versoesPlano.Any())
-                ultimaVersaoPlanoAee = versoesPlano.ToList().Max(v => v.Numero);
-            return ultimaVersaoPlanoAee + 1;
+            return versaoPlano != null ?
+                versaoPlano.Numero + 1 : 1;
         }
 
         private PlanoAEE MapearParaEntidade(SalvarPlanoAeeCommand request)
