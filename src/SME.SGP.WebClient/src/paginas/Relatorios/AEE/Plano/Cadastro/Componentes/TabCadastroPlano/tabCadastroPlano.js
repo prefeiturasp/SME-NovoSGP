@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import { Tabs } from 'antd';
 import { ContainerTabsCard } from '~/componentes/tabs/tabs.css';
 import SecaoPlanoCollapse from '../SecaoPlanoCollapse/secaoPlanoCollapse';
+import SecaoReesturutracaoPlano from '../SecaoReesturutracaoPlano/secaoReesturutracaoPlano';
 
 const { TabPane } = Tabs;
 
@@ -22,7 +23,10 @@ const TabCadastroPasso = props => {
           ''
         )}
       </TabPane>
-      <TabPane tab="Devolutivas" disabled key="2">
+      <TabPane tab="Reestruturação" key="2">
+        <SecaoReesturutracaoPlano />
+      </TabPane>
+      <TabPane tab="Devolutivas" disabled key="3">
         <></>
       </TabPane>
     </ContainerTabsCard>
