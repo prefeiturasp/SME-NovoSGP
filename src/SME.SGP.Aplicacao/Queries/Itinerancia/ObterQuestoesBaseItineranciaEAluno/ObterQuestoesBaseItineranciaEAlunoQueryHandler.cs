@@ -22,7 +22,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<ItineranciaQuestoesBaseDto> Handle(ObterQuestoesBaseItineranciaEAlunoQuery request, CancellationToken cancellationToken)
         {
-            var questoesBase = await repositorioItinerancia.ObterItineranciaQuestaoBase();
+            var tiposQuestionario = new long[] { (int)TipoQuestionario.RegistroItinerancia, (int)TipoQuestionario.RegistroItineranciaAluno };
+            var questoesBase = await repositorioItinerancia.ObterItineranciaQuestaoBase(tiposQuestionario);
 
             if (questoesBase == null || !questoesBase.Any())
                 throw new NegocioException("Não foi possível obter as questões base da itinerância");
