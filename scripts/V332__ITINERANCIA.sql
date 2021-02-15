@@ -3,7 +3,8 @@ DROP TABLE if exists public.itinerancia;
 CREATE TABLE public.itinerancia (
 	id int8 NOT NULL GENERATED ALWAYS AS identity,
 	data_visita timestamp  NOT NULL,
-	data_retorno_verificacao timestamp  NOT NULL,	
+	data_retorno_verificacao timestamp  NOT NULL,
+    situacao int4 not null default 1	
 	criado_em timestamp  NOT NULL,
     criado_por varchar(200) NOT NULL,
     alterado_em timestamp ,

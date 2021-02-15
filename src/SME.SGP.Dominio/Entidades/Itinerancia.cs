@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SME.SGP.Dominio.Enumerados;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -13,6 +14,7 @@ namespace SME.SGP.Dominio
             objetivos = new List<ItineranciaObjetivo>();
             ues = new List<ItineranciaUe>();
             objetivosBase = new List<ItineranciaObjetivoBase>();
+            Situacao = SituacaoItinerancia.Digitado;
 
         }        
         public DateTime DataVisita { get; set; }
@@ -22,6 +24,7 @@ namespace SME.SGP.Dominio
         public DateTime DataRetornoVerificacao { get; set; }
         public IEnumerable<ItineranciaQuestao> Questoes { get { return questoes; } }
         public IEnumerable<ItineranciaObjetivoBase> ObjetivosBase { get { return objetivosBase; } }
+        public SituacaoItinerancia Situacao { get; set; }
 
         private List<ItineranciaAluno> alunos { get; set; }
         private List<ItineranciaQuestao> questoes { get; set; }
