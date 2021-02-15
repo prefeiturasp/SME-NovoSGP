@@ -65,7 +65,7 @@ namespace SME.SGP.Api
         //[Permissao(Permissao.RI_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterQuestoes([FromServices] IObterQuestoesBaseUseCase useCase)
         {
-            return Ok(await useCase.Executar());
+            return Ok(await useCase.Executar()); 
         }
     }
 }
