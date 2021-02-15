@@ -10,9 +10,9 @@ namespace SME.SGP.Infra
         }
         public long Id { get; set; }
         public DateTime DataVisita { get; set; }
-        public string NomeUe { get; set; }
-        public string NomeCriancaEstudante { get; set; }
-        public string NomeTurma { get; set; }
+        public string UeNome { get; set; }
+        public string Nome { get; set; }
+        public string TurmaNome { get; set; }
         public string Situacao { get; set; }
     }
 }
