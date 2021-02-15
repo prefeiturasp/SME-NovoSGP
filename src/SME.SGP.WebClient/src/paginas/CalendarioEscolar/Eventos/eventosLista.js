@@ -283,7 +283,7 @@ const EventosLista = ({ match }) => {
         setPesquisaTipoCalendario(valorDescricao);
       }
 
-      refForm.setFieldValue('tipoCalendarioId', tipoCalendarioIdParseado);
+      refForm.setFieldValue('tipoCalendarioId', valorDescricao);
       setValorTipoCalendario(valorDescricao);
       setSelecionouCalendario(true);
       selecionaTipoCalendario(valorDescricao, refForm);
