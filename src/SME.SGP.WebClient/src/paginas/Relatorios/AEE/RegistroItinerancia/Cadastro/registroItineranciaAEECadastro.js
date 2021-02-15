@@ -380,8 +380,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
                           removerAlunos={() => removerAlunos(aluno.alunoCodigo)}
                         />
                       ))
-                    : questoesItinerancia?.length &&
-                      questoesItinerancia.map(questao => {
+                    : questoesItinerancia?.map(questao => {
                         return (
                           <div className="row mb-4" key={questao.questaoId}>
                             <div className="col-12">

@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao
                 Ues = MontarUes(ues, itinerancia)
             };
 
-            if(itinerancia.Alunos != null && itinerancia.Alunos.Count() > 0)
+            if(itinerancia.Alunos != null && itinerancia.Alunos.Any())
             {
                 var CodigosAluno = itinerancia.Alunos.Select(a => a.CodigoAluno).ToArray();
 

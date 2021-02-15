@@ -38,8 +38,8 @@ namespace SME.SGP.Aplicacao.Queries.Aluno.ObterAlunosPorCodigoEolNome
                         Codigo = alunoEOL.CodigoAluno,
                         Nome = alunoEOL.NomeAluno,
                         CodigoTurma = alunoEOL.CodigoTurma.ToString(),
-                        TurmaId = turmas != null && turmas.Count() > 0 ? turmas.FirstOrDefault(t => t.CodigoTurma == alunoEOL.CodigoTurma.ToString()).Id : 0,
-                        NomeComModalidadeTurma = turmas == null && turmas.Count() == 0 ?
+                        TurmaId = turmas != null && turmas.Any() ? turmas.FirstOrDefault(t => t.CodigoTurma == alunoEOL.CodigoTurma.ToString()).Id : 0,
+                        NomeComModalidadeTurma = turmas != null && turmas.Any() ?
                         @$"{alunoEOL.NomeAluno} - {OberterNomeTurmaFormatado(turmas.FirstOrDefault(t => t.CodigoTurma == alunoEOL.CodigoTurma.ToString()))}" : ""
                     };
                     alunoSimplesDto.Add(alunoSimples);
