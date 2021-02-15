@@ -9,7 +9,7 @@ import { BotaoEstilizado } from './reestruturacaoTabela.css';
 const ReestruturacaoTabela = ({ key }) => {
   const [exibirModal, setModalVisivel] = useState(false);
 
-  const montarBotaoRemover = text => {
+  const montarUltimaColuna = text => {
     return (
       <div className="d-flex">
         <div className="mr-4">{text}</div>
@@ -38,7 +38,7 @@ const ReestruturacaoTabela = ({ key }) => {
     {
       title: 'Descrição da reestruturação',
       dataIndex: 'descricaoReestruturacao',
-      render: montarBotaoRemover,
+      render: montarUltimaColuna,
     },
   ];
 
