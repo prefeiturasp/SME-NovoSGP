@@ -10,6 +10,6 @@ namespace SME.SGP.Infra
         public string NomeUe { get; set; }
         public string NomeCriancaEstudante { get; set; }
         public string NomeTurma { get; set; }
-        public SituacaoItinerancia Situacao { get; set; }
+        public string Situacao { get; set; }
     }
 }

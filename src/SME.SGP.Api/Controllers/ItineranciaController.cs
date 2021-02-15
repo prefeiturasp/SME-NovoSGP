@@ -85,7 +85,7 @@ namespace SME.SGP.Api
                     NomeUe = "CEU EMEF BUTANTA",
                     NomeCriancaEstudante = "5 - ALANA FERREIRA DE OLIVEIRA",
                     NomeTurma = "EF - 3C",
-                    Situacao = Dominio.Enumerados.SituacaoItinerancia.Digitado
+                    Situacao = Dominio.Enumerados.SituacaoItinerancia.Digitado.ToString()
                 },
                 new ItineranciaResumoDto()
                 {
@@ -94,7 +94,7 @@ namespace SME.SGP.Api
                     NomeUe = "EMEF ALPINO ANDRADA SERPA, TTE",
                     NomeCriancaEstudante = "2 - AUGUSTO VILAS BOA",
                     NomeTurma = "EF - 4B",
-                    Situacao = Dominio.Enumerados.SituacaoItinerancia.Digitado
+                    Situacao = Dominio.Enumerados.SituacaoItinerancia.Digitado.ToString()
                 },
                 new ItineranciaResumoDto()
                 {
@@ -103,7 +103,7 @@ namespace SME.SGP.Api
                     NomeUe = "EMEF AMIRIN LIMA, DES",
                     NomeCriancaEstudante = "5 - ALRÉLIO TELIS",
                     NomeTurma = "EF - 5A",
-                    Situacao = Dominio.Enumerados.SituacaoItinerancia.Digitado
+                    Situacao = Dominio.Enumerados.SituacaoItinerancia.Digitado.ToString()
                 },
                 new ItineranciaResumoDto()
                 {
@@ -112,7 +112,7 @@ namespace SME.SGP.Api
                     NomeUe = "EMEF AMIRIN LIMA, DES",
                     NomeCriancaEstudante = "2 - JOÃO SILVA",
                     NomeTurma = "EF - 3C",
-                    Situacao = Dominio.Enumerados.SituacaoItinerancia.Digitado
+                    Situacao = Dominio.Enumerados.SituacaoItinerancia.Digitado.ToString()
                 },
                 new ItineranciaResumoDto()
                 {
@@ -121,7 +121,7 @@ namespace SME.SGP.Api
                     NomeUe = "EMEF AMIRIN LIMA, DES",
                     NomeCriancaEstudante = "2 - JOÃO SILVA",
                     NomeTurma = "EF - 3C",
-                    Situacao = Dominio.Enumerados.SituacaoItinerancia.Digitado
+                    Situacao = Dominio.Enumerados.SituacaoItinerancia.Digitado.ToString()
                 },
                 new ItineranciaResumoDto()
                 {
@@ -130,7 +130,7 @@ namespace SME.SGP.Api
                     NomeUe = "EMEF AMIRIN LIMA, DES",
                     NomeCriancaEstudante = "2 - JOÃO SILVA",
                     NomeTurma = "EF - 3C",
-                    Situacao = Dominio.Enumerados.SituacaoItinerancia.Digitado
+                    Situacao = Dominio.Enumerados.SituacaoItinerancia.Digitado.ToString()
                 },
                 new ItineranciaResumoDto()
                 {
@@ -139,7 +139,7 @@ namespace SME.SGP.Api
                     NomeUe = "CEU EMEF BUTANTA",
                     NomeCriancaEstudante = "5 - ALANA FERREIRA DE OLIVEIRA",
                     NomeTurma = "EF - 3C",
-                    Situacao = Dominio.Enumerados.SituacaoItinerancia.Digitado
+                    Situacao = Dominio.Enumerados.SituacaoItinerancia.Digitado.ToString()
                 },
                 new ItineranciaResumoDto()
                 {
@@ -148,7 +148,7 @@ namespace SME.SGP.Api
                     NomeUe = "EMEF AMIRIN LIMA, DES",
                     NomeCriancaEstudante = "2 - JOÃO SILVA",
                     NomeTurma = "EF - 3C",
-                    Situacao = Dominio.Enumerados.SituacaoItinerancia.Digitado
+                    Situacao = Dominio.Enumerados.SituacaoItinerancia.Digitado.ToString()
                 },
                 new ItineranciaResumoDto()
                 {
@@ -157,7 +157,7 @@ namespace SME.SGP.Api
                     NomeUe = "EMEF AMIRIN LIMA, DES",
                     NomeCriancaEstudante = "2 - JOÃO SILVA",
                     NomeTurma = "EF - 3C",
-                    Situacao = Dominio.Enumerados.SituacaoItinerancia.Digitado
+                    Situacao = Dominio.Enumerados.SituacaoItinerancia.Digitado.ToString()
                 },
                 new ItineranciaResumoDto()
                 {
@@ -166,7 +166,7 @@ namespace SME.SGP.Api
                     NomeUe = "EMEF AMIRIN LIMA, DES",
                     NomeCriancaEstudante = "2 - JOÃO SILVA",
                     NomeTurma = "EF - 3C",
-                    Situacao = Dominio.Enumerados.SituacaoItinerancia.Digitado
+                    Situacao = Dominio.Enumerados.SituacaoItinerancia.Digitado.ToString()
                 },
                 new ItineranciaResumoDto()
                 {
@@ -175,7 +175,7 @@ namespace SME.SGP.Api
                     NomeUe = "EMEF AMIRIN LIMA, DES",
                     NomeCriancaEstudante = "2 - JOÃO SILVA",
                     NomeTurma = "EF - 3C",
-                    Situacao = Dominio.Enumerados.SituacaoItinerancia.Digitado
+                    Situacao = Dominio.Enumerados.SituacaoItinerancia.Digitado.ToString()
                 },
                 new ItineranciaResumoDto()
                 {
@@ -184,7 +184,7 @@ namespace SME.SGP.Api
                     NomeUe = "EMEF AMIRIN LIMA, DES",
                     NomeCriancaEstudante = "2 - JOÃO SILVA",
                     NomeTurma = "EF - 3C",
-                    Situacao = Dominio.Enumerados.SituacaoItinerancia.Digitado
+                    Situacao = Dominio.Enumerados.SituacaoItinerancia.Digitado.ToString()
                 }                
             };
             return Ok(itineranciaResumoDto);
