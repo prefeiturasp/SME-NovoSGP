@@ -20,6 +20,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(GravarHistoricoReinicioSenhaCommand request, CancellationToken cancellationToken)
         {
+
             await repositorioHistoricoReinicioSenha.SalvarAsync(new Dominio.HistoricoReinicioSenha()
             {
                 UsuarioRf = request.UsuarioRf,
