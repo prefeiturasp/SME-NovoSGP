@@ -4,6 +4,8 @@ using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api
@@ -66,6 +68,117 @@ namespace SME.SGP.Api
         public async Task<IActionResult> ObterQuestoes([FromServices] IObterQuestoesBaseUseCase useCase)
         {
             return Ok(await useCase.Executar());
+        }
+
+        [HttpGet]
+        [ProducesResponseType(typeof(PaginacaoResultadoDto<EncaminhamentoAEEResumoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        //[Permissao(Permissao.RI_C, Policy = "Bearer")]
+        public async Task<IActionResult> ListaItinerancias([FromQuery] FiltroPesquisaItineranciasDto filtro)
+        {
+            var itineranciaResumoDto = new List<ItineranciaResumoDto>()
+            {
+                new ItineranciaResumoDto()
+                {
+                    Id = 1,
+                    DataVisita = DateTime.Now,
+                    NomeUe = "CEU EMEF BUTANTA",
+                    NomeCriancaEstudante = "5 - ALANA FERREIRA DE OLIVEIRA",
+                    NomeTurma = "EF - 3C"
+                },
+                new ItineranciaResumoDto()
+                {
+                    Id = 2,
+                    DataVisita = DateTime.Now.AddDays(2),
+                    NomeUe = "EMEF ALPINO ANDRADA SERPA, TTE",
+                    NomeCriancaEstudante = "2 - AUGUSTO VILAS BOA",
+                    NomeTurma = "EF - 4B"
+                },
+                new ItineranciaResumoDto()
+                {
+                    Id = 3,
+                    DataVisita = DateTime.Now.AddDays(4),
+                    NomeUe = "EMEF AMIRIN LIMA, DES",
+                    NomeCriancaEstudante = "5 - ALRÉLIO TELIS",
+                    NomeTurma = "EF - 5A",
+                    Situacao = Dominio.Enumerados.SituacaoItinerancia.Digitado.ToString()
+                },
+                new ItineranciaResumoDto()
+                {
+                    Id = 4,
+                    DataVisita = DateTime.Now.AddDays(5),
+                    NomeUe = "EMEF AMIRIN LIMA, DES",
+                    NomeCriancaEstudante = "2 - JOÃO SILVA",
+                    NomeTurma = "EF - 3C"
+                },
+                new ItineranciaResumoDto()
+                {
+                    Id = 5,
+                    DataVisita = DateTime.Now.AddDays(6),
+                    NomeUe = "EMEF AMIRIN LIMA, DES",
+                    NomeCriancaEstudante = "2 - JOÃO SILVA",
+                    NomeTurma = "EF - 3C",
+                    Situacao = Dominio.Enumerados.SituacaoItinerancia.Digitado.ToString()
+                },
+                new ItineranciaResumoDto()
+                {
+                    Id = 6,
+                    DataVisita = DateTime.Now.AddDays(7),
+                    NomeUe = "EMEF AMIRIN LIMA, DES",
+                    NomeCriancaEstudante = "2 - JOÃO SILVA",
+                    NomeTurma = "EF - 3C"
+                },
+                new ItineranciaResumoDto()
+                {
+                    Id = 7,
+                    DataVisita = DateTime.Now.AddDays(8),
+                    NomeUe = "CEU EMEF BUTANTA",
+                    NomeCriancaEstudante = "5 - ALANA FERREIRA DE OLIVEIRA",
+                    NomeTurma = "EF - 3C"
+                },
+                new ItineranciaResumoDto()
+                {
+                    Id = 8,
+                    DataVisita = DateTime.Now.AddDays(9),
+                    NomeUe = "EMEF AMIRIN LIMA, DES",
+                    NomeCriancaEstudante = "2 - JOÃO SILVA",
+                    NomeTurma = "EF - 3C",
+                    Situacao = Dominio.Enumerados.SituacaoItinerancia.Digitado.ToString()
+                },
+                new ItineranciaResumoDto()
+                {
+                    Id = 9,
+                    DataVisita = DateTime.Now.AddDays(10),
+                    NomeUe = "EMEF AMIRIN LIMA, DES",
+                    NomeCriancaEstudante = "2 - JOÃO SILVA",
+                    NomeTurma = "EF - 3C"
+                },
+                new ItineranciaResumoDto()
+                {
+                    Id = 10,
+                    DataVisita = DateTime.Now.AddDays(11),
+                    NomeUe = "EMEF AMIRIN LIMA, DES",
+                    NomeCriancaEstudante = "2 - JOÃO SILVA",
+                    NomeTurma = "EF - 3C"
+                },
+                new ItineranciaResumoDto()
+                {
+                    Id = 11,
+                    DataVisita = DateTime.Now.AddDays(14),
+                    NomeUe = "EMEF AMIRIN LIMA, DES",
+                    NomeCriancaEstudante = "2 - JOÃO SILVA",
+                    NomeTurma = "EF - 3C"
+                },
+                new ItineranciaResumoDto()
+                {
+                    Id = 12,
+                    DataVisita = DateTime.Now.AddDays(20),
+                    NomeUe = "EMEF AMIRIN LIMA, DES",
+                    NomeCriancaEstudante = "2 - JOÃO SILVA",
+                    NomeTurma = "EF - 3C"
+                }
+            };
+            return Ok(itineranciaResumoDto);
         }
     }
 }
