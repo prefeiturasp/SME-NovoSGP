@@ -55,14 +55,12 @@ namespace SME.SGP.Aplicacao
         private IEnumerable<ItineranciaUeDto> MontarUes(IEnumerable<Ue> ues, Itinerancia itinerancia)
         {
             return ues.Select(ue =>
-             {
-                 var objUe = ues.FirstOrDefault(u => u.Id == ue.Id);
-                 var descrição = objUe != null ? $"{objUe.TipoEscola.ShortName()} - {objUe.Nome}" : "";
+             {                 
                  return new ItineranciaUeDto
                  {
                      Id = itinerancia.Ues.FirstOrDefault(i => i.UeId == ue.Id).Id,                              
                      UeId = ue.Id,
-                     Descricao = descrição
+                     Descricao = $"{ue.TipoEscola.ShortName()} - {ue.Nome}"
                  };
              });
         }
