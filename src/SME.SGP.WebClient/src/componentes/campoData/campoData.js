@@ -89,8 +89,8 @@ const CampoData = ({
   temErro,
   mensagemErro,
   carregando,
-  array,
   campoOpcional,
+  executarOnChangeExterno,
 }) => {
   const habilitarDatas = dataAtual => {
     let retorno = true;
@@ -143,10 +143,7 @@ const CampoData = ({
   const campoDataAntComValidacoes = () => {
     return (
       <Field name={name} id={name}>
-        {({
-          field: { value },
-          form: { setFieldValue, setFieldTouched, errors },
-        }) => (
+        {({ field: { value }, form: { setFieldValue, setFieldTouched } }) => (
           <div>
             <div>
               <DatePicker
@@ -251,6 +248,7 @@ const CampoData = ({
     if (somenteHora) {
       return form ? campoHoraAntComValidacoes() : campoHoraAntSemValidacoes();
     }
+
     return form ? campoDataAntComValidacoes() : campoDataAntSemValidacoes();
   };
 
@@ -294,8 +292,8 @@ CampoData.propTypes = {
   temErro: PropTypes.bool,
   mensagemErro: PropTypes.string,
   carregando: PropTypes.bool,
-  array: PropTypes.bool,
   campoOpcional: PropTypes.bool,
+  executarOnChangeExterno: PropTypes.bool,
 };
 
 CampoData.defaultProps = {
@@ -315,8 +313,8 @@ CampoData.defaultProps = {
   temErro: null,
   mensagemErro: null,
   carregando: false,
-  array: false,
   campoOpcional: false,
+  executarOnChangeExterno: false,
 };
 
 const momentSchema = new MomentSchema();

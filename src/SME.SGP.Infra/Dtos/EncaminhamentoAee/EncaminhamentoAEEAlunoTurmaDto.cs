@@ -16,5 +16,6 @@ namespace SME.SGP.Infra
         public int TurmaAno { get; set; }
         public Modalidade TurmaModalidade { get; set; }
         public SituacaoAEE Situacao { get; set; }
+        public string Responsavel { get; set; }
     }
 }

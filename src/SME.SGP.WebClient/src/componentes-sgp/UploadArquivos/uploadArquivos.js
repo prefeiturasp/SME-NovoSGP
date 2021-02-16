@@ -63,7 +63,6 @@ const UploadArquivos = props => {
   } = props;
 
   const [listaDeArquivos, setListaDeArquivos] = useState([...defaultFileList]);
-  const [timeoutMsgSucesso, setTimeoutMsgSucesso] = useState('');
 
   useEffect(() => {
     if (defaultFileList?.length) {
@@ -101,17 +100,21 @@ const UploadArquivos = props => {
         .map(tipo => tipo?.trim()?.toLowerCase());
 
       const tamanhoNome = arquivo?.name?.length;
-      const nomeTipoAtual = arquivo.name.substring(
-        tamanhoNome,
-        tamanhoNome - 4
-      );
 
-      if (nomeTipoAtual) {
-        const permiteTipo = listaPermitidos.includes(
-          nomeTipoAtual?.toLowerCase()
+      const permiteTipo = listaPermitidos.find(tipo => {
+        const nomeTipoAtual = arquivo.name.substring(
+          tamanhoNome,
+          tamanhoNome - tipo.length
         );
-        return permiteTipo;
-      }
+
+        if (nomeTipoAtual) {
+          return tipo?.toLowerCase() === nomeTipoAtual?.toLowerCase();
+        }
+
+        return false;
+      });
+
+      return !!permiteTipo;
     }
     return true;
   };
@@ -166,6 +169,11 @@ const UploadArquivos = props => {
     const novoMap = [...novaLista];
     setListaDeArquivos(novoMap);
     onChangeListaArquivos(novoMap);
+
+    if (form && form.setFieldValue) {
+      form.setFieldValue(name, novoMap);
+      form.setFieldTouched(name, true);
+    }
   };
 
   const onChange = ({ file, fileList }) => {
@@ -181,27 +189,23 @@ const UploadArquivos = props => {
       return;
     }
 
-    if (status === 'done') {
-      if (timeoutMsgSucesso) {
-        clearTimeout(timeoutMsgSucesso);
-      }
-      const timeout = setTimeout(() => {
-        sucesso(`${file.name} arquivo carregado com sucesso`);
-      }, 400);
+    const novoMap = [...fileList];
 
-      setTimeoutMsgSucesso(timeout);
+    if (status === 'done') {
+      sucesso(`${file.name} arquivo carregado com sucesso`);
     } else if (status === 'error') {
       atualizaListaArquivos(fileList, file);
       return;
     }
-    const novoMap = [...fileList];
+    if (status === 'done' || status === 'removed') {
+      if (form && form.setFieldValue) {
+        form.setFieldValue(name, novoMap);
+        form.setFieldTouched(name, true);
+      }
+    }
+
     setListaDeArquivos(novoMap);
     onChangeListaArquivos(novoMap);
-
-    if (form && form.setFieldValue) {
-      form.setFieldValue(name, novoMap);
-      form.setFieldTouched(name, true);
-    }
   };
 
   const possuiErro = () => {

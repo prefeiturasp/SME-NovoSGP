@@ -53,11 +53,12 @@ namespace SME.SGP.Aplicacao.Integracoes
         {
             var perfisUsuario = repositorioPrioridadePerfil.ObterPerfisPorIds(perfis);
             var possuiTurmaAtiva = repositorioAbrangencia.PossuiAbrangenciaTurmaAtivaPorLogin(usuario.Login);
+            var possuiTurmaInfantilAtiva = repositorioAbrangencia.PossuiAbrangenciaTurmaInfantilAtivaPorLogin(usuario.Login);
 
             usuario.DefinirPerfis(perfisUsuario);
 
             var perfilProfCJSemTurmaTitular = await ObterPerfilPrioritarioCJSemTurmaTitular(usuario.Login, usuario.PossuiPerfilCJPrioritario(), usuario.PossuiPerfilCJInfantilPrioritario());
-            usuario.DefinirPerfilAtual(usuario.ObterPerfilPrioritario(possuiTurmaAtiva, perfilProfCJSemTurmaTitular));
+            usuario.DefinirPerfilAtual(usuario.ObterPerfilPrioritario(possuiTurmaAtiva, possuiTurmaInfantilAtiva, perfilProfCJSemTurmaTitular));
 
             var perfisPorPrioridade = new PerfisPorPrioridadeDto
             {

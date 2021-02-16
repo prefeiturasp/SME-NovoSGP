@@ -27,10 +27,6 @@ namespace SME.SGP.Dominio
 
         public void DefinirEmail(string novoEmail)
         {
-            if (Perfis == null || !Perfis.Any())
-            {
-                throw new NegocioException(MENSAGEM_ERRO_USUARIO_SEM_ACESSO);
-            }
             if ((PossuiPerfilDre() ||
                  PossuiPerfilSme()) &&
                 !novoEmail.Contains("@sme.prefeitura.sp.gov.br"))
@@ -104,6 +100,9 @@ namespace SME.SGP.Dominio
         {
             return Perfis.Any(c => c.Tipo == TipoPerfil.UE && c.CodigoPerfil == PerfilAtual);
         }
+
+        public bool EhCoordenadorCEFAI()
+            => PerfilAtual == Dominio.Perfis.PERFIL_CEFAI;
 
         public bool EhPerfilProfessor()
             => EhProfessor()
@@ -180,7 +179,7 @@ namespace SME.SGP.Dominio
             ExpiracaoRecuperacaoSenha = DateTime.Now.AddHours(6);
         }
 
-        public Guid ObterPerfilPrioritario(bool possuiTurmaAtiva, Guid perfilCJPrioritario)
+        public Guid ObterPerfilPrioritario(bool possuiTurmaAtiva, bool possuiTurmaInfantilAtiva, Guid perfilCJPrioritario)
         {
             if (Perfis == null || !Perfis.Any())
                 throw new NegocioException(MENSAGEM_ERRO_USUARIO_SEM_ACESSO);
@@ -191,13 +190,15 @@ namespace SME.SGP.Dominio
                 return perfilCJPrioritario;
             }
 
-            var possuiPerfilPrioritario = Perfis.Any(c => c.CodigoPerfil == Dominio.Perfis.PERFIL_PROFESSOR && possuiTurmaAtiva);
+            var possuiPerfilPrioritario = Perfis.Any(c => c.CodigoPerfil == Dominio.Perfis.PERFIL_PROFESSOR_INFANTIL && possuiTurmaInfantilAtiva);
+            if (possuiPerfilPrioritario)
+                return Dominio.Perfis.PERFIL_PROFESSOR_INFANTIL;
 
+            possuiPerfilPrioritario = Perfis.Any(c => c.CodigoPerfil == Dominio.Perfis.PERFIL_PROFESSOR && possuiTurmaAtiva);
             if (possuiPerfilPrioritario)
                 return Dominio.Perfis.PERFIL_PROFESSOR;
 
             possuiPerfilPrioritario = Perfis.Any(c => c.CodigoPerfil == Dominio.Perfis.PERFIL_PROFESSOR_INFANTIL && possuiTurmaAtiva);
-
             if (possuiPerfilPrioritario)
                 return Dominio.Perfis.PERFIL_PROFESSOR_INFANTIL;
 

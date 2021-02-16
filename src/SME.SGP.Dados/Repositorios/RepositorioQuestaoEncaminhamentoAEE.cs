@@ -1,8 +1,10 @@
 ﻿using SME.SGP.Dominio;
+using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,35 +14,6 @@ namespace SME.SGP.Dados.Repositorios
     {
         public RepositorioQuestaoEncaminhamentoAEE(ISgpContext repositorio) : base(repositorio)
         {
-        }
-
-        public async Task<IEnumerable<Questao>> ObterListaPorQuestionario(long questionarioId)
-        {
-            var query = @"select q.*, op.*
-                          from questao q 
-                          left join opcao_resposta op on op.questao_id = q.id
-                         where q.questionario_id = @questionarioId ";
-
-            var lookup = new Dictionary<long, Questao>();
-            await database.Conexao.QueryAsync<Questao, OpcaoResposta, Questao>(query,
-                (questao, opcaoResposta) =>
-                {
-                    var q = new Questao();
-                    if (!lookup.TryGetValue(questao.Id, out q))
-                    {
-                        q = questao;
-                        lookup.Add(q.Id, q);
-                    }
-
-                    if (opcaoResposta != null)
-                    {
-                        q.OpcoesRespostas.Add(opcaoResposta);
-                    }
-
-                    return q;
-                }, new { questionarioId });
-
-            return lookup.Values;
         }
 
         public async Task<IEnumerable<long>> ObterQuestoesPorSecaoId(long encaminhamentoAEESecaoId)

@@ -100,12 +100,17 @@ const LocalizadorEstudante = props => {
       params.codigoTurma = codigoTurma;
     }
     setExibirLoader(true);
-    const retorno = await service.buscarPorNome(params).catch(() => {
+    const retorno = await service.buscarPorNome(params).catch(e => {
+      if (e?.response?.status === 601) {
+        erro('Estudante/Criança não encontrado no EOL');
+      } else {
+        erros(e);
+      }
       setExibirLoader(false);
       limparDados();
     });
     setExibirLoader(false);
-    if (retorno && retorno?.data?.items?.length > 0) {
+    if (retorno?.data?.items?.length > 0) {
       setDataSource([]);
       setDataSource(
         retorno.data.items.map(aluno => ({
@@ -116,11 +121,27 @@ const LocalizadorEstudante = props => {
           nomeComModalidadeTurma: aluno.nomeComModalidadeTurma,
         }))
       );
+
+      if (retorno?.data?.items?.length === 1) {
+        const p = retorno.data.items[0];
+        const pe = {
+          alunoCodigo: parseInt(p.codigo, 10),
+          alunoNome: p.nome,
+          codigoTurma: p.codigoTurma,
+          turmaId: p.turmaId,
+        };
+        setPessoaSelecionada(pe);
+        setDesabilitarCampo(estado => ({
+          ...estado,
+          codigo: true,
+        }));
+        onChange(pe);
+      }
     }
   };
 
   const onBuscarPorCodigo = async codigo => {
-    if (!codigo) {
+    if (!codigo.codigo) {
       limparDados();
       return;
     }
@@ -138,7 +159,7 @@ const LocalizadorEstudante = props => {
     const retorno = await service.buscarPorCodigo(params).catch(e => {
       setExibirLoader(false);
       if (e?.response?.status === 601) {
-        erro('Estudante não encontrado no EOL');
+        erro('Estudante/Criança não encontrado no EOL');
       } else {
         erros(e);
       }
@@ -193,7 +214,7 @@ const LocalizadorEstudante = props => {
     if (ueId) {
       const timeout = setTimeout(() => {
         onBuscarPorCodigo(valor);
-      }, 500);
+      }, 800);
 
       setTimeoutBuscarPorCodigoNome(timeout);
     }
@@ -207,7 +228,7 @@ const LocalizadorEstudante = props => {
     if (ueId) {
       const timeout = setTimeout(() => {
         onChangeNome(valor);
-      }, 500);
+      }, 800);
 
       setTimeoutBuscarPorCodigoNome(timeout);
     }

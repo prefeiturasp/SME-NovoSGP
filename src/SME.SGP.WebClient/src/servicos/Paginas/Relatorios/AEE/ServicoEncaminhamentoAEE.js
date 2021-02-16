@@ -1,14 +1,23 @@
-import * as Yup from 'yup';
+import QuestionarioDinamicoFuncoes from '~/componentes-sgp/QuestionarioDinamico/Funcoes/QuestionarioDinamicoFuncoes';
 import tipoQuestao from '~/dtos/tipoQuestao';
 import { store } from '~/redux';
 import {
+  setDadosCollapseAtribuicaoResponsavel,
+  setLimparDadosAtribuicaoResponsavel,
+} from '~/redux/modulos/collapseAtribuicaoResponsavel/actions';
+import {
+  setDadosCollapseLocalizarEstudante,
+  setLimparDadosLocalizarEstudante,
+} from '~/redux/modulos/collapseLocalizarEstudante/actions';
+import {
+  setDadosEncaminhamento,
   setDadosModalAviso,
-  setEncaminhamentoAEEEmEdicao,
   setExibirLoaderEncaminhamentoAEE,
   setExibirModalAviso,
   setExibirModalErrosEncaminhamento,
-  setFormsSecoesEncaminhamentoAEE,
+  setLimparDadosEncaminhamento,
 } from '~/redux/modulos/encaminhamentoAEE/actions';
+import { setDadosObjectCardEstudante } from '~/redux/modulos/objectCardEstudante/actions';
 import { erros } from '~/servicos/alertas';
 import api from '~/servicos/api';
 
@@ -17,6 +26,10 @@ const urlPadrao = 'v1/encaminhamento-aee';
 class ServicoEncaminhamentoAEE {
   obterSituacoes = () => {
     return api.get(`${urlPadrao}/situacoes`);
+  };
+
+  obterAlunoSituacaoEncaminhamentoAEE = codigoAluno => {
+    return api.get(`${urlPadrao}/estudante/${codigoAluno}/situacao`);
   };
 
   obterAvisoModal = async () => {
@@ -41,15 +54,10 @@ class ServicoEncaminhamentoAEE {
     }
   };
 
-  obterDadosEstudante = (codigoAluno, anoLetivo) => {
-    const url = `v1/estudante/${codigoAluno}/anosLetivos/${anoLetivo}`;
-    return api.get(url);
-  };
-
-  obterSecoesPorEtapaDeEncaminhamentoAEE = (etapa, encaminhamentoAeeId) => {
-    let url = `${urlPadrao}/secoes?etapa=${etapa}`;
+  obterSecoesPorEtapaDeEncaminhamentoAEE = encaminhamentoAeeId => {
+    let url = `${urlPadrao}/secoes`;
     if (encaminhamentoAeeId) {
-      url += `&encaminhamentoAeeId=${encaminhamentoAeeId}`;
+      url += `?encaminhamentoAeeId=${encaminhamentoAeeId}`;
     }
     return api.get(url);
   };
@@ -67,135 +75,71 @@ class ServicoEncaminhamentoAEE {
     return api.get(url);
   };
 
-  obterEncaminhamentoPorId = encaminhamentoId => {
-    return api.get(`${urlPadrao}/${encaminhamentoId}`);
-  };
-
-  resetarTelaDadosOriginais = () => {
+  obterEncaminhamentoPorId = async encaminhamentoId => {
     const { dispatch } = store;
-    const state = store.getState();
-    const { encaminhamentoAEE } = state;
-    const { formsSecoesEncaminhamentoAEE } = encaminhamentoAEE;
-    if (formsSecoesEncaminhamentoAEE?.length) {
-      formsSecoesEncaminhamentoAEE.forEach(item => {
-        const form = item.form();
-        form.resetForm();
-      });
-      dispatch(setEncaminhamentoAEEEmEdicao(false));
-    }
-  };
 
-  addFormsSecoesEncaminhamentoAEE = (
-    obterForm,
-    questionarioId,
-    dadosQuestionarioAtual,
-    secaoId
-  ) => {
-    const { dispatch } = store;
-    const state = store.getState();
-    const { encaminhamentoAEE } = state;
-    const { formsSecoesEncaminhamentoAEE } = encaminhamentoAEE;
-    if (!formsSecoesEncaminhamentoAEE) {
-      const param = [];
-      param[questionarioId] = {
-        form: obterForm,
-        dadosQuestionarioAtual,
-        secaoId,
+    dispatch(setExibirLoaderEncaminhamentoAEE(true));
+
+    const resultado = await api
+      .get(`${urlPadrao}/${encaminhamentoId}`)
+      .catch(e => erros(e))
+      .finally(() => dispatch(setExibirLoaderEncaminhamentoAEE(false)));
+
+    if (resultado?.data) {
+      const { aluno, turma, responsavelEncaminhamentoAEE } = resultado?.data;
+
+      const dadosObjectCard = {
+        nome: aluno.nome,
+        numeroChamada: aluno.numeroAlunoChamada,
+        dataNascimento: aluno.dataNascimento,
+        codigoEOL: aluno.codigoAluno,
+        situacao: aluno.situacao,
+        dataSituacao: aluno.dataSituacao,
       };
-      dispatch(setFormsSecoesEncaminhamentoAEE(param));
-    } else if (formsSecoesEncaminhamentoAEE?.length) {
-      const param = formsSecoesEncaminhamentoAEE;
-      param[questionarioId] = {
-        form: obterForm,
-        dadosQuestionarioAtual,
-        secaoId,
+      dispatch(setDadosObjectCardEstudante(dadosObjectCard));
+
+      const dadosCollapseLocalizarEstudante = {
+        anoLetivo: turma.anoLetivo,
+        codigoAluno: aluno.codigoAluno,
+        codigoTurma: turma.codigo,
+        turmaId: turma.id,
       };
-      dispatch(setFormsSecoesEncaminhamentoAEE(param));
+      dispatch(
+        setDadosCollapseLocalizarEstudante(dadosCollapseLocalizarEstudante)
+      );
+
+      const dadosResponsavel = {
+        codigoRF: responsavelEncaminhamentoAEE?.rf,
+        nomeServidor: responsavelEncaminhamentoAEE?.nome,
+        id: responsavelEncaminhamentoAEE?.id,
+      };
+      dispatch(setDadosCollapseAtribuicaoResponsavel(dadosResponsavel));
+
+      dispatch(setDadosEncaminhamento(resultado?.data));
+    } else {
+      dispatch(setLimparDadosAtribuicaoResponsavel());
+      dispatch(setLimparDadosLocalizarEstudante());
+      dispatch(setLimparDadosEncaminhamento());
     }
   };
 
   // TODO
-  secaoEstaConcluida = secaoId => {
-    const state = store.getState();
-    const { encaminhamentoAEE } = state;
-    const { formsSecoesEncaminhamentoAEE } = encaminhamentoAEE;
+  // secaoEstaConcluida = secaoId => {
+  //   const state = store.getState();
+  //   const { encaminhamentoAEE } = state;
+  //   const { formsSecoesEncaminhamentoAEE } = encaminhamentoAEE;
 
-    if (formsSecoesEncaminhamentoAEE?.length) {
-      const form = formsSecoesEncaminhamentoAEE.find(
-        d => d.secaoId === secaoId
-      );
-      if (form && form()) {
-        return form().getFormikContext().isValid;
-      }
-    }
+  //   if (formsSecoesEncaminhamentoAEE?.length) {
+  //     const form = formsSecoesEncaminhamentoAEE.find(
+  //       d => d.secaoId === secaoId
+  //     );
+  //     if (form && form()) {
+  //       return form().getFormikContext().isValid;
+  //     }
+  //   }
 
-    return false;
-  };
-
-  obterQuestaoPorId = (dados, idPesquisa) => {
-    let questaoAtual = '';
-
-    const obterQuestao = item => {
-      if (!questaoAtual) {
-        if (String(item.id) === String(idPesquisa)) {
-          questaoAtual = item;
-        } else if (item?.opcaoResposta?.length) {
-          item.opcaoResposta.forEach(opcaoResposta => {
-            if (opcaoResposta.questaoComplementar) {
-              obterQuestao(opcaoResposta.questaoComplementar);
-            }
-          });
-        }
-      }
-    };
-
-    dados.forEach(item => {
-      obterQuestao(item);
-    });
-
-    return questaoAtual;
-  };
-
-  obterValidationSchema = (dadosQuestionarioAtual, form) => {
-    if (dadosQuestionarioAtual?.length && form?.state?.values) {
-      const camposComValidacao = {};
-
-      let arrayCampos = [];
-
-      const camposValidar = form?.state?.values;
-      if (camposValidar && Object.keys(camposValidar)?.length) {
-        arrayCampos = Object.keys(camposValidar);
-      }
-
-      const montaValidacoes = questaoAtual => {
-        if (questaoAtual?.opcaoResposta?.length) {
-          questaoAtual.opcaoResposta.forEach(opcaoAtual => {
-            if (opcaoAtual?.questaoComplementar) {
-              montaValidacoes(opcaoAtual.questaoComplementar);
-            }
-          });
-        }
-
-        if (
-          questaoAtual.obrigatorio &&
-          arrayCampos.find(questaoId => questaoId === String(questaoAtual.id))
-        ) {
-          camposComValidacao[questaoAtual.id] = Yup.string()
-            .nullable()
-            .required('Campo obrigatório');
-        }
-      };
-
-      if (arrayCampos?.length) {
-        dadosQuestionarioAtual.forEach(questaoAtual => {
-          montaValidacoes(questaoAtual);
-        });
-
-        return Yup.object(camposComValidacao);
-      }
-    }
-    return {};
-  };
+  //   return false;
+  // };
 
   salvarEncaminhamento = async (
     encaminhamentoId,
@@ -205,11 +149,10 @@ class ServicoEncaminhamentoAEE {
     const { dispatch } = store;
 
     const state = store.getState();
-    const { encaminhamentoAEE } = state;
-    const {
-      formsSecoesEncaminhamentoAEE,
-      dadosSecaoLocalizarEstudante,
-    } = encaminhamentoAEE;
+    const { questionarioDinamico, collapseLocalizarEstudante } = state;
+    const { formsQuestionarioDinamico } = questionarioDinamico;
+
+    const { dadosCollapseLocalizarEstudante } = collapseLocalizarEstudante;
 
     let contadorFormsValidos = 0;
 
@@ -234,11 +177,11 @@ class ServicoEncaminhamentoAEE {
       });
     };
 
-    if (formsSecoesEncaminhamentoAEE?.length) {
+    if (formsQuestionarioDinamico?.length) {
       let todosOsFormsEstaoValidos = !enviarEncaminhamento;
 
       if (enviarEncaminhamento) {
-        const promises = formsSecoesEncaminhamentoAEE.map(async item =>
+        const promises = formsQuestionarioDinamico.map(async item =>
           validaAntesDoSubmit(item.form())
         );
 
@@ -246,24 +189,24 @@ class ServicoEncaminhamentoAEE {
 
         todosOsFormsEstaoValidos =
           contadorFormsValidos ===
-          formsSecoesEncaminhamentoAEE?.filter(a => a)?.length;
+          formsQuestionarioDinamico?.filter(a => a)?.length;
       }
 
       if (todosOsFormsEstaoValidos) {
         const valoresParaSalvar = {
           id: encaminhamentoId || 0,
-          turmaId: dadosSecaoLocalizarEstudante.turmaId,
-          alunoCodigo: dadosSecaoLocalizarEstudante.codigoAluno,
+          turmaId: dadosCollapseLocalizarEstudante.turmaId,
+          alunoCodigo: dadosCollapseLocalizarEstudante.codigoAluno,
           situacao,
         };
-        valoresParaSalvar.secoes = formsSecoesEncaminhamentoAEE.map(
+        valoresParaSalvar.secoes = formsQuestionarioDinamico.map(
           (item, secaoId) => {
             const form = item.form();
             const campos = form.state.values;
             const questoes = [];
 
             Object.keys(campos).forEach(key => {
-              const questaoAtual = this.obterQuestaoPorId(
+              const questaoAtual = QuestionarioDinamicoFuncoes.obterQuestaoPorId(
                 item.dadosQuestionarioAtual,
                 key
               );
@@ -329,7 +272,8 @@ class ServicoEncaminhamentoAEE {
                   }
                 });
               } else if (
-                questao.tipoQuestao === tipoQuestao.ComboMultiplaEscolha &&
+                (questao.tipoQuestao === tipoQuestao.ComboMultiplaEscolha ||
+                  questao.tipoQuestao === tipoQuestao.Checkbox) &&
                 questao?.resposta?.length
               ) {
                 questao.resposta.forEach(valorSelecionado => {
@@ -417,23 +361,15 @@ class ServicoEncaminhamentoAEE {
     return api.delete(url);
   };
 
-  obterInformacoesEscolaresDoAluno = (codigoAluno, codigoTurma) => {
-    const url = `v1/estudante/informacoes-escolares?codigoAluno=${codigoAluno}&codigoTurma=${codigoTurma}`;
-    return api.get(url);
-  };
+  podeCadastrarEncaminhamentoEstudante = async codigoEstudante => {
+    const resultado = await api
+      .get(`${urlPadrao}/estudante/${codigoEstudante}/pode-cadastrar`)
+      .catch(e => erros(e));
 
-  obterAusenciaMotivoPorAlunoTurmaBimestreAno = (
-    codigoAluno,
-    bimestre,
-    codigoTurma,
-    anoLetivo
-  ) => {
-    const url = `v1/calendarios/frequencias/ausencias-motivos?codigoAluno=${codigoAluno}&codigoTurma=${codigoTurma}&bimestre=${bimestre}&anoLetivo=${anoLetivo}`;
-    return api.get(url);
-  };
-
-  podeCadastrarEncaminhamentoEstudante = codigoEstudante => {
-    return api.get(`${urlPadrao}/estudante/${codigoEstudante}/pode-cadastrar`);
+    if (resultado?.data) {
+      return true;
+    }
+    return false;
   };
 
   removerArquivo = arquivoCodigo => {
@@ -447,6 +383,38 @@ class ServicoEncaminhamentoAEE {
 
   enviarParaAnaliseEncaminhamento = encaminhamentoId => {
     return api.post(`${urlPadrao}/enviar-analise/${encaminhamentoId}`);
+  };
+
+  obterResponsaveis = (dreId, ueId, turmaId, alunoCodigo, situacao, anoLetivo) => {
+    let url = `${urlPadrao}/responsaveis?dreId=${dreId}&ueId=${ueId}&anoLetivo=${anoLetivo}`;
+
+    if (turmaId) {
+      url += `&turmaId=${turmaId}`;
+    }
+    if (alunoCodigo) {
+      url += `&alunoCodigo=${alunoCodigo}`;
+    }
+    if (situacao) {
+      url += `&situacao=${situacao}`;
+    }
+
+    return api.get(url);
+  };
+
+  atribuirResponsavelEncaminhamento = (rfResponsavel, encaminhamentoId) => {
+    const params = {
+      rfResponsavel,
+      encaminhamentoId,
+    };
+    return api.post(`${urlPadrao}/atribuir-responsavel`, params);
+  };
+
+  concluirEncaminhamento = encaminhamentoId => {
+    return api.post(`${urlPadrao}/concluir/${encaminhamentoId}`);
+  };
+
+  removerResponsavel = encaminhamentoId => {
+    return api.post(`${urlPadrao}/remover-responsavel/${encaminhamentoId}`);
   };
 }
 

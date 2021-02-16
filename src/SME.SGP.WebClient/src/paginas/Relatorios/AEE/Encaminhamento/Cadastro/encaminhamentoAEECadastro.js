@@ -3,21 +3,20 @@ import React, { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Card } from '~/componentes';
 import { Cabecalho } from '~/componentes-sgp';
+import CollapseLocalizarEstudante from '~/componentes-sgp/CollapseLocalizarEstudante/collapseLocalizarEstudante';
 import { RotasDto } from '~/dtos';
+import { setLimparDadosAtribuicaoResponsavel } from '~/redux/modulos/collapseAtribuicaoResponsavel/actions';
+import { setLimparDadosLocalizarEstudante } from '~/redux/modulos/collapseLocalizarEstudante/actions';
 import {
-  setDadosEncaminhamento,
-  setDadosEstudanteObjectCardEncaminhamento,
-  setDadosSecaoLocalizarEstudante,
   setDesabilitarCamposEncaminhamentoAEE,
-  setExibirLoaderEncaminhamentoAEE,
   setLimparDadosEncaminhamento,
 } from '~/redux/modulos/encaminhamentoAEE/actions';
-import { erros, verificaSomenteConsulta } from '~/servicos';
+import { setLimparDadosQuestionarioDinamico } from '~/redux/modulos/questionarioDinamico/actions';
+import { setBreadcrumbManual, verificaSomenteConsulta } from '~/servicos';
 import ServicoEncaminhamentoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoEncaminhamentoAEE';
 import BotoesAcoesEncaminhamentoAEE from './Componentes/botoesAcoesEncaminhamentoAEE';
 import LoaderEncaminhamento from './Componentes/LoaderEncaminhamento/loaderEncaminhamento';
-import SecaoEncaminhamentoCollapse from './Componentes/SecaoEncaminhamento/secaoEncaminhamentoCollapse';
-import SecaoLocalizarEstudanteCollapse from './Componentes/SecaoLocalizarEstudante/secaoLocalizarEstudanteCollapse';
+import MontarDadosSecoes from './Componentes/MontarDadosSecoes/montarDadosSecoes';
 
 const EncaminhamentoAEECadastro = ({ match }) => {
   const dispatch = useDispatch();
@@ -44,37 +43,8 @@ const EncaminhamentoAEECadastro = ({ match }) => {
   const obterEncaminhamentoPorId = useCallback(async () => {
     const encaminhamentoId = match?.params?.id;
 
-    dispatch(setExibirLoaderEncaminhamentoAEE(true));
-    const resultado = await ServicoEncaminhamentoAEE.obterEncaminhamentoPorId(
-      encaminhamentoId
-    )
-      .catch(e => erros(e))
-      .finally(() => dispatch(setExibirLoaderEncaminhamentoAEE(false)));
-
-    if (resultado?.data) {
-      const { aluno, turma } = resultado?.data;
-
-      const dadosObjectCard = {
-        nome: aluno.nome,
-        numeroChamada: aluno.numeroAlunoChamada,
-        dataNascimento: aluno.dataNascimento,
-        codigoEOL: aluno.codigoAluno,
-        situacao: aluno.situacao,
-        dataSituacao: aluno.dataSituacao,
-      };
-      dispatch(setDadosEstudanteObjectCardEncaminhamento(dadosObjectCard));
-
-      const dadosSecaoLocalizarEstudante = {
-        anoLetivo: turma.anoLetivo,
-        codigoAluno: aluno.codigoAluno,
-        codigoTurma: turma.codigo,
-        turmaId: turma.id,
-      };
-      dispatch(setDadosSecaoLocalizarEstudante(dadosSecaoLocalizarEstudante));
-
-      dispatch(setDadosEncaminhamento(resultado?.data));
-    }
-  }, [match, dispatch]);
+    ServicoEncaminhamentoAEE.obterEncaminhamentoPorId(encaminhamentoId);
+  }, [match]);
 
   useEffect(() => {
     const encaminhamentoId = match?.params?.id;
@@ -83,11 +53,35 @@ const EncaminhamentoAEECadastro = ({ match }) => {
     }
   }, [match, obterEncaminhamentoPorId, dispatch]);
 
+  const limparDadosEncaminhamento = useCallback(() => {
+    dispatch(setLimparDadosEncaminhamento());
+    dispatch(setLimparDadosQuestionarioDinamico());
+  }, [dispatch]);
+
   useEffect(() => {
     return () => {
-      dispatch(setLimparDadosEncaminhamento());
+      limparDadosEncaminhamento();
+      dispatch(setLimparDadosLocalizarEstudante());
+      dispatch(setLimparDadosAtribuicaoResponsavel());
     };
-  }, [dispatch]);
+  }, [dispatch, limparDadosEncaminhamento]);
+
+  useEffect(() => {
+    const encaminhamentoId = match?.params?.id;
+    if (encaminhamentoId) {
+      setBreadcrumbManual(
+        match.url,
+        'Editar Encaminhamento',
+        `${RotasDto.RELATORIO_AEE_ENCAMINHAMENTO}`
+      );
+    }
+  }, [match]);
+
+  const validarSePermiteProximoPasso = codigoEstudante => {
+    return ServicoEncaminhamentoAEE.podeCadastrarEncaminhamentoEstudante(
+      codigoEstudante
+    );
+  };
 
   return (
     <LoaderEncaminhamento>
@@ -95,19 +89,24 @@ const EncaminhamentoAEECadastro = ({ match }) => {
       <Card>
         <div className="col-md-12">
           <div className="row">
-            <div className="col-md-12 d-flex justify-content-end pb-4">
+            <div className="col-md-12 d-flex justify-content-end mb-3">
               <BotoesAcoesEncaminhamentoAEE match={match} />
             </div>
             {match?.params?.id ? (
               ''
             ) : (
               <div className="col-md-12 mb-2">
-                <SecaoLocalizarEstudanteCollapse />
+                <CollapseLocalizarEstudante
+                  changeDre={limparDadosEncaminhamento}
+                  changeUe={limparDadosEncaminhamento}
+                  changeTurma={limparDadosEncaminhamento}
+                  changeLocalizadorEstudante={limparDadosEncaminhamento}
+                  clickCancelar={limparDadosEncaminhamento}
+                  validarSePermiteProximoPasso={validarSePermiteProximoPasso}
+                />
               </div>
             )}
-            <div className="col-md-12 mb-2">
-              <SecaoEncaminhamentoCollapse match={match} />
-            </div>
+            <MontarDadosSecoes match={match} />
           </div>
         </div>
       </Card>

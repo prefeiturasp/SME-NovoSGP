@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import QuestionarioDinamicoFuncoes from '~/componentes-sgp/QuestionarioDinamico/Funcoes/QuestionarioDinamicoFuncoes';
 import Button from '~/componentes/button';
 import { Colors } from '~/componentes/colors';
 import { RotasDto } from '~/dtos';
@@ -18,16 +19,16 @@ const BotoesAcoesEncaminhamentoAEE = props => {
 
   const dispatch = useDispatch();
 
-  const encaminhamentoAEEEmEdicao = useSelector(
-    store => store.encaminhamentoAEE.encaminhamentoAEEEmEdicao
+  const questionarioDinamicoEmEdicao = useSelector(
+    store => store.questionarioDinamico.questionarioDinamicoEmEdicao
   );
 
   const dadosEncaminhamento = useSelector(
     store => store.encaminhamentoAEE.dadosEncaminhamento
   );
 
-  const dadosSecaoLocalizarEstudante = useSelector(
-    store => store.encaminhamentoAEE.dadosSecaoLocalizarEstudante
+  const dadosCollapseLocalizarEstudante = useSelector(
+    store => store.collapseLocalizarEstudante.dadosCollapseLocalizarEstudante
   );
 
   const desabilitarCamposEncaminhamentoAEE = useSelector(
@@ -80,7 +81,7 @@ const BotoesAcoesEncaminhamentoAEE = props => {
   };
 
   const onClickVoltar = async () => {
-    if (encaminhamentoAEEEmEdicao) {
+    if (questionarioDinamicoEmEdicao) {
       const confirmou = await confirmar(
         'Atenção',
         '',
@@ -115,14 +116,14 @@ const BotoesAcoesEncaminhamentoAEE = props => {
   };
 
   const onClickCancelar = async () => {
-    if (!desabilitarCamposEncaminhamentoAEE && encaminhamentoAEEEmEdicao) {
+    if (!desabilitarCamposEncaminhamentoAEE && questionarioDinamicoEmEdicao) {
       const confirmou = await confirmar(
         'Atenção',
         'Você não salvou as informações preenchidas.',
         'Deseja realmente cancelar as alterações?'
       );
       if (confirmou) {
-        ServicoEncaminhamentoAEE.resetarTelaDadosOriginais();
+        QuestionarioDinamicoFuncoes.limparDadosOriginaisQuestionarioDinamico();
       }
     }
   };
@@ -190,6 +191,30 @@ const BotoesAcoesEncaminhamentoAEE = props => {
     }
   };
 
+  const onClickConcluirParecer = async () => {
+    if (!desabilitarCamposEncaminhamentoAEE) {
+      const encaminhamentoId = match?.params?.id;
+      const salvou = await ServicoEncaminhamentoAEE.salvarEncaminhamento(
+        encaminhamentoId,
+        situacaoAEE.Analise,
+        true
+      );
+      if (salvou) {
+        dispatch(setExibirLoaderEncaminhamentoAEE(true));
+        const resposta = await ServicoEncaminhamentoAEE.concluirEncaminhamento(
+          encaminhamentoId
+        )
+          .catch(e => erros(e))
+          .finally(() => dispatch(setExibirLoaderEncaminhamentoAEE(false)));
+
+        if (resposta?.status === 200) {
+          sucesso('Encaminhamento concluído');
+          history.push(RotasDto.RELATORIO_AEE_ENCAMINHAMENTO);
+        }
+      }
+    }
+  };
+
   return (
     <>
       <Button
@@ -209,7 +234,7 @@ const BotoesAcoesEncaminhamentoAEE = props => {
         className="mr-3"
         onClick={onClickCancelar}
         disabled={
-          !encaminhamentoAEEEmEdicao || desabilitarCamposEncaminhamentoAEE
+          !questionarioDinamicoEmEdicao || desabilitarCamposEncaminhamentoAEE
         }
       />
       <Button
@@ -219,7 +244,11 @@ const BotoesAcoesEncaminhamentoAEE = props => {
         border
         className="mr-3"
         onClick={onClickExcluir}
-        disabled={!permissoesTela.podeExcluir || !match?.params?.id}
+        hidden={
+          (dadosEncaminhamento?.situacao !== situacaoAEE.Encaminhado &&
+            dadosEncaminhamento?.situacao !== situacaoAEE.Rascunho) ||
+          !(permissoesTela.podeExcluir && dadosEncaminhamento?.podeEditar)
+        }
       />
       <Button
         id="btn-salvar"
@@ -230,7 +259,7 @@ const BotoesAcoesEncaminhamentoAEE = props => {
         onClick={onClickSalvar}
         disabled={
           desabilitarCamposEncaminhamentoAEE ||
-          !encaminhamentoAEEEmEdicao ||
+          !questionarioDinamicoEmEdicao ||
           (match?.params?.id && !dadosEncaminhamento?.podeEditar)
         }
       />
@@ -247,7 +276,7 @@ const BotoesAcoesEncaminhamentoAEE = props => {
           dadosEncaminhamento?.situacao !== situacaoAEE.Rascunho
         }
         disabled={
-          !dadosSecaoLocalizarEstudante?.codigoAluno ||
+          !dadosCollapseLocalizarEstudante?.codigoAluno ||
           desabilitarCamposEncaminhamentoAEE
         }
       />
@@ -261,12 +290,10 @@ const BotoesAcoesEncaminhamentoAEE = props => {
         onClick={onClickEncerrar}
         hidden={
           !dadosEncaminhamento?.situacao ||
-          dadosEncaminhamento?.situacao === situacaoAEE.Rascunho
+          dadosEncaminhamento?.situacao !== situacaoAEE.Encaminhado
         }
         disabled={
-          desabilitarCamposEncaminhamentoAEE ||
-          !dadosEncaminhamento?.podeEditar ||
-          dadosEncaminhamento?.situacao === situacaoAEE.Analise
+          desabilitarCamposEncaminhamentoAEE || !dadosEncaminhamento?.podeEditar
         }
       />
       <Button
@@ -279,12 +306,26 @@ const BotoesAcoesEncaminhamentoAEE = props => {
         onClick={onClickEncaminharAEE}
         hidden={
           !dadosEncaminhamento?.situacao ||
-          dadosEncaminhamento?.situacao === situacaoAEE.Rascunho
+          dadosEncaminhamento?.situacao !== situacaoAEE.Encaminhado
         }
         disabled={
-          desabilitarCamposEncaminhamentoAEE ||
-          !dadosEncaminhamento?.podeEditar ||
-          dadosEncaminhamento?.situacao === situacaoAEE.Analise
+          desabilitarCamposEncaminhamentoAEE || !dadosEncaminhamento?.podeEditar
+        }
+      />
+      <Button
+        id="btn-concluir-parecer"
+        label="Concluir parecer"
+        color={Colors.Roxo}
+        border
+        bold
+        className="ml-3"
+        onClick={onClickConcluirParecer}
+        hidden={
+          !dadosEncaminhamento?.situacao ||
+          dadosEncaminhamento?.situacao !== situacaoAEE.Analise
+        }
+        disabled={
+          desabilitarCamposEncaminhamentoAEE || !dadosEncaminhamento?.podeEditar
         }
       />
     </>

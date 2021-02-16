@@ -4,6 +4,7 @@ using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -30,6 +31,7 @@ namespace SME.SGP.Aplicacao
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
             var podeEditar = await VerificaPodeEditar(encaminhamentoAee, usuarioLogado);
+            var podeAtribuirResponsavel = await VerificaPodeAtribuirResponsavel(encaminhamentoAee, usuarioLogado);
 
             return new EncaminhamentoAEERespostaDto()
             {
@@ -41,10 +43,50 @@ namespace SME.SGP.Aplicacao
                     AnoLetivo = encaminhamentoAee.Turma.AnoLetivo
                 },
                 Situacao = encaminhamentoAee.Situacao,
+                SituacaoDescricao = encaminhamentoAee.Situacao.Name(),
                 PodeEditar = podeEditar,
+                PodeAtribuirResponsavel = podeAtribuirResponsavel,
                 MotivoEncerramento = encaminhamentoAee.MotivoEncerramento,
-                Auditoria = (AuditoriaDto)encaminhamentoAee
+                Auditoria = (AuditoriaDto)encaminhamentoAee,
+                responsavelEncaminhamentoAEE = encaminhamentoAee.Responsavel == null ? null :
+                new ResponsavelEncaminhamentoAEEDto()
+                {
+                    Id = encaminhamentoAee.Responsavel.Id,
+                    Nome = encaminhamentoAee.Responsavel.Nome,
+                    Rf = encaminhamentoAee.Responsavel.CodigoRf
+                }
             };
+        }
+
+        private async Task<bool> VerificaPodeAtribuirResponsavel(EncaminhamentoAEE encaminhamentoAee, Usuario usuarioLogado)
+        {
+            switch (encaminhamentoAee.Situacao)
+            {
+                case SituacaoAEE.AtribuicaoResponsavel:
+                case SituacaoAEE.Analise:
+                    return await EhGestorDaEscolaDaTurma(usuarioLogado, encaminhamentoAee.Turma) 
+                        || await EhCoordenadorCEFAI(usuarioLogado, encaminhamentoAee.Turma);
+                default:
+                    return false;
+            }
+        }
+
+        private async Task<bool> EhCoordenadorCEFAI(Usuario usuarioLogado, Turma turma)
+        {
+            if (!usuarioLogado.EhCoordenadorCEFAI())
+                return false;
+
+            var codigoDre = await mediator.Send(new ObterCodigoDREPorUeIdQuery(turma.UeId));
+            if (string.IsNullOrEmpty(codigoDre))
+                return false;
+
+            return await UsuarioTemFuncaoCEFAINaDRE(usuarioLogado, codigoDre);
+        }
+
+        private async Task<bool> UsuarioTemFuncaoCEFAINaDRE(Usuario usuarioLogado, string codigoDre)
+        {
+            var funcionarios = await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(codigoDre, new List<Guid>() { Perfis.PERFIL_CEFAI }));
+            return funcionarios.Any(c => c == usuarioLogado.CodigoRf);
         }
 
         private async Task<bool> VerificaPodeEditar(EncaminhamentoAEE encaminhamento, Usuario usuarioLogado)
@@ -56,13 +98,14 @@ namespace SME.SGP.Aplicacao
                 case SituacaoAEE.Encaminhado:
                     return await EhGestorDaEscolaDaTurma(usuarioLogado, encaminhamento.Turma);
                 case SituacaoAEE.Analise:
-                case SituacaoAEE.Finalizado:
-                case SituacaoAEE.Encerrado:
-                    return false;
+                    return await EhUsuarioResponsavelPeloEncaminhamento(usuarioLogado, encaminhamento.ResponsavelId);
                 default:
                     return false;
             }
         }
+
+        private Task<bool> EhUsuarioResponsavelPeloEncaminhamento(Usuario usuarioLogado, long? responsavelId)
+            => Task.FromResult(responsavelId.HasValue && usuarioLogado.Id == responsavelId.Value);
 
         private async Task<bool> EhProfessorDaTurma(Usuario usuarioLogado, Turma turma)
         {

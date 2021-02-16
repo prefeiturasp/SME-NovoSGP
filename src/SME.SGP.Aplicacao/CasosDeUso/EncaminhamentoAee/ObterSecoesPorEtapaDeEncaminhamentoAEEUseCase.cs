@@ -26,7 +26,12 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                 var situacaoEncaminhamento = await mediator.Send(new ObterSituacaoEncaminhamentoAEEPorIdQuery(encaminhamentoAeeId));
 
                 if (situacaoEncaminhamento != SituacaoAEE.Rascunho)
+                {
                     listaEtapas.Add((int)EtapaEncaminhamentoAEE.SegundaEtapa);
+
+                    if (situacaoEncaminhamento != SituacaoAEE.Encaminhado)
+                        listaEtapas.Add((int)EtapaEncaminhamentoAEE.TerceiraEtapa);
+                }
             }
 
             return await mediator.Send(new ObterSecoesPorEtapaDeEncaminhamentoQuery(listaEtapas, encaminhamentoAeeId));
