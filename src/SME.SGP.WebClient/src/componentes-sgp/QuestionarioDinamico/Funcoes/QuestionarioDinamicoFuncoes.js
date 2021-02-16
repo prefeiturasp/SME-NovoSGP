@@ -2,6 +2,7 @@ import { store } from '~/redux';
 import {
   setFormsQuestionarioDinamico,
   setQuestionarioDinamicoEmEdicao,
+  setResetarTabela,
 } from '~/redux/modulos/questionarioDinamico/actions';
 
 class QuestionarioDinamicoFuncoes {
@@ -99,6 +100,7 @@ class QuestionarioDinamicoFuncoes {
         form.resetForm();
       });
       dispatch(setQuestionarioDinamicoEmEdicao(false));
+      dispatch(setResetarTabela(true));
     }
   };
 

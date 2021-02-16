@@ -6,6 +6,7 @@ const inicial = {
   questionarioDinamicoEmEdicao: false,
   questionarioDinamicoDadosModalAnotacao: null,
   questionarioDinamicoExibirModalAnotacao: false,
+  resetarTabela: false,
 };
 
 export default function questionarioDinamico(state = inicial, action) {
@@ -49,6 +50,12 @@ export default function questionarioDinamico(state = inicial, action) {
           questionarioDinamicoDadosModalAnotacao: null,
           questionarioDinamicoExpandirLinhaAusenciaEstudante: [],
           questionarioDinamicoExibirModalAnotacao: false,
+        };
+      }
+      case '@questionarioDinamico/setResetarTabela': {
+        return {
+          ...draft,
+          resetarTabela: action.payload,
         };
       }
       default:
