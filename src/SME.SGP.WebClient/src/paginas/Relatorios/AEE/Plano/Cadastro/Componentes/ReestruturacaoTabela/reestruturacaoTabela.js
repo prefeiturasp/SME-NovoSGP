@@ -4,21 +4,29 @@ import PropTypes from 'prop-types';
 import { Button, Colors, DataTable } from '~/componentes';
 
 import ModalReestruturacaoPlano from '../ModalReestruturacaoPlano/modalReestruturacaoPlano';
-import { BotaoEstilizado } from './reestruturacaoTabela.css';
+import { BotaoEstilizado,TextoEstilizado } from './reestruturacaoTabela.css';
 
-const ReestruturacaoTabela = ({ key }) => {
+const ReestruturacaoTabela = ({ key,listaDados, setListaDados }) => {
   const [exibirModal, setModalVisivel] = useState(false);
+  const [modoVisualizacao, setModoVisualizacao] = useState(false);
+  const [dadosVisualizacao, setDadosVisualizacao] = useState();
 
-  const montarUltimaColuna = text => {
+  const cliqueVisualizar = (dadosLinha) => {
+    setModalVisivel(true);
+    setModoVisualizacao(true);
+    setDadosVisualizacao(dadosLinha);
+  }
+
+  const montarUltimaColuna =  (texto, dadosLinha) => {
     return (
       <div className="d-flex">
-        <div className="mr-4">{text}</div>
+        <TextoEstilizado className="mr-4 limitar-texto">{texto}</TextoEstilizado>
         <BotaoEstilizado
           id="btn-visualizar"
           icon="eye"
           iconType="far"
           color={Colors.Verde}
-          onClick={() => {}}
+          onClick={() => cliqueVisualizar(dadosLinha)}
           height="24px"
           width="24px"
         />
@@ -37,7 +45,7 @@ const ReestruturacaoTabela = ({ key }) => {
     },
     {
       title: 'Descrição da reestruturação',
-      dataIndex: 'descricaoReestruturacao',
+      dataIndex: 'descricaoReestruturacao.textoSimples',
       render: montarUltimaColuna,
     },
   ];
@@ -50,20 +58,15 @@ const ReestruturacaoTabela = ({ key }) => {
         key={key}
         esconderModal={esconderModal}
         exibirModal={exibirModal}
+        setListaDados={setListaDados}
+        modoVisualizacao={modoVisualizacao}
+        dadosVisualizacao={dadosVisualizacao}
       />
       <div>
         <DataTable
-          rowKey="id"
+          rowKey="key"
           columns={colunas}
-          dataSource={[
-            {
-              id: 1,
-              data: '05/10/2020',
-              versaoPlano: 'v7 - 19/02/2020',
-              descricaoReestruturacao:
-                'Alteradas as atividades que o aluno fazia após o período de aula, porque não houve muitos res…',
-            },
-          ]}
+          dataSource={listaDados}
           pagination={false}
         />
       </div>
@@ -82,6 +85,8 @@ const ReestruturacaoTabela = ({ key }) => {
 
 ReestruturacaoTabela.propTypes = {
   key: PropTypes.string.isRequired,
+  setListaDados: PropTypes.func.isRequired,
+  listaDados: PropTypes.oneOfType([PropTypes.array]).isRequired,
 };
 
 export default ReestruturacaoTabela;

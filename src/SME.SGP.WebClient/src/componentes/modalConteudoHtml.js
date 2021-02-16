@@ -12,6 +12,9 @@ import Grid from './grid';
 const Container = styled(Modal)`
   .ant-modal-footer {
     border-top: none;
+    padding: 0;
+    padding-right: ${({ paddingRight }) => paddingRight}px;
+    padding-bottom: ${({ paddingBottom }) => paddingBottom}px;
   }
 
   .padding-btn-confirmacao {
@@ -79,6 +82,9 @@ const ModalConteudoHtml = props => {
     fecharAoClicarEsc,
     esconderBotaoPrincipal,
     esconderBotaoSecundario,
+    paddingBottom,
+    paddingRight,
+    colorBotaoSecundario,
   } = props;
   return (
     <Container
@@ -91,6 +97,8 @@ const ModalConteudoHtml = props => {
       centered
       confirmLoading={loader}
       width={width}
+      paddingBottom={paddingBottom}
+      paddingRight={paddingRight}
       footer={
         tituloAtencao || perguntaAtencao ? (
           <>
@@ -110,7 +118,7 @@ const ModalConteudoHtml = props => {
                         id={shortid.generate()}
                         key="btn-sim-confirmacao"
                         label={labelBotaoSecundario}
-                        color={Colors.Roxo}
+                        color={colorBotaoSecundario}
                         bold
                         border
                         className="mr-2 padding-btn-confirmacao"
@@ -138,7 +146,7 @@ const ModalConteudoHtml = props => {
               id={shortid.generate()}
               key="btn-sim-confirmacao"
               label={labelBotaoSecundario}
-              color={Colors.Roxo}
+              color={colorBotaoSecundario}
               bold
               border
               className="mr-2 padding-btn-confirmacao"
@@ -172,6 +180,9 @@ ModalConteudoHtml.propTypes = {
   fecharAoClicarEsc: PropTypes.bool,
   esconderBotaoPrincipal: PropTypes.bool,
   esconderBotaoSecundario: PropTypes.bool,
+  paddingBottom: PropTypes.string,
+  paddingRight: PropTypes.string,
+  colorBotaoSecundario: PropTypes.string,
 };
 
 ModalConteudoHtml.defaultProps = {
@@ -181,6 +192,10 @@ ModalConteudoHtml.defaultProps = {
   fecharAoClicarEsc: true,
   esconderBotaoPrincipal: false,
   esconderBotaoSecundario: false,
+
+  paddingBottom: '',
+  paddingRight: '',
+  colorBotaoSecundario: 'Roxo',
 };
 
 export default ModalConteudoHtml;
