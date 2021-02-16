@@ -1,7 +1,6 @@
 {
   "name": "sme-sgp-front",
   "version": "0.1.0",
-  "homepage": "C:/Projetos/AMcom/SME-NovoSGP/src/SME.SGP.WebClient/build",
   "private": true,
   "scripts": {
     "start": "react-app-rewired start",
