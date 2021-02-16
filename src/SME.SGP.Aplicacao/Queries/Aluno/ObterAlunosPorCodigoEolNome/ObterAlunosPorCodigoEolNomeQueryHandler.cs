@@ -41,7 +41,7 @@ namespace SME.SGP.Aplicacao.Queries.Aluno.ObterAlunosPorCodigoEolNome
                         CodigoTurma = alunoEOL.CodigoTurma.ToString(),
                         TurmaId = turmaAluno!=null ? turmaAluno.Id : 0,
                         NomeComModalidadeTurma = turmas != null && turmas.Any() ?
-                        @$"{alunoEOL.NomeAluno} - {OberterNomeTurmaFormatado(turmas.FirstOrDefault(t => t.CodigoTurma == alunoEOL.CodigoTurma.ToString()))}" : ""
+                        $"{alunoEOL.NomeAluno} - {OberterNomeTurmaFormatado(turmas.FirstOrDefault(t => t.CodigoTurma == alunoEOL.CodigoTurma.ToString()))}" : ""
                     };
                     alunoSimplesDto.Add(alunoSimples);
                 }
