@@ -30,9 +30,12 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException($"Não foi possível salvar a itinerância do aluno");
 
             if (request.Aluno.Questoes == null || request.Aluno.Questoes.Any())
-                    foreach (var questao in request.Aluno.Questoes)
-                        await mediator.Send(new SalvarItineranciaAlunoQuestaoCommand(questao.QuestaoId, itineranciaAlunoId, questao.Resposta));
-
+                foreach (var questao in request.Aluno.Questoes)
+                {
+                    if(questao.Obrigatorio && string.IsNullOrEmpty(questao.Resposta))
+                        throw new NegocioException($"É obrigatório informar o campo: {questao.Descricao} para o aluno {request.Aluno.AlunoNome}");
+                    await mediator.Send(new SalvarItineranciaAlunoQuestaoCommand(questao.QuestaoId, itineranciaAlunoId, questao.Resposta));
+                }
             return (AuditoriaDto)itineranciaAluno;
         }
 

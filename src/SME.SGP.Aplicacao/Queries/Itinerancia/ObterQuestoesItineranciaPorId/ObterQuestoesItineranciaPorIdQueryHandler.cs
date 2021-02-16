@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -18,6 +19,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<IEnumerable<ItineranciaQuestaoDto>> Handle(ObterQuestoesItineranciaPorIdQuery request, CancellationToken cancellationToken)
-                => await repositorioItinerancia.ObterQuestoesItineranciaPorId(request.Id);
+                => await repositorioItinerancia.ObterQuestoesItineranciaPorId(request.Id, (long)TipoQuestionario.RegistroItinerancia);
     }
 }
