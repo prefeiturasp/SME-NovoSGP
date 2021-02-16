@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<PlanejamentoAnualPeriodoEscolarResumoDto>> Handle(ObterPeriodosEscolaresPorPlanejamentoAnualIdQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioPlanejamentoAnualPeriodoEscolar.ObterPorPlanejamentoAnualId(request.PlanejamentoAnualId);
+            return await repositorioPlanejamentoAnualPeriodoEscolar.ObterPlanejamentosAnuaisPeriodosTurmaPorPlanejamentoAnualId(request.PlanejamentoAnualId);
         }
     }
 }
