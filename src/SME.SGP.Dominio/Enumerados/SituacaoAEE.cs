@@ -20,5 +20,7 @@ namespace SME.SGP.Dominio.Enumerados
         Deferido = 7,
         [Display(Name = "Indeferido")]
         Indeferido = 8,
+        [Display(Name = "Devolvido pela coordenação")]
+        Devolvido = 9,
     }
 }

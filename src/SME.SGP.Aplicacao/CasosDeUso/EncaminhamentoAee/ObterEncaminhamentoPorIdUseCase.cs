@@ -94,6 +94,7 @@ namespace SME.SGP.Aplicacao
             switch (encaminhamento.Situacao)
             {
                 case SituacaoAEE.Rascunho:
+                case SituacaoAEE.Devolvido:
                     return await EhProfessorDaTurma(usuarioLogado, encaminhamento.Turma) || await EhGestorDaEscolaDaTurma(usuarioLogado, encaminhamento.Turma);
                 case SituacaoAEE.Encaminhado:
                     return await EhGestorDaEscolaDaTurma(usuarioLogado, encaminhamento.Turma);
