@@ -27,6 +27,10 @@ const DadosPlanoAnual = () => {
     store => store.planoAnual.componenteCurricular
   );
 
+  const exibirModalCopiarConteudo = useSelector(
+    store => store.planoAnual.exibirModalCopiarConteudo
+  ); 
+
   // Seta o componente curricular selecionado no SelectComponent quando não é REGENCIA!
   const montarListaComponenteCurricularesPlanejamento = useCallback(() => {
     dispatch(
@@ -84,6 +88,12 @@ const DadosPlanoAnual = () => {
         erros(e);
       });
   }, [componenteCurricular, turmaSelecionada, dispatch]);
+
+  useEffect(() => {
+    if (componenteCurricular && !exibirModalCopiarConteudo) {
+      obterTurmasParaCopiarConteudo();
+    }
+  }, [exibirModalCopiarConteudo])
 
   /**
    * carrega a lista de bimestres com os dados dos planos
