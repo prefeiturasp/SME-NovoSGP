@@ -147,14 +147,14 @@ insert into public.questionario (nome, tipo, criado_em, criado_por, criado_rf) v
 
 --INSET QUESTAO ITINERANCIA
 insert into public.questao(questionario_id, ordem, nome, obrigatorio, tipo, criado_em, criado_por, criado_rf) values(
-	(select id from public.questionario where tipo = 2), 0, 'Acompanhamento da situação', false, 2, now(),'Carga Inicial','Carga Inicial'); 
+	(select id from public.questionario where tipo = 3), 0, 'Acompanhamento da situação', false, 2, now(),'Carga Inicial','Carga Inicial'); 
 insert into public.questao(questionario_id, ordem, nome, obrigatorio, tipo, criado_em, criado_por, criado_rf) values(
-	(select id from public.questionario where tipo = 2), 1, 'Encaminhamentos', false, 2, now(),'Carga Inicial','Carga Inicial'); 
+	(select id from public.questionario where tipo = 3), 1, 'Encaminhamentos', false, 2, now(),'Carga Inicial','Carga Inicial'); 
 
 --INSERT QUESTAO ITINERANCIA ALUNO
 insert into public.questao(questionario_id, ordem, nome, obrigatorio, tipo, criado_em, criado_por, criado_rf) values(
-	(select id from public.questionario where tipo = 3), 0, 'Descritivo do estudante', false, 2, now(),'Carga Inicial','Carga Inicial'); 
+	(select id from public.questionario where tipo = 4), 0, 'Descritivo do estudante', false, 2, now(),'Carga Inicial','Carga Inicial'); 
 insert into public.questao(questionario_id, ordem, nome, obrigatorio, tipo, criado_em, criado_por, criado_rf) values(
-	(select id from public.questionario where tipo = 3), 1, 'Acompanhamento da situação', false, 2, now(),'Carga Inicial','Carga Inicial'); 
+	(select id from public.questionario where tipo = 4), 1, 'Acompanhamento da situação', false, 2, now(),'Carga Inicial','Carga Inicial'); 
 insert into public.questao(questionario_id, ordem, nome, obrigatorio, tipo, criado_em, criado_por, criado_rf) values(
-	(select id from public.questionario where tipo = 3), 2, 'Encaminhamentos', false, 2, now(),'Carga Inicial','Carga Inicial'); 
+	(select id from public.questionario where tipo = 4), 2, 'Encaminhamentos', false, 2, now(),'Carga Inicial','Carga Inicial'); 

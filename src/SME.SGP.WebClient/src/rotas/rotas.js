@@ -1187,7 +1187,7 @@ rotas.set(`${RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA}`, {
   component: {},
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  temPermissionamento: false,
+  temPermissionamento: true,
   chavePermissao: RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA,
 });
 
@@ -1198,7 +1198,7 @@ rotas.set(`${RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA}/novo`, {
   component: RegistroItineranciaAEECadastro,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  temPermissionamento: false,
+  temPermissionamento: true,
   chavePermissao: RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA,
 });
 

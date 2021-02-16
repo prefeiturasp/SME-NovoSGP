@@ -14,7 +14,7 @@ const ModalAlunos = ({
   alunosSelecionados,
   setAlunosSelecionados,
   questoes,
-  setModoEdicaoItinerancia
+  setModoEdicaoItinerancia,
 }) => {
   const [alunosSelecionadosModal, setAlunosSelecionadosModal] = useState(
     alunosSelecionados
@@ -110,7 +110,7 @@ const ModalAlunos = ({
             className="col-md-12 d-flex justify-content-between mb-4"
             key={`${alunoCodigo}`}
           >
-            <span>{alunoNome}</span>
+            <span>{`${alunoNome} (${alunoCodigo})`} </span>
             {podeRemover && (
               <BotaoEstilizado
                 id="btn-excluir"

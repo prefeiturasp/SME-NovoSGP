@@ -456,9 +456,8 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
                         label="Data da visita"
                         placeholder="Selecione a data"
                         onChange={mudarDataVisita}
-                        desabilitarData={
-                          desabilitarData || desabilitarCamposPorPermissao()
-                        }
+                        desabilitarData={desabilitarData}
+                        desabilitado={desabilitarCamposPorPermissao()}
                       />
                     </div>
                   </div>
@@ -470,8 +469,8 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
                       labelTabela="Objetivos da itinerância"
                       tituloTabela="Objetivos selecionados"
                       labelBotao="Novo objetivo"
-                      desabilitadoIncluir={permissoesTela?.podeIncluir}
-                      desabilitadoExcluir={permissoesTela?.podeAlterar}
+                      desabilitadoIncluir={!permissoesTela?.podeIncluir}
+                      desabilitadoExcluir={!permissoesTela?.podeAlterar}
                       pagination={false}
                       dadosTabela={objetivosSelecionados}
                       removerUsuario={text => removerObjetivoSelecionado(text)}
@@ -486,9 +485,9 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
                       tituloTabela="Unidades Escolares selecionadas"
                       labelBotao="Adicionar nova unidade escolar"
                       pagination={false}
-                      desabilitadoIncluir={permissoesTela?.podeIncluir}
+                      desabilitadoIncluir={!permissoesTela?.podeIncluir}
                       desabilitadoExcluir={
-                        permissoesTela?.podeAlterar ||
+                        !permissoesTela?.podeAlterar ||
                         alunosSelecionados?.length
                       }
                       dadosTabela={uesSelecionados}
@@ -551,7 +550,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
                         label="Data para retorno/verificação"
                         placeholder="Selecione a data"
                         onChange={mudarDataRetorno}
-                        disabled={desabilitarCamposPorPermissao()}
+                        desabilitado={desabilitarCamposPorPermissao()}
                       />
                     </div>
                   </div>

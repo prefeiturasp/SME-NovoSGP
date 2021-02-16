@@ -169,6 +169,7 @@ const ModalUE = ({
               key: ueSelecionada.valor,
               descricao: ueSelecionada.desc,
               codigoUe: ue,
+              ueId: ueSelecionada.id,
             },
           ]);
         }
