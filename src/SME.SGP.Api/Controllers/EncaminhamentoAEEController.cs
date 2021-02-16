@@ -210,5 +210,17 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(encaminhamentoId));
         }
+
+        [HttpPost("devolver")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.AEE_A, Policy = "Bearer")]
+        public async Task<IActionResult> DevolverEncaminhamento([FromBody] DevolucaoEncaminhamentoAEEDto devolucaoDto, [FromServices] IDevolverEncaminhamentoUseCase useCase)
+        {
+            await useCase.Executar(devolucaoDto);
+
+            return Ok(new RetornoBaseDto("Encaminhamento devolvido com sucesso"));
+        }
     }
 }
