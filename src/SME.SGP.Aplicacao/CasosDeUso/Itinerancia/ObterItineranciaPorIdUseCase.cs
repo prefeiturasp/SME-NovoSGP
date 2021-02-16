@@ -60,7 +60,8 @@ namespace SME.SGP.Aplicacao
                  {
                      Id = itinerancia.Ues.FirstOrDefault(i => i.UeId == ue.Id).Id,                              
                      UeId = ue.Id,
-                     Descricao = $"{ue.TipoEscola.ShortName()} - {ue.Nome}"
+                     Descricao = $"{ue.TipoEscola.ShortName()} - {ue.Nome}",
+                     CodigoUe = ue.CodigoUe,
                  };
              });
         }
@@ -108,8 +109,8 @@ namespace SME.SGP.Aplicacao
                 return new ItineranciaAlunoDto
                 {
                     Id = aluno.Id,
-                    AlunoCodigo = aluno.CodigoAluno,                    
-                    Nome = @$"{alunoEol.NomeAluno} - {OberterNomeTurmaFormatado(turmas.FirstOrDefault(t => t.CodigoTurma == alunoEol.CodigoTurma.ToString()))}",
+                    AlunoCodigo = aluno.CodigoAluno,
+                    AlunoNome = @$"{alunoEol.NomeAluno} - {OberterNomeTurmaFormatado(turmas.FirstOrDefault(t => t.CodigoTurma == alunoEol.CodigoTurma.ToString()))}",
                     Questoes = MontarQuestoesItineranciaAluno(aluno, questoesBase)
                 };
             });

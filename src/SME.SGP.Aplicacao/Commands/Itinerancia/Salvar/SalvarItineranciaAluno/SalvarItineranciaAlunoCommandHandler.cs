@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
                 foreach (var questao in request.Aluno.Questoes)
                 {
                     if(questao.Obrigatorio && string.IsNullOrEmpty(questao.Resposta))
-                        throw new NegocioException($"É obrigatório informar o campo: {questao.Descricao} para o aluno {request.Aluno.Nome}");
+                        throw new NegocioException($"É obrigatório informar o campo: {questao.Descricao} para o aluno {request.Aluno.AlunoNome}");
                     await mediator.Send(new SalvarItineranciaAlunoQuestaoCommand(questao.QuestaoId, itineranciaAlunoId, questao.Resposta));
                 }
             return (AuditoriaDto)itineranciaAluno;
