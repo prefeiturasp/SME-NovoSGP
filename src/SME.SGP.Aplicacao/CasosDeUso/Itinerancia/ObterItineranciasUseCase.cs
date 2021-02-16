@@ -50,7 +50,7 @@ namespace SME.SGP.Aplicacao
                 foreach (var itinerancia in itinerancias)
                 {
                     
-                    var aluno = alunosEol.FirstOrDefault(a => a.CodigoAluno == int.Parse(itinerancia.AlunoCodigo?? : 0));
+                    var aluno = alunosEol.FirstOrDefault(a => a.CodigoAluno == int.Parse(itinerancia.AlunoCodigo));
                     listaItinerancias.Add(new ItineranciaResumoDto()
                     {
                         Id = itinerancia.Id,
