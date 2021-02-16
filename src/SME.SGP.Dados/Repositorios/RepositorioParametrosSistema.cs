@@ -92,7 +92,7 @@ namespace SME.SGP.Dados.Repositorios
                           from parametros_sistema
                          where tipo = @tipoParametroSistema and ativo";
 
-            return await database.Conexao.QueryFirstAsync<string>(query, new { tipoParametroSistema });
+            return await database.Conexao.QueryFirstOrDefaultAsync<string>(query, new { tipoParametroSistema });            
         }
 
         public async Task<T> ObterValorUnicoPorTipo<T>(TipoParametroSistema tipoParametroSistema)
