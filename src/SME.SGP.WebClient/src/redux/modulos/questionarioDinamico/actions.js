@@ -28,3 +28,8 @@ export const setQuestionarioDinamicoExpandirLinhaAusenciaEstudante = payload => 
     '@questionarioDinamico/setQuestionarioDinamicoExpandirLinhaAusenciaEstudante',
   payload,
 });
+
+export const setResetarTabela = payload => ({
+  type: '@questionarioDinamico/setResetarTabela',
+  payload,
+});
