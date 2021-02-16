@@ -114,7 +114,23 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
     }
   };
 
-  const selecionarAlunos = alunos => {
+  const perguntarAntesDeInserirAluno = async () => {
+    const resposta = await confirmar(
+      'Atenção',
+      'Ao selecionar o estudante, o registro será específico por estudante. As informações preenchidas até o momento serão descartadas',
+      'Deseja continuar?'
+    );
+    return resposta;
+  };
+
+  const selecionarAlunos = async alunos => {
+    const questao = questoesItinerancia.find(q => q.resposta);
+    if (alunosSelecionados?.length === 0 && questao) {
+      const pergunta = await perguntarAntesDeInserirAluno();
+      if (!pergunta) {
+        return;
+      }
+    }
     setAlunosSelecionados(alunos);
     refForm.setFieldValue('alunos', alunos);
   };
