@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { Base } from '~/componentes';
+import { Base } from '~/componentes/colors';
 
 export const InputRFEstilo = styled.div`
   .ant-input {
