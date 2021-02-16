@@ -60,7 +60,8 @@ namespace SME.SGP.Aplicacao
                  {
                      Id = itinerancia.Ues.FirstOrDefault(i => i.UeId == ue.Id).Id,                              
                      UeId = ue.Id,
-                     Descricao = $"{ue.TipoEscola.ShortName()} - {ue.Nome}"
+                     Descricao = $"{ue.TipoEscola.ShortName()} - {ue.Nome}",
+                     CodigoUe = ue.CodigoUe,
                  };
              });
         }

@@ -6,7 +6,7 @@ namespace SME.SGP.Infra
     {
         public long Id { get; set; }
         public string AlunoCodigo { get; set; }
-        public string Nome { get; set; }
+        public string AlunoNome { get; set; }
         public IEnumerable<ItineranciaAlunoQuestaoDto> Questoes { get; set; }
     }
 }

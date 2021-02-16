@@ -10,7 +10,10 @@ import {
 } from '~/componentes';
 import { setObjetivosItinerancia } from '~/redux/modulos/itinerancia/action';
 import { aviso, confirmar } from '~/servicos';
-import { NOME_CAMPO_OBJETIVO } from '../ConstantesCamposDinâmicos';
+import {
+  NOME_CAMPO_OBJETIVO,
+  NOME_CHECK_OBJETIVO,
+} from '../ConstantesCamposDinâmicos';
 import { TituloEstilizado } from './modalObjetivos.css';
 
 const ModalObjetivos = ({
@@ -20,6 +23,7 @@ const ModalObjetivos = ({
   listaObjetivos,
   objetivosSelecionados,
   variasUesSelecionadas,
+  setModoEdicaoItinerancia,
 }) => {
   const dispatch = useDispatch();
   const [modoEdicao, setModoEdicao] = useState(false);
@@ -32,11 +36,24 @@ const ModalObjetivos = ({
   useEffect(() => {
     const valores = {};
     if (listaObjetivos?.length) {
+      const validacoesCamposComDescricao = {};
       listaObjetivos.forEach(objetivo => {
         if (objetivo.temDescricao) {
           valores[NOME_CAMPO_OBJETIVO + objetivo.itineranciaObjetivoBaseId] =
             '';
           setValoresIniciais(valores);
+          validacoesCamposComDescricao[
+            NOME_CAMPO_OBJETIVO + objetivo.itineranciaObjetivoBaseId
+          ] = Yup.string().test(
+            `validaQuestao-${objetivo.itineranciaObjetivoBaseId}`,
+            'Campo obrigatório',
+            function validar() {
+              if (objetivo.checked && !objetivo.descricao) {
+                return false;
+              }
+              return true;
+            }
+          );
         }
         const objetivoSelecionado = objetivosSelecionados?.find(
           o =>
@@ -49,6 +66,7 @@ const ModalObjetivos = ({
           objetivo.checked = false;
         }
       });
+      setValidacoes(Yup.object(validacoesCamposComDescricao));
     }
   }, [listaObjetivos]);
 
@@ -65,6 +83,7 @@ const ModalObjetivos = ({
     setObjetivosSelecionados(arraySelecionados);
     dispatch(setObjetivosItinerancia([...listaObjetivos]));
     setModoEdicao(false);
+    setModoEdicaoItinerancia(true);
     esconderModal();
   };
 
@@ -79,7 +98,6 @@ const ModalObjetivos = ({
   };
 
   const onChangeCheckbox = (item, form) => {
-    form.resetForm();
     const objetivo = listaObjetivos.find(
       o => o.itineranciaObjetivoBaseId === item.itineranciaObjetivoBaseId
     );
@@ -95,24 +113,20 @@ const ModalObjetivos = ({
         );
       } else {
         objetivo.checked = !objetivo.checked;
+        form.setFieldValue(
+          NOME_CHECK_OBJETIVO + objetivo.itineranciaObjetivoBaseId,
+          !objetivo.checked
+        );
+        if (!objetivo.checked) {
+          objetivo.descricao = '';
+          form.setFieldValue(
+            NOME_CAMPO_OBJETIVO + objetivo.itineranciaObjetivoBaseId,
+            ''
+          );
+        }
         setModoEdicao(true);
       }
     }
-    const validacoesCamposComDescricao = {};
-    listaObjetivos.forEach(objetivoItem => {
-      if (objetivoItem.temDescricao && objetivoItem.checked) {
-        validacoesCamposComDescricao[
-          NOME_CAMPO_OBJETIVO + objetivoItem.itineranciaObjetivoBaseId
-        ] = Yup.string().required('Campo obrigatório');
-      } else {
-        objetivo.descricao = '';
-      }
-    });
-    setValidacoes(
-      Object.keys(validacoesCamposComDescricao).length
-        ? Yup.object(validacoesCamposComDescricao)
-        : Yup.object({})
-    );
   };
 
   const onChangeCampoTexto = (evento, item) => {
@@ -181,7 +195,9 @@ const ModalObjetivos = ({
                         key={item.itineranciaObjetivoBaseId}
                         className="mb-3 ml-n2"
                         label={`${item.nome} ${textoUe}`}
-                        name={`objetivo-${item.itineranciaObjetivoBaseId}`}
+                        name={
+                          NOME_CHECK_OBJETIVO + item.itineranciaObjetivoBaseId
+                        }
                         onChangeCheckbox={() => onChangeCheckbox(item, form)}
                         disabled={false}
                         checked={item.checked}
@@ -222,6 +238,7 @@ ModalObjetivos.defaultProps = {
   variasUesSelecionadas: false,
   listaObjetivos: [],
   objetivosSelecionados: [],
+  setModoEdicaoItinerancia: () => {},
 };
 
 ModalObjetivos.propTypes = {
@@ -231,6 +248,7 @@ ModalObjetivos.propTypes = {
   variasUesSelecionadas: PropTypes.bool,
   listaObjetivos: PropTypes.oneOfType([PropTypes.array]),
   objetivosSelecionados: PropTypes.oneOfType([PropTypes.array]),
+  setModoEdicaoItinerancia: PropTypes.func,
 };
 
 export default ModalObjetivos;

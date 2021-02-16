@@ -13,6 +13,8 @@ const ModalAlunos = ({
   setModalVisivel,
   alunosSelecionados,
   setAlunosSelecionados,
+  questoes,
+  setModoEdicaoItinerancia
 }) => {
   const [alunosSelecionadosModal, setAlunosSelecionadosModal] = useState(
     alunosSelecionados
@@ -34,6 +36,7 @@ const ModalAlunos = ({
           {
             ...aluno,
             podeRemover: true,
+            questoes,
           },
         ];
       });
@@ -60,6 +63,7 @@ const ModalAlunos = ({
 
   const onConfirmarModal = () => {
     setAlunosSelecionados(alunosSelecionadosModal);
+    setModoEdicaoItinerancia(true);
     setModoEdicao(false);
     esconderModal();
   };
@@ -131,14 +135,18 @@ ModalAlunos.defaultProps = {
   modalVisivel: false,
   setModalVisivel: () => {},
   setAlunosSelecionados: () => {},
+  setModoEdicaoItinerancia: () => {},
+  questoes: [],
 };
 
 ModalAlunos.propTypes = {
   codigoUe: PropTypes.string,
   alunosSelecionados: PropTypes.oneOfType([PropTypes.any]),
   modalVisivel: PropTypes.bool,
+  setModoEdicaoItinerancia: PropTypes.func,
   setModalVisivel: PropTypes.func,
   setAlunosSelecionados: PropTypes.func,
+  questoes: PropTypes.oneOfType([PropTypes.any]),
 };
 
 export default ModalAlunos;
