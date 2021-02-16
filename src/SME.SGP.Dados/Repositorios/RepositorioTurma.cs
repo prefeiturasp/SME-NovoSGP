@@ -6,6 +6,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -217,6 +218,9 @@ namespace SME.SGP.Dados.Repositorios
 	                        u.dre_id = d.id
                         where
 	                        turma_id = @turmaCodigo";
+
+            contexto.AbrirConexao();
+
             return (await contexto.QueryAsync<Turma, Ue, Dre, Turma>(query, (turma, ue, dre) =>
              {
                  ue.AdicionarDre(dre);
