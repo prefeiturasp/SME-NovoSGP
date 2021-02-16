@@ -1,7 +1,7 @@
 import { Form, Formik } from 'formik';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import shortid from 'shortid';
 import * as Yup from 'yup';
 import {
@@ -16,8 +16,13 @@ import {
 } from '~/componentes';
 import { Cabecalho } from '~/componentes-sgp';
 import { RotasDto } from '~/dtos';
-import { setQuestoesItineranciaAluno } from '~/redux/modulos/itinerancia/action';
-import { erros, setBreadcrumbManual, sucesso } from '~/servicos';
+import {
+  confirmar,
+  erro,
+  erros,
+  setBreadcrumbManual,
+  sucesso,
+} from '~/servicos';
 import ServicoRegistroItineranciaAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoRegistroItineranciaAEE';
 import {
   CollapseAluno,
@@ -29,7 +34,6 @@ import {
 import { NOME_CAMPO_QUESTAO } from './componentes/ConstantesCamposDinâmicos';
 
 const RegistroItineranciaAEECadastro = ({ match }) => {
-  const dispatch = useDispatch();
   const [refForm, setRefForm] = useState({});
   const valoresIniciaisFixos = { dataVisita: '', dataRetornoVerificacao: '' };
   const [valoresIniciais, setValoresIniciais] = useState(valoresIniciaisFixos);
@@ -39,24 +43,27 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
   };
   const [validacoes, setValidacoes] = useState(Yup.object(validacoesFixas));
   const [carregandoGeral, setCarregandoGeral] = useState(false);
-  const [dataVisita, setDataVisita] = useState();
-  const [dataRetornoVerificacao, setDataRetornoVerificacao] = useState();
+  const [dataVisita, setDataVisita] = useState('');
+  const [dataRetornoVerificacao, setDataRetornoVerificacao] = useState('');
   const [modalVisivelUES, setModalVisivelUES] = useState(false);
   const [modalVisivelObjetivos, setModalVisivelObjetivos] = useState(false);
   const [modalVisivelAlunos, setModalVisivelAlunos] = useState(false);
   const [objetivosSelecionados, setObjetivosSelecionados] = useState();
   const [alunosSelecionados, setAlunosSelecionados] = useState();
   const [uesSelecionados, setUesSelecionados] = useState();
-  const [desabilitarCampos, setDesabilitarCampos] = useState(false);
+  const [modoEdicao, setModoEdicao] = useState(false);
   const [objetivosBase, setObjetivosBase] = useState([]);
   const [itineranciaId, setItineranciaId] = useState();
+  const [questoesAlunos, setQuestoesAluno] = useState([]);
+  const [itineranciaAlteracao, setItineranciaAlteracao] = useState({});
+
   const usuario = useSelector(store => store.usuario);
   const permissoesTela =
     usuario.permissoes[RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA];
   const [questoesItinerancia, setQuestoesItinerancia] = useState([]);
 
   const onClickVoltar = () => {};
-  const onClickCancelar = () => {};
+
   const onClickSalvar = async () => {
     const itinerancia = {
       id: itineranciaId,
@@ -67,27 +74,82 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
       alunos: alunosSelecionados,
       questoes: alunosSelecionados?.length ? [] : questoesItinerancia,
     };
-    setCarregandoGeral(true);
-    const salvar = await ServicoRegistroItineranciaAEE.salvarItinerancia(
-      itinerancia
-    )
-      .catch(e => erros(e))
-      .finally(setCarregandoGeral(false));
-    if (salvar?.status === 200) {
-      sucesso(`Registro ${itineranciaId ? 'alterado' : 'salvo'} com sucesso`);
+    if (!itinerancia.objetivosVisita?.length) {
+      erro('A itinerância precisa ter ao menos um objetivo selecionado');
+      return;
     }
+    if (!itinerancia.ues?.length) {
+      erro(
+        'A itinerância precisa ter ao menos uma unidade escolar selecionada'
+      );
+      return;
+    }
+    let errosAlunos = '';
+    if (itinerancia.alunos?.length) {
+      itinerancia.alunos.forEach(aluno => {
+        const questoesInvalidas = aluno.questoes.filter(
+          questao => questao.obrigatorio && !questao.resposta
+        );
+        if (questoesInvalidas.length) {
+          const camposInvalidos = questoesInvalidas.map(questao => {
+            return ` '${questao.descricao}'`;
+          });
+          errosAlunos += `O(s) campo(s) ${camposInvalidos} do aluno ${aluno.alunoNome}, são obrigatórios. `;
+        }
+      });
+    }
+    if (errosAlunos) {
+      erro(errosAlunos);
+    } else {
+      setCarregandoGeral(true);
+      const salvar = await ServicoRegistroItineranciaAEE.salvarItinerancia(
+        itinerancia
+      )
+        .catch(e => erros(e))
+        .finally(setCarregandoGeral(false));
+      if (salvar?.status === 200) {
+        sucesso(`Registro ${itineranciaId ? 'alterado' : 'salvo'} com sucesso`);
+        setModoEdicao(false);
+      }
+    }
+  };
+
+  const selecionarAlunos = alunos => {
+    setAlunosSelecionados(alunos);
+    refForm.setFieldValue('alunos', alunos);
   };
 
   const mudarDataVisita = data => {
     setDataVisita(data);
+    setModoEdicao(true);
   };
 
   const mudarDataRetorno = data => {
     setDataRetornoVerificacao(data);
+    setModoEdicao(true);
   };
 
-  const removerItemSelecionado = (text, funcao) => {
-    funcao(estadoAntigo => estadoAntigo.filter(item => item.key !== text.key));
+  const removerObjetivoSelecionado = valor => {
+    const itemLista = objetivosBase.find(
+      objetivo =>
+        objetivo.itineranciaObjetivoBaseId === valor.itineranciaObjetivoBaseId
+    );
+    if (itemLista) itemLista.descricao = '';
+    setObjetivosSelecionados(estadoAntigo =>
+      estadoAntigo
+        ? estadoAntigo.filter(
+            item =>
+              item.itineranciaObjetivoBaseId !== valor.itineranciaObjetivoBaseId
+          )
+        : []
+    );
+    setModoEdicao(true);
+  };
+
+  const removerUeSelecionada = text => {
+    setUesSelecionados(estadoAntigo =>
+      estadoAntigo.filter(item => item.key !== text.key)
+    );
   };
 
   useEffect(() => {
@@ -114,15 +176,30 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
     }
   };
 
-  const montarValidacoesValoresQuestoes = questoes => {
+  const montarValidacoesValoresQuestoes = (
+    questoes,
+    dtVisita = null,
+    dtRetorno = null
+  ) => {
     const validacoesQuestoes = validacoesFixas;
     const valoresIniciaisQuestoes = valoresIniciaisFixos;
-    valoresIniciaisQuestoes.dataVisita = dataVisita;
-    valoresIniciaisQuestoes.dataRetornoVerificacao = dataRetornoVerificacao;
+    valoresIniciaisQuestoes.dataVisita = dtVisita || dataVisita;
+    valoresIniciaisQuestoes.dataRetornoVerificacao =
+      dtRetorno || dataRetornoVerificacao;
     questoes.forEach(questao => {
       validacoesQuestoes[
         NOME_CAMPO_QUESTAO + questao.questaoId
-      ] = Yup.string().required('Campo obrigatório');
+      ] = Yup.string().test(
+        `validaCampoQuestao-${questao.questaoId}`,
+        'campo obrigatório',
+        function validar() {
+          const { alunos } = this.parent;
+          if (questao.obrigatorio && !alunos?.length && !questao.resposta) {
+            return false;
+          }
+          return true;
+        }
+      );
       valoresIniciais[NOME_CAMPO_QUESTAO + questao.questaoId] =
         questao.resposta || '';
     });
@@ -134,29 +211,86 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
     const result = await ServicoRegistroItineranciaAEE.obterQuestoesItinerancia();
     if (result?.status === 200) {
       setQuestoesItinerancia(result?.data?.itineranciaQuestao);
-      dispatch(
-        setQuestoesItineranciaAluno(result?.data?.itineranciaAlunoQuestao)
-      );
+      setQuestoesAluno(result?.data?.itineranciaAlunoQuestao);
       montarValidacoesValoresQuestoes(result.data.itineranciaQuestao);
     }
   };
 
-  useEffect(() => {
-    setCarregandoGeral(true);
-    obterObjetivos();
-    obterQuestoes();
-    setCarregandoGeral(false);
-  }, []);
+  const resetTela = () => {
+    refForm.resetForm();
+    setDataVisita('');
+    setDataRetornoVerificacao('');
+    setObjetivosSelecionados([]);
+    setUesSelecionados([]);
+    questoesItinerancia.forEach(questao => {
+      questao.resposta = '';
+    });
+    setAlunosSelecionados([]);
+  };
 
-  useEffect(() => {
-    if (alunosSelecionados?.length) {
-      montarValidacoesValoresQuestoes([]);
-    } else {
+  const construirItineranciaAlteracao = itinerancia => {
+    refForm.setFieldValue('dataVisita', window.moment(itinerancia.dataVisita));
+    refForm.setFieldValue(
+      'dataRetornoVerificacao',
+      window.moment(itinerancia.dataRetornoVerificacao)
+    );
+    setDataVisita(window.moment(itinerancia.dataVisita));
+    setDataRetornoVerificacao(
+      window.moment(itinerancia.dataRetornoVerificacao)
+    );
+    valoresIniciais.dataVisita = window.moment(itinerancia.dataVisita);
+    valoresIniciais.dataRetornoVerificacao = window.moment(
+      itinerancia.dataRetornoVerificacao
+    );
+    if (itinerancia.objetivosVisita?.length) {
+      setObjetivosSelecionados(itinerancia.objetivosVisita);
+      itinerancia.objetivosVisita.forEach(objetivo => {
+        let objetivoBase = objetivosBase.find(
+          o =>
+            o.itineranciaObjetivosBaseId === objetivo.itineranciaObjetivosBaseId
+        );
+        objetivoBase = objetivo;
+        objetivoBase.checked = true;
+      });
+    }
+    if (itinerancia.ues?.length) {
+      setUesSelecionados(itinerancia.ues);
+    }
+    if (itinerancia.questoes?.length) {
+      setQuestoesItinerancia(itinerancia.questoes);
       montarValidacoesValoresQuestoes(
-        questoesItinerancia?.length ? questoesItinerancia : []
+        itinerancia.questoes,
+        window.moment(itinerancia.dataVisita),
+        window.moment(itinerancia.dataRetornoVerificacao)
       );
     }
-  }, [alunosSelecionados]);
+    if (itinerancia.alunos?.length) {
+      setAlunosSelecionados(itinerancia.alunos);
+      refForm.setFieldValue('alunos', itinerancia.alunos);
+    }
+  };
+
+  const perguntarAntesDeCancelar = async () => {
+    const resposta = await confirmar(
+      'Atenção',
+      'Você não salvou as informações preenchidas.',
+      'Deseja realmente cancelar as alterações?'
+    );
+    return resposta;
+  };
+  const onClickCancelar = async () => {
+    if (modoEdicao) {
+      const ehParaCancelar = await perguntarAntesDeCancelar();
+      if (ehParaCancelar) {
+        setModoEdicao(false);
+        if (itineranciaId) {
+          construirItineranciaAlteracao(itineranciaAlteracao);
+        } else {
+          resetTela();
+        }
+      }
+    }
+  };
 
   useEffect(() => {
     async function obterItinerancia(id) {
@@ -165,42 +299,33 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
       ).catch(e => erros(e));
       if (result.data && result?.status === 200) {
         const itinerancia = result.data;
-        setDataVisita(itinerancia.dataVisita);
-        setDataRetornoVerificacao(itinerancia.dataRetornoVerificacao);
-        valoresIniciais.dataVisita = window.moment(itinerancia.dataVisita);
-        valoresIniciais.dataRetornoVerificacao = window.moment(
-          itinerancia.dataRetornoVerificacao
-        );
-        if (itinerancia.objetivosVisita?.length) {
-          setObjetivosSelecionados(itinerancia.objetivosVisita);
-          itinerancia.objetivosVisita.forEach(objetivo => {
-            let objetivoBase = objetivosBase.find(
-              o =>
-                o.itineranciaObjetivosBaseId ===
-                objetivo.itineranciaObjetivosBaseId
-            );
-            objetivoBase = objetivo;
-            objetivoBase.checked = true;
-          });
-        }
-        if (itinerancia.ues?.length) {
-          setUesSelecionados(itinerancia.ues);
-        }
-        if (itinerancia.questoes?.length) {
-          setQuestoesItinerancia(itinerancia.questoes);
-        }
+        setItineranciaAlteracao(itinerancia);
+        construirItineranciaAlteracao(itinerancia);
       }
     }
     if (itineranciaId) {
       obterItinerancia(itineranciaId);
+    } else {
+      obterQuestoes();
     }
   }, [itineranciaId]);
 
   const removerAlunos = alunoCodigo => {
-    setAlunosSelecionados(estadoAntigo =>
-      estadoAntigo.filter(item => item.alunoCodigo !== alunoCodigo)
-    );
+    const novosAlunos =
+      alunosSelecionados.filter(item => item.alunoCodigo !== alunoCodigo) || [];
+    if (!novosAlunos.length) {
+      montarValidacoesValoresQuestoes(questoesItinerancia);
+    }
+    setAlunosSelecionados(novosAlunos);
+    setModoEdicao(true);
+    refForm.setFieldValue('alunos', novosAlunos);
   };
+
+  useEffect(() => {
+    setCarregandoGeral(true);
+    obterObjetivos();
+    setCarregandoGeral(false);
+  }, []);
 
   const desabilitarData = dataCorrente => {
     return (
@@ -215,29 +340,31 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
       : !permissoesTela?.podeIncluir;
   };
 
-  useEffect(() => {
-    if (dataVisita && objetivosSelecionados?.length) {
-      setDesabilitarCampos(true);
-    }
-  }, [dataVisita, objetivosSelecionados]);
-
   const permiteApenasUmaUe = () => {
     if (objetivosSelecionados?.length) {
-      const objetivosComVariasUes = objetivosSelecionados.find(
+      const objetivosComVariasUes = objetivosSelecionados.filter(
         objetivo => objetivo.permiteVariasUes
       );
-      const objetivosComApenasUmaUe = objetivosSelecionados.find(
+      const objetivosComApenasUmaUe = objetivosSelecionados.filter(
         objetivo => !objetivo.permiteVariasUes
       );
-      return !objetivosComVariasUes?.length && objetivosComApenasUmaUe?.length;
+      return (
+        (!objetivosComVariasUes?.length && objetivosComApenasUmaUe?.length) ||
+        alunosSelecionados?.length
+      );
     }
     return false;
   };
 
   const validaAntesDoSubmit = form => {
-    if (Object.keys(valoresIniciais).length) {
-      const arrayCampos = Object.keys(valoresIniciais);
-      arrayCampos.forEach(campo => {
+    const camposValidacao = Object.keys(valoresIniciaisFixos);
+    if (!alunosSelecionados?.length) {
+      questoesItinerancia.forEach(questao => {
+        camposValidacao.push(NOME_CAMPO_QUESTAO + questao.questaoId);
+      });
+    }
+    if (camposValidacao.length) {
+      camposValidacao.forEach(campo => {
         form.setFieldTouched(campo, true, true);
       });
       form.validateForm().then(() => {
@@ -249,6 +376,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
   };
 
   const setQuestao = (valor, questao) => {
+    setModoEdicao(true);
     questao.resposta = valor;
   };
 
@@ -260,8 +388,8 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
           <Formik
             enableReinitialize
             initialValues={valoresIniciais}
-            validationSchema={validacoes}
             ref={refFormik => setRefForm(refFormik)}
+            validationSchema={validacoes}
             onSubmit={() => onClickSalvar()}
             validateOnBlur
             validateOnChange
@@ -278,6 +406,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
                         color={Colors.Azul}
                         border
                         className="mr-3"
+                        disabled
                         onClick={onClickVoltar}
                       />
                       <Button
@@ -288,7 +417,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
                         bold
                         className="mr-3"
                         onClick={onClickCancelar}
-                        disabled={!desabilitarCampos}
+                        disabled={!modoEdicao}
                       />
                       <Button
                         id="btn-gerar-ata-diario-bordo"
@@ -297,7 +426,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
                         border
                         bold
                         onClick={() => validaAntesDoSubmit(form)}
-                        disabled={!desabilitarCampos}
+                        disabled={!modoEdicao}
                       />
                     </div>
                   </div>
@@ -326,12 +455,10 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
                       tituloTabela="Objetivos selecionados"
                       labelBotao="Novo objetivo"
                       desabilitadoIncluir={permissoesTela?.podeIncluir}
-                      desabilitadoExcluir={permissoesTela?.podeExcluir}
+                      desabilitadoExcluir={permissoesTela?.podeAlterar}
                       pagination={false}
                       dadosTabela={objetivosSelecionados}
-                      removerUsuario={text =>
-                        removerItemSelecionado(text, setObjetivosSelecionados)
-                      }
+                      removerUsuario={text => removerObjetivoSelecionado(text)}
                       botaoAdicionar={() => setModalVisivelObjetivos(true)}
                     />
                   </div>
@@ -344,11 +471,12 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
                       labelBotao="Adicionar nova unidade escolar"
                       pagination={false}
                       desabilitadoIncluir={permissoesTela?.podeIncluir}
-                      desabilitadoExcluir={permissoesTela?.podeExcluir}
-                      dadosTabela={uesSelecionados}
-                      removerUsuario={text =>
-                        removerItemSelecionado(text, setUesSelecionados)
+                      desabilitadoExcluir={
+                        permissoesTela?.podeAlterar ||
+                        alunosSelecionados?.length
                       }
+                      dadosTabela={uesSelecionados}
+                      removerUsuario={text => removerUeSelecionada(text)}
                       botaoAdicionar={() => setModalVisivelUES(true)}
                     />
                   </div>
@@ -378,6 +506,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
                           key={aluno.alunoCodigo}
                           aluno={aluno}
                           removerAlunos={() => removerAlunos(aluno.alunoCodigo)}
+                          setModoEdicaoItinerancia={setModoEdicao}
                         />
                       ))
                     : questoesItinerancia?.map(questao => {
@@ -389,7 +518,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
                                 label={questao.descricao}
                                 value={questao.resposta}
                                 name={NOME_CAMPO_QUESTAO + questao.questaoId}
-                                id={questao.questaoId}
+                                id={`editor-questao-${questao.questaoId}`}
                                 onChange={e => setQuestao(e, questao)}
                               />
                             </div>
@@ -423,6 +552,10 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
           unEscolaresSelecionados={uesSelecionados}
           setUnEscolaresSelecionados={setUesSelecionados}
           permiteApenasUmaUe={permiteApenasUmaUe()}
+          setModoEdicaoItinerancia={setModoEdicao}
+          desabilitarBotaoExcluir={
+            permissoesTela?.podeAlterar || alunosSelecionados?.length
+          }
         />
       )}
       {modalVisivelObjetivos && (
@@ -433,6 +566,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
           setObjetivosSelecionados={setObjetivosSelecionados}
           listaObjetivos={objetivosBase}
           variasUesSelecionadas={uesSelecionados?.length > 1}
+          setModoEdicaoItinerancia={setModoEdicao}
         />
       )}
       {modalVisivelAlunos && (
@@ -440,8 +574,10 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
           modalVisivel={modalVisivelAlunos}
           setModalVisivel={setModalVisivelAlunos}
           alunosSelecionados={alunosSelecionados}
-          setAlunosSelecionados={setAlunosSelecionados}
+          setAlunosSelecionados={selecionarAlunos}
           codigoUe={uesSelecionados.length && uesSelecionados[0].codigoUe}
+          questoes={questoesAlunos}
+          setModoEdicaoItinerancia={setModoEdicao}
         />
       )}
     </>

@@ -19,6 +19,8 @@ const ModalUE = ({
   setModalVisivel,
   setUnEscolaresSelecionados,
   unEscolaresSelecionados,
+  setModoEdicaoItinerancia,
+  desabilitarBotaoExcluir,
 }) => {
   const [anoLetivo] = useState(window.moment().format('YYYY'));
   const [uesSelecionadas, setUESSelecionadas] = useState(
@@ -53,6 +55,7 @@ const ModalUE = ({
   const onConfirmarModal = () => {
     setUnEscolaresSelecionados(uesSelecionadas);
     setModoEdicao(false);
+    setModoEdicaoItinerancia(true);
     esconderModal();
   };
 
@@ -265,6 +268,7 @@ const ModalUE = ({
               onClick={() => removerUES(key)}
               height="13px"
               width="13px"
+              disabled={desabilitarBotaoExcluir}
             />
           )}
         </div>
@@ -279,6 +283,8 @@ ModalUE.defaultProps = {
   setModalVisivel: () => {},
   setUnEscolaresSelecionados: () => {},
   unEscolaresSelecionados: [],
+  setModoEdicaoItinerancia: () => {},
+  desabilitarBotaoExcluir: false,
 };
 
 ModalUE.propTypes = {
@@ -287,6 +293,8 @@ ModalUE.propTypes = {
   setModalVisivel: PropTypes.func,
   setUnEscolaresSelecionados: PropTypes.func,
   unEscolaresSelecionados: PropTypes.oneOfType([PropTypes.any]),
+  setModoEdicaoItinerancia: PropTypes.func,
+  desabilitarBotaoExcluir: PropTypes.bool,
 };
 
 export default ModalUE;

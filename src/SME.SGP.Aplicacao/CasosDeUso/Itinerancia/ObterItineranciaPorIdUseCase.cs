@@ -60,7 +60,8 @@ namespace SME.SGP.Aplicacao
                  {
                      Id = itinerancia.Ues.FirstOrDefault(i => i.UeId == ue.Id).Id,                              
                      UeId = ue.Id,
-                     Descricao = ues.FirstOrDefault(u => u.Id == ue.Id).Nome
+                     Descricao = ues.FirstOrDefault(u => u.Id == ue.Id).Nome,
+                     CodigoUe = ue.CodigoUe,
                  };
              });
         }
@@ -108,7 +109,7 @@ namespace SME.SGP.Aplicacao
                 {
                     Id = aluno.Id,
                     AlunoCodigo = aluno.CodigoAluno,                    
-                    Nome = @$"{alunosEol
+                    AlunoNome = @$"{alunosEol
                                  .FirstOrDefault(a => a.CodigoAluno == int.Parse(aluno.CodigoAluno)).NomeAluno} - {OberterNomeTurmaFormatado(turmas.FirstOrDefault(t => t.CodigoTurma == alunosEol.FirstOrDefault(a => a.CodigoAluno == int.Parse(aluno.CodigoAluno)).CodigoTurma.ToString()))}",
                     Questoes = MontarQuestoesItineranciaAluno(aluno, questoesBase)
                 };
