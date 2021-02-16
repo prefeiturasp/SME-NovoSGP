@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
+import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { Form } from 'formik';
@@ -23,7 +24,7 @@ import {
 } from './index.css';
 import { URL_LOGIN, URL_RECUPERARSENHA, URL_HOME } from '~/constantes/url';
 import ServicoPrimeiroAcesso from '~/servicos/Paginas/ServicoPrimeiroAcesso';
-import { salvarDadosLogin, Deslogar, setModificarSenha } from '~/redux/modulos/usuario/actions';
+import { salvarDadosLogin, Deslogar, setModificarSenha, setLogado } from '~/redux/modulos/usuario/actions';
 import { store } from '~/redux';
 import Erro from '../RecuperarSenha/erro';
 import { setMenusPermissoes } from '~/servicos/servico-navegacao';
@@ -47,9 +48,10 @@ const RedefinirSenha = props => {
   const [tokenValidado, setTokenValidado] = useState(false);
   const [erroGeral, setErroGeral] = useState('');
   const [tokenExpirado, setTokenExpirado] = useState(false);
+  const [carregandoContinuar, setCarregandoContinuar] = useState(false);
 
   const { senha, confirmarSenha } = senhas;
-  const token = props.match && props.match.params && props.match.params.token;
+  const token = props.match && props.match.params && props.match.params.token;  
 
   const [validacoes, setValidacoes] = useState({
     maiuscula: '',
@@ -133,7 +135,7 @@ const RedefinirSenha = props => {
       espacoBranco: !espacoBranco,
       tamanho: !!tamanho,
       iguais: !!iguais,
-    });
+    });    
   };
 
   const aoMudarSenha = e => {
@@ -157,11 +159,13 @@ const RedefinirSenha = props => {
     if (modificarSenha){
       store.dispatch(Deslogar());
       store.dispatch(setModificarSenha(false));
+      store.dispatch(setLogado(false));      
     }     
     history.push(URL_LOGIN);    
   };
 
   const alterarSenha = async () => {
+    setCarregandoContinuar(true);
     if (!logado) {      
       const requisicao = await RedefinirSenhaServico.redefinirSenha(
         {
@@ -214,17 +218,16 @@ const RedefinirSenha = props => {
           })
         );
         ServicoDashboard.obterDadosDashboard();
+        setCarregandoContinuar(false);
         history.push(URL_HOME);
       } else {
+        setCarregandoContinuar(false);
         setErroGeral(requisicao.erro);
       }
     }
-  };
+  };  
 
-  const [carregandoContinuar, setCarregandoContinuar] = useState(false);
-
-  const aoClicarContinuar = () => {
-    setCarregandoContinuar(true);
+  const aoClicarContinuar = () => {        
     realizarValidacoes(inputSenhaRef.current.value);
     setErroGeral('');
 
@@ -233,8 +236,8 @@ const RedefinirSenha = props => {
       return;
     }
 
-    if (!validarSeFormularioTemErro()) alterarSenha();
-    setCarregandoContinuar(false);
+    if (!validarSeFormularioTemErro()) 
+      alterarSenha();    
   };
 
   const aoClicarContinuarExpirado = () => {
@@ -400,6 +403,14 @@ const RedefinirSenha = props => {
       </Container>
     </>
   );
+};
+
+RedefinirSenha.propTypes = {
+  match: PropTypes.oneOfType([PropTypes.any]),
+};
+
+RedefinirSenha.defaultProps = {
+  match: {},
 };
 
 export default RedefinirSenha;

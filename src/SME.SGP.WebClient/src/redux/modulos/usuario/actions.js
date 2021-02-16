@@ -106,3 +106,10 @@ export function setModificarSenha(modificarSenha) {
     payload: modificarSenha,
   };
 }
+
+export function setLogado(logado) {
+  return {
+    type: '@usuario/setLogado',
+    payload: logado,
+  };
+}
