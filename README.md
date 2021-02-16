@@ -20,7 +20,7 @@ O [Ateliê do Software](http://forum.govit.prefeitura.sp.gov.br/uploads/default/
  5. [Comunicação](#Comunicação)
  6. [Como contribuir](#como-contribuir)
  7. [Repositórios](#Repositórios)
- 8. [Instalação e Configuração](#Instalação-e-Configuração)
+ 8. [Instalação e Configuração](#Instalação-e-Configuração).
  
 # Sobre o Produto
 
