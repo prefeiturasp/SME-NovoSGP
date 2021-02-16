@@ -104,12 +104,12 @@ namespace SME.SGP.Aplicacao
         {
             return itinerancia.Alunos.Select(aluno =>
             {
+                var alunoEol = alunosEol.FirstOrDefault(a => a.CodigoAluno == int.Parse(aluno.CodigoAluno));
                 return new ItineranciaAlunoDto
                 {
                     Id = aluno.Id,
                     AlunoCodigo = aluno.CodigoAluno,                    
-                    Nome = @$"{alunosEol
-                                 .FirstOrDefault(a => a.CodigoAluno == int.Parse(aluno.CodigoAluno)).NomeAluno} - {OberterNomeTurmaFormatado(turmas.FirstOrDefault(t => t.CodigoTurma == alunosEol.FirstOrDefault(a => a.CodigoAluno == int.Parse(aluno.CodigoAluno)).CodigoTurma.ToString()))}",
+                    Nome = @$"{alunoEol.NomeAluno} - {OberterNomeTurmaFormatado(turmas.FirstOrDefault(t => t.CodigoTurma == alunoEol.CodigoTurma.ToString()))}",
                     Questoes = MontarQuestoesItineranciaAluno(aluno, questoesBase)
                 };
             });
