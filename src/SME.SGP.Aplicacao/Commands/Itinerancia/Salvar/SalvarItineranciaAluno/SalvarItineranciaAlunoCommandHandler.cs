@@ -43,7 +43,8 @@ namespace SME.SGP.Aplicacao
             => new ItineranciaAluno()
             {
                 CodigoAluno = request.Aluno.AlunoCodigo,
-                ItineranciaId = request.ItineranciaId
+                ItineranciaId = request.ItineranciaId,
+                TurmaId = request.Aluno.TurmaId
             };
     }
 }

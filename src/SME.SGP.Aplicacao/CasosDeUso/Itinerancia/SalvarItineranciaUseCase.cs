@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
             {
                 try
                 {
-                    var itinerancia = await mediator.Send(new SalvarItineranciaCommand(itineranciaDto.DataVisita, itineranciaDto.DataRetornoVerificacao));
+                    var itinerancia = await mediator.Send(new SalvarItineranciaCommand(itineranciaDto.AnoLetivo, itineranciaDto.DataVisita, itineranciaDto.DataRetornoVerificacao));
                     if (itinerancia == null)
                         throw new NegocioException("Erro ao Salvar a itinerancia");
 

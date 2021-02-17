@@ -13,6 +13,7 @@ namespace SME.SGP.Infra
             Questoes = new List<ItineranciaQuestaoDto>();
         }
         public long Id { get; set; }
+        public int AnoLetivo { get; set; }
         public DateTime DataVisita { get; set; }
         public DateTime? DataRetornoVerificacao { get; set; }
         public IEnumerable<ItineranciaObjetivoDto> ObjetivosVisita { get; set; }

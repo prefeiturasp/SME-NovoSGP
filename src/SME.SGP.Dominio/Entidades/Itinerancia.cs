@@ -18,6 +18,7 @@ namespace SME.SGP.Dominio
 
         }        
         public DateTime DataVisita { get; set; }
+        public int AnoLetivo { get; set; }
         public IEnumerable<ItineranciaObjetivo> ObjetivosVisita { get { return objetivos; } }
         public IEnumerable<ItineranciaUe> Ues { get { return ues; } }
         public IEnumerable<ItineranciaAluno> Alunos { get { return alunos; } }

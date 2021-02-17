@@ -22,8 +22,9 @@ namespace SME.SGP.Aplicacao.Interfaces
             if (itinerancia == null)
                 throw new NegocioException($"Não foi possível localizar a itinerância de Id {dto.Id}");
 
+            itinerancia.AnoLetivo = dto.AnoLetivo;
             itinerancia.DataVisita = dto.DataVisita;
-            itinerancia.DataRetornoVerificacao = dto.DataRetornoVerificacao;
+            itinerancia.DataRetornoVerificacao = dto.DataRetornoVerificacao;            
 
             using (var transacao = unitOfWork.IniciarTransacao())
             {
