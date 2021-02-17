@@ -15,3 +15,10 @@ export const BotaoEstilizado = styled(Button)`
     }
   }
 `;
+
+export const TextoEstilizado = styled.div`
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 640px;
+`;

@@ -1,14 +1,33 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import moment from 'moment';
 import PropTypes from 'prop-types';
 import shortid from 'shortid';
 
-import { Editor, ModalConteudoHtml, SelectComponent } from '~/componentes';
+import {
+  Colors,
+  Editor,
+  ModalConteudoHtml,
+  SelectComponent,
+} from '~/componentes';
 
 import { confirmar } from '~/servicos';
 
-const ModalReestruturacaoPlano = ({ key, esconderModal, exibirModal }) => {
+const ModalReestruturacaoPlano = ({
+  key,
+  esconderModal,
+  exibirModal,
+  setListaDados,
+  modoVisualizacao,
+  dadosVisualizacao,
+}) => {
   const [modoEdicao, setModoEdicao] = useState(false);
-  const [listaVersao, setListaVersao] = useState([]);
+  const [listaVersao, setListaVersao] = useState([
+    { id: 1, desc: 'v6 - 19/02/2020', valor: 'v6 - 19/02/2020' },
+    { id: 2, desc: 'v7 - 19/02/2020', valor: 'v7 - 19/02/2020' },
+    { id: 3, desc: 'v8 - 19/02/2020', valor: 'v8 - 19/02/2020' },
+  ]);
+  const [versaoSelecionada, setVersaoSelecionada] = useState();
+  const [descricao, setDescricao] = useState();
 
   const perguntarSalvarListaUsuario = async () => {
     const resposta = await confirmar(
@@ -19,6 +38,14 @@ const ModalReestruturacaoPlano = ({ key, esconderModal, exibirModal }) => {
   };
 
   const onConfirmarModal = () => {
+    const dadosSalvar = {
+      key: shortid.generate(),
+      data: moment().format('DD/MM/YYYY'),
+      versaoPlano: versaoSelecionada,
+      descricaoReestruturacao: descricao,
+    };
+
+    setListaDados(estadoAntigo => [...estadoAntigo, dadosSalvar]);
     setModoEdicao(false);
     esconderModal();
   };
@@ -33,6 +60,27 @@ const ModalReestruturacaoPlano = ({ key, esconderModal, exibirModal }) => {
     }
   };
 
+  const mudarVersao = valor => {
+    setModoEdicao(true);
+    setVersaoSelecionada(valor);
+  };
+
+  const removerFormatacao = texto => {
+    return texto?.replace(/<.*?>/g, '') || '';
+  };
+
+  const mudarDescricao = texto => {
+    const textoSimples = removerFormatacao(texto);
+    setDescricao({ textoSimples, texto });
+  };
+
+  useEffect(() => {
+    if (modoVisualizacao && dadosVisualizacao) {
+      setVersaoSelecionada(dadosVisualizacao.versaoPlano);
+      setDescricao(dadosVisualizacao.descricaoReestruturacao);
+    }
+  }, [dadosVisualizacao, modoVisualizacao]);
+
   return (
     <ModalConteudoHtml
       id={shortid.generate()}
@@ -40,23 +88,37 @@ const ModalReestruturacaoPlano = ({ key, esconderModal, exibirModal }) => {
       visivel={exibirModal}
       titulo="Reestruturação do plano"
       onClose={fecharModal}
-      esconderBotaoPrincipal
-      esconderBotaoSecundario
+      onConfirmacaoPrincipal={onConfirmarModal}
+      onConfirmacaoSecundaria={fecharModal}
+      labelBotaoPrincipal="Salvar"
+      labelBotaoSecundario="Voltar"
       width="50%"
       closable
+      paddingBottom="24"
+      paddingRight={modoVisualizacao ? '40' : '48'}
+      colorBotaoSecundario={Colors.Azul}
+      esconderBotaoPrincipal={modoVisualizacao}
     >
-      <div className="col-12 mb-2 p-0">
+      <div className="col-12 mb-3 p-0">
         <SelectComponent
           label="Selecione o plano que corresponde a reestruturação"
           lista={listaVersao}
           valueOption="valor"
           valueText="desc"
           name="diaSemana"
-          onChange={() => setModoEdicao(true)}
+          onChange={mudarVersao}
+          valueSelect={versaoSelecionada}
+          disabled={modoVisualizacao}
         />
       </div>
-      <div className="col-12 mb-2 p-0">
-        <Editor />
+      <div className="col-12 mb-3 p-0">
+        <Editor
+          label="Descreva as mudança que houveram na reestruturação "
+          onChange={mudarDescricao}
+          inicial={descricao?.texto || ''}
+          desabilitar={modoVisualizacao}
+          removerToolbar={modoVisualizacao}
+        />
       </div>
     </ModalConteudoHtml>
   );
@@ -65,12 +127,18 @@ const ModalReestruturacaoPlano = ({ key, esconderModal, exibirModal }) => {
 ModalReestruturacaoPlano.defaultProps = {
   esconderModal: () => {},
   exibirModal: false,
+  setListaDados: () => {},
+  modoVisualizacao: false,
+  dadosVisualizacao: {},
 };
 
 ModalReestruturacaoPlano.propTypes = {
   esconderModal: PropTypes.func,
   exibirModal: PropTypes.bool,
   key: PropTypes.string.isRequired,
+  setListaDados: PropTypes.func,
+  modoVisualizacao: PropTypes.bool,
+  dadosVisualizacao: PropTypes.oneOfType([PropTypes.object]),
 };
 
 export default ModalReestruturacaoPlano;

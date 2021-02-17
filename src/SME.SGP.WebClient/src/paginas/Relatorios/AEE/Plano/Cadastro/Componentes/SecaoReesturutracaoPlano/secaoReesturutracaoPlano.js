@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { CardCollapse } from '~/componentes';
 import ReestruturacaoTabela from '../ReestruturacaoTabela/reestruturacaoTabela';
 
 const SecaoReesturutracaoPlano = () => {
+  const [listaPrimeiroSemestre, setListaPrimeiroSemestre] = useState([]);
+  const [listaSegundoSemestre, setListaSegundoSemestre] = useState([]);
   const keyPrimeiroSemestre = 'secao-1-semestre-plano-collapse';
   const keySegundoSemestre = 'secao-2-semestre-plano-collapse';
 
@@ -15,7 +17,11 @@ const SecaoReesturutracaoPlano = () => {
         indice={`${keyPrimeiroSemestre}-indice`}
         alt="secao-informacoes-plano-alt"
       >
-        <ReestruturacaoTabela key={keyPrimeiroSemestre} />
+        <ReestruturacaoTabela
+          key={keyPrimeiroSemestre}
+          listaDados={listaPrimeiroSemestre}
+          setListaDados={setListaPrimeiroSemestre}
+        />
       </CardCollapse>
       <CardCollapse
         key={`${keySegundoSemestre}-key`}
@@ -24,7 +30,11 @@ const SecaoReesturutracaoPlano = () => {
         indice={`${keySegundoSemestre}-indice`}
         alt="secao-informacoes-plano-alt"
       >
-        <ReestruturacaoTabela key={keySegundoSemestre} />
+        <ReestruturacaoTabela
+          key={keySegundoSemestre}
+          listaDados={listaSegundoSemestre}
+          setListaDados={setListaSegundoSemestre}
+        />
       </CardCollapse>
     </>
   );
