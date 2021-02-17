@@ -8,6 +8,7 @@ const inicial = {
   planoAEESituacaoEncaminhamentoAEE: {},
   planoAEEDadosSecoesPorEtapa: [],
   exibirModalErrosPlano: false,
+  reestruturacaoDados: [],
 };
 
 export default function PlanoAEE(state = inicial, action) {
@@ -65,6 +66,12 @@ export default function PlanoAEE(state = inicial, action) {
           desabilitarCamposPlanoAEE: false,
           planoAEEDadosSecoesPorEtapa: [],
           exibirModalErrosPlano: false,
+        };
+      }
+      case '@planoAEE/setReestruturacaoDados': {
+        return {
+          ...draft,
+          reestruturacaoDados: [...draft.reestruturacaoDados, action.payload],
         };
       }
       default:
