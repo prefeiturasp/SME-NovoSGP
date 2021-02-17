@@ -38,48 +38,79 @@ namespace SME.SGP.Aplicacao
 
         private async Task<IEnumerable<ItineranciaResumoDto>> MapearParaDto(IEnumerable<ItineranciaRetornoDto> itinerancias, int anoLetivo)
         {
-            var listaItinerancias = new List<ItineranciaResumoDto>();
+            var itineranciasParaRetornar = new List<ItineranciaResumoDto>();
 
-            var CodigosAluno = itinerancias.Where(a => a.AlunoCodigo != null).Select(a => a.AlunoCodigo).Distinct().ToArray();
+            var itineranciasAgrupadas = itinerancias.GroupBy(i => i.Id);
 
-            try
+            var codigosAluno = itinerancias.Where(a => !string.IsNullOrEmpty(a.AlunoCodigo)).Select(a => long.Parse(a.AlunoCodigo)).Distinct().ToArray();
+
+            var alunosEol = await mediator.Send(new ObterAlunosEolPorCodigosEAnoQuery(codigosAluno, anoLetivo));
+            var codigosDasTurmas = alunosEol.Select(al => al.CodigoTurma.ToString()).Distinct().ToArray();
+
+            var turmas = await mediator.Send(new ObterTurmasPorCodigosQuery(codigosDasTurmas));
+
+            foreach (var itineranciasAgrupada in itineranciasAgrupadas)
             {
-                var alunosEol = await mediator.Send(new ObterAlunosEolPorCodigosEAnoQuery(CodigosAluno.Select(long.Parse).ToArray(), anoLetivo));
-                var turmas = await mediator.Send(new ObterTurmasPorCodigosQuery(alunosEol.Select(al => al.CodigoTurma.ToString()).ToArray()));
+                var itineranciaParaTratar = itineranciasAgrupada.FirstOrDefault();
+                var itineranciaDto = new ItineranciaResumoDto();
+                itineranciaDto.DataVisita = itineranciaParaTratar.DataVisita;
+                itineranciaDto.UeNome = ObterNomeUe(itineranciasAgrupada, itineranciaParaTratar);
+                itineranciaDto.Id = itineranciasAgrupada.Key;
+                itineranciaDto.Situacao = itineranciaParaTratar.Situacao.Name();
+                var estudanteInfos = ObterEstudanteNomeCodigo(itineranciaParaTratar, alunosEol, itineranciasAgrupada);
+                itineranciaDto.EstudanteNome = estudanteInfos.Item1;
+                itineranciaDto.TurmaNome = ObterTurmaNome(estudanteInfos.Item2, turmas);
 
-                foreach (var itinerancia in itinerancias)
-                {
-                    
-                    var aluno = alunosEol.FirstOrDefault(a => a.CodigoAluno == int.Parse(itinerancia.AlunoCodigo));
-                    listaItinerancias.Add(new ItineranciaResumoDto()
-                    {
-                        Id = itinerancia.Id,
-                        DataVisita = itinerancia.DataVisita,
-                        Situacao = itinerancia.Situacao != 0 ? itinerancia.Situacao.Name() : "",
-                        TurmaNome = $"{itinerancia.ModalidadeCodigo.ShortName()} - {itinerancia.TurmaNome}",
-                        EstudanteNome = $"{aluno.NumeroAlunoChamada} - {aluno.NomeAluno}",
-                        UeNome = $"{itinerancia.TipoEscola.ShortName()} - {itinerancia.UeNome}"
+                itineranciasParaRetornar.Add(itineranciaDto);
 
-                    });
-                }
-
-                return listaItinerancias;
             }
-            catch (System.Exception ex)
-            {
+            return itineranciasParaRetornar;
+          
+        }
 
-                throw ex;
+        private string ObterTurmaNome(string item2, IEnumerable<Turma> turmas)
+        {
+            if (string.IsNullOrEmpty(item2))
+                return string.Empty;
+            else
+            {
+                var turma = turmas.FirstOrDefault(a => a.CodigoTurma == item2);
+                return turma is null ?  string.Empty : turma.NomeComModalidade();
             }
         }
 
-        private string OberterNomeTurmaFormatado(Turma turma)
+        private (string, string) ObterEstudanteNomeCodigo(ItineranciaRetornoDto itineranciaParaTratar, IEnumerable<TurmasDoAlunoDto> alunosEol, IGrouping<long, ItineranciaRetornoDto> itineranciasAgrupada)
         {
-            var turmaNome = "";
+            if (itineranciasAgrupada.Any(a => !string.IsNullOrEmpty(a.AlunoCodigo)))
+            {
 
-            if (turma != null)
-                turmaNome = $"{turma.ModalidadeCodigo.ShortName()} - {turma.Nome}";
+                var registrosDiferentes = itineranciasAgrupada.Select(a => a.AlunoCodigo).Distinct();
+                var qntRegistros = registrosDiferentes.Count();
+                if (qntRegistros > 1)
+                    return ($"{qntRegistros} registros selecionados.", string.Empty);
+                else {
+                    var alunoCodigo = itineranciaParaTratar.AlunoCodigo;
+                    var alunoEol = alunosEol.FirstOrDefault(a => a.CodigoAluno == int.Parse(alunoCodigo));
+                    return (alunoEol?.ObterNomeComNumeroChamada(), alunoEol.CodigoTurma.ToString()); 
+                }
 
-            return turmaNome;
-        }      
+            }
+            else return ("Sem informação", string.Empty);
+        }
+
+        private string ObterNomeUe(IGrouping<long, ItineranciaRetornoDto> itineranciasAgrupada, ItineranciaRetornoDto itineranciaDto)
+        {
+            if (itineranciasAgrupada.Any(a => !string.IsNullOrEmpty(a.UeNome)))
+            {
+                var registrosDiferentes = itineranciasAgrupada.Select(a => a.UeId).Distinct();
+                var qntRegistros = registrosDiferentes.Count();
+                if (qntRegistros > 1)
+                    return $"{qntRegistros} registros selecionados.";
+                else return $"{itineranciaDto.TipoEscola.ShortName()} {itineranciaDto.UeNome}";
+            }
+            return "Sem informação";
+        }
+
+     
     }
 }

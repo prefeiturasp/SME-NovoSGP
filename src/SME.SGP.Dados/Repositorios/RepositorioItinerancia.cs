@@ -232,14 +232,12 @@ namespace SME.SGP.Dados.Repositorios
             sql.AppendLine(" from itinerancia i ");
             sql.AppendLine(" left join itinerancia_aluno ia on ia.itinerancia_id = i.id");
             sql.AppendLine(" left join itinerancia_ue iu on iu.itinerancia_id = i.id");
-            sql.AppendLine(" left join ue on ue.id = iu.ue_id");
-            //sql.AppendLine(" left join turma t on t.ue_id = ue.id  ");
+            sql.AppendLine(" left join ue on ue.id = iu.ue_id");            
         }
 
         private static void ObtenhaFiltro(StringBuilder sql, long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao, int anoLetivo, DateTime? dataInicio, DateTime? dataFim)
         {
-            sql.AppendLine(" where ue.dre_id = @dreId and not i.excluido ");
-            //sql.AppendLine("   and t.ano_letivo = @anoLetivo ");
+            sql.AppendLine(" where ue.dre_id = @dreId and not i.excluido ");            
 
             if (ueId > 0)
                 sql.AppendLine(" and ue.id = @ueId ");
