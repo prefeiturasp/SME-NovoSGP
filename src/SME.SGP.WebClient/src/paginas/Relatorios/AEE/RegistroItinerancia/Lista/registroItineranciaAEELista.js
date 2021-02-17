@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 
 import {
   Button,
@@ -47,6 +48,9 @@ const RegistroItineranciaAEELista = () => {
   const [situacao, setSituacao] = useState();
   const [turmaId, setTurmaId] = useState();
   const [ueId, setUeId] = useState();
+  const usuario = useSelector(store => store.usuario);
+  const permissoesTela =
+    usuario.permissoes[RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA];
 
   const colunas = [
     {
@@ -71,7 +75,16 @@ const RegistroItineranciaAEELista = () => {
     },
   ];
 
-  const filtrar = (dre, ue, turma, aluno, situa, dtInicial, dtFinal) => {
+  const filtrar = (
+    ano,
+    dre,
+    ue,
+    turma,
+    aluno,
+    situacaoItinerancia,
+    dtInicial,
+    dtFinal
+  ) => {
     if (anoLetivo && dre && listaDres?.length) {
       const dreSelecionada = listaDres.find(
         item => String(item.valor) === String(dre)
@@ -86,13 +99,16 @@ const RegistroItineranciaAEELista = () => {
       );
 
       const params = {
+        anoLetivo: ano,
         dreId: dreSelecionada ? dreSelecionada?.id : '',
         ueId: ueSelecionada ? ueSelecionada?.id : '',
         turmaId: turmaSelecionada ? turmaSelecionada?.id : '',
         alunoCodigo: aluno,
-        situacao: situa,
-        dataInicial: dtInicial,
-        dataFinal: dtFinal,
+        situacao: situacaoItinerancia,
+        dataInicio: dtInicial
+          ? window.moment(dtInicial).format('YYYY-MM-DD')
+          : '',
+        dataFim: dtFinal ? window.moment(dtFinal).format('YYYY-MM-DD') : '',
       };
       setFiltro({ ...params });
     }
@@ -219,16 +235,6 @@ const RegistroItineranciaAEELista = () => {
 
     setListaTurmas([]);
     setTurmaId();
-
-    filtrar(
-      dre,
-      ueId,
-      turmaId,
-      alunoLocalizadorSelecionado,
-      situacao,
-      dataInicial,
-      dataFinal
-    );
   };
 
   const onChangeUe = ue => {
@@ -236,22 +242,11 @@ const RegistroItineranciaAEELista = () => {
 
     setListaTurmas([]);
     setTurmaId();
-
-    filtrar(
-      dreId,
-      ue,
-      turmaId,
-      alunoLocalizadorSelecionado,
-      situacao,
-      dataInicial,
-      dataFinal
-    );
   };
 
   const onChangeTurma = valor => {
     setTurmaId(valor);
     setAlunoLocalizadorSelecionado();
-    filtrar(dreId, ueId, valor, '', situacao);
   };
 
   const obterUes = useCallback(async () => {
@@ -282,6 +277,29 @@ const RegistroItineranciaAEELista = () => {
       setListaUes([]);
     }
   }, [dreId, anoLetivo, consideraHistorico]);
+
+  useEffect(() => {
+    if (anoLetivo && dreId)
+      filtrar(
+        anoLetivo,
+        dreId,
+        ueId,
+        turmaId,
+        alunoLocalizadorSelecionado,
+        situacao,
+        dataInicial,
+        dataFinal
+      );
+  }, [
+    anoLetivo,
+    dreId,
+    ueId,
+    turmaId,
+    alunoLocalizadorSelecionado,
+    situacao,
+    dataInicial,
+    dataFinal,
+  ]);
 
   useEffect(() => {
     if (dreId) {
@@ -327,11 +345,9 @@ const RegistroItineranciaAEELista = () => {
   const onChangeLocalizadorEstudante = aluno => {
     if (aluno?.alunoCodigo && aluno?.alunoNome) {
       setAlunoLocalizadorSelecionado(aluno?.alunoCodigo);
-      filtrar(dreId, ueId, turmaId, aluno?.alunoCodigo, situacao);
       return;
     }
     setAlunoLocalizadorSelecionado();
-    filtrar(dreId, ueId, turmaId, '', situacao);
   };
 
   const obterSituacoes = useCallback(async () => {
@@ -340,10 +356,12 @@ const RegistroItineranciaAEELista = () => {
       .catch(e => erros(e))
       .finally(() => setCarregandoSituacao(false));
     if (resposta?.data?.length) {
-      setListaSituacao(resposta.data);
-      return;
+      const lista = resposta.data;
+      setListaSituacao(lista);
+      if (lista.length === 1) {
+        setSituacao(lista[0].codigo.toString());
+      }
     }
-    setListaSituacao([]);
   }, []);
 
   useEffect(() => {
@@ -352,32 +370,14 @@ const RegistroItineranciaAEELista = () => {
 
   const onChangeSituacao = valor => {
     setSituacao(valor);
-    filtrar(
-      dreId,
-      ueId,
-      turmaId,
-      alunoLocalizadorSelecionado,
-      valor,
-      dataInicial,
-      dataFinal
-    );
   };
 
   const mudarDataInicial = async data => {
     setDataInicial(data);
-    filtrar(dreId, ueId, turmaId, alunoLocalizadorSelecionado, data, dataFinal);
   };
 
   const mudarDataFinal = async data => {
     setDataFinal(data);
-    filtrar(
-      dreId,
-      ueId,
-      turmaId,
-      alunoLocalizadorSelecionado,
-      dataInicial,
-      data
-    );
   };
 
   const onClickEditar = item => {
@@ -406,12 +406,7 @@ const RegistroItineranciaAEELista = () => {
                 color={Colors.Roxo}
                 bold
                 onClick={onClickNovo}
-                // disabled={
-                //   !permissoesTela.podeIncluir ||
-                //   !turmaInfantil ||
-                //   !listaComponenteCurriculares ||
-                //   !componenteCurricularSelecionado
-                // }
+                disabled={!permissoesTela.podeIncluir}
               />
             </div>
           </div>
@@ -543,7 +538,7 @@ const RegistroItineranciaAEELista = () => {
             {anoLetivo && dreId && listaDres?.length && (
               <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
                 <ListaPaginada
-                  url="v1/encaminhamento-aee"
+                  url="v1/itinerancias"
                   id="lista-alunos"
                   colunas={colunas}
                   filtro={filtro}
