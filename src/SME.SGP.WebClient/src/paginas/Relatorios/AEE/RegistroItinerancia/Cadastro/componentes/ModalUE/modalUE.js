@@ -16,6 +16,7 @@ import { BotaoEstilizado, TextoEstilizado } from './modalUE.css';
 const ModalUE = ({
   modalVisivel,
   permiteApenasUmaUe,
+  temAlunosSelecionados,
   setModalVisivel,
   setUnEscolaresSelecionados,
   unEscolaresSelecionados,
@@ -239,7 +240,12 @@ const ModalUE = ({
               lista={listaUes}
               valueOption="valor"
               valueText="desc"
-              disabled={!dreId || listaUes?.length === 1 || inputsDesabilitado}
+              disabled={
+                !dreId ||
+                listaUes?.length === 1 ||
+                inputsDesabilitado ||
+                temAlunosSelecionados
+              }
               onChange={onChangeUe}
               valueSelect={ueId}
               placeholder="Unidade Escolar (UE)"
@@ -286,6 +292,7 @@ ModalUE.defaultProps = {
   unEscolaresSelecionados: [],
   setModoEdicaoItinerancia: () => {},
   desabilitarBotaoExcluir: false,
+  temAlunosSelecionados: false,
 };
 
 ModalUE.propTypes = {
@@ -296,6 +303,7 @@ ModalUE.propTypes = {
   unEscolaresSelecionados: PropTypes.oneOfType([PropTypes.any]),
   setModoEdicaoItinerancia: PropTypes.func,
   desabilitarBotaoExcluir: PropTypes.bool,
+  temAlunosSelecionados: PropTypes.bool,
 };
 
 export default ModalUE;
