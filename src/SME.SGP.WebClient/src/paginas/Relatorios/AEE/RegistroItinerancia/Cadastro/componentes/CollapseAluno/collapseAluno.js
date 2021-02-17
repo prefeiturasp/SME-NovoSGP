@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
 import { Divider } from 'antd';
-import shortid from 'shortid';
+import { Form, Formik } from 'formik';
 import PropTypes from 'prop-types';
-import { useSelector } from 'react-redux';
+import React from 'react';
+import shortid from 'shortid';
 import {
   Base,
   Button,
@@ -11,43 +11,44 @@ import {
   PainelCollapse,
 } from '~/componentes';
 
-const CollapseAluno = ({ aluno, removerAlunos, desabilitar }) => {
-  const [acompanhamentoSituacao, setAcompanhamentoSituacao] = useState();
-  const [descritivoEstudante, setDescritivoEstudante] = useState();
-  const [encaminhamentos, setEncaminhamentos] = useState();
-  const dados = useSelector(
-    store => store.itinerancia.questoesItineranciaAluno
-  );
-
+const CollapseAluno = ({
+  aluno,
+  removerAlunos,
+  desabilitar,
+  setModoEdicaoItinerancia,
+}) => {
   const id = 'collapseAluno';
+  const onChangeResposta = (valor, questao) => {
+    questao.resposta = valor;
+    setModoEdicaoItinerancia(true);
+  };
 
   return (
     <div className="row mb-4">
       <div className="col-12">
-        <PainelCollapse onChange={() => {}}>
+        <PainelCollapse>
           <PainelCollapse.Painel
-            key={id}
+            key={`${id}-${aluno.alunoCodigo}`}
             espacoPadrao
             corBorda={Base.AzulBordaCollapse}
             temBorda
-            header={aluno.alunoNome}
+            header={aluno.nomeComModalidadeTurma}
           >
-            {dados &&
-              dados.map(questao => {
-                return (
-                  <div className="row mb-4">
-                    <div className="col-12">
-                      <JoditEditor
-                        label={questao.descricao}
-                        value=""
-                        name={questao.descricao + questao.questaoId}
-                        id={questao.questaoId}
-                        onChange={e => setAcompanhamentoSituacao(e)}
-                      />
-                    </div>
+            {aluno.questoes?.map(questao => {
+              return (
+                <div className="row mb-4">
+                  <div className="col-12">
+                    <JoditEditor
+                      label={questao.descricao}
+                      value={questao.resposta}
+                      name={questao.descricao + questao.questaoId}
+                      id={questao.questaoId}
+                      onChange={e => onChangeResposta(e, questao)}
+                    />
                   </div>
-                );
-              })}
+                </div>
+              );
+            })}
             <div className="row mt-n2">
               <Divider />
             </div>
@@ -75,12 +76,14 @@ CollapseAluno.defaultProps = {
   aluno: [],
   removerAlunos: () => {},
   desabilitar: false,
+  setModoEdicaoItinerancia: () => {},
 };
 
 CollapseAluno.propTypes = {
   aluno: PropTypes.instanceOf(PropTypes.any),
   removerAlunos: PropTypes.func,
   desabilitar: PropTypes.bool,
+  setModoEdicaoItinerancia: PropTypes.bool,
 };
 
 export default CollapseAluno;

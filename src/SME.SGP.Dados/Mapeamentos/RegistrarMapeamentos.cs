@@ -149,18 +149,18 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new QuestaoEncaminhamentoAEEMap());
                config.AddMap(new RespostaEncaminhamentoAEEMap());
                config.AddMap(new RegistroIndividualMap());
-               config.AddMap(new PendenciaRegistroIndividualMap());
-               config.AddMap(new PendenciaRegistroIndividualAlunoMap());
-               config.AddMap(new PlanoAEEMap());
-               config.AddMap(new PlanoAEEVersaoMap());
-               config.AddMap(new PlanoAEEQuestaoMap());
-               config.AddMap(new PlanoAEERespostaMap());
                config.AddMap(new ItineranciaMap());
                config.AddMap(new ItineranciaAlunoMap());
                config.AddMap(new ItineranciaAlunoQuestaoMap());
                config.AddMap(new ItineranciaQuestaoMap());
                config.AddMap(new ItineranciaObjetivoMap());
                config.AddMap(new ItineranciaUeMap());
+               config.AddMap(new PendenciaRegistroIndividualMap());
+               config.AddMap(new PendenciaRegistroIndividualAlunoMap());
+               config.AddMap(new PlanoAEEMap());
+               config.AddMap(new PlanoAEEVersaoMap());
+               config.AddMap(new PlanoAEEQuestaoMap());
+               config.AddMap(new PlanoAEERespostaMap());
                config.ForDommel();
            });
         }

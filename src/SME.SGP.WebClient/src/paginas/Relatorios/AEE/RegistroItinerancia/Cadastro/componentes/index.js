@@ -3,3 +3,4 @@ export { default as TabelaLinhaRemovivel } from './TabelaLinhaRemovivel/tabelaCa
 export { default as ModalUE } from './ModalUE/modalUE';
 export { default as ModalObjetivos } from './ModalObjetivos/modalObjetivos';
 export { default as ModalAlunos } from './ModalAlunos/modalAlunos';
+export { default as ModalErrosItinerancia } from './ModalErrosItinerancia/ModalErrosItinerancia';

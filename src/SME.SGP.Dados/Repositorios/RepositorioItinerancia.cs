@@ -41,15 +41,15 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<ItineranciaAlunoQuestaoDto>(query, new { id });
         }
 
-        public async Task<IEnumerable<ItineranciaQuestaoBaseDto>> ObterItineranciaQuestaoBase()
+        public async Task<IEnumerable<ItineranciaQuestaoBaseDto>> ObterItineranciaQuestaoBase(long[] tiposQuestionario)
         {
             var query = @"select q.id, q.nome, q.ordem, q1.tipo, q.obrigatorio 
                             from questao q
                            inner join questionario q1 on q1.id = q.questionario_id 
-                           where q1.tipo in (2,3)
+                           where q1.tipo = ANY(@tiposQuestionario)
                              and not q.excluido";
 
-            return await database.Conexao.QueryAsync<ItineranciaQuestaoBaseDto>(query);
+            return await database.Conexao.QueryAsync<ItineranciaQuestaoBaseDto>(query, new { tiposQuestionario });
         }
 
         public async Task<ItineranciaDto> ObterItineranciaPorId(long id)
@@ -91,7 +91,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<ItineranciaObjetivoDto>(query, new { id });
         }
 
-        public async Task<IEnumerable<ItineranciaQuestaoDto>> ObterQuestoesItineranciaPorId(long id)
+        public async Task<IEnumerable<ItineranciaQuestaoDto>> ObterQuestoesItineranciaPorId(long id, long tipoQuestionario)
         {
             var query = @"select iq.id,
                                  iq.questao_id as QuestaoId, 
@@ -103,11 +103,11 @@ namespace SME.SGP.Dados.Repositorios
                            inner join questionario q1 on q1.id = q.questionario_id
                            inner join itinerancia_questao iq on iq.questao_id = q.id 
                            where iq.itinerancia_id = @Id
-                             and q1.tipo in (2)
+                             and q1.tipo = @tipoQuestionario
                              and not q.excluido
                            order by q.ordem";
 
-            return await database.Conexao.QueryAsync<ItineranciaQuestaoDto>(query, new { id });
+            return await database.Conexao.QueryAsync<ItineranciaQuestaoDto>(query, new { id , tipoQuestionario });
         }
 
         public async Task<IEnumerable<ItineranciaUeDto>> ObterUesItineranciaPorId(long id)

@@ -13,6 +13,8 @@ const ModalAlunos = ({
   setModalVisivel,
   alunosSelecionados,
   setAlunosSelecionados,
+  questoes,
+  setModoEdicaoItinerancia,
 }) => {
   const [alunosSelecionadosModal, setAlunosSelecionadosModal] = useState(
     alunosSelecionados
@@ -21,6 +23,10 @@ const ModalAlunos = ({
   const [modoEdicao, setModoEdicao] = useState(false);
 
   const mudarLocalizador = aluno => {
+    const questoesAluno = [];
+    questoes.forEach(questao => {
+      questoesAluno.push({ ...questao, resposta: '' });
+    });
     if (aluno) {
       setAlunosSelecionadosModal(estadoAntigo => {
         const alunoEncontrado = estadoAntigo.find(
@@ -34,6 +40,7 @@ const ModalAlunos = ({
           {
             ...aluno,
             podeRemover: true,
+            questoes: questoesAluno,
           },
         ];
       });
@@ -60,6 +67,7 @@ const ModalAlunos = ({
 
   const onConfirmarModal = () => {
     setAlunosSelecionados(alunosSelecionadosModal);
+    setModoEdicaoItinerancia(true);
     setModoEdicao(false);
     esconderModal();
   };
@@ -106,7 +114,7 @@ const ModalAlunos = ({
             className="col-md-12 d-flex justify-content-between mb-4"
             key={`${alunoCodigo}`}
           >
-            <span>{alunoNome}</span>
+            <span>{`${alunoNome} (${alunoCodigo})`} </span>
             {podeRemover && (
               <BotaoEstilizado
                 id="btn-excluir"
@@ -131,14 +139,18 @@ ModalAlunos.defaultProps = {
   modalVisivel: false,
   setModalVisivel: () => {},
   setAlunosSelecionados: () => {},
+  setModoEdicaoItinerancia: () => {},
+  questoes: [],
 };
 
 ModalAlunos.propTypes = {
   codigoUe: PropTypes.string,
   alunosSelecionados: PropTypes.oneOfType([PropTypes.any]),
   modalVisivel: PropTypes.bool,
+  setModoEdicaoItinerancia: PropTypes.func,
   setModalVisivel: PropTypes.func,
   setAlunosSelecionados: PropTypes.func,
+  questoes: PropTypes.oneOfType([PropTypes.any]),
 };
 
 export default ModalAlunos;

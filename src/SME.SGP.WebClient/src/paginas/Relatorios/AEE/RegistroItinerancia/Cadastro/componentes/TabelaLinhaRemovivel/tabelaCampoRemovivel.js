@@ -46,7 +46,7 @@ const TabelaLinhaRemovivel = ({
         onClick={() => removerUsuario(text)}
         height="13px"
         width="13px"
-        disabled={desabilitadoIncluir}
+        disabled={desabilitadoExcluir}
       />
     );
   };

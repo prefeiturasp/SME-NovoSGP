@@ -29,10 +29,10 @@ import planoAEE from './planoAEE/reducers';
 import registroIndividual from './registroIndividual/reducers';
 import collapseLocalizarEstudante from './collapseLocalizarEstudante/reducers';
 import acompanhamentoFrequencia from './acompanhamentoFrequencia/reducers';
+import itinerancia from './itinerancia/reducers';
 import objectCardEstudante from './objectCardEstudante/reducers';
 import questionarioDinamico from './questionarioDinamico/reducers';
 import collapseAtribuicaoResponsavel from './collapseAtribuicaoResponsavel/reducers';
-import itinerancia from './itinerancia/reducers';
 
 const reducers = combineReducers({
   navegacao,
@@ -64,10 +64,10 @@ const reducers = combineReducers({
   registroIndividual,
   collapseLocalizarEstudante,
   acompanhamentoFrequencia,
+  itinerancia,
   objectCardEstudante,
   questionarioDinamico,
   collapseAtribuicaoResponsavel,
-  itinerancia,
 });
 
 const rootReducer = (state, action) => {

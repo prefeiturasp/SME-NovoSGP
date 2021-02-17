@@ -16,9 +16,12 @@ import { BotaoEstilizado, TextoEstilizado } from './modalUE.css';
 const ModalUE = ({
   modalVisivel,
   permiteApenasUmaUe,
+  temAlunosSelecionados,
   setModalVisivel,
   setUnEscolaresSelecionados,
   unEscolaresSelecionados,
+  setModoEdicaoItinerancia,
+  desabilitarBotaoExcluir,
 }) => {
   const [anoLetivo] = useState(window.moment().format('YYYY'));
   const [uesSelecionadas, setUESSelecionadas] = useState(
@@ -53,6 +56,7 @@ const ModalUE = ({
   const onConfirmarModal = () => {
     setUnEscolaresSelecionados(uesSelecionadas);
     setModoEdicao(false);
+    setModoEdicaoItinerancia(true);
     esconderModal();
   };
 
@@ -166,6 +170,7 @@ const ModalUE = ({
               key: ueSelecionada.valor,
               descricao: ueSelecionada.desc,
               codigoUe: ue,
+              ueId: ueSelecionada.id,
             },
           ]);
         }
@@ -235,7 +240,12 @@ const ModalUE = ({
               lista={listaUes}
               valueOption="valor"
               valueText="desc"
-              disabled={!dreId || listaUes?.length === 1 || inputsDesabilitado}
+              disabled={
+                !dreId ||
+                listaUes?.length === 1 ||
+                inputsDesabilitado ||
+                temAlunosSelecionados
+              }
               onChange={onChangeUe}
               valueSelect={ueId}
               placeholder="Unidade Escolar (UE)"
@@ -265,6 +275,7 @@ const ModalUE = ({
               onClick={() => removerUES(key)}
               height="13px"
               width="13px"
+              disabled={desabilitarBotaoExcluir}
             />
           )}
         </div>
@@ -279,6 +290,9 @@ ModalUE.defaultProps = {
   setModalVisivel: () => {},
   setUnEscolaresSelecionados: () => {},
   unEscolaresSelecionados: [],
+  setModoEdicaoItinerancia: () => {},
+  desabilitarBotaoExcluir: false,
+  temAlunosSelecionados: false,
 };
 
 ModalUE.propTypes = {
@@ -287,6 +301,9 @@ ModalUE.propTypes = {
   setModalVisivel: PropTypes.func,
   setUnEscolaresSelecionados: PropTypes.func,
   unEscolaresSelecionados: PropTypes.oneOfType([PropTypes.any]),
+  setModoEdicaoItinerancia: PropTypes.func,
+  desabilitarBotaoExcluir: PropTypes.bool,
+  temAlunosSelecionados: PropTypes.bool,
 };
 
 export default ModalUE;

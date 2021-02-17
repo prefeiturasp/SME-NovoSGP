@@ -22,7 +22,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<ItineranciaQuestoesBaseDto> Handle(ObterQuestoesBaseItineranciaEAlunoQuery request, CancellationToken cancellationToken)
         {
-            var questoesBase = await repositorioItinerancia.ObterItineranciaQuestaoBase();
+            var tiposQuestionario = new long[] { (int)TipoQuestionario.RegistroItinerancia, (int)TipoQuestionario.RegistroItineranciaAluno };
+            var questoesBase = await repositorioItinerancia.ObterItineranciaQuestaoBase(tiposQuestionario);
 
             if (questoesBase == null || !questoesBase.Any())
                 throw new NegocioException("Não foi possível obter as questões base da itinerância");
@@ -38,12 +39,12 @@ namespace SME.SGP.Aplicacao
             {
                 if (questaoBase.Tipo == TipoQuestionario.RegistroItinerancia)
                 {
-                    var questao = new ItineranciaQuestaoDto() { QuestaoId = questaoBase.Id, Descricao = questaoBase.Nome };
+                    var questao = new ItineranciaQuestaoDto() { QuestaoId = questaoBase.Id, Descricao = questaoBase.Nome, Obrigatorio = questaoBase.Obrigatorio };
                     listaQuestao.Add(questao);
                 }
                 else
                 {
-                    var questaoAluno = new ItineranciaAlunoQuestaoDto() { QuestaoId = questaoBase.Id, Descricao = questaoBase.Nome };
+                    var questaoAluno = new ItineranciaAlunoQuestaoDto() { QuestaoId = questaoBase.Id, Descricao = questaoBase.Nome, Obrigatorio = questaoBase.Obrigatorio };
                     listaQuestaoAluno.Add(questaoAluno);
                 }
             }

@@ -4,7 +4,7 @@ CREATE TABLE public.itinerancia (
 	id int8 NOT NULL GENERATED ALWAYS AS identity,
 	data_visita timestamp  NOT NULL,
 	data_retorno_verificacao timestamp  NOT NULL,
-    situacao int4 not null default 1	
+    situacao int4 not null default 1,	
 	criado_em timestamp  NOT NULL,
     criado_por varchar(200) NOT NULL,
     alterado_em timestamp ,
@@ -142,8 +142,8 @@ INSERT INTO public.itinerancia_objetivo_base (nome, tem_descricao, permite_varia
 INSERT INTO public.itinerancia_objetivo_base (nome, tem_descricao, permite_varias_ues, ordem) VALUES ('Outros', TRUE, FALSE, 70);
 
 --INSERT QUESTIONARIO
-insert into public.questionario (nome, tipo, criado_em, criado_por, criado_rf) values ('Questionário Registro Itinerância', 2, now(),'Carga Inicial','Carga Inicial');
-insert into public.questionario (nome, tipo, criado_em, criado_por, criado_rf) values ('Questionário Registro Itinerância do Aluno', 3, now(),'Carga Inicial','Carga Inicial');
+insert into public.questionario (nome, tipo, criado_em, criado_por, criado_rf) values ('Questionário Registro Itinerância', 3, now(),'Carga Inicial','Carga Inicial');
+insert into public.questionario (nome, tipo, criado_em, criado_por, criado_rf) values ('Questionário Registro Itinerância do Aluno', 4, now(),'Carga Inicial','Carga Inicial');
 
 --INSET QUESTAO ITINERANCIA
 insert into public.questao(questionario_id, ordem, nome, obrigatorio, tipo, criado_em, criado_por, criado_rf) values(

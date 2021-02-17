@@ -68,8 +68,8 @@ const RotasDto = {
   RELATORIO_ESCOLA_AQUI_ADESAO: '/relatorios/escola-aqui/adesao',
   RELATORIO_AEE_ENCAMINHAMENTO: '/relatorios/aee/encaminhamento',
   OCORRENCIAS: '/gestao/ocorrencias',
-  RELATORIO_AEE_PLANO: '/relatorios/aee/plano',
   RELATORIO_AEE_REGISTRO_ITINERANCIA: '/relatorios/aee/registro-itinerancia',
+  RELATORIO_AEE_PLANO: '/relatorios/aee/plano',
 };
 
 export default RotasDto;

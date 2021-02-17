@@ -1181,6 +1181,40 @@ rotas.set(`${RotasDto.RELATORIO_AEE_ENCAMINHAMENTO}/editar/:id`, {
   chavePermissao: RotasDto.RELATORIO_AEE_ENCAMINHAMENTO,
 });
 
+/**TO-DO Listagem */
+rotas.set(`${RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA}`, {
+  breadcrumbName: 'Registro de itinerância',
+  menu: ['Relatórios', 'AEE'],
+  parent: '/',
+  component: {},
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA,
+});
+
+rotas.set(`${RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA}/novo`, {
+  breadcrumbName: 'Registro de itinerância',
+  menu: ['Relatórios', 'AEE'],
+  parent: '/',
+  component: RegistroItineranciaAEECadastro,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA,
+});
+
+rotas.set(`${RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA}/editar/:id`, {
+  breadcrumbName: 'Registro de itinerância',
+  menu: ['Relatórios', 'AEE'],
+  parent: '/',
+  component: RegistroItineranciaAEECadastro,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+  chavePermissao: RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA,
+});
+
 rotas.set(RotasDto.RELATORIO_AEE_PLANO, {
   breadcrumbName: 'Plano',
   menu: ['Relatórios', 'AEE'],
@@ -1211,40 +1245,6 @@ rotas.set(`${RotasDto.RELATORIO_AEE_PLANO}/editar/:id`, {
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: true,
   chavePermissao: RotasDto.RELATORIO_AEE_PLANO,
-});
-
-/**TO-DO Listagem */
-rotas.set(`${RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA}`, {
-  breadcrumbName: 'Registro de itinerância',
-  menu: ['Relatórios', 'AEE'],
-  parent: '/',
-  component: {},
-  exact: true,
-  tipo: RotasTipo.EstruturadaAutenticada,
-  temPermissionamento: false,
-  chavePermissao: RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA,
-});
-
-rotas.set(`${RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA}/novo`, {
-  breadcrumbName: 'Registro de itinerância',
-  menu: ['Relatórios', 'AEE'],
-  parent: '/',
-  component: RegistroItineranciaAEECadastro,
-  exact: true,
-  tipo: RotasTipo.EstruturadaAutenticada,
-  temPermissionamento: false,
-  chavePermissao: RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA,
-});
-
-rotas.set(`${RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA}/editar/:id`, {
-  breadcrumbName: 'Registro de itinerância',
-  menu: ['Relatórios', 'AEE'],
-  parent: '/',
-  component: RegistroItineranciaAEECadastro,
-  exact: true,
-  tipo: RotasTipo.EstruturadaAutenticada,
-  temPermissionamento: false,
-  chavePermissao: RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA,
 });
 
 rotas.set(RotasDto.OCORRENCIAS, {
