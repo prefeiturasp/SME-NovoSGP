@@ -33,7 +33,8 @@ begin
 				inner join notas_conceitos_ciclos_parametos nccp on
 				    nccp.ciclo = tc.id
 		where a.aluno_codigo is null and
-			  ae.cd_aluno = '4046301'
+			  ae.cd_aluno not in ('4046301', '4397266') and
+			  ae.cd_turma_escola = 2114548
 		order by 1, 2, 3
 	loop
 		select ft2.id into fechamento_turma_id_referencia

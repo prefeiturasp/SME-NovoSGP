@@ -3,7 +3,8 @@ declare
 	alunos_eja record;
 	conselho_classe_id_referencia bigint;
 	fechamento_turma_id_referencia bigint;
-	conselho_classe_aluno_id_referncia bigint;
+	conselho_classe_aluno_id_referencia bigint;
+	conselho_classe_parecer_id_referencia bigint;
 
 begin
 	for alunos_eja in
@@ -23,7 +24,8 @@ begin
 					on ae.cd_aluno = a.aluno_codigo and
 				       ae.cd_turma_escola = a.turma_id::int
 		where a.aluno_codigo is null and
-			  ae.cd_aluno = '4046301'
+			  ae.cd_aluno not in ('4046301', '4397266') and
+			  ae.cd_turma_escola = 2114548
 		order by 1, 2
 	loop
 		select cc2.id, ft2.id into conselho_classe_id_referencia, fechamento_turma_id_referencia
@@ -49,12 +51,14 @@ begin
 			returning id into conselho_classe_id_referencia;
 		end if;
 	
-		select cca.id into conselho_classe_aluno_id_referncia
-			from conselho_classe_aluno cca 
+		select cca.id, cp.id into conselho_classe_aluno_id_referencia, conselho_classe_parecer_id_referencia
+			from conselho_classe_aluno cca
+				left join conselho_classe_parecer cp
+					on cca.conselho_classe_parecer_id = cp.id
 		where cca.conselho_classe_id = conselho_classe_id_referencia and
 			  cca.aluno_codigo = alunos_eja.cd_aluno;
 			 
-		if conselho_classe_aluno_id_referncia is null then
+		if conselho_classe_aluno_id_referencia is null then
 			insert into conselho_classe_aluno (conselho_classe_id,
 											   aluno_codigo,
 											   recomendacoes_aluno,
@@ -82,7 +86,7 @@ begin
 					null,
 					'Sistema',
 					null,
-					null);
+					1);
 		end if;		
 	end loop;
 end $$;
