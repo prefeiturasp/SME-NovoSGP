@@ -62,7 +62,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
     const itinerancia = {
       id: itineranciaId,
       dataVisita,
-      dataRetornoVerificacao,
+      dataRetornoVerificacao: dataRetornoVerificacao || '',
       objetivosVisita: objetivosSelecionados,
       ues: uesSelecionados,
       alunos: alunosSelecionados,
@@ -103,9 +103,6 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
       questoesInvalidas.forEach(questao => {
         camposComErro.push(`O campo ${questao.descricao} é obrigatório. `);
       });
-    }
-    if (!dataRetornoVerificacao) {
-      camposComErro.push('O campo data de retorno/verificação é obrigatório');
     }
     if (
       dataVisita &&
@@ -233,7 +230,9 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
   const construirItineranciaAlteracao = itinerancia => {
     setDataVisita(window.moment(itinerancia.dataVisita));
     setDataRetornoVerificacao(
-      window.moment(itinerancia.dataRetornoVerificacao)
+      itinerancia.dataRetornoVerificacao
+        ? window.moment(itinerancia.dataRetornoVerificacao)
+        : ''
     );
     if (itinerancia.objetivosVisita?.length) {
       setObjetivosSelecionados(itinerancia.objetivosVisita);
@@ -281,9 +280,12 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
 
   useEffect(() => {
     async function obterItinerancia(id) {
+      setCarregandoGeral(true);
       const result = await ServicoRegistroItineranciaAEE.obterItineranciaPorId(
         id
-      ).catch(e => erros(e));
+      )
+        .catch(e => erros(e))
+        .finally(setCarregandoGeral(false));
       if (result?.data && result?.status === 200) {
         const itinerancia = result.data;
         setItineranciaAlteracao(itinerancia);

@@ -14,7 +14,7 @@ namespace SME.SGP.Infra
         }
         public long Id { get; set; }
         public DateTime DataVisita { get; set; }
-        public DateTime DataRetornoVerificacao { get; set; }
+        public DateTime? DataRetornoVerificacao { get; set; }
         public IEnumerable<ItineranciaObjetivoDto> ObjetivosVisita { get; set; }
         public IEnumerable<ItineranciaUeDto> Ues { get; set; }
         public IEnumerable<ItineranciaAlunoDto> Alunos { get; set; }
