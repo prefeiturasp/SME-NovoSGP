@@ -1,8 +1,11 @@
-﻿using SME.SGP.Dominio;
+﻿using Dapper;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -165,6 +168,87 @@ namespace SME.SGP.Dados.Repositorios
                  }, param: new { id });
 
             return lookup.Values.FirstOrDefault();            
+        }
+
+        public async Task<PaginacaoResultadoDto<ItineranciaRetornoDto>> ObterItineranciasPaginado(long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao, int anoLetivo, DateTime? dataInicio, DateTime? dataFim, Paginacao paginacao)
+        {
+            var query = MontaQueryCompleta(paginacao, dreId, ueId, turmaId, alunoCodigo, situacao, anoLetivo, dataInicio, dataFim);
+
+            var parametros = new { dreId, ueId, turmaId, alunoCodigo, situacao, anoLetivo, dataInicio, dataFim };
+            var retorno = new PaginacaoResultadoDto<ItineranciaRetornoDto>();
+
+            using (var multi = await database.Conexao.QueryMultipleAsync(query, parametros))
+            {
+                retorno.Items = multi.Read<ItineranciaRetornoDto>();
+                retorno.TotalRegistros = multi.ReadFirst<int>();
+            }
+
+            retorno.TotalPaginas = (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros);
+
+            return retorno;
+        }
+
+        private static string MontaQueryCompleta(Paginacao paginacao, long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao, int anoLetivo, DateTime? dataInicio, DateTime? dataFim)
+        {
+            StringBuilder sql = new StringBuilder();
+
+            MontaQueryConsulta(paginacao, sql, contador: false, dreId, ueId, turmaId, alunoCodigo, situacao, anoLetivo, dataInicio, dataFim);
+
+            sql.AppendLine(";");
+
+            MontaQueryConsulta(paginacao, sql, contador: true, dreId, ueId, turmaId, alunoCodigo, situacao, anoLetivo, dataInicio, dataFim);
+
+            return sql.ToString();
+        }
+        private static void MontaQueryConsulta(Paginacao paginacao, StringBuilder sql, bool contador, long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao, int anoLetivo, DateTime? dataInicio, DateTime? dataFim)
+        {
+            ObtenhaCabecalho(sql, contador);
+
+            ObtenhaFiltro(sql, dreId, ueId, turmaId, alunoCodigo, situacao,  anoLetivo, dataInicio, dataFim);
+
+            if (!contador)
+                sql.AppendLine(" order by i.data_visita desc ");
+
+            if (paginacao.QuantidadeRegistros > 0 && !contador)
+                sql.AppendLine($" OFFSET {paginacao.QuantidadeRegistrosIgnorados} ROWS FETCH NEXT {paginacao.QuantidadeRegistros} ROWS ONLY ");
+        }
+
+        private static void ObtenhaCabecalho(StringBuilder sql, bool contador)
+        {
+            sql.AppendLine("select ");
+            if (contador)
+                sql.AppendLine(" count(i.id) ");
+            else
+            {
+                sql.AppendLine(" i.id ");
+                sql.AppendLine(", i.data_visita as DataVisita ");
+                sql.AppendLine(", ia.codigo_aluno as AlunoCodigo ");
+                sql.AppendLine(", iu.ue_id as UeId");
+                sql.AppendLine(", i.situacao ");                
+                sql.AppendLine(", ue.nome as UeNome ");                
+                sql.AppendLine(", ue.tipo_escola as TipoEscola ");
+            }
+
+            sql.AppendLine(" from itinerancia i ");
+            sql.AppendLine(" left join itinerancia_aluno ia on ia.itinerancia_id = i.id");
+            sql.AppendLine(" left join itinerancia_ue iu on iu.itinerancia_id = i.id");
+            sql.AppendLine(" left join ue on ue.id = iu.ue_id");            
+        }
+
+        private static void ObtenhaFiltro(StringBuilder sql, long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao, int anoLetivo, DateTime? dataInicio, DateTime? dataFim)
+        {
+            sql.AppendLine(" where ue.dre_id = @dreId and not i.excluido ");            
+
+            if (ueId > 0)
+                sql.AppendLine(" and ue.id = @ueId ");
+            if (turmaId > 0)
+                sql.AppendLine(" and t.id = @turmaId ");
+            if (!string.IsNullOrEmpty(alunoCodigo))
+                sql.AppendLine(" and ea.aluno_codigo = @alunoCodigo ");
+            if (situacao.HasValue && situacao > 0)
+                sql.AppendLine(" and ea.situacao = @situacao ");
+            if (dataInicio != null && dataFim != null)
+                sql.AppendLine("and data_visita::date between @dataInicio and @dataFim");
         }
     }
 }
