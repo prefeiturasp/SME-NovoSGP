@@ -7,14 +7,14 @@ namespace SME.SGP.Aplicacao
 {
     public class SalvarItineranciaCommand : IRequest<AuditoriaDto>
     {
-        public SalvarItineranciaCommand(DateTime dataVisita, DateTime dataRetornoVerificacao)
+        public SalvarItineranciaCommand(DateTime dataVisita, DateTime? dataRetornoVerificacao)
         {
             DataVisita = dataVisita;
             DataRetornoVerificacao = dataRetornoVerificacao;
         }
 
         public DateTime DataVisita { get; set; }
-        public DateTime DataRetornoVerificacao { get; set; }
+        public DateTime? DataRetornoVerificacao { get; set; }
     }
     public class SalvarItineranciaCommandValidator : AbstractValidator<SalvarItineranciaCommand>
     {
@@ -23,9 +23,6 @@ namespace SME.SGP.Aplicacao
             RuleFor(x => x.DataVisita)
                    .NotEmpty()
                    .WithMessage("A Data da Visita da itinerância deve ser informada!");
-            RuleFor(x => x.DataRetornoVerificacao)
-                   .NotEmpty()
-                   .WithMessage("A Data do Retorno da Verificacao da itinerância deve ser informada!");
         }
     }
 }

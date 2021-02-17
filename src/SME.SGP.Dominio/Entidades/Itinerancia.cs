@@ -21,7 +21,7 @@ namespace SME.SGP.Dominio
         public IEnumerable<ItineranciaObjetivo> ObjetivosVisita { get { return objetivos; } }
         public IEnumerable<ItineranciaUe> Ues { get { return ues; } }
         public IEnumerable<ItineranciaAluno> Alunos { get { return alunos; } }
-        public DateTime DataRetornoVerificacao { get; set; }
+        public DateTime? DataRetornoVerificacao { get; set; }
         public IEnumerable<ItineranciaQuestao> Questoes { get { return questoes; } }
         public IEnumerable<ItineranciaObjetivoBase> ObjetivosBase { get { return objetivosBase; } }
         public SituacaoItinerancia Situacao { get; set; }
