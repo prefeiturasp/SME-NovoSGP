@@ -18,6 +18,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 {
     public class ServicoEOL : IServicoEol
     {
+        private const string NOME_CHAVE_API_EOL = "x-api-eol-key";
         private readonly IRepositorioCache cache;
         private readonly HttpClient httpClient;
         private readonly IServicoLog servicoLog;
@@ -748,8 +749,6 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         public async Task<bool> PodePersistirTurmaDisciplina(string professorRf, string codigoTurma, string disciplinaId, DateTime data)
         {
-            
-
             var dataString = data.ToString("s");
 
             var resposta = await httpClient.GetAsync($"professores/{professorRf}/turmas/{codigoTurma}/disciplinas/{disciplinaId}/atribuicao/verificar/data?dataConsulta={dataString}");
@@ -765,7 +764,16 @@ namespace SME.SGP.Aplicacao.Integracoes
         {            
             var datasParaEnvio = JsonConvert.SerializeObject(datas);
 
-            var resposta = httpClient.PostAsync($"professores/{professorRf}/turmas/{codigoTurma}/disciplinas/{codigoDisciplina}/atribuicao/recorrencia/verificar/datas", new StringContent(datasParaEnvio, Encoding.UTF8, "application/json-patch+json")).Result;
+            var requestMessage = new HttpRequestMessage
+            {
+                Method = HttpMethod.Post,
+                RequestUri = new Uri(string.Concat(httpClient.BaseAddress, $"professores/{professorRf}/turmas/{codigoTurma}/disciplinas/{codigoDisciplina}/atribuicao/recorrencia/verificar/datas")),
+                Content = new StringContent(datasParaEnvio, Encoding.UTF8, "application/json-patch+json")                
+            };
+
+            requestMessage.Headers.Add(NOME_CHAVE_API_EOL, httpClient.DefaultRequestHeaders.GetValues(NOME_CHAVE_API_EOL).First());
+
+            var resposta = await httpClient.SendAsync(requestMessage);
 
             if (resposta.IsSuccessStatusCode)
             {
