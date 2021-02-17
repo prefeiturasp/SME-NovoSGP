@@ -23,6 +23,10 @@ const ModalAlunos = ({
   const [modoEdicao, setModoEdicao] = useState(false);
 
   const mudarLocalizador = aluno => {
+    const questoesAluno = [];
+    questoes.forEach(questao => {
+      questoesAluno.push({ ...questao, resposta: '' });
+    });
     if (aluno) {
       setAlunosSelecionadosModal(estadoAntigo => {
         const alunoEncontrado = estadoAntigo.find(
@@ -36,7 +40,7 @@ const ModalAlunos = ({
           {
             ...aluno,
             podeRemover: true,
-            questoes,
+            questoes: questoesAluno,
           },
         ];
       });

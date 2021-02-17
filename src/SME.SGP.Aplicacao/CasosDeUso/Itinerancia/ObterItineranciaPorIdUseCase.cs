@@ -110,7 +110,8 @@ namespace SME.SGP.Aplicacao
                 {
                     Id = aluno.Id,
                     AlunoCodigo = aluno.CodigoAluno,
-                    AlunoNome = $"{alunoEol.NomeAluno} - {OberterNomeTurmaFormatado(turmas.FirstOrDefault(t => t.CodigoTurma == alunoEol.CodigoTurma.ToString()))}",
+                    AlunoNome = alunoEol.NomeAluno,
+                    NomeComModalidadeTurma = $"{alunoEol.NomeAluno} - {OberterNomeTurmaFormatado(turmas.FirstOrDefault(t => t.CodigoTurma == alunoEol.CodigoTurma.ToString()))}",
                     Questoes = MontarQuestoesItineranciaAluno(aluno, questoesBase)
                 };
             });

@@ -1,9 +1,7 @@
-import { Form, Formik } from 'formik';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import shortid from 'shortid';
-import * as Yup from 'yup';
 import {
   Base,
   Button,
@@ -12,21 +10,22 @@ import {
   Colors,
   JoditEditor,
   Loader,
-  momentSchema,
 } from '~/componentes';
 import { Cabecalho } from '~/componentes-sgp';
 import { RotasDto } from '~/dtos';
 import {
   confirmar,
-  erro,
   erros,
   setBreadcrumbManual,
   sucesso,
+  verificaSomenteConsulta,
 } from '~/servicos';
 import ServicoRegistroItineranciaAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoRegistroItineranciaAEE';
+import { ordenarPor } from '~/utils/funcoes/gerais';
 import {
   CollapseAluno,
   ModalAlunos,
+  ModalErrosItinerancia,
   ModalObjetivos,
   ModalUE,
   TabelaLinhaRemovivel,
@@ -34,14 +33,6 @@ import {
 import { NOME_CAMPO_QUESTAO } from './componentes/ConstantesCamposDinâmicos';
 
 const RegistroItineranciaAEECadastro = ({ match }) => {
-  const [refForm, setRefForm] = useState({});
-  const valoresIniciaisFixos = { dataVisita: '', dataRetornoVerificacao: '' };
-  const [valoresIniciais, setValoresIniciais] = useState(valoresIniciaisFixos);
-  const validacoesFixas = {
-    dataVisita: momentSchema.required('Campo obrigatório'),
-    dataRetornoVerificacao: momentSchema.required('Campo obrigatório'),
-  };
-  const [validacoes, setValidacoes] = useState(Yup.object(validacoesFixas));
   const [carregandoGeral, setCarregandoGeral] = useState(false);
   const [dataVisita, setDataVisita] = useState('');
   const [dataRetornoVerificacao, setDataRetornoVerificacao] = useState('');
@@ -56,15 +47,18 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
   const [itineranciaId, setItineranciaId] = useState();
   const [questoesAlunos, setQuestoesAluno] = useState([]);
   const [itineranciaAlteracao, setItineranciaAlteracao] = useState({});
+  const [errosValidacao, setErrosValidacao] = useState([]);
+  const [modalErrosVisivel, setModalErrosVisivel] = useState(false);
+  const [questoesItinerancia, setQuestoesItinerancia] = useState([]);
+  const [somenteConsulta, setSomenteConsulta] = useState(false);
 
   const usuario = useSelector(store => store.usuario);
   const permissoesTela =
     usuario.permissoes[RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA];
-  const [questoesItinerancia, setQuestoesItinerancia] = useState([]);
 
   const onClickVoltar = () => {};
 
-  const onClickSalvar = async () => {
+  const onClickSalvar = () => {
     const itinerancia = {
       id: itineranciaId,
       dataVisita,
@@ -74,65 +68,90 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
       alunos: alunosSelecionados,
       questoes: alunosSelecionados?.length ? [] : questoesItinerancia,
     };
+    const camposComErro = [];
+    if (!dataVisita) {
+      camposComErro.push('O campo data da visita é obrigatório');
+    }
     if (!itinerancia.objetivosVisita?.length) {
-      erro('A itinerância precisa ter ao menos um objetivo selecionado');
-      return;
+      camposComErro.push(
+        'A itinerância precisa ter ao menos um objetivo selecionado'
+      );
     }
     if (!itinerancia.ues?.length) {
-      erro(
+      camposComErro.push(
         'A itinerância precisa ter ao menos uma unidade escolar selecionada'
       );
-      return;
     }
-    let errosAlunos = '';
     if (itinerancia.alunos?.length) {
       itinerancia.alunos.forEach(aluno => {
-        const questoesInvalidas = aluno.questoes.filter(
+        const questoesAlunoInvalidas = aluno.questoes.filter(
           questao => questao.obrigatorio && !questao.resposta
         );
-        if (questoesInvalidas.length) {
-          const camposInvalidos = questoesInvalidas.map(questao => {
+        if (questoesAlunoInvalidas.length) {
+          const camposInvalidos = questoesAlunoInvalidas.map(questao => {
             return ` '${questao.descricao}'`;
           });
-          errosAlunos += `O(s) campo(s) ${camposInvalidos} do aluno ${aluno.alunoNome}, são obrigatórios. `;
+          camposComErro.push(
+            `O(s) campo(s) ${camposInvalidos} do aluno ${aluno.alunoNome}, são obrigatórios. `
+          );
         }
       });
+    } else {
+      const questoesInvalidas = questoesItinerancia.filter(
+        questao => questao.obrigatorio && !questao.resposta
+      );
+      questoesInvalidas.forEach(questao => {
+        camposComErro.push(`O campo ${questao.descricao} é obrigatório. `);
+      });
     }
-    if (errosAlunos) {
-      erro(errosAlunos);
+    if (!dataRetornoVerificacao) {
+      camposComErro.push('O campo data de retorno/verificação é obrigatório');
+    }
+    if (
+      dataVisita &&
+      dataRetornoVerificacao &&
+      dataRetornoVerificacao < dataVisita
+    ) {
+      camposComErro.push(
+        'A data de retorno/verificação não pode ser menor que a data de visita'
+      );
+    }
+    if (camposComErro.length) {
+      setErrosValidacao(camposComErro);
+      setModalErrosVisivel(true);
     } else {
       setCarregandoGeral(true);
-      const salvar = await ServicoRegistroItineranciaAEE.salvarItinerancia(
-        itinerancia
-      )
+      ServicoRegistroItineranciaAEE.salvarItinerancia(itinerancia)
+        .then(resp => {
+          if (resp?.status === 200) {
+            sucesso(
+              `Registro ${itineranciaId ? 'alterado' : 'salvo'} com sucesso`
+            );
+            setModoEdicao(false);
+          }
+        })
         .catch(e => erros(e))
         .finally(setCarregandoGeral(false));
-      if (salvar?.status === 200) {
-        sucesso(`Registro ${itineranciaId ? 'alterado' : 'salvo'} com sucesso`);
-        setModoEdicao(false);
-      }
     }
-  };
-
-  const perguntarAntesDeInserirAluno = async () => {
-    const resposta = await confirmar(
-      'Atenção',
-      'Ao selecionar o estudante, o registro será específico por estudante. As informações preenchidas até o momento serão descartadas',
-      'Deseja continuar?'
-    );
-    return resposta;
   };
 
   const selecionarAlunos = async alunos => {
-    const questao = questoesItinerancia.find(q => q.resposta);
-    if (alunosSelecionados?.length === 0 && questao) {
-      const pergunta = await perguntarAntesDeInserirAluno();
-      if (!pergunta) {
-        return;
+    const questoes = questoesItinerancia.filter(q => q.resposta);
+    if (!alunosSelecionados?.length && questoes?.length) {
+      const resposta = await confirmar(
+        'Atenção',
+        'Ao selecionar o estudante, o registro será específico por estudante. As informações preenchidas até o momento serão descartadas',
+        'Deseja continuar?'
+      );
+      if (resposta) {
+        setAlunosSelecionados(ordenarPor(alunos, 'alunoNome'));
+        questoesItinerancia.forEach(questao => {
+          questao.resposta = '';
+        });
       }
+    } else {
+      setAlunosSelecionados(ordenarPor(alunos, 'alunoNome'));
     }
-    setAlunosSelecionados(alunos);
-    refForm.setFieldValue('alunos', alunos);
   };
 
   const mudarDataVisita = data => {
@@ -192,48 +211,15 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
     }
   };
 
-  const montarValidacoesValoresQuestoes = (
-    questoes,
-    dtVisita = null,
-    dtRetorno = null
-  ) => {
-    const validacoesQuestoes = validacoesFixas;
-    const valoresIniciaisQuestoes = valoresIniciaisFixos;
-    valoresIniciaisQuestoes.dataVisita = dtVisita || dataVisita;
-    valoresIniciaisQuestoes.dataRetornoVerificacao =
-      dtRetorno || dataRetornoVerificacao;
-    questoes.forEach(questao => {
-      validacoesQuestoes[
-        NOME_CAMPO_QUESTAO + questao.questaoId
-      ] = Yup.string().test(
-        `validaCampoQuestao-${questao.questaoId}`,
-        'campo obrigatório',
-        function validar() {
-          const { alunos } = this.parent;
-          if (questao.obrigatorio && !alunos?.length && !questao.resposta) {
-            return false;
-          }
-          return true;
-        }
-      );
-      valoresIniciais[NOME_CAMPO_QUESTAO + questao.questaoId] =
-        questao.resposta || '';
-    });
-    setValidacoes(Yup.object(validacoesQuestoes));
-    setValoresIniciais(valoresIniciaisQuestoes);
-  };
-
   const obterQuestoes = async () => {
     const result = await ServicoRegistroItineranciaAEE.obterQuestoesItinerancia();
     if (result?.status === 200) {
       setQuestoesItinerancia(result?.data?.itineranciaQuestao);
       setQuestoesAluno(result?.data?.itineranciaAlunoQuestao);
-      montarValidacoesValoresQuestoes(result.data.itineranciaQuestao);
     }
   };
 
   const resetTela = () => {
-    refForm.resetForm();
     setDataVisita('');
     setDataRetornoVerificacao('');
     setObjetivosSelecionados([]);
@@ -245,18 +231,9 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
   };
 
   const construirItineranciaAlteracao = itinerancia => {
-    refForm.setFieldValue('dataVisita', window.moment(itinerancia.dataVisita));
-    refForm.setFieldValue(
-      'dataRetornoVerificacao',
-      window.moment(itinerancia.dataRetornoVerificacao)
-    );
     setDataVisita(window.moment(itinerancia.dataVisita));
     setDataRetornoVerificacao(
       window.moment(itinerancia.dataRetornoVerificacao)
-    );
-    valoresIniciais.dataVisita = window.moment(itinerancia.dataVisita);
-    valoresIniciais.dataRetornoVerificacao = window.moment(
-      itinerancia.dataRetornoVerificacao
     );
     if (itinerancia.objetivosVisita?.length) {
       setObjetivosSelecionados(itinerancia.objetivosVisita);
@@ -274,15 +251,9 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
     }
     if (itinerancia.questoes?.length) {
       setQuestoesItinerancia(itinerancia.questoes);
-      montarValidacoesValoresQuestoes(
-        itinerancia.questoes,
-        window.moment(itinerancia.dataVisita),
-        window.moment(itinerancia.dataRetornoVerificacao)
-      );
     }
     if (itinerancia.alunos?.length) {
       setAlunosSelecionados(itinerancia.alunos);
-      refForm.setFieldValue('alunos', itinerancia.alunos);
     }
   };
 
@@ -313,7 +284,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
       const result = await ServicoRegistroItineranciaAEE.obterItineranciaPorId(
         id
       ).catch(e => erros(e));
-      if (result.data && result?.status === 200) {
+      if (result?.data && result?.status === 200) {
         const itinerancia = result.data;
         setItineranciaAlteracao(itinerancia);
         construirItineranciaAlteracao(itinerancia);
@@ -326,20 +297,44 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
     }
   }, [itineranciaId]);
 
-  const removerAlunos = alunoCodigo => {
+  const perguntarAntesDeRemoverAluno = async () => {
+    const resposta = await confirmar(
+      'Atenção',
+      'As informações preenchidas para o aluno serão descartadas',
+      'Deseja realmente remover o aluno?'
+    );
+    return resposta;
+  };
+
+  const confirmarRemoverAluno = alunoCodigo => {
     const novosAlunos =
       alunosSelecionados.filter(item => item.alunoCodigo !== alunoCodigo) || [];
-    if (!novosAlunos.length) {
-      montarValidacoesValoresQuestoes(questoesItinerancia);
-    }
     setAlunosSelecionados(novosAlunos);
     setModoEdicao(true);
-    refForm.setFieldValue('alunos', novosAlunos);
+  };
+
+  const removerAlunos = async alunoCodigo => {
+    const alunoRemover = alunosSelecionados.find(
+      aluno => aluno.alunoCodigo === alunoCodigo
+    );
+    const temQuestoesComResposta = alunoRemover.questoes.filter(
+      q => q.resposta
+    );
+    if (temQuestoesComResposta?.length) {
+      const pergunta = await perguntarAntesDeRemoverAluno();
+      if (pergunta) {
+        confirmarRemoverAluno(alunoCodigo);
+      }
+    } else {
+      confirmarRemoverAluno(alunoCodigo);
+    }
   };
 
   useEffect(() => {
     setCarregandoGeral(true);
     obterObjetivos();
+    setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
+
     setCarregandoGeral(false);
   }, []);
 
@@ -351,44 +346,21 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
   };
 
   const desabilitarCamposPorPermissao = () => {
-    return match?.params?.id
-      ? !permissoesTela?.podeAlterar
-      : !permissoesTela?.podeIncluir;
+    return (
+      (match?.params?.id
+        ? !permissoesTela?.podeAlterar
+        : !permissoesTela?.podeIncluir) || somenteConsulta
+    );
   };
 
   const permiteApenasUmaUe = () => {
     if (objetivosSelecionados?.length) {
-      const objetivosComVariasUes = objetivosSelecionados.filter(
-        objetivo => objetivo.permiteVariasUes
-      );
       const objetivosComApenasUmaUe = objetivosSelecionados.filter(
         objetivo => !objetivo.permiteVariasUes
       );
-      return (
-        (!objetivosComVariasUes?.length && objetivosComApenasUmaUe?.length) ||
-        alunosSelecionados?.length
-      );
+      return objetivosComApenasUmaUe?.length;
     }
     return false;
-  };
-
-  const validaAntesDoSubmit = form => {
-    const camposValidacao = Object.keys(valoresIniciaisFixos);
-    if (!alunosSelecionados?.length) {
-      questoesItinerancia.forEach(questao => {
-        camposValidacao.push(NOME_CAMPO_QUESTAO + questao.questaoId);
-      });
-    }
-    if (camposValidacao.length) {
-      camposValidacao.forEach(campo => {
-        form.setFieldTouched(campo, true, true);
-      });
-      form.validateForm().then(() => {
-        if (form.isValid || Object.keys(form.errors).length === 0) {
-          form.submitForm(form);
-        }
-      });
-    }
   };
 
   const setQuestao = (valor, questao) => {
@@ -401,163 +373,152 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
       <Cabecalho pagina="Registro de itinerância" />
       <Loader loading={carregandoGeral}>
         <Card>
-          <Formik
-            enableReinitialize
-            initialValues={valoresIniciais}
-            ref={refFormik => setRefForm(refFormik)}
-            validationSchema={validacoes}
-            onSubmit={() => onClickSalvar()}
-            validateOnBlur
-            validateOnChange
-          >
-            {form => (
-              <Form className="col-md-12 mb-4">
-                <div className="col-12 p-0">
-                  <div className="row mb-5">
-                    <div className="col-md-12 d-flex justify-content-end">
-                      <Button
-                        id="btn-voltar-ata-diario-bordo"
-                        label="Voltar"
-                        icon="arrow-left"
-                        color={Colors.Azul}
-                        border
-                        className="mr-3"
-                        disabled
-                        onClick={onClickVoltar}
-                      />
-                      <Button
-                        id="btn-cancelar-ata-diario-bordo"
-                        label="Cancelar"
-                        color={Colors.Roxo}
-                        border
-                        bold
-                        className="mr-3"
-                        onClick={onClickCancelar}
-                        disabled={!modoEdicao}
-                      />
-                      <Button
-                        id="btn-gerar-ata-diario-bordo"
-                        label="Salvar"
-                        color={Colors.Roxo}
-                        border
-                        bold
-                        onClick={() => validaAntesDoSubmit(form)}
-                        disabled={!modoEdicao}
-                      />
-                    </div>
-                  </div>
-                  <div className="row mb-4">
-                    <div className="col-3">
-                      <CampoData
-                        name="dataVisita"
-                        form={form}
-                        formatoData="DD/MM/YYYY"
-                        valor={dataVisita}
-                        label="Data da visita"
-                        placeholder="Selecione a data"
-                        onChange={mudarDataVisita}
-                        desabilitarData={desabilitarData}
-                        desabilitado={desabilitarCamposPorPermissao()}
-                      />
-                    </div>
-                  </div>
-                  <div className="row mb-4">
-                    <TabelaLinhaRemovivel
-                      bordered
-                      ordenacao
-                      dataIndex="nome"
-                      labelTabela="Objetivos da itinerância"
-                      tituloTabela="Objetivos selecionados"
-                      labelBotao="Novo objetivo"
-                      desabilitadoIncluir={!permissoesTela?.podeIncluir}
-                      desabilitadoExcluir={!permissoesTela?.podeAlterar}
-                      pagination={false}
-                      dadosTabela={objetivosSelecionados}
-                      removerUsuario={text => removerObjetivoSelecionado(text)}
-                      botaoAdicionar={() => setModalVisivelObjetivos(true)}
-                    />
-                  </div>
-                  <div className="row mb-4">
-                    <TabelaLinhaRemovivel
-                      bordered
-                      dataIndex="descricao"
-                      labelTabela="Selecione as Unidades Escolares"
-                      tituloTabela="Unidades Escolares selecionadas"
-                      labelBotao="Adicionar nova unidade escolar"
-                      pagination={false}
-                      desabilitadoIncluir={!permissoesTela?.podeIncluir}
-                      desabilitadoExcluir={
-                        !permissoesTela?.podeAlterar ||
-                        alunosSelecionados?.length
-                      }
-                      dadosTabela={uesSelecionados}
-                      removerUsuario={text => removerUeSelecionada(text)}
-                      botaoAdicionar={() => setModalVisivelUES(true)}
-                    />
-                  </div>
-                  {uesSelecionados?.length === 1 && (
-                    <div className="row mb-4">
-                      <div className="col-12 font-weight-bold mb-2">
-                        <span style={{ color: Base.CinzaMako }}>
-                          Estudantes
-                        </span>
-                      </div>
-                      <div className="col-12">
-                        <Button
-                          id={shortid.generate()}
-                          label="Adicionar novo estudante"
-                          color={Colors.Azul}
-                          border
-                          className="mr-2"
-                          onClick={() => setModalVisivelAlunos(true)}
-                          icon="user-plus"
-                        />
-                      </div>
-                    </div>
-                  )}
-                  {alunosSelecionados?.length
-                    ? alunosSelecionados.map(aluno => (
-                        <CollapseAluno
-                          key={aluno.alunoCodigo}
-                          aluno={aluno}
-                          removerAlunos={() => removerAlunos(aluno.alunoCodigo)}
-                          setModoEdicaoItinerancia={setModoEdicao}
-                        />
-                      ))
-                    : questoesItinerancia?.map(questao => {
-                        return (
-                          <div className="row mb-4" key={questao.questaoId}>
-                            <div className="col-12">
-                              <JoditEditor
-                                form={form}
-                                label={questao.descricao}
-                                value={questao.resposta}
-                                name={NOME_CAMPO_QUESTAO + questao.questaoId}
-                                id={`editor-questao-${questao.questaoId}`}
-                                onChange={e => setQuestao(e, questao)}
-                              />
-                            </div>
-                          </div>
-                        );
-                      })}
-                  <div className="row mb-4">
-                    <div className="col-3">
-                      <CampoData
-                        form={form}
-                        name="dataRetornoVerificacao"
-                        formatoData="DD/MM/YYYY"
-                        valor={dataRetornoVerificacao}
-                        label="Data para retorno/verificação"
-                        placeholder="Selecione a data"
-                        onChange={mudarDataRetorno}
-                        desabilitado={desabilitarCamposPorPermissao()}
-                      />
-                    </div>
-                  </div>
+          <div className="col-12 p-0">
+            <div className="row mb-5">
+              <div className="col-md-12 d-flex justify-content-end">
+                <Button
+                  id="btn-voltar-ata-diario-bordo"
+                  label="Voltar"
+                  icon="arrow-left"
+                  color={Colors.Azul}
+                  border
+                  className="mr-3"
+                  disabled
+                  onClick={onClickVoltar}
+                />
+                <Button
+                  id="btn-cancelar-ata-diario-bordo"
+                  label="Cancelar"
+                  color={Colors.Roxo}
+                  border
+                  bold
+                  className="mr-3"
+                  onClick={onClickCancelar}
+                  disabled={!modoEdicao}
+                />
+                <Button
+                  id="btn-gerar-ata-diario-bordo"
+                  label="Salvar"
+                  color={Colors.Roxo}
+                  border
+                  bold
+                  onClick={() => onClickSalvar()}
+                  disabled={!modoEdicao || somenteConsulta}
+                />
+              </div>
+            </div>
+            <div className="row mb-4">
+              <div className="col-3">
+                <CampoData
+                  name="dataVisita"
+                  formatoData="DD/MM/YYYY"
+                  valor={dataVisita}
+                  label="Data da visita"
+                  placeholder="Selecione a data"
+                  onChange={mudarDataVisita}
+                  desabilitarData={desabilitarData}
+                  desabilitado={desabilitarCamposPorPermissao()}
+                />
+              </div>
+            </div>
+            <div className="row mb-4">
+              <TabelaLinhaRemovivel
+                bordered
+                ordenacao
+                dataIndex="nome"
+                labelTabela="Objetivos da itinerância"
+                tituloTabela="Objetivos selecionados"
+                labelBotao="Novo objetivo"
+                desabilitadoIncluir={
+                  !permissoesTela?.podeIncluir || somenteConsulta
+                }
+                desabilitadoExcluir={
+                  !permissoesTela?.podeAlterar || somenteConsulta
+                }
+                pagination={false}
+                dadosTabela={objetivosSelecionados}
+                removerUsuario={text => removerObjetivoSelecionado(text)}
+                botaoAdicionar={() => setModalVisivelObjetivos(true)}
+              />
+            </div>
+            <div className="row mb-4">
+              <TabelaLinhaRemovivel
+                bordered
+                dataIndex="descricao"
+                labelTabela="Selecione as Unidades Escolares"
+                tituloTabela="Unidades Escolares selecionadas"
+                labelBotao="Adicionar nova unidade escolar"
+                pagination={false}
+                desabilitadoIncluir={
+                  !permissoesTela?.podeIncluir || somenteConsulta
+                }
+                desabilitadoExcluir={
+                  !permissoesTela?.podeAlterar ||
+                  alunosSelecionados?.length ||
+                  somenteConsulta
+                }
+                dadosTabela={uesSelecionados}
+                removerUsuario={text => removerUeSelecionada(text)}
+                botaoAdicionar={() => setModalVisivelUES(true)}
+              />
+            </div>
+            {uesSelecionados?.length === 1 && (
+              <div className="row mb-4">
+                <div className="col-12 font-weight-bold mb-2">
+                  <span style={{ color: Base.CinzaMako }}>Estudantes</span>
                 </div>
-              </Form>
+                <div className="col-12">
+                  <Button
+                    id={shortid.generate()}
+                    label="Adicionar novo estudante"
+                    color={Colors.Azul}
+                    border
+                    className="mr-2"
+                    onClick={() => setModalVisivelAlunos(true)}
+                    icon="user-plus"
+                    disabled={desabilitarCamposPorPermissao()}
+                  />
+                </div>
+              </div>
             )}
-          </Formik>
+            {alunosSelecionados?.length
+              ? alunosSelecionados.map(aluno => (
+                  <CollapseAluno
+                    key={aluno.alunoCodigo}
+                    aluno={aluno}
+                    removerAlunos={() => removerAlunos(aluno.alunoCodigo)}
+                    setModoEdicaoItinerancia={setModoEdicao}
+                  />
+                ))
+              : questoesItinerancia?.map(questao => {
+                  return (
+                    <div className="row mb-4" key={questao.questaoId}>
+                      <div className="col-12">
+                        <JoditEditor
+                          label={questao.descricao}
+                          value={questao.resposta}
+                          name={NOME_CAMPO_QUESTAO + questao.questaoId}
+                          id={`editor-questao-${questao.questaoId}`}
+                          onChange={e => setQuestao(e, questao)}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+            <div className="row mb-4">
+              <div className="col-3">
+                <CampoData
+                  name="dataRetornoVerificacao"
+                  formatoData="DD/MM/YYYY"
+                  valor={dataRetornoVerificacao}
+                  label="Data para retorno/verificação"
+                  placeholder="Selecione a data"
+                  onChange={mudarDataRetorno}
+                  desabilitado={desabilitarCamposPorPermissao()}
+                />
+              </div>
+            </div>
+          </div>
         </Card>
       </Loader>
       {modalVisivelUES && (
@@ -571,6 +532,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
           desabilitarBotaoExcluir={
             permissoesTela?.podeAlterar || alunosSelecionados?.length
           }
+          temAlunosSelecionados={alunosSelecionados?.length}
         />
       )}
       {modalVisivelObjetivos && (
@@ -593,6 +555,13 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
           codigoUe={uesSelecionados.length && uesSelecionados[0].codigoUe}
           questoes={questoesAlunos}
           setModoEdicaoItinerancia={setModoEdicao}
+        />
+      )}
+      {modalErrosVisivel && (
+        <ModalErrosItinerancia
+          modalVisivel={modalErrosVisivel}
+          setModalVisivel={setModalErrosVisivel}
+          erros={errosValidacao}
         />
       )}
     </>
