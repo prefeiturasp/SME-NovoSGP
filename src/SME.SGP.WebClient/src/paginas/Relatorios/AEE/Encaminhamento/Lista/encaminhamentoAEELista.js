@@ -119,7 +119,7 @@ const EncaminhamentoAEELista = () => {
         alunoCodigo: aluno,
         situacao: situa,
         responsavelRf: responsa,
-        anoLetivo
+        anoLetivo,
       };
       setFiltro({ ...params });
     }
@@ -466,8 +466,8 @@ const EncaminhamentoAEELista = () => {
                 onClick={onClickVoltar}
               />
               <Button
-                id="btn-novo"
-                label="Novo"
+                id="btn-novo-encaminhamento"
+                label="Novo Encaminhamento"
                 color={Colors.Roxo}
                 border
                 bold

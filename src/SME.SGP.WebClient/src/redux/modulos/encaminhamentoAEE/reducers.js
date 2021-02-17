@@ -8,6 +8,7 @@ const inicial = {
   exibirModalErrosEncaminhamento: false,
   exibirModalEncerramentoEncaminhamentoAEE: false,
   desabilitarCamposEncaminhamentoAEE: false,
+  exibirModalDevolverAEE: false,
 };
 
 export default function EncaminhamentoAEE(state = inicial, action) {
@@ -72,7 +73,12 @@ export default function EncaminhamentoAEE(state = inicial, action) {
           exibirModalEncerramentoEncaminhamentoAEE: false,
         };
       }
-
+      case '@encaminhamentoAEE/setExibirModalDevolverAEE': {
+        return {
+          ...draft,
+          exibirModalDevolverAEE: action.payload,
+        };
+      }
       default:
         return draft;
     }
