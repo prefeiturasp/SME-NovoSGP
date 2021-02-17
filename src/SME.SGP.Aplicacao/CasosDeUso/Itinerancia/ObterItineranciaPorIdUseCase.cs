@@ -34,7 +34,8 @@ namespace SME.SGP.Aplicacao
                 DataRetornoVerificacao = itinerancia.DataRetornoVerificacao,
                 ObjetivosVisita = MontarObjetivosItinerancia(itinerancia),
                 Questoes = MontarQuestoesItinerancia(itinerancia, questoesBase),
-                Ues = MontarUes(ues, itinerancia)
+                Ues = MontarUes(ues, itinerancia),
+                CriadoRF = itinerancia.CriadoRF,
             };
 
             if(itinerancia.Alunos != null && itinerancia.Alunos.Any())
