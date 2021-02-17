@@ -774,8 +774,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             }
             else
             {
-                string erro = $"Não foi possível validar datas para a atribuição do professor no EOL - HttpCode {(int)resposta.StatusCode} - {datasParaEnvio}";
-
+                string erro = $"Não foi possível validar datas para a atribuição do professor no EOL - url: {resposta.RequestMessage.RequestUri.AbsoluteUri} HttpCode {(int)resposta.StatusCode} - {datasParaEnvio}";
                 
                 SentrySdk.AddBreadcrumb(erro);
                 throw new NegocioException(erro);
