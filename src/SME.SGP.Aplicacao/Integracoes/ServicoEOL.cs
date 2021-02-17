@@ -765,7 +765,7 @@ namespace SME.SGP.Aplicacao.Integracoes
         {            
             var datasParaEnvio = JsonConvert.SerializeObject(datas.Select(d => d.ToString("yyyy-MM-dd")));
 
-            var resposta = await httpClient.PostAsync($"professores/{professorRf}/turmas/{codigoTurma}/disciplinas/{codigoDisciplina}/atribuicao/recorrencia/verificar/datas", new StringContent(datasParaEnvio, Encoding.UTF8, "application/json-patch+json"));
+            var resposta = await httpClient.PutAsync($"professores/{professorRf}/turmas/{codigoTurma}/disciplinas/{codigoDisciplina}/atribuicao/recorrencia/verificar/datas", new StringContent(datasParaEnvio, Encoding.UTF8, "application/json-patch+json"));
 
             if (resposta.IsSuccessStatusCode)
             {
@@ -774,7 +774,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             }
             else
             {
-                string erro = $"Não foi possível validar datas para a atribuição do professor no EOL - Allow: {resposta.Content.Headers.Allow} HttpCode {(int)resposta.StatusCode} - {datasParaEnvio}";
+                string erro = $"Não foi possível validar datas para a atribuição do professor no EOL - Request: {resposta.RequestMessage.Method.Method} Allow: {resposta.Content.Headers.Allow} HttpCode {(int)resposta.StatusCode} - {datasParaEnvio}";
                 
                 SentrySdk.AddBreadcrumb(erro);
                 throw new NegocioException(erro);
