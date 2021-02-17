@@ -22,4 +22,4 @@ select
 		'FOREIGN KEY (turma_id) REFERENCES turma (id)'
 	);
 
-CREATE INDEX eitinerancia_aluno_turma__idx ON public.itinerancia_aluno USING btree (turma_id);
+CREATE INDEX itinerancia_aluno_turma__idx ON public.itinerancia_aluno USING btree (turma_id);
