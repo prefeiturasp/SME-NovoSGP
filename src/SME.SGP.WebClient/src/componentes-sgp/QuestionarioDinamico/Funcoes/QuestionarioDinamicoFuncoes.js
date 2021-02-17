@@ -302,8 +302,8 @@ class QuestionarioDinamicoFuncoes {
             valorCampo?.id === id || valorCampo?.nome === qAtual?.nome
         );
 
-        form.setFieldValue(id, valorCampoRemovido?.valor);
-        form.values[id] = valorCampoRemovido?.valor;
+        form.setFieldValue(id, valorCampoRemovido?.valor || '');
+        form.values[id] = valorCampoRemovido?.valor || '';
       });
     }
   };
