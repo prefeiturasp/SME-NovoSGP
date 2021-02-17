@@ -121,6 +121,7 @@ const ModalReestruturacaoPlano = ({
       paddingRight={modoVisualizacao ? '40' : '48'}
       colorBotaoSecundario={Colors.Azul}
       esconderBotaoPrincipal={modoVisualizacao}
+      desabilitarBotaoPrincipal={!versaoId || !descricao}
     >
       <div className="col-12 mb-3 p-0">
         <SelectComponent

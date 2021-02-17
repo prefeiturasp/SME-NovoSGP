@@ -1,7 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
+import { useSelector } from 'react-redux';
 
 import { Button, Colors, DataTable } from '~/componentes';
+
+import { RotasDto } from '~/dtos';
+import { verificaSomenteConsulta } from '~/servicos';
 
 import ModalReestruturacaoPlano from '../ModalReestruturacaoPlano/modalReestruturacaoPlano';
 import { BotaoEstilizado, TextoEstilizado } from './reestruturacaoTabela.css';
@@ -16,6 +20,10 @@ const ReestruturacaoTabela = ({
   const [exibirModal, setModalVisivel] = useState(false);
   const [modoVisualizacao, setModoVisualizacao] = useState(false);
   const [dadosVisualizacao, setDadosVisualizacao] = useState();
+
+  const usuario = useSelector(store => store.usuario);
+  const permissoesTela = usuario.permissoes[RotasDto.RELATORIO_AEE_PLANO];
+  const somenteConsulta = useSelector(store => store.navegacao.somenteConsulta);
 
   const cliqueVisualizar = dadosLinha => {
     setModalVisivel(true);
@@ -66,6 +74,10 @@ const ReestruturacaoTabela = ({
     setModalVisivel(true);
   };
 
+  useEffect(() => {
+    verificaSomenteConsulta(permissoesTela);
+  }, [permissoesTela]);
+
   return (
     <>
       <ModalReestruturacaoPlano
@@ -86,15 +98,17 @@ const ReestruturacaoTabela = ({
           pagination={false}
         />
       </div>
-      <Button
-        id={`btn-${key}`}
-        label="Nova reestruturação"
-        icon="plus"
-        color={Colors.Azul}
-        border
-        className="mr-3 mt-2"
-        onClick={cliqueNovaRestruturacao}
-      />
+      {!somenteConsulta && permissoesTela.podeIncluir && (
+        <Button
+          id={`btn-${key}`}
+          label="Nova reestruturação"
+          icon="plus"
+          color={Colors.Azul}
+          border
+          className="mr-3 mt-2"
+          onClick={cliqueNovaRestruturacao}
+        />
+      )}
     </>
   );
 };
