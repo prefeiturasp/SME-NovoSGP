@@ -33,7 +33,9 @@ const CampoDinamicoPeriodo = props => {
           }
           break;
         case 'PERIODO_INICIO_MAIOR_QUE_FIM':
-          textoErro = 'Período início não pode ser maior que o fim';
+          if (nomeCampo === 'periodoInicio') {
+            textoErro = 'Período início não pode ser maior que o fim';
+          }
           break;
 
         default:
