@@ -12,5 +12,6 @@ namespace SME.SGP.Infra
         public long VersaoId { get; set; }
         public string Versao { get; set; }
         public string Descricao { get; set; }
+        public string DescricaoSimples { get; set; }
     }
 }

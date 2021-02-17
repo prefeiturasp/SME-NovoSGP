@@ -90,10 +90,10 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(new List<PlanoAEEReestruturacaoDto>()
             {
-                new PlanoAEEReestruturacaoDto() { Id = 1, Semestre = 1, Data = new DateTime(2021, 1, 10), Descricao = "Alteradas as atividades que o aluno fazia", Versao = "v1 - 05/01/2021", VersaoId = 10},
-                new PlanoAEEReestruturacaoDto() { Id = 2, Semestre = 1, Data = new DateTime(2021, 1, 31), Descricao = "Alterado o periodo de vigência do plano", Versao = "v2 - 30/01/2021", VersaoId = 11},
-                new PlanoAEEReestruturacaoDto() { Id = 3, Semestre = 1, Data = new DateTime(2021, 2, 05), Descricao = "Alterado dias e horarios do aluno no AEE", Versao = "v3 - 04/01/2021", VersaoId = 12},
-                new PlanoAEEReestruturacaoDto() { Id = 4, Semestre = 2, Data = new DateTime(2021, 2, 15), Descricao = "Alterado encaminhamento do aluno", Versao = "v4 - 13/01/2021", VersaoId = 13},
+                new PlanoAEEReestruturacaoDto() { Id = 1, Semestre = 1, Data = new DateTime(2021, 1, 10), DescricaoSimples = "Alteradas as atividades que o aluno fazia", Descricao = "<b>Alteradas as atividades que o aluno fazia</b>", Versao = "v1 - 05/01/2021", VersaoId = 10},
+                new PlanoAEEReestruturacaoDto() { Id = 2, Semestre = 1, Data = new DateTime(2021, 1, 31), DescricaoSimples = "Alterado o periodo de vigência do plano", Descricao = "<b>Alterado o periodo de vigência do plano</b>", Versao = "v2 - 30/01/2021", VersaoId = 11},
+                new PlanoAEEReestruturacaoDto() { Id = 3, Semestre = 1, Data = new DateTime(2021, 2, 05), DescricaoSimples = "Alterado dias e horarios do aluno no AEE", Descricao = "<b>Alterado dias e horarios do aluno no AEE</b>", Versao = "v3 - 04/01/2021", VersaoId = 12},
+                new PlanoAEEReestruturacaoDto() { Id = 4, Semestre = 2, Data = new DateTime(2021, 2, 15), DescricaoSimples = "Alterado encaminhamento do aluno", Descricao = "<b>Alterado encaminhamento do aluno</b>", Versao = "v4 - 13/01/2021", VersaoId = 13},
             });
         }
 
