@@ -47,7 +47,6 @@ namespace SME.SGP.Aplicacao
                 PodeEditar = podeEditar,
                 PodeAtribuirResponsavel = podeAtribuirResponsavel,
                 MotivoEncerramento = encaminhamentoAee.MotivoEncerramento,
-                Auditoria = (AuditoriaDto)encaminhamentoAee,
                 responsavelEncaminhamentoAEE = encaminhamentoAee.Responsavel == null ? null :
                 new ResponsavelEncaminhamentoAEEDto()
                 {
