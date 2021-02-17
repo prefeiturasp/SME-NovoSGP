@@ -765,7 +765,7 @@ namespace SME.SGP.Aplicacao.Integracoes
         {            
             var datasParaEnvio = JsonConvert.SerializeObject(datas.Select(d => d.ToString("yyyy-MM-dd")));
 
-            var resposta = await httpClient.PutAsync($"professores/{professorRf}/turmas/{codigoTurma}/disciplinas/{codigoDisciplina}/atribuicao/recorrencia/verificar/datas", new StringContent(datasParaEnvio, Encoding.UTF8, "application/json-patch+json"));
+            var resposta = await httpClient.PostAsync($"professores/{professorRf}/turmas/{codigoTurma}/disciplinas/{codigoDisciplina}/atribuicao/recorrencia/verificar/datas", new StringContent(datasParaEnvio, Encoding.UTF8, "application/json-patch+json"));
 
             if (resposta.IsSuccessStatusCode)
             {
