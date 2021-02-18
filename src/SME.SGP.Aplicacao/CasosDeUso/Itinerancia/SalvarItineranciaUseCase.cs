@@ -27,17 +27,10 @@ namespace SME.SGP.Aplicacao
             {
                 try
                 {
-                    var turmasCodigos = itineranciaDto.Alunos.Select(a => a.TurmaId.ToString()).Distinct().ToList();
-                    
-                    if (turmasCodigos != null && turmasCodigos.Any())
+                    if (itineranciaDto.Alunos.Any())
                     {
-                        var turmas = await mediator.Send(new ObterTurmasPorCodigosQuery(turmasCodigos.ToArray()));
-                        foreach (var item in itineranciaDto.Alunos)
-                        {
-                            item.TurmaId = turmas.FirstOrDefault(a => a.CodigoTurma == item.TurmaId.ToString()).Id;
-                        }                        
+                        await TrataTurmasCodigos(itineranciaDto);
                     }
-
                     var itinerancia = await mediator.Send(new SalvarItineranciaCommand(itineranciaDto.AnoLetivo, itineranciaDto.DataVisita, itineranciaDto.DataRetornoVerificacao));
                     if (itinerancia == null)
                         throw new NegocioException("Erro ao Salvar a itinerancia");
@@ -66,6 +59,23 @@ namespace SME.SGP.Aplicacao
                 {
                     unitOfWork.Rollback();
                     throw;
+                }
+            }
+        }
+
+        private async Task TrataTurmasCodigos(ItineranciaDto itineranciaDto)
+        {
+            var turmasCodigos = itineranciaDto.Alunos.Select(a => a.TurmaId.ToString()).Distinct().ToList();
+
+            if (turmasCodigos != null && turmasCodigos.Any())
+            {
+                var turmas = await mediator.Send(new ObterTurmasPorCodigosQuery(turmasCodigos.ToArray()));
+                if (turmas.Count() != turmasCodigos.Count())
+                    throw new NegocioException("Não foi possível localizar as turmas no SGP.");
+
+                foreach (var item in itineranciaDto.Alunos)
+                {
+                    item.TurmaId = turmas.FirstOrDefault(a => a.CodigoTurma == item.TurmaId.ToString()).Id;
                 }
             }
         }
