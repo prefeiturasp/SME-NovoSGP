@@ -21,6 +21,7 @@ import {
   setSomenteConsultaManual,
   sucesso,
   verificaSomenteConsulta,
+  history,
 } from '~/servicos';
 import ServicoRegistroItineranciaAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoRegistroItineranciaAEE';
 import { ordenarPor } from '~/utils/funcoes/gerais';
@@ -59,7 +60,9 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
   const permissoesTela =
     usuario.permissoes[RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA];
 
-  const onClickVoltar = () => {};
+  const onClickVoltar = () => {
+    history.push(RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA);
+  };
 
   const onClickSalvar = () => {
     const itinerancia = {
@@ -129,6 +132,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
               `Registro ${itineranciaId ? 'alterado' : 'salvo'} com sucesso`
             );
             setModoEdicao(false);
+            history.push(RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA);
           }
         })
         .catch(e => erros(e))
@@ -391,7 +395,6 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
                   color={Colors.Azul}
                   border
                   className="mr-3"
-                  disabled
                   onClick={onClickVoltar}
                 />
                 <Button
