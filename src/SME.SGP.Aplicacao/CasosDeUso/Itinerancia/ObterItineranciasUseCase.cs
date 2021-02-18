@@ -40,7 +40,7 @@ namespace SME.SGP.Aplicacao
         {
             var itineranciasParaRetornar = new List<ItineranciaResumoDto>();
 
-            if (itinerancias.FirstOrDefault() == null)
+            if (itinerancias == null || !itinerancias.Any())
                 throw new NegocioException("Nenhuma informação para os filtros informados.");
 
             var itineranciasAgrupadas = itinerancias.GroupBy(i => i.Id);
