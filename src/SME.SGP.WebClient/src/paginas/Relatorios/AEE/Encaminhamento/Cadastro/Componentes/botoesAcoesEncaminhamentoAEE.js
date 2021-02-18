@@ -8,7 +8,9 @@ import { RotasDto } from '~/dtos';
 import situacaoAEE from '~/dtos/situacaoAEE';
 import {
   setExibirLoaderEncaminhamentoAEE,
+  setExibirModalDevolverAEE,
   setExibirModalEncerramentoEncaminhamentoAEE,
+  setListaSecoesEmEdicao,
 } from '~/redux/modulos/encaminhamentoAEE/actions';
 import { confirmar, erros, sucesso } from '~/servicos';
 import history from '~/servicos/history';
@@ -47,15 +49,10 @@ const BotoesAcoesEncaminhamentoAEE = props => {
       situacao = dadosEncaminhamento?.situacao;
     }
 
-    let validarCamposObrigatorios = false;
-    if (dadosEncaminhamento?.situacao === situacaoAEE.Encaminhado) {
-      validarCamposObrigatorios = true;
-    }
-
     const salvou = await ServicoEncaminhamentoAEE.salvarEncaminhamento(
       encaminhamentoId,
       situacao,
-      validarCamposObrigatorios
+      false
     );
     if (salvou) {
       let mensagem = 'Registro salvo com sucesso';
@@ -124,6 +121,7 @@ const BotoesAcoesEncaminhamentoAEE = props => {
       );
       if (confirmou) {
         QuestionarioDinamicoFuncoes.limparDadosOriginaisQuestionarioDinamico();
+        dispatch(setListaSecoesEmEdicao([]));
       }
     }
   };
@@ -151,6 +149,10 @@ const BotoesAcoesEncaminhamentoAEE = props => {
         }
       }
     }
+  };
+
+  const onClickDevolver = () => {
+    dispatch(setExibirModalDevolverAEE(true));
   };
 
   const onClickEncerrar = async () => {
@@ -273,11 +275,25 @@ const BotoesAcoesEncaminhamentoAEE = props => {
         onClick={onClickEnviar}
         hidden={
           dadosEncaminhamento?.situacao &&
-          dadosEncaminhamento?.situacao !== situacaoAEE.Rascunho
+          dadosEncaminhamento?.situacao !== situacaoAEE.Rascunho &&
+          dadosEncaminhamento?.situacao !== situacaoAEE.Devolvido
         }
         disabled={
           !dadosCollapseLocalizarEstudante?.codigoAluno ||
           desabilitarCamposEncaminhamentoAEE
+        }
+      />
+      <Button
+        id="btn-devolver"
+        label="Devolver"
+        color={Colors.Azul}
+        border
+        bold
+        className="ml-3"
+        onClick={onClickDevolver}
+        hidden={dadosEncaminhamento?.situacao !== situacaoAEE.Encaminhado}
+        disabled={
+          desabilitarCamposEncaminhamentoAEE || !dadosEncaminhamento?.podeEditar
         }
       />
       <Button

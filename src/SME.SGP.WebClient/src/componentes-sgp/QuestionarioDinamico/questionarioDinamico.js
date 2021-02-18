@@ -31,6 +31,7 @@ const QuestionarioDinamico = props => {
     anoLetivo,
     urlUpload,
     funcaoRemoverArquivoCampoUpload,
+    onChangeQuestionario,
   } = props;
 
   const [valoresIniciais, setValoresIniciais] = useState();
@@ -187,6 +188,10 @@ const QuestionarioDinamico = props => {
           label={label}
           form={form}
           questaoAtual={questaoAtual}
+          onChange={() => {
+            dispatch(setQuestionarioDinamicoEmEdicao(true));
+            onChangeQuestionario();
+          }}
         />
       </div>
     );
@@ -301,6 +306,7 @@ const QuestionarioDinamico = props => {
                 valorAtual
               );
               dispatch(setQuestionarioDinamicoEmEdicao(true));
+              onChangeQuestionario();
             }}
           />
         );
@@ -319,6 +325,7 @@ const QuestionarioDinamico = props => {
                 valorAtual
               );
               dispatch(setQuestionarioDinamicoEmEdicao(true));
+              onChangeQuestionario();
             }}
           />
         );
@@ -337,6 +344,7 @@ const QuestionarioDinamico = props => {
                 valorAtual
               );
               dispatch(setQuestionarioDinamicoEmEdicao(true));
+              onChangeQuestionario();
             }}
           />
         );
@@ -355,6 +363,7 @@ const QuestionarioDinamico = props => {
                 valoresSelecionados
               );
               dispatch(setQuestionarioDinamicoEmEdicao(true));
+              onChangeQuestionario();
             }}
           />
         );
@@ -366,6 +375,10 @@ const QuestionarioDinamico = props => {
             form={form}
             label={label}
             desabilitado={desabilitarCampos}
+            onChange={() => {
+              dispatch(setQuestionarioDinamicoEmEdicao(true));
+              onChangeQuestionario();
+            }}
           />
         );
         break;
@@ -390,6 +403,10 @@ const QuestionarioDinamico = props => {
             desabilitado={desabilitarCampos}
             urlUpload={urlUpload}
             funcaoRemoverArquivoCampoUpload={funcaoRemoverArquivoCampoUpload}
+            onChange={() => {
+              dispatch(setQuestionarioDinamicoEmEdicao(true));
+              onChangeQuestionario();
+            }}
           />
         );
         break;
@@ -400,6 +417,10 @@ const QuestionarioDinamico = props => {
             form={form}
             label={label}
             desabilitado={desabilitarCampos}
+            onChange={() => {
+              dispatch(setQuestionarioDinamicoEmEdicao(true));
+              onChangeQuestionario();
+            }}
           />
         );
         break;
@@ -411,6 +432,10 @@ const QuestionarioDinamico = props => {
               label={label}
               form={form}
               questaoAtual={questaoAtual}
+              onChange={() => {
+                dispatch(setQuestionarioDinamicoEmEdicao(true));
+                onChangeQuestionario();
+              }}
             />
           </div>
         );
@@ -475,6 +500,7 @@ QuestionarioDinamico.propTypes = {
   anoLetivo: PropTypes.oneOfType([PropTypes.any]),
   urlUpload: PropTypes.string,
   funcaoRemoverArquivoCampoUpload: PropTypes.func,
+  onChangeQuestionario: PropTypes.func,
 };
 
 QuestionarioDinamico.defaultProps = {
@@ -486,6 +512,7 @@ QuestionarioDinamico.defaultProps = {
   anoLetivo: null,
   urlUpload: '',
   funcaoRemoverArquivoCampoUpload: () => {},
+  onChangeQuestionario: () => {},
 };
 
 export default QuestionarioDinamico;

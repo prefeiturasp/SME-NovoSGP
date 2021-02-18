@@ -65,13 +65,13 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                 long resultadoEncaminhamentoSecao = 0;
                 if (secaoExistente == null)
                     secaoExistente = await mediator.Send(new RegistrarEncaminhamentoAEESecaoCommand(encaminhamentoAEE.Id, secao.SecaoId, secao.Concluido));
-
-                resultadoEncaminhamentoSecao = secaoExistente.Id;
-                if (secaoExistente.Concluido != secao.Concluido)
+                else
                 {
                     secaoExistente.Concluido = secao.Concluido;
                     await mediator.Send(new AlterarEncaminhamentoAEESecaoCommand(secaoExistente));
                 }
+
+                resultadoEncaminhamentoSecao = secaoExistente.Id;
 
                 foreach (var questoes in secao.Questoes.GroupBy(q => q.QuestaoId))
                 {

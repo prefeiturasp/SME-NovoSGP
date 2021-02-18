@@ -8,6 +8,9 @@ const inicial = {
   exibirModalErrosEncaminhamento: false,
   exibirModalEncerramentoEncaminhamentoAEE: false,
   desabilitarCamposEncaminhamentoAEE: false,
+  listaSecoesEmEdicao: [],
+  exibirModalDevolverAEE: false,
+  nomesSecoesComCamposObrigatorios: [],
 };
 
 export default function EncaminhamentoAEE(state = inicial, action) {
@@ -50,6 +53,12 @@ export default function EncaminhamentoAEE(state = inicial, action) {
           exibirModalErrosEncaminhamento: action.payload,
         };
       }
+      case '@encaminhamentoAEE/setNomesSecoesComCamposObrigatorios': {
+        return {
+          ...draft,
+          nomesSecoesComCamposObrigatorios: action.payload,
+        };
+      }
       case '@encaminhamentoAEE/setExibirModalEncerramentoEncaminhamentoAEE': {
         return {
           ...draft,
@@ -62,6 +71,12 @@ export default function EncaminhamentoAEE(state = inicial, action) {
           desabilitarCamposEncaminhamentoAEE: action.payload,
         };
       }
+      case '@encaminhamentoAEE/setListaSecoesEmEdicao': {
+        return {
+          ...draft,
+          listaSecoesEmEdicao: action.payload,
+        };
+      }
       case '@encaminhamentoAEE/setLimparDadosEncaminhamento': {
         return {
           ...draft,
@@ -70,9 +85,16 @@ export default function EncaminhamentoAEE(state = inicial, action) {
           dadosEncaminhamento: null,
           exibirModalErrosEncaminhamento: false,
           exibirModalEncerramentoEncaminhamentoAEE: false,
+          listaSecoesEmEdicao: [],
+          nomesSecoesComCamposObrigatorios: [],
         };
       }
-
+      case '@encaminhamentoAEE/setExibirModalDevolverAEE': {
+        return {
+          ...draft,
+          exibirModalDevolverAEE: action.payload,
+        };
+      }
       default:
         return draft;
     }

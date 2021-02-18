@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setDadosSecoesPorEtapaDeEncaminhamentoAEE } from '~/redux/modulos/encaminhamentoAEE/actions';
 import { erros } from '~/servicos';
 import ServicoEncaminhamentoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoEncaminhamentoAEE';
-import AuditoriaEncaminhamento from '../AuditoriaEncaminhamento/auditoriaEncaminhamento';
 import MarcadorSituacaoAEE from '../MarcadorSituacaoAEE/marcadorSituacaoAEE';
 import AtribuicaoResponsavel from './atribuicaoResponsavel';
 import SecaoEncaminhamentoCollapse from './SecaoEncaminhamento/secaoEncaminhamentoCollapse';
@@ -59,7 +58,6 @@ const MontarDadosSecoes = ({ match }) => {
       <div className="col-md-12">
         <SecaoParecerAEECollapse match={match} />
       </div>
-      <AuditoriaEncaminhamento />
     </>
   );
 };
