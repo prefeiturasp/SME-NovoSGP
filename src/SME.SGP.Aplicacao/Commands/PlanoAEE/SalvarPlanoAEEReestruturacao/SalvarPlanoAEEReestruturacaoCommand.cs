@@ -1,0 +1,30 @@
+﻿using FluentValidation;
+using MediatR;
+using SME.SGP.Dominio;
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace SME.SGP.Aplicacao
+{
+    public class SalvarPlanoAEEReestruturacaoCommand : IRequest<long>
+    {
+        public SalvarPlanoAEEReestruturacaoCommand(PlanoAEEReestruturacao reestruturacao)
+        {
+            Reestruturacao = reestruturacao;
+        }
+
+        public PlanoAEEReestruturacao Reestruturacao { get; }
+    }
+
+    public class SalvarPlanoAEEReestruturacaoCommandValidator : AbstractValidator<SalvarPlanoAEEReestruturacaoCommand>
+    {
+        public SalvarPlanoAEEReestruturacaoCommandValidator()
+        {
+            RuleFor(a => a.Reestruturacao)
+                .NotEmpty()
+                .WithMessage("A reestruturação do plano deve ser informada para o salvamento");
+        }
+    }
+}
+

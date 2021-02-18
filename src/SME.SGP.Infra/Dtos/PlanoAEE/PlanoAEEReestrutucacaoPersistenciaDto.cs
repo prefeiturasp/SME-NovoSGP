@@ -6,7 +6,7 @@ namespace SME.SGP.Infra
 {
     public class PlanoAEEReestrutucacaoPersistenciaDto
     {
-        public long PlanoAEEId { get; set; }
+        public long? ReestruturacaoId { get; set; }
         public long VersaoId { get; set; }
         public int Semestre { get; set; }
         public string Descricao { get; set; }
