@@ -65,6 +65,7 @@
         public static string RotaAtualizarPendenciaAusenciaRegistroIndividual => "pendencias.professor.ausencia.registro.individual.atualizar";
 
         public static string RotaNotificacaoRegistroConclusaoEncaminhamentoAEE => "notificacao.registro.conclusao.encaminhamentoaee";
-        
+        public static string RotaNotificacaoEncerramentoEncaminhamentoAEE => "notificacao.encerramento.encaminhamentoaee";
+
     }
 }
