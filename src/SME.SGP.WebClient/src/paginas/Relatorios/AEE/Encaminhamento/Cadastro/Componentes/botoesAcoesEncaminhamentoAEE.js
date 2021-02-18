@@ -8,6 +8,7 @@ import { RotasDto } from '~/dtos';
 import situacaoAEE from '~/dtos/situacaoAEE';
 import {
   setExibirLoaderEncaminhamentoAEE,
+  setExibirModalDevolverAEE,
   setExibirModalEncerramentoEncaminhamentoAEE,
   setListaSecoesEmEdicao,
 } from '~/redux/modulos/encaminhamentoAEE/actions';
@@ -155,6 +156,10 @@ const BotoesAcoesEncaminhamentoAEE = props => {
     }
   };
 
+  const onClickDevolver = () => {
+    dispatch(setExibirModalDevolverAEE(true));
+  };
+
   const onClickEncerrar = async () => {
     if (!desabilitarCamposEncaminhamentoAEE) {
       const encaminhamentoId = match?.params?.id;
@@ -275,11 +280,25 @@ const BotoesAcoesEncaminhamentoAEE = props => {
         onClick={onClickEnviar}
         hidden={
           dadosEncaminhamento?.situacao &&
-          dadosEncaminhamento?.situacao !== situacaoAEE.Rascunho
+          dadosEncaminhamento?.situacao !== situacaoAEE.Rascunho &&
+          dadosEncaminhamento?.situacao !== situacaoAEE.Devolvido
         }
         disabled={
           !dadosCollapseLocalizarEstudante?.codigoAluno ||
           desabilitarCamposEncaminhamentoAEE
+        }
+      />
+      <Button
+        id="btn-devolver"
+        label="Devolver"
+        color={Colors.Azul}
+        border
+        bold
+        className="ml-3"
+        onClick={onClickDevolver}
+        hidden={dadosEncaminhamento?.situacao !== situacaoAEE.Encaminhado}
+        disabled={
+          desabilitarCamposEncaminhamentoAEE || !dadosEncaminhamento?.podeEditar
         }
       />
       <Button

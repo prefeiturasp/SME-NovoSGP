@@ -444,6 +444,10 @@ class ServicoEncaminhamentoAEE {
       dispatch(setListaSecoesEmEdicao([{ secaoId }]));
     }
   };
+
+  devolverEncaminhamentoAEE = params => {
+    return api.post(`${urlPadrao}/devolver`, params);
+  };
 }
 
 export default new ServicoEncaminhamentoAEE();

@@ -47,3 +47,8 @@ export const setListaSecoesEmEdicao = payload => ({
   type: '@encaminhamentoAEE/setListaSecoesEmEdicao',
   payload,
 });
+
+export const setExibirModalDevolverAEE = payload => ({
+  type: '@encaminhamentoAEE/setExibirModalDevolverAEE',
+  payload,
+});
