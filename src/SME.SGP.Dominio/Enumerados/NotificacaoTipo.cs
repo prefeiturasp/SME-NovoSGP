@@ -30,5 +30,8 @@ namespace SME.SGP.Dominio
 
         [Display(Name = "Planejamento")]
         Planejamento = 9,
+
+        [Display(Name = "AEE")]
+        AEE = 10,
     }
 }
