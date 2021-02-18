@@ -59,7 +59,6 @@ const MontarDadosSecoes = ({ match }) => {
       <div className="col-md-12">
         <SecaoParecerAEECollapse match={match} />
       </div>
-      <AuditoriaEncaminhamento />
     </>
   );
 };

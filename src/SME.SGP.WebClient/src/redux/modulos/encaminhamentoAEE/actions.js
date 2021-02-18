@@ -42,3 +42,8 @@ export const setDesabilitarCamposEncaminhamentoAEE = payload => ({
   type: '@encaminhamentoAEE/setDesabilitarCamposEncaminhamentoAEE',
   payload,
 });
+
+export const setListaSecoesEmEdicao = payload => ({
+  type: '@encaminhamentoAEE/setListaSecoesEmEdicao',
+  payload,
+});

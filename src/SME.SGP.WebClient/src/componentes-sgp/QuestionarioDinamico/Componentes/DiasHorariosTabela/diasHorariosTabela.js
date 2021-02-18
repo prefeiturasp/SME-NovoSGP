@@ -2,21 +2,17 @@ import { Tooltip } from 'antd';
 import * as moment from 'moment';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { DataTable } from '~/componentes';
 import Button from '~/componentes/button';
 import { Base, Colors } from '~/componentes/colors';
 import Label from '~/componentes/label';
 import { BtnExcluirDiasHorario } from '~/paginas/Relatorios/AEE/Plano/Cadastro/planoAEECadastro.css';
-import { setQuestionarioDinamicoEmEdicao } from '~/redux/modulos/questionarioDinamico/actions';
 import { confirmar } from '~/servicos';
 import ModalCadastroDiasHorario from './modalCadastroDiasHorarios';
 
 const DiasHorariosTabela = props => {
-  const { label, questaoAtual, form, desabilitado } = props;
-
-  const dispatch = useDispatch();
+  const { label, questaoAtual, form, desabilitado, onChange } = props;
 
   const [exibirModal, setExibirModal] = useState(false);
 
@@ -35,7 +31,7 @@ const DiasHorariosTabela = props => {
       dadosAtuais.push(novosDados);
       if (form) {
         form.setFieldValue(questaoAtual.id, dadosAtuais);
-        dispatch(setQuestionarioDinamicoEmEdicao(true));
+        onChange();
       }
     }
   };
@@ -82,6 +78,7 @@ const DiasHorariosTabela = props => {
                     if (indice !== -1) {
                       dadosAtuais.splice(indice, 1);
                       form.setFieldValue(questaoAtual.id, dadosAtuais);
+                      onChange();
                     }
                   }
                 }
@@ -181,6 +178,7 @@ DiasHorariosTabela.propTypes = {
   form: PropTypes.oneOfType([PropTypes.any]),
   label: PropTypes.string,
   desabilitado: PropTypes.bool,
+  onChange: PropTypes.func,
 };
 
 DiasHorariosTabela.defaultProps = {
@@ -188,6 +186,7 @@ DiasHorariosTabela.defaultProps = {
   questaoAtual: null,
   form: null,
   desabilitado: false,
+  onChange: () => {},
 };
 
 export default DiasHorariosTabela;
