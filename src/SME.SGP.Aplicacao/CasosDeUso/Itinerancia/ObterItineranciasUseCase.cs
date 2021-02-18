@@ -40,6 +40,9 @@ namespace SME.SGP.Aplicacao
         {
             var itineranciasParaRetornar = new List<ItineranciaResumoDto>();
 
+            if (itinerancias == null || !itinerancias.Any())
+                return itineranciasParaRetornar;
+
             var itineranciasAgrupadas = itinerancias.GroupBy(i => i.Id);
 
             var codigosAluno = itinerancias.Where(a => !string.IsNullOrEmpty(a.AlunoCodigo)).Select(a => long.Parse(a.AlunoCodigo)).Distinct().ToArray();
