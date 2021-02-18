@@ -99,15 +99,9 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("{planoAEEId}/versoes")]
         [ProducesResponseType(typeof(IEnumerable<PlanoAEEDescricaoVersaoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterVersoes(long planoAEEId)
+        public async Task<IActionResult> ObterVersoes(long planoAEEId, [FromServices] IObterVersoesPlanoAEEUseCase useCase)
         {
-            return Ok(new List<PlanoAEEDescricaoVersaoDto>()
-            {
-                new PlanoAEEDescricaoVersaoDto() { Id = 10, Descricao = "v1 - 05/01/2021" },
-                new PlanoAEEDescricaoVersaoDto() { Id = 11, Descricao = "v2 - 30/01/2021" },
-                new PlanoAEEDescricaoVersaoDto() { Id = 12, Descricao = "v3 - 04/01/2021" },
-                new PlanoAEEDescricaoVersaoDto() { Id = 13, Descricao = "v4 - 13/01/2021" },
-            });
+            return Ok(await useCase.Executar(planoAEEId));
         }
 
         [HttpPost("{planoAEEId}/reestruturacoes")]
@@ -117,16 +111,6 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> SalvarReestruturacao([FromBody] PlanoAEEReestrutucacaoPersistenciaDto planoAeeReestruturacaoDto, [FromServices] ISalvarReestruturacaoPlanoAEEUseCase useCase)
         {
             return Ok(await useCase.Executar(planoAeeReestruturacaoDto));
-        }
-
-        [HttpGet]
-        [Route("versoes-plano")]
-        [ProducesResponseType(typeof(IEnumerable<PlanoAEEVersaoDto>), 200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        public async Task<IActionResult> ObterVersoesPlanoAEE([FromQuery] FiltroVersoesPlanoAEEDto filtro, [FromServices] IObterVersoesPlanoAEEUseCase useCase)
-        {
-            return Ok(await useCase.Executar(filtro));
         }
     }
 }
