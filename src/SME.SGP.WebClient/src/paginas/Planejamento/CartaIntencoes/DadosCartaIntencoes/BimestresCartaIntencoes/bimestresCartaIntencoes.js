@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Auditoria } from '~/componentes';
 import CardCollapse from '~/componentes/cardCollapse';
-import Editor from '~/componentes/editor/editor';
+import JoditEditor from '~/componentes/jodit-editor/joditEditor';
 import {
   setCartaIntencoesEmEdicao,
   setDadosParaSalvarCartaIntencoes,
@@ -69,11 +69,11 @@ const BimestresCartaIntencoes = props => {
       show
     >
       <>
-        <Editor
+        <JoditEditor
           validarSeTemErro={validarSeTemErro}
           mensagemErro="Campo obrigatório"
           id={`bimestre-${bimestre}-editor`}
-          inicial={planejamento}
+          value={planejamento}
           onChange={valorNovo => {
             onChange(valorNovo);
             dispatch(setCartaIntencoesEmEdicao(true));

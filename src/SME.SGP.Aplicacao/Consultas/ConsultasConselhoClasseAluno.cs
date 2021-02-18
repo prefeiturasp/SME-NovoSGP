@@ -158,20 +158,17 @@ namespace SME.SGP.Aplicacao
             var notasConselhoClasseAluno = await consultasConselhoClasseNota.ObterNotasAlunoAsync(conselhoClasseId, alunoCodigo);
             var notasFechamentoAluno = fechamentoTurma != null && fechamentoTurma.PeriodoEscolarId.HasValue ?
                 await consultasFechamentoNota.ObterNotasAlunoBimestreAsync(fechamentoTurmaId, alunoCodigo) :
-                await consultasConselhoClasseNota.ObterNotasFinaisBimestresAlunoAsync(alunoCodigo, turmaCodigo);
+                await consultasConselhoClasseNota.ObterNotasFinaisBimestresAlunoAsync(alunoCodigo, turmaCodigo);    
 
+            var disciplinasDaTurmaEol = await servicoEOL.ObterDisciplinasPorCodigoTurma(turmaCodigo);
 
-            var disciplinasDaTurma = await servicoEOL.ObterDisciplinasPorCodigoTurma(turmaCodigo);
-
-
-            //if (disciplinas == null)
-            //    throw new NegocioException("disciplinas da turma não localizadas no eol");
-
+            var disciplinasDaTurma = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(disciplinasDaTurmaEol.Select(x => x.CodigoComponenteCurricular).Distinct().ToArray()));
+                        
             var retorno = new ConselhoClasseAlunoNotasConceitosRetornoDto();
 
             var gruposMatrizesNotas = new List<ConselhoClasseAlunoNotasConceitosDto>();
             // Retornar componentes que lançam nota
-            var gruposMatrizes = disciplinasDaTurma.Where(c => c.LancaNota && c.GrupoMatriz != null).GroupBy(c => c.GrupoMatriz?.Nome).ToList();
+            var gruposMatrizes = disciplinasDaTurma.Where(c => c.LancaNota && c.GrupoMatrizNome != null).GroupBy(c => c.GrupoMatrizNome).ToList();
             foreach (var grupoDisiplinasMatriz in gruposMatrizes.OrderBy(k => k.Key))
             {
                 var conselhoClasseAlunoNotas = new ConselhoClasseAlunoNotasConceitosDto();
@@ -346,6 +343,9 @@ namespace SME.SGP.Aplicacao
                                                                                                              TipoFrequenciaAluno.PorDisciplina,
                                                                                                              turma.CodigoTurma,
                                                                                                              componenteCurricularCodigo.ToString());
+
+                    frequenciaAluno.AdicionarFrequenciaBimestre(periodoEscolarTurma.Bimestre, frequenciaAlunoPeriodo != null ? frequenciaAlunoPeriodo.PercentualFrequencia : 100);
+
                     if (frequenciaAlunoPeriodo != null)
                     {
                         frequenciaAluno.TotalAulas += frequenciaAlunoPeriodo.TotalAulas;
@@ -424,6 +424,12 @@ namespace SME.SGP.Aplicacao
 
         private ConselhoClasseComponenteFrequenciaDto ObterNotasFrequenciaComponente(string componenteCurricularNome, long componenteCurricularCodigo, FrequenciaAluno frequenciaAluno, PeriodoEscolar periodoEscolar, Turma turma, IEnumerable<NotaConceitoBimestreComponenteDto> notasConselhoClasseAluno, IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno)
         {
+            var percentualFrequencia = (frequenciaAluno.TotalAulas > 0 ? frequenciaAluno?.PercentualFrequencia ?? 100 : 100);
+
+            // Cálculo de frequência particular do ano de 2020
+            if (periodoEscolar == null && turma.AnoLetivo.Equals(2020))
+                percentualFrequencia = frequenciaAluno.PercentualFrequenciaFinal;
+
             var conselhoClasseComponente = new ConselhoClasseComponenteFrequenciaDto()
             {
                 Nome = componenteCurricularNome,
@@ -431,7 +437,7 @@ namespace SME.SGP.Aplicacao
                 QuantidadeAulas = frequenciaAluno.TotalAulas,
                 Faltas = frequenciaAluno?.TotalAusencias ?? 0,
                 AusenciasCompensadas = frequenciaAluno?.TotalCompensacoes ?? 0,
-                Frequencia = (frequenciaAluno.TotalAulas > 0 ? frequenciaAluno?.PercentualFrequencia ?? 100 : 100),
+                Frequencia = percentualFrequencia,
                 NotasFechamentos = ObterNotasComponente(componenteCurricularCodigo, periodoEscolar, notasFechamentoAluno),
                 NotaPosConselho = ObterNotaPosConselho(componenteCurricularCodigo, periodoEscolar?.Bimestre, notasConselhoClasseAluno, notasFechamentoAluno)
             };
@@ -447,20 +453,22 @@ namespace SME.SGP.Aplicacao
             if (componentesRegencia == null || !componentesRegencia.Any())
                 throw new NegocioException("Não foram encontrados componentes curriculares para a regência informada.");
 
+            var percentualFrequencia = (frequenciaAluno.TotalAulas > 0 ? frequenciaAluno?.PercentualFrequencia ?? 100 : 100);
+
+            // Cálculo de frequência particular do ano de 2020
+            if (periodoEscolar == null && turma.AnoLetivo.Equals(2020))
+                percentualFrequencia = frequenciaAluno.PercentualFrequenciaFinal;
 
             var conselhoClasseComponente = new ConselhoClasseComponenteRegenciaFrequenciaDto()
             {
                 QuantidadeAulas = frequenciaAluno.TotalAulas,
                 Faltas = frequenciaAluno?.TotalAusencias ?? 0,
                 AusenciasCompensadas = frequenciaAluno?.TotalCompensacoes ?? 0,
-                Frequencia = (frequenciaAluno.TotalAulas > 0 ? frequenciaAluno?.PercentualFrequencia ?? 100 : 100)
+                Frequencia = percentualFrequencia
             };
-
-            //var componentesRegencia = await consultasDisciplina.ObterComponentesRegencia(turma, componenteCurricularCodigo);
+            
             foreach (var componenteRegencia in componentesRegencia)
-            {
                 conselhoClasseComponente.ComponentesCurriculares.Add(ObterNotasRegencia(componenteRegencia.Nome, componenteRegencia.CodigoComponenteCurricular, periodoEscolar, notasConselhoClasseAluno, notasFechamentoAluno));
-            }
 
             return conselhoClasseComponente;
         }

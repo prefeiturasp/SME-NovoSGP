@@ -49,9 +49,22 @@ const RotasDto = {
   RELATORIO_PARECER_CONCLUSIVO: '/relatorios/parecer-conclusivo',
   RELATORIO_NOTAS_CONCEITOS_FINAIS: '/relatorios/notas-conceitos-finais',
   RELATORIO_COMPENSACAO_AUSENCIA: '/relatorios/compensacao-ausencia',
+  RELATORIO_ESCOLA_AQUI_DASHBOARD: '/relatorios/escola-aqui/dashboard',
   DEVOLUTIVAS: '/diario-classe/devolutiva',
+  REGISTRO_INDIVIDUAL: '/diario-classe/registro-individual',
   CONTROLE_GRADE: '/relatorios/diario-classe/controle-grade',
+  RELATORIO_PLANEJAMENTO_DIARIO: '/relatorios/diario-classe/planejamento-diario',
   POC_EDITOR: '/editor',
+  SONDAGEM: '/sondagem',
+  POC_UPLOAD_ARQUIVOS: '/upload-arquivos',
+  HISTORICO_NOTIFICACOES: '/relatorios/notificacoes/historico-notificacoes',
+  DOCUMENTOS_PLANOS_TRABALHO: '/gestao/documentos-planos-trabalho',
+  RELATORIO_USUARIOS: '/relatorios/gestao/usuarios',
+  RELATORIO_ATRIBUICAO_CJ: '/relatorios/gestao/atribuicao-cj',
+  RELATORIO_ALTERACAO_NOTAS: '/relatorios/fechamento/historico-alteracao-notas',
+  RELATORIO_LEITURA: '/relatorios/escola-aqui/leitura',
+  RELATORIO_ESCOLA_AQUI_ADESAO: '/relatorios/escola-aqui/adesao',
+  OCORRENCIAS: '/gestao/ocorrencias',
 };
 
 export default RotasDto;

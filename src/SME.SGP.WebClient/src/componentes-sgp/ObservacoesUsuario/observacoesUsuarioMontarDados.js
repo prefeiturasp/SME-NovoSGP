@@ -4,10 +4,18 @@ import { useSelector } from 'react-redux';
 import shortid from 'shortid';
 import Auditoria from '~/componentes/auditoria';
 import LinhaObservacaoProprietario from './linhaObservacaoProprietario';
+import ListaNotificacoes from './listaNotificacoes/listaNotificacoes';
 import { ContainerCampoObservacao } from './observacoesUsuario.css';
 
 const ObservacoesUsuarioMontarDados = props => {
-  const { onClickSalvarEdicao, onClickExcluir } = props;
+  const {
+    onClickSalvarEdicao,
+    onClickExcluir,
+    verificaProprietario,
+    podeAlterar,
+    podeExcluir,
+    mostrarListaNotificacao,
+  } = props;
 
   const dadosObservacoes = useSelector(
     store => store.observacoesUsuario.dadosObservacoes
@@ -40,21 +48,26 @@ const ObservacoesUsuarioMontarDados = props => {
           value={obs.observacao}
         />
         {obs.auditoria ? <>{auditoria(obs)}</> : ''}
+        {mostrarListaNotificacao && <ListaNotificacoes obs={obs} />}
       </div>
     );
   };
 
   const montarValores = (obs, index) => {
-    if (obs && obs.proprietario) {
+    if (obs && (verificaProprietario ? obs.proprietario : true)) {
       return (
-        <div className="mb-5" key={shortid.generate()}>
+        <div className="mb-5 position-relative" key={shortid.generate()}>
           <LinhaObservacaoProprietario
             dados={obs}
             onClickSalvarEdicao={onClickSalvarEdicao}
             onClickExcluir={onClickExcluir}
             index={index}
+            podeAlterar={podeAlterar}
+            podeExcluir={podeExcluir}
+            proprietario={obs.proprietario}
           >
             {obs.auditoria ? auditoria(obs) : ''}
+            {mostrarListaNotificacao && <ListaNotificacoes obs={obs} />}
           </LinhaObservacaoProprietario>
         </div>
       );
@@ -76,11 +89,19 @@ const ObservacoesUsuarioMontarDados = props => {
 ObservacoesUsuarioMontarDados.propTypes = {
   onClickSalvarEdicao: PropTypes.func,
   onClickExcluir: PropTypes.func,
+  verificaProprietario: PropTypes.bool,
+  podeAlterar: PropTypes.bool,
+  podeExcluir: PropTypes.bool,
+  mostrarListaNotificacao: PropTypes.bool,
 };
 
 ObservacoesUsuarioMontarDados.defaultProps = {
   onClickSalvarEdicao: () => {},
   onClickExcluir: () => {},
+  verificaProprietario: false,
+  podeAlterar: true,
+  podeExcluir: true,
+  mostrarListaNotificacao: false,
 };
 
 export default ObservacoesUsuarioMontarDados;

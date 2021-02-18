@@ -11,13 +11,15 @@ namespace SME.SGP.Aplicacao
         {
 
         }
-        public ExcluirPlanejamentoAnualPorTurmaIdEComponenteCurricularIdCommand(long turmaId, long componenteCurricularId)
+        public ExcluirPlanejamentoAnualPorTurmaIdEComponenteCurricularIdCommand(long turmaId, long componenteCurricularId, long[] idsPlanejamentoAnualPeriodoEscolar)
         {
             TurmaId = turmaId;
             ComponenteCurricularId = componenteCurricularId;
+            IdsPlanejamentoAnualPeriodoEscolar = idsPlanejamentoAnualPeriodoEscolar;
         }
         public long TurmaId { get; set; }
         public long ComponenteCurricularId { get; set; }
+        public long[] IdsPlanejamentoAnualPeriodoEscolar { get; set; }
     }
 
 

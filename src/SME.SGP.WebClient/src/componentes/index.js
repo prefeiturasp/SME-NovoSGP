@@ -1,5 +1,5 @@
 export { CampoData, momentSchema } from './campoData/campoData';
-export { Colors, Base, Active, Hover } from './colors';
+export { CoresGraficos, Colors, Base, Active, Hover } from './colors';
 export { default as Alert } from './alert';
 export { default as Auditoria } from './auditoria';
 export { default as BarraNavegacao } from './BarraNavegacao';
@@ -28,3 +28,8 @@ export { default as SelectAutocomplete } from './select-autocomplete';
 export { default as TabComponent } from './tabs/tabs';
 export { default as Tag } from './Tag';
 export { default as TextEditor } from './textEditor';
+export { default as DetalhesAluno } from './Alunos/Detalhes';
+export { default as TabelaRetratil } from './TabelaRetratil';
+export { default as CardCollapse } from './cardCollapse';
+export { default as JoditEditor } from './jodit-editor/joditEditor';
+export { default as InputBusca } from './InputBusca/InputBusca';

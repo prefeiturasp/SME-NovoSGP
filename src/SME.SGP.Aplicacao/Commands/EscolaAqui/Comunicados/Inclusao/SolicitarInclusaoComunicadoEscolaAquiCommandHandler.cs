@@ -8,6 +8,7 @@ using SME.SGP.Dto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -191,6 +192,26 @@ namespace SME.SGP.Aplicacao
             comunicado.SetarTipoComunicado();
         }
 
+        private string IdentificarModalidadePeloGrupo(List<long> grupos)
+        {
+            List<long> modalidades = new List<long>();
+            var gruposModalidade = string.Join(",", grupos.Select(x => x).ToArray());
+            if (gruposModalidade.Contains("2") || gruposModalidade.Contains("3"))
+                modalidades.Add(1);
+
+            if (gruposModalidade.Contains("4"))
+                modalidades.Add(5);
+
+            if (gruposModalidade.Contains("5"))
+                modalidades.Add(6);
+
+            if (gruposModalidade.Contains("6"))
+                modalidades.Add(3);
+            
+            return string.Join(",", modalidades); ;
+        }
+
+
         private void MapearParaEntidadeServico(ComunicadoInserirAeDto comunicadoServico, Comunicado comunicado)
         {
             comunicadoServico.Id = comunicado.Id;
@@ -213,6 +234,7 @@ namespace SME.SGP.Aplicacao
             comunicadoServico.TipoComunicado = comunicado.TipoComunicado;
             comunicadoServico.Semestre = comunicado.Semestre;
             comunicadoServico.SeriesResumidas = comunicado.SeriesResumidas;
+            comunicadoServico.Modalidades = IdentificarModalidadePeloGrupo(comunicado.Grupos.Select(x => x.Id).ToList());
         }
 
         private async Task SalvarComunicadosParaGrupos(long id, SolicitarInclusaoComunicadoEscolaAquiCommand comunicado)

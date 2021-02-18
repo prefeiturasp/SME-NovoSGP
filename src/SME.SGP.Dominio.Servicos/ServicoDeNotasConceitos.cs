@@ -1,4 +1,5 @@
 ﻿
+using MediatR;
 using Microsoft.Extensions.Configuration;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
@@ -33,6 +34,7 @@ namespace SME.SGP.Dominio
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
+        private readonly IMediator mediator;
 
         public Turma turma { get; set; }
 
@@ -75,7 +77,7 @@ namespace SME.SGP.Dominio
             IRepositorioPeriodoFechamento repositorioPeriodoFechamento,
             IServicoNotificacao servicoNotificacao, IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
             IRepositorioAula repositorioAula, IRepositorioTurma repositorioTurma, IRepositorioParametrosSistema repositorioParametrosSistema,
-            IServicoUsuario servicoUsuario, IConfiguration configuration)
+            IServicoUsuario servicoUsuario, IConfiguration configuration, IMediator mediator)
         {
             this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativa));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
@@ -95,6 +97,7 @@ namespace SME.SGP.Dominio
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.hostAplicacao = configuration["UrlFrontEnd"];
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task Salvar(IEnumerable<NotaConceito> notasConceitos, string professorRf, string turmaId, string disciplinaId)
@@ -150,8 +153,8 @@ namespace SME.SGP.Dominio
             var notasConceitos = repositorioNotasConceitos.ObterNotasPorAlunosAtividadesAvaliativas(idsAtividadesAvaliativas, alunosId, disciplinaId);
             var atividadesAvaliativas = repositorioAtividadeAvaliativa.ListarPorIds(idsAtividadesAvaliativas);
 
-            var notasPorAvaliacoes = notasConceitos.GroupBy(x => x.AtividadeAvaliativaID);
-            var percentualAlunosInsuficientes = double.Parse(await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.PercentualAlunosInsuficientes));
+            var notasPorAvaliacoes = notasConceitos.GroupBy(x => x.AtividadeAvaliativaID);            
+            var percentualAlunosInsuficientes = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.PercentualAlunosInsuficientes, DateTime.Today.Year)));
 
             foreach (var notasPorAvaliacao in notasPorAvaliacoes)
             {

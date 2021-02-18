@@ -406,6 +406,18 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.QueryFirstOrDefault<int>(sql, parametros) > 0;
         }
 
+        public bool PossuiAbrangenciaTurmaInfantilAtivaPorLogin(string login)
+        {
+            var sql = @"select count(*) from usuario u
+                        inner join abrangencia a on a.usuario_id = u.id
+                        where u.login = @login and historico = false and turma_id is not null
+                              and a.perfil = ANY(@perfilINFANTIL) ;";
+
+            var parametros = new { login, perfilINFANTIL = new Guid[] { Perfis.PERFIL_PROFESSOR_INFANTIL } };
+
+            return database.Conexao.QueryFirstOrDefault<int>(sql, parametros) > 0;
+        }
+
         public void RemoverAbrangenciasForaEscopo(string login, Guid perfil, TipoAbrangenciaSincronizacao escopo)
         {
             var query = "delete from abrangencia where usuario_id = (select id from usuario where login = @login) and historico = false and perfil = @perfil and #escopo";
@@ -490,7 +502,7 @@ namespace SME.SGP.Dados.Repositorios
             try
             {
                 var query = new StringBuilder();
-                query.AppendLine(@"select t.turma_id as valor, t.nome as descricao from turma t
+                query.AppendLine(@"select distinct t.turma_id as valor, t.nome as descricao from turma t
                             inner join ue ue on ue.id = t.ue_id
                             inner join tipo_ciclo_ano tca on tca.ano = t.ano ");
 
@@ -515,5 +527,19 @@ namespace SME.SGP.Dados.Repositorios
                 throw ex;
             }
         }
+
+        public async Task<bool> ObterUsuarioPossuiAbrangenciaAcessoSondagemTiposEscola(string usuarioRF, Guid usuarioPerfil)
+        {
+            var query = @"select 1 from abrangencia a 
+	                        inner join usuario u 
+		                        on u.id = a.usuario_id 
+	                        inner join ue ue 
+		                        on ue.id = a.ue_id 
+                        where u.rf_codigo  = @usuarioRF
+	                        and a.perfil  = @usuarioPerfil 
+	                        and ue.tipo_escola in (1,3,4,16)";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { usuarioRF, usuarioPerfil });
+        }     
     }
 }

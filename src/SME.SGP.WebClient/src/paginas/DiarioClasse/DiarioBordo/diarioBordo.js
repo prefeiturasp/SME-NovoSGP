@@ -9,17 +9,16 @@ import AlertaPeriodoEncerrado from '~/componentes-sgp/Calendario/componentes/Mes
 import ObservacoesUsuario from '~/componentes-sgp/ObservacoesUsuario/observacoesUsuario';
 import ServicoObservacoesUsuario from '~/componentes-sgp/ObservacoesUsuario/ServicoObservacoesUsuario';
 import Alert from '~/componentes/alert';
-import CampoTexto from '~/componentes/campoTexto';
 import Card from '~/componentes/card';
-import Editor from '~/componentes/editor/editor';
+import JoditEditor from '~/componentes/jodit-editor/joditEditor';
 import ModalMultiLinhas from '~/componentes/modalMultiLinhas';
 import SelectComponent from '~/componentes/select';
-import { URL_HOME } from '~/constantes/url';
 import RotasDto from '~/dtos/rotasDto';
 import {
   limparDadosObservacoesUsuario,
   setDadosObservacoesUsuario,
 } from '~/redux/modulos/observacoesUsuario/actions';
+import { setBreadcrumbManual } from '~/servicos';
 import { confirmar, erros, sucesso } from '~/servicos/alertas';
 import history from '~/servicos/history';
 import ServicoDiarioBordo from '~/servicos/Paginas/DiarioClasse/ServicoDiarioBordo';
@@ -30,7 +29,7 @@ import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 import BotoesAcoesDiarioBordo from './botoesAcoesDiarioBordo';
 import ModalSelecionarAula from './modalSelecionarAula';
 
-const DiarioBordo = () => {
+const DiarioBordo = ({ match }) => {
   const usuario = useSelector(state => state.usuario);
   const { turmaSelecionada } = usuario;
   const permissoesTela = usuario.permissoes[RotasDto.DIARIO_BORDO];
@@ -50,6 +49,7 @@ const DiarioBordo = () => {
   ] = useState();
   const [dataSelecionada, setDataSelecionada] = useState();
   const [carregandoGeral, setCarregandoGeral] = useState(false);
+  const [carregandoData, setCarregandoData] = useState(false);
   const [modoEdicao, setModoEdicao] = useState(false);
   const [listaDatasAulas, setListaDatasAulas] = useState([]);
   const [diasParaHabilitar, setDiasParaHabilitar] = useState();
@@ -66,6 +66,7 @@ const DiarioBordo = () => {
   );
   const [desabilitarCampos, setDesabilitarCampos] = useState(false);
   const [somenteConsulta, setSomenteConsulta] = useState(false);
+  const [diarioBordoIdSelecionado, setDiarioBordoIdSelecionado] = useState();
   const dispatch = useDispatch();
 
   const inicial = {
@@ -176,22 +177,41 @@ const DiarioBordo = () => {
     }
   }, [turmaId, obterComponentesCurriculares, turmaInfantil]);
 
+  useEffect(() => {
+    if (match?.params?.aulaId)
+      setBreadcrumbManual(match?.url, 'Alterar', RotasDto.DIARIO_BORDO);
+  }, [match]);
+
   const obterDatasDeAulasDisponiveis = useCallback(async () => {
     setCarregandoGeral(true);
+    setCarregandoData(true);
     const datasDeAulas = await ServicoFrequencia.obterDatasDeAulasPorCalendarioTurmaEComponenteCurricular(
       turmaId,
       componenteCurricularSelecionado
-    ).catch(e => {
-      setCarregandoGeral(false);
-      erros(e);
-    });
+    )
+      .catch(e => {
+        setCarregandoGeral(false);
+        erros(e);
+      })
+      .finally(() => {
+        setCarregandoGeral(false);
+        setCarregandoData(false);
+      });
 
-    setCarregandoGeral(false);
     if (datasDeAulas && datasDeAulas.data && datasDeAulas.data.length) {
       setListaDatasAulas(datasDeAulas.data);
-      const habilitar = datasDeAulas.data.map(item =>
-        window.moment(item.data).format('YYYY-MM-DD')
-      );
+      const habilitar = datasDeAulas.data.map(item => {
+        if (match?.params?.aulaId && !dataSelecionada && item.aulas) {
+          const dataEncontrada = item.aulas.find(
+            a => a.aulaId.toString() === match?.params?.aulaId.toString()
+          );
+          if (dataEncontrada) {
+            setDataSelecionada(window.moment(item.data));
+            obterDiarioBordo(match?.params?.aulaId);
+          }
+        }
+        return window.moment(item.data).format('YYYY-MM-DD');
+      });
       setDiasParaHabilitar(habilitar);
     } else {
       setListaDatasAulas();
@@ -221,6 +241,24 @@ const DiarioBordo = () => {
     );
   };
 
+  const obterUsuarioPorObservacao = dadosObservacoes => {
+    const promises = dadosObservacoes.map(async observacao => {
+      const retorno = await ServicoDiarioBordo.obterNofiticarUsuarios({
+        turmaId: turmaSelecionada?.id,
+        observacaoId: observacao.id,
+      }).catch(e => erros(e));
+
+      if (retorno?.data) {
+        return {
+          ...observacao,
+          usuariosNotificacao: retorno.data,
+        };
+      }
+      return observacao;
+    });
+    return Promise.all(promises);
+  };
+
   const obterDadosObservacoes = useCallback(
     async diarioBordoId => {
       dispatch(limparDadosObservacoesUsuario());
@@ -233,7 +271,8 @@ const DiarioBordo = () => {
       });
 
       if (retorno && retorno.data) {
-        dispatch(setDadosObservacoesUsuario([...retorno.data]));
+        const dadosObservacoes = await obterUsuarioPorObservacao(retorno.data);
+        dispatch(setDadosObservacoesUsuario([...dadosObservacoes]));
       } else {
         dispatch(setDadosObservacoesUsuario([]));
       }
@@ -259,17 +298,24 @@ const DiarioBordo = () => {
       };
       setTemPeriodoAberto(retorno.data.temPeriodoAberto);
       setValoresIniciais(valInicial);
-      if (retorno.data.auditoria && retorno.data.auditoria.id) {
+      if (retorno?.data?.auditoria?.id) {
+        setDiarioBordoIdSelecionado(retorno.data.auditoria.id);
         setAuditoria(retorno.data.auditoria);
         obterDadosObservacoes(retorno.data.auditoria.id);
       }
     }
   };
-
   const salvarDiarioDeBordo = async (valores, form, clicouBtnSalvar) => {
     setCarregandoGeral(true);
+    let aulaId = aulaSelecionada?.aulaId;
+    let voltarParaListagem = false;
+    if (!aulaId && match?.params?.aulaId) {
+      aulaId = match?.params?.aulaId;
+      voltarParaListagem = true;
+    }
+
     const params = {
-      aulaId: aulaSelecionada.aulaId,
+      aulaId,
       planejamento: valores.planejamento,
       reflexoesReplanejamento: valores.reflexoesReplanejamento,
     };
@@ -284,6 +330,9 @@ const DiarioBordo = () => {
       if (clicouBtnSalvar) {
         setModoEdicao(false);
         resetarTela();
+      }
+      if (voltarParaListagem) {
+        history.push(RotasDto.DIARIO_BORDO);
       }
       salvouComSucesso = true;
     }
@@ -320,7 +369,6 @@ const DiarioBordo = () => {
             window.moment(data).format('DD/MM/YYYY')
           );
         });
-
         return aulaDataSelecionada;
       }
       return null;
@@ -380,7 +428,7 @@ const DiarioBordo = () => {
   };
 
   const onChangeCampos = () => {
-    if (!modoEdicao && valoresIniciais && valoresIniciais.aulaId) {
+    if (!modoEdicao) {
       setModoEdicao(true);
     }
   };
@@ -426,8 +474,9 @@ const DiarioBordo = () => {
     return ServicoDiarioBordo.salvarEditarObservacao(diarioBordoId, obs)
       .then(resultado => {
         if (resultado && resultado.status === 200) {
-          const msg = `Observação ${obs.id ? 'alterada' : 'inserida'
-            } com sucesso.`;
+          const msg = `Observação ${
+            obs.id ? 'alterada' : 'inserida'
+          } com sucesso.`;
           sucesso(msg);
         }
         setCarregandoGeral(false);
@@ -473,7 +522,7 @@ const DiarioBordo = () => {
     }
 
     if (validouSalvarDiario && validouSalvarObservacao) {
-      history.push(URL_HOME);
+      history.push(RotasDto.DIARIO_BORDO);
     }
   };
 
@@ -529,8 +578,8 @@ const DiarioBordo = () => {
           className="mb-2"
         />
       ) : (
-          ''
-        )}
+        ''
+      )}
       {turmaSelecionada.turma ? <AlertaPermiteSomenteTurmaInfantil /> : ''}
       <AlertaPeriodoEncerrado exibir={!temPeriodoAberto && !somenteConsulta} />
       <ModalMultiLinhas
@@ -547,7 +596,7 @@ const DiarioBordo = () => {
         onClickFecharModal={onClickFecharModal}
         onClickSelecionarAula={onClickSelecionarAula}
       />
-      <Cabecalho pagina="Diário de bordo" />
+      <Cabecalho pagina="Diário de bordo (Intencionalidade docente)" />
       <Card>
         <div className="col-md-12 mb-3">
           <Formik
@@ -598,96 +647,100 @@ const DiarioBordo = () => {
                     />
                   </div>
                   <div className="col-sm-12 col-md-4 col-lg-3 col-xl-3 mb-3">
-                    <CampoData
-                      valor={dataSelecionada}
-                      onChange={data => onChangeData(data, form)}
-                      placeholder="DD/MM/AAAA"
-                      formatoData="DD/MM/YYYY"
-                      desabilitado={
-                        !turmaInfantil ||
-                        !listaComponenteCurriculare ||
-                        !componenteCurricularSelecionado ||
-                        !diasParaHabilitar
-                      }
-                      diasParaHabilitar={diasParaHabilitar}
-                    />
+                    <Loader loading={carregandoData}>
+                      <CampoData
+                        valor={dataSelecionada}
+                        onChange={data => onChangeData(data, form)}
+                        placeholder="DD/MM/AAAA"
+                        formatoData="DD/MM/YYYY"
+                        desabilitado={
+                          !turmaInfantil ||
+                          !listaComponenteCurriculare ||
+                          !componenteCurricularSelecionado ||
+                          !diasParaHabilitar
+                        }
+                        diasParaHabilitar={diasParaHabilitar}
+                      />
+                    </Loader>
                   </div>
                 </div>
                 <div className="row">
                   {turmaInfantil &&
-                    componenteCurricularSelecionado &&
-                    dataSelecionada &&
-                    aulaSelecionada ? (
-                      <>
-                        <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
-                          <PainelCollapse defaultActiveKey="1">
-                            <PainelCollapse.Painel
-                              temBorda
-                              header="Planejamento"
-                              key="1"
-                            >
-                              <Editor
+                  componenteCurricularSelecionado &&
+                  dataSelecionada ? (
+                    <>
+                      <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
+                        <PainelCollapse defaultActiveKey="1">
+                          <PainelCollapse.Painel
+                            temBorda
+                            header="Planejamento"
+                            key="1"
+                          >
+                            <JoditEditor
+                              form={form}
+                              value={form.values.planejamento}
+                              name="planejamento"
+                              id="editor-planejamento"
+                              onChange={v => {
+                                if (valoresIniciais.planejamento !== v) {
+                                  onChangeCampos();
+                                }
+                              }}
+                              desabilitar={desabilitarCampos}
+                            />
+                          </PainelCollapse.Painel>
+                        </PainelCollapse>
+                      </div>
+                      <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
+                        <PainelCollapse defaultActiveKey="2">
+                          <PainelCollapse.Painel
+                            temBorda
+                            header="Reflexões e Replanejamentos"
+                            key="2"
+                          >
+                            <JoditEditor
+                              form={form}
+                              value={form.values.reflexoesReplanejamento}
+                              name="reflexoesReplanejamento"
+                              id="editor-reflexoes-replanejamentos"
+                              onChange={v => {
+                                if (
+                                  valoresIniciais.reflexoesReplanejamento !== v
+                                ) {
+                                  onChangeCampos();
+                                }
+                              }}
+                              desabilitar={desabilitarCampos}
+                            />
+                          </PainelCollapse.Painel>
+                        </PainelCollapse>
+                      </div>
+                      <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
+                        <PainelCollapse>
+                          <PainelCollapse.Painel temBorda header="Devolutivas">
+                            {form && form.values && form.values.devolutivas ? (
+                              <JoditEditor
+                                label="Somente leitura"
                                 form={form}
-                                name="planejamento"
-                                id="editor-planejamento"
-                                onChange={v => {
-                                  if (valoresIniciais.planejamento !== v) {
-                                    onChangeCampos();
-                                  }
-                                }}
-                                desabilitar={desabilitarCampos}
+                                value={form.values.reflexoesReplanejamento}
+                                name="devolutivas"
+                                id="editor-devolutivas"
+                                removerToolbar
+                                desabilitar
                               />
-                            </PainelCollapse.Painel>
-                          </PainelCollapse>
-                        </div>
-                        <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
-                          <PainelCollapse defaultActiveKey="2">
-                            <PainelCollapse.Painel
-                              temBorda
-                              header="Reflexões e Replanejamentos"
-                              key="2"
-                            >
-                              <Editor
-                                form={form}
-                                name="reflexoesReplanejamento"
-                                id="editor-reflexoes-replanejamentos"
-                                onChange={v => {
-                                  if (
-                                    valoresIniciais.reflexoesReplanejamento !== v
-                                  ) {
-                                    onChangeCampos();
-                                  }
-                                }}
-                                desabilitar={desabilitarCampos}
-                              />
-                            </PainelCollapse.Painel>
-                          </PainelCollapse>
-                        </div>
-                        <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
-                          <PainelCollapse>
-                            <PainelCollapse.Painel temBorda header="Devolutivas">
-                              {form && form.values && form.values.devolutivas ? (
-                                <Editor
-                                  label="Somente leitura"
-                                  form={form}
-                                  name="devolutivas"
-                                  id="editor-devolutivas"
-                                  removerToolbar
-                                  desabilitar
-                                />
-                              ) : (
-                                  <div className="text-center p-2">
-                                    Não há devolutiva registrada para este diário de
-                                    bordo
-                                  </div>
-                                )}
-                            </PainelCollapse.Painel>
-                          </PainelCollapse>
-                        </div>
-                      </>
-                    ) : (
-                      ''
-                    )}
+                            ) : (
+                              <div className="text-center p-2">
+                                Não há devolutiva registrada para este diário de
+                                bordo
+                              </div>
+                            )}
+                          </PainelCollapse.Painel>
+                        </PainelCollapse>
+                      </div>
+                    </>
+                  ) : (
+                    ''
+                  )}
                   {auditoria ? (
                     <Auditoria
                       criadoEm={auditoria.criadoEm}
@@ -699,8 +752,8 @@ const DiarioBordo = () => {
                       ignorarMarginTop
                     />
                   ) : (
-                      ''
-                    )}
+                    ''
+                  )}
                 </div>
               </Form>
             )}
@@ -708,13 +761,15 @@ const DiarioBordo = () => {
         </div>
         {auditoria && auditoria.id ? (
           <ObservacoesUsuario
+            mostrarListaNotificacao
             salvarObservacao={obs => salvarEditarObservacao(obs)}
             editarObservacao={obs => salvarEditarObservacao(obs)}
             excluirObservacao={obs => excluirObservacao(obs)}
+            permissoes={permissoesTela}
           />
         ) : (
-            ''
-          )}
+          ''
+        )}
       </Card>
     </Loader>
   );

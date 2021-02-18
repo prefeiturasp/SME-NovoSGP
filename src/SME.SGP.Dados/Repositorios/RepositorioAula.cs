@@ -5,6 +5,7 @@ using NpgsqlTypes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -824,6 +825,24 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<Aula>(query.ToString(), new { tipoCalendarioId, turmaId });
         }
 
+        public async Task<IEnumerable<AulaReduzidaDto>> ObterAulasReduzidasPorTipoCalendario(long tipoCalendarioId)
+        {
+            var query = @"select
+   		                       a.id as aulaId,
+                               a.data_aula as Data,
+                               a.quantidade as Quantidade,
+                               a.criado_por as Professor,
+                               a.criado_rf as ProfessorRf,
+                               a.turma_id as TurmaId,
+                               a.disciplina_id as DisciplinaId,
+                               ue.ue_id as CodigoUe
+                          from aula a 
+                        inner join turma t on t.turma_id = a.turma_id
+                        inner join ue on ue.id = t.ue_id
+                         where not excluido and tipo_calendario_id = @tipoCalendarioId";
+            return await database.Conexao.QueryAsync<AulaReduzidaDto>(query.ToString(), new { tipoCalendarioId });
+        }
+
         public void SalvarVarias(IEnumerable<Aula> aulas)
         {
             var sql = @"copy aula ( 
@@ -875,6 +894,38 @@ namespace SME.SGP.Dados.Repositorios
                                 where a.disciplina_id  = @ccid and turma_id = @turmaid and data_aula::date = @data";
 
             return (await database.Conexao.QueryAsync<Aula>(query, new { ccid = componenteCurricularId, turmaid = turmaId, data = data.Date })).FirstOrDefault();
+        }
+
+        public async Task<IEnumerable<AulaReduzidaDto>> ObterQuantidadeAulasReduzido(long turmaId, string componenteCurricularId, long tipoCalendarioId, int bimestre, bool professorCJ)
+        {
+            var query = @"select
+	                        a.data_aula as Data,
+	                        sum(a.quantidade) as Quantidade,
+	                        a.criado_por as Professor,
+	                        a.criado_rf as ProfessorRf
+                        from
+	                        aula a
+                        inner join turma t on
+	                        a.turma_id = t.turma_id
+                        inner join periodo_escolar pe on
+	                        a.data_aula between pe.periodo_inicio and pe.periodo_fim
+                        where
+	                        disciplina_id = @componenteCurricularId
+	                        and t.id = @turmaId
+	                        and pe.bimestre = @bimestre
+	                        and not a.excluido 
+                            and pe.tipo_calendario_id = @tipoCalendarioId
+                            and a.aula_cj = @professorCJ
+                        group by
+	                        a.data_aula,
+	                        a.criado_por,
+                            a.criado_por,
+                            a.criado_rf
+                        order by
+	                        data_aula";
+            
+                return (await database.Conexao.QueryAsync<AulaReduzidaDto>(query, new { turmaId, componenteCurricularId, tipoCalendarioId, bimestre, professorCJ }));
+            
         }
     }
 }

@@ -6,17 +6,36 @@ import { ContainerObservacoesUsuario } from './observacoesUsuario.css';
 import ObservacoesUsuarioMontarDados from './observacoesUsuarioMontarDados';
 
 const ObservacoesUsuario = props => {
-  const { salvarObservacao, editarObservacao, excluirObservacao } = props;
+  const {
+    salvarObservacao,
+    editarObservacao,
+    excluirObservacao,
+    esconderLabel,
+    esconderCaixaExterna,
+    verificaProprietario,
+    permissoes,
+    mostrarListaNotificacao,
+  } = props;
+
+  const { podeIncluir, podeAlterar, podeExcluir } = permissoes;
 
   return (
     <div className="col-sm-12 mb-2 mt-4">
-      <Label text="Observações" />
-      <ContainerObservacoesUsuario>
-        <div style={{ margin: '15px' }}>
-          <CampoObservacao salvarObservacao={salvarObservacao} />
+      {!esconderLabel && <Label text="Observações" />}
+      <ContainerObservacoesUsuario esconderCaixaExterna={esconderCaixaExterna}>
+        <div style={{ margin: `${esconderCaixaExterna ? 0 : 15}px` }}>
+          <CampoObservacao
+            salvarObservacao={salvarObservacao}
+            esconderCaixaExterna={esconderCaixaExterna}
+            podeIncluir={podeIncluir}
+          />
           <ObservacoesUsuarioMontarDados
             onClickSalvarEdicao={editarObservacao}
             onClickExcluir={excluirObservacao}
+            verificaProprietario={verificaProprietario}
+            podeAlterar={podeAlterar}
+            podeExcluir={podeExcluir}
+            mostrarListaNotificacao={mostrarListaNotificacao}
           />
         </div>
       </ContainerObservacoesUsuario>
@@ -28,12 +47,22 @@ ObservacoesUsuario.propTypes = {
   editarObservacao: PropTypes.func,
   salvarObservacao: PropTypes.func,
   excluirObservacao: PropTypes.func,
+  esconderLabel: PropTypes.bool,
+  esconderCaixaExterna: PropTypes.bool,
+  verificaProprietario: PropTypes.bool,
+  permissoes: PropTypes.objectOf(PropTypes.object),
+  mostrarListaNotificacao: PropTypes.bool,
 };
 
 ObservacoesUsuario.defaultProps = {
   editarObservacao: () => {},
   salvarObservacao: () => {},
   excluirObservacao: () => {},
+  esconderLabel: false,
+  esconderCaixaExterna: false,
+  verificaProprietario: false,
+  permissoes: { podeAlterar: true, podeIncluir: true, podeExcluir: true },
+  mostrarListaNotificacao: false,
 };
 
 export default ObservacoesUsuario;

@@ -8,5 +8,6 @@ namespace SME.SGP.Infra.Dtos
     {
         public long Id { get; set; }
         public string Nome { get; set; }
+        public string TipoEvento { get; set; }
     }
 }

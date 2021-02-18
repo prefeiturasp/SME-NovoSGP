@@ -25,6 +25,7 @@ const inicial = {
   sessaoExpirou: false,
   ehProfessorCjInfantil: false,
   ehProfessorInfantil: false,
+  ehPerfilProfessor: false,
 };
 
 export default function usuario(state = inicial, action) {
@@ -54,6 +55,7 @@ export default function usuario(state = inicial, action) {
         draft.sessaoExpirou = false;
         draft.ehProfessorInfantil = action.payload.ehProfessorInfantil;
         draft.ehProfessorCjInfantil = action.payload.ehProfessorCjInfantil;
+        draft.ehPerfilProfessor = action.payload.ehPerfilProfessor;
         break;
       case '@usuario/salvarLoginRevalidado':
         draft.token = action.payload.token;
@@ -98,6 +100,12 @@ export default function usuario(state = inicial, action) {
         break;
       case '@usuario/setPermissoes':
         draft.permissoes = action.payload;
+        break;
+      case '@usuario/setModificarSenha':
+        draft.modificarSenha = action.payload;
+        break;
+      case '@usuario/setLogado':
+        draft.logado = action.payload;
         break;
       default:
         break;

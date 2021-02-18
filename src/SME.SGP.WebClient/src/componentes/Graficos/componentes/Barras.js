@@ -11,6 +11,14 @@ function Barras({
   legendaBaixo,
   legendaEsquerda,
   porcentagem,
+  groupMode,
+  legendsTranslateX,
+  showAxisBottom,
+  customProps,
+  removeLegends,
+  customMargins,
+  labelSkipWidth,
+  labelSkipHeight,
 }) {
   const format = v => `${Math.round(v, 2)}%`;
 
@@ -19,22 +27,26 @@ function Barras({
       data={dados}
       keys={chaves}
       indexBy={indice}
-      margin={{ top: 50, right: 130, bottom: 50, left: 60 }}
+      margin={customMargins || { top: 50, right: 130, bottom: 50, left: 60 }}
       padding={0.3}
       innerPadding={1}
-      groupMode="grouped"
+      groupMode={groupMode}
       color={{ scheme: 'set3' }}
       borderColor={{ from: 'color', modifiers: [['darker', 1.6]] }}
       axisTop={null}
       axisRight={null}
-      axisBottom={{
-        tickSize: 5,
-        tickPadding: 5,
-        tickRotation: 0,
-        legend: legendaBaixo,
-        legendPosition: 'middle',
-        legendOffset: 32,
-      }}
+      axisBottom={
+        showAxisBottom
+          ? {
+              tickSize: 5,
+              tickPadding: 5,
+              tickRotation: 0,
+              legend: legendaBaixo,
+              legendPosition: 'middle',
+              legendOffset: 32,
+            }
+          : null
+      }
       axisLeft={{
         tickSize: 5,
         tickPadding: 5,
@@ -43,9 +55,9 @@ function Barras({
         legendPosition: 'middle',
         legendOffset: -40,
       }}
-      labelSkipWidth={12}
-      labelSkipHeight={12}
-      labelTextColor={{ from: 'color', modifiers: [['darker', 1.6]] }}
+      labelSkipWidth={labelSkipWidth}
+      labelSkipHeight={labelSkipHeight}
+      labelTextColor={{ from: 'color', modifiers: [['darker', 3]] }}
       legends={[
         {
           format: porcentagem ? format : null,
@@ -53,19 +65,19 @@ function Barras({
           anchor: 'bottom-right',
           direction: 'column',
           justify: false,
-          translateX: 120,
+          translateX: legendsTranslateX,
           translateY: 0,
           itemsSpacing: 2,
           itemWidth: 100,
           itemHeight: 20,
           itemDirection: 'left-to-right',
-          itemOpacity: 0.85,
+          itemOpacity: removeLegends ? 0 : 0.85,
           symbolSize: 20,
           effects: [
             {
               on: 'hover',
               style: {
-                itemOpacity: 1,
+                itemOpacity: removeLegends ? 0 : 1,
               },
             },
           ],
@@ -74,8 +86,9 @@ function Barras({
       animate
       motionStiffness={90}
       motionDamping={15}
-      labelFormat={porcentagem && format}
-      tooltipFormat={porcentagem && format}
+      labelFormat={porcentagem ? format : ''}
+      tooltipFormat={porcentagem ? format : ''}
+      {...customProps}
     />
   );
 }
@@ -87,6 +100,14 @@ Barras.propTypes = {
   legendaBaixo: t.string,
   legendaEsquerda: t.string,
   porcentagem: t.bool,
+  groupMode: t.string,
+  legendsTranslateX: t.number,
+  showAxisBottom: t.bool,
+  customProps: t.oneOfType([t.object]),
+  removeLegends: t.bool,
+  customMargins: t.oneOfType([t.any]),
+  labelSkipWidth: t.number,
+  labelSkipHeight: t.number,
 };
 
 Barras.defaultProps = {
@@ -96,6 +117,14 @@ Barras.defaultProps = {
   legendaBaixo: '',
   legendaEsquerda: '',
   porcentagem: false,
+  groupMode: 'grouped',
+  legendsTranslateX: 120,
+  showAxisBottom: true,
+  customProps: {},
+  removeLegends: false,
+  customMargins: null,
+  labelSkipWidth: 12,
+  labelSkipHeight: 12,
 };
 
 export default Barras;

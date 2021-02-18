@@ -215,5 +215,12 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<TipoCalendarioBuscaDto>(query.ToString());
         }
+
+        public async Task<string> ObterNomePorId(long tipoCalendarioId)
+        {
+            var query = @"select nome from tipo_calendario where id = @tipoCalendarioId";
+
+            return await database.Conexao.QueryFirstAsync<string>(query, new { tipoCalendarioId });
+        }
     }
 }

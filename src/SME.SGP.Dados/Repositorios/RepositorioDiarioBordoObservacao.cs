@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dominio;
+﻿using Dapper;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
@@ -13,9 +14,10 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<ListarObservacaoDiarioBordoDto>> ListarPorDiarioBordoAsync(long diarioBordoId, long usuarioLogadoId)
         {
             var sql = @"select
-							id,
+							dbo.id,
 							observacao,
 							(usuario_id = @usuarioLogadoId) as Proprietario,
+							count(dbon.*) as QtdUsuariosNotificados,
 							criado_em as CriadoEm,
 							criado_por as CriadoPor,
 							criado_rf as CriadoRf,
@@ -23,13 +25,44 @@ namespace SME.SGP.Dados.Repositorios
 							alterado_por as AlteradoPor,
 							alterado_rf as AlteradoRf
 						from
-							diario_bordo_observacao
+							diario_bordo_observacao dbo
+						left join diario_bordo_observacao_notificacao dbon on dbo.id = dbon.observacao_id
 						where
 							diario_bordo_id = @diarioBordoId
 							and not excluido 
+						group by dbo.id,
+							observacao,
+							usuario_id,
+							criado_em,
+							criado_por,
+							criado_rf,
+							alterado_em,
+							alterado_por,
+							alterado_rf
                         order by criado_em desc";
 
             return await database.Conexao.QueryAsync<ListarObservacaoDiarioBordoDto>(sql, new { diarioBordoId, usuarioLogadoId });
+        }
+
+        public async Task<Turma> ObterTurmaDiarioBordoAulaPorObservacaoId(long observacaoId)
+        {
+			const string sql = @"select
+									t.*
+								from
+									diario_bordo_observacao dbob
+								inner join
+									diario_bordo db
+									on dbob.diario_bordo_id = db.id
+								inner join
+									aula a
+									on db.aula_id = a.id
+								inner join
+									turma t
+									on a.turma_id = t.turma_id
+								where
+									dbob.id = @observacaoId";
+
+			return await database.Conexao.QuerySingleOrDefaultAsync<Turma>(sql, new { observacaoId });
         }
     }
 }

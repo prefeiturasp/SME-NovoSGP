@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import CardCollapse from '~/componentes/cardCollapse';
-import Editor from '~/componentes/editor/editor';
+import JoditEditor from '~/componentes/jodit-editor/joditEditor';
 
 const RecomendacaoAlunoFamilia = props => {
   const {
@@ -42,25 +42,27 @@ const RecomendacaoAlunoFamilia = props => {
         {exibirCardRecomendacao ? (
           <div className="row">
             <div className="col-sm-12 col-md-12 col-lg-6 col-xl-6">
-              <Editor
+              <JoditEditor
                 label="Recomendações ao aluno"
                 id="recomendacao-aluno"
-                inicial={dadosIniciais.recomendacaoAluno}
+                value={dadosIniciais.recomendacaoAluno}
                 onChange={onChangeAluno}
                 desabilitar={
                   alunoDesabilitado || desabilitarCampos || !dentroPeriodo
                 }
+                height="300px"
               />
             </div>
             <div className="col-sm-12 col-md-12 col-lg-6 col-xl-6">
-              <Editor
+              <JoditEditor
                 label="Recomendações a família "
                 id="recomendacao-familia"
-                inicial={dadosIniciais.recomendacaoFamilia}
+                value={dadosIniciais.recomendacaoFamilia}
                 onChange={onChangeFamilia}
                 desabilitar={
                   alunoDesabilitado || desabilitarCampos || !dentroPeriodo
                 }
+                height="300px"
               />
             </div>
           </div>

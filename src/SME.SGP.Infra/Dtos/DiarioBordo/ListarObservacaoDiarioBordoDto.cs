@@ -15,6 +15,8 @@ namespace SME.SGP.Infra
         public long Id { get; set; }
         public bool Proprietario { get; set; }
         public string Observacao { get; set; }
+
+        public int QtdUsuariosNotificados { get; set; }
         public AuditoriaDto Auditoria => new AuditoriaDto
         {
             CriadoEm = CriadoEm,

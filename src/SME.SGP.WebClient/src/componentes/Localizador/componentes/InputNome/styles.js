@@ -16,4 +16,7 @@ export const InputNomeEstilo = styled.div`
       color: ${Base.CinzaMenu};
     }
   }
+  .ant-select-show-search {
+    width: 100%;
+  }
 `;

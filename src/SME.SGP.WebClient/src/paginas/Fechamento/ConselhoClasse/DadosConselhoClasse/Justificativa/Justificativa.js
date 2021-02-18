@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import * as Yup from 'yup';
 import { Auditoria, Colors, Loader } from '~/componentes';
 import Button from '~/componentes/button';
-import Editor from '~/componentes/editor/editor';
+import JoditEditor from '~/componentes/jodit-editor/joditEditor';
 import {
   setNotaConceitoPosConselhoAtual,
   setSalvouJustificativa,
@@ -112,8 +112,9 @@ const Justificativa = props => {
                 {form => (
                   <Form>
                     <fieldset className="mt-3">
-                      <Editor
+                      <JoditEditor
                         form={form}
+                        value={form.values.justificativa}
                         name="justificativa"
                         id="justificativa"
                         desabilitar={

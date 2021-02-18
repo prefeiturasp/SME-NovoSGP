@@ -6,6 +6,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -217,6 +218,9 @@ namespace SME.SGP.Dados.Repositorios
 	                        u.dre_id = d.id
                         where
 	                        turma_id = @turmaCodigo";
+
+            contexto.AbrirConexao();
+
             return (await contexto.QueryAsync<Turma, Ue, Dre, Turma>(query, (turma, ue, dre) =>
              {
                  ue.AdicionarDre(dre);
@@ -359,7 +363,7 @@ namespace SME.SGP.Dados.Repositorios
                                       EnsinoEspecial = c.EnsinoEspecial,
                                       EtapaEJA = c.EtapaEJA,
                                       DataInicio = c.DataInicio,
-                                      SerieEnsino = c.SerieEnsino,                                      
+                                      SerieEnsino = c.SerieEnsino,
                                       DataFim = c.DataFim,
                                       Extinta = c.Extinta
                                   };
@@ -380,7 +384,7 @@ namespace SME.SGP.Dados.Repositorios
                         ensinoEspecial = item.EnsinoEspecial,
                         etapaEja = item.EtapaEJA,
                         dataInicio = item.DataInicio,
-                        serieEnsino = item.SerieEnsino,                        
+                        serieEnsino = item.SerieEnsino,
                         dataFim = item.DataFim
                     });
 
@@ -501,5 +505,93 @@ namespace SME.SGP.Dados.Repositorios
 	                  pe.bimestre = 1 and                      
 	                  t.dt_fim_eol is not null and 
                       t.dt_fim_eol {(definirTurmasComoHistorica ? ">=" : "<")} pe.periodo_inicio"; //Turmas extintas após o 1º bimestre do ano letivo considerado serão marcadas como histórica
+
+        public async Task<IEnumerable<Turma>> ObterTurmasPorAnoLetivoModalidade(int anoLetivo, Modalidade[] modalidades)
+        {
+
+            var query = new StringBuilder(@"select distinct * from turma t
+                                            where  t.ano_letivo = @anoLetivo and t.modalidade_codigo = ANY(@modalidades)");
+
+            return await contexto.Conexao.QueryAsync<Turma>(query.ToString(), new { anoLetivo, modalidades = modalidades.Cast<int>().ToArray() });
+
+        }
+
+        public async Task<IEnumerable<Turma>> ObterTurmasCompletasPorAnoLetivoModalidade(int anoLetivo, Modalidade[] modalidades)
+        {
+            var query = @"select turma.*, ue.*, dre.* 
+                            from turma
+                        inner join ue on ue.id = turma.ue_id
+                        inner join dre on dre.id = ue.dre_id
+                        where 
+                            turma.ano_letivo = @anoLetivo
+                            and turma.modalidade_codigo = any(@modalidades) ";
+
+            return await contexto.QueryAsync<Turma, Ue, Dre, Turma>(query, (turma, ue, dre) =>
+            {
+                ue.AdicionarDre(dre);
+                turma.AdicionarUe(ue);
+                return turma;
+            }, new { modalidades = modalidades.Cast<int>().ToArray(), anoLetivo });
+
+        }
+
+        public async Task<IEnumerable<Turma>> ObterTurmasComFechamentoOuConselhoNaoFinalizados(long ueId, int anoLetivo, long? periodoEscolarId, int[] modalidades, int semestre)
+        {
+            var joinFechamentoTurma = periodoEscolarId.HasValue ?
+                "left join fechamento_turma ft on ft.turma_id = t.id and ft.periodo_escolar_id = @periodoEscolarId" :
+                "left join fechamento_turma ft on ft.turma_id = t.id and ft.periodo_escolar_id is null";
+
+            var query = $@"select distinct t.*
+                          from turma t
+                        inner join ue on ue.id = t.ue_id
+                        inner join dre on dre.id = ue.dre_id
+                         {joinFechamentoTurma}
+                         left join fechamento_turma_disciplina d on d.fechamento_turma_id = ft.id
+                         left join conselho_classe cc on cc.fechamento_turma_id = ft.id
+                         where t.ue_id = @ueId
+                           and t.ano_letivo  = @anoLetivo
+                           and t.modalidade_codigo = ANY(@modalidades)
+                           and t.ano between '1' and '9'
+                           and (t.semestre = 0 or t.semestre = @semestre)
+                           and (d.situacao in (1,2) 
+   	                         or d.id is null 
+   	                         or cc.id is null 
+   	                         or cc.situacao = 1)";
+
+            return await contexto.Conexao.QueryAsync<Turma>(query, new { ueId, anoLetivo, periodoEscolarId, modalidades, semestre });
+        }
+
+        public async Task<IEnumerable<Turma>> ObterTurmasComInicioFechamento(long ueId, long periodoEscolarId, int[] modalidades)
+        {
+var query = @"select t.*
+                          from turma t
+                        inner join ue on ue.id = t.ue_id
+                        inner join dre on dre.id = ue.dre_id
+                        left join fechamento_turma ft on ft.turma_id = t.id and ft.periodo_escolar_id = @periodoEscolarId
+                        left join fechamento_turma_disciplina d on d.fechamento_turma_id = ft.id
+                        where t.ue_id = @ueId
+                           and t.modalidade_codigo = ANY(@modalidades)";
+
+            return await contexto.Conexao.QueryAsync<Turma>(query, new { ueId, periodoEscolarId, modalidades });
+
+        }
+
+        public async Task<IEnumerable<Turma>> ObterTurmasPorUeModalidadesAno(long ueId, int[] modalidades, int ano)
+        {
+            var query = @"select turma.*, ue.*, dre.* 
+                         from turma
+                        inner join ue on ue.id = turma.ue_id
+                        inner join dre on dre.id = ue.dre_id
+                        where turma.ue_id = @ueId
+                          and turma.ano_letivo = @ano
+                          and turma.modalidade_codigo = any(@modalidades) ";
+
+            return await contexto.QueryAsync<Turma, Ue, Dre, Turma>(query, (turma, ue, dre) =>
+            {
+                ue.AdicionarDre(dre);
+                turma.AdicionarUe(ue);
+                return turma;
+            } , new { ueId, modalidades, ano });
+        }
     }
 }

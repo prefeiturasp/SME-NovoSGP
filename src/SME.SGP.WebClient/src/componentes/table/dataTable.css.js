@@ -46,7 +46,6 @@ export const Container = styled.div`
     font-size: 14px;
     font-weight: bold;
     letter-spacing: 0.12px;
-    text-transform: capitalize;
   }
 
   .ant-table-pagination.ant-pagination {
