@@ -72,7 +72,7 @@ namespace SME.SGP.Api
         [HttpGet]
         [ProducesResponseType(typeof(PaginacaoResultadoDto<ItineranciaResumoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        //[Permissao(Permissao.RI_C, Policy = "Bearer")]
+        [Permissao(Permissao.RI_C, Policy = "Bearer")]
         public async Task<IActionResult> ListaItinerancias([FromQuery] FiltroPesquisaItineranciasDto filtro, [FromServices] IObterItineranciasUseCase useCase)
         {
             return Ok(await useCase.Executar(filtro));
@@ -92,6 +92,15 @@ namespace SME.SGP.Api
                 } 
             };
             return await Task.FromResult(Ok(situacoes));
+        }
+
+        [HttpGet("anos-letivos")]
+        [ProducesResponseType(typeof(RegistroIndividualDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.RI_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterAnosLetivos([FromServices] IObterAnosLetivosItineranciaUseCase useCase)
+        {
+            return Ok(await useCase.Executar());
         }
     }
 }

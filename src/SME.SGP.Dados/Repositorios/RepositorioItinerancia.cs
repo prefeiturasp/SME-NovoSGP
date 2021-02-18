@@ -122,6 +122,16 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<ItineranciaUeDto>(query, new { id });
         }
+
+        public async Task<IEnumerable<long>> ObterAnosLetivosItinerancia()
+        {
+            var query = @"select distinct ano_letivo 
+                            from itinerancia i 
+                           where not excluido
+                           order by ano_letivo desc";
+
+            return await database.Conexao.QueryAsync<long>(query);
+        }
         public async Task<Itinerancia> ObterEntidadeCompleta(long id)
         {
             var query = @"select i.*, ia.*, iaq.*, iq.* , io.*, iob.*, iu.*
