@@ -11,12 +11,13 @@ import {
   JoditEditor,
   Loader,
 } from '~/componentes';
-import { Cabecalho } from '~/componentes-sgp';
+import { Cabecalho, Paginacao } from '~/componentes-sgp';
 import { RotasDto } from '~/dtos';
 import {
   confirmar,
   erros,
   setBreadcrumbManual,
+  setSomenteConsultaManual,
   sucesso,
   verificaSomenteConsulta,
 } from '~/servicos';
@@ -39,9 +40,9 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
   const [modalVisivelUES, setModalVisivelUES] = useState(false);
   const [modalVisivelObjetivos, setModalVisivelObjetivos] = useState(false);
   const [modalVisivelAlunos, setModalVisivelAlunos] = useState(false);
-  const [objetivosSelecionados, setObjetivosSelecionados] = useState();
-  const [alunosSelecionados, setAlunosSelecionados] = useState();
-  const [uesSelecionados, setUesSelecionados] = useState();
+  const [objetivosSelecionados, setObjetivosSelecionados] = useState([]);
+  const [alunosSelecionados, setAlunosSelecionados] = useState([]);
+  const [uesSelecionados, setUesSelecionados] = useState([]);
   const [modoEdicao, setModoEdicao] = useState(false);
   const [objetivosBase, setObjetivosBase] = useState([]);
   const [itineranciaId, setItineranciaId] = useState();
@@ -51,6 +52,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
   const [modalErrosVisivel, setModalErrosVisivel] = useState(false);
   const [questoesItinerancia, setQuestoesItinerancia] = useState([]);
   const [somenteConsulta, setSomenteConsulta] = useState(false);
+  const [paginaAtual, setPaginaAtual] = useState(1);
 
   const usuario = useSelector(store => store.usuario);
   const permissoesTela =
@@ -290,6 +292,8 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
       if (result?.data && result?.status === 200) {
         const itinerancia = result.data;
         setItineranciaAlteracao(itinerancia);
+        setSomenteConsulta(itinerancia.criadoRF !== usuario.rf);
+        setSomenteConsultaManual(itinerancia.criadoRF !== usuario.rf);
         construirItineranciaAlteracao(itinerancia);
       }
     }
@@ -312,6 +316,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
   const confirmarRemoverAluno = alunoCodigo => {
     const novosAlunos =
       alunosSelecionados.filter(item => item.alunoCodigo !== alunoCodigo) || [];
+    setPaginaAtual(Math.ceil(novosAlunos.length / 10 || 1));
     setAlunosSelecionados(novosAlunos);
     setModoEdicao(true);
   };
@@ -337,7 +342,6 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
     setCarregandoGeral(true);
     obterObjetivos();
     setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
-
     setCarregandoGeral(false);
   }, []);
 
@@ -361,7 +365,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
       const objetivosComApenasUmaUe = objetivosSelecionados.filter(
         objetivo => !objetivo.permiteVariasUes
       );
-      return objetivosComApenasUmaUe?.length;
+      return objetivosComApenasUmaUe?.length > 0;
     }
     return false;
   };
@@ -484,30 +488,48 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
                 </div>
               </div>
             )}
-            {alunosSelecionados?.length
-              ? alunosSelecionados.map(aluno => (
-                  <CollapseAluno
-                    key={aluno.alunoCodigo}
-                    aluno={aluno}
-                    removerAlunos={() => removerAlunos(aluno.alunoCodigo)}
-                    setModoEdicaoItinerancia={setModoEdicao}
-                  />
-                ))
-              : questoesItinerancia?.map(questao => {
-                  return (
-                    <div className="row mb-4" key={questao.questaoId}>
-                      <div className="col-12">
-                        <JoditEditor
-                          label={questao.descricao}
-                          value={questao.resposta}
-                          name={NOME_CAMPO_QUESTAO + questao.questaoId}
-                          id={`editor-questao-${questao.questaoId}`}
-                          onChange={e => setQuestao(e, questao)}
-                        />
-                      </div>
+            {alunosSelecionados?.length ? (
+              <>
+                {alunosSelecionados
+                  .slice(paginaAtual * 10 - 10, paginaAtual * 10)
+                  .map(aluno => (
+                    <CollapseAluno
+                      key={aluno.alunoCodigo}
+                      aluno={aluno}
+                      removerAlunos={() => removerAlunos(aluno.alunoCodigo)}
+                      setModoEdicaoItinerancia={setModoEdicao}
+                      desabilitar={desabilitarCamposPorPermissao()}
+                    />
+                  ))}
+
+                <div className="row">
+                  <div className="col-12 d-flex justify-content-center mt-4">
+                    <Paginacao
+                      numeroRegistros={alunosSelecionados.length}
+                      pageSize={10}
+                      onChangePaginacao={e => setPaginaAtual(e)}
+                    />
+                  </div>
+                </div>
+              </>
+            ) : (
+              questoesItinerancia?.map(questao => {
+                return (
+                  <div className="row mb-4" key={questao.questaoId}>
+                    <div className="col-12">
+                      <JoditEditor
+                        label={questao.descricao}
+                        value={questao.resposta}
+                        name={NOME_CAMPO_QUESTAO + questao.questaoId}
+                        id={`editor-questao-${questao.questaoId}`}
+                        onChange={e => setQuestao(e, questao)}
+                        desabilitar={desabilitarCamposPorPermissao()}
+                      />
                     </div>
-                  );
-                })}
+                  </div>
+                );
+              })
+            )}
             <div className="row mb-4">
               <div className="col-3">
                 <CampoData
@@ -533,7 +555,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
           permiteApenasUmaUe={permiteApenasUmaUe()}
           setModoEdicaoItinerancia={setModoEdicao}
           desabilitarBotaoExcluir={
-            permissoesTela?.podeAlterar || alunosSelecionados?.length
+            !permissoesTela?.podeAlterar || alunosSelecionados?.length 
           }
           temAlunosSelecionados={alunosSelecionados?.length}
         />

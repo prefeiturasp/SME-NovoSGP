@@ -1,4 +1,5 @@
 import * as Yup from 'yup';
+import * as moment from 'moment';
 import tipoQuestao from '~/dtos/tipoQuestao';
 
 class QuestionarioDinamicoValidacoes {
@@ -29,13 +30,43 @@ class QuestionarioDinamicoValidacoes {
           arrayCampos.find(questaoId => questaoId === String(questaoAtual.id))
         ) {
           if (questaoAtual.tipoQuestao === tipoQuestao.Periodo) {
-            // TODO Fazer validação para campos datas!
-            //   camposComValidacao[
-            //     questaoAtual.id
-            //   ].periodoInicio = momentSchema.required('Campo obrigatório');
-            //   camposComValidacao[
-            //     questaoAtual.id
-            //   ].periodoFim = momentSchema.required('Campo obrigatório');
+            camposComValidacao[questaoAtual.id] = Yup.object()
+              .test(
+                'validarObrigatoriedadePeriodoInicioFim',
+                'OBRIGATORIO',
+                function validar() {
+                  const { periodoInicio, periodoFim } = this.parent[
+                    questaoAtual.id
+                  ];
+
+                  let ehValido = true;
+                  if (!periodoInicio || !periodoFim) {
+                    ehValido = false;
+                  }
+                  return ehValido;
+                }
+              )
+              .test(
+                'validarPeriodoInicioMaiorQueFim',
+                'PERIODO_INICIO_MAIOR_QUE_FIM',
+                function validar() {
+                  const { periodoInicio, periodoFim } = this.parent[
+                    questaoAtual.id
+                  ];
+
+                  let ehValido = true;
+                  if (periodoInicio && periodoFim) {
+                    const inicioMaiorQueFim = moment(
+                      periodoInicio.format('YYYY-MM-DD')
+                    ).isAfter(periodoFim.format('YYYY-MM-DD'));
+
+                    if (inicioMaiorQueFim) {
+                      ehValido = false;
+                    }
+                  }
+                  return ehValido;
+                }
+              );
           } else {
             camposComValidacao[questaoAtual.id] = Yup.string()
               .nullable()
@@ -49,7 +80,7 @@ class QuestionarioDinamicoValidacoes {
           montaValidacoes(questaoAtual);
         });
 
-        return Yup.object(camposComValidacao);
+        return Yup.object().shape(camposComValidacao);
       }
     }
     return {};

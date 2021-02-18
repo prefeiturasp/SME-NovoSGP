@@ -21,6 +21,16 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<int>(query, new { codigoAluno });
         }
 
+        public async Task<PlanoAEEVersaoDto> ObterUltimaVersaoPorPlanoId(long planoId)
+        {
+            var query = @"select pav.Id, pav.numero, pav.criado_em as CriadoEm 
+                          from plano_aee_versao pav 
+                         where pav.plano_aee_id = @planoId 
+                         order by pav.numero desc";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<PlanoAEEVersaoDto>(query, new { planoId });
+        }
+
         public async Task<IEnumerable<PlanoAEEVersaoDto>> ObterVersoesPorCodigoEstudante(string codigoEstudante)
         {
             var query = @"select pav.Id, pav.numero, pav.criado_em as CriadoEm 

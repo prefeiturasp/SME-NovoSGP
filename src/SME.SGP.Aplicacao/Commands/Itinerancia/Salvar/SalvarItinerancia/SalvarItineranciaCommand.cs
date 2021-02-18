@@ -27,7 +27,14 @@ namespace SME.SGP.Aplicacao
                    .WithMessage("O ano letivo da itinerância deve ser informado!");
             RuleFor(x => x.DataVisita)
                    .NotEmpty()
-                   .WithMessage("A Data da Visita da itinerância deve ser informada!");
+                   .WithMessage("A data da visita da itinerância deve ser informada!");
+
+            RuleFor(x => x.DataRetornoVerificacao.Value.Date)
+                .GreaterThan( a => a.DataVisita.Date)
+                .WithMessage("A data de retorno/verificação não pode ser menor ou igual que a data de visita")
+                .When( a => a.DataRetornoVerificacao.HasValue);
+
+
         }
     }
 }

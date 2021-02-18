@@ -260,7 +260,7 @@ const ModalUE = ({
           </TextoEstilizado>
         )}
       </div>
-      {uesSelecionadas?.map(({ key, descricao }) => (
+      {uesSelecionadas?.sort(FiltroHelper.ordenarLista('descricao')).map(({ key, descricao }) => (
         <div
           className="col-md-12 d-flex justify-content-between mb-4 p-0"
           key={`${key}`}

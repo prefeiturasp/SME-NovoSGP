@@ -1,54 +1,257 @@
+import { groupBy } from 'lodash';
 import { store } from '~/redux';
 import {
   setFormsQuestionarioDinamico,
   setQuestionarioDinamicoEmEdicao,
+  setResetarTabela,
 } from '~/redux/modulos/questionarioDinamico/actions';
 
 class QuestionarioDinamicoFuncoes {
-  onChangeCampoCheckbox = (questaoAtual, form, valorAtualSelecionado) => {
+  agruparCamposDuplicados = (data, campo) => {
+    if (data?.length) {
+      const groups = groupBy(data, campo);
+      const results = Object.entries(groups).map(([key, values]) => {
+        return { questaoNome: key, questoesDuplicadas: values };
+      });
+
+      return results.filter(r => r.questoesDuplicadas.length > 1);
+    }
+    return [];
+  };
+
+  adicionarCampoNovo = (form, idCampoNovo, valor) => {
+    const camposEmTela = Object.keys(form.values);
+
+    const campoEstaEmTela = camposEmTela.find(c => c === String(idCampoNovo));
+
+    if (!campoEstaEmTela) {
+      form.setFieldValue(idCampoNovo, valor);
+      form.values[idCampoNovo] = valor;
+    }
+  };
+
+  removerCampo = (form, idCampoNovo) => {
+    const camposEmTela = Object.keys(form.values);
+
+    const campoEstaEmTela = camposEmTela.find(c => c === String(idCampoNovo));
+
+    if (campoEstaEmTela) {
+      delete form.values[idCampoNovo];
+      form.unregisterField(idCampoNovo);
+    }
+  };
+
+  obterTodosCamposComplementares = (valorAtualSelecionado, questaoAtual) => {
+    const campos = [];
+    valorAtualSelecionado.forEach(a => {
+      const opcaoAtual = questaoAtual?.opcaoResposta.find(
+        c => String(c.id) === String(a || '')
+      );
+
+      if (opcaoAtual?.questoesComplementares?.length) {
+        opcaoAtual.questoesComplementares.forEach(questao => {
+          const temCampo = campos.find(q => q.id === questao.id);
+
+          if (!temCampo) {
+            campos.push(questao);
+          }
+        });
+      }
+    });
+
+    return campos;
+  };
+
+  adicionarRemoverCamposDuplicados = (
+    form,
+    camposDuplicados,
+    valoresCamposComplemetares
+  ) => {
+    camposDuplicados.forEach(c => {
+      // Na base vai ter somente 2 campos com mesmo nome para essa rotina 1 obrigatório e outro não!
+      const campoRemover = c.questoesDuplicadas?.find(co => !co.obrigatorio);
+      const campoRenderizar = c.questoesDuplicadas?.find(co => co.obrigatorio);
+
+      const valorCampoRemovido = valoresCamposComplemetares.find(
+        valorCampo =>
+          valorCampo?.id === campoRemover?.id ||
+          valorCampo?.nome === campoRemover?.nome
+      );
+
+      if (campoRemover) {
+        this.removerCampo(form, campoRemover.id);
+      }
+
+      if (campoRenderizar) {
+        this.adicionarCampoNovo(
+          form,
+          campoRenderizar?.id,
+          valorCampoRemovido?.valor
+        );
+      }
+    });
+  };
+
+  limparDadosOriginaisQuestionarioDinamico = () => {
+    const { dispatch } = store;
+    const state = store.getState();
+    const { questionarioDinamico } = state;
+    const { formsQuestionarioDinamico } = questionarioDinamico;
+    if (formsQuestionarioDinamico?.length) {
+      formsQuestionarioDinamico.forEach(item => {
+        const form = item.form();
+        form.resetForm();
+      });
+      dispatch(setQuestionarioDinamicoEmEdicao(false));
+      dispatch(setResetarTabela(true));
+    }
+  };
+
+  obterCamposNaoDuplicados = (campos, camposDuplicados) => {
+    return campos.filter(ca => {
+      const estaDuplicado = camposDuplicados.find(cd =>
+        cd.questoesDuplicadas.find(v => v.id === ca.id)
+      );
+
+      if (!estaDuplicado) {
+        return true;
+      }
+      return false;
+    });
+  };
+
+  adicionarCamposNaoDuplicados = (
+    form,
+    campos,
+    camposDuplicados,
+    valoresCamposComplemetares
+  ) => {
+    const camposNaoDuplicados = this.obterCamposNaoDuplicados(
+      campos,
+      camposDuplicados
+    );
+
+    if (camposNaoDuplicados?.length) {
+      camposNaoDuplicados.forEach(a => {
+        const valorCampoRemovido = valoresCamposComplemetares.find(
+          valorCampo => valorCampo?.id === a?.id
+        );
+        this.adicionarCampoNovo(form, a.id, valorCampoRemovido?.valor);
+      });
+    }
+  };
+
+  obterValoresCamposComplemetares = (
+    form,
+    questaoAtual,
+    valoreAnteriorSelecionado
+  ) => {
+    const valores = [];
+    const camposEmTela = Object.keys(form.values);
+
+    valoreAnteriorSelecionado.forEach(v => {
+      const opcaoAtual = questaoAtual?.opcaoResposta.find(
+        c => String(c.id) === String(v || '')
+      );
+
+      if (opcaoAtual?.questoesComplementares?.length) {
+        opcaoAtual.questoesComplementares.forEach(questao => {
+          const temCampoEmTela = camposEmTela.find(
+            idCampo => idCampo === String(questao.id)
+          );
+
+          if (temCampoEmTela) {
+            const jaEstaNaLista = valores.find(l => l.id === questao.id);
+            if (!jaEstaNaLista) {
+              valores.push({
+                id: questao.id,
+                valor: form.values[questao.id],
+                nome: questao.nome.trim(),
+              });
+            }
+          }
+        });
+      }
+    });
+
+    return valores;
+  };
+
+  removerTodosCamposComplementares = (
+    valoreAnteriorSelecionado,
+    questaoAtual,
+    form
+  ) => {
+    valoreAnteriorSelecionado.forEach(id => {
+      const opcaoAtual = questaoAtual?.opcaoResposta.find(
+        c => String(c.id) === String(id || '')
+      );
+
+      if (opcaoAtual?.questoesComplementares?.length) {
+        opcaoAtual.questoesComplementares.forEach(questao => {
+          this.removerCampo(form, questao.id);
+        });
+      }
+    });
+  };
+
+  onChangeCampoCheckboxOuComboMultiplaEscolha = (
+    questaoAtual,
+    form,
+    valorAtualSelecionado
+  ) => {
     const valoreAnteriorSelecionado = form.values[questaoAtual.id] || [];
 
-    const estaAdicionandoNovos =
-      valorAtualSelecionado?.length > valoreAnteriorSelecionado?.length;
+    const valoresCamposComplemetares = this.obterValoresCamposComplemetares(
+      form,
+      questaoAtual,
+      valoreAnteriorSelecionado
+    );
 
-    if (estaAdicionandoNovos) {
-      const checkboxNovosMarcados = valorAtualSelecionado.filter(
-        idCampo => !valoreAnteriorSelecionado.includes(idCampo)
+    if (valoreAnteriorSelecionado?.length) {
+      this.removerTodosCamposComplementares(
+        valoreAnteriorSelecionado,
+        questaoAtual,
+        form
       );
+    }
 
-      if (checkboxNovosMarcados?.length) {
-        checkboxNovosMarcados.forEach(n => {
-          const opcaoAtual = questaoAtual?.opcaoResposta.find(
-            c => String(c.id) === String(n || '')
-          );
+    const todosCamposComplementares = this.obterTodosCamposComplementares(
+      valorAtualSelecionado,
+      questaoAtual
+    );
 
-          if (opcaoAtual?.questoesComplementares?.length) {
-            opcaoAtual.questoesComplementares.forEach(questaoComplementar => {
-              form.setFieldValue(questaoComplementar.id, '');
-              form.values[questaoComplementar.id] = '';
-            });
-          }
-        });
-      }
-    } else if (!estaAdicionandoNovos) {
-      const checkboxDesmarcados = valoreAnteriorSelecionado.filter(
-        idCampo => !valorAtualSelecionado.includes(idCampo)
+    const camposSemEspaco = todosCamposComplementares.map(m => {
+      return { ...m, nome: m.nome.trim() };
+    });
+
+    const camposDuplicados = this.agruparCamposDuplicados(
+      camposSemEspaco,
+      'nome'
+    );
+
+    if (camposDuplicados?.length) {
+      this.adicionarRemoverCamposDuplicados(
+        form,
+        camposDuplicados,
+        valoresCamposComplemetares
       );
+    }
 
-      if (checkboxDesmarcados?.length) {
-        checkboxDesmarcados.forEach(n => {
-          const opcaoAtual = questaoAtual?.opcaoResposta.find(
-            c => String(c.id) === String(n || '')
-          );
+    if (camposSemEspaco?.length && camposDuplicados?.length) {
+      this.adicionarCamposNaoDuplicados(
+        form,
+        camposSemEspaco,
+        camposDuplicados
+      );
+    } else {
+      camposSemEspaco.forEach(a => {
+        const valorCampoRemovido = valoresCamposComplemetares.find(
+          valorCampo => valorCampo?.id === a?.id || valorCampo?.nome === a?.nome
+        );
 
-          if (opcaoAtual?.questoesComplementares?.length) {
-            opcaoAtual.questoesComplementares.forEach(questaoComplementar => {
-              delete form.values[questaoComplementar.id];
-              form.unregisterField(questaoComplementar.id);
-            });
-          }
-        });
-      }
+        this.adicionarCampoNovo(form, a.id, valorCampoRemovido?.valor);
+      });
     }
   };
 
@@ -57,34 +260,67 @@ class QuestionarioDinamicoFuncoes {
     form,
     valorAtualSelecionado
   ) => {
-    const valoreAnteriorSelecionado = form.values[questaoAtual.id] || '';
+    const valorAnteriorSelecionado = form.values[questaoAtual.id] || '';
+
+    const valoresCamposComplemetares = this.obterValoresCamposComplemetares(
+      form,
+      questaoAtual,
+      [valorAnteriorSelecionado]
+    );
 
     const opcaoAtual = questaoAtual?.opcaoResposta.find(
       c => String(c.id) === String(valorAtualSelecionado || '')
     );
 
     const opcaoAnterior = questaoAtual?.opcaoResposta.find(
-      c => String(c.id) === String(valoreAnteriorSelecionado || '')
+      c => String(c.id) === String(valorAnteriorSelecionado || '')
     );
 
-    // TODO - Ajustar para quando tiver mais de um questão complementar!
-    const questaoComplementarIdAtual =
-      opcaoAtual?.questoesComplementares?.[0]?.id;
+    const idsQuestoesComplementaresAnterior = opcaoAnterior?.questoesComplementares.map(
+      q => q.id
+    );
 
-    const questaoComplementarIdAnterior =
-      opcaoAnterior?.questoesComplementares?.[0]?.id;
+    const idsQuestoesComplementaresAtual = opcaoAtual?.questoesComplementares.map(
+      q => q.id
+    );
 
-    if (questaoComplementarIdAtual !== questaoComplementarIdAnterior) {
-      if (questaoComplementarIdAtual) {
-        form.setFieldValue(
-          questaoComplementarIdAtual,
-          form.values[questaoComplementarIdAnterior]
-        );
-        form.values[questaoComplementarIdAtual] =
-          form.values[questaoComplementarIdAnterior];
+    const idsQuestoesExclusao = idsQuestoesComplementaresAnterior?.filter(
+      idComplentar => {
+        if (!idsQuestoesComplementaresAtual?.includes(idComplentar)) {
+          return true;
+        }
+        return false;
       }
-      delete form.values[questaoComplementarIdAnterior];
-      form.unregisterField(questaoComplementarIdAnterior);
+    );
+
+    if (idsQuestoesExclusao?.length) {
+      idsQuestoesExclusao.forEach(id => {
+        delete form.values[id];
+        form.unregisterField(id);
+      });
+    }
+
+    const idsQuestoesAdicionar = idsQuestoesComplementaresAtual?.filter(
+      idComplentar => {
+        if (!idsQuestoesComplementaresAnterior?.includes(idComplentar)) {
+          return true;
+        }
+        return false;
+      }
+    );
+
+    if (idsQuestoesAdicionar?.length) {
+      idsQuestoesAdicionar.forEach(id => {
+        const qAtual = opcaoAtual.questoesComplementares.find(q => q.id === id);
+
+        const valorCampoRemovido = valoresCamposComplemetares.find(
+          valorCampo =>
+            valorCampo?.id === id || valorCampo?.nome === qAtual?.nome
+        );
+
+        form.setFieldValue(id, valorCampoRemovido?.valor || '');
+        form.values[id] = valorCampoRemovido?.valor || '';
+      });
     }
   };
 
@@ -110,208 +346,6 @@ class QuestionarioDinamicoFuncoes {
       return opcaoResposta;
     }
     return null;
-  };
-
-  obterValorCampoComplementarComboMultiplaEscolha = (
-    form,
-    valoresAnterioresSelecionado,
-    questaoAtual
-  ) => {
-    const camposEmTela = Object.keys(form.values);
-
-    let valorDigitadoCampoComplementar = '';
-
-    const idOpcaoRespostaComValorDigitado = valoresAnterioresSelecionado.find(
-      idCampo => {
-        const opcaoResposta = this.obterOpcaoRespostaPorId(
-          questaoAtual?.opcaoResposta,
-          idCampo
-        );
-
-        if (opcaoResposta?.questoesComplementares[0]) {
-          const temCampo = camposEmTela.find(
-            c =>
-              String(c) === String(opcaoResposta?.questoesComplementares[0]?.id)
-          );
-          return !!temCampo;
-        }
-
-        return null;
-      }
-    );
-
-    if (idOpcaoRespostaComValorDigitado) {
-      const opcaoRespostaComValorDigitado = this.obterOpcaoRespostaPorId(
-        questaoAtual?.opcaoResposta,
-        idOpcaoRespostaComValorDigitado
-      );
-      valorDigitadoCampoComplementar =
-        form.values[
-          opcaoRespostaComValorDigitado?.questoesComplementares[0]?.id
-        ];
-    }
-
-    return valorDigitadoCampoComplementar;
-  };
-
-  obterIdOpcaoRespostaComComplementarObrigatoria = (
-    valorAtualSelecionado,
-    questaoAtual
-  ) => {
-    return valorAtualSelecionado.find(valor => {
-      const opcaoAtual = questaoAtual?.opcaoResposta.find(
-        item => String(item.id) === String(valor)
-      );
-
-      if (opcaoAtual?.questoesComplementares[0]?.obrigatorio) {
-        return true;
-      }
-      return false;
-    });
-  };
-
-  obterIdOpcaoRespostaComComplementarNaoObrigatoria = (
-    valorAtualSelecionado,
-    questaoAtual
-  ) => {
-    return valorAtualSelecionado.find(valor => {
-      const opcaoResposta = this.obterOpcaoRespostaPorId(
-        questaoAtual?.opcaoResposta,
-        valor
-      );
-
-      if (opcaoResposta?.questoesComplementares[0]?.obrigatorio) {
-        return false;
-      }
-      return true;
-    });
-  };
-
-  removerAddCampoComplementarComboMultiplaEscolha = (
-    questaoAtual,
-    form,
-    idOpcaoComplementarAdicionar,
-    idOpcaoComplementarRemover,
-    valorDigitadoCampoComplementar
-  ) => {
-    const opcaoRespostaAdicionar = this.obterOpcaoRespostaPorId(
-      questaoAtual?.opcaoResposta,
-      idOpcaoComplementarAdicionar
-    );
-
-    const questaoComplementarAdicionarId =
-      opcaoRespostaAdicionar?.questoesComplementares[0]?.id;
-
-    if (questaoComplementarAdicionarId) {
-      form.setFieldValue(
-        questaoComplementarAdicionarId,
-        valorDigitadoCampoComplementar
-      );
-      form.values[
-        questaoComplementarAdicionarId
-      ] = valorDigitadoCampoComplementar;
-    }
-
-    const opcaoRespostaRemover = this.obterOpcaoRespostaPorId(
-      questaoAtual?.opcaoResposta,
-      idOpcaoComplementarRemover
-    );
-
-    const questaoComplementarRemoverId =
-      opcaoRespostaRemover?.questoesComplementares[0]?.id;
-
-    if (questaoComplementarRemoverId) {
-      delete form.values[questaoComplementarRemoverId];
-      form.unregisterField(questaoComplementarRemoverId);
-    }
-  };
-
-  onChangeCampoComboMultiplaEscolha = (
-    questaoAtual,
-    form,
-    valoresAtuaisSelecionados
-  ) => {
-    if (
-      !valoresAtuaisSelecionados?.length &&
-      questaoAtual?.opcaoResposta?.length
-    ) {
-      questaoAtual.opcaoResposta.forEach(a => {
-        if (a?.questoesComplementares[0]) {
-          delete form.values[a.questoesComplementares[0].id];
-          form.unregisterField(a.questoesComplementares[0].id);
-        }
-      });
-
-      return;
-    }
-
-    const valoresAnterioresSelecionado = form.values[questaoAtual.id]?.length
-      ? form.values[questaoAtual.id]
-      : [];
-
-    if (valoresAnterioresSelecionado?.length) {
-      const valorDigitadoCampoComplementar = this.obterValorCampoComplementarComboMultiplaEscolha(
-        form,
-        valoresAnterioresSelecionado,
-        questaoAtual
-      );
-
-      const idOpcaoRespostaAnteriorComplementarObrigatoria = this.obterIdOpcaoRespostaComComplementarObrigatoria(
-        valoresAnterioresSelecionado,
-        questaoAtual
-      );
-
-      const idOpcaoRespostaAtualComplementarObrigatoria = this.obterIdOpcaoRespostaComComplementarObrigatoria(
-        valoresAtuaisSelecionados,
-        questaoAtual
-      );
-
-      const idOpcaoRespostaAnteriorComplementarNaoObrigatoria = this.obterIdOpcaoRespostaComComplementarNaoObrigatoria(
-        valoresAnterioresSelecionado,
-        questaoAtual
-      );
-
-      const idOpcaoRespostaAtualComplementarNaoObrigatoria = this.obterIdOpcaoRespostaComComplementarNaoObrigatoria(
-        valoresAtuaisSelecionados,
-        questaoAtual
-      );
-
-      if (
-        idOpcaoRespostaAnteriorComplementarObrigatoria &&
-        idOpcaoRespostaAtualComplementarObrigatoria
-      ) {
-        this.removerAddCampoComplementarComboMultiplaEscolha(
-          questaoAtual,
-          form,
-          idOpcaoRespostaAnteriorComplementarObrigatoria,
-          idOpcaoRespostaAnteriorComplementarNaoObrigatoria ||
-            idOpcaoRespostaAtualComplementarNaoObrigatoria,
-          valorDigitadoCampoComplementar
-        );
-      } else if (
-        idOpcaoRespostaAnteriorComplementarObrigatoria &&
-        !idOpcaoRespostaAtualComplementarObrigatoria
-      ) {
-        this.removerAddCampoComplementarComboMultiplaEscolha(
-          questaoAtual,
-          form,
-          idOpcaoRespostaAtualComplementarNaoObrigatoria,
-          idOpcaoRespostaAnteriorComplementarObrigatoria,
-          valorDigitadoCampoComplementar
-        );
-      } else if (
-        !idOpcaoRespostaAnteriorComplementarObrigatoria &&
-        idOpcaoRespostaAtualComplementarObrigatoria
-      ) {
-        this.removerAddCampoComplementarComboMultiplaEscolha(
-          questaoAtual,
-          form,
-          idOpcaoRespostaAtualComplementarObrigatoria,
-          idOpcaoRespostaAnteriorComplementarNaoObrigatoria,
-          valorDigitadoCampoComplementar
-        );
-      }
-    }
   };
 
   obterQuestaoPorId = (dados, idPesquisa) => {
@@ -350,6 +384,8 @@ class QuestionarioDinamicoFuncoes {
     const state = store.getState();
     const { questionarioDinamico } = state;
     const { formsQuestionarioDinamico } = questionarioDinamico;
+    // TODO Usado o questionarioId para setar o indice do arra.
+    // Caso trocar para push no array de form, validar se vai duplicar os forms!
     if (!formsQuestionarioDinamico) {
       const param = [];
       param[questionarioId] = {
