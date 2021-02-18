@@ -148,7 +148,8 @@ const AtaFinalResultados = () => {
         modalidadeSelecionada,
         '',
         anoLetivo,
-        consideraHistorico
+        consideraHistorico,
+        true
       );
       if (data) {
         const lista = data.map(item => ({
