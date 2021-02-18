@@ -247,18 +247,20 @@ namespace SME.SGP.Dados.Repositorios
 
         private static void ObtenhaFiltro(StringBuilder sql, long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao, int anoLetivo, DateTime? dataInicio, DateTime? dataFim)
         {
-            sql.AppendLine(" where ue.dre_id = @dreId and not i.excluido ");            
+            sql.AppendLine(" where ue.dre_id = @dreId and not i.excluido ");
+            sql.AppendLine(" and i.ano_letivo = @anoLetivo ");
+            
 
             if (ueId > 0)
                 sql.AppendLine(" and ue.id = @ueId ");
             if (turmaId > 0)
-                sql.AppendLine(" and t.id = @turmaId ");
+                sql.AppendLine(" and ia.turma_id = @turmaId ");
             if (!string.IsNullOrEmpty(alunoCodigo))
-                sql.AppendLine(" and ea.aluno_codigo = @alunoCodigo ");
+                sql.AppendLine(" and ia.codigo_aluno = @alunoCodigo ");
             if (situacao.HasValue && situacao > 0)
-                sql.AppendLine(" and ea.situacao = @situacao ");
+                sql.AppendLine(" and i.situacao = @situacao ");
             if (dataInicio != null && dataFim != null)
-                sql.AppendLine("and data_visita::date between @dataInicio and @dataFim");
+                sql.AppendLine("and i.data_visita::date between @dataInicio and @dataFim");
         }
     }
 }
