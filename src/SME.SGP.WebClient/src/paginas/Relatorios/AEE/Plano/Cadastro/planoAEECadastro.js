@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Cabecalho } from '~/componentes-sgp';
 import Card from '~/componentes/card';
@@ -8,6 +8,7 @@ import LoaderPlano from './Componentes/LoaderPlano/loaderPlano';
 import TabCadastroPasso from './Componentes/TabCadastroPlano/tabCadastroPlano';
 import { setLimparDadosQuestionarioDinamico } from '~/redux/modulos/questionarioDinamico/actions';
 import {
+  setDesabilitarCamposPlanoAEE,
   setExibirLoaderPlanoAEE,
   setPlanoAEEDados,
   setPlanoAEELimparDados,
@@ -20,7 +21,11 @@ import {
   setDadosCollapseLocalizarEstudante,
   setLimparDadosLocalizarEstudante,
 } from '~/redux/modulos/collapseLocalizarEstudante/actions';
-import { erros, setBreadcrumbManual } from '~/servicos';
+import {
+  erros,
+  setBreadcrumbManual,
+  verificaSomenteConsulta,
+} from '~/servicos';
 import ServicoPlanoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoPlanoAEE';
 import { setDadosObjectCardEstudante } from '~/redux/modulos/objectCardEstudante/actions';
 import { RotasDto } from '~/dtos';
@@ -48,17 +53,20 @@ const PlanoAEECadastro = ({ match }) => {
     }
   }, [match]);
 
-  // TODO PERMISSAO
-  // useEffect(() => {
-  //   const encaminhamentoId = match?.params?.id || 0;
+  const usuario = useSelector(store => store.usuario);
+  const permissoesTela =
+    usuario.permissoes[RotasDto.RELATORIO_AEE_ENCAMINHAMENTO];
 
-  //   const soConsulta = verificaSomenteConsulta(permissoesTela);
-  //   const desabilitar =
-  //     encaminhamentoId > 0
-  //       ? soConsulta || !permissoesTela.podeAlterar
-  //       : soConsulta || !permissoesTela.podeIncluir;
-  //   dispatch(setDesabilitarCamposEncaminhamentoAEE(desabilitar));
-  // }, [match, permissoesTela, dispatch]);
+  useEffect(() => {
+    const planoId = match?.params?.id || 0;
+
+    const soConsulta = verificaSomenteConsulta(permissoesTela);
+    const desabilitar =
+      planoId > 0
+        ? soConsulta || !permissoesTela.podeAlterar
+        : soConsulta || !permissoesTela.podeIncluir;
+    dispatch(setDesabilitarCamposPlanoAEE(desabilitar));
+  }, [match, permissoesTela, dispatch]);
 
   const obterPlanoPorId = useCallback(async () => {
     const planoId = match?.params?.id ? match?.params?.id : 0;

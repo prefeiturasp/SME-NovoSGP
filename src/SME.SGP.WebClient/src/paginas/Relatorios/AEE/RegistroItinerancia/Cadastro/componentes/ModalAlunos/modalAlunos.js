@@ -1,7 +1,11 @@
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 
-import { Colors, ModalConteudoHtml, LocalizadorEstudante } from '~/componentes';
+import {
+  Colors,
+  ModalConteudoHtml,
+  LocalizadorEstudantesAtivos,
+} from '~/componentes';
 
 import { confirmar } from '~/servicos';
 
@@ -15,11 +19,11 @@ const ModalAlunos = ({
   setAlunosSelecionados,
   questoes,
   setModoEdicaoItinerancia,
+  dataVisita
 }) => {
   const [alunosSelecionadosModal, setAlunosSelecionadosModal] = useState(
     alunosSelecionados
   );
-  const anoLetivo = window.moment().format('YYYY');
   const [modoEdicao, setModoEdicao] = useState(false);
 
   const mudarLocalizador = aluno => {
@@ -39,6 +43,7 @@ const ModalAlunos = ({
           ...estadoAntigo,
           {
             ...aluno,
+            turmaId: aluno.codigoTurma,
             podeRemover: true,
             questoes: questoesAluno,
           },
@@ -97,15 +102,15 @@ const ModalAlunos = ({
       fecharAoClicarEsc
     >
       <div className="col-md-12 d-flex mb-4 p-0">
-        <LocalizadorEstudante
+        <LocalizadorEstudantesAtivos
           id="estudante"
           showLabel
           exibirCodigoEOL
           semMargin
           limparCamposAposPesquisa
-          anoLetivo={anoLetivo}
           ueId={codigoUe}
           onChange={mudarLocalizador}
+          dataReferencia={dataVisita}
         />
       </div>
       {alunosSelecionadosModal?.map(
@@ -141,6 +146,7 @@ ModalAlunos.defaultProps = {
   setAlunosSelecionados: () => {},
   setModoEdicaoItinerancia: () => {},
   questoes: [],
+  dataVisita: '',
 };
 
 ModalAlunos.propTypes = {
@@ -151,6 +157,7 @@ ModalAlunos.propTypes = {
   setModalVisivel: PropTypes.func,
   setAlunosSelecionados: PropTypes.func,
   questoes: PropTypes.oneOfType([PropTypes.any]),
+  dataVisita: PropTypes.oneOfType([PropTypes.any]),
 };
 
 export default ModalAlunos;

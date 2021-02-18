@@ -67,7 +67,8 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<ItineranciaAlunoDto>> ObterItineranciaAlunoPorId(long id)
         {
             var query = @" select id,
- 		                          codigo_aluno as CodigoAluno
+ 		                          codigo_aluno as CodigoAluno,
+                                  turma_id as TurmaId
                              from itinerancia_aluno ia 
                             where itinerancia_id = @id
                               and not excluido ";

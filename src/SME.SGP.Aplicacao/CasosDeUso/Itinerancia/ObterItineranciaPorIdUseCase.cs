@@ -30,11 +30,13 @@ namespace SME.SGP.Aplicacao
 
             var itineranciaDto = new ItineranciaDto()
             {
+                AnoLetivo = itinerancia.AnoLetivo,
                 DataVisita = itinerancia.DataVisita,
                 DataRetornoVerificacao = itinerancia.DataRetornoVerificacao,
                 ObjetivosVisita = MontarObjetivosItinerancia(itinerancia),
                 Questoes = MontarQuestoesItinerancia(itinerancia, questoesBase),
-                Ues = MontarUes(ues, itinerancia)
+                Ues = MontarUes(ues, itinerancia),
+                CriadoRF = itinerancia.CriadoRF,
             };
 
             if(itinerancia.Alunos != null && itinerancia.Alunos.Any())
@@ -110,8 +112,9 @@ namespace SME.SGP.Aplicacao
                 {
                     Id = aluno.Id,
                     AlunoCodigo = aluno.CodigoAluno,
+                    TurmaId = aluno.TurmaId,
                     AlunoNome = alunoEol.NomeAluno,
-                    NomeComModalidadeTurma = $"{alunoEol.NomeAluno} - {OberterNomeTurmaFormatado(turmas.FirstOrDefault(t => t.CodigoTurma == alunoEol.CodigoTurma.ToString()))}",
+                    NomeComModalidadeTurma = $"{alunoEol.NomeAluno} - {turmas.FirstOrDefault(t => t.CodigoTurma == alunoEol.CodigoTurma.ToString()).NomeComModalidade()}",
                     Questoes = MontarQuestoesItineranciaAluno(aluno, questoesBase)
                 };
             });
@@ -131,16 +134,5 @@ namespace SME.SGP.Aplicacao
                 };
             });
         }
-
-        private string OberterNomeTurmaFormatado(Turma turma)
-        {
-            var turmaNome = "";
-
-            if (turma != null)
-                turmaNome = $"{turma.ModalidadeCodigo.ShortName()} - {turma.Nome}";
-
-            return turmaNome;
-        }
-
     }
 }

@@ -3,11 +3,51 @@ import React from 'react';
 import { useDispatch } from 'react-redux';
 import { setQuestionarioDinamicoEmEdicao } from '~/redux/modulos/questionarioDinamico/actions';
 import { CampoData } from '~/componentes/campoData/campoData';
+import { Base } from '~/componentes/colors';
 
 const CampoDinamicoPeriodo = props => {
   const dispatch = useDispatch();
 
   const { questaoAtual, form, label, desabilitado } = props;
+
+  const obterErroQuestaoAtual = () => {
+    return form &&
+      form?.touched[questaoAtual?.id] &&
+      form?.errors[questaoAtual?.id]
+      ? form.errors[questaoAtual?.id]
+      : '';
+  };
+
+  const obterErroPorCampo = nomeCampo => {
+    const nomeErro = obterErroQuestaoAtual();
+
+    let textoErro = '';
+
+    if (nomeErro) {
+      const naoTemValorCampo = !form?.values?.[questaoAtual?.id]?.[nomeCampo];
+
+      switch (nomeErro) {
+        case 'OBRIGATORIO':
+          if (naoTemValorCampo) {
+            textoErro = 'Campo obrigatório';
+          }
+          break;
+        case 'PERIODO_INICIO_MAIOR_QUE_FIM':
+          if (nomeCampo === 'periodoInicio') {
+            textoErro = 'Período inicial deve ser menor que o período final';
+          }
+          break;
+
+        default:
+          break;
+      }
+    }
+
+    if (textoErro) {
+      return <span style={{ color: Base.Vermelho }}>{textoErro}</span>;
+    }
+    return '';
+  };
 
   return (
     <div className="col-md-12 mb-3">
@@ -21,10 +61,18 @@ const CampoDinamicoPeriodo = props => {
             placeholder="Início"
             formatoData="DD/MM/YYYY"
             desabilitado={desabilitado}
-            onChange={() => {
+            onChange={valorData => {
               dispatch(setQuestionarioDinamicoEmEdicao(true));
+              form.setFieldTouched(questaoAtual?.id, true);
+              form.setFieldValue(
+                `${questaoAtual?.id}.periodoInicio`,
+                valorData || ''
+              );
             }}
+            executarOnChangeExterno
+            className={obterErroPorCampo('periodoInicio') ? 'is-invalid' : ''}
           />
+          {obterErroPorCampo('periodoInicio')}
         </div>
         <span style={{ marginTop: 5 }}>à</span>
         <div className="col-md-2">
@@ -35,10 +83,18 @@ const CampoDinamicoPeriodo = props => {
             placeholder="Fim"
             formatoData="DD/MM/YYYY"
             desabilitado={desabilitado}
-            onChange={() => {
+            onChange={valorData => {
               dispatch(setQuestionarioDinamicoEmEdicao(true));
+              form.setFieldTouched(questaoAtual?.id, true);
+              form.setFieldValue(
+                `${questaoAtual?.id}.periodoFim`,
+                valorData || ''
+              );
             }}
+            executarOnChangeExterno
+            className={obterErroPorCampo('periodoFim') ? 'is-invalid' : ''}
           />
+          {obterErroPorCampo('periodoFim')}
         </div>
       </div>
     </div>
@@ -60,34 +116,3 @@ CampoDinamicoPeriodo.defaultProps = {
 };
 
 export default CampoDinamicoPeriodo;
-
-{
-  /* <div className="col-md-2">
-          <CampoData
-            form={form}
-            id={`${questaoAtual?.id}-inicio`}
-            name={`${questaoAtual?.id}-inicio`}
-            placeholder="Início"
-            formatoData="DD/MM/YYYY"
-            desabilitado={desabilitado}
-            onChange={() => {
-              dispatch(setQuestionarioDinamicoEmEdicao(true));
-            }}
-          />
-        </div>
-        à
-        <div className="col-md-2">
-          <CampoData
-            form={form}
-            id={`fim${questaoAtual?.id}`}
-            name={`fim${questaoAtual?.id}`}
-            placeholder="Fim"
-            formatoData="DD/MM/YYYY"
-            desabilitado={desabilitado}
-            onChange={() => {
-              dispatch(setQuestionarioDinamicoEmEdicao(true));
-            }}
-          />
-        </div>
-      </div> */
-}

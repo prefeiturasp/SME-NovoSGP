@@ -161,9 +161,11 @@ const CampoData = ({
                     : ''
                 }
                 onChange={valorData => {
-                  setFieldValue(name, valorData || '');
+                  if (!executarOnChangeExterno) {
+                    setFieldValue(name, valorData || '');
+                    setFieldTouched(name, true, true);
+                  }
                   onChange(valorData);
-                  setFieldTouched(name, true, true);
                 }}
                 disabledDate={habilitarDatas}
                 showToday={false}
