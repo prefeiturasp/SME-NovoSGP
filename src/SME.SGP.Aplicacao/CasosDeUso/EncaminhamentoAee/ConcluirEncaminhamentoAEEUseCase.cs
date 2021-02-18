@@ -12,10 +12,8 @@ namespace SME.SGP.Aplicacao
 {
     public class ConcluirEncaminhamentoAEEUseCase : AbstractUseCase, IConcluirEncaminhamentoAEEUseCase
     {
-        private readonly IExecutaNotificacaoConclusaoEncaminhamentoAEEUseCase executaNotificacaoConclusaoEncaminhamentoAEE;
-        public ConcluirEncaminhamentoAEEUseCase(IExecutaNotificacaoConclusaoEncaminhamentoAEEUseCase executaNotificacaoConclusaoEncaminhamentoAEE, IMediator mediator) : base(mediator)
+        public ConcluirEncaminhamentoAEEUseCase(IMediator mediator) : base(mediator)
         {
-            this.executaNotificacaoConclusaoEncaminhamentoAEE = executaNotificacaoConclusaoEncaminhamentoAEE ?? throw new ArgumentNullException(nameof(executaNotificacaoConclusaoEncaminhamentoAEE));
         }
 
         public async Task<bool> Executar(long encaminhamentoId)
@@ -26,8 +24,7 @@ namespace SME.SGP.Aplicacao
 
             await mediator.Send(new SalvarEncaminhamentoAEECommand(encaminhamento));
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
-            await executaNotificacaoConclusaoEncaminhamentoAEE.Executar(encaminhamento.Id, usuarioLogado.CodigoRf, usuarioLogado.Nome);
-
+            await mediator.Send(new ExecutaNotificacaoConclusaoEncaminhamentoAEECommand(encaminhamento.Id, usuarioLogado.CodigoRf, usuarioLogado.Nome));
             return true;
         }
 
