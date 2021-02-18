@@ -8,20 +8,20 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ExecutaNotificacaoConclusaoEncaminhamentoAEECommandHandler : IRequestHandler<ExecutaNotificacaoConclusaoEncaminhamentoAEECommand, bool>
+    public class ExecutaNotificacaoEncerramentoEncaminhamentoAEECommandHandler : IRequestHandler<ExecutaNotificacaoEncerramentoEncaminhamentoAEECommand, bool>
     {
         private readonly IMediator mediator;
 
-        public ExecutaNotificacaoConclusaoEncaminhamentoAEECommandHandler(IMediator mediator)
+        public ExecutaNotificacaoEncerramentoEncaminhamentoAEECommandHandler(IMediator mediator)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<bool> Handle(ExecutaNotificacaoConclusaoEncaminhamentoAEECommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(ExecutaNotificacaoEncerramentoEncaminhamentoAEECommand request, CancellationToken cancellationToken)
         {
-            SentrySdk.AddBreadcrumb($"Mensagem NotificacaoConclusaoEncaminhamentoAEEUseCase", "Rabbit - NotificacaoConclusaoEncaminhamentoAEEUseCase");
+            SentrySdk.AddBreadcrumb($"Mensagem NotificacaoEncerramentoEncaminhamentoAEECommand", "Rabbit - NotificacaoEncerramentoEncaminhamentoAEECommand");
 
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaNotificacaoRegistroConclusaoEncaminhamentoAEE,
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaNotificacaoEncerramentoEncaminhamentoAEE,
                 new NotificacaoEncaminhamentoAEEDto
                 {
                     EncaminhamentoAEEId = request.EncaminhamentoAEEId,
