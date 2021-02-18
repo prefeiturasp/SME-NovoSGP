@@ -2,19 +2,29 @@ import { Tooltip } from 'antd';
 import * as moment from 'moment';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { DataTable } from '~/componentes';
 import Button from '~/componentes/button';
 import { Base, Colors } from '~/componentes/colors';
 import Label from '~/componentes/label';
 import { BtnExcluirDiasHorario } from '~/paginas/Relatorios/AEE/Plano/Cadastro/planoAEECadastro.css';
+import { setResetarTabela } from '~/redux/modulos/questionarioDinamico/actions';
 import { confirmar } from '~/servicos';
+import { removerArrayAninhados } from '~/utils';
 import ModalCadastroDiasHorario from './modalCadastroDiasHorarios';
 
 const DiasHorariosTabela = props => {
   const { label, questaoAtual, form, desabilitado, onChange } = props;
 
+  const resetarTabela = useSelector(
+    store => store.questionarioDinamico.resetarTabela
+  );
+
+  const dispatch = useDispatch();
+
   const [exibirModal, setExibirModal] = useState(false);
+  const [dadosIniciais, setDadosIniciais] = useState({});
 
   const onClickNovoDiaHorario = () => {
     setExibirModal(true);
@@ -22,18 +32,32 @@ const DiasHorariosTabela = props => {
 
   const onCloseModal = novosDados => {
     setExibirModal(false);
+    setDadosIniciais({});
 
     if (novosDados) {
       const dadosAtuais = form?.values?.[questaoAtual.id]?.length
         ? form?.values?.[questaoAtual.id]
         : [];
-      novosDados.id = dadosAtuais.length + 1;
-      dadosAtuais.push(novosDados);
+      if (novosDados?.id) {
+        const indexItemAnterior = dadosAtuais.findIndex(
+          x => x.id === novosDados.id
+        );
+        dadosAtuais[indexItemAnterior] = novosDados;
+      } else {
+        novosDados.id = dadosAtuais.length + 1;
+        dadosAtuais.push(novosDados);
+      }
+
       if (form) {
         form.setFieldValue(questaoAtual.id, dadosAtuais);
         onChange();
       }
     }
+  };
+
+  const onClickRow = row => {
+    setDadosIniciais(row);
+    setExibirModal(true);
   };
 
   const formatarCampoTabela = data => {
@@ -136,11 +160,23 @@ const DiasHorariosTabela = props => {
     );
   };
 
+  useEffect(() => {
+    if (resetarTabela) {
+      const dadosRecuperados = questaoAtual?.resposta?.map(item =>
+        JSON.parse(item.texto)
+      );
+      const dadosNaoAninhados = removerArrayAninhados(dadosRecuperados);
+      form.setFieldValue(questaoAtual.id, dadosNaoAninhados);
+      dispatch(setResetarTabela(false));
+    }
+  }, [dispatch, resetarTabela, questaoAtual, form]);
+
   return (
     <>
       <ModalCadastroDiasHorario
         onClose={onCloseModal}
         exibirModal={exibirModal}
+        dadosIniciais={dadosIniciais}
       />
       <Label text={label} />
       <div className={possuiErro() ? 'tabela-invalida' : ''}>
@@ -153,6 +189,7 @@ const DiasHorariosTabela = props => {
               : []
           }
           pagination={false}
+          onClickRow={onClickRow}
         />
       </div>
       {form ? obterErros() : ''}

@@ -28,6 +28,19 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<PlanejamentoAnualObjetivoAprendizagem>(sql, new { componenteId });
         }
 
+        public async Task<IEnumerable<PlanejamentoAnualObjetivoAprendizagem>> ObterPorPlanejamentoAnualComponenteId(long[] componentesId)
+        {
+            var sql = @"select
+                            id as Id,
+                            planejamento_anual_componente_id as PlanejamentoAnualComponenteId,
+	                        objetivo_aprendizagem_id as ObjetivoAprendizagemId
+                        from
+                            planejamento_anual_objetivos_aprendizagem paoa
+                        where
+                            paoa.planejamento_anual_componente_id = any(@componentesId) and paoa.excluido = false";
+            return await database.Conexao.QueryAsync<PlanejamentoAnualObjetivoAprendizagem>(sql, new { componentesId });
+        }
+
         public async Task RemoverLogicamenteAsync(long id)
         {
             var sql = "UPDATE planejamento_anual_objetivos_aprendizagem SET EXCLUIDO = TRUE WHERE ID = @id";

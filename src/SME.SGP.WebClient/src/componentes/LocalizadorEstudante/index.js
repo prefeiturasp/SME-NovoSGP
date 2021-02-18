@@ -20,8 +20,18 @@ const LocalizadorEstudante = props => {
     exibirCodigoEOL,
     valorInicialAlunoCodigo,
     placeholder,
+    semMargin,
+    limparCamposAposPesquisa,
+    labelAlunoNome,
   } = props;
 
+  const classeNome = semMargin
+    ? 'col-sm-12 col-md-6 col-lg-8 col-xl-8 p-0'
+    : 'col-sm-12 col-md-6 col-lg-8 col-xl-8';
+  const classeCodigo = semMargin
+    ? 'col-sm-12 col-md-6 col-lg-4 col-xl-4 p-0 pl-4'
+    : 'col-sm-12 col-md-6 col-lg-4 col-xl-4';
+  
   const [dataSource, setDataSource] = useState([]);
   const [pessoaSelecionada, setPessoaSelecionada] = useState({});
   const [desabilitarCampo, setDesabilitarCampo] = useState({
@@ -39,9 +49,20 @@ const LocalizadorEstudante = props => {
       alunoNome: '',
       codigoTurma: '',
       turmaId: '',
+      nomeComModalidadeTurma: '',
     });
     setDataSource([]);
   }, [ueId, codigoTurma]);
+
+  useEffect(() => {
+    if (Object.keys(pessoaSelecionada).length && limparCamposAposPesquisa) {
+      setPessoaSelecionada({});
+      setDesabilitarCampo({
+        codigo: false,
+        nome: false,
+      });
+    }
+  }, [pessoaSelecionada, limparCamposAposPesquisa]);
 
   const limparDados = () => {
     onChange();
@@ -51,6 +72,7 @@ const LocalizadorEstudante = props => {
       alunoNome: '',
       codigoTurma: '',
       turmaId: '',
+      nomeComModalidadeTurma: '',
     });
     setTimeout(() => {
       setDesabilitarCampo(() => ({
@@ -97,6 +119,7 @@ const LocalizadorEstudante = props => {
           alunoNome: aluno.nome,
           codigoTurma: aluno.codigoTurma,
           turmaId: aluno.turmaId,
+          nomeComModalidadeTurma: aluno.nomeComModalidadeTurma,
         }))
       );
 
@@ -152,6 +175,7 @@ const LocalizadorEstudante = props => {
         nome,
         codigoTurma,
         turmaId,
+        nomeComModalidadeTurma,
       } = retorno.data.items[0];
       setDataSource(
         retorno.data.items.map(aluno => ({
@@ -159,6 +183,7 @@ const LocalizadorEstudante = props => {
           alunoNome: aluno.nome,
           codigoTurma: aluno.codigoTurma,
           turmaId: aluno.turmaId,
+          nomeComModalidadeTurma: aluno.nomeComModalidadeTurma,
         }))
       );
       setPessoaSelecionada({
@@ -166,6 +191,7 @@ const LocalizadorEstudante = props => {
         alunoNome: nome,
         codigoTurma,
         turmaId,
+        nomeComModalidadeTurma,
       });
       setDesabilitarCampo(estado => ({
         ...estado,
@@ -176,6 +202,7 @@ const LocalizadorEstudante = props => {
         alunoNome: nome,
         codigoTurma,
         turmaId,
+        nomeComModalidadeTurma,
       });
     }
   };
@@ -220,6 +247,7 @@ const LocalizadorEstudante = props => {
       alunoNome: objeto.props.value,
       codigoTurma: objeto.props.codigoTurma,
       turmaId: objeto.props.turmaId,
+      nomeComModalidadeTurma: objeto.props.nomeComModalidadeTurma,
     };
     setPessoaSelecionada(pessoa);
     onChange(pessoa);
@@ -255,7 +283,7 @@ const LocalizadorEstudante = props => {
           exibirCodigoEOL ? 'col-sm-12 col-md-6 col-lg-8 col-xl-8' : 'col-md-12'
         } `}
       >
-        {showLabel && <Label text="Nome" control="alunoNome" />}
+        {showLabel && <Label text={labelAlunoNome} control="alunoNome" />}
         <InputNome
           placeholder={placeholder}
           dataSource={dataSource}
@@ -269,7 +297,7 @@ const LocalizadorEstudante = props => {
         />
       </div>
       {exibirCodigoEOL ? (
-        <div className="col-sm-12 col-md-6 col-lg-4 col-xl-4">
+        <div className={classeCodigo}>
           {showLabel && <Label text="Código EOL" control="alunoCodigo" />}
           <InputCodigo
             pessoaSelecionada={pessoaSelecionada}
@@ -300,6 +328,9 @@ LocalizadorEstudante.propTypes = {
     PropTypes.string,
   ]),
   placeholder: PropTypes.string,
+  semMargin: PropTypes.bool,
+  limparCamposAposPesquisa: PropTypes.bool,
+  labelAlunoNome: PropTypes.string,
 };
 
 LocalizadorEstudante.defaultProps = {
@@ -312,6 +343,9 @@ LocalizadorEstudante.defaultProps = {
   exibirCodigoEOL: true,
   valorInicialAlunoCodigo: '',
   placeholder: '',
+  semMargin: false,
+  limparCamposAposPesquisa: false,
+  labelAlunoNome: 'Nome',
 };
 
 export default LocalizadorEstudante;

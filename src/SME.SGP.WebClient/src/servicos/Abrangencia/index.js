@@ -21,17 +21,19 @@ const AbrangenciaServico = {
    * @param {String} modalidade Modalidade Selecionada
    * @param {String} periodo Periodo (opcional)
    */
-  buscarTurmas(ue, modalidade = 0, periodo = '', anoLetivo = '', consideraHistorico = false) {
+  buscarTurmas(ue, modalidade = 0, periodo = '', anoLetivo = '', consideraHistorico = false, turmasRegulares = false) {
     let params = {};
     if (modalidade) {
-      params = { modalidade };
+        params = { modalidade };
     }
+    const action = turmasRegulares ? 'turmas-regulares' : 'turmas';
+
     if (periodo) {
       params = { ...params, periodo };
     }
 
     return api.get(
-      `v1/abrangencias/${consideraHistorico}/dres/ues/${ue}/turmas${
+      `v1/abrangencias/${consideraHistorico}/dres/ues/${ue}/${action}${
         anoLetivo ? `?anoLetivo=${anoLetivo}` : ''
       }`,
       {

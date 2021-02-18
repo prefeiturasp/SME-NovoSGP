@@ -135,8 +135,11 @@ namespace SME.SGP.Dominio.Servicos
             }
 
             // Verifica existencia de pendencia de calendario com dias letivos insuficientes
-            await VerificaPendenciaDiasLetivosInsuficientes(ehAlteracao, enviarParaWorkflow, evento, usuario);
-            await VerificaPendenciaParametroEvento(evento, usuario);
+            if (evento.EhEventoDRE() && evento.EhEventoUE())
+                await VerificaPendenciaDiasLetivosInsuficientes(ehAlteracao, enviarParaWorkflow, evento, usuario);
+
+            if (evento.EhEventoUE())
+                await VerificaPendenciaParametroEvento(evento, usuario);
 
             if (ehAlteracao)
             {
@@ -154,7 +157,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task VerificaPendenciaParametroEvento(Evento evento, Usuario usuario)
         {
-            if ( evento.GeraPendenciaParametroEvento())
+            if (evento.GeraPendenciaParametroEvento())
                 await mediator.Send(new IncluirFilaVerificaExclusaoPendenciasParametroEventoCommand(evento.TipoCalendarioId, evento.UeId, (TipoEvento)evento.TipoEventoId, usuario));
         }
 
@@ -457,7 +460,7 @@ namespace SME.SGP.Dominio.Servicos
                                 return devePassarPorWorkflow;
                             }
                             else
-                                throw new NegocioException($"O tipo de evento '{((TipoEvento)evento.TipoEvento.Codigo).GetAttribute<DisplayAttribute>().Name}' não pode ser cadastrado no recesso.");
+                                throw new NegocioException($"O tipo de evento '{((TipoEvento)evento.TipoEvento.Codigo).ObterAtributo<DisplayAttribute>().Name}' não pode ser cadastrado no recesso.");
                         }
                         else return devePassarPorWorkflow;
                     }
@@ -496,7 +499,7 @@ namespace SME.SGP.Dominio.Servicos
                                     return true;
                                 else if (evento.TipoEvento.Codigo == (long)TipoEvento.Outros)
                                     return devePassarPorWorkflow;
-                                else throw new NegocioException($"O tipo de evento '{((TipoEvento)evento.TipoEvento.Codigo).GetAttribute<DisplayAttribute>().Name}' não pode ser cadastrado fora do período escolar.");
+                                else throw new NegocioException($"O tipo de evento '{((TipoEvento)evento.TipoEvento.Codigo).ObterAtributo<DisplayAttribute>().Name}' não pode ser cadastrado fora do período escolar.");
                             }
                         }
                     }

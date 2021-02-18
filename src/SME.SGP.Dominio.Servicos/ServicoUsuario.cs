@@ -271,13 +271,7 @@ namespace SME.SGP.Dominio
             if (retornoEol == null || retornoEol.Status != AutenticacaoStatusEol.Ok)
                 throw new NegocioException("Ocorreu um erro ao obter os dados do usuário no EOL.");
 
-            if (retornoEol.Perfis == null || !retornoEol.Perfis.Any())
-            {
-                //pode ser que esse usuário não tenha se logado ainda no sistema, realizar chamada para o serviço de relacionar grupos
-                retornoEol = await servicoEOL.RelecionarUsuarioPerfis(usuario.Login);
-                if (retornoEol == null || !retornoEol.Perfis.Any())
-                    throw new NegocioException("Não é possível alterar o e-mail deste usuário pois o mesmo está sem perfis de acesso.");
-            }
+          
             var perfisUsuario = repositorioPrioridadePerfil.ObterPerfisPorIds(retornoEol.Perfis);
             usuario.DefinirPerfis(perfisUsuario);
             usuario.DefinirEmail(novoEmail);

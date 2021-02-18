@@ -226,44 +226,60 @@ const QuestionarioDinamico = props => {
 
     const valorAtualSelecionado = form.values[questaoAtual.id];
 
-    if (questaoAtual?.tipoQuestao === tipoQuestao.ComboMultiplaEscolha) {
+    if (
+      questaoAtual?.tipoQuestao === tipoQuestao.ComboMultiplaEscolha ||
+      questaoAtual?.tipoQuestao === tipoQuestao.Checkbox
+    ) {
       if (valorAtualSelecionado?.length) {
-        const idOpcaoRespostaComComplementarObrigatoria = QuestionarioDinamicoFuncoes.obterIdOpcaoRespostaComComplementarObrigatoria(
+        const listaCamposRenderizar = [];
+
+        const todosCamposComplementares = QuestionarioDinamicoFuncoes.obterTodosCamposComplementares(
           valorAtualSelecionado,
           questaoAtual
         );
 
-        if (idOpcaoRespostaComComplementarObrigatoria) {
-          const opcaoResposta = questaoAtual?.opcaoResposta.find(
-            item =>
-              String(item.id) ===
-              String(idOpcaoRespostaComComplementarObrigatoria)
-          );
+        const camposSemEspaco = todosCamposComplementares.map(m => {
+          return { ...m, nome: m.nome.trim() };
+        });
 
-          if (opcaoResposta?.questoesComplementares?.length) {
-            opcaoResposta.questoesComplementares.forEach(q => {
-              campoQuestaoComplementar.push(montarCampos(q, form, ordemLabel));
+        const camposDuplicados = QuestionarioDinamicoFuncoes.agruparCamposDuplicados(
+          camposSemEspaco,
+          'nome'
+        );
+
+        if (camposDuplicados?.length) {
+          camposDuplicados.forEach(c => {
+            // Na base vai ter somente 2 campos com mesmo nome para essa rotina 1 obrigatório e outro não!
+            const campoRenderizar = c.questoesDuplicadas?.find(
+              co => co.obrigatorio
+            );
+
+            if (campoRenderizar) {
+              listaCamposRenderizar.push(campoRenderizar);
+            }
+          });
+        }
+
+        if (camposSemEspaco?.length && camposDuplicados?.length) {
+          const camposNaoDuplicados = QuestionarioDinamicoFuncoes.obterCamposNaoDuplicados(
+            camposSemEspaco,
+            camposDuplicados
+          );
+          if (camposNaoDuplicados?.length) {
+            camposNaoDuplicados.forEach(c => {
+              listaCamposRenderizar.push(c);
             });
           }
         } else {
-          const idOpcaoRespostaComComplementarNaoObrigatoria = QuestionarioDinamicoFuncoes.obterIdOpcaoRespostaComComplementarNaoObrigatoria(
-            valorAtualSelecionado,
-            questaoAtual
-          );
-
-          montarCampoComplementarPadrao(
-            idOpcaoRespostaComComplementarNaoObrigatoria,
-            ordemLabel
-          );
+          camposSemEspaco.forEach(c => {
+            listaCamposRenderizar.push(c);
+          });
         }
+
+        listaCamposRenderizar.forEach(q => {
+          campoQuestaoComplementar.push(montarCampos(q, form, ordemLabel));
+        });
       }
-    } else if (
-      valorAtualSelecionado?.length &&
-      questaoAtual?.tipoQuestao === tipoQuestao.Checkbox
-    ) {
-      valorAtualSelecionado.forEach((vAtual, index) => {
-        montarCampoComplementarPadrao(vAtual, ordemLabel, index + 1);
-      });
     } else if (valorAtualSelecionado) {
       montarCampoComplementarPadrao(valorAtualSelecionado, ordemLabel);
     }
@@ -303,7 +319,7 @@ const QuestionarioDinamico = props => {
             label={label}
             desabilitado={desabilitarCampos}
             onChange={valorAtual => {
-              QuestionarioDinamicoFuncoes.onChangeCampoCheckbox(
+              QuestionarioDinamicoFuncoes.onChangeCampoCheckboxOuComboMultiplaEscolha(
                 questaoAtual,
                 form,
                 valorAtual
@@ -341,7 +357,7 @@ const QuestionarioDinamico = props => {
             label={label}
             desabilitado={desabilitarCampos}
             onChange={valoresSelecionados => {
-              QuestionarioDinamicoFuncoes.onChangeCampoComboMultiplaEscolha(
+              QuestionarioDinamicoFuncoes.onChangeCampoCheckboxOuComboMultiplaEscolha(
                 questaoAtual,
                 form,
                 valoresSelecionados

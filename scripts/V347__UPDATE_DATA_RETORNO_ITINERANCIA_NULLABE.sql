@@ -1,0 +1,1 @@
+ALTER TABLE public.itinerancia ALTER COLUMN data_retorno_verificacao DROP NOT NULL;
