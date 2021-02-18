@@ -385,7 +385,14 @@ class ServicoEncaminhamentoAEE {
     return api.post(`${urlPadrao}/enviar-analise/${encaminhamentoId}`);
   };
 
-  obterResponsaveis = (dreId, ueId, turmaId, alunoCodigo, situacao, anoLetivo) => {
+  obterResponsaveis = (
+    dreId,
+    ueId,
+    turmaId,
+    alunoCodigo,
+    situacao,
+    anoLetivo
+  ) => {
     let url = `${urlPadrao}/responsaveis?dreId=${dreId}&ueId=${ueId}&anoLetivo=${anoLetivo}`;
 
     if (turmaId) {
@@ -415,6 +422,10 @@ class ServicoEncaminhamentoAEE {
 
   removerResponsavel = encaminhamentoId => {
     return api.post(`${urlPadrao}/remover-responsavel/${encaminhamentoId}`);
+  };
+
+  devolverEncaminhamentoAEE = params => {
+    return api.post(`${urlPadrao}/devolver`, params);
   };
 }
 
