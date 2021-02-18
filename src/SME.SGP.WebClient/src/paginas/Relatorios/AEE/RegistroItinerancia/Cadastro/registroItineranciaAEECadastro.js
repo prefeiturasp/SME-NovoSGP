@@ -395,7 +395,6 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
                   color={Colors.Azul}
                   border
                   className="mr-3"
-                  disabled
                   onClick={onClickVoltar}
                 />
                 <Button

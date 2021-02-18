@@ -59,15 +59,15 @@ const RegistroItineranciaAEELista = () => {
     },
     {
       title: 'Unidade Escolar (UE)',
-      dataIndex: 'ue',
+      dataIndex: 'ueNome',
     },
     {
       title: 'Crianças/Estudantes ',
-      dataIndex: 'alunos',
+      dataIndex: 'estudanteNome',
     },
     {
       title: 'Turma (Regular)',
-      dataIndex: 'Turma',
+      dataIndex: 'turmaNome',
     },
     {
       title: 'Situação',

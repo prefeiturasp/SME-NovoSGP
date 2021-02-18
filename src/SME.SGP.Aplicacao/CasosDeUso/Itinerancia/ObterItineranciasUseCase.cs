@@ -56,7 +56,7 @@ namespace SME.SGP.Aplicacao
             {
                 var itineranciaParaTratar = itineranciasAgrupada.FirstOrDefault();
                 var itineranciaDto = new ItineranciaResumoDto();
-                itineranciaDto.DataVisita = itineranciaParaTratar.DataVisita;
+                itineranciaDto.DataVisita = itineranciaParaTratar.DataVisita.ToString("dd/MM/yyyy");
                 itineranciaDto.UeNome = ObterNomeUe(itineranciasAgrupada, itineranciaParaTratar);
                 itineranciaDto.Id = itineranciasAgrupada.Key;
                 itineranciaDto.Situacao = itineranciaParaTratar.Situacao.Name();
