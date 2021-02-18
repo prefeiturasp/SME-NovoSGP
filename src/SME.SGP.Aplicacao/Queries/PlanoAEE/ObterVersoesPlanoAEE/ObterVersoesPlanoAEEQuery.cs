@@ -7,14 +7,12 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterVersoesPlanoAEEQuery : IRequest<IEnumerable<PlanoAEEVersaoDto>>
     {
-        public ObterVersoesPlanoAEEQuery(long planoId, long? versaoPlanoId)
+        public ObterVersoesPlanoAEEQuery(long planoId)
         {
             PlanoId = planoId;
-            VersaoPlanoId = versaoPlanoId;
         }
 
         public long PlanoId { get; }
-        public long? VersaoPlanoId { get; }
     }
 
     public class ObterVersoesPlanoAEEQueryValidator : AbstractValidator<ObterVersoesPlanoAEEQuery>

@@ -49,7 +49,7 @@ namespace SME.SGP.Aplicacao
 
                 plano.Id = planoAEEId.Value;
                 plano.Auditoria = (AuditoriaDto)entidadePlano;
-                plano.Versoes = await mediator.Send(new ObterVersoesPlanoAEEQuery(planoAEEId.Value, null));
+                plano.Versoes = await mediator.Send(new ObterVersoesPlanoAEEQuery(planoAEEId.Value));
                 plano.Aluno = aluno;
                 plano.SituacaoDescricao = entidadePlano.Situacao.Name();
                 plano.Turma = new TurmaAnoDto()

@@ -12,9 +12,26 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<IEnumerable<PlanoAEEVersaoDto>> Executar(FiltroVersoesPlanoAEEDto filtro)
+        public async Task<IEnumerable<PlanoAEEDescricaoVersaoDto>> Executar(long planoId)
         {
-            return await mediator.Send(new ObterVersoesPlanoAEEQuery(filtro.PlanoId, filtro.VersaoPlanoId));
+            var versoesPlanoAEE = await mediator.Send(new ObterVersoesPlanoAEEQuery(planoId));
+            return MapearPlanoAEEDescricao(versoesPlanoAEE);
+        }
+
+        private static List<PlanoAEEDescricaoVersaoDto> MapearPlanoAEEDescricao(IEnumerable<PlanoAEEVersaoDto> versoesPlanoAEE)
+        {
+            var planosAEEDescricaoVersaoDto = new List<PlanoAEEDescricaoVersaoDto>();
+            foreach (var item in versoesPlanoAEE)
+            {
+                var planoAEEDescricaoVersaoDto = new PlanoAEEDescricaoVersaoDto
+                {
+                    Id = item.Id,
+                    Descricao = $"v{item.Numero.ToString()} - {item.CriadoEm.ToString("dd-MM-yyyy")}"
+                };
+                planosAEEDescricaoVersaoDto.Add(planoAEEDescricaoVersaoDto);
+            }
+
+            return planosAEEDescricaoVersaoDto;
         }
     }
 }
