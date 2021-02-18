@@ -70,16 +70,18 @@ namespace SME.SGP.Aplicacao
 
                                 var url = ObterUrlComRedirect(menuSubEnumeradoComAtributo);
 
+                                var permissoesSubMenu = permissaoMenu.Where(c => c.GetAttribute<PermissaoMenuAttribute>().Url == subMenu.Key);
+
                                 menuPai.SubMenus.Add(new MenuPermissaoDto()
                                 {
                                     Codigo = (int)menuSubEnumerado,
                                     Url = url,
                                     Descricao = menuSubEnumeradoComAtributo.SubMenu,
                                     Ordem = menuSubEnumeradoComAtributo.OrdemSubMenu,
-                                    PodeConsultar = permissaoMenu.Any(a => a.GetAttribute<PermissaoMenuAttribute>().EhConsulta),
-                                    PodeAlterar = permissaoMenu.Any(a => a.GetAttribute<PermissaoMenuAttribute>().EhAlteracao),
-                                    PodeIncluir = permissaoMenu.Any(a => a.GetAttribute<PermissaoMenuAttribute>().EhInclusao),
-                                    PodeExcluir = permissaoMenu.Any(a => a.GetAttribute<PermissaoMenuAttribute>().EhExclusao)
+                                    PodeConsultar = permissoesSubMenu.Any(a => a.GetAttribute<PermissaoMenuAttribute>().EhConsulta),
+                                    PodeAlterar = permissoesSubMenu.Any(a => a.GetAttribute<PermissaoMenuAttribute>().EhAlteracao),
+                                    PodeIncluir = permissoesSubMenu.Any(a => a.GetAttribute<PermissaoMenuAttribute>().EhInclusao),
+                                    PodeExcluir = permissoesSubMenu.Any(a => a.GetAttribute<PermissaoMenuAttribute>().EhExclusao)
                                 });
                             }
                         }

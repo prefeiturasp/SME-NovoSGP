@@ -1,4 +1,5 @@
 import { Form, Formik } from 'formik';
+import * as moment from 'moment';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import shortid from 'shortid';
@@ -15,16 +16,17 @@ import Button from '~/componentes/button';
 import { confirmar } from '~/servicos';
 
 const ModalCadastroDiasHorario = props => {
-  const { onClose, exibirModal } = props;
+  const { onClose, exibirModal, dadosIniciais } = props;
 
   const [refForm, setRefForm] = useState({});
 
   const [emEdicao, setEmEdicao] = useState(false);
 
   const valoresIniciais = {
-    diaSemana: '',
-    horarioInicio: '',
-    horarioTermino: '',
+    id: dadosIniciais ? dadosIniciais.id : 0,
+    diaSemana: dadosIniciais ? dadosIniciais.diaSemana : '',
+    horarioInicio: dadosIniciais ? moment(dadosIniciais.horarioInicio) : '',
+    horarioTermino: dadosIniciais ? moment(dadosIniciais.horarioTermino) : '',
   };
 
   const validacoes = Yup.object().shape({
@@ -181,9 +183,10 @@ const ModalCadastroDiasHorario = props => {
               <Button
                 key="btn-salvar"
                 id="btn-salvar"
-                label="Adicionar"
+                label={dadosIniciais ? 'Alterar' : 'Adicionar'}
                 color={Colors.Roxo}
                 border
+                disabled={!emEdicao}
                 onClick={() => validaAntesDoSubmit(form)}
                 className="mt-2"
               />
@@ -198,11 +201,13 @@ const ModalCadastroDiasHorario = props => {
 ModalCadastroDiasHorario.propTypes = {
   onClose: PropTypes.func,
   exibirModal: PropTypes.bool,
+  dadosIniciais: PropTypes.oneOfType([PropTypes.any]),
 };
 
 ModalCadastroDiasHorario.defaultProps = {
   onClose: () => {},
   exibirModal: false,
+  dadosIniciais: {},
 };
 
 export default ModalCadastroDiasHorario;
