@@ -4,6 +4,7 @@ using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -16,7 +17,7 @@ namespace SME.SGP.Api
     {
 
         [HttpGet("objetivos")]
-        [ProducesResponseType(typeof(RegistroIndividualDto), 200)]
+        [ProducesResponseType(typeof(IEnumerable<ItineranciaObjetivosBaseDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.RI_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterObjetivos([FromServices] IObterObjetivosBaseUseCase useCase)
@@ -25,7 +26,7 @@ namespace SME.SGP.Api
         }
 
         [HttpGet("{id}")]
-        [ProducesResponseType(typeof(RegistroIndividualDto), 200)]
+        [ProducesResponseType(typeof(ItineranciaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.RI_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterRegistroItinerancia(long id, [FromServices] IObterItineranciaPorIdUseCase useCase)
@@ -34,7 +35,7 @@ namespace SME.SGP.Api
         }
 
         [HttpPost]
-        [ProducesResponseType(typeof(RetornoBaseDto), 200)]
+        [ProducesResponseType(typeof(AuditoriaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.RI_I, Policy = "Bearer")]
         public async Task<IActionResult> Salvar([FromBody] ItineranciaDto itineranciaDto, [FromServices] ISalvarItineranciaUseCase useCase)
@@ -52,7 +53,7 @@ namespace SME.SGP.Api
         }
 
         [HttpGet("alunos/questoes/{id}")]
-        [ProducesResponseType(typeof(RegistroIndividualDto), 200)]
+        [ProducesResponseType(typeof(IEnumerable<ItineranciaAlunoQuestaoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.RI_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterQuestoesItineranciaAluno(long id, [FromServices] IObterQuestoesItineranciaAlunoUseCase useCase)
@@ -61,7 +62,7 @@ namespace SME.SGP.Api
         }
 
         [HttpGet("questoes")]
-        [ProducesResponseType(typeof(RegistroIndividualDto), 200)]
+        [ProducesResponseType(typeof(ItineranciaQuestoesBaseDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.RI_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterQuestoes([FromServices] IObterQuestoesBaseUseCase useCase)
@@ -79,7 +80,7 @@ namespace SME.SGP.Api
         }
 
         [HttpGet("situacoes")]
-        [ProducesResponseType(typeof(RegistroIndividualDto), 200)]
+        [ProducesResponseType(typeof(List<SituacaoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.RI_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterSituacoes()
@@ -95,7 +96,7 @@ namespace SME.SGP.Api
         }
 
         [HttpGet("anos-letivos")]
-        [ProducesResponseType(typeof(RegistroIndividualDto), 200)]
+        [ProducesResponseType(typeof(IEnumerable<long>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.RI_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterAnosLetivos([FromServices] IObterAnosLetivosItineranciaUseCase useCase)
