@@ -64,6 +64,7 @@ const ModalObjetivos = ({
           objetivo.descricao = objetivoSelecionado.descricao;
         } else {
           objetivo.checked = false;
+          objetivo.descricao = '';
         }
       });
       setValidacoes(Yup.object(validacoesCamposComDescricao));
