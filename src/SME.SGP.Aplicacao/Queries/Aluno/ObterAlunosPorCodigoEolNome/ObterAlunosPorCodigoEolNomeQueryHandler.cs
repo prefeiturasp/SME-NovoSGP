@@ -1,10 +1,10 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -29,15 +29,20 @@ namespace SME.SGP.Aplicacao.Queries.Aluno.ObterAlunosPorCodigoEolNome
 
                 var alunoSimplesDto = new List<AlunoSimplesDto>();
 
+                var turmas = await mediator.Send(new ObterTurmasPorCodigosQuery(alunosEOL.Select(al => al.CodigoTurma.ToString()).ToArray()));
+
                 foreach (var alunoEOL in alunosEOL.OrderBy(a => a.NomeAluno))
                 {
+                    var turmaAluno = turmas != null && turmas.Any() ? turmas.FirstOrDefault(t => t.CodigoTurma == alunoEOL.CodigoTurma.ToString()) : null;
                     var alunoSimples = new AlunoSimplesDto()
                     {
                         Codigo = alunoEOL.CodigoAluno,
                         Nome = alunoEOL.NomeAluno,
                         CodigoTurma = alunoEOL.CodigoTurma.ToString(),
-                        TurmaId = await ObterTurmaId(alunoEOL.CodigoTurma)
-                };
+                        TurmaId = turmaAluno!=null ? turmaAluno.Id : 0,
+                        NomeComModalidadeTurma = turmas != null && turmas.Any() ?
+                        $"{alunoEOL.NomeAluno} - {OberterNomeTurmaFormatado(turmas.FirstOrDefault(t => t.CodigoTurma == alunoEOL.CodigoTurma.ToString()))}" : ""
+                    };
                     alunoSimplesDto.Add(alunoSimples);
                 }
 
@@ -49,7 +54,14 @@ namespace SME.SGP.Aplicacao.Queries.Aluno.ObterAlunosPorCodigoEolNome
             }
         }
 
-        private async Task<long> ObterTurmaId(long codigoTurma)
-            => await mediator.Send(new ObterTurmaIdPorCodigoQuery(codigoTurma.ToString()));
+        private string OberterNomeTurmaFormatado(Turma turma)
+        {
+            var turmaNome = "";
+
+            if (turma != null)
+                turmaNome = $"{turma.ModalidadeCodigo.ShortName()} - {turma.Nome}";
+
+            return turmaNome;
+        }
     }
 }
