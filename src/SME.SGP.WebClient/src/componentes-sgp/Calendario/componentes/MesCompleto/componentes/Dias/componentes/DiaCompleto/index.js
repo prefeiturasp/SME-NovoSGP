@@ -8,6 +8,7 @@ import { Tooltip } from 'antd';
 // Redux
 import { store } from '~/redux';
 import { salvarDadosAulaFrequencia } from '~/redux/modulos/calendarioProfessor/actions';
+import { useSelector } from 'react-redux';
 
 // Estilos
 import { DiaCompletoWrapper, LinhaEvento, Pilula, Linha } from './styles';
@@ -53,6 +54,9 @@ function DiaCompleto({
       ? eventos.filter(diaAtual => diaAtual.dia === dia.getDate())[0]
       : null;
   }, [dia, eventos]);
+
+  const usuario = useSelector(state => state.usuario);
+  const { turmaSelecionada } = usuario;
 
   const onClickNovaAulaHandler = useCallback(
     diaSelecionado => {
@@ -204,6 +208,7 @@ function DiaCompleto({
               dadosDia?.dados?.eventosAulas?.filter(
                 evento => evento.ehAula && evento.podeCadastrarAvaliacao
               ).length > 0
+              && turmaSelecionada.modalidade > 1
             }
             onClickNovaAula={() =>
               onClickNovaAulaHandler(window.moment(dia).format('YYYY-MM-DD'))
