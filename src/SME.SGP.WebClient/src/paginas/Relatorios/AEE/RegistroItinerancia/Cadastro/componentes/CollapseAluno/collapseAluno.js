@@ -44,6 +44,7 @@ const CollapseAluno = ({
                       name={questao.descricao + questao.questaoId}
                       id={questao.questaoId}
                       onChange={e => onChangeResposta(e, questao)}
+                      desabilitar={desabilitar}
                     />
                   </div>
                 </div>
