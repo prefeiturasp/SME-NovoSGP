@@ -160,10 +160,6 @@ class ServicoEncaminhamentoAEE {
 
     const { dadosCollapseLocalizarEstudante } = collapseLocalizarEstudante;
 
-    const formsParaSalvar = formsQuestionarioDinamico.filter(f =>
-      listaSecoesEmEdicao.find(secaoEdicao => secaoEdicao.secaoId === f.secaoId)
-    );
-
     let contadorFormsValidos = 0;
 
     const validaAntesDoSubmit = refForm => {
@@ -187,21 +183,28 @@ class ServicoEncaminhamentoAEE {
       });
     };
 
-    if (formsParaSalvar?.length) {
+    if (formsQuestionarioDinamico?.length) {
       let todosOsFormsEstaoValidos = !enviarEncaminhamento;
 
       if (enviarEncaminhamento) {
-        const promises = formsParaSalvar.map(async item =>
+        const promises = formsQuestionarioDinamico.map(async item =>
           validaAntesDoSubmit(item.form())
         );
 
         await Promise.all(promises);
 
         todosOsFormsEstaoValidos =
-          contadorFormsValidos === formsParaSalvar?.filter(a => a)?.length;
+          contadorFormsValidos ===
+          formsQuestionarioDinamico?.filter(a => a)?.length;
       }
 
       if (todosOsFormsEstaoValidos) {
+        const formsParaSalvar = formsQuestionarioDinamico.filter(f =>
+          listaSecoesEmEdicao.find(
+            secaoEdicao => secaoEdicao.secaoId === f.secaoId
+          )
+        );
+
         const valoresParaSalvar = {
           id: encaminhamentoId || 0,
           turmaId: dadosCollapseLocalizarEstudante.turmaId,
