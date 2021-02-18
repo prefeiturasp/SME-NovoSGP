@@ -364,7 +364,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
       const objetivosComApenasUmaUe = objetivosSelecionados.filter(
         objetivo => !objetivo.permiteVariasUes
       );
-      return objetivosComApenasUmaUe?.length;
+      return objetivosComApenasUmaUe?.length > 0 ? true : false;
     }
     return false;
   };
@@ -554,7 +554,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
           permiteApenasUmaUe={permiteApenasUmaUe()}
           setModoEdicaoItinerancia={setModoEdicao}
           desabilitarBotaoExcluir={
-            permissoesTela?.podeAlterar || alunosSelecionados?.length
+            !permissoesTela?.podeAlterar || alunosSelecionados?.length 
           }
           temAlunosSelecionados={alunosSelecionados?.length}
         />
