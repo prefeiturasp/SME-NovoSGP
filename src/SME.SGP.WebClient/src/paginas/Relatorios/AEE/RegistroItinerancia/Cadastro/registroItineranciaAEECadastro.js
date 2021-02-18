@@ -364,7 +364,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
       const objetivosComApenasUmaUe = objetivosSelecionados.filter(
         objetivo => !objetivo.permiteVariasUes
       );
-      return objetivosComApenasUmaUe?.length > 0 ? true : false;
+      return objetivosComApenasUmaUe?.length > 0;
     }
     return false;
   };
