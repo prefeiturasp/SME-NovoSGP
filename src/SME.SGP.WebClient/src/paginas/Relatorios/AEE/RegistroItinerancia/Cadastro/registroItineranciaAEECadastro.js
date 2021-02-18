@@ -554,7 +554,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
           permiteApenasUmaUe={permiteApenasUmaUe()}
           setModoEdicaoItinerancia={setModoEdicao}
           desabilitarBotaoExcluir={
-            !permissoesTela?.podeAlterar
+            !permissoesTela?.podeAlterar || alunosSelecionados?.length 
           }
           temAlunosSelecionados={alunosSelecionados?.length}
         />
