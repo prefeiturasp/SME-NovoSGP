@@ -1055,5 +1055,21 @@ namespace SME.SGP.Aplicacao.Integracoes
             return JsonConvert.DeserializeObject<InformacoesEscolaresAlunoDto>(json);
                         
         }        
+
+        public async Task<IEnumerable<string>> DefinirTurmasRegulares(string[] codigosTurmas)
+        {
+            var parametros = JsonConvert.SerializeObject(codigosTurmas);
+            var resposta = await httpClient.PostAsync("turmas/turmas-regulares", new StringContent(parametros, Encoding.UTF8, "application/json-patch+json"));
+
+            if (!resposta.IsSuccessStatusCode || resposta.StatusCode == HttpStatusCode.NoContent)
+            {
+                await RegistrarLogSentryAsync(resposta, "definir turmas regulares", parametros);
+                return Enumerable.Empty<string>();
+            }
+
+            var json = await resposta.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<IEnumerable<string>>(json);            
+        }
     }
 }
