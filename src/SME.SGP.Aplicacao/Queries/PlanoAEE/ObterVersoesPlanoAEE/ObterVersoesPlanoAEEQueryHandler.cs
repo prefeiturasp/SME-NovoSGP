@@ -3,7 +3,6 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -19,6 +18,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<IEnumerable<PlanoAEEVersaoDto>> Handle(ObterVersoesPlanoAEEQuery request, CancellationToken cancellationToken)
-            => await repositorioPlanoAEEVersao.ObterVersoesPorPlanoId(request.PlanoId);
+            => await repositorioPlanoAEEVersao.ObterVersoesPorPlanoId(request.PlanoId, request.VersaoPlanoId);
     }
 }

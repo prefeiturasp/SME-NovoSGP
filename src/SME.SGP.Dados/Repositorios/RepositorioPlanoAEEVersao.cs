@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -41,13 +42,18 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<PlanoAEEVersaoDto>(query, new { codigoEstudante });
         }
 
-        public async Task<IEnumerable<PlanoAEEVersaoDto>> ObterVersoesPorPlanoId(long planoId)
+        public async Task<IEnumerable<PlanoAEEVersaoDto>> ObterVersoesPorPlanoId(long planoId, long? versaoPlanoId)
         {
-            var query = @"select pav.Id, pav.numero, pav.criado_em as CriadoEm 
+            var query = new StringBuilder(@"select pav.Id, pav.numero, pav.criado_em as CriadoEm 
                           from plano_aee_versao pav 
-                         where pav.plano_aee_id = @planoId order by pav.numero desc";
+                         where pav.plano_aee_id = @planoId ");
 
-            return await database.Conexao.QueryAsync<PlanoAEEVersaoDto>(query, new { planoId });
+            if (versaoPlanoId > 0)
+                query.AppendLine(" and pav.id = @versaoPlanoId");
+
+            query.AppendLine(" order by pav.numero desc");
+
+            return await database.Conexao.QueryAsync<PlanoAEEVersaoDto>(query.ToString(), new { planoId, versaoPlanoId });
         }
     }
 }
