@@ -2,18 +2,18 @@ import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { CardCollapse } from '~/componentes';
 
 import ServicoPlanoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoPlanoAEE';
 
 import ReestruturacaoTabela from '../ReestruturacaoTabela/reestruturacaoTabela';
+import { setReestruturacaoDados } from '~/redux/modulos/planoAEE/actions';
 
 const SecaoReestruturacaoPlano = ({ match }) => {
   const [listaPrimeiroSemestre, setListaPrimeiroSemestre] = useState([]);
   const [listaSegundoSemestre, setListaSegundoSemestre] = useState([]);
   const [listaVersao, setListaVersao] = useState([]);
-  const [listaReestruturacao, setListaReestruturacao] = useState([]);
 
   const keyPrimeiroSemestre = 'secao-1-semestre-plano-collapse';
   const keySegundoSemestre = 'secao-2-semestre-plano-collapse';
@@ -21,6 +21,8 @@ const SecaoReestruturacaoPlano = ({ match }) => {
   const reestruturacaoDados = useSelector(
     store => store.planoAEE.reestruturacaoDados
   );
+
+  const dispatch = useDispatch();
 
   const obterVersoes = useCallback(async () => {
     const resposta = await ServicoPlanoAEE.obterVersoes(match?.params?.id);
@@ -46,7 +48,6 @@ const SecaoReestruturacaoPlano = ({ match }) => {
     if (dados) {
       const dadosPrimeiroSemestre = dados.filter(item => item.semestre === 1);
       const dadosSegundoSemestre = dados.filter(item => item.semestre === 2);
-      setListaReestruturacao(estadoAntigo => [...estadoAntigo, ...dados]);
       setListaPrimeiroSemestre(estadoAntigo => [
         ...estadoAntigo,
         ...FormatarDados(dadosPrimeiroSemestre),
@@ -64,8 +65,9 @@ const SecaoReestruturacaoPlano = ({ match }) => {
     );
     if (resposta?.data) {
       separarDados(resposta?.data);
+      dispatch(setReestruturacaoDados(resposta?.data));
     }
-  }, [match, separarDados]);
+  }, [dispatch, match, separarDados]);
 
   useEffect(() => {
     obterReestruturacoes();

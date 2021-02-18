@@ -10,7 +10,5 @@ namespace SME.SGP.Dominio
         public long PlanoAEEVersaoId { get; set; }
         public int Semestre { get; set; }
         public string Descricao { get; set; }
-
-        public bool Excluido { get; set; }
     }
 }
