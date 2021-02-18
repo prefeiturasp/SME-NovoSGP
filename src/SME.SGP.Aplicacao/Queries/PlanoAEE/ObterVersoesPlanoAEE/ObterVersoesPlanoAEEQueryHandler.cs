@@ -18,6 +18,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<IEnumerable<PlanoAEEVersaoDto>> Handle(ObterVersoesPlanoAEEQuery request, CancellationToken cancellationToken)
-            => await repositorioPlanoAEEVersao.ObterVersoesPorPlanoId(request.PlanoId, request.VersaoPlanoId);
+            => await repositorioPlanoAEEVersao.ObterVersoesPorPlanoId(request.PlanoId);
     }
 }
