@@ -111,12 +111,13 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpPost("{planoAEEId}/reestruturacoes")]
-        [ProducesResponseType(typeof(bool), 200)]
+        [ProducesResponseType(typeof(long), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        public async Task<IActionResult> SalvarReestruturacao([FromBody] PlanoAEEReestrutucacaoPersistenciaDto planoAeeReestruturacaoDto)
+        public async Task<IActionResult> SalvarReestruturacao([FromBody] PlanoAEEReestrutucacaoPersistenciaDto planoAeeReestruturacaoDto, [FromServices] ISalvarReestruturacaoPlanoAEEUseCase useCase)
         {
-            return Ok();
+            return Ok(await useCase.Executar(planoAeeReestruturacaoDto));
+        }
 
         [HttpGet]
         [Route("versoes-plano")]
