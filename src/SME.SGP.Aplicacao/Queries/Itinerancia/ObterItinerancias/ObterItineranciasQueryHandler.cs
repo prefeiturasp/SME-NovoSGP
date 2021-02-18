@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterItineranciasQueryHandler : ConsultasBase, IRequestHandler<ObterItineranciasQuery, PaginacaoResultadoDto<ItineranciaRetornoDto>>
+    public class ObterItineranciasQueryHandler : ConsultasBase, IRequestHandler<ObterItineranciasQuery, PaginacaoResultadoDto<ItineranciaRetornoQueryDto>>
     {
         private readonly IRepositorioItinerancia repositorioItinerancia;
 
@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioItinerancia = repositorioItinerancia ?? throw new ArgumentNullException(nameof(repositorioItinerancia));
         }
 
-        public async Task<PaginacaoResultadoDto<ItineranciaRetornoDto>> Handle(ObterItineranciasQuery request, CancellationToken cancellationToken)
+        public async Task<PaginacaoResultadoDto<ItineranciaRetornoQueryDto>> Handle(ObterItineranciasQuery request, CancellationToken cancellationToken)
         {
             return await repositorioItinerancia.ObterItineranciasPaginado(request.DreId,
                                                                             request.UeId,
