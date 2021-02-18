@@ -12,6 +12,7 @@ namespace SME.SGP.Dominio
 
         public string CodigoAluno { get; set; }
         public long ItineranciaId { get; set; }
+        public long TurmaId { get; set; }
         public IEnumerable<ItineranciaAlunoQuestao> AlunosQuestoes { get { return questoes; } }
         public bool Excluido { get; set; }
 

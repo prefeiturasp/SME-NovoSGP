@@ -69,6 +69,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
       ues: uesSelecionados,
       alunos: alunosSelecionados,
       questoes: alunosSelecionados?.length ? [] : questoesItinerancia,
+      anoLetivo: new Date().getFullYear(),
     };
     const camposComErro = [];
     if (!dataVisita) {
@@ -579,6 +580,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
           codigoUe={uesSelecionados.length && uesSelecionados[0].codigoUe}
           questoes={questoesAlunos}
           setModoEdicaoItinerancia={setModoEdicao}
+          dataVisita={dataVisita}
         />
       )}
       {modalErrosVisivel && (

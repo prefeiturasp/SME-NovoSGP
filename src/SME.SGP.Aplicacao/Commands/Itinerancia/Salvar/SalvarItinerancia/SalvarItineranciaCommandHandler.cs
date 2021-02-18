@@ -30,7 +30,9 @@ namespace SME.SGP.Aplicacao
             => new Itinerancia()
             {
                 DataVisita = request.DataVisita,
-                DataRetornoVerificacao = request.DataRetornoVerificacao
+                DataRetornoVerificacao = request.DataRetornoVerificacao,
+                AnoLetivo = request.AnoLetivo
+                
             };
     }
 }

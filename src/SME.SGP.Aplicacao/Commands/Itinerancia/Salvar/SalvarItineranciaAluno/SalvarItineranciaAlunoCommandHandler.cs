@@ -24,26 +24,37 @@ namespace SME.SGP.Aplicacao
         {
             var itineranciaAluno = MapearParaEntidade(request);
 
-            var itineranciaAlunoId = await repositorioItineranciaAluno.SalvarAsync(itineranciaAluno);
+            try
+            {
+                var itineranciaAlunoId = await repositorioItineranciaAluno.SalvarAsync(itineranciaAluno);
 
-            if (itineranciaAlunoId < 0)
-                throw new NegocioException($"Não foi possível salvar a itinerância do aluno");
+                if (itineranciaAlunoId < 0)
+                    throw new NegocioException($"Não foi possível salvar a itinerância do aluno");
 
-            if (request.Aluno.Questoes == null || request.Aluno.Questoes.Any())
-                foreach (var questao in request.Aluno.Questoes)
-                {
-                    if(questao.Obrigatorio && string.IsNullOrEmpty(questao.Resposta))
-                        throw new NegocioException($"É obrigatório informar o campo: {questao.Descricao} para o aluno {request.Aluno.AlunoNome}");
-                    await mediator.Send(new SalvarItineranciaAlunoQuestaoCommand(questao.QuestaoId, itineranciaAlunoId, questao.Resposta));
-                }
-            return (AuditoriaDto)itineranciaAluno;
+                if (request.Aluno.Questoes == null || request.Aluno.Questoes.Any())
+                    foreach (var questao in request.Aluno.Questoes)
+                    {
+                        if (questao.Obrigatorio && string.IsNullOrEmpty(questao.Resposta))
+                            throw new NegocioException($"É obrigatório informar o campo: {questao.Descricao} para o aluno {request.Aluno.AlunoNome}");
+                        await mediator.Send(new SalvarItineranciaAlunoQuestaoCommand(questao.QuestaoId, itineranciaAlunoId, questao.Resposta));
+                    }
+                return (AuditoriaDto)itineranciaAluno;
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+
+            
         }
 
         private ItineranciaAluno MapearParaEntidade(SalvarItineranciaAlunoCommand request)
             => new ItineranciaAluno()
             {
                 CodigoAluno = request.Aluno.AlunoCodigo,
-                ItineranciaId = request.ItineranciaId
+                ItineranciaId = request.ItineranciaId,
+                TurmaId = request.Aluno.TurmaId
             };
     }
 }
