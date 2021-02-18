@@ -68,7 +68,9 @@ namespace SME.SGP.Aplicacao
                         Nome = opcaoResposta.Nome,
                         Ordem = opcaoResposta.Ordem,
                         QuestoesComplementares = opcaoResposta.QuestoesComplementares != null ?
-                            ObterQuestoes(opcaoResposta.QuestoesComplementares, dadosQuestionario, obterRespostas).ToList() :
+                            ObterQuestoes(opcaoResposta.QuestoesComplementares, dadosQuestionario, obterRespostas)
+                                .OrderBy(a => a.Ordem)
+                                .ToList() :
                             null
                     };
                 })

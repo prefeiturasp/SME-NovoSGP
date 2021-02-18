@@ -248,7 +248,7 @@ namespace SME.SGP.Dominio.Servicos
         {
             var tipoEvento = repositorioEventoTipo.ObterTipoEventoPorTipo(TipoEvento.FechamentoBimestre);
             if (tipoEvento == null)
-                throw new NegocioException($"Não foi possível localizar o tipo de evento {TipoEvento.FechamentoBimestre.GetAttribute<DisplayAttribute>().Name}.");
+                throw new NegocioException($"Não foi possível localizar o tipo de evento {TipoEvento.FechamentoBimestre.ObterAtributo<DisplayAttribute>().Name}.");
 
             var evento = new Evento()
             {
@@ -407,7 +407,7 @@ namespace SME.SGP.Dominio.Servicos
             var motivo = aprovado ? "" : $"Motivo: {justificativa}.";
 
             var mensagem = new StringBuilder($@"<p>A alteração de {notaConceitoTitulo}(s) final(is) da turma {turma.Nome} da 
-                            {turma.Ue.TipoEscola.ShortName()} {turma.Ue.Nome} (DRE {turma.Ue.Dre.Nome}) 
+                            {turma.Ue.TipoEscola.ObterNomeCurto()} {turma.Ue.Nome} (DRE {turma.Ue.Dre.Nome}) 
                             no bimestre {bimestre} de {turma.AnoLetivo} para o(s) aluno(s) abaxo foi {aprovadaRecusada}. {motivo}</p>");
 
             mensagem.AppendLine("<table style='margin-left: auto; margin-right: auto;' border='2' cellpadding='5'>");
@@ -449,7 +449,7 @@ namespace SME.SGP.Dominio.Servicos
                         Titulo = "Cadastro de período de reabertura de fechamento - ano anterior",
                         Tipo = NotificacaoTipo.Calendario,
                         Codigo = codigoDaNotificacao,
-                        Mensagem = $@"O período de reabertura do fechamento de bimestre abaixo da {fechamentoReabertura.Ue.TipoEscola.ShortName()} {fechamentoReabertura.Ue.Nome} ({fechamentoReabertura.Dre.Abreviacao}) foi aprovado pela supervisão escolar. <br/>
+                        Mensagem = $@"O período de reabertura do fechamento de bimestre abaixo da {fechamentoReabertura.Ue.TipoEscola.ObterNomeCurto()} {fechamentoReabertura.Ue.Nome} ({fechamentoReabertura.Dre.Abreviacao}) foi aprovado pela supervisão escolar. <br/>
                                   Tipo de Calendário: {fechamentoReabertura.TipoCalendario.Nome}<br/>
                                   Descrição: { fechamentoReabertura.Descricao} <br/>
                                   Início: { fechamentoReabertura.Inicio.ToString("dd/MM/yyyy")} <br/>
@@ -660,7 +660,7 @@ namespace SME.SGP.Dominio.Servicos
                         Titulo = "Cadastro de período de reabertura de fechamento - ano anterior",
                         Tipo = NotificacaoTipo.Calendario,
                         Codigo = codigoDaNotificacao,
-                        Mensagem = $@"O período de reabertura do fechamento de bimestre abaixo da {fechamentoReabertura.Ue.TipoEscola.ShortName()} {fechamentoReabertura.Ue.Nome} ({fechamentoReabertura.Dre.Abreviacao}) foi aprovado pela supervisão escolar. <br/>
+                        Mensagem = $@"O período de reabertura do fechamento de bimestre abaixo da {fechamentoReabertura.Ue.TipoEscola.ObterNomeCurto()} {fechamentoReabertura.Ue.Nome} ({fechamentoReabertura.Dre.Abreviacao}) foi aprovado pela supervisão escolar. <br/>
                                   Tipo de Calendário: {fechamentoReabertura.TipoCalendario.Nome}<br/>
                                   Descrição: { fechamentoReabertura.Descricao} <br/>
                                   Início: { fechamentoReabertura.Inicio.ToString("dd/MM/yyyy")} <br/>

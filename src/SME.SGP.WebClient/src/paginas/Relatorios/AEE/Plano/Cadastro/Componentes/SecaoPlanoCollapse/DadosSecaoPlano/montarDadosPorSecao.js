@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import QuestionarioDinamico from '~/componentes-sgp/QuestionarioDinamico/questionarioDinamico';
+import situacaoPlanoAEE from '~/dtos/situacaoPlanoAEE';
 import ServicoPlanoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoPlanoAEE';
 
 const MontarDadosPorSecao = props => {
@@ -11,16 +12,22 @@ const MontarDadosPorSecao = props => {
     store => store.collapseLocalizarEstudante.dadosCollapseLocalizarEstudante
   );
 
-  // const validaSeDesabilitarCampo = () => {
-  //   const planoId = match?.params?.id;
+  const planoAEEDados = useSelector(store => store.planoAEE.planoAEEDados);
 
-  //   return (
-  //     desabilitarCamposPlanoAEE ||
-  //     (planoId && !planoAEEDados.podeEditar) ||
-  //     planoAEEDados?.situacao === situacaoPlanoAEE.Cancelado ||
-  //     planoAEEDados?.situacao === situacaoPlanoAEE.Encerrado
-  //   );
-  // };
+  const desabilitarCamposPlanoAEE = useSelector(
+    store => store.planoAEE.desabilitarCamposPlanoAEE
+  );
+
+  const validaSeDesabilitarCampo = () => {
+    const planoId = match?.params?.id;
+
+    return (
+      desabilitarCamposPlanoAEE ||
+      (planoId && !planoAEEDados.podeEditar) ||
+      planoAEEDados?.situacao === situacaoPlanoAEE.Cancelado ||
+      planoAEEDados?.situacao === situacaoPlanoAEE.Encerrado
+    );
+  };
 
   return dadosQuestionarioAtual?.length ? (
     <QuestionarioDinamico
@@ -29,7 +36,7 @@ const MontarDadosPorSecao = props => {
       anoLetivo={dadosCollapseLocalizarEstudante?.anoLetivo}
       dados={dados}
       dadosQuestionarioAtual={dadosQuestionarioAtual}
-      // desabilitarCampos={validaSeDesabilitarCampo()}
+      desabilitarCampos={validaSeDesabilitarCampo()}
       funcaoRemoverArquivoCampoUpload={ServicoPlanoAEE.removerArquivo}
       urlUpload="v1/plano-aee/upload"
     />

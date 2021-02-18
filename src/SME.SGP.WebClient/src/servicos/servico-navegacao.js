@@ -93,6 +93,10 @@ const verificaSomenteConsulta = (permissoes, naoSetarResultadoNoStore) => {
   return false;
 };
 
+const setSomenteConsultaManual = valor => {
+  store.dispatch(setSomenteConsulta(valor));
+}
+
 const obterDescricaoNomeMenu = (
   url,
   modalidadesFiltroPrincipal,
@@ -137,4 +141,5 @@ export {
   getObjetoStorageUsuario,
   verificaSomenteConsulta,
   obterDescricaoNomeMenu,
+  setSomenteConsultaManual,
 };

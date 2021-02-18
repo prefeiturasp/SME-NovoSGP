@@ -8,5 +8,7 @@ namespace SME.SGP.Dominio
     {
         EncaminhamentoAEE = 1,
         PlanoAEE = 2,
+        RegistroItinerancia = 3,
+        RegistroItineranciaAluno = 4,
     }
 }

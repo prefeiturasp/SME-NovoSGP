@@ -26,7 +26,17 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await obterAlunosPorCodigoEolNomeUseCase.Executar(filtroBuscaAlunosDto));
         }
-                
+
+        [HttpPost]
+        [Route("/api/v1/estudantes/autocomplete/ativos")]
+        [ProducesResponseType(typeof(PaginacaoResultadoDto<AlunoSimplesDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public async Task<IActionResult> ObterAlunosParAutoCompleteAtivos(FiltroBuscaEstudantesAtivoDto filtroBuscaAlunosDto, [FromServices] IObterAlunosAtivosPorUeENomeUseCase obterAlunosAtivosPorUeENomeUseCase)
+        {
+            return Ok(await obterAlunosAtivosPorUeENomeUseCase.Executar(filtroBuscaAlunosDto));
+        }
+
         [HttpGet("informacoes-escolares")]
         [ProducesResponseType(typeof(IEnumerable<AlunoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
