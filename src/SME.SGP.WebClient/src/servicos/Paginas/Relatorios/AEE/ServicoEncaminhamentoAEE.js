@@ -17,6 +17,7 @@ import {
   setExibirModalErrosEncaminhamento,
   setLimparDadosEncaminhamento,
   setListaSecoesEmEdicao,
+  setNomesSecoesComCamposObrigatorios,
 } from '~/redux/modulos/encaminhamentoAEE/actions';
 import { setDadosObjectCardEstudante } from '~/redux/modulos/objectCardEstudante/actions';
 import { erros } from '~/servicos/alertas';
@@ -156,17 +157,18 @@ class ServicoEncaminhamentoAEE {
       encaminhamentoAEE,
     } = state;
     const { formsQuestionarioDinamico } = questionarioDinamico;
-    const { listaSecoesEmEdicao } = encaminhamentoAEE;
+    const {
+      listaSecoesEmEdicao,
+      dadosSecoesPorEtapaDeEncaminhamentoAEE,
+    } = encaminhamentoAEE;
 
     const { dadosCollapseLocalizarEstudante } = collapseLocalizarEstudante;
 
-    const formsParaSalvar = formsQuestionarioDinamico.filter(f =>
-      listaSecoesEmEdicao.find(secaoEdicao => secaoEdicao.secaoId === f.secaoId)
-    );
-
     let contadorFormsValidos = 0;
 
-    const validaAntesDoSubmit = refForm => {
+    const nomesSecoesComCamposObrigatorios = [];
+
+    const validaAntesDoSubmit = (refForm, secaoId) => {
       let arrayCampos = [];
 
       const camposValidar = refForm?.state?.values;
@@ -183,25 +185,39 @@ class ServicoEncaminhamentoAEE {
           Object.keys(refForm.getFormikContext().errors).length === 0
         ) {
           contadorFormsValidos += 1;
+        } else {
+          const dadosSecao = dadosSecoesPorEtapaDeEncaminhamentoAEE.find(
+            secao => secao.id === secaoId
+          );
+          if (dadosSecao) {
+            nomesSecoesComCamposObrigatorios.push(dadosSecao.nome);
+          }
         }
       });
     };
 
-    if (formsParaSalvar?.length) {
+    if (formsQuestionarioDinamico?.length) {
       let todosOsFormsEstaoValidos = !enviarEncaminhamento;
 
       if (enviarEncaminhamento) {
-        const promises = formsParaSalvar.map(async item =>
-          validaAntesDoSubmit(item.form())
+        const promises = formsQuestionarioDinamico.map(async item =>
+          validaAntesDoSubmit(item.form(), item?.secaoId || 0)
         );
 
         await Promise.all(promises);
 
         todosOsFormsEstaoValidos =
-          contadorFormsValidos === formsParaSalvar?.filter(a => a)?.length;
+          contadorFormsValidos ===
+          formsQuestionarioDinamico?.filter(a => a)?.length;
       }
 
       if (todosOsFormsEstaoValidos) {
+        const formsParaSalvar = formsQuestionarioDinamico.filter(f =>
+          listaSecoesEmEdicao.find(
+            secaoEdicao => secaoEdicao.secaoId === f.secaoId
+          )
+        );
+
         const valoresParaSalvar = {
           id: encaminhamentoId || 0,
           turmaId: dadosCollapseLocalizarEstudante.turmaId,
@@ -355,6 +371,13 @@ class ServicoEncaminhamentoAEE {
           }
         }
       } else {
+        if (nomesSecoesComCamposObrigatorios?.length) {
+          dispatch(
+            setNomesSecoesComCamposObrigatorios(
+              nomesSecoesComCamposObrigatorios
+            )
+          );
+        }
         dispatch(setExibirModalErrosEncaminhamento(true));
       }
     }

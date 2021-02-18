@@ -14,6 +14,7 @@ const AtendimentoClinicoTabela = props => {
   const { label, questaoAtual, form, desabilitado, onChange } = props;
 
   const [exibirModal, setExibirModal] = useState(false);
+  const [dadosIniciais, setDadosIniciais] = useState();
 
   const onClickNovoDetalhamento = () => {
     setExibirModal(true);
@@ -21,18 +22,31 @@ const AtendimentoClinicoTabela = props => {
 
   const onCloseModal = novosDados => {
     setExibirModal(false);
+    setDadosIniciais();
 
     if (novosDados) {
       const dadosAtuais = form?.values?.[questaoAtual.id]?.length
         ? form?.values?.[questaoAtual.id]
         : [];
-      novosDados.id = dadosAtuais.length + 1;
-      dadosAtuais.push(novosDados);
+      if (novosDados?.id) {
+        const indexItemAnterior = dadosAtuais.findIndex(
+          x => x.id === novosDados.id
+        );
+        dadosAtuais[indexItemAnterior] = novosDados;
+      } else {
+        novosDados.id = dadosAtuais.length + 1;
+        dadosAtuais.push(novosDados);
+      }
       if (form) {
         form.setFieldValue(questaoAtual.id, dadosAtuais);
         onChange();
       }
     }
+  };
+
+  const onClickRow = row => {
+    setDadosIniciais(row);
+    setExibirModal(true);
   };
 
   const formatarCampoTabela = data => {
@@ -81,7 +95,8 @@ const AtendimentoClinicoTabela = props => {
                 border
                 className="btn-excluir-atendimento-clinico"
                 disabled={desabilitado}
-                onClick={async () => {
+                onClick={async e => {
+                  e.stopPropagation();
                   if (!desabilitado) {
                     const confirmado = await confirmar(
                       'Excluir',
@@ -143,6 +158,7 @@ const AtendimentoClinicoTabela = props => {
       <ModalCadastroAtendimentoClinico
         onClose={onCloseModal}
         exibirModal={exibirModal}
+        dadosIniciais={dadosIniciais}
       />
       <Label text={label} />
       <div className={possuiErro() ? 'tabela-invalida' : ''}>
@@ -155,6 +171,7 @@ const AtendimentoClinicoTabela = props => {
               : []
           }
           pagination={false}
+          onClickRow={onClickRow}
         />
       </div>
       {form ? obterErros() : ''}

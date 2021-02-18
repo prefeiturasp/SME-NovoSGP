@@ -33,6 +33,11 @@ export const setExibirModalErrosEncaminhamento = payload => ({
   payload,
 });
 
+export const setNomesSecoesComCamposObrigatorios = payload => ({
+  type: '@encaminhamentoAEE/setNomesSecoesComCamposObrigatorios',
+  payload,
+});
+
 export const setExibirModalEncerramentoEncaminhamentoAEE = payload => ({
   type: '@encaminhamentoAEE/setExibirModalEncerramentoEncaminhamentoAEE',
   payload,

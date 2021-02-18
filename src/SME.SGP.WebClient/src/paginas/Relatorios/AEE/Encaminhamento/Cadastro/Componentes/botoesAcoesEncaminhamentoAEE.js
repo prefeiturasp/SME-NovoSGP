@@ -49,15 +49,10 @@ const BotoesAcoesEncaminhamentoAEE = props => {
       situacao = dadosEncaminhamento?.situacao;
     }
 
-    let validarCamposObrigatorios = false;
-    if (dadosEncaminhamento?.situacao === situacaoAEE.Encaminhado) {
-      validarCamposObrigatorios = true;
-    }
-
     const salvou = await ServicoEncaminhamentoAEE.salvarEncaminhamento(
       encaminhamentoId,
       situacao,
-      validarCamposObrigatorios
+      false
     );
     if (salvou) {
       let mensagem = 'Registro salvo com sucesso';

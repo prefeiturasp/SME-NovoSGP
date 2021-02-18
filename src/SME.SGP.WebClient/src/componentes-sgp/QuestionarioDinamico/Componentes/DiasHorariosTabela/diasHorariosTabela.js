@@ -59,7 +59,8 @@ const DiasHorariosTabela = props => {
               border
               className="btn-excluir-dias-horario"
               disabled={desabilitado}
-              onClick={async () => {
+              onClick={async e => {
+                e.stopPropagation();
                 if (!desabilitado) {
                   const confirmado = await confirmar(
                     'Excluir',
