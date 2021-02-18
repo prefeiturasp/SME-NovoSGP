@@ -13,10 +13,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
         public async Task<IEnumerable<PlanoAEEReestruturacaoDto>> Executar(long planoId)
         {
-            var retorno = await mediator.Send(new ObterRestruturacoesPlanoAEEQuery(planoId));
-
-
-            return retorno;
+           return await mediator.Send(new ObterRestruturacoesPlanoAEEQuery(planoId));
         }
     }
 }
