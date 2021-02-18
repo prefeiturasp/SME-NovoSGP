@@ -32,7 +32,7 @@ const CollapseAluno = ({
             espacoPadrao
             corBorda={Base.AzulBordaCollapse}
             temBorda
-            header={aluno.nomeComModalidadeTurma}
+            header={aluno.nomeAlunoComTurmaModalidade}
           >
             {aluno.questoes?.map(questao => {
               return (

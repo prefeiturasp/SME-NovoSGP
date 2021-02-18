@@ -558,6 +558,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
           codigoUe={uesSelecionados.length && uesSelecionados[0].codigoUe}
           questoes={questoesAlunos}
           setModoEdicaoItinerancia={setModoEdicao}
+          dataVisita={dataVisita}
         />
       )}
       {modalErrosVisivel && (
