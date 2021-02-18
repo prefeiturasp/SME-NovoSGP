@@ -8,6 +8,7 @@ const inicial = {
   exibirModalErrosEncaminhamento: false,
   exibirModalEncerramentoEncaminhamentoAEE: false,
   desabilitarCamposEncaminhamentoAEE: false,
+  listaSecoesEmEdicao: [],
   exibirModalDevolverAEE: false,
 };
 
@@ -63,6 +64,12 @@ export default function EncaminhamentoAEE(state = inicial, action) {
           desabilitarCamposEncaminhamentoAEE: action.payload,
         };
       }
+      case '@encaminhamentoAEE/setListaSecoesEmEdicao': {
+        return {
+          ...draft,
+          listaSecoesEmEdicao: action.payload,
+        };
+      }
       case '@encaminhamentoAEE/setLimparDadosEncaminhamento': {
         return {
           ...draft,
@@ -71,6 +78,7 @@ export default function EncaminhamentoAEE(state = inicial, action) {
           dadosEncaminhamento: null,
           exibirModalErrosEncaminhamento: false,
           exibirModalEncerramentoEncaminhamentoAEE: false,
+          listaSecoesEmEdicao: [],
         };
       }
       case '@encaminhamentoAEE/setExibirModalDevolverAEE': {

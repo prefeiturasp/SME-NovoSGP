@@ -2,20 +2,16 @@ import { Tooltip } from 'antd';
 import * as moment from 'moment';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { DataTable } from '~/componentes';
 import Button from '~/componentes/button';
 import { Base, Colors } from '~/componentes/colors';
 import Label from '~/componentes/label';
-import { setQuestionarioDinamicoEmEdicao } from '~/redux/modulos/questionarioDinamico/actions';
 import { confirmar } from '~/servicos';
 import ModalCadastroAtendimentoClinico from './modalCadastroAtendimentoClinico';
 
 const AtendimentoClinicoTabela = props => {
-  const { label, questaoAtual, form, desabilitado } = props;
-
-  const dispatch = useDispatch();
+  const { label, questaoAtual, form, desabilitado, onChange } = props;
 
   const [exibirModal, setExibirModal] = useState(false);
 
@@ -34,7 +30,7 @@ const AtendimentoClinicoTabela = props => {
       dadosAtuais.push(novosDados);
       if (form) {
         form.setFieldValue(questaoAtual.id, dadosAtuais);
-        dispatch(setQuestionarioDinamicoEmEdicao(true));
+        onChange();
       }
     }
   };
@@ -105,6 +101,7 @@ const AtendimentoClinicoTabela = props => {
                       if (indice !== -1) {
                         dadosAtuais.splice(indice, 1);
                         form.setFieldValue(questaoAtual.id, dadosAtuais);
+                        onChange();
                       }
                     }
                   }
@@ -180,6 +177,7 @@ AtendimentoClinicoTabela.propTypes = {
   form: PropTypes.oneOfType([PropTypes.any]),
   label: PropTypes.string,
   desabilitado: PropTypes.bool,
+  onChange: PropTypes.func,
 };
 
 AtendimentoClinicoTabela.defaultProps = {
@@ -187,6 +185,7 @@ AtendimentoClinicoTabela.defaultProps = {
   questaoAtual: null,
   form: null,
   desabilitado: false,
+  onChange: () => {},
 };
 
 export default AtendimentoClinicoTabela;

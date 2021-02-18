@@ -1,13 +1,9 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { useDispatch } from 'react-redux';
-import { setQuestionarioDinamicoEmEdicao } from '~/redux/modulos/questionarioDinamico/actions';
 import { CampoData } from '~/componentes/campoData/campoData';
 
 const CampoDinamicoPeriodo = props => {
-  const dispatch = useDispatch();
-
-  const { questaoAtual, form, label, desabilitado } = props;
+  const { questaoAtual, form, label, desabilitado, onChange } = props;
 
   return (
     <div className="col-md-12 mb-3">
@@ -21,9 +17,7 @@ const CampoDinamicoPeriodo = props => {
             placeholder="Início"
             formatoData="DD/MM/YYYY"
             desabilitado={desabilitado}
-            onChange={() => {
-              dispatch(setQuestionarioDinamicoEmEdicao(true));
-            }}
+            onChange={onChange}
           />
         </div>
         <span style={{ marginTop: 5 }}>à</span>
@@ -35,9 +29,7 @@ const CampoDinamicoPeriodo = props => {
             placeholder="Fim"
             formatoData="DD/MM/YYYY"
             desabilitado={desabilitado}
-            onChange={() => {
-              dispatch(setQuestionarioDinamicoEmEdicao(true));
-            }}
+            onChange={onChange}
           />
         </div>
       </div>
@@ -50,6 +42,7 @@ CampoDinamicoPeriodo.propTypes = {
   form: PropTypes.oneOfType([PropTypes.any]),
   label: PropTypes.oneOfType([PropTypes.any]),
   desabilitado: PropTypes.bool,
+  onChange: PropTypes.func,
 };
 
 CampoDinamicoPeriodo.defaultProps = {
@@ -57,6 +50,7 @@ CampoDinamicoPeriodo.defaultProps = {
   form: null,
   label: '',
   desabilitado: false,
+  onChange: () => {},
 };
 
 export default CampoDinamicoPeriodo;

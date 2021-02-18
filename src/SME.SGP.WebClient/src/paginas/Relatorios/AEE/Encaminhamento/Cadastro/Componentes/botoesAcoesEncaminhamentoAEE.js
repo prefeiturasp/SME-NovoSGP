@@ -8,8 +8,9 @@ import { RotasDto } from '~/dtos';
 import situacaoAEE from '~/dtos/situacaoAEE';
 import {
   setExibirLoaderEncaminhamentoAEE,
-  setExibirModalEncerramentoEncaminhamentoAEE,
   setExibirModalDevolverAEE,
+  setExibirModalEncerramentoEncaminhamentoAEE,
+  setListaSecoesEmEdicao,
 } from '~/redux/modulos/encaminhamentoAEE/actions';
 import { confirmar, erros, sucesso } from '~/servicos';
 import history from '~/servicos/history';
@@ -125,6 +126,7 @@ const BotoesAcoesEncaminhamentoAEE = props => {
       );
       if (confirmou) {
         QuestionarioDinamicoFuncoes.limparDadosOriginaisQuestionarioDinamico();
+        dispatch(setListaSecoesEmEdicao([]));
       }
     }
   };
