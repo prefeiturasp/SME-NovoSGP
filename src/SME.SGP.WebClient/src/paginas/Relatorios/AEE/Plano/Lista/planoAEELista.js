@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Cabecalho } from '~/componentes-sgp';
 import AbrangenciaServico from '~/servicos/Abrangencia';
 import IconeAee from '~/recursos/IconeAee.png';
@@ -16,7 +16,7 @@ import { URL_HOME } from '~/constantes/url';
 import history from '~/servicos/history';
 import FiltroHelper from '~componentes-sgp/filtro/helper';
 import LocalizadorEstudante from '~/componentes/LocalizadorEstudante';
-import { erros } from '~/servicos';
+import { erros, verificaSomenteConsulta } from '~/servicos';
 import { RotasDto } from '~/dtos';
 import ServicoPlanoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoPlanoAEE';
 import { setDadosIniciaisLocalizarEstudante } from '~/redux/modulos/collapseLocalizarEstudante/actions';
@@ -51,6 +51,10 @@ const PlanoAEELista = () => {
     alunoLocalizadorSelecionado,
     setAlunoLocalizadorSelecionado,
   ] = useState();
+
+  const usuario = useSelector(store => store.usuario);
+  const permissoesTela = usuario.permissoes[RotasDto.RELATORIO_AEE_PLANO];
+  const somenteConsulta = useSelector(store => store.navegacao.somenteConsulta);
 
   const colunas = [
     {
@@ -157,7 +161,9 @@ const PlanoAEELista = () => {
   };
 
   const onClickNovo = () => {
-    history.push(`${RotasDto.RELATORIO_AEE_PLANO}/novo`);
+    if (!somenteConsulta && permissoesTela.podeIncluir) {
+      history.push(`${RotasDto.RELATORIO_AEE_PLANO}/novo`);
+    }
   };
 
   const onCheckedConsideraHistorico = e => {
@@ -348,7 +354,7 @@ const PlanoAEELista = () => {
   };
 
   useEffect(() => {
-    if (dreId && ueId && listaDres?.length && listaUes?.length) {      
+    if (dreId && ueId && listaDres?.length && listaUes?.length) {
       filtrar(dreId, ueId, turmaId, alunoLocalizadorSelecionado, situacao);
     }
   }, [
@@ -359,6 +365,10 @@ const PlanoAEELista = () => {
     alunoLocalizadorSelecionado,
     situacao,
   ]);
+
+  useEffect(() => {
+    verificaSomenteConsulta(permissoesTela);
+  }, [permissoesTela]);
 
   return (
     <>
@@ -383,7 +393,7 @@ const PlanoAEELista = () => {
                 border
                 bold
                 onClick={onClickNovo}
-                // disabled={somenteConsulta || !permissoesTela.podeIncluir}
+                disabled={somenteConsulta || !permissoesTela.podeIncluir}
               />
             </div>
             <div className="col-sm-12 mb-4">

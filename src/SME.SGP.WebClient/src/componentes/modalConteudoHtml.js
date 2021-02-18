@@ -16,34 +16,28 @@ const Container = styled(Modal)`
     padding-right: ${({ paddingRight }) => paddingRight}px;
     padding-bottom: ${({ paddingBottom }) => paddingBottom}px;
   }
-
   .padding-btn-confirmacao {
     padding: 22px;
   }
-
   .ant-modal-header {
     border-bottom: none;
     padding-top: 27px;
     padding-bottom: 0px;
   }
-
   .ant-modal-title {
     border-bottom: solid 1.5px rgba(0, 0, 0, 0.12);
     color: #42474a;
     font-size: 25px;
     padding-bottom: 7px;
   }
-
   .ant-modal-close-x {
     font-style: normal;
     line-height: 40px;
     color: #42474a;
   }
-
   p {
     margin-bottom: 0;
   }
-
   max-height: 75%;
 `;
 

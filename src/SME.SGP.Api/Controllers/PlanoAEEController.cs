@@ -82,7 +82,6 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(codigoEstudante));
         }
 
-
         [HttpGet("{planoAEEId}/reestruturacoes")]
         [ProducesResponseType(typeof(IEnumerable<PlanoAEEReestruturacaoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
@@ -118,6 +117,15 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> SalvarReestruturacao([FromBody] PlanoAEEReestrutucacaoPersistenciaDto planoAeeReestruturacaoDto)
         {
             return Ok();
+
+        [HttpGet]
+        [Route("versoes-plano")]
+        [ProducesResponseType(typeof(IEnumerable<PlanoAEEVersaoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public async Task<IActionResult> ObterVersoesPlanoAEE([FromQuery] FiltroVersoesPlanoAEEDto filtro, [FromServices] IObterVersoesPlanoAEEUseCase useCase)
+        {
+            return Ok(await useCase.Executar(filtro));
         }
     }
 }

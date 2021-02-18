@@ -15,5 +15,7 @@ namespace SME.SGP.Infra
         public long Id { get; set; }
 
         public int CodigoComponenteCurricular { get; set; }
+
+        public int bimestre { get; set; }
     }
 }

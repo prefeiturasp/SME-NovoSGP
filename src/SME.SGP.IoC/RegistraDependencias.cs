@@ -336,6 +336,13 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioPendenciaRegistroIndividual, RepositorioPendenciaRegistroIndividual>();
             services.TryAddScoped<IRepositorioPendenciaRegistroIndividualAluno, RepositorioPendenciaRegistroIndividualAluno>();
 
+            // Itinerancia
+            services.TryAddScoped<IRepositorioItinerancia, RepositorioItinerancia>();
+            services.TryAddScoped<IRepositorioItineranciaAluno, RepositorioItineranciaAluno>();
+            services.TryAddScoped<IRepositorioItineranciaAlunoQuestao, RepositorioItineranciaAlunoQuestao>();
+            services.TryAddScoped<IRepositorioItineranciaQuestao, RepositorioItineranciaQuestao>();
+            services.TryAddScoped<IRepositorioItineranciaObjetivo, RepositorioItineranciaObjetivo>();
+            services.TryAddScoped<IRepositorioItineranciaUe, RepositorioItineranciaUe>();
             // PlanoAEE
             services.TryAddScoped<IRepositorioPlanoAEE, RepositorioPlanoAEE>();
             services.TryAddScoped<IRepositorioPlanoAEEVersao, RepositorioPlanoAEEVersao>();
@@ -699,6 +706,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterPlanosAEEUseCase, ObterPlanosAEEUseCase>();
             services.TryAddScoped<IObterSituacaoEncaminhamentoPorEstudanteUseCase, ObterSituacaoEncaminhamentoPorEstudanteUseCase>();
             services.TryAddScoped<ISalvarPlanoAEEUseCase, SalvarPlanoAEEUseCase>();
+            services.TryAddScoped<IObterVersoesPlanoAEEUseCase, ObterVersoesPlanoAEEUseCase>();
+            
 
             services.TryAddScoped<IObterAlunoPorCodigoEolEAnoLetivoUseCase, ObterAlunoPorCodigoEolEAnoLetivoUseCase>();
             services.TryAddScoped<IRegistrarEncaminhamentoAEEUseCase, RegistrarEncaminhamentoAEEUseCase>();
@@ -724,6 +733,16 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IExcluirOcorrenciaUseCase, ExcluirOcorrenciaUseCase>();
             services.TryAddScoped<IInserirOcorrenciaUseCase, InserirOcorrenciaUseCase>();
 			
+
+
+            // Itinerancia
+            services.TryAddScoped<IObterObjetivosBaseUseCase, ObterObjetivosBaseUseCase>();
+            services.TryAddScoped<IObterQuestoesItineranciaAlunoUseCase, ObterQuestoesItineranciaAlunoUseCase>();
+            services.TryAddScoped<IObterQuestoesBaseUseCase, ObterQuestoesBaseUseCase>();
+            services.TryAddScoped<IObterItineranciaPorIdUseCase, ObterItineranciaPorIdUseCase>();
+            services.TryAddScoped<ISalvarItineranciaUseCase, SalvarItineranciaUseCase>();
+            services.TryAddScoped<IExcluirItineranciaUseCase, ExcluirItineranciaUseCase>();
+            services.TryAddScoped<IAlterarItineranciaUseCase, AlterarItineranciaUseCase>();
 
 
             services.TryAddScoped<IObterInformacoesDeFrequenciaAlunosPorBimestreUseCase, ObterInformacoesDeFrequenciaAlunosPorBimestreUseCase>();
