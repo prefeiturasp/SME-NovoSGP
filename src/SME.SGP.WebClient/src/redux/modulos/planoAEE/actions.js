@@ -37,3 +37,8 @@ export const setExibirModalErrosPlano = payload => ({
   type: '@planoAEE/setExibirModalErrosPlano',
   payload,
 });
+
+export const setReestruturacaoDados = payload => ({
+  type: '@planoAEE/setReestruturacaoDados',
+  payload,
+});
