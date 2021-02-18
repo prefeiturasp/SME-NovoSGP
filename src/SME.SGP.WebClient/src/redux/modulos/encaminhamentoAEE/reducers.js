@@ -10,6 +10,7 @@ const inicial = {
   desabilitarCamposEncaminhamentoAEE: false,
   listaSecoesEmEdicao: [],
   exibirModalDevolverAEE: false,
+  nomesSecoesComCamposObrigatorios: [],
 };
 
 export default function EncaminhamentoAEE(state = inicial, action) {
@@ -52,6 +53,12 @@ export default function EncaminhamentoAEE(state = inicial, action) {
           exibirModalErrosEncaminhamento: action.payload,
         };
       }
+      case '@encaminhamentoAEE/setNomesSecoesComCamposObrigatorios': {
+        return {
+          ...draft,
+          nomesSecoesComCamposObrigatorios: action.payload,
+        };
+      }
       case '@encaminhamentoAEE/setExibirModalEncerramentoEncaminhamentoAEE': {
         return {
           ...draft,
@@ -79,6 +86,7 @@ export default function EncaminhamentoAEE(state = inicial, action) {
           exibirModalErrosEncaminhamento: false,
           exibirModalEncerramentoEncaminhamentoAEE: false,
           listaSecoesEmEdicao: [],
+          nomesSecoesComCamposObrigatorios: [],
         };
       }
       case '@encaminhamentoAEE/setExibirModalDevolverAEE': {

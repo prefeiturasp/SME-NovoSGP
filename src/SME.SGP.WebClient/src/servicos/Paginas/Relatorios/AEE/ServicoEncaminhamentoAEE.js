@@ -17,6 +17,7 @@ import {
   setExibirModalErrosEncaminhamento,
   setLimparDadosEncaminhamento,
   setListaSecoesEmEdicao,
+  setNomesSecoesComCamposObrigatorios,
 } from '~/redux/modulos/encaminhamentoAEE/actions';
 import { setDadosObjectCardEstudante } from '~/redux/modulos/objectCardEstudante/actions';
 import { erros } from '~/servicos/alertas';
@@ -156,13 +157,18 @@ class ServicoEncaminhamentoAEE {
       encaminhamentoAEE,
     } = state;
     const { formsQuestionarioDinamico } = questionarioDinamico;
-    const { listaSecoesEmEdicao } = encaminhamentoAEE;
+    const {
+      listaSecoesEmEdicao,
+      dadosSecoesPorEtapaDeEncaminhamentoAEE,
+    } = encaminhamentoAEE;
 
     const { dadosCollapseLocalizarEstudante } = collapseLocalizarEstudante;
 
     let contadorFormsValidos = 0;
 
-    const validaAntesDoSubmit = refForm => {
+    const nomesSecoesComCamposObrigatorios = [];
+
+    const validaAntesDoSubmit = (refForm, secaoId) => {
       let arrayCampos = [];
 
       const camposValidar = refForm?.state?.values;
@@ -179,6 +185,13 @@ class ServicoEncaminhamentoAEE {
           Object.keys(refForm.getFormikContext().errors).length === 0
         ) {
           contadorFormsValidos += 1;
+        } else {
+          const dadosSecao = dadosSecoesPorEtapaDeEncaminhamentoAEE.find(
+            secao => secao.id === secaoId
+          );
+          if (dadosSecao) {
+            nomesSecoesComCamposObrigatorios.push(dadosSecao.nome);
+          }
         }
       });
     };
@@ -188,7 +201,7 @@ class ServicoEncaminhamentoAEE {
 
       if (enviarEncaminhamento) {
         const promises = formsQuestionarioDinamico.map(async item =>
-          validaAntesDoSubmit(item.form())
+          validaAntesDoSubmit(item.form(), item?.secaoId || 0)
         );
 
         await Promise.all(promises);
@@ -358,6 +371,13 @@ class ServicoEncaminhamentoAEE {
           }
         }
       } else {
+        if (nomesSecoesComCamposObrigatorios?.length) {
+          dispatch(
+            setNomesSecoesComCamposObrigatorios(
+              nomesSecoesComCamposObrigatorios
+            )
+          );
+        }
         dispatch(setExibirModalErrosEncaminhamento(true));
       }
     }
