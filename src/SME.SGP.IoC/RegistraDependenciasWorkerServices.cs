@@ -506,6 +506,9 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IAlterarOcorrenciaUseCase, AlterarOcorrenciaUseCase>();
             services.TryAddScopedWorkerService<IExcluirOcorrenciaUseCase, ExcluirOcorrenciaUseCase>();
             services.TryAddScopedWorkerService<IInserirOcorrenciaUseCase, InserirOcorrenciaUseCase>();
+
+            //Notificacoes EncaminhamentoAEE
+            services.TryAddScopedWorkerService<INotificacaoConclusaoEncaminhamentoAEEUseCase, NotificacaoConclusaoEncaminhamentoAEEUseCase>();
         }
 
         private static void ResgistraDependenciaHttp(IServiceCollection services)
