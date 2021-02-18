@@ -18,7 +18,7 @@ const ReestruturacaoTabela = ({
   semestre,
 }) => {
   const [exibirModal, setModalVisivel] = useState(false);
-  const [modoVisualizacao, setModoVisualizacao] = useState(false);
+  const [modoConsulta, setModoConsulta] = useState(false);
   const [dadosVisualizacao, setDadosVisualizacao] = useState();
 
   const usuario = useSelector(store => store.usuario);
@@ -27,7 +27,7 @@ const ReestruturacaoTabela = ({
 
   const cliqueVisualizar = dadosLinha => {
     setModalVisivel(true);
-    setModoVisualizacao(true);
+    // setModoConsulta(true);
     setDadosVisualizacao(dadosLinha);
   };
 
@@ -70,7 +70,7 @@ const ReestruturacaoTabela = ({
 
   const cliqueNovaRestruturacao = () => {
     setDadosVisualizacao([]);
-    setModoVisualizacao(false);
+    setModoConsulta(false);
     setModalVisivel(true);
   };
 
@@ -84,7 +84,7 @@ const ReestruturacaoTabela = ({
         key={key}
         esconderModal={esconderModal}
         exibirModal={exibirModal}
-        modoVisualizacao={modoVisualizacao}
+        modoConsulta={modoConsulta}
         dadosVisualizacao={dadosVisualizacao}
         listaVersao={listaVersao}
         semestre={semestre}
