@@ -10,6 +10,7 @@ import {
   Colors,
   JoditEditor,
   Loader,
+  PainelCollapse,
 } from '~/componentes';
 import { Cabecalho, Paginacao } from '~/componentes-sgp';
 import { RotasDto } from '~/dtos';
@@ -490,17 +491,34 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
             )}
             {alunosSelecionados?.length ? (
               <>
-                {alunosSelecionados
-                  .slice(paginaAtual * 10 - 10, paginaAtual * 10)
-                  .map(aluno => (
-                    <CollapseAluno
-                      key={aluno.alunoCodigo}
-                      aluno={aluno}
-                      removerAlunos={() => removerAlunos(aluno.alunoCodigo)}
-                      setModoEdicaoItinerancia={setModoEdicao}
-                      desabilitar={desabilitarCamposPorPermissao()}
-                    />
-                  ))}
+                <div className="row mb-4">
+                  <div className="col-12">
+                    <PainelCollapse accordion onChange={() => {}}>
+                      {alunosSelecionados
+                        .slice(paginaAtual * 10 - 10, paginaAtual * 10)
+                        .map(aluno => (
+                          <PainelCollapse.Painel
+                            key={`painel-${aluno.alunoCodigo}`}
+                            accordion
+                            espacoPadrao
+                            corBorda={Base.AzulBordaCollapse}
+                            temBorda
+                            header={aluno.nomeAlunoComTurmaModalidade}
+                          >
+                            <CollapseAluno
+                              key={aluno.alunoCodigo}
+                              aluno={aluno}
+                              removerAlunos={() =>
+                                removerAlunos(aluno.alunoCodigo)
+                              }
+                              setModoEdicaoItinerancia={setModoEdicao}
+                              desabilitar={desabilitarCamposPorPermissao()}
+                            />
+                          </PainelCollapse.Painel>
+                        ))}
+                    </PainelCollapse>
+                  </div>
+                </div>
 
                 <div className="row">
                   <div className="col-12 d-flex justify-content-center mt-4">
@@ -555,7 +573,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
           permiteApenasUmaUe={permiteApenasUmaUe()}
           setModoEdicaoItinerancia={setModoEdicao}
           desabilitarBotaoExcluir={
-            !permissoesTela?.podeAlterar || alunosSelecionados?.length 
+            !permissoesTela?.podeAlterar || alunosSelecionados?.length
           }
           temAlunosSelecionados={alunosSelecionados?.length}
         />
