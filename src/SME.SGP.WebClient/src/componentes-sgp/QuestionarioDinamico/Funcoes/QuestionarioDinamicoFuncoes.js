@@ -3,6 +3,7 @@ import { store } from '~/redux';
 import {
   setFormsQuestionarioDinamico,
   setQuestionarioDinamicoEmEdicao,
+  setResetarTabela,
 } from '~/redux/modulos/questionarioDinamico/actions';
 
 class QuestionarioDinamicoFuncoes {
@@ -89,6 +90,21 @@ class QuestionarioDinamicoFuncoes {
         );
       }
     });
+  };
+
+  limparDadosOriginaisQuestionarioDinamico = () => {
+    const { dispatch } = store;
+    const state = store.getState();
+    const { questionarioDinamico } = state;
+    const { formsQuestionarioDinamico } = questionarioDinamico;
+    if (formsQuestionarioDinamico?.length) {
+      formsQuestionarioDinamico.forEach(item => {
+        const form = item.form();
+        form.resetForm();
+      });
+      dispatch(setQuestionarioDinamicoEmEdicao(false));
+      dispatch(setResetarTabela(true));
+    }
   };
 
   obterCamposNaoDuplicados = (campos, camposDuplicados) => {

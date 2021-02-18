@@ -27,10 +27,6 @@ namespace SME.SGP.Dominio
 
         public void DefinirEmail(string novoEmail)
         {
-            if (Perfis == null || !Perfis.Any())
-            {
-                throw new NegocioException(MENSAGEM_ERRO_USUARIO_SEM_ACESSO);
-            }
             if ((PossuiPerfilDre() ||
                  PossuiPerfilSme()) &&
                 !novoEmail.Contains("@sme.prefeitura.sp.gov.br"))

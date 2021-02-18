@@ -1,20 +1,28 @@
 import { Tooltip } from 'antd';
 import * as moment from 'moment';
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { DataTable } from '~/componentes';
 import Button from '~/componentes/button';
 import { Base, Colors } from '~/componentes/colors';
 import Label from '~/componentes/label';
 import { BtnExcluirDiasHorario } from '~/paginas/Relatorios/AEE/Plano/Cadastro/planoAEECadastro.css';
-import { setQuestionarioDinamicoEmEdicao } from '~/redux/modulos/questionarioDinamico/actions';
+import {
+  setQuestionarioDinamicoEmEdicao,
+  setResetarTabela,
+} from '~/redux/modulos/questionarioDinamico/actions';
 import { confirmar } from '~/servicos';
 import ModalCadastroDiasHorario from './modalCadastroDiasHorarios';
+import { removerArrayAninhados } from '~/utils';
 
 const DiasHorariosTabela = props => {
   const { label, questaoAtual, form, desabilitado } = props;
+
+  const resetarTabela = useSelector(
+    store => store.questionarioDinamico.resetarTabela
+  );
 
   const dispatch = useDispatch();
 
@@ -63,6 +71,29 @@ const DiasHorariosTabela = props => {
     return <span> {dataFormatada}</span>;
   };
 
+  const cliqueBotaoExcluir = async (texto, linha) => {
+    if (!desabilitado) {
+      const confirmado = await confirmar(
+        'Excluir',
+        '',
+        'Você tem certeza que deseja excluir este registro?'
+      );
+
+      if (confirmado) {
+        const dadosAtuais = form?.values?.[questaoAtual.id]?.length
+          ? form?.values?.[questaoAtual.id]
+          : [];
+
+        const indice = dadosAtuais.findIndex(item => item.id === linha.id);
+        if (indice !== -1) {
+          dadosAtuais.splice(indice, 1);
+          form.setFieldValue(questaoAtual.id, dadosAtuais);
+        }
+        dispatch(setQuestionarioDinamicoEmEdicao(true));
+      }
+    }
+  };
+
   const acoes = {
     title: 'Ação',
     dataIndex: 'acaoRemover',
@@ -78,29 +109,7 @@ const DiasHorariosTabela = props => {
               border
               className="btn-excluir-dias-horario"
               disabled={desabilitado}
-              onClick={async () => {
-                if (!desabilitado) {
-                  const confirmado = await confirmar(
-                    'Excluir',
-                    '',
-                    'Você tem certeza que deseja excluir este registro?'
-                  );
-
-                  if (confirmado) {
-                    const dadosAtuais = form?.values?.[questaoAtual.id]?.length
-                      ? form?.values?.[questaoAtual.id]
-                      : [];
-
-                    const indice = dadosAtuais.findIndex(
-                      item => item.id === linha.id
-                    );
-                    if (indice !== -1) {
-                      dadosAtuais.splice(indice, 1);
-                      form.setFieldValue(questaoAtual.id, dadosAtuais);
-                    }
-                  }
-                }
-              }}
+              onClick={() => cliqueBotaoExcluir(texto, linha)}
               height="30px"
               width="30px"
             />
@@ -152,6 +161,17 @@ const DiasHorariosTabela = props => {
       ''
     );
   };
+
+  useEffect(() => {
+    if (resetarTabela) {
+      const dadosRecuperados = questaoAtual?.resposta?.map(item =>
+        JSON.parse(item.texto)
+      );
+      const dadosNaoAninhados = removerArrayAninhados(dadosRecuperados);
+      form.setFieldValue(questaoAtual.id, dadosNaoAninhados);
+      dispatch(setResetarTabela(false));
+    }
+  }, [dispatch, resetarTabela, questaoAtual, form]);
 
   return (
     <>
