@@ -32,10 +32,10 @@ namespace SME.SGP.Aplicacao
 
                 foreach (var item in turmas)
                 {
-                    listaRetorno.AddRange(listaAlunosEol.Where(a => a.CodigoTurma == long.Parse(item.CodigoTurma)));
+                    listaRetorno.AddRange(listaAlunosEol.Where(a => a.CodigoTurma == long.Parse(item.CodigoTurma)).ToList());;
                 }                
             }
-            resultado.Items = listaRetorno;
+            resultado.Items = listaRetorno.OrderBy( a => a.NomeFinal).ToList();
             resultado.TotalPaginas = 1;
             resultado.TotalRegistros = resultado.Items.Count();
 
