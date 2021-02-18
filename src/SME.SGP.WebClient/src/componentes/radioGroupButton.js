@@ -22,6 +22,11 @@ const Campo = styled.div`
   .ant-radio-group {
     white-space: nowrap;
     margin-bottom: 5px;
+    border-radius: 0.15rem;
+    width: ${props => (props.invalido ? 'fit-content' : 'auto')};
+    padding-left: ${props => (props.invalido ? '2px' : '0px')};
+    border: ${props =>
+      props.invalido ? `1px solid  ${Base.Vermelho}` : 'none'};
   }
 
   label {
@@ -53,6 +58,10 @@ const RadioGroupButton = ({
     ) : (
       ''
     );
+  };
+
+  const possuiErro = () => {
+    return form && form.errors[name] && form.touched[name];
   };
 
   const campoComValidacoes = () => {
@@ -88,12 +97,11 @@ const RadioGroupButton = ({
 
   return (
     <>
-      <Campo className={className}>
+      <Campo className={className} invalido={possuiErro()}>
         {label ? <Label text={label} control={name || ''} /> : ''}
         {
           <>
             {form ? campoComValidacoes() : campoSemValidacoes()}
-            <br />
             {obterErros()}
           </>
         }
