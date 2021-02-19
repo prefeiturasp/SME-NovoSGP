@@ -235,6 +235,21 @@ class ServicoPlanoAEE {
     }
     return false;
   };
+
+  obterVersoes = planoAEEId => {
+    return api.get(`${urlPadrao}/${planoAEEId}/versoes`);
+  };
+
+  obterReestruturacoes = planoAEEId => {
+    return api.get(`${urlPadrao}/${planoAEEId}/reestruturacoes`);
+  };
+
+  salvarReestruturacoes = params => {
+    return api.post(
+      `${urlPadrao}/${params.planoAEEId}/reestruturacoes`,
+      params
+    );
+  };
 }
 
 export default new ServicoPlanoAEE();

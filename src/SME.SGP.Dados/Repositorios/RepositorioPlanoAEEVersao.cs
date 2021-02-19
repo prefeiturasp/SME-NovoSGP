@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -45,9 +45,10 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select pav.Id, pav.numero, pav.criado_em as CriadoEm 
                           from plano_aee_versao pav 
-                         where pav.plano_aee_id = @planoId order by pav.numero desc";
+                          where pav.plano_aee_id = @planoId 
+                          order by pav.numero desc";
 
-            return await database.Conexao.QueryAsync<PlanoAEEVersaoDto>(query, new { planoId });
+            return await database.Conexao.QueryAsync<PlanoAEEVersaoDto>(query.ToString(), new { planoId });
         }
     }
 }
