@@ -6,6 +6,6 @@ namespace SME.SGP.Infra
 {
     public class PlanoAEECadastroDevolutivaDto
     {
-        public string ParecerCoordenacao { get; set; }
+        public string Parecer { get; set; }
     }
 }
