@@ -73,15 +73,15 @@ namespace SME.SGP.Aplicacao
         {
 
             var funcionariosCP = await mediator.Send(new ObterFuncionariosPorUeECargoQuery(codigoUe, (int)Cargo.CP));
-            if(funcionariosCP != null)
+            if(funcionariosCP.Any())
                 return funcionariosCP.Select(f => f.CodigoRF).ToList();
 
             var funcionariosAD = await mediator.Send(new ObterFuncionariosPorUeECargoQuery(codigoUe, (int)Cargo.AD));
-            if (funcionariosAD != null)
+            if (funcionariosAD.Any())
                 return funcionariosAD.Select(f => f.CodigoRF).ToList();
 
             var funcionariosDiretor = await mediator.Send(new ObterFuncionariosPorUeECargoQuery(codigoUe, (int)Cargo.Diretor));
-            if (funcionariosDiretor != null)
+            if (funcionariosDiretor.Any())
                 return funcionariosDiretor.Select(f => f.CodigoRF).ToList();
 
             return null;

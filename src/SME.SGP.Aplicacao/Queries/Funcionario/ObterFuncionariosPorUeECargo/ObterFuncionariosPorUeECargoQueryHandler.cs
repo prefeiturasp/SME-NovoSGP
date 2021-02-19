@@ -42,10 +42,7 @@ namespace SME.SGP.Aplicacao
 
             }
 
-            if (!listaRetorno.Any())
-                throw new NegocioException("Não foi possível obter funcionários da UE.");
-            else return listaRetorno;
-
+            return listaRetorno;
         }
     }
 }

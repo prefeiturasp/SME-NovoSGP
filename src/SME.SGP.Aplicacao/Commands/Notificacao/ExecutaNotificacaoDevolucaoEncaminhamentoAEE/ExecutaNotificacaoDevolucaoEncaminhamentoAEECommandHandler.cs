@@ -26,7 +26,8 @@ namespace SME.SGP.Aplicacao
                 {
                     EncaminhamentoAEEId = request.EncaminhamentoAEEId,
                     UsuarioRF = request.UsuarioRF,
-                    UsuarioNome = request.UsuarioNome
+                    UsuarioNome = request.UsuarioNome,
+                    Motivo = request.MotivoDevolucao
                 }, Guid.NewGuid(), null));
 
             return true;
