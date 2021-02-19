@@ -89,5 +89,13 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(planoAEEId));
         }
+
+        [HttpPost("{planoAeeId}/devolutiva/cp")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> CadastrarDevolutivaCPPlanoAEE(long planoAEEId, [FromBody] PlanoAEECadastroDevolutivaDto planoAEEDevolutivaDto, [FromServices] ICadastrarDevolutivaCPPlanoAEEUseCase useCase)
+        {
+            return Ok(await useCase.Executar(planoAEEId, planoAEEDevolutivaDto));
+        }
     }
 }
