@@ -81,5 +81,13 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(codigoEstudante));
         }
+
+        [HttpGet("{planoAeeId}/devolutiva")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ObterDevolutivaPlanoAEE(long planoAEEId, [FromServices] IObterDevolutivaPlanoAEEPorIdUseCase useCase)
+        {
+            return Ok(await useCase.Executar(planoAEEId));
+        }
     }
 }
