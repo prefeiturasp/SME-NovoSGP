@@ -51,6 +51,7 @@ namespace SME.SGP.Aplicacao
                 plano.Auditoria = (AuditoriaDto)entidadePlano;
                 plano.Versoes = await mediator.Send(new ObterVersoesPlanoAEEQuery(planoAEEId.Value));
                 plano.Aluno = aluno;
+                plano.Situacao = entidadePlano.Situacao;
                 plano.SituacaoDescricao = entidadePlano.Situacao.Name();
                 plano.Turma = new TurmaAnoDto()
                 {
