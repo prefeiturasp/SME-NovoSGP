@@ -71,10 +71,6 @@ const ModalObjetivos = ({
     }
   }, [listaObjetivos]);
 
-  useEffect(() => {
-    listaObjetivos.forEach(objetivo => {});
-  }, []);
-
   const perguntarSalvarListaUsuario = async () => {
     const resposta = await confirmar(
       'Atenção',
