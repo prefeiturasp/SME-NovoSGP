@@ -32,9 +32,10 @@ namespace SME.SGP.Aplicacao
 
             var ueDre = $"{turma.Ue.TipoEscola.ShortName()} {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao})";
             var hostAplicacao = configuration["UrlFrontEnd"];
+            var estudanteOuCrianca = turma.ModalidadeCodigo == Modalidade.Infantil ? "da criança" : "do estudante";
 
             var titulo = $"Encaminhamento AEE - {encaminhamentoAEE.AlunoNome} ({encaminhamentoAEE.AlunoCodigo}) - {ueDre}";
-            var mensagem = $"O usuário {request.UsuarioNome} ({request.UsuarioRF}) <b>devolveu</b> o encaminhamento do estudante {encaminhamentoAEE.AlunoNome} ({encaminhamentoAEE.AlunoCodigo}) " +
+            var mensagem = $"O usuário {request.UsuarioNome} ({request.UsuarioRF}) <b>devolveu</b> o encaminhamento {estudanteOuCrianca} {encaminhamentoAEE.AlunoNome} ({encaminhamentoAEE.AlunoCodigo}) " +
                 $"da turma {turma.ModalidadeCodigo.ShortName()}-{turma.Nome} da {ueDre}. Motivo: {encaminhamentoAEE.MotivoEncerramento}. <br/><br/>" +
                 $"<a href='{hostAplicacao}relatorios/aee/encaminhamento/editar/{encaminhamentoAEE.Id}'>Clique aqui para acessar o encaminhamento.</a>";
 
@@ -48,35 +49,6 @@ namespace SME.SGP.Aplicacao
                                                                      new List<long> { usuario })); ;
 
             return true;
-        }
-
-        private async Task<List<long>> ObterUsuariosId(List<string> funcionarios)
-        {
-            List<long> usuarios = new List<long>();
-            foreach (var functionario in funcionarios)
-            {
-                var usuario = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(functionario));
-                usuarios.Add(usuario);
-            }
-            return usuarios;
-        }
-
-        private async Task<List<string>> ObterFuncionarios(string codigoUe)
-        {
-
-            var funcionariosCP = await mediator.Send(new ObterFuncionariosPorUeECargoQuery(codigoUe, (int)Cargo.CP));
-            if (funcionariosCP != null)
-                return funcionariosCP.Select(f => f.CodigoRF).ToList();
-
-            var funcionariosAD = await mediator.Send(new ObterFuncionariosPorUeECargoQuery(codigoUe, (int)Cargo.AD));
-            if (funcionariosAD != null)
-                return funcionariosAD.Select(f => f.CodigoRF).ToList();
-
-            var funcionariosDiretor = await mediator.Send(new ObterFuncionariosPorUeECargoQuery(codigoUe, (int)Cargo.Diretor));
-            if (funcionariosDiretor != null)
-                return funcionariosDiretor.Select(f => f.CodigoRF).ToList();
-
-            return null;
         }
     }
 }
