@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
 
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-            await mediator.Send(new ExecutaNotificacaoDevolucaoEncaminhamentoAEECommand(encaminhamento.Id, usuarioLogado.CodigoRf, usuarioLogado.Nome));
+            await mediator.Send(new ExecutaNotificacaoDevolucaoEncaminhamentoAEECommand(encaminhamento.Id, usuarioLogado.CodigoRf, usuarioLogado.Nome, devolucaoDto.Motivo));
 
 
             return true;

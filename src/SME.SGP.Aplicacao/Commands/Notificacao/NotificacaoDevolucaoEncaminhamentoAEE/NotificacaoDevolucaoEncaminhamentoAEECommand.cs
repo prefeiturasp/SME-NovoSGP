@@ -14,13 +14,15 @@ namespace SME.SGP.Aplicacao
         public long EncaminhamentoAEEId { get; set; }
         public string UsuarioRF { get; set; }
         public string UsuarioNome { get; set; }
+        public string MotivoDevolucao { get; set; }
 
 
-        public NotificacaoDevolucaoEncaminhamentoAEECommand(long encaminhamentoAEEId, string usuarioRF, string usuarioNome)
+        public NotificacaoDevolucaoEncaminhamentoAEECommand(long encaminhamentoAEEId, string usuarioRF, string usuarioNome, string motivoDevolucao)
         {
             EncaminhamentoAEEId = encaminhamentoAEEId;
             UsuarioRF = usuarioRF;
             UsuarioNome = usuarioNome;
+            MotivoDevolucao = motivoDevolucao;
         }
     }
 
@@ -29,8 +31,20 @@ namespace SME.SGP.Aplicacao
         public NotificacaoDevolucaoEncaminhamentoAEECommandValidator()
         {
             RuleFor(c => c.EncaminhamentoAEEId)
+                   .NotEmpty()
+                   .WithMessage("O id do encaminhamento precisa ser informado.");
+
+            RuleFor(c => c.UsuarioRF)
                .NotEmpty()
-               .WithMessage("O encaminhamento aee deve ser informado para notificação.");
+               .WithMessage("O rf do usuário precisa ser informado.");
+
+            RuleFor(c => c.UsuarioNome)
+               .NotEmpty()
+               .WithMessage("O nome do usuário precisa ser informado.");
+
+            RuleFor(c => c.MotivoDevolucao)
+              .NotEmpty()
+              .WithMessage("O motivo da devolução precisa ser informado.");
         }
     }
 }

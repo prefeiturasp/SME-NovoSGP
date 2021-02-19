@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
 
             if (mensagemRabbit.EncaminhamentoAEEId > 0)
             {
-                await mediator.Send(new NotificacaoDevolucaoEncaminhamentoAEECommand(mensagemRabbit.EncaminhamentoAEEId, mensagemRabbit.UsuarioRF, mensagemRabbit.UsuarioNome));
+                await mediator.Send(new NotificacaoDevolucaoEncaminhamentoAEECommand(mensagemRabbit.EncaminhamentoAEEId, mensagemRabbit.UsuarioRF, mensagemRabbit.UsuarioNome, mensagemRabbit.Motivo));
             }
 
             return true;
