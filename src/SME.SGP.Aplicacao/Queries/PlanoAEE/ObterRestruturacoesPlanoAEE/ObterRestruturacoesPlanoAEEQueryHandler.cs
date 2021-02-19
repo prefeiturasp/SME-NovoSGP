@@ -35,9 +35,10 @@ namespace SME.SGP.Aplicacao
                 {
                     Id = planoRestruturado.Id,
                     Data = planoRestruturado.Data,
+                    DataVersao = planoRestruturado.DataVersao,
                     Semestre = planoRestruturado.Semestre,
                     VersaoId = planoRestruturado.VersaoId,
-                    Versao = $"v{planoRestruturado.Versao} - {planoRestruturado.Data.ToString("dd/MM/yyyy")}",
+                    Versao = $"v{planoRestruturado.Versao} - {planoRestruturado.DataVersao.ToString("dd/MM/yyyy")}",
                     Descricao = planoRestruturado.Descricao,
                     DescricaoSimples = UtilRegex.RemoverTagsHtml(planoRestruturado.Descricao)
                 };
