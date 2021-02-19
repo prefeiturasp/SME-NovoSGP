@@ -1,9 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { useDispatch } from 'react-redux';
 import { Label } from '~/componentes';
 import UploadArquivos from '~/componentes-sgp/UploadArquivos/uploadArquivos';
-import { setQuestionarioDinamicoEmEdicao } from '~/redux/modulos/questionarioDinamico/actions';
 import { erros, sucesso } from '~/servicos';
 
 const CampoDinamicoUploadArquivos = props => {
@@ -12,10 +10,9 @@ const CampoDinamicoUploadArquivos = props => {
     desabilitado,
     urlUpload,
     funcaoRemoverArquivoCampoUpload,
+    onChange,
   } = props;
   const { form, questaoAtual, label } = dados;
-
-  const dispatch = useDispatch();
 
   const onRemoveFile = async arquivo => {
     const codigoArquivo = arquivo.xhr;
@@ -39,6 +36,7 @@ const CampoDinamicoUploadArquivos = props => {
           sucesso(`Arquivo ${arquivo.name} removido com sucesso`);
         }
       }
+      onChange();
       return true;
     }
 
@@ -48,6 +46,7 @@ const CampoDinamicoUploadArquivos = props => {
 
     if (resposta && resposta.status === 200) {
       sucesso(`Arquivo ${arquivo.name} removido com sucesso`);
+      onChange();
       return true;
     }
     return false;
@@ -71,9 +70,7 @@ const CampoDinamicoUploadArquivos = props => {
               ? form?.values?.[questaoAtual?.id]
               : []
           }
-          onChangeListaArquivos={() => {
-            dispatch(setQuestionarioDinamicoEmEdicao(true));
-          }}
+          onChangeListaArquivos={onChange}
         />
       </div>
     </>
@@ -85,6 +82,7 @@ CampoDinamicoUploadArquivos.propTypes = {
   desabilitado: PropTypes.bool,
   urlUpload: PropTypes.string,
   funcaoRemoverArquivoCampoUpload: PropTypes.func,
+  onChange: PropTypes.func,
 };
 
 CampoDinamicoUploadArquivos.defaultProps = {
@@ -92,6 +90,7 @@ CampoDinamicoUploadArquivos.defaultProps = {
   desabilitado: false,
   urlUpload: '',
   funcaoRemoverArquivoCampoUpload: () => {},
+  onChange: () => {},
 };
 
 export default CampoDinamicoUploadArquivos;

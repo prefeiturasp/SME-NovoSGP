@@ -1,4 +1,5 @@
 import { Form, Formik } from 'formik';
+import * as moment from 'moment';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import shortid from 'shortid';
@@ -14,16 +15,19 @@ import {
 import Button from '~/componentes/button';
 
 const ModalCadastroAtendimentoClinico = props => {
-  const { onClose, exibirModal } = props;
+  const { onClose, exibirModal, dadosIniciais } = props;
 
   const [refForm, setRefForm] = useState({});
 
   const valoresIniciais = {
-    diaSemana: '',
-    atendimentoAtividade: '',
-    localRealizacao: '',
-    horarioInicio: '',
-    horarioTermino: '',
+    id: dadosIniciais ? dadosIniciais.id : 0,
+    diaSemana: dadosIniciais ? dadosIniciais.diaSemana : '',
+    atendimentoAtividade: dadosIniciais
+      ? dadosIniciais.atendimentoAtividade
+      : '',
+    localRealizacao: dadosIniciais ? dadosIniciais.localRealizacao : '',
+    horarioInicio: dadosIniciais ? moment(dadosIniciais.horarioInicio) : '',
+    horarioTermino: dadosIniciais ? moment(dadosIniciais.horarioTermino) : '',
   };
 
   const validacoes = Yup.object().shape({
@@ -149,7 +153,7 @@ const ModalCadastroAtendimentoClinico = props => {
                 form={form}
                 name="horarioInicio"
                 label="Horário de início"
-                placeholder="09:00"
+                placeholder="Horário"
                 formatoData="HH:mm"
                 somenteHora
               />
@@ -159,8 +163,8 @@ const ModalCadastroAtendimentoClinico = props => {
                 form={form}
                 name="horarioTermino"
                 label="Horário término"
-                placeholder="09:30"
                 formatoData="HH:mm"
+                placeholder="Horário"
                 somenteHora
               />
             </div>
@@ -178,7 +182,7 @@ const ModalCadastroAtendimentoClinico = props => {
               <Button
                 key="btn-salvar"
                 id="btn-salvar"
-                label="Adicionar Registro"
+                label={dadosIniciais ? 'Alterar' : 'Adicionar'}
                 color={Colors.Roxo}
                 border
                 onClick={() => validaAntesDoSubmit(form)}
@@ -195,11 +199,13 @@ const ModalCadastroAtendimentoClinico = props => {
 ModalCadastroAtendimentoClinico.propTypes = {
   onClose: PropTypes.func,
   exibirModal: PropTypes.bool,
+  dadosIniciais: PropTypes.oneOfType([PropTypes.any]),
 };
 
 ModalCadastroAtendimentoClinico.defaultProps = {
   onClose: () => {},
   exibirModal: false,
+  dadosIniciais: null,
 };
 
 export default ModalCadastroAtendimentoClinico;
