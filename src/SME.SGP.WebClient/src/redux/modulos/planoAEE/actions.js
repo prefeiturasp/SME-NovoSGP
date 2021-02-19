@@ -42,3 +42,8 @@ export const setReestruturacaoDados = payload => ({
   type: '@planoAEE/setReestruturacaoDados',
   payload,
 });
+
+export const setAlteracaoDados = payload => ({
+  type: '@planoAEE/setAlteracaoDados',
+  payload,
+});

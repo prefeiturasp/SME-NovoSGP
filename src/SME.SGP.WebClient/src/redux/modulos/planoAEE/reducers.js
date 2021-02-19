@@ -13,7 +13,6 @@ const inicial = {
 
 export default function PlanoAEE(state = inicial, action) {
   return produce(state, draft => {
-    console.log(state, state);
     switch (action.type) {
       case '@planoAEE/setExibirModalErrosPlano': {
         return {
@@ -70,17 +69,29 @@ export default function PlanoAEE(state = inicial, action) {
         };
       }
       case '@planoAEE/setReestruturacaoDados': {
-        const idReestruturacao = action.payload?.id || action.payload;
-        const dadosAlterados = state.reestruturacaoDados.find(
-          item => item.id === idReestruturacao
-        );
-
         return {
           ...draft,
-          reestruturacaoDados: [
-            ...draft.reestruturacaoDados,
-            ...action.payload,
-          ],
+          reestruturacaoDados: action.payload,
+        };
+      }
+      case '@planoAEE/setAlteracaoDados': {
+        let dadosParaSalvar = draft.reestruturacaoDados.map(item => {
+          if (item.id === action.payload?.id) {
+            return {
+              ...item,
+              ...action.payload,
+              data: item.data,
+            };
+          }
+          return item;
+        });
+
+        if (action.payload.adicionando) {
+          dadosParaSalvar = [...draft.reestruturacaoDados, action.payload];
+        }
+        return {
+          ...draft,
+          reestruturacaoDados: dadosParaSalvar,
         };
       }
       default:

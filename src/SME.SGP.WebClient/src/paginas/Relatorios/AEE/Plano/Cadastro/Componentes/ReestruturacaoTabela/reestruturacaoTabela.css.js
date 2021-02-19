@@ -20,5 +20,8 @@ export const TextoEstilizado = styled.div`
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  max-width: 640px;
+  max-width: calc(100vw - 580px);
+  @media (min-width: 1024px) {
+    max-width: calc(100vw - 720px);
+  }
 `;
