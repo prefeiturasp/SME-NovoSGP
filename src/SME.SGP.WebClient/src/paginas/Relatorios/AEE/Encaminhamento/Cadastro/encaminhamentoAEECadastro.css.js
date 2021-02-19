@@ -15,6 +15,7 @@ export const ContainerStepsEncaminhamento = styled(Steps)`
   .ant-steps-item-title {
     width: 100%;
     padding-right: 0px;
+    line-height: normal !important;
   }
 
   .ant-steps-item-container {

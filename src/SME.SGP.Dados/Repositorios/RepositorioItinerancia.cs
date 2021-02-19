@@ -181,16 +181,16 @@ namespace SME.SGP.Dados.Repositorios
             return lookup.Values.FirstOrDefault();            
         }
 
-        public async Task<PaginacaoResultadoDto<ItineranciaRetornoDto>> ObterItineranciasPaginado(long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao, int anoLetivo, DateTime? dataInicio, DateTime? dataFim, Paginacao paginacao)
+        public async Task<PaginacaoResultadoDto<ItineranciaRetornoQueryDto>> ObterItineranciasPaginado(long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao, int anoLetivo, DateTime? dataInicio, DateTime? dataFim, Paginacao paginacao)
         {
             var query = MontaQueryCompleta(paginacao, dreId, ueId, turmaId, alunoCodigo, situacao, anoLetivo, dataInicio, dataFim);
 
             var parametros = new { dreId, ueId, turmaId, alunoCodigo, situacao, anoLetivo, dataInicio, dataFim };
-            var retorno = new PaginacaoResultadoDto<ItineranciaRetornoDto>();
+            var retorno = new PaginacaoResultadoDto<ItineranciaRetornoQueryDto>();
 
             using (var multi = await database.Conexao.QueryMultipleAsync(query, parametros))
             {
-                retorno.Items = multi.Read<ItineranciaRetornoDto>();
+                retorno.Items = multi.Read<ItineranciaRetornoQueryDto>();
                 retorno.TotalRegistros = multi.ReadFirst<int>();
             }
 
@@ -213,7 +213,7 @@ namespace SME.SGP.Dados.Repositorios
         }
         private static void MontaQueryConsulta(Paginacao paginacao, StringBuilder sql, bool contador, long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao, int anoLetivo, DateTime? dataInicio, DateTime? dataFim)
         {
-            ObtenhaCabecalho(sql, contador);
+            ObtenhaCabecalho(sql, contador, dreId, ueId, turmaId, alunoCodigo);
 
             ObtenhaFiltro(sql, dreId, ueId, turmaId, alunoCodigo, situacao,  anoLetivo, dataInicio, dataFim);
 
@@ -224,7 +224,7 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine($" OFFSET {paginacao.QuantidadeRegistrosIgnorados} ROWS FETCH NEXT {paginacao.QuantidadeRegistros} ROWS ONLY ");
         }
 
-        private static void ObtenhaCabecalho(StringBuilder sql, bool contador)
+        private static void ObtenhaCabecalho(StringBuilder sql, bool contador, long dreId, long ueId, long turmaId, string alunoCodigo)
         {
             sql.AppendLine("select ");
             if (contador)
@@ -232,18 +232,23 @@ namespace SME.SGP.Dados.Repositorios
             else
             {
                 sql.AppendLine(" i.id ");
-                sql.AppendLine(", i.data_visita as DataVisita ");
-                sql.AppendLine(", ia.codigo_aluno as AlunoCodigo ");
-                sql.AppendLine(", iu.ue_id as UeId");
-                sql.AppendLine(", i.situacao ");                
-                sql.AppendLine(", ue.nome as UeNome ");                
-                sql.AppendLine(", ue.tipo_escola as TipoEscola ");
+                sql.AppendLine(", i.data_visita as DataVisita ");                
+                sql.AppendLine(", iu2.ue_id as UeId");
+                sql.AppendLine(", i.situacao ");
+                sql.AppendLine($", (select count(*) from itinerancia_aluno ia where ia.itinerancia_id = i.id ) as alunos ");
+                sql.AppendLine($", (select count(*) from itinerancia_ue iu where iu.itinerancia_id = i.id ) as ues ");
+
             }
 
             sql.AppendLine(" from itinerancia i ");
-            sql.AppendLine(" left join itinerancia_aluno ia on ia.itinerancia_id = i.id");
-            sql.AppendLine(" left join itinerancia_ue iu on iu.itinerancia_id = i.id");
-            sql.AppendLine(" left join ue on ue.id = iu.ue_id");            
+            
+            if (dreId > 0 || ueId > 0)
+            {
+                sql.AppendLine(@" inner join itinerancia_ue iu2 on iu2.itinerancia_id = i.id 
+	                              inner join ue  on iu2.ue_id  = ue.id 
+	                              inner join dre on ue.dre_id = dre.id ");
+            }
+           
         }
 
         private static void ObtenhaFiltro(StringBuilder sql, long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao, int anoLetivo, DateTime? dataInicio, DateTime? dataFim)
@@ -262,6 +267,23 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine(" and i.situacao = @situacao ");
             if (dataInicio != null && dataFim != null)
                 sql.AppendLine("and i.data_visita::date between @dataInicio and @dataFim");
+        }
+
+        public async Task<IEnumerable<ItineranciaCodigoAlunoDto>> ObterCodigoAlunosPorItineranciasIds(long[] itineranciasIds)
+        {
+            var query = @"select codigo_aluno as alunoCodigo, itinerancia_id as ItineranciaId, turma_id as turmaId from itinerancia_aluno ia 
+                            where ia.itinerancia_id = ANY(@itineranciasIds)";
+
+            return await database.Conexao.QueryAsync<ItineranciaCodigoAlunoDto>(query, new { itineranciasIds } );
+        }
+
+        public async Task<IEnumerable<ItineranciaIdUeInfosDto>> ObterUesItineranciaPorIds(long[] itineranciaIds)
+        {
+            var query = @"select ue.nome as ueNome, ue.tipo_escola as tipoEscola, iu.itinerancia_id as itineranciaId from itinerancia_ue iu
+                            inner join ue on ue.id = iu.ue_id 
+                            where iu.itinerancia_id  = ANY(@itineranciaIds)";
+
+            return await database.Conexao.QueryAsync<ItineranciaIdUeInfosDto>(query, new { itineranciaIds });
         }
     }
 }

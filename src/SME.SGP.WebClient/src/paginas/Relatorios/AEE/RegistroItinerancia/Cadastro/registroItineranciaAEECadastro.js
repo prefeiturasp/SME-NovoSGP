@@ -114,7 +114,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
     if (
       dataVisita &&
       dataRetornoVerificacao &&
-      dataRetornoVerificacao < dataVisita
+      dataRetornoVerificacao <= dataVisita
     ) {
       camposComErro.push(
         'A data de retorno/verificação não pode ser menor que a data de visita'
@@ -350,10 +350,19 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
     setCarregandoGeral(false);
   }, []);
 
-  const desabilitarData = dataCorrente => {
+  const desabilitarDataVisita = dataCorrente => {
     return (
       dataCorrente > window.moment() ||
       dataCorrente < window.moment().startOf('year')
+    );
+  };
+
+  const desabilitarDataRetorno = dataCorrente => {
+    return (
+      dataCorrente > window.moment().endOf('year') ||
+      (dataVisita
+        ? dataCorrente <= window.moment(dataVisita).add(1, 'd')
+        : dataCorrente < window.moment().startOf('year'))
     );
   };
 
@@ -378,6 +387,10 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
   const setQuestao = (valor, questao) => {
     setModoEdicao(true);
     questao.resposta = valor;
+  };
+
+  const possuiApenasUesInfantil = () => {
+    return uesSelecionados.length && uesSelecionados[0].ehInfantil;
   };
 
   return (
@@ -427,7 +440,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
                   label="Data da visita"
                   placeholder="Selecione a data"
                   onChange={mudarDataVisita}
-                  desabilitarData={desabilitarData}
+                  desabilitarData={desabilitarDataVisita}
                   desabilitado={desabilitarCamposPorPermissao()}
                 />
               </div>
@@ -476,12 +489,18 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
             {uesSelecionados?.length === 1 && (
               <div className="row mb-4">
                 <div className="col-12 font-weight-bold mb-2">
-                  <span style={{ color: Base.CinzaMako }}>Estudantes</span>
+                  <span style={{ color: Base.CinzaMako }}>
+                    {possuiApenasUesInfantil() ? 'Crianças' : 'Estudantes'}
+                  </span>
                 </div>
                 <div className="col-12">
                   <Button
                     id={shortid.generate()}
-                    label="Adicionar novo estudante"
+                    label={`Adicionar ${
+                      possuiApenasUesInfantil()
+                        ? 'nova criança'
+                        : 'novo estudante'
+                    }`}
                     color={Colors.Azul}
                     border
                     className="mr-2"
@@ -560,6 +579,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
                   label="Data para retorno/verificação"
                   placeholder="Selecione a data"
                   onChange={mudarDataRetorno}
+                  desabilitarData={desabilitarDataRetorno}
                   desabilitado={desabilitarCamposPorPermissao()}
                 />
               </div>

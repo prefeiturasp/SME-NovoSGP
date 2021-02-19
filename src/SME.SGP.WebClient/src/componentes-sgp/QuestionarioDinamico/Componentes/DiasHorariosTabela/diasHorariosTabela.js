@@ -9,16 +9,13 @@ import Button from '~/componentes/button';
 import { Base, Colors } from '~/componentes/colors';
 import Label from '~/componentes/label';
 import { BtnExcluirDiasHorario } from '~/paginas/Relatorios/AEE/Plano/Cadastro/planoAEECadastro.css';
-import {
-  setQuestionarioDinamicoEmEdicao,
-  setResetarTabela,
-} from '~/redux/modulos/questionarioDinamico/actions';
+import { setResetarTabela } from '~/redux/modulos/questionarioDinamico/actions';
 import { confirmar } from '~/servicos';
-import ModalCadastroDiasHorario from './modalCadastroDiasHorarios';
 import { removerArrayAninhados } from '~/utils';
+import ModalCadastroDiasHorario from './modalCadastroDiasHorarios';
 
 const DiasHorariosTabela = props => {
-  const { label, questaoAtual, form, desabilitado } = props;
+  const { label, questaoAtual, form, desabilitado, onChange } = props;
 
   const resetarTabela = useSelector(
     store => store.questionarioDinamico.resetarTabela
@@ -53,7 +50,7 @@ const DiasHorariosTabela = props => {
 
       if (form) {
         form.setFieldValue(questaoAtual.id, dadosAtuais);
-        dispatch(setQuestionarioDinamicoEmEdicao(true));
+        onChange();
       }
     }
   };
@@ -71,29 +68,6 @@ const DiasHorariosTabela = props => {
     return <span> {dataFormatada}</span>;
   };
 
-  const cliqueBotaoExcluir = async (texto, linha) => {
-    if (!desabilitado) {
-      const confirmado = await confirmar(
-        'Excluir',
-        '',
-        'Você tem certeza que deseja excluir este registro?'
-      );
-
-      if (confirmado) {
-        const dadosAtuais = form?.values?.[questaoAtual.id]?.length
-          ? form?.values?.[questaoAtual.id]
-          : [];
-
-        const indice = dadosAtuais.findIndex(item => item.id === linha.id);
-        if (indice !== -1) {
-          dadosAtuais.splice(indice, 1);
-          form.setFieldValue(questaoAtual.id, dadosAtuais);
-        }
-        dispatch(setQuestionarioDinamicoEmEdicao(true));
-      }
-    }
-  };
-
   const acoes = {
     title: 'Ação',
     dataIndex: 'acaoRemover',
@@ -109,7 +83,31 @@ const DiasHorariosTabela = props => {
               border
               className="btn-excluir-dias-horario"
               disabled={desabilitado}
-              onClick={() => cliqueBotaoExcluir(texto, linha)}
+              onClick={async e => {
+                e.stopPropagation();
+                if (!desabilitado) {
+                  const confirmado = await confirmar(
+                    'Excluir',
+                    '',
+                    'Você tem certeza que deseja excluir este registro?'
+                  );
+
+                  if (confirmado) {
+                    const dadosAtuais = form?.values?.[questaoAtual.id]?.length
+                      ? form?.values?.[questaoAtual.id]
+                      : [];
+
+                    const indice = dadosAtuais.findIndex(
+                      item => item.id === linha.id
+                    );
+                    if (indice !== -1) {
+                      dadosAtuais.splice(indice, 1);
+                      form.setFieldValue(questaoAtual.id, dadosAtuais);
+                      onChange();
+                    }
+                  }
+                }
+              }}
               height="30px"
               width="30px"
             />
@@ -218,6 +216,7 @@ DiasHorariosTabela.propTypes = {
   form: PropTypes.oneOfType([PropTypes.any]),
   label: PropTypes.string,
   desabilitado: PropTypes.bool,
+  onChange: PropTypes.func,
 };
 
 DiasHorariosTabela.defaultProps = {
@@ -225,6 +224,7 @@ DiasHorariosTabela.defaultProps = {
   questaoAtual: null,
   form: null,
   desabilitado: false,
+  onChange: () => {},
 };
 
 export default DiasHorariosTabela;

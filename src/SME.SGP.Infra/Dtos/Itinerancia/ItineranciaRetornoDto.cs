@@ -14,4 +14,5 @@ namespace SME.SGP.Infra
         public string UeNome { get; set; }
         public TipoEscola TipoEscola { get; set; }        
     }
+
 }

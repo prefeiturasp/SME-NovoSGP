@@ -1,25 +1,30 @@
+import PropTypes from 'prop-types';
 import React from 'react';
-import { useSelector } from 'react-redux';
 import { Auditoria } from '~/componentes';
 
-const AuditoriaEncaminhamento = () => {
-  const dadosEncaminhamento = useSelector(
-    store => store.encaminhamentoAEE.dadosEncaminhamento
-  );
+const AuditoriaEncaminhamento = props => {
+  const { dadosAuditoria } = props;
 
-  return dadosEncaminhamento?.auditoria?.id > 0 ? (
+  return dadosAuditoria ? (
     <Auditoria
-      className="mt-2"
-      alteradoEm={dadosEncaminhamento?.auditoria.alteradoEm}
-      alteradoPor={dadosEncaminhamento?.auditoria.alteradoPor}
-      alteradoRf={dadosEncaminhamento?.auditoria.alteradoRf}
-      criadoEm={dadosEncaminhamento?.auditoria.criadoEm}
-      criadoPor={dadosEncaminhamento?.auditoria.criadoPor}
-      criadoRf={dadosEncaminhamento?.auditoria.criadoRf}
+      alteradoEm={dadosAuditoria?.alteradoEm}
+      alteradoPor={dadosAuditoria?.alteradoPor}
+      alteradoRf={dadosAuditoria?.alteradoRF}
+      criadoEm={dadosAuditoria?.criadoEm}
+      criadoPor={dadosAuditoria?.criadoPor}
+      criadoRf={dadosAuditoria?.criadoRF}
     />
   ) : (
     ''
   );
+};
+
+AuditoriaEncaminhamento.propTypes = {
+  dadosAuditoria: PropTypes.oneOfType([PropTypes.any]),
+};
+
+AuditoriaEncaminhamento.defaultProps = {
+  dadosAuditoria: null,
 };
 
 export default AuditoriaEncaminhamento;

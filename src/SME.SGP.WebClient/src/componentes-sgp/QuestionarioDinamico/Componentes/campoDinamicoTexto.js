@@ -1,13 +1,9 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { useDispatch } from 'react-redux';
-import { setQuestionarioDinamicoEmEdicao } from '~/redux/modulos/questionarioDinamico/actions';
 import { CampoTexto } from '~/componentes';
 
 const CampoDinamicoTexto = props => {
-  const dispatch = useDispatch();
-
-  const { questaoAtual, form, label, desabilitado } = props;
+  const { questaoAtual, form, label, desabilitado, onChange } = props;
 
   return (
     <div className="col-md-12 mb-3">
@@ -19,9 +15,7 @@ const CampoDinamicoTexto = props => {
         type="textarea"
         maxLength={999999}
         desabilitado={desabilitado}
-        onChange={() => {
-          dispatch(setQuestionarioDinamicoEmEdicao(true));
-        }}
+        onChange={onChange}
         minRowsTextArea="4"
       />
     </div>
@@ -33,6 +27,7 @@ CampoDinamicoTexto.propTypes = {
   form: PropTypes.oneOfType([PropTypes.any]),
   label: PropTypes.oneOfType([PropTypes.any]),
   desabilitado: PropTypes.bool,
+  onChange: PropTypes.func,
 };
 
 CampoDinamicoTexto.defaultProps = {
@@ -40,6 +35,7 @@ CampoDinamicoTexto.defaultProps = {
   form: null,
   label: '',
   desabilitado: false,
+  onChange: () => {},
 };
 
 export default CampoDinamicoTexto;

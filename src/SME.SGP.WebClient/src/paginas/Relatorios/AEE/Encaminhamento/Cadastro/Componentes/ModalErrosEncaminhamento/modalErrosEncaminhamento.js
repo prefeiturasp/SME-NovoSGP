@@ -10,6 +10,19 @@ function ModalErrosEncaminhamento() {
     store => store.encaminhamentoAEE.exibirModalErrosEncaminhamento
   );
 
+  const nomesSecoesComCamposObrigatorios = useSelector(
+    store => store.encaminhamentoAEE.nomesSecoesComCamposObrigatorios
+  );
+
+  let mensagemErro = `Existem campos obrigatórios sem preenchimentos nas seguintes seções: `;
+
+  nomesSecoesComCamposObrigatorios.forEach((secaoNome, index) => {
+    mensagemErro += secaoNome;
+    if (index + 1 < nomesSecoesComCamposObrigatorios.length) {
+      mensagemErro += ' / ';
+    }
+  });
+
   const onCloseErros = () => {
     dispatch(setExibirModalErrosEncaminhamento(false));
   };
@@ -20,7 +33,7 @@ function ModalErrosEncaminhamento() {
       visivel={exibirModalErrosEncaminhamento}
       onClose={onCloseErros}
       type="error"
-      conteudo={['Existem campos obrigatórios não preenchidos']}
+      conteudo={[mensagemErro]}
       titulo="Atenção"
     />
   );
