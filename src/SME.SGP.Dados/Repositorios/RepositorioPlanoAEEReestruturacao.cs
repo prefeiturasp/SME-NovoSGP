@@ -19,7 +19,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select 
                                 par.id, 
-                                pav.criado_em as Data,
+                                par.criado_em as Data,
                                 par.semestre as Semestre,
                                 par.plano_aee_versao_id as VersaoId,
                                 pav.numero as Versao,
