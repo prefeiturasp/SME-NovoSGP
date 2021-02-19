@@ -78,17 +78,6 @@ namespace SME.SGP.Aplicacao.Interfaces
 
         public async Task<bool> SalvarFilhosItinerancia(ItineranciaDto itineranciaDto, Itinerancia itinerancia)
         {
-            var turmasCodigos = itineranciaDto.Alunos.Select(a => a.TurmaId.ToString()).Distinct().ToList();
-
-            if (turmasCodigos != null && turmasCodigos.Any())
-            {
-                var turmas = await mediator.Send(new ObterTurmasPorCodigosQuery(turmasCodigos.ToArray()));
-                foreach (var item in itineranciaDto.Alunos)
-                {
-                    item.TurmaId = turmas.FirstOrDefault(a => a.CodigoTurma == item.TurmaId.ToString()).Id;
-                }
-            }
-
             if (itineranciaDto.Alunos == null || itineranciaDto.Alunos.Any())
                 foreach (var aluno in itineranciaDto.Alunos)
                     await mediator.Send(new SalvarItineranciaAlunoCommand(aluno, itinerancia.Id));

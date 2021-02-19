@@ -91,7 +91,7 @@ namespace SME.SGP.Aplicacao
                 itineranciasParaRetornar.Add(itineranciaParaAdicionar);
             }
 
-            return itineranciasParaRetornar;       
+            return itineranciasParaRetornar.OrderByDescending(i => i.DataVisita).ThenBy(i => i.UeNome).ThenBy(i => i.EstudanteNome);       
 
         }
 
