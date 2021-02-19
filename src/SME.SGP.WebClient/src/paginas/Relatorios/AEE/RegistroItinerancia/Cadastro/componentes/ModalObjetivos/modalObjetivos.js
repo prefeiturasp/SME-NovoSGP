@@ -10,6 +10,7 @@ import {
 } from '~/componentes';
 import { setObjetivosItinerancia } from '~/redux/modulos/itinerancia/action';
 import { aviso, confirmar } from '~/servicos';
+import { clonarObjetos } from '~/utils';
 import {
   NOME_CAMPO_OBJETIVO,
   NOME_CHECK_OBJETIVO,
@@ -29,7 +30,6 @@ const ModalObjetivos = ({
   const [modoEdicao, setModoEdicao] = useState(false);
   const [valoresIniciais, setValoresIniciais] = useState({});
   const [validacoes, setValidacoes] = useState({});
-  const [refForm, setRefForm] = useState({});
 
   const esconderModal = () => setModalVisivel(false);
 
@@ -81,7 +81,7 @@ const ModalObjetivos = ({
 
   const onConfirmarModal = () => {
     const arraySelecionados = listaObjetivos.filter(item => item.checked);
-    setObjetivosSelecionados(arraySelecionados);
+    setObjetivosSelecionados(clonarObjetos(arraySelecionados));
     dispatch(setObjetivosItinerancia([...listaObjetivos]));
     setModoEdicao(false);
     setModoEdicaoItinerancia(true);
@@ -163,7 +163,6 @@ const ModalObjetivos = ({
       onSubmit={valores => onConfirmarModal(valores)}
       validateOnBlur
       validateOnChange
-      ref={refFormik => setRefForm(refFormik)}
     >
       {form => (
         <Form className="col-md-12 mb-4">
