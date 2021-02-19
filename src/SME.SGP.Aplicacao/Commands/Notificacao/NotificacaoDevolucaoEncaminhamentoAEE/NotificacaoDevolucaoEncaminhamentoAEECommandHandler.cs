@@ -11,18 +11,18 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class NotificacaoEncerramentoEncaminhamentoAEECommandHandler : IRequestHandler<NotificacaoEncerramentoEncaminhamentoAEECommand, bool>
+    public class NotificacaoDevolucaoEncaminhamentoAEECommandHandler : IRequestHandler<NotificacaoDevolucaoEncaminhamentoAEECommand, bool>
     {
         private readonly IMediator mediator;
         private readonly IConfiguration configuration;
 
-        public NotificacaoEncerramentoEncaminhamentoAEECommandHandler(IMediator mediator, IConfiguration configuration)
+        public NotificacaoDevolucaoEncaminhamentoAEECommandHandler(IMediator mediator, IConfiguration configuration)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
-        public async Task<bool> Handle(NotificacaoEncerramentoEncaminhamentoAEECommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(NotificacaoDevolucaoEncaminhamentoAEECommand request, CancellationToken cancellationToken)
         {
 
             var encaminhamentoAEE = await mediator.Send(new ObterEncaminhamentoAEEPorIdQuery(request.EncaminhamentoAEEId));
@@ -35,8 +35,8 @@ namespace SME.SGP.Aplicacao
             var estudanteOuCrianca = turma.ModalidadeCodigo == Modalidade.Infantil ? "da criança" : "do estudante";
 
             var titulo = $"Encaminhamento AEE - {encaminhamentoAEE.AlunoNome} ({encaminhamentoAEE.AlunoCodigo}) - {ueDre}";
-            var mensagem = $"O usuário {request.UsuarioNome} ({request.UsuarioRF}) <b>encerrou</b> o encaminhamento {estudanteOuCrianca} {encaminhamentoAEE.AlunoNome} ({encaminhamentoAEE.AlunoCodigo}) " +
-                $"da turma {turma.ModalidadeCodigo.ShortName()}-{turma.Nome} da {ueDre}. Motivo: {encaminhamentoAEE.MotivoEncerramento}. <br/><br/>" +
+            var mensagem = $"O usuário {request.UsuarioNome} ({request.UsuarioRF}) <b>devolveu</b> o encaminhamento {estudanteOuCrianca} {encaminhamentoAEE.AlunoNome} ({encaminhamentoAEE.AlunoCodigo}) " +
+                $"da turma {turma.ModalidadeCodigo.ShortName()}-{turma.Nome} da {ueDre}. Motivo: {request.MensagemDevolutiva}. <br/><br/>" +
                 $"<a href='{hostAplicacao}relatorios/aee/encaminhamento/editar/{encaminhamentoAEE.Id}'>Clique aqui para acessar o encaminhamento.</a>";
 
 
@@ -50,6 +50,5 @@ namespace SME.SGP.Aplicacao
 
             return true;
         }
-
     }
 }

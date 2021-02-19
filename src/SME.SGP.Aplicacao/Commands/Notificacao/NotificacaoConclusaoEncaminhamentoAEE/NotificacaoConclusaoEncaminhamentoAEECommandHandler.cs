@@ -39,10 +39,11 @@ namespace SME.SGP.Aplicacao
             var situacao = encaminhamentoAEE.Situacao == Dominio.Enumerados.SituacaoAEE.Deferido ? "deferiu" : "indeferiu";
             var ueDre = $"{turma.Ue.TipoEscola.ShortName()} {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao})";
             var hostAplicacao = configuration["UrlFrontEnd"];
+            var estudanteOuCrianca = turma.ModalidadeCodigo == Modalidade.Infantil ? "da criança" : "do estudante";
 
             var titulo = $"Encaminhamento AEE - {encaminhamentoAEE.AlunoNome} ({encaminhamentoAEE.AlunoCodigo}) - {ueDre}";
-            var mensagem = $"O usuário {request.UsuarioNome} ({request.UsuarioRF}) <b>{situacao}</b> o encaminhamento do estudante {encaminhamentoAEE.AlunoNome} ({encaminhamentoAEE.AlunoCodigo}) " +
-                $"da turma {turma.ModalidadeCodigo.ShortName()}-{turma.Nome} da {ueDre}. " +
+            var mensagem = $"O usuário {request.UsuarioNome} ({request.UsuarioRF}) <b>{situacao}</b> o encaminhamento {estudanteOuCrianca} {encaminhamentoAEE.AlunoNome} ({encaminhamentoAEE.AlunoCodigo}) " +
+                $"da turma {turma.ModalidadeCodigo.ShortName()}-{turma.Nome} da {ueDre}.<br/><br/>" +
                 $"<a href='{hostAplicacao}relatorios/aee/encaminhamento/editar/{encaminhamentoAEE.Id}'>Clique aqui para acessar o encaminhamento.</a>";
 
 
