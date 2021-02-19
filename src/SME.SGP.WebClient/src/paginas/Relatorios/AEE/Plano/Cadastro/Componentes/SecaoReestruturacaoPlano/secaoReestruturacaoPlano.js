@@ -48,14 +48,8 @@ const SecaoReestruturacaoPlano = ({ match }) => {
     if (dados) {
       const dadosPrimeiroSemestre = dados.filter(item => item.semestre === 1);
       const dadosSegundoSemestre = dados.filter(item => item.semestre === 2);
-      setListaPrimeiroSemestre(estadoAntigo => [
-        ...estadoAntigo,
-        ...FormatarDados(dadosPrimeiroSemestre),
-      ]);
-      setListaSegundoSemestre(estadoAntigo => [
-        ...estadoAntigo,
-        ...FormatarDados(dadosSegundoSemestre),
-      ]);
+      setListaPrimeiroSemestre(FormatarDados(dadosPrimeiroSemestre));
+      setListaSegundoSemestre(FormatarDados(dadosSegundoSemestre));
     }
   }, []);
 
@@ -64,14 +58,16 @@ const SecaoReestruturacaoPlano = ({ match }) => {
       match?.params?.id
     );
     if (resposta?.data) {
-      separarDados(resposta?.data);
       dispatch(setReestruturacaoDados(resposta?.data));
     }
-  }, [dispatch, match, separarDados]);
+  }, [dispatch, match]);
 
   useEffect(() => {
     obterReestruturacoes();
-  }, [obterReestruturacoes]);
+    return () => {
+      dispatch(setReestruturacaoDados([]));
+    };
+  }, [dispatch, obterReestruturacoes]);
 
   useEffect(() => {
     if (reestruturacaoDados) {

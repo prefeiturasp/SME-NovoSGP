@@ -11,12 +11,9 @@ import {
   SelectComponent,
 } from '~/componentes';
 
-import { confirmar, erros } from '~/servicos';
+import { confirmar, erros, sucesso } from '~/servicos';
 
-import {
-  setAlteracaoDados,
-  setReestruturacaoDados,
-} from '~/redux/modulos/planoAEE/actions';
+import { setAlteracaoDados } from '~/redux/modulos/planoAEE/actions';
 import ServicoPlanoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoPlanoAEE';
 
 const ModalReestruturacaoPlano = ({
@@ -30,7 +27,7 @@ const ModalReestruturacaoPlano = ({
   match,
 }) => {
   const [modoEdicao, setModoEdicao] = useState(false);
-  const [versaoId, setVersaoId] = useState();
+  const [versaoId, setVersaoId] = useState('');
   const [descricao, setDescricao] = useState();
   const [descricaoSimples, setDescricaoSimples] = useState();
   const [reestruturacaoId, setReestruturacaoId] = useState(null);
@@ -65,9 +62,16 @@ const ModalReestruturacaoPlano = ({
         descricao,
         descricaoSimples,
         semestre,
+        adicionando: !reestruturacaoId,
       };
 
-      dispatch(setReestruturacaoDados(dadosSalvar));
+      sucesso(
+        `Reestruturação ${
+          reestruturacaoId ? 'alterada' : 'registrada'
+        } com sucesso.`
+      );
+
+      dispatch(setAlteracaoDados(dadosSalvar));
     }
     setModoEdicao(false);
     esconderModal();
@@ -89,7 +93,7 @@ const ModalReestruturacaoPlano = ({
   };
 
   const removerFormatacao = texto => {
-    return texto?.replace(/<.*?>/g, '') || '';
+    return texto?.replace(/<.*?>/g, '').replace(/&nbsp;/g, ' ') || '';
   };
 
   const mudarDescricao = texto => {
@@ -99,16 +103,16 @@ const ModalReestruturacaoPlano = ({
   };
 
   useEffect(() => {
-    const ehVisualizacao = modoConsulta || dadosVisualizacao;
-    const dadosVersao = ehVisualizacao ? dadosVisualizacao.versaoId : '';
+    const ehVisualizacao =
+      modoConsulta || Object.keys(dadosVisualizacao).length;
+    const dadosVersaoId = ehVisualizacao ? dadosVisualizacao.versaoId : '';
     const dadosDescricao = ehVisualizacao ? dadosVisualizacao.descricao : '';
     const dadosDescricaoSimples = ehVisualizacao
       ? dadosVisualizacao.descricaoSimples
       : '';
     const dadosReestruturacaoId = ehVisualizacao ? dadosVisualizacao.id : null;
 
-    console.log('dados', dadosVisualizacao);
-    setVersaoId(dadosVersao);
+    setVersaoId(String(dadosVersaoId));
     setDescricao(dadosDescricao);
     setDescricaoSimples(dadosDescricaoSimples);
     setReestruturacaoId(dadosReestruturacaoId);

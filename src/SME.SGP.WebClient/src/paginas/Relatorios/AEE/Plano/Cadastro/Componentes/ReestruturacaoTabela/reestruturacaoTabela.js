@@ -27,7 +27,6 @@ const ReestruturacaoTabela = ({
 
   const cliqueVisualizar = dadosLinha => {
     setModalVisivel(true);
-    // setModoConsulta(true);
     setDadosVisualizacao(dadosLinha);
   };
 
@@ -73,6 +72,10 @@ const ReestruturacaoTabela = ({
     setModoConsulta(false);
     setModalVisivel(true);
   };
+
+  useEffect(() => {
+    setModoConsulta(somenteConsulta || !permissoesTela.podeIncluir);
+  }, [somenteConsulta, permissoesTela]);
 
   useEffect(() => {
     verificaSomenteConsulta(permissoesTela);
