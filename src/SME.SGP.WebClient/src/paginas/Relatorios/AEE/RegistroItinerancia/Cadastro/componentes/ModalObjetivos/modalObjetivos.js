@@ -55,24 +55,24 @@ const ModalObjetivos = ({
             }
           );
         }
+        const objetivoSelecionado = objetivosSelecionados?.find(
+          o =>
+            o.itineranciaObjetivoBaseId === objetivo.itineranciaObjetivoBaseId
+        );
+        if (objetivoSelecionado) {
+          objetivo.checked = objetivoSelecionado.checked;
+          objetivo.descricao = objetivoSelecionado.descricao;
+        } else {
+          objetivo.checked = false;
+          objetivo.descricao = '';
+        }
       });
       setValidacoes(Yup.object(validacoesCamposComDescricao));
     }
   }, [listaObjetivos]);
 
   useEffect(() => {
-    listaObjetivos.forEach(objetivo => {
-      const objetivoSelecionado = objetivosSelecionados?.find(
-        o => o.itineranciaObjetivoBaseId === objetivo.itineranciaObjetivoBaseId
-      );
-      if (objetivoSelecionado) {
-        objetivo.checked = objetivoSelecionado.checked;
-        objetivo.descricao = objetivoSelecionado.descricao;
-      } else {
-        objetivo.checked = false;
-        objetivo.descricao = '';
-      }
-    });
+    listaObjetivos.forEach(objetivo => {});
   }, []);
 
   const perguntarSalvarListaUsuario = async () => {
