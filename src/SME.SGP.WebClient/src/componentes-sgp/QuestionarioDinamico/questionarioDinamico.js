@@ -161,7 +161,15 @@ const QuestionarioDinamico = props => {
           });
         }
       }
-      valores[questaoAtual.id] = valorRespostaAtual;
+
+      if (
+        !valorRespostaAtual &&
+        questaoAtual?.tipoQuestao === tipoQuestao.Periodo
+      ) {
+        valores[questaoAtual.id] = {};
+      } else {
+        valores[questaoAtual.id] = valorRespostaAtual;
+      }
     };
 
     dadosQuestionarioAtual.forEach(questaoAtual => {
