@@ -18,7 +18,7 @@ namespace SME.SGP.Dominio
         public SituacaoPlanoAEE Situacao { get; set; }
         public string ParecerCoordenacao { get; set; }
         public string ParecerPAEE { get; set; }
-        public long ResponsavelId { get; set; }
+        public long? ResponsavelId { get; set; }
 
         public List<PlanoAEEQuestao> Questoes { get; set; }
     }
