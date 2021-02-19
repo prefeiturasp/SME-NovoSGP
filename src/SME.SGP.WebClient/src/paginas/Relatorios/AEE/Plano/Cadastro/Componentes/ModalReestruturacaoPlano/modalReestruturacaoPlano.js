@@ -18,7 +18,7 @@ import ServicoPlanoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoPlanoAEE';
 
 const ModalReestruturacaoPlano = ({
   key,
-  esconderModal,
+  alternarModal,
   exibirModal,
   modoConsulta,
   dadosVisualizacao,
@@ -27,25 +27,24 @@ const ModalReestruturacaoPlano = ({
   match,
 }) => {
   const [modoEdicao, setModoEdicao] = useState(false);
-  const [versaoId, setVersaoId] = useState('');
+  const [versao, setVersao] = useState('');
+  const [versaoId, setVersaoId] = useState();
   const [descricao, setDescricao] = useState();
   const [descricaoSimples, setDescricaoSimples] = useState();
   const [reestruturacaoId, setReestruturacaoId] = useState(null);
+  const ehVisualizacao = modoConsulta || Object.keys(dadosVisualizacao).length;
 
   const dispatch = useDispatch();
 
   const perguntarSalvarListaUsuario = async () => {
     const resposta = await confirmar(
       'Atenção',
-      'Suas alterações não foram salvas, deseja salvar agora?'
+      'Você não salvou as informações preenchidas. Deseja realmente cancelar as alterações?'
     );
     return resposta;
   };
 
   const onConfirmarModal = async () => {
-    const versaoTexto = listaVersao.find(
-      item => String(item.id) === String(versaoId)
-    );
     const resposta = await ServicoPlanoAEE.salvarReestruturacoes({
       planoAEEId: match?.params?.id,
       reestruturacaoId,
@@ -58,54 +57,63 @@ const ModalReestruturacaoPlano = ({
       const dadosSalvar = {
         id: resposta?.data,
         data: moment(),
-        versao: versaoTexto.descricao,
+        versao,
+        versaoId,
         descricao,
         descricaoSimples,
         semestre,
         adicionando: !reestruturacaoId,
       };
 
-      sucesso(
-        `Reestruturação ${
-          reestruturacaoId ? 'alterada' : 'registrada'
-        } com sucesso.`
-      );
+      const palavarMsg = reestruturacaoId ? 'alterada' : 'registrada';
+      sucesso(`Reestruturação ${palavarMsg} com sucesso.`);
 
       dispatch(setAlteracaoDados(dadosSalvar));
     }
     setModoEdicao(false);
-    esconderModal();
+    alternarModal();
   };
 
   const fecharModal = async () => {
-    esconderModal();
+    alternarModal();
     if (modoEdicao) {
-      const ehPraSalvar = await perguntarSalvarListaUsuario();
-      if (ehPraSalvar) {
-        onConfirmarModal();
+      const ehPraCancelar = await perguntarSalvarListaUsuario();
+      if (ehPraCancelar) {
+        setModoEdicao(false);
+        return;
       }
+      alternarModal(true);
     }
   };
 
   const mudarVersao = valor => {
+    const acharVersao = listaVersao.find(
+      item => String(item.id) === String(valor)
+    );
     setModoEdicao(true);
     setVersaoId(valor);
+    setVersao(acharVersao?.descricao);
   };
 
   const removerFormatacao = texto => {
-    return texto?.replace(/<.*?>/g, '').replace(/&nbsp;/g, ' ') || '';
+    return texto?.replace(/&nbsp;|<.*?>/g, '') || '';
   };
 
   const mudarDescricao = texto => {
+    const textoAlterado = ehVisualizacao
+      ? texto.localeCompare(dadosVisualizacao.descricao)
+      : false;
+    if ((texto && !ehVisualizacao) || textoAlterado) {
+      setModoEdicao(true);
+    }
     const textoSimples = removerFormatacao(texto);
     setDescricao(texto);
     setDescricaoSimples(textoSimples);
   };
 
   useEffect(() => {
-    const ehVisualizacao =
-      modoConsulta || Object.keys(dadosVisualizacao).length;
     const dadosVersaoId = ehVisualizacao ? dadosVisualizacao.versaoId : '';
+    const dadosVersao = ehVisualizacao ? dadosVisualizacao.versao : '';
     const dadosDescricao = ehVisualizacao ? dadosVisualizacao.descricao : '';
     const dadosDescricaoSimples = ehVisualizacao
       ? dadosVisualizacao.descricaoSimples
@@ -113,10 +121,11 @@ const ModalReestruturacaoPlano = ({
     const dadosReestruturacaoId = ehVisualizacao ? dadosVisualizacao.id : null;
 
     setVersaoId(String(dadosVersaoId));
+    setVersao(dadosVersao);
     setDescricao(dadosDescricao);
     setDescricaoSimples(dadosDescricaoSimples);
     setReestruturacaoId(dadosReestruturacaoId);
-  }, [dadosVisualizacao, modoConsulta]);
+  }, [dadosVisualizacao, ehVisualizacao]);
 
   return (
     <ModalConteudoHtml
@@ -163,7 +172,7 @@ const ModalReestruturacaoPlano = ({
 };
 
 ModalReestruturacaoPlano.defaultProps = {
-  esconderModal: () => {},
+  alternarModal: () => {},
   exibirModal: false,
   modoConsulta: false,
   dadosVisualizacao: {},
@@ -172,7 +181,7 @@ ModalReestruturacaoPlano.defaultProps = {
 };
 
 ModalReestruturacaoPlano.propTypes = {
-  esconderModal: PropTypes.func,
+  alternarModal: PropTypes.func,
   exibirModal: PropTypes.bool,
   key: PropTypes.string.isRequired,
   modoConsulta: PropTypes.bool,

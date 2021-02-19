@@ -25,8 +25,10 @@ const ReestruturacaoTabela = ({
   const permissoesTela = usuario.permissoes[RotasDto.RELATORIO_AEE_PLANO];
   const somenteConsulta = useSelector(store => store.navegacao.somenteConsulta);
 
+  const alternarModal = booleano => setModalVisivel(booleano || !exibirModal);
+
   const cliqueVisualizar = dadosLinha => {
-    setModalVisivel(true);
+    alternarModal();
     setDadosVisualizacao(dadosLinha);
   };
 
@@ -65,12 +67,10 @@ const ReestruturacaoTabela = ({
     },
   ];
 
-  const esconderModal = () => setModalVisivel(false);
-
   const cliqueNovaRestruturacao = () => {
     setDadosVisualizacao([]);
     setModoConsulta(false);
-    setModalVisivel(true);
+    alternarModal();
   };
 
   useEffect(() => {
@@ -85,7 +85,7 @@ const ReestruturacaoTabela = ({
     <>
       <ModalReestruturacaoPlano
         key={key}
-        esconderModal={esconderModal}
+        alternarModal={alternarModal}
         exibirModal={exibirModal}
         modoConsulta={modoConsulta}
         dadosVisualizacao={dadosVisualizacao}
@@ -95,6 +95,7 @@ const ReestruturacaoTabela = ({
       />
       <div>
         <DataTable
+          semHover
           rowKey="key"
           columns={colunas}
           dataSource={listaDados}
