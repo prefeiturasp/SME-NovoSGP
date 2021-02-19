@@ -510,6 +510,7 @@ namespace SME.SGP.IoC
             //Notificacoes EncaminhamentoAEE
             services.TryAddScopedWorkerService<INotificacaoConclusaoEncaminhamentoAEEUseCase, NotificacaoConclusaoEncaminhamentoAEEUseCase>();
             services.TryAddScopedWorkerService<INotificacaoEncerramentoEncaminhamentoAEEUseCase, NotificacaoEncerramentoEncaminhamentoAEEUseCase>();
+            services.TryAddScopedWorkerService<INotificacaoDevolucaoEncaminhamentoAEEUseCase, NotificacaoDevolucaoEncaminhamentoAEEUseCase>();
         }
 
         private static void ResgistraDependenciaHttp(IServiceCollection services)

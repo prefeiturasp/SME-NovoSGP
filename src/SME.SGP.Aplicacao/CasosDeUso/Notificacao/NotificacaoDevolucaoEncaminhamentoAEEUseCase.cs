@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class NotificacaoConclusaoEncaminhamentoAEEUseCase : AbstractUseCase, INotificacaoConclusaoEncaminhamentoAEEUseCase
+    public class NotificacaoDevolucaoEncaminhamentoAEEUseCase : AbstractUseCase, INotificacaoDevolucaoEncaminhamentoAEEUseCase
     {
-        public NotificacaoConclusaoEncaminhamentoAEEUseCase(IMediator mediator) : base(mediator)
+        public NotificacaoDevolucaoEncaminhamentoAEEUseCase(IMediator mediator) : base(mediator)
         {
         }
 
@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
 
             if (mensagemRabbit.EncaminhamentoAEEId > 0)
             {
-                await mediator.Send(new NotificacaoConclusaoEncaminhamentoAEECommand(mensagemRabbit.EncaminhamentoAEEId, mensagemRabbit.UsuarioRF, mensagemRabbit.UsuarioNome));
+                await mediator.Send(new NotificacaoDevolucaoEncaminhamentoAEECommand(mensagemRabbit.EncaminhamentoAEEId, mensagemRabbit.UsuarioRF, mensagemRabbit.UsuarioNome));
             }
 
             return true;

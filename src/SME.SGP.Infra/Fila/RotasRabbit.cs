@@ -66,6 +66,9 @@
 
         public static string RotaNotificacaoRegistroConclusaoEncaminhamentoAEE => "notificacao.registro.conclusao.encaminhamentoaee";
         public static string RotaNotificacaoEncerramentoEncaminhamentoAEE => "notificacao.encerramento.encaminhamentoaee";
+        public static string RotaNotificacaoDevolucaoEncaminhamentoAEE => "notificacao.devolucao.encaminhamentoaee";
+
+        
 
     }
 }
