@@ -8,9 +8,8 @@ namespace SME.SGP.Dominio.Interfaces
         void SalvarVarios(IEnumerable<PlanejamentoAnualObjetivoAprendizagem> objetivos, long planejamentoAnualComponenteId);
         Task RemoverTodosPorPlanejamentoAnualPeriodoEscolarId(long id);
         Task RemoverTodosPorPlanejamentoAnualPeriodoEscolarIdEComponenteCurricularId(long id, long componenteCurricularId);
-        
-
         Task<IEnumerable<PlanejamentoAnualObjetivoAprendizagem>> ObterPorPlanejamentoAnualComponenteId(long componenteId);
+        Task<IEnumerable<PlanejamentoAnualObjetivoAprendizagem>> ObterPorPlanejamentoAnualComponenteId(long[] componentesId);
         Task RemoverLogicamenteAsync(long id);
     }
 }

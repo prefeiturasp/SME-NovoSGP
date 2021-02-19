@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
 
             RuleFor(c => c.DreCodigo)
                .NotEmpty()
-               .WithMessage("O tipo de evento deve ser informado.");
+               .WithMessage("O id da DRE de calendário deve ser informado.");
 
             RuleFor(c => c.UeCodigo)
                .NotEmpty()
