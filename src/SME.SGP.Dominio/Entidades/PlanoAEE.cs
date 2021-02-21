@@ -21,5 +21,9 @@ namespace SME.SGP.Dominio
         public long? ResponsavelId { get; set; }
 
         public List<PlanoAEEQuestao> Questoes { get; set; }
+
+        public void EncerrarPlanoAEE() {
+            Situacao = SituacaoPlanoAEE.AguardandoDevolutivaCoordenacao;
+        }
     }
 }
