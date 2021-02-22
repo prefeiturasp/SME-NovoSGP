@@ -108,7 +108,7 @@ namespace SME.SGP.Dados.Repositorios
                              and not q.excluido
                            order by q.ordem";
 
-            return await database.Conexao.QueryAsync<ItineranciaQuestaoDto>(query, new { id , tipoQuestionario });
+            return await database.Conexao.QueryAsync<ItineranciaQuestaoDto>(query, new { id, tipoQuestionario });
         }
 
         public async Task<IEnumerable<ItineranciaUeDto>> ObterUesItineranciaPorId(long id)
@@ -124,14 +124,14 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<ItineranciaUeDto>(query, new { id });
         }
 
-        public async Task<IEnumerable<long>> ObterAnosLetivosItinerancia()
+        public async Task<IEnumerable<int>> ObterAnosLetivosItinerancia()
         {
             var query = @"select distinct ano_letivo 
                             from itinerancia i 
                            where not excluido
                            order by ano_letivo desc";
 
-            return await database.Conexao.QueryAsync<long>(query);
+            return await database.Conexao.QueryAsync<int>(query);
         }
         public async Task<Itinerancia> ObterEntidadeCompleta(long id)
         {
@@ -148,37 +148,37 @@ namespace SME.SGP.Dados.Repositorios
 
             var lookup = new Dictionary<long, Itinerancia>();
 
-             database.Conexao.Query<Itinerancia, ItineranciaAluno, ItineranciaAlunoQuestao, ItineranciaQuestao, ItineranciaObjetivo, ItineranciaObjetivoBase, ItineranciaUe, Itinerancia>(query,
-                 (registroItinerancia, itineranciaAluno, itineranciaAlunoquestao, itineranciaQuestao, itineranciaObjetivo, itineranciaObjetivoBase, itineranciaUe) =>
-                 {
-                     Itinerancia itinerancia;
-                     if (!lookup.TryGetValue(registroItinerancia.Id, out itinerancia))
-                     {
-                         itinerancia = registroItinerancia;
-                         lookup.Add(registroItinerancia.Id, itinerancia);
-                     }
-                     if(itineranciaAluno != null)
+           await database.Conexao.QueryAsync<Itinerancia, ItineranciaAluno, ItineranciaAlunoQuestao, ItineranciaQuestao, ItineranciaObjetivo, ItineranciaObjetivoBase, ItineranciaUe, Itinerancia>(query,
+                (registroItinerancia, itineranciaAluno, itineranciaAlunoquestao, itineranciaQuestao, itineranciaObjetivo, itineranciaObjetivoBase, itineranciaUe) =>
+                {
+                    Itinerancia itinerancia;
+                    if (!lookup.TryGetValue(registroItinerancia.Id, out itinerancia))
+                    {
+                        itinerancia = registroItinerancia;
+                        lookup.Add(registroItinerancia.Id, itinerancia);
+                    }
+                    if (itineranciaAluno != null)
                         itinerancia.AdicionarAluno(itineranciaAluno);
 
-                     if (itineranciaAlunoquestao != null)
-                         itinerancia.AdicionarQuestaoAluno(itineranciaAluno.Id, itineranciaAlunoquestao);
+                    if (itineranciaAlunoquestao != null)
+                        itinerancia.AdicionarQuestaoAluno(itineranciaAluno.Id, itineranciaAlunoquestao);
 
-                     if (itineranciaQuestao != null)
-                         itinerancia.AdicionarQuestao(itineranciaQuestao);
+                    if (itineranciaQuestao != null)
+                        itinerancia.AdicionarQuestao(itineranciaQuestao);
 
-                     if (itineranciaObjetivo != null)
-                         itinerancia.AdicionarObjetivo(itineranciaObjetivo);
+                    if (itineranciaObjetivo != null)
+                        itinerancia.AdicionarObjetivo(itineranciaObjetivo);
 
-                     if (itineranciaObjetivoBase != null)
-                         itinerancia.AdicionarObjetivoBase(itineranciaObjetivoBase);
+                    if (itineranciaObjetivoBase != null)
+                        itinerancia.AdicionarObjetivoBase(itineranciaObjetivoBase);
 
-                     if (itineranciaUe != null)
-                         itinerancia.AdicionarUe(itineranciaUe);
+                    if (itineranciaUe != null)
+                        itinerancia.AdicionarUe(itineranciaUe);
 
-                     return itinerancia;
-                 }, param: new { id });
+                    return itinerancia;
+                }, param: new { id });
 
-            return lookup.Values.FirstOrDefault();            
+            return lookup.Values.FirstOrDefault();
         }
 
         public async Task<PaginacaoResultadoDto<ItineranciaRetornoQueryDto>> ObterItineranciasPaginado(long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao, int anoLetivo, DateTime? dataInicio, DateTime? dataFim, Paginacao paginacao)
@@ -215,7 +215,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             ObtenhaCabecalho(sql, contador, dreId, ueId, turmaId, alunoCodigo);
 
-            ObtenhaFiltro(sql, dreId, ueId, turmaId, alunoCodigo, situacao,  anoLetivo, dataInicio, dataFim);
+            ObtenhaFiltro(sql, dreId, ueId, turmaId, alunoCodigo, situacao, anoLetivo, dataInicio, dataFim);
 
             if (!contador)
                 sql.AppendLine(" order by i.data_visita desc ");
@@ -226,13 +226,13 @@ namespace SME.SGP.Dados.Repositorios
 
         private static void ObtenhaCabecalho(StringBuilder sql, bool contador, long dreId, long ueId, long turmaId, string alunoCodigo)
         {
-            sql.AppendLine("select ");
+            sql.AppendLine("select distinct ");
             if (contador)
                 sql.AppendLine(" count(i.id) ");
             else
             {
                 sql.AppendLine(" i.id ");
-                sql.AppendLine(", i.data_visita as DataVisita ");                
+                sql.AppendLine(", i.data_visita as DataVisita ");
                 sql.AppendLine(", iu2.ue_id as UeId");
                 sql.AppendLine(", i.situacao ");
                 sql.AppendLine($", (select count(*) from itinerancia_aluno ia where ia.itinerancia_id = i.id ) as alunos ");
@@ -241,32 +241,46 @@ namespace SME.SGP.Dados.Repositorios
             }
 
             sql.AppendLine(" from itinerancia i ");
-            
+
             if (dreId > 0 || ueId > 0)
             {
                 sql.AppendLine(@" inner join itinerancia_ue iu2 on iu2.itinerancia_id = i.id 
 	                              inner join ue  on iu2.ue_id  = ue.id 
 	                              inner join dre on ue.dre_id = dre.id ");
             }
-           
+            
+            if (turmaId > 0 || !string.IsNullOrEmpty(alunoCodigo))
+                sql.AppendLine(@" inner join itinerancia_aluno ia on ia.itinerancia_id = i.id ");
+            
+
         }
 
         private static void ObtenhaFiltro(StringBuilder sql, long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao, int anoLetivo, DateTime? dataInicio, DateTime? dataFim)
         {
             sql.AppendLine(" where ue.dre_id = @dreId and not i.excluido ");
             sql.AppendLine(" and i.ano_letivo = @anoLetivo ");
-            
+
 
             if (ueId > 0)
                 sql.AppendLine(" and ue.id = @ueId ");
+            
             if (turmaId > 0)
                 sql.AppendLine(" and ia.turma_id = @turmaId ");
+            
             if (!string.IsNullOrEmpty(alunoCodigo))
                 sql.AppendLine(" and ia.codigo_aluno = @alunoCodigo ");
+            
             if (situacao.HasValue && situacao > 0)
                 sql.AppendLine(" and i.situacao = @situacao ");
+            
             if (dataInicio != null && dataFim != null)
                 sql.AppendLine("and i.data_visita::date between @dataInicio and @dataFim");
+            
+            if (turmaId > 0)
+                sql.AppendLine("and ia.turma_id = @turmaId");
+
+            if (!string.IsNullOrEmpty(alunoCodigo))
+                sql.AppendLine("and ia.codigo_aluno = @alunoCodigo");
         }
 
         public async Task<IEnumerable<ItineranciaCodigoAlunoDto>> ObterCodigoAlunosPorItineranciasIds(long[] itineranciasIds)
@@ -274,7 +288,7 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select codigo_aluno as alunoCodigo, itinerancia_id as ItineranciaId, turma_id as turmaId from itinerancia_aluno ia 
                             where ia.itinerancia_id = ANY(@itineranciasIds)";
 
-            return await database.Conexao.QueryAsync<ItineranciaCodigoAlunoDto>(query, new { itineranciasIds } );
+            return await database.Conexao.QueryAsync<ItineranciaCodigoAlunoDto>(query, new { itineranciasIds });
         }
 
         public async Task<IEnumerable<ItineranciaIdUeInfosDto>> ObterUesItineranciaPorIds(long[] itineranciaIds)
@@ -284,6 +298,14 @@ namespace SME.SGP.Dados.Repositorios
                             where iu.itinerancia_id  = ANY(@itineranciaIds)";
 
             return await database.Conexao.QueryAsync<ItineranciaIdUeInfosDto>(query, new { itineranciaIds });
+        }
+
+        public async Task<IEnumerable<ItineranciaNomeRfCriadorRetornoDto>> ObterRfsCriadoresPorNome(string nomeParaBusca)
+        {
+            var query = $@"select distinct criado_rf as Rf, criado_por as Nome from itinerancia i 
+                                        where lower(f_unaccent(i.criado_por)) LIKE f_unaccent('%{nomeParaBusca}%') order by criado_por limit 10";
+
+            return await database.Conexao.QueryAsync<ItineranciaNomeRfCriadorRetornoDto>(query);
         }
     }
 }

@@ -24,6 +24,14 @@ namespace SME.SGP.Api
         {
             return Ok(await useCase.Executar());
         }
+        [HttpGet("criadores")]
+        [ProducesResponseType(typeof(IEnumerable<ItineranciaObjetivosBaseDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.RI_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterCriadores([FromServices] IObterRfsPorNomesItineranciaUseCase useCase, [FromQuery]string nome)
+        {
+            return Ok(await useCase.Executar(nome));
+        }
 
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(ItineranciaDto), 200)]
