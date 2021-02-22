@@ -4,6 +4,7 @@ using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api
@@ -64,6 +65,40 @@ namespace SME.SGP.Api
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.RI_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterQuestoes([FromServices] IObterQuestoesBaseUseCase useCase)
+        {
+            return Ok(await useCase.Executar());
+        }
+
+        [HttpGet]
+        [ProducesResponseType(typeof(PaginacaoResultadoDto<ItineranciaResumoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.RI_C, Policy = "Bearer")]
+        public async Task<IActionResult> ListaItinerancias([FromQuery] FiltroPesquisaItineranciasDto filtro, [FromServices] IObterItineranciasUseCase useCase)
+        {
+            return Ok(await useCase.Executar(filtro));
+        }
+
+        [HttpGet("situacoes")]
+        [ProducesResponseType(typeof(RegistroIndividualDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.RI_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterSituacoes()
+        {
+            var situacoes = new List<SituacaoDto>() { 
+                new SituacaoDto()
+                {
+                    Codigo = 1,
+                    Descricao = "Digitado",
+                } 
+            };
+            return await Task.FromResult(Ok(situacoes));
+        }
+
+        [HttpGet("anos-letivos")]
+        [ProducesResponseType(typeof(RegistroIndividualDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.RI_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterAnosLetivos([FromServices] IObterAnosLetivosItineranciaUseCase useCase)
         {
             return Ok(await useCase.Executar());
         }

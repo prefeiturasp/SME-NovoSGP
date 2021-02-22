@@ -3,6 +3,7 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -80,6 +81,47 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> VerificarExistenciaPlanoAEEPorEstudante(string codigoEstudante, [FromServices] IVerificarExistenciaPlanoAEEPorEstudanteUseCase useCase)
         {
             return Ok(await useCase.Executar(codigoEstudante));
+        }
+
+        [HttpGet("{planoAeeId}/devolutiva")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ObterDevolutivaPlanoAEE(long planoAEEId, [FromServices] IObterDevolutivaPlanoAEEPorIdUseCase useCase)
+        {
+            return Ok(await useCase.Executar(planoAEEId));
+        }
+
+        [HttpPost("encerrar-plano")]
+        [ProducesResponseType(typeof(RetornoEncerramentoPlanoAEEDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> EncerrarPlanoAEE([FromQuery] long planoAEEId, [FromServices] IEncerrarPlanoAEEUseCase usecase)
+        {
+            return Ok(await usecase.Executar(planoAEEId));
+        }
+
+        [HttpPost("{planoAeeId}/devolutiva/cp")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> CadastrarDevolutivaCPPlanoAEE(long planoAEEId, [FromBody] PlanoAEECadastroDevolutivaDto planoAEEDevolutivaDto, [FromServices] ICadastrarDevolutivaCPPlanoAEEUseCase useCase)
+        {
+            return Ok(await useCase.Executar(planoAEEId, planoAEEDevolutivaDto));
+        }
+
+        [HttpPost("{planoAeeId}/devolutiva/paai")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> CadastrarDevolutivaPAAIPlanoAEE(long planoAEEId, [FromBody] PlanoAEECadastroDevolutivaDto planoAEEDevolutivaDto, [FromServices] ICadastrarDevolutivaPAAIPlanoAEEUseCase useCase)
+        {
+            return Ok(await useCase.Executar(planoAEEId, planoAEEDevolutivaDto));
+        }
+
+        [HttpPost("atribuir-responsavel")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> AtribuirResponsavelPlanoAEE([FromBody] AtribuirResponsavelPlanoAEEDto parametros, [FromServices] IAtribuirResponsavelPlanoAEEUseCase useCase)
+        {
+            return Ok(await useCase.Executar(parametros.PlanoAEEId, parametros.ResponsavelRF));
         }
 
         [HttpGet("{planoAEEId}/reestruturacoes")]

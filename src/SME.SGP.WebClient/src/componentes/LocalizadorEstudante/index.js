@@ -22,6 +22,7 @@ const LocalizadorEstudante = props => {
     placeholder,
     semMargin,
     limparCamposAposPesquisa,
+    labelAlunoNome,
   } = props;
 
   const classeNome = semMargin
@@ -277,8 +278,12 @@ const LocalizadorEstudante = props => {
 
   return (
     <React.Fragment>
-      <div className={`${exibirCodigoEOL ? classeNome : 'col-md-12'} `}>
-        {showLabel && <Label text="Nome" control="alunoNome" />}
+      <div
+        className={`${
+          exibirCodigoEOL ? 'col-sm-12 col-md-6 col-lg-8 col-xl-8' : 'col-md-12'
+        } `}
+      >
+        {showLabel && <Label text={labelAlunoNome} control="alunoNome" />}
         <InputNome
           placeholder={placeholder}
           dataSource={dataSource}
@@ -325,6 +330,7 @@ LocalizadorEstudante.propTypes = {
   placeholder: PropTypes.string,
   semMargin: PropTypes.bool,
   limparCamposAposPesquisa: PropTypes.bool,
+  labelAlunoNome: PropTypes.string,
 };
 
 LocalizadorEstudante.defaultProps = {
@@ -339,6 +345,7 @@ LocalizadorEstudante.defaultProps = {
   placeholder: '',
   semMargin: false,
   limparCamposAposPesquisa: false,
+  labelAlunoNome: 'Nome',
 };
 
 export default LocalizadorEstudante;

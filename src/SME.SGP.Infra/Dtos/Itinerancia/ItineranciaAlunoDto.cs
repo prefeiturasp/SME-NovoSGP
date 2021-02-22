@@ -7,7 +7,8 @@ namespace SME.SGP.Infra
         public long Id { get; set; }
         public string AlunoCodigo { get; set; }
         public string AlunoNome { get; set; }
-        public string NomeComModalidadeTurma { get; set; }
+        public string NomeAlunoComTurmaModalidade { get; set; }
+        public long TurmaId { get; set; }
         public IEnumerable<ItineranciaAlunoQuestaoDto> Questoes { get; set; }
     }
 }

@@ -89,6 +89,7 @@ import RegistroItineranciaAEECadastro from '~/paginas/Relatorios/AEE/RegistroIti
 import AcompanhamentoFrequencia from '~/paginas/DiarioClasse/AcompanhamentoFrequencia/acompanhamentoFrequencia';
 import PlanoAEELista from '~/paginas/Relatorios/AEE/Plano/Lista/planoAEELista';
 import PlanoAEECadastro from '~/paginas/Relatorios/AEE/Plano/Cadastro/planoAEECadastro';
+import RegistroItineranciaAEELista from '~/paginas/Relatorios/AEE/RegistroItinerancia/Lista/registroItineranciaAEELista';
 
 const rotas = new Map();
 
@@ -1181,12 +1182,11 @@ rotas.set(`${RotasDto.RELATORIO_AEE_ENCAMINHAMENTO}/editar/:id`, {
   chavePermissao: RotasDto.RELATORIO_AEE_ENCAMINHAMENTO,
 });
 
-/**TO-DO Listagem */
 rotas.set(`${RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA}`, {
   breadcrumbName: 'Registro de itinerância',
   menu: ['Relatórios', 'AEE'],
   parent: '/',
-  component: {},
+  component: RegistroItineranciaAEELista,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: true,
@@ -1194,9 +1194,9 @@ rotas.set(`${RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA}`, {
 });
 
 rotas.set(`${RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA}/novo`, {
-  breadcrumbName: 'Registro de itinerância',
-  menu: ['Relatórios', 'AEE'],
-  parent: '/',
+  breadcrumbName: 'Cadastro',
+  menu: [],
+  parent: RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA,
   component: RegistroItineranciaAEECadastro,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,

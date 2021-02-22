@@ -82,6 +82,6 @@ namespace SME.SGP.Dominio
                    (EhTurmaEnsinoMedio && quantidadeAulasExistentesNoDia > 2);
         }
         public string NomeComModalidade() 
-                 => $"{ModalidadeCodigo} - {Nome}";
+                 => $"{ModalidadeCodigo.ObterNomeCurto()} - {Nome}";
     }
 }
