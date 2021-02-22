@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.CasosDeUso
 {
-    public class CadastrarDevolutivaCPPlanoAEEUseCase : ICadastrarDevolutivaCPPlanoAEEUseCase
+    public class CadastrarDevolutivaPAAIPlanoAEEUseCase : ICadastrarDevolutivaPAAIPlanoAEEUseCase
     {
         private readonly IMediator mediator;
 
-        public CadastrarDevolutivaCPPlanoAEEUseCase(IMediator mediator)
+        public CadastrarDevolutivaPAAIPlanoAEEUseCase(IMediator mediator)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             if (planoDto.Parecer == "")
                 throw new NegocioException("O motivo da devolutiva deve ser cadastrado");
 
-            var retorno = await mediator.Send(new CadastrarDevolutivaCPCommand(planoAEEId, planoDto.Parecer));
+            var retorno = await mediator.Send(new CadastrarDevolutivaPAAICommand(planoAEEId, planoDto.Parecer));
             return retorno;
         }
     }
