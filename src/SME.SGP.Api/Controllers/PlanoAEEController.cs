@@ -91,14 +91,28 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpPost("encerrar-plano")]
-
-        
         [ProducesResponseType(typeof(RetornoEncerramentoPlanoAEEDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> EncerrarPlanoAEE([FromQuery] long planoAEEId, [FromServices] IEncerrarPlanoAEEUseCase usecase)
         {
             return Ok(await usecase.Executar(planoAEEId));
+        }
+
+        [HttpPost("{planoAeeId}/devolutiva/cp")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> CadastrarDevolutivaCPPlanoAEE(long planoAEEId, [FromBody] PlanoAEECadastroDevolutivaDto planoAEEDevolutivaDto, [FromServices] ICadastrarDevolutivaCPPlanoAEEUseCase useCase)
+        {
+            return Ok(await useCase.Executar(planoAEEId, planoAEEDevolutivaDto));
+        }
+
+        [HttpPost("{planoAeeId}/devolutiva/paai")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> CadastrarDevolutivaPAAIPlanoAEE(long planoAEEId, [FromBody] PlanoAEECadastroDevolutivaDto planoAEEDevolutivaDto, [FromServices] ICadastrarDevolutivaPAAIPlanoAEEUseCase useCase)
+        {
+            return Ok(await useCase.Executar(planoAEEId, planoAEEDevolutivaDto));
         }
     }
 }
