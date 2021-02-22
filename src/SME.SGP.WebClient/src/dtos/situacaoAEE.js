@@ -18,6 +18,10 @@ const situacaoAEE = {
   Deferido: 7,
   /** Indeferido */
   Indeferido: 8,
+  /**  Aguardando devolutiva coordenação */
+  DevolutivaCoordenacao: 10,
+  /**  Aguardando devolutiva PAAI */
+  DevolutivaPAAI: 11,
 };
 
 export default situacaoAEE;
