@@ -748,7 +748,7 @@ namespace SME.SGP.IoC
 
             services.TryAddScoped<ICadastrarDevolutivaCPPlanoAEEUseCase, CadastrarDevolutivaCPPlanoAEEUseCase>();
             services.TryAddScoped<ICadastrarDevolutivaPAAIPlanoAEEUseCase, CadastrarDevolutivaPAAIPlanoAEEUseCase>();
-            
+            services.TryAddScoped<IAtribuirResponsavelPlanoAEEUseCase, AtribuirResponsavelPlanoAEEUseCase>();
 
             services.TryAddScoped<IObterInformacoesDeFrequenciaAlunosPorBimestreUseCase, ObterInformacoesDeFrequenciaAlunosPorBimestreUseCase>();
             services.TryAddScoped<IObterAlunosAtivosPorUeENomeUseCase, ObterAlunosAtivosPorUeENomeUseCase>();
