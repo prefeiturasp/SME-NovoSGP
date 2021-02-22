@@ -17,9 +17,6 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
         public async Task<bool> Executar(long planoAEEId, PlanoAEECadastroDevolutivaDto planoDto)
         {
-            if (planoDto.Parecer == "")
-                throw new NegocioException("O motivo da devolutiva deve ser cadastrado");
-
             var retorno = await mediator.Send(new CadastrarDevolutivaPAAICommand(planoAEEId, planoDto.Parecer));
             return retorno;
         }
