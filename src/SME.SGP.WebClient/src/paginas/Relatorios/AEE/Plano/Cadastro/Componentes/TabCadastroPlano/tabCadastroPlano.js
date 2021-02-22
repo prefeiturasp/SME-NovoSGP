@@ -7,7 +7,7 @@ import SecaoPlanoCollapse from '../SecaoPlanoCollapse/secaoPlanoCollapse';
 import { confirmar, sucesso } from '~/servicos';
 import ServicoPlanoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoPlanoAEE';
 import { setQuestionarioDinamicoEmEdicao } from '~/redux/modulos/questionarioDinamico/actions';
-import SecaoDevolutivasPlano from '../SecaoDevolutivasPlano/secaoDevolutivasPlano';
+import SecaoDevolutivasPlanoCollapse from '../SecaoDevolutivasPlano/secaoDevolutivasPlanoCollapse';
 
 const { TabPane } = Tabs;
 
@@ -60,7 +60,7 @@ const TabCadastroPasso = props => {
       )}
       {temId && (
         <TabPane tab="Devolutivas" key="3">
-          <SecaoDevolutivasPlano match={match} />
+          <SecaoDevolutivasPlanoCollapse match={match} />
         </TabPane>
       )}
     </ContainerTabsCard>
