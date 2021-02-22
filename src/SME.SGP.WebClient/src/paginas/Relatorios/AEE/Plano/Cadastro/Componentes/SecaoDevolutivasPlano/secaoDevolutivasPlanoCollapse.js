@@ -22,6 +22,8 @@ const SecaoDevolutivasPlano = ({ match }) => {
   const usuario = useSelector(store => store.usuario);
   const permissoesTela = usuario.permissoes[RotasDto.RELATORIO_AEE_PLANO];
   const somenteConsulta = useSelector(store => store.navegacao.somenteConsulta);
+  console.log('planoAEEDados', planoAEEDados);
+  console.log('permissoesTela', permissoesTela);
 
   const situacaoDevolutivaCoordenacao =
     planoAEEDados.situacaoDescricao !== situacaoAEE.DevolutivaCoordenacao;

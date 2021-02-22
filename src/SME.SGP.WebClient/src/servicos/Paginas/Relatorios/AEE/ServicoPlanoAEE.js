@@ -235,6 +235,33 @@ class ServicoPlanoAEE {
     }
     return false;
   };
+
+  obterDevolutiva = planoAeeId => {
+    return api.get(`${urlPadrao}/${planoAeeId}/devolutiva`);
+  };
+
+  solicitarEncerramento = planoAeeId => {
+    return api.post(`${urlPadrao}/encerrar-plano`, planoAeeId);
+  };
+
+  encerrarPlano = planoAeeId => {
+    return api.post(`${urlPadrao}/encerrar-plano`, planoAeeId);
+  };
+
+  salvarDevolutivaCP = params => {
+    return api.post(`${urlPadrao}/${params.planoAeeId}/devolutiva/cp`, params);
+  };
+
+  salvarDevolutivaPAAI = params => {
+    return api.post(
+      `${urlPadrao}/${params.planoAeeId}/devolutiva/paai`,
+      params
+    );
+  };
+
+  atribuirResponsavel = params => {
+    return api.post(`${urlPadrao}/atribuir-responsavel`, params);
+  };
 }
 
 export default new ServicoPlanoAEE();

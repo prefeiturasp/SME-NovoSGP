@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import Button from '~/componentes/button';
 import { Colors } from '~/componentes';
 import { confirmar, history, sucesso } from '~/servicos';
-import { RotasDto } from '~/dtos';
+import { RotasDto, situacaoAEE } from '~/dtos';
 import ServicoPlanoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoPlanoAEE';
 import QuestionarioDinamicoFuncoes from '~/componentes-sgp/QuestionarioDinamico/Funcoes/QuestionarioDinamicoFuncoes';
 
@@ -18,6 +18,13 @@ const BotoesAcoesPlanoAEE = props => {
   const desabilitarCamposPlanoAEE = useSelector(
     store => store.planoAEE.desabilitarCamposPlanoAEE
   );
+
+  const planoAEEDados = useSelector(store => store.planoAEE.planoAEEDados);
+
+  const usuario = useSelector(store => store.usuario);
+  const permissoesTela = usuario.permissoes[RotasDto.RELATORIO_AEE_PLANO];
+  const planoAeeId = match?.params?.id;
+  console.log('planoAEEDados', planoAEEDados);
 
   const onClickVoltar = async () => {
     if (questionarioDinamicoEmEdicao) {
@@ -73,6 +80,12 @@ const BotoesAcoesPlanoAEE = props => {
     }
   };
 
+  const onClickSolicitarEncerramento = async () => {
+    if (!desabilitarCamposPlanoAEE && !questionarioDinamicoEmEdicao) {
+      await ServicoPlanoAEE.solicitarEncerramento(planoAeeId);
+    }
+  };
+
   return (
     <>
       <Button
@@ -101,6 +114,20 @@ const BotoesAcoesPlanoAEE = props => {
         bold
         onClick={onClickSalvar}
         disabled={desabilitarCamposPlanoAEE || !questionarioDinamicoEmEdicao}
+      />
+      <Button
+        id="btn-solicitar-encerramento"
+        label="Solicitar encerramento"
+        color={Colors.Roxo}
+        bold
+        className="ml-3"
+        onClick={onClickSolicitarEncerramento}
+        hidden={planoAEEDados?.situacao === situacaoAEE.Encaminhado}
+        disabled={
+          desabilitarCamposPlanoAEE ||
+          questionarioDinamicoEmEdicao ||
+          !permissoesTela?.podeAlterar
+        }
       />
     </>
   );

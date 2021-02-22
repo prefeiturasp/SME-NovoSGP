@@ -8,6 +8,7 @@ import { confirmar, sucesso } from '~/servicos';
 import ServicoPlanoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoPlanoAEE';
 import { setQuestionarioDinamicoEmEdicao } from '~/redux/modulos/questionarioDinamico/actions';
 import SecaoDevolutivasPlanoCollapse from '../SecaoDevolutivasPlano/secaoDevolutivasPlanoCollapse';
+import { situacaoAEE } from '~/dtos';
 
 const { TabPane } = Tabs;
 
@@ -21,6 +22,7 @@ const TabCadastroPasso = props => {
   const questionarioDinamicoEmEdicao = useSelector(
     store => store.questionarioDinamico.questionarioDinamicoEmEdicao
   );
+  const planoAEEDados = useSelector(store => store.planoAEE.planoAEEDados);
 
   const dispatch = useDispatch();
 
@@ -59,7 +61,16 @@ const TabCadastroPasso = props => {
         </TabPane>
       )}
       {temId && (
-        <TabPane tab="Devolutivas" key="3">
+        <TabPane
+          tab="Devolutivas"
+          key="3"
+          disabled={
+            planoAEEDados?.situacao !== situacaoAEE.DevolutivaCoordenacao ||
+            planoAEEDados?.situacao !== situacaoAEE.AtribuicaoResponsavel ||
+            planoAEEDados?.situacao !== situacaoAEE.DevolutivaPAAI ||
+            planoAEEDados?.situacao !== situacaoAEE.Encerrado
+          }
+        >
           <SecaoDevolutivasPlanoCollapse match={match} />
         </TabPane>
       )}
