@@ -11,5 +11,7 @@ namespace SME.SGP.Dominio.Enumerados
         [Display(Name = "Encerrado")]
         Encerrado = 3,
 
+        [Display(Name = "Encerrado Automaticamente")]
+        EncerradoAutomaticamento = 6,
     }
 }
