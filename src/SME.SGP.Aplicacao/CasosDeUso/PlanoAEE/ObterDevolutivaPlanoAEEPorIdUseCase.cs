@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao
             return new PlanoAEEDevolutivaDto()
             {
                 ParecerCoordenacao = planoAEE.ParecerCoordenacao,
-                ParecerPAAI = planoAEE.ParecerPAEE,
+                ParecerPAAI = planoAEE.ParecerPAAI,
                 ResponsavelNome = responsavel?.Nome,
                 ResponsavelRF = responsavel?.CodigoRf,
                 PodeEditarParecerCoordenacao = await PodeEditarParecerCP(planoAEE, usuario, turma),
