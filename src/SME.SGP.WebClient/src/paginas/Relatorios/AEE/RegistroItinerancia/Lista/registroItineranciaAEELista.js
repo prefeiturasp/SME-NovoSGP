@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-
 import {
   Button,
   CampoData,
@@ -9,11 +8,10 @@ import {
   Colors,
   ListaPaginada,
   Loader,
-  LocalizadorEstudante,
+  LocalizadorEstudantesAtivos,
   SelectComponent,
 } from '~/componentes';
 import { Cabecalho, FiltroHelper } from '~/componentes-sgp';
-
 import { URL_HOME } from '~/constantes';
 import { RotasDto } from '~/dtos';
 import {
@@ -501,17 +499,20 @@ const RegistroItineranciaAEELista = () => {
               </Loader>
             </div>
             <div className="col-sm-12 col-md-6 p-0">
-              <LocalizadorEstudante
+              <LocalizadorEstudantesAtivos
                 id="estudante"
                 showLabel
+                exibirCodigoEOL={false}
                 ueId={ueId}
                 onChange={onChangeLocalizadorEstudante}
-                anoLetivo={anoLetivo}
-                desabilitado={!dreId || !ueId}
-                exibirCodigoEOL={false}
+                desabilitado={!anoLetivo || !dreId || !ueId}
                 codigoTurma={turmaId}
                 placeholder="Procure pelo nome da Criança/Estudante"
                 labelAlunoNome="Crianças/Estudantes"
+                dataReferencia={
+                  anoLetivo ? window.moment(`${anoLetivo}-01-01`) : ''
+                }
+                semMargin
               />
             </div>
           </div>
