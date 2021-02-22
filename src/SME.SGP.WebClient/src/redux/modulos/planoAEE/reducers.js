@@ -62,7 +62,6 @@ export default function PlanoAEE(state = inicial, action) {
           planoAEESituacaoEncaminhamentoAEE: {},
           planoAEEDados: null,
           exibirLoaderPlanoAEE: false,
-          desabilitarCamposPlanoAEE: false,
           planoAEEDadosSecoesPorEtapa: [],
           exibirModalErrosPlano: false,
         };
