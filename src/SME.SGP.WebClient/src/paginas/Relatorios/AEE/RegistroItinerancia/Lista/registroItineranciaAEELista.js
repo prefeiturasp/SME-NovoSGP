@@ -386,6 +386,23 @@ const RegistroItineranciaAEELista = () => {
     );
   };
 
+  const desabilitarData = current => {
+    if (current && anoLetivo) {
+      const ano = window.moment(`${anoLetivo}-01-01`);
+      return current < ano.startOf('year') || current > ano.endOf('year');
+    }
+    return false;
+  };
+
+  const desabilitarDataFinal = current => {
+    const ano = window.moment(`${anoLetivo}-01-01`);
+    const dataInicialFiltro = dataInicial || ano.startOf('year');
+    if (current && anoLetivo) {
+      return current < dataInicialFiltro || current > ano.endOf('year');
+    }
+    return false;
+  };
+
   return (
     <>
       <Cabecalho pagina="Registro de itinerância" />
@@ -522,6 +539,7 @@ const RegistroItineranciaAEELista = () => {
                 onChange={mudarDataInicial}
                 placeholder="Data inícial"
                 label="Data da visita"
+                desabilitarData={desabilitarData}
               />
             </div>
             <div className="col-sm-3 col-md-3 pt-4">
@@ -531,6 +549,7 @@ const RegistroItineranciaAEELista = () => {
                 valor={dataFinal}
                 onChange={mudarDataFinal}
                 placeholder="Data final"
+                desabilitarData={desabilitarDataFinal}
               />
             </div>
           </div>
