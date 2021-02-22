@@ -6,7 +6,6 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -566,7 +565,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<Turma>> ObterTurmasComInicioFechamento(long ueId, long periodoEscolarId, int[] modalidades)
         {
-var query = @"select t.*
+            var query = @"select t.*
                           from turma t
                         inner join ue on ue.id = t.ue_id
                         inner join dre on dre.id = ue.dre_id
@@ -594,7 +593,16 @@ var query = @"select t.*
                 ue.AdicionarDre(dre);
                 turma.AdicionarUe(ue);
                 return turma;
-            } , new { ueId, modalidades, ano });
+            }, new { ueId, modalidades, ano });
+        }
+
+        public async Task<IEnumerable<Turma>> ObterTurmasPorIds(long[] turmasIds)
+        {
+            var query = @"select *
+                         from turma
+                        where id = any(@turmasIds)";
+
+            return await contexto.Conexao.QueryAsync<Turma>(query, new { turmasIds });
         }
     }
 }
