@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterAnosLetivosItineranciaQueryHandler : IRequestHandler<ObterAnosLetivosItineranciaQuery, IEnumerable<long>>
+    public class ObterAnosLetivosItineranciaQueryHandler : IRequestHandler<ObterAnosLetivosItineranciaQuery, IEnumerable<int>>
     {
         private readonly IRepositorioItinerancia repositorioItinerancia;
 
@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioItinerancia = repositorioItinerancia ?? throw new ArgumentNullException(nameof(repositorioItinerancia));
         }
 
-        public async Task<IEnumerable<long>> Handle(ObterAnosLetivosItineranciaQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<int>> Handle(ObterAnosLetivosItineranciaQuery request, CancellationToken cancellationToken)
                 => await repositorioItinerancia.ObterAnosLetivosItinerancia();
     }
 }
