@@ -187,8 +187,8 @@ ModalConteudoHtml.defaultProps = {
   esconderBotaoPrincipal: false,
   esconderBotaoSecundario: false,
 
-  paddingBottom: '',
-  paddingRight: '',
+  paddingBottom: '15',
+  paddingRight: '20',
   colorBotaoSecundario: 'Roxo',
 };
 
