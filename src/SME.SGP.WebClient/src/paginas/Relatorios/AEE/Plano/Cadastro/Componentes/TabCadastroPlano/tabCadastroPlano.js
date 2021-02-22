@@ -8,6 +8,8 @@ import SecaoReestruturacaoPlano from '../SecaoReestruturacaoPlano/secaoReestrutu
 import { confirmar, sucesso } from '~/servicos';
 import ServicoPlanoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoPlanoAEE';
 import { setQuestionarioDinamicoEmEdicao } from '~/redux/modulos/questionarioDinamico/actions';
+import QuestionarioDinamicoFuncoes from '~/componentes-sgp/QuestionarioDinamico/Funcoes/QuestionarioDinamicoFuncoes';
+import { setAtualizarDados } from '~/redux/modulos/planoAEE/actions';
 
 const { TabPane } = Tabs;
 
@@ -31,16 +33,20 @@ const TabCadastroPasso = props => {
         '',
         'Suas alterações não foram salvas, deseja salvar agora?'
       );
+
       if (confirmou) {
         const salvou = await ServicoPlanoAEE.salvarPlano();
         if (salvou) {
           dispatch(setQuestionarioDinamicoEmEdicao(false));
+          dispatch(setAtualizarDados(true));
           const mensagem = temId
             ? 'Registro alterado com sucesso'
             : 'Registro salvo com sucesso';
           sucesso(mensagem);
+          return;
         }
       }
+      QuestionarioDinamicoFuncoes.limparDadosOriginaisQuestionarioDinamico();
     }
   };
 

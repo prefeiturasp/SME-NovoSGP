@@ -8,7 +8,10 @@ import { CardCollapse } from '~/componentes';
 import ServicoPlanoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoPlanoAEE';
 
 import ReestruturacaoTabela from '../ReestruturacaoTabela/reestruturacaoTabela';
-import { setReestruturacaoDados } from '~/redux/modulos/planoAEE/actions';
+import {
+  setAtualizarDados,
+  setReestruturacaoDados,
+} from '~/redux/modulos/planoAEE/actions';
 
 const SecaoReestruturacaoPlano = ({ match }) => {
   const [listaPrimeiroSemestre, setListaPrimeiroSemestre] = useState([]);
@@ -22,6 +25,8 @@ const SecaoReestruturacaoPlano = ({ match }) => {
     store => store.planoAEE.reestruturacaoDados
   );
 
+  const atualizarDados = useSelector(store => store.planoAEE.atualizarDados);
+
   const dispatch = useDispatch();
 
   const obterVersoes = useCallback(async () => {
@@ -34,6 +39,14 @@ const SecaoReestruturacaoPlano = ({ match }) => {
   useEffect(() => {
     obterVersoes();
   }, [obterVersoes]);
+
+  console.log('atualizarDados', atualizarDados);
+  useEffect(() => {
+    if (atualizarDados) {
+      obterVersoes();
+    }
+    dispatch(setAtualizarDados(false));
+  }, [atualizarDados, dispatch, obterVersoes]);
 
   const FormatarDados = dados =>
     dados.map(item => {
