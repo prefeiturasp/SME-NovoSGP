@@ -108,6 +108,7 @@ const ListaPaginada = props => {
         },
       })
       .then(resposta => {
+        setLinhas([]);
         setTotal(resposta.data.totalRegistros);
         setLinhas([...resposta.data.items]);
         if (setLista) {
