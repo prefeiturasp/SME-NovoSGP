@@ -91,6 +91,15 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(planoAEEId));
         }
 
+        [HttpPost("encerrar-plano")]
+        [ProducesResponseType(typeof(RetornoEncerramentoPlanoAEEDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> EncerrarPlanoAEE([FromQuery] long planoAEEId, [FromServices] IEncerrarPlanoAEEUseCase usecase)
+        {
+            return Ok(await usecase.Executar(planoAEEId));
+        }
+
         [HttpPost("{planoAeeId}/devolutiva/cp")]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
