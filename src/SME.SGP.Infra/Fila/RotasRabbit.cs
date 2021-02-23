@@ -63,5 +63,7 @@
 
         public static string RotaPendenciaAusenciaRegistroIndividual => "pendencias.professor.ausencia.registro.individual";
         public static string RotaAtualizarPendenciaAusenciaRegistroIndividual => "pendencias.professor.ausencia.registro.individual.atualizar";
+
+        public static string EncerrarPlanoAEEEstudantesInativos => "plano.aee.encerrar.inativos";
     }
 }
