@@ -14,7 +14,7 @@ CREATE table public.pendencia_encaminhamento_aee (
 	CONSTRAINT pendencia_encaminhamento_aee_pk PRIMARY KEY (id)
 );
 
-CREATE INDEX pendencia_encaminhamento_encaminhamento_aee_id_idx ON public.pendencia_encaminhamento_aee USING btree (id);
+CREATE INDEX pendencia_encaminhamento_encaminhamento_aee_id_idx ON public.pendencia_encaminhamento_aee USING btree (encaminhamento_aee_id);
 CREATE INDEX pendencia_encaminhamento_aee_pendencia_id_idx ON public.pendencia_encaminhamento_aee USING btree (pendencia_id);
 
 ALTER TABLE public.pendencia_encaminhamento_aee ADD CONSTRAINT pendencia_encaminhamento_aee_fk FOREIGN KEY (encaminhamento_aee_id) REFERENCES encaminhamento_aee(id);
