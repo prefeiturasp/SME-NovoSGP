@@ -1,34 +1,69 @@
+begin transaction;
+rollback;
+-- commit;
+
+select *
+	from turma t
+		inner join fechamento_turma ft
+			on t.id = ft.turma_id 
+		inner join conselho_classe cc
+			on ft.id = cc.fechamento_turma_id
+		inner join conselho_classe_aluno cca
+			on cc.id = cca.conselho_classe_id
+		inner join conselho_classe_nota ccn
+			on cca.id = ccn.conselho_classe_aluno_id 
+where t.turma_id = '2110372';
+
 do $$
 declare 
 	alunos_eja record;
+	disciplinas_consideradas record;
 	conselho_classe_id_referencia bigint;
 	fechamento_turma_id_referencia bigint;
 	conselho_classe_aluno_id_referencia bigint;
 	conselho_classe_parecer_id_referencia bigint;
+	ano_turma_referencia bpchar(1);
+	conselho_classe_nota_id_referencia bigint;	
 
 begin
 	for alunos_eja in
-		select distinct ae.cd_aluno,
-						ae.cd_turma_escola
+		select distinct ae.*,
+						cc.eh_regencia,
+						nccp.tipo_nota
 			from alunos_eja_2020 ae
+				inner join componente_curricular cc
+					on ae.cd_componente_curricular = cc.id
 				left join (select cca.aluno_codigo,
-								  t.turma_id
+								  t.turma_id,
+								  ccn.componente_curricular_codigo
 						      from fechamento_turma ft
 							     inner join conselho_classe cc
 							        on ft.id = cc.fechamento_turma_id
 							     inner join conselho_classe_aluno cca
 							     	on cc.id = cca.conselho_classe_id
+							     inner join conselho_classe_nota ccn
+							     	on cca.id = ccn.conselho_classe_aluno_id
 							     inner join turma t
 							     	on ft.turma_id = t.id
 							where t.ano_letivo = 2020) a
 					on ae.cd_aluno = a.aluno_codigo and
-				       ae.cd_turma_escola = a.turma_id::int
+				       ae.cd_turma_escola = a.turma_id::int and
+				       ae.cd_componente_curricular = a.componente_curricular_codigo
+				inner join turma t2
+					on ae.cd_turma_escola = t2.turma_id::int
+				inner join tipo_ciclo_ano tca on
+				    tca.ano = t2.ano
+				    and tca.modalidade = t2.modalidade_codigo
+				inner join tipo_ciclo tc on
+				    tca.tipo_ciclo_id = tc.id
+				inner join notas_conceitos_ciclos_parametos nccp on
+				    nccp.ciclo = tc.id
 		where a.aluno_codigo is null and
-			  ae.cd_aluno not in ('4046301', '4397266') and
-			  ae.cd_turma_escola = 2114548
-		order by 1, 2
+			  ae.cd_turma_escola = 2110372 and
+			  ae.cd_aluno = '7624045'
+		order by 1, 2, 3
 	loop
-		select cc2.id, ft2.id into conselho_classe_id_referencia, fechamento_turma_id_referencia
+		select cc2.id, ft2.id, t2.ano into conselho_classe_id_referencia, fechamento_turma_id_referencia, ano_turma_referencia
 			from conselho_classe cc2 
 				inner join fechamento_turma ft2
 					on cc2.fechamento_turma_id = ft2.id
@@ -86,7 +121,54 @@ begin
 					null,
 					'Sistema',
 					null,
-					1);
-		end if;		
+					case when ano_turma_referencia::int < 3 then 3 else 1 end)
+			returning id into conselho_classe_aluno_id_referencia;
+		end if;
+	
+		for disciplinas_consideradas in
+			select ccr.componente_curricular_id cd_componente_curricular
+				from componente_curricular_regencia ccr 
+			where ccr.turno is null and
+				  alunos_eja.eh_regencia
+			
+			union
+		
+			select alunos_eja.cd_componente_curricular
+			where not alunos_eja.eh_regencia
+		loop			
+			select ccn.id into conselho_classe_nota_id_referencia
+				from conselho_classe_nota ccn 
+			where ccn.conselho_classe_aluno_id = conselho_classe_aluno_id_referencia and
+				  ccn.componente_curricular_codigo = disciplinas_consideradas.cd_componente_curricular;
+				 
+			if conselho_classe_nota_id_referencia is null then
+				insert into conselho_classe_nota (conselho_classe_aluno_id,
+												  componente_curricular_codigo,
+												  nota,
+												  conceito_id,
+												  justificativa,
+												  migrado,
+												  excluido,
+												  criado_em,
+												  criado_por,
+												  alterado_em,
+												  alterado_por,
+												  criado_rf,
+												  alterado_rf)
+				values (conselho_classe_aluno_id_referencia,
+					    disciplinas_consideradas.cd_componente_curricular,
+					    case when alunos_eja.tipo_nota = 1 then 5 else null end,
+					    case when alunos_eja.tipo_nota = 2 then 2 else null end,
+					    case when alunos_eja.tipo_nota = 1 then '<p>S</p>' else '<p>Continuidade dos estudos</p>' end,					    
+					    false,
+					    false,
+					    current_date,
+					    'Sistema',
+					    null,
+					    null,
+					    'Sistema',
+					    null);
+			end if;		
+		end loop;
 	end loop;
 end $$;
