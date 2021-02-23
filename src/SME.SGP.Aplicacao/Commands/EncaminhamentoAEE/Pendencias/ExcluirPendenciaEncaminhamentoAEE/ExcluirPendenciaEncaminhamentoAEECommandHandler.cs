@@ -37,9 +37,10 @@ namespace SME.SGP.Aplicacao
                 catch (Exception e)
                 {
                     unitOfWork.Rollback();
-                    return false;
+                    throw;
                 }
             }
+            return false;
         }
     }
 }
