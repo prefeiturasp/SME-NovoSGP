@@ -16,9 +16,7 @@ namespace SME.SGP.Dominio.Enumerados
         AtribuicaoPAAI = 5,
         [Display(Name = "Aguardando devolutiva PAAI")]
         DevolutivaPAAI = 6,
-        [Display(Name = "Aguardando devolutiva da coordenação")]
-        AguardandoDevolutivaCoordenacao = 7,
         [Display(Name = "Encerrado Automaticamente")]
-        EncerradoAutomaticamento = 8,
+        EncerradoAutomaticamento = 7,
     }
 }
