@@ -27,6 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="CasosDeUso\PendenciaEncaminhamento\" />
     <Folder Include="Interfaces\CasosDeUso\Aluno\" />
     <Folder Include="Queries\AcompanhamentoFrequencia\" />
     <Folder Include="Servicos\Interfaces\" />
