@@ -46,9 +46,10 @@ const ModalReestruturacaoPlano = ({
   };
 
   const onConfirmarModal = async () => {
+    const IdReestruturacao = reestruturacaoId || '';
     const resposta = await ServicoPlanoAEE.salvarReestruturacoes({
       planoAEEId: match?.params?.id,
-      reestruturacaoId,
+      reestruturacaoId: IdReestruturacao,
       versaoId,
       semestre,
       descricao,
