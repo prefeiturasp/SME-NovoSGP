@@ -62,8 +62,17 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
   const permissoesTela =
     usuario.permissoes[RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA];
 
-  const onClickVoltar = () => {
-    history.push(RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA);
+  const onClickVoltar = async () => {
+    if (modoEdicao) {
+      const confirmou = await confirmar(
+        'Atenção',
+        'Você não salvou as informações preenchidas.',
+        'Deseja realmente cancelar as alterações?'
+      );
+      if (confirmou) history.push(RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA);
+    } else {
+      history.push(RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA);
+    }
   };
 
   const onClickSalvar = () => {
