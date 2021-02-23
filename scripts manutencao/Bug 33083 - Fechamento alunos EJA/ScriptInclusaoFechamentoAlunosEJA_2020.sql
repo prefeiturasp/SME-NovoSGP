@@ -12,7 +12,7 @@ select *
 			on ftd.id = fa.fechamento_turma_disciplina_id 
 		inner join fechamento_nota fn
 			on fa.id = fn.fechamento_aluno_id 
-where t.turma_id = '2110372';
+where t.turma_id = 'XXX';
 
 do $$
 declare 
@@ -54,8 +54,7 @@ begin
 				    tca.tipo_ciclo_id = tc.id
 				inner join notas_conceitos_ciclos_parametos nccp on
 				    nccp.ciclo = tc.id
-		where a.aluno_codigo is null and			  
-			  ae.cd_turma_escola = 2110372			  
+		where a.aluno_codigo is null		  
 		order by 1, 2, 3
 	loop
 		select ft2.id into fechamento_turma_id_referencia
