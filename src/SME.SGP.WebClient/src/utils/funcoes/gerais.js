@@ -93,7 +93,7 @@ const ordenarListaMaiorParaMenor = (conteudoParaOrdenar, nomeCampo) => {
   return dadosOrdenados;
 };
 
-const clonarObjetos = objeto => {
+const clonarObjeto = objeto => {
   return JSON.parse(JSON.stringify(objeto));
 };
 
@@ -119,5 +119,5 @@ export {
   maskTelefone,
   ordenarListaMaiorParaMenor,
   removerArrayAninhados,
-  clonarObjetos,
+  clonarObjeto,
 };

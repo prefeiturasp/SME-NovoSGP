@@ -51,6 +51,7 @@ namespace SME.SGP.Aplicacao
                 plano.Auditoria = (AuditoriaDto)entidadePlano;
                 plano.Versoes = await mediator.Send(new ObterVersoesPlanoAEEQuery(planoAEEId.Value));
                 plano.Aluno = aluno;
+                plano.Situacao = entidadePlano.Situacao;
                 plano.SituacaoDescricao = entidadePlano.Situacao.Name();
                 plano.Turma = new TurmaAnoDto()
                 {
@@ -59,12 +60,11 @@ namespace SME.SGP.Aplicacao
                     AnoLetivo = entidadePlano.Turma.AnoLetivo
                 };
 
-                var ultimaVersaoId = plano.Versoes
-                    .OrderByDescending(a => a.Numero)
-                    .Select(a => a.Id)
-                    .First();
+                var ultimoPlano = plano.Versoes.OrderByDescending(a => a.Numero).First();
+                plano.Versoes = plano.Versoes.Where(a => a.Id != ultimoPlano.Id).ToList();
+                plano.UltimaVersao = ultimoPlano;
 
-                respostasPlano = await mediator.Send(new ObterRespostasPlanoAEEPorVersaoQuery(ultimaVersaoId));
+                respostasPlano = await mediator.Send(new ObterRespostasPlanoAEEPorVersaoQuery(ultimoPlano.Id));
             }
 
             var questionarioId = await mediator.Send(new ObterQuestionarioPlanoAEEIdQuery());

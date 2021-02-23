@@ -10,13 +10,7 @@ import { verificaSomenteConsulta } from '~/servicos';
 import ModalReestruturacaoPlano from '../ModalReestruturacaoPlano/modalReestruturacaoPlano';
 import { BotaoEstilizado, TextoEstilizado } from './reestruturacaoTabela.css';
 
-const ReestruturacaoTabela = ({
-  key,
-  listaDados,
-  match,
-  listaVersao,
-  semestre,
-}) => {
+const ReestruturacaoTabela = ({ key, listaDados, match, semestre }) => {
   const [exibirModal, setModalVisivel] = useState(false);
   const [modoConsulta, setModoConsulta] = useState(false);
   const [dadosVisualizacao, setDadosVisualizacao] = useState();
@@ -83,16 +77,17 @@ const ReestruturacaoTabela = ({
 
   return (
     <>
-      <ModalReestruturacaoPlano
-        key={key}
-        alternarModal={alternarModal}
-        exibirModal={exibirModal}
-        modoConsulta={modoConsulta}
-        dadosVisualizacao={dadosVisualizacao}
-        listaVersao={listaVersao}
-        semestre={semestre}
-        match={match}
-      />
+      {exibirModal && (
+        <ModalReestruturacaoPlano
+          key={key}
+          alternarModal={alternarModal}
+          exibirModal={exibirModal}
+          modoConsulta={modoConsulta}
+          dadosVisualizacao={dadosVisualizacao}
+          semestre={semestre}
+          match={match}
+        />
+      )}
       <div>
         <DataTable
           semHover
@@ -118,14 +113,12 @@ const ReestruturacaoTabela = ({
 };
 
 ReestruturacaoTabela.defaultProps = {
-  listaVersao: [],
   match: {},
 };
 
 ReestruturacaoTabela.propTypes = {
   key: PropTypes.string.isRequired,
   listaDados: PropTypes.oneOfType([PropTypes.array]).isRequired,
-  listaVersao: PropTypes.oneOfType([PropTypes.array]),
   semestre: PropTypes.number.isRequired,
   match: PropTypes.oneOfType([PropTypes.object]),
 };

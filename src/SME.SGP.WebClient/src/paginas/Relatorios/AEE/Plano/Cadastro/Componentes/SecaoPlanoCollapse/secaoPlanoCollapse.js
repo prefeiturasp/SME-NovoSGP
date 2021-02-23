@@ -22,8 +22,8 @@ const SecaoPlanoCollapse = props => {
             planoAEEDados?.versoes === null
               ? 'Informações do Plano'
               : `Informações do Plano - v${
-                  planoAEEDados?.versoes?.[0]?.numero
-                } (${moment(planoAEEDados?.versoes?.[0]?.criadoEm).format(
+                  planoAEEDados?.ultimaVersao?.numero
+                } (${moment(planoAEEDados?.ultimaVersao?.criadoEm).format(
                   'DD/MM/YYYY'
                 )})`
           }
@@ -40,7 +40,7 @@ const SecaoPlanoCollapse = props => {
       ) : (
         ''
       )}
-      {planoAEEDados?.versoes?.length > 1 ? (
+      {planoAEEDados?.versoes?.length ? (
         <SecaoVersaoPlanoCollapse
           questionarioId={planoAEEDados?.questionarioId}
           planoId={planoAEEDados?.id}

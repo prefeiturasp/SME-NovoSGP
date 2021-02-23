@@ -3,17 +3,20 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 
 import { useDispatch, useSelector } from 'react-redux';
-import { CardCollapse } from '~/componentes';
+import { CardCollapse, Loader } from '~/componentes';
 
 import ServicoPlanoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoPlanoAEE';
 
 import ReestruturacaoTabela from '../ReestruturacaoTabela/reestruturacaoTabela';
 import { setReestruturacaoDados } from '~/redux/modulos/planoAEE/actions';
+import { erros } from '~/servicos';
 
 const SecaoReestruturacaoPlano = ({ match }) => {
   const [listaPrimeiroSemestre, setListaPrimeiroSemestre] = useState([]);
   const [listaSegundoSemestre, setListaSegundoSemestre] = useState([]);
-  const [listaVersao, setListaVersao] = useState([]);
+  const [carregandoReestruturacao, setCarregandoReestruturacao] = useState(
+    false
+  );
 
   const keyPrimeiroSemestre = 'secao-1-semestre-plano-collapse';
   const keySegundoSemestre = 'secao-2-semestre-plano-collapse';
@@ -23,17 +26,6 @@ const SecaoReestruturacaoPlano = ({ match }) => {
   );
 
   const dispatch = useDispatch();
-
-  const obterVersoes = useCallback(async () => {
-    const resposta = await ServicoPlanoAEE.obterVersoes(match?.params?.id);
-    if (resposta?.data) {
-      setListaVersao(resposta.data);
-    }
-  }, [match]);
-
-  useEffect(() => {
-    obterVersoes();
-  }, [obterVersoes]);
 
   const FormatarDados = dados =>
     dados.map(item => {
@@ -54,9 +46,12 @@ const SecaoReestruturacaoPlano = ({ match }) => {
   }, []);
 
   const obterReestruturacoes = useCallback(async () => {
+    setCarregandoReestruturacao(true);
     const resposta = await ServicoPlanoAEE.obterReestruturacoes(
       match?.params?.id
-    );
+    )
+      .catch(e => erros(e))
+      .finally(() => setCarregandoReestruturacao(false));
     if (resposta?.data) {
       dispatch(setReestruturacaoDados(resposta?.data));
     }
@@ -76,7 +71,7 @@ const SecaoReestruturacaoPlano = ({ match }) => {
   }, [reestruturacaoDados, separarDados]);
 
   return (
-    <>
+    <Loader loading={carregandoReestruturacao} ignorarTip>
       <CardCollapse
         key={`${keyPrimeiroSemestre}-key`}
         titulo="Reestruturações do 1º Semestre"
@@ -89,7 +84,6 @@ const SecaoReestruturacaoPlano = ({ match }) => {
           semestre={1}
           listaDados={listaPrimeiroSemestre}
           match={match}
-          listaVersao={listaVersao}
         />
       </CardCollapse>
       <CardCollapse
@@ -104,10 +98,9 @@ const SecaoReestruturacaoPlano = ({ match }) => {
           semestre={2}
           listaDados={listaSegundoSemestre}
           match={match}
-          listaVersao={listaVersao}
         />
       </CardCollapse>
-    </>
+    </Loader>
   );
 };
 
