@@ -74,10 +74,20 @@ namespace SME.SGP.Aplicacao
         private async Task<bool> ValidarFrequenciaGlobalAlunoInsuficiente(string codigoAluno, string codigoTurma)
         {
             var frequenciaGlobal = await mediator.Send(new ObterFrequenciaGeralAlunoQuery(codigoAluno, codigoTurma));
-            var parametroPercentualFrequenciaCritico = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.PercentualFrequenciaCritico, DateTime.Now.Year));
+
+            var tipoParametroFrequenciaMinima = await ObterTipoParametroFrequenciaMinima(codigoTurma);
+
+            var parametroPercentualFrequenciaCritico = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(tipoParametroFrequenciaMinima, DateTime.Now.Year));
             var percentualFrequenciaCritico = double.Parse(parametroPercentualFrequenciaCritico.Valor);
 
             return frequenciaGlobal < percentualFrequenciaCritico;
+        }
+
+        private async Task<TipoParametroSistema> ObterTipoParametroFrequenciaMinima(string codigoTurma)
+        {
+            return await mediator.Send(new ObterModalidadeTurmaPorCodigoQuery(codigoTurma)) == Modalidade.Infantil ? 
+                TipoParametroSistema.PercentualFrequenciaMinimaInfantil : 
+                TipoParametroSistema.PercentualFrequenciaCritico;
         }
 
         QuestaoDto ObterQuestao(long questaoId, IEnumerable<Questao> dadosQuestionario, IEnumerable<RespostaQuestaoEncaminhamentoAEEDto> respostasEncaminhamento)

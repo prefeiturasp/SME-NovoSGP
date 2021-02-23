@@ -604,5 +604,12 @@ namespace SME.SGP.Dados.Repositorios
 
             return await contexto.Conexao.QueryAsync<Turma>(query, new { turmasIds });
         }
+
+        public async Task<Modalidade> ObterModalidadePorCodigo(string turmaCodigo)
+        {
+            var query = "select modalidade_codigo from turma where turma_id = @turmaCodigo";
+
+            return await contexto.Conexao.QueryFirstOrDefaultAsync<Modalidade>(query, new { turmaCodigo });
+        }
     }
 }
