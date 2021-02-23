@@ -18,15 +18,18 @@ namespace SME.SGP.Aplicacao
         private readonly IConfiguration configuration;
         private readonly IRepositorioPendencia repositorioPendencia;
         private readonly IRepositorioPendenciaUsuario repositorioPendenciaUsuario;
-        
+        private readonly IRepositorioPendenciaEncaminhamentoAEE repositorioPendenciaEncaminhamentoAEE;
+
 
         public GerarPendenciaPAEEEncaminhamentoAEECommandHandler(IMediator mediator, IConfiguration configuration, 
-            IRepositorioPendencia repositorioPendencia, IRepositorioPendenciaUsuario repositorioPendenciaUsuario)
+            IRepositorioPendencia repositorioPendencia, IRepositorioPendenciaUsuario repositorioPendenciaUsuario,
+            IRepositorioPendenciaEncaminhamentoAEE repositorioPendenciaEncaminhamentoAEE)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             this.repositorioPendencia = repositorioPendencia ?? throw new ArgumentNullException(nameof(repositorioPendencia));
             this.repositorioPendenciaUsuario = repositorioPendenciaUsuario ?? throw new ArgumentNullException(nameof(repositorioPendenciaUsuario));
+            this.repositorioPendenciaEncaminhamentoAEE = repositorioPendenciaEncaminhamentoAEE ?? throw new ArgumentNullException(nameof(repositorioPendenciaEncaminhamentoAEE));
         }
 
         public async Task<bool> Handle(GerarPendenciaPAEEEncaminhamentoAEECommand request, CancellationToken cancellationToken)
@@ -47,8 +50,10 @@ namespace SME.SGP.Aplicacao
             pendencia.Id = await repositorioPendencia.SalvarAsync(pendencia);
 
             var pendenciaUsuario = new PendenciaUsuario { PendenciaId = pendencia.Id, UsuarioId = encaminhamentoAEE.ResponsavelId.GetValueOrDefault() };
-
             await repositorioPendenciaUsuario.SalvarAsync(pendenciaUsuario);
+
+            var pendenciaEncaminhamento = new PendenciaEncaminhamentoAEE { PendenciaId = pendencia.Id, EncaminhamentoAEEId = encaminhamentoAEE.Id };
+            await repositorioPendenciaEncaminhamentoAEE.SalvarAsync(pendenciaEncaminhamento);
 
             return true;
         }
