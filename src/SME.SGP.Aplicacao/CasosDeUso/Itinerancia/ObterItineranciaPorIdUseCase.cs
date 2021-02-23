@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao
                 Questoes = MontarQuestoesItinerancia(itinerancia, questoesBase),
                 Ues = MontarUes(ues, itinerancia),
                 CriadoRF = itinerancia.CriadoRF,
-                AuditoriaDto = (AuditoriaDto)itinerancia
+                Auditoria = (AuditoriaDto)itinerancia
             };
 
             if(itinerancia.Alunos != null && itinerancia.Alunos.Any())
