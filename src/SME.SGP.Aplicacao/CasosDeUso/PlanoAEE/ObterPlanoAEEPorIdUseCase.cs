@@ -60,12 +60,11 @@ namespace SME.SGP.Aplicacao
                     AnoLetivo = entidadePlano.Turma.AnoLetivo
                 };
 
-                var ultimaVersaoId = plano.Versoes
-                    .OrderByDescending(a => a.Numero)
-                    .Select(a => a.Id)
-                    .First();
+                var ultimoPlano = plano.Versoes.OrderByDescending(a => a.Numero).First();
+                plano.Versoes = plano.Versoes.Where(a => a.Id != ultimoPlano.Id).ToList();
+                plano.UltimaVersao = ultimoPlano;
 
-                respostasPlano = await mediator.Send(new ObterRespostasPlanoAEEPorVersaoQuery(ultimaVersaoId));
+                respostasPlano = await mediator.Send(new ObterRespostasPlanoAEEPorVersaoQuery(ultimoPlano.Id));
             }
 
             var questionarioId = await mediator.Send(new ObterQuestionarioPlanoAEEIdQuery());

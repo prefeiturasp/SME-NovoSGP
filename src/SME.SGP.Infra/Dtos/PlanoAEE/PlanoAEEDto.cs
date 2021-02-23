@@ -8,6 +8,7 @@ namespace SME.SGP.Infra
     {
         public long Id { get; set; }
         public long QuestionarioId { get; set; }
+        public PlanoAEEVersaoDto UltimaVersao { get; set; }
         public AlunoReduzidoDto Aluno { get; set; }
         public TurmaAnoDto Turma { get; set; }
         public SituacaoPlanoAEE Situacao { get; set; }
