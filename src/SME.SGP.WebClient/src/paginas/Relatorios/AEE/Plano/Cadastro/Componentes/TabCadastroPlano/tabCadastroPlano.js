@@ -8,7 +8,7 @@ import { confirmar, sucesso } from '~/servicos';
 import ServicoPlanoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoPlanoAEE';
 import { setQuestionarioDinamicoEmEdicao } from '~/redux/modulos/questionarioDinamico/actions';
 import SecaoDevolutivasPlanoCollapse from '../SecaoDevolutivasPlano/secaoDevolutivasPlanoCollapse';
-import { situacaoAEE } from '~/dtos';
+import { situacaoPlanoAEE } from '~/dtos';
 
 const { TabPane } = Tabs;
 
@@ -23,7 +23,7 @@ const TabCadastroPasso = props => {
     store => store.questionarioDinamico.questionarioDinamicoEmEdicao
   );
   const planoAEEDados = useSelector(store => store.planoAEE.planoAEEDados);
-
+  console.log('planoAEEDadosTAB', planoAEEDados);
   const dispatch = useDispatch();
 
   const cliqueTab = async key => {
@@ -65,10 +65,12 @@ const TabCadastroPasso = props => {
           tab="Devolutivas"
           key="3"
           disabled={
-            planoAEEDados?.situacao !== situacaoAEE.DevolutivaCoordenacao ||
-            planoAEEDados?.situacao !== situacaoAEE.AtribuicaoResponsavel ||
-            planoAEEDados?.situacao !== situacaoAEE.DevolutivaPAAI ||
-            planoAEEDados?.situacao !== situacaoAEE.Encerrado
+            planoAEEDados?.situacao !==
+              situacaoPlanoAEE.DevolutivaCoordenacao ||
+            planoAEEDados?.situacao !==
+              situacaoPlanoAEE.AtribuicaoResponsavel ||
+            planoAEEDados?.situacao !== situacaoPlanoAEE.DevolutivaPAAI ||
+            planoAEEDados?.situacao !== situacaoPlanoAEE.Encerrado
           }
         >
           <SecaoDevolutivasPlanoCollapse match={match} />

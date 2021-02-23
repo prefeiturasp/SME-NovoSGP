@@ -7,7 +7,7 @@ import LocalizadorFuncionario from '~/componentes-sgp/LocalizadorFuncionario';
 
 import { setLimparDadosAtribuicaoResponsavel } from '~/redux/modulos/collapseAtribuicaoResponsavel/actions';
 import { verificaSomenteConsulta } from '~/servicos';
-import { RotasDto, situacaoAEE } from '~/dtos';
+import { RotasDto, situacaoPlanoAEE } from '~/dtos';
 
 const SecaoDevolutivasPlano = ({ match }) => {
   const [descricaoCordenacao, setDescricaoCordenacao] = useState();
@@ -26,9 +26,9 @@ const SecaoDevolutivasPlano = ({ match }) => {
   console.log('permissoesTela', permissoesTela);
 
   const situacaoDevolutivaCoordenacao =
-    planoAEEDados.situacaoDescricao !== situacaoAEE.DevolutivaCoordenacao;
+    planoAEEDados.situacaoDescricao !== situacaoPlanoAEE.DevolutivaCoordenacao;
   const situacaoDevolutivaPAAI =
-    planoAEEDados.situacaoDescricao !== situacaoAEE.DevolutivaPAAI;
+    planoAEEDados.situacaoDescricao !== situacaoPlanoAEE.DevolutivaPAAI;
 
   const dadosAtribuicaoResponsavel = useSelector(
     store => store.planoAEE.dadosAtribuicaoResponsavel

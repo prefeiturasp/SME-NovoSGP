@@ -3,8 +3,8 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import Button from '~/componentes/button';
 import { Colors } from '~/componentes';
-import { confirmar, history, sucesso } from '~/servicos';
-import { RotasDto, situacaoAEE } from '~/dtos';
+import { confirmar, erros, history, sucesso } from '~/servicos';
+import { RotasDto, situacaoPlanoAEE } from '~/dtos';
 import ServicoPlanoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoPlanoAEE';
 import QuestionarioDinamicoFuncoes from '~/componentes-sgp/QuestionarioDinamico/Funcoes/QuestionarioDinamicoFuncoes';
 
@@ -82,7 +82,7 @@ const BotoesAcoesPlanoAEE = props => {
 
   const onClickSolicitarEncerramento = async () => {
     if (!desabilitarCamposPlanoAEE && !questionarioDinamicoEmEdicao) {
-      await ServicoPlanoAEE.solicitarEncerramento(planoAeeId);
+      await ServicoPlanoAEE.encerrarPlano(planoAeeId).catch(e => erros(e));
     }
   };
 
@@ -122,7 +122,10 @@ const BotoesAcoesPlanoAEE = props => {
         bold
         className="ml-3"
         onClick={onClickSolicitarEncerramento}
-        hidden={planoAEEDados?.situacao === situacaoAEE.Encaminhado}
+        hidden={
+          !planoAEEDados?.situacao ||
+          planoAEEDados?.situacao !== situacaoPlanoAEE.EmAndamento
+        }
         disabled={
           desabilitarCamposPlanoAEE ||
           questionarioDinamicoEmEdicao ||

@@ -46,17 +46,26 @@ namespace SME.SGP.Aplicacao
 
             foreach (var planoAEE in planosAEE)
             {
-                var aluno = await mediator.Send(new ObterAlunoPorCodigoEolQuery(planoAEE.AlunoCodigo, planoAEE.TurmaAno));
-
-                listaPlanosAEE.Add(new PlanoAEEResumoDto()
+                try
                 {
-                    Id = planoAEE.Id,
-                    Situacao = planoAEE.Situacao != 0 ? planoAEE.Situacao.Name() : "",
-                    Turma = $"{planoAEE.TurmaModalidade.ShortName()} - {planoAEE.TurmaNome}",
-                    Numero = aluno?.NumeroAlunoChamada ?? 0,
-                    Nome = $"{aluno?.NomeAluno}|{planoAEE.PossuiEncaminhamentoAEE}",
-                    PossuiEncaminhamentoAEE = planoAEE.PossuiEncaminhamentoAEE
-                });
+                    var aluno = await mediator.Send(new ObterAlunoPorCodigoEolQuery(planoAEE.AlunoCodigo, planoAEE.TurmaAno));
+
+                    listaPlanosAEE.Add(new PlanoAEEResumoDto()
+                    {
+                        Id = planoAEE.Id,
+                        Situacao = planoAEE.Situacao != 0 ? planoAEE.Situacao.Name() : "",
+                        Turma = $"{planoAEE.TurmaModalidade.ShortName()} - {planoAEE.TurmaNome}",
+                        Numero = aluno?.NumeroAlunoChamada ?? 0,
+                        Nome = $"{aluno?.NomeAluno}|{planoAEE.PossuiEncaminhamentoAEE}",
+                        PossuiEncaminhamentoAEE = planoAEE.PossuiEncaminhamentoAEE
+                    });
+
+                }
+                catch (Exception e)
+                {
+
+                    throw;
+                }            
             }
 
             return listaPlanosAEE;

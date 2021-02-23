@@ -245,7 +245,7 @@ class ServicoPlanoAEE {
   };
 
   encerrarPlano = planoAeeId => {
-    return api.post(`${urlPadrao}/encerrar-plano`, planoAeeId);
+    return api.post(`${urlPadrao}/encerrar-plano?planoAeeId=${planoAeeId}`);
   };
 
   salvarDevolutivaCP = params => {
