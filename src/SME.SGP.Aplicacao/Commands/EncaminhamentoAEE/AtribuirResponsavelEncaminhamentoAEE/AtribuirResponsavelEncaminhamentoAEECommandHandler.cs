@@ -46,8 +46,7 @@ namespace SME.SGP.Aplicacao
         private async Task RemovePendenciaCEFAI(long turmaId, long encaminhamentoAEEId)
         {
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
-            var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(turmaId));
-            var ehCEFAI = await EhCoordenadorCEFAI(usuarioLogado, turma);
+            var ehCEFAI = await EhCoordenadorCEFAI(usuarioLogado, turmaId);
             if (ehCEFAI)
             {
                 var pendencia = await mediator.Send(new ObterPendenciaEncaminhamentoAEEPorIdQuery(encaminhamentoAEEId));
@@ -55,16 +54,16 @@ namespace SME.SGP.Aplicacao
             }                
         }
 
-        private async Task<bool> EhCoordenadorCEFAI(Usuario usuarioLogado, Turma turma)
+        private async Task<bool> EhCoordenadorCEFAI(Usuario usuarioLogado, long turmaId)
         {
             if (!usuarioLogado.EhCoordenadorCEFAI())
                 return false;
 
-            var codigoDre = await mediator.Send(new ObterCodigoDREPorUeIdQuery(turma.UeId));
-            if (string.IsNullOrEmpty(codigoDre))
+            var codigoDRE = await mediator.Send(new ObterCodigoDREPorTurmaIdQuery(turmaId));
+            if (string.IsNullOrEmpty(codigoDRE))
                 return false;
 
-            return await UsuarioTemFuncaoCEFAINaDRE(usuarioLogado, codigoDre);
+            return await UsuarioTemFuncaoCEFAINaDRE(usuarioLogado, codigoDRE);
         }
 
         private async Task<bool> UsuarioTemFuncaoCEFAINaDRE(Usuario usuarioLogado, string codigoDre)
