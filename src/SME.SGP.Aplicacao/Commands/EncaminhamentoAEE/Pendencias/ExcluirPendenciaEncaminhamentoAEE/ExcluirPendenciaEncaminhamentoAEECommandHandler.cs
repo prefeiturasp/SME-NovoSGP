@@ -12,21 +12,34 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IMediator mediator;
         private readonly IRepositorioPendenciaEncaminhamentoAEE repositorioPendenciaEncaminhamentoAEE;
+        public readonly IUnitOfWork unitOfWork;
 
-        public ExcluirPendenciaEncaminhamentoAEECommandHandler(IMediator mediator, IRepositorioPendenciaEncaminhamentoAEE repositorioPendenciaEncaminhamentoAEE)
+        public ExcluirPendenciaEncaminhamentoAEECommandHandler(IMediator mediator, IRepositorioPendenciaEncaminhamentoAEE repositorioPendenciaEncaminhamentoAEE, IUnitOfWork unitOfWork)
         {
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
             this.repositorioPendenciaEncaminhamentoAEE = repositorioPendenciaEncaminhamentoAEE ?? throw new System.ArgumentNullException(nameof(repositorioPendenciaEncaminhamentoAEE));
+            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
         public async Task<bool> Handle(ExcluirPendenciaEncaminhamentoAEECommand request, CancellationToken cancellationToken)
         {
-            await repositorioPendenciaEncaminhamentoAEE.Excluir(request.PendenciaId);
-            await mediator.Send(new ExcluirPendenciasUsuariosPorPendenciaIdCommand(request.PendenciaId));
-            await mediator.Send(new ExcluirPendenciaPorIdCommand(request.PendenciaId));
+            using (var transacao = unitOfWork.IniciarTransacao())
+            {
+                try
+                {
+                    await repositorioPendenciaEncaminhamentoAEE.Excluir(request.PendenciaId);
+                    await mediator.Send(new ExcluirPendenciasUsuariosPorPendenciaIdCommand(request.PendenciaId));
+                    await mediator.Send(new ExcluirPendenciaPorIdCommand(request.PendenciaId));
+                    unitOfWork.PersistirTransacao();
 
-            return true;
-
+                    return true;
+                }
+                catch (Exception e)
+                {
+                    unitOfWork.Rollback();
+                    return false;
+                }
+            }
         }
     }
 }
