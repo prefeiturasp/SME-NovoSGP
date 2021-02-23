@@ -1,6 +1,8 @@
-﻿using SME.SGP.Dominio;
+﻿using Dapper;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -8,6 +10,19 @@ namespace SME.SGP.Dados.Repositorios
     {
         public RepositorioPendenciaEncaminhamentoAEE(ISgpContext database) : base(database)
         {
+        }
+
+        public async Task<PendenciaEncaminhamentoAEE> ObterPorEncaminhamentoAEEId(long encaminhamentoAEEId)
+        {
+            var sql = @"select * from pendencia_encaminhamento_aee where encaminhamento_aee_id = @encaminhamentoAEEId";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<PendenciaEncaminhamentoAEE>(sql, new { encaminhamentoAEEId });
+        }
+
+        public async Task Excluir(long pendenciaId)
+        {
+            await database.Conexao.ExecuteScalarAsync(@"delete from pendencia_encaminhamento_aee 
+                                                    where pendencia_id = @pendenciaId", new { pendenciaId });
         }
     }
 }

@@ -25,6 +25,10 @@ namespace SME.SGP.Aplicacao
             await mediator.Send(new SalvarEncaminhamentoAEECommand(encaminhamento));
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
             await mediator.Send(new ExecutaNotificacaoConclusaoEncaminhamentoAEECommand(encaminhamento.Id, usuarioLogado.CodigoRf, usuarioLogado.Nome));
+            var pendenciaEncaminhamentoAEE = await mediator.Send(new ObterPendenciaEncaminhamentoAEEPorIdQuery(encaminhamentoId));
+            if (pendenciaEncaminhamentoAEE != null)
+                await mediator.Send(new ExcluirPendenciaEncaminhamentoAEECommand(pendenciaEncaminhamentoAEE.PendenciaId));
+
             return true;
         }
 

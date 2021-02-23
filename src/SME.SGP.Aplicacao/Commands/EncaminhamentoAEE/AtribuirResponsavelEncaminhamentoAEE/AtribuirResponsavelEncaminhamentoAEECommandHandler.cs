@@ -2,6 +2,8 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -25,7 +27,7 @@ namespace SME.SGP.Aplicacao
             if (encaminhamentoAEE == null)
                 throw new NegocioException("O encaminhamento informado não foi encontrado");
 
-            if( encaminhamentoAEE.Situacao == Dominio.Enumerados.SituacaoAEE.Finalizado
+            if (encaminhamentoAEE.Situacao == Dominio.Enumerados.SituacaoAEE.Finalizado
              || encaminhamentoAEE.Situacao == Dominio.Enumerados.SituacaoAEE.Encerrado)
                 throw new NegocioException("A situação do encaminhamento não permite a remoção do responsável");
 
@@ -34,7 +36,40 @@ namespace SME.SGP.Aplicacao
 
             var idEntidadeEncaminhamento = await repositorioEncaminhamentoAEE.SalvarAsync(encaminhamentoAEE);
 
+            await RemovePendenciaCEFAI(encaminhamentoAEE.TurmaId, encaminhamentoAEE.Id);
+
+            await mediator.Send(new GerarPendenciaPAEEEncaminhamentoAEECommand(encaminhamentoAEE));
+
             return idEntidadeEncaminhamento != 0;
+        }
+
+        private async Task RemovePendenciaCEFAI(long turmaId, long encaminhamentoAEEId)
+        {
+            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var ehCEFAI = await EhCoordenadorCEFAI(usuarioLogado, turmaId);
+            if (ehCEFAI)
+            {
+                var pendencia = await mediator.Send(new ObterPendenciaEncaminhamentoAEEPorIdQuery(encaminhamentoAEEId));
+                await mediator.Send(new ExcluirPendenciaEncaminhamentoAEECommand(pendencia.PendenciaId));
+            }                
+        }
+
+        private async Task<bool> EhCoordenadorCEFAI(Usuario usuarioLogado, long turmaId)
+        {
+            if (!usuarioLogado.EhCoordenadorCEFAI())
+                return false;
+
+            var codigoDRE = await mediator.Send(new ObterCodigoDREPorTurmaIdQuery(turmaId));
+            if (string.IsNullOrEmpty(codigoDRE))
+                return false;
+
+            return await UsuarioTemFuncaoCEFAINaDRE(usuarioLogado, codigoDRE);
+        }
+
+        private async Task<bool> UsuarioTemFuncaoCEFAINaDRE(Usuario usuarioLogado, string codigoDre)
+        {
+            var funcionarios = await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(codigoDre, new List<Guid>() { Perfis.PERFIL_CEFAI }));
+            return funcionarios.Any(c => c == usuarioLogado.CodigoRf);
         }
     }
 }

@@ -54,7 +54,7 @@ namespace SME.SGP.Dominio
 
         [Display(Name = "Ausência de registro individual", GroupName = "Planejamento")]
         AusenciaDeRegistroIndividual = 17,
-
+        
         [Display(Name = "AEE", GroupName = "AEE")]
         AEE = 18,
     }

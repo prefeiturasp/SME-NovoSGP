@@ -46,7 +46,11 @@ namespace SME.SGP.Aplicacao
             {
                 encaminhamentoAEE.Situacao = Dominio.Enumerados.SituacaoAEE.Analise;
                 encaminhamentoAEE.ResponsavelId = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(funciorarioPAEE.FirstOrDefault().CodigoRf));
-            }            
+                await mediator.Send(new GerarPendenciaPAEEEncaminhamentoAEECommand(encaminhamentoAEE));
+            }
+            
+            if(!funciorarioPAEE.Any())
+                await mediator.Send(new GerarPendenciaCEFAIEncaminhamentoAEECommand(encaminhamentoAEE));
 
             var idEntidadeEncaminhamento = await repositorioEncaminhamentoAEE.SalvarAsync(encaminhamentoAEE);
 

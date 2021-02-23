@@ -8,6 +8,7 @@ import LoaderPlano from './Componentes/LoaderPlano/loaderPlano';
 import TabCadastroPasso from './Componentes/TabCadastroPlano/tabCadastroPlano';
 import { setLimparDadosQuestionarioDinamico } from '~/redux/modulos/questionarioDinamico/actions';
 import {
+  setAtualizarDados,
   setDesabilitarCamposPlanoAEE,
   setExibirLoaderPlanoAEE,
   setPlanoAEEDados,
@@ -32,6 +33,8 @@ import { RotasDto } from '~/dtos';
 import MarcadorSituacaoPlanoAEE from './Componentes/MarcadorSituacaoPlanoAEE/marcadorSituacaoPlanoAEE';
 
 const PlanoAEECadastro = ({ match }) => {
+  const atualizarDados = useSelector(store => store.planoAEE.atualizarDados);
+
   const dispatch = useDispatch();
 
   const limparDadosPlano = useCallback(() => {
@@ -54,8 +57,7 @@ const PlanoAEECadastro = ({ match }) => {
   }, [match]);
 
   const usuario = useSelector(store => store.usuario);
-  const permissoesTela =
-    usuario.permissoes[RotasDto.RELATORIO_AEE_ENCAMINHAMENTO];
+  const permissoesTela = usuario.permissoes[RotasDto.RELATORIO_AEE_PLANO];
 
   useEffect(() => {
     const planoId = match?.params?.id || 0;
@@ -115,6 +117,13 @@ const PlanoAEECadastro = ({ match }) => {
   useEffect(() => {
     obterPlanoPorId();
   }, [obterPlanoPorId]);
+
+  useEffect(() => {
+    if (atualizarDados) {
+      obterPlanoPorId();
+    }
+    dispatch(setAtualizarDados(false));
+  }, [atualizarDados, dispatch, obterPlanoPorId]);
 
   useEffect(() => {
     return () => {

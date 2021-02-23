@@ -9,6 +9,7 @@ const inicial = {
   planoAEEDadosSecoesPorEtapa: [],
   exibirModalErrosPlano: false,
   reestruturacaoDados: [],
+  atualizarDados: false,
 };
 
 export default function PlanoAEE(state = inicial, action) {
@@ -92,6 +93,12 @@ export default function PlanoAEE(state = inicial, action) {
         return {
           ...draft,
           reestruturacaoDados: dadosParaSalvar,
+        };
+      }
+      case '@planoAEE/setAtualizarDados': {
+        return {
+          ...draft,
+          atualizarDados: action.payload,
         };
       }
       default:
