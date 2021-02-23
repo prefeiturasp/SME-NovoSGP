@@ -3,6 +3,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -50,7 +51,7 @@ namespace SME.SGP.Aplicacao
             if (ehCEFAI)
             {
                 var pendencia = await mediator.Send(new ObterPendenciaEncaminhamentoAEEPorIdQuery(encaminhamentoAEEId));
-                await mediator.Send(new ExcluirPendenciaEncaminhamentoAEECommand(pendencia.Id));
+                await mediator.Send(new ExcluirPendenciaEncaminhamentoAEECommand(pendencia.PendenciaId));
             }                
         }
 

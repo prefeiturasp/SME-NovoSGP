@@ -49,7 +49,7 @@ namespace SME.SGP.Aplicacao
                 await mediator.Send(new GerarPendenciaPAEEEncaminhamentoAEECommand(encaminhamentoAEE));
             }
             
-            if(funciorarioPAEE == null)
+            if(!funciorarioPAEE.Any())
                 await mediator.Send(new GerarPendenciaCEFAIEncaminhamentoAEECommand(encaminhamentoAEE));
 
             var idEntidadeEncaminhamento = await repositorioEncaminhamentoAEE.SalvarAsync(encaminhamentoAEE);
