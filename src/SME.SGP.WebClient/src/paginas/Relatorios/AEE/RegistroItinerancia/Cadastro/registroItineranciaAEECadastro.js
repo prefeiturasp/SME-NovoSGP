@@ -201,6 +201,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
     setUesSelecionados(estadoAntigo =>
       estadoAntigo.filter(item => item.key !== text.key)
     );
+    setModoEdicao(true);
   };
 
   useEffect(() => {
@@ -265,6 +266,9 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
       });
     }
     if (itinerancia.ues?.length) {
+      itinerancia.ues.forEach(ue => {
+        ue.key = ue.codigoUe;
+      });
       setUesSelecionados(itinerancia.ues);
     }
     if (itinerancia.questoes?.length) {
