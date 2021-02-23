@@ -40,7 +40,6 @@ const SecaoReestruturacaoPlano = ({ match }) => {
     obterVersoes();
   }, [obterVersoes]);
 
-  console.log('atualizarDados', atualizarDados);
   useEffect(() => {
     if (atualizarDados) {
       obterVersoes();
