@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import moment from 'moment';
 import PropTypes from 'prop-types';
 import shortid from 'shortid';
@@ -22,7 +22,6 @@ const ModalReestruturacaoPlano = ({
   exibirModal,
   modoConsulta,
   dadosVisualizacao,
-  listaVersao,
   semestre,
   match,
 }) => {
@@ -31,8 +30,10 @@ const ModalReestruturacaoPlano = ({
   const [versaoId, setVersaoId] = useState();
   const [descricao, setDescricao] = useState();
   const [descricaoSimples, setDescricaoSimples] = useState();
-  const [reestruturacaoId, setReestruturacaoId] = useState(null);
-  const ehVisualizacao = modoConsulta || Object.keys(dadosVisualizacao).length;
+  const [reestruturacaoId, setReestruturacaoId] = useState(0);
+  const [listaVersao, setListaVersao] = useState([]);
+  const ehVisualizacao =
+    modoConsulta || !!Object.keys(dadosVisualizacao).length;
 
   const dispatch = useDispatch();
 
@@ -118,7 +119,7 @@ const ModalReestruturacaoPlano = ({
     const dadosDescricaoSimples = ehVisualizacao
       ? dadosVisualizacao.descricaoSimples
       : '';
-    const dadosReestruturacaoId = ehVisualizacao ? dadosVisualizacao.id : null;
+    const dadosReestruturacaoId = ehVisualizacao ? dadosVisualizacao.id : 0;
 
     setVersaoId(String(dadosVersaoId));
     setVersao(dadosVersao);
@@ -126,6 +127,25 @@ const ModalReestruturacaoPlano = ({
     setDescricaoSimples(dadosDescricaoSimples);
     setReestruturacaoId(dadosReestruturacaoId);
   }, [dadosVisualizacao, ehVisualizacao]);
+
+  const obterVersoes = useCallback(async () => {
+    const resposta = await ServicoPlanoAEE.obterVersoes(
+      match?.params?.id,
+      reestruturacaoId
+    );
+    if (resposta?.data) {
+      setListaVersao(resposta.data);
+    }
+  }, [match, reestruturacaoId]);
+
+  useEffect(() => {
+    if (
+      (!reestruturacaoId && !ehVisualizacao) ||
+      (reestruturacaoId && ehVisualizacao)
+    ) {
+      obterVersoes();
+    }
+  }, [obterVersoes, reestruturacaoId, ehVisualizacao]);
 
   return (
     <ModalConteudoHtml
@@ -176,7 +196,6 @@ ModalReestruturacaoPlano.defaultProps = {
   exibirModal: false,
   modoConsulta: false,
   dadosVisualizacao: {},
-  listaVersao: {},
   match: {},
 };
 
@@ -186,7 +205,6 @@ ModalReestruturacaoPlano.propTypes = {
   key: PropTypes.string.isRequired,
   modoConsulta: PropTypes.bool,
   dadosVisualizacao: PropTypes.oneOfType([PropTypes.object]),
-  listaVersao: PropTypes.oneOfType([PropTypes.object]),
   semestre: PropTypes.number.isRequired,
   match: PropTypes.oneOfType([PropTypes.object]),
 };

@@ -236,8 +236,10 @@ class ServicoPlanoAEE {
     return false;
   };
 
-  obterVersoes = planoAEEId => {
-    return api.get(`${urlPadrao}/${planoAEEId}/versoes`);
+  obterVersoes = (planoAEEId, reestruturacaoId) => {
+    return api.get(
+      `${urlPadrao}/${planoAEEId}/versoes/reestruturacao/${reestruturacaoId}`
+    );
   };
 
   obterReestruturacoes = planoAEEId => {
