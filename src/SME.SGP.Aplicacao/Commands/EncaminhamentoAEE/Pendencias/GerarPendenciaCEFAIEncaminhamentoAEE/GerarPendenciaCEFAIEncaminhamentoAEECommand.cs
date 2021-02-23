@@ -3,14 +3,13 @@ using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao
 {
-    public class GerarPendenciaPAEEEncaminhamentoAEECommand : IRequest<bool>
+    public class GerarPendenciaCEFAIEncaminhamentoAEECommand : IRequest<bool>
     {
         public EncaminhamentoAEE EncaminhamentoAEE { get; set; }
-
-        public GerarPendenciaPAEEEncaminhamentoAEECommand(EncaminhamentoAEE encaminhamentoAEE)
+        
+        public GerarPendenciaCEFAIEncaminhamentoAEECommand(EncaminhamentoAEE encaminhamentoAEE)
         {
             EncaminhamentoAEE = encaminhamentoAEE;
         }
     }
-
 }
