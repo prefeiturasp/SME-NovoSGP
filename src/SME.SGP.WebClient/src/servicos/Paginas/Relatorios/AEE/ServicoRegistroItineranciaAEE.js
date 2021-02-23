@@ -29,6 +29,10 @@ class ServicoRegistroItineranciaAEE {
   obterSituacoes = () => {
     return api.get(`${urlPadrao}/situacoes`);
   };
+
+  obterAnosLetivos = () => {
+    return api.get(`${urlPadrao}/anos-letivos`);
+  };
 }
 
 export default new ServicoRegistroItineranciaAEE();
