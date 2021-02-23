@@ -33,7 +33,6 @@ const RegistroItineranciaAEELista = () => {
   const [carregandoSituacao, setCarregandoSituacao] = useState(false);
   const [carregandoTurmas, setCarregandoTurmas] = useState(false);
   const [carregandoUes, setCarregandoUes] = useState(false);
-  const [consideraHistorico, setConsideraHistorico] = useState(false);
   const [dataFinal, setDataFinal] = useState();
   const [dataInicial, setDataInicial] = useState();
   const [dreId, setDreId] = useState();
@@ -133,11 +132,6 @@ const RegistroItineranciaAEELista = () => {
     dataFinal();
   };
 
-  const onCheckedConsideraHistorico = e => {
-    limparFiltrosSelecionados();
-    setConsideraHistorico(e.target.checked);
-  };
-
   const onChangeAnoLetivo = ano => {
     setAnoLetivo(ano);
 
@@ -165,35 +159,38 @@ const RegistroItineranciaAEELista = () => {
   const obterAnosLetivos = useCallback(async () => {
     setCarregandoAnos(true);
 
-    const anosLetivos = await FiltroHelper.obterAnosLetivos({
-      consideraHistorico,
-    })
+    const anosLetivos = await ServicoRegistroItineranciaAEE.obterAnosLetivos()
       .catch(e => erros(e))
       .finally(() => setCarregandoAnos(false));
 
-    if (!anosLetivos.length) {
-      anosLetivos.push({
+    const anos =
+      anosLetivos?.data.map(ano => {
+        return { desc: ano, valor: ano };
+      }) || [];
+
+    if (anos.length) {
+      setListaAnosLetivo(anos);
+    } else {
+      anos.push({
         desc: anoAtual,
         valor: anoAtual,
       });
     }
 
-    validarValorPadraoAnoLetivo(anosLetivos);
-
-    setListaAnosLetivo(anosLetivos);
-  }, [anoAtual, consideraHistorico, validarValorPadraoAnoLetivo]);
+    validarValorPadraoAnoLetivo(anos);
+  }, [anoAtual, validarValorPadraoAnoLetivo]);
 
   useEffect(() => {
     if (!listaAnosLetivo?.length) {
       obterAnosLetivos();
     }
-  }, [obterAnosLetivos, consideraHistorico, listaAnosLetivo]);
+  }, [obterAnosLetivos, listaAnosLetivo]);
 
   const obterDres = useCallback(async () => {
     if (anoLetivo) {
       setCarregandoDres(true);
       const resposta = await AbrangenciaServico.buscarDres(
-        `v1/abrangencias/${consideraHistorico}/dres?anoLetivo=${anoLetivo}`
+        `v1/abrangencias/${anoLetivo !== anoAtual}/dres?anoLetivo=${anoLetivo}`
       )
         .catch(e => erros(e))
         .finally(() => setCarregandoDres(false));
@@ -217,7 +214,7 @@ const RegistroItineranciaAEELista = () => {
       setDreId(undefined);
       setListaDres([]);
     }
-  }, [anoLetivo, consideraHistorico]);
+  }, [anoLetivo, anoAtual]);
 
   useEffect(() => {
     if (anoLetivo) {
@@ -252,7 +249,8 @@ const RegistroItineranciaAEELista = () => {
       setCarregandoUes(true);
       const resposta = await AbrangenciaServico.buscarUes(
         dreId,
-        `v1/abrangencias/${consideraHistorico}/dres/${dreId}/ues?anoLetivo=${anoLetivo}`,
+        `v1/abrangencias/${anoLetivo !==
+          anoAtual}/dres/${dreId}/ues?anoLetivo=${anoLetivo}`,
         true
       )
         .catch(e => erros(e))
@@ -274,7 +272,7 @@ const RegistroItineranciaAEELista = () => {
       }
       setListaUes([]);
     }
-  }, [dreId, anoLetivo, consideraHistorico]);
+  }, [dreId, anoLetivo, anoAtual]);
 
   useEffect(() => {
     if (anoLetivo && dreId)
@@ -316,7 +314,7 @@ const RegistroItineranciaAEELista = () => {
         0,
         '',
         anoLetivo,
-        consideraHistorico
+        anoLetivo !== anoAtual
       )
         .catch(e => erros(e))
         .finally(() => setCarregandoTurmas(false));
@@ -329,7 +327,7 @@ const RegistroItineranciaAEELista = () => {
         }
       }
     }
-  }, [anoLetivo, ueId, consideraHistorico]);
+  }, [anoLetivo, ueId, anoAtual]);
 
   useEffect(() => {
     if (ueId) {
@@ -422,16 +420,6 @@ const RegistroItineranciaAEELista = () => {
                 bold
                 onClick={onClickNovo}
                 disabled={!permissoesTela.podeIncluir}
-              />
-            </div>
-          </div>
-          <div className="row mb-4">
-            <div className="col-sm-12">
-              <CheckboxComponent
-                id="exibir-historico"
-                label="Exibir histórico?"
-                onChangeCheckbox={onCheckedConsideraHistorico}
-                checked={consideraHistorico}
               />
             </div>
           </div>
