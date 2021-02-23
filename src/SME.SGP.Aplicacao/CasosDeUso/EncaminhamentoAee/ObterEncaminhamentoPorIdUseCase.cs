@@ -99,6 +99,7 @@ namespace SME.SGP.Aplicacao
                     return await EhGestorDaEscolaDaTurma(usuarioLogado, encaminhamento.Turma);
                 case SituacaoAEE.Analise:
                     return await EhUsuarioResponsavelPeloEncaminhamento(usuarioLogado, encaminhamento.ResponsavelId);
+                
                 default:
                     return false;
             }
@@ -112,8 +113,9 @@ namespace SME.SGP.Aplicacao
             if (!usuarioLogado.EhProfessor())
                 return false;
 
-            var turmas = await mediator.Send(new ObterTurmasDoProfessorQuery(usuarioLogado.CodigoRf));
-            return turmas.Any(a => a.CodTurma.ToString() == turma.CodigoTurma);
+            var professores = await mediator.Send(new ObterProfessoresTitularesDaTurmaCompletosQuery(turma.CodigoTurma));
+
+            return professores.Any(a => a.ProfessorRf.ToString() == usuarioLogado.CodigoRf);
         }
 
         private async Task<bool> EhGestorDaEscolaDaTurma(Usuario usuarioLogado, Turma turma)
