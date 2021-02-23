@@ -21,6 +21,6 @@ namespace SME.SGP.Infra
         public IEnumerable<ItineranciaUeDto> Ues { get; set; }
         public IEnumerable<ItineranciaAlunoDto> Alunos { get; set; }
         public IEnumerable<ItineranciaQuestaoDto> Questoes { get; set; }
-        public AuditoriaDto AuditoriaDto { get; set; }
+        public AuditoriaDto Auditoria { get; set; }
     }
 }

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import shortid from 'shortid';
 import {
+  Auditoria,
   Base,
   Button,
   CampoData,
@@ -55,6 +56,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
   const [questoesItinerancia, setQuestoesItinerancia] = useState([]);
   const [somenteConsulta, setSomenteConsulta] = useState(false);
   const [paginaAtual, setPaginaAtual] = useState(1);
+  const [auditoria, setAuditoria] = useState();
 
   const usuario = useSelector(store => store.usuario);
   const permissoesTela =
@@ -300,6 +302,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
         setSomenteConsulta(itinerancia.criadoRF !== usuario.rf);
         setSomenteConsultaManual(itinerancia.criadoRF !== usuario.rf);
         construirItineranciaAlteracao(itinerancia);
+        setAuditoria(itinerancia.auditoria);
       }
     }
     if (itineranciaId) {
@@ -585,6 +588,16 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
               </div>
             </div>
           </div>
+          {auditoria && (
+            <Auditoria
+              criadoEm={auditoria.criadoEm}
+              criadoPor={auditoria.criadoPor}
+              criadoRf={auditoria.criadoRf}
+              alteradoPor={auditoria.alteradoPor}
+              alteradoEm={auditoria.alteradoEm}
+              alteradoRf={auditoria.alteradoRf}
+            />
+          )}
         </Card>
       </Loader>
       {modalVisivelUES && (
