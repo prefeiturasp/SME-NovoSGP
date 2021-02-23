@@ -50,5 +50,17 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<PlanoAEEVersaoDto>(query.ToString(), new { planoId });
         }
+
+        public async Task<IEnumerable<PlanoAEEVersaoDto>> ObterVersoesSemReestruturacaoPorPlanoId(long planoId, long reestruturacaoId)
+        {
+            var query = @"select pav.Id, pav.numero, pav.criado_em as CriadoEm 
+                          from plano_aee_versao pav 
+                          left join plano_aee_reestruturacao pr on pr.plano_aee_versao_id = pav.id
+                          where pav.plano_aee_id = @planoId 
+                            and (pr.id is null or pr.id = @reestruturacaoId)
+                          order by pav.numero desc";
+
+            return await database.Conexao.QueryAsync<PlanoAEEVersaoDto>(query.ToString(), new { planoId, reestruturacaoId });
+        }
     }
 }

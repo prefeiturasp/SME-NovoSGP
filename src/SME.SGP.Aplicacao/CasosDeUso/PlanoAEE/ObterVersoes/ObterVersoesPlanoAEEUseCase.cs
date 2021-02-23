@@ -12,9 +12,9 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<IEnumerable<PlanoAEEDescricaoVersaoDto>> Executar(long planoId)
+        public async Task<IEnumerable<PlanoAEEDescricaoVersaoDto>> Executar(FiltroVersoesPlanoAEEDto filtro)
         {
-            var versoesPlanoAEE = await mediator.Send(new ObterVersoesPlanoAEEQuery(planoId));
+            var versoesPlanoAEE = await mediator.Send(new ObterVersoesPlanoAEESemReestruturacaoQuery(filtro.PlanoId, filtro.ReestruturacaoId));
             return MapearPlanoAEEDescricao(versoesPlanoAEE);
         }
 
