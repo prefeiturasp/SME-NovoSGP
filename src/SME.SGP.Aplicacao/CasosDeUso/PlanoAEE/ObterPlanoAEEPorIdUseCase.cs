@@ -65,6 +65,11 @@ namespace SME.SGP.Aplicacao
                     .Select(a => a.Id)
                     .First();
 
+                plano.UltimaVersaoNumero = plano.Versoes
+                    .OrderByDescending(a => a.Numero)
+                    .Select(a => a.Numero)
+                    .First();
+
                 respostasPlano = await mediator.Send(new ObterRespostasPlanoAEEPorVersaoQuery(ultimaVersaoId));
             }
 
