@@ -90,12 +90,12 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(planoAEEId));
         }
 
-        [HttpGet("{planoAEEId}/versoes")]
+        [HttpGet("{planoAEEId}/versoes/reestruturacao/{reestruturacaoId}")]
         [ProducesResponseType(typeof(IEnumerable<PlanoAEEDescricaoVersaoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterVersoes(long planoAEEId, [FromServices] IObterVersoesPlanoAEEUseCase useCase)
+        public async Task<IActionResult> ObterVersoes(long planoAEEId, long reestruturacaoId, [FromServices] IObterVersoesPlanoAEEUseCase useCase)
         {
-            return Ok(await useCase.Executar(planoAEEId));
+            return Ok(await useCase.Executar(new FiltroVersoesPlanoAEEDto(planoAEEId, reestruturacaoId)));
         }
 
         [HttpPost("{planoAEEId}/reestruturacoes")]
