@@ -141,6 +141,20 @@ namespace SME.SGP.Dados.Repositorios
             return contexto.QueryFirstOrDefault<Ue>(query, new { turmaId });
         }
 
+        public async Task<Ue> ObterUEPorTurmaId(long turmaId)
+        {
+            var query = @"select
+                            escola.*
+                        from
+                            ue escola
+                        inner
+                        join turma t on
+                        t.ue_id = escola.id
+                        where
+                            t.id = @turmaId";
+            return await contexto.QueryFirstOrDefaultAsync<Ue>(query, new { turmaId });
+        }
+
         public async Task<IEnumerable<Ue>> SincronizarAsync(IEnumerable<Ue> entidades, IEnumerable<Dre> dres)
         {
             List<Ue> resultado = new List<Ue>();
