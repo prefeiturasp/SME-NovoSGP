@@ -38,6 +38,7 @@ import { NOME_CAMPO_QUESTAO } from './componentes/ConstantesCamposDinâmicos';
 
 const RegistroItineranciaAEECadastro = ({ match }) => {
   const [carregandoGeral, setCarregandoGeral] = useState(false);
+  const [carregandoQuestoes, setCarregandoQuestoes] = useState(false);
   const [dataVisita, setDataVisita] = useState('');
   const [dataRetornoVerificacao, setDataRetornoVerificacao] = useState('');
   const [modalVisivelUES, setModalVisivelUES] = useState(false);
@@ -143,11 +144,14 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
               `Registro ${itineranciaId ? 'alterado' : 'salvo'} com sucesso`
             );
             setModoEdicao(false);
+            setCarregandoGeral(false);
             history.push(RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA);
           }
         })
-        .catch(e => erros(e))
-        .finally(setCarregandoGeral(false));
+        .catch(e => {
+          erros(e);
+          setCarregandoGeral(false);
+        });
     }
   };
 
@@ -229,10 +233,12 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
   };
 
   const obterQuestoes = async () => {
+    setCarregandoQuestoes(true);
     const result = await ServicoRegistroItineranciaAEE.obterQuestoesItinerancia();
     if (result?.status === 200) {
       setQuestoesItinerancia(result?.data?.itineranciaQuestao);
       setQuestoesAluno(result?.data?.itineranciaAlunoQuestao);
+      setCarregandoQuestoes(false);
     }
   };
 
@@ -306,9 +312,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
       setCarregandoGeral(true);
       const result = await ServicoRegistroItineranciaAEE.obterItineranciaPorId(
         id
-      )
-        .catch(e => erros(e))
-        .finally(setCarregandoGeral(false));
+      ).catch(e => erros(e));
       if (result?.data && result?.status === 200) {
         const itinerancia = result.data;
         setItineranciaAlteracao(itinerancia);
@@ -317,6 +321,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
         construirItineranciaAlteracao(itinerancia);
         setAuditoria(itinerancia.auditoria);
       }
+      setCarregandoGeral(false);
     }
     if (itineranciaId) {
       obterItinerancia(itineranciaId);
@@ -360,10 +365,8 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
   };
 
   useEffect(() => {
-    setCarregandoGeral(true);
     obterObjetivos();
     setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
-    setCarregandoGeral(false);
   }, []);
 
   const desabilitarDataVisita = dataCorrente => {
@@ -571,18 +574,20 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
             ) : (
               questoesItinerancia?.map(questao => {
                 return (
-                  <div className="row mb-4" key={questao.questaoId}>
-                    <div className="col-12">
-                      <JoditEditor
-                        label={questao.descricao}
-                        value={questao.resposta}
-                        name={NOME_CAMPO_QUESTAO + questao.questaoId}
-                        id={`editor-questao-${questao.questaoId}`}
-                        onChange={e => setQuestao(e, questao)}
-                        desabilitar={desabilitarCamposPorPermissao()}
-                      />
+                  <Loader loading={carregandoQuestoes}>
+                    <div className="row mb-4" key={questao.questaoId}>
+                      <div className="col-12">
+                        <JoditEditor
+                          label={questao.descricao}
+                          value={questao.resposta}
+                          name={NOME_CAMPO_QUESTAO + questao.questaoId}
+                          id={`editor-questao-${questao.questaoId}`}
+                          onChange={e => setQuestao(e, questao)}
+                          desabilitar={desabilitarCamposPorPermissao()}
+                        />
+                      </div>
                     </div>
-                  </div>
+                  </Loader>
                 );
               })
             )}
