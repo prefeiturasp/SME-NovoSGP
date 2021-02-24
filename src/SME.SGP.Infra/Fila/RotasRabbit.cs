@@ -7,7 +7,10 @@
 
         public static string FilaSgp => "sme.sgp.clients";
         public static string WorkerRelatoriosSgp => "sme.sr.workers.sgp";
-        
+
+        public static string FilaGoogleSync => "googleclass.sync.geral";
+        public static string ExchangeGoogleSync => "googleclass.exchange";
+
         public static string RotaRelatoriosSolicitados => "relatorios.solicitados";
         public static string RotaRelatoriosProntos => "relatorios.prontos";
 
