@@ -759,7 +759,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<INotificacaoEncerramentoEncaminhamentoAEEUseCase, NotificacaoEncerramentoEncaminhamentoAEEUseCase>();
             services.TryAddScoped<INotificacaoDevolucaoEncaminhamentoAEEUseCase, NotificacaoDevolucaoEncaminhamentoAEEUseCase>();
 
-            services.TryAddScoped<IExecutaNotificacaoGoogleClassroomUseCase, ExecutaNotificacaoGoogleClassroomUseCase>();
+            services.TryAddScoped<IExecutarSyncGeralGoogleClassroomUseCase, ExecutarSyncGeralGoogleClassroomUseCase>();
         }
     }
 }

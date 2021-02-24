@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ExecutaNotificacaoGoogleClassroomUseCase : IExecutaNotificacaoGoogleClassroomUseCase
+    public class ExecutarSyncGeralGoogleClassroomUseCase : IExecutarSyncGeralGoogleClassroomUseCase
     {
         protected readonly IMediator mediator;
 
-        public ExecutaNotificacaoGoogleClassroomUseCase(IMediator mediator)
+        public ExecutarSyncGeralGoogleClassroomUseCase(IMediator mediator)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }

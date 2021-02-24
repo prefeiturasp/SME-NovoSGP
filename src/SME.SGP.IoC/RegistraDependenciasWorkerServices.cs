@@ -513,7 +513,7 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<INotificacaoEncerramentoEncaminhamentoAEEUseCase, NotificacaoEncerramentoEncaminhamentoAEEUseCase>();
             services.TryAddScopedWorkerService<INotificacaoDevolucaoEncaminhamentoAEEUseCase, NotificacaoDevolucaoEncaminhamentoAEEUseCase>();
 
-            services.TryAddScopedWorkerService<IExecutaNotificacaoGoogleClassroomUseCase, ExecutaNotificacaoGoogleClassroomUseCase>();
+            services.TryAddScopedWorkerService<IExecutarSyncGeralGoogleClassroomUseCase, ExecutarSyncGeralGoogleClassroomUseCase>();
         }
 
         private static void ResgistraDependenciaHttp(IServiceCollection services)

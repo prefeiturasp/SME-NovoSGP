@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Aplicacao
 {
-    public interface IExecutaNotificacaoGoogleClassroomUseCase
+    public interface IExecutarSyncGeralGoogleClassroomUseCase
     {
         Task<bool> Executar();
     }
