@@ -11,7 +11,7 @@ namespace SME.SGP.Dominio.Enumerados
         [Display(Name = "Encerrado")]
         Encerrado = 3,
         [Display(Name = "Aguardando devolutiva coordenação")]
-        ParecerCP = 4,
+        DevolutivaCP = 4,
         [Display(Name = "Aguardando atribuição de PAAI")]
         AtribuicaoPAAI = 5,
         [Display(Name = "Aguardando devolutiva PAAI")]

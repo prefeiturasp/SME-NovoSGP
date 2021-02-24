@@ -13,7 +13,11 @@ const SecaoDevolutivaPaai = () => {
   const dispatch = useDispatch();
 
   const mudarDescricaoPAAI = texto => {
-    dispatch(setDevolutivaEmEdicao(true));
+    let edicao = false;
+    if (texto) {
+      edicao = true;
+    }
+    dispatch(setDevolutivaEmEdicao(edicao));
     dispatch(setParecerPAAI(texto));
   };
 
@@ -23,8 +27,8 @@ const SecaoDevolutivaPaai = () => {
         label="Devolutiva do PAAI"
         onChange={mudarDescricaoPAAI}
         inicial={dadosDevolutiva?.parecerPAAI || parecerPAAI || ''}
-        desabilitar={dadosDevolutiva?.podeEditarParecerPAAI}
-        removerToolbar={dadosDevolutiva?.podeEditarParecerPAAI}
+        desabilitar={!dadosDevolutiva?.podeEditarParecerPAAI}
+        removerToolbar={!dadosDevolutiva?.podeEditarParecerPAAI}
       />
     </div>
   );

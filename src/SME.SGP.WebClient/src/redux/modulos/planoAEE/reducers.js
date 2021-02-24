@@ -8,15 +8,16 @@ const inicial = {
   planoAEESituacaoEncaminhamentoAEE: {},
   planoAEEDadosSecoesPorEtapa: [],
   exibirModalErrosPlano: false,
+  atualizarDados: false,
   dadosDevolutiva: {},
   parecerCoordenacao: '',
   parecerPAAI: '',
   devolutivaEmEdicao: false,
+  dadosAtribuicaoResponsavel: {},
 };
 
 export default function PlanoAEE(state = inicial, action) {
   return produce(state, draft => {
-    console.log('state', state);
     switch (action.type) {
       case '@planoAEE/setExibirModalErrosPlano': {
         return {
@@ -93,6 +94,12 @@ export default function PlanoAEE(state = inicial, action) {
           parecerCoordenacao: action.payload,
         };
       }
+      case '@planoAEE/setAtualizarDados': {
+        return {
+          ...draft,
+          atualizarDados: action.payload,
+        };
+      }
       case '@planoAEE/setParecerPAAI': {
         return {
           ...draft,
@@ -110,6 +117,13 @@ export default function PlanoAEE(state = inicial, action) {
           ...draft,
           parecerCoordenacao: '',
           parecerPAAI: '',
+          dadosAtribuicaoResponsavel: {},
+        };
+      }
+      case '@planoAEE/setDadosAtribuicaoResponsavel': {
+        return {
+          ...draft,
+          dadosAtribuicaoResponsavel: action.payload,
         };
       }
       default:

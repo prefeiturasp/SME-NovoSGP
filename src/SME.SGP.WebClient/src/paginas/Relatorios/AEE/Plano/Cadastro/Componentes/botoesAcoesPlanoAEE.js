@@ -11,7 +11,6 @@ import {
   limparDadosDevolutiva,
   setAtualizarPlanoAEEDados,
   setExibirLoaderPlanoAEE,
-  setParecerCoordenacao,
   setDevolutivaEmEdicao,
 } from '~/redux/modulos/planoAEE/actions';
 
@@ -26,48 +25,75 @@ const BotoesAcoesPlanoAEE = props => {
     store => store.planoAEE.desabilitarCamposPlanoAEE
   );
 
+  const dadosDevolutiva = useSelector(store => store.planoAEE.dadosDevolutiva);
+
   const devolutivaEmEdicao = useSelector(
     store => store.planoAEE.devolutivaEmEdicao
   );
 
   const planoAEEDados = useSelector(store => store.planoAEE.planoAEEDados);
 
+  const dadosAtribuicaoResponsavel = useSelector(
+    store => store.planoAEE.dadosAtribuicaoResponsavel
+  );
+
   const usuario = useSelector(store => store.usuario);
   const permissoesTela = usuario.permissoes[RotasDto.RELATORIO_AEE_PLANO];
 
   const situacaoDevolutivaCoordenacao =
     planoAEEDados?.situacao === situacaoPlanoAEE.DevolutivaCoordenacao;
+  const situacaoDevolutivaPAAI =
+    planoAEEDados?.situacao === situacaoPlanoAEE.DevolutivaPAAI &&
+    dadosDevolutiva?.podeEditarParecerPAAI;
+  const situacaoAtribuicaoPAAI =
+    planoAEEDados?.situacao === situacaoPlanoAEE.AtribuicaoPAAI;
+
+  const situacaoDevolutiva =
+    situacaoDevolutivaCoordenacao ||
+    (situacaoAtribuicaoPAAI && !dadosAtribuicaoResponsavel?.codigoRF);
+
   const planoAeeId = match?.params?.id;
   const labelBotaoSalvar =
-    situacaoDevolutivaCoordenacao || !planoAeeId ? 'Salvar' : 'Alterar';
+    situacaoDevolutiva || !planoAeeId ? 'Salvar' : 'Alterar';
 
-  const desabilitarBotaoSalvar = situacaoDevolutivaCoordenacao
+  const desabilitarBotaoSalvar = situacaoDevolutiva
     ? !devolutivaEmEdicao
     : desabilitarCamposPlanoAEE || !questionarioDinamicoEmEdicao;
 
-  const desabilitarBotaoCancelar = situacaoDevolutivaCoordenacao
-    ? !devolutivaEmEdicao
-    : desabilitarCamposPlanoAEE || !questionarioDinamicoEmEdicao;
-
-  console.log('planoAEEDados', planoAEEDados);
-  console.log('desabilitarCamposPlanoAEE', desabilitarCamposPlanoAEE);
+  const desabilitarBotaoCancelar =
+    situacaoDevolutiva || situacaoDevolutivaPAAI
+      ? !devolutivaEmEdicao
+      : desabilitarCamposPlanoAEE || !questionarioDinamicoEmEdicao;
 
   const dispatch = useDispatch();
-
-  const salvarDevolutivaCoordenacao = async () => {
-    const resposta = await ServicoPlanoAEE.salvarDevolutivaCP().catch(e =>
-      erros(e)
-    );
-    if (resposta?.data) {
-      sucesso('Devolutiva registrada com sucesso');
-      dispatch(setParecerCoordenacao(''));
-      history.push(RotasDto.RELATORIO_AEE_PLANO);
-    }
-  };
 
   const limparDevolutiva = () => {
     dispatch(limparDadosDevolutiva());
     dispatch(setDevolutivaEmEdicao(false));
+  };
+
+  const salvarDevolutiva = async funcao => {
+    const resposta = await funcao().catch(e => erros(e));
+
+    if (resposta?.data) {
+      sucesso('Registro salvo com sucesso');
+      limparDevolutiva();
+      history.push(RotasDto.RELATORIO_AEE_PLANO);
+    }
+  };
+
+  const escolherAcaoDevolutivas = () => {
+    if (situacaoDevolutiva) {
+      salvarDevolutiva(ServicoPlanoAEE.salvarDevolutivaCP);
+      return;
+    }
+    if (situacaoAtribuicaoPAAI) {
+      salvarDevolutiva(ServicoPlanoAEE.atribuirResponsavel);
+      return;
+    }
+    if (situacaoDevolutivaPAAI) {
+      salvarDevolutiva(ServicoPlanoAEE.salvarDevolutivaPAAI);
+    }
   };
 
   const onClickVoltar = async () => {
@@ -77,9 +103,10 @@ const BotoesAcoesPlanoAEE = props => {
         '',
         'Suas alterações não foram salvas, deseja salvar agora?'
       );
+
       if (confirmou) {
-        if (situacaoDevolutivaCoordenacao) {
-          salvarDevolutivaCoordenacao();
+        if (devolutivaEmEdicao) {
+          escolherAcaoDevolutivas();
           return;
         }
         const salvou = await ServicoPlanoAEE.salvarPlano();
@@ -94,9 +121,7 @@ const BotoesAcoesPlanoAEE = props => {
           history.push(RotasDto.RELATORIO_AEE_PLANO);
         }
       } else {
-        if (situacaoDevolutivaCoordenacao) {
-          limparDevolutiva();
-        }
+        limparDevolutiva();
         history.push(RotasDto.RELATORIO_AEE_PLANO);
       }
     } else {
@@ -115,8 +140,9 @@ const BotoesAcoesPlanoAEE = props => {
         'Deseja realmente cancelar as alterações?'
       );
       if (confirmou) {
-        if (situacaoDevolutivaCoordenacao) {
+        if (devolutivaEmEdicao) {
           limparDevolutiva();
+          dispatch(setAtualizarPlanoAEEDados(true));
           return;
         }
         QuestionarioDinamicoFuncoes.limparDadosOriginaisQuestionarioDinamico();
@@ -125,8 +151,8 @@ const BotoesAcoesPlanoAEE = props => {
   };
 
   const onClickSalvar = async () => {
-    if (situacaoDevolutivaCoordenacao) {
-      salvarDevolutivaCoordenacao();
+    if (situacaoDevolutiva) {
+      salvarDevolutiva(ServicoPlanoAEE.salvarDevolutivaCP);
       return;
     }
     const salvou = await ServicoPlanoAEE.salvarPlano();
@@ -160,8 +186,8 @@ const BotoesAcoesPlanoAEE = props => {
       erros(e)
     );
     if (resposta?.data) {
-      sucesso('Devolutiva encerrada com sucesso');
-      dispatch(setParecerCoordenacao(''));
+      sucesso('Registro salvo com sucesso');
+      limparDevolutiva();
       history.push(RotasDto.RELATORIO_AEE_PLANO);
     }
   };
@@ -226,6 +252,7 @@ const BotoesAcoesPlanoAEE = props => {
           planoAEEDados?.situacao !== situacaoPlanoAEE.DevolutivaPAAI
         }
         disabled={
+          !dadosDevolutiva?.podeEditarParecerPAAI ||
           desabilitarCamposPlanoAEE ||
           questionarioDinamicoEmEdicao ||
           !devolutivaEmEdicao ||

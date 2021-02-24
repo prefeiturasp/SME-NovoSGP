@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { Editor } from '~/componentes';
-// import { setQuestionarioDinamicoEmEdicao } from '~/redux/modulos/questionarioDinamico/actions';
 import {
   setDevolutivaEmEdicao,
   setParecerCoordenacao,

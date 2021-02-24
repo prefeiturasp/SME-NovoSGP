@@ -1,17 +1,18 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import { useDispatch, useSelector } from 'react-redux';
-import { CardCollapse, Editor } from '~/componentes';
+import { CardCollapse } from '~/componentes';
 
 import { erros, verificaSomenteConsulta } from '~/servicos';
-import { RotasDto } from '~/dtos';
+import { RotasDto, situacaoPlanoAEE } from '~/dtos';
 
 import SecaoDevolutivaCoordenacao from '../SecaoDevolutivaCoordenacao/secaoDevolutivaCoordenacao';
 import ServicoPlanoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoPlanoAEE';
 import {
   setExibirLoaderPlanoAEE,
   setDadosDevolutiva,
+  setAtualizarDados,
 } from '~/redux/modulos/planoAEE/actions';
 import SecaoDevolutivaResponsavel from '../SecaoDevolutivaResponsavel/secaoDevolutivaResponsavel';
 import SecaoDevolutivaPaai from '../SecaoDevolutivaPaai/secaoDevolutivaPaai';
@@ -22,6 +23,7 @@ const SecaoDevolutivasPlano = ({ match }) => {
   const usuario = useSelector(store => store.usuario);
   const permissoesTela = usuario.permissoes[RotasDto.RELATORIO_AEE_PLANO];
   const somenteConsulta = useSelector(store => store.navegacao.somenteConsulta);
+  const atualizarDados = useSelector(store => store.planoAEE.atualizarDados);
 
   const dispatch = useDispatch();
 
@@ -43,6 +45,14 @@ const SecaoDevolutivasPlano = ({ match }) => {
   useEffect(() => {
     obterDevolutiva();
   }, [obterDevolutiva]);
+
+  useEffect(() => {
+    if (atualizarDados) {
+      obterDevolutiva();
+    }
+    dispatch(setAtualizarDados(false));
+  }, [atualizarDados, dispatch, obterDevolutiva]);
+
   return (
     <>
       <CardCollapse
@@ -56,13 +66,19 @@ const SecaoDevolutivasPlano = ({ match }) => {
           desabilitarDevolutivaCordenacao={
             !dadosDevolutiva?.podeEditarParecerCoordenacao
           }
-          match={match}
         />
-        {dadosDevolutiva?.podeAtribuirResponsavel && (
+        {(dadosDevolutiva?.podeAtribuirResponsavel ||
+          (planoAEEDados?.situacao === situacaoPlanoAEE.DevolutivaPAAI &&
+            !dadosDevolutiva?.podeEditarParecerPAAI)) && (
           <SecaoDevolutivaResponsavel />
         )}
 
-        {!dadosDevolutiva?.podeEditarParecerPAAI && <SecaoDevolutivaPaai />}
+        {(dadosDevolutiva?.podeEditarParecerPAAI ||
+          planoAEEDados?.situacao === situacaoPlanoAEE.Encerrado ||
+          planoAEEDados?.situacao ===
+            situacaoPlanoAEE.EncerradoAutomaticamento) && (
+          <SecaoDevolutivaPaai />
+        )}
       </CardCollapse>
     </>
   );

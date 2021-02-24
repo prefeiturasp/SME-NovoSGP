@@ -48,6 +48,11 @@ export const setDadosDevolutiva = payload => ({
   payload,
 });
 
+export const setAtualizarDados = payload => ({
+  type: '@planoAEE/setAtualizarDados',
+  payload,
+});
+
 export const setParecerCoordenacao = payload => ({
   type: '@planoAEE/setParecerCoordenacao',
   payload,
@@ -65,5 +70,10 @@ export const setDevolutivaEmEdicao = payload => ({
 
 export const limparDadosDevolutiva = payload => ({
   type: '@planoAEE/limparDadosDevolutiva',
+  payload,
+});
+
+export const setDadosAtribuicaoResponsavel = payload => ({
+  type: '@planoAEE/setDadosAtribuicaoResponsavel',
   payload,
 });
