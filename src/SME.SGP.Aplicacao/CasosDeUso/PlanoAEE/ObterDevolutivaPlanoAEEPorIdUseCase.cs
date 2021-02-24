@@ -68,11 +68,11 @@ namespace SME.SGP.Aplicacao
         }
 
         private bool PodeEditarParecerPAAI(PlanoAEE planoAEE, Usuario usuario)
-            => planoAEE.Situacao == SituacaoPlanoAEE.ParecerCP
+            => planoAEE.Situacao == SituacaoPlanoAEE.DevolutivaPAAI
             && (planoAEE.ResponsavelId.GetValueOrDefault() == usuario.Id);
 
         private async Task<bool> PodeEditarParecerCP(PlanoAEE planoAEE, Usuario usuario, Turma turma)
-            => planoAEE.Situacao == SituacaoPlanoAEE.ParecerCP && 
+            => planoAEE.Situacao == SituacaoPlanoAEE.DevolutivaCP && 
                 (usuario.EhGestorEscolar() ?
                 await UsuarioGestorDoPlano(usuario, turma) :
                 false);
