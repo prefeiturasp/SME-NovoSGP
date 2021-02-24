@@ -38,6 +38,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                 if (encaminhamentoAEE != null)
                 {
                     await AlterarEncaminhamento(encaminhamentoAEEDto, encaminhamentoAEE);
+                    await GerarPendenciaEncaminhamentoAEECP(encaminhamentoAEEDto.Situacao, encaminhamentoAEE.Id);
                     return new ResultadoEncaminhamentoAEEDto() { Id = encaminhamentoAEE.Id };
                 }
             }
@@ -47,7 +48,18 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             encaminhamentoAEEDto.Situacao));
 
             await SalvarEncaminhamento(encaminhamentoAEEDto, resultadoEncaminhamento);
+
+            await GerarPendenciaEncaminhamentoAEECP(encaminhamentoAEEDto.Situacao, resultadoEncaminhamento.Id);
+
             return resultadoEncaminhamento;
+        }
+
+        private async Task GerarPendenciaEncaminhamentoAEECP(SituacaoAEE situacao, long encaminhamentoId)
+        {
+            if (situacao == SituacaoAEE.Encaminhado)
+            {
+                await mediator.Send(new GerarPendenciaCPEncaminhamentoAEECommand(encaminhamentoId));
+            }
         }
 
         public async Task AlterarEncaminhamento(EncaminhamentoAeeDto encaminhamentoAEEDto, EncaminhamentoAEE encaminhamentoAEE)
