@@ -316,7 +316,7 @@ const RegistroItineranciaAEELista = () => {
         0,
         '',
         anoLetivo,
-        anoLetivo !== anoAtual
+        consideraHistorico
       )
         .catch(e => erros(e))
         .finally(() => setCarregandoTurmas(false));
@@ -329,7 +329,7 @@ const RegistroItineranciaAEELista = () => {
         }
       }
     }
-  }, [anoLetivo, ueId, anoAtual]);
+  }, [anoLetivo, ueId, consideraHistorico]);
 
   useEffect(() => {
     if (ueId) {
