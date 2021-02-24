@@ -14,11 +14,15 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IMediator mediator;
         private readonly IRepositorioEncaminhamentoAEE repositorioEncaminhamentoAEE;
+        private readonly IServicoEncaminhamentoAEE servicoEncaminhamentoAEE;
 
-        public EnviarParaAnaliseEncaminhamentoAEECommandHandler(IMediator mediator, IRepositorioEncaminhamentoAEE repositorioEncaminhamentoAEE)
+        public EnviarParaAnaliseEncaminhamentoAEECommandHandler(IMediator mediator, 
+            IRepositorioEncaminhamentoAEE repositorioEncaminhamentoAEE,
+            IServicoEncaminhamentoAEE servicoEncaminhamentoAEE)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioEncaminhamentoAEE = repositorioEncaminhamentoAEE ?? throw new ArgumentNullException(nameof(repositorioEncaminhamentoAEE));
+            this.servicoEncaminhamentoAEE = servicoEncaminhamentoAEE ?? throw new ArgumentNullException(nameof(servicoEncaminhamentoAEE));
         }
 
         public async Task<bool> Handle(EnviarParaAnaliseEncaminhamentoAEECommand request, CancellationToken cancellationToken)
@@ -36,9 +40,7 @@ namespace SME.SGP.Aplicacao
 
             encaminhamentoAEE.Situacao = Dominio.Enumerados.SituacaoAEE.AtribuicaoResponsavel;
 
-            IEnumerable<Guid> perfis = new List<Guid>() { Perfis.PERFIL_PAEE };
-
-            var funciorarioPAEE = await ObterPAEETurma(turma);
+            var funciorarioPAEE = await servicoEncaminhamentoAEE.ObterPAEETurma(turma);
 
             if (funciorarioPAEE != null && funciorarioPAEE.Count() == 1)
             {
@@ -47,69 +49,22 @@ namespace SME.SGP.Aplicacao
                 await mediator.Send(new GerarPendenciaPAEEEncaminhamentoAEECommand(encaminhamentoAEE));
             }
 
-            if (!funciorarioPAEE.Any())
-                await mediator.Send(new GerarPendenciaCEFAIEncaminhamentoAEECommand(encaminhamentoAEE));
-
             var idEntidadeEncaminhamento = await repositorioEncaminhamentoAEE.SalvarAsync(encaminhamentoAEE);
+            
+            await servicoEncaminhamentoAEE.RemoverPendenciasCP(encaminhamentoAEE.TurmaId, encaminhamentoAEE.Id);
+            
+            if (!funciorarioPAEE.Any())
+            {
+                await mediator.Send(new GerarPendenciaAtribuirResponsavelEncaminhamentoAEECommand(encaminhamentoAEE, true));
+            }
 
-            await RemoverPendenciasCP(encaminhamentoAEE.TurmaId, encaminhamentoAEE.Id);
+            if (funciorarioPAEE.Count() > 1)
+            {
+                await mediator.Send(new GerarPendenciaAtribuirResponsavelEncaminhamentoAEECommand(encaminhamentoAEE, false));
+            }
 
             return idEntidadeEncaminhamento != 0;
         }
 
-        private async Task<bool> RemoverPendenciasCP(long turmaId, long encaminhamentoAEEId)
-        {
-            var ue = await mediator.Send(new ObterUEPorTurmaIdQuery(turmaId));
-
-            var funcionarios = await ObterFuncionarios(ue.CodigoUe);
-
-            if (funcionarios == null)
-                return false;
-
-            var usuarios = await ObterUsuariosId(funcionarios);
-
-            foreach (var usuario in usuarios)
-            {
-                var pendencia = await mediator.Send(new ObterPendenciaEncaminhamentoAEEPorIdEUsuarioIdQuery(encaminhamentoAEEId, usuario));
-                await mediator.Send(new ExcluirPendenciaEncaminhamentoAEECommand(pendencia.PendenciaId));
-            }
-            return true;
-        }
-
-        private async Task<List<string>> ObterFuncionarios(string codigoUe)
-        {
-            var funcionariosCP = await mediator.Send(new ObterFuncionariosPorUeECargoQuery(codigoUe, (int)Cargo.CP));
-            if (funcionariosCP.Any())
-                return funcionariosCP.Select(f => f.CodigoRF).ToList();
-
-            var funcionariosAD = await mediator.Send(new ObterFuncionariosPorUeECargoQuery(codigoUe, (int)Cargo.AD));
-            if (funcionariosAD.Any())
-                return funcionariosAD.Select(f => f.CodigoRF).ToList();
-
-            var funcionariosDiretor = await mediator.Send(new ObterFuncionariosPorUeECargoQuery(codigoUe, (int)Cargo.Diretor));
-            if (funcionariosDiretor.Any())
-                return funcionariosDiretor.Select(f => f.CodigoRF).ToList();
-
-            return null;
-        }
-
-        private async Task<List<long>> ObterUsuariosId(List<string> funcionarios)
-        {
-            List<long> usuarios = new List<long>();
-            foreach (var functionario in funcionarios)
-            {
-                var usuario = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(functionario));
-                usuarios.Add(usuario);
-            }
-            return usuarios;
-        }
-
-        private async Task<IEnumerable<UsuarioEolRetornoDto>> ObterPAEETurma(Turma turma)
-        {
-            var funcionariosUe = await mediator.Send(new PesquisaFuncionariosPorDreUeQuery("", "", turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe));
-
-            var atividadeFuncaoPAEE = 6;
-            return funcionariosUe.Where(c => c.CodigoFuncaoAtividade == atividadeFuncaoPAEE);
-        }
     }
 }

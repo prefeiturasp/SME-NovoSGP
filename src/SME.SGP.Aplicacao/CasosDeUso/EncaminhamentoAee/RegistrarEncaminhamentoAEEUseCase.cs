@@ -2,6 +2,7 @@
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -13,10 +14,13 @@ namespace SME.SGP.Aplicacao.CasosDeUso
     public class RegistrarEncaminhamentoAEEUseCase : IRegistrarEncaminhamentoAEEUseCase
     {
         private readonly IMediator mediator;
+        private readonly IServicoEncaminhamentoAEE servicoEncaminhamentoAEE;
 
-        public RegistrarEncaminhamentoAEEUseCase(IMediator mediator)
+        public RegistrarEncaminhamentoAEEUseCase(IMediator mediator, IServicoEncaminhamentoAEE servicoEncaminhamentoAEE)
         {
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
+            this.servicoEncaminhamentoAEE = servicoEncaminhamentoAEE ?? throw new ArgumentNullException(nameof(servicoEncaminhamentoAEE));
+
         }
 
         public async Task<ResultadoEncaminhamentoAEEDto> Executar(EncaminhamentoAeeDto encaminhamentoAEEDto)
@@ -38,7 +42,6 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                 if (encaminhamentoAEE != null)
                 {
                     await AlterarEncaminhamento(encaminhamentoAEEDto, encaminhamentoAEE);
-                    await GerarPendenciaEncaminhamentoAEECP(encaminhamentoAEEDto.Situacao, encaminhamentoAEE.Id);
                     return new ResultadoEncaminhamentoAEEDto() { Id = encaminhamentoAEE.Id };
                 }
             }
@@ -49,23 +52,24 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
             await SalvarEncaminhamento(encaminhamentoAEEDto, resultadoEncaminhamento);
 
-            await GerarPendenciaEncaminhamentoAEECP(encaminhamentoAEEDto.Situacao, resultadoEncaminhamento.Id);
+            if (encaminhamentoAEEDto.Situacao == SituacaoAEE.Encaminhado)
+                await servicoEncaminhamentoAEE.GerarPendenciaEncaminhamentoAEECP(encaminhamentoAEEDto.Situacao, resultadoEncaminhamento.Id);
 
             return resultadoEncaminhamento;
         }
 
-        private async Task GerarPendenciaEncaminhamentoAEECP(SituacaoAEE situacao, long encaminhamentoId)
-        {
-            if (situacao == SituacaoAEE.Encaminhado)
-            {
-                await mediator.Send(new GerarPendenciaCPEncaminhamentoAEECommand(encaminhamentoId));
-            }
-        }
+       
 
         public async Task AlterarEncaminhamento(EncaminhamentoAeeDto encaminhamentoAEEDto, EncaminhamentoAEE encaminhamentoAEE)
         {
             encaminhamentoAEE.Situacao = encaminhamentoAEEDto.Situacao;
             await mediator.Send(new SalvarEncaminhamentoAEECommand(encaminhamentoAEE));
+
+            if(encaminhamentoAEEDto.Situacao != SituacaoAEE.Encaminhado)
+            {
+                await servicoEncaminhamentoAEE.RemoverPendenciasCP(encaminhamentoAEE.TurmaId, encaminhamentoAEE.Id);
+            } 
+                
 
             foreach (var secao in encaminhamentoAEEDto.Secoes)
             {
