@@ -19,7 +19,8 @@ function TurmasDropDown({ form, onChange, label, consideraHistorico, anoLetivo }
         modalidadeId,
         '',
         anoLetivo,
-        consideraHistorico
+        consideraHistorico,
+        true
       );
       if (data) {
         const lista = data.map(item => ({
