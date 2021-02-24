@@ -1,9 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,7 +14,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioEncaminhamentoAEE repositorioEncaminhamentoAEE;
         private readonly IServicoEncaminhamentoAEE servicoEncaminhamentoAEE;
 
-        public EnviarParaAnaliseEncaminhamentoAEECommandHandler(IMediator mediator, 
+        public EnviarParaAnaliseEncaminhamentoAEECommandHandler(IMediator mediator,
             IRepositorioEncaminhamentoAEE repositorioEncaminhamentoAEE,
             IServicoEncaminhamentoAEE servicoEncaminhamentoAEE)
         {
@@ -50,9 +48,9 @@ namespace SME.SGP.Aplicacao
             }
 
             var idEntidadeEncaminhamento = await repositorioEncaminhamentoAEE.SalvarAsync(encaminhamentoAEE);
-            
-            await servicoEncaminhamentoAEE.RemoverPendenciasCP(encaminhamentoAEE.TurmaId, encaminhamentoAEE.Id);
-            
+
+            await mediator.Send(new ExcluirPendenciasEncaminhamentoAEECPCommand(encaminhamentoAEE.TurmaId, encaminhamentoAEE.Id));
+
             if (!funciorarioPAEE.Any())
             {
                 await mediator.Send(new GerarPendenciaAtribuirResponsavelEncaminhamentoAEECommand(encaminhamentoAEE, true));

@@ -61,8 +61,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<bool> EnviarParaFuncionarios(Turma turma, EncaminhamentoAEE encaminhamentoAEE)
         {
-
-            var usuarios = await servicoEncaminhamentoAEE.ListarUsuariosIdPorCodigoUe(turma.Ue.CodigoUe);
+            var usuarios = await mediator.Send(new ObterUsuariosIdPorCodigoUeQuery(turma.Ue.CodigoUe));
 
             if (usuarios == null)
                 return false;

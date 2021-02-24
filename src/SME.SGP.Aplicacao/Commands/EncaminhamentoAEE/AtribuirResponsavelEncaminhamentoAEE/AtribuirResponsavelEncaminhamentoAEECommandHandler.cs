@@ -50,10 +50,10 @@ namespace SME.SGP.Aplicacao
 
         private async Task RemovePendencias(long turmaId, long encaminhamentoAEEId)
         {
-            var ehCEFAI = await servicoEncaminhamentoAEE.RemovePendenciaCEFAI(turmaId, encaminhamentoAEEId);
+            var ehCEFAI = await mediator.Send(new ExcluirPendenciasEncaminhamentoAEECEFAICommand(turmaId, encaminhamentoAEEId));
             if (!ehCEFAI)
             {
-                await servicoEncaminhamentoAEE.RemoverPendenciasCP(turmaId, encaminhamentoAEEId);
+                await mediator.Send(new ExcluirPendenciasEncaminhamentoAEECPCommand(turmaId, encaminhamentoAEEId));
             }
         }
     }

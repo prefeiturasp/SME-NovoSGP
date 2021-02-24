@@ -52,8 +52,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
             await SalvarEncaminhamento(encaminhamentoAEEDto, resultadoEncaminhamento);
 
-            if (encaminhamentoAEEDto.Situacao == SituacaoAEE.Encaminhado)
-                await servicoEncaminhamentoAEE.GerarPendenciaEncaminhamentoAEECP(encaminhamentoAEEDto.Situacao, resultadoEncaminhamento.Id);
+            await mediator.Send(new GerarPendenciaCPEncaminhamentoAEECommand(resultadoEncaminhamento.Id, encaminhamentoAEEDto.Situacao));
 
             return resultadoEncaminhamento;
         }
@@ -67,9 +66,8 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
             if(encaminhamentoAEEDto.Situacao != SituacaoAEE.Encaminhado)
             {
-                await servicoEncaminhamentoAEE.RemoverPendenciasCP(encaminhamentoAEE.TurmaId, encaminhamentoAEE.Id);
+                await mediator.Send(new ExcluirPendenciasEncaminhamentoAEEPorPerfilCommand(encaminhamentoAEE.TurmaId, encaminhamentoAEE.Id));
             } 
-                
 
             foreach (var secao in encaminhamentoAEEDto.Secoes)
             {

@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.Extensions.Configuration;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -39,48 +40,52 @@ namespace SME.SGP.Aplicacao
             if (encaminhamentoAEE == null)
                 throw new NegocioException("Não foi possível localizar o EncaminhamentoAEE");
 
-            var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(encaminhamentoAEE.TurmaId));
-
-            var funcionarios = await ObterFuncionarios(turma.Ue.CodigoUe);
-
-            if (funcionarios == null)
-                return false;
-
-            var usuarios = await ObterUsuariosId(funcionarios);
-
-            var ueDre = $"{turma.Ue.TipoEscola.ShortName()} {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao})";
-            var hostAplicacao = configuration["UrlFrontEnd"];
-            var estudanteOuCrianca = turma.ModalidadeCodigo == Modalidade.Infantil ? "da criança" : "do estudante";
-
-            var titulo = $"Encaminhamento AEE para análise - {encaminhamentoAEE.AlunoNome} ({encaminhamentoAEE.AlunoCodigo}) - {ueDre}";
-            var descricao = $"O encaminhamento {estudanteOuCrianca} {encaminhamentoAEE.AlunoNome} ({encaminhamentoAEE.AlunoCodigo}) da turma {ueDre} está disponível para análise da coordenação. <br/><a href='{hostAplicacao}relatorios/aee/encaminhamento/editar/{encaminhamentoAEE.Id}'>Clique aqui para acessar o encaminhamento.</a> " +
-                $"<br/><br/>Esta pendência será resolvida automaticamente quando o parecer da coordenação for registrado no sistema.";
-
-            using (var transacao = unitOfWork.IniciarTransacao())
+            if (encaminhamentoAEE.Situacao == SituacaoAEE.Encaminhado)
             {
-                try
+                var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(encaminhamentoAEE.TurmaId));
+
+                var funcionarios = await ObterFuncionarios(turma.Ue.CodigoUe);
+
+                if (funcionarios == null)
+                    return false;
+
+                var usuarios = await ObterUsuariosId(funcionarios);
+
+                var ueDre = $"{turma.Ue.TipoEscola.ShortName()} {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao})";
+                var hostAplicacao = configuration["UrlFrontEnd"];
+                var estudanteOuCrianca = turma.ModalidadeCodigo == Modalidade.Infantil ? "da criança" : "do estudante";
+
+                var titulo = $"Encaminhamento AEE para análise - {encaminhamentoAEE.AlunoNome} ({encaminhamentoAEE.AlunoCodigo}) - {ueDre}";
+                var descricao = $"O encaminhamento {estudanteOuCrianca} {encaminhamentoAEE.AlunoNome} ({encaminhamentoAEE.AlunoCodigo}) da turma {ueDre} está disponível para análise da coordenação. <br/><a href='{hostAplicacao}relatorios/aee/encaminhamento/editar/{encaminhamentoAEE.Id}'>Clique aqui para acessar o encaminhamento.</a> " +
+                    $"<br/><br/>Esta pendência será resolvida automaticamente quando o parecer da coordenação for registrado no sistema.";
+
+                using (var transacao = unitOfWork.IniciarTransacao())
                 {
-                    foreach (var usuario in usuarios)
+                    try
                     {
-                        var pendencia = new Pendencia(TipoPendencia.AEE, titulo, descricao);
-                        pendencia.Id = await repositorioPendencia.SalvarAsync(pendencia);
+                        foreach (var usuario in usuarios)
+                        {
+                            var pendencia = new Pendencia(TipoPendencia.AEE, titulo, descricao);
+                            pendencia.Id = await repositorioPendencia.SalvarAsync(pendencia);
 
-                        var pendenciaUsuario = new PendenciaUsuario { PendenciaId = pendencia.Id, UsuarioId = usuario };
-                        await repositorioPendenciaUsuario.SalvarAsync(pendenciaUsuario);
+                            var pendenciaUsuario = new PendenciaUsuario { PendenciaId = pendencia.Id, UsuarioId = usuario };
+                            await repositorioPendenciaUsuario.SalvarAsync(pendenciaUsuario);
 
-                        var pendenciaEncaminhamento = new PendenciaEncaminhamentoAEE { PendenciaId = pendencia.Id, EncaminhamentoAEEId = encaminhamentoAEE.Id };
-                        await repositorioPendenciaEncaminhamentoAEE.SalvarAsync(pendenciaEncaminhamento);
+                            var pendenciaEncaminhamento = new PendenciaEncaminhamentoAEE { PendenciaId = pendencia.Id, EncaminhamentoAEEId = encaminhamentoAEE.Id };
+                            await repositorioPendenciaEncaminhamentoAEE.SalvarAsync(pendenciaEncaminhamento);
+                        }
+
+                        unitOfWork.PersistirTransacao();
+                        return true;
                     }
-
-                    unitOfWork.PersistirTransacao();
-                    return true;
-                }
-                catch (Exception e)
-                {
-                    unitOfWork.Rollback();
-                    throw;
+                    catch (Exception e)
+                    {
+                        unitOfWork.Rollback();
+                        throw;
+                    }
                 }
             }
+            return false;
         }
 
         private async Task<List<string>> ObterFuncionarios(string codigoUe)
