@@ -61,6 +61,9 @@ function AtribuicaoEsporadicaForm({ match }) {
   const anoAtual = window.moment().format('YYYY');
   const [ehInfantil, setEhInfantil] = useState(false);
 
+  const [listaDres, setListaDres] = useState([]);
+  const [listaUes, setListaUes] = useState([]);
+
   const [valoresIniciais, setValoresIniciais] = useState({
     professorRf: '',
     professorNome: '',
@@ -143,7 +146,17 @@ function AtribuicaoEsporadicaForm({ match }) {
       'Deseja realmente cancelar as alterações?'
     );
     if (confirmou) {
-      form.resetForm();
+      if (listaDres?.length > 1) {
+        form.setFieldValue('dreId', valoresIniciais?.dreId);
+      }
+      if (listaUes?.length > 1) {
+        form.setFieldValue('ueId', valoresIniciais?.ueId);
+      }
+      form.setFieldValue('professorRf', valoresIniciais?.professorRf);
+      form.setFieldValue('professorNome', valoresIniciais?.professorNome);
+      form.setFieldValue('dataInicio', valoresIniciais?.dataInicio);
+      form.setFieldValue('dataFim', valoresIniciais?.dataFim);
+      form.setFieldValue('anoLetivo', valoresIniciais?.anoLetivo);
       setModoEdicao(false);
     }
   };
@@ -269,7 +282,10 @@ function AtribuicaoEsporadicaForm({ match }) {
                     <DreDropDown
                       label="Diretoria Regional de Educação (DRE)"
                       form={form}
-                      onChange={valor => setDreId(valor)}
+                      onChange={(valor, lista) => {
+                        setDreId(valor);
+                        setListaDres(lista);
+                      }}
                       desabilitado={somenteConsulta}
                     />
                   </Grid>
@@ -278,8 +294,9 @@ function AtribuicaoEsporadicaForm({ match }) {
                       label="Unidade Escolar (UE)"
                       dreId={dreId}
                       form={form}
-                      onChange={(v, infantil) => {
+                      onChange={(v, infantil, lista) => {
                         setEhInfantil(infantil);
+                        setListaUes(lista);
                       }}
                       desabilitado={somenteConsulta}
                     />

@@ -35,14 +35,14 @@ function DreDropDown({ form, onChange, label, desabilitado }) {
   useEffect(() => {
     if (listaDres.length === 1) {
       form.setFieldValue('dreId', listaDres[0].valor);
-      onChange(listaDres[0].valor);
+      onChange(listaDres[0].valor, listaDres);
     }
   }, [listaDres]);
 
   useEffect(() => {
-    onChange();
+    onChange('', listaDres);
     if (!valorNuloOuVazio(form.values.dreId)) {
-      onChange(form.values.dreId);
+      onChange(form.values.dreId, listaDres);
     }
   }, [form.values.dreId]);
 
@@ -52,7 +52,9 @@ function DreDropDown({ form, onChange, label, desabilitado }) {
       form={form}
       name="dreId"
       className="fonte-14"
-      onChange={onChange}
+      onChange={valor => {
+        onChange(valor, listaDres);
+      }}
       lista={listaDres}
       valueOption="valor"
       containerVinculoId="containerFiltro"
