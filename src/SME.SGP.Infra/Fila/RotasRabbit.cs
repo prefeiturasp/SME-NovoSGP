@@ -73,5 +73,7 @@
 
         
 
+
+        public static string EncerrarPlanoAEEEstudantesInativos => "plano.aee.encerrar.inativos";
     }
 }

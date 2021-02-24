@@ -61,6 +61,8 @@ namespace SME.SGP.Background
             Cliente.ExecutarPeriodicamente<IRemoveConexaoIdleUseCase>(c => c.Executar(), Cron.MinuteInterval(30));
 
             Cliente.ExecutarPeriodicamente<IExecutarSyncGeralGoogleClassroomUseCase>(c => c.Executar(), Cron.Daily(5));
+
+            Cliente.ExecutarPeriodicamente<IExecutaEncerramentoPlanoAEEEstudantesInativosUseCase>(c => c.Executar(), Cron.Daily(8));
         }
     }
 }

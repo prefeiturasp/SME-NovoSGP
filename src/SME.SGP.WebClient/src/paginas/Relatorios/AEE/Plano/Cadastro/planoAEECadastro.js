@@ -115,6 +115,13 @@ const PlanoAEECadastro = ({ match }) => {
   }, [match, dispatch]);
 
   useEffect(() => {
+    if (atualizarDados) {
+      obterPlanoPorId();
+    }
+    dispatch(setAtualizarDados(false));
+  }, [atualizarDados, dispatch, obterPlanoPorId]);
+
+  useEffect(() => {
     obterPlanoPorId();
   }, [obterPlanoPorId]);
 

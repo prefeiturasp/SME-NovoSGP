@@ -716,6 +716,12 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterRestruturacoesPlanoAEEPorIdUseCase, ObterRestruturacoesPlanoAEEPorIdUseCase>();
             services.TryAddScoped<ISalvarReestruturacaoPlanoAEEUseCase, SalvarReestruturacaoPlanoAEEUseCase>();
 
+            services.TryAddScoped<IExecutaEncerramentoPlanoAEEEstudantesInativosUseCase, ExecutaEncerramentoPlanoAEEEstudantesInativosUseCase>();
+            services.TryAddScoped<IEncerrarPlanosAEEEstudantesInativosUseCase, EncerrarPlanosAEEEstudantesInativosUseCase>();
+            services.TryAddScoped<IObterDevolutivaPlanoAEEPorIdUseCase, ObterDevolutivaPlanoAEEPorIdUseCase>();
+            services.TryAddScoped<IEncerrarPlanoAEEUseCase, EncerrarPlanoAEEUseCase>();
+            
+
             services.TryAddScoped<IObterAlunoPorCodigoEolEAnoLetivoUseCase, ObterAlunoPorCodigoEolEAnoLetivoUseCase>();
             services.TryAddScoped<IRegistrarEncaminhamentoAEEUseCase, RegistrarEncaminhamentoAEEUseCase>();
             services.TryAddScoped<IObterEncaminhamentoPorIdUseCase, ObterEncaminhamentoPorIdUseCase>();
@@ -754,6 +760,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterAnosLetivosItineranciaUseCase, ObterAnosLetivosItineranciaUseCase>();
             services.TryAddScoped<IObterRfsPorNomesItineranciaUseCase, ObterRfsPorNomesItineranciaUseCase>();
 
+            services.TryAddScoped<ICadastrarDevolutivaCPPlanoAEEUseCase, CadastrarDevolutivaCPPlanoAEEUseCase>();
+            services.TryAddScoped<ICadastrarDevolutivaPAAIPlanoAEEUseCase, CadastrarDevolutivaPAAIPlanoAEEUseCase>();
+            services.TryAddScoped<IAtribuirResponsavelPlanoAEEUseCase, AtribuirResponsavelPlanoAEEUseCase>();
 
             services.TryAddScoped<IObterInformacoesDeFrequenciaAlunosPorBimestreUseCase, ObterInformacoesDeFrequenciaAlunosPorBimestreUseCase>();
             services.TryAddScoped<IObterAlunosAtivosPorUeENomeUseCase, ObterAlunosAtivosPorUeENomeUseCase>();

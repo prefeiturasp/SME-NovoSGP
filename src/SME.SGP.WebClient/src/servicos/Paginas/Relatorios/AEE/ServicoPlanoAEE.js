@@ -4,7 +4,9 @@ import situacaoPlanoAEE from '~/dtos/situacaoPlanoAEE';
 import tipoQuestao from '~/dtos/tipoQuestao';
 import { store } from '~/redux';
 import {
+  limparDadosDevolutiva,
   setAtualizarDados,
+  setDevolutivaEmEdicao,
   setExibirLoaderPlanoAEE,
   setExibirModalErrosPlano,
 } from '~/redux/modulos/planoAEE/actions';
@@ -257,10 +259,12 @@ class ServicoPlanoAEE {
 
   cliqueTabPlanoAEE = async (key, temId) => {
     const { dispatch } = store;
-
     const state = store.getState();
     const { questionarioDinamico } = state;
-    const { questionarioDinamicoEmEdicao } = questionarioDinamico;
+    const {
+      planoAEEDados,
+      questionarioDinamicoEmEdicao,
+    } = questionarioDinamico;
 
     if (questionarioDinamicoEmEdicao && key !== '1') {
       const confirmou = await confirmar(
@@ -283,6 +287,92 @@ class ServicoPlanoAEE {
       }
       QuestionarioDinamicoFuncoes.limparDadosOriginaisQuestionarioDinamico();
     }
+    if (!questionarioDinamicoEmEdicao && key !== '3') {
+      const salvou = await this.escolherAcaoDevolutivas(
+        planoAEEDados?.situacao
+      );
+      if (salvou) {
+        sucesso('Registro salvo com sucesso');
+        dispatch(setAtualizarDados(true));
+      }
+
+      dispatch(limparDadosDevolutiva());
+      dispatch(setDevolutivaEmEdicao(false));
+    }
+  };
+
+  obterDevolutiva = planoAeeId => {
+    return api.get(`${urlPadrao}/${planoAeeId}/devolutiva`);
+  };
+
+  encerrarPlano = planoAeeId => {
+    return api.post(`${urlPadrao}/encerrar-plano?planoAeeId=${planoAeeId}`);
+  };
+
+  salvarDevolutivaCP = () => {
+    const { planoAEE } = store.getState();
+    const { planoAEEDados, parecerCoordenacao } = planoAEE;
+    return api.post(`${urlPadrao}/${planoAEEDados.id}/devolutiva/cp`, {
+      parecer: parecerCoordenacao,
+    });
+  };
+
+  salvarDevolutivaPAAI = () => {
+    const { planoAEE } = store.getState();
+    const { planoAEEDados, parecerPAAI } = planoAEE;
+    return api.post(`${urlPadrao}/${planoAEEDados.id}/devolutiva/paai`, {
+      parecer: parecerPAAI,
+    });
+  };
+
+  atribuirResponsavel = () => {
+    const { planoAEE } = store.getState();
+    const { planoAEEDados, dadosAtribuicaoResponsavel } = planoAEE;
+    return api.post(`${urlPadrao}/atribuir-responsavel`, {
+      planoAEEId: planoAEEDados.id,
+      responsavelRF: dadosAtribuicaoResponsavel.codigoRF,
+    });
+  };
+
+  escolherAcaoDevolutivas = async () => {
+    const { dispatch, getState } = store;
+    const { planoAEE } = getState();
+    const {
+      dadosDevolutiva,
+      planoAEEDados,
+      dadosAtribuicaoResponsavel,
+      devolutivaEmEdicao,
+    } = planoAEE;
+    if (devolutivaEmEdicao) {
+      const confirmou = await confirmar(
+        'Atenção',
+        '',
+        'Suas alterações não foram salvas, deseja salvar agora?'
+      );
+      if (confirmou) {
+        if (
+          (planoAEEDados.situacao === situacaoPlanoAEE.DevolutivaCoordenacao ||
+            planoAEEDados.situacao === situacaoPlanoAEE.AtribuicaoPAAI) &&
+          !dadosAtribuicaoResponsavel?.codigoRF
+        ) {
+          await this.salvarDevolutivaCP();
+          dispatch(setAtualizarDados(true));
+          return true;
+        }
+        if (planoAEEDados.situacao === situacaoPlanoAEE.AtribuicaoPAAI) {
+          await this.atribuirResponsavel();
+          return true;
+        }
+        if (
+          planoAEEDados?.situacao === situacaoPlanoAEE.DevolutivaPAAI &&
+          dadosDevolutiva?.podeEditarParecerPAAI
+        ) {
+          await this.salvarDevolutivaPAAI();
+          return true;
+        }
+      }
+    }
+    return false;
   };
 }
 
