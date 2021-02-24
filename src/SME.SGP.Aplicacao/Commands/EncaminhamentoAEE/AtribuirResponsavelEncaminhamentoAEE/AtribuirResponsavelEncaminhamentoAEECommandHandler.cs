@@ -2,6 +2,8 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -12,7 +14,9 @@ namespace SME.SGP.Aplicacao
         private readonly IMediator mediator;
         private readonly IRepositorioEncaminhamentoAEE repositorioEncaminhamentoAEE;
 
-        public AtribuirResponsavelEncaminhamentoAEECommandHandler(IMediator mediator, IRepositorioEncaminhamentoAEE repositorioEncaminhamentoAEE)
+        public AtribuirResponsavelEncaminhamentoAEECommandHandler(IMediator mediator, 
+            IRepositorioEncaminhamentoAEE repositorioEncaminhamentoAEE
+            )
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioEncaminhamentoAEE = repositorioEncaminhamentoAEE ?? throw new ArgumentNullException(nameof(repositorioEncaminhamentoAEE));
@@ -25,7 +29,7 @@ namespace SME.SGP.Aplicacao
             if (encaminhamentoAEE == null)
                 throw new NegocioException("O encaminhamento informado não foi encontrado");
 
-            if( encaminhamentoAEE.Situacao == Dominio.Enumerados.SituacaoAEE.Finalizado
+            if (encaminhamentoAEE.Situacao == Dominio.Enumerados.SituacaoAEE.Finalizado
              || encaminhamentoAEE.Situacao == Dominio.Enumerados.SituacaoAEE.Encerrado)
                 throw new NegocioException("A situação do encaminhamento não permite a remoção do responsável");
 
@@ -34,7 +38,20 @@ namespace SME.SGP.Aplicacao
 
             var idEntidadeEncaminhamento = await repositorioEncaminhamentoAEE.SalvarAsync(encaminhamentoAEE);
 
+            await RemovePendencias(encaminhamentoAEE.TurmaId, encaminhamentoAEE.Id);
+
+            await mediator.Send(new GerarPendenciaPAEEEncaminhamentoAEECommand(encaminhamentoAEE));
+
             return idEntidadeEncaminhamento != 0;
+        }
+
+        private async Task RemovePendencias(long turmaId, long encaminhamentoAEEId)
+        {
+            var ehCEFAI = await mediator.Send(new ExcluirPendenciasEncaminhamentoAEECEFAICommand(turmaId, encaminhamentoAEEId));
+            if (!ehCEFAI)
+            {
+                await mediator.Send(new ExcluirPendenciasEncaminhamentoAEECPCommand(turmaId, encaminhamentoAEEId));
+            }
         }
     }
 }
