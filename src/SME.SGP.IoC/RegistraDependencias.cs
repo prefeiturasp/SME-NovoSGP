@@ -389,6 +389,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IServicoConselhoClasse, ServicoConselhoClasse>();
             services.TryAddScoped<IServicoCalculoParecerConclusivo, ServicoCalculoParecerConclusivo>();
             services.TryAddScoped<IServicoObjetivosAprendizagem, ServicoObjetivosAprendizagem>();
+            services.TryAddScoped<IServicoEncaminhamentoAEE, ServicoEncaminhamentoAEE>();
             services.TryAddScoped<IServicoFila, FilaRabbit>();
 
         }
