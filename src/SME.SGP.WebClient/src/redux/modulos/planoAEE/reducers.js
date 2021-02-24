@@ -8,6 +8,12 @@ const inicial = {
   planoAEESituacaoEncaminhamentoAEE: {},
   planoAEEDadosSecoesPorEtapa: [],
   exibirModalErrosPlano: false,
+  atualizarDados: false,
+  dadosDevolutiva: {},
+  parecerCoordenacao: '',
+  parecerPAAI: '',
+  devolutivaEmEdicao: false,
+  dadosAtribuicaoResponsavel: {},
 };
 
 export default function PlanoAEE(state = inicial, action) {
@@ -65,6 +71,59 @@ export default function PlanoAEE(state = inicial, action) {
           desabilitarCamposPlanoAEE: false,
           planoAEEDadosSecoesPorEtapa: [],
           exibirModalErrosPlano: false,
+        };
+      }
+      case '@planoAEE/setAtualizarPlanoAEEDados': {
+        return {
+          ...draft,
+          planoAEEDados: {
+            ...draft.planoAEEDados,
+            ...action.payload,
+          },
+        };
+      }
+      case '@planoAEE/setDadosDevolutiva': {
+        return {
+          ...draft,
+          dadosDevolutiva: action.payload,
+        };
+      }
+      case '@planoAEE/setParecerCoordenacao': {
+        return {
+          ...draft,
+          parecerCoordenacao: action.payload,
+        };
+      }
+      case '@planoAEE/setAtualizarDados': {
+        return {
+          ...draft,
+          atualizarDados: action.payload,
+        };
+      }
+      case '@planoAEE/setParecerPAAI': {
+        return {
+          ...draft,
+          parecerPAAI: action.payload,
+        };
+      }
+      case '@planoAEE/setDevolutivaEmEdicao': {
+        return {
+          ...draft,
+          devolutivaEmEdicao: action.payload,
+        };
+      }
+      case '@planoAEE/limparDadosDevolutiva': {
+        return {
+          ...draft,
+          parecerCoordenacao: '',
+          parecerPAAI: '',
+          dadosAtribuicaoResponsavel: {},
+        };
+      }
+      case '@planoAEE/setDadosAtribuicaoResponsavel': {
+        return {
+          ...draft,
+          dadosAtribuicaoResponsavel: action.payload,
         };
       }
       default:

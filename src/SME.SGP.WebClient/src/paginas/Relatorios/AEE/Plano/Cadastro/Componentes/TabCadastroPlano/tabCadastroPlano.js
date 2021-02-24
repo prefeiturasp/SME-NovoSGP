@@ -8,6 +8,12 @@ import { confirmar, sucesso } from '~/servicos';
 import ServicoPlanoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoPlanoAEE';
 import { setQuestionarioDinamicoEmEdicao } from '~/redux/modulos/questionarioDinamico/actions';
 import SecaoDevolutivasPlanoCollapse from '../SecaoDevolutivasPlano/secaoDevolutivasPlanoCollapse';
+import { situacaoPlanoAEE } from '~/dtos';
+import {
+  limparDadosDevolutiva,
+  setAtualizarDados,
+  setDevolutivaEmEdicao,
+} from '~/redux/modulos/planoAEE/actions';
 
 const { TabPane } = Tabs;
 
@@ -21,8 +27,13 @@ const TabCadastroPasso = props => {
   const questionarioDinamicoEmEdicao = useSelector(
     store => store.questionarioDinamico.questionarioDinamicoEmEdicao
   );
-
+  const planoAEEDados = useSelector(store => store.planoAEE.planoAEEDados);
   const dispatch = useDispatch();
+
+  const limparDevolutiva = () => {
+    dispatch(limparDadosDevolutiva());
+    dispatch(setDevolutivaEmEdicao(false));
+  };
 
   const cliqueTab = async key => {
     if (questionarioDinamicoEmEdicao && key !== '1') {
@@ -42,6 +53,16 @@ const TabCadastroPasso = props => {
         }
       }
     }
+    if (!questionarioDinamicoEmEdicao && key !== '3') {
+      const salvou = await ServicoPlanoAEE.escolherAcaoDevolutivas(
+        planoAEEDados?.situacao
+      );
+      if (salvou) {
+        sucesso('Registro salvo com sucesso');
+        dispatch(setAtualizarDados(true));
+      }
+      limparDevolutiva();
+    }
   };
 
   return dadosCollapseLocalizarEstudante?.codigoAluno ? (
@@ -54,12 +75,25 @@ const TabCadastroPasso = props => {
         )}
       </TabPane>
       {temId && (
-        <TabPane tab="Reestruturação" key="2">
+        <TabPane
+          tab="Reestruturação"
+          key="2"
+          disabled={
+            planoAEEDados?.situacao !== situacaoPlanoAEE.EmAndamento &&
+            planoAEEDados?.situacao !== situacaoPlanoAEE.Encerrado &&
+            planoAEEDados?.situacao !==
+              situacaoPlanoAEE.EncerradoAutomaticamento
+          }
+        >
           <></>
         </TabPane>
       )}
       {temId && (
-        <TabPane tab="Devolutivas" key="3">
+        <TabPane
+          tab="Devolutivas"
+          key="3"
+          disabled={planoAEEDados?.situacao === situacaoPlanoAEE.EmAndamento}
+        >
           <SecaoDevolutivasPlanoCollapse match={match} />
         </TabPane>
       )}

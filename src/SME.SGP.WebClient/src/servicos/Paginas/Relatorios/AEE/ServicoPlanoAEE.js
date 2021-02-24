@@ -4,10 +4,11 @@ import situacaoPlanoAEE from '~/dtos/situacaoPlanoAEE';
 import tipoQuestao from '~/dtos/tipoQuestao';
 import { store } from '~/redux';
 import {
+  setAtualizarDados,
   setExibirLoaderPlanoAEE,
   setExibirModalErrosPlano,
 } from '~/redux/modulos/planoAEE/actions';
-import { erros } from '~/servicos/alertas';
+import { confirmar, erros } from '~/servicos/alertas';
 import api from '~/servicos/api';
 
 const urlPadrao = 'v1/plano-aee';
@@ -231,6 +232,80 @@ class ServicoPlanoAEE {
         }
       } else {
         dispatch(setExibirModalErrosPlano(true));
+      }
+    }
+    return false;
+  };
+
+  obterDevolutiva = planoAeeId => {
+    return api.get(`${urlPadrao}/${planoAeeId}/devolutiva`);
+  };
+
+  encerrarPlano = planoAeeId => {
+    return api.post(`${urlPadrao}/encerrar-plano?planoAeeId=${planoAeeId}`);
+  };
+
+  salvarDevolutivaCP = () => {
+    const { planoAEE } = store.getState();
+    const { planoAEEDados, parecerCoordenacao } = planoAEE;
+    return api.post(`${urlPadrao}/${planoAEEDados.id}/devolutiva/cp`, {
+      parecer: parecerCoordenacao,
+    });
+  };
+
+  salvarDevolutivaPAAI = () => {
+    const { planoAEE } = store.getState();
+    const { planoAEEDados, parecerPAAI } = planoAEE;
+    return api.post(`${urlPadrao}/${planoAEEDados.id}/devolutiva/paai`, {
+      parecer: parecerPAAI,
+    });
+  };
+
+  atribuirResponsavel = () => {
+    const { planoAEE } = store.getState();
+    const { planoAEEDados, dadosAtribuicaoResponsavel } = planoAEE;
+    return api.post(`${urlPadrao}/atribuir-responsavel`, {
+      planoAEEId: planoAEEDados.id,
+      responsavelRF: dadosAtribuicaoResponsavel.codigoRF,
+    });
+  };
+
+  escolherAcaoDevolutivas = async () => {
+    const { dispatch, getState } = store;
+    const { planoAEE } = getState();
+    const {
+      dadosDevolutiva,
+      planoAEEDados,
+      dadosAtribuicaoResponsavel,
+      devolutivaEmEdicao,
+    } = planoAEE;
+    if (devolutivaEmEdicao) {
+      const confirmou = await confirmar(
+        'Atenção',
+        '',
+        'Suas alterações não foram salvas, deseja salvar agora?'
+      );
+      if (confirmou) {
+        if (
+          (planoAEEDados.situacao === situacaoPlanoAEE.DevolutivaCoordenacao ||
+            planoAEEDados.situacao === situacaoPlanoAEE.AtribuicaoPAAI) &&
+          !dadosAtribuicaoResponsavel?.codigoRF
+        ) {
+          await this.salvarDevolutivaCP();
+          dispatch(setAtualizarDados(true));
+          return true;
+        }
+        if (planoAEEDados.situacao === situacaoPlanoAEE.AtribuicaoPAAI) {
+          await this.atribuirResponsavel();
+          return true;
+        }
+        if (
+          planoAEEDados?.situacao === situacaoPlanoAEE.DevolutivaPAAI &&
+          dadosDevolutiva?.podeEditarParecerPAAI
+        ) {
+          await this.salvarDevolutivaPAAI();
+          return true;
+        }
       }
     }
     return false;

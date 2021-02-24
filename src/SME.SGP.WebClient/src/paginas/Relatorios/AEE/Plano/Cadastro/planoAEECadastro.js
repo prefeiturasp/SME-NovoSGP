@@ -8,6 +8,7 @@ import LoaderPlano from './Componentes/LoaderPlano/loaderPlano';
 import TabCadastroPasso from './Componentes/TabCadastroPlano/tabCadastroPlano';
 import { setLimparDadosQuestionarioDinamico } from '~/redux/modulos/questionarioDinamico/actions';
 import {
+  setAtualizarDados,
   setDesabilitarCamposPlanoAEE,
   setExibirLoaderPlanoAEE,
   setPlanoAEEDados,
@@ -32,6 +33,8 @@ import { RotasDto } from '~/dtos';
 import MarcadorSituacaoPlanoAEE from './Componentes/MarcadorSituacaoPlanoAEE/marcadorSituacaoPlanoAEE';
 
 const PlanoAEECadastro = ({ match }) => {
+  const atualizarDados = useSelector(store => store.planoAEE.atualizarDados);
+
   const dispatch = useDispatch();
 
   const limparDadosPlano = useCallback(() => {
@@ -111,6 +114,13 @@ const PlanoAEECadastro = ({ match }) => {
       dispatch(setPlanoAEEDados(resultado?.data));
     }
   }, [match, dispatch]);
+
+  useEffect(() => {
+    if (atualizarDados) {
+      obterPlanoPorId();
+    }
+    dispatch(setAtualizarDados(false));
+  }, [atualizarDados, dispatch, obterPlanoPorId]);
 
   useEffect(() => {
     obterPlanoPorId();
