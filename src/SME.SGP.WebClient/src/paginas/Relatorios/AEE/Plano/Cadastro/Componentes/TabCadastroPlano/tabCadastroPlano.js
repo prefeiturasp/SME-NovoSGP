@@ -1,15 +1,11 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { useDispatch, useSelector } from 'react-redux';
 import { Tabs } from 'antd';
+import PropTypes from 'prop-types';
+import React from 'react';
+import { useSelector } from 'react-redux';
 import { ContainerTabsCard } from '~/componentes/tabs/tabs.css';
+import ServicoPlanoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoPlanoAEE';
 import SecaoPlanoCollapse from '../SecaoPlanoCollapse/secaoPlanoCollapse';
 import SecaoReestruturacaoPlano from '../SecaoReestruturacaoPlano/secaoReestruturacaoPlano';
-import { confirmar, sucesso } from '~/servicos';
-import ServicoPlanoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoPlanoAEE';
-import { setQuestionarioDinamicoEmEdicao } from '~/redux/modulos/questionarioDinamico/actions';
-import QuestionarioDinamicoFuncoes from '~/componentes-sgp/QuestionarioDinamico/Funcoes/QuestionarioDinamicoFuncoes';
-import { setAtualizarDados } from '~/redux/modulos/planoAEE/actions';
 
 const { TabPane } = Tabs;
 
@@ -20,34 +16,9 @@ const TabCadastroPasso = props => {
   const dadosCollapseLocalizarEstudante = useSelector(
     store => store.collapseLocalizarEstudante.dadosCollapseLocalizarEstudante
   );
-  const questionarioDinamicoEmEdicao = useSelector(
-    store => store.questionarioDinamico.questionarioDinamicoEmEdicao
-  );
-
-  const dispatch = useDispatch();
 
   const cliqueTab = async key => {
-    if (questionarioDinamicoEmEdicao && key !== '1') {
-      const confirmou = await confirmar(
-        'Atenção',
-        '',
-        'Suas alterações não foram salvas, deseja salvar agora?'
-      );
-
-      if (confirmou) {
-        const salvou = await ServicoPlanoAEE.salvarPlano();
-        if (salvou) {
-          dispatch(setQuestionarioDinamicoEmEdicao(false));
-          dispatch(setAtualizarDados(true));
-          const mensagem = temId
-            ? 'Registro alterado com sucesso'
-            : 'Registro salvo com sucesso';
-          sucesso(mensagem);
-          return;
-        }
-      }
-      QuestionarioDinamicoFuncoes.limparDadosOriginaisQuestionarioDinamico();
-    }
+    ServicoPlanoAEE.cliqueTabPlanoAEE(key, temId);
   };
 
   return dadosCollapseLocalizarEstudante?.codigoAluno ? (
