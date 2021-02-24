@@ -1,21 +1,13 @@
 import { Tabs } from 'antd';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { ContainerTabsCard } from '~/componentes/tabs/tabs.css';
 import ServicoPlanoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoPlanoAEE';
 import SecaoPlanoCollapse from '../SecaoPlanoCollapse/secaoPlanoCollapse';
 import SecaoReestruturacaoPlano from '../SecaoReestruturacaoPlano/secaoReestruturacaoPlano';
-import { confirmar, sucesso } from '~/servicos';
-import ServicoPlanoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoPlanoAEE';
-import { setQuestionarioDinamicoEmEdicao } from '~/redux/modulos/questionarioDinamico/actions';
 import SecaoDevolutivasPlanoCollapse from '../SecaoDevolutivasPlano/secaoDevolutivasPlanoCollapse';
 import { situacaoPlanoAEE } from '~/dtos';
-import {
-  limparDadosDevolutiva,
-  setAtualizarDados,
-  setDevolutivaEmEdicao,
-} from '~/redux/modulos/planoAEE/actions';
 
 const { TabPane } = Tabs;
 
@@ -26,46 +18,7 @@ const TabCadastroPasso = props => {
   const dadosCollapseLocalizarEstudante = useSelector(
     store => store.collapseLocalizarEstudante.dadosCollapseLocalizarEstudante
   );
-  const questionarioDinamicoEmEdicao = useSelector(
-    store => store.questionarioDinamico.questionarioDinamicoEmEdicao
-  );
   const planoAEEDados = useSelector(store => store.planoAEE.planoAEEDados);
-  const dispatch = useDispatch();
-
-  const limparDevolutiva = () => {
-    dispatch(limparDadosDevolutiva());
-    dispatch(setDevolutivaEmEdicao(false));
-  };
-
-  const cliqueTab = async key => {
-    if (questionarioDinamicoEmEdicao && key !== '1') {
-      const confirmou = await confirmar(
-        'Atenção',
-        '',
-        'Suas alterações não foram salvas, deseja salvar agora?'
-      );
-      if (confirmou) {
-        const salvou = await ServicoPlanoAEE.salvarPlano();
-        if (salvou) {
-          dispatch(setQuestionarioDinamicoEmEdicao(false));
-          const mensagem = temId
-            ? 'Registro alterado com sucesso'
-            : 'Registro salvo com sucesso';
-          sucesso(mensagem);
-        }
-      }
-    }
-    if (!questionarioDinamicoEmEdicao && key !== '3') {
-      const salvou = await ServicoPlanoAEE.escolherAcaoDevolutivas(
-        planoAEEDados?.situacao
-      );
-      if (salvou) {
-        sucesso('Registro salvo com sucesso');
-        dispatch(setAtualizarDados(true));
-      }
-      limparDevolutiva();
-    }
-  };
 
   const cliqueTab = async key => {
     ServicoPlanoAEE.cliqueTabPlanoAEE(key, temId);
@@ -91,7 +44,7 @@ const TabCadastroPasso = props => {
               situacaoPlanoAEE.EncerradoAutomaticamento
           }
         >
-                <SecaoReestruturacaoPlano match={match} />
+          <SecaoReestruturacaoPlano match={match} />
         </TabPane>
       )}
       {temId && (

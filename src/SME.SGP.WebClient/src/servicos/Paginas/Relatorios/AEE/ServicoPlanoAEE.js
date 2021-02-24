@@ -4,7 +4,9 @@ import situacaoPlanoAEE from '~/dtos/situacaoPlanoAEE';
 import tipoQuestao from '~/dtos/tipoQuestao';
 import { store } from '~/redux';
 import {
+  limparDadosDevolutiva,
   setAtualizarDados,
+  setDevolutivaEmEdicao,
   setExibirLoaderPlanoAEE,
   setExibirModalErrosPlano,
 } from '~/redux/modulos/planoAEE/actions';
@@ -257,10 +259,12 @@ class ServicoPlanoAEE {
 
   cliqueTabPlanoAEE = async (key, temId) => {
     const { dispatch } = store;
-
     const state = store.getState();
     const { questionarioDinamico } = state;
-    const { questionarioDinamicoEmEdicao } = questionarioDinamico;
+    const {
+      planoAEEDados,
+      questionarioDinamicoEmEdicao,
+    } = questionarioDinamico;
 
     if (questionarioDinamicoEmEdicao && key !== '1') {
       const confirmou = await confirmar(
@@ -282,6 +286,18 @@ class ServicoPlanoAEE {
         }
       }
       QuestionarioDinamicoFuncoes.limparDadosOriginaisQuestionarioDinamico();
+    }
+    if (!questionarioDinamicoEmEdicao && key !== '3') {
+      const salvou = await this.escolherAcaoDevolutivas(
+        planoAEEDados?.situacao
+      );
+      if (salvou) {
+        sucesso('Registro salvo com sucesso');
+        dispatch(setAtualizarDados(true));
+      }
+
+      dispatch(limparDadosDevolutiva());
+      dispatch(setDevolutivaEmEdicao(false));
     }
   };
 
