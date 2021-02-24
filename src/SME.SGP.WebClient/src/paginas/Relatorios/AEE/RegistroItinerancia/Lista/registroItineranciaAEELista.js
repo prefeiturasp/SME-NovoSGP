@@ -4,7 +4,6 @@ import {
   Button,
   CampoData,
   Card,
-  CheckboxComponent,
   Colors,
   ListaPaginada,
   Loader,
@@ -424,7 +423,7 @@ const RegistroItineranciaAEELista = () => {
             </div>
           </div>
           <div className="row mb-4">
-            <div className="col-sm-12 col-md-6 col-lg-2 col-xl-2 pr-0">
+            <div className="col-sm-12 col-md-2 col-lg-2 col-xl-2 pr-0">
               <Loader loading={carregandoAnos} tip="">
                 <SelectComponent
                   id="ano-letivo"
@@ -439,7 +438,7 @@ const RegistroItineranciaAEELista = () => {
                 />
               </Loader>
             </div>
-            <div className="col-sm-12 col-md-12 col-lg-5 col-xl-5 pr-0">
+            <div className="col-sm-12 col-md-5 col-lg-5 col-xl-5 pr-0">
               <Loader loading={carregandoDres} tip="">
                 <SelectComponent
                   id="dre"
@@ -454,7 +453,7 @@ const RegistroItineranciaAEELista = () => {
                 />
               </Loader>
             </div>
-            <div className="col-sm-12 col-md-12 col-lg-5 col-xl-5">
+            <div className="col-sm-12 col-md-5 col-lg-5 col-xl-5">
               <Loader loading={carregandoUes} tip="">
                 <SelectComponent
                   id="ue"
