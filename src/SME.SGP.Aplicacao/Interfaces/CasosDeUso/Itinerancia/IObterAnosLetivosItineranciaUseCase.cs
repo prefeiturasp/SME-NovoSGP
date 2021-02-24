@@ -5,6 +5,6 @@ namespace SME.SGP.Aplicacao.Interfaces
 {
     public interface IObterAnosLetivosItineranciaUseCase
     {
-        Task<IEnumerable<long>> Executar();
+        Task<IEnumerable<int>> Executar();
     }
 }

@@ -6,7 +6,7 @@ using System;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterItineranciasQuery : IRequest<PaginacaoResultadoDto<ItineranciaRetornoDto>>
+    public class ObterItineranciasQuery : IRequest<PaginacaoResultadoDto<ItineranciaRetornoQueryDto>>
     {
         public ObterItineranciasQuery(long dreId, long ueId, long turmaId, int anoLetivo, string alunoCodigo, DateTime? dataInicio, DateTime? dataFim, SituacaoItinerancia situacao)
         {

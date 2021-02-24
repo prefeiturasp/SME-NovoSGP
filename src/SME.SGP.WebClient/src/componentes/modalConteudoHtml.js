@@ -12,36 +12,32 @@ import Grid from './grid';
 const Container = styled(Modal)`
   .ant-modal-footer {
     border-top: none;
+    padding: 0;
+    padding-right: ${({ paddingRight }) => paddingRight}px;
+    padding-bottom: ${({ paddingBottom }) => paddingBottom}px;
   }
-
   .padding-btn-confirmacao {
     padding: 22px;
   }
-
   .ant-modal-header {
     border-bottom: none;
     padding-top: 27px;
     padding-bottom: 0px;
   }
-
   .ant-modal-title {
     border-bottom: solid 1.5px rgba(0, 0, 0, 0.12);
     color: #42474a;
-    font-size: ${({ tamanhoFonteTitulo }) =>
-      tamanhoFonteTitulo ? `${tamanhoFonteTitulo}px !important` : '25px'};
+    font-size: 25px;
     padding-bottom: 7px;
   }
-
   .ant-modal-close-x {
     font-style: normal;
     line-height: 40px;
     color: #42474a;
   }
-
   p {
     margin-bottom: 0;
   }
-
   max-height: 75%;
 `;
 
@@ -80,7 +76,9 @@ const ModalConteudoHtml = props => {
     fecharAoClicarEsc,
     esconderBotaoPrincipal,
     esconderBotaoSecundario,
-    tamanhoFonteTitulo,
+    paddingBottom,
+    paddingRight,
+    colorBotaoSecundario,
   } = props;
   return (
     <Container
@@ -93,7 +91,8 @@ const ModalConteudoHtml = props => {
       centered
       confirmLoading={loader}
       width={width}
-      tamanhoFonteTitulo={tamanhoFonteTitulo}
+      paddingBottom={paddingBottom}
+      paddingRight={paddingRight}
       footer={
         tituloAtencao || perguntaAtencao ? (
           <>
@@ -113,7 +112,7 @@ const ModalConteudoHtml = props => {
                         id={shortid.generate()}
                         key="btn-sim-confirmacao"
                         label={labelBotaoSecundario}
-                        color={Colors.Roxo}
+                        color={colorBotaoSecundario}
                         bold
                         border
                         className="mr-2 padding-btn-confirmacao"
@@ -141,7 +140,7 @@ const ModalConteudoHtml = props => {
               id={shortid.generate()}
               key="btn-sim-confirmacao"
               label={labelBotaoSecundario}
-              color={Colors.Roxo}
+              color={colorBotaoSecundario}
               bold
               border
               className="mr-2 padding-btn-confirmacao"
@@ -169,13 +168,15 @@ const ModalConteudoHtml = props => {
 };
 
 ModalConteudoHtml.propTypes = {
-  width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  width: PropTypes.number,
   desabilitarBotaoPrincipal: PropTypes.bool,
   fecharAoClicarFora: PropTypes.bool,
   fecharAoClicarEsc: PropTypes.bool,
   esconderBotaoPrincipal: PropTypes.bool,
   esconderBotaoSecundario: PropTypes.bool,
-  tamanhoFonteTitulo: PropTypes.string,
+  paddingBottom: PropTypes.string,
+  paddingRight: PropTypes.string,
+  colorBotaoSecundario: PropTypes.string,
 };
 
 ModalConteudoHtml.defaultProps = {
@@ -185,7 +186,10 @@ ModalConteudoHtml.defaultProps = {
   fecharAoClicarEsc: true,
   esconderBotaoPrincipal: false,
   esconderBotaoSecundario: false,
-  tamanhoFonteTitulo: '',
+
+  paddingBottom: '15',
+  paddingRight: '20',
+  colorBotaoSecundario: 'Roxo',
 };
 
 export default ModalConteudoHtml;

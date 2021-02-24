@@ -1,9 +1,8 @@
 import { Checkbox } from 'antd';
+import { Field } from 'formik';
 import PropTypes from 'prop-types';
 import React from 'react';
 import styled from 'styled-components';
-import { Field } from 'formik';
-
 import { Base } from './colors';
 
 const Container = styled.div`
@@ -15,6 +14,16 @@ const Container = styled.div`
   .ant-checkbox:hover .ant-checkbox-inner,
   .ant-checkbox-input:focus + .ant-checkbox-inner {
     border-color: ${Base.Roxo};
+  }
+
+  .ant-checkbox-group-item {
+    padding-left: ${props => (props.invalido ? '2px' : '0px')};
+  }
+
+  .ant-checkbox-group {
+    border: ${props =>
+      props.invalido ? `1px solid  ${Base.Vermelho}` : 'none'};
+    border-radius: 0.15rem;
   }
 `;
 
@@ -33,6 +42,10 @@ const CheckboxGroup = props => {
     ) : (
       ''
     );
+  };
+
+  const possuiErro = () => {
+    return form && form.errors[name] && form.touched[name];
   };
 
   const campoComValidacoes = () => {
@@ -65,7 +78,7 @@ const CheckboxGroup = props => {
   };
 
   return (
-    <Container>
+    <Container invalido={possuiErro()}>
       {form ? campoComValidacoes() : campoSemValidacoes()}
       <br />
       {obterErros()}

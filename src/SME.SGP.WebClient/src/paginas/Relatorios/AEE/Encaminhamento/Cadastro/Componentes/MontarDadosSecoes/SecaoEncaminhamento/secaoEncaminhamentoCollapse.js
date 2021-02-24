@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import ObjectCardEstudante from '~/componentes-sgp/ObjectCardEstudante/objectCardEstudante';
 import CardCollapse from '~/componentes/cardCollapse';
 import situacaoAEE from '~/dtos/situacaoAEE';
+import ModalDevolverAEE from '../../ModalDevolverAEE/modalDevolverAEE';
 import ModalEncerramentoEncaminhamentoAEE from '../../ModalEncerramentoEncaminhamentoAEE/modalEncerramentoEncaminhamentoAEE';
 import ModalErrosEncaminhamento from '../../ModalErrosEncaminhamento/modalErrosEncaminhamento';
 import MotivoEncerramento from '../../MotivoEncerramento/MotivoEncerramento';
@@ -45,6 +46,7 @@ const SecaoEncaminhamentoCollapse = props => {
           <DadosSecaoEncaminhamento match={match} />
           <ModalErrosEncaminhamento />
           <ModalEncerramentoEncaminhamentoAEE match={match} />
+          <ModalDevolverAEE match={match} />
         </>
       ) : (
         ''

@@ -8,6 +8,8 @@ const inicial = {
   planoAEESituacaoEncaminhamentoAEE: {},
   planoAEEDadosSecoesPorEtapa: [],
   exibirModalErrosPlano: false,
+  reestruturacaoDados: [],
+  atualizarDados: false,
 };
 
 export default function PlanoAEE(state = inicial, action) {
@@ -64,6 +66,38 @@ export default function PlanoAEE(state = inicial, action) {
           exibirLoaderPlanoAEE: false,
           planoAEEDadosSecoesPorEtapa: [],
           exibirModalErrosPlano: false,
+        };
+      }
+      case '@planoAEE/setReestruturacaoDados': {
+        return {
+          ...draft,
+          reestruturacaoDados: action.payload,
+        };
+      }
+      case '@planoAEE/setAlteracaoDados': {
+        let dadosParaSalvar = draft.reestruturacaoDados.map(item => {
+          if (item.id === action.payload?.id) {
+            return {
+              ...item,
+              ...action.payload,
+              data: item.data,
+            };
+          }
+          return item;
+        });
+
+        if (action.payload.adicionando) {
+          dadosParaSalvar = [...draft.reestruturacaoDados, action.payload];
+        }
+        return {
+          ...draft,
+          reestruturacaoDados: dadosParaSalvar,
+        };
+      }
+      case '@planoAEE/setAtualizarDados': {
+        return {
+          ...draft,
+          atualizarDados: action.payload,
         };
       }
       default:

@@ -93,6 +93,10 @@ const ordenarListaMaiorParaMenor = (conteudoParaOrdenar, nomeCampo) => {
   return dadosOrdenados;
 };
 
+const clonarObjeto = objeto => {
+  return JSON.parse(JSON.stringify(objeto));
+};
+
 const removerArrayAninhados = arr =>
   arr.reduce(
     (acc, val) =>
@@ -115,4 +119,5 @@ export {
   maskTelefone,
   ordenarListaMaiorParaMenor,
   removerArrayAninhados,
+  clonarObjeto,
 };

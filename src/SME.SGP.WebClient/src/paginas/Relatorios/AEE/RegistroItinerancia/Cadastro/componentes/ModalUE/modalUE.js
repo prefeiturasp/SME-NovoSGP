@@ -97,6 +97,7 @@ const ModalUE = ({
             descricao: ueSelecionada.desc,
             codigoUe: ue,
             podeRemover: true,
+            ehInfantil: ueSelecionada.ehInfantil,
           },
         ];
       });
@@ -157,6 +158,7 @@ const ModalUE = ({
           desc: item.nome,
           valor: String(item.codigo),
           id: item.id,
+          ehInfantil: item.ehInfantil,
         }));
 
         if (lista?.length === 1) {
@@ -171,6 +173,7 @@ const ModalUE = ({
               descricao: ueSelecionada.desc,
               codigoUe: ue,
               ueId: ueSelecionada.id,
+              ehInfantil: ueSelecionada.ehInfantil,
             },
           ]);
         }
@@ -260,26 +263,28 @@ const ModalUE = ({
           </TextoEstilizado>
         )}
       </div>
-      {uesSelecionadas?.sort(FiltroHelper.ordenarLista('descricao')).map(({ key, descricao }) => (
-        <div
-          className="col-md-12 d-flex justify-content-between mb-4 p-0"
-          key={`${key}`}
-        >
-          <span>{descricao}</span>
-          {listaUes?.length > 1 && (
-            <BotaoEstilizado
-              id="btn-excluir"
-              icon="trash-alt"
-              iconType="far"
-              color={Colors.CinzaBotao}
-              onClick={() => removerUES(key)}
-              height="13px"
-              width="13px"
-              disabled={desabilitarBotaoExcluir}
-            />
-          )}
-        </div>
-      ))}
+      {uesSelecionadas
+        ?.sort(FiltroHelper.ordenarLista('descricao'))
+        .map(({ key, descricao }) => (
+          <div
+            className="col-md-12 d-flex justify-content-between mb-4 p-0"
+            key={`${key}`}
+          >
+            <span>{descricao}</span>
+            {listaUes?.length > 1 && (
+              <BotaoEstilizado
+                id="btn-excluir"
+                icon="trash-alt"
+                iconType="far"
+                color={Colors.CinzaBotao}
+                onClick={() => removerUES(key)}
+                height="13px"
+                width="13px"
+                disabled={desabilitarBotaoExcluir}
+              />
+            )}
+          </div>
+        ))}
     </ModalConteudoHtml>
   );
 };

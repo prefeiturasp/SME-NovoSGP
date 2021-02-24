@@ -2,22 +2,19 @@ import { Tooltip } from 'antd';
 import * as moment from 'moment';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { DataTable } from '~/componentes';
 import Button from '~/componentes/button';
 import { Base, Colors } from '~/componentes/colors';
 import Label from '~/componentes/label';
-import { setQuestionarioDinamicoEmEdicao } from '~/redux/modulos/questionarioDinamico/actions';
 import { confirmar } from '~/servicos';
 import ModalCadastroAtendimentoClinico from './modalCadastroAtendimentoClinico';
 
 const AtendimentoClinicoTabela = props => {
-  const { label, questaoAtual, form, desabilitado } = props;
-
-  const dispatch = useDispatch();
+  const { label, questaoAtual, form, desabilitado, onChange } = props;
 
   const [exibirModal, setExibirModal] = useState(false);
+  const [dadosIniciais, setDadosIniciais] = useState();
 
   const onClickNovoDetalhamento = () => {
     setExibirModal(true);
@@ -25,18 +22,31 @@ const AtendimentoClinicoTabela = props => {
 
   const onCloseModal = novosDados => {
     setExibirModal(false);
+    setDadosIniciais();
 
     if (novosDados) {
       const dadosAtuais = form?.values?.[questaoAtual.id]?.length
         ? form?.values?.[questaoAtual.id]
         : [];
-      novosDados.id = dadosAtuais.length + 1;
-      dadosAtuais.push(novosDados);
+      if (novosDados?.id) {
+        const indexItemAnterior = dadosAtuais.findIndex(
+          x => x.id === novosDados.id
+        );
+        dadosAtuais[indexItemAnterior] = novosDados;
+      } else {
+        novosDados.id = dadosAtuais.length + 1;
+        dadosAtuais.push(novosDados);
+      }
       if (form) {
         form.setFieldValue(questaoAtual.id, dadosAtuais);
-        dispatch(setQuestionarioDinamicoEmEdicao(true));
+        onChange();
       }
     }
+  };
+
+  const onClickRow = row => {
+    setDadosIniciais(row);
+    setExibirModal(true);
   };
 
   const formatarCampoTabela = data => {
@@ -85,7 +95,8 @@ const AtendimentoClinicoTabela = props => {
                 border
                 className="btn-excluir-atendimento-clinico"
                 disabled={desabilitado}
-                onClick={async () => {
+                onClick={async e => {
+                  e.stopPropagation();
                   if (!desabilitado) {
                     const confirmado = await confirmar(
                       'Excluir',
@@ -105,6 +116,7 @@ const AtendimentoClinicoTabela = props => {
                       if (indice !== -1) {
                         dadosAtuais.splice(indice, 1);
                         form.setFieldValue(questaoAtual.id, dadosAtuais);
+                        onChange();
                       }
                     }
                   }
@@ -146,6 +158,7 @@ const AtendimentoClinicoTabela = props => {
       <ModalCadastroAtendimentoClinico
         onClose={onCloseModal}
         exibirModal={exibirModal}
+        dadosIniciais={dadosIniciais}
       />
       <Label text={label} />
       <div className={possuiErro() ? 'tabela-invalida' : ''}>
@@ -158,6 +171,7 @@ const AtendimentoClinicoTabela = props => {
               : []
           }
           pagination={false}
+          onClickRow={onClickRow}
         />
       </div>
       {form ? obterErros() : ''}
@@ -180,6 +194,7 @@ AtendimentoClinicoTabela.propTypes = {
   form: PropTypes.oneOfType([PropTypes.any]),
   label: PropTypes.string,
   desabilitado: PropTypes.bool,
+  onChange: PropTypes.func,
 };
 
 AtendimentoClinicoTabela.defaultProps = {
@@ -187,6 +202,7 @@ AtendimentoClinicoTabela.defaultProps = {
   questaoAtual: null,
   form: null,
   desabilitado: false,
+  onChange: () => {},
 };
 
 export default AtendimentoClinicoTabela;

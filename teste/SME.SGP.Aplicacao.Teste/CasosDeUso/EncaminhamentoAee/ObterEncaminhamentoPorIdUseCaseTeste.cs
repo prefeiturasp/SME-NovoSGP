@@ -2,6 +2,7 @@
 using Moq;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System.Collections.Generic;
 using System.Threading;
@@ -163,10 +164,10 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
                });
 
             mediator.Setup(a => a.Send(It.IsAny<ObterUsuarioLogadoQuery>(), It.IsAny<CancellationToken>()))
-              .ReturnsAsync(new Usuario() { PerfilAtual = Perfis.PERFIL_PROFESSOR });
+              .ReturnsAsync(new Usuario() { PerfilAtual = Perfis.PERFIL_PROFESSOR, CodigoRf = "123123" });
 
-            mediator.Setup(a => a.Send(It.IsAny<ObterTurmasDoProfessorQuery>(), It.IsAny<CancellationToken>()))
-              .ReturnsAsync(new List<ProfessorTurmaReposta>() { new ProfessorTurmaReposta() { CodTurma = 123123 } });
+            mediator.Setup(a => a.Send(It.IsAny<ObterProfessoresTitularesDaTurmaCompletosQuery>(), It.IsAny<CancellationToken>()))
+              .ReturnsAsync(new List<ProfessorTitularDisciplinaEol>() { new ProfessorTitularDisciplinaEol() { ProfessorRf = "123123" } });
 
             var encaminhamentoId = 6;
 

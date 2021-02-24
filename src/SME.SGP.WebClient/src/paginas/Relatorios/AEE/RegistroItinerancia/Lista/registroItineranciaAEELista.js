@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-
 import {
   Button,
   CampoData,
@@ -9,11 +8,10 @@ import {
   Colors,
   ListaPaginada,
   Loader,
-  LocalizadorEstudante,
+  LocalizadorEstudantesAtivos,
   SelectComponent,
 } from '~/componentes';
 import { Cabecalho, FiltroHelper } from '~/componentes-sgp';
-
 import { URL_HOME } from '~/constantes';
 import { RotasDto } from '~/dtos';
 import {
@@ -35,7 +33,6 @@ const RegistroItineranciaAEELista = () => {
   const [carregandoSituacao, setCarregandoSituacao] = useState(false);
   const [carregandoTurmas, setCarregandoTurmas] = useState(false);
   const [carregandoUes, setCarregandoUes] = useState(false);
-  const [consideraHistorico, setConsideraHistorico] = useState(false);
   const [dataFinal, setDataFinal] = useState();
   const [dataInicial, setDataInicial] = useState();
   const [dreId, setDreId] = useState();
@@ -135,11 +132,6 @@ const RegistroItineranciaAEELista = () => {
     dataFinal();
   };
 
-  const onCheckedConsideraHistorico = e => {
-    limparFiltrosSelecionados();
-    setConsideraHistorico(e.target.checked);
-  };
-
   const onChangeAnoLetivo = ano => {
     setAnoLetivo(ano);
 
@@ -167,35 +159,38 @@ const RegistroItineranciaAEELista = () => {
   const obterAnosLetivos = useCallback(async () => {
     setCarregandoAnos(true);
 
-    const anosLetivos = await FiltroHelper.obterAnosLetivos({
-      consideraHistorico,
-    })
+    const anosLetivos = await ServicoRegistroItineranciaAEE.obterAnosLetivos()
       .catch(e => erros(e))
       .finally(() => setCarregandoAnos(false));
 
-    if (!anosLetivos.length) {
-      anosLetivos.push({
+    const anos =
+      anosLetivos?.data.map(ano => {
+        return { desc: ano, valor: ano };
+      }) || [];
+
+    if (anos.length) {
+      setListaAnosLetivo(anos);
+    } else {
+      anos.push({
         desc: anoAtual,
         valor: anoAtual,
       });
     }
 
-    validarValorPadraoAnoLetivo(anosLetivos);
-
-    setListaAnosLetivo(anosLetivos);
-  }, [anoAtual, consideraHistorico, validarValorPadraoAnoLetivo]);
+    validarValorPadraoAnoLetivo(anos);
+  }, [anoAtual, validarValorPadraoAnoLetivo]);
 
   useEffect(() => {
     if (!listaAnosLetivo?.length) {
       obterAnosLetivos();
     }
-  }, [obterAnosLetivos, consideraHistorico, listaAnosLetivo]);
+  }, [obterAnosLetivos, listaAnosLetivo]);
 
   const obterDres = useCallback(async () => {
     if (anoLetivo) {
       setCarregandoDres(true);
       const resposta = await AbrangenciaServico.buscarDres(
-        `v1/abrangencias/${consideraHistorico}/dres?anoLetivo=${anoLetivo}`
+        `v1/abrangencias/${anoLetivo !== anoAtual}/dres?anoLetivo=${anoLetivo}`
       )
         .catch(e => erros(e))
         .finally(() => setCarregandoDres(false));
@@ -219,7 +214,7 @@ const RegistroItineranciaAEELista = () => {
       setDreId(undefined);
       setListaDres([]);
     }
-  }, [anoLetivo, consideraHistorico]);
+  }, [anoLetivo, anoAtual]);
 
   useEffect(() => {
     if (anoLetivo) {
@@ -254,7 +249,8 @@ const RegistroItineranciaAEELista = () => {
       setCarregandoUes(true);
       const resposta = await AbrangenciaServico.buscarUes(
         dreId,
-        `v1/abrangencias/${consideraHistorico}/dres/${dreId}/ues?anoLetivo=${anoLetivo}`,
+        `v1/abrangencias/${anoLetivo !==
+          anoAtual}/dres/${dreId}/ues?anoLetivo=${anoLetivo}`,
         true
       )
         .catch(e => erros(e))
@@ -276,7 +272,7 @@ const RegistroItineranciaAEELista = () => {
       }
       setListaUes([]);
     }
-  }, [dreId, anoLetivo, consideraHistorico]);
+  }, [dreId, anoLetivo, anoAtual]);
 
   useEffect(() => {
     if (anoLetivo && dreId)
@@ -318,7 +314,7 @@ const RegistroItineranciaAEELista = () => {
         0,
         '',
         anoLetivo,
-        consideraHistorico
+        anoLetivo !== anoAtual
       )
         .catch(e => erros(e))
         .finally(() => setCarregandoTurmas(false));
@@ -331,7 +327,7 @@ const RegistroItineranciaAEELista = () => {
         }
       }
     }
-  }, [anoLetivo, ueId, consideraHistorico]);
+  }, [anoLetivo, ueId, anoAtual]);
 
   useEffect(() => {
     if (ueId) {
@@ -386,6 +382,23 @@ const RegistroItineranciaAEELista = () => {
     );
   };
 
+  const desabilitarData = current => {
+    if (current && anoLetivo) {
+      const ano = window.moment(`${anoLetivo}-01-01`);
+      return current < ano.startOf('year') || current > ano.endOf('year');
+    }
+    return false;
+  };
+
+  const desabilitarDataFinal = current => {
+    const ano = window.moment(`${anoLetivo}-01-01`);
+    const dataInicialFiltro = dataInicial || ano.startOf('year');
+    if (current && anoLetivo) {
+      return current < dataInicialFiltro || current > ano.endOf('year');
+    }
+    return false;
+  };
+
   return (
     <>
       <Cabecalho pagina="Registro de itinerância" />
@@ -407,16 +420,6 @@ const RegistroItineranciaAEELista = () => {
                 bold
                 onClick={onClickNovo}
                 disabled={!permissoesTela.podeIncluir}
-              />
-            </div>
-          </div>
-          <div className="row mb-4">
-            <div className="col-sm-12">
-              <CheckboxComponent
-                id="exibir-historico"
-                label="Exibir histórico?"
-                onChangeCheckbox={onCheckedConsideraHistorico}
-                checked={consideraHistorico}
               />
             </div>
           </div>
@@ -484,17 +487,20 @@ const RegistroItineranciaAEELista = () => {
               </Loader>
             </div>
             <div className="col-sm-12 col-md-6 p-0">
-              <LocalizadorEstudante
+              <LocalizadorEstudantesAtivos
                 id="estudante"
                 showLabel
+                exibirCodigoEOL={false}
                 ueId={ueId}
                 onChange={onChangeLocalizadorEstudante}
-                anoLetivo={anoLetivo}
-                desabilitado={!dreId || !ueId}
-                exibirCodigoEOL={false}
+                desabilitado={!anoLetivo || !dreId || !ueId}
                 codigoTurma={turmaId}
                 placeholder="Procure pelo nome da Criança/Estudante"
                 labelAlunoNome="Crianças/Estudantes"
+                dataReferencia={
+                  anoLetivo ? window.moment(`${anoLetivo}-01-01`) : ''
+                }
+                semMargin
               />
             </div>
           </div>
@@ -522,6 +528,7 @@ const RegistroItineranciaAEELista = () => {
                 onChange={mudarDataInicial}
                 placeholder="Data inícial"
                 label="Data da visita"
+                desabilitarData={desabilitarData}
               />
             </div>
             <div className="col-sm-3 col-md-3 pt-4">
@@ -531,6 +538,7 @@ const RegistroItineranciaAEELista = () => {
                 valor={dataFinal}
                 onChange={mudarDataFinal}
                 placeholder="Data final"
+                desabilitarData={desabilitarDataFinal}
               />
             </div>
           </div>

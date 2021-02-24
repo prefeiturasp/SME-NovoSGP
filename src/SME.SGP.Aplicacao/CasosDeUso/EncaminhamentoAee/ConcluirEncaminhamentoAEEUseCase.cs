@@ -19,11 +19,12 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(long encaminhamentoId)
         {
             var encaminhamento = await mediator.Send(new ObterEncaminhamentoAEEPorIdQuery(encaminhamentoId));
-            
+
             encaminhamento.Situacao = VerificaEstudanteNecessitaAEE(encaminhamento) ? SituacaoAEE.Deferido : SituacaoAEE.Indeferido;
 
             await mediator.Send(new SalvarEncaminhamentoAEECommand(encaminhamento));
-
+            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            await mediator.Send(new ExecutaNotificacaoConclusaoEncaminhamentoAEECommand(encaminhamento.Id, usuarioLogado.CodigoRf, usuarioLogado.Nome));
             return true;
         }
 

@@ -81,5 +81,30 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(codigoEstudante));
         }
+
+        [HttpGet("{planoAEEId}/reestruturacoes")]
+        [ProducesResponseType(typeof(IEnumerable<PlanoAEEReestruturacaoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ObterReestruturacoesPlanoAEE(long planoAEEId, [FromServices] IObterRestruturacoesPlanoAEEPorIdUseCase useCase)
+        {
+            return Ok(await useCase.Executar(planoAEEId));
+        }
+
+        [HttpGet("{planoAEEId}/versoes/reestruturacao/{reestruturacaoId}")]
+        [ProducesResponseType(typeof(IEnumerable<PlanoAEEDescricaoVersaoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ObterVersoes(long planoAEEId, long reestruturacaoId, [FromServices] IObterVersoesPlanoAEEUseCase useCase)
+        {
+            return Ok(await useCase.Executar(new FiltroVersoesPlanoAEEDto(planoAEEId, reestruturacaoId)));
+        }
+
+        [HttpPost("{planoAEEId}/reestruturacoes")]
+        [ProducesResponseType(typeof(long), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public async Task<IActionResult> SalvarReestruturacao([FromBody] PlanoAEEReestrutucacaoPersistenciaDto planoAeeReestruturacaoDto, [FromServices] ISalvarReestruturacaoPlanoAEEUseCase useCase)
+        {
+            return Ok(await useCase.Executar(planoAeeReestruturacaoDto));
+        }
     }
 }

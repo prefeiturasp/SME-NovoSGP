@@ -161,6 +161,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new PlanoAEEVersaoMap());
                config.AddMap(new PlanoAEEQuestaoMap());
                config.AddMap(new PlanoAEERespostaMap());
+               config.AddMap(new PlanoAEEReestruturacaoMap());
                config.ForDommel();
            });
         }
