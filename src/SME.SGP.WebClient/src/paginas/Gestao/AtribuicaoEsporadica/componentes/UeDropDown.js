@@ -29,7 +29,7 @@ function UeDropDown({ form, onChange, dreId, label, desabilitado }) {
       setListaUes(lista);
       if (lista.length === 1) {
         form.setFieldValue('ueId', lista[0].valor);
-        onChange(lista[0].valor, lista[0].ehInfantil);
+        onChange(lista[0].valor, lista[0].ehInfantil, listaUes);
       }
     }
   }
@@ -39,6 +39,7 @@ function UeDropDown({ form, onChange, dreId, label, desabilitado }) {
       buscarUes();
     } else {
       setListaUes([]);
+      form.setFieldValue('ueId', undefined);
     }
   }, [dreId]);
 
@@ -49,7 +50,7 @@ function UeDropDown({ form, onChange, dreId, label, desabilitado }) {
       className="fonte-14"
       label={!label ? null : label}
       onChange={v => {
-        onChange(v, ehInfantil(v));
+        onChange(v, ehInfantil(v), listaUes);
       }}
       lista={listaUes}
       valueOption="valor"

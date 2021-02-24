@@ -5,6 +5,7 @@ import QuestionarioDinamico from '~/componentes-sgp/QuestionarioDinamico/questio
 import { setQuestionarioDinamicoEmEdicao } from '~/redux/modulos/questionarioDinamico/actions';
 import { erros } from '~/servicos';
 import ServicoEncaminhamentoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoEncaminhamentoAEE';
+import AuditoriaEncaminhamento from '../AuditoriaEncaminhamento/auditoriaEncaminhamento';
 
 const MontarDadosPorSecao = props => {
   const dispatch = useDispatch();
@@ -64,16 +65,24 @@ const MontarDadosPorSecao = props => {
   };
 
   return dados?.questionarioId && dadosQuestionarioAtual?.length ? (
-    <QuestionarioDinamico
-      codigoAluno={dadosCollapseLocalizarEstudante?.codigoAluno}
-      codigoTurma={dadosCollapseLocalizarEstudante?.codigoTurma}
-      anoLetivo={dadosCollapseLocalizarEstudante?.anoLetivo}
-      dados={dados}
-      dadosQuestionarioAtual={dadosQuestionarioAtual}
-      desabilitarCampos={validaSeDesabilitarCampo()}
-      funcaoRemoverArquivoCampoUpload={ServicoEncaminhamentoAEE.removerArquivo}
-      urlUpload="v1/encaminhamento-aee/upload"
-    />
+    <>
+      <QuestionarioDinamico
+        codigoAluno={dadosCollapseLocalizarEstudante?.codigoAluno}
+        codigoTurma={dadosCollapseLocalizarEstudante?.codigoTurma}
+        anoLetivo={dadosCollapseLocalizarEstudante?.anoLetivo}
+        dados={dados}
+        dadosQuestionarioAtual={dadosQuestionarioAtual}
+        desabilitarCampos={validaSeDesabilitarCampo()}
+        funcaoRemoverArquivoCampoUpload={
+          ServicoEncaminhamentoAEE.removerArquivo
+        }
+        urlUpload="v1/encaminhamento-aee/upload"
+        onChangeQuestionario={() => {
+          ServicoEncaminhamentoAEE.guardarSecaoEmEdicao(dados?.id);
+        }}
+      />
+      <AuditoriaEncaminhamento dadosAuditoria={dados?.auditoria} />
+    </>
   ) : (
     ''
   );

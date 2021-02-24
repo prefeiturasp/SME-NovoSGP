@@ -2,6 +2,7 @@
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -47,13 +48,22 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             encaminhamentoAEEDto.Situacao));
 
             await SalvarEncaminhamento(encaminhamentoAEEDto, resultadoEncaminhamento);
+
+            await mediator.Send(new GerarPendenciaCPEncaminhamentoAEECommand(resultadoEncaminhamento.Id, encaminhamentoAEEDto.Situacao));
+
             return resultadoEncaminhamento;
         }
+              
 
         public async Task AlterarEncaminhamento(EncaminhamentoAeeDto encaminhamentoAEEDto, EncaminhamentoAEE encaminhamentoAEE)
         {
             encaminhamentoAEE.Situacao = encaminhamentoAEEDto.Situacao;
             await mediator.Send(new SalvarEncaminhamentoAEECommand(encaminhamentoAEE));
+
+            if(encaminhamentoAEEDto.Situacao != SituacaoAEE.Encaminhado)
+            {
+                await mediator.Send(new ExcluirPendenciasEncaminhamentoAEECPCommand(encaminhamentoAEE.Id, encaminhamentoAEE.TurmaId));
+            } 
 
             foreach (var secao in encaminhamentoAEEDto.Secoes)
             {
@@ -65,13 +75,13 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                 long resultadoEncaminhamentoSecao = 0;
                 if (secaoExistente == null)
                     secaoExistente = await mediator.Send(new RegistrarEncaminhamentoAEESecaoCommand(encaminhamentoAEE.Id, secao.SecaoId, secao.Concluido));
-
-                resultadoEncaminhamentoSecao = secaoExistente.Id;
-                if (secaoExistente.Concluido != secao.Concluido)
+                else
                 {
                     secaoExistente.Concluido = secao.Concluido;
                     await mediator.Send(new AlterarEncaminhamentoAEESecaoCommand(secaoExistente));
                 }
+
+                resultadoEncaminhamentoSecao = secaoExistente.Id;
 
                 foreach (var questoes in secao.Questoes.GroupBy(q => q.QuestaoId))
                 {

@@ -7,7 +7,10 @@
 
         public static string FilaSgp => "sme.sgp.clients";
         public static string WorkerRelatoriosSgp => "sme.sr.workers.sgp";
-        
+
+        public static string FilaGoogleSync => "googleclass.sync.geral";
+        public static string ExchangeGoogleSync => "googleclass.exchange";
+
         public static string RotaRelatoriosSolicitados => "relatorios.solicitados";
         public static string RotaRelatoriosProntos => "relatorios.prontos";
 
@@ -63,6 +66,13 @@
 
         public static string RotaPendenciaAusenciaRegistroIndividual => "pendencias.professor.ausencia.registro.individual";
         public static string RotaAtualizarPendenciaAusenciaRegistroIndividual => "pendencias.professor.ausencia.registro.individual.atualizar";
+
+        public static string RotaNotificacaoRegistroConclusaoEncaminhamentoAEE => "notificacao.registro.conclusao.encaminhamentoaee";
+        public static string RotaNotificacaoEncerramentoEncaminhamentoAEE => "notificacao.encerramento.encaminhamentoaee";
+        public static string RotaNotificacaoDevolucaoEncaminhamentoAEE => "notificacao.devolucao.encaminhamentoaee";
+
+        
+
 
         public static string EncerrarPlanoAEEEstudantesInativos => "plano.aee.encerrar.inativos";
     }

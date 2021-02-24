@@ -1,9 +1,11 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { useDispatch, useSelector } from 'react-redux';
 import { Tabs } from 'antd';
+import PropTypes from 'prop-types';
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { ContainerTabsCard } from '~/componentes/tabs/tabs.css';
+import ServicoPlanoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoPlanoAEE';
 import SecaoPlanoCollapse from '../SecaoPlanoCollapse/secaoPlanoCollapse';
+import SecaoReestruturacaoPlano from '../SecaoReestruturacaoPlano/secaoReestruturacaoPlano';
 import { confirmar, sucesso } from '~/servicos';
 import ServicoPlanoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoPlanoAEE';
 import { setQuestionarioDinamicoEmEdicao } from '~/redux/modulos/questionarioDinamico/actions';
@@ -65,6 +67,10 @@ const TabCadastroPasso = props => {
     }
   };
 
+  const cliqueTab = async key => {
+    ServicoPlanoAEE.cliqueTabPlanoAEE(key, temId);
+  };
+
   return dadosCollapseLocalizarEstudante?.codigoAluno ? (
     <ContainerTabsCard type="card" width="20%" onTabClick={cliqueTab}>
       <TabPane tab="Cadastro do Plano" key="1">
@@ -85,7 +91,7 @@ const TabCadastroPasso = props => {
               situacaoPlanoAEE.EncerradoAutomaticamento
           }
         >
-          <></>
+                <SecaoReestruturacaoPlano match={match} />
         </TabPane>
       )}
       {temId && (

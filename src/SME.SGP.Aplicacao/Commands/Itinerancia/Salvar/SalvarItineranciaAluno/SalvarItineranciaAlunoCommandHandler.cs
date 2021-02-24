@@ -23,9 +23,7 @@ namespace SME.SGP.Aplicacao
         public async Task<AuditoriaDto> Handle(SalvarItineranciaAlunoCommand request, CancellationToken cancellationToken)
         {
             var itineranciaAluno = MapearParaEntidade(request);
-
-            try
-            {
+            
                 var itineranciaAlunoId = await repositorioItineranciaAluno.SalvarAsync(itineranciaAluno);
 
                 if (itineranciaAlunoId < 0)
@@ -39,13 +37,6 @@ namespace SME.SGP.Aplicacao
                         await mediator.Send(new SalvarItineranciaAlunoQuestaoCommand(questao.QuestaoId, itineranciaAlunoId, questao.Resposta));
                     }
                 return (AuditoriaDto)itineranciaAluno;
-            }
-            catch (Exception ex)
-            {
-
-                throw ex;
-            }
-
             
         }
 

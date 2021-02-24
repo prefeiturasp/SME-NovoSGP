@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterAnosLetivosItineranciaQuery : IRequest<IEnumerable<long>>
+    public class ObterAnosLetivosItineranciaQuery : IRequest<IEnumerable<int>>
     {
     }
 }

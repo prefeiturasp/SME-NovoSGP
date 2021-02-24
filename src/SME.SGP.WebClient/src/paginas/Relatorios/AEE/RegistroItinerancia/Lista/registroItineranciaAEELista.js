@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-
 import {
   Button,
   CampoData,
@@ -9,11 +8,10 @@ import {
   Colors,
   ListaPaginada,
   Loader,
-  LocalizadorEstudante,
+  LocalizadorEstudantesAtivos,
   SelectComponent,
 } from '~/componentes';
 import { Cabecalho, FiltroHelper } from '~/componentes-sgp';
-
 import { URL_HOME } from '~/constantes';
 import { RotasDto } from '~/dtos';
 import {
@@ -131,13 +129,13 @@ const RegistroItineranciaAEELista = () => {
     setTurmaId();
     setAlunoLocalizadorSelecionado();
     setSituacao();
-    dataInicial();
-    dataFinal();
+    setDataInicial();
+    setDataFinal();
   };
 
-  const onCheckedConsideraHistorico = e => {
+  const onCheckedConsideraHistorico = () => {
     limparFiltrosSelecionados();
-    setConsideraHistorico(e.target.checked);
+    setConsideraHistorico(!consideraHistorico);
   };
 
   const onChangeAnoLetivo = ano => {
@@ -164,32 +162,32 @@ const RegistroItineranciaAEELista = () => {
     [anoAtual]
   );
 
-  const obterAnosLetivos = useCallback(async () => {
-    setCarregandoAnos(true);
-
-    const anosLetivos = await FiltroHelper.obterAnosLetivos({
-      consideraHistorico,
-    })
-      .catch(e => erros(e))
-      .finally(() => setCarregandoAnos(false));
-
-    if (!anosLetivos.length) {
-      anosLetivos.push({
-        desc: anoAtual,
-        valor: anoAtual,
-      });
-    }
-
-    validarValorPadraoAnoLetivo(anosLetivos);
-
-    setListaAnosLetivo(anosLetivos);
-  }, [anoAtual, consideraHistorico, validarValorPadraoAnoLetivo]);
-
   useEffect(() => {
-    if (!listaAnosLetivo?.length) {
-      obterAnosLetivos();
+    async function obterAnosLetivos() {
+      setCarregandoAnos(true);
+      let anos = [
+        {
+          desc: anoAtual,
+          valor: anoAtual,
+        },
+      ];
+      if (consideraHistorico) {
+        const anosLetivos = await ServicoRegistroItineranciaAEE.obterAnosLetivos()
+          .catch(e => erros(e))
+          .finally(() => setCarregandoAnos(false));
+
+        anos =
+          anosLetivos?.data.map(ano => {
+            return { desc: ano, valor: ano };
+          }) || [];
+      } else {
+        setCarregandoAnos(false);
+      }
+      setListaAnosLetivo(anos);
+      validarValorPadraoAnoLetivo(anos);
     }
-  }, [obterAnosLetivos, consideraHistorico, listaAnosLetivo]);
+    obterAnosLetivos();
+  }, [anoAtual, consideraHistorico, validarValorPadraoAnoLetivo]);
 
   const obterDres = useCallback(async () => {
     if (anoLetivo) {
@@ -386,6 +384,23 @@ const RegistroItineranciaAEELista = () => {
     );
   };
 
+  const desabilitarData = current => {
+    if (current && anoLetivo) {
+      const ano = window.moment(`${anoLetivo}-01-01`);
+      return current < ano.startOf('year') || current > ano.endOf('year');
+    }
+    return false;
+  };
+
+  const desabilitarDataFinal = current => {
+    const ano = window.moment(`${anoLetivo}-01-01`);
+    const dataInicialFiltro = dataInicial || ano.startOf('year');
+    if (current && anoLetivo) {
+      return current < dataInicialFiltro || current > ano.endOf('year');
+    }
+    return false;
+  };
+
   return (
     <>
       <Cabecalho pagina="Registro de itinerância" />
@@ -484,17 +499,20 @@ const RegistroItineranciaAEELista = () => {
               </Loader>
             </div>
             <div className="col-sm-12 col-md-6 p-0">
-              <LocalizadorEstudante
+              <LocalizadorEstudantesAtivos
                 id="estudante"
                 showLabel
+                exibirCodigoEOL={false}
                 ueId={ueId}
                 onChange={onChangeLocalizadorEstudante}
-                anoLetivo={anoLetivo}
-                desabilitado={!dreId || !ueId}
-                exibirCodigoEOL={false}
+                desabilitado={!anoLetivo || !dreId || !ueId}
                 codigoTurma={turmaId}
                 placeholder="Procure pelo nome da Criança/Estudante"
                 labelAlunoNome="Crianças/Estudantes"
+                dataReferencia={
+                  anoLetivo ? window.moment(`${anoLetivo}-01-01`) : ''
+                }
+                semMargin
               />
             </div>
           </div>
@@ -522,6 +540,7 @@ const RegistroItineranciaAEELista = () => {
                 onChange={mudarDataInicial}
                 placeholder="Data inícial"
                 label="Data da visita"
+                desabilitarData={desabilitarData}
               />
             </div>
             <div className="col-sm-3 col-md-3 pt-4">
@@ -531,6 +550,7 @@ const RegistroItineranciaAEELista = () => {
                 valor={dataFinal}
                 onChange={mudarDataFinal}
                 placeholder="Data final"
+                desabilitarData={desabilitarDataFinal}
               />
             </div>
           </div>

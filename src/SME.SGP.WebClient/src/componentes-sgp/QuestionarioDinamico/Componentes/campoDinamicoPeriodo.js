@@ -1,14 +1,10 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { useDispatch } from 'react-redux';
-import { setQuestionarioDinamicoEmEdicao } from '~/redux/modulos/questionarioDinamico/actions';
 import { CampoData } from '~/componentes/campoData/campoData';
 import { Base } from '~/componentes/colors';
 
 const CampoDinamicoPeriodo = props => {
-  const dispatch = useDispatch();
-
-  const { questaoAtual, form, label, desabilitado } = props;
+  const { questaoAtual, form, label, desabilitado, onChange } = props;
 
   const obterErroQuestaoAtual = () => {
     return form &&
@@ -62,12 +58,12 @@ const CampoDinamicoPeriodo = props => {
             formatoData="DD/MM/YYYY"
             desabilitado={desabilitado}
             onChange={valorData => {
-              dispatch(setQuestionarioDinamicoEmEdicao(true));
               form.setFieldTouched(questaoAtual?.id, true);
               form.setFieldValue(
                 `${questaoAtual?.id}.periodoInicio`,
                 valorData || ''
               );
+              onChange();
             }}
             executarOnChangeExterno
             className={obterErroPorCampo('periodoInicio') ? 'is-invalid' : ''}
@@ -84,12 +80,12 @@ const CampoDinamicoPeriodo = props => {
             formatoData="DD/MM/YYYY"
             desabilitado={desabilitado}
             onChange={valorData => {
-              dispatch(setQuestionarioDinamicoEmEdicao(true));
               form.setFieldTouched(questaoAtual?.id, true);
               form.setFieldValue(
                 `${questaoAtual?.id}.periodoFim`,
                 valorData || ''
               );
+              onChange();
             }}
             executarOnChangeExterno
             className={obterErroPorCampo('periodoFim') ? 'is-invalid' : ''}
@@ -106,6 +102,7 @@ CampoDinamicoPeriodo.propTypes = {
   form: PropTypes.oneOfType([PropTypes.any]),
   label: PropTypes.oneOfType([PropTypes.any]),
   desabilitado: PropTypes.bool,
+  onChange: PropTypes.func,
 };
 
 CampoDinamicoPeriodo.defaultProps = {
@@ -113,6 +110,7 @@ CampoDinamicoPeriodo.defaultProps = {
   form: null,
   label: '',
   desabilitado: false,
+  onChange: () => {},
 };
 
 export default CampoDinamicoPeriodo;

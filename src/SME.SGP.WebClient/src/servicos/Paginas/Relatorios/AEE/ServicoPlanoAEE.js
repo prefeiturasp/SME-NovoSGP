@@ -8,7 +8,8 @@ import {
   setExibirLoaderPlanoAEE,
   setExibirModalErrosPlano,
 } from '~/redux/modulos/planoAEE/actions';
-import { confirmar, erros } from '~/servicos/alertas';
+import { setQuestionarioDinamicoEmEdicao } from '~/redux/modulos/questionarioDinamico/actions';
+import { confirmar, erros, sucesso } from '~/servicos/alertas';
 import api from '~/servicos/api';
 
 const urlPadrao = 'v1/plano-aee';
@@ -235,6 +236,53 @@ class ServicoPlanoAEE {
       }
     }
     return false;
+  };
+
+  obterVersoes = (planoAEEId, reestruturacaoId) => {
+    return api.get(
+      `${urlPadrao}/${planoAEEId}/versoes/reestruturacao/${reestruturacaoId}`
+    );
+  };
+
+  obterReestruturacoes = planoAEEId => {
+    return api.get(`${urlPadrao}/${planoAEEId}/reestruturacoes`);
+  };
+
+  salvarReestruturacoes = params => {
+    return api.post(
+      `${urlPadrao}/${params.planoAEEId}/reestruturacoes`,
+      params
+    );
+  };
+
+  cliqueTabPlanoAEE = async (key, temId) => {
+    const { dispatch } = store;
+
+    const state = store.getState();
+    const { questionarioDinamico } = state;
+    const { questionarioDinamicoEmEdicao } = questionarioDinamico;
+
+    if (questionarioDinamicoEmEdicao && key !== '1') {
+      const confirmou = await confirmar(
+        'Atenção',
+        '',
+        'Suas alterações não foram salvas, deseja salvar agora?'
+      );
+
+      if (confirmou) {
+        const salvou = await this.salvarPlano();
+        if (salvou) {
+          dispatch(setQuestionarioDinamicoEmEdicao(false));
+          dispatch(setAtualizarDados(true));
+          const mensagem = temId
+            ? 'Registro alterado com sucesso'
+            : 'Registro salvo com sucesso';
+          sucesso(mensagem);
+          return;
+        }
+      }
+      QuestionarioDinamicoFuncoes.limparDadosOriginaisQuestionarioDinamico();
+    }
   };
 
   obterDevolutiva = planoAeeId => {

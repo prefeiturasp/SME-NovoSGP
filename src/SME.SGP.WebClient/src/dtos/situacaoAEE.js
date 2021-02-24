@@ -18,6 +18,8 @@ const situacaoAEE = {
   Deferido: 7,
   /** Indeferido */
   Indeferido: 8,
+  /** Devolvido pela coordenação */
+  Devolvido: 9,
   /**  Aguardando devolutiva coordenação */
   DevolutivaCoordenacao: 10,
   /**  Aguardando devolutiva PAAI */

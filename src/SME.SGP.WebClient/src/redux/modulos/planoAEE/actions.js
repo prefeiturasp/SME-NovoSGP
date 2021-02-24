@@ -38,6 +38,21 @@ export const setExibirModalErrosPlano = payload => ({
   payload,
 });
 
+export const setReestruturacaoDados = payload => ({
+  type: '@planoAEE/setReestruturacaoDados',
+  payload,
+});
+
+export const setAlteracaoDados = payload => ({
+  type: '@planoAEE/setAlteracaoDados',
+  payload,
+});
+
+export const setAtualizarDados = payload => ({
+  type: '@planoAEE/setAtualizarDados',
+  payload,
+});
+
 export const setAtualizarPlanoAEEDados = payload => ({
   type: '@planoAEE/setAtualizarPlanoAEEDados',
   payload,
@@ -45,11 +60,6 @@ export const setAtualizarPlanoAEEDados = payload => ({
 
 export const setDadosDevolutiva = payload => ({
   type: '@planoAEE/setDadosDevolutiva',
-  payload,
-});
-
-export const setAtualizarDados = payload => ({
-  type: '@planoAEE/setAtualizarDados',
   payload,
 });
 

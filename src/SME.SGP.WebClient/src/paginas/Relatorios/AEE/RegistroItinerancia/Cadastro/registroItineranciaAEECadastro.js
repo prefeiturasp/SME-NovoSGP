@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import shortid from 'shortid';
 import {
+  Auditoria,
   Base,
   Button,
   CampoData,
@@ -37,6 +38,7 @@ import { NOME_CAMPO_QUESTAO } from './componentes/ConstantesCamposDinâmicos';
 
 const RegistroItineranciaAEECadastro = ({ match }) => {
   const [carregandoGeral, setCarregandoGeral] = useState(false);
+  const [carregandoQuestoes, setCarregandoQuestoes] = useState(false);
   const [dataVisita, setDataVisita] = useState('');
   const [dataRetornoVerificacao, setDataRetornoVerificacao] = useState('');
   const [modalVisivelUES, setModalVisivelUES] = useState(false);
@@ -55,13 +57,23 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
   const [questoesItinerancia, setQuestoesItinerancia] = useState([]);
   const [somenteConsulta, setSomenteConsulta] = useState(false);
   const [paginaAtual, setPaginaAtual] = useState(1);
+  const [auditoria, setAuditoria] = useState();
 
   const usuario = useSelector(store => store.usuario);
   const permissoesTela =
     usuario.permissoes[RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA];
 
-  const onClickVoltar = () => {
-    history.push(RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA);
+  const onClickVoltar = async () => {
+    if (modoEdicao) {
+      const confirmou = await confirmar(
+        'Atenção',
+        'Você não salvou as informações preenchidas.',
+        'Deseja realmente cancelar as alterações?'
+      );
+      if (confirmou) history.push(RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA);
+    } else {
+      history.push(RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA);
+    }
   };
 
   const onClickSalvar = () => {
@@ -114,7 +126,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
     if (
       dataVisita &&
       dataRetornoVerificacao &&
-      dataRetornoVerificacao < dataVisita
+      dataRetornoVerificacao <= dataVisita
     ) {
       camposComErro.push(
         'A data de retorno/verificação não pode ser menor que a data de visita'
@@ -132,11 +144,14 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
               `Registro ${itineranciaId ? 'alterado' : 'salvo'} com sucesso`
             );
             setModoEdicao(false);
+            setCarregandoGeral(false);
             history.push(RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA);
           }
         })
-        .catch(e => erros(e))
-        .finally(setCarregandoGeral(false));
+        .catch(e => {
+          erros(e);
+          setCarregandoGeral(false);
+        });
     }
   };
 
@@ -190,6 +205,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
     setUesSelecionados(estadoAntigo =>
       estadoAntigo.filter(item => item.key !== text.key)
     );
+    setModoEdicao(true);
   };
 
   useEffect(() => {
@@ -217,10 +233,12 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
   };
 
   const obterQuestoes = async () => {
+    setCarregandoQuestoes(true);
     const result = await ServicoRegistroItineranciaAEE.obterQuestoesItinerancia();
     if (result?.status === 200) {
       setQuestoesItinerancia(result?.data?.itineranciaQuestao);
       setQuestoesAluno(result?.data?.itineranciaAlunoQuestao);
+      setCarregandoQuestoes(false);
     }
   };
 
@@ -254,6 +272,9 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
       });
     }
     if (itinerancia.ues?.length) {
+      itinerancia.ues.forEach(ue => {
+        ue.key = ue.codigoUe;
+      });
       setUesSelecionados(itinerancia.ues);
     }
     if (itinerancia.questoes?.length) {
@@ -291,16 +312,16 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
       setCarregandoGeral(true);
       const result = await ServicoRegistroItineranciaAEE.obterItineranciaPorId(
         id
-      )
-        .catch(e => erros(e))
-        .finally(setCarregandoGeral(false));
+      ).catch(e => erros(e));
       if (result?.data && result?.status === 200) {
         const itinerancia = result.data;
         setItineranciaAlteracao(itinerancia);
         setSomenteConsulta(itinerancia.criadoRF !== usuario.rf);
         setSomenteConsultaManual(itinerancia.criadoRF !== usuario.rf);
         construirItineranciaAlteracao(itinerancia);
+        setAuditoria(itinerancia.auditoria);
       }
+      setCarregandoGeral(false);
     }
     if (itineranciaId) {
       obterItinerancia(itineranciaId);
@@ -344,16 +365,23 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
   };
 
   useEffect(() => {
-    setCarregandoGeral(true);
     obterObjetivos();
     setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
-    setCarregandoGeral(false);
   }, []);
 
-  const desabilitarData = dataCorrente => {
+  const desabilitarDataVisita = dataCorrente => {
     return (
       dataCorrente > window.moment() ||
       dataCorrente < window.moment().startOf('year')
+    );
+  };
+
+  const desabilitarDataRetorno = dataCorrente => {
+    return (
+      dataCorrente > window.moment().endOf('year') ||
+      (dataVisita
+        ? dataCorrente <= window.moment(dataVisita).add(1, 'd')
+        : dataCorrente < window.moment().startOf('year'))
     );
   };
 
@@ -378,6 +406,10 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
   const setQuestao = (valor, questao) => {
     setModoEdicao(true);
     questao.resposta = valor;
+  };
+
+  const possuiApenasUesInfantil = () => {
+    return uesSelecionados.length && uesSelecionados[0].ehInfantil;
   };
 
   return (
@@ -427,7 +459,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
                   label="Data da visita"
                   placeholder="Selecione a data"
                   onChange={mudarDataVisita}
-                  desabilitarData={desabilitarData}
+                  desabilitarData={desabilitarDataVisita}
                   desabilitado={desabilitarCamposPorPermissao()}
                 />
               </div>
@@ -476,12 +508,18 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
             {uesSelecionados?.length === 1 && (
               <div className="row mb-4">
                 <div className="col-12 font-weight-bold mb-2">
-                  <span style={{ color: Base.CinzaMako }}>Estudantes</span>
+                  <span style={{ color: Base.CinzaMako }}>
+                    {possuiApenasUesInfantil() ? 'Crianças' : 'Estudantes'}
+                  </span>
                 </div>
                 <div className="col-12">
                   <Button
                     id={shortid.generate()}
-                    label="Adicionar novo estudante"
+                    label={`Adicionar ${
+                      possuiApenasUesInfantil()
+                        ? 'nova criança'
+                        : 'novo estudante'
+                    }`}
                     color={Colors.Azul}
                     border
                     className="mr-2"
@@ -536,18 +574,20 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
             ) : (
               questoesItinerancia?.map(questao => {
                 return (
-                  <div className="row mb-4" key={questao.questaoId}>
-                    <div className="col-12">
-                      <JoditEditor
-                        label={questao.descricao}
-                        value={questao.resposta}
-                        name={NOME_CAMPO_QUESTAO + questao.questaoId}
-                        id={`editor-questao-${questao.questaoId}`}
-                        onChange={e => setQuestao(e, questao)}
-                        desabilitar={desabilitarCamposPorPermissao()}
-                      />
+                  <Loader loading={carregandoQuestoes}>
+                    <div className="row mb-4" key={questao.questaoId}>
+                      <div className="col-12">
+                        <JoditEditor
+                          label={questao.descricao}
+                          value={questao.resposta}
+                          name={NOME_CAMPO_QUESTAO + questao.questaoId}
+                          id={`editor-questao-${questao.questaoId}`}
+                          onChange={e => setQuestao(e, questao)}
+                          desabilitar={desabilitarCamposPorPermissao()}
+                        />
+                      </div>
                     </div>
-                  </div>
+                  </Loader>
                 );
               })
             )}
@@ -560,11 +600,22 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
                   label="Data para retorno/verificação"
                   placeholder="Selecione a data"
                   onChange={mudarDataRetorno}
+                  desabilitarData={desabilitarDataRetorno}
                   desabilitado={desabilitarCamposPorPermissao()}
                 />
               </div>
             </div>
           </div>
+          {auditoria && (
+            <Auditoria
+              criadoEm={auditoria.criadoEm}
+              criadoPor={auditoria.criadoPor}
+              criadoRf={auditoria.criadoRf}
+              alteradoPor={auditoria.alteradoPor}
+              alteradoEm={auditoria.alteradoEm}
+              alteradoRf={auditoria.alteradoRf}
+            />
+          )}
         </Card>
       </Loader>
       {modalVisivelUES && (

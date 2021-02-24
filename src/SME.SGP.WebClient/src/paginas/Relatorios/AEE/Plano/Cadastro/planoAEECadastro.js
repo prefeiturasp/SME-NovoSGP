@@ -57,8 +57,7 @@ const PlanoAEECadastro = ({ match }) => {
   }, [match]);
 
   const usuario = useSelector(store => store.usuario);
-  const permissoesTela =
-    usuario.permissoes[RotasDto.RELATORIO_AEE_ENCAMINHAMENTO];
+  const permissoesTela = usuario.permissoes[RotasDto.RELATORIO_AEE_PLANO];
 
   useEffect(() => {
     const planoId = match?.params?.id || 0;
@@ -125,6 +124,13 @@ const PlanoAEECadastro = ({ match }) => {
   useEffect(() => {
     obterPlanoPorId();
   }, [obterPlanoPorId]);
+
+  useEffect(() => {
+    if (atualizarDados) {
+      obterPlanoPorId();
+    }
+    dispatch(setAtualizarDados(false));
+  }, [atualizarDados, dispatch, obterPlanoPorId]);
 
   useEffect(() => {
     return () => {

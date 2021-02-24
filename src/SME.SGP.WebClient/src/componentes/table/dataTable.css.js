@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import { Base } from '../colors';
 
 export const Container = styled.div`
@@ -109,54 +109,64 @@ export const Container = styled.div`
     font-size: 12px;
   }
 
-  .ant-pagination-item-active:focus,
-  .ant-pagination-item-active:hover {
-    border-color: ${Base.Roxo} !important;
-  }
-
-  .ant-pagination-item-active:focus a,
-  .ant-pagination-item-active:hover a {
-    color: ${Base.Branco} !important;
-  }
-
   .ant-table-tbody tr td span.cor-vermelho {
     color: ${Base.Vermelho};
   }
 
-  .ant-table-tbody tr:hover td {
-    background: ${Base.Roxo} !important;
-    color: ${Base.Branco} !important;
+  ${({ semHover }) =>
+    semHover
+      ? css`
+          .ant-table-tbody tr:hover td {
+            background: transparent !important;
+            cursor: default !important;
+          }
+        `
+      : css`
+          .ant-pagination-item-active:focus,
+          .ant-pagination-item-active:hover {
+            border-color: ${Base.Roxo} !important;
+          }
 
-    span.cor-vermelho {
-      color: ${Base.Branco} !important;
-    }
+          .ant-pagination-item-active:focus a,
+          .ant-pagination-item-active:hover a {
+            color: ${Base.Branco} !important;
+          }
 
-    span.cor-novo-registro-lista {
-      color: ${Base.Branco} !important;
-    }
+          .ant-table-tbody tr:hover td {
+            background: ${Base.Roxo} !important;
+            color: ${Base.Branco} !important;
 
-    a.texto-vermelho-negrito {
-      color: ${Base.Branco} !important;
-    }
+            span.cor-vermelho {
+              color: ${Base.Branco} !important;
+            }
 
-    a.cor-novo-registro-lista {
-      color: ${Base.Branco} !important;
-    }
+            span.cor-novo-registro-lista {
+              color: ${Base.Branco} !important;
+            }
 
-    div button {
-      color: ${Base.Roxo} !important;
-      background: ${Base.Branco} !important;
-    }
+            a.texto-vermelho-negrito {
+              color: ${Base.Branco} !important;
+            }
 
-    i {
-      color: ${Base.Branco} !important;
-    }
-  }
+            a.cor-novo-registro-lista {
+              color: ${Base.Branco} !important;
+            }
 
-  .ant-table-tbody tr:hover {
-    background: ${Base.Roxo} !important;
-    color: ${Base.Branco} !important;
-  }
+            div button {
+              color: ${Base.Roxo} !important;
+              background: ${Base.Branco} !important;
+            }
+
+            i {
+              color: ${Base.Branco} !important;
+            }
+          }
+
+          .ant-table-tbody tr:hover {
+            background: ${Base.Roxo} !important;
+            color: ${Base.Branco} !important;
+          }
+        `}
 
   .ant-table-tbody tr.ant-table-row-selected > td {
     background: ${Base.Roxo};

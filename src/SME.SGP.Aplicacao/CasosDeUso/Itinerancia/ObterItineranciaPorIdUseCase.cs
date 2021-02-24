@@ -37,6 +37,7 @@ namespace SME.SGP.Aplicacao
                 Questoes = MontarQuestoesItinerancia(itinerancia, questoesBase),
                 Ues = MontarUes(ues, itinerancia),
                 CriadoRF = itinerancia.CriadoRF,
+                Auditoria = (AuditoriaDto)itinerancia
             };
 
             if(itinerancia.Alunos != null && itinerancia.Alunos.Any())
@@ -44,8 +45,10 @@ namespace SME.SGP.Aplicacao
                 var CodigosAluno = itinerancia.Alunos.Select(a => a.CodigoAluno).ToArray();
 
                 var alunosEol = await mediator.Send(new ObterAlunosEolPorCodigosEAnoQuery(CodigosAluno.Select(long.Parse).ToArray(), DateTime.Now.Year));
+                
+                var turmasIds = itinerancia.Alunos.Select(al => al.TurmaId).Distinct().ToArray();
 
-                var turmas = await mediator.Send(new ObterTurmasPorCodigosQuery(alunosEol.Select(al => al.CodigoTurma.ToString()).ToArray()));
+                var turmas = await mediator.Send(new ObterTurmasPorIdsQuery(turmasIds));
 
                 itineranciaDto.Alunos = MontarAlunosItinerancia(itinerancia, alunosEol, questoesBase, turmas);
             }
@@ -114,7 +117,7 @@ namespace SME.SGP.Aplicacao
                     AlunoCodigo = aluno.CodigoAluno,
                     TurmaId = aluno.TurmaId,
                     AlunoNome = alunoEol.NomeAluno,
-                    NomeAlunoComTurmaModalidade = $"{alunoEol.NomeAluno} - {turmas.FirstOrDefault(t => t.CodigoTurma == alunoEol.CodigoTurma.ToString()).NomeComModalidade()}",
+                    NomeAlunoComTurmaModalidade = $"{alunoEol.NomeAluno} - {turmas.FirstOrDefault(t => t.Id == aluno.TurmaId).NomeComModalidade()}",
                     Questoes = MontarQuestoesItineranciaAluno(aluno, questoesBase)
                 };
             });

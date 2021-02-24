@@ -78,17 +78,10 @@ namespace SME.SGP.Aplicacao.Interfaces
 
         public async Task<bool> SalvarFilhosItinerancia(ItineranciaDto itineranciaDto, Itinerancia itinerancia)
         {
-            var turmasCodigos = itineranciaDto.Alunos.Select(a => a.TurmaId.ToString()).Distinct().ToList();
-
-            if (turmasCodigos != null && turmasCodigos.Any())
+            if (itineranciaDto.Alunos.Any())
             {
-                var turmas = await mediator.Send(new ObterTurmasPorCodigosQuery(turmasCodigos.ToArray()));
-                foreach (var item in itineranciaDto.Alunos)
-                {
-                    item.TurmaId = turmas.FirstOrDefault(a => a.CodigoTurma == item.TurmaId.ToString()).Id;
-                }
+                await TrataTurmasCodigos(itineranciaDto);
             }
-
             if (itineranciaDto.Alunos == null || itineranciaDto.Alunos.Any())
                 foreach (var aluno in itineranciaDto.Alunos)
                     await mediator.Send(new SalvarItineranciaAlunoCommand(aluno, itinerancia.Id));
@@ -106,6 +99,23 @@ namespace SME.SGP.Aplicacao.Interfaces
                     await mediator.Send(new SalvarItineranciaUeCommand(ue.UeId, itinerancia.Id));
 
             return true;
+        }
+
+        private async Task TrataTurmasCodigos(ItineranciaDto itineranciaDto)
+        {
+            var turmasCodigos = itineranciaDto.Alunos.Select(a => a.TurmaId.ToString()).Distinct().ToList();
+
+            if (turmasCodigos != null && turmasCodigos.Any())
+            {
+                var turmas = await mediator.Send(new ObterTurmasPorCodigosQuery(turmasCodigos.ToArray()));
+                if (turmas.Count() != turmasCodigos.Count())
+                    throw new NegocioException("Não foi possível localizar as turmas no SGP.");
+
+                foreach (var item in itineranciaDto.Alunos)
+                {
+                    item.TurmaId = turmas.FirstOrDefault(a => a.CodigoTurma == item.TurmaId.ToString()).Id;
+                }
+            }
         }
     }
 }

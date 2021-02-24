@@ -10,6 +10,7 @@ import {
 } from '~/componentes';
 import { setObjetivosItinerancia } from '~/redux/modulos/itinerancia/action';
 import { aviso, confirmar } from '~/servicos';
+import { clonarObjeto } from '~/utils';
 import {
   NOME_CAMPO_OBJETIVO,
   NOME_CHECK_OBJETIVO,
@@ -29,7 +30,6 @@ const ModalObjetivos = ({
   const [modoEdicao, setModoEdicao] = useState(false);
   const [valoresIniciais, setValoresIniciais] = useState({});
   const [validacoes, setValidacoes] = useState({});
-  const [refForm, setRefForm] = useState({});
 
   const esconderModal = () => setModalVisivel(false);
 
@@ -81,19 +81,33 @@ const ModalObjetivos = ({
 
   const onConfirmarModal = () => {
     const arraySelecionados = listaObjetivos.filter(item => item.checked);
-    setObjetivosSelecionados(arraySelecionados);
+    setObjetivosSelecionados(clonarObjeto(arraySelecionados));
     dispatch(setObjetivosItinerancia([...listaObjetivos]));
     setModoEdicao(false);
     setModoEdicaoItinerancia(true);
     esconderModal();
   };
 
-  const fecharModal = async () => {
-    esconderModal();
-    if (modoEdicao) {
-      const ehPraSalvar = await perguntarSalvarListaUsuario();
-      if (ehPraSalvar) {
-        onConfirmarModal();
+  const validaCamposForm = async form => {
+    if (Object.keys(valoresIniciais).length) {
+      const arrayCampos = Object.keys(valoresIniciais);
+      arrayCampos.forEach(campo => {
+        form.setFieldTouched(campo, true, true);
+      });
+      await form.validateForm();
+      return form.isValid || Object.keys(form.errors).length === 0;
+    }
+  };
+
+  const fecharModal = async form => {
+    const validacao = await validaCamposForm(form);
+    if (validacao) {
+      esconderModal();
+      if (modoEdicao) {
+        const ehPraSalvar = await perguntarSalvarListaUsuario();
+        if (ehPraSalvar) {
+          onConfirmarModal();
+        }
       }
     }
   };
@@ -141,17 +155,9 @@ const ModalObjetivos = ({
     setModoEdicao(true);
   };
 
-  const validaAntesDoSubmit = form => {
-    if (Object.keys(valoresIniciais).length) {
-      const arrayCampos = Object.keys(valoresIniciais);
-      arrayCampos.forEach(campo => {
-        form.setFieldTouched(campo, true, true);
-      });
-      form.validateForm().then(() => {
-        if (form.isValid || Object.keys(form.errors).length === 0) {
-          form.submitForm(form);
-        }
-      });
+  const validaAntesDoSubmit = async form => {
+    if (await validaCamposForm(form)) {
+      form.submitForm(form);
     }
   };
 
@@ -163,16 +169,15 @@ const ModalObjetivos = ({
       onSubmit={valores => onConfirmarModal(valores)}
       validateOnBlur
       validateOnChange
-      ref={refFormik => setRefForm(refFormik)}
     >
       {form => (
         <Form className="col-md-12 mb-4">
           <ModalConteudoHtml
             titulo="Objetivos da itinerância"
             visivel={modalVisivel}
-            onClose={fecharModal}
+            onClose={() => fecharModal(form)}
             onConfirmacaoPrincipal={() => validaAntesDoSubmit(form)}
-            onConfirmacaoSecundaria={fecharModal}
+            onConfirmacaoSecundaria={() => fecharModal(form)}
             labelBotaoPrincipal="Adicionar objetivos"
             labelBotaoSecundario="Cancelar"
             closable
@@ -184,7 +189,7 @@ const ModalObjetivos = ({
               <div className="row mb-3">
                 <TituloEstilizado>Selecione os objetivos</TituloEstilizado>
               </div>
-              {listaObjetivos?.length &&
+              {listaObjetivos?.length > 0 &&
                 listaObjetivos.map(item => {
                   const textoUe = item.permiteVariasUes
                     ? '(uma ou mais unidades)'
