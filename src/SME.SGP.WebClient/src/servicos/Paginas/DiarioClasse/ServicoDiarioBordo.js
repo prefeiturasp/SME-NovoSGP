@@ -111,8 +111,8 @@ class ServicoDiarioBordo {
     numeroRegistros,
   }) => {
     const dataBusca =
-      dataInicio && dataFim
-        ? `dataInicio=${dataInicio}&dataFim=${dataFim}&`
+      dataInicio || dataFim
+        ? `dataInicio=${dataInicio ?? ''}&dataFim=${dataFim ?? ''}&`
         : '';
     return api.get(
       `${urlPadrao}/titulos/turmas/${turmaId}/componentes-curriculares/${componenteCurricularId}?` +
