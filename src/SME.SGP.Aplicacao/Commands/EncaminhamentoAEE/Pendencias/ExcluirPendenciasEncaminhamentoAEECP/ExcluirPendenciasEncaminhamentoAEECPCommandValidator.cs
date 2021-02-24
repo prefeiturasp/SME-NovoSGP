@@ -6,9 +6,9 @@ namespace SME.SGP.Aplicacao
     {
         public ExcluirPendenciasEncaminhamentoAEECPCommandValidator()
         {
-            RuleFor(c => c.PendenciaId)
+            RuleFor(c => c.EncaminhamentoId)
                 .NotEmpty()
-                .WithMessage("O id da pendência deve ser informado.");
+                .WithMessage("O id do encaminhamento deve ser informado.");
 
             RuleFor(c => c.TurmaId)
                 .NotEmpty()

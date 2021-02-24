@@ -14,13 +14,10 @@ namespace SME.SGP.Aplicacao.CasosDeUso
     public class RegistrarEncaminhamentoAEEUseCase : IRegistrarEncaminhamentoAEEUseCase
     {
         private readonly IMediator mediator;
-        private readonly IServicoEncaminhamentoAEE servicoEncaminhamentoAEE;
 
-        public RegistrarEncaminhamentoAEEUseCase(IMediator mediator, IServicoEncaminhamentoAEE servicoEncaminhamentoAEE)
+        public RegistrarEncaminhamentoAEEUseCase(IMediator mediator)
         {
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
-            this.servicoEncaminhamentoAEE = servicoEncaminhamentoAEE ?? throw new ArgumentNullException(nameof(servicoEncaminhamentoAEE));
-
         }
 
         public async Task<ResultadoEncaminhamentoAEEDto> Executar(EncaminhamentoAeeDto encaminhamentoAEEDto)
@@ -56,8 +53,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
             return resultadoEncaminhamento;
         }
-
-       
+              
 
         public async Task AlterarEncaminhamento(EncaminhamentoAeeDto encaminhamentoAEEDto, EncaminhamentoAEE encaminhamentoAEE)
         {
@@ -66,7 +62,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
             if(encaminhamentoAEEDto.Situacao != SituacaoAEE.Encaminhado)
             {
-                await mediator.Send(new ExcluirPendenciasEncaminhamentoAEEPorPerfilCommand(encaminhamentoAEE.TurmaId, encaminhamentoAEE.Id));
+                await mediator.Send(new ExcluirPendenciasEncaminhamentoAEECPCommand(encaminhamentoAEE.Id, encaminhamentoAEE.TurmaId));
             } 
 
             foreach (var secao in encaminhamentoAEEDto.Secoes)

@@ -4,13 +4,13 @@ namespace SME.SGP.Aplicacao
 {
     public class ExcluirPendenciasEncaminhamentoAEECPCommand : IRequest<bool>
     {
-        public ExcluirPendenciasEncaminhamentoAEECPCommand(long pendenciaId, long turmaId)
+        public ExcluirPendenciasEncaminhamentoAEECPCommand(long turmaId, long encaminhamentoId)
         {
-            PendenciaId = pendenciaId;
+            EncaminhamentoId = encaminhamentoId;
             TurmaId = turmaId;
         }
 
         public long TurmaId { get; set; }
-        public long PendenciaId { get; set; }
+        public long EncaminhamentoId { get; set; }
     }
 }

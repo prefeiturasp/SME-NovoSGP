@@ -19,14 +19,12 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioPendencia repositorioPendencia;
         private readonly IRepositorioPendenciaUsuario repositorioPendenciaUsuario;
         private readonly IRepositorioPendenciaEncaminhamentoAEE repositorioPendenciaEncaminhamentoAEE;
-        private readonly IServicoEncaminhamentoAEE servicoEncaminhamentoAEE;
         private readonly IUnitOfWork unitOfWork;
 
 
         public GerarPendenciaAtribuirResponsavelEncaminhamentoAEECommandHandler(IMediator mediator, IConfiguration configuration,
             IRepositorioPendencia repositorioPendencia, IRepositorioPendenciaUsuario repositorioPendenciaUsuario,
             IRepositorioPendenciaEncaminhamentoAEE repositorioPendenciaEncaminhamentoAEE,
-            IServicoEncaminhamentoAEE servicoEncaminhamentoAEE,
             IUnitOfWork unitOfWork)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -34,7 +32,6 @@ namespace SME.SGP.Aplicacao
             this.repositorioPendencia = repositorioPendencia ?? throw new ArgumentNullException(nameof(repositorioPendencia));
             this.repositorioPendenciaUsuario = repositorioPendenciaUsuario ?? throw new ArgumentNullException(nameof(repositorioPendenciaUsuario));
             this.repositorioPendenciaEncaminhamentoAEE = repositorioPendenciaEncaminhamentoAEE ?? throw new ArgumentNullException(nameof(repositorioPendenciaEncaminhamentoAEE));
-            this.servicoEncaminhamentoAEE = servicoEncaminhamentoAEE ?? throw new ArgumentNullException(nameof(servicoEncaminhamentoAEE));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
@@ -46,7 +43,7 @@ namespace SME.SGP.Aplicacao
 
             if (request.EhCEFAI)
             {
-                var usuarioId = await servicoEncaminhamentoAEE.ObtemUsuarioCEFAIDaDre(turma.Ue.Dre.CodigoDre);
+                var usuarioId = await mediator.Send(new ObtemUsuarioCEFAIDaDreQuery(turma.Ue.Dre.CodigoDre));
 
                 if (usuarioId == 0)
                     return false;

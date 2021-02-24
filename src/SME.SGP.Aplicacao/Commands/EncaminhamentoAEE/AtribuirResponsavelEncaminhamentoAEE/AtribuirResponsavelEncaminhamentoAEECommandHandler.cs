@@ -13,15 +13,12 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IMediator mediator;
         private readonly IRepositorioEncaminhamentoAEE repositorioEncaminhamentoAEE;
-        private readonly IServicoEncaminhamentoAEE servicoEncaminhamentoAEE;
 
         public AtribuirResponsavelEncaminhamentoAEECommandHandler(IMediator mediator, 
-            IRepositorioEncaminhamentoAEE repositorioEncaminhamentoAEE,
-            IServicoEncaminhamentoAEE servicoEncaminhamentoAEE
+            IRepositorioEncaminhamentoAEE repositorioEncaminhamentoAEE
             )
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.servicoEncaminhamentoAEE = servicoEncaminhamentoAEE ?? throw new ArgumentNullException(nameof(servicoEncaminhamentoAEE));
             this.repositorioEncaminhamentoAEE = repositorioEncaminhamentoAEE ?? throw new ArgumentNullException(nameof(repositorioEncaminhamentoAEE));
         }
 

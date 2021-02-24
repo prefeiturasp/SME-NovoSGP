@@ -12,15 +12,12 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IMediator mediator;
         private readonly IRepositorioEncaminhamentoAEE repositorioEncaminhamentoAEE;
-        private readonly IServicoEncaminhamentoAEE servicoEncaminhamentoAEE;
 
         public EnviarParaAnaliseEncaminhamentoAEECommandHandler(IMediator mediator,
-            IRepositorioEncaminhamentoAEE repositorioEncaminhamentoAEE,
-            IServicoEncaminhamentoAEE servicoEncaminhamentoAEE)
+            IRepositorioEncaminhamentoAEE repositorioEncaminhamentoAEE)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioEncaminhamentoAEE = repositorioEncaminhamentoAEE ?? throw new ArgumentNullException(nameof(repositorioEncaminhamentoAEE));
-            this.servicoEncaminhamentoAEE = servicoEncaminhamentoAEE ?? throw new ArgumentNullException(nameof(servicoEncaminhamentoAEE));
         }
 
         public async Task<bool> Handle(EnviarParaAnaliseEncaminhamentoAEECommand request, CancellationToken cancellationToken)
@@ -38,7 +35,7 @@ namespace SME.SGP.Aplicacao
 
             encaminhamentoAEE.Situacao = Dominio.Enumerados.SituacaoAEE.AtribuicaoResponsavel;
 
-            var funciorarioPAEE = await servicoEncaminhamentoAEE.ObterPAEETurma(turma);
+            var funciorarioPAEE = await mediator.Send(new ObterPAEETurmaQuery(turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe));
 
             if (funciorarioPAEE != null && funciorarioPAEE.Count() == 1)
             {
