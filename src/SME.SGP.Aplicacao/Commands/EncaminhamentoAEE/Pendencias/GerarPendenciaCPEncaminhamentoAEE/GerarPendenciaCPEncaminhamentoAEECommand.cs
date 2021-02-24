@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio.Enumerados;
 
 namespace SME.SGP.Aplicacao
 {
@@ -6,9 +7,12 @@ namespace SME.SGP.Aplicacao
     {
         public long EncaminhamentoAEEId { get; set; }
 
-        public GerarPendenciaCPEncaminhamentoAEECommand(long encaminhamentoAEEId)
+        public SituacaoAEE Situacao { get; set; }
+
+        public GerarPendenciaCPEncaminhamentoAEECommand(long encaminhamentoAEEId, SituacaoAEE situacao)
         {
             EncaminhamentoAEEId = encaminhamentoAEEId;
+            Situacao = situacao;
         }
     }
 

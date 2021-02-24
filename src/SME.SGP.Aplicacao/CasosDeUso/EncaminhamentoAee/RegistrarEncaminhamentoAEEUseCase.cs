@@ -2,6 +2,7 @@
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -38,7 +39,6 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                 if (encaminhamentoAEE != null)
                 {
                     await AlterarEncaminhamento(encaminhamentoAEEDto, encaminhamentoAEE);
-                    await GerarPendenciaEncaminhamentoAEECP(encaminhamentoAEEDto.Situacao, encaminhamentoAEE.Id);
                     return new ResultadoEncaminhamentoAEEDto() { Id = encaminhamentoAEE.Id };
                 }
             }
@@ -49,23 +49,21 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
             await SalvarEncaminhamento(encaminhamentoAEEDto, resultadoEncaminhamento);
 
-            await GerarPendenciaEncaminhamentoAEECP(encaminhamentoAEEDto.Situacao, resultadoEncaminhamento.Id);
+            await mediator.Send(new GerarPendenciaCPEncaminhamentoAEECommand(resultadoEncaminhamento.Id, encaminhamentoAEEDto.Situacao));
 
             return resultadoEncaminhamento;
         }
-
-        private async Task GerarPendenciaEncaminhamentoAEECP(SituacaoAEE situacao, long encaminhamentoId)
-        {
-            if (situacao == SituacaoAEE.Encaminhado)
-            {
-                await mediator.Send(new GerarPendenciaCPEncaminhamentoAEECommand(encaminhamentoId));
-            }
-        }
+              
 
         public async Task AlterarEncaminhamento(EncaminhamentoAeeDto encaminhamentoAEEDto, EncaminhamentoAEE encaminhamentoAEE)
         {
             encaminhamentoAEE.Situacao = encaminhamentoAEEDto.Situacao;
             await mediator.Send(new SalvarEncaminhamentoAEECommand(encaminhamentoAEE));
+
+            if(encaminhamentoAEEDto.Situacao != SituacaoAEE.Encaminhado)
+            {
+                await mediator.Send(new ExcluirPendenciasEncaminhamentoAEECPCommand(encaminhamentoAEE.Id, encaminhamentoAEE.TurmaId));
+            } 
 
             foreach (var secao in encaminhamentoAEEDto.Secoes)
             {
