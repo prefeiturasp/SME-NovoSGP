@@ -4,6 +4,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -29,8 +30,21 @@ namespace SME.SGP.Aplicacao
 
             await mediator.Send(new ExecutaNotificacaoDevolucaoEncaminhamentoAEECommand(encaminhamento.Id, usuarioLogado.CodigoRf, usuarioLogado.Nome, devolucaoDto.Motivo));
 
+            await ExcluirPendenciasEncaminhamentoAEE(encaminhamento.Id);
 
             return true;
+        }
+
+        private async Task ExcluirPendenciasEncaminhamentoAEE(long encaminhamentoId)
+        {
+            var pendenciasEncaminhamentoAEE = await mediator.Send(new ObterPendenciasDoEncaminhamentoAEEPorIdQuery(encaminhamentoId));
+            if (pendenciasEncaminhamentoAEE != null || !pendenciasEncaminhamentoAEE.Any())
+            {
+                foreach (var pendenciaEncaminhamentoAEE in pendenciasEncaminhamentoAEE)
+                {
+                    await mediator.Send(new ExcluirPendenciaEncaminhamentoAEECommand(pendenciaEncaminhamentoAEE.PendenciaId));
+                }
+            }
         }
     }
 }

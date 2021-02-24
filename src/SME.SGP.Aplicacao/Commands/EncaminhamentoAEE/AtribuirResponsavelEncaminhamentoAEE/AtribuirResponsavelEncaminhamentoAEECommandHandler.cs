@@ -36,22 +36,80 @@ namespace SME.SGP.Aplicacao
 
             var idEntidadeEncaminhamento = await repositorioEncaminhamentoAEE.SalvarAsync(encaminhamentoAEE);
 
-            await RemovePendenciaCEFAI(encaminhamentoAEE.TurmaId, encaminhamentoAEE.Id);
+            await RemovePendencias(encaminhamentoAEE.TurmaId, encaminhamentoAEE.Id);
 
             await mediator.Send(new GerarPendenciaPAEEEncaminhamentoAEECommand(encaminhamentoAEE));
 
             return idEntidadeEncaminhamento != 0;
         }
 
-        private async Task RemovePendenciaCEFAI(long turmaId, long encaminhamentoAEEId)
+        private async Task RemovePendencias(long turmaId, long encaminhamentoAEEId)
+        {
+            var ehCEFAI = await RemovePendenciaCEFAI(turmaId, encaminhamentoAEEId);
+            if (!ehCEFAI)
+            {
+                await RemoverPendenciasCP(turmaId, encaminhamentoAEEId);
+            }
+        }
+
+        private async Task<bool> RemoverPendenciasCP(long turmaId, long encaminhamentoAEEId)
+        {
+            var ue = await mediator.Send(new ObterUEPorTurmaIdQuery(turmaId));
+
+            var funcionarios = await ObterFuncionarios(ue.CodigoUe);
+
+            if (funcionarios == null)
+                return false;
+
+            var usuarios = await ObterUsuariosId(funcionarios);
+
+            foreach (var usuario in usuarios)
+            {
+                var pendencia = await mediator.Send(new ObterPendenciaEncaminhamentoAEEPorIdEUsuarioIdQuery(encaminhamentoAEEId, usuario));
+                await mediator.Send(new ExcluirPendenciaEncaminhamentoAEECommand(pendencia.PendenciaId));
+            }
+            return true;
+        }
+
+        private async Task<List<string>> ObterFuncionarios(string codigoUe)
+        {
+            var funcionariosCP = await mediator.Send(new ObterFuncionariosPorUeECargoQuery(codigoUe, (int)Cargo.CP));
+            if (funcionariosCP.Any())
+                return funcionariosCP.Select(f => f.CodigoRF).ToList();
+
+            var funcionariosAD = await mediator.Send(new ObterFuncionariosPorUeECargoQuery(codigoUe, (int)Cargo.AD));
+            if (funcionariosAD.Any())
+                return funcionariosAD.Select(f => f.CodigoRF).ToList();
+
+            var funcionariosDiretor = await mediator.Send(new ObterFuncionariosPorUeECargoQuery(codigoUe, (int)Cargo.Diretor));
+            if (funcionariosDiretor.Any())
+                return funcionariosDiretor.Select(f => f.CodigoRF).ToList();
+
+            return null;
+        }
+
+        private async Task<List<long>> ObterUsuariosId(List<string> funcionarios)
+        {
+            List<long> usuarios = new List<long>();
+            foreach (var functionario in funcionarios)
+            {
+                var usuario = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(functionario));
+                usuarios.Add(usuario);
+            }
+            return usuarios;
+        }
+
+        private async Task<bool> RemovePendenciaCEFAI(long turmaId, long encaminhamentoAEEId)
         {
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
             var ehCEFAI = await EhCoordenadorCEFAI(usuarioLogado, turmaId);
             if (ehCEFAI)
             {
-                var pendencia = await mediator.Send(new ObterPendenciaEncaminhamentoAEEPorIdQuery(encaminhamentoAEEId));
+                var pendencia = await mediator.Send(new ObterPendenciaEncaminhamentoAEEPorIdEUsuarioIdQuery(encaminhamentoAEEId, usuarioLogado.Id));
                 await mediator.Send(new ExcluirPendenciaEncaminhamentoAEECommand(pendencia.PendenciaId));
-            }                
+                return true;
+            }
+            return false;
         }
 
         private async Task<bool> EhCoordenadorCEFAI(Usuario usuarioLogado, long turmaId)
