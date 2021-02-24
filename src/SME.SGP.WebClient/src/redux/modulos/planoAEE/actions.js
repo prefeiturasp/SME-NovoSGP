@@ -37,3 +37,33 @@ export const setExibirModalErrosPlano = payload => ({
   type: '@planoAEE/setExibirModalErrosPlano',
   payload,
 });
+
+export const setAtualizarPlanoAEEDados = payload => ({
+  type: '@planoAEE/setAtualizarPlanoAEEDados',
+  payload,
+});
+
+export const setDadosDevolutiva = payload => ({
+  type: '@planoAEE/setDadosDevolutiva',
+  payload,
+});
+
+export const setParecerCoordenacao = payload => ({
+  type: '@planoAEE/setParecerCoordenacao',
+  payload,
+});
+
+export const setParecerPAAI = payload => ({
+  type: '@planoAEE/setParecerPAAI',
+  payload,
+});
+
+export const setDevolutivaEmEdicao = payload => ({
+  type: '@planoAEE/setDevolutivaEmEdicao',
+  payload,
+});
+
+export const limparDadosDevolutiva = payload => ({
+  type: '@planoAEE/limparDadosDevolutiva',
+  payload,
+});

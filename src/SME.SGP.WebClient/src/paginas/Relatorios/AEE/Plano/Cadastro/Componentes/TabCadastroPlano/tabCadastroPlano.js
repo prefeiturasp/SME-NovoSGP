@@ -56,7 +56,15 @@ const TabCadastroPasso = props => {
         )}
       </TabPane>
       {temId && (
-        <TabPane tab="Reestruturação" key="2">
+        <TabPane
+          tab="Reestruturação"
+          key="2"
+          disabled={
+            planoAEEDados?.situacao !== situacaoPlanoAEE.EmAndamento &&
+            planoAEEDados?.situacao !== situacaoPlanoAEE.Cancelado &&
+            planoAEEDados?.situacao !== situacaoPlanoAEE.Encerrado
+          }
+        >
           <></>
         </TabPane>
       )}
@@ -66,11 +74,9 @@ const TabCadastroPasso = props => {
           key="3"
           disabled={
             planoAEEDados?.situacao !==
-              situacaoPlanoAEE.DevolutivaCoordenacao ||
-            planoAEEDados?.situacao !==
-              situacaoPlanoAEE.AtribuicaoResponsavel ||
-            planoAEEDados?.situacao !== situacaoPlanoAEE.DevolutivaPAAI ||
-            planoAEEDados?.situacao !== situacaoPlanoAEE.Encerrado
+              situacaoPlanoAEE.DevolutivaCoordenacao &&
+            planoAEEDados?.situacao !== situacaoPlanoAEE.DevolutivaPAAI &&
+            planoAEEDados?.situacao !== situacaoPlanoAEE.AtribuicaoPAAI
           }
         >
           <SecaoDevolutivasPlanoCollapse match={match} />

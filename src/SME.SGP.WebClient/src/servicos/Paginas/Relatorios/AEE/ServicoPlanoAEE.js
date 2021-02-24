@@ -240,23 +240,24 @@ class ServicoPlanoAEE {
     return api.get(`${urlPadrao}/${planoAeeId}/devolutiva`);
   };
 
-  solicitarEncerramento = planoAeeId => {
-    return api.post(`${urlPadrao}/encerrar-plano`, planoAeeId);
-  };
-
   encerrarPlano = planoAeeId => {
     return api.post(`${urlPadrao}/encerrar-plano?planoAeeId=${planoAeeId}`);
   };
 
-  salvarDevolutivaCP = params => {
-    return api.post(`${urlPadrao}/${params.planoAeeId}/devolutiva/cp`, params);
+  salvarDevolutivaCP = () => {
+    const { planoAEE } = store.getState();
+    const { planoAEEDados, parecerCoordenacao } = planoAEE;
+    return api.post(`${urlPadrao}/${planoAEEDados.id}/devolutiva/cp`, {
+      parecer: parecerCoordenacao,
+    });
   };
 
-  salvarDevolutivaPAAI = params => {
-    return api.post(
-      `${urlPadrao}/${params.planoAeeId}/devolutiva/paai`,
-      params
-    );
+  salvarDevolutivaPAAI = () => {
+    const { planoAEE } = store.getState();
+    const { planoAEEDados, parecerPAAI } = planoAEE;
+    return api.post(`${urlPadrao}/${planoAEEDados.id}/devolutiva/paai`, {
+      parecer: parecerPAAI,
+    });
   };
 
   atribuirResponsavel = params => {
