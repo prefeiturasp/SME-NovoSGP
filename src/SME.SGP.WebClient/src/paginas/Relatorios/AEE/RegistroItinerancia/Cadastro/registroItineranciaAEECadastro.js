@@ -146,8 +146,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
     if (modoEdicao) {
       const confirmou = await confirmar(
         'Atenção',
-        'Suas alterações não foram salvas, deseja salvar agora?',
-        'Deseja realmente cancelar as alterações?'
+        'Suas alterações não foram salvas, deseja salvar agora?'
       );
       if (confirmou) onClickSalvar();
       else history.push(RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA);
