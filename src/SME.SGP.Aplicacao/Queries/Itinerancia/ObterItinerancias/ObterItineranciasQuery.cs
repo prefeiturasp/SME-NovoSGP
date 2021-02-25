@@ -8,7 +8,7 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterItineranciasQuery : IRequest<PaginacaoResultadoDto<ItineranciaRetornoQueryDto>>
     {
-        public ObterItineranciasQuery(long dreId, long ueId, long turmaId, int anoLetivo, string alunoCodigo, DateTime? dataInicio, DateTime? dataFim, SituacaoItinerancia situacao)
+        public ObterItineranciasQuery(long dreId, long ueId, long turmaId, int anoLetivo, string alunoCodigo, DateTime? dataInicio, DateTime? dataFim, SituacaoItinerancia situacao, string criadoRf)
         {
             DreId = dreId;
             UeId = ueId;
@@ -17,7 +17,8 @@ namespace SME.SGP.Aplicacao
             AlunoCodigo = alunoCodigo;
             DataInicio = dataInicio;
             DataFim = dataFim;
-            Situacao = situacao;            
+            Situacao = situacao;
+            CriadoRf = criadoRf;
         }
 
         public long DreId { get; set; }
@@ -27,7 +28,8 @@ namespace SME.SGP.Aplicacao
         public string AlunoCodigo { get; set; }
         public DateTime? DataInicio { get; set; }
         public DateTime? DataFim { get; set; }
-        public SituacaoItinerancia Situacao { get; set; }        
+        public SituacaoItinerancia Situacao { get; set; }
+        public string CriadoRf { get; set; }
     }
 
     public class ObterItineranciasQueryValidator : AbstractValidator<ObterItineranciasQuery>

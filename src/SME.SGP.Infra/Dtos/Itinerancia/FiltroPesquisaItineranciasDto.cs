@@ -12,6 +12,7 @@ namespace SME.SGP.Infra
         public string AlunoCodigo { get; set; }
         public DateTime? DataInicio { get; set; }
         public DateTime? DataFim { get; set; }
-        public SituacaoItinerancia Situacao { get; set; }       
+        public SituacaoItinerancia Situacao { get; set; }
+        public string CriadoRf { get; set; }
     }
 }

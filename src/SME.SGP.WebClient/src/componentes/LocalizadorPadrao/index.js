@@ -27,15 +27,21 @@ function LocalizadorPadrao({
 
   const onChangeValor = busca => {
     if (busca?.length) setValor(busca);
-    else setDataSource([]);
+    else {
+      setValor();
+      onChange();
+      setDataSource([]);
+    }
   };
 
   const onSearchValor = async selecionado => {
     const dados = await api.get(`${url}?nome=${selecionado}`);
-    if (dados?.data) {
+    if (dados.status === 200 && dados?.data) {
       setDataSource(dados.data);
+      setCarregando(false);
+    } else {
+      setCarregando(false);
     }
-    setCarregando(false);
   };
 
   const validaAntesBuscar = busca => {
@@ -45,8 +51,8 @@ function LocalizadorPadrao({
     }
 
     if (url && busca?.length >= 3) {
-      setCarregando(true);
       const timeout = setTimeout(() => {
+        setCarregando(true);
         onSearchValor(busca);
       }, 800);
       setTimeoutBusca(timeout);

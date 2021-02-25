@@ -47,6 +47,7 @@ const RegistroItineranciaAEELista = () => {
   const [situacao, setSituacao] = useState();
   const [turmaId, setTurmaId] = useState();
   const [ueId, setUeId] = useState();
+  const [criador, setCriador] = useState();
   const usuario = useSelector(store => store.usuario);
   const permissoesTela =
     usuario.permissoes[RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA];
@@ -72,6 +73,10 @@ const RegistroItineranciaAEELista = () => {
       title: 'Situação',
       dataIndex: 'situacao',
     },
+    {
+      title: 'Criado por',
+      dataIndex: 'criadoPor',
+    },
   ];
 
   const filtrar = (
@@ -82,7 +87,8 @@ const RegistroItineranciaAEELista = () => {
     aluno,
     situacaoItinerancia,
     dtInicial,
-    dtFinal
+    dtFinal,
+    criadoPor,
   ) => {
     if (anoLetivo && dre && listaDres?.length) {
       const dreSelecionada = listaDres.find(
@@ -108,6 +114,7 @@ const RegistroItineranciaAEELista = () => {
           ? window.moment(dtInicial).format('YYYY-MM-DD')
           : '',
         dataFim: dtFinal ? window.moment(dtFinal).format('YYYY-MM-DD') : '',
+        criadoRf: criadoPor?.rf,
       };
       setFiltro({ ...params });
     }
@@ -287,7 +294,8 @@ const RegistroItineranciaAEELista = () => {
         alunoLocalizadorSelecionado,
         situacao,
         dataInicial,
-        dataFinal
+        dataFinal,
+        criador,
       );
   }, [
     anoLetivo,
@@ -298,6 +306,7 @@ const RegistroItineranciaAEELista = () => {
     situacao,
     dataInicial,
     dataFinal,
+    criador,
   ]);
 
   useEffect(() => {
@@ -503,7 +512,7 @@ const RegistroItineranciaAEELista = () => {
               <LocalizadorPadrao
                 showLabel
                 labelNome="Criador"
-                onChange={e => console.log(e)}
+                onChange={e => setCriador(e)}
                 placeholder="Procure pelo nome do criador da itinerância"
                 url="v1/itinerancias/criadores"
                 campoValor="rf"
