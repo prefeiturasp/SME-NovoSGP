@@ -9,18 +9,6 @@
     "eject": "react-scripts eject",
     "cmz": "npx git-cz"
   },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
   "dependencies": {
     "@ant-design/icons": "^4.2.2",
     "@ckeditor/ckeditor5-build-classic": "^16.0.0",
