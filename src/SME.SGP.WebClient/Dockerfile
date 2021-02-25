@@ -1,6 +1,8 @@
 FROM node:carbon-alpine as build-deps
 WORKDIR /usr/src/app
 COPY src/SME.SGP.WebClient/package.json src/SME.SGP.WebClient/yarn.lock ./
+
+RUN set NODE_OPTIONS=--max_old_space_size=4096
 RUN yarn
 COPY /src/SME.SGP.WebClient/ .
 RUN yarn build
