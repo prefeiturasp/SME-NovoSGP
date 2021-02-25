@@ -12,6 +12,7 @@ import {
   SelectComponent,
 } from '~/componentes';
 import { Cabecalho, FiltroHelper } from '~/componentes-sgp';
+import LocalizadorPadrao from '~/componentes/LocalizadorPadrao';
 import { URL_HOME } from '~/constantes';
 import { RotasDto } from '~/dtos';
 import {
@@ -46,6 +47,7 @@ const RegistroItineranciaAEELista = () => {
   const [situacao, setSituacao] = useState();
   const [turmaId, setTurmaId] = useState();
   const [ueId, setUeId] = useState();
+  const [criador, setCriador] = useState();
   const usuario = useSelector(store => store.usuario);
   const permissoesTela =
     usuario.permissoes[RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA];
@@ -71,6 +73,10 @@ const RegistroItineranciaAEELista = () => {
       title: 'Situação',
       dataIndex: 'situacao',
     },
+    {
+      title: 'Criado por',
+      dataIndex: 'criadoPor',
+    },
   ];
 
   const filtrar = (
@@ -81,7 +87,8 @@ const RegistroItineranciaAEELista = () => {
     aluno,
     situacaoItinerancia,
     dtInicial,
-    dtFinal
+    dtFinal,
+    criadoPor,
   ) => {
     if (anoLetivo && dre && listaDres?.length) {
       const dreSelecionada = listaDres.find(
@@ -107,6 +114,7 @@ const RegistroItineranciaAEELista = () => {
           ? window.moment(dtInicial).format('YYYY-MM-DD')
           : '',
         dataFim: dtFinal ? window.moment(dtFinal).format('YYYY-MM-DD') : '',
+        criadoRf: criadoPor?.rf,
       };
       setFiltro({ ...params });
     }
@@ -286,7 +294,8 @@ const RegistroItineranciaAEELista = () => {
         alunoLocalizadorSelecionado,
         situacao,
         dataInicial,
-        dataFinal
+        dataFinal,
+        criador,
       );
   }, [
     anoLetivo,
@@ -297,6 +306,7 @@ const RegistroItineranciaAEELista = () => {
     situacao,
     dataInicial,
     dataFinal,
+    criador,
   ]);
 
   useEffect(() => {
@@ -436,7 +446,7 @@ const RegistroItineranciaAEELista = () => {
             </div>
           </div>
           <div className="row mb-4">
-            <div className="col-sm-12 col-md-6 col-lg-2 col-xl-2 pr-0">
+            <div className="col-sm-12 col-md-2 col-lg-2 col-xl-2 pr-0">
               <Loader loading={carregandoAnos} tip="">
                 <SelectComponent
                   id="ano-letivo"
@@ -451,7 +461,7 @@ const RegistroItineranciaAEELista = () => {
                 />
               </Loader>
             </div>
-            <div className="col-sm-12 col-md-12 col-lg-5 col-xl-5 pr-0">
+            <div className="col-sm-12 col-md-5 col-lg-5 col-xl-5 pr-0">
               <Loader loading={carregandoDres} tip="">
                 <SelectComponent
                   id="dre"
@@ -466,7 +476,7 @@ const RegistroItineranciaAEELista = () => {
                 />
               </Loader>
             </div>
-            <div className="col-sm-12 col-md-12 col-lg-5 col-xl-5">
+            <div className="col-sm-12 col-md-5 col-lg-5 col-xl-5">
               <Loader loading={carregandoUes} tip="">
                 <SelectComponent
                   id="ue"
@@ -483,7 +493,7 @@ const RegistroItineranciaAEELista = () => {
             </div>
           </div>
           <div className="row mb-4">
-            <div className="col-sm-12 col-md-6 pr-0">
+            <div className="col-sm-12 col-md-2 pr-0">
               <Loader loading={carregandoTurmas} tip="">
                 <SelectComponent
                   id="turma (Regular)"
@@ -498,7 +508,18 @@ const RegistroItineranciaAEELista = () => {
                 />
               </Loader>
             </div>
-            <div className="col-sm-12 col-md-6 p-0">
+            <div className="col-sm-12 col-md-5 pr-0">
+              <LocalizadorPadrao
+                showLabel
+                labelNome="Criado por"
+                onChange={e => setCriador(e)}
+                placeholder="Procure pelo nome do criador da itinerância"
+                url="v1/itinerancias/criadores"
+                campoValor="rf"
+                campoDescricao="nome"
+              />
+            </div>
+            <div className="col-sm-12 col-md-5 p-0">
               <LocalizadorEstudantesAtivos
                 id="estudante"
                 showLabel
