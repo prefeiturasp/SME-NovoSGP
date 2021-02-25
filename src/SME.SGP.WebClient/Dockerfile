@@ -1,9 +1,13 @@
 FROM node:carbon-alpine as build-deps
 WORKDIR /usr/src/app
-COPY src/SME.SGP.WebClient/package.json src/SME.SGP.WebClient/yarn.lock ./
-RUN yarn
+# COPY src/SME.SGP.WebClient/package.json src/SME.SGP.WebClient/yarn.lock ./
+
+ENV NODE_OPTIONS --max_old_space_size=4096
+
 COPY /src/SME.SGP.WebClient/ .
-RUN yarn build
+RUN set NODE_OPTIONS=--max_old_space_size=4096 && \ 
+    yarn install && \
+    yarn build
 
 FROM nginx:1.17-alpine
 
@@ -16,5 +20,4 @@ ADD src/SME.SGP.WebClient/docker/startup.sh /startup.sh
 RUN dos2unix "/startup.sh"
 RUN ["chmod", "+x", "/startup.sh"]
 CMD /startup.sh
-
 
