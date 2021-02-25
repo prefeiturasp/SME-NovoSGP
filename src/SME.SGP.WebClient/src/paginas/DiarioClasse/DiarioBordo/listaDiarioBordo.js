@@ -31,6 +31,7 @@ import {
 } from '~/servicos';
 import ServicoDiarioBordo from '~/servicos/Paginas/DiarioClasse/ServicoDiarioBordo';
 import { Mensagens } from './componentes';
+import { erro } from '~/servicos/alertas';
 
 const ListaDiarioBordo = () => {
   const [carregandoGeral, setCarregandoGeral] = useState(false);
@@ -144,11 +145,9 @@ const ListaDiarioBordo = () => {
   );
 
   useEffect(() => {
-    if (
-      ((dataInicial && dataFinal) || (!dataInicial && !dataFinal)) &&
-      componenteCurricularSelecionado &&
-      numeroPagina
-    ) {
+    if (((dataInicial && dataFinal && dataFinal >= dataInicial) || (!dataInicial && !dataFinal) || (dataInicial && !dataFinal) || (!dataInicial && dataFinal)) && 
+         componenteCurricularSelecionado &&
+         numeroPagina) {
       const dataIncialFormatada =
         dataInicial && dataInicial.format('MM-DD-YYYY');
       const dataFinalFormatada = dataFinal && dataFinal.format('MM-DD-YYYY');
@@ -319,6 +318,18 @@ const ListaDiarioBordo = () => {
     history.push(`${RotasDto.DIARIO_BORDO}/novo`);
   };
 
+  useEffect(() => {
+    if (dataFinal)
+        validarSetarDataFinal(dataFinal);
+  }, [dataInicial]);
+
+  const validarSetarDataFinal = async data => {
+    if (dataInicial && window.moment(data) < window.moment(dataInicial)) {
+      erro('A data final deve ser maior ou igual a data inicial.');
+      setDataFinal('');
+    } else setDataFinal(data);
+  };
+
   return (
     <Loader loading={carregandoGeral} className="w-100">
       <Mensagens />
@@ -387,7 +398,7 @@ const ListaDiarioBordo = () => {
             <div className="col-sm-12 col-md-4 col-lg-3 col-xl-3 mb-4">
               <CampoData
                 valor={dataFinal}
-                onChange={data => setDataFinal(data)}
+                onChange={data => validarSetarDataFinal(data)}
                 name="dataFinal"
                 placeholder="DD/MM/AAAA"
                 formatoData="DD/MM/YYYY"
