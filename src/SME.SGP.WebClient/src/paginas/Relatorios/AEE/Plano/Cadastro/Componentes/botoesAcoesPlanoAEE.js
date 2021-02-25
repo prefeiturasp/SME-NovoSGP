@@ -72,27 +72,31 @@ const BotoesAcoesPlanoAEE = props => {
     dispatch(setDevolutivaEmEdicao(false));
   };
 
-  const salvarDevolutiva = async funcao => {
-    const resposta = await funcao().catch(e => erros(e));
-
-    if (resposta?.data) {
-      sucesso('Registro salvo com sucesso');
-      limparDevolutiva();
-      history.push(RotasDto.RELATORIO_AEE_PLANO);
-    }
-  };
-
-  const escolherAcaoDevolutivas = () => {
+  const escolherAcaoDevolutivas = async () => {
+    let msg = '';
+    let resposta = [];
     if (situacaoDevolutiva) {
-      salvarDevolutiva(ServicoPlanoAEE.salvarDevolutivaCP);
-      return;
+      resposta = await ServicoPlanoAEE.salvarDevolutivaCP().catch(e =>
+        erros(e)
+      );
+      msg = 'Devolutiva realizada com sucesso';
     }
     if (situacaoAtribuicaoPAAI) {
-      salvarDevolutiva(ServicoPlanoAEE.atribuirResponsavel);
-      return;
+      resposta = await ServicoPlanoAEE.atribuirResponsavel().catch(e =>
+        erros(e)
+      );
+      msg = 'Atribuição do responsável realizada com sucesso';
     }
     if (situacaoDevolutivaPAAI) {
-      salvarDevolutiva(ServicoPlanoAEE.salvarDevolutivaPAAI);
+      resposta = await ServicoPlanoAEE.salvarDevolutivaPAAI().catch(e =>
+        erros(e)
+      );
+      msg = 'Encerramento do plano realizado com sucesso';
+    }
+    if (resposta?.data) {
+      sucesso(msg);
+      limparDevolutiva();
+      history.push(RotasDto.RELATORIO_AEE_PLANO);
     }
   };
 
@@ -152,7 +156,7 @@ const BotoesAcoesPlanoAEE = props => {
 
   const onClickSalvar = async () => {
     if (situacaoDevolutiva) {
-      salvarDevolutiva(ServicoPlanoAEE.salvarDevolutivaCP);
+      escolherAcaoDevolutivas();
       return;
     }
     const salvou = await ServicoPlanoAEE.salvarPlano();
@@ -187,7 +191,7 @@ const BotoesAcoesPlanoAEE = props => {
       erros(e)
     );
     if (resposta?.data) {
-      sucesso('Registro salvo com sucesso');
+      sucesso('Encerramento do plano realizado com sucesso');
       limparDevolutiva();
       history.push(RotasDto.RELATORIO_AEE_PLANO);
     }

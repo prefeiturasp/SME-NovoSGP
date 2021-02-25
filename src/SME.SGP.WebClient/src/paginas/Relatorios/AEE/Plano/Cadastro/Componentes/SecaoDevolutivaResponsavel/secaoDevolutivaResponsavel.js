@@ -49,7 +49,7 @@ const SecaoDevolutivaResponsavel = () => {
 
     if (resposta?.data) {
       history.push(RotasDto.RELATORIO_AEE_PLANO);
-      sucesso('Registro salvo com sucesso');
+      sucesso('Atribuição do responsável realizada com sucesso');
     }
   };
 
