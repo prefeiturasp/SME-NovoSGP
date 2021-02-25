@@ -176,6 +176,7 @@ const BotoesAcoesPlanoAEE = props => {
         .catch(e => erros(e))
         .finally(() => dispatch(setExibirLoaderPlanoAEE(false)));
       if (resposta?.data) {
+        sucesso('Solicitação de encerramento realizada com sucesso');
         dispatch(setAtualizarPlanoAEEDados(resposta?.data));
       }
     }

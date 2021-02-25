@@ -33,7 +33,12 @@ const SecaoDevolutivaResponsavel = () => {
           nomeServidor: funcionario?.nomeServidor,
         })
       );
-      dispatch(setDevolutivaEmEdicao(true));
+      if (
+        !dadosAtribuicaoResponsavel?.codigoRF &&
+        !dadosDevolutiva?.responsavelRF
+      ) {
+        dispatch(setDevolutivaEmEdicao(true));
+      }
     }
   };
 
