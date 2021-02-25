@@ -73,6 +73,7 @@ const SecaoDevolutivasPlano = ({ match }) => {
         )}
 
         {(dadosDevolutiva?.podeEditarParecerPAAI ||
+          planoAEEDados?.situacao === situacaoPlanoAEE.DevolutivaPAAI ||
           planoAEEDados?.situacao === situacaoPlanoAEE.Encerrado ||
           planoAEEDados?.situacao ===
             situacaoPlanoAEE.EncerradoAutomaticamento) && (
