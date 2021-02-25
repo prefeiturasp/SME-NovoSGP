@@ -15,6 +15,7 @@ import {
 
 const SecaoDevolutivaResponsavel = () => {
   const [limparCampos, setLimparCampos] = useState(false);
+  const [responsavelSelecionado, setResponsavelSelecionado] = useState();
 
   const dadosDevolutiva = useSelector(store => store.planoAEE.dadosDevolutiva);
   const planoAEEDados = useSelector(store => store.planoAEE.planoAEEDados);
@@ -27,12 +28,12 @@ const SecaoDevolutivaResponsavel = () => {
   const onChangeLocalizador = funcionario => {
     setLimparCampos(false);
     if (funcionario?.codigoRF && funcionario?.nomeServidor) {
-      dispatch(
-        setDadosAtribuicaoResponsavel({
-          codigoRF: funcionario?.codigoRF,
-          nomeServidor: funcionario?.nomeServidor,
-        })
-      );
+      const params = {
+        codigoRF: funcionario?.codigoRF,
+        nomeServidor: funcionario?.nomeServidor,
+      };
+      dispatch(setDadosAtribuicaoResponsavel(params));
+      setResponsavelSelecionado(params);
       if (
         !dadosAtribuicaoResponsavel?.codigoRF &&
         !dadosDevolutiva?.responsavelRF
@@ -65,6 +66,15 @@ const SecaoDevolutivaResponsavel = () => {
     }
   }, [dadosAtribuicaoResponsavel]);
 
+  useEffect(() => {
+    if (!dadosDevolutiva?.codigoRF) {
+      setResponsavelSelecionado({
+        codigoRF: dadosDevolutiva?.responsavelRF,
+        nomeServidor: dadosDevolutiva?.responsavelNome,
+      });
+    }
+  }, [dadosDevolutiva]);
+
   return (
     <>
       <Label text="Responsável" className="mb-3" />
@@ -76,15 +86,11 @@ const SecaoDevolutivaResponsavel = () => {
           limparCampos={limparCampos}
           url="v1/encaminhamento-aee/responsavel/pesquisa"
           valorInicial={{
-            codigoRF:
-              dadosAtribuicaoResponsavel?.codigoRF ||
-              dadosDevolutiva?.responsavelRF,
-            nome:
-              dadosAtribuicaoResponsavel?.codigoRF ||
-              dadosDevolutiva?.responsavelNome,
+            codigoRF: responsavelSelecionado?.codigoRF,
+            nome: responsavelSelecionado?.nomeServidor,
           }}
           desabilitado={
-            dadosAtribuicaoResponsavel?.codigoRF ||
+            responsavelSelecionado?.codigoRF ||
             !dadosDevolutiva?.podeAtribuirResponsavel
           }
         />
@@ -98,7 +104,7 @@ const SecaoDevolutivaResponsavel = () => {
           className="mr-3"
           onClick={onClickCancelar}
           disabled={
-            !dadosAtribuicaoResponsavel?.codigoRF ||
+            !responsavelSelecionado?.codigoRF ||
             !dadosDevolutiva?.podeAtribuirResponsavel
           }
         />
@@ -110,7 +116,7 @@ const SecaoDevolutivaResponsavel = () => {
           bold
           onClick={onClickAtribuirResponsavel}
           disabled={
-            !dadosAtribuicaoResponsavel?.codigoRF ||
+            !responsavelSelecionado?.codigoRF ||
             !dadosDevolutiva?.podeAtribuirResponsavel
           }
         />
