@@ -2,10 +2,7 @@
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -25,7 +22,22 @@ namespace SME.SGP.Aplicacao
             await mediator.Send(new SalvarEncaminhamentoAEECommand(encaminhamento));
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
             await mediator.Send(new ExecutaNotificacaoConclusaoEncaminhamentoAEECommand(encaminhamento.Id, usuarioLogado.CodigoRf, usuarioLogado.Nome));
+
+            await ExcluirPendenciasEncaminhamentoAEE(encaminhamentoId);
+
             return true;
+        }
+
+        private async Task ExcluirPendenciasEncaminhamentoAEE(long encaminhamentoId)
+        {
+            var pendenciasEncaminhamentoAEE = await mediator.Send(new ObterPendenciasDoEncaminhamentoAEEPorIdQuery(encaminhamentoId));
+            if (pendenciasEncaminhamentoAEE != null || !pendenciasEncaminhamentoAEE.Any())
+            {
+                foreach (var pendenciaEncaminhamentoAEE in pendenciasEncaminhamentoAEE)
+                {
+                    await mediator.Send(new ExcluirPendenciaEncaminhamentoAEECommand(pendenciaEncaminhamentoAEE.PendenciaId));
+                }
+            }
         }
 
         private bool VerificaEstudanteNecessitaAEE(EncaminhamentoAEE encaminhamento)

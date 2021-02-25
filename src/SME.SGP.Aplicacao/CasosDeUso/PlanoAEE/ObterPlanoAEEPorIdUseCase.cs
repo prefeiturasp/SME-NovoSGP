@@ -11,11 +11,8 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterPlanoAEEPorIdUseCase : AbstractUseCase, IObterPlanoAEEPorIdUseCase
     {
-        private readonly IRepositorioPlanoAEE repositorioPlanoAEE;
-
-        public ObterPlanoAEEPorIdUseCase(IMediator mediator, IRepositorioPlanoAEE repositorioPlanoAEE) : base(mediator)
+        public ObterPlanoAEEPorIdUseCase(IMediator mediator) : base(mediator)
         {
-            this.repositorioPlanoAEE = repositorioPlanoAEE ?? throw new ArgumentNullException(nameof(repositorioPlanoAEE));
         }
 
         public async Task<PlanoAEEDto> Executar(long? planoAEEId)
@@ -25,7 +22,7 @@ namespace SME.SGP.Aplicacao
 
             if (planoAEEId.HasValue && planoAEEId > 0)
             {
-                var entidadePlano = await repositorioPlanoAEE.ObterPlanoComTurmaPorId(planoAEEId.Value);
+                var entidadePlano = await mediator.Send(new ObterPlanoAEEComTurmaPorIdQuery(planoAEEId.Value));
                 var alunoPorTurmaResposta = await mediator.Send(new ObterAlunoPorCodigoEolQuery(entidadePlano.AlunoCodigo, entidadePlano.Turma.AnoLetivo));
 
                 if (alunoPorTurmaResposta == null)

@@ -23,7 +23,8 @@ namespace SME.SGP.Aplicacao
                                                                                       filtro.AlunoCodigo,
                                                                                       filtro.DataInicio,
                                                                                       filtro.DataFim,
-                                                                                      filtro.Situacao));
+                                                                                      filtro.Situacao,
+                                                                                      filtro.CriadoRf));
 
             if (listaRetorno != null && listaRetorno.Items.Any())
             {
@@ -86,7 +87,7 @@ namespace SME.SGP.Aplicacao
                 itineranciaParaAdicionar.Situacao = item.Situacao.Name();
                 itineranciaParaAdicionar.UeNome = ObterNomeUe(item, itineranciasUes);
                 itineranciaParaAdicionar.TurmaNome = ObterTurmaNome(item, turmas, itineranciasAlunos);
-                
+                itineranciaParaAdicionar.CriadoPor = item.CriadoPor;
 
                 itineranciasParaRetornar.Add(itineranciaParaAdicionar);
             }

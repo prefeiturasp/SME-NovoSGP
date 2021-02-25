@@ -181,11 +181,11 @@ namespace SME.SGP.Dados.Repositorios
             return lookup.Values.FirstOrDefault();
         }
 
-        public async Task<PaginacaoResultadoDto<ItineranciaRetornoQueryDto>> ObterItineranciasPaginado(long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao, int anoLetivo, DateTime? dataInicio, DateTime? dataFim, Paginacao paginacao)
+        public async Task<PaginacaoResultadoDto<ItineranciaRetornoQueryDto>> ObterItineranciasPaginado(long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao, int anoLetivo, DateTime? dataInicio, DateTime? dataFim, string criadoRf, Paginacao paginacao)
         {
-            var query = MontaQueryCompleta(paginacao, dreId, ueId, turmaId, alunoCodigo, situacao, anoLetivo, dataInicio, dataFim);
+            var query = MontaQueryCompleta(paginacao, dreId, ueId, turmaId, alunoCodigo, situacao, anoLetivo, dataInicio, dataFim, criadoRf);
 
-            var parametros = new { dreId, ueId, turmaId, alunoCodigo, situacao, anoLetivo, dataInicio, dataFim };
+            var parametros = new { dreId, ueId, turmaId, alunoCodigo, situacao, anoLetivo, dataInicio, dataFim, criadoRf };
             var retorno = new PaginacaoResultadoDto<ItineranciaRetornoQueryDto>();
 
             using (var multi = await database.Conexao.QueryMultipleAsync(query, parametros))
@@ -199,23 +199,23 @@ namespace SME.SGP.Dados.Repositorios
             return retorno;
         }
 
-        private static string MontaQueryCompleta(Paginacao paginacao, long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao, int anoLetivo, DateTime? dataInicio, DateTime? dataFim)
+        private static string MontaQueryCompleta(Paginacao paginacao, long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao, int anoLetivo, DateTime? dataInicio, DateTime? dataFim, string criadoRf)
         {
             StringBuilder sql = new StringBuilder();
 
-            MontaQueryConsulta(paginacao, sql, contador: false, dreId, ueId, turmaId, alunoCodigo, situacao, anoLetivo, dataInicio, dataFim);
+            MontaQueryConsulta(paginacao, sql, contador: false, dreId, ueId, turmaId, alunoCodigo, situacao, anoLetivo, dataInicio, dataFim, criadoRf);
 
             sql.AppendLine(";");
 
-            MontaQueryConsulta(paginacao, sql, contador: true, dreId, ueId, turmaId, alunoCodigo, situacao, anoLetivo, dataInicio, dataFim);
+            MontaQueryConsulta(paginacao, sql, contador: true, dreId, ueId, turmaId, alunoCodigo, situacao, anoLetivo, dataInicio, dataFim, criadoRf);
 
             return sql.ToString();
         }
-        private static void MontaQueryConsulta(Paginacao paginacao, StringBuilder sql, bool contador, long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao, int anoLetivo, DateTime? dataInicio, DateTime? dataFim)
+        private static void MontaQueryConsulta(Paginacao paginacao, StringBuilder sql, bool contador, long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao, int anoLetivo, DateTime? dataInicio, DateTime? dataFim, string criadoRf)
         {
             ObtenhaCabecalho(sql, contador, dreId, ueId, turmaId, alunoCodigo);
 
-            ObtenhaFiltro(sql, dreId, ueId, turmaId, alunoCodigo, situacao, anoLetivo, dataInicio, dataFim);
+            ObtenhaFiltro(sql, dreId, ueId, turmaId, alunoCodigo, situacao, anoLetivo, dataInicio, dataFim, criadoRf);
 
             if (!contador)
                 sql.AppendLine(" order by i.data_visita desc ");
@@ -235,6 +235,7 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine(", i.data_visita as DataVisita ");
                 sql.AppendLine(", iu2.ue_id as UeId");
                 sql.AppendLine(", i.situacao ");
+                sql.AppendLine(", i.criado_por ");
                 sql.AppendLine($", (select count(*) from itinerancia_aluno ia where ia.itinerancia_id = i.id ) as alunos ");
                 sql.AppendLine($", (select count(*) from itinerancia_ue iu where iu.itinerancia_id = i.id ) as ues ");
 
@@ -255,7 +256,7 @@ namespace SME.SGP.Dados.Repositorios
 
         }
 
-        private static void ObtenhaFiltro(StringBuilder sql, long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao, int anoLetivo, DateTime? dataInicio, DateTime? dataFim)
+        private static void ObtenhaFiltro(StringBuilder sql, long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao, int anoLetivo, DateTime? dataInicio, DateTime? dataFim, string criadoRf)
         {
             sql.AppendLine(" where ue.dre_id = @dreId and not i.excluido ");
             sql.AppendLine(" and i.ano_letivo = @anoLetivo ");
@@ -281,6 +282,9 @@ namespace SME.SGP.Dados.Repositorios
 
             if (!string.IsNullOrEmpty(alunoCodigo))
                 sql.AppendLine("and ia.codigo_aluno = @alunoCodigo");
+
+            if (!string.IsNullOrEmpty(criadoRf))
+                sql.AppendLine("and i.criado_rf = @criadoRf");
         }
 
         public async Task<IEnumerable<ItineranciaCodigoAlunoDto>> ObterCodigoAlunosPorItineranciasIds(long[] itineranciasIds)
@@ -303,7 +307,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<ItineranciaNomeRfCriadorRetornoDto>> ObterRfsCriadoresPorNome(string nomeParaBusca)
         {
             var query = $@"select distinct criado_rf as Rf, criado_por as Nome from itinerancia i 
-                                        where lower(f_unaccent(i.criado_por)) LIKE f_unaccent('%{nomeParaBusca}%') order by criado_por limit 10";
+                                        where lower(f_unaccent(i.criado_por)) LIKE lower(f_unaccent('%{nomeParaBusca}%')) order by criado_por limit 10";
 
             return await database.Conexao.QueryAsync<ItineranciaNomeRfCriadorRetornoDto>(query);
         }

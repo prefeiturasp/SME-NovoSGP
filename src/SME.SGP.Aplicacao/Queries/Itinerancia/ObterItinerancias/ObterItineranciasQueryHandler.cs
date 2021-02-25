@@ -27,6 +27,7 @@ namespace SME.SGP.Aplicacao
                                                                             request.AnoLetivo,
                                                                             request.DataInicio,
                                                                             request.DataFim,
+                                                                            request.CriadoRf,
                                                                             Paginacao);
         }
     }

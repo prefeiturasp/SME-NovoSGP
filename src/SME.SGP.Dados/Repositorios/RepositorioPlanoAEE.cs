@@ -4,6 +4,7 @@ using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -131,6 +132,13 @@ namespace SME.SGP.Dados.Repositorios
                     planoAEEDto.Turma = turma;
                     return planoAEEDto;
                 }, new { planoId })).FirstOrDefault();
+        }
+
+        public async Task<IEnumerable<PlanoAEE>> ObterPlanosAtivos()
+        {
+            var query = @"select * from plano_aee where not excluido and situacao not in (2,3)";
+
+            return await database.Conexao.QueryAsync<PlanoAEE>(query);
         }
     }
 }
