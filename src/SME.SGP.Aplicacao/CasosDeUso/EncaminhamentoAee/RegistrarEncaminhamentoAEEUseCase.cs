@@ -62,7 +62,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
             if(encaminhamentoAEEDto.Situacao != SituacaoAEE.Encaminhado)
             {
-                await mediator.Send(new ExcluirPendenciasEncaminhamentoAEECPCommand(encaminhamentoAEE.Id, encaminhamentoAEE.TurmaId));
+                await mediator.Send(new ExcluirPendenciasEncaminhamentoAEECPCommand(encaminhamentoAEE.TurmaId, encaminhamentoAEE.Id ));
             } 
 
             foreach (var secao in encaminhamentoAEEDto.Secoes)

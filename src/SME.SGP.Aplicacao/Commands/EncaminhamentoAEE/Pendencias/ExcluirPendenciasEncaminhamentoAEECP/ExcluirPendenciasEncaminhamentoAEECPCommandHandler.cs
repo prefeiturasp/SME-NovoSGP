@@ -24,6 +24,8 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> RemoverPendenciasCP(long turmaId, long encaminhamentoAEEId)
         {
             var ue = await mediator.Send(new ObterUEPorTurmaIdQuery(turmaId));
+            if (ue == null)
+                return false;
 
             var funcionarios = await ObterFuncionarios(ue.CodigoUe);
 
