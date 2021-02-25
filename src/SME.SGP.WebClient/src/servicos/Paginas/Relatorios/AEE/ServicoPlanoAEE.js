@@ -292,7 +292,6 @@ class ServicoPlanoAEE {
         planoAEEDados?.situacao
       );
       if (salvou) {
-        sucesso('Registro salvo com sucesso');
         dispatch(setAtualizarDados(true));
       }
 
@@ -357,10 +356,12 @@ class ServicoPlanoAEE {
         ) {
           await this.salvarDevolutivaCP();
           dispatch(setAtualizarDados(true));
+          sucesso('Devolutiva realizada com sucesso');
           return true;
         }
         if (planoAEEDados.situacao === situacaoPlanoAEE.AtribuicaoPAAI) {
           await this.atribuirResponsavel();
+          sucesso('Atribuição do responsável realizada com sucesso');
           return true;
         }
         if (
@@ -368,6 +369,7 @@ class ServicoPlanoAEE {
           dadosDevolutiva?.podeEditarParecerPAAI
         ) {
           await this.salvarDevolutivaPAAI();
+          sucesso('Encerramento do plano realizado com sucesso');
           return true;
         }
       }

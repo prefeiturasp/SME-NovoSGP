@@ -22,7 +22,6 @@ const SecaoDevolutivasPlano = ({ match }) => {
   const dadosDevolutiva = useSelector(store => store.planoAEE.dadosDevolutiva);
   const usuario = useSelector(store => store.usuario);
   const permissoesTela = usuario.permissoes[RotasDto.RELATORIO_AEE_PLANO];
-  const somenteConsulta = useSelector(store => store.navegacao.somenteConsulta);
   const atualizarDados = useSelector(store => store.planoAEE.atualizarDados);
 
   const dispatch = useDispatch();

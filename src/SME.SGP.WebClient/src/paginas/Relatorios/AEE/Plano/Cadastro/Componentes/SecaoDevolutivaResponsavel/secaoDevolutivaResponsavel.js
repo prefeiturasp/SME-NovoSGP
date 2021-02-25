@@ -33,7 +33,12 @@ const SecaoDevolutivaResponsavel = () => {
           nomeServidor: funcionario?.nomeServidor,
         })
       );
-      dispatch(setDevolutivaEmEdicao(true));
+      if (
+        !dadosAtribuicaoResponsavel?.codigoRF &&
+        !dadosDevolutiva?.responsavelRF
+      ) {
+        dispatch(setDevolutivaEmEdicao(true));
+      }
     }
   };
 
@@ -44,7 +49,7 @@ const SecaoDevolutivaResponsavel = () => {
 
     if (resposta?.data) {
       history.push(RotasDto.RELATORIO_AEE_PLANO);
-      sucesso('Registro salvo com sucesso');
+      sucesso('Atribuição do responsável realizada com sucesso');
     }
   };
 
