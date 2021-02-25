@@ -14,7 +14,7 @@ function LocalizadorPadrao({
   onChange,
   valorSelecionado,
   desabilitado,
-  placeholderNome,
+  placeholder,
   url,
   campoValor,
   campoDescricao,
@@ -103,7 +103,7 @@ function LocalizadorPadrao({
             allowClear
           >
             <Input
-              placeholder={placeholderNome}
+              placeholder={placeholder}
               prefix={<i className="fa fa-search fa-lg" />}
               disabled={desabilitado}
               allowClear
@@ -123,7 +123,7 @@ LocalizadorPadrao.propTypes = {
   ]),
   onChange: PropTypes.func,
   desabilitado: PropTypes.bool,
-  placeholderNome: PropTypes.string.isRequired,
+  placeholder: PropTypes.string,
   url: PropTypes.string,
   campoValor: PropTypes.string,
   campoDescricao: PropTypes.string,
@@ -137,6 +137,7 @@ LocalizadorPadrao.defaultProps = {
   url: '',
   campoValor: 'valor',
   campoDescricao: 'descricao',
+  placeholder: '',
 };
 
 export default LocalizadorPadrao;

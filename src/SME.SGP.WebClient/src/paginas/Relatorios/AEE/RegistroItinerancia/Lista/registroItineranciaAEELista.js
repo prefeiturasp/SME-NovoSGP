@@ -511,7 +511,7 @@ const RegistroItineranciaAEELista = () => {
             <div className="col-sm-12 col-md-5 pr-0">
               <LocalizadorPadrao
                 showLabel
-                labelNome="Criador"
+                labelNome="Criado por"
                 onChange={e => setCriador(e)}
                 placeholder="Procure pelo nome do criador da itinerância"
                 url="v1/itinerancias/criadores"
