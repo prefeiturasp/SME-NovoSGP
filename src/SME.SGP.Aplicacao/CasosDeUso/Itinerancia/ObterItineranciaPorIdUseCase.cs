@@ -115,7 +115,7 @@ namespace SME.SGP.Aplicacao
                 {
                     Id = aluno.Id,
                     AlunoCodigo = aluno.CodigoAluno,
-                    TurmaId = aluno.TurmaId,
+                    TurmaId = alunoEol.CodigoTurma,
                     AlunoNome = alunoEol.NomeAluno,
                     NomeAlunoComTurmaModalidade = $"{alunoEol.NomeAluno} - {turmas.FirstOrDefault(t => t.Id == aluno.TurmaId).NomeComModalidade()}",
                     Questoes = MontarQuestoesItineranciaAluno(aluno, questoesBase)

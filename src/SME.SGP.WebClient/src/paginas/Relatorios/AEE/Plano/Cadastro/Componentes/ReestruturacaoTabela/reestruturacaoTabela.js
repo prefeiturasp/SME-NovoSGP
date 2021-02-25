@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 
 import { Button, Colors, DataTable } from '~/componentes';
 
-import { RotasDto } from '~/dtos';
+import { RotasDto, situacaoPlanoAEE } from '~/dtos';
 import { verificaSomenteConsulta } from '~/servicos';
 
 import ModalReestruturacaoPlano from '../ModalReestruturacaoPlano/modalReestruturacaoPlano';
@@ -18,6 +18,7 @@ const ReestruturacaoTabela = ({ key, listaDados, match, semestre }) => {
   const usuario = useSelector(store => store.usuario);
   const permissoesTela = usuario.permissoes[RotasDto.RELATORIO_AEE_PLANO];
   const somenteConsulta = useSelector(store => store.navegacao.somenteConsulta);
+  const planoAEEDados = useSelector(store => store.planoAEE.planoAEEDados);
 
   const alternarModal = booleano => setModalVisivel(booleano || !exibirModal);
 
@@ -68,8 +69,12 @@ const ReestruturacaoTabela = ({ key, listaDados, match, semestre }) => {
   };
 
   useEffect(() => {
-    setModoConsulta(somenteConsulta || !permissoesTela.podeIncluir);
-  }, [somenteConsulta, permissoesTela]);
+    setModoConsulta(
+      somenteConsulta ||
+        !permissoesTela.podeIncluir ||
+        planoAEEDados?.situacao !== situacaoPlanoAEE.EmAndamento
+    );
+  }, [somenteConsulta, permissoesTela, planoAEEDados]);
 
   useEffect(() => {
     verificaSomenteConsulta(permissoesTela);
@@ -97,17 +102,19 @@ const ReestruturacaoTabela = ({ key, listaDados, match, semestre }) => {
           pagination={false}
         />
       </div>
-      {!somenteConsulta && permissoesTela.podeIncluir && (
-        <Button
-          id={`btn-${key}`}
-          label="Nova reestruturação"
-          icon="plus"
-          color={Colors.Azul}
-          border
-          className="mr-3 mt-2"
-          onClick={cliqueNovaRestruturacao}
-        />
-      )}
+      {planoAEEDados?.situacao === situacaoPlanoAEE.EmAndamento &&
+        !somenteConsulta &&
+        permissoesTela.podeIncluir && (
+          <Button
+            id={`btn-${key}`}
+            label="Nova reestruturação"
+            icon="plus"
+            color={Colors.Azul}
+            border
+            className="mr-3 mt-2"
+            onClick={cliqueNovaRestruturacao}
+          />
+        )}
     </>
   );
 };

@@ -30,6 +30,10 @@ namespace SME.SGP.Aplicacao
 
             var idEntidadeEncaminhamento = await repositorioEncaminhamentoAEE.SalvarAsync(encaminhamentoAEE);
 
+            var pendenciaEncaminhamentoAEE = await mediator.Send(new ObterPendenciaEncaminhamentoAEEPorIdQuery(request.EncaminhamentoId));
+            if (pendenciaEncaminhamentoAEE != null)
+                await mediator.Send(new ExcluirPendenciaEncaminhamentoAEECommand(pendenciaEncaminhamentoAEE.PendenciaId));
+
             return idEntidadeEncaminhamento != 0;
         }
     }

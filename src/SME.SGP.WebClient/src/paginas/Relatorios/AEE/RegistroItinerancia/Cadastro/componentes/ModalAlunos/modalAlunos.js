@@ -34,7 +34,7 @@ const ModalAlunos = ({
     if (aluno) {
       setAlunosSelecionadosModal(estadoAntigo => {
         const alunoEncontrado = estadoAntigo.find(
-          item => item.alunoCodigo === aluno.alunoCodigo
+          item => item.alunoCodigo.toString() === aluno.alunoCodigo.toString()
         );
         if (alunoEncontrado) {
           return estadoAntigo;

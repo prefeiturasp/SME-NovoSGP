@@ -318,6 +318,10 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioQuestaoEncaminhamentoAEE, RepositorioQuestaoEncaminhamentoAEE>();
             services.TryAddScoped<IRepositorioRespostaEncaminhamentoAEE, RepositorioRespostaEncaminhamentoAEE>();
 
+            // Pendencias do EncaminhamentoAEE
+            services.TryAddScoped<IRepositorioPendenciaEncaminhamentoAEE, RepositorioPendenciaEncaminhamentoAEE>();
+            
+
 
             // Questionario
             services.TryAddScoped<IRepositorioQuestionario, RepositorioQuestionario>();
@@ -712,6 +716,12 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterRestruturacoesPlanoAEEPorIdUseCase, ObterRestruturacoesPlanoAEEPorIdUseCase>();
             services.TryAddScoped<ISalvarReestruturacaoPlanoAEEUseCase, SalvarReestruturacaoPlanoAEEUseCase>();
 
+            services.TryAddScoped<IExecutaEncerramentoPlanoAEEEstudantesInativosUseCase, ExecutaEncerramentoPlanoAEEEstudantesInativosUseCase>();
+            services.TryAddScoped<IEncerrarPlanosAEEEstudantesInativosUseCase, EncerrarPlanosAEEEstudantesInativosUseCase>();
+            services.TryAddScoped<IObterDevolutivaPlanoAEEPorIdUseCase, ObterDevolutivaPlanoAEEPorIdUseCase>();
+            services.TryAddScoped<IEncerrarPlanoAEEUseCase, EncerrarPlanoAEEUseCase>();
+            
+
             services.TryAddScoped<IObterAlunoPorCodigoEolEAnoLetivoUseCase, ObterAlunoPorCodigoEolEAnoLetivoUseCase>();
             services.TryAddScoped<IRegistrarEncaminhamentoAEEUseCase, RegistrarEncaminhamentoAEEUseCase>();
             services.TryAddScoped<IObterEncaminhamentoPorIdUseCase, ObterEncaminhamentoPorIdUseCase>();
@@ -750,6 +760,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterAnosLetivosItineranciaUseCase, ObterAnosLetivosItineranciaUseCase>();
             services.TryAddScoped<IObterRfsPorNomesItineranciaUseCase, ObterRfsPorNomesItineranciaUseCase>();
 
+            services.TryAddScoped<ICadastrarDevolutivaCPPlanoAEEUseCase, CadastrarDevolutivaCPPlanoAEEUseCase>();
+            services.TryAddScoped<ICadastrarDevolutivaPAAIPlanoAEEUseCase, CadastrarDevolutivaPAAIPlanoAEEUseCase>();
+            services.TryAddScoped<IAtribuirResponsavelPlanoAEEUseCase, AtribuirResponsavelPlanoAEEUseCase>();
 
             services.TryAddScoped<IObterInformacoesDeFrequenciaAlunosPorBimestreUseCase, ObterInformacoesDeFrequenciaAlunosPorBimestreUseCase>();
             services.TryAddScoped<IObterAlunosAtivosPorUeENomeUseCase, ObterAlunosAtivosPorUeENomeUseCase>();
@@ -757,8 +770,9 @@ namespace SME.SGP.IoC
             //Notificacoes EncaminhamentoAEE
             services.TryAddScoped<INotificacaoConclusaoEncaminhamentoAEEUseCase, NotificacaoConclusaoEncaminhamentoAEEUseCase>();
             services.TryAddScoped<INotificacaoEncerramentoEncaminhamentoAEEUseCase, NotificacaoEncerramentoEncaminhamentoAEEUseCase>();
-            services.TryAddScoped<INotificacaoDevolucaoEncaminhamentoAEEUseCase, NotificacaoDevolucaoEncaminhamentoAEEUseCase>();                       
+            services.TryAddScoped<INotificacaoDevolucaoEncaminhamentoAEEUseCase, NotificacaoDevolucaoEncaminhamentoAEEUseCase>();
 
+            services.TryAddScoped<IExecutarSyncGeralGoogleClassroomUseCase, ExecutarSyncGeralGoogleClassroomUseCase>();
         }
     }
 }

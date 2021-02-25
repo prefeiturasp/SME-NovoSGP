@@ -1,9 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
-using SME.SGP.Infra;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -15,6 +12,24 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<bool> Executar(long encaminhamentoAeeId)
-            => await mediator.Send(new ExcluirEncaminhamentoAEECommand(encaminhamentoAeeId));
+        {
+            await mediator.Send(new ExcluirEncaminhamentoAEECommand(encaminhamentoAeeId));
+
+            await ExcluirPendenciasEncaminhamentoAEE(encaminhamentoAeeId);
+
+            return true;
+        }
+
+        private async Task ExcluirPendenciasEncaminhamentoAEE(long encaminhamentoId)
+        {
+            var pendenciasEncaminhamentoAEE = await mediator.Send(new ObterPendenciasDoEncaminhamentoAEEPorIdQuery(encaminhamentoId));
+            if (pendenciasEncaminhamentoAEE != null || !pendenciasEncaminhamentoAEE.Any())
+            {
+                foreach (var pendenciaEncaminhamentoAEE in pendenciasEncaminhamentoAEE)
+                {
+                    await mediator.Send(new ExcluirPendenciaEncaminhamentoAEECommand(pendenciaEncaminhamentoAEE.PendenciaId));
+                }
+            }
+        }
     }
 }

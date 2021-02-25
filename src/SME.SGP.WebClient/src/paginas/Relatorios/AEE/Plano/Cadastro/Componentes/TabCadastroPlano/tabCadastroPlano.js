@@ -6,6 +6,8 @@ import { ContainerTabsCard } from '~/componentes/tabs/tabs.css';
 import ServicoPlanoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoPlanoAEE';
 import SecaoPlanoCollapse from '../SecaoPlanoCollapse/secaoPlanoCollapse';
 import SecaoReestruturacaoPlano from '../SecaoReestruturacaoPlano/secaoReestruturacaoPlano';
+import SecaoDevolutivasPlanoCollapse from '../SecaoDevolutivasPlano/secaoDevolutivasPlanoCollapse';
+import { situacaoPlanoAEE } from '~/dtos';
 
 const { TabPane } = Tabs;
 
@@ -16,6 +18,7 @@ const TabCadastroPasso = props => {
   const dadosCollapseLocalizarEstudante = useSelector(
     store => store.collapseLocalizarEstudante.dadosCollapseLocalizarEstudante
   );
+  const planoAEEDados = useSelector(store => store.planoAEE.planoAEEDados);
 
   const cliqueTab = async key => {
     ServicoPlanoAEE.cliqueTabPlanoAEE(key, temId);
@@ -31,13 +34,26 @@ const TabCadastroPasso = props => {
         )}
       </TabPane>
       {temId && (
-        <TabPane tab="Reestruturação" key="2">
+        <TabPane
+          tab="Reestruturação"
+          key="2"
+          disabled={
+            planoAEEDados?.situacao !== situacaoPlanoAEE.EmAndamento &&
+            planoAEEDados?.situacao !== situacaoPlanoAEE.Encerrado &&
+            planoAEEDados?.situacao !==
+              situacaoPlanoAEE.EncerradoAutomaticamento
+          }
+        >
           <SecaoReestruturacaoPlano match={match} />
         </TabPane>
       )}
       {temId && (
-        <TabPane tab="Devolutivas" disabled key="3">
-          <></>
+        <TabPane
+          tab="Devolutivas"
+          key="3"
+          disabled={planoAEEDados?.situacao === situacaoPlanoAEE.EmAndamento}
+        >
+          <SecaoDevolutivasPlanoCollapse match={match} />
         </TabPane>
       )}
     </ContainerTabsCard>
