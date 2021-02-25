@@ -15,6 +15,7 @@ const inicial = {
   parecerPAAI: '',
   devolutivaEmEdicao: false,
   dadosAtribuicaoResponsavel: {},
+  dadosModalReestruturacao: {},
 };
 
 export default function PlanoAEE(state = inicial, action) {
@@ -150,6 +151,12 @@ export default function PlanoAEE(state = inicial, action) {
         return {
           ...draft,
           dadosAtribuicaoResponsavel: action.payload,
+        };
+      }
+      case '@planoAEE/setDadosModalReestruturacao': {
+        return {
+          ...draft,
+          dadosModalReestruturacao: action.payload,
         };
       }
       default:
