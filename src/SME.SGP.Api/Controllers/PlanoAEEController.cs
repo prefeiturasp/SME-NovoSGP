@@ -68,9 +68,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.PAEE_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterPlanoAeePorVersao(long versaoPlanoId, [FromServices] IObterQuestoesPlanoAEEPorVersaoUseCase useCase)
+        public async Task<IActionResult> ObterPlanoAeePorVersao(long versaoPlanoId, [FromQuery] string turmaCodigo, [FromServices] IObterQuestoesPlanoAEEPorVersaoUseCase useCase)
         {
-            return Ok(await useCase.Executar(versaoPlanoId));
+            return Ok(await useCase.Executar(new FiltroPesquisaQuestoesPlanoAEEDto(versaoPlanoId, turmaCodigo)));
         }
 
         [HttpPost("salvar")]
