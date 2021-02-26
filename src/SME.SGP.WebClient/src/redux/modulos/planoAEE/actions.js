@@ -87,3 +87,8 @@ export const setDadosAtribuicaoResponsavel = payload => ({
   type: '@planoAEE/setDadosAtribuicaoResponsavel',
   payload,
 });
+
+export const setDadosModalReestruturacao = payload => ({
+  type: '@planoAEE/setDadosModalReestruturacao',
+  payload,
+});
