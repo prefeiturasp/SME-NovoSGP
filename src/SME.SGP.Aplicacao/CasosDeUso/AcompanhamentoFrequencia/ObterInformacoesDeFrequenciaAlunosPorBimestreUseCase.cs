@@ -19,10 +19,10 @@ namespace SME.SGP.Aplicacao
         public async Task<FrequenciaAlunosPorBimestreDto> Executar(ObterFrequenciaAlunosPorBimestreDto dto)
         {
             var componenteCurricular = await ObterComponenteCurricularAsync(dto.ComponenteCurricularId);
-            if(componenteCurricular is null)
+            if (componenteCurricular is null)
                 throw new NegocioException("O componente curricular informado não foi encontrado.");
 
-            if(!componenteCurricular.RegistraFrequencia)
+            if (!componenteCurricular.RegistraFrequencia)
                 throw new NegocioException("Este componente curricular não possui controle de frequência.");
 
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(dto.TurmaId));
@@ -55,7 +55,7 @@ namespace SME.SGP.Aplicacao
             var aulasDadas = await mediator.Send(new ObterAulasDadasPorTurmaDisciplinaEPeriodoEscolarQuery(turma.Id, componenteCurricularId, tipoCalendarioId, periodoEscolar.Id));
 
             var frequenciaAlunosRegistrada = await mediator.Send(new ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(turma, componenteCurricularId, periodoEscolar.Id));
-            var frequenciaAlunos = await Task.WhenAll(alunos.Select(x => DefinirFrequenciaAlunoListagemAsync(x, turma, frequenciaAlunosRegistrada, periodoEscolar)));
+            var frequenciaAlunos = await DefinirFrequenciaAlunoListagemAsync(alunos, turma, frequenciaAlunosRegistrada, periodoEscolar);
 
             return new FrequenciaAlunosPorBimestreDto
             {
@@ -68,29 +68,37 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        private async Task<int> ObterAulasPrevistasAsync(Turma turma, long componenteCurricularId, long tipoCalendarioId, int? bimestre = null) 
+        private async Task<int> ObterAulasPrevistasAsync(Turma turma, long componenteCurricularId, long tipoCalendarioId, int? bimestre = null)
             => turma.ModalidadeCodigo != Modalidade.Infantil
                 ? await mediator.Send(new ObterQuantidadeAulasPrevistasPorTurmaEBimestreQuery(turma.CodigoTurma, tipoCalendarioId, componenteCurricularId, bimestre))
                 : default;
 
-        private async Task<AlunoFrequenciaDto> DefinirFrequenciaAlunoListagemAsync(AlunoPorTurmaResposta aluno, Turma turma, IEnumerable<FrequenciaAluno> frequenciaAlunosRegistrada, PeriodoEscolar periodoEscolar)
+        private async Task<IEnumerable<AlunoFrequenciaDto>> DefinirFrequenciaAlunoListagemAsync(IEnumerable<AlunoPorTurmaResposta> alunos, Turma turma, IEnumerable<FrequenciaAluno> frequenciaAlunosRegistrada, PeriodoEscolar periodoEscolar)
         {
-            var frequenciaAlunoRegistrada = frequenciaAlunosRegistrada.FirstOrDefault(y => y.CodigoAluno == aluno.CodigoAluno);
-            var ausencias = frequenciaAlunoRegistrada?.TotalAusencias ?? default;
-            var compensacoes = frequenciaAlunoRegistrada?.TotalCompensacoes ?? default;
-            var marcador = periodoEscolar != null ? await mediator.Send(new ObterMarcadorFrequenciaAlunoQuery(aluno, periodoEscolar, turma.ModalidadeCodigo)) : null;
-
-            return new AlunoFrequenciaDto
+            List<AlunoFrequenciaDto> novaListaAlunos = new List<AlunoFrequenciaDto>();
+            foreach (var aluno in alunos)
             {
-                AlunoRf = long.Parse(aluno.CodigoAluno),
-                Ausencias = ausencias,
-                Compensacoes = compensacoes,
-                Frequencia = frequenciaAlunoRegistrada?.PercentualFrequencia ?? 100,
-                MarcadorFrequencia = marcador,
-                Nome = aluno.NomeAluno,
-                NumeroChamada = aluno.NumeroAlunoChamada,
-                PossuiJustificativas = ausencias > 0
-            };
+                var frequenciaAlunoRegistrada = frequenciaAlunosRegistrada.FirstOrDefault(y => y.CodigoAluno == aluno.CodigoAluno);
+                var ausencias = frequenciaAlunoRegistrada?.TotalAusencias ?? default;
+                var compensacoes = frequenciaAlunoRegistrada?.TotalCompensacoes ?? default;
+                var marcador = periodoEscolar != null ? await mediator.Send(new ObterMarcadorFrequenciaAlunoQuery(aluno, periodoEscolar, turma.ModalidadeCodigo)) : null;
+                var alunoPossuiPlanoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, turma.AnoLetivo));
+
+                novaListaAlunos.Add(new AlunoFrequenciaDto
+                {
+                    AlunoRf = long.Parse(aluno.CodigoAluno),
+                    Ausencias = ausencias,
+                    Compensacoes = compensacoes,
+                    Frequencia = frequenciaAlunoRegistrada?.PercentualFrequencia ?? 100,
+                    MarcadorFrequencia = marcador,
+                    Nome = aluno.NomeAluno,
+                    NumeroChamada = aluno.NumeroAlunoChamada,
+                    PossuiJustificativas = ausencias > 0,
+                    EhAtendidoAEE = alunoPossuiPlanoAEE
+                });
+            }
+
+            return novaListaAlunos;
         }
 
         private async Task<DisciplinaDto> ObterComponenteCurricularAsync(long componenteCurricularId)
@@ -111,7 +119,7 @@ namespace SME.SGP.Aplicacao
             var aulasDadas = await mediator.Send(new ObterAulasDadasPorTurmaDisciplinaEPeriodoEscolarQuery(turma.Id, componenteCurricularId, tipoCalendarioId, periodosEscolaresIds));
 
             var frequenciaAlunosRegistrada = await ObterFrequenciaAlunosRegistradaFinalAsync(turma, componenteCurricularId, tipoCalendarioId, periodosEscolaresIds);
-            var frequenciaAlunos = await Task.WhenAll(alunos.Select(x => DefinirFrequenciaAlunoListagemAsync(x, turma, frequenciaAlunosRegistrada, null)));
+            var frequenciaAlunos = await DefinirFrequenciaAlunoListagemAsync(alunos, turma, frequenciaAlunosRegistrada, null);
 
             return new FrequenciaAlunosPorBimestreDto
             {
