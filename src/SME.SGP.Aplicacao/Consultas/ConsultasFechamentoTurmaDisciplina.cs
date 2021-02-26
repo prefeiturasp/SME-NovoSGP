@@ -1,4 +1,5 @@
-﻿using SME.SGP.Aplicacao.Integracoes;
+﻿using MediatR;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
@@ -31,6 +32,7 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoAluno servicoAluno;
         private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
+        private readonly IMediator mediator;
 
         public ConsultasFechamentoTurmaDisciplina(IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina,
             IRepositorioTipoCalendario repositorioTipoCalendario,
@@ -50,7 +52,8 @@ namespace SME.SGP.Aplicacao
             IConsultasDisciplina consultasDisciplina,
             IConsultasFechamentoAluno consultasFechamentoAluno,
             IConsultasPeriodoFechamento consultasPeriodoFechamento,
-            IConsultasTurma consultasTurma
+            IConsultasTurma consultasTurma,
+            IMediator mediator
             )
         {
             this.repositorioFechamentoTurmaDisciplina = repositorioFechamentoTurmaDisciplina ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurmaDisciplina));
@@ -196,6 +199,7 @@ namespace SME.SGP.Aplicacao
                     alunoDto.NumeroChamada = aluno.NumeroAlunoChamada;
                     alunoDto.Nome = aluno.NomeAluno;
                     alunoDto.Ativo = aluno.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Ativo);
+                    alunoDto.EhAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, turma.AnoLetivo));
 
                     var anotacaoAluno = await consultasFehcamentoAluno.ObterAnotacaoPorAlunoEFechamento(fechamentoTurma?.Id ?? 0, aluno.CodigoAluno);
                     alunoDto.TemAnotacao = anotacaoAluno != null && anotacaoAluno.Anotacao != null &&

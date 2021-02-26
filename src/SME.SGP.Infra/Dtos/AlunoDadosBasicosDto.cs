@@ -22,6 +22,7 @@ namespace SME.SGP.Infra
         public double Frequencia { get; set; }
         public MarcadorFrequenciaDto Marcador { get; set; }
         public string NomeResponsavel { get; set; }
+        public bool EhAntedidoAEE { get; set; }
         public string TipoResponsavel { get; set; }
         public string CelularResponsavel { get; set; }
         public DateTime DataAtualizacaoContato { get; set; }
