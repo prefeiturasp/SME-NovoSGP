@@ -6,7 +6,7 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterAlunoPorCodigoEolQuery : IRequest<AlunoPorTurmaResposta>
     {
-        public ObterAlunoPorCodigoEolQuery(string codigoAluno, int anoLetivo, string codigoTurma)
+        public ObterAlunoPorCodigoEolQuery(string codigoAluno, int anoLetivo, string codigoTurma = null)
         {
             CodigoAluno = codigoAluno;
             AnoLetivo = anoLetivo;
