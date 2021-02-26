@@ -139,6 +139,7 @@ namespace SME.SGP.Aplicacao
             var nomeAvaliacaoAuditoriaInclusao = string.Empty;
             var nomeAvaliacaoAuditoriaAlteracao = string.Empty;
 
+            
             foreach (var periodoEscolar in periodosEscolares)
             {
                 AtividadeAvaliativa atividadeAvaliativaParaObterTipoNota = null;
@@ -189,11 +190,13 @@ namespace SME.SGP.Aplicacao
 
                     foreach (var aluno in alunosForeach)
                     {
+                        var alunoPossuiPlanoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, filtro.AnoLetivo));
                         var notaConceitoAluno = new NotasConceitosAlunoRetornoDto()
                         {
                             Id = aluno.CodigoAluno,
                             Nome = aluno.NomeValido(),
-                            NumeroChamada = aluno.NumeroAlunoChamada
+                            NumeroChamada = aluno.NumeroAlunoChamada,
+                            EhAtendidoAEE = alunoPossuiPlanoAEE
                         };
                         var notasAvaliacoes = new List<NotasConceitosNotaAvaliacaoRetornoDto>();
 
