@@ -223,6 +223,7 @@ namespace SME.SGP.Aplicacao
                 if (aula.DataAula < aluno.DataMatricula.Date)
                     continue;
 
+                var alunoPossuiPlanoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, turma.AnoLetivo));
                 var registroFrequenciaAluno = new RegistroFrequenciaAlunoDto
                 {
                     CodigoAluno = aluno.CodigoAluno,
@@ -238,7 +239,8 @@ namespace SME.SGP.Aplicacao
                     NomeResponsavel = aluno.NomeResponsavel,
                     TipoResponsavel = ObterTipoResponsavel(aluno.TipoResponsavel),
                     CelularResponsavel = aluno.CelularResponsavel,
-                    DataAtualizacaoContato = aluno.DataAtualizacaoContato
+                    DataAtualizacaoContato = aluno.DataAtualizacaoContato,
+                    EhAtendidoAEE = alunoPossuiPlanoAEE
                 };
 
                 // Marcador visual da situação
