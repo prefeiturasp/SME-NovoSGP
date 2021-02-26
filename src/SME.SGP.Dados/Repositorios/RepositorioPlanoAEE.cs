@@ -130,7 +130,7 @@ namespace SME.SGP.Dados.Repositorios
                                         inner join turma tu on tu.id = pa.turma_id 
                                         where pa.aluno_codigo = @codigoEstudante 
                                         and pa.situacao <> 3
-                                        and EXTRACT(ISOYEAR from pa.aluno_codigo) = @ano 
+                                        and EXTRACT(ISOYEAR from pa.criado_em) = @ano 
                                         limit 1";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<PlanoAEEResumoDto>(query, new { codigoEstudante, ano });
