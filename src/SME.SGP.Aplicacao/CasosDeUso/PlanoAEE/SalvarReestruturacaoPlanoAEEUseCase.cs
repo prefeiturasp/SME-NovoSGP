@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -11,8 +12,11 @@ namespace SME.SGP.Aplicacao
 {
     public class SalvarReestruturacaoPlanoAEEUseCase : AbstractUseCase, ISalvarReestruturacaoPlanoAEEUseCase
     {
-        public SalvarReestruturacaoPlanoAEEUseCase(IMediator mediator) : base(mediator)
+        private readonly IUnitOfWork unitOfWork;
+
+        public SalvarReestruturacaoPlanoAEEUseCase(IMediator mediator, IUnitOfWork unitOfWork) : base(mediator)
         {
+            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
         public async Task<long> Executar(PlanoAEEReestrutucacaoPersistenciaDto param)
@@ -28,7 +32,29 @@ namespace SME.SGP.Aplicacao
             reestruturacao.Semestre = param.Semestre;
             reestruturacao.Descricao = param.Descricao;
 
-            return await mediator.Send(new SalvarPlanoAEEReestruturacaoCommand(reestruturacao));
+            long reestruturacaoId = await SalvarReestruturacao(reestruturacao);
+
+            return reestruturacaoId;
+        }
+
+        private async Task<long> SalvarReestruturacao(PlanoAEEReestruturacao reestruturacao)
+        {
+            using (var transacao = unitOfWork.IniciarTransacao())
+            {
+                try
+                {
+                    var reestruturacaoId = await mediator.Send(new SalvarPlanoAEEReestruturacaoCommand(reestruturacao));
+                    await mediator.Send(new AtualizarSituacaoPlanoAEEPorVersaoCommand(reestruturacao.PlanoAEEVersaoId, SituacaoPlanoAEE.Reestruturado));
+
+                    unitOfWork.PersistirTransacao();
+                    return reestruturacaoId;
+                }
+                catch (Exception e)
+                {
+                    unitOfWork.Rollback();
+                    throw;
+                }
+            }
         }
 
         private async Task<bool> ExisteReestruturacaoParaVersao(long versaoId, long? reestruturacaoId)

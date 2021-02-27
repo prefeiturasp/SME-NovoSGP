@@ -140,5 +140,14 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<PlanoAEE>(query);
         }
+
+        public async Task<int> AtualizarSituacaoPlanoPorVersao(long versaoId, int situacao)
+        {
+            var query = @"update plano_aee
+                           set situacao = @situacao
+                          where id in (select plano_aee_id from plano_aee_versao where id = @versaoId) ";
+
+            return await database.Conexao.ExecuteAsync(query, new { versaoId, situacao });
+        }
     }
 }

@@ -6,8 +6,8 @@ namespace SME.SGP.Dominio.Enumerados
     {
         [Display(Name = "Em andamento")]
         EmAndamento = 1,
-        [Display(Name = "Cancelado")]
-        Cancelado = 2,
+        [Display(Name = "Em andamento/Reestruturação")]
+        Reestruturado = 2,
         [Display(Name = "Encerrado")]
         Encerrado = 3,
         [Display(Name = "Aguardando devolutiva coordenação")]
