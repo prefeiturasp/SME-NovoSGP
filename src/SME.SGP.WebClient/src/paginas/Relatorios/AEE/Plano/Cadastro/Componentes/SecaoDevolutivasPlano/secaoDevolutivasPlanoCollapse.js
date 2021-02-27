@@ -66,10 +66,10 @@ const SecaoDevolutivasPlano = ({ match }) => {
             !dadosDevolutiva?.podeEditarParecerCoordenacao
           }
         />
-        {(dadosDevolutiva?.podeAtribuirResponsavel ||
-          (planoAEEDados?.situacao === situacaoPlanoAEE.DevolutivaPAAI &&
-            !dadosDevolutiva?.podeEditarParecerPAAI)) && (
+        {dadosDevolutiva?.podeAtribuirResponsavel ? (
           <SecaoDevolutivaResponsavel />
+        ) : (
+          ''
         )}
 
         {(dadosDevolutiva?.podeEditarParecerPAAI ||

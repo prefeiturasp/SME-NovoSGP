@@ -1,7 +1,7 @@
 import { Form, Formik } from 'formik';
 import * as moment from 'moment';
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import shortid from 'shortid';
 import * as Yup from 'yup';
 import {
@@ -19,15 +19,22 @@ const ModalCadastroDiasHorario = props => {
   const { onClose, exibirModal, dadosIniciais } = props;
 
   const [refForm, setRefForm] = useState({});
+  const [valoresIniciais, setValoresIniciais] = useState({});
 
   const [emEdicao, setEmEdicao] = useState(false);
 
-  const valoresIniciais = {
-    id: dadosIniciais ? dadosIniciais.id : 0,
-    diaSemana: dadosIniciais ? dadosIniciais.diaSemana : '',
-    horarioInicio: dadosIniciais ? moment(dadosIniciais.horarioInicio) : '',
-    horarioTermino: dadosIniciais ? moment(dadosIniciais.horarioTermino) : '',
-  };
+  useEffect(() => {
+    if (dadosIniciais?.id) {
+      setValoresIniciais({
+        id: dadosIniciais ? dadosIniciais.id : 0,
+        diaSemana: dadosIniciais ? dadosIniciais.diaSemana : '',
+        horarioInicio: dadosIniciais ? moment(dadosIniciais.horarioInicio) : '',
+        horarioTermino: dadosIniciais
+          ? moment(dadosIniciais.horarioTermino)
+          : '',
+      });
+    }
+  }, [dadosIniciais]);
 
   const validacoes = Yup.object().shape({
     diaSemana: Yup.string()
@@ -36,6 +43,12 @@ const ModalCadastroDiasHorario = props => {
     horarioInicio: momentSchema.required('Campo obrigatório'),
     horarioTermino: momentSchema.required('Campo obrigatório'),
   });
+
+  const limparDadosModal = () => {
+    setValoresIniciais({});
+    setEmEdicao(false);
+    refForm.resetForm();
+  };
 
   const listaDiasSemana = [
     {
@@ -76,20 +89,17 @@ const ModalCadastroDiasHorario = props => {
         'Deseja realmente cancelar as alterações?'
       );
       if (confirmou) {
-        setEmEdicao(false);
-        refForm.resetForm();
+        limparDadosModal();
         onClose();
       }
     } else {
-      setEmEdicao(false);
-      refForm.resetForm();
+      limparDadosModal();
       onClose();
     }
   };
 
   const onSalvar = valores => {
-    refForm.resetForm();
-    setEmEdicao(false);
+    limparDadosModal();
     onClose(valores);
   };
 

@@ -48,7 +48,7 @@ const DataTable = props => {
   };
 
   return (
-    <Container className="table-responsive" semHover>
+    <Container className="table-responsive" semHover={semHover}>
       <Table
         id={id}
         scroll={scroll}
