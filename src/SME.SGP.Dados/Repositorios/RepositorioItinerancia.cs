@@ -235,7 +235,7 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine(", i.data_visita as DataVisita ");
                 sql.AppendLine(", iu2.ue_id as UeId");
                 sql.AppendLine(", i.situacao ");
-                sql.AppendLine(", i.criado_por ");
+                sql.AppendLine(", i.criado_por||'('||i.criado_rf||')' as criado_por");
                 sql.AppendLine($", (select count(*) from itinerancia_aluno ia where ia.itinerancia_id = i.id ) as alunos ");
                 sql.AppendLine($", (select count(*) from itinerancia_ue iu where iu.itinerancia_id = i.id ) as ues ");
 
