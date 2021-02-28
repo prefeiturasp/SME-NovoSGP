@@ -174,7 +174,7 @@ const BotoesAcoesPlanoAEE = props => {
       dispatch(setQuestionarioDinamicoEmEdicao(false));
 
       if (registroNovo) {
-        history.push(`${RotasDto.RELATORIO_AEE_PLANO}/editar/${planoId}`);
+        history.push(`${RotasDto.RELATORIO_AEE_PLANO}`);
       } else {
         dispatch(setAtualizarDados(true));
       }
