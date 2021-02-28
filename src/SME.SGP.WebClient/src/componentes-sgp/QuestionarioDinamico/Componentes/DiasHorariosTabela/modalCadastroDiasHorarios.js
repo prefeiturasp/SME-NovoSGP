@@ -14,6 +14,7 @@ import {
 } from '~/componentes';
 import Button from '~/componentes/button';
 import { confirmar } from '~/servicos';
+import QuestionarioDinamicoFuncoes from '../../Funcoes/QuestionarioDinamicoFuncoes';
 
 const ModalCadastroDiasHorario = props => {
   const { onClose, exibirModal, dadosIniciais } = props;
@@ -37,36 +38,7 @@ const ModalCadastroDiasHorario = props => {
     horarioTermino: momentSchema.required('Campo obrigatório'),
   });
 
-  const listaDiasSemana = [
-    {
-      valor: 'Domingo',
-      desc: 'Domingo',
-    },
-    {
-      valor: 'Segunda',
-      desc: 'Segunda',
-    },
-    {
-      valor: 'Terça',
-      desc: 'Terça',
-    },
-    {
-      valor: 'Quarta',
-      desc: 'Quarta',
-    },
-    {
-      valor: 'Quinta',
-      desc: 'Quinta',
-    },
-    {
-      valor: 'Sexta',
-      desc: 'Sexta',
-    },
-    {
-      valor: 'Sábado',
-      desc: 'Sábado',
-    },
-  ];
+  const listaDiasSemana = QuestionarioDinamicoFuncoes.obterListaDiasSemana();
 
   const fecharModal = async () => {
     if (emEdicao) {

@@ -405,6 +405,62 @@ class QuestionarioDinamicoFuncoes {
       dispatch(setFormsQuestionarioDinamico(param));
     }
   };
+
+  obterListaDiasSemana = () => {
+    return [
+      {
+        valor: 'Domingo',
+        desc: 'Domingo',
+        ordem: 1,
+      },
+      {
+        valor: 'Segunda',
+        desc: 'Segunda',
+        ordem: 2,
+      },
+      {
+        valor: 'Terça',
+        desc: 'Terça',
+        ordem: 3,
+      },
+      {
+        valor: 'Quarta',
+        desc: 'Quarta',
+        ordem: 4,
+      },
+      {
+        valor: 'Quinta',
+        desc: 'Quinta',
+        ordem: 5,
+      },
+      {
+        valor: 'Sexta',
+        desc: 'Sexta',
+        ordem: 6,
+      },
+      {
+        valor: 'Sábado',
+        desc: 'Sábado',
+        ordem: 7,
+      },
+    ];
+  };
+
+  ordenarDiasDaSemana = diasDaSemanaAtual => {
+    const listaOrdenada = [];
+
+    const diasDaSemana = this.obterListaDiasSemana();
+
+    diasDaSemana.forEach(dia => {
+      const temEsseDia = diasDaSemanaAtual.find(
+        item => item.diaSemana === dia.valor
+      );
+      if (temEsseDia) {
+        listaOrdenada.push(temEsseDia);
+      }
+    });
+    return listaOrdenada;
+  };
 }
 
 export default new QuestionarioDinamicoFuncoes();
