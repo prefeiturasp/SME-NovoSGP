@@ -161,6 +161,10 @@ const CollapseLocalizarEstudanteDados = props => {
 
       if (resposta?.data) {
         setListaTurmas(resposta.data);
+
+        if (resposta?.data.length === 1) {
+          setCodigoTurma(resposta.data[0].codigo);
+        }
       }
     }
   }, [anoAtual, codigoUe]);
@@ -301,6 +305,7 @@ const CollapseLocalizarEstudanteDados = props => {
             valueSelect={codigoTurma}
             onChange={onChangeTurma}
             placeholder="Turma"
+            disabled={listaTurmas?.length === 1}
           />
         </Loader>
       </div>

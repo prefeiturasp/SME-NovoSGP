@@ -1,7 +1,7 @@
 import moment from 'moment';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import shortid from 'shortid';
 import {
   Colors,
@@ -12,6 +12,7 @@ import {
 import {
   setAlteracaoDados,
   setAtualizarDados,
+  setDadosModalReestruturacao,
 } from '~/redux/modulos/planoAEE/actions';
 import { confirmar, erros, sucesso } from '~/servicos';
 import ServicoPlanoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoPlanoAEE';
@@ -36,6 +37,9 @@ const ModalReestruturacaoPlano = ({
     modoConsulta || !!Object.keys(dadosVisualizacao).length;
 
   const dispatch = useDispatch();
+  const dadosModalReestruturacao = useSelector(
+    store => store.planoAEE.dadosModalReestruturacao
+  );
 
   const perguntarSalvarListaUsuario = async () => {
     const resposta = await confirmar(
@@ -74,7 +78,64 @@ const ModalReestruturacaoPlano = ({
     }
     setModoEdicao(false);
     alternarModal();
+
+    setVersao('');
+    setVersaoId();
+    setDescricao();
+    setDescricaoSimples();
+    setReestruturacaoId(0);
+    setListaVersao([]);
+    dispatch(setDadosModalReestruturacao({}));
   };
+
+  const mudarVersao = useCallback(
+    valor => {
+      const acharVersao = listaVersao.find(
+        item => String(item.id) === String(valor)
+      );
+      setModoEdicao(true);
+      setVersaoId(valor);
+      setVersao(acharVersao?.descricao);
+      dispatch(
+        setDadosModalReestruturacao({
+          ...dadosModalReestruturacao,
+          versaoId: valor,
+        })
+      );
+    },
+    [dispatch, dadosModalReestruturacao, listaVersao]
+  );
+
+  const removerFormatacao = texto => {
+    return texto?.replace(/&nbsp;|<.*?>/g, '') || '';
+  };
+
+  const mudarDescricao = useCallback(
+    texto => {
+      const textoAlterado = ehVisualizacao
+        ? texto.localeCompare(dadosVisualizacao.descricao)
+        : false;
+      if ((texto && !ehVisualizacao) || textoAlterado) {
+        setModoEdicao(true);
+      }
+      const textoSimples = removerFormatacao(texto);
+
+      setDescricao(texto);
+      setDescricaoSimples(textoSimples);
+      dispatch(
+        setDadosModalReestruturacao({
+          ...dadosModalReestruturacao,
+          descricao: texto,
+        })
+      );
+    },
+    [
+      dispatch,
+      dadosModalReestruturacao,
+      dadosVisualizacao.descricao,
+      ehVisualizacao,
+    ]
+  );
 
   const fecharModal = async () => {
     alternarModal();
@@ -82,35 +143,11 @@ const ModalReestruturacaoPlano = ({
       const ehPraCancelar = await perguntarSalvarListaUsuario();
       if (ehPraCancelar) {
         setModoEdicao(false);
+        dispatch(setDadosModalReestruturacao({}));
         return;
       }
       alternarModal(true);
     }
-  };
-
-  const mudarVersao = valor => {
-    const acharVersao = listaVersao.find(
-      item => String(item.id) === String(valor)
-    );
-    setModoEdicao(true);
-    setVersaoId(valor);
-    setVersao(acharVersao?.descricao);
-  };
-
-  const removerFormatacao = texto => {
-    return texto?.replace(/&nbsp;|<.*?>/g, '') || '';
-  };
-
-  const mudarDescricao = texto => {
-    const textoAlterado = ehVisualizacao
-      ? texto.localeCompare(dadosVisualizacao.descricao)
-      : false;
-    if ((texto && !ehVisualizacao) || textoAlterado) {
-      setModoEdicao(true);
-    }
-    const textoSimples = removerFormatacao(texto);
-    setDescricao(texto);
-    setDescricaoSimples(textoSimples);
   };
 
   useEffect(() => {
@@ -147,6 +184,21 @@ const ModalReestruturacaoPlano = ({
       obterVersoes();
     }
   }, [obterVersoes, reestruturacaoId, ehVisualizacao]);
+
+  useEffect(() => {
+    if (!versaoId && dadosModalReestruturacao?.versaoId) {
+      mudarVersao(dadosModalReestruturacao?.versaoId);
+    }
+    if (!descricao && dadosModalReestruturacao?.descricao) {
+      mudarDescricao(dadosModalReestruturacao.descricao);
+    }
+  }, [
+    dadosModalReestruturacao,
+    descricao,
+    versaoId,
+    mudarVersao,
+    mudarDescricao,
+  ]);
 
   return (
     <ModalConteudoHtml
