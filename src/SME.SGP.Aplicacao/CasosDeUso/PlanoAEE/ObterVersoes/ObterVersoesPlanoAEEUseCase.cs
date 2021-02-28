@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
                 var planoAEEDescricaoVersaoDto = new PlanoAEEDescricaoVersaoDto
                 {
                     Id = item.Id,
-                    Descricao = $"v{item.Numero.ToString()} - {item.CriadoEm.ToString("dd-MM-yyyy")}"
+                    Descricao = $"v{item.Numero} - {item.CriadoEm:dd/MM/yyyy}"
                 };
                 planosAEEDescricaoVersaoDto.Add(planoAEEDescricaoVersaoDto);
             }

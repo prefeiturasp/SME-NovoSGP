@@ -33,7 +33,7 @@ const DiasHorariosTabela = props => {
 
   const onCloseModal = novosDados => {
     setExibirModal(false);
-    setDadosIniciais({});
+    setDadosIniciais();
 
     if (novosDados) {
       const dadosAtuais = form?.values?.[questaoAtual.id]?.length
@@ -182,7 +182,6 @@ const DiasHorariosTabela = props => {
       <Label text={label} />
       <div className={possuiErro() ? 'tabela-invalida' : ''}>
         <DataTable
-          rowKey="id"
           columns={colunas}
           dataSource={
             form?.values?.[questaoAtual.id]?.length

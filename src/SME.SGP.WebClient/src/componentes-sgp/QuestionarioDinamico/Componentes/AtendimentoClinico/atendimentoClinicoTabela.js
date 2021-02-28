@@ -163,7 +163,6 @@ const AtendimentoClinicoTabela = props => {
       <Label text={label} />
       <div className={possuiErro() ? 'tabela-invalida' : ''}>
         <DataTable
-          rowKey="id"
           columns={colunas}
           dataSource={
             form?.values?.[questaoAtual.id]?.length

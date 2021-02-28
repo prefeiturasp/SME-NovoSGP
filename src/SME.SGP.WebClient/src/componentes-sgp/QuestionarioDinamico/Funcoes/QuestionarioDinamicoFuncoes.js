@@ -452,11 +452,13 @@ class QuestionarioDinamicoFuncoes {
     const diasDaSemana = this.obterListaDiasSemana();
 
     diasDaSemana.forEach(dia => {
-      const temEsseDia = diasDaSemanaAtual.find(
+      const temEssesDias = diasDaSemanaAtual.filter(
         item => item.diaSemana === dia.valor
       );
-      if (temEsseDia) {
-        listaOrdenada.push(temEsseDia);
+      if (temEssesDias?.length) {
+        temEssesDias.forEach(d => {
+          listaOrdenada.push(d);
+        });
       }
     });
     return listaOrdenada;
