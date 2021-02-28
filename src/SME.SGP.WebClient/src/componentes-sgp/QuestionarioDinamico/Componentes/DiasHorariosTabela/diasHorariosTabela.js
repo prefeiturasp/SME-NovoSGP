@@ -12,6 +12,7 @@ import { BtnExcluirDiasHorario } from '~/paginas/Relatorios/AEE/Plano/Cadastro/p
 import { setResetarTabela } from '~/redux/modulos/questionarioDinamico/actions';
 import { confirmar } from '~/servicos';
 import { removerArrayAninhados } from '~/utils';
+import QuestionarioDinamicoFuncoes from '../../Funcoes/QuestionarioDinamicoFuncoes';
 import ModalCadastroDiasHorario from './modalCadastroDiasHorarios';
 
 const DiasHorariosTabela = props => {
@@ -32,7 +33,7 @@ const DiasHorariosTabela = props => {
 
   const onCloseModal = novosDados => {
     setExibirModal(false);
-    setDadosIniciais({});
+    setDadosIniciais();
 
     if (novosDados) {
       const dadosAtuais = form?.values?.[questaoAtual.id]?.length
@@ -181,11 +182,12 @@ const DiasHorariosTabela = props => {
       <Label text={label} />
       <div className={possuiErro() ? 'tabela-invalida' : ''}>
         <DataTable
-          rowKey="id"
           columns={colunas}
           dataSource={
             form?.values?.[questaoAtual.id]?.length
-              ? form?.values?.[questaoAtual.id]
+              ? QuestionarioDinamicoFuncoes.ordenarDiasDaSemana(
+                  form?.values?.[questaoAtual.id]
+                )
               : []
           }
           pagination={false}

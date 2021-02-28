@@ -1,4 +1,6 @@
-﻿namespace SME.SGP.Infra
+﻿using System;
+
+namespace SME.SGP.Infra
 {
     public class PlanoAEEResumoDto
     {
@@ -8,5 +10,7 @@
         public string Turma { get; set; }
         public bool PossuiEncaminhamentoAEE { get; set; }
         public string Situacao { get; set; }
+        public DateTime CriadoEm { get; set; }
+        public string Versao { get; set; }
     }
 }

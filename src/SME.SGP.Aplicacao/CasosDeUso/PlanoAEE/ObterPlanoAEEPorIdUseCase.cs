@@ -15,14 +15,15 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<PlanoAEEDto> Executar(long? planoAEEId)
+        public async Task<PlanoAEEDto> Executar(FiltroPesquisaQuestoesPorPlanoAEEIdDto filtro)
         {
             var plano = new PlanoAEEDto();
             var respostasPlano = Enumerable.Empty<RespostaQuestaoDto>();
+            PlanoAEEVersaoDto ultimaVersao = null;
 
-            if (planoAEEId.HasValue && planoAEEId > 0)
+            if (filtro.PlanoAEEId.HasValue && filtro.PlanoAEEId > 0)
             {
-                var entidadePlano = await mediator.Send(new ObterPlanoAEEComTurmaPorIdQuery(planoAEEId.Value));
+                var entidadePlano = await mediator.Send(new ObterPlanoAEEComTurmaPorIdQuery(filtro.PlanoAEEId.Value));
                 var alunoPorTurmaResposta = await mediator.Send(new ObterAlunoPorCodigoEolQuery(entidadePlano.AlunoCodigo, entidadePlano.Turma.AnoLetivo));
 
                 if (alunoPorTurmaResposta == null)
@@ -43,10 +44,9 @@ namespace SME.SGP.Aplicacao
                     DataAtualizacaoContato = alunoPorTurmaResposta.DataAtualizacaoContato
                 };
 
-
-                plano.Id = planoAEEId.Value;
+                plano.Id = filtro.PlanoAEEId.Value;
                 plano.Auditoria = (AuditoriaDto)entidadePlano;
-                plano.Versoes = await mediator.Send(new ObterVersoesPlanoAEEQuery(planoAEEId.Value));
+                plano.Versoes = await mediator.Send(new ObterVersoesPlanoAEEQuery(filtro.PlanoAEEId.Value));
                 plano.Aluno = aluno;
                 plano.Situacao = entidadePlano.Situacao;
                 plano.SituacaoDescricao = entidadePlano.Situacao.Name();
@@ -57,17 +57,16 @@ namespace SME.SGP.Aplicacao
                     AnoLetivo = entidadePlano.Turma.AnoLetivo
                 };
 
-                var ultimoPlano = plano.Versoes.OrderByDescending(a => a.Numero).First();
-                plano.Versoes = plano.Versoes.Where(a => a.Id != ultimoPlano.Id).ToList();
-                plano.UltimaVersao = ultimoPlano;
-
-                respostasPlano = await mediator.Send(new ObterRespostasPlanoAEEPorVersaoQuery(ultimoPlano.Id));
+                filtro.TurmaCodigo = entidadePlano.Turma.CodigoTurma;
+                ultimaVersao = plano.Versoes.OrderByDescending(a => a.Numero).First();
+                plano.Versoes = plano.Versoes.Where(a => a.Id != ultimaVersao.Id).ToList();
+                plano.UltimaVersao = ultimaVersao;
             }
 
             var questionarioId = await mediator.Send(new ObterQuestionarioPlanoAEEIdQuery());
+            var ultimaVersaoId = ultimaVersao?.Id ?? 0;
 
-            plano.Questoes = await mediator.Send(new ObterQuestoesPorQuestionarioPorIdQuery(questionarioId, questaoId =>
-               respostasPlano.Where(c => c.QuestaoId == questaoId)));
+            plano.Questoes = await mediator.Send(new ObterQuestoesPlanoAEEPorVersaoQuery(questionarioId, ultimaVersaoId, filtro.TurmaCodigo));
 
             plano.QuestionarioId = questionarioId;
 

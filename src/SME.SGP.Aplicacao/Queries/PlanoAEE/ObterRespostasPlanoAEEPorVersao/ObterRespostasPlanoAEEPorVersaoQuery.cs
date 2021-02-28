@@ -16,15 +16,4 @@ namespace SME.SGP.Aplicacao
 
         public long VersaoPlanoId { get; }
     }
-
-    public class ObterRespostasPlanoAEEPorVersaoQueryValidator : AbstractValidator<ObterRespostasPlanoAEEPorVersaoQuery>
-    {
-        public ObterRespostasPlanoAEEPorVersaoQueryValidator()
-        {
-            RuleFor(a => a.VersaoPlanoId)
-                .NotEmpty()
-                .WithMessage("O id da versão do plano deve ser informado para buscar suas respostas.");
-        }
-    }
-
 }

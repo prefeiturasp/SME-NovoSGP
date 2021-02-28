@@ -1,8 +1,8 @@
 const situacaoPlanoAEE = {
   EmAndamento: 1,
-  Cancelado: 2,
+  Reestruturado: 2,
   Encerrado: 3,
-  DevolutivaCoordenacao: 4,
+  DevolutivaCP: 4,
   AtribuicaoPAAI: 5,
   DevolutivaPAAI: 6,
   EncerradoAutomaticamento: 7,

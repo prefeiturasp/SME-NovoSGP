@@ -32,20 +32,25 @@ class ServicoPlanoAEE {
     return false;
   };
 
-  obterPlanoPorId = planoId => {
-    return api.get(`${urlPadrao}/${planoId}`);
+  obterPlanoPorId = (planoId, turmaCodigo) => {
+    let url = `${urlPadrao}/${planoId}`;
+    if (turmaCodigo) {
+      url = `${url}?turmaCodigo=${turmaCodigo}`;
+    }
+    return api.get(url);
   };
 
-  obterVersaoPlanoPorId = versaoPlanoId => {
-    return api.get(`${urlPadrao}/versao/${versaoPlanoId}`);
+  obterVersaoPlanoPorId = (versaoPlanoId, questionarioId, turmaCodigo) => {
+    let url = `${urlPadrao}/versao/${versaoPlanoId}?questionarioId=${questionarioId}`;
+
+    if (turmaCodigo) {
+      url = `${url}&turmaCodigo=${turmaCodigo}`;
+    }
+    return api.get(url);
   };
 
   obterPlanoPorCodigoEstudante = codigoEstudante => {
     return api.get(`${urlPadrao}/estudante/${codigoEstudante}`);
-  };
-
-  obterVersaoPlanoPorId = versaoPlanoId => {
-    return api.get(`${urlPadrao}/versao/${versaoPlanoId}`);
   };
 
   obterQuestionario = (questionarioId, planoId, codigoAluno, codigoTurma) => {
@@ -56,7 +61,7 @@ class ServicoPlanoAEE {
     return api.get(url);
   };
 
-  salvarPlano = async () => {
+  salvarPlano = async retornarPlanoId => {
     const { dispatch } = store;
 
     const state = store.getState();
@@ -220,7 +225,10 @@ class ServicoPlanoAEE {
           turmaId: dadosCollapseLocalizarEstudante.turmaId,
           turmaCodigo: dadosCollapseLocalizarEstudante.codigoTurma,
           alunoCodigo: dadosCollapseLocalizarEstudante.codigoAluno,
-          situacao: situacaoPlanoAEE.EmAndamento,
+          situacao:
+            planoAEEDados?.situacao === situacaoPlanoAEE.Reestruturado
+              ? situacaoPlanoAEE.Reestruturado
+              : situacaoPlanoAEE.EmAndamento,
           questoes: questoesSalvar[0],
         };
 
@@ -231,6 +239,9 @@ class ServicoPlanoAEE {
           .finally(() => dispatch(setExibirLoaderPlanoAEE(false)));
 
         if (resposta?.status === 200) {
+          if (retornarPlanoId) {
+            return resposta?.data?.planoId;
+          }
           return true;
         }
       } else {
@@ -350,7 +361,7 @@ class ServicoPlanoAEE {
       );
       if (confirmou) {
         if (
-          (planoAEEDados.situacao === situacaoPlanoAEE.DevolutivaCoordenacao ||
+          (planoAEEDados.situacao === situacaoPlanoAEE.DevolutivaCP ||
             planoAEEDados.situacao === situacaoPlanoAEE.AtribuicaoPAAI) &&
           !dadosAtribuicaoResponsavel?.codigoRF
         ) {

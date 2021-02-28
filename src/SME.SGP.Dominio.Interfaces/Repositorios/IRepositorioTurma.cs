@@ -21,6 +21,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<Turma>> SincronizarAsync(IEnumerable<Turma> entidades, IEnumerable<Ue> ues);
 
         Task<long> ObterTurmaIdPorCodigo(string turmaCodigo);
+        Task<DreUeDaTurmaDto> ObterCodigosDreUe(string turmaCodigo);
         Task<IEnumerable<Turma>> ObterTurmasInfantilNaoDeProgramaPorAnoLetivoAsync(int anoLetivo);
         Task<IEnumerable<Turma>> ObterTurmasPorIds(long[] turmasIds);
         Task<IEnumerable<Turma>> ObterTurmasPorUeModalidadesAno(long ueId, int[] modalidades, int ano);
