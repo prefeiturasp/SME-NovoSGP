@@ -15,6 +15,7 @@ const inicial = {
   parecerPAAI: '',
   devolutivaEmEdicao: false,
   dadosAtribuicaoResponsavel: {},
+  exibirCollapseVersao: null,
 };
 
 export default function PlanoAEE(state = inicial, action) {
@@ -72,6 +73,7 @@ export default function PlanoAEE(state = inicial, action) {
           desabilitarCamposPlanoAEE: false,
           planoAEEDadosSecoesPorEtapa: [],
           exibirModalErrosPlano: false,
+          exibirCollapseVersao: null,
         };
       }
       case '@planoAEE/setReestruturacaoDados': {
@@ -151,6 +153,12 @@ export default function PlanoAEE(state = inicial, action) {
         return {
           ...draft,
           dadosAtribuicaoResponsavel: action.payload,
+        };
+      }
+      case '@planoAEE/setExibirCollapseVersao': {
+        return {
+          ...draft,
+          exibirCollapseVersao: action.payload,
         };
       }
       default:

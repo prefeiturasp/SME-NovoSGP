@@ -1,15 +1,19 @@
 import * as moment from 'moment';
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import CardCollapse from '~/componentes/cardCollapse';
+import { setExibirCollapseVersao } from '~/redux/modulos/planoAEE/actions';
 import MontarDadosPorSecaoVersao from './montarDadosPorSecaoVersao';
 
 const SecaoVersaoPlanoCollapse = () => {
+  const dispatch = useDispatch();
+
   const planoAEEDados = useSelector(store => store.planoAEE.planoAEEDados);
+  const exibirCollapseVersao = useSelector(
+    store => store.planoAEE.exibirCollapseVersao
+  );
 
   const { versoes, questionarioId, turma } = planoAEEDados;
-
-  const [exibir, setExibir] = useState(false);
 
   return (
     <>
@@ -24,9 +28,9 @@ const SecaoVersaoPlanoCollapse = () => {
           ).format('DD/MM/YYYY')})`}
           indice={`secao-informacoes-plano-${plano.id}-collapse-indice`}
           alt={`secao-informacoes-plano-${plano.id}-alt`}
-          show={exibir}
+          show={exibirCollapseVersao === plano.numero}
           onClick={() => {
-            setExibir(!exibir);
+            dispatch(setExibirCollapseVersao(plano.numero));
           }}
         >
           <MontarDadosPorSecaoVersao
@@ -35,7 +39,7 @@ const SecaoVersaoPlanoCollapse = () => {
             }}
             versao={plano.id}
             questionarioId={questionarioId}
-            exibir={exibir}
+            exibir={exibirCollapseVersao === plano.numero}
             turmaCodigo={turma?.codigo}
           />
         </CardCollapse>
