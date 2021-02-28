@@ -620,7 +620,7 @@ namespace SME.SGP.Dados.Repositorios
                          inner join dre on dre.id = ue.dre_id 
                          where t.turma_id = @turmaCodigo";
 
-            return await contexto.Conexao.QueryFirstOrDefaultAsync<DreUeDaTurmaDto>(query, turmaCodigo);
+            return await contexto.Conexao.QueryFirstOrDefaultAsync<DreUeDaTurmaDto>(query, new { turmaCodigo });
         }
     }
 }

@@ -1,40 +1,24 @@
+import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import PropTypes from 'prop-types';
 import { Cabecalho } from '~/componentes-sgp';
+import CollapseLocalizarEstudante from '~/componentes-sgp/CollapseLocalizarEstudante/collapseLocalizarEstudante';
 import Card from '~/componentes/card';
+import { RotasDto } from '~/dtos';
+import { setLimparDadosLocalizarEstudante } from '~/redux/modulos/collapseLocalizarEstudante/actions';
+import { setDesabilitarCamposPlanoAEE } from '~/redux/modulos/planoAEE/actions';
+import { setLimparDadosQuestionarioDinamico } from '~/redux/modulos/questionarioDinamico/actions';
+import { setBreadcrumbManual, verificaSomenteConsulta } from '~/servicos';
+import ServicoPlanoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoPlanoAEE';
+import BotaoVerSituacaoEncaminhamentoAEE from './Componentes/BotaoVerSituacaoEncaminhamentoAEE/botaoVerSituacaoEncaminhamentoAEE';
 import BotoesAcoesPlanoAEE from './Componentes/botoesAcoesPlanoAEE';
 import LoaderPlano from './Componentes/LoaderPlano/loaderPlano';
-import TabCadastroPasso from './Componentes/TabCadastroPlano/tabCadastroPlano';
-import { setLimparDadosQuestionarioDinamico } from '~/redux/modulos/questionarioDinamico/actions';
-import {
-  setAtualizarDados,
-  setDesabilitarCamposPlanoAEE,
-  setExibirLoaderPlanoAEE,
-  setPlanoAEEDados,
-  setPlanoAEELimparDados,
-} from '~/redux/modulos/planoAEE/actions';
-import CollapseLocalizarEstudante from '~/componentes-sgp/CollapseLocalizarEstudante/collapseLocalizarEstudante';
+import MarcadorSituacaoPlanoAEE from './Componentes/MarcadorSituacaoPlanoAEE/marcadorSituacaoPlanoAEE';
 import ObjectCardEstudantePlanoAEE from './Componentes/ObjectCardEstudantePlanoAEE/objectCardEstudantePlanoAEE';
 import SituacaoEncaminhamentoAEE from './Componentes/SituacaoEncaminhamentoAEE/situacaoEncaminhamentoAEE';
-import BotaoVerSituacaoEncaminhamentoAEE from './Componentes/BotaoVerSituacaoEncaminhamentoAEE/botaoVerSituacaoEncaminhamentoAEE';
-import {
-  setDadosCollapseLocalizarEstudante,
-  setLimparDadosLocalizarEstudante,
-} from '~/redux/modulos/collapseLocalizarEstudante/actions';
-import {
-  erros,
-  setBreadcrumbManual,
-  verificaSomenteConsulta,
-} from '~/servicos';
-import ServicoPlanoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoPlanoAEE';
-import { setDadosObjectCardEstudante } from '~/redux/modulos/objectCardEstudante/actions';
-import { RotasDto } from '~/dtos';
-import MarcadorSituacaoPlanoAEE from './Componentes/MarcadorSituacaoPlanoAEE/marcadorSituacaoPlanoAEE';
+import TabCadastroPlano from './Componentes/TabCadastroPlano/tabCadastroPlano';
 
 const PlanoAEECadastro = ({ match }) => {
-  const atualizarDados = useSelector(store => store.planoAEE.atualizarDados);
-
   const dispatch = useDispatch();
 
   const limparDadosPlano = useCallback(() => {
@@ -69,68 +53,6 @@ const PlanoAEECadastro = ({ match }) => {
         : soConsulta || !permissoesTela.podeIncluir;
     dispatch(setDesabilitarCamposPlanoAEE(desabilitar));
   }, [match, permissoesTela, dispatch]);
-
-  const obterPlanoPorId = useCallback(async () => {
-    const planoId = match?.params?.id ? match?.params?.id : 0;
-    dispatch(setPlanoAEELimparDados());
-    dispatch(setExibirLoaderPlanoAEE(true));
-    const resultado = await ServicoPlanoAEE.obterPlanoPorId(planoId)
-      .catch(e => erros(e))
-      .finally(() => dispatch(setExibirLoaderPlanoAEE(false)));
-
-    if (resultado?.data) {
-      if (resultado?.data?.aluno) {
-        const { aluno } = resultado?.data;
-
-        const dadosObjectCard = {
-          nome: aluno.nome,
-          dataNascimento: aluno.dataNascimento,
-          situacao: aluno.situacao,
-          dataSituacao: aluno.dataSituacao,
-          nomeResponsavel: aluno.nomeResponsavel,
-          tipoResponsavel: aluno.tipoResponsavel,
-          celularResponsavel: aluno.celularResponsavel,
-          dataAtualizacaoContato: aluno.dataAtualizacaoContato,
-          codigoEOL: aluno.codigoAluno,
-          turma: aluno.turmaEscola,
-          numeroChamada: aluno.numeroAlunoChamada,
-        };
-        dispatch(setDadosObjectCardEstudante(dadosObjectCard));
-      }
-      if (resultado?.data?.turma) {
-        const { aluno, turma } = resultado?.data;
-        const dadosCollapseLocalizarEstudante = {
-          anoLetivo: turma.anoLetivo,
-          codigoAluno: aluno.codigoAluno,
-          codigoTurma: turma.codigo,
-          turmaId: turma.id,
-        };
-
-        dispatch(
-          setDadosCollapseLocalizarEstudante(dadosCollapseLocalizarEstudante)
-        );
-      }
-      dispatch(setPlanoAEEDados(resultado?.data));
-    }
-  }, [match, dispatch]);
-
-  useEffect(() => {
-    if (atualizarDados) {
-      obterPlanoPorId();
-    }
-    dispatch(setAtualizarDados(false));
-  }, [atualizarDados, dispatch, obterPlanoPorId]);
-
-  useEffect(() => {
-    obterPlanoPorId();
-  }, [obterPlanoPorId]);
-
-  useEffect(() => {
-    if (atualizarDados) {
-      obterPlanoPorId();
-    }
-    dispatch(setAtualizarDados(false));
-  }, [atualizarDados, dispatch, obterPlanoPorId]);
 
   useEffect(() => {
     return () => {
@@ -175,7 +97,7 @@ const PlanoAEECadastro = ({ match }) => {
               <BotaoVerSituacaoEncaminhamentoAEE />
             </div>
             <div className="col-md-12 mt-2 mb-2">
-              <TabCadastroPasso match={match} />
+              <TabCadastroPlano match={match} />
             </div>
           </div>
         </div>

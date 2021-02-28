@@ -32,20 +32,25 @@ class ServicoPlanoAEE {
     return false;
   };
 
-  obterPlanoPorId = planoId => {
-    return api.get(`${urlPadrao}/${planoId}`);
+  obterPlanoPorId = (planoId, turmaCodigo) => {
+    let url = `${urlPadrao}/${planoId}`;
+    if (turmaCodigo) {
+      url = `${url}?turmaCodigo=${turmaCodigo}`;
+    }
+    return api.get(url);
   };
 
-  obterVersaoPlanoPorId = versaoPlanoId => {
-    return api.get(`${urlPadrao}/versao/${versaoPlanoId}`);
+  obterVersaoPlanoPorId = (versaoPlanoId, questionarioId, turmaCodigo) => {
+    let url = `${urlPadrao}/versao/${versaoPlanoId}?questionarioId=${questionarioId}`;
+
+    if (turmaCodigo) {
+      url = `${url}&turmaCodigo=${turmaCodigo}`;
+    }
+    return api.get(url);
   };
 
   obterPlanoPorCodigoEstudante = codigoEstudante => {
     return api.get(`${urlPadrao}/estudante/${codigoEstudante}`);
-  };
-
-  obterVersaoPlanoPorId = versaoPlanoId => {
-    return api.get(`${urlPadrao}/versao/${versaoPlanoId}`);
   };
 
   obterQuestionario = (questionarioId, planoId, codigoAluno, codigoTurma) => {

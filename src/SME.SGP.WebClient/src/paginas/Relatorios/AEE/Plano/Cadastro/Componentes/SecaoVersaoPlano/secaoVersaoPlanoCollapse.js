@@ -1,11 +1,15 @@
 import * as moment from 'moment';
-import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import CardCollapse from '~/componentes/cardCollapse';
 import MontarDadosPorSecaoVersao from './montarDadosPorSecaoVersao';
 
-const SecaoVersaoPlanoCollapse = props => {
-  const { versoes } = props;
+const SecaoVersaoPlanoCollapse = () => {
+  const planoAEEDados = useSelector(store => store.planoAEE.planoAEEDados);
+
+  const { versoes, questionarioId, turma } = planoAEEDados;
+
+  const [exibir, setExibir] = useState(false);
 
   return (
     <>
@@ -20,25 +24,24 @@ const SecaoVersaoPlanoCollapse = props => {
           ).format('DD/MM/YYYY')})`}
           indice={`secao-informacoes-plano-${plano.id}-collapse-indice`}
           alt={`secao-informacoes-plano-${plano.id}-alt`}
+          show={exibir}
+          onClick={() => {
+            setExibir(!exibir);
+          }}
         >
           <MontarDadosPorSecaoVersao
             dados={{
               questionarioId: plano.id,
             }}
             versao={plano.id}
+            questionarioId={questionarioId}
+            exibir={exibir}
+            turmaCodigo={turma?.codigo}
           />
         </CardCollapse>
       ))}
     </>
   );
-};
-
-SecaoVersaoPlanoCollapse.propTypes = {
-  versoes: PropTypes.oneOfType([PropTypes.object]),
-};
-
-SecaoVersaoPlanoCollapse.defaultProps = {
-  versoes: [],
 };
 
 export default SecaoVersaoPlanoCollapse;
