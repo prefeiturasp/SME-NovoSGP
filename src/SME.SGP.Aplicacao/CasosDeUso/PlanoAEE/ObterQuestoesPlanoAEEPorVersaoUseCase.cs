@@ -15,6 +15,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<IEnumerable<QuestaoDto>> Executar(FiltroPesquisaQuestoesPlanoAEEDto filtro)
-            => await mediator.Send(new ObterQuestoesPlanoAEEPorVersaoQuery(filtro.VersaoPlanoId, filtro.TurmaCodigo));
+            => await mediator.Send(new ObterQuestoesPlanoAEEPorVersaoQuery(filtro.QuestionarioId, filtro.VersaoPlanoId, filtro.TurmaCodigo));
     }
 }

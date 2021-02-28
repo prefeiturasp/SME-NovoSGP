@@ -19,11 +19,11 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<QuestaoDto>> Handle(ObterQuestoesPlanoAEEPorVersaoQuery request, CancellationToken cancellationToken)
         {
-            var respostasPlano = await mediator.Send(new ObterRespostasPlanoAEEPorVersaoQuery(request.VersaoPlanoId));
+            var respostasPlano = request.VersaoPlanoId > 0 ?
+                await mediator.Send(new ObterRespostasPlanoAEEPorVersaoQuery(request.VersaoPlanoId)) :
+                Enumerable.Empty<RespostaQuestaoDto>();
 
-            var questionarioId = await mediator.Send(new ObterQuestionarioPlanoAEEIdQuery());
-
-            var questoes = await mediator.Send(new ObterQuestoesPorQuestionarioPorIdQuery(questionarioId, questaoId =>
+            var questoes = await mediator.Send(new ObterQuestoesPorQuestionarioPorIdQuery(request.QuestionarioId, questaoId =>
                respostasPlano.Where(c => c.QuestaoId == questaoId)));
 
             questoes = await AplicarRegrasPlano(request.TurmaCodigo, questoes);

@@ -9,12 +9,14 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterQuestoesPlanoAEEPorVersaoQuery : IRequest<IEnumerable<QuestaoDto>>
     {
-        public ObterQuestoesPlanoAEEPorVersaoQuery(long versaoPlanoId, string turmaCodigo)
+        public ObterQuestoesPlanoAEEPorVersaoQuery(long questionarioId, long versaoPlanoId, string turmaCodigo)
         {
+            QuestionarioId = questionarioId;
             VersaoPlanoId = versaoPlanoId;
             TurmaCodigo = turmaCodigo;
         }
 
+        public long QuestionarioId { get; }
         public long VersaoPlanoId { get; }
         public string TurmaCodigo { get; }
     }

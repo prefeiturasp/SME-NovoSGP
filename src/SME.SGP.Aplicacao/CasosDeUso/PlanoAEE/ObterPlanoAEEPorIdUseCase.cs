@@ -57,6 +57,7 @@ namespace SME.SGP.Aplicacao
                     AnoLetivo = entidadePlano.Turma.AnoLetivo
                 };
 
+                filtro.TurmaCodigo = entidadePlano.Turma.CodigoTurma;
                 ultimaVersao = plano.Versoes.OrderByDescending(a => a.Numero).First();
                 plano.Versoes = plano.Versoes.Where(a => a.Id != ultimaVersao.Id).ToList();
                 plano.UltimaVersao = ultimaVersao;
@@ -65,7 +66,7 @@ namespace SME.SGP.Aplicacao
             var questionarioId = await mediator.Send(new ObterQuestionarioPlanoAEEIdQuery());
             var ultimaVersaoId = ultimaVersao?.Id ?? 0;
 
-            plano.Questoes = await mediator.Send(new ObterQuestoesPlanoAEEPorVersaoQuery(ultimaVersaoId, filtro.TurmaCodigo));
+            plano.Questoes = await mediator.Send(new ObterQuestoesPlanoAEEPorVersaoQuery(questionarioId, ultimaVersaoId, filtro.TurmaCodigo));
 
             plano.QuestionarioId = questionarioId;
 
