@@ -6,7 +6,10 @@ import CollapseLocalizarEstudante from '~/componentes-sgp/CollapseLocalizarEstud
 import Card from '~/componentes/card';
 import { RotasDto } from '~/dtos';
 import { setLimparDadosLocalizarEstudante } from '~/redux/modulos/collapseLocalizarEstudante/actions';
-import { setDesabilitarCamposPlanoAEE } from '~/redux/modulos/planoAEE/actions';
+import {
+  setDesabilitarCamposPlanoAEE,
+  setPlanoAEELimparDados,
+} from '~/redux/modulos/planoAEE/actions';
 import { setLimparDadosQuestionarioDinamico } from '~/redux/modulos/questionarioDinamico/actions';
 import { setBreadcrumbManual, verificaSomenteConsulta } from '~/servicos';
 import ServicoPlanoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoPlanoAEE';
@@ -23,6 +26,7 @@ const PlanoAEECadastro = ({ match }) => {
 
   const limparDadosPlano = useCallback(() => {
     dispatch(setLimparDadosQuestionarioDinamico());
+    dispatch(setPlanoAEELimparDados());
   }, [dispatch]);
 
   const validarSePermiteProximoPasso = async codigoEstudante => {

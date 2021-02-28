@@ -61,7 +61,7 @@ class ServicoPlanoAEE {
     return api.get(url);
   };
 
-  salvarPlano = async () => {
+  salvarPlano = async retornarPlanoId => {
     const { dispatch } = store;
 
     const state = store.getState();
@@ -236,6 +236,9 @@ class ServicoPlanoAEE {
           .finally(() => dispatch(setExibirLoaderPlanoAEE(false)));
 
         if (resposta?.status === 200) {
+          if (retornarPlanoId) {
+            return resposta?.data?.planoId;
+          }
           return true;
         }
       } else {

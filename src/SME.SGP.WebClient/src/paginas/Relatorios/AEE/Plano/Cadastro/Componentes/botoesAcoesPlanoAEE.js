@@ -12,7 +12,9 @@ import {
   setAtualizarPlanoAEEDados,
   setExibirLoaderPlanoAEE,
   setDevolutivaEmEdicao,
+  setAtualizarDados,
 } from '~/redux/modulos/planoAEE/actions';
+import { setQuestionarioDinamicoEmEdicao } from '~/redux/modulos/questionarioDinamico/actions';
 
 const BotoesAcoesPlanoAEE = props => {
   const { match } = props;
@@ -159,16 +161,23 @@ const BotoesAcoesPlanoAEE = props => {
       escolherAcaoDevolutivas();
       return;
     }
-    const salvou = await ServicoPlanoAEE.salvarPlano();
-    const planoId = match?.params?.id;
+    const planoId = await ServicoPlanoAEE.salvarPlano(true);
+    const registroNovo = !match?.params?.id;
 
-    if (salvou) {
-      let mensagem = 'Registro salvo com sucesso';
-      if (planoId) {
-        mensagem = 'Registro alterado com sucesso';
+    if (planoId) {
+      let mensagem = 'Registro alterado com sucesso';
+      if (registroNovo) {
+        mensagem = 'Registro salvo com sucesso';
       }
       sucesso(mensagem);
-      history.push(RotasDto.RELATORIO_AEE_PLANO);
+
+      dispatch(setQuestionarioDinamicoEmEdicao(false));
+
+      if (registroNovo) {
+        history.push(`${RotasDto.RELATORIO_AEE_PLANO}/editar/${planoId}`);
+      } else {
+        dispatch(setAtualizarDados(true));
+      }
     }
   };
 
