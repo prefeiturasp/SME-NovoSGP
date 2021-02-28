@@ -42,8 +42,8 @@ const BotoesAcoesPlanoAEE = props => {
   const usuario = useSelector(store => store.usuario);
   const permissoesTela = usuario.permissoes[RotasDto.RELATORIO_AEE_PLANO];
 
-  const situacaoDevolutivaCoordenacao =
-    planoAEEDados?.situacao === situacaoPlanoAEE.DevolutivaCoordenacao;
+  const situacaoDevolutivaCP =
+    planoAEEDados?.situacao === situacaoPlanoAEE.DevolutivaCP;
   const situacaoDevolutivaPAAI =
     planoAEEDados?.situacao === situacaoPlanoAEE.DevolutivaPAAI &&
     dadosDevolutiva?.podeEditarParecerPAAI;
@@ -51,7 +51,7 @@ const BotoesAcoesPlanoAEE = props => {
     planoAEEDados?.situacao === situacaoPlanoAEE.AtribuicaoPAAI;
 
   const situacaoDevolutiva =
-    situacaoDevolutivaCoordenacao ||
+    situacaoDevolutivaCP ||
     (situacaoAtribuicaoPAAI && !dadosAtribuicaoResponsavel?.codigoRF);
 
   const planoAeeId = match?.params?.id;
@@ -245,7 +245,8 @@ const BotoesAcoesPlanoAEE = props => {
         onClick={onClickSolicitarEncerramento}
         hidden={
           !planoAEEDados?.situacao ||
-          planoAEEDados?.situacao !== situacaoPlanoAEE.EmAndamento
+          (planoAEEDados?.situacao !== situacaoPlanoAEE.EmAndamento &&
+            planoAEEDados?.situacao !== situacaoPlanoAEE.Reestruturado)
         }
         disabled={
           desabilitarCamposPlanoAEE ||

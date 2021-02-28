@@ -1,19 +1,19 @@
-import React, { useCallback, useEffect, useState } from 'react';
 import moment from 'moment';
 import PropTypes from 'prop-types';
-import shortid from 'shortid';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-
+import shortid from 'shortid';
 import {
   Colors,
   Editor,
   ModalConteudoHtml,
   SelectComponent,
 } from '~/componentes';
-
+import {
+  setAlteracaoDados,
+  setAtualizarDados,
+} from '~/redux/modulos/planoAEE/actions';
 import { confirmar, erros, sucesso } from '~/servicos';
-
-import { setAlteracaoDados } from '~/redux/modulos/planoAEE/actions';
 import ServicoPlanoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoPlanoAEE';
 
 const ModalReestruturacaoPlano = ({
@@ -69,7 +69,7 @@ const ModalReestruturacaoPlano = ({
 
       const palavarMsg = reestruturacaoId ? 'alterada' : 'registrada';
       sucesso(`Reestruturação ${palavarMsg} com sucesso.`);
-
+      dispatch(setAtualizarDados(true));
       dispatch(setAlteracaoDados(dadosSalvar));
     }
     setModoEdicao(false);

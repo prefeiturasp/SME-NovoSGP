@@ -225,7 +225,10 @@ class ServicoPlanoAEE {
           turmaId: dadosCollapseLocalizarEstudante.turmaId,
           turmaCodigo: dadosCollapseLocalizarEstudante.codigoTurma,
           alunoCodigo: dadosCollapseLocalizarEstudante.codigoAluno,
-          situacao: situacaoPlanoAEE.EmAndamento,
+          situacao:
+            planoAEEDados?.situacao === situacaoPlanoAEE.Reestruturado
+              ? situacaoPlanoAEE.Reestruturado
+              : situacaoPlanoAEE.EmAndamento,
           questoes: questoesSalvar[0],
         };
 
@@ -358,7 +361,7 @@ class ServicoPlanoAEE {
       );
       if (confirmou) {
         if (
-          (planoAEEDados.situacao === situacaoPlanoAEE.DevolutivaCoordenacao ||
+          (planoAEEDados.situacao === situacaoPlanoAEE.DevolutivaCP ||
             planoAEEDados.situacao === situacaoPlanoAEE.AtribuicaoPAAI) &&
           !dadosAtribuicaoResponsavel?.codigoRF
         ) {

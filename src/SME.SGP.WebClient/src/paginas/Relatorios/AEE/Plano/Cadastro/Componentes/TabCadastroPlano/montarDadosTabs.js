@@ -35,6 +35,7 @@ const MontarDadosTabs = props => {
           key="2"
           disabled={
             planoAEEDados?.situacao !== situacaoPlanoAEE.EmAndamento &&
+            planoAEEDados?.situacao !== situacaoPlanoAEE.Reestruturado &&
             planoAEEDados?.situacao !== situacaoPlanoAEE.Encerrado &&
             planoAEEDados?.situacao !==
               situacaoPlanoAEE.EncerradoAutomaticamento
@@ -47,7 +48,10 @@ const MontarDadosTabs = props => {
         <TabPane
           tab="Devolutivas"
           key="3"
-          disabled={planoAEEDados?.situacao === situacaoPlanoAEE.EmAndamento}
+          disabled={
+            planoAEEDados?.situacao === situacaoPlanoAEE.EmAndamento ||
+            planoAEEDados?.situacao === situacaoPlanoAEE.Reestruturado
+          }
         >
           <SecaoDevolutivasPlanoCollapse match={match} />
         </TabPane>
