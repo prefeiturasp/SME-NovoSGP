@@ -98,7 +98,7 @@ const PlanoAEELista = () => {
       },
     },
     {
-      title: 'Versao',
+      title: 'Versão',
       dataIndex: 'versao',
     },
   ];
