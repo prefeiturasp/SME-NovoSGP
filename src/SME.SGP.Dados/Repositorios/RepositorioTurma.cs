@@ -622,5 +622,16 @@ namespace SME.SGP.Dados.Repositorios
 
             return await contexto.Conexao.QueryFirstOrDefaultAsync<DreUeDaTurmaDto>(query, new { turmaCodigo });
         }
+
+        public async Task<DreUeDaTurmaDto> ObterCodigosDreUePorId(long turmaId)
+        {
+            var query = @"select ue.ue_id as ueCodigo, dre.dre_id as dreCodigo
+                          from turma t 
+                         inner join ue on ue.id = t.ue_id
+                         inner join dre on dre.id = ue.dre_id 
+                         where t.id = @turmaId";
+
+            return await contexto.Conexao.QueryFirstOrDefaultAsync<DreUeDaTurmaDto>(query, new { turmaId });
+        }
     }
 }

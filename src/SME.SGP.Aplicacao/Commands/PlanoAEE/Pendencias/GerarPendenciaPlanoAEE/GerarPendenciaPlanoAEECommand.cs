@@ -6,9 +6,9 @@ using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class GerarPendenciaValidadePlanoAEECommand : IRequest<bool>
+    public class GerarPendenciaPlanoAEECommand : IRequest<bool>
     {
-        public GerarPendenciaValidadePlanoAEECommand(long planoAEEId, long usuarioId, string titulo, string descricao)
+        public GerarPendenciaPlanoAEECommand(long planoAEEId, long usuarioId, string titulo, string descricao)
         {
             PlanoAEEId = planoAEEId;
             UsuarioId = usuarioId;
@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
         public string Descricao { get; }
     }
 
-    public class GerarPendenciaValidadePlanoAEECommandValidator : AbstractValidator<GerarPendenciaValidadePlanoAEECommand>
+    public class GerarPendenciaValidadePlanoAEECommandValidator : AbstractValidator<GerarPendenciaPlanoAEECommand>
     {
         public GerarPendenciaValidadePlanoAEECommandValidator()
         {

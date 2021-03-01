@@ -9,20 +9,20 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class GerarPendenciaValidadePlanoAEECommandHandler : IRequestHandler<GerarPendenciaValidadePlanoAEECommand, bool>
+    public class GerarPendenciaPlanoAEECommandHandler : IRequestHandler<GerarPendenciaPlanoAEECommand, bool>
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly IMediator mediator;
         private readonly IRepositorioPendenciaPlanoAEE repositorioPendenciaPlanoAEE;
 
-        public GerarPendenciaValidadePlanoAEECommandHandler(IUnitOfWork unitOfWork, IMediator mediator, IRepositorioPendenciaPlanoAEE repositorioPendenciaPlanoAEE)
+        public GerarPendenciaPlanoAEECommandHandler(IUnitOfWork unitOfWork, IMediator mediator, IRepositorioPendenciaPlanoAEE repositorioPendenciaPlanoAEE)
         {
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioPendenciaPlanoAEE = repositorioPendenciaPlanoAEE ?? throw new ArgumentNullException(nameof(repositorioPendenciaPlanoAEE));
         }
 
-        public async Task<bool> Handle(GerarPendenciaValidadePlanoAEECommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(GerarPendenciaPlanoAEECommand request, CancellationToken cancellationToken)
         {
             using (var transacao = unitOfWork.IniciarTransacao())
             {

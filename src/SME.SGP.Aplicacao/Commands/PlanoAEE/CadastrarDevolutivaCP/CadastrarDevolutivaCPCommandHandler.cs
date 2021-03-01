@@ -1,8 +1,10 @@
 ﻿using MediatR;
+using Microsoft.Extensions.Configuration;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,18 +17,20 @@ namespace SME.SGP.Aplicacao.Commands
         private readonly IRepositorioPlanoAEE repositorioPlanoAEE;
         private readonly IMediator mediator;
         private readonly IUnitOfWork unitOfWork;
+        private readonly IConfiguration configuration;
 
         public CadastrarDevolutivaCPCommandHandler(
             IRepositorioPlanoAEE repositorioPlanoAEE,
             IMediator mediator,
-            IUnitOfWork unitOfWork)
+            IUnitOfWork unitOfWork,
+            IConfiguration configuration)
         {
             this.repositorioPlanoAEE = repositorioPlanoAEE ?? throw new ArgumentNullException(nameof(repositorioPlanoAEE));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+            this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
-       
         public async Task<bool> Handle(CadastrarDevolutivaCPCommand request, CancellationToken cancellationToken)
         {
             var planoAEE = await repositorioPlanoAEE.ObterPorIdAsync(request.PlanoAEEId);
@@ -39,7 +43,48 @@ namespace SME.SGP.Aplicacao.Commands
 
             var idEntidadeEncaminhamento = await repositorioPlanoAEE.SalvarAsync(planoAEE);
 
+            await GerarPendenciaCEFAI(planoAEE, planoAEE.TurmaId);
+
             return idEntidadeEncaminhamento != 0;
+        }
+
+        private async Task GerarPendenciaCEFAI(PlanoAEE plano, long turmaId)
+        {
+            if (!await ParametroGeracaoPendenciaAtivo())
+                return;
+
+            var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(turmaId));
+            if (turma == null)
+                throw new NegocioException($"Não foi possível localizar a turma [{turmaId}]");
+
+            var funcionarios = await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(turma.Ue.Dre.CodigoDre, new List<Guid>() { Perfis.PERFIL_CEFAI }));
+            if (funcionarios != null && funcionarios.Any())
+                await GerarPendenciaCEFAI(funcionarios.First(), plano, turma);
+        }
+
+        private async Task GerarPendenciaCEFAI(string funcionario, PlanoAEE plano, Turma turma)
+        {
+            var ueDre = $"{turma.Ue.TipoEscola.ShortName()} {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao})";
+            var hostAplicacao = configuration["UrlFrontEnd"];
+            var estudanteOuCrianca = turma.ModalidadeCodigo == Modalidade.Infantil ? "da criança" : "do estudante";
+
+            var titulo = $"Plano AEE a encerrar - {plano.AlunoNome} ({plano.AlunoCodigo}) - {ueDre}";
+            var descricao = @$"Foi solicitado o encerramento do Plano AEE {estudanteOuCrianca} {plano.AlunoNome} ({plano.AlunoCodigo}) da turma {turma.NomeComModalidade()} da {ueDre}. <br/><a href='{hostAplicacao}relatorios/aee/plano/editar/{plano.Id}'>Clique aqui</a> para acessar o plano e atribuir um PAAI para analisar e realizar a devolutiva.
+                <br/><br/>A pendência será resolvida automaticamente após este registro.";
+
+            var usuarioId = await ObterUsuarioPorRF(funcionario);
+
+            await mediator.Send(new GerarPendenciaPlanoAEECommand(plano.Id, usuarioId, titulo, descricao));
+        }
+
+        private async Task<long> ObterUsuarioPorRF(string criadoRF)
+            => await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(criadoRF));
+
+        private async Task<bool> ParametroGeracaoPendenciaAtivo()
+        {
+            var parametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.GerarPendenciasEncaminhamentoAEE, DateTime.Today.Year));
+
+            return parametro != null && parametro.Ativo;
         }
     }
 }
