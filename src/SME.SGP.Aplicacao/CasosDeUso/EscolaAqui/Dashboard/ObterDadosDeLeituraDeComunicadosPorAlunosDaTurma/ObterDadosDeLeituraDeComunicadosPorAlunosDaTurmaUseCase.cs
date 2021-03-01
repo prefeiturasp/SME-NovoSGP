@@ -41,6 +41,9 @@ namespace SME.SGP.Aplicacao.CasosDeUso.EscolaAqui.Dashboard.ObterDadosDeLeituraD
                     throw new Exception("Não foi possível localizar o aluno");
 
                 item.Marcador = servicoAluno.ObterMarcadorAluno(aluno, periodoEscolar, false);
+
+                item.EhAntedidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, turma.AnoLetivo));
+
                 dadosLeituraAlunosComunicadoPorTurmaComMarcador.Add(item);
             }
 
