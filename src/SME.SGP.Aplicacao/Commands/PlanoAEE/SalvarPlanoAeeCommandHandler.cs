@@ -58,7 +58,7 @@ namespace SME.SGP.Aplicacao.Commands
                         {
                             var planoAEEQuestaoId = await mediator.Send(new SalvarPlanoAEEQuestaoCommand(planoId, questao.QuestaoId, planoAEEVersaoId));
 
-                            await mediator.Send(new SalvarPlanoAEERespostaCommand(planoAEEQuestaoId, questao.Resposta, questao.TipoQuestao));
+                            await mediator.Send(new SalvarPlanoAEERespostaCommand(planoId, planoAEEQuestaoId, questao.Resposta, questao.TipoQuestao));
                         }
                     }
 

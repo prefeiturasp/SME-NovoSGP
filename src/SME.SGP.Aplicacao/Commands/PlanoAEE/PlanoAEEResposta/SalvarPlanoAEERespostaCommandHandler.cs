@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao.Commands
             {
                 ConveterRespostaPeriodoEmDatas(request, resposta);
 
-                ValidarIntervaloDeDatas(resposta);
+                await ValidarIntervaloDeDatas(resposta, request.PlanoId);
             }
 
             if (!String.IsNullOrEmpty(request.Resposta) && EnumExtension.EhUmDosValores(request.TipoQuestao, new Enum[] { TipoQuestao.Radio, TipoQuestao.Combo, TipoQuestao.Checkbox, TipoQuestao.ComboMultiplaEscolha }))
@@ -66,7 +66,7 @@ namespace SME.SGP.Aplicacao.Commands
             resposta.PeriodoInicio = DateTime.Parse(periodos[0]).Date;
             resposta.PeriodoFim = DateTime.Parse(periodos[1]).Date;
         }
-        private void ValidarIntervaloDeDatas(PlanoAEEResposta resposta)
+        private async Task ValidarIntervaloDeDatas(PlanoAEEResposta resposta, long planoId)
         {
             // Data inicial deve ser menor que a data final
             if (resposta.PeriodoInicio.Value > resposta.PeriodoFim.Value)
@@ -78,6 +78,9 @@ namespace SME.SGP.Aplicacao.Commands
             // Data inicial deve ser menor que a data final
             if (UtilData.ObterDiferencaDeMesesEntreDatas(resposta.PeriodoInicio.Value, resposta.PeriodoFim.Value) > 3)
                 throw new NegocioException("Não é permitido cadastrar plano AEE com intervalo do período maior que 3 meses!");
+
+            if (resposta.PeriodoFim > DateTime.Today)
+                await mediator.Send(new ExcluirPendenciaValidadePlanoAEECommand(planoId));
         }
     }
 }
