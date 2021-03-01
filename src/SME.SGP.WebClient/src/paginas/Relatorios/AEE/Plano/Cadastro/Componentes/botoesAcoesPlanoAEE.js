@@ -12,7 +12,9 @@ import {
   setAtualizarPlanoAEEDados,
   setExibirLoaderPlanoAEE,
   setDevolutivaEmEdicao,
+  setAtualizarDados,
 } from '~/redux/modulos/planoAEE/actions';
+import { setQuestionarioDinamicoEmEdicao } from '~/redux/modulos/questionarioDinamico/actions';
 
 const BotoesAcoesPlanoAEE = props => {
   const { match } = props;
@@ -40,8 +42,8 @@ const BotoesAcoesPlanoAEE = props => {
   const usuario = useSelector(store => store.usuario);
   const permissoesTela = usuario.permissoes[RotasDto.RELATORIO_AEE_PLANO];
 
-  const situacaoDevolutivaCoordenacao =
-    planoAEEDados?.situacao === situacaoPlanoAEE.DevolutivaCoordenacao;
+  const situacaoDevolutivaCP =
+    planoAEEDados?.situacao === situacaoPlanoAEE.DevolutivaCP;
   const situacaoDevolutivaPAAI =
     planoAEEDados?.situacao === situacaoPlanoAEE.DevolutivaPAAI &&
     dadosDevolutiva?.podeEditarParecerPAAI;
@@ -49,7 +51,7 @@ const BotoesAcoesPlanoAEE = props => {
     planoAEEDados?.situacao === situacaoPlanoAEE.AtribuicaoPAAI;
 
   const situacaoDevolutiva =
-    situacaoDevolutivaCoordenacao ||
+    situacaoDevolutivaCP ||
     (situacaoAtribuicaoPAAI && !dadosAtribuicaoResponsavel?.codigoRF);
 
   const planoAeeId = match?.params?.id;
@@ -159,16 +161,23 @@ const BotoesAcoesPlanoAEE = props => {
       escolherAcaoDevolutivas();
       return;
     }
-    const salvou = await ServicoPlanoAEE.salvarPlano();
-    const planoId = match?.params?.id;
+    const planoId = await ServicoPlanoAEE.salvarPlano(true);
+    const registroNovo = !match?.params?.id;
 
-    if (salvou) {
-      let mensagem = 'Registro salvo com sucesso';
-      if (planoId) {
-        mensagem = 'Registro alterado com sucesso';
+    if (planoId) {
+      let mensagem = 'Registro alterado com sucesso';
+      if (registroNovo) {
+        mensagem = 'Registro salvo com sucesso';
       }
       sucesso(mensagem);
-      history.push(RotasDto.RELATORIO_AEE_PLANO);
+
+      dispatch(setQuestionarioDinamicoEmEdicao(false));
+
+      if (registroNovo) {
+        history.push(`${RotasDto.RELATORIO_AEE_PLANO}`);
+      } else {
+        dispatch(setAtualizarDados(true));
+      }
     }
   };
 
@@ -236,7 +245,8 @@ const BotoesAcoesPlanoAEE = props => {
         onClick={onClickSolicitarEncerramento}
         hidden={
           !planoAEEDados?.situacao ||
-          planoAEEDados?.situacao !== situacaoPlanoAEE.EmAndamento
+          (planoAEEDados?.situacao !== situacaoPlanoAEE.EmAndamento &&
+            planoAEEDados?.situacao !== situacaoPlanoAEE.Reestruturado)
         }
         disabled={
           desabilitarCamposPlanoAEE ||

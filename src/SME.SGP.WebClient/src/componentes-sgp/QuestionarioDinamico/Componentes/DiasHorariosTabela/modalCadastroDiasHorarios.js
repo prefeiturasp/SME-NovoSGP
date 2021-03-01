@@ -14,6 +14,7 @@ import {
 } from '~/componentes';
 import Button from '~/componentes/button';
 import { confirmar } from '~/servicos';
+import QuestionarioDinamicoFuncoes from '../../Funcoes/QuestionarioDinamicoFuncoes';
 
 const ModalCadastroDiasHorario = props => {
   const { onClose, exibirModal, dadosIniciais } = props;
@@ -44,42 +45,13 @@ const ModalCadastroDiasHorario = props => {
     horarioTermino: momentSchema.required('Campo obrigatório'),
   });
 
+  const listaDiasSemana = QuestionarioDinamicoFuncoes.obterListaDiasSemana();
+
   const limparDadosModal = () => {
     setValoresIniciais({});
     setEmEdicao(false);
     refForm.resetForm();
   };
-
-  const listaDiasSemana = [
-    {
-      valor: 'Domingo',
-      desc: 'Domingo',
-    },
-    {
-      valor: 'Segunda',
-      desc: 'Segunda',
-    },
-    {
-      valor: 'Terça',
-      desc: 'Terça',
-    },
-    {
-      valor: 'Quarta',
-      desc: 'Quarta',
-    },
-    {
-      valor: 'Quinta',
-      desc: 'Quinta',
-    },
-    {
-      valor: 'Sexta',
-      desc: 'Sexta',
-    },
-    {
-      valor: 'Sábado',
-      desc: 'Sábado',
-    },
-  ];
 
   const fecharModal = async () => {
     if (emEdicao) {
@@ -193,7 +165,7 @@ const ModalCadastroDiasHorario = props => {
               <Button
                 key="btn-salvar"
                 id="btn-salvar"
-                label={dadosIniciais ? 'Alterar' : 'Adicionar'}
+                label={dadosIniciais?.id ? 'Alterar' : 'Adicionar'}
                 color={Colors.Roxo}
                 border
                 disabled={!emEdicao}

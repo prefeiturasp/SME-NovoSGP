@@ -81,12 +81,16 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine("    WHEN ea.id > 0  THEN 1 ");
                 sql.AppendLine("  END as PossuiEncaminhamentoAEE ");
                 sql.AppendLine(", pa.situacao ");
+                sql.AppendLine(", pa.criado_em as CriadoEm ");
+                sql.AppendLine(", pav.numero as Versao ");
+                sql.AppendLine(", pav.criado_em as DataVersao ");
             }
 
             sql.AppendLine(" from plano_aee pa ");
             sql.AppendLine(" left join encaminhamento_aee ea on ea.aluno_codigo = pa.aluno_codigo and not ea.excluido and ea.situacao not in(4,5,7,8) ");
             sql.AppendLine(" inner join turma t on t.id = pa.turma_id");
             sql.AppendLine(" inner join ue on t.ue_id = ue.id");
+            sql.AppendLine(" inner join plano_aee_versao pav on pav.id = (select max(id) from plano_aee_versao where plano_aee_id = pa.id)");
         }
 
         private static void ObtenhaFiltro(StringBuilder sql, long ueId, long turmaId, string alunoCodigo, int? situacao)
@@ -139,6 +143,15 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select * from plano_aee where not excluido and situacao not in (2,3)";
 
             return await database.Conexao.QueryAsync<PlanoAEE>(query);
+        }
+
+        public async Task<int> AtualizarSituacaoPlanoPorVersao(long versaoId, int situacao)
+        {
+            var query = @"update plano_aee
+                           set situacao = @situacao
+                          where id in (select plano_aee_id from plano_aee_versao where id = @versaoId) ";
+
+            return await database.Conexao.ExecuteAsync(query, new { versaoId, situacao });
         }
     }
 }

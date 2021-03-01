@@ -1,73 +1,108 @@
-import { Tabs } from 'antd';
 import PropTypes from 'prop-types';
-import React from 'react';
-import { useSelector } from 'react-redux';
-import { ContainerTabsCard } from '~/componentes/tabs/tabs.css';
+import React, { useCallback, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { setDadosCollapseLocalizarEstudante } from '~/redux/modulos/collapseLocalizarEstudante/actions';
+import { setDadosObjectCardEstudante } from '~/redux/modulos/objectCardEstudante/actions';
+import {
+  setAtualizarDados,
+  setExibirLoaderPlanoAEE,
+  setPlanoAEEDados,
+  setPlanoAEELimparDados,
+} from '~/redux/modulos/planoAEE/actions';
+import { erros } from '~/servicos';
 import ServicoPlanoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoPlanoAEE';
-import SecaoPlanoCollapse from '../SecaoPlanoCollapse/secaoPlanoCollapse';
-import SecaoReestruturacaoPlano from '../SecaoReestruturacaoPlano/secaoReestruturacaoPlano';
-import SecaoDevolutivasPlanoCollapse from '../SecaoDevolutivasPlano/secaoDevolutivasPlanoCollapse';
-import { situacaoPlanoAEE } from '~/dtos';
+import MontarDadosTabs from './montarDadosTabs';
 
-const { TabPane } = Tabs;
-
-const TabCadastroPasso = props => {
+const TabCadastroPlano = props => {
   const { match } = props;
-  const temId = match?.params?.id;
+
+  const dispatch = useDispatch();
+
+  const atualizarDados = useSelector(store => store.planoAEE.atualizarDados);
 
   const dadosCollapseLocalizarEstudante = useSelector(
     store => store.collapseLocalizarEstudante.dadosCollapseLocalizarEstudante
   );
-  const planoAEEDados = useSelector(store => store.planoAEE.planoAEEDados);
 
-  const cliqueTab = async key => {
-    ServicoPlanoAEE.cliqueTabPlanoAEE(key, temId);
-  };
+  const obterPlanoPorId = useCallback(async () => {
+    const planoId = match?.params?.id ? match?.params?.id : 0;
 
-  return dadosCollapseLocalizarEstudante?.codigoAluno ? (
-    <ContainerTabsCard type="card" width="20%" onTabClick={cliqueTab}>
-      <TabPane tab="Cadastro do Plano" key="1">
-        {dadosCollapseLocalizarEstudante?.codigoAluno ? (
-          <SecaoPlanoCollapse match={match} />
-        ) : (
-          ''
-        )}
-      </TabPane>
-      {temId && (
-        <TabPane
-          tab="Reestruturação"
-          key="2"
-          disabled={
-            planoAEEDados?.situacao !== situacaoPlanoAEE.EmAndamento &&
-            planoAEEDados?.situacao !== situacaoPlanoAEE.Encerrado &&
-            planoAEEDados?.situacao !==
-              situacaoPlanoAEE.EncerradoAutomaticamento
-          }
-        >
-          <SecaoReestruturacaoPlano match={match} />
-        </TabPane>
-      )}
-      {temId && (
-        <TabPane
-          tab="Devolutivas"
-          key="3"
-          disabled={planoAEEDados?.situacao === situacaoPlanoAEE.EmAndamento}
-        >
-          <SecaoDevolutivasPlanoCollapse match={match} />
-        </TabPane>
-      )}
-    </ContainerTabsCard>
-  ) : (
-    ''
-  );
+    let turmaCodigo = 0;
+
+    if (!planoId) {
+      turmaCodigo = dadosCollapseLocalizarEstudante?.codigoTurma;
+    }
+
+    dispatch(setExibirLoaderPlanoAEE(true));
+    const resultado = await ServicoPlanoAEE.obterPlanoPorId(
+      planoId,
+      turmaCodigo
+    )
+      .catch(e => erros(e))
+      .finally(() => dispatch(setExibirLoaderPlanoAEE(false)));
+
+    if (resultado?.data) {
+      if (resultado?.data?.aluno) {
+        const { aluno } = resultado?.data;
+
+        const dadosObjectCard = {
+          nome: aluno.nome,
+          dataNascimento: aluno.dataNascimento,
+          situacao: aluno.situacao,
+          dataSituacao: aluno.dataSituacao,
+          nomeResponsavel: aluno.nomeResponsavel,
+          tipoResponsavel: aluno.tipoResponsavel,
+          celularResponsavel: aluno.celularResponsavel,
+          dataAtualizacaoContato: aluno.dataAtualizacaoContato,
+          codigoEOL: aluno.codigoAluno,
+          turma: aluno.turmaEscola,
+          numeroChamada: aluno.numeroAlunoChamada,
+        };
+        dispatch(setDadosObjectCardEstudante(dadosObjectCard));
+      }
+      dispatch(setPlanoAEEDados(resultado?.data));
+
+      if (resultado?.data?.turma) {
+        const { aluno, turma } = resultado?.data;
+        const dadosLocalizarEstudante = {
+          anoLetivo: turma.anoLetivo,
+          codigoAluno: aluno.codigoAluno,
+          codigoTurma: turma.codigo,
+          turmaId: turma.id,
+        };
+
+        dispatch(setDadosCollapseLocalizarEstudante(dadosLocalizarEstudante));
+      }
+    } else {
+      dispatch(setPlanoAEELimparDados());
+    }
+  }, [match, dispatch, dadosCollapseLocalizarEstudante]);
+
+  useEffect(() => {
+    if (atualizarDados) {
+      obterPlanoPorId();
+    }
+    dispatch(setAtualizarDados(false));
+  }, [atualizarDados, dispatch, obterPlanoPorId]);
+
+  useEffect(() => {
+    const planoId = match?.params?.id ? match?.params?.id : 0;
+    if (planoId && !dadosCollapseLocalizarEstudante?.codigoAluno) {
+      obterPlanoPorId();
+    } else if (!planoId && dadosCollapseLocalizarEstudante?.codigoAluno) {
+      obterPlanoPorId();
+    }
+  }, [obterPlanoPorId, match, dadosCollapseLocalizarEstudante]);
+
+  return <MontarDadosTabs match={match} />;
 };
 
-TabCadastroPasso.propTypes = {
+TabCadastroPlano.propTypes = {
   match: PropTypes.oneOfType([PropTypes.object]),
 };
 
-TabCadastroPasso.defaultProps = {
+TabCadastroPlano.defaultProps = {
   match: {},
 };
 
-export default TabCadastroPasso;
+export default TabCadastroPlano;

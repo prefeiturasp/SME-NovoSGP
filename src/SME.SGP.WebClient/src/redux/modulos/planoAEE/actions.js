@@ -88,6 +88,11 @@ export const setDadosAtribuicaoResponsavel = payload => ({
   payload,
 });
 
+export const setExibirCollapseVersao = payload => ({
+  type: '@planoAEE/setExibirCollapseVersao',
+  payload,
+});
+
 export const setDadosModalReestruturacao = payload => ({
   type: '@planoAEE/setDadosModalReestruturacao',
   payload,

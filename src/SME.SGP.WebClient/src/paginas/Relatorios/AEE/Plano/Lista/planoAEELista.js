@@ -1,25 +1,26 @@
+import * as moment from 'moment';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Cabecalho } from '~/componentes-sgp';
-import AbrangenciaServico from '~/servicos/Abrangencia';
-import IconeAee from '~/recursos/IconeAee.png';
 import {
   CheckboxComponent,
   ListaPaginada,
   Loader,
   SelectComponent,
 } from '~/componentes';
+import { Cabecalho } from '~/componentes-sgp';
 import Button from '~/componentes/button';
 import Card from '~/componentes/card';
 import { Colors } from '~/componentes/colors';
-import { URL_HOME } from '~/constantes/url';
-import history from '~/servicos/history';
-import FiltroHelper from '~componentes-sgp/filtro/helper';
 import LocalizadorEstudante from '~/componentes/LocalizadorEstudante';
-import { erros, verificaSomenteConsulta } from '~/servicos';
+import { URL_HOME } from '~/constantes/url';
 import { RotasDto } from '~/dtos';
-import ServicoPlanoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoPlanoAEE';
+import IconeAee from '~/recursos/IconeAee.png';
 import { setDadosIniciaisLocalizarEstudante } from '~/redux/modulos/collapseLocalizarEstudante/actions';
+import { erros, verificaSomenteConsulta } from '~/servicos';
+import AbrangenciaServico from '~/servicos/Abrangencia';
+import history from '~/servicos/history';
+import ServicoPlanoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoPlanoAEE';
+import FiltroHelper from '~componentes-sgp/filtro/helper';
 
 const PlanoAEELista = () => {
   const dispatch = useDispatch();
@@ -84,6 +85,21 @@ const PlanoAEELista = () => {
     {
       title: 'Situação',
       dataIndex: 'situacao',
+    },
+    {
+      title: 'Data de cadastro',
+      dataIndex: 'criadoEm',
+      render: data => {
+        let dataFormatada = '';
+        if (data) {
+          dataFormatada = moment(data).format('DD/MM/YYYY HH:mm');
+        }
+        return <span> {dataFormatada}</span>;
+      },
+    },
+    {
+      title: 'Versão',
+      dataIndex: 'versao',
     },
   ];
 

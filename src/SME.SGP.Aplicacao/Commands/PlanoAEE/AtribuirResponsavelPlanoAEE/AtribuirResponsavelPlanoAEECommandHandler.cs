@@ -25,8 +25,7 @@ namespace SME.SGP.Aplicacao
             if (planoAEE == null)
                 throw new NegocioException("O Plano AEE informado não foi encontrado");
 
-            if(planoAEE.Situacao == Dominio.Enumerados.SituacaoPlanoAEE.Cancelado
-             || planoAEE.Situacao == Dominio.Enumerados.SituacaoPlanoAEE.Encerrado)
+            if (planoAEE.Situacao == Dominio.Enumerados.SituacaoPlanoAEE.Encerrado)
                 throw new NegocioException("A situação do Plano AEE não permite a remoção do responsável");
 
             planoAEE.Situacao = Dominio.Enumerados.SituacaoPlanoAEE.DevolutivaPAAI;

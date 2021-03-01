@@ -1,22 +1,20 @@
-import React, { useCallback, useEffect, useState } from 'react';
 import moment from 'moment';
 import PropTypes from 'prop-types';
-import shortid from 'shortid';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-
+import shortid from 'shortid';
 import {
   Colors,
   Editor,
   ModalConteudoHtml,
   SelectComponent,
 } from '~/componentes';
-
-import { confirmar, erros, sucesso } from '~/servicos';
-
 import {
   setAlteracaoDados,
+  setAtualizarDados,
   setDadosModalReestruturacao,
 } from '~/redux/modulos/planoAEE/actions';
+import { confirmar, erros, sucesso } from '~/servicos';
 import ServicoPlanoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoPlanoAEE';
 
 const ModalReestruturacaoPlano = ({
@@ -75,11 +73,19 @@ const ModalReestruturacaoPlano = ({
 
       const palavarMsg = reestruturacaoId ? 'alterada' : 'registrada';
       sucesso(`Reestruturação ${palavarMsg} com sucesso.`);
-
+      dispatch(setAtualizarDados(true));
       dispatch(setAlteracaoDados(dadosSalvar));
     }
     setModoEdicao(false);
     alternarModal();
+
+    setVersao('');
+    setVersaoId();
+    setDescricao();
+    setDescricaoSimples();
+    setReestruturacaoId(0);
+    setListaVersao([]);
+    dispatch(setDadosModalReestruturacao({}));
   };
 
   const mudarVersao = useCallback(
@@ -113,6 +119,7 @@ const ModalReestruturacaoPlano = ({
         setModoEdicao(true);
       }
       const textoSimples = removerFormatacao(texto);
+
       setDescricao(texto);
       setDescricaoSimples(textoSimples);
       dispatch(
