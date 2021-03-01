@@ -19,6 +19,10 @@ namespace SME.SGP.Aplicacao
         {
             try
             {
+                var parametroCorrespondente = await mediator.Send(new ObterParametroSistemaPorTipoQuery(TipoParametroSistema.PendenciaPorAusenciaDeRegistroIndividual));
+                if (string.IsNullOrWhiteSpace(parametroCorrespondente))
+                    return true;
+
                 var turmasDoEnsinoInfantil = await mediator.Send(new ObterTurmasPorAnoModalidadeQuery(DateTime.Now.Year, Modalidade.Infantil));
                 if (!turmasDoEnsinoInfantil?.Any() ?? true)
                 {
