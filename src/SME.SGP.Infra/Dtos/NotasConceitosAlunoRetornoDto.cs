@@ -19,5 +19,6 @@ namespace SME.SGP.Infra
         public List<FechamentoNotaRetornoDto> NotasBimestre { get; set; }
         public int NumeroChamada { get; set; }
         public int PercentualFrequencia { get; set; }
+        public bool EhAtendidoAEE { get; set; }
     }
 }
