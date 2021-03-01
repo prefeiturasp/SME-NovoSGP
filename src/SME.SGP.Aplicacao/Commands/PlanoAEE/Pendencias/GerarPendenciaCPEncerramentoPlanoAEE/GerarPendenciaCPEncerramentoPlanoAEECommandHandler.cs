@@ -17,20 +17,12 @@ namespace SME.SGP.Aplicacao
         private readonly IMediator mediator;
         private readonly IUnitOfWork unitOfWork;
         private readonly IConfiguration configuration;
-        private readonly IRepositorioPendencia repositorioPendencia;
-        private readonly IRepositorioPendenciaUsuario repositorioPendenciaUsuario;
-        private readonly IRepositorioPendenciaPlanoAEE repositorioPendenciaPlanoAEE;
 
-        public GerarPendenciaCPEncerramentoPlanoAEECommandHandler(IMediator mediator, IUnitOfWork unitOfWork, IConfiguration configuration,
-            IRepositorioPendencia repositorioPendencia, IRepositorioPendenciaUsuario repositorioPendenciaUsuario,
-            IRepositorioPendenciaPlanoAEE repositorioPendenciaPlanoAEE)
+        public GerarPendenciaCPEncerramentoPlanoAEECommandHandler(IMediator mediator, IUnitOfWork unitOfWork, IConfiguration configuration)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-            this.repositorioPendencia = repositorioPendencia ?? throw new ArgumentNullException(nameof(repositorioPendencia));
-            this.repositorioPendenciaUsuario = repositorioPendenciaUsuario ?? throw new ArgumentNullException(nameof(repositorioPendenciaUsuario));
-            this.repositorioPendenciaPlanoAEE = repositorioPendenciaPlanoAEE ?? throw new ArgumentNullException(nameof(repositorioPendenciaPlanoAEE));
         }
 
         public async Task<bool> Handle(GerarPendenciaCPEncerramentoPlanoAEECommand request, CancellationToken cancellationToken)
@@ -72,14 +64,9 @@ namespace SME.SGP.Aplicacao
                     {
                         foreach (var usuario in usuarios)
                         {
-                            var pendencia = new Pendencia(TipoPendencia.AEE, titulo, descricao);
-                            pendencia.Id = await repositorioPendencia.SalvarAsync(pendencia);
-
-                            var pendenciaUsuario = new PendenciaUsuario { PendenciaId = pendencia.Id, UsuarioId = usuario };
-                            await repositorioPendenciaUsuario.SalvarAsync(pendenciaUsuario);
-
-                            var pendenciaEncaminhamento = new PendenciaPlanoAEE { PendenciaId = pendencia.Id, PlanoAEEId = planoAEE.Id };
-                            await repositorioPendenciaPlanoAEE.SalvarAsync(pendenciaEncaminhamento);
+                            var pendenciaId = await mediator.Send(new SalvarPendenciaCommand(TipoPendencia.AEE, descricao, "", titulo));
+                            var pendenciaUsuarioId = await mediator.Send(new SalvarPendenciaUsuarioCommand(pendenciaId, usuario));
+                            await mediator.Send(new SalvarPendenciaPlanoAEECommand(pendenciaId, planoAEE.Id));
                         }
 
                         unitOfWork.PersistirTransacao();
