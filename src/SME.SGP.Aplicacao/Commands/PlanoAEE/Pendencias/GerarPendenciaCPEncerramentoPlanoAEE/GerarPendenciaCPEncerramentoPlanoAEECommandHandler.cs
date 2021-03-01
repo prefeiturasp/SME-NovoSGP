@@ -44,9 +44,7 @@ namespace SME.SGP.Aplicacao
                 var usuarios = await ObterUsuariosId(funcionarios);
 
                 var usuarioCEFAIId = await mediator.Send(new ObtemUsuarioCEFAIDaDreQuery(ue.Dre.CodigoDre));
-                if (usuarioCEFAIId > 0)
-                    usuarios.Add(usuarioCEFAIId);
-
+                
                 if (planoAEE.ResponsavelId.GetValueOrDefault() > 0)
                     usuarios.Add(planoAEE.ResponsavelId.GetValueOrDefault());
 
@@ -62,6 +60,16 @@ namespace SME.SGP.Aplicacao
                 {
                     try
                     {
+                        if(usuarioCEFAIId > 0)
+                        {
+                            var descricaoDEFAI = $"Foi solicitado o encerramento do Plano AEE {estudanteOuCrianca} {planoAEE.AlunoNome} ({planoAEE.AlunoCodigo}) da turma {planoAEE.Turma.NomeComModalidade()} da {ueDre}. <br/><a href='{hostAplicacao}relatorios/aee/plano/editar/{planoAEE.Id}'>Clique aqui para acessar o plano e atribuir um PAAI para analisar e realizar a devolutiva.</a> " +
+                                $"<br/><br/>A pendência será resolvida automaticamente após este registro.";
+                            var pendenciaId = await mediator.Send(new SalvarPendenciaCommand(TipoPendencia.AEE, descricao, "", titulo));
+                            var pendenciaUsuarioId = await mediator.Send(new SalvarPendenciaUsuarioCommand(pendenciaId, usuarioCEFAIId));
+                            await mediator.Send(new SalvarPendenciaPlanoAEECommand(pendenciaId, planoAEE.Id));
+                        }
+
+
                         foreach (var usuario in usuarios)
                         {
                             var pendenciaId = await mediator.Send(new SalvarPendenciaCommand(TipoPendencia.AEE, descricao, "", titulo));
