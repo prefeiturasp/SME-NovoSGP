@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioPendenciaUsuario repositorioPendenciaUsuario;
         private readonly IRepositorioPendenciaPlanoAEE repositorioPendenciaPlanoAEE;
 
-        public GerarPendenciaCPEncaminhamentoAEECommandHandler(IMediator mediator, IUnitOfWork unitOfWork, IConfiguration configuration,
+        public GerarPendenciaCPEncerramentoPlanoAEECommandHandler(IMediator mediator, IUnitOfWork unitOfWork, IConfiguration configuration,
             IRepositorioPendencia repositorioPendencia, IRepositorioPendenciaUsuario repositorioPendenciaUsuario,
             IRepositorioPendenciaPlanoAEE repositorioPendenciaPlanoAEE)
         {
