@@ -315,6 +315,7 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IRepositorioPlanoAEEQuestao, RepositorioPlanoAEEQuestao>();
             services.TryAddScopedWorkerService<IRepositorioPlanoAEEResposta, RepositorioPlanoAEEResposta>();
             services.TryAddScopedWorkerService<IRepositorioPlanoAEEReestruturacao, RepositorioPlanoAEEReestruturacao>();
+            services.TryAddScopedWorkerService<IRepositorioPendenciaPlanoAEE, RepositorioPendenciaPlanoAEE>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
