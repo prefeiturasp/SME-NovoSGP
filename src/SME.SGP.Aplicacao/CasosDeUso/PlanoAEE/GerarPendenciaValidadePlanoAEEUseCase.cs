@@ -20,6 +20,9 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit param)
         {
+            if (!await ParametroGeracaoPendenciasAtivo())
+                return false;
+
             var dataFim = DateTime.Today.AddDays(-1);
             var planosEncerrados = await mediator.Send(new ObterPlanosAEEPorDataFimQuery(dataFim));
 
@@ -37,6 +40,13 @@ namespace SME.SGP.Aplicacao
             }
 
             return true;
+        }
+
+        private async Task<bool> ParametroGeracaoPendenciasAtivo()
+        {
+            var parametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.GerarPendenciasEncaminhamentoAEE, DateTime.Today.Year));
+
+            return parametro != null && parametro.Ativo;
         }
 
         private async Task GerarPendenciaValidadePlano(PlanoAEE planoEncerrado, DateTime dataFim)
