@@ -129,7 +129,7 @@ namespace SME.SGP.Dados.Repositorios
                                         from plano_aee pa
                                         inner join turma tu on tu.id = pa.turma_id 
                                         where pa.aluno_codigo = @codigoEstudante 
-                                        and pa.situacao <> 3
+                                        and pa.situacao not in (3,7)
                                         and EXTRACT(ISOYEAR from pa.criado_em) = @ano 
                                         limit 1";
 
