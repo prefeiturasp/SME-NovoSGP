@@ -48,7 +48,7 @@ namespace SME.SGP.Aplicacao
             var alunosDadosBasicosDTO = new List<AlunoDadosBasicosDto>();
             foreach (var aluno in alunosParaRegistroIndividual)
             {
-                var alunoPossuiPlanoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoEOL, turma.AnoLetivo));
+                aluno.EhAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoEOL, turma.AnoLetivo));
                 alunosDadosBasicosDTO.Add(aluno);
             }
 
