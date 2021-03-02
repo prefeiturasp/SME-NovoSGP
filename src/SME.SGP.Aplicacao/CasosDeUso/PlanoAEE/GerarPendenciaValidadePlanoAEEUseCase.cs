@@ -63,7 +63,7 @@ namespace SME.SGP.Aplicacao
 
             var usuarioId = await ObterUsuarioPorRF(planoEncerrado.CriadoRF);
 
-            await mediator.Send(new GerarPendenciaValidadePlanoAEECommand(planoEncerrado.Id, usuarioId, titulo, descricao));
+            await mediator.Send(new GerarPendenciaPlanoAEECommand(planoEncerrado.Id, usuarioId, titulo, descricao));
         }
 
         private async Task<long> ObterUsuarioPorRF(string criadoRF)

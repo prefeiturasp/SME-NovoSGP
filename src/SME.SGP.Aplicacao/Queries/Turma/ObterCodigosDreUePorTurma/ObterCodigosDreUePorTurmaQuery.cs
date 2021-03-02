@@ -4,9 +4,9 @@ using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObteCodigosDreUePorTurmaQuery : IRequest<DreUeDaTurmaDto>
+    public class ObterCodigosDreUePorTurmaQuery : IRequest<DreUeDaTurmaDto>
     {
-        public ObteCodigosDreUePorTurmaQuery(string turmaCodigo)
+        public ObterCodigosDreUePorTurmaQuery(string turmaCodigo)
         {
             TurmaCodigo = turmaCodigo;
         }
@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
         public string TurmaCodigo { get; }
     }
 
-    public class ObteCodigosDreUePorTurmaQueryValidator : AbstractValidator<ObteCodigosDreUePorTurmaQuery>
+    public class ObteCodigosDreUePorTurmaQueryValidator : AbstractValidator<ObterCodigosDreUePorTurmaQuery>
     {
         public ObteCodigosDreUePorTurmaQueryValidator()
         {
