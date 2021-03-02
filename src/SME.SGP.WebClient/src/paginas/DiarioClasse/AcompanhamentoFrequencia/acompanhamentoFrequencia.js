@@ -223,7 +223,7 @@ const AcompanhamentoFrequencia = () => {
                     valueText="nome"
                     valueSelect={componenteCurricularIdSelecionado}
                     onChange={onChangeComponenteCurricular}
-                    placeholder="Disciplina"
+                    placeholder="Componente curricular"
                     disabled={desabilitarComponenteCurricular}
                   />
                 </Loader>
