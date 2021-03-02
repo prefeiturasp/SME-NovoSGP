@@ -13,5 +13,6 @@ namespace SME.SGP.Infra
         public string Turma { get; set; }
         public string Situacao { get; set; }
         public string Responsavel { get; set; }
+        public bool EhAtendidoAEE { get; set; }
     }
 }
