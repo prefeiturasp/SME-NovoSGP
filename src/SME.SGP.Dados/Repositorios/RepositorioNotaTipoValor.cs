@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -26,9 +27,14 @@ namespace SME.SGP.Dados.Repositorios
             return database.QueryFirstOrDefault<NotaTipoValor>(sql, parametros);
         }
 
-        public NotaTipoValor ObterPorTurmaId(long turmaId)
+        public NotaTipoValor ObterPorTurmaId(long turmaId, TipoTurma tipoTurma = TipoTurma.Regular)
         {
-            var sql = @"select
+            var sql = tipoTurma == TipoTurma.EducacaoFisica ? 
+                    $@"select *
+	                      from notas_conceitos_ciclos_parametos
+                       where tipo_nota = {(int)TipoNota.Nota}
+                       limit 1;" :
+                    @"select
 	                    nccp.*
                     from
 	                    turma t
