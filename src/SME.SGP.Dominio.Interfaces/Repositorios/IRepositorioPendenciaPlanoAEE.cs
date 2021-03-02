@@ -7,6 +7,6 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioPendenciaPlanoAEE : IRepositorioBase<PendenciaPlanoAEE>
     {
-        Task<PendenciaPlanoAEE> ObterPorPlanoId(long planoAEEId);
+        Task<IEnumerable<PendenciaPlanoAEE>> ObterPorPlanoId(long planoAEEId);
     }
 }

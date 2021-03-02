@@ -24,9 +24,9 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(ExcluirPendenciaPlanoAEECommand request, CancellationToken cancellationToken)
         {
-            var pendenciaPlano = await repositorioPendenciaPlanoAEE.ObterPorPlanoId(request.PlanoAEEId);
+            var pendenciasPlano = await repositorioPendenciaPlanoAEE.ObterPorPlanoId(request.PlanoAEEId);
 
-            if (pendenciaPlano != null)
+            foreach(var pendenciaPlano in pendenciasPlano)
                 await ExcluirPendencia(pendenciaPlano);
 
             return true;
