@@ -41,7 +41,12 @@ namespace SME.SGP.Aplicacao.Commands
 
             var idEntidadeEncaminhamento = await repositorioPlanoAEE.SalvarAsync(planoAEE);
 
+            await ExcluirPendenciaPAAI(planoAEE);
+
             return idEntidadeEncaminhamento != 0;
         }
+
+        private async Task ExcluirPendenciaPAAI(PlanoAEE planoAEE)
+            => await mediator.Send(new ExcluirPendenciaPlanoAEECommand(planoAEE.Id));
     }
 }
