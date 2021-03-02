@@ -71,9 +71,6 @@ namespace SME.SGP.Aplicacao
 
         private async Task ExcluirPendenciaCEFAI(PlanoAEE planoAEE)
         {
-            if (!await ParametroGeracaoPendenciaAtivo())
-                return;
-
             await mediator.Send(new ExcluirPendenciaPlanoAEECommand(planoAEE.Id));
         }
 
