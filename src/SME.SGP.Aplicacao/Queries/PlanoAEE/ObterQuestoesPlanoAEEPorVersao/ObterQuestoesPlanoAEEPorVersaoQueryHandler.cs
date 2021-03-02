@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<IEnumerable<QuestaoDto>> AplicarRegrasPlano(string turmaCodigo, IEnumerable<QuestaoDto> questoes)
         {
-            var codigos = await mediator.Send(new ObteCodigosDreUePorTurmaQuery(turmaCodigo));
+            var codigos = await mediator.Send(new ObterCodigosDreUePorTurmaQuery(turmaCodigo));
             var funciorarioPAEE = await mediator.Send(new ObterPAEETurmaQuery(codigos.DreCodigo, codigos.UeCodigo));
 
             if (funciorarioPAEE != null && funciorarioPAEE.Any())
