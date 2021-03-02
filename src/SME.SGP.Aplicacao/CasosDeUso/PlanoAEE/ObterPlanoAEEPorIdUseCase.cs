@@ -40,7 +40,7 @@ namespace SME.SGP.Aplicacao
                     NomeResponsavel = alunoPorTurmaResposta.NomeResponsavel,
                     TipoResponsavel = alunoPorTurmaResposta.TipoResponsavel,
                     CelularResponsavel = alunoPorTurmaResposta.CelularResponsavel,
-                    DataAtualizacaoContato = alunoPorTurmaResposta.DataAtualizacaoContato
+                    DataAtualizacaoContato = alunoPorTurmaResposta.DataAtualizacaoContato 
                 };
 
 

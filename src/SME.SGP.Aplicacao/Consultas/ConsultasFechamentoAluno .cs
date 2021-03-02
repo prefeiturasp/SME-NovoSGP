@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao
 
             var dadosAluno = (AlunoDadosBasicosDto)dadosAlunos.FirstOrDefault(c => c.CodigoTurma.ToString() == codigoTurma);
 
-            dadosAluno.EhAntedidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(codigoAluno, anoLetivo));
+            dadosAluno.EhAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(codigoAluno, anoLetivo));
 
             var anotacaoAluno = await consultaFechamentoAluno;
             var anotacaoDto = anotacaoAluno == null ?
