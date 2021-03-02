@@ -57,12 +57,12 @@ namespace SME.SGP.Aplicacao.Commands
             if (turma == null)
                 throw new NegocioException($"Não foi possível localizar a turma [{turmaId}]");
 
-            var funcionarios = await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(turma.Ue.Dre.CodigoDre, new List<Guid>() { Perfis.PERFIL_CEFAI }));
-            if (funcionarios != null && funcionarios.Any())
-                await GerarPendenciaCEFAI(funcionarios.First(), plano, turma);
+            var usuarioId = await mediator.Send(new ObtemUsuarioCEFAIDaDreQuery(turma.Ue.Dre.CodigoDre));
+            if (usuarioId > 0)
+                await GerarPendenciaCEFAI(usuarioId, plano, turma);
         }
 
-        private async Task GerarPendenciaCEFAI(string funcionario, PlanoAEE plano, Turma turma)
+        private async Task GerarPendenciaCEFAI(long usuarioId, PlanoAEE plano, Turma turma)
         {
             var ueDre = $"{turma.Ue.TipoEscola.ShortName()} {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao})";
             var hostAplicacao = configuration["UrlFrontEnd"];
@@ -72,13 +72,8 @@ namespace SME.SGP.Aplicacao.Commands
             var descricao = @$"Foi solicitado o encerramento do Plano AEE {estudanteOuCrianca} {plano.AlunoNome} ({plano.AlunoCodigo}) da turma {turma.NomeComModalidade()} da {ueDre}. <br/><a href='{hostAplicacao}relatorios/aee/plano/editar/{plano.Id}'>Clique aqui</a> para acessar o plano e atribuir um PAAI para analisar e realizar a devolutiva.
                 <br/><br/>A pendência será resolvida automaticamente após este registro.";
 
-            var usuarioId = await ObterUsuarioPorRF(funcionario);
-
             await mediator.Send(new GerarPendenciaPlanoAEECommand(plano.Id, usuarioId, titulo, descricao));
         }
-
-        private async Task<long> ObterUsuarioPorRF(string criadoRF)
-            => await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(criadoRF));
 
         private async Task<bool> ParametroGeracaoPendenciaAtivo()
         {
