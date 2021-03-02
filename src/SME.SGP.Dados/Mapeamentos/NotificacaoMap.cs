@@ -17,4 +17,3 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.WorkflowAprovacaoNivel).Ignore();
         }
     }
-}
