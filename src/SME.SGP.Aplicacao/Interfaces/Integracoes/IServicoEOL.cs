@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -134,5 +135,7 @@ namespace SME.SGP.Aplicacao.Integracoes
         Task<IEnumerable<ComponenteCurricularDto>> ObterComponentesCurriculares();
 
         Task<IEnumerable<string>> DefinirTurmasRegulares(string[] codigosTurmas);
+
+        Task<DadosTurmaEolDto> ObterDadosTurmaPorCodigo(string codigoTurma);
     }
 }
