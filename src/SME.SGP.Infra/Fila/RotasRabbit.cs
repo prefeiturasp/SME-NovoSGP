@@ -71,9 +71,7 @@
         public static string RotaNotificacaoEncerramentoEncaminhamentoAEE => "notificacao.encerramento.encaminhamentoaee";
         public static string RotaNotificacaoDevolucaoEncaminhamentoAEE => "notificacao.devolucao.encaminhamentoaee";
 
-        
-
-
         public static string EncerrarPlanoAEEEstudantesInativos => "plano.aee.encerrar.inativos";
+        public static string GerarPendenciaValidadePlanoAEE => "plano.aee.pendencia.validade";
     }
 }

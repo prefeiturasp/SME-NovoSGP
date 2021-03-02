@@ -163,6 +163,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new PlanoAEERespostaMap());
                config.AddMap(new PlanoAEEReestruturacaoMap());
                config.AddMap(new PendenciaEncaminhamentoAEEMap());               
+               config.AddMap(new PendenciaPlanoAEEMap());               
                config.ForDommel();
            });
         }

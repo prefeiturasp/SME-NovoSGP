@@ -103,10 +103,9 @@ namespace SME.SGP.Worker.RabbitMQ
             comandos.Add(RotasRabbit.RotaNotificacaoRegistroConclusaoEncaminhamentoAEE, new ComandoRabbit("Executa notificação para registro de conclusão do Encaminhamento AEE", typeof(INotificacaoConclusaoEncaminhamentoAEEUseCase)));
             comandos.Add(RotasRabbit.RotaNotificacaoEncerramentoEncaminhamentoAEE, new ComandoRabbit("Executa notificação para encerramento do Encaminhamento AEE", typeof(INotificacaoEncerramentoEncaminhamentoAEEUseCase)));
             comandos.Add(RotasRabbit.RotaNotificacaoDevolucaoEncaminhamentoAEE, new ComandoRabbit("Executa notificação para devolucao do Encaminhamento AEE", typeof(INotificacaoDevolucaoEncaminhamentoAEEUseCase)));
-            
-
 
             comandos.Add(RotasRabbit.EncerrarPlanoAEEEstudantesInativos, new ComandoRabbit("Excluir plano AEE estudantes inativos", typeof(IEncerrarPlanosAEEEstudantesInativosUseCase)));
+            comandos.Add(RotasRabbit.GerarPendenciaValidadePlanoAEE, new ComandoRabbit("Gerar Pendência de Validade do PlanoAEE", typeof(IGerarPendenciaValidadePlanoAEEUseCase)));
         }
 
         private async Task TratarMensagem(BasicDeliverEventArgs ea)
