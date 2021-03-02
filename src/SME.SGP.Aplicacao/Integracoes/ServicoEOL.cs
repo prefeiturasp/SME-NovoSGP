@@ -5,6 +5,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -1057,6 +1058,19 @@ namespace SME.SGP.Aplicacao.Integracoes
             var json = await resposta.Content.ReadAsStringAsync();
 
             return JsonConvert.DeserializeObject<IEnumerable<string>>(json);            
+        }
+
+        public async Task<DadosTurmaEolDto> ObterDadosTurmaPorCodigo(string codigoTurma)
+        {
+            var url = $@"turmas/{codigoTurma}/dados";
+
+            var resposta = await httpClient.GetAsync(url);
+
+            if (!resposta.IsSuccessStatusCode)
+                throw new NegocioException($"Não foram encontrados dados da turma {codigoTurma} no EOL.");
+
+            var json = await resposta.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<DadosTurmaEolDto>(json);
         }
     }
 }
