@@ -42,7 +42,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.EscolaAqui.Dashboard.ObterDadosDeLeituraD
 
                 item.Marcador = servicoAluno.ObterMarcadorAluno(aluno, periodoEscolar, false);
 
-                item.EhAntedidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, turma.AnoLetivo));
+                item.EhAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, turma.AnoLetivo));
 
                 dadosLeituraAlunosComunicadoPorTurmaComMarcador.Add(item);
             }

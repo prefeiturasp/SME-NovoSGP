@@ -136,7 +136,7 @@ namespace SME.SGP.Aplicacao
                 if (periodoEscolar != null)
                     dadosBasicos.Marcador = servicoAluno.ObterMarcadorAluno(dadoAluno, periodoEscolar);
 
-                dadosBasicos.EhAntedidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(dadoAluno.CodigoAluno, anoLetivo));
+                dadosBasicos.EhAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(dadoAluno.CodigoAluno, anoLetivo));
 
                 dadosAlunosDto.Add(dadosBasicos);
             }
