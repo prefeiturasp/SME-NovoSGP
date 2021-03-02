@@ -43,7 +43,7 @@ namespace SME.SGP.Aplicacao
 
                 var usuarios = await ObterUsuariosId(funcionarios);
 
-                var ueDre = $"{ue.TipoEscola.ShortName()} {ue.Nome} ({ue.Dre.Abreviacao})";
+                var ueDre = $"{turma.Ue.TipoEscola.ShortName()} {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao})";
                 var hostAplicacao = configuration["UrlFrontEnd"];
                 var estudanteOuCrianca = turma.ModalidadeCodigo == Modalidade.Infantil ? "da criança" : "do estudante";
 
