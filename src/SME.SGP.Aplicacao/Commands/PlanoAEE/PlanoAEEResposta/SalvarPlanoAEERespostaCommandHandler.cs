@@ -80,7 +80,7 @@ namespace SME.SGP.Aplicacao.Commands
                 throw new NegocioException("Não é permitido cadastrar plano AEE com intervalo do período maior que 3 meses!");
 
             if (resposta.PeriodoFim > DateTime.Today)
-                await mediator.Send(new ExcluirPendenciaValidadePlanoAEECommand(planoId));
+                await mediator.Send(new ExcluirPendenciaPlanoAEECommand(planoId));
         }
     }
 }
