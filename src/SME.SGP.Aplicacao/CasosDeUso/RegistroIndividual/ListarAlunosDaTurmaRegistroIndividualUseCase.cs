@@ -49,7 +49,6 @@ namespace SME.SGP.Aplicacao
             foreach (var aluno in alunosParaRegistroIndividual)
             {
                 var alunoPossuiPlanoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoEOL, turma.AnoLetivo));
-                aluno.EhAtendidoAEE = alunoPossuiPlanoAEE;
                 alunosDadosBasicosDTO.Add(aluno);
             }
 
