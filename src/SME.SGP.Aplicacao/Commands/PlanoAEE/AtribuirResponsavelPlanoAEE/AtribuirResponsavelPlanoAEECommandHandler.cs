@@ -1,6 +1,8 @@
 ﻿using MediatR;
+using Microsoft.Extensions.Configuration;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,11 +13,13 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IMediator mediator;
         private readonly IRepositorioPlanoAEE repositorioPlanoAEE;
+        private readonly IConfiguration configuration;
 
-        public AtribuirResponsavelPlanoAEECommandHandler(IMediator mediator, IRepositorioPlanoAEE repositorioPlanoAEE)
+        public AtribuirResponsavelPlanoAEECommandHandler(IMediator mediator, IRepositorioPlanoAEE repositorioPlanoAEE, IConfiguration configuration)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioPlanoAEE = repositorioPlanoAEE ?? throw new ArgumentNullException(nameof(repositorioPlanoAEE));
+            this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
         public async Task<bool> Handle(AtribuirResponsavelPlanoAEECommand request, CancellationToken cancellationToken)
@@ -33,7 +37,41 @@ namespace SME.SGP.Aplicacao
 
             var idEntidadePlanoAEE = await repositorioPlanoAEE.SalvarAsync(planoAEE);
 
+            await VerificaGeracaoPendenciaPAAI(planoAEE);
+
             return idEntidadePlanoAEE != 0;
+        }
+
+        private async Task VerificaGeracaoPendenciaPAAI(PlanoAEE planoAEE)
+        {
+            if (!await ParametroGeracaoPendenciaAtivo())
+                return;
+
+            var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(planoAEE.TurmaId));
+            if (turma == null)
+                throw new NegocioException($"Não foi possível localizar a turma [{planoAEE.TurmaId}]");
+
+            await GerarPendenciaPAAI(planoAEE, turma);
+        }
+
+        private async Task GerarPendenciaPAAI(PlanoAEE plano, Turma turma)
+        {
+            var ueDre = $"{turma.Ue.TipoEscola.ShortName()} {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao})";
+            var hostAplicacao = configuration["UrlFrontEnd"];
+            var estudanteOuCrianca = turma.ModalidadeCodigo == Modalidade.Infantil ? "da criança" : "do estudante";
+
+            var titulo = $"Plano AEE a encerrar - {plano.AlunoNome} ({plano.AlunoCodigo}) - {ueDre}";
+            var descricao = @$"Foi solicitado o encerramento do Plano AEE {estudanteOuCrianca} {plano.AlunoNome} ({plano.AlunoCodigo}) da turma {turma.NomeComModalidade()} da {ueDre}. <br/><a href='{hostAplicacao}relatorios/aee/plano/editar/{plano.Id}'>Clique aqui</a> para acessar o plano e registrar a devolutiva.
+                <br/><br/>A pendência será resolvida automaticamente após este registro.";
+
+            await mediator.Send(new GerarPendenciaPlanoAEECommand(plano.Id, plano.ResponsavelId.Value, titulo, descricao));
+        }
+
+        private async Task<bool> ParametroGeracaoPendenciaAtivo()
+        {
+            var parametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.GerarPendenciasEncaminhamentoAEE, DateTime.Today.Year));
+
+            return parametro != null && parametro.Ativo;
         }
     }
 }
