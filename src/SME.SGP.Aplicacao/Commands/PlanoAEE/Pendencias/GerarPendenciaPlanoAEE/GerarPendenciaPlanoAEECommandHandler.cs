@@ -32,7 +32,8 @@ namespace SME.SGP.Aplicacao
 
                     await repositorioPendenciaPlanoAEE.SalvarAsync(new PendenciaPlanoAEE(pendenciaId, request.PlanoAEEId));
 
-                    await mediator.Send(new SalvarPendenciaUsuarioCommand(pendenciaId, request.UsuarioId));
+                    foreach(var usuarioId in request.UsuariosIds)
+                        await mediator.Send(new SalvarPendenciaUsuarioCommand(pendenciaId, usuarioId));
 
                     unitOfWork.PersistirTransacao();
                 }

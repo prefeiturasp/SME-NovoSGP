@@ -27,16 +27,16 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(GerarPendenciaCPEncerramentoPlanoAEECommand request, CancellationToken cancellationToken)
         {
-            var planoAEE = await mediator.Send(new ObterPlanoAEEComTurmaPorIdQuery(request.PlanoAEEId));
+            var planoAEE = await mediator.Send(new ObterPlanoAEEPorIdQuery(request.PlanoAEEId));
 
             if (planoAEE == null)
                 throw new NegocioException("Não foi possível localizar o PlanoAEE");
 
             if (planoAEE.Situacao == SituacaoPlanoAEE.DevolutivaCP)
             {
-                var ue = await mediator.Send(new ObterUeComDrePorCodigoQuery(planoAEE.Turma.CodigoTurma));
+                var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(planoAEE.TurmaId));
 
-                var funcionarios = await ObterFuncionarios(ue.CodigoUe);
+                var funcionarios = await ObterFuncionarios(turma.Ue.CodigoUe);
 
                 if (funcionarios == null)
                     return false;
@@ -45,32 +45,13 @@ namespace SME.SGP.Aplicacao
 
                 var ueDre = $"{ue.TipoEscola.ShortName()} {ue.Nome} ({ue.Dre.Abreviacao})";
                 var hostAplicacao = configuration["UrlFrontEnd"];
-                var estudanteOuCrianca = planoAEE.Turma.ModalidadeCodigo == Modalidade.Infantil ? "da criança" : "do estudante";
+                var estudanteOuCrianca = turma.ModalidadeCodigo == Modalidade.Infantil ? "da criança" : "do estudante";
 
                 var titulo = $"Plano AEE a encerrar - {planoAEE.AlunoNome} ({planoAEE.AlunoCodigo}) - {ueDre}";
-                var descricao = $"Foi solicitado o encerramento do Plano AEE {estudanteOuCrianca} {planoAEE.AlunoNome} ({planoAEE.AlunoCodigo}) da turma {planoAEE.Turma.NomeComModalidade()} da {ueDre}. <br/><a href='{hostAplicacao}relatorios/aee/plano/editar/{planoAEE.Id}'>Clique aqui para acessar o plano e registrar a devolutiva.</a> " +
+                var descricao = $"Foi solicitado o encerramento do Plano AEE {estudanteOuCrianca} {planoAEE.AlunoNome} ({planoAEE.AlunoCodigo}) da turma {turma.NomeComModalidade()} da {ueDre}. <br/><a href='{hostAplicacao}relatorios/aee/plano/editar/{planoAEE.Id}'>Clique aqui para acessar o plano e registrar a devolutiva.</a> " +
                     $"<br/><br/>A pendência será resolvida automaticamente após este registro.";
 
-                using (var transacao = unitOfWork.IniciarTransacao())
-                {
-                    try
-                    {
-                        foreach (var usuario in usuarios)
-                        {
-                            var pendenciaId = await mediator.Send(new SalvarPendenciaCommand(TipoPendencia.AEE, descricao, "", titulo));
-                            var pendenciaUsuarioId = await mediator.Send(new SalvarPendenciaUsuarioCommand(pendenciaId, usuario));
-                            await mediator.Send(new SalvarPendenciaPlanoAEECommand(pendenciaId, planoAEE.Id));
-                        }
-
-                        unitOfWork.PersistirTransacao();
-                        return true;
-                    }
-                    catch (Exception e)
-                    {
-                        unitOfWork.Rollback();
-                        throw;
-                    }
-                }
+                await mediator.Send(new GerarPendenciaPlanoAEECommand(planoAEE.Id, usuarios, titulo, descricao));
             }
             return false;
         }
