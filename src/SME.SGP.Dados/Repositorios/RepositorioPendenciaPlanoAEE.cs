@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -11,13 +12,13 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<PendenciaPlanoAEE> ObterPorPlanoId(long planoAEEId)
+        public async Task<IEnumerable<PendenciaPlanoAEE>> ObterPorPlanoId(long planoAEEId)
         {
             var query = @"select * 
                           from pendencia_plano_aee
                          where plano_aee_id = @planoAEEId ";
 
-            return await database.QueryFirstOrDefaultAsync<PendenciaPlanoAEE>(query, new { planoAEEId });
+            return await database.QueryAsync<PendenciaPlanoAEE>(query, new { planoAEEId });
         }
     }
 }
