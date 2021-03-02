@@ -65,8 +65,8 @@ const PlanoAEELista = () => {
       dataIndex: 'nome',
       render: (_, record) => (
         <NomeEstudanteLista
-          nome={record?.nome.split('|')[0]}
-          exibirSinalizacao={record?.nome.split('|')[1] === 'True'}
+          nome={record?.nome}
+          exibirSinalizacao={record?.ehAtendidoAEE}
         />
       ),
     },

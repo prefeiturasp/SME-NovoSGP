@@ -86,7 +86,7 @@ const EncaminhamentoAEELista = () => {
       render: (_, record) => (
         <NomeEstudanteLista
           nome={record?.nome}
-          exibirSinalizacao={!record?.ehAtendidoAEE}
+          exibirSinalizacao={record?.ehAtendidoAEE}
         />
       ),
     },

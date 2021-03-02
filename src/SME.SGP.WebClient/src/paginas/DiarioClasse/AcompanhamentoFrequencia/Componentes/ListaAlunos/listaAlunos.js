@@ -183,7 +183,7 @@ const ListaAlunos = props => {
                               {/* {data.nome} */}
                               <NomeEstudanteLista
                                 nome={data?.nome}
-                                exibirSinalizacao={!data?.ehAtendidoAEE}
+                                exibirSinalizacao={data?.ehAtendidoAEE}
                               />
                             </td>
                             <td
