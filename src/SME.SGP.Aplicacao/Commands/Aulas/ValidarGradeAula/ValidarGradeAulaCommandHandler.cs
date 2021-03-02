@@ -21,7 +21,8 @@ namespace SME.SGP.Aplicacao
         {
             if (request.EhRegencia)
             {
-                if (request.AulasExistentes != null && request.AulasExistentes.Any(c => c.TipoAula != TipoAula.Reposicao))
+                var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+                if (request.AulasExistentes != null && request.AulasExistentes.Any(c => c.TipoAula != TipoAula.Reposicao) && !(usuarioLogado.EhProfessorCj() || usuarioLogado.EhProfessorCjInfantil()))
                 {
                     if (request.TurmaModalidade == Modalidade.EJA)
                         return (false, "Para regência de EJA só é permitido a criação de 5 aulas por dia.");
