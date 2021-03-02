@@ -105,16 +105,13 @@ const CadastroOcorrencias = ({ match }) => {
         ocorrencia.data.dataOcorrencia = window.moment(
           new Date(ocorrencia.data.dataOcorrencia)
         );
-        ocorrencia.data.horaOcorrencia = ocorrencia.data.horaOcorrencia
-          ? window.moment(
-              new Date(
-                `${window
-                  .moment()
-                  .format('DD/MM/YYYY')
-                  .toString()} ${ocorrencia.data.horaOcorrencia}:00`
-              )
-            )
-          : '';
+        const data = new Date(ocorrencia.data.dataOcorrencia);
+        const horaMin = ocorrencia.data.horaOcorrencia.split(":");
+        data.setHours(ocorrencia.data.horaOcorrencia ? horaMin[0] : '00');
+        data.setMinutes(ocorrencia.data.horaOcorrencia ? horaMin[1] : '00');                
+        ocorrencia.data.horaOcorrencia = window.moment(
+          new Date(data)
+        );
         setValoresIniciais(ocorrencia.data);
         refForm.setFieldValue(
           'ocorrenciaTipoId',
