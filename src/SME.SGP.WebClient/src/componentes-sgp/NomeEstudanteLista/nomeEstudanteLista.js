@@ -5,8 +5,8 @@ import SinalizacaoAEE from '../SinalizacaoAEE/sinalizacaoAEE';
 
 const NomeEstudanteLista = ({ nome, exibirSinalizacao, tituloSinalizacao }) => {
   return (
-    <div className="d-flex justify-content-between">
-      <span>{nome} </span>
+    <div className="d-flex justify-content-between w-100">
+      <span className="pr-2">{nome} </span>
       <SinalizacaoAEE
         exibirSinalizacao={exibirSinalizacao}
         tituloSinalizacao={tituloSinalizacao}

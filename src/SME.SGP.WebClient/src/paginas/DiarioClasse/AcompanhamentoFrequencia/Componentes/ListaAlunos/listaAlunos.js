@@ -18,6 +18,7 @@ import ModalAnotacoesAcompanhamentoFrequencia from './modalAnotacoesAcompanhamen
 import ServicoAcompanhamentoFrequencia from '~/servicos/Paginas/DiarioClasse/ServicoAcompanhamentoFrequencia';
 import { erros } from '~/servicos';
 import { Loader } from '~/componentes';
+import NomeEstudanteLista from '~/componentes-sgp/NomeEstudanteLista/nomeEstudanteLista';
 
 const ListaAlunos = props => {
   const usuario = useSelector(store => store.usuario);
@@ -179,7 +180,11 @@ const ListaAlunos = props => {
                                   : `solid 1px ${Base.CinzaDesabilitado}`,
                               }}
                             >
-                              {data.nome}
+                              {/* {data.nome} */}
+                              <NomeEstudanteLista
+                                nome={data?.nome}
+                                exibirSinalizacao={!data?.ehAtendidoAEE}
+                              />
                             </td>
                             <td
                               className="col-valor-linha-dois"

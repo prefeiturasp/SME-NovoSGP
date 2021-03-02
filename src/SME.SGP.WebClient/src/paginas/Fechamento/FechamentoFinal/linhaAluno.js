@@ -1,6 +1,7 @@
 import { Tooltip } from 'antd';
 import PropTypes from 'prop-types';
 import React from 'react';
+import NomeEstudanteLista from '~/componentes-sgp/NomeEstudanteLista/nomeEstudanteLista';
 
 import CampoConceitoFinal from './campoConceitoFinal';
 import CampoNotaFinal from './campoNotaFinal';
@@ -23,7 +24,6 @@ const LinhaAluno = ({
   ehSintese,
   registraFrequencia,
 }) => {
-
   const obterValorConceito = valor => {
     if (listaConceitos && listaConceitos.length) {
       const conceito = listaConceitos.find(item => item.id == valor);
@@ -123,7 +123,12 @@ const LinhaAluno = ({
             <div style={{ display: 'inline' }}>{aluno.numeroChamada}</div>
           )}
         </td>
-        <td className="col-nome-aluno"> {aluno.nome}</td>
+        <td className="col-nome-aluno">
+          <NomeEstudanteLista
+            nome={aluno?.nome}
+            exibirSinalizacao={aluno.ehAtendidoAEE}
+          />
+        </td>
         {ehSintese ? (
           <td className="col-nota-conceito">{aluno.sintese}</td>
         ) : (
