@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,11 @@ namespace SME.SGP.Aplicacao
     {
         public static async Task<List<SemestreAcompanhamentoDto>> Executar(IMediator mediator, string turmaCodigo)
         {
-            var bimestreAtual = await mediator.Send(new ObterBimestreAtualQuery(turmaCodigo, DateTime.Today));
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaCodigo));
+            if (turma == null)
+                throw new NegocioException("A turma informada não foi encontrada!");
+
+            var bimestreAtual = await mediator.Send(new ObterBimestreAtualQuery(DateTime.Today, turma));
 
             return await mediator.Send(new ObterListaSemestresRelatorioPAPQuery(bimestreAtual));
         }
