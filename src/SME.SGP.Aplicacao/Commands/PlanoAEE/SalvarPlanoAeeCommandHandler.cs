@@ -62,12 +62,12 @@ namespace SME.SGP.Aplicacao.Commands
                         }
                     }
 
-                    transacao.Commit();
+                    unitOfWork.PersistirTransacao();
                     return new RetornoPlanoAEEDto(planoId, planoAEEVersaoId);
                 }
                 catch (Exception ex)
                 {
-                    transacao.Rollback();
+                    unitOfWork.Rollback();
                     throw ex;
                 }
             }

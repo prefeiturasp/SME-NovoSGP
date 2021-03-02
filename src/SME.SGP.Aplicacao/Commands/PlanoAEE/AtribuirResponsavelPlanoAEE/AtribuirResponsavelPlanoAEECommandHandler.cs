@@ -44,7 +44,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task VerificaGeracaoPendenciaPAAI(PlanoAEE planoAEE)
         {
-            if (!await ParametroGeracaoPendenciaAtivo())
+            if (!await ParametroGeracaoPendenciaAtivo() || await AtribuidoAoMesmoUsuario(planoAEE))
                 return;
 
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(planoAEE.TurmaId));
@@ -52,6 +52,12 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException($"Não foi possível localizar a turma [{planoAEE.TurmaId}]");
 
             await GerarPendenciaPAAI(planoAEE, turma);
+        }
+
+        private async Task<bool> AtribuidoAoMesmoUsuario(PlanoAEE planoAEE)
+        {
+            var usuarioId = await mediator.Send(new ObterUsuarioLogadoIdQuery());
+            return usuarioId == planoAEE.ResponsavelId;
         }
 
         private async Task GerarPendenciaPAAI(PlanoAEE plano, Turma turma)
@@ -76,7 +82,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<bool> ParametroGeracaoPendenciaAtivo()
         {
-            var parametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.GerarPendenciasEncaminhamentoAEE, DateTime.Today.Year));
+            var parametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.GerarPendenciasPlanoAEE, DateTime.Today.Year));
 
             return parametro != null && parametro.Ativo;
         }

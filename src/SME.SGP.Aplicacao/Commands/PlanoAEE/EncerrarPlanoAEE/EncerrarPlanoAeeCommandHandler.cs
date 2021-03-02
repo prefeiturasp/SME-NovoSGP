@@ -30,11 +30,15 @@ namespace SME.SGP.Aplicacao.Commands
             
             var planoId = await repositorioPlanoAEE.SalvarAsync(planoAEE);
 
+            await ExcluirPendenciasPlano(planoId);
             if(await ParametroGeracaoPendenciaAtivo())
                 await mediator.Send(new GerarPendenciaCPEncerramentoPlanoAEECommand(planoAEE.Id));
 
             return new RetornoEncerramentoPlanoAEEDto(planoId, planoAEE.Situacao);
         }
+
+        private async Task ExcluirPendenciasPlano(long planoId)
+            => await mediator.Send(new ExcluirPendenciaPlanoAEECommand(planoId));
 
         private async Task<bool> ParametroGeracaoPendenciaAtivo()
         {

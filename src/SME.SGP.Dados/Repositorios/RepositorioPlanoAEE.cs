@@ -164,7 +164,7 @@ namespace SME.SGP.Dados.Repositorios
                          inner join plano_aee_resposta par on par.plano_questao_id = paq.id
                           left join pendencia_plano_aee ppa on ppa.plano_aee_id = pa.id
                          where par.periodo_fim <= @dataFim
-                           and pa.situacao = 1
+                           and pa.situacao in (1,2)
                            and ppa.id is null";
 
             return await database.Conexao.QueryAsync<PlanoAEE>(query, new { dataFim });

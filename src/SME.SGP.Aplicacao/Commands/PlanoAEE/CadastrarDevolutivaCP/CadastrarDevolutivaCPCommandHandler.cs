@@ -81,7 +81,7 @@ namespace SME.SGP.Aplicacao.Commands
 
         private async Task<bool> ParametroGeracaoPendenciaAtivo()
         {
-            var parametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.GerarPendenciasEncaminhamentoAEE, DateTime.Today.Year));
+            var parametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.GerarPendenciasPlanoAEE, DateTime.Today.Year));
 
             return parametro != null && parametro.Ativo;
         }
