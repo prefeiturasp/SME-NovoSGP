@@ -6,9 +6,9 @@ using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ExcluirPendenciaValidadePlanoAEECommand : IRequest<bool>
+    public class ExcluirPendenciaPlanoAEECommand : IRequest<bool>
     {
-        public ExcluirPendenciaValidadePlanoAEECommand(long planoAEEId)
+        public ExcluirPendenciaPlanoAEECommand(long planoAEEId)
         {
             PlanoAEEId = planoAEEId;
         }
@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
         public long PlanoAEEId { get; }
     }
 
-    public class ExcluirPendenciaValidadePlanoAEECommandValidator : AbstractValidator<ExcluirPendenciaValidadePlanoAEECommand>
+    public class ExcluirPendenciaValidadePlanoAEECommandValidator : AbstractValidator<ExcluirPendenciaPlanoAEECommand>
     {
         public ExcluirPendenciaValidadePlanoAEECommandValidator()
         {

@@ -9,24 +9,24 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ExcluirPendenciaValidadePlanoAEECommandHandler : IRequestHandler<ExcluirPendenciaValidadePlanoAEECommand, bool>
+    public class ExcluirPendenciaPlanoAEECommandHandler : IRequestHandler<ExcluirPendenciaPlanoAEECommand, bool>
     {
         private readonly IMediator mediator;
         private readonly IUnitOfWork unitOfWork;
         private readonly IRepositorioPendenciaPlanoAEE repositorioPendenciaPlanoAEE;
 
-        public ExcluirPendenciaValidadePlanoAEECommandHandler(IMediator mediator, IUnitOfWork unitOfWork, IRepositorioPendenciaPlanoAEE repositorioPendenciaPlanoAEE)
+        public ExcluirPendenciaPlanoAEECommandHandler(IMediator mediator, IUnitOfWork unitOfWork, IRepositorioPendenciaPlanoAEE repositorioPendenciaPlanoAEE)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.repositorioPendenciaPlanoAEE = repositorioPendenciaPlanoAEE ?? throw new ArgumentNullException(nameof(repositorioPendenciaPlanoAEE));
         }
 
-        public async Task<bool> Handle(ExcluirPendenciaValidadePlanoAEECommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(ExcluirPendenciaPlanoAEECommand request, CancellationToken cancellationToken)
         {
-            var pendenciaPlano = await repositorioPendenciaPlanoAEE.ObterPorPlanoId(request.PlanoAEEId);
+            var pendenciasPlano = await repositorioPendenciaPlanoAEE.ObterPorPlanoId(request.PlanoAEEId);
 
-            if (pendenciaPlano != null)
+            foreach(var pendenciaPlano in pendenciasPlano)
                 await ExcluirPendencia(pendenciaPlano);
 
             return true;
