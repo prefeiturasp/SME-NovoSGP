@@ -43,13 +43,6 @@ namespace SME.SGP.Aplicacao
 
                 var usuarios = await ObterUsuariosId(funcionarios);
 
-                var usuarioCEFAIId = await mediator.Send(new ObtemUsuarioCEFAIDaDreQuery(ue.Dre.CodigoDre));
-                if (usuarioCEFAIId > 0)
-                    usuarios.Add(usuarioCEFAIId);
-
-                if (planoAEE.ResponsavelId.GetValueOrDefault() > 0)
-                    usuarios.Add(planoAEE.ResponsavelId.GetValueOrDefault());
-
                 var ueDre = $"{ue.TipoEscola.ShortName()} {ue.Nome} ({ue.Dre.Abreviacao})";
                 var hostAplicacao = configuration["UrlFrontEnd"];
                 var estudanteOuCrianca = planoAEE.Turma.ModalidadeCodigo == Modalidade.Infantil ? "da criança" : "do estudante";

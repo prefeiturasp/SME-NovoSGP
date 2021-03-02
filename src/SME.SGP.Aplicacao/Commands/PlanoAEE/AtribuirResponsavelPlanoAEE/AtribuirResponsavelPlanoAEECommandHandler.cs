@@ -56,6 +56,8 @@ namespace SME.SGP.Aplicacao
 
         private async Task GerarPendenciaPAAI(PlanoAEE plano, Turma turma)
         {
+            await ExcluirPendenciaCEFAI(plano);
+
             var ueDre = $"{turma.Ue.TipoEscola.ShortName()} {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao})";
             var hostAplicacao = configuration["UrlFrontEnd"];
             var estudanteOuCrianca = turma.ModalidadeCodigo == Modalidade.Infantil ? "da criança" : "do estudante";
@@ -65,6 +67,11 @@ namespace SME.SGP.Aplicacao
                 <br/><br/>A pendência será resolvida automaticamente após este registro.";
 
             await mediator.Send(new GerarPendenciaPlanoAEECommand(plano.Id, plano.ResponsavelId.Value, titulo, descricao));
+        }
+
+        private async Task ExcluirPendenciaCEFAI(PlanoAEE planoAEE)
+        {
+            await mediator.Send(new ExcluirPendenciaPlanoAEECommand(planoAEE.Id));
         }
 
         private async Task<bool> ParametroGeracaoPendenciaAtivo()
