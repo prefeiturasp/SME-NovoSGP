@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
             {
                 try
                 {
-                    var notificacaoId = await mediator.Send(new EnviarNotificacaoUsuariosCommand(request.Titulo, request.Descricao, Dominio.NotificacaoCategoria.Alerta, Dominio.NotificacaoTipo.AEE, new List<long>() { request.UsuarioId }));
+                    var notificacaoId = await mediator.Send(new EnviarNotificacaoUsuariosCommand(request.Titulo, request.Descricao, Dominio.NotificacaoCategoria.Alerta, Dominio.NotificacaoTipo.AEE, request.UsuariosIds));
                     await repositorioNotificacaoPlanoAEE.SalvarAsync(new Dominio.NotificacaoPlanoAEE(notificacaoId, request.PlanoId, request.Tipo));
 
                     unitOfWork.PersistirTransacao();

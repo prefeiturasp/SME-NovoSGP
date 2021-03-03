@@ -12,14 +12,23 @@ namespace SME.SGP.Aplicacao
         public GerarNotificacaoPlanoAEECommand(long planoId, long usuarioId, string titulo, string descricao, NotificacaoPlanoAEETipo notificacaoPlanoAEETipo)
         {
             PlanoId = planoId;
-            UsuarioId = usuarioId;
+            UsuariosIds = new List<long>() { usuarioId };
+            Titulo = titulo;
+            Descricao = descricao;
+            Tipo = notificacaoPlanoAEETipo;
+        }
+
+        public GerarNotificacaoPlanoAEECommand(long planoId, IEnumerable<long> usuariosIds, string titulo, string descricao, NotificacaoPlanoAEETipo notificacaoPlanoAEETipo)
+        {
+            PlanoId = planoId;
+            UsuariosIds = usuariosIds;
             Titulo = titulo;
             Descricao = descricao;
             Tipo = notificacaoPlanoAEETipo;
         }
 
         public long PlanoId { get; }
-        public long UsuarioId { get; }
+        public IEnumerable<long> UsuariosIds { get; }
         public string Titulo { get; }
         public string Descricao { get; }
         public NotificacaoPlanoAEETipo Tipo { get; }
@@ -33,7 +42,7 @@ namespace SME.SGP.Aplicacao
                 .NotEmpty()
                 .WithMessage("O id do plano deve ser informado para geração de notificação de plano AEE");
 
-            RuleFor(a => a.UsuarioId)
+            RuleFor(a => a.UsuariosIds)
                 .NotEmpty()
                 .WithMessage("O id do usuário deve ser informado para geração de notificação de plano AEE");
 
