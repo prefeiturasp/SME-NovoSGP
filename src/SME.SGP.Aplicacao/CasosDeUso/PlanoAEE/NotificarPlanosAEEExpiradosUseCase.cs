@@ -53,9 +53,7 @@ namespace SME.SGP.Aplicacao
             => await mediator.Send(new ObtemUsuarioCEFAIDaDreQuery(codigoDre));
 
         private async Task<Turma> ObterTurma(long turmaId)
-        {
-            throw new NotImplementedException();
-        }
+            => await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(turmaId));
 
         private async Task<DateTime> ObterDataFim()
         {
