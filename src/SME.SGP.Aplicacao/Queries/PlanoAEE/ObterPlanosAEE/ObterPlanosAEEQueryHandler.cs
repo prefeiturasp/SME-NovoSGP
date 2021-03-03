@@ -57,10 +57,10 @@ namespace SME.SGP.Aplicacao
                         Turma = $"{planoAEE.TurmaModalidade.ShortName()} - {planoAEE.TurmaNome}",
                         Numero = aluno?.NumeroAlunoChamada ?? 0,
                         Nome = $"{aluno?.NomeAluno}",
-                        PossuiEncaminhamentoAEE = planoAEE.PossuiEncaminhamentoAEE
+                        PossuiEncaminhamentoAEE = planoAEE.PossuiEncaminhamentoAEE,
                         CriadoEm = planoAEE.CriadoEm,
                         Versao = $"v{planoAEE.Versao} ({planoAEE.DataVersao:dd/MM/yyyy})"
-                    });
+                    }); ;
 
                 }
                 catch (Exception e)
