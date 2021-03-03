@@ -199,5 +199,24 @@ namespace SME.SGP.Dados.Repositorios
                     return planoAEE;
                 }, new { reestruturacaoId })).FirstOrDefault();
         }
+
+        public async Task<PlanoAEE> ObterPlanoComTurmaUeDrePorId(long planoId)
+        {
+            var query = @" select pa.*, t.*, ue.*, dre.*
+                            from plano_aee pa
+                           inner join turma t on t.id = pa.turma_id
+                           inner join ue on ue.id = t.ue_id
+                           inner join dre on dre.id = ue.dre_id
+                           where pa.id = @planoId";
+
+            return (await database.Conexao.QueryAsync<PlanoAEE, Turma, Ue, Dre, PlanoAEE>(query,
+                (planoAEEDto, turma, ue, dre) =>
+                {
+                    ue.Dre = dre;
+                    turma.Ue = ue;
+                    planoAEEDto.Turma = turma;
+                    return planoAEEDto;
+                }, new { planoId })).FirstOrDefault();
+        }
     }
 }
