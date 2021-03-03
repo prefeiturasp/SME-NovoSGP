@@ -42,14 +42,12 @@ const OcorrenciasCardCollapse = () => {
         show={exibir}
         alt="ocorrencias-acompanhamento-aprendizagem"
       >
-        <div className="col-md-12 mb-2">
-          <ListaPaginada
-            url=""
-            id="lista-ocorrencias-acompanhamento-aprendizagem"
-            colunas={colunas}
-            filtro={filtro}
-          />
-        </div>
+        <ListaPaginada
+          url=""
+          id="lista-ocorrencias-acompanhamento-aprendizagem"
+          colunas={colunas}
+          filtro={filtro}
+        />
       </CardCollapse>
     </div>
   );
