@@ -2,6 +2,7 @@
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -92,7 +93,7 @@ namespace SME.SGP.Aplicacao
                 itineranciasParaRetornar.Add(itineranciaParaAdicionar);
             }
 
-            return itineranciasParaRetornar.OrderByDescending(i => i.DataVisita).ThenBy(i => i.UeNome).ThenBy(i => i.EstudanteNome);       
+            return itineranciasParaRetornar.OrderByDescending(i => DateTime.Parse(i.DataVisita)).ThenBy(i => i.UeNome).ThenBy(i => i.EstudanteNome);       
 
         }
 
