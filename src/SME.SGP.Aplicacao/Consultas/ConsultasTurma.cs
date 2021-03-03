@@ -1,4 +1,5 @@
-﻿using SME.SGP.Aplicacao.Integracoes;
+﻿using MediatR;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -17,14 +18,16 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
         private readonly IServicoEol servicoEOL;
-        private readonly IServicoAluno servicoAluno;        
+        private readonly IServicoAluno servicoAluno;
+        private readonly IMediator mediator;
 
         public ConsultasTurma(IRepositorioTurma repositorioTurma,
                                 IConsultasTipoCalendario consultasTipoCalendario,
                                 IConsultasPeriodoFechamento consultasPeriodoFechamento,
                                 IConsultasPeriodoEscolar consultasPeriodoEscolar,
                                 IServicoEol servicoEOL,
-                                IServicoAluno servicoAluno                                
+                                IServicoAluno servicoAluno,
+                                IMediator mediator
             )
         {
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
@@ -32,7 +35,8 @@ namespace SME.SGP.Aplicacao
             this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
-            this.servicoAluno = servicoAluno ?? throw new ArgumentNullException(nameof(servicoAluno));            
+            this.servicoAluno = servicoAluno ?? throw new ArgumentNullException(nameof(servicoAluno));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<bool> TurmaEmPeriodoAberto(string codigoTurma, DateTime dataReferencia, int bimestre = 0, TipoCalendario tipoCalendario = null)
@@ -131,6 +135,8 @@ namespace SME.SGP.Aplicacao
                 // se informado periodo escolar carrega marcadores no periodo
                 if (periodoEscolar != null)
                     dadosBasicos.Marcador = servicoAluno.ObterMarcadorAluno(dadoAluno, periodoEscolar);
+
+                dadosBasicos.EhAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(dadoAluno.CodigoAluno, anoLetivo));
 
                 dadosAlunosDto.Add(dadosBasicos);
             }

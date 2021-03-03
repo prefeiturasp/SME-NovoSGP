@@ -123,6 +123,23 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<PlanoAEEResumoDto>(query, new { codigoEstudante });
         }
 
+        public async Task<PlanoAEEResumoDto> ObterPlanoPorEstudanteEAno(string codigoEstudante, int ano)
+        {
+            var query = @"select distinct   pa.Id,
+	                                        pa.aluno_numero as numero,
+	                                        pa.aluno_nome as nome,
+	                                        tu.nome as turma,
+	                                        pa.situacao 
+                                        from plano_aee pa
+                                        inner join turma tu on tu.id = pa.turma_id 
+                                        where pa.aluno_codigo = @codigoEstudante 
+                                        and pa.situacao not in (3,7)
+                                        and EXTRACT(ISOYEAR from pa.criado_em) = @ano 
+                                        limit 1";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<PlanoAEEResumoDto>(query, new { codigoEstudante, ano });
+        }
+
         public async Task<PlanoAEE> ObterPlanoComTurmaPorId(long planoId)
         {
             var query = @" select pa.*, t.*

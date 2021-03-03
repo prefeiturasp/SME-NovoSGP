@@ -1,6 +1,8 @@
 import * as moment from 'moment';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { Cabecalho, NomeEstudanteLista } from '~/componentes-sgp';
+import AbrangenciaServico from '~/servicos/Abrangencia';
 import {
   CheckboxComponent,
   ListaPaginada,
@@ -65,18 +67,12 @@ const PlanoAEELista = () => {
     {
       title: 'Nome',
       dataIndex: 'nome',
-      render: value => {
-        return (
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span>{value.split('|')[0]} </span>
-            {value.split('|')[1] === 'True' ? (
-              <img src={IconeAee} style={{ height: 18 }} alt="aee" />
-            ) : (
-              ''
-            )}
-          </div>
-        );
-      },
+      render: (_, record) => (
+        <NomeEstudanteLista
+          nome={record?.nome}
+          exibirSinalizacao={record?.possuiEncaminhamentoAEE}
+        />
+      ),
     },
     {
       title: 'Turma',

@@ -13,6 +13,7 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<PlanoAEE> ObterPlanoComTurmaPorId(long planoId);
         Task<IEnumerable<PlanoAEE>> ObterPlanosAtivos();
+        Task<PlanoAEEResumoDto> ObterPlanoPorEstudanteEAno(string codigoEstudante, int anoLetivo);
         Task<int> AtualizarSituacaoPlanoPorVersao(long versaoId, int situacao);
         Task<IEnumerable<PlanoAEE>> ObterPorDataFinalVigencia(DateTime dataFim);
     }

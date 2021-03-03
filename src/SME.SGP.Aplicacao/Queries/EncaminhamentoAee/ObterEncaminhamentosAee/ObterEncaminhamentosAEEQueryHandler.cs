@@ -51,6 +51,7 @@ namespace SME.SGP.Aplicacao
             {
                 var aluno = await mediator.Send(new ObterAlunoPorCodigoEolQuery(encaminhamento.AlunoCodigo, encaminhamento.TurmaAno));
 
+                var ehAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, encaminhamento.TurmaAno));
                 listaEncaminhamentos.Add(new EncaminhamentoAEEResumoDto()
                 {
                     Id = encaminhamento.Id,
@@ -58,7 +59,8 @@ namespace SME.SGP.Aplicacao
                     Turma = $"{encaminhamento.TurmaModalidade.ShortName()} - {encaminhamento.TurmaNome}",
                     Numero = aluno?.NumeroAlunoChamada ?? 0,
                     Nome = aluno?.NomeAluno,
-                    Responsavel = encaminhamento.Responsavel
+                    Responsavel = encaminhamento.Responsavel,
+                    EhAtendidoAEE = ehAtendidoAEE
                 });
             }
 
