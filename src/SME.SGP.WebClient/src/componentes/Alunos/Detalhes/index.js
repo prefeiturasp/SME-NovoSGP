@@ -112,9 +112,7 @@ const DetalhesAluno = props => {
                 </p>
               </div>
               <div>
-                <SinalizacaoAEE
-                  exibirSinalizacao={nomeResponsavel?.ehAtendidoAEE}
-                />
+                <SinalizacaoAEE exibirSinalizacao={dados?.ehAtendidoAEE} />
               </div>
             </div>
           ) : (
