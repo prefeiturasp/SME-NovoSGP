@@ -42,10 +42,12 @@ namespace SME.SGP.Aplicacao
             if (aluno == null)
                 throw new NegocioException("Aluno não encontrado");
 
-            return MapearParaDto(anotacao, motivoAusencia, aluno);
+            var frequencia = await mediator.Send(new ObterFrequenciaGeralAlunoQuery(aluno.CodigoAluno, turma.CodigoTurma));
+
+            return MapearParaDto(anotacao, motivoAusencia, aluno, frequencia);
         }
 
-        private AnotacaoFrequenciaAlunoCompletoDto MapearParaDto(Dominio.AnotacaoFrequenciaAluno anotacao, Dominio.MotivoAusencia motivoAusencia, AlunoPorTurmaResposta aluno)
+        private AnotacaoFrequenciaAlunoCompletoDto MapearParaDto(AnotacaoFrequenciaAluno anotacao, MotivoAusencia motivoAusencia, AlunoPorTurmaResposta aluno, double frequencia)
         {
             return new AnotacaoFrequenciaAlunoCompletoDto()
             {
@@ -61,7 +63,8 @@ namespace SME.SGP.Aplicacao
                     NumeroChamada = aluno.NumeroAlunoChamada,
                     Situacao = aluno.SituacaoMatricula,
                     SituacaoCodigo = aluno.CodigoSituacaoMatricula,
-                    TipoResponsavel = ObterTipoResponsavel(aluno.TipoResponsavel)
+                    TipoResponsavel = ObterTipoResponsavel(aluno.TipoResponsavel),
+                    Frequencia=frequencia,
                 },
                 Anotacao = anotacao.Anotacao,
                 Auditoria = (AuditoriaDto)anotacao,
