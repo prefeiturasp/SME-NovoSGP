@@ -90,6 +90,7 @@ import AcompanhamentoFrequencia from '~/paginas/DiarioClasse/AcompanhamentoFrequ
 import PlanoAEELista from '~/paginas/Relatorios/AEE/Plano/Lista/planoAEELista';
 import PlanoAEECadastro from '~/paginas/Relatorios/AEE/Plano/Cadastro/planoAEECadastro';
 import RegistroItineranciaAEELista from '~/paginas/Relatorios/AEE/RegistroItinerancia/Lista/registroItineranciaAEELista';
+import RelatorioDevolutivas from '~/paginas/Relatorios/Planejamento/Devolutivas/relatorioDevolutivas';
 
 const rotas = new Map();
 
@@ -1127,6 +1128,17 @@ rotas.set(RotasDto.RELATORIO_ALTERACAO_NOTAS, {
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: false,
   chavePermissao: RotasDto.RELATORIO_ALTERACAO_NOTAS,
+});
+
+rotas.set(RotasDto.RELATORIO_DEVOLUTIVAS, {
+  breadcrumbName: 'Devolutivas',
+  menu: ['Relatórios', 'Planejamento'],
+  parent: '/',
+  component: RelatorioDevolutivas,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+  chavePermissao: RotasDto.RELATORIO_DEVOLUTIVAS,
 });
 
 rotas.set(RotasDto.RELATORIO_LEITURA, {

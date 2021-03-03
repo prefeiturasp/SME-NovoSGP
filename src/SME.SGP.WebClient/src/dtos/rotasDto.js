@@ -70,6 +70,7 @@ const RotasDto = {
   OCORRENCIAS: '/gestao/ocorrencias',
   RELATORIO_AEE_REGISTRO_ITINERANCIA: '/relatorios/aee/registro-itinerancia',
   RELATORIO_AEE_PLANO: '/relatorios/aee/plano',
+  RELATORIO_DEVOLUTIVAS: '/relatorios/planejamento/devolutivas',
 };
 
 export default RotasDto;
