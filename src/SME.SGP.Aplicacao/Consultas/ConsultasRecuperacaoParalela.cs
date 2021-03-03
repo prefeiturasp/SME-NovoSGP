@@ -63,14 +63,14 @@ namespace SME.SGP.Aplicacao
             return await MapearParaDtoAsync(alunosEol, alunosRecuperacaoParalela, filtro.TurmaId, filtro.PeriodoId, filtro.Ordenacao, periodoEscolarAtual);
         }
 
-        public async Task<PaginacaoResultadoDto<RecuperacaoParalelaTotalResultadoDto>> ListarTotalResultado(int? periodo, string dreId, string ueId, int? cicloId, string turmaId, string ano, 
+        public async Task<PaginacaoResultadoDto<RecuperacaoParalelaTotalResultadoDto>> ListarTotalResultado(int? periodo, string dreId, string ueId, int? cicloId, string turmaId, string ano,
             int anoLetivo, int? pagina)
         {
             var totalResumo = await repositorioRecuperacaoParalela.ListarTotalResultado(periodo, dreId, ueId, cicloId, turmaId, ano, anoLetivo, pagina);
             return MapearResultadoPaginadoParaDto(totalResumo);
         }
 
-        public async Task<IEnumerable<RecuperacaoParalelaTotalResultadoDto>> ListarTotalResultadoEncaminhamento(int? periodo, string dreId, string ueId, int? cicloId, string turmaId, string ano, 
+        public async Task<IEnumerable<RecuperacaoParalelaTotalResultadoDto>> ListarTotalResultadoEncaminhamento(int? periodo, string dreId, string ueId, int? cicloId, string turmaId, string ano,
             int anoLetivo, int? pagina)
         {
             if (periodo.HasValue && periodo.Value != (int)PeriodoRecuperacaoParalela.Encaminhamento) return null;
@@ -86,7 +86,7 @@ namespace SME.SGP.Aplicacao
             return MapearParaDtoTotalEstudantes(total, totalAlunosPorSeries);
         }
 
-        public async Task<RecuperacaoParalelaTotalEstudantePorFrequenciaDto> TotalEstudantesPorFrequencia(int? periodo, string dreId, string ueId, int? cicloId, string turmaId, 
+        public async Task<RecuperacaoParalelaTotalEstudantePorFrequenciaDto> TotalEstudantesPorFrequencia(int? periodo, string dreId, string ueId, int? cicloId, string turmaId,
             string ano, int anoLetivo)
         {
             var totalAlunosPorSeriesFrequencia = await repositorioRecuperacaoParalela.ListarTotalEstudantesPorFrequencia(periodo, dreId, ueId, cicloId, turmaId, ano, anoLetivo);
@@ -154,7 +154,7 @@ namespace SME.SGP.Aplicacao
                         }));
 
             if (periodoId != (int)PeriodoRecuperacaoParalela.Encaminhamento && alunos.Any())
-            {   
+            {
                 //pegar as frequencias de acordo com os critérios
                 var frequencias = await servicoRecuperacaoParalela.ObterFrequencias(alunosEol.Select(w => w.CodigoAluno).ToArray(), string.Empty, alunos.First().Ano, (PeriodoRecuperacaoParalela)periodoId);
 
@@ -196,7 +196,7 @@ namespace SME.SGP.Aplicacao
             }
 
             switch (ordenacao)
-            {               
+            {
                 case RecuperacaoParalelaOrdenacao.AlfabeticoDecrescente:
                     recuperacaoRetorno.Periodo.Alunos = recuperacaoRetorno.Periodo.Alunos.OrderByDescending(w => w.Nome).ToList();
                     break;
@@ -219,12 +219,17 @@ namespace SME.SGP.Aplicacao
         private async Task<List<RecuperacaoParalelaAlunoListagemDto>> ObterAlunos(IEnumerable<(long AlunoId, long Id)> retorno, IEnumerable<AlunoPorTurmaResposta> alunosEol, IEnumerable<RetornoRecuperacaoParalela> alunosRecuperacaoParalela, IEnumerable<ObjetivoDto> objetivos, long turmaId)
         {
             List<RecuperacaoParalelaAlunoListagemDto> listaRetorno = new List<RecuperacaoParalelaAlunoListagemDto>();
-            foreach(var a in retorno)
+            foreach (var a in retorno)
             {
                 var aluno = alunosEol.FirstOrDefault(w => Convert.ToInt32(w.CodigoAluno) == a.AlunoId);
 
                 var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(aluno.CodigoTurma.ToString()));
-                var ehAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, turma.AnoLetivo));
+
+                var ehAtendidoAEE = false;
+                if (turma != null)
+                {
+                    ehAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, turma.AnoLetivo));
+                }
 
                 listaRetorno.Add(new RecuperacaoParalelaAlunoListagemDto
                 {
