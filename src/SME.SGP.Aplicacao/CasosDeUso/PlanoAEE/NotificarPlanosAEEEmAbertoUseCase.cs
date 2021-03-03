@@ -12,11 +12,8 @@ namespace SME.SGP.Aplicacao
 {
     public class NotificarPlanosAEEEmAbertoUseCase : AbstractUseCase, INotificarPlanosAEEEmAbertoUseCase
     {
-        private readonly IConfiguration configuration;
-
-        public NotificarPlanosAEEEmAbertoUseCase(IMediator mediator, IConfiguration configuration) : base(mediator)
+        public NotificarPlanosAEEEmAbertoUseCase(IMediator mediator) : base(mediator)
         {
-            this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
         public async Task<bool> Executar(MensagemRabbit param)
@@ -35,10 +32,20 @@ namespace SME.SGP.Aplicacao
 
             var planosAtivos = await mediator.Send(new ObterPlanosAEEAtivosComTurmaEVigenciaQuery());
 
-            foreach (var planoExpirado in planosExpirados)
-                await NotificarPlanoExpirado(planoExpirado, dataFim);
+            await EnviarNotificacao(planosAtivos.GroupBy(a => a.DRECodigo));
 
             return true;
+        }
+
+        private async Task EnviarNotificacao(IEnumerable<IGrouping<string, PlanoAEEReduzidoDto>> dresPlanos)
+        {
+            foreach(var dre in dresPlanos)
+            {
+                var dreCodigo = dre.Key;
+                var dreAbreviacao = dre.FirstOrDefault().DREAbreviacao;
+
+                await NotificarPlanoEmAberto(dre.GroupBy(a => $"{a.UETipo.ShortName()} {a.UENome}"), dreCodigo, dreAbreviacao);
+            }
         }
 
         private async Task<List<DateTime>> ObterDatasParametroPlanoAEEEmAberto()
@@ -53,40 +60,40 @@ namespace SME.SGP.Aplicacao
             return null;
         }
 
-        private async Task NotificarPlanoExpirado(PlanoAEE plano, DateTime dataFim)
+        private async Task NotificarPlanoEmAberto(IEnumerable<IGrouping<string, PlanoAEEReduzidoDto>> planos, string dreCodigo, string dreAbreviacao)
         {
-            var turma = await ObterTurma(plano.TurmaId);
+            var titulo = $"Acompanhamento dos planos AEE ({dreAbreviacao})";
+            string descricao = $@"Segue a lista de Planos AEE das unidades da {dreAbreviacao} sob sua responsabilidade: <br/><br/>
+                <table style='margin-left: auto; margin-right: auto; margin-top: 10px' border='2' cellpadding='5'>";
 
-            var ueDre = $"{turma.Ue.TipoEscola.ShortName()} {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao})";
-            var hostAplicacao = configuration["UrlFrontEnd"];
-            var estudanteOuCrianca = turma.ModalidadeCodigo == Modalidade.Infantil ? "da criança" : "do estudante";
+            foreach(var ue in planos)
+            {
+                descricao += $"<tr style='font-weight: bold; text-align:center;'><td colspan=4;>{ue.Key}</td></tr>";
+                descricao += $@"<tr style='font-weight: bold'>
+                    <td style='padding-left:5px;padding-right:5px;'>Estudante</td>
+                    <td style='padding-left:5px;padding-right:5px;'>Turma Regular</td>
+                    <td style='padding-left:5px;padding-right:5px;'>Vigência do Plano</td>
+                    <td style='padding-left:5px;padding-right:5px;'>Situação</td></tr>";
+                foreach (var plano in ue.OrderBy(a => a.EstudanteNome).ToList())
+                {
+                    descricao += $@"<tr><td style='padding-left:5px;padding-right:5px;'>{plano.EstudanteNome} ({plano.EstudanteCodigo})</td>
+                        <td style='padding-left:5px;padding-right:5px;'>{plano.TurmaModalidade.ShortName()} - {plano.TurmaNome}</td>
+                        <td style='padding-left:5px;padding-right:5px;'>{plano.VigenciaInicio.Date:d} - {plano.VigenciaFim.Date:d}</td>
+                        <td style='padding-left:5px;padding-right:5px;'>{plano.Situacao.Name()}</td></tr>";
+                }
+            }
 
-            var titulo = $"Plano AEE Expirado - {plano.AlunoNome} ({plano.AlunoCodigo}) - {ueDre}";
-            var descricao = $@"O Plano AEE {estudanteOuCrianca} {plano.AlunoNome} ({plano.AlunoCodigo}) da turma {turma.NomeComModalidade()} da {ueDre} expirou em {dataFim:dd/MM/yyyy}. <br/>
-                <a href='{hostAplicacao}relatorios/aee/plano/editar/{plano.Id}'>Clique aqui</a> para acessar o plano. ";
+            descricao += "</table>";
 
-            var usuarioId = await ObterCEFAI(turma.Ue.Dre.CodigoDre);
+            var supervisores = await mediator.Send(new ObterSupervisoresPorDreQuery(dreCodigo));
 
-            if (usuarioId > 0)
-                await mediator.Send(new GerarNotificacaoPlanoAEECommand(plano.Id, usuarioId, titulo, descricao, NotificacaoPlanoAEETipo.PlanoExpirado));
-        }
-
-        private async Task<long> ObterCEFAI(string codigoDre)
-            => await mediator.Send(new ObtemUsuarioCEFAIDaDreQuery(codigoDre));
-
-        private async Task<Turma> ObterTurma(long turmaId)
-        {
-            throw new NotImplementedException();
-        }
-
-        private async Task<DateTime> ObterDataFim()
-        {
-            var parametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.DiasGeracaoNotificacoesPlanoAEEExpirado, DateTime.Today.Year));
-
-            if (parametro == null)
-                throw new NegocioException("Parâmetro de Dias para notificar plano AEE expirados não localizado");
-
-            return DateTime.Today.AddDays(int.Parse(parametro.Valor) * -1);
+            if(supervisores.Any())
+            {
+                foreach(var supervisor in supervisores)
+                {
+                    await mediator.Send(new NotificarUsuarioCommand(titulo, descricao, supervisor.SupervisorId, NotificacaoCategoria.Aviso, NotificacaoTipo.AEE));
+                }
+            }
         }
 
         private async Task<bool> ParametroNotificarPlanosAEE()
