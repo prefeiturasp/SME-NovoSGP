@@ -106,6 +106,7 @@ namespace SME.SGP.Worker.RabbitMQ
 
             comandos.Add(RotasRabbit.EncerrarPlanoAEEEstudantesInativos, new ComandoRabbit("Excluir plano AEE estudantes inativos", typeof(IEncerrarPlanosAEEEstudantesInativosUseCase)));
             comandos.Add(RotasRabbit.GerarPendenciaValidadePlanoAEE, new ComandoRabbit("Gerar Pendência de Validade do PlanoAEE", typeof(IGerarPendenciaValidadePlanoAEEUseCase)));
+            comandos.Add(RotasRabbit.NotificarPlanoAEEExpirado, new ComandoRabbit("Excluir plano AEE estudantes inativos", typeof(INotificarPlanosAEEExpiradosUseCase)));
         }
 
         private async Task TratarMensagem(BasicDeliverEventArgs ea)

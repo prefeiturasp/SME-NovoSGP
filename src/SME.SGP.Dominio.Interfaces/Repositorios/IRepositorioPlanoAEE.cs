@@ -14,6 +14,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<PlanoAEE> ObterPlanoComTurmaPorId(long planoId);
         Task<IEnumerable<PlanoAEE>> ObterPlanosAtivos();
         Task<int> AtualizarSituacaoPlanoPorVersao(long versaoId, int situacao);
-        Task<IEnumerable<PlanoAEE>> ObterPorDataFinalVigencia(DateTime dataFim);
+        Task<IEnumerable<PlanoAEE>> ObterPorDataFinalVigencia(DateTime dataFim, bool desconsiderarPendencias = true, bool desconsiderarNotificados = false);
     }
 }

@@ -98,8 +98,8 @@ namespace SME.SGP.Dominio
         GerarPendenciasEncaminhamentoAEE = 49,
         GerarPendenciasPlanoAEE = 50,
 
-
         GerarNotificacaoPlanoAEE = 51,
+        DiasGeracaoNotificacoesPlanoAEEExpirado = 52,
 
         //Sistema
         HabilitarServicosEmBackground = 100
