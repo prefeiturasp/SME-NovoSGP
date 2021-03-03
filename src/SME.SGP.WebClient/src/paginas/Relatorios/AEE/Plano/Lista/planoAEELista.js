@@ -9,17 +9,14 @@ import {
   Loader,
   SelectComponent,
 } from '~/componentes';
-import { Cabecalho } from '~/componentes-sgp';
 import Button from '~/componentes/button';
 import Card from '~/componentes/card';
 import { Colors } from '~/componentes/colors';
 import LocalizadorEstudante from '~/componentes/LocalizadorEstudante';
 import { URL_HOME } from '~/constantes/url';
 import { RotasDto } from '~/dtos';
-import IconeAee from '~/recursos/IconeAee.png';
 import { setDadosIniciaisLocalizarEstudante } from '~/redux/modulos/collapseLocalizarEstudante/actions';
 import { erros, verificaSomenteConsulta } from '~/servicos';
-import AbrangenciaServico from '~/servicos/Abrangencia';
 import history from '~/servicos/history';
 import ServicoPlanoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoPlanoAEE';
 import FiltroHelper from '~componentes-sgp/filtro/helper';
