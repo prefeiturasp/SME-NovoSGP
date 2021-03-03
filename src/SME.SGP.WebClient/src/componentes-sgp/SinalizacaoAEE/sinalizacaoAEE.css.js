@@ -1,5 +1,5 @@
 import styled from 'styled-components';
 
 export const ImagemEstilizada = styled.img`
-  height: 18;
+  height: 18px;
 `;

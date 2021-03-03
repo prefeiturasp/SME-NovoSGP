@@ -10,6 +10,7 @@ import Cabecalho from './componentes/Cabecalho';
 
 // Estilos
 import { TabelaEstilo, Tabela, DetalhesAluno, LinhaTabela } from './style';
+import SinalizacaoAEE from '~/componentes-sgp/SinalizacaoAEE/sinalizacaoAEE';
 
 function TabelaRetratil({
   alunos,
@@ -169,28 +170,29 @@ function TabelaRetratil({
                 </td>
                 <td>
                   <div
-                    className="d-flex align-items-center"
+                    className="d-flex align-items-center justify-content-between"
                     style={{
                       marginLeft: '-9px',
                     }}
                   >
-                    <div
-                      className={
-                        item.marcadorDiasSemRegistroExibir ? 'col-11' : 'col-12'
-                      }
-                    >
+                    <div>
                       {exibirProcessoConcluido && (
                         <i className="icone-concluido fa fa-check-circle" />
                       )}
                       {item.nome}
                     </div>
-                    {item.marcadorDiasSemRegistroExibir && (
-                      <div className="col-1">
-                        <Tooltip title={item.marcadorDiasSemRegistroTexto}>
-                          <i className="fas fa-exclamation icone-ausencia" />
-                        </Tooltip>
-                      </div>
-                    )}
+
+                    <div className="d-flex align-items-center justify-content-between">
+                      <SinalizacaoAEE exibirSinalizacao={item.ehAtendidoAEE} />
+
+                      {item.marcadorDiasSemRegistroExibir && (
+                        <div className="pl-3">
+                          <Tooltip title={item.marcadorDiasSemRegistroTexto}>
+                            <i className="fas fa-exclamation icone-ausencia" />
+                          </Tooltip>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </td>
               </LinhaTabela>
