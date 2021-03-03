@@ -75,5 +75,6 @@
         public static string GerarPendenciaValidadePlanoAEE => "plano.aee.pendencia.validade";
 
         public static string NotificarPlanoAEEExpirado => "plano.aee.notificar.expirados";
+        public static string NotificarPlanoAEEReestruturado => "plano.aee.notificar.reestruturado";
     }
 }
