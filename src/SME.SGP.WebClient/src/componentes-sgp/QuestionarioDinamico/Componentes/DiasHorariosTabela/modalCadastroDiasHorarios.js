@@ -1,7 +1,7 @@
 import { Form, Formik } from 'formik';
 import * as moment from 'moment';
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import shortid from 'shortid';
 import * as Yup from 'yup';
 import {
@@ -14,20 +14,28 @@ import {
 } from '~/componentes';
 import Button from '~/componentes/button';
 import { confirmar } from '~/servicos';
+import QuestionarioDinamicoFuncoes from '../../Funcoes/QuestionarioDinamicoFuncoes';
 
 const ModalCadastroDiasHorario = props => {
   const { onClose, exibirModal, dadosIniciais } = props;
 
   const [refForm, setRefForm] = useState({});
+  const [valoresIniciais, setValoresIniciais] = useState({});
 
   const [emEdicao, setEmEdicao] = useState(false);
 
-  const valoresIniciais = {
-    id: dadosIniciais ? dadosIniciais.id : 0,
-    diaSemana: dadosIniciais ? dadosIniciais.diaSemana : '',
-    horarioInicio: dadosIniciais ? moment(dadosIniciais.horarioInicio) : '',
-    horarioTermino: dadosIniciais ? moment(dadosIniciais.horarioTermino) : '',
-  };
+  useEffect(() => {
+    if (dadosIniciais?.id) {
+      setValoresIniciais({
+        id: dadosIniciais ? dadosIniciais.id : 0,
+        diaSemana: dadosIniciais ? dadosIniciais.diaSemana : '',
+        horarioInicio: dadosIniciais ? moment(dadosIniciais.horarioInicio) : '',
+        horarioTermino: dadosIniciais
+          ? moment(dadosIniciais.horarioTermino)
+          : '',
+      });
+    }
+  }, [dadosIniciais]);
 
   const validacoes = Yup.object().shape({
     diaSemana: Yup.string()
@@ -37,36 +45,13 @@ const ModalCadastroDiasHorario = props => {
     horarioTermino: momentSchema.required('Campo obrigatório'),
   });
 
-  const listaDiasSemana = [
-    {
-      valor: 'Domingo',
-      desc: 'Domingo',
-    },
-    {
-      valor: 'Segunda',
-      desc: 'Segunda',
-    },
-    {
-      valor: 'Terça',
-      desc: 'Terça',
-    },
-    {
-      valor: 'Quarta',
-      desc: 'Quarta',
-    },
-    {
-      valor: 'Quinta',
-      desc: 'Quinta',
-    },
-    {
-      valor: 'Sexta',
-      desc: 'Sexta',
-    },
-    {
-      valor: 'Sábado',
-      desc: 'Sábado',
-    },
-  ];
+  const listaDiasSemana = QuestionarioDinamicoFuncoes.obterListaDiasSemana();
+
+  const limparDadosModal = () => {
+    setValoresIniciais({});
+    setEmEdicao(false);
+    refForm.resetForm();
+  };
 
   const fecharModal = async () => {
     if (emEdicao) {
@@ -76,20 +61,17 @@ const ModalCadastroDiasHorario = props => {
         'Deseja realmente cancelar as alterações?'
       );
       if (confirmou) {
-        setEmEdicao(false);
-        refForm.resetForm();
+        limparDadosModal();
         onClose();
       }
     } else {
-      setEmEdicao(false);
-      refForm.resetForm();
+      limparDadosModal();
       onClose();
     }
   };
 
   const onSalvar = valores => {
-    refForm.resetForm();
-    setEmEdicao(false);
+    limparDadosModal();
     onClose(valores);
   };
 
@@ -183,7 +165,7 @@ const ModalCadastroDiasHorario = props => {
               <Button
                 key="btn-salvar"
                 id="btn-salvar"
-                label={dadosIniciais ? 'Alterar' : 'Adicionar'}
+                label={dadosIniciais?.id ? 'Alterar' : 'Adicionar'}
                 color={Colors.Roxo}
                 border
                 disabled={!emEdicao}

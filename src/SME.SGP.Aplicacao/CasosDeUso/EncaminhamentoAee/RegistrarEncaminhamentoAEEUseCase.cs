@@ -49,11 +49,18 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
             await SalvarEncaminhamento(encaminhamentoAEEDto, resultadoEncaminhamento);
 
-            await mediator.Send(new GerarPendenciaCPEncaminhamentoAEECommand(resultadoEncaminhamento.Id, encaminhamentoAEEDto.Situacao));
+            if (await ParametroGeracaoPendenciaAtivo())
+                await mediator.Send(new GerarPendenciaCPEncaminhamentoAEECommand(resultadoEncaminhamento.Id, encaminhamentoAEEDto.Situacao));
 
             return resultadoEncaminhamento;
         }
-              
+
+        private async Task<bool> ParametroGeracaoPendenciaAtivo()
+        {
+            var parametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.GerarPendenciasEncaminhamentoAEE, DateTime.Today.Year));
+
+            return parametro != null && parametro.Ativo;
+        }
 
         public async Task AlterarEncaminhamento(EncaminhamentoAeeDto encaminhamentoAEEDto, EncaminhamentoAEE encaminhamentoAEE)
         {

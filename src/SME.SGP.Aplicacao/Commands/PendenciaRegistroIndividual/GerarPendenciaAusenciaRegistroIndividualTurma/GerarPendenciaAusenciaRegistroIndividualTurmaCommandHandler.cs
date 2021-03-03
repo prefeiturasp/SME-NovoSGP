@@ -38,6 +38,12 @@ namespace SME.SGP.Aplicacao
             var retorno = new RetornoBaseDto();
 
             var diasDeAusencia = await ObterDiasDeAusenciaParaPendenciaRegistroIndividualAsync();
+
+            var periodos = await mediator.Send(new ObterPeriodosEscolaresPorAnoEModalidadeTurmaQuery(request.Turma.ModalidadeCodigo, request.Turma.AnoLetivo, request.Turma.Semestre));
+            var diferencaInicioAnoLetivo = DateTime.Today.Subtract(periodos.Single(p => p.Bimestre.Equals(1)).PeriodoInicio);
+            if (diferencaInicioAnoLetivo.Days < diasDeAusencia)
+                return retorno;
+
             var query = new ListarAlunosTurmaComAusenciaRegistroIndividualPorDiasQuery(request.Turma.Id, request.Turma.CodigoTurma, diasDeAusencia);
             var alunosTurmaComAusenciaRegistroIndividualPorDias = await mediator.Send(query);
             if (!alunosTurmaComAusenciaRegistroIndividualPorDias?.Any() ?? true)

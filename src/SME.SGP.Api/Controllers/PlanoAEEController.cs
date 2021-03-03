@@ -57,9 +57,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.PAEE_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterPlanoAee(long? planoAeeId, [FromServices] IObterPlanoAEEPorIdUseCase useCase)
+        public async Task<IActionResult> ObterPlanoAee(long? planoAeeId, [FromQuery] string turmaCodigo, [FromServices] IObterPlanoAEEPorIdUseCase useCase)
         {
-            return Ok(await useCase.Executar(planoAeeId));
+            return Ok(await useCase.Executar(new FiltroPesquisaQuestoesPorPlanoAEEIdDto(planoAeeId, turmaCodigo)));
         }
 
         [HttpGet]
@@ -68,9 +68,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.PAEE_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterPlanoAeePorVersao(long versaoPlanoId, [FromServices] IObterQuestoesPlanoAEEPorVersaoUseCase useCase)
+        public async Task<IActionResult> ObterPlanoAeePorVersao(long versaoPlanoId, [FromQuery] string turmaCodigo, [FromQuery] long questionarioId, [FromServices] IObterQuestoesPlanoAEEPorVersaoUseCase useCase)
         {
-            return Ok(await useCase.Executar(versaoPlanoId));
+            return Ok(await useCase.Executar(new FiltroPesquisaQuestoesPlanoAEEDto(questionarioId, versaoPlanoId, turmaCodigo)));
         }
 
         [HttpPost("salvar")]

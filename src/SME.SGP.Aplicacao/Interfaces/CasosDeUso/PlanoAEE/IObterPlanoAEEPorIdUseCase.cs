@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public interface IObterPlanoAEEPorIdUseCase : IUseCase<long?, PlanoAEEDto>
+    public interface IObterPlanoAEEPorIdUseCase : IUseCase<FiltroPesquisaQuestoesPorPlanoAEEIdDto, PlanoAEEDto>
     {
     }
 }
