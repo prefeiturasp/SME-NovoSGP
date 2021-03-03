@@ -90,6 +90,7 @@ import AcompanhamentoFrequencia from '~/paginas/DiarioClasse/AcompanhamentoFrequ
 import PlanoAEELista from '~/paginas/Relatorios/AEE/Plano/Lista/planoAEELista';
 import PlanoAEECadastro from '~/paginas/Relatorios/AEE/Plano/Cadastro/planoAEECadastro';
 import RegistroItineranciaAEELista from '~/paginas/Relatorios/AEE/RegistroItinerancia/Lista/registroItineranciaAEELista';
+import AcompanhamentoAprendizagem from '~/paginas/Relatorios/AcompanhamentoAprendizagem/acompanhamentoAprendizagem';
 
 const rotas = new Map();
 
@@ -1276,6 +1277,17 @@ rotas.set(`${RotasDto.OCORRENCIAS}/editar/:id`, {
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: false,
   chavePermissao: RotasDto.OCORRENCIAS,
+});
+
+rotas.set(RotasDto.ACOMPANHAMENTO_APRENDIZAGEM, {
+  breadcrumbName: 'Relatório do Acompanhamento da Aprendizagem',
+  menu: ['Relatórios'],
+  parent: '/',
+  component: AcompanhamentoAprendizagem,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+  chavePermissao: RotasDto.ACOMPANHAMENTO_APRENDIZAGEM,
 });
 
 const rotasArray = [];
