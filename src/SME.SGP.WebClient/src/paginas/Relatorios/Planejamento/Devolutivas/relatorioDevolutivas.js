@@ -20,9 +20,12 @@ import { ModalidadeDTO } from '~/dtos';
 
 import {
   AbrangenciaServico,
+  ehTurmaInfantil,
   erros,
   history,
   ServicoFiltroRelatorio,
+  ServicoRelatorioDevolutivas,
+  sucesso,
 } from '~/servicos';
 
 const RelatorioDevolutivas = () => {
@@ -37,19 +40,24 @@ const RelatorioDevolutivas = () => {
   const [consideraHistorico, setConsideraHistorico] = useState(false);
   const [desabilitarGerar, setDesabilitarGerar] = useState(true);
   const [dreId, setDreId] = useState();
-  const [naoEhInfantil, setNaoEhInfantil] = useState(false);
+  const [exibirConteudoDevolutiva, setExibirConteudoDevolutiva] = useState(
+    false
+  );
   const [exibirLoaderGeral, setExibirLoaderGeral] = useState(false);
-  const [filtro, setFiltro] = useState({});
+
   const [listaAnosLetivo, setListaAnosLetivo] = useState([]);
   const [listaBimestre, setListaBimestre] = useState([]);
   const [listaDres, setListaDres] = useState([]);
   const [listaModalidades, setListaModalidades] = useState([]);
-  const [listarExibirConteudo, setListarExibirConteudo] = useState(false);
   const [listaTurmas, setListaTurmas] = useState([]);
   const [listaUes, setListaUes] = useState([]);
+
   const [modalidadeId, setModalidadeId] = useState();
+  const [naoEhInfantil, setNaoEhInfantil] = useState(false);
   const [turmaId, setTurmaId] = useState();
   const [ueId, setUeId] = useState();
+
+  const { turmaSelecionada } = useSelector(store => store.usuario);
 
   const OPCAO_TODOS = '-99';
   const opcoesRadioSimNao = [
@@ -64,6 +72,7 @@ const RelatorioDevolutivas = () => {
     setListaUes([]);
     setListaTurmas([]);
     setTurmaId();
+    setNaoEhInfantil(false);
   };
 
   const onClickVoltar = () => {
@@ -75,7 +84,25 @@ const RelatorioDevolutivas = () => {
     limparFiltrosSelecionados();
   };
 
-  const gerar = () => {};
+  const gerar = async () => {
+    setExibirLoaderGeral(true);
+    const retorno = await ServicoRelatorioDevolutivas.gerar({
+      dreId,
+      ueId,
+      anoLetivo,
+      bimestres,
+      ano: anoLetivo,
+      turma: turmaId,
+      exibirConteudoDevolutiva,
+    })
+      .catch(e => erros(e))
+      .finally(setExibirLoaderGeral(false));
+    if (retorno?.status === 200) {
+      sucesso(
+        'Solicitação de geração do relatório gerada com sucesso. Em breve você receberá uma notificação com o resultado.'
+      );
+    }
+  };
 
   const onCheckedConsideraHistorico = () => {
     limparFiltrosSelecionados();
@@ -180,6 +207,9 @@ const RelatorioDevolutivas = () => {
 
     setListaTurmas([]);
     setTurmaId();
+    if (!ue) {
+      setNaoEhInfantil(false);
+    }
   };
 
   const obterUes = useCallback(async () => {
@@ -229,7 +259,6 @@ const RelatorioDevolutivas = () => {
     const modalidadeInfatil = data.filter(
       item => String(item.valor) === String(ModalidadeDTO.INFANTIL)
     );
-    console.log('modalidadeInfatil', modalidadeInfatil);
     if (!modalidadeInfatil.length) {
       setNaoEhInfantil(true);
     }
@@ -256,7 +285,6 @@ const RelatorioDevolutivas = () => {
           if (String(lista[0].valor) === String(ModalidadeDTO.INFANTIL)) {
             setModalidadeId(lista[0].valor);
             naoInfantil = false;
-            console.log('a', lista[0].valor);
           }
           setNaoEhInfantil(naoInfantil);
           return;
@@ -277,30 +305,53 @@ const RelatorioDevolutivas = () => {
 
   const onChangeTurma = valor => {
     setTurmaId(valor);
+    setBimestres([]);
+  };
+
+  const onchangeMultiSelect = (valores, valoreAtual, funSetarNovoValor) => {
+    const opcaoTodosJaSelecionado = valoreAtual
+      ? valoreAtual.includes(OPCAO_TODOS)
+      : false;
+    if (opcaoTodosJaSelecionado) {
+      const listaSemOpcaoTodos = valores.filter(v => v !== OPCAO_TODOS);
+      funSetarNovoValor(listaSemOpcaoTodos);
+    } else if (valores.includes(OPCAO_TODOS)) {
+      funSetarNovoValor([OPCAO_TODOS]);
+    } else {
+      funSetarNovoValor(valores);
+    }
   };
 
   const obterTurmas = useCallback(async () => {
-    if (anoLetivo && ueId) {
+    if (dreId && ueId && modalidadeId) {
       setCarregandoTurmas(true);
-      const resposta = await AbrangenciaServico.buscarTurmas(
+      const { data } = await AbrangenciaServico.buscarTurmas(
         ueId,
-        0,
+        modalidadeId,
         '',
         anoLetivo,
         consideraHistorico
-      )
-        .catch(e => erros(e))
-        .finally(() => setCarregandoTurmas(false));
-
-      if (resposta?.data) {
-        setListaTurmas(resposta.data);
-
-        if (resposta?.data?.length === 1) {
-          setTurmaId(resposta.data[0].codigo);
+      ).finally(() => setCarregandoTurmas(false));
+      if (data) {
+        const lista = [];
+        if (data.length > 1) {
+          lista.push({ valor: OPCAO_TODOS, desc: 'Todas' });
+        }
+        data.map(item =>
+          lista.push({
+            desc: item.nome,
+            valor: item.codigo,
+            id: item.id,
+            ano: item.ano,
+          })
+        );
+        setListaTurmas(lista);
+        if (lista.length === 1) {
+          setTurmaId([lista[0].valor]);
         }
       }
     }
-  }, [anoLetivo, ueId, consideraHistorico]);
+  }, [ueId, dreId, consideraHistorico, anoLetivo, modalidadeId]);
 
   useEffect(() => {
     if (ueId && !naoEhInfantil) {
@@ -337,52 +388,20 @@ const RelatorioDevolutivas = () => {
     setBimestres(undefined);
   }, [modalidadeId, obterBimestres]);
 
-  const filtrar = useCallback(
-    (ano, dre, ue, turma) => {
-      if (anoLetivo && dre && listaDres?.length) {
-        const dreSelecionada = listaDres.find(
-          item => String(item.valor) === String(dre)
-        );
-
-        const ueSelecionada = listaUes.find(
-          item => String(item.valor) === String(ue)
-        );
-
-        const turmaSelecionada = listaTurmas.find(
-          item => String(item.codigo) === String(turma)
-        );
-
-        const params = {
-          anoLetivo: ano,
-          dreId: dreSelecionada ? dreSelecionada?.id : '',
-          ueId: ueSelecionada ? ueSelecionada?.id : '',
-          turmaId: turmaSelecionada ? turmaSelecionada?.id : '',
-        };
-        setFiltro({ ...params });
-      }
-    },
-    [anoLetivo, listaDres, listaTurmas, listaUes]
-  );
-
   useEffect(() => {
-    if (anoLetivo && dreId && ueId) {
-      filtrar(anoLetivo, dreId, ueId, turmaId);
+    const ehInfatil = ehTurmaInfantil(ModalidadeDTO, turmaSelecionada);
+    if (Object.keys(turmaSelecionada).length) {
+      setNaoEhInfantil(!ehInfatil);
+      return;
     }
-  }, [anoLetivo, dreId, ueId, turmaId, filtrar]);
-
-  console.log('naoe', naoEhInfantil);
-
-  const abrangenciaUsuario = async () => {
-    const { data } = await AbrangenciaServico.usuarioTemAbrangenciaTodasTurmas(
-      consideraHistorico
-    ).finally(() => setCarregandoModalidade(false));
-
-    console.log('dataUU', data);
-  };
+    setNaoEhInfantil(false);
+  }, [turmaSelecionada]);
 
   useEffect(() => {
-    abrangenciaUsuario();
-  }, []);
+    const desabilitar =
+      !anoLetivo || !dreId || !ueId || !turmaId?.length || !bimestres?.length;
+    setDesabilitarGerar(desabilitar);
+  }, [anoLetivo, dreId, ueId, turmaId, bimestres]);
 
   return (
     <Loader loading={exibirLoaderGeral}>
@@ -435,6 +454,7 @@ const RelatorioDevolutivas = () => {
                 label="Exibir histórico?"
                 onChangeCheckbox={onCheckedConsideraHistorico}
                 checked={consideraHistorico}
+                disabled={naoEhInfantil}
               />
             </div>
           </div>
@@ -447,7 +467,7 @@ const RelatorioDevolutivas = () => {
                   lista={listaAnosLetivo}
                   valueOption="valor"
                   valueText="desc"
-                  disabled={listaAnosLetivo?.length === 1}
+                  disabled={naoEhInfantil || listaAnosLetivo?.length === 1}
                   onChange={onChangeAnoLetivo}
                   valueSelect={anoLetivo}
                   placeholder="Ano letivo"
@@ -462,7 +482,9 @@ const RelatorioDevolutivas = () => {
                   lista={listaDres}
                   valueOption="valor"
                   valueText="desc"
-                  disabled={!anoLetivo || listaDres?.length === 1}
+                  disabled={
+                    naoEhInfantil || !anoLetivo || listaDres?.length === 1
+                  }
                   onChange={onChangeDre}
                   valueSelect={dreId}
                   placeholder="Diretoria Regional De Educação (DRE)"
@@ -504,14 +526,17 @@ const RelatorioDevolutivas = () => {
             <div className="col-sm-12 col-md-4 pr-0">
               <Loader loading={carregandoTurmas} ignorarTip>
                 <SelectComponent
-                  id="turma (Regular)"
+                  multiple
+                  id="turma"
                   lista={listaTurmas}
-                  valueOption="codigo"
-                  valueText="modalidadeTurmaNome"
+                  valueOption="valor"
+                  valueText="desc"
                   label="Turma"
                   disabled={!modalidadeId || listaTurmas?.length === 1}
                   valueSelect={turmaId}
-                  onChange={onChangeTurma}
+                  onChange={valores => {
+                    onchangeMultiSelect(valores, turmaId, onChangeTurma);
+                  }}
                   placeholder="Turma"
                 />
               </Loader>
@@ -524,7 +549,10 @@ const RelatorioDevolutivas = () => {
                 label="Bimestre"
                 disabled={!modalidadeId || listaBimestre?.length === 1}
                 valueSelect={bimestres}
-                onChange={onChangeBimestre}
+                multiple
+                onChange={valores => {
+                  onchangeMultiSelect(valores, bimestres, onChangeBimestre);
+                }}
                 placeholder="Selecione o bimestre"
               />
             </div>
@@ -536,15 +564,10 @@ const RelatorioDevolutivas = () => {
                 opcoes={opcoesRadioSimNao}
                 valorInicial
                 onChange={e => {
-                  setListarExibirConteudo(e.target.value);
+                  setExibirConteudoDevolutiva(e.target.value);
                 }}
-                value={listarExibirConteudo}
-                desabilitado={
-                  !dreId ||
-                  !ueId ||
-                  dreId === OPCAO_TODOS ||
-                  ueId === OPCAO_TODOS
-                }
+                value={exibirConteudoDevolutiva}
+                desabilitado={!dreId || !ueId || !turmaId || !bimestres}
               />
             </div>
           </div>
