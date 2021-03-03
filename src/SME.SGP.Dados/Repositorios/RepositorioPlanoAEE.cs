@@ -140,7 +140,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<PlanoAEE>> ObterPlanosAtivos()
         {
-            var query = @"select * from plano_aee where not excluido and situacao not in (2,3)";
+            var query = @"select * from plano_aee where not excluido and situacao not in (3,7)";
 
             return await database.Conexao.QueryAsync<PlanoAEE>(query);
         }
@@ -176,6 +176,13 @@ namespace SME.SGP.Dados.Repositorios
                            {condicaoNotificacoes}";
 
             return await database.Conexao.QueryAsync<PlanoAEE>(query, new { dataFim });
+        }
+
+        public async Task<IEnumerable<PlanoAEE>> ObterPlanosAtivosComTurma()
+        {
+            var query = @"select pa.*, t.* from plano_aee pa inner join turma t on t.id = pa.turma_id where not excluido and situacao not in (3,7)";
+
+            return await database.Conexao.QueryAsync<PlanoAEE>(query);
         }
     }
 }
