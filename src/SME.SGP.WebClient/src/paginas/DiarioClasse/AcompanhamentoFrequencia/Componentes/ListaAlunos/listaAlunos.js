@@ -28,6 +28,10 @@ const ListaAlunos = props => {
     store => store.filtro.modalidades
   );
 
+  const exibirModalAnotacao = useSelector(
+    store => store.acompanhamentoFrequencia.exibirModalAnotacao
+  );
+
   const { bimestreSelecionado } = useSelector(
     store => store.acompanhamentoFrequencia
   );
@@ -74,7 +78,11 @@ const ListaAlunos = props => {
       <Loader loading={carregandoListaAlunos} />
       {dadosBimestre ? (
         <>
-          <ModalAnotacoesAcompanhamentoFrequencia />
+          {exibirModalAnotacao ? (
+            <ModalAnotacoesAcompanhamentoFrequencia />
+          ) : (
+            ''
+          )}
           <TabelaColunasFixas>
             <div className="row">
               <div className="col-md-6 col-sm-12">

@@ -2,7 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import shortid from 'shortid';
 import { Card } from 'antd';
-import { Colors, DetalhesAluno, ModalConteudoHtml } from '~/componentes';
+import {
+  Colors,
+  DetalhesAluno,
+  Loader,
+  ModalConteudoHtml,
+} from '~/componentes';
 import Button from '~/componentes/button';
 import ServicoAnotacaoFrequenciaAluno from '~/servicos/Paginas/DiarioClasse/ServicoAnotacaoFrequenciaAluno';
 import JoditEditor from '~/componentes/jodit-editor/joditEditor';
@@ -20,7 +25,8 @@ const ModalAnotacoesAcompanhamentoFrequencia = () => {
     store => store.filtro.modalidades
   );
 
-  const [dados, setDados] = useState({});
+  const [dados, setDados] = useState();
+  const [carregandoDados, setCarregandoDados] = useState(false);
 
   const dadosModalAnotacao = useSelector(
     store => store.acompanhamentoFrequencia.dadosModalAnotacao
@@ -33,15 +39,18 @@ const ModalAnotacoesAcompanhamentoFrequencia = () => {
   useEffect(() => {
     const obterAnotacao = async () => {
       if (exibirModalAnotacao && dadosModalAnotacao) {
+        setCarregandoDados(true);
         const retorno = await ServicoAnotacaoFrequenciaAluno.obterAnotacaoPorId(
           dadosModalAnotacao.id
-        ).catch(e => erros(e));
+        ).catch(e => {
+          erros(e);
+          setCarregandoDados(false);
+        });
 
         if (retorno?.data) {
           setDados(retorno.data);
+          setCarregandoDados(false);
         }
-      } else {
-        setDados([]);
       }
     };
     obterAnotacao();
@@ -51,6 +60,7 @@ const ModalAnotacoesAcompanhamentoFrequencia = () => {
     dispatch(setDadosModalAnotacao());
     dispatch(setExibirModalAnotacao(false));
   };
+
   return (
     <ModalConteudoHtml
       id={shortid.generate()}
@@ -67,32 +77,38 @@ const ModalAnotacoesAcompanhamentoFrequencia = () => {
       width={750}
       closable
     >
-      <DetalhesAluno
-        className="mb-2"
-        dados={dados?.aluno}
-        exibirBotaoImprimir={false}
-      />
-      <Card
-        type="inner"
-        className="rounded mt-3 mb-3"
-        headStyle={{ borderBottomRightRadius: 0 }}
-        bodyStyle={{ borderTopRightRadius: 0 }}
-      >
-        <strong>{dados?.motivoAusencia?.descricao}</strong>
-      </Card>
-      <JoditEditor value={dados?.anotacao} readonly removerToolbar />
-      <div className="col-md-12 mt-2 p-0 d-flex justify-content-end">
-        <Button
-          key="btn-voltar"
-          id="btn-voltar"
-          label="Voltar"
-          icon="arrow-left"
-          color={Colors.Azul}
-          border
-          onClick={onClose}
-          className="mt-2"
-        />
-      </div>
+      <Loader loading={carregandoDados}>
+        {dados && (
+          <>
+            <DetalhesAluno
+              className="mb-2"
+              dados={dados?.aluno}
+              exibirBotaoImprimir={false}
+            />
+            <Card
+              type="inner"
+              className="rounded mt-3 mb-3"
+              headStyle={{ borderBottomRightRadius: 0 }}
+              bodyStyle={{ borderTopRightRadius: 0 }}
+            >
+              <strong>{dados?.motivoAusencia?.descricao}</strong>
+            </Card>
+            <JoditEditor value={dados?.anotacao} readonly removerToolbar />
+            <div className="col-md-12 mt-2 p-0 d-flex justify-content-end">
+              <Button
+                key="btn-voltar"
+                id="btn-voltar"
+                label="Voltar"
+                icon="arrow-left"
+                color={Colors.Azul}
+                border
+                onClick={onClose}
+                className="mt-2"
+              />
+            </div>
+          </>
+        )}
+      </Loader>
     </ModalConteudoHtml>
   );
 };
