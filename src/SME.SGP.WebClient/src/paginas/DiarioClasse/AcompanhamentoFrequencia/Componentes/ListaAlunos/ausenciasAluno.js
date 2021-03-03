@@ -17,6 +17,7 @@ const AusenciasAluno = props => {
   const [carregandoListaAusencias, setCarregandoListaAusencias] = useState(
     false
   );
+  const [semDados, setSemDados] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -39,13 +40,17 @@ const AusenciasAluno = props => {
           turmaId,
           componenteCurricularId,
           codigoAluno
-        ).catch(e => erros(e));
+        ).catch(e => {
+          erros(e);
+          setSemDados(true);
+        });
 
         if (retorno?.data) {
+          setSemDados(false);
           setDados(retorno.data);
+        } else {
+          setSemDados(true);
         }
-      } else {
-        setDados([]);
       }
       setCarregandoListaAusencias(false);
     };
@@ -88,7 +93,7 @@ const AusenciasAluno = props => {
         <tr>
           <td colSpan="5">
             <Loader loading={carregandoListaAusencias} />
-            {dados.length ? (
+            {dados.length > 0 && !semDados && (
               <>
                 <TabelaColunasFixas>
                   <div className="wrapper">
@@ -119,7 +124,8 @@ const AusenciasAluno = props => {
                   </div>
                 </TabelaColunasFixas>
               </>
-            ) : (
+            )}
+            {semDados && (
               <>
                 <p>
                   {carregandoListaAusencias
