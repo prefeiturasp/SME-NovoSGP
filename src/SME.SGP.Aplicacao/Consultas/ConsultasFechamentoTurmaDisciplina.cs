@@ -75,6 +75,7 @@ namespace SME.SGP.Aplicacao
             this.consultasFehcamentoAluno = consultasFechamentoAluno ?? throw new ArgumentNullException(nameof(consultasFechamentoAluno));
             this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));
             this.consultasTurma = consultasTurma ?? throw new ArgumentNullException(nameof(consultasTurma));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public IEnumerable<Sintese> _sinteses { get; set; }
@@ -194,12 +195,14 @@ namespace SME.SGP.Aplicacao
                                            where fa.AlunoCodigo.Equals(aluno.CodigoAluno)
                                            select ft).FirstOrDefault();
 
-                    var alunoDto = new NotaConceitoAlunoBimestreDto();
-                    alunoDto.CodigoAluno = aluno.CodigoAluno;
-                    alunoDto.NumeroChamada = aluno.NumeroAlunoChamada;
-                    alunoDto.Nome = aluno.NomeAluno;
-                    alunoDto.Ativo = aluno.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Ativo);
-                    alunoDto.EhAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, turma.AnoLetivo));
+                    var alunoDto = new NotaConceitoAlunoBimestreDto
+                    {
+                        CodigoAluno = aluno.CodigoAluno,
+                        NumeroChamada = aluno.NumeroAlunoChamada,
+                        Nome = aluno.NomeAluno,
+                        Ativo = aluno.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Ativo),
+                        EhAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, turma.AnoLetivo))
+                };
 
                     var anotacaoAluno = await consultasFehcamentoAluno.ObterAnotacaoPorAlunoEFechamento(fechamentoTurma?.Id ?? 0, aluno.CodigoAluno);
                     alunoDto.TemAnotacao = anotacaoAluno != null && anotacaoAluno.Anotacao != null &&
