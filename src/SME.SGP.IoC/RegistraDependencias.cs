@@ -765,9 +765,12 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterAnosLetivosItineranciaUseCase, ObterAnosLetivosItineranciaUseCase>();
             services.TryAddScoped<IObterRfsPorNomesItineranciaUseCase, ObterRfsPorNomesItineranciaUseCase>();
 
+            // Plano AEE
             services.TryAddScoped<ICadastrarDevolutivaCPPlanoAEEUseCase, CadastrarDevolutivaCPPlanoAEEUseCase>();
             services.TryAddScoped<ICadastrarDevolutivaPAAIPlanoAEEUseCase, CadastrarDevolutivaPAAIPlanoAEEUseCase>();
             services.TryAddScoped<IAtribuirResponsavelPlanoAEEUseCase, AtribuirResponsavelPlanoAEEUseCase>();
+            services.TryAddScoped<IExecutaNotificacaoPlanoAEEExpiradoUseCase, ExecutaNotificacaoPlanoAEEExpiradoUseCase>();
+            services.TryAddScoped<INotificarPlanosAEEExpiradosUseCase, NotificarPlanosAEEExpiradosUseCase>();
 
             services.TryAddScoped<IObterInformacoesDeFrequenciaAlunosPorBimestreUseCase, ObterInformacoesDeFrequenciaAlunosPorBimestreUseCase>();
             services.TryAddScoped<IObterAlunosAtivosPorUeENomeUseCase, ObterAlunosAtivosPorUeENomeUseCase>();
