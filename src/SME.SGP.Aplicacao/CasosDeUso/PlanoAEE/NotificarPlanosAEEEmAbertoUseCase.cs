@@ -39,7 +39,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task EnviarNotificacao(IEnumerable<IGrouping<string, PlanoAEEReduzidoDto>> dresPlanos)
         {
-            foreach(var dre in dresPlanos)
+            foreach (var dre in dresPlanos)
             {
                 var dreCodigo = dre.Key;
                 var dreAbreviacao = dre.FirstOrDefault().DREAbreviacao;
@@ -52,7 +52,7 @@ namespace SME.SGP.Aplicacao
         {
             var parametros = await mediator.Send(new ObterParametrosSistemaPorTipoEAnoQuery(TipoParametroSistema.DiasParaNotificacarPlanoAEEAberto, DateTime.Today.Year));
 
-            if(parametros != null)
+            if (parametros != null)
             {
                 return parametros.Where(a => a.Ativo).Select(a => Convert.ToDateTime($"{a.Valor}/{DateTime.Today.Year}")).ToList();
             }
@@ -60,13 +60,13 @@ namespace SME.SGP.Aplicacao
             return null;
         }
 
-        private async Task NotificarPlanoEmAberto(IEnumerable<IGrouping<string, PlanoAEEReduzidoDto>> planos, string dreCodigo, string dreAbreviacao)
+        private async Task<bool> NotificarPlanoEmAberto(IEnumerable<IGrouping<string, PlanoAEEReduzidoDto>> planos, string dreCodigo, string dreAbreviacao)
         {
             var titulo = $"Acompanhamento dos planos AEE ({dreAbreviacao})";
             string descricao = $@"Segue a lista de Planos AEE das unidades da {dreAbreviacao} sob sua responsabilidade: <br/><br/>
                 <table style='margin-left: auto; margin-right: auto; margin-top: 10px' border='2' cellpadding='5'>";
 
-            foreach(var ue in planos)
+            foreach (var ue in planos)
             {
                 descricao += $"<tr style='font-weight: bold; text-align:center;'><td colspan=4;>{ue.Key}</td></tr>";
                 descricao += $@"<tr style='font-weight: bold'>
@@ -85,15 +85,31 @@ namespace SME.SGP.Aplicacao
 
             descricao += "</table>";
 
-            var supervisores = await mediator.Send(new ObterSupervisoresPorDreQuery(dreCodigo));
+            var supervisores = await ObterSupervisores(dreCodigo);
 
-            if(supervisores.Any())
+            if (supervisores == null)
+                return false;
+
+            foreach (var supervisor in supervisores)
             {
-                foreach(var supervisor in supervisores)
-                {
-                    await mediator.Send(new NotificarUsuarioCommand(titulo, descricao, supervisor.SupervisorId, NotificacaoCategoria.Aviso, NotificacaoTipo.AEE));
-                }
+                await mediator.Send(new NotificarUsuarioCommand(titulo, descricao, supervisor, NotificacaoCategoria.Aviso, NotificacaoTipo.AEE));
             }
+            return true;
+
+        }
+
+        private async Task<List<string>> ObterSupervisores(string codigoUe)
+        {
+
+            var supervisores = await mediator.Send(new ObterFuncionariosPorUeECargoQuery(codigoUe, (int)Cargo.Supervisor));
+            if (supervisores.Any())
+                return supervisores.Select(f => f.CodigoRF).ToList();
+
+            var supervisoresTecnicos = await mediator.Send(new ObterFuncionariosPorUeECargoQuery(codigoUe, (int)Cargo.SupervisorTecnico));
+            if (supervisoresTecnicos.Any())
+                return supervisoresTecnicos.Select(f => f.CodigoRF).ToList();
+
+            return null;
         }
 
         private async Task<bool> ParametroNotificarPlanosAEE()
