@@ -43,7 +43,22 @@ namespace SME.SGP.Aplicacao.Commands
 
             await ExcluirPendenciaPAAI(planoAEE);
 
+            await NotificarEncerramento(planoAEE);
+
             return idEntidadeEncaminhamento != 0;
+        }
+
+        private async Task NotificarEncerramento(PlanoAEE planoAEE)
+        {
+            if (await ParametroNotificarPlanosAEEAtivo())
+                await mediator.Send(new EnviarFilaNotificacaoEncerramentoPlanoAEECommand(planoAEE.Id));
+        }
+
+        private async Task<bool> ParametroNotificarPlanosAEEAtivo()
+        {
+            var parametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.GerarNotificacaoPlanoAEE, DateTime.Today.Year));
+
+            return parametro != null && parametro.Ativo;
         }
 
         private async Task ExcluirPendenciaPAAI(PlanoAEE planoAEE)

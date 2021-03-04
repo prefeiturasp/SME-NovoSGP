@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class EnviarNotificacaoUsuariosCommandHandler : IRequestHandler<EnviarNotificacaoUsuariosCommand, bool>
+    public class EnviarNotificacaoUsuariosCommandHandler : IRequestHandler<EnviarNotificacaoUsuariosCommand, long>
     {
         private readonly IRepositorioNotificacao repositorioNotificacao;
 
@@ -18,11 +18,12 @@ namespace SME.SGP.Aplicacao
             this.repositorioNotificacao = repositorioNotificacao ?? throw new ArgumentNullException(nameof(repositorioNotificacao));
         }
 
-        public async Task<bool> Handle(EnviarNotificacaoUsuariosCommand request, CancellationToken cancellationToken)
+        public async Task<long> Handle(EnviarNotificacaoUsuariosCommand request, CancellationToken cancellationToken)
         {
-            foreach(var usuario in request.Usuarios)
+            Notificacao notificacao = null;
+            foreach (var usuario in request.Usuarios)
             {
-                var notificacao = new Notificacao()
+                notificacao = new Notificacao()
                 {
                     Codigo = ObtemNovoCodigo(),
                     Ano = DateTime.Today.Year,
@@ -39,7 +40,7 @@ namespace SME.SGP.Aplicacao
                 await repositorioNotificacao.SalvarAsync(notificacao);
             }
 
-            return true;
+            return notificacao.Id;
         }
         public long ObtemNovoCodigo()
         {

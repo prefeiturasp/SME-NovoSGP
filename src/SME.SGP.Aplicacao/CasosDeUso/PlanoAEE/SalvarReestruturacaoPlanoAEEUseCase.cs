@@ -34,6 +34,9 @@ namespace SME.SGP.Aplicacao
 
             long reestruturacaoId = await SalvarReestruturacao(reestruturacao);
 
+            if (await ParametroNotificacoesPlanoAtivo())
+                await mediator.Send(new EnviarFilaNotificacaoReestruturacaoPlanoAEECommand(reestruturacaoId));
+
             return reestruturacaoId;
         }
 
@@ -60,5 +63,11 @@ namespace SME.SGP.Aplicacao
         private async Task<bool> ExisteReestruturacaoParaVersao(long versaoId, long? reestruturacaoId)
             => await mediator.Send(new VerificaExistenciaReestruturacaoPorVersaoPlanoAEEIdQuery(versaoId, reestruturacaoId.GetValueOrDefault()));
 
+        private async Task<bool> ParametroNotificacoesPlanoAtivo()
+        {
+            var parametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.GerarNotificacaoPlanoAEE, DateTime.Today.Year));
+
+            return parametro != null && parametro.Ativo;
+        }
     }
 }
