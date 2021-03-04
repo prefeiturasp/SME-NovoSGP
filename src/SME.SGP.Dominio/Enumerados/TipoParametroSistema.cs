@@ -100,6 +100,7 @@ namespace SME.SGP.Dominio
 
         GerarNotificacaoPlanoAEE = 51,
         DiasGeracaoNotificacoesPlanoAEEExpirado = 52,
+        DiasParaNotificacarPlanoAEEAberto = 53,
 
         //Sistema
         HabilitarServicosEmBackground = 100
