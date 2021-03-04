@@ -76,5 +76,7 @@
 
         public static string NotificarPlanoAEEExpirado => "plano.aee.notificar.expirados";
         public static string NotificarPlanoAEEReestruturado => "plano.aee.notificar.reestruturado";
+
+        public static string NotificarCriacaoPlanoAEE => "plano.aee.notificar.criacao";
     }
 }
