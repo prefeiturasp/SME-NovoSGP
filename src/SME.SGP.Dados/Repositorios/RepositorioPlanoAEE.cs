@@ -215,6 +215,45 @@ namespace SME.SGP.Dados.Repositorios
                     order by dre.dre_id, ue.nome, t.nome ";
 
             return await database.Conexao.QueryAsync<PlanoAEEReduzidoDto>(query);
+        public async Task<PlanoAEE> ObterPorReestruturacaoId(long reestruturacaoId)
+        {
+            var query = @"select pa.*, t.*, ue.*, dre.*
+                         from plano_aee pa
+                        inner join plano_aee_versao pav on pav.plano_aee_id = pa.id 
+                        inner join plano_aee_reestruturacao par on par.plano_aee_versao_id = pav.id
+                        inner join turma t on t.id = pa.turma_id 
+                        inner join ue on ue.id = t.ue_id 
+                        inner join dre on dre.id = ue.dre_id 
+                        where par.id = @reestruturacaoId";
+
+            return (await database.Conexao.QueryAsync<PlanoAEE, Turma, Ue, Dre, PlanoAEE>(query,
+                (planoAEE, turma, ue, dre) =>
+                {
+                    ue.Dre = dre;
+                    turma.Ue = ue;
+                    planoAEE.Turma = turma;
+
+                    return planoAEE;
+                }, new { reestruturacaoId })).FirstOrDefault();
+        }
+
+        public async Task<PlanoAEE> ObterPlanoComTurmaUeDrePorId(long planoId)
+        {
+            var query = @" select pa.*, t.*, ue.*, dre.*
+                            from plano_aee pa
+                           inner join turma t on t.id = pa.turma_id
+                           inner join ue on ue.id = t.ue_id
+                           inner join dre on dre.id = ue.dre_id
+                           where pa.id = @planoId";
+
+            return (await database.Conexao.QueryAsync<PlanoAEE, Turma, Ue, Dre, PlanoAEE>(query,
+                (planoAEEDto, turma, ue, dre) =>
+                {
+                    ue.Dre = dre;
+                    turma.Ue = ue;
+                    planoAEEDto.Turma = turma;
+                    return planoAEEDto;
+                }, new { planoId })).FirstOrDefault();
         }
     }
 }
