@@ -27,7 +27,17 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
             var planoAeePersistidoDto = await mediator.Send(new SalvarPlanoAeeCommand(planoAeeDto, turma.Id, aluno.NomeAluno, aluno.CodigoAluno, aluno.NumeroAlunoChamada));
 
+            if (await ParametroNotificacoesPlanoAtivo())
+                await mediator.Send(new EnviarFilaNotificacaoCriacaoPlanoAEECommand(planoAeePersistidoDto.PlanoId));
+
             return planoAeePersistidoDto;
+        }
+
+        private async Task<bool> ParametroNotificacoesPlanoAtivo()
+        {
+            var parametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.GerarNotificacaoPlanoAEE, DateTime.Today.Year));
+
+            return parametro != null && parametro.Ativo;
         }
     }
 }
