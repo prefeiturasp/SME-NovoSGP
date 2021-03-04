@@ -24,14 +24,24 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(dto));
         }
 
-        [HttpGet("turmas/{turmaId}/componentes-curriculares/{componenteCurricularId}/alunos/{alunoCodigo}/justificativas")]
+        [HttpGet("turmas/{turmaId}/componentes-curriculares/{componenteCurricularId}/alunos/{alunoCodigo}/justificativas/bimestre/{bimestre}")]
         [ProducesResponseType(typeof(IEnumerable<JustificativaAlunoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 602)]
         [Permissao(Permissao.AFQ_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterJustificativasAlunoPorComponenteCurricular(long turmaId, long alunoCodigo, long componenteCurricularId, [FromServices] IObterJustificativasAlunoPorComponenteCurricularUseCase useCase)
+        public async Task<IActionResult> ObterJustificativasAlunoPorComponenteCurricular(long turmaId, long alunoCodigo, long componenteCurricularId,int bimestre, [FromServices] IObterJustificativasAlunoPorComponenteCurricularUseCase useCase)
         {
-            return Ok(await useCase.Executar(new FiltroJustificativasAlunoPorComponenteCurricular(turmaId, componenteCurricularId, alunoCodigo)));
+            return Ok(await useCase.Executar(new FiltroJustificativasAlunoPorComponenteCurricular(turmaId, componenteCurricularId, alunoCodigo, bimestre)));
+        }
+
+        [HttpGet("semestre/{semestreNumero}/turma/{turmaId}/ano-letivo/{anoLetivo}/aluno/{alunoCodigo}")]
+        [ProducesResponseType(typeof(FrequenciaAlunosPorBimestreDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 602)]
+        [Permissao(Permissao.AFQ_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterInformacoesDeFrequenciaAlunoPorSemestre([FromQuery] ObterFrequenciaAlunosPorBimestreDto dto, [FromServices] IObterInformacoesDeFrequenciaAlunosPorBimestreUseCase useCase)
+        {
+            return Ok(await useCase.Executar(dto));
         }
     }
 }

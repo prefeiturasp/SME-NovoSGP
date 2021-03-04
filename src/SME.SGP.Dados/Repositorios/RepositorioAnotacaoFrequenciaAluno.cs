@@ -73,5 +73,58 @@ namespace SME.SGP.Dados.Repositorios
                 componenteCurricularId = componenteCurricularId.ToString()
             });
         }
+
+        public async Task<IEnumerable<JustificativaAlunoDto>> ObterPorTurmaAlunoComponenteCurricularBimestre(long turmaId, long alunoCodigo, long componenteCurricularId, int bimestre)
+        {
+            var query = @"select n.* from (
+                            (
+                            select an.id,case when ma.descricao is not null then ma.descricao else an.anotacao end as Motivo, a.data_aula DataAnotacao 
+                            from anotacao_frequencia_aluno an
+                            left join motivo_ausencia ma on an.motivo_ausencia_id = ma.id  
+                            inner join aula a on a.id = an.aula_id 
+                            inner join turma t on t.turma_id = a.turma_id";
+            if(bimestre > 0)
+            { 
+                query += " inner join periodo_escolar pe on a.tipo_calendario_id = pe.tipo_calendario_id and a.data_aula between pe.periodo_inicio and pe.periodo_fim and pe.bimestre = @bimestre";
+            }
+            query += @" where not an.excluido 
+                            and t.id = @turmaId 
+                            and an.codigo_aluno = @codigoAluno";
+            if(componenteCurricularId > 0)
+                query += "and a.disciplina_id = @componenteCurricularId";
+
+            query += @")
+                            union
+                            (
+                            select 0 as id, '' as Motivo, a.data_aula as DataAnotacao 
+                            from registro_ausencia_aluno raa 
+                            inner join registro_frequencia rf on rf.id = raa.registro_frequencia_id 
+                            inner join aula a on a.id = rf.aula_id 
+                            left join anotacao_frequencia_aluno an on an.aula_id = a.id and an.codigo_aluno = @codigoAluno
+                            left join turma t on t.turma_id = a.turma_id";
+            if(bimestre > 0)
+            { 
+                query += " inner join periodo_escolar pe on a.tipo_calendario_id = pe.tipo_calendario_id and a.data_aula between pe.periodo_inicio and pe.periodo_fim and pe.bimestre = @bimestre";
+            }
+            query += @"where t.id = @turmaId
+                            and raa.codigo_aluno = @codigoAluno";
+            if (componenteCurricularId > 0)
+                query += "and a.disciplina_id = @componenteCurricularId";
+
+            query += @"and not a.excluido 
+                            and not raa.excluido
+                            and an.id is null
+                            )
+                            ) n
+                            order by n.DataAnotacao desc";
+
+            return await database.Conexao.QueryAsync<JustificativaAlunoDto>(query, new
+            {
+                turmaId,
+                codigoAluno = alunoCodigo.ToString(),
+                componenteCurricularId = componenteCurricularId.ToString(),
+                bimestre
+            });
+        }
     }
 }
