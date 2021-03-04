@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Utilitarios;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,29 +34,25 @@ namespace SME.SGP.Aplicacao
             var titulo = $"Plano AEE encerrado - {plano.AlunoNome} ({plano.AlunoCodigo}) - {ueDre}";
             var descricao = $@"O Plano AEE {estudanteOuCrianca} {plano.AlunoNome} ({plano.AlunoCodigo}) da turma {plano.Turma.NomeComModalidade()} da {ueDre} foi encerrado.<br/>
                             <ul>
-                                <li>Devolutiva da Coordenação: {plano.ParecerCoordenacao}</li>
-                                <li>Devolutiva PAAI: {plano.ParecerPAAI}</li>
+                                <li>Devolutiva da Coordenação: {UtilRegex.RemoverTagsHtml(plano.ParecerCoordenacao)}</li>
+                                <li>Devolutiva PAAI: {UtilRegex.RemoverTagsHtml(plano.ParecerPAAI)}</li>
                             </ul>
                             <a href='{hostAplicacao}relatorios/aee/plano/editar/{plano.Id}'>Clique aqui</a> para acessar o plano. ";
 
-            var usuariosIds = await ObterUsuarios(plano.Turma.Ue.CodigoUe, plano.Turma.Ue.Dre.CodigoDre);
+            var usuariosIds = await ObterUsuarios(plano.Turma.Ue.CodigoUe, plano.Turma.Ue.Dre.CodigoDre, plano.CriadoRF);
 
             if (usuariosIds.Any())
-                await mediator.Send(new GerarNotificacaoPlanoAEECommand(plano.Id, usuariosIds, titulo, descricao, NotificacaoPlanoAEETipo.PlanoReestruturado));
+                await mediator.Send(new GerarNotificacaoPlanoAEECommand(plano.Id, usuariosIds, titulo, descricao, NotificacaoPlanoAEETipo.PlanoReestruturado, NotificacaoCategoria.Aviso));
 
             return true;
         }
 
-        private async Task<IEnumerable<long>> ObterUsuarios(string ueCodigo, string dreCodigo)
+        private async Task<IEnumerable<long>> ObterUsuarios(string ueCodigo, string dreCodigo, string rfCriador)
         {
-            var coordenadoresUe = await ObterCoordenadoresUe(ueCodigo);
+            var usuariosRFs = await ObterCoordenadoresUe(ueCodigo);
+            usuariosRFs.Add(rfCriador);
 
-            var usuariosIds = await ObterUsuariosId(coordenadoresUe);
-            var coordenadorCEFAI = await mediator.Send(new ObtemUsuarioCEFAIDaDreQuery(dreCodigo));
-
-            if (coordenadorCEFAI != 0)
-                usuariosIds.Add(coordenadorCEFAI);
-
+            var usuariosIds = await ObterUsuariosId(usuariosRFs);
             return usuariosIds;
         }
 

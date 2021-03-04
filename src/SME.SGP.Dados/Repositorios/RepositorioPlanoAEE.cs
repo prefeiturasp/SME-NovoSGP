@@ -154,10 +154,10 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.ExecuteAsync(query, new { versaoId, situacao });
         }
 
-        public async Task<IEnumerable<PlanoAEE>> ObterPorDataFinalVigencia(DateTime dataFim, bool desconsiderarPendencias = true, bool desconsiderarNotificados = false)
+        public async Task<IEnumerable<PlanoAEE>> ObterPorDataFinalVigencia(DateTime dataFim, bool desconsiderarPendencias = true, bool desconsiderarNotificados = false, NotificacaoPlanoAEETipo tipo = NotificacaoPlanoAEETipo.PlanoCriado)
         {
             var joinPendecias = desconsiderarPendencias ? "left join pendencia_plano_aee ppa on ppa.plano_aee_id = pa.id" : "";
-            var joinNotificacoes = desconsiderarNotificados ? "left join notificacao_plano_aee npa on npa.plano_aee_id = pa.id" : "";
+            var joinNotificacoes = desconsiderarNotificados ? "left join notificacao_plano_aee npa on npa.plano_aee_id = pa.id and npa.tipo = @tipo" : "";
 
             var condicaoPendencias = desconsiderarPendencias ? "and ppa.id is null" : "";
             var condicaoNotificacoes = desconsiderarNotificados ? "and npa.id is null" : "";
@@ -175,7 +175,7 @@ namespace SME.SGP.Dados.Repositorios
                            {condicaoPendencias}
                            {condicaoNotificacoes}";
 
-            return await database.Conexao.QueryAsync<PlanoAEE>(query, new { dataFim });
+            return await database.Conexao.QueryAsync<PlanoAEE>(query, new { dataFim, tipo });
         }
 
         public async Task<IEnumerable<PlanoAEEReduzidoDto>> ObterPlanosAEEAtivosComTurmaEVigencia()
@@ -215,6 +215,8 @@ namespace SME.SGP.Dados.Repositorios
                     order by dre.dre_id, ue.nome, t.nome ";
 
             return await database.Conexao.QueryAsync<PlanoAEEReduzidoDto>(query);
+        }
+
         public async Task<PlanoAEE> ObterPorReestruturacaoId(long reestruturacaoId)
         {
             var query = @"select pa.*, t.*, ue.*, dre.*

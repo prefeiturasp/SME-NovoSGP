@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
                 return false;
 
             var dataFim = await ObterDataFim();
-            var planosExpirados = await mediator.Send(new ObterPlanosAEEPorDataFimQuery(dataFim, false, true));
+            var planosExpirados = await mediator.Send(new ObterPlanosAEEPorDataFimQuery(dataFim, false, true, NotificacaoPlanoAEETipo.PlanoExpirado));
 
             foreach (var planoExpirado in planosExpirados)
                 await NotificarPlanoExpirado(planoExpirado, dataFim);
@@ -40,7 +40,7 @@ namespace SME.SGP.Aplicacao
             var estudanteOuCrianca = turma.ModalidadeCodigo == Modalidade.Infantil ? "da criança" : "do estudante";
 
             var titulo = $"Plano AEE Expirado - {plano.AlunoNome} ({plano.AlunoCodigo}) - {ueDre}";
-            var descricao = $@"O Plano AEE {estudanteOuCrianca} {plano.AlunoNome} ({plano.AlunoCodigo}) da turma {turma.NomeComModalidade()} da {ueDre} expirou em {dataFim:dd/MM/yyyy}. <br/>
+            var descricao = $@"O Plano AEE {estudanteOuCrianca} {plano.AlunoNome} ({plano.AlunoCodigo}) da turma {turma.NomeComModalidade()} da {ueDre} expirou em {dataFim:dd/MM/yyyy} e até o momento não teve sua vigência prorrogada ou foi encerrado.<br/>
                 <a href='{hostAplicacao}relatorios/aee/plano/editar/{plano.Id}'>Clique aqui</a> para acessar o plano. ";
 
             var usuarioId = await ObterCEFAI(turma.Ue.Dre.CodigoDre);

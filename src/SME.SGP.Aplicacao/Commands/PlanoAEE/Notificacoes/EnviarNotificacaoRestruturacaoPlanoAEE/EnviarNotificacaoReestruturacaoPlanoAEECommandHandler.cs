@@ -44,7 +44,7 @@ namespace SME.SGP.Aplicacao
             var usuariosIds = await ObterUsuarios(plano.Turma.Ue.CodigoUe, plano.Turma.Ue.Dre.CodigoDre);
 
             if (usuariosIds.Any())
-                await mediator.Send(new GerarNotificacaoPlanoAEECommand(plano.Id, usuariosIds, titulo, descricao, NotificacaoPlanoAEETipo.PlanoReestruturado));
+                await mediator.Send(new GerarNotificacaoPlanoAEECommand(plano.Id, usuariosIds, titulo, descricao, NotificacaoPlanoAEETipo.PlanoReestruturado, NotificacaoCategoria.Aviso));
 
             return true;
         }

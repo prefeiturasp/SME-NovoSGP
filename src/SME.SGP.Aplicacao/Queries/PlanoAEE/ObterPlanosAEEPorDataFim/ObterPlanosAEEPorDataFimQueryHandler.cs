@@ -19,6 +19,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<IEnumerable<PlanoAEE>> Handle(ObterPlanosAEEPorDataFimQuery request, CancellationToken cancellationToken)
-            => await repositorioPlanoAEE.ObterPorDataFinalVigencia(request.DataFim, request.DesconsideraPendencias, request.DesconsideraNotificados);
+            => await repositorioPlanoAEE.ObterPorDataFinalVigencia(request.DataFim, request.DesconsideraPendencias, request.DesconsideraNotificados, request.Tipo);
     }
 }

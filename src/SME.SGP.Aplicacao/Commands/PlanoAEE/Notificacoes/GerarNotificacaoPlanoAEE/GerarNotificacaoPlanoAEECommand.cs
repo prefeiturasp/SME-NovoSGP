@@ -9,22 +9,24 @@ namespace SME.SGP.Aplicacao
 {
     public class GerarNotificacaoPlanoAEECommand : IRequest<bool>
     {
-        public GerarNotificacaoPlanoAEECommand(long planoId, long usuarioId, string titulo, string descricao, NotificacaoPlanoAEETipo notificacaoPlanoAEETipo)
+        public GerarNotificacaoPlanoAEECommand(long planoId, long usuarioId, string titulo, string descricao, NotificacaoPlanoAEETipo notificacaoPlanoAEETipo, NotificacaoCategoria tipoNotificacao = NotificacaoCategoria.Alerta)
         {
             PlanoId = planoId;
             UsuariosIds = new List<long>() { usuarioId };
             Titulo = titulo;
             Descricao = descricao;
             Tipo = notificacaoPlanoAEETipo;
+            TipoNotificacao = tipoNotificacao;
         }
 
-        public GerarNotificacaoPlanoAEECommand(long planoId, IEnumerable<long> usuariosIds, string titulo, string descricao, NotificacaoPlanoAEETipo notificacaoPlanoAEETipo)
+        public GerarNotificacaoPlanoAEECommand(long planoId, IEnumerable<long> usuariosIds, string titulo, string descricao, NotificacaoPlanoAEETipo notificacaoPlanoAEETipo, NotificacaoCategoria tipoNotificacao = NotificacaoCategoria.Alerta)
         {
             PlanoId = planoId;
             UsuariosIds = usuariosIds;
             Titulo = titulo;
             Descricao = descricao;
             Tipo = notificacaoPlanoAEETipo;
+            TipoNotificacao = tipoNotificacao;
         }
 
         public long PlanoId { get; }
@@ -32,6 +34,7 @@ namespace SME.SGP.Aplicacao
         public string Titulo { get; }
         public string Descricao { get; }
         public NotificacaoPlanoAEETipo Tipo { get; }
+        public NotificacaoCategoria TipoNotificacao { get; }
     }
 
     public class GerarNotificacaoPlanoAEECommandValidator : AbstractValidator<GerarNotificacaoPlanoAEECommand>

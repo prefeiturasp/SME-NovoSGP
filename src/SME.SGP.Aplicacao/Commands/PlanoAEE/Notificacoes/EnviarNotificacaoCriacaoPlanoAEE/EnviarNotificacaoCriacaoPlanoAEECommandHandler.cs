@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(EnviarNotificacaoCriacaoPlanoAEECommand request, CancellationToken cancellationToken)
         {
-            var planoAEE = await mediator.Send(new ObterPlanoAEEPorIdQuery(request.PlanoAEEId));
+            var planoAEE = await mediator.Send(new ObterPlanoAEEComTurmaUeEDrePorIdQuery(request.PlanoAEEId));
 
             if (planoAEE == null)
                 throw new NegocioException($"O PlanoAEE [{request.PlanoAEEId}] não foi localizado.");
@@ -33,8 +33,8 @@ namespace SME.SGP.Aplicacao
             var estudanteOuCrianca = planoAEE.Turma.ModalidadeCodigo == Modalidade.Infantil ? "da criança" : "do estudante";
 
             var titulo = $"Novo plano AEE - {planoAEE.AlunoNome} ({planoAEE.AlunoCodigo}) - {ueDre}";
-            var descricao = $@"O Plano AEE do {estudanteOuCrianca} {planoAEE.AlunoNome} ({planoAEE.AlunoCodigo}) da turma {planoAEE.Turma.NomeComModalidade()} da {ueDre} foi cadastrado no sistema.<br/>
-                            <a href='{hostAplicacao}relatorios/aee/planoAEE/editar/{planoAEE.Id}'>Clique aqui</a> para acessar o planoAEE. ";
+            var descricao = $@"O Plano AEE {estudanteOuCrianca} {planoAEE.AlunoNome} ({planoAEE.AlunoCodigo}) da turma {planoAEE.Turma.NomeComModalidade()} da {ueDre} foi cadastrado no sistema.<br/>
+                            <a href='{hostAplicacao}relatorios/aee/plano/editar/{planoAEE.Id}'>Clique aqui</a> para acessar o plano AEE. ";
 
             var usuariosIds = await ObterUsuarios(planoAEE.Turma.Ue.CodigoUe, planoAEE.Turma.Ue.Dre.CodigoDre);
 

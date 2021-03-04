@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
             var planoAeePersistidoDto = await mediator.Send(new SalvarPlanoAeeCommand(planoAeeDto, turma.Id, aluno.NomeAluno, aluno.CodigoAluno, aluno.NumeroAlunoChamada));
 
-            if (await ParametroNotificacoesPlanoAtivo())
+            if ((!planoAeeDto.Id.HasValue || planoAeeDto.Id.Value == 0) & await ParametroNotificacoesPlanoAtivo())
                 await mediator.Send(new EnviarFilaNotificacaoCriacaoPlanoAEECommand(planoAeePersistidoDto.PlanoId));
 
             return planoAeePersistidoDto;

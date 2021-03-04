@@ -9,16 +9,18 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterPlanosAEEPorDataFimQuery : IRequest<IEnumerable<PlanoAEE>>
     {
-        public ObterPlanosAEEPorDataFimQuery(DateTime dataFim, bool desconsideraPendencias = true, bool desconsideraNotificados = false)
+        public ObterPlanosAEEPorDataFimQuery(DateTime dataFim, bool desconsideraPendencias = true, bool desconsideraNotificados = false, NotificacaoPlanoAEETipo tipo = NotificacaoPlanoAEETipo.PlanoCriado)
         {
             DataFim = dataFim;
             DesconsideraPendencias = desconsideraPendencias;
             DesconsideraNotificados = desconsideraNotificados;
+            Tipo = tipo;
         }
 
         public DateTime DataFim { get; }
         public bool DesconsideraPendencias { get; }
         public bool DesconsideraNotificados { get; }
+        public NotificacaoPlanoAEETipo Tipo { get; }
     }
 
     public class ObterPlanosAEEPorDataFimQueryValidator : AbstractValidator<ObterPlanosAEEPorDataFimQuery>
