@@ -722,7 +722,7 @@ const DiarioBordo = ({ match }) => {
                               <JoditEditor
                                 label="Somente leitura"
                                 form={form}
-                                value={form.values.reflexoesReplanejamento}
+                                value={form.values.devolutivas}
                                 name="devolutivas"
                                 id="editor-devolutivas"
                                 removerToolbar
