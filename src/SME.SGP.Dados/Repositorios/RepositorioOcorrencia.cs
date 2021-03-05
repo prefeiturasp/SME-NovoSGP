@@ -158,5 +158,25 @@ namespace SME.SGP.Dados
 
             return resultado;
         }
+
+        public async Task<IEnumerable<OcorrenciasPorAlunoDto>> ObterOcorrenciasPorTurmaAlunoEPeriodo(long turmaId, long codigoAluno, DateTime periodoInicio, DateTime periodoFim)
+        {
+            var query = @"select
+                            o.data_ocorrencia data_ocorrencia,
+                            CONCAT(o.criado_por, ' (', o.criado_rf, ')') registrado_por, 
+	                        o.titulo, 
+	                        oa.codigo_aluno
+                        from ocorrencia o
+                            inner join ocorrencia_aluno oa on oa.ocorrencia_id = o.id
+                            inner join turma t on t.id = o.turma_id 
+                        where 
+                            oa.codigo_aluno = @codigoAluno and 
+                            o.turma_id = @turmaId and 
+                            o.criado_em::date between @periodoInicio and @periodoFim
+                        order by o.data_ocorrencia desc
+                        limit 10";
+
+            return await database.Conexao.QueryAsync<OcorrenciasPorAlunoDto>(query, new { turmaId, codigoAluno, periodoInicio, periodoFim }); ;
+        }
     }
 }
