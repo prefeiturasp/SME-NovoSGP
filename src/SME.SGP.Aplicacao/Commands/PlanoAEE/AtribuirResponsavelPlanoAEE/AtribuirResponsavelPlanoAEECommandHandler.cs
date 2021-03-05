@@ -44,6 +44,8 @@ namespace SME.SGP.Aplicacao
 
         private async Task VerificaGeracaoPendenciaPAAI(PlanoAEE planoAEE)
         {
+            await ExcluirPendenciaCEFAI(planoAEE);
+
             if (!await ParametroGeracaoPendenciaAtivo() || await AtribuidoAoMesmoUsuario(planoAEE))
                 return;
 
@@ -62,8 +64,6 @@ namespace SME.SGP.Aplicacao
 
         private async Task GerarPendenciaPAAI(PlanoAEE plano, Turma turma)
         {
-            await ExcluirPendenciaCEFAI(plano);
-
             var ueDre = $"{turma.Ue.TipoEscola.ShortName()} {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao})";
             var hostAplicacao = configuration["UrlFrontEnd"];
             var estudanteOuCrianca = turma.ModalidadeCodigo == Modalidade.Infantil ? "da criança" : "do estudante";
