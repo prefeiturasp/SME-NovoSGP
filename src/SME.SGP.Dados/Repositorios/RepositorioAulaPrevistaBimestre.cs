@@ -73,6 +73,24 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<AulaPrevistaBimestre>(sql, parametros);
         }
 
+        public async Task<IEnumerable<AulaPrevistaBimestre>> ObterAulasPrevistasPorTurmaTipoCalendarioBimestre(long tipoCalendarioId, string turmaId, int bimestre)
+        {
+            var sql = @"select
+                            apb.*
+                        from
+                            aula_prevista ap
+                        inner join
+                            aula_prevista_bimestre apb
+                            on ap.id = apb.aula_prevista_id
+                        where
+                            ap.tipo_calendario_id = @tipoCalendarioId and
+                            ap.turma_id = @turmaId and 
+                            and apb.bimestre = @bimestre";
+
+            var parametros = new { tipoCalendarioId, turmaId, bimestre };
+            return await database.Conexao.QueryAsync<AulaPrevistaBimestre>(sql, parametros);
+        }
+
         public async Task<IEnumerable<AulaPrevistaBimestreQuantidade>> ObterBimestresAulasPrevistasPorId(long? aulaPrevistaId)
         {
             StringBuilder query = new StringBuilder();
@@ -84,9 +102,6 @@ namespace SME.SGP.Dados.Repositorios
 
             return (await database.Conexao.QueryAsync<AulaPrevistaBimestreQuantidade>(query.ToString(), new { aulaPrevistaId }));
         }
-
-
-
 
     }
 }
