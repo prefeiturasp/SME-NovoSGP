@@ -24,24 +24,24 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(dto));
         }
 
-        [HttpGet("turmas/{turmaId}/componentes-curriculares/{componenteCurricularId}/alunos/{alunoCodigo}/justificativas/bimestre/{bimestre}")]
-        [ProducesResponseType(typeof(IEnumerable<JustificativaAlunoDto>), 200)]
+        [HttpGet("turmas/{turmaId}/componentes-curriculares/{componenteCurricularId}/alunos/{alunoCodigo}/bimestres/{bimestre}/justificativas")]
+        [ProducesResponseType(typeof(PaginacaoResultadoDto<JustificativaAlunoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 602)]
         [Permissao(Permissao.AFQ_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterJustificativasAlunoPorComponenteCurricular(long turmaId, long alunoCodigo, long componenteCurricularId,int bimestre, [FromServices] IObterJustificativasAlunoPorComponenteCurricularUseCase useCase)
+        public async Task<IActionResult> ObterJustificativasAlunoPorComponenteCurricular(long turmaId, long alunoCodigo, long componenteCurricularId, int bimestre, [FromServices] IObterJustificativasAlunoPorComponenteCurricularUseCase useCase)
         {
             return Ok(await useCase.Executar(new FiltroJustificativasAlunoPorComponenteCurricular(turmaId, componenteCurricularId, alunoCodigo, bimestre)));
         }
 
-        [HttpGet("semestre/{semestreNumero}/turma/{turmaId}/ano-letivo/{anoLetivo}/aluno/{alunoCodigo}")]
-        [ProducesResponseType(typeof(FrequenciaAlunosPorBimestreDto), 200)]
+        [HttpGet("turmas/{turmaId}/semestres/{semestre}/alunos/{alunoCodigo}")]
+        [ProducesResponseType(typeof(FrequenciaAlunoBimestreDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 602)]
         [Permissao(Permissao.AFQ_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterInformacoesDeFrequenciaAlunoPorSemestre([FromQuery] ObterFrequenciaAlunosPorBimestreDto dto, [FromServices] IObterInformacoesDeFrequenciaAlunosPorBimestreUseCase useCase)
+        public async Task<IActionResult> ObterInformacoesDeFrequenciaAlunoPorSemestre(long turmaId, int semestre, long alunoCodigo, [FromServices] IObterInformacoesDeFrequenciaAlunoPorSemestreUseCase useCase)
         {
-            return Ok(await useCase.Executar(dto));
+            return Ok(await useCase.Executar(new ObterFrequenciaAlunosPorSemestreDto(turmaId, alunoCodigo, semestre )));
         }
     }
 }

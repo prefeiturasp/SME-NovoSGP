@@ -1,26 +1,61 @@
 ﻿using MediatR;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interfaces;
+using SME.SGP.Infra.Utilitarios;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.Queries.MotivosAusencia.ObterMotivosPorTurmaAlunoComponenteCurricular
+namespace SME.SGP.Aplicacao
 {
-    public class ObterMotivoPorTurmaAlunoComponenteCurricularBimestreQueryHandler : IRequestHandler<ObterMotivoPorTurmaAlunoComponenteCurricularBimestreQuery, IEnumerable<JustificativaAlunoDto>>
+    public class ObterMotivoPorTurmaAlunoComponenteCurricularBimestreQueryHandler : ConsultasBase, IRequestHandler<ObterMotivoPorTurmaAlunoComponenteCurricularBimestreQuery, PaginacaoResultadoDto<JustificativaAlunoDto>>
     {
+        public IMediator mediator { get; }
         private readonly IRepositorioAnotacaoFrequenciaAluno repositorioAnotacaoFrequenciaAluno;
 
-        public ObterMotivoPorTurmaAlunoComponenteCurricularBimestreQueryHandler(IRepositorioAnotacaoFrequenciaAluno repositorioAnotacaoFrequenciaAluno)
+        public ObterMotivoPorTurmaAlunoComponenteCurricularBimestreQueryHandler(IContextoAplicacao contextoAplicacao, IMediator mediator, IRepositorioAnotacaoFrequenciaAluno repositorioAnotacaoFrequenciaAluno) : base(contextoAplicacao)
         {
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioAnotacaoFrequenciaAluno = repositorioAnotacaoFrequenciaAluno ?? throw new ArgumentNullException(nameof(repositorioAnotacaoFrequenciaAluno));
         }
-        public async Task<IEnumerable<JustificativaAlunoDto>> Handle(ObterMotivoPorTurmaAlunoComponenteCurricularBimestreQuery request, CancellationToken cancellationToken)
+        public async Task<PaginacaoResultadoDto<JustificativaAlunoDto>> Handle(ObterMotivoPorTurmaAlunoComponenteCurricularBimestreQuery request, CancellationToken cancellationToken)
         {
-            var motivosAusencia = await repositorioAnotacaoFrequenciaAluno.ObterPorTurmaAlunoComponenteCurricularBimestre(request.TurmaId, request.AlunoCodigo, request.ComponenteCurricularId, request.Bimestre);
-           
-            return motivosAusencia;
+            return MapearParaDto(await repositorioAnotacaoFrequenciaAluno.ObterPorTurmaAlunoComponenteCurricularBimestrePaginado(
+                request.TurmaId,
+                request.AlunoCodigo, 
+                request.ComponenteCurricularId, 
+                request.Bimestre, 
+                Paginacao));
+        }
+
+        private PaginacaoResultadoDto<JustificativaAlunoDto> MapearParaDto(PaginacaoResultadoDto<JustificativaAlunoDto> resultadoDto)
+        {
+            return new PaginacaoResultadoDto<JustificativaAlunoDto>()
+            {
+                TotalPaginas = resultadoDto.TotalPaginas,
+                TotalRegistros = resultadoDto.TotalRegistros,
+                Items = MapearFrequenciasParaDto(resultadoDto.Items)
+            };
+        }
+
+        private IEnumerable<JustificativaAlunoDto> MapearFrequenciasParaDto(IEnumerable<JustificativaAlunoDto> frequencias)
+        {
+            var listaFrequencias = new List<JustificativaAlunoDto>();
+
+            foreach (var frequencia in frequencias)
+            {
+                listaFrequencias.Add(new JustificativaAlunoDto()
+                {
+                    Id = frequencia.Id,
+                    DataAnotacao = frequencia.DataAnotacao,
+                    Motivo = UtilRegex.RemoverTagsHtml(frequencia.Motivo),
+                    RegistradoPor = frequencia.RegistradoPor
+                });
+            }
+
+            return listaFrequencias;
         }
     }
 }
