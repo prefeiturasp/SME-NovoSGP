@@ -29,7 +29,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public NotaTipoValor ObterPorTurmaId(long turmaId, TipoTurma tipoTurma = TipoTurma.Regular)
         {
-            var sql = tipoTurma == TipoTurma.EducacaoFisica ? 
+            var sql = tipoTurma == TipoTurma.EdFisica ? 
                     $@"select *
 	                      from notas_conceitos_ciclos_parametos
                        where tipo_nota = {(int)TipoNota.Nota}
