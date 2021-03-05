@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
 
         }
 
-        public async Task<IEnumerable<FrequenciaAlunoBimestreDto>> Executar(ObterFrequenciaAlunosPorSemestreDto dto)
+        public async Task<IEnumerable<FrequenciaAlunoBimestreDto>> Executar(FiltroTurmaAlunoSemestreDto dto)
         {
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(dto.TurmaId));
             if (turma == null)
