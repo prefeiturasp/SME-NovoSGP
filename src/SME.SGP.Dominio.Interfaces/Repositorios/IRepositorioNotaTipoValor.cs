@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SME.SGP.Dominio.Enumerados;
+using System;
 
 namespace SME.SGP.Dominio.Interfaces
 {
@@ -6,6 +7,6 @@ namespace SME.SGP.Dominio.Interfaces
     {
         NotaTipoValor ObterPorCicloIdDataAvalicacao(long cicloId, DateTime dataAvalicao);
 
-        NotaTipoValor ObterPorTurmaId(long turmaId);
+        NotaTipoValor ObterPorTurmaId(long turmaId, TipoTurma tipoTurma = TipoTurma.Regular);
     }
 }
