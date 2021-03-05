@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterOcorrenciasPorAlunoQuery : IRequest<IEnumerable<OcorrenciasPorAlunoDto>>
+    public class ObterOcorrenciasPorAlunoQuery : IRequest<PaginacaoResultadoDto<OcorrenciasPorAlunoDto>>
     {
         public ObterOcorrenciasPorAlunoQuery(long turmaId, long alunoCodigo, DateTime periodoInicio, DateTime periodoFim)
         {

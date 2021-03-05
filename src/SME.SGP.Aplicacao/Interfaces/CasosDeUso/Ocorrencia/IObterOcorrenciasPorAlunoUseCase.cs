@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public interface IObterOcorrenciasPorAlunoUseCase : IUseCase<FiltroTurmaAlunoSemestreDto, IEnumerable<OcorrenciasPorAlunoDto>>
+    public interface IObterOcorrenciasPorAlunoUseCase : IUseCase<FiltroTurmaAlunoSemestreDto, PaginacaoResultadoDto<OcorrenciasPorAlunoDto>>
     {
     }
 }

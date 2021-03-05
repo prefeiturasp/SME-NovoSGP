@@ -36,10 +36,9 @@ namespace SME.SGP.Api.Controllers
             return Ok(result);
         }
 
-
         [HttpGet]
         [Route("turma/{turmaId}/aluno/{codigoAluno}/semestre/{semestre}")]
-        [ProducesResponseType(typeof(IEnumerable<OcorrenciasPorAlunoDto>), 200)]
+        [ProducesResponseType(typeof(PaginacaoResultadoDto<OcorrenciasPorAlunoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.OCO_C, Policy = "Bearer")]

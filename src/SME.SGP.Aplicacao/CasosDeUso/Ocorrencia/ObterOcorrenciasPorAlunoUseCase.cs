@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -13,7 +12,7 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<IEnumerable<OcorrenciasPorAlunoDto>> Executar(FiltroTurmaAlunoSemestreDto dto)
+        public async Task<PaginacaoResultadoDto<OcorrenciasPorAlunoDto>> Executar(FiltroTurmaAlunoSemestreDto dto)
         {
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(dto.TurmaId));
             if (turma == null)
@@ -57,6 +56,6 @@ namespace SME.SGP.Aplicacao
 
 
 
-        
+
     }
 }
