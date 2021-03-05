@@ -98,5 +98,14 @@ namespace SME.SGP.Api.Controllers
 
             return Ok(resultado);
         }
+
+        [HttpGet("turmas/{turmaId}/semestres/{semestre}/alunos/{alunoCodigo}")]
+        [ProducesResponseType(typeof(PaginacaoResultadoDto<ComunicadoAlunoReduzidoDto>), 200)]
+        [ProducesResponseType(typeof(PaginacaoResultadoDto<ComunicadoAlunoReduzidoDto>), 204)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ObterComunicadosDoAluno(long turmaId, int semestre, long alunoCodigo, [FromServices] IObterComunicadosPaginadosAlunoUseCase useCase)
+        {
+            return Ok(await useCase.Executar(new FiltroTurmaAlunoSemestreDto(turmaId, alunoCodigo, semestre)));
+        }
     }
 }
