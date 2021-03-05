@@ -48,7 +48,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("where ativo and tipo = @tipo");
             query.AppendLine("and ano = @ano");
 
-            var resultado = await database.Conexao.QueryAsync<KeyValuePair<string, string>>(query.ToString(), new { tipo });
+            var resultado = await database.Conexao.QueryAsync<KeyValuePair<string, string>>(query.ToString(), new { tipo, ano });
 
             return resultado
                 .ToDictionary(pair => pair.Key, pair => pair.Value);
