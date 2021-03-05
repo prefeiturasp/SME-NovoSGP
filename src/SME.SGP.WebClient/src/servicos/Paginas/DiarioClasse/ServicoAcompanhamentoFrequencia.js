@@ -16,10 +16,11 @@ class ServicoAcompanhamentoFrequencia {
   obterJustificativaAcompanhamentoFrequencia = async (
     turmaId,
     componenteCurricularId,
-    alunoCodigo
+    alunoCodigo,
+    bimestre
   ) => {
     return api.get(
-      `${urlPadrao}/turmas/${turmaId}/componentes-curriculares/${componenteCurricularId}/alunos/${alunoCodigo}/justificativas`
+      `${urlPadrao}/turmas/${turmaId}/componentes-curriculares/${componenteCurricularId}/alunos/${alunoCodigo}/bimestres/${bimestre}/justificativas`
     );
   };
 }

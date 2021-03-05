@@ -225,6 +225,7 @@ const ListaAlunos = props => {
                             turmaId={turmaSelecionada?.id}
                             componenteCurricularId={componenteCurricularId}
                             codigoAluno={data.alunoRf}
+                            bimestre={bimestreSelecionado}
                           />
                         </>
                       );
