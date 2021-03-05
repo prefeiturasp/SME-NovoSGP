@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SME.SGP.Dominio.Enumerados;
+using System;
 
 namespace SME.SGP.Dto
 {
@@ -19,5 +20,6 @@ namespace SME.SGP.Dto
         public string SerieEnsino { get; set; }
         public DateTime? DataInicioTurma { get; set; }
         public bool Extinta { get; set; }
+        public TipoTurma TipoTurma { get; set; }
     }
 }
