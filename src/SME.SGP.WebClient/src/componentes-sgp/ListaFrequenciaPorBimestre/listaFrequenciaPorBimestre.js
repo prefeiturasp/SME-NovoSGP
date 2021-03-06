@@ -38,7 +38,7 @@ const ListaFrequenciaPorBimestre = props => {
                                   {data.bimestre}°
                                 </td>
                                 <td className="col-valor-linha-dois">
-                                  {data.aulasPrevistas}
+                                  {data.aulasRealizadas}
                                 </td>
                                 <td className="col-valor-linha-dois">
                                   {data.ausencias}
@@ -52,7 +52,7 @@ const ListaFrequenciaPorBimestre = props => {
                               </tr>
                               <AusenciasEstudante
                                 indexLinha={index}
-                                dados={data}
+                                bimestre={data?.bimestre}
                                 turmaId={turmaId}
                                 codigoAluno={codigoAluno}
                                 componenteCurricularId={componenteCurricularId}

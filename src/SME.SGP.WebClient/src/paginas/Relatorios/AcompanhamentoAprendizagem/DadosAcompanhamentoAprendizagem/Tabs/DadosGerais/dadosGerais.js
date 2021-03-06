@@ -10,7 +10,7 @@ const DadosGerais = props => {
   return (
     <>
       <FrequenciaCardCollapse semestreSelecionado={semestreSelecionado} />
-      <OcorrenciasCardCollapse />
+      <OcorrenciasCardCollapse semestreSelecionado={semestreSelecionado} />
       <RegistroComunicacaoEscolaAquiCardCollapse />
     </>
   );
