@@ -621,5 +621,17 @@
 
         [PermissaoMenu(Menu = "AEE", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = true, Url = "/relatorios/aee/registro-itinerancia", EhSubMenu = true, OrdemSubMenu = 3, SubMenu = "Registro de itinerância")]
         RI_A = 209,
+
+        [PermissaoMenu(Menu = "Relatório do Acompanhamento da Aprendizagem", Icone = "fas fa-file-alt", Agrupamento = "Dashboard", OrdemAgrupamento = 8, OrdemMenu = 1, EhConsulta = true, Url = "/dashboard/acompanhamento-aprendizagem")]
+        RAA_C = 210,
+
+        [PermissaoMenu(Menu = "Relatório do Acompanhamento da Aprendizagem", Icone = "fas fa-file-alt", Agrupamento = "Dashboard", OrdemAgrupamento = 8, OrdemMenu = 1, EhInclusao = true, Url = "/dashboard/acompanhamento-aprendizagem")]
+        RAA_I = 211,
+
+        [PermissaoMenu(Menu = "Relatório do Acompanhamento da Aprendizagem", Icone = "fas fa-file-alt", Agrupamento = "Dashboard", OrdemAgrupamento = 8, OrdemMenu = 1, EhExclusao = true, Url = "/dashboard/acompanhamento-aprendizagem")]
+        RAA_E = 212,
+
+        [PermissaoMenu(Menu = "Relatório do Acompanhamento da Aprendizagem", Icone = "fas fa-file-alt", Agrupamento = "Dashboard", OrdemAgrupamento = 8, OrdemMenu = 1, EhAlteracao = true, Url = "/dashboard/acompanhamento-aprendizagem")]
+        RAA_A = 213,
     }
 }
