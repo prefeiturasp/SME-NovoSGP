@@ -1,23 +1,22 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { Tooltip } from 'antd';
 import PropTypes from 'prop-types';
-import BtnExpandirFrequenciaAluno from './btnExpandirFrequenciaAluno';
-import AusenciasAluno from './ausenciasAluno';
-import { Base } from '~/componentes/colors';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Loader } from '~/componentes';
+import AusenciasEstudante from '~/componentes-sgp/ListaFrequenciaPorBimestre/ausenciasEstudante';
+import BtnExpandirAusenciaEstudante from '~/componentes-sgp/ListaFrequenciaPorBimestre/btnExpandirAusenciaEstudante';
+import ModalAnotacoes from '~/componentes-sgp/ListaFrequenciaPorBimestre/modalAnotacoes';
 import Ordenacao from '~/componentes-sgp/Ordenacao/ordenacao';
+import { Base } from '~/componentes/colors';
 import { setExpandirLinhaFrequenciaAluno } from '~/redux/modulos/acompanhamentoFrequencia/actions';
+import { erros } from '~/servicos';
+import ServicoAcompanhamentoFrequencia from '~/servicos/Paginas/DiarioClasse/ServicoAcompanhamentoFrequencia';
 import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 import {
-  TabelaColunasFixas,
-  Marcadores,
   MarcadorAulas,
+  Marcadores,
+  TabelaColunasFixas,
 } from './listaAlunos.css';
-import ModalAnotacoesAcompanhamentoFrequencia from './modalAnotacoesAcompanhamentoFrequencia';
-
-import ServicoAcompanhamentoFrequencia from '~/servicos/Paginas/DiarioClasse/ServicoAcompanhamentoFrequencia';
-import { erros } from '~/servicos';
-import { Loader } from '~/componentes';
 
 const ListaAlunos = props => {
   const usuario = useSelector(store => store.usuario);
@@ -74,7 +73,7 @@ const ListaAlunos = props => {
       <Loader loading={carregandoListaAlunos} />
       {dadosBimestre ? (
         <>
-          <ModalAnotacoesAcompanhamentoFrequencia />
+          <ModalAnotacoes />
           <TabelaColunasFixas>
             <div className="row">
               <div className="col-md-6 col-sm-12">
@@ -212,20 +211,18 @@ const ListaAlunos = props => {
                               {data.frequencia}%
                               {data.ausencias > 0 &&
                                 bimestreSelecionado > 0 && (
-                                  <BtnExpandirFrequenciaAluno
+                                  <BtnExpandirAusenciaEstudante
                                     indexLinha={index}
-                                    codigoAluno={data.alunoRf}
                                   />
                                 )}
                             </td>
                           </tr>
-                          <AusenciasAluno
+                          <AusenciasEstudante
                             indexLinha={index}
-                            dados={data.ausencias}
-                            turmaId={turmaSelecionada?.id}
-                            componenteCurricularId={componenteCurricularId}
-                            codigoAluno={data.alunoRf}
                             bimestre={bimestreSelecionado}
+                            turmaId={turmaId}
+                            codigoAluno={data.alunoRf}
+                            componenteCurricularId={componenteCurricularId}
                           />
                         </>
                       );
