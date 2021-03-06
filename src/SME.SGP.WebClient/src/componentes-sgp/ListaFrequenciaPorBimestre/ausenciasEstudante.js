@@ -61,13 +61,14 @@ const AusenciasEstudante = props => {
   );
 
   useEffect(() => {
-    if (expandirLinhaAusenciaEstudante && dados) {
+    if (expandirLinhaAusenciaEstudante[indexLinha] && dados) {
       obterAusenciaMotivoPorAlunoTurmaBimestreAno();
     } else {
       setAusencias([]);
     }
   }, [
     dados,
+    indexLinha,
     expandirLinhaAusenciaEstudante,
     obterAusenciaMotivoPorAlunoTurmaBimestreAno,
   ]);
