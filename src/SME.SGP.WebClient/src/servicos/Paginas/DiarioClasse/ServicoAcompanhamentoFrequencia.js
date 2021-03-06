@@ -23,6 +23,30 @@ class ServicoAcompanhamentoFrequencia {
       `${urlPadrao}/turmas/${turmaId}/componentes-curriculares/${componenteCurricularId}/alunos/${alunoCodigo}/bimestres/${bimestre}/justificativas`
     );
   };
+
+  obterJustificativaAcompanhamentoFrequenciaPaginacaoManual = (
+    turmaId,
+    componenteCurricularId,
+    alunoCodigo,
+    bimestre,
+    numeroPagina,
+    numeroRegistros
+  ) => {
+    const url = `${urlPadrao}/turmas/${turmaId}/componentes-curriculares/${componenteCurricularId ||
+      0}/alunos/${alunoCodigo}/bimestres/${bimestre}/justificativas?numeroPagina=${numeroPagina ||
+      1}&numeroRegistros=${numeroRegistros}`;
+
+    return api.get(url);
+  };
+
+  obterInformacoesDeFrequenciaAlunoPorSemestre = (
+    turmaId,
+    semestre,
+    alunoCodigo
+  ) => {
+    const url = `${urlPadrao}/turmas/${turmaId}/semestres/${semestre}/alunos/${alunoCodigo}`;
+    return api.get(url);
+  };
 }
 
 export default new ServicoAcompanhamentoFrequencia();
