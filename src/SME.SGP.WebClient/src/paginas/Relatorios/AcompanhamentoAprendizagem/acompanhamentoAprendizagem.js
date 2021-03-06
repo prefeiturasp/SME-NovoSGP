@@ -186,7 +186,7 @@ const AcompanhamentoAprendizagem = () => {
                       <DadosAcompanhamentoAprendizagem
                         codigoTurma={turmaSelecionada.turma}
                         modalidade={turmaSelecionada.modalidade}
-                        semestreConsulta={semestreSelecionado}
+                        semestreSelecionado={semestreSelecionado}
                       />
                     </TabelaRetratilAcompanhamentoAprendizagem>
                   </div>

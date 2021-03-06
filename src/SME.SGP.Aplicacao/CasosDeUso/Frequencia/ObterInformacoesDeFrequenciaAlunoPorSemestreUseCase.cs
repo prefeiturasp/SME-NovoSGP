@@ -60,7 +60,7 @@ namespace SME.SGP.Aplicacao
         {
 
             FrequenciaAlunoBimestreDto dto = new FrequenciaAlunoBimestreDto();
-            dto.Bimestre = $"{periodoEscolar.Bimestre}°";
+            dto.Bimestre = periodoEscolar.Bimestre.ToString();
             dto.AulasRealizadas = await mediator.Send(new ObterAulasDadasPorTurmaIdEPeriodoEscolarQuery(turma.Id, new List<long> { periodoEscolar.Id }, tipoCalendarioId));
             
             var frequenciasRegistradas = await mediator.Send(new ObterFrequenciaBimestresQuery(alunoCodigo, periodoEscolar.Bimestre, turma.CodigoTurma, TipoFrequenciaAluno.Geral));
