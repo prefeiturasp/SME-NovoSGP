@@ -49,9 +49,9 @@ namespace SME.SGP.Aplicacao
                 listaFrequencias.Add(new JustificativaAlunoDto()
                 {
                     Id = frequencia.Id,
-                    DataAnotacao = frequencia.DataAnotacao,
-                    Motivo = UtilRegex.RemoverTagsHtml(frequencia.Motivo),
-                    RegistradoPor = frequencia.RegistradoPor
+                    DataAusencia = frequencia.DataAusencia,
+                    Motivo = frequencia.RegistradoPor.Length > 0 ? UtilRegex.RemoverTagsHtml(frequencia.Motivo) : "Não possui Anotação/Motivo",
+                    RegistradoPor = frequencia.RegistradoPor.Length > 0 ? frequencia.RegistradoPor : "Não possui Anotação/Motivo"
                 });
             }
 

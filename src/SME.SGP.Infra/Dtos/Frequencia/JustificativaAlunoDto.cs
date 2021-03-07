@@ -8,15 +8,15 @@ namespace SME.SGP.Infra
         {
 
         }
-        public JustificativaAlunoDto(long id, string motivo, DateTime dataAnotacao, string registradoPor)
+        public JustificativaAlunoDto(long id, string motivo, DateTime dataAusencia, string registradoPor)
         {
-            DataAnotacao = dataAnotacao;
+            DataAusencia = dataAusencia;
             Motivo = motivo;
             Id = id;
             RegistradoPor = registradoPor;
         }
 
-        public DateTime DataAnotacao { get; set; }
+        public DateTime DataAusencia { get; set; }
         public string Motivo { get; set; }
         public string RegistradoPor { get; set; }
         public long Id { get; set; }
