@@ -38,11 +38,11 @@ const BtnExpandirAusenciaEstudante = props => {
 };
 
 BtnExpandirAusenciaEstudante.defaultProps = {
-  indexLinha: PropTypes.number,
+  indexLinha: PropTypes.oneOfType([PropTypes.any]),
 };
 
 BtnExpandirAusenciaEstudante.propTypes = {
-  indexLinha: null,
+  indexLinha: '',
 };
 
 export default BtnExpandirAusenciaEstudante;

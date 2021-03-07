@@ -2,6 +2,7 @@ import * as moment from 'moment';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import shortid from 'shortid';
 import Loader from '~/componentes/loader';
 import {
   setDadosModalAnotacao,
@@ -130,7 +131,7 @@ const AusenciasEstudante = props => {
                         {ausencias?.items?.length ? (
                           ausencias?.items?.map(item => {
                             return (
-                              <tr>
+                              <tr key={shortid.generate()}>
                                 <td className="col-valor-linha-um">
                                   {moment(item.dataAusencia).format(
                                     'DD/MM/YYYY'
@@ -179,7 +180,7 @@ const AusenciasEstudante = props => {
 };
 
 AusenciasEstudante.defaultProps = {
-  indexLinha: PropTypes.number,
+  indexLinha: PropTypes.oneOfType([PropTypes.any]),
   bimestre: PropTypes.oneOfType([PropTypes.any]),
   turmaId: PropTypes.oneOfType([PropTypes.any]),
   codigoAluno: PropTypes.oneOfType([PropTypes.any]),

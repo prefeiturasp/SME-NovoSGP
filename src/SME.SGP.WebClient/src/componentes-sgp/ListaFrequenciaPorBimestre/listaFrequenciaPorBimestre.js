@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import shortid from 'shortid';
 import AusenciasEstudante from './ausenciasEstudante';
 import BtnExpandirAusenciaEstudante from './btnExpandirAusenciaEstudante';
 import { TabelaColunasFixas } from './listaFrequenciaPorBimestre.css';
@@ -33,7 +34,7 @@ const ListaFrequenciaPorBimestre = props => {
                         dados?.map((data, index) => {
                           return (
                             <>
-                              <tr id={index}>
+                              <tr key={shortid.generate()}>
                                 <td className="col-valor-linha-dois">
                                   {data.bimestre}°
                                 </td>

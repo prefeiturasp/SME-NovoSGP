@@ -11,7 +11,9 @@ const DadosGerais = props => {
     <>
       <FrequenciaCardCollapse semestreSelecionado={semestreSelecionado} />
       <OcorrenciasCardCollapse semestreSelecionado={semestreSelecionado} />
-      <RegistroComunicacaoEscolaAquiCardCollapse />
+      <RegistroComunicacaoEscolaAquiCardCollapse
+        semestreSelecionado={semestreSelecionado}
+      />
     </>
   );
 };

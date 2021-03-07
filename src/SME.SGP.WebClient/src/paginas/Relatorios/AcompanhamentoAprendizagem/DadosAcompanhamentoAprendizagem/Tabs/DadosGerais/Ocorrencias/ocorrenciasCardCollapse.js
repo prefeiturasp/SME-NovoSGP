@@ -60,8 +60,14 @@ const OcorrenciasCardCollapse = props => {
             colunas={colunas}
             filtro={{}}
             filtroEhValido={
-              !!(turmaSelecionada?.id && codigoEOL && semestreSelecionado)
+              !!(
+                exibir &&
+                turmaSelecionada?.id &&
+                codigoEOL &&
+                semestreSelecionado
+              )
             }
+            showSizeChanger={false}
           />
         ) : (
           ''

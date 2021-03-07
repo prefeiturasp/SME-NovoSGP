@@ -1,17 +1,28 @@
 import * as moment from 'moment';
+import PropTypes from 'prop-types';
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { ListaPaginada } from '~/componentes';
 import CardCollapse from '~/componentes/cardCollapse';
 
-const RegistroComunicacaoEscolaAquiCardCollapse = () => {
-  const [exibir, setExibir] = useState(true);
+const RegistroComunicacaoEscolaAquiCardCollapse = props => {
+  const dadosAlunoObjectCard = useSelector(
+    store => store.acompanhamentoAprendizagem.dadosAlunoObjectCard
+  );
 
-  const [filtro, setFiltro] = useState({});
+  const usuario = useSelector(store => store.usuario);
+  const { turmaSelecionada } = usuario;
+
+  const { codigoEOL } = dadosAlunoObjectCard;
+
+  const { semestreSelecionado } = props;
+
+  const [exibir, setExibir] = useState(false);
 
   const colunas = [
     {
       title: 'Data',
-      dataIndex: 'data',
+      dataIndex: 'dataEnvio',
       render: data => {
         let dataFormatada = '';
         if (data) {
@@ -22,7 +33,7 @@ const RegistroComunicacaoEscolaAquiCardCollapse = () => {
     },
     {
       title: 'Categoria',
-      dataIndex: 'categoria',
+      dataIndex: 'categoriaNome',
     },
     {
       title: 'Título',
@@ -30,7 +41,7 @@ const RegistroComunicacaoEscolaAquiCardCollapse = () => {
     },
     {
       title: 'Leitura',
-      dataIndex: 'leitura',
+      dataIndex: 'statusLeitura',
     },
   ];
 
@@ -47,16 +58,37 @@ const RegistroComunicacaoEscolaAquiCardCollapse = () => {
         alt="registro-comunicacao-escola-aqui-acompanhamento-aprendizagem"
       >
         <div className="col-md-12 mb-2">
-          <ListaPaginada
-            url=""
-            id="lista-registro-comunicacao-escola-aqui"
-            colunas={colunas}
-            filtro={filtro}
-          />
+          {turmaSelecionada?.id && codigoEOL && semestreSelecionado ? (
+            <ListaPaginada
+              url={`v1/comunicado/turmas/${turmaSelecionada?.id}/semestres/${semestreSelecionado}/alunos/${codigoEOL}`}
+              id="lista-ocorrencias-acompanhamento-aprendizagem"
+              colunas={colunas}
+              filtro={{}}
+              filtroEhValido={
+                !!(
+                  exibir &&
+                  turmaSelecionada?.id &&
+                  codigoEOL &&
+                  semestreSelecionado
+                )
+              }
+              showSizeChanger={false}
+            />
+          ) : (
+            ''
+          )}
         </div>
       </CardCollapse>
     </div>
   );
+};
+
+RegistroComunicacaoEscolaAquiCardCollapse.propTypes = {
+  semestreSelecionado: PropTypes.string,
+};
+
+RegistroComunicacaoEscolaAquiCardCollapse.defaultProps = {
+  semestreSelecionado: '',
 };
 
 export default RegistroComunicacaoEscolaAquiCardCollapse;
