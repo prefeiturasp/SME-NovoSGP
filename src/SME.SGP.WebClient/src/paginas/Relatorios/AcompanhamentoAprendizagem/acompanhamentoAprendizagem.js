@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { AlertaPermiteSomenteTurmaInfantil } from '~/componentes-sgp';
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import Alert from '~/componentes/alert';
 import Card from '~/componentes/card';
@@ -11,7 +12,7 @@ import {
   setDadosAlunoObjectCard,
   setExibirLoaderGeralAcompanhamentoAprendizagem,
 } from '~/redux/modulos/acompanhamentoAprendizagem/actions';
-import { ServicoCalendarios } from '~/servicos';
+import { ehTurmaInfantil, ServicoCalendarios } from '~/servicos';
 import { erros } from '~/servicos/alertas';
 import ServicoAcompanhamentoAprendizagem from '~/servicos/Paginas/Relatorios/AcompanhamentoAprendizagem/ServicoAcompanhamentoAprendizagem';
 import { Container } from './acompanhamentoAprendizagem.css';
@@ -27,7 +28,11 @@ const AcompanhamentoAprendizagem = () => {
 
   const usuario = useSelector(store => store.usuario);
   const { turmaSelecionada } = usuario;
-  const { turma, anoLetivo, periodo } = turmaSelecionada;
+  const { turma, anoLetivo } = turmaSelecionada;
+
+  const modalidadesFiltroPrincipal = useSelector(
+    store => store.filtro.modalidades
+  );
 
   const [listaSemestres, setListaSemestres] = useState([]);
   const [semestreSelecionado, setSemestreSelecionado] = useState(undefined);
@@ -41,11 +46,10 @@ const AcompanhamentoAprendizagem = () => {
       if (turma) {
         dispatch(setExibirLoaderGeralAcompanhamentoAprendizagem(true));
         // TODO Trocar endpoint!
-        console.log(`Semetre selecionado: ${semestreConsulta}`);
         const retorno = await ServicoAcompanhamentoAprendizagem.obterListaAlunos(
           turma,
           anoLetivo,
-          periodo
+          semestreConsulta
         )
           .catch(e => erros(e))
           .finally(() =>
@@ -60,19 +64,21 @@ const AcompanhamentoAprendizagem = () => {
         }
       }
     },
-    [anoLetivo, dispatch, turma, periodo, resetarInfomacoes]
+    [anoLetivo, dispatch, turma, resetarInfomacoes]
   );
 
   const obterListaSemestres = useCallback(async () => {
-    const retorno = await ServicoAcompanhamentoAprendizagem.obterListaSemestres().catch(
-      e => erros(e)
-    );
-    if (retorno?.data) {
-      setListaSemestres(retorno.data);
-    } else {
-      setListaSemestres([]);
+    if (ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada)) {
+      const retorno = await ServicoAcompanhamentoAprendizagem.obterListaSemestres().catch(
+        e => erros(e)
+      );
+      if (retorno?.data) {
+        setListaSemestres(retorno.data);
+      } else {
+        setListaSemestres([]);
+      }
     }
-  }, []);
+  }, [modalidadesFiltroPrincipal, turmaSelecionada]);
 
   useEffect(() => {
     resetarInfomacoes();
@@ -89,7 +95,6 @@ const AcompanhamentoAprendizagem = () => {
     resetarInfomacoes,
     dispatch,
     obterListaSemestres,
-    turmaSelecionada,
   ]);
 
   useEffect(() => {
@@ -145,7 +150,7 @@ const AcompanhamentoAprendizagem = () => {
       ) : (
         ''
       )}
-
+      {turmaSelecionada.turma ? <AlertaPermiteSomenteTurmaInfantil /> : ''}
       <Cabecalho pagina="Relatório do Acompanhamento da Aprendizagem" />
       <LoaderAcompanhamentoAprendizagem>
         <Card>
@@ -156,7 +161,8 @@ const AcompanhamentoAprendizagem = () => {
               </div>
             </div>
           </div>
-          {turmaSelecionada?.turma ? (
+          {turmaSelecionada?.turma &&
+          ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada) ? (
             <>
               <div className="col-md-12 mb-2">
                 <div className="row">
