@@ -95,7 +95,7 @@ const AusenciasEstudante = props => {
         </div>
 
         <BtnVisualizarAnotacao
-          className={item.motivo ? 'btn-com-anotacao' : ''}
+          className={item.id > 0 ? 'btn-com-anotacao' : ''}
           onClick={() => {
             if (item.motivo) {
               onClickAnotacao(item);
