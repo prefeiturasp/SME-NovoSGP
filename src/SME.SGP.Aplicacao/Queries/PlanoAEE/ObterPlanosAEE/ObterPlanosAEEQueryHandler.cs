@@ -58,6 +58,7 @@ namespace SME.SGP.Aplicacao
                         Numero = aluno?.NumeroAlunoChamada ?? 0,
                         Nome = $"{aluno?.NomeAluno}",
                         PossuiEncaminhamentoAEE = planoAEE.PossuiEncaminhamentoAEE,
+                        EhAtendidoAEE = (planoAEE.Situacao != SituacaoPlanoAEE.Encerrado && planoAEE.Situacao != SituacaoPlanoAEE.EncerradoAutomaticamento),
                         CriadoEm = planoAEE.CriadoEm,
                         Versao = $"v{planoAEE.Versao} ({planoAEE.DataVersao:dd/MM/yyyy})"
                     }); ;
