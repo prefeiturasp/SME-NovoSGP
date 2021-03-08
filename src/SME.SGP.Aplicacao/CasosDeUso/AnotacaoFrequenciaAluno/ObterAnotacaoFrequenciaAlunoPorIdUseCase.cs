@@ -42,10 +42,10 @@ namespace SME.SGP.Aplicacao
             if (aluno == null)
                 throw new NegocioException("Aluno não encontrado");
 
-            return MapearParaDto(anotacao, motivoAusencia, aluno);
+            return await MapearParaDto(anotacao, motivoAusencia, aluno, turma.AnoLetivo);
         }
 
-        private AnotacaoFrequenciaAlunoCompletoDto MapearParaDto(Dominio.AnotacaoFrequenciaAluno anotacao, Dominio.MotivoAusencia motivoAusencia, AlunoPorTurmaResposta aluno)
+        private async Task<AnotacaoFrequenciaAlunoCompletoDto> MapearParaDto(Dominio.AnotacaoFrequenciaAluno anotacao, Dominio.MotivoAusencia motivoAusencia, AlunoPorTurmaResposta aluno, int anoLetivo)
         {
             return new AnotacaoFrequenciaAlunoCompletoDto()
             {
@@ -61,7 +61,8 @@ namespace SME.SGP.Aplicacao
                     NumeroChamada = aluno.NumeroAlunoChamada,
                     Situacao = aluno.SituacaoMatricula,
                     SituacaoCodigo = aluno.CodigoSituacaoMatricula,
-                    TipoResponsavel = ObterTipoResponsavel(aluno.TipoResponsavel)
+                    TipoResponsavel = ObterTipoResponsavel(aluno.TipoResponsavel),
+                    EhAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, anoLetivo))
                 },
                 Anotacao = anotacao.Anotacao,
                 Auditoria = (AuditoriaDto)anotacao,
