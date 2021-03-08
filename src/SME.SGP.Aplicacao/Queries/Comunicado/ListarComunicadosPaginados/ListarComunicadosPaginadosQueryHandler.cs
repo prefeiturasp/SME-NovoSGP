@@ -7,6 +7,7 @@ using SME.SGP.Infra.Dtos;
 using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -15,29 +16,35 @@ namespace SME.SGP.Aplicacao.Queries.Evento.ObterDataPossuiEventoLiberacaoExcepci
     public class ListarComunicadosPaginadosQueryHandler : ConsultasBase, IRequestHandler<ListarComunicadosPaginadosQuery, PaginacaoResultadoDto<ComunicadoAlunoReduzidoDto>>
     {
         private readonly IRepositorioComunicado repositorioComunicado;
+        private readonly IMediator mediator;
 
-        public ListarComunicadosPaginadosQueryHandler(IContextoAplicacao contextoAplicacao, IRepositorioComunicado repositorioComunicado) : base(contextoAplicacao)
+        public ListarComunicadosPaginadosQueryHandler(IContextoAplicacao contextoAplicacao, IRepositorioComunicado repositorioComunicado, IMediator mediator) : base(contextoAplicacao)
         {
             this.repositorioComunicado = repositorioComunicado ?? throw new System.ArgumentNullException(nameof(repositorioComunicado));
+            this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator)); ;
         }
         public async Task<PaginacaoResultadoDto<ComunicadoAlunoReduzidoDto>> Handle(ListarComunicadosPaginadosQuery request, CancellationToken cancellationToken)
         {
-            return MapearParaDto(await repositorioComunicado.ObterComunicadosReduzidos(request.DRECodigo, request.UECodigo, request.TurmaCodigo, request.AlunoCodigo, Paginacao));
+            return await MapearParaDtoAsync(await repositorioComunicado.ObterComunicadosReduzidos(request.DRECodigo, request.UECodigo, request.TurmaCodigo, request.AlunoCodigo, Paginacao), request.AlunoCodigo);
         }
 
-        private PaginacaoResultadoDto<ComunicadoAlunoReduzidoDto> MapearParaDto(PaginacaoResultadoDto<ComunicadoAlunoReduzidoDto> resultadoDto)
+        private async Task<PaginacaoResultadoDto<ComunicadoAlunoReduzidoDto>> MapearParaDtoAsync(PaginacaoResultadoDto<ComunicadoAlunoReduzidoDto> resultadoDto, string alunoCodigo)
         {
             return new PaginacaoResultadoDto<ComunicadoAlunoReduzidoDto>()
             {
                 TotalPaginas = resultadoDto.TotalPaginas,
                 TotalRegistros = resultadoDto.TotalRegistros,
-                Items = MapearComunicados(resultadoDto.Items)
+                Items = await MapearComunicados(resultadoDto.Items, alunoCodigo)
             };
         }
 
-        private IEnumerable<ComunicadoAlunoReduzidoDto> MapearComunicados(IEnumerable<ComunicadoAlunoReduzidoDto> comunicados)
+        private async Task<IEnumerable<ComunicadoAlunoReduzidoDto>> MapearComunicados(IEnumerable<ComunicadoAlunoReduzidoDto> comunicados, string alunoCodigo)
         {
             var listaComunicados = new List<ComunicadoAlunoReduzidoDto>();
+            if (comunicados.Count() == 0)
+                return listaComunicados;
+
+            var obterComunicados = await mediator.Send(new ObterSituacaoComunicadosEscolaAquiQuery(alunoCodigo, comunicados.Select(c => c.ComunicadoId).ToArray())); ;
 
             foreach (var comunicado in comunicados)
             {
@@ -47,8 +54,8 @@ namespace SME.SGP.Aplicacao.Queries.Evento.ObterDataPossuiEventoLiberacaoExcepci
                     Titulo = comunicado.Titulo,
                     Categoria = comunicado.Categoria,
                     CategoriaNome = comunicado.Categoria.Name(),
-                    StatusLeitura = "Não Lida"
-                }); ;
+                    StatusLeitura = obterComunicados.FirstOrDefault(c => c.NotificacaoId == comunicado.ComunicadoId).Situacao
+                });
             }
 
             return listaComunicados;
