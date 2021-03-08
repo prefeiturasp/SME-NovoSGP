@@ -14,7 +14,10 @@ namespace SME.SGP.Dominio.Interfaces
         Task<long> ObterIdPorAnoLetivoEModalidadeAsync(int anoLetivo, ModalidadeTipoCalendario modalidade, int semestre = 0);
 
         Task<IEnumerable<TipoCalendario>> ListarPorAnoLetivo(int anoLetivo);
+
         Task<IEnumerable<TipoCalendario>> ListarPorAnoLetivoEModalidades(int anoLetivo, int[] modalidades);
+
+        Task<IEnumerable<TipoCalendarioBuscaDto>> ListarPorAnosLetivoEModalidades(int[] anosLetivo, int[] modalidades);
 
         Task<IEnumerable<TipoCalendario>> BuscarPorAnoLetivo(int anoLetivo);
 
