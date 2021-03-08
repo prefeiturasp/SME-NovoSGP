@@ -117,5 +117,11 @@ namespace SME.SGP.Api.Controllers
             return Ok(await relatorioUseCase.Executar(filtro));
         }
 
+
+        [HttpPost("devolutivas")]
+        public async Task<IActionResult> Devolutivas([FromBody] FiltroRelatorioDevolutivas filtro, [FromServices] IRelatorioDevolutivasUseCase relatorioUseCase)
+        {
+            return Ok(await relatorioUseCase.Executar(filtro));
+        }
     }
 }
