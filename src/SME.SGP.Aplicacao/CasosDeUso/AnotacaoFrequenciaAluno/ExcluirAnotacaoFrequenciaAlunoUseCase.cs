@@ -19,16 +19,17 @@ namespace SME.SGP.Aplicacao
             var anotacao = await ObterAnotacao(anotacaoId);
 
             var aula = await mediator.Send(new ObterAulaPorIdQuery(anotacao.AulaId));
-            await ValidarAtribuicaoUsuario(long.Parse(aula.DisciplinaId), aula.TurmaId, aula.DataAula);
+            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-            await mediator.Send(new ExcluirAnotacaoFrequenciaAlunoCommand(anotacao));;
+            if (!usuario.EhProfessorCj())
+                await ValidarAtribuicaoUsuario(long.Parse(aula.DisciplinaId), aula.TurmaId, aula.DataAula, usuario);
+
+            await mediator.Send(new ExcluirAnotacaoFrequenciaAlunoCommand(anotacao)); ;
             return true;
         }
 
-        private async Task ValidarAtribuicaoUsuario(long componenteCurricularId, string turmaId, DateTime dataAula)
+        private async Task ValidarAtribuicaoUsuario(long componenteCurricularId, string turmaId, DateTime dataAula, Usuario usuarioLogado)
         {
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
-
             var usuarioPossuiAtribuicaoNaTurmaNaData = await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(componenteCurricularId, turmaId, dataAula, usuarioLogado));
             if (!usuarioPossuiAtribuicaoNaTurmaNaData)
                 throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, componente e data.");
