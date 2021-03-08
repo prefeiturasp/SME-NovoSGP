@@ -32,17 +32,17 @@ namespace SME.SGP.Aplicacao
             {
                 var professoresRf = professores.Select(x => x.ProfessorRf).ToList();
                 var usuarios = await mediator.Send(new ObterUsuariosPorCodigosRfQuery(professoresRf));
-                if (!usuarios?.Any() ?? true)
-                    throw new NegocioException("Os usuários dos professores da turma não foram encontrados.");
-
-                return professores
-                    .Select(x => new UsuarioNotificarDiarioBordoObservacaoDto
-                    {
-                        Nome = $"{x.ProfessorNome} ({x.ProfessorRf})",
-                        PodeRemover = false,
-                        UsuarioId = usuarios.FirstOrDefault(y => y.CodigoRf == x.ProfessorRf).Id
-                    })
-                    .ToList();
+                if (usuarios != null && usuarios.Any())
+                {
+                    return professores
+                        .Select(x => new UsuarioNotificarDiarioBordoObservacaoDto
+                        {
+                            Nome = $"{x.ProfessorNome} ({x.ProfessorRf})",
+                            PodeRemover = false,
+                            UsuarioId = usuarios.FirstOrDefault(y => y.CodigoRf == x.ProfessorRf).Id
+                        })
+                        .ToList();
+                }
             }
 
             return default;
