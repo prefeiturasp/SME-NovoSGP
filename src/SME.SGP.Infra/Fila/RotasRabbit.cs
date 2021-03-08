@@ -73,5 +73,12 @@
 
         public static string EncerrarPlanoAEEEstudantesInativos => "plano.aee.encerrar.inativos";
         public static string GerarPendenciaValidadePlanoAEE => "plano.aee.pendencia.validade";
+
+        public static string NotificarPlanoAEEExpirado => "plano.aee.notificar.expirados";
+
+        public static string NotificarPlanoAEEEmAberto => "plano.aee.notificar.emaberto";
+        public static string NotificarPlanoAEEReestruturado => "plano.aee.notificar.reestruturado";
+        public static string NotificarCriacaoPlanoAEE => "plano.aee.notificar.criacao";
+        public static string NotificarPlanoAEEEncerrado => "plano.aee.notificar.encerramento";
     }
 }

@@ -6,6 +6,7 @@ import { Loader } from '~/componentes';
 import AusenciasEstudante from '~/componentes-sgp/ListaFrequenciaPorBimestre/ausenciasEstudante';
 import BtnExpandirAusenciaEstudante from '~/componentes-sgp/ListaFrequenciaPorBimestre/btnExpandirAusenciaEstudante';
 import ModalAnotacoes from '~/componentes-sgp/ListaFrequenciaPorBimestre/modalAnotacoes';
+import NomeEstudanteLista from '~/componentes-sgp/NomeEstudanteLista/nomeEstudanteLista';
 import Ordenacao from '~/componentes-sgp/Ordenacao/ordenacao';
 import { Base } from '~/componentes/colors';
 import { setExpandirLinhaFrequenciaAluno } from '~/redux/modulos/acompanhamentoFrequencia/actions';
@@ -178,7 +179,10 @@ const ListaAlunos = props => {
                                   : `solid 1px ${Base.CinzaDesabilitado}`,
                               }}
                             >
-                              {data.nome}
+                              <NomeEstudanteLista
+                                nome={data?.nome}
+                                exibirSinalizacao={data?.ehAtendidoAEE}
+                              />
                             </td>
                             <td
                               className="col-valor-linha-dois"

@@ -9,8 +9,10 @@ import {
   setModoEdicaoGeral,
   setModoEdicaoGeralNotaFinal,
 } from '~/redux/modulos/notasConceitos/actions';
+import NomeEstudanteLista from '../NomeEstudanteLista/nomeEstudanteLista';
 
 import Ordenacao from '../Ordenacao/ordenacao';
+import SinalizacaoAEE from '../SinalizacaoAEE/sinalizacaoAEE';
 import {
   CaixaMarcadores,
   InfoMarcador,
@@ -249,23 +251,20 @@ const Avaliacao = props => {
                             {aluno.numeroChamada}
                           </td>
                           <td className="sticky-col col-nome-aluno">
-                            {aluno.marcador ? (
-                              <>
-                                <Tooltip
-                                  title={aluno.marcador.descricao}
-                                  placement="top"
-                                >
-                                  <InfoMarcador className="fas fa-circle" />
-                                </Tooltip>
-                                <div style={{ marginLeft: '30px' }}>
-                                  {aluno.nome}
-                                </div>
-                              </>
-                            ) : (
-                              <div style={{ marginLeft: '30px' }}>
-                                {aluno.nome}
-                              </div>
+                            {aluno.marcador && (
+                              <Tooltip
+                                title={aluno.marcador.descricao}
+                                placement="top"
+                              >
+                                <InfoMarcador className="fas fa-circle" />
+                              </Tooltip>
                             )}
+                            <div style={{ marginLeft: '30px' }}>
+                              <NomeEstudanteLista
+                                nome={aluno?.nome}
+                                exibirSinalizacao={aluno?.ehAtendidoAEE}
+                              />
+                            </div>
                           </td>
                           {aluno.notasAvaliacoes.length
                             ? aluno.notasAvaliacoes.map(nota => {

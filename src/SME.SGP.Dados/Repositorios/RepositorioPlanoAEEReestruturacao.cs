@@ -41,5 +41,30 @@ namespace SME.SGP.Dados.Repositorios
 
             return (await database.Conexao.QueryAsync<int>(query, new { versaoId, reestruturacaoId })).Any();
         }
+
+        public async Task<PlanoAEEReestruturacao> ObterCompletoPorId(long reestruturacaoId)
+        {
+            var query = @"select par.*, pav.*, pa.*, t.*, ue.*, dre.*
+                         from plano_aee_reestruturacao par 
+                        inner join plano_aee_versao pav on par.plano_aee_versao_id = pav.id 
+                        inner join plano_aee pa on pav.plano_aee_id = pa.id
+                        inner join turma t on t.id = pa.turma_id 
+                        inner join ue on ue.id = t.ue_id 
+                        inner join dre on dre.id = ue.dre_id 
+                        where par.id = @reestruturacaoId";
+
+            return (await database.Conexao.QueryAsync<PlanoAEEReestruturacao, PlanoAEEVersao, PlanoAEE, Turma, Ue, Dre, PlanoAEEReestruturacao>(query,
+                (reestruturacao, versao, plano, turma, ue, dre) =>
+                {
+                    ue.Dre = dre;
+                    turma.Ue = ue;
+                    plano.Turma = turma;
+                    versao.PlanoAEE = plano;
+                    reestruturacao.PlanoAEEVersao = versao;
+
+                    return reestruturacao;
+                }, new { reestruturacaoId })).FirstOrDefault();
+
+        }
     }
 }

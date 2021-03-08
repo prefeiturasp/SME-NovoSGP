@@ -8,3 +8,5 @@ export { default as Calendario } from './Calendario';
 export { default as FiltroHelper } from './filtro/helper';
 export { default as AlertaPermiteSomenteTurmaInfantil } from './AlertaPermiteSomenteTurmaInfantil/alertaPermiteSomenteTurmaInfantil';
 export { default as Paginacao } from './Paginacao/paginacao';
+export { default as SinalizacaoAEE } from './SinalizacaoAEE/sinalizacaoAEE';
+export { default as NomeEstudanteLista } from './NomeEstudanteLista/nomeEstudanteLista';
