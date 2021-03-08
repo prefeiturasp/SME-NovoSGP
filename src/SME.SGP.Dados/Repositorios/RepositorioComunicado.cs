@@ -514,7 +514,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             if (contador)
             {
-                sql.AppendLine(" select count(n.id) ");
+                sql.AppendLine(" select count(n.ComunicadoId) ");
             }
             else
             {
@@ -524,7 +524,7 @@ namespace SME.SGP.Dados.Repositorios
             sql.AppendLine(@" from
 	                    ( (
 	                    select
-                            comunicado.id,
+                            comunicado.id as ComunicadoId,
 		                    data_envio as DataEnvio,
 		                    tipo_comunicado as Categoria,
 		                    titulo,
