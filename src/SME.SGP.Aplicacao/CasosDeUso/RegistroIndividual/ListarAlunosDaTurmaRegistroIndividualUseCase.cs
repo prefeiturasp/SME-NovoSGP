@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
 
             var alunosDadosBasicosDTO = await ObterAlunoTemAtendimentoPlanoAEE(turma, alunosParaRegistroIndividual);
 
-            if (alunosDaTurmaComPendencia.Any())
+            if (parametroDiasSemRegistroIndividual > 0 && alunosDaTurmaComPendencia.Any())
             {
                 var alunosComPendencia = alunosParaRegistroIndividual.Where(a => alunosDaTurmaComPendencia.Contains(long.Parse(a.CodigoEOL))).ToList();
                 foreach (var alunoDaTurma in alunosComPendencia)
@@ -58,10 +58,7 @@ namespace SME.SGP.Aplicacao
         private async Task<int> ObterDiasDeAusenciaParaPendenciaRegistroIndividualAsync()
         {
             var parametroDiasSemRegistroIndividual = await mediator.Send(new ObterParametroSistemaPorTipoQuery(TipoParametroSistema.PendenciaPorAusenciaDeRegistroIndividual));
-            if (string.IsNullOrEmpty(parametroDiasSemRegistroIndividual))
-                throw new NegocioException($"Não foi possível obter o parâmetro {TipoParametroSistema.PendenciaPorAusenciaDeRegistroIndividual.Name()} ");
-
-            return int.Parse(parametroDiasSemRegistroIndividual);
+            return parametroDiasSemRegistroIndividual != null ? int.Parse(parametroDiasSemRegistroIndividual) : 0;
         }
     }
 
