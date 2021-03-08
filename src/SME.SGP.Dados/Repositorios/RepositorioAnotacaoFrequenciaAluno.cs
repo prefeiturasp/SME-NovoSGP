@@ -172,7 +172,7 @@ namespace SME.SGP.Dados.Repositorios
                             select 
                                 an.id,
                                 case when ma.descricao is not null then ma.descricao else an.anotacao end as Motivo, 
-                                a.data_aula DataAnotacao,
+                                a.data_aula DataAusencia,
                                 an.criado_por as RegistradoPor
                             from anotacao_frequencia_aluno an
                             left join motivo_ausencia ma on an.motivo_ausencia_id = ma.id  
@@ -191,7 +191,7 @@ namespace SME.SGP.Dados.Repositorios
             sql.AppendLine(@")
                             union
                             (
-                            select 0 as id, '' as Motivo, a.data_aula as DataAnotacao, '' as RegistradoPor 
+                            select 0 as id, '' as Motivo, a.data_aula as DataAusencia, '' as RegistradoPor 
                             from registro_ausencia_aluno raa 
                             inner join registro_frequencia rf on rf.id = raa.registro_frequencia_id 
                             inner join aula a on a.id = rf.aula_id 
@@ -213,7 +213,7 @@ namespace SME.SGP.Dados.Repositorios
                             ) n
                             ");
             if (!contador)
-                sql.AppendLine(" order by n.DataAnotacao desc ");
+                sql.AppendLine(" order by n.DataAusencia desc ");
 
 
             if (paginacao.QuantidadeRegistros > 0 && !contador)

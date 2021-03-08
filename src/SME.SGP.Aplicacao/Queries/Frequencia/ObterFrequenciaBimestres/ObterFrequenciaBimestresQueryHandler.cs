@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<FrequenciaBimestreAlunoDto>> Handle(ObterFrequenciaBimestresQuery request, CancellationToken cancellationToken)
         {
-            var frequenciaAluno = await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterFrequenciaBimestresAsync(request.CodigoAluno, 0, request.CodigoTurma, TipoFrequenciaAluno.Geral);
+            var frequenciaAluno = await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterFrequenciaBimestresAsync(request.CodigoAluno, request.Bimestre, request.CodigoTurma, TipoFrequenciaAluno.Geral);
 
             var frequenciaBimestreAlunoDto = new List<FrequenciaBimestreAlunoDto>();
 
