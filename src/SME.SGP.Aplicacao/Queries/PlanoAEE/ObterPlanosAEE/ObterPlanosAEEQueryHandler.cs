@@ -62,7 +62,7 @@ namespace SME.SGP.Aplicacao
                         EhAtendidoAEE = (planoAEE.Situacao != SituacaoPlanoAEE.Encerrado && planoAEE.Situacao != SituacaoPlanoAEE.EncerradoAutomaticamento),
                         CriadoEm = planoAEE.CriadoEm,
                         Versao = $"v{planoAEE.Versao} ({planoAEE.DataVersao:dd/MM/yyyy})"
-                    }); ;
+                    });
 
                 }
                 catch (Exception e)
