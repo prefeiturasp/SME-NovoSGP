@@ -1286,7 +1286,7 @@ rotas.set(RotasDto.ACOMPANHAMENTO_APRENDIZAGEM, {
   component: AcompanhamentoAprendizagem,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  temPermissionamento: true,
+  temPermissionamento: false,
   chavePermissao: RotasDto.ACOMPANHAMENTO_APRENDIZAGEM,
 });
 
