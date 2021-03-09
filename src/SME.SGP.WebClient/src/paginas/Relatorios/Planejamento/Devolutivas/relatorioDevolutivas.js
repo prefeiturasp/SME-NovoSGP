@@ -87,10 +87,12 @@ const RelatorioDevolutivas = () => {
   const gerar = async () => {
     setExibirLoaderGeral(true);
     const retorno = await ServicoRelatorioDevolutivas.gerar({
+      ano: anoLetivo,
+      dreId,
       ueId,
       bimestres,
       turmas: turmaId,
-      exibirConteudoDevolutiva,
+      exibirDetalhes: exibirConteudoDevolutiva,
     })
       .catch(e => erros(e))
       .finally(setExibirLoaderGeral(false));
@@ -371,7 +373,6 @@ const RelatorioDevolutivas = () => {
       bi.push({ desc: '4º', valor: 4 });
     }
 
-    bi.push({ desc: 'Final', valor: 0 });
     bi.push({ desc: 'Todos', valor: -99 });
     setListaBimestre(bi);
   }, [modalidadeId]);
