@@ -63,6 +63,11 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.TipoCalendario
             mediator.Setup(a => a.Send(It.IsAny<ObterTipoCalendarioPorBuscaQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(mockRetorno);
 
+            var usuario = new Usuario();
+            usuario.DefinirPerfis(new List<PrioridadePerfil>());
+            mediator.Setup(x => x.Send(It.IsAny<ObterUsuarioLogadoQuery>(), It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult(usuario));
+           
             //Act
             var retorno = await buscarTiposCalendarioPorDescricaoUseCaseTeste.Executar("2020");
 
