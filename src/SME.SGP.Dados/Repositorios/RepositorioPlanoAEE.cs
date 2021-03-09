@@ -123,6 +123,23 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<PlanoAEEResumoDto>(query, new { codigoEstudante });
         }
 
+        public async Task<PlanoAEEResumoDto> ObterPlanoPorEstudanteEAno(string codigoEstudante, int ano)
+        {
+            var query = @"select distinct   pa.Id,
+	                                        pa.aluno_numero as numero,
+	                                        pa.aluno_nome as nome,
+	                                        tu.nome as turma,
+	                                        pa.situacao 
+                                        from plano_aee pa
+                                        inner join turma tu on tu.id = pa.turma_id 
+                                        where pa.aluno_codigo = @codigoEstudante 
+                                        and pa.situacao not in (3,7)
+                                        and EXTRACT(ISOYEAR from pa.criado_em) = @ano 
+                                        limit 1";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<PlanoAEEResumoDto>(query, new { codigoEstudante, ano });
+        }
+
         public async Task<PlanoAEE> ObterPlanoComTurmaPorId(long planoId)
         {
             var query = @" select pa.*, t.*
@@ -140,7 +157,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<PlanoAEE>> ObterPlanosAtivos()
         {
-            var query = @"select * from plano_aee where not excluido and situacao not in (2,3)";
+            var query = @"select * from plano_aee where not excluido and situacao not in (3,7)";
 
             return await database.Conexao.QueryAsync<PlanoAEE>(query);
         }
@@ -154,20 +171,108 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.ExecuteAsync(query, new { versaoId, situacao });
         }
 
-        public async Task<IEnumerable<PlanoAEE>> ObterPorDataFinalVigencia(DateTime dataFim)
+        public async Task<IEnumerable<PlanoAEE>> ObterPorDataFinalVigencia(DateTime dataFim, bool desconsiderarPendencias = true, bool desconsiderarNotificados = false, NotificacaoPlanoAEETipo tipo = NotificacaoPlanoAEETipo.PlanoCriado)
         {
-            var query = @"select pa.* 
+            var joinPendecias = desconsiderarPendencias ? "left join pendencia_plano_aee ppa on ppa.plano_aee_id = pa.id" : "";
+            var joinNotificacoes = desconsiderarNotificados ? "left join notificacao_plano_aee npa on npa.plano_aee_id = pa.id and npa.tipo = @tipo" : "";
+
+            var condicaoPendencias = desconsiderarPendencias ? "and ppa.id is null" : "";
+            var condicaoNotificacoes = desconsiderarNotificados ? "and npa.id is null" : "";
+
+            var query = $@"select pa.* 
                           from plano_aee pa
                          inner join plano_aee_versao pav on pav.id in (select max(id) from plano_aee_versao where plano_aee_id = pa.id)
                          inner join plano_aee_questao paq on paq.plano_aee_versao_id = pav.id
                          inner join questao q on q.id = paq.questao_id and q.ordem = 1 and q.tipo = 10
                          inner join plano_aee_resposta par on par.plano_questao_id = paq.id
-                          left join pendencia_plano_aee ppa on ppa.plano_aee_id = pa.id
+                          {joinPendecias}
+                          {joinNotificacoes}
                          where par.periodo_fim <= @dataFim
                            and pa.situacao in (1,2)
-                           and ppa.id is null";
+                           {condicaoPendencias}
+                           {condicaoNotificacoes}";
 
-            return await database.Conexao.QueryAsync<PlanoAEE>(query, new { dataFim });
+            return await database.Conexao.QueryAsync<PlanoAEE>(query, new { dataFim, tipo });
+        }
+
+        public async Task<IEnumerable<PlanoAEEReduzidoDto>> ObterPlanosAEEAtivosComTurmaEVigencia()
+        {
+            var query = @"select
+	                    pa.id as Id,
+	                    pa.aluno_nome as EstudanteNome,
+	                    pa.aluno_codigo as EstudanteCodigo,
+	                    t.nome as TurmaNome,
+	                    dre.dre_id as DRECodigo,
+                        dre.abreviacao as DREAbreviacao,
+	                    t.modalidade_codigo as TurmaModalidade,
+	                    ue.nome as UENome,
+	                    ue.tipo_escola as UETipo,
+	                    pa.situacao as Situacao,
+	                    pav.numero as VersaoNumero,
+	                    par.periodo_inicio as VigenciaInicio,
+                        par.periodo_fim as VigenciaFim
+                    from
+	                    plano_aee pa
+                    inner join turma t on
+	                    pa.turma_id = t.id
+                    inner join ue on
+	                    t.ue_id = ue.id
+                    inner join dre on 
+	                    dre.id = ue.dre_id 
+                    inner join plano_aee_versao pav on
+	                    pav.id in (select max(id) from plano_aee_versao where plano_aee_id = pa.id)
+                    inner join plano_aee_questao paq on
+	                    pav.id = paq.plano_aee_versao_id
+                    inner join plano_aee_resposta par on
+	                    paq.id = par.plano_questao_id
+                    where
+	                    par.periodo_inicio is not null
+	                    and pa.situacao not in (3,
+	                    7)
+                    order by dre.dre_id, ue.nome, t.nome ";
+
+            return await database.Conexao.QueryAsync<PlanoAEEReduzidoDto>(query);
+        }
+
+        public async Task<PlanoAEE> ObterPorReestruturacaoId(long reestruturacaoId)
+        {
+            var query = @"select pa.*, t.*, ue.*, dre.*
+                         from plano_aee pa
+                        inner join plano_aee_versao pav on pav.plano_aee_id = pa.id 
+                        inner join plano_aee_reestruturacao par on par.plano_aee_versao_id = pav.id
+                        inner join turma t on t.id = pa.turma_id 
+                        inner join ue on ue.id = t.ue_id 
+                        inner join dre on dre.id = ue.dre_id 
+                        where par.id = @reestruturacaoId";
+
+            return (await database.Conexao.QueryAsync<PlanoAEE, Turma, Ue, Dre, PlanoAEE>(query,
+                (planoAEE, turma, ue, dre) =>
+                {
+                    ue.Dre = dre;
+                    turma.Ue = ue;
+                    planoAEE.Turma = turma;
+
+                    return planoAEE;
+                }, new { reestruturacaoId })).FirstOrDefault();
+        }
+
+        public async Task<PlanoAEE> ObterPlanoComTurmaUeDrePorId(long planoId)
+        {
+            var query = @" select pa.*, t.*, ue.*, dre.*
+                            from plano_aee pa
+                           inner join turma t on t.id = pa.turma_id
+                           inner join ue on ue.id = t.ue_id
+                           inner join dre on dre.id = ue.dre_id
+                           where pa.id = @planoId";
+
+            return (await database.Conexao.QueryAsync<PlanoAEE, Turma, Ue, Dre, PlanoAEE>(query,
+                (planoAEEDto, turma, ue, dre) =>
+                {
+                    ue.Dre = dre;
+                    turma.Ue = ue;
+                    planoAEEDto.Turma = turma;
+                    return planoAEEDto;
+                }, new { planoId })).FirstOrDefault();
         }
     }
 }

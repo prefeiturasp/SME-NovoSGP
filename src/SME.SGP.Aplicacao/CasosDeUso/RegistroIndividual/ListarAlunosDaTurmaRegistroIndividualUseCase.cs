@@ -26,9 +26,11 @@ namespace SME.SGP.Aplicacao
             //TODO: Modificar para mediatr
             var parametroDiasSemRegistroIndividual = await ObterDiasDeAusenciaParaPendenciaRegistroIndividualAsync();
 
-            var alunosDaTurmaComPendencia = (await mediator.Send(new ListarAlunosCodigosPorTurmaComponenteComPendenciaQuery(turma.Id, filtro.ComponenteCurricularId))).ToList() ;            
+            var alunosDaTurmaComPendencia = (await mediator.Send(new ListarAlunosCodigosPorTurmaComponenteComPendenciaQuery(turma.Id, filtro.ComponenteCurricularId))).ToList();
 
-            if (alunosDaTurmaComPendencia.Any())
+            var alunosDadosBasicosDTO = await ObterAlunoTemAtendimentoPlanoAEE(turma, alunosParaRegistroIndividual);
+
+            if (parametroDiasSemRegistroIndividual > 0 && alunosDaTurmaComPendencia.Any())
             {
                 var alunosComPendencia = alunosParaRegistroIndividual.Where(a => alunosDaTurmaComPendencia.Contains(long.Parse(a.CodigoEOL))).ToList();
                 foreach (var alunoDaTurma in alunosComPendencia)
@@ -38,15 +40,25 @@ namespace SME.SGP.Aplicacao
                 }
             }
 
-            return alunosParaRegistroIndividual;
+            return alunosDadosBasicosDTO;
         }
+
+        private async Task<List<AlunoDadosBasicosDto>> ObterAlunoTemAtendimentoPlanoAEE(Turma turma, IEnumerable<AlunoDadosBasicosDto> alunosParaRegistroIndividual)
+        {
+            var alunosDadosBasicosDTO = new List<AlunoDadosBasicosDto>();
+            foreach (var aluno in alunosParaRegistroIndividual)
+            {
+                aluno.EhAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoEOL, turma.AnoLetivo));
+                alunosDadosBasicosDTO.Add(aluno);
+            }
+
+            return alunosDadosBasicosDTO;
+        }
+
         private async Task<int> ObterDiasDeAusenciaParaPendenciaRegistroIndividualAsync()
         {
             var parametroDiasSemRegistroIndividual = await mediator.Send(new ObterParametroSistemaPorTipoQuery(TipoParametroSistema.PendenciaPorAusenciaDeRegistroIndividual));
-            if (string.IsNullOrEmpty(parametroDiasSemRegistroIndividual))
-                throw new NegocioException($"Não foi possível obter o parâmetro {TipoParametroSistema.PendenciaPorAusenciaDeRegistroIndividual.Name()} ");
-
-            return int.Parse(parametroDiasSemRegistroIndividual);
+            return parametroDiasSemRegistroIndividual != null ? int.Parse(parametroDiasSemRegistroIndividual) : 0;
         }
     }
 

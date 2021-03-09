@@ -2,6 +2,7 @@ import { Avatar, Card } from 'antd';
 import * as moment from 'moment';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { SinalizacaoAEE } from '~/componentes-sgp';
 import Button from '~/componentes/button';
 import { Base, Colors } from '~/componentes/colors';
 import { Container, DadosAluno, FrequenciaGlobal } from './styles';
@@ -109,6 +110,9 @@ const DetalhesAluno = props => {
                       : ''
                   })`}</span>
                 </p>
+              </div>
+              <div>
+                <SinalizacaoAEE exibirSinalizacao={dados?.ehAtendidoAEE} />
               </div>
             </div>
           ) : (

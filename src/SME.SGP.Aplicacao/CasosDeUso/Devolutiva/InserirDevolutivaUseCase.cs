@@ -59,8 +59,8 @@ namespace SME.SGP.Aplicacao
 
         private async Task<int> ValidarBimestreDiarios(Turma turma, DateTime inicioEfetivo, DateTime fimEfetivo)
         {
-            var bimestreInicio = await mediator.Send(new ObterBimestreAtualQuery(turma.CodigoTurma, inicioEfetivo, turma));
-            var bimestreFim = await mediator.Send(new ObterBimestreAtualQuery(turma.CodigoTurma, fimEfetivo, turma));
+            var bimestreInicio = await mediator.Send(new ObterBimestreAtualQuery(inicioEfetivo, turma));
+            var bimestreFim = await mediator.Send(new ObterBimestreAtualQuery(fimEfetivo, turma));
 
             if (bimestreInicio != bimestreFim)
             {

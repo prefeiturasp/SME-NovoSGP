@@ -6,7 +6,7 @@ import {
   Loader,
   SelectComponent,
 } from '~/componentes';
-import { Cabecalho } from '~/componentes-sgp';
+import { Cabecalho, NomeEstudanteLista } from '~/componentes-sgp';
 import Button from '~/componentes/button';
 import Card from '~/componentes/card';
 import { Colors } from '~/componentes/colors';
@@ -83,6 +83,12 @@ const EncaminhamentoAEELista = () => {
     {
       title: 'Nome',
       dataIndex: 'nome',
+      render: (_, record) => (
+        <NomeEstudanteLista
+          nome={record?.nome}
+          exibirSinalizacao={record?.ehAtendidoAEE}
+        />
+      ),
     },
     {
       title: 'Turma',
