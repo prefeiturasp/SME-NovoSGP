@@ -91,5 +91,6 @@ namespace SME.SGP.Dominio.Interfaces
 
         bool VerificarAulaPorWorkflowId(long workflowId);
 
+        Task<IEnumerable<Aula>> ObterAulasExcluidasComDiarioDeBordoAtivos(string codigoTurma, long tipoCalendarioId);
     }
 }
