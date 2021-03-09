@@ -622,7 +622,7 @@
         [PermissaoMenu(Menu = "AEE", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = true, Url = "/relatorios/aee/registro-itinerancia", EhSubMenu = true, OrdemSubMenu = 3, SubMenu = "Registro de itinerância")]
         RI_A = 209,
 
-        [PermissaoMenu(Menu = "Relatório de Devolutivas", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhConsulta = true, Url = "/relatorios/devolutivas")]
+        [PermissaoMenu(Menu = "Planejamento", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhConsulta = true, Url = "/relatorios/planejamento/devolutivas", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Devolutivas")]
         RD_C = 214,
     }
 }
