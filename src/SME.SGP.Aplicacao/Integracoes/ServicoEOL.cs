@@ -19,6 +19,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 {
     public class ServicoEOL : IServicoEol
     {
+        private const string NOME_CHAVE_API_EOL = "x-api-eol-key";
         private readonly IRepositorioCache cache;
         private readonly HttpClient httpClient;
         private readonly IServicoLog servicoLog;
@@ -752,8 +753,6 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         public async Task<bool> PodePersistirTurmaDisciplina(string professorRf, string codigoTurma, string disciplinaId, DateTime data)
         {
-            
-
             var dataString = data.ToString("s");
 
             var resposta = await httpClient.GetAsync($"professores/{professorRf}/turmas/{codigoTurma}/disciplinas/{disciplinaId}/atribuicao/verificar/data?dataConsulta={dataString}");
@@ -766,11 +765,19 @@ namespace SME.SGP.Aplicacao.Integracoes
         }
 
         public async Task<IEnumerable<PodePersistirNaDataRetornoEolDto>> PodePersistirTurmaNasDatas(string professorRf, string codigoTurma, DateTime[] datas, long codigoDisciplina)
-        {
-            
+        {            
             var datasParaEnvio = JsonConvert.SerializeObject(datas);
 
-            var resposta = await httpClient.PostAsync($"professores/{professorRf}/turmas/{codigoTurma}/disciplinas/{codigoDisciplina}/atribuicao/recorrencia/verificar/datas", new StringContent(datasParaEnvio, Encoding.UTF8, "application/json"));
+            var requestMessage = new HttpRequestMessage
+            {
+                Method = HttpMethod.Post,
+                RequestUri = new Uri(string.Concat(httpClient.BaseAddress, $"professores/{professorRf}/turmas/{codigoTurma}/disciplinas/{codigoDisciplina}/atribuicao/recorrencia/verificar/datas")),
+                Content = new StringContent(datasParaEnvio, Encoding.UTF8, "application/json-patch+json")                
+            };
+
+            requestMessage.Headers.Add(NOME_CHAVE_API_EOL, httpClient.DefaultRequestHeaders.GetValues(NOME_CHAVE_API_EOL).First());
+
+            var resposta = await httpClient.SendAsync(requestMessage);
 
             if (resposta.IsSuccessStatusCode)
             {
@@ -779,8 +786,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             }
             else
             {
-                string erro = $"Não foi possível validar datas para a atribuição do professor no EOL - HttpCode {(int)resposta.StatusCode} - {datasParaEnvio}";
-
+                string erro = $"Não foi possível validar datas para a atribuição do professor no EOL - Request: {requestMessage.Method.Method} Allow: {resposta.Content.Headers.Allow} HttpCode {(int)resposta.StatusCode} - {datasParaEnvio}";
                 
                 SentrySdk.AddBreadcrumb(erro);
                 throw new NegocioException(erro);
