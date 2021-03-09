@@ -51,7 +51,7 @@ namespace SME.SGP.Aplicacao
                     Id = frequencia.Id,
                     DataAusencia = frequencia.DataAusencia,
                     Motivo = frequencia.RegistradoPor.Length > 0 ? UtilRegex.RemoverTagsHtml(frequencia.Motivo) : "Não possui Anotação/Motivo",
-                    RegistradoPor = frequencia.RegistradoPor.Length > 0 ? frequencia.RegistradoPor : "Não possui Anotação/Motivo"
+                    RegistradoPor = frequencia.RegistradoPor.Length > 0 ? $"{frequencia.RegistradoPor} ({frequencia.RegistradoRF})" : "Não possui Anotação/Motivo"
                 });
             }
 
