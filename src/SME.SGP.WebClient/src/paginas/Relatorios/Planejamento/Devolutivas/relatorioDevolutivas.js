@@ -87,12 +87,9 @@ const RelatorioDevolutivas = () => {
   const gerar = async () => {
     setExibirLoaderGeral(true);
     const retorno = await ServicoRelatorioDevolutivas.gerar({
-      dreId,
       ueId,
-      anoLetivo,
       bimestres,
-      ano: anoLetivo,
-      turma: turmaId,
+      turmas: turmaId,
       exibirConteudoDevolutiva,
     })
       .catch(e => erros(e))
