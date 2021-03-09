@@ -70,7 +70,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<int> ObterAulasPrevistasAsync(Turma turma, long componenteCurricularId, long tipoCalendarioId, int? bimestre = null)
             => turma.ModalidadeCodigo != Modalidade.Infantil
-                ? await mediator.Send(new ObterQuantidadeAulasPrevistasPorTurmaEBimestreQuery(turma.CodigoTurma, tipoCalendarioId, componenteCurricularId, bimestre))
+                ? await mediator.Send(new ObterQuantidadeAulasPrevistasPorTurmaEBimestreEComponenteCurricularQuery(turma.CodigoTurma, tipoCalendarioId, componenteCurricularId, bimestre))
                 : default;
 
         private async Task<IEnumerable<AlunoFrequenciaDto>> DefinirFrequenciaAlunoListagemAsync(IEnumerable<AlunoPorTurmaResposta> alunos, Turma turma, IEnumerable<FrequenciaAluno> frequenciaAlunosRegistrada, PeriodoEscolar periodoEscolar)

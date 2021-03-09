@@ -218,7 +218,7 @@ function TabelaRetratil({
 
 TabelaRetratil.propTypes = {
   alunos: t.oneOfType([t.array]),
-  children: t.oneOfType([t.element, t.func]),
+  children: t.oneOfType([t.any]),
   onChangeAlunoSelecionado: t.func,
   permiteOnChangeAluno: t.func,
   codigoAlunoSelecionado: t.oneOfType([t.any]),
