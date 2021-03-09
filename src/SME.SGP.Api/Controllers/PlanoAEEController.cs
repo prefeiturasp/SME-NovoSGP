@@ -76,7 +76,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("salvar")]
         [ProducesResponseType(typeof(bool), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.PAEE_I, Policy = "Bearer")]
+        [Permissao(Permissao.PAEE_A, Policy = "Bearer")]
         public async Task<IActionResult> Salvar([FromBody] PlanoAEEPersistenciaDto planoAeeDto, [FromServices] ISalvarPlanoAEEUseCase usecase)
         {
             return Ok(await usecase.Executar(planoAeeDto));
