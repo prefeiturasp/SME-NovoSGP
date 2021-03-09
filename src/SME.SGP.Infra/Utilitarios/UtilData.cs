@@ -9,7 +9,14 @@ namespace SME.SGP.Infra.Utilitarios
         {
             DateTimeFormatInfo dfi = DateTimeFormatInfo.CurrentInfo;
 
-            return dfi.Calendar.GetWeekOfYear(data, dfi.CalendarWeekRule, dfi.FirstDayOfWeek);
+            DayOfWeek day = dfi.Calendar.GetDayOfWeek(data);
+            if (day >= DayOfWeek.Sunday && day <= DayOfWeek.Thursday)
+            {
+                data = data.AddDays(3);
+            }
+
+            // Return the week of our adjusted day
+            return dfi.Calendar.GetWeekOfYear(data, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday);
         }
     }
 }
