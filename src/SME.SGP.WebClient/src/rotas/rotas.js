@@ -1281,7 +1281,7 @@ rotas.set(`${RotasDto.OCORRENCIAS}/editar/:id`, {
 
 rotas.set(RotasDto.ACOMPANHAMENTO_APRENDIZAGEM, {
   breadcrumbName: 'Relatório do Acompanhamento da Aprendizagem',
-  menu: ['Relatórios'],
+  menu: ['Dashboard'],
   parent: '/',
   component: AcompanhamentoAprendizagem,
   exact: true,
