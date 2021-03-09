@@ -22,7 +22,7 @@ import BotoesAcoesAcompanhamentoAprendizagem from './DadosAcompanhamentoAprendiz
 import DadosAcompanhamentoAprendizagem from './DadosAcompanhamentoAprendizagem/dadosAcompanhamentoAprendizagem';
 import ObjectCardAcompanhamentoAprendizagem from './DadosAcompanhamentoAprendizagem/ObjectCardAcompanhamentoAprendizagem/objectCardRelatorioSemestral';
 import TabelaRetratilAcompanhamentoAprendizagem from './DadosAcompanhamentoAprendizagem/TabelaRetratilAcompanhamentoAprendizagem/tabelaRetratilAcompanhamentoAprendizagem';
-import LoaderAcompanhamentoAprendizagem from './laderAcompanhamentoAprendizagem';
+import LoaderAcompanhamentoAprendizagem from './loaderAcompanhamentoAprendizagem';
 
 const AcompanhamentoAprendizagem = () => {
   const dispatch = useDispatch();
