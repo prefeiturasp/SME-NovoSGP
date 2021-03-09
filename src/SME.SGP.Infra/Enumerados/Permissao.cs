@@ -634,4 +634,4 @@
         [PermissaoMenu(Menu = "Relatório do Acompanhamento da Aprendizagem", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = true, Url = "/relatorios/acompanhamento-aprendizagem")]
         RAA_A = 213,        
     }
-}1
+}
