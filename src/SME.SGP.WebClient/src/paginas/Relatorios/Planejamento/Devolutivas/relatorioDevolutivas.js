@@ -92,7 +92,7 @@ const RelatorioDevolutivas = () => {
       ueId,
       bimestres,
       turmas: turmaId,
-      exibirConteudoDevolutiva,
+      exibirDetalhes: exibirConteudoDevolutiva,
     })
       .catch(e => erros(e))
       .finally(setExibirLoaderGeral(false));
