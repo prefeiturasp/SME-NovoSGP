@@ -633,5 +633,8 @@
 
         [PermissaoMenu(Menu = "Relatório do Acompanhamento da Aprendizagem", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = true, Url = "/relatorios/acompanhamento-aprendizagem")]
         RAA_A = 213,        
+
+        [PermissaoMenu(Menu = "Planejamento", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhConsulta = true, Url = "/relatorios/planejamento/devolutivas", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Devolutivas")]
+        RD_C = 214,
     }
 }
