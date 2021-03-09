@@ -5,6 +5,7 @@ import Cabecalho from '~/componentes-sgp/cabecalho';
 import Alert from '~/componentes/alert';
 import Card from '~/componentes/card';
 import SelectComponent from '~/componentes/select';
+import situacaoMatriculaAluno from '~/dtos/situacaoMatriculaAluno';
 import {
   limparDadosAcompanhamentoAprendizagem,
   setAlunosAcompanhamentoAprendizagem,
@@ -41,11 +42,32 @@ const AcompanhamentoAprendizagem = () => {
     dispatch(limparDadosAcompanhamentoAprendizagem());
   }, [dispatch]);
 
+  const obterFrequenciaAluno = async codigoAluno => {
+    const retorno = await ServicoCalendarios.obterFrequenciaAluno(
+      codigoAluno,
+      turma
+    ).catch(e => erros(e));
+    if (retorno && retorno.data) {
+      return retorno.data;
+    }
+    return 0;
+  };
+
+  const onChangeAlunoSelecionado = async aluno => {
+    resetarInfomacoes();
+    const frequenciaGeralAluno = await obterFrequenciaAluno(aluno.codigoEOL);
+    const novoAluno = aluno;
+    novoAluno.frequencia = frequenciaGeralAluno;
+    dispatch(setDadosAlunoObjectCard(aluno));
+
+    dispatch(setCodigoAlunoSelecionado(aluno.codigoEOL));
+  };
+
   const obterListaAlunos = useCallback(
     async semestreConsulta => {
       if (turma) {
         dispatch(setExibirLoaderGeralAcompanhamentoAprendizagem(true));
-        // TODO Trocar endpoint!
+
         const retorno = await ServicoAcompanhamentoAprendizagem.obterListaAlunos(
           turma,
           anoLetivo,
@@ -58,6 +80,12 @@ const AcompanhamentoAprendizagem = () => {
 
         if (retorno?.data) {
           dispatch(setAlunosAcompanhamentoAprendizagem(retorno.data));
+          const primeiroEstudanteAtivo = retorno.data.find(
+            item => item.situacaoCodigo === situacaoMatriculaAluno.Ativo
+          );
+          if (primeiroEstudanteAtivo) {
+            onChangeAlunoSelecionado(primeiroEstudanteAtivo);
+          }
         } else {
           resetarInfomacoes();
           dispatch(setAlunosAcompanhamentoAprendizagem([]));
@@ -104,27 +132,6 @@ const AcompanhamentoAprendizagem = () => {
       dispatch(setAlunosAcompanhamentoAprendizagem([]));
     }
   }, [semestreSelecionado, obterListaAlunos, dispatch]);
-
-  const obterFrequenciaAluno = async codigoAluno => {
-    const retorno = await ServicoCalendarios.obterFrequenciaAluno(
-      codigoAluno,
-      turma
-    ).catch(e => erros(e));
-    if (retorno && retorno.data) {
-      return retorno.data;
-    }
-    return 0;
-  };
-
-  const onChangeAlunoSelecionado = async aluno => {
-    resetarInfomacoes();
-    const frequenciaGeralAluno = await obterFrequenciaAluno(aluno.codigoEOL);
-    const novoAluno = aluno;
-    novoAluno.frequencia = frequenciaGeralAluno;
-    dispatch(setDadosAlunoObjectCard(aluno));
-
-    dispatch(setCodigoAlunoSelecionado(aluno.codigoEOL));
-  };
 
   const onChangeSemestre = valor => {
     resetarInfomacoes();
