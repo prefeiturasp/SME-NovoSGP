@@ -86,10 +86,12 @@ const RelatorioDevolutivas = () => {
 
   const gerar = async () => {
     setExibirLoaderGeral(true);
+
+    const ue = listaUes.find(item => String(item.valor) === String(ueId));
     const retorno = await ServicoRelatorioDevolutivas.gerar({
       ano: anoLetivo,
       dreId,
-      ueId,
+      ueId: ue?.id,
       bimestres,
       turmas: turmaId,
       exibirDetalhes: exibirConteudoDevolutiva,
