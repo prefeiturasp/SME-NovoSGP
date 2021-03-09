@@ -52,14 +52,15 @@ namespace SME.SGP.Aplicacao
         {
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
             var listaCartasDto = new List<CartaIntencoesRetornoDto>();
+            var usuarioTemAtribuicao = false;
 
             foreach (var periodoEscolar in periodosEscolares.OrderBy(x => x.Bimestre))
             {
                 var carta = cartas?.FirstOrDefault(a => a.PeriodoEscolarId == periodoEscolar.Id);
 
-                var usuarioTemAtribuicao = await UsuarioTemAtribuicao(usuarioLogado, turma.CodigoTurma, componenteCurricularId, periodoEscolar);
-                var usuarioEhCp = await UsuarioEhCp(usuarioLogado);
-
+                if(!usuarioLogado.EhProfessorCj())
+                    usuarioTemAtribuicao = await UsuarioTemAtribuicao(usuarioLogado, turma.CodigoTurma, componenteCurricularId, periodoEscolar);
+              
                 listaCartasDto.Add(new CartaIntencoesRetornoDto()
                 {
                     Id = carta?.Id ?? 0,
@@ -67,7 +68,7 @@ namespace SME.SGP.Aplicacao
                     PeriodoEscolarId = periodoEscolar.Id,
                     Bimestre = periodoEscolar.Bimestre,
                     PeriodoAberto = await TurmaEmPeridoAberto(turma, periodoEscolar.Bimestre),
-                    UsuarioTemAtribuicao = usuarioTemAtribuicao || usuarioEhCp,
+                    UsuarioTemAtribuicao = usuarioTemAtribuicao || usuarioLogado.EhCP() || usuarioLogado.EhProfessorCj(),
                     Auditoria = (AuditoriaDto)carta
                 });
             }
@@ -79,16 +80,6 @@ namespace SME.SGP.Aplicacao
         {
             var validacao = await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaNoPeriodoQuery(componenteCurricularId, turmaCodigo, usuario.CodigoRf, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim));
             return validacao;
-        }
-
-        private async Task<bool> UsuarioEhCp(Usuario usuario)
-        {
-            if (usuario.Perfis == null)
-            {
-                return false;
-            }
-
-            return usuario.Perfis.Any(x => x.Tipo == TipoPerfil.UE && x.CodigoPerfil == Dominio.Perfis.PERFIL_CP);
         }
 
         private async Task<bool> TurmaEmPeridoAberto(Turma turma, int bimestre)
