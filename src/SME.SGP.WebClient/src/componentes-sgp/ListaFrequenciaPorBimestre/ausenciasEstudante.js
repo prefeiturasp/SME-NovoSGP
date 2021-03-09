@@ -112,7 +112,7 @@ const AusenciasEstudante = props => {
     <>
       {expandirLinhaAusenciaEstudante[indexLinha] ? (
         <tr>
-          <td colSpan="4">
+          <td colSpan="6">
             <Loader loading={exibirLoader}>
               <TabelaColunasFixas
                 style={{ display: 'inline-grid', width: '100%' }}
@@ -148,7 +148,7 @@ const AusenciasEstudante = props => {
                           })
                         ) : (
                           <tr className="text-center">
-                            <td colSpan="3">Sem dados</td>
+                            <td colSpan="6">Sem dados</td>
                           </tr>
                         )}
                       </tbody>
