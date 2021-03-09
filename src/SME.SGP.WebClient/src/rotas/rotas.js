@@ -90,7 +90,7 @@ import AcompanhamentoFrequencia from '~/paginas/DiarioClasse/AcompanhamentoFrequ
 import PlanoAEELista from '~/paginas/Relatorios/AEE/Plano/Lista/planoAEELista';
 import PlanoAEECadastro from '~/paginas/Relatorios/AEE/Plano/Cadastro/planoAEECadastro';
 import RegistroItineranciaAEELista from '~/paginas/Relatorios/AEE/RegistroItinerancia/Lista/registroItineranciaAEELista';
-import AcompanhamentoAprendizagem from '~/paginas/Dashboard/AcompanhamentoAprendizagem/acompanhamentoAprendizagem';
+import AcompanhamentoAprendizagem from '~/paginas/Relatorios/AcompanhamentoAprendizagem/acompanhamentoAprendizagem';
 
 const rotas = new Map();
 
@@ -1281,7 +1281,7 @@ rotas.set(`${RotasDto.OCORRENCIAS}/editar/:id`, {
 
 rotas.set(RotasDto.ACOMPANHAMENTO_APRENDIZAGEM, {
   breadcrumbName: 'Relatório do Acompanhamento da Aprendizagem',
-  menu: ['Dashboard'],
+  menu: ['Relatório'],
   parent: '/',
   component: AcompanhamentoAprendizagem,
   exact: true,
