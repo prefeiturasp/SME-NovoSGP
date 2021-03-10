@@ -21,6 +21,7 @@ function TabelaRetratil({
   exibirProcessoConcluido,
   tituloCabecalho,
   pularDesabilitados,
+  larguraAluno,
 }) {
   const [retraido, setRetraido] = useState(false);
   const [alunoSelecionado, setAlunoSelecionado] = useState(null);
@@ -200,7 +201,7 @@ function TabelaRetratil({
           </tbody>
         </Tabela>
       </div>
-      <DetalhesAluno>
+      <DetalhesAluno larguraAluno={larguraAluno}>
         <Cabecalho
           titulo={tituloCabecalho}
           retraido={retraido}
@@ -225,6 +226,7 @@ TabelaRetratil.propTypes = {
   exibirProcessoConcluido: t.bool,
   tituloCabecalho: t.string,
   pularDesabilitados: t.bool,
+  larguraAluno: t.string,
 };
 
 TabelaRetratil.defaultProps = {
@@ -236,6 +238,7 @@ TabelaRetratil.defaultProps = {
   exibirProcessoConcluido: false,
   tituloCabecalho: 'Detalhes do estudante',
   pularDesabilitados: false,
+  larguraAluno: '',
 };
 
 export default TabelaRetratil;
