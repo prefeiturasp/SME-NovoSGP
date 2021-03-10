@@ -40,9 +40,17 @@ namespace SME.SGP.Aplicacao
 
             await RemovePendencias(encaminhamentoAEE.TurmaId, encaminhamentoAEE.Id);
 
-            await mediator.Send(new GerarPendenciaPAEEEncaminhamentoAEECommand(encaminhamentoAEE));
+            if (await ParametroGeracaoPendenciaAtivo())
+                await mediator.Send(new GerarPendenciaPAEEEncaminhamentoAEECommand(encaminhamentoAEE));
 
             return idEntidadeEncaminhamento != 0;
+        }
+
+        private async Task<bool> ParametroGeracaoPendenciaAtivo()
+        {
+            var parametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.GerarPendenciasEncaminhamentoAEE, DateTime.Today.Year));
+
+            return parametro != null && parametro.Ativo;
         }
 
         private async Task RemovePendencias(long turmaId, long encaminhamentoAEEId)

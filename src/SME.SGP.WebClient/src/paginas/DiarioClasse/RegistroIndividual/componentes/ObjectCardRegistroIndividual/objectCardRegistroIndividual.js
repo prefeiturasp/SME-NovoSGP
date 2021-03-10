@@ -10,7 +10,6 @@ const ObjectCardRegistroIndividual = () => {
 
   return (
     <DetalhesAluno
-      exibirResponsavel={false}
       exibirBotaoImprimir={false}
       exibirFrequencia={false}
       dados={dadosAlunoObjectCard}

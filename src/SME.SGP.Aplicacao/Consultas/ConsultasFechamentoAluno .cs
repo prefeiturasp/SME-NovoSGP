@@ -1,4 +1,5 @@
-﻿using SME.SGP.Aplicacao.Integracoes;
+﻿using MediatR;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -14,12 +15,15 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioFechamentoAluno repositorio;
         private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
         private readonly IServicoEol servicoEOL;
+        private readonly IMediator mediator;
 
         public ConsultasFechamentoAluno(IRepositorioFechamentoAluno repositorio
-                                            , IServicoEol servicoEOL, IRepositorioComponenteCurricular repositorioComponenteCurricular)
+                                            , IServicoEol servicoEOL, 
+            IRepositorioComponenteCurricular repositorioComponenteCurricular, IMediator mediator)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
         }
 
@@ -31,6 +35,8 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException($"Não foram localizados dados do aluno {codigoAluno} na turma {codigoTurma} no EOL para o ano letivo {anoLetivo}");
 
             var dadosAluno = (AlunoDadosBasicosDto)dadosAlunos.FirstOrDefault(c => c.CodigoTurma.ToString() == codigoTurma);
+
+            dadosAluno.EhAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(codigoAluno, anoLetivo));
 
             var anotacaoAluno = await consultaFechamentoAluno;
             var anotacaoDto = anotacaoAluno == null ?

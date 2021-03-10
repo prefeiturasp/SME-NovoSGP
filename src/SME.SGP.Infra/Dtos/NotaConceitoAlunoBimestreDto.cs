@@ -17,5 +17,6 @@ namespace SME.SGP.Infra
         public SinteseEnum SinteseId { get; set; }
         public string Sintese { get; set; }
         public bool TemAnotacao { get; set; }
+        public bool EhAtendidoAEE { get; set; }
     }
 }

@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 // Componentes
-import { Base } from '~/componentes';
+import { Base } from '~/componentes/colors';
 
 const DivWrapperMes = styled.div`
   display: flex;

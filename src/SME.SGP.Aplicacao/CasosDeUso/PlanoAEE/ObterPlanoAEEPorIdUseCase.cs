@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
@@ -41,7 +42,8 @@ namespace SME.SGP.Aplicacao
                     NomeResponsavel = alunoPorTurmaResposta.NomeResponsavel,
                     TipoResponsavel = alunoPorTurmaResposta.TipoResponsavel,
                     CelularResponsavel = alunoPorTurmaResposta.CelularResponsavel,
-                    DataAtualizacaoContato = alunoPorTurmaResposta.DataAtualizacaoContato
+                    DataAtualizacaoContato = alunoPorTurmaResposta.DataAtualizacaoContato,
+                    EhAtendidoAEE = (entidadePlano.Situacao != SituacaoPlanoAEE.Encerrado && entidadePlano.Situacao != SituacaoPlanoAEE.EncerradoAutomaticamento)
                 };
 
                 plano.Id = filtro.PlanoAEEId.Value;

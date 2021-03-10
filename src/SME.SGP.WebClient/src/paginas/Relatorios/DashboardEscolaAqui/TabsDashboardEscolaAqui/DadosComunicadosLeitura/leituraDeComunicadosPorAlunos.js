@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { DataTable, Label, Loader, SelectComponent } from '~/componentes';
+import { NomeEstudanteLista } from '~/componentes-sgp';
 import { erros } from '~/servicos';
 import ServicoDashboardEscolaAqui from '~/servicos/Paginas/Relatorios/EscolaAqui/DashboardEscolaAqui/ServicoDashboardEscolaAqui';
 import { MarcadorSituacaoAluno } from '../../dashboardEscolaAqui.css';
@@ -114,6 +115,12 @@ const LeituraDeComunicadosPorAlunos = props => {
           title: 'Nome',
           dataIndex: 'nomeAluno',
           colSpan: 2,
+          render: (_, record) => (
+            <NomeEstudanteLista
+              nome={record?.nomeAluno}
+              exibirSinalizacao={record?.ehAtendidoAEE}
+            />
+          ),
         },
         {
           title: 'Responsável',
