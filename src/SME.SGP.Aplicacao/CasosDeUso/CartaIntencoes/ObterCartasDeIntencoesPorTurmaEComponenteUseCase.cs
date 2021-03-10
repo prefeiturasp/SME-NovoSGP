@@ -68,7 +68,7 @@ namespace SME.SGP.Aplicacao
                     PeriodoEscolarId = periodoEscolar.Id,
                     Bimestre = periodoEscolar.Bimestre,
                     PeriodoAberto = await TurmaEmPeridoAberto(turma, periodoEscolar.Bimestre),
-                    UsuarioTemAtribuicao = usuarioTemAtribuicao || usuarioLogado.EhCP() || usuarioLogado.EhProfessorCj(),
+                    UsuarioTemAtribuicao = usuarioTemAtribuicao || usuarioLogado.EhAbrangenciaUEECP() || usuarioLogado.EhProfessorCj(),
                     Auditoria = (AuditoriaDto)carta
                 });
             }
