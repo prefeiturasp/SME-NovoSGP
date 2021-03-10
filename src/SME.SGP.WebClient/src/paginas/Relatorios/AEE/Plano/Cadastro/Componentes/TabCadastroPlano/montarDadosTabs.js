@@ -29,7 +29,7 @@ const MontarDadosTabs = props => {
       <TabPane tab="Cadastro do Plano" key="1">
         <SecaoPlanoCollapse match={match} />
       </TabPane>
-      {temId && (
+      {/* {temId && (
         <TabPane
           tab="Reestruturação"
           key="2"
@@ -43,7 +43,7 @@ const MontarDadosTabs = props => {
         >
           <SecaoReestruturacaoPlano match={match} />
         </TabPane>
-      )}
+      )} */}
       {temId && (
         <TabPane
           tab="Devolutivas"
