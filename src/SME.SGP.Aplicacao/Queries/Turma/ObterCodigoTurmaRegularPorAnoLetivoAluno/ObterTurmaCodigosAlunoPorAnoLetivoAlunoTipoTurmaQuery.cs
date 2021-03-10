@@ -7,9 +7,9 @@ using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterCodigoTurmaRegularPorAnoLetivoAlunoQuery : IRequest<IEnumerable<string>>
+    public class ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery : IRequest<IEnumerable<string>>
     {
-        public ObterCodigoTurmaRegularPorAnoLetivoAlunoQuery(int anoLetivo, string codigoAluno, IEnumerable<int> tiposTurmas)
+        public ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(int anoLetivo, string codigoAluno, IEnumerable<int> tiposTurmas)
         {
             AnoLetivo = anoLetivo;
             CodigoAluno = codigoAluno;
@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
         public IEnumerable<int> TiposTurmas { get; set; }
     }
 
-    public class ObterCodigoTurmaRegularPorAnoLetivoAlunoQueryValidator : AbstractValidator<ObterCodigoTurmaRegularPorAnoLetivoAlunoQuery>
+    public class ObterCodigoTurmaRegularPorAnoLetivoAlunoQueryValidator : AbstractValidator<ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery>
     {
         public ObterCodigoTurmaRegularPorAnoLetivoAlunoQueryValidator()
         {

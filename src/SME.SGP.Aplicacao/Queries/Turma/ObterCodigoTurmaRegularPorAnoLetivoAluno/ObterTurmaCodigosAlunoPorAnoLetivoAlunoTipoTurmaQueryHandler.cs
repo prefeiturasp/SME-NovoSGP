@@ -9,16 +9,16 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterCodigoTurmaRegularPorAnoLetivoAlunoQueryHandler : IRequestHandler<ObterCodigoTurmaRegularPorAnoLetivoAlunoQuery, IEnumerable<string>>
+    public class ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQueryHandler : IRequestHandler<ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery, IEnumerable<string>>
     {
         private readonly IHttpClientFactory httpClientFactory;
 
-        public ObterCodigoTurmaRegularPorAnoLetivoAlunoQueryHandler(IHttpClientFactory httpClientFactory)
+        public ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQueryHandler(IHttpClientFactory httpClientFactory)
         {
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
         }
 
-        public async Task<IEnumerable<string>> Handle(ObterCodigoTurmaRegularPorAnoLetivoAlunoQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<string>> Handle(ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery request, CancellationToken cancellationToken)
         {
             var tiposTurma = String.Join("&tiposTurma=", request.TiposTurmas);
             var httpClient = httpClientFactory.CreateClient("servicoEOL");
@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
             if (resposta.IsSuccessStatusCode)
             {
                 var json = await resposta.Content.ReadAsStringAsync();
-                return  JsonConvert.DeserializeObject<IEnumerable<string>>(json);
+                return  JsonConvert.DeserializeObject<List<string>>(json);
             }
             return Enumerable.Empty<string>(); ;
         }
