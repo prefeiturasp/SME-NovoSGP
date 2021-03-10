@@ -139,6 +139,11 @@ namespace SME.SGP.Dominio
 
         public async Task<NotaTipoValor> TipoNotaPorAvaliacao(AtividadeAvaliativa atividadeAvaliativa, bool consideraHistorico = false)
         {
+            var turmaEOL = await servicoEOL.ObterDadosTurmaPorCodigo(atividadeAvaliativa.TurmaId.ToString());
+
+            if (turmaEOL.TipoTurma == Enumerados.TipoTurma.EdFisica)
+                return repositorioNotaTipoValor.ObterPorTurmaId(Convert.ToInt64(atividadeAvaliativa.TurmaId),  Enumerados.TipoTurma.EdFisica);
+
             var notaTipo = await ObterNotaTipo(atividadeAvaliativa.TurmaId, atividadeAvaliativa.DataAvaliacao, consideraHistorico);
 
             if (notaTipo == null)
@@ -333,7 +338,7 @@ namespace SME.SGP.Dominio
                         throw new NegocioException("Não foi possível localizar o parâmetro de conceito.");
                 }
 
-                notaConceito.TipoNota = (TipoNota)tipoNota.Id;
+                notaConceito.TipoNota = tipoNota.TipoNota;
                 notaConceito.DisciplinaId = disciplinaId;
                 if (atividadeAvaliativa.Categoria.Equals(CategoriaAtividadeAvaliativa.Interdisciplinar) && notaConceito.Id.Equals(0))
                 {
