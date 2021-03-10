@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQueryHandler : IRequestHandler<ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery, IEnumerable<string>>
+    public class ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQueryHandler : IRequestHandler<ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery, string[]>
     {
         private readonly IHttpClientFactory httpClientFactory;
 
@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
         }
 
-        public async Task<IEnumerable<string>> Handle(ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery request, CancellationToken cancellationToken)
+        public async Task<string[]> Handle(ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery request, CancellationToken cancellationToken)
         {
             var tiposTurma = String.Join("&tiposTurma=", request.TiposTurmas);
             var httpClient = httpClientFactory.CreateClient("servicoEOL");
@@ -26,9 +26,9 @@ namespace SME.SGP.Aplicacao
             if (resposta.IsSuccessStatusCode)
             {
                 var json = await resposta.Content.ReadAsStringAsync();
-                return  JsonConvert.DeserializeObject<List<string>>(json);
+                return  JsonConvert.DeserializeObject<string[]>(json);
             }
-            return Enumerable.Empty<string>(); ;
+            return new string[] { };
         }
     }
 }

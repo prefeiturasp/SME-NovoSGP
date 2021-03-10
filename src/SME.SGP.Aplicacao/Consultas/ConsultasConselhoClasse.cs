@@ -56,14 +56,14 @@ namespace SME.SGP.Aplicacao
         {
             var turma = await ObterTurma(turmaCodigo);
             var ehAnoAnterior = turma.AnoLetivo != DateTime.Today.Year;
-
+           
             if (turma.EhTurmaEdFisicaOuItinerario())
             {
                 var tipos = new List<int>() {
                         (int)TipoTurma.Regular
                     };
                 var codigosTurmasRelacionadas = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, tipos));
-                turma = await consultasTurma.ObterPorCodigo(codigosTurmasRelacionadas.FirstOrDefault());
+                turma = await ObterTurma(codigosTurmasRelacionadas.FirstOrDefault());
             }
 
             if (bimestre == 0 && !ehFinal)

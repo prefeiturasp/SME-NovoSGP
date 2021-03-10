@@ -7,7 +7,7 @@ using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery : IRequest<IEnumerable<string>>
+    public class ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery : IRequest<string[]>
     {
         public ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(int anoLetivo, string codigoAluno, IEnumerable<int> tiposTurmas)
         {
