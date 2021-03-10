@@ -931,6 +931,32 @@ namespace SME.SGP.Dados.Repositorios
             
         }
 
+        public async Task<int> ObterAulasDadasPorTurmaDisciplinaEPeriodoEscolar(long turmaId, long componenteCurricularId, long tipoCalendarioId, IEnumerable<long> periodosEscolaresIds)
+        {
+            const string sql = @"select 
+	                                sum(a.quantidade)
+                                from 
+	                                aula a 
+                                inner join
+	                                turma t
+	                                on a.turma_id = t.turma_id
+                                inner join 
+	                                periodo_escolar pe 
+	                                on a.data_aula BETWEEN pe.periodo_inicio AND pe.periodo_fim
+                                inner join
+	                                registro_frequencia rf 
+	                                on a.id = rf.aula_id
+                                where 
+	                                not a.excluido
+	                                and t.id = @turmaId
+	                                and a.disciplina_id = @componenteCurricularId
+                                    and a.tipo_calendario_id = @tipoCalendarioId
+	                                and pe.id = any(@periodosEscolaresIds)";
+
+            var parametros = new { turmaId, componenteCurricularId = componenteCurricularId.ToString(), tipoCalendarioId, periodosEscolaresIds = periodosEscolaresIds.ToList() };
+            return await database.Conexao.QuerySingleOrDefaultAsync<int?>(sql, parametros) ?? default;
+        }
+
         public async Task<IEnumerable<Aula>> ObterAulasExcluidasComDiarioDeBordoAtivos(string codigoTurma, long tipoCalendarioId)
         {
             var sqlQuery = @"select a.*

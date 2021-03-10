@@ -80,7 +80,7 @@ namespace SME.SGP.Dominio.Servicos
             {
                 Abrangencia = AbrangenciaFeriadoCalendario.Nacional,
                 DataFeriado = dataFeriado,
-                Nome = feriado.GetAttribute<DisplayAttribute>().Name,
+                Nome = feriado.ObterAtributo<DisplayAttribute>().Name,
                 Tipo = TipoFeriadoCalendario.Movel
             };
 

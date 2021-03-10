@@ -3,8 +3,7 @@ import * as moment from 'moment';
 import PropTypes from 'prop-types';
 import React from 'react';
 import Button from '~/componentes/button';
-import { Colors } from '~/componentes/colors';
-import { Base } from '~/componentes';
+import { Base, Colors } from '~/componentes/colors';
 import { Container, DadosAluno, FrequenciaGlobal } from './styles';
 
 const DetalhesAluno = props => {
@@ -30,6 +29,7 @@ const DetalhesAluno = props => {
     tipoResponsavel,
     celularResponsavel,
     dataAtualizacaoContato,
+    turma,
   } = dados;
 
   const numeroLinhas = () => {
@@ -87,6 +87,7 @@ const DetalhesAluno = props => {
                 {dataSituacao ? moment(dataSituacao).format('L') : ''}{' '}
                 {dataSituacao ? moment(dataSituacao).format('LT') : ''}
               </p>
+              {turma ? <p>Turma: {turma}</p> : ''}
             </div>
           </div>
           {nomeResponsavel && exibirResponsavel ? (

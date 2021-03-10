@@ -6,6 +6,7 @@ import api from '~/servicos/api';
 import RotasDto from '~/dtos/rotasDto';
 import modalidade from '~/dtos/modalidade';
 import { obterModalidadeFiltroPrincipal } from './Validacoes/validacoesInfatil';
+import { FiltroHelper } from '~/componentes-sgp';
 
 const setMenusPermissoes = () => {
   let permissoes = {};
@@ -36,7 +37,10 @@ const setMenusPermissoes = () => {
             }
           }
           if (itemMenu.subMenus && itemMenu.subMenus.length > 0) {
-            itemMenu.subMenus.forEach(subItem => {
+            const subMenusOrdenados = itemMenu.subMenus.sort(
+              FiltroHelper.ordenarLista('ordem')
+            );
+            subMenusOrdenados.forEach(subItem => {
               menu.subMenus.push({
                 codigo: subItem.codigo,
                 descricao: subItem.descricao,
@@ -93,6 +97,10 @@ const verificaSomenteConsulta = (permissoes, naoSetarResultadoNoStore) => {
   return false;
 };
 
+const setSomenteConsultaManual = valor => {
+  store.dispatch(setSomenteConsulta(valor));
+}
+
 const obterDescricaoNomeMenu = (
   url,
   modalidadesFiltroPrincipal,
@@ -137,4 +145,5 @@ export {
   getObjetoStorageUsuario,
   verificaSomenteConsulta,
   obterDescricaoNomeMenu,
+  setSomenteConsultaManual,
 };

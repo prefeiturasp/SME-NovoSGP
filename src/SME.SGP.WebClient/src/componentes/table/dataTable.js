@@ -18,6 +18,7 @@ const DataTable = props => {
     loading,
     id,
     scroll,
+    semHover,
   } = props;
 
   const rowSelection = {
@@ -47,7 +48,7 @@ const DataTable = props => {
   };
 
   return (
-    <Container className="table-responsive">
+    <Container className="table-responsive" semHover={semHover}>
       <Table
         id={id}
         scroll={scroll}
@@ -114,6 +115,7 @@ DataTable.propTypes = {
   id: PropTypes.string,
   scroll: PropTypes.object,
   cpfRowMask: PropTypes.bool,
+  semHover: PropTypes.bool,
 };
 
 DataTable.defaultProps = {
@@ -122,11 +124,12 @@ DataTable.defaultProps = {
   selectMultipleRows: false,
   pageSize: 10,
   pagination: true,
-  onRowClick: () => { },
+  onRowClick: () => {},
   locale: { emptyText: 'Sem dados' },
   idLinha: 'id',
   id: 'componente-tabela-sgp',
   scroll: {},
+  semHover: false,
 };
 
 export default DataTable;

@@ -6,7 +6,6 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -334,6 +333,7 @@ namespace SME.SGP.Dados.Repositorios
                                   join l in armazenados on c.CodigoTurma equals l.CodigoTurma
                                   where c.Nome != l.Nome ||
                                         c.Ano != l.Ano ||
+                                        c.TipoTurma != l.TipoTurma ||
                                         c.AnoLetivo != l.AnoLetivo ||
                                         c.ModalidadeCodigo != l.ModalidadeCodigo ||
                                         c.Semestre != l.Semestre ||
@@ -351,6 +351,7 @@ namespace SME.SGP.Dados.Repositorios
                                       Ano = c.Ano,
                                       AnoLetivo = c.AnoLetivo,
                                       CodigoTurma = c.CodigoTurma,
+                                      TipoTurma = c.TipoTurma,
                                       DataAtualizacao = DateTime.Today,
                                       Id = l.Id,
                                       ModalidadeCodigo = c.ModalidadeCodigo,
@@ -374,6 +375,7 @@ namespace SME.SGP.Dados.Repositorios
                     {
                         nome = item.Nome,
                         ano = item.Ano,
+                        tipoTurma = item.TipoTurma,
                         anoLetivo = item.AnoLetivo,
                         modalidadeCodigo = item.ModalidadeCodigo,
                         semestre = item.Semestre,
@@ -563,7 +565,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<Turma>> ObterTurmasComInicioFechamento(long ueId, long periodoEscolarId, int[] modalidades)
         {
-var query = @"select t.*
+            var query = @"select t.*
                           from turma t
                         inner join ue on ue.id = t.ue_id
                         inner join dre on dre.id = ue.dre_id
@@ -591,7 +593,34 @@ var query = @"select t.*
                 ue.AdicionarDre(dre);
                 turma.AdicionarUe(ue);
                 return turma;
-            } , new { ueId, modalidades, ano });
+            }, new { ueId, modalidades, ano });
+        }
+
+        public async Task<IEnumerable<Turma>> ObterTurmasPorIds(long[] turmasIds)
+        {
+            var query = @"select *
+                         from turma
+                        where id = any(@turmasIds)";
+
+            return await contexto.Conexao.QueryAsync<Turma>(query, new { turmasIds });
+        }
+
+        public async Task<Modalidade> ObterModalidadePorCodigo(string turmaCodigo)
+        {
+            var query = "select modalidade_codigo from turma where turma_id = @turmaCodigo";
+
+            return await contexto.Conexao.QueryFirstOrDefaultAsync<Modalidade>(query, new { turmaCodigo });
+        }
+
+        public async Task<DreUeDaTurmaDto> ObterCodigosDreUe(string turmaCodigo)
+        {
+            var query = @"select ue.ue_id as ueCodigo, dre.dre_id as dreCodigo
+                          from turma t 
+                         inner join ue on ue.id = t.ue_id
+                         inner join dre on dre.id = ue.dre_id 
+                         where t.turma_id = @turmaCodigo";
+
+            return await contexto.Conexao.QueryFirstOrDefaultAsync<DreUeDaTurmaDto>(query, new { turmaCodigo });
         }
     }
 }

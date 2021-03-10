@@ -7,6 +7,7 @@ namespace SME.SGP.Dominio
         public string Ano { get; set; }
         public int AnoLetivo { get; set; }
         public string CodigoTurma { get; set; }
+        public int TipoTurma { get; set; }
         public DateTime DataAtualizacao { get; set; }
         public long Id { get; set; }
         public Modalidade ModalidadeCodigo { get; set; }
@@ -80,5 +81,7 @@ namespace SME.SGP.Dominio
                    (EhTurmaFund2 || (EhEJA() && (anoTurma == 3 || anoTurma == 4))) ||
                    (EhTurmaEnsinoMedio && quantidadeAulasExistentesNoDia > 2);
         }
+        public string NomeComModalidade() 
+                 => $"{ModalidadeCodigo.ObterNomeCurto()}-{Nome}";
     }
 }

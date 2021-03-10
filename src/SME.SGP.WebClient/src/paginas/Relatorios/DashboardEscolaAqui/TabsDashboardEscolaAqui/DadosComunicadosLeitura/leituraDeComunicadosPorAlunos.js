@@ -13,7 +13,7 @@ const LeituraDeComunicadosPorAlunos = props => {
   const { comunicado, listaComunicado } = props;
 
   const [exibirLoader, setExibirLoader] = useState(false);
-  const [listaAlunos, setListaAlunos] = useState(false);
+  const [listaAlunos, setListaAlunos] = useState([]);
   const [listaTurmas, setListaTurmas] = useState([]);
   const [codigoTurmaSelecionado, setCodigoTurmaSelecionado] = useState();
 
@@ -56,8 +56,15 @@ const LeituraDeComunicadosPorAlunos = props => {
         setListaAlunos(resposta.data);
       }
     },
-    []
+    [comunicado, listaComunicado]
   );
+
+  useEffect(() => {
+    setListaAlunos([]);
+    return () => {
+      setListaAlunos([]);
+    };
+  }, [comunicado]);
 
   const montarSelectTurmas = () => {
     return (
@@ -173,10 +180,12 @@ const LeituraDeComunicadosPorAlunos = props => {
   ]);
 
   useEffect(() => {
+    setListaTurmas([]);
+    setListaAlunos([]);
     if (dadosDeLeituraDeComunicadosPorTurmas?.length) {
       obterTurmas();
     }
-  }, [dadosDeLeituraDeComunicadosPorTurmas, obterTurmas]);
+  }, [dadosDeLeituraDeComunicadosPorTurmas, comunicado, obterTurmas]);
 
   return dadosDeLeituraDeComunicadosPorTurmas.length ? (
     <div className="col-md-12 pt-2">

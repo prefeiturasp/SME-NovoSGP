@@ -76,7 +76,7 @@ namespace SME.SGP.Dados.Repositorios
             {
                 ue.AdicionarDre(dre);
                 return ue;
-            }, 
+            },
             new { ueCodigo })).FirstOrDefault();
         }
 
@@ -139,6 +139,20 @@ namespace SME.SGP.Dados.Repositorios
                         where
                             t.turma_id = @turmaId";
             return contexto.QueryFirstOrDefault<Ue>(query, new { turmaId });
+        }
+
+        public async Task<Ue> ObterUEPorTurmaId(long turmaId)
+        {
+            var query = @"select
+                            escola.*
+                        from
+                            ue escola
+                        inner
+                        join turma t on
+                        t.ue_id = escola.id
+                        where
+                            t.id = @turmaId";
+            return await contexto.QueryFirstOrDefaultAsync<Ue>(query, new { turmaId });
         }
 
         public async Task<IEnumerable<Ue>> SincronizarAsync(IEnumerable<Ue> entidades, IEnumerable<Dre> dres)
@@ -265,6 +279,13 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select count(id) from turma where ano between '1' and '9' and ue_id = @ueId and ano_letivo = @ano";
 
             return await contexto.Conexao.QueryFirstOrDefaultAsync<int>(query, new { ueId, ano });
-       }
+        }
+
+        public async Task<IEnumerable<Ue>> ObterUesPorIds(long[] ids)
+        {
+            var query = @"select * from ue where id = ANY(@ids)";
+
+            return await contexto.QueryAsync<Ue>(query, new { ids });
+        }
     }
 }

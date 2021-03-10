@@ -38,6 +38,7 @@ const JoditEditor = forwardRef((props, ref) => {
     permiteInserirArquivo,
     readonly,
     removerToolbar,
+    iframeStyle,
   } = props;
 
   const textArea = useRef(null);
@@ -97,23 +98,27 @@ const JoditEditor = forwardRef((props, ref) => {
     uploader: {
       buildData: data => {
         return new Promise((resolve, reject) => {
-          const arquivo = data.getAll('files[0]')[0];
+          if (permiteInserirArquivo) {
+            const arquivo = data.getAll('files[0]')[0];
 
-          if (excedeuLimiteMaximo(arquivo)) {
-            const msg = 'Tamanho máximo 100mb';
-            erro(msg);
-            reject(new Error(msg));
-          }
+            if (excedeuLimiteMaximo(arquivo)) {
+              const msg = 'Tamanho máximo 100mb';
+              erro(msg);
+              reject(new Error(msg));
+            }
 
-          if (
-            arquivo.type.substring(0, 5) === 'image' ||
-            arquivo.type.substring(0, 5) === 'video'
-          ) {
-            resolve(data);
+            if (
+              arquivo.type.substring(0, 5) === 'image' ||
+              arquivo.type.substring(0, 5) === 'video'
+            ) {
+              resolve(data);
+            } else {
+              const msg = 'Formato inválido';
+              erro(msg);
+              reject(new Error(msg));
+            }
           } else {
-            const msg = 'Formato inválido';
-            erro(msg);
-            reject(new Error(msg));
+            reject(new Error('Não é possível inserir arquivo'));
           }
         });
       },
@@ -158,6 +163,7 @@ const JoditEditor = forwardRef((props, ref) => {
       font: '16px Arial',
       overflow: 'none',
     },
+    iframeStyle,
   };
 
   useEffect(() => {
@@ -353,6 +359,7 @@ JoditEditor.propTypes = {
   permiteInserirArquivo: PropTypes.bool,
   readonly: PropTypes.bool,
   removerToolbar: PropTypes.bool,
+  iframeStyle: PropTypes.string,
 };
 
 JoditEditor.defaultProps = {
@@ -371,6 +378,7 @@ JoditEditor.defaultProps = {
   permiteInserirArquivo: true,
   readonly: false,
   removerToolbar: false,
+  iframeStyle: '',
 };
 
 export default JoditEditor;

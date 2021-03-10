@@ -83,6 +83,13 @@ import RelatorioLeitura from '~/paginas/Relatorios/EscolaAqui/Leitura/relatorioL
 import ListaOcorrencias from '~/paginas/Gestao/Ocorrencia/ListaOcorrencias';
 import CadastroOcorrencias from '~/paginas/Gestao/Ocorrencia/CadastroOcorrencias';
 import RelatorioPlanejamentoDiario from '~/paginas/Relatorios/DiarioClasse/PlanejamentoDiario/relatorioPlanejamentoDiario';
+import EncaminhamentoAEELista from '~/paginas/Relatorios/AEE/Encaminhamento/Lista/encaminhamentoAEELista';
+import EncaminhamentoAEECadastro from '~/paginas/Relatorios/AEE/Encaminhamento/Cadastro/encaminhamentoAEECadastro';
+import RegistroItineranciaAEECadastro from '~/paginas/Relatorios/AEE/RegistroItinerancia/Cadastro/registroItineranciaAEECadastro';
+import AcompanhamentoFrequencia from '~/paginas/DiarioClasse/AcompanhamentoFrequencia/acompanhamentoFrequencia';
+import PlanoAEELista from '~/paginas/Relatorios/AEE/Plano/Lista/planoAEELista';
+import PlanoAEECadastro from '~/paginas/Relatorios/AEE/Plano/Cadastro/planoAEECadastro';
+import RegistroItineranciaAEELista from '~/paginas/Relatorios/AEE/RegistroItinerancia/Lista/registroItineranciaAEELista';
 
 const rotas = new Map();
 
@@ -572,6 +579,17 @@ rotas.set(`${RotasDto.FREQUENCIA_PLANO_AULA}`, {
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: true,
   chavePermissao: RotasDto.FREQUENCIA_PLANO_AULA,
+});
+
+rotas.set(`${RotasDto.ACOMPANHAMENTO_FREQUENCIA}`, {
+  breadcrumbName: 'Acompanhamento de Frequência',
+  menu: ['Diário de Classe'],
+  parent: '/',
+  component: AcompanhamentoFrequencia,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.ACOMPANHAMENTO_FREQUENCIA,
 });
 
 rotas.set(`${RotasDto.NOTAS}/:disciplinaId/:bimestre`, {
@@ -1131,6 +1149,102 @@ rotas.set(RotasDto.RELATORIO_ESCOLA_AQUI_ADESAO, {
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: false,
   chavePermissao: RotasDto.RELATORIO_ESCOLA_AQUI_ADESAO,
+});
+
+rotas.set(RotasDto.RELATORIO_AEE_ENCAMINHAMENTO, {
+  breadcrumbName: 'Encaminhamento',
+  menu: ['Relatórios', 'AEE'],
+  parent: '/',
+  component: EncaminhamentoAEELista,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.RELATORIO_AEE_ENCAMINHAMENTO,
+});
+
+rotas.set(`${RotasDto.RELATORIO_AEE_ENCAMINHAMENTO}/novo`, {
+  breadcrumbName: 'Cadastrar Encaminhamento',
+  parent: `${RotasDto.RELATORIO_AEE_ENCAMINHAMENTO}`,
+  component: EncaminhamentoAEECadastro,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.RELATORIO_AEE_ENCAMINHAMENTO,
+});
+
+rotas.set(`${RotasDto.RELATORIO_AEE_ENCAMINHAMENTO}/editar/:id`, {
+  breadcrumbName: 'Editar Encaminhamento',
+  parent: `${RotasDto.RELATORIO_AEE_ENCAMINHAMENTO}`,
+  component: EncaminhamentoAEECadastro,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.RELATORIO_AEE_ENCAMINHAMENTO,
+});
+
+rotas.set(`${RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA}`, {
+  breadcrumbName: 'Registro de itinerância',
+  menu: ['Relatórios', 'AEE'],
+  parent: '/',
+  component: RegistroItineranciaAEELista,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA,
+});
+
+rotas.set(`${RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA}/novo`, {
+  breadcrumbName: 'Cadastro',
+  menu: [],
+  parent: RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA,
+  component: RegistroItineranciaAEECadastro,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA,
+});
+
+rotas.set(`${RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA}/editar/:id`, {
+  breadcrumbName: 'Registro de itinerância',
+  menu: ['Relatórios', 'AEE'],
+  parent: '/',
+  component: RegistroItineranciaAEECadastro,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+  chavePermissao: RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA,
+});
+
+rotas.set(RotasDto.RELATORIO_AEE_PLANO, {
+  breadcrumbName: 'Plano',
+  menu: ['Relatórios', 'AEE'],
+  parent: '/',
+  component: PlanoAEELista,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.RELATORIO_AEE_PLANO,
+});
+
+rotas.set(`${RotasDto.RELATORIO_AEE_PLANO}/novo`, {
+  breadcrumbName: 'Plano',
+  menu: ['Relatórios', 'AEE'],
+  parent: '/',
+  component: PlanoAEECadastro,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.RELATORIO_AEE_PLANO,
+});
+
+rotas.set(`${RotasDto.RELATORIO_AEE_PLANO}/editar/:id`, {
+  breadcrumbName: 'Editar Plano AEE',
+  parent: `${RotasDto.RELATORIO_AEE_PLANO}`,
+  component: PlanoAEECadastro,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.RELATORIO_AEE_PLANO,
 });
 
 rotas.set(RotasDto.OCORRENCIAS, {

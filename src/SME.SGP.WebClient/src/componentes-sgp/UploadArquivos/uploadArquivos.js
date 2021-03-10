@@ -93,7 +93,38 @@ const UploadArquivos = props => {
     return false;
   };
 
+  const permiteInserirFormato = arquivo => {
+    if (tiposArquivosPermitidos?.trim()) {
+      const listaPermitidos = tiposArquivosPermitidos
+        .split(',')
+        .map(tipo => tipo?.trim()?.toLowerCase());
+
+      const tamanhoNome = arquivo?.name?.length;
+
+      const permiteTipo = listaPermitidos.find(tipo => {
+        const nomeTipoAtual = arquivo.name.substring(
+          tamanhoNome,
+          tamanhoNome - tipo.length
+        );
+
+        if (nomeTipoAtual) {
+          return tipo?.toLowerCase() === nomeTipoAtual?.toLowerCase();
+        }
+
+        return false;
+      });
+
+      return !!permiteTipo;
+    }
+    return true;
+  };
+
   const beforeUploadDefault = arquivo => {
+    if (!permiteInserirFormato(arquivo)) {
+      erro('Formato não permitido');
+      return false;
+    }
+
     if (excedeuLimiteMaximo(arquivo)) {
       erro('Tamanho máximo 100mb');
       return false;
@@ -138,6 +169,11 @@ const UploadArquivos = props => {
     const novoMap = [...novaLista];
     setListaDeArquivos(novoMap);
     onChangeListaArquivos(novoMap);
+
+    if (form && form.setFieldValue) {
+      form.setFieldValue(name, novoMap);
+      form.setFieldTouched(name, true);
+    }
   };
 
   const onChange = ({ file, fileList }) => {
@@ -148,20 +184,28 @@ const UploadArquivos = props => {
       return;
     }
 
+    if (!permiteInserirFormato(file)) {
+      atualizaListaArquivos(fileList, file);
+      return;
+    }
+
+    const novoMap = [...fileList];
+
     if (status === 'done') {
       sucesso(`${file.name} arquivo carregado com sucesso`);
     } else if (status === 'error') {
       atualizaListaArquivos(fileList, file);
       return;
     }
-    const novoMap = [...fileList];
+    if (status === 'done' || status === 'removed') {
+      if (form && form.setFieldValue) {
+        form.setFieldValue(name, novoMap);
+        form.setFieldTouched(name, true);
+      }
+    }
+
     setListaDeArquivos(novoMap);
     onChangeListaArquivos(novoMap);
-
-    if (form && form.setFieldValue) {
-      form.setFieldValue(name, novoMap);
-      form.setFieldTouched(name, true);
-    }
   };
 
   const possuiErro = () => {
@@ -193,7 +237,14 @@ const UploadArquivos = props => {
           <InboxOutlined />
         </p>
         <p className="ant-upload-text">{textoUpload}</p>
-        <p className="ant-upload-hint">{textoFormatoUpload}</p>
+        <p className="ant-upload-hint">
+          {tiposArquivosPermitidos
+            ? textoFormatoUpload.replace(
+                'Todos os formatos',
+                `Os formatos ${tiposArquivosPermitidos}`
+              )
+            : textoFormatoUpload}
+        </p>
       </ContainerDragger>
     );
   };

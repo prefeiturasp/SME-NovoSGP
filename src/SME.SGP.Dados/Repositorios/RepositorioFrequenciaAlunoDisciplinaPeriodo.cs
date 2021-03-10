@@ -4,6 +4,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -102,11 +103,13 @@ namespace SME.SGP.Dados.Repositorios
                 });
         }
 
-        public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaBimestresAsync(string codigoAluno, int bimestre, string codigoTurma)
+        public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaBimestresAsync(string codigoAluno, int bimestre, string codigoTurma, TipoFrequenciaAluno tipoFrequencia = TipoFrequenciaAluno.PorDisciplina)
         {
-            var query = @"select * from frequencia_aluno fa 
-                            where fa.codigo_aluno = @codigoAluno
-                            and fa.turma_id = @turmaId and fa.tipo = 1";
+            var query = @"select * 
+                            from frequencia_aluno fa 
+                           where fa.codigo_aluno = @codigoAluno
+                             and fa.turma_id = @turmaId 
+                             and fa.tipo = @tipoFrequencia";
 
             if (bimestre > 0)
                 query += " and fa.bimestre = @bimestre";
@@ -115,7 +118,8 @@ namespace SME.SGP.Dados.Repositorios
             {
                 codigoAluno,
                 bimestre,
-                turmaId = codigoTurma
+                turmaId = codigoTurma,
+                tipoFrequencia,
             };
 
             return await database.Conexao.QueryAsync<FrequenciaAluno>(query, parametros);
@@ -188,6 +192,22 @@ namespace SME.SGP.Dados.Repositorios
                 disciplinaId,
                 dataAtual,
             });
+        }
+
+        public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolar(string codigoTurma, string componenteCurricularId, TipoFrequenciaAluno tipoFrequencia, IEnumerable<long> periodosEscolaresIds)
+        {
+            const string sql = @"select 
+	                                fa.*
+                                from 
+	                                frequencia_aluno fa 
+                                where
+	                                turma_id = @codigoTurma and 
+	                                disciplina_id = @componenteCurricularId and 
+	                                tipo = @tipoFrequencia and
+	                                periodo_escolar_id = any(@periodosEscolaresIds)";
+
+            var parametros = new { codigoTurma, componenteCurricularId, tipoFrequencia = (short)tipoFrequencia, periodosEscolaresIds = periodosEscolaresIds.ToList() };
+            return await database.Conexao.QueryAsync<FrequenciaAluno>(sql, parametros);
         }
     }
 }

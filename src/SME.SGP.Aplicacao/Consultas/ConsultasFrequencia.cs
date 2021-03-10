@@ -414,5 +414,17 @@ namespace SME.SGP.Aplicacao
 
             return Math.Round(somaFrequenciaFinal / totalDisciplinas, 2);
         }
+
+
+        public async Task<IEnumerable<AusenciaMotivoDto>> ObterAusenciaMotivoPorAlunoTurmaBimestreAno(string codigoAluno, string codigoTurma, short bimestre, short anoLetivo)
+        => await mediator
+            .Send(
+                new ObterAusenciaMotivoPorAlunoTurmaBimestreAnoQuery(
+                    codigoAluno,
+                    codigoTurma,
+                    bimestre,
+                    anoLetivo
+                    )
+            );
     }
 }

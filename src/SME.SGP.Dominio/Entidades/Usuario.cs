@@ -101,6 +101,9 @@ namespace SME.SGP.Dominio
             return Perfis.Any(c => c.Tipo == TipoPerfil.UE && c.CodigoPerfil == PerfilAtual);
         }
 
+        public bool EhCoordenadorCEFAI()
+            => PerfilAtual == Dominio.Perfis.PERFIL_CEFAI;
+
         public bool EhPerfilProfessor()
             => EhProfessor()
             || EhProfessorCj()
@@ -134,7 +137,7 @@ namespace SME.SGP.Dominio
                 || PerfilAtual == Dominio.Perfis.PERFIL_PROFESSOR_INFANTIL;
         }
 
-        public bool EhCP()
+        public bool EhAbrangenciaUEECP()
         {
             return Perfis.Any(x => x.Tipo == TipoPerfil.UE && x.CodigoPerfil == Dominio.Perfis.PERFIL_CP);
         }
@@ -145,6 +148,19 @@ namespace SME.SGP.Dominio
                 || PerfilAtual == Dominio.Perfis.PERFIL_CJ_INFANTIL;
         }
 
+        public bool EhGestorEscolar()
+            => EhCP()
+            || EhAD()
+            || EhDiretor();
+
+        private bool EhCP()
+            => PerfilAtual == Dominio.Perfis.PERFIL_CP;
+
+        private bool EhAD()
+            => PerfilAtual == Dominio.Perfis.PERFIL_AD;
+
+        private bool EhDiretor()
+            => PerfilAtual == Dominio.Perfis.PERFIL_DIRETOR;
 
         public bool EhProfessorPoa()
         {
