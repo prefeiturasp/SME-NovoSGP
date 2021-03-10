@@ -18,5 +18,7 @@ namespace SME.SGP.Dominio.Enumerados
         DevolutivaPAAI = 6,
         [Display(Name = "Encerrado Automaticamente")]
         EncerradoAutomaticamento = 7,
+        [Display(Name = "Expirado")]
+        Expirado = 8,
     }
 }
