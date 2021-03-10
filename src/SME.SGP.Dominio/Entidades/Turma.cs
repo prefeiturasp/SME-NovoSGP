@@ -87,8 +87,7 @@ namespace SME.SGP.Dominio
         public bool EhTurmaEdFisicaOuItinerario()
         {
             var tipoTurma = (SME.SGP.Dominio.Enumerados.TipoTurma)TipoTurma;
-            return tipoTurma.EhUmDosValores(SME.SGP.Dominio.Enumerados.TipoTurma.EdFisica, SME.SGP.Dominio.Enumerados.TipoTurma.Itinerarios2AAno) &&
-                !tipoTurma.EhUmDosValores(SME.SGP.Dominio.Enumerados.TipoTurma.Regular);
+            return tipoTurma.EhUmDosValores(SME.SGP.Dominio.Enumerados.TipoTurma.EdFisica, SME.SGP.Dominio.Enumerados.TipoTurma.Itinerarios2AAno);
         }
     }
 }
