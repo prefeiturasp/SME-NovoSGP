@@ -22,6 +22,7 @@ const TabelaRetratilAcompanhamentoAprendizagem = ({
           onChangeAlunoSelecionado={onChangeAlunoSelecionado}
           alunos={alunosAcompanhamentoAprendizagem}
           codigoAlunoSelecionado={codigoAlunoSelecionado}
+          pularDesabilitados
         >
           {children}
         </TabelaRetratil>
