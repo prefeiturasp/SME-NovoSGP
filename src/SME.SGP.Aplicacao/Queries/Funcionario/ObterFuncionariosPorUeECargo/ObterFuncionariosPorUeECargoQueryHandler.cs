@@ -28,6 +28,9 @@ namespace SME.SGP.Aplicacao
 
             var listaRetorno = new List<FuncionarioDTO>();
 
+            if (request.CodigoCargo == (int)Cargo.Supervisor)
+                return ObterSupervisoresUE(request.CodigoUE);
+
             using (var httpClient = httpClientFactory.CreateClient("servicoEOL"))
             {
                 var resposta = await httpClient.GetAsync($"/api/escolas/{request.CodigoUE}/funcionarios/cargos/{request.CodigoCargo}");
@@ -43,6 +46,16 @@ namespace SME.SGP.Aplicacao
             }
 
             return listaRetorno;
+        }
+
+        private IEnumerable<FuncionarioDTO> ObterSupervisoresUE(string codigoUE)
+        {
+            var supervisores = repositorioSupervisorEscolaDre.ObtemSupervisoresPorUe(codigoUE);
+
+            return supervisores.Select(a => new FuncionarioDTO()
+            {
+                CodigoRF = a.SupervisorId
+            });
         }
     }
 }
