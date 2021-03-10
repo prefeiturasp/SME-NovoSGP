@@ -24,7 +24,9 @@ namespace SME.SGP.Aplicacao
             if (ehCEFAI)
             {
                 var pendencia = await mediator.Send(new ObterPendenciaEncaminhamentoAEEPorIdEUsuarioIdQuery(request.EncaminhamentoAEEId, usuarioLogado.Id));
-                await mediator.Send(new ExcluirPendenciaEncaminhamentoAEECommand(pendencia.PendenciaId));
+                if (pendencia != null)
+                    await mediator.Send(new ExcluirPendenciaEncaminhamentoAEECommand(pendencia.PendenciaId));
+
                 return true;
             }
             return false;

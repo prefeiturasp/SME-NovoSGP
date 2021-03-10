@@ -12,7 +12,6 @@ import { Loader } from '~/componentes';
 import SelectComponent from '~/componentes/select';
 
 import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
-import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 import { erros } from '~/servicos';
 import ListaBimestres from './Componentes/listaBimestres';
 import modalidade from '~/dtos/modalidade';
@@ -169,6 +168,17 @@ const AcompanhamentoFrequencia = () => {
     }
   }, [componenteCurricularIdSelecionado]);
 
+  const obterComponenteCurricularId = () => {
+    const componenteSelecionado = listaComponentesCurriculares.find(
+      c =>
+        String(c.codigoComponenteCurricular) ===
+        String(componenteCurricularIdSelecionado)
+    );
+    return componenteSelecionado.territorioSaber
+      ? componenteSelecionado.id
+      : componenteCurricularIdSelecionado;
+  };
+
   return (
     <>
       <div className="col-12">
@@ -223,7 +233,7 @@ const AcompanhamentoFrequencia = () => {
                     valueText="nome"
                     valueSelect={componenteCurricularIdSelecionado}
                     onChange={onChangeComponenteCurricular}
-                    placeholder="Disciplina"
+                    placeholder="Componente curricular"
                     disabled={desabilitarComponenteCurricular}
                   />
                 </Loader>
@@ -236,9 +246,7 @@ const AcompanhamentoFrequencia = () => {
                   <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
                     <ListaBimestres
                       bimestres={bimestres}
-                      componenteCurricularIdSelecionado={
-                        componenteCurricularIdSelecionado
-                      }
+                      componenteCurricularIdSelecionado={obterComponenteCurricularId()}
                     />
                   </div>
                 </div>

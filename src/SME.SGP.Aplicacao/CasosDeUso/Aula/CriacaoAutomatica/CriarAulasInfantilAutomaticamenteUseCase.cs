@@ -4,7 +4,6 @@ using Sentry.Protocol;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Interfaces;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -24,7 +23,7 @@ namespace SME.SGP.Aplicacao
         {
             var executarManutencao = await mediator.Send(new ObterExecutarManutencaoAulasInfantilQuery());
 
-            if(!executarManutencao)
+            if (!executarManutencao)
             {
                 SentrySdk.CaptureMessage($"{DateTime.Now:dd/MM/yyyy HH:mm:ss} - Rotina de manutenção de aulas do Infantil não iniciada pois seu parâmetro está marcado como não executar", SentryLevel.Warning);
                 return false;
@@ -41,7 +40,7 @@ namespace SME.SGP.Aplicacao
 
                     var diasForaDoPeriodoEscolar = await mediator.Send(new ObterDiasForaDoPeriodoEscolarQuery(periodosEscolares));
 
-                    var turmas = await mediator.Send(new ObterTurmasInfantilNaoDeProgramaQuery(anoAtual));
+                    var turmas = await mediator.Send(new ObterTurmasInfantilNaoDeProgramaQuery(anoAtual));                    
                     if (turmas != null && turmas.Any())
                     {
                         var paginador = 900;
