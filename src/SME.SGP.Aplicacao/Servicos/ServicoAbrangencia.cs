@@ -342,7 +342,8 @@ namespace SME.SGP.Aplicacao.Servicos
                  Ano = z.Ano,
                  AnoLetivo = z.AnoLetivo,
                  CodigoTurma = z.Codigo,
-                 ModalidadeCodigo = (Modalidade)Convert.ToInt32(z.CodigoModalidade),
+                 //Para turma do tipo 7 (Itinerarios 2A Ano) a modalidade é definida como Médio
+                 ModalidadeCodigo = z.TipoTurma == Dominio.Enumerados.TipoTurma.Itinerarios2AAno ? Modalidade.Medio : (Modalidade)Convert.ToInt32(z.CodigoModalidade),
                  QuantidadeDuracaoAula = z.DuracaoTurno,
                  Nome = z.NomeTurma,
                  Semestre = z.Semestre,

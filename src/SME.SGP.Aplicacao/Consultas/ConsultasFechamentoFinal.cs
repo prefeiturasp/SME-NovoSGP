@@ -87,7 +87,8 @@ namespace SME.SGP.Aplicacao
             if (alunosDaTurma == null || !alunosDaTurma.Any())
                 throw new NegocioException("Não foram encontrandos alunos para a turma informada.");
 
-            var tipoNota = repositorioNotaTipoValor.ObterPorTurmaId(turma.Id);
+            var turmaEOL = await servicoEOL.ObterDadosTurmaPorCodigo(turma.CodigoTurma);
+            var tipoNota = repositorioNotaTipoValor.ObterPorTurmaId(turma.Id, turmaEOL.TipoTurma);
             if (tipoNota == null)
                 throw new NegocioException("Não foi possível localizar o tipo de nota para esta turma.");
 
