@@ -100,7 +100,6 @@ namespace SME.SGP.Aplicacao
 
         private async Task<List<string>> ObterSupervisores(string codigoUe)
         {
-
             var supervisores = await mediator.Send(new ObterFuncionariosPorUeECargoQuery(codigoUe, (int)Cargo.Supervisor));
             if (supervisores.Any())
                 return supervisores.Select(f => f.CodigoRF).ToList();
