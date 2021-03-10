@@ -81,7 +81,14 @@ namespace SME.SGP.Dominio
                    (EhTurmaFund2 || (EhEJA() && (anoTurma == 3 || anoTurma == 4))) ||
                    (EhTurmaEnsinoMedio && quantidadeAulasExistentesNoDia > 2);
         }
-        public string NomeComModalidade() 
+        public string NomeComModalidade()
                  => $"{ModalidadeCodigo.ObterNomeCurto()}-{Nome}";
+
+        public bool EhTurmaEdFisicaOuItinerario()
+        {
+            var tipoTurma = (SME.SGP.Dominio.Enumerados.TipoTurma)TipoTurma;
+            return tipoTurma.EhUmDosValores(SME.SGP.Dominio.Enumerados.TipoTurma.EdFisica, SME.SGP.Dominio.Enumerados.TipoTurma.Itinerarios2AAno) &&
+                !tipoTurma.EhUmDosValores(SME.SGP.Dominio.Enumerados.TipoTurma.Regular);
+        }
     }
 }
