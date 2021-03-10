@@ -64,7 +64,7 @@ namespace SME.SGP.Aplicacao
                     Situacao = aluno.SituacaoMatricula,
                     SituacaoCodigo = aluno.CodigoSituacaoMatricula,
                     TipoResponsavel = ObterTipoResponsavel(aluno.TipoResponsavel),
-                    EhAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, anoLetivo))
+                    EhAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, anoLetivo)),
                     Frequencia=frequencia,
                 },
                 Anotacao = anotacao.Anotacao,

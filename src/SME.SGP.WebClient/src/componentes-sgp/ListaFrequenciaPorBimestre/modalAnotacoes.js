@@ -22,7 +22,7 @@ const ModalAnotacoes = () => {
     store => store.filtro.modalidades
   );
 
-  const [dados, setDados] = useState({});
+  const [dados, setDados] = useState();
 
   const dadosModalAnotacao = useSelector(
     store => store.listaFrequenciaPorBimestre.dadosModalAnotacao
@@ -43,7 +43,7 @@ const ModalAnotacoes = () => {
           setDados(retorno.data);
         }
       } else {
-        setDados([]);
+        setDados();
       }
     };
     obterAnotacao();
@@ -53,7 +53,7 @@ const ModalAnotacoes = () => {
     dispatch(setDadosModalAnotacao());
     dispatch(setExibirModalAnotacao(false));
   };
-  return (
+  return dados && dadosModalAnotacao?.id ? (
     <ModalConteudoHtml
       id={shortid.generate()}
       key="anotacao"
@@ -125,6 +125,8 @@ const ModalAnotacoes = () => {
         </div>
       </div>
     </ModalConteudoHtml>
+  ) : (
+    ''
   );
 };
 
