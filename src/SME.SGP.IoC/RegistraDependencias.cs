@@ -793,6 +793,8 @@ namespace SME.SGP.IoC
             
 
             services.TryAddScoped<IRelatorioDevolutivasUseCase, RelatorioDevolutivasUseCase>();
+            services.TryAddScoped<IObterBimestreAtualPorTurmaIdUseCase, ObterBimestreAtualPorTurmaIdUseCase>();
+            
         }
     }
 }

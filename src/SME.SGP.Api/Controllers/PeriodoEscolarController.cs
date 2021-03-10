@@ -84,5 +84,14 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar((Dominio.Modalidade)modalidade, anoLetivo, 0));
         }
+
+        [HttpGet("turmas/{turmaId}/bimestres/atual")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(BimestreDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> BimestreAtual(long turmaId, [FromServices] IObterBimestreAtualPorTurmaIdUseCase useCase)
+        {
+            return Ok(await useCase.Executar(turmaId));
+        }
     }
 }
