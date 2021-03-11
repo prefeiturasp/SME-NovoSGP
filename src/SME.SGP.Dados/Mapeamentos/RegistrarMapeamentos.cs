@@ -165,6 +165,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new PendenciaEncaminhamentoAEEMap());               
                config.AddMap(new PendenciaPlanoAEEMap());               
                config.AddMap(new NotificacaoPlanoAEEMap());
+               config.AddMap(new OcorrenciaTipoMap());
                config.ForDommel();
            });
         }
