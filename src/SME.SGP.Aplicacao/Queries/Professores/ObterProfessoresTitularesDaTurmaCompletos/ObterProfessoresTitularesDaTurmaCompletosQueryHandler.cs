@@ -24,9 +24,9 @@ namespace SME.SGP.Aplicacao
             var professores = await servicoEol.ObterProfessoresTitularesDisciplinas(request.CodigoTurma);
             if (!professores?.Any() ?? true) return retorno;
 
-            foreach(var professor in professores)
+            foreach (var professor in professores)
             {
-                if(!professor.ProfessorRf.Contains(","))
+                if (!professor.ProfessorRf.Contains(","))
                 {
                     retorno.Add(professor);
                     continue;
@@ -40,10 +40,10 @@ namespace SME.SGP.Aplicacao
 
         private void AdicionarProfessoresConcatenados(ProfessorTitularDisciplinaEol professor, List<ProfessorTitularDisciplinaEol> retorno)
         {
-            var professorRfs = professor.ProfessorRf.Split(',');
-            var professorNome = professor.ProfessorNome.Split(',');
+            var professorRfs = professor.ProfessorRf.Trim().Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            var professorNome = professor.ProfessorNome.Trim().Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
-            for(var index = 0;  index < professorRfs.Count(); index++)
+            for (var index = 0; index < professorRfs.Count(); index++)
             {
                 retorno.Add(new ProfessorTitularDisciplinaEol
                 {
