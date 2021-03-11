@@ -44,10 +44,10 @@ namespace SME.SGP.Aplicacao
 
             var frequencia = await mediator.Send(new ObterFrequenciaGeralAlunoQuery(aluno.CodigoAluno, turma.CodigoTurma));
 
-            return MapearParaDto(anotacao, motivoAusencia, aluno, frequencia);
+            return await MapearParaDto(anotacao, motivoAusencia, aluno, turma.AnoLetivo, frequencia);
         }
 
-        private AnotacaoFrequenciaAlunoCompletoDto MapearParaDto(AnotacaoFrequenciaAluno anotacao, MotivoAusencia motivoAusencia, AlunoPorTurmaResposta aluno, double frequencia)
+        private async Task<AnotacaoFrequenciaAlunoCompletoDto> MapearParaDto(Dominio.AnotacaoFrequenciaAluno anotacao, Dominio.MotivoAusencia motivoAusencia, AlunoPorTurmaResposta aluno, int anoLetivo, double frequencia)
         {
             return new AnotacaoFrequenciaAlunoCompletoDto()
             {
@@ -64,6 +64,7 @@ namespace SME.SGP.Aplicacao
                     Situacao = aluno.SituacaoMatricula,
                     SituacaoCodigo = aluno.CodigoSituacaoMatricula,
                     TipoResponsavel = ObterTipoResponsavel(aluno.TipoResponsavel),
+                    EhAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, anoLetivo)),
                     Frequencia=frequencia,
                 },
                 Anotacao = anotacao.Anotacao,

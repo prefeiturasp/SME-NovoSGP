@@ -56,6 +56,7 @@ const TabCadastroPlano = props => {
           dataAtualizacaoContato: aluno.dataAtualizacaoContato,
           codigoEOL: aluno.codigoAluno,
           turma: aluno.turmaEscola,
+          ehAtendidoAEE: aluno?.ehAtendidoAEE,
           numeroChamada: aluno.numeroAlunoChamada,
         };
         dispatch(setDadosObjectCardEstudante(dadosObjectCard));

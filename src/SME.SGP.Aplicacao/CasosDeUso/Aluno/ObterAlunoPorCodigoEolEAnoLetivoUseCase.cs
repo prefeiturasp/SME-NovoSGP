@@ -32,7 +32,8 @@ namespace SME.SGP.Aplicacao
                 NomeResponsavel = alunoPorTurmaResposta.NomeResponsavel,
                 TipoResponsavel = alunoPorTurmaResposta.TipoResponsavel,
                 CelularResponsavel = alunoPorTurmaResposta.CelularResponsavel,
-                DataAtualizacaoContato = alunoPorTurmaResposta.DataAtualizacaoContato
+                DataAtualizacaoContato = alunoPorTurmaResposta.DataAtualizacaoContato,
+                EhAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(alunoPorTurmaResposta.CodigoAluno, anoLetivo))
             };
 
             return alunoReduzido;

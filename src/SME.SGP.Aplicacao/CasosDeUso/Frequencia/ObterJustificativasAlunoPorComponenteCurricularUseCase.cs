@@ -13,19 +13,9 @@ namespace SME.SGP.Aplicacao
 
         }
 
-        public async Task<IEnumerable<JustificativaAlunoDto>> Executar(FiltroJustificativasAlunoPorComponenteCurricular dto)
+        public async Task<PaginacaoResultadoDto<JustificativaAlunoDto>> Executar(FiltroJustificativasAlunoPorComponenteCurricular dto)
         {
-            var justificativas = await mediator.Send(new ObterMotivoPorTurmaAlunoComponenteCurricularQuery(dto.TurmaId, dto.ComponenteCurricularCodigo, dto.AlunoCodigo));
-            MapearParaDto(justificativas);
-            return justificativas;
-        }
-
-        private void MapearParaDto(IEnumerable<JustificativaAlunoDto> listaJustificativas)
-        {
-            foreach(var justificativa in listaJustificativas)
-            {
-                justificativa.Motivo = UtilRegex.RemoverTagsHtml(justificativa.Motivo);
-            }
+            return await mediator.Send(new ObterMotivoPorTurmaAlunoComponenteCurricularBimestreQuery(dto.TurmaId, dto.ComponenteCurricularCodigo, dto.AlunoCodigo, dto.Bimestre));
         }
     }
 }

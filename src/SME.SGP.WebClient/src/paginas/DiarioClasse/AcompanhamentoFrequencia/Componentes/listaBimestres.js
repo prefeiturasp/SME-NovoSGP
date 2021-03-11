@@ -1,12 +1,10 @@
 import { Tabs } from 'antd';
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { ContainerTabsCard } from '~/componentes/tabs/tabs.css';
-import {
-  setBimestreSelecionado,
-  setExpandirLinhaFrequenciaAluno,
-} from '~/redux/modulos/acompanhamentoFrequencia/actions';
+import { setBimestreSelecionado } from '~/redux/modulos/acompanhamentoFrequencia/actions';
+import { setExpandirLinhaAusenciaEstudante } from '~/redux/modulos/listaFrequenciaPorBimestre/actions';
 import ListaAlunos from './ListaAlunos/listaAlunos';
 
 const { TabPane } = Tabs;
@@ -22,7 +20,7 @@ const ListaBimestres = props => {
 
   const onChangeTab = numeroBimestre => {
     if (componenteCurricularIdSelecionado) {
-      dispatch(setExpandirLinhaFrequenciaAluno([]));
+      dispatch(setExpandirLinhaAusenciaEstudante([]));
       dispatch(setBimestreSelecionado(numeroBimestre));
     }
   };

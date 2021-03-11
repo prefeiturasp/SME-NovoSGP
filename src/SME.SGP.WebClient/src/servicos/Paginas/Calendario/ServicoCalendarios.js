@@ -49,6 +49,11 @@ class ServicoCalendarios {
     const url = `v1/calendarios/frequencias/ausencias-motivos?codigoAluno=${codigoAluno}&codigoTurma=${codigoTurma}&bimestre=${bimestre}&anoLetivo=${anoLetivo}`;
     return api.get(url);
   };
+
+  obterFrequenciaAluno = (alunoCodigo, turmaCodigo) => {
+    const url = `v1/calendarios/frequencias/alunos/${alunoCodigo}/turmas/${turmaCodigo}/geral`;
+    return api.get(url);
+  };
 }
 
 export default new ServicoCalendarios();
