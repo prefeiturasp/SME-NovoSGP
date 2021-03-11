@@ -321,9 +321,14 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task<bool> VerificaNotasTodosComponentesCurriculares(string alunoCodigo, Turma turma, long? periodoEscolarId)
         {
-            var notasAluno = await repositorioConselhoClasseNota.ObterNotasAlunoAsync(alunoCodigo, turma.CodigoTurma, periodoEscolarId);
+            var turmasCodigos = await mediator.Send(new ObterCodigoTurmaRegularPorAnoLetivoAlunoQuery(turma.AnoLetivo, alunoCodigo, turma.ObterTiposRegularesDiferentes()));
+            turmasCodigos = turmasCodigos.Concat(new string[] { turma.CodigoTurma });
 
-            var componentesCurriculares = await ObterComponentesTurma(turma);
+            var notasAluno = await repositorioConselhoClasseNota.ObterNotasAlunoPorTurmasAsync(alunoCodigo, turmasCodigos, periodoEscolarId);
+            //var notasAluno = await repositorioConselhoClasseNota.ObterNotasAlunoAsync(alunoCodigo, turma.CodigoTurma, periodoEscolarId);
+
+            //var componentesCurriculares = await ObterComponentesTurma(turma);
+            var componentesCurriculares = await ObterComponentesTurmas(turmasCodigos);
 
             // Checa se todas as disciplinas da turma receberam nota
             foreach (var componenteCurricular in componentesCurriculares.Where(c => c.LancaNota))
@@ -331,6 +336,25 @@ namespace SME.SGP.Dominio.Servicos
                     return false;
 
             return true;
+        }
+
+        private async Task<IEnumerable<DisciplinaDto>> ObterComponentesTurmas(string[] turmasCodigo)
+        {
+            var componentesTurma = new List<DisciplinaDto>();
+            var componentesCurriculares = await consultasDisciplina.ObterDisciplinasPorTurma(turma.CodigoTurma, false);
+            if (componentesCurriculares == null)
+                throw new NegocioException("Não localizado disciplinas para a turma no EOL!");
+
+            componentesTurma.AddRange(componentesCurriculares.Where(c => !c.Regencia));
+            foreach (var componenteCurricular in componentesCurriculares.Where(c => c.Regencia))
+            {
+                // Adiciona lista de componentes relacionados a regencia
+                componentesTurma.AddRange(
+                    consultasDisciplina.MapearParaDto(
+                        await consultasDisciplina.ObterComponentesRegencia(turma, componenteCurricular.CodigoComponenteCurricular)));
+            }
+
+            return componentesTurma;
         }
 
         private async Task<IEnumerable<DisciplinaDto>> ObterComponentesTurma(Turma turma)

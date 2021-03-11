@@ -124,5 +124,21 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { alunoCodigo, turmaCodigo });
         }
+
+        public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasAlunoPorTurmasAsync(string alunoCodigo, IEnumerable<string> turmasCodigos, long? periodoEscolarId)
+        {
+            var condicaoPeriodoEscolar = periodoEscolarId.HasValue ? "ft.periodo_escolar_id = @periodoEscolarId" : "ft.periodo_escolar_id is null";
+            var query = $@"select ccn.componente_curricular_codigo as ComponenteCurricularCodigo, ccn.conceito_id as ConceitoId, ccn.nota as Nota
+                  from fechamento_turma ft
+                 inner join turma t on t.id = ft.turma_id 
+                 inner join conselho_classe cc on cc.fechamento_turma_id = ft.id
+                 inner join conselho_classe_aluno cca on cca.conselho_classe_id  = cc.id
+                 inner join conselho_classe_nota ccn on ccn.conselho_classe_aluno_id = cca.id 
+                 where {condicaoPeriodoEscolar}
+                   and t.turma_id = ANY(@turmasCodigos)
+                   and cca.aluno_codigo = @alunoCodigo ";
+
+            return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { alunoCodigo, turmasCodigos, periodoEscolarId });
+        }
     }
 }

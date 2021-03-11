@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SME.SGP.Dominio
 {
     public class Turma
     {
+        public static readonly int[] TiposRegulares = { 1, 2, 7 };
         public string Ano { get; set; }
         public int AnoLetivo { get; set; }
         public string CodigoTurma { get; set; }
@@ -88,6 +91,13 @@ namespace SME.SGP.Dominio
         {
             var tipoTurma = (SME.SGP.Dominio.Enumerados.TipoTurma)TipoTurma;
             return tipoTurma.EhUmDosValores(SME.SGP.Dominio.Enumerados.TipoTurma.EdFisica, SME.SGP.Dominio.Enumerados.TipoTurma.Itinerarios2AAno);
+        }
+
+        public IEnumerable<int> ObterTiposRegularesDiferentes()
+        {
+            return TiposRegulares
+                .Where(a => a != TipoTurma)
+                .ToList();
         }
     }
 }
