@@ -321,8 +321,8 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task<bool> VerificaNotasTodosComponentesCurriculares(string alunoCodigo, Turma turma, long? periodoEscolarId)
         {
-            var turmasCodigos = await mediator.Send(new ObterCodigoTurmaRegularPorAnoLetivoAlunoQuery(turma.AnoLetivo, alunoCodigo, turma.ObterTiposRegularesDiferentes()));
-            turmasCodigos = turmasCodigos.Concat(new string[] { turma.CodigoTurma });
+            var turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, turma.ObterTiposRegularesDiferentes()));
+            turmasCodigos = turmasCodigos.Concat(new string[] { turma.CodigoTurma }).ToArray();
 
             var notasAluno = await repositorioConselhoClasseNota.ObterNotasAlunoPorTurmasAsync(alunoCodigo, turmasCodigos, periodoEscolarId);
             //var notasAluno = await repositorioConselhoClasseNota.ObterNotasAlunoAsync(alunoCodigo, turma.CodigoTurma, periodoEscolarId);
