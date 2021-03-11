@@ -205,6 +205,7 @@ namespace SME.SGP.Dados.Repositorios
 	                    dre.dre_id as DRECodigo,
                         dre.abreviacao as DREAbreviacao,
 	                    t.modalidade_codigo as TurmaModalidade,
+	                    ue.ue_id as UECodigo,
 	                    ue.nome as UENome,
 	                    ue.tipo_escola as UETipo,
 	                    pa.situacao as Situacao,
