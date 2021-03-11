@@ -426,6 +426,8 @@ namespace SME.SGP.Aplicacao.Integracoes
             var codigosDres = ObterCodigosDres();
             string url = $"abrangencia/estrutura-vigente";
 
+            
+
             if (codigosDres != null && codigosDres.Length > 0)
             {
                 resultado = new EstruturaInstitucionalRetornoEolDTO();
@@ -873,9 +875,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         private string[] ObterCodigosDres()
         {
-            string url = $"abrangencia/codigos-dres";
-
-            
+            string url = $"abrangencia/codigos-dres";            
 
             var resposta = httpClient.GetAsync(url).Result;
 
@@ -886,7 +886,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             }
             else
             {
-                SentrySdk.AddBreadcrumb($"Ocorreu um erro na tentativa de buscar os codigos das Dres no EOL - HttpCode {resposta.StatusCode} - Body {resposta.Content?.ReadAsStringAsync()?.Result ?? string.Empty}");
+                SentrySdk.AddBreadcrumb($"Ocorreu um erro na tentativa de buscar os codigos das Dres no EOL - HttpCode {resposta.StatusCode} - Body {resposta.Content?.ReadAsStringAsync()?.Result ?? string.Empty} - URL: {httpClient.BaseAddress}");
                 return new string[0];
             }
         }
