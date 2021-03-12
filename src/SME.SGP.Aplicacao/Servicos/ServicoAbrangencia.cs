@@ -110,7 +110,7 @@ namespace SME.SGP.Aplicacao.Servicos
                 await SincronizarEstruturaInstitucional(estruturaInstitucionalVigente);
             else
             {
-                var erro = new NegocioException($"Não foi possível obter dados de estrutura institucional do EOL. {estruturaInstitucionalVigente?.Dres?.Count}");
+                var erro = new NegocioException($"_Não foi possível obter dados de estrutura institucional do EOL. {estruturaInstitucionalVigente?.Dres?.Count}");
                 SentrySdk.CaptureException(erro);
                 throw erro;
             }
