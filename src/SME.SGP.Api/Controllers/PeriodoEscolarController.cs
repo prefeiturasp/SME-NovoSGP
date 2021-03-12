@@ -87,11 +87,11 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar((Dominio.Modalidade)modalidade, anoLetivo, 0));
         }
 
-        [HttpGet("turmas/{turmaId}/periodo-letivo")]
+        [HttpGet("turmas/{turmaCodigo}/periodo-letivo")]
         [ProducesResponseType(204)]
-        [ProducesResponseType(typeof(IEnumerable<PeriodoEscolarLetivoTurmaDto>), 200)]
+        [ProducesResponseType(typeof(PeriodoEscolarLetivoTurmaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterPeriodoLetivoTurma(string turmaCodigo, IObterPeriodoLetivoTurmaUseCase useCase)
+        public async Task<IActionResult> ObterPeriodoLetivoTurma(string turmaCodigo, [FromServices] IObterPeriodoLetivoTurmaUseCase useCase)
         {
             return Ok(await useCase.Executar(turmaCodigo));
         }

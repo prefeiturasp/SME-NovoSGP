@@ -58,10 +58,10 @@ const DevolutivasLista = () => {
       const periodoLetivoTurmaResponse = await ServicoPeriodoEscolar
         .obterPeriodoLetivoTurma(turmaSelecionada.turma).catch(e => erros(e));
       if (periodoLetivoTurmaResponse?.data) {
-        var datas = [moment(periodoLetivoTurmaResponse.data.PeriodoInicio).format('YYYY-MM-DD')];
-        var qtdDias = periodoLetivoTurmaResponse.data.PeriodoFim - periodoLetivoTurmaResponse.data.PeriodoInicio;
-        for (let indice = 0; indice < qtdDias, indice++) {
-          var novaData = moment(periodoLetivoTurmaResponse.data.PeriodoInicio).add(1, 'days');
+        var datas = [moment(periodoLetivoTurmaResponse.data.periodoInicio).format('YYYY-MM-DD')];
+        var qtdDias = moment(periodoLetivoTurmaResponse.data.periodoFim).diff(periodoLetivoTurmaResponse.data.periodoInicio, 'days');
+        for (let indice = 1; indice <= qtdDias; indice++) {
+          var novaData = moment(periodoLetivoTurmaResponse.data.periodoInicio).add(indice, 'days');
           datas.push(novaData.format('YYYY-MM-DD'));
         }
         setPeriodoHabilitado(datas);
@@ -184,10 +184,8 @@ const DevolutivasLista = () => {
   const onClickNovo = () => {
     history.push(`${RotasDto.DEVOLUTIVAS}/novo`);
   };
-  const onClickEditar = item => {
-    if (permissoesTela.podeAlterar) {
+  const onClickEditar = item => {    
       history.push(`${RotasDto.DEVOLUTIVAS}/editar/${item.id}`);
-    }
   };
 
   return (
@@ -262,6 +260,7 @@ const DevolutivasLista = () => {
                   !listaComponenteCurriculare ||
                   !componenteCurricularSelecionado
                 }
+                diasParaHabilitar={periodoHabilitado}
               />
             </div>
           </div>
