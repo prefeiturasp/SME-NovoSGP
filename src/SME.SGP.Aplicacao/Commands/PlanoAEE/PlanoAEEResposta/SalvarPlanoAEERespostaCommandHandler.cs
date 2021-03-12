@@ -45,7 +45,7 @@ namespace SME.SGP.Aplicacao.Commands
                 resposta.RespostaId = long.Parse(request.Resposta);
             }
 
-            if (EnumExtension.EhUmDosValores(request.TipoQuestao, new Enum[] { TipoQuestao.Frase, TipoQuestao.Texto, TipoQuestao.AtendimentoClinico, TipoQuestao.FrequenciaEstudanteAEE }))
+            if (EnumExtension.EhUmDosValores(request.TipoQuestao, new Enum[] { TipoQuestao.Frase, TipoQuestao.Texto, TipoQuestao.AtendimentoClinico, TipoQuestao.FrequenciaEstudanteAEE, TipoQuestao.PeriodoEscolar }))
             {
                 resposta.Texto = request.Resposta;
             }
