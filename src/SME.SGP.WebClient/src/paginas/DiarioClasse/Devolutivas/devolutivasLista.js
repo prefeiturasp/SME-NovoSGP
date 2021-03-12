@@ -16,6 +16,7 @@ import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
 import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 import RotasDto from '~/dtos/rotasDto';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
+import ServicoPeriodoEscolar from '~/servicos/Paginas/Calendario/ServicoPeriodoEscolar';
 
 const DevolutivasLista = () => {
   const usuario = useSelector(state => state.usuario);
@@ -25,7 +26,6 @@ const DevolutivasLista = () => {
     store => store.filtro.modalidades
   );
   const turmaCodigo = turmaSelecionada ? turmaSelecionada.turma : 0;
-
   const [
     listaComponenteCurriculare,
     setListaComponenteCurriculare,
@@ -40,6 +40,7 @@ const DevolutivasLista = () => {
   const [filtro, setFiltro] = useState({});
   const permissoesTela = usuario.permissoes[RotasDto.DEVOLUTIVAS];
   const [somenteConsulta, setSomenteConsulta] = useState(false);
+  const [periodoHabilitado, setPeriodoHabilitado] = useState();
 
   useEffect(() => {
     const naoSetarSomenteConsultaNoStore = !ehTurmaInfantil(
@@ -49,8 +50,25 @@ const DevolutivasLista = () => {
     setSomenteConsulta(
       verificaSomenteConsulta(permissoesTela, naoSetarSomenteConsultaNoStore)
     );
+    obterPeriodoLetivoTurma();
   }, [turmaSelecionada, permissoesTela, modalidadesFiltroPrincipal]);
 
+  const obterPeriodoLetivoTurma = async() => {
+    if (turmaSelecionada && turmaSelecionada.turma) {
+      const periodoLetivoTurmaResponse = await ServicoPeriodoEscolar
+        .obterPeriodoLetivoTurma(turmaSelecionada.turma).catch(e => erros(e));
+      if (periodoLetivoTurmaResponse?.data) {
+        var datas = [moment(periodoLetivoTurmaResponse.data.PeriodoInicio).format('YYYY-MM-DD')];
+        var qtdDias = periodoLetivoTurmaResponse.data.PeriodoFim - periodoLetivoTurmaResponse.data.PeriodoInicio;
+        for (let indice = 0; indice < qtdDias, indice++) {
+          var novaData = moment(periodoLetivoTurmaResponse.data.PeriodoInicio).add(1, 'days');
+          datas.push(novaData.format('YYYY-MM-DD'));
+        }
+        setPeriodoHabilitado(datas);
+      }      
+    }
+  }
+  
   const colunas = [
     {
       title: 'Intervalo de Datas',
