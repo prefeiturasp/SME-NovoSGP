@@ -134,6 +134,11 @@ namespace SME.SGP.Dominio
                 || PerfilAtual == Dominio.Perfis.PERFIL_PROFESSOR_INFANTIL;
         }
 
+        public bool EhAbrangenciaUEECP()
+        {
+            return Perfis.Any(x => x.Tipo == TipoPerfil.UE && x.CodigoPerfil == Dominio.Perfis.PERFIL_CP);
+        }
+
         public bool EhProfessorCj()
         {
             return PerfilAtual == Dominio.Perfis.PERFIL_CJ

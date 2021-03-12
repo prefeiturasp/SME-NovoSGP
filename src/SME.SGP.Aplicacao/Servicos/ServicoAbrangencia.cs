@@ -95,14 +95,22 @@ namespace SME.SGP.Aplicacao.Servicos
 
         public async Task SincronizarEstruturaInstitucionalVigenteCompleta()
         {
+            EstruturaInstitucionalRetornoEolDTO estruturaInstitucionalVigente;
 
-            var estruturaInstitucionalVigente = servicoEOL.ObterEstruturaInstuticionalVigentePorDre();
+            try
+            {
+                estruturaInstitucionalVigente = servicoEOL.ObterEstruturaInstuticionalVigentePorDre();
+            }
+            catch (Exception ex)
+            {
+                throw new NegocioException($"Erro ao obter estrutura organizacional vigente no EOL. Detalhe: {ex}");
+            }
 
             if (estruturaInstitucionalVigente != null && estruturaInstitucionalVigente.Dres != null && estruturaInstitucionalVigente.Dres.Count > 0)
                 await SincronizarEstruturaInstitucional(estruturaInstitucionalVigente);
             else
             {
-                var erro = new NegocioException("Não foi possível obter dados de estrutura institucional do EOL");
+                var erro = new NegocioException($"_Não foi possível obter dados de estrutura institucional do EOL. {estruturaInstitucionalVigente?.Dres?.Count}");
                 SentrySdk.CaptureException(erro);
                 throw erro;
             }
@@ -301,9 +309,15 @@ namespace SME.SGP.Aplicacao.Servicos
 
             repositorioAbrangencia.InserirAbrangencias(novas.Select(x => new Abrangencia() { Perfil = perfil, UeId = x.Id }), login);
 
-            var paraAtualizar = abrangenciaSintetica.Where(x => !ues.Select(y => y.Id).Contains(x.UeId)).Select(x => x.Id);
+            var paraAtualizar = abrangenciaSintetica.Where(x => !ues.Select(y => y.Id).Contains(x.UeId));
 
-            repositorioAbrangencia.AtualizaAbrangenciaHistorica(paraAtualizar);
+            var perfisHistorico = paraAtualizar.Where(x => x.EhPerfilProfessor()).Select(x => x.Id);
+
+            repositorioAbrangencia.AtualizaAbrangenciaHistorica(perfisHistorico);
+
+            var perfisGestao = paraAtualizar.Where(x => !x.EhPerfilProfessor()).Select(x => x.Id);
+
+            repositorioAbrangencia.ExcluirAbrangencias(perfisGestao);
         }
 
         private void SincronizarAbrangenciPorDres(IEnumerable<AbrangenciaSinteticaDto> abrangenciaSintetica, IEnumerable<Dre> dres, string login, Guid perfil)
@@ -312,9 +326,15 @@ namespace SME.SGP.Aplicacao.Servicos
 
             repositorioAbrangencia.InserirAbrangencias(novas.Select(x => new Abrangencia() { Perfil = perfil, DreId = x.Id }), login);
 
-            var paraAtualizar = abrangenciaSintetica.Where(x => !dres.Select(y => y.Id).Contains(x.DreId)).Select(x => x.Id);
+            var paraAtualizar = abrangenciaSintetica.Where(x => !dres.Select(y => y.Id).Contains(x.DreId));
 
-            repositorioAbrangencia.AtualizaAbrangenciaHistorica(paraAtualizar);
+            var perfisHistorico = paraAtualizar.Where(x => x.EhPerfilProfessor()).Select(x => x.Id);
+
+            repositorioAbrangencia.AtualizaAbrangenciaHistorica(perfisHistorico);
+
+            var perfisGestao = paraAtualizar.Where(x => !x.EhPerfilProfessor()).Select(x => x.Id);
+
+            repositorioAbrangencia.ExcluirAbrangencias(perfisGestao);
         }
 
         private void SincronizarCiclos(IEnumerable<CicloRetornoDto> ciclos)
