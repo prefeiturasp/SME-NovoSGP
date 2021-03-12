@@ -1,13 +1,15 @@
 import { Tooltip } from 'antd';
 import PropTypes from 'prop-types';
-import React from 'react';
-import { useDispatch } from 'react-redux';
+import React, { createRef, useRef } from 'react';
+import ReactDOM from 'react-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import shortid from 'shortid';
 import { LabelSemDados } from '~/componentes';
 import notasConceitos from '~/dtos/notasConceitos';
 import {
   setModoEdicaoGeral,
   setModoEdicaoGeralNotaFinal,
+  setExpandirLinha,
 } from '~/redux/modulos/notasConceitos/actions';
 
 import Ordenacao from '../Ordenacao/ordenacao';
@@ -35,6 +37,10 @@ const Avaliacao = props => {
     ehRegencia,
     disciplinaSelecionada,
   } = props;
+
+  const expandirLinha = useSelector(
+    store => store.notasConceitos.expandirLinha
+  );
 
   const onChangeNotaConceito = (nota, valorNovo) => {
     if (!desabilitarCampos && nota.podeEditar) {
@@ -99,11 +105,96 @@ const Avaliacao = props => {
       : '';
   };
 
-  const montarCampoNotaConceito = nota => {
+  const acharAluno = (aluno, numero) => {
+    return (
+      dados &&
+      dados?.alunos
+        .map((valor, index, elementos) => {
+          if (valor.id === aluno?.id) {
+            return elementos[index + numero];
+          }
+          return '';
+        })
+        .filter(item => item?.id)
+    );
+  };
+  const moverCursor = async (
+    alunoEscolhido,
+    indexElemento,
+    item,
+    regencia = false
+  ) => {
+    const elemento = document.getElementsByName(`${item}${alunoEscolhido}`);
+    let elementoCursor = elemento[indexElemento];
+    if (regencia) {
+      await new Promise(resolve => setTimeout(resolve, 600));
+      // eslint-disable-next-line prefer-destructuring
+      elementoCursor = elemento[0].getElementsByTagName('input')[0];
+    }
+    if (elementoCursor) {
+      elementoCursor.focus();
+      elementoCursor.select();
+    }
+  };
+
+  const escolherDirecao = keyCode => {
+    switch (keyCode) {
+      case 38:
+        return -1;
+      case 40:
+        return 1;
+      default:
+        return 0;
+    }
+  };
+
+  const acharTd = e => {
+    return e.nativeEvent.path.find(item => item.localName === 'td');
+  };
+
+  const clicarSetas = (
+    e,
+    aluno,
+    label = '',
+    indexNotaConceito = 0,
+    regencia = false
+  ) => {
+    const direcao = escolherDirecao(e.keyCode);
+    const disciplina = label.toLowerCase();
+
+    if (regencia) {
+      let novaLinha = [];
+      const novoIndex = indexNotaConceito + direcao;
+      if (expandirLinha[novoIndex]) {
+        expandirLinha[novoIndex] = false;
+        novaLinha = expandirLinha;
+      } else {
+        novaLinha[novoIndex] = true;
+      }
+      dispatch(setExpandirLinha([...novaLinha]));
+    }
+    const elementoTD = acharTd(e);
+    const indexElemento = elementoTD?.cellIndex - 2;
+
+    // console.log('elementoTD', elementoTD);
+    // console.log('indexElemento', indexElemento);
+    // console.log('e', e);
+
+    const alunoEscolhido = direcao && acharAluno(aluno, direcao);
+    if (alunoEscolhido.length) {
+      const item = regencia ? disciplina : 'aluno';
+      moverCursor(alunoEscolhido[0].id, indexElemento, item, regencia);
+    }
+  };
+
+  const montarCampoNotaConceito = (nota, aluno) => {
     switch (Number(notaTipo)) {
       case Number(notasConceitos.Notas):
         return (
           <CampoNota
+            esconderSetas
+            name={`aluno${aluno.id}`}
+            clicarSetas={e => clicarSetas(e, aluno)}
             nota={nota}
             onChangeNotaConceito={valorNovo =>
               onChangeNotaConceito(nota, valorNovo)
@@ -140,10 +231,19 @@ const Avaliacao = props => {
     return aluno.notasBimestre[0];
   };
 
-  const montarCampoNotaConceitoFinal = (aluno, label, indexNotaConceito) => {
+  const montarCampoNotaConceitoFinal = (
+    aluno,
+    label,
+    indexNotaConceito,
+    regencia
+  ) => {
     if (Number(notaTipo) === Number(notasConceitos.Notas)) {
       return (
         <CampoNotaFinal
+          name={`aluno${aluno.id}`}
+          clicarSetas={e =>
+            clicarSetas(e, aluno, label, indexNotaConceito, regencia)
+          }
           montaNotaFinal={() => montaNotaFinal(aluno, indexNotaConceito)}
           onChangeNotaConceitoFinal={(nota, valor) =>
             onChangeNotaConceitoFinal(nota, valor)
@@ -274,7 +374,7 @@ const Avaliacao = props => {
                                     key={shortid.generate()}
                                     className="width-150"
                                   >
-                                    {montarCampoNotaConceito(nota)}
+                                    {montarCampoNotaConceito(nota, aluno)}
                                     {nota.ausente ? (
                                       <Tooltip title={descricaoAlunoAusente}>
                                         <i className="fas fa-user-times icon-aluno-ausente" />
@@ -309,7 +409,8 @@ const Avaliacao = props => {
                             montarCampoNotaConceitoFinal(
                               aluno,
                               label,
-                              indexNotaConceito
+                              indexNotaConceito,
+                              true
                             )
                           }
                         />

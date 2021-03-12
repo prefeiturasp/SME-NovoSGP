@@ -16,6 +16,8 @@ const CampoNotaFinal = props => {
     mediaAprovacaoBimestre,
     label,
     podeLancarNotaFinal,
+    clicarSetas,
+    name,
   } = props;
 
   const modoEdicaoGeral = useSelector(
@@ -115,7 +117,9 @@ const CampoNotaFinal = props => {
     <Tooltip placement="bottom" title={abaixoDaMedia ? 'Abaixo da Média' : ''}>
       <div>
         <CampoNumero
-          label={label ? label : ''}
+          name={name}
+          onKeyDown={clicarSetas}
+          label={label || ''}
           onChange={valorNovo => {
             const invalido = valorInvalido(valorNovo);
             if (!invalido && editouCampo(notaValorAtual, valorNovo)) {
@@ -125,7 +129,7 @@ const CampoNotaFinal = props => {
           value={notaValorAtual}
           min={0}
           max={10}
-          step={0.5}
+          step={0}
           placeholder="Nota Final"
           disabled={
             desabilitarCampo ||
@@ -153,6 +157,8 @@ CampoNotaFinal.defaultProps = {
   podeEditar: PropTypes.bool,
   periodoFim: PropTypes.string,
   mediaAprovacaoBimestre: PropTypes.number,
+  clicarSetas: PropTypes.func,
+  name: PropTypes.string,
 };
 
 CampoNotaFinal.propTypes = {
@@ -162,6 +168,8 @@ CampoNotaFinal.propTypes = {
   podeEditar: false,
   periodoFim: '',
   mediaAprovacaoBimestre: 0,
+  clicarSetas: () => {},
+  name: '',
 };
 
 export default CampoNotaFinal;

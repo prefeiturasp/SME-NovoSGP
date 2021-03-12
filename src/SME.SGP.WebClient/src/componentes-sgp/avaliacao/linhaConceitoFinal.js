@@ -34,6 +34,7 @@ const LinhaConceitoFinal = props => {
                         <div
                           style={{ paddingRight: '22px' }}
                           key={shortid.generate()}
+                          name={`${item.disciplina?.toLowerCase()}${aluno?.id}`}
                         >
                           {montarCampoNotaConceitoFinal(item.disciplina, index)}
                         </div>
