@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso.Turma;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -83,6 +85,15 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterBimestresModalidadeEAno(int modalidade, int anoLetivo, [FromServices] IObterPeriodosEscolaresPorAnoEModalidadeTurmaUseCase useCase)
         {
             return Ok(await useCase.Executar((Dominio.Modalidade)modalidade, anoLetivo, 0));
+        }
+
+        [HttpGet("turmas/{turmaId}/periodo-letivo")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(IEnumerable<PeriodoEscolarLetivoTurmaDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ObterPeriodoLetivoTurma(string turmaCodigo, IObterPeriodoLetivoTurmaUseCase useCase)
+        {
+            return Ok(await useCase.Executar(turmaCodigo));
         }
     }
 }
