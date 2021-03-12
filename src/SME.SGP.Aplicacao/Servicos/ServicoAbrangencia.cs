@@ -95,8 +95,16 @@ namespace SME.SGP.Aplicacao.Servicos
 
         public async Task SincronizarEstruturaInstitucionalVigenteCompleta()
         {
+            EstruturaInstitucionalRetornoEolDTO estruturaInstitucionalVigente;
 
-            var estruturaInstitucionalVigente = servicoEOL.ObterEstruturaInstuticionalVigentePorDre();
+            try
+            {
+                estruturaInstitucionalVigente = servicoEOL.ObterEstruturaInstuticionalVigentePorDre();
+            }
+            catch (Exception ex)
+            {
+                throw new NegocioException($"Erro ao obter estrutura organizacional vigente no EOL. Detalhe: {ex}");
+            }
 
             if (estruturaInstitucionalVigente != null && estruturaInstitucionalVigente.Dres != null && estruturaInstitucionalVigente.Dres.Count > 0)
                 await SincronizarEstruturaInstitucional(estruturaInstitucionalVigente);
