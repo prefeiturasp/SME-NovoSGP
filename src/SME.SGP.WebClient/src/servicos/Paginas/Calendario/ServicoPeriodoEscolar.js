@@ -15,6 +15,11 @@ class ServicoPeriodoEscolar {
         const url = `v1/periodo-escolar/modalidades/${modalidade}/ano-letivo/${anoLetivo}/bimestres`;
         return api.get(url);
     };
+
+    obterPeriodoLetivoTurma = async (codigoTurma) => {
+        const url = `v1/periodo-escolar/turmas/${codigoTurma}/periodo-letivo`;
+        return api.get(url);
+    }
 };
 
 export default new ServicoPeriodoEscolar();
