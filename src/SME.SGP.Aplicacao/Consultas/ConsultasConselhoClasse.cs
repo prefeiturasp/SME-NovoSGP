@@ -59,11 +59,11 @@ namespace SME.SGP.Aplicacao
            
             if (turma.EhTurmaEdFisicaOuItinerario())
             {
-                //var tipos = new List<int>() {
-                //        (int)TipoTurma.Regular
-                //    };
-                //var codigosTurmasRelacionadas = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, tipos));
-                //turma = await ObterTurma(codigosTurmasRelacionadas.FirstOrDefault());
+                var tipos = new List<TipoTurma>() {
+                        TipoTurma.Regular
+                    };
+                var codigosTurmasRelacionadas = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, tipos));
+                turma = await ObterTurma(codigosTurmasRelacionadas.FirstOrDefault());
             }
 
             if (bimestre == 0 && !ehFinal)
