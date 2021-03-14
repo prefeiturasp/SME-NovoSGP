@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SME.SGP.Dominio.Enumerados;
+using System;
 
 namespace SME.SGP.Dominio
 {
@@ -7,7 +8,7 @@ namespace SME.SGP.Dominio
         public string Ano { get; set; }
         public int AnoLetivo { get; set; }
         public string CodigoTurma { get; set; }
-        public int TipoTurma { get; set; }
+        public TipoTurma TipoTurma { get; set; }
         public DateTime DataAtualizacao { get; set; }
         public long Id { get; set; }
         public Modalidade ModalidadeCodigo { get; set; }
