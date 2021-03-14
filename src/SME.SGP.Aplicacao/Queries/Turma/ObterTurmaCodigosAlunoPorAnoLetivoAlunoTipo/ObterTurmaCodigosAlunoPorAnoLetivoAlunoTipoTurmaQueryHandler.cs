@@ -2,7 +2,6 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,13 +19,13 @@ namespace SME.SGP.Aplicacao
 
         public async Task<string[]> Handle(ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery request, CancellationToken cancellationToken)
         {
-            var tiposTurma = String.Join("&tiposTurma=", request.TiposTurmas);
+            var tiposTurma = String.Join("&tiposTurma=", (IEnumerable<int>)request.TiposTurmas);
             var httpClient = httpClientFactory.CreateClient("servicoEOL");
             var resposta = await httpClient.GetAsync($"turmas/anos-letivos/{request.AnoLetivo}/alunos/{request.CodigoAluno}/regulares?tiposTurma={tiposTurma}");
             if (resposta.IsSuccessStatusCode)
             {
                 var json = await resposta.Content.ReadAsStringAsync();
-                return  JsonConvert.DeserializeObject<string[]>(json);
+                return JsonConvert.DeserializeObject<string[]>(json);
             }
             return new string[] { };
         }

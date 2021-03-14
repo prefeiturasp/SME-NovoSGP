@@ -54,9 +54,7 @@ namespace SME.SGP.Aplicacao
 
                 if (turma.EhTurmaEdFisicaOuItinerario())
                 {
-                    var tipos = new List<int>() {
-                        (int)TipoTurma.Regular
-                    };
+                    var tipos = new List<TipoTurma>() { TipoTurma.Regular };
                     var codigosTurmasRelacionadas = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, tipos));
                     turma = await consultasTurma.ObterPorCodigo(codigosTurmasRelacionadas.FirstOrDefault());
                 }
