@@ -161,17 +161,17 @@ namespace SME.SGP.Aplicacao
                 await consultasFechamentoNota.ObterNotasAlunoBimestreAsync(fechamentoTurmaId, alunoCodigo) :
                 await consultasConselhoClasseNota.ObterNotasFinaisBimestresAlunoAsync(alunoCodigo, turmaCodigo);
 
-            var tiposTurma = new List<int>()
+            var tiposTurma = new List<TipoTurma>()
             {
-                (int)TipoTurma.Regular,
-                (int)TipoTurma.EdFisica,
-                (int)TipoTurma.Itinerarios2AAno
+                TipoTurma.Regular,
+                TipoTurma.EdFisica,
+                TipoTurma.Itinerarios2AAno
             };
 
             var turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, tiposTurma));
             Usuario usuarioAtual = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-            var disciplinasDaTurmaEol = await mediator.Send(new ObterComponentesCurricularesPorTurmasCodigoQuery(turmasCodigos, usuarioAtual.PerfilAtual, usuarioAtual.Login, turma.EnsinoEspecial));
+            var disciplinasDaTurmaEol = await mediator.Send(new ObterComponentesCurricularesPorTurmasCodigoQuery(turmasCodigos, usuarioAtual.PerfilAtual, usuarioAtual.Login, turma.EnsinoEspecial, turma.TurnoParaComponentesCurriculares));
 
             var disciplinasDaTurma = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(disciplinasDaTurmaEol.Select(x => x.CodigoComponenteCurricular).Distinct().ToArray()));
                         
