@@ -1,13 +1,17 @@
-﻿using System;
+﻿using SME.SGP.Dominio.Enumerados;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SME.SGP.Dominio
 {
     public class Turma
     {
+        public static readonly TipoTurma[] TiposRegulares = { TipoTurma.Regular, TipoTurma.EdFisica, TipoTurma.Itinerarios2AAno };
         public string Ano { get; set; }
         public int AnoLetivo { get; set; }
         public string CodigoTurma { get; set; }
-        public int TipoTurma { get; set; }
+        public TipoTurma TipoTurma { get; set; }
         public DateTime DataAtualizacao { get; set; }
         public long Id { get; set; }
         public Modalidade ModalidadeCodigo { get; set; }
@@ -88,6 +92,24 @@ namespace SME.SGP.Dominio
         {
             var tipoTurma = (SME.SGP.Dominio.Enumerados.TipoTurma)TipoTurma;
             return tipoTurma.EhUmDosValores(SME.SGP.Dominio.Enumerados.TipoTurma.EdFisica, SME.SGP.Dominio.Enumerados.TipoTurma.Itinerarios2AAno);
+        }
+
+        public IEnumerable<TipoTurma> ObterTiposRegularesDiferentes()
+        {
+            return TiposRegulares
+                .Where(a => a != TipoTurma)
+                .ToList();
+        }
+        public bool DeveVerificarRegraRegulares()
+        {
+            return TiposRegulares.Any(a => a == TipoTurma);
+        }
+        public int TurnoParaComponentesCurriculares
+        {
+            get
+            {
+                return ModalidadeCodigo == Modalidade.Fundamental ? QuantidadeDuracaoAula : 0;
+            }
         }
     }
 }

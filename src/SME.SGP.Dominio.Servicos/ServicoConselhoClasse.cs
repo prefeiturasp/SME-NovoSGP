@@ -321,9 +321,17 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task<bool> VerificaNotasTodosComponentesCurriculares(string alunoCodigo, Turma turma, long? periodoEscolarId)
         {
-            var notasAluno = await repositorioConselhoClasseNota.ObterNotasAlunoAsync(alunoCodigo, turma.CodigoTurma, periodoEscolarId);
+            string[] turmasCodigos;
+            if (turma.DeveVerificarRegraRegulares() && turma.EhTurmaEdFisicaOuItinerario())
+            {
+                turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, turma.ObterTiposRegularesDiferentes()));
+                turmasCodigos = turmasCodigos.Concat(new string[] { turma.CodigoTurma }).ToArray();
+            }                
+            else turmasCodigos = new string[] { turma.CodigoTurma };
 
-            var componentesCurriculares = await ObterComponentesTurma(turma);
+            var notasAluno = await repositorioConselhoClasseNota.ObterNotasAlunoPorTurmasAsync(alunoCodigo, turmasCodigos, periodoEscolarId);
+            
+            var componentesCurriculares = await ObterComponentesTurmas(turmasCodigos, turma.EnsinoEspecial, turma.TurnoParaComponentesCurriculares);
 
             // Checa se todas as disciplinas da turma receberam nota
             foreach (var componenteCurricular in componentesCurriculares.Where(c => c.LancaNota))
@@ -331,6 +339,18 @@ namespace SME.SGP.Dominio.Servicos
                     return false;
 
             return true;
+        }
+
+        private async Task<IEnumerable<DisciplinaDto>> ObterComponentesTurmas(string[] turmasCodigo, bool ehEnsinoEspecial, int turnoParaComponentesCurriculares)
+        {
+            var componentesTurma = new List<DisciplinaDto>();
+            Usuario usuarioAtual = await mediator.Send(new ObterUsuarioLogadoQuery());
+
+            var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesPorTurmasCodigoQuery(turmasCodigo, usuarioAtual.PerfilAtual, usuarioAtual.Login, ehEnsinoEspecial, turnoParaComponentesCurriculares));
+            if (componentesCurriculares == null)
+                throw new NegocioException("Não localizado disciplinas para a turma no EOL!");
+
+            return componentesTurma;
         }
 
         private async Task<IEnumerable<DisciplinaDto>> ObterComponentesTurma(Turma turma)
