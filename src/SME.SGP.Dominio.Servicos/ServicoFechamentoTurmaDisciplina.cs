@@ -223,6 +223,12 @@ namespace SME.SGP.Dominio.Servicos
             if (periodoEscolar == null)
                 throw new NegocioException($"Não localizado período de fechamento em aberto para turma informada no {entidadeDto.Bimestre}º Bimestre");
 
+            if (turmaFechamento.EhTurmaEdFisicaOuItinerario())
+            {
+                var turmaRegular = await mediator.Send(new ObterTurmaPorIdAnoLetivoModalidadeTipoQuery(turmaFechamento.UeId, turmaFechamento.AnoLetivo, Enumerados.TipoTurma.Regular));
+                turmaFechamento = turmaRegular ?? throw new NegocioException($"Não foi possível obter a turma regular para gerar o fechamento da turma {turmaFechamento.CodigoTurma} - {turmaFechamento.NomeComModalidade()}");
+            }
+
             await CarregaFechamentoTurma(fechamentoTurmaDisciplina, turmaFechamento, periodoEscolar);
 
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
@@ -287,7 +293,7 @@ namespace SME.SGP.Dominio.Servicos
 
                 Cliente.Executar<IServicoFechamentoTurmaDisciplina>(c => c.GerarPendenciasFechamento(fechamentoTurmaDisciplina.DisciplinaId, turmaFechamento, periodoEscolar, fechamentoTurmaDisciplina, usuarioLogado, componenteSemNota, disciplinaEOL.RegistraFrequencia));
 
-                await mediator.Send(new PublicaFilaExcluirPendenciaAusenciaFechamentoCommand(fechamentoTurmaDisciplina.DisciplinaId,periodoEscolar.Id, turmaFechamento.Id, usuarioLogado));
+                await mediator.Send(new PublicaFilaExcluirPendenciaAusenciaFechamentoCommand(fechamentoTurmaDisciplina.DisciplinaId, periodoEscolar.Id, turmaFechamento.Id, usuarioLogado));
 
                 return (AuditoriaPersistenciaDto)fechamentoTurmaDisciplina;
             }
@@ -374,17 +380,17 @@ namespace SME.SGP.Dominio.Servicos
                         if (!EnviarWfAprovacao())
                         {
                             if (fechamentoNotaDto.Nota.HasValue)
-                            {                                
-                                if (fechamentoNotaDto.Nota != notaFechamento.Nota)                                    
+                            {
+                                if (fechamentoNotaDto.Nota != notaFechamento.Nota)
                                     await mediator.Send(new SalvarHistoricoNotaFechamentoCommand(notaFechamento.Nota.Value, fechamentoNotaDto.Nota.Value, notaFechamento.Id));
 
                                 notaFechamento.Nota = fechamentoNotaDto.Nota;
                             }
                             else
-                            {                                
+                            {
                                 if (fechamentoNotaDto.ConceitoId != notaFechamento.ConceitoId)
                                     await mediator.Send(new SalvarHistoricoConceitoFechamentoCommand(notaFechamento.ConceitoId.Value, fechamentoNotaDto.ConceitoId.Value, notaFechamento.Id));
-                            
+
                                 notaFechamento.ConceitoId = fechamentoNotaDto.ConceitoId;
                             }
 

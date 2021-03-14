@@ -322,7 +322,7 @@ namespace SME.SGP.Dominio.Servicos
         public async Task<bool> VerificaNotasTodosComponentesCurriculares(string alunoCodigo, Turma turma, long? periodoEscolarId)
         {
             string[] turmasCodigos;
-            if (turma.EhTurmaEdFisicaOuItinerario())
+            if (turma.DeveVerificarRegraRegulares() && turma.EhTurmaEdFisicaOuItinerario())
             {
                 turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, turma.ObterTiposRegularesDiferentes()));
                 turmasCodigos = turmasCodigos.Concat(new string[] { turma.CodigoTurma }).ToArray();
@@ -331,7 +331,7 @@ namespace SME.SGP.Dominio.Servicos
 
             var notasAluno = await repositorioConselhoClasseNota.ObterNotasAlunoPorTurmasAsync(alunoCodigo, turmasCodigos, periodoEscolarId);
             
-            var componentesCurriculares = await ObterComponentesTurmas(turmasCodigos, turma.EnsinoEspecial);
+            var componentesCurriculares = await ObterComponentesTurmas(turmasCodigos, turma.EnsinoEspecial, turma.TurnoParaComponentesCurriculares);
 
             // Checa se todas as disciplinas da turma receberam nota
             foreach (var componenteCurricular in componentesCurriculares.Where(c => c.LancaNota))
@@ -341,25 +341,14 @@ namespace SME.SGP.Dominio.Servicos
             return true;
         }
 
-        private async Task<IEnumerable<DisciplinaDto>> ObterComponentesTurmas(string[] turmasCodigo, bool ehEnsinoEspecial)
+        private async Task<IEnumerable<DisciplinaDto>> ObterComponentesTurmas(string[] turmasCodigo, bool ehEnsinoEspecial, int turnoParaComponentesCurriculares)
         {
             var componentesTurma = new List<DisciplinaDto>();
             Usuario usuarioAtual = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-            var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesPorTurmasCodigoQuery(turmasCodigo, usuarioAtual.PerfilAtual, usuarioAtual.Login, ehEnsinoEspecial));
+            var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesPorTurmasCodigoQuery(turmasCodigo, usuarioAtual.PerfilAtual, usuarioAtual.Login, ehEnsinoEspecial, turnoParaComponentesCurriculares));
             if (componentesCurriculares == null)
                 throw new NegocioException("Não localizado disciplinas para a turma no EOL!");
-
-            componentesTurma.AddRange(componentesCurriculares.Where(c => !c.Regencia));
-            
-            //TODO: TRATAR OS COMPONENTES DE REGENCIA
-            //foreach (var componenteCurricular in componentesCurriculares.Where(c => c.Regencia))
-            //{
-            //    // Adiciona lista de componentes relacionados a regencia
-            //    componentesTurma.AddRange(
-            //        consultasDisciplina.MapearParaDto(
-            //            await consultasDisciplina.ObterComponentesRegencia(turma, componenteCurricular.CodigoComponenteCurricular)));
-            //}
 
             return componentesTurma;
         }

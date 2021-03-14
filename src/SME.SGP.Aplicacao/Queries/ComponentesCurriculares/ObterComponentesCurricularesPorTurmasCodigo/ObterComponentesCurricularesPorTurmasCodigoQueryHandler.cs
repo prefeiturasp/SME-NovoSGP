@@ -18,6 +18,8 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
         private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
         private readonly IHttpClientFactory httpClientFactory;
+        private readonly IMediator mediator;
+        private static readonly long[] IDS_COMPONENTES_REGENCIA = { 2, 7, 8, 89, 138 };
 
         public ObterComponentesCurricularesPorTurmasCodigoQueryHandler(IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ,
             IRepositorioComponenteCurricular repositorioComponenteCurricular, IHttpClientFactory httpClientFactory, IMediator mediator)
@@ -25,7 +27,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoCJ));
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
-
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
         public async Task<IEnumerable<DisciplinaDto>> Handle(ObterComponentesCurricularesPorTurmasCodigoQuery request, CancellationToken cancellationToken)
         {
@@ -34,7 +36,7 @@ namespace SME.SGP.Aplicacao
 
             if (request.PerfilAtual == Perfis.PERFIL_CJ || request.PerfilAtual == Perfis.PERFIL_CJ_INFANTIL)
             {
-                var atribuicoes = await repositorioAtribuicaoCJ.ObterPorFiltros(null, string.Empty, string.Empty, 0, request.LoginAtual, string.Empty, true, string.Empty, request.TurmasCodigo);
+                var atribuicoes = await repositorioAtribuicaoCJ.ObterPorFiltros(request.TurmaModalidade, string.Empty, string.Empty, 0, request.LoginAtual, string.Empty, true, string.Empty, request.TurmasCodigo);
 
                 if (atribuicoes != null && atribuicoes.Any())
                 {
@@ -42,14 +44,22 @@ namespace SME.SGP.Aplicacao
                     var disciplinasEol = await repositorioComponenteCurricular.ObterDisciplinasPorIds(atribuicoesIds);
 
                     disciplinas = TransformarListaDisciplinaEolParaRetornoDto(disciplinasEol);
+
+                    disciplinas = await ObterDisciplinasCJRegencia(disciplinas);
                 }
             }
             else
-            {
-                disciplinas = await ObterDisciplinasTurmasRegularesEol(request);
+            {        
+                disciplinas = await ObterDisciplinasTurmasEol(request);
+                
+                if (disciplinas != null && disciplinas.Any(a => a.Regencia))
+                {
+                    var regencias = await repositorioComponenteCurricular.ObterComponentesCurricularesRegenciaPorAnoETurno(request.TurmaAno, request.TurnoParaComponentesCurriculares);
+                    var novasDisciplinasSemRegencia = disciplinas.Where(a => !a.Regencia).ToList();
+                    var novasDisciplinasRegencia = disciplinas.Where(a => a.Regencia && regencias.Any(b => b.CodigoComponenteCurricular == a.CodigoComponenteCurricular)).ToList();
+                    disciplinas = novasDisciplinasSemRegencia.Union(novasDisciplinasRegencia).OrderBy( a => a.Nome).ToList();
+                }
             }
-
-            var disciplinasRegencia = disciplinas.Where(a => a.Regencia).ToList();
 
             if (disciplinas != null && disciplinas.Any())
             {
@@ -59,6 +69,24 @@ namespace SME.SGP.Aplicacao
             return disciplinasDto;
 
         }
+
+        private async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasCJRegencia(IEnumerable<DisciplinaResposta> disciplinas)
+        {
+            if (disciplinas.Any(a => a.Regencia))
+            {
+                var disciplinasRegenciaEolCodigos = disciplinas.Where(a => a.Regencia).Select(a => a.CodigoComponenteCurricular).Distinct().ToArray();
+                var disciplinasRegenciaEol = await repositorioComponenteCurricular.ObterDisciplinasPorIds(disciplinasRegenciaEolCodigos);
+                if (disciplinasRegenciaEol.Any())
+                {
+                    var componentesRegencia = await repositorioComponenteCurricular.ObterDisciplinasPorIds(IDS_COMPONENTES_REGENCIA);
+                    var componentesRegenciaDto = TransformarListaDisciplinaEolParaRetornoDto(componentesRegencia);
+                    disciplinas = disciplinas.Union(componentesRegenciaDto);
+                }
+            }
+
+            return disciplinas;
+        }
+
         private async Task<List<DisciplinaDto>> MapearParaDto(IEnumerable<DisciplinaResposta> disciplinas, bool turmaEspecial)
         {
             var retorno = new List<DisciplinaDto>();
@@ -101,7 +129,7 @@ namespace SME.SGP.Aplicacao
         {
             return turmaEspecial && (regencia || new long[] { 218, 138, 1116 }.Contains(componenteCurricularCodigo));
         }
-        private async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasTurmasRegularesEol(ObterComponentesCurricularesPorTurmasCodigoQuery request)
+        private async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasTurmasEol(ObterComponentesCurricularesPorTurmasCodigoQuery request)
         {
             var turmasCodigo = String.Join("&codigoTurmas=", request.TurmasCodigo);
             var httpClient = httpClientFactory.CreateClient("servicoEOL");
