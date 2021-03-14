@@ -23,11 +23,6 @@ update public.componente_curricular_area_conhecimento
 set nome = 'Matemática e suas tecnologias' 
 where id = 2;
 
---Anterior 'Matemática'
-update public.componente_curricular_area_conhecimento 
-set nome = 'Matemática e suas tecnologias' 
-where id = 2;
-
 --Anterior 'Ciências da Natureza'
 update public.componente_curricular_area_conhecimento 
 set nome = 'Ciências da Natureza e suas tecnologias' 
