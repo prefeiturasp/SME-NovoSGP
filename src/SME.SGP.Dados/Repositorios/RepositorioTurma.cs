@@ -31,7 +31,8 @@ namespace SME.SGP.Dados.Repositorios
                         ensino_especial,
                         etapa_eja,
                         data_inicio,
-                        dt_fim_eol
+                        dt_fim_eol,
+                        tipo_turma
                     from
 	                    public.turma
                     where turma_id in (#ids);";
@@ -347,8 +348,7 @@ namespace SME.SGP.Dados.Repositorios
                                         c.DataInicio.HasValue != l.DataInicio.HasValue ||
                                         (c.DataInicio.HasValue && l.DataInicio.HasValue && c.DataInicio.Value.Date != l.DataInicio.Value.Date) ||
                                         c.DataFim.HasValue != l.DataFim.HasValue ||
-                                        (c.DataFim.HasValue && l.DataFim.HasValue && c.DataFim.Value.Date != l.DataFim.Value.Date) || 
-                                        c.TipoTurma != l.TipoTurma
+                                        (c.DataFim.HasValue && l.DataFim.HasValue && c.DataFim.Value.Date != l.DataFim.Value.Date)                                     
                                   select new Turma()
                                   {
                                       Ano = c.Ano,
