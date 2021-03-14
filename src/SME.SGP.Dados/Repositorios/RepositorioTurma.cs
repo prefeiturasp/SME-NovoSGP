@@ -198,6 +198,7 @@ namespace SME.SGP.Dados.Repositorios
 	                        t.qt_duracao_aula,
 	                        t.tipo_turno,
 	                        t.data_atualizacao,
+                            t.tipo_turma,
 	                        u.id as UeId,
 	                        u.id,
 	                        u.ue_id,
@@ -211,7 +212,6 @@ namespace SME.SGP.Dados.Repositorios
 	                        d.dre_id,
 	                        d.abreviacao,
 	                        d.data_atualizacao
-
                         from
 	                        turma t
                         inner join ue u on

@@ -90,8 +90,7 @@ namespace SME.SGP.Dominio
 
         public bool EhTurmaEdFisicaOuItinerario()
         {
-            var tipoTurma = (SME.SGP.Dominio.Enumerados.TipoTurma)TipoTurma;
-            return tipoTurma.EhUmDosValores(SME.SGP.Dominio.Enumerados.TipoTurma.EdFisica, SME.SGP.Dominio.Enumerados.TipoTurma.Itinerarios2AAno);
+            return TipoTurma.EhUmDosValores(TipoTurma.EdFisica, TipoTurma.Itinerarios2AAno);
         }
 
         public IEnumerable<TipoTurma> ObterTiposRegularesDiferentes()

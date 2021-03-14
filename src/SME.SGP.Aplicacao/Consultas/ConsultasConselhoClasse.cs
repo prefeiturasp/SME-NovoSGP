@@ -69,7 +69,7 @@ namespace SME.SGP.Aplicacao
             if (bimestre == 0 && !ehFinal)
                 bimestre = await ObterBimestreAtual(turma);
 
-            var fechamentoTurma = await consultasFechamentoTurma.ObterPorTurmaCodigoBimestreAsync(turmaCodigo, bimestre);
+            var fechamentoTurma = await consultasFechamentoTurma.ObterPorTurmaCodigoBimestreAsync(turma.CodigoTurma, bimestre);
 
             if (fechamentoTurma == null && !ehAnoAnterior)
             {
@@ -121,7 +121,7 @@ namespace SME.SGP.Aplicacao
                 periodoFechamentoBimestre.FinalDoFechamento :
                 (await ObterPeriodoUltimoBimestre(turma)).PeriodoFim;
 
-            var tipoNota = await servicoDeNotasConceitos.ObterNotaTipo(turma.CodigoTurma, dataReferencia, consideraHistorico);
+            var tipoNota = await servicoDeNotasConceitos.ObterNotaTipoPorTurmaDataReferencia(turma, dataReferencia, consideraHistorico);
             if (tipoNota == null)
                 throw new NegocioException("Não foi possível identificar o tipo de nota da turma");
 
