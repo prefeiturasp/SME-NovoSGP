@@ -30,7 +30,8 @@ namespace SME.SGP.Dados.Repositorios
                         ensino_especial,
                         etapa_eja,
                         data_inicio,
-                        dt_fim_eol
+                        dt_fim_eol,
+                        tipo_turma
                     from
 	                    public.turma
                     where turma_id in (#ids);";
@@ -51,7 +52,8 @@ namespace SME.SGP.Dados.Repositorios
                         etapa_eja = @etapaEja,
                         data_inicio = @dataInicio,
                         serie_ensino = @serieEnsino,
-                        dt_fim_eol = @dataFim
+                        dt_fim_eol = @dataFim,
+                        tipo_turma = @tipoTurma
                     where
 	                    id = @id;";
 
@@ -325,11 +327,11 @@ namespace SME.SGP.Dados.Repositorios
                     item.DataAtualizacao = DateTime.Today;
                     item.Ue = ues.First(x => x.CodigoUe == item.Ue.CodigoUe);
                     item.UeId = item.Ue.Id;
-                    item.Id = (long)await contexto.Conexao.InsertAsync(item);
+                    item.Id = (long)await contexto.Conexao.InsertAsync(item);                    
                     resultado.Add(item);
                 }
 
-                var modificados = from c in entidades
+                var modificados = from c in iteracao
                                   join l in armazenados on c.CodigoTurma equals l.CodigoTurma
                                   where c.Nome != l.Nome ||
                                         c.Ano != l.Ano ||
@@ -345,7 +347,7 @@ namespace SME.SGP.Dados.Repositorios
                                         c.DataInicio.HasValue != l.DataInicio.HasValue ||
                                         (c.DataInicio.HasValue && l.DataInicio.HasValue && c.DataInicio.Value.Date != l.DataInicio.Value.Date) ||
                                         c.DataFim.HasValue != l.DataFim.HasValue ||
-                                        (c.DataFim.HasValue && l.DataFim.HasValue && c.DataFim.Value.Date != l.DataFim.Value.Date)
+                                        (c.DataFim.HasValue && l.DataFim.HasValue && c.DataFim.Value.Date != l.DataFim.Value.Date)                                        
                                   select new Turma()
                                   {
                                       Ano = c.Ano,
