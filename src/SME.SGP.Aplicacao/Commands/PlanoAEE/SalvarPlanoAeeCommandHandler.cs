@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -62,7 +63,11 @@ namespace SME.SGP.Aplicacao.Commands
                         }
                     }
 
+                    if (request.Situacao == SituacaoPlanoAEE.Expirado)
+                        await mediator.Send(new ExcluirPendenciaPlanoAEECommand(planoId));
+
                     unitOfWork.PersistirTransacao();
+
                     return new RetornoPlanoAEEDto(planoId, planoAEEVersaoId);
                 }
                 catch (Exception ex)
@@ -111,7 +116,7 @@ namespace SME.SGP.Aplicacao.Commands
             => new PlanoAEE()
             {
                 TurmaId = request.TurmaId,
-                Situacao = request.Situacao,
+                Situacao = SituacaoPlanoAEE.EmAndamento,
                 AlunoCodigo = request.AlunoCodigo,
                 AlunoNumero = request.AlunoNumero,
                 AlunoNome = request.AlunoNome,
