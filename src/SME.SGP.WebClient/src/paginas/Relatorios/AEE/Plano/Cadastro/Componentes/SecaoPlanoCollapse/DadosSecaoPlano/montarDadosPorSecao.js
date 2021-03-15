@@ -39,6 +39,7 @@ const MontarDadosPorSecao = props => {
       desabilitarCampos={validaSeDesabilitarCampo()}
       funcaoRemoverArquivoCampoUpload={ServicoPlanoAEE.removerArquivo}
       urlUpload="v1/plano-aee/upload"
+      turmaId={dadosCollapseLocalizarEstudante?.turmaId}
     />
   ) : (
     ''

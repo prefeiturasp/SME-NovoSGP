@@ -14,7 +14,7 @@ const CampoDinamicoTexto = props => {
         form={form}
         type="textarea"
         maxLength={999999}
-        desabilitado={desabilitado}
+        desabilitado={desabilitado || questaoAtual.somenteLeitura}
         onChange={onChange}
         minRowsTextArea="4"
       />

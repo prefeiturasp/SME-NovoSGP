@@ -56,7 +56,7 @@ const CampoDinamicoPeriodo = props => {
             name={`${questaoAtual?.id}.periodoInicio`}
             placeholder="Início"
             formatoData="DD/MM/YYYY"
-            desabilitado={desabilitado}
+            desabilitado={desabilitado || questaoAtual.somenteLeitura}
             onChange={valorData => {
               form.setFieldTouched(questaoAtual?.id, true);
               form.setFieldValue(

@@ -18,6 +18,7 @@ import QuestionarioDinamicoValidacoes from './Validacoes/QuestionarioDinamicoVal
 import DiasHorariosTabela from './Componentes/DiasHorariosTabela/diasHorariosTabela';
 import CampoDinamicoPeriodo from './Componentes/campoDinamicoPeriodo';
 import CampoDinamicoCheckbox from './Componentes/campoDinamicoCheckbox';
+import CampoDinamicoPeriodoEscolar from './Componentes/campoDinamicoPeriodoEscolar';
 
 const QuestionarioDinamico = props => {
   const dispatch = useDispatch();
@@ -32,6 +33,7 @@ const QuestionarioDinamico = props => {
     urlUpload,
     funcaoRemoverArquivoCampoUpload,
     onChangeQuestionario,
+    turmaId,
   } = props;
 
   const [valoresIniciais, setValoresIniciais] = useState();
@@ -74,6 +76,7 @@ const QuestionarioDinamico = props => {
             valorRespostaAtual = resposta.map(r => Number(r.opcaoRespostaId));
             break;
           case tipoQuestao.Texto:
+          case tipoQuestao.PeriodoEscolar:
             valorRespostaAtual = resposta[0].texto;
             break;
           case tipoQuestao.Periodo:
@@ -448,6 +451,21 @@ const QuestionarioDinamico = props => {
           </div>
         );
         break;
+      case tipoQuestao.PeriodoEscolar:
+        campoAtual = (
+          <CampoDinamicoPeriodoEscolar
+            questaoAtual={questaoAtual}
+            form={form}
+            label={label}
+            desabilitado={desabilitarCampos}
+            onChange={() => {
+              dispatch(setQuestionarioDinamicoEmEdicao(true));
+              onChangeQuestionario();
+            }}
+            turmaId={turmaId}
+          />
+        );
+        break;
       default:
         break;
     }
@@ -509,6 +527,7 @@ QuestionarioDinamico.propTypes = {
   urlUpload: PropTypes.string,
   funcaoRemoverArquivoCampoUpload: PropTypes.func,
   onChangeQuestionario: PropTypes.func,
+  turmaId: PropTypes.oneOfType([PropTypes.any]),
 };
 
 QuestionarioDinamico.defaultProps = {
@@ -521,6 +540,7 @@ QuestionarioDinamico.defaultProps = {
   urlUpload: '',
   funcaoRemoverArquivoCampoUpload: () => {},
   onChangeQuestionario: () => {},
+  turmaId: null,
 };
 
 export default QuestionarioDinamico;
