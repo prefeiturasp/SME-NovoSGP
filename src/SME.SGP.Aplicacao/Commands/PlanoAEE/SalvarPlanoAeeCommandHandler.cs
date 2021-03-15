@@ -120,7 +120,6 @@ namespace SME.SGP.Aplicacao.Commands
 
                 return planoAEE;
             }
-                var planoId = request.PlanoAEEDto.Id.GetValueOrDefault();
 
             return new PlanoAEE()
             {
