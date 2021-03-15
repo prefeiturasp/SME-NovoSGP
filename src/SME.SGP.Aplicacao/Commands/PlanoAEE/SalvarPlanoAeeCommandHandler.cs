@@ -45,8 +45,7 @@ namespace SME.SGP.Aplicacao.Commands
                 try
                 {
                     // Salva Plano
-                    if (planoId == 0)
-                        planoId = await repositorioPlanoAEE.SalvarAsync(plano);
+                    planoId = await repositorioPlanoAEE.SalvarAsync(plano);
 
                     // Salva Versao
                     var planoAEEVersaoId = await SalvarPlanoAEEVersao(planoId, ultimaVersaoPlanoAee);
@@ -115,6 +114,7 @@ namespace SME.SGP.Aplicacao.Commands
         private PlanoAEE MapearParaEntidade(SalvarPlanoAeeCommand request)
             => new PlanoAEE()
             {
+                Id = request.PlanoAEEDto.Id.GetValueOrDefault(),
                 TurmaId = request.TurmaId,
                 Situacao = SituacaoPlanoAEE.EmAndamento,
                 AlunoCodigo = request.AlunoCodigo,
