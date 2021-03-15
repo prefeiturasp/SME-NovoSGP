@@ -111,10 +111,19 @@ namespace SME.SGP.Aplicacao.Commands
                 versaoPlano.Numero + 1 : 1;
         }
 
-        private PlanoAEE MapearParaEntidade(SalvarPlanoAeeCommand request)
-            => new PlanoAEE()
+        private async Task<PlanoAEE> MapearParaEntidade(SalvarPlanoAeeCommand request)
+        {
+            if (request.PlanoAEEDto.Id.HasValue)
             {
-                Id = request.PlanoAEEDto.Id.GetValueOrDefault(),
+                var planoAEE = await mediator.Send(new ObterPlanoAEEPorIdQuery(request.PlanoAEEDto.Id.Value));
+                planoAEE.Situacao = SituacaoPlanoAEE.EmAndamento;
+
+                return planoAEE;
+            }
+                var planoId = request.PlanoAEEDto.Id.GetValueOrDefault();
+
+            return new PlanoAEE()
+            {
                 TurmaId = request.TurmaId,
                 Situacao = SituacaoPlanoAEE.EmAndamento,
                 AlunoCodigo = request.AlunoCodigo,
@@ -122,5 +131,6 @@ namespace SME.SGP.Aplicacao.Commands
                 AlunoNome = request.AlunoNome,
                 Questoes = new System.Collections.Generic.List<PlanoAEEQuestao>()
             };
+        }
     }
 }
