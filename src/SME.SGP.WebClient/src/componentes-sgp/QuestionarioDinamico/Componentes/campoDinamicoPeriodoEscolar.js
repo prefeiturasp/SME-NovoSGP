@@ -37,7 +37,7 @@ const CampoDinamicoPeriodoEscolar = props => {
     if (retorno?.data) {
       form.setFieldValue(String(questaoAtual.id), String(retorno.data.id));
     } else {
-      form.setFieldValue(String(questaoAtual.id), undefined);
+      form.setFieldValue(String(questaoAtual.id), '');
     }
   }, [turmaId, form, questaoAtual]);
 
