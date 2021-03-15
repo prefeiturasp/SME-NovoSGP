@@ -457,6 +457,7 @@ const QuestionarioDinamico = props => {
             questaoAtual={questaoAtual}
             form={form}
             label={label}
+            desabilitado={desabilitarCampos}
             onChange={() => {
               dispatch(setQuestionarioDinamicoEmEdicao(true));
               onChangeQuestionario();

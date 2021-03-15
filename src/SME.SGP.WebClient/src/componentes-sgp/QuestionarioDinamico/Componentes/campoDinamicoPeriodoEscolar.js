@@ -6,7 +6,7 @@ import { erros } from '~/servicos';
 import ServicoPeriodoEscolar from '~/servicos/Paginas/Calendario/ServicoPeriodoEscolar';
 
 const CampoDinamicoPeriodoEscolar = props => {
-  const { questaoAtual, form, label, onChange, turmaId } = props;
+  const { questaoAtual, form, label, desabilitado, onChange, turmaId } = props;
 
   const [lista, setLista] = useState([]);
   const [exibirLoader, setExibirLoader] = useState(false);
@@ -44,11 +44,13 @@ const CampoDinamicoPeriodoEscolar = props => {
   useEffect(() => {
     if (turmaId) {
       obterBimestres();
-      obterBimestreAtual();
+      if (!desabilitado) {
+        obterBimestreAtual();
+      }
     } else {
       setLista([]);
     }
-  }, [turmaId, obterBimestres]);
+  }, [turmaId, obterBimestres, desabilitado]);
 
   return (
     <div className="col-sm-12 col-md-12 col-lg-6 col-xl-6 mb-3">
@@ -61,7 +63,7 @@ const CampoDinamicoPeriodoEscolar = props => {
           lista={lista}
           valueOption="id"
           valueText="descricao"
-          disabled
+          disabled={desabilitado || questaoAtual.somenteLeitura}
           onChange={valorAtualSelecionado => {
             onChange(valorAtualSelecionado);
           }}
@@ -75,6 +77,7 @@ CampoDinamicoPeriodoEscolar.propTypes = {
   questaoAtual: PropTypes.oneOfType([PropTypes.any]),
   form: PropTypes.oneOfType([PropTypes.any]),
   label: PropTypes.oneOfType([PropTypes.any]),
+  desabilitado: PropTypes.bool,
   onChange: PropTypes.oneOfType([PropTypes.any]),
   turmaId: PropTypes.oneOfType([PropTypes.any]),
 };
@@ -83,6 +86,7 @@ CampoDinamicoPeriodoEscolar.defaultProps = {
   questaoAtual: null,
   form: null,
   label: '',
+  desabilitado: false,
   onChange: () => {},
   turmaId: null,
 };
