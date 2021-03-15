@@ -207,6 +207,10 @@ namespace SME.SGP.Dominio
             if (possuiPerfilPrioritario)
                 return Dominio.Perfis.PERFIL_PROFESSOR_INFANTIL;
 
+            possuiPerfilPrioritario = PossuiPerfilProfessor() && PossuiPerfilCJInfantil() && !possuiTurmaAtiva;
+            if (possuiPerfilPrioritario)
+                return Dominio.Perfis.PERFIL_CJ_INFANTIL;
+
             return Perfis.FirstOrDefault().CodigoPerfil;
         }
 
