@@ -25,9 +25,8 @@ namespace SME.SGP.Aplicacao
 
             var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarAtualPorTurmaQuery(turma, DateTime.Now.Date));
 
-            var bimestre = new BimestreDto() { Id = periodoEscolar.Id, Numero = periodoEscolar.Bimestre };
-
-            return bimestre;
+            return periodoEscolar == null ? null :
+                new BimestreDto() { Id = periodoEscolar.Id, Numero = periodoEscolar.Bimestre };
         }
     }
 }

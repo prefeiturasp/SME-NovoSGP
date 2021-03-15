@@ -92,7 +92,12 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> BimestreAtual(long turmaId, [FromServices] IObterBimestreAtualPorTurmaIdUseCase useCase)
         {
-            return Ok(await useCase.Executar(turmaId));
+            var bimestre = await useCase.Executar(turmaId);
+
+            if (bimestre != null)
+                return Ok(bimestre);
+            else
+                return NoContent();
         }
     }
 }

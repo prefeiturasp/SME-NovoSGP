@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao.Commands
 
         public async Task<RetornoPlanoAEEDto> Handle(SalvarPlanoAeeCommand request, CancellationToken cancellationToken)
         {
-            var plano = MapearParaEntidade(request);
+            var plano = await MapearParaEntidade(request);
 
             var planoAeeDto = request.PlanoAEEDto;
             var planoId = planoAeeDto.Id.GetValueOrDefault();
