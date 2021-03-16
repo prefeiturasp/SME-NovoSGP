@@ -59,7 +59,6 @@ const Avaliacao = props => {
   };
 
   const onChangeNotaConceitoFinal = (notaBimestre, valorNovo) => {
-    console.log('valorNovo', valorNovo);
     notaBimestre.notaConceito = valorNovo;
     notaBimestre.modoEdicao = true;
     dados.modoEdicao = true;
