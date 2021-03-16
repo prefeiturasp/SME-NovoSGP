@@ -2,16 +2,15 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SME.SGP.Dominio
+namespace SME.SGP.Infra
 {
-    public class AcompanhamentoAlunoSemestre : EntidadeBase
+    public class AcompanhamentoAlunoDto
     {
-        public AcompanhamentoAluno AcompanhamentoAluno { get; set; }
         public long AcompanhamentoAlunoId { get; set; }
-
+        public long AcompanhamentoAlunoSemestreId { get; set; }
+        public long TurmaId { get; set; }
         public int Semestre { get; set; }
+        public string AlunoCodigo { get; set; }
         public string Observacoes { get; set; }
-
-        public bool Excluido { get; set; }
     }
 }
