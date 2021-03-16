@@ -10,7 +10,7 @@ UPDATE public.componente_curricular set grupo_matriz_id = 5
 where id in (1329,1330,1331,1332,1333,1336,1335,1334,1346,1318,1350,1359,1347);
 
 UPDATE public.componente_curricular set grupo_matriz_id = 6
-where id in (1417,1418,1318,1419,1425,1420,1421,1422,1423,1424,1426,1427,1428,1337,1431,1429,1430);
+where id in (1417,1418,1418,1419,1425,1420,1421,1422,1423,1424,1426,1427,1428,1337,1431,1429,1430);
 
 --NOVAS AREAS DE CONHECIMENTO
 --Anterior 'Linguagens'
