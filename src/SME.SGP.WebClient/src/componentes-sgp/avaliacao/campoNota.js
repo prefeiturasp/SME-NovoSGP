@@ -13,6 +13,7 @@ const CampoNota = props => {
     clicarSetas,
     name,
     esconderSetas,
+    step,
   } = props;
 
   const modoEdicaoGeralNotaFinal = useSelector(
@@ -95,7 +96,7 @@ const CampoNota = props => {
       value={notaValorAtual}
       min={0}
       max={10}
-      step={0}
+      step={step}
       placeholder="Nota"
       classNameCampo={`${nota.ausente ? 'aluno-ausente-notas' : ''}`}
       disabled={
@@ -113,6 +114,7 @@ CampoNota.defaultProps = {
   clicarSetas: () => {},
   name: '',
   esconderSetas: false,
+  step: 0.5,
 };
 
 CampoNota.propTypes = {
@@ -122,6 +124,7 @@ CampoNota.propTypes = {
   clicarSetas: PropTypes.func,
   name: PropTypes.string,
   esconderSetas: PropTypes.bool,
+  step: PropTypes.number,
 };
 
 export default CampoNota;

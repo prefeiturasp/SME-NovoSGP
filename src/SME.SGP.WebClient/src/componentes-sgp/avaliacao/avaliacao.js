@@ -11,6 +11,13 @@ import {
   setModoEdicaoGeralNotaFinal,
   setExpandirLinha,
 } from '~/redux/modulos/notasConceitos/actions';
+import {
+  acharItem,
+  escolherDirecaoSetas,
+  esperarMiliSegundos,
+  moverCursor,
+  tratarString,
+} from '~/utils';
 
 import Ordenacao from '../Ordenacao/ordenacao';
 import {
@@ -52,6 +59,7 @@ const Avaliacao = props => {
   };
 
   const onChangeNotaConceitoFinal = (notaBimestre, valorNovo) => {
+    console.log('valorNovo', valorNovo);
     notaBimestre.notaConceito = valorNovo;
     notaBimestre.modoEdicao = true;
     dados.modoEdicao = true;
@@ -105,66 +113,17 @@ const Avaliacao = props => {
       : '';
   };
 
-  const acharAluno = (aluno, numero) => {
-    return (
-      dados &&
-      dados?.alunos
-        .map((valor, index, elementos) => {
-          if (valor.id === aluno?.id) {
-            return elementos[index + numero];
-          }
-          return '';
-        })
-        .filter(item => item?.id)
-    );
-  };
-  const moverCursor = async (
-    alunoEscolhido,
-    indexElemento,
-    item,
-    regencia = false
-  ) => {
-    const elemento = document.getElementsByName(`${item}${alunoEscolhido}`);
-    let elementoCursor = elemento[indexElemento];
-    if (regencia) {
-      await new Promise(resolve => setTimeout(resolve, 600));
-      // eslint-disable-next-line prefer-destructuring
-      elementoCursor = elemento[0].getElementsByTagName('input')[0];
-    }
-    if (elementoCursor) {
-      elementoCursor.focus();
-      elementoCursor.select();
-    }
+  const acharElemento = (e, elemento) => {
+    return e.nativeEvent.path.find(item => item.localName === elemento);
   };
 
-  const escolherDirecao = keyCode => {
-    switch (keyCode) {
-      case 38:
-        return -1;
-      case 40:
-        return 1;
-      default:
-        return 0;
-    }
-  };
-
-  const acharTd = e => {
-    return e.nativeEvent.path.find(item => item.localName === 'td');
-  };
-
-  const clicarSetas = (
-    e,
-    aluno,
-    label = '',
-    indexNotaConceito = 0,
-    regencia = false
-  ) => {
-    const direcao = escolherDirecao(e.keyCode);
+  const clicarSetas = (e, aluno, label = '', index = 0, regencia = false) => {
+    const direcao = escolherDirecaoSetas(e.keyCode);
     const disciplina = label.toLowerCase();
 
     if (regencia) {
       let novaLinha = [];
-      const novoIndex = indexNotaConceito + direcao;
+      const novoIndex = index + direcao;
       if (expandirLinha[novoIndex]) {
         expandirLinha[novoIndex] = false;
         novaLinha = expandirLinha;
@@ -173,17 +132,15 @@ const Avaliacao = props => {
       }
       dispatch(setExpandirLinha([...novaLinha]));
     }
-    const elementoTD = acharTd(e);
+    const elementoTD = acharElemento(e, 'td');
     const indexElemento = elementoTD?.cellIndex - 2;
-
-    // console.log('elementoTD', elementoTD);
-    // console.log('indexElemento', indexElemento);
-    // console.log('e', e);
-
-    const alunoEscolhido = direcao && acharAluno(aluno, direcao);
+    const alunoEscolhido =
+      direcao && acharItem(dados?.alunos, aluno, direcao, 'id');
     if (alunoEscolhido.length) {
-      const item = regencia ? disciplina : 'aluno';
-      moverCursor(alunoEscolhido[0].id, indexElemento, item, regencia);
+      const disciplinaTratada = tratarString(disciplina);
+      const item = regencia ? disciplinaTratada : 'aluno';
+      const itemEscolhido = `${item}${alunoEscolhido[0].id}`;
+      moverCursor(itemEscolhido, indexElemento, regencia);
     }
   };
 
@@ -195,6 +152,7 @@ const Avaliacao = props => {
             esconderSetas
             name={`aluno${aluno.id}`}
             clicarSetas={e => clicarSetas(e, aluno)}
+            step={0}
             nota={nota}
             onChangeNotaConceito={valorNovo =>
               onChangeNotaConceito(nota, valorNovo)
@@ -219,10 +177,10 @@ const Avaliacao = props => {
     }
   };
 
-  const montaNotaFinal = (aluno, indexNotaConceito) => {
+  const montaNotaFinal = (aluno, index) => {
     if (aluno && aluno.notasBimestre && aluno.notasBimestre.length) {
       if (ehRegencia) {
-        return aluno.notasBimestre[indexNotaConceito];
+        return aluno.notasBimestre[index];
       }
       return aluno.notasBimestre[0];
     }
@@ -231,20 +189,15 @@ const Avaliacao = props => {
     return aluno.notasBimestre[0];
   };
 
-  const montarCampoNotaConceitoFinal = (
-    aluno,
-    label,
-    indexNotaConceito,
-    regencia
-  ) => {
+  const montarCampoNotaConceitoFinal = (aluno, label, index, regencia) => {
     if (Number(notaTipo) === Number(notasConceitos.Notas)) {
       return (
         <CampoNotaFinal
+          esconderSetas
           name={`aluno${aluno.id}`}
-          clicarSetas={e =>
-            clicarSetas(e, aluno, label, indexNotaConceito, regencia)
-          }
-          montaNotaFinal={() => montaNotaFinal(aluno, indexNotaConceito)}
+          clicarSetas={e => clicarSetas(e, aluno, label, index, regencia)}
+          step={0}
+          montaNotaFinal={() => montaNotaFinal(aluno, index)}
           onChangeNotaConceitoFinal={(nota, valor) =>
             onChangeNotaConceitoFinal(nota, valor)
           }
@@ -264,9 +217,7 @@ const Avaliacao = props => {
     if (Number(notaTipo) === Number(notasConceitos.Conceitos)) {
       return (
         <CampoConceitoFinal
-          montaNotaConceitoFinal={() =>
-            montaNotaFinal(aluno, indexNotaConceito)
-          }
+          montaNotaConceitoFinal={() => montaNotaFinal(aluno, index)}
           onChangeNotaConceitoFinal={(nota, valor) =>
             onChangeNotaConceitoFinal(nota, valor)
           }
@@ -402,16 +353,8 @@ const Avaliacao = props => {
                           indexLinha={i}
                           dados={dados}
                           aluno={aluno}
-                          montarCampoNotaConceitoFinal={(
-                            label,
-                            indexNotaConceito
-                          ) =>
-                            montarCampoNotaConceitoFinal(
-                              aluno,
-                              label,
-                              indexNotaConceito,
-                              true
-                            )
+                          montarCampoNotaConceitoFinal={label =>
+                            montarCampoNotaConceitoFinal(aluno, label, i, true)
                           }
                         />
                       </>
