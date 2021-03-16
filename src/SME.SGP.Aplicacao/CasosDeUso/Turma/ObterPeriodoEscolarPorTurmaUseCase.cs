@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
             if (turma == null)
                 throw new NegocioException($"Turma [{turmaId}] não localizada!");
 
-            var periodos = await mediator.Send(new ObterPeriodosEscolaresPorAnoEModalidadeTurmaQuery(turma.ModalidadeCodigo, turma.AnoLetivo, turma.Semestre));       
+            var periodos = await mediator.Send(new ObterPeriodosEscolaresPorAnoEModalidadeTurmaQuery(turma.ModalidadeCodigo, turma.AnoLetivo, turma.Semestre));
             
             return periodos?.Select(c => new PeriodoEscolarPorTurmaDto
             {
