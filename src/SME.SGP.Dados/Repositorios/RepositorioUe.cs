@@ -176,7 +176,7 @@ namespace SME.SGP.Dados.Repositorios
                     resultado.Add(item);
                 }
 
-                var modificados = from c in entidades
+                var modificados = from c in iteracao
                                   join l in armazenados on c.CodigoUe equals l.CodigoUe
                                   where l.DataAtualizacao != DateTime.Today &&
                                         (c.Nome != l.Nome ||

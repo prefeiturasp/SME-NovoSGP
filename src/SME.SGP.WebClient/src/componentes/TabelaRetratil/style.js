@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 // Componentes
 import { Base } from '~/componentes/colors';
@@ -123,6 +123,9 @@ export const LinhaTabela = styled.tr`
 
 export const DetalhesAluno = styled.div`
   flex: 1;
+  ${({ larguraAluno }) => css`
+    width: ${larguraAluno};
+  `}
 `;
 
 export const CabecalhoDetalhes = styled.div`

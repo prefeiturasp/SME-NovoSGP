@@ -2,6 +2,7 @@
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -370,6 +371,12 @@ namespace SME.SGP.Aplicacao
 
         public async Task<TipoNota> ObterNotaTipo(long turmaId, int anoLetivo, bool consideraHistorico)
         {
+            var turmaEOL = await servicoEOL.ObterDadosTurmaPorCodigo(turmaId.ToString());
+
+            // Para turma tipo 2 o padrão é nota.
+            if (turmaEOL.TipoTurma == TipoTurma.EdFisica)
+                return TipoNota.Nota;
+
             var notaTipo = await servicoDeNotasConceitos.TipoNotaPorAvaliacao(new AtividadeAvaliativa()
             {
                 TurmaId = turmaId.ToString(),

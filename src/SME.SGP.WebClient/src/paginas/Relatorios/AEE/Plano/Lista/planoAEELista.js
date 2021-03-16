@@ -67,7 +67,7 @@ const PlanoAEELista = () => {
       render: (_, record) => (
         <NomeEstudanteLista
           nome={record?.nome}
-          exibirSinalizacao={record?.possuiEncaminhamentoAEE}
+          exibirSinalizacao={record?.ehAtendidoAEE}
         />
       ),
     },

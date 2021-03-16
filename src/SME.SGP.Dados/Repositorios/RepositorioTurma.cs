@@ -328,7 +328,7 @@ namespace SME.SGP.Dados.Repositorios
                     item.DataAtualizacao = DateTime.Today;
                     item.Ue = ues.First(x => x.CodigoUe == item.Ue.CodigoUe);
                     item.UeId = item.Ue.Id;
-                    item.Id = (long)await contexto.Conexao.InsertAsync(item);
+                    item.Id = (long)await contexto.Conexao.InsertAsync(item);                    
                     resultado.Add(item);
                 }
 
@@ -348,7 +348,7 @@ namespace SME.SGP.Dados.Repositorios
                                         c.DataInicio.HasValue != l.DataInicio.HasValue ||
                                         (c.DataInicio.HasValue && l.DataInicio.HasValue && c.DataInicio.Value.Date != l.DataInicio.Value.Date) ||
                                         c.DataFim.HasValue != l.DataFim.HasValue ||
-                                        (c.DataFim.HasValue && l.DataFim.HasValue && c.DataFim.Value.Date != l.DataFim.Value.Date)                                     
+                                        (c.DataFim.HasValue && l.DataFim.HasValue && c.DataFim.Value.Date != l.DataFim.Value.Date)                                        
                                   select new Turma()
                                   {
                                       Ano = c.Ano,
@@ -642,7 +642,7 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select * from turma t 
                             where t.ue_id = @ueId 
                             and t.ano_letivo = @anoLetivo 
-                            and t.tipo = @turmaTipo";
+                            and t.tipo_turma = @turmaTipo";
 
             return await contexto.Conexao.QueryFirstOrDefaultAsync<Turma>(query, new { ueId, anoLetivo , turmaTipo });
         }

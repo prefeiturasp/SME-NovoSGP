@@ -886,6 +886,9 @@ namespace SME.SGP.Dados.Repositorios
         {
             var sql = "update aula set excluido = true, alterado_por = @alteradoPor, alterado_em = @alteradoEm, alterado_rf = @alteradoRf where id = any(@idsAulas)";
             await database.Conexao.ExecuteAsync(sql, new { idsAulas, alteradoPor = "Sistema", alteradoEm = DateTime.Now, alteradoRf = "Sistema" });
+
+            sql = "update diario_bordo set excluido = true, alterado_por = @alteradoPor, alterado_em = @alteradoEm, alterado_rf = @alteradoRf where aula_id = any(@idsAulas)";
+            await database.Conexao.ExecuteAsync(sql, new { idsAulas, alteradoPor = "Sistema", alteradoEm = DateTime.Now, alteradoRf = "Sistema" });
         }
 
         public async Task<Aula> ObterAulaPorComponenteCurricularIdTurmaIdEData(string componenteCurricularId, string turmaId, DateTime data)
@@ -952,6 +955,47 @@ namespace SME.SGP.Dados.Repositorios
 
             var parametros = new { turmaId, componenteCurricularId = componenteCurricularId.ToString(), tipoCalendarioId, periodosEscolaresIds = periodosEscolaresIds.ToList() };
             return await database.Conexao.QuerySingleOrDefaultAsync<int?>(sql, parametros) ?? default;
+        }
+
+        public async Task<int> ObterAulasDadasPorTurmaEPeriodoEscolar(long turmaId, long tipoCalendarioId, IEnumerable<long> periodosEscolaresIds)
+        {
+            const string sql = @"select 
+	                                sum(a.quantidade)
+                                from 
+	                                aula a 
+                                inner join
+	                                turma t
+	                                on a.turma_id = t.turma_id
+                                inner join 
+	                                periodo_escolar pe 
+	                                on a.data_aula BETWEEN pe.periodo_inicio AND pe.periodo_fim
+                                inner join
+	                                registro_frequencia rf 
+	                                on a.id = rf.aula_id
+                                where 
+	                                not a.excluido
+	                                and t.id = @turmaId
+                                    and a.tipo_calendario_id = @tipoCalendarioId
+	                                and pe.id = any(@periodosEscolaresIds)";
+
+            var parametros = new { turmaId, tipoCalendarioId, periodosEscolaresIds = periodosEscolaresIds.ToList() };
+            return await database.Conexao.QuerySingleOrDefaultAsync<int?>(sql, parametros) ?? default;
+        }
+
+        public async Task<IEnumerable<Aula>> ObterAulasExcluidasComDiarioDeBordoAtivos(string codigoTurma, long tipoCalendarioId)
+        {
+            var sqlQuery = @"select a.*
+	                            from diario_bordo db
+		                            inner join aula a
+			                            on db.aula_id = a.id
+		                            inner join turma t
+			                            on a.turma_id = t.turma_id
+                             where t.turma_id = @codigoTurma and
+	                               a.tipo_calendario_id = @tipoCalendarioId and
+	                               a.excluido and
+	                               not db.excluido;";
+
+            return (await database.Conexao.QueryAsync<Aula>(sqlQuery, new { codigoTurma, tipoCalendarioId }));
         }
     }
 }

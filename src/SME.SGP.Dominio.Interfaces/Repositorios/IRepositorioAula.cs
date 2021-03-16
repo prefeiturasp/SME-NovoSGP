@@ -15,7 +15,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<AulaConsultaDto> ObterAulaDataTurmaDisciplina(DateTime data, string turmaId, string disciplinaId);
 
         Task<AulaConsultaDto> ObterAulaDataTurmaDisciplinaProfessorRf(DateTime data, string turmaId, string disciplinaId, string professorRf);
-
+        Task<int> ObterAulasDadasPorTurmaEPeriodoEscolar(long turmaId, long tipoCalendarioId, IEnumerable<long> periodosEscolaresIds);
         Task<AulaConsultaDto> ObterAulaIntervaloTurmaDisciplina(DateTime dataInicio, DateTime dataFim, string turmaId, long atividadeAvaliativaId);
         Task<int> ObterAulasDadasPorTurmaDisciplinaEPeriodoEscolar(long turmaId, long componenteCurricularId, long tipoCalendarioId, IEnumerable<long> periodosEscolaresIds);
         Task<IEnumerable<AulaDto>> ObterAulas(long tipoCalendarioId, string turmaId, string ueId, string codigoRf, int? mes = null, int? semanaAno = null, string disciplinaId = null);
@@ -91,5 +91,6 @@ namespace SME.SGP.Dominio.Interfaces
 
         bool VerificarAulaPorWorkflowId(long workflowId);
 
+        Task<IEnumerable<Aula>> ObterAulasExcluidasComDiarioDeBordoAtivos(string codigoTurma, long tipoCalendarioId);
     }
 }

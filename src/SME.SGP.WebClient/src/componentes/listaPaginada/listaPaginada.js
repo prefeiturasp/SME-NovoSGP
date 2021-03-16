@@ -23,7 +23,8 @@ const ListaPaginada = props => {
     onErro,
     paramArrayFormat,
     temPaginacao,
-    setLista
+    setLista,
+    showSizeChanger,
   } = props;
 
   const [carregando, setCarregando] = useState(false);
@@ -36,7 +37,7 @@ const ListaPaginada = props => {
     defaultPageSize: 10,
     pageSize: 10,
     total: 0,
-    showSizeChanger: true,
+    showSizeChanger,
     pageSizeOptions: ['10', '20', '50', '100'],
     locale: { items_per_page: 'Linhas' },
     current: 1
@@ -178,7 +179,7 @@ const ListaPaginada = props => {
               defaultPageSize: paginaAtual.defaultPageSize,
               pageSize: paginaAtual.pageSize,
               total,
-              showSizeChanger: true,
+              showSizeChanger,
               pageSizeOptions: ['10', '20', '50', '100'],
               locale: { items_per_page: '' },
               current: paginaAtual.current,
@@ -227,7 +228,8 @@ ListaPaginada.propTypes = {
   onErro: PropTypes.oneOfType([PropTypes.func]),
   paramArrayFormat: PropTypes.oneOfType([PropTypes.string]),
   temPaginacao: PropTypes.oneOfType([PropTypes.bool]),
-  setLista: PropTypes.oneOfType([PropTypes.func])
+  setLista: PropTypes.oneOfType([PropTypes.func]),
+  showSizeChanger: PropTypes.oneOfType([PropTypes.bool]),
 };
 
 ListaPaginada.defaultProps = {
@@ -243,7 +245,8 @@ ListaPaginada.defaultProps = {
   onErro: () => { },
   paramArrayFormat: 'brackets',
   temPaginacao: true,
-  setLista: () => { }
+  setLista: () => { },
+  showSizeChanger: true,
 };
 
 export default ListaPaginada;

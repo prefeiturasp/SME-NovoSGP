@@ -22,5 +22,6 @@ namespace SME.SGP.Infra
         public string Sintese { get; set; }
         public double TotalAusenciasCompensadas { get; set; }
         public int TotalFaltas { get; set; }
+        public bool EhAtendidoAEE { get; set; }
     }
 }

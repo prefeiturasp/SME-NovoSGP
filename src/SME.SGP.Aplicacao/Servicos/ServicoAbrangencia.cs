@@ -301,9 +301,15 @@ namespace SME.SGP.Aplicacao.Servicos
 
             repositorioAbrangencia.InserirAbrangencias(novas.Select(x => new Abrangencia() { Perfil = perfil, UeId = x.Id }), login);
 
-            var paraAtualizar = abrangenciaSintetica.Where(x => !ues.Select(y => y.Id).Contains(x.UeId)).Select(x => x.Id);
+            var paraAtualizar = abrangenciaSintetica.Where(x => !ues.Select(y => y.Id).Contains(x.UeId));
 
-            repositorioAbrangencia.AtualizaAbrangenciaHistorica(paraAtualizar);
+            var perfisHistorico = paraAtualizar.Where(x => x.EhPerfilProfessor()).Select(x => x.Id);
+
+            repositorioAbrangencia.AtualizaAbrangenciaHistorica(perfisHistorico);
+
+            var perfisGestao = paraAtualizar.Where(x => !x.EhPerfilProfessor()).Select(x => x.Id);
+
+            repositorioAbrangencia.ExcluirAbrangencias(perfisGestao);
         }
 
         private void SincronizarAbrangenciPorDres(IEnumerable<AbrangenciaSinteticaDto> abrangenciaSintetica, IEnumerable<Dre> dres, string login, Guid perfil)
@@ -312,9 +318,15 @@ namespace SME.SGP.Aplicacao.Servicos
 
             repositorioAbrangencia.InserirAbrangencias(novas.Select(x => new Abrangencia() { Perfil = perfil, DreId = x.Id }), login);
 
-            var paraAtualizar = abrangenciaSintetica.Where(x => !dres.Select(y => y.Id).Contains(x.DreId)).Select(x => x.Id);
+            var paraAtualizar = abrangenciaSintetica.Where(x => !dres.Select(y => y.Id).Contains(x.DreId));
 
-            repositorioAbrangencia.AtualizaAbrangenciaHistorica(paraAtualizar);
+            var perfisHistorico = paraAtualizar.Where(x => x.EhPerfilProfessor()).Select(x => x.Id);
+
+            repositorioAbrangencia.AtualizaAbrangenciaHistorica(perfisHistorico);
+
+            var perfisGestao = paraAtualizar.Where(x => !x.EhPerfilProfessor()).Select(x => x.Id);
+
+            repositorioAbrangencia.ExcluirAbrangencias(perfisGestao);
         }
 
         private void SincronizarCiclos(IEnumerable<CicloRetornoDto> ciclos)
@@ -356,7 +368,7 @@ namespace SME.SGP.Aplicacao.Servicos
                  DataFim = z.DataFim,
                  Extinta = z.Extinta,
                  TipoTurma = z.TipoTurma
-             })));            
+             })));
 
             dres = await repositorioDre.SincronizarAsync(dres);
             ues = await repositorioUe.SincronizarAsync(ues, dres);
