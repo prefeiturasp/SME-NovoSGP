@@ -277,16 +277,16 @@
         [PermissaoMenu(Menu = "Eventos", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 9, EhAlteracao = true, Url = "/calendario-escolar/eventos")]
         E_A = 91,
 
-        [PermissaoMenu(Menu = "Atribuição esporádica", Icone = "fas fa-user-cog", Agrupamento = "Gestão", OrdemAgrupamento = 6, EhMenu = false, EhConsulta = true, Url = "/gestao/atribuicao-esporadica")]
+        [PermissaoMenu(Menu = "Atribuição esporádica", Icone = "fas fa-user-cog", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 1, EhConsulta = true, Url = "/gestao/atribuicao-esporadica")]
         AE_C = 92,
 
-        [PermissaoMenu(Menu = "Atribuição esporádica", Icone = "fas fa-user-cog", Agrupamento = "Gestão", OrdemAgrupamento = 6, EhMenu = false, EhInclusao = true, Url = "/gestao/atribuicao-esporadica")]
+        [PermissaoMenu(Menu = "Atribuição esporádica", Icone = "fas fa-user-cog", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 1, EhInclusao = true, Url = "/gestao/atribuicao-esporadica")]
         AE_I = 93,
 
-        [PermissaoMenu(Menu = "Atribuição esporádica", Icone = "fas fa-user-cog", Agrupamento = "Gestão", OrdemAgrupamento = 6, EhMenu = false, EhExclusao = true, Url = "/gestao/atribuicao-esporadica")]
+        [PermissaoMenu(Menu = "Atribuição esporádica", Icone = "fas fa-user-cog", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 1, EhExclusao = true, Url = "/gestao/atribuicao-esporadica")]
         AE_E = 94,
 
-        [PermissaoMenu(Menu = "Atribuição esporádica", Icone = "fas fa-user-cog", Agrupamento = "Gestão", OrdemAgrupamento = 6, EhMenu = false, EhAlteracao = true, Url = "/gestao/atribuicao-esporadica")]
+        [PermissaoMenu(Menu = "Atribuição esporádica", Icone = "fas fa-user-cog", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 1, EhAlteracao = true, Url = "/gestao/atribuicao-esporadica")]
         AE_A = 95,
 
         [PermissaoMenu(Menu = "Atribuição Supervisor", Icone = "fas fa-user-cog", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 5, EhConsulta = true, Url = "/gestao/atribuicao-supervisor-lista")]
