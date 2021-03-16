@@ -225,10 +225,7 @@ class ServicoPlanoAEE {
           turmaId: dadosCollapseLocalizarEstudante.turmaId,
           turmaCodigo: dadosCollapseLocalizarEstudante.codigoTurma,
           alunoCodigo: dadosCollapseLocalizarEstudante.codigoAluno,
-          situacao:
-            planoAEEDados?.situacao === situacaoPlanoAEE.Reestruturado
-              ? situacaoPlanoAEE.Reestruturado
-              : situacaoPlanoAEE.EmAndamento,
+          situacao: planoAEEDados?.situacao,
           questoes: questoesSalvar[0],
         };
 
