@@ -6,7 +6,15 @@ import { erros } from '~/servicos/alertas';
 import api from '~/servicos/api';
 
 const CampoNota = props => {
-  const { nota, onChangeNotaConceito, desabilitarCampo } = props;
+  const {
+    nota,
+    onChangeNotaConceito,
+    desabilitarCampo,
+    clicarSetas,
+    name,
+    esconderSetas,
+    step,
+  } = props;
 
   const modoEdicaoGeralNotaFinal = useSelector(
     store => store.notasConceitos.modoEdicaoGeralNotaFinal
@@ -72,7 +80,14 @@ const CampoNota = props => {
 
   return (
     <CampoNumero
+      esconderSetas={esconderSetas}
+      name={name}
+      onKeyDown={clicarSetas}
       onChange={valorNovo => {
+        if (valorNovo === null) {
+          setarValorNovo('');
+          return;
+        }
         const invalido = valorInvalido(valorNovo);
         if (!invalido && editouCampo(notaValorAtual, valorNovo)) {
           setarValorNovo(valorNovo);
@@ -81,7 +96,7 @@ const CampoNota = props => {
       value={notaValorAtual}
       min={0}
       max={10}
-      step={0.5}
+      step={step}
       placeholder="Nota"
       classNameCampo={`${nota.ausente ? 'aluno-ausente-notas' : ''}`}
       disabled={
@@ -93,11 +108,23 @@ const CampoNota = props => {
 };
 
 CampoNota.defaultProps = {
-  onChangeNotaConceito: PropTypes.func,
+  nota: '',
+  onChangeNotaConceito: () => {},
+  desabilitarCampo: false,
+  clicarSetas: () => {},
+  name: '',
+  esconderSetas: false,
+  step: 0.5,
 };
 
 CampoNota.propTypes = {
-  onChangeNotaConceito: () => {},
+  nota: PropTypes.string,
+  onChangeNotaConceito: PropTypes.func,
+  desabilitarCampo: PropTypes.bool,
+  clicarSetas: PropTypes.func,
+  name: PropTypes.string,
+  esconderSetas: PropTypes.bool,
+  step: PropTypes.number,
 };
 
 export default CampoNota;

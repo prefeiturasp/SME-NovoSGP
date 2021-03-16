@@ -1,9 +1,15 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import shortid from 'shortid';
 import modalidadeDto from '~/dtos/modalidade';
 import notasConceitos from '~/dtos/notasConceitos';
+import {
+  escolherDirecaoSetas,
+  moverCursor,
+  removerArrayAninhados,
+  tratarString,
+} from '~/utils';
 import CampoConceito from '../CamposNotaConceito/campoConceito';
 import CampoNota from '../CamposNotaConceito/campoNota';
 import { BarraLateralLista, Lista } from '../listasNotasConceitos.css';
@@ -18,8 +24,10 @@ const ListaFinal = props => {
     alunoDesabilitado,
     corBarraLateral,
     corRegenciaBarraLateral,
+    dadosListasNotasConceitos,
   } = props;
 
+  const [componentesAgrupados, setComponentesAgrupados] = useState();
   const usuario = useSelector(store => store.usuario);
   const { turmaSelecionada } = usuario;
   const { modalidade } = turmaSelecionada;
@@ -40,16 +48,45 @@ const ListaFinal = props => {
       ? dadosLista.componenteRegencia.componentesCurriculares.length * 2
       : 0;
 
+  const acharComponenteCurricular = (codigoComponente, numero) => {
+    return componentesAgrupados
+      ?.map((valor, index, elementos) => {
+        const nomeComponente = tratarString(valor?.nome);
+        if (nomeComponente === codigoComponente) {
+          return elementos[index + numero];
+        }
+        return '';
+      })
+      .filter(item => item?.nome);
+  };
+
+  const clicarSetas = (e, nomeComponenteCurricular) => {
+    const direcao = escolherDirecaoSetas(e.keyCode);
+    const componenteEscolhido =
+      direcao && acharComponenteCurricular(nomeComponenteCurricular, direcao);
+
+    if (componenteEscolhido.length) {
+      const componenteTratado = tratarString(componenteEscolhido[0].nome);
+      moverCursor(componenteTratado);
+    }
+  };
+
   const montaCampoPosConselho = (
     id,
     notaPosConselho,
     idCampo,
-    codigoComponenteCurricular
+    codigoComponenteCurricular,
+    item
   ) => {
+    const nomeComponenteCurricular = tratarString(item?.nome);
     switch (Number(tipoNota)) {
       case Number(notasConceitos.Notas):
         return (
           <CampoNota
+            esconderSetas
+            name={nomeComponenteCurricular}
+            clicarSetas={e => clicarSetas(e, nomeComponenteCurricular)}
+            step={0}
             id={id}
             notaPosConselho={notaPosConselho}
             idCampo={idCampo}
@@ -123,6 +160,16 @@ const ListaFinal = props => {
     );
   };
 
+  useEffect(() => {
+    if (!componentesAgrupados && dadosListasNotasConceitos?.length) {
+      const componentes = dadosListasNotasConceitos?.map(
+        item => item.componentesCurriculares
+      );
+      const componentesNaoAninhados = removerArrayAninhados(componentes);
+      setComponentesAgrupados(componentesNaoAninhados);
+    }
+  }, [dadosListasNotasConceitos, componentesAgrupados]);
+
   return (
     <Lista className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
       <div className="table-responsive">
@@ -169,7 +216,8 @@ const ListaFinal = props => {
                           item.notaPosConselho.id,
                           item.notaPosConselho.nota,
                           `${descricaoGrupoMatriz} ${index} componente`,
-                          item.codigoComponenteCurricular
+                          item.codigoComponenteCurricular,
+                          item
                         )}
                       </td>
                       <td>{item.faltas}</td>
@@ -207,7 +255,8 @@ const ListaFinal = props => {
                             item.notaPosConselho.id,
                             item.notaPosConselho.nota,
                             `${descricaoGrupoMatriz} ${index} regencia`,
-                            item.codigoComponenteCurricular
+                            item.codigoComponenteCurricular,
+                            item
                           )}
                         </td>
                         {index === 0 ? (
@@ -249,6 +298,10 @@ ListaFinal.propTypes = {
   alunoDesabilitado: PropTypes.bool,
   corBarraLateral: PropTypes.string,
   corRegenciaBarraLateral: PropTypes.string,
+  dadosListasNotasConceitos: PropTypes.oneOfType([
+    PropTypes.object,
+    PropTypes.array,
+  ]),
 };
 
 ListaFinal.defaultProps = {
@@ -259,6 +312,7 @@ ListaFinal.defaultProps = {
   alunoDesabilitado: false,
   corBarraLateral: '',
   corRegenciaBarraLateral: '',
+  dadosListasNotasConceitos: [],
 };
 
 export default ListaFinal;

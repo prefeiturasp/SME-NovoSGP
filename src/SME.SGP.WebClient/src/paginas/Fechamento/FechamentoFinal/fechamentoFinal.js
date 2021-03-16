@@ -150,7 +150,7 @@ const FechamentoFinal = forwardRef((props, ref) => {
   };
 
   const onChangeNotaAluno = (aluno, nota, disciplina) => {
-    let notas = notasEmEdicao;
+    const notas = notasEmEdicao;
     const notaEmEdicao = notasEmEdicao.find(
       c =>
         c.alunoRf == aluno.codigo && c.componenteCurricularCodigo == disciplina
@@ -246,6 +246,7 @@ const FechamentoFinal = forwardRef((props, ref) => {
                   return (
                     <>
                       <LinhaAluno
+                        dados={alunos}
                         aluno={aluno}
                         ehRegencia={ehRegencia}
                         ehNota={ehNota}
@@ -309,9 +310,9 @@ FechamentoFinal.defaultProps = {
   disciplinaCodigo: '1',
   ehRegencia: false,
   turmaPrograma: false,
-  onChange: () => { },
+  onChange: () => {},
   desabilitarCampo: false,
-  carregandoFechamentoFinal: () => { },
+  carregandoFechamentoFinal: () => {},
   bimestreCorrente: '',
   registraFrequencia: true,
 };
