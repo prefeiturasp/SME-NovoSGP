@@ -23,6 +23,11 @@ class ServicoPeriodoEscolar {
   obterBimestreAtualPorTurmaId = turmaId => {
     return api.get(`v1/periodo-escolar/turmas/${turmaId}/bimestres/atual`);
   };
+
+  obterPeriodoLetivoTurma = async (codigoTurma) => {
+    const url = `v1/periodo-escolar/turmas/${codigoTurma}/periodo-letivo`;
+    return api.get(url);
+  };
 }
 
 export default new ServicoPeriodoEscolar();
