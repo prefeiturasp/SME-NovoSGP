@@ -83,7 +83,7 @@ const DiasHorariosTabela = props => {
               color={Colors.Azul}
               border
               className="btn-excluir-dias-horario"
-              disabled={desabilitado}
+              disabled={desabilitado || questaoAtual.somenteLeitura}
               onClick={async e => {
                 e.stopPropagation();
                 if (!desabilitado) {

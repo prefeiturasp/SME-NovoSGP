@@ -3,6 +3,7 @@ using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -69,7 +70,7 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpGet("turmas/{turmaId}")]
-        [ProducesResponseType(typeof(IEnumerable<TipoCalendarioSugestaoDto>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<PeriodoEscolarPorTurmaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> ObterBimetresPeriodosEscolaresTurma([FromServices] IObterPeriodoEscolarPorTurmaUseCase useCase, long turmaId)
         {
@@ -83,6 +84,20 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterBimestresModalidadeEAno(int modalidade, int anoLetivo, [FromServices] IObterPeriodosEscolaresPorAnoEModalidadeTurmaUseCase useCase)
         {
             return Ok(await useCase.Executar((Dominio.Modalidade)modalidade, anoLetivo, 0));
+        }
+
+        [HttpGet("turmas/{turmaId}/bimestres/atual")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(BimestreDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> BimestreAtual(long turmaId, [FromServices] IObterBimestreAtualPorTurmaIdUseCase useCase)
+        {
+            var bimestre = await useCase.Executar(turmaId);
+
+            if (bimestre != null)
+                return Ok(bimestre);
+            else
+                return NoContent();
         }
     }
 }

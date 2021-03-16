@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -31,7 +32,7 @@ namespace SME.SGP.Aplicacao.Commands
 
         public async Task<RetornoPlanoAEEDto> Handle(SalvarPlanoAeeCommand request, CancellationToken cancellationToken)
         {
-            var plano = MapearParaEntidade(request);
+            var plano = await MapearParaEntidade(request);
 
             var planoAeeDto = request.PlanoAEEDto;
             var planoId = planoAeeDto.Id.GetValueOrDefault();
@@ -44,8 +45,7 @@ namespace SME.SGP.Aplicacao.Commands
                 try
                 {
                     // Salva Plano
-                    if (planoId == 0)
-                        planoId = await repositorioPlanoAEE.SalvarAsync(plano);
+                    planoId = await repositorioPlanoAEE.SalvarAsync(plano);
 
                     // Salva Versao
                     var planoAEEVersaoId = await SalvarPlanoAEEVersao(planoId, ultimaVersaoPlanoAee);
@@ -62,7 +62,11 @@ namespace SME.SGP.Aplicacao.Commands
                         }
                     }
 
+                    if (request.Situacao == SituacaoPlanoAEE.Expirado)
+                        await mediator.Send(new ExcluirPendenciaPlanoAEECommand(planoId));
+
                     unitOfWork.PersistirTransacao();
+
                     return new RetornoPlanoAEEDto(planoId, planoAEEVersaoId);
                 }
                 catch (Exception ex)
@@ -107,15 +111,25 @@ namespace SME.SGP.Aplicacao.Commands
                 versaoPlano.Numero + 1 : 1;
         }
 
-        private PlanoAEE MapearParaEntidade(SalvarPlanoAeeCommand request)
-            => new PlanoAEE()
+        private async Task<PlanoAEE> MapearParaEntidade(SalvarPlanoAeeCommand request)
+        {
+            if (request.PlanoAEEDto.Id.HasValue && request.PlanoAEEDto.Id > 0)
+            {
+                var planoAEE = await mediator.Send(new ObterPlanoAEEPorIdQuery(request.PlanoAEEDto.Id.Value));
+                planoAEE.Situacao = SituacaoPlanoAEE.EmAndamento;
+
+                return planoAEE;
+            }
+
+            return new PlanoAEE()
             {
                 TurmaId = request.TurmaId,
-                Situacao = request.Situacao,
+                Situacao = SituacaoPlanoAEE.EmAndamento,
                 AlunoCodigo = request.AlunoCodigo,
                 AlunoNumero = request.AlunoNumero,
                 AlunoNome = request.AlunoNome,
                 Questoes = new System.Collections.Generic.List<PlanoAEEQuestao>()
             };
+        }
     }
 }
