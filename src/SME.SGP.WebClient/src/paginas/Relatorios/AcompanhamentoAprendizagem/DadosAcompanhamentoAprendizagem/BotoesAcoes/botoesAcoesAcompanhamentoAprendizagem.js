@@ -9,15 +9,38 @@ const BotoesAcoesAcompanhamentoAprendizagem = () => {
     history.push(URL_HOME);
   };
 
+  const onClickCancelar = async () => {};
+
+  const onClickSalvar = async () => {};
+
   return (
-    <Button
-      id="btn-voltar"
-      label="Voltar"
-      icon="arrow-left"
-      color={Colors.Azul}
-      border
-      onClick={onClickVoltar}
-    />
+    <>
+      <Button
+        id="btn-voltar"
+        label="Voltar"
+        icon="arrow-left"
+        color={Colors.Azul}
+        border
+        className="mr-2"
+        onClick={onClickVoltar}
+      />
+      <Button
+        id="btn-cancelar"
+        label="Cancelar"
+        color={Colors.Roxo}
+        border
+        className="mr-2"
+        onClick={onClickCancelar}
+      />
+      <Button
+        id="btn-salvar"
+        label="Salvar"
+        color={Colors.Roxo}
+        border
+        bold
+        onClick={onClickSalvar}
+      />
+    </>
   );
 };
 

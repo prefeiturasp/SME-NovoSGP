@@ -1,9 +1,10 @@
-import PropTypes from 'prop-types';
 import { Tabs } from 'antd';
+import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ContainerTabsCard } from '~/componentes/tabs/tabs.css';
 import DadosGerais from './Tabs/DadosGerais/dadosGerais';
+import RegistrosFotos from './Tabs/RegistrosFotos/registrosFotos';
 
 const { TabPane } = Tabs;
 
@@ -33,8 +34,8 @@ const DadosAcompanhamentoAprendizagem = props => {
           <TabPane tab="Dados gerais" key="1">
             <DadosGerais semestreSelecionado={semestreSelecionado} />
           </TabPane>
-          <TabPane tab="Registros e fotos" key="2" disabled>
-            Registros e fotos
+          <TabPane tab="Registros e fotos" key="2">
+            <RegistrosFotos semestreSelecionado={semestreSelecionado} />
           </TabPane>
           <TabPane tab="Observações" key="3" disabled>
             Observações
