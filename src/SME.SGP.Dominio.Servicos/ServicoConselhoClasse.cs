@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -70,10 +71,7 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task<ConselhoClasseNotaRetornoDto> SalvarConselhoClasseAlunoNotaAsync(ConselhoClasseNotaDto conselhoClasseNotaDto, string alunoCodigo, long conselhoClasseId, long fechamentoTurmaId, string codigoTurma, int bimestre)
         {
-            var conselhoClasseNota = new ConselhoClasseNota();
-
-            var fechamentoTurma = await repositorioFechamentoTurma.ObterCompletoPorIdAsync(fechamentoTurmaId);
-
+            var fechamentoTurma = await ObterFechamentoTurma(fechamentoTurmaId, alunoCodigo);
             var fechamentoTurmaDisciplina = new FechamentoTurmaDisciplina();
 
             if (fechamentoTurma == null)
@@ -107,6 +105,9 @@ namespace SME.SGP.Dominio.Servicos
                 };
 
             }
+
+        
+
             try
             {
                 unitOfWork.IniciarTransacao();
@@ -141,6 +142,8 @@ namespace SME.SGP.Dominio.Servicos
             }
 
             long conselhoClasseAlunoId = 0;
+            var conselhoClasseNota = new ConselhoClasseNota();
+
             try
             {
                 if (conselhoClasseId == 0)
@@ -301,7 +304,8 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task<AuditoriaConselhoClasseAlunoDto> SalvarConselhoClasseAluno(ConselhoClasseAluno conselhoClasseAluno)
         {
-            var fechamentoTurma = await ObterFechamentoTurma(conselhoClasseAluno.ConselhoClasse.FechamentoTurmaId);
+            var fechamentoTurma = await ObterFechamentoTurma(conselhoClasseAluno.ConselhoClasse.FechamentoTurmaId, conselhoClasseAluno.AlunoCodigo);
+
             if (!await VerificaNotasTodosComponentesCurriculares(conselhoClasseAluno.AlunoCodigo, fechamentoTurma.Turma, fechamentoTurma.PeriodoEscolarId))
                 throw new NegocioException("É necessário que todos os componentes tenham nota/conceito informados!");
 
@@ -322,7 +326,7 @@ namespace SME.SGP.Dominio.Servicos
         public async Task<bool> VerificaNotasTodosComponentesCurriculares(string alunoCodigo, Turma turma, long? periodoEscolarId)
         {
             string[] turmasCodigos;
-            if (turma.DeveVerificarRegraRegulares() && turma.EhTurmaEdFisicaOuItinerario())
+            if (turma.DeveVerificarRegraRegulares())
             {
                 turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, turma.ObterTiposRegularesDiferentes()));
                 turmasCodigos = turmasCodigos.Concat(new string[] { turma.CodigoTurma }).ToArray();
@@ -349,25 +353,6 @@ namespace SME.SGP.Dominio.Servicos
             var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesPorTurmasCodigoQuery(turmasCodigo, usuarioAtual.PerfilAtual, usuarioAtual.Login, ehEnsinoEspecial, turnoParaComponentesCurriculares));
             if (componentesCurriculares == null)
                 throw new NegocioException("Não localizado disciplinas para a turma no EOL!");
-
-            return componentesTurma;
-        }
-
-        private async Task<IEnumerable<DisciplinaDto>> ObterComponentesTurma(Turma turma)
-        {
-            var componentesTurma = new List<DisciplinaDto>();
-            var componentesCurriculares = await consultasDisciplina.ObterDisciplinasPorTurma(turma.CodigoTurma, false);
-            if (componentesCurriculares == null)
-                throw new NegocioException("Não localizado disciplinas para a turma no EOL!");
-
-            componentesTurma.AddRange(componentesCurriculares.Where(c => !c.Regencia));
-            foreach (var componenteCurricular in componentesCurriculares.Where(c => c.Regencia))
-            {
-                // Adiciona lista de componentes relacionados a regencia
-                componentesTurma.AddRange(
-                    consultasDisciplina.MapearParaDto(
-                        await consultasDisciplina.ObterComponentesRegencia(turma, componenteCurricular.CodigoComponenteCurricular)));
-            }
 
             return componentesTurma;
         }
@@ -420,16 +405,50 @@ namespace SME.SGP.Dominio.Servicos
                 conselhoClasseAluno = new ConselhoClasseAluno() { AlunoCodigo = alunoCodigo, ConselhoClasse = conselhoClasse, ConselhoClasseId = conselhoClasse.Id };
                 await repositorioConselhoClasseAluno.SalvarAsync(conselhoClasseAluno);
             }
-            conselhoClasseAluno.ConselhoClasse.FechamentoTurma = await ObterFechamentoTurma(fechamentoTurmaId);
+            conselhoClasseAluno.ConselhoClasse.FechamentoTurma = await ObterFechamentoTurma(fechamentoTurmaId, alunoCodigo);
 
             return conselhoClasseAluno;
         }
 
-        private async Task<FechamentoTurma> ObterFechamentoTurma(long fechamentoTurmaId)
+        private async Task<FechamentoTurma> ObterFechamentoTurma(long fechamentoTurmaId, string alunoCodigo)
         {
             var fechamentoTurma = await repositorioFechamentoTurma.ObterCompletoPorIdAsync(fechamentoTurmaId);
             if (fechamentoTurma == null)
                 throw new NegocioException("Fechamento da turma não localizado");
+
+            //Se for dos tipos 2 e 7, deve utilizar o fechamento da turma do tipo 1.
+            //Caso não exista, gerar;
+            if (fechamentoTurma.Turma.EhTurmaEdFisicaOuItinerario())
+            {
+                //Obter a turma do tipo 1 do aluno
+                var tiposTurma = new List<TipoTurma>() { TipoTurma.Regular };
+                var turmasRegularesDoAluno = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(fechamentoTurma.Turma.AnoLetivo, alunoCodigo, tiposTurma));
+                if (turmasRegularesDoAluno == null && !turmasRegularesDoAluno.Any())
+                    throw new NegocioException($"Não foi possível obter a turma Regular do aluno {alunoCodigo}");
+
+                var turmaRegularCodigo = turmasRegularesDoAluno.FirstOrDefault();
+                var turmaRegularId = await mediator.Send(new ObterTurmaIdPorCodigoQuery(turmaRegularCodigo));
+                if (turmaRegularId == 0)
+                    throw new NegocioException($"Não foi possível obter a turma Regular do aluno {alunoCodigo} na base do SGP");
+
+
+                var fechamentoDaTurmaRegular = await mediator.Send(new ObterFechamentoPorTurmaPeriodoQuery() { TurmaId = turmaRegularId, PeriodoEscolarId = fechamentoTurma.PeriodoEscolarId ?? 0 });
+                if (fechamentoDaTurmaRegular == null)
+                {
+                    //Gerar fechamento para a turma Regular
+                    var fechamentoParaIncluirDto = new IncluirFechamentoDto(turmaRegularId, fechamentoTurma.PeriodoEscolarId);
+
+                    var fechamentoParaUtilizarId = await mediator.Send(new IncluirFechamentoFinalCommand(fechamentoParaIncluirDto));
+
+                    if (fechamentoParaUtilizarId <= 0)
+                        throw new NegocioException("Não foi possível gerar o fechamento para a turma Regular.");
+
+                    fechamentoTurma = await repositorioFechamentoTurma.ObterCompletoPorIdAsync(fechamentoParaUtilizarId);
+
+                }
+                else fechamentoTurma = fechamentoDaTurmaRegular;
+
+            }
 
             return fechamentoTurma;
         }
