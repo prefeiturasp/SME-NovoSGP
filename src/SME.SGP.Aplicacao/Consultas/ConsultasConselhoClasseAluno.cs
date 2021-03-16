@@ -185,7 +185,7 @@ namespace SME.SGP.Aplicacao
                 var conselhoClasseAlunoNotas = new ConselhoClasseAlunoNotasConceitosDto();
                 conselhoClasseAlunoNotas.GrupoMatriz = grupoDisiplinasMatriz.Key;
 
-                foreach (var disciplina in grupoDisiplinasMatriz)
+                foreach (var disciplina in grupoDisiplinasMatriz.OrderBy(g => g.Nome))
                 {
                     // Carrega Frequencia Aluno
                     var frequenciaAluno = await ObterFrequenciaAluno(turma,
