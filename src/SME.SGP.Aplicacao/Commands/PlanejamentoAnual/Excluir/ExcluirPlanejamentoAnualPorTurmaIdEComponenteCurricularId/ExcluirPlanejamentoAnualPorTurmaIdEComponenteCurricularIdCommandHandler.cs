@@ -55,11 +55,11 @@ namespace SME.SGP.Aplicacao
                     .ObterPorPlanejamentoAnualComponenteId(planejamentoAnualComponente.Select(pc => pc.Id).ToArray());
 
                 foreach (var paoa in planejamentoAnualObjetivosAprendizagem)
-                    await repositorioPlanejamentoAnualObjetivosAprendizagem.RemoverLogicamenteAsync(paoa.Id);
+                    repositorioPlanejamentoAnualObjetivosAprendizagem.RemoverLogicamenteAsync(paoa.Id).Wait();
 
-                await repositorioPlanejamentoAnualComponente.RemoverLogicamenteAsync(planejamentoAnualComponente.Select(pc => pc.Id).ToArray());
+                repositorioPlanejamentoAnualComponente.RemoverLogicamenteAsync(planejamentoAnualComponente.Select(pc => pc.Id).ToArray()).Wait();
 
-                await repositorioPlanejamentoAnualPeriodoEscolar.RemoverLogicamentePorTurmaBimestreAsync(comando.TurmaId, pape.Bimestre);
+                repositorioPlanejamentoAnualPeriodoEscolar.RemoverLogicamentePorTurmaBimestreAsync(comando.TurmaId, pape.Bimestre).Wait();
             }
 
             await repositorioPlanejamentoAnual.RemoverLogicamenteAsync(planejamentoAnual);
