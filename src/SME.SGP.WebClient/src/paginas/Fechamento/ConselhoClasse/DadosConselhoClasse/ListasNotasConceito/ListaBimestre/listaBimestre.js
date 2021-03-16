@@ -44,6 +44,8 @@ const ListaBimestre = props => {
       case Number(notasConceitos.Notas):
         return (
           <CampoNota
+            esconderSetas
+            step={0}
             id={id}
             notaPosConselho={notaPosConselho}
             idCampo={idCampo}

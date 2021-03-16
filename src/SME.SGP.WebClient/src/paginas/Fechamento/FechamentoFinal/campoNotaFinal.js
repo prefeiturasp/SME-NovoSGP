@@ -15,13 +15,17 @@ const CampoNotaFinal = props => {
     eventoData,
     mediaAprovacaoBimestre,
     label,
+    clicarSetas,
+    name,
+    esconderSetas,
+    step,
   } = props;
 
   const [notaBimestre, setNotaBimestre] = useState();
   const [notaValorAtual, setNotaValorAtual] = useState();
   const [notaAlterada, setNotaAlterada] = useState(false);
   const [abaixoDaMedia, setAbaixoDaMedia] = useState(false);
-  const [valorIncremento] = useState(0.5);
+  const [valorIncremento] = useState(step);
   const [
     carregandoValorArredondamento,
     setCarregandoValorArredondamento,
@@ -124,6 +128,9 @@ const CampoNotaFinal = props => {
       <div>
         <Loader loading={carregandoValorArredondamento} tip="">
           <CampoNumero
+            esconderSetas={esconderSetas}
+            name={name}
+            onKeyDown={clicarSetas}
             label={label || ''}
             onChange={valorNovo => {
               const invalido = valorInvalido(valorNovo);
@@ -131,7 +138,7 @@ const CampoNotaFinal = props => {
                 setarValorNovo(valorNovo);
               }
             }}
-            value={notaValorAtual ? notaValorAtual : ''}
+            value={notaValorAtual || ''}
             min={0}
             max={10}
             step={valorIncremento}
@@ -157,6 +164,10 @@ CampoNotaFinal.defaultProps = {
   podeEditar: PropTypes.bool,
   eventoData: PropTypes.string,
   mediaAprovacaoBimestre: PropTypes.number,
+  clicarSetas: PropTypes.func,
+  name: PropTypes.string,
+  esconderSetas: PropTypes.bool,
+  step: PropTypes.number,
 };
 
 CampoNotaFinal.propTypes = {
@@ -166,6 +177,10 @@ CampoNotaFinal.propTypes = {
   podeEditar: false,
   eventoData: '',
   mediaAprovacaoBimestre: 0,
+  clicarSetas: () => {},
+  name: '',
+  esconderSetas: false,
+  step: 0.5,
 };
 
 export default CampoNotaFinal;
