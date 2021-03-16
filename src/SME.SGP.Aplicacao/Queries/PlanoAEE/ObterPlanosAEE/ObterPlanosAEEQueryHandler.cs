@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interfaces;
@@ -56,8 +57,9 @@ namespace SME.SGP.Aplicacao
                         Situacao = planoAEE.Situacao != 0 ? planoAEE.Situacao.Name() : "",
                         Turma = $"{planoAEE.TurmaModalidade.ShortName()} - {planoAEE.TurmaNome}",
                         Numero = aluno?.NumeroAlunoChamada ?? 0,
-                        Nome = $"{aluno?.NomeAluno}|{planoAEE.PossuiEncaminhamentoAEE}",
+                        Nome = $"{aluno?.NomeAluno}",
                         PossuiEncaminhamentoAEE = planoAEE.PossuiEncaminhamentoAEE,
+                        EhAtendidoAEE = (planoAEE.Situacao != SituacaoPlanoAEE.Encerrado && planoAEE.Situacao != SituacaoPlanoAEE.EncerradoAutomaticamento),
                         CriadoEm = planoAEE.CriadoEm,
                         Versao = $"v{planoAEE.Versao} ({planoAEE.DataVersao:dd/MM/yyyy})"
                     });

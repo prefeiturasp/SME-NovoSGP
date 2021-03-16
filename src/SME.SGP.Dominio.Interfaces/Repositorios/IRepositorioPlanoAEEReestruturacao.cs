@@ -9,5 +9,6 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task<IEnumerable<PlanoAEEReestruturacaoDto>> ObterRestruturacoesPorPlanoAEEId(long planoId);
         Task<bool> ExisteReestruturacaoParaVersao(long versaoId, long reestruturacaoId);
+        Task<PlanoAEEReestruturacao> ObterCompletoPorId(long reestruturacaoId);
     }
 }

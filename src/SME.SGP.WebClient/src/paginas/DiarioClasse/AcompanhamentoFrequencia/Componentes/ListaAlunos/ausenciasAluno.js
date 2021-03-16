@@ -12,7 +12,13 @@ import { BtnVisualizarAnotacao, TabelaColunasFixas } from './listaAlunos.css';
 import { Loader } from '~/componentes';
 
 const AusenciasAluno = props => {
-  const { indexLinha, componenteCurricularId, codigoAluno, turmaId } = props;
+  const {
+    indexLinha,
+    componenteCurricularId,
+    codigoAluno,
+    turmaId,
+    bimestre,
+  } = props;
   const [dados, setDados] = useState([]);
   const [carregandoListaAusencias, setCarregandoListaAusencias] = useState(
     false
@@ -39,7 +45,8 @@ const AusenciasAluno = props => {
         const retorno = await ServicoAcompanhamentoFrequencia.obterJustificativaAcompanhamentoFrequencia(
           turmaId,
           componenteCurricularId,
-          codigoAluno
+          codigoAluno,
+          bimestre
         ).catch(e => {
           erros(e);
           setSemDados(true);
@@ -148,6 +155,7 @@ AusenciasAluno.defaultProps = {
   turmaId: PropTypes.string,
   codigoAluno: PropTypes.string,
   indexLinha: PropTypes.number,
+  bimestre: PropTypes.number,
 };
 
 AusenciasAluno.propTypes = {
@@ -155,6 +163,7 @@ AusenciasAluno.propTypes = {
   turmaId: PropTypes.string,
   codigoAluno: PropTypes.string,
   indexLinha: null,
+  bimestre: null,
 };
 
 export default AusenciasAluno;

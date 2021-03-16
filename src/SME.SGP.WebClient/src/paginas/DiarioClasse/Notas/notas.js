@@ -1,6 +1,9 @@
 import { Tabs } from 'antd';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import * as Yup from 'yup';
+import { Formik, Form } from 'formik';
+import moment from 'moment';
 import { Grid, Loader, ModalConteudoHtml, Colors } from '~/componentes';
 import Button from '~/componentes/button';
 import Avaliacao from '~/componentes-sgp/avaliacao/avaliacao';
@@ -25,10 +28,7 @@ import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 import ServicoNotas from '~/servicos/ServicoNotas';
 import BotoesAcoessNotasConceitos from './botoesAcoes';
 import { Container, ContainerAuditoria } from './notas.css';
-import * as Yup from 'yup';
-import { Formik, Form } from 'formik';
 import ServicoPeriodoFechamento from '~/servicos/Paginas/Calendario/ServicoPeriodoFechamento';
-import moment from 'moment';
 import AlertaModalidadeInfantil from '~/componentes-sgp/AlertaModalidadeInfantil/alertaModalidadeInfantil';
 import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 import ServicoNotaConceito from '~/servicos/Paginas/DiarioClasse/ServicoNotaConceito';
@@ -574,7 +574,7 @@ const Notas = ({ match }) => {
     return pergutarParaSalvarNotaFinal(bimestresSemAvaliacaoBimestral)
       .then(salvarAvaliacaoFinal => {
         if (salvarAvaliacaoFinal) {
-          let valoresBimestresSalvarComNotas = valoresBimestresSalvar.filter(
+          const valoresBimestresSalvarComNotas = valoresBimestresSalvar.filter(
             x => x.notaConceitoAlunos.length > 0
           );
 

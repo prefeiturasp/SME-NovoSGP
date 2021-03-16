@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public interface IObterJustificativasAlunoPorComponenteCurricularUseCase : IUseCase<FiltroJustificativasAlunoPorComponenteCurricular, IEnumerable<JustificativaAlunoDto>>
+    public interface IObterJustificativasAlunoPorComponenteCurricularUseCase : IUseCase<FiltroJustificativasAlunoPorComponenteCurricular, PaginacaoResultadoDto<JustificativaAlunoDto>>
     {
     }
 }

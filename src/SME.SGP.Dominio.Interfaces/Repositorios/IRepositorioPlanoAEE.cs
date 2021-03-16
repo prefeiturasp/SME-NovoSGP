@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -12,6 +13,11 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<PlanoAEE> ObterPlanoComTurmaPorId(long planoId);
         Task<IEnumerable<PlanoAEE>> ObterPlanosAtivos();
+        Task<PlanoAEEResumoDto> ObterPlanoPorEstudanteEAno(string codigoEstudante, int anoLetivo);
         Task<int> AtualizarSituacaoPlanoPorVersao(long versaoId, int situacao);
+        Task<IEnumerable<PlanoAEE>> ObterPorDataFinalVigencia(DateTime dataFim, bool desconsiderarPendencias = true, bool desconsiderarNotificados = false, NotificacaoPlanoAEETipo tipo = NotificacaoPlanoAEETipo.PlanoCriado);
+        Task<IEnumerable<PlanoAEEReduzidoDto>> ObterPlanosAEEAtivosComTurmaEVigencia();
+        Task<PlanoAEE> ObterPorReestruturacaoId(long reestruturacaoId);
+        Task<PlanoAEE> ObterPlanoComTurmaUeDrePorId(long planoId);
     }
 }
