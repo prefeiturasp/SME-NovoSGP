@@ -55,6 +55,16 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { fechamentoTurmaId, alunoCodigo });
         }
 
+        public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasAlunoPorTurmasCodigosAsync(string[] turmasCodigos, string alunoCodigo)
+        {
+            var query = $@"{queryNotasFechamento}
+                         where t.turma_id = ANY(@turmasCodigos)
+                           and fa.aluno_codigo = @alunoCodigo";
+
+            return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { turmasCodigos, alunoCodigo });
+        }
+
+
         public async Task<IEnumerable<WfAprovacaoNotaFechamento>> ObterNotasEmAprovacaoPorFechamento(long fechamentoTurmaDisciplinaId)
         {
             var query = @"select w.*
