@@ -8,6 +8,7 @@ namespace SME.SGP.Dominio
     {
         Geral = 1,
         Editor = 2,
-        EncaminhamentoAEE = 3
+        EncaminhamentoAEE = 3,
+        FotoAluno = 4
     }
 }

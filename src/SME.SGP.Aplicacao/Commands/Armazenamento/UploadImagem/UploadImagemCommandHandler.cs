@@ -1,39 +1,30 @@
 ﻿using MediatR;
-using Microsoft.AspNetCore.Http;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class UploadArquivoCommandHandler : IRequestHandler<UploadArquivoCommand, ArquivoArmazenadoDto>
+    public class UploadImagemCommandHandler : IRequestHandler<UploadImagemCommand, ArquivoArmazenadoDto>
     {
         private readonly IMediator mediator;
 
-        public UploadArquivoCommandHandler(IMediator mediator)
+        public UploadImagemCommandHandler(IMediator mediator)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<ArquivoArmazenadoDto> Handle(UploadArquivoCommand request, CancellationToken cancellationToken)
+        public async Task<ArquivoArmazenadoDto> Handle(UploadImagemCommand request, CancellationToken cancellationToken)
         {
-            if (request.TipoConteudo != TipoConteudoArquivo.Indefinido)
-            {
-                if (request.Arquivo.ContentType != request.TipoConteudo.Name())
-                    throw new NegocioException("O formato de arquivo enviado não é aceito");
-            }
+            var caminhoArquivo = ObterCaminhoArquivo(request.TipoArquivo);
 
-            var nomeArquivo = request.Arquivo.FileName;
-            var caminhoArquivo = ObterCaminhoArquivo(request.Tipo);
-
-            var arquivo = await mediator.Send(new SalvarArquivoRepositorioCommand(nomeArquivo, request.Tipo, request.Arquivo.ContentType));
-            await mediator.Send(new ArmazenarArquivoFisicoCommand(request.Arquivo, arquivo.Codigo.ToString(), caminhoArquivo));
+            var arquivo = await mediator.Send(new SalvarArquivoRepositorioCommand(request.NomeArquivo, request.TipoArquivo, request.Formato));
+            await mediator.Send(new ArmazenarImagemFisicaCommand(request.Imagem, arquivo.Codigo.ToString(), request.NomeArquivo, caminhoArquivo, request.Formato));
 
             return arquivo;
         }
