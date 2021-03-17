@@ -412,45 +412,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task<FechamentoTurma> ObterFechamentoTurma(long fechamentoTurmaId, string alunoCodigo)
         {
-            var fechamentoTurma = await repositorioFechamentoTurma.ObterCompletoPorIdAsync(fechamentoTurmaId);
-            if (fechamentoTurma == null)
-                throw new NegocioException("Fechamento da turma não localizado");
-
-            //Se for dos tipos 2 e 7, deve utilizar o fechamento da turma do tipo 1.
-            //Caso não exista, gerar;
-            if (fechamentoTurma.Turma.EhTurmaEdFisicaOuItinerario())
-            {
-                //Obter a turma do tipo 1 do aluno
-                var tiposTurma = new List<TipoTurma>() { TipoTurma.Regular };
-                var turmasRegularesDoAluno = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(fechamentoTurma.Turma.AnoLetivo, alunoCodigo, tiposTurma));
-                if (turmasRegularesDoAluno == null && !turmasRegularesDoAluno.Any())
-                    throw new NegocioException($"Não foi possível obter a turma Regular do aluno {alunoCodigo}");
-
-                var turmaRegularCodigo = turmasRegularesDoAluno.FirstOrDefault();
-                var turmaRegularId = await mediator.Send(new ObterTurmaIdPorCodigoQuery(turmaRegularCodigo));
-                if (turmaRegularId == 0)
-                    throw new NegocioException($"Não foi possível obter a turma Regular do aluno {alunoCodigo} na base do SGP");
-
-
-                var fechamentoDaTurmaRegular = await mediator.Send(new ObterFechamentoPorTurmaPeriodoQuery() { TurmaId = turmaRegularId, PeriodoEscolarId = fechamentoTurma.PeriodoEscolarId ?? 0 });
-                if (fechamentoDaTurmaRegular == null)
-                {
-                    //Gerar fechamento para a turma Regular
-                    var fechamentoParaIncluirDto = new IncluirFechamentoDto(turmaRegularId, fechamentoTurma.PeriodoEscolarId);
-
-                    var fechamentoParaUtilizarId = await mediator.Send(new IncluirFechamentoFinalCommand(fechamentoParaIncluirDto));
-
-                    if (fechamentoParaUtilizarId <= 0)
-                        throw new NegocioException("Não foi possível gerar o fechamento para a turma Regular.");
-
-                    fechamentoTurma = await repositorioFechamentoTurma.ObterCompletoPorIdAsync(fechamentoParaUtilizarId);
-
-                }
-                else fechamentoTurma = fechamentoDaTurmaRegular;
-
-            }
-
-            return fechamentoTurma;
+            return await mediator.Send(new ObterFechamentoTurmaPorIdAlunoCodigoQuery(fechamentoTurmaId, alunoCodigo));
         }
 
         private void ValidarNotasFechamentoConselhoClasse2020(ConselhoClasseNota conselhoClasseNota)

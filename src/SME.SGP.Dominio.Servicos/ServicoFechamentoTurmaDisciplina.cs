@@ -223,12 +223,6 @@ namespace SME.SGP.Dominio.Servicos
             if (periodoEscolar == null)
                 throw new NegocioException($"Não localizado período de fechamento em aberto para turma informada no {entidadeDto.Bimestre}º Bimestre");
 
-            if (turmaFechamento.EhTurmaEdFisicaOuItinerario())
-            {
-                var turmaRegular = await mediator.Send(new ObterTurmaPorIdAnoLetivoModalidadeTipoQuery(turmaFechamento.UeId, turmaFechamento.AnoLetivo, Enumerados.TipoTurma.Regular));
-                turmaFechamento = turmaRegular ?? throw new NegocioException($"Não foi possível obter a turma regular para gerar o fechamento da turma {turmaFechamento.CodigoTurma} - {turmaFechamento.NomeComModalidade()}");
-            }
-
             await CarregaFechamentoTurma(fechamentoTurmaDisciplina, turmaFechamento, periodoEscolar);
 
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
