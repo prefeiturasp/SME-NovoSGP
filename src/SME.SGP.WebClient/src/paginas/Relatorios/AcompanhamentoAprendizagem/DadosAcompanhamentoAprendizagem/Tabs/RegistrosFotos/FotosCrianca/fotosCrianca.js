@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import CardCollapse from '~/componentes/cardCollapse';
 
 const FotosCrianca = () => {
-  const [exibir, setExibir] = useState(true);
+  const [exibir, setExibir] = useState(false);
 
   const onClickExpandir = () => setExibir(!exibir);
 

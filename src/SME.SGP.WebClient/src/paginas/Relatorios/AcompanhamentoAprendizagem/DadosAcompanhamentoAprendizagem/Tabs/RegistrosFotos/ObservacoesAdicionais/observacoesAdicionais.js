@@ -3,7 +3,7 @@ import { JoditEditor } from '~/componentes';
 import CardCollapse from '~/componentes/cardCollapse';
 
 const ObservacoesAdicionais = () => {
-  const [exibir, setExibir] = useState(true);
+  const [exibir, setExibir] = useState(false);
 
   const onClickExpandir = () => setExibir(!exibir);
 
