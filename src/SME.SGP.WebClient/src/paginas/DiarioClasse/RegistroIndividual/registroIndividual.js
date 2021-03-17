@@ -32,7 +32,7 @@ import {
 } from '~/servicos';
 
 import { RotasDto } from '~/dtos';
-import MetodosRegistroIndividual from './metodosRegistroIndividual';
+import MetodosRegistroIndividual from '~/componentes-sgp/RegistroIndividual/metodosRegistroIndividual';
 
 const RegistroIndividual = () => {
   const [exibirListas, setExibirListas] = useState(false);

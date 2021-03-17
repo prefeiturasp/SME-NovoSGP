@@ -7,7 +7,7 @@ import { Paginacao } from '~/componentes-sgp';
 import { setExibirLoaderGeralRegistroAnteriores } from '~/redux/modulos/registroIndividual/actions';
 
 import Item from './item/item';
-import MetodosRegistroIndividual from '~/paginas/DiarioClasse/RegistroIndividual/metodosRegistroIndividual';
+import MetodosRegistroIndividual from '~/componentes-sgp/RegistroIndividual/metodosRegistroIndividual';
 
 const RegistrosAnterioresConteudo = () => {
   const [dataInicio, setDataInicio] = useState();
