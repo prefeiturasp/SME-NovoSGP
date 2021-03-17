@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -31,13 +32,25 @@ namespace SME.SGP.Api.Controllers
             return BadRequest();
         }
 
-        [HttpPost("semestres/{acompanhamentoAlunoSemestreId}")]
-        [ProducesResponseType(typeof(IEnumerable<SinteseDto>), 200)]
+        [HttpGet("semestres/{acompanhamentoAlunoSemestreId}/fotos")]
+        [ProducesResponseType(typeof(IEnumerable<(byte[], string, string)>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 400)]
         public async Task<IActionResult> ObterFotos(long acompanhamentoAlunoSemestreId, [FromServices]IObterFotosSemestreAlunoUseCase useCase)
         {
             return Ok(await useCase.Executar(acompanhamentoAlunoSemestreId));
         }
+
+
+        [HttpDelete("semestres/{acompanhamentoAlunoSemestreId}/fotos/{codigoFoto}")]
+        [ProducesResponseType(typeof(AuditoriaDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public async Task<IActionResult> ObterFotos(Guid codigoFoto, [FromServices] IExcluirFotoAlunoUseCase useCase)
+        {
+            return Ok(await useCase.Executar(codigoFoto));
+        }
+
+
     }
 }
