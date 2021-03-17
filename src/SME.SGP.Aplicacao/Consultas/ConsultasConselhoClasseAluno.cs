@@ -160,7 +160,7 @@ namespace SME.SGP.Aplicacao
 
             if (turma.DeveVerificarRegraRegulares())
             {
-                List<TipoTurma> turmasCodigosParaConsulta = new() { turma.TipoTurma };
+                List<TipoTurma> turmasCodigosParaConsulta = new List<TipoTurma>(){ turma.TipoTurma };
                 turmasCodigosParaConsulta.AddRange(turma.ObterTiposRegularesDiferentes());
                 turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, turmasCodigosParaConsulta));
                 conselhosClassesIds = await mediator.Send(new ObterConselhoClasseIdsPorTurmaEPeriodoQuery(turmasCodigos, fechamentoTurma.PeriodoEscolarId));
