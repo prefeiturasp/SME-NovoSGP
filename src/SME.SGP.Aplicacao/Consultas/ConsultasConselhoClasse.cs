@@ -55,28 +55,29 @@ namespace SME.SGP.Aplicacao
         public async Task<ConselhoClasseAlunoResumoDto> ObterConselhoClasseTurma(string turmaCodigo, string alunoCodigo, int bimestre = 0, bool ehFinal = false, bool consideraHistorico = false)
         {
             var turma = await ObterTurma(turmaCodigo);
-            var ehAnoAnterior = turma.AnoLetivo != DateTime.Today.Year;
-           
+
             if (turma.EhTurmaEdFisicaOuItinerario())
             {
                 var tipos = new List<TipoTurma>() {
                         TipoTurma.Regular
                     };
                 var codigosTurmasRelacionadas = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, tipos));
-                turma = await ObterTurma(codigosTurmasRelacionadas.FirstOrDefault());
+                turma = await ObterTurma(codigosTurmasRelacionadas.FirstOrDefault());                
             }
+
+            var ehAnoAnterior = turma.AnoLetivo != DateTime.Today.Year;
+
+            var fechamentoTurma = await consultasFechamentoTurma.ObterPorTurmaCodigoBimestreAsync(turma.CodigoTurma, bimestre);            
 
             if (bimestre == 0 && !ehFinal)
                 bimestre = await ObterBimestreAtual(turma);
-
-            var fechamentoTurma = await consultasFechamentoTurma.ObterPorTurmaCodigoBimestreAsync(turma.CodigoTurma, bimestre);
 
             if (fechamentoTurma == null && !ehAnoAnterior)
             {
                 throw new NegocioException("Fechamento da turma não localizado " + (!ehFinal && bimestre > 0 ? $"para o bimestre {bimestre}" : ""));
             }
 
-            var conselhoClasse = fechamentoTurma != null ? await repositorioConselhoClasse.ObterPorFechamentoId(fechamentoTurma.Id): null;
+            var conselhoClasse = fechamentoTurma != null ? await repositorioConselhoClasse.ObterPorFechamentoId(fechamentoTurma.Id) : null;
 
             var periodoEscolarId = fechamentoTurma?.PeriodoEscolarId;
             if (periodoEscolarId == null)

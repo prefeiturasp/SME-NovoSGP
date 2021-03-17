@@ -7,19 +7,21 @@ using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterNotasFechamentosPorTurmasCodigosQuery : IRequest<IEnumerable<NotaConceitoBimestreComponenteDto>>
+    public class ObterNotasFechamentosPorTurmasCodigosBimestreQuery : IRequest<IEnumerable<NotaConceitoBimestreComponenteDto>>
     {
-        public ObterNotasFechamentosPorTurmasCodigosQuery(string[] turmasCodigos, string alunoCodigo)
+        public ObterNotasFechamentosPorTurmasCodigosBimestreQuery(string[] turmasCodigos, string alunoCodigo, int bimestre)
         {
             TurmasCodigos = turmasCodigos;
             AlunoCodigo = alunoCodigo;
+            Bimestre = bimestre;
         }
         public string[] TurmasCodigos { get; set; }
         public string AlunoCodigo { get; set; }
+        public int Bimestre { get; set; }
 
-        public class ObterNotasFechamentosPorTurmasCodigosQueryValidator : AbstractValidator<ObterNotasFechamentosPorTurmasCodigosQuery>
+        public class ObterNotasFechamentosPorTurmasCodigosBimestreQueryValidator : AbstractValidator<ObterNotasFechamentosPorTurmasCodigosBimestreQuery>
         {
-            public ObterNotasFechamentosPorTurmasCodigosQueryValidator()
+            public ObterNotasFechamentosPorTurmasCodigosBimestreQueryValidator()
             {
                 RuleFor(a => a.TurmasCodigos)
                     .NotNull()
@@ -29,6 +31,10 @@ namespace SME.SGP.Aplicacao
                     .NotNull()
                     .NotEmpty()
                     .WithMessage("Necessário informar o código do aluno para obter as notas de fechmamento");
+                RuleFor(a => a.Bimestre)
+                    .NotNull()
+                    .NotEmpty()
+                    .WithMessage("Necessário informar o bimestre para obter as notas de fechmamento");
             }
         }
     }
