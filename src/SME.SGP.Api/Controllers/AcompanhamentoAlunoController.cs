@@ -33,7 +33,7 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpGet("semestres/{acompanhamentoAlunoSemestreId}/fotos")]
-        [ProducesResponseType(typeof(IEnumerable<(byte[], string, string)>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<ArquivoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 400)]
         public async Task<IActionResult> ObterFotos(long acompanhamentoAlunoSemestreId, [FromServices]IObterFotosSemestreAlunoUseCase useCase)
