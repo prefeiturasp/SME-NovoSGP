@@ -38,6 +38,7 @@ namespace SME.SGP.Aplicacao
             var turma = fechamentoTurma?.Turma;
 
             long[] conselhosClassesIds;
+            string[] turmasCodigos;
 
             if (turma.DeveVerificarRegraRegulares())
             {
@@ -45,10 +46,13 @@ namespace SME.SGP.Aplicacao
 
                 tipos.AddRange(turma.ObterTiposRegularesDiferentes());
 
-                var codigosTurmasRelacionadas = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, tipos));
-                conselhosClassesIds = await mediator.Send(new ObterConselhoClasseIdsPorTurmaEPeriodoQuery(codigosTurmasRelacionadas, fechamentoTurma.PeriodoEscolarId));
+                turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, tipos));
+                conselhosClassesIds = await mediator.Send(new ObterConselhoClasseIdsPorTurmaEPeriodoQuery(turmasCodigos, fechamentoTurma.PeriodoEscolarId));
             }
-            else conselhosClassesIds = new long[1] { conselhoClasseId };
+            else { 
+                conselhosClassesIds = new long[1] { conselhoClasseId };
+                turmasCodigos = new string[] { turma.CodigoTurma };
+            }
 
             var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre);
             if (tipoCalendario == null) throw new NegocioException("Tipo calendário não encontrado");
@@ -72,7 +76,7 @@ namespace SME.SGP.Aplicacao
                 emFechamento = await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamento(turma.CodigoTurma, DateTime.Today, bimestre.Value);
             }
 
-            var anotacoesDoAluno = await consultasFechamentoAluno.ObterAnotacaoAlunoParaConselhoAsync(alunoCodigo, fechamentoTurmaId);
+            var anotacoesDoAluno = await consultasFechamentoAluno.ObterAnotacaoAlunoParaConselhoAsync(alunoCodigo, turmasCodigos);
             if (anotacoesDoAluno == null)
                 anotacoesDoAluno = new List<FechamentoAlunoAnotacaoConselhoDto>();
 
@@ -82,23 +86,26 @@ namespace SME.SGP.Aplicacao
             var anotacoesPedagogicas = new StringBuilder();
             var auditoriaListaDto = new List<AuditoriaDto>();
 
-            foreach (var conselhoClassesIdParaTratar in conselhosClassesIds)
+            if (conselhosClassesIds != null)
             {
-                var conselhoClasseAluno = await repositorioConselhoClasseAluno.ObterPorConselhoClasseAlunoCodigoAsync(conselhoClassesIdParaTratar, alunoCodigo);
-
-                if (conselhoClasseAluno != null && (!string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesAluno) || !string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesFamilia) || !string.IsNullOrEmpty(conselhoClasseAluno.AnotacoesPedagogicas)))
+                foreach (var conselhoClassesIdParaTratar in conselhosClassesIds)
                 {
-                    if (!string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesAluno))
-                        recomendacaoAluno.AppendLine(conselhoClasseAluno.RecomendacoesAluno);
+                    var conselhoClasseAluno = await repositorioConselhoClasseAluno.ObterPorConselhoClasseAlunoCodigoAsync(conselhoClassesIdParaTratar, alunoCodigo);
+
+                    if (conselhoClasseAluno != null && (!string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesAluno) || !string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesFamilia) || !string.IsNullOrEmpty(conselhoClasseAluno.AnotacoesPedagogicas)))
+                    {
+                        if (!string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesAluno))
+                            recomendacaoAluno.AppendLine(conselhoClasseAluno.RecomendacoesAluno);
 
 
-                    if (!string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesFamilia))
-                        recomendacaoFamilia.AppendLine(conselhoClasseAluno.RecomendacoesFamilia);
+                        if (!string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesFamilia))
+                            recomendacaoFamilia.AppendLine(conselhoClasseAluno.RecomendacoesFamilia);
 
-                    if (!string.IsNullOrEmpty(conselhoClasseAluno.AnotacoesPedagogicas))
-                        anotacoesPedagogicas.AppendLine(conselhoClasseAluno.AnotacoesPedagogicas);
+                        if (!string.IsNullOrEmpty(conselhoClasseAluno.AnotacoesPedagogicas))
+                            anotacoesPedagogicas.AppendLine(conselhoClasseAluno.AnotacoesPedagogicas);
 
-                    auditoriaListaDto.Add((AuditoriaDto)conselhoClasseAluno); //No final, buscar a mais recente
+                        auditoriaListaDto.Add((AuditoriaDto)conselhoClasseAluno); //No final, buscar a mais recente
+                    }
                 }
             }
 

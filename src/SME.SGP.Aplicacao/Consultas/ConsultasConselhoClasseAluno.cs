@@ -171,11 +171,14 @@ namespace SME.SGP.Aplicacao
             }           
             
             var notasConselhoClasseAluno = new List<NotaConceitoBimestreComponenteDto>();
-                        
-            foreach (var conselhosClassesId in conselhosClassesIds)
+
+            if (conselhosClassesIds != null)
             {
-                var notasParaAdicionar = await consultasConselhoClasseNota.ObterNotasAlunoAsync(conselhoClasseId, alunoCodigo);
-                notasConselhoClasseAluno.AddRange(notasParaAdicionar);        
+                foreach (var conselhosClassesId in conselhosClassesIds)
+                {
+                    var notasParaAdicionar = await consultasConselhoClasseNota.ObterNotasAlunoAsync(conselhoClasseId, alunoCodigo);
+                    notasConselhoClasseAluno.AddRange(notasParaAdicionar);
+                }
             }
 
             var notasFechamentoAluno = fechamentoTurma != null && fechamentoTurma.PeriodoEscolarId.HasValue ?
