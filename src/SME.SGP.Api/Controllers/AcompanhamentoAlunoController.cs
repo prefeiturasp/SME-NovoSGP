@@ -30,5 +30,14 @@ namespace SME.SGP.Api.Controllers
 
             return BadRequest();
         }
+
+        [HttpPost("semestres/{acompanhamentoAlunoSemestreId}")]
+        [ProducesResponseType(typeof(IEnumerable<SinteseDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 400)]
+        public async Task<IActionResult> ObterFotos(long acompanhamentoAlunoSemestreId, [FromServices]IObterFotosSemestreAlunoUseCase useCase)
+        {
+            return Ok(await useCase.Executar(acompanhamentoAlunoSemestreId));
+        }
     }
 }
