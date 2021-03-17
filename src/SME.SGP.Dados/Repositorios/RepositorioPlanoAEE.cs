@@ -189,7 +189,7 @@ namespace SME.SGP.Dados.Repositorios
                           {joinPendecias}
                           {joinNotificacoes}
                          where pe.periodo_fim <= @dataFim
-                           and pa.situacao in (1,2)
+                           and pa.situacao in (1,2,8)
                            {condicaoPendencias}
                            {condicaoNotificacoes}";
 
