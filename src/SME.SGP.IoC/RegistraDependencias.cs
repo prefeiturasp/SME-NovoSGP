@@ -487,6 +487,7 @@ namespace SME.SGP.IoC
 
             // Acompanhamento Aluno
             services.TryAddScoped<ISalvarAcompanhamentoAlunoUseCase, SalvarAcompanhamentoAlunoUseCase>();
+            services.TryAddScoped<ISalvarFotoAlunoUseCase, SalvarFotoAlunoUseCase>();
 
             // Armazenamento de arquivos
             services.TryAddScoped<IUploadDeArquivoUseCase, UploadDeArquivoUseCase>();
