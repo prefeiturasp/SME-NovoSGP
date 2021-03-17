@@ -67,10 +67,12 @@ namespace SME.SGP.Aplicacao
 
             var ehAnoAnterior = turma.AnoLetivo != DateTime.Today.Year;
 
-            var fechamentoTurma = await consultasFechamentoTurma.ObterPorTurmaCodigoBimestreAsync(turma.CodigoTurma, bimestre);            
-
             if (bimestre == 0 && !ehFinal)
                 bimestre = await ObterBimestreAtual(turma);
+
+            var fechamentoTurma = await consultasFechamentoTurma.ObterPorTurmaCodigoBimestreAsync(turma.CodigoTurma, bimestre);            
+
+           
 
             if (fechamentoTurma == null && !ehAnoAnterior)
             {
@@ -149,8 +151,8 @@ namespace SME.SGP.Aplicacao
 
         private async Task<int> ObterBimestreAtual(Turma turma)
         {
-            var periodoEscolar = await consultasPeriodoEscolar.ObterUltimoPeriodoAbertoAsync(turma);
-            return periodoEscolar != null ? periodoEscolar.Bimestre : 0;
+            var bimestre = await mediator.Send(new ObterBimestreAtualComAberturaPorTurmaQuery(turma, DateTime.Today));
+            return bimestre;
         }
 
         public ConselhoClasse ObterPorId(long conselhoClasseId)

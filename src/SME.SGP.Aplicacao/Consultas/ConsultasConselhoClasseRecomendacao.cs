@@ -6,6 +6,7 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -13,27 +14,18 @@ namespace SME.SGP.Aplicacao
     public class ConsultasConselhoClasseRecomendacao : IConsultasConselhoClasseRecomendacao
     {
         private readonly IConsultasFechamentoAluno consultasFechamentoAluno;
-        private readonly IConsultasFechamentoTurma consultasFechamentoTurma;
-        private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
         private readonly IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno;
-        private readonly IRepositorioConselhoClasseRecomendacao repositorioConselhoClasseRecomendacao;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
-        private readonly IConsultasTurma consultasTurma;
         private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
         private readonly IConsultasConselhoClasse consultasConselhoClasse;
         private readonly IMediator mediator;
 
-        public ConsultasConselhoClasseRecomendacao(IRepositorioConselhoClasseRecomendacao repositorioConselhoClasseRecomendacao,
-            IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno, IConsultasPeriodoEscolar consultasPeriodoEscolar, IConsultasTurma consultasTurma,
-            IConsultasFechamentoAluno consultasFechamentoAluno, IConsultasFechamentoTurma consultasFechamentoTurma, IConsultasPeriodoFechamento consultasPeriodoFechamento,
+        public ConsultasConselhoClasseRecomendacao(IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno,
+            IConsultasFechamentoAluno consultasFechamentoAluno, IConsultasPeriodoFechamento consultasPeriodoFechamento,
             IConsultasConselhoClasse consultasConselhoClasse, IRepositorioTipoCalendario repositorioTipoCalendario, IMediator mediator)
         {
             this.repositorioConselhoClasseAluno = repositorioConselhoClasseAluno ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAluno));
-            this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
-            this.consultasTurma = consultasTurma ?? throw new ArgumentNullException(nameof(consultasTurma));
             this.consultasFechamentoAluno = consultasFechamentoAluno ?? throw new ArgumentNullException(nameof(consultasFechamentoAluno));
-            this.repositorioConselhoClasseRecomendacao = repositorioConselhoClasseRecomendacao ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseRecomendacao));
-            this.consultasFechamentoTurma = consultasFechamentoTurma ?? throw new ArgumentNullException(nameof(consultasFechamentoTurma));
             this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));
             this.consultasConselhoClasse = consultasConselhoClasse ?? throw new ArgumentNullException(nameof(consultasConselhoClasse));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
@@ -42,26 +34,27 @@ namespace SME.SGP.Aplicacao
 
         public async Task<ConsultasConselhoClasseRecomendacaoConsultaDto> ObterRecomendacoesAlunoFamilia(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, string codigoTurma, int? bimestre)
         {
-            var fechamentoTurma = await consultasFechamentoTurma.ObterCompletoPorIdAsync(fechamentoTurmaId);
+            var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaPorIdAlunoCodigoQuery(fechamentoTurmaId, alunoCodigo));
             var turma = fechamentoTurma?.Turma;
 
-            var emFechamento = true;
+            long[] conselhosClassesIds;
 
-            if (fechamentoTurma == null)
+            if (turma.DeveVerificarRegraRegulares())
             {
-                turma = await consultasTurma.ObterPorCodigo(codigoTurma);
-                if (turma == null) throw new NegocioException("Turma não encontrada");
+                var tipos = new List<TipoTurma>() { turma.TipoTurma };
 
-                if (turma.EhTurmaEdFisicaOuItinerario())
-                {
-                    var tipos = new List<TipoTurma>() { TipoTurma.Regular };
-                    var codigosTurmasRelacionadas = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, tipos));
-                    turma = await consultasTurma.ObterPorCodigo(codigosTurmasRelacionadas.FirstOrDefault());
-                }
+                tipos.AddRange(turma.ObterTiposRegularesDiferentes());
 
-                var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre);
-                if (tipoCalendario == null) throw new NegocioException("Tipo calendário não encontrado");
+                var codigosTurmasRelacionadas = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, tipos));
+                conselhosClassesIds = await mediator.Send(new ObterConselhoClasseIdsPorTurmaEPeriodoQuery(codigosTurmasRelacionadas, fechamentoTurma.PeriodoEscolarId));
             }
+            else conselhosClassesIds = new long[1] { conselhoClasseId };
+
+            var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre);
+            if (tipoCalendario == null) throw new NegocioException("Tipo calendário não encontrado");
+
+
+            bool emFechamento;
 
             if (!bimestre.HasValue)
             {
@@ -83,41 +76,55 @@ namespace SME.SGP.Aplicacao
             if (anotacoesDoAluno == null)
                 anotacoesDoAluno = new List<FechamentoAlunoAnotacaoConselhoDto>();
 
-            var conselhoClasseAluno = fechamentoTurma != null ? await repositorioConselhoClasseAluno.ObterPorFechamentoAsync(fechamentoTurma.Id, alunoCodigo) : null;
-            if (conselhoClasseAluno == null || string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesAluno) || string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesFamilia))
-                return await ObterRecomendacoesIniciais(conselhoClasseAluno, anotacoesDoAluno, emFechamento);
+            var consultasConselhoClasseRecomendacaoConsultaDto = new ConsultasConselhoClasseRecomendacaoConsultaDto();
+            var recomendacaoAluno = new StringBuilder();
+            var recomendacaoFamilia = new StringBuilder();
+            var anotacoesPedagogicas = new StringBuilder();
+            var auditoriaListaDto = new List<AuditoriaDto>();
 
-            return TransformaEntidadeEmConsultaDto(conselhoClasseAluno, anotacoesDoAluno, emFechamento);
-        }
-
-        private async Task<ConsultasConselhoClasseRecomendacaoConsultaDto> ObterRecomendacoesIniciais(ConselhoClasseAluno conselhoClasseAluno, IEnumerable<FechamentoAlunoAnotacaoConselhoDto> anotacoesAluno, bool emFechamento)
-        {
-            (string recomendacoesAluno, string recomendacoesFamilia) recomendacoes = (string.Empty, string.Empty);
-            if (conselhoClasseAluno == null || string.IsNullOrEmpty(conselhoClasseAluno?.RecomendacoesAluno) || string.IsNullOrEmpty(conselhoClasseAluno?.RecomendacoesFamilia))
-                recomendacoes = await mediator.Send(new ObterTextoRecomendacoesAlunoFamiliaQuery());
-
-            return new ConsultasConselhoClasseRecomendacaoConsultaDto()
+            foreach (var conselhoClassesIdParaTratar in conselhosClassesIds)
             {
-                RecomendacaoAluno = conselhoClasseAluno?.RecomendacoesAluno ?? recomendacoes.recomendacoesAluno,
-                RecomendacaoFamilia = conselhoClasseAluno?.RecomendacoesFamilia ?? recomendacoes.recomendacoesFamilia,
-                AnotacoesAluno = anotacoesAluno,
-                SomenteLeitura = !emFechamento,
-                Auditoria = conselhoClasseAluno != null ? (AuditoriaDto)conselhoClasseAluno : null
-            };
-        }
+                var conselhoClasseAluno = await repositorioConselhoClasseAluno.ObterPorConselhoClasseAlunoCodigoAsync(conselhoClassesIdParaTratar, alunoCodigo);
 
-        private ConsultasConselhoClasseRecomendacaoConsultaDto TransformaEntidadeEmConsultaDto(ConselhoClasseAluno conselhoClasseAluno,
-            IEnumerable<FechamentoAlunoAnotacaoConselhoDto> anotacoesAluno, bool emFechamento)
-        {
-            return new ConsultasConselhoClasseRecomendacaoConsultaDto()
+                if (conselhoClasseAluno != null && (!string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesAluno) || !string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesFamilia) || !string.IsNullOrEmpty(conselhoClasseAluno.AnotacoesPedagogicas)))
+                {
+                    if (!string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesAluno))
+                        recomendacaoAluno.AppendLine(conselhoClasseAluno.RecomendacoesAluno);
+
+
+                    if (!string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesFamilia))
+                        recomendacaoFamilia.AppendLine(conselhoClasseAluno.RecomendacoesFamilia);
+
+                    if (!string.IsNullOrEmpty(conselhoClasseAluno.AnotacoesPedagogicas))
+                        anotacoesPedagogicas.AppendLine(conselhoClasseAluno.AnotacoesPedagogicas);
+
+                    auditoriaListaDto.Add((AuditoriaDto)conselhoClasseAluno); //No final, buscar a mais recente
+                }
+            }
+
+
+            if (recomendacaoAluno.Length == 0 || recomendacaoFamilia.Length == 0)
             {
-                RecomendacaoAluno = conselhoClasseAluno.RecomendacoesAluno,
-                RecomendacaoFamilia = conselhoClasseAluno.RecomendacoesFamilia,
-                AnotacoesAluno = anotacoesAluno,
-                AnotacoesPedagogicas = conselhoClasseAluno.AnotacoesPedagogicas,
-                SomenteLeitura = !emFechamento,
-                Auditoria = (AuditoriaDto)conselhoClasseAluno
-            };
+                var recomendacoes = await mediator.Send(new ObterTextoRecomendacoesAlunoFamiliaQuery());
+
+                if (recomendacaoAluno.Length == 0)
+                    recomendacaoAluno.AppendLine(recomendacoes.recomendacoesAluno);
+
+                if (recomendacaoFamilia.Length == 0)
+                    recomendacaoFamilia.AppendLine(recomendacoes.recomendacoesFamilia);
+            }
+
+            consultasConselhoClasseRecomendacaoConsultaDto.AnotacoesAluno = anotacoesDoAluno;
+            consultasConselhoClasseRecomendacaoConsultaDto.AnotacoesPedagogicas = anotacoesPedagogicas.ToString();
+
+            var auditoria = auditoriaListaDto.Any() ? auditoriaListaDto.OrderBy(a => a.AlteradoEm).ThenBy(a => a.CriadoEm).FirstOrDefault() : null;
+
+            consultasConselhoClasseRecomendacaoConsultaDto.Auditoria = auditoria;
+            consultasConselhoClasseRecomendacaoConsultaDto.RecomendacaoAluno = recomendacaoAluno.ToString();
+            consultasConselhoClasseRecomendacaoConsultaDto.RecomendacaoFamilia = recomendacaoFamilia.ToString();
+            consultasConselhoClasseRecomendacaoConsultaDto.SomenteLeitura = !emFechamento;
+
+            return consultasConselhoClasseRecomendacaoConsultaDto;
         }
     }
 }
