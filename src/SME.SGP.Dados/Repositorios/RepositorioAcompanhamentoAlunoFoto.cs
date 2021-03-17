@@ -13,6 +13,27 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
+        public async Task<AcompanhamentoAlunoFoto> ObterFotoPorCodigo(Guid codigoFoto)
+        {
+            var query = @"select aaf.* 
+                          from acompanhamento_aluno_foto aaf 
+                         inner join arquivo a on a.id = aaf.arquivo_id 
+                         where not aaf.excluido 
+                           and a.codigo = @";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<AcompanhamentoAlunoFoto>(query, new { codigoFoto });
+        }
+
+        public async Task<AcompanhamentoAlunoFoto> ObterFotoPorMiniaturaId(long miniaturaId)
+        {
+            var query = @"select aaf.* 
+                      from acompanhamento_aluno_foto aaf 
+                     where not aaf.excluido 
+                       and aaf.miniatura_id = @miniaturaId";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<AcompanhamentoAlunoFoto>(query, new { miniaturaId });
+        }
+
         public async Task<IEnumerable<Arquivo>> ObterFotosPorSemestreId(long acompanhamentoSemestreId)
         {
             var query = @"select a.*
