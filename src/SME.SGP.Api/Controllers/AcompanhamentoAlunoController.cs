@@ -41,6 +41,15 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(acompanhamentoAlunoSemestreId));
         }
 
+        [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<AcompanhamentoAlunoTurmaSemestreDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 400)]
+        public async Task<IActionResult> ObterAcompanhamentoAluno([FromQuery] long turmaId, string alunoId, int semestre, [FromServices] IObterAcompanhamentoAlunoUseCase useCase)
+        {
+            return Ok(await useCase.Executar(new FiltroAcompanhamentoTurmaAlunoSemestreDto(turmaId, alunoId, semestre)));
+        }
+
 
         [HttpDelete("semestres/{acompanhamentoAlunoSemestreId}/fotos/{codigoFoto}")]
         [ProducesResponseType(typeof(AuditoriaDto), 200)]
