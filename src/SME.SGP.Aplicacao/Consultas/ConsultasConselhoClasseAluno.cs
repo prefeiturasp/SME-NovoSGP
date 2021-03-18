@@ -209,7 +209,7 @@ namespace SME.SGP.Aplicacao
                     var frequenciaAluno = await ObterFrequenciaAluno(turma,
                                                                      periodoEscolar,
                                                                      disciplina.CodigoComponenteCurricular,
-                                                                     alunoCodigo);
+                                                                     alunoCodigo, turmasCodigos);
 
                     if (disciplina.Regencia)
                     {
@@ -336,19 +336,22 @@ namespace SME.SGP.Aplicacao
             return componenteSinteseAdicionar;
         }
 
-        private async Task<FrequenciaAluno> ObterFrequenciaAluno(Turma turma, PeriodoEscolar periodoEscolar, long componenteCurricularCodigo, string alunoCodigo)
+        private async Task<FrequenciaAluno> ObterFrequenciaAluno(Turma turma, PeriodoEscolar periodoEscolar, long componenteCurricularCodigo, string alunoCodigo, string[] turmasCodigo)
         {
             var frequenciaAluno = new FrequenciaAluno();
             if (periodoEscolar != null)
             {
                 // Frequencia do bimestre
-                frequenciaAluno = repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunoData(alunoCodigo,
-                                                                               periodoEscolar.PeriodoFim,
+                frequenciaAluno = await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunoDataTurmasAsync(alunoCodigo,
+                                                                               periodoEscolar.PeriodoFim,                                                                               
                                                                                TipoFrequenciaAluno.PorDisciplina,
-                                                                               componenteCurricularCodigo.ToString(),
-                                                                               turma.CodigoTurma);
+                                                                               turmasCodigo,
+                                                                               componenteCurricularCodigo.ToString());
                 if (frequenciaAluno != null)
                     return frequenciaAluno;
+
+                //TODO CONTINUAR DAQUI A PARTE DE FREQUENCIA
+                //var totalAulasDadas = await mediator.Send(new ObterAulasDadasPorTurmasComponentePeriodoQuery());
 
                 return new FrequenciaAluno()
                 {
