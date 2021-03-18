@@ -42,7 +42,7 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<AcompanhamentoAlunoDto>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<AcompanhamentoAlunoTurmaSemestreDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 400)]
         public async Task<IActionResult> ObterAcompanhamentoAluno([FromQuery] string turmaId, string alunoId, int semestre, [FromServices] IObterAcompanhamentoAlunoUseCase useCase)

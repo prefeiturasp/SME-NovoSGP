@@ -12,17 +12,18 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<IEnumerable<AcompanhamentoAlunoDto>> ObterAcompanhamentoPorTurmaAlunoESemestre(string turmaCodigo, string alunoCodigo, int semestre)
+        public async Task<IEnumerable<AcompanhamentoAlunoTurmaSemestreDto>> ObterAcompanhamentoPorTurmaAlunoESemestre(string turmaCodigo, string alunoCodigo, int semestre)
         {
             try
             {
-
-            var query = @"select 
+                var query = @"select 
 	                        aas.acompanhamento_aluno_id as AcompanhamentoAlunoId,
 	                        aas.observacoes as observacoes,
 	                        aa.turma_id as TurmaId,
 	                        aa.aluno_codigo as AlunoCodigo,
-	                        aas.semestre
+	                        aas.semestre,
+                            aas.criado_por,
+                            aas.criado_em
                         from acompanhamento_aluno_semestre aas
                             inner join acompanhamento_aluno aa on aa.id = aas.acompanhamento_aluno_id
                         where aa.turma_id = @turmaCodigo
@@ -30,9 +31,9 @@ namespace SME.SGP.Dados.Repositorios
                             and aas.semestre = @semestre 
                             and aas.excluido = false ";
 
-            return await database.Conexao.QueryAsync<AcompanhamentoAlunoDto>(query, new { turmaCodigo, alunoCodigo, semestre });
+                return await database.Conexao.QueryAsync<AcompanhamentoAlunoTurmaSemestreDto>(query, new { turmaCodigo, alunoCodigo, semestre });
             }
-            catch (System.Exception ex )
+            catch (System.Exception ex)
             {
                 throw ex;
             }

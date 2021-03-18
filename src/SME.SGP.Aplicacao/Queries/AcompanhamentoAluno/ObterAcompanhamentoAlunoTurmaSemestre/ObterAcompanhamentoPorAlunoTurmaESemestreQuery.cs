@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterAcompanhamentoPorAlunoTurmaESemestreQuery : IRequest<IEnumerable<AcompanhamentoAlunoDto>>
+    public class ObterAcompanhamentoPorAlunoTurmaESemestreQuery : IRequest<IEnumerable<AcompanhamentoAlunoTurmaSemestreDto>>
     {
         public ObterAcompanhamentoPorAlunoTurmaESemestreQuery(string alunoCodigo, string turmaCodigo, int semestre)
         {
