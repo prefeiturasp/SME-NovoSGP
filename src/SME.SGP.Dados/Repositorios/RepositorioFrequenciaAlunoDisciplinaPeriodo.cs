@@ -209,5 +209,31 @@ namespace SME.SGP.Dados.Repositorios
             var parametros = new { codigoTurma, componenteCurricularId, tipoFrequencia = (short)tipoFrequencia, periodosEscolaresIds = periodosEscolaresIds.ToList() };
             return await database.Conexao.QueryAsync<FrequenciaAluno>(sql, parametros);
         }
+
+     
+        public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaGeralAlunoPorAnoModalidadeSemestre(string alunoCodigo, int anoTurma, long tipoCalendarioId)
+        {
+            var query = new StringBuilder($@"select fa.* 
+                            from frequencia_aluno fa
+                            inner join turma t on fa.turma_id = t.turma_id ");
+
+            if (tipoCalendarioId > 0)
+                query.AppendLine("inner join periodo_escolar pe on fa.periodo_escolar_id = pe.id");
+
+            query.AppendLine(@" where tipo = 2 
+                and fa.codigo_aluno = @alunoCodigo 
+                and t.ano_letivo = @anoTurma 
+                and t.tipo_turma in(1,2,7) ");
+
+            if (tipoCalendarioId > 0)
+                query.AppendLine(" and pe.tipo_calendario_id = @tipoCalendarioId");
+
+            return await database.Conexao
+                .QueryAsync<FrequenciaAluno>(query.ToString(), new
+                {
+                    alunoCodigo,
+                    anoTurma
+                });
+        }
     }
 }
