@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Loader } from '~/componentes';
 import {
+  setConselhoClasseEmEdicao,
   setDadosListasNotasConceitos,
   setPodeEditarNota,
 } from '~/redux/modulos/conselhoClasse/actions';
@@ -35,6 +36,24 @@ const ListasNotasConceitos = props => {
   const [exibir, setExibir] = useState(false);
   const [carregando, setCarregando] = useState(false);
 
+  const habilitaConselhoClasse = dados => {
+    const { conselhoClasseAlunoId } = dadosPrincipaisConselhoClasse;
+    let notasFechamentosPreenchidas = true;
+    dados.notasConceitos.map(notasConceitos =>
+      notasConceitos.componentesCurriculares.map(componentesCurriculares =>
+        componentesCurriculares.notasFechamentos.map(notasFechamentos => {
+          if (!notasFechamentos.notaConceito) {
+            notasFechamentosPreenchidas = false;
+          }
+          return notasFechamentos;
+        })
+      )
+    );
+    if (!conselhoClasseAlunoId && notasFechamentosPreenchidas) {
+      dispatch(setConselhoClasseEmEdicao(true));
+    }
+  };
+
   const obterDadosLista = useCallback(async () => {
     setCarregando(true);
     const resultado = await ServicoConselhoClasse.obterNotasConceitosConselhoClasse(
@@ -49,6 +68,7 @@ const ListasNotasConceitos = props => {
       dispatch(setDadosListasNotasConceitos(resultado.data.notasConceitos));
       dispatch(setPodeEditarNota(resultado.data.podeEditarNota));
       setExibir(true);
+      habilitaConselhoClasse(resultado.data);
     } else {
       setExibir(false);
     }
