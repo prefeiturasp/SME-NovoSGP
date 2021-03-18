@@ -1,7 +1,11 @@
+import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import CardCollapse from '~/componentes/cardCollapse';
+import FotosCriancaDados from './fotosCriancaDados';
 
-const FotosCrianca = () => {
+const FotosCrianca = props => {
+  const { semestreSelecionado } = props;
+
   const [exibir, setExibir] = useState(false);
 
   const onClickExpandir = () => setExibir(!exibir);
@@ -16,10 +20,18 @@ const FotosCrianca = () => {
         show={exibir}
         alt="fotos-crianca"
       >
-        Fotos da criança
+        <FotosCriancaDados semestreSelecionado={semestreSelecionado} />
       </CardCollapse>
     </div>
   );
+};
+
+FotosCrianca.propTypes = {
+  semestreSelecionado: PropTypes.string,
+};
+
+FotosCrianca.defaultProps = {
+  semestreSelecionado: '',
 };
 
 export default FotosCrianca;

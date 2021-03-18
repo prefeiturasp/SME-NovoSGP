@@ -11,7 +11,7 @@ const RegistrosFotos = props => {
     <>
       <RegistrosIndividuais semestreSelecionado={semestreSelecionado} />
       <ObservacoesAdicionais />
-      <FotosCrianca />
+      <FotosCrianca semestreSelecionado={semestreSelecionado} />
     </>
   );
 };

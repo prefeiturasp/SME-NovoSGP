@@ -1,5 +1,7 @@
 import api from '~/servicos/api';
 
+const urlPadrao = '/v1/acompanhamento/alunos';
+
 class ServicoAcompanhamentoAprendizagem {
   obterListaAlunos = (turmaCodigo, anoLetivo, periodo) => {
     // TODO Trocar endpoint!
@@ -22,6 +24,30 @@ class ServicoAcompanhamentoAprendizagem {
         ],
       });
     });
+  };
+
+  salvarAcompanhamentoAprendizagem = params => {
+    return api.get(`${urlPadrao}/semestres`, params);
+  };
+
+  uploadFoto = (formData, configuracaoHeader) => {
+    return api.post(
+      `${urlPadrao}/semestres/upload`,
+      formData,
+      configuracaoHeader
+    );
+  };
+
+  obterFotos = acompanhamentoAlunoSemestreId => {
+    return api.get(
+      `${urlPadrao}/semestres/${acompanhamentoAlunoSemestreId}/fotos`
+    );
+  };
+
+  excluirFotos = (acompanhamentoAlunoSemestreId, codigoFoto) => {
+    return api.delete(
+      `${urlPadrao}/semestres/${acompanhamentoAlunoSemestreId}/fotos/${codigoFoto}`
+    );
   };
 }
 
