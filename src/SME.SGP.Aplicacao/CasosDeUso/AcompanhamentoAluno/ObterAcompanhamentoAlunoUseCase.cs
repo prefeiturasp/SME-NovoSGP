@@ -18,12 +18,13 @@ namespace SME.SGP.Aplicacao
         {
 
             var resultadoAcompanhamentosAlunoTurmaSemestre = new List<AcompanhamentoAlunoTurmaSemestreDto>();
-            var acompanhamentosAlunoTurmaSemestre = await mediator.Send(new ObterAcompanhamentoPorAlunoTurmaESemestreQuery(filtro.TurmaId, filtro.AlunoId, filtro.Semestre));
 
-            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(filtro.TurmaId));
+            var turma = await mediator.Send(new ObterTurmaPorIdQuery(filtro.TurmaId));
 
             if (turma == null)
                 throw new NegocioException("Não foi possível localizar a turma informada!");
+
+            var acompanhamentosAlunoTurmaSemestre = await mediator.Send(new ObterAcompanhamentoPorAlunoTurmaESemestreQuery(filtro.AlunoId, turma.Id, filtro.Semestre));
 
             var periodosAbertos = await mediator.Send(new ObterPeriodoEscolarAtualPorTurmaQuery(turma, DateTime.Now));
 

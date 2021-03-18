@@ -45,7 +45,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<AcompanhamentoAlunoTurmaSemestreDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 400)]
-        public async Task<IActionResult> ObterAcompanhamentoAluno([FromQuery] string turmaId, string alunoId, int semestre, [FromServices] IObterAcompanhamentoAlunoUseCase useCase)
+        public async Task<IActionResult> ObterAcompanhamentoAluno([FromQuery] long turmaId, string alunoId, int semestre, [FromServices] IObterAcompanhamentoAlunoUseCase useCase)
         {
             return Ok(await useCase.Executar(new FiltroAcompanhamentoTurmaAlunoSemestreDto(turmaId, alunoId, semestre)));
         }

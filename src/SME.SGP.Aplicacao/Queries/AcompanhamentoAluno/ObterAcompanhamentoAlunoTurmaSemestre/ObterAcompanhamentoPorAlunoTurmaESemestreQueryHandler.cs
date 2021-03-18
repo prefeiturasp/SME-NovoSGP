@@ -18,6 +18,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<IEnumerable<AcompanhamentoAlunoTurmaSemestreDto>> Handle(ObterAcompanhamentoPorAlunoTurmaESemestreQuery request, CancellationToken cancellationToken)
-            => await repositorioAcompanhamentoAluno.ObterAcompanhamentoPorTurmaAlunoESemestre(request.TurmaCodigo, request.AlunoCodigo, request.Semestre);
+            => await repositorioAcompanhamentoAluno.ObterAcompanhamentoPorTurmaAlunoESemestre(request.TurmaId, request.AlunoCodigo, request.Semestre);
     }
 }

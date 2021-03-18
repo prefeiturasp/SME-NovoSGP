@@ -2,11 +2,11 @@
 {
     public class FiltroAcompanhamentoTurmaAlunoSemestreDto
     {
-        public string TurmaId { get; set; }
+        public long TurmaId { get; set; }
         public string AlunoId { get; set; }
         public int Semestre { get; set; }
 
-        public FiltroAcompanhamentoTurmaAlunoSemestreDto(string turmaId, string alunoId, int semestre)
+        public FiltroAcompanhamentoTurmaAlunoSemestreDto(long turmaId, string alunoId, int semestre)
         {
             TurmaId = turmaId;
             AlunoId = alunoId;

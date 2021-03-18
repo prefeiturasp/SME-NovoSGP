@@ -10,8 +10,8 @@ namespace SME.SGP.Aplicacao
                 .NotEmpty()
                 .WithMessage("O Código do Aluno deve ser informado para consulta.");
 
-            RuleFor(a => a.TurmaCodigo)
-                .NotEmpty()
+            RuleFor(a => a.TurmaId)
+                .GreaterThan(0)
                 .WithMessage("O Código da Turma deve ser informado para consulta.");
 
             RuleFor(a => a.Semestre)

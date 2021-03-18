@@ -6,15 +6,15 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterAcompanhamentoPorAlunoTurmaESemestreQuery : IRequest<IEnumerable<AcompanhamentoAlunoTurmaSemestreDto>>
     {
-        public ObterAcompanhamentoPorAlunoTurmaESemestreQuery(string alunoCodigo, string turmaCodigo, int semestre)
+        public ObterAcompanhamentoPorAlunoTurmaESemestreQuery(string alunoCodigo, long turmaId, int semestre)
         {
             AlunoCodigo = alunoCodigo;
-            TurmaCodigo = turmaCodigo;
+            TurmaId = turmaId;
             Semestre = semestre;
         }
 
         public string AlunoCodigo { get; }
-        public string TurmaCodigo { get; }
+        public long TurmaId { get; }
         public int Semestre { get; }
     }
 }
