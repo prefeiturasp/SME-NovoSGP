@@ -39,11 +39,6 @@ namespace SME.SGP.Dominio
             DataInicioPeriodoEMaiorDataFimPeriodo();
         }
 
-        public object FirstOrDefault(Func<object, bool> p)
-        {
-            throw new NotImplementedException();
-        }
-
         private void DataInicioPeriodoEMaiorDataFimPeriodo()
         {
             if (PeriodoFim < PeriodoInicio)
