@@ -12,7 +12,7 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<AuditoriaDto> Executar(AcompanhamentoAlunoDto acompanhamento, IFormFile file)
-            => await mediator.Send(new SalvarFotoAlunoCommand(acompanhamento, file));
+        public async Task<AuditoriaDto> Executar(AcompanhamentoAlunoDto acompanhamento)
+            => await mediator.Send(new SalvarFotoAlunoCommand(acompanhamento));
     }
 }

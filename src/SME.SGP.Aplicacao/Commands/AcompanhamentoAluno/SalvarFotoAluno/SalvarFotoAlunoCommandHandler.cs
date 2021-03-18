@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
                 await ObterAcompanhametnoSemestre(request.Acompanhamento.AcompanhamentoAlunoSemestreId) :
                 await GerarAcompanhamentoSemestre(request.Acompanhamento);
             
-            return await GerarFotosSemestre(acompanhamentoSemestre, request.File);
+            return await GerarFotosSemestre(acompanhamentoSemestre, request.Acompanhamento.File);
         }
 
         private async Task<AuditoriaDto> GerarFotosSemestre(AcompanhamentoAlunoSemestre acompanhamentoSemestre, IFormFile file)
@@ -82,11 +82,8 @@ namespace SME.SGP.Aplicacao
             using (var memoryStream = new MemoryStream())
             {
                 await file.CopyToAsync(memoryStream);
-                using (var img = Image.FromStream(memoryStream))
-                {
-                    // TODO testar o retorno do objeto disposed
-                    return img;
-                }
+                var img = Image.FromStream(memoryStream);
+                return img;
             }
         }
     }

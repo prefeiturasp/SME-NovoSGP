@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -12,5 +13,6 @@ namespace SME.SGP.Infra
         public int Semestre { get; set; }
         public string AlunoCodigo { get; set; }
         public string Observacoes { get; set; }
+        public IFormFile File { get; set; }
     }
 }

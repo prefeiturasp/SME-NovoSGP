@@ -36,7 +36,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<MiniaturaFotoDto>> ObterFotosPorSemestreId(long acompanhamentoSemestreId)
         {
-            var query = @"select a.Codigo, fo.Codigo as CodigoFotoOriginal, a.Tipo, a.TipoConteudo, a.Nome
+            var query = @"select a.Codigo, fo.Codigo as CodigoFotoOriginal, a.Tipo, a.tipo_conteudo, a.Nome
                           from arquivo a
                          inner join acompanhamento_aluno_foto aaf on aaf.arquivo_id = a.id 
                          inner join acompanhamento_aluno_foto aafo on aafo.miniatura_id = aaf.id 

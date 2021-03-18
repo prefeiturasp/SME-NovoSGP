@@ -15,6 +15,8 @@ namespace SME.SGP.Dominio
         public Arquivo Miniatura { get; set; }
         public long? MiniaturaId { get; set; }
 
+        public AcompanhamentoAlunoFoto FotoOriginal { get; set; }
+
         public bool Excluido { get; set; }
     }
 }

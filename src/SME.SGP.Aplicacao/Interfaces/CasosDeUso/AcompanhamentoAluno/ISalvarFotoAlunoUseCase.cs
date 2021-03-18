@@ -7,8 +7,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Interfaces
 {
-    public interface ISalvarFotoAlunoUseCase
+    public interface ISalvarFotoAlunoUseCase : IUseCase<AcompanhamentoAlunoDto, AuditoriaDto>
     {
-        Task<AuditoriaDto> Executar(AcompanhamentoAlunoDto acompanhamento, IFormFile file);
     }
 }
