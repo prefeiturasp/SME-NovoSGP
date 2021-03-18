@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
             return await DownloadMiniaturas(miniaturas);
         }
 
-        private async Task<IEnumerable<ArquivoDto>> DownloadMiniaturas(IEnumerable<Arquivo> miniaturas)
+        private async Task<IEnumerable<ArquivoDto>> DownloadMiniaturas(IEnumerable<MiniaturaFotoDto> miniaturas)
         {
             var arquivos = new List<ArquivoDto>();
 
@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
 
                 arquivos.Add(new ArquivoDto()
                 {
-                    Codigo = miniatura.Codigo,
+                    Codigo = miniatura.CodigoFotoOriginal,
                     Download = (arquivoFisico, miniatura.TipoConteudo, miniatura.Nome)
                 });
             }

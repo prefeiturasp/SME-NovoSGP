@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterMiniaturasFotosSemestreAlunoQueryHandler : IRequestHandler<ObterMiniaturasFotosSemestreAlunoQuery, IEnumerable<Arquivo>>
+    public class ObterMiniaturasFotosSemestreAlunoQueryHandler : IRequestHandler<ObterMiniaturasFotosSemestreAlunoQuery, IEnumerable<MiniaturaFotoDto>>
     {
         private readonly IRepositorioAcompanhamentoAlunoFoto repositorio;
 
@@ -18,7 +19,7 @@ namespace SME.SGP.Aplicacao
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
         }
 
-        public async Task<IEnumerable<Arquivo>> Handle(ObterMiniaturasFotosSemestreAlunoQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<MiniaturaFotoDto>> Handle(ObterMiniaturasFotosSemestreAlunoQuery request, CancellationToken cancellationToken)
             => await repositorio.ObterFotosPorSemestreId(request.AcompanhamentoSemestreId);
     }
 }

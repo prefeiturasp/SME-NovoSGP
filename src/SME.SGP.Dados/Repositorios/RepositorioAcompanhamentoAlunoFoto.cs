@@ -34,15 +34,17 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<AcompanhamentoAlunoFoto>(query, new { miniaturaId });
         }
 
-        public async Task<IEnumerable<Arquivo>> ObterFotosPorSemestreId(long acompanhamentoSemestreId)
+        public async Task<IEnumerable<MiniaturaFotoDto>> ObterFotosPorSemestreId(long acompanhamentoSemestreId)
         {
-            var query = @"select a.*
+            var query = @"select a.Codigo, fo.Codigo as CodigoFotoOriginal, a.Tipo, a.TipoConteudo, a.Nome
                           from arquivo a
                          inner join acompanhamento_aluno_foto aaf on aaf.arquivo_id = a.id 
+                         inner join acompanhamento_aluno_foto aafo on aafo.miniatura_id = aaf.id 
+                         inner join arquivo fo on fo.id = aafo.arquivo_id 
                          where not aaf.excluido 
                            and aaf.acompanhamento_aluno_semestre_id = @acompanhamentoSemestreId";
 
-            return await database.Conexao.QueryAsync<Arquivo>(query, new { acompanhamentoSemestreId });
+            return await database.Conexao.QueryAsync<MiniaturaFotoDto>(query, new { acompanhamentoSemestreId });
         }
     }
 }
