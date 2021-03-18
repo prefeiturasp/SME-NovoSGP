@@ -15,6 +15,7 @@ import { limparDadosFiltro } from '~/redux/modulos/filtro/actions';
 import { LimparSessao } from '~/redux/modulos/sessao/actions';
 import ServicoNotificacao from '~/servicos/Paginas/ServicoNotificacao';
 import { erros } from '~/servicos/alertas';
+import { TOKEN_EXPIRADO } from '~/constantes';
 
 const Navbar = () => {
   const retraido = useSelector(state => state.navegacao.retraido);
@@ -27,10 +28,15 @@ const Navbar = () => {
   };
 
   useEffect(() => {
-    ServicoNotificacao.obterQuantidadeNotificacoesNaoLidas().catch(e =>
-      erros(e)
-    );
-    ServicoNotificacao.obterUltimasNotificacoesNaoLidas().catch(e => erros(e));
+    ServicoNotificacao.obterQuantidadeNotificacoesNaoLidas().catch(e => {
+      if (e?.message.indexOf(TOKEN_EXPIRADO) >= 0) return;
+
+      erros(e);
+    });
+    ServicoNotificacao.obterUltimasNotificacoesNaoLidas().catch(e => {
+      if (e?.message.indexOf(TOKEN_EXPIRADO) >= 0) return;
+      erros(e);
+    });
   }, []);
 
   return (
