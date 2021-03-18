@@ -62,19 +62,14 @@ namespace SME.SGP.Aplicacao
 
         public async Task<double> ObterFrequenciaGeralAluno(string alunoCodigo, string turmaCodigo, string componenteCurricularCodigo = "")
         {
-            var frequenciaAlunoPeriodos = await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterFrequenciaGeralAluno(alunoCodigo, turmaCodigo, componenteCurricularCodigo);
 
-            if (frequenciaAlunoPeriodos == null || !frequenciaAlunoPeriodos.Any())
+            var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(turmaCodigo));
+            var tipoCalendarioId = turma.ModalidadeCodigo == Modalidade.EJA ? await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma)) : 0 ;
+            
+            var frequenciaAluno = await mediator.Send(new ObterFrequenciaGeralAlunoPorCodigoAnoSemestreQuery(alunoCodigo, turma.AnoLetivo, tipoCalendarioId));
+            
+            if (frequenciaAluno == null)
                 return 100;
-
-            var frequenciaAluno = new FrequenciaAluno()
-            {
-                TotalAulas = frequenciaAlunoPeriodos.Sum(f => f.TotalAulas),
-                TotalAusencias = frequenciaAlunoPeriodos.Sum(f => f.TotalAusencias),
-                TotalCompensacoes = frequenciaAlunoPeriodos.Sum(f => f.TotalCompensacoes),
-            };
-
-            var turma = await repositorioTurma.ObterPorCodigo(turmaCodigo);
 
             //Particularidade de 2020
             if (turma.AnoLetivo.Equals(2020))
