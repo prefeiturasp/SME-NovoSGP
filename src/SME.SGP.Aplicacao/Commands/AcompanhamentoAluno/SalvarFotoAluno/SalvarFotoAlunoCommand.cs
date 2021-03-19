@@ -10,14 +10,12 @@ namespace SME.SGP.Aplicacao
 {
     public class SalvarFotoAlunoCommand : IRequest<AuditoriaDto>
     {
-        public SalvarFotoAlunoCommand(AcompanhamentoAlunoDto acompanhamento, IFormFile file)
+        public SalvarFotoAlunoCommand(AcompanhamentoAlunoDto acompanhamento)
         {
             Acompanhamento = acompanhamento;
-            File = file;
         }
 
         public AcompanhamentoAlunoDto Acompanhamento { get; }
-        public IFormFile File { get; }
     }
 
     public class SalvarFotoAlunoCommandValidator : AbstractValidator<SalvarFotoAlunoCommand>
@@ -27,10 +25,6 @@ namespace SME.SGP.Aplicacao
             RuleFor(a => a.Acompanhamento)
                 .NotEmpty()
                 .WithMessage("Os dados do acompanhamento do aluno deve ser informador para armazenamento da foto");
-
-            RuleFor(a => a.File)
-                .NotEmpty()
-                .WithMessage("A foto deve ser informada para armazenamento");
         }
     }
 }

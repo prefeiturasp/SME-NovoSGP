@@ -5,6 +5,7 @@ const inicial = {
   dadosAlunoObjectCard: {},
   codigoAlunoSelecionado: null,
   exibirLoaderGeralAcompanhamentoAprendizagem: false,
+  dadosAcompanhamentoAprendizagem: {},
 };
 
 export default function AcompanhamentoAprendizagem(state = inicial, action) {
@@ -34,12 +35,19 @@ export default function AcompanhamentoAprendizagem(state = inicial, action) {
           dadosAlunoObjectCard: {},
           codigoAlunoSelecionado: null,
           exibirLoaderGeralAcompanhamentoAprendizagem: false,
+          dadosAcompanhamentoAprendizagem: {},
         };
       }
       case '@acompanhamentoAprendizagem/setExibirLoaderGeralAcompanhamentoAprendizagem': {
         return {
           ...draft,
           exibirLoaderGeralAcompanhamentoAprendizagem: action.payload,
+        };
+      }
+      case '@acompanhamentoAprendizagem/setDadosAcompanhamentoAprendizagem': {
+        return {
+          ...draft,
+          dadosAcompanhamentoAprendizagem: action.payload,
         };
       }
 

@@ -13,32 +13,32 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<IEnumerable<AcompanhamentoAlunoTurmaSemestreDto>> ObterAcompanhamentoPorTurmaAlunoESemestre(long turmaId, string alunoCodigo, int semestre)
+        public async Task<AcompanhamentoAlunoSemestre> ObterAcompanhamentoPorTurmaAlunoESemestre(long turmaId, string alunoCodigo, int semestre)
         {
             try
             {
-                var query = @"select 
-	                        aas.acompanhamento_aluno_id as AcompanhamentoAlunoId,
-	                        aas.observacoes as observacoes,
-	                        aa.turma_id as TurmaId,
-	                        aa.aluno_codigo as AlunoCodigo,
-	                        aas.semestre,
-                            aas.criado_por as CriadoPor,
-                            aas.criado_em as CriadoEm
+                var query = @"select aas.*
                         from acompanhamento_aluno_semestre aas
                             inner join acompanhamento_aluno aa on aa.id = aas.acompanhamento_aluno_id
                         where aa.turma_id = @turmaId
                             and aa.aluno_codigo = @alunoCodigo
                             and aas.semestre = @semestre 
-                            and aas.excluido = false ";
+                            and not aas.excluido ";
 
-                return await database.Conexao.QueryAsync<AcompanhamentoAlunoTurmaSemestreDto>(query, new { turmaId, alunoCodigo, semestre });
+                return await database.Conexao.QueryFirstOrDefaultAsync<AcompanhamentoAlunoSemestre>(query, new { turmaId, alunoCodigo, semestre });
             }
             catch (System.Exception ex)
             {
                 throw ex;
             }
 
+        }
+
+        public async Task<long> ObterPorTurmaEAluno(long turmaId, string alunoCodigo)
+        {
+            var query = @"select id from acompanhamento_aluno where not excluido and turma_id = @turmaId and aluno_codigo = @alunoCodigo";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<long>(query, new { turmaId, alunoCodigo });
         }
     }
 }

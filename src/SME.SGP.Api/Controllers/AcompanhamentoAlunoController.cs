@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
@@ -15,19 +14,21 @@ namespace SME.SGP.Api.Controllers
     public class AcompanhamentoAlunoController : Controller
     {
         [HttpPost("semestres")]
-        [ProducesResponseType(typeof(IEnumerable<SinteseDto>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<AuditoriaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> Salvar([FromServices] ISalvarAcompanhamentoAlunoUseCase useCase, [FromBody] AcompanhamentoAlunoDto dto)
              => Ok(await useCase.Executar(dto));
 
         [HttpPost("semestres/upload")]
-        [ProducesResponseType(typeof(IEnumerable<SinteseDto>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<AuditoriaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 400)]
-        public async Task<IActionResult> UploadFoto([FromForm] IFormFile file, [FromBody] AcompanhamentoAlunoDto dto, [FromServices] ISalvarFotoAlunoUseCase useCase)
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [RequestSizeLimit(5 * 1024 * 1024)]
+        public async Task<IActionResult> UploadFoto([FromForm][FromBody] AcompanhamentoAlunoDto dto, [FromServices] ISalvarFotoAlunoUseCase useCase)
         {
-            if (file.Length > 0)
-                Ok(await useCase.Executar(dto, file));
+            if (dto.File.Length > 0)
+                return Ok(await useCase.Executar(dto));
 
             return BadRequest();
         }
@@ -55,7 +56,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(AuditoriaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        public async Task<IActionResult> ObterFotos(Guid codigoFoto, [FromServices] IExcluirFotoAlunoUseCase useCase)
+        public async Task<IActionResult> DeletarFotos(Guid codigoFoto, [FromServices] IExcluirFotoAlunoUseCase useCase)
         {
             return Ok(await useCase.Executar(codigoFoto));
         }

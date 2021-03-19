@@ -60,8 +60,8 @@ namespace SME.SGP.Aplicacao
 
         private async Task ExcluirFoto(AcompanhamentoAlunoFoto foto)
         {
-            await mediator.Send(new ExcluirArquivoPorIdCommand(foto.ArquivoId));
             repositorio.Remover(foto);
+            await mediator.Send(new ExcluirArquivoPorIdCommand(foto.ArquivoId));
         }
     }
 }

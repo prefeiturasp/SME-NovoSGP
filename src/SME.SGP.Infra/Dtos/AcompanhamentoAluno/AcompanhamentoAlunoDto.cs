@@ -1,4 +1,6 @@
-﻿namespace SME.SGP.Infra
+﻿using Microsoft.AspNetCore.Http;
+
+namespace SME.SGP.Infra
 {
     public class AcompanhamentoAlunoDto
     {
@@ -8,5 +10,6 @@
         public int Semestre { get; set; }
         public string AlunoCodigo { get; set; }
         public string Observacoes { get; set; }
+        public IFormFile File { get; set; }
     }
 }
