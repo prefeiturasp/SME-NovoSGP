@@ -74,6 +74,8 @@ const UploadImagens = props => {
   useEffect(() => {
     if (listaInicialImagens?.length) {
       setListaImagens(montarListaImagensParaExibir(listaInicialImagens));
+    } else {
+      setListaImagens([]);
     }
   }, [listaInicialImagens]);
 

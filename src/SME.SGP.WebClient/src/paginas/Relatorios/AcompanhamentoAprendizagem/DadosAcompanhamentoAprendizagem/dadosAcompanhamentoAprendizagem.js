@@ -44,8 +44,7 @@ const DadosAcompanhamentoAprendizagem = props => {
     ).catch(e => erros(e));
 
     if (retorno?.data) {
-      // TODO Não pegar o pelo indice!
-      dispatch(setDadosAcompanhamentoAprendizagem(retorno?.data[0]));
+      dispatch(setDadosAcompanhamentoAprendizagem(retorno?.data));
     } else {
       dispatch(setDadosAcompanhamentoAprendizagem({}));
     }

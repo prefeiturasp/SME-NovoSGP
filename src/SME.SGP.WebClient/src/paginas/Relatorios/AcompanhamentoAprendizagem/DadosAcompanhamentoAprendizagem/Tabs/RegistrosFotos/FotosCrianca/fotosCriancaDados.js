@@ -99,6 +99,10 @@ const FotosCriancaDados = props => {
         nome: 'acompanhamentoAlunoSemestreId',
         valor: dadosAcompanhamentoAprendizagem?.acompanhamentoAlunoSemestreId,
       },
+      {
+        nome: 'acompanhamentoAlunoId',
+        valor: dadosAcompanhamentoAprendizagem?.acompanhamentoAlunoId,
+      },
     ],
     obterImagens,
     removerImagem,
