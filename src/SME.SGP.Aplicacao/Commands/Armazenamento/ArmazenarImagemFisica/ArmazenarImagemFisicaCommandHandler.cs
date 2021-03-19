@@ -20,12 +20,7 @@ namespace SME.SGP.Aplicacao
 
             var bitmap = new Bitmap(request.Imagem);
             bitmap.Save(caminho, ObterFormato(request.Formato));
-
-            //using (var stream = File.Create(caminho))
-            //{
-            //    request.Imagem.Save(stream, ObterFormato(request.Formato));
-            //}
-
+      
             return Task.FromResult(true);
         }
 
