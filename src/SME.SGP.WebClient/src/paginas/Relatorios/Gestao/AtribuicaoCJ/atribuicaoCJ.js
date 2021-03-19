@@ -20,6 +20,8 @@ import {
   ServicoFiltroRelatorio,
 } from '~/servicos';
 
+import { ordenarDescPor } from '~/utils/funcoes/gerais';
+
 import { ModalidadeDTO } from '~/dtos';
 
 import { URL_HOME } from '~/constantes';
@@ -184,7 +186,8 @@ const AtribuicaoCJ = () => {
       else setAnoLetivo(Number(anosLetivos[0].valor));
     }
 
-    setListaAnosLetivo(anosLetivos);
+    const anosOrdenados = ordenarDescPor(anosLetivos, 'desc');
+    setListaAnosLetivo(anosOrdenados);
     setCarregandoGeral(false);
   }, [anoAtual]);
 
