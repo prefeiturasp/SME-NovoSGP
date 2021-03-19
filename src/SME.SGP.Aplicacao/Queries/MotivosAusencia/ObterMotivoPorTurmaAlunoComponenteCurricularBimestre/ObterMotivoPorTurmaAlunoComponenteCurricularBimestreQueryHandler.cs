@@ -45,7 +45,7 @@ namespace SME.SGP.Aplicacao
         {
             var listaFrequencias = new List<JustificativaAlunoDto>();
 
-            foreach (var frequencia in frequencias.Where(f => f.Id > 0).ToList())
+            foreach (var frequencia in frequencias)
             {
                 listaFrequencias.Add(new JustificativaAlunoDto()
                 {

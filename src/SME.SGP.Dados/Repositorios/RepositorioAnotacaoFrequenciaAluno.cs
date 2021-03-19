@@ -168,7 +168,6 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine(" select n.* ");
             }
             sql.AppendLine(@" from (
-                            (
                             select 
                                 an.id,
                                 case when ma.descricao is not null then ma.descricao else an.anotacao end as Motivo, 
@@ -189,30 +188,7 @@ namespace SME.SGP.Dados.Repositorios
             if (componenteCurricularId > 0)
                 sql.AppendLine(" and a.disciplina_id = @componenteCurricularId ");
 
-            sql.AppendLine(@")
-                            union
-                            (
-                            select 0 as id, '' as Motivo, a.data_aula as DataAusencia, '' as RegistradoPor, '' as RegistradoRF 
-                            from registro_ausencia_aluno raa 
-                            inner join registro_frequencia rf on rf.id = raa.registro_frequencia_id 
-                            inner join aula a on a.id = rf.aula_id 
-                            left join anotacao_frequencia_aluno an on an.aula_id = a.id and an.codigo_aluno = @alunoCodigo
-                            left join turma t on t.turma_id = a.turma_id ");
-            if (bimestre > 0)
-            {
-                sql.AppendLine(" inner join periodo_escolar pe on a.tipo_calendario_id = pe.tipo_calendario_id and a.data_aula between pe.periodo_inicio and pe.periodo_fim and pe.bimestre = @bimestre");
-            }
-            sql.AppendLine(@" where t.id = @turmaId
-                            and raa.codigo_aluno = @alunoCodigo ");
-            if (componenteCurricularId > 0)
-                sql.AppendLine(" and a.disciplina_id = @componenteCurricularId ");
-
-            sql.AppendLine(@" and not a.excluido 
-                            and not raa.excluido
-                            and an.id is null
-                            )
-                            ) n
-                            ");
+            sql.AppendLine(@") n");
             if (!contador)
                 sql.AppendLine(" order by n.DataAusencia desc ");
 
