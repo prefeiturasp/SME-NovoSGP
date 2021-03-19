@@ -13,7 +13,7 @@ import {
 } from '~/redux/modulos/notasConceitos/actions';
 import {
   acharItem,
-  escolherDirecaoSetas,
+  converterAcaoTecla,
   esperarMiliSegundos,
   moverCursor,
   tratarString,
@@ -50,7 +50,7 @@ const Avaliacao = props => {
   );
 
   const onChangeNotaConceito = (nota, valorNovo) => {
-    if (!desabilitarCampos && nota.podeEditar) {
+    if (!desabilitarCampos && nota.podeEditar && valorNovo !== null) {
       nota.notaConceito = valorNovo;
       nota.modoEdicao = true;
       dados.modoEdicao = true;
@@ -59,10 +59,12 @@ const Avaliacao = props => {
   };
 
   const onChangeNotaConceitoFinal = (notaBimestre, valorNovo) => {
-    notaBimestre.notaConceito = valorNovo;
-    notaBimestre.modoEdicao = true;
-    dados.modoEdicao = true;
-    dispatch(setModoEdicaoGeralNotaFinal(true));
+    if (!desabilitarCampos && valorNovo !== null) {
+      notaBimestre.notaConceito = valorNovo;
+      notaBimestre.modoEdicao = true;
+      dados.modoEdicao = true;
+      dispatch(setModoEdicaoGeralNotaFinal(true));
+    }
   };
 
   const descricaoAlunoAusente = 'Aluno ausente na data da avaliação';
@@ -117,10 +119,10 @@ const Avaliacao = props => {
   };
 
   const clicarSetas = (e, aluno, label = '', index = 0, regencia = false) => {
-    const direcao = escolherDirecaoSetas(e.keyCode);
+    const direcao = converterAcaoTecla(e.keyCode);
     const disciplina = label.toLowerCase();
 
-    if (regencia) {
+    if (direcao && regencia) {
       let novaLinha = [];
       const novoIndex = index + direcao;
       if (expandirLinha[novoIndex]) {
@@ -188,13 +190,19 @@ const Avaliacao = props => {
     return aluno.notasBimestre[0];
   };
 
-  const montarCampoNotaConceitoFinal = (aluno, label, index, regencia) => {
+  const montarCampoNotaConceitoFinal = (
+    aluno,
+    label,
+    index,
+    regencia,
+    indexLinha
+  ) => {
     if (Number(notaTipo) === Number(notasConceitos.Notas)) {
       return (
         <CampoNotaFinal
           esconderSetas
           name={`aluno${aluno.id}`}
-          clicarSetas={e => clicarSetas(e, aluno, label, index, regencia)}
+          clicarSetas={e => clicarSetas(e, aluno, label, indexLinha, regencia)}
           step={0}
           montaNotaFinal={() => montaNotaFinal(aluno, index)}
           onChangeNotaConceitoFinal={(nota, valor) =>
@@ -352,8 +360,14 @@ const Avaliacao = props => {
                           indexLinha={i}
                           dados={dados}
                           aluno={aluno}
-                          montarCampoNotaConceitoFinal={label =>
-                            montarCampoNotaConceitoFinal(aluno, label, i, true)
+                          montarCampoNotaConceitoFinal={(label, index) =>
+                            montarCampoNotaConceitoFinal(
+                              aluno,
+                              label,
+                              index,
+                              true,
+                              i
+                            )
                           }
                         />
                       </>

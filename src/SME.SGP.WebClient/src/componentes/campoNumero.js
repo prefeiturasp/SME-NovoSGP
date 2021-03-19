@@ -52,6 +52,7 @@ const CampoNumero = React.forwardRef((props, ref) => {
     ehDecimal,
     decimalSeparator,
     esconderSetas,
+    onKeyUp,
   } = props;
 
   const possuiErro = () => {
@@ -100,6 +101,7 @@ const CampoNumero = React.forwardRef((props, ref) => {
               maxLength={maxlength || ''}
               innerRef={ref}
               onKeyDown={onKeyDown}
+              onKeyUp={onKeyUp}
               onChange={value => {
                 form.setFieldValue(name, value);
                 form.setFieldTouched(name, true);
@@ -117,6 +119,7 @@ const CampoNumero = React.forwardRef((props, ref) => {
             onChange={onChange}
             readOnly={desabilitado}
             onKeyDown={onKeyDown}
+            onKeyUp={onKeyUp}
             value={value}
             max={max}
             min={min}
@@ -141,6 +144,7 @@ CampoNumero.propTypes = {
   ehDecimal: PropTypes.bool,
   decimalSeparator: PropTypes.string,
   esconderSetas: PropTypes.bool,
+  onKeyUp: PropTypes.func,
 };
 
 CampoNumero.defaultProps = {
@@ -150,6 +154,7 @@ CampoNumero.defaultProps = {
   ehDecimal: true,
   decimalSeparator: ',',
   esconderSetas: false,
+  onKeyUp: () => {},
 };
 
 export default CampoNumero;

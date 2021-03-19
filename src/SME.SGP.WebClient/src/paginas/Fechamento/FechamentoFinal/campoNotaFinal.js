@@ -5,6 +5,7 @@ import CampoNumero from '~/componentes/campoNumero';
 import { erros } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import { Loader } from '~/componentes';
+import { converterAcaoTecla } from '~/utils';
 
 const CampoNotaFinal = props => {
   const {
@@ -25,7 +26,6 @@ const CampoNotaFinal = props => {
   const [notaValorAtual, setNotaValorAtual] = useState();
   const [notaAlterada, setNotaAlterada] = useState(false);
   const [abaixoDaMedia, setAbaixoDaMedia] = useState(false);
-  const [valorIncremento] = useState(step);
   const [
     carregandoValorArredondamento,
     setCarregandoValorArredondamento,
@@ -62,6 +62,8 @@ const CampoNotaFinal = props => {
     [mediaAprovacaoBimestre, notaBimestre]
   );
 
+  const notaAtual = notaValorAtual >= 0 ? notaValorAtual : '';
+
   useEffect(() => {
     setNotaBimestre(montaNotaFinal());
   }, [montaNotaFinal]);
@@ -93,9 +95,9 @@ const CampoNotaFinal = props => {
   const setarValorNovo = async valorNovo => {
     if (!desabilitarCampo && podeEditar) {
       setNotaValorAtual(valorNovo);
-      const resto = valorNovo % valorIncremento;
+      const resto = valorNovo % 0.5;
       let notaArredondada = valorNovo;
-      if (resto > 0.0) {
+      if (resto) {
         setCarregandoValorArredondamento(true);
         const retorno = await api
           .get(
@@ -123,6 +125,13 @@ const CampoNotaFinal = props => {
     return regexValorInvalido.test(String(valorNovo));
   };
 
+  const apertarTecla = e => {
+    const teclaEscolhida = converterAcaoTecla(e.keyCode);
+    if (teclaEscolhida === 0) {
+      setarValorNovo(0);
+    }
+  };
+
   return (
     <Tooltip placement="bottom" title={abaixoDaMedia ? 'Abaixo da Média' : ''}>
       <div>
@@ -131,17 +140,22 @@ const CampoNotaFinal = props => {
             esconderSetas={esconderSetas}
             name={name}
             onKeyDown={clicarSetas}
+            onKeyUp={apertarTecla}
             label={label || ''}
             onChange={valorNovo => {
-              const invalido = valorInvalido(valorNovo);
-              if (!invalido && editouCampo(notaValorAtual, valorNovo)) {
-                setarValorNovo(valorNovo);
+              let valorEnviado = null;
+              if (valorNovo) {
+                const invalido = valorInvalido(valorNovo);
+                if (!invalido && editouCampo(notaValorAtual, valorNovo)) {
+                  valorEnviado = valorNovo;
+                }
               }
+              setarValorNovo(valorEnviado);
             }}
-            value={notaValorAtual || ''}
+            value={notaAtual}
             min={0}
             max={10}
-            step={valorIncremento}
+            step={step}
             disabled={desabilitarCampo || !podeEditar}
             className={`tamanho-conceito-final ${
               abaixoDaMedia
