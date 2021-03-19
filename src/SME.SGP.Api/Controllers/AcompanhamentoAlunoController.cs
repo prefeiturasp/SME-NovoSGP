@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
@@ -24,6 +23,8 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<AuditoriaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 400)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [RequestSizeLimit(5 * 1024 * 1024)]
         public async Task<IActionResult> UploadFoto([FromForm][FromBody] AcompanhamentoAlunoDto dto, [FromServices] ISalvarFotoAlunoUseCase useCase)
         {
             if (dto.File.Length > 0)

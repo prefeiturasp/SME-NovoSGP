@@ -4,6 +4,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -14,32 +15,46 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<IEnumerable<AcompanhamentoAlunoTurmaSemestreDto>> Executar(FiltroAcompanhamentoTurmaAlunoSemestreDto filtro)
+        public async Task<AcompanhamentoAlunoTurmaSemestreDto> Executar(FiltroAcompanhamentoTurmaAlunoSemestreDto filtro)
         {
+            var turma = await ObterTurma(filtro.TurmaId);
 
-            var resultadoAcompanhamentosAlunoTurmaSemestre = new List<AcompanhamentoAlunoTurmaSemestreDto>();
+            var acompanhamentosAlunoTurmaSemestre = await ObterAcompanhamentoSemestre(filtro.AlunoId, turma.Id, filtro.Semestre);
 
-            var turma = await mediator.Send(new ObterTurmaPorIdQuery(filtro.TurmaId));
+            var periodosEscolares = await mediator.Send(new ObterPeriodosEscolaresPorAnoEModalidadeTurmaQuery(turma.ModalidadeCodigo, turma.AnoLetivo, turma.Semestre));
+
+            acompanhamentosAlunoTurmaSemestre.PodeEditar = VerificaSePodeEditarAcompanhamentoAluno(periodosEscolares);
+
+            return acompanhamentosAlunoTurmaSemestre;
+        }
+
+        private async Task<Turma> ObterTurma(long turmaId)
+        {
+            var turma = await mediator.Send(new ObterTurmaPorIdQuery(turmaId));
 
             if (turma == null)
                 throw new NegocioException("Não foi possível localizar a turma informada!");
 
-            var acompanhamentosAlunoTurmaSemestre = await mediator.Send(new ObterAcompanhamentoPorAlunoTurmaESemestreQuery(filtro.AlunoId, turma.Id, filtro.Semestre));
-
-            var periodosAbertos = await mediator.Send(new ObterPeriodoEscolarAtualPorTurmaQuery(turma, DateTime.Now));
-
-            VerificaSePodeEditarAcompanhamentoAluno(resultadoAcompanhamentosAlunoTurmaSemestre, acompanhamentosAlunoTurmaSemestre, periodosAbertos);
-
-            return resultadoAcompanhamentosAlunoTurmaSemestre;
+            return turma;
         }
 
-        private static void VerificaSePodeEditarAcompanhamentoAluno(List<AcompanhamentoAlunoTurmaSemestreDto> resultadoAcompanhamentosAlunoTurmaSemestre, IEnumerable<AcompanhamentoAlunoTurmaSemestreDto> acompanhamentosAlunoTurmaSemestre, PeriodoEscolar periodosAbertos)
+        private async Task<AcompanhamentoAlunoTurmaSemestreDto> ObterAcompanhamentoSemestre(string alunoId, long turmaId, int semestre)
         {
-            foreach (var acompanhamento in acompanhamentosAlunoTurmaSemestre)
+            var acompanhamentoSemestre = await mediator.Send(new ObterAcompanhamentoPorAlunoTurmaESemestreQuery(alunoId, turmaId, semestre));
+
+            return new AcompanhamentoAlunoTurmaSemestreDto()
             {
-                acompanhamento.PodeEditar = periodosAbertos != null ? true : false;
-                resultadoAcompanhamentosAlunoTurmaSemestre.Add(acompanhamento);
-            }
+                AcompanhamentoAlunoId = acompanhamentoSemestre?.AcompanhamentoAlunoId ?? await ObterAcompanhamentoAluno(turmaId, alunoId),
+                AcompanhamentoAlunoSemestreId = acompanhamentoSemestre?.Id ?? 0,
+                Observacoes = acompanhamentoSemestre?.Observacoes,
+                Auditoria = (AuditoriaDto)acompanhamentoSemestre
+            };
         }
+
+        private async Task<long> ObterAcompanhamentoAluno(long turmaId, string alunoId)
+            => await mediator.Send(new ObterAcompanhamentoAlunoIDPorTurmaQuery(turmaId, alunoId));
+         
+        private bool VerificaSePodeEditarAcompanhamentoAluno(IEnumerable<PeriodoEscolar> periodosEscolares)
+            => periodosEscolares.Any(a => a.PeriodoInicio <= DateTime.Today && a.PeriodoFim >= DateTime.Today);
     }
 }

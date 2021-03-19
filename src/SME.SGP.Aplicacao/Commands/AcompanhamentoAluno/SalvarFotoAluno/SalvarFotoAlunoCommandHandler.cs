@@ -40,7 +40,7 @@ namespace SME.SGP.Aplicacao
             {
                 try
                 {
-                    var miniaturaId = await GerarFotoSemestre(miniatura, file.FileName, file.ContentType, acompanhamentoSemestre.Id);
+                    var miniaturaId = await GerarFotoSemestre(miniatura, ObterNomeMiniatura(file.FileName), file.ContentType, acompanhamentoSemestre.Id);
                     await GerarFotoSemestre(imagem, file.FileName, file.ContentType, acompanhamentoSemestre.Id, miniaturaId);
 
                     await mediator.Send(new SalvarAcompanhamentoAlunoSemestreCommand(acompanhamentoSemestre));
@@ -58,7 +58,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<long> GerarFotoSemestre(Image foto, string nomeArquivo, string formato, long acompanhamentoSemestreId, long? miniaturaId = null)
         {
-            var arquivo = await mediator.Send(new UploadImagemCommand(foto, Dominio.TipoArquivo.FotoAluno, ObterNomeMiniatura(nomeArquivo), formato));
+            var arquivo = await mediator.Send(new UploadImagemCommand(foto, Dominio.TipoArquivo.FotoAluno, nomeArquivo, formato));
             return await mediator.Send(new GerarAcompanhamentoAlunoFotoCommand(acompanhamentoSemestreId, arquivo.Id, miniaturaId));
         }
 

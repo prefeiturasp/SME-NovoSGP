@@ -18,10 +18,13 @@ namespace SME.SGP.Aplicacao
             var nomeArquivo = request.NomeFisico + Path.GetExtension(request.NomeArquivo);
             var caminho = Path.Combine(request.Caminho, nomeArquivo);
 
-            using (var stream = File.Create(caminho))
-            {
-                request.Imagem.Save(stream, ObterFormato(request.Formato));
-            }
+            var bitmap = new Bitmap(request.Imagem);
+            bitmap.Save(caminho, ObterFormato(request.Formato));
+
+            //using (var stream = File.Create(caminho))
+            //{
+            //    request.Imagem.Save(stream, ObterFormato(request.Formato));
+            //}
 
             return Task.FromResult(true);
         }

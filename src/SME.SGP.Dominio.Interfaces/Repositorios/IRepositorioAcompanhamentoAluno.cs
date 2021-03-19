@@ -6,6 +6,7 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioAcompanhamentoAluno : IRepositorioBase<AcompanhamentoAluno>
     {
-        Task<IEnumerable<AcompanhamentoAlunoTurmaSemestreDto>> ObterAcompanhamentoPorTurmaAlunoESemestre(long turmaId, string alunoCodigo, int semestre);
+        Task<AcompanhamentoAlunoSemestre> ObterAcompanhamentoPorTurmaAlunoESemestre(long turmaId, string alunoCodigo, int semestre);
+        Task<long> ObterPorTurmaEAluno(long turmaId, string alunoCodigo);
     }
 }

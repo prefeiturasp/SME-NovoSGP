@@ -1,10 +1,11 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterAcompanhamentoPorAlunoTurmaESemestreQuery : IRequest<IEnumerable<AcompanhamentoAlunoTurmaSemestreDto>>
+    public class ObterAcompanhamentoPorAlunoTurmaESemestreQuery : IRequest<AcompanhamentoAlunoSemestre>
     {
         public ObterAcompanhamentoPorAlunoTurmaESemestreQuery(string alunoCodigo, long turmaId, int semestre)
         {

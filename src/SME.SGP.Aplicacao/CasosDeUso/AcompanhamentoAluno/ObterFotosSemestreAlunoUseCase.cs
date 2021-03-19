@@ -31,6 +31,7 @@ namespace SME.SGP.Aplicacao
                 arquivos.Add(new ArquivoDto()
                 {
                     Codigo = miniatura.CodigoFotoOriginal,
+                    Nome = miniatura.Nome,
                     Download = (arquivoFisico, miniatura.TipoConteudo, miniatura.Nome)
                 });
             }
