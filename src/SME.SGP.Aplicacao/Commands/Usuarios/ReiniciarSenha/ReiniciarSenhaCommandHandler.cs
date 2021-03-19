@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
 
             var retorno = new UsuarioReinicioSenhaDto();
 
-            if (String.IsNullOrEmpty(usuario.Email))
+            if (usuario != null && String.IsNullOrEmpty(usuario.Email))
             {
                 retorno.DeveAtualizarEmail = true;
                 retorno.Mensagem = $"Usuário {request.CodigoRf} - {usuario.Nome} não possui email cadastrado!";
