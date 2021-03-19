@@ -48,7 +48,8 @@ namespace SME.SGP.Aplicacao
             {
                 var turma = turmas[i];
 
-                var aulas = (await mediator.Send(new ObterAulasDaTurmaPorTipoCalendarioQuery(turma.CodigoTurma, tipoCalendarioId)))?.ToList();
+                var aulas = (await mediator.Send(new ObterAulasDaTurmaPorTipoCalendarioQuery(turma.CodigoTurma, tipoCalendarioId)))?.ToList();                
+                aulas.AddRange(await repositorioAula.ObterAulasExcluidasComDiarioDeBordoAtivos(turma.CodigoTurma, tipoCalendarioId));
 
                 if (aulas == null)
                 {
