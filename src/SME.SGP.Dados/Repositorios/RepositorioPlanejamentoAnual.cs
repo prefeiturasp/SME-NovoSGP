@@ -295,13 +295,10 @@ namespace SME.SGP.Dados.Repositorios
                         not exists(select 1
                                     from planejamento_anual_periodo_escolar pape
                                         inner join planejamento_anual_componente pac
-                                            on pape.id = pac.planejamento_anual_periodo_escolar_id
-                                        inner join planejamento_anual_objetivos_aprendizagem paoa
-			                                on pac.id = paoa.planejamento_anual_componente_id
+                                            on pape.id = pac.planejamento_anual_periodo_escolar_id                                        
                                    where pape.planejamento_anual_id = pa.id and
                                   		 not pape.excluido and
-                                  		 not pac.excluido and
-                                  		 not paoa.excluido);";
+                                  		 not pac.excluido);";
             await database.Conexao.ExecuteAsync(sql, new { id });
         }
     }

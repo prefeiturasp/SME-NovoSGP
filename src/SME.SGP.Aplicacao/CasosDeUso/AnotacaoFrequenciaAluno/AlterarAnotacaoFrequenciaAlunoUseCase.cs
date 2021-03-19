@@ -2,8 +2,6 @@
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -19,23 +17,24 @@ namespace SME.SGP.Aplicacao
             var anotacao = await ObterAnotacao(param.Id);
 
             var aula = await mediator.Send(new ObterAulaPorIdQuery(anotacao.AulaId));
-            await ValidarAtribuicaoUsuario(long.Parse(aula.DisciplinaId), aula.TurmaId, aula.DataAula);
+            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+
+            if (!usuario.EhProfessorCj())
+                await ValidarAtribuicaoUsuario(long.Parse(aula.DisciplinaId), aula.TurmaId, aula.DataAula, usuario);
 
             return await AtualizarAnotacaoFrequenciaAluno(anotacao, param);
         }
 
         private async Task<bool> AtualizarAnotacaoFrequenciaAluno(AnotacaoFrequenciaAluno anotacao, AlterarAnotacaoFrequenciaAlunoDto param)
-        {           
+        {
             anotacao.MotivoAusenciaId = param.MotivoAusenciaId;
             anotacao.Anotacao = param.Anotacao;
 
             return await mediator.Send(new AlterarAnotacaoFrequenciaAlunoCommand(anotacao));
         }
 
-        private async Task ValidarAtribuicaoUsuario(long componenteCurricularId, string turmaId, DateTime dataAula)
+        private async Task ValidarAtribuicaoUsuario(long componenteCurricularId, string turmaId, DateTime dataAula, Usuario usuarioLogado)
         {
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
-
             var usuarioPossuiAtribuicaoNaTurmaNaData = await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(componenteCurricularId, turmaId, dataAula, usuarioLogado));
             if (!usuarioPossuiAtribuicaoNaTurmaNaData)
                 throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, componente e data.");

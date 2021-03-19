@@ -300,6 +300,12 @@ const CalendarioEscolar = () => {
         setListaTipoCalendario(data);
         setCarregandoTipos(false);
         setCarregandoMeses(false);
+
+        if (data?.length === 1) {
+          console.log('d', data);
+          setValorTipoCalendario(data[0].descricao);
+          setTipoCalendarioSelecionado(data[0].id);
+        }
       }
     })();
 
@@ -348,6 +354,7 @@ const CalendarioEscolar = () => {
                   onChange={selecionaTipoCalendario}
                   handleSearch={handleSearch}
                   value={valorTipoCalendario}
+                  disabled={listaTipoCalendario?.length === 1}
                 />
               </Loader>
             </Grid>
@@ -453,7 +460,7 @@ const CalendarioEscolar = () => {
                   valueText="desc"
                   valueSelect={unidadeEscolarSelecionada}
                   placeholder="Unidade Escolar (UE)"
-                  disabled={!dreSelecionada}
+                  disabled={!dreSelecionada || unidadesEscolares?.length === 1}
                 />
               </Loader>
             </Grid>
