@@ -1,11 +1,16 @@
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { Loader } from '~/componentes';
 import UploadImagens from '~/componentes-sgp/UploadImagens/uploadImagens';
-import { erros } from '~/servicos';
+import { erros, sucesso } from '~/servicos';
 import ServicoAcompanhamentoAprendizagem from '~/servicos/Paginas/Relatorios/AcompanhamentoAprendizagem/ServicoAcompanhamentoAprendizagem';
 
 const FotosCriancaDados = props => {
+  const dadosAcompanhamentoAprendizagem = useSelector(
+    store => store.acompanhamentoAprendizagem.dadosAcompanhamentoAprendizagem
+  );
+
   const dadosAlunoObjectCard = useSelector(
     store => store.acompanhamentoAprendizagem.dadosAlunoObjectCard
   );
@@ -18,6 +23,7 @@ const FotosCriancaDados = props => {
   const { semestreSelecionado } = props;
 
   const [exibirLoader, setExibirLoader] = useState(false);
+  const [listaInicialImagens, setListaInicialImagens] = useState([]);
 
   const obterImagens = async dados => {
     setExibirLoader(true);
@@ -44,12 +50,35 @@ const FotosCriancaDados = props => {
     return listaImagens;
   };
 
-  const removerImagem = () => {
-    // TODO
-    // const resposta = await ServicoAcompanhamentoAprendizagem.obterFotos(
-    //   dados?.id
-    // )
-  }
+  const obterImagensEstudante = () => {
+    obterImagens({
+      id: dadosAcompanhamentoAprendizagem?.acompanhamentoAlunoSemestreId,
+    }).then(imagens => {
+      setListaInicialImagens(imagens);
+    });
+  };
+
+  const removerImagem = async codigoFoto => {
+    if (
+      codigoFoto &&
+      dadosAcompanhamentoAprendizagem?.acompanhamentoAlunoSemestreId
+    ) {
+      setExibirLoader(true);
+      const resposta = await ServicoAcompanhamentoAprendizagem.excluirFotos(
+        dadosAcompanhamentoAprendizagem?.acompanhamentoAlunoSemestreId,
+        codigoFoto
+      )
+        .catch(e => erros(e))
+        .finally(() => setExibirLoader(false));
+
+      if (resposta?.data) {
+        sucesso('Imagem excluída com sucesso');
+        obterImagensEstudante();
+        return true;
+      }
+    }
+    return false;
+  };
 
   const configUploadImagens = {
     servicoCustomRequest: ServicoAcompanhamentoAprendizagem.uploadFoto,
@@ -66,12 +95,27 @@ const FotosCriancaDados = props => {
         nome: 'alunoCodigo',
         valor: codigoEOL,
       },
+      {
+        nome: 'acompanhamentoAlunoSemestreId',
+        valor: dadosAcompanhamentoAprendizagem?.acompanhamentoAlunoSemestreId,
+      },
     ],
     obterImagens,
     removerImagem,
+    listaInicialImagens,
   };
 
-  return <UploadImagens {...configUploadImagens} />;
+  useEffect(() => {
+    if (dadosAcompanhamentoAprendizagem?.acompanhamentoAlunoSemestreId) {
+      obterImagensEstudante();
+    }
+  }, [dadosAcompanhamentoAprendizagem]);
+
+  return (
+    <Loader loading={exibirLoader}>
+      <UploadImagens {...configUploadImagens} />
+    </Loader>
+  );
 };
 
 FotosCriancaDados.propTypes = {

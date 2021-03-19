@@ -23,3 +23,8 @@ export const setExibirLoaderGeralAcompanhamentoAprendizagem = payload => ({
     '@acompanhamentoAprendizagem/setExibirLoaderGeralAcompanhamentoAprendizagem',
   payload,
 });
+
+export const setDadosAcompanhamentoAprendizagem = payload => ({
+  type: '@acompanhamentoAprendizagem/setDadosAcompanhamentoAprendizagem',
+  payload,
+});

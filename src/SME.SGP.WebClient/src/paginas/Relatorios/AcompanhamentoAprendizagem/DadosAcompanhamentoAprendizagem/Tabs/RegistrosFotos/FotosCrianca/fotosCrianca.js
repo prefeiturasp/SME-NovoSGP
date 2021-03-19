@@ -1,25 +1,22 @@
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import React from 'react';
 import CardCollapse from '~/componentes/cardCollapse';
 import FotosCriancaDados from './fotosCriancaDados';
 
 const FotosCrianca = props => {
   const { semestreSelecionado } = props;
 
-  const [exibir, setExibir] = useState(false);
-
-  const onClickExpandir = () => setExibir(!exibir);
-
   return (
     <div className="col-md-12 mb-2">
       <CardCollapse
         key="fotos-crianca-collapse"
-        onClick={onClickExpandir}
         titulo="Fotos da criança"
         indice="fotos-crianca"
-        show={exibir}
         alt="fotos-crianca"
       >
+        <span className="font-weight-bold">
+          Carregue até 3 fotos da criança
+        </span>
         <FotosCriancaDados semestreSelecionado={semestreSelecionado} />
       </CardCollapse>
     </div>

@@ -26,6 +26,12 @@ class ServicoAcompanhamentoAprendizagem {
     });
   };
 
+  obterAcompanhamentoEstudante = (turmaId, alunoId, semestre) => {
+    return api.get(
+      `${urlPadrao}?turmaId=${turmaId}&alunoId=${alunoId}&semestre=${semestre}`
+    );
+  };
+
   salvarAcompanhamentoAprendizagem = params => {
     return api.get(`${urlPadrao}/semestres`, params);
   };
