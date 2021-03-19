@@ -1,9 +1,9 @@
 import { PlusOutlined } from '@ant-design/icons';
 import { Modal, Upload } from 'antd';
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Loader from '~/componentes/loader';
-import { erros } from '~/servicos';
+import { confirmar, erros } from '~/servicos';
 import ServicoArmazenamento from '~/servicos/Componentes/ServicoArmazenamento';
 
 function getBase64DataURL(file, type) {
@@ -22,6 +22,7 @@ const UploadImagens = props => {
     obterImagens,
     parametrosCustomRequest,
     removerImagem,
+    listaInicialImagens,
   } = props;
 
   const [listaImagens, setListaImagens] = useState([]);
@@ -60,18 +61,28 @@ const UploadImagens = props => {
     }
   };
 
+  const montarListaImagensParaExibir = imagens => {
+    return imagens.map(item => {
+      if (!item.url && item.type && item.fileBase64) {
+        item.url = `data:${item.type};base64,${item.fileBase64}`;
+      }
+
+      return { ...item, status: 'done' };
+    });
+  };
+
+  useEffect(() => {
+    if (listaInicialImagens?.length) {
+      setListaImagens(montarListaImagensParaExibir(listaInicialImagens));
+    }
+  }, [listaInicialImagens]);
+
   const afterSuccess = async dados => {
     if (obterImagens) {
       const imagens = await obterImagens(dados);
 
       if (imagens?.length) {
-        const listaMapeada = imagens.map(item => {
-          if (!item.url && item.type && item.fileBase64) {
-            item.url = `data:${item.type};base64,${item.fileBase64}`;
-          }
-
-          return { ...item, status: 'done' };
-        });
+        const listaMapeada = montarListaImagensParaExibir(imagens);
         setListaImagens(listaMapeada);
       }
     } else {
@@ -113,9 +124,16 @@ const UploadImagens = props => {
     }
   };
 
-  const handleRemove = dados => {
+  const onRemove = async dados => {
     if (removerImagem) {
-      removerImagem(dados);
+      const confirmado = await confirmar(
+        'Excluir',
+        '',
+        'Deseja realmente excluir esta imagem?'
+      );
+      if (confirmado) {
+        removerImagem(dados?.uid);
+      }
     } else {
       // TODO
     }
@@ -128,7 +146,7 @@ const UploadImagens = props => {
         fileList={listaImagens}
         onPreview={handlePreview}
         customRequest={customRequest}
-        handleRemove={handleRemove}
+        onRemove={onRemove}
       >
         <div>
           <PlusOutlined />
@@ -156,6 +174,7 @@ UploadImagens.propTypes = {
   parametrosCustomRequest: PropTypes.oneOfType([PropTypes.array]),
   obterImagens: PropTypes.func,
   removerImagem: PropTypes.func,
+  listaInicialImagens: PropTypes.oneOfType([PropTypes.array]),
 };
 
 UploadImagens.defaultProps = {
@@ -163,6 +182,7 @@ UploadImagens.defaultProps = {
   parametrosCustomRequest: [],
   obterImagens: null,
   removerImagem: null,
+  listaInicialImagens: [],
 };
 
 export default UploadImagens;
