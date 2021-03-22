@@ -150,7 +150,7 @@ namespace SME.SGP.Aplicacao
 
                 periodoEscolar = await repositorioPeriodoEscolar.ObterPorTipoCalendarioEBimestreAsync(tipoCalendario.Id, bimestre);
 
-                if (turma.AnoLetivo == DateTime.Today.Year) throw new NegocioException("Fechamento da Turma não encontrado");
+                if (bimestre > 0) throw new NegocioException("Fechamento da turma não encontrado");
             }
 
             var turmaCodigo = turma.CodigoTurma;
