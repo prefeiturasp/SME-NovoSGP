@@ -7,7 +7,6 @@ namespace SME.SGP.Aplicacao
     public class SalvarPlanoAeeCommand : IRequest<RetornoPlanoAEEDto>
     {
         public long TurmaId { get; set; }
-        public SituacaoPlanoAEE Situacao { get; set; }
         public int AlunoNumero { get; set; }
         public string AlunoNome { get; set; }
         public string AlunoCodigo { get; set; }
@@ -20,7 +19,6 @@ namespace SME.SGP.Aplicacao
             AlunoNome = alunoNome;
             AlunoCodigo = alunoCodigo;
             AlunoNumero = alunoNumero;
-            Situacao = SituacaoPlanoAEE.EmAndamento;
         }
     }
 }

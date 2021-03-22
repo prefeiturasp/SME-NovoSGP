@@ -62,7 +62,7 @@ namespace SME.SGP.Aplicacao.Commands
                         }
                     }
 
-                    if (request.Situacao == SituacaoPlanoAEE.Expirado)
+                    if (request.PlanoAEEDto.Situacao == SituacaoPlanoAEE.Expirado)
                         await mediator.Send(new ExcluirPendenciaPlanoAEECommand(planoId));
 
                     unitOfWork.PersistirTransacao();
@@ -116,7 +116,7 @@ namespace SME.SGP.Aplicacao.Commands
             if (request.PlanoAEEDto.Id.HasValue && request.PlanoAEEDto.Id > 0)
             {
                 var planoAEE = await mediator.Send(new ObterPlanoAEEPorIdQuery(request.PlanoAEEDto.Id.Value));
-                planoAEE.Situacao = SituacaoPlanoAEE.EmAndamento;
+                planoAEE.Situacao = request.PlanoAEEDto.Situacao;
 
                 return planoAEE;
             }

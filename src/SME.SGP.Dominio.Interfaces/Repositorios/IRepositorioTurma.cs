@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
 {
@@ -14,7 +15,7 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<Turma> ObterTurmaComUeEDrePorCodigo(string turmaCodigo);
 
-        Task<Turma> ObterTurmaComUeEDrePorId(long turmaId);       
+        Task<Turma> ObterTurmaComUeEDrePorId(long turmaId);
 
         Task<bool> ObterTurmaEspecialPorCodigo(string turmaCodigo);
 
@@ -22,6 +23,7 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<long> ObterTurmaIdPorCodigo(string turmaCodigo);
         Task<DreUeDaTurmaDto> ObterCodigosDreUe(string turmaCodigo);
+        Task<Turma> ObterTurmaPorAnoLetivoModalidadeTipoAsync(long ueId, int anoLetivo, TipoTurma turmaTipo);
         Task<DreUeDaTurmaDto> ObterCodigosDreUePorId(long turmaId);
         Task<IEnumerable<Turma>> ObterTurmasInfantilNaoDeProgramaPorAnoLetivoAsync(int anoLetivo);
         Task<IEnumerable<Turma>> ObterTurmasPorIds(long[] turmasIds);

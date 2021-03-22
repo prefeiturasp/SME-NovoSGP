@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -70,10 +71,7 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task<ConselhoClasseNotaRetornoDto> SalvarConselhoClasseAlunoNotaAsync(ConselhoClasseNotaDto conselhoClasseNotaDto, string alunoCodigo, long conselhoClasseId, long fechamentoTurmaId, string codigoTurma, int bimestre)
         {
-            var conselhoClasseNota = new ConselhoClasseNota();
-
-            var fechamentoTurma = await repositorioFechamentoTurma.ObterCompletoPorIdAsync(fechamentoTurmaId);
-
+            var fechamentoTurma = await ObterFechamentoTurma(fechamentoTurmaId, alunoCodigo);
             var fechamentoTurmaDisciplina = new FechamentoTurmaDisciplina();
 
             if (fechamentoTurma == null)
@@ -107,6 +105,9 @@ namespace SME.SGP.Dominio.Servicos
                 };
 
             }
+
+        
+
             try
             {
                 unitOfWork.IniciarTransacao();
@@ -141,6 +142,8 @@ namespace SME.SGP.Dominio.Servicos
             }
 
             long conselhoClasseAlunoId = 0;
+            var conselhoClasseNota = new ConselhoClasseNota();
+
             try
             {
                 if (conselhoClasseId == 0)
@@ -301,7 +304,8 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task<AuditoriaConselhoClasseAlunoDto> SalvarConselhoClasseAluno(ConselhoClasseAluno conselhoClasseAluno)
         {
-            var fechamentoTurma = await ObterFechamentoTurma(conselhoClasseAluno.ConselhoClasse.FechamentoTurmaId);
+            var fechamentoTurma = await ObterFechamentoTurma(conselhoClasseAluno.ConselhoClasse.FechamentoTurmaId, conselhoClasseAluno.AlunoCodigo);
+
             if (!await VerificaNotasTodosComponentesCurriculares(conselhoClasseAluno.AlunoCodigo, fechamentoTurma.Turma, fechamentoTurma.PeriodoEscolarId))
                 throw new NegocioException("É necessário que todos os componentes tenham nota/conceito informados!");
 
@@ -321,9 +325,17 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task<bool> VerificaNotasTodosComponentesCurriculares(string alunoCodigo, Turma turma, long? periodoEscolarId)
         {
-            var notasAluno = await repositorioConselhoClasseNota.ObterNotasAlunoAsync(alunoCodigo, turma.CodigoTurma, periodoEscolarId);
+            string[] turmasCodigos;
+            if (turma.DeveVerificarRegraRegulares())
+            {
+                turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, turma.ObterTiposRegularesDiferentes()));
+                turmasCodigos = turmasCodigos.Concat(new string[] { turma.CodigoTurma }).ToArray();
+            }                
+            else turmasCodigos = new string[] { turma.CodigoTurma };
 
-            var componentesCurriculares = await ObterComponentesTurma(turma);
+            var notasAluno = await repositorioConselhoClasseNota.ObterNotasAlunoPorTurmasAsync(alunoCodigo, turmasCodigos, periodoEscolarId);
+            
+            var componentesCurriculares = await ObterComponentesTurmas(turmasCodigos, turma.EnsinoEspecial, turma.TurnoParaComponentesCurriculares);
 
             // Checa se todas as disciplinas da turma receberam nota
             foreach (var componenteCurricular in componentesCurriculares.Where(c => c.LancaNota))
@@ -333,21 +345,14 @@ namespace SME.SGP.Dominio.Servicos
             return true;
         }
 
-        private async Task<IEnumerable<DisciplinaDto>> ObterComponentesTurma(Turma turma)
+        private async Task<IEnumerable<DisciplinaDto>> ObterComponentesTurmas(string[] turmasCodigo, bool ehEnsinoEspecial, int turnoParaComponentesCurriculares)
         {
             var componentesTurma = new List<DisciplinaDto>();
-            var componentesCurriculares = await consultasDisciplina.ObterDisciplinasPorTurma(turma.CodigoTurma, false);
+            Usuario usuarioAtual = await mediator.Send(new ObterUsuarioLogadoQuery());
+
+            var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesPorTurmasCodigoQuery(turmasCodigo, usuarioAtual.PerfilAtual, usuarioAtual.Login, ehEnsinoEspecial, turnoParaComponentesCurriculares));
             if (componentesCurriculares == null)
                 throw new NegocioException("Não localizado disciplinas para a turma no EOL!");
-
-            componentesTurma.AddRange(componentesCurriculares.Where(c => !c.Regencia));
-            foreach (var componenteCurricular in componentesCurriculares.Where(c => c.Regencia))
-            {
-                // Adiciona lista de componentes relacionados a regencia
-                componentesTurma.AddRange(
-                    consultasDisciplina.MapearParaDto(
-                        await consultasDisciplina.ObterComponentesRegencia(turma, componenteCurricular.CodigoComponenteCurricular)));
-            }
 
             return componentesTurma;
         }
@@ -400,18 +405,14 @@ namespace SME.SGP.Dominio.Servicos
                 conselhoClasseAluno = new ConselhoClasseAluno() { AlunoCodigo = alunoCodigo, ConselhoClasse = conselhoClasse, ConselhoClasseId = conselhoClasse.Id };
                 await repositorioConselhoClasseAluno.SalvarAsync(conselhoClasseAluno);
             }
-            conselhoClasseAluno.ConselhoClasse.FechamentoTurma = await ObterFechamentoTurma(fechamentoTurmaId);
+            conselhoClasseAluno.ConselhoClasse.FechamentoTurma = await ObterFechamentoTurma(fechamentoTurmaId, alunoCodigo);
 
             return conselhoClasseAluno;
         }
 
-        private async Task<FechamentoTurma> ObterFechamentoTurma(long fechamentoTurmaId)
+        private async Task<FechamentoTurma> ObterFechamentoTurma(long fechamentoTurmaId, string alunoCodigo)
         {
-            var fechamentoTurma = await repositorioFechamentoTurma.ObterCompletoPorIdAsync(fechamentoTurmaId);
-            if (fechamentoTurma == null)
-                throw new NegocioException("Fechamento da turma não localizado");
-
-            return fechamentoTurma;
+            return await mediator.Send(new ObterFechamentoTurmaPorIdAlunoCodigoQuery(fechamentoTurmaId, alunoCodigo));
         }
 
         private void ValidarNotasFechamentoConselhoClasse2020(ConselhoClasseNota conselhoClasseNota)

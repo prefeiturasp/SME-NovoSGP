@@ -2,6 +2,7 @@
 using Dommel;
 using Sentry;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -197,6 +198,7 @@ namespace SME.SGP.Dados.Repositorios
 	                        t.qt_duracao_aula,
 	                        t.tipo_turno,
 	                        t.data_atualizacao,
+                            t.tipo_turma,
 	                        u.id as UeId,
 	                        u.id,
 	                        u.ue_id,
@@ -210,7 +212,6 @@ namespace SME.SGP.Dados.Repositorios
 	                        d.dre_id,
 	                        d.abreviacao,
 	                        d.data_atualizacao
-
                         from
 	                        turma t
                         inner join ue u on
@@ -368,9 +369,9 @@ namespace SME.SGP.Dados.Repositorios
                                       DataInicio = c.DataInicio,
                                       SerieEnsino = c.SerieEnsino,
                                       DataFim = c.DataFim,
-                                      Extinta = c.Extinta
+                                      Extinta = c.Extinta,                                      
                                   };
-
+             
                 foreach (var item in modificados)
                 {
                     await contexto.Conexao.ExecuteAsync(Update, new
@@ -634,6 +635,16 @@ namespace SME.SGP.Dados.Repositorios
                          where t.id = @turmaId";
 
             return await contexto.Conexao.QueryFirstOrDefaultAsync<DreUeDaTurmaDto>(query, new { turmaId });
+        }
+
+        public async Task<Turma> ObterTurmaPorAnoLetivoModalidadeTipoAsync(long ueId, int anoLetivo, TipoTurma turmaTipo)
+        {
+            var query = @"select * from turma t 
+                            where t.ue_id = @ueId 
+                            and t.ano_letivo = @anoLetivo 
+                            and t.tipo_turma = @turmaTipo";
+
+            return await contexto.Conexao.QueryFirstOrDefaultAsync<Turma>(query, new { ueId, anoLetivo , turmaTipo });
         }
     }
 }
