@@ -17,7 +17,7 @@ update  componente_curricular cc set descricao_sgp = 'Sala de Leitura' where cc.
 update  componente_curricular cc set descricao_sgp = 'Tecnologias para Aprendizagem' where cc.id = 1348;
 update  componente_curricular cc set descricao_sgp = 'Tecnologias para Aprendizagem' where cc.id = 1349;
 update  componente_curricular cc set descricao_sgp = 'Projeto de vida' where cc.id = 1350;
-update  componente_curricular cc set descricao_sgp = 'Investigação Científica e Processos Matemáticos (Química)' where cc.id = 1351;
+update  componente_curricular cc set descricao_sgp = 'Investigação Científica e Processos Matemáticos (Física)' where cc.id = 1351;
 update  componente_curricular cc set descricao_sgp = 'Formação do Mundo Multipolar' where cc.id = 1352;
 update  componente_curricular cc set descricao_sgp = 'Trajetória dos Direitos Humanos' where cc.id = 1353;
 update  componente_curricular cc set descricao_sgp = 'Sociedade, Cultura e Interculturalismo' where cc.id = 1354;
