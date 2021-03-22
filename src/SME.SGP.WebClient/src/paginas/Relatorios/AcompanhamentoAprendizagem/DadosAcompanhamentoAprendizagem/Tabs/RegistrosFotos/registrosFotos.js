@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import AuditoriaAcompanhamentoAprendizagem from '../../AuditoriaAcompanhamento/auditoriaAcompanhamento';
 import FotosCrianca from './FotosCrianca/fotosCrianca';
 import ObservacoesAdicionais from './ObservacoesAdicionais/observacoesAdicionais';
 import RegistrosIndividuais from './RegistrosIndividuais/registrosIndividuais';
@@ -12,6 +13,7 @@ const RegistrosFotos = props => {
       <RegistrosIndividuais semestreSelecionado={semestreSelecionado} />
       <ObservacoesAdicionais />
       <FotosCrianca semestreSelecionado={semestreSelecionado} />
+      <AuditoriaAcompanhamentoAprendizagem />
     </>
   );
 };
