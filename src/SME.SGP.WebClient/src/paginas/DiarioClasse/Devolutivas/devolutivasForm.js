@@ -31,6 +31,7 @@ import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 import { ehTurmaInfantil } from '~/servicos/Validacoes/validacoesInfatil';
 import DadosPlanejamentoDiarioBordo from './DadosPlanejamentoDiarioBordo/dadosPlanejamentoDiarioBordo';
+import ServicoPeriodoEscolar from '~/servicos/Paginas/Calendario/ServicoPeriodoEscolar';
 
 const DevolutivasForm = ({ match }) => {
   const dispatch = useDispatch();
@@ -61,6 +62,7 @@ const DevolutivasForm = ({ match }) => {
   const permissoesTela = usuario.permissoes[RotasDto.DEVOLUTIVAS];
   const [desabilitarCampos, setDesabilitarCampos] = useState(false);
   const [exibirCampoDescricao, setExibirCampoDescricao] = useState(false);
+  const [periodoLetivo, setPeriodoLetivo] = useState();
 
   const inicial = {
     codigoComponenteCurricular: 0,
@@ -85,6 +87,22 @@ const DevolutivasForm = ({ match }) => {
       .min(200, 'Você precisa preencher com no mínimo 200 caracteres'),
   });
 
+  const obterPeriodoLetivoTurma = async() => {
+    if (turmaSelecionada && turmaSelecionada.turma) {
+      const periodoLetivoTurmaResponse = await ServicoPeriodoEscolar
+        .obterPeriodoLetivoTurma(turmaSelecionada.turma).catch(e => erros(e));
+      if (periodoLetivoTurmaResponse?.data) {
+        var datas = [moment(periodoLetivoTurmaResponse.data.periodoInicio).format('YYYY-MM-DD')];
+        var qtdDias = moment(periodoLetivoTurmaResponse.data.periodoFim).diff(periodoLetivoTurmaResponse.data.periodoInicio, 'days');
+        for (let indice = 1; indice <= qtdDias; indice++) {
+          var novaData = moment(periodoLetivoTurmaResponse.data.periodoInicio).add(indice, 'days');
+          datas.push(novaData.format('YYYY-MM-DD'));
+        }
+        setPeriodoLetivo(datas);
+      }      
+    }
+  }
+
   useEffect(() => {
     const naoSetarSomenteConsultaNoStore = !ehTurmaInfantil(
       modalidadesFiltroPrincipal,
@@ -100,6 +118,7 @@ const DevolutivasForm = ({ match }) => {
         ? soConsulta || !permissoesTela.podeAlterar
         : soConsulta || !permissoesTela.podeIncluir;
     setDesabilitarCampos(desabilitar);
+    obterPeriodoLetivoTurma();
   }, [
     idDevolutiva,
     permissoesTela,
@@ -590,6 +609,7 @@ const DevolutivasForm = ({ match }) => {
                         !form.values.codigoComponenteCurricular ||
                         desabilitarCampos
                       }
+                      diasParaHabilitar={periodoLetivo}
                     />
                   </div>
                   <div className="col-sm-12 col-md-6 col-lg-3 col-xl-2 mb-5">
