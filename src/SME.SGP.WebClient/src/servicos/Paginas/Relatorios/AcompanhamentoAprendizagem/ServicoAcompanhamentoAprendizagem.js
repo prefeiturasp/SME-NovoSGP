@@ -38,6 +38,7 @@ class ServicoAcompanhamentoAprendizagem {
     dispatch(setExibirLoaderGeralAcompanhamentoAprendizagem(true));
 
     dispatch(limparDadosRegistroIndividual());
+    dispatch(setDadosAcompanhamentoAprendizagem({}));
 
     const retorno = await api
       .get(
@@ -50,7 +51,7 @@ class ServicoAcompanhamentoAprendizagem {
 
     if (retorno?.data) {
       dispatch(setDadosAcompanhamentoAprendizagem({ ...retorno.data }));
-      return retorno.data.acompanhamentoAlunoSemestreId;
+      return retorno.data;
     }
 
     dispatch(setDadosAcompanhamentoAprendizagem({}));

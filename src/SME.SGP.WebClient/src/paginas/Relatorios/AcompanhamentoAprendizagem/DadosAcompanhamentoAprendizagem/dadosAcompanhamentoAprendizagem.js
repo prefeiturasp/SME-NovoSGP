@@ -41,26 +41,30 @@ const DadosAcompanhamentoAprendizagem = props => {
   };
 
   const validaPermissoes = useCallback(
-    novoRegistro => {
+    (novoRegistro, podeEditar) => {
       const somenteConsulta = verificaSomenteConsulta(permissoesTela);
 
-      const desabilitar = novoRegistro
-        ? somenteConsulta || !permissoesTela.podeIncluir
-        : somenteConsulta || !permissoesTela.podeAlterar;
+      const desabilitar =
+        dadosAlunoObjectCard.desabilitado ||
+        !podeEditar ||
+        (novoRegistro
+          ? somenteConsulta || !permissoesTela.podeIncluir
+          : somenteConsulta || !permissoesTela.podeAlterar);
 
       dispatch(setDesabilitarCamposAcompanhamentoAprendizagem(desabilitar));
     },
-    [dispatch, permissoesTela]
+    [dispatch, dadosAlunoObjectCard, permissoesTela]
   );
 
   const obterDadosAcompanhamentoAprendizagemPorEstudante = async () => {
-    const acompanhamentoAlunoSemestreId = await ServicoAcompanhamentoAprendizagem.obterAcompanhamentoEstudante(
+    const retorno = await ServicoAcompanhamentoAprendizagem.obterAcompanhamentoEstudante(
       turmaSelecionada?.id,
       codigoEOL,
       semestreSelecionado
     );
 
-    validaPermissoes(acompanhamentoAlunoSemestreId);
+    const { acompanhamentoAlunoSemestreId, podeEditar } = retorno;
+    validaPermissoes(acompanhamentoAlunoSemestreId, podeEditar);
   };
 
   useEffect(() => {

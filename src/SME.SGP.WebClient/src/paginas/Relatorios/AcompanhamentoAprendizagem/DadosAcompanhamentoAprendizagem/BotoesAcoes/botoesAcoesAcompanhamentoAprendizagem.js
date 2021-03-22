@@ -69,7 +69,7 @@ const BotoesAcoesAcompanhamentoAprendizagem = props => {
   };
 
   const recarregarDados = () => {
-    dispatch(setAcompanhamentoAprendizagemEmEdicao());
+    dispatch(setAcompanhamentoAprendizagemEmEdicao(false));
     ServicoAcompanhamentoAprendizagem.obterAcompanhamentoEstudante(
       turmaSelecionada?.id,
       codigoEOL,
