@@ -210,7 +210,6 @@ namespace SME.SGP.Aplicacao
 
             var gruposMatrizesNotas = new List<ConselhoClasseAlunoNotasConceitosDto>();
 
-
             // Retornar componentes que lançam nota
             var gruposMatrizes = disciplinasDaTurma.Where(c => c.LancaNota && c.GrupoMatrizNome != null).OrderBy(d => d.GrupoMatrizId).GroupBy(c => c.GrupoMatrizNome).ToList();
             foreach (var grupoDisiplinasMatriz in gruposMatrizes)
@@ -223,16 +222,12 @@ namespace SME.SGP.Aplicacao
                     //codigo da turma da disciplina
                     var turmaDisciplinaCodigo = disciplinasDaTurmaEol.FirstOrDefault(a => a.CodigoComponenteCurricular == disciplina.CodigoComponenteCurricular);
 
-                    var turmaParaBuscarNotas = turmas.FirstOrDefault(a => a.CodigoTurma == turmaDisciplinaCodigo.TurmaCodigo);
-
-                    
+                    var turmaParaBuscarNotas = turmas.FirstOrDefault(a => a.CodigoTurma == turmaDisciplinaCodigo.TurmaCodigo);                    
 
                     //Verificar se objeto não está nulo
                     var turmaPeriodoEscolar = turmasPeriodosEscolares.FirstOrDefault(a => a.Item1.Id == turmaParaBuscarNotas.Id);
 
-                    var periodoEscolarParaUtilizar = turmaPeriodoEscolar.Item2;
-
-                 
+                    var periodoEscolarParaUtilizar = turmaPeriodoEscolar.Item2;                 
 
                     // Carrega Frequencia Aluno
                     var frequenciaAluno = await ObterFrequenciaAluno(turmaParaBuscarNotas, periodoEscolarParaUtilizar, disciplina.CodigoComponenteCurricular,
