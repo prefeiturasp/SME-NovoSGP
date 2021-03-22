@@ -1,15 +1,31 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Loader } from '~/componentes';
 import { RegistrosAnterioresConteudo } from '~/componentes-sgp/RegistroIndividual/registrosAnteriores/registrosAnterioresConteudo';
 import CardCollapse from '~/componentes/cardCollapse';
+import { RotasDto } from '~/dtos';
+import { limparDadosRegistroIndividual } from '~/redux/modulos/registroIndividual/actions';
 
-const RegistrosIndividuais = props => {
+const RegistrosIndividuais = () => {
   const exibirLoaderGeralRegistroAnteriores = useSelector(
     store => store.registroIndividual.exibirLoaderGeralRegistroAnteriores
   );
-  const { semestreSelecionado } = props;
+
+  const dadosAcompanhamentoAprendizagem = useSelector(
+    store => store.acompanhamentoAprendizagem.dadosAcompanhamentoAprendizagem
+  );
+
+  const dispatch = useDispatch();
+
+  const usuario = useSelector(store => store.usuario);
+  const permissoesTela =
+    usuario.permissoes[RotasDto.ACOMPANHAMENTO_APRENDIZAGEM];
+
+  useEffect(() => {
+    return () => {
+      dispatch(limparDadosRegistroIndividual());
+    };
+  }, [dispatch]);
 
   return (
     <Loader
@@ -24,19 +40,16 @@ const RegistrosIndividuais = props => {
           indice="registros-individuais"
           alt="registros-individuais"
         >
-          <RegistrosAnterioresConteudo />
+          <RegistrosAnterioresConteudo
+            permissoesTela={permissoesTela}
+            periodoInicio={dadosAcompanhamentoAprendizagem?.periodoInicio}
+            periodoFim={dadosAcompanhamentoAprendizagem?.periodoFim}
+            podeEditar={dadosAcompanhamentoAprendizagem?.podeEditar}
+          />
         </CardCollapse>
       </div>
     </Loader>
   );
-};
-
-RegistrosIndividuais.propTypes = {
-  semestreSelecionado: PropTypes.string,
-};
-
-RegistrosIndividuais.defaultProps = {
-  semestreSelecionado: '',
 };
 
 export default RegistrosIndividuais;

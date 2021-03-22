@@ -1,10 +1,11 @@
 import { Tabs } from 'antd';
 import PropTypes from 'prop-types';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { ContainerTabsCard } from '~/componentes/tabs/tabs.css';
-import { setDadosAcompanhamentoAprendizagem } from '~/redux/modulos/acompanhamentoAprendizagem/actions';
-import { erros } from '~/servicos';
+import { RotasDto } from '~/dtos';
+import { setDesabilitarCamposAcompanhamentoAprendizagem } from '~/redux/modulos/acompanhamentoAprendizagem/actions';
+import { verificaSomenteConsulta } from '~/servicos';
 import ServicoAcompanhamentoAprendizagem from '~/servicos/Paginas/Relatorios/AcompanhamentoAprendizagem/ServicoAcompanhamentoAprendizagem';
 import DadosGerais from './Tabs/DadosGerais/dadosGerais';
 import RegistrosFotos from './Tabs/RegistrosFotos/registrosFotos';
@@ -12,11 +13,11 @@ import RegistrosFotos from './Tabs/RegistrosFotos/registrosFotos';
 const { TabPane } = Tabs;
 
 const DadosAcompanhamentoAprendizagem = props => {
-  const dispatch = useDispatch();
-
   const dadosAlunoObjectCard = useSelector(
     store => store.acompanhamentoAprendizagem.dadosAlunoObjectCard
   );
+
+  const dispatch = useDispatch();
 
   const usuario = useSelector(store => store.usuario);
   const { turmaSelecionada } = usuario;
@@ -24,6 +25,9 @@ const DadosAcompanhamentoAprendizagem = props => {
   const { codigoEOL } = dadosAlunoObjectCard;
 
   const { semestreSelecionado } = props;
+
+  const permissoesTela =
+    usuario.permissoes[RotasDto.ACOMPANHAMENTO_APRENDIZAGEM];
 
   const [tabAtual, setTabAtual] = useState('1');
 
@@ -36,18 +40,27 @@ const DadosAcompanhamentoAprendizagem = props => {
     setTabAtual(numeroTab);
   };
 
+  const validaPermissoes = useCallback(
+    novoRegistro => {
+      const somenteConsulta = verificaSomenteConsulta(permissoesTela);
+
+      const desabilitar = novoRegistro
+        ? somenteConsulta || !permissoesTela.podeIncluir
+        : somenteConsulta || !permissoesTela.podeAlterar;
+
+      dispatch(setDesabilitarCamposAcompanhamentoAprendizagem(desabilitar));
+    },
+    [dispatch, permissoesTela]
+  );
+
   const obterDadosAcompanhamentoAprendizagemPorEstudante = async () => {
-    const retorno = await ServicoAcompanhamentoAprendizagem.obterAcompanhamentoEstudante(
+    const acompanhamentoAlunoSemestreId = await ServicoAcompanhamentoAprendizagem.obterAcompanhamentoEstudante(
       turmaSelecionada?.id,
       codigoEOL,
       semestreSelecionado
-    ).catch(e => erros(e));
+    );
 
-    if (retorno?.data) {
-      dispatch(setDadosAcompanhamentoAprendizagem(retorno?.data));
-    } else {
-      dispatch(setDadosAcompanhamentoAprendizagem({}));
-    }
+    validaPermissoes(acompanhamentoAlunoSemestreId);
   };
 
   useEffect(() => {

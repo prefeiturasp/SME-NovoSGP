@@ -5,6 +5,7 @@ import Cabecalho from '~/componentes-sgp/cabecalho';
 import Alert from '~/componentes/alert';
 import Card from '~/componentes/card';
 import SelectComponent from '~/componentes/select';
+import { RotasDto } from '~/dtos';
 import situacaoMatriculaAluno from '~/dtos/situacaoMatriculaAluno';
 import {
   limparDadosAcompanhamentoAprendizagem,
@@ -18,11 +19,11 @@ import {
   setComponenteCurricularSelecionado,
   setDadosAlunoObjectCard as setDadosAlunoObjectCardRegistroIndividual,
 } from '~/redux/modulos/registroIndividual/actions';
-
 import {
   ehTurmaInfantil,
   ServicoCalendarios,
   ServicoDisciplina,
+  verificaSomenteConsulta,
 } from '~/servicos';
 import { erros } from '~/servicos/alertas';
 import ServicoAcompanhamentoAprendizagem from '~/servicos/Paginas/Relatorios/AcompanhamentoAprendizagem/ServicoAcompanhamentoAprendizagem';
@@ -48,6 +49,9 @@ const AcompanhamentoAprendizagem = () => {
   const componenteCurricularSelecionado = useSelector(
     state => state.registroIndividual.componenteCurricularSelecionado
   );
+
+  const permissoesTela =
+    usuario.permissoes[RotasDto.ACOMPANHAMENTO_APRENDIZAGEM];
 
   const [listaComponenteCurricular, setListaComponenteCurricular] = useState(
     []
@@ -126,6 +130,10 @@ const AcompanhamentoAprendizagem = () => {
     obterComponentesCurriculares,
   ]);
 
+  useEffect(() => {
+    verificaSomenteConsulta(permissoesTela, !turmaSelecionada?.turma);
+  }, [turmaSelecionada, permissoesTela]);
+
   const obterFrequenciaAluno = async codigoAluno => {
     const retorno = await ServicoCalendarios.obterFrequenciaAluno(
       codigoAluno,
@@ -200,6 +208,14 @@ const AcompanhamentoAprendizagem = () => {
     setSemestreSelecionado(valor);
   };
 
+  const permiteOnChangeAluno = async () => {
+    const continuar = await ServicoAcompanhamentoAprendizagem.salvarDadosAcompanhamentoAprendizagem(
+      semestreSelecionado
+    );
+
+    return continuar;
+  };
+
   return (
     <Container>
       {!turmaSelecionada.turma ? (
@@ -224,7 +240,9 @@ const AcompanhamentoAprendizagem = () => {
           <div className="col-md-12">
             <div className="row">
               <div className="col-md-12 d-flex justify-content-end pb-4">
-                <BotoesAcoesAcompanhamentoAprendizagem />
+                <BotoesAcoesAcompanhamentoAprendizagem
+                  semestreSelecionado={semestreSelecionado}
+                />
               </div>
             </div>
           </div>
@@ -254,6 +272,7 @@ const AcompanhamentoAprendizagem = () => {
                       valueSelect={semestreSelecionado}
                       onChange={onChangeSemestre}
                       placeholder="Selecione o semestre"
+                      disabled={!componenteCurricularSelecionado}
                     />
                   </div>
                 </div>
@@ -266,6 +285,7 @@ const AcompanhamentoAprendizagem = () => {
                   <div className="col-md-12 mb-2">
                     <TabelaRetratilAcompanhamentoAprendizagem
                       onChangeAlunoSelecionado={onChangeAlunoSelecionado}
+                      permiteOnChangeAluno={permiteOnChangeAluno}
                     >
                       <ObjectCardAcompanhamentoAprendizagem />
                       <DadosAcompanhamentoAprendizagem

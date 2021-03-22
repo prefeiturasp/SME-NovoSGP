@@ -1,17 +1,94 @@
+import PropTypes from 'prop-types';
 import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import Button from '~/componentes/button';
 import { Colors } from '~/componentes/colors';
 import { URL_HOME } from '~/constantes/url';
+import { setAcompanhamentoAprendizagemEmEdicao } from '~/redux/modulos/acompanhamentoAprendizagem/actions';
+import { confirmar } from '~/servicos';
 import history from '~/servicos/history';
+import ServicoAcompanhamentoAprendizagem from '~/servicos/Paginas/Relatorios/AcompanhamentoAprendizagem/ServicoAcompanhamentoAprendizagem';
 
-const BotoesAcoesAcompanhamentoAprendizagem = () => {
-  const onClickVoltar = async () => {
-    history.push(URL_HOME);
+const BotoesAcoesAcompanhamentoAprendizagem = props => {
+  const { semestreSelecionado } = props;
+
+  const dispatch = useDispatch();
+
+  const desabilitarCamposAcompanhamentoAprendizagem = useSelector(
+    store =>
+      store.acompanhamentoAprendizagem
+        .desabilitarCamposAcompanhamentoAprendizagem
+  );
+
+  const acompanhamentoAprendizagemEmEdicao = useSelector(
+    store => store.acompanhamentoAprendizagem.acompanhamentoAprendizagemEmEdicao
+  );
+
+  const dadosAlunoObjectCard = useSelector(
+    store => store.acompanhamentoAprendizagem.dadosAlunoObjectCard
+  );
+
+  const { codigoEOL } = dadosAlunoObjectCard;
+
+  const usuario = useSelector(store => store.usuario);
+  const { turmaSelecionada } = usuario;
+
+  const onClickSalvar = async () => {
+    const continuar = await ServicoAcompanhamentoAprendizagem.salvarDadosAcompanhamentoAprendizagem(
+      semestreSelecionado
+    );
+
+    return continuar;
   };
 
-  const onClickCancelar = async () => {};
+  const perguntaAoSalvar = async () => {
+    return confirmar(
+      'Atenção',
+      '',
+      'Suas alterações não foram salvas, deseja salvar agora?'
+    );
+  };
 
-  const onClickSalvar = async () => {};
+  const onClickVoltar = async () => {
+    if (
+      !desabilitarCamposAcompanhamentoAprendizagem &&
+      acompanhamentoAprendizagemEmEdicao
+    ) {
+      const confirmado = await perguntaAoSalvar();
+      if (confirmado) {
+        const continuar = await onClickSalvar();
+        if (continuar) {
+          history.push(URL_HOME);
+        }
+      } else {
+        history.push(URL_HOME);
+      }
+    } else {
+      history.push(URL_HOME);
+    }
+  };
+
+  const recarregarDados = () => {
+    dispatch(setAcompanhamentoAprendizagemEmEdicao());
+    ServicoAcompanhamentoAprendizagem.obterAcompanhamentoEstudante(
+      turmaSelecionada?.id,
+      codigoEOL,
+      semestreSelecionado
+    );
+  };
+
+  const onClickCancelar = async () => {
+    if (acompanhamentoAprendizagemEmEdicao) {
+      const confirmou = await confirmar(
+        'Atenção',
+        'Você não salvou as informações preenchidas.',
+        'Deseja realmente cancelar as alterações?'
+      );
+      if (confirmou) {
+        recarregarDados();
+      }
+    }
+  };
 
   return (
     <>
@@ -31,6 +108,10 @@ const BotoesAcoesAcompanhamentoAprendizagem = () => {
         border
         className="mr-2"
         onClick={onClickCancelar}
+        disabled={
+          desabilitarCamposAcompanhamentoAprendizagem ||
+          !acompanhamentoAprendizagemEmEdicao
+        }
       />
       <Button
         id="btn-salvar"
@@ -39,9 +120,21 @@ const BotoesAcoesAcompanhamentoAprendizagem = () => {
         border
         bold
         onClick={onClickSalvar}
+        disabled={
+          desabilitarCamposAcompanhamentoAprendizagem ||
+          !acompanhamentoAprendizagemEmEdicao
+        }
       />
     </>
   );
+};
+
+BotoesAcoesAcompanhamentoAprendizagem.propTypes = {
+  semestreSelecionado: PropTypes.string,
+};
+
+BotoesAcoesAcompanhamentoAprendizagem.defaultProps = {
+  semestreSelecionado: '',
 };
 
 export default BotoesAcoesAcompanhamentoAprendizagem;

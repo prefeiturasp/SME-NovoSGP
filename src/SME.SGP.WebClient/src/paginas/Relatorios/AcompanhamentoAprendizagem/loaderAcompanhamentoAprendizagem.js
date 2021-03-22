@@ -18,7 +18,7 @@ const LoaderAcompanhamentoAprendizagem = ({ children }) => {
 };
 
 LoaderAcompanhamentoAprendizagem.propTypes = {
-  children: PropTypes.oneOfType([PropTypes.element, PropTypes.func]),
+  children: PropTypes.oneOfType([PropTypes.any]),
 };
 
 LoaderAcompanhamentoAprendizagem.defaultProps = {

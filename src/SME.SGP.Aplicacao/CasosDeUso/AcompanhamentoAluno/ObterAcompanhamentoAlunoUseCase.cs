@@ -23,9 +23,23 @@ namespace SME.SGP.Aplicacao
 
             var periodosEscolares = await mediator.Send(new ObterPeriodosEscolaresPorAnoEModalidadeTurmaQuery(turma.ModalidadeCodigo, turma.AnoLetivo, turma.Semestre));
 
-            acompanhamentosAlunoTurmaSemestre.PodeEditar = VerificaSePodeEditarAcompanhamentoAluno(periodosEscolares);
+            TratamentoSemestre(acompanhamentosAlunoTurmaSemestre, periodosEscolares, filtro.Semestre, turma.ModalidadeCodigo);
 
             return acompanhamentosAlunoTurmaSemestre;
+        }
+
+        private void TratamentoSemestre(AcompanhamentoAlunoTurmaSemestreDto acompanhamentosAlunoTurmaSemestre, IEnumerable<PeriodoEscolar> periodosEscolares, int semestre, Modalidade modalidadeCodigo)
+        {
+            acompanhamentosAlunoTurmaSemestre.PodeEditar = VerificaSePodeEditarAcompanhamentoAluno(periodosEscolares);
+
+            var periodosSemestre = modalidadeCodigo == Modalidade.EJA ?
+                periodosEscolares :
+                    semestre == 1 ?
+                    periodosEscolares.Where(c => new int[] { 1, 2 }.Contains(c.Bimestre)) :
+                    periodosEscolares.Where(c => new int[] { 3, 4 }.Contains(c.Bimestre));
+
+            acompanhamentosAlunoTurmaSemestre.PeriodoInicio = periodosSemestre.Min(a => a.PeriodoInicio);
+            acompanhamentosAlunoTurmaSemestre.PeriodoFim = periodosSemestre.Max(a => a.PeriodoFim);
         }
 
         private async Task<Turma> ObterTurma(long turmaId)
