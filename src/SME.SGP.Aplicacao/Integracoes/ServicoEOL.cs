@@ -424,15 +424,13 @@ namespace SME.SGP.Aplicacao.Integracoes
         {
             EstruturaInstitucionalRetornoEolDTO resultado = null;
             var codigosDres = ObterCodigosDres();
-            string url = $"abrangencia/estrutura-vigente";
+            string url = $"abrangencia/estrutura-vigente";            
 
             if (codigosDres != null && codigosDres.Length > 0)
             {
                 resultado = new EstruturaInstitucionalRetornoEolDTO();
                 foreach (var item in codigosDres)
                 {
-                    
-
                     var resposta = httpClient.GetAsync($"{url}/{item}").Result;
 
                     if (resposta.IsSuccessStatusCode)
@@ -444,7 +442,10 @@ namespace SME.SGP.Aplicacao.Integracoes
                             resultado.Dres.AddRange(parcial.Dres);
                     }
                     else
+                    {
                         SentrySdk.AddBreadcrumb($"Ocorreu um erro na tentativa de buscar os dados de Estrutura Institucional Vigente por Dre: {item} - HttpCode {resposta.StatusCode} - Body {resposta.Content?.ReadAsStringAsync()?.Result ?? string.Empty}");
+                        throw new NegocioException($"Erro ao obter a estrutura organizacional vigente no EOL. URL base: {httpClient.BaseAddress}");
+                    }                        
                 }
             }
 
@@ -873,9 +874,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         private string[] ObterCodigosDres()
         {
-            string url = $"abrangencia/codigos-dres";
-
-            
+            string url = $"abrangencia/codigos-dres";            
 
             var resposta = httpClient.GetAsync(url).Result;
 
@@ -886,8 +885,8 @@ namespace SME.SGP.Aplicacao.Integracoes
             }
             else
             {
-                SentrySdk.AddBreadcrumb($"Ocorreu um erro na tentativa de buscar os codigos das Dres no EOL - HttpCode {resposta.StatusCode} - Body {resposta.Content?.ReadAsStringAsync()?.Result ?? string.Empty}");
-                return new string[0];
+                SentrySdk.AddBreadcrumb($"Ocorreu um erro na tentativa de buscar os codigos das Dres no EOL - HttpCode {resposta.StatusCode} - Body {resposta.Content?.ReadAsStringAsync()?.Result ?? string.Empty} - URL: {httpClient.BaseAddress}");
+                throw new NegocioException($"Erro ao obter os códigos de DREs no EOL. URL base: {httpClient.BaseAddress}");
             }
         }
 

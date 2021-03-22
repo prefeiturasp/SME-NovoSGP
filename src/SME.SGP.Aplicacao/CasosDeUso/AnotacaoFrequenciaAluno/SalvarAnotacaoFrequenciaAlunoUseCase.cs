@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
 
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-            if (aula.DataAula.Date <= DateTime.Today)
+            if (aula.DataAula.Date <= DateTime.Today && !usuarioLogado.EhProfessorCj())
             {
                 var usuarioPossuiAtribuicaoNaTurmaNaData = await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(dto.ComponenteCurricularId, aula.TurmaId, aula.DataAula, usuarioLogado));
                 if (!usuarioPossuiAtribuicaoNaTurmaNaData)
