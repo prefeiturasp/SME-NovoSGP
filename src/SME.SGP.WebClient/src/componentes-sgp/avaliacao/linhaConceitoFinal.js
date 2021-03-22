@@ -30,7 +30,7 @@ const LinhaConceitoFinal = props => {
                   Conceitos finais Regência de classe
                 </div>
                 {aluno && aluno.notasBimestre && aluno.notasBimestre.length
-                  ? aluno.notasBimestre.map(item => {
+                  ? aluno.notasBimestre.map((item, index) => {
                       const disciplinaTratada = tratarString(item.disciplina);
                       return (
                         <div
@@ -38,7 +38,7 @@ const LinhaConceitoFinal = props => {
                           key={shortid.generate()}
                           name={`${disciplinaTratada}${aluno?.id}`}
                         >
-                          {montarCampoNotaConceitoFinal(item.disciplina)}
+                          {montarCampoNotaConceitoFinal(item.disciplina, index)}
                         </div>
                       );
                     })

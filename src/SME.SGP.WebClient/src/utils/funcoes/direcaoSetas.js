@@ -1,11 +1,15 @@
-const escolherDirecaoSetas = keyCode => {
+const converterAcaoTecla = keyCode => {
   switch (keyCode) {
     case 38:
       return -1;
     case 40:
       return 1;
-    default:
+    case 48:
       return 0;
+    case 96:
+      return 0;
+    default:
+      return false;
   }
 };
 
@@ -53,7 +57,7 @@ const moverCursor = async (
 };
 
 export {
-  escolherDirecaoSetas,
+  converterAcaoTecla,
   acharItem,
   esperarMiliSegundos,
   tratarString,

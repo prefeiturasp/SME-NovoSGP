@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setExpandirLinha } from '~/redux/modulos/notasConceitos/actions';
 import {
   acharItem,
-  escolherDirecaoSetas,
+  converterAcaoTecla,
   esperarMiliSegundos,
   moverCursor,
   tratarString,
@@ -95,10 +95,10 @@ const LinhaAluno = ({
     index = 0,
     regencia = false
   ) => {
-    const direcao = escolherDirecaoSetas(e.keyCode);
+    const direcao = converterAcaoTecla(e.keyCode);
     const disciplina = label.toLowerCase();
 
-    if (regencia) {
+    if (direcao && regencia) {
       let novaLinha = [];
       const novoIndex = index + direcao;
 
