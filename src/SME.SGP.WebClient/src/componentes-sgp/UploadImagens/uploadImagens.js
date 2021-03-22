@@ -28,6 +28,11 @@ export const ContainerUpload = styled(Upload)`
         props.desabilitarUpload ? 'none' : 'auto'} !important;
     }
   }
+
+  .ant-upload-list-picture .ant-upload-list-item-thumbnail,
+  .ant-upload-list-picture-card .ant-upload-list-item-thumbnail {
+    opacity: 1;
+  }
 `;
 
 const UploadImagens = props => {
@@ -45,6 +50,8 @@ const UploadImagens = props => {
   const [listaImagens, setListaImagens] = useState([]);
 
   const [exibirLoader, setExibirLoader] = useState(false);
+
+  const TAMANHO_MAXIMO_UPLOAD = 5;
 
   const CONFIG_PADRAO_MODAL = {
     previewVisible: false,
@@ -148,9 +155,19 @@ const UploadImagens = props => {
     }
   };
 
+  const excedeuLimiteMaximo = arquivo => {
+    const tamanhoArquivo = arquivo.size / 1024 / 1024;
+    return tamanhoArquivo > TAMANHO_MAXIMO_UPLOAD;
+  };
+
   const beforeUpload = arquivo => {
     if (!permiteInserirFormato(arquivo, tiposArquivosPermitidos)) {
       erro('Formato não permitido');
+      return false;
+    }
+
+    if (excedeuLimiteMaximo(arquivo)) {
+      erro('Tamanho máximo 5mb');
       return false;
     }
 
@@ -172,7 +189,7 @@ const UploadImagens = props => {
       >
         <div>
           <PlusOutlined />
-          <div style={{ marginTop: 8 }}>Upload</div>
+          <div style={{ marginTop: 8 }}>Carregar</div>
         </div>
       </ContainerUpload>
       <Modal
