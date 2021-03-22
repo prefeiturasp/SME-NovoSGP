@@ -94,13 +94,13 @@ namespace SME.SGP.Aplicacao
 
             var dataInicioNovoSGP = await mediator.Send(new ObterParametroSistemaPorTipoQuery(TipoParametroSistema.DataInicioSGP));
 
-            if (!usuarioLogado.EhProfessor())
-            {
-                var disciplinasCacheString = await repositorioCache.ObterAsync(chaveCache);
+            //if (!usuarioLogado.EhProfessor())
+            //{
+            //    var disciplinasCacheString = await repositorioCache.ObterAsync(chaveCache);
 
-                if (!string.IsNullOrWhiteSpace(disciplinasCacheString))
-                    return JsonConvert.DeserializeObject<List<DisciplinaDto>>(disciplinasCacheString);
-            }
+            //    if (!string.IsNullOrWhiteSpace(disciplinasCacheString))
+            //        return JsonConvert.DeserializeObject<List<DisciplinaDto>>(disciplinasCacheString);
+            //}
 
             var turma = await repositorioTurma.ObterPorCodigo(codigoTurma);
             if (turma == null)
