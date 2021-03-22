@@ -36,6 +36,7 @@ api.interceptors.request.use(
 
     if (diff >= 0 && dataHoraExpiracao) {
       deslogarPorSessaoInvalida();
+      console.log('AQUI');
       store.dispatch(DeslogarSessaoExpirou());
       CancelToken.cancel(TOKEN_EXPIRADO);
       renovaCancelToken();
