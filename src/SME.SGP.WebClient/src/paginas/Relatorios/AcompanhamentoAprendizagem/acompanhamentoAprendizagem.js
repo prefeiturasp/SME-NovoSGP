@@ -200,6 +200,14 @@ const AcompanhamentoAprendizagem = () => {
     setSemestreSelecionado(valor);
   };
 
+  const permiteOnChangeAluno = async () => {
+    const continuar = await ServicoAcompanhamentoAprendizagem.salvarDadosAcompanhamentoAprendizagem(
+      semestreSelecionado
+    );
+
+    return continuar;
+  };
+
   return (
     <Container>
       {!turmaSelecionada.turma ? (
@@ -224,7 +232,9 @@ const AcompanhamentoAprendizagem = () => {
           <div className="col-md-12">
             <div className="row">
               <div className="col-md-12 d-flex justify-content-end pb-4">
-                <BotoesAcoesAcompanhamentoAprendizagem />
+                <BotoesAcoesAcompanhamentoAprendizagem
+                  semestreSelecionado={semestreSelecionado}
+                />
               </div>
             </div>
           </div>
@@ -254,6 +264,7 @@ const AcompanhamentoAprendizagem = () => {
                       valueSelect={semestreSelecionado}
                       onChange={onChangeSemestre}
                       placeholder="Selecione o semestre"
+                      disabled={!componenteCurricularSelecionado}
                     />
                   </div>
                 </div>
@@ -266,6 +277,7 @@ const AcompanhamentoAprendizagem = () => {
                   <div className="col-md-12 mb-2">
                     <TabelaRetratilAcompanhamentoAprendizagem
                       onChangeAlunoSelecionado={onChangeAlunoSelecionado}
+                      permiteOnChangeAluno={permiteOnChangeAluno}
                     >
                       <ObjectCardAcompanhamentoAprendizagem />
                       <DadosAcompanhamentoAprendizagem

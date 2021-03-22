@@ -1,10 +1,8 @@
 import { Tabs } from 'antd';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { ContainerTabsCard } from '~/componentes/tabs/tabs.css';
-import { setDadosAcompanhamentoAprendizagem } from '~/redux/modulos/acompanhamentoAprendizagem/actions';
-import { erros } from '~/servicos';
 import ServicoAcompanhamentoAprendizagem from '~/servicos/Paginas/Relatorios/AcompanhamentoAprendizagem/ServicoAcompanhamentoAprendizagem';
 import DadosGerais from './Tabs/DadosGerais/dadosGerais';
 import RegistrosFotos from './Tabs/RegistrosFotos/registrosFotos';
@@ -12,8 +10,6 @@ import RegistrosFotos from './Tabs/RegistrosFotos/registrosFotos';
 const { TabPane } = Tabs;
 
 const DadosAcompanhamentoAprendizagem = props => {
-  const dispatch = useDispatch();
-
   const dadosAlunoObjectCard = useSelector(
     store => store.acompanhamentoAprendizagem.dadosAlunoObjectCard
   );
@@ -37,17 +33,11 @@ const DadosAcompanhamentoAprendizagem = props => {
   };
 
   const obterDadosAcompanhamentoAprendizagemPorEstudante = async () => {
-    const retorno = await ServicoAcompanhamentoAprendizagem.obterAcompanhamentoEstudante(
+    ServicoAcompanhamentoAprendizagem.obterAcompanhamentoEstudante(
       turmaSelecionada?.id,
       codigoEOL,
       semestreSelecionado
-    ).catch(e => erros(e));
-
-    if (retorno?.data) {
-      dispatch(setDadosAcompanhamentoAprendizagem(retorno?.data));
-    } else {
-      dispatch(setDadosAcompanhamentoAprendizagem({}));
-    }
+    );
   };
 
   useEffect(() => {
