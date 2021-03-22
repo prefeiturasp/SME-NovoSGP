@@ -100,7 +100,7 @@ const UploadArquivos = props => {
     }
 
     if (excedeuLimiteMaximo(arquivo)) {
-      erro('Tamanho máximo 100mb');
+      erro('Tamanho máximo 100 MB');
       return false;
     }
 

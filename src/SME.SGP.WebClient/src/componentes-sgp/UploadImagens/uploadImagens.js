@@ -167,7 +167,7 @@ const UploadImagens = props => {
     }
 
     if (excedeuLimiteMaximo(arquivo)) {
-      erro('Tamanho máximo 5mb');
+      erro('Tamanho máximo 5 MB');
       return false;
     }
 
