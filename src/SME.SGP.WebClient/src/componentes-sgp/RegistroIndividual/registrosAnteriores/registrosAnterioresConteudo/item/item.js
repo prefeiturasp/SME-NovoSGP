@@ -17,7 +17,7 @@ import {
 } from '~/servicos';
 import { ContainerBotoes } from './item.css';
 
-const Item = ({ dados, setCarregandoGeral, permissoesTela }) => {
+const Item = ({ dados, setCarregandoGeral, permissoesTela, podeEditar }) => {
   const {
     alunoCodigo,
     auditoria,
@@ -123,6 +123,11 @@ const Item = ({ dados, setCarregandoGeral, permissoesTela }) => {
   }, [registro]);
 
   useEffect(() => {
+    if (!podeEditar) {
+      setMostrarBotoes(false);
+      return;
+    }
+
     if (
       permissoesTela.podeIncluir &&
       !dadosAlunoObjectCard.desabilitado &&
@@ -136,6 +141,7 @@ const Item = ({ dados, setCarregandoGeral, permissoesTela }) => {
     dadosAlunoObjectCard.desabilitado,
     permissoesTela.podeIncluir,
     turmaSelecionada.consideraHistorico,
+    podeEditar,
   ]);
 
   return (
@@ -234,12 +240,14 @@ Item.propTypes = {
   dados: PropTypes.instanceOf(Object),
   setCarregandoGeral: PropTypes.func,
   permissoesTela: PropTypes.instanceOf(Object),
+  podeEditar: PropTypes.bool,
 };
 
 Item.defaultProps = {
   dados: {},
   setCarregandoGeral: () => {},
   permissoesTela: {},
+  podeEditar: true,
 };
 
 export default Item;

@@ -4,6 +4,7 @@ import {
   setDadosAcompanhamentoAprendizagem,
   setExibirLoaderGeralAcompanhamentoAprendizagem,
 } from '~/redux/modulos/acompanhamentoAprendizagem/actions';
+import { limparDadosRegistroIndividual } from '~/redux/modulos/registroIndividual/actions';
 import { erros, sucesso } from '~/servicos/alertas';
 import api from '~/servicos/api';
 
@@ -35,6 +36,8 @@ class ServicoAcompanhamentoAprendizagem {
   obterAcompanhamentoEstudante = async (turmaId, alunoId, semestre) => {
     const { dispatch } = store;
     dispatch(setExibirLoaderGeralAcompanhamentoAprendizagem(true));
+
+    dispatch(limparDadosRegistroIndividual());
 
     const retorno = await api
       .get(
