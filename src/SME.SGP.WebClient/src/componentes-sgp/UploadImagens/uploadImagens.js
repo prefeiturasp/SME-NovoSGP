@@ -19,7 +19,7 @@ function getBase64DataURL(file, type) {
 const UploadImagens = props => {
   const {
     servicoCustomRequest,
-    obterImagens,
+    afterSuccessUpload,
     parametrosCustomRequest,
     removerImagem,
     listaInicialImagens,
@@ -79,19 +79,6 @@ const UploadImagens = props => {
     }
   }, [listaInicialImagens]);
 
-  const afterSuccess = async dados => {
-    if (obterImagens) {
-      const imagens = await obterImagens(dados);
-
-      if (imagens?.length) {
-        const listaMapeada = montarListaImagensParaExibir(imagens);
-        setListaImagens(listaMapeada);
-      }
-    } else {
-      // TODO
-    }
-  };
-
   const customRequest = options => {
     const { onSuccess, onError, file, onProgress } = options;
 
@@ -115,7 +102,9 @@ const UploadImagens = props => {
       servicoCustomRequest(fmData, config)
         .then(resposta => {
           onSuccess(file, resposta.data);
-          afterSuccess(resposta.data);
+          if (afterSuccessUpload) {
+            afterSuccessUpload(resposta.data);
+          }
         })
         .catch(e => {
           onError({ event: e });
@@ -174,7 +163,7 @@ const UploadImagens = props => {
 UploadImagens.propTypes = {
   servicoCustomRequest: PropTypes.func,
   parametrosCustomRequest: PropTypes.oneOfType([PropTypes.array]),
-  obterImagens: PropTypes.func,
+  afterSuccessUpload: PropTypes.func,
   removerImagem: PropTypes.func,
   listaInicialImagens: PropTypes.oneOfType([PropTypes.array]),
 };
@@ -182,7 +171,7 @@ UploadImagens.propTypes = {
 UploadImagens.defaultProps = {
   servicoCustomRequest: null,
   parametrosCustomRequest: [],
-  obterImagens: null,
+  afterSuccessUpload: null,
   removerImagem: null,
   listaInicialImagens: [],
 };
