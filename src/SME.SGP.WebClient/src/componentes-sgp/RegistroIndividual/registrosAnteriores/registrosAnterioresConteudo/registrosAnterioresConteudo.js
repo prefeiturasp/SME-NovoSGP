@@ -145,7 +145,13 @@ const RegistrosAnterioresConteudo = props => {
 
       if (Number(diferencaDias) > 60) {
         const dtFim = window.moment({ ...dataFimSelecionada });
-        dataInicioSelecionada = dtFim.subtract(60, 'd');
+        const dataSubtraida = dtFim.subtract(60, 'd');
+
+        if (dataSubtraida < dInicioPeriodo) {
+          dataInicioSelecionada = dInicioPeriodo;
+        } else {
+          dataInicioSelecionada = dataSubtraida;
+        }
       } else {
         dataInicioSelecionada = dInicioPeriodo;
       }
