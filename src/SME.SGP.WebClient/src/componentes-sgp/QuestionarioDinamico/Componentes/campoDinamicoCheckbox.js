@@ -14,7 +14,7 @@ const CampoDinamicoCheckbox = props => {
       {label}
       <CheckboxGroup
         options={options}
-        disabled={desabilitado}
+        disabled={desabilitado || questaoAtual.somenteLeitura}
         id={String(questaoAtual?.id)}
         name={String(questaoAtual?.id)}
         form={form}

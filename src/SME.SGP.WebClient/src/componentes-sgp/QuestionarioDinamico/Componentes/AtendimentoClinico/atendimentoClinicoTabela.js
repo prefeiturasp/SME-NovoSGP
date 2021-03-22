@@ -94,7 +94,7 @@ const AtendimentoClinicoTabela = props => {
                 color={Colors.Azul}
                 border
                 className="btn-excluir-atendimento-clinico"
-                disabled={desabilitado}
+                disabled={desabilitado || questaoAtual.somenteLeitura}
                 onClick={async e => {
                   e.stopPropagation();
                   if (!desabilitado) {

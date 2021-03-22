@@ -60,6 +60,7 @@ namespace SME.SGP.Aplicacao
                 Obrigatorio = questao.Obrigatorio,
                 Observacao = questao.Observacao,
                 Opcionais = questao.Opcionais,
+                SomenteLeitura = questao.SomenteLeitura,
                 OpcaoResposta = questao.OpcoesRespostas.Select(opcaoResposta =>
                 {
                     return new OpcaoRespostaDto()

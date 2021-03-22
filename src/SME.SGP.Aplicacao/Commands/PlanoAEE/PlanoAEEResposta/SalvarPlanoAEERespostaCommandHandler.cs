@@ -45,7 +45,7 @@ namespace SME.SGP.Aplicacao.Commands
                 resposta.RespostaId = long.Parse(request.Resposta);
             }
 
-            if (EnumExtension.EhUmDosValores(request.TipoQuestao, new Enum[] { TipoQuestao.Frase, TipoQuestao.Texto, TipoQuestao.AtendimentoClinico, TipoQuestao.FrequenciaEstudanteAEE }))
+            if (EnumExtension.EhUmDosValores(request.TipoQuestao, new Enum[] { TipoQuestao.Frase, TipoQuestao.Texto, TipoQuestao.AtendimentoClinico, TipoQuestao.FrequenciaEstudanteAEE, TipoQuestao.PeriodoEscolar }))
             {
                 resposta.Texto = request.Resposta;
             }
@@ -78,9 +78,6 @@ namespace SME.SGP.Aplicacao.Commands
             // Data inicial deve ser menor que a data final
             if (UtilData.ObterDiferencaDeMesesEntreDatas(resposta.PeriodoInicio.Value, resposta.PeriodoFim.Value) > 3)
                 throw new NegocioException("Não é permitido cadastrar plano AEE com intervalo do período maior que 3 meses!");
-
-            if (resposta.PeriodoFim > DateTime.Today)
-                await mediator.Send(new ExcluirPendenciaPlanoAEECommand(planoId));
         }
     }
 }

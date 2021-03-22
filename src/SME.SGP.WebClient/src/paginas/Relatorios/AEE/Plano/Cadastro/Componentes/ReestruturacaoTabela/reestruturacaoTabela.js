@@ -73,6 +73,7 @@ const ReestruturacaoTabela = ({ key, listaDados, match, semestre }) => {
       somenteConsulta ||
         !permissoesTela.podeIncluir ||
         (planoAEEDados?.situacao !== situacaoPlanoAEE.EmAndamento &&
+          planoAEEDados?.situacao !== situacaoPlanoAEE.Expirado &&
           planoAEEDados?.situacao !== situacaoPlanoAEE.Reestruturado)
     );
   }, [somenteConsulta, permissoesTela, planoAEEDados]);
@@ -104,6 +105,7 @@ const ReestruturacaoTabela = ({ key, listaDados, match, semestre }) => {
         />
       </div>
       {(planoAEEDados?.situacao === situacaoPlanoAEE.EmAndamento ||
+        planoAEEDados?.situacao === situacaoPlanoAEE.Expirado ||
         planoAEEDados?.situacao === situacaoPlanoAEE.Reestruturado) &&
         !somenteConsulta &&
         permissoesTela.podeIncluir && (

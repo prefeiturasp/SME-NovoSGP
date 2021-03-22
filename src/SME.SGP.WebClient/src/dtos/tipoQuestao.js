@@ -10,6 +10,7 @@ const tipoQuestao = {
   ComboMultiplaEscolha: 9,
   Periodo: 10,
   FrequenciaEstudanteAEE: 11,
+  PeriodoEscolar: 12,
 };
 
 export default tipoQuestao;

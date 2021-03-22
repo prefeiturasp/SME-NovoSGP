@@ -32,21 +32,49 @@ namespace SME.SGP.Aplicacao
 
             var planosAtivos = await mediator.Send(new ObterPlanosAEEAtivosComTurmaEVigenciaQuery());
 
-            await EnviarNotificacao(planosAtivos.GroupBy(a => a.DRECodigo));
+            await EnviarNotificacao(planosAtivos.GroupBy(a => a.UECodigo));
 
             return true;
         }
 
-        private async Task EnviarNotificacao(IEnumerable<IGrouping<string, PlanoAEEReduzidoDto>> dresPlanos)
+        private async Task EnviarNotificacao(IEnumerable<IGrouping<string, PlanoAEEReduzidoDto>> uesPlanos)
         {
-            foreach (var dre in dresPlanos)
-            {
-                var dreCodigo = dre.Key;
-                var dreAbreviacao = dre.FirstOrDefault().DREAbreviacao;
+            var supervisoresPlanos = new List<PlanosAEEPorSupervisorDto>();
 
-                await NotificarPlanoEmAberto(dre.GroupBy(a => $"{a.UETipo.ShortName()} {a.UENome}"), dreCodigo, dreAbreviacao);
+            foreach (var planosUe in uesPlanos)
+            {
+                var ueCodigo = planosUe.Key;
+                var supervisores = await ObterSupervisores(ueCodigo);
+
+                CarregarPlanosPorSupervisor(supervisoresPlanos, supervisores, planosUe);
+            }
+
+            foreach(var supervisor in supervisoresPlanos)
+                await NotificarPlanoEmAberto(supervisor);
+
+        }
+
+        private void CarregarPlanosPorSupervisor(List<PlanosAEEPorSupervisorDto> supervisoresPlanos, List<string> supervisores, IGrouping<string, PlanoAEEReduzidoDto> planosUe)
+        {
+            foreach(var supervisor in supervisores)
+            {
+                var supervisorPlanos = ObterSupervisorComPlanos(supervisoresPlanos, supervisor);
+
+                if (supervisorPlanos == null)
+                    AdicionaSupervisorEPlanos(supervisoresPlanos, supervisor, planosUe);
+                else
+                    AdicionaPlanosAoSupervisor(supervisorPlanos, planosUe);
             }
         }
+
+        private void AdicionaPlanosAoSupervisor(PlanosAEEPorSupervisorDto supervisorPlanos, IGrouping<string, PlanoAEEReduzidoDto> planosUe)
+            => supervisorPlanos.Planos.Add(new PlanosAEEPorUEDto(planosUe.Key, planosUe.ToList()));
+
+        private void AdicionaSupervisorEPlanos(List<PlanosAEEPorSupervisorDto> supervisoresPlanos, string supervisor, IGrouping<string, PlanoAEEReduzidoDto> planosUe)
+            => supervisoresPlanos.Add(new PlanosAEEPorSupervisorDto(supervisor, planosUe.Key, planosUe.ToList()));
+
+        private PlanosAEEPorSupervisorDto ObterSupervisorComPlanos(List<PlanosAEEPorSupervisorDto> supervisoresPlanos, string supervisor)
+            => supervisoresPlanos.FirstOrDefault(c => c.Supervisor == supervisor);
 
         private async Task<List<DateTime>> ObterDatasParametroPlanoAEEEmAberto()
         {
@@ -60,21 +88,26 @@ namespace SME.SGP.Aplicacao
             return null;
         }
 
-        private async Task<bool> NotificarPlanoEmAberto(IEnumerable<IGrouping<string, PlanoAEEReduzidoDto>> planos, string dreCodigo, string dreAbreviacao)
+        private async Task<bool> NotificarPlanoEmAberto(PlanosAEEPorSupervisorDto supervisor)
         {
+            var dreAbreviacao = supervisor.Planos.First().Planos.First().DREAbreviacao;
+
             var titulo = $"Acompanhamento dos planos AEE ({dreAbreviacao})";
             string descricao = $@"Segue a lista de Planos AEE das unidades da {dreAbreviacao} sob sua responsabilidade: <br/><br/>
                 <table style='margin-left: auto; margin-right: auto; margin-top: 10px' border='2' cellpadding='5'>";
 
-            foreach (var ue in planos)
+            foreach (var planosUe in supervisor.Planos)
             {
-                descricao += $"<tr style='font-weight: bold; text-align:center;'><td colspan=4;>{ue.Key}</td></tr>";
+                var ue = $"{planosUe.Planos.First().UETipo.ShortName()} {planosUe.Planos.First().UENome}";
+
+                descricao += $"<tr style='font-weight: bold; text-align:center;'><td colspan=4;>{ue}</td></tr>";
                 descricao += $@"<tr style='font-weight: bold'>
                     <td style='padding-left:5px;padding-right:5px;'>Estudante</td>
                     <td style='padding-left:5px;padding-right:5px;'>Turma Regular</td>
                     <td style='padding-left:5px;padding-right:5px;'>Vigência do Plano</td>
                     <td style='padding-left:5px;padding-right:5px;'>Situação</td></tr>";
-                foreach (var plano in ue.OrderBy(a => a.EstudanteNome).ToList())
+
+                foreach (var plano in planosUe.Planos.OrderBy(a => a.EstudanteNome))
                 {
                     descricao += $@"<tr><td style='padding-left:5px;padding-right:5px;'>{plano.EstudanteNome} ({plano.EstudanteCodigo})</td>
                         <td style='padding-left:5px;padding-right:5px;'>{plano.TurmaModalidade.ShortName()} - {plano.TurmaNome}</td>
@@ -85,27 +118,18 @@ namespace SME.SGP.Aplicacao
 
             descricao += "</table>";
 
-            var supervisores = await ObterSupervisores(dreCodigo);
+            await mediator.Send(new NotificarUsuarioCommand(titulo, descricao, supervisor.Supervisor, NotificacaoCategoria.Aviso, NotificacaoTipo.AEE));
 
-            if (supervisores == null)
-                return false;
-
-            foreach (var supervisor in supervisores)
-            {
-                await mediator.Send(new NotificarUsuarioCommand(titulo, descricao, supervisor, NotificacaoCategoria.Aviso, NotificacaoTipo.AEE));
-            }
             return true;
-
         }
 
-        private async Task<List<string>> ObterSupervisores(string codigoUe)
+        private async Task<List<string>> ObterSupervisores(string codigoUE)
         {
-
-            var supervisores = await mediator.Send(new ObterFuncionariosPorUeECargoQuery(codigoUe, (int)Cargo.Supervisor));
+            var supervisores = await mediator.Send(new ObterFuncionariosPorUeECargoQuery(codigoUE, (int)Cargo.Supervisor));
             if (supervisores.Any())
                 return supervisores.Select(f => f.CodigoRF).ToList();
 
-            var supervisoresTecnicos = await mediator.Send(new ObterFuncionariosPorUeECargoQuery(codigoUe, (int)Cargo.SupervisorTecnico));
+            var supervisoresTecnicos = await mediator.Send(new ObterFuncionariosPorUeECargoQuery(codigoUE, (int)Cargo.SupervisorTecnico));
             if (supervisoresTecnicos.Any())
                 return supervisoresTecnicos.Select(f => f.CodigoRF).ToList();
 

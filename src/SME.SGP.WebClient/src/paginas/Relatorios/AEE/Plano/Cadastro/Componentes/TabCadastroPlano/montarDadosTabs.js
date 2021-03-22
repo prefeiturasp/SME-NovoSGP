@@ -1,6 +1,6 @@
 import { Tabs } from 'antd';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ContainerTabsCard } from '~/componentes/tabs/tabs.css';
 import { situacaoPlanoAEE } from '~/dtos';
@@ -20,6 +20,9 @@ const MontarDadosTabs = props => {
   );
   const planoAEEDados = useSelector(store => store.planoAEE.planoAEEDados);
 
+  // Seção pode voltar no futuro!
+  const exibirTabReestruturacao = false;
+
   const cliqueTab = async key => {
     ServicoPlanoAEE.cliqueTabPlanoAEE(key, temId);
   };
@@ -29,12 +32,13 @@ const MontarDadosTabs = props => {
       <TabPane tab="Cadastro do Plano" key="1">
         <SecaoPlanoCollapse match={match} />
       </TabPane>
-      {temId && (
+      {temId && exibirTabReestruturacao && (
         <TabPane
           tab="Reestruturação"
           key="2"
           disabled={
             planoAEEDados?.situacao !== situacaoPlanoAEE.EmAndamento &&
+            planoAEEDados?.situacao !== situacaoPlanoAEE.Expirado &&
             planoAEEDados?.situacao !== situacaoPlanoAEE.Reestruturado &&
             planoAEEDados?.situacao !== situacaoPlanoAEE.Encerrado &&
             planoAEEDados?.situacao !==
@@ -50,6 +54,7 @@ const MontarDadosTabs = props => {
           key="3"
           disabled={
             planoAEEDados?.situacao === situacaoPlanoAEE.EmAndamento ||
+            planoAEEDados?.situacao === situacaoPlanoAEE.Expirado ||
             planoAEEDados?.situacao === situacaoPlanoAEE.Reestruturado
           }
         >

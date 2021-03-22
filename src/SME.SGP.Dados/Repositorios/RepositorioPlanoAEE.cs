@@ -183,12 +183,13 @@ namespace SME.SGP.Dados.Repositorios
                           from plano_aee pa
                          inner join plano_aee_versao pav on pav.id in (select max(id) from plano_aee_versao where plano_aee_id = pa.id)
                          inner join plano_aee_questao paq on paq.plano_aee_versao_id = pav.id
-                         inner join questao q on q.id = paq.questao_id and q.ordem = 1 and q.tipo = 10
+                         inner join questao q on q.id = paq.questao_id and q.ordem = 1 and q.tipo = 12
                          inner join plano_aee_resposta par on par.plano_questao_id = paq.id
+                         inner join periodo_escolar pe on pe.id = par.texto::bigint
                           {joinPendecias}
                           {joinNotificacoes}
-                         where par.periodo_fim <= @dataFim
-                           and pa.situacao in (1,2)
+                         where pe.periodo_fim <= @dataFim
+                           and pa.situacao in (1,2,8)
                            {condicaoPendencias}
                            {condicaoNotificacoes}";
 
@@ -205,6 +206,7 @@ namespace SME.SGP.Dados.Repositorios
 	                    dre.dre_id as DRECodigo,
                         dre.abreviacao as DREAbreviacao,
 	                    t.modalidade_codigo as TurmaModalidade,
+	                    ue.ue_id as UECodigo,
 	                    ue.nome as UENome,
 	                    ue.tipo_escola as UETipo,
 	                    pa.situacao as Situacao,

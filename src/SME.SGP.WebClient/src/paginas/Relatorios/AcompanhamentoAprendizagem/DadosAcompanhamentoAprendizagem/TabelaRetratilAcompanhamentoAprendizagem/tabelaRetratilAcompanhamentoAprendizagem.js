@@ -23,6 +23,7 @@ const TabelaRetratilAcompanhamentoAprendizagem = ({
           alunos={alunosAcompanhamentoAprendizagem}
           codigoAlunoSelecionado={codigoAlunoSelecionado}
           pularDesabilitados
+          larguraAluno="60%"
         >
           {children}
         </TabelaRetratil>

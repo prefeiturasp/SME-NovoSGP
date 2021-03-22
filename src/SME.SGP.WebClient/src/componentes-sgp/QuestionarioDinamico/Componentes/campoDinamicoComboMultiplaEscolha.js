@@ -20,7 +20,7 @@ const CampoDinamicoComboMultiplaEscolha = props => {
           lista={lista}
           valueOption="value"
           valueText="label"
-          disabled={desabilitado}
+          disabled={desabilitado || questaoAtual.somenteLeitura}
           onChange={valorAtualSelecionado => {
             onChange(valorAtualSelecionado);
           }}

@@ -2,8 +2,6 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -11,8 +9,6 @@ namespace SME.SGP.Aplicacao
 {
     public class ComandosFechamentoFinal : IComandosFechamentoFinal
     {
-        private readonly IRepositorioConceito repositorioConceito;
-        private readonly IRepositorioFechamentoNota repositorioFechamentoNota;
         private readonly IRepositorioFechamentoAluno repositorioFechamentoAluno;
         private readonly IRepositorioFechamentoTurma repositorioFechamentoTurma;
         private readonly IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina;
@@ -21,22 +17,18 @@ namespace SME.SGP.Aplicacao
         private readonly IMediator mediator;
 
         public ComandosFechamentoFinal(
-            IRepositorioConceito repositorioConceito,
             IServicoFechamentoFinal servicoFechamentoFinal,
             IRepositorioTurma repositorioTurma,
-            IRepositorioFechamentoNota repositorioFechamentoNota,
             IRepositorioFechamentoAluno repositorioFechamentoAluno,
             IRepositorioFechamentoTurma repositorioFechamentoTurma,
             IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina,
             IMediator mediator)
         {
-            this.repositorioConceito = repositorioConceito ?? throw new System.ArgumentNullException(nameof(repositorioConceito));
             this.servicoFechamentoFinal = servicoFechamentoFinal ?? throw new System.ArgumentNullException(nameof(servicoFechamentoFinal));
             this.repositorioTurma = repositorioTurma ?? throw new System.ArgumentNullException(nameof(repositorioTurma));
             this.repositorioFechamentoTurmaDisciplina = repositorioFechamentoTurmaDisciplina ?? throw new System.ArgumentNullException(nameof(repositorioFechamentoTurmaDisciplina));
             this.repositorioFechamentoTurma = repositorioFechamentoTurma ?? throw new System.ArgumentNullException(nameof(repositorioFechamentoTurma));
             this.repositorioFechamentoAluno = repositorioFechamentoAluno ?? throw new System.ArgumentNullException(nameof(repositorioFechamentoAluno));
-            this.repositorioFechamentoNota = repositorioFechamentoNota ?? throw new System.ArgumentNullException(nameof(repositorioFechamentoNota));
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
 
@@ -44,12 +36,8 @@ namespace SME.SGP.Aplicacao
         {
             var turma = await ObterTurma(fechamentoFinalSalvarDto.TurmaCodigo);
 
-            var dataAtual = DateTime.Today;
-
-            var existePeriodoAberturaOuReabertura = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, dataAtual, 0, dataAtual.Year == turma.AnoLetivo));
-
             var fechamentoTurmaDisciplina = await TransformarDtoSalvarEmEntidade(fechamentoFinalSalvarDto, turma);
-            
+
             var mensagensDeErro = await servicoFechamentoFinal.SalvarAsync(fechamentoTurmaDisciplina, turma);
 
             return mensagensDeErro.ToArray();
@@ -85,11 +73,11 @@ namespace SME.SGP.Aplicacao
                 if (fechamentoAluno == null)
                     fechamentoAluno = new FechamentoAluno() { AlunoCodigo = agrupamentoAluno.Key };
 
-                foreach(var fechamentoItemDto in agrupamentoAluno)
+                foreach (var fechamentoItemDto in agrupamentoAluno)
                 {
                     var fechamentoNota = fechamentoAluno.FechamentoNotas.FirstOrDefault(c => c.DisciplinaId == fechamentoItemDto.ComponenteCurricularCodigo);
 
-                    if(fechamentoNota != null)
+                    if (fechamentoNota != null)
                     {
                         if (fechamentoItemDto.Nota.HasValue)
                         {
@@ -100,7 +88,7 @@ namespace SME.SGP.Aplicacao
                         if (fechamentoNota.ConceitoId.Value != fechamentoItemDto.ConceitoId.Value)
                             await mediator.Send(new SalvarHistoricoConceitoFechamentoCommand(fechamentoNota.ConceitoId.Value, fechamentoItemDto.ConceitoId.Value, fechamentoNota.Id));
                     }
-                    
+
                     MapearParaEntidade(fechamentoNota, fechamentoItemDto, fechamentoAluno);
                 }
 
