@@ -18,6 +18,12 @@ const FotosCriancaDados = props => {
     store => store.acompanhamentoAprendizagem.dadosAlunoObjectCard
   );
 
+  const desabilitarCamposAcompanhamentoAprendizagem = useSelector(
+    store =>
+      store.acompanhamentoAprendizagem
+        .desabilitarCamposAcompanhamentoAprendizagem
+  );
+
   const usuario = useSelector(store => store.usuario);
   const { turmaSelecionada } = usuario;
 
@@ -129,6 +135,9 @@ const FotosCriancaDados = props => {
     afterSuccessUpload,
     removerImagem,
     listaInicialImagens,
+    desabilitar:
+      desabilitarCamposAcompanhamentoAprendizagem ||
+      !dadosAcompanhamentoAprendizagem?.podeEditar,
   };
 
   useEffect(() => {

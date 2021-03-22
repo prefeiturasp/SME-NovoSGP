@@ -4,11 +4,17 @@ import { useSelector } from 'react-redux';
 import { Loader } from '~/componentes';
 import { RegistrosAnterioresConteudo } from '~/componentes-sgp/RegistroIndividual/registrosAnteriores/registrosAnterioresConteudo';
 import CardCollapse from '~/componentes/cardCollapse';
+import { RotasDto } from '~/dtos';
 
 const RegistrosIndividuais = props => {
   const exibirLoaderGeralRegistroAnteriores = useSelector(
     store => store.registroIndividual.exibirLoaderGeralRegistroAnteriores
   );
+
+  const usuario = useSelector(store => store.usuario);
+  const permissoesTela =
+    usuario.permissoes[RotasDto.ACOMPANHAMENTO_APRENDIZAGEM];
+
   const { semestreSelecionado } = props;
 
   return (
@@ -24,7 +30,7 @@ const RegistrosIndividuais = props => {
           indice="registros-individuais"
           alt="registros-individuais"
         >
-          <RegistrosAnterioresConteudo />
+          <RegistrosAnterioresConteudo permissoesTela={permissoesTela} />
         </CardCollapse>
       </div>
     </Loader>

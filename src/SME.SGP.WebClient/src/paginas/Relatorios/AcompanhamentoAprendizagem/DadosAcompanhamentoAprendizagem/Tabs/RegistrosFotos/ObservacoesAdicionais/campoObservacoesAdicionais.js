@@ -11,6 +11,12 @@ const CampoObservacoesAdicionais = () => {
     store => store.acompanhamentoAprendizagem.dadosAcompanhamentoAprendizagem
   );
 
+  const desabilitarCamposAcompanhamentoAprendizagem = useSelector(
+    store =>
+      store.acompanhamentoAprendizagem
+        .desabilitarCamposAcompanhamentoAprendizagem
+  );
+
   const [observacao, setObservacao] = useState();
 
   useEffect(() => {
@@ -29,6 +35,14 @@ const CampoObservacoesAdicionais = () => {
       id="observacoes-adicionais-editor"
       value={observacao}
       onChange={onChange}
+      readonly={
+        desabilitarCamposAcompanhamentoAprendizagem ||
+        !dadosAcompanhamentoAprendizagem?.podeEditar
+      }
+      removerToolbar={
+        desabilitarCamposAcompanhamentoAprendizagem ||
+        !dadosAcompanhamentoAprendizagem?.podeEditar
+      }
     />
   );
 };

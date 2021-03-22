@@ -1,8 +1,11 @@
 import { Tabs } from 'antd';
 import PropTypes from 'prop-types';
-import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { ContainerTabsCard } from '~/componentes/tabs/tabs.css';
+import { RotasDto } from '~/dtos';
+import { setDesabilitarCamposAcompanhamentoAprendizagem } from '~/redux/modulos/acompanhamentoAprendizagem/actions';
+import { verificaSomenteConsulta } from '~/servicos';
 import ServicoAcompanhamentoAprendizagem from '~/servicos/Paginas/Relatorios/AcompanhamentoAprendizagem/ServicoAcompanhamentoAprendizagem';
 import DadosGerais from './Tabs/DadosGerais/dadosGerais';
 import RegistrosFotos from './Tabs/RegistrosFotos/registrosFotos';
@@ -14,12 +17,17 @@ const DadosAcompanhamentoAprendizagem = props => {
     store => store.acompanhamentoAprendizagem.dadosAlunoObjectCard
   );
 
+  const dispatch = useDispatch();
+
   const usuario = useSelector(store => store.usuario);
   const { turmaSelecionada } = usuario;
 
   const { codigoEOL } = dadosAlunoObjectCard;
 
   const { semestreSelecionado } = props;
+
+  const permissoesTela =
+    usuario.permissoes[RotasDto.ACOMPANHAMENTO_APRENDIZAGEM];
 
   const [tabAtual, setTabAtual] = useState('1');
 
@@ -32,12 +40,27 @@ const DadosAcompanhamentoAprendizagem = props => {
     setTabAtual(numeroTab);
   };
 
+  const validaPermissoes = useCallback(
+    novoRegistro => {
+      const somenteConsulta = verificaSomenteConsulta(permissoesTela);
+
+      const desabilitar = novoRegistro
+        ? somenteConsulta || !permissoesTela.podeIncluir
+        : somenteConsulta || !permissoesTela.podeAlterar;
+
+      dispatch(setDesabilitarCamposAcompanhamentoAprendizagem(desabilitar));
+    },
+    [dispatch, permissoesTela]
+  );
+
   const obterDadosAcompanhamentoAprendizagemPorEstudante = async () => {
-    ServicoAcompanhamentoAprendizagem.obterAcompanhamentoEstudante(
+    const acompanhamentoAlunoSemestreId = await ServicoAcompanhamentoAprendizagem.obterAcompanhamentoEstudante(
       turmaSelecionada?.id,
       codigoEOL,
       semestreSelecionado
     );
+
+    validaPermissoes(acompanhamentoAlunoSemestreId);
   };
 
   useEffect(() => {

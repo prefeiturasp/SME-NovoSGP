@@ -5,6 +5,7 @@ import Cabecalho from '~/componentes-sgp/cabecalho';
 import Alert from '~/componentes/alert';
 import Card from '~/componentes/card';
 import SelectComponent from '~/componentes/select';
+import { RotasDto } from '~/dtos';
 import situacaoMatriculaAluno from '~/dtos/situacaoMatriculaAluno';
 import {
   limparDadosAcompanhamentoAprendizagem,
@@ -18,11 +19,11 @@ import {
   setComponenteCurricularSelecionado,
   setDadosAlunoObjectCard as setDadosAlunoObjectCardRegistroIndividual,
 } from '~/redux/modulos/registroIndividual/actions';
-
 import {
   ehTurmaInfantil,
   ServicoCalendarios,
   ServicoDisciplina,
+  verificaSomenteConsulta,
 } from '~/servicos';
 import { erros } from '~/servicos/alertas';
 import ServicoAcompanhamentoAprendizagem from '~/servicos/Paginas/Relatorios/AcompanhamentoAprendizagem/ServicoAcompanhamentoAprendizagem';
@@ -48,6 +49,9 @@ const AcompanhamentoAprendizagem = () => {
   const componenteCurricularSelecionado = useSelector(
     state => state.registroIndividual.componenteCurricularSelecionado
   );
+
+  const permissoesTela =
+    usuario.permissoes[RotasDto.ACOMPANHAMENTO_APRENDIZAGEM];
 
   const [listaComponenteCurricular, setListaComponenteCurricular] = useState(
     []
@@ -125,6 +129,10 @@ const AcompanhamentoAprendizagem = () => {
     modalidadesFiltroPrincipal,
     obterComponentesCurriculares,
   ]);
+
+  useEffect(() => {
+    verificaSomenteConsulta(permissoesTela, !turmaSelecionada?.turma);
+  }, [turmaSelecionada, permissoesTela]);
 
   const obterFrequenciaAluno = async codigoAluno => {
     const retorno = await ServicoCalendarios.obterFrequenciaAluno(

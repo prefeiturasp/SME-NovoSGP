@@ -47,11 +47,11 @@ class ServicoAcompanhamentoAprendizagem {
 
     if (retorno?.data) {
       dispatch(setDadosAcompanhamentoAprendizagem({ ...retorno.data }));
-      return true;
+      return retorno.data.acompanhamentoAlunoSemestreId;
     }
 
     dispatch(setDadosAcompanhamentoAprendizagem({}));
-    return false;
+    return 0;
   };
 
   salvarAcompanhamentoAprendizagem = params => {
