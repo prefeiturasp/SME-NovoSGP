@@ -88,7 +88,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { alunoCodigo, turmaCodigo, periodoEscolarId });
         }
 
-        public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasFinaisBimestresAlunoAsync(string alunoCodigo, string turmaCodigo)
+        public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasFinaisBimestresAlunoAsync(string alunoCodigo, string[] turmasCodigo)
         {
             var query = @"select distinct * from (
                 select pe.bimestre, fn.disciplina_id as ComponenteCurricularCodigo, coalesce(ccn.conceito_id, fn.conceito_id) as ConceitoId, coalesce(ccn.nota, fn.nota) as Nota
@@ -103,7 +103,7 @@ namespace SME.SGP.Dados.Repositorios
 		                                        and cca.aluno_codigo = fa.aluno_codigo 
                   left join conselho_classe_nota ccn on ccn.conselho_classe_aluno_id = cca.id 
 		                                        and ccn.componente_curricular_codigo = fn.disciplina_id 
-                 where t.turma_id = @turmaCodigo
+                 where t.turma_id = ANY(@turmasCodigo)
                    and fa.aluno_codigo = @alunoCodigo
                 union all 
                 select pe.bimestre, ccn.componente_curricular_codigo as ComponenteCurricularCodigo, coalesce(ccn.conceito_id, fn.conceito_id) as ConceitoId, coalesce(ccn.nota, fn.nota) as Nota
@@ -118,11 +118,11 @@ namespace SME.SGP.Dados.Repositorios
 		                                        and cca.aluno_codigo = fa.aluno_codigo 
                   left join fechamento_nota fn on fn.fechamento_aluno_id = fa.id
 		                                        and ccn.componente_curricular_codigo = fn.disciplina_id 
-                 where t.turma_id = @turmaCodigo
+                 where t.turma_id = ANY(@turmasCodigo)
                    and cca.aluno_codigo = @alunoCodigo
                 ) x ";
 
-            return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { alunoCodigo, turmaCodigo });
+            return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { alunoCodigo, turmasCodigo });
         }
 
         public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasAlunoPorTurmasAsync(string alunoCodigo, IEnumerable<string> turmasCodigos, long? periodoEscolarId)
