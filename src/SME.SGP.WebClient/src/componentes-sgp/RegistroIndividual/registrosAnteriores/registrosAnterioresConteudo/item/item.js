@@ -1,29 +1,23 @@
-import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
 import { Tooltip } from 'antd';
+import PropTypes from 'prop-types';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-
 import { Auditoria, Button, Colors, JoditEditor } from '~/componentes';
-
-import {
-  confirmar,
-  erros,
-  ServicoRegistroIndividual,
-  sucesso,
-} from '~/servicos';
-
 import {
   alterarRegistroAnterior,
   excluirRegistroAnteriorId,
   setRegistroAnteriorEmEdicao,
   setRegistroAnteriorId,
 } from '~/redux/modulos/registroIndividual/actions';
-
-import { RotasDto } from '~/dtos';
-
+import {
+  confirmar,
+  erros,
+  ServicoRegistroIndividual,
+  sucesso,
+} from '~/servicos';
 import { ContainerBotoes } from './item.css';
 
-const Item = ({ dados, setCarregandoGeral }) => {
+const Item = ({ dados, setCarregandoGeral, permissoesTela }) => {
   const {
     alunoCodigo,
     auditoria,
@@ -45,8 +39,6 @@ const Item = ({ dados, setCarregandoGeral }) => {
     store => store.registroIndividual.dadosAlunoObjectCard
   );
   const turmaSelecionada = useSelector(state => state.usuario.turmaSelecionada);
-  const permissoes = useSelector(state => state.usuario.permissoes);
-  const permissoesTela = permissoes[RotasDto.REGISTRO_INDIVIDUAL];
 
   const dispatch = useDispatch();
 
@@ -241,11 +233,13 @@ const Item = ({ dados, setCarregandoGeral }) => {
 Item.propTypes = {
   dados: PropTypes.instanceOf(Object),
   setCarregandoGeral: PropTypes.func,
+  permissoesTela: PropTypes.instanceOf(Object),
 };
 
 Item.defaultProps = {
   dados: {},
   setCarregandoGeral: () => {},
+  permissoesTela: {},
 };
 
 export default Item;

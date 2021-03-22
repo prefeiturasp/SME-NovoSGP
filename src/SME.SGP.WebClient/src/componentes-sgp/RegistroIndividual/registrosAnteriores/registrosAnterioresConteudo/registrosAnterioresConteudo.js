@@ -1,15 +1,14 @@
+import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-
 import { CampoData, Label, Loader } from '~/componentes';
 import { Paginacao } from '~/componentes-sgp';
-
-import { setExibirLoaderGeralRegistroAnteriores } from '~/redux/modulos/registroIndividual/actions';
-
-import Item from './item/item';
 import MetodosRegistroIndividual from '~/componentes-sgp/RegistroIndividual/metodosRegistroIndividual';
+import { setExibirLoaderGeralRegistroAnteriores } from '~/redux/modulos/registroIndividual/actions';
+import Item from './item/item';
 
-const RegistrosAnterioresConteudo = () => {
+const RegistrosAnterioresConteudo = props => {
+  const { permissoesTela } = props;
   const [dataInicio, setDataInicio] = useState();
   const [dataFim, setDataFim] = useState(window.moment());
   const [carregandoGeral, setCarregandoGeral] = useState(false);
@@ -227,6 +226,7 @@ const RegistrosAnterioresConteudo = () => {
               key={`${dados.id}`}
               dados={dados}
               setCarregandoGeral={setCarregandoGeral}
+              permissoesTela={permissoesTela}
             />
           )
         )}
@@ -253,6 +253,14 @@ const RegistrosAnterioresConteudo = () => {
       </div>
     </Loader>
   );
+};
+
+RegistrosAnterioresConteudo.propTypes = {
+  permissoesTela: PropTypes.instanceOf(Object),
+};
+
+RegistrosAnterioresConteudo.defaultProps = {
+  permissoesTela: {},
 };
 
 export default RegistrosAnterioresConteudo;
