@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import CampoNumero from '~/componentes/campoNumero';
 import { erros } from '~/servicos/alertas';
 import api from '~/servicos/api';
+import { converterAcaoTecla } from '~/utils';
 
 const CampoNota = props => {
   const {
@@ -54,23 +55,28 @@ const CampoNota = props => {
   }, [nota.notaConceito, nota.notaOriginal, validaSeTeveAlteracao]);
 
   const setarValorNovo = async valorNovo => {
-    setNotaValorAtual(valorNovo);
-    const retorno = await api
-      .get(
-        `v1/avaliacoes/${nota.atividadeAvaliativaId}/notas/${Number(
-          valorNovo
-        )}/arredondamento`
-      )
-      .catch(e => erros(e));
+    if (!desabilitarCampo && nota.podeEditar) {
+      setNotaValorAtual(valorNovo);
+      let notaArredondada = valorNovo;
+      if (valorNovo) {
+        setNotaValorAtual(valorNovo);
+        const retorno = await api
+          .get(
+            `v1/avaliacoes/${nota.atividadeAvaliativaId}/notas/${Number(
+              valorNovo
+            )}/arredondamento`
+          )
+          .catch(e => erros(e));
 
-    let notaArredondada = valorNovo;
-    if (retorno && retorno.data) {
-      notaArredondada = retorno.data;
+        if (retorno && retorno.data) {
+          notaArredondada = retorno.data;
+        }
+      }
+
+      validaSeTeveAlteracao(nota.notaOriginal, notaArredondada);
+      onChangeNotaConceito(notaArredondada);
+      setNotaValorAtual(notaArredondada);
     }
-
-    validaSeTeveAlteracao(nota.notaOriginal, notaArredondada);
-    onChangeNotaConceito(notaArredondada);
-    setNotaValorAtual(notaArredondada);
   };
 
   const valorInvalido = valorNovo => {
@@ -78,20 +84,28 @@ const CampoNota = props => {
     return regexValorInvalido.test(String(valorNovo));
   };
 
+  const apertarTecla = e => {
+    const teclaEscolhida = converterAcaoTecla(e.keyCode);
+    if (teclaEscolhida === 0) {
+      setarValorNovo(0);
+    }
+  };
+
   return (
     <CampoNumero
       esconderSetas={esconderSetas}
       name={name}
       onKeyDown={clicarSetas}
+      onKeyUp={apertarTecla}
       onChange={valorNovo => {
-        if (valorNovo === null) {
-          setarValorNovo('');
-          return;
+        let valorEnviado = null;
+        if (valorNovo) {
+          const invalido = valorInvalido(valorNovo);
+          if (!invalido && editouCampo(notaValorAtual, valorNovo)) {
+            valorEnviado = valorNovo;
+          }
         }
-        const invalido = valorInvalido(valorNovo);
-        if (!invalido && editouCampo(notaValorAtual, valorNovo)) {
-          setarValorNovo(valorNovo);
-        }
+        setarValorNovo(valorEnviado);
       }}
       value={notaValorAtual}
       min={0}

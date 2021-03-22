@@ -5,7 +5,7 @@ import shortid from 'shortid';
 import modalidadeDto from '~/dtos/modalidade';
 import notasConceitos from '~/dtos/notasConceitos';
 import {
-  escolherDirecaoSetas,
+  converterAcaoTecla,
   moverCursor,
   removerArrayAninhados,
   tratarString,
@@ -61,7 +61,7 @@ const ListaFinal = props => {
   };
 
   const clicarSetas = (e, nomeComponenteCurricular) => {
-    const direcao = escolherDirecaoSetas(e.keyCode);
+    const direcao = converterAcaoTecla(e.keyCode);
     const componenteEscolhido =
       direcao && acharComponenteCurricular(nomeComponenteCurricular, direcao);
 

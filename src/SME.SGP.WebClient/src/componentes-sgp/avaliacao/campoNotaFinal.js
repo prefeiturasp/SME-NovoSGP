@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import CampoNumero from '~/componentes/campoNumero';
 import { erros } from '~/servicos/alertas';
 import api from '~/servicos/api';
+import { converterAcaoTecla } from '~/utils';
 
 const CampoNotaFinal = props => {
   const {
@@ -90,17 +91,19 @@ const CampoNotaFinal = props => {
   const setarValorNovo = async valorNovo => {
     if (!desabilitarCampo && podeEditar) {
       setNotaValorAtual(valorNovo);
-      const retorno = await api
-        .get(
-          `v1/avaliacoes/notas/${Number(
-            valorNovo
-          )}/arredondamento?data=${periodoFim}`
-        )
-        .catch(e => erros(e));
-
       let notaArredondada = valorNovo;
-      if (retorno && retorno.data) {
-        notaArredondada = retorno.data;
+      if (valorNovo) {
+        const retorno = await api
+          .get(
+            `v1/avaliacoes/notas/${Number(
+              valorNovo
+            )}/arredondamento?data=${periodoFim}`
+          )
+          .catch(e => erros(e));
+
+        if (retorno && retorno.data) {
+          notaArredondada = retorno.data;
+        }
       }
 
       validaSeEstaAbaixoDaMedia(notaArredondada);
@@ -115,6 +118,13 @@ const CampoNotaFinal = props => {
     return regexValorInvalido.test(String(valorNovo));
   };
 
+  const apertarTecla = e => {
+    const teclaEscolhida = converterAcaoTecla(e.keyCode);
+    if (teclaEscolhida === 0) {
+      setarValorNovo(0);
+    }
+  };
+
   return (
     <Tooltip placement="bottom" title={abaixoDaMedia ? 'Abaixo da Média' : ''}>
       <div>
@@ -122,16 +132,17 @@ const CampoNotaFinal = props => {
           esconderSetas={esconderSetas}
           name={name}
           onKeyDown={clicarSetas}
+          onKeyUp={apertarTecla}
           label={label || ''}
           onChange={valorNovo => {
-            if (valorNovo === null) {
-              setarValorNovo('');
-              return;
+            let valorEnviado = null;
+            if (valorNovo) {
+              const invalido = valorInvalido(valorNovo);
+              if (!invalido && editouCampo(notaValorAtual, valorNovo)) {
+                valorEnviado = valorNovo;
+              }
             }
-            const invalido = valorInvalido(valorNovo);
-            if (!invalido && editouCampo(notaValorAtual, valorNovo)) {
-              setarValorNovo(valorNovo);
-            }
+            setarValorNovo(valorEnviado);
           }}
           value={notaValorAtual}
           min={0}
