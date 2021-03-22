@@ -2,6 +2,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import { Modal, Upload } from 'antd';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
+import styled from 'styled-components';
 import Loader from '~/componentes/loader';
 import { confirmar, erros } from '~/servicos';
 import ServicoArmazenamento from '~/servicos/Componentes/ServicoArmazenamento';
@@ -16,6 +17,18 @@ function getBase64DataURL(file, type) {
   });
 }
 
+export const ContainerUpload = styled(Upload)`
+  .ant-upload-select-picture-card {
+    cursor: ${props =>
+      props.desabilitarUpload ? 'not-allowed' : 'pointer'} !important;
+
+    .ant-upload {
+      pointer-events: ${props =>
+        props.desabilitarUpload ? 'none' : 'auto'} !important;
+    }
+  }
+`;
+
 const UploadImagens = props => {
   const {
     servicoCustomRequest,
@@ -23,6 +36,8 @@ const UploadImagens = props => {
     parametrosCustomRequest,
     removerImagem,
     listaInicialImagens,
+    desabilitar,
+    maximoImagens,
   } = props;
 
   const [listaImagens, setListaImagens] = useState([]);
@@ -82,7 +97,8 @@ const UploadImagens = props => {
   const customRequest = options => {
     const { onSuccess, onError, file, onProgress } = options;
 
-    if (servicoCustomRequest) {
+    const quantdadeAtualImagens = listaImagens?.length;
+    if (quantdadeAtualImagens < maximoImagens && servicoCustomRequest) {
       const fmData = new FormData();
       fmData.append('file', file);
 
@@ -132,18 +148,21 @@ const UploadImagens = props => {
 
   return (
     <Loader loading={exibirLoader}>
-      <Upload
+      <ContainerUpload
         listType="picture-card"
         fileList={listaImagens}
         onPreview={handlePreview}
         customRequest={customRequest}
         onRemove={onRemove}
+        disabled={desabilitar}
+        accept="image/png, image/jpeg, image/jpg"
+        desabilitarUpload={listaImagens?.length >= maximoImagens}
       >
         <div>
           <PlusOutlined />
           <div style={{ marginTop: 8 }}>Upload</div>
         </div>
-      </Upload>
+      </ContainerUpload>
       <Modal
         visible={configModal?.previewVisible}
         title={configModal?.previewTitle}
@@ -166,6 +185,8 @@ UploadImagens.propTypes = {
   afterSuccessUpload: PropTypes.func,
   removerImagem: PropTypes.func,
   listaInicialImagens: PropTypes.oneOfType([PropTypes.array]),
+  desabilitar: PropTypes.bool,
+  maximoImagens: PropTypes.number,
 };
 
 UploadImagens.defaultProps = {
@@ -174,6 +195,8 @@ UploadImagens.defaultProps = {
   afterSuccessUpload: null,
   removerImagem: null,
   listaInicialImagens: [],
+  desabilitar: false,
+  maximoImagens: 3,
 };
 
 export default UploadImagens;
