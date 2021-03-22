@@ -7,7 +7,7 @@ import styled from 'styled-components';
 import { Base } from '~/componentes/colors';
 import { erro, erros, sucesso } from '~/servicos';
 import ServicoArmazenamento from '~/servicos/Componentes/ServicoArmazenamento';
-import { downloadBlob } from '~/utils/funcoes/gerais';
+import { downloadBlob, permiteInserirFormato } from '~/utils/funcoes/gerais';
 
 const { Dragger } = Upload;
 
@@ -93,34 +93,8 @@ const UploadArquivos = props => {
     return false;
   };
 
-  const permiteInserirFormato = arquivo => {
-    if (tiposArquivosPermitidos?.trim()) {
-      const listaPermitidos = tiposArquivosPermitidos
-        .split(',')
-        .map(tipo => tipo?.trim()?.toLowerCase());
-
-      const tamanhoNome = arquivo?.name?.length;
-
-      const permiteTipo = listaPermitidos.find(tipo => {
-        const nomeTipoAtual = arquivo.name.substring(
-          tamanhoNome,
-          tamanhoNome - tipo.length
-        );
-
-        if (nomeTipoAtual) {
-          return tipo?.toLowerCase() === nomeTipoAtual?.toLowerCase();
-        }
-
-        return false;
-      });
-
-      return !!permiteTipo;
-    }
-    return true;
-  };
-
   const beforeUploadDefault = arquivo => {
-    if (!permiteInserirFormato(arquivo)) {
+    if (!permiteInserirFormato(arquivo, tiposArquivosPermitidos)) {
       erro('Formato não permitido');
       return false;
     }

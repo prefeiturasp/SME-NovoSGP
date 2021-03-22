@@ -4,8 +4,9 @@ import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Loader from '~/componentes/loader';
-import { confirmar, erros } from '~/servicos';
+import { confirmar, erro, erros } from '~/servicos';
 import ServicoArmazenamento from '~/servicos/Componentes/ServicoArmazenamento';
+import { permiteInserirFormato } from '~/utils/funcoes/gerais';
 
 function getBase64DataURL(file, type) {
   return new Promise((resolve, reject) => {
@@ -38,6 +39,7 @@ const UploadImagens = props => {
     listaInicialImagens,
     desabilitar,
     maximoImagens,
+    tiposArquivosPermitidos,
   } = props;
 
   const [listaImagens, setListaImagens] = useState([]);
@@ -146,6 +148,15 @@ const UploadImagens = props => {
     }
   };
 
+  const beforeUpload = arquivo => {
+    if (!permiteInserirFormato(arquivo, tiposArquivosPermitidos)) {
+      erro('Formato não permitido');
+      return false;
+    }
+
+    return true;
+  };
+
   return (
     <Loader loading={exibirLoader}>
       <ContainerUpload
@@ -155,8 +166,9 @@ const UploadImagens = props => {
         customRequest={customRequest}
         onRemove={onRemove}
         disabled={desabilitar}
-        accept="image/png, image/jpeg, image/jpg"
+        accept={tiposArquivosPermitidos}
         desabilitarUpload={listaImagens?.length >= maximoImagens}
+        beforeUpload={beforeUpload}
       >
         <div>
           <PlusOutlined />
@@ -187,6 +199,7 @@ UploadImagens.propTypes = {
   listaInicialImagens: PropTypes.oneOfType([PropTypes.array]),
   desabilitar: PropTypes.bool,
   maximoImagens: PropTypes.number,
+  tiposArquivosPermitidos: PropTypes.string,
 };
 
 UploadImagens.defaultProps = {
@@ -197,6 +210,7 @@ UploadImagens.defaultProps = {
   listaInicialImagens: [],
   desabilitar: false,
   maximoImagens: 3,
+  tiposArquivosPermitidos: '.jpg, .jpeg, .png',
 };
 
 export default UploadImagens;
