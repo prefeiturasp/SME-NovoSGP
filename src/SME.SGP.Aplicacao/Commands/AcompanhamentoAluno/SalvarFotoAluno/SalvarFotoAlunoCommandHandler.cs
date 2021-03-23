@@ -28,10 +28,13 @@ namespace SME.SGP.Aplicacao
                 await ObterAcompanhametnoSemestre(request.Acompanhamento.AcompanhamentoAlunoSemestreId) :
                 await GerarAcompanhamentoSemestre(request.Acompanhamento);
             
-            return await GerarFotosSemestre(acompanhamentoSemestre, request.Acompanhamento.File);
+            return await GerarFotosSemestre(acompanhamentoSemestre, request.Acompanhamento.File, AuditarSemestre(request.Acompanhamento.AcompanhamentoAlunoSemestreId));
         }
 
-        private async Task<AuditoriaDto> GerarFotosSemestre(AcompanhamentoAlunoSemestre acompanhamentoSemestre, IFormFile file)
+        private bool AuditarSemestre(long acompanhamentoAlunoSemestreId)
+            => acompanhamentoAlunoSemestreId > 0;
+
+        private async Task<AuditoriaDto> GerarFotosSemestre(AcompanhamentoAlunoSemestre acompanhamentoSemestre, IFormFile file, bool auditarSemestre)
         {
             var imagem = await ObterImagem(file);
             var miniatura = imagem.GetThumbnailImage(88, 88, () => false, IntPtr.Zero);
@@ -43,7 +46,8 @@ namespace SME.SGP.Aplicacao
                     var miniaturaId = await GerarFotoSemestre(miniatura, ObterNomeMiniatura(file.FileName), file.ContentType, acompanhamentoSemestre.Id);
                     await GerarFotoSemestre(imagem, file.FileName, file.ContentType, acompanhamentoSemestre.Id, miniaturaId);
 
-                    await mediator.Send(new SalvarAcompanhamentoAlunoSemestreCommand(acompanhamentoSemestre));
+                    if (auditarSemestre)
+                        await mediator.Send(new SalvarAcompanhamentoAlunoSemestreCommand(acompanhamentoSemestre));
                     unitOfWork.PersistirTransacao();
 
                     return (AuditoriaDto)acompanhamentoSemestre;

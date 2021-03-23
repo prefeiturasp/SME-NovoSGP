@@ -51,7 +51,6 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(new FiltroAcompanhamentoTurmaAlunoSemestreDto(turmaId, alunoId, semestre)));
         }
 
-
         [HttpDelete("semestres/{acompanhamentoAlunoSemestreId}/fotos/{codigoFoto}")]
         [ProducesResponseType(typeof(AuditoriaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
@@ -60,7 +59,5 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(codigoFoto));
         }
-
-
     }
 }
