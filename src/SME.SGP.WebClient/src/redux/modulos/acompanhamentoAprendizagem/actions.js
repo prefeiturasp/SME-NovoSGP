@@ -29,12 +29,6 @@ export const setDadosAcompanhamentoAprendizagem = payload => ({
   payload,
 });
 
-export const setDadosIniciaisAcompanhamentoAprendizagem = payload => ({
-  type:
-    '@acompanhamentoAprendizagem/setDadosIniciaisAcompanhamentoAprendizagem',
-  payload,
-});
-
 export const setAcompanhamentoAprendizagemEmEdicao = payload => ({
   type: '@acompanhamentoAprendizagem/setAcompanhamentoAprendizagemEmEdicao',
   payload,

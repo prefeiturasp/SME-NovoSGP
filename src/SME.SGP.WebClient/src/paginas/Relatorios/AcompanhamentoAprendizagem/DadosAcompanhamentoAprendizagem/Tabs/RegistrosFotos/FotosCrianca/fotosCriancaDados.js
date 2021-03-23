@@ -135,9 +135,8 @@ const FotosCriancaDados = props => {
     afterSuccessUpload,
     removerImagem,
     listaInicialImagens,
-    desabilitar:
-      desabilitarCamposAcompanhamentoAprendizagem ||
-      !dadosAcompanhamentoAprendizagem?.podeEditar,
+    desabilitar: desabilitarCamposAcompanhamentoAprendizagem,
+    quantidadeMaxima: dadosAcompanhamentoAprendizagem?.quantidadeFotos,
   };
 
   useEffect(() => {

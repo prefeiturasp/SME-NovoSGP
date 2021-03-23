@@ -15,6 +15,12 @@ const RegistrosIndividuais = () => {
     store => store.acompanhamentoAprendizagem.dadosAcompanhamentoAprendizagem
   );
 
+  const desabilitarCamposAcompanhamentoAprendizagem = useSelector(
+    store =>
+      store.acompanhamentoAprendizagem
+        .desabilitarCamposAcompanhamentoAprendizagem
+  );
+
   const dispatch = useDispatch();
 
   const usuario = useSelector(store => store.usuario);
@@ -44,7 +50,7 @@ const RegistrosIndividuais = () => {
             permissoesTela={permissoesTela}
             periodoInicio={dadosAcompanhamentoAprendizagem?.periodoInicio}
             periodoFim={dadosAcompanhamentoAprendizagem?.periodoFim}
-            podeEditar={dadosAcompanhamentoAprendizagem?.podeEditar}
+            podeEditar={!desabilitarCamposAcompanhamentoAprendizagem}
           />
         </CardCollapse>
       </div>

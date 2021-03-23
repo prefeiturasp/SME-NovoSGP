@@ -6,7 +6,6 @@ const inicial = {
   codigoAlunoSelecionado: null,
   exibirLoaderGeralAcompanhamentoAprendizagem: false,
   dadosAcompanhamentoAprendizagem: {},
-  dadosIniciaisAcompanhamentoAprendizagem: {},
   acompanhamentoAprendizagemEmEdicao: false,
   desabilitarCamposAcompanhamentoAprendizagem: false,
 };
@@ -38,8 +37,7 @@ export default function AcompanhamentoAprendizagem(state = inicial, action) {
           dadosAlunoObjectCard: {},
           codigoAlunoSelecionado: null,
           exibirLoaderGeralAcompanhamentoAprendizagem: false,
-          dadosAcompanhamentoAprendizagem: {},
-          dadosIniciaisAcompanhamentoAprendizagem: {},
+          dadosAcompanhamentoAprendizagem: null,
           acompanhamentoAprendizagemEmEdicao: false,
         };
       }
@@ -53,12 +51,6 @@ export default function AcompanhamentoAprendizagem(state = inicial, action) {
         return {
           ...draft,
           dadosAcompanhamentoAprendizagem: action.payload,
-        };
-      }
-      case '@acompanhamentoAprendizagem/setDadosIniciaisAcompanhamentoAprendizagem': {
-        return {
-          ...draft,
-          dadosIniciaisAcompanhamentoAprendizagem: action.payload,
         };
       }
       case '@acompanhamentoAprendizagem/setAcompanhamentoAprendizagemEmEdicao': {
