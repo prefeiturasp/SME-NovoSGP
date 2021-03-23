@@ -6,6 +6,7 @@ const situacaoPlanoAEE = {
   AtribuicaoPAAI: 5,
   DevolutivaPAAI: 6,
   EncerradoAutomaticamento: 7,
+  Expirado: 8,
 };
 
 export default situacaoPlanoAEE;

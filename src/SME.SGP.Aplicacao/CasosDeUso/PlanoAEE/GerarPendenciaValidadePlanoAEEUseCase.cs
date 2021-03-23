@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Sentry;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
 using System.Threading.Tasks;
@@ -30,6 +31,7 @@ namespace SME.SGP.Aplicacao
             {
                 try
                 {
+                    await ExpirarPlano(planoEncerrado);
                     await GerarPendenciaValidadePlano(planoEncerrado, dataFim);
                 }
                 catch (Exception e)
@@ -40,6 +42,12 @@ namespace SME.SGP.Aplicacao
             }
 
             return true;
+        }
+
+        private async Task ExpirarPlano(PlanoAEE plano)
+        {
+            plano.Situacao = SituacaoPlanoAEE.Expirado;
+            await mediator.Send(new PersistirPlanoAEECommand(plano));
         }
 
         private async Task<bool> ParametroGeracaoPendenciasAtivo()

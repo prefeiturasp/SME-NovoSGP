@@ -48,7 +48,7 @@ class ServicoSalvarConselhoClasse {
       };
 
       if (!recomendacaoAluno) {
-        erro('É obrigatório informar Recomendações ao aluno');
+        erro('É obrigatório informar Recomendações ao estudante');
         return false;
       }
 

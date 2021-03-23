@@ -11,6 +11,7 @@ namespace SME.SGP.Dados
         {
             ToTable("questao");
             Map(a => a.QuestionarioId).ToColumn("questionario_id");
+            Map(a => a.SomenteLeitura).ToColumn("somente_leitura");
         }
     }
 }

@@ -267,7 +267,7 @@ namespace SME.SGP.Dados.Repositorios
             var propriedadeReferencia = ehInfantil ? "PossuiPendenciaDiarioBordo" : "PossuiPendenciaPlanoAula";
 
             var sql = $@"select
-	                          CASE WHEN rf.id is null THEN 1
+	                          CASE WHEN rf.id is null and cc.permite_registro_frequencia THEN 1
                                     ELSE 0
                               END PossuiPendenciaFrequencia,
                               CASE WHEN tr.id is null THEN 1
@@ -277,6 +277,8 @@ namespace SME.SGP.Dados.Repositorios
 	                            aula
                             inner join turma on 
 	                            aula.turma_id = turma.turma_id
+                            inner join componente_curricular cc on 
+	                        	aula.disciplina_id = cc.id::varchar
 	                        left join registro_frequencia rf on
 	                            aula.id = rf.aula_id
                             left join {tabelaReferencia} tr on

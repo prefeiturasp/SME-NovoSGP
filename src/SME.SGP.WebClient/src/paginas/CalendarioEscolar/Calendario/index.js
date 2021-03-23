@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { Tooltip, Switch } from 'antd';
 import shortid from 'shortid';
@@ -50,13 +50,26 @@ const CalendarioEscolar = () => {
 
   const [eventoSme, setEventoSme] = useState(true);
 
+  const selecionarTipoCalendario = useCallback(() => {
+    const calendarioId = eventoCalendarioEdicao.tipoCalendario;
+    const calendario = listaTipoCalendario?.find(
+      item => item.id === calendarioId
+    );
+
+    if (calendario) {
+      setValorTipoCalendario(calendario.descricao);
+      setTipoCalendarioSelecionado(calendarioId);
+    }
+  }, [eventoCalendarioEdicao, listaTipoCalendario]);
+
   useEffect(() => {
     if (eventoCalendarioEdicao?.tipoCalendario) {
       if (eventoCalendarioEdicao.eventoSme) {
         setEventoSme(eventoCalendarioEdicao.eventoSme);
+        selecionarTipoCalendario();
       }
     }
-  }, [eventoCalendarioEdicao]);
+  }, [eventoCalendarioEdicao, selecionarTipoCalendario]);
 
   const [dreSelecionada, setDreSelecionada] = useState(undefined);
   const [unidadeEscolarSelecionada, setUnidadeEscolarSelecionada] = useState(
@@ -182,7 +195,7 @@ const CalendarioEscolar = () => {
     );
 
     const modalidade = ServicoCalendarios.converterModalidade(
-      calendario.modalidade
+      calendario?.modalidade
     );
     AbrangenciaServico.buscarUes(dre, '', false, modalidade)
       .then(resposta => {
@@ -300,6 +313,12 @@ const CalendarioEscolar = () => {
         setListaTipoCalendario(data);
         setCarregandoTipos(false);
         setCarregandoMeses(false);
+
+        if (data?.length === 1) {
+          console.log('d', data);
+          setValorTipoCalendario(data[0].descricao);
+          setTipoCalendarioSelecionado(data[0].id);
+        }
       }
     })();
 
@@ -348,6 +367,7 @@ const CalendarioEscolar = () => {
                   onChange={selecionaTipoCalendario}
                   handleSearch={handleSearch}
                   value={valorTipoCalendario}
+                  disabled={listaTipoCalendario?.length === 1}
                 />
               </Loader>
             </Grid>
@@ -453,7 +473,7 @@ const CalendarioEscolar = () => {
                   valueText="desc"
                   valueSelect={unidadeEscolarSelecionada}
                   placeholder="Unidade Escolar (UE)"
-                  disabled={!dreSelecionada}
+                  disabled={!dreSelecionada || unidadesEscolares?.length === 1}
                 />
               </Loader>
             </Grid>

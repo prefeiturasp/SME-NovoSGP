@@ -10,6 +10,7 @@ namespace SME.SGP.Infra
         public string Nome { get; set; }
         public string Observacao { get; set; }
         public bool Obrigatorio { get; set; }
+        public bool SomenteLeitura { get; set; }
         public TipoQuestao TipoQuestao { get; set; }
         public string Opcionais { get; set; }
         public OpcaoRespostaDto[] OpcaoResposta { get; set; }

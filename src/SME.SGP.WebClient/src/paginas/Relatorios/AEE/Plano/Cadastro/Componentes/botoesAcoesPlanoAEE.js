@@ -246,6 +246,7 @@ const BotoesAcoesPlanoAEE = props => {
         hidden={
           !planoAEEDados?.situacao ||
           (planoAEEDados?.situacao !== situacaoPlanoAEE.EmAndamento &&
+            planoAEEDados?.situacao !== situacaoPlanoAEE.Expirado &&
             planoAEEDados?.situacao !== situacaoPlanoAEE.Reestruturado)
         }
         disabled={

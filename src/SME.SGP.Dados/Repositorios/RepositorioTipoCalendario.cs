@@ -222,5 +222,18 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryFirstAsync<string>(query, new { tipoCalendarioId });
         }
+
+        public async Task<IEnumerable<TipoCalendarioBuscaDto>> ListarPorAnosLetivoEModalidades(int[] anosLetivo, int[] modalidades)
+        {
+            StringBuilder query = new StringBuilder();
+
+            query.AppendLine("select *, ano_letivo ||' - '|| nome as descricao");
+            query.AppendLine("from tipo_calendario");
+            query.AppendLine("where excluido = false");
+            query.AppendLine("and ano_letivo = any(@anosLetivo)");
+            query.AppendLine("and modalidade = any(@modalidades)");
+
+            return await database.Conexao.QueryAsync<TipoCalendarioBuscaDto>(query.ToString(), new { anosLetivo, modalidades });
+        }
     }
 }
