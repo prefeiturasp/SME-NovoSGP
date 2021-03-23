@@ -5,6 +5,7 @@ import Cabecalho from '~/componentes-sgp/cabecalho';
 import Alert from '~/componentes/alert';
 import Card from '~/componentes/card';
 import SelectComponent from '~/componentes/select';
+import { RotasDto } from '~/dtos';
 import situacaoMatriculaAluno from '~/dtos/situacaoMatriculaAluno';
 import {
   limparDadosAcompanhamentoAprendizagem,
@@ -13,7 +14,17 @@ import {
   setDadosAlunoObjectCard,
   setExibirLoaderGeralAcompanhamentoAprendizagem,
 } from '~/redux/modulos/acompanhamentoAprendizagem/actions';
-import { ehTurmaInfantil, ServicoCalendarios } from '~/servicos';
+import {
+  resetarDadosRegistroIndividual,
+  setComponenteCurricularSelecionado,
+  setDadosAlunoObjectCard as setDadosAlunoObjectCardRegistroIndividual,
+} from '~/redux/modulos/registroIndividual/actions';
+import {
+  ehTurmaInfantil,
+  ServicoCalendarios,
+  ServicoDisciplina,
+  verificaSomenteConsulta,
+} from '~/servicos';
 import { erros } from '~/servicos/alertas';
 import ServicoAcompanhamentoAprendizagem from '~/servicos/Paginas/Relatorios/AcompanhamentoAprendizagem/ServicoAcompanhamentoAprendizagem';
 import { Container } from './acompanhamentoAprendizagem.css';
@@ -35,12 +46,93 @@ const AcompanhamentoAprendizagem = () => {
     store => store.filtro.modalidades
   );
 
+  const componenteCurricularSelecionado = useSelector(
+    state => state.registroIndividual.componenteCurricularSelecionado
+  );
+
+  const permissoesTela =
+    usuario.permissoes[RotasDto.ACOMPANHAMENTO_APRENDIZAGEM];
+
+  const [listaComponenteCurricular, setListaComponenteCurricular] = useState(
+    []
+  );
   const [listaSemestres, setListaSemestres] = useState([]);
   const [semestreSelecionado, setSemestreSelecionado] = useState(undefined);
 
   const resetarInfomacoes = useCallback(() => {
     dispatch(limparDadosAcompanhamentoAprendizagem());
   }, [dispatch]);
+
+  const obterComponentesCurriculares = useCallback(async () => {
+    dispatch(setExibirLoaderGeralAcompanhamentoAprendizagem(true));
+    const resposta = await ServicoDisciplina.obterDisciplinasPorTurma(turma)
+      .catch(e => erros(e))
+      .finally(() =>
+        dispatch(setExibirLoaderGeralAcompanhamentoAprendizagem(false))
+      );
+
+    if (resposta?.data?.length) {
+      setListaComponenteCurricular(resposta?.data);
+
+      if (resposta?.data.length === 1) {
+        dispatch(
+          setComponenteCurricularSelecionado(
+            String(resposta?.data[0].codigoComponenteCurricular)
+          )
+        );
+      }
+    } else {
+      dispatch(setComponenteCurricularSelecionado());
+      setListaComponenteCurricular([]);
+    }
+  }, [dispatch, turma]);
+
+  const obterListaSemestres = useCallback(async () => {
+    if (ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada)) {
+      const retorno = await ServicoAcompanhamentoAprendizagem.obterListaSemestres().catch(
+        e => erros(e)
+      );
+      if (retorno?.data) {
+        setListaSemestres(retorno.data);
+      } else {
+        setListaSemestres([]);
+      }
+    }
+  }, [modalidadesFiltroPrincipal, turmaSelecionada]);
+
+  useEffect(() => {
+    resetarInfomacoes();
+    dispatch(setAlunosAcompanhamentoAprendizagem([]));
+    dispatch(resetarDadosRegistroIndividual());
+
+    if (
+      turmaSelecionada?.turma &&
+      ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada)
+    ) {
+      obterComponentesCurriculares();
+      obterListaSemestres();
+    } else {
+      setSemestreSelecionado(undefined);
+      setListaSemestres([]);
+    }
+
+    return () => {
+      dispatch(resetarDadosRegistroIndividual());
+      dispatch(setComponenteCurricularSelecionado());
+      resetarInfomacoes();
+    };
+  }, [
+    dispatch,
+    resetarInfomacoes,
+    obterListaSemestres,
+    turmaSelecionada,
+    modalidadesFiltroPrincipal,
+    obterComponentesCurriculares,
+  ]);
+
+  useEffect(() => {
+    verificaSomenteConsulta(permissoesTela, !turmaSelecionada?.turma);
+  }, [turmaSelecionada, permissoesTela]);
 
   const obterFrequenciaAluno = async codigoAluno => {
     const retorno = await ServicoCalendarios.obterFrequenciaAluno(
@@ -59,6 +151,7 @@ const AcompanhamentoAprendizagem = () => {
     const novoAluno = aluno;
     novoAluno.frequencia = frequenciaGeralAluno;
     dispatch(setDadosAlunoObjectCard(aluno));
+    dispatch(setDadosAlunoObjectCardRegistroIndividual(aluno));
 
     dispatch(setCodigoAlunoSelecionado(aluno.codigoEOL));
   };
@@ -95,49 +188,32 @@ const AcompanhamentoAprendizagem = () => {
     [anoLetivo, dispatch, turma, resetarInfomacoes]
   );
 
-  const obterListaSemestres = useCallback(async () => {
-    if (ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada)) {
-      const retorno = await ServicoAcompanhamentoAprendizagem.obterListaSemestres().catch(
-        e => erros(e)
-      );
-      if (retorno?.data) {
-        setListaSemestres(retorno.data);
-      } else {
-        setListaSemestres([]);
-      }
-    }
-  }, [modalidadesFiltroPrincipal, turmaSelecionada]);
-
   useEffect(() => {
-    resetarInfomacoes();
-    dispatch(setAlunosAcompanhamentoAprendizagem([]));
-    if (turma) {
-      obterListaSemestres();
-    } else {
-      setSemestreSelecionado(undefined);
-      setListaSemestres([]);
-    }
-  }, [
-    obterListaAlunos,
-    turma,
-    resetarInfomacoes,
-    dispatch,
-    obterListaSemestres,
-  ]);
-
-  useEffect(() => {
-    if (semestreSelecionado) {
+    if (componenteCurricularSelecionado && semestreSelecionado) {
       obterListaAlunos(semestreSelecionado);
     } else {
       dispatch(setAlunosAcompanhamentoAprendizagem([]));
     }
-  }, [semestreSelecionado, obterListaAlunos, dispatch]);
+  }, [
+    componenteCurricularSelecionado,
+    semestreSelecionado,
+    obterListaAlunos,
+    dispatch,
+  ]);
 
   const onChangeSemestre = valor => {
     resetarInfomacoes();
     dispatch(setAlunosAcompanhamentoAprendizagem([]));
     dispatch(setCodigoAlunoSelecionado());
     setSemestreSelecionado(valor);
+  };
+
+  const permiteOnChangeAluno = async () => {
+    const continuar = await ServicoAcompanhamentoAprendizagem.salvarDadosAcompanhamentoAprendizagem(
+      semestreSelecionado
+    );
+
+    return continuar;
   };
 
   return (
@@ -164,7 +240,9 @@ const AcompanhamentoAprendizagem = () => {
           <div className="col-md-12">
             <div className="row">
               <div className="col-md-12 d-flex justify-content-end pb-4">
-                <BotoesAcoesAcompanhamentoAprendizagem />
+                <BotoesAcoesAcompanhamentoAprendizagem
+                  semestreSelecionado={semestreSelecionado}
+                />
               </div>
             </div>
           </div>
@@ -175,6 +253,18 @@ const AcompanhamentoAprendizagem = () => {
                 <div className="row">
                   <div className="col-sm-12 col-md-6 col-lg-6 col-xl-4 mb-2">
                     <SelectComponent
+                      id="componenteCurricular"
+                      name="ComponenteCurricularId"
+                      lista={listaComponenteCurricular || []}
+                      valueOption="codigoComponenteCurricular"
+                      valueText="nome"
+                      valueSelect={componenteCurricularSelecionado}
+                      placeholder="Selecione um componente curricular"
+                      disabled={listaComponenteCurricular?.length === 1}
+                    />
+                  </div>
+                  <div className="col-sm-12 col-md-6 col-lg-6 col-xl-4 mb-2">
+                    <SelectComponent
                       id="semestre"
                       lista={listaSemestres}
                       valueOption="semestre"
@@ -182,11 +272,12 @@ const AcompanhamentoAprendizagem = () => {
                       valueSelect={semestreSelecionado}
                       onChange={onChangeSemestre}
                       placeholder="Selecione o semestre"
+                      disabled={!componenteCurricularSelecionado}
                     />
                   </div>
                 </div>
               </div>
-              {semestreSelecionado ? (
+              {componenteCurricularSelecionado && semestreSelecionado ? (
                 <>
                   <div className="col-md-12 mb-2 d-flex">
                     <BotaoOrdenarListaAlunos />
@@ -194,6 +285,7 @@ const AcompanhamentoAprendizagem = () => {
                   <div className="col-md-12 mb-2">
                     <TabelaRetratilAcompanhamentoAprendizagem
                       onChangeAlunoSelecionado={onChangeAlunoSelecionado}
+                      permiteOnChangeAluno={permiteOnChangeAluno}
                     >
                       <ObjectCardAcompanhamentoAprendizagem />
                       <DadosAcompanhamentoAprendizagem

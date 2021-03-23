@@ -106,6 +106,32 @@ const removerArrayAninhados = arr =>
     []
   );
 
+const permiteInserirFormato = (arquivo, tiposArquivosPermitidos) => {
+  if (tiposArquivosPermitidos?.trim()) {
+    const listaPermitidos = tiposArquivosPermitidos
+      .split(',')
+      .map(tipo => tipo?.trim()?.toLowerCase());
+
+    const tamanhoNome = arquivo?.name?.length;
+
+    const permiteTipo = listaPermitidos.find(tipo => {
+      const nomeTipoAtual = arquivo.name.substring(
+        tamanhoNome,
+        tamanhoNome - tipo.length
+      );
+
+      if (nomeTipoAtual) {
+        return tipo?.toLowerCase() === nomeTipoAtual?.toLowerCase();
+      }
+
+      return false;
+    });
+
+    return !!permiteTipo;
+  }
+  return true;
+};
+
 export {
   validaSeObjetoEhNuloOuVazio,
   valorNuloOuVazio,
@@ -120,4 +146,5 @@ export {
   ordenarListaMaiorParaMenor,
   removerArrayAninhados,
   clonarObjeto,
+  permiteInserirFormato,
 };

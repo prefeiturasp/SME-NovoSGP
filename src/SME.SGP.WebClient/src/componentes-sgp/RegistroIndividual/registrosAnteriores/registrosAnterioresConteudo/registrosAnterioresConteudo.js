@@ -1,17 +1,18 @@
+import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-
 import { CampoData, Label, Loader } from '~/componentes';
 import { Paginacao } from '~/componentes-sgp';
-
+import MetodosRegistroIndividual from '~/componentes-sgp/RegistroIndividual/metodosRegistroIndividual';
 import { setExibirLoaderGeralRegistroAnteriores } from '~/redux/modulos/registroIndividual/actions';
-
 import Item from './item/item';
-import MetodosRegistroIndividual from '~/paginas/DiarioClasse/RegistroIndividual/metodosRegistroIndividual';
 
-const RegistrosAnterioresConteudo = () => {
+const RegistrosAnterioresConteudo = props => {
+  const { permissoesTela, podeEditar, periodoInicio, periodoFim } = props;
   const [dataInicio, setDataInicio] = useState();
-  const [dataFim, setDataFim] = useState(window.moment());
+  const [dataFim, setDataFim] = useState(
+    !periodoInicio && !periodoFim ? window.moment() : null
+  );
   const [carregandoGeral, setCarregandoGeral] = useState(false);
   const [numeroPagina, setNumeroPagina] = useState(1);
   const [numeroRegistros, setNumeroRegistros] = useState(10);
@@ -41,6 +42,12 @@ const RegistrosAnterioresConteudo = () => {
 
   const verificarData = useCallback(
     (dataInicial = dataInicio, dataFinal = dataFim) => {
+      if (periodoInicio && periodoFim) {
+        return [
+          dataInicial?.format('MM-DD-YYYY'),
+          dataFinal?.format('MM-DD-YYYY'),
+        ];
+      }
       const dataFormatadaInicio = dataInicial?.format('MM-DD-YYYY');
       const dataFormatadaFim = dataFinal?.format('MM-DD-YYYY');
       const dataAtualUmDia = window
@@ -52,7 +59,7 @@ const RegistrosAnterioresConteudo = () => {
         : dataFormatadaFim;
       return [dataFormatadaInicio, dataFimEscolhida];
     },
-    [dataInicio, dataFim, ehMesmaData]
+    [dataInicio, dataFim, ehMesmaData, periodoInicio, periodoFim]
   );
 
   useEffect(() => {
@@ -112,10 +119,47 @@ const RegistrosAnterioresConteudo = () => {
   }, [dataFim, turmaSelecionada]);
 
   useEffect(() => {
-    if (!dataInicio && dataFim) {
+    if (!dataInicio && dataFim && !periodoInicio && !periodoFim) {
       escolherData();
     }
   }, [dataInicio, dataFim, escolherData]);
+
+  useEffect(() => {
+    if (periodoInicio && periodoFim) {
+      const dInicioPeriodo = window.moment(periodoInicio);
+      const dFimPeriodo = window.moment(periodoFim);
+      const dataHoje = window.moment();
+      const anoAtual = dataHoje?.format('YYYY');
+      const primeiroDiaDoAno = window.moment(`${anoAtual}-01-01`);
+
+      let dataInicioSelecionada = null;
+      let dataFimSelecionada = null;
+
+      if (dataHoje < dFimPeriodo) {
+        dataFimSelecionada = dataHoje;
+      } else {
+        dataFimSelecionada = dFimPeriodo;
+      }
+
+      const diferencaDias = dataFimSelecionada?.diff(primeiroDiaDoAno, 'days');
+
+      if (Number(diferencaDias) > 60) {
+        const dtFim = window.moment({ ...dataFimSelecionada });
+        const dataSubtraida = dtFim.subtract(60, 'd');
+
+        if (dataSubtraida < dInicioPeriodo) {
+          dataInicioSelecionada = dInicioPeriodo;
+        } else {
+          dataInicioSelecionada = dataSubtraida;
+        }
+      } else {
+        dataInicioSelecionada = dInicioPeriodo;
+      }
+
+      setDataInicio(dataInicioSelecionada);
+      setDataFim(dataFimSelecionada);
+    }
+  }, [periodoInicio, periodoFim]);
 
   const onChangePaginacao = async pagina => {
     setCarregandoGeral(true);
@@ -144,7 +188,18 @@ const RegistrosAnterioresConteudo = () => {
     setCarregandoGeral(false);
   };
 
-  const desabilitarDataFim = dataCorrente => {
+  const desabilitarData = dataCorrente => {
+    if (periodoInicio && periodoFim) {
+      const dInicio = window.moment(periodoInicio);
+      const dFim = window.moment(periodoFim);
+
+      let dtFimComparacao = window.moment();
+
+      if (dtFimComparacao > dFim) {
+        dtFimComparacao = dFim;
+      }
+      return dataCorrente < dInicio || dataCorrente > dtFimComparacao;
+    }
     return dataCorrente && dataCorrente > window.moment();
   };
 
@@ -165,6 +220,9 @@ const RegistrosAnterioresConteudo = () => {
         numeroRegistros
       );
       setCarregandoGeral(false);
+      if (periodoInicio && periodoFim) {
+        setDataInicio(data);
+      }
       return;
     }
     setDataInicio(data);
@@ -207,7 +265,7 @@ const RegistrosAnterioresConteudo = () => {
               valor={dataInicio}
               onChange={mudarDataInicio}
               placeholder="Data início"
-              desabilitarData={desabilitarDataFim}
+              desabilitarData={desabilitarData}
             />
           </div>
           <div className="col-3 p-0 pb-2 mb-4">
@@ -217,7 +275,7 @@ const RegistrosAnterioresConteudo = () => {
               valor={dataFim}
               onChange={mudarDataFim}
               placeholder="Data fim"
-              desabilitarData={desabilitarDataFim}
+              desabilitarData={desabilitarData}
             />
           </div>
         </div>
@@ -227,6 +285,8 @@ const RegistrosAnterioresConteudo = () => {
               key={`${dados.id}`}
               dados={dados}
               setCarregandoGeral={setCarregandoGeral}
+              permissoesTela={permissoesTela}
+              podeEditar={podeEditar}
             />
           )
         )}
@@ -253,6 +313,20 @@ const RegistrosAnterioresConteudo = () => {
       </div>
     </Loader>
   );
+};
+
+RegistrosAnterioresConteudo.propTypes = {
+  permissoesTela: PropTypes.instanceOf(Object),
+  podeEditar: PropTypes.bool,
+  periodoInicio: PropTypes.string,
+  periodoFim: PropTypes.string,
+};
+
+RegistrosAnterioresConteudo.defaultProps = {
+  permissoesTela: {},
+  podeEditar: true,
+  periodoInicio: '',
+  periodoFim: '',
 };
 
 export default RegistrosAnterioresConteudo;

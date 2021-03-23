@@ -5,6 +5,7 @@ import shortid from 'shortid';
 import { CardCollapse, Loader } from '~/componentes';
 
 import { CONFIG_COLLAPSE_REGISTRO_INDIVIDUAL } from '~/constantes';
+import { RotasDto } from '~/dtos';
 
 import { setRecolherRegistrosAnteriores } from '~/redux/modulos/registroIndividual/actions';
 
@@ -19,6 +20,9 @@ const RegistrosAnteriores = () => {
   const exibirLoaderGeralRegistroAnteriores = useSelector(
     store => store.registroIndividual.exibirLoaderGeralRegistroAnteriores
   );
+
+  const usuario = useSelector(store => store.usuario);
+  const permissoesTela = usuario.permissoes[RotasDto.REGISTRO_INDIVIDUAL];
 
   const idCollapse = shortid.generate();
   const dispatch = useDispatch();
@@ -51,7 +55,7 @@ const RegistrosAnteriores = () => {
           show={expandir}
           onClick={expandirAlternado}
         >
-          <RegistrosAnterioresConteudo />
+          <RegistrosAnterioresConteudo permissoesTela={permissoesTela} />
         </CardCollapse>
       </div>
     </Loader>
