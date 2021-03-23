@@ -780,11 +780,11 @@ const CompensacaoAusenciaForm = ({ match }) => {
         idsAlunosAusenciaCompensadas.find(id => String(id) === String(item.id))
       );
       const confirmado = await confirmar(
-        'Excluir aluno',
+        'Excluir estudante',
         listaAlunosRemover.map(item => {
           return `${item.id} - ${item.nome}`;
         }),
-        'A frequência do(s) seguinte(s) aluno(s) será recalculada somente quando salvar as suas alterações',
+        'A frequência do(s) seguinte(s) estudante(s) será recalculada somente quando salvar as suas alterações',
         'Excluir',
         'Cancelar',
         true
@@ -992,7 +992,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
                       <SelectComponent
                         form={form}
                         id="disciplina"
-                        label="Disciplina"
+                        label="Componente Curricular"
                         name="disciplinaId"
                         lista={listaDisciplinas}
                         valueOption="codigoComponenteCurricular"
@@ -1078,8 +1078,8 @@ const CompensacaoAusenciaForm = ({ match }) => {
                 <div className="row">
                   <div className="col-sm-5 col-md-5 col-lg-5 col-xl-5 mb-2">
                     <CampoTexto
-                      label="Seleção dos alunos"
-                      placeholder="Digite o nome do aluno"
+                      label="Seleção dos estudantes"
+                      placeholder="Digite o nome do estudante"
                       onChange={onChangeSelecaoAluno}
                       value={selecaoAlunoSelecionado}
                       type="input"
