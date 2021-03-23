@@ -19,13 +19,24 @@ namespace SME.SGP.Aplicacao
         {
             var turma = await ObterTurma(filtro.TurmaId);
 
-            var acompanhamentosAlunoTurmaSemestre = await ObterAcompanhamentoSemestre(filtro.AlunoId, turma.Id, filtro.Semestre);
+            var acompanhamentoAlunoTurmaSemestre = await ObterAcompanhamentoSemestre(filtro.AlunoId, turma.Id, filtro.Semestre);
 
             var periodosEscolares = await mediator.Send(new ObterPeriodosEscolaresPorAnoEModalidadeTurmaQuery(turma.ModalidadeCodigo, turma.AnoLetivo, turma.Semestre));
 
-            TratamentoSemestre(acompanhamentosAlunoTurmaSemestre, periodosEscolares, filtro.Semestre, turma.ModalidadeCodigo);
+            TratamentoSemestre(acompanhamentoAlunoTurmaSemestre, periodosEscolares, filtro.Semestre, turma.ModalidadeCodigo);
+            await ParametroQuantidadeFotosAluno(acompanhamentoAlunoTurmaSemestre, turma.AnoLetivo);
 
-            return acompanhamentosAlunoTurmaSemestre;
+            return acompanhamentoAlunoTurmaSemestre;
+        }
+
+        private async Task ParametroQuantidadeFotosAluno(AcompanhamentoAlunoTurmaSemestreDto acompanhamentoAlunoTurmaSemestre, int anoLetivo)
+        {
+            var parametroQuantidade = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.QuantidadeFotosAcompanhamentoAluno, anoLetivo));
+
+            if (parametroQuantidade == null)
+                throw new NegocioException("Não foi possível localizar o parâmetro de quantidade de fotos do acompanhamento estudante/criança");
+
+            acompanhamentoAlunoTurmaSemestre.QuantidadeFotos = int.Parse(parametroQuantidade.Valor);
         }
 
         private void TratamentoSemestre(AcompanhamentoAlunoTurmaSemestreDto acompanhamentosAlunoTurmaSemestre, IEnumerable<PeriodoEscolar> periodosEscolares, int semestre, Modalidade modalidadeCodigo)
