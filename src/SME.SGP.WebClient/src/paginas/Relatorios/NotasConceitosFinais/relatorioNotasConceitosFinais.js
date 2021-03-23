@@ -42,12 +42,15 @@ const RelatorioNotasConceitosFinais = () => {
   const [valorCondicao, setValorCondicao] = useState(undefined);
   const [tipoNotaSelecionada, setTipoNotaSelecionada] = useState(undefined);
   const [listaConceitos, setListaConceitos] = useState([]);
+  const [campoBloqueado, setCampoBloqueado] = useState(false);
 
-  const [listaCondicao] = useState([
+  const listaCondicaoInicial = [
+    { valor: '0', desc: 'Todas' },
     { valor: '1', desc: 'Igual' },
     { valor: '2', desc: 'Maior ' },
     { valor: '3', desc: 'Menor' },
-  ]);
+  ];
+  const [listaCondicao, setListaCondicao] = useState(listaCondicaoInicial);
   const [condicao, setCondicao] = useState(undefined);
 
   const listaFormatos = [
@@ -55,6 +58,7 @@ const RelatorioNotasConceitosFinais = () => {
     { valor: '4', desc: 'Excel' },
   ];
   const listaTipoNota = [
+    { valor: tipoNota.todas, desc: 'Todas' },
     { valor: tipoNota.nota, desc: 'Nota' },
     { valor: tipoNota.conceito, desc: 'Conceito' },
     { valor: tipoNota.sintese, desc: 'Síntese' },
@@ -87,12 +91,13 @@ const RelatorioNotasConceitosFinais = () => {
   const obterModalidades = async ue => {
     if (ue) {
       setCarregandoGeral(true);
-      const retorno = await ServicoFiltroRelatorio.obterModalidadesAnoLetivo(ue,anoLetivo).catch(
-        e => {
-          erros(e);
-          setCarregandoGeral(false);
-        }
-      );
+      const retorno = await ServicoFiltroRelatorio.obterModalidadesAnoLetivo(
+        ue,
+        anoLetivo
+      ).catch(e => {
+        erros(e);
+        setCarregandoGeral(false);
+      });
       if (retorno && retorno.data) {
         if (retorno.data && retorno.data.length && retorno.data.length === 1) {
           setModalidadeId(retorno.data[0].valor);
@@ -364,6 +369,11 @@ const RelatorioNotasConceitosFinais = () => {
     }
   }, [tipoNotaSelecionada, anoLetivo]);
 
+  const valorCondicaoDesabilitar =
+    tipoNotaSelecionada === tipoNota.todas
+      ? false
+      : valorCondicao === undefined || valorCondicao === '';
+
   const desabilitarGerar =
     !anoLetivo ||
     !codigoDre ||
@@ -373,9 +383,8 @@ const RelatorioNotasConceitosFinais = () => {
     !componentesCurriculares ||
     !bimestres ||
     !condicao ||
-    valorCondicao === undefined ||
-    valorCondicao === '' ||
     !tipoNota ||
+    valorCondicaoDesabilitar ||
     (String(modalidadeId) === String(modalidade.EJA) ? !semestre : false) ||
     !formato;
 
@@ -481,17 +490,46 @@ const RelatorioNotasConceitosFinais = () => {
     setComponentesCurriculares(valor);
   const onChangeBimestre = valor => setBimestres(valor);
   const onChangeCondicao = valor => setCondicao(valor);
+
   const onChangeComparacao = valor => {
     setValorCondicao(valor);
   };
 
   const onChangeTipoNota = valor => {
-    setValorCondicao(undefined);
-    setCondicao(undefined);
-    setTipoNotaSelecionada(valor);
-    if (valor && (valor === '2' || valor === '3')) {
-      setCondicao('1');
+    let valorCampoCondicao;
+    let bloqueado = false;
+    let novaListaCondicao = listaCondicaoInicial;
+    const valorOpcaoMaior = 2;
+
+    if (valor === tipoNota.todas) {
+      valorCampoCondicao = '0';
+      bloqueado = true;
     }
+    if (valor === tipoNota.conceito) {
+      valorCampoCondicao = '1';
+      novaListaCondicao = listaCondicaoInicial
+        .map(item => {
+          if (String(item.valor) === '0') {
+            return {
+              ...item,
+              desc: 'Todos',
+            };
+          }
+          return item;
+        })
+        .filter(item => Number(item.valor) < valorOpcaoMaior);
+    }
+    if (valor === tipoNota.sintese) {
+      valorCampoCondicao = '1';
+      novaListaCondicao = listaCondicaoInicial.filter(
+        item => Number(item.valor) < valorOpcaoMaior
+      );
+    }
+    setListaCondicao(novaListaCondicao);
+    setValorCondicao(undefined);
+    setCondicao(valorCampoCondicao);
+    setTipoNotaSelecionada(valor);
+    setCampoBloqueado(bloqueado);
   };
   const onChangeFormato = valor => setFormato(valor);
 
@@ -712,8 +750,7 @@ const RelatorioNotasConceitosFinais = () => {
                   label="Condição"
                   disabled={
                     (listaCondicao && listaCondicao.length === 1) ||
-                    tipoNotaSelecionada === tipoNota.conceito ||
-                    tipoNotaSelecionada === tipoNota.sintese
+                    campoBloqueado
                   }
                   valueSelect={condicao}
                   onChange={onChangeCondicao}
@@ -732,7 +769,7 @@ const RelatorioNotasConceitosFinais = () => {
                     label="Valor"
                     className="w-100"
                     placeholder="Selecione o valor"
-                    disabled={!tipoNotaSelecionada}
+                    disabled={!tipoNotaSelecionada || campoBloqueado}
                   />
                 ) : (
                   <SelectComponent
@@ -743,7 +780,7 @@ const RelatorioNotasConceitosFinais = () => {
                     valueSelect={valorCondicao}
                     onChange={onChangeComparacao}
                     placeholder="Selecione o valor"
-                    disabled={!tipoNotaSelecionada}
+                    disabled={!tipoNotaSelecionada || campoBloqueado}
                   />
                 )}
               </div>
