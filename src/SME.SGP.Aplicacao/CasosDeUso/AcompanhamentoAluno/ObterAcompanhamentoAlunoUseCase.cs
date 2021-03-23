@@ -33,10 +33,8 @@ namespace SME.SGP.Aplicacao
         {
             var parametroQuantidade = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.QuantidadeFotosAcompanhamentoAluno, anoLetivo));
 
-            if (parametroQuantidade == null)
-                throw new NegocioException("Não foi possível localizar o parâmetro de quantidade de fotos do acompanhamento estudante/criança");
-
-            acompanhamentoAlunoTurmaSemestre.QuantidadeFotos = int.Parse(parametroQuantidade.Valor);
+            acompanhamentoAlunoTurmaSemestre.QuantidadeFotos = parametroQuantidade == null ? 3 :
+                int.Parse(parametroQuantidade.Valor);
         }
 
         private void TratamentoSemestre(AcompanhamentoAlunoTurmaSemestreDto acompanhamentosAlunoTurmaSemestre, IEnumerable<PeriodoEscolar> periodosEscolares, int semestre, Modalidade modalidadeCodigo)
