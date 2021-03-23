@@ -498,27 +498,34 @@ const RelatorioNotasConceitosFinais = () => {
   const onChangeTipoNota = valor => {
     let valorCampoCondicao;
     let bloqueado = false;
+    let novaListaCondicao = listaCondicaoInicial;
+    const valorOpcaoMaior = 2;
 
     if (valor === tipoNota.todas) {
       valorCampoCondicao = '0';
       bloqueado = true;
     }
-    if (valor === tipoNota.sintese) {
-      setListaCondicao(estadoAntigo => {
-        return estadoAntigo.map(item => {
-          if (item.valor === '0') {
+    if (valor === tipoNota.conceito) {
+      valorCampoCondicao = '1';
+      novaListaCondicao = listaCondicaoInicial
+        .map(item => {
+          if (String(item.valor) === '0') {
             return {
-              valor: item.valor,
+              ...item,
               desc: 'Todos',
             };
           }
           return item;
-        });
-      });
-    } else {
-      setListaCondicao(listaCondicaoInicial);
+        })
+        .filter(item => Number(item.valor) < valorOpcaoMaior);
     }
-
+    if (valor === tipoNota.sintese) {
+      valorCampoCondicao = '1';
+      novaListaCondicao = listaCondicaoInicial.filter(
+        item => Number(item.valor) < valorOpcaoMaior
+      );
+    }
+    setListaCondicao(novaListaCondicao);
     setValorCondicao(undefined);
     setCondicao(valorCampoCondicao);
     setTipoNotaSelecionada(valor);
