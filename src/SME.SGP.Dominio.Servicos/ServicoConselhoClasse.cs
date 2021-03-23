@@ -24,7 +24,6 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioUe repositorioUe;
         private readonly IRepositorioDre repositorioDre;
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
-        private readonly IConsultasTurma consultasTurma;
         private readonly IConsultasConselhoClasse consultasConselhoClasse;
         private readonly IConsultasDisciplina consultasDisciplina;
         private readonly IUnitOfWork unitOfWork;
@@ -40,7 +39,6 @@ namespace SME.SGP.Dominio.Servicos
                                      IRepositorioUe repositorioUe,
                                      IRepositorioDre repositorioDre,
                                      IConsultasPeriodoEscolar consultasPeriodoEscolar,
-                                     IConsultasTurma consultasTurma,
                                      IConsultasPeriodoFechamento consultasPeriodoFechamento,
                                      IConsultasConselhoClasse consultasConselhoClasse,
                                      IConsultasDisciplina consultasDisciplina,
@@ -59,7 +57,6 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
             this.repositorioDre = repositorioDre ?? throw new ArgumentNullException(nameof(repositorioDre));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
-            this.consultasTurma = consultasTurma ?? throw new ArgumentNullException(nameof(consultasTurma));
             this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));
             this.repositorioConselhoClasseNota = repositorioConselhoClasseNota ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseNota));
             this.consultasConselhoClasse = consultasConselhoClasse ?? throw new ArgumentNullException(nameof(consultasConselhoClasse));
@@ -71,24 +68,23 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task<ConselhoClasseNotaRetornoDto> SalvarConselhoClasseAlunoNotaAsync(ConselhoClasseNotaDto conselhoClasseNotaDto, string alunoCodigo, long conselhoClasseId, long fechamentoTurmaId, string codigoTurma, int bimestre)
         {
-            var fechamentoTurma = await ObterFechamentoTurma(fechamentoTurmaId, alunoCodigo);
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(codigoTurma));
+            if (turma == null) throw new NegocioException("Turma não encontrada");
+
+            var ehAnoAnterior = turma.AnoLetivo != DateTime.Now.Year;
+            var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaPorIdAlunoCodigoQuery(fechamentoTurmaId, alunoCodigo, ehAnoAnterior));
             var fechamentoTurmaDisciplina = new FechamentoTurmaDisciplina();
 
             if (fechamentoTurma == null)
             {
-                var turma = await consultasTurma.ObterPorCodigo(codigoTurma);
-                if (turma == null) throw new NegocioException("Turma não encontrada");
+                if (!ehAnoAnterior) throw new NegocioException("Não existe fechamento de turma para o conselho de classe");
 
                 var ue = repositorioUe.ObterPorId(turma.UeId);
                 ue.AdicionarDre(repositorioDre.ObterPorId(ue.DreId));
-                turma.AdicionarUe(ue);               
+                turma.AdicionarUe(ue);     
 
-                if (turma.AnoLetivo == DateTime.Today.Year) throw new NegocioException("Não existe fechamento de turma para o conselho de classe");
-
-                var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre);
-                if (tipoCalendario == null) throw new NegocioException("Tipo calendário não encontrado");
-
-                var periodoEscolar = await consultasPeriodoEscolar.ObterPeriodoEscolarPorTipoCalendarioBimestre(tipoCalendario.Id, bimestre);
+                var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, bimestre));
+                if(periodoEscolar == null) throw new NegocioException("Período escolar não encontrado");
 
                 fechamentoTurma = new FechamentoTurma()
                 {
@@ -304,7 +300,7 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task<AuditoriaConselhoClasseAlunoDto> SalvarConselhoClasseAluno(ConselhoClasseAluno conselhoClasseAluno)
         {
-            var fechamentoTurma = await ObterFechamentoTurma(conselhoClasseAluno.ConselhoClasse.FechamentoTurmaId, conselhoClasseAluno.AlunoCodigo);
+            var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaPorIdAlunoCodigoQuery(conselhoClasseAluno.ConselhoClasse.FechamentoTurmaId, conselhoClasseAluno.AlunoCodigo));
 
             if (!await VerificaNotasTodosComponentesCurriculares(conselhoClasseAluno.AlunoCodigo, fechamentoTurma.Turma, fechamentoTurma.PeriodoEscolarId))
                 throw new NegocioException("É necessário que todos os componentes tenham nota/conceito informados!");

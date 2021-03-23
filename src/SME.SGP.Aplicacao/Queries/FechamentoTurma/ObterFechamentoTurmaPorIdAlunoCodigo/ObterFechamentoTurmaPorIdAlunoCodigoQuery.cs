@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
                 RuleFor(a => a.AlunoCodigo)
                     .NotNull()
                     .NotEmpty()
-                    .WithMessage("Necessário informar o código do aluno para obter o fechmamento da turma");
+                    .WithMessage("Necessário informar o código do aluno para obter o fechamento da turma");
             }
         }
     }
