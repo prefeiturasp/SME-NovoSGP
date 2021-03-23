@@ -131,8 +131,12 @@ const AcompanhamentoAprendizagem = () => {
   ]);
 
   useEffect(() => {
-    verificaSomenteConsulta(permissoesTela, !turmaSelecionada?.turma);
-  }, [turmaSelecionada, permissoesTela]);
+    const ehInfantil = ehTurmaInfantil(
+      modalidadesFiltroPrincipal,
+      turmaSelecionada
+    );
+    verificaSomenteConsulta(permissoesTela, !ehInfantil);
+  }, [turmaSelecionada, permissoesTela, modalidadesFiltroPrincipal]);
 
   const obterFrequenciaAluno = async codigoAluno => {
     const retorno = await ServicoCalendarios.obterFrequenciaAluno(
