@@ -3,6 +3,7 @@ import { Modal, Upload } from 'antd';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import { Base } from '~/componentes/colors';
 import Loader from '~/componentes/loader';
 import { confirmar, erro, erros } from '~/servicos';
 import ServicoArmazenamento from '~/servicos/Componentes/ServicoArmazenamento';
@@ -20,6 +21,7 @@ function getBase64DataURL(file, type) {
 
 export const ContainerUpload = styled(Upload)`
   .ant-upload-select-picture-card {
+    opacity: ${props => (props.desabilitarUpload ? 0.8 : 1)} !important;
     cursor: ${props =>
       props.desabilitarUpload ? 'not-allowed' : 'pointer'} !important;
 
@@ -33,6 +35,10 @@ export const ContainerUpload = styled(Upload)`
   .ant-upload-list-picture-card .ant-upload-list-item-thumbnail {
     opacity: 1;
   }
+
+  .tamanho-icone-plus {
+    font-size: 20px;
+  }
 `;
 
 const UploadImagens = props => {
@@ -43,7 +49,7 @@ const UploadImagens = props => {
     removerImagem,
     listaInicialImagens,
     desabilitar,
-    maximoImagens,
+    quantidadeMaxima,
     tiposArquivosPermitidos,
   } = props;
 
@@ -107,7 +113,7 @@ const UploadImagens = props => {
     const { onSuccess, onError, file, onProgress } = options;
 
     const quantdadeAtualImagens = listaImagens?.length;
-    if (quantdadeAtualImagens < maximoImagens && servicoCustomRequest) {
+    if (quantdadeAtualImagens < quantidadeMaxima && servicoCustomRequest) {
       const fmData = new FormData();
       fmData.append('file', file);
 
@@ -184,11 +190,14 @@ const UploadImagens = props => {
         onRemove={onRemove}
         disabled={desabilitar}
         accept={tiposArquivosPermitidos}
-        desabilitarUpload={listaImagens?.length >= maximoImagens}
+        desabilitarUpload={listaImagens?.length >= quantidadeMaxima}
         beforeUpload={beforeUpload}
       >
         <div>
-          <PlusOutlined />
+          <PlusOutlined
+            style={{ color: Base.Roxo }}
+            className="tamanho-icone-plus"
+          />
           <div style={{ marginTop: 8 }}>Carregar</div>
         </div>
       </ContainerUpload>
@@ -215,7 +224,7 @@ UploadImagens.propTypes = {
   removerImagem: PropTypes.func,
   listaInicialImagens: PropTypes.oneOfType([PropTypes.array]),
   desabilitar: PropTypes.bool,
-  maximoImagens: PropTypes.number,
+  quantidadeMaxima: PropTypes.number,
   tiposArquivosPermitidos: PropTypes.string,
 };
 
@@ -226,7 +235,7 @@ UploadImagens.defaultProps = {
   removerImagem: null,
   listaInicialImagens: [],
   desabilitar: false,
-  maximoImagens: 3,
+  quantidadeMaxima: 3,
   tiposArquivosPermitidos: '.jpg, .jpeg, .png',
 };
 

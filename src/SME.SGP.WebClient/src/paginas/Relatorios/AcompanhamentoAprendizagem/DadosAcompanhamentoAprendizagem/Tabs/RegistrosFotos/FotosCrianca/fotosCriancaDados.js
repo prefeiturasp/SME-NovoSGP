@@ -136,6 +136,7 @@ const FotosCriancaDados = props => {
     removerImagem,
     listaInicialImagens,
     desabilitar: desabilitarCamposAcompanhamentoAprendizagem,
+    quantidadeMaxima: dadosAcompanhamentoAprendizagem?.quantidadeFotos,
   };
 
   useEffect(() => {
