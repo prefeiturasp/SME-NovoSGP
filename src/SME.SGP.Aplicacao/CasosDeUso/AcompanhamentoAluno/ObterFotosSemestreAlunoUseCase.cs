@@ -15,9 +15,23 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<ArquivoDto>> Executar(long acompanhamentoSemestreId)
         {
-            var miniaturas = await mediator.Send(new ObterMiniaturasFotosSemestreAlunoQuery(acompanhamentoSemestreId));
+            var quantidade = await ObterQuantidadeFotos(acompanhamentoSemestreId);
+            var miniaturas = await mediator.Send(new ObterMiniaturasFotosSemestreAlunoQuery(acompanhamentoSemestreId, quantidade));
 
             return await DownloadMiniaturas(miniaturas);
+        }
+
+        private async Task<int> ObterQuantidadeFotos(long acompanhamentoSemestreId)
+        {
+            var ano = await mediator.Send(new ObterAnoDoAcompanhamentoAlunoQuery(acompanhamentoSemestreId));
+            if (ano == 0)
+                throw new NegocioException("O ano do acompanhamento do estudante/criança não foi localizado");
+
+            var parametroQuantidade = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.QuantidadeFotosAcompanhamentoAluno, ano));
+            if (parametroQuantidade == null)
+                throw new NegocioException("O parâmetro de quantidade de fotos do acompanhamento do estudante/criança não foi localizado");
+
+            return int.Parse(parametroQuantidade.Valor);
         }
 
         private async Task<IEnumerable<ArquivoDto>> DownloadMiniaturas(IEnumerable<MiniaturaFotoDto> miniaturas)
