@@ -12,6 +12,7 @@ import { Deslogar } from '~/redux/modulos/usuario/actions';
 import history from '~/servicos/history';
 import { URL_LOGIN, URL_HOME } from '~/constantes/url';
 import { limparDadosFiltro } from '~/redux/modulos/filtro/actions';
+import { setExibirMensagemSessaoExpirou } from '~/redux/modulos/mensagens/actions';
 import { LimparSessao } from '~/redux/modulos/sessao/actions';
 import ServicoNotificacao from '~/servicos/Paginas/ServicoNotificacao';
 import { erros } from '~/servicos/alertas';
@@ -24,6 +25,7 @@ const Navbar = () => {
     store.dispatch(limparDadosFiltro());
     store.dispatch(Deslogar());
     store.dispatch(LimparSessao());
+    store.dispatch(setExibirMensagemSessaoExpirou(false));
     history.push(URL_LOGIN);
   };
 
