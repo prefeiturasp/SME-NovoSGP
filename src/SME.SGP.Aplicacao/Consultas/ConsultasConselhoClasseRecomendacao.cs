@@ -19,10 +19,11 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
         private readonly IConsultasConselhoClasse consultasConselhoClasse;
         private readonly IMediator mediator;
+        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
 
         public ConsultasConselhoClasseRecomendacao(IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno,
             IConsultasFechamentoAluno consultasFechamentoAluno, IConsultasPeriodoFechamento consultasPeriodoFechamento,
-            IConsultasConselhoClasse consultasConselhoClasse, IRepositorioTipoCalendario repositorioTipoCalendario, IMediator mediator)
+            IConsultasConselhoClasse consultasConselhoClasse, IRepositorioTipoCalendario repositorioTipoCalendario, IMediator mediator, IRepositorioPeriodoEscolar repositorioPeriodoEscolar)
         {
             this.repositorioConselhoClasseAluno = repositorioConselhoClasseAluno ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAluno));
             this.consultasFechamentoAluno = consultasFechamentoAluno ?? throw new ArgumentNullException(nameof(consultasFechamentoAluno));
@@ -30,12 +31,28 @@ namespace SME.SGP.Aplicacao
             this.consultasConselhoClasse = consultasConselhoClasse ?? throw new ArgumentNullException(nameof(consultasConselhoClasse));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
         }
 
         public async Task<ConsultasConselhoClasseRecomendacaoConsultaDto> ObterRecomendacoesAlunoFamilia(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, string codigoTurma, int? bimestre)
         {
-            var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaPorIdAlunoCodigoQuery(fechamentoTurmaId, alunoCodigo));
-            var turma = fechamentoTurma?.Turma;
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(codigoTurma));
+            if (turma == null)
+                throw new NegocioException("Turma não encontrada");
+
+            var ehAnoAnterior = turma.AnoLetivo != DateTime.Today.Year;
+
+            var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaPorIdAlunoCodigoQuery(fechamentoTurmaId, alunoCodigo, ehAnoAnterior));
+
+            var periodoEscolar = fechamentoTurma?.PeriodoEscolar;
+
+            if(fechamentoTurma != null)
+              turma = fechamentoTurma?.Turma;
+            else
+            {
+                periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, bimestre.Value));
+                if (periodoEscolar == null) throw new NegocioException("Período escolar não encontrado");
+            }
 
             long[] conselhosClassesIds;
             string[] turmasCodigos;
@@ -47,15 +64,12 @@ namespace SME.SGP.Aplicacao
                 tipos.AddRange(turma.ObterTiposRegularesDiferentes());
 
                 turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, tipos));
-                conselhosClassesIds = await mediator.Send(new ObterConselhoClasseIdsPorTurmaEPeriodoQuery(turmasCodigos, fechamentoTurma.PeriodoEscolarId));
+                conselhosClassesIds = await mediator.Send(new ObterConselhoClasseIdsPorTurmaEPeriodoQuery(turmasCodigos, periodoEscolar.Id));
             }
             else { 
                 conselhosClassesIds = new long[1] { conselhoClasseId };
                 turmasCodigos = new string[] { turma.CodigoTurma };
             }
-
-            var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre);
-            if (tipoCalendario == null) throw new NegocioException("Tipo calendário não encontrado");
 
 
             bool emFechamento;
