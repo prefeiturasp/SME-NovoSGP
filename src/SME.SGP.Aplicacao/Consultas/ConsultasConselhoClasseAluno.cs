@@ -155,7 +155,7 @@ namespace SME.SGP.Aplicacao
                 List<TipoTurma> turmasCodigosParaConsulta = new List<TipoTurma>() { turma.TipoTurma };
                 turmasCodigosParaConsulta.AddRange(turma.ObterTiposRegularesDiferentes());
                 turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, turmasCodigosParaConsulta));
-                conselhosClassesIds = await mediator.Send(new ObterConselhoClasseIdsPorTurmaEPeriodoQuery(turmasCodigos, periodoEscolar.Id));
+                conselhosClassesIds = await mediator.Send(new ObterConselhoClasseIdsPorTurmaEPeriodoQuery(turmasCodigos, periodoEscolar?.Id));
             }
             else
             {
@@ -187,11 +187,12 @@ namespace SME.SGP.Aplicacao
             var turmasPeriodosEscolares = new List<(Turma, PeriodoEscolar)>();
             foreach (var turmaParaTratarPeriodoEscolar in turmas)
             {
-                var turmaPeriodo = turmaParaTratarPeriodoEscolar.Id != turma.Id ? turmaParaTratarPeriodoEscolar : turma;
-                var periodoEscolarTurma = await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turmaPeriodo, bimestre));
-                if (periodoEscolarTurma == null)
-                    throw new NegocioException($"Não foi possível localizar o período escolar da turma {turmaParaTratarPeriodoEscolar.CodigoTurma}");
-                turmasPeriodosEscolares.Add((turma, periodoEscolarTurma));
+                var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre);
+                if (tipoCalendario == null) throw new NegocioException("Tipo de calendáro não encontrado");
+
+                var periodoEscolarTurma = await repositorioPeriodoEscolar.ObterPorTipoCalendarioEBimestreAsync(tipoCalendario.Id, bimestre);
+
+                turmasPeriodosEscolares.Add((turmaParaTratarPeriodoEscolar, periodoEscolarTurma));
 
                 if (turmas.Count == 1 || turmaParaTratarPeriodoEscolar.EhTurmaRegular())
                 {

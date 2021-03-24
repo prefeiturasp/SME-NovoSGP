@@ -64,7 +64,7 @@ namespace SME.SGP.Aplicacao
                 tipos.AddRange(turma.ObterTiposRegularesDiferentes());
 
                 turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, tipos));
-                conselhosClassesIds = await mediator.Send(new ObterConselhoClasseIdsPorTurmaEPeriodoQuery(turmasCodigos, periodoEscolar.Id));
+                conselhosClassesIds = await mediator.Send(new ObterConselhoClasseIdsPorTurmaEPeriodoQuery(turmasCodigos, periodoEscolar?.Id));
             }
             else { 
                 conselhosClassesIds = new long[1] { conselhoClasseId };
