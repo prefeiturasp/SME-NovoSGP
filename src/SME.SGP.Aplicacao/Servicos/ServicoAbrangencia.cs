@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Hangfire;
 
 namespace SME.SGP.Aplicacao.Servicos
 {
@@ -93,6 +94,7 @@ namespace SME.SGP.Aplicacao.Servicos
             repositorioAbrangencia.InserirAbrangencias(abrangencias, login);
         }
 
+        [Queue("sgp")]
         public async Task SincronizarEstruturaInstitucionalVigenteCompleta()
         {
             EstruturaInstitucionalRetornoEolDTO estruturaInstitucionalVigente;
