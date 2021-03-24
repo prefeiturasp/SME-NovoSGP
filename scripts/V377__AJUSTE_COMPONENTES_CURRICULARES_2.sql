@@ -1,2 +1,5 @@
-update grade_disciplina set componente_curricular_id = 1351 where componente_curricular_id = 1314 and grade_id in (select id from grade where nome in 
-('EMEFM - 1ª Série - Integral'));
+delete from grade_disciplina where grade_id = (select id from grade where nome = 'EMEFM - 1ª Série - Integral') and componente_curricular_id = 1314;
+delete from grade_disciplina where grade_id = (select id from grade where nome = 'EMEFM - 1ª Série - Integral') and componente_curricular_id = 1351;
+
+insert into grade_disciplina (grade_id, ano, componente_curricular_id, quantidade_aulas, criado_em, criado_por, criado_rf)
+values ((select id from grade where nome = 'EMEFM - 1ª Série - Integral'), 1, 1351, 1, now(), 'Carga', 'Carga');
