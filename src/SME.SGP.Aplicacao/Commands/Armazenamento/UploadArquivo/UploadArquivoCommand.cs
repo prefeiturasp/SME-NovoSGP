@@ -8,7 +8,7 @@ using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class UploadArquivoCommand : IRequest<Guid>
+    public class UploadArquivoCommand : IRequest<ArquivoArmazenadoDto>
     {
         public UploadArquivoCommand(IFormFile arquivo, TipoArquivo tipoArquivo = TipoArquivo.Geral, TipoConteudoArquivo tipoConteudo = TipoConteudoArquivo.Indefinido)
         {

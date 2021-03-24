@@ -120,7 +120,7 @@ namespace SME.SGP.Dados.Repositorios
                            where ano = @ano
                              and tipo = @tipo";
 
-            return await database.Conexao.QueryFirstAsync<ParametrosSistema>(query, new { tipo, ano });
+            return await database.Conexao.QueryFirstOrDefaultAsync<ParametrosSistema>(query, new { tipo, ano });
         }
 
         public async Task<IEnumerable<ParametrosSistema>> ObterParametrosPorTipoEAno(TipoParametroSistema tipo, int ano)

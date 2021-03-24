@@ -312,6 +312,10 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioOcorrenciaAluno, RepositorioOcorrenciaAluno>();
             services.TryAddScoped<IRepositorioOcorrenciaTipo, RepositorioOcorrenciaTipo>();
 
+            // Acompanhamento Aluno
+            services.TryAddScoped<IRepositorioAcompanhamentoAluno, RepositorioAcompanhamentoAluno>();
+            services.TryAddScoped<IRepositorioAcompanhamentoAlunoSemestre, RepositorioAcompanhamentoAlunoSemestre>();
+            services.TryAddScoped<IRepositorioAcompanhamentoAlunoFoto, RepositorioAcompanhamentoAlunoFoto>();
 
             // Encaminhamento AEE
             services.TryAddScoped<IRepositorioSecaoEncaminhamentoAEE, RepositorioSecaoEncaminhamentoAEE>();
@@ -482,6 +486,13 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IAlterarDevolutivaUseCase, AlterarDevolutivaUseCase>();
             services.TryAddScoped<IObterQuantidadeNotificacoesNaoLidasPorUsuarioUseCase, ObterQuantidadeNotificacoesNaoLidasPorUsuarioUseCase>();
             services.TryAddScoped<IObterUltimasNotificacoesNaoLidasPorUsuarioUseCase, ObterUltimasNotificacoesNaoLidasPorUsuarioUseCase>();
+
+            // Acompanhamento Aluno
+            services.TryAddScoped<ISalvarAcompanhamentoAlunoUseCase, SalvarAcompanhamentoAlunoUseCase>();
+            services.TryAddScoped<ISalvarFotoAlunoUseCase, SalvarFotoAlunoUseCase>();
+            services.TryAddScoped<IObterFotosSemestreAlunoUseCase, ObterFotosSemestreAlunoUseCase>();
+            services.TryAddScoped<IExcluirFotoAlunoUseCase, ExcluirFotoAlunoUseCase>();
+            services.TryAddScoped<IObterAcompanhamentoAlunoUseCase, ObterAcompanhamentoAlunoUseCase>();
 
             // Armazenamento de arquivos
             services.TryAddScoped<IUploadDeArquivoUseCase, UploadDeArquivoUseCase>();
