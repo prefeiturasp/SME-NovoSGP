@@ -188,6 +188,14 @@ const Sider = () => {
     }
   };
 
+  const itemMenuEscolhido = item => {
+    const { keyPath } = item;
+    const indice = keyPath.length - 1;
+    const [, numero] = keyPath[indice].split('-');
+    const menu = document.getElementById(numero);
+    menu.getElementsByClassName('ant-menu-submenu-arrow')[0].click();
+  };
+
   return (
     <MenuBody id="main" retraido={NavegacaoStore.retraido}>
       <Sider
@@ -258,6 +266,7 @@ const Sider = () => {
               onOpenChange={onOpenChange}
               onSelect={selecionarItem.bind(NavegacaoStore.menuSelecionado)}
               selectedKeys={NavegacaoStore.menuSelecionado}
+              onClick={itemMenuEscolhido}
             >
               {criarMenus(usuario.menu)}
             </Menu>
