@@ -110,5 +110,10 @@ namespace SME.SGP.Dominio
                 return ModalidadeCodigo == Modalidade.Fundamental ? QuantidadeDuracaoAula : 0;
             }
         }
+
+        public bool EhTurmaRegular()
+        {
+            return TipoTurma == TipoTurma.Regular;
+        }
     }
 }

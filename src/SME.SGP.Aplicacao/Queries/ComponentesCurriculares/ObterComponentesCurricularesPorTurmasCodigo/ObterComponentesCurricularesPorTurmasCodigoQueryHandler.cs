@@ -122,7 +122,8 @@ namespace SME.SGP.Aplicacao
             RegistraFrequencia = disciplina.RegistroFrequencia,
             LancaNota = disciplina.LancaNota,
             PossuiObjetivos = componentesComObjetivos.Any(a => a == disciplina.CodigoComponenteCurricular),
-            ObjetivosAprendizagemOpcionais = ComponentePossuiObjetivosOpcionais(disciplina.CodigoComponenteCurricular, disciplina.Regencia, turmaEspecial)
+            ObjetivosAprendizagemOpcionais = ComponentePossuiObjetivosOpcionais(disciplina.CodigoComponenteCurricular, disciplina.Regencia, turmaEspecial),
+            TurmaCodigo = disciplina.TurmaCodigo
         };
 
         public bool ComponentePossuiObjetivosOpcionais(long componenteCurricularCodigo, bool regencia, bool turmaEspecial)
@@ -138,8 +139,6 @@ namespace SME.SGP.Aplicacao
             {
                 var json = await resposta.Content.ReadAsStringAsync();
                 var listaEol = JsonConvert.DeserializeObject<IEnumerable<ComponenteCurricularEol>>(json);
-
-
                 return TransformarParaDtoDisciplina(listaEol);
             }
             else return default;
@@ -159,7 +158,8 @@ namespace SME.SGP.Aplicacao
                     Regencia = disciplinaEol.Regencia,
                     Compartilhada = disciplinaEol.Compartilhada,
                     RegistroFrequencia = disciplinaEol.RegistraFrequencia,
-                    LancaNota = disciplinaEol.LancaNota
+                    LancaNota = disciplinaEol.LancaNota,
+                    TurmaCodigo = disciplinaEol.TurmaCodigo
                 };
             }
         }
