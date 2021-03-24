@@ -26,3 +26,8 @@ COPY --from=publish /app .
 RUN mkdir Imagens
 ENTRYPOINT ["dotnet", "SME.SGP.Api.dll"]
 
+RUN apt-get update \
+    && apt-get install -y --allow-unauthenticated \
+        libgdiplus \
+     && rm -rf /var/lib/apt/lists/* 
+
