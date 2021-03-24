@@ -24,12 +24,12 @@ namespace SME.SGP.Aplicacao
         public async Task<FechamentoTurma> Handle(ObterFechamentoTurmaPorIdAlunoCodigoQuery request, CancellationToken cancellationToken)
         {
             var fechamentoTurma = await repositorioFechamentoTurma.ObterCompletoPorIdAsync(request.FechamentoTurmaId);
-            if (fechamentoTurma == null)
+            if (fechamentoTurma == null && !request.EhAnoAnterior)
                 throw new NegocioException("Fechamento da turma não localizado");
 
             //Se for dos tipos 2 e 7, deve utilizar o fechamento da turma do tipo 1.
             //Caso não exista, gerar;
-            if (fechamentoTurma.Turma.EhTurmaEdFisicaOuItinerario())
+            if (fechamentoTurma != null && fechamentoTurma.Turma.EhTurmaEdFisicaOuItinerario())
             {
                 //Obter a turma do tipo 1 do aluno
                 var tiposTurma = new List<TipoTurma>() { TipoTurma.Regular };
