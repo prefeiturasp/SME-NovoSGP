@@ -266,7 +266,7 @@ const Sider = () => {
               onOpenChange={onOpenChange}
               onSelect={selecionarItem.bind(NavegacaoStore.menuSelecionado)}
               selectedKeys={NavegacaoStore.menuSelecionado}
-              onClick={item => itemMenuEscolhido(item)}
+              onClick={itemMenuEscolhido}
             >
               {criarMenus(usuario.menu)}
             </Menu>
