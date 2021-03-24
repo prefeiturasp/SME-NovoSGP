@@ -24,6 +24,22 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<ConselhoClasse>(query, new { fechamentoTurmaId });
         }
 
+        public async Task<IEnumerable<long>> ObterConselhoClasseIdsPorTurmaEPeriodoAsync(string[] turmasCodigos, long? periodoEscolarId = null)
+        {
+            var query = new StringBuilder(@"select c.id 
+                            from conselho_classe c 
+                            inner join fechamento_turma ft on ft.id = c.fechamento_turma_id
+                            inner join turma t on t.id = ft.turma_id
+                            where t.turma_id = ANY(@turmasCodigos) ");
+
+            if (periodoEscolarId.HasValue)
+                query.AppendLine("and ft.periodo_escolar_id = @periodoEscolarId");
+            else
+                query.AppendLine("and ft.periodo_escolar_id is null");
+
+            return await database.Conexao.QueryAsync<long>(query.ToString(), new { turmasCodigos, periodoEscolarId });
+        }
+
         public async Task<ConselhoClasse> ObterPorTurmaEPeriodoAsync(long turmaId, long? periodoEscolarId = null)
         {
             var query = new StringBuilder(@"select c.* 

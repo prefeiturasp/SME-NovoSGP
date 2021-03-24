@@ -226,8 +226,12 @@ namespace SME.SGP.Dominio.Servicos
             await CarregaFechamentoTurma(fechamentoTurmaDisciplina, turmaFechamento, periodoEscolar);
 
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
-            // Valida Permissão do Professor na Turma/Disciplina
-            await VerificaSeProfessorPodePersistirTurma(usuarioLogado.CodigoRf, entidadeDto.TurmaId, periodoEscolar.PeriodoFim);
+
+            // Valida Permissão do Professor na Turma/Disciplina            
+            if (!turmaFechamento.EhTurmaEdFisicaOuItinerario())
+            {
+                await VerificaSeProfessorPodePersistirTurma(usuarioLogado.CodigoRf, entidadeDto.TurmaId, periodoEscolar.PeriodoFim);
+            }
 
             var fechamentoAlunos = Enumerable.Empty<FechamentoAluno>();
 
@@ -287,7 +291,7 @@ namespace SME.SGP.Dominio.Servicos
 
                 Cliente.Executar<IServicoFechamentoTurmaDisciplina>(c => c.GerarPendenciasFechamento(fechamentoTurmaDisciplina.DisciplinaId, turmaFechamento, periodoEscolar, fechamentoTurmaDisciplina, usuarioLogado, componenteSemNota, disciplinaEOL.RegistraFrequencia));
 
-                await mediator.Send(new PublicaFilaExcluirPendenciaAusenciaFechamentoCommand(fechamentoTurmaDisciplina.DisciplinaId,periodoEscolar.Id, turmaFechamento.Id, usuarioLogado));
+                await mediator.Send(new PublicaFilaExcluirPendenciaAusenciaFechamentoCommand(fechamentoTurmaDisciplina.DisciplinaId, periodoEscolar.Id, turmaFechamento.Id, usuarioLogado));
 
                 return (AuditoriaPersistenciaDto)fechamentoTurmaDisciplina;
             }
@@ -374,17 +378,17 @@ namespace SME.SGP.Dominio.Servicos
                         if (!EnviarWfAprovacao())
                         {
                             if (fechamentoNotaDto.Nota.HasValue)
-                            {                                
-                                if (fechamentoNotaDto.Nota != notaFechamento.Nota)                                    
+                            {
+                                if (fechamentoNotaDto.Nota != notaFechamento.Nota)
                                     await mediator.Send(new SalvarHistoricoNotaFechamentoCommand(notaFechamento.Nota.Value, fechamentoNotaDto.Nota.Value, notaFechamento.Id));
 
                                 notaFechamento.Nota = fechamentoNotaDto.Nota;
                             }
                             else
-                            {                                
+                            {
                                 if (fechamentoNotaDto.ConceitoId != notaFechamento.ConceitoId)
                                     await mediator.Send(new SalvarHistoricoConceitoFechamentoCommand(notaFechamento.ConceitoId.Value, fechamentoNotaDto.ConceitoId.Value, notaFechamento.Id));
-                            
+
                                 notaFechamento.ConceitoId = fechamentoNotaDto.ConceitoId;
                             }
 

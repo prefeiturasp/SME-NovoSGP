@@ -23,3 +23,19 @@ export const setExibirLoaderGeralAcompanhamentoAprendizagem = payload => ({
     '@acompanhamentoAprendizagem/setExibirLoaderGeralAcompanhamentoAprendizagem',
   payload,
 });
+
+export const setDadosAcompanhamentoAprendizagem = payload => ({
+  type: '@acompanhamentoAprendizagem/setDadosAcompanhamentoAprendizagem',
+  payload,
+});
+
+export const setAcompanhamentoAprendizagemEmEdicao = payload => ({
+  type: '@acompanhamentoAprendizagem/setAcompanhamentoAprendizagemEmEdicao',
+  payload,
+});
+
+export const setDesabilitarCamposAcompanhamentoAprendizagem = payload => ({
+  type:
+    '@acompanhamentoAprendizagem/setDesabilitarCamposAcompanhamentoAprendizagem',
+  payload,
+});
