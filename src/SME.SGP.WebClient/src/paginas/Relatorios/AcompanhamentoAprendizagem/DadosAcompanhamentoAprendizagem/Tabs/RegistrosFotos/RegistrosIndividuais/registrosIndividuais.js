@@ -28,8 +28,7 @@ const RegistrosIndividuais = props => {
   const dispatch = useDispatch();
 
   const usuario = useSelector(store => store.usuario);
-  const permissoesTela =
-    usuario.permissoes[RotasDto.ACOMPANHAMENTO_APRENDIZAGEM];
+  const permissoesTela = usuario.permissoes[RotasDto.REGISTRO_INDIVIDUAL];
 
   const [exibirRegistroIndividual, setExibirRegistroIndividual] = useState(
     false
