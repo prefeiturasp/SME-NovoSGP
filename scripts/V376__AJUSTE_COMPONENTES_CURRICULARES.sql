@@ -8,7 +8,7 @@ values ((select id from grade where nome = 'EMEFM - 1ª Série - Noturno'), 1, 9
 update grade_disciplina set componente_curricular_id = 51 where componente_curricular_id = 54 and grade_id in (select id from grade where nome in 
 ('EMEFM - 1ª Série - Integral','EMEFM - 2ª Série - Integral Turno 7h','EMEFM - 1ª Série - Noturno','EMEBS - 1ª Série - Integral','EMEBS - 1ª Série - Noturno'));
 
---Atualiza o id do componente curricular de física
+--Atualiza o id do componente curricular de Língua, Literatura e Cultura dos países de Língua Espanhola
 update grade_disciplina set componente_curricular_id = 1311 where componente_curricular_id = 1346 and grade_id in (select id from grade where nome in 
 ('EMEFM - 1ª Série - Integral','EMEFM - 2ª Série - Integral Turno 7h'));
 
