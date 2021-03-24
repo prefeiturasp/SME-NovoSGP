@@ -144,6 +144,8 @@ namespace SME.SGP.Dominio.Servicos
                 });
             }
 
+            repositorioNotificacaoCompensacaoAusencia.Excluir(compensacaoId);
+
             var gestores = BuscaGestoresUe(ue.CodigoUe);
             if (gestores != null && gestores.Any())
             {
