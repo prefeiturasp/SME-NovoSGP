@@ -12,9 +12,11 @@ import { Deslogar } from '~/redux/modulos/usuario/actions';
 import history from '~/servicos/history';
 import { URL_LOGIN, URL_HOME } from '~/constantes/url';
 import { limparDadosFiltro } from '~/redux/modulos/filtro/actions';
+import { setExibirMensagemSessaoExpirou } from '~/redux/modulos/mensagens/actions';
 import { LimparSessao } from '~/redux/modulos/sessao/actions';
 import ServicoNotificacao from '~/servicos/Paginas/ServicoNotificacao';
 import { erros } from '~/servicos/alertas';
+import { TOKEN_EXPIRADO } from '~/constantes';
 
 const Navbar = () => {
   const retraido = useSelector(state => state.navegacao.retraido);
@@ -23,14 +25,20 @@ const Navbar = () => {
     store.dispatch(limparDadosFiltro());
     store.dispatch(Deslogar());
     store.dispatch(LimparSessao());
+    store.dispatch(setExibirMensagemSessaoExpirou(false));
     history.push(URL_LOGIN);
   };
 
   useEffect(() => {
-    ServicoNotificacao.obterQuantidadeNotificacoesNaoLidas().catch(e =>
-      erros(e)
-    );
-    ServicoNotificacao.obterUltimasNotificacoesNaoLidas().catch(e => erros(e));
+    ServicoNotificacao.obterQuantidadeNotificacoesNaoLidas().catch(e => {
+      if (e?.message.indexOf(TOKEN_EXPIRADO) >= 0) return;
+
+      erros(e);
+    });
+    ServicoNotificacao.obterUltimasNotificacoesNaoLidas().catch(e => {
+      if (e?.message.indexOf(TOKEN_EXPIRADO) >= 0) return;
+      erros(e);
+    });
   }, []);
 
   return (
