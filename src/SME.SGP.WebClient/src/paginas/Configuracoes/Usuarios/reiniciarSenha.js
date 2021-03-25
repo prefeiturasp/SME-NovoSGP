@@ -140,7 +140,7 @@ export default function ReiniciarSenha({ perfilSelecionado }) {
 
   const onChangeDre = dre => {
     setDreSelecionada(!dre ? '' : dre);
-    setUeSelecionada([]);
+    setUeSelecionada('');
     setListaUes([]);
   };
 
@@ -181,13 +181,13 @@ export default function ReiniciarSenha({ perfilSelecionado }) {
 
     if (dreSelecionada) {
       const parametrosPost = {
-        codigoDRE: dreSelecionada,        
+        codigoDRE: dreSelecionada,
         nomeServidor: nomeUsuarioSelecionado,
         codigoRF: rfSelecionado,
       };
 
       if (ueSelecionada && ueSelecionada.length > 0)
-        parametrosPost["codigoUE"] = ueSelecionada;
+        parametrosPost.codigoUE = ueSelecionada;
 
       const lista = await api
         .post(`v1/unidades-escolares/funcionarios`, parametrosPost)
