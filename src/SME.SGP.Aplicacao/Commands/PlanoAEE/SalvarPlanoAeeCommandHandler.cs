@@ -116,7 +116,7 @@ namespace SME.SGP.Aplicacao.Commands
             if (request.PlanoAEEDto.Id.HasValue && request.PlanoAEEDto.Id > 0)
             {
                 var planoAEE = await mediator.Send(new ObterPlanoAEEPorIdQuery(request.PlanoAEEDto.Id.Value));
-                planoAEE.Situacao = request.PlanoAEEDto.Situacao;
+                planoAEE.Situacao = SituacaoPlanoAEE.EmAndamento;
 
                 return planoAEE;
             }
