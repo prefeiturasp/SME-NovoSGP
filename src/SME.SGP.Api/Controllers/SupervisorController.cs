@@ -45,9 +45,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<SupervisorDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.ASP_C, Policy = "Bearer")]
-        public IActionResult ObterSupervidoresPorDreENome(string dreId, [FromQuery]BuscaSupervisorPorNomeDto supervisorNome)
+        public async Task<IActionResult> ObterSupervidoresPorDreENome(string dreId, [FromQuery]BuscaSupervisorPorNomeDto supervisorNome)
         {
-            return Ok(consultasSupervisor.ObterPorDreENomeSupervisor(supervisorNome.Nome, dreId));
+            return Ok(await consultasSupervisor.ObterPorDreENomeSupervisorAsync(supervisorNome.Nome, dreId));
         }
 
         [HttpGet("dre/{dreId}/vinculo-escolas")]
