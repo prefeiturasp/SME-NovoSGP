@@ -9,10 +9,10 @@ namespace SME.SGP.Infra
         [Required(ErrorMessage = "A data deve ser informada")]
         public DateTime DataAula { get; set; }
 
-        [Required(ErrorMessage = "A disciplina deve ser informada")]
+        [Required(ErrorMessage = "O componente curricular deve ser informado")]
         public string DisciplinaId { get; set; }
 
-        [Required(ErrorMessage = "O nome da disciplina deve ser informado")]
+        [Required(ErrorMessage = "O nome do componente curricular deve ser informado")]
         public string DisciplinaNome { get; set; }
 
         public string DisciplinaCompartilhadaId { get; set; }
