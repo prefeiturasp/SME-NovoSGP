@@ -67,7 +67,7 @@ namespace SME.SGP.Aplicacao
 
                 var usuarioPodePersistirTurmaNaData = await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(aulaRecorrente.ComponenteCurricularId, aulaRecorrente.CodigoTurma, aulaRecorrente.DataAula, usuarioLogado));
                 if (!usuarioPodePersistirTurmaNaData)
-                    throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, disciplina e data.");
+                    throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, componente curricular e data.");
             }
         }
 
@@ -104,7 +104,7 @@ namespace SME.SGP.Aplicacao
             var tituloMensagem = $"Criação de Aulas de {componenteCurricularNome} na turma {turma.Nome}";
             StringBuilder mensagemUsuario = new StringBuilder();
 
-            mensagemUsuario.Append($"Foram criadas {quantidadeAulasCriadas} aulas da disciplina {componenteCurricularNome} para a turma {turma.Nome} da {turma.Ue?.Nome} ({turma.Ue?.Dre?.Nome}).");
+            mensagemUsuario.Append($"Foram criadas {quantidadeAulasCriadas} aulas do componente curricular {componenteCurricularNome} para a turma {turma.Nome} da {turma.Ue?.Nome} ({turma.Ue?.Dre?.Nome}).");
 
             if (mensagensValidacao.Any())
             {
