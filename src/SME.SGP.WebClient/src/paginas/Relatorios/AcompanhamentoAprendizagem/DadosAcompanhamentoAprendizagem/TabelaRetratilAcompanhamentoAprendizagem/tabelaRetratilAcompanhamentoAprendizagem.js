@@ -5,6 +5,7 @@ import TabelaRetratil from '~/componentes/TabelaRetratil';
 
 const TabelaRetratilAcompanhamentoAprendizagem = ({
   onChangeAlunoSelecionado,
+  permiteOnChangeAluno,
   children,
 }) => {
   const alunosAcompanhamentoAprendizagem = useSelector(
@@ -20,6 +21,7 @@ const TabelaRetratilAcompanhamentoAprendizagem = ({
       {alunosAcompanhamentoAprendizagem?.length ? (
         <TabelaRetratil
           onChangeAlunoSelecionado={onChangeAlunoSelecionado}
+          permiteOnChangeAluno={permiteOnChangeAluno}
           alunos={alunosAcompanhamentoAprendizagem}
           codigoAlunoSelecionado={codigoAlunoSelecionado}
           pularDesabilitados
@@ -36,11 +38,13 @@ const TabelaRetratilAcompanhamentoAprendizagem = ({
 
 TabelaRetratilAcompanhamentoAprendizagem.propTypes = {
   onChangeAlunoSelecionado: PropTypes.func,
+  permiteOnChangeAluno: PropTypes.func,
   children: PropTypes.oneOfType([PropTypes.any]),
 };
 
 TabelaRetratilAcompanhamentoAprendizagem.defaultProps = {
   onChangeAlunoSelecionado: () => {},
+  permiteOnChangeAluno: () => {},
   children: () => {},
 };
 

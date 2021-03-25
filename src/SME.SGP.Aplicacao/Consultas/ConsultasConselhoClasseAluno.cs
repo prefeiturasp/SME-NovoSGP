@@ -2,6 +2,7 @@
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -82,20 +83,21 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<ConselhoDeClasseGrupoMatrizDto>> ObterListagemDeSinteses(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, string codigoTurma, int bimestre)
         {
             var retorno = new List<ConselhoDeClasseGrupoMatrizDto>();
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(codigoTurma));
+            if (turma == null)
+                throw new NegocioException("Turma não encontrada");
 
-            var fechamentoTurma = await consultasFechamentoTurma.ObterCompletoPorIdAsync(fechamentoTurmaId);
+            var ehAnoAnterior = turma.AnoLetivo != DateTime.Today.Year;
 
-            var turma = fechamentoTurma?.Turma;
+            var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaPorIdAlunoCodigoQuery(fechamentoTurmaId, alunoCodigo, ehAnoAnterior));
 
-            if (fechamentoTurma == null)
+            if (fechamentoTurma != null)
+                turma = fechamentoTurma?.Turma;
+            else
             {
-                turma = await repositorioTurma.ObterPorCodigo(codigoTurma);
-                if (turma == null)
-                    throw new NegocioException("Turma não encontrada");
-                if (turma.AnoLetivo == DateTime.Today.Year)
+                if (!ehAnoAnterior)
                     throw new NegocioException("Não existe fechamento para a turma");
             }
-
 
             if (turma.AnoLetivo != 2020 && turma.AnoLetivo == DateTime.Now.Year && bimestre == 0 && !await ExisteConselhoClasseUltimoBimestreAsync(turma, alunoCodigo))
                 throw new NegocioException("Aluno não possui conselho de classe do último bimestre");
@@ -136,57 +138,112 @@ namespace SME.SGP.Aplicacao
 
         public async Task<ConselhoClasseAlunoNotasConceitosRetornoDto> ObterNotasFrequencia(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, string codigoTurma, int bimestre)
         {
-            var fechamentoTurma = await consultasFechamentoTurma.ObterCompletoPorIdAsync(fechamentoTurmaId);
-            var turma = fechamentoTurma?.Turma;
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(codigoTurma));
+            var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaPorIdAlunoCodigoQuery(fechamentoTurmaId, alunoCodigo, turma.AnoLetivo != DateTime.Now.Year));
             var periodoEscolar = fechamentoTurma?.PeriodoEscolar;
-
-            if (fechamentoTurma == null)
+            if(fechamentoTurma != null) turma = fechamentoTurma?.Turma;
+            else
             {
-                turma = await repositorioTurma.ObterPorCodigo(codigoTurma);
-                if (turma == null) throw new NegocioException("Turma não localizada");
+                periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, bimestre));
+            }
 
+            string[] turmasCodigos;
+            long[] conselhosClassesIds;
+
+            if (turma.DeveVerificarRegraRegulares())
+            {
+                List<TipoTurma> turmasCodigosParaConsulta = new List<TipoTurma>() { turma.TipoTurma };
+                turmasCodigosParaConsulta.AddRange(turma.ObterTiposRegularesDiferentes());
+                turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, turmasCodigosParaConsulta));
+                conselhosClassesIds = await mediator.Send(new ObterConselhoClasseIdsPorTurmaEPeriodoQuery(turmasCodigos, periodoEscolar?.Id));
+            }
+            else
+            {
+                turmasCodigos = new string[1] { turma.CodigoTurma };
+                conselhosClassesIds = new long[1] { conselhoClasseId };
+            }
+
+            var notasConselhoClasseAluno = new List<NotaConceitoBimestreComponenteDto>();
+
+            if (conselhosClassesIds != null)
+            {
+                foreach (var conselhosClassesId in conselhosClassesIds)
+                {
+                    var notasParaAdicionar = await consultasConselhoClasseNota.ObterNotasAlunoAsync(conselhoClasseId, alunoCodigo);
+                    notasConselhoClasseAluno.AddRange(notasParaAdicionar);
+                }
+            }
+
+            List<Turma> turmas;
+
+            if (turmasCodigos.Length > 0)
+                turmas = (await mediator.Send(new ObterTurmasPorCodigosQuery(turmasCodigos))).ToList();
+            else turmas = new List<Turma>() { turma };
+
+
+            PeriodoEscolar periodoDaTurmaPrincipal = new PeriodoEscolar();
+
+            //obter periodos escolares
+            var turmasPeriodosEscolares = new List<(Turma, PeriodoEscolar)>();
+            foreach (var turmaParaTratarPeriodoEscolar in turmas)
+            {
                 var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre);
                 if (tipoCalendario == null) throw new NegocioException("Tipo de calendáro não encontrado");
 
-                periodoEscolar = await repositorioPeriodoEscolar.ObterPorTipoCalendarioEBimestreAsync(tipoCalendario.Id, bimestre);
+                var periodoEscolarTurma = await repositorioPeriodoEscolar.ObterPorTipoCalendarioEBimestreAsync(tipoCalendario.Id, bimestre);
 
-                if (turma.AnoLetivo == DateTime.Today.Year) throw new NegocioException("Fechamento da Turma não encontrado");
+                turmasPeriodosEscolares.Add((turmaParaTratarPeriodoEscolar, periodoEscolarTurma));
+
+                if (turmas.Count == 1 || turmaParaTratarPeriodoEscolar.EhTurmaRegular())
+                {
+                    periodoDaTurmaPrincipal = periodoEscolarTurma;
+                }
             }
 
-            var turmaCodigo = turma.CodigoTurma;
-
-            var notasConselhoClasseAluno = await consultasConselhoClasseNota.ObterNotasAlunoAsync(conselhoClasseId, alunoCodigo);
+            //Verificar as notas finais
             var notasFechamentoAluno = fechamentoTurma != null && fechamentoTurma.PeriodoEscolarId.HasValue ?
-                await consultasFechamentoNota.ObterNotasAlunoBimestreAsync(fechamentoTurmaId, alunoCodigo) :
-                await consultasConselhoClasseNota.ObterNotasFinaisBimestresAlunoAsync(alunoCodigo, turmaCodigo);    
+               await mediator.Send(new ObterNotasFechamentosPorTurmasCodigosBimestreQuery(turmasCodigos, alunoCodigo, bimestre)) :
+               await consultasConselhoClasseNota.ObterNotasFinaisBimestresAlunoAsync(alunoCodigo, turmasCodigos);
 
-            var disciplinasDaTurmaEol = await servicoEOL.ObterDisciplinasPorCodigoTurma(turmaCodigo);
+            Usuario usuarioAtual = await mediator.Send(new ObterUsuarioLogadoQuery());
+
+            var disciplinasDaTurmaEol = await mediator.Send(new ObterComponentesCurricularesPorTurmasCodigoQuery(turmasCodigos, usuarioAtual.PerfilAtual, usuarioAtual.Login, turma.EnsinoEspecial, turma.TurnoParaComponentesCurriculares));
 
             var disciplinasDaTurma = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(disciplinasDaTurmaEol.Select(x => x.CodigoComponenteCurricular).Distinct().ToArray()));
-                        
+
+
             var retorno = new ConselhoClasseAlunoNotasConceitosRetornoDto();
 
             var gruposMatrizesNotas = new List<ConselhoClasseAlunoNotasConceitosDto>();
+
             // Retornar componentes que lançam nota
-            var gruposMatrizes = disciplinasDaTurma.Where(c => c.LancaNota && c.GrupoMatrizNome != null).GroupBy(c => c.GrupoMatrizNome).ToList();
-            foreach (var grupoDisiplinasMatriz in gruposMatrizes.OrderBy(k => k.Key))
+            var gruposMatrizes = disciplinasDaTurma.Where(c => c.LancaNota && c.GrupoMatrizNome != null).OrderBy(d => d.GrupoMatrizId).GroupBy(c => c.GrupoMatrizNome).ToList();
+            foreach (var grupoDisiplinasMatriz in gruposMatrizes)
             {
                 var conselhoClasseAlunoNotas = new ConselhoClasseAlunoNotasConceitosDto();
                 conselhoClasseAlunoNotas.GrupoMatriz = grupoDisiplinasMatriz.Key;
 
-                foreach (var disciplina in grupoDisiplinasMatriz)
+                foreach (var disciplina in grupoDisiplinasMatriz.OrderBy(g => g.Nome))
                 {
+                    //codigo da turma da disciplina
+                    var turmaDisciplinaCodigo = disciplinasDaTurmaEol.FirstOrDefault(a => a.CodigoComponenteCurricular == disciplina.CodigoComponenteCurricular);
+
+                    var turmaParaBuscarNotas = turmas.FirstOrDefault(a => a.CodigoTurma == turmaDisciplinaCodigo.TurmaCodigo);
+
+                    //Verificar se objeto não está nulo
+                    var turmaPeriodoEscolar = turmasPeriodosEscolares.FirstOrDefault(a => a.Item1.Id == turmaParaBuscarNotas?.Id);
+
+                    var periodoEscolarParaUtilizar = turmaPeriodoEscolar.Item2;
+
                     // Carrega Frequencia Aluno
-                    var frequenciaAluno = await ObterFrequenciaAluno(turma,
-                                                                     periodoEscolar,
-                                                                     disciplina.CodigoComponenteCurricular,
+                    var frequenciaAluno = await ObterFrequenciaAluno(turmaParaBuscarNotas, periodoEscolarParaUtilizar, disciplina.CodigoComponenteCurricular,
                                                                      alunoCodigo);
 
                     if (disciplina.Regencia)
                     {
                         conselhoClasseAlunoNotas.ComponenteRegencia = await ObterNotasFrequenciaRegencia(disciplina.CodigoComponenteCurricular,
                                                                                                          frequenciaAluno,
-                                                                                                         periodoEscolar,
+                                                                                                         periodoEscolarParaUtilizar,
                                                                                                          turma,
                                                                                                          notasConselhoClasseAluno,
                                                                                                          notasFechamentoAluno);
@@ -195,7 +252,7 @@ namespace SME.SGP.Aplicacao
                         conselhoClasseAlunoNotas.ComponentesCurriculares.Add(ObterNotasFrequenciaComponente(disciplina.Nome,
                                                                                                             disciplina.CodigoComponenteCurricular,
                                                                                                             frequenciaAluno,
-                                                                                                            periodoEscolar,
+                                                                                                            periodoEscolarParaUtilizar,
                                                                                                             turma,
                                                                                                             notasConselhoClasseAluno,
                                                                                                             notasFechamentoAluno));
@@ -203,7 +260,7 @@ namespace SME.SGP.Aplicacao
                 gruposMatrizesNotas.Add(conselhoClasseAlunoNotas);
             }
 
-            retorno.PodeEditarNota = await VerificaSePodeEditarNota(alunoCodigo, turma, periodoEscolar);
+            retorno.PodeEditarNota = await VerificaSePodeEditarNota(alunoCodigo, turma, periodoDaTurmaPrincipal);
             retorno.NotasConceitos = gruposMatrizesNotas;
 
             return retorno;
@@ -224,7 +281,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<ParecerConclusivoDto> ObterParecerConclusivo(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, string codigoTurma)
         {
-            var fechamentoTurma = await consultasFechamentoTurma.ObterCompletoPorIdAsync(fechamentoTurmaId);
+            var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaPorIdAlunoCodigoQuery(fechamentoTurmaId, alunoCodigo));
             var turma = fechamentoTurma?.Turma;
             var ehAnoAtual = false;
 
@@ -466,7 +523,7 @@ namespace SME.SGP.Aplicacao
                 AusenciasCompensadas = frequenciaAluno?.TotalCompensacoes ?? 0,
                 Frequencia = percentualFrequencia
             };
-            
+
             foreach (var componenteRegencia in componentesRegencia)
                 conselhoClasseComponente.ComponentesCurriculares.Add(ObterNotasRegencia(componenteRegencia.Nome, componenteRegencia.CodigoComponenteCurricular, periodoEscolar, notasConselhoClasseAluno, notasFechamentoAluno));
 

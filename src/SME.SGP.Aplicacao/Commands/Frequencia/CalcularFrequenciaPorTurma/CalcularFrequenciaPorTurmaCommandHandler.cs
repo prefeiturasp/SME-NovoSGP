@@ -133,7 +133,7 @@ namespace SME.SGP.Aplicacao
             }
             else
             {
-                var frequenciaAluno = repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunoData(codigoAluno, dataAtual, TipoFrequenciaAluno.Geral);
+                var frequenciaAluno = repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunoData(codigoAluno, dataAtual, TipoFrequenciaAluno.Geral, turmaId);
 
                 if (frequenciaAluno != null)
                     repositorioFrequenciaAlunoDisciplinaPeriodo.Remover(frequenciaAluno);

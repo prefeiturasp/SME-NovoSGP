@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<FechamentoAlunoCompletoDto> ObterAnotacaoAluno(string codigoAluno, long fechamentoId, string codigoTurma, int anoLetivo)
         {
-            var consultaFechamentoAluno = repositorio.ObterFechamentoAluno(fechamentoId, codigoAluno);
+            var consultaFechamentoAluno = await repositorio.ObterFechamentoAluno(fechamentoId, codigoAluno);
             var dadosAlunos = await servicoEOL.ObterDadosAluno(codigoAluno, anoLetivo);
             if (dadosAlunos == null || !dadosAlunos.Any(c => c.CodigoTurma.ToString() == codigoTurma))
                 throw new NegocioException($"Não foram localizados dados do aluno {codigoAluno} na turma {codigoTurma} no EOL para o ano letivo {anoLetivo}");
@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
 
             dadosAluno.EhAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(codigoAluno, anoLetivo));
 
-            var anotacaoAluno = await consultaFechamentoAluno;
+            var anotacaoAluno = consultaFechamentoAluno;
             var anotacaoDto = anotacaoAluno == null ?
                             new FechamentoAlunoCompletoDto() { Aluno = dadosAluno } :
                             MapearParaDto(anotacaoAluno, dadosAluno);
@@ -46,9 +46,9 @@ namespace SME.SGP.Aplicacao
             return anotacaoDto;
         }
 
-        public async Task<IEnumerable<FechamentoAlunoAnotacaoConselhoDto>> ObterAnotacaoAlunoParaConselhoAsync(string alunoCodigo, long fechamentoTurmaId)
+        public async Task<IEnumerable<FechamentoAlunoAnotacaoConselhoDto>> ObterAnotacaoAlunoParaConselhoAsync(string alunoCodigo, string[] turmasCodigos)
         {
-            var anotacoesDto = await repositorio.ObterAnotacoesTurmaAlunoBimestreAsync(alunoCodigo, fechamentoTurmaId);
+            var anotacoesDto = await repositorio.ObterAnotacoesTurmaAlunoBimestreAsync(alunoCodigo, turmasCodigos);
             if (anotacoesDto == null || !anotacoesDto.Any())
                 return default;
 

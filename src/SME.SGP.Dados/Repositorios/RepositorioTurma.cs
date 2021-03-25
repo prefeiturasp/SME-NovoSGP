@@ -2,6 +2,7 @@
 using Dommel;
 using Sentry;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -30,7 +31,8 @@ namespace SME.SGP.Dados.Repositorios
                         ensino_especial,
                         etapa_eja,
                         data_inicio,
-                        dt_fim_eol
+                        dt_fim_eol,
+                        tipo_turma
                     from
 	                    public.turma
                     where turma_id in (#ids);";
@@ -51,7 +53,8 @@ namespace SME.SGP.Dados.Repositorios
                         etapa_eja = @etapaEja,
                         data_inicio = @dataInicio,
                         serie_ensino = @serieEnsino,
-                        dt_fim_eol = @dataFim
+                        dt_fim_eol = @dataFim,
+                        tipo_turma = @tipoTurma
                     where
 	                    id = @id;";
 
@@ -195,6 +198,7 @@ namespace SME.SGP.Dados.Repositorios
 	                        t.qt_duracao_aula,
 	                        t.tipo_turno,
 	                        t.data_atualizacao,
+                            t.tipo_turma,
 	                        u.id as UeId,
 	                        u.id,
 	                        u.ue_id,
@@ -208,7 +212,6 @@ namespace SME.SGP.Dados.Repositorios
 	                        d.dre_id,
 	                        d.abreviacao,
 	                        d.data_atualizacao
-
                         from
 	                        turma t
                         inner join ue u on
@@ -325,11 +328,11 @@ namespace SME.SGP.Dados.Repositorios
                     item.DataAtualizacao = DateTime.Today;
                     item.Ue = ues.First(x => x.CodigoUe == item.Ue.CodigoUe);
                     item.UeId = item.Ue.Id;
-                    item.Id = (long)await contexto.Conexao.InsertAsync(item);
+                    item.Id = (long)await contexto.Conexao.InsertAsync(item);                    
                     resultado.Add(item);
                 }
 
-                var modificados = from c in entidades
+                var modificados = from c in iteracao
                                   join l in armazenados on c.CodigoTurma equals l.CodigoTurma
                                   where c.Nome != l.Nome ||
                                         c.Ano != l.Ano ||
@@ -345,7 +348,7 @@ namespace SME.SGP.Dados.Repositorios
                                         c.DataInicio.HasValue != l.DataInicio.HasValue ||
                                         (c.DataInicio.HasValue && l.DataInicio.HasValue && c.DataInicio.Value.Date != l.DataInicio.Value.Date) ||
                                         c.DataFim.HasValue != l.DataFim.HasValue ||
-                                        (c.DataFim.HasValue && l.DataFim.HasValue && c.DataFim.Value.Date != l.DataFim.Value.Date)
+                                        (c.DataFim.HasValue && l.DataFim.HasValue && c.DataFim.Value.Date != l.DataFim.Value.Date)                                        
                                   select new Turma()
                                   {
                                       Ano = c.Ano,
@@ -366,9 +369,9 @@ namespace SME.SGP.Dados.Repositorios
                                       DataInicio = c.DataInicio,
                                       SerieEnsino = c.SerieEnsino,
                                       DataFim = c.DataFim,
-                                      Extinta = c.Extinta
+                                      Extinta = c.Extinta,                                      
                                   };
-
+             
                 foreach (var item in modificados)
                 {
                     await contexto.Conexao.ExecuteAsync(Update, new
@@ -632,6 +635,16 @@ namespace SME.SGP.Dados.Repositorios
                          where t.id = @turmaId";
 
             return await contexto.Conexao.QueryFirstOrDefaultAsync<DreUeDaTurmaDto>(query, new { turmaId });
+        }
+
+        public async Task<Turma> ObterTurmaPorAnoLetivoModalidadeTipoAsync(long ueId, int anoLetivo, TipoTurma turmaTipo)
+        {
+            var query = @"select * from turma t 
+                            where t.ue_id = @ueId 
+                            and t.ano_letivo = @anoLetivo 
+                            and t.tipo_turma = @turmaTipo";
+
+            return await contexto.Conexao.QueryFirstOrDefaultAsync<Turma>(query, new { ueId, anoLetivo , turmaTipo });
         }
     }
 }

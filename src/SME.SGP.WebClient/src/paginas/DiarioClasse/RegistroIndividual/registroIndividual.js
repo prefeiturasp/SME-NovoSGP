@@ -32,7 +32,7 @@ import {
 } from '~/servicos';
 
 import { RotasDto } from '~/dtos';
-import MetodosRegistroIndividual from './metodosRegistroIndividual';
+import MetodosRegistroIndividual from '~/componentes-sgp/RegistroIndividual/metodosRegistroIndividual';
 
 const RegistroIndividual = () => {
   const [exibirListas, setExibirListas] = useState(false);
@@ -86,7 +86,9 @@ const RegistroIndividual = () => {
       turmaSelecionada
     );
     setTurmaInfantil(infantil);
-  }, [modalidadesFiltroPrincipal, turmaSelecionada]);
+
+    verificaSomenteConsulta(permissoesTela, !infantil);
+  }, [modalidadesFiltroPrincipal, turmaSelecionada, permissoesTela]);
 
   const permiteOnChangeAluno = async () => {
     return true;
@@ -145,16 +147,11 @@ const RegistroIndividual = () => {
     }
   };
 
-  const validaSomenteConsulta = useCallback(() => {
-    verificaSomenteConsulta(permissoesTela);
-  }, [permissoesTela]);
-
   useEffect(() => {
-    validaSomenteConsulta();
     return () => {
       resetarTela();
     };
-  }, [turmaSelecionada, validaSomenteConsulta, resetarTela]);
+  }, [turmaSelecionada, resetarTela]);
 
   return (
     <Loader loading={exibirLoaderGeralRegistroIndividual} className="w-100">
