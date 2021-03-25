@@ -92,7 +92,7 @@ const CompensacaoAusenciaLista = () => {
       width: '30%',
     },
     {
-      title: 'Alunos',
+      title: 'Estudantes',
       dataIndex: 'alunos',
       width: '60%',
       render: dados => montaExibicaoAlunos(dados),
@@ -370,7 +370,7 @@ const CompensacaoAusenciaLista = () => {
                   valueText="nome"
                   valueSelect={disciplinaIdSelecionada}
                   onChange={onChangeDisciplinas}
-                  placeholder="Disciplina"
+                  placeholder="Componente Curricular"
                   disabled={desabilitarDisciplina}
                 />
               </Loader>
@@ -404,7 +404,7 @@ const CompensacaoAusenciaLista = () => {
               <CampoTexto
                 name="nomeAtividade"
                 id="nomeAtividade"
-                placeholder="Nome do Aluno"
+                placeholder="Nome do Estudante"
                 iconeBusca
                 allowClear
                 onChange={onChangeNomeAluno}
