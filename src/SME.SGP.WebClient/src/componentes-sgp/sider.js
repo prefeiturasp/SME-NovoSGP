@@ -54,7 +54,16 @@ const Sider = () => {
       );
   }, [usuario.menu]);
 
-  const alterarPosicaoJanelaPopup = (idElementoHtml, quantidadeItens) => {
+  const esperarElementoExistir = (selector, callback) => {
+    const el = document.getElementById(selector);
+    if (el) {
+      return callback(el);
+    }
+    setTimeout(() => esperarElementoExistir(selector, callback), 5);
+    return '';
+  };
+
+  const alterarPosicaoJanelaPopup = async (idElementoHtml, quantidadeItens) => {
     const itemMenu = window.document.getElementById(idElementoHtml);
     if (itemMenu) {
       const alturaItens = quantidadeItens * 40 + 6;
@@ -66,13 +75,24 @@ const Sider = () => {
         alturaTotalItens > alturaTela
           ? posicaoY - (alturaTotalItens - alturaTela)
           : posicaoY;
-      document.documentElement.style.setProperty(
-        '--posicao-item-menu-top',
-        `${posicaoTop}px`
-      );
+
+      if (quantidadeItens) {
+        document.documentElement.style.setProperty(
+          '--posicao-item-menu-top',
+          `${posicaoTop}px`
+        );
+      }
+
       document.documentElement.style.setProperty(
         '--posicao-item-menu-right',
         `${posicaoRight}px`
+      );
+
+      esperarElementoExistir(`sub-${idElementoHtml}$Menu`, el =>
+        el.parentElement.style.setProperty(
+          '--posicao-item-menu-top',
+          `${posicaoTop}px`
+        )
       );
     }
   };
