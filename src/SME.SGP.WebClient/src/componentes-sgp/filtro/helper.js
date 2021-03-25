@@ -1,5 +1,6 @@
 import ServicoFiltro from '~/servicos/Componentes/ServicoFiltro';
 import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
+import { TOKEN_EXPIRADO } from '~/constantes';
 
 class FiltroHelper {
   obterAnosLetivos = async ({ consideraHistorico }) => {
@@ -173,7 +174,10 @@ class FiltroHelper {
         }
         return turmas.sort(this.ordenarLista('desc'));
       })
-      .catch(() => turmas);
+      .catch(e => {
+        if (e?.message.indexOf(TOKEN_EXPIRADO) >= 0) return e;
+        return turmas;
+      });
   };
 
   ordenarLista = indice => {
