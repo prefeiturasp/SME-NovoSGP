@@ -9,6 +9,7 @@ import {
   setIdCamposNotasPosConselho,
   setNotaConceitoPosConselhoAtual,
   setGerandoParecerConclusivo,
+  setExibirLoaderGeralConselhoClasse,
 } from '~/redux/modulos/conselhoClasse/actions';
 import notasConceitos from '~/dtos/notasConceitos';
 
@@ -56,10 +57,17 @@ class ServicoSalvarConselhoClasse {
         erro('É obrigatório informar Recomendações a família ');
         return false;
       }
-
+      dispatch(setExibirLoaderGeralConselhoClasse(true));
       const retorno = await ServicoConselhoClasse.salvarRecomendacoesAlunoFamilia(
         params
-      ).catch(e => erros(e));
+      )
+        .finally(() => {
+          dispatch(setExibirLoaderGeralConselhoClasse(false));
+        })
+        .catch(e => {
+          dispatch(setExibirLoaderGeralConselhoClasse(false));
+          erros(e);
+        });
 
       if (retorno && retorno.status === 200) {
         if (!dadosPrincipaisConselhoClasse.conselhoClasseId) {
