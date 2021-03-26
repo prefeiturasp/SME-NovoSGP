@@ -349,6 +349,7 @@ namespace SME.SGP.Dominio.Servicos
             var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesPorTurmasCodigoQuery(turmasCodigo, usuarioAtual.PerfilAtual, usuarioAtual.Login, ehEnsinoEspecial, turnoParaComponentesCurriculares));
             if (componentesCurriculares == null)
                 throw new NegocioException("Não localizado disciplinas para a turma no EOL!");
+            else componentesTurma.AddRange(componentesCurriculares);
 
             return componentesTurma;
         }
