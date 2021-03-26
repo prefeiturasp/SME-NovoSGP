@@ -65,8 +65,6 @@ namespace SME.SGP.Aplicacao
                 turma = await ObterTurma(codigosTurmasRelacionadas.FirstOrDefault());                
             }
 
-            var ehAnoAnterior = turma.AnoLetivo != DateTime.Today.Year;
-
             if (bimestre == 0 && !ehFinal)
                 bimestre = await ObterBimestreAtual(turma);
 
@@ -74,7 +72,7 @@ namespace SME.SGP.Aplicacao
 
            
 
-            if (fechamentoTurma == null && !ehAnoAnterior)
+            if (fechamentoTurma == null && !turma.EhAnoAnterior())
             {
                 throw new NegocioException("Fechamento da turma não localizado " + (!ehFinal && bimestre > 0 ? $"para o bimestre {bimestre}" : ""));
             }

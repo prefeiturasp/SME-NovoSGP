@@ -40,18 +40,19 @@ namespace SME.SGP.Aplicacao
             if (turma == null)
                 throw new NegocioException("Turma não encontrada");
 
-            var ehAnoAnterior = turma.AnoLetivo != DateTime.Today.Year;
-
-            var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaPorIdAlunoCodigoQuery(fechamentoTurmaId, alunoCodigo, ehAnoAnterior));
+            var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaPorIdAlunoCodigoQuery(fechamentoTurmaId, alunoCodigo, turma.EhAnoAnterior()));
 
             var periodoEscolar = fechamentoTurma?.PeriodoEscolar;
 
-            if(fechamentoTurma != null)
-              turma = fechamentoTurma?.Turma;
+            if (fechamentoTurma != null)
+                turma = fechamentoTurma?.Turma;
             else
             {
-                periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, bimestre.Value));
-                if (periodoEscolar == null) throw new NegocioException("Período escolar não encontrado");
+                if (bimestre > 0)
+                {
+                    periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, bimestre.Value));
+                    if (periodoEscolar == null) throw new NegocioException("Período escolar não encontrado");
+                }
             }
 
             long[] conselhosClassesIds;
@@ -66,7 +67,8 @@ namespace SME.SGP.Aplicacao
                 turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, tipos));
                 conselhosClassesIds = await mediator.Send(new ObterConselhoClasseIdsPorTurmaEPeriodoQuery(turmasCodigos, periodoEscolar?.Id));
             }
-            else { 
+            else
+            {
                 conselhosClassesIds = new long[1] { conselhoClasseId };
                 turmasCodigos = new string[] { turma.CodigoTurma };
             }
