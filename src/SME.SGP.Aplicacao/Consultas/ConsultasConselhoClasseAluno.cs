@@ -198,6 +198,7 @@ namespace SME.SGP.Aplicacao
                 {
                     periodoDaTurmaPrincipal = periodoEscolarTurma;
                 }
+                if (bimestre > 0) throw new NegocioException("Fechamento da turma não encontrado");
             }
 
             //Verificar as notas finais
