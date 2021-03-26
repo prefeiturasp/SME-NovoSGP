@@ -19,7 +19,7 @@ const ListaAlunosAusenciasCompensadas = props => {
     const confirmado = await confirmar(
       'Alterar quantidade',
       `${aluno.id} - ${aluno.nome}`,
-      'A frequência do seguinte aluno será recalculada somente quando salvar as suas alterações',
+      'A frequência do seguinte estudante será recalculada somente quando salvar as suas alterações',
       'Alterar',
       'Cancelar',
       true
@@ -86,7 +86,7 @@ const ListaAlunosAusenciasCompensadas = props => {
 
   return (
     <>
-      <Label text="Alunos com Ausências Compensadas" />
+      <Label text="Estudantes com Ausências Compensadas" />
       <CardTabelaAlunos>
         <DataTable
           scroll={{ y: 420 }}
