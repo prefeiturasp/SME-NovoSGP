@@ -14,7 +14,7 @@ namespace SME.SGP.Api.Controllers
     public class AcompanhamentoTurmaController : Controller
     {
         [HttpPost("")]
-        [ProducesResponseType(typeof(IEnumerable<AuditoriaDto>), 200)]
+        [ProducesResponseType(typeof(AuditoriaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> Salvar([FromServices] ISalvarAcompanhamentoTurmaUseCase useCase, [FromBody] AcompanhamentoTurmaDto dto)
              => Ok(await useCase.Executar(dto));
