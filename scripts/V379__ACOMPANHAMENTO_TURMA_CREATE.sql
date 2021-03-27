@@ -1,7 +1,7 @@
-CREATE TABLE if exists public.acompanhamento_turma (
+CREATE TABLE if not exists public.acompanhamento_turma (
 	id int8 NOT NULL GENERATED ALWAYS AS identity,
     turma_id int8 NOT NULL,
-    semestre int4 not null,
+    semestre int not null,
 	apanhado_geral varchar not null,
 	
 	criado_em timestamp  NOT NULL,
@@ -15,4 +15,4 @@ CREATE TABLE if exists public.acompanhamento_turma (
     CONSTRAINT acompanhamento_turma_pk PRIMARY KEY (id)
 );
 ALTER TABLE public.acompanhamento_turma ADD CONSTRAINT acompanhamento_turma_fk FOREIGN KEY (turma_id) REFERENCES turma(id);
-CREATE INDEX acompanhamento_turma_idx ON public.acompanhamento_turma USING btree (turma_id);
+CREATE INDEX if not exists acompanhamento_turma_idx ON public.acompanhamento_turma USING btree (turma_id);
