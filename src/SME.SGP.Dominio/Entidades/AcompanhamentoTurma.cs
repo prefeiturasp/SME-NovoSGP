@@ -6,5 +6,6 @@
         public long TurmaId { get; set; }
 
         public int Semestre { get; set; }
+        public string ApanhadoGeral { get; set; }
     }
 }
