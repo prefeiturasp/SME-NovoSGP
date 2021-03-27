@@ -2,7 +2,7 @@ CREATE TABLE if not exists public.acompanhamento_turma (
 	id int8 NOT NULL GENERATED ALWAYS AS identity,
     turma_id int8 NOT NULL,
     semestre int not null,
-	apanhado_geral varchar not null,
+	apanhado_geral varchar,
 	
 	criado_em timestamp  NOT NULL,
     criado_por varchar(200) NOT NULL,
