@@ -307,7 +307,7 @@ const AcompanhamentoAprendizagem = () => {
                     </TabelaRetratilAcompanhamentoAprendizagem>
                   </div>
                   <div className="col-md-12 mb-2 mt-2">
-                    <ApanhadoGeral />
+                    <ApanhadoGeral semestreSelecionado={semestreSelecionado} />
                   </div>
                 </>
               ) : (

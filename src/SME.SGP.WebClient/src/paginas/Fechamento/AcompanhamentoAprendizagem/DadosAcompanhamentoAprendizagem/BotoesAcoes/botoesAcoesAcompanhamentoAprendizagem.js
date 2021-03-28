@@ -91,7 +91,10 @@ const BotoesAcoesAcompanhamentoAprendizagem = props => {
 
     if (apanhadoGeralEmEdicao) {
       dispatch(setApanhadoGeralEmEdicao(false));
-      ServicoAcompanhamentoAprendizagem.obterDadosApanhadoGeral();
+      ServicoAcompanhamentoAprendizagem.obterDadosApanhadoGeral(
+        turmaSelecionada?.id,
+        semestreSelecionado
+      );
     }
   };
 
