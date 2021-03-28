@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Aplicacao.Interfaces
 {
-    public interface IObterAcompanhamentoTurmaApanhadoGeralUseCase : IUseCase<long, AcompanhamentoTurmaDto>
+    public interface IObterAcompanhamentoTurmaApanhadoGeralUseCase : IUseCase<FiltroAcompanhamentoTurmaApanhadoGeral, AcompanhamentoTurmaDto>
     {
     }
 }

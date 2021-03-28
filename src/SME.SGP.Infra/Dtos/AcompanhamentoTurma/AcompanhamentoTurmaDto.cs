@@ -8,6 +8,7 @@ namespace SME.SGP.Infra
         public int Semestre { get; set; }
         public string ApanhadoGeral { get; set; }
         public long AcompanhamentoTurmaId { get; set; }
+        public AuditoriaDto Auditoria { get; set; }
     }
 }
 

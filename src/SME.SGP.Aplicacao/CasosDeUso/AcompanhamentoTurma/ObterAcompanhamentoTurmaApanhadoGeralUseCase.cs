@@ -12,9 +12,9 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<AcompanhamentoTurmaDto> Executar(long acompanhamentoTurmaId)
+        public async Task<AcompanhamentoTurmaDto> Executar(FiltroAcompanhamentoTurmaApanhadoGeral filtro)
         {
-            var acompanhamentoTurma = await mediator.Send(new ObterAcompanhamentoTurmaPorIdQuery(acompanhamentoTurmaId));
+            var acompanhamentoTurma = await mediator.Send(new ObterApanhadoGeralPorTurmaIdESemestreQuery(filtro.TurmaId, filtro.Semestre));
             return MapearEntidadeParaDTO(acompanhamentoTurma);
         }
 
@@ -25,7 +25,8 @@ namespace SME.SGP.Aplicacao
                 AcompanhamentoTurmaId = acompanhamentoTurma.Id,
                 ApanhadoGeral = acompanhamentoTurma.ApanhadoGeral,
                 Semestre = acompanhamentoTurma.Semestre,
-                TurmaId = acompanhamentoTurma.TurmaId
+                TurmaId = acompanhamentoTurma.TurmaId,
+                Auditoria = (AuditoriaDto)acompanhamentoTurma
             };
             return acompanhamentoTurmaDto;
         }
