@@ -1,4 +1,4 @@
-﻿using SME.SGP.Infra.Dtos.AcompanhamentoTurma;
+﻿using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao.Interfaces
 {

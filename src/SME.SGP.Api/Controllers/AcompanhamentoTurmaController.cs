@@ -18,5 +18,15 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> Salvar([FromServices] ISalvarAcompanhamentoTurmaUseCase useCase, [FromBody] AcompanhamentoTurmaDto dto)
              => Ok(await useCase.Executar(dto));
+
+
+        [HttpGet("apanhado-geral")]
+        [ProducesResponseType(typeof(AcompanhamentoTurmaDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 400)]
+        public async Task<IActionResult> Obter(long acompanhamentoAlunoSemestreId, [FromServices] IObterAcompanhamentoTurmaApanhadoGeralUseCase useCase)
+        {
+            return Ok(await useCase.Executar(acompanhamentoAlunoSemestreId));
+        }
     }
 }

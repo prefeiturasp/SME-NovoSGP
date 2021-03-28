@@ -2,7 +2,6 @@
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos.AcompanhamentoTurma;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -60,15 +59,5 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(codigoFoto));
         }
-
-        [HttpGet("turma/apanhado-geral")]
-        [ProducesResponseType(typeof(AcompanhamentoTurmaDto), 200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 400)]
-        public async Task<IActionResult> ObterAcompanhamentoApanhadoGeral(long acompanhamentoAlunoSemestreId, [FromServices] IObterAcompanhamentoTurmaApanhadoGeralUseCase useCase)
-        {
-            return Ok(await useCase.Executar(acompanhamentoAlunoSemestreId));
-        }
-
     }
 }
