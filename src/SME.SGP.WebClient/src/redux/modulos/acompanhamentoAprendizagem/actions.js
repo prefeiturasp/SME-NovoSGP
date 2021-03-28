@@ -39,3 +39,13 @@ export const setDesabilitarCamposAcompanhamentoAprendizagem = payload => ({
     '@acompanhamentoAprendizagem/setDesabilitarCamposAcompanhamentoAprendizagem',
   payload,
 });
+
+export const setDadosApanhadoGeral = payload => ({
+  type: '@acompanhamentoAprendizagem/setDadosApanhadoGeral',
+  payload,
+});
+
+export const setApanhadoGeralEmEdicao = payload => ({
+  type: '@acompanhamentoAprendizagem/setApanhadoGeralEmEdicao',
+  payload,
+});
