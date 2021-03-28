@@ -1,7 +1,9 @@
 import { store } from '~/redux';
 import {
   setAcompanhamentoAprendizagemEmEdicao,
+  setApanhadoGeralEmEdicao,
   setDadosAcompanhamentoAprendizagem,
+  setDadosApanhadoGeral,
   setExibirLoaderGeralAcompanhamentoAprendizagem,
 } from '~/redux/modulos/acompanhamentoAprendizagem/actions';
 import { limparDadosRegistroIndividual } from '~/redux/modulos/registroIndividual/actions';
@@ -105,7 +107,7 @@ class ServicoAcompanhamentoAprendizagem {
     const {
       dadosAcompanhamentoAprendizagem,
       acompanhamentoAprendizagemEmEdicao,
-      desabilitarCampos,
+      desabilitarCamposAcompanhamentoAprendizagem,
       dadosAlunoObjectCard,
     } = acompanhamentoAprendizagem;
 
@@ -156,7 +158,7 @@ class ServicoAcompanhamentoAprendizagem {
       return false;
     };
 
-    if (desabilitarCampos) {
+    if (desabilitarCamposAcompanhamentoAprendizagem) {
       return true;
     }
 
@@ -165,6 +167,100 @@ class ServicoAcompanhamentoAprendizagem {
     }
 
     return true;
+  };
+
+  atualizarApanhadoGeral = valorNovo => {
+    const { dispatch } = store;
+    const state = store.getState();
+
+    const { acompanhamentoAprendizagem } = state;
+
+    const { dadosApanhadoGeral } = acompanhamentoAprendizagem;
+
+    const dadosApanhadoGeralAtual = dadosApanhadoGeral;
+    dadosApanhadoGeralAtual.apanhadoGeral = valorNovo;
+    dispatch(setDadosApanhadoGeral(dadosApanhadoGeralAtual));
+  };
+
+  salvarApanhadoGeral = params => {
+    return api.post(`v1/acompanhamento/turmas`, params);
+  };
+
+  salvarDadosApanhadoGeral = async semestreSelecionado => {
+    const { dispatch } = store;
+    const state = store.getState();
+
+    const { acompanhamentoAprendizagem, usuario } = state;
+    const { turmaSelecionada } = usuario;
+
+    const {
+      dadosApanhadoGeral,
+      desabilitarCamposAcompanhamentoAprendizagem,
+      apanhadoGeralEmEdicao,
+    } = acompanhamentoAprendizagem;
+
+    const salvar = async () => {
+      const paramsApanhadoGeral = {
+        turmaId: turmaSelecionada?.id,
+        semestre: semestreSelecionado,
+        apanhadoGeral: dadosApanhadoGeral.apanhadoGeral || '',
+        acompanhamentoTurmaId: dadosApanhadoGeral.acompanhamentoTurmaId || 0,
+      };
+      const retornoApanhadoGeral = await this.salvarApanhadoGeral(
+        paramsApanhadoGeral
+      )
+        .catch(e => erros(e))
+        .finally(() =>
+          dispatch(setExibirLoaderGeralAcompanhamentoAprendizagem(false))
+        );
+
+      const salvouApanhadoGeral = retornoApanhadoGeral?.status === 200;
+
+      if (salvouApanhadoGeral) {
+        if (dadosApanhadoGeral.acompanhamentoTurmaId) {
+          sucesso('Apanhado geral alterado com sucesso');
+        } else {
+          sucesso('Apanhado geral inserido com sucesso');
+        }
+
+        paramsApanhadoGeral.auditoria = retornoApanhadoGeral.data;
+        paramsApanhadoGeral.acompanhamentoTurmaId =
+          retornoApanhadoGeral.data.id;
+        dispatch(setDadosApanhadoGeral(paramsApanhadoGeral));
+
+        dispatch(setApanhadoGeralEmEdicao(false));
+        return true;
+      }
+      return false;
+    };
+
+    if (desabilitarCamposAcompanhamentoAprendizagem) {
+      return true;
+    }
+
+    if (apanhadoGeralEmEdicao) {
+      return salvar();
+    }
+
+    return true;
+  };
+
+  obterDadosApanhadoGeral = async (turmaId, semestre) => {
+    const url = `v1/acompanhamento/turmas/apanhado-geral?turmaId=${turmaId}&semestre=${semestre}`;
+
+    const { dispatch } = store;
+    dispatch(setExibirLoaderGeralAcompanhamentoAprendizagem(true));
+    dispatch(setDadosApanhadoGeral({}));
+    const retorno = await api
+      .get(url)
+      .catch(e => erros(e))
+      .finally(() =>
+        dispatch(setExibirLoaderGeralAcompanhamentoAprendizagem(false))
+      );
+
+    if (retorno?.data) {
+      dispatch(setDadosApanhadoGeral({ ...retorno.data }));
+    }
   };
 }
 

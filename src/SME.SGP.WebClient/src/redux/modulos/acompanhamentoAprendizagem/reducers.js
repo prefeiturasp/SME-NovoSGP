@@ -8,6 +8,8 @@ const inicial = {
   dadosAcompanhamentoAprendizagem: {},
   acompanhamentoAprendizagemEmEdicao: false,
   desabilitarCamposAcompanhamentoAprendizagem: false,
+  dadosApanhadoGeral: {},
+  apanhadoGeralEmEdicao: false,
 };
 
 export default function AcompanhamentoAprendizagem(state = inicial, action) {
@@ -63,6 +65,18 @@ export default function AcompanhamentoAprendizagem(state = inicial, action) {
         return {
           ...draft,
           desabilitarCamposAcompanhamentoAprendizagem: action.payload,
+        };
+      }
+      case '@acompanhamentoAprendizagem/setDadosApanhadoGeral': {
+        return {
+          ...draft,
+          dadosApanhadoGeral: action.payload,
+        };
+      }
+      case '@acompanhamentoAprendizagem/setApanhadoGeralEmEdicao': {
+        return {
+          ...draft,
+          apanhadoGeralEmEdicao: action.payload,
         };
       }
 
