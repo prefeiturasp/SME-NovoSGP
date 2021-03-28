@@ -1,4 +1,7 @@
 ﻿namespace SME.SGP.Infra.Dtos.AcompanhamentoTurma
+﻿using Microsoft.AspNetCore.Http;
+
+namespace SME.SGP.Infra
 {
     public class AcompanhamentoTurmaDto
     {
