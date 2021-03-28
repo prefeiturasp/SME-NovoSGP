@@ -19,4 +19,5 @@ namespace SME.SGP.Aplicacao
         public async Task<AcompanhamentoTurma> Handle(ObterAcompanhamentoTurmaPorIdQuery request, CancellationToken cancellationToken)
             => await repositorioAcompanhamentoTurma.ObterPorIdAsync(request.Id);
     }
+
 }
