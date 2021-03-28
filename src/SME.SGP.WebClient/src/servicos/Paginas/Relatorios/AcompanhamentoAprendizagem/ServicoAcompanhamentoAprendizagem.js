@@ -204,7 +204,7 @@ class ServicoAcompanhamentoAprendizagem {
         turmaId: turmaSelecionada?.id,
         semestre: semestreSelecionado,
         apanhadoGeral: dadosApanhadoGeral.apanhadoGeral || '',
-        acompanhamentoTurmaId: dadosApanhadoGeral.acompanhamentoTurmaId || 1,
+        acompanhamentoTurmaId: dadosApanhadoGeral.acompanhamentoTurmaId || 0,
       };
       const retornoApanhadoGeral = await this.salvarApanhadoGeral(
         paramsApanhadoGeral
@@ -245,8 +245,22 @@ class ServicoAcompanhamentoAprendizagem {
     return true;
   };
 
-  obterDadosApanhadoGeral = () => {
-    // TODO
+  obterDadosApanhadoGeral = async (turmaId, semestre) => {
+    const url = `v1/acompanhamento/turmas/apanhado-geral?turmaId=${turmaId}&semestre=${semestre}`;
+
+    const { dispatch } = store;
+    dispatch(setExibirLoaderGeralAcompanhamentoAprendizagem(true));
+    dispatch(setDadosApanhadoGeral({}));
+    const retorno = await api
+      .get(url)
+      .catch(e => erros(e))
+      .finally(() =>
+        dispatch(setExibirLoaderGeralAcompanhamentoAprendizagem(false))
+      );
+
+    if (retorno?.data) {
+      dispatch(setDadosApanhadoGeral({ ...retorno.data }));
+    }
   };
 }
 
