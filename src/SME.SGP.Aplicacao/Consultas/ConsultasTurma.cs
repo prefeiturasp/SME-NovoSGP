@@ -89,7 +89,7 @@ namespace SME.SGP.Aplicacao
             var tipoCalendario = await consultasTipoCalendario.ObterPorTurma(turma);
             var listaPeriodos = await consultasPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id);
 
-            return await ObterPeriodosEmAberto(turma, dataReferencia, listaPeriodos.Periodos, ehAnoLetivo);
+            return await ObterPeriodosEmAberto(turma, dataReferencia, listaPeriodos != null ? listaPeriodos.Periodos : new List<PeriodoEscolarDto>(), ehAnoLetivo);
         }
 
         private async Task<IEnumerable<PeriodoEscolarAbertoDto>> ObterPeriodosEmAberto(Turma turma, DateTime dataReferencia, List<PeriodoEscolarDto> periodos, bool ehAnoLetivo = false)

@@ -87,15 +87,13 @@ namespace SME.SGP.Aplicacao
             if (turma == null)
                 throw new NegocioException("Turma não encontrada");
 
-            var ehAnoAnterior = turma.AnoLetivo != DateTime.Today.Year;
-
-            var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaPorIdAlunoCodigoQuery(fechamentoTurmaId, alunoCodigo, ehAnoAnterior));
+            var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaPorIdAlunoCodigoQuery(fechamentoTurmaId, alunoCodigo, turma.EhAnoAnterior()));
 
             if (fechamentoTurma != null)
                 turma = fechamentoTurma?.Turma;
             else
             {
-                if (!ehAnoAnterior)
+                if (!turma.EhAnoAnterior())
                     throw new NegocioException("Não existe fechamento para a turma");
             }
 
@@ -141,10 +139,11 @@ namespace SME.SGP.Aplicacao
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(codigoTurma));
             var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaPorIdAlunoCodigoQuery(fechamentoTurmaId, alunoCodigo, turma.AnoLetivo != DateTime.Now.Year));
             var periodoEscolar = fechamentoTurma?.PeriodoEscolar;
-            if(fechamentoTurma != null) turma = fechamentoTurma?.Turma;
+            if (fechamentoTurma != null) turma = fechamentoTurma?.Turma;
             else
             {
-                periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, bimestre));
+                if (bimestre > 0)
+                    periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, bimestre));
             }
 
             string[] turmasCodigos;
@@ -281,26 +280,26 @@ namespace SME.SGP.Aplicacao
 
         public async Task<ParecerConclusivoDto> ObterParecerConclusivo(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, string codigoTurma)
         {
-            var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaPorIdAlunoCodigoQuery(fechamentoTurmaId, alunoCodigo));
-            var turma = fechamentoTurma?.Turma;
-            var ehAnoAtual = false;
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(codigoTurma));
+            if(turma == null) throw new NegocioException("Turma não encontrada");
+
+            var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaPorIdAlunoCodigoQuery(fechamentoTurmaId, alunoCodigo, turma.EhAnoAnterior()));
 
             if (fechamentoTurma == null)
             {
-                turma = await repositorioTurma.ObterPorCodigo(codigoTurma);
-                if (turma == null) throw new NegocioException("Turma não encontrada");
-
-                if (ehAnoAtual)
+                if (!turma.EhAnoAnterior())
                     throw new NegocioException("Não existe fechamento para a turma");
             }
+            else
+            {
+                turma = fechamentoTurma.Turma;
+            }
 
-            ehAnoAtual = turma.AnoLetivo == DateTime.Now.Year;
-
-            if (turma.AnoLetivo != 2020 && ehAnoAtual && !await ExisteConselhoClasseUltimoBimestreAsync(turma, alunoCodigo))
+            if (turma.AnoLetivo != 2020 && !turma.EhAnoAnterior() && !await ExisteConselhoClasseUltimoBimestreAsync(turma, alunoCodigo))
                 throw new NegocioException("Aluno não possui conselho de classe do último bimestre");
 
             var conselhoClasseAluno = await repositorioConselhoClasseAluno.ObterPorConselhoClasseAlunoCodigoAsync(conselhoClasseId, alunoCodigo);
-            if (ehAnoAtual && (conselhoClasseAluno == null || !conselhoClasseAluno.ConselhoClasseParecerId.HasValue))
+            if (!turma.EhAnoAnterior() && (conselhoClasseAluno == null || !conselhoClasseAluno.ConselhoClasseParecerId.HasValue))
                 return await servicoConselhoClasse.GerarParecerConclusivoAlunoAsync(conselhoClasseId, fechamentoTurmaId, alunoCodigo);
 
             return new ParecerConclusivoDto()
