@@ -4,7 +4,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import Button from '~/componentes/button';
 import { Colors } from '~/componentes/colors';
 import { URL_HOME } from '~/constantes/url';
-import { setAcompanhamentoAprendizagemEmEdicao } from '~/redux/modulos/acompanhamentoAprendizagem/actions';
+import {
+  setAcompanhamentoAprendizagemEmEdicao,
+  setApanhadoGeralEmEdicao,
+} from '~/redux/modulos/acompanhamentoAprendizagem/actions';
 import { confirmar } from '~/servicos';
 import history from '~/servicos/history';
 import ServicoAcompanhamentoAprendizagem from '~/servicos/Paginas/Relatorios/AcompanhamentoAprendizagem/ServicoAcompanhamentoAprendizagem';
@@ -24,6 +27,10 @@ const BotoesAcoesAcompanhamentoAprendizagem = props => {
     store => store.acompanhamentoAprendizagem.acompanhamentoAprendizagemEmEdicao
   );
 
+  const apanhadoGeralEmEdicao = useSelector(
+    store => store.acompanhamentoAprendizagem.apanhadoGeralEmEdicao
+  );
+
   const dadosAlunoObjectCard = useSelector(
     store => store.acompanhamentoAprendizagem.dadosAlunoObjectCard
   );
@@ -34,11 +41,15 @@ const BotoesAcoesAcompanhamentoAprendizagem = props => {
   const { turmaSelecionada } = usuario;
 
   const onClickSalvar = async () => {
-    const continuar = await ServicoAcompanhamentoAprendizagem.salvarDadosAcompanhamentoAprendizagem(
+    const salvouApanhadoGeral = await ServicoAcompanhamentoAprendizagem.salvarDadosApanhadoGeral(
       semestreSelecionado
     );
 
-    return continuar;
+    const salvouCompanhamento = await ServicoAcompanhamentoAprendizagem.salvarDadosAcompanhamentoAprendizagem(
+      semestreSelecionado
+    );
+
+    return salvouApanhadoGeral && salvouCompanhamento;
   };
 
   const perguntaAoSalvar = async () => {
@@ -52,7 +63,7 @@ const BotoesAcoesAcompanhamentoAprendizagem = props => {
   const onClickVoltar = async () => {
     if (
       !desabilitarCamposAcompanhamentoAprendizagem &&
-      acompanhamentoAprendizagemEmEdicao
+      (acompanhamentoAprendizagemEmEdicao || apanhadoGeralEmEdicao)
     ) {
       const confirmado = await perguntaAoSalvar();
       if (confirmado) {
@@ -69,16 +80,23 @@ const BotoesAcoesAcompanhamentoAprendizagem = props => {
   };
 
   const recarregarDados = () => {
-    dispatch(setAcompanhamentoAprendizagemEmEdicao(false));
-    ServicoAcompanhamentoAprendizagem.obterAcompanhamentoEstudante(
-      turmaSelecionada?.id,
-      codigoEOL,
-      semestreSelecionado
-    );
+    if (acompanhamentoAprendizagemEmEdicao) {
+      dispatch(setAcompanhamentoAprendizagemEmEdicao(false));
+      ServicoAcompanhamentoAprendizagem.obterAcompanhamentoEstudante(
+        turmaSelecionada?.id,
+        codigoEOL,
+        semestreSelecionado
+      );
+    }
+
+    if (apanhadoGeralEmEdicao) {
+      dispatch(setApanhadoGeralEmEdicao(false));
+      ServicoAcompanhamentoAprendizagem.obterDadosApanhadoGeral();
+    }
   };
 
   const onClickCancelar = async () => {
-    if (acompanhamentoAprendizagemEmEdicao) {
+    if (acompanhamentoAprendizagemEmEdicao || apanhadoGeralEmEdicao) {
       const confirmou = await confirmar(
         'Atenção',
         'Você não salvou as informações preenchidas.',
@@ -110,7 +128,7 @@ const BotoesAcoesAcompanhamentoAprendizagem = props => {
         onClick={onClickCancelar}
         disabled={
           desabilitarCamposAcompanhamentoAprendizagem ||
-          !acompanhamentoAprendizagemEmEdicao
+          (!acompanhamentoAprendizagemEmEdicao && !apanhadoGeralEmEdicao)
         }
       />
       <Button
@@ -122,7 +140,7 @@ const BotoesAcoesAcompanhamentoAprendizagem = props => {
         onClick={onClickSalvar}
         disabled={
           desabilitarCamposAcompanhamentoAprendizagem ||
-          !acompanhamentoAprendizagemEmEdicao
+          (!acompanhamentoAprendizagemEmEdicao && !apanhadoGeralEmEdicao)
         }
       />
     </>

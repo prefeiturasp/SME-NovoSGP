@@ -10,8 +10,10 @@ import situacaoMatriculaAluno from '~/dtos/situacaoMatriculaAluno';
 import {
   limparDadosAcompanhamentoAprendizagem,
   setAlunosAcompanhamentoAprendizagem,
+  setApanhadoGeralEmEdicao,
   setCodigoAlunoSelecionado,
   setDadosAlunoObjectCard,
+  setDadosApanhadoGeral,
   setExibirLoaderGeralAcompanhamentoAprendizagem,
 } from '~/redux/modulos/acompanhamentoAprendizagem/actions';
 import {
@@ -28,6 +30,7 @@ import {
 import { erros } from '~/servicos/alertas';
 import ServicoAcompanhamentoAprendizagem from '~/servicos/Paginas/Relatorios/AcompanhamentoAprendizagem/ServicoAcompanhamentoAprendizagem';
 import { Container } from './acompanhamentoAprendizagem.css';
+import ApanhadoGeral from './DadosAcompanhamentoAprendizagem/ApanhadoGeral/apanhadoGeral';
 import BotaoOrdenarListaAlunos from './DadosAcompanhamentoAprendizagem/BotaoOrdenarListaAlunos/botaoOrdenarListaAlunos';
 import BotoesAcoesAcompanhamentoAprendizagem from './DadosAcompanhamentoAprendizagem/BotoesAcoes/botoesAcoesAcompanhamentoAprendizagem';
 import DadosAcompanhamentoAprendizagem from './DadosAcompanhamentoAprendizagem/dadosAcompanhamentoAprendizagem';
@@ -119,6 +122,8 @@ const AcompanhamentoAprendizagem = () => {
     return () => {
       dispatch(resetarDadosRegistroIndividual());
       dispatch(setComponenteCurricularSelecionado());
+      dispatch(setDadosApanhadoGeral({}));
+      dispatch(setApanhadoGeralEmEdicao(false));
       resetarInfomacoes();
     };
   }, [
@@ -209,6 +214,8 @@ const AcompanhamentoAprendizagem = () => {
     resetarInfomacoes();
     dispatch(setAlunosAcompanhamentoAprendizagem([]));
     dispatch(setCodigoAlunoSelecionado());
+    dispatch(setDadosApanhadoGeral({}));
+    dispatch(setApanhadoGeralEmEdicao(false));
     setSemestreSelecionado(valor);
   };
 
@@ -298,6 +305,9 @@ const AcompanhamentoAprendizagem = () => {
                         semestreSelecionado={semestreSelecionado}
                       />
                     </TabelaRetratilAcompanhamentoAprendizagem>
+                  </div>
+                  <div className="col-md-12 mb-2 mt-2">
+                    <ApanhadoGeral />
                   </div>
                 </>
               ) : (
