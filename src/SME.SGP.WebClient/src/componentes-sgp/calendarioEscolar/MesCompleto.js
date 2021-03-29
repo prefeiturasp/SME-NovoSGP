@@ -8,6 +8,7 @@ import { store } from '~/redux';
 import { selecionaMes } from '~/redux/modulos/calendarioEscolar/actions';
 import api from '~/servicos/api';
 import Loader from '~/componentes/loader';
+import { erros } from '~/servicos';
 
 const Div = styled.div``;
 
@@ -83,25 +84,26 @@ const MesCompleto = props => {
           await api
             .get(
               `v1/calendarios/eventos/meses/${mes}/tipos?EhEventoSme=${eventoSme}&${
-              dreSelecionada ? `DreId=${dreSelecionada}&` : ''
+                dreSelecionada ? `DreId=${dreSelecionada}&` : ''
               }${
-              tipoCalendarioSelecionado
-                ? `IdTipoCalendario=${tipoCalendarioSelecionado}&`
-                : ''
+                tipoCalendarioSelecionado
+                  ? `IdTipoCalendario=${tipoCalendarioSelecionado}&`
+                  : ''
               }${
-              unidadeEscolarSelecionada
-                ? `UeId=${unidadeEscolarSelecionada}`
-                : ''
+                unidadeEscolarSelecionada
+                  ? `UeId=${unidadeEscolarSelecionada}`
+                  : ''
               }`
             )
             .then(resposta => {
-              if (resposta.data)
-                setTipoEventosDiaLista(resposta.data);
-              setCarregandoTipos(false);
+              let listaEventos = [];
+              if (resposta?.data) {
+                listaEventos = resposta.data;
+              }
+              setTipoEventosDiaLista(listaEventos);
             })
-            .catch(() => {
-              setCarregandoTipos(false);
-            });
+            .catch(e => erros(e))
+            .finally(() => setCarregandoTipos(false));
         }
       }
     },
@@ -135,7 +137,7 @@ const MesCompleto = props => {
       obterTipoEventosDia(mesSelecionado);
     }
     return () => setEstaAberto({ [mesSelecionado]: false });
-  }, [mesSelecionado]);
+  }, [mesSelecionado, obterTipoEventosDia]);
 
   return mesSelecionado > 0 && estaAberto[mesSelecionado] ? (
     <Div
@@ -221,8 +223,8 @@ const MesCompleto = props => {
       </Loader>
     </Div>
   ) : (
-      <Div />
-    );
+    <Div />
+  );
 };
 
 MesCompleto.propTypes = {
