@@ -344,7 +344,7 @@ export default function ReiniciarSenha({ perfilSelecionado }) {
           <Button
             label="Filtrar"
             color={Colors.Azul}
-            disabled={perfilSelecionado}
+            disabled={perfilSelecionado || !dreSelecionada}
             border
             className="text-center d-block mt-4 float-right w-100"
             onClick={onClickFiltrar}
