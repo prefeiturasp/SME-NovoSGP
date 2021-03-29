@@ -128,7 +128,8 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasAlunoPorTurmasAsync(string alunoCodigo, IEnumerable<string> turmasCodigos, long? periodoEscolarId)
         {
             var condicaoPeriodoEscolar = periodoEscolarId.HasValue ? "ft.periodo_escolar_id = @periodoEscolarId" : "ft.periodo_escolar_id is null";
-            var query = $@"select ccn.componente_curricular_codigo as ComponenteCurricularCodigo, ccn.conceito_id as ConceitoId, ccn.nota as Nota
+            var query = $@"select * from (
+               select ccn.componente_curricular_codigo as ComponenteCurricularCodigo, ccn.conceito_id as ConceitoId, ccn.nota as Nota
                   from fechamento_turma ft
                  inner join turma t on t.id = ft.turma_id 
                  inner join conselho_classe cc on cc.fechamento_turma_id = ft.id
@@ -136,7 +137,18 @@ namespace SME.SGP.Dados.Repositorios
                  inner join conselho_classe_nota ccn on ccn.conselho_classe_aluno_id = cca.id 
                  where {condicaoPeriodoEscolar}
                    and t.turma_id = ANY(@turmasCodigos)
-                   and cca.aluno_codigo = @alunoCodigo ";
+                   and cca.aluno_codigo = @alunoCodigo 
+               union
+               select ftd.disciplina_id as ComponenteCurricularCodigo,fn.conceito_id as ConceitoId, fn.nota as nota 
+                 from fechamento_nota fn 
+                inner join fechamento_aluno fa on fa.id = fn.fechamento_aluno_id 
+                inner join fechamento_turma_disciplina ftd on ftd.id = fa.fechamento_turma_disciplina_id 
+                inner join fechamento_turma ft on ft.id = ftd.fechamento_turma_id
+                inner join turma t on t.id = ft.turma_id
+                where {condicaoPeriodoEscolar}
+                  and t.turma_id = ANY(@turmasCodigos)
+                  and fa.aluno_codigo = @alunoCodigo 
+                ) as x"; ;
 
             return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { alunoCodigo, turmasCodigos, periodoEscolarId });
         }
