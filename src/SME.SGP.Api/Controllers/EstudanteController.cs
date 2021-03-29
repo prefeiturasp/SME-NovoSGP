@@ -61,7 +61,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         public async Task<IActionResult> ObterFotoAluno(string codigoAluno, [FromServices] IObterEstudanteFotoUseCase useCase)
         {
-            return Ok(await useCase.Executar(codigoAluno, anoLetivo));
+            return Ok(await useCase.Executar(codigoAluno));
         }
     }
 }
