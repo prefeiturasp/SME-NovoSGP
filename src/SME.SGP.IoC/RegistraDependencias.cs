@@ -815,6 +815,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterPeriodoLetivoTurmaUseCase, ObterPeriodoLetivoTurmaUseCase>();
 
             services.TryAddScoped<ISalvarAcompanhamentoTurmaUseCase, SalvarAcompanhamentoTurmaUseCase>();
+            services.TryAddScoped<IObterEstudanteFotoUseCase, ObterEstudanteFotoUseCase>();
 
         }
     }

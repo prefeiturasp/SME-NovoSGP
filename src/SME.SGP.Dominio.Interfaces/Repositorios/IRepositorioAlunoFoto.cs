@@ -6,5 +6,6 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioAlunoFoto : IRepositorioBase<AlunoFoto>
     {
+        Task<MiniaturaFotoDto> ObterFotosPorAlunoCodigo(string alunoCodigo);
     }
 }
