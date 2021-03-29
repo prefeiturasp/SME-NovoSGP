@@ -117,8 +117,7 @@ namespace SME.SGP.Dominio.Servicos
                 return;
 
             // Verifica se possui aluno não notificado na compensação
-            alunos = alunos.Where(a => !a.Notificado && a.QuantidadeFaltasCompensadas > 0);
-            if (!alunos.Any())
+            if (!alunos.Any(a => !a.Notificado && a.QuantidadeFaltasCompensadas > 0))
                 return;
 
             // Carrega dados da compensacao a notificar
