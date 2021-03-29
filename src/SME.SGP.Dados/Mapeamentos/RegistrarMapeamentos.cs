@@ -172,6 +172,8 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new AcompanhamentoAlunoSemestreMap());
                config.AddMap(new AcompanhamentoAlunoFotoMap());
                config.AddMap(new AcompanhamentoTurmaMap());
+               config.AddMap(new AlunoFotoMap());
+               
                config.ForDommel();
            });
         }
