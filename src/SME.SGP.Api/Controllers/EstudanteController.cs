@@ -56,7 +56,7 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpGet("{codigoAluno}/foto")]
-        [ProducesResponseType(typeof(AlunoReduzidoDto), 200)]
+        [ProducesResponseType(typeof(ArquivoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         public async Task<IActionResult> ObterFotoAluno(string codigoAluno, [FromServices] IObterEstudanteFotoUseCase useCase)
