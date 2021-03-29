@@ -50,11 +50,20 @@ const Sider = () => {
           .filter(menu => {
             if (menu.ehMenu) return menu;
           })
-          .map(x => 'menu-' + x.codigo)
+          .map(x => `menu-${x.codigo}`)
       );
   }, [usuario.menu]);
 
-  const alterarPosicaoJanelaPopup = (idElementoHtml, quantidadeItens) => {
+  const esperarElementoExistir = (selector, callback) => {
+    const el = document.getElementById(selector);
+    if (el) {
+      return callback(el);
+    }
+    setTimeout(() => esperarElementoExistir(selector, callback), 5);
+    return '';
+  };
+
+  const alterarPosicaoJanelaPopup = async (idElementoHtml, quantidadeItens) => {
     const itemMenu = window.document.getElementById(idElementoHtml);
     if (itemMenu) {
       const alturaItens = quantidadeItens * 40 + 6;
@@ -66,13 +75,24 @@ const Sider = () => {
         alturaTotalItens > alturaTela
           ? posicaoY - (alturaTotalItens - alturaTela)
           : posicaoY;
-      document.documentElement.style.setProperty(
-        '--posicao-item-menu-top',
-        `${posicaoTop}px`
-      );
+
+      if (quantidadeItens) {
+        document.documentElement.style.setProperty(
+          '--posicao-item-menu-top',
+          `${posicaoTop}px`
+        );
+      }
+
       document.documentElement.style.setProperty(
         '--posicao-item-menu-right',
         `${posicaoRight}px`
+      );
+
+      esperarElementoExistir(`sub-${idElementoHtml}$Menu`, el =>
+        el.parentElement.style.setProperty(
+          '--posicao-item-menu-top',
+          `${posicaoTop}px`
+        )
       );
     }
   };
@@ -113,7 +133,7 @@ const Sider = () => {
               item.descricao
             )}
           </span>
-          {item.url ? <Link to={item.url} id={'link-' + item.codigo} /> : ''}
+          {item.url ? <Link to={item.url} id={`link-${item.codigo}`} /> : ''}
         </Menu.Item>
       );
     });
@@ -138,7 +158,7 @@ const Sider = () => {
               }
               title={
                 subMenu.icone ? (
-                  <div className={'item-menu-retraido'}>
+                  <div className="item-menu-retraido">
                     <i
                       className={
                         subMenu.icone +
@@ -150,7 +170,7 @@ const Sider = () => {
                 ) : (
                   <div
                     className={
-                      'item-menu-retraido' + temSubmenu
+                      `item-menu-retraido${temSubmenu}`
                         ? ' submenu-subnivel'
                         : ''
                     }
@@ -166,6 +186,14 @@ const Sider = () => {
         }
       });
     }
+  };
+
+  const itemMenuEscolhido = item => {
+    const { keyPath } = item;
+    const indice = keyPath.length - 1;
+    const [, numero] = keyPath[indice].split('-');
+    const menu = document.getElementById(numero);
+    menu.getElementsByClassName('ant-menu-submenu-arrow')[0].click();
   };
 
   return (
@@ -238,6 +266,7 @@ const Sider = () => {
               onOpenChange={onOpenChange}
               onSelect={selecionarItem.bind(NavegacaoStore.menuSelecionado)}
               selectedKeys={NavegacaoStore.menuSelecionado}
+              onClick={itemMenuEscolhido}
             >
               {criarMenus(usuario.menu)}
             </Menu>
