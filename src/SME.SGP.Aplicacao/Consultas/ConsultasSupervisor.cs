@@ -47,20 +47,46 @@ namespace SME.SGP.Aplicacao
             return listaRetorno;
         }
 
-        public IEnumerable<SupervisorDto> ObterPorDreENomeSupervisor(string supervisorNome, string dreId)
+        public async Task<IEnumerable<SupervisorDto>> ObterPorDreENomeSupervisorAsync(string supervisorNome, string dreId)
         {
             var supervisoresEol = servicoEOL.ObterSupervisoresPorDre(dreId);
+            var supervisoresAtribuidos = (await repositorioSupervisorEscolaDre.ObtemSupervisoresPorDreAsync(dreId))?.DistinctBy(s => s.SupervisorId);
+
+            var nomeServidoresAtribuidos = await servicoEOL.ObterListaNomePorListaRF(supervisoresAtribuidos?.Select(s => s.SupervisorId));
+
+            var lstSupervisores = new List<SupervisorDto>();
 
             if (string.IsNullOrEmpty(supervisorNome))
             {
-                return supervisoresEol?.Select(a => new SupervisorDto() { SupervisorId = a.CodigoRF, SupervisorNome = a.NomeServidor });
+                if (supervisoresEol != null && supervisoresEol.Any())
+                    lstSupervisores.AddRange(supervisoresEol?.Select(a => new SupervisorDto() { SupervisorId = a.CodigoRF, SupervisorNome = a.NomeServidor }));
+
+                if (supervisoresAtribuidos != null && supervisoresAtribuidos.Any())
+                    lstSupervisores.AddRange(supervisoresAtribuidos?.Where(s => !supervisoresEol.Select(se => se.CodigoRF).Contains(s.SupervisorId))
+                                                                                            ?.Select(a => new SupervisorDto()
+                                                                                            {
+                                                                                                SupervisorId = a.SupervisorId,
+                                                                                                SupervisorNome = nomeServidoresAtribuidos?
+                                                                                                        .FirstOrDefault(n => n.CodigoRF == a.SupervisorId)?.Nome
+                                                                                            }));
             }
             else
             {
-                return from a in supervisoresEol
-                       where a.NomeServidor.ToLower().Contains(supervisorNome.ToLower())
-                       select new SupervisorDto() { SupervisorId = a.CodigoRF, SupervisorNome = a.NomeServidor };
+                if (supervisoresEol != null && supervisoresEol.Any())
+                    lstSupervisores.AddRange(
+                        from a in supervisoresEol
+                        where a.NomeServidor.ToLower().Contains(supervisorNome.ToLower())
+                        select new SupervisorDto() { SupervisorId = a.CodigoRF, SupervisorNome = a.NomeServidor });
+
+                if (supervisoresAtribuidos != null && supervisoresAtribuidos.Any())
+                    lstSupervisores.AddRange(
+                       from a in supervisoresAtribuidos
+                       join b in nomeServidoresAtribuidos on a.SupervisorId equals b.CodigoRF
+                       where !supervisoresEol.Select(s => s.CodigoRF).Contains(a.SupervisorId) && b.Nome.ToLower().Contains(supervisorNome.ToLower())
+                       select new SupervisorDto() { SupervisorId = b.CodigoRF, SupervisorNome = b.Nome });
             }
+
+            return lstSupervisores?.OrderBy(s => s.SupervisorNome);
         }
 
         public IEnumerable<SupervisorEscolasDto> ObterPorDreESupervisor(string supervisorId, string dreId)
