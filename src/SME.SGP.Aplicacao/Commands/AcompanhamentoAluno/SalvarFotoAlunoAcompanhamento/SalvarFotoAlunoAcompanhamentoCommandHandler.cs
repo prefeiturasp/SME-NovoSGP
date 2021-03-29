@@ -11,18 +11,18 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class SalvarFotoAlunoCommandHandler : IRequestHandler<SalvarFotoAlunoCommand, AuditoriaDto>
+    public class SalvarFotoAlunoAcompanhamentoCommandHandler : IRequestHandler<SalvarFotoAlunoAcompanhamentoCommand, AuditoriaDto>
     {
         private readonly IMediator mediator;
         private readonly IUnitOfWork unitOfWork;
 
-        public SalvarFotoAlunoCommandHandler(IMediator mediator, IUnitOfWork unitOfWork)
+        public SalvarFotoAlunoAcompanhamentoCommandHandler(IMediator mediator, IUnitOfWork unitOfWork)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
-        public async Task<AuditoriaDto> Handle(SalvarFotoAlunoCommand request, CancellationToken cancellationToken)
+        public async Task<AuditoriaDto> Handle(SalvarFotoAlunoAcompanhamentoCommand request, CancellationToken cancellationToken)
         {
             var acompanhamentoSemestre = request.Acompanhamento.AcompanhamentoAlunoSemestreId > 0 ?
                 await ObterAcompanhametnoSemestre(request.Acompanhamento.AcompanhamentoAlunoSemestreId) :

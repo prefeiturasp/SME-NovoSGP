@@ -63,5 +63,14 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(codigoAluno));
         }
+
+        [HttpPost("{codigoAluno}/foto")]
+        [ProducesResponseType(typeof(ArquivoDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public async Task<IActionResult> SalvarFotoAluno(string codigoAluno, [FromServices] IObterEstudanteFotoUseCase useCase)
+        {
+            return Ok(await useCase.Executar(codigoAluno));
+        }
     }
 }
