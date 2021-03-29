@@ -40,6 +40,7 @@ namespace SME.SGP.Dados.Repositorios
 	                        turma_id = @turmaId
 	                        and pac.componente_curricular_id = @componenteCurricularId
 	                        and pape.periodo_escolar_id = @periodoEscolarId
+                            and pape.excluido = false 
                             and pa.excluido = false 
                             and pac.excluido = false
                             and (paoa.excluido is null or paoa.excluido = false)
