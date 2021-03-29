@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import CampoNumero from '~/componentes/campoNumero';
 import { erros } from '~/servicos/alertas';
 import api from '~/servicos/api';
+import { converterAcaoTecla } from '~/utils';
 
 const CampoNotaFinal = props => {
   const {
@@ -16,6 +17,10 @@ const CampoNotaFinal = props => {
     mediaAprovacaoBimestre,
     label,
     podeLancarNotaFinal,
+    clicarSetas,
+    name,
+    esconderSetas,
+    step,
   } = props;
 
   const modoEdicaoGeral = useSelector(
@@ -86,17 +91,20 @@ const CampoNotaFinal = props => {
   const setarValorNovo = async valorNovo => {
     if (!desabilitarCampo && podeEditar) {
       setNotaValorAtual(valorNovo);
-      const retorno = await api
-        .get(
-          `v1/avaliacoes/notas/${Number(
-            valorNovo
-          )}/arredondamento?data=${periodoFim}`
-        )
-        .catch(e => erros(e));
-
+      const resto = valorNovo % 0.5;
       let notaArredondada = valorNovo;
-      if (retorno && retorno.data) {
-        notaArredondada = retorno.data;
+      if (resto) {
+        const retorno = await api
+          .get(
+            `v1/avaliacoes/notas/${Number(
+              valorNovo
+            )}/arredondamento?data=${periodoFim}`
+          )
+          .catch(e => erros(e));
+
+        if (retorno && retorno.data) {
+          notaArredondada = retorno.data;
+        }
       }
 
       validaSeEstaAbaixoDaMedia(notaArredondada);
@@ -111,21 +119,37 @@ const CampoNotaFinal = props => {
     return regexValorInvalido.test(String(valorNovo));
   };
 
+  const apertarTecla = e => {
+    const teclaEscolhida = converterAcaoTecla(e.keyCode);
+    if (teclaEscolhida === 0) {
+      setarValorNovo(0);
+    }
+  };
+
   return (
     <Tooltip placement="bottom" title={abaixoDaMedia ? 'Abaixo da Média' : ''}>
       <div>
         <CampoNumero
-          label={label ? label : ''}
+          esconderSetas={esconderSetas}
+          name={name}
+          onKeyDown={clicarSetas}
+          onKeyUp={apertarTecla}
+          label={label || ''}
           onChange={valorNovo => {
-            const invalido = valorInvalido(valorNovo);
-            if (!invalido && editouCampo(notaValorAtual, valorNovo)) {
-              setarValorNovo(valorNovo);
+            let valorEnviado = null;
+            if (valorNovo) {
+              const invalido = valorInvalido(valorNovo);
+              if (!invalido && editouCampo(notaValorAtual, valorNovo)) {
+                valorEnviado = valorNovo;
+              }
             }
+            const valorCampo = valorNovo > 0 ? valorNovo : null;
+            setarValorNovo(valorEnviado || valorCampo);
           }}
           value={notaValorAtual}
           min={0}
           max={10}
-          step={0.5}
+          step={step}
           placeholder="Nota Final"
           disabled={
             desabilitarCampo ||
@@ -153,6 +177,10 @@ CampoNotaFinal.defaultProps = {
   podeEditar: PropTypes.bool,
   periodoFim: PropTypes.string,
   mediaAprovacaoBimestre: PropTypes.number,
+  clicarSetas: PropTypes.func,
+  name: PropTypes.string,
+  esconderSetas: PropTypes.bool,
+  step: PropTypes.bool,
 };
 
 CampoNotaFinal.propTypes = {
@@ -162,6 +190,10 @@ CampoNotaFinal.propTypes = {
   podeEditar: false,
   periodoFim: '',
   mediaAprovacaoBimestre: 0,
+  clicarSetas: () => {},
+  name: '',
+  esconderSetas: false,
+  step: 0.5,
 };
 
 export default CampoNotaFinal;

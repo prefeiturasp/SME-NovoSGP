@@ -2,7 +2,7 @@ import { InputNumber } from 'antd';
 import { Field } from 'formik';
 import PropTypes from 'prop-types';
 import React from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import { Base } from './colors';
 import Label from './label';
 
@@ -15,6 +15,13 @@ const Campo = styled.div`
   }
   .ant-input-number {
     height: 38px;
+    &-handler-wrap {
+      ${({ esconderSetas }) =>
+        esconderSetas &&
+        css`
+          display: none;
+        `}
+    }
   }
 
   height: 45px;
@@ -44,6 +51,8 @@ const CampoNumero = React.forwardRef((props, ref) => {
     onBlur,
     ehDecimal,
     decimalSeparator,
+    esconderSetas,
+    onKeyUp,
   } = props;
 
   const possuiErro = () => {
@@ -57,24 +66,24 @@ const CampoNumero = React.forwardRef((props, ref) => {
     }
   };
 
-  const validaFormatter =  valor => {
+  const validaFormatter = valor => {
     if (!ehDecimal) {
-      valor = valor.toString().replace('.', '')
-      valor = valor.toString().replace(',', '')
+      valor = valor.toString().replace('.', '');
+      valor = valor.toString().replace(',', '');
     }
     return valor;
-  }
+  };
 
-  const validaParser =  valor => {
+  const validaParser = valor => {
     if (!ehDecimal) {
-      valor = valor.replace(/[^0-9.]/g, '')
+      valor = valor.replace(/[^0-9.]/g, '');
     }
     return valor;
-  }
+  };
 
   return (
     <>
-      <Campo className={classNameCampo}>
+      <Campo esconderSetas={esconderSetas} className={classNameCampo}>
         {label ? <Label text={label} control={name || ''} /> : ''}
         {form ? (
           <>
@@ -92,6 +101,7 @@ const CampoNumero = React.forwardRef((props, ref) => {
               maxLength={maxlength || ''}
               innerRef={ref}
               onKeyDown={onKeyDown}
+              onKeyUp={onKeyUp}
               onChange={value => {
                 form.setFieldValue(name, value);
                 form.setFieldTouched(name, true);
@@ -103,11 +113,13 @@ const CampoNumero = React.forwardRef((props, ref) => {
           </>
         ) : (
           <InputNumber
+            name={name}
             ref={ref}
             placeholder={placeholder}
             onChange={onChange}
             readOnly={desabilitado}
             onKeyDown={onKeyDown}
+            onKeyUp={onKeyUp}
             value={value}
             max={max}
             min={min}
@@ -131,6 +143,8 @@ CampoNumero.propTypes = {
   semMensagem: PropTypes.bool,
   ehDecimal: PropTypes.bool,
   decimalSeparator: PropTypes.string,
+  esconderSetas: PropTypes.bool,
+  onKeyUp: PropTypes.func,
 };
 
 CampoNumero.defaultProps = {
@@ -139,6 +153,8 @@ CampoNumero.defaultProps = {
   semMensagem: false,
   ehDecimal: true,
   decimalSeparator: ',',
+  esconderSetas: false,
+  onKeyUp: () => {},
 };
 
 export default CampoNumero;
