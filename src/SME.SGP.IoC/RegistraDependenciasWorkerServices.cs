@@ -277,6 +277,7 @@ namespace SME.SGP.IoC
             //services.TryAddScopedWorkerService<IRepositorioTestePostgre, RepositorioTestePostgre>();
             services.TryAddScopedWorkerService<IRepositorioFechamentoReaberturaBimestre, RepositorioFechamentoReaberturaBimestre>();
             services.TryAddScopedWorkerService<IRepositorioHistoricoReinicioSenha, RepositorioHistoricoReinicioSenha>();
+            services.TryAddScopedWorkerService<IRepositorioComunicado, RepositorioComunicado>();
             services.TryAddScopedWorkerService<IRepositorioComunicadoAluno, RepositorioComunicadoAluno>();
             services.TryAddScopedWorkerService<IRepositorioComunicadoTurma, RepositorioComunicadoTurma>();
             services.TryAddScopedWorkerService<IRepositorioDiarioBordo, RepositorioDiarioBordo>();
