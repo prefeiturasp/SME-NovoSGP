@@ -34,8 +34,8 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("  end as professorrf");
             query.AppendLine("from fechamento_turma_disciplina ftd ");
             query.AppendLine("inner join fechamento_aluno fa on fa.fechamento_turma_disciplina_id = ftd.id");
-            query.AppendLine("where fa.aluno_codigo = @alunoCodigo");
-            query.AppendLine(" and ftd.fechamento_turma_id = @fechamentoTurmaId");
+            query.AppendLine("where not ftd.excluido and not fa.excluido ");
+            query.AppendLine(" and fa.aluno_codigo = @alunoCodigo and ftd.fechamento_turma_id = @fechamentoTurmaId");
 
             return await database.Conexao.QueryAsync<FechamentoAlunoAnotacaoConselhoDto>(query.ToString(), new { alunoCodigo, fechamentoTurmaId });
         }

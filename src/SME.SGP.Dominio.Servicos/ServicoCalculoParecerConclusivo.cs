@@ -88,7 +88,12 @@ namespace SME.SGP.Dominio.Servicos
             if (!validacaoConselho.ExisteNotaConselho)
                 return parecerNota;
 
-            return ObterParecerValidacao(validacaoConselho.ValidacaoNotaConselho);
+            var parecerValidacao = ObterParecerValidacao(validacaoConselho.ValidacaoNotaConselho);
+
+            if (parecerValidacao.Aprovado && parecerNota.Aprovado)
+                return parecerNota;
+
+            return parecerValidacao;
         }
 
         #region Frequência
