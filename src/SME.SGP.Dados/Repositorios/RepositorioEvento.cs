@@ -1087,7 +1087,8 @@ namespace SME.SGP.Dados.Repositorios
 	                        letivo,
                             e.ue_id,
                             e.dre_id,
-                            e.nome
+                            e.nome,
+                            e.feriado_id                       
                         from
 	                        evento e
                                 inner join tipo_calendario tc
