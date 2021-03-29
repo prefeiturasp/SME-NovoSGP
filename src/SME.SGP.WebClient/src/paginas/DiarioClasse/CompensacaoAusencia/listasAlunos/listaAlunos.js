@@ -1,11 +1,14 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { DataTable, Label } from '~/componentes';
+import { ordenarPor } from '~/utils/funcoes/gerais';
 
 import { CardTabelaAlunos } from '../styles';
 
 const ListaAlunos = props => {
   const { lista, idsAlunos, onSelectRow } = props;
+
+  const listaOrdenada = ordenarPor(lista, 'nome');
 
   const montaExibicaoPercentual = (frequencia, dadosAluno) => {
     const frequenciaArredondada = frequencia
@@ -56,9 +59,9 @@ const ListaAlunos = props => {
           selectedRowKeys={idsAlunos}
           onSelectRow={onSelectRowAlunos}
           columns={colunasListaAlunos}
-          dataSource={lista}
+          dataSource={listaOrdenada}
           selectMultipleRows
-          onClickRow={() => { }}
+          onClickRow={() => {}}
           pagination={false}
           pageSize={9999}
         />
@@ -76,7 +79,7 @@ ListaAlunos.propTypes = {
 ListaAlunos.defaultProps = {
   lista: [],
   idsAlunos: [],
-  onSelectRow: () => { },
+  onSelectRow: () => {},
 };
 
 export default ListaAlunos;

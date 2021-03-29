@@ -30,9 +30,6 @@ namespace SME.SGP.Aplicacao
             var eventos = await mediator.Send(new ObterEventosPorTipoDeCalendarioDreUeQuery(request.TipoCalendarioId, request.DreCodigo, request.UeCodigo, false, false));
             var tipoCalendario = await mediator.Send(new ObterTipoCalendarioPorIdQuery(request.TipoCalendarioId));
 
-            if (!string.IsNullOrEmpty(request.DreCodigo)  && !string.IsNullOrEmpty(request.UeCodigo))
-                eventos = eventos.Where(e => e.DreId == null);
-
             if (tipoCalendario == null)
                 throw new NegocioException("Tipo de calendario não encontrado");
 
