@@ -69,7 +69,7 @@ namespace SME.SGP.Dados.Repositorios
                             }
                         }
                         else
-                        {                            
+                        {
                             componenteCurricular = componente;
                             componenteCurricular.ObjetivosAprendizagem.Add(objetivo);
                             periodoAdicionado.ComponentesCurriculares.Add(componenteCurricular);
@@ -146,7 +146,7 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<PlanejamentoAnualPeriodoEscolarResumoDto>(sql, new { planejamentoAnualId });
         }
-        
+
         public async Task<bool> PlanejamentoPossuiObjetivos(long planejamentoAnualPeriodoId)
         {
             var query = @"select pc.id
@@ -166,6 +166,9 @@ namespace SME.SGP.Dados.Repositorios
         {
             var sql = @"update planejamento_anual_periodo_escolar pape
                         set excluido = true
+                          , alterado_por = @alteradoPor
+                          , alterado_rf = @alteradoRF
+                          , alterado_em = @alteradoEm 
                         where pape.id in (select pape2.id
                                             from planejamento_anual pa
                                                 inner join planejamento_anual_periodo_escolar pape2
@@ -176,7 +179,14 @@ namespace SME.SGP.Dados.Repositorios
                                                 pe.bimestre = @bimestre and
                                                 not pa.excluido and
                                                 not pape2.excluido);";
-            await database.Conexao.ExecuteAsync(sql, new { idTurma, bimestre });
+            await database.Conexao.ExecuteAsync(sql, new
+            {
+                idTurma,
+                bimestre,
+                alteradoPor = database.UsuarioLogadoNomeCompleto,
+                alteradoRF = database.UsuarioLogadoRF,
+                alteradoEm = DateTimeExtension.HorarioBrasilia()
+            });
         }
 
         public async Task<IEnumerable<PlanejamentoAnualPeriodoEscolarResumoDto>> ObterPlanejamentosAnuaisPeriodosTurmaPorPlanejamentoAnualId(long planejamentoAnualId)

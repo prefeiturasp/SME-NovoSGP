@@ -38,16 +38,20 @@ namespace SME.SGP.Dados.Repositorios
             return planejamento;
         }
 
-        public async Task RemoverLogicamenteAsync(long id)
-        {
-            var sql = "UPDATE planejamento_anual_componente SET EXCLUIDO = TRUE WHERE ID = @id";
-            await database.Conexao.ExecuteAsync(sql, new { id });
-        }
-
         public async Task RemoverLogicamenteAsync(long[] ids)
         {
-            var sql = "UPDATE planejamento_anual_componente SET EXCLUIDO = TRUE WHERE ID = any(@ids)";
-            await database.Conexao.ExecuteAsync(sql, new { ids });
+            var sql = @"UPDATE planejamento_anual_componente 
+                               SET excluido = true
+                                 , alterado_por = @alteradoPor
+                                 , alterado_rf = @alteradoRF
+                                 , alterado_em = @alteradoEm 
+                              WHERE ID = any(@ids)";
+            await database.Conexao.ExecuteAsync(sql, new { 
+                ids,
+                alteradoPor = database.UsuarioLogadoNomeCompleto,
+                alteradoRF = database.UsuarioLogadoRF,
+                alteradoEm = DateTimeExtension.HorarioBrasilia()
+            });
         }
     }
 }
