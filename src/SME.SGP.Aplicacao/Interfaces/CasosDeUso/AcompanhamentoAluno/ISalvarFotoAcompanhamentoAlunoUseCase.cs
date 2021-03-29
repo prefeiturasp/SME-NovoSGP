@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Interfaces
 {
-    public interface ISalvarFotoAlunoUseCase : IUseCase<AcompanhamentoAlunoDto, AuditoriaDto>
+    public interface ISalvarFotoAcompanhamentoAlunoUseCase : IUseCase<AcompanhamentoAlunoDto, AuditoriaDto>
     {
     }
 }

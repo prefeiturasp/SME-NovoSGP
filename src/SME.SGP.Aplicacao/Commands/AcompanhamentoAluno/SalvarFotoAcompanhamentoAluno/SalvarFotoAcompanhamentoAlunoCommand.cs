@@ -8,9 +8,9 @@ using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class SalvarFotoAlunoAcompanhamentoCommand : IRequest<AuditoriaDto>
+    public class SalvarFotoAcompanhamentoAlunoCommand : IRequest<AuditoriaDto>
     {
-        public SalvarFotoAlunoAcompanhamentoCommand(AcompanhamentoAlunoDto acompanhamento)
+        public SalvarFotoAcompanhamentoAlunoCommand(AcompanhamentoAlunoDto acompanhamento)
         {
             Acompanhamento = acompanhamento;
         }
@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
         public AcompanhamentoAlunoDto Acompanhamento { get; }
     }
 
-    public class SalvarFotoAlunoAcompanhamentoCommandValidator : AbstractValidator<SalvarFotoAlunoAcompanhamentoCommand>
+    public class SalvarFotoAlunoAcompanhamentoCommandValidator : AbstractValidator<SalvarFotoAcompanhamentoAlunoCommand>
     {
         public SalvarFotoAlunoAcompanhamentoCommandValidator()
         {
