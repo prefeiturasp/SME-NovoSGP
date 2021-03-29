@@ -177,9 +177,8 @@ export default function ReiniciarSenha({ perfilSelecionado }) {
   }, [carregarUes, dreSelecionada]);
 
   const onClickFiltrar = async () => {
-    if (!permissoesTela.podeConsultar) return;
-
     if (dreSelecionada) {
+      setCarregando(true);
       const parametrosPost = {
         codigoDRE: dreSelecionada,
         nomeServidor: nomeUsuarioSelecionado,
@@ -193,7 +192,9 @@ export default function ReiniciarSenha({ perfilSelecionado }) {
         .post(`v1/unidades-escolares/funcionarios`, parametrosPost)
         .catch(() => {
           setListaUsuario([]);
-        });
+        })
+        .finally(() => setCarregando(false));
+
       if (lista && lista.data) {
         setListaUsuario([]);
         setListaUsuario(lista.data);
