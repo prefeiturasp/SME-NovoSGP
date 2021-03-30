@@ -41,12 +41,6 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<PlanejamentoAnualObjetivoAprendizagem>(sql, new { componentesId });
         }
 
-        public async Task RemoverLogicamenteAsync(long id)
-        {
-            var sql = "UPDATE planejamento_anual_objetivos_aprendizagem SET EXCLUIDO = TRUE WHERE ID = @id";
-            await database.Conexao.ExecuteAsync(sql, new { id });
-        }
-
         public async Task RemoverTodosPorPlanejamentoAnualPeriodoEscolarId(long id)
         {
             var sql = @"delete

@@ -7,21 +7,19 @@ namespace SME.SGP.Aplicacao
 {
     public class ExcluirPlanejamentoAnualPorTurmaIdEComponenteCurricularIdCommand : IRequest<bool>
     {
-        public ExcluirPlanejamentoAnualPorTurmaIdEComponenteCurricularIdCommand()
-        {
+        public ExcluirPlanejamentoAnualPorTurmaIdEComponenteCurricularIdCommand() { }
 
-        }
         public ExcluirPlanejamentoAnualPorTurmaIdEComponenteCurricularIdCommand(long turmaId, long componenteCurricularId, long[] idsPlanejamentoAnualPeriodoEscolar)
         {
             TurmaId = turmaId;
             ComponenteCurricularId = componenteCurricularId;
-            IdsPlanejamentoAnualPeriodoEscolar = idsPlanejamentoAnualPeriodoEscolar;
+            IdsPlanejamentoAnualPeriodoEscolarSelecionados = idsPlanejamentoAnualPeriodoEscolar;
         }
+
         public long TurmaId { get; set; }
         public long ComponenteCurricularId { get; set; }
-        public long[] IdsPlanejamentoAnualPeriodoEscolar { get; set; }
+        public long[] IdsPlanejamentoAnualPeriodoEscolarSelecionados { get; set; }
     }
-
 
     public class RemovePlanejamentoAnualAntigoCommandValidator : AbstractValidator<ExcluirPlanejamentoAnualPorTurmaIdEComponenteCurricularIdCommand>
     {
