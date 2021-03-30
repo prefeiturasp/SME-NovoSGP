@@ -7,17 +7,10 @@ import { Base } from '~/componentes/colors';
 import Loader from '~/componentes/loader';
 import { confirmar, erro, erros } from '~/servicos';
 import ServicoArmazenamento from '~/servicos/Componentes/ServicoArmazenamento';
-import { permiteInserirFormato } from '~/utils/funcoes/gerais';
-
-function getBase64DataURL(file, type) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    const fileBlob = new Blob([file], { type });
-    reader.readAsDataURL(fileBlob);
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = error => reject(error);
-  });
-}
+import {
+  getBase64DataURL,
+  permiteInserirFormato,
+} from '~/utils/funcoes/gerais';
 
 export const ContainerUpload = styled(Upload)`
   .ant-upload-select-picture-card {
@@ -51,6 +44,8 @@ const UploadImagens = props => {
     desabilitar,
     quantidadeMaxima,
     tiposArquivosPermitidos,
+    showUploadList,
+    exibirCarregarImagem,
   } = props;
 
   const [listaImagens, setListaImagens] = useState([]);
@@ -129,15 +124,17 @@ const UploadImagens = props => {
           onProgress({ percent: (event.loaded / event.total) * 100 }, file);
         },
       };
-
+      setExibirLoader(true);
       servicoCustomRequest(fmData, config)
         .then(resposta => {
           onSuccess(file, resposta.data);
           if (afterSuccessUpload) {
             afterSuccessUpload(resposta.data);
           }
+          setExibirLoader(false);
         })
         .catch(e => {
+          setExibirLoader(false);
           onError({ event: e });
           erros(e);
         });
@@ -181,7 +178,7 @@ const UploadImagens = props => {
   };
 
   return (
-    <Loader loading={exibirLoader}>
+    <Loader loading={exibirLoader} tip="">
       <ContainerUpload
         listType="picture-card"
         fileList={listaImagens}
@@ -192,14 +189,19 @@ const UploadImagens = props => {
         accept={tiposArquivosPermitidos}
         desabilitarUpload={listaImagens?.length >= quantidadeMaxima}
         beforeUpload={beforeUpload}
+        showUploadList={showUploadList}
       >
-        <div>
-          <PlusOutlined
-            style={{ color: Base.Roxo }}
-            className="tamanho-icone-plus"
-          />
-          <div style={{ marginTop: 8 }}>Carregar</div>
-        </div>
+        {exibirCarregarImagem ? (
+          <div>
+            <PlusOutlined
+              style={{ color: Base.Roxo }}
+              className="tamanho-icone-plus"
+            />
+            <div style={{ marginTop: 8 }}>Carregar</div>
+          </div>
+        ) : (
+          ''
+        )}
       </ContainerUpload>
       <Modal
         visible={configModal?.previewVisible}
@@ -226,6 +228,8 @@ UploadImagens.propTypes = {
   desabilitar: PropTypes.bool,
   quantidadeMaxima: PropTypes.number,
   tiposArquivosPermitidos: PropTypes.string,
+  showUploadList: PropTypes.oneOfType([PropTypes.object]),
+  exibirCarregarImagem: PropTypes.bool,
 };
 
 UploadImagens.defaultProps = {
@@ -237,6 +241,12 @@ UploadImagens.defaultProps = {
   desabilitar: false,
   quantidadeMaxima: 3,
   tiposArquivosPermitidos: '.jpg, .jpeg, .png',
+  showUploadList: {
+    showRemoveIcon: true,
+    showPreviewIcon: true,
+    showDownloadIcon: false,
+  },
+  exibirCarregarImagem: true,
 };
 
 export default UploadImagens;
