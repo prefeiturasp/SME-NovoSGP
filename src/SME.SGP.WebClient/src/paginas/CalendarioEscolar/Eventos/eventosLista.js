@@ -94,18 +94,20 @@ const EventosLista = ({ match }) => {
           return true;
         }
       ),
-      dataFim: momentSchema.test(
-        'validaFim',
-        'Data obrigatória',
-        function validar() {
+      dataFim: momentSchema
+        .test('validaFim', 'Data obrigatória', function validar() {
           const { dataInicio } = this.parent;
           const { dataFim } = this.parent;
           if (dataInicio && !dataFim) {
             return false;
           }
           return true;
-        }
-      ),
+        })
+        .test('validaFim', 'Data inicial maior que final', function validar() {
+          const { dataInicio, dataFim } = this.parent;
+          if (dataInicio > dataFim) return false;
+          return true;
+        }),
     })
   );
 
@@ -658,7 +660,6 @@ const EventosLista = ({ match }) => {
                   <SelectComponent
                     name="dreId"
                     id="select-ue"
-                    u
                     lista={listaDre}
                     valueOption="codigo"
                     valueText="nome"
