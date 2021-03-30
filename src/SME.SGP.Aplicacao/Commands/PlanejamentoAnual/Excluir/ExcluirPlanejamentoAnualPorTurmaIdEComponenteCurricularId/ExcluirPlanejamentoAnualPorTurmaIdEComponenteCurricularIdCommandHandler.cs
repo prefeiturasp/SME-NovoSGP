@@ -16,35 +16,38 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioPlanejamentoAnualPeriodoEscolar repositorioPlanejamentoAnualPeriodoEscolar;
         private readonly IRepositorioPlanejamentoAnualComponente repositorioPlanejamentoAnualComponente;
         private readonly IRepositorioPlanejamentoAnualObjetivosAprendizagem repositorioPlanejamentoAnualObjetivosAprendizagem;
+        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
 
         public ExcluirPlanejamentoAnualPorTurmaIdEComponenteCurricularIdCommandHandler(IRepositorioPlanejamentoAnual repositorioPlanejamentoAnual,
                                                      IRepositorioPlanejamentoAnualPeriodoEscolar repositorioPlanejamentoAnualPeriodoEscolar,
                                                      IRepositorioPlanejamentoAnualComponente repositorioPlanejamentoAnualComponente,
-                                                     IRepositorioPlanejamentoAnualObjetivosAprendizagem repositorioPlanejamentoAnualObjetivosAprendizagem, IMediator mediator) : base(mediator)
+                                                     IRepositorioPlanejamentoAnualObjetivosAprendizagem repositorioPlanejamentoAnualObjetivosAprendizagem, 
+                                                     IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
+                                                     IMediator mediator) : base(mediator)
         {
             this.repositorioPlanejamentoAnual = repositorioPlanejamentoAnual ?? throw new System.ArgumentNullException(nameof(repositorioPlanejamentoAnual));
             this.repositorioPlanejamentoAnualPeriodoEscolar = repositorioPlanejamentoAnualPeriodoEscolar ?? throw new System.ArgumentNullException(nameof(repositorioPlanejamentoAnualPeriodoEscolar));
             this.repositorioPlanejamentoAnualComponente = repositorioPlanejamentoAnualComponente ?? throw new System.ArgumentNullException(nameof(repositorioPlanejamentoAnualComponente));
             this.repositorioPlanejamentoAnualObjetivosAprendizagem = repositorioPlanejamentoAnualObjetivosAprendizagem ?? throw new System.ArgumentNullException(nameof(repositorioPlanejamentoAnualObjetivosAprendizagem));
+            this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
         }
         public async Task<bool> Handle(ExcluirPlanejamentoAnualPorTurmaIdEComponenteCurricularIdCommand comando, CancellationToken cancellationToken)
         {
-            var planejamentoAnual = await repositorioPlanejamentoAnual.ObterIdPorTurmaEComponenteCurricular(comando.TurmaId, comando.ComponenteCurricularId);
-            if (planejamentoAnual == 0)
+            var planejamentoAnualIdDestino = await repositorioPlanejamentoAnual.ObterIdPorTurmaEComponenteCurricular(comando.TurmaId, comando.ComponenteCurricularId);
+            if (planejamentoAnualIdDestino == 0)
                 return true;
 
-            var planejamentoAnualPeriodosEscolares = await repositorioPlanejamentoAnualPeriodoEscolar.ObterPorPlanejamentoAnualId(planejamentoAnual);
-
-            if (comando.IdsPlanejamentoAnualPeriodoEscolar != null && comando.IdsPlanejamentoAnualPeriodoEscolar.Any())
+            IList<PlanejamentoAnualPeriodoEscolar> listaPlanejamentoAnualPeriodoEscolarOrigem = new List<PlanejamentoAnualPeriodoEscolar>();
+            comando.IdsPlanejamentoAnualPeriodoEscolarSelecionados.ToList().ForEach(id => 
             {
-                var periodosEscolaresConsiderados = (from id in comando.IdsPlanejamentoAnualPeriodoEscolar
-                                                     select repositorioPlanejamentoAnualPeriodoEscolar.ObterPorId(id).PeriodoEscolarId);
+                listaPlanejamentoAnualPeriodoEscolarOrigem.Add(repositorioPlanejamentoAnualPeriodoEscolar.ObterPorId(id));
+            });
 
-                var bimestresConsiderados = (from id in periodosEscolaresConsiderados
-                                             select mediator.Send(new ObterPeriodoEscolarePorIdQuery(id)).Result.Bimestre);
+            var bimestresConsiderados = listaPlanejamentoAnualPeriodoEscolarOrigem
+                .Select(pe => repositorioPeriodoEscolar.ObterPorId(pe.PeriodoEscolarId).Bimestre);
 
-                planejamentoAnualPeriodosEscolares = planejamentoAnualPeriodosEscolares.Where(pape => bimestresConsiderados.Contains(pape.Bimestre));
-            }
+            var planejamentoAnualPeriodosEscolares = await repositorioPlanejamentoAnualPeriodoEscolar
+                .ObterPorPlanejamentoAnualId(planejamentoAnualIdDestino, bimestresConsiderados.ToArray());
 
             foreach (var pape in planejamentoAnualPeriodosEscolares)
             {
@@ -62,7 +65,7 @@ namespace SME.SGP.Aplicacao
                 await repositorioPlanejamentoAnualPeriodoEscolar.RemoverLogicamentePorTurmaBimestreAsync(comando.TurmaId, pape.Bimestre);
             }
 
-            await repositorioPlanejamentoAnual.RemoverLogicamenteAsync(planejamentoAnual);
+            await repositorioPlanejamentoAnual.RemoverLogicamenteAsync(planejamentoAnualIdDestino);
 
             return true;
         }

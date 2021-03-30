@@ -4,6 +4,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -14,10 +15,16 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<PlanejamentoAnualPeriodoEscolar> ObterPorPlanejamentoAnualIdEPeriodoId(long id, long periodoEscolarId)
+        public async Task<PlanejamentoAnualPeriodoEscolar> ObterPorPlanejamentoAnualIdEPeriodoId(long id, long periodoEscolarId, bool consideraExcluido = false)
         {
-            var sql = "select * from planejamento_anual_periodo_escolar where planejamento_anual_id = @id and periodo_escolar_id = @periodoEscolarId and excluido = false";
-            return await database.Conexao.QueryFirstOrDefaultAsync<PlanejamentoAnualPeriodoEscolar>(sql, new { id, periodoEscolarId });
+            var sql = $@"select * 
+                             from planejamento_anual_periodo_escolar 
+                         where planejamento_anual_id = @id and 
+                               periodo_escolar_id = @periodoEscolarId {(!consideraExcluido ? "and not excluido" : string.Empty)} 
+                         order by id desc;";
+
+            return await database.Conexao
+                .QueryFirstOrDefaultAsync<PlanejamentoAnualPeriodoEscolar>(sql, new { id, periodoEscolarId });
         }
 
         public async Task<PlanejamentoAnualPeriodoEscolar> ObterPlanejamentoAnualPeriodoEscolarPorTurmaEComponenteCurricular(long turmaId, long componenteCurricularId, long periodoEscolarId)
@@ -134,18 +141,22 @@ namespace SME.SGP.Dados.Repositorios
             return retorno;
         }
 
-        public async Task<IEnumerable<PlanejamentoAnualPeriodoEscolarResumoDto>> ObterPorPlanejamentoAnualId(long planejamentoAnualId)
+        public async Task<IEnumerable<PlanejamentoAnualPeriodoEscolarResumoDto>> ObterPorPlanejamentoAnualId(long planejamentoAnualId, int[] bimestresConsiderados)
         {
-            var sql = @"select
-	                    pape.id,
-	                    bimestre
-                    from
-	                    planejamento_anual_periodo_escolar pape
-                    inner join periodo_escolar pe on
-	                    pape.periodo_escolar_id = pe.id
-                    where planejamento_anual_id = @planejamentoAnualId and pape.excluido = false;";
+            var sqlQuery = new StringBuilder();
 
-            return await database.Conexao.QueryAsync<PlanejamentoAnualPeriodoEscolarResumoDto>(sql, new { planejamentoAnualId });
+            sqlQuery.AppendLine("select pape.id,");
+            sqlQuery.AppendLine("       pe.bimestre");
+            sqlQuery.AppendLine("   from planejamento_anual_periodo_escolar pape");
+            sqlQuery.AppendLine("       inner join periodo_escolar pe");
+            sqlQuery.AppendLine("           on pape.periodo_escolar_id = pe.id");
+            sqlQuery.AppendLine("where pape.planejamento_anual_id = @planejamentoAnualId and");
+            if (bimestresConsiderados.Any())
+                sqlQuery.AppendLine("      pe.bimestre = any(@bimestresConsiderados) and");
+            sqlQuery.AppendLine("      not pape.excluido;");
+
+            return await database.Conexao
+                .QueryAsync<PlanejamentoAnualPeriodoEscolarResumoDto>(sqlQuery.ToString(), new { planejamentoAnualId, bimestresConsiderados });
         }
 
         public async Task<bool> PlanejamentoPossuiObjetivos(long planejamentoAnualPeriodoId)

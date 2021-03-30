@@ -31,10 +31,17 @@ namespace SME.SGP.Dados.Repositorios
             return  await database.Conexao.QueryAsync<PlanejamentoAnualComponente>(sql, new { turmaId, bimestre, componenteCurricularId });
         }
 
-        public async Task<PlanejamentoAnualComponente> ObterPorPlanejamentoAnualPeriodoEscolarId(long componenteCurricularId, long id)
+        public async Task<PlanejamentoAnualComponente> ObterPorPlanejamentoAnualPeriodoEscolarId(long componenteCurricularId, long id, bool consideraExcluido = false)
         {
-            var sql = @"select * from planejamento_anual_componente where planejamento_anual_periodo_escolar_id = @id and componente_curricular_id = @componenteCurricularId and excluido = false";
-            var planejamento = await database.Conexao.QueryFirstOrDefaultAsync<PlanejamentoAnualComponente>(sql, new { id, componenteCurricularId });
+            var sql = $@"select * 
+                            from planejamento_anual_componente 
+                         where planejamento_anual_periodo_escolar_id = @id and 
+                               componente_curricular_id = @componenteCurricularId {(!consideraExcluido ? " and not excluido" : string.Empty )}
+                         order by id desc;";
+
+            var planejamento = await database.Conexao
+                .QueryFirstOrDefaultAsync<PlanejamentoAnualComponente>(sql, new { id, componenteCurricularId });
+
             return planejamento;
         }
 
