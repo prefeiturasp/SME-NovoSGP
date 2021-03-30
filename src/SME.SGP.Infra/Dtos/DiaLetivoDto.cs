@@ -20,12 +20,12 @@ namespace SME.SGP.Infra
         public List<string> DreIds { get; set; }
         public bool PossuiEvento { get; set; }
         public bool PossuiEventoUe(string codigoUe) => PossuiUe(codigoUe) && PossuiEvento;
-        public bool PossuiEventoSME(string codigoUe) => NaoPossuiUe(codigoUe) && PossuiEvento;
+        public bool PossuiEventoSME() => NaoPossuiUe() && PossuiEvento;
         public bool CriarAulaUe(string codigoUe) => PossuiEventoUe(codigoUe) && EhLetivo;
-        public bool CriarAulaSME(string codigoUe) => PossuiEventoSME(codigoUe) && EhLetivo;
+        public bool CriarAulaSME() => PossuiEventoSME() && EhLetivo;
         public bool ExcluirAulaUe(string codigoUe) => PossuiEventoUe(codigoUe) && !EhLetivo;
         public bool ExcluirAulaSME => (UesIds == null || !UesIds.Any()) && !EhLetivo;
-        public bool NaoPossuiUe(string codigoUe) => (UesIds == null || !UesIds.Any(c => c == codigoUe));
+        public bool NaoPossuiUe() => (UesIds == null || !UesIds.Any());
         public bool PossuiUe(string codigoUe) => UesIds != null && UesIds.Any(c => c == codigoUe);
     }
 }
