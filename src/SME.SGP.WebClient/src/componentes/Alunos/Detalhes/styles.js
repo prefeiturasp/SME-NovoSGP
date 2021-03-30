@@ -59,9 +59,6 @@ const ContainerAvatar = styled.div`
     color: ${Base.Roxo};
     text-align: center;
   }
-
-  .tamanho-upload-imagem-modal {
-  }
 `;
 
 const ContainerModalUploadImagem = styled.div`
