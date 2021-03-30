@@ -68,6 +68,7 @@ const ContainerModalUploadImagem = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-top: 1rem;
 
   .ant-upload-list-picture-card .ant-upload-list-item {
     width: 360px !important;
@@ -78,6 +79,11 @@ const ContainerModalUploadImagem = styled.div`
     width: 360px !important;
     height: 360px !important;
     margin: 8px 0px 0px 0px !important;
+  }
+
+  .ant-upload.ant-upload-select-picture-card {
+    margin-right: 0px;
+    margin-bottom: 0px;
   }
 `;
 

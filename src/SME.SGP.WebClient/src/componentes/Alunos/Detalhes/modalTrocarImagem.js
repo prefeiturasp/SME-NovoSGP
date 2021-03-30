@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { ModalConteudoHtml } from '~/componentes';
+import { Base, ModalConteudoHtml } from '~/componentes';
 import UploadImagens from '~/componentes-sgp/UploadImagens/uploadImagens';
 import Loader from '~/componentes/loader';
 import { erros, sucesso } from '~/servicos';
@@ -119,6 +119,13 @@ const ModalTrocarImagem = props => {
       <Loader loading={exibirLoader} tip="">
         <ContainerModalUploadImagem>
           <UploadImagens {...configUploadImagens} />
+          {exibirCarregarImagem ? (
+            <div style={{ color: Base.CinzaBotao, fontSize: '12px' }}>
+              .jpeg, .jpg e .png
+            </div>
+          ) : (
+            ''
+          )}
         </ContainerModalUploadImagem>
       </Loader>
     </ModalConteudoHtml>
