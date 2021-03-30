@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace SME.SGP.Dominio
 {
     public enum TipoNota
     {
+        [Display(Name = "Todas")]
+        Todas = 0,
         [Display(Name = "Nota")]
         Nota = 1,
         [Display(Name = "Conceito")]

@@ -5,6 +5,7 @@ import CampoNumero from '~/componentes/campoNumero';
 import { erros } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import { Loader } from '~/componentes';
+import { converterAcaoTecla } from '~/utils';
 
 const CampoNotaFinal = props => {
   const {
@@ -15,13 +16,16 @@ const CampoNotaFinal = props => {
     eventoData,
     mediaAprovacaoBimestre,
     label,
+    clicarSetas,
+    name,
+    esconderSetas,
+    step,
   } = props;
 
   const [notaBimestre, setNotaBimestre] = useState();
   const [notaValorAtual, setNotaValorAtual] = useState();
   const [notaAlterada, setNotaAlterada] = useState(false);
   const [abaixoDaMedia, setAbaixoDaMedia] = useState(false);
-  const [valorIncremento] = useState(0.5);
   const [
     carregandoValorArredondamento,
     setCarregandoValorArredondamento,
@@ -58,6 +62,8 @@ const CampoNotaFinal = props => {
     [mediaAprovacaoBimestre, notaBimestre]
   );
 
+  const notaAtual = notaValorAtual >= 0 ? notaValorAtual : '';
+
   useEffect(() => {
     setNotaBimestre(montaNotaFinal());
   }, [montaNotaFinal]);
@@ -89,9 +95,9 @@ const CampoNotaFinal = props => {
   const setarValorNovo = async valorNovo => {
     if (!desabilitarCampo && podeEditar) {
       setNotaValorAtual(valorNovo);
-      const resto = valorNovo % valorIncremento;
+      const resto = valorNovo % 0.5;
       let notaArredondada = valorNovo;
-      if (resto > 0.0) {
+      if (resto) {
         setCarregandoValorArredondamento(true);
         const retorno = await api
           .get(
@@ -119,22 +125,38 @@ const CampoNotaFinal = props => {
     return regexValorInvalido.test(String(valorNovo));
   };
 
+  const apertarTecla = e => {
+    const teclaEscolhida = converterAcaoTecla(e.keyCode);
+    if (teclaEscolhida === 0) {
+      setarValorNovo(0);
+    }
+  };
+
   return (
     <Tooltip placement="bottom" title={abaixoDaMedia ? 'Abaixo da Média' : ''}>
       <div>
         <Loader loading={carregandoValorArredondamento} tip="">
           <CampoNumero
+            esconderSetas={esconderSetas}
+            name={name}
+            onKeyDown={clicarSetas}
+            onKeyUp={apertarTecla}
             label={label || ''}
             onChange={valorNovo => {
-              const invalido = valorInvalido(valorNovo);
-              if (!invalido && editouCampo(notaValorAtual, valorNovo)) {
-                setarValorNovo(valorNovo);
+              let valorEnviado = null;
+              if (valorNovo) {
+                const invalido = valorInvalido(valorNovo);
+                if (!invalido && editouCampo(notaValorAtual, valorNovo)) {
+                  valorEnviado = valorNovo;
+                }
               }
+              const valorCampo = valorNovo > 0 ? valorNovo : null;
+              setarValorNovo(valorEnviado || valorCampo);
             }}
-            value={notaValorAtual ? notaValorAtual : ''}
+            value={notaAtual}
             min={0}
             max={10}
-            step={valorIncremento}
+            step={step}
             disabled={desabilitarCampo || !podeEditar}
             className={`tamanho-conceito-final ${
               abaixoDaMedia
@@ -157,6 +179,10 @@ CampoNotaFinal.defaultProps = {
   podeEditar: PropTypes.bool,
   eventoData: PropTypes.string,
   mediaAprovacaoBimestre: PropTypes.number,
+  clicarSetas: PropTypes.func,
+  name: PropTypes.string,
+  esconderSetas: PropTypes.bool,
+  step: PropTypes.number,
 };
 
 CampoNotaFinal.propTypes = {
@@ -166,6 +192,10 @@ CampoNotaFinal.propTypes = {
   podeEditar: false,
   eventoData: '',
   mediaAprovacaoBimestre: 0,
+  clicarSetas: () => {},
+  name: '',
+  esconderSetas: false,
+  step: 0.5,
 };
 
 export default CampoNotaFinal;
