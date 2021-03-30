@@ -9,6 +9,7 @@ import { confirmar, erro, erros } from '~/servicos';
 import ServicoArmazenamento from '~/servicos/Componentes/ServicoArmazenamento';
 import {
   getBase64DataURL,
+  obterTamanhoImagemPorArquivo,
   permiteInserirFormato,
 } from '~/utils/funcoes/gerais';
 
@@ -34,6 +35,9 @@ export const ContainerUpload = styled(Upload)`
   }
 `;
 
+const ALTURA_MINIMA = 180;
+const LARGURA_MINIMA = 180;
+
 const UploadImagens = props => {
   const {
     servicoCustomRequest,
@@ -46,6 +50,7 @@ const UploadImagens = props => {
     tiposArquivosPermitidos,
     showUploadList,
     exibirCarregarImagem,
+    valorMinimoAlturaLargura,
   } = props;
 
   const [listaImagens, setListaImagens] = useState([]);
@@ -163,18 +168,38 @@ const UploadImagens = props => {
     return tamanhoArquivo > TAMANHO_MAXIMO_UPLOAD;
   };
 
+  const validarTamanhoMonimoAlturaLargura = async arquivo => {
+    const tamanhoImagem = await obterTamanhoImagemPorArquivo(arquivo);
+
+    const ehValido =
+      tamanhoImagem?.height > valorMinimoAlturaLargura?.height &&
+      tamanhoImagem?.width > valorMinimoAlturaLargura?.width;
+
+    return ehValido;
+  };
+
   const beforeUpload = arquivo => {
-    if (!permiteInserirFormato(arquivo, tiposArquivosPermitidos)) {
-      erro('Formato não permitido');
-      return false;
-    }
+    return new Promise(async (resolve, reject) => {
+      if (!permiteInserirFormato(arquivo, tiposArquivosPermitidos)) {
+        erro('Formato não permitido');
+        reject(new Error(false));
+      }
 
-    if (excedeuLimiteMaximo(arquivo)) {
-      erro('Tamanho máximo 5 MB');
-      return false;
-    }
+      if (excedeuLimiteMaximo(arquivo)) {
+        erro('Tamanho máximo 5 MB');
+        reject(new Error(false));
+      }
 
-    return true;
+      const ehValido = await validarTamanhoMonimoAlturaLargura(arquivo);
+      if (!ehValido) {
+        erro(
+          `A resolução mínima é de ${valorMinimoAlturaLargura?.height} x ${valorMinimoAlturaLargura?.width} pixels`
+        );
+        reject(new Error(false));
+      }
+
+      resolve(true);
+    });
   };
 
   return (
@@ -230,6 +255,7 @@ UploadImagens.propTypes = {
   tiposArquivosPermitidos: PropTypes.string,
   showUploadList: PropTypes.oneOfType([PropTypes.object]),
   exibirCarregarImagem: PropTypes.bool,
+  valorMinimoAlturaLargura: PropTypes.oneOfType([PropTypes.object]),
 };
 
 UploadImagens.defaultProps = {
@@ -247,6 +273,10 @@ UploadImagens.defaultProps = {
     showDownloadIcon: false,
   },
   exibirCarregarImagem: true,
+  valorMinimoAlturaLargura: {
+    height: ALTURA_MINIMA,
+    width: LARGURA_MINIMA,
+  },
 };
 
 export default UploadImagens;
