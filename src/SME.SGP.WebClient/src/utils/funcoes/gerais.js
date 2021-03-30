@@ -132,6 +132,16 @@ const permiteInserirFormato = (arquivo, tiposArquivosPermitidos) => {
   return true;
 };
 
+const getBase64DataURL = (file, type) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    const fileBlob = new Blob([file], { type });
+    reader.readAsDataURL(fileBlob);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+  });
+};
+
 export {
   validaSeObjetoEhNuloOuVazio,
   valorNuloOuVazio,
@@ -147,4 +157,5 @@ export {
   removerArrayAninhados,
   clonarObjeto,
   permiteInserirFormato,
+  getBase64DataURL,
 };
