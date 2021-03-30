@@ -11,7 +11,7 @@ import { getBase64DataURL } from '~/utils';
 import { ContainerModalUploadImagem } from './styles';
 
 const ModalTrocarImagem = props => {
-  const { exbirModal, onCloseModal, codigoAluno, dadosImagem } = props;
+  const { exibirModal, onCloseModal, codigoAluno, dadosImagem } = props;
 
   const [exibirLoader, setExibirLoader] = useState(false);
   const [imagemAtual, setImagemAtual] = useState([]);
@@ -50,10 +50,10 @@ const ModalTrocarImagem = props => {
   };
 
   useEffect(() => {
-    if (exbirModal && dadosImagem?.uid) {
+    if (exibirModal && dadosImagem?.uid) {
       obterImagem(dadosImagem.uid);
     }
-  }, [dadosImagem, exbirModal]);
+  }, [dadosImagem, exibirModal]);
 
   const afterSuccessUpload = dados => {
     if (dados?.codigo) {
@@ -100,11 +100,11 @@ const ModalTrocarImagem = props => {
     exibirCarregarImagem,
   };
 
-  return exbirModal ? (
+  return exibirModal ? (
     <ModalConteudoHtml
       id="modal-alterar-imagem"
       key="alterar-imagem"
-      visivel={exbirModal && !confirmacao?.visivel}
+      visivel={exibirModal && !confirmacao?.visivel}
       titulo="Alterar a imagem"
       onClose={() => onCloseModal(trocouImagem)}
       esconderBotaoPrincipal
@@ -135,14 +135,14 @@ const ModalTrocarImagem = props => {
 };
 
 ModalTrocarImagem.propTypes = {
-  exbirModal: PropTypes.bool,
+  exibirModal: PropTypes.bool,
   onCloseModal: PropTypes.oneOfType([PropTypes.func]),
   codigoAluno: PropTypes.string,
   dadosImagem: PropTypes.oneOfType([PropTypes.any]),
 };
 
 ModalTrocarImagem.defaultProps = {
-  exbirModal: false,
+  exibirModal: false,
   onCloseModal: () => {},
   codigoAluno: '',
   dadosImagem: null,

@@ -10,7 +10,7 @@ const ImagemEstudanteObjectCard = props => {
   const { codigoEOL, permiteAlterarImagem } = props;
 
   const [dadosImagem, setDadosImagem] = useState();
-  const [exbirModal, setExbirModal] = useState(false);
+  const [exibirModal, setExibirModal] = useState(false);
   const [exibirLoader, setExibirLoader] = useState(false);
 
   const mapearDados = resposta => {
@@ -49,7 +49,7 @@ const ImagemEstudanteObjectCard = props => {
 
   const onClickAlterarImagem = () => {
     if (!exibirLoader && permiteAlterarImagem) {
-      setExbirModal(true);
+      setExibirModal(true);
     }
   };
 
@@ -58,13 +58,13 @@ const ImagemEstudanteObjectCard = props => {
       setDadosImagem();
       obterFoto();
     }
-    setExbirModal(!exbirModal);
+    setExibirModal(!exibirModal);
   };
 
   return (
     <>
       <ModalTrocarImagem
-        exbirModal={exbirModal}
+        exibirModal={exibirModal}
         dadosImagem={dadosImagem}
         onCloseModal={fecharModal}
       />
