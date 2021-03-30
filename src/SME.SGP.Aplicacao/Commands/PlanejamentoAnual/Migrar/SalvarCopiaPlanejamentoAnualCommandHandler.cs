@@ -85,7 +85,7 @@ namespace SME.SGP.Aplicacao
                         .ToList();
 
                     listaPlanejamentoAnualObjetivoAprendizagemRemover
-                        .ForEach(oa => repositorioPlanejamentoAnualObjetivosAprendizagem.RemoverLogico(oa.Id));
+                        .ForEach(oa => repositorioPlanejamentoAnualObjetivosAprendizagem.RemoverLogico(oa.Id).Wait());
                 }
             }
 
