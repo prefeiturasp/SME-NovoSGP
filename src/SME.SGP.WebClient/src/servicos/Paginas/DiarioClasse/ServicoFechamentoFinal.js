@@ -1,9 +1,10 @@
 import api from '~/servicos/api';
 
 class ServicoFechamentoFinal {
-  obter = (turmaCodigo, disciplinaCodigo, ehRegencia) => {
+  obter = (turmaCodigo, disciplinaCodigo, ehRegencia, semestre) => {
     return api.get(
-      `v1/fechamentos/finais?DisciplinaCodigo=${disciplinaCodigo}&TurmaCodigo=${turmaCodigo}&ehRegencia=${ehRegencia}`
+      `v1/fechamentos/finais?DisciplinaCodigo=${disciplinaCodigo}&TurmaCodigo=${turmaCodigo}&ehRegencia=${ehRegencia}&semestre=${semestre ||
+        0}`
     );
   };
 

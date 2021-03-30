@@ -29,6 +29,7 @@ const FechamentoFinal = forwardRef((props, ref) => {
     carregandoFechamentoFinal,
     bimestreCorrente,
     registraFrequencia,
+    semestre,
   } = props;
 
   const dispatch = useDispatch();
@@ -92,7 +93,12 @@ const FechamentoFinal = forwardRef((props, ref) => {
     setNotasEmEdicao([]);
     dispatch(setExpandirLinha([]));
     carregandoFechamentoFinal(true);
-    ServicoFechamentoFinal.obter(turmaCodigo, disciplinaCodigo, ehRegencia)
+    ServicoFechamentoFinal.obter(
+      turmaCodigo,
+      disciplinaCodigo,
+      ehRegencia,
+      semestre
+    )
       .then(resposta => {
         if (resposta && resposta.data) {
           resposta.data.alunos.forEach(item => {
@@ -302,6 +308,7 @@ FechamentoFinal.propTypes = {
   carregandoFechamentoFinal: PropTypes.func,
   bimestreCorrente: PropTypes.string,
   registraFrequencia: PropTypes.bool,
+  semestre: PropTypes.number,
 };
 
 FechamentoFinal.defaultProps = {
@@ -309,11 +316,12 @@ FechamentoFinal.defaultProps = {
   disciplinaCodigo: '1',
   ehRegencia: false,
   turmaPrograma: false,
-  onChange: () => { },
+  onChange: () => {},
   desabilitarCampo: false,
-  carregandoFechamentoFinal: () => { },
+  carregandoFechamentoFinal: () => {},
   bimestreCorrente: '',
   registraFrequencia: true,
+  semestre: null,
 };
 
 export default FechamentoFinal;

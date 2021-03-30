@@ -257,7 +257,8 @@ namespace SME.SGP.Dados.Repositorios
                 .QueryAsync<FrequenciaAluno>(query.ToString(), new
                 {
                     alunoCodigo,
-                    anoTurma
+                    anoTurma,
+                    tipoCalendarioId
                 });
         }
     }
