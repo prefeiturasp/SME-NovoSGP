@@ -168,7 +168,7 @@ const UploadImagens = props => {
     return tamanhoArquivo > TAMANHO_MAXIMO_UPLOAD;
   };
 
-  const validarTamanhoMonimoAlturaLargura = async arquivo => {
+  const validarTamanhoMinimoAlturaLargura = async arquivo => {
     const tamanhoImagem = await obterTamanhoImagemPorArquivo(arquivo);
 
     const ehValido =
@@ -190,7 +190,7 @@ const UploadImagens = props => {
         reject(new Error(false));
       }
 
-      const ehValido = await validarTamanhoMonimoAlturaLargura(arquivo);
+      const ehValido = await validarTamanhoMinimoAlturaLargura(arquivo);
       if (!ehValido) {
         erro(
           `A resolução mínima é de ${valorMinimoAlturaLargura?.height} x ${valorMinimoAlturaLargura?.width} pixels`
