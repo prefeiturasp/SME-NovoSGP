@@ -76,6 +76,7 @@ const ModalAnotacoes = () => {
             dados={dados?.aluno}
             exibirBotaoImprimir={false}
             exibirFrequencia={false}
+            permiteAlterarImagem={false}
           />
         </div>
         <div className="col-md-12 mb-2">

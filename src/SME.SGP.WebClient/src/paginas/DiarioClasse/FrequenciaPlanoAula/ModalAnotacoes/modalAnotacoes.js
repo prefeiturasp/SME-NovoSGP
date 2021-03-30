@@ -259,6 +259,7 @@ const ModalAnotacoesFrequencia = props => {
                 dados={dadosEstudanteOuCrianca}
                 exibirBotaoImprimir={false}
                 exibirFrequencia={false}
+                permiteAlterarImagem={false}
               />
             </div>
             <div className="col-md-12 mt-2">
