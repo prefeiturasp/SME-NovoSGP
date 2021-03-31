@@ -63,8 +63,9 @@ export default function usuario(state = inicial, action) {
         draft.dataHoraExpiracao = action.payload.dataHoraExpiracao;
         break;
       case '@usuario/deslogar':
-        draft = inicial;
         localStorage.clear();
+        inicial.sessaoExpirou = false;
+        draft = inicial;
         break;
       case '@usuario/deslogarSessaoExpirou':
         localStorage.clear();
