@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import { Base } from '../../../componentes/colors';
 
 export const BtnLink = styled.div`
@@ -119,3 +119,9 @@ export const Planejamento = styled.div`
 `;
 
 export const Container = styled.div``;
+
+export const IframeStyle = css`
+  body {
+    min-height: 500px !important;
+  }
+`;
