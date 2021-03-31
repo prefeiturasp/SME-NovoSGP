@@ -77,5 +77,16 @@ namespace SME.SGP.Api.Controllers
             return BadRequest();
 
         }
+
+        [HttpDelete("{codigoAluno}/foto")]
+        [ProducesResponseType(typeof(ArquivoDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public async Task<IActionResult> ExcluirFotoAluno(string codigoAluno, [FromServices] IExcluirEstudanteFotoUseCase useCase)
+        {
+
+            return Ok(await useCase.Executar(codigoAluno));
+
+        }
     }
 }
