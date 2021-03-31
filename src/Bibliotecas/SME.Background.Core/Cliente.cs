@@ -21,7 +21,7 @@ namespace SME.Background.Core
 
         public static void ExecutarPeriodicamente<T>(Expression<Action<T>> metodo, string cron, string nomeFila = "default")
         {
-            Orquestrador.ObterProcessador(TipoProcessamento.ExecucaoRecorrente).ExecutarPeriodicamente(metodo, cron);
+            Orquestrador.ObterProcessador(TipoProcessamento.ExecucaoRecorrente).ExecutarPeriodicamente(metodo, cron, nomeFila);
         }
 
         private static void GravarLog(string mensagem)
