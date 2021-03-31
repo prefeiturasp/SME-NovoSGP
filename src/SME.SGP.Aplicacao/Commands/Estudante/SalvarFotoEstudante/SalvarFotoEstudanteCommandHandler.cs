@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class SalvarFotoEstudanteCommandHandler : IRequestHandler<SalvarFotoEstudanteCommand, bool>
+    public class SalvarFotoEstudanteCommandHandler : IRequestHandler<SalvarFotoEstudanteCommand, Guid>
     {
         private readonly IMediator mediator;
         private readonly IUnitOfWork unitOfWork;
@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
-        public async Task<bool> Handle(SalvarFotoEstudanteCommand request, CancellationToken cancellationToken)
+        public async Task<Guid> Handle(SalvarFotoEstudanteCommand request, CancellationToken cancellationToken)
         {
 
             var aluno = await mediator.Send(new ObterAlunoPorCodigoEAnoQuery(request.AlunoCodigo, DateTime.Now.Year));
@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
             return await GerarFotoAluno(request.AlunoCodigo, request.File);
         }
 
-        private async Task<bool> GerarFotoAluno(string alunoCodigo, IFormFile file)
+        private async Task<Guid> GerarFotoAluno(string alunoCodigo, IFormFile file)
         {
             var imagem = await ObterImagem(file);
             var miniatura = imagem.GetThumbnailImage(88, 88, () => false, IntPtr.Zero);
@@ -42,13 +42,13 @@ namespace SME.SGP.Aplicacao
             {
                 try
                 {
-                    var miniaturaId = await GerarFoto(miniatura, alunoCodigo, ObterNomeMiniatura(file.FileName), file.ContentType);
+                    var miniaturaId = await GerarFotoMiniatura(miniatura, alunoCodigo, ObterNomeMiniatura(file.FileName), file.ContentType);
 
-                    await GerarFoto(imagem, alunoCodigo, file.FileName, file.ContentType, miniaturaId);
+                   var codigoArquivo =  await GerarFoto(imagem, alunoCodigo, file.FileName, file.ContentType, miniaturaId);
 
                     unitOfWork.PersistirTransacao();
 
-                    return true;
+                    return codigoArquivo;
                 }
                 catch (Exception e)
                 {
@@ -60,10 +60,17 @@ namespace SME.SGP.Aplicacao
         }
 
 
-        private async Task<long> GerarFoto(Image foto, string alunoCodigo, string nomeArquivo, string formato, long? miniaturaId = null)
+        private async Task<long> GerarFotoMiniatura(Image foto, string alunoCodigo, string nomeArquivo, string formato, long? miniaturaId = null)
         {
             var arquivo = await mediator.Send(new UploadImagemCommand(foto, Dominio.TipoArquivo.FotoAluno, nomeArquivo, formato));
             return await mediator.Send(new GerarFotoEstudanteCommand(alunoCodigo, arquivo.Id, miniaturaId));
+        }
+
+        private async Task<Guid> GerarFoto(Image foto, string alunoCodigo, string nomeArquivo, string formato, long? miniaturaId = null)
+        {
+            var arquivo = await mediator.Send(new UploadImagemCommand(foto, Dominio.TipoArquivo.FotoAluno, nomeArquivo, formato));
+            await mediator.Send(new GerarFotoEstudanteCommand(alunoCodigo, arquivo.Id, miniaturaId));
+            return arquivo.Codigo;
         }
 
         private string ObterNomeMiniatura(string nomeArquivo)

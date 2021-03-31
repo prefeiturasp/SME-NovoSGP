@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
+using System;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -12,7 +13,7 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<bool> Executar(EstudanteFotoDto dto)
+        public async Task<Guid> Executar(EstudanteFotoDto dto)
             => await mediator.Send(new SalvarFotoEstudanteCommand(dto.File, dto.AlunoCodigo));
     }
 }
