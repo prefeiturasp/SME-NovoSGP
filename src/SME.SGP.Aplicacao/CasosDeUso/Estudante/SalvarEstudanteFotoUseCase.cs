@@ -13,6 +13,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<bool> Executar(EstudanteFotoDto dto)
-            => await mediator.Send(new SalvarFotoEstudanteCommand(dto));
+            => await mediator.Send(new SalvarFotoEstudanteCommand(dto.File, dto.AlunoCodigo));
     }
 }

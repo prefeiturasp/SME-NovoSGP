@@ -12,7 +12,7 @@ namespace SME.SGP.Aplicacao
     {
         public SalvarFotoEstudanteCommandValidator()
         {
-            RuleFor(a => a.FormFile)
+            RuleFor(a => a.File)
                 .NotEmpty()
                 .WithMessage("A imagem do estudante deve ser enviada");
             RuleFor(a => a.AlunoCodigo)
