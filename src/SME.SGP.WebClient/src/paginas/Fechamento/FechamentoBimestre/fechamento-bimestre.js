@@ -480,6 +480,7 @@ const FechamentoBismestre = () => {
                       }
                       bimestreCorrente={bimestreCorrente}
                       registraFrequencia={registraFrequencia}
+                      semestre={turmaSelecionada.periodo}
                     />
                   </TabPane>
                 </ContainerTabsCard>
