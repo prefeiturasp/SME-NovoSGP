@@ -10,5 +10,10 @@ namespace SME.SGP.Infra
         public TipoArquivo Tipo { get; set; }
         public string TipoConteudo { get; set; }
         public string Nome { get; set; }
+        public long MiniaturaId { get; set; }
+        public long FotoId { get; set; }
+        public long MiniaturaArquivoId { get; set; }
+        public long ArquivoId { get; set; }
+
     }
 }

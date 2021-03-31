@@ -11,6 +11,13 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
+        public async Task<AlunoFoto> ObterFotoPorAlunoCodigo(string codigoAluno)
+        {
+            var query = @"select * from aluno_foto af where not af.excluido and af.aluno_codigo = @codigoAluno";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<AlunoFoto>(query, new { codigoAluno });
+        }
+
         public async Task<MiniaturaFotoDto> ObterFotosPorAlunoCodigo(string alunoCodigo)
         {
             var query = @"select
@@ -18,7 +25,11 @@ namespace SME.SGP.Dados.Repositorios
 	                    a2.Codigo as CodigoFotoOriginal,
 	                    a.Tipo,
 	                    a.tipo_conteudo,
-	                    a2.Nome
+	                    a2.Nome,
+                        af.id as FotoId,
+                        af.arquivo_id as ArquivoId,
+                        af2.id as MiniaturaId,
+                        af2.arquivo_id as MiniaturaArquivoId,
                     from
 	                    arquivo a
                     inner join aluno_foto af on
