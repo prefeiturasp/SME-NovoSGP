@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { CoresGraficos, Loader } from '~/componentes';
 import { setDadosDeLeituraDeComunicadosPorTurmas } from '~/redux/modulos/dashboardEscolaAqui/actions';
 import { erros } from '~/servicos';
-import ServicoDashboardEscolaAqui from '~/servicos/Paginas/Relatorios/EscolaAqui/DashboardEscolaAqui/ServicoDashboardEscolaAqui';
+import ServicoDashboardEscolaAqui from '~/servicos/Paginas/Dashboard/ServicoDashboardEscolaAqui';
 import {
   mapearParaDtoDadosComunicadosGraficoBarras,
   obterDadosComunicadoSelecionado,
