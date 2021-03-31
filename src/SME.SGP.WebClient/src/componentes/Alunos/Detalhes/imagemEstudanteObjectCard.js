@@ -65,8 +65,9 @@ const ImagemEstudanteObjectCard = props => {
     <>
       <ModalTrocarImagem
         exibirModal={exibirModal}
-        dadosImagem={dadosImagem}
         onCloseModal={fecharModal}
+        codigoEOL={codigoEOL}
+        dadosImagem={dadosImagem}
       />
       <ContainerAvatar className="mr-3" onClick={onClickAlterarImagem}>
         <Loader loading={exibirLoader} tip="">
