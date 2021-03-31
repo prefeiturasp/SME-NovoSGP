@@ -92,6 +92,7 @@ import PlanoAEECadastro from '~/paginas/Relatorios/AEE/Plano/Cadastro/planoAEECa
 import RegistroItineranciaAEELista from '~/paginas/Relatorios/AEE/RegistroItinerancia/Lista/registroItineranciaAEELista';
 import AcompanhamentoAprendizagem from '~/paginas/Fechamento/AcompanhamentoAprendizagem/acompanhamentoAprendizagem';
 import RelatorioDevolutivas from '~/paginas/Relatorios/Planejamento/Devolutivas/relatorioDevolutivas';
+import DashboardAEE from '~/paginas/Dashboard/AEE/dashboardAEE';
 
 const rotas = new Map();
 
@@ -1300,6 +1301,17 @@ rotas.set(RotasDto.ACOMPANHAMENTO_APRENDIZAGEM, {
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: true,
   chavePermissao: RotasDto.ACOMPANHAMENTO_APRENDIZAGEM,
+});
+
+rotas.set(RotasDto.DASHBOARD_AEE, {
+  breadcrumbName: 'AEE',
+  menu: ['Dashboard'],
+  parent: '/',
+  component: DashboardAEE,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  // temPermissionamento: true,
+  chavePermissao: RotasDto.DASHBOARD_AEE,
 });
 
 const rotasArray = [];

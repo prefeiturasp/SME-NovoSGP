@@ -55,7 +55,7 @@ const RotasDto = {
   REGISTRO_INDIVIDUAL: '/diario-classe/registro-individual',
   CONTROLE_GRADE: '/relatorios/diario-classe/controle-grade',
   RELATORIO_PLANEJAMENTO_DIARIO:
-  '/relatorios/diario-classe/planejamento-diario',
+    '/relatorios/diario-classe/planejamento-diario',
   POC_EDITOR: '/editor',
   SONDAGEM: '/sondagem',
   POC_UPLOAD_ARQUIVOS: '/upload-arquivos',
@@ -72,6 +72,7 @@ const RotasDto = {
   RELATORIO_AEE_PLANO: '/relatorios/aee/plano',
   ACOMPANHAMENTO_APRENDIZAGEM: '/fechamento/acompanhamento-aprendizagem',
   RELATORIO_DEVOLUTIVAS: '/relatorios/planejamento/devolutivas',
+  DASHBOARD_AEE: '/dashboard/dashboard-aee',
 };
 
 export default RotasDto;
