@@ -174,6 +174,31 @@ namespace SME.SGP.Dados.Repositorios
                 codigoTurma
             });
         }
+        public async Task<IEnumerable<FrequenciaAluno>> ObterPorAlunoTurmasDisciplinasDataAsync(string codigoAluno, TipoFrequenciaAluno tipoFrequencia, 
+            string[] disciplinasId , string[] turmasCodigo, int[] bimestres)
+        {
+            var query = new StringBuilder(@"select fa.*
+                        from frequencia_aluno fa
+                        inner join periodo_escolar pe on fa.periodo_escolar_id = pe.id
+                        where
+	                        codigo_aluno = @codigoAluno
+	                        and tipo = @tipoFrequencia                            	                       
+                            and turma_id = ANY(@turmasCodigo)
+                            and disciplina_id = ANY(@disciplinasId) ");
+
+            if (bimestres.Length > 0)
+                query.AppendLine(" and pe.bimestre = ANY(@bimestres)");
+        
+
+            return await database.QueryAsync<FrequenciaAluno>(query.ToString(), new
+            {
+                codigoAluno,
+                tipoFrequencia,
+                disciplinasId,
+                turmasCodigo,
+                bimestres
+            });
+        }
         public async Task<FrequenciaAluno> ObterPorAlunoDataTurmasAsync(string codigoAluno, DateTime dataAtual, TipoFrequenciaAluno tipoFrequencia, string[] turmasCodigo, string disciplinaId = "")
         {
             var query = new StringBuilder(@"select fa.*
