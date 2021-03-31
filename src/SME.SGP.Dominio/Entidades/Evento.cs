@@ -286,6 +286,8 @@ namespace SME.SGP.Dominio
         public bool EhEventoUE() =>
             !string.IsNullOrWhiteSpace(DreId) && !string.IsNullOrWhiteSpace(UeId);
 
+        public bool EhFeriado() => FeriadoId.HasValue;
+
         private static DateTime ObterPrimeiroDiaDoMes(DateTime dataAtual)
         {
             return new DateTime(dataAtual.Year, dataAtual.Month, 1);

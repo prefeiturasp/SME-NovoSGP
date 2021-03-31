@@ -1,5 +1,7 @@
-﻿using Sentry;
+﻿using MediatR;
+using Sentry;
 using SME.Background.Core;
+using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
@@ -29,6 +31,8 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
+        private readonly IMediator mediator;
+
 
         public ServicoPeriodoFechamento(IRepositorioPeriodoFechamento repositorioFechamento,
                                  IRepositorioPeriodoFechamentoBimestre repositorioPeriodoFechamentoBimestre,
@@ -42,7 +46,7 @@ namespace SME.SGP.Dominio.Servicos
                                  IRepositorioEventoTipo repositorioTipoEvento,
                                  IServicoEol servicoEol,
                                  IServicoNotificacao servicoNotificacao,
-                                 IUnitOfWork unitOfWork)
+                                 IUnitOfWork unitOfWork, IMediator mediator)
         {
             this.repositorioPeriodoFechamento = repositorioFechamento ?? throw new ArgumentNullException(nameof(repositorioFechamento));
             this.repositorioPeriodoFechamentoBimestre = repositorioPeriodoFechamentoBimestre ?? throw new ArgumentNullException(nameof(repositorioPeriodoFechamentoBimestre));
@@ -57,6 +61,7 @@ namespace SME.SGP.Dominio.Servicos
             this.servicoEol = servicoEol ?? throw new ArgumentNullException(nameof(servicoEol));
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public void AlterarPeriodosComHierarquiaInferior(PeriodoFechamento fechamento)
@@ -77,11 +82,11 @@ namespace SME.SGP.Dominio.Servicos
             foreach (var fechamentoBimestre in fechamento.FechamentosBimestre)
             {
                 // Obter Lista de PeriodoFechamentoBimestre por Dre e PeriodoEscolar
-                var periodosFechamentoBimestre = 
+                var periodosFechamentoBimestre =
                     await repositorioPeriodoFechamentoBimestre.ObterBimestreParaAlteracaoHierarquicaAsync(
-                        fechamentoBimestre.PeriodoEscolarId, 
-                        fechamento.DreId, 
-                        fechamentoBimestre.InicioDoFechamento, 
+                        fechamentoBimestre.PeriodoEscolarId,
+                        fechamento.DreId,
+                        fechamentoBimestre.InicioDoFechamento,
                         fechamentoBimestre.FinalDoFechamento);
 
                 if (periodosFechamentoBimestre != null && periodosFechamentoBimestre.Any())
@@ -89,7 +94,7 @@ namespace SME.SGP.Dominio.Servicos
             }
 
             // Agrupa a lista em PeriodoEscolar (por UE)
-            foreach(var periodosFechamentoBimestreUE in listaPeriodosAlteracao.GroupBy(a => a.PeriodoFechamentoId))
+            foreach (var periodosFechamentoBimestreUE in listaPeriodosAlteracao.GroupBy(a => a.PeriodoFechamentoId))
             {
                 var periodoFechamento = listaPeriodosAlteracao.Select(a => a.PeriodoFechamento).FirstOrDefault(c => c.Id == periodosFechamentoBimestreUE.Key);
 
@@ -119,7 +124,7 @@ namespace SME.SGP.Dominio.Servicos
 
                 // Notifica Alteração dos Periodos
                 if (periodoFechamento.UeId.HasValue)
-                    EnviaNotificacaoParaUe(periodosFechamentoBimestreUE, periodoFechamento.UeId.Value);
+                    await EnviaNotificacaoParaUe(periodosFechamentoBimestreUE, periodoFechamento.UeId.Value);
                 else
                     EnviaNotificacaoParaDre(periodoFechamento.DreId.Value, periodosFechamentoBimestreUE);
             }
@@ -207,7 +212,7 @@ namespace SME.SGP.Dominio.Servicos
                     {
                         if (bimestreFechamentoSME != null)
                         {
-                            bimestreDreUe.InicioMinimo = 
+                            bimestreDreUe.InicioMinimo =
                                 bimestreFechamentoSME.InicioDoFechamento < bimestreSME.InicioDoFechamento ?
                                 bimestreFechamentoSME.InicioDoFechamento.Value : bimestreSME.InicioDoFechamento;
 
@@ -307,7 +312,7 @@ namespace SME.SGP.Dominio.Servicos
             {
 
                 throw;
-            }        
+            }
         }
 
         private void AtualizaEventoDeFechamento(PeriodoFechamentoBimestre bimestre, EventoFechamento fechamentoExistente)
@@ -392,11 +397,11 @@ namespace SME.SGP.Dominio.Servicos
                 {
 
                     throw;
-                }            
+                }
             }
         }
 
-        private void EnviaNotificacaoParaUe(IEnumerable<PeriodoFechamentoBimestre> fechamentosBimestre, long UeId)
+        private async Task EnviaNotificacaoParaUe(IEnumerable<PeriodoFechamentoBimestre> fechamentosBimestre, long UeId)
         {
             try
             {
@@ -414,6 +419,22 @@ namespace SME.SGP.Dominio.Servicos
                         foreach (var diretor in diretores)
                         {
                             var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(diretor.CodigoRf);
+                            notificacao.UsuarioId = usuario.Id;
+
+                            servicoNotificacao.Salvar(notificacao);
+                        }
+                    }
+
+                    var admsUe = await servicoEol.ObterAdministradoresSGPParaNotificar(ue.CodigoUe);
+                    
+                    if (admsUe == null || !admsUe.Any())
+                        SentrySdk.AddBreadcrumb($"Não foram localizados os ADMs para Ue {ue.CodigoUe}.");
+                    else
+                    {
+                        var usuarios = await mediator.Send(new ObterUsuariosPorRfOuCriaQuery(admsUe, true));
+
+                        foreach (var usuario in usuarios.Where(u => u.PossuiPerfilAdmUE()))
+                        {
                             notificacao.UsuarioId = usuario.Id;
 
                             servicoNotificacao.Salvar(notificacao);
