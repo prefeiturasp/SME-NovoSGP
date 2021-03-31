@@ -109,12 +109,6 @@ const DashboardAEE = () => {
     }
   }, [codigoDre, obterUes]);
 
-  // useEffect(() => {
-  //   if (anoLetivo && codigoDre && codigoUe) {
-
-  //   }
-  // }, [anoLetivo, codigoDre, codigoUe]);
-
   useEffect(() => {
     obterAnosLetivos();
     obterDres();
