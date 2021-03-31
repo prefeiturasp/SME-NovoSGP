@@ -327,17 +327,9 @@ namespace SME.SGP.Dominio.Servicos
         public async Task<bool> VerificaNotasTodosComponentesCurriculares(string alunoCodigo, Turma turma, long? periodoEscolarId)
         {
             int bimestre;
+            long[] conselhosClassesIds;
 
-            if (periodoEscolarId.HasValue)
-            {
-                var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarePorIdQuery(periodoEscolarId.Value));
-                if (periodoEscolar == null)
-                    throw new NegocioException("Não foi possível localizar o período escolar");
-
-                bimestre = periodoEscolar.Bimestre;
-            }
-            else bimestre = 0;
-
+         
             string[] turmasCodigos;
             if (turma.DeveVerificarRegraRegulares())
             {
@@ -346,16 +338,43 @@ namespace SME.SGP.Dominio.Servicos
             }                
             else turmasCodigos = new string[] { turma.CodigoTurma };
 
+
+            if (periodoEscolarId.HasValue)
+            {
+                var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarePorIdQuery(periodoEscolarId.Value));
+                if (periodoEscolar == null)
+                    throw new NegocioException("Não foi possível localizar o período escolar");
+
+                bimestre = periodoEscolar.Bimestre;
+                conselhosClassesIds = await mediator.Send(new ObterConselhoClasseIdsPorTurmaEPeriodoQuery(turmasCodigos, periodoEscolar?.Id));
+            }
+            else
+            {
+                bimestre = 0;
+                conselhosClassesIds = new long[0];
+            }
+
+            var notasParaVerificar = new List<NotaConceitoBimestreComponenteDto>();
+
+            if (conselhosClassesIds != null)
+            {
+                foreach (var conselhosClassesId in conselhosClassesIds)
+                {
+                    var notasParaAdicionar = await consultasConselhoClasseNota.ObterNotasAlunoAsync(conselhosClassesId, alunoCodigo);
+                    notasParaVerificar.AddRange(notasParaAdicionar);
+                }
+            }
+
             //var notasAluno = await repositorioConselhoClasseNota.ObterNotasAlunoPorTurmasAsync(alunoCodigo, turmasCodigos, periodoEscolarId);
-            var notasAluno = periodoEscolarId.HasValue ?
-            await mediator.Send(new ObterNotasFechamentosPorTurmasCodigosBimestreQuery(turmasCodigos, alunoCodigo, bimestre)) :
-            await consultasConselhoClasseNota.ObterNotasFinaisBimestresAlunoAsync(alunoCodigo, turmasCodigos);
+            if (periodoEscolarId.HasValue)
+                notasParaVerificar.AddRange(await mediator.Send(new ObterNotasFechamentosPorTurmasCodigosBimestreQuery(turmasCodigos, alunoCodigo, bimestre)));
+            else notasParaVerificar.AddRange(await consultasConselhoClasseNota.ObterNotasFinaisBimestresAlunoAsync(alunoCodigo, turmasCodigos));
 
             var componentesCurriculares = await ObterComponentesTurmas(turmasCodigos, turma.EnsinoEspecial, turma.TurnoParaComponentesCurriculares);
 
             // Checa se todas as disciplinas da turma receberam nota
             foreach (var componenteCurricular in componentesCurriculares.Where(c => c.LancaNota))
-                if (!notasAluno.Any(c => c.ComponenteCurricularCodigo == componenteCurricular.CodigoComponenteCurricular))
+                if (!notasParaVerificar.Any(c => c.ComponenteCurricularCodigo == componenteCurricular.CodigoComponenteCurricular))
                     return false;
 
             return true;
