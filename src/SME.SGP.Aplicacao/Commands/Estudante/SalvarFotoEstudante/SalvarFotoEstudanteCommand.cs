@@ -8,7 +8,7 @@ using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class SalvarFotoEstudanteCommand : IRequest<bool>
+    public class SalvarFotoEstudanteCommand : IRequest<Guid>
     {
         public SalvarFotoEstudanteCommand(IFormFile file, string alunoCodigo)
         {

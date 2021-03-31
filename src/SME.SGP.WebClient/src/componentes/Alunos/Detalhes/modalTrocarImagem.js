@@ -11,7 +11,7 @@ import { getBase64DataURL } from '~/utils';
 import { ContainerModalUploadImagem } from './styles';
 
 const ModalTrocarImagem = props => {
-  const { exibirModal, onCloseModal, codigoAluno, dadosImagem } = props;
+  const { exibirModal, onCloseModal, codigoEOL, dadosImagem } = props;
 
   const [exibirLoader, setExibirLoader] = useState(false);
   const [imagemAtual, setImagemAtual] = useState([]);
@@ -43,6 +43,9 @@ const ModalTrocarImagem = props => {
       const urlImagem = await getBase64DataURL(resposta?.data, type || '');
       const dadosMapeados = { ...dadosImagem };
       dadosMapeados.url = urlImagem;
+      dadosMapeados.type = type;
+      dadosMapeados.uid = uid;
+
       atualizarDadosImagem([dadosMapeados]);
     } else {
       atualizarDadosImagem();
@@ -55,20 +58,20 @@ const ModalTrocarImagem = props => {
     }
   }, [dadosImagem, exibirModal]);
 
-  const afterSuccessUpload = dados => {
-    if (dados?.codigo) {
-      obterImagem(dados?.codigo);
+  const afterSuccessUpload = codigo => {
+    if (codigo) {
+      obterImagem(codigo);
     } else {
       atualizarDadosImagem();
     }
     setTrocouImagem(true);
   };
 
-  const removerImagem = async codigoFoto => {
-    if (codigoFoto) {
+  const removerImagem = async () => {
+    if (codigoEOL) {
       setExibirLoader(true);
       const resposta = await ServicoImagemEstudante.excluirImagemEstudante(
-        codigoFoto
+        codigoEOL
       )
         .catch(e => erros(e))
         .finally(() => setExibirLoader(false));
@@ -86,7 +89,7 @@ const ModalTrocarImagem = props => {
     parametrosCustomRequest: [
       {
         nome: 'codigoAluno',
-        valor: codigoAluno,
+        valor: codigoEOL,
       },
     ],
     afterSuccessUpload,
@@ -106,7 +109,10 @@ const ModalTrocarImagem = props => {
       key="alterar-imagem"
       visivel={exibirModal && !confirmacao?.visivel}
       titulo="Alterar a imagem"
-      onClose={() => onCloseModal(trocouImagem)}
+      onClose={() => {
+        onCloseModal(trocouImagem);
+        setImagemAtual([]);
+      }}
       esconderBotaoPrincipal
       esconderBotaoSecundario
       width={400}
@@ -137,14 +143,14 @@ const ModalTrocarImagem = props => {
 ModalTrocarImagem.propTypes = {
   exibirModal: PropTypes.bool,
   onCloseModal: PropTypes.oneOfType([PropTypes.func]),
-  codigoAluno: PropTypes.string,
+  codigoEOL: PropTypes.string,
   dadosImagem: PropTypes.oneOfType([PropTypes.any]),
 };
 
 ModalTrocarImagem.defaultProps = {
   exibirModal: false,
   onCloseModal: () => {},
-  codigoAluno: '',
+  codigoEOL: '',
   dadosImagem: null,
 };
 

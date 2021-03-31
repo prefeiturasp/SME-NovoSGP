@@ -21,15 +21,15 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<MiniaturaFotoDto> ObterFotosPorAlunoCodigo(string alunoCodigo)
         {
             var query = @"select
-	                    a.Codigo,
-	                    a2.Codigo as CodigoFotoOriginal,
+	                    a2.Codigo,
+	                    a.Codigo as CodigoFotoOriginal,
 	                    a.Tipo,
 	                    a.tipo_conteudo,
-	                    a2.Nome,
+	                    a.Nome,
                         af.id as FotoId,
                         af.arquivo_id as ArquivoId,
                         af2.id as MiniaturaId,
-                        af2.arquivo_id as MiniaturaArquivoId,
+                        af2.arquivo_id as MiniaturaArquivoId
                     from
 	                    arquivo a
                     inner join aluno_foto af on

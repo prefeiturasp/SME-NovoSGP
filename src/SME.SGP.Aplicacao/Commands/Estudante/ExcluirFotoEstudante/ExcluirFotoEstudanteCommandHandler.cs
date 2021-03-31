@@ -36,8 +36,8 @@ namespace SME.SGP.Aplicacao
             {
                 try
                 {
-                    await ExcluirFoto(fotoAluno.MiniaturaId, fotoAluno.MiniaturaArquivoId);
                     await ExcluirFoto(fotoAluno.FotoId, fotoAluno.ArquivoId);
+                    await ExcluirFoto(fotoAluno.MiniaturaId, fotoAluno.MiniaturaArquivoId);
 
                     unitOfWork.PersistirTransacao();
 
