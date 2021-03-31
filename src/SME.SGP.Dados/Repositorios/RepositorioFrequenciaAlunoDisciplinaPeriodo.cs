@@ -270,7 +270,7 @@ namespace SME.SGP.Dados.Repositorios
             if (tipoCalendarioId > 0)
                 query.AppendLine("inner join periodo_escolar pe on fa.periodo_escolar_id = pe.id");
 
-            query.AppendLine(@" where tipo = 2 
+            query.AppendLine(@" where fa.tipo = 2 
                 and fa.codigo_aluno = @alunoCodigo 
                 and t.ano_letivo = @anoTurma 
                 and t.tipo_turma in(1,2,7) ");
