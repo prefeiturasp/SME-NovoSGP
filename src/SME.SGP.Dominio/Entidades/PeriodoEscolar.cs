@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SME.SGP.Dominio
 {
@@ -23,11 +24,14 @@ namespace SME.SGP.Dominio
             return PeriodoInicio.Date <= data.Date && PeriodoFim.Date >= data.Date;
         }
 
-        public IEnumerable<DateTime> ObterIntervaloDatas()
+        public IEnumerable<DateTime> ObterIntervaloDatas(IEnumerable<(DateTime, DateTime)> periodosFeriados)
         {
             var datas = new List<DateTime>();
             for (var dia = PeriodoInicio.Date; dia <= PeriodoFim.Date; dia = dia.AddDays(1))
-                datas.Add(dia);
+            {
+                if (periodosFeriados == null || !periodosFeriados.Any() || !periodosFeriados.Any(pf => pf.Item1 >= dia && pf.Item2 <= dia))
+                    datas.Add(dia);
+            }
             return datas;
         }
 
