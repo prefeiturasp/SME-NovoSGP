@@ -815,6 +815,10 @@ namespace SME.SGP.IoC
 
             services.TryAddScoped<ISalvarAcompanhamentoTurmaUseCase, SalvarAcompanhamentoTurmaUseCase>();
 
+            services.TryAddScoped<IExecutaSincronizacaoEstruturaOranizacionalUesUseCase, ExecutaSincronizacaoEstruturaOranizacionalUesUseCase>();
+            services.TryAddScoped<IEnviarSincronizacaoEstruturaInstitucionalUesUseCase, EnviarSincronizacaoEstruturaInstitucionalUesUseCase>();
+            
+
         }
     }
 }

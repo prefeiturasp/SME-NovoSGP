@@ -59,6 +59,11 @@ namespace SME.SGP.Dados.Repositorios
             return await contexto.Conexao.QueryFirstOrDefaultAsync<string>(query, new { ueId });
         }
 
+        public async Task<long> ObterIdDrePorCodigo(string codigo)
+        {
+            return await contexto.Conexao.QueryFirstOrDefaultAsync<long>("select Id from dre where dre_id = @codigo", new { codigo });
+        }
+
         public Dre ObterPorCodigo(string codigo)
         {
             return contexto.Conexao.QueryFirstOrDefault<Dre>("select * from dre where dre_id = @codigo", new { codigo });
