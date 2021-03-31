@@ -1008,15 +1008,15 @@ rotas.set(RotasDto.RELATORIO_COMPENSACAO_AUSENCIA, {
   chavePermissao: RotasDto.RELATORIO_COMPENSACAO_AUSENCIA,
 });
 
-rotas.set(RotasDto.RELATORIO_ESCOLA_AQUI_DASHBOARD, {
-  breadcrumbName: 'Dashboard',
-  menu: ['Relatórios', 'Escola aqui '],
+rotas.set(RotasDto.DASHBOARD_ESCOLA_AQUI, {
+  breadcrumbName: 'Escola aqui',
+  menu: ['Dashboard'],
   parent: '/',
   component: DashboardEscolaAqui,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: false,
-  chavePermissao: RotasDto.RELATORIO_ESCOLA_AQUI_DASHBOARD,
+  chavePermissao: RotasDto.DASHBOARD_ESCOLA_AQUI,
 });
 
 rotas.set(RotasDto.CONTROLE_GRADE, {
