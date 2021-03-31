@@ -20,6 +20,10 @@ const CampoNota = props => {
     codigoComponenteCurricular,
     mediaAprovacao,
     alunoDesabilitado,
+    esconderSetas,
+    name,
+    clicarSetas,
+    step,
   } = props;
 
   const fechamentoPeriodoInicioFim = useSelector(
@@ -160,6 +164,9 @@ const CampoNota = props => {
   const campoNotaPosConselho = (abaixoMedia, validarMedia) => {
     return (
       <CampoNumero
+        esconderSetas={esconderSetas}
+        name={name}
+        onKeyDown={clicarSetas}
         onChange={valorNovo => {
           const invalido = valorInvalido(valorNovo);
           if (!invalido && editouCampo(notaValorAtual, valorNovo)) {
@@ -169,7 +176,7 @@ const CampoNota = props => {
         value={notaValorAtual}
         min={0}
         max={10}
-        step={0.5}
+        step={step}
         className={abaixoMedia ? 'borda-abaixo-media' : ''}
         desabilitado={
           (alunoDesabilitado && !podeEditarNota) ||
@@ -219,6 +226,10 @@ CampoNota.propTypes = {
   codigoComponenteCurricular: PropTypes.oneOfType([PropTypes.any]),
   mediaAprovacao: PropTypes.number,
   alunoDesabilitado: PropTypes.bool,
+  clicarSetas: PropTypes.func,
+  name: PropTypes.string,
+  esconderSetas: PropTypes.bool,
+  step: PropTypes.number,
 };
 
 CampoNota.defaultProps = {
@@ -228,6 +239,10 @@ CampoNota.defaultProps = {
   codigoComponenteCurricular: '',
   mediaAprovacao: 5,
   alunoDesabilitado: false,
+  clicarSetas: () => {},
+  name: '',
+  esconderSetas: false,
+  step: 0.5,
 };
 
 export default CampoNota;

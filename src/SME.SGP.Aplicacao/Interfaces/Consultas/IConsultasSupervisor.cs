@@ -8,7 +8,7 @@ namespace SME.SGP.Aplicacao
     {
         Task<IEnumerable<SupervisorEscolasDto>> ObterPorDre(string dreId);
 
-        IEnumerable<SupervisorDto> ObterPorDreENomeSupervisor(string supervisorNome, string dreId);
+        Task<IEnumerable<SupervisorDto>> ObterPorDreENomeSupervisorAsync(string supervisorNome, string dreId);
 
         IEnumerable<SupervisorEscolasDto> ObterPorDreESupervisor(string supervisorId, string dreId);
 

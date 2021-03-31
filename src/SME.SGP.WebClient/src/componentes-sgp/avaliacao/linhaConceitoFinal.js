@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import shortid from 'shortid';
+import { tratarString } from '~/utils';
 
 const LinhaConceitoFinal = props => {
   const expandirLinha = useSelector(
@@ -30,10 +31,12 @@ const LinhaConceitoFinal = props => {
                 </div>
                 {aluno && aluno.notasBimestre && aluno.notasBimestre.length
                   ? aluno.notasBimestre.map((item, index) => {
+                      const disciplinaTratada = tratarString(item.disciplina);
                       return (
                         <div
                           style={{ paddingRight: '22px' }}
                           key={shortid.generate()}
+                          name={`${disciplinaTratada}${aluno?.id}`}
                         >
                           {montarCampoNotaConceitoFinal(item.disciplina, index)}
                         </div>
