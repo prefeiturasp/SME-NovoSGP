@@ -29,7 +29,10 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IUnitOfWork unitOfWork;
         private readonly IServicoCalculoParecerConclusivo servicoCalculoParecerConclusivo;
         private readonly IMediator mediator;
+        private readonly IConsultasConselhoClasseNota consultasConselhoClasseNota;
 
+
+        
         public ServicoConselhoClasse(IRepositorioConselhoClasse repositorioConselhoClasse,
                                      IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno,
                                      IRepositorioFechamentoTurma repositorioFechamentoTurma,
@@ -45,7 +48,8 @@ namespace SME.SGP.Dominio.Servicos
                                      IRepositorioConselhoClasseNota repositorioConselhoClasseNota,
                                      IUnitOfWork unitOfWork,
                                      IServicoCalculoParecerConclusivo servicoCalculoParecerConclusivo,
-                                     IMediator mediator)
+                                     IMediator mediator,
+                                     IConsultasConselhoClasseNota consultasConselhoClasseNota)
 
         {
             this.repositorioConselhoClasse = repositorioConselhoClasse ?? throw new ArgumentNullException(nameof(repositorioConselhoClasse));
@@ -64,6 +68,7 @@ namespace SME.SGP.Dominio.Servicos
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.servicoCalculoParecerConclusivo = servicoCalculoParecerConclusivo ?? throw new ArgumentNullException(nameof(servicoCalculoParecerConclusivo));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            this.consultasConselhoClasseNota = consultasConselhoClasseNota ?? throw new ArgumentNullException(nameof(consultasConselhoClasseNota));
         }
 
         public async Task<ConselhoClasseNotaRetornoDto> SalvarConselhoClasseAlunoNotaAsync(ConselhoClasseNotaDto conselhoClasseNotaDto, string alunoCodigo, long conselhoClasseId, long fechamentoTurmaId, string codigoTurma, int bimestre)
@@ -321,6 +326,18 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task<bool> VerificaNotasTodosComponentesCurriculares(string alunoCodigo, Turma turma, long? periodoEscolarId)
         {
+            int bimestre;
+
+            if (periodoEscolarId.HasValue)
+            {
+                var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarePorIdQuery(periodoEscolarId.Value));
+                if (periodoEscolar == null)
+                    throw new NegocioException("Não foi possível localizar o período escolar");
+
+                bimestre = periodoEscolar.Bimestre;
+            }
+            else bimestre = 0;
+
             string[] turmasCodigos;
             if (turma.DeveVerificarRegraRegulares())
             {
@@ -329,8 +346,11 @@ namespace SME.SGP.Dominio.Servicos
             }                
             else turmasCodigos = new string[] { turma.CodigoTurma };
 
-            var notasAluno = await repositorioConselhoClasseNota.ObterNotasAlunoPorTurmasAsync(alunoCodigo, turmasCodigos, periodoEscolarId);
-            
+            //var notasAluno = await repositorioConselhoClasseNota.ObterNotasAlunoPorTurmasAsync(alunoCodigo, turmasCodigos, periodoEscolarId);
+            var notasAluno = periodoEscolarId.HasValue ?
+            await mediator.Send(new ObterNotasFechamentosPorTurmasCodigosBimestreQuery(turmasCodigos, alunoCodigo, bimestre)) :
+            await consultasConselhoClasseNota.ObterNotasFinaisBimestresAlunoAsync(alunoCodigo, turmasCodigos);
+
             var componentesCurriculares = await ObterComponentesTurmas(turmasCodigos, turma.EnsinoEspecial, turma.TurnoParaComponentesCurriculares);
 
             // Checa se todas as disciplinas da turma receberam nota
