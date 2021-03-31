@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
                .WithMessage("O Id da tuma deve ser informado.");
             RuleFor(c => c.DisciplinaId)
                .NotEmpty()
-               .WithMessage("O Id da disciplina deve ser informado.");
+               .WithMessage("O Id do componente curricular deve ser informado.");
         }
     }
 }

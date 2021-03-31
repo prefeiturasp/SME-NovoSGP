@@ -9,6 +9,7 @@ namespace SME.SGP.Infra
         public long Id { get; set; }
         public string Nome { get; set; }
         public bool EhInterdisciplinar { get; set; }
+        public bool EhCJ { get; set; }
         public string[] Disciplinas { get; set; }
     }
 }

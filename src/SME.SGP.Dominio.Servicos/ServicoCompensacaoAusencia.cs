@@ -122,12 +122,12 @@ namespace SME.SGP.Dominio.Servicos
             var disciplinasEOL = await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { disciplinaId });
 
             if (!disciplinasEOL.Any())
-                throw new NegocioException("Disciplina não encontrada no EOL.");
+                throw new NegocioException("Componente curricular não encontrado no EOL.");
 
             var disciplina = disciplinasEOL.FirstOrDefault();
 
             if (!registroMigrado && disciplina.Regencia && ((disciplinasRegenciaIds == null) || !disciplinasRegenciaIds.Any()))
-                throw new NegocioException("Regência de classe deve informar a(s) disciplina(s) relacionadas a esta atividade.");
+                throw new NegocioException("Regência de classe deve informar o(s) componente(s) curricular(es) relacionados a esta atividade.");
 
         }
 

@@ -39,7 +39,10 @@ const Dia = props => {
     if (dia && mesAtual && tipoLista.length) {
       const lista = tipoLista.filter(evento => evento.dia === dia.getDate())[0];
       if (lista) setTipoEventosDiaLista(lista);
+      return;
     }
+
+    setTipoEventosDiaLista([]);
   }, [dia, mesAtual, tipoLista]);
 
   const selecionaDiaAberto = useCallback(() => {

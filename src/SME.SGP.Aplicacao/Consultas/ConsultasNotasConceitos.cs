@@ -128,9 +128,9 @@ namespace SME.SGP.Aplicacao
 
             var tipoAvaliacaoBimestral = await repositorioTipoAvaliacao.ObterTipoAvaliacaoBimestral();
 
-            retorno.BimestreAtual = bimestre.Value;            
+            retorno.BimestreAtual = bimestre.Value;
             retorno.MediaAprovacaoBimestre = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.MediaBimestre, DateTime.Today.Year)));
-            retorno.MinimoAvaliacoesBimestrais = tipoAvaliacaoBimestral.AvaliacoesNecessariasPorBimestre;            
+            retorno.MinimoAvaliacoesBimestrais = tipoAvaliacaoBimestral.AvaliacoesNecessariasPorBimestre;
             retorno.PercentualAlunosInsuficientes = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.PercentualAlunosInsuficientes, DateTime.Today.Year)));
 
             DateTime? dataUltimaNotaConceitoInserida = null;
@@ -171,7 +171,7 @@ namespace SME.SGP.Aplicacao
                     var consultaEOL = await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { long.Parse(filtro.DisciplinaCodigo) });
 
                     if (consultaEOL == null || !consultaEOL.Any())
-                        throw new NegocioException("Disciplina informada não encontrada no EOL");
+                        throw new NegocioException("Componente curricular informado não encontrado no EOL");
                     var disciplinaEOL = consultaEOL.First();
 
                     IEnumerable<DisciplinaResposta> disciplinasRegencia = null;
@@ -252,7 +252,7 @@ namespace SME.SGP.Aplicacao
 
                         // Carrega Notas do Bimestre
                         if (fechamentoTurma != null)
-                        {                            
+                        {
                             bimestreParaAdicionar.FechamentoTurmaId = fechamentoTurma.Id;
                             bimestreParaAdicionar.Situacao = fechamentoTurma.Situacao;
 
@@ -323,7 +323,8 @@ namespace SME.SGP.Aplicacao
                             Id = avaliacao.Id,
                             Data = avaliacao.DataAvaliacao,
                             Descricao = avaliacao.DescricaoAvaliacao,
-                            Nome = avaliacao.NomeAvaliacao
+                            Nome = avaliacao.NomeAvaliacao,
+                            EhCJ = avaliacao.EhCj
                         };
                         if (avaliacao.Categoria.Equals(CategoriaAtividadeAvaliativa.Interdisciplinar))
                         {
@@ -486,13 +487,13 @@ namespace SME.SGP.Aplicacao
                         disciplinasObservacao.Add(disciplinaRegencia.Nome);
                 }
                 if (disciplinasObservacao.Count > 0)
-                    bimestreDto.Observacoes.Add($"A(s) disciplina(s) [{string.Join(",", disciplinasObservacao)}] não tem o número mínimo de avaliações bimestrais no bimestre {bimestre}");
+                    bimestreDto.Observacoes.Add($"O(s) componente(s) curricular(es) [{string.Join(",", disciplinasObservacao)}] não tem o número mínimo de avaliações bimestrais no bimestre {bimestre}");
             }
             else
             {
                 var avaliacoes = await repositorioAtividadeAvaliativaDisciplina.ObterAvaliacoesBimestrais(tipoCalendarioId, turmaCodigo, disciplinaEOL.CodigoComponenteCurricular.ToString(), bimestre);
                 if ((avaliacoes == null) || (avaliacoes.Count() < tipoAvaliacaoBimestral.AvaliacoesNecessariasPorBimestre))
-                    bimestreDto.Observacoes.Add($"A disciplina [{disciplinaEOL.Nome}] não tem o número mínimo de avaliações bimestrais no bimestre {bimestre}");
+                    bimestreDto.Observacoes.Add($"O componente curricular [{disciplinaEOL.Nome}] não tem o número mínimo de avaliações bimestrais no bimestre {bimestre}");
             }
         }
 
