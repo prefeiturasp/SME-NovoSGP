@@ -141,12 +141,12 @@ namespace SME.SGP.Api
 
             //services.AdicionarRedis(Configuration, serviceProvider.GetService<IServicoLog>());
 
-            if (Configuration.GetValue<bool>("FF_BackgroundEnabled", false))
-            {
-                Orquestrador.Registrar(new Processor(Configuration, "SGP_Postgres"));
-                RegistraServicosRecorrentes.Registrar();
-            }
-            else
+            //if (Configuration.GetValue<bool>("FF_BackgroundEnabled", false))
+            //{
+            //    Orquestrador.Registrar(new Processor(Configuration, "SGP_Postgres"));
+            //    RegistraServicosRecorrentes.Registrar();
+            //}
+            //else
                 Orquestrador.Desativar();
 
             services.AddHealthChecks()
