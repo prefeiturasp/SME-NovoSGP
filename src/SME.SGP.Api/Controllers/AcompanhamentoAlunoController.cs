@@ -25,7 +25,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 400)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [RequestSizeLimit(5 * 1024 * 1024)]
-        public async Task<IActionResult> UploadFoto([FromForm][FromBody] AcompanhamentoAlunoDto dto, [FromServices] ISalvarFotoAlunoUseCase useCase)
+        public async Task<IActionResult> UploadFoto([FromForm][FromBody] AcompanhamentoAlunoDto dto, [FromServices] ISalvarFotoAcompanhamentoAlunoUseCase useCase)
         {
             if (dto.File.Length > 0)
                 return Ok(await useCase.Executar(dto));

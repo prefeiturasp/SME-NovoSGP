@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Infra;
@@ -62,6 +63,19 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterFotoAluno(string codigoAluno, [FromServices] IObterEstudanteFotoUseCase useCase)
         {
             return Ok(await useCase.Executar(codigoAluno));
+        }
+
+        [HttpPost("{codigoAluno}/foto")]
+        [ProducesResponseType(typeof(ArquivoDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public async Task<IActionResult> SalvarFotoAluno(string codigoAluno, [FromForm] IFormFile file, [FromServices] ISalvarFotoEstudanteUseCase useCase)
+        {
+            if (file.Length > 0)
+                return Ok(await useCase.Executar(new EstudanteFotoDto() { AlunoCodigo = codigoAluno, File = file }));
+
+            return BadRequest();
+
         }
     }
 }

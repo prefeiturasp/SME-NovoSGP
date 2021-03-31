@@ -491,7 +491,7 @@ namespace SME.SGP.IoC
 
             // Acompanhamento Aluno
             services.TryAddScoped<ISalvarAcompanhamentoAlunoUseCase, SalvarAcompanhamentoAlunoUseCase>();
-            services.TryAddScoped<ISalvarFotoAlunoUseCase, SalvarFotoAlunoUseCase>();
+            services.TryAddScoped<ISalvarFotoAcompanhamentoAlunoUseCase, SalvarFotoAcompanhamentoAlunoUseCase>();
             services.TryAddScoped<IObterFotosSemestreAlunoUseCase, ObterFotosSemestreAlunoUseCase>();
             services.TryAddScoped<IExcluirFotoAlunoUseCase, ExcluirFotoAlunoUseCase>();
             services.TryAddScoped<IObterAcompanhamentoAlunoUseCase, ObterAcompanhamentoAlunoUseCase>();
@@ -769,8 +769,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IExcluirOcorrenciaUseCase, ExcluirOcorrenciaUseCase>();
             services.TryAddScoped<IInserirOcorrenciaUseCase, InserirOcorrenciaUseCase>();
             services.TryAddScoped<IObterOcorrenciasPorAlunoUseCase, ObterOcorrenciasPorAlunoUseCase>();
-            
 
+
+            services.TryAddScoped<ISalvarFotoEstudanteUseCase, SalvarFotoEstudanteUseCase>();         
 
 
             // Itinerancia
