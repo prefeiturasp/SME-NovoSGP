@@ -10,25 +10,18 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterUsuarioLogadoIdQueryHandler : IRequestHandler<ObterUsuarioLogadoIdQuery, long>
     {
-        private readonly IContextoAplicacao contextoAplicacao;
         private readonly IRepositorioUsuario repositorioUsuario;
+        private readonly IMediator mediator;
 
-        public ObterUsuarioLogadoIdQueryHandler(IContextoAplicacao contextoAplicacao, IRepositorioUsuario repositorioUsuario)
+        public ObterUsuarioLogadoIdQueryHandler(IRepositorioUsuario repositorioUsuario, IMediator mediator)
         {
-            this.contextoAplicacao = contextoAplicacao ?? throw new ArgumentNullException(nameof(contextoAplicacao));
             this.repositorioUsuario = repositorioUsuario ?? throw new ArgumentNullException(nameof(repositorioUsuario));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
-        public string ObterLoginAtual()
-        {
-            var loginAtual = contextoAplicacao.ObterVarivel<string>("login");
-            if (loginAtual == null)
-                throw new NegocioException("Não foi possível localizar o login no token");
 
-            return loginAtual;
-        }
-        public Task<long> Handle(ObterUsuarioLogadoIdQuery request, CancellationToken cancellationToken)
+        public async Task<long> Handle(ObterUsuarioLogadoIdQuery request, CancellationToken cancellationToken)
         {
-            var login = ObterLoginAtual();
+            var login = await mediator.Send(new ObterLoginAtualQuery());
             if (string.IsNullOrWhiteSpace(login))
                 throw new NegocioException("Usuário não encontrado.");
 
@@ -39,7 +32,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Usuário não encontrado.");
             }
 
-            return Task.FromResult(usuario.Id);
+            return usuario.Id;
 
         }
     }
