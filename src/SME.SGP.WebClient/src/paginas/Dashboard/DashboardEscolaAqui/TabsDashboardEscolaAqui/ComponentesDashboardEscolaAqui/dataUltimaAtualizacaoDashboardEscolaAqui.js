@@ -1,7 +1,7 @@
 import * as moment from 'moment';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
-import ServicoDashboardEscolaAqui from '~/servicos/Paginas/Relatorios/EscolaAqui/DashboardEscolaAqui/ServicoDashboardEscolaAqui';
+import ServicoDashboardEscolaAqui from '~/servicos/Paginas/Dashboard/ServicoDashboardEscolaAqui';
 import { ContainerDataUltimaAtualizacao } from '../../dashboardEscolaAqui.css';
 
 const DataUltimaAtualizacaoDashboardEscolaAqui = props => {

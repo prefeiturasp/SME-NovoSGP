@@ -68,7 +68,7 @@ import RegistroIndividual from '~/paginas/DiarioClasse/RegistroIndividual/regist
 import DevolutivasForm from '~/paginas/DiarioClasse/Devolutivas/devolutivasForm';
 import RelatorioNotasConceitosFinais from '~/paginas/Relatorios/NotasConceitosFinais/relatorioNotasConceitosFinais';
 import RelatorioCompensacaoAusencia from '~/paginas/Relatorios/CompensacaoAusencia/relatorioCompensacaoAusencia';
-import DashboardEscolaAqui from '~/paginas/Relatorios/DashboardEscolaAqui/dashboardEscolaAqui';
+import DashboardEscolaAqui from '~/paginas/Dashboard/DashboardEscolaAqui/dashboardEscolaAqui';
 import ControleGrade from '~/paginas/Relatorios/DiarioClasse/ControleGrade/controleGrade';
 import Sondagem from '~/paginas/Sondagem/sondagem';
 import PocUploadArquivos from '~/componentes-sgp/UploadArquivos/pocUploadArquivos';

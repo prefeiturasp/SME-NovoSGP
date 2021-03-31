@@ -18,7 +18,7 @@ import {
 } from '~/redux/modulos/dashboardEscolaAqui/actions';
 import { AbrangenciaServico, api, erros } from '~/servicos';
 import ServicoFiltroRelatorio from '~/servicos/Paginas/FiltroRelatorio/ServicoFiltroRelatorio';
-import ServicoDashboardEscolaAqui from '~/servicos/Paginas/Relatorios/EscolaAqui/DashboardEscolaAqui/ServicoDashboardEscolaAqui';
+import ServicoDashboardEscolaAqui from '~/servicos/Paginas/Dashboard/ServicoDashboardEscolaAqui';
 import {
   mapearParaDtoGraficoPizzaComValorEPercentual,
   obterDadosComunicadoSelecionado,

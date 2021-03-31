@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 import { DataTable, Label, Loader, SelectComponent } from '~/componentes';
 import { NomeEstudanteLista } from '~/componentes-sgp';
 import { erros } from '~/servicos';
-import ServicoDashboardEscolaAqui from '~/servicos/Paginas/Relatorios/EscolaAqui/DashboardEscolaAqui/ServicoDashboardEscolaAqui';
+import ServicoDashboardEscolaAqui from '~/servicos/Paginas/Dashboard/ServicoDashboardEscolaAqui';
 import { MarcadorSituacaoAluno } from '../../dashboardEscolaAqui.css';
 import { obterDadosComunicadoSelecionado } from '../../dashboardEscolaAquiGraficosUtils';
 
