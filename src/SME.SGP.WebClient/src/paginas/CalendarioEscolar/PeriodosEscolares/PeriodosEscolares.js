@@ -61,6 +61,10 @@ const PeriodosEscolares = () => {
   const [pesquisaTipoCalendario, setPesquisaTipoCalendario] = useState('');
   const [carregandoTipos, setCarregandoTipos] = useState(false);
 
+  const temValorInicial = Object.keys(valoresIniciais).length;
+  const labelBotaoCadastrar =
+    temValorInicial && modoEdicao ? 'Alterar' : 'Cadastrar';
+
   const validacaoPrimeiroBim = {
     primeiroBimestreDataInicial: momentSchema.required(
       'Data inicial obrigatória'
@@ -559,7 +563,7 @@ const PeriodosEscolares = () => {
                   />
                   <Button
                     id={shortid.generate()}
-                    label="Cadastrar"
+                    label={labelBotaoCadastrar}
                     color={Colors.Roxo}
                     border
                     bold
