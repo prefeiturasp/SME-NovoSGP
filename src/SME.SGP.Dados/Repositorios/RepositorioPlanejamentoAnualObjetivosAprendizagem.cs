@@ -15,16 +15,13 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<IEnumerable<PlanejamentoAnualObjetivoAprendizagem>> ObterPorPlanejamentoAnualComponenteId(long componenteId)
+        public async Task<IEnumerable<PlanejamentoAnualObjetivoAprendizagem>> ObterPorPlanejamentoAnualComponenteId(long componenteId, bool consideraExcluido = false)
         {
-            var sql = @"select
-                            id as Id,
-                            planejamento_anual_componente_id as PlanejamentoAnualComponenteId,
-	                        objetivo_aprendizagem_id as ObjetivoAprendizagemId
-                        from
-                            planejamento_anual_objetivos_aprendizagem paoa
-                        where
-                            paoa.planejamento_anual_componente_id = @componenteId and paoa.excluido = false";
+            var sql = $@"select paoa.*
+                            from
+                                planejamento_anual_objetivos_aprendizagem paoa
+                         where
+                            paoa.planejamento_anual_componente_id = @componenteId{(!consideraExcluido ? " and paoa.excluido = false" : string.Empty)};";
             return await database.Conexao.QueryAsync<PlanejamentoAnualObjetivoAprendizagem>(sql, new { componenteId });
         }
 

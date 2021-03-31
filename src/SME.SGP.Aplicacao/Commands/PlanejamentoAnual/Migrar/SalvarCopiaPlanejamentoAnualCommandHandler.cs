@@ -42,26 +42,29 @@ namespace SME.SGP.Aplicacao
 
             foreach (var periodo in request.PlanejamentoAnual.PeriodosEscolares)
             {
-                var planejamentoAnualPeriodoEscolarExistente = await repositorioPlanejamentoAnualPeriodoEscolar
+                var planejamentoAnualPeriodoEscolar = await repositorioPlanejamentoAnualPeriodoEscolar
                     .ObterPorPlanejamentoAnualIdEPeriodoId(planejamentoAnualId, periodo.PeriodoEscolarId, true);
 
-                long? planejamentoAnualPeriodoEscolarId = planejamentoAnualPeriodoEscolarExistente?.Id;
+                if (planejamentoAnualPeriodoEscolar == null)
+                    planejamentoAnualPeriodoEscolar = new PlanejamentoAnualPeriodoEscolar(periodo.PeriodoEscolarId, planejamentoAnualId);
+                else
+                    planejamentoAnualPeriodoEscolar.Excluido = false;
 
-                if (planejamentoAnualPeriodoEscolarExistente == null)
-                {
-                    var copiaPeriodo = new PlanejamentoAnualPeriodoEscolar(periodo.PeriodoEscolarId, planejamentoAnualId);
-                    planejamentoAnualPeriodoEscolarId = await repositorioPlanejamentoAnualPeriodoEscolar.SalvarAsync(copiaPeriodo);
-                }
+                var planejamentoAnualPeriodoEscolarId = await repositorioPlanejamentoAnualPeriodoEscolar
+                    .SalvarAsync(planejamentoAnualPeriodoEscolar);
 
                 foreach (var componente in periodo.ComponentesCurriculares)
                 {
                     var planejamentoAnualComponente = await repositorioPlanejamentoAnualComponente
-                        .ObterPorPlanejamentoAnualPeriodoEscolarId(componente.ComponenteCurricularId, planejamentoAnualPeriodoEscolarId.Value, true);
+                        .ObterPorPlanejamentoAnualPeriodoEscolarId(componente.ComponenteCurricularId, planejamentoAnualPeriodoEscolarId, true);
 
                     if (planejamentoAnualComponente == null)
-                        planejamentoAnualComponente = new PlanejamentoAnualComponente(componente.ComponenteCurricularId, componente.Descricao, planejamentoAnualPeriodoEscolarId.Value);
+                        planejamentoAnualComponente = new PlanejamentoAnualComponente(componente.ComponenteCurricularId, componente.Descricao, planejamentoAnualPeriodoEscolarId);
                     else
+                    {
+                        planejamentoAnualComponente.Excluido = false;
                         planejamentoAnualComponente.Descricao = componente.Descricao;
+                    }
 
                     var planejamentoAnualComponenteId = await repositorioPlanejamentoAnualComponente.SalvarAsync(planejamentoAnualComponente);
 
@@ -74,10 +77,11 @@ namespace SME.SGP.Aplicacao
                             .SingleOrDefault(oa => oa.ObjetivoAprendizagemId.Equals(objetivo.ObjetivoAprendizagemId));
 
                         if (planejamentoAnualObjetivoAprendizagem == null)
-                        {
-                            var copiaObjetivo = new PlanejamentoAnualObjetivoAprendizagem(planejamentoAnualComponenteId, objetivo.ObjetivoAprendizagemId);
-                            await repositorioPlanejamentoAnualObjetivosAprendizagem.SalvarAsync(copiaObjetivo);
-                        }                        
+                            planejamentoAnualObjetivoAprendizagem = new PlanejamentoAnualObjetivoAprendizagem(planejamentoAnualComponenteId, objetivo.ObjetivoAprendizagemId);
+                        else
+                            planejamentoAnualObjetivoAprendizagem.Excluido = false;
+
+                        await repositorioPlanejamentoAnualObjetivosAprendizagem.SalvarAsync(planejamentoAnualObjetivoAprendizagem);
                     }
 
                     var listaPlanejamentoAnualObjetivoAprendizagemRemover = listaPlanejamentoAnualObjetivoAprendizagemExistente
