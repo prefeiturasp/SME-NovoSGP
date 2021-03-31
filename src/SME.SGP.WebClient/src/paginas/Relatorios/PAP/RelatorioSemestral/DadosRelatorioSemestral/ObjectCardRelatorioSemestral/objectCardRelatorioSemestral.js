@@ -18,6 +18,10 @@ const ObjectCardRelatorioSemestral = props => {
         .relatorioSemestralAlunoId
   );
 
+  const desabilitarCampos = useSelector(
+    store => store.relatorioSemestralPAP.desabilitarCampos
+  );
+
   const gerar = async () => {
     const params = {
       turmaCodigo: turmaSelecionada.turma,
@@ -38,6 +42,7 @@ const ObjectCardRelatorioSemestral = props => {
       dados={dadosAlunoObjectCard}
       desabilitarImprimir={!relatorioSemestralAlunoId}
       onClickImprimir={gerar}
+      permiteAlterarImagem={!desabilitarCampos}
     />
   );
 };

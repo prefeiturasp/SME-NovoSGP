@@ -84,6 +84,7 @@ const ModalAnotacoesAcompanhamentoFrequencia = () => {
               className="mb-2"
               dados={dados?.aluno}
               exibirBotaoImprimir={false}
+              permiteAlterarImagem={false}
             />
             <Card
               type="inner"

@@ -7,12 +7,17 @@ const ObjectCardEstudantePlanoAEE = () => {
     store => store.collapseLocalizarEstudante.dadosCollapseLocalizarEstudante
   );
 
+  const desabilitarCamposPlanoAEE = useSelector(
+    store => store.planoAEE.desabilitarCamposPlanoAEE
+  );
+
   return dadosCollapseLocalizarEstudante?.codigoAluno ? (
     <ObjectCardEstudante
       codigoAluno={dadosCollapseLocalizarEstudante?.codigoAluno}
       anoLetivo={dadosCollapseLocalizarEstudante?.anoLetivo}
       exibirBotaoImprimir={false}
       exibirFrequencia={false}
+      permiteAlterarImagem={!desabilitarCamposPlanoAEE}
     />
   ) : (
     ''
