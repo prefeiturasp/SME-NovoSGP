@@ -91,8 +91,9 @@ const CampoNotaFinal = props => {
   const setarValorNovo = async valorNovo => {
     if (!desabilitarCampo && podeEditar) {
       setNotaValorAtual(valorNovo);
+      const resto = valorNovo % 0.5;
       let notaArredondada = valorNovo;
-      if (valorNovo) {
+      if (resto) {
         const retorno = await api
           .get(
             `v1/avaliacoes/notas/${Number(
@@ -142,7 +143,8 @@ const CampoNotaFinal = props => {
                 valorEnviado = valorNovo;
               }
             }
-            setarValorNovo(valorEnviado);
+            const valorCampo = valorNovo > 0 ? valorNovo : null;
+            setarValorNovo(valorEnviado || valorCampo);
           }}
           value={notaValorAtual}
           min={0}

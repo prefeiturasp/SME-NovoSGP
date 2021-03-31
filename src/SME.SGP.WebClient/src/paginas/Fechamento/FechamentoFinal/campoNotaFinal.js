@@ -150,7 +150,8 @@ const CampoNotaFinal = props => {
                   valorEnviado = valorNovo;
                 }
               }
-              setarValorNovo(valorEnviado);
+              const valorCampo = valorNovo > 0 ? valorNovo : null;
+              setarValorNovo(valorEnviado || valorCampo);
             }}
             value={notaAtual}
             min={0}

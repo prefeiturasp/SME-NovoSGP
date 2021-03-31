@@ -370,7 +370,7 @@ const RelatorioNotasConceitosFinais = () => {
   }, [tipoNotaSelecionada, anoLetivo]);
 
   const valorCondicaoDesabilitar =
-    tipoNotaSelecionada === tipoNota.todas
+    tipoNotaSelecionada === tipoNota.todas || condicao === '0'
       ? false
       : valorCondicao === undefined || valorCondicao === '';
 
@@ -489,7 +489,13 @@ const RelatorioNotasConceitosFinais = () => {
   const onChangeComponenteCurricular = valor =>
     setComponentesCurriculares(valor);
   const onChangeBimestre = valor => setBimestres(valor);
-  const onChangeCondicao = valor => setCondicao(valor);
+
+  const onChangeCondicao = valor => {
+    if (valor === '0') {
+      setCampoBloqueado(true);
+    }
+    setCondicao(valor);
+  };
 
   const onChangeComparacao = valor => {
     setValorCondicao(valor);
