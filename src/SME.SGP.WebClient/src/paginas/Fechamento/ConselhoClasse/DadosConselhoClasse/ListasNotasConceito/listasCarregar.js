@@ -51,6 +51,7 @@ const ListasCarregar = props => {
         <ListaFinal
           key={shortid.generate()}
           dadosLista={item}
+          dadosListasNotasConceitos={dadosListasNotasConceitos}
           tipoNota={tipoNota}
           listaTiposConceitos={listaTiposConceitos}
           mediaAprovacao={mediaAprovacao}

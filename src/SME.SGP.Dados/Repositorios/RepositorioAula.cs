@@ -241,17 +241,20 @@ namespace SME.SGP.Dados.Repositorios
         {
             StringBuilder query = new StringBuilder();
             query.AppendLine("SELECT a.id,");
-            query.AppendLine("a.data_aula,");
-            query.AppendLine("a.tipo_aula,");
-            query.AppendLine("a.aula_cj,");
-            query.AppendLine("a.disciplina_id,");
-            query.AppendLine("a.professor_rf");
-            query.AppendLine("FROM public.aula a");
+            query.AppendLine("       a.data_aula,");
+            query.AppendLine("       a.tipo_aula,");
+            query.AppendLine("       a.aula_cj,");
+            query.AppendLine("       a.disciplina_id,");
+            query.AppendLine("       a.professor_rf");
+            query.AppendLine("  FROM public.aula a");
+            query.AppendLine("      INNER JOIN turma t");
+            query.AppendLine("          ON a.turma_id = t.turma_id");
             query.AppendLine("WHERE a.excluido = false");
             query.AppendLine("AND a.status <> 3");
             query.AppendLine("AND a.tipo_calendario_id = @tipoCalendarioId");
             query.AppendLine("AND a.turma_id = @turmaCodigo");
             query.AppendLine("AND extract(month from a.data_aula) = @mes");
+            query.AppendLine("AND extract(year from a.data_aula) = t.ano_letivo");
 
             return (await database.Conexao.QueryAsync<Aula>(query.ToString(), new { tipoCalendarioId, turmaCodigo, ueCodigo, mes }));
         }
@@ -821,7 +824,15 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<Aula>> ObterAulasPorTurmaETipoCalendario(long tipoCalendarioId, string turmaId)
         {
-            var query = @"select * from aula where tipo_calendario_id = @tipoCalendarioId and turma_id = @turmaId and not excluido";
+            var query = @"select a.* 
+                            from aula a
+                                inner join turma t
+                                    on a.turma_id = t.turma_id
+                          where a.tipo_calendario_id = @tipoCalendarioId and 
+                                a.turma_id = @turmaId and 
+                                not a.excluido and
+                                extract(year from a.data_aula) = t.ano_letivo
+                          order by a.data_aula";
             return await database.Conexao.QueryAsync<Aula>(query.ToString(), new { tipoCalendarioId, turmaId });
         }
 
