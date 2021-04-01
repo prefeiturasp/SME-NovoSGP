@@ -31,7 +31,7 @@ namespace SME.Background.Core.Processors
             throw new ExcecaoServicoDesativadoException("Não é possível realizar novos processamentos periódicos pois o serviço de processamento em segundo plano está desativado");
         }
 
-        public void ExecutarPeriodicamente<T>(Expression<Action<T>> metodo, string cron)
+        public void ExecutarPeriodicamente<T>(Expression<Action<T>> metodo, string cron, string nomeFila = "default")
         {
             throw new ErroInternoException("O serviço de processamento em segundo plano está desativado");
         }
