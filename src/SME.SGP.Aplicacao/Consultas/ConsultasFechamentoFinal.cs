@@ -125,8 +125,14 @@ namespace SME.SGP.Aplicacao
                 notasFechamentosBimestres = await ObterNotasFechamentosBimestres(filtros.DisciplinaCodigo, turma, periodosEscolares, retorno.EhNota);
 
             var usuarioEPeriodoPodeEditar = await PodeEditarNotaOuConceitoPeriodoUsuario(usuarioAtual, ultimoPeriodoEscolar, turma, filtros.DisciplinaCodigo.ToString(), retorno.EventoData);
+            var alunosValidosOrdenados = alunosDaTurma
+                .Where(a => a.NumeroAlunoChamada > 0 || 
+                            a.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Ativo) ||
+                            a.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Concluido))
+                .OrderBy(a => a.NumeroAlunoChamada)
+                .ThenBy(a => a.NomeValido());
 
-            foreach (var aluno in alunosDaTurma.Where(a => a.NumeroAlunoChamada > 0 || a.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Ativo)).OrderBy(a => a.NumeroAlunoChamada).ThenBy(a => a.NomeValido()))
+            foreach (var aluno in alunosValidosOrdenados)
             {
                 FechamentoFinalConsultaRetornoAlunoDto fechamentoFinalAluno = await TrataFrequenciaAluno(filtros, periodosEscolares, aluno, turma);
 
