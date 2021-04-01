@@ -17,7 +17,12 @@ namespace SME.SGP.Aplicacao.CasosDeUso
         {
             SentrySdk.AddBreadcrumb($"Mensagem ExecutaSincronizacaoEstruturaInstitucionalUesUseCase", "Rabbit - ExecutaSincronizacaoEstruturaInstitucionalUesUseCase");
 
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.SincronizaEstruturaInstitucionalUes, null, Guid.NewGuid(), null, fila: RotasRabbit.FilaSincronizacaoInstitucional));
+            var codigosDre = await mediator.Send(new ObterCodigosDresQuery());
+
+            foreach (var codigoDre in codigosDre)
+            {
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.SincronizaEstruturaInstitucionalUes, codigoDre, Guid.NewGuid(), null, fila: RotasRabbit.FilaSincronizacaoInstitucional));
+            }
         }
     }
 }

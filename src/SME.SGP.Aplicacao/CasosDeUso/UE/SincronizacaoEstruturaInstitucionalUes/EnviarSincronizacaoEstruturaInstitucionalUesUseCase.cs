@@ -2,6 +2,7 @@
 using Sentry;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
+using System;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.CasosDeUso
@@ -16,10 +17,9 @@ namespace SME.SGP.Aplicacao.CasosDeUso
         {
             SentrySdk.AddBreadcrumb($"Mensagem EnviarSincronizacaoEstruturaInstitucionalUesInclusaoUseCase", "Rabbit - EnviarSincronizacaoEstruturaInstitucionalUesInclusaoUseCase");
 
-            var codigosDre = await mediator.Send(new ObterCodigosDresQuery());
+            var codigoDre = mensagemRabbit.Mensagem.ToString();
 
-            foreach (var codigoDre in codigosDre)
-                await mediator.Send(new EnviarSincronizacaoEstruturaInstitucionalUesCommand(codigoDre));
+            await mediator.Send(new EnviarSincronizacaoEstruturaInstitucionalUesCommand(codigoDre));
 
             return true;
         }
