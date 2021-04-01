@@ -108,7 +108,8 @@ namespace SME.Background.Hangfire
 
             hangFireServer = new BackgroundJobServer(new BackgroundJobServerOptions()
             {
-                WorkerCount = workerCount
+                WorkerCount = workerCount,
+                Queues = new[] { "sgp", "default" }
             });
         }
     }
