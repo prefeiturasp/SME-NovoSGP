@@ -286,6 +286,10 @@ namespace SME.SGP.Dominio
             else return true;
         }
 
+        public bool PossuiPerfilAdmUE()
+           => Perfis != null &&
+               Perfis.Any(c => c.CodigoPerfil == Dominio.Perfis.PERFIL_ADMUE);
+
         public bool PossuiPerfilCJ()
             => Perfis != null &&
                 Perfis.Any(c => c.CodigoPerfil == Dominio.Perfis.PERFIL_CJ);
