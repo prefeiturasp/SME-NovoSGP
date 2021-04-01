@@ -38,6 +38,7 @@ const JoditEditor = forwardRef((props, ref) => {
     permiteInserirArquivo,
     readonly,
     removerToolbar,
+    iframeStyle,
   } = props;
 
   const textArea = useRef(null);
@@ -158,6 +159,7 @@ const JoditEditor = forwardRef((props, ref) => {
       font: '16px Arial',
       overflow: 'none',
     },
+    iframeStyle,
   };
 
   useEffect(() => {
@@ -353,6 +355,7 @@ JoditEditor.propTypes = {
   permiteInserirArquivo: PropTypes.bool,
   readonly: PropTypes.bool,
   removerToolbar: PropTypes.bool,
+  iframeStyle: PropTypes.string,
 };
 
 JoditEditor.defaultProps = {
@@ -371,6 +374,7 @@ JoditEditor.defaultProps = {
   permiteInserirArquivo: true,
   readonly: false,
   removerToolbar: false,
+  iframeStyle: '',
 };
 
 export default JoditEditor;
