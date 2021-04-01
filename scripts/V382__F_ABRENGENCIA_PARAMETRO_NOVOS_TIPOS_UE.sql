@@ -20,7 +20,7 @@ where a.login = p_login and
       (p_turma_semestre = 0 or (p_turma_semestre <> 0 and act.turma_semestre = p_turma_semestre)) and
 	  (p_dre_codigo is null or (p_dre_codigo is not null and act.dre_codigo = p_dre_codigo)) and
       (p_ano_letivo = 0 or (p_ano_letivo <> 0 and act.turma_ano_letivo = p_ano_letivo))
-      and (p_ignorar_tipos_ue is null or ue.tipo_escola <> ANY(p_ignorar_tipos_ue))
+      and (p_ignorar_tipos_ue is null or not(ue.tipo_escola = ANY(p_ignorar_tipos_ue)))
 
 union
 
@@ -41,7 +41,7 @@ where a.login = p_login and
       (p_turma_semestre = 0 or (p_turma_semestre <> 0 and act.turma_semestre = p_turma_semestre)) and
       (p_dre_codigo is null or (p_dre_codigo is not null and act.dre_codigo = p_dre_codigo)) and
       (p_ano_letivo = 0 or (p_ano_letivo <> 0 and act.turma_ano_letivo = p_ano_letivo))
-      and (p_ignorar_tipos_ue is null or ue.tipo_escola <> ANY(p_ignorar_tipos_ue))
+      and (p_ignorar_tipos_ue is null or not(ue.tipo_escola = ANY(p_ignorar_tipos_ue)))
 
 union
 
@@ -63,7 +63,7 @@ where a.login = p_login and
       (p_turma_semestre = 0 or (p_turma_semestre <> 0 and act.turma_semestre = p_turma_semestre)) and
       (p_dre_codigo is null or (p_dre_codigo is not null and act.dre_codigo = p_dre_codigo)) and
       (p_ano_letivo = 0 or (p_ano_letivo <> 0 and act.turma_ano_letivo = p_ano_letivo))
-      and (p_ignorar_tipos_ue is null or ue.tipo_escola <> ANY(p_ignorar_tipos_ue))
+      and (p_ignorar_tipos_ue is null or not(ue.tipo_escola = ANY(p_ignorar_tipos_ue)))
 
 $function$
 ;

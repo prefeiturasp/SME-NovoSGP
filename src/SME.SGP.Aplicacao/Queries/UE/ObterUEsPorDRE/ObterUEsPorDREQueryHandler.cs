@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -21,11 +22,17 @@ namespace SME.SGP.Aplicacao.Queries.UE.ObterUEsPorDRE
 
         public async Task<IEnumerable<AbrangenciaUeRetorno>> Handle(ObterUEsPorDREQuery request, CancellationToken cancellationToken)
         {
-            var anoNovosTiposUE = request.ConsideraNovasUEs ? request.AnoLetivo + 1 : request.AnoLetivo;
+            var anoNovosTiposUE = ObterAno(request.ConsideraNovasUEs, request.AnoLetivo);
             var parametroNovosTiposUE = await mediator.Send(new ObterNovosTiposUEPorAnoQuery(anoNovosTiposUE));
             var novosTiposUE = parametroNovosTiposUE?.Split(',').Select(a => int.Parse(a)).ToArray();
 
             return (await repositorioAbrangencia.ObterUes(request.CodigoDre, request.Login, request.Perfil, request.Modalidade, request.Periodo, request.ConsideraHistorico, request.AnoLetivo, novosTiposUE)).OrderBy(c => c.Nome);
+        }
+
+        private int ObterAno(bool consideraNovasUEs, int anoLetivo)
+        {
+            var ano = anoLetivo > 0 ? anoLetivo : DateTime.Today.Year;
+            return consideraNovasUEs ? ano + 1 : ano;
         }
     }
 }
