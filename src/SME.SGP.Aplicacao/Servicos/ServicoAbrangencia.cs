@@ -92,7 +92,7 @@ namespace SME.SGP.Aplicacao.Servicos
         {
             repositorioAbrangencia.InserirAbrangencias(abrangencias, login);
         }
-
+                
         public async Task SincronizarEstruturaInstitucionalVigenteCompleta()
         {
             EstruturaInstitucionalRetornoEolDTO estruturaInstitucionalVigente;
