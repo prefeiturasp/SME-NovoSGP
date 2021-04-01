@@ -539,7 +539,7 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IExecutarSyncGeralGoogleClassroomUseCase, ExecutarSyncGeralGoogleClassroomUseCase>();
 
             services.TryAddScopedWorkerService<IEnviarSincronizacaoEstruturaInstitucionalUesUseCase, EnviarSincronizacaoEstruturaInstitucionalUesUseCase>();
-            services.TryAddScopedWorkerService<IExecutaSincronizacaoEstruturaOranizacionalUesUseCase, ExecutaSincronizacaoEstruturaOranizacionalUesUseCase>();
+            services.TryAddScopedWorkerService<IExecutaSincronizacaoEstruturaInstitucionalUesUseCase, ExecutaSincronizacaoEstruturaInstitucionalUesUseCase>();
         }
 
         private static void ResgistraDependenciaHttp(IServiceCollection services)

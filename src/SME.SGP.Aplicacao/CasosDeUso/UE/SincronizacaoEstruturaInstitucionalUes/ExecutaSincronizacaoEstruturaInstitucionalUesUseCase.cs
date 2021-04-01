@@ -7,15 +7,15 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.CasosDeUso
 {
-    public class ExecutaSincronizacaoEstruturaOranizacionalUesUseCase : AbstractUseCase, IExecutaSincronizacaoEstruturaOranizacionalUesUseCase
+    public class ExecutaSincronizacaoEstruturaInstitucionalUesUseCase : AbstractUseCase, IExecutaSincronizacaoEstruturaInstitucionalUesUseCase
     {
-        public ExecutaSincronizacaoEstruturaOranizacionalUesUseCase(IMediator mediator) : base(mediator)
+        public ExecutaSincronizacaoEstruturaInstitucionalUesUseCase(IMediator mediator) : base(mediator)
         {
         }
 
         public async Task Executar()
         {
-            SentrySdk.AddBreadcrumb($"Mensagem ExecutaSincronizacaoEstruturaOranizacionalUesUseCase", "Rabbit - ExecutaSincronizacaoEstruturaOranizacionalUesUseCase");
+            SentrySdk.AddBreadcrumb($"Mensagem ExecutaSincronizacaoEstruturaInstitucionalUesUseCase", "Rabbit - ExecutaSincronizacaoEstruturaInstitucionalUesUseCase");
 
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.SincronizaEstruturaInstitucionalUes, null, Guid.NewGuid(), null, fila: RotasRabbit.FilaSincronizacaoInstitucional));
         }

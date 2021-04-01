@@ -24,5 +24,4 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             return true;
         }
     }
-
 }

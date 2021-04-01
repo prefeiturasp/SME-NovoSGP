@@ -71,7 +71,7 @@ namespace SME.SGP.Background
 
             Cliente.ExecutarPeriodicamente<IExecutaNotificacaoPlanoAEEEmAbertoUseCase>(c => c.Executar(), Cron.Daily(5));
 
-            Cliente.ExecutarPeriodicamente<IExecutaSincronizacaoEstruturaOranizacionalUesUseCase>(c => c.Executar(), Cron.Daily(13));
+            Cliente.ExecutarPeriodicamente<IExecutaSincronizacaoEstruturaInstitucionalUesUseCase>(c => c.Executar(), Cron.Daily(13));
         }
     }
 }

@@ -815,7 +815,7 @@ namespace SME.SGP.IoC
 
             services.TryAddScoped<ISalvarAcompanhamentoTurmaUseCase, SalvarAcompanhamentoTurmaUseCase>();
 
-            services.TryAddScoped<IExecutaSincronizacaoEstruturaOranizacionalUesUseCase, ExecutaSincronizacaoEstruturaOranizacionalUesUseCase>();
+            services.TryAddScoped<IExecutaSincronizacaoEstruturaInstitucionalUesUseCase, ExecutaSincronizacaoEstruturaInstitucionalUesUseCase>();
             services.TryAddScoped<IEnviarSincronizacaoEstruturaInstitucionalUesUseCase, EnviarSincronizacaoEstruturaInstitucionalUesUseCase>();
             
 

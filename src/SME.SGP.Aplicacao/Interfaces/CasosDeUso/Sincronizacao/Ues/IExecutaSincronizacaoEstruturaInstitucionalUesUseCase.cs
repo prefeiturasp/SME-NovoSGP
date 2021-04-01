@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Aplicacao.Interfaces
 {
-    public interface IExecutaSincronizacaoEstruturaOranizacionalUesUseCase
+    public interface IExecutaSincronizacaoEstruturaInstitucionalUesUseCase
     {
         Task Executar();
     }
