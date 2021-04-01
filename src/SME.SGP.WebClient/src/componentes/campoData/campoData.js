@@ -91,6 +91,7 @@ const CampoData = ({
   carregando,
   array,
   campoOpcional,
+  aoAbrirCalendario,
 }) => {
   const habilitarDatas = dataAtual => {
     let retorno = true;
@@ -171,6 +172,7 @@ const CampoData = ({
                 disabledDate={habilitarDatas}
                 showToday={false}
                 value={value || null}
+                onOpenChange={aoAbrirCalendario}
               />
             </div>
           </div>
@@ -198,6 +200,7 @@ const CampoData = ({
         value={valor || null}
         disabledDate={habilitarDatas}
         showToday={false}
+        onOpenChange={aoAbrirCalendario}
       />
     );
   };
@@ -276,6 +279,7 @@ CampoData.propTypes = {
   carregando: PropTypes.bool,
   array: PropTypes.bool,
   campoOpcional: PropTypes.bool,
+  aoAbrirCalendario: PropTypes.func,
 };
 
 CampoData.defaultProps = {
@@ -297,6 +301,7 @@ CampoData.defaultProps = {
   carregando: false,
   array: false,
   campoOpcional: false,
+  aoAbrirCalendario: () => {},
 };
 
 const momentSchema = new MomentSchema();
