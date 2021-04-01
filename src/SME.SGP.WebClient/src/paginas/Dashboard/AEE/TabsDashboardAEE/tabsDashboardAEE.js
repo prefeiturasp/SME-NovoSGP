@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { ContainerTabsCard } from '~/componentes/tabs/tabs.css';
 import { ContainerTabsDashboard } from '../../style';
+import GraficosEncaminhamentos from './Encaminhamentos/graficosEncaminhamentos';
 
 const { TabPane } = Tabs;
 
@@ -31,7 +32,11 @@ const TabsDashboardAEE = props => {
             activeKey={tabSelecionada}
           >
             <TabPane tab="Encaminhamentos" key="1">
-              Encaminhamentos
+              <GraficosEncaminhamentos
+                anoLetivo={anoLetivo}
+                codigoDre={codigoDre}
+                codigoUe={codigoUe}
+              />
             </TabPane>
             <TabPane tab="Planos" key="2">
               Planos
