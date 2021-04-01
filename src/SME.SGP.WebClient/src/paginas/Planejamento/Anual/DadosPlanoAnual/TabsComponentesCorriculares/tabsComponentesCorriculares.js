@@ -98,6 +98,12 @@ const TabsComponentesCorriculares = props => {
   useEffect(() => {
     async function verificarComponentesComObjetivos() {
       try {
+        const mudouTurma = listaComponentesCheck.find(
+          item => item.turmaSelecionada !== turmaSelecionada.id
+        );
+        if (mudouTurma) {
+          dispatch(setListaComponentesCheck([]));
+        }
         if (listaComponentesCurricularesPlanejamento.length) {
           dispatch(setExibirLoaderPlanoAnual(true));
           listaComponentesCurricularesPlanejamento.map(async item => {
@@ -123,6 +129,7 @@ const TabsComponentesCorriculares = props => {
                 const novoItem = {
                   componenteId: item.codigoComponenteCurricular,
                   bimestreId: dadosBimestre.id,
+                  turmaSelecionada: turmaSelecionada.id,
                 };
                 tempComponentesComObjetivos.push(novoItem);
                 dispatch(setListaComponentesCheck(tempComponentesComObjetivos));
@@ -134,10 +141,13 @@ const TabsComponentesCorriculares = props => {
       } catch (error) {}
     }
     verificarComponentesComObjetivos();
-    return () => {
-      dispatch(setListaComponentesCheck([]));
-    };
-  }, [listaComponentesCurricularesPlanejamento, dadosBimestre]);
+  }, [
+    listaComponentesCurricularesPlanejamento,
+    dadosBimestre,
+    dispatch,
+    turmaSelecionada.id,
+    listaComponentesCheck,
+  ]);
 
   // Quando tiver somente uma tab(componente curricular) já selecionar!
   useEffect(() => {
@@ -155,7 +165,6 @@ const TabsComponentesCorriculares = props => {
     nome,
     codigoComponenteCurricular
   ) => {
-    console.log('listaComponentesCheck', listaComponentesCheck);
     if (listaComponentesCheck?.length) {
       if (
         listaComponentesCheck.filter(
