@@ -31,23 +31,34 @@ namespace SME.SGP.Dados.Repositorios
             return  await database.Conexao.QueryAsync<PlanejamentoAnualComponente>(sql, new { turmaId, bimestre, componenteCurricularId });
         }
 
-        public async Task<PlanejamentoAnualComponente> ObterPorPlanejamentoAnualPeriodoEscolarId(long componenteCurricularId, long id)
+        public async Task<PlanejamentoAnualComponente> ObterPorPlanejamentoAnualPeriodoEscolarId(long componenteCurricularId, long id, bool consideraExcluido = false)
         {
-            var sql = @"select * from planejamento_anual_componente where planejamento_anual_periodo_escolar_id = @id and componente_curricular_id = @componenteCurricularId and excluido = false";
-            var planejamento = await database.Conexao.QueryFirstOrDefaultAsync<PlanejamentoAnualComponente>(sql, new { id, componenteCurricularId });
-            return planejamento;
-        }
+            var sql = $@"select * 
+                            from planejamento_anual_componente 
+                         where planejamento_anual_periodo_escolar_id = @id and 
+                               componente_curricular_id = @componenteCurricularId {(!consideraExcluido ? " and not excluido" : string.Empty )}
+                         order by id desc;";
 
-        public async Task RemoverLogicamenteAsync(long id)
-        {
-            var sql = "UPDATE planejamento_anual_componente SET EXCLUIDO = TRUE WHERE ID = @id";
-            await database.Conexao.ExecuteAsync(sql, new { id });
+            var planejamento = await database.Conexao
+                .QueryFirstOrDefaultAsync<PlanejamentoAnualComponente>(sql, new { id, componenteCurricularId });
+
+            return planejamento;
         }
 
         public async Task RemoverLogicamenteAsync(long[] ids)
         {
-            var sql = "UPDATE planejamento_anual_componente SET EXCLUIDO = TRUE WHERE ID = any(@ids)";
-            await database.Conexao.ExecuteAsync(sql, new { ids });
+            var sql = @"UPDATE planejamento_anual_componente 
+                               SET excluido = true
+                                 , alterado_por = @alteradoPor
+                                 , alterado_rf = @alteradoRF
+                                 , alterado_em = @alteradoEm 
+                              WHERE ID = any(@ids)";
+            await database.Conexao.ExecuteAsync(sql, new { 
+                ids,
+                alteradoPor = database.UsuarioLogadoNomeCompleto,
+                alteradoRF = database.UsuarioLogadoRF,
+                alteradoEm = DateTimeExtension.HorarioBrasilia()
+            });
         }
     }
 }
