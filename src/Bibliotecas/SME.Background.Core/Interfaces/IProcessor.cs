@@ -12,7 +12,7 @@ namespace SME.Background.Core.Interfaces
 
         void ExecutarPeriodicamente(Expression<Action> metodo, string cron);
 
-        void ExecutarPeriodicamente<T>(Expression<Action<T>> metodo, string cron);
+        void ExecutarPeriodicamente<T>(Expression<Action<T>> metodo, string cron, string nomeFila = "deafult");
 
         void Registrar();
     }
