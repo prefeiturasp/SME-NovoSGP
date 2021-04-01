@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
             }
             else
             {
-                var erro = new NegocioException($"_Não foi possível obter dados de estrutura institucional do EOL. {estruturaInstitucionalVigentePorDre?.Dres?.Count}");
+                var erro = new NegocioException($"Não foi possível obter dados de estrutura institucional do EOL. {estruturaInstitucionalVigentePorDre?.Dres?.Count}");
                 SentrySdk.CaptureException(erro);
                 throw erro;
             }
@@ -44,4 +44,3 @@ namespace SME.SGP.Aplicacao
         }
     }
 }
-
