@@ -65,7 +65,7 @@ namespace SME.SGP.Dominio
         CEUATCOMPL = 27,
 
         [Display(Name = "CENTRO PARA CRIANCAS E ADOLESCENTES", ShortName = "CCA")]
-        CEUATCOMPL = 29,
+        CCA = 29,
 
         [Display(Name = "Centro Municipal de Educação Infantil", ShortName = "CEMEI")]
         CEMEI = 28,
