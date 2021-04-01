@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
 using Sentry;
-using SME.SGP.Dominio;
 using SME.SGP.Dto;
 using System.Net.Http;
 using System.Text;
@@ -43,7 +42,6 @@ namespace SME.SGP.Aplicacao
             else
             {
                 SentrySdk.AddBreadcrumb($"Ocorreu um erro na tentativa de buscar os dados de Estrutura Institucional Vigente por Dre: {request.CodigoDre} - HttpCode {resposta.StatusCode} - Body {resposta.Content?.ReadAsStringAsync()?.Result ?? string.Empty}");
-                throw new NegocioException($"Erro ao obter a estrutura organizacional vigente no EOL. URL base: {httpClient.BaseAddress}");
             }
 
             return resultado;
