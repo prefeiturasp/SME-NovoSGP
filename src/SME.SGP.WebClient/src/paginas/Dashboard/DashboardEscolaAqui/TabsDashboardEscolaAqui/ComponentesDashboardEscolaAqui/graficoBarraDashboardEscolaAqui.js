@@ -21,9 +21,10 @@ const GraficoBarraDashboardEscolaAqui = props => {
     removeLegends,
     customPropsColors,
     dadosLegendaCustomizada,
+    margemPersonalizada,
   } = props;
 
-  const margemPersonalizada = {
+  const customMargins = {
     top: 50,
     right: dadosLegendaCustomizada?.length ? 0 : 130,
     bottom: 50,
@@ -38,7 +39,7 @@ const GraficoBarraDashboardEscolaAqui = props => {
         }}
       >
         <div className="col-md-12">
-          <TituloGrafico>{titulo}</TituloGrafico>
+          {titulo ? <TituloGrafico>{titulo}</TituloGrafico> : ''}
           <ContainerGraficoBarras>
             <Graficos.Barras
               groupMode={groupMode || 'grouped'}
@@ -47,7 +48,7 @@ const GraficoBarraDashboardEscolaAqui = props => {
               chaves={chavesGrafico}
               legendsTranslateX={105}
               removeLegends={removeLegends}
-              customMargins={margemPersonalizada}
+              customMargins={margemPersonalizada || customMargins}
               labelSkipWidth={0}
               labelSkipHeight={0}
               customProps={{
@@ -83,6 +84,7 @@ GraficoBarraDashboardEscolaAqui.propTypes = {
   removeLegends: PropTypes.bool,
   customPropsColors: PropTypes.oneOfType([PropTypes.any]),
   dadosLegendaCustomizada: PropTypes.oneOfType([PropTypes.array]),
+  margemPersonalizada: PropTypes.oneOfType(PropTypes.any),
 };
 
 GraficoBarraDashboardEscolaAqui.defaultProps = {
@@ -94,6 +96,7 @@ GraficoBarraDashboardEscolaAqui.defaultProps = {
   removeLegends: false,
   customPropsColors: null,
   dadosLegendaCustomizada: [],
+  margemPersonalizada: null,
 };
 
 export default GraficoBarraDashboardEscolaAqui;
