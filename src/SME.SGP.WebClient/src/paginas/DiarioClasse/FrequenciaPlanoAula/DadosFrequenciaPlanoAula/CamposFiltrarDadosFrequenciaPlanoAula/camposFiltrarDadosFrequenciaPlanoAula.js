@@ -1,4 +1,5 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import moment from 'moment';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { CampoData } from '~/componentes';
 import SelectComponent from '~/componentes/select';
@@ -53,26 +54,46 @@ const CamposFiltrarDadosFrequenciaPlanoAula = () => {
 
   const [listaDatasAulas, setListaDatasAulas] = useState();
   const [diasParaHabilitar, setDiasParaHabilitar] = useState();
+  const [diasParaSinalizar, setDiasParaSinalizar] = useState();
   const [aulasParaSelecionar, setAulasParaSelecionar] = useState([]);
   const [exibirModalSelecionarAula, setExibirModalSelecionarAula] = useState(
     false
   );
 
+  const valorPadrao = useMemo(() => {
+    const ano = turmaSelecionada.anoLetivo;
+    const dataParcial = moment().format('MM-DD');
+    const dataInteira = moment(`${dataParcial}-${ano}`);
+    return dataInteira;
+  }, [turmaSelecionada.anoLetivo]);
+
   const obterDatasDeAulasDisponiveis = useCallback(async () => {
-    dispatch(setExibirLoaderFrequenciaPlanoAula(true));    
-    const datasDeAulas = (turmaSelecionada && turmaSelecionada.turma) ? await ServicoFrequencia.obterDatasDeAulasPorCalendarioTurmaEComponenteCurricular(
-      turmaSelecionada.turma,
-      codigoComponenteCurricular
-    )
-      .finally(() => dispatch(setExibirLoaderFrequenciaPlanoAula(false)))
-      .catch(e => erros(e)) : [];
+    dispatch(setExibirLoaderFrequenciaPlanoAula(true));
+    const datasDeAulas =
+      turmaSelecionada && turmaSelecionada.turma
+        ? await ServicoFrequencia.obterDatasDeAulasPorCalendarioTurmaEComponenteCurricular(
+            turmaSelecionada.turma,
+            codigoComponenteCurricular
+          )
+            .finally(() => dispatch(setExibirLoaderFrequenciaPlanoAula(false)))
+            .catch(e => erros(e))
+        : [];
 
     if (datasDeAulas && datasDeAulas.data && datasDeAulas.data.length) {
       setListaDatasAulas(datasDeAulas.data);
-      const habilitar = datasDeAulas.data.map(item =>
-        window.moment(item.data).format('YYYY-MM-DD')
-      );
+      const habilitar = [];
+      const sinalizar = [];
+      datasDeAulas.data.forEach(itemDatas => {
+        const dataFormatada = moment(itemDatas.data).format('YYYY-MM-DD');
+        itemDatas.aulas.forEach(itemAulas => {
+          if (itemAulas.possuiFrequenciaRegistrada) {
+            sinalizar.push(moment(dataFormatada));
+          }
+        });
+        habilitar.push(dataFormatada);
+      });
       setDiasParaHabilitar(habilitar);
+      setDiasParaSinalizar(sinalizar);
     } else {
       setListaDatasAulas();
       setDiasParaHabilitar();
@@ -82,11 +103,14 @@ const CamposFiltrarDadosFrequenciaPlanoAula = () => {
 
   const obterListaComponenteCurricular = useCallback(async () => {
     dispatch(setExibirLoaderFrequenciaPlanoAula(true));
-    const resposta = (turmaSelecionada && turmaSelecionada.turma) ? await ServicoDisciplina.obterDisciplinasPorTurma(
-      turmaSelecionada.turma
-    )
-      .finally(() => dispatch(setExibirLoaderFrequenciaPlanoAula(false)))
-      .catch(e => erros(e)) : [];
+    const resposta =
+      turmaSelecionada && turmaSelecionada.turma
+        ? await ServicoDisciplina.obterDisciplinasPorTurma(
+            turmaSelecionada.turma
+          )
+            .finally(() => dispatch(setExibirLoaderFrequenciaPlanoAula(false)))
+            .catch(e => erros(e))
+        : [];
 
     if (resposta && resposta.data) {
       setListaComponenteCurricular(resposta.data);
@@ -357,6 +381,8 @@ const CamposFiltrarDadosFrequenciaPlanoAula = () => {
             !diasParaHabilitar
           }
           diasParaHabilitar={diasParaHabilitar}
+          diasParaSinalizar={diasParaSinalizar}
+          valorPadrao={valorPadrao}
         />
       </div>
       <ModalSelecionarAulaFrequenciaPlanoAula
