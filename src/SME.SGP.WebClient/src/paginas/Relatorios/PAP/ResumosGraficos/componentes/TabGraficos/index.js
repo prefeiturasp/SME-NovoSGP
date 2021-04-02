@@ -396,7 +396,7 @@ function TabGraficos({ dados, periodo, ciclos, filtroTela }) {
         if (lista.indexOf(i) === -1) lista.push(i);
       });
     });
-
+    lista.sort();
     setChaves(lista);
   };
 
