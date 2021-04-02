@@ -30,6 +30,15 @@ class ServicoDashboardAEE {
       ueId
     );
   };
+
+  obterSituacoesPlanos = (anoLetivo, dreId, ueId) => {
+    return this.montarConsultaPadraoGraficos(
+      'planos/situacoes',
+      anoLetivo,
+      dreId,
+      ueId
+    );
+  };
 }
 
 export default new ServicoDashboardAEE();

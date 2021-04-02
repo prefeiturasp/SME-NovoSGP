@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Base } from '~/componentes';
 import CardCollapse from '~/componentes/cardCollapse';
 import ServicoDashboardAEE from '~/servicos/Paginas/Dashboard/ServicoDashboardAEE';
-import GraficoBarrasPadraoAEE from '../../graficoBarrasPadraoAEE';
+import GraficoBarrasPadraoAEE from '../../Componentes/graficoBarrasPadraoAEE';
 
 const QuantidadeEstudantesEncaminhamentosDeferidos = props => {
   const { anoLetivo, dreId, ueId } = props;
@@ -15,13 +15,15 @@ const QuantidadeEstudantesEncaminhamentosDeferidos = props => {
 
   const [exibir, setExibir] = useState(false);
 
+  const key = 'quantidade-estudantes-encaminhamentos-deferidos';
+
   return (
     <div className="mt-3">
       <CardCollapse
-        key="quantidade-estudantes-encaminhamentos-deferidos-collapse-key"
-        titulo="Quantidade de estudantes com encaminhamentos deferidos "
-        indice="quantidade-estudantes-encaminhamentos-deferidos-collapse-indice"
-        alt="quantidade-estudantes-encaminhamentos-deferidos-alt"
+        titulo="Quantidade de estudantes com encaminhamentos deferidos"
+        key={`${key}-collapse-key`}
+        indice={`${key}-collapse-indice`}
+        alt={`${key}-alt`}
         configCabecalho={configCabecalho}
         show={exibir}
         onClick={() => {

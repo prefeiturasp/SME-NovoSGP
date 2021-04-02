@@ -5,7 +5,7 @@ import CardCollapse from '~/componentes/cardCollapse';
 import ServicoDashboardAEE from '~/servicos/Paginas/Dashboard/ServicoDashboardAEE';
 import GraficoBarrasPadraoAEE from '../../Componentes/graficoBarrasPadraoAEE';
 
-const QuantidadeEncaminhamentosSituacao = props => {
+const QuantidadePlanosSituacao = props => {
   const { anoLetivo, dreId, ueId } = props;
 
   const configCabecalho = {
@@ -15,12 +15,12 @@ const QuantidadeEncaminhamentosSituacao = props => {
 
   const [exibir, setExibir] = useState(false);
 
-  const key = 'quantidade-encaminhamentos-situacao';
+  const key = 'quantidade-planos-situacao';
 
   return (
     <div className="mt-3">
       <CardCollapse
-        titulo="Quantidade de encaminhamentos por situação"
+        titulo="Quantidade de planos por situação"
         key={`${key}-collapse-key`}
         indice={`${key}-collapse-indice`}
         alt={`${key}-alt`}
@@ -39,7 +39,7 @@ const QuantidadeEncaminhamentosSituacao = props => {
               nomeIndiceDesc="descricaoSituacao"
               nomeValor="quantidade"
               ServicoObterValoresGrafico={
-                ServicoDashboardAEE.obterQuantidadeEncaminhamentosPorSituacao
+                ServicoDashboardAEE.obterSituacoesPlanos
               }
             />
           </div>
@@ -51,16 +51,16 @@ const QuantidadeEncaminhamentosSituacao = props => {
   );
 };
 
-QuantidadeEncaminhamentosSituacao.propTypes = {
+QuantidadePlanosSituacao.propTypes = {
   anoLetivo: PropTypes.oneOfType(PropTypes.any),
   dreId: PropTypes.string,
   ueId: PropTypes.string,
 };
 
-QuantidadeEncaminhamentosSituacao.defaultProps = {
+QuantidadePlanosSituacao.defaultProps = {
   anoLetivo: null,
   dreId: '',
   ueId: '',
 };
 
-export default QuantidadeEncaminhamentosSituacao;
+export default QuantidadePlanosSituacao;

@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { ContainerTabsCard } from '~/componentes/tabs/tabs.css';
 import { ContainerTabsDashboard } from '../../style';
 import GraficosEncaminhamentos from './Encaminhamentos/graficosEncaminhamentos';
+import GraficosPlanos from './Planos/graficoPlanos';
 
 const { TabPane } = Tabs;
 
@@ -39,7 +40,7 @@ const TabsDashboardAEE = props => {
               />
             </TabPane>
             <TabPane tab="Planos" key="2">
-              Planos
+              <GraficosPlanos anoLetivo={anoLetivo} dreId={dreId} ueId={ueId} />
             </TabPane>
           </ContainerTabsCard>
         </ContainerTabsDashboard>
