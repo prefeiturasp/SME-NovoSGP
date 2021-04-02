@@ -3,6 +3,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -209,6 +210,32 @@ namespace SME.SGP.Dados.Repositorios
             ObtenhaFiltro(sql, ueId, turmaId, alunoCodigo, situacao, "");
 
             return await database.Conexao.QueryAsync<UsuarioEolRetornoDto>(sql.ToString(), new { dreId, ueId, turmaId, alunoCodigo, situacao, anoLetivo });
+        }
+
+        public async Task<IEnumerable<EncaminhamentoAEESituacaoDto>> ObterQuantidadeSituacoes(int ano, long dreId, long ueId)
+        {
+            var sql = new StringBuilder(@"select situacao, count(ea.id) as Quantidade from encaminhamento_aee ea ");
+            sql.Append(" inner join turma t on ea.turma_id = t.id ");
+            sql.Append(" inner join ue on t.ue_id = ue.id ");
+            
+            var where = new StringBuilder(@" where t.ano_letivo = @ano ");
+            
+            if (dreId > 0)
+            {
+                sql.Append(" inner join dre on ue.dre_id = ue.id ");
+                where.Append(" and dre.id = @dreId");
+            }
+
+            if(ueId > 0)
+            {
+                where.Append(" and ue.id = @ueId");
+            }
+
+            sql.Append(where.ToString());
+
+            sql.Append(" group by ea.situacao ");
+
+            return await database.Conexao.QueryAsync<EncaminhamentoAEESituacaoDto>(sql.ToString(), new { ano, dreId, ueId });
         }
     }
 }
