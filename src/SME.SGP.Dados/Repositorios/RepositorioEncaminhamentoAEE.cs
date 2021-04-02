@@ -212,7 +212,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<UsuarioEolRetornoDto>(sql.ToString(), new { dreId, ueId, turmaId, alunoCodigo, situacao, anoLetivo });
         }
 
-        public async Task<IEnumerable<EncaminhamentoAEESituacaoDto>> ObterQuantidadeSituacoes(int ano, long dreId, long ueId)
+        public async Task<IEnumerable<AEESituacaoDto>> ObterQuantidadeSituacoes(int ano, long dreId, long ueId)
         {
             var sql = new StringBuilder(@"select situacao, count(ea.id) as Quantidade from encaminhamento_aee ea ");
             sql.Append(" inner join turma t on ea.turma_id = t.id ");
@@ -235,7 +235,7 @@ namespace SME.SGP.Dados.Repositorios
 
             sql.Append(" group by ea.situacao ");
 
-            return await database.Conexao.QueryAsync<EncaminhamentoAEESituacaoDto>(sql.ToString(), new { ano, dreId, ueId });
+            return await database.Conexao.QueryAsync<AEESituacaoDto>(sql.ToString(), new { ano, dreId, ueId });
         }
     }
 }

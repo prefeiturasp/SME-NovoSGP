@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterEncaminhamentoAEESituacoesUseCase : AbstractUseCase, IObterEncaminhamentoAEESituacoesUseCase
+    public class ObterPlanoAEESituacoesUseCase : AbstractUseCase, IObterPlanoAEESituacoesUseCase
     {
-        public ObterEncaminhamentoAEESituacoesUseCase(IMediator mediator) : base(mediator)
+        public ObterPlanoAEESituacoesUseCase(IMediator mediator) : base(mediator)
         {
         }
 
@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
         {
             if (param.Ano == 0)
                 param.Ano = DateTime.Now.Year;
-            return await mediator.Send(new ObterEncaminhamentoAEESituacoesQuery(param.Ano, param.DreId, param.UeId));
+            return await mediator.Send(new ObterPlanoAEESituacoesQuery(param.Ano, param.DreId, param.UeId));
         }
     }
 }

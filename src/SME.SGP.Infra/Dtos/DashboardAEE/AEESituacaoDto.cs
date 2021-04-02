@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SME.SGP.Infra.Dtos
 {
-    public class EncaminhamentoAEESituacaoDto
+    public class AEESituacaoDto
     {
         public long Quantidade { get; set; }
         public SituacaoAEE Situacao { get; set; }
