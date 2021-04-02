@@ -169,7 +169,7 @@ namespace SME.SGP.Aplicacao
             //Verificar as notas finais
             var notasFechamentoAluno = fechamentoTurma != null && fechamentoTurma.PeriodoEscolarId.HasValue ?
                await mediator.Send(new ObterNotasFechamentosPorTurmasCodigosBimestreQuery(turmasCodigos, alunoCodigo, bimestre)) :
-               await consultasConselhoClasseNota.ObterNotasFinaisBimestresAlunoAsync(alunoCodigo, turmasCodigos);
+               await consultasConselhoClasseNota.ObterNotasFinaisBimestresAlunoAsync(alunoCodigo, turmasCodigos, bimestre);
 
             Usuario usuarioAtual = await mediator.Send(new ObterUsuarioLogadoQuery());
 
