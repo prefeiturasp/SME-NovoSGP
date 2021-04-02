@@ -6,7 +6,7 @@ namespace SME.SGP.Infra.Dtos
 {
     public class FiltroDashboardAEEDto
     {
-        public int Ano { get; set; }
+        public int AnoLetivo { get; set; }
         public long DreId { get; set; }
         public long UeId { get; set; }
     }
