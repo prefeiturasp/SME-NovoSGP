@@ -124,7 +124,11 @@ namespace SME.SGP.Dominio.Servicos
             {
                 var aulas = await repositorioAula.ObterAulas(atribuicaoCJ.TurmaId, atribuicaoCJ.UeId, atribuicaoCJ.ProfessorRf, null, atribuicaoCJ.DisciplinaId.ToString());
                 if (aulas != null && aulas.Any())
-                    throw new NegocioException($"Não é possível tirar a substituição da turma {atribuicaoCJ.TurmaId} para o componente curricular {atribuicaoCJ.DisciplinaId}");
+                {
+                    var componenteCurricular = await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { atribuicaoCJ.DisciplinaId });
+                    var nomeComponenteCurricular = componenteCurricular != null && componenteCurricular.Any() ? componenteCurricular.FirstOrDefault().Nome : "";
+                    throw new NegocioException($"Não é possível remover a substituição da turma {atribuicaoCJ.Turma.Nome} no componente curricular {nomeComponenteCurricular} porque existem aulas cadastradas.");
+                }
             }
         }
     }

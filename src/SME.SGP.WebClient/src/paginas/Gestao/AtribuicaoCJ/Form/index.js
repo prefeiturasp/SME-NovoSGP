@@ -288,6 +288,7 @@ function AtribuicaoCJForm({ match, location }) {
                     <ModalidadesDropDown
                       label="Modalidade"
                       form={form}
+                      disabled={valoresIniciais?.modalidadeId}
                       onChange={value => {
                         if (
                           value !== undefined &&
