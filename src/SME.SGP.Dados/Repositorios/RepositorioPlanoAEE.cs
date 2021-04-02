@@ -278,7 +278,7 @@ namespace SME.SGP.Dados.Repositorios
                 }, new { planoId })).FirstOrDefault();
         }
 
-        public async Task<IEnumerable<AEESituacaoDto>> ObterQuantidadeSituacoes(int ano, long dreId, long ueId)
+        public async Task<IEnumerable<AEESituacaoPlanoDto>> ObterQuantidadeSituacoes(int ano, long dreId, long ueId)
         {
             var sql = new StringBuilder(@"select situacao, count(pa.id) as Quantidade from plano_aee pa ");
             sql.Append(" inner join turma t on pa.turma_id = t.id ");
@@ -301,7 +301,33 @@ namespace SME.SGP.Dados.Repositorios
 
             sql.Append(" group by pa.situacao ");
 
-            return await database.Conexao.QueryAsync<AEESituacaoDto>(sql.ToString(), new { ano, dreId, ueId });
+            return await database.Conexao.QueryAsync<AEESituacaoPlanoDto>(sql.ToString(), new { ano, dreId, ueId });
+        }
+
+        public async Task<IEnumerable<AEETurmaDto>> ObterQuantidadeVigentes(int ano, long dreId, long ueId)
+        {
+            var sql = new StringBuilder(@"select t.ano as AnoTurma, t.modalidade_codigo as Modalidade, count(pa.id) as Quantidade from plano_aee pa ");
+            sql.Append(" inner join turma t on pa.turma_id = t.id ");
+            sql.Append(" inner join ue on t.ue_id = ue.id ");
+
+            var where = new StringBuilder(@" where t.ano_letivo = @ano and pa.situacao not in (3,7)");
+
+            if (dreId > 0)
+            {
+                sql.Append(" inner join dre on ue.dre_id = ue.id ");
+                where.Append(" and dre.id = @dreId");
+            }
+
+            if (ueId > 0)
+            {
+                where.Append(" and ue.id = @ueId");
+            }
+
+            sql.Append(where.ToString());
+
+            sql.Append(" group by t.ano, t.modalidade_codigo ");
+
+            return await database.Conexao.QueryAsync<AEETurmaDto>(sql.ToString(), new { ano, dreId, ueId });
         }
     }
 }
