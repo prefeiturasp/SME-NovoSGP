@@ -15,9 +15,9 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<AEESituacaoPlanoDto>> Executar(FiltroDashboardAEEDto param)
         {
-            if (param.Ano == 0)
-                param.Ano = DateTime.Now.Year;
-            return await mediator.Send(new ObterPlanoAEESituacoesQuery(param.Ano, param.DreId, param.UeId));
+            if (param.AnoLetivo == 0)
+                param.AnoLetivo = DateTime.Now.Year;
+            return await mediator.Send(new ObterPlanoAEESituacoesQuery(param.AnoLetivo, param.DreId, param.UeId));
         }
     }
 }
