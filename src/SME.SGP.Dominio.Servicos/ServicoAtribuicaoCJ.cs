@@ -126,7 +126,7 @@ namespace SME.SGP.Dominio.Servicos
                 if (aulas != null && aulas.Any())
                 {
                     var componenteCurricular = await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { atribuicaoCJ.DisciplinaId });
-                    var nomeComponenteCurricular = componenteCurricular != null && componenteCurricular.Any() ? componenteCurricular.FirstOrDefault().Nome : "";
+                    var nomeComponenteCurricular = componenteCurricular?.FirstOrDefault()?.Nome ?? atribuicaoCJ.DisciplinaId.ToString();
                     throw new NegocioException($"Não é possível remover a substituição da turma {atribuicaoCJ.Turma.Nome} no componente curricular {nomeComponenteCurricular} porque existem aulas cadastradas.");
                 }
             }
