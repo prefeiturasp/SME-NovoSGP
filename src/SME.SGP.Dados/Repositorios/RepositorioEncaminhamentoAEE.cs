@@ -237,5 +237,31 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<AEESituacaoDto>(sql.ToString(), new { ano, dreId, ueId });
         }
+
+        public async Task<IEnumerable<AEETurmaDto>> ObterQuantidadeDeferidos(int ano, long dreId, long ueId)
+        {
+            var sql = new StringBuilder(@"select t.ano as AnoTurma, t.modalidade_codigo as Modalidade, count(ea.id) as Quantidade from encaminhamento_aee ea ");
+            sql.Append(" inner join turma t on ea.turma_id = t.id ");
+            sql.Append(" inner join ue on t.ue_id = ue.id ");
+
+            var where = new StringBuilder(@" where t.ano_letivo = @ano and situacao = 7 ");
+
+            if (dreId > 0)
+            {
+                sql.Append(" inner join dre on ue.dre_id = ue.id ");
+                where.Append(" and dre.id = @dreId");
+            }
+
+            if (ueId > 0)
+            {
+                where.Append(" and ue.id = @ueId");
+            }
+
+            sql.Append(where.ToString());
+
+            sql.Append(" group by t.ano, t.modalidade_codigo ");
+
+            return await database.Conexao.QueryAsync<AEETurmaDto>(sql.ToString(), new { ano, dreId, ueId });
+        }
     }
 }
