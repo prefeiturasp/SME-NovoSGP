@@ -310,7 +310,7 @@ namespace SME.SGP.Dados.Repositorios
             sql.Append(" inner join turma t on pa.turma_id = t.id ");
             sql.Append(" inner join ue on t.ue_id = ue.id ");
 
-            var where = new StringBuilder(@" where t.ano_letivo = @ano and pa.situacao not in (3,7)");
+            var where = new StringBuilder(@" where t.ano_letivo = @ano and pa.situacao in (1,2,8)");
 
             if (dreId > 0)
             {
