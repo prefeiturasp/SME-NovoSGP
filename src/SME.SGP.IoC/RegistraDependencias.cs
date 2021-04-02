@@ -815,6 +815,8 @@ namespace SME.SGP.IoC
 
             services.TryAddScoped<ISalvarAcompanhamentoTurmaUseCase, SalvarAcompanhamentoTurmaUseCase>();
 
+            services.TryAddScoped<IObterEncaminhamentoAEESituacoesUseCase, ObterEncaminhamentoAEESituacoesUseCase>();
+
         }
     }
 }
