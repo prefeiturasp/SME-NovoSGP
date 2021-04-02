@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
                .WithMessage("A turma deve ser informada para consulta do periodo escolar.");
 
             RuleFor(c => c.Bimestre)
-               .NotNull()
+               .InclusiveBetween(0,4)
                .WithMessage("O bimestre deve ser informado para consulta do periodo escolar.");
         }
     }
