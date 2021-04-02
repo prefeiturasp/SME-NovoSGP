@@ -818,6 +818,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterEncaminhamentoAEESituacoesUseCase, ObterEncaminhamentoAEESituacoesUseCase>();
             services.TryAddScoped<IObterPlanoAEESituacoesUseCase, ObterPlanoAEESituacoesUseCase>();
             services.TryAddScoped<IObterEncaminhamentosAEEDeferidosUseCase, ObterEncaminhamentosAEEDeferidosUseCase>();
+            services.TryAddScoped<IObterPlanosAEEVigentesUseCase, ObterPlanosAEEVigentesUseCase>();
 
         }
     }

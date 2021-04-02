@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public interface IObterPlanoAEESituacoesUseCase : IUseCase<FiltroDashboardAEEDto, IEnumerable<AEESituacaoPlanoDto>>
+    public interface IObterPlanosAEEVigentesUseCase : IUseCase<FiltroDashboardAEEDto, IEnumerable<AEETurmaDto>>
     {
     }
 }

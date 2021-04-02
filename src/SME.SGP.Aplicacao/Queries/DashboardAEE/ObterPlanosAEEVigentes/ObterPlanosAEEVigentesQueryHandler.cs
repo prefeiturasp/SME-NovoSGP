@@ -11,16 +11,16 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterPlanoAEESituacoesQueryHandler : IRequestHandler<ObterPlanoAEESituacoesQuery, IEnumerable<AEESituacaoPlanoDto>>
+    public class ObterPlanosAEEVigentesQueryHandler : IRequestHandler<ObterPlanosAEEVigentesQuery, IEnumerable<AEETurmaDto>>
     {
         private readonly IRepositorioPlanoAEE repositorio;
 
-        public ObterPlanoAEESituacoesQueryHandler(IRepositorioPlanoAEE repositorio)
+        public ObterPlanosAEEVigentesQueryHandler(IRepositorioPlanoAEE repositorio)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
         }
 
-        public async Task<IEnumerable<AEESituacaoPlanoDto>> Handle(ObterPlanoAEESituacoesQuery request, CancellationToken cancellationToken)
-            => await repositorio.ObterQuantidadeSituacoes(request.Ano, request.DreId, request.UeId);
+        public async Task<IEnumerable<AEETurmaDto>> Handle(ObterPlanosAEEVigentesQuery request, CancellationToken cancellationToken)
+            => await repositorio.ObterQuantidadeVigentes(request.Ano, request.DreId, request.UeId);
     }
 }
