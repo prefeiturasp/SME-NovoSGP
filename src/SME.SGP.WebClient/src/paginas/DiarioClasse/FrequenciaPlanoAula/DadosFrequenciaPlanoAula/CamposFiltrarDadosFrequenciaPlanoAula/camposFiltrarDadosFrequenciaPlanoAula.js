@@ -1,5 +1,5 @@
 import moment from 'moment';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { CampoData } from '~/componentes';
 import SelectComponent from '~/componentes/select';
@@ -16,7 +16,6 @@ import ServicoFrequencia from '~/servicos/Paginas/DiarioClasse/ServicoFrequencia
 import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
 import servicoSalvarFrequenciaPlanoAula from '../../servicoSalvarFrequenciaPlanoAula';
 import ModalSelecionarAulaFrequenciaPlanoAula from '../ModalSelecionarAula/modalSelecionarAulaFrequenciaPlanoAula';
-import { esperarMiliSegundos } from '~/utils';
 
 const CamposFiltrarDadosFrequenciaPlanoAula = () => {
   const dispatch = useDispatch();
@@ -55,10 +54,18 @@ const CamposFiltrarDadosFrequenciaPlanoAula = () => {
 
   const [listaDatasAulas, setListaDatasAulas] = useState();
   const [diasParaHabilitar, setDiasParaHabilitar] = useState();
+  const [diasParaSinalizar, setDiasParaSinalizar] = useState();
   const [aulasParaSelecionar, setAulasParaSelecionar] = useState([]);
   const [exibirModalSelecionarAula, setExibirModalSelecionarAula] = useState(
     false
   );
+
+  const valorPadrao = useMemo(() => {
+    const ano = turmaSelecionada.anoLetivo;
+    const dataParcial = moment().format('MM-DD');
+    const dataInteira = moment(`${dataParcial}-${ano}`);
+    return dataInteira;
+  }, [turmaSelecionada.anoLetivo]);
 
   const obterDatasDeAulasDisponiveis = useCallback(async () => {
     dispatch(setExibirLoaderFrequenciaPlanoAula(true));
@@ -74,10 +81,19 @@ const CamposFiltrarDadosFrequenciaPlanoAula = () => {
 
     if (datasDeAulas && datasDeAulas.data && datasDeAulas.data.length) {
       setListaDatasAulas(datasDeAulas.data);
-      const habilitar = datasDeAulas.data.map(item =>
-        window.moment(item.data).format('YYYY-MM-DD')
-      );
+      const habilitar = [];
+      const sinalizar = [];
+      datasDeAulas.data.forEach(itemDatas => {
+        const dataFormatada = moment(itemDatas.data).format('YYYY-MM-DD');
+        itemDatas.aulas.forEach(itemAulas => {
+          if (itemAulas.possuiFrequenciaRegistrada) {
+            sinalizar.push(moment(dataFormatada));
+          }
+        });
+        habilitar.push(dataFormatada);
+      });
       setDiasParaHabilitar(habilitar);
+      setDiasParaSinalizar(sinalizar);
     } else {
       setListaDatasAulas();
       setDiasParaHabilitar();
@@ -334,26 +350,6 @@ const CamposFiltrarDadosFrequenciaPlanoAula = () => {
     codigoComponenteCurricular,
   ]);
 
-  const aoAbrirCalendario = async isOpen => {
-    if (isOpen && !dataSelecionada && turmaSelecionada.consideraHistorico) {
-      await esperarMiliSegundos(100);
-      const elementoAnoAnterior = document.getElementsByClassName(
-        'ant-calendar-prev-year-btn'
-      );
-      if (elementoAnoAnterior?.length) {
-        const anoAnterior = elementoAnoAnterior[0];
-        const anoAtual = moment().format('YYYY');
-        const numeroClicks =
-          Number(anoAtual) - Number(turmaSelecionada.anoLetivo);
-        if (numeroClicks) {
-          for (let i = 0; i < numeroClicks; i++) {
-            anoAnterior.click();
-          }
-        }
-      }
-    }
-  };
-
   return (
     <>
       <div className="col-sm-12 col-md-4 col-lg-4 col-xl-4 mb-2">
@@ -385,7 +381,8 @@ const CamposFiltrarDadosFrequenciaPlanoAula = () => {
             !diasParaHabilitar
           }
           diasParaHabilitar={diasParaHabilitar}
-          aoAbrirCalendario={aoAbrirCalendario}
+          diasParaSinalizar={diasParaSinalizar}
+          valorPadrao={valorPadrao}
         />
       </div>
       <ModalSelecionarAulaFrequenciaPlanoAula

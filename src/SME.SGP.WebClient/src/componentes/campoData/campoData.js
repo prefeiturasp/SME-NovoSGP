@@ -91,7 +91,8 @@ const CampoData = ({
   carregando,
   array,
   campoOpcional,
-  aoAbrirCalendario,
+  valorPadrao,
+  diasParaSinalizar,
 }) => {
   const habilitarDatas = dataAtual => {
     let retorno = true;
@@ -141,6 +142,33 @@ const CampoData = ({
     <Icon style={{ fontSize: '16px', lineHeight: 0 }} type="calendar" />
   );
 
+  const dataRender = (dataRenderizar, dataAtualSelecionada) => {
+    const style = {};
+    if (diasParaSinalizar?.length) {
+      const temDiaNaLista = diasParaSinalizar.find(dataSinalizar =>
+        dataSinalizar?.isSame(dataRenderizar, 'date')
+      );
+      if (
+        temDiaNaLista &&
+        moment.isMoment(dataAtualSelecionada) &&
+        !dataRenderizar?.isSame(dataAtualSelecionada, 'date')
+      ) {
+        style.color = Base.AzulAnakiwa;
+        style.borderColor = Base.AzulAnakiwa;
+      }
+    }
+    return (
+      <div
+        className="ant-calendar-date"
+        aria-selected="false"
+        aria-disabled="false"
+        style={style}
+      >
+        {dataRenderizar.date()}
+      </div>
+    );
+  };
+
   const campoDataAntComValidacoes = () => {
     return (
       <Field name={name} id={name}>
@@ -172,7 +200,8 @@ const CampoData = ({
                 disabledDate={habilitarDatas}
                 showToday={false}
                 value={value || null}
-                onOpenChange={aoAbrirCalendario}
+                defaultPickerValue={valorPadrao}
+                dataRender={dataRender}
               />
             </div>
           </div>
@@ -200,7 +229,8 @@ const CampoData = ({
         value={valor || null}
         disabledDate={habilitarDatas}
         showToday={false}
-        onOpenChange={aoAbrirCalendario}
+        defaultPickerValue={valorPadrao}
+        dateRender={dataRender}
       />
     );
   };
@@ -279,7 +309,8 @@ CampoData.propTypes = {
   carregando: PropTypes.bool,
   array: PropTypes.bool,
   campoOpcional: PropTypes.bool,
-  aoAbrirCalendario: PropTypes.func,
+  valorPadrao: PropTypes.string,
+  diasParaSinalizar: PropTypes.oneOfType([PropTypes.array]),
 };
 
 CampoData.defaultProps = {
@@ -301,7 +332,8 @@ CampoData.defaultProps = {
   carregando: false,
   array: false,
   campoOpcional: false,
-  aoAbrirCalendario: () => {},
+  valorPadrao: '',
+  diasParaSinalizar: [],
 };
 
 const momentSchema = new MomentSchema();
