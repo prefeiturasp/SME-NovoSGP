@@ -89,7 +89,7 @@ namespace SME.SGP.Dominio.Servicos
                 turma.AdicionarUe(ue);     
 
                 var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, bimestre));
-                if(periodoEscolar == null) throw new NegocioException("Período escolar não encontrado");
+                if(periodoEscolar == null && bimestre > 0 ) throw new NegocioException("Período escolar não encontrado");
 
                 fechamentoTurma = new FechamentoTurma()
                 {
