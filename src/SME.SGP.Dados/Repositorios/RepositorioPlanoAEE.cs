@@ -3,6 +3,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -275,6 +276,32 @@ namespace SME.SGP.Dados.Repositorios
                     planoAEEDto.Turma = turma;
                     return planoAEEDto;
                 }, new { planoId })).FirstOrDefault();
+        }
+
+        public async Task<IEnumerable<AEESituacaoDto>> ObterQuantidadeSituacoes(int ano, long dreId, long ueId)
+        {
+            var sql = new StringBuilder(@"select situacao, count(pa.id) as Quantidade from plano_aee pa ");
+            sql.Append(" inner join turma t on pa.turma_id = t.id ");
+            sql.Append(" inner join ue on t.ue_id = ue.id ");
+
+            var where = new StringBuilder(@" where t.ano_letivo = @ano ");
+
+            if (dreId > 0)
+            {
+                sql.Append(" inner join dre on ue.dre_id = ue.id ");
+                where.Append(" and dre.id = @dreId");
+            }
+
+            if (ueId > 0)
+            {
+                where.Append(" and ue.id = @ueId");
+            }
+
+            sql.Append(where.ToString());
+
+            sql.Append(" group by pa.situacao ");
+
+            return await database.Conexao.QueryAsync<AEESituacaoDto>(sql.ToString(), new { ano, dreId, ueId });
         }
     }
 }
