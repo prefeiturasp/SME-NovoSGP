@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 namespace SME.SGP.Api.Controllers
 {
     [ApiController]
-    [Route("api/v1/aee/dashboard")]
+    [Route("api/v1/dashboard/aee")]
     //[Authorize("Bearer")]
     public class DashboardAEEController : ControllerBase
     {
