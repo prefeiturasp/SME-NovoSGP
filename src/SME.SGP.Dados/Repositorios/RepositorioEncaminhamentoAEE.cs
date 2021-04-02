@@ -214,7 +214,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<EncaminhamentoAEESituacaoDto>> ObterQuantidadeSituacoes(int ano, long dreId, long ueId)
         {
-            var sql = new StringBuilder(@"select situacao, sum(1) as Quantidade from encaminhamento_aee ea ");
+            var sql = new StringBuilder(@"select situacao, count(ea.id) as Quantidade from encaminhamento_aee ea ");
             sql.Append(" inner join turma t on ea.turma_id = t.id ");
             sql.Append(" inner join ue on t.ue_id = ue.id ");
             
