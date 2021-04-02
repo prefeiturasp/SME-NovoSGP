@@ -2,8 +2,8 @@ import api from '~/servicos/api';
 
 const urlPadrao = 'v1/dashboard/aee';
 class ServicoDashboardAEE {
-  obterQuantidadeEncaminhamentosPorSituacao = (anoLetivo, dreId, ueId) => {
-    let url = `${urlPadrao}/encaminhamentos/situacoes?ano=${anoLetivo}`;
+  montarConsultaPadraoGraficos = (rota, anoLetivo, dreId, ueId) => {
+    let url = `${urlPadrao}/${rota}?ano=${anoLetivo}`;
     if (dreId) {
       url += `&dreId=${dreId}`;
     }
@@ -11,6 +11,24 @@ class ServicoDashboardAEE {
       url += `&ueId=${ueId}`;
     }
     return api.get(url);
+  };
+
+  obterQuantidadeEncaminhamentosPorSituacao = (anoLetivo, dreId, ueId) => {
+    return this.montarConsultaPadraoGraficos(
+      'encaminhamentos/situacoes',
+      anoLetivo,
+      dreId,
+      ueId
+    );
+  };
+
+  obterEncaminhamentosDeferidos = (anoLetivo, dreId, ueId) => {
+    return this.montarConsultaPadraoGraficos(
+      'encaminhamentos/deferidos',
+      anoLetivo,
+      dreId,
+      ueId
+    );
   };
 }
 

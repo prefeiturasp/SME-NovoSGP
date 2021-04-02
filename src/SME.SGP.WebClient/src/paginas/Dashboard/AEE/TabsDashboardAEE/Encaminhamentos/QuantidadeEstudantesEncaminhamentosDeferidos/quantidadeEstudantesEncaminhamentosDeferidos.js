@@ -5,7 +5,7 @@ import CardCollapse from '~/componentes/cardCollapse';
 import ServicoDashboardAEE from '~/servicos/Paginas/Dashboard/ServicoDashboardAEE';
 import GraficoBarrasPadraoAEE from '../../graficoBarrasPadraoAEE';
 
-const QuantidadeEncaminhamentosSituacao = props => {
+const QuantidadeEstudantesEncaminhamentosDeferidos = props => {
   const { anoLetivo, dreId, ueId } = props;
 
   const configCabecalho = {
@@ -18,10 +18,10 @@ const QuantidadeEncaminhamentosSituacao = props => {
   return (
     <div className="mt-3">
       <CardCollapse
-        key="quantidade-encaminhamentos-situacao-collapse-key"
-        titulo="Quantidade de encaminhamentos por situação"
-        indice="quantidade-encaminhamentos-situacao-collapse-indice"
-        alt="quantidade-encaminhamentos-situacaoe-alt"
+        key="quantidade-estudantes-encaminhamentos-deferidos-collapse-key"
+        titulo="Quantidade de estudantes com encaminhamentos deferidos "
+        indice="quantidade-estudantes-encaminhamentos-deferidos-collapse-indice"
+        alt="quantidade-estudantes-encaminhamentos-deferidos-alt"
         configCabecalho={configCabecalho}
         show={exibir}
         onClick={() => {
@@ -34,10 +34,10 @@ const QuantidadeEncaminhamentosSituacao = props => {
               anoLetivo={anoLetivo}
               dreId={dreId}
               ueId={ueId}
-              nomeIndiceDesc="descricaoSituacao"
+              nomeIndiceDesc="descricao"
               nomeValor="quantidade"
               ServicoObterValoresGrafico={
-                ServicoDashboardAEE.obterQuantidadeEncaminhamentosPorSituacao
+                ServicoDashboardAEE.obterEncaminhamentosDeferidos
               }
             />
           </div>
@@ -49,16 +49,16 @@ const QuantidadeEncaminhamentosSituacao = props => {
   );
 };
 
-QuantidadeEncaminhamentosSituacao.propTypes = {
+QuantidadeEstudantesEncaminhamentosDeferidos.propTypes = {
   anoLetivo: PropTypes.oneOfType(PropTypes.any),
   dreId: PropTypes.string,
   ueId: PropTypes.string,
 };
 
-QuantidadeEncaminhamentosSituacao.defaultProps = {
+QuantidadeEstudantesEncaminhamentosDeferidos.defaultProps = {
   anoLetivo: null,
   dreId: '',
   ueId: '',
 };
 
-export default QuantidadeEncaminhamentosSituacao;
+export default QuantidadeEstudantesEncaminhamentosDeferidos;
