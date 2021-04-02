@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
         public Guid PerfilAtual { get; set; }
         public string LoginAtual { get; set; }
         public bool TemEnsinoEspecial { get; set; }
-        public Modalidade TurmaModalidade { get; set; }
+        public Modalidade? TurmaModalidade { get; set; }
         public int TurmaAno { get; set; }
         public int TurnoParaComponentesCurriculares { get; set; }
     }
