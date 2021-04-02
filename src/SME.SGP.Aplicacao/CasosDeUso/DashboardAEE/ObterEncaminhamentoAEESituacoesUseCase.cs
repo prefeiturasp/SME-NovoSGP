@@ -13,7 +13,7 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<IEnumerable<AEESituacaoDto>> Executar(FiltroDashboardAEEDto param)
+        public async Task<IEnumerable<AEESituacaoEncaminhamentoDto>> Executar(FiltroDashboardAEEDto param)
         {
             if (param.Ano == 0)
                 param.Ano = DateTime.Now.Year;

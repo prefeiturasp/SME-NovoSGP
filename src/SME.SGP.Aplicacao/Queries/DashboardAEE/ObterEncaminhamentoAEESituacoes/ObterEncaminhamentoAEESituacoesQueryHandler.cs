@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterEncaminhamentoAEESituacoesQueryHandler : IRequestHandler<ObterEncaminhamentoAEESituacoesQuery, IEnumerable<AEESituacaoDto>>
+    public class ObterEncaminhamentoAEESituacoesQueryHandler : IRequestHandler<ObterEncaminhamentoAEESituacoesQuery, IEnumerable<AEESituacaoEncaminhamentoDto>>
     {
         private readonly IRepositorioEncaminhamentoAEE repositorio;
 
@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
         }
 
-        public async Task<IEnumerable<AEESituacaoDto>> Handle(ObterEncaminhamentoAEESituacoesQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<AEESituacaoEncaminhamentoDto>> Handle(ObterEncaminhamentoAEESituacoesQuery request, CancellationToken cancellationToken)
             => await repositorio.ObterQuantidadeSituacoes(request.Ano, request.DreId, request.UeId);
     }
 }
