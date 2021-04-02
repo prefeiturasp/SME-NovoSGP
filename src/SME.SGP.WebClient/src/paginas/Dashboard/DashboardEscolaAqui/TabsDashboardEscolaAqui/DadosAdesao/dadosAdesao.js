@@ -7,10 +7,10 @@ import {
   adicionarCoresNosGraficos,
   formataMilhar,
   mapearParaDtoGraficoPizzaComValorEPercentual,
-} from '../../dashboardEscolaAquiGraficosUtils';
+} from '../../../ComponentesDashboard/graficosDashboardUtils';
 import DataUltimaAtualizacaoDashboardEscolaAqui from '../ComponentesDashboardEscolaAqui/dataUltimaAtualizacaoDashboardEscolaAqui';
-import GraficoBarraDashboardEscolaAqui from '../ComponentesDashboardEscolaAqui/graficoBarraDashboardEscolaAqui';
-import GraficoPizzaDashboardEscolaAqui from '../ComponentesDashboardEscolaAqui/graficoPizzaDashboardEscolaAqui';
+import GraficoBarraDashboard from '~/paginas/Dashboard/ComponentesDashboard/graficoBarraDashboard';
+import GraficoPizzaDashboard from '~/paginas/Dashboard/ComponentesDashboard/graficoPizzaDashboard';
 
 const DadosAdesao = props => {
   const { codigoDre, codigoUe } = props;
@@ -200,7 +200,7 @@ const DadosAdesao = props => {
 
   const graficoBarras = (dados, titulo) => {
     return (
-      <GraficoBarraDashboardEscolaAqui
+      <GraficoBarraDashboard
         titulo={titulo}
         dadosGrafico={dados}
         chavesGrafico={chavesGrafico}
@@ -218,7 +218,7 @@ const DadosAdesao = props => {
 
       {dadosGraficoAdesao && dadosGraficoAdesao.length ? (
         <>
-          <GraficoPizzaDashboardEscolaAqui
+          <GraficoPizzaDashboard
             titulo="Total de Usuários"
             dadosGrafico={dadosGraficoAdesao}
           />

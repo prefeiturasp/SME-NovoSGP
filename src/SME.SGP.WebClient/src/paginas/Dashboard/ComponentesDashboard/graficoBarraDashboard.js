@@ -2,16 +2,13 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Graficos } from '~/componentes';
 import LegendaGrafico from '~/componentes-sgp/LegendaGrafico/legendaGrafico';
-import {
-  ContainerGraficoBarras,
-  TituloGrafico,
-} from '../../dashboardEscolaAqui.css';
+import { ContainerGraficoBarras, TituloGrafico } from '../style';
 import {
   formataMilhar,
-  tooltipCustomizadoDashboardEscolaAqui,
-} from '../../dashboardEscolaAquiGraficosUtils';
+  tooltipCustomizadoDashboard,
+} from './graficosDashboardUtils';
 
-const GraficoBarraDashboardEscolaAqui = props => {
+const GraficoBarraDashboard = props => {
   const {
     titulo,
     dadosGrafico,
@@ -54,7 +51,7 @@ const GraficoBarraDashboardEscolaAqui = props => {
               customProps={{
                 colors: customPropsColors || (item => item?.data?.color),
                 tooltip: item => {
-                  return tooltipCustomizadoDashboardEscolaAqui(item);
+                  return tooltipCustomizadoDashboard(item);
                 },
                 labelFormat: valor => (
                   <tspan y={-7}>{formataMilhar(valor)}</tspan>
@@ -75,7 +72,7 @@ const GraficoBarraDashboardEscolaAqui = props => {
   );
 };
 
-GraficoBarraDashboardEscolaAqui.propTypes = {
+GraficoBarraDashboard.propTypes = {
   titulo: PropTypes.string,
   dadosGrafico: PropTypes.oneOfType([PropTypes.array]),
   chavesGrafico: PropTypes.oneOfType([PropTypes.array]),
@@ -87,7 +84,7 @@ GraficoBarraDashboardEscolaAqui.propTypes = {
   margemPersonalizada: PropTypes.oneOfType(PropTypes.any),
 };
 
-GraficoBarraDashboardEscolaAqui.defaultProps = {
+GraficoBarraDashboard.defaultProps = {
   titulo: '',
   dadosGrafico: [],
   chavesGrafico: [],
@@ -99,4 +96,4 @@ GraficoBarraDashboardEscolaAqui.defaultProps = {
   margemPersonalizada: null,
 };
 
-export default GraficoBarraDashboardEscolaAqui;
+export default GraficoBarraDashboard;

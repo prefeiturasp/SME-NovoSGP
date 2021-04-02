@@ -6,8 +6,8 @@ import ServicoDashboardEscolaAqui from '~/servicos/Paginas/Dashboard/ServicoDash
 import {
   mapearParaDtoDadosComunicadosGraficoBarras,
   obterDadosComunicadoSelecionado,
-} from '../../dashboardEscolaAquiGraficosUtils';
-import GraficoBarraDashboardEscolaAqui from '../ComponentesDashboardEscolaAqui/graficoBarraDashboardEscolaAqui';
+} from '../../../ComponentesDashboard/graficosDashboardUtils';
+import GraficoBarraDashboard from '../../../ComponentesDashboard/graficoBarraDashboard';
 
 const LeituraDeComunicadosAgrupadosPorDre = props => {
   const {
@@ -89,7 +89,7 @@ const LeituraDeComunicadosAgrupadosPorDre = props => {
         tip="Carregando Total de Comunicados por DRE"
       >
         {dadosDeLeituraDeComunicadosAgrupadosPorDre?.length ? (
-          <GraficoBarraDashboardEscolaAqui
+          <GraficoBarraDashboard
             titulo="Total de Comunicados por DRE"
             dadosGrafico={dadosDeLeituraDeComunicadosAgrupadosPorDre}
             chavesGrafico={chavesGrafico}

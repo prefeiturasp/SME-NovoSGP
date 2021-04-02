@@ -72,7 +72,7 @@ const RotasDto = {
   ACOMPANHAMENTO_APRENDIZAGEM: '/fechamento/acompanhamento-aprendizagem',
   RELATORIO_DEVOLUTIVAS: '/relatorios/planejamento/devolutivas',
   DASHBOARD_ESCOLA_AQUI: '/dashboard/escola-aqui',
-  DASHBOARD_AEE: '/dashboard/dashboard-aee',
+  DASHBOARD_AEE: '/dashboard/aee',
 };
 
 export default RotasDto;

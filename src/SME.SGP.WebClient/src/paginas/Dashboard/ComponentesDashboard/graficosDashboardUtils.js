@@ -46,7 +46,7 @@ const mapearParaDtoGraficoPizzaComValorEPercentual = dados => {
   return dadosMapeadosComPorcentagem;
 };
 
-const tooltipCustomizadoDashboardEscolaAqui = item => {
+const tooltipCustomizadoDashboard = item => {
   return (
     <div style={{ whiteSpace: 'pre', display: 'flex', alignItems: 'center' }}>
       <span
@@ -162,7 +162,7 @@ export {
   formataMilhar,
   adicionarCoresNosGraficos,
   obterDadosComunicadoSelecionado,
-  tooltipCustomizadoDashboardEscolaAqui,
+  tooltipCustomizadoDashboard,
   mapearParaDtoDadosComunicadosGraficoBarras,
   mapearParaDtoGraficoPizzaComValorEPercentual,
 };
