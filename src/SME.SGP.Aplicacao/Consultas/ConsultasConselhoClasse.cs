@@ -66,16 +66,13 @@ namespace SME.SGP.Aplicacao
             }
 
             if (bimestre == 0 && !ehFinal)
-                bimestre = await ObterBimestreAtual(turma);
-
-            var fechamentoTurma = await consultasFechamentoTurma.ObterPorTurmaCodigoBimestreAsync(turma.CodigoTurma, bimestre);            
-
-           
-
-            if (fechamentoTurma == null && !turma.EhAnoAnterior())
             {
-                throw new NegocioException("Fechamento da turma não localizado " + (!ehFinal && bimestre > 0 ? $"para o bimestre {bimestre}" : ""));
-            }
+                bimestre = await ObterBimestreAtual(turma);
+                if (bimestre == 0)
+                    bimestre = 1;
+            }            
+
+            var fechamentoTurma = await consultasFechamentoTurma.ObterPorTurmaCodigoBimestreAsync(turma.CodigoTurma, bimestre);                        
 
             var conselhoClasse = fechamentoTurma != null ? await repositorioConselhoClasse.ObterPorFechamentoId(fechamentoTurma.Id) : null;
 

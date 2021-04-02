@@ -6,5 +6,6 @@
         public bool EhRegencia { get; set; }
 
         public string TurmaCodigo { get; set; }
+        public int semestre { get; set; }
     }
 }

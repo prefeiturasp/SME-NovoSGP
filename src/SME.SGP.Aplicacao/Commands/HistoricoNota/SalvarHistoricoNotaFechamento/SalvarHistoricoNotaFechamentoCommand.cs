@@ -28,11 +28,11 @@ namespace SME.SGP.Aplicacao
         public SalvarHistoricoNotaFechamentoCommandValidator()
         {
             RuleFor(c => c.NotaAnterior)
-            .NotEmpty()
+            .NotNull()
             .WithMessage("A nota anteior deve ser informada para geração do histórico");
 
             RuleFor(c => c.NotaNova)
-            .NotEmpty()
+            .NotNull()
             .WithMessage("A nota nova deve ser informada para geração do histórico");
 
             RuleFor(a => a.FechamentoNotaId)

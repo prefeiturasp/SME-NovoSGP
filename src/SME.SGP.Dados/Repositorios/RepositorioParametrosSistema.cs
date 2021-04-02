@@ -133,5 +133,12 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<ParametrosSistema>(query.ToString(), new { tipo, ano });
         }
+
+        public async Task<string> ObterNovosTiposUEPorAno(int anoLetivo)
+        {
+            var query = @"select STRING_AGG(valor, ',') from parametros_sistema ps where ano >= @anoLetivo and tipo = 55";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<string>(query, new { anoLetivo });
+        }
     }
 }
