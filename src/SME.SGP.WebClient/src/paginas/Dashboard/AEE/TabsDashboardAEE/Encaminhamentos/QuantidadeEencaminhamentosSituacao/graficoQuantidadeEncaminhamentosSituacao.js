@@ -4,8 +4,8 @@ import { Loader } from '~/componentes';
 import {
   adicionarCoresNosGraficos,
   formataMilhar,
-} from '~/paginas/Dashboard/DashboardEscolaAqui/dashboardEscolaAquiGraficosUtils';
-import GraficoBarraDashboardEscolaAqui from '~/paginas/Dashboard/DashboardEscolaAqui/TabsDashboardEscolaAqui/ComponentesDashboardEscolaAqui/graficoBarraDashboardEscolaAqui';
+} from '~/paginas/Dashboard/ComponentesDashboard/graficosDashboardUtils';
+import GraficoBarraDashboard from '~/paginas/Dashboard/ComponentesDashboard/graficoBarraDashboard';
 import { erros } from '~/servicos';
 import ServicoDashboardAEE from '~/servicos/Paginas/Dashboard/ServicoDashboardAEE';
 
@@ -68,7 +68,7 @@ const GraficoQuantidadeEncaminhamentosSituacao = props => {
 
   const graficoBarras = (dados, titulo) => {
     return (
-      <GraficoBarraDashboardEscolaAqui
+      <GraficoBarraDashboard
         titulo={titulo}
         dadosGrafico={dados}
         chavesGrafico={chavesGrafico}
