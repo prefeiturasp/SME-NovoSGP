@@ -5,7 +5,7 @@ import { erros } from '~/servicos';
 import ServicoDashboardEscolaAqui from '~/servicos/Paginas/Dashboard/ServicoDashboardEscolaAqui';
 import {
   adicionarCoresNosGraficos,
-  formataMilhar,
+  montarDadosGrafico,
   mapearParaDtoGraficoPizzaComValorEPercentual,
 } from '../../../ComponentesDashboard/graficosDashboardUtils';
 import DataUltimaAtualizacaoDashboardEscolaAqui from '../ComponentesDashboardEscolaAqui/dataUltimaAtualizacaoDashboardEscolaAqui';
@@ -99,17 +99,6 @@ const DadosAdesao = props => {
     }
   }, [codigoDre, codigoUe]);
 
-  const montarDadosGrafico = (item, nomeCampo, dados) => {
-    if (item[nomeCampo]) {
-      const totalDados = {
-        nomeCompletoDre: item.nomeCompletoDre,
-      };
-      totalDados[nomeCampo] = item[nomeCampo];
-      totalDados[item.nomeCompletoDre] = formataMilhar(item[nomeCampo]);
-      dados.push(totalDados);
-    }
-  };
-
   const mapearDadosGraficos = useCallback(dados => {
     const chaves = [];
     const dadosTotalUsuariosComCpfInvalidos = [];
@@ -123,25 +112,29 @@ const DadosAdesao = props => {
       montarDadosGrafico(
         item,
         'totalUsuariosComCpfInvalidos',
-        dadosTotalUsuariosComCpfInvalidos
+        dadosTotalUsuariosComCpfInvalidos,
+        'nomeCompletoDre'
       );
 
       montarDadosGrafico(
         item,
         'totalUsuariosSemAppInstalado',
-        dadosTotalUsuariosSemAppInstalado
+        dadosTotalUsuariosSemAppInstalado,
+        'nomeCompletoDre'
       );
 
       montarDadosGrafico(
         item,
         'totalUsuariosPrimeiroAcessoIncompleto',
-        dadosTotalUsuariosPrimeiroAcessoIncompleto
+        dadosTotalUsuariosPrimeiroAcessoIncompleto,
+        'nomeCompletoDre'
       );
 
       montarDadosGrafico(
         item,
         'totalUsuariosValidos',
-        dadosTotalUsuariosValidos
+        dadosTotalUsuariosValidos,
+        'nomeCompletoDre'
       );
     });
 

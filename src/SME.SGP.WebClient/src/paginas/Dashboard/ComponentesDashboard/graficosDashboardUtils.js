@@ -158,6 +158,21 @@ const obterDadosComunicadoSelecionado = (
   return comunicado;
 };
 
+const montarDadosGrafico = (
+  item,
+  nomeCampo,
+  dadosMapeados,
+  descricaoColuna
+) => {
+  if (item[nomeCampo]) {
+    const novosDadosMap = {};
+    novosDadosMap[descricaoColuna] = item[descricaoColuna];
+    novosDadosMap[nomeCampo] = item[nomeCampo];
+    novosDadosMap[item[descricaoColuna]] = formataMilhar(item[nomeCampo]);
+    dadosMapeados.push(novosDadosMap);
+  }
+};
+
 export {
   formataMilhar,
   adicionarCoresNosGraficos,
@@ -165,4 +180,5 @@ export {
   tooltipCustomizadoDashboard,
   mapearParaDtoDadosComunicadosGraficoBarras,
   mapearParaDtoGraficoPizzaComValorEPercentual,
+  montarDadosGrafico,
 };
