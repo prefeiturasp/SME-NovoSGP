@@ -8,7 +8,7 @@ using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterEncaminhamentoAEESituacoesQuery : IRequest<IEnumerable<AEESituacaoDto>>
+    public class ObterEncaminhamentoAEESituacoesQuery : IRequest<IEnumerable<AEESituacaoEncaminhamentoDto>>
     {
         public long UeId { get; set; }
         public int Ano { get; set; }

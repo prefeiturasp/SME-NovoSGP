@@ -20,8 +20,8 @@ namespace SME.SGP.Api.Controllers
     public class DashboardAEEController : ControllerBase
     {
         [HttpGet("encaminhamentos/situacoes")]
-        [ProducesResponseType(typeof(AEESituacaoDto), 200)]
-        [ProducesResponseType(typeof(AEESituacaoDto), 204)]
+        [ProducesResponseType(typeof(AEESituacaoEncaminhamentoDto), 200)]
+        [ProducesResponseType(typeof(AEESituacaoEncaminhamentoDto), 204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> ObterSituacoesEncaminhamentos([FromQuery] int ano, [FromQuery] long dreId, long ueId, [FromServices] IObterEncaminhamentoAEESituacoesUseCase useCase)
         {
@@ -45,10 +45,24 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpGet("planos/situacoes")]
-        [ProducesResponseType(typeof(AEESituacaoDto), 200)]
-        [ProducesResponseType(typeof(AEESituacaoDto), 204)]
+        [ProducesResponseType(typeof(AEESituacaoPlanoDto), 200)]
+        [ProducesResponseType(typeof(AEESituacaoPlanoDto), 204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> ObterSituacoesPlanos([FromQuery] int ano, [FromQuery] long dreId, long ueId, [FromServices] IObterPlanoAEESituacoesUseCase useCase)
+        {
+            return Ok(await useCase.Executar(new FiltroDashboardAEEDto()
+            {
+                Ano = ano,
+                DreId = dreId,
+                UeId = ueId
+            }));
+        }
+
+        [HttpGet("planos/vigentes")]
+        [ProducesResponseType(typeof(AEETurmaDto), 200)]
+        [ProducesResponseType(typeof(AEETurmaDto), 204)]
+        [ProducesResponseType(typeof(AEETurmaDto), 500)]
+        public async Task<IActionResult> ObterPlanosVigentes([FromQuery] int ano, [FromQuery] long dreId, long ueId, [FromServices] IObterPlanosAEEVigentesUseCase useCase)
         {
             return Ok(await useCase.Executar(new FiltroDashboardAEEDto()
             {
