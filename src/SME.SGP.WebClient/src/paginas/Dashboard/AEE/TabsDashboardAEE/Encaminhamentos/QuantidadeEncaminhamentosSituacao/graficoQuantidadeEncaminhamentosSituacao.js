@@ -3,29 +3,20 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Loader } from '~/componentes';
 import {
   adicionarCoresNosGraficos,
-  formataMilhar,
+  montarDadosGrafico,
 } from '~/paginas/Dashboard/ComponentesDashboard/graficosDashboardUtils';
 import GraficoBarraDashboard from '~/paginas/Dashboard/ComponentesDashboard/graficoBarraDashboard';
 import { erros } from '~/servicos';
 import ServicoDashboardAEE from '~/servicos/Paginas/Dashboard/ServicoDashboardAEE';
 
 const GraficoQuantidadeEncaminhamentosSituacao = props => {
-  const { anoLetivo, codigoDre, codigoUe } = props;
+  const { anoLetivo, dreId, ueId } = props;
 
   const [chavesGrafico, setChavesGrafico] = useState([]);
   const [dadosGrafico, setDadosGrafico] = useState([]);
   const [exibirLoader, setExibirLoader] = useState(false);
 
-  const montarDadosGrafico = (item, nomeCampo, dadosMapeados) => {
-    if (item[nomeCampo]) {
-      const novosDadosMap = {
-        descricaoSituacao: item.descricaoSituacao,
-      };
-      novosDadosMap[nomeCampo] = item[nomeCampo];
-      novosDadosMap[item.descricaoSituacao] = formataMilhar(item[nomeCampo]);
-      dadosMapeados.push(novosDadosMap);
-    }
-  };
+  const OPCAO_TODOS = '-99';
 
   const mapearDadosGraficos = useCallback(dados => {
     const chaves = [];
@@ -33,7 +24,12 @@ const GraficoQuantidadeEncaminhamentosSituacao = props => {
 
     dados.forEach(item => {
       chaves.push(item.descricaoSituacao);
-      montarDadosGrafico(item, 'quantidade', dadosMapeados);
+      montarDadosGrafico(
+        item,
+        'quantidade',
+        dadosMapeados,
+        'descricaoSituacao'
+      );
     });
 
     setChavesGrafico(chaves);
@@ -45,8 +41,8 @@ const GraficoQuantidadeEncaminhamentosSituacao = props => {
     setExibirLoader(true);
     const retorno = await ServicoDashboardAEE.obterQuantidadeEncaminhamentosPorSituacao(
       anoLetivo,
-      codigoDre,
-      codigoUe
+      dreId === OPCAO_TODOS ? '' : dreId,
+      ueId === OPCAO_TODOS ? '' : ueId
     )
       .catch(e => erros(e))
       .finally(() => setExibirLoader(false));
@@ -56,15 +52,15 @@ const GraficoQuantidadeEncaminhamentosSituacao = props => {
     } else {
       setDadosGrafico([]);
     }
-  }, [anoLetivo, codigoDre, codigoUe, mapearDadosGraficos]);
+  }, [anoLetivo, dreId, ueId, mapearDadosGraficos]);
 
   useEffect(() => {
-    if (anoLetivo && codigoDre && codigoUe) {
+    if (anoLetivo && dreId && ueId) {
       obterDadosGrafico();
     } else {
       setDadosGrafico([]);
     }
-  }, [anoLetivo, codigoDre, codigoUe, obterDadosGrafico]);
+  }, [anoLetivo, dreId, ueId, obterDadosGrafico]);
 
   const graficoBarras = (dados, titulo) => {
     return (
@@ -87,21 +83,25 @@ const GraficoQuantidadeEncaminhamentosSituacao = props => {
 
   return (
     <Loader loading={exibirLoader} className="col-md-12 text-center">
-      {dadosGrafico?.length ? graficoBarras(dadosGrafico, ' ') : 'Sem dados'}
+      {dadosGrafico?.length
+        ? graficoBarras(dadosGrafico, ' ')
+        : !exibirLoader
+        ? 'Sem dados'
+        : ''}
     </Loader>
   );
 };
 
 GraficoQuantidadeEncaminhamentosSituacao.propTypes = {
   anoLetivo: PropTypes.oneOfType(PropTypes.any),
-  codigoDre: PropTypes.string,
-  codigoUe: PropTypes.string,
+  dreId: PropTypes.string,
+  ueId: PropTypes.string,
 };
 
 GraficoQuantidadeEncaminhamentosSituacao.defaultProps = {
   anoLetivo: null,
-  codigoDre: '',
-  codigoUe: '',
+  dreId: '',
+  ueId: '',
 };
 
 export default GraficoQuantidadeEncaminhamentosSituacao;

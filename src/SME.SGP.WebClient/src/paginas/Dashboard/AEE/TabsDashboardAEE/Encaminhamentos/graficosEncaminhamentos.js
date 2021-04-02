@@ -1,15 +1,15 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import QuantidadeEencaminhamentosSituacao from './QuantidadeEencaminhamentosSituacao/quantidadeEncaminhamentosSituacao';
+import QuantidadeEncaminhamentosSituacao from './QuantidadeEncaminhamentosSituacao/quantidadeEncaminhamentosSituacao';
 
 const GraficosEncaminhamentos = props => {
-  const { anoLetivo, codigoDre, codigoUe } = props;
+  const { anoLetivo, dreId, ueId } = props;
   return (
     <>
-      <QuantidadeEencaminhamentosSituacao
+      <QuantidadeEncaminhamentosSituacao
         anoLetivo={anoLetivo}
-        codigoDre={codigoDre}
-        codigoUe={codigoUe}
+        dreId={dreId}
+        ueId={ueId}
       />
     </>
   );
@@ -17,14 +17,14 @@ const GraficosEncaminhamentos = props => {
 
 GraficosEncaminhamentos.propTypes = {
   anoLetivo: PropTypes.oneOfType(PropTypes.any),
-  codigoDre: PropTypes.string,
-  codigoUe: PropTypes.string,
+  dreId: PropTypes.string,
+  ueId: PropTypes.string,
 };
 
 GraficosEncaminhamentos.defaultProps = {
   anoLetivo: null,
-  codigoDre: '',
-  codigoUe: '',
+  dreId: '',
+  ueId: '',
 };
 
 export default GraficosEncaminhamentos;

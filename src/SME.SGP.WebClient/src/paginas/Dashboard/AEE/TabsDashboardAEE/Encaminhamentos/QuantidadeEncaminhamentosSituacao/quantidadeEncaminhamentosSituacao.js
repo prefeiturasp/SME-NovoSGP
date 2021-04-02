@@ -1,16 +1,18 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useState } from 'react';
 import { Base } from '~/componentes';
 import CardCollapse from '~/componentes/cardCollapse';
 import GraficoQuantidadeEncaminhamentosSituacao from './graficoQuantidadeEncaminhamentosSituacao';
 
 const QuantidadeEncaminhamentosSituacao = props => {
-  const { anoLetivo, codigoDre, codigoUe } = props;
+  const { anoLetivo, dreId, ueId } = props;
 
   const configCabecalho = {
     altura: '44px',
     corBorda: Base.AzulBordaCollapse,
   };
+
+  const [exibir, setExibir] = useState(false);
 
   return (
     <div className="mt-3">
@@ -20,14 +22,22 @@ const QuantidadeEncaminhamentosSituacao = props => {
         indice="quantidade-encaminhamentos-situacao-collapse-indice"
         alt="quantidade-encaminhamentos-situacaoe-alt"
         configCabecalho={configCabecalho}
+        show={exibir}
+        onClick={() => {
+          setExibir(!exibir);
+        }}
       >
-        <div className="col-md-12">
-          <GraficoQuantidadeEncaminhamentosSituacao
-            anoLetivo={anoLetivo}
-            codigoDre={codigoDre}
-            codigoUe={codigoUe}
-          />
-        </div>
+        {exibir ? (
+          <div className="col-md-12">
+            <GraficoQuantidadeEncaminhamentosSituacao
+              anoLetivo={anoLetivo}
+              dreId={dreId}
+              ueId={ueId}
+            />
+          </div>
+        ) : (
+          ''
+        )}
       </CardCollapse>
     </div>
   );
@@ -35,14 +45,14 @@ const QuantidadeEncaminhamentosSituacao = props => {
 
 QuantidadeEncaminhamentosSituacao.propTypes = {
   anoLetivo: PropTypes.oneOfType(PropTypes.any),
-  codigoDre: PropTypes.string,
-  codigoUe: PropTypes.string,
+  dreId: PropTypes.string,
+  ueId: PropTypes.string,
 };
 
 QuantidadeEncaminhamentosSituacao.defaultProps = {
   anoLetivo: null,
-  codigoDre: '',
-  codigoUe: '',
+  dreId: '',
+  ueId: '',
 };
 
 export default QuantidadeEncaminhamentosSituacao;

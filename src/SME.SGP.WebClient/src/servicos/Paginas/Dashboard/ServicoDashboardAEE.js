@@ -1,37 +1,16 @@
-class ServicoDashboardAEE {
-  obterQuantidadeEncaminhamentosPorSituacao = (
-    anoLetivo,
-    codigoDre,
-    codigoUe
-  ) => {
-    console.log('obterQuantidadeEncaminhamentosPorSituacao');
-    console.log(`anoLetivo: ${anoLetivo}`);
-    console.log(`codigoDre: ${codigoDre}`);
-    console.log(`codigoUe: ${codigoUe}`);
-    const mock = [
-      {
-        descricaoSituacao: 'Aguardando validação do CP',
-        quantidade: 264,
-      },
-      {
-        descricaoSituacao: 'Aguardando análise PAEE/PAAI',
-        quantidade: 332,
-      },
-      {
-        descricaoSituacao: 'Indeferido',
-        quantidade: 363,
-      },
-      {
-        descricaoSituacao: 'Deferido',
-        quantidade: 348,
-      },
-    ];
+import api from '~/servicos/api';
 
-    return new Promise(resolve => {
-      setTimeout(() => {
-        resolve({ data: mock, status: 200 });
-      }, 2000);
-    });
+const urlPadrao = 'v1/dashboard/aee';
+class ServicoDashboardAEE {
+  obterQuantidadeEncaminhamentosPorSituacao = (anoLetivo, dreId, ueId) => {
+    let url = `${urlPadrao}/encaminhamentos/situacoes?ano=${anoLetivo}`;
+    if (dreId) {
+      url += `&dreId=${dreId}`;
+    }
+    if (ueId) {
+      url += `&ueId=${ueId}`;
+    }
+    return api.get(url);
   };
 }
 

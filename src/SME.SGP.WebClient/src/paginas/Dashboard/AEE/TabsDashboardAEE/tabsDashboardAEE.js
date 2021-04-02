@@ -8,15 +8,15 @@ import GraficosEncaminhamentos from './Encaminhamentos/graficosEncaminhamentos';
 const { TabPane } = Tabs;
 
 const TabsDashboardAEE = props => {
-  const { anoLetivo, codigoDre, codigoUe } = props;
+  const { anoLetivo, dreId, ueId } = props;
 
   const [tabSelecionada, setTabSelecionada] = useState();
 
   useEffect(() => {
-    if (!anoLetivo || !codigoDre || !codigoUe) {
+    if (!anoLetivo || !dreId || !ueId) {
       setTabSelecionada();
     }
-  }, [anoLetivo, codigoDre, codigoUe]);
+  }, [anoLetivo, dreId, ueId]);
 
   const onChangeTab = tabAtiva => {
     setTabSelecionada(tabAtiva);
@@ -24,7 +24,7 @@ const TabsDashboardAEE = props => {
 
   return (
     <>
-      {anoLetivo && codigoDre && codigoUe ? (
+      {anoLetivo && dreId && ueId ? (
         <ContainerTabsDashboard>
           <ContainerTabsCard
             type="card"
@@ -34,8 +34,8 @@ const TabsDashboardAEE = props => {
             <TabPane tab="Encaminhamentos" key="1">
               <GraficosEncaminhamentos
                 anoLetivo={anoLetivo}
-                codigoDre={codigoDre}
-                codigoUe={codigoUe}
+                dreId={dreId}
+                ueId={ueId}
               />
             </TabPane>
             <TabPane tab="Planos" key="2">
@@ -52,14 +52,14 @@ const TabsDashboardAEE = props => {
 
 TabsDashboardAEE.propTypes = {
   anoLetivo: PropTypes.oneOfType(PropTypes.any),
-  codigoUe: PropTypes.string,
-  codigoDre: PropTypes.string,
+  ueId: PropTypes.string,
+  dreId: PropTypes.string,
 };
 
 TabsDashboardAEE.defaultProps = {
   anoLetivo: null,
-  codigoDre: '',
-  codigoUe: '',
+  dreId: '',
+  ueId: '',
 };
 
 export default TabsDashboardAEE;

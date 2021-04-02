@@ -19,12 +19,14 @@ const DashboardAEE = () => {
 
   const [anoAtual] = useState(moment().format('YYYY'));
   const [anoLetivo, setAnoLetivo] = useState(anoAtual);
-  const [codigoDre, setCodigoDre] = useState(undefined);
-  const [codigoUe, setCodigoUe] = useState(undefined);
+  const [dre, setDre] = useState(undefined);
+  const [ue, setUe] = useState(undefined);
 
   const [carregandoAnosLetivos, setCarregandoAnosLetivos] = useState(false);
   const [carregandoDres, setCarregandoDres] = useState(false);
   const [carregandoUes, setCarregandoUes] = useState(false);
+
+  const OPCAO_TODOS = '-99';
 
   const obterAnosLetivos = useCallback(async () => {
     setCarregandoAnosLetivos(true);
@@ -47,10 +49,10 @@ const DashboardAEE = () => {
     }
   }, []);
 
-  const obterUes = useCallback(async dre => {
-    if (dre) {
+  const obterUes = useCallback(async codigoDre => {
+    if (codigoDre) {
       setCarregandoUes(true);
-      const retorno = await ServicoFiltroRelatorio.obterUes(dre)
+      const retorno = await ServicoFiltroRelatorio.obterUes(codigoDre)
         .catch(e => {
           erros(e);
           setCarregandoUes(false);
@@ -58,26 +60,27 @@ const DashboardAEE = () => {
         .finally(() => setCarregandoUes(false));
 
       if (retorno?.data?.length) {
-        const mapUes = retorno.data.map(item => ({
-          desc: item.nome,
-          valor: String(item.codigo),
-        }));
-
-        if (mapUes?.length === 1) {
-          setCodigoUe(mapUes[0].valor);
+        setListaUes(retorno.data);
+        if (retorno.data?.length === 1) {
+          setUe(retorno.data[0]);
         }
-        setListaUes(mapUes);
       } else {
         setListaUes([]);
       }
     }
   }, []);
 
-  const onChangeDre = dre => {
-    setCodigoDre(dre);
-
+  const onChangeDre = codigoDre => {
+    if (codigoDre) {
+      const dreAtual = listaDres?.find(item => item.codigo === codigoDre);
+      if (dreAtual) {
+        setDre(dreAtual);
+      }
+    } else {
+      setDre();
+    }
     setListaUes([]);
-    setCodigoUe(undefined);
+    setUe(undefined);
   };
 
   const obterDres = async () => {
@@ -93,7 +96,7 @@ const DashboardAEE = () => {
       setListaDres(retorno.data);
 
       if (retorno.data.length === 1) {
-        setCodigoDre(retorno.data[0].codigo);
+        setDre(retorno.data[0]);
       }
     } else {
       setListaDres([]);
@@ -101,13 +104,13 @@ const DashboardAEE = () => {
   };
 
   useEffect(() => {
-    if (codigoDre) {
-      obterUes(codigoDre);
+    if (dre?.codigo) {
+      obterUes(dre.codigo);
     } else {
-      setCodigoUe(undefined);
+      setUe(undefined);
       setListaUes([]);
     }
-  }, [codigoDre, obterUes]);
+  }, [dre, obterUes]);
 
   useEffect(() => {
     obterAnosLetivos();
@@ -118,8 +121,15 @@ const DashboardAEE = () => {
     history.push(URL_HOME);
   };
 
-  const onChangeUe = ue => {
-    setCodigoUe(ue);
+  const onChangeUe = codigoUe => {
+    if (codigoUe) {
+      const ueAtual = listaUes?.find(item => item.codigo === codigoUe);
+      if (ueAtual) {
+        setUe(ueAtual);
+      }
+    } else {
+      setUe();
+    }
   };
 
   const onChangeAnoLetivo = ano => {
@@ -168,7 +178,7 @@ const DashboardAEE = () => {
                   valueText="nome"
                   disabled={listaDres?.length === 1}
                   onChange={onChangeDre}
-                  valueSelect={codigoDre}
+                  valueSelect={dre?.codigo}
                   placeholder="Diretoria Regional de Educação (DRE)"
                 />
               </Loader>
@@ -179,11 +189,11 @@ const DashboardAEE = () => {
                   id="ue"
                   label="Unidade Escolar (UE)"
                   lista={listaUes}
-                  valueOption="valor"
-                  valueText="desc"
+                  valueOption="codigo"
+                  valueText="nome"
                   disabled={listaUes?.length === 1}
                   onChange={onChangeUe}
-                  valueSelect={codigoUe}
+                  valueSelect={ue?.codigo}
                   placeholder="Unidade Escolar (UE)"
                 />
               </Loader>
@@ -191,11 +201,15 @@ const DashboardAEE = () => {
           </div>
           <div className="row">
             <div className="col-md-12 mt-2">
-              <TabsDashboardAEE
-                anoLetivo={anoLetivo}
-                codigoDre={codigoDre}
-                codigoUe={codigoUe}
-              />
+              {dre && ue ? (
+                <TabsDashboardAEE
+                  anoLetivo={anoLetivo}
+                  dreId={OPCAO_TODOS === dre?.codigo ? OPCAO_TODOS : dre?.id}
+                  ueId={OPCAO_TODOS === ue?.codigo ? OPCAO_TODOS : ue?.id}
+                />
+              ) : (
+                ''
+              )}
             </div>
           </div>
         </div>
