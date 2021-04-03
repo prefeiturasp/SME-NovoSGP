@@ -1,12 +1,18 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import QuantidadePlanosSituacao from './QuantidadePlanosSituacao/quantidadePlanosSituacao';
+import QuantidadePlanosUtilizamRecursosAcessibilidadeSalaRegularSRM from './QuantidadePlanosUtilizamRecursosAcessibilidadeSalaRegularSRM/quantidadePlanosUtilizamRecursosAcessibilidadeSalaRegularSRM';
 
 const GraficosPlanos = props => {
   const { anoLetivo, dreId, ueId } = props;
   return (
     <>
       <QuantidadePlanosSituacao
+        anoLetivo={anoLetivo}
+        dreId={dreId}
+        ueId={ueId}
+      />
+      <QuantidadePlanosUtilizamRecursosAcessibilidadeSalaRegularSRM
         anoLetivo={anoLetivo}
         dreId={dreId}
         ueId={ueId}

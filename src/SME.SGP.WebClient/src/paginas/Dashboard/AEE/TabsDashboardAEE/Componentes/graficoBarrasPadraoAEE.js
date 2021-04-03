@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Loader } from '~/componentes';
+import { CoresGraficos, Loader } from '~/componentes';
 import GraficoBarraDashboard from '~/paginas/Dashboard/ComponentesDashboard/graficoBarraDashboard';
 import {
   adicionarCoresNosGraficos,
@@ -16,29 +16,67 @@ const GraficoBarrasPadraoAEE = props => {
     nomeIndiceDesc,
     nomeValor,
     ServicoObterValoresGrafico,
+    chavesGraficoAgrupado,
   } = props;
 
   const [chavesGrafico, setChavesGrafico] = useState([]);
   const [dadosGrafico, setDadosGrafico] = useState([]);
   const [exibirLoader, setExibirLoader] = useState(false);
+  const [dadosLegendaGrafico, setDadosLegendaGrafico] = useState([]);
 
   const OPCAO_TODOS = '-99';
 
+  const customPropsColors = item => {
+    if (item.id === chavesGraficoAgrupado[0]?.nomeChave) {
+      return CoresGraficos[0];
+    }
+    if (item.id === chavesGraficoAgrupado[1]?.nomeChave) {
+      return CoresGraficos[1];
+    }
+    return CoresGraficos[2];
+  };
+
   const mapearDadosGraficos = useCallback(
     dados => {
-      const chaves = [];
+      const listaChaves = [];
       const dadosMapeados = [];
 
       dados.forEach(item => {
-        chaves.push(item[nomeIndiceDesc]);
+        listaChaves.push(item[nomeIndiceDesc]);
         montarDadosGrafico(item, nomeValor, dadosMapeados, nomeIndiceDesc);
       });
 
-      setChavesGrafico(chaves);
+      setChavesGrafico(listaChaves);
 
       setDadosGrafico(adicionarCoresNosGraficos(dadosMapeados));
     },
     [nomeIndiceDesc, nomeValor]
+  );
+
+  const mapearDadosGraficoAgrupado = useCallback(
+    dados => {
+      const dadosMapeadosComCores = adicionarCoresNosGraficos(
+        dados.filter(item => item[nomeIndiceDesc])
+      );
+
+      const dadosParaMontarLegenda = [];
+
+      chavesGraficoAgrupado.forEach((item, index) => {
+        const temValor = dadosMapeadosComCores.find(d => !!d?.[item.nomeChave]);
+        if (temValor) {
+          dadosParaMontarLegenda.push({
+            label: temValor[item.legenda],
+            color: CoresGraficos[index],
+          });
+        }
+      });
+
+      if (dadosParaMontarLegenda?.length) {
+        setDadosLegendaGrafico(dadosParaMontarLegenda);
+      }
+      setDadosGrafico(dadosMapeadosComCores);
+    },
+    [nomeIndiceDesc, chavesGraficoAgrupado]
   );
 
   const obterDadosGrafico = useCallback(async () => {
@@ -52,11 +90,22 @@ const GraficoBarrasPadraoAEE = props => {
       .finally(() => setExibirLoader(false));
 
     if (retorno?.data?.length) {
-      mapearDadosGraficos(retorno.data);
+      if (chavesGraficoAgrupado?.length) {
+        mapearDadosGraficoAgrupado(retorno.data);
+      } else {
+        mapearDadosGraficos(retorno.data);
+      }
     } else {
       setDadosGrafico([]);
     }
-  }, [anoLetivo, dreId, ueId, mapearDadosGraficos]);
+  }, [
+    anoLetivo,
+    dreId,
+    ueId,
+    chavesGraficoAgrupado,
+    mapearDadosGraficoAgrupado,
+    mapearDadosGraficos,
+  ]);
 
   useEffect(() => {
     if (anoLetivo && dreId && ueId) {
@@ -66,14 +115,17 @@ const GraficoBarrasPadraoAEE = props => {
     }
   }, [anoLetivo, dreId, ueId, obterDadosGrafico]);
 
-  const graficoBarras = (dados, titulo) => {
+  const graficoBarras = dados => {
     return (
       <GraficoBarraDashboard
-        titulo={titulo}
         dadosGrafico={dados}
-        chavesGrafico={chavesGrafico}
+        chavesGrafico={
+          chavesGraficoAgrupado?.length
+            ? chavesGraficoAgrupado.map(ch => ch.nomeChave)
+            : chavesGrafico
+        }
         indice={nomeIndiceDesc}
-        groupMode="stacked"
+        groupMode={chavesGraficoAgrupado?.length ? 'grouped' : 'stacked'}
         removeLegends
         margemPersonalizada={{
           top: 50,
@@ -81,6 +133,10 @@ const GraficoBarrasPadraoAEE = props => {
           bottom: 50,
           left: 90,
         }}
+        customPropsColors={
+          chavesGraficoAgrupado?.length ? customPropsColors : null
+        }
+        dadosLegendaCustomizada={dadosLegendaGrafico}
       />
     );
   };
@@ -88,7 +144,7 @@ const GraficoBarrasPadraoAEE = props => {
   return (
     <Loader loading={exibirLoader} className="col-md-12 text-center">
       {dadosGrafico?.length
-        ? graficoBarras(dadosGrafico, ' ')
+        ? graficoBarras(dadosGrafico)
         : !exibirLoader
         ? 'Sem dados'
         : ''}
@@ -103,6 +159,7 @@ GraficoBarrasPadraoAEE.propTypes = {
   nomeIndiceDesc: PropTypes.string,
   nomeValor: PropTypes.string,
   ServicoObterValoresGrafico: PropTypes.func,
+  chavesGraficoAgrupado: PropTypes.oneOfType(PropTypes.array),
 };
 
 GraficoBarrasPadraoAEE.defaultProps = {
@@ -112,6 +169,7 @@ GraficoBarrasPadraoAEE.defaultProps = {
   nomeIndiceDesc: '',
   nomeValor: '',
   ServicoObterValoresGrafico: () => {},
+  chavesGraficoAgrupado: [],
 };
 
 export default GraficoBarrasPadraoAEE;

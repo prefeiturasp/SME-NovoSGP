@@ -3,7 +3,7 @@ import api from '~/servicos/api';
 const urlPadrao = 'v1/dashboard/aee';
 class ServicoDashboardAEE {
   montarConsultaPadraoGraficos = (rota, anoLetivo, dreId, ueId) => {
-    let url = `${urlPadrao}/${rota}?ano=${anoLetivo}`;
+    let url = `${urlPadrao}/${rota}?anoLetivo=${anoLetivo}`;
     if (dreId) {
       url += `&dreId=${dreId}`;
     }
@@ -34,6 +34,15 @@ class ServicoDashboardAEE {
   obterSituacoesPlanos = (anoLetivo, dreId, ueId) => {
     return this.montarConsultaPadraoGraficos(
       'planos/situacoes',
+      anoLetivo,
+      dreId,
+      ueId
+    );
+  };
+
+  obterPlanosAcessibilidades = (anoLetivo, dreId, ueId) => {
+    return this.montarConsultaPadraoGraficos(
+      'planos/acessibilidades',
       anoLetivo,
       dreId,
       ueId
