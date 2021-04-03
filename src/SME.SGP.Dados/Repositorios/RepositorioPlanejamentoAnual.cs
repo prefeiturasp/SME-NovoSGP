@@ -290,7 +290,10 @@ namespace SME.SGP.Dados.Repositorios
         public async Task RemoverLogicamenteAsync(long id)
         {
             var sql = @"UPDATE planejamento_anual pa
-                        SET EXCLUIDO = TRUE
+                        SET excluido = true
+                          , alterado_por = @alteradoPor
+                          , alterado_rf = @alteradoRF
+                          , alterado_em = @alteradoEm 
                         WHERE ID = @id and
                         not exists(select 1
                                     from planejamento_anual_periodo_escolar pape
@@ -299,7 +302,13 @@ namespace SME.SGP.Dados.Repositorios
                                    where pape.planejamento_anual_id = pa.id and
                                   		 not pape.excluido and
                                   		 not pac.excluido);";
-            await database.Conexao.ExecuteAsync(sql, new { id });
+            await database.Conexao.ExecuteAsync(sql, new
+            {
+                id,
+                alteradoPor = database.UsuarioLogadoNomeCompleto,
+                alteradoRF = database.UsuarioLogadoRF,
+                alteradoEm = DateTimeExtension.HorarioBrasilia()
+            });
         }
     }
 }

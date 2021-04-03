@@ -714,8 +714,8 @@ namespace SME.SGP.Dados.Repositorios
             queryNova.AppendLine($"{ (ehTodasDres ? "null" : string.IsNullOrWhiteSpace(dreId) ? "null" : $"'{dreId}'")}, ");
             queryNova.AppendLine($"{(ehTodasUes ? "null" : string.IsNullOrWhiteSpace(ueId) ? "null" : $"'{ueId}'")},");
             queryNova.AppendLine($"{!podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme}, ");
-            queryNova.AppendLine($"{(dataInicio.HasValue ? dataInicio.Value.Date.ToString() : "null")}, ");
-            queryNova.AppendLine($"{(dataFim.HasValue ? dataFim.Value.Date.ToString() : "null")}, ");
+            queryNova.AppendLine($"{(dataInicio.HasValue ? $"'{dataInicio.Value.Date}'" : "null")}, ");
+            queryNova.AppendLine($"{(dataFim.HasValue ? $"'{dataFim.Value.Date}'" : "null")}, ");
             queryNova.AppendLine($"{(tipoEventoId.HasValue ? tipoEventoId.ToString() : "null")}, ");
             queryNova.AppendLine($"{(string.IsNullOrWhiteSpace(nomeEvento) ? "null" : $"'{nomeEvento}'")})");
         }

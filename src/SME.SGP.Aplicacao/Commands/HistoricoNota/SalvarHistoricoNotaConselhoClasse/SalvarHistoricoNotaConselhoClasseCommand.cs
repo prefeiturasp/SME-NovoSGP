@@ -26,12 +26,12 @@ namespace SME.SGP.Aplicacao
                   .WithMessage("O id da nota do conselho de classe deve ser informada para geração do histórico!");
 
             RuleFor(a => a.NotaAnteior)
-                  .NotEmpty()
+                  .NotNull()
                   .WithMessage("A nota anterior do conselho de classe deve ser informada para geração do histórico!");
 
             RuleFor(a => a.NotaNova)
-                  .NotEmpty()
-                  .WithMessage("A nota anterior do conselho de classe deve ser informada para geração do histórico!");
+                  .NotNull()
+                  .WithMessage("A nnova nota do conselho de classe deve ser informada para geração do histórico!");
         }
     }
 }

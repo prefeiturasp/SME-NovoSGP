@@ -102,10 +102,6 @@ namespace SME.SGP.Dominio.Servicos
             if (!await ValidarFrequenciaGeralAluno(alunoCodigo, turmaCodigo))
                 return false;
 
-            return await ValidarFrequenciaBaseNacionalAluno(alunoCodigo, turmaCodigo);
-        }
-        private async Task<bool> ValidarFrequenciaBaseNacionalAluno(string alunoCodigo, string turmaCodigo)
-        {            
             var parametroFrequenciaBaseNacional = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.PercentualFrequenciaCriticoBaseNacional, DateTime.Today.Year)));
             var componentesCurriculares = await servicoEOL.ObterDisciplinasPorCodigoTurma(turmaCodigo);
             // Filtra componentes da Base Nacional

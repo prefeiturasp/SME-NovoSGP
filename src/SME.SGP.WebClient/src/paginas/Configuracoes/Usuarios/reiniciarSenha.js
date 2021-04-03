@@ -159,7 +159,7 @@ export default function ReiniciarSenha({ perfilSelecionado }) {
   const carregarUes = useCallback(
     async dre => {
       const ues = await api.get(
-        `/v1/abrangencias/${consideraHistorico}/dres/${dre}/ues`
+        `/v1/abrangencias/${consideraHistorico}/dres/${dre}/ues?consideraNovasUEs=${true}`
       );
       if (ues.data) {
         setListaUes(ues.data);
@@ -177,9 +177,8 @@ export default function ReiniciarSenha({ perfilSelecionado }) {
   }, [carregarUes, dreSelecionada]);
 
   const onClickFiltrar = async () => {
-    if (!permissoesTela.podeConsultar) return;
-
     if (dreSelecionada) {
+      setCarregando(true);
       const parametrosPost = {
         codigoDRE: dreSelecionada,
         nomeServidor: nomeUsuarioSelecionado,
@@ -193,7 +192,9 @@ export default function ReiniciarSenha({ perfilSelecionado }) {
         .post(`v1/unidades-escolares/funcionarios`, parametrosPost)
         .catch(() => {
           setListaUsuario([]);
-        });
+        })
+        .finally(() => setCarregando(false));
+
       if (lista && lista.data) {
         setListaUsuario([]);
         setListaUsuario(lista.data);
@@ -343,7 +344,7 @@ export default function ReiniciarSenha({ perfilSelecionado }) {
           <Button
             label="Filtrar"
             color={Colors.Azul}
-            disabled={perfilSelecionado}
+            disabled={perfilSelecionado || !dreSelecionada}
             border
             className="text-center d-block mt-4 float-right w-100"
             onClick={onClickFiltrar}

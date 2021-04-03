@@ -21,5 +21,6 @@ namespace SME.SGP.Dominio
         public string Descricao { get; set; }
         public long PlanejamentoAnualPeriodoEscolarId { get; set; }
         public List<PlanejamentoAnualObjetivoAprendizagem> ObjetivosAprendizagem { get; set; }
+        public bool Excluido { get; set; }
     }
 }
