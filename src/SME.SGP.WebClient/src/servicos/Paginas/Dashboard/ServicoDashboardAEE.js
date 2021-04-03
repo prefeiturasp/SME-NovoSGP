@@ -48,6 +48,15 @@ class ServicoDashboardAEE {
       ueId
     );
   };
+
+  obterPlanosVigentes = (anoLetivo, dreId, ueId) => {
+    return this.montarConsultaPadraoGraficos(
+      'planos/vigentes',
+      anoLetivo,
+      dreId,
+      ueId
+    );
+  };
 }
 
 export default new ServicoDashboardAEE();
