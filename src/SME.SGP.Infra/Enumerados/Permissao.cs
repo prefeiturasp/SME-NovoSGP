@@ -636,5 +636,8 @@
 
         [PermissaoMenu(Menu = "Planejamento", Icone = "fas fa-print", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhConsulta = true, Url = "/relatorios/planejamento/devolutivas", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Devolutivas")]
         RD_C = 214,
+
+        [PermissaoMenu(Menu = "AEE", Icone = "fas fa-chart-bar", Agrupamento = "Dashboard", OrdemAgrupamento = 8, EhConsulta = true, Url = "/dashboard/aee")]
+        DAEE_C = 215,
     }
 }
