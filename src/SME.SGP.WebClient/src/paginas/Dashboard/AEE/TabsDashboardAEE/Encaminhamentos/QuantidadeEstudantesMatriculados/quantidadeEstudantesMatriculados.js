@@ -5,7 +5,7 @@ import CardCollapse from '~/componentes/cardCollapse';
 import ServicoDashboardAEE from '~/servicos/Paginas/Dashboard/ServicoDashboardAEE';
 import GraficoBarrasPadraoAEE from '../../Componentes/graficoBarrasPadraoAEE';
 
-const QuantidadePlanosUtilizamRecursosAcessibilidadeSalaRegularSRM = props => {
+const QuantidadeEstudantesMatriculados = props => {
   const { anoLetivo, dreId, ueId } = props;
 
   const configCabecalho = {
@@ -15,12 +15,12 @@ const QuantidadePlanosUtilizamRecursosAcessibilidadeSalaRegularSRM = props => {
 
   const [exibir, setExibir] = useState(false);
 
-  const key = 'quantidade-planos-utilizam-recursos-acessibilidade-regular-srm';
+  const key = 'quantidade-estudantes-matriculados';
 
   return (
     <div className="mt-3">
       <CardCollapse
-        titulo="Quantidade de planos que utilizam recursos de acessibilidade na Sala Regular e na SRM"
+        titulo="Quantidade de estudantes matriculados em SRM ou PAEE colaborativo"
         key={`${key}-collapse-key`}
         indice={`${key}-collapse-indice`}
         alt={`${key}-alt`}
@@ -37,12 +37,12 @@ const QuantidadePlanosUtilizamRecursosAcessibilidadeSalaRegularSRM = props => {
               dreId={dreId}
               ueId={ueId}
               chavesGraficoAgrupado={[
-                { nomeChave: 'quantidadeSim', legenda: 'legendaSim' },
-                { nomeChave: 'quantidadeNao', legenda: 'legendaNao' },
+                { nomeChave: 'quantidadeSRM', legenda: 'legendaSRM' },
+                { nomeChave: 'quantidadePAEE', legenda: 'legendaPAEE' },
               ]}
               nomeIndiceDesc="descricao"
               ServicoObterValoresGrafico={
-                ServicoDashboardAEE.obterPlanosAcessibilidades
+                ServicoDashboardAEE.obterQuantidadeEstudantesMatriculados
               }
             />
           </div>
@@ -54,16 +54,16 @@ const QuantidadePlanosUtilizamRecursosAcessibilidadeSalaRegularSRM = props => {
   );
 };
 
-QuantidadePlanosUtilizamRecursosAcessibilidadeSalaRegularSRM.propTypes = {
+QuantidadeEstudantesMatriculados.propTypes = {
   anoLetivo: PropTypes.oneOfType(PropTypes.any),
   dreId: PropTypes.string,
   ueId: PropTypes.string,
 };
 
-QuantidadePlanosUtilizamRecursosAcessibilidadeSalaRegularSRM.defaultProps = {
+QuantidadeEstudantesMatriculados.defaultProps = {
   anoLetivo: null,
   dreId: '',
   ueId: '',
 };
 
-export default QuantidadePlanosUtilizamRecursosAcessibilidadeSalaRegularSRM;
+export default QuantidadeEstudantesMatriculados;

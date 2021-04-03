@@ -57,6 +57,15 @@ class ServicoDashboardAEE {
       ueId
     );
   };
+
+  obterQuantidadeEstudantesMatriculados = (anoLetivo, dreId, ueId) => {
+    return this.montarConsultaPadraoGraficos(
+      'planos/matriculados-srm-paee',
+      anoLetivo,
+      dreId,
+      ueId
+    );
+  };
 }
 
 export default new ServicoDashboardAEE();

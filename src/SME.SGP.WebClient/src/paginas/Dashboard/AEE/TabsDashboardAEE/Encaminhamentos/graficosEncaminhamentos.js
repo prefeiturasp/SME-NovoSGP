@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import QuantidadeEncaminhamentosSituacao from './QuantidadeEncaminhamentosSituacao/quantidadeEncaminhamentosSituacao';
 import QuantidadeEstudantesEncaminhamentosDeferidos from './QuantidadeEstudantesEncaminhamentosDeferidos/quantidadeEstudantesEncaminhamentosDeferidos';
+import QuantidadeEstudantesMatriculados from './QuantidadeEstudantesMatriculados/quantidadeEstudantesMatriculados';
 
 const GraficosEncaminhamentos = props => {
   const { anoLetivo, dreId, ueId } = props;
@@ -13,6 +14,11 @@ const GraficosEncaminhamentos = props => {
         ueId={ueId}
       />
       <QuantidadeEstudantesEncaminhamentosDeferidos
+        anoLetivo={anoLetivo}
+        dreId={dreId}
+        ueId={ueId}
+      />
+      <QuantidadeEstudantesMatriculados
         anoLetivo={anoLetivo}
         dreId={dreId}
         ueId={ueId}
