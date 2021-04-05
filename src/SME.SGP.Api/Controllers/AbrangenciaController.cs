@@ -176,9 +176,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        public async Task<IActionResult> ObterUes(string codigoDre, [FromQuery]Modalidade? modalidade, [FromQuery]int periodo = 0, [FromQuery]int anoLetivo = 0)
+        public async Task<IActionResult> ObterUes([FromServices]IObterUEsPorDreUseCase useCase, string codigoDre, [FromQuery]Modalidade? modalidade, [FromQuery]int periodo = 0, [FromQuery]int anoLetivo = 0, [FromQuery]bool consideraNovasUEs = false)
         {
-            var ues = await consultasAbrangencia.ObterUes(codigoDre, modalidade, periodo, ConsideraHistorico, anoLetivo);
+            var ues = await useCase.Executar(codigoDre, modalidade, periodo, ConsideraHistorico, anoLetivo, consideraNovasUEs);
 
             if (!ues.Any())
                 return NoContent();

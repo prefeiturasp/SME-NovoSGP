@@ -62,19 +62,17 @@ namespace SME.SGP.Aplicacao
                         TipoTurma.Regular
                     };
                 var codigosTurmasRelacionadas = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, tipos));
-                turma = await ObterTurma(codigosTurmasRelacionadas.FirstOrDefault());                
+                turma = await ObterTurma(codigosTurmasRelacionadas.FirstOrDefault());
             }
 
-            var ehAnoAnterior = turma.AnoLetivo != DateTime.Today.Year;
-
             if (bimestre == 0 && !ehFinal)
+            {
                 bimestre = await ObterBimestreAtual(turma);
-
-            var fechamentoTurma = await consultasFechamentoTurma.ObterPorTurmaCodigoBimestreAsync(turma.CodigoTurma, bimestre);            
-
-           
-
-            if (fechamentoTurma == null && !ehAnoAnterior)
+                if (bimestre == 0)
+                    bimestre = 1;
+            }
+            var fechamentoTurma = await consultasFechamentoTurma.ObterPorTurmaCodigoBimestreAsync(turma.CodigoTurma, bimestre);
+            if(fechamentoTurma == null && !turma.EhAnoAnterior())
             {
                 throw new NegocioException("Fechamento da turma não localizado " + (!ehFinal && bimestre > 0 ? $"para o bimestre {bimestre}" : ""));
             }

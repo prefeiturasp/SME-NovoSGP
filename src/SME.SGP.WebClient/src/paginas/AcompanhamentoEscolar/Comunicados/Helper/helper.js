@@ -46,7 +46,7 @@ class FiltroHelper {
 
   async ObterUes(dre) {
     try {
-      const retorno = await ServicoFiltroRelatorio.obterUes(dre);
+      const retorno = await ServicoFiltroRelatorio.obterUes(dre, true);
 
       var dados = await this.mapearParaSelect(retorno.data, ID_TODOS, true);
 

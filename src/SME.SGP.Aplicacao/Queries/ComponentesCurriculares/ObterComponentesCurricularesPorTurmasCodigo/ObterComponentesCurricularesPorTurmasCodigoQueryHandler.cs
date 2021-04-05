@@ -33,6 +33,7 @@ namespace SME.SGP.Aplicacao
         {
             var disciplinasDto = new List<DisciplinaDto>();
             IEnumerable<DisciplinaResposta> disciplinas = new List<DisciplinaResposta>();
+            IEnumerable<DisciplinaResposta> disciplinasCJ = new List<DisciplinaResposta>();
 
             if (request.PerfilAtual == Perfis.PERFIL_CJ || request.PerfilAtual == Perfis.PERFIL_CJ_INFANTIL)
             {
@@ -43,27 +44,24 @@ namespace SME.SGP.Aplicacao
                     var atribuicoesIds = atribuicoes.Select(a => a.DisciplinaId).Distinct().ToArray();
                     var disciplinasEol = await repositorioComponenteCurricular.ObterDisciplinasPorIds(atribuicoesIds);
 
-                    disciplinas = TransformarListaDisciplinaEolParaRetornoDto(disciplinasEol);
+                    disciplinasCJ = TransformarListaDisciplinaEolParaRetornoDto(disciplinasEol);
 
-                    disciplinas = await ObterDisciplinasCJRegencia(disciplinas);
+                    disciplinasCJ = await ObterDisciplinasCJRegencia(disciplinasCJ);
                 }
             }
-            else
-            {        
-                disciplinas = await ObterDisciplinasTurmasEol(request);
-                
-                if (disciplinas != null && disciplinas.Any(a => a.Regencia))
-                {
-                    var regencias = await repositorioComponenteCurricular.ObterComponentesCurricularesRegenciaPorAnoETurno(request.TurmaAno, request.TurnoParaComponentesCurriculares);
-                    var novasDisciplinasSemRegencia = disciplinas.Where(a => !a.Regencia).ToList();
-                    var novasDisciplinasRegencia = disciplinas.Where(a => a.Regencia && regencias.Any(b => b.CodigoComponenteCurricular == a.CodigoComponenteCurricular)).ToList();
-                    disciplinas = novasDisciplinasSemRegencia.Union(novasDisciplinasRegencia).OrderBy( a => a.Nome).ToList();
-                }
+            disciplinas = await ObterDisciplinasTurmasEol(request);
+
+            if (disciplinas != null && disciplinas.Any(a => a.Regencia))
+            {
+                var regencias = await repositorioComponenteCurricular.ObterComponentesCurricularesRegenciaPorAnoETurno(request.TurmaAno, request.TurnoParaComponentesCurriculares);
+                var novasDisciplinasSemRegencia = disciplinas.Where(a => !a.Regencia).ToList();
+                var novasDisciplinasRegencia = disciplinas.Where(a => a.Regencia && regencias.Any(b => b.CodigoComponenteCurricular == a.CodigoComponenteCurricular)).ToList();
+                disciplinas = novasDisciplinasSemRegencia.Union(novasDisciplinasRegencia).OrderBy(a => a.Nome).ToList();
             }
 
             if (disciplinas != null && disciplinas.Any())
             {
-                disciplinasDto = await MapearParaDto(disciplinas, request.TemEnsinoEspecial);
+                disciplinasDto = await MapearParaDto(disciplinas, disciplinasCJ, request.TemEnsinoEspecial);
             }
 
             return disciplinasDto;
@@ -87,7 +85,7 @@ namespace SME.SGP.Aplicacao
             return disciplinas;
         }
 
-        private async Task<List<DisciplinaDto>> MapearParaDto(IEnumerable<DisciplinaResposta> disciplinas, bool turmaEspecial)
+        private async Task<List<DisciplinaDto>> MapearParaDto(IEnumerable<DisciplinaResposta> disciplinas, IEnumerable<DisciplinaResposta> disciplinasCJ, bool turmaEspecial)
         {
             var retorno = new List<DisciplinaDto>();
 
@@ -96,9 +94,15 @@ namespace SME.SGP.Aplicacao
                 var disciplinasCodigos = disciplinas.Select(a => a.CodigoComponenteCurricular);
                 var disciplinasComObjetivos = await ObterComponentesPossuiObjetivos(disciplinasCodigos);
 
+                foreach (var disciplinaCj in disciplinasCJ)
+                {
+                    retorno.Add(MapearParaDto(disciplinaCj, disciplinasComObjetivos, turmaEspecial));
+                }
+
                 foreach (var disciplina in disciplinas)
                 {
-                    retorno.Add(MapearParaDto(disciplina, disciplinasComObjetivos, turmaEspecial));
+                    if (!retorno.Any(d => d.CodigoComponenteCurricular == disciplina.CodigoComponenteCurricular))
+                        retorno.Add(MapearParaDto(disciplina, disciplinasComObjetivos, turmaEspecial));
                 }
             }
             return retorno;
