@@ -315,7 +315,6 @@ const CalendarioEscolar = () => {
         setCarregandoMeses(false);
 
         if (data?.length === 1) {
-          console.log('d', data);
           setValorTipoCalendario(data[0].descricao);
           setTipoCalendarioSelecionado(data[0].id);
         }

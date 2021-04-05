@@ -37,15 +37,11 @@ namespace SME.SGP.Aplicacao
                 // Validando as turmas
                 foreach (var turma in comando.Planejamento.TurmasDestinoIds)
                 {
-                    var checarTurma = new Turma();
-                    if (usuario.PerfilAtual == Dominio.Perfis.PERFIL_CP)
-                    {
+                    Turma checarTurma;
+                    if (usuario.PerfilAtual == Perfis.PERFIL_CP)
                         checarTurma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(turma));
-                    }
                     else
-                    {
                         checarTurma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(turma.ToString()));
-                    }
 
                     if (checarTurma == null)
                         throw new NegocioException($"Turma não encontrada");
@@ -70,10 +66,7 @@ namespace SME.SGP.Aplicacao
                     planejamentoCopiado.PeriodosEscolares.AddRange(periodosOrigem);
 
                     if (!excessoes.Any())
-                    {
-                        await mediator.Send(new ExcluirPlanejamentoAnualPorTurmaIdEComponenteCurricularIdCommand(checarTurma.Id, comando.Planejamento.ComponenteCurricularId, comando.Planejamento.PlanejamentoPeriodosEscolaresIds.ToArray()));
                         await mediator.Send(new SalvarCopiaPlanejamentoAnualCommand(planejamentoCopiado));
-                    }
 
                 }
 
@@ -82,16 +75,14 @@ namespace SME.SGP.Aplicacao
                     var str = new StringBuilder();
                     str.AppendLine($"Os seguintes erros foram encontrados: ");
                     foreach (var t in excessoes)
-                    {
                         str.AppendLine($"- {t}");
-                    }
 
                     throw new NegocioException(str.ToString());
                 }
 
                 unitOfWork.PersistirTransacao();
             }
-            catch (Exception ex)
+            catch
             {
                 unitOfWork.Rollback();
                 throw;
