@@ -25,6 +25,7 @@ const inicial = {
   exibirCardCollapseFrequencia: false,
   desenvolvimentoDaAulaValidaObrigatoriedade: undefined,
   objetivosEspecificosParaAulaValidarObrigatoriedade: undefined,
+  atualizarDatas: false,
 };
 
 export default function frequenciaPlanoAula(state = inicial, action) {
@@ -215,6 +216,12 @@ export default function frequenciaPlanoAula(state = inicial, action) {
         return {
           ...draft,
           objetivosEspecificosParaAulaValidarObrigatoriedade: action.payload,
+        };
+      }
+      case '@frequenciaPlanoAula/setAtualizarDatas': {
+        return {
+          ...draft,
+          atualizarDatas: action.payload,
         };
       }
 
