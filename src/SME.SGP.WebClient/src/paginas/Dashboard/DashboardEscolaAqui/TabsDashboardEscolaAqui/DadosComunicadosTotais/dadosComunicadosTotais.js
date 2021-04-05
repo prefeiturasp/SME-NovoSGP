@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { CoresGraficos, Loader, SelectComponent } from '~/componentes';
 import { AbrangenciaServico, erros } from '~/servicos';
 import ServicoDashboardEscolaAqui from '~/servicos/Paginas/Dashboard/ServicoDashboardEscolaAqui';
-import GraficoBarraDashboardEscolaAqui from '../ComponentesDashboardEscolaAqui/graficoBarraDashboardEscolaAqui';
+import GraficoBarraDashboard from '../../../ComponentesDashboard/graficoBarraDashboard';
 
 const DadosComunicadosTotais = props => {
   const { codigoDre, codigoUe } = props;
@@ -161,7 +161,7 @@ const DadosComunicadosTotais = props => {
 
   const graficoTotalComunicadosEnviados = () => {
     return dadosGraficoTotalComunicadosEnviados?.length ? (
-      <GraficoBarraDashboardEscolaAqui
+      <GraficoBarraDashboard
         titulo="Total de Comunicados Enviados"
         dadosGrafico={dadosGraficoTotalComunicadosEnviados}
         chavesGrafico={chavesGraficos}
@@ -176,7 +176,7 @@ const DadosComunicadosTotais = props => {
 
   const graficoTotalComunicadosPorDRE = () => {
     return dadosTotalComunicadosPorDRE?.length ? (
-      <GraficoBarraDashboardEscolaAqui
+      <GraficoBarraDashboard
         titulo="Total de Comunicados por DRE"
         dadosGrafico={dadosTotalComunicadosPorDRE}
         chavesGrafico={chavesGraficos}

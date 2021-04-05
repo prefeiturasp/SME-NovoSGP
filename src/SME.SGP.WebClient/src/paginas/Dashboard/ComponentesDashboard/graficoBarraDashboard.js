@@ -2,16 +2,13 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Graficos } from '~/componentes';
 import LegendaGrafico from '~/componentes-sgp/LegendaGrafico/legendaGrafico';
-import {
-  ContainerGraficoBarras,
-  TituloGrafico,
-} from '../../dashboardEscolaAqui.css';
+import { ContainerGraficoBarras, TituloGrafico } from '../style';
 import {
   formataMilhar,
-  tooltipCustomizadoDashboardEscolaAqui,
-} from '../../dashboardEscolaAquiGraficosUtils';
+  tooltipCustomizadoDashboard,
+} from './graficosDashboardUtils';
 
-const GraficoBarraDashboardEscolaAqui = props => {
+const GraficoBarraDashboard = props => {
   const {
     titulo,
     dadosGrafico,
@@ -21,9 +18,10 @@ const GraficoBarraDashboardEscolaAqui = props => {
     removeLegends,
     customPropsColors,
     dadosLegendaCustomizada,
+    margemPersonalizada,
   } = props;
 
-  const margemPersonalizada = {
+  const customMargins = {
     top: 50,
     right: dadosLegendaCustomizada?.length ? 0 : 130,
     bottom: 50,
@@ -38,7 +36,7 @@ const GraficoBarraDashboardEscolaAqui = props => {
         }}
       >
         <div className="col-md-12">
-          <TituloGrafico>{titulo}</TituloGrafico>
+          {titulo ? <TituloGrafico>{titulo}</TituloGrafico> : ''}
           <ContainerGraficoBarras>
             <Graficos.Barras
               groupMode={groupMode || 'grouped'}
@@ -47,13 +45,13 @@ const GraficoBarraDashboardEscolaAqui = props => {
               chaves={chavesGrafico}
               legendsTranslateX={105}
               removeLegends={removeLegends}
-              customMargins={margemPersonalizada}
+              customMargins={margemPersonalizada || customMargins}
               labelSkipWidth={0}
               labelSkipHeight={0}
               customProps={{
                 colors: customPropsColors || (item => item?.data?.color),
                 tooltip: item => {
-                  return tooltipCustomizadoDashboardEscolaAqui(item);
+                  return tooltipCustomizadoDashboard(item);
                 },
                 labelFormat: valor => (
                   <tspan y={-7}>{formataMilhar(valor)}</tspan>
@@ -74,7 +72,7 @@ const GraficoBarraDashboardEscolaAqui = props => {
   );
 };
 
-GraficoBarraDashboardEscolaAqui.propTypes = {
+GraficoBarraDashboard.propTypes = {
   titulo: PropTypes.string,
   dadosGrafico: PropTypes.oneOfType([PropTypes.array]),
   chavesGrafico: PropTypes.oneOfType([PropTypes.array]),
@@ -83,9 +81,10 @@ GraficoBarraDashboardEscolaAqui.propTypes = {
   removeLegends: PropTypes.bool,
   customPropsColors: PropTypes.oneOfType([PropTypes.any]),
   dadosLegendaCustomizada: PropTypes.oneOfType([PropTypes.array]),
+  margemPersonalizada: PropTypes.oneOfType(PropTypes.any),
 };
 
-GraficoBarraDashboardEscolaAqui.defaultProps = {
+GraficoBarraDashboard.defaultProps = {
   titulo: '',
   dadosGrafico: [],
   chavesGrafico: [],
@@ -94,6 +93,7 @@ GraficoBarraDashboardEscolaAqui.defaultProps = {
   removeLegends: false,
   customPropsColors: null,
   dadosLegendaCustomizada: [],
+  margemPersonalizada: null,
 };
 
-export default GraficoBarraDashboardEscolaAqui;
+export default GraficoBarraDashboard;

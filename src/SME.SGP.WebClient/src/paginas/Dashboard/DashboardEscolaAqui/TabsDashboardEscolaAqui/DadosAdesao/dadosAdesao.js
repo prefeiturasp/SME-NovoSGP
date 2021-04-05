@@ -5,12 +5,12 @@ import { erros } from '~/servicos';
 import ServicoDashboardEscolaAqui from '~/servicos/Paginas/Dashboard/ServicoDashboardEscolaAqui';
 import {
   adicionarCoresNosGraficos,
-  formataMilhar,
+  montarDadosGrafico,
   mapearParaDtoGraficoPizzaComValorEPercentual,
-} from '../../dashboardEscolaAquiGraficosUtils';
+} from '../../../ComponentesDashboard/graficosDashboardUtils';
 import DataUltimaAtualizacaoDashboardEscolaAqui from '../ComponentesDashboardEscolaAqui/dataUltimaAtualizacaoDashboardEscolaAqui';
-import GraficoBarraDashboardEscolaAqui from '../ComponentesDashboardEscolaAqui/graficoBarraDashboardEscolaAqui';
-import GraficoPizzaDashboardEscolaAqui from '../ComponentesDashboardEscolaAqui/graficoPizzaDashboardEscolaAqui';
+import GraficoBarraDashboard from '~/paginas/Dashboard/ComponentesDashboard/graficoBarraDashboard';
+import GraficoPizzaDashboard from '~/paginas/Dashboard/ComponentesDashboard/graficoPizzaDashboard';
 
 const DadosAdesao = props => {
   const { codigoDre, codigoUe } = props;
@@ -99,17 +99,6 @@ const DadosAdesao = props => {
     }
   }, [codigoDre, codigoUe]);
 
-  const montarDadosGrafico = (item, nomeCampo, dados) => {
-    if (item[nomeCampo]) {
-      const totalDados = {
-        nomeCompletoDre: item.nomeCompletoDre,
-      };
-      totalDados[nomeCampo] = item[nomeCampo];
-      totalDados[item.nomeCompletoDre] = formataMilhar(item[nomeCampo]);
-      dados.push(totalDados);
-    }
-  };
-
   const mapearDadosGraficos = useCallback(dados => {
     const chaves = [];
     const dadosTotalUsuariosComCpfInvalidos = [];
@@ -123,25 +112,29 @@ const DadosAdesao = props => {
       montarDadosGrafico(
         item,
         'totalUsuariosComCpfInvalidos',
-        dadosTotalUsuariosComCpfInvalidos
+        dadosTotalUsuariosComCpfInvalidos,
+        'nomeCompletoDre'
       );
 
       montarDadosGrafico(
         item,
         'totalUsuariosSemAppInstalado',
-        dadosTotalUsuariosSemAppInstalado
+        dadosTotalUsuariosSemAppInstalado,
+        'nomeCompletoDre'
       );
 
       montarDadosGrafico(
         item,
         'totalUsuariosPrimeiroAcessoIncompleto',
-        dadosTotalUsuariosPrimeiroAcessoIncompleto
+        dadosTotalUsuariosPrimeiroAcessoIncompleto,
+        'nomeCompletoDre'
       );
 
       montarDadosGrafico(
         item,
         'totalUsuariosValidos',
-        dadosTotalUsuariosValidos
+        dadosTotalUsuariosValidos,
+        'nomeCompletoDre'
       );
     });
 
@@ -200,7 +193,7 @@ const DadosAdesao = props => {
 
   const graficoBarras = (dados, titulo) => {
     return (
-      <GraficoBarraDashboardEscolaAqui
+      <GraficoBarraDashboard
         titulo={titulo}
         dadosGrafico={dados}
         chavesGrafico={chavesGrafico}
@@ -218,7 +211,7 @@ const DadosAdesao = props => {
 
       {dadosGraficoAdesao && dadosGraficoAdesao.length ? (
         <>
-          <GraficoPizzaDashboardEscolaAqui
+          <GraficoPizzaDashboard
             titulo="Total de Usuários"
             dadosGrafico={dadosGraficoAdesao}
           />

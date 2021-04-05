@@ -8,7 +8,7 @@ import { NomeEstudanteLista } from '~/componentes-sgp';
 import { erros } from '~/servicos';
 import ServicoDashboardEscolaAqui from '~/servicos/Paginas/Dashboard/ServicoDashboardEscolaAqui';
 import { MarcadorSituacaoAluno } from '../../dashboardEscolaAqui.css';
-import { obterDadosComunicadoSelecionado } from '../../dashboardEscolaAquiGraficosUtils';
+import { obterDadosComunicadoSelecionado } from '../../../ComponentesDashboard/graficosDashboardUtils';
 
 const LeituraDeComunicadosPorAlunos = props => {
   const { comunicado, listaComunicado } = props;
