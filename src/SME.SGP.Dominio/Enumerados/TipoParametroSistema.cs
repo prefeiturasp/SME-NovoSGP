@@ -104,6 +104,8 @@ namespace SME.SGP.Dominio
 
         QuantidadeFotosAcompanhamentoAluno = 54,
 
+        NovosTiposUE = 55,
+
         //Sistema
         HabilitarServicosEmBackground = 100
     }
