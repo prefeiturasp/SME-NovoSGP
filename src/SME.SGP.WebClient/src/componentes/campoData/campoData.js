@@ -146,15 +146,21 @@ const CampoData = ({
     const style = {};
     if (diasParaSinalizar?.length) {
       const temDiaNaLista = diasParaSinalizar.find(dataSinalizar =>
-        dataSinalizar?.isSame(dataRenderizar, 'date')
+        dataSinalizar?.isSame(
+          moment(dataRenderizar).format('YYYY-MM-DD'),
+          'date'
+        )
       );
       if (
         temDiaNaLista &&
         moment.isMoment(dataAtualSelecionada) &&
-        !dataRenderizar?.isSame(dataAtualSelecionada, 'date')
+        !dataRenderizar?.isSame(
+          moment(dataAtualSelecionada).format('YYYY-DD-MM'),
+          'date'
+        )
       ) {
         style.color = Base.AzulAnakiwa;
-        style.borderColor = Base.AzulAnakiwa;
+        style.border = `1px solid ${Base.AzulAnakiwa}`;
       }
     }
     return (
