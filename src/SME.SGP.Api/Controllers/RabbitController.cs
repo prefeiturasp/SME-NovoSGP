@@ -33,6 +33,9 @@ namespace SME.SGP.Api.Controllers
             canalRabbit.QueueDeclare(RotasRabbit.FilaSgp, false, false, false, null);
             canalRabbit.QueueBind(RotasRabbit.FilaSgp, RotasRabbit.ExchangeSgp, "*", null);
 
+            canalRabbit.QueueDeclare(RotasRabbit.FilaSincronizacaoInstitucional, false, false, false, null);
+            canalRabbit.QueueBind(RotasRabbit.FilaSincronizacaoInstitucional, RotasRabbit.ExchangeSgp, "*", null);
+
             canalRabbit.ExchangeDeclare(RotasRabbit.ExchangeServidorRelatorios, ExchangeType.Topic);
             canalRabbit.QueueDeclare(RotasRabbit.FilaSgp, false, false, false, null);
             canalRabbit.QueueBind(RotasRabbit.FilaSgp, RotasRabbit.ExchangeServidorRelatorios, "*", null);

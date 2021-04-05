@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
             });
             var body = Encoding.UTF8.GetBytes(mensagem);
 
-            model.QueueBind(RotasRabbit.FilaSgp, RotasRabbit.ExchangeSgp, command.NomeFila);
+            model.QueueBind(String.IsNullOrEmpty(command.Fila) ? RotasRabbit.FilaSgp : command.Fila, RotasRabbit.ExchangeSgp, command.NomeFila);
             model.BasicPublish(RotasRabbit.ExchangeSgp, command.NomeFila, null, body);
             return Task.FromResult(true);
         }

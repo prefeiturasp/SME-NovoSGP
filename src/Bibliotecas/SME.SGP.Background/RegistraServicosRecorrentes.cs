@@ -18,6 +18,7 @@ namespace SME.SGP.Background
             // de segunda a sexta as 10, 14 e 16 horas
             Cliente.ExecutarPeriodicamente<IServicoAbrangencia>(c => c.SincronizarEstruturaInstitucionalVigenteCompleta(), "0 13,17,19 * * 1-5", "sgp");
 
+
             //todos os dias à 1 da manhã
             Cliente.ExecutarPeriodicamente<IServicoObjetivosAprendizagem>(c => c.SincronizarObjetivosComJurema(), Cron.Daily(22));
 
@@ -69,6 +70,8 @@ namespace SME.SGP.Background
             Cliente.ExecutarPeriodicamente<IExecutaNotificacaoPlanoAEEExpiradoUseCase>(c => c.Executar(), Cron.Daily(5));
 
             Cliente.ExecutarPeriodicamente<IExecutaNotificacaoPlanoAEEEmAbertoUseCase>(c => c.Executar(), Cron.Daily(5));
+
+            Cliente.ExecutarPeriodicamente<IExecutaSincronizacaoEstruturaInstitucionalUesUseCase>(c => c.Executar(), Cron.Daily(13));
         }
     }
 }

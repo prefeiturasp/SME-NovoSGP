@@ -6,6 +6,8 @@
         public static string ExchangeSgp => "sme.sgp.workers";
 
         public static string FilaSgp => "sme.sgp.clients";
+
+        public static string FilaSincronizacaoInstitucional => "sme.sgp.sincronizacao.institucional";
         public static string WorkerRelatoriosSgp => "sme.sr.workers.sgp";
 
         public static string FilaGoogleSync => "googleclass.sync.geral";
@@ -80,5 +82,7 @@
         public static string NotificarPlanoAEEReestruturado => "plano.aee.notificar.reestruturado";
         public static string NotificarCriacaoPlanoAEE => "plano.aee.notificar.criacao";
         public static string NotificarPlanoAEEEncerrado => "plano.aee.notificar.encerramento";
+
+        public static string SincronizaEstruturaInstitucionalUes => "sincroniza.estrtura.institucional.ues";
     }
 }

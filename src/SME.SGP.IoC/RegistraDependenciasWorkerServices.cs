@@ -65,6 +65,9 @@ namespace SME.SGP.IoC
             canalRabbit.ExchangeDeclare(RotasRabbit.ExchangeSgp, ExchangeType.Topic);
             canalRabbit.QueueDeclare(RotasRabbit.FilaSgp, false, false, false, null);
             canalRabbit.QueueBind(RotasRabbit.FilaSgp, RotasRabbit.ExchangeSgp, "*");
+
+            canalRabbit.QueueDeclare(RotasRabbit.FilaSincronizacaoInstitucional, false, false, false, null);
+            canalRabbit.QueueBind(RotasRabbit.FilaSincronizacaoInstitucional, RotasRabbit.ExchangeSgp, "*", null);
         }
 
         private static void RegistrarComandos(IServiceCollection services)
@@ -535,6 +538,9 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<INotificacaoDevolucaoEncaminhamentoAEEUseCase, NotificacaoDevolucaoEncaminhamentoAEEUseCase>();
 
             services.TryAddScopedWorkerService<IExecutarSyncGeralGoogleClassroomUseCase, ExecutarSyncGeralGoogleClassroomUseCase>();
+
+            services.TryAddScopedWorkerService<IEnviarSincronizacaoEstruturaInstitucionalUesUseCase, EnviarSincronizacaoEstruturaInstitucionalUesUseCase>();
+            services.TryAddScopedWorkerService<IExecutaSincronizacaoEstruturaInstitucionalUesUseCase, ExecutaSincronizacaoEstruturaInstitucionalUesUseCase>();
         }
 
         private static void ResgistraDependenciaHttp(IServiceCollection services)
