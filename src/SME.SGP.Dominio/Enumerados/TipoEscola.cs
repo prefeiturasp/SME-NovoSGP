@@ -19,22 +19,22 @@ namespace SME.SGP.Dominio
         [Display(Name = "Escola Municipal de Ensino Bilíngue para Surdos", ShortName = "EMEBS")]
         EMEBS = 4,
 
-        [Display(Name = "Centro de Educação Infantil Direto ", ShortName = "CEIDIRET")]
+        [Display(Name = "Centro de Educação Infantil Direto ", ShortName = "CEI DIRET")]
         CEIDIRET = 10,
 
-        [Display(Name = "Centro de Educação Infantil Indireto", ShortName = "CEIINDIR")]
+        [Display(Name = "Centro de Educação Infantil Indireto", ShortName = "CEI INDIR")]
         CEIINDIR = 11,
 
-        [Display(Name = "Creche Particular COnveniada", ShortName = "CRPCONV")]
+        [Display(Name = "Creche Particular COnveniada", ShortName = "CR.P.CONV")]
         CRPCONV = 12,
 
         [Display(Name = "CENTRO INTEGRADO DE EDUCACAO DE JOVENS E ADULTOS", ShortName = "CIEJA")]
         CIEJA = 13,
 
-        [Display(Name = "CENTRO DE CONVIVENCIA INFANTIL /CENTRO INFANTIL DE PROTECAO A SAUDE", ShortName = "CCICIPS")]
+        [Display(Name = "CENTRO DE CONVIVENCIA INFANTIL /CENTRO INFANTIL DE PROTECAO A SAUDE", ShortName = "CCI/CIPS")]
         CCICIPS = 14,
 
-        [Display(Name = "ESCOLA PARTICULAR", ShortName = "ESCPART")]
+        [Display(Name = "ESCOLA PARTICULAR", ShortName = "ESC.PART.")]
         ESCPART = 15,
 
         [Display(Name = "Centro Unificado de Educação - Escola Municipal de Ensino Fundamental", ShortName = "CEU EMEF")]
@@ -43,7 +43,7 @@ namespace SME.SGP.Dominio
         [Display(Name = "Centro Unificado de Educação - Escola Municipal de Educação Infantil", ShortName = "CEU EMEI")]
         CEUEMEI = 17,
 
-        [Display(Name = "CENTRO EDUCACIONAL UNIFICADO - CEI", ShortName = "CEUCEI")]
+        [Display(Name = "CENTRO EDUCACIONAL UNIFICADO - CEI", ShortName = "CEU CEI")]
         CEUCEI = 18,
 
         [Display(Name = "CENTRO EDUCACIONAL UNIFICADO", ShortName = "CEU")]
@@ -55,13 +55,13 @@ namespace SME.SGP.Dominio
         [Display(Name = "CENTRO MUNICIPAL DE CAPACITACAO E TREIN.", ShortName = "CMCT")]
         CMCT = 23,
 
-        [Display(Name = "ESCOLA TECNICA", ShortName = "ETEC")]
+        [Display(Name = "ESCOLA TECNICA", ShortName = "E TEC")]
         ETEC = 25,
 
-        [Display(Name = "ESPECIAL CONVENIADA", ShortName = "ESPCONV")]
+        [Display(Name = "ESPECIAL CONVENIADA", ShortName = "ESP CONV")]
         ESPCONV = 26,
 
-        [Display(Name = "CEU EXCLUSIVO ATIVIDADE COMPLEMENTAR", ShortName = "CEUATCOMPL")]
+        [Display(Name = "CEU EXCLUSIVO ATIVIDADE COMPLEMENTAR", ShortName = "CEU AT COMPL")]
         CEUATCOMPL = 27,
 
         [Display(Name = "CENTRO PARA CRIANCAS E ADOLESCENTES", ShortName = "CCA")]
