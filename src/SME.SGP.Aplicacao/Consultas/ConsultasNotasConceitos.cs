@@ -128,9 +128,9 @@ namespace SME.SGP.Aplicacao
 
             var tipoAvaliacaoBimestral = await repositorioTipoAvaliacao.ObterTipoAvaliacaoBimestral();
 
-            retorno.BimestreAtual = bimestre.Value;            
+            retorno.BimestreAtual = bimestre.Value;
             retorno.MediaAprovacaoBimestre = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.MediaBimestre, DateTime.Today.Year)));
-            retorno.MinimoAvaliacoesBimestrais = tipoAvaliacaoBimestral.AvaliacoesNecessariasPorBimestre;            
+            retorno.MinimoAvaliacoesBimestrais = tipoAvaliacaoBimestral.AvaliacoesNecessariasPorBimestre;
             retorno.PercentualAlunosInsuficientes = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.PercentualAlunosInsuficientes, DateTime.Today.Year)));
 
             DateTime? dataUltimaNotaConceitoInserida = null;
@@ -255,7 +255,7 @@ namespace SME.SGP.Aplicacao
 
                         // Carrega Notas do Bimestre
                         if (fechamentoTurma != null)
-                        {                            
+                        {
                             bimestreParaAdicionar.FechamentoTurmaId = fechamentoTurma.Id;
                             bimestreParaAdicionar.Situacao = fechamentoTurma.Situacao;
 
@@ -326,7 +326,8 @@ namespace SME.SGP.Aplicacao
                             Id = avaliacao.Id,
                             Data = avaliacao.DataAvaliacao,
                             Descricao = avaliacao.DescricaoAvaliacao,
-                            Nome = avaliacao.NomeAvaliacao
+                            Nome = avaliacao.NomeAvaliacao,
+                            EhCJ = avaliacao.EhCj
                         };
                         if (avaliacao.Categoria.Equals(CategoriaAtividadeAvaliativa.Interdisciplinar))
                         {

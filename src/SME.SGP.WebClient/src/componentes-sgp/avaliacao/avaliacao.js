@@ -148,6 +148,11 @@ const Avaliacao = props => {
   };
 
   const montarCampoNotaConceito = (nota, aluno) => {
+    const avaliacao = dados.avaliacoes.find(
+      item => item.id === nota.atividadeAvaliativaId
+    );
+    const desabilitarNota = ehProfessorCj ? !avaliacao.ehCJ : avaliacao.ehCJ;
+
     switch (Number(notaTipo)) {
       case Number(notasConceitos.Notas):
         return (
@@ -160,7 +165,7 @@ const Avaliacao = props => {
             onChangeNotaConceito={valorNovo =>
               onChangeNotaConceito(nota, valorNovo)
             }
-            desabilitarCampo={desabilitarCampos}
+            desabilitarCampo={desabilitarCampos || desabilitarNota}
             mediaAprovacaoBimestre={dados.mediaAprovacaoBimestre}
           />
         );
