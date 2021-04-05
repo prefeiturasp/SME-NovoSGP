@@ -60,7 +60,7 @@ class ServicoDashboardAEE {
 
   obterQuantidadeEstudantesMatriculados = (anoLetivo, dreId, ueId) => {
     return this.montarConsultaPadraoGraficos(
-      'planos/matriculados-srm-paee',
+      'encaminhamentos/matriculados-srm-paee',
       anoLetivo,
       dreId,
       ueId
