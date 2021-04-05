@@ -1294,7 +1294,7 @@ rotas.set(`${RotasDto.OCORRENCIAS}/editar/:id`, {
 
 rotas.set(RotasDto.ACOMPANHAMENTO_APRENDIZAGEM, {
   breadcrumbName: 'Relatório do Acompanhamento da Aprendizagem',
-  menu: ['Relatório'],
+  menu: ['Fechamento'],
   parent: '/',
   component: AcompanhamentoAprendizagem,
   exact: true,
@@ -1310,7 +1310,7 @@ rotas.set(RotasDto.DASHBOARD_AEE, {
   component: DashboardAEE,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  // temPermissionamento: true,
+  temPermissionamento: true,
   chavePermissao: RotasDto.DASHBOARD_AEE,
 });
 

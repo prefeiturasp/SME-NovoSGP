@@ -8,8 +8,8 @@ import ServicoDashboardEscolaAqui from '~/servicos/Paginas/Dashboard/ServicoDash
 import {
   mapearParaDtoDadosComunicadosGraficoBarras,
   obterDadosComunicadoSelecionado,
-} from '../../dashboardEscolaAquiGraficosUtils';
-import GraficoBarraDashboardEscolaAqui from '../ComponentesDashboardEscolaAqui/graficoBarraDashboardEscolaAqui';
+} from '../../../ComponentesDashboard/graficosDashboardUtils';
+import GraficoBarraDashboard from '../../../ComponentesDashboard/graficoBarraDashboard';
 
 const LeituraDeComunicadosPorModalidades = props => {
   const {
@@ -100,7 +100,7 @@ const LeituraDeComunicadosPorModalidades = props => {
         tip="Carregando Total de leituras por Modalidade"
       >
         {dadosDeLeituraDeComunicadosAgrupadosPorModalidade?.length ? (
-          <GraficoBarraDashboardEscolaAqui
+          <GraficoBarraDashboard
             titulo="Total de leituras por Modalidade"
             dadosGrafico={dadosDeLeituraDeComunicadosAgrupadosPorModalidade}
             chavesGrafico={chavesGrafico}

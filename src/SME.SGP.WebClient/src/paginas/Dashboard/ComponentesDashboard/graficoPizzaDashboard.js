@@ -2,9 +2,9 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Graficos } from '~/componentes';
 import LegendaGrafico from '~/componentes-sgp/LegendaGrafico/legendaGrafico';
-import { TituloGrafico } from '../../dashboardEscolaAqui.css';
+import { TituloGrafico } from '../style';
 
-const GraficoPizzaDashboardEscolaAqui = props => {
+const GraficoPizzaDashboard = props => {
   const { titulo, dadosGrafico } = props;
 
   return (
@@ -26,14 +26,14 @@ const GraficoPizzaDashboardEscolaAqui = props => {
   );
 };
 
-GraficoPizzaDashboardEscolaAqui.propTypes = {
+GraficoPizzaDashboard.propTypes = {
   dadosGrafico: PropTypes.oneOfType([PropTypes.array]),
   titulo: PropTypes.string,
 };
 
-GraficoPizzaDashboardEscolaAqui.defaultProps = {
+GraficoPizzaDashboard.defaultProps = {
   dadosGrafico: [],
   titulo: '',
 };
 
-export default GraficoPizzaDashboardEscolaAqui;
+export default GraficoPizzaDashboard;

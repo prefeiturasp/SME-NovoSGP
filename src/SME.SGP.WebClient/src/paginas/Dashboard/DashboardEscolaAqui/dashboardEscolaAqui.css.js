@@ -37,19 +37,6 @@ export const ContainerDataUltimaAtualizacao = styled.span`
   padding: 0px 5px 0px 5px;
 `;
 
-export const TituloGrafico = styled.div`
-  text-align: center;
-  font-size: 24px;
-  color: #000000;
-  font-weight: 700;
-  margin: 10px;
-`;
-
-export const ContainerGraficoBarras = styled.div`
-  height: 70vh;
-  width: 70vw;
-`;
-
 export const MarcadorSituacaoAluno = styled.i`
   color: ${Base.Roxo} !important;
   font-size: 10px;

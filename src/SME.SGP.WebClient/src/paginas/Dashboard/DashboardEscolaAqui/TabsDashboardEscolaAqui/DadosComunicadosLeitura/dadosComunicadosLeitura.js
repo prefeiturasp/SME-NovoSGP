@@ -22,9 +22,9 @@ import ServicoDashboardEscolaAqui from '~/servicos/Paginas/Dashboard/ServicoDash
 import {
   mapearParaDtoGraficoPizzaComValorEPercentual,
   obterDadosComunicadoSelecionado,
-} from '../../dashboardEscolaAquiGraficosUtils';
+} from '../../../ComponentesDashboard/graficosDashboardUtils';
 import DataUltimaAtualizacaoDashboardEscolaAqui from '../ComponentesDashboardEscolaAqui/dataUltimaAtualizacaoDashboardEscolaAqui';
-import GraficoPizzaDashboardEscolaAqui from '../ComponentesDashboardEscolaAqui/graficoPizzaDashboardEscolaAqui';
+import GraficoPizzaDashboard from '~/paginas/Dashboard/ComponentesDashboard/graficoPizzaDashboard';
 import LeituraDeComunicadosAgrupadosPorDre from './leituraDeComunicadosAgrupadosPorDre';
 import LeituraDeComunicadosPorAlunos from './leituraDeComunicadosPorAlunos';
 import LeituraDeComunicadosPorModalidades from './leituraDeComunicadosPorModalidades';
@@ -781,7 +781,7 @@ const DadosComunicadosLeitura = props => {
 
           <div className="col-md-12">
             {dadosDeLeituraDeComunicados?.length ? (
-              <GraficoPizzaDashboardEscolaAqui
+              <GraficoPizzaDashboard
                 titulo="Dados de leitura"
                 dadosGrafico={dadosDeLeituraDeComunicados}
               />

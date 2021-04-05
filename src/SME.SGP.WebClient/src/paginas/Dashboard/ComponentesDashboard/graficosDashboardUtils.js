@@ -46,7 +46,7 @@ const mapearParaDtoGraficoPizzaComValorEPercentual = dados => {
   return dadosMapeadosComPorcentagem;
 };
 
-const tooltipCustomizadoDashboardEscolaAqui = item => {
+const tooltipCustomizadoDashboard = item => {
   return (
     <div style={{ whiteSpace: 'pre', display: 'flex', alignItems: 'center' }}>
       <span
@@ -158,11 +158,27 @@ const obterDadosComunicadoSelecionado = (
   return comunicado;
 };
 
+const montarDadosGrafico = (
+  item,
+  nomeCampo,
+  dadosMapeados,
+  descricaoColuna
+) => {
+  if (item[nomeCampo]) {
+    const novosDadosMap = {};
+    novosDadosMap[descricaoColuna] = item[descricaoColuna];
+    novosDadosMap[nomeCampo] = item[nomeCampo];
+    novosDadosMap[item[descricaoColuna]] = formataMilhar(item[nomeCampo]);
+    dadosMapeados.push(novosDadosMap);
+  }
+};
+
 export {
   formataMilhar,
   adicionarCoresNosGraficos,
   obterDadosComunicadoSelecionado,
-  tooltipCustomizadoDashboardEscolaAqui,
+  tooltipCustomizadoDashboard,
   mapearParaDtoDadosComunicadosGraficoBarras,
   mapearParaDtoGraficoPizzaComValorEPercentual,
+  montarDadosGrafico,
 };

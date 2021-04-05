@@ -3,19 +3,21 @@ import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { ContainerTabsCard } from '~/componentes/tabs/tabs.css';
 import { ContainerTabsDashboard } from '../../style';
+import GraficosEncaminhamentos from './Encaminhamentos/graficosEncaminhamentos';
+import GraficosPlanos from './Planos/graficoPlanos';
 
 const { TabPane } = Tabs;
 
 const TabsDashboardAEE = props => {
-  const { anoLetivo, codigoDre, codigoUe } = props;
+  const { anoLetivo, dreId, ueId } = props;
 
   const [tabSelecionada, setTabSelecionada] = useState();
 
   useEffect(() => {
-    if (!anoLetivo || !codigoDre || !codigoUe) {
+    if (!anoLetivo || !dreId || !ueId) {
       setTabSelecionada();
     }
-  }, [anoLetivo, codigoDre, codigoUe]);
+  }, [anoLetivo, dreId, ueId]);
 
   const onChangeTab = tabAtiva => {
     setTabSelecionada(tabAtiva);
@@ -23,7 +25,7 @@ const TabsDashboardAEE = props => {
 
   return (
     <>
-      {anoLetivo && codigoDre && codigoUe ? (
+      {anoLetivo && dreId && ueId ? (
         <ContainerTabsDashboard>
           <ContainerTabsCard
             type="card"
@@ -31,10 +33,14 @@ const TabsDashboardAEE = props => {
             activeKey={tabSelecionada}
           >
             <TabPane tab="Encaminhamentos" key="1">
-              Encaminhamentos
+              <GraficosEncaminhamentos
+                anoLetivo={anoLetivo}
+                dreId={dreId}
+                ueId={ueId}
+              />
             </TabPane>
             <TabPane tab="Planos" key="2">
-              Planos
+              <GraficosPlanos anoLetivo={anoLetivo} dreId={dreId} ueId={ueId} />
             </TabPane>
           </ContainerTabsCard>
         </ContainerTabsDashboard>
@@ -47,14 +53,14 @@ const TabsDashboardAEE = props => {
 
 TabsDashboardAEE.propTypes = {
   anoLetivo: PropTypes.oneOfType(PropTypes.any),
-  codigoUe: PropTypes.string,
-  codigoDre: PropTypes.string,
+  ueId: PropTypes.string,
+  dreId: PropTypes.string,
 };
 
 TabsDashboardAEE.defaultProps = {
   anoLetivo: null,
-  codigoDre: '',
-  codigoUe: '',
+  dreId: '',
+  ueId: '',
 };
 
 export default TabsDashboardAEE;

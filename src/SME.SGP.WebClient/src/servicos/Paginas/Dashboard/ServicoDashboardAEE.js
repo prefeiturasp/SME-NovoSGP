@@ -1,10 +1,70 @@
+import api from '~/servicos/api';
+
+const urlPadrao = 'v1/dashboard/aee';
 class ServicoDashboardAEE {
-  obterQuantidadeEncaminhamentosPorSituacao = () => {
-    return new Promise(resolve => {
-      setTimeout(() => {
-        resolve({ data: { valor: 123 }, status: 200 });
-      }, 2000);
-    });
+  montarConsultaPadraoGraficos = (rota, anoLetivo, dreId, ueId) => {
+    let url = `${urlPadrao}/${rota}?anoLetivo=${anoLetivo}`;
+    if (dreId) {
+      url += `&dreId=${dreId}`;
+    }
+    if (ueId) {
+      url += `&ueId=${ueId}`;
+    }
+    return api.get(url);
+  };
+
+  obterQuantidadeEncaminhamentosPorSituacao = (anoLetivo, dreId, ueId) => {
+    return this.montarConsultaPadraoGraficos(
+      'encaminhamentos/situacoes',
+      anoLetivo,
+      dreId,
+      ueId
+    );
+  };
+
+  obterEncaminhamentosDeferidos = (anoLetivo, dreId, ueId) => {
+    return this.montarConsultaPadraoGraficos(
+      'encaminhamentos/deferidos',
+      anoLetivo,
+      dreId,
+      ueId
+    );
+  };
+
+  obterSituacoesPlanos = (anoLetivo, dreId, ueId) => {
+    return this.montarConsultaPadraoGraficos(
+      'planos/situacoes',
+      anoLetivo,
+      dreId,
+      ueId
+    );
+  };
+
+  obterPlanosAcessibilidades = (anoLetivo, dreId, ueId) => {
+    return this.montarConsultaPadraoGraficos(
+      'planos/acessibilidades',
+      anoLetivo,
+      dreId,
+      ueId
+    );
+  };
+
+  obterPlanosVigentes = (anoLetivo, dreId, ueId) => {
+    return this.montarConsultaPadraoGraficos(
+      'planos/vigentes',
+      anoLetivo,
+      dreId,
+      ueId
+    );
+  };
+
+  obterQuantidadeEstudantesMatriculados = (anoLetivo, dreId, ueId) => {
+    return this.montarConsultaPadraoGraficos(
+      'planos/matriculados-srm-paee',
+      anoLetivo,
+      dreId,
+      ueId
+    );
   };
 }
 
