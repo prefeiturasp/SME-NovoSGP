@@ -6,6 +6,7 @@ import SelectComponent from '~/componentes/select';
 import { salvarDadosAulaFrequencia } from '~/redux/modulos/calendarioProfessor/actions';
 import {
   limparDadosFrequenciaPlanoAula,
+  setAtualizarDatas,
   setAulaIdFrequenciaPlanoAula,
   setComponenteCurricularFrequenciaPlanoAula,
   setDataSelecionadaFrequenciaPlanoAula,
@@ -43,6 +44,10 @@ const CamposFiltrarDadosFrequenciaPlanoAula = () => {
 
   const dadosAulaFrequencia = useSelector(
     state => state.calendarioProfessor.dadosAulaFrequencia
+  );
+
+  const atualizarDatas = useSelector(
+    state => state.frequenciaPlanoAula.atualizarDatas
   );
 
   const [listaComponenteCurricular, setListaComponenteCurricular] = useState(
@@ -94,6 +99,7 @@ const CamposFiltrarDadosFrequenciaPlanoAula = () => {
       });
       setDiasParaHabilitar(habilitar);
       setDiasParaSinalizar(sinalizar);
+      dispatch(setAtualizarDatas(false));
     } else {
       setListaDatasAulas();
       setDiasParaHabilitar();
@@ -141,13 +147,17 @@ const CamposFiltrarDadosFrequenciaPlanoAula = () => {
 
   // Quando selecionar o componente curricular vai realizar a consulta das das que tem aulas cadastrada para essa turma!
   useEffect(() => {
-    if (codigoComponenteCurricular && turmaSelecionada?.turma) {
+    if (
+      (codigoComponenteCurricular && turmaSelecionada?.turma) ||
+      atualizarDatas
+    ) {
       obterDatasDeAulasDisponiveis();
     }
   }, [
     codigoComponenteCurricular,
     obterDatasDeAulasDisponiveis,
     turmaSelecionada,
+    atualizarDatas,
   ]);
 
   // Quando tem valor do componente curricular no redux vai setar o id no componente select!
