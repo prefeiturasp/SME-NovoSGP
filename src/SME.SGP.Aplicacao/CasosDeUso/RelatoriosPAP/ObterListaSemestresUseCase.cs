@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
             if (!turmaPossuiComponente)
                 return null;
 
-            var bimestreAtual = await mediator.Send(new ObterBimestreAtualQuery(turmaCodigo, DateTime.Today));
+            var bimestreAtual = await mediator.Send(new ObterBimestreAtualQuery(DateTime.Today, turma));
 
             return await mediator.Send(new ObterListaSemestresRelatorioPAPQuery(bimestreAtual));
         }

@@ -17,14 +17,9 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<int> Handle(ObterBimestreAtualQuery request, CancellationToken cancellationToken)
         {
-            Turma turma;
+            Turma turma = request.Turma;
 
-            if (request.Turma == null)
-                turma = await repositorioTurma.ObterPorCodigo(request.TurmaCodigo);
-            else
-                turma = request.Turma;
-
-            return await repositorioPeriodoEscolar.ObterBimestreAtualAsync(request.TurmaCodigo, turma.ModalidadeTipoCalendario, request.DataReferencia);
+            return await repositorioPeriodoEscolar.ObterBimestreAtualAsync(turma.CodigoTurma, turma.ModalidadeTipoCalendario, request.DataReferencia);
         }
     }
 }
