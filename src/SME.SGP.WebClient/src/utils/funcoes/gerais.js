@@ -132,6 +132,34 @@ const permiteInserirFormato = (arquivo, tiposArquivosPermitidos) => {
   return true;
 };
 
+const getBase64DataURL = (file, type) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    const fileBlob = new Blob([file], { type });
+    reader.readAsDataURL(fileBlob);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+  });
+};
+
+const obterTamanhoImagemPorArquivo = file => {
+  return new Promise(resolve => {
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      const img = new Image();
+      img.src = reader.result;
+      img.onload = () =>
+        resolve({
+          width: img.naturalWidth,
+          height: img.naturalHeight,
+        });
+    };
+
+    reader.readAsDataURL(file);
+  });
+};
+
 export {
   validaSeObjetoEhNuloOuVazio,
   valorNuloOuVazio,
@@ -147,4 +175,6 @@ export {
   removerArrayAninhados,
   clonarObjeto,
   permiteInserirFormato,
+  getBase64DataURL,
+  obterTamanhoImagemPorArquivo,
 };

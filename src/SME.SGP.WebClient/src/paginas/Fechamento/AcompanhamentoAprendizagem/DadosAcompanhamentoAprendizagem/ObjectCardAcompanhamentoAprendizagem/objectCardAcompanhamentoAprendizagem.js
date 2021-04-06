@@ -7,8 +7,18 @@ const ObjectCardAcompanhamentoAprendizagem = () => {
     store => store.acompanhamentoAprendizagem.dadosAlunoObjectCard
   );
 
+  const desabilitarCamposAcompanhamentoAprendizagem = useSelector(
+    store =>
+      store.acompanhamentoAprendizagem
+        .desabilitarCamposAcompanhamentoAprendizagem
+  );
+
   return (
-    <DetalhesAluno dados={dadosAlunoObjectCard} exibirBotaoImprimir={false} />
+    <DetalhesAluno
+      dados={dadosAlunoObjectCard}
+      exibirBotaoImprimir={false}
+      permiteAlterarImagem={!desabilitarCamposAcompanhamentoAprendizagem}
+    />
   );
 };
 
