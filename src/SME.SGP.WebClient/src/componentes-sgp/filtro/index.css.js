@@ -2,7 +2,8 @@ import styled from 'styled-components';
 import { Base } from '~/componentes/colors';
 
 export const Container = styled.div`
-  width: 568px !important;
+  max-width: 568px !important;
+  width: 50% !important;
   z-index: 100;
   @media (max-width: 575.98px) {
     max-width: 80%;

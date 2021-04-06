@@ -374,6 +374,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("a.alterado_rf,");
             query.AppendLine("a.excluido,");
             query.AppendLine("a.eh_regencia,");
+            query.AppendLine("a.eh_cj,");
             query.AppendLine("ta.id as TipoAvaliacaoId,");
             query.AppendLine("ta.nome,");
             query.AppendLine("ta.descricao,");
