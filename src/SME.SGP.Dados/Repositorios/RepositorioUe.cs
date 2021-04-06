@@ -166,23 +166,8 @@ namespace SME.SGP.Dados.Repositorios
                 var armazenados = await contexto.Conexao.QueryAsync<Ue>(QuerySincronizacao.Replace("#ids", string.Join(",", iteracao.Select(x => $"'{x.CodigoUe}'"))));
 
                 var novos = iteracao.Where(x => !armazenados.Select(y => y.CodigoUe).Contains(x.CodigoUe));
-
-                foreach (var item in novos)
-                {
-                    item.DataAtualizacao = DateTime.Today;
-                    item.Dre = dres.First(x => x.CodigoDre == item.Dre.CodigoDre);
-                    item.DreId = item.Dre.Id;
-                    try
-                    {
-                        item.Id = (long)await contexto.Conexao.InsertAsync(item);
-                    }
-                    catch (Exception ex)
-                    {
-                        throw ex;
-                    }
-                    
-                    resultado.Add(item);
-                }
+                
+                await PersisteNovosRegistros(dres, resultado, novos);
 
                 var modificados = from c in iteracao
                                   join l in armazenados on c.CodigoUe equals l.CodigoUe
@@ -211,6 +196,18 @@ namespace SME.SGP.Dados.Repositorios
             }
 
             return resultado;
+        }
+
+        private async Task PersisteNovosRegistros(IEnumerable<Dre> dres, List<Ue> resultado, IEnumerable<Ue> novos)
+        {
+            foreach (var item in novos)
+            {
+                item.DataAtualizacao = DateTime.Today;
+                item.Dre = dres.First(x => x.CodigoDre == item.Dre.CodigoDre);
+                item.DreId = item.Dre.Id;
+                item.Id = (long)await contexto.Conexao.InsertAsync(item);
+                resultado.Add(item);
+            }
         }
 
         public async Task<bool> ValidarUeEducacaoInfantil(long ueId)
