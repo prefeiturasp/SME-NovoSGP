@@ -20,3 +20,4 @@ ALTER TABLE public.aluno_foto ADD CONSTRAINT aluno_foto_arquivo_fk FOREIGN KEY (
 
 CREATE INDEX if not exists aluno_foto_miniatura_idx ON public.aluno_foto USING btree (miniatura_id);
 CREATE INDEX if not exists aluno_foto_arquivo_idx ON public.aluno_foto USING btree (arquivo_id);
+CREATE INDEX if not exists aluno_foto_aluno_codigo_idx ON public.aluno_foto USING btree (aluno_codigo);
