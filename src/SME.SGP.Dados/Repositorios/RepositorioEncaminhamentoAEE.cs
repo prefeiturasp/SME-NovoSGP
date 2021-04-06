@@ -222,7 +222,7 @@ namespace SME.SGP.Dados.Repositorios
             
             if (dreId > 0)
             {
-                sql.Append(" inner join dre on ue.dre_id = ue.id ");
+                sql.Append(" inner join dre on ue.dre_id = dre.id ");
                 where.Append(" and dre.id = @dreId");
             }
 
@@ -248,7 +248,7 @@ namespace SME.SGP.Dados.Repositorios
 
             if (dreId > 0)
             {
-                sql.Append(" inner join dre on ue.dre_id = ue.id ");
+                sql.Append(" inner join dre on ue.dre_id = dre.id ");
                 where.Append(" and dre.id = @dreId");
             }
 

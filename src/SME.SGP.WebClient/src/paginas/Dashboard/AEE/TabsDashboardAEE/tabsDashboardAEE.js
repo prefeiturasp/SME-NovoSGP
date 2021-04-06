@@ -9,7 +9,7 @@ import GraficosPlanos from './Planos/graficoPlanos';
 const { TabPane } = Tabs;
 
 const TabsDashboardAEE = props => {
-  const { anoLetivo, dreId, ueId } = props;
+  const { anoLetivo, dreId, ueId, dreCodigo, ueCodigo } = props;
 
   const [tabSelecionada, setTabSelecionada] = useState();
 
@@ -37,6 +37,8 @@ const TabsDashboardAEE = props => {
                 anoLetivo={anoLetivo}
                 dreId={dreId}
                 ueId={ueId}
+                dreCodigo={dreCodigo}
+                ueCodigo={ueCodigo}
               />
             </TabPane>
             <TabPane tab="Planos" key="2">
@@ -55,12 +57,16 @@ TabsDashboardAEE.propTypes = {
   anoLetivo: PropTypes.oneOfType(PropTypes.any),
   ueId: PropTypes.string,
   dreId: PropTypes.string,
+  dreCodigo: PropTypes.string,
+  ueCodigo: PropTypes.string,
 };
 
 TabsDashboardAEE.defaultProps = {
   anoLetivo: null,
   dreId: '',
   ueId: '',
+  dreCodigo: '',
+  ueCodigo: '',
 };
 
 export default TabsDashboardAEE;

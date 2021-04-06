@@ -6,7 +6,7 @@ import ServicoDashboardAEE from '~/servicos/Paginas/Dashboard/ServicoDashboardAE
 import GraficoBarrasPadraoAEE from '../../Componentes/graficoBarrasPadraoAEE';
 
 const QuantidadeEstudantesMatriculados = props => {
-  const { anoLetivo, dreId, ueId } = props;
+  const { anoLetivo, ueCodigo, dreCodigo } = props;
 
   const configCabecalho = {
     altura: '44px',
@@ -34,8 +34,8 @@ const QuantidadeEstudantesMatriculados = props => {
           <div className="col-md-12">
             <GraficoBarrasPadraoAEE
               anoLetivo={anoLetivo}
-              dreId={dreId}
-              ueId={ueId}
+              dreCodigo={dreCodigo}
+              ueCodigo={ueCodigo}
               chavesGraficoAgrupado={[
                 { nomeChave: 'quantidadeSRM', legenda: 'legendaSRM' },
                 { nomeChave: 'quantidadePAEE', legenda: 'legendaPAEE' },
@@ -56,14 +56,14 @@ const QuantidadeEstudantesMatriculados = props => {
 
 QuantidadeEstudantesMatriculados.propTypes = {
   anoLetivo: PropTypes.oneOfType(PropTypes.any),
-  dreId: PropTypes.string,
-  ueId: PropTypes.string,
+  dreCodigo: PropTypes.string,
+  ueCodigo: PropTypes.string,
 };
 
 QuantidadeEstudantesMatriculados.defaultProps = {
   anoLetivo: null,
-  dreId: '',
-  ueId: '',
+  dreCodigo: '',
+  ueCodigo: '',
 };
 
 export default QuantidadeEstudantesMatriculados;

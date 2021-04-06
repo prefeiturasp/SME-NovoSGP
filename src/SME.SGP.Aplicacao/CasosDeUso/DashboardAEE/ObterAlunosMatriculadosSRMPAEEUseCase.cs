@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
             if (param.AnoLetivo == 0)
                 param.AnoLetivo = DateTime.Now.Year;
             
-            var alunosMatriculadosEol = await mediator.Send(new ObterAlunosMatriculadosPorAnoLetivoECCEolQuery(param.AnoLetivo, param.DreId, param.UeId, new int[] { 1030, 1310 }));
+            var alunosMatriculadosEol = await mediator.Send(new ObterAlunosMatriculadosPorAnoLetivoECCEolQuery(param.AnoLetivo, param.DreCodigo, param.UeCodigo, new int[] { 1030, 1310 }));
             if(alunosMatriculadosEol.Any())
             {
                 return MapearParaDto(alunosMatriculadosEol);
@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
 
         private static IEnumerable<AEEAlunosMatriculadosDto> MapearParaDto(IEnumerable<AlunosMatriculadosEolDto> alunosMatriculadosEol)
         {
-            List<AEEAlunosMatriculadosDto> alunos = new();
+            List<AEEAlunosMatriculadosDto> alunos = new List<AEEAlunosMatriculadosDto>();
 
             foreach (var alunoMatriculadoEol in alunosMatriculadosEol.GroupBy(a => $"{a.Modalidade} - {a.Ano}"))
             {
@@ -46,7 +46,7 @@ namespace SME.SGP.Aplicacao
                 alunos.Add(aluno);
 
             }
-            return alunos;
+            return alunos.OrderBy(a => a.Descricao);
         }
     }
 }

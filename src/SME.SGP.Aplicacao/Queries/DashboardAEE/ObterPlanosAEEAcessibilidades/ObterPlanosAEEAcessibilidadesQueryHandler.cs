@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
 
             if(query.Any())
             {
-                List<AEEAcessibilidadeRetornoDto> retorno = new();
+                List<AEEAcessibilidadeRetornoDto> retorno = new List<AEEAcessibilidadeRetornoDto>();
 
                 var dadosRegular = query.Where(s => s.Descricao.ToUpper() == "REGULAR");
                 retorno.Add(new AEEAcessibilidadeRetornoDto()

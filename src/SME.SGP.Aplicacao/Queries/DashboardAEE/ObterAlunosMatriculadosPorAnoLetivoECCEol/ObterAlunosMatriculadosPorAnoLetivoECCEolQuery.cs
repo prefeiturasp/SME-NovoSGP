@@ -10,16 +10,16 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterAlunosMatriculadosPorAnoLetivoECCEolQuery : IRequest<IEnumerable<AlunosMatriculadosEolDto>>
     {
-        public long UeId { get; set; }
+        public string UeCodigo { get; set; }
         public int Ano { get; set; }
-        public long DreId { get; set; }
+        public string DreCodigo { get; set; }
         public int[] ComponentesCurriculares { get; set; }
 
-        public ObterAlunosMatriculadosPorAnoLetivoECCEolQuery(int ano, long dreId, long ueId, int[] componentesCurriculares)
+        public ObterAlunosMatriculadosPorAnoLetivoECCEolQuery(int ano, string dreCodigo, string ueCodigo, int[] componentesCurriculares)
         {
             Ano = ano;
-            DreId = dreId;
-            UeId = ueId;
+            DreCodigo = dreCodigo;
+            UeCodigo = ueCodigo;
             ComponentesCurriculares = componentesCurriculares;
         }
     }

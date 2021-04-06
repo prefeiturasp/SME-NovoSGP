@@ -17,6 +17,8 @@ const GraficoBarrasPadraoAEE = props => {
     nomeValor,
     ServicoObterValoresGrafico,
     chavesGraficoAgrupado,
+    ueCodigo,
+    dreCodigo,
   } = props;
 
   const [chavesGrafico, setChavesGrafico] = useState([]);
@@ -84,7 +86,9 @@ const GraficoBarrasPadraoAEE = props => {
     const retorno = await ServicoObterValoresGrafico(
       anoLetivo,
       dreId === OPCAO_TODOS ? '' : dreId,
-      ueId === OPCAO_TODOS ? '' : ueId
+      ueId === OPCAO_TODOS ? '' : ueId,
+      dreCodigo === OPCAO_TODOS ? '' : dreCodigo,
+      ueCodigo === OPCAO_TODOS ? '' : ueCodigo
     )
       .catch(e => erros(e))
       .finally(() => setExibirLoader(false));
@@ -105,15 +109,17 @@ const GraficoBarrasPadraoAEE = props => {
     chavesGraficoAgrupado,
     mapearDadosGraficoAgrupado,
     mapearDadosGraficos,
+    dreCodigo,
+    ueCodigo,
   ]);
 
   useEffect(() => {
-    if (anoLetivo && dreId && ueId) {
+    if (anoLetivo && ((dreId && ueId) || (dreCodigo && ueCodigo))) {
       obterDadosGrafico();
     } else {
       setDadosGrafico([]);
     }
-  }, [anoLetivo, dreId, ueId, obterDadosGrafico]);
+  }, [anoLetivo, dreId, ueId, dreCodigo, ueCodigo, obterDadosGrafico]);
 
   const graficoBarras = dados => {
     return (
@@ -160,6 +166,8 @@ GraficoBarrasPadraoAEE.propTypes = {
   nomeValor: PropTypes.string,
   ServicoObterValoresGrafico: PropTypes.func,
   chavesGraficoAgrupado: PropTypes.oneOfType(PropTypes.array),
+  dreCodigo: PropTypes.string,
+  ueCodigo: PropTypes.string,
 };
 
 GraficoBarrasPadraoAEE.defaultProps = {
@@ -170,6 +178,8 @@ GraficoBarrasPadraoAEE.defaultProps = {
   nomeValor: '',
   ServicoObterValoresGrafico: () => {},
   chavesGraficoAgrupado: [],
+  dreCodigo: '',
+  ueCodigo: '',
 };
 
 export default GraficoBarrasPadraoAEE;

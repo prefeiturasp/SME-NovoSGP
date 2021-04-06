@@ -314,7 +314,7 @@ namespace SME.SGP.Dados.Repositorios
 
             if (dreId > 0)
             {
-                sql.Append(" inner join dre on ue.dre_id = ue.id ");
+                sql.Append(" inner join dre on ue.dre_id = dre.id ");
                 where.Append(" and dre.id = @dreId");
             }
 
@@ -327,7 +327,8 @@ namespace SME.SGP.Dados.Repositorios
 
             sql.Append(" group by t.ano, t.modalidade_codigo ");
 
-            return await database.Conexao.QueryAsync<AEETurmaDto>(sql.ToString(), new { ano, dreId, ueId });
+            return (await database.Conexao.QueryAsync<AEETurmaDto>(sql.ToString(), new { ano, dreId, ueId }))
+                .OrderBy(a => a.Ordem).ThenBy(a => a.Descricao);
         }
 
         public async Task<IEnumerable<AEEAcessibilidateDto>> ObterQuantidadeAcessibilidades(int ano, long dreId, long ueId)

@@ -5,7 +5,7 @@ import QuantidadeEstudantesEncaminhamentosDeferidos from './QuantidadeEstudantes
 import QuantidadeEstudantesMatriculados from './QuantidadeEstudantesMatriculados/quantidadeEstudantesMatriculados';
 
 const GraficosEncaminhamentos = props => {
-  const { anoLetivo, dreId, ueId } = props;
+  const { anoLetivo, dreId, ueId, dreCodigo, ueCodigo } = props;
   return (
     <>
       <QuantidadeEncaminhamentosSituacao
@@ -22,6 +22,8 @@ const GraficosEncaminhamentos = props => {
         anoLetivo={anoLetivo}
         dreId={dreId}
         ueId={ueId}
+        dreCodigo={dreCodigo}
+        ueCodigo={ueCodigo}
       />
     </>
   );
@@ -31,12 +33,16 @@ GraficosEncaminhamentos.propTypes = {
   anoLetivo: PropTypes.oneOfType(PropTypes.any),
   dreId: PropTypes.string,
   ueId: PropTypes.string,
+  dreCodigo: PropTypes.string,
+  ueCodigo: PropTypes.string,
 };
 
 GraficosEncaminhamentos.defaultProps = {
   anoLetivo: null,
   dreId: '',
   ueId: '',
+  dreCodigo: '',
+  ueCodigo: '',
 };
 
 export default GraficosEncaminhamentos;

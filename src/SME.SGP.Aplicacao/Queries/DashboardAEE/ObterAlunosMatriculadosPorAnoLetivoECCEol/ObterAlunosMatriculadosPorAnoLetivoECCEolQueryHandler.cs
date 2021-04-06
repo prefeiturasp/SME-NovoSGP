@@ -29,11 +29,11 @@ namespace SME.SGP.Aplicacao
 
             var url = $"alunos/ano-letivo/{request.Ano}/matriculados?componentesCurriculares={componentesCurriculares}";
             var httpClient = httpClientFactory.CreateClient("servicoEOL");
-            if (request.DreId > 0)
-                url += $"&dreId={request.DreId}";
+            if (!string.IsNullOrEmpty(request.DreCodigo))
+                url += $"&dreId={request.DreCodigo}";
 
-            if (request.UeId > 0)
-                url += $"&ueId={request.UeId}";
+            if (!string.IsNullOrEmpty(request.UeCodigo))
+                url += $"&ueId={request.UeCodigo}";
 
             var resposta = await httpClient.GetAsync(url);
             if (resposta.IsSuccessStatusCode)

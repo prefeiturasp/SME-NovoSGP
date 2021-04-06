@@ -206,6 +206,12 @@ const DashboardAEE = () => {
                   anoLetivo={anoLetivo}
                   dreId={OPCAO_TODOS === dre?.codigo ? OPCAO_TODOS : dre?.id}
                   ueId={OPCAO_TODOS === ue?.codigo ? OPCAO_TODOS : ue?.id}
+                  dreCodigo={
+                    OPCAO_TODOS === dre?.codigo ? OPCAO_TODOS : dre?.codigo
+                  }
+                  ueCodigo={
+                    OPCAO_TODOS === ue?.codigo ? OPCAO_TODOS : ue?.codigo
+                  }
                 />
               ) : (
                 ''
