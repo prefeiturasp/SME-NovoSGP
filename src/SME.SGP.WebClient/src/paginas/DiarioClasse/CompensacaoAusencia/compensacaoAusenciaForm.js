@@ -754,7 +754,12 @@ const CompensacaoAusenciaForm = ({ match }) => {
       const novaListaAlunosAusenciaCompensada = obterListaAlunosComIdsSelecionados(
         alunosAusenciaTurma,
         idsAlunos
-      );
+      ).map(item => {
+        return {
+          ...item,
+          alunoSemSalvar: true,
+        };
+      });
 
       const novaListaAlunos = obterListaAlunosSemIdsSelecionados(
         alunosAusenciaTurma,
@@ -790,7 +795,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
       const dadosAlunoMsg = `${listaAlunosRemover[0]?.id} - ${listaAlunosRemover[0]?.nome}`;
       let confirmado = true;
 
-      if (listaAlunosRemover[0]?.quantidadeFaltasCompensadas) {
+      if (!listaAlunosRemover[0]?.alunoSemSalvar) {
         confirmado = await confirmar(
           'Excluir estudante',
           dadosAlunoMsg,
