@@ -201,8 +201,8 @@ namespace SME.SGP.Dominio.Servicos
                 {
                     throw new NegocioException("Não é possível cadastrar o evento pois não existe período escolar cadastrado para este calendário.");
                 }
-                var periodoAtual = periodoEscolar.FirstOrDefault(c => DateTime.Now >= c.PeriodoInicio && DateTime.Now <= c.PeriodoFim);
-                dataFinal = periodoAtual.PeriodoFim;
+                var periodoFinal = periodoEscolar.OrderByDescending(p => p.Bimestre).FirstOrDefault();
+                dataFinal = periodoFinal.PeriodoFim;
             }
             var eventos = evento.ObterRecorrencia(padraoRecorrencia, padraoRecorrenciaMensal, dataInicial, dataFinal.Value, diasDaSemana, repeteACada, diaDeOcorrencia);
             var notificacoesSucesso = new List<DateTime>();

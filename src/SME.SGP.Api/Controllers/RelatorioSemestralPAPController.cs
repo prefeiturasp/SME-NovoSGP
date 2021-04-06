@@ -22,7 +22,12 @@ namespace SME.SGP.Api.Controllers
         //[Permissao(Permissao.NC_C, Permissao.NC_I, Policy = "Bearer")]
         public async Task<IActionResult> ObterSemestres(string turmaCodigo, [FromServices]IMediator mediator)
         {
-            return Ok(await ObterListaSemestresUseCase.Executar(mediator, turmaCodigo));
+            var retorno = await ObterListaSemestresUseCase.Executar(mediator, turmaCodigo);
+
+            if (retorno == null || !retorno.Any())
+                return NoContent();
+
+            return Ok(retorno);
         }
 
         [HttpGet("turmas/{turmaCodigo}/semestres/{semestre}/alunos/{alunoCodigo}")]
