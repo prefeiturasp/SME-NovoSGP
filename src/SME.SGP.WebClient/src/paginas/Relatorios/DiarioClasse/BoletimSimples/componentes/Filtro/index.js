@@ -47,10 +47,13 @@ function Filtro({ onFiltrar, resetForm }) {
         anoLetivoSelecionado: anoLetivo           
       });     
       setModalidades(modalidades);
+
+      if (modalidades.length === 1)
+        setModalidadeId(modalidades[0].valor);
+
     }    
     if (anoLetivo)
       obterModalidades(); 
-
     setCarregandoModalidades(false);
   }, [anoLetivo]);  
 
