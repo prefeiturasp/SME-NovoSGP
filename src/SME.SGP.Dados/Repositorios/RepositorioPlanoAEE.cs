@@ -3,6 +3,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -275,6 +276,91 @@ namespace SME.SGP.Dados.Repositorios
                     planoAEEDto.Turma = turma;
                     return planoAEEDto;
                 }, new { planoId })).FirstOrDefault();
+        }
+
+        public async Task<IEnumerable<AEESituacaoPlanoDto>> ObterQuantidadeSituacoes(int ano, long dreId, long ueId)
+        {
+            var sql = new StringBuilder(@"select situacao, count(pa.id) as Quantidade from plano_aee pa ");
+            sql.Append(" inner join turma t on pa.turma_id = t.id ");
+            sql.Append(" inner join ue on t.ue_id = ue.id ");
+
+            var where = new StringBuilder(@" where t.ano_letivo = @ano ");
+
+            if (dreId > 0)
+            {
+                sql.Append(" inner join dre on ue.dre_id = ue.id ");
+                where.Append(" and dre.id = @dreId");
+            }
+
+            if (ueId > 0)
+            {
+                where.Append(" and ue.id = @ueId");
+            }
+
+            sql.Append(where.ToString());
+
+            sql.Append(" group by pa.situacao ");
+
+            return await database.Conexao.QueryAsync<AEESituacaoPlanoDto>(sql.ToString(), new { ano, dreId, ueId });
+        }
+
+        public async Task<IEnumerable<AEETurmaDto>> ObterQuantidadeVigentes(int ano, long dreId, long ueId)
+        {
+            var sql = new StringBuilder(@"select t.ano as AnoTurma, t.modalidade_codigo as Modalidade, count(pa.id) as Quantidade from plano_aee pa ");
+            sql.Append(" inner join turma t on pa.turma_id = t.id ");
+            sql.Append(" inner join ue on t.ue_id = ue.id ");
+
+            var where = new StringBuilder(@" where t.ano_letivo = @ano and pa.situacao in (1,2,8)");
+
+            if (dreId > 0)
+            {
+                sql.Append(" inner join dre on ue.dre_id = dre.id ");
+                where.Append(" and dre.id = @dreId");
+            }
+
+            if (ueId > 0)
+            {
+                where.Append(" and ue.id = @ueId");
+            }
+
+            sql.Append(where.ToString());
+
+            sql.Append(" group by t.ano, t.modalidade_codigo ");
+
+            return (await database.Conexao.QueryAsync<AEETurmaDto>(sql.ToString(), new { ano, dreId, ueId }))
+                .OrderBy(a => a.Ordem).ThenBy(a => a.Descricao);
+        }
+
+        public async Task<IEnumerable<AEEAcessibilidateDto>> ObterQuantidadeAcessibilidades(int ano, long dreId, long ueId)
+        {
+            var sql = new StringBuilder(@"select 
+                case when q.ordem = 7 then 'Regular' else 'SRM' end as Descricao,
+                or2.nome as opcao, count(par.id) as quantidade from plano_aee pa ");
+            sql.Append(" inner join turma t on pa.turma_id = t.id ");
+            sql.Append(" inner join ue on t.ue_id = ue.id ");
+            sql.Append(" inner join plano_aee_questao paq on paq.plano_aee_versao_id = (select max(id) from plano_aee_versao where plano_aee_id = pa.id) ");
+            sql.Append(" inner join questao q on paq.questao_id = q.id ");
+            sql.Append(" inner join plano_aee_resposta par on paq.id = par.plano_questao_id  ");
+            sql.Append(" inner join opcao_resposta or2 on par.resposta_id = or2.id ");
+            
+            var where = new StringBuilder(@" where t.ano_letivo = @ano and q.ordem in (7,8)");
+
+            if (dreId > 0)
+            {
+                sql.Append(" inner join dre on ue.dre_id = ue.id ");
+                where.Append(" and dre.id = @dreId");
+            }
+
+            if (ueId > 0)
+            {
+                where.Append(" and ue.id = @ueId");
+            }
+
+            sql.Append(where.ToString());
+
+            sql.Append(" group by or2.nome, q.ordem ");
+
+            return await database.Conexao.QueryAsync<AEEAcessibilidateDto>(sql.ToString(), new { ano, dreId, ueId });
         }
     }
 }
