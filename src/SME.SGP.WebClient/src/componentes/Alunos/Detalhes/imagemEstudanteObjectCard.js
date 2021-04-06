@@ -48,7 +48,7 @@ const ImagemEstudanteObjectCard = props => {
   }, [codigoEOL]);
 
   const onClickAlterarImagem = () => {
-    if (!exibirLoader && permiteAlterarImagem) {
+    if (codigoEOL && !exibirLoader && permiteAlterarImagem) {
       setExibirModal(true);
     }
   };
@@ -81,7 +81,7 @@ const ImagemEstudanteObjectCard = props => {
               <i className="far fa-user" />
             )}
           </span>
-          {permiteAlterarImagem ? (
+          {codigoEOL && permiteAlterarImagem ? (
             <div className="desc-alterar-imagem">Alterar imagem</div>
           ) : (
             ''

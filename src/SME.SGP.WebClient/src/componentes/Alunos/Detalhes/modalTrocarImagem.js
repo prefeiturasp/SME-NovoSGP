@@ -20,6 +20,15 @@ const ModalTrocarImagem = props => {
 
   const confirmacao = useSelector(state => state.alertas.confirmacao);
 
+  useEffect(() => {
+    if (!exibirModal) {
+      setExibirLoader(false);
+      setImagemAtual([]);
+      setExibirCarregarImagem(true);
+      setTrocouImagem(false);
+    }
+  }, [exibirModal]);
+
   const atualizarDadosImagem = dados => {
     if (dados) {
       setExibirCarregarImagem(false);
