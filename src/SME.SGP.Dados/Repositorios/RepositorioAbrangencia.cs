@@ -370,14 +370,14 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryFirstOrDefaultAsync<AbrangenciaUeRetorno>(query.ToString(), new { codigo, login, perfil }));
         }
 
-        public async Task<IEnumerable<AbrangenciaUeRetorno>> ObterUes(string codigoDre, string login, Guid perfil, Modalidade? modalidade = null, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0)
+        public async Task<IEnumerable<AbrangenciaUeRetorno>> ObterUes(string codigoDre, string login, Guid perfil, Modalidade? modalidade = null, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0, int[] ignorarTiposUE = null)
         {
             // Foi utilizada função de banco de dados com intuíto de melhorar a performance
             var query = @"select distinct codigo,
 	                                      nome as NomeSimples,
 	                                      tipoescola,
                                           ue_id as id
-	                         from f_abrangencia_ues(@login, @perfil, @consideraHistorico, @modalidade, @semestre, @codigoDre, @anoLetivo)
+	                         from f_abrangencia_ues(@login, @perfil, @consideraHistorico, @modalidade, @semestre, @codigoDre, @anoLetivo, @ignorarTiposUE)
                           order by 2;";
 
             var parametros = new
@@ -388,7 +388,8 @@ namespace SME.SGP.Dados.Repositorios
                 modalidade = modalidade ?? 0,
                 semestre = periodo,
                 codigoDre,
-                anoLetivo
+                anoLetivo,
+                ignorarTiposUE
             };
 
             return await database.Conexao.QueryAsync<AbrangenciaUeRetorno>(query, parametros);

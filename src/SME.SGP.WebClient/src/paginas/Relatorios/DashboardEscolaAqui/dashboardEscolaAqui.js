@@ -22,10 +22,12 @@ const DashboardEscolaAqui = () => {
   const obterUes = useCallback(async dre => {
     if (dre) {
       setCarregandoGeral(true);
-      const retorno = await ServicoFiltroRelatorio.obterUes(dre).catch(e => {
-        erros(e);
-        setCarregandoGeral(false);
-      });
+      const retorno = await ServicoFiltroRelatorio.obterUes(dre, true).catch(
+        e => {
+          erros(e);
+          setCarregandoGeral(false);
+        }
+      );
       if (retorno && retorno.data) {
         const lista = retorno.data.map(item => ({
           desc: item.nome,

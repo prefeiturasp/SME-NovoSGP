@@ -172,7 +172,15 @@ namespace SME.SGP.Dados.Repositorios
                     item.DataAtualizacao = DateTime.Today;
                     item.Dre = dres.First(x => x.CodigoDre == item.Dre.CodigoDre);
                     item.DreId = item.Dre.Id;
-                    item.Id = (long)await contexto.Conexao.InsertAsync(item);
+                    try
+                    {
+                        item.Id = (long)await contexto.Conexao.InsertAsync(item);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw ex;
+                    }
+                    
                     resultado.Add(item);
                 }
 

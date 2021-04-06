@@ -188,17 +188,6 @@ const RelatorioLeitura = () => {
       desabilitar = true;
     }
 
-    if (
-      !desabilitar &&
-      codigoDre &&
-      codigoUe &&
-      codigoDre !== OPCAO_TODOS &&
-      codigoUe !== OPCAO_TODOS &&
-      !turmaId
-    ) {
-      desabilitar = true;
-    }
-
     setDesabilitarGerar(desabilitar);
   }, [anoLetivo, codigoDre, codigoUe, turmaId, modalidadeId, semestre]);
 
@@ -227,7 +216,7 @@ const RelatorioLeitura = () => {
       setCarregandoUes(true);
       const resposta = await AbrangenciaServico.buscarUes(
         codigoDre,
-        `v1/abrangencias/${consideraHistorico}/dres/${codigoDre}/ues?anoLetivo=${anoLetivo}`,
+        `v1/abrangencias/${consideraHistorico}/dres/${codigoDre}/ues?anoLetivo=${anoLetivo}&consideraNovasUEs=${true}`,
         true
       )
         .catch(e => erros(e))
