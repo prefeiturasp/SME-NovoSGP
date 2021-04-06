@@ -91,6 +91,8 @@ const CampoData = ({
   carregando,
   campoOpcional,
   executarOnChangeExterno,
+  valorPadrao,
+  diasParaSinalizar,
 }) => {
   const habilitarDatas = dataAtual => {
     let retorno = true;
@@ -140,6 +142,39 @@ const CampoData = ({
     <Icon style={{ fontSize: '16px', lineHeight: 0 }} type="calendar" />
   );
 
+  const dataRender = (dataRenderizar, dataAtualSelecionada) => {
+    const style = {};
+    if (diasParaSinalizar?.length) {
+      const temDiaNaLista = diasParaSinalizar.find(dataSinalizar =>
+        dataSinalizar?.isSame(
+          moment(dataRenderizar).format('YYYY-MM-DD'),
+          'date'
+        )
+      );
+      if (
+        temDiaNaLista &&
+        moment.isMoment(dataAtualSelecionada) &&
+        !dataRenderizar?.isSame(
+          moment(dataAtualSelecionada).format('YYYY-DD-MM'),
+          'date'
+        )
+      ) {
+        style.color = Base.AzulAnakiwa;
+        style.border = `1px solid ${Base.AzulAnakiwa}`;
+      }
+    }
+    return (
+      <div
+        className="ant-calendar-date"
+        aria-selected="false"
+        aria-disabled="false"
+        style={style}
+      >
+        {dataRenderizar.date()}
+      </div>
+    );
+  };
+
   const campoDataAntComValidacoes = () => {
     return (
       <Field name={name} id={name}>
@@ -170,6 +205,8 @@ const CampoData = ({
                 disabledDate={habilitarDatas}
                 showToday={false}
                 value={value || null}
+                defaultPickerValue={valorPadrao}
+                dataRender={dataRender}
               />
             </div>
           </div>
@@ -197,6 +234,8 @@ const CampoData = ({
         value={valor || null}
         disabledDate={habilitarDatas}
         showToday={false}
+        defaultPickerValue={valorPadrao}
+        dateRender={dataRender}
       />
     );
   };
@@ -296,6 +335,8 @@ CampoData.propTypes = {
   carregando: PropTypes.bool,
   campoOpcional: PropTypes.bool,
   executarOnChangeExterno: PropTypes.bool,
+  valorPadrao: PropTypes.string,
+  diasParaSinalizar: PropTypes.oneOfType([PropTypes.array]),
 };
 
 CampoData.defaultProps = {
@@ -317,6 +358,8 @@ CampoData.defaultProps = {
   carregando: false,
   campoOpcional: false,
   executarOnChangeExterno: false,
+  valorPadrao: '',
+  diasParaSinalizar: [],
 };
 
 const momentSchema = new MomentSchema();
