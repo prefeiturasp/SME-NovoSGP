@@ -8,17 +8,19 @@ using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterPlanosAEEAcessibilidadesQuery : IRequest<IEnumerable<AEEAcessibilidadeRetornoDto>>
+    public class ObterAlunosMatriculadosPorAnoLetivoECCEolQuery : IRequest<IEnumerable<AlunosMatriculadosEolDto>>
     {
         public long UeId { get; set; }
         public int Ano { get; set; }
         public long DreId { get; set; }
+        public int[] ComponentesCurriculares { get; set; }
 
-        public ObterPlanosAEEAcessibilidadesQuery(int ano, long dreId, long ueId)
+        public ObterAlunosMatriculadosPorAnoLetivoECCEolQuery(int ano, long dreId, long ueId, int[] componentesCurriculares)
         {
             Ano = ano;
             DreId = dreId;
             UeId = ueId;
+            ComponentesCurriculares = componentesCurriculares;
         }
     }
 }

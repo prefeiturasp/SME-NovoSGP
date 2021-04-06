@@ -85,5 +85,19 @@ namespace SME.SGP.Api.Controllers
                 UeId = ueId
             }));
         }
+
+        [HttpGet("encaminhamentos/matriculados-srm-paee")]
+        [ProducesResponseType(typeof(AEEAcessibilidadeRetornoDto), 200)]
+        [ProducesResponseType(typeof(AEEAcessibilidadeRetornoDto), 204)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ObterAlunosMatriculadosSRMPAEE([FromQuery] int anoLetivo, [FromQuery] long dreId, long ueId, [FromServices] IObterAlunosMatriculadosSRMPAEEUseCase useCase)
+        {
+            return Ok(await useCase.Executar(new FiltroDashboardAEEDto()
+            {
+                AnoLetivo = anoLetivo,
+                DreId = dreId,
+                UeId = ueId
+            }));
+        }
     }
 }
