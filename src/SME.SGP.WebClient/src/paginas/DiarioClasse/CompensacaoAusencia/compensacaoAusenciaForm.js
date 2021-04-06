@@ -786,17 +786,20 @@ const CompensacaoAusenciaForm = ({ match }) => {
       const listaAlunosRemover = alunosAusenciaCompensada.filter(item =>
         idsAlunosAusenciaCompensadas.find(id => String(id) === String(item.id))
       );
-      const confirmado = await confirmar(
-        'Excluir estudante',
-        listaAlunosRemover.map(item => {
-          return `${item.id} - ${item.nome}`;
-        }),
-        'A frequência do(s) seguinte(s) estudante(s) será recalculada somente quando salvar as suas alterações',
-        'Excluir',
-        'Cancelar',
-        true
-      );
 
+      const dadosAlunoMsg = `${listaAlunosRemover[0]?.id} - ${listaAlunosRemover[0]?.nome}`;
+      let confirmado = true;
+
+      if (listaAlunosRemover[0]?.quantidadeFaltasCompensadas) {
+        confirmado = await confirmar(
+          'Excluir estudante',
+          dadosAlunoMsg,
+          'A frequência do(s) seguinte(s) estudante(s) será recalculada somente quando salvar as suas alterações',
+          'Excluir',
+          'Cancelar',
+          true
+        );
+      }
       if (confirmado) {
         const novaListaAlunosOriginal = obterListaAlunosComIdsSelecionados(
           alunosAusenciaTurmaOriginal,
