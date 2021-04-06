@@ -8,11 +8,16 @@ const ObjectCardRegistroIndividual = () => {
     store => store.registroIndividual.dadosAlunoObjectCard
   );
 
+  const desabilitarCampos = useSelector(
+    state => state.registroIndividual.desabilitarCampos
+  );
+
   return (
     <DetalhesAluno
       exibirBotaoImprimir={false}
       exibirFrequencia={false}
       dados={dadosAlunoObjectCard}
+      permiteAlterarImagem={!desabilitarCampos}
     />
   );
 };

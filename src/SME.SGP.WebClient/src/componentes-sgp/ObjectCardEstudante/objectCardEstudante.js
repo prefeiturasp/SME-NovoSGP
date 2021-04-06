@@ -13,6 +13,7 @@ const ObjectCardEstudante = props => {
     anoLetivo,
     exibirBotaoImprimir,
     exibirFrequencia,
+    permiteAlterarImagem,
   } = props;
 
   const dispatch = useDispatch();
@@ -69,6 +70,7 @@ const ObjectCardEstudante = props => {
         dados={dadosObjectCardEstudante}
         exibirBotaoImprimir={exibirBotaoImprimir}
         exibirFrequencia={exibirFrequencia}
+        permiteAlterarImagem={permiteAlterarImagem}
       />
     </Loader>
   );
@@ -79,6 +81,7 @@ ObjectCardEstudante.propTypes = {
   anoLetivo: PropTypes.oneOfType([PropTypes.any]),
   exibirBotaoImprimir: PropTypes.bool,
   exibirFrequencia: PropTypes.bool,
+  permiteAlterarImagem: PropTypes.bool,
 };
 
 ObjectCardEstudante.defaultProps = {
@@ -86,6 +89,7 @@ ObjectCardEstudante.defaultProps = {
   anoLetivo: '',
   exibirBotaoImprimir: true,
   exibirFrequencia: true,
+  permiteAlterarImagem: true,
 };
 
 export default ObjectCardEstudante;
