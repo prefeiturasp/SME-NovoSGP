@@ -3,10 +3,11 @@ import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { ContainerTabsCard } from '~/componentes/tabs/tabs.css';
-import { setTabAtualComponenteCurricular,
-         setExibirLoaderPlanoAnual,
-         setListaComponentesCheck
-        } from '~/redux/modulos/anual/actions';
+import {
+  setTabAtualComponenteCurricular,
+  setExibirLoaderPlanoAnual,
+  setListaComponentesCheck,
+} from '~/redux/modulos/anual/actions';
 import ServicoPlanoAnual from '~/servicos/Paginas/ServicoPlanoAnual';
 import DescricaoPlanejamento from '../DescricaoPlanejamento/descricaoPlanejamento';
 import ListaObjetivos from '../ListaObjetivos/listaObjetivos';
@@ -20,7 +21,9 @@ const { TabPane } = Tabs;
 
 const TabsComponentesCorriculares = props => {
   const dispatch = useDispatch();
-  const listaComponentesCheck = useSelector(store => store.planoAnual.listaComponentesCheck);
+  const listaComponentesCheck = useSelector(
+    store => store.planoAnual.listaComponentesCheck
+  );
 
   const usuario = useSelector(store => store.usuario);
   const { turmaSelecionada } = usuario;
@@ -61,7 +64,7 @@ const TabsComponentesCorriculares = props => {
         />
       </div>
     );
-  };  
+  };
 
   const onChangeTab = useCallback(
     codigoComponente => {
@@ -90,34 +93,61 @@ const TabsComponentesCorriculares = props => {
       listaComponentesCurricularesPlanejamento,
       turmaSelecionada,
     ]
-  ); 
+  );
 
   useEffect(() => {
     async function verificarComponentesComObjetivos() {
-      try {                
-        if(listaComponentesCurricularesPlanejamento.length){                   
-          dispatch(setExibirLoaderPlanoAnual(true));          
+      try {
+        const mudouTurma = listaComponentesCheck.find(
+          item => item.turmaSelecionada !== turmaSelecionada.id
+        );
+        if (mudouTurma) {
+          dispatch(setListaComponentesCheck([]));
+        }
+        if (listaComponentesCurricularesPlanejamento.length) {
+          dispatch(setExibirLoaderPlanoAnual(true));
           listaComponentesCurricularesPlanejamento.map(async item => {
-            if(!listaComponentesCheck?.filter(f => f.componenteId == item.codigoComponenteCurricular && f.bimestreId == dadosBimestre.id).length){
-              const { componentes } = await ServicoPlanoAnual.verificarDadosPlanoPorComponenteCurricular(
+            if (
+              !listaComponentesCheck?.filter(
+                f =>
+                  f.componenteId == item.codigoComponenteCurricular &&
+                  f.bimestreId == dadosBimestre.id
+              ).length
+            ) {
+              const {
+                componentes,
+              } = await ServicoPlanoAnual.verificarDadosPlanoPorComponenteCurricular(
                 turmaSelecionada.id,
                 item.codigoComponenteCurricular,
-                dadosBimestre.id              
+                dadosBimestre.id
               );
-              if(componentes[0]?.objetivosAprendizagemId?.length || componentes[0]?.descricao){                 
-                let tempComponentesComObjetivos = listaComponentesCheck;
-                const novoItem = { componenteId : item.codigoComponenteCurricular, bimestreId: dadosBimestre.id}
-                tempComponentesComObjetivos.push(novoItem);                
-                dispatch(setListaComponentesCheck(tempComponentesComObjetivos));                                          
+              if (
+                componentes[0]?.objetivosAprendizagemId?.length ||
+                componentes[0]?.descricao
+              ) {
+                const tempComponentesComObjetivos = listaComponentesCheck;
+                const novoItem = {
+                  componenteId: item.codigoComponenteCurricular,
+                  bimestreId: dadosBimestre.id,
+                  turmaSelecionada: turmaSelecionada.id,
+                };
+                tempComponentesComObjetivos.push(novoItem);
+                dispatch(setListaComponentesCheck(tempComponentesComObjetivos));
               }
-            }                                    
+            }
           });
-          dispatch(setExibirLoaderPlanoAnual(false));          
+          dispatch(setExibirLoaderPlanoAnual(false));
         }
       } catch (error) {}
     }
     verificarComponentesComObjetivos();
-  }, [listaComponentesCurricularesPlanejamento,dadosBimestre]);
+  }, [
+    listaComponentesCurricularesPlanejamento,
+    dadosBimestre,
+    dispatch,
+    turmaSelecionada.id,
+    listaComponentesCheck,
+  ]);
 
   // Quando tiver somente uma tab(componente curricular) já selecionar!
   useEffect(() => {
@@ -128,22 +158,28 @@ const TabsComponentesCorriculares = props => {
       onChangeTab(
         listaComponentesCurricularesPlanejamento[0].codigoComponenteCurricular
       );
-    }    
+    }
   }, [onChangeTab, clicouNoBimestre, listaComponentesCurricularesPlanejamento]);
 
   const obterDescricaoNomeTabComponenteCurricular = (
     nome,
     codigoComponenteCurricular
   ) => {
-
-    if(listaComponentesCheck?.length){
-      if(listaComponentesCheck.filter(item => item.componenteId == codigoComponenteCurricular && item.bimestreId == dadosBimestre.id).length){
+    if (listaComponentesCheck?.length) {
+      if (
+        listaComponentesCheck.filter(
+          item =>
+            item.componenteId == codigoComponenteCurricular &&
+            item.bimestreId == dadosBimestre.id
+        ).length
+      ) {
         return (
           <DescricaoNomeTabComponenteCurricular
             title={nome}
             tabSelecionada={
-              String(tabAtualComponenteCurricular?.codigoComponenteCurricular) ===
-              String(codigoComponenteCurricular)
+              String(
+                tabAtualComponenteCurricular?.codigoComponenteCurricular
+              ) === String(codigoComponenteCurricular)
             }
           >
             <span className="desc-nome">{nome}</span>
