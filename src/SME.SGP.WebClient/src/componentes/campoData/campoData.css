@@ -70,7 +70,7 @@
 .ant-calendar-date:hover {
   background: #086397;
   cursor: pointer;
-  color: #ffffff;
+  color: #ffffff !important;
 }
 
 .ant-calendar-disabled-cell.ant-calendar-today .ant-calendar-date {
