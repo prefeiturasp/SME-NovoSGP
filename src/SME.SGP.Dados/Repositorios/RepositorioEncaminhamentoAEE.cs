@@ -261,7 +261,8 @@ namespace SME.SGP.Dados.Repositorios
 
             sql.Append(" group by t.ano, t.modalidade_codigo ");
 
-            return await database.Conexao.QueryAsync<AEETurmaDto>(sql.ToString(), new { ano, dreId, ueId });
+            return (await database.Conexao.QueryAsync<AEETurmaDto>(sql.ToString(), new { ano, dreId, ueId }))
+                .OrderBy(a => a.Ordem).ThenBy(a => a.Descricao);
         }
     }
 }
