@@ -49,13 +49,14 @@ namespace SME.SGP.Aplicacao
                     .Select(x => new DatasAulasDto()
                     {
                         Data = x.Key,
-                        Aulas = x.OrderBy(a => a.AulaCJ).Select(a => new AulaSimplesDto()
+                        Aulas = x.OrderBy(a => a.AulaCJ).Select(async a => new AulaSimplesDto()
                         {
                             AulaId = a.IdAula,
                             AulaCJ = a.AulaCJ,
                             ProfessorRf = a.ProfessorRf,
-                            CriadoPor = a.CriadoPor
-                        })
+                            CriadoPor = a.CriadoPor,
+                            PossuiFrequenciaRegistrada = await mediator.Send(new ObterAulaPossuiFrequenciaQuery(a.IdAula))
+                        }).Select(a => a.Result)
                     });
         }
 
