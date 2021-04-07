@@ -124,11 +124,13 @@ namespace SME.SGP.Dominio.Servicos
 
             var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesPorTurmasCodigoQuery(turmasCodigos, usuarioAtual.PerfilAtual, usuarioAtual.Login, turma.EnsinoEspecial, turma.TurnoParaComponentesCurriculares));
             // Filtra componentes que lançam frequência
-            var componentesCurricularesBaseNacional = componentesCurriculares.Where(c => c.RegistraFrequencia);
-            foreach (var componenteCurricular in componentesCurriculares)
+            var componentesCurriculareslancaFrequencia = componentesCurriculares.Where(c => c.RegistraFrequencia);
+            var componentesCurricularesCodigos = componentesCurriculareslancaFrequencia.Select(c => c.CodigoComponenteCurricular.ToString()).ToArray();
+
+            var frequencias = await mediator.Send(new ObterFrequenciasAlunosPorCodigoAlunoCodigoComponentesTurmaQuery(alunoCodigo, turmasCodigos, componentesCurricularesCodigos));
+            foreach (var frequencia in frequencias)
             {
-                var frequenciaGeralComponente = await consultasFrequencia.ObterFrequenciaGeralAlunoPorTurmaEComponente(alunoCodigo, componenteCurricular.TurmaCodigo, componenteCurricular.CodigoComponenteCurricular.ToString());
-                if (frequenciaGeralComponente != null && frequenciaGeralComponente.PercentualFrequencia < parametroFrequenciaBaseNacional)
+                if (frequencia.PercentualFrequencia < parametroFrequenciaBaseNacional)
                     return false;
             }
 

@@ -286,5 +286,23 @@ namespace SME.SGP.Dados.Repositorios
                     tipoCalendarioId
                 });
         }
+
+        public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciasAlunosPorCodigoAlunoCodigoComponentesTurmaAsync(string alunoCodigo, string[] turmasCodigos, string[] componenteCurricularCodigos)
+        {
+            var query = $@"select * 
+                            from frequencia_aluno
+                           where tipo = 1
+	                        and codigo_aluno = @alunoCodigo
+                            and turma_id = ANY(@turmasCodigos)
+                            and disciplina_id = ANY(@componenteCurricularCodigos)";
+
+            return await database.Conexao
+                .QueryAsync<FrequenciaAluno>(query.ToString(), new
+                {
+                    alunoCodigo,
+                    turmasCodigos,
+                    componenteCurricularCodigos
+                });
+        }
     }
 }
