@@ -23,17 +23,17 @@ namespace SME.SGP.Aplicacao
             var alunosMatriculadosEol = await mediator.Send(new ObterAlunosMatriculadosPorAnoLetivoECCEolQuery(param.AnoLetivo, param.DreCodigo, param.UeCodigo, new int[] { 1030, 1310 }));
             if(alunosMatriculadosEol.Any())
             {
-                return MapearParaDto(alunosMatriculadosEol);
+                return param.UeCodigo != null ? MapearParaDtoModalidade(alunosMatriculadosEol.GroupBy(a => $"{a.Modalidade}")) : MapearParaDto(alunosMatriculadosEol.GroupBy(a => $"{a.Modalidade} - {a.Ano}"));
             }
 
             return null;
         }
 
-        private static IEnumerable<AEEAlunosMatriculadosDto> MapearParaDto(IEnumerable<AlunosMatriculadosEolDto> alunosMatriculadosEol)
+        private static IEnumerable<AEEAlunosMatriculadosDto> MapearParaDto(IEnumerable<IGrouping<string, AlunosMatriculadosEolDto>> alunosMatriculadosEol)
         {
             List<AEEAlunosMatriculadosDto> alunos = new List<AEEAlunosMatriculadosDto>();
 
-            foreach (var alunoMatriculadoEol in alunosMatriculadosEol.GroupBy(a => $"{a.Modalidade} - {a.Ano}"))
+            foreach (var alunoMatriculadoEol in alunosMatriculadosEol)
             {
                 AEEAlunosMatriculadosDto aluno = new AEEAlunosMatriculadosDto()
                 {
@@ -43,6 +43,29 @@ namespace SME.SGP.Aplicacao
                     LegendaSRM = "Qtd. de matriculados SRM",
                     QuantidadePAEE = alunoMatriculadoEol.Any(a => a.ComponenteCurricularId == 1310) ? alunoMatriculadoEol.FirstOrDefault(a => a.ComponenteCurricularId == 1310).Quantidade : 0,
                     QuantidadeSRM = alunoMatriculadoEol.Any(a => a.ComponenteCurricularId == 1030) ? alunoMatriculadoEol.FirstOrDefault(a => a.ComponenteCurricularId == 1030).Quantidade : 0,
+                };
+                alunos.Add(aluno);
+
+            }
+            return alunos
+                .OrderBy(a => a.Ordem)
+                .ThenBy(a => a.Descricao);
+        }
+
+        private static IEnumerable<AEEAlunosMatriculadosDto> MapearParaDtoModalidade(IEnumerable<IGrouping<string, AlunosMatriculadosEolDto>> alunosMatriculadosEol)
+        {
+            List<AEEAlunosMatriculadosDto> alunos = new List<AEEAlunosMatriculadosDto>();
+
+            foreach (var alunoMatriculadoEol in alunosMatriculadosEol)
+            {
+                AEEAlunosMatriculadosDto aluno = new AEEAlunosMatriculadosDto()
+                {
+                    Ordem = alunoMatriculadoEol.First().Ordem,
+                    Descricao = alunoMatriculadoEol.Key,
+                    LegendaPAEE = "Qtd. de matriculados PAEE colaborativo",
+                    LegendaSRM = "Qtd. de matriculados SRM",
+                    QuantidadePAEE = alunoMatriculadoEol.Any(a => a.ComponenteCurricularId == 1310) ? alunoMatriculadoEol.Where(a => a.ComponenteCurricularId == 1310).Sum(a => a.Quantidade) : 0,
+                    QuantidadeSRM = alunoMatriculadoEol.Any(a => a.ComponenteCurricularId == 1030) ? alunoMatriculadoEol.Where(a => a.ComponenteCurricularId == 1030).Sum(a => a.Quantidade) : 0,
                 };
                 alunos.Add(aluno);
 

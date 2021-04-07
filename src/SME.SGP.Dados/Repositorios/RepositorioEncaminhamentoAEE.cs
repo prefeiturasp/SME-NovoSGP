@@ -240,7 +240,14 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<AEETurmaDto>> ObterQuantidadeDeferidos(int ano, long dreId, long ueId)
         {
-            var sql = new StringBuilder(@"select t.ano as AnoTurma, t.modalidade_codigo as Modalidade, count(ea.id) as Quantidade from encaminhamento_aee ea ");
+            var sql = new StringBuilder(@"select t.modalidade_codigo as Modalidade, count(ea.id) as Quantidade ");
+
+            if (ueId == 0)
+            {
+                sql.Append(", t.ano as AnoTurma ");
+            }
+
+            sql.Append(" from encaminhamento_aee ea ");
             sql.Append(" inner join turma t on ea.turma_id = t.id ");
             sql.Append(" inner join ue on t.ue_id = ue.id ");
 
@@ -259,7 +266,12 @@ namespace SME.SGP.Dados.Repositorios
 
             sql.Append(where.ToString());
 
-            sql.Append(" group by t.ano, t.modalidade_codigo ");
+            sql.Append(" group by t.modalidade_codigo ");
+            if (ueId == 0)
+            {
+                sql.Append(", t.ano ");
+            }
+            
 
             return (await database.Conexao.QueryAsync<AEETurmaDto>(sql.ToString(), new { ano, dreId, ueId }))
                 .OrderBy(a => a.Ordem).ThenBy(a => a.Descricao);
