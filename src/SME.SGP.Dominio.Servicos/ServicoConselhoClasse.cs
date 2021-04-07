@@ -368,14 +368,23 @@ namespace SME.SGP.Dominio.Servicos
             //var notasAluno = await repositorioConselhoClasseNota.ObterNotasAlunoPorTurmasAsync(alunoCodigo, turmasCodigos, periodoEscolarId);
             if (periodoEscolarId.HasValue)
                 notasParaVerificar.AddRange(await mediator.Send(new ObterNotasFechamentosPorTurmasCodigosBimestreQuery(turmasCodigos, alunoCodigo, bimestre)));
-            else notasParaVerificar.AddRange(await consultasConselhoClasseNota.ObterNotasFinaisBimestresAlunoAsync(alunoCodigo, turmasCodigos));
+            else
+            {
+                var todasAsNotas = await consultasConselhoClasseNota.ObterNotasFinaisBimestresAlunoAsync(alunoCodigo, turmasCodigos);
+                if (todasAsNotas!= null && todasAsNotas.Any())
+                    notasParaVerificar.AddRange(todasAsNotas.Where( a => a.Bimestre == null));
+            }
+
 
             var componentesCurriculares = await ObterComponentesTurmas(turmasCodigos, turma.EnsinoEspecial, turma.TurnoParaComponentesCurriculares);
 
             // Checa se todas as disciplinas da turma receberam nota
             foreach (var componenteCurricular in componentesCurriculares.Where(c => c.LancaNota))
+            {
                 if (!notasParaVerificar.Any(c => c.ComponenteCurricularCodigo == componenteCurricular.CodigoComponenteCurricular))
                     return false;
+            }
+                
 
             return true;
         }
