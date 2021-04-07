@@ -160,6 +160,12 @@ export const setDesenvolvimentoDaAulaValidaObrigatoriedade = payload => ({
 });
 
 export const setobjetivosEspecificosParaAulaValidarObrigatoriedade = payload => ({
-  type: '@frequenciaPlanoAula/setobjetivosEspecificosParaAulaValidarObrigatoriedade',
+  type:
+    '@frequenciaPlanoAula/setobjetivosEspecificosParaAulaValidarObrigatoriedade',
+  payload,
+});
+
+export const setAtualizarDatas = payload => ({
+  type: '@frequenciaPlanoAula/setAtualizarDatas',
   payload,
 });
