@@ -90,16 +90,13 @@ const NovoRegistroIndividual = () => {
     setExibirCollapse(false);
   }, [podeRealizarNovoRegistro, setExibirCollapse, dadosAlunoObjectCard]);
 
-  const validaPermissoes = useCallback(
-    temDadosNovosRegistros => {
-      const novoRegistro = verificaSomenteConsulta(permissoesTela);
+  const validaPermissoes = useCallback(() => {
+    const novoRegistro = verificaSomenteConsulta(permissoesTela);
 
-      const desabilitar = novoRegistro || temDadosNovosRegistros;
+    const desabilitar = novoRegistro || !podeRealizarNovoRegistro;
 
-      dispatch(setDesabilitarCampos(!!desabilitar));
-    },
-    [dispatch, permissoesTela]
-  );
+    dispatch(setDesabilitarCampos(!!desabilitar));
+  }, [dispatch, permissoesTela, podeRealizarNovoRegistro]);
 
   const mudarEditor = useCallback(
     novoRegistro => {
@@ -191,7 +188,7 @@ const NovoRegistroIndividual = () => {
 
   useEffect(() => {
     if (podeRealizarNovoRegistro) {
-      validaPermissoes(podeRealizarNovoRegistro);
+      validaPermissoes();
     }
   }, [validaPermissoes, podeRealizarNovoRegistro]);
 
