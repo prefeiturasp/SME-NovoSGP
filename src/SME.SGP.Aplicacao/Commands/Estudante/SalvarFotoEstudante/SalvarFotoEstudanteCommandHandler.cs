@@ -7,6 +7,7 @@ using SME.SGP.Infra;
 using System;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -25,12 +26,16 @@ namespace SME.SGP.Aplicacao
 
         public async Task<Guid> Handle(SalvarFotoEstudanteCommand request, CancellationToken cancellationToken)
         {
-
-            var aluno = await mediator.Send(new ObterAlunoPorCodigoEAnoQuery(request.AlunoCodigo, DateTime.Now.Year));
-            if (aluno == null)
-                throw new NegocioException("O aluno informado não foi encontrado");
+            //if (!(await ValidarAlunoNaTurma(request.AlunoCodigo, request.TurmaCodigo)))
+            //    throw new NegocioException("O aluno informado não foi encontrado");
             
             return await GerarFotoAluno(request.AlunoCodigo, request.File);
+        }
+
+        private async Task<bool> ValidarAlunoNaTurma(string alunoCodigo, string turmaCodigo)
+        {
+            var alunos = await mediator.Send(new ObterAlunosSimplesDaTurmaQuery(turmaCodigo));
+            return alunos.Any(a => a.Codigo == alunoCodigo);
         }
 
         private async Task<Guid> GerarFotoAluno(string alunoCodigo, IFormFile file)
