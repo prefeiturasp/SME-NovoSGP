@@ -128,11 +128,7 @@ namespace SME.SGP.Dominio.Servicos
             var componentesCurricularesCodigos = componentesCurriculareslancaFrequencia.Select(c => c.CodigoComponenteCurricular.ToString()).ToArray();
 
             var frequencias = await mediator.Send(new ObterFrequenciasAlunosPorCodigoAlunoCodigoComponentesTurmaQuery(alunoCodigo, turmasCodigos, componentesCurricularesCodigos));
-            foreach (var frequencia in frequencias)
-            {
-                if (frequencia.PercentualFrequencia < parametroFrequenciaBaseNacional)
-                    return false;
-            }
+            if (frequencias.Any(f => f.PercentualFrequencia < parametroFrequenciaBaseNacional)) return false;
 
             return true;
         }
