@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -102,14 +103,32 @@ namespace SME.SGP.Dominio.Servicos
             if (!await ValidarFrequenciaGeralAluno(alunoCodigo, turmaCodigo))
                 return false;
 
-            var parametroFrequenciaBaseNacional = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.PercentualFrequenciaCriticoBaseNacional, DateTime.Today.Year)));
-            var componentesCurriculares = await servicoEOL.ObterDisciplinasPorCodigoTurma(turmaCodigo);
-            // Filtra componentes da Base Nacional
-            var componentesCurricularesBaseNacional = componentesCurriculares.Where(c => c.BaseNacional);
-            foreach (var componenteCurricular in componentesCurricularesBaseNacional)
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaCodigo));
+
+            string[] turmasCodigos;
+
+            if (turma.DeveVerificarRegraRegulares())
             {
-                var frequenciaGeralComponente = await consultasFrequencia.ObterFrequenciaGeralAluno(alunoCodigo, turmaCodigo, componenteCurricular.CodigoComponenteCurricular.ToString());
-                if (frequenciaGeralComponente < parametroFrequenciaBaseNacional)
+                List<TipoTurma> turmasCodigosParaConsulta = new List<TipoTurma>() { turma.TipoTurma };
+                turmasCodigosParaConsulta.AddRange(turma.ObterTiposRegularesDiferentes());
+                turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, turmasCodigosParaConsulta));
+            }
+            else
+            {
+                turmasCodigos = new string[1] { turma.CodigoTurma };
+            }
+
+            var parametroFrequenciaBaseNacional = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.PercentualFrequenciaCriticoBaseNacional, DateTime.Today.Year)));
+
+            Usuario usuarioAtual = await mediator.Send(new ObterUsuarioLogadoQuery());
+
+            var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesPorTurmasCodigoQuery(turmasCodigos, usuarioAtual.PerfilAtual, usuarioAtual.Login, turma.EnsinoEspecial, turma.TurnoParaComponentesCurriculares));
+            // Filtra componentes que lançam frequência
+            var componentesCurricularesBaseNacional = componentesCurriculares.Where(c => c.RegistraFrequencia);
+            foreach (var componenteCurricular in componentesCurriculares)
+            {
+                var frequenciaGeralComponente = await consultasFrequencia.ObterFrequenciaGeralAlunoPorTurmaEComponente(alunoCodigo, componenteCurricular.TurmaCodigo, componenteCurricular.CodigoComponenteCurricular.ToString());
+                if (frequenciaGeralComponente != null && frequenciaGeralComponente.PercentualFrequencia < parametroFrequenciaBaseNacional)
                     return false;
             }
 
