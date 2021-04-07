@@ -40,7 +40,12 @@ namespace SME.SGP.Aplicacao
                     {
                         try
                         {
-                            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.SincronizaEstruturaInstitucionalTurmasSync, ue.CodigoUe, Guid.NewGuid(), null, fila: RotasRabbit.SincronizaEstruturaInstitucionalTurmasSync));
+                            var publicarSyncTurma = await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.SincronizaEstruturaInstitucionalTurmasSync, ue.CodigoUe, Guid.NewGuid(), null, fila: RotasRabbit.SincronizaEstruturaInstitucionalTurmasSync));
+                            if (!publicarSyncTurma)
+                            {
+                                var erro = new NegocioException($"Não foi possível iniciar a sincronização das turmas da UE : {ue.CodigoUe}.");
+                                SentrySdk.CaptureException(erro);
+                            }
                         }
                         catch (Exception ex)
                         {
