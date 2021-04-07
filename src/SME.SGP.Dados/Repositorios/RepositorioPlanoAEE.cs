@@ -306,11 +306,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<AEETurmaDto>> ObterQuantidadeVigentes(int ano, long dreId, long ueId)
         {
-            var sql = new StringBuilder(@"select t.modalidade_codigo as Modalidade, count(pa.id) as Quantidade");
-            if (ueId == 0)
-            {
-                sql.Append(", t.ano as AnoTurma ");
-            }
+            var sql = new StringBuilder(@"select t.nome, t.modalidade_codigo as Modalidade, count(pa.id) as Quantidade, t.ano as AnoTurma ");
             sql.Append(" from plano_aee pa ");
 
             sql.Append(" inner join turma t on pa.turma_id = t.id ");
@@ -331,13 +327,7 @@ namespace SME.SGP.Dados.Repositorios
             }
 
             sql.Append(where.ToString());
-
-            sql.Append(" group by t.modalidade_codigo ");
-
-            if (ueId == 0)
-            {
-                sql.Append(", t.ano ");
-            }
+            sql.Append(" group by t.modalidade_codigo, t.nome, t.ano  ");
 
             return (await database.Conexao.QueryAsync<AEETurmaDto>(sql.ToString(), new { ano, dreId, ueId }))
                 .OrderBy(a => a.Ordem).ThenBy(a => a.Descricao);

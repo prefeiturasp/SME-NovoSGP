@@ -11,6 +11,7 @@ namespace SME.SGP.Infra.Dtos
         public int Quantidade { get; set; }
         public int Ordem { get; set; }
         public string Modalidade { get; set; }
+        public string Turma { get; set; }
         public string Ano { get; set; }
     }
 }
