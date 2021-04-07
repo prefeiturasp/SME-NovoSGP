@@ -68,7 +68,8 @@ const ListasNotasConceitos = props => {
       dispatch(setDadosListasNotasConceitos(resultado.data.notasConceitos));
       dispatch(setPodeEditarNota(resultado.data.podeEditarNota));
       setExibir(true);
-      habilitaConselhoClasse(resultado.data);
+      if (bimestreSelecionado?.valor !== 'final')
+        habilitaConselhoClasse(resultado.data);
     } else {
       setExibir(false);
     }
