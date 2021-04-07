@@ -19,6 +19,8 @@ const GraficoBarraDashboard = props => {
     customPropsColors,
     dadosLegendaCustomizada,
     margemPersonalizada,
+    styleLegendaLabel,
+    showAxisBottom,
   } = props;
 
   const customMargins = {
@@ -57,12 +59,17 @@ const GraficoBarraDashboard = props => {
                   <tspan y={-7}>{formataMilhar(valor)}</tspan>
                 ),
               }}
+              showAxisBottom={showAxisBottom}
             />
           </ContainerGraficoBarras>
         </div>
         {dadosLegendaCustomizada?.length ? (
           <div className="col-md-12">
-            <LegendaGrafico dados={dadosLegendaCustomizada} orizontal />
+            <LegendaGrafico
+              dados={dadosLegendaCustomizada}
+              orizontal
+              styleLegendaLabel={styleLegendaLabel}
+            />
           </div>
         ) : (
           ''
@@ -82,6 +89,8 @@ GraficoBarraDashboard.propTypes = {
   customPropsColors: PropTypes.oneOfType([PropTypes.any]),
   dadosLegendaCustomizada: PropTypes.oneOfType([PropTypes.array]),
   margemPersonalizada: PropTypes.oneOfType(PropTypes.any),
+  styleLegendaLabel: PropTypes.oneOfType(PropTypes.any),
+  showAxisBottom: PropTypes.bool,
 };
 
 GraficoBarraDashboard.defaultProps = {
@@ -94,6 +103,8 @@ GraficoBarraDashboard.defaultProps = {
   customPropsColors: null,
   dadosLegendaCustomizada: [],
   margemPersonalizada: null,
+  styleLegendaLabel: null,
+  showAxisBottom: true,
 };
 
 export default GraficoBarraDashboard;
