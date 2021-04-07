@@ -4,12 +4,12 @@ import shortid from 'shortid';
 import { ContainerLegendaGrafico } from './legendaGrafico.css';
 
 const LegendaGrafico = props => {
-  const { orizontal, dados } = props;
+  const { orizontal, dados, styleLegendaLabel } = props;
 
   return dados?.length ? (
     <ContainerLegendaGrafico orizontal={orizontal}>
       <div className="legenda-container">
-        <ul className="legenda-labels">
+        <ul className="legenda-labels" style={styleLegendaLabel}>
           {dados.map(item => {
             return (
               <li key={shortid.generate()}>
@@ -38,11 +38,13 @@ const LegendaGrafico = props => {
 LegendaGrafico.propTypes = {
   orizontal: PropTypes.bool,
   dados: PropTypes.oneOfType([PropTypes.array]),
+  styleLegendaLabel: PropTypes.oneOfType(PropTypes.any),
 };
 
 LegendaGrafico.defaultProps = {
   orizontal: false,
   dados: null,
+  styleLegendaLabel: null,
 };
 
 export default LegendaGrafico;

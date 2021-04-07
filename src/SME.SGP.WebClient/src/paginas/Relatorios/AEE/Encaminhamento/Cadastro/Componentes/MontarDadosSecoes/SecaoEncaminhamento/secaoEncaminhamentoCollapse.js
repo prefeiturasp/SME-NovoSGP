@@ -21,6 +21,10 @@ const SecaoEncaminhamentoCollapse = props => {
     store => store.encaminhamentoAEE.dadosEncaminhamento
   );
 
+  const desabilitarCamposEncaminhamentoAEE = useSelector(
+    store => store.encaminhamentoAEE.desabilitarCamposEncaminhamentoAEE
+  );
+
   return (
     <CardCollapse
       key="secao-encaminhamento-collapse-key"
@@ -41,6 +45,7 @@ const SecaoEncaminhamentoCollapse = props => {
             anoLetivo={dadosCollapseLocalizarEstudante?.anoLetivo}
             exibirBotaoImprimir={false}
             exibirFrequencia={false}
+            permiteAlterarImagem={!desabilitarCamposEncaminhamentoAEE}
           />
           <MotivoEncerramento />
           <DadosSecaoEncaminhamento match={match} />

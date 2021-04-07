@@ -11,6 +11,8 @@ namespace SME.SGP.Dominio.Interfaces
 
         Dre ObterPorCodigo(string codigo);
 
+        Task<long> ObterIdDrePorCodigo(string codigo);
+
         Dre ObterPorId(long id);
 
         IEnumerable<Dre> ObterTodas();
