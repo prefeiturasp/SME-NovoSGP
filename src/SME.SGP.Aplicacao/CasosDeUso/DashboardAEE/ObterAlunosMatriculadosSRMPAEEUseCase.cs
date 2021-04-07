@@ -37,16 +37,19 @@ namespace SME.SGP.Aplicacao
             {
                 AEEAlunosMatriculadosDto aluno = new AEEAlunosMatriculadosDto()
                 {
+                    Ordem = alunoMatriculadoEol.First().Ordem,
                     Descricao = alunoMatriculadoEol.Key,
                     LegendaPAEE = "Qtd. de matriculados PAEE colaborativo",
                     LegendaSRM = "Qtd. de matriculados SRM",
-                    QuantidadePAEE = alunoMatriculadoEol.Where(a => a.ComponenteCurricularId == 1310).Any() ? alunoMatriculadoEol.FirstOrDefault(a => a.ComponenteCurricularId == 1310).Quantidade : 0,
-                    QuantidadeSRM = alunoMatriculadoEol.Where(a => a.ComponenteCurricularId == 1030).Any() ? alunoMatriculadoEol.FirstOrDefault(a => a.ComponenteCurricularId == 1030).Quantidade : 0,
+                    QuantidadePAEE = alunoMatriculadoEol.Any(a => a.ComponenteCurricularId == 1310) ? alunoMatriculadoEol.FirstOrDefault(a => a.ComponenteCurricularId == 1310).Quantidade : 0,
+                    QuantidadeSRM = alunoMatriculadoEol.Any(a => a.ComponenteCurricularId == 1030) ? alunoMatriculadoEol.FirstOrDefault(a => a.ComponenteCurricularId == 1030).Quantidade : 0,
                 };
                 alunos.Add(aluno);
 
             }
-            return alunos.OrderBy(a => a.Descricao);
+            return alunos
+                .OrderBy(a => a.Ordem)
+                .ThenBy(a => a.Descricao);
         }
     }
 }

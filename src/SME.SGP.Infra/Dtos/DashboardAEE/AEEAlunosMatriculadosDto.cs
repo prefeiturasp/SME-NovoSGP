@@ -7,6 +7,7 @@ namespace SME.SGP.Infra.Dtos
 {
     public class AEEAlunosMatriculadosDto
     {
+        public int Ordem { get; set; }
         public string Descricao { get; set; }
         public string LegendaSRM { get; set; }
         public string LegendaPAEE { get; set; }
