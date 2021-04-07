@@ -23,17 +23,17 @@ namespace SME.SGP.Aplicacao
             var alunosMatriculadosEol = await mediator.Send(new ObterAlunosMatriculadosPorAnoLetivoECCEolQuery(param.AnoLetivo, param.DreCodigo, param.UeCodigo, new int[] { 1030, 1310 }));
             if(alunosMatriculadosEol.Any())
             {
-                return MapearParaDto(alunosMatriculadosEol);
+                return param.UeCodigo != null ? MapearParaDto(alunosMatriculadosEol.GroupBy(a => $"{a.Modalidade} - {a.Turma}")) : MapearParaDto(alunosMatriculadosEol.GroupBy(a => $"{a.Modalidade} - {a.Ano}"));
             }
 
             return null;
         }
 
-        private static IEnumerable<AEEAlunosMatriculadosDto> MapearParaDto(IEnumerable<AlunosMatriculadosEolDto> alunosMatriculadosEol)
+        private static IEnumerable<AEEAlunosMatriculadosDto> MapearParaDto(IEnumerable<IGrouping<string, AlunosMatriculadosEolDto>> alunosMatriculadosEol)
         {
             List<AEEAlunosMatriculadosDto> alunos = new List<AEEAlunosMatriculadosDto>();
 
-            foreach (var alunoMatriculadoEol in alunosMatriculadosEol.GroupBy(a => $"{a.Modalidade} - {a.Ano}"))
+            foreach (var alunoMatriculadoEol in alunosMatriculadosEol)
             {
                 AEEAlunosMatriculadosDto aluno = new AEEAlunosMatriculadosDto()
                 {
