@@ -54,6 +54,9 @@ namespace SME.SGP.Worker.RabbitMQ
             canalRabbit.QueueDeclare(RotasRabbit.SincronizaEstruturaInstitucionalTurmasSync, true, false, false, null);
             canalRabbit.QueueBind(RotasRabbit.SincronizaEstruturaInstitucionalTurmasSync, RotasRabbit.ExchangeSgp, "*", null);
 
+            canalRabbit.QueueDeclare(RotasRabbit.SincronizaEstruturaInstitucionalTurma, true, false, false, null);
+            canalRabbit.QueueBind(RotasRabbit.SincronizaEstruturaInstitucionalTurma, RotasRabbit.ExchangeSgp, "*", null);
+
             comandos = new Dictionary<string, ComandoRabbit>();
             RegistrarUseCases();
         }
@@ -121,6 +124,7 @@ namespace SME.SGP.Worker.RabbitMQ
             // Sincronização das UES e turmas
             comandos.Add(RotasRabbit.SincronizaEstruturaInstitucionalUes, new ComandoRabbit("Sincronizar Estrutura Institucional de UES", typeof(IEnviarSincronizacaoEstruturaInstitucionalUesUseCase)));
             comandos.Add(RotasRabbit.SincronizaEstruturaInstitucionalTurmasSync, new ComandoRabbit("Sincronizar Estrutura Institucional de Turmas", typeof(IEnviarSincronizacaoEstruturaInstitucionalTurmasUseCase)));
+            comandos.Add(RotasRabbit.SincronizaEstruturaInstitucionalTurma, new ComandoRabbit("Incluir turma vinda da sincronização Institucional", typeof(IExecutaSincronizacaoEstruturaInstitucionalTurmaUseCase)));
         }
 
         private async Task TratarMensagem(BasicDeliverEventArgs ea)

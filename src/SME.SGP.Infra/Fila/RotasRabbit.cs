@@ -85,5 +85,6 @@
 
         public static string SincronizaEstruturaInstitucionalUes => "sincroniza.estrutura.institucional.ues";
         public static string SincronizaEstruturaInstitucionalTurmasSync => "sincroniza.estrutura.institucional.turmas.sync";
+        public static string SincronizaEstruturaInstitucionalTurma => "sincroniza.estrutura.institucional.turma";
     }
 }
