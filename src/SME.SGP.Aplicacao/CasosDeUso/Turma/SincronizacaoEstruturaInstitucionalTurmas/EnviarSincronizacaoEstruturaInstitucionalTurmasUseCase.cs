@@ -4,7 +4,7 @@ using SME.SGP.Infra;
 using System;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.CasosDeUso.Turma
+namespace SME.SGP.Aplicacao
 {
     public class EnviarSincronizacaoEstruturaInstitucionalTurmasUseCase : AbstractUseCase, IEnviarSincronizacaoEstruturaInstitucionalTurmasUseCase
     {
