@@ -2,6 +2,7 @@
 using Sentry;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System;
 using System.Linq;
 using System.Threading;
@@ -32,6 +33,21 @@ namespace SME.SGP.Aplicacao
                 var ues = estruturaInstitucionalVigentePorDre.Dres.SelectMany(x => x.Ues.Select(y => new Ue { CodigoUe = y.Codigo, TipoEscola = y.CodTipoEscola, Nome = y.Nome, Dre = new Dre() { CodigoDre = x.Codigo } }));
 
                 ues = await repositorioUe.SincronizarAsync(ues, dres);
+
+                if(ues != null && ues.Any())
+                {
+                    foreach(var ue in ues)
+                    {
+                        try
+                        {
+                            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.SincronizaEstruturaInstitucionalTurmasSync, ue.CodigoUe, Guid.NewGuid(), null, fila: RotasRabbit.SincronizaEstruturaInstitucionalTurmasSync));
+                        }
+                        catch (Exception ex)
+                        {
+                            SentrySdk.CaptureException(ex);
+                        }
+                    }
+                }                
             }
             else
             {
