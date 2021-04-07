@@ -31,18 +31,18 @@ const QuantidadePlanosSituacao = props => {
         }}
       >
         {exibir ? (
-          <div className="col-md-12">
-            <GraficoBarrasPadraoAEE
-              anoLetivo={anoLetivo}
-              dreId={dreId}
-              ueId={ueId}
-              nomeIndiceDesc="descricaoSituacao"
-              nomeValor="quantidade"
-              ServicoObterValoresGrafico={
-                ServicoDashboardAEE.obterSituacoesPlanos
-              }
-            />
-          </div>
+          <GraficoBarrasPadraoAEE
+            anoLetivo={anoLetivo}
+            dreId={dreId}
+            ueId={ueId}
+            nomeIndiceDesc="descricaoSituacao"
+            nomeValor="quantidade"
+            ServicoObterValoresGrafico={
+              ServicoDashboardAEE.obterSituacoesPlanos
+            }
+            exibirLegenda
+            showAxisBottom={false}
+          />
         ) : (
           ''
         )}

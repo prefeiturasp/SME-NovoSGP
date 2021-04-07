@@ -19,6 +19,8 @@ const GraficoBarrasPadraoAEE = props => {
     chavesGraficoAgrupado,
     ueCodigo,
     dreCodigo,
+    exibirLegenda,
+    showAxisBottom,
   } = props;
 
   const [chavesGrafico, setChavesGrafico] = useState([]);
@@ -49,10 +51,29 @@ const GraficoBarrasPadraoAEE = props => {
       });
 
       setChavesGrafico(listaChaves);
+      const dadosComCores = adicionarCoresNosGraficos(dadosMapeados);
 
-      setDadosGrafico(adicionarCoresNosGraficos(dadosMapeados));
+      setDadosGrafico(dadosComCores);
+
+      if (exibirLegenda) {
+        const dadosParaMontarLegenda = [];
+
+        listaChaves.forEach((nomeLegenda, index) => {
+          const temValor = dadosComCores.find(d => !!d?.[nomeLegenda]);
+          if (temValor) {
+            dadosParaMontarLegenda.push({
+              label: nomeLegenda,
+              color: CoresGraficos[index],
+            });
+          }
+        });
+
+        if (dadosParaMontarLegenda?.length) {
+          setDadosLegendaGrafico(dadosParaMontarLegenda);
+        }
+      }
     },
-    [nomeIndiceDesc, nomeValor]
+    [nomeIndiceDesc, nomeValor, exibirLegenda]
   );
 
   const mapearDadosGraficoAgrupado = useCallback(
@@ -143,6 +164,12 @@ const GraficoBarrasPadraoAEE = props => {
           chavesGraficoAgrupado?.length ? customPropsColors : null
         }
         dadosLegendaCustomizada={dadosLegendaGrafico}
+        styleLegendaLabel={{
+          display: 'flex',
+          flexFlow: 'wrap',
+          marginLeft: '108px',
+        }}
+        showAxisBottom={showAxisBottom}
       />
     );
   };
@@ -168,6 +195,8 @@ GraficoBarrasPadraoAEE.propTypes = {
   chavesGraficoAgrupado: PropTypes.oneOfType(PropTypes.array),
   dreCodigo: PropTypes.string,
   ueCodigo: PropTypes.string,
+  exibirLegenda: PropTypes.bool,
+  showAxisBottom: PropTypes.bool,
 };
 
 GraficoBarrasPadraoAEE.defaultProps = {
@@ -180,6 +209,8 @@ GraficoBarrasPadraoAEE.defaultProps = {
   chavesGraficoAgrupado: [],
   dreCodigo: '',
   ueCodigo: '',
+  exibirLegenda: false,
+  showAxisBottom: true,
 };
 
 export default GraficoBarrasPadraoAEE;
