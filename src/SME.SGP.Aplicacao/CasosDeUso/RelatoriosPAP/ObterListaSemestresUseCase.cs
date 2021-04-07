@@ -16,13 +16,14 @@ namespace SME.SGP.Aplicacao
             if (turma == null)
                 throw new NegocioException("A turma informada não foi encontrada!");
 
-            var bimestreAtual = await mediator.Send(new ObterBimestreAtualQuery(DateTime.Today, turma));
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
             var turmaPossuiComponente = await mediator.Send(new TurmaPossuiComponenteCurricularPAPQuery(turmaCodigo, usuarioLogado.Login, usuarioLogado.PerfilAtual));
 
             if (!turmaPossuiComponente)
                 return null;
+
+            var bimestreAtual = await mediator.Send(new ObterBimestreAtualQuery(DateTime.Today, turma));
 
             return await mediator.Send(new ObterListaSemestresRelatorioPAPQuery(bimestreAtual));
         }
