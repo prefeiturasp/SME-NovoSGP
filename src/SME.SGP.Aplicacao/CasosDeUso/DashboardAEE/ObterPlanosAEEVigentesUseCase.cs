@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
 
         private IEnumerable<AEETurmaDto> MapearParaDto(IEnumerable<AEETurmaDto> planos)
         {
-            List<AEETurmaDto> retorno = new();
+            List<AEETurmaDto> retorno = new List<AEETurmaDto>();
 
             foreach(var plano in planos.GroupBy(a=> $"{a.Modalidade.ShortName()} - {a.AnoTurma}"))
             {
