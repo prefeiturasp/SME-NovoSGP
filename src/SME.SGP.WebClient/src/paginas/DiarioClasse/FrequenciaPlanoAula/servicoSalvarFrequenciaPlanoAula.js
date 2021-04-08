@@ -1,6 +1,6 @@
 import { store } from '~/redux';
-import { useSelector } from 'react-redux';
 import {
+  setAtualizarDatas,
   setDataSelecionadaFrequenciaPlanoAula,
   setErrosPlanoAula,
   setExibirLoaderFrequenciaPlanoAula,
@@ -18,7 +18,7 @@ class ServicoSalvarFrequenciaPlanoAula {
     const state = store.getState();
 
     const { frequenciaPlanoAula } = state;
-    const { listaDadosFrequencia, aulaId } = frequenciaPlanoAula;   
+    const { listaDadosFrequencia, aulaId } = frequenciaPlanoAula;
 
     const valorParaSalvar = {
       aulaId,
@@ -44,7 +44,7 @@ class ServicoSalvarFrequenciaPlanoAula {
 
   salvarPlanoAula = async () => {
     const { dispatch } = store;
-    const state = store.getState();   
+    const state = store.getState();
 
     const { frequenciaPlanoAula, usuario, perfis } = state;
     const { ehProfessorCj, turmaSelecionada } = usuario;
@@ -153,7 +153,7 @@ class ServicoSalvarFrequenciaPlanoAula {
       aulaId,
       objetivosAprendizagemComponente,
       ComponenteCurricularId: componenteCurricular.id,
-      ConsideraHistorico: consideraHistorico
+      ConsideraHistorico: consideraHistorico,
     };
 
     dispatch(setExibirLoaderFrequenciaPlanoAula(true));
@@ -201,6 +201,7 @@ class ServicoSalvarFrequenciaPlanoAula {
 
     if (salvouComSucesso) {
       dispatch(setDataSelecionadaFrequenciaPlanoAula());
+      dispatch(setAtualizarDatas(true));
     }
     return salvouComSucesso;
   };

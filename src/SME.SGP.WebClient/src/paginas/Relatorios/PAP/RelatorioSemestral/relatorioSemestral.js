@@ -170,6 +170,19 @@ const RelatorioSemestral = () => {
       ) : (
         ''
       )}
+      {!listaSemestres.length &&
+        !ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada) && (
+          <Alert
+            alerta={{
+              tipo: 'warning',
+              id: 'sem-turma-pap',
+              mensagem:
+                'Somente é possivel realizar o preenchimento do PAP para turmas PAP',
+              estiloTitulo: { fontSize: '18px' },
+            }}
+            className="mb-4"
+          />
+        )}
       <AlertaDentroPeriodoPAP />
       <AlertaModalidadeInfantil />
       <Cabecalho pagina="Relatório semestral" />
@@ -198,6 +211,7 @@ const RelatorioSemestral = () => {
                       valueSelect={semestreSelecionado}
                       onChange={onChangeSemestre}
                       placeholder="Selecione o período"
+                      disabled={!listaSemestres.length}
                     />
                   </div>
                 </div>

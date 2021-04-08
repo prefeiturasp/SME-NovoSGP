@@ -6,8 +6,8 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioPlanejamentoAnualPeriodoEscolar : IRepositorioBase<PlanejamentoAnualPeriodoEscolar>
     {
-        Task<PlanejamentoAnualPeriodoEscolar> ObterPorPlanejamentoAnualIdEPeriodoId(long id, long periodoEscolarId);
-        Task<IEnumerable<PlanejamentoAnualPeriodoEscolarResumoDto>> ObterPorPlanejamentoAnualId(long planejamentoAnualId);
+        Task<PlanejamentoAnualPeriodoEscolar> ObterPorPlanejamentoAnualIdEPeriodoId(long id, long periodoEscolarId, bool consideraxcluido = false);
+        Task<IEnumerable<PlanejamentoAnualPeriodoEscolarResumoDto>> ObterPorPlanejamentoAnualId(long planejamentoAnualId, int[] bimestresConsiderados);
         Task<IEnumerable<PlanejamentoAnualPeriodoEscolarResumoDto>> ObterPlanejamentosAnuaisPeriodosTurmaPorPlanejamentoAnualId(long planejamentoAnualId);
         Task<PlanejamentoAnualPeriodoEscolar> ObterPlanejamentoAnualPeriodoEscolarPorTurmaEComponenteCurricular(long turmaId, long componenteCurricularId, long periodoEscolarId);
 

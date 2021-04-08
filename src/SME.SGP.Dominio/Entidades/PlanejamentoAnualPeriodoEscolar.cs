@@ -25,5 +25,6 @@ namespace SME.SGP.Dominio
         public long PlanejamentoAnualId { get; set; }
         public List<PlanejamentoAnualComponente> ComponentesCurriculares { get; set; }
         public PeriodoEscolar PeriodoEscolar { get; set; }
+        public bool Excluido { get; set; }
     }
 }
