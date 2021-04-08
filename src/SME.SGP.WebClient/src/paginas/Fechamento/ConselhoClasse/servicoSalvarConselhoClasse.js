@@ -121,8 +121,17 @@ class ServicoSalvarConselhoClasse {
         return false;
       }
 
+      const perguntarParaSalvar = async () => {
+        return confirmar(
+          'Atenção',
+          '',
+          'Suas alterações não foram salvas, deseja salvar agora?'
+        );
+      };
+
       // Tenta salvar os registros se estão válidos e continuar para executação a ação!
-      return salvar();
+      const perguntaAantesSalvar = await perguntarParaSalvar();
+      if (perguntaAantesSalvar) return salvar();
     }
     return true;
   };
