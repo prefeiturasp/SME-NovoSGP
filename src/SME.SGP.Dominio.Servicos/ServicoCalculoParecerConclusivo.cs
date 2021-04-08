@@ -68,41 +68,6 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task<ConselhoClasseParecerConclusivo> Calcular(string alunoCodigo, string turmaCodigo, IEnumerable<ConselhoClasseParecerConclusivo> pareceresDaTurma)
         {
-            // Frequencia
-            Filtrar(pareceresDaTurma.Where(c => c.Frequencia), "Frequência");
-            if (!await ValidarParecerPorFrequencia(alunoCodigo, turmaCodigo))
-                return ObterParecerValidacao(false);
-
-            var parecerFrequencia = ObterParecerValidacao(true);
-
-            // Nota
-            if (!Filtrar(pareceresDaTurma.Where(c => c.Nota), "Nota"))
-                return parecerFrequencia;
-
-            var parecerNota = ObterParecerValidacao(await ValidarParecerPorNota(alunoCodigo, turmaCodigo));
-
-            // Conselho
-            if (!Filtrar(pareceresDaTurma.Where(c => c.Conselho), "Conselho"))
-                return parecerNota;
-
-            var validacaoConselho = await ValidarParecerPorConselho(alunoCodigo, turmaCodigo);
-            if (!validacaoConselho.ExisteNotaConselho)
-                return parecerNota;
-
-            var parecerValidacao = ObterParecerValidacao(validacaoConselho.ValidacaoNotaConselho);
-
-            if (parecerValidacao.Aprovado && parecerNota.Aprovado)
-                return parecerNota;
-
-            return parecerValidacao;
-        }
-
-        #region Frequência
-        private async Task<bool> ValidarParecerPorFrequencia(string alunoCodigo, string turmaCodigo)
-        {
-            if (!await ValidarFrequenciaGeralAluno(alunoCodigo, turmaCodigo))
-                return false;
-
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaCodigo));
 
             string[] turmasCodigos;
@@ -117,6 +82,40 @@ namespace SME.SGP.Dominio.Servicos
             {
                 turmasCodigos = new string[1] { turma.CodigoTurma };
             }
+            // Frequencia
+            Filtrar(pareceresDaTurma.Where(c => c.Frequencia), "Frequência");
+            if (!await ValidarParecerPorFrequencia(alunoCodigo, turma, turmasCodigos))
+                return ObterParecerValidacao(false);
+
+            var parecerFrequencia = ObterParecerValidacao(true);
+
+            // Nota
+            if (!Filtrar(pareceresDaTurma.Where(c => c.Nota), "Nota"))
+                return parecerFrequencia;
+
+            var parecerNota = ObterParecerValidacao(await ValidarParecerPorNota(alunoCodigo, turmasCodigos));
+
+            // Conselho
+            if (!Filtrar(pareceresDaTurma.Where(c => c.Conselho), "Conselho"))
+                return parecerNota;
+
+            var validacaoConselho = await ValidarParecerPorConselho(alunoCodigo, turmasCodigos);
+            if (!validacaoConselho.ExisteNotaConselho)
+                return parecerNota;
+
+            var parecerValidacao = ObterParecerValidacao(validacaoConselho.ValidacaoNotaConselho);
+
+            if (parecerValidacao.Aprovado && parecerNota.Aprovado)
+                return parecerNota;
+
+            return parecerValidacao;
+        }
+
+        #region Frequência
+        private async Task<bool> ValidarParecerPorFrequencia(string alunoCodigo, Turma turma, string[] turmasCodigos)
+        {
+            if (!await ValidarFrequenciaGeralAluno(alunoCodigo, turma.CodigoTurma))
+                return false;
 
             var parametroFrequenciaBaseNacional = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.PercentualFrequenciaCriticoBaseNacional, DateTime.Today.Year)));
 
@@ -143,9 +142,9 @@ namespace SME.SGP.Dominio.Servicos
         #endregion
 
         #region Nota
-        private async Task<bool> ValidarParecerPorNota(string alunoCodigo, string turmaCodigo)
+        private async Task<bool> ValidarParecerPorNota(string alunoCodigo, string[] turmasCodigos)
         {
-            var notasFechamentoAluno = await repositorioFechamentoNota.ObterNotasFinaisAlunoAsync(turmaCodigo, alunoCodigo);
+            var notasFechamentoAluno = await mediator.Send(new ObterNotasFinaisPorAlunoTurmasQuery(alunoCodigo, turmasCodigos));
             if (notasFechamentoAluno == null || !notasFechamentoAluno.Any())
                 return true;
 
@@ -180,9 +179,9 @@ namespace SME.SGP.Dominio.Servicos
         #endregion
 
         #region Conselho
-        private async Task<(bool ExisteNotaConselho, bool ValidacaoNotaConselho)> ValidarParecerPorConselho(string alunoCodigo, string turmaCodigo)
+        private async Task<(bool ExisteNotaConselho, bool ValidacaoNotaConselho)> ValidarParecerPorConselho(string alunoCodigo, string[] turmasCodigos)
         {
-            var notasConselhoClasse = await repositorioConselhoClasseNota.ObterNotasConselhoAlunoAsync(alunoCodigo, turmaCodigo, null);
+            var notasConselhoClasse = await mediator.Send(new ObterNotasFinaisConselhoFechamentoPorAlunoTurmasQuery(turmasCodigos, alunoCodigo));
             if (notasConselhoClasse == null || !notasConselhoClasse.Any())
                 return (false, false);
 
@@ -192,17 +191,28 @@ namespace SME.SGP.Dominio.Servicos
                await ValidarParecerConselhoPorConceito(notasConselhoClasse));
         }
 
-        private async Task<bool> ValidarParecerConselhoPorNota(IEnumerable<NotaConceitoBimestreComponenteDto> notasConselhoClasse)
+        private async Task<bool> ValidarParecerConselhoPorNota(IEnumerable<NotaConceitoFechamentoConselhoFinalDto> notasConselhoClasse)
         {           
             var notaMedia = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.MediaBimestre, DateTime.Today.Year)));
             foreach (var notaConcelhoClasse in notasConselhoClasse)
-                if (notaConcelhoClasse.Nota < notaMedia)
+            {
+                var nota = notaConcelhoClasse.Nota;
+                if (notaConcelhoClasse.ConselhoClasseAlunoId == 0)
+                {
+                    var notaConselho = notasConselhoClasse.FirstOrDefault(cn => cn.ComponenteCurricularCodigo == notaConcelhoClasse.ComponenteCurricularCodigo && notaConcelhoClasse.ConselhoClasseAlunoId != null);
+                    if(notaConselho != null)
+                    {
+                        nota = notaConselho.Nota;
+                    }
+                }
+                if (nota < notaMedia)
                     return false;
+            }
 
             return true;
         }
 
-        private async Task<bool> ValidarParecerConselhoPorConceito(IEnumerable<NotaConceitoBimestreComponenteDto> notasConselhoClasse)
+        private async Task<bool> ValidarParecerConselhoPorConceito(IEnumerable<NotaConceitoFechamentoConselhoFinalDto> notasConselhoClasse)
         {
             var conceitosVigentes = await repositorioConceito.ObterPorData(DateTime.Today);
             foreach (var conceitoConselhoClasseAluno in notasConselhoClasse)
