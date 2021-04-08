@@ -200,7 +200,7 @@ namespace SME.SGP.Aplicacao
                     alunoDto.CodigoAluno = aluno.CodigoAluno;
                     alunoDto.NumeroChamada = aluno.NumeroAlunoChamada;
                     alunoDto.Nome = aluno.NomeAluno;
-                    alunoDto.Ativo = aluno.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Ativo);
+                    alunoDto.Ativo = new SituacaoMatriculaAluno[] { SituacaoMatriculaAluno.Ativo, SituacaoMatriculaAluno.Concluido }.Contains(aluno.CodigoSituacaoMatricula);
 
                     var anotacaoAluno = await consultasFehcamentoAluno.ObterAnotacaoPorAlunoEFechamento(fechamentoTurma?.Id ?? 0, aluno.CodigoAluno);
                     alunoDto.TemAnotacao = anotacaoAluno != null && anotacaoAluno.Anotacao != null &&
