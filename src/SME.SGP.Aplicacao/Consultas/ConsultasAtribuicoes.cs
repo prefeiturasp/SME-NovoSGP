@@ -42,7 +42,7 @@ namespace SME.SGP.Aplicacao
                 var codigosDres = new List<string>();
 
                 if (somenteInfantil)
-                    ObterAtribuicoesCjDre(loginAtual, codigosDres, Modalidade.Infantil);
+                    ObterAtribuicoesCjDre(loginAtual, codigosDres, Modalidade.InfantilPreEscola);
                 else
                     ObterAtribuicoesCjDre(loginAtual, codigosDres);
 
@@ -71,7 +71,7 @@ namespace SME.SGP.Aplicacao
 
                 var somenteInfantil = perfilAtual == Perfis.PERFIL_CJ_INFANTIL;
                 if (somenteInfantil)
-                    await ObterAtribuicoesCjUe(loginAtual, codigosUes, codigoDre, Modalidade.Infantil);
+                    await ObterAtribuicoesCjUe(loginAtual, codigosUes, codigoDre, Modalidade.InfantilPreEscola);
                 else
                     await ObterAtribuicoesCjUe(loginAtual, codigosUes, codigoDre);
 
