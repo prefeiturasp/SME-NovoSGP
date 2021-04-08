@@ -49,8 +49,9 @@ const EventosLista = ({ match }) => {
 
   const [listaCalendario, setListaCalendario] = useState([]);
   const [listaDre, setListaDre] = useState([]);
-  const [campoUeDesabilitado, setCampoUeDesabilitado] = useState(true);
+  const [campoUeDesabilitado, setCampoUeDesabilitado] = useState(false);
   const [dreSelecionada, setDreSelecionada] = useState();
+  const [ueSelecionada, setUeSelecionada] = useState();
   const [listaUe, setListaUe] = useState([]);
   const [nomeEvento, setNomeEvento] = useState('');
   const [listaTipoEvento, setListaTipoEvento] = useState([]);
@@ -93,18 +94,20 @@ const EventosLista = ({ match }) => {
           return true;
         }
       ),
-      dataFim: momentSchema.test(
-        'validaFim',
-        'Data obrigatória',
-        function validar() {
+      dataFim: momentSchema
+        .test('validaFim', 'Data obrigatória', function validar() {
           const { dataInicio } = this.parent;
           const { dataFim } = this.parent;
           if (dataInicio && !dataFim) {
             return false;
           }
           return true;
-        }
-      ),
+        })
+        .test('validaFim', 'Data inicial maior que final', function validar() {
+          const { dataInicio, dataFim } = this.parent;
+          if (dataInicio > dataFim) return false;
+          return true;
+        }),
     })
   );
 
@@ -213,10 +216,10 @@ const EventosLista = ({ match }) => {
     descricao => {
       const tipo = listaCalendario?.find(t => t.descricao === descricao);
       const filtroAtual = filtro;
+      const dreId = filtroCalendarioEscolar?.dreId || dreSelecionada;
+      const ueId = filtroCalendarioEscolar?.ueId || ueSelecionada;
 
       if (tipo?.id) {
-        const dreId = filtroCalendarioEscolar?.dreId;
-        const ueId = filtroCalendarioEscolar?.ueId;
         filtroAtual.dreId = dreId;
         filtroAtual.ueId = ueId;
         filtroAtual.ehTodasDres = false;
@@ -224,10 +227,6 @@ const EventosLista = ({ match }) => {
         filtroAtual.tipoCalendarioId = tipo.id;
 
         setSelecionouCalendario(true);
-        setDreSelecionada(dreId);
-        setCampoUeDesabilitado(!dreId);
-        refForm.setFieldValue('dreId', dreId);
-        refForm.setFieldValue('ueId', ueId);
 
         validarFiltrar();
         setFiltro({ ...filtroAtual });
@@ -239,14 +238,15 @@ const EventosLista = ({ match }) => {
       } else {
         setFiltroValido(false);
         setSelecionouCalendario(false);
-        setDreSelecionada([]);
-        setListaUe([]);
-        setCampoUeDesabilitado(true);
         setTipoEvento('');
         setNomeEvento('');
         refForm.resetForm();
         setFiltro({});
       }
+      refForm.setFieldValue('dreId', dreId);
+      refForm.setFieldValue('ueId', ueId);
+      setDreSelecionada(dreId);
+      setUeSelecionada(ueId);
       setValorTipoCalendario(descricao);
       setTipoCalendarioSelecionado(tipo?.id);
       setFiltroCalendario({ ...filtroAtual });
@@ -259,6 +259,8 @@ const EventosLista = ({ match }) => {
       validarFiltrar,
       setFiltroCalendario,
       filtroCalendarioEscolar,
+      dreSelecionada,
+      ueSelecionada,
     ]
   );
 
@@ -331,7 +333,9 @@ const EventosLista = ({ match }) => {
 
   useEffect(() => {
     if (listaUe.length === 1 && !usuario.possuiPerfilSmeOuDre) {
-      refForm.setFieldValue('ueId', listaUe[0].codigo.toString());
+      const ueId = listaUe[0].codigo.toString();
+      refForm.setFieldValue('ueId', ueId);
+      setUeSelecionada(ueId);
       setUeDesabilitada(true);
     }
   }, [listaUe, refForm, usuario.possuiPerfilSmeOuDre]);
@@ -356,11 +360,14 @@ const EventosLista = ({ match }) => {
         item => item.id === tipoCalendarioId
       );
 
+      const modalidadeConvertida = !calendarioSelecionado?.modalidade
+        ? 0
+        : ServicoCalendarios.converterModalidade(
+            calendarioSelecionado?.modalidade
+          );
       const ues = await ServicoEvento.listarUes(
         dreSelecionada,
-        ServicoCalendarios.converterModalidade(
-          calendarioSelecionado?.modalidade
-        )
+        modalidadeConvertida
       );
 
       if (!sucesso) {
@@ -484,7 +491,8 @@ const EventosLista = ({ match }) => {
 
     const filtroAtual = filtro;
 
-    filtroAtual.dataInicio = dataInicio && dataInicio.toDate();
+    filtroAtual.dataInicio =
+      dataInicio && moment(dataInicio).format('MM-DD-YYYY');
     setFiltro({ ...filtroAtual });
 
     if (filtroAtual.dataInicio && filtroAtual.dataFim) {
@@ -496,7 +504,7 @@ const EventosLista = ({ match }) => {
     setFiltroValido({ valido: false });
 
     const filtroAtual = filtro;
-    filtroAtual.dataFim = dataFim && dataFim.toDate();
+    filtroAtual.dataFim = dataFim && moment(dataFim).format('MM-DD-YYYY');
 
     setFiltro({ ...filtroAtual });
 
@@ -652,7 +660,6 @@ const EventosLista = ({ match }) => {
                   <SelectComponent
                     name="dreId"
                     id="select-ue"
-                    u
                     lista={listaDre}
                     valueOption="codigo"
                     valueText="nome"

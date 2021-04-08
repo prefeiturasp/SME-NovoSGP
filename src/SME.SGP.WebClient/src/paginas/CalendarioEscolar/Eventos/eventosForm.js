@@ -59,10 +59,10 @@ const EventosForm = ({ match }) => {
   const permissoesTela = usuarioStore.permissoes[RotasDto.EVENTOS];
   const [somenteConsulta, setSomenteConsulta] = useState(false);
   const [desabilitarCampos, setDesabilitarCampos] = useState(false);
-
   const [auditoria, setAuditoria] = useState([]);
   const [modoEdicao, setModoEdicao] = useState(false);
   const [novoRegistro, setNovoRegistro] = useState(true);
+
   const [exibirAuditoria, setExibirAuditoria] = useState(false);
   const [exibirModalCopiarEvento, setExibirModalCopiarEvento] = useState(false);
   const [
@@ -136,7 +136,8 @@ const EventosForm = ({ match }) => {
   };
 
   const carregarUes = async dre => {
-    const { tipoCalendarioId } = refFormulario.current.state.values;
+    const tipoCalendarioId =
+      refFormulario?.current?.state?.values.tipoCalendarioId;
     const calendarioSelecionado = calendarioEscolarAtual.find(
       item => item.id === tipoCalendarioId
     );
@@ -369,7 +370,6 @@ const EventosForm = ({ match }) => {
   );
 
   const [podeAlterarExcluir, setPodeAlterarExcluir] = useState(false);
-
   const consultaPorId = async id => {
     const evento = await servicoEvento.obterPorId(id).catch(e => erros(e));
 
@@ -388,9 +388,7 @@ const EventosForm = ({ match }) => {
 
       setPodeAlterarExcluir(
         usuarioStore.possuiPerfilSme === true ||
-          (usuarioStore.possuiPerfilDre === true &&
-            evento.data.dreId &&
-            evento.data.ueId) ||
+          (usuarioStore.possuiPerfilDre === true && evento.data.dreId) ||
           evento.data.criadoRF === usuarioStore.rf
       );
 

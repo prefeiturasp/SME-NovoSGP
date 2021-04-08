@@ -15,6 +15,7 @@ import {
   Badge,
   BtnLink,
   InseridoAlterado,
+  IframeStyle,
   ListaItens,
   Titulo,
   TituloAno,
@@ -123,7 +124,6 @@ export default function PlanoCiclo() {
   }, [turmaSelecionada, modalidadesFiltroPrincipal]);
 
   const carregarCiclos = async () => {
-
     if (usuario && turmaSelecionada.turma) {
       let anoSelecionado = '';
       let codModalidade = null;
@@ -153,15 +153,12 @@ export default function PlanoCiclo() {
         params.anos = anosTurmasUsuario;
       }
 
-      const ciclos = await api.post('v1/ciclos/filtro', params)
-        .catch(err => {
-          if (err?.response?.status === 601)
-            erro(err.response.data.mensagens[0]);
-          else
-            erro('Ocorreu um erro interno.');
-          setSomenteConsulta(true);
-          setCarregandoCiclos(false);
-        });
+      const ciclos = await api.post('v1/ciclos/filtro', params).catch(err => {
+        if (err?.response?.status === 601) erro(err.response.data.mensagens[0]);
+        else erro('Ocorreu um erro interno.');
+        setSomenteConsulta(true);
+        setCarregandoCiclos(false);
+      });
 
       if (ciclos) {
         let sugestaoCiclo = ciclos.data.find(item => item.selecionado);
@@ -493,19 +490,19 @@ export default function PlanoCiclo() {
     <>
       <div className="col-md-12">
         {!turmaSelecionada.turma &&
-          !ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada) ? (
-            <Alert
-              alerta={{
-                tipo: 'warning',
-                id: 'plano-ciclo-selecione-turma',
-                mensagem: 'Você precisa escolher uma turma.',
-                estiloTitulo: { fontSize: '18px' },
-              }}
-              className="mb-0"
-            />
-          ) : (
-            ''
-          )}
+        !ehTurmaInfantil(modalidadesFiltroPrincipal, turmaSelecionada) ? (
+          <Alert
+            alerta={{
+              tipo: 'warning',
+              id: 'plano-ciclo-selecione-turma',
+              mensagem: 'Você precisa escolher uma turma.',
+              estiloTitulo: { fontSize: '18px' },
+            }}
+            className="mb-0"
+          />
+        ) : (
+          ''
+        )}
       </div>
       <AlertaModalidadeInfantil />
       <div className="col-md-12 mt-1">
@@ -524,8 +521,8 @@ export default function PlanoCiclo() {
               Registro Migrado
             </RegistroMigrado>
           ) : (
-              ''
-            )}
+            ''
+          )}
         </Titulo>
       </div>
       <Card>
@@ -617,6 +614,7 @@ export default function PlanoCiclo() {
                 <div className="col-md-6">
                   <JoditEditor
                     ref={textEditorRef}
+                    iframeStyle={IframeStyle}
                     id="textEditor"
                     height="620px"
                     value={descricaoCiclo}
@@ -630,18 +628,18 @@ export default function PlanoCiclo() {
                         {inseridoAlterado.criadoEm}
                       </p>
                     ) : (
-                        ''
-                      )}
+                      ''
+                    )}
 
                     {inseridoAlterado.alteradoPor &&
-                      inseridoAlterado.alteradoEm ? (
-                        <p>
-                          ALTERADO por {inseridoAlterado.alteradoPor} em{' '}
-                          {inseridoAlterado.alteradoEm}
-                        </p>
-                      ) : (
-                        ''
-                      )}
+                    inseridoAlterado.alteradoEm ? (
+                      <p>
+                        ALTERADO por {inseridoAlterado.alteradoPor} em{' '}
+                        {inseridoAlterado.alteradoEm}
+                      </p>
+                    ) : (
+                      ''
+                    )}
                   </InseridoAlterado>
                 </div>
                 <div className="col-md-6 btn-link-plano-ciclo">
