@@ -313,11 +313,11 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryAsync<AbrangenciaDreRetorno>(query, parametros)).AsList();
         }
 
-        public async Task<IEnumerable<int>> ObterModalidades(string login, Guid perfil, int anoLetivo, bool consideraHistorico)
+        public async Task<IEnumerable<int>> ObterModalidades(string login, Guid perfil, int anoLetivo, bool consideraHistorico, IEnumerable<Modalidade> modadlidadesQueSeraoIgnoradas = null)
         {
             // Foi utilizada função de banco de dados com intuíto de melhorar a performance
-            return (await database.Conexao.QueryAsync<int>(@"select f_abrangencia_modalidades(@login, @perfil, @consideraHistorico, @anoLetivo)
-                                                             order by 1", new { login, perfil, consideraHistorico, anoLetivo })).AsList();
+            return (await database.Conexao.QueryAsync<int>(@"select f_abrangencia_modalidades(@login, @perfil, @consideraHistorico, @anoLetivo, @modadlidadesQueSeraoIgnoradas)
+                                                             order by 1", new { login, perfil, consideraHistorico, anoLetivo, modadlidadesQueSeraoIgnoradas })).AsList();
         }
 
         public async Task<IEnumerable<int>> ObterSemestres(string login, Guid perfil, Modalidade modalidade, bool consideraHistorico, int anoLetivo = 0)
