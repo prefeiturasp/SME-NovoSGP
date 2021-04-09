@@ -53,8 +53,8 @@ namespace SME.SGP.Worker.RabbitMQ
             canalRabbit.QueueDeclare(RotasRabbit.SincronizaEstruturaInstitucionalDreTratar, true, false, false);
             canalRabbit.QueueBind(RotasRabbit.SincronizaEstruturaInstitucionalDreTratar, RotasRabbit.ExchangeSgp, RotasRabbit.SincronizaEstruturaInstitucionalDreTratar);
 
-            canalRabbit.QueueDeclare(RotasRabbit.SincronizaEstruturaInstitucionalTurma, true, false, false, null);
-            canalRabbit.QueueBind(RotasRabbit.SincronizaEstruturaInstitucionalTurma, RotasRabbit.ExchangeSgp, "*", null);
+            canalRabbit.QueueDeclare(RotasRabbit.SincronizaEstruturaInstitucionalTurmaTratar, true, false, false, null);
+            canalRabbit.QueueBind(RotasRabbit.SincronizaEstruturaInstitucionalTurmaTratar, RotasRabbit.ExchangeSgp, "*", null);
 
             comandos = new Dictionary<string, ComandoRabbit>();
             RegistrarUseCases();

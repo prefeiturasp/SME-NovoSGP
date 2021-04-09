@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
             {
                 try
                 {
-                    var publicarFilaIncluirTurma = await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.SincronizaEstruturaInstitucionalTurma, codigoTurma, Guid.NewGuid(), null, fila: RotasRabbit.SincronizaEstruturaInstitucionalTurma));
+                    var publicarFilaIncluirTurma = await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.SincronizaEstruturaInstitucionalTurmaTratar, codigoTurma, Guid.NewGuid(), null, fila: RotasRabbit.SincronizaEstruturaInstitucionalTurmaTratar));
                     if (!publicarFilaIncluirTurma)
                     {
                         var mensagem = $"Não foi possível inserir a turma de codígo : {codigoTurma} na fila de inclusão.";

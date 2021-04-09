@@ -86,6 +86,6 @@
         public static string SincronizaEstruturaInstitucionalDreTratar => "sgp.estrutura.institucional.dre.tratar";
         public static string SincronizaEstruturaInstitucionalUeTratar => "sgp.estrutura.institucional.ue.tratar";
         public static string SincronizaEstruturaInstitucionalTurmasSync => "sgp.estrutura.institucional.turmas.sync";        
-        public static string SincronizaEstruturaInstitucionalTurma => "sincroniza.estrutura.institucional.turma";
+        public static string SincronizaEstruturaInstitucionalTurmaTratar => "sgp.estrutura.institucional.turma.tratar";
     }
 }
