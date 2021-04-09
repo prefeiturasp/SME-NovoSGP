@@ -106,6 +106,8 @@ namespace SME.SGP.Dominio
 
         NovosTiposUE = 55,
 
+        NovasModalidades = 56,
+
         //Sistema
         HabilitarServicosEmBackground = 100
     }
