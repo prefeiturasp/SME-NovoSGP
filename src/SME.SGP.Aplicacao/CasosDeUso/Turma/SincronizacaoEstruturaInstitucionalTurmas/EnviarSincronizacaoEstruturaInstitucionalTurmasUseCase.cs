@@ -23,17 +23,17 @@ namespace SME.SGP.Aplicacao
                 SentrySdk.CaptureMessage($"Não foi possível iniciar a sincronização das turmas. O codígo da Ue não foi informado");
             }
 
-            var turmasDaUEParaIncluir = await mediator.Send(new ObterTurmasEOLParaSyncEstruturaInstitucionalPorUeIdQuery(ueId));
-            if (!turmasDaUEParaIncluir?.Any() ?? true) return true;
+            var codigosTurma = await mediator.Send(new ObterCodigosTurmasEOLPorUeIdParaSyncEstruturaInstitucionalQuery(ueId));
+            if (!codigosTurma?.Any() ?? true) return true;
 
-            foreach (var turmaDaUEParaIncluir in turmasDaUEParaIncluir)
+            foreach (var codigoTurma in codigosTurma)
             {
                 try
                 {
-                    var publicarFilaIncluirTurma = await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.SincronizaEstruturaInstitucionalTurma, turmaDaUEParaIncluir.CodigoTurma, Guid.NewGuid(), null, fila: RotasRabbit.SincronizaEstruturaInstitucionalTurma));
+                    var publicarFilaIncluirTurma = await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.SincronizaEstruturaInstitucionalTurma, codigoTurma, Guid.NewGuid(), null, fila: RotasRabbit.SincronizaEstruturaInstitucionalTurma));
                     if (!publicarFilaIncluirTurma)
                     {
-                        var mensagem = $"Não foi possível inserir a turma de codígo : {turmaDaUEParaIncluir.CodigoTurma} na fila de inclusão.";
+                        var mensagem = $"Não foi possível inserir a turma de codígo : {codigoTurma} na fila de inclusão.";
                         SentrySdk.CaptureMessage(mensagem);
                     }
                 }
