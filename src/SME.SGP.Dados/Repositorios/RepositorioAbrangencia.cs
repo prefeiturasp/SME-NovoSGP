@@ -313,11 +313,12 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryAsync<AbrangenciaDreRetorno>(query, parametros)).AsList();
         }
 
-        public async Task<IEnumerable<int>> ObterModalidades(string login, Guid perfil, int anoLetivo, bool consideraHistorico, IEnumerable<Modalidade> modadlidadesQueSeraoIgnoradas = null)
+        public async Task<IEnumerable<int>> ObterModalidades(string login, Guid perfil, int anoLetivo, bool consideraHistorico, IEnumerable<Modalidade> modalidadesQueSeraoIgnoradas)
         {
+            var query = @"select f_abrangencia_modalidades(@login, @perfil, @consideraHistorico, @anoLetivo, @modalidadesQueSeraoIgnoradas) order by 1";
+            var modalidadesQueSeraoIgnoradasArray = modalidadesQueSeraoIgnoradas.Select(x => (int)x).ToArray();
             // Foi utilizada função de banco de dados com intuíto de melhorar a performance
-            return (await database.Conexao.QueryAsync<int>(@"select f_abrangencia_modalidades(@login, @perfil, @consideraHistorico, @anoLetivo, @modadlidadesQueSeraoIgnoradas)
-                                                             order by 1", new { login, perfil, consideraHistorico, anoLetivo, modadlidadesQueSeraoIgnoradas })).AsList();
+            return (await database.Conexao.QueryAsync<int>(query, new { login, perfil, consideraHistorico, anoLetivo, modalidadesQueSeraoIgnoradas = modalidadesQueSeraoIgnoradasArray })).AsList();
         }
 
         public async Task<IEnumerable<int>> ObterSemestres(string login, Guid perfil, Modalidade modalidade, bool consideraHistorico, int anoLetivo = 0)
@@ -488,14 +489,15 @@ namespace SME.SGP.Dados.Repositorios
             return dados.OrderBy(x => x.Descricao);
         }
 
-        public async Task<IEnumerable<Modalidade>> ObterModalidadesPorUeAbrangencia(string codigoUe, string login, Guid perfilAtual)
+        public async Task<IEnumerable<Modalidade>> ObterModalidadesPorUeAbrangencia(string codigoUe, string login, Guid perfilAtual, IEnumerable<Modalidade> modadlidadesQueSeraoIgnoradas)
         {
             var query = @"select distinct vau.modalidade_codigo from v_abrangencia_usuario vau 
                             where vau.login = @login
                             and usuario_perfil  = @perfilAtual
-                            and vau.ue_codigo = @codigoUe";
+                            and vau.ue_codigo = @codigoUe
+                            and (@modadlidadesQueSeraoIgnoradas is null or not(avau.modalidade_codigo = ANY(@modadlidadesQueSeraoIgnoradas)))";
 
-            return await database.Conexao.QueryAsync<Modalidade>(query, new { codigoUe, login, perfilAtual });
+            return await database.Conexao.QueryAsync<Modalidade>(query, new { codigoUe, login, perfilAtual, modadlidadesQueSeraoIgnoradas });
         }
 
         public async Task<IEnumerable<OpcaoDropdownDto>> ObterDropDownTurmasPorUeAnoLetivoModalidadeSemestreAnos(string codigoUe, int anoLetivo, Modalidade? modalidade, int semestre, IList<string> anos)

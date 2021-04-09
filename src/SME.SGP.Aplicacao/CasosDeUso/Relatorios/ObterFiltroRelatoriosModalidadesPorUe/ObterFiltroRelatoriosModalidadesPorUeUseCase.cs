@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -13,10 +14,18 @@ namespace SME.SGP.Aplicacao
         {
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
-        public async Task<IEnumerable<OpcaoDropdownDto>> Executar(string codigoUe, int anoLetivo, bool consideraHistorico)
+        public async Task<IEnumerable<OpcaoDropdownDto>> Executar(string codigoUe, int anoLetivo, bool consideraHistorico, bool consideraNovasModalidades)
         {
-            return await mediator.Send(new ObterFiltroRelatoriosModalidadesPorUeQuery(codigoUe, anoLetivo, consideraHistorico));
+            var login = await mediator.Send(new ObterLoginAtualQuery());
+            var perfil = await mediator.Send(new ObterPerfilAtualQuery());
+            var modadlidadesQueSeraoIgnoradas = await ObterModalidadesQueSeraoIgnoradas(anoLetivo, consideraNovasModalidades);
+            return await mediator.Send(new ObterFiltroRelatoriosModalidadesPorUeQuery(codigoUe, anoLetivo, consideraHistorico, login, perfil, modadlidadesQueSeraoIgnoradas));
         }
 
+        private async Task<IEnumerable<Modalidade>> ObterModalidadesQueSeraoIgnoradas(int anoLetivo, bool consideraNovasModalidades)
+        {
+            if (consideraNovasModalidades) return null;
+            return await mediator.Send(new ObterNovasModalidadesPorAnoQuery(anoLetivo));
+        }
     }
 }

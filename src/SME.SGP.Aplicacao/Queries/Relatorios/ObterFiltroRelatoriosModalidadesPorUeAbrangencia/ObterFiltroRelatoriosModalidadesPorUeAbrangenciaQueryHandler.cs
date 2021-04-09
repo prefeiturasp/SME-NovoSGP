@@ -30,13 +30,7 @@ namespace SME.SGP.Aplicacao
                 return EnumExtensao.ListarDto<Modalidade>().Select(c => new OpcaoDropdownDto(c.Id.ToString(), c.Descricao));
             }
 
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
-
-            if (usuarioLogado == null)
-                throw new NegocioException("Não foi possível localizar o usuario logado.");
-
-            var modalidades = await repositorioAbrangencia.ObterModalidadesPorUeAbrangencia(request.CodigoUe, usuarioLogado.Login, usuarioLogado.PerfilAtual);
-
+            var modalidades = await repositorioAbrangencia.ObterModalidadesPorUeAbrangencia(request.CodigoUe, request.Login, request.Perfil, request.ModadlidadesQueSeraoIgnoradas);
             return modalidades?.Select(c => new OpcaoDropdownDto(((int)c).ToString(), c.Name()));
         }
     }

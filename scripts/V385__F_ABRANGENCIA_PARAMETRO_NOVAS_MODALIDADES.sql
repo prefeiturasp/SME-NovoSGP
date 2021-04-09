@@ -12,7 +12,7 @@ where a.login = p_login and
 	  a.perfil_id = p_perfil_id and	  
 	  act.turma_historica = p_historico and      
 	  act.turma_ano_letivo = p_ano_letivo
-	  and (p_ignorar_modalidades is null or not(act.modalidade_codigo = ANY(p_ignorar_modalidades))
+	  and (p_ignorar_modalidades is null or not(act.modalidade_codigo = ANY(p_ignorar_modalidades)))
 	 
 union
 
@@ -24,7 +24,7 @@ where a.login = p_login and
 	  a.perfil_id = p_perfil_id and
 	  act.turma_historica = p_historico and      	  
 	  act.turma_ano_letivo = p_ano_letivo
-	  and (p_ignorar_modalidades is null or not(act.modalidade_codigo = ANY(p_ignorar_modalidades))
+	  and (p_ignorar_modalidades is null or not(act.modalidade_codigo = ANY(p_ignorar_modalidades)))
 
 union
 
@@ -37,6 +37,6 @@ where a.login = p_login and
 	  ((p_historico = true and a.historico = true) or
 	   (p_historico = false and a.historico  = false and act.turma_historica = false)) and	        
 	  act.turma_ano_letivo = p_ano_letivo
-	 and (p_ignorar_modalidades is null or not(act.modalidade_codigo = ANY(p_ignorar_modalidades));
+	 and (p_ignorar_modalidades is null or not(act.modalidade_codigo = ANY(p_ignorar_modalidades)));
 $function$
 ;
