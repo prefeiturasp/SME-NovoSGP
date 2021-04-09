@@ -576,7 +576,8 @@ namespace SME.SGP.IoC
 
             // Funcionario
             services.TryAddScoped<IPesquisaFuncionariosPorDreUeUseCase, PesquisaFuncionariosPorDreUeUseCase>();
-
+            services.TryAddScoped<IObterFuncionariosPAAIPorDreUseCase, ObterFuncionariosPAAIPorDreUseCase>();
+            
 
             // Grade Curricular
             services.TryAddScoped<IRelatorioControleGradeUseCase, RelatorioControleGradeUseCase>();
