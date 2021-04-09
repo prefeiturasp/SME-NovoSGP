@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
             }
 
             var anoAtual = DateTime.Now.Year;
-            var tipoCalendarioId = await mediator.Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(Modalidade.Infantil, anoAtual, null));
+            var tipoCalendarioId = await mediator.Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(Modalidade.InfantilPreEscola, anoAtual, null));
             if (tipoCalendarioId > 0)
             {
                 var periodosEscolares = await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioIdQuery(tipoCalendarioId));

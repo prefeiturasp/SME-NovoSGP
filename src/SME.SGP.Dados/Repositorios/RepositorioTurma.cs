@@ -404,7 +404,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<Turma>> ObterTurmasInfantilNaoDeProgramaPorAnoLetivoAsync(int anoLetivo)
         {
-            var modalidade = Modalidade.Infantil;
+            var modalidade = Modalidade.InfantilPreEscola;
             var turmas = new List<Turma>();
             var query = @"select
 	                            t.*,
