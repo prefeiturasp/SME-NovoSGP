@@ -22,6 +22,6 @@ namespace SME.SGP.Infra
         public DateTime? DataInicioTurma { get; set; }
         public bool Extinta { get; set; }
         public string Situacao { get; set; }
-        public string ueCodigo { get; set; }
+        public string UeCodigo { get; set; }
     }
 }
