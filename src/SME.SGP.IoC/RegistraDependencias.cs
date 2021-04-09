@@ -819,11 +819,14 @@ namespace SME.SGP.IoC
             services.TryAddScoped<ISalvarFotoEstudanteUseCase, SalvarFotoEstudanteUseCase>();
             services.TryAddScoped<IExcluirEstudanteFotoUseCase, ExcluirEstudanteFotoUseCase>();
 
-            services.TryAddScoped<IExecutaSincronizacaoEstruturaInstitucionalUesUseCase, ExecutaSincronizacaoEstruturaInstitucionalUesUseCase>();
-            services.TryAddScoped<IEnviarSincronizacaoEstruturaInstitucionalUesUseCase, EnviarSincronizacaoEstruturaInstitucionalUesUseCase>();
-
-            services.TryAddScoped<IEnviarSincronizacaoEstruturaInstitucionalTurmasUseCase, EnviarSincronizacaoEstruturaInstitucionalTurmasUseCase>();
+            services.TryAddScoped<IExecutaSincronizacaoEstruturaInstitucionalSyncUseCase, ExecutaSincronizacaoEstruturaInstitucionalSyncUseCase>();
             
+            services.TryAddScoped<ITrataSincronizacaoInstitucionalUeUseCase, TrataSincronizacaoInstitucionalUeUseCase>();
+            services.TryAddScoped<ITrataSincronizacaoInstitucionalDreUseCase, TrataSincronizacaoInstitucionalDreUseCase>();
+
+            
+
+
 
         }
     }
