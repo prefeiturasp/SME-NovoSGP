@@ -66,8 +66,11 @@ namespace SME.SGP.IoC
             canalRabbit.QueueDeclare(RotasRabbit.FilaSgp, false, false, false, null);
             canalRabbit.QueueBind(RotasRabbit.FilaSgp, RotasRabbit.ExchangeSgp, "*");
 
-            canalRabbit.QueueDeclare(RotasRabbit.FilaSincronizacaoInstitucional, false, false, false, null);
-            canalRabbit.QueueBind(RotasRabbit.FilaSincronizacaoInstitucional, RotasRabbit.ExchangeSgp, "*", null);
+            canalRabbit.QueueDeclare(RotasRabbit.SincronizaEstruturaInstitucionalDreTratar, true, false, false);
+            canalRabbit.QueueBind(RotasRabbit.SincronizaEstruturaInstitucionalDreTratar, RotasRabbit.ExchangeSgp, RotasRabbit.SincronizaEstruturaInstitucionalDreTratar);
+
+            canalRabbit.QueueDeclare(RotasRabbit.SincronizaEstruturaInstitucionalUeTratar, true, false, false);
+            canalRabbit.QueueBind(RotasRabbit.SincronizaEstruturaInstitucionalUeTratar, RotasRabbit.ExchangeSgp, RotasRabbit.SincronizaEstruturaInstitucionalUeTratar);
         }
 
         private static void RegistrarComandos(IServiceCollection services)
@@ -539,8 +542,8 @@ namespace SME.SGP.IoC
 
             services.TryAddScopedWorkerService<IExecutarSyncGeralGoogleClassroomUseCase, ExecutarSyncGeralGoogleClassroomUseCase>();
 
-            services.TryAddScopedWorkerService<IEnviarSincronizacaoEstruturaInstitucionalUesUseCase, EnviarSincronizacaoEstruturaInstitucionalUesUseCase>();
-            services.TryAddScopedWorkerService<IExecutaSincronizacaoEstruturaInstitucionalUesUseCase, ExecutaSincronizacaoEstruturaInstitucionalUesUseCase>();
+            services.TryAddScopedWorkerService<ITrataSincronizacaoInstitucionalUeUseCase, TrataSincronizacaoInstitucionalUeUseCase>();
+            services.TryAddScopedWorkerService<IExecutaSincronizacaoEstruturaInstitucionalSyncUseCase, ExecutaSincronizacaoEstruturaInstitucionalSyncUseCase>();
         }
 
         private static void ResgistraDependenciaHttp(IServiceCollection services)

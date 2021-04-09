@@ -48,11 +48,10 @@ namespace SME.SGP.Worker.RabbitMQ
             canalRabbit.QueueBind(RotasRabbit.FilaSgp, RotasRabbit.ExchangeServidorRelatorios, "*", null);            
             canalRabbit.QueueDeclare(RotasRabbit.WorkerRelatoriosSgp, false, false, false, null);
             canalRabbit.QueueBind(RotasRabbit.WorkerRelatoriosSgp, RotasRabbit.ExchangeServidorRelatorios, "*", null);
-            canalRabbit.QueueDeclare(RotasRabbit.FilaSincronizacaoInstitucional, false, false, false, null);
-            canalRabbit.QueueBind(RotasRabbit.FilaSincronizacaoInstitucional, RotasRabbit.ExchangeSgp, "*", null);
 
-            canalRabbit.QueueDeclare(RotasRabbit.SincronizaEstruturaInstitucionalTurmasSync, true, false, false, null);
-            canalRabbit.QueueBind(RotasRabbit.SincronizaEstruturaInstitucionalTurmasSync, RotasRabbit.ExchangeSgp, "*", null);
+
+            canalRabbit.QueueDeclare(RotasRabbit.SincronizaEstruturaInstitucionalDreTratar, true, false, false);
+            canalRabbit.QueueBind(RotasRabbit.SincronizaEstruturaInstitucionalDreTratar, RotasRabbit.ExchangeSgp, RotasRabbit.SincronizaEstruturaInstitucionalDreTratar);
 
             comandos = new Dictionary<string, ComandoRabbit>();
             RegistrarUseCases();
@@ -119,8 +118,9 @@ namespace SME.SGP.Worker.RabbitMQ
             comandos.Add(RotasRabbit.NotificarPlanoAEEEncerrado, new ComandoRabbit("Enviar Notificação de Encerramento de PlanoAEE", typeof(IEnviarNotificacaoEncerramentoPlanoAEEUseCase)));
 
             // Sincronização das UES e turmas
-            comandos.Add(RotasRabbit.SincronizaEstruturaInstitucionalUes, new ComandoRabbit("Sincronizar Estrutura Institucional de UES", typeof(IEnviarSincronizacaoEstruturaInstitucionalUesUseCase)));
-            comandos.Add(RotasRabbit.SincronizaEstruturaInstitucionalTurmasSync, new ComandoRabbit("Sincronizar Estrutura Institucional de Turmas", typeof(IEnviarSincronizacaoEstruturaInstitucionalTurmasUseCase)));
+            comandos.Add(RotasRabbit.SincronizaEstruturaInstitucionalDreTratar, new ComandoRabbit("Estrutura Institucional - Tratar uma Dre", typeof(ITrataSincronizacaoInstitucionalDreUseCase)));
+            comandos.Add(RotasRabbit.SincronizaEstruturaInstitucionalUeTratar, new ComandoRabbit("Estrutura Institucional - Tratar uma Ue", typeof(ITrataSincronizacaoInstitucionalUeUseCase)));
+            //comandos.Add(RotasRabbit.SincronizaEstruturaInstitucionalTurmasSync, new ComandoRabbit("Sincronizar Estrutura Institucional de Turmas", typeof(IEnviarSincronizacaoEstruturaInstitucionalTurmasUseCase)));
         }
 
         private async Task TratarMensagem(BasicDeliverEventArgs ea)
@@ -257,7 +257,9 @@ namespace SME.SGP.Worker.RabbitMQ
             };
 
             canalRabbit.BasicConsume(RotasRabbit.FilaSgp, false, consumer);
-            canalRabbit.BasicConsume(RotasRabbit.FilaSincronizacaoInstitucional, false, consumer);
+            canalRabbit.BasicConsume(RotasRabbit.SincronizaEstruturaInstitucionalDreTratar, false, consumer);
+            canalRabbit.BasicConsume(RotasRabbit.SincronizaEstruturaInstitucionalUeTratar, false, consumer);
+
             return Task.CompletedTask;
         }
     }
