@@ -21,8 +21,8 @@ namespace SME.SGP.Aplicacao.Queries.ParametroSistema.ObterNovasModalidadesPorAno
         public async Task<IEnumerable<Modalidade>> Handle(ObterNovasModalidadesPorAnoQuery request, CancellationToken cancellationToken)
         {
             var parametro = await repositorioParametrosSistema.ObterParametroPorTipoEAno(TipoParametroSistema.NovasModalidades, request.AnoLetivo);
-            var novasModalidadesSplit = parametro.Valor.Split(',');
-            return novasModalidadesSplit.Select(x => (Modalidade)Enum.Parse(typeof(Modalidade), x));
+            var novasModalidadesSplit = parametro?.Valor.Split(',');
+            return novasModalidadesSplit?.Select(x => (Modalidade)Enum.Parse(typeof(Modalidade), x));
         }
     }
 }
