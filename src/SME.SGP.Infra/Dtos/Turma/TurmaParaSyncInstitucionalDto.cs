@@ -14,8 +14,7 @@ namespace SME.SGP.Infra
         public int Semestre { get; set; }
         public int DuracaoTurno { get; set; }
         public int TipoTurno { get; set; }
-        public DateTime? DataFim { get; set; }
-        public bool Ehistorico { get; set; }
+        public DateTime? DataFim { get; set; }        
         public bool EnsinoEspecial { get; set; }
         public int EtapaEJA { get; set; }
         public string SerieEnsino { get; set; }
