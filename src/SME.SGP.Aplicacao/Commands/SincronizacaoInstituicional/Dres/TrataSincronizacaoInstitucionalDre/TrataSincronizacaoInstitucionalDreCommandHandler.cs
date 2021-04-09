@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Sentry;
 using SME.SGP.Infra;
 using System;
 using System.Linq;
@@ -19,17 +20,26 @@ namespace SME.SGP.Aplicacao
         {
             var uesCodigo = await mediator.Send(new ObterUesCodigoPorDreSincronizacaoInstitucionalQuery(request.DreCodigo));
 
-            if (uesCodigo != null && uesCodigo.Any())
+            if (!uesCodigo?.Any() ?? true) return true;
+
+            foreach (var ueCodigo in uesCodigo)
             {
-                foreach (var ueCodigo in uesCodigo)
+                try
                 {
                     var publicarSyncTurma = await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.SincronizaEstruturaInstitucionalUeTratar, ueCodigo, Guid.NewGuid(), null, fila: RotasRabbit.SincronizaEstruturaInstitucionalUeTratar));
+                    if (!publicarSyncTurma)
+                    {
+                        var mensagem = $"Não foi possível inserir a UE de codígo : {ueCodigo} na fila de sync.";
+                        SentrySdk.CaptureMessage(mensagem);
+                    }
                 }
+                catch (Exception ex)
+                {
+                    SentrySdk.CaptureException(ex);
+                }                
             }
-
             return true;
             //TODO: Tratar caso não haja Ue para a Dre?
-            
         }
     }
 }

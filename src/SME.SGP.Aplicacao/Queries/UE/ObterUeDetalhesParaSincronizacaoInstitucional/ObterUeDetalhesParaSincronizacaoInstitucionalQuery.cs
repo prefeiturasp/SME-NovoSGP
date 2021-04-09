@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using FluentValidation;
+using MediatR;
 using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
@@ -11,5 +12,15 @@ namespace SME.SGP.Aplicacao
         }
 
         public string UeCodigo { get; set; }
+    }
+    public class ObterUeDetalhesParaSincronizacaoInstitucionalQueryValidator : AbstractValidator<ObterUeDetalhesParaSincronizacaoInstitucionalQuery>
+    {
+        public ObterUeDetalhesParaSincronizacaoInstitucionalQueryValidator()
+        {
+
+            RuleFor(c => c.UeCodigo)
+                .NotEmpty()
+                .WithMessage("O código da Ue deve ser informado.");
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using FluentValidation;
+using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 
@@ -15,5 +16,15 @@ namespace SME.SGP.Aplicacao
 
         public UeDetalhesParaSincronizacaoInstituicionalDto UeEOL { get; set; }
         public Ue UeSGP { get; set; }
+    }
+
+    public class TrataSincronizacaoInstitucionalUeCommandValidator : AbstractValidator<TrataSincronizacaoInstitucionalUeCommand>
+    {
+        public TrataSincronizacaoInstitucionalUeCommandValidator()
+        {
+            RuleFor(c => c.UeEOL)
+                .NotEmpty()
+                .WithMessage("A UeEOL deve ser informada.");
+        }
     }
 }
