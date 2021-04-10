@@ -20,10 +20,10 @@ namespace SME.SGP.Api.Controllers
     public class DashboardItineranciaController : ControllerBase
     {
         [HttpGet("visitas-paais")]
-        [ProducesResponseType(typeof(IEnumerable<ItineranciaVisitaDto>), 200)]
-        [ProducesResponseType(typeof(IEnumerable<ItineranciaVisitaDto>), 204)]
+        [ProducesResponseType(typeof(IEnumerable<DashboardItineranciaDto>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<DashboardItineranciaDto>), 204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterVisitasPAAIs([FromQuery] int anoLetivo, [FromQuery] long dreId, [FromQuery] long ueId, [FromQuery] int mes, [FromServices] IObterVisitasPAAIsUseCase useCase)
+        public async Task<IActionResult> ObterVisitasPAAIs([FromQuery] int anoLetivo, [FromQuery] long dreId, [FromQuery] long ueId, [FromQuery] int mes, [FromServices] IObterDashboardItineranciaVisitasPAAIsUseCase useCase)
         {
             return Ok(await useCase.Executar(new FiltroDashboardItineranciaDto()
             {
@@ -31,6 +31,22 @@ namespace SME.SGP.Api.Controllers
                 DreId = dreId,
                 UeId = ueId,
                 Mes = mes
+            }));
+        }
+
+        [HttpGet("objetivos")]
+        [ProducesResponseType(typeof(IEnumerable<DashboardItineranciaDto>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<DashboardItineranciaDto>), 204)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ObterObjetivos([FromQuery] int anoLetivo, [FromQuery] long dreId, [FromQuery] long ueId, [FromQuery] int mes, [FromQuery] string rf, [FromServices] IObterDashboardItineranciaObjetivosUseCase useCase)
+        {
+            return Ok(await useCase.Executar(new FiltroDashboardItineranciaDto()
+            {
+                AnoLetivo = anoLetivo,
+                DreId = dreId,
+                UeId = ueId,
+                Mes = mes,
+                RF = rf
             }));
         }
     }

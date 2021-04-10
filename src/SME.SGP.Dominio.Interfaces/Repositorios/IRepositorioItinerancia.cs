@@ -16,7 +16,8 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<ItineranciaObjetivoDto>> ObterObjetivosItineranciaPorId(long id);
         Task<IEnumerable<ItineranciaQuestaoDto>> ObterQuestoesItineranciaPorId(long id, long tipoQuestionario);
         Task<IEnumerable<ItineranciaUeDto>> ObterUesItineranciaPorId(long id);
-        Task<IEnumerable<ItineranciaVisitaDto>> ObterQuantidadeVisitasPAAI(int ano, long dreId, long ueId, int mes);
+        Task<IEnumerable<DashboardItineranciaDto>> ObterQuantidadeObjetivos(int ano, long dreId, long ueId, int mes, string codigoRF);
+        Task<IEnumerable<DashboardItineranciaDto>> ObterQuantidadeVisitasPAAI(int ano, long dreId, long ueId, int mes);
         Task<IEnumerable<ItineranciaIdUeInfosDto>> ObterUesItineranciaPorIds(long[] itineranciaIds);
         Task<IEnumerable<ItineranciaNomeRfCriadorRetornoDto>> ObterRfsCriadoresPorNome(string nomeParaBusca);
         Task<IEnumerable<ItineranciaCodigoAlunoDto>> ObterCodigoAlunosPorItineranciasIds(long[] itineranciasIds);
