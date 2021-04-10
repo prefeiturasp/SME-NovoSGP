@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public interface IObterVisitasPAAIsUseCase : IUseCase<FiltroDashboardItineranciaDto, IEnumerable<ItineranciaVisitaDto>>
+    public interface IObterDashboardItineranciaObjetivosUseCase : IUseCase<FiltroDashboardItineranciaDto, IEnumerable<DashboardItineranciaDto>>
     {
     }
 }

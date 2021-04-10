@@ -312,7 +312,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<ItineranciaNomeRfCriadorRetornoDto>(query);
         }
 
-        public async Task<IEnumerable<ItineranciaVisitaDto>> ObterQuantidadeVisitasPAAI(int ano, long dreId, long ueId, int mes)
+        public async Task<IEnumerable<DashboardItineranciaDto>> ObterQuantidadeVisitasPAAI(int ano, long dreId, long ueId, int mes)
         {
             var sql = new StringBuilder("");
             var where = new StringBuilder("where i.ano_letivo = @ano and not i.excluido ");
@@ -321,9 +321,6 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine(@"select i.criado_rf as Descricao, count(i.id ) as Quantidade");
             else
                 sql.AppendLine(@"select dre.abreviacao as Descricao, count(i.id ) as Quantidade");
-
-
-
 
             sql.AppendLine(@" from itinerancia i
                             inner join itinerancia_ue iu on iu.itinerancia_id = i.id
@@ -347,7 +344,41 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine(" group by dre.abreviacao order by 1;");
 
 
-            return await database.Conexao.QueryAsync<ItineranciaVisitaDto>(sql.ToString(), new { ano, dreId, ueId, mes });
+            return await database.Conexao.QueryAsync<DashboardItineranciaDto>(sql.ToString(), new { ano, dreId, ueId, mes });
+        }
+
+        public async Task<IEnumerable<DashboardItineranciaDto>> ObterQuantidadeObjetivos(int ano, long dreId, long ueId, int mes, string codigoRF)
+        {
+            var sql = new StringBuilder("");
+            var where = new StringBuilder("where i.ano_letivo = @ano and not i.excluido ");
+
+
+            sql.AppendLine(@"select iob.nome as Descricao, count(i.id) as Quantidade from itinerancia_objetivo io 
+                            inner join itinerancia i on io.itinerancia_id = i.id
+                            inner join itinerancia_objetivo_base iob on io.itinerancia_base_id = iob.id 
+                            inner join itinerancia_ue iu on iu.itinerancia_id = i.id
+                            inner join ue on iu.ue_id = ue.id 
+                            inner join dre on ue.dre_id = dre.id ");
+
+            if (dreId > 0)
+                where.AppendLine(" and dre.id = @dreId ");
+
+            if (ueId > 0)
+                where.AppendLine(" and ue.id = @ueId ");
+
+            if (mes > 0)
+                where.AppendLine(" and extract(month from i.data_visita) = @mes");
+
+            if(codigoRF != null)
+                where.AppendLine(" and i.criado_rf = @codigoRF");
+
+            sql.AppendLine(where.ToString());
+
+
+            sql.AppendLine(" group by iob.nome order by 1;");
+
+
+            return await database.Conexao.QueryAsync<DashboardItineranciaDto>(sql.ToString(), new { ano, dreId, ueId, mes, codigoRF });
         }
     }
 }

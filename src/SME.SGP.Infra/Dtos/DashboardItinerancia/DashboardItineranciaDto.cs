@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SME.SGP.Infra.Dtos
 {
-    public class ItineranciaVisitaDto
+    public class DashboardItineranciaDto
     {
         public long Quantidade { get; set; }
         public string Descricao { get; set; }

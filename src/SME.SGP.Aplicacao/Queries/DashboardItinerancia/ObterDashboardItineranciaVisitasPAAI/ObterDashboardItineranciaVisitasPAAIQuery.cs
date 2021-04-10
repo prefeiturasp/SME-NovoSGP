@@ -8,14 +8,14 @@ using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterItineranciasVisitasPAAIQuery : IRequest<IEnumerable<ItineranciaVisitaDto>>
+    public class ObterDashboardItineranciaVisitasPAAIQuery : IRequest<IEnumerable<DashboardItineranciaDto>>
     {
         public long UeId { get; set; }
         public int Ano { get; set; }
         public int Mes { get; set; }
         public long DreId { get; set; }
 
-        public ObterItineranciasVisitasPAAIQuery(int ano, long dreId, long ueId, int mes)
+        public ObterDashboardItineranciaVisitasPAAIQuery(int ano, long dreId, long ueId, int mes)
         {
             Ano = ano;
             DreId = dreId;
