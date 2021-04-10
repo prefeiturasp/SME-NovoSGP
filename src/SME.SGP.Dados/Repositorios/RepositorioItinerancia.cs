@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -148,35 +149,35 @@ namespace SME.SGP.Dados.Repositorios
 
             var lookup = new Dictionary<long, Itinerancia>();
 
-           await database.Conexao.QueryAsync<Itinerancia, ItineranciaAluno, ItineranciaAlunoQuestao, ItineranciaQuestao, ItineranciaObjetivo, ItineranciaObjetivoBase, ItineranciaUe, Itinerancia>(query,
-                (registroItinerancia, itineranciaAluno, itineranciaAlunoquestao, itineranciaQuestao, itineranciaObjetivo, itineranciaObjetivoBase, itineranciaUe) =>
-                {
-                    Itinerancia itinerancia;
-                    if (!lookup.TryGetValue(registroItinerancia.Id, out itinerancia))
-                    {
-                        itinerancia = registroItinerancia;
-                        lookup.Add(registroItinerancia.Id, itinerancia);
-                    }
-                    if (itineranciaAluno != null)
-                        itinerancia.AdicionarAluno(itineranciaAluno);
+            await database.Conexao.QueryAsync<Itinerancia, ItineranciaAluno, ItineranciaAlunoQuestao, ItineranciaQuestao, ItineranciaObjetivo, ItineranciaObjetivoBase, ItineranciaUe, Itinerancia>(query,
+                 (registroItinerancia, itineranciaAluno, itineranciaAlunoquestao, itineranciaQuestao, itineranciaObjetivo, itineranciaObjetivoBase, itineranciaUe) =>
+                 {
+                     Itinerancia itinerancia;
+                     if (!lookup.TryGetValue(registroItinerancia.Id, out itinerancia))
+                     {
+                         itinerancia = registroItinerancia;
+                         lookup.Add(registroItinerancia.Id, itinerancia);
+                     }
+                     if (itineranciaAluno != null)
+                         itinerancia.AdicionarAluno(itineranciaAluno);
 
-                    if (itineranciaAlunoquestao != null)
-                        itinerancia.AdicionarQuestaoAluno(itineranciaAluno.Id, itineranciaAlunoquestao);
+                     if (itineranciaAlunoquestao != null)
+                         itinerancia.AdicionarQuestaoAluno(itineranciaAluno.Id, itineranciaAlunoquestao);
 
-                    if (itineranciaQuestao != null)
-                        itinerancia.AdicionarQuestao(itineranciaQuestao);
+                     if (itineranciaQuestao != null)
+                         itinerancia.AdicionarQuestao(itineranciaQuestao);
 
-                    if (itineranciaObjetivo != null)
-                        itinerancia.AdicionarObjetivo(itineranciaObjetivo);
+                     if (itineranciaObjetivo != null)
+                         itinerancia.AdicionarObjetivo(itineranciaObjetivo);
 
-                    if (itineranciaObjetivoBase != null)
-                        itinerancia.AdicionarObjetivoBase(itineranciaObjetivoBase);
+                     if (itineranciaObjetivoBase != null)
+                         itinerancia.AdicionarObjetivoBase(itineranciaObjetivoBase);
 
-                    if (itineranciaUe != null)
-                        itinerancia.AdicionarUe(itineranciaUe);
+                     if (itineranciaUe != null)
+                         itinerancia.AdicionarUe(itineranciaUe);
 
-                    return itinerancia;
-                }, param: new { id });
+                     return itinerancia;
+                 }, param: new { id });
 
             return lookup.Values.FirstOrDefault();
         }
@@ -232,7 +233,7 @@ namespace SME.SGP.Dados.Repositorios
             else
             {
                 sql.AppendLine(" i.id ");
-                sql.AppendLine(", i.data_visita as DataVisita ");                
+                sql.AppendLine(", i.data_visita as DataVisita ");
                 sql.AppendLine(", i.situacao ");
                 sql.AppendLine(", i.criado_por||'('||i.criado_rf||')' as criado_por");
                 sql.AppendLine($", (select count(*) from itinerancia_aluno ia where ia.itinerancia_id = i.id ) as alunos ");
@@ -248,10 +249,10 @@ namespace SME.SGP.Dados.Repositorios
 	                              inner join ue  on iu2.ue_id  = ue.id 
 	                              inner join dre on ue.dre_id = dre.id ");
             }
-            
+
             if (turmaId > 0 || !string.IsNullOrEmpty(alunoCodigo))
                 sql.AppendLine(@" inner join itinerancia_aluno ia on ia.itinerancia_id = i.id ");
-            
+
 
         }
 
@@ -263,19 +264,19 @@ namespace SME.SGP.Dados.Repositorios
 
             if (ueId > 0)
                 sql.AppendLine(" and ue.id = @ueId ");
-            
+
             if (turmaId > 0)
                 sql.AppendLine(" and ia.turma_id = @turmaId ");
-            
+
             if (!string.IsNullOrEmpty(alunoCodigo))
                 sql.AppendLine(" and ia.codigo_aluno = @alunoCodigo ");
-            
+
             if (situacao.HasValue && situacao > 0)
                 sql.AppendLine(" and i.situacao = @situacao ");
-            
+
             if (dataInicio != null && dataFim != null)
                 sql.AppendLine("and i.data_visita::date between @dataInicio and @dataFim");
-            
+
             if (turmaId > 0)
                 sql.AppendLine("and ia.turma_id = @turmaId");
 
@@ -309,6 +310,44 @@ namespace SME.SGP.Dados.Repositorios
                                         where lower(f_unaccent(i.criado_por)) LIKE lower(f_unaccent('%{nomeParaBusca}%')) order by criado_por limit 10";
 
             return await database.Conexao.QueryAsync<ItineranciaNomeRfCriadorRetornoDto>(query);
+        }
+
+        public async Task<IEnumerable<ItineranciaVisitaDto>> ObterQuantidadeVisitasPAAI(int ano, long dreId, long ueId, int mes)
+        {
+            var sql = new StringBuilder("");
+            var where = new StringBuilder("where i.ano_letivo = @ano ");
+
+            if (dreId > 0)
+                sql.AppendLine(@"select i.criado_rf as Descricao, count(i.id ) as Quantidade");
+            else
+                sql.AppendLine(@"select dre.abreviacao as Descricao, count(i.id ) as Quantidade");
+
+
+
+
+            sql.AppendLine(@" from itinerancia i
+                            inner join itinerancia_ue iu on iu.itinerancia_id = i.id
+                            inner join ue on iu.ue_id = ue.id 
+                            inner join dre on ue.dre_id = dre.id ");
+
+            if (dreId > 0)
+                where.AppendLine(" and dre.id = @dreId ");
+
+            if (ueId > 0)
+                where.AppendLine(" and ue.id = @ueId ");
+
+            if (mes > 0)
+                where.AppendLine(" and extract(month from i.criado_em) = @mes");
+
+            sql.AppendLine(where.ToString());
+
+            if (dreId > 0)
+                sql.AppendLine(" group by i.criado_rf order by 1;");
+            else
+                sql.AppendLine(" group by dre.abreviacao order by 1;");
+
+
+            return await database.Conexao.QueryAsync<ItineranciaVisitaDto>(sql.ToString(), new { ano, dreId, ueId, mes });
         }
     }
 }
