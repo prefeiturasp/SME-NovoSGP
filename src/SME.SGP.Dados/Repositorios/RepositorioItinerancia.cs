@@ -337,7 +337,7 @@ namespace SME.SGP.Dados.Repositorios
                 where.AppendLine(" and ue.id = @ueId ");
 
             if (mes > 0)
-                where.AppendLine(" and extract(month from i.criado_em) = @mes");
+                where.AppendLine(" and extract(month from i.data_visita) = @mes");
 
             sql.AppendLine(where.ToString());
 
