@@ -15,9 +15,9 @@ using System.Threading.Tasks;
 namespace SME.SGP.Api.Controllers
 {
     [ApiController]
-    [Route("api/v1/dashboard/itinerancia")]
+    [Route("api/v1/dashboard/registro-itinerancia")]
     //[Authorize("Bearer")]
-    public class DashboardItineranciaController : ControllerBase
+    public class DashboardRegistroItineranciaController : ControllerBase
     {
         [HttpGet("visitas-paais")]
         [ProducesResponseType(typeof(IEnumerable<DashboardItineranciaDto>), 200)]
