@@ -315,7 +315,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<ItineranciaVisitaDto>> ObterQuantidadeVisitasPAAI(int ano, long dreId, long ueId, int mes)
         {
             var sql = new StringBuilder("");
-            var where = new StringBuilder("where i.ano_letivo = @ano ");
+            var where = new StringBuilder("where i.ano_letivo = @ano and not i.excluido ");
 
             if (dreId > 0)
                 sql.AppendLine(@"select i.criado_rf as Descricao, count(i.id ) as Quantidade");
