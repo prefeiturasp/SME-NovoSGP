@@ -115,8 +115,6 @@ namespace SME.SGP.Worker.RabbitMQ
             comandos.Add(RotasRabbit.NotificarCriacaoPlanoAEE, new ComandoRabbit("Enviar Notificação de Criação de PlanoAEE", typeof(IEnviarNotificacaoCriacaoPlanoAEEUseCase)));
             comandos.Add(RotasRabbit.NotificarPlanoAEEEncerrado, new ComandoRabbit("Enviar Notificação de Encerramento de PlanoAEE", typeof(IEnviarNotificacaoEncerramentoPlanoAEEUseCase)));
 
-            comandos.Add(RotasRabbit.RotaNotificacaoRegistroItineranciaInseridoUseCase, new ComandoRabbit("Enviar Notificação quanto insere um novo Registro de Itinerância", typeof(INotificacaoSalvarItineranciaUseCase)));
-
             // Sincronização das UES
             comandos.Add(RotasRabbit.SincronizaEstruturaInstitucionalUes, new ComandoRabbit("Sincronizar Estrutura Institucional de UES", typeof(IEnviarSincronizacaoEstruturaInstitucionalUesUseCase)));
         }
