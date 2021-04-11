@@ -21,24 +21,43 @@ class ServicoDashboardRegistroItinerancia {
     return api.get(url);
   };
 
-  obterQuantidadeRegistrosPAAI = (anoLetivo, dreId, ueId, mes) => {
+  obterQuantidadeRegistrosPAAI = (
+    anoLetivo,
+    dreId,
+    ueId,
+    dreCodigo,
+    ueCodigo,
+    mes
+  ) => {
     return this.montarConsultaPadraoGraficos(
       'visitas-paais',
       anoLetivo,
       dreId,
       ueId,
-      mes
+      mes,
+      dreCodigo,
+      ueCodigo
     );
   };
 
-  obterQuantidadeRegistrosPorObjetivo = (anoLetivo, dreId, ueId, mes, rf) => {
+  obterQuantidadeRegistrosPorObjetivo = (
+    anoLetivo,
+    dreId,
+    ueId,
+    dreCodigo,
+    ueCodigo,
+    mes,
+    rf
+  ) => {
     return this.montarConsultaPadraoGraficos(
       'objetivos',
       anoLetivo,
       dreId,
       ueId,
       mes,
-      rf
+      rf,
+      dreCodigo,
+      ueCodigo
     );
   };
 }

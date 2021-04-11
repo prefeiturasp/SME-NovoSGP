@@ -13,6 +13,8 @@ const MontarGraficoBarras = props => {
     anoLetivo,
     dreId,
     ueId,
+    mesSelecionado,
+    rf,
     nomeIndiceDesc,
     nomeValor,
     ServicoObterValoresGrafico,
@@ -109,7 +111,9 @@ const MontarGraficoBarras = props => {
       dreId === OPCAO_TODOS ? '' : dreId,
       ueId === OPCAO_TODOS ? '' : ueId,
       dreCodigo === OPCAO_TODOS ? '' : dreCodigo,
-      ueCodigo === OPCAO_TODOS ? '' : ueCodigo
+      ueCodigo === OPCAO_TODOS ? '' : ueCodigo,
+      mesSelecionado === OPCAO_TODOS ? '' : mesSelecionado,
+      rf === OPCAO_TODOS ? '' : rf
     )
       .catch(e => erros(e))
       .finally(() => setExibirLoader(false));
@@ -132,6 +136,8 @@ const MontarGraficoBarras = props => {
     mapearDadosGraficos,
     dreCodigo,
     ueCodigo,
+    mesSelecionado,
+    rf,
   ]);
 
   useEffect(() => {
@@ -187,8 +193,10 @@ const MontarGraficoBarras = props => {
 
 MontarGraficoBarras.propTypes = {
   anoLetivo: PropTypes.oneOfType(PropTypes.any),
-  dreId: PropTypes.string,
-  ueId: PropTypes.string,
+  dreId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  ueId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  mesSelecionado: PropTypes.string,
+  rf: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   nomeIndiceDesc: PropTypes.string,
   nomeValor: PropTypes.string,
   ServicoObterValoresGrafico: PropTypes.func,
@@ -201,8 +209,10 @@ MontarGraficoBarras.propTypes = {
 
 MontarGraficoBarras.defaultProps = {
   anoLetivo: null,
-  dreId: '',
-  ueId: '',
+  dreId: null,
+  ueId: null,
+  mesSelecionado: '',
+  rf: '',
   nomeIndiceDesc: '',
   nomeValor: '',
   ServicoObterValoresGrafico: () => {},

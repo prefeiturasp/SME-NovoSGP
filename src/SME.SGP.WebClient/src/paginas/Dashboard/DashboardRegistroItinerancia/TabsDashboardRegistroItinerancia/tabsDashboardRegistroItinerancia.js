@@ -54,15 +54,15 @@ const TabsDashboardRegistroItinerancia = props => {
 
 TabsDashboardRegistroItinerancia.propTypes = {
   anoLetivo: PropTypes.oneOfType(PropTypes.any),
-  ueId: PropTypes.string,
-  dreId: PropTypes.string,
+  ueId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  dreId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   mesSelecionado: PropTypes.string,
 };
 
 TabsDashboardRegistroItinerancia.defaultProps = {
   anoLetivo: null,
-  dreId: '',
-  ueId: '',
+  dreId: null,
+  ueId: null,
   mesSelecionado: '',
 };
 

@@ -25,15 +25,15 @@ const GraficosRegistroItinerancia = props => {
 
 GraficosRegistroItinerancia.propTypes = {
   anoLetivo: PropTypes.oneOfType(PropTypes.any),
-  dreId: PropTypes.string,
-  ueId: PropTypes.string,
+  dreId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  ueId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   mesSelecionado: PropTypes.string,
 };
 
 GraficosRegistroItinerancia.defaultProps = {
   anoLetivo: null,
-  dreId: '',
-  ueId: '',
+  dreId: null,
+  ueId: null,
   mesSelecionado: '',
 };
 

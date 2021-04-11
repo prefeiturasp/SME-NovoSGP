@@ -6,7 +6,7 @@ import MontarGraficoBarras from '~/paginas/Dashboard/ComponentesDashboard/montar
 import ServicoDashboardRegistroItinerancia from '~/servicos/Paginas/Dashboard/ServicoDashboardRegistroItinerancia';
 
 const QuantidadeRegistrosPAAI = props => {
-  const { anoLetivo, dreId, ueId } = props;
+  const { anoLetivo, dreId, ueId, mesSelecionado } = props;
 
   const configCabecalho = {
     altura: '44px',
@@ -16,6 +16,8 @@ const QuantidadeRegistrosPAAI = props => {
   const [exibir, setExibir] = useState(false);
 
   const key = 'quantidade-registros-paai';
+
+  const OPCAO_TODOS = '-99';
 
   return (
     <div className="mt-3">
@@ -35,13 +37,14 @@ const QuantidadeRegistrosPAAI = props => {
             anoLetivo={anoLetivo}
             dreId={dreId}
             ueId={ueId}
+            mesSelecionado={mesSelecionado}
             nomeIndiceDesc="descricao"
             nomeValor="quantidade"
             ServicoObterValoresGrafico={
               ServicoDashboardRegistroItinerancia.obterQuantidadeRegistrosPAAI
             }
-            exibirLegenda
-            showAxisBottom={false}
+            exibirLegenda={dreId !== OPCAO_TODOS}
+            showAxisBottom={dreId === OPCAO_TODOS}
           />
         ) : (
           ''
@@ -53,14 +56,16 @@ const QuantidadeRegistrosPAAI = props => {
 
 QuantidadeRegistrosPAAI.propTypes = {
   anoLetivo: PropTypes.oneOfType(PropTypes.any),
-  dreId: PropTypes.string,
-  ueId: PropTypes.string,
+  dreId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  ueId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  mesSelecionado: PropTypes.string,
 };
 
 QuantidadeRegistrosPAAI.defaultProps = {
   anoLetivo: null,
-  dreId: '',
-  ueId: '',
+  dreId: null,
+  ueId: null,
+  mesSelecionado: '',
 };
 
 export default QuantidadeRegistrosPAAI;
