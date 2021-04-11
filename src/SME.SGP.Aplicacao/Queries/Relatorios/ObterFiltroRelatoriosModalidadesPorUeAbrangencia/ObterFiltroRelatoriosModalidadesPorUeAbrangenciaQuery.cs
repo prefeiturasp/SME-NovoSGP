@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
         {
             RuleFor(c => c.CodigoUe)
             .NotEmpty()
-            .WithMessage("O código da ue ser informado.");
+            .WithMessage("O código da ue deve ser informado.");
 
             RuleFor(x => x.Login)
                 .NotEmpty()
