@@ -83,6 +83,8 @@
         public static string NotificarCriacaoPlanoAEE => "plano.aee.notificar.criacao";
         public static string NotificarPlanoAEEEncerrado => "plano.aee.notificar.encerramento";
 
+        public static string RotaNotificacaoRegistroItineranciaInseridoUseCase => "notificacao.registro.itinerancia.inserido";
+
         public static string SincronizaEstruturaInstitucionalUes => "sincroniza.estrtura.institucional.ues";
     }
 }
