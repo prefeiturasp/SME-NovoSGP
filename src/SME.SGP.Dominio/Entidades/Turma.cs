@@ -12,7 +12,7 @@ namespace SME.SGP.Dominio
         public Modalidade ModalidadeCodigo { get; set; }
         public ModalidadeTipoCalendario ModalidadeTipoCalendario
         {
-            get => ModalidadeCodigo == Modalidade.EJA ?
+                get => ModalidadeCodigo == Modalidade.EJA ?
                 ModalidadeTipoCalendario.EJA :
                 ModalidadeCodigo == Modalidade.Infantil ?
                     ModalidadeTipoCalendario.Infantil :
