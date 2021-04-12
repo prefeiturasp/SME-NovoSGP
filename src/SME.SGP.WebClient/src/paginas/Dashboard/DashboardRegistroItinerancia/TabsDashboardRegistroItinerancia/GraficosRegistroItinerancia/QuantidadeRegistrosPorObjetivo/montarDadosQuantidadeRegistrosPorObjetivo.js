@@ -24,12 +24,17 @@ const MontarDadosQuantidadeRegistrosPorObjetivo = props => {
 
       if (retorno?.data?.length) {
         const lista = retorno.data;
-        lista.unshift({ nomeServidor: 'Todos', codigoRf: OPCAO_TODOS });
-        setListaPAAIs(retorno.data);
+
+        if (retorno.data.length === 1) {
+          setServidorSelecionado(lista[0].codigoRf);
+        }
 
         if (retorno.data.length > 1) {
+          lista.unshift({ nomeServidor: 'Todos', codigoRf: OPCAO_TODOS });
           setServidorSelecionado(OPCAO_TODOS);
         }
+
+        setListaPAAIs(retorno.data);
       } else {
         setListaPAAIs([]);
         setServidorSelecionado();
@@ -62,26 +67,31 @@ const MontarDadosQuantidadeRegistrosPorObjetivo = props => {
               onChange={onChange}
               valueSelect={servidorSelecionado}
               placeholder="PAAIs"
+              allowClear={false}
             />
           </Loader>
         </div>
       ) : (
         ''
       )}
-      <MontarGraficoBarras
-        anoLetivo={anoLetivo}
-        dreId={dreId}
-        ueId={ueId}
-        mesSelecionado={mesSelecionado}
-        rf={servidorSelecionado}
-        nomeIndiceDesc="descricao"
-        nomeValor="quantidade"
-        ServicoObterValoresGrafico={
-          ServicoDashboardRegistroItinerancia.obterQuantidadeRegistrosPorObjetivo
-        }
-        exibirLegenda
-        showAxisBottom={false}
-      />
+      {servidorSelecionado ? (
+        <MontarGraficoBarras
+          anoLetivo={anoLetivo}
+          dreId={dreId}
+          ueId={ueId}
+          mesSelecionado={mesSelecionado}
+          rf={servidorSelecionado}
+          nomeIndiceDesc="descricao"
+          nomeValor="quantidade"
+          ServicoObterValoresGrafico={
+            ServicoDashboardRegistroItinerancia.obterQuantidadeRegistrosPorObjetivo
+          }
+          exibirLegenda
+          showAxisBottom={false}
+        />
+      ) : (
+        ''
+      )}
     </>
   );
 };
