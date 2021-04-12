@@ -170,11 +170,6 @@ const MontarGraficoBarras = props => {
           chavesGraficoAgrupado?.length ? customPropsColors : null
         }
         dadosLegendaCustomizada={dadosLegendaGrafico}
-        styleLegendaLabel={{
-          display: 'flex',
-          flexFlow: 'wrap',
-          marginLeft: '108px',
-        }}
         showAxisBottom={showAxisBottom}
       />
     );
