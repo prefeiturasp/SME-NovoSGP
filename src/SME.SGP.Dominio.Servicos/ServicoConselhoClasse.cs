@@ -32,7 +32,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IConsultasConselhoClasseNota consultasConselhoClasseNota;
 
 
-        
+
         public ServicoConselhoClasse(IRepositorioConselhoClasse repositorioConselhoClasse,
                                      IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno,
                                      IRepositorioFechamentoTurma repositorioFechamentoTurma,
@@ -86,10 +86,10 @@ namespace SME.SGP.Dominio.Servicos
 
                 var ue = repositorioUe.ObterPorId(turma.UeId);
                 ue.AdicionarDre(repositorioDre.ObterPorId(ue.DreId));
-                turma.AdicionarUe(ue);     
+                turma.AdicionarUe(ue);
 
                 var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, bimestre));
-                if(periodoEscolar == null && bimestre > 0 ) throw new NegocioException("Período escolar não encontrado");
+                if (periodoEscolar == null && bimestre > 0) throw new NegocioException("Período escolar não encontrado");
 
                 fechamentoTurma = new FechamentoTurma()
                 {
@@ -107,7 +107,7 @@ namespace SME.SGP.Dominio.Servicos
 
             }
 
-        
+
 
             try
             {
@@ -127,16 +127,16 @@ namespace SME.SGP.Dominio.Servicos
                 else
                 {
                     // Fechamento Final
-                    if(fechamentoTurma.Turma.AnoLetivo != 2020)
+                    if (fechamentoTurma.Turma.AnoLetivo != 2020)
                     {
                         var validacaoConselhoFinal = await consultasConselhoClasse.ValidaConselhoClasseUltimoBimestre(fechamentoTurma.Turma);
                         if (!validacaoConselhoFinal.Item2 && fechamentoTurma.Turma.AnoLetivo == DateTime.Today.Year)
                             throw new NegocioException($"Para acessar este aba você precisa registrar o conselho de classe do {validacaoConselhoFinal.Item1}º bimestre");
-                    }                    
+                    }
                 }
                 unitOfWork.PersistirTransacao();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 unitOfWork.Rollback();
                 throw e;
@@ -160,6 +160,8 @@ namespace SME.SGP.Dominio.Servicos
 
                     conselhoClasseAlunoId = await SalvarConselhoClasseAlunoResumido(conselhoClasse.Id, alunoCodigo);
 
+                    await mediator.Send(new InserirTurmasComplementaresCommand(fechamentoTurma.TurmaId, conselhoClasseAlunoId, alunoCodigo));
+
                     conselhoClasseNota = ObterConselhoClasseNota(conselhoClasseNotaDto, conselhoClasseAlunoId);
 
                     if (fechamentoTurma.Turma.AnoLetivo == 2020)
@@ -174,6 +176,8 @@ namespace SME.SGP.Dominio.Servicos
                     unitOfWork.IniciarTransacao();
 
                     conselhoClasseAlunoId = conselhoClasseAluno != null ? conselhoClasseAluno.Id : await SalvarConselhoClasseAlunoResumido(conselhoClasseId, alunoCodigo);
+
+                    await mediator.Send(new InserirTurmasComplementaresCommand(fechamentoTurma.TurmaId, conselhoClasseAlunoId, alunoCodigo));
 
                     conselhoClasseNota = await repositorioConselhoClasseNota.ObterPorConselhoClasseAlunoComponenteCurricularAsync(conselhoClasseAlunoId, conselhoClasseNotaDto.CodigoComponenteCurricular);
 
@@ -319,7 +323,9 @@ namespace SME.SGP.Dominio.Servicos
             else
                 await repositorioConselhoClasse.SalvarAsync(conselhoClasseAluno.ConselhoClasse);
 
-            await repositorioConselhoClasseAluno.SalvarAsync(conselhoClasseAluno);
+            var conselhoClasseAlunoId = await repositorioConselhoClasseAluno.SalvarAsync(conselhoClasseAluno);
+
+            await mediator.Send(new InserirTurmasComplementaresCommand(fechamentoTurma.TurmaId, conselhoClasseAlunoId, conselhoClasseAluno.AlunoCodigo));
 
             return (AuditoriaConselhoClasseAlunoDto)conselhoClasseAluno;
         }
@@ -329,13 +335,13 @@ namespace SME.SGP.Dominio.Servicos
             int bimestre;
             long[] conselhosClassesIds;
 
-         
+
             string[] turmasCodigos;
             if (turma.DeveVerificarRegraRegulares())
             {
                 turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, turma.ObterTiposRegularesDiferentes()));
                 turmasCodigos = turmasCodigos.Concat(new string[] { turma.CodigoTurma }).ToArray();
-            }                
+            }
             else turmasCodigos = new string[] { turma.CodigoTurma };
 
 
@@ -371,8 +377,8 @@ namespace SME.SGP.Dominio.Servicos
             else
             {
                 var todasAsNotas = await consultasConselhoClasseNota.ObterNotasFinaisBimestresAlunoAsync(alunoCodigo, turmasCodigos);
-                if (todasAsNotas!= null && todasAsNotas.Any())
-                    notasParaVerificar.AddRange(todasAsNotas.Where( a => a.Bimestre == null));
+                if (todasAsNotas != null && todasAsNotas.Any())
+                    notasParaVerificar.AddRange(todasAsNotas.Where(a => a.Bimestre == null));
             }
 
 
@@ -384,7 +390,7 @@ namespace SME.SGP.Dominio.Servicos
                 if (!notasParaVerificar.Any(c => c.ComponenteCurricularCodigo == componenteCurricular.CodigoComponenteCurricular))
                     return false;
             }
-                
+
 
             return true;
         }
