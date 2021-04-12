@@ -632,9 +632,9 @@
         RAA_E = 212,
 
         [PermissaoMenu(Menu = "Relatório do Acompanhamento da Aprendizagem", Icone = "fas fa-pencil-ruler", Agrupamento = "Fechamento", OrdemAgrupamento = 3, OrdemMenu = 5, EhAlteracao = true, Url = "/fechamento/acompanhamento-aprendizagem")]
-        RAA_A = 213,     
+        RAA_A = 213,
 
-        [PermissaoMenu(Menu = "Planejamento", Icone = "fas fa-print", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhConsulta = true, Url = "/relatorios/planejamento/devolutivas", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Devolutivas")]
+        [PermissaoMenu(Menu = "Diario classe", Icone = "fas fa-print", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhConsulta = true, Url = "/relatorios/planejamento/devolutivas", EhSubMenu = true, OrdemSubMenu = 3, SubMenu = "Devolutivas")]
         RD_C = 214,
 
         [PermissaoMenu(Menu = "AEE", Icone = "fas fa-chart-bar", Agrupamento = "Dashboard", OrdemAgrupamento = 8, EhConsulta = true, Url = "/dashboard/aee")]
