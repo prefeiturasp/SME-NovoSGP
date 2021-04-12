@@ -28,23 +28,6 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Não foi possível encontrar a UE informada");
             await NotificarItinerancia(ue, request.CriadoRF, request.CriadoPor, request.DataVisita, request.Estudantes);
 
-            //var ues = await ObterUEsPorModalidade(request.ModalidadeTipoCalendario);
-
-            //foreach(var ue in ues)
-            //{
-            //    if (!await ExistePeriodoFechamentoCadastrado(ue, request.PeriodoFechamentoBimestre))
-            //    {
-            //        try
-            //        {
-            //            await NotificarUe(ue, request.ModalidadeTipoCalendario);
-            //        }
-            //        catch (Exception e)
-            //        {
-            //            SentrySdk.CaptureException(e);
-            //        }
-            //    }
-            //}
-
             return true;
         }
 
