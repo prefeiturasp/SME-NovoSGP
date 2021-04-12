@@ -18,9 +18,6 @@ namespace SME.SGP.Aplicacao
             if (param.AnoLetivo == 0)
                 param.AnoLetivo = DateTime.Now.Year;
 
-            if (param.Mes == 0)
-                param.Mes = 1;
-
             return await mediator.Send(new ObterDashboardItineranciaObjetivosQuery(param.AnoLetivo, param.DreId, param.UeId, param.Mes, param.RF));
         }
     }
