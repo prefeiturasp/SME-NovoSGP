@@ -541,6 +541,8 @@ namespace SME.SGP.IoC
 
             services.TryAddScopedWorkerService<IEnviarSincronizacaoEstruturaInstitucionalUesUseCase, EnviarSincronizacaoEstruturaInstitucionalUesUseCase>();
             services.TryAddScopedWorkerService<IExecutaSincronizacaoEstruturaInstitucionalUesUseCase, ExecutaSincronizacaoEstruturaInstitucionalUesUseCase>();
+
+            services.TryAddScopedWorkerService<INotificacaoSalvarItineranciaUseCase, NotificacaoSalvarItineranciaUseCase>();
         }
 
         private static void ResgistraDependenciaHttp(IServiceCollection services)
