@@ -74,9 +74,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(int[]), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterAnosLetivos()
+        public async Task<IActionResult> ObterAnosLetivos([FromQuery] int anoMinimo)
         {
-            int[] retorno = (await consultasAbrangencia.ObterAnosLetivos(ConsideraHistorico)).ToArray();
+            int[] retorno = (await consultasAbrangencia.ObterAnosLetivos(ConsideraHistorico, anoMinimo)).ToArray();
 
             if (!retorno.Any())
                 return NoContent();

@@ -54,6 +54,7 @@ const DashboardRegistroItinerancia = () => {
 
     const anosLetivos = await FiltroHelper.obterAnosLetivos({
       consideraHistorico,
+      anoMinimo: 2021,
     });
 
     if (!anosLetivos.length) {
