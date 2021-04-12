@@ -19,14 +19,8 @@ namespace SME.SGP.Aplicacao
         {
             var login = await mediator.Send(new ObterLoginAtualQuery());
             var perfil = await mediator.Send(new ObterPerfilAtualQuery());
-            var modadlidadesQueSeraoIgnoradas = await ObterModalidadesQueSeraoIgnoradasAsync(consideraNovasModalidades);
+            var modadlidadesQueSeraoIgnoradas = await mediator.Send(new ObterNovasModalidadesPorAnoQuery(DateTime.Now.Year, consideraNovasModalidades));
             return await mediator.Send(new ObterFiltroRelatoriosModalidadesPorUeAbrangenciaQuery(codigoUe, login, perfil, modadlidadesQueSeraoIgnoradas));
-        }
-
-        private async Task<IEnumerable<Modalidade>> ObterModalidadesQueSeraoIgnoradasAsync(bool consideraNovasModalidades)
-        {
-            if (consideraNovasModalidades) return null;
-            return await mediator.Send(new ObterNovasModalidadesPorAnoQuery(DateTime.Now.Year));
         }
     }
 }

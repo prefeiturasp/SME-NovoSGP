@@ -18,14 +18,8 @@ namespace SME.SGP.Aplicacao
         {
             var login = await mediator.Send(new ObterLoginAtualQuery());
             var perfil = await mediator.Send(new ObterPerfilAtualQuery());
-            var modalidadesQueSeraoIgnoradas = await ObterModalidadesQueSeraoIgnoradas(anoLetivo, consideraNovasModalidades);
+            var modalidadesQueSeraoIgnoradas = await mediator.Send(new ObterNovasModalidadesPorAnoQuery(anoLetivo, consideraNovasModalidades));
             return await mediator.Send(new ObterFiltroRelatoriosModalidadesPorUeQuery(codigoUe, anoLetivo, consideraHistorico, login, perfil, modalidadesQueSeraoIgnoradas));
-        }
-
-        private async Task<IEnumerable<Modalidade>> ObterModalidadesQueSeraoIgnoradas(int anoLetivo, bool consideraNovasModalidades)
-        {
-            if (consideraNovasModalidades) return null;
-            return await mediator.Send(new ObterNovasModalidadesPorAnoQuery(anoLetivo));
         }
     }
 }

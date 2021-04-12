@@ -20,9 +20,16 @@ namespace SME.SGP.Aplicacao.Queries.ParametroSistema.ObterNovasModalidadesPorAno
 
         public async Task<IEnumerable<Modalidade>> Handle(ObterNovasModalidadesPorAnoQuery request, CancellationToken cancellationToken)
         {
-            var parametro = await repositorioParametrosSistema.ObterParametroPorTipoEAno(TipoParametroSistema.NovasModalidades, request.AnoLetivo);
-            var novasModalidadesSplit = parametro?.Valor.Split(',');
+            if (request.ConsideraNovasModalidades && request.AnoLetivo == DateTime.Now.Year) 
+                return null;
+
+            var anoLetivo = ObterAnoParaConsulta(request);
+            var novasModalidades = await repositorioParametrosSistema.ObterNovasModalidadesAPartirDoAno(anoLetivo);
+            var novasModalidadesSplit = novasModalidades?.Split(',');
             return novasModalidadesSplit?.Select(x => (Modalidade)Enum.Parse(typeof(Modalidade), x));
         }
+
+        /* Caso seja considerado as novas modalidades, apenas serão removidos as modalidades adicionadas em anos seguintes. */
+        private int ObterAnoParaConsulta(ObterNovasModalidadesPorAnoQuery request) => request.ConsideraNovasModalidades ? request.AnoLetivo + 1 : request.AnoLetivo;
     }
 }
