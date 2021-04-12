@@ -2,8 +2,8 @@ import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { Base } from '~/componentes';
 import CardCollapse from '~/componentes/cardCollapse';
+import MontarGraficoBarras from '~/paginas/Dashboard/ComponentesDashboard/montarGraficoBarras';
 import ServicoDashboardAEE from '~/servicos/Paginas/Dashboard/ServicoDashboardAEE';
-import GraficoBarrasPadraoAEE from '../../Componentes/graficoBarrasPadraoAEE';
 
 const QuantidadeEncaminhamentosSituacao = props => {
   const { anoLetivo, dreId, ueId } = props;
@@ -32,7 +32,7 @@ const QuantidadeEncaminhamentosSituacao = props => {
       >
         {exibir ? (
           <div className="col-md-12">
-            <GraficoBarrasPadraoAEE
+            <MontarGraficoBarras
               anoLetivo={anoLetivo}
               dreId={dreId}
               ueId={ueId}
@@ -41,6 +41,8 @@ const QuantidadeEncaminhamentosSituacao = props => {
               ServicoObterValoresGrafico={
                 ServicoDashboardAEE.obterQuantidadeEncaminhamentosPorSituacao
               }
+              exibirLegenda
+              showAxisBottom={false}
             />
           </div>
         ) : (
