@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
 
         Task<IEnumerable<OpcaoDropdownDto>> ObterAnosTurmasPorUeModalidade(string codigoUe, Modalidade modalidade, bool consideraHistorico);
 
-        Task<IEnumerable<int>> ObterAnosLetivos(bool consideraHistorico);
+        Task<IEnumerable<int>> ObterAnosLetivos(bool consideraHistorico, int anoMinimo);
 
         Task<IEnumerable<int>> ObterAnosLetivosTodos();
 

@@ -2,8 +2,8 @@ import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { Base } from '~/componentes';
 import CardCollapse from '~/componentes/cardCollapse';
+import MontarGraficoBarras from '~/paginas/Dashboard/ComponentesDashboard/montarGraficoBarras';
 import ServicoDashboardAEE from '~/servicos/Paginas/Dashboard/ServicoDashboardAEE';
-import GraficoBarrasPadraoAEE from '../../Componentes/graficoBarrasPadraoAEE';
 
 const QuantidadeCriancasEstudantesPlanoVigente = props => {
   const { anoLetivo, dreId, ueId } = props;
@@ -32,7 +32,7 @@ const QuantidadeCriancasEstudantesPlanoVigente = props => {
       >
         {exibir ? (
           <div className="col-md-12">
-            <GraficoBarrasPadraoAEE
+            <MontarGraficoBarras
               anoLetivo={anoLetivo}
               dreId={dreId}
               ueId={ueId}

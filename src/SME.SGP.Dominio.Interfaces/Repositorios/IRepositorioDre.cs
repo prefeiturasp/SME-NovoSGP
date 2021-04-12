@@ -15,6 +15,8 @@ namespace SME.SGP.Dominio.Interfaces
 
         Dre ObterPorId(long id);
 
+        Task<Dre> ObterPorIdAsync(long id);
+
         IEnumerable<Dre> ObterTodas();
 
         Task<IEnumerable<Dre>> SincronizarAsync(IEnumerable<Dre> entidades);
