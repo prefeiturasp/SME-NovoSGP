@@ -1,9 +1,11 @@
 import api from '~/servicos/api';
 
 class ServicoFiltro {
-  static listarAnosLetivos = async ({ consideraHistorico }) => {
+  static listarAnosLetivos = async ({ consideraHistorico, anoMinimo }) => {
     return api
-      .get(`v1/abrangencias/${consideraHistorico}/anos-letivos`)
+      .get(
+        `v1/abrangencias/${consideraHistorico}/anos-letivos?anoMinimo=${anoMinimo}`
+      )
       .then(resposta => resposta);
   };
 

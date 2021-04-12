@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
             DreId = dreId;
             UeId = ueId;
             Mes = mes;
-            CodigoRF = CodigoRF;
+            CodigoRF = codigoRF;
         }
     }
 }
