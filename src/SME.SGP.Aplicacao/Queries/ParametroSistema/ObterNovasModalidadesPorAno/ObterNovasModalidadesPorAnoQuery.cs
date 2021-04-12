@@ -7,12 +7,14 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterNovasModalidadesPorAnoQuery : IRequest<IEnumerable<Modalidade>>
     {
-        public ObterNovasModalidadesPorAnoQuery(int anoLetivo)
+        public ObterNovasModalidadesPorAnoQuery(int anoLetivo, bool consideraNovasModalidades)
         {
             AnoLetivo = anoLetivo;
+            ConsideraNovasModalidades = consideraNovasModalidades;
         }
 
         public int AnoLetivo { get; }
+        public bool ConsideraNovasModalidades { get; set; }
     }
 
     public class ObterNovasModalidadesPorAnoQueryValidator : AbstractValidator<ObterNovasModalidadesPorAnoQuery>
