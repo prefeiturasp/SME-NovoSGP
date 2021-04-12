@@ -99,7 +99,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<NotaConceitoFechamentoConselhoFinalDto>> ObterNotasFinaisAlunoAsync(string[] turmasCodigos, string alunoCodigo)
         {
             var query = $@"select distinct * from (
-                                select cca.id as ConselhoAlunoId, 
+                                select cca.id as ConselhoClasseAlunoId, 
                                        fn.disciplina_id as ComponenteCurricularCodigo, 
                                        coalesce(ccn.conceito_id, fn.conceito_id) as ConceitoId, 
                                        coalesce(ccn.nota, fn.nota) as Nota
@@ -119,7 +119,7 @@ namespace SME.SGP.Dados.Repositorios
                                    and fa.aluno_codigo = @alunoCodigo
                                    and bimestre is null
                                 union all 
-                                select cca.id as ConselhoAlunoId, 
+                                select cca.id as ConselhoClasseAlunoId, 
                                        ccn.componente_curricular_codigo as ComponenteCurricularCodigo, 
                                        coalesce(ccn.conceito_id, fn.conceito_id) as ConceitoId,
                                        coalesce(ccn.nota, fn.nota) as Nota
