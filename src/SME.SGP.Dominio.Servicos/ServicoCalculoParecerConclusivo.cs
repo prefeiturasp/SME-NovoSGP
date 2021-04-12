@@ -199,7 +199,7 @@ namespace SME.SGP.Dominio.Servicos
                 var nota = notaConcelhoClasse.Nota;
                 if (notaConcelhoClasse.ConselhoClasseAlunoId == 0)
                 {
-                    var notaConselho = notasConselhoClasse.FirstOrDefault(cn => cn.ComponenteCurricularCodigo == notaConcelhoClasse.ComponenteCurricularCodigo && notaConcelhoClasse.ConselhoClasseAlunoId != null);
+                    var notaConselho = notasConselhoClasse.FirstOrDefault(cn => cn.ComponenteCurricularCodigo == notaConcelhoClasse.ComponenteCurricularCodigo && cn.ConselhoClasseAlunoId > 0);
                     if(notaConselho != null)
                     {
                         nota = notaConselho.Nota;
@@ -217,7 +217,18 @@ namespace SME.SGP.Dominio.Servicos
             var conceitosVigentes = await repositorioConceito.ObterPorData(DateTime.Today);
             foreach (var conceitoConselhoClasseAluno in notasConselhoClasse)
             {
-                var conceitoAluno = conceitosVigentes.FirstOrDefault(c => c.Id == conceitoConselhoClasseAluno.ConceitoId);
+                var conceitoId = conceitoConselhoClasseAluno.ConceitoId;
+
+                if (conceitoConselhoClasseAluno.ConselhoClasseAlunoId == 0)
+                {
+                    var conceitoConselho = notasConselhoClasse.FirstOrDefault(cn => cn.ComponenteCurricularCodigo == conceitoConselhoClasseAluno.ComponenteCurricularCodigo && cn.ConselhoClasseAlunoId > 0);
+                    if (conceitoConselho != null)
+                    {
+                        conceitoId = conceitoConselho.ConceitoId;
+                    }
+                }
+
+                var conceitoAluno = conceitosVigentes.FirstOrDefault(c => c.Id == conceitoId);
                 if (!conceitoAluno.Aprovado)
                     return false;
             }
