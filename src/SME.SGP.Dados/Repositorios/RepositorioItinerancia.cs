@@ -318,7 +318,7 @@ namespace SME.SGP.Dados.Repositorios
             var where = new StringBuilder("where i.ano_letivo = @ano and not i.excluido ");
 
             if (dreId > 0)
-                sql.AppendLine(@"select i.criado_rf as Descricao, count(i.id ) as Quantidade");
+                sql.AppendLine(@"select i.criado_por || ' (' || i.criado_rf || ')' as Descricao, count(i.id ) as Quantidade");
             else
                 sql.AppendLine(@"select dre.abreviacao as Descricao, count(i.id ) as Quantidade");
 
@@ -339,7 +339,7 @@ namespace SME.SGP.Dados.Repositorios
             sql.AppendLine(where.ToString());
 
             if (dreId > 0)
-                sql.AppendLine(" group by i.criado_rf order by 1;");
+                sql.AppendLine(" group by i.criado_por, i.criado_rf order by 1;");
             else
                 sql.AppendLine(" group by dre.abreviacao order by 1;");
 
