@@ -74,7 +74,8 @@ const MontarDadosQuantidadeRegistrosPorObjetivo = props => {
       ) : (
         ''
       )}
-      {servidorSelecionado ? (
+      {(dreId !== OPCAO_TODOS && servidorSelecionado) ||
+      dreId === OPCAO_TODOS ? (
         <MontarGraficoBarras
           anoLetivo={anoLetivo}
           dreId={dreId}

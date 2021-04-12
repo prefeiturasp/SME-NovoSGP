@@ -165,11 +165,9 @@ const DashboardRegistroItinerancia = () => {
 
   const montarMeses = useCallback(() => {
     const meses = obterTodosMeses();
-    if (usuario.possuiPerfilSme) {
-      meses.push({ numeroMes: OPCAO_TODOS, nome: 'Todos' });
-    }
+    meses.push({ numeroMes: OPCAO_TODOS, nome: 'Todos' });
     setListaTodosMeses(meses);
-  }, [usuario.possuiPerfilSme]);
+  }, []);
 
   useEffect(() => {
     montarMeses();
