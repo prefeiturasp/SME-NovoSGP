@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
 
         private IEnumerable<AEETurmaDto> MapearParaDto(IEnumerable<AEETurmaDto> encaminhamentos)
         {
-            var retorno = new List<AEETurmaDto>();
+            List<AEETurmaDto> retorno = new List<AEETurmaDto>();
 
             foreach (var encaminhamento in encaminhamentos.GroupBy(a => $"{a.Modalidade.ShortName()} - {a.AnoTurma}"))
             {

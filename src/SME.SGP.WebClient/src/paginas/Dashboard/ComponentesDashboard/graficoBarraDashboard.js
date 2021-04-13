@@ -19,7 +19,6 @@ const GraficoBarraDashboard = props => {
     customPropsColors,
     dadosLegendaCustomizada,
     margemPersonalizada,
-    styleLegendaLabel,
     showAxisBottom,
   } = props;
 
@@ -65,11 +64,7 @@ const GraficoBarraDashboard = props => {
         </div>
         {dadosLegendaCustomizada?.length ? (
           <div className="col-md-12">
-            <LegendaGrafico
-              dados={dadosLegendaCustomizada}
-              orizontal
-              styleLegendaLabel={styleLegendaLabel}
-            />
+            <LegendaGrafico dados={dadosLegendaCustomizada} orizontal />
           </div>
         ) : (
           ''
@@ -89,7 +84,6 @@ GraficoBarraDashboard.propTypes = {
   customPropsColors: PropTypes.oneOfType([PropTypes.any]),
   dadosLegendaCustomizada: PropTypes.oneOfType([PropTypes.array]),
   margemPersonalizada: PropTypes.oneOfType(PropTypes.any),
-  styleLegendaLabel: PropTypes.oneOfType(PropTypes.any),
   showAxisBottom: PropTypes.bool,
 };
 
@@ -103,7 +97,6 @@ GraficoBarraDashboard.defaultProps = {
   customPropsColors: null,
   dadosLegendaCustomizada: [],
   margemPersonalizada: null,
-  styleLegendaLabel: null,
   showAxisBottom: true,
 };
 

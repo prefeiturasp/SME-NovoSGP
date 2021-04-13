@@ -159,6 +159,60 @@ const obterTamanhoImagemPorArquivo = file => {
     reader.readAsDataURL(file);
   });
 };
+const obterTodosMeses = () => {
+  const meses = [
+    {
+      numeroMes: '1',
+      nome: 'Janeiro',
+    },
+    {
+      numeroMes: '2',
+      nome: 'Fevereiro',
+    },
+    {
+      numeroMes: '3',
+      nome: 'Março',
+    },
+    {
+      numeroMes: '4',
+      nome: 'Abril',
+    },
+    {
+      numeroMes: '5',
+      nome: 'Maio',
+    },
+    {
+      numeroMes: '6',
+      nome: 'Junho',
+    },
+    {
+      numeroMes: '7',
+      nome: 'Julho',
+    },
+    {
+      numeroMes: '8',
+      nome: 'Agosto',
+    },
+    {
+      numeroMes: '9',
+      nome: 'Setembro',
+    },
+    {
+      numeroMes: '10',
+      nome: 'Outubro',
+    },
+    {
+      numeroMes: '11',
+      nome: 'Novembro',
+    },
+    {
+      numeroMes: '12',
+      nome: 'Dezembro',
+    },
+  ];
+
+  return meses;
+};
 
 export {
   validaSeObjetoEhNuloOuVazio,
@@ -177,4 +231,5 @@ export {
   permiteInserirFormato,
   getBase64DataURL,
   obterTamanhoImagemPorArquivo,
+  obterTodosMeses,
 };

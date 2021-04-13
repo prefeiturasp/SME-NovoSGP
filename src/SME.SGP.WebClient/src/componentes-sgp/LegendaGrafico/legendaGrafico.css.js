@@ -1,51 +1,42 @@
 import styled from 'styled-components';
 
 export const ContainerLegendaGrafico = styled.div`
-  font-size: ${props => (props.orizontal ? '16px' : '18px')};
-  font-family: 'Roboto' !important;
-  font-weight: 700;
-  color: #42474a;
-  min-width: ${props => (props.orizontal ? '900px' : '100%')};
+  margin-left: 70px;
+  width: 70vw;
+  font-size: 12px;
+
+  .legenda-centralizada {
+    display: flex;
+    justify-content: center;
+  }
 
   .legenda-container-conteudo {
     display: flex;
     align-items: center;
     margin: 5px;
-  }
+    text-align: initial;
 
-  .legenda-container ul {
-    margin: 0;
-    margin-bottom: 5px;
-    padding: 0;
-    float: ${props => (props.orizontal ? 'none' : 'left')};
-    list-style: none;
-    display: ${props => (props.orizontal ? 'flex' : 'block')};
-    justify-content: space-evenly;
-  }
+    .cor-legenda {
+      display: flex;
+      align-items: center;
+    }
 
-  .legenda-container ul li {
-    font-size: 80%;
-    list-style: none;
-    margin-left: 0;
-    line-height: 18px;
-    margin-bottom: 18px;
-  }
+    .label-valor {
+      color: #000000;
+      font-weight: bold;
+    }
 
-  .legenda-labels {
-    text-align: left;
-  }
+    span {
+      display: block;
+      height: 16px;
+      width: 16px;
+      margin-right: 10px;
+      border-radius: 4px;
+    }
 
-  ul.legenda-labels li span {
-    display: block;
-    float: left;
-    height: 30px;
-    width: 30px;
-    margin-right: 5px;
-    margin-left: 0;
-  }
-
-  .label-valor-porcentagem {
-    color: gray;
-    font-style: italic;
+    .label-valor-porcentagem {
+      color: gray;
+      font-style: italic;
+    }
   }
 `;
