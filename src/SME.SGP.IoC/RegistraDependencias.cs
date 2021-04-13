@@ -826,7 +826,9 @@ namespace SME.SGP.IoC
 
             
 
-
+            services.TryAddScoped<IEnviarSincronizacaoEstruturaInstitucionalTurmasUseCase, EnviarSincronizacaoEstruturaInstitucionalTurmasUseCase>();
+            services.TryAddScoped<IExecutaSincronizacaoEstruturaInstitucionalTurmaUseCase, ExecutaSincronizacaoEstruturaInstitucionalTurmaUseCase>();
+            
 
         }
     }
