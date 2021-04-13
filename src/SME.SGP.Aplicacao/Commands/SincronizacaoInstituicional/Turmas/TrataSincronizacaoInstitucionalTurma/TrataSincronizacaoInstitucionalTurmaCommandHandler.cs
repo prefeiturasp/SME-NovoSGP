@@ -1,9 +1,9 @@
 ﻿using MediatR;
-using SME.SGP.Dominio.Enumerados;
+using Sentry;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -12,34 +12,81 @@ namespace SME.SGP.Aplicacao
     public class TrataSincronizacaoInstitucionalTurmaCommandHandler : IRequestHandler<TrataSincronizacaoInstitucionalTurmaCommand, bool>
     {
         private readonly IRepositorioTurma repositorioTurma;
+        private readonly IMediator mediator;
 
-        public TrataSincronizacaoInstitucionalTurmaCommandHandler(IRepositorioTurma repositorioTurma)
+        public TrataSincronizacaoInstitucionalTurmaCommandHandler(IRepositorioTurma repositorioTurma, IMediator mediator)
         {
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public Task<bool> Handle(TrataSincronizacaoInstitucionalTurmaCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(TrataSincronizacaoInstitucionalTurmaCommand request, CancellationToken cancellationToken)
         {
-            // TODO : Verificar se a turma está concluída para marcar como histórica
             var turma = request.Turma;
 
-            if(turma.Situacao == "C")
-            {
-                // MArcar como histórica
-            }
+            if (turma.Situacao == "C")
+                return await AtualizarTurmaParaHistoricaAsync(turma.Codigo.ToString());
 
-            // TODO : Verificar se não tiver calendário cadastrado e a turma for extinta deve excluir direto 
+            if (turma.Situacao == "E")
+                return await VerificarTurmaExtintaAsync(turma);
 
-            // TODO : Obter o tipo de calendário pela modalidade da turma 
+            if (turma.Situacao == "O" || turma.Situacao == "A")
+                return await IncluirTurmaAsync(turma);
 
-            // - Obter os periodos do tipo de calendário
-            // - Obter o primeiro periodo e sua data inicial 
-            // - Se a Data da extinção da turma for menor que a Inicial do periodo, deve-se deletar a turma do SGP 
-            //   caso contrário, deve-se marcar a turma como histórica
-
-
-
-            throw new NotImplementedException();
+            return true;
         }
+
+        private async Task<bool> AtualizarTurmaParaHistoricaAsync(string turmaId)
+        {
+            var turmaAtualizada = await repositorioTurma.AtualizarTurmaParaHistorica(turmaId);
+
+            if (!turmaAtualizada)
+            {
+                SentrySdk.CaptureMessage($"Não foi possível atualizar a turma id {turmaId} para histórica.");
+                return false;
+            }
+            return true;
+        }
+
+        private async Task<bool> VerificarTurmaExtintaAsync(TurmaParaSyncInstitucionalDto turma)
+        {
+            var anoAtual = DateTime.Now.Year;
+            var tipoCalendarioId = await mediator.Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(turma.CodigoModalidade, anoAtual, null));
+
+            if (tipoCalendarioId > 0)
+            {
+                var periodosEscolares = await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioIdQuery(tipoCalendarioId));
+                if (periodosEscolares != null && periodosEscolares.Any())
+                {
+                    var primeiroPeriodo = periodosEscolares.OrderBy(x => x.Bimestre).First();
+
+                    if (turma.DataStatusTurmaEscola.Date < primeiroPeriodo.PeriodoInicio.Date)
+                    {
+                        await ExcluirTurnaAsync(turma.Codigo.ToString());
+                        return true;
+                    }
+                    else
+                    {
+                        return await AtualizarTurmaParaHistoricaAsync(turma.Codigo.ToString());
+                    }
+                }
+                else
+                {
+                    await ExcluirTurnaAsync(turma.Codigo.ToString());
+                    return true;
+                }
+            }
+            else
+            {
+                await ExcluirTurnaAsync(turma.Codigo.ToString());
+                return true;
+            }
+        }
+
+        private async Task<bool> IncluirTurmaAsync(TurmaParaSyncInstitucionalDto turma)
+            => await repositorioTurma.SalvarAsync(turma);
+
+        private async Task ExcluirTurnaAsync(string turmaId)
+            => await repositorioTurma.ExcluirTurmaExtintaAsync(turmaId);
     }
 }

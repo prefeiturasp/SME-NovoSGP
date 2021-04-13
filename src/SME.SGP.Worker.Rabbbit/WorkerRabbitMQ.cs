@@ -258,7 +258,7 @@ namespace SME.SGP.Worker.RabbitMQ
 
             canalRabbit.BasicConsume(RotasRabbit.FilaSgp, false, consumer);
             canalRabbit.BasicConsume(RotasRabbit.SincronizaEstruturaInstitucionalDreTratar, false, consumer);
-            canalRabbit.BasicConsume(RotasRabbit.SincronizaEstruturaInstitucionalUeTratar, false, consumer);
+           // canalRabbit.BasicConsume(RotasRabbit.SincronizaEstruturaInstitucionalUeTratar, false, consumer);
 
             return Task.CompletedTask;
         }

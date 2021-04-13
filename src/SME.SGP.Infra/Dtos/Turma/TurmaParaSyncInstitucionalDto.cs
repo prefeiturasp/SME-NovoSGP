@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SME.SGP.Dominio;
+using System;
 
 namespace SME.SGP.Infra
 {
@@ -9,7 +10,7 @@ namespace SME.SGP.Infra
         public int Codigo { get; set; }
         public int TipoTurma { get; set; }
         public string Modalidade { get; set; }
-        public int CodigoModalidade { get; set; }
+        public Modalidade CodigoModalidade { get; set; }
         public string NomeTurma { get; set; }
         public int Semestre { get; set; }
         public int DuracaoTurno { get; set; }
@@ -22,5 +23,7 @@ namespace SME.SGP.Infra
         public bool Extinta { get; set; }
         public string Situacao { get; set; }
         public string UeCodigo { get; set; }
+        public DateTime DataAtualizacao { get; set; }
+        public DateTime DataStatusTurmaEscola { get; set; }
     }
 }
