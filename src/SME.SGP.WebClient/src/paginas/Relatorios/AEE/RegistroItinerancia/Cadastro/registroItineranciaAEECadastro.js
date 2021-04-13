@@ -26,6 +26,7 @@ import {
 } from '~/servicos';
 import ServicoRegistroItineranciaAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoRegistroItineranciaAEE';
 import { ordenarPor } from '~/utils/funcoes/gerais';
+import { BotaoCustomizado } from '../registroItinerancia.css';
 import {
   CollapseAluno,
   ModalAlunos,
@@ -58,6 +59,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
   const [somenteConsulta, setSomenteConsulta] = useState(false);
   const [paginaAtual, setPaginaAtual] = useState(1);
   const [auditoria, setAuditoria] = useState();
+  const [imprimindo, setImprimindo] = useState(false);
 
   const usuario = useSelector(store => store.usuario);
   const permissoesTela =
@@ -412,6 +414,19 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
     return uesSelecionados.length && uesSelecionados[0].ehInfantil;
   };
 
+  const gerarRelatorio = async () => {
+    setImprimindo(true);
+
+    await ServicoRegistroItineranciaAEE.gerarRelatorio([match?.params?.id])
+      .then(() => {
+        sucesso(
+          'Solicitação de geração do relatório gerada com sucesso. Em breve você receberá uma notificação com o resultado.'
+        );
+      })
+      .finally(setImprimindo(false))
+      .catch(e => erros(e));
+  };
+
   return (
     <>
       <Cabecalho pagina="Registro de itinerância" />
@@ -450,7 +465,24 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
                 />
               </div>
             </div>
-            <div className="row mb-4">
+            {match?.params?.id && (
+              <div className="row mb-4">
+                <div className="col-sm-12">
+                  <Loader loading={imprimindo} ignorarTip>
+                    <BotaoCustomizado
+                      border
+                      id="btn-imprimir-relatorio-itinerancia"
+                      className="btn-imprimir"
+                      icon="print"
+                      color={Colors.Azul}
+                      width="38px"
+                      onClick={() => gerarRelatorio()}
+                    />
+                  </Loader>
+                </div>
+              </div>
+            )}
+            <div className="row mb-4 mt-2">
               <div className="col-3">
                 <CampoData
                   name="dataVisita"
