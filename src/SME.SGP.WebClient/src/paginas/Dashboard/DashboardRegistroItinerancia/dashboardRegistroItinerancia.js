@@ -164,10 +164,15 @@ const DashboardRegistroItinerancia = () => {
   }, [obterDres, anoLetivo, consideraHistorico]);
 
   const montarMeses = useCallback(() => {
-    const meses = obterTodosMeses();
-    meses.push({ numeroMes: OPCAO_TODOS, nome: 'Todos' });
-    setListaTodosMeses(meses);
-  }, []);
+    if (dre && ue) {
+      const meses = obterTodosMeses();
+      meses.push({ numeroMes: OPCAO_TODOS, nome: 'Todos' });
+      setListaTodosMeses(meses);
+    } else {
+      setListaTodosMeses([]);
+      setMesSelecionado();
+    }
+  }, [dre, ue]);
 
   useEffect(() => {
     montarMeses();
@@ -279,19 +284,17 @@ const DashboardRegistroItinerancia = () => {
               </Loader>
             </div>
             <div className="col-sm-12 col-md-6 col-lg-4 col-xl-4 mb-2">
-              <Loader loading={carregandoUes}>
-                <SelectComponent
-                  id="meses"
-                  label="Mês"
-                  lista={listaTodosMeses}
-                  valueOption="numeroMes"
-                  valueText="nome"
-                  disabled={listaTodosMeses?.length === 1}
-                  onChange={onChangeMes}
-                  valueSelect={mesSelecionado}
-                  placeholder="Mês"
-                />
-              </Loader>
+              <SelectComponent
+                id="meses"
+                label="Mês"
+                lista={listaTodosMeses}
+                valueOption="numeroMes"
+                valueText="nome"
+                disabled={listaTodosMeses?.length === 1}
+                onChange={onChangeMes}
+                valueSelect={mesSelecionado}
+                placeholder="Mês"
+              />
             </div>
           </div>
           <div className="row">
