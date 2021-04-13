@@ -33,6 +33,10 @@ class ServicoRegistroItineranciaAEE {
   obterAnosLetivos = () => {
     return api.get(`${urlPadrao}/anos-letivos`);
   };
+
+  gerarRelatorio = ids => {
+    return api.post('/v1/relatorios/itinerancias', ids);
+  };
 }
 
 export default new ServicoRegistroItineranciaAEE();
