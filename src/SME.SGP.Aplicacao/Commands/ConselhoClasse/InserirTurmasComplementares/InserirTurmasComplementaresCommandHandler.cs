@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao.Commands
 
         public async Task<bool> Handle(InserirTurmasComplementaresCommand request, CancellationToken cancellationToken)
         {
-            var turmaRegular = await repositorioTurma.ObterPorId(request.TurmaRegularId);
+            var turmaRegular = await repositorioTurma.ObterPorId(request.TurmaId);
 
             if (turmaRegular.DeveVerificarRegraRegulares())
             {
@@ -37,11 +37,11 @@ namespace SME.SGP.Aplicacao.Commands
 
                 if (turmasCodigos != null && turmasCodigos.Any())
                 {
-                    var turmasIds = await repositorioTurma.ObterPorCodigosAsync(turmasCodigos);
+                    var turmasNaoRegulares = (await repositorioTurma.ObterPorCodigosAsync(turmasCodigos))?.Where(t => !t.EhTurmaRegular());
 
-                    if (turmasIds != null && turmasIds.Any())
+                    if (turmasNaoRegulares != null && turmasNaoRegulares.Any())
                     {
-                        foreach (var turma in turmasIds)
+                        foreach (var turma in turmasNaoRegulares)
                         {
                             if (!await repositorioCCAlunoTurmaComplementar.VerificarSeExisteRegistro(request.ConselhoClasseAlunoId, turma.Id))
                             {

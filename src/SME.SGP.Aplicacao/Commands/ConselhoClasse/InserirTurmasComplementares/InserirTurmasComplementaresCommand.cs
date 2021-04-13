@@ -5,14 +5,14 @@ namespace SME.SGP.Aplicacao
 {
     public  class InserirTurmasComplementaresCommand : IRequest<bool>
     {
-        public InserirTurmasComplementaresCommand(long turmaRegularId, long conselhoClasseAlunoId, string alunoCodigo)
+        public InserirTurmasComplementaresCommand(long turmaId, long conselhoClasseAlunoId, string alunoCodigo)
         {
-            TurmaRegularId = turmaRegularId;
+            TurmaId = turmaId;
             ConselhoClasseAlunoId = conselhoClasseAlunoId;
             AlunoCodigo = alunoCodigo;
         }
 
-        public long TurmaRegularId { get; set; }
+        public long TurmaId { get; set; }
         public long ConselhoClasseAlunoId { get; set; }
         public string AlunoCodigo { get; set; }
     }
@@ -29,10 +29,9 @@ namespace SME.SGP.Aplicacao
                    .NotEmpty()
                    .WithMessage("O Id do conselho de classe do aluno devem ser informado!");
 
-            RuleFor(a => a.TurmaRegularId)
+            RuleFor(a => a.TurmaId)
                    .NotEmpty()
-                   .WithMessage("O Id da turma regular do aluno deve ser informado!");
-
+                   .WithMessage("O Id da turma do aluno deve ser informado!");
         }
     }
 }
