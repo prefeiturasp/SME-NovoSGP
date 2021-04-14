@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace SME.SGP.Infra
@@ -10,5 +11,17 @@ namespace SME.SGP.Infra
 
         [Range(1, long.MaxValue, ErrorMessage = "É necessário informar o tipo de calendário")]
         public long TipoCalendario { get; set; }
+
+        public DateTime? AlteradoEm { get; set; }
+
+        public string AlteradoPor { get; set; }
+
+        public string AlteradoRF { get; set; }
+
+        public DateTime CriadoEm { get; set; }
+
+        public string CriadoPor { get; set; }
+
+        public string CriadoRF { get; set; }
     }
 }

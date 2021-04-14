@@ -35,6 +35,7 @@ import { erro } from '~/servicos/alertas';
 import modalidade from '~/dtos/modalidade';
 import ServicoFiltro from '~/servicos/Componentes/ServicoFiltro';
 import { Loader } from '~/componentes';
+import { TOKEN_EXPIRADO } from '~/constantes';
 
 const Filtro = () => {
   const dispatch = useDispatch();
@@ -439,14 +440,20 @@ const Filtro = () => {
 
       setCarregandoTurmas(true);
 
+      let existeErroTokenExpirado = false;
       const listaTurmas = await FiltroHelper.obterTurmas({
         consideraHistorico,
         modalidadeSelecionada,
         unidadeEscolarSelecionada,
         periodoSelecionado: periodo,
         anoLetivoSelecionado,
+      }).catch(e => {
+        if (e?.message.indexOf(TOKEN_EXPIRADO) >= 0) {
+          existeErroTokenExpirado = true;
+        }
       });
 
+      if (existeErroTokenExpirado) return [];
       if ((!listaTurmas || listaTurmas.length === 0) && aplicouFiltro) {
         setUnidadeEscolarSelecionada();
         setCampoUnidadeEscolarDesabilitado(true);

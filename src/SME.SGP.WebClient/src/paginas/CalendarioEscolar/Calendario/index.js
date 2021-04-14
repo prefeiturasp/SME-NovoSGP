@@ -250,7 +250,8 @@ const CalendarioEscolar = () => {
       eventoCalendarioEdicao &&
       eventoCalendarioEdicao.unidadeEscolar
     ) {
-      setDreSelecionada(eventoCalendarioEdicao.unidadeEscolar);
+      setDreSelecionada(eventoCalendarioEdicao.dre);
+      setUnidadeEscolarSelecionada(eventoCalendarioEdicao.unidadeEscolar);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [unidadesEscolares, carregandoMeses]);
@@ -315,7 +316,6 @@ const CalendarioEscolar = () => {
         setCarregandoMeses(false);
 
         if (data?.length === 1) {
-          console.log('d', data);
           setValorTipoCalendario(data[0].descricao);
           setTipoCalendarioSelecionado(data[0].id);
         }
