@@ -212,11 +212,9 @@ export default function ConselhoClasse(state = inicial, action) {
           dadosBimestresConselhoClasse: action.payload,
         };
       }
-      case '@conselhoClasse/setExibirLoaderGeralConselhoClasse': {
-        return {
-          ...draft,
-          exibirLoaderGeralConselhoClasse: action.payload,
-        };
+      case '@conselhoClasse/setJustificativaAtual': {
+        draft.notaConceitoPosConselhoAtual.justificativa = action.payload;
+        break;
       }
 
       default:
