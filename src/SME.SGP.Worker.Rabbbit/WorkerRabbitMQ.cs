@@ -61,8 +61,7 @@ namespace SME.SGP.Worker.RabbitMQ
 
             canalRabbit.QueueDeclare(RotasRabbit.SincronizaEstruturaInstitucionalTipoEscolaTratar, true, false, false);
             canalRabbit.QueueBind(RotasRabbit.SincronizaEstruturaInstitucionalTipoEscolaTratar, RotasRabbit.ExchangeSgp, RotasRabbit.SincronizaEstruturaInstitucionalTipoEscolaTratar);
-
-            canalRabbit.QueueDeclare(RotasRabbit.SincronizaEstruturaInstitucionalTurmaTratar, true, false, false, null);
+                        
             canalRabbit.QueueDeclare(RotasRabbit.SincronizaEstruturaInstitucionalUeTratar, true, false, false);
             canalRabbit.QueueBind(RotasRabbit.SincronizaEstruturaInstitucionalUeTratar, RotasRabbit.ExchangeSgp, RotasRabbit.SincronizaEstruturaInstitucionalUeTratar);
 
@@ -140,10 +139,7 @@ namespace SME.SGP.Worker.RabbitMQ
             comandos.Add(RotasRabbit.SincronizaEstruturaInstitucionalDreTratar, new ComandoRabbit("Estrutura Institucional - Tratar uma Dre", typeof(IExecutarSincronizacaoInstitucionalTipoEscolaSyncUseCase)));
             comandos.Add(RotasRabbit.SincronizaEstruturaInstitucionalUeTratar, new ComandoRabbit("Estrutura Institucional - Tratar uma Ue", typeof(IExecutarSincronizacaoInstitucionalUeTratarUseCase)));
             comandos.Add(RotasRabbit.SincronizaEstruturaInstitucionalTipoEscolaSync, new ComandoRabbit("Estrutura Institucional - Sync de Tipos de Escola", typeof(IExecutarSincronizacaoInstitucionalTipoEscolaSyncUseCase)));
-            comandos.Add(RotasRabbit.SincronizaEstruturaInstitucionalTipoEscolaTratar, new ComandoRabbit("Estrutura Institucional - Tratar um Tipo de Escola", typeof(IExecutarSincronizacaoInstitucionalTipoEscolaTratarUseCase)));
-            
-            comandos.Add(RotasRabbit.SincronizaEstruturaInstitucionalDreTratar, new ComandoRabbit("Estrutura Institucional - Tratar uma Dre", typeof(ITrataSincronizacaoInstitucionalDreUseCase)));
-            comandos.Add(RotasRabbit.SincronizaEstruturaInstitucionalUeTratar, new ComandoRabbit("Estrutura Institucional - Tratar uma Ue", typeof(ITrataSincronizacaoInstitucionalUeUseCase)));
+            comandos.Add(RotasRabbit.SincronizaEstruturaInstitucionalTipoEscolaTratar, new ComandoRabbit("Estrutura Institucional - Tratar um Tipo de Escola", typeof(IExecutarSincronizacaoInstitucionalTipoEscolaTratarUseCase)));                        
             comandos.Add(RotasRabbit.SincronizaEstruturaInstitucionalTurmaTratar, new ComandoRabbit("Estrutura Institucional - Tratar uma Turma", typeof(ITrataSincronizacaoInstitucionalTurmaUseCase)));
             comandos.Add(RotasRabbit.SincronizaEstruturaInstitucionalTurmasSync, new ComandoRabbit("Estrutura Institucional - Sincronizar Turmas", typeof(IEnviarSincronizacaoEstruturaInstitucionalTurmasUseCase)));
         }
