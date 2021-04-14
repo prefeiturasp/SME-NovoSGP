@@ -1,24 +1,23 @@
-﻿using FluentValidation;
-using MediatR;
-using SME.SGP.Dominio;
+﻿using MediatR;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
     public class NotificacaoSalvarItineranciaAlunosCommand : IRequest<bool>
     {
-        public NotificacaoSalvarItineranciaAlunosCommand(string ueCodigo, string criadoRF, string criadoPor, DateTime dataVisita, IEnumerable<ItineranciaAlunoDto> estudantes)
+        public NotificacaoSalvarItineranciaAlunosCommand(string ueCodigo, string criadoRF, string criadoPor, DateTime dataVisita, IEnumerable<ItineranciaAlunoDto> estudantes, long itineranciaId)
         {
             UeCodigo = ueCodigo;
             CriadoRF = criadoRF;
             CriadoPor = criadoPor;
             DataVisita = dataVisita;
             Estudantes = estudantes;
+            ItineranciaId = itineranciaId;
         }
 
+        public long ItineranciaId { get; set; }
         public string UeCodigo { get; set; }
         public string CriadoRF { get; set; }
         public string CriadoPor { get; set; }

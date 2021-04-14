@@ -26,12 +26,12 @@ namespace SME.SGP.Aplicacao
             var ue = await mediator.Send(new ObterUeComDrePorCodigoQuery(request.UeCodigo));
             if (ue == null)
                 throw new NegocioException("Não foi possível encontrar a UE informada");
-            await NotificarItinerancia(ue, request.CriadoRF, request.CriadoPor, request.DataVisita, request.Estudantes);
+            await NotificarItinerancia(ue, request.CriadoRF, request.CriadoPor, request.DataVisita, request.Estudantes, request.ItineranciaId);
 
             return true;
         }
 
-        private async Task NotificarItinerancia(Ue ue, string criadoRF, string criadoPor, DateTime dataVisita, IEnumerable<ItineranciaAlunoDto> estudantes)
+        private async Task NotificarItinerancia(Ue ue, string criadoRF, string criadoPor, DateTime dataVisita, IEnumerable<ItineranciaAlunoDto> estudantes, long itineranciaId)
         {
             var descricaoUe = $"{ue.TipoEscola.ShortName()} {ue.Nome} ({ue.Dre.Abreviacao})";
             var titulo = $"Novo Registro de Itinerância - {descricaoUe} - {dataVisita:dd/MM/yyyy}";
@@ -58,7 +58,9 @@ namespace SME.SGP.Aplicacao
             mensagem.AppendLine();
             mensagem.AppendLine("<br/><br/><a href='https://dev-novosgp.sme.prefeitura.sp.gov.br' target='_blank' class='btn-baixar-relatorio'><i class='fas fa-arrow-down mr-2'></i>Download</a>");
 
-            await mediator.Send(new EnviarNotificacaoCommand(titulo, mensagem.ToString(), NotificacaoCategoria.Workflow_Aprovacao, NotificacaoTipo.AEE, ObterCargosGestaoEscola(), ue.Dre.CodigoDre, ue.CodigoUe));
+            var workflowId = await mediator.Send(new EnviarNotificacaoItineranciaCommand(itineranciaId, titulo, mensagem.ToString(), NotificacaoCategoria.Workflow_Aprovacao, NotificacaoTipo.AEE, ObterCargosGestaoEscola(), ue.Dre.CodigoDre, ue.CodigoUe));
+
+            await mediator.Send(new SalvarWorkflowAprovacaoItineranciaCommand(itineranciaId, workflowId));
 
         }
         private Cargo[] ObterCargosGestaoEscola()
