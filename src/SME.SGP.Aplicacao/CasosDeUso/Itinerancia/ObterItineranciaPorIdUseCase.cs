@@ -44,7 +44,7 @@ namespace SME.SGP.Aplicacao
                 Ues = MontarUes(ues, itinerancia),
                 CriadoRF = itinerancia.CriadoRF,
                 Auditoria = (AuditoriaDto)itinerancia,
-                StatusWorkflow = workflow != null ? ObterMensagemStatus(workflow.Niveis) : "",
+                StatusWorkflow = workflow != null ? ObterMensagemStatus(workflow.Niveis, verificaWorkflow.StatusAprovacao) : "",
                 PodeEditar = workflow != null ? VerificaPodeEditar(workflow.Niveis) : false
             };
 
@@ -72,9 +72,9 @@ namespace SME.SGP.Aplicacao
                 return false;
         }
 
-        private string ObterMensagemStatus(IEnumerable<WorkflowAprovacaoNivel> niveis)
+        private string ObterMensagemStatus(IEnumerable<WorkflowAprovacaoNivel> niveis, bool statusAprovacao)
         {
-            if (niveis.FirstOrDefault(a => a.Status == WorkflowAprovacaoNivelStatus.Aprovado) != null)
+            if (statusAprovacao)
             {
                 var nivel = niveis.FirstOrDefault(a => a.Status == WorkflowAprovacaoNivelStatus.Aprovado);
                 return $"Aceito por {nivel.AlteradoPor} ({nivel.AlteradoRF}) em {nivel.AlteradoEm:dd/MM/yyy HH:mm}";
