@@ -145,9 +145,9 @@ namespace SME.SGP.Aplicacao
                     DadosAula = new DadosAulaDto
                     {
                         DisciplinaId = disciplina?.CodigoComponenteCurricular ?? null,
-                        Disciplina = $"{(disciplina?.Nome ?? "Disciplina não encontrada")} {(x.TipoAula == TipoAula.Reposicao ? "(Reposição)" : "")} {(x.Status == EntidadeStatus.AguardandoAprovacao ? "- Aguardando aprovação" : "")}",
+                        Disciplina = $"{(disciplina?.Nome ?? "Componente curricular não encontrado")} {(x.TipoAula == TipoAula.Reposicao ? "(Reposição)" : "")} {(x.Status == EntidadeStatus.AguardandoAprovacao ? "- Aguardando aprovação" : "")}",
                         DisciplinaCompartilhadaId = disciplinaCompartilhada?.CodigoComponenteCurricular ?? null,
-                        DisciplinaCompartilhada = $"{(disciplinaCompartilhada?.Nome ?? "Disciplina não encontrada")} ",
+                        DisciplinaCompartilhada = $"{(disciplinaCompartilhada?.Nome ?? "Componente curricular não encontrado")} ",
                         EhRegencia = disciplina.Regencia,
                         EhCompartilhada = disciplina.Compartilhada,
                         PermiteRegistroFrequencia = disciplina.RegistraFrequencia && !x.SomenteConsulta,
