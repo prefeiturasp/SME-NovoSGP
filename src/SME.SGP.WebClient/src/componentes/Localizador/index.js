@@ -11,7 +11,7 @@ import { Grid, Label } from '~/componentes';
 
 // Services
 import service from './services/LocalizadorService';
-import { erros } from '~/servicos/alertas';
+import { erro, erros } from '~/servicos/alertas';
 
 // Funções
 import { validaSeObjetoEhNuloOuVazio } from '~/utils/funcoes/gerais';
@@ -24,6 +24,7 @@ function Localizador({
   showLabel,
   form,
   dreId,
+  ueId,
   anoLetivo,
   desabilitado,
   rfEdicao,
@@ -36,6 +37,7 @@ function Localizador({
   classesRF,
   limparCamposAposPesquisa,
   validaPerfilProfessor,
+  mensagemErroConsultaRF,
 }) {
   const usuario = useSelector(store => store.usuario);
   const [dataSource, setDataSource] = useState([]);
@@ -45,6 +47,7 @@ function Localizador({
     nome: false,
   });
   const { ehPerfilProfessor, rf } = usuario;
+  const [exibirLoader, setExibirLoader] = useState(false);
 
   const validacaoDesabilitaPerfilProfessor = () => {
     return validaPerfilProfessor && ehPerfilProfessor;
@@ -65,12 +68,16 @@ function Localizador({
       }, 200);
     }
 
-    if (valor.length < 2) return;
-    const { data: dados } = await service.buscarAutocomplete({
-      nome: valor,
-      dreId,
-      anoLetivo,
-    });
+    if (valor.length < 3) return;
+    setExibirLoader(true);
+    const { data: dados } = await service
+      .buscarAutocomplete({
+        nome: valor,
+        dreId,
+        anoLetivo,
+        ueId,
+      })
+      .finally(() => setExibirLoader(false));
 
     if (dados && dados.length > 0) {
       setDataSource(
@@ -87,11 +94,15 @@ function Localizador({
     async ({ rf }) => {
       try {
         buscandoDados(true);
-        const { data: dados } = await service.buscarPorRf({
-          rf,
-          anoLetivo,
-          buscarOutrosCargos,
-        });
+        setExibirLoader(true);
+        const { data: dados } = await service
+          .buscarPorRf({
+            rf,
+            anoLetivo,
+            buscarOutrosCargos,
+          })
+          .finally(() => setExibirLoader(false));
+
         if (!dados) throw new RFNaoEncontradoExcecao();
 
         setPessoaSelecionada({
@@ -106,7 +117,11 @@ function Localizador({
         }));
         buscandoDados(false);
       } catch (error) {
-        erros(error);
+        if (mensagemErroConsultaRF) {
+          erro(mensagemErroConsultaRF);
+        } else {
+          erros(error);
+        }
         buscandoDados(false);
         setPessoaSelecionada({
           professorRf: '',
@@ -115,7 +130,7 @@ function Localizador({
         });
       }
     },
-    [anoLetivo, buscarOutrosCargos]
+    [anoLetivo, buscarOutrosCargos, mensagemErroConsultaRF]
   );
 
   const onChangeRF = valor => {
@@ -219,6 +234,7 @@ function Localizador({
             validacaoDesabilitaPerfilProfessor() ||
             desabilitarCampo.rf
           }
+          exibirLoader={exibirLoader}
         />
       </Grid>
       <Grid className="pr-0" cols={8}>
@@ -236,6 +252,7 @@ function Localizador({
             validacaoDesabilitaPerfilProfessor() ||
             desabilitarCampo.nome
           }
+          exibirLoader={exibirLoader}
         />
       </Grid>
     </>
@@ -250,6 +267,7 @@ Localizador.propTypes = {
   ]),
   showLabel: PropTypes.bool,
   dreId: PropTypes.string,
+  ueId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   anoLetivo: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   desabilitado: PropTypes.bool,
   rfEdicao: PropTypes.string,
@@ -262,6 +280,7 @@ Localizador.propTypes = {
   classesRF: PropTypes.string,
   limparCamposAposPesquisa: PropTypes.bool,
   validaPerfilProfessor: PropTypes.bool,
+  mensagemErroConsultaRF: PropTypes.string,
 };
 
 Localizador.defaultProps = {
@@ -269,6 +288,7 @@ Localizador.defaultProps = {
   form: null,
   showLabel: false,
   dreId: null,
+  ueId: null,
   anoLetivo: null,
   desabilitado: false,
   rfEdicao: '',
@@ -281,6 +301,7 @@ Localizador.defaultProps = {
   classesRF: '',
   limparCamposAposPesquisa: false,
   validaPerfilProfessor: true,
+  mensagemErroConsultaRF: '',
 };
 
 export default Localizador;
