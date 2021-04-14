@@ -8,7 +8,7 @@ CREATE TABLE public.wf_aprovacao_itinerancia (
 );
 
 ALTER TABLE public.wf_aprovacao_itinerancia ADD CONSTRAINT wf_aprovacao_itinerancia_fk FOREIGN KEY (wf_aprovacao_id) REFERENCES wf_aprovacao(id);
-ALTER TABLE public.wf_aprovacao_itinerancia_itinerancia ADD CONSTRAINT wf_aprovacao_itinerancia_itinerancia_fk FOREIGN KEY (itinerancia) REFERENCES itinerancia(id);
+ALTER TABLE public.wf_aprovacao_itinerancia ADD CONSTRAINT wf_aprovacao_itinerancia_itinerancia_fk FOREIGN KEY (itinerancia_id) REFERENCES itinerancia(id);
 
 CREATE INDEX wf_aprovacao_itinerancia_idx ON public.wf_aprovacao_itinerancia USING btree (wf_aprovacao_id);
 CREATE INDEX wf_aprovacao_itinerancia_itinerancia_idx ON public.wf_aprovacao_itinerancia USING btree (itinerancia_id);

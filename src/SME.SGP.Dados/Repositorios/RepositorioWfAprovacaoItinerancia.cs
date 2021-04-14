@@ -15,9 +15,16 @@ namespace SME.SGP.Dados.Repositorios
             this.database = database ?? throw new ArgumentNullException(nameof(database));
         }
 
-        public Task<WfAprovacaoItinerancia> ObterPorWorkflowId(long workflowId)
+        public async Task<WfAprovacaoItinerancia> ObterPorWorkflowId(long workflowId)
         {
-            throw new NotImplementedException();
+            var query = @"select 
+	                        wf_aprovacao_id as WfAprovacaoId,
+	                        itinerancia_id as ItineranciaId,
+	                        status_aprovacao as StatusAprovacao
+                        from wf_aprovacao_itinerancia
+                        where wf_aprovacao_id = @workflowId";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<WfAprovacaoItinerancia>(query, new { workflowId });
         }
 
         public async Task SalvarAsync(WfAprovacaoItinerancia entidade)
