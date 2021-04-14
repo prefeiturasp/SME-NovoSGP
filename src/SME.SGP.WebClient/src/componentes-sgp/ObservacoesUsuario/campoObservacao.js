@@ -105,7 +105,7 @@ const CampoObservacao = props => {
             color={Colors.Azul}
             border
             onClick={() => setModalVisivel(true)}
-            disabled={!podeIncluir}
+            disabled={!!observacaoEmEdicao || !podeIncluir}
           />
         </div>
         <div className="p-0 col-md-6 d-flex justify-content-end">
