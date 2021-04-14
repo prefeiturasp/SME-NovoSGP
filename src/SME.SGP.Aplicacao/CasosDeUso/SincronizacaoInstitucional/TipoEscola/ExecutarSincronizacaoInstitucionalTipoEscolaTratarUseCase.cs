@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class TrataSincronizacaoInstitucionalTipoEscolaUseCase : AbstractUseCase, ITrataSincronizacaoInstitucionalDreUseCase
+    public class ExecutarSincronizacaoInstitucionalTipoEscolaTratarUseCase : AbstractUseCase, IExecutarSincronizacaoInstitucionalTipoEscolaTratarUseCase
     {
-        public TrataSincronizacaoInstitucionalTipoEscolaUseCase(IMediator mediator) : base(mediator)
+        public ExecutarSincronizacaoInstitucionalTipoEscolaTratarUseCase(IMediator mediator) : base(mediator)
         {
         }
 

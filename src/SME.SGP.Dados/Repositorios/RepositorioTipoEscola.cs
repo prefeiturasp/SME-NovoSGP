@@ -19,7 +19,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<TipoEscolaEol> ObterPorCodigoAsync(long codigo)
         {
-            var query = "select tp.cod_tipo_escola_eol as CodEol, tp.descricao, tp.data_atualizacao as DtAtualizacao  from tipo_escola tp where codigo = @codigo";
+            var query = "select tp.*  from tipo_escola tp where tp.cod_tipo_escola_eol = @codigo";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<TipoEscolaEol>(query, new { codigo });
         }

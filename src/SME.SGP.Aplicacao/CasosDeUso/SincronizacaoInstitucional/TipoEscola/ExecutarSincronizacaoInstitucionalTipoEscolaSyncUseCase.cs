@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class SyncSincronizacaoInstitucionalTipoEscolaUseCase : AbstractUseCase, ITrataSincronizacaoInstitucionalDreUseCase
+    public class ExecutarSincronizacaoInstitucionalTipoEscolaSyncUseCase : AbstractUseCase, IExecutarSincronizacaoInstitucionalTipoEscolaSyncUseCase
     {
-        public SyncSincronizacaoInstitucionalTipoEscolaUseCase(IMediator mediator) : base(mediator)
+        public ExecutarSincronizacaoInstitucionalTipoEscolaSyncUseCase(IMediator mediator) : base(mediator)
         {
         }
 
@@ -30,8 +30,8 @@ namespace SME.SGP.Aplicacao
             {
                 try
                 {
-                    var publicarTraamentoTipoEscola = await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.SincronizaEstruturaInstitucionalUeTratar, tipoEscola, Guid.NewGuid(), null, fila: RotasRabbit.SincronizaEstruturaInstitucionalUeTratar));
-                    if (!publicarTraamentoTipoEscola)
+                    var publicarTratamentoTipoEscola = await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.SincronizaEstruturaInstitucionalTipoEscolaTratar, tipoEscola, Guid.NewGuid(), null, fila: RotasRabbit.SincronizaEstruturaInstitucionalTipoEscolaTratar));
+                    if (!publicarTratamentoTipoEscola)
                     {
                         var mensagem = $"Não foi possível inserir o Tipo de Escola : {tipoEscola} na fila de sync.";
                         SentrySdk.CaptureMessage(mensagem);

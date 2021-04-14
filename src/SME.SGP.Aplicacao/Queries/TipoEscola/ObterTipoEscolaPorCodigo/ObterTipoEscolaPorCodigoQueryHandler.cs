@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterTipoEscolaPorCodigoQueryHandler : IRequestHandler<ObterTipoEscolaPorCodigoQuery, TipoEscola>
+    public class ObterTipoEscolaPorCodigoQueryHandler : IRequestHandler<ObterTipoEscolaPorCodigoQuery, TipoEscolaEol>
     {
         private readonly IRepositorioTipoEscola repositorioTipoEscola;
 
