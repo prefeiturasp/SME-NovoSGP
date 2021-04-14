@@ -1,17 +1,73 @@
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Loader } from '~/componentes';
 import ObservacoesUsuario from '~/componentes-sgp/ObservacoesUsuario/observacoesUsuario';
 import ServicoObservacoesUsuario from '~/componentes-sgp/ObservacoesUsuario/ServicoObservacoesUsuario';
 import { RotasDto } from '~/dtos';
+import {
+  limparDadosObservacoesUsuario,
+  setDadosObservacoesUsuario,
+} from '~/redux/modulos/observacoesUsuario/actions';
 import { confirmar, erros, sucesso } from '~/servicos';
 import ServicoPlanoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoPlanoAEE';
 
 const MontarDadosObservacoesPlanoAEE = () => {
   const usuario = useSelector(store => store.usuario);
+  const { turmaSelecionada } = usuario;
+
   const permissoesTela = usuario.permissoes[RotasDto.RELATORIO_AEE_PLANO];
 
+  const planoAEEDados = useSelector(store => store.planoAEE.planoAEEDados);
+
+  const dispatch = useDispatch();
+
   const [carregandoGeral, setCarregandoGeral] = useState(false);
+
+  const obterUsuarioPorObservacao = useCallback(
+    dadosObservacoes => {
+      const promises = dadosObservacoes.map(async observacao => {
+        const retorno = await ServicoPlanoAEE.obterNofiticarUsuarios({
+          turmaId: turmaSelecionada?.id,
+          observacaoId: observacao.id,
+        }).catch(e => erros(e));
+
+        if (retorno?.data) {
+          return {
+            ...observacao,
+            usuariosNotificacao: retorno.data,
+          };
+        }
+        return observacao;
+      });
+      return Promise.all(promises);
+    },
+    [turmaSelecionada]
+  );
+
+  const obterDadosObservacoes = useCallback(
+    async id => {
+      dispatch(limparDadosObservacoesUsuario());
+      setCarregandoGeral(true);
+
+      const retorno = await ServicoPlanoAEE.obterDadosObservacoes(id)
+        .catch(e => erros(e))
+        .finally(() => setCarregandoGeral(false));
+
+      if (retorno && retorno.data) {
+        const dadosObservacoes = await obterUsuarioPorObservacao(retorno.data);
+        dispatch(setDadosObservacoesUsuario([...dadosObservacoes]));
+      } else {
+        dispatch(setDadosObservacoesUsuario([]));
+      }
+    },
+    [dispatch, obterUsuarioPorObservacao]
+  );
+
+  useEffect(() => {
+    if (planoAEEDados?.id) {
+      obterDadosObservacoes(planoAEEDados.id);
+    }
+  }, [planoAEEDados, obterDadosObservacoes]);
 
   const salvarEditarObservacao = async obs => {
     setCarregandoGeral(true);
