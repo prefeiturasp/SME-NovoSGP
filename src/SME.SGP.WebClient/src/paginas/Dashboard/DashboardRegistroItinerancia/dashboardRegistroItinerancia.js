@@ -95,7 +95,7 @@ const DashboardRegistroItinerancia = () => {
       if (resposta?.data?.length) {
         const lista = resposta.data;
 
-        if (usuario.possuiPerfilSme) {
+        if (usuario.possuiPerfilSmeOuDre) {
           lista.unshift({ codigo: OPCAO_TODOS, nome: 'Todas' });
         }
 
