@@ -66,7 +66,7 @@ namespace SME.SGP.Aplicacao
 
                 var usuarioPodePersistirTurmaNaData = await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(aulaRecorrente.ComponenteCurricularId, aulaRecorrente.CodigoTurma, aulaRecorrente.DataAula, aulaRecorrente.Usuario));
                 if (!usuarioPodePersistirTurmaNaData)
-                    throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, disciplina e data.");
+                    throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, componente curricular e data.");
             }
         }
 
@@ -238,7 +238,7 @@ namespace SME.SGP.Aplicacao
             var aulasComConsistencia = listaAlteracoes.Where(c => !c.sucesso && !c.erro);
             var aulasComErro = listaAlteracoes.Where(c => !c.sucesso && c.erro);
 
-            mensagemUsuario.Append($"Foram alteradas {aulasAlteradas.Count()} aulas da disciplina {componenteCurricularNome} para a turma {turma.Nome} da {turma.Ue?.Nome} ({turma.Ue?.Dre?.Nome}).");
+            mensagemUsuario.Append($"Foram alteradas {aulasAlteradas.Count()} aulas do componente curricular {componenteCurricularNome} para a turma {turma.Nome} da {turma.Ue?.Nome} ({turma.Ue?.Dre?.Nome}).");
 
             if (aulasComConsistencia.Any())
             {

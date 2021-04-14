@@ -516,10 +516,10 @@ namespace SME.SGP.Dominio.Servicos
             // carregar nomes da turma, escola, disciplina e professor para notificacao
             var disciplina = ObterNomeDisciplina(registroFrequencia.CodigoDisciplina);
 
-            var tituloMensagem = $"Título: Alteração extemporânea de frequência  da turma {registroFrequencia.NomeTurma} na disciplina {disciplina}.";
+            var tituloMensagem = $"Título: Alteração extemporânea de frequência  da turma {registroFrequencia.NomeTurma} no componente curricular {disciplina}.";
 
             StringBuilder mensagemUsuario = new StringBuilder();
-            mensagemUsuario.Append($"O Professor {usuarioAlteracao} realizou alterações no registro de frequência do dia {registroFrequencia.DataAula} da turma {registroFrequencia.NomeTurma} ({registroFrequencia.NomeUe}) na disciplina {disciplina}.");
+            mensagemUsuario.Append($"O Professor {usuarioAlteracao} realizou alterações no registro de frequência do dia {registroFrequencia.DataAula} da turma {registroFrequencia.NomeTurma} ({registroFrequencia.NomeUe}) no componente curricular {disciplina}.");
 
             var hostAplicacao = configuration["UrlFrontEnd"];
             mensagemUsuario.Append($"<a href='{hostAplicacao}diario-classe/frequencia-plano-aula'>Clique aqui para acessar esse registro.</a>");
@@ -646,7 +646,7 @@ namespace SME.SGP.Dominio.Servicos
                     mensagemUsuario.Append("<br />");
                     mensagemUsuario.Append($"<br />Escola: <b>{turmaSemRegistro.NomeUe}</b>");
                     mensagemUsuario.Append($"<br />Turma: <b>{turmaSemRegistro.NomeTurma}</b>");
-                    mensagemUsuario.Append($"<br />Disciplina: <b>{disciplina.Nome}</b>");
+                    mensagemUsuario.Append($"<br />Componente Curricular: <b>{disciplina.Nome}</b>");
                     mensagemUsuario.Append($"<br />Aulas:");
 
                     mensagemUsuario.Append("<ul>");
@@ -687,8 +687,8 @@ namespace SME.SGP.Dominio.Servicos
             }
             else
             {
-                Console.WriteLine("Não foi possível obter a disciplina pois o EOL não respondeu");
-                SentrySdk.CaptureEvent(new SentryEvent(new NegocioException("Não foi possível obter a disciplina pois o EOL não respondeu")));
+                Console.WriteLine("Não foi possível obter o componente curricular pois o EOL não respondeu");
+                SentrySdk.CaptureEvent(new SentryEvent(new NegocioException("Não foi possível obter o componente curricular pois o EOL não respondeu")));
             }
         }
 
@@ -698,7 +698,7 @@ namespace SME.SGP.Dominio.Servicos
             var disciplina = await repositorioComponenteCurricular.ObterDisciplinasPorIds(disciplinaId);
 
             if (!disciplina.Any())
-                throw new NegocioException("Disciplina não encontrada no EOL.");
+                throw new NegocioException("Componente curricular não encontrado no EOL.");
 
             return disciplina.FirstOrDefault().Nome;
         }
