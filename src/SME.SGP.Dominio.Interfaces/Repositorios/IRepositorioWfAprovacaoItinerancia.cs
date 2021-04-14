@@ -7,5 +7,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task SalvarAsync(WfAprovacaoItinerancia entidade);
 
         Task<WfAprovacaoItinerancia> ObterPorWorkflowId(long workflowId);
+        Task<WfAprovacaoItinerancia> ObterPorItineranciaId(long itineranciaId);
     }
 }
