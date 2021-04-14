@@ -157,7 +157,7 @@ namespace SME.SGP.Dominio.Servicos
                 {
                     await AprovarAlteracaoNotaFechamento(codigoDaNotificacao, workflow.Id, workflow.TurmaId, workflow.CriadoRF, workflow.CriadoPor);
                 }
-                else if (workflow.Tipo == WorkflowAprovacaoTipo.RegistroItineranciaAprovado)
+                else if (workflow.Tipo == WorkflowAprovacaoTipo.RegistroItinerancia)
                 {
                     await AprovarRegistroDeItinerancia(codigoDaNotificacao, workflow.Id, workflow.CriadoRF, workflow.CriadoPor);
                 }
@@ -169,9 +169,9 @@ namespace SME.SGP.Dominio.Servicos
             var itineranciaReprovada = await mediator.Send(new ObterWorkflowAprovacaoItineranciaPorIdQuery(workFlowId));
             if (itineranciaReprovada != null)
             {
-                await mediator.Send(new AtualizarStatusWorkflowAprovacaoItineranciaCommand(itineranciaReprovada.Id, workFlowId, false));
+                await mediator.Send(new AtualizarStatusWorkflowAprovacaoItineranciaCommand(itineranciaReprovada.ItineranciaId, workFlowId, false));
 
-                await mediator.Send(new NotificacaoRegistroItineranciaRecusadoCommand(itineranciaReprovada.Id, workFlowId));
+                await mediator.Send(new NotificacaoRegistroItineranciaRecusadoCommand(itineranciaReprovada.ItineranciaId, workFlowId));
             }
         }
 
@@ -767,7 +767,7 @@ namespace SME.SGP.Dominio.Servicos
             else if (workflow.Tipo == WorkflowAprovacaoTipo.AlteracaoNotaFechamento)
             {
                 await TrataReprovacaoAlteracaoNotaFechamento(workflow, codigoDaNotificacao, motivo);
-            } else if (workflow.Tipo == WorkflowAprovacaoTipo.RegistroItineranciaReprovado)
+            } else if (workflow.Tipo == WorkflowAprovacaoTipo.RegistroItinerancia)
             {
                 await ReprovarRegistroDeItinerancia(workflow.Id);
             }

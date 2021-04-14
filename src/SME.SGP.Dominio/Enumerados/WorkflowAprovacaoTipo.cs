@@ -8,8 +8,7 @@
         Evento_Data_Passada = 4,
         Fechamento_Reabertura = 5,
         AlteracaoNotaFechamento = 6,
-        RegistroItineranciaAprovado = 7,
-        RegistroItineranciaReprovado = 8
+        RegistroItinerancia = 7,
 
     }
 }

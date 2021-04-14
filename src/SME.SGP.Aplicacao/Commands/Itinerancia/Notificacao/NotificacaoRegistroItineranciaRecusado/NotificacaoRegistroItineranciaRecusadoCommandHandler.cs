@@ -47,30 +47,69 @@ namespace SME.SGP.Aplicacao
 
             mensagem.AppendLine($"<br><br>Motivo: {observacao}");
 
-            var usuarioIdCEFAI = await mediator.Send(new ObtemUsuarioCEFAIDaDreQuery(ue.Dre.CodigoDre));
+            var funcionarios = await ObtemUsuariosCEFAIDRE(ue.Dre.CodigoDre);
+            
+            funcionarios.Add(criadoRF);
+            var usuarios = await ObterUsuariosId(funcionarios) ;
 
-            await mediator.Send(new EnviarNotificacaoUsuariosCommand(titulo, mensagem.ToString(), NotificacaoCategoria.Aviso, NotificacaoTipo.AEE, new long[] { Convert.ToInt64(criadoRF), usuarioIdCEFAI }));
+            await mediator.Send(new EnviarNotificacaoUsuariosCommand(titulo, mensagem.ToString(), NotificacaoCategoria.Aviso, NotificacaoTipo.AEE, usuarios));
         }
+
+        private async Task<List<string>> ObtemUsuariosCEFAIDRE(string codigoDre)
+        {
+            var cefais = await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(codigoDre, new List<Guid>() { Perfis.PERFIL_CEFAI }));
+            return cefais.ToList();
+        }
+
+        private async Task<List<long>> ObterUsuariosId(List<string> funcionarios)
+        {
+            List<long> usuarios = new List<long>();
+            foreach (var functionario in funcionarios)
+            {
+                var usuario = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(functionario));
+                usuarios.Add(usuario);
+            }
+            return usuarios;
+        }
+
 
         private async Task MontarTabelaDeEstudantes(IEnumerable<ItineranciaAluno> estudantes, StringBuilder mensagem, DateTime dataVisita)
         {
             List<Turma> turmas = new List<Turma>();
-            var estudantesEol = await mediator.Send(new ObterAlunosEolPorCodigosEAnoQuery(estudantes.Select(a => Convert.ToInt64(a.CodigoAluno)).ToArray(), dataVisita.Year));
+            mensagem.AppendLine("<br/><br/><table border=2><tr style='font-weight: bold'><td>Estudante</td><td>Turma Regular</td></tr>");
 
-            foreach (var estudante in estudantesEol.OrderBy(a => a.NomeAluno))
+            var estudantesMapeados = await MapearEstudantesItinerancia(estudantes, dataVisita);
+
+            foreach (var estudante in estudantesMapeados.OrderBy(a => a.AlunoNome))
             {
-                var turma = turmas.FirstOrDefault(a => a.Id == estudantes.FirstOrDefault(e => e.CodigoAluno == estudante.CodigoAluno.ToString()).TurmaId);
+                var turma = turmas.FirstOrDefault(a => a.Id == estudantes.FirstOrDefault(e => e.CodigoAluno == estudante.AlunoCodigo.ToString()).TurmaId);
                 if (turma == null)
                 {
-                    turma = await mediator.Send(new ObterTurmaPorIdQuery(estudantes.FirstOrDefault(e => e.CodigoAluno == estudante.CodigoAluno.ToString()).TurmaId));
+                    turma = await mediator.Send(new ObterTurmaPorIdQuery(estudantes.FirstOrDefault(e => e.CodigoAluno == estudante.AlunoCodigo.ToString()).TurmaId));
                     turmas.Add(turma);
                 }
-                mensagem.AppendLine($"<tr><td>{estudante.NomeAluno} ({estudante.CodigoAluno})</td><td>{turma.ModalidadeCodigo.ShortName()} - {turma.Nome}</td></tr>");
-                mensagem.AppendLine("</table>");
+                mensagem.AppendLine($"<tr><td>{estudante.AlunoNome} ({estudante.AlunoCodigo})</td><td>{turma.ModalidadeCodigo.ShortName()} - {turma.Nome}</td></tr>");
             }
-            
+            mensagem.AppendLine("</table>");
+            mensagem.AppendLine();
 
         }
+        private async Task<List<ItineranciaAlunoDto>> MapearEstudantesItinerancia(IEnumerable<ItineranciaAluno> estudantes, DateTime dataVisita)
+        {
+            List<ItineranciaAlunoDto> itineranciaAlunos = new List<ItineranciaAlunoDto>();
 
+            var estudantesEol = await mediator.Send(new ObterAlunosEolPorCodigosEAnoQuery(estudantes.Select(a => Convert.ToInt64(a.CodigoAluno)).ToArray(), dataVisita.Year));
+
+            foreach(var estudante in estudantes)
+            {
+                itineranciaAlunos.Add(new ItineranciaAlunoDto()
+                {
+                    AlunoCodigo = estudante.CodigoAluno,
+                    AlunoNome = estudantesEol.FirstOrDefault(e => e.CodigoAluno.ToString() == estudante.CodigoAluno).NomeAluno
+                });
+            }
+
+            return itineranciaAlunos;
+        }
     }
 }
