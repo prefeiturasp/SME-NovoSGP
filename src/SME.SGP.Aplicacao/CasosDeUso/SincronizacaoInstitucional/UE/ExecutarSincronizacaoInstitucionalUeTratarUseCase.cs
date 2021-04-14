@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.CasosDeUso
 {
-    public class TrataSincronizacaoInstitucionalUeUseCase : AbstractUseCase, ITrataSincronizacaoInstitucionalUeUseCase
+    public class ExecutarSincronizacaoInstitucionalUeTratarUseCase : AbstractUseCase, IExecutarSincronizacaoInstitucionalUeTratarUseCase
     {
-        public TrataSincronizacaoInstitucionalUeUseCase(IMediator mediator) : base(mediator)
+        public ExecutarSincronizacaoInstitucionalUeTratarUseCase(IMediator mediator) : base(mediator)
         {
         }
 
