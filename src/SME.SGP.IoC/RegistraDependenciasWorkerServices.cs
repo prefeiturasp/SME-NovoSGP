@@ -542,8 +542,16 @@ namespace SME.SGP.IoC
 
             services.TryAddScopedWorkerService<IExecutarSyncGeralGoogleClassroomUseCase, ExecutarSyncGeralGoogleClassroomUseCase>();
 
-            services.TryAddScopedWorkerService<ITrataSincronizacaoInstitucionalUeUseCase, TrataSincronizacaoInstitucionalUeUseCase>();
-            services.TryAddScopedWorkerService<IExecutaSincronizacaoEstruturaInstitucionalSyncUseCase, ExecutaSincronizacaoEstruturaInstitucionalSyncUseCase>();
+            services.TryAddScopedWorkerService<IExecutarSincronizacaoInstitucionalSyncUseCase, ExecutarSincronizacaoEstruturaInstitucionalSyncUseCase>();
+
+            services.TryAddScopedWorkerService<IExecutarSincronizacaoInstitucionalDreTratarUseCase, ExecutarSincronizacaoInstitucionalDreTratarUseCase>();
+            services.TryAddScopedWorkerService<IExecutarSincronizacaoInstitucionalUeTratarUseCase, ExecutarSincronizacaoInstitucionalUeTratarUseCase>();
+
+            services.TryAddScopedWorkerService<IExecutarSincronizacaoInstitucionalUeTratarUseCase, ExecutarSincronizacaoInstitucionalUeTratarUseCase>();
+
+            services.TryAddScopedWorkerService<IExecutarSincronizacaoInstitucionalTipoEscolaSyncUseCase, ExecutarSincronizacaoInstitucionalTipoEscolaSyncUseCase>();
+            services.TryAddScopedWorkerService<IExecutarSincronizacaoInstitucionalTipoEscolaTratarUseCase, ExecutarSincronizacaoInstitucionalTipoEscolaTratarUseCase>();
+
         }
 
         private static void ResgistraDependenciaHttp(IServiceCollection services)

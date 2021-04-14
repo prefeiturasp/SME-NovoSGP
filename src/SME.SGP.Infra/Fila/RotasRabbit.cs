@@ -87,5 +87,8 @@
         public static string SincronizaEstruturaInstitucionalUeTratar => "sgp.estrutura.institucional.ue.tratar";
         public static string SincronizaEstruturaInstitucionalTurmasSync => "sgp.estrutura.institucional.turmas.sync";        
         public static string SincronizaEstruturaInstitucionalTurmaTratar => "sgp.estrutura.institucional.turma.tratar";
+        
+        public static string SincronizaEstruturaInstitucionalTipoEscolaSync => "sgp.estrutura.institucional.tipoescola.sync";
+        public static string SincronizaEstruturaInstitucionalTipoEscolaTratar => "sgp.estrutura.institucional.tipoescola.tratar";
     }
 }
