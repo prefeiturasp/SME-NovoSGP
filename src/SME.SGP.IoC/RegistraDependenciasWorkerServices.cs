@@ -319,6 +319,9 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IRepositorioOcorrenciaAluno, RepositorioOcorrenciaAluno>();
             services.TryAddScopedWorkerService<IRepositorioOcorrenciaTipo, RepositorioOcorrenciaTipo>();
 
+            // Itinerância
+            services.TryAddScopedWorkerService<IRepositorioWfAprovacaoItinerancia, RepositorioWfAprovacaoItinerancia>();
+
             // PlanoAEE
             services.TryAddScopedWorkerService<IRepositorioPlanoAEE, RepositorioPlanoAEE>();
             services.TryAddScopedWorkerService<IRepositorioPlanoAEEVersao, RepositorioPlanoAEEVersao>();
