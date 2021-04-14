@@ -21,52 +21,56 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(NotificacaoRegistroItineranciaRecusadoCommand request, CancellationToken cancellationToken)
         {
-            var ue = await mediator.Send(new ObterUeComDrePorCodigoQuery(request.UeCodigo));
+            var itinerancia = await mediator.Send(new ObterItineranciaPorIdQuery(request.ItineranciaId));
+            if (itinerancia == null)
+                throw new NegocioException("Não foi possível encontrar a Itinerância informada");
+
+            var ue = await mediator.Send(new ObterUeComDrePorIdQuery(itinerancia.Ues.FirstOrDefault().UeId));
             if (ue == null)
                 throw new NegocioException("Não foi possível encontrar a UE informada");
-            await NotificarItineranciaRecusada(ue, request.CriadoRF, request.CriadoPor, request.DataVisita, request.Estudantes);
 
+
+            var workflow = await mediator.Send(new ObterWorkflowPorIdQuery(request.WorkflowId));
+
+
+            await NotificarItineranciaRecusada(ue, itinerancia.CriadoRF, itinerancia.DataVisita, itinerancia.Alunos, workflow.Niveis.FirstOrDefault(a => a.Status == WorkflowAprovacaoNivelStatus.Reprovado).Observacao);
             return true;
         }
 
-        private async Task NotificarItineranciaRecusada(Ue ue, string criadoRF, string criadoPor, DateTime dataVisita, IEnumerable<ItineranciaAlunoDto> estudantes)
+        private async Task NotificarItineranciaRecusada(Ue ue, string criadoRF, DateTime dataVisita, IEnumerable<ItineranciaAluno> estudantes, string observacao)
         {
             var descricaoUe = $"{ue.TipoEscola.ShortName()} {ue.Nome} ({ue.Dre.Abreviacao})";
             var titulo = $"Registro de Itinerância devolvido - {descricaoUe} - {dataVisita:dd/MM/yyyy}";
             var mensagem = new StringBuilder($"Registro de Itinerância da {descricaoUe} no dia {dataVisita:dd/MM/yyyy} para os estudantes abaixo foi devolvido pelos gestores da UE");
 
-            await MontarTabelaDeEstudantes(estudantes, mensagem);
+            await MontarTabelaDeEstudantes(estudantes, mensagem, dataVisita);
 
-            mensagem.AppendLine("<br/>Você precisa validar este registro aceitando esta notificação para que o registro seja considerado válido.");
-            mensagem.AppendLine();
-            mensagem.AppendLine("<br/><br/>Clique no botão abaixo para fazer o download do arquivo.");
-            mensagem.AppendLine();
-            mensagem.AppendLine("<br/><br/><a href='https://dev-novosgp.sme.prefeitura.sp.gov.br' target='_blank' class='btn-baixar-relatorio'><i class='fas fa-arrow-down mr-2'></i>Download</a>");
+            mensagem.AppendLine($"<br><br>Motivo: {observacao}");
 
-            await mediator.Send(new EnviarNotificacaoCommand(titulo, mensagem.ToString(), NotificacaoCategoria.Workflow_Aprovacao, NotificacaoTipo.AEE, ObterCargosGestaoEscola(), ue.Dre.CodigoDre, ue.CodigoUe));
+            var usuarioIdCEFAI = await mediator.Send(new ObtemUsuarioCEFAIDaDreQuery(ue.Dre.CodigoDre));
 
+            await mediator.Send(new EnviarNotificacaoUsuariosCommand(titulo, mensagem.ToString(), NotificacaoCategoria.Aviso, NotificacaoTipo.AEE, new long[] { Convert.ToInt64(criadoRF), usuarioIdCEFAI }));
         }
 
-        private async Task MontarTabelaDeEstudantes(IEnumerable<ItineranciaAlunoDto> estudantes, StringBuilder mensagem)
+        private async Task MontarTabelaDeEstudantes(IEnumerable<ItineranciaAluno> estudantes, StringBuilder mensagem, DateTime dataVisita)
         {
             List<Turma> turmas = new List<Turma>();
-            mensagem.AppendLine();
-            mensagem.AppendLine("<br/><br/><table border=2><tr style='font-weight: bold'><td>Estudante</td><td>Turma Regular</td></tr>");
-            foreach (var estudante in estudantes.OrderBy(a => a.AlunoNome))
+            var estudantesEol = await mediator.Send(new ObterAlunosEolPorCodigosEAnoQuery(estudantes.Select(a => Convert.ToInt64(a.CodigoAluno)).ToArray(), dataVisita.Year));
+
+            foreach (var estudante in estudantesEol.OrderBy(a => a.NomeAluno))
             {
-                var turma = turmas.FirstOrDefault(a => a.Id == estudante.TurmaId);
+                var turma = turmas.FirstOrDefault(a => a.Id == estudantes.FirstOrDefault(e => e.CodigoAluno == estudante.CodigoAluno.ToString()).TurmaId);
                 if (turma == null)
                 {
-                    turma = await mediator.Send(new ObterTurmaPorIdQuery(estudante.TurmaId));
+                    turma = await mediator.Send(new ObterTurmaPorIdQuery(estudantes.FirstOrDefault(e => e.CodigoAluno == estudante.CodigoAluno.ToString()).TurmaId));
                     turmas.Add(turma);
                 }
-                mensagem.AppendLine($"<tr><td>{estudante.AlunoNome} ({estudante.AlunoCodigo})</td><td>{turma.ModalidadeCodigo.ShortName()} - {turma.Nome}</td></tr>");
+                mensagem.AppendLine($"<tr><td>{estudante.NomeAluno} ({estudante.CodigoAluno})</td><td>{turma.ModalidadeCodigo.ShortName()} - {turma.Nome}</td></tr>");
+                mensagem.AppendLine("</table>");
             }
-            mensagem.AppendLine("</table>");
-            mensagem.AppendLine();
+            
+
         }
 
-        private Cargo[] ObterCargosGestaoEscola()
-            => new[] { Cargo.CP, Cargo.Diretor };
     }
 }

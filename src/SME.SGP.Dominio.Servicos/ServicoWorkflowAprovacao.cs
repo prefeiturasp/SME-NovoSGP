@@ -28,7 +28,6 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioUsuario repositorioUsuario;
         private readonly IRepositorioPendencia repositorioPendencia;
         private readonly IRepositorioEventoTipo repositorioEventoTipo;
-        private readonly IRepositorioWfAprovacaoItinerancia repositorioWfAprovacaoItinerancia;
         private readonly IServicoEol servicoEOL;
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoUsuario servicoUsuario;
@@ -52,7 +51,6 @@ namespace SME.SGP.Dominio.Servicos
                                         IRepositorioUsuario repositorioUsuario,
                                         IRepositorioPendencia repositorioPendencia,
                                         IRepositorioEventoTipo repositorioEventoTipo,
-                                        IRepositorioWfAprovacaoItinerancia repositorioWfAprovacaoItinerancia,
                                         IMediator mediator)
         {
             this.repositorioNotificacao = repositorioNotificacao ?? throw new System.ArgumentNullException(nameof(repositorioNotificacao));
@@ -72,7 +70,6 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioUsuario = repositorioUsuario ?? throw new ArgumentNullException(nameof(repositorioUsuario));
             this.repositorioPendencia = repositorioPendencia ?? throw new ArgumentNullException(nameof(repositorioPendencia));
             this.repositorioEventoTipo = repositorioEventoTipo ?? throw new ArgumentNullException(nameof(repositorioEventoTipo));
-            this.repositorioWfAprovacaoItinerancia = repositorioWfAprovacaoItinerancia ?? throw new ArgumentNullException(nameof(repositorioWfAprovacaoItinerancia));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
@@ -160,10 +157,21 @@ namespace SME.SGP.Dominio.Servicos
                 {
                     await AprovarAlteracaoNotaFechamento(codigoDaNotificacao, workflow.Id, workflow.TurmaId, workflow.CriadoRF, workflow.CriadoPor);
                 }
-                else if (workflow.Tipo == WorkflowAprovacaoTipo.RegistroItinerancia)
+                else if (workflow.Tipo == WorkflowAprovacaoTipo.RegistroItineranciaAprovado)
                 {
                     await AprovarRegistroDeItinerancia(codigoDaNotificacao, workflow.Id, workflow.CriadoRF, workflow.CriadoPor);
                 }
+            }
+        }
+
+        private async Task ReprovarRegistroDeItinerancia(long workFlowId)
+        {
+            var itineranciaReprovada = await mediator.Send(new ObterWorkflowAprovacaoItineranciaPorIdQuery(workFlowId));
+            if (itineranciaReprovada != null)
+            {
+                await mediator.Send(new AtualizarStatusWorkflowAprovacaoItineranciaCommand(itineranciaReprovada.Id, workFlowId, false));
+
+                await mediator.Send(new NotificacaoRegistroItineranciaRecusadoCommand(itineranciaReprovada.Id, workFlowId));
             }
         }
 
@@ -172,14 +180,11 @@ namespace SME.SGP.Dominio.Servicos
             var itineranciaEmAprovacao = await mediator.Send(new ObterWorkflowAprovacaoItineranciaPorIdQuery(workFlowId));
             if (itineranciaEmAprovacao != null)
             {          
-                await mediator.Send(new AtualizarStatusWorkflowAprovacaoItineranciaCommand(itineranciaEmAprovacao.Id, workFlowId));
+                await mediator.Send(new AtualizarStatusWorkflowAprovacaoItineranciaCommand(itineranciaEmAprovacao.Id, workFlowId, true));
 
                 await mediator.Send(new NotificacaoUsuarioCriadorRegistroItineranciaCommand(itineranciaEmAprovacao.Id, workFlowId));
             }
         }
-
-        //private IEnumerable<WfAprovacaoNotaFechamento> ObterRegistroDeItineranciaEmAprovacao(long workflowId)
-        //    => repositorioItinerancia.ObterNotasEmAprovacaoWf(workflowId).Result;
 
         private async Task AprovarAlteracaoNotaFechamento(long codigoDaNotificacao, long workFlowId, string turmaCodigo, string criadoRF, string criadoPor)
         {
@@ -760,7 +765,12 @@ namespace SME.SGP.Dominio.Servicos
                 TrataReprovacaoFechamentoReabertura(workflow, codigoDaNotificacao, motivo, nivel.Id);
             }
             else if (workflow.Tipo == WorkflowAprovacaoTipo.AlteracaoNotaFechamento)
+            {
                 await TrataReprovacaoAlteracaoNotaFechamento(workflow, codigoDaNotificacao, motivo);
+            } else if (workflow.Tipo == WorkflowAprovacaoTipo.RegistroItineranciaReprovado)
+            {
+                await ReprovarRegistroDeItinerancia(workflow.Id);
+            }
         }
 
         private async Task TrataReprovacaoAlteracaoNotaFechamento(WorkflowAprovacao workflow, long codigoDaNotificacao, string motivo)

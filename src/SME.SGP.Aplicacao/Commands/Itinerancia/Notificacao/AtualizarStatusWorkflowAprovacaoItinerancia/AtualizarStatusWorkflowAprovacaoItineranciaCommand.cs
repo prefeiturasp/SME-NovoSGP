@@ -4,11 +4,11 @@ namespace SME.SGP.Aplicacao
 {
     public class AtualizarStatusWorkflowAprovacaoItineranciaCommand : IRequest<bool>
     {
-        public AtualizarStatusWorkflowAprovacaoItineranciaCommand(long itineranciaId, long workflowId)
+        public AtualizarStatusWorkflowAprovacaoItineranciaCommand(long itineranciaId, long workflowId, bool statusAprovacao)
         {
             ItineranciaId = itineranciaId;
             WorkflowId = workflowId;
-            StatusAprovacao = true;
+            StatusAprovacao = statusAprovacao;
         }
 
         public long ItineranciaId { get; set; }
