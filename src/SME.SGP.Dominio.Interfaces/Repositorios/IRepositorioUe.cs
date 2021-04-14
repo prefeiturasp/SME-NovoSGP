@@ -34,5 +34,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<Ue>> ObterUesPorModalidade(int[] modalidades, int anoLetivo = 0);
         Task<IEnumerable<Ue>> ObterUesPorIds(long[] ids);
         Task<Ue> ObterUEPorTurmaId(long turmaId);
+        Task<Ue> ObterUeComDrePorId(long ueId);
     }
 }

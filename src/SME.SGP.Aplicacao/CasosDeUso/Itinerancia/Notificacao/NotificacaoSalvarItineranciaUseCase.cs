@@ -20,13 +20,13 @@ namespace SME.SGP.Aplicacao
 
             if (mensagemRabbit.Estudantes.Any())
             {
-                await mediator.Send(new NotificacaoSalvarItineranciaAlunosCommand(mensagemRabbit.Ues.FirstOrDefault().CodigoUe, mensagemRabbit.CriadoRF, mensagemRabbit.CriadoPor, mensagemRabbit.DataVisita, mensagemRabbit.Estudantes));
+                await mediator.Send(new NotificacaoSalvarItineranciaAlunosCommand(mensagemRabbit.Ues.FirstOrDefault().CodigoUe, mensagemRabbit.CriadoRF, mensagemRabbit.CriadoPor, mensagemRabbit.DataVisita, mensagemRabbit.Estudantes, mensagemRabbit.ItineranciaId));
             }
             else
             {
                 foreach (var ue in mensagemRabbit.Ues)
                 {
-                    await mediator.Send(new NotificacaoSalvarItineranciaSemAlunosVinculadosCommand(ue.CodigoUe, mensagemRabbit.CriadoRF, mensagemRabbit.CriadoPor, mensagemRabbit.DataVisita));
+                   await mediator.Send(new NotificacaoSalvarItineranciaSemAlunosVinculadosCommand(ue.CodigoUe, mensagemRabbit.CriadoRF, mensagemRabbit.CriadoPor, mensagemRabbit.DataVisita));
                 }
             }
 

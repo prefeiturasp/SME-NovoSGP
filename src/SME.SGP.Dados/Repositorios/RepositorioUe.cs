@@ -80,6 +80,21 @@ namespace SME.SGP.Dados.Repositorios
             new { ueCodigo })).FirstOrDefault();
         }
 
+        public async Task<Ue> ObterUeComDrePorId(long ueId)
+        {
+            var query = @"select ue.*, dre.* 
+                            from ue 
+                           inner join dre on dre.id = ue.dre_id
+                           where ue.id = @ueId";
+
+            return (await contexto.Conexao.QueryAsync<Ue, Dre, Ue>(query, (ue, dre) =>
+            {
+                ue.AdicionarDre(dre);
+                return ue;
+            },
+            new { ueId })).FirstOrDefault();
+        }
+
         public IEnumerable<Ue> ObterTodas()
         {
             var query = @"select

@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Aplicacao
 {
-    public class NotificacaoUsusarioCriadorRegistroItineranciaCommandValidator : AbstractValidator<NotificacaoUsusarioCriadorRegistroItineranciaCommand>
+    public class NotificacaoUsusarioCriadorRegistroItineranciaCommandValidator : AbstractValidator<NotificacaoUsuarioCriadorRegistroItineranciaCommand>
     {
         public NotificacaoUsusarioCriadorRegistroItineranciaCommandValidator()
         {
