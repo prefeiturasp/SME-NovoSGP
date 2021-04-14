@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ConsultasTurma: IConsultasTurma
+    public class ConsultasTurma : IConsultasTurma
     {
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IConsultasTipoCalendario consultasTipoCalendario;
@@ -127,9 +127,15 @@ namespace SME.SGP.Aplicacao
 
             var dadosAlunosDto = new List<AlunoDadosBasicosDto>();
 
-            foreach(var dadoAluno in dadosAlunos)
+            foreach (var dadoAluno in dadosAlunos)
             {
                 var dadosBasicos = (AlunoDadosBasicosDto)dadoAluno;
+
+                if ((TipoResponsavel)Convert.ToInt32(dadoAluno.TipoResponsavel) == TipoResponsavel.ProprioEstudante &&
+                    !string.IsNullOrEmpty(dadoAluno.NomeSocialAluno) && dadoAluno.Maioridade)
+                {
+                    dadosBasicos.NomeResponsavel = dadoAluno.NomeSocialAluno;
+                }
 
                 dadosBasicos.TipoResponsavel = ObterTipoResponsavel(dadoAluno.TipoResponsavel);
                 // se informado periodo escolar carrega marcadores no periodo
