@@ -135,7 +135,7 @@ namespace SME.SGP.Dominio.Servicos
         private async Task<bool> ValidarFrequenciaGeralAluno(string alunoCodigo, string turmaCodigo)
         {
             var frequenciaAluno = await consultasFrequencia.ObterFrequenciaGeralAluno(alunoCodigo, turmaCodigo);
-                       
+
             var parametroFrequenciaGeral = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.PercentualFrequenciaCritico, DateTime.Today.Year)));
             return !(frequenciaAluno < parametroFrequenciaGeral);
         }
@@ -192,18 +192,15 @@ namespace SME.SGP.Dominio.Servicos
         }
 
         private async Task<bool> ValidarParecerConselhoPorNota(IEnumerable<NotaConceitoFechamentoConselhoFinalDto> notasConselhoClasse)
-        {           
+        {
             var notaMedia = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.MediaBimestre, DateTime.Today.Year)));
             foreach (var notaConcelhoClasse in notasConselhoClasse)
             {
                 var nota = notaConcelhoClasse.Nota;
-                if (notaConcelhoClasse.ConselhoClasseAlunoId == 0)
+                var notaPosConselho = notasConselhoClasse.FirstOrDefault(n => n.ComponenteCurricularCodigo == notaConcelhoClasse.ComponenteCurricularCodigo && n.ConselhoClasseAlunoId > 0);
+                if (notaPosConselho != null)
                 {
-                    var notaConselho = notasConselhoClasse.FirstOrDefault(cn => cn.ComponenteCurricularCodigo == notaConcelhoClasse.ComponenteCurricularCodigo && cn.ConselhoClasseAlunoId > 0);
-                    if(notaConselho != null)
-                    {
-                        nota = notaConselho.Nota;
-                    }
+                    nota = notaPosConselho.Nota;
                 }
                 if (nota < notaMedia)
                     return false;
@@ -219,13 +216,10 @@ namespace SME.SGP.Dominio.Servicos
             {
                 var conceitoId = conceitoConselhoClasseAluno.ConceitoId;
 
-                if (conceitoConselhoClasseAluno.ConselhoClasseAlunoId == 0)
+                var conceitoPosConselho = notasConselhoClasse.FirstOrDefault(n => n.ComponenteCurricularCodigo == conceitoConselhoClasseAluno.ComponenteCurricularCodigo && n.ConselhoClasseAlunoId > 0);
+                if (conceitoPosConselho != null)
                 {
-                    var conceitoConselho = notasConselhoClasse.FirstOrDefault(cn => cn.ComponenteCurricularCodigo == conceitoConselhoClasseAluno.ComponenteCurricularCodigo && cn.ConselhoClasseAlunoId > 0);
-                    if (conceitoConselho != null)
-                    {
-                        conceitoId = conceitoConselho.ConceitoId;
-                    }
+                    conceitoId = conceitoPosConselho.ConceitoId;
                 }
 
                 var conceitoAluno = conceitosVigentes.FirstOrDefault(c => c.Id == conceitoId);
