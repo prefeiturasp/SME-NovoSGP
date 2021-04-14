@@ -140,33 +140,7 @@ namespace SME.SGP.Dados.Repositorios
 
         private const string QueryAulasTurmasForaListaCodigos = @"select id from public.aula where turma_id in (#codigosTurmasARemover)";
 
-        private const string QueryDefinirTurmaHistorica = "update public.turma set historica = true where turma_id in (#codigosTurmasParaHistorico);";
-
-        private const string QueryDeleteTurmaExtinta = @"delete 
-                                                           from public.compensacao_ausencia_aluno
-                                                          where compensacao_ausencia_id in (select id
-                                                                                              from public.compensacao_ausencia
-                                                                                             where turma_id = @turmaId);
-                                                        delete from public.compensacao_ausencia
-                                                         where turma_id = @turmaId;
-
-                                                        delete from public.pendencia_fechamento
-                                                         where fechamento_turma_disciplina_id = select id
-      										                                                      from public.fechamento_turma_disciplina
-     										                                                     where fechamento_turma_id in (select id
-                                     										                                                     from public.fechamento_turma
-                                    									                                                        where turma_id = @turmaId);
-
-                                                        delete from public.wf_aprovacao_nota_fechamento
-                                                        where fechamento_nota_id in (select id
-                                                         from public.fechamento_nota
-                                                         where fechamento_aluno_id in (select id
-                                                                                         from public.fechamento_aluno
-                                                                                        where fechamento_turma_disciplina_id in (select id
-                                                                                         								          from public.fechamento_turma_disciplina
-                                                                                         								         where fechamento_turma_id in (select id
-                                                                                                                         							             from public.fechamento_turma
-                                                                                                                         							            where turma_id @turmaId)))); ";
+        private const string QueryDefinirTurmaHistorica = "update public.turma set historica = true where turma_id in (#codigosTurmasParaHistorico);";        
 
         private readonly ISgpContext contexto;
 
