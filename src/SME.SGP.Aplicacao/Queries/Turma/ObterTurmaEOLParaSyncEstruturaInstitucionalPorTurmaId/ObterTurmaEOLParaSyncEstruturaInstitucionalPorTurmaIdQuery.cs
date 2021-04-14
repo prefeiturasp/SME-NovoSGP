@@ -6,12 +6,12 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterTurmaEOLParaSyncEstruturaInstitucionalPorTurmaIdQuery : IRequest<TurmaParaSyncInstitucionalDto>
     {
-        public ObterTurmaEOLParaSyncEstruturaInstitucionalPorTurmaIdQuery(string turmaId)
+        public ObterTurmaEOLParaSyncEstruturaInstitucionalPorTurmaIdQuery(long turmaId)
         {
             TurmaId = turmaId;
         }
 
-        public string TurmaId { get; set; }
+        public long TurmaId { get; set; }
     }
     public class ObterTurmaEOLParaSyncEstruturaInstitucionalPorTurmaIdQueryValidator : AbstractValidator<ObterTurmaEOLParaSyncEstruturaInstitucionalPorTurmaIdQuery>
     {

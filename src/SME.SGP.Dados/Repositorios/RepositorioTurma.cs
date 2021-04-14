@@ -354,7 +354,7 @@ namespace SME.SGP.Dados.Repositorios
                     item.DataAtualizacao = DateTime.Today;
                     item.Ue = ues.First(x => x.CodigoUe == item.Ue.CodigoUe);
                     item.UeId = item.Ue.Id;
-                    item.Id = (long)await contexto.Conexao.InsertAsync(item);                    
+                    item.Id = (long)await contexto.Conexao.InsertAsync(item);
                     resultado.Add(item);
                 }
 
@@ -374,7 +374,7 @@ namespace SME.SGP.Dados.Repositorios
                                         c.DataInicio.HasValue != l.DataInicio.HasValue ||
                                         (c.DataInicio.HasValue && l.DataInicio.HasValue && c.DataInicio.Value.Date != l.DataInicio.Value.Date) ||
                                         c.DataFim.HasValue != l.DataFim.HasValue ||
-                                        (c.DataFim.HasValue && l.DataFim.HasValue && c.DataFim.Value.Date != l.DataFim.Value.Date)                                        
+                                        (c.DataFim.HasValue && l.DataFim.HasValue && c.DataFim.Value.Date != l.DataFim.Value.Date)
                                   select new Turma()
                                   {
                                       Ano = c.Ano,
@@ -395,9 +395,9 @@ namespace SME.SGP.Dados.Repositorios
                                       DataInicio = c.DataInicio,
                                       SerieEnsino = c.SerieEnsino,
                                       DataFim = c.DataFim,
-                                      Extinta = c.Extinta,                                      
+                                      Extinta = c.Extinta,
                                   };
-             
+
                 foreach (var item in modificados)
                 {
                     await contexto.Conexao.ExecuteAsync(Update, new
@@ -503,7 +503,7 @@ namespace SME.SGP.Dados.Repositorios
                 SentrySdk.CaptureException(erro);
                 transacao.Rollback();
             }
-        }        
+        }
 
         public async Task<IEnumerable<Turma>> ObterPorCodigosAsync(string[] codigos)
         {
@@ -670,24 +670,28 @@ namespace SME.SGP.Dados.Repositorios
                             and t.ano_letivo = @anoLetivo 
                             and t.tipo_turma = @turmaTipo";
 
-            return await contexto.Conexao.QueryFirstOrDefaultAsync<Turma>(query, new { ueId, anoLetivo , turmaTipo });
+            return await contexto.Conexao.QueryFirstOrDefaultAsync<Turma>(query, new { ueId, anoLetivo, turmaTipo });
         }
 
         public async Task<bool> AtualizarTurmaParaHistorica(string turmaId)
         {
             var query = @"update public.turma 
-                             set historica = true 
+                             set historica = true,
+                                 data_atualizacao = @dataAtualizacao
                            where turma_id = @turmaId";
 
-           return await contexto.Conexao.ExecuteScalarAsync<bool>(query, new { turmaId });
+            var retorno = await contexto.Conexao.ExecuteAsync(query, new { turmaId, dataAtualizacao = DateTime.Now });
+
+            return retorno != 0;
+
         }
 
-        public async Task<bool> SalvarAsync(TurmaParaSyncInstitucionalDto turma)
+        public async Task<bool> SalvarAsync(TurmaParaSyncInstitucionalDto turma, long ueId)
         {
             var query = @"INSERT INTO public.turma
 				                (turma_id, ue_id, nome, ano, ano_letivo, modalidade_codigo, semestre, qt_duracao_aula, tipo_turno, data_atualizacao, historica, dt_fim_eol, ensino_especial, etapa_eja, data_inicio, serie_ensino, tipo_turma)
 	                        values
-	                            (@Codigo, @UeCodigo, @NomeTurma, @Ano, @AnoLetivo, @CodigoModalidade, @Semestre, @DuracaoTurno, @TipoTurno, @DataAtualizacao, false, @DataFim, @EnsinoEspecial, @EtapaEJA, @DataInicioTurma, @SerieEnsino, @TipoTurma);";
+	                            (@Codigo, @ueId, @NomeTurma, @Ano, @AnoLetivo, @CodigoModalidade, @Semestre, @DuracaoTurno, @TipoTurno, @DataAtualizacao, false, @DataFim, @EnsinoEspecial, @EtapaEJA, @DataInicioTurma, @SerieEnsino, @TipoTurma);";
 
             var parametros = new
             {
@@ -706,10 +710,13 @@ namespace SME.SGP.Dados.Repositorios
                 turma.EtapaEJA,
                 turma.DataInicioTurma,
                 turma.SerieEnsino,
-                turma.TipoTurma
+                turma.TipoTurma,
+                ueId,
             };
+            var retorno = await contexto.Conexao.ExecuteAsync(query, parametros);
 
-            return await contexto.Conexao.ExecuteScalarAsync<bool>(query, parametros);
+            return retorno != 0;
+
         }
 
         public async Task ExcluirTurmaExtintaAsync(string turmaId)
@@ -721,7 +728,7 @@ namespace SME.SGP.Dados.Repositorios
                                          .Replace("#queryIdsFechamentoTurmaDisciplinaTurmasForaListaCodigos", QueryIdsFechamentoTurmaDisciplinaTurmasForaListaCodigos)
                                          .Replace("#queryIdsTurmasForaListaCodigos", QueryIdsTurmasForaListaCodigos)
                                          .Replace("#queryIdsAulasTurmasForaListaCodigos", QueryAulasTurmasForaListaCodigos)
-                                         .Replace("#codigosTurmasARemover", turmaId);
+                                         .Replace("#codigosTurmasARemover", $"'{turmaId}'");
 
 
             var transacao = contexto.Conexao.BeginTransaction();

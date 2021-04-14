@@ -24,6 +24,6 @@ namespace SME.SGP.Infra
         public string Situacao { get; set; }
         public string UeCodigo { get; set; }
         public DateTime DataAtualizacao { get; set; }
-        public DateTime DataStatusTurmaEscola { get; set; }
+        public DateTime DataStatusTurmaEscola { get; set; }        
     }
 }

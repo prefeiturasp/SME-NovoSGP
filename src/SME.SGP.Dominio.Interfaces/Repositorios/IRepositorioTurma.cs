@@ -37,7 +37,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<long>> ObterTurmasPorUeAnos(string ueCodigo, int anoLetivo, string[] anos, int modalidadeId);
         Task<Modalidade> ObterModalidadePorCodigo(string turmaCodigo);
         Task<bool> AtualizarTurmaParaHistorica(string turmaId);
-        Task<bool> SalvarAsync(TurmaParaSyncInstitucionalDto turma);
+        Task<bool> SalvarAsync(TurmaParaSyncInstitucionalDto turma, long ueId);
         Task ExcluirTurmaExtintaAsync(string turmaId);       
 
     }

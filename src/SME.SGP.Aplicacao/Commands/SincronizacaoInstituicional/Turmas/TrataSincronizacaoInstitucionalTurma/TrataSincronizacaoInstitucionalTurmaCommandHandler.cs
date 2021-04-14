@@ -34,19 +34,7 @@ namespace SME.SGP.Aplicacao
                 return await IncluirTurmaAsync(turma);
 
             return true;
-        }
-
-        private async Task<bool> AtualizarTurmaParaHistoricaAsync(string turmaId)
-        {
-            var turmaAtualizada = await repositorioTurma.AtualizarTurmaParaHistorica(turmaId);
-
-            if (!turmaAtualizada)
-            {
-                SentrySdk.CaptureMessage($"Não foi possível atualizar a turma id {turmaId} para histórica.");
-                return false;
-            }
-            return true;
-        }
+        }        
 
         private async Task<bool> VerificarTurmaExtintaAsync(TurmaParaSyncInstitucionalDto turma)
         {
@@ -83,8 +71,38 @@ namespace SME.SGP.Aplicacao
             }
         }
 
+        private async Task<bool> AtualizarTurmaParaHistoricaAsync(string turmaId)
+        {
+            var turmaAtualizada = await repositorioTurma.AtualizarTurmaParaHistorica(turmaId);
+
+            if (!turmaAtualizada)
+            {
+                SentrySdk.CaptureMessage($"Não foi possível atualizar a turma id {turmaId} para histórica.");
+                return false;
+            }
+            return true;
+        }
+
         private async Task<bool> IncluirTurmaAsync(TurmaParaSyncInstitucionalDto turma)
-            => await repositorioTurma.SalvarAsync(turma);
+        {
+            var turmaSgp = await mediator.Send(new ObterTurmaPorCodigoQuery(turma.Codigo.ToString()));
+
+            if(turmaSgp != null)
+            {
+                SentrySdk.CaptureMessage($"Não foi possível Incluir a turma de código {turma.Codigo}. Turma já existe na base Sgp");
+                return false;
+            }
+
+            var ue = await mediator.Send(new ObterUeComDrePorCodigoQuery(turma.UeCodigo));           
+
+            if (ue == null)
+            {
+                SentrySdk.CaptureMessage($"Não foi possível Incluir a turma de código {turma.Codigo}. Pois não foi encontrado a UE {turma.UeCodigo}.");
+                return false;
+            }                   
+
+            return await repositorioTurma.SalvarAsync(turma, ue.Id);
+        }
 
         private async Task ExcluirTurnaAsync(string turmaId)
             => await repositorioTurma.ExcluirTurmaExtintaAsync(turmaId);
