@@ -11,6 +11,7 @@ import {
   Colors,
   JoditEditor,
   Loader,
+  MarcadorSituacao,
   PainelCollapse,
 } from '~/componentes';
 import { Cabecalho, Paginacao } from '~/componentes-sgp';
@@ -389,7 +390,9 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
     return (
       (match?.params?.id
         ? !permissoesTela?.podeAlterar
-        : !permissoesTela?.podeIncluir) || somenteConsulta
+        : !permissoesTela?.podeIncluir) ||
+      somenteConsulta ||
+      !itineranciaAlteracao?.podeEditar
     );
   };
 
@@ -450,6 +453,17 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
                 />
               </div>
             </div>
+            {itineranciaId && itineranciaAlteracao?.statusWorkflow && (
+              <div className="row mb-4">
+                <div className="col-sm-12 d-flex justify-content-end">
+                  <div>
+                    <MarcadorSituacao corFundo={Colors.Azul}>
+                      {itineranciaAlteracao?.statusWorkflow}
+                    </MarcadorSituacao>
+                  </div>
+                </div>
+              </div>
+            )}
             <div className="row mb-4">
               <div className="col-3">
                 <CampoData
