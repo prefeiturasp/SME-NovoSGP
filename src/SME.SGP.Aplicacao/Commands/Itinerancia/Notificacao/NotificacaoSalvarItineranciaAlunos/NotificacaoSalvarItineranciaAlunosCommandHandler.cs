@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.Extensions.Configuration;
 using Sentry;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
@@ -15,10 +16,12 @@ namespace SME.SGP.Aplicacao
     public class NotificacaoSalvarItineranciaAlunosCommandHandler : IRequestHandler<NotificacaoSalvarItineranciaAlunosCommand, bool>
     {
         private readonly IMediator mediator;
+        private readonly IConfiguration configuration;
 
-        public NotificacaoSalvarItineranciaAlunosCommandHandler(IMediator mediator)
+        public NotificacaoSalvarItineranciaAlunosCommandHandler(IMediator mediator, IConfiguration configuration)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
         public async Task<bool> Handle(NotificacaoSalvarItineranciaAlunosCommand request, CancellationToken cancellationToken)
@@ -36,6 +39,7 @@ namespace SME.SGP.Aplicacao
             var descricaoUe = $"{ue.TipoEscola.ShortName()} {ue.Nome} ({ue.Dre.Abreviacao})";
             var titulo = $"Novo Registro de Itinerância - {descricaoUe} - {dataVisita:dd/MM/yyyy}";
             var mensagem = new StringBuilder($"O usuário {criadoPor} ({criadoRF}) inseriu um novo registro de itinerância para a {descricaoUe} no dia {dataVisita:dd/MM/yyyy} para os seguintes estudantes:");
+            var urlServidorRelatorios = configuration.GetSection("UrlServidorRelatorios").Value;
 
             List<Turma> turmas = new List<Turma>();
             mensagem.AppendLine();
@@ -56,7 +60,15 @@ namespace SME.SGP.Aplicacao
             mensagem.AppendLine();
             mensagem.AppendLine("<br/><br/>Clique no botão abaixo para fazer o download do arquivo.");
             mensagem.AppendLine();
-            mensagem.AppendLine("<br/><br/><a href='https://dev-novosgp.sme.prefeitura.sp.gov.br' target='_blank' class='btn-baixar-relatorio'><i class='fas fa-arrow-down mr-2'></i>Download</a>");
+
+            var codigoCorrelacao = await mediator.Send(new SolicitaRelatorioItineranciaCommand(new FiltroRelatorioItineranciaDto()
+            {
+                Itinerancias = new long[] { itineranciaId },
+                UsuarioNome = criadoPor,
+                UsuarioRF = criadoRF
+            }));
+
+            mensagem.AppendLine($"<br/><br/><a href='{urlServidorRelatorios}api/v1/downloads/sgp/pdf/Itiner%C3%A2ncias.pdf/{codigoCorrelacao}' target='_blank' class='btn-baixar-relatorio'><i class='fas fa-arrow-down mr-2'></i>Download</a>");
 
             var workflowId = await mediator.Send(new EnviarNotificacaoItineranciaCommand(itineranciaId, titulo, mensagem.ToString(), NotificacaoCategoria.Workflow_Aprovacao, NotificacaoTipo.AEE, ObterCargosGestaoEscola(), ue.Dre.CodigoDre, ue.CodigoUe));
 

@@ -180,9 +180,9 @@ namespace SME.SGP.Dominio.Servicos
             var itineranciaEmAprovacao = await mediator.Send(new ObterWorkflowAprovacaoItineranciaPorIdQuery(workFlowId));
             if (itineranciaEmAprovacao != null)
             {          
-                await mediator.Send(new AtualizarStatusWorkflowAprovacaoItineranciaCommand(itineranciaEmAprovacao.Id, workFlowId, true));
+                await mediator.Send(new AtualizarStatusWorkflowAprovacaoItineranciaCommand(itineranciaEmAprovacao.ItineranciaId, workFlowId, true));
 
-                await mediator.Send(new NotificacaoUsuarioCriadorRegistroItineranciaCommand(itineranciaEmAprovacao.Id, workFlowId));
+                await mediator.Send(new NotificacaoUsuarioCriadorRegistroItineranciaCommand(itineranciaEmAprovacao.ItineranciaId, workFlowId));
             }
         }
 

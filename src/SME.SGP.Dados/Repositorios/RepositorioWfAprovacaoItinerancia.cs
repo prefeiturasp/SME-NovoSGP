@@ -22,7 +22,7 @@ namespace SME.SGP.Dados.Repositorios
 	                        itinerancia_id as ItineranciaId,
 	                        status_aprovacao as StatusAprovacao
                         from wf_aprovacao_itinerancia
-                        where itinerancia_id = @itineranciaId";
+                        where itinerancia_id = @itineranciaId order by id desc";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<WfAprovacaoItinerancia>(query, new { itineranciaId });
         }
@@ -34,7 +34,7 @@ namespace SME.SGP.Dados.Repositorios
 	                        itinerancia_id as ItineranciaId,
 	                        status_aprovacao as StatusAprovacao
                         from wf_aprovacao_itinerancia
-                        where wf_aprovacao_id = @workflowId";
+                        where wf_aprovacao_id = @workflowId order by id desc";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<WfAprovacaoItinerancia>(query, new { workflowId });
         }

@@ -43,10 +43,12 @@ namespace SME.SGP.Aplicacao
             List<Turma> turmas = new List<Turma>();
             mensagem.AppendLine();
             mensagem.AppendLine("<br/><br/><table border=2><tr style='font-weight: bold'><td>Estudante</td><td>Turma Regular</td></tr>");
-
+            
+            var usuario = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(criadoRF));
+            
             await MontarTabelaEstudantes(estudantes, mensagem, turmas, dataVisita);
 
-            await mediator.Send(new EnviarNotificacaoUsuariosCommand(titulo, mensagem.ToString(), NotificacaoCategoria.Aviso, NotificacaoTipo.Calendario, new long[] { Convert.ToInt64(criadoRF) }));
+            await mediator.Send(new EnviarNotificacaoUsuariosCommand(titulo, mensagem.ToString(), NotificacaoCategoria.Aviso, NotificacaoTipo.AEE, new long[] { usuario }));
         }
 
         private async Task MontarTabelaEstudantes(IEnumerable<ItineranciaAluno> estudantes, StringBuilder mensagem, List<Turma> turmas, DateTime dataVisita)
@@ -62,8 +64,9 @@ namespace SME.SGP.Aplicacao
                     turmas.Add(turma);
                 }
                 mensagem.AppendLine($"<tr><td>{estudante.NomeAluno} ({estudante.CodigoAluno})</td><td>{turma.ModalidadeCodigo.ShortName()} - {turma.Nome}</td></tr>");
-                mensagem.AppendLine("</table>");
+                
             }
+            mensagem.AppendLine("</table>");
         }
     }
 }

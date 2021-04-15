@@ -76,22 +76,22 @@ namespace SME.SGP.Aplicacao
         {
             if (statusAprovacao)
             {
-                var nivel = niveis.FirstOrDefault(a => a.Status == WorkflowAprovacaoNivelStatus.Aprovado);
+                var nivel = niveis.Where(a => a.Status == WorkflowAprovacaoNivelStatus.Aprovado).OrderByDescending(b => b.AlteradoEm).FirstOrDefault();
                 return $"Aceito por {nivel.AlteradoPor} ({nivel.AlteradoRF}) em {nivel.AlteradoEm:dd/MM/yyy HH:mm}";
             }
             else if (niveis.FirstOrDefault(a => a.Status == WorkflowAprovacaoNivelStatus.Excluido) != null)
             {
-                var nivel = niveis.FirstOrDefault(a => a.Status == WorkflowAprovacaoNivelStatus.Excluido);
+                var nivel = niveis.Where(a => a.Status == WorkflowAprovacaoNivelStatus.Excluido).OrderByDescending(b => b.AlteradoEm).FirstOrDefault();
                 return $"Excluído por {nivel.AlteradoPor} ({nivel.AlteradoRF}) em {nivel.AlteradoEm:dd/MM/yyy HH:mm}";
             }
             else if (niveis.FirstOrDefault(a => a.Status == WorkflowAprovacaoNivelStatus.Reprovado) != null)
             {
-                var nivel = niveis.FirstOrDefault(a => a.Status == WorkflowAprovacaoNivelStatus.Reprovado);
+                var nivel = niveis.Where(a => a.Status == WorkflowAprovacaoNivelStatus.Reprovado).OrderByDescending(b => b.AlteradoEm).FirstOrDefault();
                 return $"Reprovado por {nivel.AlteradoPor} ({nivel.AlteradoRF}) em {nivel.AlteradoEm:dd/MM/yyy HH:mm}";
             }
             else if (niveis.FirstOrDefault(a => a.Status == WorkflowAprovacaoNivelStatus.Substituido) != null)
             {
-                var nivel = niveis.FirstOrDefault(a => a.Status == WorkflowAprovacaoNivelStatus.Substituido);
+                var nivel = niveis.Where(a => a.Status == WorkflowAprovacaoNivelStatus.Substituido).OrderByDescending(b => b.AlteradoEm).FirstOrDefault();
                 return $"Substituído por {nivel.AlteradoPor} ({nivel.AlteradoRF}) em {nivel.AlteradoEm:dd/MM/yyy HH:mm}";
             }
             else if (niveis.FirstOrDefault(a => a.Status == WorkflowAprovacaoNivelStatus.AguardandoAprovacao) != null)

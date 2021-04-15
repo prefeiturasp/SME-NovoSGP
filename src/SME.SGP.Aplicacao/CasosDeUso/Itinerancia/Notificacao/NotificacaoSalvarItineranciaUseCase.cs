@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
             {
                 foreach (var ue in mensagemRabbit.Ues)
                 {
-                   await mediator.Send(new NotificacaoSalvarItineranciaSemAlunosVinculadosCommand(ue.CodigoUe, mensagemRabbit.CriadoRF, mensagemRabbit.CriadoPor, mensagemRabbit.DataVisita));
+                   await mediator.Send(new NotificacaoSalvarItineranciaSemAlunosVinculadosCommand(ue.CodigoUe, mensagemRabbit.CriadoRF, mensagemRabbit.CriadoPor, mensagemRabbit.DataVisita, mensagemRabbit.ItineranciaId));
                 }
             }
 
