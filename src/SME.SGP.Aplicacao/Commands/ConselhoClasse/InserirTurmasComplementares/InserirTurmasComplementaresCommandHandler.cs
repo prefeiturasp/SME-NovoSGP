@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
             {
                 string[] turmasCodigos;
 
-                List<TipoTurma> turmasCodigosParaConsulta = new() { turmaRegular.TipoTurma };
+                var turmasCodigosParaConsulta = new List<TipoTurma>() { turmaRegular.TipoTurma };
                 turmasCodigosParaConsulta.AddRange(turmaRegular.ObterTiposRegularesDiferentes());
                 turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turmaRegular.AnoLetivo, request.AlunoCodigo, turmasCodigosParaConsulta));
 
