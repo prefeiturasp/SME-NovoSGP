@@ -83,25 +83,45 @@ namespace SME.SGP.Aplicacao
             return true;
         }
 
-        private async Task<bool> IncluirTurmaAsync(TurmaParaSyncInstitucionalDto turma)
+        private async Task<bool> IncluirTurmaAsync(TurmaParaSyncInstitucionalDto turmaEol)
         {
-            var turmaSgp = await mediator.Send(new ObterTurmaPorCodigoQuery(turma.Codigo.ToString()));
-
-            if(turmaSgp != null)
-            {
-                SentrySdk.CaptureMessage($"Não foi possível Incluir a turma de código {turma.Codigo}. Turma já existe na base Sgp");
-                return false;
-            }
-
-            var ue = await mediator.Send(new ObterUeComDrePorCodigoQuery(turma.UeCodigo));           
+            var ue = await mediator.Send(new ObterUeComDrePorCodigoQuery(turmaEol.UeCodigo));           
 
             if (ue == null)
             {
-                SentrySdk.CaptureMessage($"Não foi possível Incluir a turma de código {turma.Codigo}. Pois não foi encontrado a UE {turma.UeCodigo}.");
+                SentrySdk.CaptureMessage($"Não foi possível Incluir a turma de código {turmaEol.Codigo}. Pois não foi encontrado a UE {turmaEol.UeCodigo}.");
                 return false;
-            }                   
+            }
+            
+            var turmaSgp = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaEol.Codigo.ToString()));
 
-            return await repositorioTurma.SalvarAsync(turma, ue.Id);
+            if(turmaSgp == null)
+            {
+                await repositorioTurma.SalvarAsync(turmaEol, ue.Id);
+            }
+            else
+            {
+                if (turmaSgp.Nome != turmaEol.NomeTurma ||
+                   turmaSgp.Ano != turmaEol.Ano.ToString() ||
+                   (int)turmaSgp.TipoTurma != turmaEol.TipoTurma ||
+                   turmaSgp.AnoLetivo != turmaEol.AnoLetivo ||
+                   turmaSgp.ModalidadeCodigo != turmaEol.CodigoModalidade ||
+                   turmaSgp.Semestre != turmaEol.Semestre ||
+                   turmaSgp.QuantidadeDuracaoAula != turmaEol.DuracaoTurno ||
+                   turmaSgp.TipoTurno != turmaEol.TipoTurno ||
+                   turmaSgp.EnsinoEspecial != turmaEol.EnsinoEspecial ||
+                   turmaSgp.EtapaEJA != turmaEol.EtapaEJA ||
+                   turmaSgp.SerieEnsino != turmaEol.SerieEnsino ||
+                   turmaSgp.DataInicio.HasValue != turmaEol.DataInicioTurma.HasValue ||
+                   (turmaSgp.DataInicio.HasValue && turmaEol.DataInicioTurma.HasValue && turmaSgp.DataInicio.Value.Date != turmaEol.DataInicioTurma.Value.Date) ||
+                   turmaSgp.DataFim.HasValue != turmaEol.DataFim.HasValue ||
+                   (turmaSgp.DataFim.HasValue && turmaEol.DataFim.HasValue && turmaSgp.DataFim.Value.Date != turmaEol.DataFim.Value.Date))
+                {
+                    await repositorioTurma.AtualizarTurmaSincronizacaoInstitucionalAsync(turmaEol);
+                }
+                  
+            }
+            return true;
         }
 
         private async Task ExcluirTurnaAsync(string turmaId)

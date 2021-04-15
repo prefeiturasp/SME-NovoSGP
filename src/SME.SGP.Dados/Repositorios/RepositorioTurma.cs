@@ -721,5 +721,57 @@ namespace SME.SGP.Dados.Repositorios
                 transacao.Rollback();
             }
         }
+
+        public async Task<bool> AtualizarTurmaSincronizacaoInstitucionalAsync(TurmaParaSyncInstitucionalDto turma)
+        {
+            var query = @"update
+	                            public.turma
+                            set
+	                            nome = @nomeTurma,
+	                            ano = @ano,
+	                            ano_letivo = @anoLetivo,
+	                            modalidade_codigo = @codigoModalidade,
+	                            semestre = @semestre,
+	                            qt_duracao_aula = @duracaoTurno,
+	                            tipo_turno = @tipoTurno,
+	                            data_atualizacao = @dataAtualizacao,
+                                ensino_especial = @ensinoEspecial,
+                                etapa_eja = @etapaEja,
+                                data_inicio = @dataInicioTurma,
+                                serie_ensino = @serieEnsino,
+                                dt_fim_eol = @dataFim,
+                                tipo_turma = @tipoTurma                                
+                            where
+	                            turma_id = @turmaId";
+
+            var parametros = new
+            {   
+                turma.NomeTurma,
+                Ano = turma.Ano.ToString(),
+                turma.AnoLetivo,
+                codigoModalidade = (int)turma.CodigoModalidade,
+                turma.Semestre,
+                turma.DuracaoTurno,
+                turma.TipoTurno,
+                turma.DataAtualizacao,
+                turma.DataFim,
+                turma.EnsinoEspecial,
+                turma.EtapaEJA,
+                turma.DataInicioTurma,
+                turma.SerieEnsino,
+                turma.TipoTurma,
+                turmaId = turma.Codigo.ToString(),
+            };
+            try
+            {
+                var retorno = await contexto.Conexao.ExecuteAsync(query, parametros);
+                return retorno != 0;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }          
+
+        }
     }
 }

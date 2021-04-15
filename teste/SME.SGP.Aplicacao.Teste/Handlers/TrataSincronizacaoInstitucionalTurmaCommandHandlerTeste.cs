@@ -98,6 +98,65 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
             repositorioTurma.Verify(r => r.SalvarAsync(turma, 1), Times.Once);            
         }
 
+        [Fact(DisplayName = "Valida o tratamento de turma para Atualizar na base")]
+        public async Task Tratar_Turma_Deve_Atualizar()
+        {
+            //Arrange
+            var turma = new TurmaParaSyncInstitucionalDto()
+            {
+                Ano = 4,
+                AnoLetivo = 2021,
+                Codigo = 2258053,
+                TipoTurma = 1,
+                Modalidade = null,
+                CodigoModalidade = Dominio.Modalidade.InfantilPreEscola,
+                NomeTurma = "4D",
+                Semestre = 0,
+                DuracaoTurno = 10,
+                TipoTurno = 6,
+                DataFim = null,
+                EnsinoEspecial = false,
+                EtapaEJA = 0,
+                SerieEnsino = "MINI GRUPO II",
+                DataInicioTurma = DateTime.Parse("2021-02-10"),
+                Extinta = false,
+                Situacao = "O",
+                UeCodigo = "094765",
+                DataAtualizacao = DateTime.Parse("2021-02-10"),
+                DataStatusTurmaEscola = DateTime.Parse("2021-02-10"),
+            };
+
+            mediator.Setup(a => a.Send(It.IsAny<ObterUeComDrePorCodigoQuery>(), It.IsAny<CancellationToken>()))
+               .ReturnsAsync(new Ue() { Id = 1 });
+
+            mediator.Setup(a => a.Send(It.IsAny<ObterTurmaPorCodigoQuery>(), It.IsAny<CancellationToken>()))
+               .ReturnsAsync(new Turma()
+               {
+                   Ano = "4",
+                   AnoLetivo = 2021,
+                   CodigoTurma = "2258053",
+                   TipoTurma = Dominio.Enumerados.TipoTurma.Regular,                   
+                   ModalidadeCodigo = Dominio.Modalidade.InfantilPreEscola,
+                   Nome = "4DD",
+                   Semestre = 0,
+                   QuantidadeDuracaoAula = 10,
+                   TipoTurno = 6,
+                   DataFim = null,
+                   EnsinoEspecial = false,
+                   EtapaEJA = 0,
+                   SerieEnsino = "MINI GRUPO II",
+                   DataInicio = DateTime.Parse("2021-02-10"),
+                   Extinta = false,
+                   DataAtualizacao = DateTime.Parse("2021-02-10"),                   
+               });
+
+            //Act  
+            await trataSincronizacaoInstitucionalTurmaCommandHandler.Handle(new TrataSincronizacaoInstitucionalTurmaCommand(turma), new CancellationToken());
+
+            //Assert
+            repositorioTurma.Verify(r => r.AtualizarTurmaSincronizacaoInstitucionalAsync(turma), Times.Once);
+        }
+
         [Fact(DisplayName = "Valida o tratamento de turma extinta antes da criação do cadendario para excluír da base")]
         public async Task Tratar_Turma_Extinta_Sem_TipoCalencarioId_Deve_Exluir()
         {
