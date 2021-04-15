@@ -9,15 +9,15 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class EnviarSincronizacaoEstruturaInstitucionalTurmasUseCase : AbstractUseCase, IEnviarSincronizacaoEstruturaInstitucionalTurmasUseCase
+    public class ExecutarSincronizacaoInstitucionalTurmaSyncUseCase : AbstractUseCase, IExecutarSincronizacaoInstitucionalTurmaSyncUseCase
     {
-        public EnviarSincronizacaoEstruturaInstitucionalTurmasUseCase(IMediator mediator) : base(mediator)
+        public ExecutarSincronizacaoInstitucionalTurmaSyncUseCase(IMediator mediator) : base(mediator)
         {
         }
 
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
-            var ueId = JsonConvert.DeserializeObject<string>(mensagemRabbit.Mensagem.ToString());
+            var ueId = mensagemRabbit.Mensagem.ToString();
             if (string.IsNullOrEmpty(ueId))
             {
                 SentrySdk.CaptureMessage($"Não foi possível iniciar a sincronização das turmas. O codígo da Ue não foi informado");
@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
             {
                 try
                 {
-                    var publicarFilaIncluirTurma = await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.SincronizaEstruturaInstitucionalTurmaTratar, codigoTurma, Guid.NewGuid(), null, fila: RotasRabbit.SincronizaEstruturaInstitucionalTurmaTratar));
+                    var publicarFilaIncluirTurma = await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.SincronizaEstruturaInstitucionalTurmaTratar, codigoTurma, mensagemRabbit.CodigoCorrelacao, null, fila: RotasRabbit.SincronizaEstruturaInstitucionalTurmaTratar));
                     if (!publicarFilaIncluirTurma)
                     {
                         var mensagem = $"Não foi possível inserir a turma de codígo : {codigoTurma} na fila de inclusão.";

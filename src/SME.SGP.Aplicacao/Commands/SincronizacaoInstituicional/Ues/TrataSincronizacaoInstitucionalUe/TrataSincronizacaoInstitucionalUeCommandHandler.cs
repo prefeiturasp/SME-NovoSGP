@@ -58,7 +58,7 @@ namespace SME.SGP.Aplicacao
 
                     await repositorioUe.AtualizarAsync(ueParaAtualizar);
                 }
-            }          
+            }
 
             return true;
         }

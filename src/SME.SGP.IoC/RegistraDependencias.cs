@@ -831,10 +831,10 @@ namespace SME.SGP.IoC
 
             services.TryAddScoped<IExecutarSincronizacaoInstitucionalTipoEscolaSyncUseCase, ExecutarSincronizacaoInstitucionalTipoEscolaSyncUseCase>();
             services.TryAddScoped<IExecutarSincronizacaoInstitucionalTipoEscolaTratarUseCase, ExecutarSincronizacaoInstitucionalTipoEscolaTratarUseCase>();
-            services.TryAddScoped<IEnviarSincronizacaoEstruturaInstitucionalTurmasUseCase, EnviarSincronizacaoEstruturaInstitucionalTurmasUseCase>();            
+            services.TryAddScoped<IExecutarSincronizacaoInstitucionalTurmaSyncUseCase, ExecutarSincronizacaoInstitucionalTurmaSyncUseCase>();            
             services.TryAddScoped<IExecutarSincronizacaoInstitucionalCicloSyncUseCase, ExecutarSincronizacaoInstitucionalCicloSyncUseCase>();
             services.TryAddScoped<IExecutarSincronizacaoInstitucionalCicloTratarUseCase, ExecutarSincronizacaoInstitucionalCicloTratarUseCase>();
-            services.TryAddScoped<ITrataSincronizacaoInstitucionalTurmaUseCase, TrataSincronizacaoInstitucionalTurmaUseCase>();
+            services.TryAddScoped<IExecutarSincronizacaoInstitucionalTurmaTratarUseCase, ExecutarSincronizacaoInstitucionalTurmaTratarUseCase>();
             
 
         }

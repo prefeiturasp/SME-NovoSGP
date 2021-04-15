@@ -140,7 +140,7 @@ namespace SME.SGP.Dados.Repositorios
 
         private const string QueryAulasTurmasForaListaCodigos = @"select id from public.aula where turma_id in (#codigosTurmasARemover)";
 
-        private const string QueryDefinirTurmaHistorica = "update public.turma set historica = true where turma_id in (#codigosTurmasParaHistorico);";        
+        private const string QueryDefinirTurmaHistorica = "update public.turma set historica = true where turma_id in (#codigosTurmasParaHistorico);";
 
         private readonly ISgpContext contexto;
 
@@ -745,7 +745,7 @@ namespace SME.SGP.Dados.Repositorios
 	                            turma_id = @turmaId";
 
             var parametros = new
-            {   
+            {
                 turma.NomeTurma,
                 Ano = turma.Ano.ToString(),
                 turma.AnoLetivo,
@@ -762,15 +762,10 @@ namespace SME.SGP.Dados.Repositorios
                 turma.TipoTurma,
                 turmaId = turma.Codigo.ToString(),
             };
-            try
-            {
-                var retorno = await contexto.Conexao.ExecuteAsync(query, parametros);
-                return retorno != 0;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }          
+
+            var retorno = await contexto.Conexao.ExecuteAsync(query, parametros);
+            return retorno != 0;
+
 
         }
     }

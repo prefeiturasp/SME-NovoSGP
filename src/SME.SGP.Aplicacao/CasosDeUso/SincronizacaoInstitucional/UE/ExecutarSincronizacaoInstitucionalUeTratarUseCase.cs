@@ -26,9 +26,11 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
             var ueSgp = await mediator.Send(new ObterUeComDrePorCodigoQuery(ueCodigo));
 
-            await mediator.Send(new TrataSincronizacaoInstitucionalUeCommand(ueEol, ueSgp));
+            if (await mediator.Send(new TrataSincronizacaoInstitucionalUeCommand(ueEol, ueSgp)))
+                return await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.SincronizaEstruturaInstitucionalTurmasSync, ueCodigo, mensagemRabbit.CodigoCorrelacao, null, fila: RotasRabbit.SincronizaEstruturaInstitucionalTurmasSync));
+            else
+                throw new NegocioException($"Não foi possível sincronizar a UE de código {ueCodigo}");
 
-            return true;
         }
     }
 }

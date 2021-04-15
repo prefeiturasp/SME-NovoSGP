@@ -26,8 +26,8 @@ namespace SME.SGP.Aplicacao
             {
                 try
                 {
-                    var publicarSyncTurma = await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.SincronizaEstruturaInstitucionalUeTratar, ueCodigo, Guid.NewGuid(), null, fila: RotasRabbit.SincronizaEstruturaInstitucionalUeTratar));
-                    if (!publicarSyncTurma)
+                    var publicarSyncUe = await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.SincronizaEstruturaInstitucionalUeTratar, ueCodigo, Guid.NewGuid(), null, fila: RotasRabbit.SincronizaEstruturaInstitucionalUeTratar));
+                    if (!publicarSyncUe)
                     {
                         var mensagem = $"Não foi possível inserir a UE de codígo : {ueCodigo} na fila de sync.";
                         SentrySdk.CaptureMessage(mensagem);
@@ -38,8 +38,7 @@ namespace SME.SGP.Aplicacao
                     SentrySdk.CaptureException(ex);
                 }                
             }
-            return true;
-            //TODO: Tratar caso não haja Ue para a Dre?
+            return true;            
         }
     }
 }

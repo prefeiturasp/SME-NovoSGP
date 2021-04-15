@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Sentry;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -22,19 +23,24 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(TrataSincronizacaoInstitucionalTurmaCommand request, CancellationToken cancellationToken)
         {
-            var turma = request.Turma;
+            var turmaEOL = request.TurmaEOL;
 
-            if (turma.Situacao == "C")
-                return await AtualizarTurmaParaHistoricaAsync(turma.Codigo.ToString());
+            if (request.TurmaSGP == null)
+                return await IncluirTurmaAsync(turmaEOL, request.TurmaSGP);
 
-            if (turma.Situacao == "E")
-                return await VerificarTurmaExtintaAsync(turma);
+            if (turmaEOL.Situacao == "C")
+            {
+                return await AtualizarTurmaParaHistoricaAsync(turmaEOL.Codigo.ToString());
+            }
 
-            if (turma.Situacao == "O" || turma.Situacao == "A")
-                return await IncluirTurmaAsync(turma);
+            if (turmaEOL.Situacao == "E")
+                return await VerificarTurmaExtintaAsync(turmaEOL);
+
+            if (turmaEOL.Situacao == "O" || turmaEOL.Situacao == "A")
+                return await IncluirTurmaAsync(turmaEOL, request.TurmaSGP);
 
             return true;
-        }        
+        }
 
         private async Task<bool> VerificarTurmaExtintaAsync(TurmaParaSyncInstitucionalDto turma)
         {
@@ -83,20 +89,17 @@ namespace SME.SGP.Aplicacao
             return true;
         }
 
-        private async Task<bool> IncluirTurmaAsync(TurmaParaSyncInstitucionalDto turmaEol)
+        private async Task<bool> IncluirTurmaAsync(TurmaParaSyncInstitucionalDto turmaEol, Turma turmaSgp)
         {
-            var ue = await mediator.Send(new ObterUeComDrePorCodigoQuery(turmaEol.UeCodigo));           
-
-            if (ue == null)
+            if (turmaSgp == null)
             {
-                SentrySdk.CaptureMessage($"Não foi possível Incluir a turma de código {turmaEol.Codigo}. Pois não foi encontrado a UE {turmaEol.UeCodigo}.");
-                return false;
-            }
-            
-            var turmaSgp = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaEol.Codigo.ToString()));
+                var ue = await mediator.Send(new ObterUeComDrePorCodigoQuery(turmaEol.UeCodigo));
 
-            if(turmaSgp == null)
-            {
+                if (ue == null)
+                {
+                    SentrySdk.CaptureMessage($"Não foi possível Incluir a turma de código {turmaEol.Codigo}. Pois não foi encontrado a UE {turmaEol.UeCodigo}.");
+                    return false;
+                }
                 await repositorioTurma.SalvarAsync(turmaEol, ue.Id);
             }
             else
@@ -117,9 +120,10 @@ namespace SME.SGP.Aplicacao
                    turmaSgp.DataFim.HasValue != turmaEol.DataFim.HasValue ||
                    (turmaSgp.DataFim.HasValue && turmaEol.DataFim.HasValue && turmaSgp.DataFim.Value.Date != turmaEol.DataFim.Value.Date))
                 {
+
                     await repositorioTurma.AtualizarTurmaSincronizacaoInstitucionalAsync(turmaEol);
                 }
-                  
+
             }
             return true;
         }

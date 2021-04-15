@@ -15,8 +15,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
         public async Task Executar()
         {
-            SentrySdk.AddBreadcrumb($"Mensagem IExecutaSincronizacaoEstruturaInstitucionalSyncUseCase", "Rabbit - ExecutaSincronizacaoEstruturaInstitucionalUesUseCase");
-
+            SentrySdk.AddBreadcrumb($"Mensagem ExecutarSincronizacaoEstruturaInstitucionalSyncUseCase", "Rabbit - ExecutarSincronizacaoEstruturaInstitucionalSyncUseCase");
 
             //TODO: Fazer um Sync de Dre específico;
             var codigosDre = await mediator.Send(new ObterCodigosDresQuery());
@@ -27,6 +26,8 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             }
 
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.SincronizaEstruturaInstitucionalTipoEscolaSync, string.Empty, Guid.NewGuid(), null, fila: RotasRabbit.SincronizaEstruturaInstitucionalTipoEscolaSync));
+
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.SincronizaEstruturaInstitucionalCicloSync, string.Empty, Guid.NewGuid(), null, fila: RotasRabbit.SincronizaEstruturaInstitucionalCicloSync));
         }
     }
 }

@@ -54,7 +54,7 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
             };
 
             //Act  
-            await trataSincronizacaoInstitucionalTurmaCommandHandler.Handle(new TrataSincronizacaoInstitucionalTurmaCommand(turma), new CancellationToken());
+            await trataSincronizacaoInstitucionalTurmaCommandHandler.Handle(new TrataSincronizacaoInstitucionalTurmaCommand(turma, null), new CancellationToken());
 
             //Assert
             repositorioTurma.Verify(r => r.AtualizarTurmaParaHistorica(turma.Codigo.ToString()), Times.Once);            
@@ -92,7 +92,7 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
                .ReturnsAsync(new Ue() { Id = 1});
 
             //Act  
-            await trataSincronizacaoInstitucionalTurmaCommandHandler.Handle(new TrataSincronizacaoInstitucionalTurmaCommand(turma), new CancellationToken());
+            await trataSincronizacaoInstitucionalTurmaCommandHandler.Handle(new TrataSincronizacaoInstitucionalTurmaCommand(turma, null), new CancellationToken());
 
             //Assert
             repositorioTurma.Verify(r => r.SalvarAsync(turma, 1), Times.Once);            
@@ -151,7 +151,7 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
                });
 
             //Act  
-            await trataSincronizacaoInstitucionalTurmaCommandHandler.Handle(new TrataSincronizacaoInstitucionalTurmaCommand(turma), new CancellationToken());
+            await trataSincronizacaoInstitucionalTurmaCommandHandler.Handle(new TrataSincronizacaoInstitucionalTurmaCommand(turma, null), new CancellationToken());
 
             //Assert
             repositorioTurma.Verify(r => r.AtualizarTurmaSincronizacaoInstitucionalAsync(turma), Times.Once);
@@ -192,7 +192,7 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
                 .ReturnsAsync(new List<PeriodoEscolar>());
 
             //Act  
-            var retorno = await trataSincronizacaoInstitucionalTurmaCommandHandler.Handle(new TrataSincronizacaoInstitucionalTurmaCommand(turma), new CancellationToken());
+            var retorno = await trataSincronizacaoInstitucionalTurmaCommandHandler.Handle(new TrataSincronizacaoInstitucionalTurmaCommand(turma, null), new CancellationToken());
 
             //Assert
             repositorioTurma.Verify(r => r.ExcluirTurmaExtintaAsync(turma.Codigo.ToString()), Times.Once);
@@ -250,7 +250,7 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
                 }); ;
 
             //Act  
-            var retorno = await trataSincronizacaoInstitucionalTurmaCommandHandler.Handle(new TrataSincronizacaoInstitucionalTurmaCommand(turma), new CancellationToken());
+            var retorno = await trataSincronizacaoInstitucionalTurmaCommandHandler.Handle(new TrataSincronizacaoInstitucionalTurmaCommand(turma, null), new CancellationToken());
 
             //Assert
             repositorioTurma.Verify(r => r.ExcluirTurmaExtintaAsync(turma.Codigo.ToString()), Times.Once);
@@ -308,7 +308,7 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
                 }); ;
 
             //Act  
-            await trataSincronizacaoInstitucionalTurmaCommandHandler.Handle(new TrataSincronizacaoInstitucionalTurmaCommand(turma), new CancellationToken());
+            await trataSincronizacaoInstitucionalTurmaCommandHandler.Handle(new TrataSincronizacaoInstitucionalTurmaCommand(turma, null), new CancellationToken());
 
             //Assert
             repositorioTurma.Verify(r => r.AtualizarTurmaParaHistorica(turma.Codigo.ToString()), Times.Once);            

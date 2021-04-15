@@ -19,16 +19,14 @@ namespace SME.SGP.Aplicacao
 
         public async Task<TurmaParaSyncInstitucionalDto> Handle(ObterTurmaEOLParaSyncEstruturaInstitucionalPorTurmaIdQuery request, CancellationToken cancellationToken)
         {
-            var turma = new TurmaParaSyncInstitucionalDto();
-
             var httpClient = httpClientFactory.CreateClient("servicoEOL");
             var resposta = await httpClient.GetAsync($"turmas/{request.TurmaId}/sincronizacoes-institucionais");
             if (resposta.IsSuccessStatusCode)
             {
                 var json = await resposta.Content.ReadAsStringAsync();
-                turma = JsonConvert.DeserializeObject<TurmaParaSyncInstitucionalDto>(json);
+                return JsonConvert.DeserializeObject<TurmaParaSyncInstitucionalDto>(json);
             }
-            return turma;
+            return default;
         }
     }
 }

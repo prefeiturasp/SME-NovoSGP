@@ -2,15 +2,16 @@
 using Newtonsoft.Json;
 using Sentry;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class TrataSincronizacaoInstitucionalTurmaUseCase : AbstractUseCase, ITrataSincronizacaoInstitucionalTurmaUseCase
+    public class ExecutarSincronizacaoInstitucionalTurmaTratarUseCase : AbstractUseCase, IExecutarSincronizacaoInstitucionalTurmaTratarUseCase
     {
-        public TrataSincronizacaoInstitucionalTurmaUseCase(IMediator mediator) : base(mediator)
+        public ExecutarSincronizacaoInstitucionalTurmaTratarUseCase(IMediator mediator) : base(mediator)
         {
         }
 
@@ -21,13 +22,14 @@ namespace SME.SGP.Aplicacao
 
             try
             {
-                var turmaParaTratar = await mediator.Send(new ObterTurmaEOLParaSyncEstruturaInstitucionalPorTurmaIdQuery(codigoTurma));
-                if (turmaParaTratar == null)
-                {
-                    SentrySdk.CaptureMessage($"Não foi possível realizar o tratamento da turma id {codigoTurma}. Turma não encontrada no Eol.");
-                    return true;
-                }
-                var turmaTratada = await mediator.Send(new TrataSincronizacaoInstitucionalTurmaCommand(turmaParaTratar));
+                var turmaEOL = await mediator.Send(new ObterTurmaEOLParaSyncEstruturaInstitucionalPorTurmaIdQuery(codigoTurma));
+                if (turmaEOL == null)
+                    throw new NegocioException($"Não foi possível realizar o tratamento da turma id {codigoTurma}. Turma não encontrada no Eol.");
+
+                var turmaSGP = await mediator.Send(new ObterTurmaPorCodigoQuery(codigoTurma.ToString()));
+
+                var turmaTratada = await mediator.Send(new TrataSincronizacaoInstitucionalTurmaCommand(turmaEOL, turmaSGP));
+
                 if (!turmaTratada)
                 {
                     SentrySdk.CaptureMessage($"Não foi possível realizar o tratamento da turma id {codigoTurma}.");
