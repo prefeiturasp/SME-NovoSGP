@@ -11,6 +11,7 @@ import {
   Colors,
   JoditEditor,
   Loader,
+  MarcadorSituacao,
   PainelCollapse,
 } from '~/componentes';
 import { Cabecalho, Paginacao } from '~/componentes-sgp';
@@ -64,6 +65,8 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
   const usuario = useSelector(store => store.usuario);
   const permissoesTela =
     usuario.permissoes[RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA];
+
+  const permissaoStatus = itineranciaId && !itineranciaAlteracao?.podeEditar;
 
   const onClickSalvar = () => {
     const itinerancia = {
@@ -391,7 +394,9 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
     return (
       (match?.params?.id
         ? !permissoesTela?.podeAlterar
-        : !permissoesTela?.podeIncluir) || somenteConsulta
+        : !permissoesTela?.podeIncluir) ||
+      somenteConsulta ||
+      permissaoStatus
     );
   };
 
@@ -465,20 +470,29 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
                 />
               </div>
             </div>
-            {match?.params?.id && (
+            {itineranciaId && (
               <div className="row mb-4">
-                <div className="col-sm-12">
-                  <Loader loading={imprimindo} ignorarTip>
-                    <BotaoCustomizado
-                      border
-                      id="btn-imprimir-relatorio-itinerancia"
-                      className="btn-imprimir"
-                      icon="print"
-                      color={Colors.Azul}
-                      width="38px"
-                      onClick={() => gerarRelatorio()}
-                    />
-                  </Loader>
+                <div className="col-sm-12 d-flex justify-content-between align-items-center">
+                  <div className="pr-4">
+                    <Loader loading={imprimindo} ignorarTip>
+                      <BotaoCustomizado
+                        border
+                        id="btn-imprimir-relatorio-itinerancia"
+                        className="btn-imprimir"
+                        icon="print"
+                        color={Colors.Azul}
+                        width="38px"
+                        onClick={() => gerarRelatorio()}
+                      />
+                    </Loader>
+                  </div>
+                  <div>
+                    {itineranciaAlteracao?.statusWorkflow && (
+                      <MarcadorSituacao corFundo={Colors.Azul}>
+                        {itineranciaAlteracao?.statusWorkflow}
+                      </MarcadorSituacao>
+                    )}
+                  </div>
                 </div>
               </div>
             )}
@@ -505,10 +519,14 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
                 tituloTabela="Objetivos selecionados"
                 labelBotao="Novo objetivo"
                 desabilitadoIncluir={
-                  !permissoesTela?.podeIncluir || somenteConsulta
+                  !permissoesTela?.podeIncluir ||
+                  somenteConsulta ||
+                  permissaoStatus
                 }
                 desabilitadoExcluir={
-                  !permissoesTela?.podeAlterar || somenteConsulta
+                  !permissoesTela?.podeAlterar ||
+                  somenteConsulta ||
+                  permissaoStatus
                 }
                 pagination={false}
                 dadosTabela={objetivosSelecionados}
@@ -525,12 +543,15 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
                 labelBotao="Adicionar nova unidade escolar"
                 pagination={false}
                 desabilitadoIncluir={
-                  !permissoesTela?.podeIncluir || somenteConsulta
+                  !permissoesTela?.podeIncluir ||
+                  somenteConsulta ||
+                  permissaoStatus
                 }
                 desabilitadoExcluir={
                   !permissoesTela?.podeAlterar ||
                   alunosSelecionados?.length ||
-                  somenteConsulta
+                  somenteConsulta ||
+                  permissaoStatus
                 }
                 dadosTabela={uesSelecionados}
                 removerUsuario={text => removerUeSelecionada(text)}
