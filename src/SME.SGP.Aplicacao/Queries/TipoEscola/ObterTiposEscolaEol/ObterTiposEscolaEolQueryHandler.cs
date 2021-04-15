@@ -8,15 +8,15 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterTiposEscolaQueryHandler : IRequestHandler<ObterTiposEscolaQuery, IEnumerable<TipoEscolaRetornoDto>>
+    public class ObterTiposEscolaEolQueryHandler : IRequestHandler<ObterTiposEscolaEolQuery, IEnumerable<TipoEscolaRetornoDto>>
     {
         private readonly IHttpClientFactory httpClientFactory;
 
-        public ObterTiposEscolaQueryHandler(IHttpClientFactory httpClientFactory)
+        public ObterTiposEscolaEolQueryHandler(IHttpClientFactory httpClientFactory)
         {
             this.httpClientFactory = httpClientFactory ?? throw new System.ArgumentNullException(nameof(httpClientFactory));
         }
-        public async Task<IEnumerable<TipoEscolaRetornoDto>> Handle(ObterTiposEscolaQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<TipoEscolaRetornoDto>> Handle(ObterTiposEscolaEolQuery request, CancellationToken cancellationToken)
         {
             var httpClient = httpClientFactory.CreateClient("servicoEOL");
             var resposta = await httpClient.GetAsync("escolas/tiposEscolas");
