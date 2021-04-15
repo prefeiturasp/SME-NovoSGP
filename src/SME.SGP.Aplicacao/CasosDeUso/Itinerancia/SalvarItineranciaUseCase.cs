@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
                     {
                         await TrataTurmasCodigos(itineranciaDto);
                     }
-                    var itinerancia = await mediator.Send(new SalvarItineranciaCommand(itineranciaDto.AnoLetivo, itineranciaDto.DataVisita, itineranciaDto.DataRetornoVerificacao));
+                    var itinerancia = await mediator.Send(new SalvarItineranciaCommand(itineranciaDto.AnoLetivo, itineranciaDto.DataVisita, itineranciaDto.DataRetornoVerificacao, itineranciaDto.EventoId));
                     if (itinerancia == null)
                         throw new NegocioException("Erro ao Salvar a itinerancia");
 
