@@ -204,7 +204,6 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IRepositorioDre, RepositorioDre>();
             services.TryAddScopedWorkerService<IRepositorioEvento, RepositorioEvento>();
             services.TryAddScopedWorkerService<IRepositorioEventoMatricula, RepositorioEventoMatricula>();
-            services.TryAddScopedWorkerService<IRepositorioEventoTipo, RepositorioEventoTipo>();
             services.TryAddScopedWorkerService<IRepositorioFeriadoCalendario, RepositorioFeriadoCalendario>();
             services.TryAddScopedWorkerService<IRepositorioFrequencia, RepositorioFrequencia>();
             services.TryAddScopedWorkerService<IRepositorioFrequenciaAlunoDisciplinaPeriodo, RepositorioFrequenciaAlunoDisciplinaPeriodo>();
@@ -308,6 +307,10 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IRepositorioEncaminhamentoAEESecao, RepositorioEncaminhamentoAEESecao>();
             services.TryAddScopedWorkerService<IRepositorioQuestaoEncaminhamentoAEE, RepositorioQuestaoEncaminhamentoAEE>();
             services.TryAddScopedWorkerService<IRepositorioRespostaEncaminhamentoAEE, RepositorioRespostaEncaminhamentoAEE>();
+
+            // EventoTipo
+            services.TryAddScopedWorkerService<IRepositorioEventoTipo, RepositorioEventoTipo>();
+            services.TryAddScopedWorkerService<IRepositorioPerfilEventoTipo, RepositorioPerfilEventoTipo>();
 
             // Questionario
             services.TryAddScopedWorkerService<IRepositorioQuestionario, RepositorioQuestionario>();
