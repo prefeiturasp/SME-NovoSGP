@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ExecutarSincronizacaoInstitucionalCicloTratarUseCase : AbstractUseCase, IExecutarSincronizacaoInstitucionalCicloUseCase
+    public class ExecutarSincronizacaoInstitucionalCicloTratarUseCase : AbstractUseCase, IExecutarSincronizacaoInstitucionalCicloTratarUseCase
     {
         public ExecutarSincronizacaoInstitucionalCicloTratarUseCase(IMediator mediator) : base(mediator)
         {
