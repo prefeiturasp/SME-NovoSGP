@@ -1,6 +1,7 @@
 const Colors = {
   Azul: 'Azul',
   AzulAnakiwa: 'AzulAnakiwa',
+  Branco: 'Branco',
   Roxo: 'Roxo',
   CinzaBotao: 'CinzaBotao',
   Laranja: 'Laranja',
