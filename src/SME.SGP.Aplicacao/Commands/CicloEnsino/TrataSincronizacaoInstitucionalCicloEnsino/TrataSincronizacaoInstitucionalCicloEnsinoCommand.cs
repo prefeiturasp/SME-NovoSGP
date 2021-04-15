@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
         {
             RuleFor(a => a.CicloEol)
                    .NotEmpty()
-                   .WithMessage("O ciclo deve ser informado!");
+                   .WithMessage("O cicloEol deve ser informado!");
         }
     }
 }
