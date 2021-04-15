@@ -51,6 +51,9 @@ namespace SME.SGP.Aplicacao
                         foreach (var ue in itineranciaDto.Ues)
                             await mediator.Send(new SalvarItineranciaUeCommand(ue.UeId, itinerancia.Id));
 
+                    if (itineranciaDto.DataRetornoVerificacao.HasValue)
+                        await SalvarEventoItinerancia(itineranciaDto);
+
                     unitOfWork.PersistirTransacao();
 
                     return itinerancia;
@@ -61,6 +64,12 @@ namespace SME.SGP.Aplicacao
                     throw;
                 }
             }
+        }
+
+        private async Task SalvarEventoItinerancia(ItineranciaDto itineranciaDto)
+        {
+            foreach (var ue in itineranciaDto.Ues)
+                await mediator.Send(new CriarEventoItineranciaPAAICommand(ue.CodigoDre, ue.CodigoUe, itineranciaDto.DataRetornoVerificacao.Value, itineranciaDto.DataVisita, itineranciaDto.ObjetivosVisita));
         }
 
         private async Task TrataTurmasCodigos(ItineranciaDto itineranciaDto)
