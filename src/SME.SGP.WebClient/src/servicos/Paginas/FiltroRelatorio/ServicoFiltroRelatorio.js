@@ -29,7 +29,7 @@ class ServicoFiltroRelatorio {
   };
 
   obterModalidadesPorAbrangencia = codigoUe => {
-    const url = `${urlPadrao}/ues/${codigoUe}/modalidades/abrangencias`;
+    const url = `${urlPadrao}/ues/${codigoUe}/modalidades/abrangencias?consideraNovasModalidades=true`;
     return api.get(url);
   };
 
