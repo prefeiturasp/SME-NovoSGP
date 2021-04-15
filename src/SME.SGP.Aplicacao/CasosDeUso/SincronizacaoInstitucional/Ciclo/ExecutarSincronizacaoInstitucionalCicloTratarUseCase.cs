@@ -19,9 +19,11 @@ namespace SME.SGP.Aplicacao
             if (cicloEOL == null)
                 throw new NegocioException($"Não foi possível inserir o ciclo. A mensagem enviada é inválida.");
 
-            var auditoria =  await mediator.Send(new SalvarCicloEnsinoCommand(cicloEOL));          
+            var cicloSgp = await mediator.Send(new ObterCicloPorCodigoQuery(cicloEOL.Codigo));
 
-            return auditoria.Id != 0;
+            await mediator.Send(new TrataSincronizacaoInstitucionalCicloEnsinoCommand(cicloEOL, cicloSgp));          
+
+            return true;
         }
     }
 }
