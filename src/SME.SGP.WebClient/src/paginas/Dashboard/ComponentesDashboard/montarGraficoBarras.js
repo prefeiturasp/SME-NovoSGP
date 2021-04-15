@@ -8,11 +8,13 @@ import {
 } from '~/paginas/Dashboard/ComponentesDashboard/graficosDashboardUtils';
 import { erros } from '~/servicos';
 
-const GraficoBarrasPadraoAEE = props => {
+const MontarGraficoBarras = props => {
   const {
     anoLetivo,
     dreId,
     ueId,
+    mesSelecionado,
+    rf,
     nomeIndiceDesc,
     nomeValor,
     ServicoObterValoresGrafico,
@@ -109,7 +111,9 @@ const GraficoBarrasPadraoAEE = props => {
       dreId === OPCAO_TODOS ? '' : dreId,
       ueId === OPCAO_TODOS ? '' : ueId,
       dreCodigo === OPCAO_TODOS ? '' : dreCodigo,
-      ueCodigo === OPCAO_TODOS ? '' : ueCodigo
+      ueCodigo === OPCAO_TODOS ? '' : ueCodigo,
+      mesSelecionado === OPCAO_TODOS ? '' : mesSelecionado,
+      rf === OPCAO_TODOS ? '' : rf
     )
       .catch(e => erros(e))
       .finally(() => setExibirLoader(false));
@@ -132,6 +136,8 @@ const GraficoBarrasPadraoAEE = props => {
     mapearDadosGraficos,
     dreCodigo,
     ueCodigo,
+    mesSelecionado,
+    rf,
   ]);
 
   useEffect(() => {
@@ -164,11 +170,6 @@ const GraficoBarrasPadraoAEE = props => {
           chavesGraficoAgrupado?.length ? customPropsColors : null
         }
         dadosLegendaCustomizada={dadosLegendaGrafico}
-        styleLegendaLabel={{
-          display: 'flex',
-          flexFlow: 'wrap',
-          marginLeft: '108px',
-        }}
         showAxisBottom={showAxisBottom}
       />
     );
@@ -185,10 +186,12 @@ const GraficoBarrasPadraoAEE = props => {
   );
 };
 
-GraficoBarrasPadraoAEE.propTypes = {
+MontarGraficoBarras.propTypes = {
   anoLetivo: PropTypes.oneOfType(PropTypes.any),
-  dreId: PropTypes.string,
-  ueId: PropTypes.string,
+  dreId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  ueId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  mesSelecionado: PropTypes.string,
+  rf: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   nomeIndiceDesc: PropTypes.string,
   nomeValor: PropTypes.string,
   ServicoObterValoresGrafico: PropTypes.func,
@@ -199,10 +202,12 @@ GraficoBarrasPadraoAEE.propTypes = {
   showAxisBottom: PropTypes.bool,
 };
 
-GraficoBarrasPadraoAEE.defaultProps = {
+MontarGraficoBarras.defaultProps = {
   anoLetivo: null,
-  dreId: '',
-  ueId: '',
+  dreId: null,
+  ueId: null,
+  mesSelecionado: '',
+  rf: '',
   nomeIndiceDesc: '',
   nomeValor: '',
   ServicoObterValoresGrafico: () => {},
@@ -213,4 +218,4 @@ GraficoBarrasPadraoAEE.defaultProps = {
   showAxisBottom: true,
 };
 
-export default GraficoBarrasPadraoAEE;
+export default MontarGraficoBarras;

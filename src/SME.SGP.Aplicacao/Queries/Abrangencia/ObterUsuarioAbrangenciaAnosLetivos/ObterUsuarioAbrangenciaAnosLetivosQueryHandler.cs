@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<IEnumerable<int>> Handle(ObterUsuarioAbrangenciaAnosLetivosQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioAbrangencia.ObterAnosLetivos(request.Login, request.Perfil, request.ConsideraHistorico);
+            return await repositorioAbrangencia.ObterAnosLetivos(request.Login, request.Perfil, request.ConsideraHistorico, request.AnoMinimo);
         }
     }
 }

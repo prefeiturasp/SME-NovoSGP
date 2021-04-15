@@ -81,8 +81,10 @@ namespace SME.SGP.Dominio
         [Display(Name = "relatorios/planejamento-diario", ShortName = "Planejamento Diario", Description = "Relatório de controle de planejamento diário")]
         PlanejamentoDiario = 27,
 
-        [Display(Name = "relatorios/devolutivas", ShortName = "Devolutivas", Description = "Relatório de Devolutivas")]
-        Devolutivas = 28
+        [Display(Name = "relatorios/devolutivas", ShortName = "Devolutivas", Description = "Relatório de Devolutiva")]
+        Devolutivas = 28,
 
+        [Display(Name = "relatorios/itinerancias", ShortName = "Itinerâncias", Description = "Relatório do Registro de Itinerância")]
+        Itinerancias = 29
     }
 }
