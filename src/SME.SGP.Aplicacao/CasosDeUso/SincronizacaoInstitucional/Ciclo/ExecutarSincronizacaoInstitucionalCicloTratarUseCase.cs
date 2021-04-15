@@ -14,21 +14,14 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit param)
         {
-
             var cicloEOL = param.ObterObjetoMensagem<CicloRetornoDto>();
 
-            //TODO: Continuar a task 37437
+            if (cicloEOL == null)
+                throw new NegocioException($"Não foi possível inserir o ciclo. A mensagem enviada é inválida.");
 
-            //if (tipoEscolaEOL == null)
-            //    throw new NegocioException($"Não foi possível fazer o tratamento do tipo de escola da mensagem {param.CodigoCorrelacao}");
+            var auditoria =  await mediator.Send(new SalvarCicloEnsinoCommand(cicloEOL));          
 
-            //var tipoEscolaSGP = await mediator.Send(new ObterTipoEscolaPorCodigoQuery(tipoEscolaEOL.Codigo));
-
-            //await mediator.Send(new TrataSincronizacaoInstitucionalTipoEscolaCommand(tipoEscolaSGP, tipoEscolaEOL));
-
-
-            return true;
-
+            return auditoria.Id != 0;
         }
     }
 }
