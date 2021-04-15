@@ -66,6 +66,8 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
   const permissoesTela =
     usuario.permissoes[RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA];
 
+  const permissaoStatus = itineranciaId && !itineranciaAlteracao?.podeEditar;
+
   const onClickSalvar = () => {
     const itinerancia = {
       id: itineranciaId,
@@ -394,7 +396,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
         ? !permissoesTela?.podeAlterar
         : !permissoesTela?.podeIncluir) ||
       somenteConsulta ||
-      !itineranciaAlteracao?.podeEditar
+      permissaoStatus
     );
   };
 
@@ -468,32 +470,29 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
                 />
               </div>
             </div>
-            {itineranciaId && itineranciaAlteracao?.statusWorkflow && (
+            {itineranciaId && (
               <div className="row mb-4">
-                <div className="col-sm-12 d-flex justify-content-end">
-                  <div>
-                    <MarcadorSituacao corFundo={Colors.Azul}>
-                      {itineranciaAlteracao?.statusWorkflow}
-                    </MarcadorSituacao>
+                <div className="col-sm-12 d-flex justify-content-between align-items-center">
+                  <div className="pr-4">
+                    <Loader loading={imprimindo} ignorarTip>
+                      <BotaoCustomizado
+                        border
+                        id="btn-imprimir-relatorio-itinerancia"
+                        className="btn-imprimir"
+                        icon="print"
+                        color={Colors.Azul}
+                        width="38px"
+                        onClick={() => gerarRelatorio()}
+                      />
+                    </Loader>
                   </div>
-                </div>
-              </div>
-            )}
-            <div className="row mb-4">
-            {match?.params?.id && (
-              <div className="row mb-4">
-                <div className="col-sm-12">
-                  <Loader loading={imprimindo} ignorarTip>
-                    <BotaoCustomizado
-                      border
-                      id="btn-imprimir-relatorio-itinerancia"
-                      className="btn-imprimir"
-                      icon="print"
-                      color={Colors.Azul}
-                      width="38px"
-                      onClick={() => gerarRelatorio()}
-                    />
-                  </Loader>
+                  <div>
+                    {itineranciaAlteracao?.statusWorkflow && (
+                      <MarcadorSituacao corFundo={Colors.Azul}>
+                        {itineranciaAlteracao?.statusWorkflow}
+                      </MarcadorSituacao>
+                    )}
+                  </div>
                 </div>
               </div>
             )}
@@ -520,10 +519,14 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
                 tituloTabela="Objetivos selecionados"
                 labelBotao="Novo objetivo"
                 desabilitadoIncluir={
-                  !permissoesTela?.podeIncluir || somenteConsulta
+                  !permissoesTela?.podeIncluir ||
+                  somenteConsulta ||
+                  permissaoStatus
                 }
                 desabilitadoExcluir={
-                  !permissoesTela?.podeAlterar || somenteConsulta
+                  !permissoesTela?.podeAlterar ||
+                  somenteConsulta ||
+                  permissaoStatus
                 }
                 pagination={false}
                 dadosTabela={objetivosSelecionados}
@@ -540,12 +543,15 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
                 labelBotao="Adicionar nova unidade escolar"
                 pagination={false}
                 desabilitadoIncluir={
-                  !permissoesTela?.podeIncluir || somenteConsulta
+                  !permissoesTela?.podeIncluir ||
+                  somenteConsulta ||
+                  permissaoStatus
                 }
                 desabilitadoExcluir={
                   !permissoesTela?.podeAlterar ||
                   alunosSelecionados?.length ||
-                  somenteConsulta
+                  somenteConsulta ||
+                  permissaoStatus
                 }
                 dadosTabela={uesSelecionados}
                 removerUsuario={text => removerUeSelecionada(text)}
