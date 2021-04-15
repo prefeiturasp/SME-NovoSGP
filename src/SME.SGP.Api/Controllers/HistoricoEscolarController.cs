@@ -20,6 +20,5 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await historicoEscolarUseCase.Executar(filtroHistoricoEscolarDto));
         }
-
     }
 }

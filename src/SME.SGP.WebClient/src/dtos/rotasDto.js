@@ -73,6 +73,7 @@ const RotasDto = {
   RELATORIO_DEVOLUTIVAS: '/relatorios/planejamento/devolutivas',
   DASHBOARD_ESCOLA_AQUI: '/dashboard/escola-aqui',
   DASHBOARD_AEE: '/dashboard/aee',
+  DASHBOARD_REGISTRO_ITINERANCIA: '/dashboard/registro-itinerancia',
 };
 
 export default RotasDto;
