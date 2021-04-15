@@ -20,17 +20,28 @@ namespace SME.SGP.Aplicacao
             if (param.AnoLetivo == 0)
                 param.AnoLetivo = DateTime.Now.Year;
             var encaminhamentos =  await mediator.Send(new ObterEncaminhamentosAEEDeferidosQuery(param.AnoLetivo, param.DreId, param.UeId));
-            return param.UeId > 0 ? MapearParaDtoTurmas(encaminhamentos) : MapearParaDto(encaminhamentos);
+           
+            var lista = param.UeId > 0 ? MapearParaDtoTurmas(encaminhamentos) : MapearParaDto(encaminhamentos);
+            return lista.OrderBy(a => a.Ordem)
+                .ThenBy(a => a.Descricao);
         }
 
         private IEnumerable<AEETurmaDto> MapearParaDto(IEnumerable<AEETurmaDto> encaminhamentos)
         {
-            return encaminhamentos.Select(a => new AEETurmaDto()
+            List<AEETurmaDto> retorno = new List<AEETurmaDto>();
+
+            foreach (var encaminhamento in encaminhamentos.GroupBy(a => $"{a.Modalidade.ShortName()} - {a.AnoTurma}"))
             {
-                Modalidade = a.Modalidade,
-                Quantidade = a.Quantidade,
-                Descricao = a.AnoTurma > 0 ? $"{a.Modalidade.ShortName()} - {a.AnoTurma}" : a.Modalidade.ShortName(),
-            });
+                retorno.Add(new AEETurmaDto()
+                {
+                    Modalidade = encaminhamento.FirstOrDefault().Modalidade,
+                    Quantidade = encaminhamento.Sum(a => a.Quantidade),
+                    AnoTurma = encaminhamento.FirstOrDefault().AnoTurma,
+                    Descricao = encaminhamento.FirstOrDefault().AnoTurma > 0 ? $"{encaminhamento.FirstOrDefault().Modalidade.ShortName()} - {encaminhamento.FirstOrDefault().AnoTurma}" : encaminhamento.FirstOrDefault().Modalidade.ShortName(),
+                });
+            }
+
+            return retorno;
         }
 
         private IEnumerable<AEETurmaDto> MapearParaDtoTurmas(IEnumerable<AEETurmaDto> encaminhamentos)

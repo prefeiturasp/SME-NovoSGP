@@ -639,5 +639,8 @@
 
         [PermissaoMenu(Menu = "AEE", Icone = "fas fa-chart-bar", Agrupamento = "Dashboard", OrdemAgrupamento = 8, EhConsulta = true, Url = "/dashboard/aee")]
         DAEE_C = 215,
+
+        [PermissaoMenu(Menu = "Registro de Itinerância", Icone = "fas fa-chart-bar", Agrupamento = "Dashboard", OrdemAgrupamento = 8, EhConsulta = true, Url = "/dashboard/registro-itinerancia")]
+        DRI_C = 216,
     }
 }

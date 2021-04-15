@@ -7,6 +7,7 @@ using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
@@ -150,6 +151,14 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> Devolutivas([FromBody] FiltroRelatorioDevolutivas filtro, [FromServices] IRelatorioDevolutivasUseCase relatorioUseCase)
         {
             return Ok(await relatorioUseCase.Executar(filtro));
+        }
+
+        [HttpPost("itinerancias")]
+        [ProducesResponseType(typeof(Boolean), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> Itinerancias([FromBody] IEnumerable<long> itinerancias, [FromServices] IRelatorioItineranciasUseCase relatorioUseCase)
+        {
+            return Ok(await relatorioUseCase.Executar(itinerancias));
         }
     }
 }

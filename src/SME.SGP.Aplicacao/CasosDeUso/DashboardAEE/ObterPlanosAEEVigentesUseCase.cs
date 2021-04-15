@@ -21,17 +21,27 @@ namespace SME.SGP.Aplicacao
                 param.AnoLetivo = DateTime.Now.Year;
             var planos = await mediator.Send(new ObterPlanosAEEVigentesQuery(param.AnoLetivo, param.DreId, param.UeId));
 
-            return param.UeId > 0 ? MapearParaDtoTurmas(planos) : MapearParaDto(planos);
+            var lista = param.UeId > 0 ? MapearParaDtoTurmas(planos) : MapearParaDto(planos);
+            return lista.OrderBy(a => a.Ordem)
+                .ThenBy(a => a.Descricao);
         }
 
         private IEnumerable<AEETurmaDto> MapearParaDto(IEnumerable<AEETurmaDto> planos)
         {
-            return planos.Select(a => new AEETurmaDto()
+            List<AEETurmaDto> retorno = new List<AEETurmaDto>();
+
+            foreach(var plano in planos.GroupBy(a=> $"{a.Modalidade.ShortName()} - {a.AnoTurma}"))
             {
-                Modalidade = a.Modalidade,
-                Quantidade = a.Quantidade,
-                Descricao = a.AnoTurma > 0 ? $"{a.Modalidade.ShortName()} - {a.AnoTurma}" : a.Modalidade.ShortName(),
-            });
+                retorno.Add(new AEETurmaDto()
+                {
+                    Modalidade = plano.FirstOrDefault().Modalidade,
+                    Quantidade = plano.Sum(a => a.Quantidade),
+                    AnoTurma = plano.FirstOrDefault().AnoTurma,
+                    Descricao = plano.FirstOrDefault().AnoTurma > 0 ? $"{plano.FirstOrDefault().Modalidade.ShortName()} - {plano.FirstOrDefault().AnoTurma}" : plano.FirstOrDefault().Modalidade.ShortName(),
+                });
+            }
+
+            return retorno;
         }
 
         private IEnumerable<AEETurmaDto> MapearParaDtoTurmas(IEnumerable<AEETurmaDto> planos)

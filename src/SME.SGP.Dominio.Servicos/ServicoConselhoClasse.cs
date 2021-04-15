@@ -384,8 +384,10 @@ namespace SME.SGP.Dominio.Servicos
 
             var componentesCurriculares = await ObterComponentesTurmas(turmasCodigos, turma.EnsinoEspecial, turma.TurnoParaComponentesCurriculares);
 
+            var disciplinasDaTurma = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(componentesCurriculares.Select(x => x.CodigoComponenteCurricular).Distinct().ToArray()));
+
             // Checa se todas as disciplinas da turma receberam nota
-            foreach (var componenteCurricular in componentesCurriculares.Where(c => c.LancaNota))
+            foreach (var componenteCurricular in disciplinasDaTurma.Where(c => c.LancaNota && c.GrupoMatrizNome != null))
             {
                 if (!notasParaVerificar.Any(c => c.ComponenteCurricularCodigo == componenteCurricular.CodigoComponenteCurricular))
                     return false;

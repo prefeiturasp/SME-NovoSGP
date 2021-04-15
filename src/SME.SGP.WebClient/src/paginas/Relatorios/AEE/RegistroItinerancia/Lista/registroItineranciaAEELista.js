@@ -20,7 +20,9 @@ import {
   erros,
   history,
   ServicoRegistroItineranciaAEE,
+  sucesso,
 } from '~/servicos';
+import { BotaoCustomizado } from '../registroItinerancia.css';
 
 const RegistroItineranciaAEELista = () => {
   const [
@@ -48,6 +50,9 @@ const RegistroItineranciaAEELista = () => {
   const [turmaId, setTurmaId] = useState();
   const [ueId, setUeId] = useState();
   const [criador, setCriador] = useState();
+  const [idRegistrosSelecionadas, setIdRegistrosSelecionadas] = useState([]);
+  const [imprimindo, setImprimindo] = useState(false);
+
   const usuario = useSelector(store => store.usuario);
   const permissoesTela =
     usuario.permissoes[RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA];
@@ -88,7 +93,7 @@ const RegistroItineranciaAEELista = () => {
     situacaoItinerancia,
     dtInicial,
     dtFinal,
-    criadoPor,
+    criadoPor
   ) => {
     if (anoLetivo && dre && listaDres?.length) {
       const dreSelecionada = listaDres.find(
@@ -295,7 +300,7 @@ const RegistroItineranciaAEELista = () => {
         situacao,
         dataInicial,
         dataFinal,
-        criador,
+        criador
       );
   }, [
     anoLetivo,
@@ -409,6 +414,23 @@ const RegistroItineranciaAEELista = () => {
       return current < dataInicialFiltro || current > ano.endOf('year');
     }
     return false;
+  };
+
+  const onSelecionarItems = items => {
+    setIdRegistrosSelecionadas(items.map(item => item.id));
+  };
+
+  const gerarRelatorio = async () => {
+    setImprimindo(true);
+
+    await ServicoRegistroItineranciaAEE.gerarRelatorio(idRegistrosSelecionadas)
+      .then(() => {
+        sucesso(
+          'Solicitação de geração do relatório gerada com sucesso. Em breve você receberá uma notificação com o resultado.'
+        );
+      })
+      .finally(setImprimindo(false))
+      .catch(e => erros(e));
   };
 
   return (
@@ -575,21 +597,45 @@ const RegistroItineranciaAEELista = () => {
               />
             </div>
           </div>
+
           <div className="row mb-4">
             {anoLetivo && dreId && listaDres?.length && (
-              <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
-                <ListaPaginada
-                  url="v1/itinerancias"
-                  id="lista-alunos"
-                  colunas={colunas}
-                  filtro={filtro}
-                  filtroEhValido={
-                    !!(anoLetivo && dreId && filtro.dreId && listaDres?.length)
-                  }
-                  temPaginacao
-                  onClick={onClickEditar}
-                />
-              </div>
+              <>
+                <div className="col-sm-12 mb-3 mt-2">
+                  <Loader loading={imprimindo} ignorarTip>
+                    <BotaoCustomizado
+                      border
+                      id="btn-imprimir-relatorio-itinerancia"
+                      className="btn-imprimir"
+                      icon="print"
+                      color={Colors.Azul}
+                      width="38px"
+                      onClick={() => gerarRelatorio()}
+                      disabled={!idRegistrosSelecionadas.length}
+                    />
+                  </Loader>
+                </div>
+                <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
+                  <ListaPaginada
+                    url="v1/itinerancias"
+                    id="lista-alunos"
+                    colunas={colunas}
+                    filtro={filtro}
+                    filtroEhValido={
+                      !!(
+                        anoLetivo &&
+                        dreId &&
+                        filtro.dreId &&
+                        listaDres?.length
+                      )
+                    }
+                    temPaginacao
+                    multiSelecao
+                    onClick={onClickEditar}
+                    selecionarItems={onSelecionarItems}
+                  />
+                </div>
+              </>
             )}
           </div>
         </div>

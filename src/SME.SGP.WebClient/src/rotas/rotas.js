@@ -93,6 +93,7 @@ import RegistroItineranciaAEELista from '~/paginas/Relatorios/AEE/RegistroItiner
 import AcompanhamentoAprendizagem from '~/paginas/Fechamento/AcompanhamentoAprendizagem/acompanhamentoAprendizagem';
 import RelatorioDevolutivas from '~/paginas/Relatorios/Planejamento/Devolutivas/relatorioDevolutivas';
 import DashboardAEE from '~/paginas/Dashboard/AEE/dashboardAEE';
+import DashboardRegistroItinerancia from '~/paginas/Dashboard/DashboardRegistroItinerancia/dashboardRegistroItinerancia';
 
 const rotas = new Map();
 
@@ -1312,6 +1313,17 @@ rotas.set(RotasDto.DASHBOARD_AEE, {
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: true,
   chavePermissao: RotasDto.DASHBOARD_AEE,
+});
+
+rotas.set(RotasDto.DASHBOARD_REGISTRO_ITINERANCIA, {
+  breadcrumbName: 'Registro de Itinerância',
+  menu: ['Dashboard'],
+  parent: '/',
+  component: DashboardRegistroItinerancia,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.DASHBOARD_REGISTRO_ITINERANCIA,
 });
 
 const rotasArray = [];
