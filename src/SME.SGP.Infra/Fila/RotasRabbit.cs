@@ -83,12 +83,16 @@
         public static string NotificarPlanoAEEEncerrado => "plano.aee.notificar.encerramento";
 
 
-        public static string SincronizaEstruturaInstitucionalDreTratar => "sgp.estrutura.institucional.dre.tratar";
-        public static string SincronizaEstruturaInstitucionalUeTratar => "sgp.estrutura.institucional.ue.tratar";
-        public static string SincronizaEstruturaInstitucionalTurmasSync => "sgp.estrutura.institucional.turmas.sync";        
-        public static string SincronizaEstruturaInstitucionalTurmaTratar => "sgp.estrutura.institucional.turma.tratar";
+        public static string SincronizaEstruturaInstitucionalDreTratar => "sgp.sincronizacao.institucional.dre.tratar";
+        public static string SincronizaEstruturaInstitucionalUeTratar => "sgp.sincronizacao.institucional.ue.tratar";
+        public static string SincronizaEstruturaInstitucionalTurmasSync => "sgp.sincronizacao.institucional.turmas.sync";        
+        public static string SincronizaEstruturaInstitucionalTurmaTratar => "sgp.sincronizacao.institucional.turma.tratar";
         
-        public static string SincronizaEstruturaInstitucionalTipoEscolaSync => "sgp.estrutura.institucional.tipoescola.sync";
-        public static string SincronizaEstruturaInstitucionalTipoEscolaTratar => "sgp.estrutura.institucional.tipoescola.tratar";
+        public static string SincronizaEstruturaInstitucionalTipoEscolaSync => "sgp.sincronizacao.institucional.tipoescola.sync";
+        public static string SincronizaEstruturaInstitucionalTipoEscolaTratar => "sgp.sincronizacao.institucional.tipoescola.tratar";
+
+        public static string SincronizaEstruturaInstitucionalCicloSync => "sgp.sincronizacao.institucional.ciclo.sync";
+        public static string SincronizaEstruturaInstitucionalCicloTratar => "sgp.sincronizacao.institucional.ciclo.tratar";
+
     }
 }
