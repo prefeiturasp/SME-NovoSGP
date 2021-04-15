@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(MensagemRabbit param)
         {
                         
-            var tiposEscola = await mediator.Send(new ObterTiposEscolaQuery());
+            var tiposEscola = await mediator.Send(new ObterTiposEscolaEolQuery());
 
             if (tiposEscola == null || !tiposEscola.Any())
             {
