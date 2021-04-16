@@ -358,6 +358,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioItineranciaQuestao, RepositorioItineranciaQuestao>();
             services.TryAddScoped<IRepositorioItineranciaObjetivo, RepositorioItineranciaObjetivo>();
             services.TryAddScoped<IRepositorioItineranciaUe, RepositorioItineranciaUe>();
+            services.TryAddScoped<IRepositorioItineranciaEvento, RepositorioItineranciaEvento>();
+
             // PlanoAEE
             services.TryAddScoped<IRepositorioPlanoAEE, RepositorioPlanoAEE>();
             services.TryAddScoped<IRepositorioPlanoAEEVersao, RepositorioPlanoAEEVersao>();
