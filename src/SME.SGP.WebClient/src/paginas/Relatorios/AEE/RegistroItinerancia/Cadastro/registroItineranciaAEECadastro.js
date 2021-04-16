@@ -68,13 +68,12 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
   const [carregandoEventos, setCarregandoEventos] = useState(false);
   const [valorTipoCalendario, setValorTipoCalendario] = useState('');
   const [listaCalendario, setListaCalendario] = useState([]);
-  const [selecionouEvento, setSelecionouEvento] = useState(false);
   const [valorEvento, setValorEvento] = useState('');
   const [tipoCalendarioSelecionado, setTipoCalendarioSelecionado] = useState(
     ''
   );
   const [listaEvento, setListaEvento] = useState([]);
-  const [eventoSelecionado, setEventoSelecionado] = useState('');
+  const [eventoId, setEventoId] = useState('');
 
   const usuario = useSelector(store => store.usuario);
   const permissoesTela =
@@ -90,6 +89,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
       alunos: alunosSelecionados,
       questoes: alunosSelecionados?.length ? [] : questoesItinerancia,
       anoLetivo: new Date().getFullYear(),
+      eventoId,
     };
     const camposComErro = [];
     if (!dataVisita) {
@@ -300,7 +300,43 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
     if (itinerancia.alunos?.length) {
       setAlunosSelecionados(itinerancia.alunos);
     }
+
+    if (itinerancia.tipoCalendarioId) {
+      setTipoCalendarioSelecionado(itinerancia.tipoCalendarioId);
+    }
+
+    if (itinerancia.eventoId) {
+      setEventoId(itinerancia.eventoId);
+    }
   };
+
+  useEffect(() => {
+    if (
+      listaCalendario?.length &&
+      tipoCalendarioSelecionado &&
+      !valorTipoCalendario
+    ) {
+      const tipo = listaCalendario?.find(t => {
+        return t.id === tipoCalendarioSelecionado;
+      });
+
+      if (tipo?.id) {
+        setValorTipoCalendario(tipo.descricao);
+      }
+    }
+  }, [listaCalendario, tipoCalendarioSelecionado, valorTipoCalendario]);
+
+  useEffect(() => {
+    if (listaEvento?.length && eventoId && !valorEvento) {
+      const evento = listaEvento?.find(t => {
+        return t.id === eventoId;
+      });
+
+      if (evento?.id) {
+        setValorEvento(evento.nome);
+      }
+    }
+  }, [listaEvento, eventoId, valorEvento]);
 
   const perguntarAntesDeCancelar = async () => {
     const resposta = await confirmar(
@@ -443,6 +479,9 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
   };
 
   const selecionaTipoCalendario = descricao => {
+    setValorEvento();
+    setEventoId();
+    setListaEvento([]);
     const tipo = listaCalendario?.find(t => {
       return t.descricao === descricao;
     });
@@ -451,6 +490,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
       setValorTipoCalendario(descricao);
       setTipoCalendarioSelecionado(tipo.id);
     }
+    setModoEdicao(true);
   };
 
   const hasAnoLetivoClause = t =>
@@ -496,6 +536,31 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
     }
   }, [dataVisita]);
 
+  const obterListaEventos = async tipoCalendarioId => {
+    setCarregandoEventos(true);
+    const retorno = await ServicoRegistroItineranciaAEE.obterEventos(
+      tipoCalendarioId
+    )
+      .catch(e => erros(e))
+      .finally(() => setCarregandoEventos(false));
+
+    if (retorno?.data?.length) {
+      setListaEvento(retorno.data);
+    } else {
+      setEventoId();
+      setListaEvento([]);
+    }
+  };
+
+  useEffect(() => {
+    if (tipoCalendarioSelecionado) {
+      obterListaEventos(tipoCalendarioSelecionado);
+    } else {
+      setEventoId();
+      setListaEvento([]);
+    }
+  }, [tipoCalendarioSelecionado]);
+
   const selecionaEvento = nome => {
     const evento = listaEvento?.find(t => {
       return t.nome === nome;
@@ -503,8 +568,9 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
 
     if (evento?.id) {
       setValorEvento(evento.nome);
-      setEventoSelecionado(evento);
+      setEventoId(evento?.id);
     }
+    setModoEdicao(true);
   };
 
   return (
