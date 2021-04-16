@@ -10,6 +10,7 @@ using Sentry;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dados;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Utilitarios;
 using SME.SGP.IoC;
 using SME.SGP.Worker.RabbitMQ;
 
@@ -36,6 +37,7 @@ namespace SME.SGP.Worker.Rabbbit
             RegistrarHttpClients(services, configuration);
             services.AddApplicationInsightsTelemetry(configuration);
             var provider = services.BuildServiceProvider();
+            ConfiguraVariaveisAmbiente(services);
             //services.AdicionarRedis(configuration, provider.GetService<IServicoLog>());
 
             if (env.EnvironmentName != "teste-integrado")
@@ -135,5 +137,12 @@ namespace SME.SGP.Worker.Rabbbit
 
         }
 
+        private void ConfiguraVariaveisAmbiente(IServiceCollection services)
+        {
+            var configuracaoRabbit = new ConfiguracaoRabbit();
+            configuration.GetSection(nameof(ConfiguracaoRabbit)).Bind(configuracaoRabbit, c => c.BindNonPublicProperties = true);
+
+            services.AddSingleton(configuracaoRabbit);
+        }
     }
 }
