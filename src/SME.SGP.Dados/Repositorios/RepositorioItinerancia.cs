@@ -136,7 +136,7 @@ namespace SME.SGP.Dados.Repositorios
         }
         public async Task<Itinerancia> ObterEntidadeCompleta(long id)
         {
-            var query = @"select i.*, ia.*, iaq.*, iq.* , io.*, iob.*, iu.*
+            var query = @"select i.*, ia.*, iaq.*, iq.* , io.*, iob.*, iu.*, e.*
                             from itinerancia i 
                            left join itinerancia_aluno ia on ia.itinerancia_id = i.id
                            left join itinerancia_aluno_questao iaq on iaq.itinerancia_aluno_id = ia.id    

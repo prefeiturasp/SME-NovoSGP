@@ -35,6 +35,7 @@ namespace SME.SGP.Aplicacao
                 ObjetivosVisita = MontarObjetivosItinerancia(itinerancia),
                 Questoes = MontarQuestoesItinerancia(itinerancia, questoesBase),
                 Ues = MontarUes(ues, itinerancia),
+                TipoCalendarioId = await ObterTipoCalendario(itinerancia.EventoId),
                 EventoId = itinerancia.EventoId,
                 CriadoRF = itinerancia.CriadoRF,
                 Auditoria = (AuditoriaDto)itinerancia
@@ -56,6 +57,8 @@ namespace SME.SGP.Aplicacao
             return itineranciaDto;
         }
 
+        private async Task<long> ObterTipoCalendario(long? eventoId)
+            => eventoId.HasValue ? await mediator.Send(new ObterTipoCalendarioIdPorEventoQuery(eventoId.Value)) : 0;
 
         private IEnumerable<ItineranciaUeDto> MontarUes(IEnumerable<Ue> ues, Itinerancia itinerancia)
         {

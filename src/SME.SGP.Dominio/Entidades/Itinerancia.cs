@@ -17,6 +17,7 @@ namespace SME.SGP.Dominio
             Situacao = SituacaoItinerancia.Digitado;
 
         }
+        public Evento Evento { get; set; }
         public long? EventoId { get; set; }
         public DateTime DataVisita { get; set; }
         public int AnoLetivo { get; set; }

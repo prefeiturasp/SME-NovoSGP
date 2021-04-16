@@ -1252,5 +1252,12 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<EventoDataDto>(query, new { tipoCalendarioId, login, perfil, historico });
         }
+
+        public async Task<long> ObterTipoCalendarioIdPorEvento(long eventoId)
+        {
+            var query = @"select tipo_calendario_id from evento where id = @eventoId";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<long>(query, new { eventoId });
+        }
     }
 }
