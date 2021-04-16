@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
             foreach (var ano in request.Anos)
             {
                 listaRetorno.AddRange(await repositorioObjetivoAprendizagem
-                    .ObterPorAnoEComponenteCurricularJuremaIds(int.TryParse(ano, out anoTurma) ? (AnoTurma)Convert.ToInt32(ano) : null, request.JuremaIds));
+                    .ObterPorAnoEComponenteCurricularJuremaIds(int.TryParse(ano, out anoTurma) ? (AnoTurma)Convert.ToInt32(ano) : (AnoTurma?)null, request.JuremaIds));
             }
 
             return listaRetorno;
