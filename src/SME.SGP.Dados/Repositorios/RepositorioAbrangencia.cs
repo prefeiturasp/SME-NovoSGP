@@ -496,7 +496,7 @@ namespace SME.SGP.Dados.Repositorios
                             where vau.login = @login
                             and usuario_perfil  = @perfilAtual
                             and vau.ue_codigo = @codigoUe
-                            and (@modadlidadesQueSeraoIgnoradas is null or not(avau.modalidade_codigo = ANY(@modadlidadesQueSeraoIgnoradas)))";
+                            and (@modadlidadesQueSeraoIgnoradas is null or not(vau.modalidade_codigo = ANY(@modadlidadesQueSeraoIgnoradas)))";
 
             return await database.Conexao.QueryAsync<Modalidade>(query, new { codigoUe, login, perfilAtual, modadlidadesQueSeraoIgnoradas });
         }
