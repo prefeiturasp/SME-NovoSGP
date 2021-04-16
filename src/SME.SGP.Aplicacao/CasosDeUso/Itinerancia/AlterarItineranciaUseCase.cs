@@ -25,6 +25,7 @@ namespace SME.SGP.Aplicacao.Interfaces
             itinerancia.AnoLetivo = dto.AnoLetivo;
             itinerancia.DataVisita = dto.DataVisita;
             itinerancia.DataRetornoVerificacao = dto.DataRetornoVerificacao;            
+            itinerancia.EventoId = dto.EventoId;
 
             using (var transacao = unitOfWork.IniciarTransacao())
             {
@@ -48,7 +49,6 @@ namespace SME.SGP.Aplicacao.Interfaces
                     throw;
                 }
             }
-
         }
 
         public async Task<bool> ExluirFilhosItinerancia(Itinerancia itinerancia)
