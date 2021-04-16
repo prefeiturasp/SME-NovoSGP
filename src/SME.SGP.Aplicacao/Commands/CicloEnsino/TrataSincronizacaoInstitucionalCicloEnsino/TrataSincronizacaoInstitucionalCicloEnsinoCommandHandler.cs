@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
             }
             else
             {
-                if (request.CicloSgp.DtAtualizacao != DateTime.Now && (request.CicloSgp.Descricao != request.CicloEol.Descricao)
+                if ((request.CicloSgp.Descricao != request.CicloEol.Descricao)
                     || (request.CicloSgp.CodigoModalidadeEnsino != request.CicloEol.CodigoModalidadeEnsino) 
                     || (request.CicloSgp.CodigoEtapaEnsino != request.CicloSgp.CodigoEtapaEnsino))
                 {
@@ -36,9 +36,8 @@ namespace SME.SGP.Aplicacao
                     request.CicloSgp.DtAtualizacao = request.CicloEol.DtAtualizacao;
                     request.CicloSgp.CodigoModalidadeEnsino = request.CicloEol.CodigoModalidadeEnsino;
                     request.CicloSgp.CodigoEtapaEnsino = request.CicloSgp.CodigoEtapaEnsino;
-
-                    var cicloEnsino = MapearParaEntidade(request.CicloSgp);
-                    await repositorioCicloEnsino.SalvarAsync(cicloEnsino);
+                                        
+                    await repositorioCicloEnsino.SalvarAsync(request.CicloSgp);
                 }                
             }           
 
@@ -48,7 +47,6 @@ namespace SME.SGP.Aplicacao
         private CicloEnsino MapearParaEntidade(CicloRetornoDto ciclo)
             => new CicloEnsino()
             {
-                Id = ciclo.Id,
                 CodEol = ciclo.Codigo,
                 Descricao = ciclo.Descricao,
                 DtAtualizacao = ciclo.DtAtualizacao,

@@ -36,16 +36,30 @@ namespace SME.SGP.Worker.RabbitMQ
         private readonly Dictionary<string, ComandoRabbit> comandos;
 
 
-        public WorkerRabbitMQ(IConnection conexaoRabbit, IServiceScopeFactory serviceScopeFactory, IConfiguration configuration)
+        public WorkerRabbitMQ(IServiceScopeFactory serviceScopeFactory, IConfiguration configuration)
         {
             sentryDSN = configuration.GetValue<string>("Sentry:DSN");
-            this.conexaoRabbit = conexaoRabbit ?? throw new ArgumentNullException(nameof(conexaoRabbit));
+            
             this.serviceScopeFactory = serviceScopeFactory ?? throw new ArgumentNullException(nameof(serviceScopeFactory));
+
+
+            var factory = new ConnectionFactory
+            {
+                HostName = configuration.GetValue<string>("ConfiguracaoRabbit:HostName"),
+                UserName = configuration.GetValue<string>("ConfiguracaoRabbit:UserName"),
+                Password = configuration.GetValue<string>("ConfiguracaoRabbit:Password"),
+                VirtualHost = configuration.GetValue<string>("ConfiguracaoRabbit:Virtualhost")
+            };
+
+            conexaoRabbit = factory.CreateConnection();
             canalRabbit = conexaoRabbit.CreateModel();
+
+            //TODO: Botar para variável de ambiente
+            canalRabbit.BasicQos(0, 10, false);
 
             canalRabbit.ExchangeDeclare(RotasRabbit.ExchangeServidorRelatorios, ExchangeType.Topic);
             canalRabbit.QueueDeclare(RotasRabbit.FilaSgp, false, false, false, null);
-            canalRabbit.QueueBind(RotasRabbit.FilaSgp, RotasRabbit.ExchangeServidorRelatorios, "*", null);            
+            canalRabbit.QueueBind(RotasRabbit.FilaSgp, RotasRabbit.ExchangeServidorRelatorios, "*", null);
             canalRabbit.QueueDeclare(RotasRabbit.WorkerRelatoriosSgp, false, false, false, null);
             canalRabbit.QueueBind(RotasRabbit.WorkerRelatoriosSgp, RotasRabbit.ExchangeServidorRelatorios, "*", null);
 
@@ -122,7 +136,7 @@ namespace SME.SGP.Worker.RabbitMQ
 
             comandos.Add(RotasRabbit.RotaNotificacaoInicioFimPeriodoFechamento, new ComandoRabbit("Executa notificação sobre o início e fim do Periodo de fechamento", typeof(INotificacaoInicioFimPeriodoFechamentoUseCase)));
             comandos.Add(RotasRabbit.RotaNotificacaoFrequenciaUe, new ComandoRabbit("Notificar frequências dos alunos no bimestre para UE", typeof(INotificacaoFrequenciaUeUseCase)));
-            
+
             comandos.Add(RotasRabbit.RotaTrataNotificacoesNiveis, new ComandoRabbit("Trata Níveis e Cargos das notificações aguardando ação", typeof(ITrataNotificacoesNiveisCargosUseCase)));
             comandos.Add(RotasRabbit.RotaPendenciaAusenciaRegistroIndividual, new ComandoRabbit("Gerar as pendências por ausência de registro individual", typeof(IGerarPendenciaAusenciaRegistroIndividualUseCase)));
             comandos.Add(RotasRabbit.RotaAtualizarPendenciaAusenciaRegistroIndividual, new ComandoRabbit("Atualizar pendência por ausência de registro individual", typeof(IAtualizarPendenciaRegistroIndividualUseCase)));
@@ -135,7 +149,7 @@ namespace SME.SGP.Worker.RabbitMQ
             comandos.Add(RotasRabbit.GerarPendenciaValidadePlanoAEE, new ComandoRabbit("Gerar Pendência de Validade do PlanoAEE", typeof(IGerarPendenciaValidadePlanoAEEUseCase)));
             comandos.Add(RotasRabbit.NotificarPlanoAEEExpirado, new ComandoRabbit("Excluir plano AEE estudantes inativos", typeof(INotificarPlanosAEEExpiradosUseCase)));
             comandos.Add(RotasRabbit.NotificarPlanoAEEEmAberto, new ComandoRabbit("Notificar Plano AEE que estejam abertos", typeof(INotificarPlanosAEEEmAbertoUseCase)));
-            
+
             comandos.Add(RotasRabbit.NotificarPlanoAEEReestruturado, new ComandoRabbit("Enviar Notificação de Reestruturação de PlanoAEE", typeof(IEnviarNotificacaoReestruturacaoPlanoAEEUseCase)));
             comandos.Add(RotasRabbit.NotificarCriacaoPlanoAEE, new ComandoRabbit("Enviar Notificação de Criação de PlanoAEE", typeof(IEnviarNotificacaoCriacaoPlanoAEEUseCase)));
             comandos.Add(RotasRabbit.NotificarPlanoAEEEncerrado, new ComandoRabbit("Enviar Notificação de Encerramento de PlanoAEE", typeof(IEnviarNotificacaoEncerramentoPlanoAEEUseCase)));
@@ -281,8 +295,14 @@ namespace SME.SGP.Worker.RabbitMQ
             var consumer = new EventingBasicConsumer(canalRabbit);
             consumer.Received += async (ch, ea) =>
             {
-
-                await TratarMensagem(ea);
+                try
+                {
+                    await TratarMensagem(ea);
+                }
+                catch (Exception ex)
+                {
+                    SentrySdk.CaptureException(ex);
+                }
             };
 
             canalRabbit.BasicConsume(RotasRabbit.FilaSgp, false, consumer);

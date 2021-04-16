@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit param)
         {
-                        
+
             var tiposEscola = await mediator.Send(new ObterTiposEscolaEolQuery());
 
             if (tiposEscola == null || !tiposEscola.Any())
@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
             {
                 try
                 {
-                    var publicarTratamentoTipoEscola = await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.SincronizaEstruturaInstitucionalTipoEscolaTratar, tipoEscola, Guid.NewGuid(), null, fila: RotasRabbit.SincronizaEstruturaInstitucionalTipoEscolaTratar));
+                    var publicarTratamentoTipoEscola = await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.SincronizaEstruturaInstitucionalTipoEscolaTratar, tipoEscola, param.CodigoCorrelacao, null, fila: RotasRabbit.SincronizaEstruturaInstitucionalTipoEscolaTratar));
                     if (!publicarTratamentoTipoEscola)
                     {
                         var mensagem = $"Não foi possível inserir o Tipo de Escola : {tipoEscola} na fila de sync.";

@@ -1,10 +1,11 @@
 ﻿using FluentValidation;
 using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterCicloPorCodigoQuery : IRequest<CicloRetornoDto>
+    public class ObterCicloPorCodigoQuery : IRequest<CicloEnsino>
     {
         public ObterCicloPorCodigoQuery(long codigoEol)
         {

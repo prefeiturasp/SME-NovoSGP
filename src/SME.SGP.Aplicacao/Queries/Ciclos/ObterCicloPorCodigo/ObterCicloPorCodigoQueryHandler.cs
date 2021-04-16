@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterCicloPorCodigoQueryHandler : IRequestHandler<ObterCicloPorCodigoQuery, CicloRetornoDto>
+    public class ObterCicloPorCodigoQueryHandler : IRequestHandler<ObterCicloPorCodigoQuery, CicloEnsino>
     {
         private readonly IRepositorioCiclo repositorioCiclo;
 
@@ -16,7 +17,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioCiclo = repositorioCiclo ?? throw new ArgumentNullException(nameof(repositorioCiclo));
         }
 
-        public async Task<CicloRetornoDto> Handle(ObterCicloPorCodigoQuery request, CancellationToken cancellationToken)
+        public async Task<CicloEnsino> Handle(ObterCicloPorCodigoQuery request, CancellationToken cancellationToken)
         {
             var ciclo = await repositorioCiclo.ObterCicloPorCodigoEol(request.CodigoEol);
 

@@ -15,13 +15,15 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
         public async Task Executar()
         {
+            var codigoCorrelacao = Guid.NewGuid();
+
             SentrySdk.AddBreadcrumb($"Mensagem ExecutarSincronizacaoEstruturaInstitucionalSyncUseCase", "Rabbit - ExecutarSincronizacaoEstruturaInstitucionalSyncUseCase");
                         
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.SincronizaEstruturaInstitucionalDreSync, string.Empty, Guid.NewGuid(), null, fila: RotasRabbit.SincronizaEstruturaInstitucionalDreSync));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.SincronizaEstruturaInstitucionalDreSync, string.Empty, codigoCorrelacao, null, fila: RotasRabbit.SincronizaEstruturaInstitucionalDreSync));
 
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.SincronizaEstruturaInstitucionalTipoEscolaSync, string.Empty, Guid.NewGuid(), null, fila: RotasRabbit.SincronizaEstruturaInstitucionalTipoEscolaSync));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.SincronizaEstruturaInstitucionalTipoEscolaSync, string.Empty, codigoCorrelacao, null, fila: RotasRabbit.SincronizaEstruturaInstitucionalTipoEscolaSync));
 
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.SincronizaEstruturaInstitucionalCicloSync, string.Empty, Guid.NewGuid(), null, fila: RotasRabbit.SincronizaEstruturaInstitucionalCicloSync));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.SincronizaEstruturaInstitucionalCicloSync, string.Empty, codigoCorrelacao, null, fila: RotasRabbit.SincronizaEstruturaInstitucionalCicloSync));
         }
     }
 }
