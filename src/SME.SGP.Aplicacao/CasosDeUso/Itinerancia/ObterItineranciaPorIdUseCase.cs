@@ -20,7 +20,6 @@ namespace SME.SGP.Aplicacao
         {
             var itinerancia = await mediator.Send(new ObterItineranciaPorIdQuery(id));
 
-
             if (itinerancia == null)
                 throw new NegocioException($"Não foi possível localizar a itinerância de Id {id}");
 
@@ -36,6 +35,7 @@ namespace SME.SGP.Aplicacao
                 ObjetivosVisita = MontarObjetivosItinerancia(itinerancia),
                 Questoes = MontarQuestoesItinerancia(itinerancia, questoesBase),
                 Ues = MontarUes(ues, itinerancia),
+                EventoId = itinerancia.EventoId,
                 CriadoRF = itinerancia.CriadoRF,
                 Auditoria = (AuditoriaDto)itinerancia
             };
