@@ -82,7 +82,7 @@
         public static string NotificarCriacaoPlanoAEE => "plano.aee.notificar.criacao";
         public static string NotificarPlanoAEEEncerrado => "plano.aee.notificar.encerramento";
 
-
+        public static string SincronizaEstruturaInstitucionalDreSync => "sgp.sincronizacao.institucional.dre.sync";
         public static string SincronizaEstruturaInstitucionalDreTratar => "sgp.sincronizacao.institucional.dre.tratar";
         public static string SincronizaEstruturaInstitucionalUeTratar => "sgp.sincronizacao.institucional.ue.tratar";
         public static string SincronizaEstruturaInstitucionalTurmasSync => "sgp.sincronizacao.institucional.turmas.sync";        

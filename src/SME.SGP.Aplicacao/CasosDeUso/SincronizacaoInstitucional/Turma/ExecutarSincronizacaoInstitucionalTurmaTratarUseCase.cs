@@ -16,8 +16,8 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
-        {
-            var codigoTurma = JsonConvert.DeserializeObject<long>(mensagemRabbit.Mensagem.ToString());
+        {            
+            var codigoTurma = long.Parse(mensagemRabbit.Mensagem.ToString());
             if (codigoTurma == 0) return true;
 
             try
