@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Utilitarios;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,11 +12,11 @@ namespace SME.SGP.Aplicacao
 {
     public class PublicarFilaSgpCommandHandler : IRequestHandler<PublicarFilaSgpCommand, bool>
     {
-        private readonly IConfiguration configuration;
+        private readonly ConfiguracaoRabbitOptions configuracaoRabbitOptions;
 
-        public PublicarFilaSgpCommandHandler(IConfiguration configuration)
+        public PublicarFilaSgpCommandHandler(ConfiguracaoRabbitOptions configuracaoRabbitOptions )
         {
-            this.configuration = configuration;
+                    this.configuracaoRabbitOptions = configuracaoRabbitOptions ?? throw new System.ArgumentNullException(nameof(configuracaoRabbitOptions));
         }
 
         public Task<bool> Handle(PublicarFilaSgpCommand command, CancellationToken cancellationToken)
@@ -29,10 +30,10 @@ namespace SME.SGP.Aplicacao
 
             var factory = new ConnectionFactory
             {
-                HostName = configuration.GetValue<string>("ConfiguracaoRabbit:HostName"),
-                UserName = configuration.GetValue<string>("ConfiguracaoRabbit:UserName"),
-                Password = configuration.GetValue<string>("ConfiguracaoRabbit:Password"),
-                VirtualHost = configuration.GetValue<string>("ConfiguracaoRabbit:Virtualhost")
+                HostName = configuracaoRabbitOptions.HostName,
+                UserName = configuracaoRabbitOptions.UserName,
+                Password = configuracaoRabbitOptions.Password,
+                VirtualHost = configuracaoRabbitOptions.VirtualHost
             };
 
             using (var conexaoRabbit = factory.CreateConnection())

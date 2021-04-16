@@ -15,6 +15,7 @@ using SME.Background.Hangfire;
 using SME.SGP.Api.HealthCheck;
 using SME.SGP.Background;
 using SME.SGP.Dados;
+using SME.SGP.Infra.Utilitarios;
 using SME.SGP.IoC;
 using System;
 using System.Collections.Generic;
@@ -129,6 +130,8 @@ namespace SME.SGP.Api
 
             services.AddApplicationInsightsTelemetry(Configuration);
 
+            ConfiguraVariaveisAmbiente(services);
+
             var serviceProvider = services.BuildServiceProvider();
 
             Orquestrador.Inicializar(serviceProvider);
@@ -154,20 +157,20 @@ namespace SME.SGP.Api
                 options.SupportedCultures = new List<CultureInfo> { new CultureInfo("pt-BR"), new CultureInfo("pt-BR") };
             });
 
-            if (_env.EnvironmentName != "teste-integrado")
-            {
-                services.AddRabbit();
-            }
-
-            // Teste para injeção do client de telemetria em classe estática 
 
 
             var clientTelemetry = serviceProvider.GetService<TelemetryClient>();
             DapperExtensionMethods.Init(clientTelemetry);
-
-            //
-
+         
             services.AddMemoryCache();
+        }
+
+        private void ConfiguraVariaveisAmbiente(IServiceCollection services)
+        {
+            var configuracaoRabbitOptions = new ConfiguracaoRabbitOptions();
+            Configuration.GetSection(nameof(ConfiguracaoRabbitOptions)).Bind(configuracaoRabbitOptions, c => c.BindNonPublicProperties = true);
+
+            services.AddSingleton(configuracaoRabbitOptions);
         }
     }
 }

@@ -13,6 +13,7 @@ using SME.SGP.Infra;
 using SME.SGP.Infra.Contexto;
 using SME.SGP.Infra.Excecoes;
 using SME.SGP.Infra.Interfaces;
+using SME.SGP.Infra.Utilitarios;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -28,6 +29,7 @@ namespace SME.SGP.Worker.RabbitMQ
         private readonly string sentryDSN;
         private readonly IConnection conexaoRabbit;
         private readonly IServiceScopeFactory serviceScopeFactory;
+        private readonly ConfiguracaoRabbitOptions consumoDeFilasOptions;
 
         /// <summary>
         /// configuração da lista de tipos para a fila do rabbit instanciar, seguindo a ordem de propriedades:
@@ -36,26 +38,26 @@ namespace SME.SGP.Worker.RabbitMQ
         private readonly Dictionary<string, ComandoRabbit> comandos;
 
 
-        public WorkerRabbitMQ(IServiceScopeFactory serviceScopeFactory, IConfiguration configuration)
+        public WorkerRabbitMQ(IServiceScopeFactory serviceScopeFactory, IConfiguration configuration, ConfiguracaoRabbitOptions consumoDeFilasOptions)
         {
             sentryDSN = configuration.GetValue<string>("Sentry:DSN");
             
             this.serviceScopeFactory = serviceScopeFactory ?? throw new ArgumentNullException(nameof(serviceScopeFactory));
 
+            this.consumoDeFilasOptions = consumoDeFilasOptions;            
 
             var factory = new ConnectionFactory
             {
-                HostName = configuration.GetValue<string>("ConfiguracaoRabbit:HostName"),
-                UserName = configuration.GetValue<string>("ConfiguracaoRabbit:UserName"),
-                Password = configuration.GetValue<string>("ConfiguracaoRabbit:Password"),
-                VirtualHost = configuration.GetValue<string>("ConfiguracaoRabbit:Virtualhost")
+                HostName = this.consumoDeFilasOptions.HostName,  
+                UserName = this.consumoDeFilasOptions.UserName, 
+                Password = this.consumoDeFilasOptions.Password, 
+                VirtualHost = this.consumoDeFilasOptions.VirtualHost 
             };
 
             conexaoRabbit = factory.CreateConnection();
             canalRabbit = conexaoRabbit.CreateModel();
-
-            //TODO: Botar para variável de ambiente
-            canalRabbit.BasicQos(0, 10, false);
+            
+            canalRabbit.BasicQos(0, this.consumoDeFilasOptions.LimiteDeMensagensPorExecucao, false);
 
             canalRabbit.ExchangeDeclare(RotasRabbit.ExchangeServidorRelatorios, ExchangeType.Topic);
             canalRabbit.QueueDeclare(RotasRabbit.FilaSgp, false, false, false, null);
