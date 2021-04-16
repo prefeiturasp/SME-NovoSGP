@@ -11,11 +11,13 @@ namespace SME.SGP.Aplicacao.Commands
     public class CriarEventoItineranciaPAAICommandHandler : IRequestHandler<CriarEventoItineranciaPAAICommand, bool>
     {
         private readonly IRepositorioEvento repositorioEvento;
+        private readonly IRepositorioItineranciaEvento repositorioItineranciaEvento;
         private readonly IMediator mediator;
 
-        public CriarEventoItineranciaPAAICommandHandler(IRepositorioEvento repositorioEvento, IMediator mediator)
+        public CriarEventoItineranciaPAAICommandHandler(IMediator mediator, IRepositorioEvento repositorioEvento, IRepositorioItineranciaEvento repositorioItineranciaEvento)
         {
             this.repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));
+            this.repositorioItineranciaEvento = repositorioItineranciaEvento ?? throw new ArgumentNullException(nameof(repositorioItineranciaEvento));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
@@ -37,6 +39,7 @@ namespace SME.SGP.Aplicacao.Commands
             try
             {
                 await repositorioEvento.SalvarAsync(evento);
+                await repositorioItineranciaEvento.SalvarAsync(new ItineranciaEvento(request.ItineranciaId, evento.Id));
 
                 return true;
             }

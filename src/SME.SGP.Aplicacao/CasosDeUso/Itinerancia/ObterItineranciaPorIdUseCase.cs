@@ -41,7 +41,7 @@ namespace SME.SGP.Aplicacao
                 Auditoria = (AuditoriaDto)itinerancia
             };
 
-            if(itinerancia.Alunos != null && itinerancia.Alunos.Any())
+            if (itinerancia.Alunos != null && itinerancia.Alunos.Any())
             {
                 var CodigosAluno = itinerancia.Alunos.Select(a => a.CodigoAluno).ToArray();
 
@@ -70,6 +70,7 @@ namespace SME.SGP.Aplicacao
                      UeId = ue.Id,
                      Descricao = $"{ue.TipoEscola.ShortName()} - {ue.Nome}",
                      CodigoUe = ue.CodigoUe,
+                     CodigoDre = ue.Dre.CodigoDre,
                  };
              });
         }

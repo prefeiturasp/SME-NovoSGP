@@ -174,6 +174,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new AcompanhamentoTurmaMap());
                config.AddMap(new AlunoFotoMap());
                config.AddMap(new PerfilEventoTipoMap());
+               config.AddMap(new ItineranciaEventoMap());
                
                config.ForDommel();
            });
