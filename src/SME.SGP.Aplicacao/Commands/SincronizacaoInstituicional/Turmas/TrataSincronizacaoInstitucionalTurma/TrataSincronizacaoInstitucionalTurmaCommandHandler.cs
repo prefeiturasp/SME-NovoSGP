@@ -120,7 +120,6 @@ namespace SME.SGP.Aplicacao
                    turmaSgp.DataFim.HasValue != turmaEol.DataFim.HasValue ||
                    (turmaSgp.DataFim.HasValue && turmaEol.DataFim.HasValue && turmaSgp.DataFim.Value.Date != turmaEol.DataFim.Value.Date))
                 {
-
                     await repositorioTurma.AtualizarTurmaSincronizacaoInstitucionalAsync(turmaEol);
                 }
 

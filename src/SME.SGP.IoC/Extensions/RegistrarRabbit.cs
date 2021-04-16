@@ -22,12 +22,13 @@ namespace SME.SGP.IoC
 
             var conexaoRabbit = factory.CreateConnection();
             IModel _channel = conexaoRabbit.CreateModel();
-            services.AddSingleton(conexaoRabbit);
-            services.AddSingleton(_channel);
+            //services.AddSingleton(conexaoRabbit);
 
-            _channel.ExchangeDeclare(RotasRabbit.ExchangeSgp, ExchangeType.Topic);
-            _channel.QueueDeclare(RotasRabbit.FilaSgp, false, false, false, null);
-            _channel.QueueBind(RotasRabbit.FilaSgp, RotasRabbit.ExchangeSgp, "*");
+            //services.AddTransient<IModel>(_channel);
+
+            //_channel.ExchangeDeclare(RotasRabbit.ExchangeSgp, ExchangeType.Topic);
+            //_channel.QueueDeclare(RotasRabbit.FilaSgp, false, false, false, null);
+            //_channel.QueueBind(RotasRabbit.FilaSgp, RotasRabbit.ExchangeSgp, "*");
         }
     }
 }

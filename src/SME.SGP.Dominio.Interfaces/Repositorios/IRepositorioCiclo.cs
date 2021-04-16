@@ -15,6 +15,6 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<IEnumerable<RetornoCicloDto>> ObterCiclosPorAnoModalidadeECodigoUe(FiltroCicloPorModalidadeECodigoUeDto filtroCicloPorModalidadeECodigoUeDto);
         Task<IEnumerable<RetornoCicloDto>> ObterCiclosPorAnoModalidadeECodigoUeAbrangencia(FiltroCicloPorModalidadeECodigoUeDto filtro, long usuarioId, Guid perfil);
-        Task<CicloRetornoDto> ObterCicloPorCodigoEol(long codigoEol);
+        Task<CicloEnsino> ObterCicloPorCodigoEol(long codigoEol);
     }
 }
