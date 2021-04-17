@@ -9,9 +9,9 @@ using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterTiposCalendarioPorAnoLetivoModalidadeoQuery : IRequest<IEnumerable<TipoCalendario>>
+    public class ObterTiposCalendarioPorAnoLetivoModalidadeQuery : IRequest<IEnumerable<TipoCalendario>>
     {
-        public ObterTiposCalendarioPorAnoLetivoModalidadeoQuery(int anoLetivo, string modalidadesStr)
+        public ObterTiposCalendarioPorAnoLetivoModalidadeQuery(int anoLetivo, string modalidadesStr)
         {
             AnoLetivo = anoLetivo;
             ModalidadesStr = modalidadesStr;
@@ -69,7 +69,7 @@ namespace SME.SGP.Aplicacao
         }
     }
 
-    public class ObterTiposCalendarioPorAnoLetivoModalidadeoQueryValidator : AbstractValidator<ObterTiposCalendarioPorAnoLetivoModalidadeoQuery>
+    public class ObterTiposCalendarioPorAnoLetivoModalidadeoQueryValidator : AbstractValidator<ObterTiposCalendarioPorAnoLetivoModalidadeQuery>
     {
         public ObterTiposCalendarioPorAnoLetivoModalidadeoQueryValidator()
         {
@@ -77,8 +77,8 @@ namespace SME.SGP.Aplicacao
             RuleFor(x => x).Must(ValidaListaModalidades).WithMessage(" Lista contém modalidade inválida");
         }
 
-        private bool ValidaListaModalidades(ObterTiposCalendarioPorAnoLetivoModalidadeoQuery query)
-            => ObterTiposCalendarioPorAnoLetivoModalidadeoQuery.ObterModalidadesDaLista(query.ModalidadesStr, out _);
+        private bool ValidaListaModalidades(ObterTiposCalendarioPorAnoLetivoModalidadeQuery query)
+            => ObterTiposCalendarioPorAnoLetivoModalidadeQuery.ObterModalidadesDaLista(query.ModalidadesStr, out _);
 
     }
 }

@@ -307,5 +307,12 @@ namespace SME.SGP.Dados.Repositorios
                 return ue;
             }, new { ids });
         }
+
+        public async Task<TipoEscola> ObterTipoEscolaPorCodigo(string ueCodigo)
+        {
+            var query = "select tipo_escola from ue where ue_id = @ueCodigo";
+
+            return await contexto.Conexao.QueryFirstOrDefaultAsync<TipoEscola>(query, new { ueCodigo });
+        }
     }
 }
