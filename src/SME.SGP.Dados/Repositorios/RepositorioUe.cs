@@ -307,5 +307,27 @@ namespace SME.SGP.Dados.Repositorios
 
             return await contexto.QueryAsync<Ue>(query, new { ids });
         }
+
+        public async Task<IEnumerable<Ue>> ObterUEsComDREsPorIds(long[] ids)
+        {
+            var query = @"select ue.*, dre.* 
+                            from ue 
+                           inner join dre on dre.id = ue.dre_id
+                           where ue.id = ANY(@ids)";
+
+            return await contexto.QueryAsync<Ue, Dre, Ue>(query, (ue, dre) =>
+            {
+                ue.Dre = dre;
+
+                return ue;
+            }, new { ids });
+        }
+
+        public async Task<TipoEscola> ObterTipoEscolaPorCodigo(string ueCodigo)
+        {
+            var query = "select tipo_escola from ue where ue_id = @ueCodigo";
+
+            return await contexto.Conexao.QueryFirstOrDefaultAsync<TipoEscola>(query, new { ueCodigo });
+        }
     }
 }

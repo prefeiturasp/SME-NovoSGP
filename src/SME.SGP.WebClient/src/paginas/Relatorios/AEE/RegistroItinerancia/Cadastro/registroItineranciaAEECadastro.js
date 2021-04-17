@@ -1,3 +1,4 @@
+import moment from 'moment';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -10,9 +11,11 @@ import {
   Card,
   Colors,
   JoditEditor,
+  Label,
   Loader,
   MarcadorSituacao,
   PainelCollapse,
+  SelectAutocomplete,
 } from '~/componentes';
 import { Cabecalho, Paginacao } from '~/componentes-sgp';
 import { RotasDto } from '~/dtos';
@@ -24,6 +27,7 @@ import {
   sucesso,
   verificaSomenteConsulta,
   history,
+  ServicoCalendarios,
 } from '~/servicos';
 import ServicoRegistroItineranciaAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoRegistroItineranciaAEE';
 import { ordenarPor } from '~/utils/funcoes/gerais';
@@ -61,6 +65,16 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
   const [paginaAtual, setPaginaAtual] = useState(1);
   const [auditoria, setAuditoria] = useState();
   const [imprimindo, setImprimindo] = useState(false);
+  const [carregandoTipos, setCarregandoTipos] = useState(false);
+  const [carregandoEventos, setCarregandoEventos] = useState(false);
+  const [valorTipoCalendario, setValorTipoCalendario] = useState('');
+  const [listaCalendario, setListaCalendario] = useState([]);
+  const [valorEvento, setValorEvento] = useState('');
+  const [tipoCalendarioSelecionado, setTipoCalendarioSelecionado] = useState(
+    ''
+  );
+  const [listaEvento, setListaEvento] = useState([]);
+  const [eventoId, setEventoId] = useState('');
 
   const usuario = useSelector(store => store.usuario);
   const permissoesTela =
@@ -78,6 +92,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
       alunos: alunosSelecionados,
       questoes: alunosSelecionados?.length ? [] : questoesItinerancia,
       anoLetivo: new Date().getFullYear(),
+      eventoId,
     };
     const camposComErro = [];
     if (!dataVisita) {
@@ -288,7 +303,43 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
     if (itinerancia.alunos?.length) {
       setAlunosSelecionados(itinerancia.alunos);
     }
+
+    if (itinerancia.tipoCalendarioId) {
+      setTipoCalendarioSelecionado(itinerancia.tipoCalendarioId);
+    }
+
+    if (itinerancia.eventoId) {
+      setEventoId(itinerancia.eventoId);
+    }
   };
+
+  useEffect(() => {
+    if (
+      listaCalendario?.length &&
+      tipoCalendarioSelecionado &&
+      !valorTipoCalendario
+    ) {
+      const tipo = listaCalendario?.find(t => {
+        return t.id === tipoCalendarioSelecionado;
+      });
+
+      if (tipo?.id) {
+        setValorTipoCalendario(tipo.descricao);
+      }
+    }
+  }, [listaCalendario, tipoCalendarioSelecionado, valorTipoCalendario]);
+
+  useEffect(() => {
+    if (listaEvento?.length && eventoId && !valorEvento) {
+      const evento = listaEvento?.find(t => {
+        return t.id === eventoId;
+      });
+
+      if (evento?.id) {
+        setValorEvento(evento.nome);
+      }
+    }
+  }, [listaEvento, eventoId, valorEvento]);
 
   const perguntarAntesDeCancelar = async () => {
     const resposta = await confirmar(
@@ -419,10 +470,10 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
     return uesSelecionados.length && uesSelecionados[0].ehInfantil;
   };
 
-  const gerarRelatorio = async () => {
+  const gerarRelatorio = () => {
     setImprimindo(true);
 
-    await ServicoRegistroItineranciaAEE.gerarRelatorio([match?.params?.id])
+    ServicoRegistroItineranciaAEE.gerarRelatorio([match?.params?.id])
       .then(() => {
         sucesso(
           'Solicitação de geração do relatório gerada com sucesso. Em breve você receberá uma notificação com o resultado.'
@@ -430,6 +481,101 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
       })
       .finally(setImprimindo(false))
       .catch(e => erros(e));
+  };
+
+  const selecionaTipoCalendario = descricao => {
+    setValorEvento();
+    setEventoId();
+    setListaEvento([]);
+    const tipo = listaCalendario?.find(t => {
+      return t.descricao === descricao;
+    });
+
+    if (tipo?.id) {
+      setValorTipoCalendario(descricao);
+      setTipoCalendarioSelecionado(tipo.id);
+    }
+    setModoEdicao(true);
+  };
+
+  const hasAnoLetivoClause = t =>
+    moment(dataVisita).format('YYYY') ?? false
+      ? String(t.anoLetivo) === moment(dataVisita).format('YYYY')
+      : true;
+
+  const hasActiveSituation = t => t.situacao;
+
+  const filterAllowedCalendarTypes = data => {
+    return data.filter(hasAnoLetivoClause).filter(hasActiveSituation);
+  };
+
+  const loadTiposCalendarioEffect = () => {
+    let isSubscribed = true;
+
+    (async () => {
+      setCarregandoTipos(true);
+
+      const { data } = await ServicoCalendarios
+        .obterTiposCalendarioAutoComplete
+        // pesquisaTipoCalendario
+        ();
+
+      if (isSubscribed) {
+        const allowedList = filterAllowedCalendarTypes(data);
+        setListaCalendario(allowedList);
+        selecionaTipoCalendario(
+          allowedList.length > 0 ? allowedList[0].descricao : ''
+        );
+        setCarregandoTipos(false);
+      }
+    })();
+
+    return () => {
+      isSubscribed = false;
+    };
+  };
+
+  useEffect(() => {
+    if (dataVisita) {
+      loadTiposCalendarioEffect();
+    }
+  }, [dataVisita]);
+
+  const obterListaEventos = async tipoCalendarioId => {
+    setCarregandoEventos(true);
+    const retorno = await ServicoRegistroItineranciaAEE.obterEventos(
+      tipoCalendarioId
+    )
+      .catch(e => erros(e))
+      .finally(() => setCarregandoEventos(false));
+
+    if (retorno?.data?.length) {
+      setListaEvento(retorno.data);
+    } else {
+      setEventoId();
+      setListaEvento([]);
+    }
+  };
+
+  useEffect(() => {
+    if (tipoCalendarioSelecionado) {
+      obterListaEventos(tipoCalendarioSelecionado);
+    } else {
+      setEventoId();
+      setListaEvento([]);
+    }
+  }, [tipoCalendarioSelecionado]);
+
+  const selecionaEvento = nome => {
+    const evento = listaEvento?.find(t => {
+      return t.nome === nome;
+    });
+
+    if (evento?.id) {
+      setValorEvento(evento.nome);
+      setEventoId(evento?.id);
+    }
+    setModoEdicao(true);
   };
 
   return (
@@ -508,6 +654,49 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
                   desabilitarData={desabilitarDataVisita}
                   desabilitado={desabilitarCamposPorPermissao()}
                 />
+              </div>
+            </div>
+            <div className="row mb-4">
+              <div className="col-6">
+                <Label control="tipoCalendarioId" text="Tipo de Calendário" />
+                <Loader loading={carregandoTipos} tip="">
+                  <SelectAutocomplete
+                    hideLabel
+                    showList
+                    isHandleSearch
+                    placeholder="Selecione um calendário"
+                    className="col-md-12"
+                    name="tipoCalendarioId"
+                    id="select-tipo-calendario"
+                    lista={listaCalendario}
+                    valueField="id"
+                    textField="descricao"
+                    onSelect={valor => selecionaTipoCalendario(valor)}
+                    value={valorTipoCalendario}
+                    allowClear
+                  />
+                </Loader>
+              </div>
+              <div className="col-6">
+                <Label control="evento" text="Evento" />
+                <Loader loading={carregandoEventos} tip="">
+                  <SelectAutocomplete
+                    hideLabel
+                    showList
+                    isHandleSearch
+                    placeholder="Selecione um evento"
+                    className="col-md-12"
+                    name="eventoId"
+                    id="select-evento"
+                    key="select-evento-key"
+                    lista={listaEvento}
+                    valueField="id"
+                    textField="nome"
+                    onSelect={valor => selecionaEvento(valor)}
+                    value={valorEvento}
+                    allowClear
+                  />
+                </Loader>
               </div>
             </div>
             <div className="row mb-4">
