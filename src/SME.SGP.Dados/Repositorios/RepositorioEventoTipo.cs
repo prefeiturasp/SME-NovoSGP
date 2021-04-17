@@ -112,5 +112,12 @@ namespace SME.SGP.Dados.Repositorios
                 and not exists (select 1 from perfil_evento_tipo pet where not pet.excluido and pet.evento_tipo_id = et.id and pet.exclusivo)
                ))");
         }
+
+        public async Task<long> ObterIdPorCodigo(int codigo)
+        {
+            var query = "select id from evento_tipo where codigo = @codigo";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<long>(query, new { codigo });
+        }
     }
 }

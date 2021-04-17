@@ -14,5 +14,6 @@ namespace SME.SGP.Dominio.Interfaces
         EventoTipo ObterTipoEventoPorTipo(TipoEvento tipoEvento);
 
         EventoTipo ObterPorCodigo(long id);
+        Task<long> ObterIdPorCodigo(int codigo);
     }
 }

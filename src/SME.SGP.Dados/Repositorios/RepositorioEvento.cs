@@ -1241,15 +1241,14 @@ namespace SME.SGP.Dados.Repositorios
 		                    and ((tc.modalidade = 1 and au.modalidade_codigo in (5, 6)) 
 		                      or (tc.modalidade = 2 and au.modalidade_codigo = 3)
 		                      or (tc.modalidade = 3 and au.modalidade_codigo = 1))
-	                    left join perfil_evento_tipo pet on pet.codigo_perfil = @perfil and not pet.excluido
+                        left join itinerancia i on i.evento_id = e.id
                     where et.ativo 
 	                    and not et.excluido
 	                    and not e.excluido
+	                    and i.id is null
 	                    and extract(year from e.data_inicio) = tc.ano_letivo
 	                    and et.codigo = 28
-	                    and e.tipo_calendario_id = @tipoCalendarioId
-	                    and (pet.id is null or pet.evento_tipo_id = et.id)";
-
+	                    and e.tipo_calendario_id = @tipoCalendarioId";
             return await database.Conexao.QueryAsync<EventoDataDto>(query, new { tipoCalendarioId, login, perfil, historico });
         }
 

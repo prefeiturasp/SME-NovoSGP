@@ -25,8 +25,13 @@ namespace SME.SGP.Aplicacao.Commands
         {
             var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
 
+            var tipoCalendarioId = await ObterTipoCalendarioId(request.UeCodigo);
+            var tipoEventoId = await ObterTipoEventoItinerancia();
+
             var evento = new Evento()
             {
+                TipoCalendarioId = tipoCalendarioId,
+                TipoEventoId = tipoEventoId,
                 DreId = request.DreCodigo,
                 UeId = request.UeCodigo,
                 DataInicio = request.DataEvento,
@@ -47,6 +52,17 @@ namespace SME.SGP.Aplicacao.Commands
             {
                 throw new Exception($"Erro ao salvar evento da itinerância: {e.Message}");
             }        
+        }
+
+        private async Task<long> ObterTipoEventoItinerancia()
+            => await mediator.Send(new ObterEventoTipoIdPorCodigoQuery(TipoEvento.ItineranciaPAAI));
+
+        private async Task<long> ObterTipoCalendarioId(string ueCodigo)
+        {
+            var anoLetivo = DateTime.Now.Year;
+            var semestre = DateTime.Now.Semestre();
+
+            return await mediator.Send(new ObterTipoCalendarioIdPorCodigoUEQuery(ueCodigo, anoLetivo, semestre));
         }
 
         private string ObterNomeEvento(CriarEventoItineranciaPAAICommand request, Usuario usuario)
