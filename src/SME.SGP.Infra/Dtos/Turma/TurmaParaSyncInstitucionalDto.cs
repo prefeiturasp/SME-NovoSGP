@@ -5,7 +5,7 @@ namespace SME.SGP.Infra
 {
     public class TurmaParaSyncInstitucionalDto
     {
-        public int Ano { get; set; }
+        public string Ano { get; set; }
         public int AnoLetivo { get; set; }
         public int Codigo { get; set; }
         public int TipoTurma { get; set; }

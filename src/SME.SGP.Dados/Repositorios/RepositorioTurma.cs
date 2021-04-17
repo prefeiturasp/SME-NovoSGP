@@ -747,7 +747,7 @@ namespace SME.SGP.Dados.Repositorios
             var parametros = new
             {
                 turma.NomeTurma,
-                Ano = turma.Ano.ToString(),
+                turma.Ano,
                 turma.AnoLetivo,
                 codigoModalidade = (int)turma.CodigoModalidade,
                 turma.Semestre,
