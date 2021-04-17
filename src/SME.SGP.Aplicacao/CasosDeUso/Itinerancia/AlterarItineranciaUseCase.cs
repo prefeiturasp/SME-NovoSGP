@@ -4,6 +4,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -81,8 +82,11 @@ namespace SME.SGP.Aplicacao.Interfaces
         private async Task SalvarEventosItinerancia(ItineranciaDto dto)
         {
             foreach (var ue in dto.Ues)
-                await mediator.Send(new CriarEventoItineranciaPAAICommand(dto.Id, ue.CodigoDre, ue.CodigoUe, dto.DataRetornoVerificacao.Value, dto.DataVisita, dto.ObjetivosVisita));
+                await mediator.Send(new CriarEventoItineranciaPAAICommand(dto.Id, ue.CodigoDre, ue.CodigoUe, dto.DataRetornoVerificacao.Value, dto.DataVisita, ObterObjetivos(dto.ObjetivosVisita)));
         }
+
+        private IEnumerable<ItineranciaObjetivoDescricaoDto> ObterObjetivos(IEnumerable<ItineranciaObjetivoDto> objetivosVisita)
+            => objetivosVisita.Select(a => (ItineranciaObjetivoDescricaoDto)a);
 
         private async Task AtualizaDatasEventos(long id, DateTime? dataRetornoVerificacao)
         {

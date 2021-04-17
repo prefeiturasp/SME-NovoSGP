@@ -77,5 +77,8 @@ namespace SME.SGP.Dominio
             if (!objetivosBase.Any(o => o.Id == objetivoBase.Id))
                 objetivosBase.Add(objetivoBase);
         }
+
+        public bool PossuiAlunos()
+            => Alunos != null && Alunos.Any();
     }
 }
