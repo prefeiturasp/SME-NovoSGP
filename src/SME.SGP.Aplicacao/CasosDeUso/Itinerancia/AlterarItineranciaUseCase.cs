@@ -1,6 +1,8 @@
 ﻿using MediatR;
+using Sentry;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -47,6 +49,8 @@ namespace SME.SGP.Aplicacao.Interfaces
 
                     unitOfWork.PersistirTransacao();
 
+                    await EnviarNotificacao(itinerancia, dto);
+
                     return auditoriaDto;
                 }
                 catch (Exception)
@@ -88,6 +92,29 @@ namespace SME.SGP.Aplicacao.Interfaces
         private async Task RemoverEventosItinerancia(long id)
         {
             await mediator.Send(new RemoverEventosItineranciaCommand(id));
+        }
+
+        private async Task EnviarNotificacao(Itinerancia itinerancia, ItineranciaDto dto)
+        {
+            SentrySdk.AddBreadcrumb($"Mensagem RotaNotificacaoRegistroItineranciaInseridoUseCase", "Rabbit - RotaNotificacaoRegistroItineranciaInseridoUseCase");
+
+            var verificaWorkflow = await mediator.Send(new ObterWorkflowItineranciaPorItineranciaIdQuery(itinerancia.Id));
+            WorkflowAprovacao workflow = null;
+
+            if (verificaWorkflow != null)
+                workflow = await mediator.Send(new ObterWorkflowPorIdQuery(verificaWorkflow.WfAprovacaoId));
+
+            if(workflow == null || workflow.Niveis.Any(a => a.Status == WorkflowAprovacaoNivelStatus.Reprovado))
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaNotificacaoRegistroItineranciaInseridoUseCase,
+                    new NotificacaoSalvarItineranciaDto
+                    {
+                        CriadoRF = itinerancia.CriadoRF,
+                        CriadoPor = itinerancia.CriadoPor,
+                        DataVisita = dto.DataVisita,
+                        Ues = dto.Ues,
+                        Estudantes = dto.Alunos,
+                        ItineranciaId = itinerancia.Id
+                    }, Guid.NewGuid(), null));
         }
 
         public async Task<bool> ExluirFilhosItinerancia(Itinerancia itinerancia)

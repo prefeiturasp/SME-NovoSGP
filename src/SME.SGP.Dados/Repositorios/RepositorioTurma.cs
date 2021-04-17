@@ -283,7 +283,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<long>> ObterTurmasPorUeAnos(string ueCodigo, int anoLetivo, string[] anos, int modalidadeId)
         {
-            var query = new StringBuilder(@"select x.turma_Id from (select distinct on (2) t.turma_id , t.ano from turma t
+            var query = new StringBuilder(@"select t.turma_id from turma t
                                                 inner join ue u on u.id  = t.ue_id 
                                             where  t.ano_letivo = @anoLetivo and t.modalidade_codigo = @modalidadeId ");
 
@@ -292,8 +292,6 @@ namespace SME.SGP.Dados.Repositorios
 
             if (anos != null && anos.Length > 0)
                 query.AppendLine("and t.ano = any(@anos) ");
-
-            query.AppendLine(") x");
 
             return await contexto.Conexao.QueryAsync<long>(query.ToString(), new { ueCodigo, anos, anoLetivo, modalidadeId });
 

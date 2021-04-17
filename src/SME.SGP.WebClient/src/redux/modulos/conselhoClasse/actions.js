@@ -132,3 +132,8 @@ export const setExibirLoaderGeralConselhoClasse = payload => ({
   type: '@conselhoClasse/setExibirLoaderGeralConselhoClasse',
   payload,
 });
+
+export const setJustificativaAtual = payload => ({
+  type: '@conselhoClasse/setJustificativaAtual',
+  payload,
+});

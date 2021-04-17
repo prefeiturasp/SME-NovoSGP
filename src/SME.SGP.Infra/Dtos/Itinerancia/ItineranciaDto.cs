@@ -24,5 +24,7 @@ namespace SME.SGP.Infra
         public long? TipoCalendarioId { get; set; }
         public long? EventoId { get; set; }
         public AuditoriaDto Auditoria { get; set; }
+        public string StatusWorkflow { get; set; }
+        public bool PodeEditar { get; set; }
     }
 }

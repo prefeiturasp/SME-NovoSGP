@@ -1,7 +1,9 @@
 ﻿using MediatR;
+using Sentry;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -55,6 +57,19 @@ namespace SME.SGP.Aplicacao
                         await SalvarEventoItinerancia(itinerancia.Id, itineranciaDto);
 
                     unitOfWork.PersistirTransacao();
+
+                    SentrySdk.AddBreadcrumb($"Mensagem RotaNotificacaoRegistroItineranciaInseridoUseCase", "Rabbit - RotaNotificacaoRegistroItineranciaInseridoUseCase");
+
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaNotificacaoRegistroItineranciaInseridoUseCase,
+                        new NotificacaoSalvarItineranciaDto
+                        {
+                            CriadoRF = itinerancia.CriadoRF,
+                            CriadoPor = itinerancia.CriadoPor,
+                            DataVisita = itineranciaDto.DataVisita,
+                            Ues = itineranciaDto.Ues,
+                            Estudantes = itineranciaDto.Alunos,
+                            ItineranciaId = itinerancia.Id
+                        }, Guid.NewGuid(), null));
 
                     return itinerancia;
                 }
