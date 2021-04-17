@@ -66,7 +66,7 @@ namespace SME.SGP.Aplicacao.Commands
         }
 
         private string ObterNomeEvento(CriarEventoItineranciaPAAICommand request, Usuario usuario)
-            => $"tinerância PAAI {usuario.Nome}";
+            => $"Itinerância PAAI {usuario.Nome}";
 
         private string ObterDescricaoEvento(CriarEventoItineranciaPAAICommand request)
         {

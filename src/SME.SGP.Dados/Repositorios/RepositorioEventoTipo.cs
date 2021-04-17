@@ -106,11 +106,15 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine("and lower(f_unaccent(descricao)) like @descricao");
 
             sql.AppendLine(@" and (
-  	            exists (select 1 from perfil_evento_tipo pet where not pet.excluido and pet.codigo_perfil = :perfilCodigo and pet.evento_tipo_id = et.id and pet.exclusivo)
-                    or (
-   		            not exists (select 1 from perfil_evento_tipo pet where not pet.excluido and pet.codigo_perfil = :perfilCodigo and pet.exclusivo)
-                and not exists (select 1 from perfil_evento_tipo pet where not pet.excluido and pet.evento_tipo_id = et.id and pet.exclusivo)
-               ))");
+                -- Tem acesso exclusivo ao tipo e permite cadastro
+                exists (select 1 from perfil_evento_tipo pet where not pet.excluido and pet.codigo_perfil = :perfilCodigo and pet.evento_tipo_id = et.id and pet.exclusivo)
+                --ou (não tem acesso exclusivo pro perfil
+                  or (not exists (select 1 from perfil_evento_tipo pet where not pet.excluido and pet.codigo_perfil = :perfilCodigo and pet.exclusivo)
+                  --e (tem permissao de cadastro pro tipo evento
+                      and (exists (select 1 from perfil_evento_tipo pet where not pet.excluido and pet.codigo_perfil = :perfilCodigo and pet.evento_tipo_id = et.id and pet.permite_cadastro)
+                  --ou nao tem configuracao pro tipo evento))
+                      or not exists (select 1 from perfil_evento_tipo pet where not pet.excluido and pet.evento_tipo_id = et.id))
+                  ))");
         }
 
         public async Task<long> ObterIdPorCodigo(int codigo)
