@@ -91,7 +91,6 @@ namespace SME.SGP.Dados.Repositorios
         private static void ObtenhaCabecalhoConsulta(StringBuilder sql, bool contador)
         {
             sql.AppendLine($"select {(contador ? "count(et.*)" : "et.*")} from evento_tipo et");
-            sql.AppendLine($" left join perfil_evento_tipo pet on pet.codigo_perfil = @perfilCodigo and not pet.excluido");
             sql.AppendLine($"where not et.excluido");
         }
 
@@ -106,7 +105,12 @@ namespace SME.SGP.Dados.Repositorios
             if (!string.IsNullOrWhiteSpace(descricao))
                 sql.AppendLine("and lower(f_unaccent(descricao)) like @descricao");
 
-            sql.AppendLine("and (pet.id is null or pet.evento_tipo_id = et.id)");
+            sql.AppendLine(@" and (
+  	            exists (select 1 from perfil_evento_tipo pet where not pet.excluido and pet.codigo_perfil = :perfilCodigo and pet.evento_tipo_id = et.id and pet.exclusivo)
+                    or (
+   		            not exists (select 1 from perfil_evento_tipo pet where not pet.excluido and pet.codigo_perfil = :perfilCodigo and pet.exclusivo)
+                and not exists (select 1 from perfil_evento_tipo pet where not pet.excluido and pet.evento_tipo_id = et.id and pet.exclusivo)
+               ))");
         }
     }
 }
