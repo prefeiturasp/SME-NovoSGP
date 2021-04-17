@@ -23,8 +23,7 @@ namespace SME.SGP.Aplicacao
         {
             byte[] body = FormataBodyWorker(request);
 
-            //rabbitChannel.QueueBind(request.Fila, RotasRabbit.ExchangeGoogleSync, RotasRabbit.FilaGoogleSync);
-            //rabbitChannel.BasicPublish(RotasRabbit.ExchangeGoogleSync, request.Fila, null, body);
+            rabbitChannel.BasicPublish(RotasRabbit.ExchangeGoogleSync, request.Fila, null, body);
 
             SentrySdk.CaptureMessage("3 - AdicionaFilaWorkerGoogleClassroom");
 
