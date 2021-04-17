@@ -105,7 +105,7 @@ namespace SME.SGP.Aplicacao
             else
             {
                 if (turmaSgp.Nome != turmaEol.NomeTurma ||
-                   turmaSgp.Ano != turmaEol.Ano.ToString() ||
+                   turmaSgp.Ano != turmaEol.Ano ||
                    (int)turmaSgp.TipoTurma != turmaEol.TipoTurma ||
                    turmaSgp.AnoLetivo != turmaEol.AnoLetivo ||
                    turmaSgp.ModalidadeCodigo != turmaEol.CodigoModalidade ||
