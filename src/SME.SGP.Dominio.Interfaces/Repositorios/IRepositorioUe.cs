@@ -36,6 +36,8 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<Ue>> ObterUesPorIds(long[] ids);
         Task<IEnumerable<Ue>> ObterUEsComDREsPorIds(long[] ids);
         Task<Ue> ObterUEPorTurmaId(long turmaId);
+        Task<long> IncluirAsync(Ue ueParaIncluir);
+        Task AtualizarAsync(Ue ueParaAtualizar);
         Task<Ue> ObterUeComDrePorId(long ueId);
     }
 }

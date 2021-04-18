@@ -308,6 +308,16 @@ namespace SME.SGP.Dados.Repositorios
             return await contexto.QueryAsync<Ue>(query, new { ids });
         }
 
+        public async Task<long> IncluirAsync(Ue ueParaIncluir)
+        {
+            return (long)await contexto.Conexao.InsertAsync(ueParaIncluir);
+        }
+
+        public async Task AtualizarAsync(Ue ueParaAtualizar)
+        {
+            await contexto.Conexao.UpdateAsync(ueParaAtualizar);
+        }
+
         public async Task<IEnumerable<Ue>> ObterUEsComDREsPorIds(long[] ids)
         {
             var query = @"select ue.*, dre.* 

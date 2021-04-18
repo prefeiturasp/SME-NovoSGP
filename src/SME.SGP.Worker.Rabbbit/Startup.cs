@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Sentry;
+using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dados;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Utilitarios;
 using SME.SGP.IoC;
 using SME.SGP.Worker.RabbitMQ;
 
@@ -32,21 +34,16 @@ namespace SME.SGP.Worker.Rabbbit
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddHttpContextAccessor();
+            
             RegistraDependencias.Registrar(services);
+            
             RegistrarHttpClients(services, configuration);
-            services.AddApplicationInsightsTelemetry(configuration);
-            var provider = services.BuildServiceProvider();
-            //services.AdicionarRedis(configuration, provider.GetService<IServicoLog>());
-
-            if (env.EnvironmentName != "teste-integrado")
-            {
-                services.AddRabbit();
-            }
-
+            
+            services.AddApplicationInsightsTelemetry(configuration);         
+            
             services.AddHostedService<WorkerRabbitMQ>();
 
-
-            // Teste para injeção do client de telemetria em classe estática 
+            ConfiguraVariaveisAmbiente(services);
 
             var serviceProvider = services.BuildServiceProvider();
             var clientTelemetry = serviceProvider.GetService<TelemetryClient>();
@@ -54,6 +51,13 @@ namespace SME.SGP.Worker.Rabbbit
             SentrySdk.Init(configuration.GetValue<string>("Sentry:DSN"));
 
             services.AddMemoryCache();
+        }
+        private void ConfiguraVariaveisAmbiente(IServiceCollection services)
+        {
+            var configuracaoRabbitOptions = new ConfiguracaoRabbitOptions();
+            configuration.GetSection(nameof(ConfiguracaoRabbitOptions)).Bind(configuracaoRabbitOptions, c => c.BindNonPublicProperties = true);
+
+            services.AddSingleton(configuracaoRabbitOptions);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -133,7 +137,6 @@ namespace SME.SGP.Worker.Rabbbit
                 c.DefaultRequestHeaders.Add("Accept", "application/json");
             });
 
-        }
-
+        }   
     }
 }
