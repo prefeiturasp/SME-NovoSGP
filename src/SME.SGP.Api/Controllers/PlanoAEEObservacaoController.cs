@@ -32,5 +32,15 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(dto));
         }
+
+        [HttpDelete("{id}")]
+        [ProducesResponseType(typeof(AuditoriaDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.PAEE_C, Policy = "Bearer")]
+        public async Task<IActionResult> Excluir(long id, [FromServices] IExcluirPlanoAEEObservacaoUseCase useCase)
+        {
+            return Ok(await useCase.Executar(id));
+        }
     }
 }
