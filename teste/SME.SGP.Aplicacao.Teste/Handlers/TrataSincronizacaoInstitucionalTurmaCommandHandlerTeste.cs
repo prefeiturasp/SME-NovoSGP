@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
             //Arrange
             var turma = new TurmaParaSyncInstitucionalDto()
             {
-                Ano = 4,
+                Ano = "4",
                 AnoLetivo = 2021,
                 Codigo = 2258053,
                 TipoTurma = 1,
@@ -66,7 +66,7 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
             //Arrange
             var turma = new TurmaParaSyncInstitucionalDto()
             {
-                Ano = 4,
+                Ano = "4",
                 AnoLetivo = 2021,
                 Codigo = 2258053,
                 TipoTurma = 1,
@@ -104,7 +104,7 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
             //Arrange
             var turma = new TurmaParaSyncInstitucionalDto()
             {
-                Ano = 4,
+                Ano = "4",
                 AnoLetivo = 2021,
                 Codigo = 2258053,
                 TipoTurma = 1,
@@ -163,7 +163,7 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
             //Arrange
             var turma = new TurmaParaSyncInstitucionalDto()
             {
-                Ano = 4,
+                Ano = "4",
                 AnoLetivo = 2021,
                 Codigo = 2258053,
                 TipoTurma = 1,
@@ -205,7 +205,7 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
             //Arrange
             var turma = new TurmaParaSyncInstitucionalDto()
             {
-                Ano = 4,
+                Ano = "4",
                 AnoLetivo = 2021,
                 Codigo = 2258053,
                 TipoTurma = 1,
@@ -263,7 +263,7 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
             //Arrange
             var turma = new TurmaParaSyncInstitucionalDto()
             {
-                Ano = 4,
+                Ano = "4",
                 AnoLetivo = 2021,
                 Codigo = 2340746,
                 TipoTurma = 1,
