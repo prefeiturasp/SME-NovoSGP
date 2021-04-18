@@ -807,6 +807,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterAlunosAtivosPorUeENomeUseCase, ObterAlunosAtivosPorUeENomeUseCase>();
 
             services.TryAddScoped<ICriarPlanoAEEObservacaoUseCase, CriarPlanoAEEObservacaoUseCase>();
+            services.TryAddScoped<IAlterarPlanoAEEObservacaoUseCase, AlterarPlanoAEEObservacaoUseCase>();
 
             //Notificacoes EncaminhamentoAEE
             services.TryAddScoped<INotificacaoConclusaoEncaminhamentoAEEUseCase, NotificacaoConclusaoEncaminhamentoAEEUseCase>();
