@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<AuditoriaDto> Executar(PersistenciaPlanoAEEObservacaoDto dto)
         {
-            return await mediator.Send(new AlterarPlanoAEEObservacaoCommand(dto.Id, dto.Observacao, dto.Usuarios));
+            return await mediator.Send(new AlterarPlanoAEEObservacaoCommand(dto.Id, dto.PlanoAEEId, dto.Observacao, dto.Usuarios));
         }
     }
 }
