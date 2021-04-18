@@ -63,13 +63,13 @@ namespace SME.SGP.Aplicacao
                 AulasPrevistas = aulasPrevistas,
                 Bimestre = periodoEscolar.Bimestre,
                 FrequenciaAlunos = frequenciaAlunos.OrderBy(x => x.Nome),
-                MostraColunaCompensacaoAusencia = turma.ModalidadeCodigo != Modalidade.Infantil,
-                MostraLabelAulasPrevistas = turma.ModalidadeCodigo != Modalidade.Infantil
+                MostraColunaCompensacaoAusencia = turma.ModalidadeCodigo != Modalidade.InfantilPreEscola,
+                MostraLabelAulasPrevistas = turma.ModalidadeCodigo != Modalidade.InfantilPreEscola
             };
         }
 
         private async Task<int> ObterAulasPrevistasAsync(Turma turma, long componenteCurricularId, long tipoCalendarioId, int? bimestre = null)
-            => turma.ModalidadeCodigo != Modalidade.Infantil
+            => turma.ModalidadeCodigo != Modalidade.InfantilPreEscola
                 ? await mediator.Send(new ObterQuantidadeAulasPrevistasPorTurmaEBimestreEComponenteCurricularQuery(turma.CodigoTurma, tipoCalendarioId, componenteCurricularId, bimestre))
                 : default;
 
@@ -127,8 +127,8 @@ namespace SME.SGP.Aplicacao
                 AulasPrevistas = aulasPrevistas,
                 Bimestre = BimestreFinal,
                 FrequenciaAlunos = frequenciaAlunos.OrderBy(x => x.Nome),
-                MostraColunaCompensacaoAusencia = turma.ModalidadeCodigo != Modalidade.Infantil,
-                MostraLabelAulasPrevistas = turma.ModalidadeCodigo != Modalidade.Infantil
+                MostraColunaCompensacaoAusencia = turma.ModalidadeCodigo != Modalidade.InfantilPreEscola,
+                MostraLabelAulasPrevistas = turma.ModalidadeCodigo != Modalidade.InfantilPreEscola
             };
         }
 

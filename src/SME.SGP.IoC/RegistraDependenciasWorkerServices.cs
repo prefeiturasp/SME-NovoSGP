@@ -29,8 +29,7 @@ namespace SME.SGP.IoC
     {
         public static void Registrar(IServiceCollection services)
         {
-            RegistrarMediator(services);
-            RegistrarRabbit(services);
+            RegistrarMediator(services);            
 
             ResgistraDependenciaHttp(services);
             RegistrarRepositorios(services);
@@ -47,29 +46,6 @@ namespace SME.SGP.IoC
             services.AddMediatR(assembly);
             services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidacoesPipeline<,>));
         }
-        private static void RegistrarRabbit(IServiceCollection services)
-        {
-            var factory = new ConnectionFactory
-            {
-                HostName = Environment.GetEnvironmentVariable("ConfiguracaoRabbit__HostName"),
-                UserName = Environment.GetEnvironmentVariable("ConfiguracaoRabbit__UserName"),
-                Password = Environment.GetEnvironmentVariable("ConfiguracaoRabbit__Password"),
-                VirtualHost = Environment.GetEnvironmentVariable("ConfiguracaoRabbit__Virtualhost")
-            };
-
-            var conexaoRabbit = factory.CreateConnection();
-            IModel canalRabbit = conexaoRabbit.CreateModel();
-            services.AddSingleton(conexaoRabbit);
-            services.AddSingleton(canalRabbit);
-
-            canalRabbit.ExchangeDeclare(RotasRabbit.ExchangeSgp, ExchangeType.Topic);
-            canalRabbit.QueueDeclare(RotasRabbit.FilaSgp, false, false, false, null);
-            canalRabbit.QueueBind(RotasRabbit.FilaSgp, RotasRabbit.ExchangeSgp, "*");
-
-            canalRabbit.QueueDeclare(RotasRabbit.FilaSincronizacaoInstitucional, false, false, false, null);
-            canalRabbit.QueueBind(RotasRabbit.FilaSincronizacaoInstitucional, RotasRabbit.ExchangeSgp, "*", null);
-        }
-
         private static void RegistrarComandos(IServiceCollection services)
         {
             services.TryAddScopedWorkerService<IComandosPlanoCiclo, ComandosPlanoCiclo>();
@@ -204,7 +180,6 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IRepositorioDre, RepositorioDre>();
             services.TryAddScopedWorkerService<IRepositorioEvento, RepositorioEvento>();
             services.TryAddScopedWorkerService<IRepositorioEventoMatricula, RepositorioEventoMatricula>();
-            services.TryAddScopedWorkerService<IRepositorioEventoTipo, RepositorioEventoTipo>();
             services.TryAddScopedWorkerService<IRepositorioFeriadoCalendario, RepositorioFeriadoCalendario>();
             services.TryAddScopedWorkerService<IRepositorioFrequencia, RepositorioFrequencia>();
             services.TryAddScopedWorkerService<IRepositorioFrequenciaAlunoDisciplinaPeriodo, RepositorioFrequenciaAlunoDisciplinaPeriodo>();
@@ -309,6 +284,10 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IRepositorioEncaminhamentoAEESecao, RepositorioEncaminhamentoAEESecao>();
             services.TryAddScopedWorkerService<IRepositorioQuestaoEncaminhamentoAEE, RepositorioQuestaoEncaminhamentoAEE>();
             services.TryAddScopedWorkerService<IRepositorioRespostaEncaminhamentoAEE, RepositorioRespostaEncaminhamentoAEE>();
+
+            // EventoTipo
+            services.TryAddScopedWorkerService<IRepositorioEventoTipo, RepositorioEventoTipo>();
+            services.TryAddScopedWorkerService<IRepositorioPerfilEventoTipo, RepositorioPerfilEventoTipo>();
 
             // Questionario
             services.TryAddScopedWorkerService<IRepositorioQuestionario, RepositorioQuestionario>();
@@ -543,8 +522,21 @@ namespace SME.SGP.IoC
 
             services.TryAddScopedWorkerService<IExecutarSyncGeralGoogleClassroomUseCase, ExecutarSyncGeralGoogleClassroomUseCase>();
 
-            services.TryAddScopedWorkerService<IEnviarSincronizacaoEstruturaInstitucionalUesUseCase, EnviarSincronizacaoEstruturaInstitucionalUesUseCase>();
-            services.TryAddScopedWorkerService<IExecutaSincronizacaoEstruturaInstitucionalUesUseCase, ExecutaSincronizacaoEstruturaInstitucionalUesUseCase>();
+            services.TryAddScopedWorkerService<IExecutarSincronizacaoInstitucionalSyncUseCase, ExecutarSincronizacaoEstruturaInstitucionalSyncUseCase>();
+
+            services.TryAddScopedWorkerService<IExecutarSincronizacaoInstitucionalDreSyncUseCase, ExecutarSincronizacaoInstitucionalDreSyncUseCase>();
+            services.TryAddScopedWorkerService<IExecutarSincronizacaoInstitucionalDreTratarUseCase, ExecutarSincronizacaoInstitucionalDreTratarUseCase>();
+
+            services.TryAddScopedWorkerService<IExecutarSincronizacaoInstitucionalUeTratarUseCase, ExecutarSincronizacaoInstitucionalUeTratarUseCase>();
+
+            services.TryAddScopedWorkerService<IExecutarSincronizacaoInstitucionalTipoEscolaSyncUseCase, ExecutarSincronizacaoInstitucionalTipoEscolaSyncUseCase>();
+            services.TryAddScopedWorkerService<IExecutarSincronizacaoInstitucionalTipoEscolaTratarUseCase, ExecutarSincronizacaoInstitucionalTipoEscolaTratarUseCase>();
+            services.TryAddScopedWorkerService<IExecutarSincronizacaoInstitucionalCicloSyncUseCase, ExecutarSincronizacaoInstitucionalCicloSyncUseCase>();
+            services.TryAddScopedWorkerService<IExecutarSincronizacaoInstitucionalCicloTratarUseCase, ExecutarSincronizacaoInstitucionalCicloTratarUseCase>();
+            services.TryAddScopedWorkerService<IExecutarSincronizacaoInstitucionalTurmaSyncUseCase, ExecutarSincronizacaoInstitucionalTurmaSyncUseCase>();
+            services.TryAddScopedWorkerService<IExecutarSincronizacaoInstitucionalTurmaTratarUseCase, ExecutarSincronizacaoInstitucionalTurmaTratarUseCase>();
+
+            
 
             services.TryAddScopedWorkerService<INotificacaoSalvarItineranciaUseCase, NotificacaoSalvarItineranciaUseCase>();
         }

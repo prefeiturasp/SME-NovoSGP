@@ -20,7 +20,6 @@ namespace SME.SGP.Aplicacao
         {
             var itinerancia = await mediator.Send(new ObterItineranciaPorIdQuery(id));
 
-
             if (itinerancia == null)
                 throw new NegocioException($"Não foi possível localizar a itinerância de Id {id}");
 
@@ -42,6 +41,8 @@ namespace SME.SGP.Aplicacao
                 ObjetivosVisita = MontarObjetivosItinerancia(itinerancia),
                 Questoes = MontarQuestoesItinerancia(itinerancia, questoesBase),
                 Ues = MontarUes(ues, itinerancia),
+                TipoCalendarioId = await ObterTipoCalendario(itinerancia.EventoId),
+                EventoId = itinerancia.EventoId,
                 CriadoRF = itinerancia.CriadoRF,
                 Auditoria = (AuditoriaDto)itinerancia,
                 StatusWorkflow = workflow != null ? ObterMensagemStatus(workflow.Niveis, verificaWorkflow.StatusAprovacao) : "",
@@ -101,6 +102,9 @@ namespace SME.SGP.Aplicacao
             else
                 return "Sem status informado";
         }
+        
+        private async Task<long> ObterTipoCalendario(long? eventoId)
+            => eventoId.HasValue ? await mediator.Send(new ObterTipoCalendarioIdPorEventoQuery(eventoId.Value)) : 0;
 
         private IEnumerable<ItineranciaUeDto> MontarUes(IEnumerable<Ue> ues, Itinerancia itinerancia)
         {
@@ -112,6 +116,7 @@ namespace SME.SGP.Aplicacao
                      UeId = ue.Id,
                      Descricao = $"{ue.TipoEscola.ShortName()} - {ue.Nome}",
                      CodigoUe = ue.CodigoUe,
+                     CodigoDre = ue.Dre.CodigoDre,
                  };
              });
         }

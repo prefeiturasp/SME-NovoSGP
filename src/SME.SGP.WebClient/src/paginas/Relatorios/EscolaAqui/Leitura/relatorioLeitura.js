@@ -263,7 +263,7 @@ const RelatorioLeitura = () => {
       setCarregandoModalidade(true);
       const {
         data,
-      } = await ServicoFiltroRelatorio.obterModalidadesPorAbrangencia(ue);
+      } = await ServicoFiltroRelatorio.obterModalidadesPorAbrangencia(ue, true);
 
       if (data) {
         const lista = data.map(item => ({

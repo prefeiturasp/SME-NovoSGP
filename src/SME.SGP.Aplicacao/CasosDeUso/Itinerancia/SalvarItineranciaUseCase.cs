@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
                     {
                         await TrataTurmasCodigos(itineranciaDto);
                     }
-                    var itinerancia = await mediator.Send(new SalvarItineranciaCommand(itineranciaDto.AnoLetivo, itineranciaDto.DataVisita, itineranciaDto.DataRetornoVerificacao));
+                    var itinerancia = await mediator.Send(new SalvarItineranciaCommand(itineranciaDto.AnoLetivo, itineranciaDto.DataVisita, itineranciaDto.DataRetornoVerificacao, itineranciaDto.EventoId));
                     if (itinerancia == null)
                         throw new NegocioException("Erro ao Salvar a itinerancia");
 
@@ -52,6 +52,9 @@ namespace SME.SGP.Aplicacao
                     if (itineranciaDto.Ues == null || itineranciaDto.Ues.Any())
                         foreach (var ue in itineranciaDto.Ues)
                             await mediator.Send(new SalvarItineranciaUeCommand(ue.UeId, itinerancia.Id));
+
+                    if (itineranciaDto.DataRetornoVerificacao.HasValue)
+                        await SalvarEventoItinerancia(itinerancia.Id, itineranciaDto);
 
                     unitOfWork.PersistirTransacao();
 
@@ -76,6 +79,12 @@ namespace SME.SGP.Aplicacao
                     throw;
                 }
             }
+        }
+
+        private async Task SalvarEventoItinerancia(long itineranciaId, ItineranciaDto itineranciaDto)
+        {
+            foreach (var ue in itineranciaDto.Ues)
+                await mediator.Send(new CriarEventoItineranciaPAAICommand(itineranciaId, ue.CodigoDre, ue.CodigoUe, itineranciaDto.DataRetornoVerificacao.Value, itineranciaDto.DataVisita, itineranciaDto.ObjetivosVisita));
         }
 
         private async Task TrataTurmasCodigos(ItineranciaDto itineranciaDto)
