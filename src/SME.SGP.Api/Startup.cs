@@ -13,6 +13,7 @@ using Prometheus;
 using SME.Background.Core;
 using SME.Background.Hangfire;
 using SME.SGP.Api.HealthCheck;
+using SME.SGP.Aplicacao;
 using SME.SGP.Background;
 using SME.SGP.Dados;
 using SME.SGP.Infra.Utilitarios;

@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using SME.SGP.Infra;
@@ -14,9 +13,9 @@ namespace SME.SGP.Aplicacao
     {
         private readonly ConfiguracaoRabbitOptions configuracaoRabbitOptions;
 
-        public PublicarFilaSgpCommandHandler(ConfiguracaoRabbitOptions configuracaoRabbitOptions )
+        public PublicarFilaSgpCommandHandler(ConfiguracaoRabbitOptions configuracaoRabbitOptions)
         {
-                    this.configuracaoRabbitOptions = configuracaoRabbitOptions ?? throw new System.ArgumentNullException(nameof(configuracaoRabbitOptions));
+            this.configuracaoRabbitOptions = configuracaoRabbitOptions ?? throw new System.ArgumentNullException(nameof(configuracaoRabbitOptions));
         }
 
         public Task<bool> Handle(PublicarFilaSgpCommand command, CancellationToken cancellationToken)
@@ -49,7 +48,7 @@ namespace SME.SGP.Aplicacao
 
                     _channel.BasicPublish(RotasRabbit.ExchangeSgp, command.NomeFila, null, body);
                 }
-            }                
+            }
 
             return Task.FromResult(true);
         }

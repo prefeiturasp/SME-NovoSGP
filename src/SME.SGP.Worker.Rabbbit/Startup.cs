@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Sentry;
+using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dados;
 using SME.SGP.Infra;
@@ -39,10 +40,10 @@ namespace SME.SGP.Worker.Rabbbit
             RegistrarHttpClients(services, configuration);
             
             services.AddApplicationInsightsTelemetry(configuration);         
-                     
-            ConfiguraVariaveisAmbiente(services);          
+            
+            services.AddHostedService<WorkerRabbitMQ>();
 
-            services.AddHostedService<WorkerRabbitMQ>();            
+            ConfiguraVariaveisAmbiente(services);
 
             var serviceProvider = services.BuildServiceProvider();
             var clientTelemetry = serviceProvider.GetService<TelemetryClient>();
