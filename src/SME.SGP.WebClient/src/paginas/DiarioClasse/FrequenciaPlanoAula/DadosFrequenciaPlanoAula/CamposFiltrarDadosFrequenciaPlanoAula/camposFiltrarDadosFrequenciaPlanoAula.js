@@ -1,10 +1,12 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import moment from 'moment';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { CampoData } from '~/componentes';
 import SelectComponent from '~/componentes/select';
 import { salvarDadosAulaFrequencia } from '~/redux/modulos/calendarioProfessor/actions';
 import {
   limparDadosFrequenciaPlanoAula,
+  setAtualizarDatas,
   setAulaIdFrequenciaPlanoAula,
   setComponenteCurricularFrequenciaPlanoAula,
   setDataSelecionadaFrequenciaPlanoAula,
@@ -44,6 +46,10 @@ const CamposFiltrarDadosFrequenciaPlanoAula = () => {
     state => state.calendarioProfessor.dadosAulaFrequencia
   );
 
+  const atualizarDatas = useSelector(
+    state => state.frequenciaPlanoAula.atualizarDatas
+  );
+
   const [listaComponenteCurricular, setListaComponenteCurricular] = useState(
     []
   );
@@ -53,26 +59,47 @@ const CamposFiltrarDadosFrequenciaPlanoAula = () => {
 
   const [listaDatasAulas, setListaDatasAulas] = useState();
   const [diasParaHabilitar, setDiasParaHabilitar] = useState();
+  const [diasParaSinalizar, setDiasParaSinalizar] = useState();
   const [aulasParaSelecionar, setAulasParaSelecionar] = useState([]);
   const [exibirModalSelecionarAula, setExibirModalSelecionarAula] = useState(
     false
   );
 
+  const valorPadrao = useMemo(() => {
+    const ano = turmaSelecionada.anoLetivo;
+    const dataParcial = moment().format('MM-DD');
+    const dataInteira = moment(`${dataParcial}-${ano}`);
+    return dataInteira;
+  }, [turmaSelecionada.anoLetivo]);
+
   const obterDatasDeAulasDisponiveis = useCallback(async () => {
-    dispatch(setExibirLoaderFrequenciaPlanoAula(true));    
-    const datasDeAulas = (turmaSelecionada && turmaSelecionada.turma) ? await ServicoFrequencia.obterDatasDeAulasPorCalendarioTurmaEComponenteCurricular(
-      turmaSelecionada.turma,
-      codigoComponenteCurricular
-    )
-      .finally(() => dispatch(setExibirLoaderFrequenciaPlanoAula(false)))
-      .catch(e => erros(e)) : [];
+    dispatch(setExibirLoaderFrequenciaPlanoAula(true));
+    const datasDeAulas =
+      turmaSelecionada && turmaSelecionada.turma
+        ? await ServicoFrequencia.obterDatasDeAulasPorCalendarioTurmaEComponenteCurricular(
+            turmaSelecionada.turma,
+            codigoComponenteCurricular
+          )
+            .finally(() => dispatch(setExibirLoaderFrequenciaPlanoAula(false)))
+            .catch(e => erros(e))
+        : [];
 
     if (datasDeAulas && datasDeAulas.data && datasDeAulas.data.length) {
       setListaDatasAulas(datasDeAulas.data);
-      const habilitar = datasDeAulas.data.map(item =>
-        window.moment(item.data).format('YYYY-MM-DD')
-      );
+      const habilitar = [];
+      const sinalizar = [];
+      datasDeAulas.data.forEach(itemDatas => {
+        const dataFormatada = moment(itemDatas.data).format('YYYY-MM-DD');
+        itemDatas.aulas.forEach(itemAulas => {
+          if (itemAulas.possuiFrequenciaRegistrada) {
+            sinalizar.push(moment(dataFormatada));
+          }
+        });
+        habilitar.push(dataFormatada);
+      });
       setDiasParaHabilitar(habilitar);
+      setDiasParaSinalizar(sinalizar);
+      dispatch(setAtualizarDatas(false));
     } else {
       setListaDatasAulas();
       setDiasParaHabilitar();
@@ -82,11 +109,14 @@ const CamposFiltrarDadosFrequenciaPlanoAula = () => {
 
   const obterListaComponenteCurricular = useCallback(async () => {
     dispatch(setExibirLoaderFrequenciaPlanoAula(true));
-    const resposta = (turmaSelecionada && turmaSelecionada.turma) ? await ServicoDisciplina.obterDisciplinasPorTurma(
-      turmaSelecionada.turma
-    )
-      .finally(() => dispatch(setExibirLoaderFrequenciaPlanoAula(false)))
-      .catch(e => erros(e)) : [];
+    const resposta =
+      turmaSelecionada && turmaSelecionada.turma
+        ? await ServicoDisciplina.obterDisciplinasPorTurma(
+            turmaSelecionada.turma
+          )
+            .finally(() => dispatch(setExibirLoaderFrequenciaPlanoAula(false)))
+            .catch(e => erros(e))
+        : [];
 
     if (resposta && resposta.data) {
       setListaComponenteCurricular(resposta.data);
@@ -117,13 +147,17 @@ const CamposFiltrarDadosFrequenciaPlanoAula = () => {
 
   // Quando selecionar o componente curricular vai realizar a consulta das das que tem aulas cadastrada para essa turma!
   useEffect(() => {
-    if (codigoComponenteCurricular && turmaSelecionada?.turma) {
+    if (
+      (codigoComponenteCurricular && turmaSelecionada?.turma) ||
+      atualizarDatas
+    ) {
       obterDatasDeAulasDisponiveis();
     }
   }, [
     codigoComponenteCurricular,
     obterDatasDeAulasDisponiveis,
     turmaSelecionada,
+    atualizarDatas,
   ]);
 
   // Quando tem valor do componente curricular no redux vai setar o id no componente select!
@@ -357,6 +391,8 @@ const CamposFiltrarDadosFrequenciaPlanoAula = () => {
             !diasParaHabilitar
           }
           diasParaHabilitar={diasParaHabilitar}
+          diasParaSinalizar={diasParaSinalizar}
+          valorPadrao={valorPadrao}
         />
       </div>
       <ModalSelecionarAulaFrequenciaPlanoAula

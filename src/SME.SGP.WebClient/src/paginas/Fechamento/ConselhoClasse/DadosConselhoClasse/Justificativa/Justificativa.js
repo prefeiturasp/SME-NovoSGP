@@ -7,7 +7,7 @@ import { Auditoria, Colors, Loader } from '~/componentes';
 import Button from '~/componentes/button';
 import JoditEditor from '~/componentes/jodit-editor/joditEditor';
 import {
-  setNotaConceitoPosConselhoAtual,
+  setJustificativaAtual,
   setSalvouJustificativa,
 } from '~/redux/modulos/conselhoClasse/actions';
 import servicoSalvarConselhoClasse from '../../servicoSalvarConselhoClasse';
@@ -39,16 +39,7 @@ const Justificativa = props => {
     store => store.conselhoClasse.podeEditarNota
   );
 
-  const {
-    id,
-    justificativa,
-    auditoria,
-    nota,
-    conceito,
-    codigoComponenteCurricular,
-    idCampo,
-    ehEdicao,
-  } = notaConceitoPosConselhoAtual;
+  const { justificativa, auditoria, ehEdicao } = notaConceitoPosConselhoAtual;
 
   const valoresIniciais = {
     justificativa: justificativa || '',
@@ -77,18 +68,7 @@ const Justificativa = props => {
 
   const onChange = justificativaNova => {
     if (!alunoDesabilitado || !desabilitarCampos || dentroPeriodo) {
-      dispatch(
-        setNotaConceitoPosConselhoAtual({
-          id,
-          codigoComponenteCurricular,
-          nota,
-          conceito,
-          ehEdicao: true,
-          justificativa: justificativaNova,
-          auditoria,
-          idCampo,
-        })
-      );
+      dispatch(setJustificativaAtual(justificativaNova));
     }
   };
 
@@ -128,20 +108,20 @@ const Justificativa = props => {
                       />
                       <div className="d-flex justify-content-end pt-2">
                         {notaConceitoPosConselhoAtual &&
-                          notaConceitoPosConselhoAtual.id &&
-                          auditoria ? (
-                            <Auditoria
-                              criadoEm={auditoria.criadoEm}
-                              criadoPor={auditoria.criadoPor}
-                              criadoRf={auditoria.criadoRf}
-                              alteradoPor={auditoria.alteradoPor}
-                              alteradoEm={auditoria.alteradoEm}
-                              alteradoRf={auditoria.alteradoRf}
-                              ignorarMarginTop
-                            />
-                          ) : (
-                            ''
-                          )}
+                        notaConceitoPosConselhoAtual.id &&
+                        auditoria ? (
+                          <Auditoria
+                            criadoEm={auditoria.criadoEm}
+                            criadoPor={auditoria.criadoPor}
+                            criadoRf={auditoria.criadoRf}
+                            alteradoPor={auditoria.alteradoPor}
+                            alteradoEm={auditoria.alteradoEm}
+                            alteradoRf={auditoria.alteradoRf}
+                            ignorarMarginTop
+                          />
+                        ) : (
+                          ''
+                        )}
                         <Button
                           label="Salvar"
                           color={Colors.Roxo}
@@ -166,8 +146,8 @@ const Justificativa = props => {
           </div>
         </div>
       ) : (
-          ''
-        )}
+        ''
+      )}
     </>
   );
 };

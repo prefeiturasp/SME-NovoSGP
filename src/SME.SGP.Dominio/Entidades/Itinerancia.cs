@@ -16,7 +16,9 @@ namespace SME.SGP.Dominio
             objetivosBase = new List<ItineranciaObjetivoBase>();
             Situacao = SituacaoItinerancia.Digitado;
 
-        }        
+        }
+        public Evento Evento { get; set; }
+        public long? EventoId { get; set; }
         public DateTime DataVisita { get; set; }
         public int AnoLetivo { get; set; }
         public IEnumerable<ItineranciaObjetivo> ObjetivosVisita { get { return objetivos; } }

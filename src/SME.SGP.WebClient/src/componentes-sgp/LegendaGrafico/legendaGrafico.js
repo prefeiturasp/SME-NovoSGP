@@ -1,34 +1,65 @@
 import PropTypes from 'prop-types';
-import React from 'react';
-import shortid from 'shortid';
+import React, { useEffect, useState } from 'react';
 import { ContainerLegendaGrafico } from './legendaGrafico.css';
 
 const LegendaGrafico = props => {
   const { orizontal, dados } = props;
 
+  const TAMANHO_PADRAO_COLUNA = '3';
+
+  const [tamanhoColuna, setTamanhoColuna] = useState('');
+
+  useEffect(() => {
+    let valorAtual = TAMANHO_PADRAO_COLUNA;
+
+    if (orizontal) {
+      switch (dados?.length) {
+        case 1:
+          valorAtual = '12';
+          break;
+        case 2:
+          valorAtual = '6';
+          break;
+        case 3:
+          valorAtual = '4';
+          break;
+
+        default:
+          break;
+      }
+    } else {
+      valorAtual = '12';
+    }
+
+    setTamanhoColuna(valorAtual);
+  }, [dados, orizontal]);
+
   return dados?.length ? (
-    <ContainerLegendaGrafico orizontal={orizontal}>
-      <div className="legenda-container">
-        <ul className="legenda-labels">
-          {dados.map(item => {
-            return (
-              <li key={shortid.generate()}>
-                <div className="legenda-container-conteudo">
-                  <div>
-                    <span style={{ backgroundColor: item.color }} />
-                  </div>
-                  <div>
-                    <div className="label-valor-porcentagem">
-                      {item.radialLabel}
-                    </div>
-                    {item.label}
-                  </div>
+    <ContainerLegendaGrafico
+      className="row"
+      style={{ display: !orizontal ? 'inline-table' : '' }}
+    >
+      {dados.map(item => {
+        return (
+          <div
+            className={`col-md-${tamanhoColuna} ${
+              orizontal && dados.length <= 3 ? 'legenda-centralizada' : ''
+            }`}
+          >
+            <div className="legenda-container-conteudo">
+              <div className="cor-legenda">
+                <span style={{ backgroundColor: item.color }} />
+              </div>
+              <div className="label-valor">
+                <div className="label-valor-porcentagem">
+                  {item.radialLabel}
                 </div>
-              </li>
-            );
-          })}
-        </ul>
-      </div>
+                {item.label}
+              </div>
+            </div>
+          </div>
+        );
+      })}
     </ContainerLegendaGrafico>
   ) : (
     ''

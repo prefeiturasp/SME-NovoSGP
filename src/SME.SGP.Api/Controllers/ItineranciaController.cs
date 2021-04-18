@@ -111,5 +111,15 @@ namespace SME.SGP.Api
         {
             return Ok(await useCase.Executar());
         }
+
+        [HttpGet("eventos")]
+        [ProducesResponseType(typeof(IEnumerable<EventoNomeDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.RI_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterEventosPorCalendario([FromQuery]long tipoCalendarioId, [FromServices] IObterEventosItinerânciaPorTipoCalendarioUseCase useCase)
+        {
+            return Ok(await useCase.Executar(tipoCalendarioId));
+        }
+
     }
 }

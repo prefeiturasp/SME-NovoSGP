@@ -180,7 +180,6 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IRepositorioDre, RepositorioDre>();
             services.TryAddScopedWorkerService<IRepositorioEvento, RepositorioEvento>();
             services.TryAddScopedWorkerService<IRepositorioEventoMatricula, RepositorioEventoMatricula>();
-            services.TryAddScopedWorkerService<IRepositorioEventoTipo, RepositorioEventoTipo>();
             services.TryAddScopedWorkerService<IRepositorioFeriadoCalendario, RepositorioFeriadoCalendario>();
             services.TryAddScopedWorkerService<IRepositorioFrequencia, RepositorioFrequencia>();
             services.TryAddScopedWorkerService<IRepositorioFrequenciaAlunoDisciplinaPeriodo, RepositorioFrequenciaAlunoDisciplinaPeriodo>();
@@ -240,6 +239,7 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IRepositorioFechamentoTurma, RepositorioFechamentoTurma>();
             services.TryAddScopedWorkerService<IRepositorioConselhoClasse, RepositorioConselhoClasse>();
             services.TryAddScopedWorkerService<IRepositorioConselhoClasseAluno, RepositorioConselhoClasseAluno>();
+            services.TryAddScopedWorkerService<IRepositorioConselhoClasseAlunoTurmaComplementar, RepositorioConselhoClasseAlunoTurmaComplementar>();
             services.TryAddScopedWorkerService<IRepositorioConselhoClasseNota, RepositorioConselhoClasseNota>();
             services.TryAddScopedWorkerService<IRepositorioGrupoComunicacao, RepositorioGrupoComunicacao>();
             services.TryAddScopedWorkerService<IRepositorioWfAprovacaoNotaFechamento, RepositorioWfAprovacaoNotaFechamento>();
@@ -285,6 +285,10 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IRepositorioQuestaoEncaminhamentoAEE, RepositorioQuestaoEncaminhamentoAEE>();
             services.TryAddScopedWorkerService<IRepositorioRespostaEncaminhamentoAEE, RepositorioRespostaEncaminhamentoAEE>();
 
+            // EventoTipo
+            services.TryAddScopedWorkerService<IRepositorioEventoTipo, RepositorioEventoTipo>();
+            services.TryAddScopedWorkerService<IRepositorioPerfilEventoTipo, RepositorioPerfilEventoTipo>();
+
             // Questionario
             services.TryAddScopedWorkerService<IRepositorioQuestionario, RepositorioQuestionario>();
             services.TryAddScopedWorkerService<IRepositorioQuestao, RepositorioQuestao>();
@@ -294,6 +298,9 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IRepositorioOcorrencia, RepositorioOcorrencia>();
             services.TryAddScopedWorkerService<IRepositorioOcorrenciaAluno, RepositorioOcorrenciaAluno>();
             services.TryAddScopedWorkerService<IRepositorioOcorrenciaTipo, RepositorioOcorrenciaTipo>();
+
+            // Itinerância
+            services.TryAddScopedWorkerService<IRepositorioWfAprovacaoItinerancia, RepositorioWfAprovacaoItinerancia>();
 
             // PlanoAEE
             services.TryAddScopedWorkerService<IRepositorioPlanoAEE, RepositorioPlanoAEE>();
@@ -529,6 +536,9 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IExecutarSincronizacaoInstitucionalTurmaSyncUseCase, ExecutarSincronizacaoInstitucionalTurmaSyncUseCase>();
             services.TryAddScopedWorkerService<IExecutarSincronizacaoInstitucionalTurmaTratarUseCase, ExecutarSincronizacaoInstitucionalTurmaTratarUseCase>();
 
+            
+
+            services.TryAddScopedWorkerService<INotificacaoSalvarItineranciaUseCase, NotificacaoSalvarItineranciaUseCase>();
         }
 
         private static void ResgistraDependenciaHttp(IServiceCollection services)

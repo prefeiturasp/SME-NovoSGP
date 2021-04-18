@@ -68,7 +68,7 @@ import RegistroIndividual from '~/paginas/DiarioClasse/RegistroIndividual/regist
 import DevolutivasForm from '~/paginas/DiarioClasse/Devolutivas/devolutivasForm';
 import RelatorioNotasConceitosFinais from '~/paginas/Relatorios/NotasConceitosFinais/relatorioNotasConceitosFinais';
 import RelatorioCompensacaoAusencia from '~/paginas/Relatorios/CompensacaoAusencia/relatorioCompensacaoAusencia';
-import DashboardEscolaAqui from '~/paginas/Relatorios/DashboardEscolaAqui/dashboardEscolaAqui';
+import DashboardEscolaAqui from '~/paginas/Dashboard/DashboardEscolaAqui/dashboardEscolaAqui';
 import ControleGrade from '~/paginas/Relatorios/DiarioClasse/ControleGrade/controleGrade';
 import Sondagem from '~/paginas/Sondagem/sondagem';
 import PocUploadArquivos from '~/componentes-sgp/UploadArquivos/pocUploadArquivos';
@@ -92,6 +92,8 @@ import PlanoAEECadastro from '~/paginas/Relatorios/AEE/Plano/Cadastro/planoAEECa
 import RegistroItineranciaAEELista from '~/paginas/Relatorios/AEE/RegistroItinerancia/Lista/registroItineranciaAEELista';
 import AcompanhamentoAprendizagem from '~/paginas/Fechamento/AcompanhamentoAprendizagem/acompanhamentoAprendizagem';
 import RelatorioDevolutivas from '~/paginas/Relatorios/Planejamento/Devolutivas/relatorioDevolutivas';
+import DashboardAEE from '~/paginas/Dashboard/AEE/dashboardAEE';
+import DashboardRegistroItinerancia from '~/paginas/Dashboard/DashboardRegistroItinerancia/dashboardRegistroItinerancia';
 
 const rotas = new Map();
 
@@ -1007,15 +1009,15 @@ rotas.set(RotasDto.RELATORIO_COMPENSACAO_AUSENCIA, {
   chavePermissao: RotasDto.RELATORIO_COMPENSACAO_AUSENCIA,
 });
 
-rotas.set(RotasDto.RELATORIO_ESCOLA_AQUI_DASHBOARD, {
-  breadcrumbName: 'Dashboard',
-  menu: ['Relatórios', 'Escola aqui '],
+rotas.set(RotasDto.DASHBOARD_ESCOLA_AQUI, {
+  breadcrumbName: 'Escola aqui',
+  menu: ['Dashboard'],
   parent: '/',
   component: DashboardEscolaAqui,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: false,
-  chavePermissao: RotasDto.RELATORIO_ESCOLA_AQUI_DASHBOARD,
+  chavePermissao: RotasDto.DASHBOARD_ESCOLA_AQUI,
 });
 
 rotas.set(RotasDto.CONTROLE_GRADE, {
@@ -1293,13 +1295,35 @@ rotas.set(`${RotasDto.OCORRENCIAS}/editar/:id`, {
 
 rotas.set(RotasDto.ACOMPANHAMENTO_APRENDIZAGEM, {
   breadcrumbName: 'Relatório do Acompanhamento da Aprendizagem',
-  menu: ['Relatório'],
+  menu: ['Fechamento'],
   parent: '/',
   component: AcompanhamentoAprendizagem,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: true,
   chavePermissao: RotasDto.ACOMPANHAMENTO_APRENDIZAGEM,
+});
+
+rotas.set(RotasDto.DASHBOARD_AEE, {
+  breadcrumbName: 'AEE',
+  menu: ['Dashboard'],
+  parent: '/',
+  component: DashboardAEE,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.DASHBOARD_AEE,
+});
+
+rotas.set(RotasDto.DASHBOARD_REGISTRO_ITINERANCIA, {
+  breadcrumbName: 'Registro de Itinerância',
+  menu: ['Dashboard'],
+  parent: '/',
+  component: DashboardRegistroItinerancia,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.DASHBOARD_REGISTRO_ITINERANCIA,
 });
 
 const rotasArray = [];
