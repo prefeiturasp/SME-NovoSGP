@@ -1,7 +1,9 @@
 ﻿using MediatR;
+using Sentry;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -31,7 +33,7 @@ namespace SME.SGP.Aplicacao
                     {
                         await TrataTurmasCodigos(itineranciaDto);
                     }
-                    var itinerancia = await mediator.Send(new SalvarItineranciaCommand(itineranciaDto.AnoLetivo, itineranciaDto.DataVisita, itineranciaDto.DataRetornoVerificacao));
+                    var itinerancia = await mediator.Send(new SalvarItineranciaCommand(itineranciaDto.AnoLetivo, itineranciaDto.DataVisita, itineranciaDto.DataRetornoVerificacao, itineranciaDto.EventoId));
                     if (itinerancia == null)
                         throw new NegocioException("Erro ao Salvar a itinerancia");
 
@@ -51,7 +53,23 @@ namespace SME.SGP.Aplicacao
                         foreach (var ue in itineranciaDto.Ues)
                             await mediator.Send(new SalvarItineranciaUeCommand(ue.UeId, itinerancia.Id));
 
+                    if (itineranciaDto.DataRetornoVerificacao.HasValue)
+                        await SalvarEventoItinerancia(itinerancia.Id, itineranciaDto);
+
                     unitOfWork.PersistirTransacao();
+
+                    SentrySdk.AddBreadcrumb($"Mensagem RotaNotificacaoRegistroItineranciaInseridoUseCase", "Rabbit - RotaNotificacaoRegistroItineranciaInseridoUseCase");
+
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaNotificacaoRegistroItineranciaInseridoUseCase,
+                        new NotificacaoSalvarItineranciaDto
+                        {
+                            CriadoRF = itinerancia.CriadoRF,
+                            CriadoPor = itinerancia.CriadoPor,
+                            DataVisita = itineranciaDto.DataVisita,
+                            Ues = itineranciaDto.Ues,
+                            Estudantes = itineranciaDto.Alunos,
+                            ItineranciaId = itinerancia.Id
+                        }, Guid.NewGuid(), null));
 
                     return itinerancia;
                 }
@@ -61,6 +79,12 @@ namespace SME.SGP.Aplicacao
                     throw;
                 }
             }
+        }
+
+        private async Task SalvarEventoItinerancia(long itineranciaId, ItineranciaDto itineranciaDto)
+        {
+            foreach (var ue in itineranciaDto.Ues)
+                await mediator.Send(new CriarEventoItineranciaPAAICommand(itineranciaId, ue.CodigoDre, ue.CodigoUe, itineranciaDto.DataRetornoVerificacao.Value, itineranciaDto.DataVisita, itineranciaDto.ObjetivosVisita));
         }
 
         private async Task TrataTurmasCodigos(ItineranciaDto itineranciaDto)

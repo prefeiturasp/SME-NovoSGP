@@ -29,7 +29,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<PaginacaoResultadoDto<EventoTipoDto>> Listar(FiltroEventoTipoDto Filtro)
         {
-            var retornoQueryPaginada = await repositorioEventoTipo.ListarTipos(Filtro.LocalOcorrencia, Filtro.Letivo, Filtro.Descricao, Paginacao);
+            var perfilAtual = servicoUsuario.ObterPerfilAtual();
+            var retornoQueryPaginada = await repositorioEventoTipo.ListarTipos(Filtro.LocalOcorrencia, Filtro.Letivo, Filtro.Descricao, perfilAtual, Paginacao);
 
             var retornoConsultaPaginada = new PaginacaoResultadoDto<EventoTipoDto>
             {

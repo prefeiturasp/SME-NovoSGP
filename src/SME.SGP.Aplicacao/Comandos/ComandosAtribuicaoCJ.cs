@@ -46,7 +46,7 @@ namespace SME.SGP.Aplicacao
 
                 await servicoAtribuicaoCJ.Salvar(atribuicao, professoresTitularesDisciplinasEol, atribuicoesAtuais);
 
-                Guid perfilCJ = atribuicao.Modalidade == Modalidade.Infantil ? Perfis.PERFIL_CJ_INFANTIL : Perfis.PERFIL_CJ;
+                Guid perfilCJ = atribuicao.Modalidade == Modalidade.InfantilPreEscola ? Perfis.PERFIL_CJ_INFANTIL : Perfis.PERFIL_CJ;
 
                 atribuiuCj = await AtribuirPerfilCJ(atribuicaoCJPersistenciaDto, perfilCJ, atribuiuCj);
             }

@@ -129,7 +129,7 @@ namespace SME.SGP.Dados.Repositorios
                         order by
 	                        ae.data_fim desc";
 
-            var infantil = Modalidade.Infantil;
+            var infantil = Modalidade.InfantilPreEscola;
             return database.Conexao.QueryFirstOrDefault<AtribuicaoEsporadica>(sql, new { codigoRF, infantil });
         }
     }

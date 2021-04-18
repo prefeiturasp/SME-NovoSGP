@@ -37,6 +37,10 @@ class ServicoRegistroItineranciaAEE {
   gerarRelatorio = ids => {
     return api.post('/v1/relatorios/itinerancias', ids);
   };
+
+  obterEventos = tipoCalendarioId => {
+    return api.get(`${urlPadrao}/eventos?tipoCalendarioId=${tipoCalendarioId}`);
+  };
 }
 
 export default new ServicoRegistroItineranciaAEE();

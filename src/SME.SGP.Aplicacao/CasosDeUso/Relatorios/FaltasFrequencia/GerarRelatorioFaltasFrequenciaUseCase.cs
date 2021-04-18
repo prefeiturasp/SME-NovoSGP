@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
                 switch (filtro.Modalidade)
                 {
                     case Modalidade.Fundamental:
-                    case Modalidade.Infantil:
+                    case Modalidade.InfantilPreEscola:
                     case Modalidade.Medio:
                         filtro.Bimestres.AddRange(new int[] { 0, 1, 2, 3, 4, -99 });
                         break;

@@ -20,13 +20,18 @@ namespace SME.SGP.Aplicacao
         {
             var itinerancia = await mediator.Send(new ObterItineranciaPorIdQuery(id));
 
-
             if (itinerancia == null)
                 throw new NegocioException($"Não foi possível localizar a itinerância de Id {id}");
 
             var ues = await mediator.Send(new ObterUesPorIdsQuery(itinerancia.Ues.Select(u => u.UeId).ToArray()));
 
             var questoesBase = await mediator.Send(new ObterQuestoesBaseItineranciaEAlunoQuery());
+
+            var verificaWorkflow = await mediator.Send(new ObterWorkflowItineranciaPorItineranciaIdQuery(itinerancia.Id));
+            WorkflowAprovacao workflow = null;
+
+            if (verificaWorkflow != null)
+                workflow = await mediator.Send(new ObterWorkflowPorIdQuery(verificaWorkflow.WfAprovacaoId));
 
             var itineranciaDto = new ItineranciaDto()
             {
@@ -36,16 +41,20 @@ namespace SME.SGP.Aplicacao
                 ObjetivosVisita = MontarObjetivosItinerancia(itinerancia),
                 Questoes = MontarQuestoesItinerancia(itinerancia, questoesBase),
                 Ues = MontarUes(ues, itinerancia),
+                TipoCalendarioId = await ObterTipoCalendario(itinerancia.EventoId),
+                EventoId = itinerancia.EventoId,
                 CriadoRF = itinerancia.CriadoRF,
-                Auditoria = (AuditoriaDto)itinerancia
+                Auditoria = (AuditoriaDto)itinerancia,
+                StatusWorkflow = workflow != null ? ObterMensagemStatus(workflow.Niveis, verificaWorkflow.StatusAprovacao) : "",
+                PodeEditar = workflow != null ? VerificaPodeEditar(workflow.Niveis) : false
             };
 
-            if(itinerancia.Alunos != null && itinerancia.Alunos.Any())
+            if (itinerancia.Alunos != null && itinerancia.Alunos.Any())
             {
                 var CodigosAluno = itinerancia.Alunos.Select(a => a.CodigoAluno).ToArray();
 
                 var alunosEol = await mediator.Send(new ObterAlunosEolPorCodigosEAnoQuery(CodigosAluno.Select(long.Parse).ToArray(), DateTime.Now.Year));
-                
+
                 var turmasIds = itinerancia.Alunos.Select(al => al.TurmaId).Distinct().ToArray();
 
                 var turmas = await mediator.Send(new ObterTurmasPorIdsQuery(turmasIds));
@@ -56,17 +65,58 @@ namespace SME.SGP.Aplicacao
             return itineranciaDto;
         }
 
+        private bool VerificaPodeEditar(IEnumerable<WorkflowAprovacaoNivel> niveis)
+        {
+            if (niveis.FirstOrDefault(a => a.Status == WorkflowAprovacaoNivelStatus.Reprovado) != null)
+                return true;
+            else
+                return false;
+        }
+
+        private string ObterMensagemStatus(IEnumerable<WorkflowAprovacaoNivel> niveis, bool statusAprovacao)
+        {
+            if (statusAprovacao)
+            {
+                var nivel = niveis.Where(a => a.Status == WorkflowAprovacaoNivelStatus.Aprovado).OrderByDescending(b => b.AlteradoEm).FirstOrDefault();
+                return $"Aceito por {nivel.AlteradoPor} ({nivel.AlteradoRF}) em {nivel.AlteradoEm:dd/MM/yyy HH:mm}";
+            }
+            else if (niveis.FirstOrDefault(a => a.Status == WorkflowAprovacaoNivelStatus.Excluido) != null)
+            {
+                var nivel = niveis.Where(a => a.Status == WorkflowAprovacaoNivelStatus.Excluido).OrderByDescending(b => b.AlteradoEm).FirstOrDefault();
+                return $"Excluído por {nivel.AlteradoPor} ({nivel.AlteradoRF}) em {nivel.AlteradoEm:dd/MM/yyy HH:mm}";
+            }
+            else if (niveis.FirstOrDefault(a => a.Status == WorkflowAprovacaoNivelStatus.Reprovado) != null)
+            {
+                var nivel = niveis.Where(a => a.Status == WorkflowAprovacaoNivelStatus.Reprovado).OrderByDescending(b => b.AlteradoEm).FirstOrDefault();
+                return $"Reprovado por {nivel.AlteradoPor} ({nivel.AlteradoRF}) em {nivel.AlteradoEm:dd/MM/yyy HH:mm}";
+            }
+            else if (niveis.FirstOrDefault(a => a.Status == WorkflowAprovacaoNivelStatus.Substituido) != null)
+            {
+                var nivel = niveis.Where(a => a.Status == WorkflowAprovacaoNivelStatus.Substituido).OrderByDescending(b => b.AlteradoEm).FirstOrDefault();
+                return $"Substituído por {nivel.AlteradoPor} ({nivel.AlteradoRF}) em {nivel.AlteradoEm:dd/MM/yyy HH:mm}";
+            }
+            else if (niveis.FirstOrDefault(a => a.Status == WorkflowAprovacaoNivelStatus.AguardandoAprovacao) != null)
+            {
+                return $"Aguardando aprovação";
+            }
+            else
+                return "Sem status informado";
+        }
+        
+        private async Task<long> ObterTipoCalendario(long? eventoId)
+            => eventoId.HasValue ? await mediator.Send(new ObterTipoCalendarioIdPorEventoQuery(eventoId.Value)) : 0;
 
         private IEnumerable<ItineranciaUeDto> MontarUes(IEnumerable<Ue> ues, Itinerancia itinerancia)
         {
             return ues.Select(ue =>
-             {                 
+             {
                  return new ItineranciaUeDto
                  {
-                     Id = itinerancia.Ues.FirstOrDefault(i => i.UeId == ue.Id).Id,                              
+                     Id = itinerancia.Ues.FirstOrDefault(i => i.UeId == ue.Id).Id,
                      UeId = ue.Id,
                      Descricao = $"{ue.TipoEscola.ShortName()} - {ue.Nome}",
                      CodigoUe = ue.CodigoUe,
+                     CodigoDre = ue.Dre.CodigoDre,
                  };
              });
         }

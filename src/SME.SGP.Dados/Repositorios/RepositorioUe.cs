@@ -82,6 +82,21 @@ namespace SME.SGP.Dados.Repositorios
             new { ueCodigo })).FirstOrDefault();
         }
 
+        public async Task<Ue> ObterUeComDrePorId(long ueId)
+        {
+            var query = @"select ue.*, dre.* 
+                            from ue 
+                           inner join dre on dre.id = ue.dre_id
+                           where ue.id = @ueId";
+
+            return (await contexto.Conexao.QueryAsync<Ue, Dre, Ue>(query, (ue, dre) =>
+            {
+                ue.AdicionarDre(dre);
+                return ue;
+            },
+            new { ueId })).FirstOrDefault();
+        }
+
         public IEnumerable<Ue> ObterTodas()
         {
             var query = @"select
@@ -293,6 +308,38 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select * from ue where id = ANY(@ids)";
 
             return await contexto.QueryAsync<Ue>(query, new { ids });
+        }
+
+        public async Task<long> IncluirAsync(Ue ueParaIncluir)
+        {
+            return (long)await contexto.Conexao.InsertAsync(ueParaIncluir);
+        }
+
+        public async Task AtualizarAsync(Ue ueParaAtualizar)
+        {
+            await contexto.Conexao.UpdateAsync(ueParaAtualizar);
+        }
+
+        public async Task<IEnumerable<Ue>> ObterUEsComDREsPorIds(long[] ids)
+        {
+            var query = @"select ue.*, dre.* 
+                            from ue 
+                           inner join dre on dre.id = ue.dre_id
+                           where ue.id = ANY(@ids)";
+
+            return await contexto.QueryAsync<Ue, Dre, Ue>(query, (ue, dre) =>
+            {
+                ue.Dre = dre;
+
+                return ue;
+            }, new { ids });
+        }
+
+        public async Task<TipoEscola> ObterTipoEscolaPorCodigo(string ueCodigo)
+        {
+            var query = "select tipo_escola from ue where ue_id = @ueCodigo";
+
+            return await contexto.Conexao.QueryFirstOrDefaultAsync<TipoEscola>(query, new { ueCodigo });
         }
     }
 }

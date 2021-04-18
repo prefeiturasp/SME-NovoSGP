@@ -1,6 +1,8 @@
 ﻿using MediatR;
+using Sentry;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,12 +21,16 @@ namespace SME.SGP.Aplicacao.Interfaces
         {
             var itinerancia = await mediator.Send(new ObterItineranciaPorIdQuery(dto.Id));
 
+            var dataRetornoAlterada = itinerancia.DataRetornoVerificacao != dto.DataRetornoVerificacao;
+            var dataRetornoAnterior = itinerancia.DataRetornoVerificacao;
+
             if (itinerancia == null)
                 throw new NegocioException($"Não foi possível localizar a itinerância de Id {dto.Id}");
 
             itinerancia.AnoLetivo = dto.AnoLetivo;
             itinerancia.DataVisita = dto.DataVisita;
             itinerancia.DataRetornoVerificacao = dto.DataRetornoVerificacao;            
+            itinerancia.EventoId = dto.EventoId;
 
             using (var transacao = unitOfWork.IniciarTransacao())
             {
@@ -38,7 +44,12 @@ namespace SME.SGP.Aplicacao.Interfaces
                     
                     await SalvarFilhosItinerancia(dto, itinerancia);
 
+                    if (dataRetornoAlterada)
+                        await AltararDataEventosItinerancias(dto, dataRetornoAnterior);
+
                     unitOfWork.PersistirTransacao();
+
+                    await EnviarNotificacao(itinerancia, dto);
 
                     return auditoriaDto;
                 }
@@ -48,7 +59,62 @@ namespace SME.SGP.Aplicacao.Interfaces
                     throw;
                 }
             }
+        }
 
+        private async Task AltararDataEventosItinerancias(ItineranciaDto dto, DateTime? dataRetornoAnterior)
+        {
+            if (UsuarioRemoveuDataDeRetorno(dto))
+                await RemoverEventosItinerancia(dto.Id);
+            else if (UsuarioAlterouDataDeRetorno(dto, dataRetornoAnterior))
+                await AtualizaDatasEventos(dto.Id, dto.DataRetornoVerificacao);
+            else // UsuarioIncluiuDataRetorno
+                await SalvarEventosItinerancia(dto);
+        }
+
+        private bool UsuarioAlterouDataDeRetorno(ItineranciaDto dto, DateTime? dataRetornoAnterior)
+            => dataRetornoAnterior.HasValue && dto.DataRetornoVerificacao.HasValue;
+
+        private bool UsuarioRemoveuDataDeRetorno(ItineranciaDto dto)
+            => !dto.DataRetornoVerificacao.HasValue;
+
+
+        private async Task SalvarEventosItinerancia(ItineranciaDto dto)
+        {
+            foreach (var ue in dto.Ues)
+                await mediator.Send(new CriarEventoItineranciaPAAICommand(dto.Id, ue.CodigoDre, ue.CodigoUe, dto.DataRetornoVerificacao.Value, dto.DataVisita, dto.ObjetivosVisita));
+        }
+
+        private async Task AtualizaDatasEventos(long id, DateTime? dataRetornoVerificacao)
+        {
+            await mediator.Send(new AtualizarDatasEventosItineranciaCommand(id, dataRetornoVerificacao.Value));
+        }
+
+        private async Task RemoverEventosItinerancia(long id)
+        {
+            await mediator.Send(new RemoverEventosItineranciaCommand(id));
+        }
+
+        private async Task EnviarNotificacao(Itinerancia itinerancia, ItineranciaDto dto)
+        {
+            SentrySdk.AddBreadcrumb($"Mensagem RotaNotificacaoRegistroItineranciaInseridoUseCase", "Rabbit - RotaNotificacaoRegistroItineranciaInseridoUseCase");
+
+            var verificaWorkflow = await mediator.Send(new ObterWorkflowItineranciaPorItineranciaIdQuery(itinerancia.Id));
+            WorkflowAprovacao workflow = null;
+
+            if (verificaWorkflow != null)
+                workflow = await mediator.Send(new ObterWorkflowPorIdQuery(verificaWorkflow.WfAprovacaoId));
+
+            if(workflow == null || workflow.Niveis.Any(a => a.Status == WorkflowAprovacaoNivelStatus.Reprovado))
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaNotificacaoRegistroItineranciaInseridoUseCase,
+                    new NotificacaoSalvarItineranciaDto
+                    {
+                        CriadoRF = itinerancia.CriadoRF,
+                        CriadoPor = itinerancia.CriadoPor,
+                        DataVisita = dto.DataVisita,
+                        Ues = dto.Ues,
+                        Estudantes = dto.Alunos,
+                        ItineranciaId = itinerancia.Id
+                    }, Guid.NewGuid(), null));
         }
 
         public async Task<bool> ExluirFilhosItinerancia(Itinerancia itinerancia)

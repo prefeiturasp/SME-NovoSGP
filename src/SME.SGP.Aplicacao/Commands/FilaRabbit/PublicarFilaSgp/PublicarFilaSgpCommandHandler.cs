@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using SME.SGP.Infra;
-using System;
+using SME.SGP.Infra.Utilitarios;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,11 +11,11 @@ namespace SME.SGP.Aplicacao
 {
     public class PublicarFilaSgpCommandHandler : IRequestHandler<PublicarFilaSgpCommand, bool>
     {
-        private readonly IModel model;
+        private readonly ConfiguracaoRabbitOptions configuracaoRabbitOptions;
 
-        public PublicarFilaSgpCommandHandler(IModel model)
+        public PublicarFilaSgpCommandHandler(ConfiguracaoRabbitOptions configuracaoRabbitOptions)
         {
-            this.model = model ?? throw new ArgumentNullException(nameof(model));
+            this.configuracaoRabbitOptions = configuracaoRabbitOptions ?? throw new System.ArgumentNullException(nameof(configuracaoRabbitOptions));
         }
 
         public Task<bool> Handle(PublicarFilaSgpCommand command, CancellationToken cancellationToken)
@@ -27,14 +27,29 @@ namespace SME.SGP.Aplicacao
                                              command.PerfilUsuario,
                                              command.NotificarErroUsuario);
 
-            var mensagem = JsonConvert.SerializeObject(request, new JsonSerializerSettings
+            var factory = new ConnectionFactory
             {
-                NullValueHandling = NullValueHandling.Ignore
-            });
-            var body = Encoding.UTF8.GetBytes(mensagem);
+                HostName = configuracaoRabbitOptions.HostName,
+                UserName = configuracaoRabbitOptions.UserName,
+                Password = configuracaoRabbitOptions.Password,
+                VirtualHost = configuracaoRabbitOptions.VirtualHost
+            };
 
-            model.QueueBind(String.IsNullOrEmpty(command.Fila) ? RotasRabbit.FilaSgp : command.Fila, RotasRabbit.ExchangeSgp, command.NomeFila);
-            model.BasicPublish(RotasRabbit.ExchangeSgp, command.NomeFila, null, body);
+            using (var conexaoRabbit = factory.CreateConnection())
+            {
+                using (IModel _channel = conexaoRabbit.CreateModel())
+                {
+                    var mensagem = JsonConvert.SerializeObject(request, new JsonSerializerSettings
+                    {
+                        NullValueHandling = NullValueHandling.Ignore
+                    });
+                    var body = Encoding.UTF8.GetBytes(mensagem);
+
+
+                    _channel.BasicPublish(RotasRabbit.ExchangeSgp, command.NomeFila, null, body);
+                }
+            }
+
             return Task.FromResult(true);
         }
     }
