@@ -15,7 +15,12 @@ import ServicoDiarioBordo from '~/servicos/Paginas/DiarioClasse/ServicoDiarioBor
 import { ContainerCampoObservacao } from './observacoesUsuario.css';
 
 const CampoObservacao = props => {
-  const { salvarObservacao, esconderCaixaExterna, podeIncluir } = props;
+  const {
+    salvarObservacao,
+    esconderCaixaExterna,
+    podeIncluir,
+    obterUsuariosNotificadosDiarioBordo,
+  } = props;
   const [modalVisivel, setModalVisivel] = useState(false);
 
   const dispatch = useDispatch();
@@ -54,16 +59,22 @@ const CampoObservacao = props => {
     const retorno = await salvarObservacao({ observacao: novaObservacao });
     if (retorno?.status === 200) {
       dispatch(setNovaObservacao(''));
-      const retornoUsuarios = await ServicoDiarioBordo.obterNofiticarUsuarios({
-        turmaId,
-      }).catch(e => erros(e));
+      if (obterUsuariosNotificadosDiarioBordo) {
+        const retornoUsuarios = await ServicoDiarioBordo.obterNofiticarUsuarios(
+          {
+            turmaId,
+          }
+        ).catch(e => erros(e));
 
-      if (retornoUsuarios?.status === 200) {
-        dispatch(setListaUsuariosNotificacao(retornoUsuarios.data));
+        if (retornoUsuarios?.status === 200) {
+          dispatch(setListaUsuariosNotificacao(retornoUsuarios.data));
+        }
       }
     }
   };
 
+  // TODO Não é para estar aqui esta função, refatorar esta regra!
+  // Criado a prop obterUsuariosNotificadosDiarioBordo para contornar esta situação!
   const obterNofiticarUsuarios = useCallback(async () => {
     const retorno = await ServicoDiarioBordo.obterNofiticarUsuarios({
       turmaId,
@@ -75,10 +86,19 @@ const CampoObservacao = props => {
   }, [turmaId]);
 
   useEffect(() => {
-    if (turmaId && !listaUsuarios?.length) {
+    if (
+      turmaId &&
+      !listaUsuarios?.length &&
+      obterUsuariosNotificadosDiarioBordo
+    ) {
       obterNofiticarUsuarios();
     }
-  }, [turmaId, obterNofiticarUsuarios, listaUsuarios]);
+  }, [
+    turmaId,
+    obterNofiticarUsuarios,
+    listaUsuarios,
+    obterUsuariosNotificadosDiarioBordo,
+  ]);
 
   return (
     <>
@@ -149,12 +169,14 @@ CampoObservacao.propTypes = {
   salvarObservacao: PropTypes.func,
   esconderCaixaExterna: PropTypes.bool,
   podeIncluir: PropTypes.oneOfType(PropTypes.object),
+  obterUsuariosNotificadosDiarioBordo: PropTypes.bool,
 };
 
 CampoObservacao.defaultProps = {
   salvarObservacao: () => {},
   esconderCaixaExterna: false,
   podeIncluir: true,
+  obterUsuariosNotificadosDiarioBordo: true,
 };
 
 export default CampoObservacao;

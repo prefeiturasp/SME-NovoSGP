@@ -15,6 +15,7 @@ const ObservacoesUsuario = props => {
     verificaProprietario,
     permissoes,
     mostrarListaNotificacao,
+    obterUsuariosNotificadosDiarioBordo,
   } = props;
 
   const { podeIncluir, podeAlterar, podeExcluir } = permissoes;
@@ -28,6 +29,9 @@ const ObservacoesUsuario = props => {
             salvarObservacao={salvarObservacao}
             esconderCaixaExterna={esconderCaixaExterna}
             podeIncluir={podeIncluir}
+            obterUsuariosNotificadosDiarioBordo={
+              obterUsuariosNotificadosDiarioBordo
+            }
           />
           <ObservacoesUsuarioMontarDados
             onClickSalvarEdicao={editarObservacao}
@@ -52,6 +56,7 @@ ObservacoesUsuario.propTypes = {
   verificaProprietario: PropTypes.bool,
   permissoes: PropTypes.objectOf(PropTypes.object),
   mostrarListaNotificacao: PropTypes.bool,
+  obterUsuariosNotificadosDiarioBordo: PropTypes.bool,
 };
 
 ObservacoesUsuario.defaultProps = {
@@ -63,6 +68,7 @@ ObservacoesUsuario.defaultProps = {
   verificaProprietario: false,
   permissoes: { podeAlterar: true, podeIncluir: true, podeExcluir: true },
   mostrarListaNotificacao: false,
+  obterUsuariosNotificadosDiarioBordo: true,
 };
 
 export default ObservacoesUsuario;
