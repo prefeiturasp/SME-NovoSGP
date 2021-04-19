@@ -17,7 +17,7 @@ const CollapseLocalizarEstudante = props => {
   return (
     <CardCollapse
       key="localizar-estudante-collapse-key"
-      titulo="Localizar estudante"
+      titulo="Localizar Criança/Estudante"
       indice="localizar-estudante-collapse-indice"
       alt="localizar-estudante-alt"
       show
