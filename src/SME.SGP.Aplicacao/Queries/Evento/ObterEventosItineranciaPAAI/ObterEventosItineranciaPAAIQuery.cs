@@ -8,14 +8,16 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterEventosItineranciaPAAIQuery : IRequest<IEnumerable<EventoNomeDto>>
     {
-        public ObterEventosItineranciaPAAIQuery(long tipoCalendarioId, string login, Guid perfil)
+        public ObterEventosItineranciaPAAIQuery(long tipoCalendarioId, long itineranciaId, string login, Guid perfil)
         {
             TipoCalendarioId = tipoCalendarioId;
+            ItineranciaId = itineranciaId;
             Login = login;
             Perfil = perfil;
         }
 
         public long TipoCalendarioId { get; }
+        public long ItineranciaId { get; }
         public string Login { get; }
         public Guid Perfil { get; }
     }

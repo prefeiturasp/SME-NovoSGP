@@ -11,11 +11,10 @@ import {
   Card,
   Colors,
   JoditEditor,
-  Label,
   Loader,
   MarcadorSituacao,
   PainelCollapse,
-  SelectAutocomplete,
+  SelectComponent,
 } from '~/componentes';
 import { Cabecalho, Paginacao } from '~/componentes-sgp';
 import { RotasDto } from '~/dtos';
@@ -67,14 +66,10 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
   const [imprimindo, setImprimindo] = useState(false);
   const [carregandoTipos, setCarregandoTipos] = useState(false);
   const [carregandoEventos, setCarregandoEventos] = useState(false);
-  const [valorTipoCalendario, setValorTipoCalendario] = useState('');
   const [listaCalendario, setListaCalendario] = useState([]);
-  const [valorEvento, setValorEvento] = useState('');
-  const [tipoCalendarioSelecionado, setTipoCalendarioSelecionado] = useState(
-    ''
-  );
+  const [tipoCalendarioSelecionado, setTipoCalendarioSelecionado] = useState();
   const [listaEvento, setListaEvento] = useState([]);
-  const [eventoId, setEventoId] = useState('');
+  const [eventoId, setEventoId] = useState();
 
   const usuario = useSelector(store => store.usuario);
   const permissoesTela =
@@ -305,41 +300,13 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
     }
 
     if (itinerancia.tipoCalendarioId) {
-      setTipoCalendarioSelecionado(itinerancia.tipoCalendarioId);
+      setTipoCalendarioSelecionado(String(itinerancia.tipoCalendarioId));
     }
 
     if (itinerancia.eventoId) {
-      setEventoId(itinerancia.eventoId);
+      setEventoId(String(itinerancia.eventoId));
     }
   };
-
-  useEffect(() => {
-    if (
-      listaCalendario?.length &&
-      tipoCalendarioSelecionado &&
-      !valorTipoCalendario
-    ) {
-      const tipo = listaCalendario?.find(t => {
-        return t.id === tipoCalendarioSelecionado;
-      });
-
-      if (tipo?.id) {
-        setValorTipoCalendario(tipo.descricao);
-      }
-    }
-  }, [listaCalendario, tipoCalendarioSelecionado, valorTipoCalendario]);
-
-  useEffect(() => {
-    if (listaEvento?.length && eventoId && !valorEvento) {
-      const evento = listaEvento?.find(t => {
-        return t.id === eventoId;
-      });
-
-      if (evento?.id) {
-        setValorEvento(evento.nome);
-      }
-    }
-  }, [listaEvento, eventoId, valorEvento]);
 
   const perguntarAntesDeCancelar = async () => {
     const resposta = await confirmar(
@@ -483,17 +450,14 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
       .catch(e => erros(e));
   };
 
-  const selecionaTipoCalendario = descricao => {
-    setValorEvento();
+  const selecionaTipoCalendario = tipo => {
     setEventoId();
     setListaEvento([]);
-    const tipo = listaCalendario?.find(t => {
-      return t.descricao === descricao;
-    });
 
-    if (tipo?.id) {
-      setValorTipoCalendario(descricao);
-      setTipoCalendarioSelecionado(tipo.id);
+    if (tipo) {
+      setTipoCalendarioSelecionado(tipo);
+    } else {
+      setTipoCalendarioSelecionado();
     }
     setModoEdicao(true);
   };
@@ -523,9 +487,9 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
       if (isSubscribed) {
         const allowedList = filterAllowedCalendarTypes(data);
         setListaCalendario(allowedList);
-        selecionaTipoCalendario(
-          allowedList.length > 0 ? allowedList[0].descricao : ''
-        );
+        if (allowedList?.length === 1) {
+          selecionaTipoCalendario(allowedList[0].id);
+        }
         setCarregandoTipos(false);
       }
     })();
@@ -541,10 +505,11 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
     }
   }, [dataVisita]);
 
-  const obterListaEventos = async tipoCalendarioId => {
+  const obterListaEventos = async (tipoCalendarioId, id) => {
     setCarregandoEventos(true);
     const retorno = await ServicoRegistroItineranciaAEE.obterEventos(
-      tipoCalendarioId
+      tipoCalendarioId,
+      id
     )
       .catch(e => erros(e))
       .finally(() => setCarregandoEventos(false));
@@ -559,21 +524,18 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
 
   useEffect(() => {
     if (tipoCalendarioSelecionado) {
-      obterListaEventos(tipoCalendarioSelecionado);
+      obterListaEventos(tipoCalendarioSelecionado, itineranciaId);
     } else {
       setEventoId();
       setListaEvento([]);
     }
-  }, [tipoCalendarioSelecionado]);
+  }, [tipoCalendarioSelecionado, itineranciaId]);
 
-  const selecionaEvento = nome => {
-    const evento = listaEvento?.find(t => {
-      return t.nome === nome;
-    });
-
-    if (evento?.id) {
-      setValorEvento(evento.nome);
-      setEventoId(evento?.id);
+  const selecionaEvento = evento => {
+    if (evento) {
+      setEventoId(evento);
+    } else {
+      setEventoId(evento);
     }
     setModoEdicao(true);
   };
@@ -658,43 +620,32 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
             </div>
             <div className="row mb-4">
               <div className="col-6">
-                <Label control="tipoCalendarioId" text="Tipo de Calendário" />
                 <Loader loading={carregandoTipos} tip="">
-                  <SelectAutocomplete
-                    hideLabel
-                    showList
-                    isHandleSearch
-                    placeholder="Selecione um calendário"
-                    className="col-md-12"
-                    name="tipoCalendarioId"
-                    id="select-tipo-calendario"
+                  <SelectComponent
+                    id="tipo-calendario"
+                    label="Tipo de Calendário"
                     lista={listaCalendario}
-                    valueField="id"
-                    textField="descricao"
-                    onSelect={valor => selecionaTipoCalendario(valor)}
-                    value={valorTipoCalendario}
-                    allowClear
+                    valueOption="id"
+                    valueText="descricao"
+                    onChange={selecionaTipoCalendario}
+                    valueSelect={tipoCalendarioSelecionado}
+                    placeholder="Selecione um calendário"
+                    showSearch
                   />
                 </Loader>
               </div>
               <div className="col-6">
-                <Label control="evento" text="Evento" />
                 <Loader loading={carregandoEventos} tip="">
-                  <SelectAutocomplete
-                    hideLabel
-                    showList
-                    isHandleSearch
-                    placeholder="Selecione um evento"
-                    className="col-md-12"
-                    name="eventoId"
-                    id="select-evento"
-                    key="select-evento-key"
+                  <SelectComponent
+                    id="evento"
+                    label="Evento"
                     lista={listaEvento}
-                    valueField="id"
-                    textField="nome"
-                    onSelect={valor => selecionaEvento(valor)}
-                    value={valorEvento}
-                    allowClear
+                    valueOption="id"
+                    valueText="nome"
+                    onChange={selecionaEvento}
+                    valueSelect={eventoId}
+                    placeholder="Selecione um evento"
+                    showSearch
                   />
                 </Loader>
               </div>
