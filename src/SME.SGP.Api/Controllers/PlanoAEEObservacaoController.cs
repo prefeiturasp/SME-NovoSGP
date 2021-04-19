@@ -13,6 +13,15 @@ namespace SME.SGP.Api.Controllers
     [Route("api/v1/plano-aee/observacoes")]
     public class PlanoAEEObservacaoController : ControllerBase
     {
+        [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<PlanoAEEObservacaoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.PAEE_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterPlanosAEE([FromQuery] long planoAEEId, [FromServices] IObterPlanoAEEObservacaoUseCase useCase)
+        {
+            return Ok(await useCase.Executar(planoAEEId));
+        }
+
         [HttpPost]
         [ProducesResponseType(typeof(AuditoriaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
