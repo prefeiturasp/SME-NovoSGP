@@ -2,6 +2,8 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados
 {
@@ -10,5 +12,14 @@ namespace SME.SGP.Dados
         public RepositorioPlanoAEEObservacao(ISgpContext database) : base(database)
         {
         }
+
+        public async Task<IEnumerable<PlanoAEEObservacaoDto>> ObterObservacoesPlanoPorId(long planoId)
+        {
+            var query = "select * from plano_aee_observacao where plano_aee_observacao_id = @planoId";
+
+            return await database.Conexao.QueryAsync<PlanoAEEObservacaoDto>(query, new { planoId });
+        }
+
+
     }
 }
