@@ -10,16 +10,16 @@ namespace SME.SGP.Aplicacao
     public class ObterFiltroRelatoriosModalidadesPorUeAbrangenciaQuery : IRequest<IEnumerable<OpcaoDropdownDto>>
     {
         public string CodigoUe { get; }
-        public IEnumerable<Modalidade> ModadlidadesQueSeraoIgnoradas { get; set; }
+        public IEnumerable<Modalidade> ModalidadesQueSeraoIgnoradas { get; set; }
         public string Login { get; set; }
         public Guid Perfil { get; set; }
 
-        public ObterFiltroRelatoriosModalidadesPorUeAbrangenciaQuery(string codigoUe, string login, Guid perfil, IEnumerable<Modalidade> modadlidadesQueSeraoIgnoradas)
+        public ObterFiltroRelatoriosModalidadesPorUeAbrangenciaQuery(string codigoUe, string login, Guid perfil, IEnumerable<Modalidade> modalidadesQueSeraoIgnoradas)
         {
             CodigoUe = codigoUe;
             Login = login;
             Perfil = perfil;
-            ModadlidadesQueSeraoIgnoradas = modadlidadesQueSeraoIgnoradas;
+            ModalidadesQueSeraoIgnoradas = modalidadesQueSeraoIgnoradas;
         }
     }
 

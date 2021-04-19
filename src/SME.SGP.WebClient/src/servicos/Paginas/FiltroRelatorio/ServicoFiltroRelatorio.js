@@ -21,14 +21,9 @@ class ServicoFiltroRelatorio {
   obterModalidadesAnoLetivo = (
     codigoUe,
     anoLetivo,
-    consideraNovasModalidades
+    consideraNovasModalidades = false
   ) => {
     const url = `${urlPadrao}/ues/${codigoUe}/${anoLetivo}/modalidades?consideraNovasModalidades=${consideraNovasModalidades}`;
-    return api.get(url);
-  };
-
-  obterModalidadesAnoLetivo = (codigoUe, anoLetivo) => {
-    const url = `${urlPadrao}/ues/${codigoUe}/${anoLetivo}/modalidades`;
     return api.get(url);
   };
 

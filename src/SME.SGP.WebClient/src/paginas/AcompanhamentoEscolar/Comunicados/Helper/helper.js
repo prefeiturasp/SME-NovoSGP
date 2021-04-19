@@ -103,7 +103,8 @@ class FiltroHelper {
     try {
       const retorno = await ServicoFiltroRelatorio.obterModalidadesAnoLetivo(
         ue,
-        anoLetivo
+        anoLetivo,
+        true
       );
 
       const dados = retorno.data.map(x => {

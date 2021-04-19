@@ -18,16 +18,16 @@ namespace SME.SGP.Aplicacao
             Perfil = perfil;
         }
 
-        public ObterFiltroRelatoriosModalidadesPorUeQuery(string codigoUe, int anoLetivo, bool consideraHistorico, string login, Guid perfil, IEnumerable<Modalidade> modadlidadesQueSeraoIgnoradas)
+        public ObterFiltroRelatoriosModalidadesPorUeQuery(string codigoUe, int anoLetivo, bool consideraHistorico, string login, Guid perfil, IEnumerable<Modalidade> modalidadesQueSeraoIgnoradas)
             : this(codigoUe, anoLetivo, consideraHistorico, login, perfil)
         {
-            ModadlidadesQueSeraoIgnoradas = modadlidadesQueSeraoIgnoradas;
+            ModalidadesQueSeraoIgnoradas = modalidadesQueSeraoIgnoradas;
         }
 
         public string CodigoUe { get; }
         public int AnoLetivo { get; set; }
         public bool ConsideraHistorico { get; set; }
-        public IEnumerable<Modalidade> ModadlidadesQueSeraoIgnoradas { get; set; }
+        public IEnumerable<Modalidade> ModalidadesQueSeraoIgnoradas { get; set; }
         public string Login { get; set; }
         public Guid Perfil { get; set; }
     }
