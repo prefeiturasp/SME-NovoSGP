@@ -22,7 +22,14 @@ namespace SME.SGP.Aplicacao
         {
             if (request.CodigoUe == "-99")
             {
-                return EnumExtensao.ListarDto<Modalidade>().Select(c => new OpcaoDropdownDto(c.Id.ToString(), c.Descricao));
+                var todasAsModalidades = EnumExtensao.ListarDto<Modalidade>();
+                if (request.ModadlidadesQueSeraoIgnoradas != null && request.ModadlidadesQueSeraoIgnoradas.Any())
+                {
+                    var descricoesIgnoradas = request.ModadlidadesQueSeraoIgnoradas.Select(a => a.Name());
+                    var listaTratada = todasAsModalidades.Where(m => !descricoesIgnoradas.Contains(m.Descricao));
+                    return listaTratada.Select(c => new OpcaoDropdownDto(c.Id.ToString(), c.Descricao));
+                }
+                return todasAsModalidades.Select(c => new OpcaoDropdownDto(c.Id.ToString(), c.Descricao));
             }
 
             var listaAbrangencia = await repositorioAbrangencia.ObterModalidades(request.Login, request.Perfil, request.AnoLetivo, request.ConsideraHistorico, request.ModadlidadesQueSeraoIgnoradas);

@@ -27,10 +27,16 @@ namespace SME.SGP.Aplicacao
         {
             if (request.CodigoUe == "-99")
             {
-                return EnumExtensao.ListarDto<Modalidade>().Select(c => new OpcaoDropdownDto(c.Id.ToString(), c.Descricao));
+                var todasAsModalidades = EnumExtensao.ListarDto<Modalidade>();
+                if (request.ModalidadesQueSeraoIgnoradas != null && request.ModalidadesQueSeraoIgnoradas.Any()) {
+                    var descricoesIgnoradas = request.ModalidadesQueSeraoIgnoradas.Select(a => a.Name());
+                    var listaTratada = todasAsModalidades.Where(m => !descricoesIgnoradas.Contains(m.Descricao));
+                    return listaTratada.Select(c => new OpcaoDropdownDto(c.Id.ToString(), c.Descricao));
+                }
+                return todasAsModalidades.Select(c => new OpcaoDropdownDto(c.Id.ToString(), c.Descricao));
             }
 
-            var modalidades = await repositorioAbrangencia.ObterModalidadesPorUeAbrangencia(request.CodigoUe, request.Login, request.Perfil, request.ModadlidadesQueSeraoIgnoradas);
+            var modalidades = await repositorioAbrangencia.ObterModalidadesPorUeAbrangencia(request.CodigoUe, request.Login, request.Perfil, request.ModalidadesQueSeraoIgnoradas);
             return modalidades?.Select(c => new OpcaoDropdownDto(((int)c).ToString(), c.Name()));
         }
     }
