@@ -25,7 +25,7 @@ pipeline {
          }
            steps {
                sh 'echo Analise SonarQube API'
-               sh 'dotnet-sonarscanner begin /k:"SME-NovoSGP" /d:sonar.host.url="http://sonar.sme.prefeitura.sp.gov.br" /d:sonar.login="8fd25bf927e18aa448d4d00ef7478004a67bf485" /d:sonar.cs.opencover.reportsPaths="teste/SME.SGP.Aplicacao.Teste/coverage.opencover.xml,teste/SME.SGP.Dominio.Servicos.Teste/coverage.opencover.xml,teste/SME.SGP.Dominio.Teste/coverage.opencover.xml,teste/SME.SGP.Dominio.Servicos.Teste/coverage.opencover.xml,teste/" /d:sonar.coverage.exclusions="**Test*.cs"'
+               sh 'dotnet-sonarscanner begin /k:"SME-NovoSGP" /d:sonar.host.url="http://sonar.sme.prefeitura.sp.gov.br" /d:sonar.login="8fd25bf927e18aa448d4d00ef7478004a67bf485" /d:sonar.cs.opencover.reportsPaths="teste/SME.SGP.Aplicacao.Teste/coverage.opencover.xml,teste/SME.SGP.Dominio.Servicos.Teste/coverage.opencover.xml,teste/SME.SGP.Dominio.Teste/coverage.opencover.xml,teste/SME.SGP.Dominio.Servicos.Teste/coverage.opencover.xml" /d:sonar.coverage.exclusions="**Test*.cs"'
 
             anlise codigo frontend
              sh 'echo Analise SonarQube FRONTEND'
@@ -45,22 +45,22 @@ pipeline {
         }
         
             
-      // stage('Testes') {
-      //      steps {
-          //  //Executa os testes
-            // sh 'dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover'
-      //      }
-      //  }
+      stage('Testes') {
+           steps {
+           //Executa os testes
+            sh 'dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover'
+           }
+       }
         
-       //     stage('Fim Análise Código') {
-      //    when {
-       //     branch 'development-NaoExecutar'
-      //    }
-       //     steps {
-       //         sh 'echo Fim SonarQube API'
-      //          sh 'dotnet-sonarscanner end /d:sonar.login="8fd25bf927e18aa448d4d00ef7478004a67bf485"'
-       //     }
-     //  }
+           stage('Fim Análise Código') {
+         when {
+           branch 'development-NaoExecutar'
+         }
+           steps {
+               sh 'echo Fim SonarQube API'
+               sh 'dotnet-sonarscanner end /d:sonar.login="8fd25bf927e18aa448d4d00ef7478004a67bf485"'
+           }
+      }
 
       stage('Deploy DEV') {
         when {
