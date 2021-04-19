@@ -184,7 +184,7 @@ namespace SME.SGP.Dominio.Servicos
                 usuario = await servicoUsuario.ObterUsuarioLogado();
 
             if (!usuario.EhProfessorCj() && !await servicoUsuario.PodePersistirTurmaDisciplina(codigoRf, turmaId, disciplinaId, dataAula.Local()))
-                throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, disciplina e data.");
+                throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, componente curricular e data.");
         }
 
         private void ValidaSeUsuarioPodeCriarAula(Aula aula, Usuario usuario)
