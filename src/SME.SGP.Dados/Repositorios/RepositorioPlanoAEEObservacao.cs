@@ -15,9 +15,34 @@ namespace SME.SGP.Dados
 
         public async Task<IEnumerable<PlanoAEEObservacaoDto>> ObterObservacoesPlanoPorId(long planoId)
         {
-            var query = "select id, observacao from plano_aee_observacao where not excluido and plano_aee_observacao_id = @planoId";
+            var query = @"select pao.*
+                            , u.id, u.nome 
+                        from plano_aee_observacao pao 
+                         left join notificacao_plano_aee_observacao npao on npao.plano_aee_observacao_id = pao.id
+                         left join notificacao n on n.id = npao.notificacao_id
+                         left join usuario u on u.id = n.usuario_id
+                        where not pao.excluido 
+                          and pao.plano_aee_id = @planoId";
 
-            return await database.Conexao.QueryAsync<PlanoAEEObservacaoDto>(query, new { planoId });
+            var lookup = new Dictionary<long, PlanoAEEObservacaoDto>();
+            await database.Conexao.QueryAsync<PlanoAEEObservacao, UsuarioNomeDto, PlanoAEEObservacaoDto>(query, 
+                (planoAEE, usuario) =>
+            {
+                PlanoAEEObservacaoDto planoDto = null;
+                if (!lookup.TryGetValue(planoAEE.Id, out planoDto))
+                {
+                    planoDto = new PlanoAEEObservacaoDto(planoAEE.Id, planoAEE.Observacao);
+                    planoDto.Auditoria = (AuditoriaDto)planoAEE;
+
+                    lookup.Add(planoAEE.Id, planoDto);
+                }
+
+                planoDto.AdicionaUsuario(usuario);
+
+                return planoDto;
+            }, new { planoId });
+
+            return lookup.Values;
         }
 
 
