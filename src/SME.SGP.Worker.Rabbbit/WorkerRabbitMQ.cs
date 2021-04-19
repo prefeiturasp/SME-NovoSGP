@@ -59,6 +59,8 @@ namespace SME.SGP.Worker.RabbitMQ
             
             canalRabbit.BasicQos(0, this.consumoDeFilasOptions.LimiteDeMensagensPorExecucao, false);
 
+            canalRabbit.ExchangeDeclare(RotasRabbit.ExchangeSgp, ExchangeType.Topic);
+
             canalRabbit.ExchangeDeclare(RotasRabbit.ExchangeServidorRelatorios, ExchangeType.Topic);
             canalRabbit.QueueDeclare(RotasRabbit.FilaSgp, false, false, false, null);
 
