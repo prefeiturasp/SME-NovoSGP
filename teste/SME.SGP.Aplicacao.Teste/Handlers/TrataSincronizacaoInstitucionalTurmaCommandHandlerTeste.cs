@@ -5,7 +5,6 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -35,7 +34,6 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
                 AnoLetivo = 2021,
                 Codigo = 2258053,
                 TipoTurma = 1,
-                Modalidade = null,
                 CodigoModalidade = Dominio.Modalidade.InfantilPreEscola,
                 NomeTurma = "4D",
                 Semestre = 0,
@@ -43,7 +41,6 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
                 TipoTurno = 6,
                 DataFim = null,
                 EnsinoEspecial = false,
-                EtapaEJA = 0,
                 SerieEnsino = "MINI GRUPO II",
                 DataInicioTurma = DateTime.Parse("2021-02-10"),
                 Extinta = false,
@@ -57,7 +54,7 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
             await trataSincronizacaoInstitucionalTurmaCommandHandler.Handle(new TrataSincronizacaoInstitucionalTurmaCommand(turma, null), new CancellationToken());
 
             //Assert
-            repositorioTurma.Verify(r => r.AtualizarTurmaParaHistorica(turma.Codigo.ToString()), Times.Once);            
+            repositorioTurma.Verify(r => r.AtualizarTurmaParaHistorica(turma.Codigo.ToString()), Times.Once);
         }
 
         [Fact(DisplayName = "Valida o tratamento de turma para inserir na base")]
@@ -70,7 +67,6 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
                 AnoLetivo = 2021,
                 Codigo = 2258053,
                 TipoTurma = 1,
-                Modalidade = null,
                 CodigoModalidade = Dominio.Modalidade.InfantilPreEscola,
                 NomeTurma = "4D",
                 Semestre = 0,
@@ -78,7 +74,6 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
                 TipoTurno = 6,
                 DataFim = null,
                 EnsinoEspecial = false,
-                EtapaEJA = 0,
                 SerieEnsino = "MINI GRUPO II",
                 DataInicioTurma = DateTime.Parse("2021-02-10"),
                 Extinta = false,
@@ -86,16 +81,16 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
                 UeCodigo = "094765",
                 DataAtualizacao = DateTime.Parse("2021-02-10"),
                 DataStatusTurmaEscola = DateTime.Parse("2021-02-10"),
-            };           
+            };
 
             mediator.Setup(a => a.Send(It.IsAny<ObterUeComDrePorCodigoQuery>(), It.IsAny<CancellationToken>()))
-               .ReturnsAsync(new Ue() { Id = 1});
+               .ReturnsAsync(new Ue() { Id = 1 });
 
             //Act  
             await trataSincronizacaoInstitucionalTurmaCommandHandler.Handle(new TrataSincronizacaoInstitucionalTurmaCommand(turma, null), new CancellationToken());
 
             //Assert
-            repositorioTurma.Verify(r => r.SalvarAsync(turma, 1), Times.Once);            
+            repositorioTurma.Verify(r => r.SalvarAsync(turma, 1), Times.Once);
         }
 
         [Fact(DisplayName = "Valida o tratamento de turma para Atualizar na base")]
@@ -108,7 +103,6 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
                 AnoLetivo = 2021,
                 Codigo = 2258053,
                 TipoTurma = 1,
-                Modalidade = null,
                 CodigoModalidade = Dominio.Modalidade.InfantilPreEscola,
                 NomeTurma = "4D",
                 Semestre = 0,
@@ -116,7 +110,6 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
                 TipoTurno = 6,
                 DataFim = null,
                 EnsinoEspecial = false,
-                EtapaEJA = 0,
                 SerieEnsino = "MINI GRUPO II",
                 DataInicioTurma = DateTime.Parse("2021-02-10"),
                 Extinta = false,
@@ -135,7 +128,7 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
                    Ano = "4",
                    AnoLetivo = 2021,
                    CodigoTurma = "2258053",
-                   TipoTurma = Dominio.Enumerados.TipoTurma.Regular,                   
+                   TipoTurma = Dominio.Enumerados.TipoTurma.Regular,
                    ModalidadeCodigo = Dominio.Modalidade.InfantilPreEscola,
                    Nome = "4DD",
                    Semestre = 0,
@@ -147,7 +140,7 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
                    SerieEnsino = "MINI GRUPO II",
                    DataInicio = DateTime.Parse("2021-02-10"),
                    Extinta = false,
-                   DataAtualizacao = DateTime.Parse("2021-02-10"),                   
+                   DataAtualizacao = DateTime.Parse("2021-02-10"),
                });
 
             //Act  
@@ -167,7 +160,6 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
                 AnoLetivo = 2021,
                 Codigo = 2258053,
                 TipoTurma = 1,
-                Modalidade = null,
                 CodigoModalidade = Dominio.Modalidade.InfantilPreEscola,
                 NomeTurma = "4D",
                 Semestre = 0,
@@ -175,7 +167,6 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
                 TipoTurno = 6,
                 DataFim = null,
                 EnsinoEspecial = false,
-                EtapaEJA = 0,
                 SerieEnsino = "MINI GRUPO II",
                 DataInicioTurma = DateTime.Parse("2021-02-10"),
                 Extinta = true,
@@ -208,16 +199,14 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
                 Ano = "4",
                 AnoLetivo = 2021,
                 Codigo = 2258053,
-                TipoTurma = 1,
-                Modalidade = null,
+                TipoTurma = 1,                
                 CodigoModalidade = Dominio.Modalidade.InfantilPreEscola,
                 NomeTurma = "4D",
                 Semestre = 0,
                 DuracaoTurno = 10,
                 TipoTurno = 6,
                 DataFim = null,
-                EnsinoEspecial = false,
-                EtapaEJA = 0,
+                EnsinoEspecial = false,                
                 SerieEnsino = "MINI GRUPO II",
                 DataInicioTurma = DateTime.Parse("2021-02-10"),
                 Extinta = true,
@@ -266,16 +255,14 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
                 Ano = "4",
                 AnoLetivo = 2021,
                 Codigo = 2340746,
-                TipoTurma = 1,
-                Modalidade = null,
+                TipoTurma = 1,                
                 CodigoModalidade = Dominio.Modalidade.InfantilPreEscola,
                 NomeTurma = "4D",
                 Semestre = 0,
                 DuracaoTurno = 10,
                 TipoTurno = 6,
                 DataFim = null,
-                EnsinoEspecial = false,
-                EtapaEJA = 0,
+                EnsinoEspecial = false,                
                 SerieEnsino = "MINI GRUPO II",
                 DataInicioTurma = DateTime.Parse("2021-02-10"),
                 Extinta = true,
@@ -311,7 +298,7 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
             await trataSincronizacaoInstitucionalTurmaCommandHandler.Handle(new TrataSincronizacaoInstitucionalTurmaCommand(turma, null), new CancellationToken());
 
             //Assert
-            repositorioTurma.Verify(r => r.AtualizarTurmaParaHistorica(turma.Codigo.ToString()), Times.Once);            
+            repositorioTurma.Verify(r => r.AtualizarTurmaParaHistorica(turma.Codigo.ToString()), Times.Once);
         }
     }
 }
