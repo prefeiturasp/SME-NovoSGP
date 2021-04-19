@@ -15,7 +15,7 @@ namespace SME.SGP.Dados
 
         public async Task<IEnumerable<PlanoAEEObservacaoDto>> ObterObservacoesPlanoPorId(long planoId)
         {
-            var query = "select * from plano_aee_observacao where plano_aee_observacao_id = @planoId";
+            var query = "select * from plano_aee_observacao where not excluido and plano_aee_observacao_id = @planoId";
 
             return await database.Conexao.QueryAsync<PlanoAEEObservacaoDto>(query, new { planoId });
         }
