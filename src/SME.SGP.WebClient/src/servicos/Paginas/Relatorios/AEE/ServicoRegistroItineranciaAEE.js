@@ -39,9 +39,11 @@ class ServicoRegistroItineranciaAEE {
   };
 
   obterEventos = (tipoCalendarioId, itineranciaId) => {
-    return api.get(
-      `${urlPadrao}/eventos?tipoCalendarioId=${tipoCalendarioId}&itineranciaId=${itineranciaId}`
-    );
+    let url = `${urlPadrao}/eventos?tipoCalendarioId=${tipoCalendarioId}`;
+    if (itineranciaId) {
+      url += `&itineranciaId=${itineranciaId}`;
+    }
+    return api.get(url);
   };
 }
 
