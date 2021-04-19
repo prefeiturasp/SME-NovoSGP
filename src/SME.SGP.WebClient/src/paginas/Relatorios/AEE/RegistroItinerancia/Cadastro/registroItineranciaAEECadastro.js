@@ -505,11 +505,11 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
     }
   }, [dataVisita]);
 
-  const obterListaEventos = async tipoCalendarioId => {
+  const obterListaEventos = async (tipoCalendarioId, id) => {
     setCarregandoEventos(true);
     const retorno = await ServicoRegistroItineranciaAEE.obterEventos(
       tipoCalendarioId,
-      match?.params?.id
+      id
     )
       .catch(e => erros(e))
       .finally(() => setCarregandoEventos(false));
@@ -524,12 +524,12 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
 
   useEffect(() => {
     if (tipoCalendarioSelecionado) {
-      obterListaEventos(tipoCalendarioSelecionado);
+      obterListaEventos(tipoCalendarioSelecionado, itineranciaId);
     } else {
       setEventoId();
       setListaEvento([]);
     }
-  }, [tipoCalendarioSelecionado]);
+  }, [tipoCalendarioSelecionado, itineranciaId]);
 
   const selecionaEvento = evento => {
     if (evento) {
