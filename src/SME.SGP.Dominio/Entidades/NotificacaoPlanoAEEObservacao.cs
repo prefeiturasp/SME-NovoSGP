@@ -6,6 +6,13 @@ namespace SME.SGP.Dominio
 {
     public class NotificacaoPlanoAEEObservacao : EntidadeBase
     {
+        public NotificacaoPlanoAEEObservacao() { }
+        public NotificacaoPlanoAEEObservacao(long notificacaoId, long planoAEEObservacaoId)
+        {
+            NotificacaoId = notificacaoId;
+            PlanoAEEObservacaoId = planoAEEObservacaoId;
+        }
+
         public PlanoAEEObservacao PlanoAEEObservacao { get; set; }
         public long PlanoAEEObservacaoId { get; set; }
 

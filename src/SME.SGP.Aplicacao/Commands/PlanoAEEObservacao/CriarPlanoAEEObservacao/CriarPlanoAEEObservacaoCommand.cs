@@ -3,6 +3,7 @@ using MediatR;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace SME.SGP.Aplicacao
@@ -13,10 +14,14 @@ namespace SME.SGP.Aplicacao
         {
             PlanoAEEId = planoAEEId;
             Observacao = observacao;
+            Usuarios = usuarios;
         }
 
         public long PlanoAEEId { get; }
         public string Observacao { get; }
+        public IEnumerable<long> Usuarios { get; }
+
+        public bool PossuiUsuarios { get => Usuarios != null && Usuarios.Any(); }
     }
 
     public class CriarPlanoAEEObservacaoCommandValidator : AbstractValidator<CriarPlanoAEEObservacaoCommand>

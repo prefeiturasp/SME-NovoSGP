@@ -6,7 +6,7 @@ namespace SME.SGP.Dados
     {
         public NotificacaoPlanoAEEObservacaoMap()
         {
-            ToTable("notificao_plano_aee_observacao");
+            ToTable("notificacao_plano_aee_observacao");
             Map(a => a.PlanoAEEObservacaoId).ToColumn("plano_aee_observacao_id");
             Map(a => a.NotificacaoId).ToColumn("notificacao_id");
         }

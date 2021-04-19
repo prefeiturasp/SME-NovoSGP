@@ -3,22 +3,27 @@ using MediatR;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
     public class AlterarPlanoAEEObservacaoCommand : IRequest<AuditoriaDto>
     {
-        public AlterarPlanoAEEObservacaoCommand(long id, string observacao, IEnumerable<long> usuarios)
+        public AlterarPlanoAEEObservacaoCommand(long id, long planoAEEId, string observacao, IEnumerable<long> usuarios)
         {
             Id = id;
+            PlanoAEEId = planoAEEId;
             Observacao = observacao;
             Usuarios = usuarios;
         }
 
         public long Id { get; }
+        public long PlanoAEEId { get; }
         public string Observacao { get; }
         public IEnumerable<long> Usuarios { get; }
+
+        public bool PossuiUsuarios { get => Usuarios != null && Usuarios.Any(); }
     }
 
     public class AlterarPlanoAEEObservacaoCommandValidator : AbstractValidator<AlterarPlanoAEEObservacaoCommand>
