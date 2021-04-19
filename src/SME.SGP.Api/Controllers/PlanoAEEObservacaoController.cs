@@ -17,7 +17,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<PlanoAEEObservacaoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PAEE_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterPlanosAEE([FromQuery] long planoAEEId, [FromServices] IObterPlanoAEEObservacaoUseCase useCase)
+        public async Task<IActionResult> ObterObservacoesPlanosAEE([FromQuery] long planoAEEId, [FromServices] IObterPlanoAEEObservacaoUseCase useCase)
         {
             return Ok(await useCase.Executar(planoAEEId));
         }
