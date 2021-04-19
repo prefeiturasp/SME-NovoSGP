@@ -2,77 +2,86 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Loader } from '~/componentes';
 import ObservacoesUsuario from '~/componentes-sgp/ObservacoesUsuario/observacoesUsuario';
-import ServicoObservacoesUsuario from '~/componentes-sgp/ObservacoesUsuario/ServicoObservacoesUsuario';
 import { RotasDto } from '~/dtos';
 import {
   limparDadosObservacoesUsuario,
   setDadosObservacoesUsuario,
 } from '~/redux/modulos/observacoesUsuario/actions';
 import { confirmar, erros, sucesso } from '~/servicos';
-import ServicoPlanoAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoPlanoAEE';
+import ServicoPlanoAEEObservacoes from '~/servicos/Paginas/Relatorios/AEE/ServicoPlanoAEEObservacoes';
 
 const MontarDadosObservacoesPlanoAEE = () => {
   const usuario = useSelector(store => store.usuario);
-  const { turmaSelecionada } = usuario;
 
   const permissoesTela = usuario.permissoes[RotasDto.RELATORIO_AEE_PLANO];
 
   const planoAEEDados = useSelector(store => store.planoAEE.planoAEEDados);
 
+  const listaUsuariosNotificacao = useSelector(
+    store => store.observacoesUsuario.listaUsuariosNotificacao
+  );
+
   const dispatch = useDispatch();
 
   const [carregandoGeral, setCarregandoGeral] = useState(false);
 
-  const obterUsuarioPorObservacao = useCallback(
-    dadosObservacoes => {
-      const promises = dadosObservacoes.map(async observacao => {
-        const retorno = await ServicoPlanoAEE.obterNofiticarUsuarios({
-          turmaId: turmaSelecionada?.id,
-          observacaoId: observacao.id,
-        }).catch(e => erros(e));
-
-        if (retorno?.data) {
-          return {
-            ...observacao,
-            usuariosNotificacao: retorno.data,
-          };
-        }
-        return observacao;
-      });
-      return Promise.all(promises);
-    },
-    [turmaSelecionada]
-  );
-
   const obterDadosObservacoes = useCallback(
     async id => {
-      dispatch(limparDadosObservacoesUsuario());
       setCarregandoGeral(true);
 
-      const retorno = await ServicoPlanoAEE.obterDadosObservacoes(id)
+      const retorno = await ServicoPlanoAEEObservacoes.obterDadosObservacoes(id)
         .catch(e => erros(e))
         .finally(() => setCarregandoGeral(false));
 
-      if (retorno && retorno.data) {
-        const dadosObservacoes = await obterUsuarioPorObservacao(retorno.data);
-        dispatch(setDadosObservacoesUsuario([...dadosObservacoes]));
+      if (retorno?.data) {
+        const lista = retorno.data.map(item => {
+          const obs = { ...item };
+          if (item?.usuarios?.length) {
+            obs.usuariosNotificacao = item?.usuarios;
+          }
+          return obs;
+        });
+
+        dispatch(setDadosObservacoesUsuario([...lista]));
       } else {
         dispatch(setDadosObservacoesUsuario([]));
       }
     },
-    [dispatch, obterUsuarioPorObservacao]
+    [dispatch]
   );
 
   useEffect(() => {
     if (planoAEEDados?.id) {
+      dispatch(limparDadosObservacoesUsuario());
       obterDadosObservacoes(planoAEEDados.id);
     }
-  }, [planoAEEDados, obterDadosObservacoes]);
+  }, [planoAEEDados, dispatch, obterDadosObservacoes]);
 
   const salvarEditarObservacao = async obs => {
     setCarregandoGeral(true);
 
-    return ServicoPlanoAEE.salvarEditarObservacao(9999)
+    const params = {
+      planoAEEId: planoAEEDados?.id || 0,
+      id: obs?.id || 0,
+      observacao: obs?.observacao || 0,
+    };
+
+    if (obs?.id && obs?.usuarios?.length) {
+      params.usuarios = obs.usuarios
+        .filter(item => !!item?.usuarioId)
+        .map(u => {
+          return u.usuarioId;
+        });
+    } else if (!obs?.id && listaUsuariosNotificacao?.length) {
+      params.usuariosNotificacao = [...listaUsuariosNotificacao];
+      params.usuarios = params.usuariosNotificacao
+        .filter(item => !!item?.usuarioId)
+        .map(u => {
+          return u.usuarioId;
+        });
+    }
+
+    return ServicoPlanoAEEObservacoes.salvarEditarObservacao(params)
       .then(resultado => {
         if (resultado?.status === 200) {
           const msg = `Observação ${
@@ -82,10 +91,7 @@ const MontarDadosObservacoesPlanoAEE = () => {
         }
         setCarregandoGeral(false);
 
-        ServicoObservacoesUsuario.atualizarSalvarEditarDadosObservacao(
-          obs,
-          resultado.data
-        );
+        obterDadosObservacoes(planoAEEDados.id);
         return resultado;
       })
       .catch(e => {
@@ -104,7 +110,9 @@ const MontarDadosObservacoesPlanoAEE = () => {
 
     if (confirmado) {
       setCarregandoGeral(true);
-      const resultado = await ServicoPlanoAEE.excluirObservacao(obs?.id)
+      const resultado = await ServicoPlanoAEEObservacoes.excluirObservacao(
+        obs?.id
+      )
         .catch(e => {
           erros(e);
           setCarregandoGeral(false);
@@ -113,7 +121,7 @@ const MontarDadosObservacoesPlanoAEE = () => {
 
       if (resultado?.status === 200) {
         sucesso('Registro excluído com sucesso');
-        ServicoObservacoesUsuario.atualizarExcluirDadosObservacao(obs);
+        obterDadosObservacoes(planoAEEDados.id);
       }
     }
   };
@@ -127,6 +135,7 @@ const MontarDadosObservacoesPlanoAEE = () => {
         editarObservacao={obs => salvarEditarObservacao(obs)}
         excluirObservacao={obs => excluirObservacao(obs)}
         permissoes={permissoesTela}
+        obterUsuariosNotificadosDiarioBordo={false}
       />
     </Loader>
   );
