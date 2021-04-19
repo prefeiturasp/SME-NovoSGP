@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace SME.SGP.Infra
 {
     public class FiltroPlanoAnualDisciplinaDto : FiltroPlanoAnualDto
     {
-        [Required(ErrorMessage = "Disciplina deve ser informada para filtrar os objetivos")]
+        [Required(ErrorMessage = "Componente curricular deve ser informado para filtrar os objetivos")]
         public long DisciplinaId { get; set; }
     }
 }
