@@ -25,28 +25,20 @@ namespace SME.SGP.Aplicacao
             long[] ids;
 
             if (componenteCurricularId == 138)
-            {
                 ids = new long[] { (ensinoEspecial ? 11 : 6) };
-            }
             else
-            {
                 ids = await mediator.Send(new ObterJuremaIdsPorComponentesCurricularIdQuery(componenteCurricularId));
-            }
 
-            var objetivos = await mediator.Send(new ListarObjetivoAprendizagemPorAnoEComponenteCurricularQuery(ano, ids));
+            IEnumerable<int> anosFundamental = Enumerable.Range(1, 9);
 
-            
+            var objetivos = await mediator.Send(
+                new ListarObjetivoAprendizagemPorAnoEComponenteCurricularQuery(ensinoEspecial ? anosFundamental.Select(a => a.ToString()).ToArray() : new string[] { ano }, ids));
 
             foreach (var item in objetivos)
-            {
                 item.ComponenteCurricularEolId = componenteCurricularId;
-            }
 
-            IEnumerable<int> anos = Enumerable.Range(1, 9);
-            if (ensinoEspecial && !anos.Select(a => a.ToString()).Contains(ano.ToString()))
-            {
-                return objetivos.OrderBy(o => o.Ano).ThenBy(x => x.Codigo);
-            }
+            if (ensinoEspecial && !anosFundamental.Select(a => a.ToString()).Contains(ano.ToString()))
+                return objetivos.OrderBy(o => Enum.Parse(typeof(AnoTurma), o.Ano)).ThenBy(x => x.Codigo);
 
             var anoTurma = Convert.ToInt32(ano);
 
