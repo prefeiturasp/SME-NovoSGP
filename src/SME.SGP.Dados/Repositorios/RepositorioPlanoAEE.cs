@@ -143,15 +143,18 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<PlanoAEE> ObterPlanoComTurmaPorId(long planoId)
         {
-            var query = @" select pa.*, t.*
+            var query = @" select pa.*, t.*, ue.*
                             from plano_aee pa
                            inner join turma t on t.id = pa.turma_id
+                           inner join ue on ue.id = t.ue_id
                            where pa.id = @planoId";
 
-            return (await database.Conexao.QueryAsync<PlanoAEE, Turma, PlanoAEE>(query,
-                (planoAEEDto, turma) =>
+            return (await database.Conexao.QueryAsync<PlanoAEE, Turma, Ue, PlanoAEE>(query,
+                (planoAEEDto, turma, ue) =>
                 {
+                    turma.Ue = ue;
                     planoAEEDto.Turma = turma;
+
                     return planoAEEDto;
                 }, new { planoId })).FirstOrDefault();
         }
