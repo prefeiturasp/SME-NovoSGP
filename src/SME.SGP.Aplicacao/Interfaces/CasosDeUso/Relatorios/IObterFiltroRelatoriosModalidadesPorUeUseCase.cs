@@ -6,6 +6,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IObterFiltroRelatoriosModalidadesPorUeUseCase
     {
-        Task<IEnumerable<OpcaoDropdownDto>> Executar(string codigoUe, int anoLetivo, bool consideraHistorico);
+        Task<IEnumerable<OpcaoDropdownDto>> Executar(string codigoUe, int anoLetivo, bool consideraHistorico, bool consideraNovasModalidades);
     }
 }

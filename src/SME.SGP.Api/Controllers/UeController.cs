@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
 using System.Collections.Generic;
@@ -17,9 +18,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<ModalidadeRetornoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        public async Task<IActionResult> ObterModalidedes(string codigoUe, [FromQuery]int ano, [FromServices]IConsultasUe consultasUe)
+        public async Task<IActionResult> ObterModalidedes([FromServices] IObterModalidadesPorUeUseCase obterModalidadesPorUeUseCase, string codigoUe, [FromQuery]int ano, [FromQuery] bool consideraNovasModalidades = false)
         {
-            return Ok(await consultasUe.ObterModalidadesPorUe(codigoUe, ano));
+            return Ok(await obterModalidadesPorUeUseCase.Executar(codigoUe, ano, consideraNovasModalidades));
         }
 
         [HttpGet("{codigoUe}/modalidades/{idModalidade}")]
