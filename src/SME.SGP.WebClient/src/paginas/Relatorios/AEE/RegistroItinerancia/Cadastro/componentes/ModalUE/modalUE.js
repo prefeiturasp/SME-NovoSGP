@@ -98,6 +98,7 @@ const ModalUE = ({
             codigoUe: ue,
             podeRemover: true,
             ehInfantil: ueSelecionada.ehInfantil,
+            codigoDre: dreId,
           },
         ];
       });
@@ -172,6 +173,7 @@ const ModalUE = ({
               key: ueSelecionada.valor,
               descricao: ueSelecionada.desc,
               codigoUe: ue,
+              codigoDre: dreId,
               ueId: ueSelecionada.id,
               ehInfantil: ueSelecionada.ehInfantil,
             },

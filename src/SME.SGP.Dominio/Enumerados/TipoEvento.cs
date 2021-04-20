@@ -84,5 +84,8 @@ namespace SME.SGP.Dominio
 
         [Display(Name = "Reunião")]
         Reuniao = 27,
+
+        [Display(Name = "Itinerância PAAI")]
+        ItineranciaPAAI = 28,
     }
 }

@@ -96,6 +96,7 @@ const EventosForm = ({ match }) => {
   const refFormulario = useRef(null);
   const [dreDesabilitada, setDreDesabilitada] = useState(false);
   const [ueDesabilitada, setUeDesabilitada] = useState(false);
+  const [desabilitarLetivo, setDesabilitarLetivo] = useState(false);
 
   const [idEvento, setIdEvento] = useState(0);
   const inicial = {
@@ -130,6 +131,8 @@ const EventosForm = ({ match }) => {
   const [recorrencia, setRecorrencia] = useState(null);
 
   const [aguardandoAprovacao, setAguardandoAprovacao] = useState(false);
+
+  const { current } = refFormulario;
 
   const obterUesPorDre = (dre, modalidade) => {
     return AbrangenciaServico.buscarUes(dre, '', false, modalidade);
@@ -171,7 +174,7 @@ const EventosForm = ({ match }) => {
       const tiposEvento = await api.get(
         'v1/calendarios/eventos/tipos/listar?ehCadastro=true&numeroRegistros=100'
       );
-      if (tiposEvento && tiposEvento.data && tiposEvento.data.items) {
+      if (tiposEvento?.data?.items) {
         setListaTipoEvento(tiposEvento.data.items);
         setListaTipoEventoOrigem(tiposEvento.data.items);
       } else {
@@ -183,6 +186,22 @@ const EventosForm = ({ match }) => {
 
     montarConsultas();
   }, []);
+
+  useEffect(() => {
+    if (listaTipoEvento?.length === 1 && current?.state?.values?.ueId) {
+      refFormulario.current.setFieldValue(
+        'tipoEventoId',
+        String(listaTipoEvento[0].id)
+      );
+
+      if (listaTipoEvento[0].descricao === 'Itinerância PAAI') {
+        setDesabilitarLetivo(true);
+        refFormulario.current.setFieldValue('letivo', 0);
+      }
+      return;
+    }
+    refFormulario.current.setFieldValue('tipoEventoId', '');
+  }, [listaTipoEvento, current]);
 
   useEffect(() => {
     const desabilitar = novoRegistro
@@ -991,7 +1010,11 @@ const EventosForm = ({ match }) => {
                     }}
                     label="Tipo evento"
                     placeholder="Selecione um tipo"
-                    disabled={desabilitarCampos || !usuarioPodeAlterar}
+                    disabled={
+                      listaTipoEvento.length === 1 ||
+                      desabilitarCampos ||
+                      !usuarioPodeAlterar
+                    }
                   />
                 </div>
                 {eventoTipoFeriadoSelecionado ? (
@@ -1060,21 +1083,23 @@ const EventosForm = ({ match }) => {
                     <small>Existe recorrência cadastrada</small>
                   )}
                 </div>
-                <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 mb-2">
-                  <RadioGroupButton
-                    label="Letivo"
-                    form={form}
-                    opcoes={opcoesLetivo}
-                    name="letivo"
-                    valorInicial
-                    onChange={onChangeCampos}
-                    desabilitado={
-                      desabilitarCampos ||
-                      desabilitarOpcaoLetivo ||
-                      !usuarioPodeAlterar
-                    }
-                  />
-                </div>
+                {!desabilitarLetivo && (
+                  <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 mb-2">
+                    <RadioGroupButton
+                      label="Letivo"
+                      form={form}
+                      opcoes={opcoesLetivo}
+                      name="letivo"
+                      valorInicial
+                      onChange={onChangeCampos}
+                      desabilitado={
+                        desabilitarCampos ||
+                        desabilitarOpcaoLetivo ||
+                        !usuarioPodeAlterar
+                      }
+                    />
+                  </div>
+                )}
                 <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 pb-2">
                   <CampoTexto
                     form={form}

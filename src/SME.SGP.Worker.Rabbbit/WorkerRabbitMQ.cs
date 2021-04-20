@@ -13,6 +13,7 @@ using SME.SGP.Infra;
 using SME.SGP.Infra.Contexto;
 using SME.SGP.Infra.Excecoes;
 using SME.SGP.Infra.Interfaces;
+using SME.SGP.Infra.Utilitarios;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -28,6 +29,7 @@ namespace SME.SGP.Worker.RabbitMQ
         private readonly string sentryDSN;
         private readonly IConnection conexaoRabbit;
         private readonly IServiceScopeFactory serviceScopeFactory;
+        private readonly ConfiguracaoRabbitOptions consumoDeFilasOptions;
 
         /// <summary>
         /// configuração da lista de tipos para a fila do rabbit instanciar, seguindo a ordem de propriedades:
@@ -36,20 +38,64 @@ namespace SME.SGP.Worker.RabbitMQ
         private readonly Dictionary<string, ComandoRabbit> comandos;
 
 
-        public WorkerRabbitMQ(IConnection conexaoRabbit, IServiceScopeFactory serviceScopeFactory, IConfiguration configuration)
+        public WorkerRabbitMQ(IServiceScopeFactory serviceScopeFactory, IConfiguration configuration, ConfiguracaoRabbitOptions consumoDeFilasOptions)
         {
             sentryDSN = configuration.GetValue<string>("Sentry:DSN");
-            this.conexaoRabbit = conexaoRabbit ?? throw new ArgumentNullException(nameof(conexaoRabbit));
+            
             this.serviceScopeFactory = serviceScopeFactory ?? throw new ArgumentNullException(nameof(serviceScopeFactory));
+
+            this.consumoDeFilasOptions = consumoDeFilasOptions;            
+
+            var factory = new ConnectionFactory
+            {
+                HostName = this.consumoDeFilasOptions.HostName,  
+                UserName = this.consumoDeFilasOptions.UserName, 
+                Password = this.consumoDeFilasOptions.Password, 
+                VirtualHost = this.consumoDeFilasOptions.VirtualHost 
+            };
+
+            conexaoRabbit = factory.CreateConnection();
             canalRabbit = conexaoRabbit.CreateModel();
+            
+            canalRabbit.BasicQos(0, this.consumoDeFilasOptions.LimiteDeMensagensPorExecucao, false);
+
+            canalRabbit.ExchangeDeclare(RotasRabbit.ExchangeSgp, ExchangeType.Topic);
 
             canalRabbit.ExchangeDeclare(RotasRabbit.ExchangeServidorRelatorios, ExchangeType.Topic);
             canalRabbit.QueueDeclare(RotasRabbit.FilaSgp, false, false, false, null);
-            canalRabbit.QueueBind(RotasRabbit.FilaSgp, RotasRabbit.ExchangeServidorRelatorios, "*", null);            
+
+            canalRabbit.QueueBind(RotasRabbit.FilaSgp, RotasRabbit.ExchangeServidorRelatorios, "*", null);
+            canalRabbit.QueueBind(RotasRabbit.FilaSgp, RotasRabbit.ExchangeSgp, "*");
+
             canalRabbit.QueueDeclare(RotasRabbit.WorkerRelatoriosSgp, false, false, false, null);
             canalRabbit.QueueBind(RotasRabbit.WorkerRelatoriosSgp, RotasRabbit.ExchangeServidorRelatorios, "*", null);
-            canalRabbit.QueueDeclare(RotasRabbit.FilaSincronizacaoInstitucional, false, false, false, null);
-            canalRabbit.QueueBind(RotasRabbit.FilaSincronizacaoInstitucional, RotasRabbit.ExchangeSgp, "*", null);
+
+            canalRabbit.QueueDeclare(RotasRabbit.SincronizaEstruturaInstitucionalDreSync, true, false, false);
+            canalRabbit.QueueBind(RotasRabbit.SincronizaEstruturaInstitucionalDreSync, RotasRabbit.ExchangeSgp, RotasRabbit.SincronizaEstruturaInstitucionalDreSync);
+
+            canalRabbit.QueueDeclare(RotasRabbit.SincronizaEstruturaInstitucionalDreTratar, true, false, false);
+            canalRabbit.QueueBind(RotasRabbit.SincronizaEstruturaInstitucionalDreTratar, RotasRabbit.ExchangeSgp, RotasRabbit.SincronizaEstruturaInstitucionalDreTratar);
+
+            canalRabbit.QueueDeclare(RotasRabbit.SincronizaEstruturaInstitucionalUeTratar, true, false, false);
+            canalRabbit.QueueBind(RotasRabbit.SincronizaEstruturaInstitucionalUeTratar, RotasRabbit.ExchangeSgp, RotasRabbit.SincronizaEstruturaInstitucionalUeTratar);
+
+            canalRabbit.QueueDeclare(RotasRabbit.SincronizaEstruturaInstitucionalTipoEscolaSync, true, false, false);
+            canalRabbit.QueueBind(RotasRabbit.SincronizaEstruturaInstitucionalTipoEscolaSync, RotasRabbit.ExchangeSgp, RotasRabbit.SincronizaEstruturaInstitucionalTipoEscolaSync);
+
+            canalRabbit.QueueDeclare(RotasRabbit.SincronizaEstruturaInstitucionalTipoEscolaTratar, true, false, false);
+            canalRabbit.QueueBind(RotasRabbit.SincronizaEstruturaInstitucionalTipoEscolaTratar, RotasRabbit.ExchangeSgp, RotasRabbit.SincronizaEstruturaInstitucionalTipoEscolaTratar);
+
+            canalRabbit.QueueDeclare(RotasRabbit.SincronizaEstruturaInstitucionalTurmasSync, true, false, false);
+            canalRabbit.QueueBind(RotasRabbit.SincronizaEstruturaInstitucionalTurmasSync, RotasRabbit.ExchangeSgp, RotasRabbit.SincronizaEstruturaInstitucionalTurmasSync);
+
+            canalRabbit.QueueDeclare(RotasRabbit.SincronizaEstruturaInstitucionalTurmaTratar, true, false, false);
+            canalRabbit.QueueBind(RotasRabbit.SincronizaEstruturaInstitucionalTurmaTratar, RotasRabbit.ExchangeSgp, RotasRabbit.SincronizaEstruturaInstitucionalTurmaTratar);
+
+            canalRabbit.QueueDeclare(RotasRabbit.SincronizaEstruturaInstitucionalCicloSync, true, false, false);
+            canalRabbit.QueueBind(RotasRabbit.SincronizaEstruturaInstitucionalCicloSync, RotasRabbit.ExchangeSgp, RotasRabbit.SincronizaEstruturaInstitucionalCicloSync);
+
+            canalRabbit.QueueDeclare(RotasRabbit.SincronizaEstruturaInstitucionalCicloTratar, true, false, false);
+            canalRabbit.QueueBind(RotasRabbit.SincronizaEstruturaInstitucionalCicloTratar, RotasRabbit.ExchangeSgp, RotasRabbit.SincronizaEstruturaInstitucionalCicloTratar);
 
             comandos = new Dictionary<string, ComandoRabbit>();
             RegistrarUseCases();
@@ -97,7 +143,7 @@ namespace SME.SGP.Worker.RabbitMQ
 
             comandos.Add(RotasRabbit.RotaNotificacaoInicioFimPeriodoFechamento, new ComandoRabbit("Executa notificação sobre o início e fim do Periodo de fechamento", typeof(INotificacaoInicioFimPeriodoFechamentoUseCase)));
             comandos.Add(RotasRabbit.RotaNotificacaoFrequenciaUe, new ComandoRabbit("Notificar frequências dos alunos no bimestre para UE", typeof(INotificacaoFrequenciaUeUseCase)));
-            
+
             comandos.Add(RotasRabbit.RotaTrataNotificacoesNiveis, new ComandoRabbit("Trata Níveis e Cargos das notificações aguardando ação", typeof(ITrataNotificacoesNiveisCargosUseCase)));
             comandos.Add(RotasRabbit.RotaPendenciaAusenciaRegistroIndividual, new ComandoRabbit("Gerar as pendências por ausência de registro individual", typeof(IGerarPendenciaAusenciaRegistroIndividualUseCase)));
             comandos.Add(RotasRabbit.RotaAtualizarPendenciaAusenciaRegistroIndividual, new ComandoRabbit("Atualizar pendência por ausência de registro individual", typeof(IAtualizarPendenciaRegistroIndividualUseCase)));
@@ -110,13 +156,25 @@ namespace SME.SGP.Worker.RabbitMQ
             comandos.Add(RotasRabbit.GerarPendenciaValidadePlanoAEE, new ComandoRabbit("Gerar Pendência de Validade do PlanoAEE", typeof(IGerarPendenciaValidadePlanoAEEUseCase)));
             comandos.Add(RotasRabbit.NotificarPlanoAEEExpirado, new ComandoRabbit("Excluir plano AEE estudantes inativos", typeof(INotificarPlanosAEEExpiradosUseCase)));
             comandos.Add(RotasRabbit.NotificarPlanoAEEEmAberto, new ComandoRabbit("Notificar Plano AEE que estejam abertos", typeof(INotificarPlanosAEEEmAbertoUseCase)));
-            
+
             comandos.Add(RotasRabbit.NotificarPlanoAEEReestruturado, new ComandoRabbit("Enviar Notificação de Reestruturação de PlanoAEE", typeof(IEnviarNotificacaoReestruturacaoPlanoAEEUseCase)));
             comandos.Add(RotasRabbit.NotificarCriacaoPlanoAEE, new ComandoRabbit("Enviar Notificação de Criação de PlanoAEE", typeof(IEnviarNotificacaoCriacaoPlanoAEEUseCase)));
             comandos.Add(RotasRabbit.NotificarPlanoAEEEncerrado, new ComandoRabbit("Enviar Notificação de Encerramento de PlanoAEE", typeof(IEnviarNotificacaoEncerramentoPlanoAEEUseCase)));
 
-            // Sincronização das UES
-            comandos.Add(RotasRabbit.SincronizaEstruturaInstitucionalUes, new ComandoRabbit("Sincronizar Estrutura Institucional de UES", typeof(IEnviarSincronizacaoEstruturaInstitucionalUesUseCase)));
+            // Sincronização das UES e turmas
+            comandos.Add(RotasRabbit.SincronizaEstruturaInstitucionalDreSync, new ComandoRabbit("Estrutura Institucional - Sync de Dre", typeof(IExecutarSincronizacaoInstitucionalDreSyncUseCase)));
+            comandos.Add(RotasRabbit.SincronizaEstruturaInstitucionalDreTratar, new ComandoRabbit("Estrutura Institucional - Tratar uma Dre", typeof(IExecutarSincronizacaoInstitucionalDreTratarUseCase)));
+            comandos.Add(RotasRabbit.SincronizaEstruturaInstitucionalUeTratar, new ComandoRabbit("Estrutura Institucional - Tratar uma Ue", typeof(IExecutarSincronizacaoInstitucionalUeTratarUseCase)));
+            comandos.Add(RotasRabbit.SincronizaEstruturaInstitucionalTipoEscolaSync, new ComandoRabbit("Estrutura Institucional - Sync de Tipos de Escola", typeof(IExecutarSincronizacaoInstitucionalTipoEscolaSyncUseCase)));
+            comandos.Add(RotasRabbit.SincronizaEstruturaInstitucionalTipoEscolaTratar, new ComandoRabbit("Estrutura Institucional - Tratar um Tipo de Escola", typeof(IExecutarSincronizacaoInstitucionalTipoEscolaTratarUseCase)));
+            comandos.Add(RotasRabbit.SincronizaEstruturaInstitucionalCicloSync, new ComandoRabbit("Estrutura Institucional - Sync de Ciclo Ensino", typeof(IExecutarSincronizacaoInstitucionalCicloSyncUseCase)));
+            comandos.Add(RotasRabbit.SincronizaEstruturaInstitucionalCicloTratar, new ComandoRabbit("Estrutura Institucional - Tratar um de Ciclo Ensino", typeof(IExecutarSincronizacaoInstitucionalCicloTratarUseCase)));
+            comandos.Add(RotasRabbit.SincronizaEstruturaInstitucionalTurmasSync, new ComandoRabbit("Estrutura Institucional - Sincronizar Turmas", typeof(IExecutarSincronizacaoInstitucionalTurmaSyncUseCase)));
+            comandos.Add(RotasRabbit.SincronizaEstruturaInstitucionalTurmaTratar, new ComandoRabbit("Estrutura Institucional - Tratar uma Turma", typeof(IExecutarSincronizacaoInstitucionalTurmaTratarUseCase)));
+           
+            comandos.Add(RotasRabbit.RotaNotificacaoRegistroItineranciaInseridoUseCase, new ComandoRabbit("Enviar Notificação quanto insere um novo Registro de Itinerância", typeof(INotificacaoSalvarItineranciaUseCase)));
+
+           
         }
 
         private async Task TratarMensagem(BasicDeliverEventArgs ea)
@@ -248,12 +306,27 @@ namespace SME.SGP.Worker.RabbitMQ
             var consumer = new EventingBasicConsumer(canalRabbit);
             consumer.Received += async (ch, ea) =>
             {
-
-                await TratarMensagem(ea);
+                try
+                {
+                    await TratarMensagem(ea);
+                }
+                catch (Exception ex)
+                {
+                    SentrySdk.CaptureException(ex);
+                }
             };
 
             canalRabbit.BasicConsume(RotasRabbit.FilaSgp, false, consumer);
-            canalRabbit.BasicConsume(RotasRabbit.FilaSincronizacaoInstitucional, false, consumer);
+            canalRabbit.BasicConsume(RotasRabbit.SincronizaEstruturaInstitucionalDreSync, false, consumer);
+            canalRabbit.BasicConsume(RotasRabbit.SincronizaEstruturaInstitucionalDreTratar, false, consumer);
+            canalRabbit.BasicConsume(RotasRabbit.SincronizaEstruturaInstitucionalUeTratar, false, consumer);
+            canalRabbit.BasicConsume(RotasRabbit.SincronizaEstruturaInstitucionalTipoEscolaSync, false, consumer);
+            canalRabbit.BasicConsume(RotasRabbit.SincronizaEstruturaInstitucionalTipoEscolaTratar, false, consumer);
+            canalRabbit.BasicConsume(RotasRabbit.SincronizaEstruturaInstitucionalCicloSync, false, consumer);
+            canalRabbit.BasicConsume(RotasRabbit.SincronizaEstruturaInstitucionalCicloTratar, false, consumer);
+            canalRabbit.BasicConsume(RotasRabbit.SincronizaEstruturaInstitucionalTurmaTratar, false, consumer);
+            canalRabbit.BasicConsume(RotasRabbit.SincronizaEstruturaInstitucionalTurmasSync, false, consumer);
+
             return Task.CompletedTask;
         }
     }

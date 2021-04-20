@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao.Queries.Frequencia.ObterMarcadorFrequenciaAluno
         {
             MarcadorFrequenciaDto marcador = null;
 
-            var ehInfantil = request.Modalidade == Modalidade.Infantil;
+            var ehInfantil = request.Modalidade == Modalidade.InfantilPreEscola;
             var dataSituacao = $"{request.Aluno.DataSituacao.Day}/{request.Aluno.DataSituacao.Month}/{request.Aluno.DataSituacao.Year}";
 
             switch (request.Aluno.CodigoSituacaoMatricula)

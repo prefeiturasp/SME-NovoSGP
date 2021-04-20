@@ -17,9 +17,9 @@ namespace SME.SGP.Dominio
         public Modalidade ModalidadeCodigo { get; set; }
         public ModalidadeTipoCalendario ModalidadeTipoCalendario
         {
-            get => ModalidadeCodigo == Modalidade.EJA ?
+                get => ModalidadeCodigo == Modalidade.EJA ?
                 ModalidadeTipoCalendario.EJA :
-                ModalidadeCodigo == Modalidade.Infantil ?
+                ModalidadeCodigo == Modalidade.InfantilPreEscola ?
                     ModalidadeTipoCalendario.Infantil :
                     ModalidadeTipoCalendario.FundamentalMedio;
         }
@@ -28,7 +28,6 @@ namespace SME.SGP.Dominio
         public int Semestre { get; set; }
         public int TipoTurno { get; set; }
         public string SerieEnsino { get; set; }
-
         public Ue Ue { get; set; }
         public long UeId { get; set; }
 
@@ -67,7 +66,7 @@ namespace SME.SGP.Dominio
         public bool EhTurmaFund1 => (ModalidadeCodigo == Modalidade.Fundamental && AnoTurmaInteiro >= 1 && AnoTurmaInteiro <= 5);
         public bool EhTurmaFund2 => (ModalidadeCodigo == Modalidade.Fundamental && AnoTurmaInteiro >= 6 && AnoTurmaInteiro <= 9);
         public bool EhTurmaEnsinoMedio => ModalidadeCodigo == Modalidade.Medio;
-        public bool EhTurmaInfantil => ModalidadeCodigo == Modalidade.Infantil;
+        public bool EhTurmaInfantil => ModalidadeCodigo == Modalidade.InfantilPreEscola;
 
         public bool EhTurmaHistorica => AnoLetivo < DateTime.Now.Year;
 
