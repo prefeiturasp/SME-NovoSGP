@@ -190,7 +190,7 @@ namespace SME.SGP.Aplicacao
         public async Task Validar(FiltroAtividadeAvaliativaDto filtro)
         {
             if (filtro.DisciplinasId.Length <= 0)
-                throw new NegocioException("É necessário informar a disciplina");
+                throw new NegocioException("É necessário informar o componente curricular");
             var disciplina = await ObterDisciplina(filtro.DisciplinasId[0]);
             var usuario = await servicoUsuario.ObterUsuarioLogado();
             DateTime dataAvaliacao = filtro.DataAvaliacao.Value.Date;
@@ -215,14 +215,14 @@ namespace SME.SGP.Aplicacao
             {
                 if (await repositorioAtividadeAvaliativa.VerificarSeJaExisteAvaliacaoRegencia(dataAvaliacao, filtro.DreId, filtro.UeID, filtro.TurmaId, filtro.DisciplinasId, filtro.DisciplinaContidaRegenciaId, usuario.CodigoRf, filtro.Id))
                 {
-                    throw new NegocioException("Já existe atividade avaliativa cadastrada para essa data e disciplina.");
+                    throw new NegocioException("Já existe atividade avaliativa cadastrada para essa data e componente curricular.");
                 }
             }
             else
             {
                 if (await repositorioAtividadeAvaliativa.VerificarSeJaExisteAvaliacaoNaoRegencia(dataAvaliacao, filtro.DreId, filtro.UeID, filtro.TurmaId, filtro.DisciplinasId, usuario.CodigoRf, filtro.Id))
                 {
-                    throw new NegocioException("Já existe atividade avaliativa cadastrada para essa data e disciplina.");
+                    throw new NegocioException("Já existe atividade avaliativa cadastrada para essa data e componente curricular.");
                 }
             }
         }
@@ -320,7 +320,7 @@ namespace SME.SGP.Aplicacao
             long[] disciplinaId = { long.Parse(idDisciplina) };
             var disciplina = await repositorioComponenteCurricular.ObterDisciplinasPorIds(disciplinaId);
             if (!disciplina.Any())
-                throw new NegocioException("Disciplina não encontrada no EOL.");
+                throw new NegocioException("Componente curricular não encontrado no EOL.");
             return disciplina.FirstOrDefault();
         }
 
@@ -456,7 +456,7 @@ namespace SME.SGP.Aplicacao
                 usuario = await servicoUsuario.ObterUsuarioLogado();
 
             if (!usuario.EhProfessorCj() && !await servicoUsuario.PodePersistirTurmaDisciplina(codigoRf, turmaId, disciplinaId, dataAula))
-                throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, disciplina e data.");
+                throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, componente curricular e data.");
         }
     }
 }

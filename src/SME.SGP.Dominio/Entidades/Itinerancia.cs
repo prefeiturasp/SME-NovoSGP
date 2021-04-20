@@ -16,7 +16,9 @@ namespace SME.SGP.Dominio
             objetivosBase = new List<ItineranciaObjetivoBase>();
             Situacao = SituacaoItinerancia.Digitado;
 
-        }        
+        }
+        public Evento Evento { get; set; }
+        public long? EventoId { get; set; }
         public DateTime DataVisita { get; set; }
         public int AnoLetivo { get; set; }
         public IEnumerable<ItineranciaObjetivo> ObjetivosVisita { get { return objetivos; } }
@@ -75,5 +77,17 @@ namespace SME.SGP.Dominio
             if (!objetivosBase.Any(o => o.Id == objetivoBase.Id))
                 objetivosBase.Add(objetivoBase);
         }
+
+        public bool PossuiAlunos()
+            => Alunos != null && Alunos.Any();
+
+        public bool PossuiObjetivos()
+            => ObjetivosVisita != null && ObjetivosVisita.Any();
+
+        public bool PossuiQuestoes()
+            => Questoes == null && Questoes.Any();
+
+        public bool PossuiUes()
+            => Ues == null && Ues.Any();
     }
 }

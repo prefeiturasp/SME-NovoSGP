@@ -10,7 +10,7 @@ namespace SME.SGP.Infra
         [Required(ErrorMessage = "O bimestre deve ser informado")]
         public int Bimestre { get; set; }
 
-        [Range(1, long.MaxValue, ErrorMessage = "A disciplina deve ser informada")]
+        [Range(1, long.MaxValue, ErrorMessage = "O componente curricular deve ser informado")]
         public long ComponenteCurricularEolId { get; set; }
 
         [Required(ErrorMessage = "A escola deve ser informada")]

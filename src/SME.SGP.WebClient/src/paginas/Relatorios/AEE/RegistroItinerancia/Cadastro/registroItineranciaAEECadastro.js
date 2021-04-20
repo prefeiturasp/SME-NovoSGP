@@ -1,3 +1,4 @@
+import moment from 'moment';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -13,6 +14,7 @@ import {
   Loader,
   MarcadorSituacao,
   PainelCollapse,
+  SelectComponent,
 } from '~/componentes';
 import { Cabecalho, Paginacao } from '~/componentes-sgp';
 import { RotasDto } from '~/dtos';
@@ -24,6 +26,7 @@ import {
   sucesso,
   verificaSomenteConsulta,
   history,
+  ServicoCalendarios,
 } from '~/servicos';
 import ServicoRegistroItineranciaAEE from '~/servicos/Paginas/Relatorios/AEE/ServicoRegistroItineranciaAEE';
 import { ordenarPor } from '~/utils/funcoes/gerais';
@@ -61,6 +64,12 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
   const [paginaAtual, setPaginaAtual] = useState(1);
   const [auditoria, setAuditoria] = useState();
   const [imprimindo, setImprimindo] = useState(false);
+  const [carregandoTipos, setCarregandoTipos] = useState(false);
+  const [carregandoEventos, setCarregandoEventos] = useState(false);
+  const [listaCalendario, setListaCalendario] = useState([]);
+  const [tipoCalendarioSelecionado, setTipoCalendarioSelecionado] = useState();
+  const [listaEvento, setListaEvento] = useState([]);
+  const [eventoId, setEventoId] = useState();
 
   const usuario = useSelector(store => store.usuario);
   const permissoesTela =
@@ -78,6 +87,7 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
       alunos: alunosSelecionados,
       questoes: alunosSelecionados?.length ? [] : questoesItinerancia,
       anoLetivo: new Date().getFullYear(),
+      eventoId,
     };
     const camposComErro = [];
     if (!dataVisita) {
@@ -288,6 +298,14 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
     if (itinerancia.alunos?.length) {
       setAlunosSelecionados(itinerancia.alunos);
     }
+
+    if (itinerancia.tipoCalendarioId) {
+      setTipoCalendarioSelecionado(String(itinerancia.tipoCalendarioId));
+    }
+
+    if (itinerancia.eventoId) {
+      setEventoId(String(itinerancia.eventoId));
+    }
   };
 
   const perguntarAntesDeCancelar = async () => {
@@ -419,10 +437,10 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
     return uesSelecionados.length && uesSelecionados[0].ehInfantil;
   };
 
-  const gerarRelatorio = async () => {
+  const gerarRelatorio = () => {
     setImprimindo(true);
 
-    await ServicoRegistroItineranciaAEE.gerarRelatorio([match?.params?.id])
+    ServicoRegistroItineranciaAEE.gerarRelatorio([match?.params?.id])
       .then(() => {
         sucesso(
           'Solicitação de geração do relatório gerada com sucesso. Em breve você receberá uma notificação com o resultado.'
@@ -430,6 +448,96 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
       })
       .finally(setImprimindo(false))
       .catch(e => erros(e));
+  };
+
+  const selecionaTipoCalendario = tipo => {
+    setEventoId();
+    setListaEvento([]);
+
+    if (tipo) {
+      setTipoCalendarioSelecionado(tipo);
+    } else {
+      setTipoCalendarioSelecionado();
+    }
+    setModoEdicao(true);
+  };
+
+  const hasAnoLetivoClause = t =>
+    moment(dataVisita).format('YYYY') ?? false
+      ? String(t.anoLetivo) === moment(dataVisita).format('YYYY')
+      : true;
+
+  const hasActiveSituation = t => t.situacao;
+
+  const filterAllowedCalendarTypes = data => {
+    return data.filter(hasAnoLetivoClause).filter(hasActiveSituation);
+  };
+
+  const loadTiposCalendarioEffect = () => {
+    let isSubscribed = true;
+
+    (async () => {
+      setCarregandoTipos(true);
+
+      const { data } = await ServicoCalendarios
+        .obterTiposCalendarioAutoComplete
+        // pesquisaTipoCalendario
+        ();
+
+      if (isSubscribed) {
+        const allowedList = filterAllowedCalendarTypes(data);
+        setListaCalendario(allowedList);
+        if (allowedList?.length === 1) {
+          selecionaTipoCalendario(allowedList[0].id);
+        }
+        setCarregandoTipos(false);
+      }
+    })();
+
+    return () => {
+      isSubscribed = false;
+    };
+  };
+
+  useEffect(() => {
+    if (dataVisita) {
+      loadTiposCalendarioEffect();
+    }
+  }, [dataVisita]);
+
+  const obterListaEventos = async (tipoCalendarioId, id) => {
+    setCarregandoEventos(true);
+    const retorno = await ServicoRegistroItineranciaAEE.obterEventos(
+      tipoCalendarioId,
+      id
+    )
+      .catch(e => erros(e))
+      .finally(() => setCarregandoEventos(false));
+
+    if (retorno?.data?.length) {
+      setListaEvento(retorno.data);
+    } else {
+      setEventoId();
+      setListaEvento([]);
+    }
+  };
+
+  useEffect(() => {
+    if (tipoCalendarioSelecionado) {
+      obterListaEventos(tipoCalendarioSelecionado, itineranciaId);
+    } else {
+      setEventoId();
+      setListaEvento([]);
+    }
+  }, [tipoCalendarioSelecionado, itineranciaId]);
+
+  const selecionaEvento = evento => {
+    if (evento) {
+      setEventoId(evento);
+    } else {
+      setEventoId(evento);
+    }
+    setModoEdicao(true);
   };
 
   return (
@@ -508,6 +616,38 @@ const RegistroItineranciaAEECadastro = ({ match }) => {
                   desabilitarData={desabilitarDataVisita}
                   desabilitado={desabilitarCamposPorPermissao()}
                 />
+              </div>
+            </div>
+            <div className="row mb-4">
+              <div className="col-6">
+                <Loader loading={carregandoTipos} tip="">
+                  <SelectComponent
+                    id="tipo-calendario"
+                    label="Tipo de Calendário"
+                    lista={listaCalendario}
+                    valueOption="id"
+                    valueText="descricao"
+                    onChange={selecionaTipoCalendario}
+                    valueSelect={tipoCalendarioSelecionado}
+                    placeholder="Selecione um calendário"
+                    showSearch
+                  />
+                </Loader>
+              </div>
+              <div className="col-6">
+                <Loader loading={carregandoEventos} tip="">
+                  <SelectComponent
+                    id="evento"
+                    label="Evento"
+                    lista={listaEvento}
+                    valueOption="id"
+                    valueText="nome"
+                    onChange={selecionaEvento}
+                    valueSelect={eventoId}
+                    placeholder="Selecione um evento"
+                    showSearch
+                  />
+                </Loader>
               </div>
             </div>
             <div className="row mb-4">

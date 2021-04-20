@@ -17,7 +17,8 @@ namespace SME.SGP.Infra.Utilitarios
         {
             byte[] encodedDataAsBytes = Convert.FromBase64String(entrada);
 
-            return Encoding.ASCII.GetString(encodedDataAsBytes);
+            //Encode utilizado para tratar acentuação da string encodada pelo front utilizando o btoa (React)
+            return Encoding.GetEncoding(28591).GetString(encodedDataAsBytes);
         }
     }
 }

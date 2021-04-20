@@ -380,5 +380,43 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<DashboardItineranciaDto>(sql.ToString(), new { ano, dreId, ueId, mes, codigoRF });
         }
+
+        public async Task<Itinerancia> ObterComUesPorId(long id)
+        {
+            var query = @"select i.*, iu.*, ue.*, dre.*
+                  from itinerancia i
+                 inner join itinerancia_ue iu on iu.itinerancia_id = i.id
+                 inner join ue on ue.id = iu.ue_id
+                 inner join dre on dre.id = ue.dre_id
+                 where i.id = @id ";
+
+            Itinerancia registroItinerancia = null;
+
+            await database.Conexao.QueryAsync<Itinerancia, ItineranciaUe, Ue, Dre, Itinerancia>(query,
+                (itinerancia, itineranciaUe, ue, dre) =>
+                {
+                    if (registroItinerancia == null)
+                        registroItinerancia = itinerancia;
+
+                    ue.Dre = dre;
+                    itineranciaUe.Ue = ue;
+
+                    registroItinerancia.AdicionarUe(itineranciaUe);
+
+                    return itinerancia;
+                }, new { id });
+
+            return registroItinerancia;
+        }
+
+        public async Task<IEnumerable<ItineranciaObjetivoDescricaoDto>> ObterDecricaoObjetivosPorId(long itineranciaId)
+        {
+            var query = @"select iob.nome, io.descricao
+                          from itinerancia_objetivo io 
+                         inner join itinerancia_objetivo_base iob on iob.id = io.itinerancia_base_id
+                         where io.itinerancia_id = @itineranciaId";
+
+            return await database.Conexao.QueryAsync<ItineranciaObjetivoDescricaoDto>(query, new { itineranciaId });
+        }
     }
 }

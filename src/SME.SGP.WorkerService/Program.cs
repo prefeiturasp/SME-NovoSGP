@@ -38,6 +38,7 @@ namespace SME.SGP.Worker.Service
                 services.AddHostedService<WorkerService>();
                 WorkerService.ConfigurarDependencias(hostContext.Configuration, services);
                 WorkerService.Configurar(hostContext.Configuration, services);
+                WorkerService.ConfiguraVariaveisAmbiente(services, hostContext.Configuration);
 
                 services.AddApplicationInsightsTelemetryWorkerService(hostContext.Configuration.GetValue<string>("ApplicationInsights__InstrumentationKey"));
 

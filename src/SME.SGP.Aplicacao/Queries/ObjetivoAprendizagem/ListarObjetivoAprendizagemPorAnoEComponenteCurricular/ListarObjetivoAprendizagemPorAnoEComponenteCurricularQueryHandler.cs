@@ -22,11 +22,15 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<ObjetivoAprendizagemDto>> Handle(ListarObjetivoAprendizagemPorAnoEComponenteCurricularQuery request, CancellationToken cancellationToken)
         {
             int anoTurma;
+            var listaRetorno = new List<ObjetivoAprendizagemDto>();
 
-            if (!string.IsNullOrEmpty(request.Ano) && int.TryParse(request.Ano, out anoTurma))
-                return await repositorioObjetivoAprendizagem.ObterPorAnoEComponenteCurricularJuremaIds((AnoTurma)anoTurma, request.JuremaIds);
-            else
-                return await repositorioObjetivoAprendizagem.ObterPorAnoEComponenteCurricularJuremaIds(null, request.JuremaIds);
+            foreach (var ano in request.Anos)
+            {
+                listaRetorno.AddRange(await repositorioObjetivoAprendizagem
+                    .ObterPorAnoEComponenteCurricularJuremaIds(int.TryParse(ano, out anoTurma) ? (AnoTurma)Convert.ToInt32(ano) : (AnoTurma?)null, request.JuremaIds));
+            }
+
+            return listaRetorno;
         }
     }
 }

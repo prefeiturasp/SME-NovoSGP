@@ -100,6 +100,7 @@ const ModalNotificarUsuarios = ({
           anoLetivo={anoAtual}
           limparCamposAposPesquisa
           validaPerfilProfessor={false}
+          mensagemErroConsultaRF="Este usuário não consta na base do SGP e não será possível notificá-lo"
         />
       </div>
       {usuariosSelecionados?.map(({ usuarioId, nome, podeRemover }) => (

@@ -5,6 +5,7 @@ using Sentry;
 using SME.Background.Core;
 using SME.SGP.Api;
 using SME.SGP.Dados.Mapeamentos;
+using SME.SGP.Infra.Utilitarios;
 using SME.SGP.IoC;
 using System.Net;
 using System.Net.Sockets;
@@ -67,6 +68,13 @@ namespace SME.SGP.Worker.Service
             RegistrarMapeamentos.Registrar();
             RegistraClientesHttp.Registrar(services, configuration);
             Orquestrador.Inicializar(services.BuildServiceProvider());
+        }
+        internal static void ConfiguraVariaveisAmbiente(IServiceCollection services, IConfiguration configuration)
+        {
+            var configuracaoRabbitOptions = new ConfiguracaoRabbitOptions();
+            configuration.GetSection(nameof(ConfiguracaoRabbitOptions)).Bind(configuracaoRabbitOptions, c => c.BindNonPublicProperties = true);
+
+            services.AddSingleton(configuracaoRabbitOptions);
         }
     }
 }

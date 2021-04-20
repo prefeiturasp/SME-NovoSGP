@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
 
                 var usuarioPodePersistirTurmaNaData = await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(request.ComponenteCurricularCodigo, request.TurmaCodigo, request.Data, request.Usuario));
                 if (!usuarioPodePersistirTurmaNaData)
-                    return (false, "Você não pode fazer alterações ou inclusões nesta turma, disciplina e data.");
+                    return (false, "Você não pode fazer alterações ou inclusões nesta turma, componente curricular e data.");
             }
 
             return (true, string.Empty);

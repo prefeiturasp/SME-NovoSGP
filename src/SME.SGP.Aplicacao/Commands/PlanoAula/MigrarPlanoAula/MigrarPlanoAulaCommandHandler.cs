@@ -44,7 +44,7 @@ namespace SME.SGP.Aplicacao
                      ));
 
                 if (aulaConsultaDto == null)
-                    throw new NegocioException($"Não há aula cadastrada para a turma {planoTurma.TurmaId} para a data {planoTurma.Data.ToString("dd/MM/yyyy")} nesta disciplina!");
+                    throw new NegocioException($"Não há aula cadastrada para a turma {planoTurma.TurmaId} para a data {planoTurma.Data.ToString("dd/MM/yyyy")} neste componente curricular!");
 
                 var planoCopia = new PlanoAulaDto()
                 {
