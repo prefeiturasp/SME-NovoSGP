@@ -41,8 +41,11 @@ const BoletimSimples = () => {
       dreCodigo: valoresFiltro.dreId,
       ueCodigo: valoresFiltro.ueId,
       turmaCodigo: valoresFiltro.turmaId,
-      semestre: valoresFiltro.semestre,
-      consideraHistorico: valoresFiltro.consideraHistorico     
+      semestre:
+        String(valoresFiltro.modalidadeId) === String(modalidade.EJA)
+          ? valoresFiltro.semestre
+          : 0,
+      consideraHistorico: valoresFiltro.consideraHistorico
     });
     setItensSelecionados([]);
     setSelecionarAlunos(
@@ -82,7 +85,7 @@ const BoletimSimples = () => {
       title: 'Nome',
       dataIndex: 'nome',
     },
-  ]; 
+  ];
 
   return (
     <>
