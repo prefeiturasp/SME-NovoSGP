@@ -27,7 +27,7 @@ pipeline {
                sh 'echo Analise SonarQube API'
                sh 'dotnet-sonarscanner begin /k:"SME-NovoSGP" /d:sonar.host.url="http://sonar.sme.prefeitura.sp.gov.br" /d:sonar.login="8fd25bf927e18aa448d4d00ef7478004a67bf485" /d:sonar.cs.opencover.reportsPaths="teste/SME.SGP.Aplicacao.Teste/coverage.opencover.xml,teste/SME.SGP.Dominio.Servicos.Teste/coverage.opencover.xml,teste/SME.SGP.Dominio.Teste/coverage.opencover.xml,teste/SME.SGP.Dominio.Servicos.Teste/coverage.opencover.xml" /d:sonar.coverage.exclusions="**Test*.cs"'
 
-            anlise codigo frontend
+            //anlise codigo frontend
              sh 'echo Analise SonarQube FRONTEND'
                 sh 'sonar-scanner \
                 -Dsonar.projectKey=SME-NovoSGP-WebClient \
