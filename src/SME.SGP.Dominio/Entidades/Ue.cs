@@ -4,6 +4,10 @@ namespace SME.SGP.Dominio
 {
     public class Ue
     {
+        public Ue()
+        {
+            DataAtualizacao = DateTime.Now;
+        }
         public string CodigoUe { get; set; }
         public DateTime DataAtualizacao { get; set; }
         public Dre Dre { get; set; }

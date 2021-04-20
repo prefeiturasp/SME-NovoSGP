@@ -220,7 +220,7 @@ namespace SME.SGP.Aplicacao
         {
             var disciplinaEOL = await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { disciplinaId });
             if (disciplinaEOL == null || !disciplinaEOL.Any())
-                throw new NegocioException($"Disciplina não localizada no SGP [{disciplinaId}]");
+                throw new NegocioException($"Componente curricular não localizado no SGP [{disciplinaId}]");
 
             return disciplinaEOL.FirstOrDefault();
         }

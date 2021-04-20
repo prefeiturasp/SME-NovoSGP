@@ -2,8 +2,8 @@
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Utilitarios;
 using System;
-using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,11 +12,11 @@ namespace SME.SGP.Aplicacao
 {
     public class PublicaFilaWorkerSgpCommandHandler : IRequestHandler<PublicaFilaWorkerSgpCommand, bool>
     {
-        private readonly IModel rabbitChannel;
+        private readonly ConfiguracaoRabbitOptions configuracaoRabbitOptions;
 
-        public PublicaFilaWorkerSgpCommandHandler(IModel rabbitChannel)
+        public PublicaFilaWorkerSgpCommandHandler(ConfiguracaoRabbitOptions configuracaoRabbitOptions)
         {
-            this.rabbitChannel = rabbitChannel ?? throw new ArgumentNullException(nameof(rabbitChannel));
+            this.configuracaoRabbitOptions = configuracaoRabbitOptions ?? throw new ArgumentNullException(nameof(configuracaoRabbitOptions));
         }
 
         public Task<bool> Handle(PublicaFilaWorkerSgpCommand request, CancellationToken cancellationToken)
@@ -31,8 +31,22 @@ namespace SME.SGP.Aplicacao
             var mensagemJson = JsonConvert.SerializeObject(mensagem);
             var body = Encoding.UTF8.GetBytes(mensagemJson);
 
-            rabbitChannel.QueueBind(RotasRabbit.FilaSgp, RotasRabbit.ExchangeSgp, request.NomeFila);
-            rabbitChannel.BasicPublish(RotasRabbit.ExchangeSgp, request.NomeFila, null, body);
+            var factory = new ConnectionFactory
+            {
+                HostName = configuracaoRabbitOptions.HostName,
+                UserName = configuracaoRabbitOptions.UserName,
+                Password = configuracaoRabbitOptions.Password,
+                VirtualHost = configuracaoRabbitOptions.VirtualHost
+            };
+
+            using (var conexaoRabbit = factory.CreateConnection())
+            {
+                using (IModel _channel = conexaoRabbit.CreateModel())
+                {
+                    _channel.BasicPublish(RotasRabbit.ExchangeSgp, request.NomeFila, null, body);
+                }
+            }
+
 
             return Task.FromResult(true);
         }

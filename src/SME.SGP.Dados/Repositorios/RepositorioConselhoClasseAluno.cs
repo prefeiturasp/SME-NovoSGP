@@ -98,47 +98,51 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<NotaConceitoFechamentoConselhoFinalDto>> ObterNotasFinaisAlunoAsync(string[] turmasCodigos, string alunoCodigo)
         {
-            var query = $@"select distinct * from (
-                                select cca.id as ConselhoClasseAlunoId, 
-                                       fn.disciplina_id as ComponenteCurricularCodigo, 
-                                       coalesce(ccn.conceito_id, fn.conceito_id) as ConceitoId, 
-                                       coalesce(ccn.nota, fn.nota) as Nota
-                                  from fechamento_turma ft
-                                  left join periodo_escolar pe on pe.id = ft.periodo_escolar_id 
-                                 inner join turma t on t.id = ft.turma_id 
-                                 inner join fechamento_turma_disciplina ftd on ftd.fechamento_turma_id = ft.id
-                                 inner join fechamento_aluno fa on fa.fechamento_turma_disciplina_id = ftd.id
-                                 inner join fechamento_nota fn on fn.fechamento_aluno_id = fa.id
-                                 left join componente_curricular ccr on ccr.id = fn.disciplina_id 
-                                  left join conselho_classe cc on cc.fechamento_turma_id = ft.id
-                                  left join conselho_classe_aluno cca on cca.conselho_classe_id  = cc.id
-		                                                        and cca.aluno_codigo = fa.aluno_codigo 
-                                  left join conselho_classe_nota ccn on ccn.conselho_classe_aluno_id = cca.id 
-		                                                        and ccn.componente_curricular_codigo = fn.disciplina_id 
-                                 where t.turma_id = ANY(@turmasCodigos)
-                                   and fa.aluno_codigo = @alunoCodigo
-                                   and bimestre is null
-                                union all 
-                                select cca.id as ConselhoClasseAlunoId, 
-                                       ccn.componente_curricular_codigo as ComponenteCurricularCodigo, 
-                                       coalesce(ccn.conceito_id, fn.conceito_id) as ConceitoId,
-                                       coalesce(ccn.nota, fn.nota) as Nota
-                                  from fechamento_turma ft
-                                  left join periodo_escolar pe on pe.id = ft.periodo_escolar_id 
-                                 inner join turma t on t.id = ft.turma_id 
-                                 inner join conselho_classe cc on cc.fechamento_turma_id = ft.id
-                                 inner join conselho_classe_aluno cca on cca.conselho_classe_id  = cc.id
-                                 inner join conselho_classe_nota ccn on ccn.conselho_classe_aluno_id = cca.id                  
-                                 left join componente_curricular ccr on ccr.id = ccn.componente_curricular_codigo 
-                                  left join fechamento_turma_disciplina ftd on ftd.fechamento_turma_id = ft.id
-                                  left join fechamento_aluno fa on fa.fechamento_turma_disciplina_id = ftd.id
-		                                                        and cca.aluno_codigo = fa.aluno_codigo 
-                                  left join fechamento_nota fn on fn.fechamento_aluno_id = fa.id
-		                                                        and ccn.componente_curricular_codigo = fn.disciplina_id 
-                                 where t.turma_id = ANY(@turmasCodigos)
-                                   and cca.aluno_codigo = @alunoCodigo
-                                   and bimestre is null
-                                ) x ";
+            var query = $@"select distinct * from (SELECT 0                AS ConselhoClasseAlunoId,
+                                   fn.disciplina_id AS ComponenteCurricularCodigo,
+                                   fn.conceito_id   AS ConceitoId,
+                                   fn.nota          AS Nota
+                            FROM   fechamento_turma ft
+                                   LEFT JOIN periodo_escolar pe
+                                          ON pe.id = ft.periodo_escolar_id
+                                   INNER JOIN turma t
+                                           ON t.id = ft.turma_id
+                                   INNER JOIN fechamento_turma_disciplina ftd
+                                           ON ftd.fechamento_turma_id = ft.id
+                                   INNER JOIN fechamento_aluno fa
+                                           ON fa.fechamento_turma_disciplina_id = ftd.id
+                                   INNER JOIN fechamento_nota fn
+                                           ON fn.fechamento_aluno_id = fa.id
+                            WHERE  t.turma_id = ANY(@turmasCodigos)
+                                   AND fa.aluno_codigo = @alunoCodigo
+                                   AND pe.bimestre IS NULL
+                            UNION
+                            SELECT cca.id                                    AS ConselhoClasseAlunoId,
+                                   ccn.componente_curricular_codigo          AS ComponenteCurricularCodigo,
+                                   ccn.conceito_id AS ConceitoId,
+                                   ccn.nota               AS Nota
+                            FROM   fechamento_turma ft
+                                   LEFT JOIN periodo_escolar pe
+                                          ON pe.id = ft.periodo_escolar_id
+                                   INNER JOIN turma t
+                                           ON t.id = ft.turma_id
+                                   INNER JOIN conselho_classe cc
+                                           ON cc.fechamento_turma_id = ft.id
+                                   INNER JOIN conselho_classe_aluno cca
+                                           ON cca.conselho_classe_id = cc.id
+                                   INNER JOIN conselho_classe_nota ccn
+                                           ON ccn.conselho_classe_aluno_id = cca.id
+                                   LEFT JOIN fechamento_turma_disciplina ftd
+                                          ON ftd.fechamento_turma_id = ft.id
+                                   LEFT JOIN fechamento_aluno fa
+                                          ON fa.fechamento_turma_disciplina_id = ftd.id
+                                             AND cca.aluno_codigo = fa.aluno_codigo
+                                   LEFT JOIN fechamento_nota fn
+                                          ON fn.fechamento_aluno_id = fa.id
+                                             AND ccn.componente_curricular_codigo = fn.disciplina_id
+                            WHERE  t.turma_id = ANY(@turmasCodigos)
+                                   AND cca.aluno_codigo = @alunoCodigo
+                                   AND bimestre IS NULL )  x";
 
             return await database.Conexao.QueryAsync<NotaConceitoFechamentoConselhoFinalDto>(query, new { turmasCodigos, alunoCodigo });
         }

@@ -24,6 +24,7 @@ namespace SME.SGP.Dominio.Interfaces
         IEnumerable<Ue> ObterTodas();
 
         Task<IEnumerable<Turma>> ObterTurmas(string ueCodigo, Modalidade modalidade, int ano);
+        Task<TipoEscola> ObterTipoEscolaPorCodigo(string ueCodigo);
         Task<int> ObterQuantidadeTurmasSeriadas(long ueId, int ano);
         Ue ObterUEPorTurma(string turmaId);
 
@@ -33,6 +34,10 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<IEnumerable<Ue>> ObterUesPorModalidade(int[] modalidades, int anoLetivo = 0);
         Task<IEnumerable<Ue>> ObterUesPorIds(long[] ids);
+        Task<IEnumerable<Ue>> ObterUEsComDREsPorIds(long[] ids);
         Task<Ue> ObterUEPorTurmaId(long turmaId);
+        Task<long> IncluirAsync(Ue ueParaIncluir);
+        Task AtualizarAsync(Ue ueParaAtualizar);
+        Task<Ue> ObterUeComDrePorId(long ueId);
     }
 }

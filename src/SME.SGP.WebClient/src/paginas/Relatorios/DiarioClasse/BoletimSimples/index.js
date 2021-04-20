@@ -14,7 +14,7 @@ import modalidade from '~/dtos/modalidade';
 
 const BoletimSimples = () => {
   const [loaderSecao] = useState(false);
-  const [somenteConsulta] = useState(false); 
+  const [somenteConsulta] = useState(false);
 
   const [filtro, setFiltro] = useState({
     anoLetivo: '',
@@ -23,7 +23,7 @@ const BoletimSimples = () => {
     dreCodigo: '',
     ueCodigo: '',
     turmaCodigo: '',
-    consideraHistorico: false
+    consideraHistorico: false,
   });
 
   const [itensSelecionados, setItensSelecionados] = useState([]);
