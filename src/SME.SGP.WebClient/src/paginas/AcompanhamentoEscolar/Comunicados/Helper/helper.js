@@ -10,7 +10,7 @@ class FiltroHelper {
     return array.map(x => {
       var id = x.codigo == ID_TODOS ? todas : x.codigo;
       var nome = x.codigo == ID_TODOS ? x.nomeSimples : x.nome;
-      return { id, nome: ue ? nome : x.nome };
+      return { id, nome: ue ? nome : x.nome, tipoEscola : x.tipoEscola };
     });
   }
 
