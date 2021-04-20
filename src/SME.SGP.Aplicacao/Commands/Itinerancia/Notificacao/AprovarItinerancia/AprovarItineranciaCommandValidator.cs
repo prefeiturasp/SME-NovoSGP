@@ -2,9 +2,9 @@
 
 namespace SME.SGP.Aplicacao
 {
-    public class AtualizarStatusWorkflowAprovacaoItineranciaCommandValidator : AbstractValidator<AtualizarStatusWorkflowAprovacaoItineranciaCommand>
+    public class AprovarItineranciaCommandValidator : AbstractValidator<AprovarItineranciaCommand>
     {
-        public AtualizarStatusWorkflowAprovacaoItineranciaCommandValidator()
+        public AprovarItineranciaCommandValidator()
         {
             RuleFor(c => c.ItineranciaId)
                .NotEmpty()
