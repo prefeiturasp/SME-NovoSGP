@@ -1236,7 +1236,7 @@ namespace SME.SGP.Dados.Repositorios
 		                    on e.tipo_evento_id = et.id 
 	                    inner join tipo_calendario tc
 		                    on e.tipo_calendario_id = tc.id
-	                    left join f_abrangencia_ues(@login, @perfil, @historico) au
+	                    inner join f_abrangencia_ues(@login, @perfil, @historico) au
 		                    on e.ue_id = au.codigo
 		                    and ((tc.modalidade = 1 and au.modalidade_codigo in (5, 6)) 
 		                      or (tc.modalidade = 2 and au.modalidade_codigo = 3)
