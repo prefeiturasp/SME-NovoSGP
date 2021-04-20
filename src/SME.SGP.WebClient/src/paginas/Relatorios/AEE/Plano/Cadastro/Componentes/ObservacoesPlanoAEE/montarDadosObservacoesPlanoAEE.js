@@ -136,6 +136,10 @@ const MontarDadosObservacoesPlanoAEE = () => {
         excluirObservacao={obs => excluirObservacao(obs)}
         permissoes={permissoesTela}
         obterUsuariosNotificadosDiarioBordo={false}
+        usarLocalizadorFuncionario
+        parametrosLocalizadorFuncionario={{
+          codigoUe: planoAEEDados?.turma?.codigoUE,
+        }}
       />
     </Loader>
   );

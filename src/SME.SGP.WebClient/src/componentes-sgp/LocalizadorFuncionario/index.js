@@ -19,6 +19,8 @@ const LocalizadorFuncionario = props => {
     placeholder,
     url,
     limparCampos,
+    mensagemErroConsultaRF,
+    limparCamposAposPesquisa,
   } = props;
 
   const [dataSource, setDataSource] = useState([]);
@@ -36,6 +38,7 @@ const LocalizadorFuncionario = props => {
     setFuncionarioSelecionado({
       nomeServidor: '',
       codigoRF: '',
+      usuarioId: null,
     });
     setDataSource([]);
   }, [codigoDre, codigoUe, codigoTurma]);
@@ -46,6 +49,7 @@ const LocalizadorFuncionario = props => {
     setFuncionarioSelecionado({
       nomeServidor: '',
       codigoRF: '',
+      usuarioId: null,
     });
     setTimeout(() => {
       setDesabilitarCampo(() => ({
@@ -94,6 +98,7 @@ const LocalizadorFuncionario = props => {
         retorno.data.items.map(funcionario => ({
           codigoRF: funcionario.codigoRf,
           nomeServidor: funcionario.nomeServidor,
+          usuarioId: funcionario.usuarioId,
         }))
       );
     } else {
@@ -135,22 +140,28 @@ const LocalizadorFuncionario = props => {
         url
       )
         .catch(e => {
-          erros(e);
+          if (mensagemErroConsultaRF) {
+            erro(mensagemErroConsultaRF);
+          } else {
+            erros(e);
+          }
           limparDados();
         })
         .finally(() => setExibirLoader(false));
 
       if (retorno?.data?.items?.length > 0) {
-        const { codigoRf, nomeServidor } = retorno.data.items[0];
+        const { codigoRf, nomeServidor, usuarioId } = retorno.data.items[0];
 
         const funcionarioRetorno = {
           codigoRF: codigoRf,
           nomeServidor,
+          usuarioId,
         };
         setDataSource(
           retorno.data.items.map(funcionario => ({
             codigoRF: funcionario.codigoRf,
             nomeServidor: funcionario.nomeServidor,
+            usuarioId: funcionario.usuarioId,
           }))
         );
         setFuncionarioSelecionado(funcionarioRetorno);
@@ -159,6 +170,9 @@ const LocalizadorFuncionario = props => {
           nomeServidor: true,
         }));
         onChange(funcionarioRetorno);
+        if (limparCamposAposPesquisa) {
+          limparDados();
+        }
       } else {
         erro('Funcionário não encontrado');
         setDataSource([]);
@@ -212,6 +226,7 @@ const LocalizadorFuncionario = props => {
     const funcionario = {
       codigoRF: objeto.key,
       nomeServidor: objeto.props.value,
+      usuarioId: objeto.props.usuarioId,
     };
     setFuncionarioSelecionado(funcionario);
     onChange(funcionario);
@@ -219,6 +234,9 @@ const LocalizadorFuncionario = props => {
       ...estado,
       codigoRF: true,
     }));
+    if (limparCamposAposPesquisa) {
+      limparDados();
+    }
   };
 
   useEffect(() => {
@@ -288,6 +306,8 @@ LocalizadorFuncionario.propTypes = {
   placeholder: PropTypes.string,
   url: PropTypes.string,
   limparCampos: PropTypes.bool,
+  mensagemErroConsultaRF: PropTypes.string,
+  limparCamposAposPesquisa: PropTypes.bool,
 };
 
 LocalizadorFuncionario.defaultProps = {
@@ -301,6 +321,8 @@ LocalizadorFuncionario.defaultProps = {
   placeholder: '',
   url: '',
   limparCampos: false,
+  mensagemErroConsultaRF: '',
+  limparCamposAposPesquisa: false,
 };
 
 export default LocalizadorFuncionario;
