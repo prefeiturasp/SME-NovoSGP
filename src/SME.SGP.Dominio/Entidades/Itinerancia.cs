@@ -80,5 +80,14 @@ namespace SME.SGP.Dominio
 
         public bool PossuiAlunos()
             => Alunos != null && Alunos.Any();
+
+        public bool PossuiObjetivos()
+            => ObjetivosVisita != null && ObjetivosVisita.Any();
+
+        public bool PossuiQuestoes()
+            => Questoes == null && Questoes.Any();
+
+        public bool PossuiUes()
+            => Ues == null && Ues.Any();
     }
 }
