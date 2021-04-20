@@ -20,6 +20,8 @@ const CampoObservacao = props => {
     esconderCaixaExterna,
     podeIncluir,
     obterUsuariosNotificadosDiarioBordo,
+    usarLocalizadorFuncionario,
+    parametrosLocalizadorFuncionario,
   } = props;
   const [modalVisivel, setModalVisivel] = useState(false);
 
@@ -73,8 +75,6 @@ const CampoObservacao = props => {
     }
   };
 
-  // TODO Não é para estar aqui esta função, refatorar esta regra!
-  // Criado a prop obterUsuariosNotificadosDiarioBordo para contornar esta situação!
   const obterNofiticarUsuarios = useCallback(async () => {
     const retorno = await ServicoDiarioBordo.obterNofiticarUsuarios({
       turmaId,
@@ -159,6 +159,8 @@ const CampoObservacao = props => {
           listaUsuarios={listaUsuarios}
           somenteConsulta={!podeIncluir}
           desabilitado={!novaObservacao || !podeIncluir}
+          usarLocalizadorFuncionario={usarLocalizadorFuncionario}
+          parametrosLocalizadorFuncionario={parametrosLocalizadorFuncionario}
         />
       )}
     </>
@@ -170,6 +172,8 @@ CampoObservacao.propTypes = {
   esconderCaixaExterna: PropTypes.bool,
   podeIncluir: PropTypes.oneOfType(PropTypes.object),
   obterUsuariosNotificadosDiarioBordo: PropTypes.bool,
+  usarLocalizadorFuncionario: PropTypes.bool,
+  parametrosLocalizadorFuncionario: PropTypes.oneOfType(PropTypes.object),
 };
 
 CampoObservacao.defaultProps = {
@@ -177,6 +181,8 @@ CampoObservacao.defaultProps = {
   esconderCaixaExterna: false,
   podeIncluir: true,
   obterUsuariosNotificadosDiarioBordo: true,
+  usarLocalizadorFuncionario: false,
+  parametrosLocalizadorFuncionario: {},
 };
 
 export default CampoObservacao;
