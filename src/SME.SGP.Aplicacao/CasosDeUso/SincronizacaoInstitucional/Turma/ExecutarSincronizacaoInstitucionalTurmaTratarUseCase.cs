@@ -33,13 +33,14 @@ namespace SME.SGP.Aplicacao
 
                 if (!turmaTratada)
                 {
-                    SentrySdk.CaptureMessage($"Não foi possível realizar o tratamento da turma id {codigoTurma}.");
-                    return true;
+                    throw new Exception($"Não foi possível realizar o tratamento da turma id {codigoTurma}.");
                 }
             }
             catch (Exception ex)
             {
+                SentrySdk.CaptureMessage($"Não foi possível realizar o tratamento da turma id {codigoTurma}.");
                 SentrySdk.CaptureException(ex);
+                throw;
             }
             return true;
         }
