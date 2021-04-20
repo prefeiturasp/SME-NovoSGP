@@ -24,7 +24,6 @@ function Localizador({
   showLabel,
   form,
   dreId,
-  ueId,
   anoLetivo,
   desabilitado,
   rfEdicao,
@@ -75,7 +74,6 @@ function Localizador({
         nome: valor,
         dreId,
         anoLetivo,
-        ueId,
       })
       .finally(() => setExibirLoader(false));
 
@@ -267,7 +265,6 @@ Localizador.propTypes = {
   ]),
   showLabel: PropTypes.bool,
   dreId: PropTypes.string,
-  ueId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   anoLetivo: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   desabilitado: PropTypes.bool,
   rfEdicao: PropTypes.string,
@@ -288,7 +285,6 @@ Localizador.defaultProps = {
   form: null,
   showLabel: false,
   dreId: null,
-  ueId: null,
   anoLetivo: null,
   desabilitado: false,
   rfEdicao: '',
