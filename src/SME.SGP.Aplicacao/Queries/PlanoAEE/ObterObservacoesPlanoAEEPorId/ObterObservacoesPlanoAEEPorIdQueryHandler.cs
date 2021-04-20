@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<PlanoAEEObservacaoDto>> Handle(ObterObservacoesPlanoAEEPorIdQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioPlanoAEEObservacao.ObterObservacoesPlanoPorId(request.Id);
+            return await repositorioPlanoAEEObservacao.ObterObservacoesPlanoPorId(request.Id, request.UsuarioRF);
         }
     }
 }

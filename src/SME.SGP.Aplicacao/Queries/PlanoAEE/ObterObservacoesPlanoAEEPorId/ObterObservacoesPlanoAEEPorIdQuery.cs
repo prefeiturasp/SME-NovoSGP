@@ -7,12 +7,14 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterObservacoesPlanoAEEPorIdQuery : IRequest<IEnumerable<PlanoAEEObservacaoDto>>
     {
-        public ObterObservacoesPlanoAEEPorIdQuery(long id)
+        public ObterObservacoesPlanoAEEPorIdQuery(long id, string usuarioRF)
         {
             Id = id;
+            UsuarioRF = usuarioRF;
         }
 
         public long Id { get; }
+        public string UsuarioRF { get; }
     }
 
     public class ObterObservacoesPlanoAEEPorIdQueryValidator : AbstractValidator<ObterObservacoesPlanoAEEPorIdQuery>

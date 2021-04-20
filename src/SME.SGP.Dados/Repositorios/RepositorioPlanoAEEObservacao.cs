@@ -13,7 +13,7 @@ namespace SME.SGP.Dados
         {
         }
 
-        public async Task<IEnumerable<PlanoAEEObservacaoDto>> ObterObservacoesPlanoPorId(long planoId)
+        public async Task<IEnumerable<PlanoAEEObservacaoDto>> ObterObservacoesPlanoPorId(long planoId, string usuarioRF)
         {
             var query = @"select pao.*
                             , u.id, u.nome 
@@ -31,7 +31,7 @@ namespace SME.SGP.Dados
                 PlanoAEEObservacaoDto planoDto = null;
                 if (!lookup.TryGetValue(planoAEE.Id, out planoDto))
                 {
-                    planoDto = new PlanoAEEObservacaoDto(planoAEE.Id, planoAEE.Observacao);
+                    planoDto = new PlanoAEEObservacaoDto(planoAEE.Id, planoAEE.Observacao, planoAEE.CriadoRF == usuarioRF);
                     planoDto.Auditoria = (AuditoriaDto)planoAEE;
 
                     lookup.Add(planoAEE.Id, planoDto);
