@@ -28,12 +28,9 @@ namespace SME.SGP.Aplicacao
             var ue = await mediator.Send(new ObterUeComDrePorIdQuery(itinerancia.Ues.FirstOrDefault().UeId));
             if (ue == null)
                 throw new NegocioException("Não foi possível encontrar a UE informada");
-
-
-            var workflow = await mediator.Send(new ObterWorkflowPorIdQuery(request.WorkflowId));
-
-
-            await NotificarItineranciaRecusada(ue, itinerancia.CriadoRF, itinerancia.DataVisita, itinerancia.Alunos, workflow.Niveis.FirstOrDefault(a => a.Status == WorkflowAprovacaoNivelStatus.Reprovado).Observacao);
+            
+            await NotificarItineranciaRecusada(ue, itinerancia.CriadoRF, itinerancia.DataVisita, itinerancia.Alunos, request.Observacoes);
+            
             return true;
         }
 

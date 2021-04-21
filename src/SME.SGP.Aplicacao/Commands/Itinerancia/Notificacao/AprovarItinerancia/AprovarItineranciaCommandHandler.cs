@@ -31,13 +31,10 @@ namespace SME.SGP.Aplicacao
             var itinerancia = await repositorioItinerancia.ObterComUesPorId(request.ItineranciaId);
             var objetivos = await repositorioItinerancia.ObterDecricaoObjetivosPorId(request.ItineranciaId);
 
-            using (var transacao = unitOfWork.IniciarTransacao())
-            {
                 await repositorioWfAprovacaoItinerancia.SalvarAsync(wfAprovacaoItinerancia);
 
                 if (itinerancia.DataRetornoVerificacao.HasValue)
                     await CriarEvento(itinerancia, objetivos);
-            }
 
             return true;
         }
