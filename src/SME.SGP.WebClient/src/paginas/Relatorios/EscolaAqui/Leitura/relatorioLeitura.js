@@ -139,13 +139,13 @@ const RelatorioLeitura = () => {
           abrev: item.abreviacao,
         }));
 
-        if (possuiPerfilSme) {
+        if (lista?.length > 1 && possuiPerfilSme) {
           lista.unshift({ valor: OPCAO_TODOS, desc: 'Enviado para todas' });
         }
 
         setListaDres(lista);
 
-        if (lista && lista.length && lista.length === 1) {
+        if (lista?.length === 1) {
           setCodigoDre(lista[0].valor);
         }
       } else {
@@ -228,11 +228,11 @@ const RelatorioLeitura = () => {
           valor: String(item.codigo),
         }));
 
-        if (possuiPerfilSme || possuiPerfilDre) {
+        if (lista?.length > 1 && (possuiPerfilSme || possuiPerfilDre)) {
           lista.unshift({ valor: OPCAO_TODOS, desc: 'Enviado para todas' });
         }
 
-        if (lista && lista.length && lista.length === 1) {
+        if (lista?.length === 1) {
           setCodigoUe(lista[0].valor);
         }
 
