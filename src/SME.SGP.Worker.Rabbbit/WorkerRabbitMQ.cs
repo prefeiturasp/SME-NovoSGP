@@ -313,6 +313,7 @@ namespace SME.SGP.Worker.RabbitMQ
                 catch (Exception ex)
                 {
                     SentrySdk.CaptureException(ex);
+                    canalRabbit.BasicReject(ea.DeliveryTag, false);
                 }
             };
 

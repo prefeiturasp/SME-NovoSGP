@@ -116,11 +116,10 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<EnumeradoRetornoDto>), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterModalidades(int anoLetivo)
+        public async Task<IActionResult> ObterModalidades([FromServices] IObterModalidadesPorAnoUseCase obterModalidadesPorAnoUseCase, int anoLetivo, bool consideraNovasModalidades = false)
         {
-            var retorno = await consultasAbrangencia.ObterModalidades(anoLetivo, ConsideraHistorico);
-
-            if (!retorno.Any())
+            var retorno = await obterModalidadesPorAnoUseCase.Executar(anoLetivo, ConsideraHistorico, consideraNovasModalidades);
+            if (!retorno?.Any() ?? true)
                 return NoContent();
 
             return Ok(retorno);

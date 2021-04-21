@@ -46,7 +46,7 @@ namespace SME.SGP.Aplicacao
                 CriadoRF = itinerancia.CriadoRF,
                 Auditoria = (AuditoriaDto)itinerancia,
                 StatusWorkflow = workflow != null ? ObterMensagemStatus(workflow.Niveis, verificaWorkflow.StatusAprovacao) : "",
-                PodeEditar = workflow != null ? VerificaPodeEditar(workflow.Niveis) : false
+                PodeEditar = workflow != null ? VerificaPodeEditar(workflow.Niveis) : true
             };
 
             if (itinerancia.Alunos != null && itinerancia.Alunos.Any())

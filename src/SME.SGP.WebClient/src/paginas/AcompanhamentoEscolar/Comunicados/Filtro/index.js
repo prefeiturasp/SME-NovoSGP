@@ -127,7 +127,10 @@ function Filtro({ onFiltrar }) {
           'Data de expiração não pode ser maior que ano atual',
           function validar() {
             const { dataExpiracao } = this.parent;
-            return !(moment(dataExpiracao).format('YYYY') > moment(new Date()).format('YYYY'));
+            return !(
+              moment(dataExpiracao).format('YYYY') >
+              moment(new Date()).format('YYYY')
+            );
           }
         )
         .test(
@@ -200,10 +203,10 @@ function Filtro({ onFiltrar }) {
   }, [anosModalidade, modalidadeSelecionada]);
 
   const modalidadeTurmaCalendarioRelation = {
-    "1": "3",
-    "3": "2",
-    "5": "1",
-    "6": "1"
+    '1': '3',
+    '3': '2',
+    '5': '1',
+    '6': '1',
   };
 
   const hasAnoLetivoClause = t =>
@@ -239,7 +242,7 @@ function Filtro({ onFiltrar }) {
       );
 
       if (isSubscribed) {
-        let allowedList = filterAllowedCalendarTypes(data);
+        const allowedList = filterAllowedCalendarTypes(data);
         setListaCalendario(allowedList);
         selecionaTipoCalendario(
           allowedList.length > 0 ? allowedList[0].descricao : '',
@@ -269,7 +272,7 @@ function Filtro({ onFiltrar }) {
       setCarregandoEventos(true);
 
       const _form = refForm?.state?.values;
-      let filter = {
+      const filter = {
         tipoCalendario: +(tipoCalendarioSelecionado ?? null),
         anoLetivo: +(_form?.anoLetivo ?? null),
         modalidade: +(_form?.modalidade ?? null),
@@ -288,7 +291,7 @@ function Filtro({ onFiltrar }) {
           delete filter[key];
       });
 
-      let data = await ServicoComunicadoEvento.listarPor(filter);
+      const data = await ServicoComunicadoEvento.listarPor(filter);
 
       if (isSubscribed) {
         if (data && data.length > 0) {
@@ -348,8 +351,10 @@ function Filtro({ onFiltrar }) {
   };
 
   async function ObterModalidades(ue) {
+
     const anoForm = refForm?.state?.values?.anoLetivo ? refForm.state.values.anoLetivo : moment().year();
     const dados = await FiltroHelper.obterModalidadesAnoLetivo(ue, anoForm);
+
     if (!dados || dados.length === 0) return;
     if (dados.length === 1) refForm.setFieldValue('modalidade', dados[0].id);
     setModalidades(dados);
@@ -380,14 +385,12 @@ function Filtro({ onFiltrar }) {
       modalidade == MODALIDADE_EJA_ID
     ) {
       refForm.setFieldValue('ano', 'Todos');
-      return;
     }
   };
 
   const chainLimpaAnos = (dados, modalidade) => {
     if (modalidade != TODAS_MODALIDADES_ID && modalidade != MODALIDADE_EJA_ID) {
       refForm.setFieldValue('ano', '');
-      return;
     }
   };
 
@@ -521,7 +524,6 @@ function Filtro({ onFiltrar }) {
     if (!ano || ano == -99) {
       setTurmas(todosTurmasModalidade);
       refForm.setFieldValue('turmas', [TODAS_TURMAS_ID]);
-      return;
     }
   };
 
@@ -532,9 +534,9 @@ function Filtro({ onFiltrar }) {
       return;
     }
 
-    var ultimoTodos = turmas[turmas.length - 1] === TODAS_TURMAS_ID;
+    const ultimoTodos = turmas[turmas.length - 1] === TODAS_TURMAS_ID;
 
-    var turmasFiltradas = ultimoTodos
+    const turmasFiltradas = ultimoTodos
       ? turmas.filter(x => x === TODAS_TURMAS_ID)
       : turmas.filter(x => x !== TODAS_TURMAS_ID);
 
@@ -552,7 +554,7 @@ function Filtro({ onFiltrar }) {
 
   const onSubmitFiltro = valores => {
     if (dres?.length && ues?.length) {
-      let valoresSubmit = {
+      const valoresSubmit = {
         ...valores,
         // modalidade: valores.modalidade === TODAS_MODALIDADES_ID ? '' : valores.modalidade,
         modalidade: null,

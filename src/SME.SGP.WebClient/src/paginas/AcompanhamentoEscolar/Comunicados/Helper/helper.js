@@ -16,9 +16,9 @@ class FiltroHelper {
 
   async ObterAnoLetivo(modalidade) {
     try {
-      var anosLetivos = await AbrangenciaServico.buscarTodosAnosLetivos();
+      const anosLetivos = await AbrangenciaServico.buscarTodosAnosLetivos();
 
-      var dados = anosLetivos.data.map(x => {
+      const dados = anosLetivos.data.map(x => {
         return { id: x, nome: x };
       });
 
@@ -35,7 +35,7 @@ class FiltroHelper {
         erros(e);
       });
 
-      var dados = await this.mapearParaSelect(retorno.data, ID_TODOS);
+      const dados = await this.mapearParaSelect(retorno.data, ID_TODOS);
 
       return dados;
     } catch (error) {
@@ -48,7 +48,7 @@ class FiltroHelper {
     try {
       const retorno = await ServicoFiltroRelatorio.obterUes(dre, true);
 
-      var dados = await this.mapearParaSelect(retorno.data, ID_TODOS, true);
+      const dados = await this.mapearParaSelect(retorno.data, ID_TODOS, true);
 
       return dados;
     } catch (error) {
@@ -59,9 +59,13 @@ class FiltroHelper {
 
   async ObterModalidades(ue, anoLetivo, consideraHistorico) {
     try {
-      const retorno = await ServicoFiltroRelatorio.obterModalidades(ue, anoLetivo, consideraHistorico);
+      const retorno = await ServicoFiltroRelatorio.obterModalidades(
+        ue,
+        anoLetivo,
+        consideraHistorico
+      );
 
-      var dados = retorno.data.map(x => {
+      const dados = retorno.data.map(x => {
         return { id: x.valor, nome: x.descricao };
       });
 
@@ -74,11 +78,15 @@ class FiltroHelper {
     }
   }
 
-  async obterModalidadesAnoLetivo(ue, anoLetivo){
+  async obterModalidadesAnoLetivo(ue, anoLetivo, consideraNovasModalidades) {
     try {
-      const retorno = await ServicoFiltroRelatorio.obterModalidadesAnoLetivo(ue, anoLetivo);
+      const retorno = await ServicoFiltroRelatorio.obterModalidadesAnoLetivo(
+        ue,
+        anoLetivo,
+        consideraNovasModalidades
+      );
 
-      var dados = retorno.data.map(x => {
+      const dados = retorno.data.map(x => {
         return { id: x.valor, nome: x.descricao };
       });
 
@@ -91,11 +99,15 @@ class FiltroHelper {
     }
   }
 
-  async obterModalidadesAnoLetivo(ue, anoLetivo){
+  async obterModalidadesAnoLetivo(ue, anoLetivo) {
     try {
-      const retorno = await ServicoFiltroRelatorio.obterModalidadesAnoLetivo(ue, anoLetivo);
+      const retorno = await ServicoFiltroRelatorio.obterModalidadesAnoLetivo(
+        ue,
+        anoLetivo,
+        true
+      );
 
-      var dados = retorno.data.map(x => {
+      const dados = retorno.data.map(x => {
         return { id: x.valor, nome: x.descricao };
       });
 
@@ -110,14 +122,14 @@ class FiltroHelper {
 
   async ObterTurmas(anoLetivo, codigoUe, modalidade, semestre) {
     try {
-      var retorno = await ServicoFiltroRelatorio.obterTurmasPorCodigoUeModalidadeSemestre(
+      const retorno = await ServicoFiltroRelatorio.obterTurmasPorCodigoUeModalidadeSemestre(
         anoLetivo,
         codigoUe,
         modalidade,
         semestre
       );
 
-      var dados = retorno.data.map(x => {
+      const dados = retorno.data.map(x => {
         return { id: x.valor, nome: x.descricao };
       });
 
@@ -167,13 +179,16 @@ class FiltroHelper {
 
   async obterAnosPorModalidade(modalidade, codigoUe) {
     try {
-      const response = await ServicoComunicados.buscarAnosPorModalidade(modalidade, codigoUe);
-      let dados = response.data;
+      const response = await ServicoComunicados.buscarAnosPorModalidade(
+        modalidade,
+        codigoUe
+      );
+      const dados = response.data;
 
-      if(dados && dados.length == 0) {
+      if (dados && dados.length == 0) {
         dados.unshift({
           modalidade: +modalidade,
-          ano: 'Todos'
+          ano: 'Todos',
         });
       }
 

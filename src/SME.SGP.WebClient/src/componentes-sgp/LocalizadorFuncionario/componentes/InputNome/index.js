@@ -42,7 +42,11 @@ const InputNome = props => {
   const options =
     sugestoes &&
     sugestoes.map(item => (
-      <AutoComplete.Option key={item.codigoRF} value={item.nomeServidor}>
+      <AutoComplete.Option
+        key={item.codigoRF}
+        value={item.nomeServidor}
+        usuarioId={item.usuarioId}
+      >
         {item.nomeServidor}
       </AutoComplete.Option>
     ));

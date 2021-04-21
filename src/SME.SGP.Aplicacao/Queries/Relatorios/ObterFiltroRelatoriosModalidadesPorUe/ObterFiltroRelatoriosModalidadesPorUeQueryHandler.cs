@@ -12,29 +12,31 @@ namespace SME.SGP.Aplicacao
     public class ObterFiltroRelatoriosModalidadesPorUeQueryHandler : IRequestHandler<ObterFiltroRelatoriosModalidadesPorUeQuery, IEnumerable<OpcaoDropdownDto>>
     {
         private readonly IRepositorioAbrangencia repositorioAbrangencia;
-        private readonly IServicoUsuario servicoUsuario;
 
-        public ObterFiltroRelatoriosModalidadesPorUeQueryHandler(IRepositorioAbrangencia repositorioAbrangencia, IServicoUsuario servicoUsuario)
+        public ObterFiltroRelatoriosModalidadesPorUeQueryHandler(IRepositorioAbrangencia repositorioAbrangencia)
         {
             this.repositorioAbrangencia = repositorioAbrangencia ?? throw new System.ArgumentNullException(nameof(repositorioAbrangencia));
-            this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
         }
 
         public async Task<IEnumerable<OpcaoDropdownDto>> Handle(ObterFiltroRelatoriosModalidadesPorUeQuery request, CancellationToken cancellationToken)
         {
             if (request.CodigoUe == "-99")
             {
-                return EnumExtensao.ListarDto<Modalidade>().Select(c => new OpcaoDropdownDto(c.Id.ToString(), c.Descricao));
+                var todasAsModalidades = EnumExtensao.ListarDto<Modalidade>();
+                if (request.ModalidadesQueSeraoIgnoradas != null && request.ModalidadesQueSeraoIgnoradas.Any())
+                {
+                    var idsIgnoradas = request.ModalidadesQueSeraoIgnoradas.Select(a => (int)a);
+                    var listaTratada = todasAsModalidades.Where(m => !idsIgnoradas.Contains(m.Id));
+                    return listaTratada.Select(c => new OpcaoDropdownDto(c.Id.ToString(), c.Descricao));
+                }
+                return todasAsModalidades.Select(c => new OpcaoDropdownDto(c.Id.ToString(), c.Descricao));
             }
 
-            var login = servicoUsuario.ObterLoginAtual();
-            var perfil = servicoUsuario.ObterPerfilAtual();
-
-            var listaAbrangencia = await repositorioAbrangencia.ObterModalidades(login, perfil, request.AnoLetivo, request.ConsideraHistorico);
+            var listaAbrangencia = await repositorioAbrangencia.ObterModalidades(request.Login, request.Perfil, request.AnoLetivo, request.ConsideraHistorico, request.ModalidadesQueSeraoIgnoradas);
 
             var modalidades = await repositorioAbrangencia.ObterModalidadesPorUe(request.CodigoUe);
 
-            return modalidades?.Where(m => listaAbrangencia.Contains((int)m))?. Select(c => new OpcaoDropdownDto(((int)c).ToString(), c.Name()));
+            return modalidades?.Where(m => listaAbrangencia.Contains((int)m))?.Select(c => new OpcaoDropdownDto(((int)c).ToString(), c.Name()));
         }
     }
 }

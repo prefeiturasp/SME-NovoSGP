@@ -17,6 +17,7 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Background;
 using SME.SGP.Dados;
 using SME.SGP.Infra.Utilitarios;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.IoC;
 using System;
 using System.Collections.Generic;
@@ -136,6 +137,9 @@ namespace SME.SGP.Api
             var serviceProvider = services.BuildServiceProvider();
 
             Orquestrador.Inicializar(serviceProvider);
+
+            //Provisório: Caso necessite sincronizar a estrutura, descomentar a linha abaixo e iniciar o projeto
+            //serviceProvider.GetService<IServicoAbrangencia>().SincronizarEstruturaInstitucionalVigenteCompleta();
 
             if (Configuration.GetValue<bool>("FF_BackgroundEnabled", false))
             {

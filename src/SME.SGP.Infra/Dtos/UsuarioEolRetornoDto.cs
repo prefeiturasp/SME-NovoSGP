@@ -5,5 +5,6 @@
         public string CodigoRf { get; set; }
         public string NomeServidor { get; set; }
         public int CodigoFuncaoAtividade { get; set; }
+        public long UsuarioId { get; set; }
     }
 }
