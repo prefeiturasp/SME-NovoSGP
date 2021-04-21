@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
                 yield return new EventoNomeDto()
                 {
                     Id = evento.Id,
-                    Nome = $"{evento.Data:dd/MM/yyyy} {evento.Nome} ({evento.UeNome})"
+                    Nome = $"{evento.Data:dd/MM/yyyy} {evento.Nome} ({evento.TipoEscola.ShortName()} {evento.UeNome})"
                 };
 
         }
