@@ -224,7 +224,7 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
             var retorno = await trataSincronizacaoInstitucionalTurmaCommandHandler.Handle(new TrataSincronizacaoInstitucionalTurmaCommand(turmaEol, turmaSgp), new CancellationToken());
 
             //Assert
-            repositorioTurma.Verify(r => r.ExcluirTurmaExtintaAsync(turmaEol.Codigo.ToString()), Times.Once);
+            repositorioTurma.Verify(r => r.ExcluirTurmaExtintaAsync(turmaEol.Codigo.ToString(), 1),  Times.Once);
             Assert.True(retorno);
         }
 
@@ -299,7 +299,7 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
             var retorno = await trataSincronizacaoInstitucionalTurmaCommandHandler.Handle(new TrataSincronizacaoInstitucionalTurmaCommand(turmaEol, turmaSgp), new CancellationToken());
 
             //Assert
-            repositorioTurma.Verify(r => r.ExcluirTurmaExtintaAsync(turmaEol.Codigo.ToString()), Times.Once);
+            repositorioTurma.Verify(r => r.ExcluirTurmaExtintaAsync(turmaEol.Codigo.ToString(), 1), Times.Once);
             Assert.True(retorno);
         }
 
