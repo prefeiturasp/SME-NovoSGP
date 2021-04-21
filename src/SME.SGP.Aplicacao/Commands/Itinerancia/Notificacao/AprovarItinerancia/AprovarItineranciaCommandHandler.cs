@@ -33,10 +33,20 @@ namespace SME.SGP.Aplicacao
 
             using (var transacao = unitOfWork.IniciarTransacao())
             {
-                await repositorioWfAprovacaoItinerancia.SalvarAsync(wfAprovacaoItinerancia);
+                try
+                {
+                    await repositorioWfAprovacaoItinerancia.SalvarAsync(wfAprovacaoItinerancia);
 
-                if (itinerancia.DataRetornoVerificacao.HasValue)
-                    await CriarEvento(itinerancia, objetivos);
+                    if (itinerancia.DataRetornoVerificacao.HasValue)
+                        await CriarEvento(itinerancia, objetivos);
+
+                    unitOfWork.PersistirTransacao();
+                }
+                catch (Exception e)
+                {
+                    unitOfWork.Rollback();
+                    throw;
+                }            
             }
 
             return true;
