@@ -29,6 +29,9 @@ namespace SME.SGP.Aplicacao
             var planoAEE = request.PossuiUsuarios ? await ObterPlanoAEE(request.PlanoAEEId) : null;
             var usuarioAtual = request.PossuiUsuarios ? await mediator.Send(new ObterUsuarioLogadoQuery()) : null;
 
+            if (request.PossuiUsuarios)
+                request.TratarUsuariosNotificacao(usuarioAtual.Id);
+
             using (var transacao = unitOfWork.IniciarTransacao())
             {
                 try
