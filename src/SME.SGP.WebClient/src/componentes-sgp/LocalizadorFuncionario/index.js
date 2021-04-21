@@ -174,7 +174,9 @@ const LocalizadorFuncionario = props => {
           limparDados();
         }
       } else {
-        erro('Funcionário não encontrado');
+        if (!mensagemErroConsultaRF) {
+          erro('Funcionário não encontrado');
+        }
         setDataSource([]);
         setDesabilitarCampo(() => ({
           codigoRF: false,
