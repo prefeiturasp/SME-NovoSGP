@@ -16,7 +16,7 @@ namespace SME.SGP.Dados
         public async Task<IEnumerable<PlanoAEEObservacaoDto>> ObterObservacoesPlanoPorId(long planoId, string usuarioRF)
         {
             var query = @"select pao.*
-                            , u.id, u.nome 
+                            , u.id as UsuarioId, u.nome 
                         from plano_aee_observacao pao 
                          left join notificacao_plano_aee_observacao npao on npao.plano_aee_observacao_id = pao.id
                          left join notificacao n on n.id = npao.notificacao_id
@@ -40,7 +40,7 @@ namespace SME.SGP.Dados
                 planoDto.AdicionaUsuario(usuario);
 
                 return planoDto;
-            }, new { planoId });
+            }, new { planoId }, splitOn: "UsuarioId");
 
             return lookup.Values;
         }
