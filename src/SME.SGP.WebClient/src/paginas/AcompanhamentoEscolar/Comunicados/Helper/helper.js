@@ -8,9 +8,9 @@ const ID_TODOS = '-99';
 class FiltroHelper {
   async mapearParaSelect(array, todas, ue) {
     return array.map(x => {
-      const id = x.codigo == ID_TODOS ? todas : x.codigo;
-      const nome = x.codigo == ID_TODOS ? x.nomeSimples : x.nome;
-      return { id, nome: ue ? nome : x.nome };
+      var id = x.codigo == ID_TODOS ? todas : x.codigo;
+      var nome = x.codigo == ID_TODOS ? x.nomeSimples : x.nome;
+      return { id, nome: ue ? nome : x.nome, tipoEscola : x.tipoEscola };
     });
   }
 

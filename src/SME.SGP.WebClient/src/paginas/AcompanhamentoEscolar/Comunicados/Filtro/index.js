@@ -27,6 +27,22 @@ const TODAS_MODALIDADES_ID = '-99';
 const TODAS_TURMAS_ID = '-99';
 const TODAS_UES_ID = '-99';
 const TODAS_DRE_ID = '-99';
+const TIPOS_ESCOLA_BLOQUEAR = [
+  10,
+  11,
+  12,
+  13,
+  14,
+  15,
+  18,
+  19,
+  22,
+  23,
+  25,
+  26,
+  27,
+  29,
+];
 
 function Filtro({ onFiltrar }) {
   const todos = [{ id: TODAS_MODALIDADES_ID, nome: 'Todas' }];
@@ -52,6 +68,10 @@ function Filtro({ onFiltrar }) {
   const [anosModalidade, setAnosModalidade] = useState([]);
   const [gruposSelecionados, setGruposSelecionados] = useState([]);
   const [timeoutCampoPesquisa, setTimeoutCampoPesquisa] = useState();
+  const [
+    bloquearCamposCalendarioEventos,
+    setBloquearCamposCalendarioEventos,
+  ] = useState(false);
 
   const dreDesabilitada = useMemo(() => {
     return dres.length <= 1;
@@ -331,14 +351,10 @@ function Filtro({ onFiltrar }) {
   };
 
   async function ObterModalidades(ue) {
-    const anoForm = refForm?.state?.values?.anoLetivo
-      ? refForm.state.values.anoLetivo
-      : moment().year();
-    const dados = await FiltroHelper.obterModalidadesAnoLetivo(
-      ue,
-      anoForm,
-      true
-    );
+
+    const anoForm = refForm?.state?.values?.anoLetivo ? refForm.state.values.anoLetivo : moment().year();
+    const dados = await FiltroHelper.obterModalidadesAnoLetivo(ue, anoForm);
+
     if (!dados || dados.length === 0) return;
     if (dados.length === 1) refForm.setFieldValue('modalidade', dados[0].id);
     setModalidades(dados);
@@ -440,6 +456,17 @@ function Filtro({ onFiltrar }) {
       return;
     }
 
+    const ueEscolhida = ues.find(item => item.id.toString() === ue);
+    const ueEncontrada = TIPOS_ESCOLA_BLOQUEAR.find(
+      id => id === ueEscolhida.tipoEscola
+    );
+
+    if (ueEncontrada) {
+      setBloquearCamposCalendarioEventos(true);
+      return;
+    }
+
+    setBloquearCamposCalendarioEventos(false);
     loadTiposCalendarioEffect();
   };
 
@@ -824,7 +851,8 @@ function Filtro({ onFiltrar }) {
                   onSelect={valor => selecionaTipoCalendario(valor, form)}
                   value={valorTipoCalendario}
                   form={form}
-                  allowClear
+                  allowClear={true}
+                  disabled={bloquearCamposCalendarioEventos}
                 />
               </Loader>
             </Grid>
@@ -847,6 +875,7 @@ function Filtro({ onFiltrar }) {
                   value={valorEvento}
                   form={form}
                   allowClear={false}
+                  disabled={bloquearCamposCalendarioEventos}
                 />
               </Loader>
             </Grid>
