@@ -134,7 +134,7 @@ const MontarDadosObservacoesPlanoAEE = () => {
         salvarObservacao={obs => salvarEditarObservacao(obs)}
         editarObservacao={obs => salvarEditarObservacao(obs)}
         excluirObservacao={obs => excluirObservacao(obs)}
-        permissoes={permissoesTela}
+        verificaProprietario
         obterUsuariosNotificadosDiarioBordo={false}
         usarLocalizadorFuncionario
         parametrosLocalizadorFuncionario={{

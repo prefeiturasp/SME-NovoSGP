@@ -130,20 +130,24 @@ const ModalNotificarUsuarios = ({
             />
           </div>
         ) : (
-          <Localizador
-            labelRF="RF"
-            placeholderRF="Procure pelo RF do usuário"
-            placeholderNome="Procure pelo nome do usuário"
-            labelNome="Nome"
-            showLabel
-            onChange={mudarLocalizador}
-            buscarOutrosCargos
-            classesRF="p-0"
-            anoLetivo={anoAtual}
-            limparCamposAposPesquisa
-            validaPerfilProfessor={false}
-            mensagemErroConsultaRF="Este usuário não consta na base do SGP e não será possível notificá-lo"
-          />
+          <div className="col-md-12">
+            <div className="row">
+              <Localizador
+                labelRF="RF"
+                placeholderRF="Procure pelo RF do usuário"
+                placeholderNome="Procure pelo nome do usuário"
+                labelNome="Nome"
+                showLabel
+                onChange={mudarLocalizador}
+                buscarOutrosCargos
+                classesRF="p-0"
+                anoLetivo={anoAtual}
+                limparCamposAposPesquisa
+                validaPerfilProfessor={false}
+                mensagemErroConsultaRF="Este usuário não consta na base do SGP e não será possível notificá-lo"
+              />
+            </div>
+          </div>
         )}
       </div>
       {usuariosSelecionados?.map(({ usuarioId, nome, podeRemover }) => (
