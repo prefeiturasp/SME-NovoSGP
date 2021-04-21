@@ -22,6 +22,7 @@ const CampoObservacao = props => {
     obterUsuariosNotificadosDiarioBordo,
     usarLocalizadorFuncionario,
     parametrosLocalizadorFuncionario,
+    desabilitarBotaoNotificar,
   } = props;
   const [modalVisivel, setModalVisivel] = useState(false);
 
@@ -125,7 +126,9 @@ const CampoObservacao = props => {
             color={Colors.Azul}
             border
             onClick={() => setModalVisivel(true)}
-            disabled={!!observacaoEmEdicao || !podeIncluir}
+            disabled={
+              !!observacaoEmEdicao || !podeIncluir || desabilitarBotaoNotificar
+            }
           />
         </div>
         <div className="p-0 col-md-6 d-flex justify-content-end">
@@ -174,6 +177,7 @@ CampoObservacao.propTypes = {
   obterUsuariosNotificadosDiarioBordo: PropTypes.bool,
   usarLocalizadorFuncionario: PropTypes.bool,
   parametrosLocalizadorFuncionario: PropTypes.oneOfType(PropTypes.object),
+  desabilitarBotaoNotificar: PropTypes.bool,
 };
 
 CampoObservacao.defaultProps = {
@@ -183,6 +187,7 @@ CampoObservacao.defaultProps = {
   obterUsuariosNotificadosDiarioBordo: true,
   usarLocalizadorFuncionario: false,
   parametrosLocalizadorFuncionario: {},
+  desabilitarBotaoNotificar: false,
 };
 
 export default CampoObservacao;

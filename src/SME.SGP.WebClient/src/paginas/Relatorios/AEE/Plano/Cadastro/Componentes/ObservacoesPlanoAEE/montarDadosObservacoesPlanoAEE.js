@@ -6,11 +6,16 @@ import { RotasDto } from '~/dtos';
 import {
   limparDadosObservacoesUsuario,
   setDadosObservacoesUsuario,
+  setListaUsuariosNotificacao,
 } from '~/redux/modulos/observacoesUsuario/actions';
 import { confirmar, erros, sucesso } from '~/servicos';
 import ServicoPlanoAEEObservacoes from '~/servicos/Paginas/Relatorios/AEE/ServicoPlanoAEEObservacoes';
 
 const MontarDadosObservacoesPlanoAEE = () => {
+  const [desabilitarBotaoNotificar, setDesabilitarBotaoNotificar] = useState(
+    true
+  );
+
   const usuario = useSelector(store => store.usuario);
 
   const permissoesTela = usuario.permissoes[RotasDto.RELATORIO_AEE_PLANO];
@@ -19,6 +24,10 @@ const MontarDadosObservacoesPlanoAEE = () => {
 
   const listaUsuariosNotificacao = useSelector(
     store => store.observacoesUsuario.listaUsuariosNotificacao
+  );
+
+  const novaObservacao = useSelector(
+    store => store.observacoesUsuario.novaObservacao
   );
 
   const dispatch = useDispatch();
@@ -46,6 +55,8 @@ const MontarDadosObservacoesPlanoAEE = () => {
       } else {
         dispatch(setDadosObservacoesUsuario([]));
       }
+
+      dispatch(setListaUsuariosNotificacao([]));
     },
     [dispatch]
   );
@@ -126,15 +137,24 @@ const MontarDadosObservacoesPlanoAEE = () => {
     }
   };
 
+  useEffect(() => {
+    let desabilitaBotao = true;
+    if (novaObservacao) {
+      desabilitaBotao = false;
+    }
+    setDesabilitarBotaoNotificar(desabilitaBotao);
+  }, [novaObservacao]);
+
   return (
     <Loader loading={carregandoGeral}>
       <ObservacoesUsuario
         esconderLabel
         mostrarListaNotificacao
+        desabilitarBotaoNotificar={desabilitarBotaoNotificar}
         salvarObservacao={obs => salvarEditarObservacao(obs)}
         editarObservacao={obs => salvarEditarObservacao(obs)}
         excluirObservacao={obs => excluirObservacao(obs)}
-        permissoes={permissoesTela}
+        verificaProprietario
         obterUsuariosNotificadosDiarioBordo={false}
         usarLocalizadorFuncionario
         parametrosLocalizadorFuncionario={{

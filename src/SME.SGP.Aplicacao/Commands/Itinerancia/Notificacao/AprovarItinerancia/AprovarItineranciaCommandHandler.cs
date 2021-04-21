@@ -27,14 +27,28 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(AprovarItineranciaCommand request, CancellationToken cancellationToken)
         {
-            var wfAprovacaoItinerancia = await repositorioWfAprovacaoItinerancia.ObterPorWorkflowId(request.WorkflowId);
+            var wfAprovacaoItinerancia = await repositorioWfAprovacaoItinerancia.ObterPorItineranciaId(request.ItineranciaId);
+            wfAprovacaoItinerancia.StatusAprovacao = request.StatusAprovacao;
             var itinerancia = await repositorioItinerancia.ObterComUesPorId(request.ItineranciaId);
             var objetivos = await repositorioItinerancia.ObterDecricaoObjetivosPorId(request.ItineranciaId);
 
-                await repositorioWfAprovacaoItinerancia.SalvarAsync(wfAprovacaoItinerancia);
+            using (var transacao = unitOfWork.IniciarTransacao())
+            {
+                try
+                {
+                    await repositorioWfAprovacaoItinerancia.SalvarAsync(wfAprovacaoItinerancia);
 
-                if (itinerancia.DataRetornoVerificacao.HasValue)
-                    await CriarEvento(itinerancia, objetivos);
+                    if (itinerancia.DataRetornoVerificacao.HasValue)
+                        await CriarEvento(itinerancia, objetivos);
+
+                    unitOfWork.PersistirTransacao();
+                }
+                catch (Exception e)
+                {
+                    unitOfWork.Rollback();
+                    throw;
+                }            
+            }
 
             return true;
         }
