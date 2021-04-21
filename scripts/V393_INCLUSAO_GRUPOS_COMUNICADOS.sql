@@ -16,7 +16,7 @@ VALUES('MOVA', 22, null, current_timestamp, 'Carga inicial', null, null, 'Carga 
 -- ETEC
 INSERT INTO public.grupo_comunicado
 (nome, tipo_escola_id, tipo_ciclo_id, criado_em, criado_por, alterado_em, alterado_por, criado_rf, alterado_rf, excluido, etapa_ensino_id)
-VALUES('ETEC', null, null, current_timestamp, 'Carga inicial', null, null, 'Carga Inicial', null, false, '14');
+VALUES('ETEC', null, 20, current_timestamp, 'Carga inicial', null, null, 'Carga Inicial', null, false, '14');
 
 -- Infantil CEI 
-update public.grupo_comunicado set nome = 'Intantil CEI' where id = 2
+update public.grupo_comunicado set nome = 'Infantil CEI' where id = 2
