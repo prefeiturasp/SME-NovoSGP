@@ -9,6 +9,7 @@ namespace SME.SGP.Infra
         public List<string> TurmasCodigos { get; set; }
         public TipoFormatoRelatorio TipoFormatoRelatorio { get; set; }
         public Usuario Usuario { get; set; }
+        public int? Visualizacao { get; set; }
     }
 
 
