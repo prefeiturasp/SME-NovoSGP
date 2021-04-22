@@ -10,10 +10,12 @@ namespace SME.SGP.Aplicacao
     public class SalvarWorkflowAprovacaoItineranciaCommandHandler : IRequestHandler<SalvarWorkflowAprovacaoItineranciaCommand, bool>
     {
         private readonly IRepositorioWfAprovacaoItinerancia repositorioWfAprovacaoItinerancia;
+        private readonly IMediator mediator;
 
-        public SalvarWorkflowAprovacaoItineranciaCommandHandler(IRepositorioWfAprovacaoItinerancia repositorioWfAprovacaoItinerancia)
+        public SalvarWorkflowAprovacaoItineranciaCommandHandler(IRepositorioWfAprovacaoItinerancia repositorioWfAprovacaoItinerancia, IMediator mediator)
         {
             this.repositorioWfAprovacaoItinerancia = repositorioWfAprovacaoItinerancia ?? throw new ArgumentNullException(nameof(repositorioWfAprovacaoItinerancia));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<bool> Handle(SalvarWorkflowAprovacaoItineranciaCommand request, CancellationToken cancellationToken)
@@ -25,6 +27,7 @@ namespace SME.SGP.Aplicacao
             };
 
             await repositorioWfAprovacaoItinerancia.SalvarAsync(wfAprovacaoItinerancia);
+            await mediator.Send(new AlterarSituacaoItineranciaCommand(request.ItineranciaId, Dominio.Enumerados.SituacaoItinerancia.Enviado));
 
             return true;
         }
