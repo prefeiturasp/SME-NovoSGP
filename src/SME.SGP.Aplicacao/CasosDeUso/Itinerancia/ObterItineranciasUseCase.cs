@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
 
             if (listaRetorno != null && listaRetorno.Items.Any())
             {
-               return await MapearParaDto(listaRetorno, filtro.AnoLetivo);
+                return await MapearParaDto(listaRetorno, filtro.AnoLetivo);
             }
 
             return default;
@@ -69,15 +69,16 @@ namespace SME.SGP.Aplicacao
 
                 var codigosDasTurmas = alunosEol.Select(al => al.CodigoTurma.ToString()).Distinct().ToArray();
                 turmas = (await mediator.Send(new ObterTurmasPorCodigosQuery(codigosDasTurmas))).ToList();
+
             }
 
-            if (itinerancias.Any( a => a.Ues == 1))
+            if (itinerancias.Any(a => a.Ues == 1))
             {
                 var itineranciasUesIds = itinerancias.Where(a => a.Ues == 1).Select(a => a.Id).ToArray();
                 itineranciasUes = (await mediator.Send(new ObterUesPorItineranciasIdsQuery(itineranciasUesIds))).ToList();
             }
 
-      
+
             foreach (var item in itinerancias)
             {
                 var itineranciaParaAdicionar = new ItineranciaResumoDto();
@@ -93,7 +94,7 @@ namespace SME.SGP.Aplicacao
                 itineranciasParaRetornar.Add(itineranciaParaAdicionar);
             }
 
-            return itineranciasParaRetornar.OrderByDescending(i => DateTime.Parse(i.DataVisita)).ThenBy(i => i.UeNome).ThenBy(i => i.EstudanteNome);       
+            return itineranciasParaRetornar.OrderByDescending(i => DateTime.Parse(i.DataVisita)).ThenBy(i => i.UeNome).ThenBy(i => i.EstudanteNome);
 
         }
 
@@ -125,8 +126,8 @@ namespace SME.SGP.Aplicacao
                 return $"{item.Ues} registros selecionados";
             }
             else return "Sem informação";
-        }    
-    
+        }
+
         private string ObterEstudanteNomeCodigo(ItineranciaRetornoQueryDto itineranciaParaTratar, IEnumerable<TurmasDoAlunoDto> alunosEol, List<ItineranciaCodigoAlunoDto> itineranciaCodigoAlunos)
         {
 
@@ -140,7 +141,7 @@ namespace SME.SGP.Aplicacao
             else
             {
                 return "Sem informação";
-            }              
+            }
         }
     }
 }
