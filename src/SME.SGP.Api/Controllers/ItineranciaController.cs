@@ -3,9 +3,12 @@ using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api
@@ -91,16 +94,13 @@ namespace SME.SGP.Api
         [ProducesResponseType(typeof(List<SituacaoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.RI_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterSituacoes()
+        public IActionResult ObterSituacoes()
         {
-            var situacoes = new List<SituacaoDto>() { 
-                new SituacaoDto()
-                {
-                    Codigo = 1,
-                    Descricao = "Digitado",
-                } 
-            };
-            return await Task.FromResult(Ok(situacoes));
+            var situacoes = Enum.GetValues(typeof(SituacaoItinerancia))
+                        .Cast<SituacaoItinerancia>()
+                        .Select(d => new { codigo = (int)d, descricao = d.Name() })
+                        .ToList();
+            return Ok(situacoes);
         }
 
         [HttpGet("anos-letivos")]

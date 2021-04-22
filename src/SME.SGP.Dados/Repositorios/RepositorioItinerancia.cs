@@ -422,9 +422,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<int> AtualizarStatusItinerancia(long itineranciaId, int situacao)
         {
-            var query = @"update itinerancia
-                           set situacao = @situacao
-                          id = @itineranciaId ";
+            var query = @"update itinerancia set situacao = @situacao where id = @itineranciaId ";
 
             return await database.Conexao.ExecuteAsync(query, new { itineranciaId, situacao });
         }
