@@ -56,7 +56,8 @@ namespace SME.SGP.Aplicacao
                 {
                     Id = entidadePlano.Turma.Id,
                     Codigo = entidadePlano.Turma.CodigoTurma,
-                    AnoLetivo = entidadePlano.Turma.AnoLetivo
+                    AnoLetivo = entidadePlano.Turma.AnoLetivo,
+                    CodigoUE = entidadePlano.Turma.Ue.CodigoUe
                 };
 
                 filtro.TurmaCodigo = entidadePlano.Turma.CodigoTurma;

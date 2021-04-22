@@ -62,10 +62,10 @@ namespace SME.SGP.Dados.Repositorios
                     delete from public.compensacao_ausencia_aluno
                     where compensacao_ausencia_id in (select id
                                                       from public.compensacao_ausencia
-                                                      where turma_id in (#queryIdsTurmasForaListaCodigos));
+                                                      where turma_id = #turmaId);
 
                     delete from public.compensacao_ausencia
-                    where turma_id in (#queryIdsTurmasForaListaCodigos);
+                    where turma_id = #turmaId;
 
                     delete from public.pendencia_fechamento
                     where fechamento_turma_disciplina_id in (#queryIdsFechamentoTurmaDisciplinaTurmasForaListaCodigos);
@@ -95,13 +95,13 @@ namespace SME.SGP.Dados.Repositorios
                     delete from public.conselho_classe
                     where fechamento_turma_id in (select id
                                                   from public.fechamento_turma
-                                                  where turma_id in (#queryIdsTurmasForaListaCodigos));
+                                                  where turma_id = #turmaId);
 
                     delete from public.fechamento_turma
                     where turma_id in (#queryIdsTurmasForaListaCodigos);
                   
                     delete from public.frequencia_aluno
-                    where turma_id in (#codigosTurmasARemover);
+                    where turma_id = #turmaId;
 
                     delete from public.diario_bordo
                     where aula_id in (#queryIdsAulasTurmasForaListaCodigos);         
@@ -113,22 +113,22 @@ namespace SME.SGP.Dados.Repositorios
                     where aula_id in (#queryIdsAulasTurmasForaListaCodigos);
 
                     delete from public.aula
-                    where id in (#queryIdsAulasTurmasForaListaCodigos);
+                    where turma_id = #turmaId;
                     
                     delete from public.turma
-                    where turma_id in (#codigosTurmasARemover);";
+                    where turma_id = #turmaId;";
 
-        private const string QueryIdsTurmasForaListaCodigos = "select id from public.turma where turma_id in (#codigosTurmasARemover)";
+        private const string QueryIdsTurmasForaListaCodigos = "select id from public.turma where turma_id = #turmaId";
 
         private const string QueryIdsFechamentoTurmaDisciplinaTurmasForaListaCodigos = @"select id
                                                                                          from public.fechamento_turma_disciplina
                                                                                          where fechamento_turma_id in (select id
                                                                                                                        from public.fechamento_turma
-                                                                                                                       where turma_id in (#queryIdsTurmasForaListaCodigos))";
+                                                                                                                       where turma_id = #turmaId)";
 
         private const string QueryIdsFechamentoTurmaTurmasForaListaCodigos = @"select id
                                                                                from public.fechamento_turma
-                                                                               where turma_id in (#queryIdsTurmasForaListaCodigos)";
+                                                                               where turma_id = #turmaId";
 
         private const string QueryIdsConselhoClasseTurmasForaListaCodigos = @"select id
                                                                               from public.conselho_classe
@@ -138,9 +138,9 @@ namespace SME.SGP.Dados.Repositorios
                                                                             from public.fechamento_aluno
                                                                             where fechamento_turma_disciplina_id in (#queryIdsFechamentoTurmaDisciplinaTurmasForaListaCodigos)";
 
-        private const string QueryAulasTurmasForaListaCodigos = @"select id from public.aula where turma_id in (#codigosTurmasARemover)";
+        private const string QueryAulasTurmasForaListaCodigos = @"select id from public.aula where turma_id = #turmaId";
 
-        private const string QueryDefinirTurmaHistorica = "update public.turma set historica = true where turma_id in (#codigosTurmasParaHistorico);";
+        private const string QueryDefinirTurmaHistorica = "update public.turma set historica = true where turma_id = #turmaId;";
 
         private readonly ISgpContext contexto;
 
@@ -283,7 +283,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<long>> ObterTurmasPorUeAnos(string ueCodigo, int anoLetivo, string[] anos, int modalidadeId)
         {
-            var query = new StringBuilder(@"select x.turma_Id from (select distinct on (2) t.turma_id , t.ano from turma t
+            var query = new StringBuilder(@"select t.turma_id from turma t
                                                 inner join ue u on u.id  = t.ue_id 
                                             where  t.ano_letivo = @anoLetivo and t.modalidade_codigo = @modalidadeId ");
 
@@ -292,8 +292,6 @@ namespace SME.SGP.Dados.Repositorios
 
             if (anos != null && anos.Length > 0)
                 query.AppendLine("and t.ano = any(@anos) ");
-
-            query.AppendLine(") x");
 
             return await contexto.Conexao.QueryAsync<long>(query.ToString(), new { ueCodigo, anos, anoLetivo, modalidadeId });
 
@@ -328,7 +326,7 @@ namespace SME.SGP.Dados.Repositorios
                     item.DataAtualizacao = DateTime.Today;
                     item.Ue = ues.First(x => x.CodigoUe == item.Ue.CodigoUe);
                     item.UeId = item.Ue.Id;
-                    item.Id = (long)await contexto.Conexao.InsertAsync(item);                    
+                    item.Id = (long)await contexto.Conexao.InsertAsync(item);
                     resultado.Add(item);
                 }
 
@@ -348,7 +346,7 @@ namespace SME.SGP.Dados.Repositorios
                                         c.DataInicio.HasValue != l.DataInicio.HasValue ||
                                         (c.DataInicio.HasValue && l.DataInicio.HasValue && c.DataInicio.Value.Date != l.DataInicio.Value.Date) ||
                                         c.DataFim.HasValue != l.DataFim.HasValue ||
-                                        (c.DataFim.HasValue && l.DataFim.HasValue && c.DataFim.Value.Date != l.DataFim.Value.Date)                                        
+                                        (c.DataFim.HasValue && l.DataFim.HasValue && c.DataFim.Value.Date != l.DataFim.Value.Date)
                                   select new Turma()
                                   {
                                       Ano = c.Ano,
@@ -369,9 +367,9 @@ namespace SME.SGP.Dados.Repositorios
                                       DataInicio = c.DataInicio,
                                       SerieEnsino = c.SerieEnsino,
                                       DataFim = c.DataFim,
-                                      Extinta = c.Extinta,                                      
+                                      Extinta = c.Extinta,
                                   };
-             
+
                 foreach (var item in modificados)
                 {
                     await contexto.Conexao.ExecuteAsync(Update, new
@@ -404,7 +402,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<Turma>> ObterTurmasInfantilNaoDeProgramaPorAnoLetivoAsync(int anoLetivo)
         {
-            var modalidade = Modalidade.Infantil;
+            var modalidade = Modalidade.InfantilPreEscola;
             var turmas = new List<Turma>();
             var query = @"select
 	                            t.*,
@@ -644,7 +642,374 @@ namespace SME.SGP.Dados.Repositorios
                             and t.ano_letivo = @anoLetivo 
                             and t.tipo_turma = @turmaTipo";
 
-            return await contexto.Conexao.QueryFirstOrDefaultAsync<Turma>(query, new { ueId, anoLetivo , turmaTipo });
+            return await contexto.Conexao.QueryFirstOrDefaultAsync<Turma>(query, new { ueId, anoLetivo, turmaTipo });
+        }
+
+        public async Task<bool> AtualizarTurmaParaHistorica(string turmaId)
+        {
+            var query = @"update public.turma 
+                             set historica = true,
+                                 data_atualizacao = @dataAtualizacao
+                           where turma_id = @turmaId";
+
+            var retorno = await contexto.Conexao.ExecuteAsync(query, new { turmaId, dataAtualizacao = DateTime.Now });
+
+            return retorno != 0;
+
+        }
+
+        public async Task<bool> SalvarAsync(TurmaParaSyncInstitucionalDto turma, long ueId)
+        {
+            var query = @"INSERT INTO public.turma
+				                (turma_id, ue_id, nome, ano, ano_letivo, modalidade_codigo, semestre, qt_duracao_aula, tipo_turno, data_atualizacao, historica, dt_fim_eol, ensino_especial, etapa_eja, data_inicio, serie_ensino, tipo_turma)
+	                        values
+	                            (@Codigo, @ueId, @NomeTurma, @Ano, @AnoLetivo, @CodigoModalidade, @Semestre, @DuracaoTurno, @TipoTurno, @DataAtualizacao, @historica, @DataFim, @EnsinoEspecial, @EtapaEJA, @DataInicioTurma, @SerieEnsino, @TipoTurma);";
+
+            var parametros = new
+            {
+                turma.Codigo,
+                turma.UeCodigo,
+                turma.NomeTurma,
+                turma.Ano,
+                turma.AnoLetivo,
+                turma.CodigoModalidade,
+                turma.Semestre,
+                turma.DuracaoTurno,
+                turma.TipoTurno,
+                turma.DataAtualizacao,
+                turma.DataFim,
+                turma.EnsinoEspecial,
+                turma.EtapaEJA,
+                turma.DataInicioTurma,
+                turma.SerieEnsino,
+                turma.TipoTurma,
+                ueId,
+                historica = turma.Extinta
+            };
+            var retorno = await contexto.Conexao.ExecuteAsync(query, parametros);
+
+            return retorno != 0;
+
+        }
+
+        public async Task ExcluirTurmaExtintaAsync(string turmaCodigo, long turmaId)
+        {
+
+                var sqlExcluirTurmas = @"delete
+                            from
+	                            public.compensacao_ausencia_aluno
+                            where
+	                            compensacao_ausencia_id in (
+	                            select
+		                            id
+	                            from
+		                            public.compensacao_ausencia
+	                            where
+		                            turma_id = @turmaId);
+
+                            delete
+                            from
+	                            public.compensacao_ausencia
+                            where
+	                            turma_id = @turmaId;
+
+                            delete
+                            from
+	                            public.pendencia_fechamento
+                            where
+	                            fechamento_turma_disciplina_id in (
+	                            select
+		                            id
+	                            from
+		                            public.fechamento_turma_disciplina
+	                            where
+		                            fechamento_turma_id in (
+		                            select
+			                            id
+		                            from
+			                            public.fechamento_turma
+		                            where
+			                            turma_id = @turmaId));
+
+                            delete
+                            from
+	                            public.wf_aprovacao_nota_fechamento
+                            where
+	                            fechamento_nota_id in (
+	                            select
+		                            id
+	                            from
+		                            public.fechamento_nota
+	                            where
+		                            fechamento_aluno_id in (
+		                            select
+			                            id
+		                            from
+			                            public.fechamento_aluno
+		                            where
+			                            fechamento_turma_disciplina_id in (
+			                            select
+				                            id
+			                            from
+				                            public.fechamento_turma_disciplina
+			                            where
+				                            fechamento_turma_id in (
+				                            select
+					                            id
+				                            from
+					                            public.fechamento_turma
+				                            where
+					                            turma_id = @turmaId))));
+
+                            delete
+                            from
+	                            public.fechamento_nota
+                            where
+	                            fechamento_aluno_id in (
+	                            select
+		                            id
+	                            from
+		                            public.fechamento_aluno
+	                            where
+		                            fechamento_turma_disciplina_id in (
+		                            select
+			                            id
+		                            from
+			                            public.fechamento_turma_disciplina
+		                            where
+			                            fechamento_turma_id in (
+			                            select
+				                            id
+			                            from
+				                            public.fechamento_turma
+			                            where
+				                            turma_id = @turmaId)));
+
+                            delete
+                            from
+	                            public.fechamento_aluno
+                            where
+	                            fechamento_turma_disciplina_id in (
+	                            select
+		                            id
+	                            from
+		                            public.fechamento_turma_disciplina
+	                            where
+		                            fechamento_turma_id in (
+		                            select
+			                            id
+		                            from
+			                            public.fechamento_turma
+		                            where
+			                            turma_id = @turmaId));
+
+                            delete
+                            from
+	                            public.fechamento_turma_disciplina
+                            where
+	                            fechamento_turma_id in (
+	                            select
+		                            id
+	                            from
+		                            public.fechamento_turma
+	                            where
+		                            turma_id = @turmaId);
+
+                            delete
+                            from
+	                            public.conselho_classe_nota
+                            where
+	                            conselho_classe_aluno_id in (
+	                            select
+		                            id
+	                            from
+		                            public.conselho_classe_aluno
+	                            where
+		                            conselho_classe_id in (
+		                            select
+			                            id
+		                            from
+			                            public.conselho_classe
+		                            where
+			                            fechamento_turma_id in (
+			                            select
+				                            id
+			                            from
+				                            public.fechamento_turma
+			                            where
+				                            turma_id = @turmaId)));
+
+                            delete
+                            from
+	                            public.conselho_classe_aluno
+                            where
+	                            conselho_classe_id in (
+	                            select
+		                            id
+	                            from
+		                            public.conselho_classe
+	                            where
+		                            fechamento_turma_id in (
+		                            select
+			                            id
+		                            from
+			                            public.fechamento_turma
+		                            where
+			                            turma_id = @turmaId));
+
+                            delete
+                            from
+	                            public.conselho_classe
+                            where
+	                            fechamento_turma_id in (
+	                            select
+		                            id
+	                            from
+		                            public.fechamento_turma
+	                            where
+		                            turma_id = @turmaId);
+
+                            delete
+                            from
+	                            public.fechamento_turma
+                            where
+	                            turma_id = @turmaId;
+
+                            delete
+                            from
+	                            public.frequencia_aluno
+                            where
+	                            turma_id = @turmaCodigo;
+
+                            delete
+                            from
+	                            public.diario_bordo
+                            where
+	                            aula_id in (
+	                            select
+		                            id
+	                            from
+		                            public.aula
+	                            where
+		                            turma_id = @turmaCodigo);
+
+                            delete
+                            from
+	                            public.notificacao_frequencia
+                            where
+	                            aula_id in (
+	                            select
+		                            id
+	                            from
+		                            public.aula
+	                            where
+		                            turma_id = @turmaCodigo);
+
+                            delete
+                            from
+	                            public.registro_frequencia
+                            where
+	                            aula_id in (
+	                            select
+		                            id
+	                            from
+		                            public.aula
+	                            where
+		                            turma_id = @turmaCodigo);
+
+                            delete
+                            from
+	                            public.aula
+                            where
+	                            turma_id = @turmaCodigo;
+
+                            delete
+                            from
+	                            pendencia_registro_individual_aluno pria
+                            where
+	                            pria.pendencia_registro_individual_id in (
+	                            select
+		                            id
+	                            from
+		                            pendencia_registro_individual pri
+	                            where
+		                            pri.turma_id = @turmaId);
+
+                            delete
+                            from
+	                            pendencia_registro_individual pri
+                            where
+	                            pri.turma_id = @turmaId;
+
+                            delete
+                            from
+	                            public.turma
+                            where
+	                            id = @turmaId;";
+
+
+            var transacao = contexto.Conexao.BeginTransaction();
+
+            try
+            {
+                await contexto.Conexao
+                    .ExecuteAsync(sqlExcluirTurmas, new { turmaId, turmaCodigo },  transacao);
+
+                transacao.Commit();
+            }
+            catch (Exception ex)
+            {
+                var erro = new Exception("Erro ao atualizar ou excluir turmas extintas", ex);
+                SentrySdk.CaptureException(erro);
+                transacao.Rollback();
+            }
+        }
+
+        public async Task<bool> AtualizarTurmaSincronizacaoInstitucionalAsync(TurmaParaSyncInstitucionalDto turma)
+        {
+            var query = @"update
+	                            public.turma
+                            set
+	                            nome = @nomeTurma,
+	                            ano = @ano,
+	                            ano_letivo = @anoLetivo,
+	                            modalidade_codigo = @codigoModalidade,
+	                            semestre = @semestre,
+	                            qt_duracao_aula = @duracaoTurno,
+	                            tipo_turno = @tipoTurno,
+	                            data_atualizacao = @dataAtualizacao,
+                                ensino_especial = @ensinoEspecial,
+                                etapa_eja = @etapaEja,
+                                data_inicio = @dataInicioTurma,
+                                serie_ensino = @serieEnsino,
+                                dt_fim_eol = @dataFim,
+                                tipo_turma = @tipoTurma                                
+                            where
+	                            turma_id = @turmaId";
+
+            var parametros = new
+            {
+                turma.NomeTurma,
+                turma.Ano,
+                turma.AnoLetivo,
+                codigoModalidade = (int)turma.CodigoModalidade,
+                turma.Semestre,
+                turma.DuracaoTurno,
+                turma.TipoTurno,
+                turma.DataAtualizacao,
+                turma.DataFim,
+                turma.EnsinoEspecial,
+                turma.EtapaEJA,
+                turma.DataInicioTurma,
+                turma.SerieEnsino,
+                turma.TipoTurma,
+                turmaId = turma.Codigo.ToString(),
+            };
+
+            var retorno = await contexto.Conexao.ExecuteAsync(query, parametros);
+            return retorno != 0;
+
+
         }
     }
 }

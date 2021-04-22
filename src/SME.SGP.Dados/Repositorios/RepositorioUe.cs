@@ -49,15 +49,17 @@ namespace SME.SGP.Dados.Repositorios
             return resultado;
         }
 
-        public async Task<IEnumerable<Modalidade>> ObterModalidades(string ueCodigo, int ano)
+        public async Task<IEnumerable<Modalidade>> ObterModalidades(string ueCodigo, int ano, IEnumerable<Modalidade> modalidadesQueSeraoIgnoradas)
         {
             var query = @"select distinct t.modalidade_codigo from turma t
                                 inner join ue u
                                 on t.ue_id = u.id
-                                    where u.ue_id = @ueCodigo
-                                and t.ano_letivo = @ano";
+                            where u.ue_id = @ueCodigo
+                            and t.ano_letivo = @ano
+                            and (@modalidadesQueSeraoIgnoradas is null or not(t.modalidade_codigo = any(@modalidadesQueSeraoIgnoradas)))";
 
-            return await contexto.QueryAsync<Modalidade>(query, new { ueCodigo, ano });
+            var modalidadesQueSeraoIgnoradasArray = modalidadesQueSeraoIgnoradas.Select(x => (int)x).ToArray();
+            return await contexto.QueryAsync<Modalidade>(query, new { ueCodigo, ano, modalidadesQueSeraoIgnoradas = modalidadesQueSeraoIgnoradasArray });
         }
 
         public Ue ObterPorCodigo(string ueId)
@@ -78,6 +80,21 @@ namespace SME.SGP.Dados.Repositorios
                 return ue;
             },
             new { ueCodigo })).FirstOrDefault();
+        }
+
+        public async Task<Ue> ObterUeComDrePorId(long ueId)
+        {
+            var query = @"select ue.*, dre.* 
+                            from ue 
+                           inner join dre on dre.id = ue.dre_id
+                           where ue.id = @ueId";
+
+            return (await contexto.Conexao.QueryAsync<Ue, Dre, Ue>(query, (ue, dre) =>
+            {
+                ue.AdicionarDre(dre);
+                return ue;
+            },
+            new { ueId })).FirstOrDefault();
         }
 
         public IEnumerable<Ue> ObterTodas()
@@ -291,6 +308,38 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select * from ue where id = ANY(@ids)";
 
             return await contexto.QueryAsync<Ue>(query, new { ids });
+        }
+
+        public async Task<long> IncluirAsync(Ue ueParaIncluir)
+        {
+            return (long)await contexto.Conexao.InsertAsync(ueParaIncluir);
+        }
+
+        public async Task AtualizarAsync(Ue ueParaAtualizar)
+        {
+            await contexto.Conexao.UpdateAsync(ueParaAtualizar);
+        }
+
+        public async Task<IEnumerable<Ue>> ObterUEsComDREsPorIds(long[] ids)
+        {
+            var query = @"select ue.*, dre.* 
+                            from ue 
+                           inner join dre on dre.id = ue.dre_id
+                           where ue.id = ANY(@ids)";
+
+            return await contexto.QueryAsync<Ue, Dre, Ue>(query, (ue, dre) =>
+            {
+                ue.Dre = dre;
+
+                return ue;
+            }, new { ids });
+        }
+
+        public async Task<TipoEscola> ObterTipoEscolaPorCodigo(string ueCodigo)
+        {
+            var query = "select tipo_escola from ue where ue_id = @ueCodigo";
+
+            return await contexto.Conexao.QueryFirstOrDefaultAsync<TipoEscola>(query, new { ueCodigo });
         }
     }
 }

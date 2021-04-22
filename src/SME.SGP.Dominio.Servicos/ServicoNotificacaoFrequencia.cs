@@ -336,7 +336,7 @@ namespace SME.SGP.Dominio.Servicos
             var alunosFaltosos = repositorioFrequencia.ObterAlunosFaltosos(dataReferencia, tipoCalendarioId);
 
             // Faltou em todas as aulas do dia e tem pelo menos 3 aulas registradas
-            var alunosFaltasTodasAulasDoDia = alunosFaltosos.Where(c => c.QuantidadeAulas == c.QuantidadeFaltas && ((c.modalidadeCodigo == Modalidade.Fundamental && c.Ano <= 5) || c.QuantidadeAulas >= 3 || c.modalidadeCodigo == Modalidade.Infantil));
+            var alunosFaltasTodasAulasDoDia = alunosFaltosos.Where(c => c.QuantidadeAulas == c.QuantidadeFaltas && ((c.modalidadeCodigo == Modalidade.Fundamental && c.Ano <= 5) || c.QuantidadeAulas >= 3 || c.modalidadeCodigo == Modalidade.InfantilPreEscola));
 
 
             var alunosFaltasTodosOsDias = alunosFaltasTodasAulasDoDia
@@ -435,7 +435,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task<IEnumerable<(Cargo?, Usuario)>> BuscaProfessorAula(RegistroFrequenciaFaltanteDto turma)
         {
-            if (turma.ModalidadeTurma == Modalidade.Infantil)
+            if (turma.ModalidadeTurma == Modalidade.InfantilPreEscola)
             {
                 var disciplinaEols = await servicoEOL.ObterProfessoresTitularesDisciplinas(turma.CodigoTurma);
                 if (disciplinaEols != null)

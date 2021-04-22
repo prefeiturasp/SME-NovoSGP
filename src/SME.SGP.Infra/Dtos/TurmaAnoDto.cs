@@ -9,5 +9,6 @@ namespace SME.SGP.Infra.Dtos
         public long Id { get; set; }
         public string Codigo { get; set; }
         public int AnoLetivo { get; set; }
+        public string CodigoUE { get; set; }
     }
 }

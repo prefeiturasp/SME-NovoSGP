@@ -4,6 +4,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -37,7 +38,24 @@ namespace SME.SGP.Aplicacao
                 NomeServidor = request.Nome,
             };
 
-            return await servicoEOL.ObterFuncionariosPorDre(usuario.PerfilAtual, filtro);
+            return await CarregarUsuarioId(await servicoEOL.ObterFuncionariosPorDre(usuario.PerfilAtual, filtro));
+        }
+
+        private async Task<IEnumerable<UsuarioEolRetornoDto>> CarregarUsuarioId(IEnumerable<UsuarioEolRetornoDto> funcionarios)
+        {
+            var rfs = funcionarios.Select(a => a.CodigoRf)
+                .Distinct()
+                .ToList();
+
+            var usuarios = await mediator.Send(new ObterUsuariosPorCodigosRfQuery(rfs));
+
+            if (usuarios != null)
+                foreach(var funcionario in funcionarios)
+                {
+                    funcionario.UsuarioId = usuarios.FirstOrDefault(a => a.CodigoRf == funcionario.CodigoRf)?.Id ?? 0;
+                }
+
+            return funcionarios;
         }
 
         private async Task<(string codigoDRE, string codigoUE)> ObterCodigosFiltros(string codigoDRE, string codigoUE, string codigoTurma)

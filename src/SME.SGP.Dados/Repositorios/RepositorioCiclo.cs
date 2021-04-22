@@ -126,5 +126,16 @@ namespace SME.SGP.Dados.Repositorios
             
             return await database.Conexao.QueryAsync<RetornoCicloDto>(query.ToString(), parametros);
         }
+
+        public async Task<CicloEnsino> ObterCicloPorCodigoEol(long codigoEol)
+        {
+            var sql = @"select *
+                          from ciclo_ensino ce 
+                         where cod_ciclo_ensino_eol = @codigoEol";
+
+            var parametros = new { codigoEol };
+
+            return await database.QueryFirstOrDefaultAsync<CicloEnsino>(sql, parametros);
+        }
     }
 }

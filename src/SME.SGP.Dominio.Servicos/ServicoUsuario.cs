@@ -151,7 +151,7 @@ namespace SME.SGP.Dominio
 
         public Usuario ObterUsuarioPorCodigoRfLoginOuAdiciona(string codigoRf, string login = "", string nome = "", string email = "", bool buscaLogin = false)
         {
-            var eNumero = int.TryParse(codigoRf, out int n);
+            var eNumero = long.TryParse(codigoRf, out long n);
 
             codigoRf = eNumero ? codigoRf : null;
 

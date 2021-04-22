@@ -23,7 +23,7 @@ const BoletimSimples = () => {
     dreCodigo: '',
     ueCodigo: '',
     turmaCodigo: '',
-    consideraHistorico: false
+    consideraHistorico: false,
   });
 
   const [itensSelecionados, setItensSelecionados] = useState([]);

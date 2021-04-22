@@ -15,6 +15,10 @@ const ObservacoesUsuario = props => {
     verificaProprietario,
     permissoes,
     mostrarListaNotificacao,
+    obterUsuariosNotificadosDiarioBordo,
+    usarLocalizadorFuncionario,
+    parametrosLocalizadorFuncionario,
+    desabilitarBotaoNotificar,
   } = props;
 
   const { podeIncluir, podeAlterar, podeExcluir } = permissoes;
@@ -25,9 +29,15 @@ const ObservacoesUsuario = props => {
       <ContainerObservacoesUsuario esconderCaixaExterna={esconderCaixaExterna}>
         <div style={{ margin: `${esconderCaixaExterna ? 0 : 15}px` }}>
           <CampoObservacao
+            desabilitarBotaoNotificar={desabilitarBotaoNotificar}
             salvarObservacao={salvarObservacao}
             esconderCaixaExterna={esconderCaixaExterna}
             podeIncluir={podeIncluir}
+            obterUsuariosNotificadosDiarioBordo={
+              obterUsuariosNotificadosDiarioBordo
+            }
+            usarLocalizadorFuncionario={usarLocalizadorFuncionario}
+            parametrosLocalizadorFuncionario={parametrosLocalizadorFuncionario}
           />
           <ObservacoesUsuarioMontarDados
             onClickSalvarEdicao={editarObservacao}
@@ -52,6 +62,10 @@ ObservacoesUsuario.propTypes = {
   verificaProprietario: PropTypes.bool,
   permissoes: PropTypes.objectOf(PropTypes.object),
   mostrarListaNotificacao: PropTypes.bool,
+  obterUsuariosNotificadosDiarioBordo: PropTypes.bool,
+  usarLocalizadorFuncionario: PropTypes.bool,
+  parametrosLocalizadorFuncionario: PropTypes.objectOf(PropTypes.object),
+  desabilitarBotaoNotificar: PropTypes.bool,
 };
 
 ObservacoesUsuario.defaultProps = {
@@ -63,6 +77,10 @@ ObservacoesUsuario.defaultProps = {
   verificaProprietario: false,
   permissoes: { podeAlterar: true, podeIncluir: true, podeExcluir: true },
   mostrarListaNotificacao: false,
+  obterUsuariosNotificadosDiarioBordo: true,
+  usarLocalizadorFuncionario: false,
+  parametrosLocalizadorFuncionario: {},
+  desabilitarBotaoNotificar: false,
 };
 
 export default ObservacoesUsuario;

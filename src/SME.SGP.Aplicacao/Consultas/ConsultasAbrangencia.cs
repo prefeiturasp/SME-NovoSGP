@@ -10,6 +10,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using SME.SGP.Infra.Enumerados;
 using SME.SGP.Dominio.Enumerados;
+using MediatR;
 
 namespace SME.SGP.Aplicacao
 {
@@ -18,13 +19,15 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioAbrangencia repositorioAbrangencia;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IServicoEol servicoEOL;
+        private readonly IMediator mediator;
 
-        public ConsultasAbrangencia(IRepositorioAbrangencia repositorioAbrangencia, IServicoUsuario servicoUsuario, IServicoEol servicoEOL)
+        public ConsultasAbrangencia(IRepositorioAbrangencia repositorioAbrangencia, IServicoUsuario servicoUsuario, IServicoEol servicoEOL, IMediator mediator)
         {
             this.repositorioAbrangencia = repositorioAbrangencia ?? throw new System.ArgumentNullException(nameof(repositorioAbrangencia));
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
-        }
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+    }
 
         public async Task<IEnumerable<AbrangenciaFiltroRetorno>> ObterAbrangenciaPorfiltro(string texto, bool consideraHistorico)
         {
@@ -52,12 +55,12 @@ namespace SME.SGP.Aplicacao
             return await repositorioAbrangencia.ObterAbrangenciaTurma(turma, login, perfil, consideraHistorico, abrangenciaPermitida);
         }
 
-        public async Task<IEnumerable<int>> ObterAnosLetivos(bool consideraHistorico)
+        public async Task<IEnumerable<int>> ObterAnosLetivos(bool consideraHistorico, int anoMinimo)
         {
             var login = servicoUsuario.ObterLoginAtual();
             var perfil = servicoUsuario.ObterPerfilAtual();
 
-            return await repositorioAbrangencia.ObterAnosLetivos(login, perfil, consideraHistorico);
+            return await mediator.Send(new ObterUsuarioAbrangenciaAnosLetivosQuery(login, consideraHistorico, perfil, anoMinimo));
         }
 
         public async Task<IEnumerable<OpcaoDropdownDto>> ObterAnosTurmasPorUeModalidade(string codigoUe, Modalidade modalidade, bool consideraHistorico)
@@ -98,19 +101,6 @@ namespace SME.SGP.Aplicacao
             var perfil = servicoUsuario.ObterPerfilAtual();
 
             return await repositorioAbrangencia.ObterDres(login, perfil, modalidade, periodo, consideraHistorico, anoLetivo);
-        }
-
-        public async Task<IEnumerable<EnumeradoRetornoDto>> ObterModalidades(int anoLetivo, bool consideraHistorico)
-        {
-            var login = servicoUsuario.ObterLoginAtual();
-            var perfil = servicoUsuario.ObterPerfilAtual();
-
-            var lista = await repositorioAbrangencia.ObterModalidades(login, perfil, anoLetivo, consideraHistorico);
-
-            var listaModalidades = from a in lista
-                                   select new EnumeradoRetornoDto() { Id = a, Descricao = ((Modalidade)a).GetAttribute<DisplayAttribute>().Name };
-
-            return listaModalidades.OrderBy(a => a.Descricao);
         }
 
         public async Task<IEnumerable<int>> ObterSemestres(Modalidade modalidade, bool consideraHistorico, int anoLetivo = 0)

@@ -384,6 +384,34 @@ class ServicoPlanoAEE {
     }
     return false;
   };
+
+  obterDadosObservacoes = id => {
+    // TODO - Validar!
+    return api.get(`${urlPadrao}/${id}/observacoes`);
+  };
+
+  obterNofiticarUsuarios = ({ turmaId, observacaoId = '' }) => {
+    // TODO - Validar!
+    return api.get(
+      `${urlPadrao}/notificacoes/usuarios?turmaId=${turmaId}&observacaoId=${observacaoId}`
+    );
+  };
+
+  salvarEditarObservacao = (id, dados) => {
+    // TODO - Validar!
+    if (id) {
+      const url = `${urlPadrao}/observacoes/${id}`;
+      return api.put(url, dados);
+    }
+
+    const url = `${urlPadrao}/${id}/observacoes`;
+    return api.post(url, dados);
+  };
+
+  excluirObservacao = id => {
+    // TODO - Validar!
+    return api.delete(`${urlPadrao}/observacoes/${id}`);
+  };
 }
 
 export default new ServicoPlanoAEE();

@@ -6,8 +6,7 @@
         public static string ExchangeSgp => "sme.sgp.workers";
 
         public static string FilaSgp => "sme.sgp.clients";
-
-        public static string FilaSincronizacaoInstitucional => "sme.sgp.sincronizacao.institucional";
+        
         public static string WorkerRelatoriosSgp => "sme.sr.workers.sgp";
 
         public static string FilaGoogleSync => "googleclass.sync.geral";
@@ -83,6 +82,20 @@
         public static string NotificarCriacaoPlanoAEE => "plano.aee.notificar.criacao";
         public static string NotificarPlanoAEEEncerrado => "plano.aee.notificar.encerramento";
 
+        public static string RotaNotificacaoRegistroItineranciaInseridoUseCase => "notificacao.registro.itinerancia.inserido";
+
         public static string SincronizaEstruturaInstitucionalUes => "sincroniza.estrtura.institucional.ues";
+        public static string SincronizaEstruturaInstitucionalDreSync => "sgp.sincronizacao.institucional.dre.sync";
+        public static string SincronizaEstruturaInstitucionalDreTratar => "sgp.sincronizacao.institucional.dre.tratar";
+        public static string SincronizaEstruturaInstitucionalUeTratar => "sgp.sincronizacao.institucional.ue.tratar";
+        public static string SincronizaEstruturaInstitucionalTurmasSync => "sgp.sincronizacao.institucional.turmas.sync";        
+        public static string SincronizaEstruturaInstitucionalTurmaTratar => "sgp.sincronizacao.institucional.turma.tratar";
+        
+        public static string SincronizaEstruturaInstitucionalTipoEscolaSync => "sgp.sincronizacao.institucional.tipoescola.sync";
+        public static string SincronizaEstruturaInstitucionalTipoEscolaTratar => "sgp.sincronizacao.institucional.tipoescola.tratar";
+
+        public static string SincronizaEstruturaInstitucionalCicloSync => "sgp.sincronizacao.institucional.ciclo.sync";
+        public static string SincronizaEstruturaInstitucionalCicloTratar => "sgp.sincronizacao.institucional.ciclo.tratar";
+
     }
 }

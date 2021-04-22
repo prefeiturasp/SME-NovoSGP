@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
         public async Task<bool> Executar(FiltroRelatorioParecerConclusivoDto filtroRelatorioParecerConclusivoDto)
         {
-            if (filtroRelatorioParecerConclusivoDto.Modalidade.HasValue && filtroRelatorioParecerConclusivoDto.Modalidade.Value == Modalidade.Infantil)
+            if (filtroRelatorioParecerConclusivoDto.Modalidade.HasValue && filtroRelatorioParecerConclusivoDto.Modalidade.Value == Modalidade.InfantilPreEscola)
                 throw new NegocioException("Não é possível gerar este relatório para a modalidade infantil!");
 
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
