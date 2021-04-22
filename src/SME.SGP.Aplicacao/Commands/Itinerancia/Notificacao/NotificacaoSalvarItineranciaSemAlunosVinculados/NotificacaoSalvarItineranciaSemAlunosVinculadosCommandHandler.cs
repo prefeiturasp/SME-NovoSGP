@@ -53,7 +53,6 @@ namespace SME.SGP.Aplicacao
 
 
             await mediator.Send(new EnviarNotificacaoCommand(titulo, mensagem.ToString(), NotificacaoCategoria.Alerta, NotificacaoTipo.AEE, ObterCargosGestaoEscola(), ue.Dre.CodigoDre, ue.CodigoUe));
-            await mediator.Send(new AlterarSituacaoItineranciaCommand(itineranciaId, Dominio.Enumerados.SituacaoItinerancia.Enviado));
 
         }
         private Cargo[] ObterCargosGestaoEscola()
