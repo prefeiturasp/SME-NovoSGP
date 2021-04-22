@@ -95,6 +95,9 @@ namespace SME.SGP.Dominio
         [Display(Name = "Pendência por ausência de registro individual")]        
         PendenciaPorAusenciaDeRegistroIndividual = 48,
 
+        // Processo Executando
+        TempoValidadeProcessoExecutandoEmSegundos = 49,
+
         //Sistema
         HabilitarServicosEmBackground = 100
     }
