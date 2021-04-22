@@ -1,8 +1,7 @@
 import styled, { css } from 'styled-components';
 
 export const Container = styled.div`
-  position: ${({ listagemDiario, somenteLeitura }) =>
-    listagemDiario && !somenteLeitura && 'absolute'};
+  position: ${({ somenteLeitura }) => !somenteLeitura && 'absolute'};
 
   ${({ listagemDiario }) =>
     listagemDiario
