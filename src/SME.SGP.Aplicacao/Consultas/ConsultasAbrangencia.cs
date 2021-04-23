@@ -158,8 +158,11 @@ namespace SME.SGP.Aplicacao
 
             result.ToList().ForEach(a =>
             {
-                var modalidadeEnum = (Modalidade)a.CodigoModalidade;
-                a.ModalidadeTurmaNome = $"{modalidadeEnum.ShortName()} - {a.Nome}";
+                if(Enum.IsDefined(typeof(Modalidade), (Modalidade)a.CodigoModalidade))
+                {
+                    var modalidadeEnum = (Modalidade)a.CodigoModalidade;
+                    a.ModalidadeTurmaNome = $"{modalidadeEnum.ShortName()} - {a.Nome}";
+                }                
             });
 
             return result;
