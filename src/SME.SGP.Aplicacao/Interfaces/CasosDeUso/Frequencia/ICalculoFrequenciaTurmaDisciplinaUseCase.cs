@@ -6,6 +6,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface ICalculoFrequenciaTurmaDisciplinaUseCase : IUseCase<MensagemRabbit, bool>
     {
-        public Task IncluirCalculoFila(CalcularFrequenciaDto calcularFrequenciaDto);
+        Task IncluirCalculoFila(CalcularFrequenciaDto calcularFrequenciaDto);
     }
 }
