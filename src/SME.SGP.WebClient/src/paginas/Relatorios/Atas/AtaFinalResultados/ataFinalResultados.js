@@ -41,12 +41,9 @@ const AtaFinalResultados = () => {
   const [carregandoAnosLetivos, setCarregandoAnosLetivos] = useState(false);
   const [carregandoDres, setCarregandoDres] = useState(false);
   const [carregandoUes, setCarregandoUes] = useState(false);
-  const [listaVisualizacao, setListaVisualizacao] = useState([
-    { valor: '1', desc: 'Turma' },
-    { valor: '2', desc: 'Estudantes' },
-  ]);
+  const [listaVisualizacao, setListaVisualizacao] = useState([]);
   const [desabilitaVisualizacao, setDesabilitaVisualizacao] = useState(true);
-  const [visualizacao, setVisualizacao] = useState('1');
+  const [visualizacao, setVisualizacao] = useState('');
   const [listaTurmasCompletas, setListaTurmasComplestas] = useState([]);
 
   const listaFormatos = [
@@ -88,6 +85,19 @@ const AtaFinalResultados = () => {
     },
     [ueId]
   );
+
+  const obterVisualizacoes = useCallback(async () => {
+    const { data } = await api.get(
+      `/v1/relatorios/filtros/ata-final/tipos-visualizacao`
+    );
+    if (data) {
+      const lista = data.map(item => ({
+        desc: item.desc,
+        valor: item.valor,
+      }));
+      setListaVisualizacao(lista);
+    }
+  }, []);
 
   const obterUes = useCallback(
     async dre => {
@@ -172,7 +182,8 @@ const AtaFinalResultados = () => {
           '',
           anoLetivo,
           consideraHistorico,
-          true
+          false,
+          [1, 2, 7]
         );
         if (data) {
           setListaTurmasComplestas(data);
@@ -289,7 +300,8 @@ const AtaFinalResultados = () => {
 
   useEffect(() => {
     obterDres();
-  }, [obterDres]);
+    obterVisualizacoes();
+  }, [obterDres, obterVisualizacoes]);
 
   useEffect(() => {
     let turmaExcecao = false;
@@ -308,7 +320,6 @@ const AtaFinalResultados = () => {
       (turmaId.length === 1 && turmaId[0] !== '-99' && turmaExcecao) ||
       !turmaId.length ||
       turmaExcecao;
-    if (desabilita) setVisualizacao('1');
     setDesabilitaVisualizacao(desabilita);
   }, [turmaId, modalidadeId]);
 

@@ -148,5 +148,21 @@ namespace SME.SGP.Aplicacao
 
             return (await repositorioAbrangencia.ObterUes(codigoDre, login, perfil, modalidade, periodo, consideraHistorico, anoLetivo)).OrderBy(c => c.Nome).ToList();
         }
+
+        public async Task<IEnumerable<AbrangenciaTurmaRetorno>> ObterTurmasPorTipos(string codigoUe, Modalidade modalidade, int periodo, bool consideraHistorico, int anoLetivo, int[] tipos)
+        {
+            var login = servicoUsuario.ObterLoginAtual();
+            var perfil = servicoUsuario.ObterPerfilAtual();
+
+            var result = await repositorioAbrangencia.ObterTurmasPorTipos(codigoUe, login, perfil, modalidade, tipos, periodo, consideraHistorico, anoLetivo);
+
+            result.ToList().ForEach(a =>
+            {
+                var modalidadeEnum = (Modalidade)a.CodigoModalidade;
+                a.ModalidadeTurmaNome = $"{modalidadeEnum.ShortName()} - {a.Nome}";
+            });
+
+            return result;
+        }
     }
 }
