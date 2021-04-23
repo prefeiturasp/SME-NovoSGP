@@ -96,7 +96,7 @@ namespace SME.SGP.Dominio
         PendenciaPorAusenciaDeRegistroIndividual = 48,
 
         // Processo Executando
-        TempoValidadeProcessoExecutandoEmSegundos = 49,
+        TempoValidadeProcessoExecutandoEmSegundos = 57,
 
         //Sistema
         HabilitarServicosEmBackground = 100
