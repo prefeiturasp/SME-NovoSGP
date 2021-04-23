@@ -44,7 +44,7 @@ const AtaFinalResultados = () => {
   const [listaVisualizacao, setListaVisualizacao] = useState([]);
   const [desabilitaVisualizacao, setDesabilitaVisualizacao] = useState(true);
   const [visualizacao, setVisualizacao] = useState('');
-  const [listaTurmasCompletas, setListaTurmasComplestas] = useState([]);
+  const [listaTurmasCompletas, setListaTurmasCompletas] = useState([]);
 
   const listaFormatos = [
     { valor: '1', desc: 'PDF' },
@@ -186,7 +186,7 @@ const AtaFinalResultados = () => {
           [1, 2, 7]
         );
         if (data) {
-          setListaTurmasComplestas(data);
+          setListaTurmasCompletas(data);
           const lista = data.map(item => ({
             desc: item.nome,
             valor: item.codigo,
@@ -200,7 +200,7 @@ const AtaFinalResultados = () => {
             setTurmaId(lista[0].valor);
           }
         } else {
-          setListaTurmasComplestas([]);
+          setListaTurmasCompletas([]);
         }
       }
     },
@@ -305,11 +305,15 @@ const AtaFinalResultados = () => {
 
   useEffect(() => {
     let turmaExcecao = false;
+    let apenasTurma = false;
     if (turmaId?.length) {
       turmaId.forEach(codigo => {
         const turma = listaTurmasCompletas.find(t => t.codigo === codigo);
         if (codigo !== '-99' && turma && String(turma.ano) !== '2') {
           turmaExcecao = true;
+        }
+        if (codigo !== '-99' && turma && turma?.tipoTurma === 7) {
+          apenasTurma = true;
         }
       });
     }
@@ -319,9 +323,10 @@ const AtaFinalResultados = () => {
       String(modalidadeId) !== String(modalidade.ENSINO_MEDIO) ||
       (turmaId.length === 1 && turmaId[0] !== '-99' && turmaExcecao) ||
       !turmaId.length ||
-      turmaExcecao;
+      turmaExcecao ||
+      (turmaId.length === 1 && turmaId[0] !== '-99' && apenasTurma);
     setDesabilitaVisualizacao(desabilita);
-  }, [turmaId, modalidadeId]);
+  }, [turmaId, modalidadeId, listaTurmasCompletas]);
 
   const onClickVoltar = () => {
     history.push(URL_HOME);
@@ -410,10 +415,29 @@ const AtaFinalResultados = () => {
   };
 
   const onChangeSemestre = valor => setSemestre(valor);
+
+  const checarTipoTurma = valor => {
+    setVisualizacao('');
+    if (valor[0] !== '-99' && valor.length === 1) {
+      const turmaSelecionada = listaTurmasCompletas?.find(
+        item => item.codigo === valor[0]
+      );
+      if (turmaSelecionada?.tipoTurma === 7) {
+        setVisualizacao(
+          `${
+            listaVisualizacao.find(a => a.desc?.toUpperCase() === 'TURMA')
+              ?.valor
+          }`
+        );
+      }
+    }
+  };
+
   const onChangeTurma = valor => {
     const todosSetado = turmaId?.find(a => a === '-99');
     const todos = valor.find(a => a === '-99' && !todosSetado);
     const novoValor = todosSetado && valor.length === 2 ? [valor[1]] : valor;
+    checarTipoTurma(novoValor);
     setTurmaId(todos ? [todos] : novoValor);
     habilitarSelecaoFormato(valor);
   };
