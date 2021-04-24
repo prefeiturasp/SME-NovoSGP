@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
             }
             catch (Exception ex)
             {
-                SentrySdk.CaptureMessage($"Não foi possível realizar o tratamento da turma id {codigoTurma}.");
+                SentrySdk.CaptureMessage($"Não foi possível realizar o tratamento da turma id {codigoTurma}.", Sentry.Protocol.SentryLevel.Error);
                 SentrySdk.CaptureException(ex);
                 throw;
             }

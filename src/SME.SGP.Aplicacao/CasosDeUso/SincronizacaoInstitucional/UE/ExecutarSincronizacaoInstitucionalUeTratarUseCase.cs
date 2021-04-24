@@ -15,8 +15,6 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
-            SentrySdk.AddBreadcrumb($"Mensagem TrataSincronizacaoInstitucionalUeUseCase", "Rabbit - TrataSincronizacaoInstitucionalUeUseCase");
-
             var ueCodigo = mensagemRabbit.Mensagem.ToString();
 
             if (string.IsNullOrEmpty(ueCodigo))
