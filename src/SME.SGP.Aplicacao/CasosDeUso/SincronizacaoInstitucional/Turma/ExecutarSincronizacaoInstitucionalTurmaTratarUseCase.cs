@@ -24,8 +24,9 @@ namespace SME.SGP.Aplicacao
             try
             {
                 var turmaEOL = await mediator.Send(new ObterTurmaEOLParaSyncEstruturaInstitucionalPorTurmaIdQuery(codigoTurma));
+                
                 if (turmaEOL == null)
-                    throw new NegocioException($"Não foi possível realizar o tratamento da turma id {codigoTurma}. Turma não encontrada no Eol.");
+                    return true;
 
                 var turmaSGP = await mediator.Send(new ObterTurmaPorCodigoQuery(codigoTurma.ToString()));
 
@@ -38,7 +39,7 @@ namespace SME.SGP.Aplicacao
             }
             catch (Exception ex)
             {
-                SentrySdk.CaptureMessage($"Não foi possível realizar o tratamento da turma id {codigoTurma}.", Sentry.Protocol.SentryLevel.Error);
+                SentrySdk.CaptureMessage($"Não foi possível realizar o tratamento da turma id {codigoTurma}.", Sentry.Protocol.SentryLevel.Error );
                 SentrySdk.CaptureException(ex);
                 throw;
             }
