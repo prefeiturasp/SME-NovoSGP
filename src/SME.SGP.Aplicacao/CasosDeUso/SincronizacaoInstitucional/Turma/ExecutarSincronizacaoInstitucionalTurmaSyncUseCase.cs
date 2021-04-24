@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Newtonsoft.Json;
 using Sentry;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
@@ -20,7 +19,7 @@ namespace SME.SGP.Aplicacao
             var ueId = mensagemRabbit.Mensagem.ToString();
             if (string.IsNullOrEmpty(ueId))
             {
-                SentrySdk.CaptureMessage($"Não foi possível iniciar a sincronização das turmas. O codígo da Ue não foi informado");
+                SentrySdk.CaptureMessage($"Não foi possível iniciar a sincronização das turmas. O codígo da Ue não foi informado", Sentry.Protocol.SentryLevel.Error);
             }
 
             var codigosTurma = await mediator.Send(new ObterCodigosTurmasEOLPorUeIdParaSyncEstruturaInstitucionalQuery(ueId));
@@ -34,11 +33,12 @@ namespace SME.SGP.Aplicacao
                     if (!publicarFilaIncluirTurma)
                     {
                         var mensagem = $"Não foi possível inserir a turma de codígo : {codigoTurma} na fila de inclusão.";
-                        SentrySdk.CaptureMessage(mensagem);
+                        SentrySdk.CaptureMessage(mensagem, Sentry.Protocol.SentryLevel.Error);
                     }
                 }
                 catch (Exception ex)
                 {
+                    SentrySdk.AddBreadcrumb($"Não foi possível incluir a turma {codigoTurma} na fila para tratamento", "sincronizacao-institucional", null, null, Sentry.Protocol.BreadcrumbLevel.Error);
                     SentrySdk.CaptureException(ex);
                 }
             }
