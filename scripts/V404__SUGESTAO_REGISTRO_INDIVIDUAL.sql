@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS public.sugestao_registro_itinerancia (
 	descricao varchar(150) NOT NULL,
 	excluido boolean not null default false,
 
-	CONSTRAINT sugestao_registro_indivisual_pk PRIMARY KEY (id)
+	CONSTRAINT sugestao_registro_individual_pk PRIMARY KEY (id)
 );
 
 insert into public.sugestao_registro_itinerancia(mes, descricao) values (2,'Momento de adaptação e acolhimento. Como foi ou está sendo este processo para a criança e a família?');
