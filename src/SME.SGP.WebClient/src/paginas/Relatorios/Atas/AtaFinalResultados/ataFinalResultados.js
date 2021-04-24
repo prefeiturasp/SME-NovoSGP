@@ -303,19 +303,39 @@ const AtaFinalResultados = () => {
     obterVisualizacoes();
   }, [obterDres, obterVisualizacoes]);
 
+  const checarTipoTurma = valor => {
+    setVisualizacao('');
+    const turmasSelecionadasItinerancia = listaTurmasCompletas.filter(
+      lt => valor.find(t => lt.codigo === t) && lt.tipoTurma === 7
+    );
+    if (turmasSelecionadasItinerancia.length === valor?.length) {
+      setVisualizacao(
+        `${
+          listaVisualizacao.find(a => a.desc?.toUpperCase() === 'TURMA')?.valor
+        }`
+      );
+      return true;
+    }
+
+    const turmasSelecionadas = listaTurmasCompletas.filter(
+      lt => valor.find(t => lt.codigo === t) && String(lt.ano) !== '2'
+    );
+
+    if (turmasSelecionadas.length > 0) {
+      setVisualizacao(
+        `${
+          listaVisualizacao.find(a => a.desc?.toUpperCase() === 'TURMA')?.valor
+        }`
+      );
+      return true;
+    }
+    return false;
+  };
+
   useEffect(() => {
     let turmaExcecao = false;
-    let apenasTurma = false;
     if (turmaId?.length) {
-      turmaId.forEach(codigo => {
-        const turma = listaTurmasCompletas.find(t => t.codigo === codigo);
-        if (codigo !== '-99' && turma && String(turma.ano) !== '2') {
-          turmaExcecao = true;
-        }
-        if (codigo !== '-99' && turma && turma?.tipoTurma === 7) {
-          apenasTurma = true;
-        }
-      });
+      turmaExcecao = checarTipoTurma(turmaId);
     }
     const desabilita =
       !modalidadeId ||
@@ -323,8 +343,7 @@ const AtaFinalResultados = () => {
       String(modalidadeId) !== String(modalidade.ENSINO_MEDIO) ||
       (turmaId.length === 1 && turmaId[0] !== '-99' && turmaExcecao) ||
       !turmaId.length ||
-      turmaExcecao ||
-      (turmaId.length === 1 && turmaId[0] !== '-99' && apenasTurma);
+      turmaExcecao;
     setDesabilitaVisualizacao(desabilita);
   }, [turmaId, modalidadeId, listaTurmasCompletas]);
 
@@ -416,28 +435,10 @@ const AtaFinalResultados = () => {
 
   const onChangeSemestre = valor => setSemestre(valor);
 
-  const checarTipoTurma = valor => {
-    setVisualizacao('');
-    if (valor[0] !== '-99' && valor.length === 1) {
-      const turmaSelecionada = listaTurmasCompletas?.find(
-        item => item.codigo === valor[0]
-      );
-      if (turmaSelecionada?.tipoTurma === 7) {
-        setVisualizacao(
-          `${
-            listaVisualizacao.find(a => a.desc?.toUpperCase() === 'TURMA')
-              ?.valor
-          }`
-        );
-      }
-    }
-  };
-
   const onChangeTurma = valor => {
     const todosSetado = turmaId?.find(a => a === '-99');
     const todos = valor.find(a => a === '-99' && !todosSetado);
     const novoValor = todosSetado && valor.length === 2 ? [valor[1]] : valor;
-    checarTipoTurma(novoValor);
     setTurmaId(todos ? [todos] : novoValor);
     habilitarSelecaoFormato(valor);
   };
