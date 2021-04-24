@@ -44,7 +44,7 @@ const AtaFinalResultados = () => {
   const [listaVisualizacao, setListaVisualizacao] = useState([]);
   const [desabilitaVisualizacao, setDesabilitaVisualizacao] = useState(true);
   const [visualizacao, setVisualizacao] = useState('');
-  const [listaTurmasCompletas, setListaTurmasComplestas] = useState([]);
+  const [listaTurmasCompletas, setListaTurmasCompletas] = useState([]);
 
   const listaFormatos = [
     { valor: '1', desc: 'PDF' },
@@ -186,7 +186,7 @@ const AtaFinalResultados = () => {
           [1, 2, 7]
         );
         if (data) {
-          setListaTurmasComplestas(data);
+          setListaTurmasCompletas(data);
           const lista = data.map(item => ({
             desc: item.nome,
             valor: item.codigo,
@@ -200,7 +200,7 @@ const AtaFinalResultados = () => {
             setTurmaId(lista[0].valor);
           }
         } else {
-          setListaTurmasComplestas([]);
+          setListaTurmasCompletas([]);
         }
       }
     },
@@ -303,15 +303,39 @@ const AtaFinalResultados = () => {
     obterVisualizacoes();
   }, [obterDres, obterVisualizacoes]);
 
+  const checarTipoTurma = valor => {
+    setVisualizacao('');
+    const turmasSelecionadasItinerancia = listaTurmasCompletas.filter(
+      lt => valor.find(t => lt.codigo === t) && lt.tipoTurma === 7
+    );
+    if (turmasSelecionadasItinerancia.length === valor?.length) {
+      setVisualizacao(
+        `${
+          listaVisualizacao.find(a => a.desc?.toUpperCase() === 'TURMA')?.valor
+        }`
+      );
+      return true;
+    }
+
+    const turmasSelecionadas = listaTurmasCompletas.filter(
+      lt => valor.find(t => lt.codigo === t) && String(lt.ano) !== '2'
+    );
+
+    if (turmasSelecionadas.length > 0) {
+      setVisualizacao(
+        `${
+          listaVisualizacao.find(a => a.desc?.toUpperCase() === 'TURMA')?.valor
+        }`
+      );
+      return true;
+    }
+    return false;
+  };
+
   useEffect(() => {
     let turmaExcecao = false;
     if (turmaId?.length) {
-      turmaId.forEach(codigo => {
-        const turma = listaTurmasCompletas.find(t => t.codigo === codigo);
-        if (codigo !== '-99' && turma && String(turma.ano) !== '2') {
-          turmaExcecao = true;
-        }
-      });
+      turmaExcecao = checarTipoTurma(turmaId);
     }
     const desabilita =
       !modalidadeId ||
@@ -321,7 +345,7 @@ const AtaFinalResultados = () => {
       !turmaId.length ||
       turmaExcecao;
     setDesabilitaVisualizacao(desabilita);
-  }, [turmaId, modalidadeId]);
+  }, [turmaId, modalidadeId, listaTurmasCompletas]);
 
   const onClickVoltar = () => {
     history.push(URL_HOME);
@@ -410,6 +434,7 @@ const AtaFinalResultados = () => {
   };
 
   const onChangeSemestre = valor => setSemestre(valor);
+
   const onChangeTurma = valor => {
     const todosSetado = turmaId?.find(a => a === '-99');
     const todos = valor.find(a => a === '-99' && !todosSetado);
