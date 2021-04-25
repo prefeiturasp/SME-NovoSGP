@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 
 import { Button, Colors, Loader } from '~/componentes';
 
 import { erros, sucesso, ServicoAcompanhamentoAprendizagem } from '~/servicos';
 
-const BotaoGerarRelatorioAprendizagem = () => {
+const BotaoGerarRelatorioAprendizagem = ({ semestre }) => {
   const [gerandoRelatorio, setGerandoRelatorio] = useState(false);
 
   const alunosAcompanhamentoAprendizagem = useSelector(
@@ -19,7 +20,7 @@ const BotaoGerarRelatorioAprendizagem = () => {
     setGerandoRelatorio(true);
     await ServicoAcompanhamentoAprendizagem.gerar({
       turmaCodigo: turmaSelecionada.turma,
-      alunoCodigo: 0,
+      semestre: parseInt(semestre, 10),
     })
       .then(() => {
         sucesso(
@@ -46,6 +47,14 @@ const BotaoGerarRelatorioAprendizagem = () => {
       )}
     </>
   );
+};
+
+BotaoGerarRelatorioAprendizagem.propTypes = {
+  semestre: PropTypes.string,
+};
+
+BotaoGerarRelatorioAprendizagem.defaultProps = {
+  semestre: '',
 };
 
 export default BotaoGerarRelatorioAprendizagem;

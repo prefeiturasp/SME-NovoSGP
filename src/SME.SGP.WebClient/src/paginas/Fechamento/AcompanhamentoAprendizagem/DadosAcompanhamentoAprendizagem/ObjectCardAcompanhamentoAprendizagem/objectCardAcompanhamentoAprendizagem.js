@@ -1,9 +1,12 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
+
 import DetalhesAluno from '~/componentes/Alunos/Detalhes';
+
 import { erros, sucesso, ServicoAcompanhamentoAprendizagem } from '~/servicos';
 
-const ObjectCardAcompanhamentoAprendizagem = () => {
+const ObjectCardAcompanhamentoAprendizagem = ({ semestre }) => {
   const dadosAlunoObjectCard = useSelector(
     store => store.acompanhamentoAprendizagem.dadosAlunoObjectCard
   );
@@ -22,6 +25,7 @@ const ObjectCardAcompanhamentoAprendizagem = () => {
     await ServicoAcompanhamentoAprendizagem.gerar({
       turmaCodigo: turmaSelecionada.turma,
       alunoCodigo,
+      semestre: parseInt(semestre, 10),
     })
       .then(() => {
         sucesso(
@@ -39,6 +43,14 @@ const ObjectCardAcompanhamentoAprendizagem = () => {
       permiteAlterarImagem={!desabilitarCamposAcompanhamentoAprendizagem}
     />
   );
+};
+
+ObjectCardAcompanhamentoAprendizagem.propTypes = {
+  semestre: PropTypes.string,
+};
+
+ObjectCardAcompanhamentoAprendizagem.defaultProps = {
+  semestre: '',
 };
 
 export default ObjectCardAcompanhamentoAprendizagem;
