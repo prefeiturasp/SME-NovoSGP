@@ -31,6 +31,7 @@ import { erros } from '~/servicos/alertas';
 import ServicoAcompanhamentoAprendizagem from '~/servicos/Paginas/Relatorios/AcompanhamentoAprendizagem/ServicoAcompanhamentoAprendizagem';
 import { Container } from './acompanhamentoAprendizagem.css';
 import ApanhadoGeral from './DadosAcompanhamentoAprendizagem/ApanhadoGeral/apanhadoGeral';
+import BotaoGerarRelatorioAprendizagem from './DadosAcompanhamentoAprendizagem/BotaoGerarRelatorioAprendizagem/botaoGerarRelatorioConselhoClasseTurma';
 import BotaoOrdenarListaAlunos from './DadosAcompanhamentoAprendizagem/BotaoOrdenarListaAlunos/botaoOrdenarListaAlunos';
 import BotoesAcoesAcompanhamentoAprendizagem from './DadosAcompanhamentoAprendizagem/BotoesAcoes/botoesAcoesAcompanhamentoAprendizagem';
 import DadosAcompanhamentoAprendizagem from './DadosAcompanhamentoAprendizagem/dadosAcompanhamentoAprendizagem';
@@ -292,6 +293,7 @@ const AcompanhamentoAprendizagem = () => {
                 <>
                   <div className="col-md-12 mb-2 d-flex">
                     <BotaoOrdenarListaAlunos />
+                    <BotaoGerarRelatorioAprendizagem />
                   </div>
                   <div className="col-md-12 mb-2">
                     <TabelaRetratilAcompanhamentoAprendizagem
