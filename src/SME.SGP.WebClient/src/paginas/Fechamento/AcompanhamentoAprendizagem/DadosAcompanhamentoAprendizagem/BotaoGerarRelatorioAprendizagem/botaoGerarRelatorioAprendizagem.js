@@ -19,7 +19,7 @@ const BotaoGerarRelatorioAprendizagem = ({ semestre }) => {
   const gerar = async () => {
     setGerandoRelatorio(true);
     await ServicoAcompanhamentoAprendizagem.gerar({
-      turmaId: turmaSelecionada.Id,
+      turmaId: turmaSelecionada.id,
       semestre: parseInt(semestre, 10),
     })
       .then(() => {
