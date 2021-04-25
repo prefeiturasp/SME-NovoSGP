@@ -23,7 +23,7 @@ const ObjectCardAcompanhamentoAprendizagem = ({ semestre }) => {
 
   const gerar = async () => {
     await ServicoAcompanhamentoAprendizagem.gerar({
-      turmaCodigo: turmaSelecionada.turma,
+      turmaId: turmaSelecionada.id,
       alunoCodigo,
       semestre: parseInt(semestre, 10),
     })
