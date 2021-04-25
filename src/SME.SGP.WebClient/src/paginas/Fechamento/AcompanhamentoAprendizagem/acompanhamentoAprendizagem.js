@@ -293,14 +293,18 @@ const AcompanhamentoAprendizagem = () => {
                 <>
                   <div className="col-md-12 mb-2 d-flex">
                     <BotaoOrdenarListaAlunos />
-                    <BotaoGerarRelatorioAprendizagem />
+                    <BotaoGerarRelatorioAprendizagem
+                      semestre={semestreSelecionado}
+                    />
                   </div>
                   <div className="col-md-12 mb-2">
                     <TabelaRetratilAcompanhamentoAprendizagem
                       onChangeAlunoSelecionado={onChangeAlunoSelecionado}
                       permiteOnChangeAluno={permiteOnChangeAluno}
                     >
-                      <ObjectCardAcompanhamentoAprendizagem />
+                      <ObjectCardAcompanhamentoAprendizagem
+                        semestre={semestreSelecionado}
+                      />
                       <DadosAcompanhamentoAprendizagem
                         codigoTurma={turmaSelecionada.turma}
                         modalidade={turmaSelecionada.modalidade}
