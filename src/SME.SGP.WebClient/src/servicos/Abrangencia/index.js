@@ -65,6 +65,12 @@ const AbrangenciaServico = {
       `v1/abrangencias/${consideraHistorico}/ues/${codigoUe}/modalidades/${modalidade}/turmas/anos`
     );
   },
+  obterSemestres(consideraHistorico, anoLetivo, modalidade) {
+    const url = `v1/abrangencias/${consideraHistorico}/semestres?anoLetivo=${anoLetivo}&modalidade=${modalidade ||
+      0}`;
+
+    return api.get(url);
+  },
 };
 
 export default AbrangenciaServico;
