@@ -30,7 +30,7 @@ import RotasDto from '~/dtos/rotasDto';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 import ServicoComunicados from '~/servicos/Paginas/AcompanhamentoEscolar/Comunicados/ServicoComunicados';
 import ServicoComunicadoEvento from '~/servicos/Paginas/AcompanhamentoEscolar/ComunicadoEvento/ServicoComunicadoEvento';
-import { confirmar, erro, sucesso } from '~/servicos/alertas';
+import { confirmar, erro, erros, sucesso } from '~/servicos/alertas';
 import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
 
 import FiltroHelper from '~/paginas/AcompanhamentoEscolar/Comunicados/Helper/helper.js';
@@ -234,7 +234,9 @@ const ComunicadosCadastro = ({ match }) => {
         data,
       } = await ServicoCalendarios.obterTiposCalendarioAutoComplete(
         pesquisaTipoCalendario
-      );
+      )
+        .catch(e => erros(e))
+        .finally(() => setCarregandoTipos(false));
 
       if (isSubscribed && !bloquearCamposCalendarioEventos) {
         let allowedList = filterAllowedCalendarTypes(data);
@@ -265,6 +267,7 @@ const ComunicadosCadastro = ({ match }) => {
         return;
       }
       selecionaTipoCalendario('', refForm, '', true);
+      selecionaEvento('', refForm);
     })();
 
     return () => {
@@ -298,11 +301,13 @@ const ComunicadosCadastro = ({ match }) => {
           delete filter[key];
       });
 
-      let data = await ServicoComunicadoEvento.listarPor(filter);
+      const retorno = await ServicoComunicadoEvento.listarPor(filter)
+        .catch(e => erros(e))
+        .finally(() => setCarregandoEventos(false));
 
       if (isSubscribed) {
-        if (data && data.length > 0) {
-          data.forEach(
+        if (retorno?.data?.length) {
+          retorno.data.forEach(
             item =>
               (item.nome = `${item.id} - ${item.nome} (${item.tipoEvento})`)
           );
@@ -313,15 +318,19 @@ const ComunicadosCadastro = ({ match }) => {
             '',
             refForm,
             false,
-            data.length > 0
-              ? data?.find(t => {
+            retorno.data.length > 0
+              ? retorno.data?.find(t => {
                   return t.id === valoresIniciais.eventoId;
                 })
               : ''
           );
         }
+        if (retorno?.data?.length) {
+          setListaEvento(retorno.data);
+        } else {
+          setListaEvento([]);
+        }
 
-        setListaEvento(data);
         setCarregandoEventos(false);
       }
     })();
@@ -490,6 +499,15 @@ const ComunicadosCadastro = ({ match }) => {
     }
   }, [idComunicado]);
 
+  const validarBloquearCamposCalendarioEventos = ue => {
+    const ueEscolhida = ues?.find(item => item?.id?.toString() === ue);
+    const ueEncontrada = TIPOS_ESCOLA_BLOQUEAR.find(
+      id => id === ueEscolhida?.tipoEscola
+    );
+
+    return !!ueEncontrada;
+  };
+
   const validacoes = Yup.object({
     descricao: Yup.string().required('Campo obrigatório'),
     anoLetivo: Yup.string().required('Campo obrigatório'),
@@ -502,14 +520,11 @@ const ComunicadosCadastro = ({ match }) => {
       'Campo obrigatório',
       function validar() {
         const { CodigoUe, eventoId } = this.parent;
-        if (bloquearCamposCalendarioEventos) {
+        const bloquear = validarBloquearCamposCalendarioEventos(CodigoUe);
+        if (bloquear) {
           return true;
         }
-        if (
-          CodigoUe !== '-99' &&
-          !eventoId &&
-          !bloquearCamposCalendarioEventos
-        ) {
+        if (CodigoUe !== '-99' && !eventoId) {
           return false;
         }
         return true;
@@ -520,7 +535,8 @@ const ComunicadosCadastro = ({ match }) => {
       'Campo obrigatório',
       function validar() {
         const { CodigoUe, tipoCalendarioId } = this.parent;
-        if (bloquearCamposCalendarioEventos) {
+        const bloquear = validarBloquearCamposCalendarioEventos(CodigoUe);
+        if (bloquear) {
           return true;
         }
         if (CodigoUe !== '-99' && !tipoCalendarioId) {
@@ -594,8 +610,6 @@ const ComunicadosCadastro = ({ match }) => {
     });
   };
 
-
-
   const [gruposLista, setGruposLista] = useState([]);
 
   const dreDesabilitada = useMemo(() => {
@@ -643,7 +657,6 @@ const ComunicadosCadastro = ({ match }) => {
   const estudantesVisiveis = useMemo(() => {
     return alunoEspecificado;
   }, [alunoEspecificado]);
-
 
   useEffect(() => {
     if (!refForm?.setFieldValue) return;
@@ -890,20 +903,24 @@ const ComunicadosCadastro = ({ match }) => {
     setUnidadeEscolarUE(true);
     onChangeModalidade('');
     ObterModalidades(ue, anoLetivo);
-
-    const ueEscolhida = ues.find(item => item.id.toString() === ue);
-    const ueEncontrada = TIPOS_ESCOLA_BLOQUEAR.find(
-      id => id === ueEscolhida.tipoEscola
-    );
-
-    if (ueEncontrada) {
-      setBloquearCamposCalendarioEventos(true);
-      return;
-    }
-
-    setBloquearCamposCalendarioEventos(false);
-    loadTiposCalendarioEffect();
   };
+
+  useEffect(() => {
+    const ue = refForm?.state?.values?.CodigoUe;
+    if (ue) {
+      const bloquear = validarBloquearCamposCalendarioEventos(ue);
+      if (bloquear) {
+        setBloquearCamposCalendarioEventos(true);
+        return;
+      }
+
+      setBloquearCamposCalendarioEventos(false);
+      loadTiposCalendarioEffect();
+    } else {
+      setBloquearCamposCalendarioEventos(false);
+      loadTiposCalendarioEffect();
+    }
+  }, [refForm?.state?.values?.CodigoUe]);
 
   useEffect(() => {
     if (
@@ -1109,7 +1126,6 @@ const ComunicadosCadastro = ({ match }) => {
       refForm.setFieldValue('alunosEspecificados', false);
     }
   };
-
 
   useEffect(loadTiposCalendarioEffect, [
     pesquisaTipoCalendario,
@@ -1495,7 +1511,7 @@ const ComunicadosCadastro = ({ match }) => {
                       alunosLoader={alunosLoader}
                       ObterAlunos={ObterAlunos}
                       modoEdicaoConsulta={modoEdicaoConsulta}
-                      onClose={() => { }}
+                      onClose={() => {}}
                       onConfirm={alunosSel => {
                         setAlunosSelecionado([
                           ...alunosSelecionados,

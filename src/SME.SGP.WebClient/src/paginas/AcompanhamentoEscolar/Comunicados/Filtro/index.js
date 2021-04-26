@@ -19,7 +19,7 @@ import {
 import { Linha } from '~/componentes/EstilosGlobais';
 import ServicoComunicados from '~/servicos/Paginas/AcompanhamentoEscolar/Comunicados/ServicoComunicados';
 import ServicoComunicadoEvento from '~/servicos/Paginas/AcompanhamentoEscolar/ComunicadoEvento/ServicoComunicadoEvento';
-import { ServicoCalendarios } from '~/servicos';
+import { erros, ServicoCalendarios } from '~/servicos';
 import FiltroHelper from '~/paginas/AcompanhamentoEscolar/Comunicados/Helper/helper.js';
 
 const MODALIDADE_EJA_ID = '3';
@@ -157,7 +157,6 @@ function Filtro({ onFiltrar }) {
   const [carregandoTipos, setCarregandoTipos] = useState(false);
   const [listaCalendario, setListaCalendario] = useState([]);
   const [valorTipoCalendario, setValorTipoCalendario] = useState('');
-  const [selecionouCalendario, setSelecionouCalendario] = useState(false);
   const [tipoCalendarioSelecionado, setTipoCalendarioSelecionado] = useState(
     ''
   );
@@ -165,20 +164,23 @@ function Filtro({ onFiltrar }) {
 
   const [carregandoEventos, setCarregandoEventos] = useState(false);
   const [listaEvento, setListaEvento] = useState([]);
-  const [selecionouEvento, setSelecionouEvento] = useState(false);
   const [valorEvento, setValorEvento] = useState('');
   const [eventoSelecionado, setEventoSelecionado] = useState('');
   const [pesquisaEvento, setPesquisaEvento] = useState('');
 
-  const selecionaTipoCalendario = (descricao, form) => {
-    const tipo = listaCalendario?.find(t => {
-      return t.descricao === descricao;
-    });
+  const limparDadosEvento = form => {
+    setValorEvento('');
+    setEventoSelecionado();
+    if (form?.setFieldValue) {
+      form.setFieldValue('eventoId', '');
+    }
+  };
 
-    if (tipo?.id) {
-      setSelecionouCalendario(true);
-      setValorTipoCalendario(descricao);
-      setTipoCalendarioSelecionado(tipo.id);
+  const limparDadosTipoCalendario = form => {
+    setValorEvento('');
+    setEventoSelecionado();
+    if (form?.setFieldValue) {
+      form.setFieldValue('eventoId', '');
     }
   };
 
@@ -188,10 +190,26 @@ function Filtro({ onFiltrar }) {
     });
 
     if (evento?.id) {
-      setSelecionouEvento(true);
       setValorEvento(evento.nome);
       setEventoSelecionado(evento);
+    } else {
+      limparDadosEvento(form);
     }
+  };
+
+  const selecionaTipoCalendario = (descricao, form) => {
+    const tipo = listaCalendario?.find(t => {
+      return t.descricao === descricao;
+    });
+
+    if (tipo?.id) {
+      setValorTipoCalendario(descricao);
+      setTipoCalendarioSelecionado(tipo.id);
+    } else {
+      limparDadosTipoCalendario(form);
+    }
+
+    selecionaEvento('', form);
   };
 
   const anosModalidadeDesabilita = useMemo(() => {
@@ -291,13 +309,19 @@ function Filtro({ onFiltrar }) {
           delete filter[key];
       });
 
-      const data = await ServicoComunicadoEvento.listarPor(filter);
+      const retorno = await ServicoComunicadoEvento.listarPor(filter)
+        .catch(e => erros(e))
+        .finally(() => setCarregandoEventos(false));
 
       if (isSubscribed) {
-        if (data && data.length > 0) {
-          data.forEach(item => (item.nome = `${item.id} - ${item.nome}`));
+        if (retorno?.data.length) {
+          retorno.data.forEach(
+            item => (item.nome = `${item.id} - ${item.nome}`)
+          );
+          setListaEvento(retorno.data);
+        } else {
+          setListaEvento([]);
         }
-        setListaEvento(data);
         setCarregandoEventos(false);
       }
     })();
@@ -351,8 +375,9 @@ function Filtro({ onFiltrar }) {
   };
 
   async function ObterModalidades(ue) {
-
-    const anoForm = refForm?.state?.values?.anoLetivo ? refForm.state.values.anoLetivo : moment().year();
+    const anoForm = refForm?.state?.values?.anoLetivo
+      ? refForm.state.values.anoLetivo
+      : moment().year();
     const dados = await FiltroHelper.obterModalidadesAnoLetivo(ue, anoForm);
 
     if (!dados || dados.length === 0) return;
@@ -453,22 +478,33 @@ function Filtro({ onFiltrar }) {
     if (ue == TODAS_UES_ID) {
       setModalidades(todosTurmasModalidade);
       setTurmas(todosTurmasModalidade);
-      return;
     }
+  };
 
-    const ueEscolhida = ues.find(item => item.id.toString() === ue);
+  const validarBloquearCamposCalendarioEventos = ue => {
+    const ueEscolhida = ues?.find(item => item?.id?.toString() === ue);
     const ueEncontrada = TIPOS_ESCOLA_BLOQUEAR.find(
-      id => id === ueEscolhida.tipoEscola
+      id => id === ueEscolhida?.tipoEscola
     );
 
-    if (ueEncontrada) {
-      setBloquearCamposCalendarioEventos(true);
-      return;
-    }
-
-    setBloquearCamposCalendarioEventos(false);
-    loadTiposCalendarioEffect();
+    return !!ueEncontrada;
   };
+
+  useEffect(() => {
+    if (ueSelecionada) {
+      const bloquear = validarBloquearCamposCalendarioEventos(ueSelecionada);
+      if (bloquear) {
+        setBloquearCamposCalendarioEventos(true);
+        return;
+      }
+
+      setBloquearCamposCalendarioEventos(false);
+      loadTiposCalendarioEffect();
+    } else {
+      setBloquearCamposCalendarioEventos(false);
+      loadTiposCalendarioEffect();
+    }
+  }, [ueSelecionada]);
 
   const onChangeModalidade = async modalidade => {
     refForm.setFieldValue('semestre', '');
@@ -849,6 +885,7 @@ function Filtro({ onFiltrar }) {
                   valueField="id"
                   textField="descricao"
                   onSelect={valor => selecionaTipoCalendario(valor, form)}
+                  onChange={valor => selecionaTipoCalendario(valor, form)}
                   value={valorTipoCalendario}
                   form={form}
                   allowClear={true}
@@ -872,6 +909,7 @@ function Filtro({ onFiltrar }) {
                   valueField="id"
                   textField="nome"
                   onSelect={valor => selecionaEvento(valor, form)}
+                  onChange={valor => selecionaEvento(valor, form)}
                   value={valorEvento}
                   form={form}
                   allowClear={false}
