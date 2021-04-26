@@ -348,7 +348,7 @@ const RelatorioDevolutivas = () => {
         );
         setListaTurmas(lista);
         if (lista.length === 1) {
-          setTurmaId([lista[0].valor]);
+          setTurmaId([lista[0].id]);
         }
       }
     }
@@ -529,7 +529,7 @@ const RelatorioDevolutivas = () => {
                   multiple
                   id="turma"
                   lista={listaTurmas}
-                  valueOption="valor"
+                  valueOption="id"
                   valueText="desc"
                   label="Turma"
                   disabled={!modalidadeId || listaTurmas?.length === 1}
