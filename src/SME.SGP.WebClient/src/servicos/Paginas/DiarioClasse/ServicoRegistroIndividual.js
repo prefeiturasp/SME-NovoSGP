@@ -50,6 +50,13 @@ class ServicoRegistroIndividual {
   deletarRegistroIndividual = ({ id }) => {
     return api.delete(`/v1/registros-individuais/${id}`);
   };
+
+  obterSugestao = params => {
+    return Promise.resolve({
+      textoSugestao:
+        'Momento de adaptação e acolhimento: Como foi ou está sendo para a criança e a família?',
+    });
+  };
 }
 
 export default new ServicoRegistroIndividual();
