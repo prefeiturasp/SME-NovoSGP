@@ -94,8 +94,18 @@ namespace SME.SGP.Aplicacao
         {
             try
             {
-                var rf = long.Parse(atribuicaoCJ.ProfessorRf);
-                var turmaId = long.Parse(atribuicaoCJ.TurmaId);
+                if(!long.TryParse(atribuicaoCJ.ProfessorRf, out var rf))
+                {
+                    SentrySdk.CaptureMessage("Não foi possível publicar a atribuição CJ no Google Classroom Api. O RF informado é inválido.");
+                    return;
+                }
+
+                if (!long.TryParse(atribuicaoCJ.TurmaId, out var turmaId))
+                {
+                    SentrySdk.CaptureMessage("Não foi possível publicar a atribuição CJ no Google Classroom Api. A turma informada é inválida.");
+                    return;
+                }
+
                 var dto = new AtribuicaoCJGoogleClassroomApiDto(rf, turmaId, atribuicaoCJ.DisciplinaId);
 
                 var publicacaoConcluida = await mediator.Send(new PublicarFilaGoogleClassroomCommand(RotasRabbitGoogleClassroomApi.FilaProfessorCursoIncluir, dto));
