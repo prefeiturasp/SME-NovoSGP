@@ -19,11 +19,7 @@ namespace SME.SGP.Aplicacao
         {
             RuleFor(a => a.Mes)
                 .NotEmpty()
-                .WithMessage("O mês deve ser informado.");
-
-            RuleFor(a => a.Mes)
-                .InclusiveBetween(2,12)
-                .WithMessage("O mês deve está no intervalo de 2 a 12.");
+                .WithMessage("O mês deve ser informado.");            
         }
     }
 }
