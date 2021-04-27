@@ -110,10 +110,10 @@ namespace SME.SGP.Dados.Repositorios
         }
         public async Task<SugestaoTopicoRegistroIndividualDto> ObterSugestaoTopicoPorMes(int mes)
         {
-            const string query = @"select is2.id,
-                                          is2.descricao 
-                                     from itinerancia_sugestao is2
-                                    where is2.mes = @mes
+            const string query = @"select ris.id,
+                                          ris.descricao 
+                                     from registro_individual_sugestao ris 
+                                    where ris.mes = @mes
                                       and not excluido";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<SugestaoTopicoRegistroIndividualDto>(query, new { mes });
