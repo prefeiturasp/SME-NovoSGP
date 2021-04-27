@@ -28,14 +28,14 @@ pipeline {
         
       stage('Testes API DEV') {
         when {
-           branch 'Story/38310'
+           branch 'development'
         }
         options { retry(3) }
 
            steps {
              withCredentials([file(credentialsId: 'dev-newman-sgp', variable: 'NEWMANSGPDEV')]) {
                sh 'cp $NEWMANSGPDEV teste/Postman/Dev.json'
-               sh 'newman run teste/Postman/GradeComponentesCurriculares.json -e teste/Postman/Dev.json -r htmlextra --reporter-htmlextra-title "Grade dos Componentes Curriculares" --reporter-htmlextra-export ./results/reportgcc.html'
+               sh 'newman run teste/Postman/GradeComponentesCurriculares.json -e teste/Postman/Dev.json -r htmlextra --reporter-htmlextra-titleSize 4 --reporter-htmlextra-title "Grade dos Componentes Curriculares" --reporter-htmlextra-export ./results/reportgcc.html'
                publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'results', reportFiles: 'reportgcc.html', reportName: 'Postman Report', reportTitles: 'Report'])
              
              } 
@@ -51,7 +51,7 @@ pipeline {
            steps {
              withCredentials([file(credentialsId: 'hom-newman-sgp', variable: 'NEWMANSGPHOM')]) {
                sh 'cp $NEWMANSGPHOM teste/Postman/Hom.json'
-               sh 'newman run teste/Postman/GradeComponentesCurriculares.json -e teste/Postman/Hom.json -r htmlextra --reporter-htmlextra-title "Grade dos Componentes Curriculares" --reporter-htmlextra-export ./results/report.html'
+               sh 'newman run teste/Postman/GradeComponentesCurriculares.json -e teste/Postman/Hom.json -r htmlextra --reporter-htmlextra-titleSize 4 --reporter-htmlextra-title "Grade dos Componentes Curriculares" --reporter-htmlextra-export ./results/report.html'
                publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'results', reportFiles: 'report.html', reportName: 'Postman Report', reportTitles: 'Report'])
              
              } 
