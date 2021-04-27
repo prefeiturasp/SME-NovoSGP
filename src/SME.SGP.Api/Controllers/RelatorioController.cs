@@ -160,5 +160,13 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await relatorioUseCase.Executar(itinerancias));
         }
+
+        [HttpPost("registro-individual")]
+        [ProducesResponseType(typeof(Boolean), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> RegistroIndividual([FromServices] FiltroRelatorioRegistroIndividualDto filtro, [FromServices] IRelatorioItineranciasUseCase relatorioUseCase)
+        {
+            return Ok(await relatorioUseCase.Executar(itinerancias));
+        }
     }
 }
