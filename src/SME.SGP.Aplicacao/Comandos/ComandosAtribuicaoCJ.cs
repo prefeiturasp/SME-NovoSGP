@@ -1,4 +1,6 @@
-﻿using SME.SGP.Aplicacao.Integracoes;
+﻿using MediatR;
+using Sentry;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -11,18 +13,20 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
         private readonly IRepositorioCache repositorioCache;
+        private readonly IMediator mediator;
         private readonly IServicoAtribuicaoCJ servicoAtribuicaoCJ;
         private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
 
         public ComandosAtribuicaoCJ(IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ, IServicoAtribuicaoCJ servicoAtribuicaoCJ,
-            IServicoEol servicoEOL, IServicoUsuario servicoUsuario, IRepositorioCache repositorioCache)
+            IServicoEol servicoEOL, IServicoUsuario servicoUsuario, IRepositorioCache repositorioCache, IMediator mediator)
         {
             this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoCJ));
             this.servicoAtribuicaoCJ = servicoAtribuicaoCJ ?? throw new ArgumentNullException(nameof(servicoAtribuicaoCJ));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task Salvar(AtribuicaoCJPersistenciaDto atribuicaoCJPersistenciaDto)
@@ -49,6 +53,8 @@ namespace SME.SGP.Aplicacao
                 Guid perfilCJ = atribuicao.Modalidade == Modalidade.InfantilPreEscola ? Perfis.PERFIL_CJ_INFANTIL : Perfis.PERFIL_CJ;
 
                 atribuiuCj = await AtribuirPerfilCJ(atribuicaoCJPersistenciaDto, perfilCJ, atribuiuCj);
+
+                await PublicarAtribuicaoNoGoogleClassroomApiAsync(atribuicao);
             }
         }
 
@@ -82,6 +88,28 @@ namespace SME.SGP.Aplicacao
                 UeId = dto.UeId,
                 DisciplinaId = itemDto.DisciplinaId
             };
+        }
+
+        private async Task PublicarAtribuicaoNoGoogleClassroomApiAsync(AtribuicaoCJ atribuicaoCJ)
+        {
+            try
+            {
+                var rf = long.Parse(atribuicaoCJ.ProfessorRf);
+                var turmaId = long.Parse(atribuicaoCJ.TurmaId);
+                var dto = new AtribuicaoCJGoogleClassroomApiDto(rf, turmaId, atribuicaoCJ.DisciplinaId);
+
+                var publicacaoConcluida = await mediator.Send(new PublicarFilaGoogleClassroomCommand(RotasRabbitGoogleClassroomApi.FilaProfessorCursoIncluir, dto));
+                if(!publicacaoConcluida)
+                {
+                    SentrySdk.AddBreadcrumb("Atribuição CJ", "Google Classroom Api");
+                    SentrySdk.CaptureMessage($"Não foi possível publicar na fila {RotasRabbitGoogleClassroomApi.FilaProfessorCursoIncluir}."); ;
+                }
+            }
+            catch(Exception ex)
+            {
+                SentrySdk.AddBreadcrumb("Atribuição CJ", "Google Classroom Api");
+                SentrySdk.CaptureException(ex);
+            }
         }
     }
 }
