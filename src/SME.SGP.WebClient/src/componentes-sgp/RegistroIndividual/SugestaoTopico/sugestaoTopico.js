@@ -10,13 +10,17 @@ const SugestaoTopico = ({ valorData }) => {
   const [textoSugestao, setTextoSugestao] = useState();
 
   const obterSugestao = useCallback(async () => {
-    const mesSelecionado = moment(valorData).format('MM');
-    const retorno = await ServicoRegistroIndividual.obterSugestao(
-      mesSelecionado
-    );
+    const mes = moment(valorData).format('MM');
+    const mesParseado = parseInt(mes, 10);
 
-    if (retorno) {
-      setTextoSugestao(retorno[0].descricao);
+    if (mesParseado !== 1) {
+      const retorno = await ServicoRegistroIndividual.obterSugestao(
+        mesParseado
+      );
+
+      if (retorno?.data) {
+        setTextoSugestao(retorno?.data?.descricao);
+      }
     }
   }, [valorData]);
 

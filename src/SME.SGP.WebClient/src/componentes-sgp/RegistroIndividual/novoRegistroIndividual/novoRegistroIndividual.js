@@ -244,7 +244,7 @@ const NovoRegistroIndividual = () => {
             show={expandir}
             onClick={expandirAlternado}
           >
-            <div className="col-3 p-0 pb-2">
+            <div className="col-4 p-0 pb-2">
               <CampoData
                 name="data"
                 placeholder="Selecione"
