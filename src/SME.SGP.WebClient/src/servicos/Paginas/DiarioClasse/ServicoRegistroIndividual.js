@@ -52,7 +52,7 @@ class ServicoRegistroIndividual {
   };
 
   obterSugestao = params => {
-    return api.get(`/v1/registros-individuais/sugestao-topico/${params}`);
+    return api.get(`/v1/registros-individuais/sugestoes-topicos/${params}`);
   };
 }
 
