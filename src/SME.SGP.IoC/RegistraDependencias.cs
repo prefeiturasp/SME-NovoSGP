@@ -827,6 +827,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<INotificacaoDevolucaoEncaminhamentoAEEUseCase, NotificacaoDevolucaoEncaminhamentoAEEUseCase>();
 
             services.TryAddScoped<IExecutarSyncGeralGoogleClassroomUseCase, ExecutarSyncGeralGoogleClassroomUseCase>();
+            services.TryAddScoped<IExecutaSyncComparativoGoogleClassroomUseCase, ExecutaSyncComparativoGoogleClassroomUseCase>();
+
             services.TryAddScoped<IObterInformacoesDeFrequenciaAlunoPorSemestreUseCase, ObterInformacoesDeFrequenciaAlunoPorSemestreUseCase>();
 
 
