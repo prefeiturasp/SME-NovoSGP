@@ -46,6 +46,7 @@ namespace SME.SGP.Aplicacao
                     var body = Encoding.UTF8.GetBytes(mensagem);
 
 
+                    _channel.QueueBind(string.IsNullOrEmpty(command.Fila) ? RotasRabbit.FilaSgp : command.Fila, RotasRabbit.ExchangeSgp, command.NomeFila);
                     _channel.BasicPublish(RotasRabbit.ExchangeSgp, command.NomeFila, null, body);
                 }
             }

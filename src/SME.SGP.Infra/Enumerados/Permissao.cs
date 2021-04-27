@@ -141,7 +141,7 @@
         [PermissaoMenu(EhMenu = false, EhAlteracao = true, Menu = "Atribuição Professor", Agrupamento = "Atribuição Professor")]
         AP_A = 45,
 
-        [PermissaoMenu(Menu = "Usuários", Icone = "fas fa-user-cog", Agrupamento = "Configurações", OrdemAgrupamento = 8, OrdemMenu = 1, Url = "/usuarios/reiniciar-senha", EhAlteracao = true,
+        [PermissaoMenu(Menu = "Usuários", Icone = "fas fa-user-cog", Agrupamento = "Configurações", OrdemAgrupamento = 9, OrdemMenu = 1, Url = "/usuarios/reiniciar-senha", EhAlteracao = true,
            EhSubMenu = true, EhConsulta = true, SubMenu = "Reiniciar Senha")]
         AS_C = 47,
 
@@ -301,16 +301,16 @@
         [PermissaoMenu(Menu = "Atribuição Supervisor", Icone = "fas fa-tasks", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 5, EhAlteracao = true, Url = "/gestao/atribuicao-supervisor-lista")]
         ASP_A = 99,
 
-        [PermissaoMenu(Menu = "Tipo de Avaliação", Icone = "fas fa-user-cog", Agrupamento = "Configurações", OrdemAgrupamento = 8, OrdemMenu = 2, EhConsulta = true, Url = "/configuracoes/tipo-avaliacao")]
+        [PermissaoMenu(Menu = "Tipo de Avaliação", Icone = "fas fa-user-cog", Agrupamento = "Configurações", OrdemAgrupamento = 9, OrdemMenu = 2, EhConsulta = true, Url = "/configuracoes/tipo-avaliacao")]
         TA_C = 100,
 
-        [PermissaoMenu(Menu = "Tipo de Avaliação", Icone = "fas fa-user-cog", Agrupamento = "Configurações", OrdemAgrupamento = 8, OrdemMenu = 2, EhInclusao = true, Url = "/configuracoes/tipo-avaliacao")]
+        [PermissaoMenu(Menu = "Tipo de Avaliação", Icone = "fas fa-user-cog", Agrupamento = "Configurações", OrdemAgrupamento = 9, OrdemMenu = 2, EhInclusao = true, Url = "/configuracoes/tipo-avaliacao")]
         TA_I = 101,
 
-        [PermissaoMenu(Menu = "Tipo de Avaliação", Icone = "fas fa-user-cog", Agrupamento = "Configurações", OrdemAgrupamento = 8, OrdemMenu = 2, EhExclusao = true, Url = "/configuracoes/tipo-avaliacao")]
+        [PermissaoMenu(Menu = "Tipo de Avaliação", Icone = "fas fa-user-cog", Agrupamento = "Configurações", OrdemAgrupamento = 9, OrdemMenu = 2, EhExclusao = true, Url = "/configuracoes/tipo-avaliacao")]
         TA_E = 102,
 
-        [PermissaoMenu(Menu = "Tipo de Avaliação", Icone = "fas fa-user-cog", Agrupamento = "Configurações", OrdemAgrupamento = 8, OrdemMenu = 2, EhAlteracao = true, Url = "/configuracoes/tipo-avaliacao")]
+        [PermissaoMenu(Menu = "Tipo de Avaliação", Icone = "fas fa-user-cog", Agrupamento = "Configurações", OrdemAgrupamento = 9, OrdemMenu = 2, EhAlteracao = true, Url = "/configuracoes/tipo-avaliacao")]
         TA_A = 103,
 
         [PermissaoMenu(Menu = "Aula prevista X Aula dada", Icone = "", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 4, EhInclusao = true, Url = "/diario-classe/aula-dada-aula-prevista")]
@@ -632,9 +632,9 @@
         RAA_E = 212,
 
         [PermissaoMenu(Menu = "Relatório do Acompanhamento da Aprendizagem", Icone = "fas fa-pencil-ruler", Agrupamento = "Fechamento", OrdemAgrupamento = 3, OrdemMenu = 5, EhAlteracao = true, Url = "/fechamento/acompanhamento-aprendizagem")]
-        RAA_A = 213,     
+        RAA_A = 213,
 
-        [PermissaoMenu(Menu = "Planejamento", Icone = "fas fa-print", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhConsulta = true, Url = "/relatorios/planejamento/devolutivas", EhSubMenu = true, OrdemSubMenu = 1, SubMenu = "Devolutivas")]
+        [PermissaoMenu(Menu = "Diario classe", Icone = "fas fa-print", Agrupamento = "Relatórios", OrdemAgrupamento = 7, OrdemMenu = 2, EhConsulta = true, Url = "/relatorios/planejamento/devolutivas", EhSubMenu = true, OrdemSubMenu = 3, SubMenu = "Devolutivas")]
         RD_C = 214,
 
         [PermissaoMenu(Menu = "AEE", Icone = "fas fa-chart-bar", Agrupamento = "Dashboard", OrdemAgrupamento = 8, EhConsulta = true, Url = "/dashboard/aee")]

@@ -18,6 +18,7 @@ import BotoesAcoesPlanoAEE from './Componentes/botoesAcoesPlanoAEE';
 import LoaderPlano from './Componentes/LoaderPlano/loaderPlano';
 import MarcadorSituacaoPlanoAEE from './Componentes/MarcadorSituacaoPlanoAEE/marcadorSituacaoPlanoAEE';
 import ObjectCardEstudantePlanoAEE from './Componentes/ObjectCardEstudantePlanoAEE/objectCardEstudantePlanoAEE';
+import ObservacoesPlanoAEE from './Componentes/ObservacoesPlanoAEE/observacoesPlanoAEE';
 import SituacaoEncaminhamentoAEE from './Componentes/SituacaoEncaminhamentoAEE/situacaoEncaminhamentoAEE';
 import TabCadastroPlano from './Componentes/TabCadastroPlano/tabCadastroPlano';
 
@@ -102,6 +103,9 @@ const PlanoAEECadastro = ({ match }) => {
             </div>
             <div className="col-md-12 mt-2 mb-2">
               <TabCadastroPlano match={match} />
+            </div>
+            <div className="col-sm-12">
+              <ObservacoesPlanoAEE />
             </div>
           </div>
         </div>

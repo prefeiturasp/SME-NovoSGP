@@ -2,21 +2,24 @@ import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Colors, Localizador, ModalConteudoHtml } from '~/componentes';
+import LocalizadorFuncionario from '~/componentes-sgp/LocalizadorFuncionario';
 import { setListaUsuariosNotificacao } from '~/redux/modulos/observacoesUsuario/actions';
-import { confirmar } from '~/servicos';
+import { confirmar, erro } from '~/servicos';
 import { BotaoEstilizado, TextoEstilizado } from './modalNotificarUsuarios.css';
 
 const ModalNotificarUsuarios = ({
   modalVisivel,
   setModalVisivel,
   listaUsuarios,
-  desabilitado,
+  usarLocalizadorFuncionario,
+  parametrosLocalizadorFuncionario,
 }) => {
   const [usuariosSelecionados, setUsuariosSelecionados] = useState(
     listaUsuarios
   );
   const anoAtual = window.moment().format('YYYY');
   const [modoEdicao, setModoEdicao] = useState(false);
+
   const dispatch = useDispatch();
 
   const mudarLocalizador = valores => {
@@ -33,6 +36,34 @@ const ModalNotificarUsuarios = ({
           {
             usuarioId: valores.usuarioId,
             nome: `${valores.professorNome} (${valores?.professorRf})`,
+            podeRemover: true,
+          },
+        ];
+      });
+      setModoEdicao(true);
+    }
+  };
+
+  const onChangeLocalizadorFuncionario = valores => {
+    if (valores?.codigoRF) {
+      if (!valores?.usuarioId) {
+        erro(
+          'Este usuário não consta na base do SGP e não será possível notificá-lo'
+        );
+        return;
+      }
+      setUsuariosSelecionados(estadoAntigo => {
+        const usuario = estadoAntigo.find(
+          item => item.usuarioId === valores.usuarioId
+        );
+        if (usuario) {
+          return estadoAntigo;
+        }
+        return [
+          ...estadoAntigo,
+          {
+            usuarioId: valores.usuarioId,
+            nome: `${valores.nomeServidor} (${valores?.codigoRF})`,
             podeRemover: true,
           },
         ];
@@ -87,20 +118,37 @@ const ModalNotificarUsuarios = ({
       fecharAoClicarFora
       fecharAoClicarEsc
     >
-      <div className="col-md-12 d-flex mb-4">
-        <Localizador
-          labelRF="RF"
-          placeholderRF="Procure pelo RF do usuário"
-          placeholderNome="Procure pelo nome do usuário"
-          labelNome="Nome"
-          showLabel
-          onChange={mudarLocalizador}
-          buscarOutrosCargos
-          classesRF="p-0"
-          anoLetivo={anoAtual}
-          limparCamposAposPesquisa
-          validaPerfilProfessor={false}
-        />
+      <div className="col-md-12 mb-4">
+        {usarLocalizadorFuncionario ? (
+          <div className="row">
+            <LocalizadorFuncionario
+              id="funcionario"
+              onChange={onChangeLocalizadorFuncionario}
+              codigoUe={parametrosLocalizadorFuncionario?.codigoUe}
+              limparCamposAposPesquisa
+              mensagemErroConsultaRF="Este usuário não consta na base do SGP e não será possível notificá-lo"
+            />
+          </div>
+        ) : (
+          <div className="col-md-12">
+            <div className="row">
+              <Localizador
+                labelRF="RF"
+                placeholderRF="Procure pelo RF do usuário"
+                placeholderNome="Procure pelo nome do usuário"
+                labelNome="Nome"
+                showLabel
+                onChange={mudarLocalizador}
+                buscarOutrosCargos
+                classesRF="p-0"
+                anoLetivo={anoAtual}
+                limparCamposAposPesquisa
+                validaPerfilProfessor={false}
+                mensagemErroConsultaRF="Este usuário não consta na base do SGP e não será possível notificá-lo"
+              />
+            </div>
+          </div>
+        )}
       </div>
       {usuariosSelecionados?.map(({ usuarioId, nome, podeRemover }) => (
         <div
@@ -131,14 +179,16 @@ ModalNotificarUsuarios.defaultProps = {
   listaUsuarios: [],
   modalVisivel: false,
   setModalVisivel: () => {},
-  desabilitado: false,
+  usarLocalizadorFuncionario: false,
+  parametrosLocalizadorFuncionario: {},
 };
 
 ModalNotificarUsuarios.propTypes = {
   listaUsuarios: PropTypes.oneOfType([PropTypes.any]),
   modalVisivel: PropTypes.bool,
   setModalVisivel: PropTypes.func,
-  desabilitado: PropTypes.bool,
+  usarLocalizadorFuncionario: PropTypes.bool,
+  parametrosLocalizadorFuncionario: PropTypes.oneOfType([PropTypes.object]),
 };
 
 export default ModalNotificarUsuarios;

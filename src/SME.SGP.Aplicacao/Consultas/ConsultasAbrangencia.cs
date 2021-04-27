@@ -103,19 +103,6 @@ namespace SME.SGP.Aplicacao
             return await repositorioAbrangencia.ObterDres(login, perfil, modalidade, periodo, consideraHistorico, anoLetivo);
         }
 
-        public async Task<IEnumerable<EnumeradoRetornoDto>> ObterModalidades(int anoLetivo, bool consideraHistorico)
-        {
-            var login = servicoUsuario.ObterLoginAtual();
-            var perfil = servicoUsuario.ObterPerfilAtual();
-
-            var lista = await repositorioAbrangencia.ObterModalidades(login, perfil, anoLetivo, consideraHistorico);
-
-            var listaModalidades = from a in lista
-                                   select new EnumeradoRetornoDto() { Id = a, Descricao = ((Modalidade)a).GetAttribute<DisplayAttribute>().Name };
-
-            return listaModalidades.OrderBy(a => a.Descricao);
-        }
-
         public async Task<IEnumerable<int>> ObterSemestres(Modalidade modalidade, bool consideraHistorico, int anoLetivo = 0)
         {
             var login = servicoUsuario.ObterLoginAtual();

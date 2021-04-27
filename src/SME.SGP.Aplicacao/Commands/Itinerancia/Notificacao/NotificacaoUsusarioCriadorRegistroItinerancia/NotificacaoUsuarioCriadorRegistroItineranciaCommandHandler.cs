@@ -55,7 +55,7 @@ namespace SME.SGP.Aplicacao
         {
             var estudantesEol = await mediator.Send(new ObterAlunosEolPorCodigosEAnoQuery(estudantes.Select(a => Convert.ToInt64(a.CodigoAluno)).ToArray(), dataVisita.Year));
 
-            foreach (var estudante in estudantesEol.OrderBy(a => a.NomeAluno))
+            foreach (var estudante in estudantesEol.OrderBy(a => a.NomeAluno).DistinctBy(a => a.CodigoAluno))
             {
                 var turma = turmas.FirstOrDefault(a => a.Id == estudantes.FirstOrDefault(e => e.CodigoAluno == estudante.CodigoAluno.ToString()).TurmaId);
                 if (turma == null)

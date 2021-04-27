@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao
             if (ues != null && ues.Any())
                 ues = ues.OrderBy(c => c.Nome).ToList();
 
-            if (possuiAbrangenciaEmTodasAsUes)
+            if (possuiAbrangenciaEmTodasAsUes && ues.Count > 1)
                 ues?.Insert(0, new AbrangenciaUeRetorno { Codigo = "-99", NomeSimples = "Todas" });
 
             return ues;

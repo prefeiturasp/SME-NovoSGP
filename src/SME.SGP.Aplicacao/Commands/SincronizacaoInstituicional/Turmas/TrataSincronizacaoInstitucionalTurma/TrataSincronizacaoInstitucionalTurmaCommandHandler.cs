@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao
             }
 
             if (turmaEOL.Situacao == "E")
-                return await VerificarTurmaExtintaAsync(turmaEOL);
+                return await VerificarTurmaExtintaAsync(turmaEOL, request.TurmaSGP.Id);
 
             if (turmaEOL.Situacao == "O" || turmaEOL.Situacao == "A")
                 return await IncluirTurmaAsync(turmaEOL, request.TurmaSGP);
@@ -42,7 +42,7 @@ namespace SME.SGP.Aplicacao
             return true;
         }
 
-        private async Task<bool> VerificarTurmaExtintaAsync(TurmaParaSyncInstitucionalDto turma)
+        private async Task<bool> VerificarTurmaExtintaAsync(TurmaParaSyncInstitucionalDto turma, long turmaSgpId)
         {
             var anoAtual = DateTime.Now.Year;
             var tipoCalendarioId = await mediator.Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(turma.CodigoModalidade, anoAtual, null));
@@ -56,7 +56,7 @@ namespace SME.SGP.Aplicacao
 
                     if (turma.DataStatusTurmaEscola.Date < primeiroPeriodo.PeriodoInicio.Date)
                     {
-                        await ExcluirTurnaAsync(turma.Codigo.ToString());
+                        await ExcluirTurnaAsync(turma.Codigo.ToString() , turmaSgpId);
                         return true;
                     }
                     else
@@ -66,13 +66,13 @@ namespace SME.SGP.Aplicacao
                 }
                 else
                 {
-                    await ExcluirTurnaAsync(turma.Codigo.ToString());
+                    await ExcluirTurnaAsync(turma.Codigo.ToString() ,turmaSgpId);
                     return true;
                 }
             }
             else
             {
-                await ExcluirTurnaAsync(turma.Codigo.ToString());
+                await ExcluirTurnaAsync(turma.Codigo.ToString(), turmaSgpId);
                 return true;
             }
         }
@@ -127,7 +127,7 @@ namespace SME.SGP.Aplicacao
             return true;
         }
 
-        private async Task ExcluirTurnaAsync(string turmaId)
-            => await repositorioTurma.ExcluirTurmaExtintaAsync(turmaId);
+        private async Task ExcluirTurnaAsync(string turmaCodigo, long turmaId)
+            => await repositorioTurma.ExcluirTurmaExtintaAsync(turmaCodigo, turmaId);
     }
 }

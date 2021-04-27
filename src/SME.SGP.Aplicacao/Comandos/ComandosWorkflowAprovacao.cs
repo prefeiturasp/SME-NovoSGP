@@ -32,10 +32,16 @@ namespace SME.SGP.Aplicacao
             var workflow = ObterWorkflow(notificacaoId);
 
             unitOfWork.IniciarTransacao();
-
-            await servicoWorkflowAprovacao.Aprovar(workflow, aprovar, observacao, notificacaoId);
-
-            unitOfWork.PersistirTransacao();
+            try
+            {
+                await servicoWorkflowAprovacao.Aprovar(workflow, aprovar, observacao, notificacaoId);
+                unitOfWork.PersistirTransacao();
+            }
+            catch (Exception ex)
+            {
+                unitOfWork.Rollback();
+                Sentry.SentrySdk.CaptureException(ex);
+            }
         }
 
         public async Task<string> ValidarWorkflowAprovacao(long notificacaoId)

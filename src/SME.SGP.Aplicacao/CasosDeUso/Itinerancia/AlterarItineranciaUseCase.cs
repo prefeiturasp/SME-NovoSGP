@@ -4,6 +4,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -81,8 +82,11 @@ namespace SME.SGP.Aplicacao.Interfaces
         private async Task SalvarEventosItinerancia(ItineranciaDto dto)
         {
             foreach (var ue in dto.Ues)
-                await mediator.Send(new CriarEventoItineranciaPAAICommand(dto.Id, ue.CodigoDre, ue.CodigoUe, dto.DataRetornoVerificacao.Value, dto.DataVisita, dto.ObjetivosVisita));
+                await mediator.Send(new CriarEventoItineranciaPAAICommand(dto.Id, ue.CodigoDre, ue.CodigoUe, dto.DataRetornoVerificacao.Value, dto.DataVisita, ObterObjetivos(dto.ObjetivosVisita)));
         }
+
+        private IEnumerable<ItineranciaObjetivoDescricaoDto> ObterObjetivos(IEnumerable<ItineranciaObjetivoDto> objetivosVisita)
+            => objetivosVisita.Select(a => (ItineranciaObjetivoDescricaoDto)a);
 
         private async Task AtualizaDatasEventos(long id, DateTime? dataRetornoVerificacao)
         {
@@ -119,22 +123,22 @@ namespace SME.SGP.Aplicacao.Interfaces
 
         public async Task<bool> ExluirFilhosItinerancia(Itinerancia itinerancia)
         {
-            if (itinerancia.Alunos == null || itinerancia.Alunos.Any())
+            if (itinerancia.PossuiAlunos())
                 foreach (var aluno in itinerancia.Alunos)
                     if (!await mediator.Send(new ExcluirItineranciaAlunoCommand(aluno)))
                         throw new NegocioException($"Não foi possível excluir a itinerância do aluno de Id {aluno.Id}");
 
-            if (itinerancia.ObjetivosVisita == null || itinerancia.ObjetivosVisita.Any())
+            if (itinerancia.PossuiObjetivos())
                 foreach (var objetivo in itinerancia.ObjetivosVisita)
                     if (!await mediator.Send(new ExcluirItineranciaObjetivoCommand(objetivo.Id)))
                         throw new NegocioException($"Não foi possível excluir o objetivo da itinerância de Id {objetivo.Id}");
 
-            if (itinerancia.Questoes == null || itinerancia.Questoes.Any())
+            if (itinerancia.PossuiQuestoes())
                 foreach (var questao in itinerancia.Questoes)
                     if (!await mediator.Send(new ExcluirItineranciaQuestaoCommand(questao.Id)))
-                        throw new NegocioException($"Não foi possível excluir a quesão da itinerância de Id {questao.Id}");
+                        throw new NegocioException($"Não foi possível excluir a questão da itinerância de Id {questao.Id}");
 
-            if (itinerancia.Ues == null || itinerancia.Ues.Any())
+            if (itinerancia.PossuiUes())
                 foreach (var ue in itinerancia.Ues)
                     if (!await mediator.Send(new ExcluirItineranciaUeCommand(ue.Id)))
                         throw new NegocioException($"Não foi possível excluir a ue da itinerância de Id {ue.Id}");
@@ -144,23 +148,22 @@ namespace SME.SGP.Aplicacao.Interfaces
 
         public async Task<bool> SalvarFilhosItinerancia(ItineranciaDto itineranciaDto, Itinerancia itinerancia)
         {
-            if (itineranciaDto.Alunos.Any())
+            if (itineranciaDto.PossuiAlunos)
             {
                 await TrataTurmasCodigos(itineranciaDto);
-            }
-            if (itineranciaDto.Alunos == null || itineranciaDto.Alunos.Any())
                 foreach (var aluno in itineranciaDto.Alunos)
                     await mediator.Send(new SalvarItineranciaAlunoCommand(aluno, itinerancia.Id));
+            }
 
-            if (itineranciaDto.ObjetivosVisita == null || itineranciaDto.ObjetivosVisita.Any())
+            if (itineranciaDto.PossuiObjetivos)
                 foreach (var objetivo in itineranciaDto.ObjetivosVisita)
                     await mediator.Send(new SalvarItineranciaObjetivoCommand(objetivo.ItineranciaObjetivoBaseId, itinerancia.Id, objetivo.Descricao, objetivo.TemDescricao));
 
-            if (itineranciaDto.Questoes == null || itineranciaDto.Questoes.Any())
+            if (itineranciaDto.PossuiQuestoes)
                 foreach (var questao in itineranciaDto.Questoes)
                     await mediator.Send(new SalvarItineranciaQuestaoCommand(questao.QuestaoId, itinerancia.Id, questao.Resposta));
 
-            if (itineranciaDto.Ues == null || itineranciaDto.Ues.Any())
+            if (itineranciaDto.PossuiUes)
                 foreach (var ue in itineranciaDto.Ues)
                     await mediator.Send(new SalvarItineranciaUeCommand(ue.UeId, itinerancia.Id));
 

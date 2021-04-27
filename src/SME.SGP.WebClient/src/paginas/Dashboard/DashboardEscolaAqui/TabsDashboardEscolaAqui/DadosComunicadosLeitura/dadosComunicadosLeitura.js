@@ -176,7 +176,8 @@ const DadosComunicadosLeitura = props => {
     if (ue && ano) {
       setCarregandoModalidades(true);
       const resposta = await ServicoFiltroRelatorio.obterModalidadesPorAbrangencia(
-        ue
+        ue,
+        true
       )
         .catch(e => erros(e))
         .finally(() => setCarregandoModalidades(false));

@@ -1,4 +1,5 @@
-﻿using SME.SGP.Infra;
+﻿using SME.SGP.Dominio.Enumerados;
+using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
@@ -24,5 +25,9 @@ namespace SME.SGP.Dominio.Interfaces
         Task<Itinerancia> ObterEntidadeCompleta(long id);
         Task<PaginacaoResultadoDto<ItineranciaRetornoQueryDto>> ObterItineranciasPaginado(long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao, int anoLetivo, DateTime? dataInicio, DateTime? dataFim, string criadoRf, Paginacao paginacao);
         Task<IEnumerable<int>> ObterAnosLetivosItinerancia();
+        Task<Itinerancia> ObterComUesPorId(long id);
+        Task<IEnumerable<ItineranciaObjetivoDescricaoDto>> ObterDecricaoObjetivosPorId(long itineranciaId);
+
+        Task<int> AtualizarStatusItinerancia(long itineranciaId, int situacao);
     }
 }

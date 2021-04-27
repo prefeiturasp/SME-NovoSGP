@@ -164,14 +164,14 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        private async Task ReprovarRegistroDeItinerancia(long workFlowId)
+        private async Task ReprovarRegistroDeItinerancia(long workFlowId, string motivo)
         {
             var itineranciaReprovada = await mediator.Send(new ObterWorkflowAprovacaoItineranciaPorIdQuery(workFlowId));
             if (itineranciaReprovada != null)
             {
-                await mediator.Send(new AtualizarStatusWorkflowAprovacaoItineranciaCommand(itineranciaReprovada.ItineranciaId, workFlowId, false));
+                await mediator.Send(new AprovarItineranciaCommand(itineranciaReprovada.ItineranciaId, workFlowId, false));
 
-                await mediator.Send(new NotificacaoRegistroItineranciaRecusadoCommand(itineranciaReprovada.ItineranciaId, workFlowId));
+                await mediator.Send(new NotificacaoRegistroItineranciaRecusadoCommand(itineranciaReprovada.ItineranciaId, workFlowId, motivo));
             }
         }
 
@@ -180,7 +180,7 @@ namespace SME.SGP.Dominio.Servicos
             var itineranciaEmAprovacao = await mediator.Send(new ObterWorkflowAprovacaoItineranciaPorIdQuery(workFlowId));
             if (itineranciaEmAprovacao != null)
             {          
-                await mediator.Send(new AtualizarStatusWorkflowAprovacaoItineranciaCommand(itineranciaEmAprovacao.ItineranciaId, workFlowId, true));
+                await mediator.Send(new AprovarItineranciaCommand(itineranciaEmAprovacao.ItineranciaId, workFlowId, true));
 
                 await mediator.Send(new NotificacaoUsuarioCriadorRegistroItineranciaCommand(itineranciaEmAprovacao.ItineranciaId, workFlowId));
             }
@@ -769,7 +769,7 @@ namespace SME.SGP.Dominio.Servicos
                 await TrataReprovacaoAlteracaoNotaFechamento(workflow, codigoDaNotificacao, motivo);
             } else if (workflow.Tipo == WorkflowAprovacaoTipo.RegistroItinerancia)
             {
-                await ReprovarRegistroDeItinerancia(workflow.Id);
+                await ReprovarRegistroDeItinerancia(workflow.Id, motivo);
             }
         }
 

@@ -27,16 +27,16 @@ namespace SME.SGP.Aplicacao
         {
             if (request.CodigoUe == "-99")
             {
-                return EnumExtensao.ListarDto<Modalidade>().Select(c => new OpcaoDropdownDto(c.Id.ToString(), c.Descricao));
+                var todasAsModalidades = EnumExtensao.ListarDto<Modalidade>();
+                if (request.ModalidadesQueSeraoIgnoradas != null && request.ModalidadesQueSeraoIgnoradas.Any()) {
+                    var idsIgnoradas = request.ModalidadesQueSeraoIgnoradas.Select(a => (int)a);
+                    var listaTratada = todasAsModalidades.Where(m => !idsIgnoradas.Contains(m.Id));
+                    return listaTratada.Select(c => new OpcaoDropdownDto(c.Id.ToString(), c.Descricao));
+                }
+                return todasAsModalidades.Select(c => new OpcaoDropdownDto(c.Id.ToString(), c.Descricao));
             }
 
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
-
-            if (usuarioLogado == null)
-                throw new NegocioException("Não foi possível localizar o usuario logado.");
-
-            var modalidades = await repositorioAbrangencia.ObterModalidadesPorUeAbrangencia(request.CodigoUe, usuarioLogado.Login, usuarioLogado.PerfilAtual);
-
+            var modalidades = await repositorioAbrangencia.ObterModalidadesPorUeAbrangencia(request.CodigoUe, request.Login, request.Perfil, request.ModalidadesQueSeraoIgnoradas);
             return modalidades?.Select(c => new OpcaoDropdownDto(((int)c).ToString(), c.Name()));
         }
     }

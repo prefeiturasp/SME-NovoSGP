@@ -2,6 +2,8 @@ import moment from 'moment';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { CampoData } from '~/componentes';
+import Button from '~/componentes/button';
+import { Colors } from '~/componentes/colors';
 import SelectComponent from '~/componentes/select';
 import { salvarDadosAulaFrequencia } from '~/redux/modulos/calendarioProfessor/actions';
 import {
@@ -12,7 +14,7 @@ import {
   setDataSelecionadaFrequenciaPlanoAula,
   setExibirLoaderFrequenciaPlanoAula,
 } from '~/redux/modulos/frequenciaPlanoAula/actions';
-import { confirmar, erros, ServicoCalendarios } from '~/servicos';
+import { confirmar, erros } from '~/servicos';
 import ServicoFrequencia from '~/servicos/Paginas/DiarioClasse/ServicoFrequencia';
 import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
 import servicoSalvarFrequenciaPlanoAula from '../../servicoSalvarFrequenciaPlanoAula';
@@ -20,6 +22,9 @@ import ModalSelecionarAulaFrequenciaPlanoAula from '../ModalSelecionarAula/modal
 
 const CamposFiltrarDadosFrequenciaPlanoAula = () => {
   const dispatch = useDispatch();
+
+  const [bloquearProximo, setBloquearProximo] = useState(true);
+  const [veioCalendario, setVeioCalendario] = useState(false);
 
   const usuario = useSelector(store => store.usuario);
   const { turmaSelecionada } = usuario;
@@ -260,9 +265,10 @@ const CamposFiltrarDadosFrequenciaPlanoAula = () => {
 
   const validaSeTemIdAula = useCallback(
     async data => {
-      if (dadosAulaFrequencia && dadosAulaFrequencia.aulaId) {
+      if (!veioCalendario && dadosAulaFrequencia?.aulaId) {
         // Quando for Professor ou CJ podem visualizar somente uma aula por data selecionada!
         dispatch(setAulaIdFrequenciaPlanoAula(dadosAulaFrequencia.aulaId));
+        setVeioCalendario(true);
       } else {
         const aulaDataSelecionada = await obterAulaSelecionada(data);
         if (aulaDataSelecionada && aulaDataSelecionada.aulas.length === 1) {
@@ -281,18 +287,11 @@ const CamposFiltrarDadosFrequenciaPlanoAula = () => {
         }
       }
     },
-    [obterAulaSelecionada, dispatch, dadosAulaFrequencia]
+    [obterAulaSelecionada, dispatch, dadosAulaFrequencia, veioCalendario]
   );
 
   const onChangeData = useCallback(
     async data => {
-      // TODO
-      // resetarPlanoAula();
-      // setAula();
-      // TODO VER SE DA PARA REMOVER DAQUI!
-
-      // if (planoAulaExpandido) onClickPlanoAula();
-
       let salvou = true;
       if (modoEdicaoFrequencia || modoEdicaoPlanoAula) {
         const confirmarParaSalvar = await pergutarParaSalvar();
@@ -336,7 +335,8 @@ const CamposFiltrarDadosFrequenciaPlanoAula = () => {
       dadosAulaFrequencia.disciplinaId &&
       listaComponenteCurricular &&
       listaComponenteCurricular.length &&
-      !codigoComponenteCurricular
+      !codigoComponenteCurricular &&
+      !veioCalendario
     ) {
       onChangeComponenteCurricular(String(dadosAulaFrequencia.disciplinaId));
     }
@@ -346,7 +346,8 @@ const CamposFiltrarDadosFrequenciaPlanoAula = () => {
       dadosAulaFrequencia.dia &&
       diasParaHabilitar &&
       diasParaHabilitar.length &&
-      !dataSelecionada
+      !dataSelecionada &&
+      !veioCalendario
     ) {
       onChangeData(window.moment(dadosAulaFrequencia.dia));
     }
@@ -358,7 +359,36 @@ const CamposFiltrarDadosFrequenciaPlanoAula = () => {
     onChangeComponenteCurricular,
     onChangeData,
     codigoComponenteCurricular,
+    veioCalendario,
   ]);
+
+  const onClickProximaAula = async () => {
+    const datasOrdenadas = diasParaHabilitar.sort(
+      (a, b) => Date.parse(new Date(a)) - Date.parse(new Date(b))
+    );
+    const proximoIndice =
+      datasOrdenadas.findIndex(
+        data =>
+          window.moment(data).format('DD/MM/YYYY') ===
+          window.moment(dataSelecionada).format('DD/MM/YYYY')
+      ) + 1;
+    await onChangeData(window.moment(datasOrdenadas[proximoIndice]));
+  };
+
+  useEffect(() => {
+    if (diasParaHabilitar && dataSelecionada) {
+      const datasOrdenadas = diasParaHabilitar.sort(
+        (a, b) => Date.parse(new Date(a)) - Date.parse(new Date(b))
+      );
+      const indiceAtual = datasOrdenadas.findIndex(
+        data =>
+          window.moment(data).format('DD/MM/YYYY') ===
+          window.moment(dataSelecionada).format('DD/MM/YYYY')
+      );
+      const qtdeItems = datasOrdenadas.length - 1;
+      setBloquearProximo(indiceAtual >= qtdeItems);
+    }
+  }, [diasParaHabilitar, dataSelecionada]);
 
   return (
     <>
@@ -393,6 +423,18 @@ const CamposFiltrarDadosFrequenciaPlanoAula = () => {
           diasParaHabilitar={diasParaHabilitar}
           diasParaSinalizar={diasParaSinalizar}
           valorPadrao={valorPadrao}
+        />
+      </div>
+      <div className="col-sm-12 col-md-4 col-lg-3 col-xl-3 mb-3">
+        <Button
+          id="btn-proximo"
+          label="Próxima aula"
+          icon="arrow-right"
+          color={Colors.Azul}
+          border
+          className="mr-3"
+          disabled={bloquearProximo}
+          onClick={onClickProximaAula}
         />
       </div>
       <ModalSelecionarAulaFrequenciaPlanoAula

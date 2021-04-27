@@ -9,7 +9,7 @@ namespace SME.SGP.Dominio.Interfaces
 
         IEnumerable<Ue> MaterializarCodigosUe(string[] idUes, out string[] codigosNaoEncontrados);
 
-        Task<IEnumerable<Modalidade>> ObterModalidades(string ueCodigo, int ano);
+        Task<IEnumerable<Modalidade>> ObterModalidades(string ueCodigo, int ano, IEnumerable<Modalidade> modalidadesQueSeraoIgnoradas);
 
         Ue ObterPorCodigo(string ueId);
 

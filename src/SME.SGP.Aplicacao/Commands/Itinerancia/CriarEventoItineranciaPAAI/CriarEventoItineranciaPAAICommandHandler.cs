@@ -75,10 +75,7 @@ namespace SME.SGP.Aplicacao.Commands
             
             descricao.AppendLine("Objetivos:");
             foreach(var objetivo in request.Objetivos)
-            {
-                var complemento = !string.IsNullOrEmpty(objetivo.Descricao) ? $" (Descrição disponível no registro da itinerância)" : "";
-                descricao.AppendLine($" - {objetivo.Nome}{complemento}");
-            }
+                descricao.AppendLine($" - {objetivo.Nome}");
 
             return descricao.ToString();
         }

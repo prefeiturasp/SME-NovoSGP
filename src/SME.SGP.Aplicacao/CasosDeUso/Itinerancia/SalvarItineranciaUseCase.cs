@@ -5,6 +5,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -37,29 +38,29 @@ namespace SME.SGP.Aplicacao
                     if (itinerancia == null)
                         throw new NegocioException("Erro ao Salvar a itinerancia");
 
-                    if (itineranciaDto.Alunos == null || itineranciaDto.Alunos.Any())
+                    if (itineranciaDto.PossuiAlunos)
                         foreach (var aluno in itineranciaDto.Alunos)
                             await mediator.Send(new SalvarItineranciaAlunoCommand(aluno, itinerancia.Id));
 
-                    if (itineranciaDto.ObjetivosVisita == null || itineranciaDto.ObjetivosVisita.Any())
+                    if (itineranciaDto.PossuiObjetivos)
                         foreach (var objetivo in itineranciaDto.ObjetivosVisita)
                             await mediator.Send(new SalvarItineranciaObjetivoCommand(objetivo.ItineranciaObjetivoBaseId, itinerancia.Id, objetivo.Descricao, objetivo.TemDescricao));
 
-                    if (itineranciaDto.Questoes == null || itineranciaDto.Questoes.Any())
+                    if (itineranciaDto.PossuiQuestoes)
                         foreach (var questao in itineranciaDto.Questoes)
                             await mediator.Send(new SalvarItineranciaQuestaoCommand(questao.QuestaoId, itinerancia.Id, questao.Resposta));
 
-                    if (itineranciaDto.Ues == null || itineranciaDto.Ues.Any())
+                    if (itineranciaDto.PossuiUes)
                         foreach (var ue in itineranciaDto.Ues)
                             await mediator.Send(new SalvarItineranciaUeCommand(ue.UeId, itinerancia.Id));
 
-                    if (itineranciaDto.DataRetornoVerificacao.HasValue)
+                    if (itineranciaDto.DataRetornoVerificacao.HasValue && !itineranciaDto.PossuiAlunos)
                         await SalvarEventoItinerancia(itinerancia.Id, itineranciaDto);
 
                     unitOfWork.PersistirTransacao();
 
                     SentrySdk.AddBreadcrumb($"Mensagem RotaNotificacaoRegistroItineranciaInseridoUseCase", "Rabbit - RotaNotificacaoRegistroItineranciaInseridoUseCase");
-
+                    await mediator.Send(new AlterarSituacaoItineranciaCommand(itinerancia.Id, Dominio.Enumerados.SituacaoItinerancia.Enviado));
                     await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaNotificacaoRegistroItineranciaInseridoUseCase,
                         new NotificacaoSalvarItineranciaDto
                         {
@@ -84,8 +85,17 @@ namespace SME.SGP.Aplicacao
         private async Task SalvarEventoItinerancia(long itineranciaId, ItineranciaDto itineranciaDto)
         {
             foreach (var ue in itineranciaDto.Ues)
-                await mediator.Send(new CriarEventoItineranciaPAAICommand(itineranciaId, ue.CodigoDre, ue.CodigoUe, itineranciaDto.DataRetornoVerificacao.Value, itineranciaDto.DataVisita, itineranciaDto.ObjetivosVisita));
+                await mediator.Send(new CriarEventoItineranciaPAAICommand(
+                    itineranciaId,
+                    ue.CodigoDre,
+                    ue.CodigoUe,
+                    itineranciaDto.DataRetornoVerificacao.Value,
+                    itineranciaDto.DataVisita,
+                    ObterObjetivos(itineranciaDto.ObjetivosVisita)));
         }
+
+        private IEnumerable<ItineranciaObjetivoDescricaoDto> ObterObjetivos(IEnumerable<ItineranciaObjetivoDto> objetivosVisita)
+            => objetivosVisita.Select(a => (ItineranciaObjetivoDescricaoDto)a);
 
         private async Task TrataTurmasCodigos(ItineranciaDto itineranciaDto)
         {
