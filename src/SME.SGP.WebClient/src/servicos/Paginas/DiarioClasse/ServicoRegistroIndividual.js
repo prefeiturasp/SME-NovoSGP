@@ -52,10 +52,7 @@ class ServicoRegistroIndividual {
   };
 
   obterSugestao = params => {
-    return Promise.resolve({
-      textoSugestao:
-        'Momento de adaptação e acolhimento: Como foi ou está sendo para a criança e a família?',
-    });
+    return api.get(`/v1/registros-individuais/sugestoes-topicos/${params}`);
   };
 }
 

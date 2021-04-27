@@ -10,13 +10,17 @@ const SugestaoTopico = ({ valorData }) => {
   const [textoSugestao, setTextoSugestao] = useState();
 
   const obterSugestao = useCallback(async () => {
-    const mesSelecionado = moment(valorData).format('MM');
-    const retorno = await ServicoRegistroIndividual.obterSugestao({
-      mes: mesSelecionado,
-    });
+    const mes = moment(valorData).format('MM');
+    const mesParseado = parseInt(mes, 10);
 
-    if (retorno) {
-      setTextoSugestao(retorno.textoSugestao);
+    if (mesParseado !== 1) {
+      const retorno = await ServicoRegistroIndividual.obterSugestao(
+        mesParseado
+      );
+
+      if (retorno?.data) {
+        setTextoSugestao(retorno?.data?.descricao);
+      }
     }
   }, [valorData]);
 
@@ -25,10 +29,14 @@ const SugestaoTopico = ({ valorData }) => {
   }, [obterSugestao]);
 
   return (
-    <Container>
-      <i className="fas fa-info-circle">&nbsp;Sugestão de tópico:</i>
-      &nbsp;{textoSugestao}
-    </Container>
+    <>
+      {textoSugestao && (
+        <Container>
+          <i className="fas fa-info-circle">&nbsp;Sugestão de tópico:</i>
+          &nbsp;{textoSugestao}
+        </Container>
+      )}
+    </>
   );
 };
 
