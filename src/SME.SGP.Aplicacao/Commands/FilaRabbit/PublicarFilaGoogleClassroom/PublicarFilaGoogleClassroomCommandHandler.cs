@@ -42,7 +42,7 @@ namespace SME.SGP.Aplicacao
 
                     byte[] body = FormataBodyWorker(request);
 
-                    _channel.BasicPublish(RotasRabbit.ExchangeGoogleSync, request.Fila, null, body);
+                    _channel.BasicPublish(RotasRabbitGoogleClassroomApi.ExchangeGoogleSync, request.Fila, null, body);
                 }
             }
 
