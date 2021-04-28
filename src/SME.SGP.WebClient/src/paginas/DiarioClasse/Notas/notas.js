@@ -864,6 +864,8 @@ const Notas = ({ match }) => {
           justificativa: bimestrePesquisado.justificativa,
         };
 
+        console.log('bimestreAtualizado',bimestreAtualizado);
+
         switch (Number(numeroBimestre)) {
           case 1:
             setPrimeiroBimestre(bimestreAtualizado);
@@ -969,7 +971,7 @@ const Notas = ({ match }) => {
       clicouNoBotaoSalvar,
       clicouNoBotaoVoltar
     );
-  };
+  };  
 
   return (
     <Container>
