@@ -367,6 +367,7 @@ const AtaFinalResultados = () => {
     if (permissoesTela.podeConsultar) {
       const params = {
         turmasCodigos: [],
+        anoLetivo,
         tipoFormatoRelatorio: formato,
         visualizacao,
       };
