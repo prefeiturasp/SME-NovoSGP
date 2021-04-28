@@ -224,7 +224,9 @@ const NovoRegistroIndividual = () => {
       elementos[0].addEventListener('click', setarDataVazia, false);
     }
     return () => {
-      elementos[0].removeEventListener('click', setarDataVazia);
+      if (elementos.length) {
+        elementos[0].removeEventListener('click', setarDataVazia);
+      }
     };
   });
 

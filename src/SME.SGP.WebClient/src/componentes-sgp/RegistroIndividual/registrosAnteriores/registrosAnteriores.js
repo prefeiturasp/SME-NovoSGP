@@ -23,6 +23,7 @@ const RegistrosAnteriores = () => {
 
   const usuario = useSelector(store => store.usuario);
   const permissoesTela = usuario.permissoes[RotasDto.REGISTRO_INDIVIDUAL];
+  const turmaSelecionada = useSelector(state => state.usuario.turmaSelecionada);
 
   const idCollapse = shortid.generate();
   const dispatch = useDispatch();
@@ -30,6 +31,12 @@ const RegistrosAnteriores = () => {
   const expandirAlternado = useCallback(() => setExpandir(!expandir), [
     expandir,
   ]);
+
+  const { anoLetivo, consideraHistorico } = turmaSelecionada;
+  const dataLimiteInferior = `${anoLetivo}-01-01`;
+  const dataLimiteSuperior = consideraHistorico
+    ? `${anoLetivo}-12-31`
+    : window.moment().format('YYYY-MM-DD');
 
   useEffect(() => {
     if (recolherRegistrosAnteriores && expandir) {
@@ -55,7 +62,11 @@ const RegistrosAnteriores = () => {
           show={expandir}
           onClick={expandirAlternado}
         >
-          <RegistrosAnterioresConteudo permissoesTela={permissoesTela} />
+          <RegistrosAnterioresConteudo
+            permissoesTela={permissoesTela}
+            periodoInicio={dataLimiteInferior}
+            periodoFim={dataLimiteSuperior}
+          />
         </CardCollapse>
       </div>
     </Loader>

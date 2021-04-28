@@ -4,7 +4,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { CampoData, Label, Loader } from '~/componentes';
 import { Paginacao } from '~/componentes-sgp';
 import MetodosRegistroIndividual from '~/componentes-sgp/RegistroIndividual/metodosRegistroIndividual';
-import { setExibirLoaderGeralRegistroAnteriores } from '~/redux/modulos/registroIndividual/actions';
+import {
+  setDataFimImpressaoRegistrosAnteriores,
+  setDataInicioImpressaoRegistrosAnteriores,
+  setExibirLoaderGeralRegistroAnteriores,
+} from '~/redux/modulos/registroIndividual/actions';
 import Item from './item/item';
 
 const RegistrosAnterioresConteudo = props => {
@@ -112,10 +116,13 @@ const RegistrosAnterioresConteudo = props => {
 
     if (Number(anoLetivo) !== Number(anoAtual)) {
       dataInicioSelecionada = window.moment(`${anoLetivo}-01-01`);
-      setDataFim(window.moment(`${anoLetivo}-12-31`));
+      const dataFinal = window.moment(`${anoLetivo}-12-31`);
+      setDataFim(dataFinal);
+      dispatch(setDataFimImpressaoRegistrosAnteriores(dataFinal));
     }
 
     setDataInicio(dataInicioSelecionada);
+    dispatch(setDataInicioImpressaoRegistrosAnteriores(dataInicioSelecionada));
   }, [dataFim, turmaSelecionada]);
 
   useEffect(() => {
@@ -157,7 +164,12 @@ const RegistrosAnterioresConteudo = props => {
       }
 
       setDataInicio(dataInicioSelecionada);
+      dispatch(
+        setDataInicioImpressaoRegistrosAnteriores(dataInicioSelecionada)
+      );
+
       setDataFim(dataFimSelecionada);
+      dispatch(setDataFimImpressaoRegistrosAnteriores(dataFimSelecionada));
     }
   }, [periodoInicio, periodoFim]);
 
@@ -222,6 +234,7 @@ const RegistrosAnterioresConteudo = props => {
       setCarregandoGeral(false);
       if (periodoInicio && periodoFim) {
         setDataInicio(data);
+        dispatch(setDataInicioImpressaoRegistrosAnteriores(data));
       }
       return;
     }
@@ -249,6 +262,7 @@ const RegistrosAnterioresConteudo = props => {
       setCarregandoGeral(false);
     }
     setDataFim(data);
+    dispatch(setDataFimImpressaoRegistrosAnteriores(data));
   };
 
   return (

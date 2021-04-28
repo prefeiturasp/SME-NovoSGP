@@ -18,6 +18,9 @@ const inicial = {
   registroIndividualEmEdicao: false,
   resetDataNovoRegistroIndividual: false,
   podeRealizarNovoRegistro: false,
+  exibirModalImpressaoRegistroIndividual: false,
+  dataInicioImpressaoRegistrosAnteriores: '',
+  dataFimImpressaoRegistrosAnteriores: '',
 };
 
 export default function RegistroIndividual(state = inicial, action) {
@@ -224,6 +227,24 @@ export default function RegistroIndividual(state = inicial, action) {
           dadosRegistroAtual: {},
           dadosPrincipaisRegistroIndividual: {},
           resetDataNovoRegistroIndividual: true,
+        };
+      }
+      case '@registroIndividual/setExibirModalImpressaoRegistroIndividual': {
+        return {
+          ...draft,
+          exibirModalImpressaoRegistroIndividual: action.payload,
+        };
+      }
+      case '@registroIndividual/setDataInicioImpressaoRegistrosAnteriores': {
+        return {
+          ...draft,
+          dataInicioImpressaoRegistrosAnteriores: action.payload,
+        };
+      }
+      case '@registroIndividual/setDataFimImpressaoRegistrosAnteriores': {
+        return {
+          ...draft,
+          dataFimImpressaoRegistrosAnteriores: action.payload,
         };
       }
       default:
