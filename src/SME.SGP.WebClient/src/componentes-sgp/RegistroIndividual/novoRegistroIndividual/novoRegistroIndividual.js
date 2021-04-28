@@ -195,7 +195,12 @@ const NovoRegistroIndividual = () => {
   }, [validaPermissoes, podeRealizarNovoRegistro]);
 
   const desabilitarData = dataCorrente => {
-    return dataCorrente && dataCorrente > window.moment();
+    const anoLetivo = turmaSelecionada?.anoLetivo;
+    return (
+      dataCorrente &&
+      (dataCorrente < window.moment(`${anoLetivo}-01-01`) ||
+        dataCorrente > window.moment())
+    );
   };
 
   const expandirAlternado = useCallback(() => setExpandir(!expandir), [
@@ -226,7 +231,9 @@ const NovoRegistroIndividual = () => {
       elementos[0].addEventListener('click', setarDataVazia, false);
     }
     return () => {
-      elementos[0].removeEventListener('click', setarDataVazia);
+      if (elementos.length) {
+        elementos[0].removeEventListener('click', setarDataVazia);
+      }
     };
   });
 
@@ -244,7 +251,7 @@ const NovoRegistroIndividual = () => {
             show={expandir}
             onClick={expandirAlternado}
           >
-            <div className="col-4 p-0 pb-2">
+            <div className="col-3 p-0 pb-2">
               <CampoData
                 name="data"
                 placeholder="Selecione"
