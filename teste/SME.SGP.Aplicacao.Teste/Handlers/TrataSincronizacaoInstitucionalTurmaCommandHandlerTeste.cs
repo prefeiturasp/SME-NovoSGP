@@ -166,7 +166,7 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
             await trataSincronizacaoInstitucionalTurmaCommandHandler.Handle(new TrataSincronizacaoInstitucionalTurmaCommand(turmaEol, turmaSgp), new CancellationToken());
 
             //Assert
-            repositorioTurma.Verify(r => r.AtualizarTurmaSincronizacaoInstitucionalAsync(turmaEol), Times.Once);
+            repositorioTurma.Verify(r => r.AtualizarTurmaSincronizacaoInstitucionalAsync(turmaEol, false), Times.Once);
         }
 
         //[Fact(DisplayName = "Valida o tratamento de turma extinta antes da criação do cadendario para excluír da base")]
@@ -374,7 +374,7 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
             await trataSincronizacaoInstitucionalTurmaCommandHandler.Handle(new TrataSincronizacaoInstitucionalTurmaCommand(turmaEol, turmaSgp), new CancellationToken());
 
             //Assert
-            repositorioTurma.Verify(r => r.AtualizarTurmaParaHistorica(turmaEol.Codigo.ToString()), Times.Once);
+            repositorioTurma.Verify(r => r.AtualizarTurmaSincronizacaoInstitucionalAsync(turmaEol, true), Times.Once);
         }
     }
 }

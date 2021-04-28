@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
-using SME.SGP.Dominio;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -23,6 +22,8 @@ namespace SME.SGP.Aplicacao
             var turmasCodigo = new List<long>();
 
             var httpClient = httpClientFactory.CreateClient("servicoEOL");
+            httpClient.Timeout = TimeSpan.FromMinutes(4);
+
             var resposta = await httpClient.GetAsync($"turmas/ue/{request.UeId}/sincronizacoes-institucionais");
             if (resposta.IsSuccessStatusCode)
             {

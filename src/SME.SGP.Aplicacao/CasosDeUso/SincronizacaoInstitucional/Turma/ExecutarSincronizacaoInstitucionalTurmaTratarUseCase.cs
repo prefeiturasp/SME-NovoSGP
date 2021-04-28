@@ -16,29 +16,30 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
-        {            
-            var codigoTurma = long.Parse(mensagemRabbit.Mensagem.ToString());
+        {
+            var filtro = mensagemRabbit.ObterObjetoMensagem<MensagemSyncTurmaDto>();
 
-            if (codigoTurma == 0) return true;
+            if (filtro.CodigoTurma == 0) return true;
 
             try
             {
-                var turmaEOL = await mediator.Send(new ObterTurmaEOLParaSyncEstruturaInstitucionalPorTurmaIdQuery(codigoTurma));
+                var turmaEOL = await mediator.Send(new ObterTurmaEOLParaSyncEstruturaInstitucionalPorTurmaIdQuery(filtro.CodigoTurma, filtro.UeId));
+                
                 if (turmaEOL == null)
-                    throw new NegocioException($"Não foi possível realizar o tratamento da turma id {codigoTurma}. Turma não encontrada no Eol.");
+                    return true;
 
-                var turmaSGP = await mediator.Send(new ObterTurmaPorCodigoQuery(codigoTurma.ToString()));
+                var turmaSGP = await mediator.Send(new ObterTurmaPorCodigoQuery(filtro.CodigoTurma.ToString()));
 
                 var turmaTratada = await mediator.Send(new TrataSincronizacaoInstitucionalTurmaCommand(turmaEOL, turmaSGP));
 
                 if (!turmaTratada)
                 {
-                    throw new Exception($"Não foi possível realizar o tratamento da turma id {codigoTurma}.");
+                    throw new Exception($"Não foi possível realizar o tratamento da turma id {filtro.CodigoTurma}.");
                 }
             }
             catch (Exception ex)
             {
-                SentrySdk.CaptureMessage($"Não foi possível realizar o tratamento da turma id {codigoTurma}.");
+                SentrySdk.CaptureMessage($"Não foi possível realizar o tratamento da turma id {filtro.CodigoTurma}.", Sentry.Protocol.SentryLevel.Error );
                 SentrySdk.CaptureException(ex);
                 throw;
             }
