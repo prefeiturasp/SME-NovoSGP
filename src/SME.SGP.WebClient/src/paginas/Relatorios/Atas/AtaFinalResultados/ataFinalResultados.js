@@ -183,7 +183,7 @@ const AtaFinalResultados = () => {
           anoLetivo,
           consideraHistorico,
           false,
-          [1, 2, 7]
+          [1, 7]
         );
         if (data) {
           setListaTurmasCompletas(data);
