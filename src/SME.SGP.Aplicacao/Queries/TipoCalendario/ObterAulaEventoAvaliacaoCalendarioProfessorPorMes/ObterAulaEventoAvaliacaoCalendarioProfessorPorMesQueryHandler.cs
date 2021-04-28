@@ -57,7 +57,9 @@ namespace SME.SGP.Aplicacao
 
                     }
 
-                    eventoAula.PossuiPendencia = await mediator.Send(new ObterPendenciasAulaPorAulaIdsQuery(aulasDoDia.Select(a => a.Id).ToArray(), turma.ModalidadeCodigo));
+                    //TO DO
+                    //MUDANDO PARA TESTE DE PERFORMANCE
+                    eventoAula.PossuiPendencia = false; //await mediator.Send(new ObterPendenciasAulaPorAulaIdsQuery(aulasDoDia.Select(a => a.Id).ToArray(), turma.ModalidadeCodigo));
                 }
                 listaRetorno.Add(eventoAula);
             }
