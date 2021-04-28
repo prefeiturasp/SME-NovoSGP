@@ -8,6 +8,7 @@
         #region Professores
 
         public static string FilaProfessorCursoIncluir => "googleclass.professor.curso.incluir";
+        public static string FilaProfessorCursoRemover => "googleclass.professor.curso.remover";
 
         #endregion Professores
     }
