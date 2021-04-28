@@ -28,6 +28,8 @@ import {
   verificaSomenteConsulta,
 } from '~/servicos';
 
+import SugestaoTopico from '../SugestaoTopico/sugestaoTopico';
+
 const NovoRegistroIndividual = () => {
   const dataAtual = window.moment();
   const [expandir, setExpandir] = useState(false);
@@ -242,7 +244,7 @@ const NovoRegistroIndividual = () => {
             show={expandir}
             onClick={expandirAlternado}
           >
-            <div className="col-3 p-0 pb-2">
+            <div className="col-4 p-0 pb-2">
               <CampoData
                 name="data"
                 placeholder="Selecione"
@@ -252,7 +254,12 @@ const NovoRegistroIndividual = () => {
                 desabilitarData={desabilitarData}
               />
             </div>
-            <div className="pt-1">
+            {permissoesTela.podeIncluir && (
+              <div className="col-12 p-0 pb-3">
+                <SugestaoTopico valorData={data} />
+              </div>
+            )}
+            <div className="pt-2">
               <Loader ignorarTip loading={carregandoNovoRegistro}>
                 <div style={{ minHeight: 200 }}>
                   <JoditEditor

@@ -108,5 +108,15 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<UltimoRegistroIndividualAlunoTurmaDto>(query, new { turmaId });
         }
+        public async Task<SugestaoTopicoRegistroIndividualDto> ObterSugestaoTopicoPorMes(int mes)
+        {
+            const string query = @"select ris.id,
+                                          ris.descricao 
+                                     from registro_individual_sugestao ris 
+                                    where ris.mes = @mes
+                                      and not excluido";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<SugestaoTopicoRegistroIndividualDto>(query, new { mes });
+        }
     }
 }

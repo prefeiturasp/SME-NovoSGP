@@ -24,6 +24,8 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
             var ueSgp = await mediator.Send(new ObterUeComDrePorCodigoQuery(ueCodigo));
 
+            
+
             if (await mediator.Send(new TrataSincronizacaoInstitucionalUeCommand(ueEol, ueSgp)))
                 return await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.SincronizaEstruturaInstitucionalTurmasSync, ueCodigo, mensagemRabbit.CodigoCorrelacao, null, fila: RotasRabbit.SincronizaEstruturaInstitucionalTurmasSync));
             else

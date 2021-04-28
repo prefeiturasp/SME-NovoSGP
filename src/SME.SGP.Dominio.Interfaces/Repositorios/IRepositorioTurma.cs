@@ -39,7 +39,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<bool> AtualizarTurmaParaHistorica(string turmaId);
         Task<bool> SalvarAsync(TurmaParaSyncInstitucionalDto turma, long ueId);
         Task ExcluirTurmaExtintaAsync(string turmaCodigo, long turmaId);
-        Task<bool> AtualizarTurmaSincronizacaoInstitucionalAsync(TurmaParaSyncInstitucionalDto turma);
+        Task<bool> AtualizarTurmaSincronizacaoInstitucionalAsync(TurmaParaSyncInstitucionalDto turma, bool deveMarcarHistorica = false);
 
     }
 }

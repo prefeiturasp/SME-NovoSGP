@@ -85,6 +85,15 @@ namespace SME.SGP.Api
         {
             return Ok(await excluirRegistroIndividualUseCase.Executar(id));
         }
+
+        [HttpGet("sugestoes-topicos/{mes}")]
+        [ProducesResponseType(typeof(SugestaoTopicoRegistroIndividualDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.REI_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterSugestaoTopico([FromServices] IObterSugestaoTopicoRegistroIndividualPorMesUseCase useCase, int mes)
+        {
+            return Ok(await useCase.Executar(mes));
+        }
     }
 }
 
