@@ -965,7 +965,7 @@ namespace SME.SGP.Dados.Repositorios
             }
         }
 
-        public async Task<bool> AtualizarTurmaSincronizacaoInstitucionalAsync(TurmaParaSyncInstitucionalDto turma)
+        public async Task<bool> AtualizarTurmaSincronizacaoInstitucionalAsync(TurmaParaSyncInstitucionalDto turma, bool deveMarcarHistorica = false)
         {
             var query = @"update
 	                            public.turma
@@ -983,7 +983,8 @@ namespace SME.SGP.Dados.Repositorios
                                 data_inicio = @dataInicioTurma,
                                 serie_ensino = @serieEnsino,
                                 dt_fim_eol = @dataFim,
-                                tipo_turma = @tipoTurma                                
+                                tipo_turma = @tipoTurma,
+                                historica = @historica
                             where
 	                            turma_id = @turmaId";
 
@@ -1004,6 +1005,7 @@ namespace SME.SGP.Dados.Repositorios
                 turma.SerieEnsino,
                 turma.TipoTurma,
                 turmaId = turma.Codigo.ToString(),
+                historica = deveMarcarHistorica ? true : false
             };
 
             var retorno = await contexto.Conexao.ExecuteAsync(query, parametros);

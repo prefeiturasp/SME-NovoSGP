@@ -61,7 +61,7 @@ namespace SME.SGP.Aplicacao
                     }
                     else
                     {
-                        return await AtualizarTurmaParaHistoricaAsync(turma.Codigo.ToString());
+                        return await repositorioTurma.AtualizarTurmaSincronizacaoInstitucionalAsync(turma, true);                        
                     }
                 }
                 else
