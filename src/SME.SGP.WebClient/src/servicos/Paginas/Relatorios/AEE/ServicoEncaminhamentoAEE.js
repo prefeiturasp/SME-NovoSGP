@@ -125,28 +125,10 @@ class ServicoEncaminhamentoAEE {
     }
   };
 
-  // TODO
-  // secaoEstaConcluida = secaoId => {
-  //   const state = store.getState();
-  //   const { encaminhamentoAEE } = state;
-  //   const { formsSecoesEncaminhamentoAEE } = encaminhamentoAEE;
-
-  //   if (formsSecoesEncaminhamentoAEE?.length) {
-  //     const form = formsSecoesEncaminhamentoAEE.find(
-  //       d => d.secaoId === secaoId
-  //     );
-  //     if (form && form()) {
-  //       return form().getFormikContext().isValid;
-  //     }
-  //   }
-
-  //   return false;
-  // };
-
   salvarEncaminhamento = async (
     encaminhamentoId,
     situacao,
-    enviarEncaminhamento
+    validarCamposObrigatorios
   ) => {
     const { dispatch } = store;
 
@@ -197,9 +179,9 @@ class ServicoEncaminhamentoAEE {
     };
 
     if (formsQuestionarioDinamico?.length) {
-      let todosOsFormsEstaoValidos = !enviarEncaminhamento;
+      let todosOsFormsEstaoValidos = !validarCamposObrigatorios;
 
-      if (enviarEncaminhamento) {
+      if (validarCamposObrigatorios) {
         const promises = formsQuestionarioDinamico.map(async item =>
           validaAntesDoSubmit(item.form(), item?.secaoId || 0)
         );
@@ -209,6 +191,10 @@ class ServicoEncaminhamentoAEE {
         todosOsFormsEstaoValidos =
           contadorFormsValidos ===
           formsQuestionarioDinamico?.filter(a => a)?.length;
+      }
+
+      if (listaSecoesEmEdicao?.length === 0 && todosOsFormsEstaoValidos) {
+        return true;
       }
 
       if (todosOsFormsEstaoValidos) {
