@@ -235,7 +235,7 @@ namespace SME.SGP.Dados.Repositorios
                         group by
 	                        1";
 
-            return (await database.Conexao.QuerySingleOrDefaultAsync<bool>(sql, new { aulas = aulasId, hoje = DateTime.Today.Date }));
+            return (await database.Conexao.QueryFirstOrDefaultAsync<bool>(sql, new { aulas = aulasId, hoje = DateTime.Today.Date }));
         }
 
         public async Task<bool> PossuiPendenciasAtividadeAvaliativaPorAulaId(long aulaId)
@@ -258,7 +258,7 @@ namespace SME.SGP.Dados.Repositorios
                             and a.data_aula::date < @hoje
 	                        and n.id is null";
 
-            return (await database.Conexao.QuerySingleOrDefaultAsync<bool>(sql, new { aula = aulaId, hoje = DateTime.Today.Date }));
+            return (await database.Conexao.QueryFirstOrDefaultAsync<bool>(sql, new { aula = aulaId, hoje = DateTime.Today.Date }));
         }
 
         public async Task<PendenciaAulaDto> PossuiPendenciasPorAulaId(long aulaId, bool ehInfantil)
