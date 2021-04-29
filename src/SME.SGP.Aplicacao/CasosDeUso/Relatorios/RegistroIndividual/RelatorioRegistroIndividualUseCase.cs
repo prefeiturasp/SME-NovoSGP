@@ -15,6 +15,9 @@ namespace SME.SGP.Aplicacao
         {
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
+            filtro.UsuarioNome = usuarioLogado.Nome;
+            filtro.UsuarioRF = usuarioLogado.CodigoRf;
+
             return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.RegistroIndividual, filtro, usuarioLogado));
         }
     }
