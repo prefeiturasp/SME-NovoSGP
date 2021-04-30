@@ -25,12 +25,21 @@ const RegistrosAnteriores = () => {
   const permissoesTela = usuario.permissoes[RotasDto.REGISTRO_INDIVIDUAL];
   const turmaSelecionada = useSelector(state => state.usuario.turmaSelecionada);
 
+  const mostrarMensagemSemHistorico = useSelector(
+    store => store.registroIndividual.mostrarMensagemSemHistorico
+  );
+
   const idCollapse = shortid.generate();
   const dispatch = useDispatch();
 
   const expandirAlternado = useCallback(() => setExpandir(!expandir), [
     expandir,
   ]);
+
+  const mensagemHistorico = mostrarMensagemSemHistorico
+    ? ' - Sem histórico de registros'
+    : '';
+  const tituloCollapse = `Registros anteriores${mensagemHistorico}`;
 
   const { anoLetivo, consideraHistorico } = turmaSelecionada;
   const dataLimiteInferior = `${anoLetivo}-01-01`;
@@ -56,7 +65,7 @@ const RegistrosAnteriores = () => {
           configCabecalho={CONFIG_COLLAPSE_REGISTRO_INDIVIDUAL}
           styleCardBody={{ paddingTop: 12 }}
           key={`${idCollapse}-collapse-key`}
-          titulo="Registros anteriores"
+          titulo={tituloCollapse}
           indice={`${idCollapse}-collapse-indice`}
           alt={`${idCollapse}-alt`}
           show={expandir}
