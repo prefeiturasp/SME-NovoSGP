@@ -275,14 +275,16 @@ const AtaFinalResultados = () => {
       !ueId ||
       !modalidadeId ||
       !turmaId?.length ||
-      !formato ||
-      !visualizacao;
+      !formato;
 
-    if (modalidadeId === modalidade.EJA) {
-      setDesabilitarBtnGerar(!semestre || desabilitar);
-    } else {
-      setDesabilitarBtnGerar(desabilitar);
+    let desabilitado = desabilitar;
+
+    if (Number(modalidadeId) === Number(modalidade.EJA)) {
+      desabilitado = semestre || desabilitar;
+    } else if (Number(modalidadeId) === Number(modalidade.ENSINO_MEDIO)) {
+      desabilitado = desabilitar || !visualizacao;
     }
+    setDesabilitarBtnGerar(desabilitado);
   }, [
     anoLetivo,
     dreId,
@@ -318,10 +320,10 @@ const AtaFinalResultados = () => {
     }
 
     const turmasSelecionadas = listaTurmasCompletas.filter(
-      lt => valor.find(t => lt.codigo === t) && String(lt.ano) !== '2'
+      lt => valor.find(t => lt.codigo === t) && String(lt.ano) === '2'
     );
 
-    if (turmasSelecionadas.length > 0) {
+    if (!turmasSelecionadas.length) {
       setVisualizacao(
         `${
           listaVisualizacao.find(a => a.desc?.toUpperCase() === 'TURMA')?.valor
@@ -409,6 +411,7 @@ const AtaFinalResultados = () => {
 
     setListaTurmas([]);
     setTurmaId(undefined);
+    setVisualizacao('');
   };
 
   const onChangeAnoLetivo = ano => {
