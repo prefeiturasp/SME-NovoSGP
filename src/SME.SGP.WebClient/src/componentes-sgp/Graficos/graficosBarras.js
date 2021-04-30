@@ -57,9 +57,10 @@ const GraficoBarras = props => {
             },
           },
           marker: {
+            symbol: 'circle',
             style: {
               y: 5,
-              r: 9,
+              r: 6,
             },
           },
         }
@@ -72,7 +73,7 @@ const GraficoBarras = props => {
         },
       },
     },
-    appendPadding: 20,
+    appendPadding: [20, 0, 20, 0],
     color: colors?.length ? colors : CoresGraficos,
   };
 
