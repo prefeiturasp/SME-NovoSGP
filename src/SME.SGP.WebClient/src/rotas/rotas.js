@@ -94,6 +94,7 @@ import AcompanhamentoAprendizagem from '~/paginas/Fechamento/AcompanhamentoApren
 import RelatorioDevolutivas from '~/paginas/Relatorios/Planejamento/Devolutivas/relatorioDevolutivas';
 import DashboardAEE from '~/paginas/Dashboard/AEE/dashboardAEE';
 import DashboardRegistroItinerancia from '~/paginas/Dashboard/DashboardRegistroItinerancia/dashboardRegistroItinerancia';
+import DashboardFrequencia from '~/paginas/Dashboard/DashboardFrequencia/dashboardFrequencia';
 
 const rotas = new Map();
 
@@ -1324,6 +1325,17 @@ rotas.set(RotasDto.DASHBOARD_REGISTRO_ITINERANCIA, {
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: true,
   chavePermissao: RotasDto.DASHBOARD_REGISTRO_ITINERANCIA,
+});
+
+rotas.set(RotasDto.DASHBOARD_FREQUENCIA, {
+  breadcrumbName: 'Frequência',
+  menu: ['Dashboard'],
+  parent: '/',
+  component: DashboardFrequencia,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  // temPermissionamento: true,
+  chavePermissao: RotasDto.DASHBOARD_FREQUENCIA,
 });
 
 const rotasArray = [];
