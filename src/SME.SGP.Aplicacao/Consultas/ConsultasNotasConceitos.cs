@@ -364,6 +364,11 @@ namespace SME.SGP.Aplicacao
                         retorno.NotaTipo = notaTipo.TipoNota;
                         ObterValoresDeAuditoria(dataUltimaNotaConceitoInserida, dataUltimaNotaConceitoAlterada, usuarioRfUltimaNotaConceitoInserida, usuarioRfUltimaNotaConceitoAlterada, notaTipo.TipoNota, retorno, nomeAvaliacaoAuditoriaInclusao, nomeAvaliacaoAuditoriaAlteracao);
                     }
+                    else
+                    {
+                        var tipoNota = await ObterNotaTipo(long.Parse(filtro.TurmaCodigo), filtro.AnoLetivo, filtro.TurmaHistorico);
+                        retorno.NotaTipo = tipoNota;
+                    }
                 }
 
                 retorno.Bimestres.Add(bimestreParaAdicionar);

@@ -202,7 +202,7 @@ const Avaliacao = props => {
     regencia,
     indexLinha
   ) => {
-    if (Number(notaTipo) === Number(notasConceitos.Notas) || Number(notasConceitos.Notas) === notaTipo) {
+    if (Number(notaTipo) === Number(notasConceitos.Notas)) {
       return (
         <CampoNotaFinal
           esconderSetas
@@ -226,8 +226,7 @@ const Avaliacao = props => {
         />
       );
     }
-    if (Number(notaTipo) === Number(notasConceitos.Conceitos) || !(Number(notasConceitos.Notas) === notaTipo)) {
-      console.log('aluno.podeEditar', aluno.podeEditar);
+    if (Number(notaTipo) === Number(notasConceitos.Conceitos)) {
       return (
         <CampoConceitoFinal
           montaNotaConceitoFinal={() => montaNotaFinal(aluno, index)}
