@@ -336,7 +336,7 @@ const AtaFinalResultados = () => {
 
   useEffect(() => {
     let turmaExcecao = false;
-    if (turmaId?.length) {
+    if (turmaId?.length && turmaId[0] !== '-99') {
       turmaExcecao = checarTipoTurma(turmaId);
     }
     const desabilita =
@@ -449,6 +449,7 @@ const AtaFinalResultados = () => {
     const novoValor = todosSetado && valor.length === 2 ? [valor[1]] : valor;
     setTurmaId(todos ? [todos] : novoValor);
     habilitarSelecaoFormato(valor);
+    setVisualizacao('');
   };
   const onChangeFormato = valor => setFormato(valor);
 
