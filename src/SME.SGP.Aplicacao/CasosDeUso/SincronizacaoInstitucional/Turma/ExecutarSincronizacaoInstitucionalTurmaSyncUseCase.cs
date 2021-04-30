@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Newtonsoft.Json;
 using Sentry;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
@@ -29,7 +30,11 @@ namespace SME.SGP.Aplicacao
             {
                 try
                 {
-                    var publicarFilaIncluirTurma = await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.SincronizaEstruturaInstitucionalTurmaTratar, codigoTurma, mensagemRabbit.CodigoCorrelacao, null, fila: RotasRabbit.SincronizaEstruturaInstitucionalTurmaTratar));
+                    var mensagemSyncTurma = new MensagemSyncTurmaDto(ueId, codigoTurma);
+
+                    var mensagemParaPublicar = JsonConvert.SerializeObject(mensagemSyncTurma);
+
+                    var publicarFilaIncluirTurma = await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.SincronizaEstruturaInstitucionalTurmaTratar, mensagemParaPublicar, mensagemRabbit.CodigoCorrelacao, null, fila: RotasRabbit.SincronizaEstruturaInstitucionalTurmaTratar));
                     if (!publicarFilaIncluirTurma)
                     {
                         var mensagem = $"Não foi possível inserir a turma de codígo : {codigoTurma} na fila de inclusão.";
