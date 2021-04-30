@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
         {
             if (request.Aluno.AlunosQuestoes == null || request.Aluno.AlunosQuestoes.Any())
                 foreach (var questao in request.Aluno.AlunosQuestoes)
-                    await mediator.Send(new ExcluirItineranciaAlunoQuestaoCommand(questao.Id));
+                    await mediator.Send(new ExcluirItineranciaAlunoQuestaoCommand(questao.Id)); // TODO: Incluir Id Itinerância
 
             repositorioItineranciaAluno.Remover(request.Aluno.Id);
 
