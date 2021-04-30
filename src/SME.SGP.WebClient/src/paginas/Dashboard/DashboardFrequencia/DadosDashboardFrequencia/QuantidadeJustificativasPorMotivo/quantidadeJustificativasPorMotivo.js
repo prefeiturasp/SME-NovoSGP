@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { Base } from '~/componentes';
 import CardCollapse from '~/componentes/cardCollapse';
+import GraficoQuantidadeJustificativasPorMotivo from './graficoQuantidadeJustificativasPorMotivo';
 
 const QuantidadeJustificativasPorMotivo = props => {
   const { anoLetivo, dreId, ueId, modalidade, semestre } = props;
@@ -28,7 +29,17 @@ const QuantidadeJustificativasPorMotivo = props => {
           setExibir(!exibir);
         }}
       >
-        {exibir ? 'GRÁFICO' : ''}
+        {exibir ? (
+          <GraficoQuantidadeJustificativasPorMotivo
+            anoLetivo={anoLetivo}
+            dreId={dreId}
+            ueId={ueId}
+            modalidade={modalidade}
+            semestre={semestre}
+          />
+        ) : (
+          ''
+        )}
       </CardCollapse>
     </div>
   );
