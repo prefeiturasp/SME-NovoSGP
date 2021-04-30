@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { Base } from '~/componentes';
 import CardCollapse from '~/componentes/cardCollapse';
+import GraficoFrequenciaGlobalPorDRE from './graficoFrequenciaGlobalPorDRE';
 
 const FrequenciaGlobalPorDRE = props => {
   const { anoLetivo, dreId, ueId, modalidade, semestre } = props;
@@ -28,7 +29,17 @@ const FrequenciaGlobalPorDRE = props => {
           setExibir(!exibir);
         }}
       >
-        {exibir ? 'GRÁFICO' : ''}
+        {exibir ? (
+          <GraficoFrequenciaGlobalPorDRE
+            anoLetivo={anoLetivo}
+            dreId={dreId}
+            ueId={ueId}
+            modalidade={modalidade}
+            semestre={semestre}
+          />
+        ) : (
+          ''
+        )}
       </CardCollapse>
     </div>
   );
