@@ -115,7 +115,7 @@ namespace SME.SGP.Dominio
             if (alunos == null || !alunos.Any())
                 throw new NegocioException("Não foi encontrado nenhum aluno para a turma informada");
 
-            ValidarAvaliacoes(idsAtividadesAvaliativas, atividadesAvaliativas, professorRf, disciplinaId);
+            await ValidarAvaliacoes(idsAtividadesAvaliativas, atividadesAvaliativas, professorRf, disciplinaId);
 
             var entidadesSalvar = new List<NotaConceito>();
 
@@ -270,26 +270,24 @@ namespace SME.SGP.Dominio
             unitOfWork.PersistirTransacao();
         }
 
-        private void ValidarAvaliacoes(IEnumerable<long> avaliacoesAlteradasIds, IEnumerable<AtividadeAvaliativa> atividadesAvaliativas, string professorRf, string disciplinaId)
+        private async Task ValidarAvaliacoes(IEnumerable<long> avaliacoesAlteradasIds, IEnumerable<AtividadeAvaliativa> atividadesAvaliativas, string professorRf, string disciplinaId)
         {
             if (atividadesAvaliativas == null || !atividadesAvaliativas.Any())
                 throw new NegocioException("Não foi encontrada nenhuma da(s) avaliação(es) informada(s)");
 
             ValidarSeAtividadesAvaliativasExistem(avaliacoesAlteradasIds, atividadesAvaliativas);
+            var disciplinasEol = await servicoEOL.ObterProfessoresTitularesDisciplinas(turma.CodigoTurma);
 
-            atividadesAvaliativas.ToList().ForEach(async atividadeAvaliativa => await ValidarDataAvaliacaoECriador(atividadeAvaliativa, professorRf, disciplinaId));
+            foreach (var atividadeAvaliativa in atividadesAvaliativas)
+                await ValidarDataAvaliacaoECriador(atividadeAvaliativa, professorRf, disciplinaId, disciplinasEol);
         }
 
-        private async Task ValidarDataAvaliacaoECriador(AtividadeAvaliativa atividadeAvaliativa, string professorRf, string disciplinaId)
+        private async Task ValidarDataAvaliacaoECriador(AtividadeAvaliativa atividadeAvaliativa, string professorRf, string disciplinaId, IEnumerable<ProfessorTitularDisciplinaEol> disciplinasEol)
         {
             if (atividadeAvaliativa.DataAvaliacao.Date > DateTime.Today)
                 throw new NegocioException("Não é possivel atribuir notas/conceitos para avaliação(es) com data(s) futura(s)");
 
             bool ehTitular = false;
-            var disciplinasEol = Enumerable.Empty<ProfessorTitularDisciplinaEol>();
-
-            if (!atividadeAvaliativa.EhCj)
-                disciplinasEol = await servicoEOL.ObterProfessoresTitularesDisciplinas(turma.CodigoTurma);
 
             if (disciplinasEol != null && disciplinasEol.Any())
                 ehTitular = disciplinasEol.Any(d => d.DisciplinaId.ToString() == disciplinaId && d.ProfessorRf == professorRf);
