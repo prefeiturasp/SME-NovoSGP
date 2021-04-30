@@ -21,6 +21,7 @@ const inicial = {
   exibirModalImpressaoRegistroIndividual: false,
   dataInicioImpressaoRegistrosAnteriores: '',
   dataFimImpressaoRegistrosAnteriores: '',
+  mostrarMensagemSemHistorico: false,
 };
 
 export default function RegistroIndividual(state = inicial, action) {
@@ -245,6 +246,12 @@ export default function RegistroIndividual(state = inicial, action) {
         return {
           ...draft,
           dataFimImpressaoRegistrosAnteriores: action.payload,
+        };
+      }
+      case '@registroIndividual/setMostrarMensagemSemHistorico': {
+        return {
+          ...draft,
+          mostrarMensagemSemHistorico: action.payload,
         };
       }
       default:

@@ -127,3 +127,8 @@ export const setDataFimImpressaoRegistrosAnteriores = payload => ({
   type: '@registroIndividual/setDataFimImpressaoRegistrosAnteriores',
   payload,
 });
+
+export const setMostrarMensagemSemHistorico = payload => ({
+  type: '@registroIndividual/setMostrarMensagemSemHistorico',
+  payload,
+});
