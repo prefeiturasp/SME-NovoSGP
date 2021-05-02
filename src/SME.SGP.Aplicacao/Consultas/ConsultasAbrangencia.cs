@@ -158,14 +158,24 @@ namespace SME.SGP.Aplicacao
 
             result.ToList().ForEach(a =>
             {
-                if(Enum.IsDefined(typeof(Modalidade), (Modalidade)a.CodigoModalidade))
-                {
-                    var modalidadeEnum = (Modalidade)a.CodigoModalidade;
-                    a.ModalidadeTurmaNome = $"{modalidadeEnum.ShortName()} - {a.Nome}";
-                }                
+                var modalidadeEnum = (Modalidade)a.CodigoModalidade;
+                a.ModalidadeTurmaNome = $"{modalidadeEnum.ShortName()} - {a.Nome}";
             });
 
-            return result;
+            return OrdernarTurmasItinerario(result);
+        }
+
+        private IEnumerable<AbrangenciaTurmaRetorno> OrdernarTurmasItinerario(IEnumerable<AbrangenciaTurmaRetorno> result)
+        {
+            List<AbrangenciaTurmaRetorno> turmasOrdenadas = new List<AbrangenciaTurmaRetorno> ();
+
+            var turmasRegulares = result.Where(t => t.TipoTurma == (int)TipoTurma.Regular);
+            var turmasItinerario = result.Where(t => t.TipoTurma == (int)TipoTurma.Itinerarios2AAno || t.TipoTurma == (int)TipoTurma.ItinerarioEnsMedio);
+
+            turmasOrdenadas.AddRange(turmasRegulares.OrderBy(a => a.ModalidadeTurmaNome));
+            turmasOrdenadas.AddRange(turmasItinerario.OrderBy(a => a.ModalidadeTurmaNome));
+
+            return turmasOrdenadas;
         }
     }
 }
