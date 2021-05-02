@@ -147,10 +147,7 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterTurmas(string codigoUe, [FromQuery] Modalidade modalidade, int periodo = 0, [FromQuery] int anoLetivo = 0, [FromQuery] int[] tipos = null)
         {
             IEnumerable<AbrangenciaTurmaRetorno> turmas;
-            if (tipos.Any())
-                turmas = await consultasAbrangencia.ObterTurmasPorTipos(codigoUe, modalidade, periodo, ConsideraHistorico, anoLetivo, tipos);
-            else
-                turmas = await consultasAbrangencia.ObterTurmas(codigoUe, modalidade, periodo, ConsideraHistorico, anoLetivo);
+            turmas = await consultasAbrangencia.ObterTurmas(codigoUe, modalidade, periodo, ConsideraHistorico, anoLetivo, tipos);
 
             if (!turmas.Any())
                 return NoContent();

@@ -114,22 +114,6 @@ namespace SME.SGP.Aplicacao
                     .Where(a => a != 0);
         }
 
-        public async Task<IEnumerable<AbrangenciaTurmaRetorno>> ObterTurmas(string codigoUe, Modalidade modalidade, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0)
-        {
-            var login = servicoUsuario.ObterLoginAtual();
-            var perfil = servicoUsuario.ObterPerfilAtual();
-
-            var result = await repositorioAbrangencia.ObterTurmas(codigoUe, login, perfil, modalidade, periodo, consideraHistorico, anoLetivo);
-
-            result.ToList().ForEach(a =>
-            {
-                var modalidadeEnum = (Modalidade)a.CodigoModalidade;
-                a.ModalidadeTurmaNome = $"{modalidadeEnum.ShortName()} - {a.Nome}";
-            });
-
-            return result;
-        }
-
         public async Task<IEnumerable<AbrangenciaTurmaRetorno>> ObterTurmasRegulares(string codigoUe, Modalidade modalidade, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0)
         {
             var login = servicoUsuario.ObterLoginAtual();
@@ -149,12 +133,12 @@ namespace SME.SGP.Aplicacao
             return (await repositorioAbrangencia.ObterUes(codigoDre, login, perfil, modalidade, periodo, consideraHistorico, anoLetivo)).OrderBy(c => c.Nome).ToList();
         }
 
-        public async Task<IEnumerable<AbrangenciaTurmaRetorno>> ObterTurmasPorTipos(string codigoUe, Modalidade modalidade, int periodo, bool consideraHistorico, int anoLetivo, int[] tipos)
+        public async Task<IEnumerable<AbrangenciaTurmaRetorno>> ObterTurmas(string codigoUe, Modalidade modalidade, int periodo, bool consideraHistorico, int anoLetivo, int[] tipos)
         {
             var login = servicoUsuario.ObterLoginAtual();
             var perfil = servicoUsuario.ObterPerfilAtual();
 
-            var result = await repositorioAbrangencia.ObterTurmasPorTipos(codigoUe, login, perfil, modalidade, tipos, periodo, consideraHistorico, anoLetivo);
+            var result = await repositorioAbrangencia.ObterTurmasPorTipos(codigoUe, login, perfil, modalidade, tipos.Any() ? tipos : null, periodo, consideraHistorico, anoLetivo);
 
             result.ToList().ForEach(a =>
             {
@@ -169,10 +153,10 @@ namespace SME.SGP.Aplicacao
         {
             List<AbrangenciaTurmaRetorno> turmasOrdenadas = new List<AbrangenciaTurmaRetorno> ();
 
-            var turmasRegulares = result.Where(t => t.TipoTurma == (int)TipoTurma.Regular);
             var turmasItinerario = result.Where(t => t.TipoTurma == (int)TipoTurma.Itinerarios2AAno || t.TipoTurma == (int)TipoTurma.ItinerarioEnsMedio);
-
-            turmasOrdenadas.AddRange(turmasRegulares.OrderBy(a => a.ModalidadeTurmaNome));
+            var turmas = result.Where(t => !turmasItinerario.Any(ti => ti.Id == t.Id));
+            
+            turmasOrdenadas.AddRange(turmas.OrderBy(a => a.ModalidadeTurmaNome));
             turmasOrdenadas.AddRange(turmasItinerario.OrderBy(a => a.ModalidadeTurmaNome));
 
             return turmasOrdenadas;
