@@ -331,17 +331,14 @@ const AtaFinalResultados = () => {
 
   useEffect(() => {
     let turmaExcecao = false;
-    if (
-      turmaId?.length &&
-      turmaId[0] !== '-99' &&
-      parseInt(modalidadeId, 10) === parseInt(modalidade.ENSINO_MEDIO, 10)
-    ) {
+    if (turmaId?.length && turmaId[0] !== '-99') {
       turmaExcecao = checarTipoTurma(turmaId);
     }
     const desabilita =
       !modalidadeId ||
       !turmaId ||
       (turmaId.length === 1 && turmaId[0] !== '-99' && turmaExcecao) ||
+      parseInt(modalidadeId, 10) !== parseInt(modalidade.ENSINO_MEDIO, 10) ||
       !turmaId.length ||
       turmaExcecao;
     setDesabilitaVisualizacao(desabilita);
