@@ -324,11 +324,6 @@ const AtaFinalResultados = () => {
     );
 
     if (!turmasSelecionadas.length) {
-      setVisualizacao(
-        `${
-          listaVisualizacao.find(a => a.desc?.toUpperCase() === 'TURMA')?.valor
-        }`
-      );
       return true;
     }
     return false;
@@ -336,13 +331,16 @@ const AtaFinalResultados = () => {
 
   useEffect(() => {
     let turmaExcecao = false;
-    if (turmaId?.length && turmaId[0] !== '-99') {
+    if (
+      turmaId?.length &&
+      turmaId[0] !== '-99' &&
+      String(modalidadeId) === String(modalidade.ENSINO_MEDIO)
+    ) {
       turmaExcecao = checarTipoTurma(turmaId);
     }
     const desabilita =
       !modalidadeId ||
       !turmaId ||
-      String(modalidadeId) !== String(modalidade.ENSINO_MEDIO) ||
       (turmaId.length === 1 && turmaId[0] !== '-99' && turmaExcecao) ||
       !turmaId.length ||
       turmaExcecao;
