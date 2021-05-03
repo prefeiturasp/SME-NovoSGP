@@ -524,7 +524,7 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<INotificacaoDevolucaoEncaminhamentoAEEUseCase, NotificacaoDevolucaoEncaminhamentoAEEUseCase>();
 
             services.TryAddScopedWorkerService<IExecutarSyncGeralGoogleClassroomUseCase, ExecutarSyncGeralGoogleClassroomUseCase>();
-            services.TryAddScopedWorkerService<IExecutaSyncComparativoGoogleClassroomUseCase, ExecutaSyncComparativoGoogleClassroomUseCase>();
+            services.TryAddScopedWorkerService<IExecutaSyncGsaGoogleClassroomUseCase, ExecutaSyncGsaGoogleClassroomUseCase>();
 
             services.TryAddScopedWorkerService<IExecutarSincronizacaoInstitucionalSyncUseCase, ExecutarSincronizacaoEstruturaInstitucionalSyncUseCase>();
 

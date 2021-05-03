@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Aplicacao.Interfaces
 {
-    public interface IExecutaSyncComparativoGoogleClassroomUseCase
+    public interface IExecutaSyncGsaGoogleClassroomUseCase
     {
         Task<bool> Executar();
     }
