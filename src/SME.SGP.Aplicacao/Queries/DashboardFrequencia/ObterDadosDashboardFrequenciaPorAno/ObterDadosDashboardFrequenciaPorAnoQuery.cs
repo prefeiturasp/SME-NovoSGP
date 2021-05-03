@@ -33,6 +33,10 @@ namespace SME.SGP.Aplicacao
                 .NotNull()
                 .NotEmpty()
                 .WithMessage("O ano letivo deve ser informado.");
+            RuleFor(c => c.Modalidade)
+                .NotNull()
+                .NotEmpty()
+                .WithMessage("A modalidade deve ser informada.");
         }
     }
 }
