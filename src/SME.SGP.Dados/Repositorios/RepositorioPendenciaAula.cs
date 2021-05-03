@@ -207,15 +207,13 @@ namespace SME.SGP.Dados.Repositorios
 	                        and aula.id = ANY(@aulas)
                             and aula.data_aula::date < @hoje
                             and (rf.id is null or tr.id is null)
-	                        group by
-	                        1 ";
+	                        ";
 
-            return (await database.Conexao.QuerySingleOrDefaultAsync<bool>(sql, new { aulas = aulasId, hoje = DateTime.Today.Date }));
+            return (await database.Conexao.QueryFirstOrDefaultAsync<bool>(sql, new { aulas = aulasId, hoje = DateTime.Today.Date }));
         }
 
         public async Task<bool> PossuiPendenciasAtividadeAvaliativaPorAulasId(long[] aulasId)
         {            
-
             var sql = @"select 1
                             from aula a
                             inner join atividade_avaliativa aa on a.id = ANY(@aulas)
