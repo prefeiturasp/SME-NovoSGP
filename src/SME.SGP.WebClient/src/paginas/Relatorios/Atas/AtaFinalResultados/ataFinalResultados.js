@@ -334,7 +334,7 @@ const AtaFinalResultados = () => {
     if (
       turmaId?.length &&
       turmaId[0] !== '-99' &&
-      String(modalidadeId) === String(modalidade.ENSINO_MEDIO)
+      parseInt(modalidadeId, 10) === parseInt(modalidade.ENSINO_MEDIO, 10)
     ) {
       turmaExcecao = checarTipoTurma(turmaId);
     }
