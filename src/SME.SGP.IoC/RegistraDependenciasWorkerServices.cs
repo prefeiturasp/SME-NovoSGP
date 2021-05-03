@@ -312,6 +312,9 @@ namespace SME.SGP.IoC
 
             services.TryAddScopedWorkerService<IRepositorioPlanoAEEObservacao, RepositorioPlanoAEEObservacao>();
             services.TryAddScopedWorkerService<IRepositorioNotificacaoPlanoAEEObservacao, RepositorioNotificacaoPlanoAEEObservacao>();
+
+            // Consolidação Frequencia Turma
+            services.TryAddScopedWorkerService<IRepositorioConsolidacaoFrequenciaTurma, RepositorioConsolidacaoFrequenciaTurma>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)

@@ -376,6 +376,9 @@ namespace SME.SGP.IoC
 
             // Notificações Plano AEE
             services.TryAddScoped<IRepositorioNotificacaoPlanoAEE, RepositorioNotificacaoPlanoAEE>();
+
+            // Consolidação Frequeência Turma
+            services.TryAddScoped<IRepositorioConsolidacaoFrequenciaTurma, RepositorioConsolidacaoFrequenciaTurma>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)

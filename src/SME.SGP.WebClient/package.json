@@ -10,6 +10,7 @@
     "cmz": "npx git-cz"
   },
   "dependencies": {
+    "@ant-design/charts": "^1.1.2",
     "@ant-design/icons": "^4.2.2",
     "@ckeditor/ckeditor5-build-classic": "^16.0.0",
     "@ckeditor/ckeditor5-react": "^2.0.0",
