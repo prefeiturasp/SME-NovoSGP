@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
 {
-    public interface IRepositorioConsolidacaoFrequenciaTurma : IRepositorioBase<ConsolidacaoFrequenciaTurma>
+    public interface IRepositorioConsolidacaoFrequenciaTurma
     {
         Task<IEnumerable<FrequenciaGlobalPorAnoDto>> ObterFrequenciaGlobalPorAnoAsync(int anoLetivo, long dreId, long ueId, Modalidade? modalidade);
     }

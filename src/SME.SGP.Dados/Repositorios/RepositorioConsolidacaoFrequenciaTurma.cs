@@ -6,10 +6,13 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
-    public class RepositorioConsolidacaoFrequenciaTurma : RepositorioBase<ConsolidacaoFrequenciaTurma>, IRepositorioConsolidacaoFrequenciaTurma
+    public class RepositorioConsolidacaoFrequenciaTurma : IRepositorioConsolidacaoFrequenciaTurma
     {
-        public RepositorioConsolidacaoFrequenciaTurma(ISgpContext database) : base(database)
+        protected readonly ISgpContext database;
+
+        protected RepositorioConsolidacaoFrequenciaTurma(ISgpContext database)
         {
+            this.database = database;
         }
 
         private string ObterWhereFrequenciaGlobalPorAno(long dreId, long ueId, Modalidade? modalidade)
