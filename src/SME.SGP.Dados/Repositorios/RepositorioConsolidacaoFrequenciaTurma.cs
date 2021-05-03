@@ -57,5 +57,33 @@ namespace SME.SGP.Dados.Repositorios
                 .Conexao
                 .QueryAsync<FrequenciaGlobalPorAnoDto>(sql, new { modalidade, dreId, ueId, anoLetivo });
         }
+
+        public async Task<IEnumerable<FrequenciaGlobalPorDreDto>> ObterFrequenciaGlobalPorDreAsync(int anoLetivo)
+        {
+            const string sql = @"
+                SELECT
+                    dre.abreviacao,
+                    SUM(cft.quantidade_acima_minimo_frequencia) AS QuantidadeAcimaMinimoFrequencia,
+                    SUM(cft.quantidade_abaixo_minimo_frequencia) AS QuantidadeAbaixoMinimoFrequencia
+                FROM
+                    consolidacao_frequencia_turma cft 
+                INNER JOIN
+                    turma t 
+                    ON t.id = cft.turma_id
+                INNER JOIN
+                    ue 
+                    ON ue.id = t.ue_id 
+                INNER JOIN 
+                    dre 
+                    ON dre.id = ue.dre_id
+                WHERE
+                    t.ano = @anoLetivo
+                GROUP BY
+                    dre.abreviacao";
+
+            return await database
+                .Conexao
+                .QueryAsync<FrequenciaGlobalPorDreDto>(sql, new { anoLetivo });
+        }
     }
 }
