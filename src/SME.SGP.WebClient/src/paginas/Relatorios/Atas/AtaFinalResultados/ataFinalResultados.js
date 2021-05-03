@@ -341,7 +341,6 @@ const AtaFinalResultados = () => {
     const desabilita =
       !modalidadeId ||
       !turmaId ||
-      // String(modalidadeId) !== String(modalidade.ENSINO_MEDIO) ||
       (turmaId.length === 1 && turmaId[0] !== '-99' && turmaExcecao) ||
       !turmaId.length ||
       turmaExcecao;
