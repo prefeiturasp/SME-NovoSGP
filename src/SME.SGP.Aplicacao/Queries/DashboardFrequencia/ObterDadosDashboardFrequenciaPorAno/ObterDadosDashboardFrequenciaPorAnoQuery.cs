@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using FluentValidation;
+using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
@@ -21,5 +22,17 @@ namespace SME.SGP.Aplicacao
         public long DreId { get; set; }
         public long UeId { get; set; }
         public Modalidade Modalidade { get; set; }
+    }
+
+    public class ObterDadosDashboardFrequenciaPorAnoQueryValidator : AbstractValidator<ObterDadosDashboardFrequenciaPorAnoQuery>
+    {
+        public ObterDadosDashboardFrequenciaPorAnoQueryValidator()
+        {
+
+            RuleFor(c => c.AnoLetivo)
+                .NotNull()
+                .NotEmpty()
+                .WithMessage("O ano letivo deve ser informado.");
+        }
     }
 }

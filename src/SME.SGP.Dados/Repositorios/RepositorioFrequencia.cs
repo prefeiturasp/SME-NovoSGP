@@ -248,28 +248,31 @@ namespace SME.SGP.Dados.Repositorios
                                and t.ano_letivo = @anoLetivo";
             if (dreId > 0) subQuery += " and dre.id = @dreId";
             if (ueId > 0) subQuery += " and ue.id = @ueId";
-            if (modalidade != null) subQuery += " and t.modalidade_codigo = @modalidade";
+            if (modalidade > 0) subQuery += " and t.modalidade_codigo = @modalidade";
             return subQuery;
         }
 
         public async Task<IEnumerable<FrequenciaGlobalPorAnoDto>> ObterFrequenciaGlobalPorAnoAsync(int anoLetivo, long dreId, long ueId, Modalidade? modalidade)
         {
             var sql = $@"
-                select modalidade,
-	                   ano,
-                       count(frequencia) as quantidade, 
-                       'Qtd. acima do mínimo de frequencia' as descricao 
-                  from ({ObterSubselectFrequenciaGlobalPorAno(dreId, ueId, modalidade)}) x
-                 where x.frequencia >= cast((select valor from parametros_sistema ps where tipo = 4 and ano = @anoLetivo) as integer)
-                 group by x.modalidade, x.ano
-                 union 
-                 select modalidade,
-	                    ano, 
-                        count(frequencia) as quantidade,
-                       'Qtd. abaixo do mínimo de frequencia' as descricao         
-                   from ({ObterSubselectFrequenciaGlobalPorAno(dreId, ueId, modalidade)}) x
-                 where x.frequencia < cast((select valor from parametros_sistema ps where tipo = 4 and ano = @anoLetivo) as integer)
-                 group by x.modalidade, x.ano
+                select * from (
+                    select modalidade,
+	                       ano,
+                           count(frequencia) as quantidade, 
+                           'Qtd. acima do mínimo de frequencia' as descricao 
+                      from ({ObterSubselectFrequenciaGlobalPorAno(dreId, ueId, modalidade)}) x
+                     where x.frequencia >= cast((select valor from parametros_sistema ps where tipo = 4 and ano = @anoLetivo) as integer)
+                     group by x.modalidade, x.ano
+                     union 
+                     select modalidade,
+	                        ano, 
+                            count(frequencia) as quantidade,
+                           'Qtd. abaixo do mínimo de frequencia' as descricao         
+                       from ({ObterSubselectFrequenciaGlobalPorAno(dreId, ueId, modalidade)}) x
+                     where x.frequencia < cast((select valor from parametros_sistema ps where tipo = 4 and ano = @anoLetivo) as integer)
+                     group by x.modalidade, x.ano
+                ) z 
+                order by z.modalidade,z.ano,z.quantidade
  
             ";
 
