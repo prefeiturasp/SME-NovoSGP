@@ -50,6 +50,10 @@ class ServicoRegistroIndividual {
   deletarRegistroIndividual = ({ id }) => {
     return api.delete(`/v1/registros-individuais/${id}`);
   };
+
+  obterSugestao = params => {
+    return api.get(`/v1/registros-individuais/sugestoes-topicos/${params}`);
+  };
 }
 
 export default new ServicoRegistroIndividual();

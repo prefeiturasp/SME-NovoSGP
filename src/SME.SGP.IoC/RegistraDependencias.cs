@@ -778,6 +778,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterRegistroIndividualPorAlunoDataUseCase, ObterRegistroIndividualPorAlunoDataUseCase>();
             services.TryAddScoped<IObterRegistroIndividualUseCase, ObterRegistroIndividualUseCase>();
             services.TryAddScoped<IObterRegistrosIndividuaisPorAlunoPeriodoUseCase, ObterRegistrosIndividuaisPorAlunoPeriodoUseCase>();
+            services.TryAddScoped<IObterSugestaoTopicoRegistroIndividualPorMesUseCase, ObterSugestaoTopicoRegistroIndividualPorMesUseCase>();
 
             services.TryAddScoped<IListarOcorrenciasUseCase, ListarOcorrenciasUseCase>();
             services.TryAddScoped<IListarTiposOcorrenciaUseCase, ListarTiposOcorrenciaUseCase>();
