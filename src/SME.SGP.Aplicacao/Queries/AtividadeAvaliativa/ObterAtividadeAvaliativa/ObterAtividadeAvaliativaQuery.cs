@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
                 .WithMessage("A data avaliação deve ser informada.");
             RuleFor(c => c.DisciplinaId)
                 .NotEmpty()
-                .WithMessage("O id da disciplina deve ser informado.");
+                .WithMessage("O id do componente curricular deve ser informado.");
             RuleFor(c => c.TurmaId)
                 .NotEmpty()
                 .WithMessage("O id da Turma deve ser informado.");

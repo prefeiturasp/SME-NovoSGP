@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
             var alunos = frequenciaDto.ListaFrequencia.Select(a => a.CodigoAluno).ToList();
             if (alunos == null || !alunos.Any())
             {
-                throw new NegocioException("A lista de alunos a turma e a disciplina devem ser informados para calcular a frequência.");
+                throw new NegocioException("A lista de alunos da turma e o componente curricular devem ser informados para calcular a frequência.");
             }
 
             var aula = await consultasAula.BuscarPorId(frequenciaDto.AulaId);

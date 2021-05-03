@@ -156,7 +156,7 @@ namespace SME.SGP.Aplicacao
             var aulasComErro = listaExclusoes.Where(c => !c.sucesso);
             var aulasComFrequenciaOuPlanoAula = listaExclusoes.Where(a => a.existeFrequencia || a.existePlanoAula);
 
-            mensagemUsuario.Append($"Foram excluidas {aulasExcluidas.Count()} aulas da disciplina {componenteCurricularNome} para a turma {turma.Nome} da {turma.Ue?.Nome} ({turma.Ue?.Dre?.Nome}).");
+            mensagemUsuario.Append($"Foram excluidas {aulasExcluidas.Count()} aulas do componente curricular {componenteCurricularNome} para a turma {turma.Nome} da {turma.Ue?.Nome} ({turma.Ue?.Dre?.Nome}).");
 
             if (aulasComFrequenciaOuPlanoAula.Any())
             {
