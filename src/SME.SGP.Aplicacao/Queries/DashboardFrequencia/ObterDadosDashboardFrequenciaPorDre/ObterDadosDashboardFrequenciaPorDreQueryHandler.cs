@@ -49,6 +49,6 @@ namespace SME.SGP.Aplicacao
         }
 
         private static string FormatarAbreviacaoDre(string abreviacaoDre)
-            => abreviacaoDre.Replace(DashboardFrequenciaConstants.PrefixoDreParaSerRemovido, string.Empty);
+            => abreviacaoDre.Replace(DashboardFrequenciaConstants.PrefixoDreParaSerRemovido, string.Empty).Trim();
     }
 }
