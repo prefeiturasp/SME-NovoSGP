@@ -6,20 +6,23 @@ namespace SME.SGP.Aplicacao
 {
     public class ExcluirItineranciaAlunoCommand : IRequest<bool>
     {
-        public ExcluirItineranciaAlunoCommand(ItineranciaAluno aluno)
+        public ExcluirItineranciaAlunoCommand(ItineranciaAluno itineranciAluno)
         {
-            Aluno = aluno;
+            ItineranciaAluno = itineranciAluno;
         }
 
-        public ItineranciaAluno Aluno { get; set; }
+        public ItineranciaAluno ItineranciaAluno { get; set; }
+
+
     }
     public class ExcluirItineranciaAlunoCommandValidator : AbstractValidator<ExcluirItineranciaAlunoCommand>
     {
         public ExcluirItineranciaAlunoCommandValidator()
         {
-            RuleFor(c => c.Aluno)
+            RuleFor(c => c.ItineranciaAluno)
             .NotEmpty()
             .WithMessage("O id da itinerância do aluno deve ser informado para exclusão.");
+
         }
     }
 }
