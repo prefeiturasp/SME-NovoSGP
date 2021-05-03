@@ -11,16 +11,16 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterDadosDashboardFrequenciaPorAnoQueryHandler : IRequestHandler<ObterDadosDashboardFrequenciaPorAnoQuery, IEnumerable<GraficoFrequenciaGlobalPorAnoDto>>
     {
-        private readonly IRepositorioFrequencia repositorioFrequencia;
+        private readonly IRepositorioConsolidacaoFrequenciaTurma repositorioConsolidacaoFrequenciaTurma;
 
-        public ObterDadosDashboardFrequenciaPorAnoQueryHandler(IRepositorioFrequencia repositorioFrequencia)
+        public ObterDadosDashboardFrequenciaPorAnoQueryHandler(IRepositorioConsolidacaoFrequenciaTurma repositorioConsolidacaoFrequenciaTurma)
         {
-            this.repositorioFrequencia = repositorioFrequencia ?? throw new ArgumentNullException(nameof(repositorioFrequencia));
+            this.repositorioConsolidacaoFrequenciaTurma = repositorioConsolidacaoFrequenciaTurma ?? throw new ArgumentNullException(nameof(repositorioConsolidacaoFrequenciaTurma));
         }
 
         public async Task<IEnumerable<GraficoFrequenciaGlobalPorAnoDto>> Handle(ObterDadosDashboardFrequenciaPorAnoQuery request, CancellationToken cancellationToken)
         {
-            var listaFrequencia = await repositorioFrequencia.ObterFrequenciaGlobalPorAnoAsync(request.AnoLetivo, request.DreId, request.UeId, request.Modalidade);
+            var listaFrequencia = await repositorioConsolidacaoFrequenciaTurma.ObterFrequenciaGlobalPorAnoAsync(request.AnoLetivo, request.DreId, request.UeId, request.Modalidade);
             return MontarDto(listaFrequencia);
         }
 
