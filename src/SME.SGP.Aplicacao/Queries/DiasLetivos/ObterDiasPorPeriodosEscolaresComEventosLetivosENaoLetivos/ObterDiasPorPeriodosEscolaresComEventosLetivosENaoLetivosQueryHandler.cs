@@ -30,7 +30,8 @@ namespace SME.SGP.Aplicacao
                 datasDosPeriodosEscolares.AddRange(periodoEscolar.ObterIntervaloDatas(periodosEventosFeriados).Select(c => new DiaLetivoDto
                 {
                     Data = c,
-                    EhLetivo = !c.FimDeSemana()
+                    EhLetivo = eventos.Any(e => e.Letivo == EventoLetivo.Sim && c.Date >= e.DataInicio.Date && c.Date <= e.DataFim.Date) || 
+                               (!c.FimDeSemana() && !eventos.Any(e => e.Letivo == EventoLetivo.Nao && c.Date >= e.DataInicio.Date && c.Date <= e.DataFim.Date))
                 }));
             }
 
