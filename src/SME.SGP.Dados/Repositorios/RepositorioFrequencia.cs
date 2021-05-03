@@ -167,7 +167,7 @@ namespace SME.SGP.Dados.Repositorios
             if (Periodo == PeriodoRecuperacaoParalela.AcompanhamentoPrimeiroSemestre)
                 query.AppendLine("and bimestre IN  (1,2)");
             query.AppendLine("group by codigo_aluno");
-      
+
             return await database.Conexao.QueryAsync<RecuperacaoParalelaFrequenciaDto>(query.ToString(), new { CodigoAlunos, CodigoDisciplina = CodigoDisciplina.ToArray(), Ano });
         }
 
@@ -194,7 +194,7 @@ namespace SME.SGP.Dados.Repositorios
                             and aula_id = @aulaId";
 
             return database.Conexao.QueryFirstOrDefault<RegistroFrequencia>(query, new { aulaId });
-        }        
+        }
 
         public async Task<IEnumerable<AusenciaMotivoDto>> ObterAusenciaMotivoPorAlunoTurmaBimestreAno(string codigoAluno, string turma, short bimestre, short anoLetivo)
         {
@@ -223,6 +223,59 @@ namespace SME.SGP.Dados.Repositorios
             return await database
                 .Conexao
                 .QueryAsync<AusenciaMotivoDto>(sql, new { codigoAluno, turma, bimestre, anoLetivo });
+        }
+
+        private string ObterSubselectFrequenciaGlobalPorAno(long dreId, long ueId, Modalidade? modalidade)
+        {
+            var subQuery = @"SELECT t.modalidade_codigo as modalidade,
+				                   t.ano, 
+			                       ((100 / total_aulas) * (total_aulas - (total_ausencias - total_compensacoes))) as frequencia
+
+                              from frequencia_aluno fa
+
+                             inner
+                              join turma t on t.turma_id = fa.turma_id
+
+                        inner
+                              join ue on ue.id = t.ue_id
+
+                        inner
+                              join dre on dre.id = ue.dre_id
+
+                             where not fa.excluido
+                               and fa.tipo = 2
+
+                               and t.ano_letivo = @anoLetivo";
+            if (dreId > 0) subQuery += " and dre.id = @dreId";
+            if (ueId > 0) subQuery += " and ue.id = @ueId";
+            if (modalidade != null) subQuery += " and t.modalidade_codigo = @modalidade";
+            return subQuery;
+        }
+
+        public async Task<IEnumerable<FrequenciaGlobalPorAnoDto>> ObterFrequenciaGlobalPorAnoAsync(int anoLetivo, long dreId, long ueId, Modalidade? modalidade)
+        {
+            var sql = $@"
+                select modalidade,
+	                   ano,
+                       count(frequencia) as quantidade, 
+                       'Qtd. acima do mínimo de frequencia' as descricao 
+                  from ({ObterSubselectFrequenciaGlobalPorAno(dreId, ueId, modalidade)}) x
+                 where x.frequencia >= cast((select valor from parametros_sistema ps where tipo = 4 and ano = @anoLetivo) as integer)
+                 group by x.modalidade, x.ano
+                 union 
+                 select modalidade,
+	                    ano, 
+                        count(frequencia) as quantidade,
+                       'Qtd. abaixo do mínimo de frequencia' as descricao         
+                   from ({ObterSubselectFrequenciaGlobalPorAno(dreId, ueId, modalidade)}) x
+                 where x.frequencia < cast((select valor from parametros_sistema ps where tipo = 4 and ano = @anoLetivo) as integer)
+                 group by x.modalidade, x.ano
+ 
+            ";
+
+            return await database
+                .Conexao
+                .QueryAsync<FrequenciaGlobalPorAnoDto>(sql, new { modalidade, dreId, ueId, anoLetivo });
         }
     }
 }
