@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Loader } from '~/componentes';
-import GraficoBarras from '~/componentes-sgp/Graficos/GraficoBarras/graficosBarras';
+import GraficoBarras from '~/componentes-sgp/Graficos/graficoBarras';
 import { erros } from '~/servicos';
 import ServicoDashboardFrequencia from '~/servicos/Paginas/Dashboard/ServicoDashboardFrequencia';
 
@@ -41,7 +41,10 @@ const GraficoQuantidadeJustificativasPorMotivo = props => {
   }, [anoLetivo, dreId, ueId, obterDadosGrafico]);
 
   return (
-    <Loader loading={exibirLoader} className="col-md-12 text-center">
+    <Loader
+      loading={exibirLoader}
+      className={exibirLoader ? 'text-center' : ''}
+    >
       {dadosGrafico?.length ? (
         <GraficoBarras data={dadosGrafico} />
       ) : !exibirLoader ? (
