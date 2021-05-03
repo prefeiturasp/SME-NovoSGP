@@ -15,7 +15,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task ExcluirItineranciaQuestao(long questaoId, long itineranciaId)
         {
-            await database.Conexao.ExecuteScalarAsync(@"delete from itinerancia_questao iq where itinerancia_id = @itineranciaId and questao_id = @questaoId", new { questaoId, itineranciaId });
+            await database.Conexao.ExecuteScalarAsync(@"delete from itinerancia_questao iq where itinerancia_id = @itineranciaId and id = @questaoId", new { questaoId, itineranciaId });
         }
     }
 }
