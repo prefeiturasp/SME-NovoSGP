@@ -224,5 +224,46 @@ namespace SME.SGP.Dados.Repositorios
                 .Conexao
                 .QueryAsync<AusenciaMotivoDto>(sql, new { codigoAluno, turma, bimestre, anoLetivo });
         }
+
+        public async Task<IEnumerable<GraficoBaseDto>> ObterDashboardFrequenciaAusenciasPorMotivo(int anoLetivo, long dreId, long ueId, Modalidade? modalidade, string ano, int semestre)
+        {
+            var query = @"select ma.descricao, count(afa.id) as Quantidade
+                      from anotacao_frequencia_aluno afa   
+                     inner join motivo_ausencia ma on ma.id = afa.motivo_ausencia_id 
+                     inner join aula a on a.id = afa.aula_id 
+                     inner join turma t on t.turma_id = a.turma_id 
+                     inner join ue on ue.id = t.ue_id 
+                     inner join dre on dre.id = ue.dre_id 
+                     where not a.excluido 
+                       and not afa.excluido 
+                       and t.ano_letivo = @anoLetivo ";
+
+            if (dreId > 0)
+                query += " and ue.dre_id = @dreId";
+
+            if (ueId > 0)
+                query += " and ue.id = @ueId";
+
+            if (modalidade.HasValue && modalidade.Value > 0)
+                query += " and t.modalidade_codigo = @modalidade";
+
+            if (!string.IsNullOrEmpty(ano))
+                query += " and t.ano = @ano";
+
+            if (semestre > 0)
+                query += " and t.semestre = @semestre";
+
+            query += " group by ma.descricao";
+
+            return await database.Conexao.QueryAsync<GraficoBaseDto>(query, new
+            {
+                anoLetivo,
+                dreId,
+                ueId,
+                modalidade = (int)modalidade,
+                ano,
+                semestre
+            });
+        }
     }
 }
