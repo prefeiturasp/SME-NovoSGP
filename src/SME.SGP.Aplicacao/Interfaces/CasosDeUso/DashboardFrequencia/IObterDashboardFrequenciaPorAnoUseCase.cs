@@ -9,6 +9,8 @@ namespace SME.SGP.Aplicacao
 {
     public interface IObterDashboardFrequenciaPorAnoUseCase 
     {
-        Task<IEnumerable<GraficoFrequenciaGlobalPorAnoDto>> Executar(int anoLetivo, long dreId, long ueId, Modalidade modalidade);
+        Task<IEnumerable<GraficoFrequenciaGlobalPorAnoDto>> Executar(int anoLetivo, long dreId, long ueId, Modalidade modalidade, int semestre);
     }
+    
+
 }
