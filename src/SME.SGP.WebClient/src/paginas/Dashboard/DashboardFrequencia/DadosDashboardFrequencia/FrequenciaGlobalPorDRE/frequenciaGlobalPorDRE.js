@@ -5,7 +5,7 @@ import CardCollapse from '~/componentes/cardCollapse';
 import GraficoFrequenciaGlobalPorDRE from './graficoFrequenciaGlobalPorDRE';
 
 const FrequenciaGlobalPorDRE = props => {
-  const { anoLetivo, dreId, ueId, modalidade, semestre } = props;
+  const { anoLetivo, modalidade, semestre, listaAnosEscolares } = props;
 
   const configCabecalho = {
     altura: '44px',
@@ -32,10 +32,9 @@ const FrequenciaGlobalPorDRE = props => {
         {exibir ? (
           <GraficoFrequenciaGlobalPorDRE
             anoLetivo={anoLetivo}
-            dreId={dreId}
-            ueId={ueId}
             modalidade={modalidade}
             semestre={semestre}
+            listaAnosEscolares={listaAnosEscolares}
           />
         ) : (
           ''
@@ -47,18 +46,16 @@ const FrequenciaGlobalPorDRE = props => {
 
 FrequenciaGlobalPorDRE.propTypes = {
   anoLetivo: PropTypes.oneOfType(PropTypes.any),
-  dreId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-  ueId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   modalidade: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   semestre: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  listaAnosEscolares: PropTypes.oneOfType(PropTypes.array),
 };
 
 FrequenciaGlobalPorDRE.defaultProps = {
   anoLetivo: null,
-  dreId: null,
-  ueId: null,
   modalidade: null,
   semestre: null,
+  listaAnosEscolares: [],
 };
 
 export default FrequenciaGlobalPorDRE;

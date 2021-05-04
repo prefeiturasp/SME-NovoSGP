@@ -34,12 +34,12 @@ const GraficoFrequenciaGlobalPorAno = props => {
   }, [anoLetivo, dreId, ueId, modalidade, semestre]);
 
   useEffect(() => {
-    if (anoLetivo && dreId && ueId) {
+    if (modalidade && anoLetivo && dreId && ueId) {
       obterDadosGrafico();
     } else {
       setDadosGrafico([]);
     }
-  }, [anoLetivo, dreId, ueId, obterDadosGrafico]);
+  }, [modalidade, anoLetivo, dreId, ueId, obterDadosGrafico]);
 
   return (
     <Loader
@@ -56,7 +56,7 @@ const GraficoFrequenciaGlobalPorAno = props => {
           colors={['#0288D1', '#F57C00']}
         />
       ) : !exibirLoader ? (
-        'Sem dados'
+        <div className="text-center">Sem dados</div>
       ) : (
         ''
       )}

@@ -1,155 +1,127 @@
-const mockQuantidadeJustificativasMotivo = [
-  {
-    quantidade: 1500,
-    descricao: 'Atestado Médico do Aluno',
-  },
-  {
-    quantidade: 1500,
-    descricao: 'Atestado Médico de pessoa da Família',
-  },
-  {
-    quantidade: 2000,
-    descricao: 'Doença na Família, sem atestado',
-  },
-  {
-    quantidade: 1901,
-    descricao: 'Óbito de pessoa da Família',
-  },
-  {
-    quantidade: 2000,
-    descricao: 'Inexistência de pessoa para levar à escola',
-  },
-  {
-    quantidade: 1702,
-    descricao: 'Enchente',
-  },
-  {
-    quantidade: 1501,
-    descricao: 'Falta de transporte',
-  },
-];
+import api from '~/servicos/api';
 
-const mockoFrequenciaGlobalPorAno = [
-  {
-    quantidade: 1000,
-    descricao: 'Qtd. acima do minímo de frequência',
-    turma: 'EI - 5',
-  },
-  {
-    quantidade: 1501,
-    descricao: 'Qtd. abaixo do mínimo de frequência',
-    turma: 'EI - 5',
-  },
-  {
-    quantidade: 500,
-    descricao: 'Qtd. acima do minímo de frequência',
-    turma: 'EI - 6',
-  },
-  {
-    quantidade: 20000,
-    descricao: 'Qtd. abaixo do mínimo de frequência',
-    turma: 'EI - 6',
-  },
-];
-
-const mockFrequenciaGlobalPorDRE = [
-  {
-    quantidade: 1000,
-    descricao: 'Qtd. acima do minímo de frequência',
-    dre: 'BT',
-  },
-  {
-    quantidade: 1501,
-    descricao: 'Qtd. abaixo do mínimo de frequência',
-    dre: 'BT',
-  },
-  {
-    quantidade: 5003,
-    descricao: 'Qtd. acima do minímo de frequência',
-    dre: 'CL',
-  },
-  {
-    quantidade: 2000,
-    descricao: 'Qtd. abaixo do mínimo de frequência',
-    dre: 'CL',
-  },
-  {
-    quantidade: 4003,
-    descricao: 'Qtd. acima do minímo de frequência',
-    dre: 'CS',
-  },
-  {
-    quantidade: 1000,
-    descricao: 'Qtd. abaixo do mínimo de frequência',
-    dre: 'CS',
-  },
-  {
-    quantidade: 500,
-    descricao: 'Qtd. acima do minímo de frequência',
-    dre: 'FB',
-  },
-  {
-    quantidade: 900,
-    descricao: 'Qtd. abaixo do mínimo de frequência',
-    dre: 'FB',
-  },
-  {
-    quantidade: 3500,
-    descricao: 'Qtd. acima do minímo de frequência',
-    dre: 'GA',
-  },
-  {
-    quantidade: 4900,
-    descricao: 'Qtd. abaixo do mínimo de frequência',
-    dre: 'GA',
-  },
-];
-
-const mockQuantidadeAusenciasPossuemJustificativa = [
-  {
-    quantidade: 1500,
-    descricao: 'EI - 5',
-  },
-  {
-    quantidade: 1500,
-    descricao: 'EI - 6',
-  },
-];
+const urlPadrao = 'v1/dashboard/frequencias';
 
 class ServicoDashboardFrequencia {
-  obterFrequenciaGlobalPorAno = () => {
-    return new Promise(resolve => {
-      const retorno = { data: mockoFrequenciaGlobalPorAno };
-      setTimeout(() => {
-        resolve(retorno);
-      }, 2000);
+  montarConsultaPadraoGraficos = params => {
+    const {
+      rota,
+      anoLetivo,
+      dreId,
+      ueId,
+      modalidade,
+      semestre,
+      anoEscolar,
+      turmaId,
+    } = params;
+
+    let url = `${urlPadrao}/${rota}?anoLetivo=${anoLetivo}`;
+
+    if (dreId) {
+      url += `&dreId=${dreId}`;
+    }
+    if (ueId) {
+      url += `&ueId=${ueId}`;
+    }
+    if (modalidade) {
+      url += `&modalidade=${modalidade}`;
+    }
+    if (semestre) {
+      url += `&semestre=${semestre}`;
+    }
+    if (anoEscolar) {
+      url += `&ano=${anoEscolar}`;
+    }
+    if (turmaId) {
+      url += `&turmaId=${turmaId}`;
+    }
+    return api.get(url);
+  };
+
+  obterFrequenciaGlobalPorAno = (
+    anoLetivo,
+    dreId,
+    ueId,
+    modalidade,
+    semestre
+  ) => {
+    return this.montarConsultaPadraoGraficos({
+      rota: 'global/por-ano',
+      anoLetivo,
+      dreId,
+      ueId,
+      modalidade,
+      semestre,
     });
   };
 
-  obterFrequenciaGlobalPorDRE = () => {
-    return new Promise(resolve => {
-      const retorno = { data: mockFrequenciaGlobalPorDRE };
-      setTimeout(() => {
-        resolve(retorno);
-      }, 2000);
+  obterFrequenciaGlobalPorDRE = (
+    anoLetivo,
+    modalidade,
+    anoEscolar,
+    semestre
+  ) => {
+    return this.montarConsultaPadraoGraficos({
+      rota: 'global/dre',
+      anoLetivo,
+      modalidade,
+      anoEscolar,
+      semestre,
     });
   };
 
-  obterQuantidadeAusenciasPossuemJustificativa = () => {
-    return new Promise(resolve => {
-      const retorno = { data: mockQuantidadeAusenciasPossuemJustificativa };
-      setTimeout(() => {
-        resolve(retorno);
-      }, 2000);
+  obterQuantidadeAusenciasPossuemJustificativa = (
+    anoLetivo,
+    dreId,
+    ueId,
+    modalidade,
+    semestre
+  ) => {
+    return this.montarConsultaPadraoGraficos({
+      rota: 'ausencias/justificativas',
+      anoLetivo,
+      dreId,
+      ueId,
+      modalidade,
+      semestre,
     });
   };
 
-  obterQuantidadeJustificativasMotivo = () => {
-    return new Promise(resolve => {
-      const retorno = { data: mockQuantidadeJustificativasMotivo };
-      setTimeout(() => {
-        resolve(retorno);
-      }, 2000);
+  obterQuantidadeJustificativasMotivo = (
+    anoLetivo,
+    dreId,
+    ueId,
+    modalidade,
+    semestre,
+    anoEscolar,
+    turmaId
+  ) => {
+    return this.montarConsultaPadraoGraficos({
+      rota: 'ausencias/motivo',
+      anoLetivo,
+      dreId,
+      ueId,
+      modalidade,
+      semestre,
+      anoEscolar,
+      turmaId,
+    });
+  };
+
+  obterAnosEscolaresPorModalidade = (
+    anoLetivo,
+    dreId,
+    ueId,
+    modalidade,
+    semestre
+  ) => {
+    return this.montarConsultaPadraoGraficos({
+      rota: 'modalidades/ano',
+      anoLetivo,
+      dreId,
+      ueId,
+      modalidade,
+      semestre,
     });
   };
 }
