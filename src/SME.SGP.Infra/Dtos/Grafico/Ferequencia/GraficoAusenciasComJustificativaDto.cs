@@ -6,7 +6,7 @@ namespace SME.SGP.Infra
     {
         public Modalidade Modalidade { get; set; }
         public string Ano { get; set; }
-        public string ModalidadeAno { get; set; }
+        public string NomeTurma { get; set; }
     }
 
     public class GraficoAusenciasComJustificativaResultadoDto : GraficoBaseDto

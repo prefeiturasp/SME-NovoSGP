@@ -30,9 +30,9 @@ namespace SME.SGP.Aplicacao
             {
                 dto.Add(new GraficoAusenciasComJustificativaResultadoDto()
                 {
-                    Descricao = $"{ausencia.Modalidade.ShortName()}-{ausencia.Ano}",
+                    Descricao = string.IsNullOrEmpty(ausencia.NomeTurma) ? $"{ausencia.Modalidade.ShortName()}-{ausencia.Ano}" : ausencia.NomeTurma,
                     Quantidade = ausencia.Quantidade,
-                    ModalidadeAno = $"{ausencia.Modalidade.ShortName()}-{ausencia.Ano}"
+                    ModalidadeAno = string.IsNullOrEmpty(ausencia.NomeTurma) ? $"{ausencia.Modalidade.ShortName()}-{ausencia.Ano}" : ausencia.NomeTurma,
                 });
             }
             return dto;
