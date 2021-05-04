@@ -1334,7 +1334,7 @@ rotas.set(RotasDto.DASHBOARD_FREQUENCIA, {
   component: DashboardFrequencia,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  // temPermissionamento: true,
+  temPermissionamento: true,
   chavePermissao: RotasDto.DASHBOARD_FREQUENCIA,
 });
 

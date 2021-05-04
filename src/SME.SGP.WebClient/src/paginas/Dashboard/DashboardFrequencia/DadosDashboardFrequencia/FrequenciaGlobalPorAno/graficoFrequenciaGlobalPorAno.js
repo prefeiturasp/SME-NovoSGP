@@ -1,3 +1,4 @@
+import * as moment from 'moment';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Loader } from '~/componentes';
@@ -7,7 +8,14 @@ import { erros } from '~/servicos';
 import ServicoDashboardFrequencia from '~/servicos/Paginas/Dashboard/ServicoDashboardFrequencia';
 
 const GraficoFrequenciaGlobalPorAno = props => {
-  const { anoLetivo, dreId, ueId, modalidade, semestre } = props;
+  const {
+    anoLetivo,
+    dreId,
+    ueId,
+    modalidade,
+    semestre,
+    dataUltimaConsolidacao,
+  } = props;
 
   const [dadosGrafico, setDadosGrafico] = useState([]);
   const [exibirLoader, setExibirLoader] = useState(false);
@@ -46,7 +54,15 @@ const GraficoFrequenciaGlobalPorAno = props => {
       loading={exibirLoader}
       className={exibirLoader ? 'text-center' : ''}
     >
-      <DataUltimaAtualizacao dataFormatada="04/01/2021 04:58" />
+      {dataUltimaConsolidacao && (
+        <DataUltimaAtualizacao
+          dataFormatada={
+            dataUltimaConsolidacao
+              ? moment(dataUltimaConsolidacao).format('DD/MM/YYYY HH:mm:ss')
+              : ''
+          }
+        />
+      )}
       {dadosGrafico?.length ? (
         <GraficoBarras
           data={dadosGrafico}
@@ -70,6 +86,7 @@ GraficoFrequenciaGlobalPorAno.propTypes = {
   ueId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   modalidade: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   semestre: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  dataUltimaConsolidacao: PropTypes.string,
 };
 
 GraficoFrequenciaGlobalPorAno.defaultProps = {
@@ -78,6 +95,7 @@ GraficoFrequenciaGlobalPorAno.defaultProps = {
   ueId: null,
   modalidade: null,
   semestre: null,
+  dataUltimaConsolidacao: '',
 };
 
 export default GraficoFrequenciaGlobalPorAno;

@@ -15,6 +15,7 @@ const GraficosFrequencia = props => {
     listaAnosEscolares,
     codigoUe,
     consideraHistorico,
+    dataUltimaConsolidacao,
   } = props;
 
   const OPCAO_TODOS = '-99';
@@ -27,6 +28,7 @@ const GraficosFrequencia = props => {
         ueId={ueId}
         modalidade={modalidade}
         semestre={semestre}
+        dataUltimaConsolidacao={dataUltimaConsolidacao}
       />
       {dreId === OPCAO_TODOS && ueId === OPCAO_TODOS && (
         <FrequenciaGlobalPorDRE
@@ -34,6 +36,7 @@ const GraficosFrequencia = props => {
           modalidade={modalidade}
           semestre={semestre}
           listaAnosEscolares={listaAnosEscolares}
+          dataUltimaConsolidacao={dataUltimaConsolidacao}
         />
       )}
       <QuantidadeAusenciasPossuemJustificativa
@@ -66,6 +69,7 @@ GraficosFrequencia.propTypes = {
   listaAnosEscolares: PropTypes.oneOfType(PropTypes.array),
   codigoUe: PropTypes.string,
   consideraHistorico: PropTypes.bool,
+  dataUltimaConsolidacao: PropTypes.string,
 };
 
 GraficosFrequencia.defaultProps = {
@@ -77,6 +81,7 @@ GraficosFrequencia.defaultProps = {
   listaAnosEscolares: [],
   codigoUe: '',
   consideraHistorico: false,
+  dataUltimaConsolidacao: '',
 };
 
 export default GraficosFrequencia;

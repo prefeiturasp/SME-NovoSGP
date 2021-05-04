@@ -5,7 +5,14 @@ import CardCollapse from '~/componentes/cardCollapse';
 import GraficoFrequenciaGlobalPorAno from './graficoFrequenciaGlobalPorAno';
 
 const FrequenciaGlobalPorAno = props => {
-  const { anoLetivo, dreId, ueId, modalidade, semestre } = props;
+  const {
+    anoLetivo,
+    dreId,
+    ueId,
+    modalidade,
+    semestre,
+    dataUltimaConsolidacao,
+  } = props;
 
   const configCabecalho = {
     altura: '44px',
@@ -36,6 +43,7 @@ const FrequenciaGlobalPorAno = props => {
             ueId={ueId}
             modalidade={modalidade}
             semestre={semestre}
+            dataUltimaConsolidacao={dataUltimaConsolidacao}
           />
         ) : (
           ''
@@ -51,6 +59,7 @@ FrequenciaGlobalPorAno.propTypes = {
   ueId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   modalidade: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   semestre: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  dataUltimaConsolidacao: PropTypes.string,
 };
 
 FrequenciaGlobalPorAno.defaultProps = {
@@ -59,6 +68,7 @@ FrequenciaGlobalPorAno.defaultProps = {
   ueId: null,
   modalidade: null,
   semestre: null,
+  dataUltimaConsolidacao: '',
 };
 
 export default FrequenciaGlobalPorAno;
