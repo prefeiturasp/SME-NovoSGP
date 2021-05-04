@@ -304,5 +304,19 @@ namespace SME.SGP.Dados.Repositorios
                     componenteCurricularCodigos
                 });
         }
+
+        public async Task<IEnumerable<FrequenciaAlunoDto>> ObterFrequenciaGeralPorTurma(string turmaCodigo)
+        {
+            var query = @"select codigo_aluno as AlunoCodigo
+	                    , sum(total_aulas) as TotalAulas
+	                    , sum(total_ausencias) as TotalAusencias
+	                    , sum(total_compensacoes ) as TotalCompensacoes 
+                      from frequencia_aluno fa 
+                     where fa.turma_id = @turmaCodigo
+                       and tipo = 2
+                      group by codigo_aluno";
+
+            return await database.Conexao.QueryAsync<FrequenciaAlunoDto>(query, new { turmaCodigo });
+        }
     }
 }

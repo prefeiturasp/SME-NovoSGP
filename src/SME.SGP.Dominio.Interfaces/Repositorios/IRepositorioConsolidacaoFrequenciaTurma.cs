@@ -8,5 +8,8 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task<IEnumerable<FrequenciaGlobalPorAnoDto>> ObterFrequenciaGlobalPorAnoAsync(int anoLetivo, long dreId, long ueId, Modalidade? modalidade, int semestre);
         Task<IEnumerable<FrequenciaGlobalPorDreDto>> ObterFrequenciaGlobalPorDreAsync(int anoLetivo);
+        Task<bool> ExisteConsolidacaoFrequenciaTurmaPorAno(int ano);
+        Task<long> Inserir(ConsolidacaoFrequenciaTurma consolidacao);
+        Task LimparConsolidacaoFrequenciasTurmasPorAno(int ano);
     }
 }
