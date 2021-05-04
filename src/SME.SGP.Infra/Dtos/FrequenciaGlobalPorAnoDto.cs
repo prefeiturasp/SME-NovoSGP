@@ -7,6 +7,7 @@ namespace SME.SGP.Infra
 {
     public class FrequenciaGlobalPorAnoDto
     {
+        public string NomeTurma { get; set; }
         public Modalidade Modalidade { get; set; }
         public int Ano { get; set; }
         public int QuantidadeAcimaMinimoFrequencia { get; set; }

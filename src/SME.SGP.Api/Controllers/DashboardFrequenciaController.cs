@@ -30,9 +30,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(RetornoBaseDto), 200)]
         [Permissao(Permissao.DF_C, Policy = "Bearer")]
-        public async Task<IActionResult> Listar(int anoLetivo, long dreId, long ueId, Modalidade modalidade, [FromServices] IObterDashboardFrequenciaPorAnoUseCase useCase)
+        public async Task<IActionResult> Listar(int anoLetivo, long dreId, long ueId, Modalidade modalidade, int semestre, [FromServices] IObterDashboardFrequenciaPorAnoUseCase useCase)
         {
-            return Ok(await useCase.Executar(anoLetivo, dreId, ueId, modalidade));
+            return Ok(await useCase.Executar(anoLetivo, dreId, ueId, modalidade, semestre));
         }
 
         [HttpGet("global/dre")]
