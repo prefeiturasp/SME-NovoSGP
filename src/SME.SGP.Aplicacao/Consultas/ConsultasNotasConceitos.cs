@@ -117,9 +117,6 @@ namespace SME.SGP.Aplicacao
                 // Disciplina não tem disciplinas filhas então carrega avaliações da propria
                 atividadesAvaliativaEBimestres.AddRange(await consultasAtividadeAvaliativa.ObterAvaliacoesNoBimestre(filtro.TurmaCodigo, filtro.DisciplinaCodigo, periodoAtual.PeriodoInicio, periodoAtual.PeriodoFim));
 
-            //if (atividadesAvaliativaEBimestres is null || !atividadesAvaliativaEBimestres.Any())
-            //    return ObterRetornoGenericoBimestreAtualVazio(periodosEscolares, bimestre.Value);
-
             var alunos = await servicoEOL.ObterAlunosPorTurma(filtro.TurmaCodigo);
             if (alunos == null || !alunos.Any())
                 throw new NegocioException("Não foi encontrado alunos para a turma informada");
@@ -169,9 +166,6 @@ namespace SME.SGP.Aplicacao
                     if (atividadesAvaliativaEBimestres != null && atividadesAvaliativaEBimestres.Any())
                         notas = repositorioNotasConceitos
                             .ObterNotasPorAlunosAtividadesAvaliativas(atividadesAvaliativas, alunosIds, filtro.DisciplinaCodigo);
-
-                    //var notas = repositorioNotasConceitos
-                    //    .ObterNotasPorAlunosAtividadesAvaliativas(atividadesAvaliativas, alunosIds, filtro.DisciplinaCodigo);
 
                     var ausenciasAtividadesAvaliativas = await repositorioFrequencia
                         .ObterAusencias(filtro.TurmaCodigo, filtro.DisciplinaCodigo, atividadesAvaliativasdoBimestre.Select(a => a.DataAvaliacao).Distinct().ToArray(), alunosIds.ToArray());
