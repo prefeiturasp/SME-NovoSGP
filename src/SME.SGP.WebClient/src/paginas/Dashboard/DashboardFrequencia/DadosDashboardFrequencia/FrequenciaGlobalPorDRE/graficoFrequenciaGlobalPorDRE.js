@@ -1,12 +1,20 @@
+import * as moment from 'moment';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Loader, SelectComponent } from '~/componentes';
+import DataUltimaAtualizacao from '~/componentes-sgp/DataUltimaAtualizacao/dataUltimaAtualizacao';
 import GraficoBarras from '~/componentes-sgp/Graficos/graficoBarras';
 import { erros } from '~/servicos';
 import ServicoDashboardFrequencia from '~/servicos/Paginas/Dashboard/ServicoDashboardFrequencia';
 
 const GraficoFrequenciaGlobalPorDRE = props => {
-  const { anoLetivo, modalidade, semestre, listaAnosEscolares } = props;
+  const {
+    anoLetivo,
+    modalidade,
+    semestre,
+    listaAnosEscolares,
+    dataUltimaConsolidacao,
+  } = props;
 
   const [dadosGrafico, setDadosGrafico] = useState([]);
   const [exibirLoader, setExibirLoader] = useState(false);
@@ -68,6 +76,17 @@ const GraficoFrequenciaGlobalPorDRE = props => {
             allowClear={false}
           />
         </div>
+        {dataUltimaConsolidacao && (
+          <div className="col-sm-12 col-md-6 col-lg-9 col-xl-9 mb-2">
+            <DataUltimaAtualizacao
+              dataFormatada={
+                dataUltimaConsolidacao
+                  ? moment(dataUltimaConsolidacao).format('DD/MM/YYYY HH:mm:ss')
+                  : ''
+              }
+            />
+          </div>
+        )}
       </div>
       <Loader
         loading={exibirLoader}
@@ -96,6 +115,7 @@ GraficoFrequenciaGlobalPorDRE.propTypes = {
   modalidade: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   semestre: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   listaAnosEscolares: PropTypes.oneOfType(PropTypes.array),
+  dataUltimaConsolidacao: PropTypes.string,
 };
 
 GraficoFrequenciaGlobalPorDRE.defaultProps = {
@@ -103,6 +123,7 @@ GraficoFrequenciaGlobalPorDRE.defaultProps = {
   modalidade: null,
   semestre: null,
   listaAnosEscolares: [],
+  dataUltimaConsolidacao: '',
 };
 
 export default GraficoFrequenciaGlobalPorDRE;

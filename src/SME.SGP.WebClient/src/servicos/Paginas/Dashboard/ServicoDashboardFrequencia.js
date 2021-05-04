@@ -124,6 +124,10 @@ class ServicoDashboardFrequencia {
       semestre,
     });
   };
+
+  obterUltimaConsolidacao = anoLetivo => {
+    return api.get(`${urlPadrao}/consolidacao?anoLetivo=${anoLetivo}`);
+  };
 }
 
 export default new ServicoDashboardFrequencia();

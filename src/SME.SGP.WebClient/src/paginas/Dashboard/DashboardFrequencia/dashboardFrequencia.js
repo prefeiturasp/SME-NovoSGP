@@ -32,6 +32,7 @@ const DashboardFrequencia = () => {
   const [ue, setUe] = useState();
   const [modalidadeSelecionada, setModalidadeSelecionada] = useState();
   const [semestreSelecionado, setSemestreSelecionado] = useState();
+  const [dataUltimaConsolidacao, setDataUltimaConsolidacao] = useState();
 
   const [carregandoAnosLetivos, setCarregandoAnosLetivos] = useState(false);
   const [carregandoDres, setCarregandoDres] = useState(false);
@@ -317,6 +318,26 @@ const DashboardFrequencia = () => {
     obterAnosEscolares,
   ]);
 
+  const obterUltimaConsolidacao = useCallback(async () => {
+    const resposta = await ServicoDashboardFrequencia.obterUltimaConsolidacao(
+      anoLetivo
+    ).catch(e => erros(e));
+
+    if (resposta?.data) {
+      setDataUltimaConsolidacao(resposta.data);
+    } else {
+      setDataUltimaConsolidacao();
+    }
+  }, [anoLetivo]);
+
+  useEffect(() => {
+    if (anoLetivo) {
+      obterUltimaConsolidacao();
+    } else {
+      setDataUltimaConsolidacao();
+    }
+  }, [anoLetivo, obterUltimaConsolidacao]);
+
   return (
     <>
       <Cabecalho pagina="Dashboard frequência" />
@@ -447,6 +468,7 @@ const DashboardFrequencia = () => {
                   listaAnosEscolares={listaAnosEscolares}
                   codigoUe={ue?.codigo}
                   consideraHistorico={consideraHistorico}
+                  dataUltimaConsolidacao={dataUltimaConsolidacao}
                 />
               ) : (
                 ''
