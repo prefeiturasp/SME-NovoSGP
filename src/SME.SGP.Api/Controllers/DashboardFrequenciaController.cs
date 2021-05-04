@@ -28,10 +28,20 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(IEnumerable<GraficoFrequenciaGlobalPorDREDto>), 200)]
-        //[Permissao(Permissao.PDA_C, Policy = "Bearer")]
+        [Permissao(Permissao.PDA_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterFrequenciaGlobalPorDre(int anoLetivo, [FromServices] IObterDadosDashboardFrequenciaPorDreUseCase useCase)
         {
             return Ok(await useCase.Executar(anoLetivo));
+        }
+
+        [HttpGet("ausencias/justificativas")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(IEnumerable<GraficoAusenciasComJustificativaPorAnoDto>), 200)]
+        //[Permissao(Permissao.PDA_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterAusenciasComJustificativa(int anoLetivo, long dreId, long ueId, Modalidade modalidade, [FromServices] IObterDadosDashboardAusenciasComJustificativaUseCase useCase)
+        {
+            return Ok(await useCase.Executar(anoLetivo, dreId, ueId, modalidade));
         }
     }
 }
