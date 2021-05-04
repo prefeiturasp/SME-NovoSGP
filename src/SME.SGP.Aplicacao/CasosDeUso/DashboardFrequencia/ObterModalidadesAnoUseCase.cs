@@ -16,58 +16,18 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<IEnumerable<ModalidadesPorAnoDto>> Executar(List<string> anos)
+        public async Task<IEnumerable<RetornoModalidadesPorAnoDto>> Executar(int anoLetivo, long dreId, long ueId, int modalidade, int semestre)
         {
-            var modalidades = await mediator.Send(new ObterModalidadesPorAnosQuery(anos));
-            return ObterDescricoesPorModalidade(modalidades);
-        }
-
-        private static List<ModalidadesPorAnoDto> ObterDescricoesPorModalidade(IEnumerable<ModalidadesPorAnoDto> modalidades)
-        {
-            var resultado = new List<ModalidadesPorAnoDto>();
+            var modalidadesPorAnoRetornoDto = new List<RetornoModalidadesPorAnoDto>();
+            var modalidades = await mediator.Send(new ObterModalidadesPorAnosQuery(anoLetivo, dreId, ueId, modalidade, semestre));
             foreach (var item in modalidades)
             {
-                item.Modalidade = ObterModalidade(item.Modalidade);
-                resultado.Add(item);
+                modalidadesPorAnoRetornoDto.Add(new RetornoModalidadesPorAnoDto()
+                {
+                    ModalidadeAno = $"{item.Modalidade.ShortName()}-{item.Ano}"
+                });
             }
-            return resultado;
-        }
-
-        private static string ObterModalidade(string modalidade)
-        {
-            switch (modalidade)
-            {
-                case "1":
-                    modalidade = Modalidade.InfantilPreEscola.ToString();
-                    break;
-                case "2":
-                    modalidade = Modalidade.InfantilCEI.ToString();
-                    break;
-                case "3":
-                    modalidade = Modalidade.EJA.ToString();
-                    break;
-                case "4":
-                    modalidade = Modalidade.CIEJA.ToString();
-                    break;
-                case "5":
-                    modalidade = Modalidade.Fundamental.ToString();
-                    break;
-                case "6":
-                    modalidade = Modalidade.Medio.ToString();
-                    break;
-                case "7":
-                    modalidade = Modalidade.CMCT.ToString();
-                    break;
-                case "8":
-                    modalidade = Modalidade.MOVA.ToString();
-                    break;
-                case "9":
-                    modalidade = Modalidade.ETEC.ToString();
-                    break;
-                default:
-                    break;
-            }
-            return modalidade;
+            return modalidadesPorAnoRetornoDto;
         }
     }
 }

@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<ModalidadesPorAnoDto>> Handle(ObterModalidadesPorAnosQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioTurma.ObterModalidadesPorAnos(request.Anos);
+            return await repositorioTurma.ObterModalidadesPorAnos(request.AnoLetivo, request.DreId, request.UeId, request.modalidade, request.semestre);
         }
                 
     }

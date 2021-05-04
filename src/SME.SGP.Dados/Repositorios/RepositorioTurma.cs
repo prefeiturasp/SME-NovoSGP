@@ -1014,11 +1014,34 @@ namespace SME.SGP.Dados.Repositorios
 
         }
 
-        public async Task<IEnumerable<ModalidadesPorAnoDto>> ObterModalidadesPorAnos(List<string> anos)
+        public async Task<IEnumerable<ModalidadesPorAnoDto>> ObterModalidadesPorAnos(int anoLetivo, long dreId, long ueId, int modalidade, int semestre)
         {
-            var query = @"select distinct modalidade_codigo as modalidade from turma where ano = any(@anos)";
 
-            return await contexto.Conexao.QueryAsync<ModalidadesPorAnoDto>(query, new { anos });
+            var query = new StringBuilder(@"select 
+                            distinct modalidade_codigo as modalidade, 
+                            ano
+                         from turma t
+                         inner join ue u on t.ue_id = u.id
+                         inner join dre d on d.id = u.dre_id
+                         where ano in ('1', '2', '3', '4', '5', '6', '7', '8', '9') and
+                         ano_letivo = @anoLetivo  
+                         ");
+
+            if (dreId > 0) 
+                query.AppendLine(" and d.id = @dreId ");
+
+            if (ueId > 0)
+                query.AppendLine(" and u.id  = @ueId ");
+
+            if (modalidade > 0)
+                query.AppendLine(" and t.modalidade_codigo = @modalidade ");
+
+            if (semestre >= 0)
+                query.AppendLine(" and t.semestre = @semestre ");
+
+            query.AppendLine("order by ano");
+
+            return await contexto.Conexao.QueryAsync<ModalidadesPorAnoDto>(query.ToString(), new { anoLetivo, dreId, ueId, modalidade, semestre });
         }
     }
 }

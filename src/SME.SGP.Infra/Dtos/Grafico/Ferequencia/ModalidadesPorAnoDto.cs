@@ -4,6 +4,12 @@ namespace SME.SGP.Infra
 {
     public class ModalidadesPorAnoDto 
     {
-        public string Modalidade { get; set; }
+        public Modalidade Modalidade { get; set; }
+        public int Ano { get; set; }
+    }
+
+    public class RetornoModalidadesPorAnoDto
+    {
+        public string ModalidadeAno { get; set; }
     }
 }
