@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -24,7 +23,8 @@ namespace SME.SGP.Aplicacao
             {
                 modalidadesPorAnoRetornoDto.Add(new RetornoModalidadesPorAnoDto()
                 {
-                    ModalidadeAno = $"{item.Modalidade.ShortName()}-{item.Ano}"
+                    ModalidadeAno = $"{item.Modalidade.ShortName()}-{item.Ano}",
+                    Ano = item.Ano
                 });
             }
             return modalidadesPorAnoRetornoDto;
