@@ -19,8 +19,6 @@ namespace SME.SGP.Aplicacao
 
         public async Task<AuditoriaDto> Handle(AlterarItineranciaCommand request, CancellationToken cancellationToken)
         {
-            //var itinerancia = MapearParaEntidade(request);
-
             await repositorioItinerancia.SalvarAsync(request.itinerancia);
 
             return (AuditoriaDto)request.itinerancia;
@@ -29,8 +27,8 @@ namespace SME.SGP.Aplicacao
         private Itinerancia MapearParaEntidade(AlterarItineranciaCommand request)
            => new Itinerancia()
            {
-               Id = request.itinerancia.Id
-
+               Id = request.itinerancia.Id,
+               
            };
     }
 }

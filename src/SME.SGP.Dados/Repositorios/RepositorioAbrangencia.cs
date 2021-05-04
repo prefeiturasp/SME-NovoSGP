@@ -213,7 +213,7 @@ namespace SME.SGP.Dados.Repositorios
                 .FirstOrDefault();
         }
 
-        public async Task<IEnumerable<int>> ObterAnosLetivos(string login, Guid perfil, bool consideraHistorico, int anoMinimo )
+        public async Task<IEnumerable<int>> ObterAnosLetivos(string login, Guid perfil, bool consideraHistorico, int anoMinimo)
         {
             // Foi utilizada função de banco de dados com intuíto de melhorar a performance
             var anos = (await database.Conexao.QueryAsync<int>(@"select f_abrangencia_anos_letivos(@login, @perfil, @consideraHistorico)
@@ -546,6 +546,27 @@ namespace SME.SGP.Dados.Repositorios
 	                        and ue.tipo_escola in (1,3,4,16)";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { usuarioRF, usuarioPerfil });
-        }     
+        }
+
+        public async Task<IEnumerable<AbrangenciaTurmaRetorno>> ObterTurmasPorTipos(string codigoUe, string login, Guid perfil, Modalidade modalidade, int[] tipos, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0)
+        {
+            var query = @"select ano,
+	                             anoLetivo,
+	                             codigo,
+	                             codigoModalidade,
+	                             nome,
+	                             semestre,
+	                             qtDuracaoAula,
+	                             tipoTurno,
+                                 ensinoEspecial,
+                                 turma_id as id,
+                                 tipoturma
+                            from f_abrangencia_turmas_tipos(@login, @perfil, @consideraHistorico, @modalidade, @semestre, @codigoUe, @anoLetivo, @tipos)
+                          order by 5";
+
+            var result = (await database.Conexao.QueryAsync<AbrangenciaTurmaRetorno>(query.ToString(), new { login, perfil, consideraHistorico, modalidade, semestre = periodo, codigoUe, anoLetivo, tipos })).AsList();
+
+            return result;
+        }
     }
 }

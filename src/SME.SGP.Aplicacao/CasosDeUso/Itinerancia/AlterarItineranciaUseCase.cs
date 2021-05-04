@@ -33,16 +33,16 @@ namespace SME.SGP.Aplicacao.Interfaces
             itinerancia.DataRetornoVerificacao = dto.DataRetornoVerificacao;            
             itinerancia.EventoId = dto.EventoId;
 
+            await ExcluirFilhosItinerancia(dto, itinerancia);
+
             using (var transacao = unitOfWork.IniciarTransacao())
             {
                 try
                 {
                     var auditoriaDto = await mediator.Send(new AlterarItineranciaCommand(itinerancia));
-                    if(auditoriaDto == null)
+                    if (auditoriaDto == null)
                         throw new NegocioException($"Não foi possível alterar a itinerância de Id {itinerancia.Id}");
-                    
-                    await ExluirFilhosItinerancia(itinerancia);
-                    
+
                     await SalvarFilhosItinerancia(dto, itinerancia);
 
                     if (dataRetornoAlterada)
@@ -121,26 +121,26 @@ namespace SME.SGP.Aplicacao.Interfaces
                     }, Guid.NewGuid(), null));
         }
 
-        public async Task<bool> ExluirFilhosItinerancia(Itinerancia itinerancia)
+        public async Task<bool> ExcluirFilhosItinerancia(ItineranciaDto itineranciaDto, Itinerancia itinerancia)
         {
-            if (itinerancia.PossuiAlunos())
+            if (itineranciaDto.PossuiAlunos)
                 foreach (var aluno in itinerancia.Alunos)
                     if (!await mediator.Send(new ExcluirItineranciaAlunoCommand(aluno)))
                         throw new NegocioException($"Não foi possível excluir a itinerância do aluno de Id {aluno.Id}");
 
-            if (itinerancia.PossuiObjetivos())
+            if (itineranciaDto.PossuiObjetivos)
                 foreach (var objetivo in itinerancia.ObjetivosVisita)
-                    if (!await mediator.Send(new ExcluirItineranciaObjetivoCommand(objetivo.Id)))
+                    if (!await mediator.Send(new ExcluirItineranciaObjetivoCommand(objetivo.Id, itinerancia.Id)))
                         throw new NegocioException($"Não foi possível excluir o objetivo da itinerância de Id {objetivo.Id}");
 
-            if (itinerancia.PossuiQuestoes())
+            if (itineranciaDto.PossuiQuestoes)
                 foreach (var questao in itinerancia.Questoes)
-                    if (!await mediator.Send(new ExcluirItineranciaQuestaoCommand(questao.Id)))
+                    if (!await mediator.Send(new ExcluirItineranciaQuestaoCommand(questao.Id, itinerancia.Id)))
                         throw new NegocioException($"Não foi possível excluir a questão da itinerância de Id {questao.Id}");
 
-            if (itinerancia.PossuiUes())
+            if (itineranciaDto.PossuiUes)
                 foreach (var ue in itinerancia.Ues)
-                    if (!await mediator.Send(new ExcluirItineranciaUeCommand(ue.Id)))
+                    if (!await mediator.Send(new ExcluirItineranciaUeCommand(ue.Id, itinerancia.Id)))
                         throw new NegocioException($"Não foi possível excluir a ue da itinerância de Id {ue.Id}");
 
             return true;
