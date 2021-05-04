@@ -19,6 +19,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<IEnumerable<GraficoBaseDto>> Handle(ObterDashboardFrequenciaAusenciasPorMotivoQuery request, CancellationToken cancellationToken)
-            => await repositorio.ObterDashboardFrequenciaAusenciasPorMotivo(request.AnoLetivo, request.DreId, request.UeId, request.Modalidade, request.Ano, request.Semestre);
+            => await repositorio.ObterDashboardFrequenciaAusenciasPorMotivo(request.AnoLetivo, request.DreId, request.UeId, request.Modalidade, request.Ano, request.TurmaId, request.Semestre);
     }
 }

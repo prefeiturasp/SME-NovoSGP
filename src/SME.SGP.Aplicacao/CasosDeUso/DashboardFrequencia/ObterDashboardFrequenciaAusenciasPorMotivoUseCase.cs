@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<IEnumerable<GraficoBaseDto>> Executar(int anoLetivo, long dreId, long ueId, Modalidade? modalidade = null, string ano = "", int semestre = 0)
-            => await mediator.Send(new ObterDashboardFrequenciaAusenciasPorMotivoQuery(anoLetivo, dreId, ueId, modalidade, ano, semestre));
+        public async Task<IEnumerable<GraficoBaseDto>> Executar(int anoLetivo, long dreId, long ueId, Modalidade? modalidade = null, string ano = "", long turmaId = 0, int semestre = 0)
+            => await mediator.Send(new ObterDashboardFrequenciaAusenciasPorMotivoQuery(anoLetivo, dreId, ueId, modalidade, ano, turmaId, semestre));
     }
 }
