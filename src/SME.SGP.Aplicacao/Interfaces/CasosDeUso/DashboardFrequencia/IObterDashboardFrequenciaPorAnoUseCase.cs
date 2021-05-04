@@ -11,4 +11,6 @@ namespace SME.SGP.Aplicacao
     {
         Task<IEnumerable<GraficoFrequenciaGlobalPorAnoDto>> Executar(int anoLetivo, long dreId, long ueId, Modalidade modalidade);
     }
+    
+
 }

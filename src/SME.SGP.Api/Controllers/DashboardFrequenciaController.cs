@@ -14,6 +14,17 @@ namespace SME.SGP.Api.Controllers
     [Route("api/v1/dashboard/frequencias")]
     public class DashboardFrequenciaController : Controller
     {
+
+        [HttpGet("modalidades/ano")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 200)]
+        [Permissao(Permissao.DF_C, Policy = "Bearer")]
+        public async Task<IActionResult> ModalidadesPorAno([FromQuery] int anoLetivo, long dreId, long ueId, int modalidade, int semestre, [FromServices] IObterModalidadesAnoUseCase useCase)
+        {
+            return Ok(await useCase.Executar(anoLetivo, dreId, ueId, modalidade, semestre));
+        }
+
         [HttpGet("global/por-ano")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
