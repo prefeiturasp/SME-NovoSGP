@@ -11,5 +11,6 @@ namespace SME.SGP.Infra
     public class RetornoModalidadesPorAnoDto
     {
         public string ModalidadeAno { get; set; }
+        public int Ano { get; set; }
     }
 }
