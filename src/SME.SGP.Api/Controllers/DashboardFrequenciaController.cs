@@ -5,6 +5,7 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -15,6 +16,22 @@ namespace SME.SGP.Api.Controllers
     [Route("api/v1/dashboard/frequencias")]
     public class DashboardFrequenciaController : Controller
     {
+        [HttpGet("consolidacao")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(DateTime), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 204)]
+        [Permissao(Permissao.DF_C, Policy = "Bearer")]
+        public async Task<IActionResult> UltimaConsolidacao(int anoLetivo, [FromServices] IObterDataConsolidacaoFrequenciaUseCase useCase)
+        {
+            var ultimaConsolidacao = await useCase.Executar(anoLetivo);
+
+            if (!ultimaConsolidacao.HasValue)
+                return NoContent();
+
+            return Ok(ultimaConsolidacao.Value);
+        }
+
 
         [HttpGet("modalidades/ano")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
