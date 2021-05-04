@@ -7,6 +7,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IObterDadosDashboardAusenciasComJustificativaUseCase
     {
-        Task<IEnumerable<GraficoAusenciasComJustificativaPorAnoDto>> Executar(int anoLetivo, long dreId, long ueId, Modalidade modalidade);
+        Task<IEnumerable<GraficoAusenciasComJustificativaResultadoDto>> Executar(int anoLetivo, long dreId, long ueId, Modalidade modalidade, int semestre);
     }
 }

@@ -16,11 +16,9 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<IEnumerable<GraficoAusenciasComJustificativaPorAnoDto>> IObterDadosDashboardAusenciasComJustificativaUseCase.Executar(int anoLetivo, long dreId, long ueId, Modalidade modalidade)
+        public async Task<IEnumerable<GraficoAusenciasComJustificativaResultadoDto>> Executar(int anoLetivo, long dreId, long ueId, Modalidade modalidade, int semestre)
         {
-            return await mediator.Send(new ObterDadosDashboardAusenciasComJustificativaPorAnoQuery(anoLetivo, dreId, ueId, modalidade));
+            return await mediator.Send(new ObterDadosDashboardAusenciasComJustificativaQuery(anoLetivo, dreId, ueId, modalidade, semestre));
         }
     }
-
-    
 }
