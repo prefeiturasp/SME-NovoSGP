@@ -225,7 +225,7 @@ namespace SME.SGP.Dados.Repositorios
                 .QueryAsync<AusenciaMotivoDto>(sql, new { codigoAluno, turma, bimestre, anoLetivo });
         }
 
-        public async Task<IEnumerable<GraficoBaseDto>> ObterDashboardFrequenciaAusenciasPorMotivo(int anoLetivo, long dreId, long ueId, Modalidade? modalidade, string ano, int semestre)
+        public async Task<IEnumerable<GraficoBaseDto>> ObterDashboardFrequenciaAusenciasPorMotivo(int anoLetivo, long dreId, long ueId, Modalidade? modalidade, string ano, long turmaId, int semestre)
         {
             var query = @"select ma.descricao, count(afa.id) as Quantidade
                       from anotacao_frequencia_aluno afa   
@@ -250,6 +250,9 @@ namespace SME.SGP.Dados.Repositorios
             if (!string.IsNullOrEmpty(ano))
                 query += " and t.ano = @ano";
 
+            if (turmaId > 0)
+                query += " and t.id = @turmaId";
+
             if (semestre > 0)
                 query += " and t.semestre = @semestre";
 
@@ -262,6 +265,7 @@ namespace SME.SGP.Dados.Repositorios
                 ueId,
                 modalidade = (int)modalidade,
                 ano,
+                turmaId,
                 semestre
             });
         }
