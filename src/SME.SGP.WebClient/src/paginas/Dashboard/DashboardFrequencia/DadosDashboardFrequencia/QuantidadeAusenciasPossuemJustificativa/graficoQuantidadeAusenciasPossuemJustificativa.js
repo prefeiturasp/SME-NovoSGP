@@ -48,7 +48,7 @@ const GraficoQuantidadeAusenciasPossuemJustificativa = props => {
       {dadosGrafico?.length ? (
         <GraficoBarras data={dadosGrafico} xAxisVisible legendVisible={false} />
       ) : !exibirLoader ? (
-        'Sem dados'
+        <div className="text-center">Sem dados</div>
       ) : (
         ''
       )}

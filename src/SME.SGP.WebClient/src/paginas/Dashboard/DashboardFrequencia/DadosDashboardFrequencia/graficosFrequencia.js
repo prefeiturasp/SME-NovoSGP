@@ -16,6 +16,9 @@ const GraficosFrequencia = props => {
     codigoUe,
     consideraHistorico,
   } = props;
+
+  const OPCAO_TODOS = '-99';
+
   return (
     <>
       <FrequenciaGlobalPorAno
@@ -25,14 +28,14 @@ const GraficosFrequencia = props => {
         modalidade={modalidade}
         semestre={semestre}
       />
-      <FrequenciaGlobalPorDRE
-        anoLetivo={anoLetivo}
-        dreId={dreId}
-        ueId={ueId}
-        modalidade={modalidade}
-        semestre={semestre}
-        listaAnosEscolares={listaAnosEscolares}
-      />
+      {dreId === OPCAO_TODOS && ueId === OPCAO_TODOS && (
+        <FrequenciaGlobalPorDRE
+          anoLetivo={anoLetivo}
+          modalidade={modalidade}
+          semestre={semestre}
+          listaAnosEscolares={listaAnosEscolares}
+        />
+      )}
       <QuantidadeAusenciasPossuemJustificativa
         anoLetivo={anoLetivo}
         dreId={dreId}

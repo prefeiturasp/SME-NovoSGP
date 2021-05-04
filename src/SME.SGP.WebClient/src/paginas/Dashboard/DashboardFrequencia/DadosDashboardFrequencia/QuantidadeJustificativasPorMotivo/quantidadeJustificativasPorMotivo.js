@@ -11,6 +11,7 @@ const QuantidadeJustificativasPorMotivo = props => {
     ueId,
     modalidade,
     semestre,
+    listaAnosEscolares,
     codigoUe,
     consideraHistorico,
   } = props;
@@ -44,6 +45,7 @@ const QuantidadeJustificativasPorMotivo = props => {
             ueId={ueId}
             modalidade={modalidade}
             semestre={semestre}
+            listaAnosEscolares={listaAnosEscolares}
             codigoUe={codigoUe}
             consideraHistorico={consideraHistorico}
           />
@@ -61,6 +63,7 @@ QuantidadeJustificativasPorMotivo.propTypes = {
   ueId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   modalidade: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   semestre: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  listaAnosEscolares: PropTypes.oneOfType(PropTypes.array),
   codigoUe: PropTypes.string,
   consideraHistorico: PropTypes.bool,
 };
@@ -71,6 +74,7 @@ QuantidadeJustificativasPorMotivo.defaultProps = {
   ueId: null,
   modalidade: null,
   semestre: null,
+  listaAnosEscolares: [],
   codigoUe: '',
   consideraHistorico: false,
 };

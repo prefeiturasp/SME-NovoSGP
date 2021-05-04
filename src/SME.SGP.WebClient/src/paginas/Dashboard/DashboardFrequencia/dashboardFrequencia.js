@@ -12,6 +12,7 @@ import { ServicoFiltroRelatorio } from '~/servicos';
 import AbrangenciaServico from '~/servicos/Abrangencia';
 import { erros } from '~/servicos/alertas';
 import history from '~/servicos/history';
+import ServicoDashboardFrequencia from '~/servicos/Paginas/Dashboard/ServicoDashboardFrequencia';
 import GraficosFrequencia from './DadosDashboardFrequencia/graficosFrequencia';
 
 const DashboardFrequencia = () => {
@@ -60,7 +61,6 @@ const DashboardFrequencia = () => {
 
     const anosLetivos = await FiltroHelper.obterAnosLetivos({
       consideraHistorico,
-      anoMinimo: 2021,
     });
 
     if (!anosLetivos.length) {
@@ -219,7 +219,7 @@ const DashboardFrequencia = () => {
   }, [ue, anoLetivo, consideraHistorico]);
 
   useEffect(() => {
-    if (ue && OPCAO_TODOS !== ue?.codigo && anoLetivo) {
+    if (ue && anoLetivo) {
       obterModalidades();
     } else {
       setListaModalidades([]);
@@ -284,26 +284,38 @@ const DashboardFrequencia = () => {
   };
 
   const obterAnosEscolares = useCallback(async () => {
-    const respota = await AbrangenciaServico.buscarAnosEscolares(
-      ue?.codigo,
+    const respota = await ServicoDashboardFrequencia.obterAnosEscolaresPorModalidade(
+      anoLetivo,
+      dre?.id,
+      ue?.id,
       modalidadeSelecionada,
-      anoLetivo != anoAtual
+      semestreSelecionado
     ).catch(e => erros(e));
 
     if (respota?.data?.length) {
+      if (respota.data.length > 1) {
+        respota.data.unshift({ ano: OPCAO_TODOS, modalidadeAno: 'Todos' });
+      }
       setListaAnosEscolares(respota.data);
     } else {
       setListaAnosEscolares([]);
     }
-  }, [anoAtual, modalidadeSelecionada, anoLetivo, ue]);
+  }, [anoLetivo, dre, ue, modalidadeSelecionada, semestreSelecionado]);
 
   useEffect(() => {
-    if (modalidadeSelecionada && ue?.codigo && anoLetivo) {
+    if (anoLetivo && dre && ue && modalidadeSelecionada) {
       obterAnosEscolares();
     } else {
       setListaAnosEscolares([]);
     }
-  }, [modalidadeSelecionada, anoLetivo, ue, obterAnosEscolares]);
+  }, [
+    anoLetivo,
+    dre,
+    ue,
+    modalidadeSelecionada,
+    semestreSelecionado,
+    obterAnosEscolares,
+  ]);
 
   return (
     <>
@@ -391,9 +403,7 @@ const DashboardFrequencia = () => {
                   lista={listaModalidades}
                   valueOption="valor"
                   valueText="descricao"
-                  disabled={
-                    listaModalidades?.length === 1 || OPCAO_TODOS === ue?.codigo
-                  }
+                  disabled={listaModalidades?.length === 1}
                   onChange={onChangeModalidade}
                   valueSelect={modalidadeSelecionada}
                   placeholder="Selecione uma modalidade"
@@ -410,7 +420,7 @@ const DashboardFrequencia = () => {
                   valueText="descricao"
                   disabled={
                     listaSemestres?.length === 1 ||
-                    String(modalidadeSelecionada) !== String(ModalidadeDTO.EJA)
+                    Number(modalidadeSelecionada) !== ModalidadeDTO.EJA
                   }
                   onChange={onChangeSemestre}
                   valueSelect={semestreSelecionado}
@@ -421,7 +431,13 @@ const DashboardFrequencia = () => {
           </div>
           <div className="row">
             <div className="col-md-12 mt-2">
-              {anoLetivo && dre && ue ? (
+              {anoLetivo &&
+              dre &&
+              ue &&
+              modalidadeSelecionada &&
+              !!(Number(modalidadeSelecionada) === ModalidadeDTO.EJA
+                ? semestreSelecionado
+                : !semestreSelecionado) ? (
                 <GraficosFrequencia
                   anoLetivo={anoLetivo}
                   dreId={OPCAO_TODOS === dre?.codigo ? OPCAO_TODOS : dre?.id}

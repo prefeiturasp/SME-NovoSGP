@@ -6,18 +6,11 @@ import { erros } from '~/servicos';
 import ServicoDashboardFrequencia from '~/servicos/Paginas/Dashboard/ServicoDashboardFrequencia';
 
 const GraficoFrequenciaGlobalPorDRE = props => {
-  const {
-    anoLetivo,
-    dreId,
-    ueId,
-    modalidade,
-    semestre,
-    listaAnosEscolares,
-  } = props;
+  const { anoLetivo, modalidade, semestre, listaAnosEscolares } = props;
 
   const [dadosGrafico, setDadosGrafico] = useState([]);
   const [exibirLoader, setExibirLoader] = useState(false);
-  const [anoEscolarSelecionado, setAnoEscolarSelecionado] = useState();
+  const [anoEscolar, setAnoEscolar] = useState();
 
   const OPCAO_TODOS = '-99';
 
@@ -25,11 +18,9 @@ const GraficoFrequenciaGlobalPorDRE = props => {
     setExibirLoader(true);
     const retorno = await ServicoDashboardFrequencia.obterFrequenciaGlobalPorDRE(
       anoLetivo,
-      dreId === OPCAO_TODOS ? '' : dreId,
-      ueId === OPCAO_TODOS ? '' : ueId,
       modalidade,
-      semestre,
-      anoEscolarSelecionado
+      anoEscolar === OPCAO_TODOS ? '' : anoEscolar,
+      semestre
     )
       .catch(e => erros(e))
       .finally(() => setExibirLoader(false));
@@ -39,33 +30,27 @@ const GraficoFrequenciaGlobalPorDRE = props => {
     } else {
       setDadosGrafico([]);
     }
-  }, [anoEscolarSelecionado, anoLetivo, dreId, ueId, modalidade, semestre]);
+  }, [anoLetivo, modalidade, anoEscolar, semestre]);
 
   useEffect(() => {
-    if (anoLetivo && dreId && ueId) {
+    if (anoLetivo && modalidade && anoEscolar && modalidade) {
       obterDadosGrafico();
     } else {
       setDadosGrafico([]);
     }
-  }, [anoLetivo, dreId, ueId, obterDadosGrafico]);
+  }, [anoLetivo, modalidade, anoEscolar, semestre, obterDadosGrafico]);
 
   useEffect(() => {
-    if (listaAnosEscolares?.length) {
-      if (listaAnosEscolares?.length === 1) {
-        setAnoEscolarSelecionado(listaAnosEscolares[0].valor);
-      } else {
-        const temTodos = listaAnosEscolares.find(
-          item => item.valor === OPCAO_TODOS
-        );
-        if (temTodos) {
-          setAnoEscolarSelecionado(OPCAO_TODOS);
-        }
-      }
+    if (listaAnosEscolares?.length === 1) {
+      setAnoEscolar(listaAnosEscolares[0].ano);
+    }
+    if (listaAnosEscolares?.length > 1) {
+      setAnoEscolar(OPCAO_TODOS);
     }
   }, [listaAnosEscolares]);
 
   const onChangeAnoEscolar = valor => {
-    setAnoEscolarSelecionado(valor);
+    setAnoEscolar(valor);
   };
 
   return (
@@ -74,12 +59,13 @@ const GraficoFrequenciaGlobalPorDRE = props => {
         <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 mb-2">
           <SelectComponent
             lista={listaAnosEscolares}
-            valueOption="valor"
-            valueText="descricao"
+            valueOption="ano"
+            valueText="modalidadeAno"
             disabled={listaAnosEscolares?.length === 1}
-            valueSelect={anoEscolarSelecionado}
+            valueSelect={anoEscolar}
             onChange={onChangeAnoEscolar}
             placeholder="Selecione o ano"
+            allowClear={false}
           />
         </div>
       </div>
@@ -96,7 +82,7 @@ const GraficoFrequenciaGlobalPorDRE = props => {
             colors={['#0288D1', '#F57C00']}
           />
         ) : !exibirLoader ? (
-          'Sem dados'
+          <div className="text-center">Sem dados</div>
         ) : (
           ''
         )}
@@ -107,8 +93,6 @@ const GraficoFrequenciaGlobalPorDRE = props => {
 
 GraficoFrequenciaGlobalPorDRE.propTypes = {
   anoLetivo: PropTypes.oneOfType(PropTypes.any),
-  dreId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-  ueId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   modalidade: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   semestre: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   listaAnosEscolares: PropTypes.oneOfType(PropTypes.array),
@@ -116,8 +100,6 @@ GraficoFrequenciaGlobalPorDRE.propTypes = {
 
 GraficoFrequenciaGlobalPorDRE.defaultProps = {
   anoLetivo: null,
-  dreId: null,
-  ueId: null,
   modalidade: null,
   semestre: null,
   listaAnosEscolares: [],
