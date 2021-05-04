@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System.Collections.Generic;
@@ -14,14 +15,25 @@ namespace SME.SGP.Api.Controllers
     [Route("api/v1/dashboard/frequencias")]
     public class DashboardFrequenciaController : Controller
     {
+
+        [HttpGet("modalidades/ano")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 200)]
+        [Permissao(Permissao.DF_C, Policy = "Bearer")]
+        public async Task<IActionResult> ModalidadesPorAno([FromQuery] int anoLetivo, long dreId, long ueId, int modalidade, int semestre, [FromServices] IObterModalidadesAnoUseCase useCase)
+        {
+            return Ok(await useCase.Executar(anoLetivo, dreId, ueId, modalidade, semestre));
+        }
+
         [HttpGet("global/por-ano")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(RetornoBaseDto), 200)]
         [Permissao(Permissao.DF_C, Policy = "Bearer")]
-        public async Task<IActionResult> Listar(int anoLetivo, long dreId, long ueId, Modalidade modalidade, [FromServices] IObterDashboardFrequenciaPorAnoUseCase useCase)
+        public async Task<IActionResult> Listar(int anoLetivo, long dreId, long ueId, Modalidade modalidade, int semestre, [FromServices] IObterDashboardFrequenciaPorAnoUseCase useCase)
         {
-            return Ok(await useCase.Executar(anoLetivo, dreId, ueId, modalidade));
+            return Ok(await useCase.Executar(anoLetivo, dreId, ueId, modalidade, semestre));
         }
 
         [HttpGet("global/dre")]
@@ -29,9 +41,19 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(IEnumerable<GraficoFrequenciaGlobalPorDREDto>), 200)]
         [Permissao(Permissao.PDA_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterFrequenciaGlobalPorDre(int anoLetivo, [FromServices] IObterDadosDashboardFrequenciaPorDreUseCase useCase)
+        public async Task<IActionResult> ObterFrequenciaGlobalPorDre([FromQuery] FiltroGraficoFrequenciaGlobalPorDREDto filtro, [FromServices] IObterDadosDashboardFrequenciaPorDreUseCase useCase)
         {
-            return Ok(await useCase.Executar(anoLetivo));
+            return Ok(await useCase.Executar(filtro));
+        }
+
+        [HttpGet("ausencias/motivo")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(IEnumerable<GraficoBaseDto>), 200)]
+        [Permissao(Permissao.DF_C, Policy = "Bearer")]
+        public async Task<IActionResult> AusenciasPorMotivo(int anoLetivo, long dreId, long ueId, Modalidade modalidade, string ano, int semestre, [FromServices] IObterDashboardFrequenciaAusenciasPorMotivoUseCase useCase)
+        {
+            return Ok(await useCase.Executar(anoLetivo, dreId, ueId, modalidade, ano, semestre));
         }
 
         [HttpGet("ausencias/justificativas")]
