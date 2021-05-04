@@ -5,6 +5,7 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -15,6 +16,22 @@ namespace SME.SGP.Api.Controllers
     [Route("api/v1/dashboard/frequencias")]
     public class DashboardFrequenciaController : Controller
     {
+        [HttpGet("consolidacao")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(DateTime), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 204)]
+        [Permissao(Permissao.DF_C, Policy = "Bearer")]
+        public async Task<IActionResult> UltimaConsolidacao(int anoLetivo, [FromServices] IObterDataConsolidacaoFrequenciaUseCase useCase)
+        {
+            var ultimaConsolidacao = await useCase.Executar(anoLetivo);
+
+            if (!ultimaConsolidacao.HasValue)
+                return NoContent();
+
+            return Ok(ultimaConsolidacao.Value);
+        }
+
 
         [HttpGet("modalidades/ano")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
@@ -40,7 +57,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(IEnumerable<GraficoFrequenciaGlobalPorDREDto>), 200)]
-        [Permissao(Permissao.DF_C, Policy = "Bearer")]
+        [Permissao(Permissao.PDA_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterFrequenciaGlobalPorDre([FromQuery] FiltroGraficoFrequenciaGlobalPorDREDto filtro, [FromServices] IObterDadosDashboardFrequenciaPorDreUseCase useCase)
         {
             return Ok(await useCase.Executar(filtro));
@@ -54,6 +71,15 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> AusenciasPorMotivo(int anoLetivo, long dreId, long ueId, Modalidade modalidade, string ano, int semestre, [FromServices] IObterDashboardFrequenciaAusenciasPorMotivoUseCase useCase)
         {
             return Ok(await useCase.Executar(anoLetivo, dreId, ueId, modalidade, ano, semestre));
+        }
+
+        [HttpGet("ausencias/justificativas")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(IEnumerable<GraficoAusenciasComJustificativaResultadoDto>), 200)]
+        public async Task<IActionResult> ObterAusenciasComJustificativa(int anoLetivo, long dreId, long ueId, Modalidade modalidade, int semestre, [FromServices] IObterDadosDashboardAusenciasComJustificativaUseCase useCase)
+        {
+            return Ok(await useCase.Executar(anoLetivo, dreId, ueId, modalidade, semestre));
         }
     }
 }
