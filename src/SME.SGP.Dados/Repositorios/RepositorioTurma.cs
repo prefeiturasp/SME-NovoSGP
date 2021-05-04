@@ -1013,5 +1013,12 @@ namespace SME.SGP.Dados.Repositorios
 
 
         }
+
+        public async Task<IEnumerable<ModalidadesPorAnoDto>> ObterModalidadesPorAnos(List<string> anos)
+        {
+            var query = @"select distinct modalidade_codigo as modalidade from turma where ano = any(@anos)";
+
+            return await contexto.Conexao.QueryAsync<ModalidadesPorAnoDto>(query, new { anos });
+        }
     }
 }
