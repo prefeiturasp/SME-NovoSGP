@@ -3,6 +3,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -44,11 +45,11 @@ namespace SME.SGP.Dados.Repositorios
                 .QueryAsync<FrequenciaGlobalPorAnoDto>(sql, new { modalidade, dreId, ueId, anoLetivo });
         }
 
-        public async Task<IEnumerable<FrequenciaGlobalPorDreDto>> ObterFrequenciaGlobalPorDreAsync(int anoLetivo)
+        public async Task<IEnumerable<FrequenciaGlobalPorDreDto>> ObterFrequenciaGlobalPorDreAsync(int anoLetivo, Modalidade modalidade, string ano, int? semestre)
         {
-            const string sql = @"
+            const string sqlBase = @"
                 SELECT
-                    dre.abreviacao,
+                    dre.abreviacao AS Dre,
                     SUM(cft.quantidade_acima_minimo_frequencia) AS QuantidadeAcimaMinimoFrequencia,
                     SUM(cft.quantidade_abaixo_minimo_frequencia) AS QuantidadeAbaixoMinimoFrequencia
                 FROM
@@ -63,13 +64,26 @@ namespace SME.SGP.Dados.Repositorios
                     dre 
                     ON dre.id = ue.dre_id
                 WHERE
-                    t.ano = @anoLetivo
-                GROUP BY
-                    dre.abreviacao";
+                    t.ano_letivo = @anoLetivo
+                    AND t.modalidade_codigo = @modalidade ";
+
+            var sql = new StringBuilder(sqlBase);
+            
+            if(!string.IsNullOrWhiteSpace(ano))
+            {
+                sql.AppendLine(" AND t.ano = @ano ");
+            }
+
+            if(modalidade == Modalidade.EJA && semestre.HasValue)
+            {
+                sql.AppendLine(" AND t.semestre = @semestre ");
+            }
+
+            sql.AppendLine(" GROUP BY dre.abreviacao");
 
             return await database
                 .Conexao
-                .QueryAsync<FrequenciaGlobalPorDreDto>(sql, new { anoLetivo });
+                .QueryAsync<FrequenciaGlobalPorDreDto>(sql.ToString(), new { anoLetivo, modalidade, ano, semestre });
         }
 
         public async Task<bool> ExisteConsolidacaoFrequenciaTurmaPorAno(int ano)
