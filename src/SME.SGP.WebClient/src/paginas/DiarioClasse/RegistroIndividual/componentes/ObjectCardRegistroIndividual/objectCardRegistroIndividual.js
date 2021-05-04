@@ -54,7 +54,7 @@ const ObjectCardRegistroIndividual = () => {
 
   useEffect(() => {
     const desabilitar =
-      Object.keys(dadosRegistroAtual).length &&
+      Object.keys(dadosRegistroAtual).length ||
       dadosPrincipaisRegistroIndividual?.registrosIndividuais?.items.length;
 
     dispatch(setMostrarMensagemSemHistorico(!desabilitar));
