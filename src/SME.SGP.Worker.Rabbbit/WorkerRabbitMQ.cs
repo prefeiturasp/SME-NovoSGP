@@ -97,6 +97,12 @@ namespace SME.SGP.Worker.RabbitMQ
             canalRabbit.QueueDeclare(RotasRabbit.SincronizaEstruturaInstitucionalCicloTratar, true, false, false);
             canalRabbit.QueueBind(RotasRabbit.SincronizaEstruturaInstitucionalCicloTratar, RotasRabbit.ExchangeSgp, RotasRabbit.SincronizaEstruturaInstitucionalCicloTratar);
 
+            canalRabbit.QueueDeclare(RotasRabbit.ConsolidarFrequenciasTurmasNoAno, true, false, false);
+            canalRabbit.QueueBind(RotasRabbit.ConsolidarFrequenciasTurmasNoAno, RotasRabbit.ExchangeSgp, RotasRabbit.ConsolidarFrequenciasTurmasNoAno);
+
+            canalRabbit.QueueDeclare(RotasRabbit.ConsolidarFrequenciasPorTurma, true, false, false);
+            canalRabbit.QueueBind(RotasRabbit.ConsolidarFrequenciasPorTurma, RotasRabbit.ExchangeSgp, RotasRabbit.ConsolidarFrequenciasPorTurma);
+
             comandos = new Dictionary<string, ComandoRabbit>();
             RegistrarUseCases();
         }
@@ -174,7 +180,9 @@ namespace SME.SGP.Worker.RabbitMQ
            
             comandos.Add(RotasRabbit.RotaNotificacaoRegistroItineranciaInseridoUseCase, new ComandoRabbit("Enviar Notificação quanto insere um novo Registro de Itinerância", typeof(INotificacaoSalvarItineranciaUseCase)));
 
-           
+            comandos.Add(RotasRabbit.ConsolidacaoFrequenciasTurmasCarregar, new ComandoRabbit("Consolidação de Registros de Frequência das Turmas - Carregar", typeof(IConsolidarFrequenciaTurmasUseCase)));
+            comandos.Add(RotasRabbit.ConsolidarFrequenciasTurmasNoAno, new ComandoRabbit("Consolidar Registros de Frequência das Turmas", typeof(IConsolidarFrequenciaTurmasPorAnoUseCase)));
+            comandos.Add(RotasRabbit.ConsolidarFrequenciasPorTurma, new ComandoRabbit("Consolidar Registros de Frequência por Turma", typeof(IConsolidarFrequenciaPorTurmaUseCase)));
         }
 
         private async Task TratarMensagem(BasicDeliverEventArgs ea)
@@ -328,6 +336,8 @@ namespace SME.SGP.Worker.RabbitMQ
             canalRabbit.BasicConsume(RotasRabbit.SincronizaEstruturaInstitucionalCicloTratar, false, consumer);
             canalRabbit.BasicConsume(RotasRabbit.SincronizaEstruturaInstitucionalTurmaTratar, false, consumer);
             canalRabbit.BasicConsume(RotasRabbit.SincronizaEstruturaInstitucionalTurmasSync, false, consumer);
+            canalRabbit.BasicConsume(RotasRabbit.ConsolidarFrequenciasTurmasNoAno, false, consumer);
+            canalRabbit.BasicConsume(RotasRabbit.ConsolidarFrequenciasPorTurma, false, consumer);
 
             return Task.CompletedTask;
         }

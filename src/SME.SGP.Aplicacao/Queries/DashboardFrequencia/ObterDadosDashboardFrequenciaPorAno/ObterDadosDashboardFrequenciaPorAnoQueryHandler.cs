@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<GraficoFrequenciaGlobalPorAnoDto>> Handle(ObterDadosDashboardFrequenciaPorAnoQuery request, CancellationToken cancellationToken)
         {
-            var listaFrequencia = await repositorioConsolidacaoFrequenciaTurma.ObterFrequenciaGlobalPorAnoAsync(request.AnoLetivo, request.DreId, request.UeId, request.Modalidade);
+            var listaFrequencia = await repositorioConsolidacaoFrequenciaTurma.ObterFrequenciaGlobalPorAnoAsync(request.AnoLetivo, request.DreId, request.UeId, request.Modalidade, request.Semestre);
             return MontarDto(listaFrequencia);
         }
 
@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
                     {
                         Descricao = DashboardFrequenciaConstants.QuantidadeAcimaMinimoFrequenciaDescricao,
                         Quantidade = frequencia.QuantidadeAcimaMinimoFrequencia,
-                        Turma = frequencia.Modalidade.ShortName() + " - " + frequencia.Ano
+                        Turma = !string.IsNullOrEmpty(frequencia.NomeTurma) ? frequencia.NomeTurma: frequencia.Modalidade.ShortName() + " - " + frequencia.Ano
                     });
                 }
                 if (frequencia.QuantidadeAbaixoMinimoFrequencia > 0)
@@ -44,7 +44,7 @@ namespace SME.SGP.Aplicacao
                     {
                         Descricao = DashboardFrequenciaConstants.QuantidadeAbaixoMinimoFrequenciaDescricao,
                         Quantidade = frequencia.QuantidadeAbaixoMinimoFrequencia,
-                        Turma = frequencia.Modalidade.ShortName() + " - " + frequencia.Ano
+                        Turma = !string.IsNullOrEmpty(frequencia.NomeTurma) ? frequencia.NomeTurma : frequencia.Modalidade.ShortName() + " - " + frequencia.Ano
                     });
                 }
             }
