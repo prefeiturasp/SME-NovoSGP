@@ -7,12 +7,18 @@ namespace SME.SGP.Aplicacao
 {
     public class ExecutaSyncGsaGoogleClassroomUseCase : AbstractUseCase, IExecutaSyncGsaGoogleClassroomUseCase
     {
-        public ExecutaSyncGsaGoogleClassroomUseCase(IMediator mediator) : base(mediator)
+        private readonly GoogleClassroomSyncOptions googleClassroomSyncOptions;
+
+        public ExecutaSyncGsaGoogleClassroomUseCase(IMediator mediator, GoogleClassroomSyncOptions googleClassroomSyncOptions) : base(mediator)
         {
+            this.googleClassroomSyncOptions = googleClassroomSyncOptions;
         }
 
         public async Task<bool> Executar()
         {
+            if (!googleClassroomSyncOptions.ExecutarGsaSync)
+                return false;
+
             string mensagem = "Mensagem API Google Classroom - Comparativo de Dados";
             return await mediator.Send(new PublicarFilaGoogleClassroomCommand(RotasRabbitGoogleClassroomApi.FilaGsaSync, mensagem));
         }
