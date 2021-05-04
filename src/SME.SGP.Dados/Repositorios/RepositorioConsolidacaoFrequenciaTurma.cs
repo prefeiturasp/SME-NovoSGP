@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dominio;
+﻿using Dapper;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
@@ -8,9 +9,9 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioConsolidacaoFrequenciaTurma : IRepositorioConsolidacaoFrequenciaTurma
     {
-        protected readonly ISgpContext database;
+        private readonly ISgpContext database;
 
-        protected RepositorioConsolidacaoFrequenciaTurma(ISgpContext database)
+        public RepositorioConsolidacaoFrequenciaTurma(ISgpContext database)
         {
             this.database = database;
         }
@@ -52,6 +53,30 @@ namespace SME.SGP.Dados.Repositorios
             return await database
                 .Conexao
                 .QueryAsync<FrequenciaGlobalPorAnoDto>(sql, new { modalidade, dreId, ueId, anoLetivo });
+        }
+
+        public async Task<bool> ExisteConsolidacaoFrequenciaTurmaPorAno(int ano)
+        {
+            var query = @"select 1 
+                          from consolidacao_frequencia_turma c
+                         inner join turma t on t.id = c.turma_id
+                         where t.ano_letivo = @ano";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { ano });
+        }
+
+        public async Task<long> Inserir(ConsolidacaoFrequenciaTurma consolidacao)
+        {
+            return (long)(await database.Conexao.InsertAsync(consolidacao));
+        }
+
+        public async Task LimparConsolidacaoFrequenciasTurmasPorAno(int ano)
+        {
+            var query = @"delete from consolidacao_frequencia_turma
+                        where turma_id in (
+                            select id from turma where ano_letivo = @ano)";
+
+            await database.Conexao.ExecuteScalarAsync(query, new { ano });
         }
     }
 }
