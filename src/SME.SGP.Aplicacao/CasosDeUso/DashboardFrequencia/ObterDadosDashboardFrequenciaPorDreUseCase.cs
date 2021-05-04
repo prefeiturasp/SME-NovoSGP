@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator;
         }
 
-        public async Task<IEnumerable<GraficoFrequenciaGlobalPorDREDto>> Executar(int anoLetivo) 
-            => await mediator.Send(new ObterDadosDashboardFrequenciaPorDreQuery(anoLetivo));
+        public async Task<IEnumerable<GraficoFrequenciaGlobalPorDREDto>> Executar(FiltroGraficoFrequenciaGlobalPorDREDto filtro) 
+            => await mediator.Send(new ObterDadosDashboardFrequenciaPorDreQuery(filtro.AnoLetivo, filtro.Modalidade, filtro.Ano, filtro.Semestre));
     }
 }

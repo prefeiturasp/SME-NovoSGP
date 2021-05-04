@@ -29,9 +29,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(IEnumerable<GraficoFrequenciaGlobalPorDREDto>), 200)]
         [Permissao(Permissao.DF_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterFrequenciaGlobalPorDre(int anoLetivo, [FromServices] IObterDadosDashboardFrequenciaPorDreUseCase useCase)
+        public async Task<IActionResult> ObterFrequenciaGlobalPorDre([FromQuery] FiltroGraficoFrequenciaGlobalPorDREDto filtro, [FromServices] IObterDadosDashboardFrequenciaPorDreUseCase useCase)
         {
-            return Ok(await useCase.Executar(anoLetivo));
+            return Ok(await useCase.Executar(filtro));
         }
     }
 }
