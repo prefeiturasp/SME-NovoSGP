@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
         {
             var resultado = new List<GraficoFrequenciaGlobalPorDREDto>();
 
-            var frequenciasGlobaisPorDre = await repositorioConsolidacaoFrequenciaTurma.ObterFrequenciaGlobalPorDreAsync(request.AnoLetivo);
+            var frequenciasGlobaisPorDre = await repositorioConsolidacaoFrequenciaTurma.ObterFrequenciaGlobalPorDreAsync(request.AnoLetivo, request.Modalidade, request.Ano, request.Semestre);
             if (!frequenciasGlobaisPorDre?.Any() ?? true)
                 return resultado;
 

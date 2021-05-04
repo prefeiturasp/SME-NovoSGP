@@ -6,6 +6,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IObterDadosDashboardFrequenciaPorDreUseCase
     {
-        Task<IEnumerable<GraficoFrequenciaGlobalPorDREDto>> Executar(int anoLetivo);
+        Task<IEnumerable<GraficoFrequenciaGlobalPorDREDto>> Executar(FiltroGraficoFrequenciaGlobalPorDREDto filtro);
     }
 }
