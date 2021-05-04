@@ -44,7 +44,7 @@ pipeline {
 
       stage('Testes API HOM') {
         when {
-           branch 'Story/38310'
+           branch 'release'
         }
         options { retry(3) }
 
