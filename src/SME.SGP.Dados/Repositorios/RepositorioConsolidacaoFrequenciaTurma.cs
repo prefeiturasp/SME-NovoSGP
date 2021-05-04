@@ -16,43 +16,28 @@ namespace SME.SGP.Dados.Repositorios
             this.database = database;
         }
 
-        private string ObterWhereFrequenciaGlobalPorAno(long dreId, long ueId, Modalidade? modalidade)
+        public async Task<IEnumerable<FrequenciaGlobalPorAnoDto>> ObterFrequenciaGlobalPorAnoAsync(int anoLetivo, long dreId, long ueId, Modalidade? modalidade, int semestre)
         {
-            var subQuery = "";
-            if (dreId > 0) subQuery += " and dre.id = @dreId";
-            if (ueId > 0) subQuery += " and ue.id = @ueId";
-            if (modalidade > 0) subQuery += " and t.modalidade_codigo  = @modalidade";
-            return subQuery;
-        }
+            string campoNomeTurma = ueId>0? "t.nome as nomeTurma,": ""; 
+            string agrupamentoTurma = ueId > 0 ? "t.nome," : "";
 
-        public async Task<IEnumerable<FrequenciaGlobalPorAnoDto>> ObterFrequenciaGlobalPorAnoAsync(int anoLetivo, long dreId, long ueId, Modalidade? modalidade)
-        {
-            var sql = $@"select * from (
-	                        select t.modalidade_codigo as modalidade, 
-		                           t.ano, 
-		                           cft.quantidade_acima_minimo_frequencia as quantidade , 
-		                           'Qtd. acima do mínimo de frequencia' as descricao
-	                          from consolidacao_frequencia_turma cft
-	                         inner join turma t on t.id = cft.turma_id
-                             inner join ue on ue.id = t.ue_id 
-                             inner join dre on dre.id = ue.dre_id 
-	                         where quantidade_acima_minimo_frequencia > 0
-	                           and t.ano_letivo = @anoLetivo
-                              {ObterWhereFrequenciaGlobalPorAno(dreId, ueId, modalidade)}
-                             union 
-                     	    select t.modalidade_codigo as modalidade, 
-		                           t.ano, 
-		                           cft.quantidade_abaixo_minimo_frequencia as quantidade, 
-		                           'Qtd. abaixo do mínimo de frequencia' as descricao
-	                          from consolidacao_frequencia_turma cft
-	                         inner join turma t on t.id = cft.turma_id
-                             inner join ue on ue.id = t.ue_id 
-                             inner join dre on dre.id = ue.dre_id 
-	                         where quantidade_abaixo_minimo_frequencia > 0
-	                           and t.ano_letivo = @anoLetivo
-                                {ObterWhereFrequenciaGlobalPorAno(dreId, ueId, modalidade)}
-                            ) x
-                        order by x.modalidade, x.ano, x.quantidade";
+            var sql = $@"select t.modalidade_codigo as modalidade, 
+                                {campoNomeTurma}
+		                        t.ano,
+		                        sum(cft.quantidade_acima_minimo_frequencia)  AS QuantidadeAcimaMinimoFrequencia,
+		                        sum(cft.quantidade_abaixo_minimo_frequencia) AS QuantidadeAbaixoMinimoFrequencia
+	                      from consolidacao_frequencia_turma cft
+	                     inner join turma t on t.id = cft.turma_id
+                         inner join ue on ue.id = t.ue_id 
+                         inner join dre on dre.id = ue.dre_id 
+	                     where quantidade_abaixo_minimo_frequencia > 0
+	                       and t.ano_letivo = @anoLetivo
+                           and t.modalidade_codigo = @modalidade";
+            if (semestre > 0) sql += @"  and t.semestre = @semestre";
+            if (dreId > 0) sql += @" and dre.id = @dreId";
+            if(ueId > 0) sql += @"  and ue.id = @ueId";
+            sql += $@"    group by t.modalidade_codigo,{agrupamentoTurma} t.ano 
+                         order by t.modalidade_codigo,{agrupamentoTurma} t.ano";
 
             return await database
                 .Conexao

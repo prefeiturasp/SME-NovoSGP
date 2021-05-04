@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<GraficoFrequenciaGlobalPorAnoDto>> Handle(ObterDadosDashboardFrequenciaPorAnoQuery request, CancellationToken cancellationToken)
         {
-            var listaFrequencia = await repositorioConsolidacaoFrequenciaTurma.ObterFrequenciaGlobalPorAnoAsync(request.AnoLetivo, request.DreId, request.UeId, request.Modalidade);
+            var listaFrequencia = await repositorioConsolidacaoFrequenciaTurma.ObterFrequenciaGlobalPorAnoAsync(request.AnoLetivo, request.DreId, request.UeId, request.Modalidade, request.Semestre);
             return MontarDto(listaFrequencia);
         }
 
@@ -29,12 +29,24 @@ namespace SME.SGP.Aplicacao
             var dto =  new List<GraficoFrequenciaGlobalPorAnoDto>();
             foreach(var frequencia in listaFrequencia)
             {
-                dto.Add(new GraficoFrequenciaGlobalPorAnoDto()
+                if (frequencia.QuantidadeAcimaMinimoFrequencia > 0)
                 {
-                    Descricao = frequencia.Descricao,
-                    Quantidade = frequencia.Quantidade,
-                    Turma = frequencia.Modalidade.ShortName() + " - " + frequencia.Ano
-                });
+                    dto.Add(new GraficoFrequenciaGlobalPorAnoDto()
+                    {
+                        Descricao = DashboardFrequenciaConstants.QuantidadeAcimaMinimoFrequenciaDescricao,
+                        Quantidade = frequencia.QuantidadeAcimaMinimoFrequencia,
+                        Turma = !string.IsNullOrEmpty(frequencia.NomeTurma) ? frequencia.NomeTurma: frequencia.Modalidade.ShortName() + " - " + frequencia.Ano
+                    });
+                }
+                if (frequencia.QuantidadeAbaixoMinimoFrequencia > 0)
+                {
+                    dto.Add(new GraficoFrequenciaGlobalPorAnoDto()
+                    {
+                        Descricao = DashboardFrequenciaConstants.QuantidadeAbaixoMinimoFrequenciaDescricao,
+                        Quantidade = frequencia.QuantidadeAbaixoMinimoFrequencia,
+                        Turma = !string.IsNullOrEmpty(frequencia.NomeTurma) ? frequencia.NomeTurma : frequencia.Modalidade.ShortName() + " - " + frequencia.Ano
+                    });
+                }
             }
             return dto;
         }
