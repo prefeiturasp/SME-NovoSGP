@@ -22,6 +22,7 @@ const DashboardFrequencia = () => {
   const [listaUes, setListaUes] = useState([]);
   const [listaModalidades, setListaModalidades] = useState([]);
   const [listaSemestres, setListaSemestres] = useState([]);
+  const [listaAnosEscolares, setListaAnosEscolares] = useState([]);
 
   const [consideraHistorico, setConsideraHistorico] = useState(false);
   const [anoAtual] = useState(moment().format('YYYY'));
@@ -282,6 +283,28 @@ const DashboardFrequencia = () => {
     setSemestreSelecionado(valor);
   };
 
+  const obterAnosEscolares = useCallback(async () => {
+    const respota = await AbrangenciaServico.buscarAnosEscolares(
+      ue?.codigo,
+      modalidadeSelecionada,
+      anoLetivo != anoAtual
+    ).catch(e => erros(e));
+
+    if (respota?.data?.length) {
+      setListaAnosEscolares(respota.data);
+    } else {
+      setListaAnosEscolares([]);
+    }
+  }, [anoAtual, modalidadeSelecionada, anoLetivo, ue]);
+
+  useEffect(() => {
+    if (modalidadeSelecionada && ue?.codigo && anoLetivo) {
+      obterAnosEscolares();
+    } else {
+      setListaAnosEscolares([]);
+    }
+  }, [modalidadeSelecionada, anoLetivo, ue, obterAnosEscolares]);
+
   return (
     <>
       <Cabecalho pagina="Dashboard frequência" />
@@ -405,6 +428,9 @@ const DashboardFrequencia = () => {
                   ueId={OPCAO_TODOS === ue?.codigo ? OPCAO_TODOS : ue?.id}
                   modalidade={modalidadeSelecionada}
                   semestre={semestreSelecionado}
+                  listaAnosEscolares={listaAnosEscolares}
+                  codigoUe={ue?.codigo}
+                  consideraHistorico={consideraHistorico}
                 />
               ) : (
                 ''

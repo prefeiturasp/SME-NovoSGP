@@ -5,7 +5,15 @@ import CardCollapse from '~/componentes/cardCollapse';
 import GraficoQuantidadeJustificativasPorMotivo from './graficoQuantidadeJustificativasPorMotivo';
 
 const QuantidadeJustificativasPorMotivo = props => {
-  const { anoLetivo, dreId, ueId, modalidade, semestre } = props;
+  const {
+    anoLetivo,
+    dreId,
+    ueId,
+    modalidade,
+    semestre,
+    codigoUe,
+    consideraHistorico,
+  } = props;
 
   const configCabecalho = {
     altura: '44px',
@@ -36,6 +44,8 @@ const QuantidadeJustificativasPorMotivo = props => {
             ueId={ueId}
             modalidade={modalidade}
             semestre={semestre}
+            codigoUe={codigoUe}
+            consideraHistorico={consideraHistorico}
           />
         ) : (
           ''
@@ -51,6 +61,8 @@ QuantidadeJustificativasPorMotivo.propTypes = {
   ueId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   modalidade: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   semestre: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  codigoUe: PropTypes.string,
+  consideraHistorico: PropTypes.bool,
 };
 
 QuantidadeJustificativasPorMotivo.defaultProps = {
@@ -59,6 +71,8 @@ QuantidadeJustificativasPorMotivo.defaultProps = {
   ueId: null,
   modalidade: null,
   semestre: null,
+  codigoUe: '',
+  consideraHistorico: false,
 };
 
 export default QuantidadeJustificativasPorMotivo;

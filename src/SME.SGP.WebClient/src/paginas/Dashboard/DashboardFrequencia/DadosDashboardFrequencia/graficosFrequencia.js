@@ -6,7 +6,16 @@ import QuantidadeAusenciasPossuemJustificativa from './QuantidadeAusenciasPossue
 import QuantidadeJustificativasPorMotivo from './QuantidadeJustificativasPorMotivo/quantidadeJustificativasPorMotivo';
 
 const GraficosFrequencia = props => {
-  const { anoLetivo, dreId, ueId, modalidade, semestre } = props;
+  const {
+    anoLetivo,
+    dreId,
+    ueId,
+    modalidade,
+    semestre,
+    listaAnosEscolares,
+    codigoUe,
+    consideraHistorico,
+  } = props;
   return (
     <>
       <FrequenciaGlobalPorAno
@@ -22,6 +31,7 @@ const GraficosFrequencia = props => {
         ueId={ueId}
         modalidade={modalidade}
         semestre={semestre}
+        listaAnosEscolares={listaAnosEscolares}
       />
       <QuantidadeAusenciasPossuemJustificativa
         anoLetivo={anoLetivo}
@@ -36,6 +46,9 @@ const GraficosFrequencia = props => {
         ueId={ueId}
         modalidade={modalidade}
         semestre={semestre}
+        listaAnosEscolares={listaAnosEscolares}
+        codigoUe={codigoUe}
+        consideraHistorico={consideraHistorico}
       />
     </>
   );
@@ -47,6 +60,9 @@ GraficosFrequencia.propTypes = {
   ueId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   modalidade: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   semestre: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  listaAnosEscolares: PropTypes.oneOfType(PropTypes.array),
+  codigoUe: PropTypes.string,
+  consideraHistorico: PropTypes.bool,
 };
 
 GraficosFrequencia.defaultProps = {
@@ -55,6 +71,9 @@ GraficosFrequencia.defaultProps = {
   ueId: null,
   modalidade: null,
   semestre: null,
+  listaAnosEscolares: [],
+  codigoUe: '',
+  consideraHistorico: false,
 };
 
 export default GraficosFrequencia;
