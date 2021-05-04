@@ -24,5 +24,6 @@ namespace SME.SGP.Dominio
         public readonly static Guid PERFIL_POEI = Guid.Parse("5ce1e074-37d6-e911-abd6-f81654fe895d");
         public readonly static Guid PERFIL_POED = Guid.Parse("5de1e074-37d6-e911-abd6-f81654fe895d");
         public readonly static Guid PERFIL_POSL = Guid.Parse("5ee1e074-37d6-e911-abd6-f81654fe895d");
+        public readonly static Guid PERFIL_COMUNICADOS_UE = Guid.Parse("64e1e074-37d6-e911-abd6-f81654fe895d");
     }
 }
