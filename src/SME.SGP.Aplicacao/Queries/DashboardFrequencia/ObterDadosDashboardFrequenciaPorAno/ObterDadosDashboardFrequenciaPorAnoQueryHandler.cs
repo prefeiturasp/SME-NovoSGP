@@ -29,12 +29,24 @@ namespace SME.SGP.Aplicacao
             var dto =  new List<GraficoFrequenciaGlobalPorAnoDto>();
             foreach(var frequencia in listaFrequencia)
             {
-                dto.Add(new GraficoFrequenciaGlobalPorAnoDto()
+                if (frequencia.QuantidadeAcimaMinimoFrequencia > 0)
                 {
-                    Descricao = frequencia.Descricao,
-                    Quantidade = frequencia.Quantidade,
-                    Turma = frequencia.Modalidade.ShortName() + " - " + frequencia.Ano
-                });
+                    dto.Add(new GraficoFrequenciaGlobalPorAnoDto()
+                    {
+                        Descricao = DashboardFrequenciaConstants.QuantidadeAcimaMinimoFrequenciaDescricao,
+                        Quantidade = frequencia.QuantidadeAcimaMinimoFrequencia,
+                        Turma = frequencia.Modalidade.ShortName() + " - " + frequencia.Ano
+                    });
+                }
+                if (frequencia.QuantidadeAbaixoMinimoFrequencia > 0)
+                {
+                    dto.Add(new GraficoFrequenciaGlobalPorAnoDto()
+                    {
+                        Descricao = DashboardFrequenciaConstants.QuantidadeAbaixoMinimoFrequenciaDescricao,
+                        Quantidade = frequencia.QuantidadeAbaixoMinimoFrequencia,
+                        Turma = frequencia.Modalidade.ShortName() + " - " + frequencia.Ano
+                    });
+                }
             }
             return dto;
         }
