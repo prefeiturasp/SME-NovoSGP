@@ -167,7 +167,7 @@ namespace SME.SGP.Dados.Repositorios
             if (Periodo == PeriodoRecuperacaoParalela.AcompanhamentoPrimeiroSemestre)
                 query.AppendLine("and bimestre IN  (1,2)");
             query.AppendLine("group by codigo_aluno");
-      
+
             return await database.Conexao.QueryAsync<RecuperacaoParalelaFrequenciaDto>(query.ToString(), new { CodigoAlunos, CodigoDisciplina = CodigoDisciplina.ToArray(), Ano });
         }
 
@@ -194,7 +194,7 @@ namespace SME.SGP.Dados.Repositorios
                             and aula_id = @aulaId";
 
             return database.Conexao.QueryFirstOrDefault<RegistroFrequencia>(query, new { aulaId });
-        }        
+        }
 
         public async Task<IEnumerable<AusenciaMotivoDto>> ObterAusenciaMotivoPorAlunoTurmaBimestreAno(string codigoAluno, string turma, short bimestre, short anoLetivo)
         {
