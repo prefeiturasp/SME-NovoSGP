@@ -122,7 +122,11 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<GraficoAusenciasComJustificativaDto>> ObterAusenciasComJustificativaASync(int anoLetivo, long dreId, long ueId, Modalidade? modalidade, int semestre)
         {
+            string campoNomeTurma = ueId > 0 ? "t.nome as nomeTurma," : "";
+            string agrupamentoTurma = ueId > 0 ? "t.nome," : "";
+
             var sql = $@"select count(afa.id) as quantidade, 
+                                {campoNomeTurma}
                                 t.modalidade_codigo as modalidade, 
                                 t.ano 
                         from anotacao_frequencia_aluno afa 
@@ -130,13 +134,12 @@ namespace SME.SGP.Dados.Repositorios
                             inner join turma t on t.turma_id = a.turma_id 
                             inner join ue on ue.id = t.ue_id 
                             inner join dre on dre.id = ue.dre_id 
-                        where motivo_ausencia_id is not null 
-                            or anotacao is not null and 
-                            afa.excluido = false and 
-                            t.ano_letivo = @anoLetivo
+                        where (motivo_ausencia_id is not null or anotacao is not null)
+                          and afa.excluido = false 
+                          and t.ano_letivo = @anoLetivo
                         {ObterWhereAusenciasComJustificativaASync(dreId, ueId, modalidade, semestre)}
-                        group by t.modalidade_codigo, t.ano
-                        order by t.modalidade_codigo, t.ano
+                        group by {agrupamentoTurma} t.modalidade_codigo, t.ano
+                        order by {agrupamentoTurma} t.modalidade_codigo, t.ano
     ";
 
             return await database
