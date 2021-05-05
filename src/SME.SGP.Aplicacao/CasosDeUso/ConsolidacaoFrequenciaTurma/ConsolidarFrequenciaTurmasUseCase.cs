@@ -49,8 +49,11 @@ namespace SME.SGP.Aplicacao
             return false;
         }
 
-        private async Task AtualizarDataExecucao(int anoAtual)
+        private async Task AtualizarDataExecucao(int ano)
         {
+            if (ano < DateTime.Now.Year)
+                parametroExecucao.Ano = ano;
+
             parametroExecucao.Valor = DateTime.Now.ToString();
 
             await mediator.Send(new AtualizarParametroSistemaCommand(parametroExecucao));
@@ -67,7 +70,10 @@ namespace SME.SGP.Aplicacao
             for (var ano = 2014; ano < anoAtual; ano++)
             {
                 if (!await mediator.Send(new ExisteConsolidacaoFrequenciaTurmaPorAnoQuery(ano)))
+                {
                     await ConsolidarFrequenciasTurmasNoAno(ano);
+                    await AtualizarDataExecucao(ano);
+                }
             }
         }
 
