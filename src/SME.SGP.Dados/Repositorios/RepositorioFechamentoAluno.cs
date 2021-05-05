@@ -38,7 +38,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine(" and fa.aluno_codigo = @alunoCodigo and ftd.fechamento_turma_id = @fechamentoTurmaId");
             query.AppendLine(" and fa.anotacao is not null");
 
-            return await database.Conexao.QueryAsync<FechamentoAlunoAnotacaoConselhoDto>(query, new { alunoCodigo, turmasCodigos });
+            return await database.Conexao.QueryAsync<FechamentoAlunoAnotacaoConselhoDto>(query.ToString(), new { alunoCodigo, turmasCodigos });
         }
 
         public async Task<FechamentoAluno> ObterFechamentoAluno(long fechamentoTurmaDisciplinaId, string alunoCodigo)
