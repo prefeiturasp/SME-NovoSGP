@@ -50,6 +50,7 @@ namespace SME.SGP.Dados.Repositorios
             const string sqlBase = @"
                 SELECT
                     dre.abreviacao AS Dre,
+                    dre.dre_id,
                     SUM(cft.quantidade_acima_minimo_frequencia) AS QuantidadeAcimaMinimoFrequencia,
                     SUM(cft.quantidade_abaixo_minimo_frequencia) AS QuantidadeAbaixoMinimoFrequencia
                 FROM
@@ -79,7 +80,8 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine(" AND t.semestre = @semestre ");
             }
 
-            sql.AppendLine(" GROUP BY dre.abreviacao");
+            sql.AppendLine(@" GROUP BY dre.abreviacao, dre.dre_id
+                              ORDER BY dre.dre_id");
 
             return await database
                 .Conexao
