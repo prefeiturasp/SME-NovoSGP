@@ -10,8 +10,6 @@ namespace SME.SGP.Aplicacao
 {
     public class ConsolidarFrequenciaTurmasUseCase : AbstractUseCase, IConsolidarFrequenciaTurmasUseCase
     {
-        private ParametrosSistema parametroExecucao;
-
         public ConsolidarFrequenciaTurmasUseCase(IMediator mediator) : base(mediator)
         {
         }
@@ -20,16 +18,13 @@ namespace SME.SGP.Aplicacao
         {
             try
             {
-                var anoAtual = DateTime.Now.Year;
 
-                if (!await ExecutarConsolidacaoFrequencia(anoAtual))
+                if (!await ExecutarConsolidacaoFrequencia())
                     return false;
 
-                await ConsolidarFrequenciaTurmasHistorico(anoAtual);
+                await ConsolidarFrequenciaTurmasHistorico();
 
-                await ConsolidarFrequenciaTurmasAnoAtual(anoAtual);
-
-                await AtualizarDataExecucao(anoAtual);
+                await ConsolidarFrequenciaTurmasAnoAtual();
 
                 return true;
             }
@@ -37,43 +32,51 @@ namespace SME.SGP.Aplicacao
             {
                 SentrySdk.CaptureException(ex);
                 throw;
-            }        
+            }
         }
 
-        private async Task<bool> ExecutarConsolidacaoFrequencia(int anoAtual)
+        private async Task<bool> ExecutarConsolidacaoFrequencia()
         {
-            parametroExecucao = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.ExecucaoConsolidacaoFrequenciaTurma, anoAtual));
+            var parametroExecucao = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.ExecucaoConsolidacaoFrequenciaTurma, DateTime.Now.Year));
             if (parametroExecucao != null)
                 return parametroExecucao.Ativo;
 
             return false;
         }
 
-        private async Task AtualizarDataExecucao(int anoAtual)
+        private async Task AtualizarDataExecucao(int ano)
         {
-            parametroExecucao.Valor = DateTime.Now.ToString();
+            var parametroSistema = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.ExecucaoConsolidacaoFrequenciaTurma, ano));
+            if (parametroSistema != null)
+            {
+                parametroSistema.Valor = DateTime.Now.ToString();
 
-            await mediator.Send(new AtualizarParametroSistemaCommand(parametroExecucao));
+                await mediator.Send(new AtualizarParametroSistemaCommand(parametroSistema));
+            }
         }
 
-        private async Task ConsolidarFrequenciaTurmasAnoAtual(int anoAtual)
+        private async Task ConsolidarFrequenciaTurmasAnoAtual()
         {
+            var anoAtual = DateTime.Now.Year;
             await mediator.Send(new LimparConsolidacaoFrequenciaTurmasPorAnoCommand(anoAtual));
             await ConsolidarFrequenciasTurmasNoAno(anoAtual);
         }
 
-        private async Task ConsolidarFrequenciaTurmasHistorico(int anoAtual)
+        private async Task ConsolidarFrequenciaTurmasHistorico()
         {
-            for (var ano = 2014; ano < anoAtual; ano++)
+            for (var ano = 2014; ano < DateTime.Now.Year; ano++)
             {
                 if (!await mediator.Send(new ExisteConsolidacaoFrequenciaTurmaPorAnoQuery(ano)))
+                {
                     await ConsolidarFrequenciasTurmasNoAno(ano);
+                }
             }
         }
 
         private async Task ConsolidarFrequenciasTurmasNoAno(int ano)
         {
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.ConsolidarFrequenciasTurmasNoAno, new FiltroAnoDto(ano), Guid.NewGuid(), null, fila: RotasRabbit.ConsolidarFrequenciasTurmasNoAno));
+            await AtualizarDataExecucao(ano);
         }
     }
 }
