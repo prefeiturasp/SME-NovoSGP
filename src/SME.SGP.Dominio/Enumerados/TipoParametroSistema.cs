@@ -107,11 +107,11 @@ namespace SME.SGP.Dominio
         NovosTiposUE = 55,
 
         NovasModalidades = 56,
+        // Processo Executando
+        TempoValidadeProcessoExecutandoEmSegundos = 57,
 
         ExecucaoConsolidacaoFrequenciaTurma = 58,
 
-        // Processo Executando
-        TempoValidadeProcessoExecutandoEmSegundos = 57,
 
         //Sistema
         HabilitarServicosEmBackground = 100
