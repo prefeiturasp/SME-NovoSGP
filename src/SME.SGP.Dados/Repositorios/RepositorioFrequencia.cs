@@ -229,7 +229,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select ma.descricao, count(afa.id) as Quantidade
                       from anotacao_frequencia_aluno afa   
-                     inner join motivo_ausencia ma on ma.id = afa.motivo_ausencia_id 
+                     left join motivo_ausencia ma on ma.id = afa.motivo_ausencia_id 
                      inner join aula a on a.id = afa.aula_id 
                      inner join turma t on t.turma_id = a.turma_id 
                      inner join ue on ue.id = t.ue_id 

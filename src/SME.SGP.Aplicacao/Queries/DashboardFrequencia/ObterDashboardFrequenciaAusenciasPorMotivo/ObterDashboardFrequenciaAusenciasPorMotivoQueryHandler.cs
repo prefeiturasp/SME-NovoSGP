@@ -3,6 +3,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,6 +20,17 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<IEnumerable<GraficoBaseDto>> Handle(ObterDashboardFrequenciaAusenciasPorMotivoQuery request, CancellationToken cancellationToken)
-            => await repositorio.ObterDashboardFrequenciaAusenciasPorMotivo(request.AnoLetivo, request.DreId, request.UeId, request.Modalidade, request.Ano, request.TurmaId, request.Semestre);
+        {
+            var resultadosAusenciasPorMotivo =  await repositorio.ObterDashboardFrequenciaAusenciasPorMotivo(request.AnoLetivo, request.DreId, request.UeId, request.Modalidade, request.Ano, request.TurmaId, request.Semestre);
+            return resultadosAusenciasPorMotivo
+                .Select(ausenciasPorMotivo =>
+                {
+                    if (string.IsNullOrWhiteSpace(ausenciasPorMotivo.Descricao))
+                        ausenciasPorMotivo.Descricao = DashboardFrequenciaConstants.DescricaoMotivoPadraoParaAnotacoesSemMotivoSelecionado;
+
+                    return ausenciasPorMotivo;
+                })
+                .ToList();
+        }
     }
 }
