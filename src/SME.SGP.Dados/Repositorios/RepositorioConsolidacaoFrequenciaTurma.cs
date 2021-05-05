@@ -133,10 +133,13 @@ namespace SME.SGP.Dados.Repositorios
                                 t.ano 
                         from anotacao_frequencia_aluno afa 
                             inner join aula a on a.id = afa.aula_id 
+                            inner join registro_frequencia rf on rf.aula_id = a.id 
+                            inner join registro_ausencia_aluno raa on raa.registro_frequencia_id = rf.id and raa.codigo_aluno = afa.codigo_aluno 
                             inner join turma t on t.turma_id = a.turma_id 
                             inner join ue on ue.id = t.ue_id 
                             inner join dre on dre.id = ue.dre_id 
-                        where (motivo_ausencia_id is not null or anotacao is not null)
+                        where not a.excluido and not rf.excluido and not afa.excluido
+                          and (motivo_ausencia_id is not null or anotacao is not null)
                           and afa.excluido = false 
                           and t.ano_letivo = @anoLetivo
                         {ObterWhereAusenciasComJustificativaASync(dreId, ueId, modalidade, semestre)}
