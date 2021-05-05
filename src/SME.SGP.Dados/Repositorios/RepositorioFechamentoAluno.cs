@@ -36,6 +36,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("inner join fechamento_aluno fa on fa.fechamento_turma_disciplina_id = ftd.id");
             query.AppendLine("where not ftd.excluido and not fa.excluido ");
             query.AppendLine(" and fa.aluno_codigo = @alunoCodigo and ftd.fechamento_turma_id = @fechamentoTurmaId");
+            query.AppendLine(" and fa.anotacao is not null");
 
             return await database.Conexao.QueryAsync<FechamentoAlunoAnotacaoConselhoDto>(query.ToString(), new { alunoCodigo, fechamentoTurmaId });
         }
