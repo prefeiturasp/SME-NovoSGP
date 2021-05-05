@@ -7,9 +7,8 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterTurmasFechamentoAcompanhamentoQuery : IRequest<PaginacaoResultadoDto<TurmaAcompanhamentoFechamentoRetornoDto>>
     {
-        public ObterTurmasFechamentoAcompanhamentoQuery(Paginacao paginacao, long dreId, long ueId, long[] turmaId, Modalidade modalidade, int semestre, int bimestre, int anoLetivo)
-        {
-            Paginacao = paginacao;
+        public ObterTurmasFechamentoAcompanhamentoQuery(long dreId, long ueId, long[] turmaId, Modalidade modalidade, int semestre, int bimestre, int anoLetivo)
+        {            
             DreId = dreId;
             UeId = ueId;
             TurmaId = turmaId;
@@ -18,8 +17,7 @@ namespace SME.SGP.Aplicacao
             Bimestre = bimestre;
             AnoLetivo = anoLetivo;            
         }
-
-        public Paginacao Paginacao { get; set; }
+        
         public long DreId { get; set; }
         public long UeId { get; set; }
         public long[] TurmaId { get; set; }
@@ -31,10 +29,7 @@ namespace SME.SGP.Aplicacao
     public class ObterTurmasFechamentoAcompanhamentoQueryValidator : AbstractValidator<ObterTurmasFechamentoAcompanhamentoQuery>
     {
         public ObterTurmasFechamentoAcompanhamentoQueryValidator()
-        {
-            RuleFor(x => x.Paginacao)
-                .NotEmpty()
-                .WithMessage("A paginação deve ser informada.");
+        {            
             RuleFor(a => a.DreId)
                 .NotEmpty()
                 .WithMessage("O código da DRE deve ser informado.");
