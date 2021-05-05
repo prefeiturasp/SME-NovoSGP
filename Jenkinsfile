@@ -28,7 +28,7 @@ pipeline {
         
       stage('Testes API DEV') {
         when {
-           branch 'development'
+           branch 'Story/38310'
         }
         options { retry(3) }
 
