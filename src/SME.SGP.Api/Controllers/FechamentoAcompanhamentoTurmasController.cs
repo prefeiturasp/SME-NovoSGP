@@ -3,12 +3,12 @@ using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos;
-using System;
+using SME.SGP.Infra.Dtos.FechamentoAcompanhamentoTurmas;
 using System.Collections.Generic;
-using System.Linq;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api
@@ -88,7 +88,7 @@ namespace SME.SGP.Api
                     new TurmaAcompanhamentoFechamentoRetornoDto()
                     {
                         TurmaId = 543234,
-                        Nome = "Turma 5B",                        
+                        Nome = "Turma 5B",
                     },
                      new TurmaAcompanhamentoFechamentoRetornoDto()
                     {
@@ -102,7 +102,68 @@ namespace SME.SGP.Api
                     }
                 }
             };
-            return  Ok(listaPaginada);
+            return Ok(listaPaginada);
+        }
+
+        [HttpGet("turmas/{turmaId}/fechamentos/bimestres/{bimestre}")]
+        [ProducesResponseType(typeof(IEnumerable<StatusTotalFechamentoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        //[Permissao(Permissao.RI_C, Policy = "Bearer")]
+        public async Task<IActionResult> ListaTotalStatusFechamentos(long turmaId, int bimestre)
+        {
+
+            var listaStatus = new List<StatusTotalFechamentoDto>() {
+
+                new StatusTotalFechamentoDto()
+                {
+                    Descricao = StatusFechamento.NaoIniciado.Description(),
+                    Quantidade = 10
+                },
+
+                new StatusTotalFechamentoDto()
+                {
+                    Descricao = StatusFechamento.EmAndamento.Description(),
+                    Quantidade = 25
+                },
+
+                 new StatusTotalFechamentoDto()
+                {
+                    Descricao = StatusFechamento.Concluido.Description(),
+                    Quantidade = 3
+                }
+            };
+
+            return Ok(listaStatus);
+        }
+        [HttpGet("turmas/{turmaId}/conselho-classe/bimestres/{bimestre}")]
+        [ProducesResponseType(typeof(IEnumerable<StatusTotalFechamentoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        //[Permissao(Permissao.RI_C, Policy = "Bearer")]
+        public async Task<IActionResult> ListaTotalStatusConselhosClasse(long turmaId, int bimestre)
+        {
+
+            var listaStatus = new List<StatusTotalFechamentoDto>() {
+
+                new StatusTotalFechamentoDto()
+                {
+                    Descricao = StatusFechamento.NaoIniciado.Description(),
+                    Quantidade = 5
+                },
+
+                new StatusTotalFechamentoDto()
+                {
+                    Descricao = StatusFechamento.EmAndamento.Description(),
+                    Quantidade = 15
+                },
+
+                 new StatusTotalFechamentoDto()
+                {
+                    Descricao = StatusFechamento.Concluido.Description(),
+                    Quantidade = 30
+                }
+            };
+
+            return Ok(listaStatus);
         }
     }
 }
