@@ -4,6 +4,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -21,7 +22,7 @@ namespace SME.SGP.Dados.Repositorios
             return contexto.Conexao.QueryFirstOrDefault<RelatorioCorrelacao>("select * from relatorio_correlacao where codigo = @codigoCorrelacao", new { codigoCorrelacao });
         }
 
-        public RelatorioCorrelacao ObterCorrelacaoJasperPorCodigo(Guid codigoCorrelacao)
+        public async Task<RelatorioCorrelacao> ObterCorrelacaoJasperPorCodigoAsync(Guid codigoCorrelacao)
         {
             var query = @"select
 	                        rc.*,rcj.*
@@ -31,12 +32,16 @@ namespace SME.SGP.Dados.Repositorios
 	                        rc.id = rcj.relatorio_correlacao_id
                         where
 	                        rc.codigo = @codigoCorrelacao";
-            return contexto.Conexao.Query<RelatorioCorrelacao, RelatorioCorrelacaoJasper, RelatorioCorrelacao>(query,
+
+            var result = await contexto.Conexao.QueryAsync<RelatorioCorrelacao, RelatorioCorrelacaoJasper, RelatorioCorrelacao>(query,
                 (correlacao, jasper) =>
                 {
                     correlacao.AdicionarCorrelacaoJasper(jasper);
                     return correlacao;
-                }, new { codigoCorrelacao }).FirstOrDefault();
+                }, new { codigoCorrelacao });
+
+            return result.FirstOrDefault();
+
         }
     }
 }
