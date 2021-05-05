@@ -29,11 +29,7 @@ namespace SME.SGP.Aplicacao
         {
             RuleFor(c => c.NotaAnterior)
             .NotEmpty()
-            .WithMessage("A nota anteior deve ser informada para geração do histórico");
-
-            RuleFor(c => c.NotaNova)
-            .NotEmpty()
-            .WithMessage("A nota nova deve ser informada para geração do histórico");
+            .WithMessage("A nota anteior deve ser informada para geração do histórico");            
 
             RuleFor(a => a.FechamentoNotaId)
             .NotEmpty()
