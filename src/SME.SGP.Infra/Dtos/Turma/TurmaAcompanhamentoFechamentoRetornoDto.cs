@@ -4,5 +4,7 @@
     {
         public long TurmaId { get; set; }
         public string Nome { get; set; }
+        public string NomeFormatado
+            => $"Turma {Nome}";
     }
 }
