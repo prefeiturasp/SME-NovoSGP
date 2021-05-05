@@ -211,6 +211,10 @@ namespace SME.SGP.Dominio
             if (possuiPerfilPrioritario)
                 return Dominio.Perfis.PERFIL_CJ_INFANTIL;
 
+            possuiPerfilPrioritario = PossuiPerfilProfessor() && PossuiPerfilComunicadosUe() && !possuiTurmaAtiva;
+            if (possuiPerfilPrioritario)
+                return Dominio.Perfis.PERFIL_COMUNICADOS_UE;
+
             return Perfis.FirstOrDefault().CodigoPerfil;
         }
 
@@ -220,6 +224,8 @@ namespace SME.SGP.Dominio
                 perfil == Dominio.Perfis.PERFIL_PROFESSOR_INFANTIL)
                 Perfis = Perfis.OrderByDescending(o => o.EhPerfilInfantil());
         }
+
+
 
         public TipoPerfil? ObterTipoPerfilAtual()
         {
@@ -318,6 +324,10 @@ namespace SME.SGP.Dominio
            => Perfis != null &&
                Perfis.Any(c => c.CodigoPerfil == Dominio.Perfis.PERFIL_PROFESSOR);
 
+        public bool PossuiPerfilComunicadosUe()
+           => Perfis != null &&
+               Perfis.Any(c => c.CodigoPerfil == Dominio.Perfis.PERFIL_COMUNICADOS_UE);
+
         public bool PossuiPerfilProfessorInfantil()
            => Perfis != null &&
                Perfis.Any(c => c.CodigoPerfil == Dominio.Perfis.PERFIL_PROFESSOR_INFANTIL);
@@ -384,6 +394,8 @@ namespace SME.SGP.Dominio
         {
             return Perfis != null && Perfis.Any(c => c.Tipo == TipoPerfil.UE);
         }
+
+
 
         public bool TemPerfilGestaoUes()
         {

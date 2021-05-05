@@ -111,6 +111,9 @@ namespace SME.SGP.Dominio
         // Processo Executando
         TempoValidadeProcessoExecutandoEmSegundos = 57,
 
+        ExecucaoConsolidacaoFrequenciaTurma = 58,
+
+
         //Sistema
         HabilitarServicosEmBackground = 100
     }

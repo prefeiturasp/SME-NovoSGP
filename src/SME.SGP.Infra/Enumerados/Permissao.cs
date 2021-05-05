@@ -642,5 +642,8 @@
 
         [PermissaoMenu(Menu = "Registro de Itinerância", Icone = "fas fa-chart-bar", Agrupamento = "Dashboard", OrdemAgrupamento = 8, EhConsulta = true, Url = "/dashboard/registro-itinerancia")]
         DRI_C = 216,
+
+        [PermissaoMenu(Menu = "Frequência", Icone = "fas fa-chart-bar", Agrupamento = "Dashboard", OrdemAgrupamento = 8, EhConsulta = true, Url = "/dashboard/frequencia")]
+        DF_C = 217,
     }
 }
