@@ -54,6 +54,10 @@ class ServicoRegistroIndividual {
   obterSugestao = params => {
     return api.get(`/v1/registros-individuais/sugestoes-topicos/${params}`);
   };
+
+  gerar = params => {
+    return api.post('/v1/relatorios/registros-individuais', params);
+  };
 }
 
 export default new ServicoRegistroIndividual();

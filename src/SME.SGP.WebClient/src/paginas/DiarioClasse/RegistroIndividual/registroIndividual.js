@@ -5,10 +5,12 @@ import { Card, Loader, SelectComponent } from '~/componentes';
 import { Cabecalho } from '~/componentes-sgp';
 
 import {
+  BotaoGerarRelatorioRegistroIndividual,
   BotaoOrdenarListaAlunos,
   BotoesAcoes,
   DadosRegistroIndividual,
   Mensagens,
+  ModalImpressaoRegistroIndividual,
   ObjectCardRegistroIndividual,
   TabelaRetratilRegistroIndividual,
 } from './componentes';
@@ -156,6 +158,7 @@ const RegistroIndividual = () => {
   return (
     <Loader loading={exibirLoaderGeralRegistroIndividual} className="w-100">
       <Mensagens />
+      <ModalImpressaoRegistroIndividual />
       <Cabecalho pagina="Registro individual" />
       <Card>
         <div className="col-md-12 p-0">
@@ -184,6 +187,7 @@ const RegistroIndividual = () => {
               <>
                 <div className="col-md-12 mb-3 d-flex">
                   <BotaoOrdenarListaAlunos />
+                  <BotaoGerarRelatorioRegistroIndividual />
                 </div>
                 <div className="col-md-12 mb-2">
                   <TabelaRetratilRegistroIndividual

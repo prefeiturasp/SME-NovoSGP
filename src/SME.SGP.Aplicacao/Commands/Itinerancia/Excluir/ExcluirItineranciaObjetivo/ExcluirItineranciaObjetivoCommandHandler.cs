@@ -17,8 +17,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(ExcluirItineranciaObjetivoCommand request, CancellationToken cancellationToken)
         {
-            repositorioItineranciaObjetivo.Remover(request.Id);
-
+            await repositorioItineranciaObjetivo.ExcluirItineranciaObjetivo(request.ObjetivoId, request.ItineranciaId);
             return true;
         }
     }
