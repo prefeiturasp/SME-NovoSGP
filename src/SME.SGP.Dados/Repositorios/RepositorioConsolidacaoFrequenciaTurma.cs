@@ -138,7 +138,7 @@ namespace SME.SGP.Dados.Repositorios
                             inner join turma t on t.turma_id = a.turma_id 
                             inner join ue on ue.id = t.ue_id 
                             inner join dre on dre.id = ue.dre_id 
-                        where not a.excluido and not rf.excluido and not afa.excluido
+                        where not a.excluido and not rf.excluido and not afa.excluido and not raa.excluido
                           and (motivo_ausencia_id is not null or anotacao is not null)
                           and afa.excluido = false 
                           and t.ano_letivo = @anoLetivo
