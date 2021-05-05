@@ -6,6 +6,7 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -105,5 +106,14 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterAusenciaMotivoPorAlunoTurmaBimestreAno([FromQuery] string codigoAluno, [FromQuery] string codigoTurma, [FromQuery] short bimestre, [FromQuery] short anoLetivo, [FromServices] IConsultasFrequencia consultasFrequencia)
              => Ok(await consultasFrequencia.ObterAusenciaMotivoPorAlunoTurmaBimestreAno(codigoAluno, codigoTurma, bimestre, anoLetivo));
 
+        [HttpPost("frequencias/calcular")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(bool), 200)]
+        public async Task<IActionResult> CalcularFrequencia([FromBody] CalcularFrequenciaDto calcularFrequenciaDto, [FromServices] ICalculoFrequenciaTurmaDisciplinaUseCase calculoFrequenciaTurmaDisciplinaUseCase)
+        {
+            await calculoFrequenciaTurmaDisciplinaUseCase.IncluirCalculoFila(calcularFrequenciaDto);
+            return Ok();
+        }
     }
 }

@@ -1,9 +1,11 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using static SME.SGP.Dominio.DateTimeExtension;
 
 namespace SME.SGP.Aplicacao
 {
@@ -20,22 +22,39 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(IncluirFilaCalcularFrequenciaPorTurmaCommand request, CancellationToken cancellationToken)
         {
             //Verificar se já há essa turma/bimestre/disciplina
-            var processoNaFila = await repositorioProcessoExecutando.ObterProcessoCalculoFrequenciaAsync(request.TurmaId, request.DisciplinaId, request.Bimestre,
-                Dominio.TipoProcesso.CalculoFrequenciaFilaRabbit);
+            var processoNaFila = await repositorioProcessoExecutando
+                .ObterProcessoCalculoFrequenciaAsync(request.TurmaId, request.DisciplinaId, request.Bimestre, TipoProcesso.CalculoFrequenciaFilaRabbit);
+            
+            if (processoNaFila != null)
+            {
+                var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(request.TurmaId));
+
+                var parametroTempoValidade = await mediator
+                    .Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.TempoValidadeProcessoExecutandoEmSegundos, turma.AnoLetivo));
+
+                if (parametroTempoValidade != null)
+                {
+                    var tempoValidade = int.Parse(parametroTempoValidade.Valor);
+                    if (processoNaFila.CriadoEm.AddSeconds(tempoValidade) < HorarioBrasilia())
+                    {
+                        await repositorioProcessoExecutando.RemoverAsync(processoNaFila);
+                        processoNaFila = null;
+                    }
+                }               
+            }
 
             if (processoNaFila == null)
             {
-                 await repositorioProcessoExecutando.SalvarAsync(new Dominio.ProcessoExecutando()
+                await repositorioProcessoExecutando.SalvarAsync(new ProcessoExecutando()
                 {
                     Bimestre = request.Bimestre,
                     DisciplinaId = request.DisciplinaId,
-                    TipoProcesso = Dominio.TipoProcesso.CalculoFrequenciaFilaRabbit,
-                    TurmaId = request.TurmaId
+                    TipoProcesso = TipoProcesso.CalculoFrequenciaFilaRabbit,
+                    TurmaId = request.TurmaId,
+                    CriadoEm = HorarioBrasilia()
                 });
 
                 var comando = new CalcularFrequenciaPorTurmaCommand(request.Alunos, request.DataAula, request.TurmaId, request.DisciplinaId, request.Bimestre);
-                
-                //var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaCalculoFrequenciaPorTurmaComponente, comando, Guid.NewGuid(), null));
             }
