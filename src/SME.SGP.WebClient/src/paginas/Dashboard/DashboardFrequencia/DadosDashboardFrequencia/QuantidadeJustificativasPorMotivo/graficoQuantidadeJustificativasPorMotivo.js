@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Loader, SelectComponent } from '~/componentes';
 import GraficoBarras from '~/componentes-sgp/Graficos/graficoBarras';
 import { ModalidadeDTO } from '~/dtos';
@@ -7,16 +8,17 @@ import { AbrangenciaServico, erros } from '~/servicos';
 import ServicoDashboardFrequencia from '~/servicos/Paginas/Dashboard/ServicoDashboardFrequencia';
 
 const GraficoQuantidadeJustificativasPorMotivo = props => {
-  const {
-    anoLetivo,
-    dreId,
-    ueId,
-    modalidade,
-    semestre,
-    listaAnosEscolares,
-    codigoUe,
-    consideraHistorico,
-  } = props;
+  const { anoLetivo, dreId, ueId, modalidade, semestre, codigoUe } = props;
+
+  const listaAnosEscolares = useSelector(
+    store =>
+      store.dashboardFrequencia?.dadosDashboardFrequencia?.listaAnosEscolares
+  );
+
+  const consideraHistorico = useSelector(
+    store =>
+      store.dashboardFrequencia?.dadosDashboardFrequencia?.consideraHistorico
+  );
 
   const [dadosGrafico, setDadosGrafico] = useState([]);
   const [exibirLoader, setExibirLoader] = useState(false);
@@ -50,13 +52,16 @@ const GraficoQuantidadeJustificativasPorMotivo = props => {
   }, [anoLetivo, dreId, ueId, modalidade, semestre, turmaId, anoEscolar]);
 
   useEffect(() => {
+    const consultaPorTurma = ueId && ueId !== OPCAO_TODOS;
+    const consultaPorAnoEscolar = ueId === OPCAO_TODOS;
+
     if (
       anoLetivo &&
       dreId &&
       ueId &&
       modalidade &&
       !!(Number(modalidade) === ModalidadeDTO.EJA ? semestre : !semestre) &&
-      (anoEscolar || turmaId)
+      ((consultaPorTurma && turmaId) || (consultaPorAnoEscolar && anoEscolar))
     ) {
       obterDadosGrafico();
     } else {
@@ -104,7 +109,7 @@ const GraficoQuantidadeJustificativasPorMotivo = props => {
     if (resultado?.data?.length) {
       setListaTurmas(resultado.data);
       if (resultado.data.length === 1) {
-        setTurmaId(resultado.data[0].id);
+        setTurmaId(String(resultado.data[0].id));
       }
 
       if (resultado.data.length > 1) {
@@ -189,9 +194,7 @@ GraficoQuantidadeJustificativasPorMotivo.propTypes = {
   ueId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   modalidade: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   semestre: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-  listaAnosEscolares: PropTypes.oneOfType(PropTypes.array),
   codigoUe: PropTypes.string,
-  consideraHistorico: PropTypes.bool,
 };
 
 GraficoQuantidadeJustificativasPorMotivo.defaultProps = {
@@ -200,9 +203,7 @@ GraficoQuantidadeJustificativasPorMotivo.defaultProps = {
   ueId: null,
   modalidade: null,
   semestre: null,
-  listaAnosEscolares: [],
   codigoUe: '',
-  consideraHistorico: false,
 };
 
 export default GraficoQuantidadeJustificativasPorMotivo;

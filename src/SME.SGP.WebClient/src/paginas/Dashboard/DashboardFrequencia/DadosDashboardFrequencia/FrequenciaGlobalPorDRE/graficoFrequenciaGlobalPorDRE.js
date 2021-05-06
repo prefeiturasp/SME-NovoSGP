@@ -1,6 +1,7 @@
 import * as moment from 'moment';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Loader, SelectComponent } from '~/componentes';
 import DataUltimaAtualizacao from '~/componentes-sgp/DataUltimaAtualizacao/dataUltimaAtualizacao';
 import GraficoBarras from '~/componentes-sgp/Graficos/graficoBarras';
@@ -8,13 +9,18 @@ import { erros } from '~/servicos';
 import ServicoDashboardFrequencia from '~/servicos/Paginas/Dashboard/ServicoDashboardFrequencia';
 
 const GraficoFrequenciaGlobalPorDRE = props => {
-  const {
-    anoLetivo,
-    modalidade,
-    semestre,
-    listaAnosEscolares,
-    dataUltimaConsolidacao,
-  } = props;
+  const { anoLetivo, modalidade, semestre } = props;
+
+  const dataUltimaConsolidacao = useSelector(
+    store =>
+      store.dashboardFrequencia?.dadosDashboardFrequencia
+        ?.dataUltimaConsolidacao
+  );
+
+  const listaAnosEscolares = useSelector(
+    store =>
+      store.dashboardFrequencia?.dadosDashboardFrequencia?.listaAnosEscolares
+  );
 
   const [dadosGrafico, setDadosGrafico] = useState([]);
   const [exibirLoader, setExibirLoader] = useState(false);
@@ -66,7 +72,7 @@ const GraficoFrequenciaGlobalPorDRE = props => {
       <div className="row">
         <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 mb-2">
           <SelectComponent
-            lista={listaAnosEscolares}
+            lista={listaAnosEscolares || []}
             valueOption="ano"
             valueText="modalidadeAno"
             disabled={listaAnosEscolares?.length === 1}
@@ -114,16 +120,12 @@ GraficoFrequenciaGlobalPorDRE.propTypes = {
   anoLetivo: PropTypes.oneOfType(PropTypes.any),
   modalidade: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   semestre: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-  listaAnosEscolares: PropTypes.oneOfType(PropTypes.array),
-  dataUltimaConsolidacao: PropTypes.string,
 };
 
 GraficoFrequenciaGlobalPorDRE.defaultProps = {
   anoLetivo: null,
   modalidade: null,
   semestre: null,
-  listaAnosEscolares: [],
-  dataUltimaConsolidacao: '',
 };
 
 export default GraficoFrequenciaGlobalPorDRE;

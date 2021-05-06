@@ -1,4 +1,6 @@
 import api from '~/servicos/api';
+import { store } from '~/redux';
+import { setDadosDashboardFrequencia } from '~/redux/modulos/dashboardFrequencia/actions';
 
 const urlPadrao = 'v1/dashboard/frequencias';
 
@@ -127,6 +129,19 @@ class ServicoDashboardFrequencia {
 
   obterUltimaConsolidacao = anoLetivo => {
     return api.get(`${urlPadrao}/consolidacao?anoLetivo=${anoLetivo}`);
+  };
+
+  atualizarFiltros = (nomeParametro, valor) => {
+    const { dispatch } = store;
+    const state = store.getState();
+
+    const { dashboardFrequencia } = state;
+    const { dadosDashboardFrequencia } = dashboardFrequencia;
+
+    const novoMap = { ...dadosDashboardFrequencia };
+    novoMap[nomeParametro] = valor;
+
+    dispatch(setDadosDashboardFrequencia(novoMap));
   };
 }
 
