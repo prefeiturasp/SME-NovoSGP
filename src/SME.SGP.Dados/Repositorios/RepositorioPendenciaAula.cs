@@ -213,7 +213,7 @@ namespace SME.SGP.Dados.Repositorios
         }
 
         public async Task<bool> PossuiPendenciasAtividadeAvaliativaPorAulasId(long[] aulasId)
-        {            
+        {
             var sql = @"select 1
                             from aula a
                             inner join atividade_avaliativa aa on a.id = ANY(@aulas)
