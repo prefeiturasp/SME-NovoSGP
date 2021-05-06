@@ -1169,7 +1169,7 @@ rotas.set(RotasDto.RELATORIO_ESCOLA_AQUI_ADESAO, {
 
 rotas.set(RotasDto.RELATORIO_AEE_ENCAMINHAMENTO, {
   breadcrumbName: 'Encaminhamento',
-  menu: ['Relatórios', 'AEE'],
+  menu: ['AEE'],
   parent: '/',
   component: EncaminhamentoAEELista,
   exact: true,
@@ -1179,7 +1179,7 @@ rotas.set(RotasDto.RELATORIO_AEE_ENCAMINHAMENTO, {
 });
 
 rotas.set(`${RotasDto.RELATORIO_AEE_ENCAMINHAMENTO}/novo`, {
-  breadcrumbName: 'Cadastrar Encaminhamento',
+  breadcrumbName: 'Cadastrar',
   parent: `${RotasDto.RELATORIO_AEE_ENCAMINHAMENTO}`,
   component: EncaminhamentoAEECadastro,
   exact: true,
@@ -1189,7 +1189,7 @@ rotas.set(`${RotasDto.RELATORIO_AEE_ENCAMINHAMENTO}/novo`, {
 });
 
 rotas.set(`${RotasDto.RELATORIO_AEE_ENCAMINHAMENTO}/editar/:id`, {
-  breadcrumbName: 'Editar Encaminhamento',
+  breadcrumbName: 'Editar',
   parent: `${RotasDto.RELATORIO_AEE_ENCAMINHAMENTO}`,
   component: EncaminhamentoAEECadastro,
   exact: true,
@@ -1200,7 +1200,7 @@ rotas.set(`${RotasDto.RELATORIO_AEE_ENCAMINHAMENTO}/editar/:id`, {
 
 rotas.set(`${RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA}`, {
   breadcrumbName: 'Registro de itinerância',
-  menu: ['Relatórios', 'AEE'],
+  menu: ['AEE'],
   parent: '/',
   component: RegistroItineranciaAEELista,
   exact: true,
@@ -1211,7 +1211,6 @@ rotas.set(`${RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA}`, {
 
 rotas.set(`${RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA}/novo`, {
   breadcrumbName: 'Cadastro',
-  menu: [],
   parent: RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA,
   component: RegistroItineranciaAEECadastro,
   exact: true,
@@ -1222,7 +1221,7 @@ rotas.set(`${RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA}/novo`, {
 
 rotas.set(`${RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA}/editar/:id`, {
   breadcrumbName: 'Registro de itinerância',
-  menu: ['Relatórios', 'AEE'],
+  menu: ['AEE'],
   parent: '/',
   component: RegistroItineranciaAEECadastro,
   exact: true,
@@ -1233,7 +1232,7 @@ rotas.set(`${RotasDto.RELATORIO_AEE_REGISTRO_ITINERANCIA}/editar/:id`, {
 
 rotas.set(RotasDto.RELATORIO_AEE_PLANO, {
   breadcrumbName: 'Plano',
-  menu: ['Relatórios', 'AEE'],
+  menu: ['AEE'],
   parent: '/',
   component: PlanoAEELista,
   exact: true,
@@ -1243,9 +1242,8 @@ rotas.set(RotasDto.RELATORIO_AEE_PLANO, {
 });
 
 rotas.set(`${RotasDto.RELATORIO_AEE_PLANO}/novo`, {
-  breadcrumbName: 'Plano',
-  menu: ['Relatórios', 'AEE'],
-  parent: '/',
+  breadcrumbName: 'Cadastro',
+  parent: RotasDto.RELATORIO_AEE_PLANO,
   component: PlanoAEECadastro,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
@@ -1254,7 +1252,7 @@ rotas.set(`${RotasDto.RELATORIO_AEE_PLANO}/novo`, {
 });
 
 rotas.set(`${RotasDto.RELATORIO_AEE_PLANO}/editar/:id`, {
-  breadcrumbName: 'Editar Plano AEE',
+  breadcrumbName: 'Editar',
   parent: `${RotasDto.RELATORIO_AEE_PLANO}`,
   component: PlanoAEECadastro,
   exact: true,
