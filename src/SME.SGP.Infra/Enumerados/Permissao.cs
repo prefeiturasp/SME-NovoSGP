@@ -583,43 +583,43 @@
         [PermissaoMenu(Menu = "Ocorrências", Icone = "fas fa-tasks", Agrupamento = "Gestão", OrdemAgrupamento = 6, EhAlteracao = true, Url = "/gestao/ocorrencias")]
         OCO_A = 196,
 
-        [PermissaoMenu(Menu = "Encaminhamento", Icone = "fas fa-print", Agrupamento = "AEE", OrdemAgrupamento = 7, OrdemMenu = 1, EhConsulta = true, Url = "/relatorios/aee/encaminhamento")]
+        [PermissaoMenu(Menu = "Encaminhamento", Icone = "fas fa-universal-access", Agrupamento = "AEE", OrdemAgrupamento = 7, OrdemMenu = 1, EhConsulta = true, Url = "/aee/encaminhamento")]
         AEE_C = 197,
 
-        [PermissaoMenu(Menu = "Encaminhamento", Icone = "fas fa-print", Agrupamento = "AEE", OrdemAgrupamento = 7, OrdemMenu = 1, EhInclusao = true, Url = "/relatorios/aee/encaminhamento")]
+        [PermissaoMenu(Menu = "Encaminhamento", Icone = "fas fa-universal-access", Agrupamento = "AEE", OrdemAgrupamento = 7, OrdemMenu = 1, EhInclusao = true, Url = "/aee/encaminhamento")]
         AEE_I = 198,
 
-        [PermissaoMenu(Menu = "Encaminhamento", Icone = "fas fa-print", Agrupamento = "AEE", OrdemAgrupamento = 7, OrdemMenu = 1, EhExclusao = true, Url = "/relatorios/aee/encaminhamento")]
+        [PermissaoMenu(Menu = "Encaminhamento", Icone = "fas fa-universal-access", Agrupamento = "AEE", OrdemAgrupamento = 7, OrdemMenu = 1, EhExclusao = true, Url = "/aee/encaminhamento")]
         AEE_E = 199,
 
-        [PermissaoMenu(Menu = "Encaminhamento", Icone = "fas fa-print", Agrupamento = "AEE", OrdemAgrupamento = 7, OrdemMenu = 1, EhAlteracao = true, Url = "/relatorios/aee/encaminhamento")]
+        [PermissaoMenu(Menu = "Encaminhamento", Icone = "fas fa-universal-access", Agrupamento = "AEE", OrdemAgrupamento = 7, OrdemMenu = 1, EhAlteracao = true, Url = "/aee/encaminhamento")]
         AEE_A = 200,
 
         [PermissaoMenu(Menu = "Acompanhamento de frequência", Icone = "fas fa-user-cog", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 7, EhConsulta = true, Url = "/diario-classe/acompanhamento-frequencia")]
         AFQ_C = 201,
 
-        [PermissaoMenu(Menu = "Plano", Icone = "fas fa-print", Agrupamento = "AEE", OrdemAgrupamento = 7, OrdemMenu = 2, EhConsulta = true, Url = "/relatorios/aee/plano")]
+        [PermissaoMenu(Menu = "Plano", Icone = "fas fa-universal-access", Agrupamento = "AEE", OrdemAgrupamento = 7, OrdemMenu = 2, EhConsulta = true, Url = "/aee/plano")]
         PAEE_C = 202,
 
-        [PermissaoMenu(Menu = "Plano", Icone = "fas fa-print", Agrupamento = "AEE", OrdemAgrupamento = 7, OrdemMenu = 2, EhInclusao = true, Url = "/relatorios/aee/plano")]
+        [PermissaoMenu(Menu = "Plano", Icone = "fas fa-universal-access", Agrupamento = "AEE", OrdemAgrupamento = 7, OrdemMenu = 2, EhInclusao = true, Url = "/aee/plano")]
         PAEE_I = 203,
 
-        [PermissaoMenu(Menu = "Plano", Icone = "fas fa-print", Agrupamento = "AEE", OrdemAgrupamento = 7, OrdemMenu = 2, EhExclusao = true, Url = "/relatorios/aee/plano")]
+        [PermissaoMenu(Menu = "Plano", Icone = "fas fa-universal-access", Agrupamento = "AEE", OrdemAgrupamento = 7, OrdemMenu = 2, EhExclusao = true, Url = "/aee/plano")]
         PAEE_E = 204,
 
-        [PermissaoMenu(Menu = "Plano", Icone = "fas fa-print", Agrupamento = "AEE", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = true, Url = "/relatorios/aee/plano")]
+        [PermissaoMenu(Menu = "Plano", Icone = "fas fa-universal-access", Agrupamento = "AEE", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = true, Url = "/aee/plano")]
         PAEE_A = 205,
         
-        [PermissaoMenu(Menu = "Registro de itinerância", Icone = "fas fa-print", Agrupamento = "AEE", OrdemAgrupamento = 7, OrdemMenu = 3, EhConsulta = true, Url = "/relatorios/aee/registro-itinerancia")]
+        [PermissaoMenu(Menu = "Registro de itinerância", Icone = "fas fa-universal-access", Agrupamento = "AEE", OrdemAgrupamento = 7, OrdemMenu = 3, EhConsulta = true, Url = "/aee/registro-itinerancia")]
         RI_C = 206,
 
-        [PermissaoMenu(Menu = "Registro de itinerância", Icone = "fas fa-print", Agrupamento = "AEE", OrdemAgrupamento = 7, OrdemMenu = 3, EhInclusao = true, Url = "/relatorios/aee/registro-itinerancia")]
+        [PermissaoMenu(Menu = "Registro de itinerância", Icone = "fas fa-universal-access", Agrupamento = "AEE", OrdemAgrupamento = 7, OrdemMenu = 3, EhInclusao = true, Url = "/aee/registro-itinerancia")]
         RI_I = 207,
 
-        [PermissaoMenu(Menu = "Registro de itinerância", Icone = "fas fa-print", Agrupamento = "AEE", OrdemAgrupamento = 7, OrdemMenu = 3, EhExclusao = true, Url = "/relatorios/aee/registro-itinerancia")]
+        [PermissaoMenu(Menu = "Registro de itinerância", Icone = "fas fa-universal-access", Agrupamento = "AEE", OrdemAgrupamento = 7, OrdemMenu = 3, EhExclusao = true, Url = "/aee/registro-itinerancia")]
         RI_E = 208,
 
-        [PermissaoMenu(Menu = "Registro de itinerância", Icone = "fas fa-print", Agrupamento = "AEE", OrdemAgrupamento = 7, OrdemMenu = 3, EhAlteracao = true, Url = "/relatorios/aee/registro-itinerancia")]
+        [PermissaoMenu(Menu = "Registro de itinerância", Icone = "fas fa-universal-access", Agrupamento = "AEE", OrdemAgrupamento = 7, OrdemMenu = 3, EhAlteracao = true, Url = "/aee/registro-itinerancia")]
         RI_A = 209,
 
         [PermissaoMenu(Menu = "Relatório do Acompanhamento da Aprendizagem", Icone = "fas fa-pencil-ruler", Agrupamento = "Fechamento", OrdemAgrupamento = 3, OrdemMenu = 5, EhConsulta = true, Url = "/fechamento/acompanhamento-aprendizagem")]

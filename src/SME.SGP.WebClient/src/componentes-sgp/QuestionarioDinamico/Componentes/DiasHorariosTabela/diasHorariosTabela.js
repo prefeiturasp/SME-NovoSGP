@@ -8,7 +8,7 @@ import { DataTable } from '~/componentes';
 import Button from '~/componentes/button';
 import { Base, Colors } from '~/componentes/colors';
 import Label from '~/componentes/label';
-import { BtnExcluirDiasHorario } from '~/paginas/Relatorios/AEE/Plano/Cadastro/planoAEECadastro.css';
+import { BtnExcluirDiasHorario } from '~/paginas/AEE/Plano/Cadastro/planoAEECadastro.css';
 import { setResetarTabela } from '~/redux/modulos/questionarioDinamico/actions';
 import { confirmar } from '~/servicos';
 import { removerArrayAninhados } from '~/utils';
