@@ -21,6 +21,6 @@ namespace SME.SGP.Aplicacao
 
     public class SalvarHistoricoNotaCommandValidator : AbstractValidator<SalvarHistoricoNotaCommand>
     {
-        public SalvarHistoricoNotaCommandValidator() { }
+        public SalvarHistoricoNotaCommandValidator(){}
     }
 }
