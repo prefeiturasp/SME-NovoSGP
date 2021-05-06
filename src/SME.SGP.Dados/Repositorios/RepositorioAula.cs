@@ -434,7 +434,7 @@ namespace SME.SGP.Dados.Repositorios
 
             query.AppendLine("and turma_id = @turma ");
             query.AppendLine("and disciplina_id = @componenteCurricular ");
-            query.AppendLine("and extract('week' from data_aula) = @semana ");
+            query.AppendLine("and extract('week' from data_aula::date + 1) = (@semana - 1)");
             query.AppendLine("and Date(data_aula) <> @dataExcecao");
 
             var qtd = await database.Conexao.QueryFirstOrDefaultAsync<int?>(query.ToString(), new
