@@ -71,7 +71,7 @@ const EncaminhamentoAEECadastro = ({ match }) => {
     if (encaminhamentoId) {
       setBreadcrumbManual(
         match.url,
-        'Editar Encaminhamento',
+        'Editar',
         `${RotasDto.RELATORIO_AEE_ENCAMINHAMENTO}`
       );
     }
