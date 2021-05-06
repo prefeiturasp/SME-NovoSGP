@@ -376,7 +376,7 @@ namespace SME.SGP.Dominio.Servicos
                             if (fechamentoNotaDto.Nota.HasValue)
                             {                                
                                 if (fechamentoNotaDto.Nota != notaFechamento.Nota)                                    
-                                    await mediator.Send(new SalvarHistoricoNotaFechamentoCommand(notaFechamento.Nota.Value, fechamentoNotaDto.Nota.Value, notaFechamento.Id));
+                                    await mediator.Send(new SalvarHistoricoNotaFechamentoCommand(notaFechamento.Nota != null ? notaFechamento.Nota.Value : (double?)null , fechamentoNotaDto.Nota != null ? fechamentoNotaDto.Nota.Value : (double?)null, notaFechamento.Id));
 
                                 notaFechamento.Nota = fechamentoNotaDto.Nota;
                             }
