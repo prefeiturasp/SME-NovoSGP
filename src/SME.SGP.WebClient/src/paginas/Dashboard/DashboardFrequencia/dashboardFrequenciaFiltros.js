@@ -426,7 +426,7 @@ const DashboardFrequenciaFiltros = () => {
               label="Semestre"
               lista={listaSemestres}
               valueOption="valor"
-              valueText="descricao"
+              valueText="desc"
               disabled={
                 listaSemestres?.length === 1 ||
                 Number(modalidade) !== ModalidadeDTO.EJA
