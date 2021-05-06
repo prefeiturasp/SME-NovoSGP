@@ -1,26 +1,41 @@
-import PropTypes from 'prop-types';
 import React from 'react';
+import { useSelector } from 'react-redux';
+import { ModalidadeDTO } from '~/dtos';
 import FrequenciaGlobalPorAno from './FrequenciaGlobalPorAno/frequenciaGlobalPorAno';
 import FrequenciaGlobalPorDRE from './FrequenciaGlobalPorDRE/frequenciaGlobalPorDRE';
 import QuantidadeAusenciasPossuemJustificativa from './QuantidadeAusenciasPossuemJustificativa/quantidadeAusenciasPossuemJustificativa';
 import QuantidadeJustificativasPorMotivo from './QuantidadeJustificativasPorMotivo/quantidadeJustificativasPorMotivo';
 
-const GraficosFrequencia = props => {
-  const {
-    anoLetivo,
-    dreId,
-    ueId,
-    modalidade,
-    semestre,
-    listaAnosEscolares,
-    codigoUe,
-    consideraHistorico,
-    dataUltimaConsolidacao,
-  } = props;
-
+const GraficosFrequencia = () => {
   const OPCAO_TODOS = '-99';
 
-  return (
+  const anoLetivo = useSelector(
+    store => store.dashboardFrequencia?.dadosDashboardFrequencia?.anoLetivo
+  );
+  const dre = useSelector(
+    store => store.dashboardFrequencia?.dadosDashboardFrequencia?.dre
+  );
+  const ue = useSelector(
+    store => store.dashboardFrequencia?.dadosDashboardFrequencia?.ue
+  );
+  const modalidade = useSelector(
+    store => store.dashboardFrequencia?.dadosDashboardFrequencia?.modalidade
+  );
+  const semestre = useSelector(
+    store => store.dashboardFrequencia?.dadosDashboardFrequencia?.semestre
+  );
+
+  const dreId = OPCAO_TODOS === dre?.codigo ? OPCAO_TODOS : dre?.id;
+  const ueId = OPCAO_TODOS === ue?.codigo ? OPCAO_TODOS : ue?.id;
+
+  const exibirFrequenciaGlobalPorDRE =
+    dre?.codigo === OPCAO_TODOS && ue?.codigo === OPCAO_TODOS;
+
+  return anoLetivo &&
+    dre &&
+    ue &&
+    modalidade &&
+    !!(Number(modalidade) === ModalidadeDTO.EJA ? semestre : !semestre) ? (
     <>
       <FrequenciaGlobalPorAno
         anoLetivo={anoLetivo}
@@ -28,15 +43,12 @@ const GraficosFrequencia = props => {
         ueId={ueId}
         modalidade={modalidade}
         semestre={semestre}
-        dataUltimaConsolidacao={dataUltimaConsolidacao}
       />
-      {dreId === OPCAO_TODOS && ueId === OPCAO_TODOS && (
+      {exibirFrequenciaGlobalPorDRE && (
         <FrequenciaGlobalPorDRE
           anoLetivo={anoLetivo}
           modalidade={modalidade}
           semestre={semestre}
-          listaAnosEscolares={listaAnosEscolares}
-          dataUltimaConsolidacao={dataUltimaConsolidacao}
         />
       )}
       <QuantidadeAusenciasPossuemJustificativa
@@ -52,36 +64,12 @@ const GraficosFrequencia = props => {
         ueId={ueId}
         modalidade={modalidade}
         semestre={semestre}
-        listaAnosEscolares={listaAnosEscolares}
-        codigoUe={codigoUe}
-        consideraHistorico={consideraHistorico}
+        codigoUe={ue?.codigo}
       />
     </>
+  ) : (
+    ''
   );
-};
-
-GraficosFrequencia.propTypes = {
-  anoLetivo: PropTypes.oneOfType(PropTypes.any),
-  dreId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-  ueId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-  modalidade: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-  semestre: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-  listaAnosEscolares: PropTypes.oneOfType(PropTypes.array),
-  codigoUe: PropTypes.string,
-  consideraHistorico: PropTypes.bool,
-  dataUltimaConsolidacao: PropTypes.string,
-};
-
-GraficosFrequencia.defaultProps = {
-  anoLetivo: null,
-  dreId: null,
-  ueId: null,
-  modalidade: null,
-  semestre: null,
-  listaAnosEscolares: [],
-  codigoUe: '',
-  consideraHistorico: false,
-  dataUltimaConsolidacao: '',
 };
 
 export default GraficosFrequencia;
