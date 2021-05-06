@@ -1,6 +1,7 @@
 import * as moment from 'moment';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Loader } from '~/componentes';
 import DataUltimaAtualizacao from '~/componentes-sgp/DataUltimaAtualizacao/dataUltimaAtualizacao';
 import GraficoBarras from '~/componentes-sgp/Graficos/graficoBarras';
@@ -8,14 +9,13 @@ import { erros } from '~/servicos';
 import ServicoDashboardFrequencia from '~/servicos/Paginas/Dashboard/ServicoDashboardFrequencia';
 
 const GraficoFrequenciaGlobalPorAno = props => {
-  const {
-    anoLetivo,
-    dreId,
-    ueId,
-    modalidade,
-    semestre,
-    dataUltimaConsolidacao,
-  } = props;
+  const { anoLetivo, dreId, ueId, modalidade, semestre } = props;
+
+  const dataUltimaConsolidacao = useSelector(
+    store =>
+      store.dashboardFrequencia?.dadosDashboardFrequencia
+        ?.dataUltimaConsolidacao
+  );
 
   const [dadosGrafico, setDadosGrafico] = useState([]);
   const [exibirLoader, setExibirLoader] = useState(false);
@@ -86,7 +86,6 @@ GraficoFrequenciaGlobalPorAno.propTypes = {
   ueId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   modalidade: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   semestre: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-  dataUltimaConsolidacao: PropTypes.string,
 };
 
 GraficoFrequenciaGlobalPorAno.defaultProps = {
@@ -95,7 +94,6 @@ GraficoFrequenciaGlobalPorAno.defaultProps = {
   ueId: null,
   modalidade: null,
   semestre: null,
-  dataUltimaConsolidacao: '',
 };
 
 export default GraficoFrequenciaGlobalPorAno;
