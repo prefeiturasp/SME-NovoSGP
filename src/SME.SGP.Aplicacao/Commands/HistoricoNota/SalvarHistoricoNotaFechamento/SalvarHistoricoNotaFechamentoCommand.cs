@@ -5,7 +5,7 @@ namespace SME.SGP.Aplicacao
 {
     public class SalvarHistoricoNotaFechamentoCommand : IRequest<long>
     {
-        public SalvarHistoricoNotaFechamentoCommand(double notaAnterior, double notaNova, long fechamentoNotaId, string criadoRF = "", string criadoPor = "", long? workFlowId = null)
+        public SalvarHistoricoNotaFechamentoCommand(double? notaAnterior, double? notaNova, long fechamentoNotaId, string criadoRF = "", string criadoPor = "", long? workFlowId = null)
         {
             NotaAnterior = notaAnterior;
             NotaNova = notaNova;
@@ -15,8 +15,8 @@ namespace SME.SGP.Aplicacao
             WorkFlowId = workFlowId;
         }
 
-        public double NotaAnterior { get; set; }
-        public double NotaNova { get; set; }
+        public double? NotaAnterior { get; set; }
+        public double? NotaNova { get; set; }
         public long FechamentoNotaId { get; set; }
         public string CriadoRF { get; set; }
         public string CriadoPor { get; set; }
