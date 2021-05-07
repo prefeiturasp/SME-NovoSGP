@@ -15,17 +15,8 @@ const ListaAlunosAusenciasCompensadas = props => {
     desabilitarCampos,
   } = props;
 
-  const atualizarValores = async (qt, indexAluno, aluno) => {
-    const confirmado = await confirmar(
-      'Alterar quantidade',
-      `${aluno.id} - ${aluno.nome}`,
-      'A frequência do seguinte estudante será recalculada somente quando salvar as suas alterações',
-      'Alterar',
-      'Cancelar',
-      true
-    );
-
-    if (confirmado && indexAluno >= 0) {
+  const atualizarValores = async (qt, indexAluno) => {
+    if (indexAluno >= 0) {
       const lista = listaAusenciaCompensada;
       lista[indexAluno].quantidadeFaltasCompensadas = qt;
       atualizarValoresListaCompensacao(lista);
@@ -41,7 +32,6 @@ const ListaAlunosAusenciasCompensadas = props => {
         descricao: String(index + 1),
       });
     }
-
     return (
       <SelectComponent
         onChange={qt => {
