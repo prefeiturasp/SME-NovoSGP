@@ -21,15 +21,6 @@ namespace SME.SGP.Aplicacao
 
     public class SalvarHistoricoNotaCommandValidator : AbstractValidator<SalvarHistoricoNotaCommand>
     {
-        public SalvarHistoricoNotaCommandValidator()
-        {
-            RuleFor(c => c.NotaAnterior)
-            .NotNull()
-            .WithMessage("A nota anteior deve ser informada para geração do histórico");
-
-            RuleFor(c => c.NotaNova)
-            .NotNull()
-            .WithMessage("A nota nova deve ser informada para geração do histórico");
-        }
+        public SalvarHistoricoNotaCommandValidator(){}
     }
 }
