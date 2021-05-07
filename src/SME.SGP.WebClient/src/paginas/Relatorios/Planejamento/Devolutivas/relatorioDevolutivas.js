@@ -108,6 +108,7 @@ const RelatorioDevolutivas = () => {
   const onCheckedConsideraHistorico = () => {
     limparFiltrosSelecionados();
     setConsideraHistorico(!consideraHistorico);
+    setAnoLetivo(anoAtual);
   };
 
   const onChangeAnoLetivo = ano => {
@@ -467,7 +468,11 @@ const RelatorioDevolutivas = () => {
                   lista={listaAnosLetivo}
                   valueOption="valor"
                   valueText="desc"
-                  disabled={!consideraHistorico || naoEhInfantil || listaAnosLetivo?.length === 1}
+                  disabled={
+                    !consideraHistorico ||
+                    naoEhInfantil ||
+                    listaAnosLetivo?.length === 1
+                  }
                   onChange={onChangeAnoLetivo}
                   valueSelect={anoLetivo}
                   placeholder="Ano letivo"

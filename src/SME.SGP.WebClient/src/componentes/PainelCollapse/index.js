@@ -11,8 +11,18 @@ import {
 } from './styles';
 
 function PainelCollapse({ children, ...props }) {
-  const renderizarIcone = painelProps =>
-    painelProps.isActive ? <Icon type="up" /> : <Icon type="down" />;
+  const renderizarIcone = painelProps => {
+    // painelProps.isActive ? <Icon type="up" /> : <Icon type="down" />;
+    const direcaoSeta = painelProps.isActive ? 'up' : 'down';
+    return (
+      <div>
+        <IconeEstilizado
+          className={`fa fa-chevron-${direcaoSeta}`}
+          aria-hidden="true"
+        />
+      </div>
+    );
+  };
 
   return (
     <CollapseEstilizado

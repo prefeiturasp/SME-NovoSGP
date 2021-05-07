@@ -94,6 +94,7 @@ import AcompanhamentoAprendizagem from '~/paginas/Fechamento/AcompanhamentoApren
 import RelatorioDevolutivas from '~/paginas/Relatorios/Planejamento/Devolutivas/relatorioDevolutivas';
 import DashboardAEE from '~/paginas/Dashboard/AEE/dashboardAEE';
 import DashboardRegistroItinerancia from '~/paginas/Dashboard/DashboardRegistroItinerancia/dashboardRegistroItinerancia';
+import AcompanhamentoFechamento from '~/paginas/Fechamento/AcompanhamentoFechamento/acompanhamentoFechamento';
 
 const rotas = new Map();
 
@@ -1324,6 +1325,17 @@ rotas.set(RotasDto.DASHBOARD_REGISTRO_ITINERANCIA, {
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: true,
   chavePermissao: RotasDto.DASHBOARD_REGISTRO_ITINERANCIA,
+});
+
+rotas.set(RotasDto.ACOMPANHAMENTO_FECHAMENTO, {
+  breadcrumbName: 'Relatório do Acompanhamento da Aprendizagem',
+  menu: ['Fechamento'],
+  parent: '/',
+  component: AcompanhamentoFechamento,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+  chavePermissao: RotasDto.ACOMPANHAMENTO_FECHAMENTO,
 });
 
 const rotasArray = [];

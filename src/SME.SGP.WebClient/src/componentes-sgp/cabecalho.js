@@ -31,9 +31,9 @@ const Container = styled.div`
   }
 `;
 
-const Cabecalho = ({ titulo, pagina, children }) => {
+const Cabecalho = ({ titulo, pagina, children, classes }) => {
   return (
-    <Container>
+    <Container className={classes}>
       <div className="col-xs-12 col-md-12 col-lg-12 p-l-10">
         <span>{titulo}</span>
         <span className="titulo">{pagina}</span>
@@ -46,10 +46,14 @@ const Cabecalho = ({ titulo, pagina, children }) => {
 Cabecalho.defaultProps = {
   titulo: '',
   pagina: '',
+  children: '',
+  classes: '',
 };
 
 Cabecalho.propTypes = {
   titulo: PropTypes.string,
   pagina: PropTypes.string,
+  children: PropTypes.oneOfType([PropTypes.node, PropTypes.string]),
+  classes: PropTypes.string,
 };
 export default Cabecalho;

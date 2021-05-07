@@ -145,9 +145,14 @@ const ListaDiarioBordo = () => {
   );
 
   useEffect(() => {
-    if (((dataInicial && dataFinal && dataFinal >= dataInicial) || (!dataInicial && !dataFinal) || (dataInicial && !dataFinal) || (!dataInicial && dataFinal)) && 
-         componenteCurricularSelecionado &&
-         numeroPagina) {
+    if (
+      ((dataInicial && dataFinal && dataFinal >= dataInicial) ||
+        (!dataInicial && !dataFinal) ||
+        (dataInicial && !dataFinal) ||
+        (!dataInicial && dataFinal)) &&
+      componenteCurricularSelecionado &&
+      numeroPagina
+    ) {
       const dataIncialFormatada =
         dataInicial && dataInicial.format('MM-DD-YYYY');
       const dataFinalFormatada = dataFinal && dataFinal.format('MM-DD-YYYY');
@@ -319,8 +324,7 @@ const ListaDiarioBordo = () => {
   };
 
   useEffect(() => {
-    if (dataFinal)
-        validarSetarDataFinal(dataFinal);
+    if (dataFinal) validarSetarDataFinal(dataFinal);
   }, [dataInicial]);
 
   const validarSetarDataFinal = async data => {
@@ -422,7 +426,6 @@ const ListaDiarioBordo = () => {
                     corBorda={Base.AzulBordaCollapse}
                     temBorda
                     header={titulo}
-                    // altura={44}
                   >
                     <div className="row ">
                       <div className="col-sm-12 mb-3">

@@ -5,9 +5,9 @@ import { Base } from './colors';
 
 const Container = styled.div`
   label {
-    height: 17px;
     font-family: Roboto;
-    font-size: 14px;
+    height: ${({ altura }) => `${altura}px`};
+    font-size: ${({ tamanhoFonte }) => `${tamanhoFonte}px`};
     font-weight: normal;
     font-style: normal;
     font-stretch: normal;
@@ -30,9 +30,22 @@ const Container = styled.div`
   }
 `;
 
-const Label = ({ text, control, center, className, campoOpcional, observacaoText }) => {
+const Label = ({
+  text,
+  control,
+  center,
+  className,
+  campoOpcional,
+  observacaoText,
+  tamanhoFonte,
+  altura,
+}) => {
   return (
-    <Container className={center && 'text-center'}>
+    <Container
+      className={center && 'text-center'}
+      tamanhoFonte={tamanhoFonte}
+      altura={altura}
+    >
       <label htmlFor={control} id={text} className={className}>
         {text}
         {observacaoText ? <span> {` ${observacaoText}`}</span> : ''}
@@ -50,7 +63,10 @@ Label.propTypes = {
   control: PropTypes.string,
   center: PropTypes.bool,
   className: PropTypes.string,
+  campoOpcional: PropTypes.string,
   observacaoText: PropTypes.string,
+  tamanhoFonte: PropTypes.string,
+  altura: PropTypes.string,
 };
 
 Label.defaultProps = {
@@ -58,7 +74,10 @@ Label.defaultProps = {
   control: null,
   center: false,
   className: '',
+  campoOpcional: '',
   observacaoText: '',
+  tamanhoFonte: '14',
+  altura: '17',
 };
 
 export default Label;

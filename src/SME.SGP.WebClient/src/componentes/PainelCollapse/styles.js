@@ -7,8 +7,10 @@ import { Collapse } from 'antd';
 import { Base } from '~/componentes';
 
 export const IconeEstilizado = styled.i`
-  color: ${Base.Verde};
-  background: ${Base.Azul};
+  width: 24px;
+  height: 24px;
+  font-size: 18px !important;
+  color: #42474a !important;
 `;
 
 export const CollapseEstilizado = styled(Collapse)`
@@ -41,19 +43,20 @@ export const PainelEstilizado = styled(Collapse.Panel)`
     ${props => props.temBorda && `border-radius: 4px !important`};
     ${props =>
       props.temBorda &&
-      `border-left: 7px solid ${
+      `border-left: 8px solid ${
         props.corBorda ? props.corBorda : Base.AzulBreadcrumb
       }`};
 
     ${({ accordion }) =>
       accordion &&
       css`
-        height: 44px;
+        height: 100% !important;
       `}
   }
 
   .ant-collapse-content {
     height: 100% !important;
+    background-color: transparent !important;
   }
 
   &.ant-collapse-item-active {
@@ -68,10 +71,12 @@ export const PainelEstilizado = styled(Collapse.Panel)`
     ${({ accordion }) =>
       accordion &&
       css`
-        box-shadow: 0px 0px 4px -2px grey;
-        min-height: 44px;
+        border: 1px solid #bfbfbf;
+        box-sizing: border-box;
+        box-shadow: 0px 1px 4px rgba(8, 35, 48, 0.1);
+        min-height: 48px;
         margin-bottom: 16px;
-        border-radius: 4px;
+        border-radius: 4px !important;
       `}
   }
 `;
