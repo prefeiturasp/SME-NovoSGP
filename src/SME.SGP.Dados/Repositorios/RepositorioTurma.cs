@@ -1014,9 +1014,8 @@ namespace SME.SGP.Dados.Repositorios
 
         }       
 
-        public async Task<PaginacaoResultadoDto<TurmaAcompanhamentoFechamentoRetornoDto>> ObterTurmasFechamentoAcompanhamento(Paginacao paginacao, string dreCodigo, string ueCodigo, long[] turmaId, Modalidade modalidade, int semestre, int bimestre, int anoLetivo)
-        {
-            var listarTodasTurmas = turmaId.Any(c => c == -99);
+        public async Task<PaginacaoResultadoDto<TurmaAcompanhamentoFechamentoRetornoDto>> ObterTurmasFechamentoAcompanhamento(Paginacao paginacao, string dreCodigo, string ueCodigo, long[] turmaId, Modalidade modalidade, int semestre, int bimestre, int anoLetivo, bool listarTodasTurmas)
+        {            
             var query = new StringBuilder(@"select t.id as TurmaId,
                                                      t.nome       
                                                 from turma t 

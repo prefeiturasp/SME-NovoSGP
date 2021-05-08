@@ -13,7 +13,7 @@ namespace SME.SGP.Api
     //[Authorize("Bearer")]
     public class FechamentoAcompanhamentoTurmasController : ControllerBase
     {
-        [HttpGet]
+        [HttpGet("turmas")]
         [ProducesResponseType(typeof(PaginacaoResultadoDto<TurmaAcompanhamentoFechamentoRetornoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         //[Permissao(Permissao.RI_C, Policy = "Bearer")]

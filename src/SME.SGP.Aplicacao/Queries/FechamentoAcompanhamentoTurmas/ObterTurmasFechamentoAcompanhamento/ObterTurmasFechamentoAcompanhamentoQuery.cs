@@ -7,7 +7,7 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterTurmasFechamentoAcompanhamentoQuery : IRequest<PaginacaoResultadoDto<TurmaAcompanhamentoFechamentoRetornoDto>>
     {
-        public ObterTurmasFechamentoAcompanhamentoQuery(string dreCodigo, string ueCodigo, long[] turmaId, Modalidade modalidade, int semestre, int bimestre, int anoLetivo)
+        public ObterTurmasFechamentoAcompanhamentoQuery(string dreCodigo, string ueCodigo, long[] turmaId, Modalidade modalidade, int semestre, int bimestre, int anoLetivo, bool listarTodasTurmas)
         {
             DreCodigo = dreCodigo;
             UeCodigo = ueCodigo;
@@ -16,6 +16,7 @@ namespace SME.SGP.Aplicacao
             Semestre = semestre;
             Bimestre = bimestre;
             AnoLetivo = anoLetivo;
+            ListarTodasTurmas = listarTodasTurmas;
         }
 
         public string DreCodigo { get; set; }
@@ -25,6 +26,7 @@ namespace SME.SGP.Aplicacao
         public int Semestre { get; set; }
         public int Bimestre { get; set; }
         public int AnoLetivo { get; set; }        
+        public bool ListarTodasTurmas { get; set; }        
     }
     public class ObterTurmasFechamentoAcompanhamentoQueryValidator : AbstractValidator<ObterTurmasFechamentoAcompanhamentoQuery>
     {

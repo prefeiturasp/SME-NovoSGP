@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Infra;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -10,15 +11,16 @@ namespace SME.SGP.Aplicacao
         {
         }
         public async Task<PaginacaoResultadoDto<TurmaAcompanhamentoFechamentoRetornoDto>> Executar(FiltroAcompanhamentoFechamentoTurmasDto param)
-        {           
-
+        {
+            var listarTodasTurmas = param.TurmaId.Any(c => c == -99);
             var turmas = await mediator.Send(new ObterTurmasFechamentoAcompanhamentoQuery(param.DreCodigo,
                                                                                           param.UeCodigo,
                                                                                           param.TurmaId,
                                                                                           param.Modalidade,
                                                                                           param.Semestre,
                                                                                           param.Bimestre,
-                                                                                          param.AnoLetivo));
+                                                                                          param.AnoLetivo,
+                                                                                          listarTodasTurmas));
             return turmas;
         }
     }
