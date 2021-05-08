@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
                 .WithMessage("O código da Ue deve ser informado.");
             RuleFor(a => a.TurmaId)
                 .NotEmpty()
-                .WithMessage("Pelo menos uma turma de ser informada.");
+                .WithMessage("Pelo menos uma turma deve ser informada.");
             RuleFor(a => a.Modalidade)
                 .NotEmpty()
                 .WithMessage("A modalidade deve ser informada.");
