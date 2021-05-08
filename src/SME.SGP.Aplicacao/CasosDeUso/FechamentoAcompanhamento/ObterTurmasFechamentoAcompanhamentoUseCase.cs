@@ -12,8 +12,8 @@ namespace SME.SGP.Aplicacao
         public async Task<PaginacaoResultadoDto<TurmaAcompanhamentoFechamentoRetornoDto>> Executar(FiltroAcompanhamentoFechamentoTurmasDto param)
         {           
 
-            var turmas = await mediator.Send(new ObterTurmasFechamentoAcompanhamentoQuery(param.DreId,
-                                                                                          param.UeId,
+            var turmas = await mediator.Send(new ObterTurmasFechamentoAcompanhamentoQuery(param.DreCodigo,
+                                                                                          param.UeCodigo,
                                                                                           param.TurmaId,
                                                                                           param.Modalidade,
                                                                                           param.Semestre,
