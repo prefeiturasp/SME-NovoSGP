@@ -1031,10 +1031,11 @@ namespace SME.SGP.Dados.Repositorios
                         if (!listarTodasTurmas)
                             query.AppendLine("and t.id = ANY(@turmaId) ");
 
-                             query.AppendLine( @"and t.modalidade_codigo = @modalidade
+                             query.AppendLine(@"and t.modalidade_codigo = @modalidade
                                                  and t.semestre = @semestre
                                                  and pe.bimestre = @bimestre
                                                  and t.ano_letivo = @anoLetivo
+                                                 and not t.historica
                                                order by t.nome
                                               OFFSET @quantidadeRegistrosIgnorados ROWS FETCH NEXT @quantidadeRegistros ROWS ONLY; ");
                         
@@ -1055,7 +1056,8 @@ namespace SME.SGP.Dados.Repositorios
                             query.AppendLine(@"and t.modalidade_codigo = @modalidade
                                                and t.semestre = @semestre
                                                and pe.bimestre = @bimestre
-                                               and t.ano_letivo = @anoLetivo"); 
+                                               and t.ano_letivo = @anoLetivo
+                                               and not t.historica"); 
             
 
             var retorno = new PaginacaoResultadoDto<TurmaAcompanhamentoFechamentoRetornoDto>();            
