@@ -117,9 +117,6 @@ namespace SME.SGP.Aplicacao
                 // Disciplina não tem disciplinas filhas então carrega avaliações da propria
                 atividadesAvaliativaEBimestres.AddRange(await consultasAtividadeAvaliativa.ObterAvaliacoesNoBimestre(filtro.TurmaCodigo, filtro.DisciplinaCodigo, periodoAtual.PeriodoInicio, periodoAtual.PeriodoFim));
 
-            if (atividadesAvaliativaEBimestres is null || !atividadesAvaliativaEBimestres.Any())
-                return ObterRetornoGenericoBimestreAtualVazio(periodosEscolares, bimestre.Value);
-
             var alunos = await servicoEOL.ObterAlunosPorTurma(filtro.TurmaCodigo);
             if (alunos == null || !alunos.Any())
                 throw new NegocioException("Não foi encontrado alunos para a turma informada");
@@ -163,8 +160,13 @@ namespace SME.SGP.Aplicacao
                         .ToList();
 
                     var alunosIds = alunos.Select(a => a.CodigoAluno).Distinct();
-                    var notas = repositorioNotasConceitos
-                        .ObterNotasPorAlunosAtividadesAvaliativas(atividadesAvaliativasdoBimestre.Select(a => a.Id).Distinct(), alunosIds, filtro.DisciplinaCodigo);
+
+                    IEnumerable<long> atividadesAvaliativas = atividadesAvaliativasdoBimestre.Select(a => a.Id)?.Distinct();
+                    IEnumerable<NotaConceito> notas = null;
+
+                    if (atividadesAvaliativaEBimestres != null && atividadesAvaliativaEBimestres.Any())
+                        notas = repositorioNotasConceitos
+                            .ObterNotasPorAlunosAtividadesAvaliativas(atividadesAvaliativas, alunosIds, filtro.DisciplinaCodigo);
 
                     var ausenciasAtividadesAvaliativas = await repositorioFrequencia
                         .ObterAusencias(filtro.TurmaCodigo, filtro.DisciplinaCodigo, atividadesAvaliativasdoBimestre.Select(a => a.DataAvaliacao).Distinct().ToArray(), alunosIds.ToArray());
@@ -237,7 +239,7 @@ namespace SME.SGP.Aplicacao
                             notasAvaliacoes.Add(notaAvaliacao);
                         }
 
-                        notaConceitoAluno.PodeEditar = notasAvaliacoes.Any(na => na.PodeEditar);
+                        notaConceitoAluno.PodeEditar = notasAvaliacoes.Any(na => na.PodeEditar) || (atividadesAvaliativaEBimestres is null || !atividadesAvaliativaEBimestres.Any());
 
                         notaConceitoAluno.Marcador = servicoAluno.ObterMarcadorAluno(aluno, new PeriodoEscolar()
                         {
@@ -358,6 +360,11 @@ namespace SME.SGP.Aplicacao
 
                         retorno.NotaTipo = notaTipo.TipoNota;
                         ObterValoresDeAuditoria(dataUltimaNotaConceitoInserida, dataUltimaNotaConceitoAlterada, usuarioRfUltimaNotaConceitoInserida, usuarioRfUltimaNotaConceitoAlterada, notaTipo.TipoNota, retorno, nomeAvaliacaoAuditoriaInclusao, nomeAvaliacaoAuditoriaAlteracao);
+                    }
+                    else
+                    {
+                        var tipoNota = await ObterNotaTipo(long.Parse(filtro.TurmaCodigo), filtro.AnoLetivo, filtro.TurmaHistorico);
+                        retorno.NotaTipo = tipoNota;
                     }
                 }
 
