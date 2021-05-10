@@ -20,8 +20,8 @@ namespace SME.SGP.Aplicacao
         public async Task<PaginacaoResultadoDto<TurmaAcompanhamentoFechamentoRetornoDto>> Handle(ObterTurmasFechamentoAcompanhamentoQuery request, CancellationToken cancellationToken)
         {
             var turmasPaginada = await repositorioTurma.ObterTurmasFechamentoAcompanhamento(Paginacao,
-                                                                                            request.DreCodigo,
-                                                                                            request.UeCodigo,
+                                                                                            request.DreId,
+                                                                                            request.UeId,
                                                                                             request.TurmaId,
                                                                                             request.Modalidade,
                                                                                             request.Semestre,

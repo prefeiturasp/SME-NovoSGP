@@ -1014,7 +1014,7 @@ namespace SME.SGP.Dados.Repositorios
 
         }       
 
-        public async Task<PaginacaoResultadoDto<TurmaAcompanhamentoFechamentoRetornoDto>> ObterTurmasFechamentoAcompanhamento(Paginacao paginacao, string dreCodigo, string ueCodigo, long[] turmaId, Modalidade modalidade, int semestre, int bimestre, int anoLetivo, bool listarTodasTurmas)
+        public async Task<PaginacaoResultadoDto<TurmaAcompanhamentoFechamentoRetornoDto>> ObterTurmasFechamentoAcompanhamento(Paginacao paginacao, long dreId, long ueId, long[] turmasId, Modalidade modalidade, int semestre, int bimestre, int anoLetivo, bool listarTodasTurmas)
         {            
             var query = new StringBuilder(@"select t.id as TurmaId,
                                                      t.nome       
@@ -1025,11 +1025,11 @@ namespace SME.SGP.Dados.Repositorios
                                                   on t.ano_letivo = tc.ano_letivo and t.modalidade_codigo = tc.modalidade 
                                                inner join periodo_escolar pe
 	                                              on tc.id = pe.tipo_calendario_id
-                                               where dre.dre_id = @dreCodigo
-                                                 and ue.ue_id = @ueCodigo ");
+                                               where dre.id = @dreId
+                                                 and ue.id = @ueId ");
 
                         if (!listarTodasTurmas)
-                            query.AppendLine("and t.id = ANY(@turmaId) ");
+                            query.AppendLine("and t.id = ANY(@turmasId) ");
 
                              query.AppendLine(@"and t.modalidade_codigo = @modalidade
                                                  and t.semestre = @semestre
@@ -1047,11 +1047,11 @@ namespace SME.SGP.Dados.Repositorios
                                                    on t.ano_letivo = tc.ano_letivo and t.modalidade_codigo = tc.modalidade 
                                                 inner join periodo_escolar pe
 	                                               on tc.id = pe.tipo_calendario_id
-                                                where dre.dre_id = @dreCodigo
-                                                  and ue.ue_id = @ueCodigo ");
+                                                where dre.id = @dreId
+                                                  and ue.id = @ueId ");
 
                             if (!listarTodasTurmas)
-                                query.AppendLine("and t.id = ANY(@turmaId) ");
+                                query.AppendLine("and t.id = ANY(@turmasId) ");
 
                             query.AppendLine(@"and t.modalidade_codigo = @modalidade
                                                and t.semestre = @semestre
@@ -1066,9 +1066,9 @@ namespace SME.SGP.Dados.Repositorios
             {
                 quantidadeRegistrosIgnorados = paginacao.QuantidadeRegistrosIgnorados,
                 quantidadeRegistros = paginacao.QuantidadeRegistros,
-                turmaId,
-                dreCodigo,
-                ueCodigo,
+                turmasId,
+                dreId,
+                ueId,
                 modalidade = (int)modalidade,
                 semestre,
                 bimestre,
