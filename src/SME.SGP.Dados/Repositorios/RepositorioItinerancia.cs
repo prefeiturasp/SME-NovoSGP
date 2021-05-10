@@ -111,19 +111,6 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<ItineranciaQuestaoDto>(query, new { id, tipoQuestionario });
         }
 
-        public async Task<IEnumerable<ItineranciaUeDto>> ObterUesItineranciaPorId(long id)
-        {
-            var query = @"select iu.id,
-       		                     iu.ue_id as UeId,
-       		                     ue.nome as Descricao
-                            from itinerancia_ue iu 
-                           inner join ue on ue.id = iu.ue_id 
-                           where iu.itinerancia_id = @Id
-                             and not iu.excluido";
-
-            return await database.Conexao.QueryAsync<ItineranciaUeDto>(query, new { id });
-        }
-
         public async Task<IEnumerable<int>> ObterAnosLetivosItinerancia()
         {
             var query = @"select distinct ano_letivo 
@@ -230,10 +217,10 @@ namespace SME.SGP.Dados.Repositorios
             {
                 sql.AppendLine(" i.id ");
                 sql.AppendLine(", i.data_visita as DataVisita ");
+                sql.AppendLine(", i.ue_id as UeId ");
                 sql.AppendLine(", i.situacao ");
                 sql.AppendLine(", i.criado_por||'('||i.criado_rf||')' as criado_por");
                 sql.AppendLine($", (select count(*) from itinerancia_aluno ia where ia.itinerancia_id = i.id ) as alunos ");
-                sql.AppendLine($", (select count(*) from itinerancia_ue iu where iu.itinerancia_id = i.id ) as ues ");
 
             }
 
