@@ -7,3 +7,4 @@ drop table if exists public.itinerancia_ue;
 -- itinerancia
 alter table public.itinerancia add column if not exists ue_id int8 NOT null;
 ALTER TABLE public.itinerancia ADD CONSTRAINT itinerancia_ue_fk FOREIGN KEY (ue_id) REFERENCES ue(id);
+CREATE index if not exists itinerancia_ue_id_idx ON public.itinerancia USING btree (ue_id);
