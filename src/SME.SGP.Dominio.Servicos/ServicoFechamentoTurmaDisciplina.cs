@@ -162,8 +162,7 @@ namespace SME.SGP.Dominio.Servicos
                 await servicoPendenciaFechamento.ValidarPercentualAlunosAbaixoDaMedia(fechamento);
                 await servicoPendenciaFechamento.ValidarAlteracaoExtemporanea(fechamento.Id, turma.CodigoTurma, fechamento.CriadoRF);
             }
-            await servicoPendenciaFechamento.ValidarAulasReposicaoPendente(fechamento.Id, turma, disciplinaId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim);
-            await servicoPendenciaFechamento.ValidarAulasSemPlanoAulaNaDataDoFechamento(fechamento.Id, turma, disciplinaId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim);
+            await servicoPendenciaFechamento.ValidarAulasReposicaoPendente(fechamento.Id, turma, disciplinaId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim);            
 
             if (registraFrequencia)
                 await servicoPendenciaFechamento.ValidarAulasSemFrequenciaRegistrada(fechamento.Id, turma, disciplinaId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim);
@@ -378,9 +377,9 @@ namespace SME.SGP.Dominio.Servicos
                         if (!EnviarWfAprovacao())
                         {
                             if (fechamentoNotaDto.Nota.HasValue)
-                            {
-                                if (fechamentoNotaDto.Nota != notaFechamento.Nota)
-                                    await mediator.Send(new SalvarHistoricoNotaFechamentoCommand(notaFechamento.Nota.Value, fechamentoNotaDto.Nota.Value, notaFechamento.Id));
+                            {                                
+                                if (fechamentoNotaDto.Nota != notaFechamento.Nota)                                    
+                                    await mediator.Send(new SalvarHistoricoNotaFechamentoCommand(notaFechamento.Nota != null ? notaFechamento.Nota.Value : (double?)null , fechamentoNotaDto.Nota != null ? fechamentoNotaDto.Nota.Value : (double?)null, notaFechamento.Id));
 
                                 notaFechamento.Nota = fechamentoNotaDto.Nota;
                             }
