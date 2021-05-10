@@ -39,10 +39,6 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine(" and fa.anotacao is not null");
 
             return await database.Conexao.QueryAsync<FechamentoAlunoAnotacaoConselhoDto>(query.ToString(), new { alunoCodigo, turmasCodigos });
-            query.AppendLine(" and fa.anotacao is not null");
-
-            return await database.Conexao.QueryAsync<FechamentoAlunoAnotacaoConselhoDto>(query.ToString(), new { alunoCodigo, fechamentoTurmaId });
->>>>>>>>> Temporary merge branch 2
         }
 
         public async Task<FechamentoAluno> ObterFechamentoAluno(long fechamentoTurmaDisciplinaId, string alunoCodigo)
