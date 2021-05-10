@@ -27,10 +27,8 @@ namespace SME.SGP.Infra
         public AuditoriaDto Auditoria { get; set; }
         public string StatusWorkflow { get; set; }
         public bool PodeEditar { get; set; }
-
         public bool PossuiAlunos { get => Alunos != null && Alunos.Any(); }
         public bool PossuiObjetivos { get => ObjetivosVisita != null && ObjetivosVisita.Any(); }
         public bool PossuiQuestoes { get => Questoes != null && Questoes.Any(); }
-        public bool PossuiUes { get => Ues != null && Ues.Any(); }
     }
 }

@@ -138,10 +138,10 @@ namespace SME.SGP.Aplicacao.Interfaces
                     if (!await mediator.Send(new ExcluirItineranciaQuestaoCommand(questao.Id, itinerancia.Id)))
                         throw new NegocioException($"Não foi possível excluir a questão da itinerância de Id {questao.Id}");
 
-            if (itineranciaDto.PossuiUes)
-                foreach (var ue in itinerancia.Ues)
-                    if (!await mediator.Send(new ExcluirItineranciaUeCommand(ue.Id, itinerancia.Id)))
-                        throw new NegocioException($"Não foi possível excluir a ue da itinerância de Id {ue.Id}");
+            //if (itineranciaDto.PossuiUes)
+            //    foreach (var ue in itinerancia.Ues)
+            //        if (!await mediator.Send(new ExcluirItineranciaUeCommand(ue.Id, itinerancia.Id)))
+            //            throw new NegocioException($"Não foi possível excluir a ue da itinerância de Id {ue.Id}");
 
             return true;
         }
@@ -162,10 +162,6 @@ namespace SME.SGP.Aplicacao.Interfaces
             if (itineranciaDto.PossuiQuestoes)
                 foreach (var questao in itineranciaDto.Questoes)
                     await mediator.Send(new SalvarItineranciaQuestaoCommand(questao.QuestaoId, itinerancia.Id, questao.Resposta));
-
-            if (itineranciaDto.PossuiUes)
-                foreach (var ue in itineranciaDto.Ues)
-                    await mediator.Send(new SalvarItineranciaUeCommand(ue.UeId, itinerancia.Id));
 
             return true;
         }

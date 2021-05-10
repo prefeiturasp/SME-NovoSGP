@@ -150,8 +150,8 @@ namespace SME.SGP.Dados.Repositorios
 
             var lookup = new Dictionary<long, Itinerancia>();
 
-            await database.Conexao.QueryAsync<Itinerancia, ItineranciaAluno, ItineranciaAlunoQuestao, ItineranciaQuestao, ItineranciaObjetivo, ItineranciaObjetivoBase, ItineranciaUe, Itinerancia>(query,
-                 (registroItinerancia, itineranciaAluno, itineranciaAlunoquestao, itineranciaQuestao, itineranciaObjetivo, itineranciaObjetivoBase, itineranciaUe) =>
+            await database.Conexao.QueryAsync<Itinerancia, ItineranciaAluno, ItineranciaAlunoQuestao, ItineranciaQuestao, ItineranciaObjetivo, ItineranciaObjetivoBase, Itinerancia>(query,
+                 (registroItinerancia, itineranciaAluno, itineranciaAlunoquestao, itineranciaQuestao, itineranciaObjetivo, itineranciaObjetivoBase) =>
                  {
                      Itinerancia itinerancia;
                      if (!lookup.TryGetValue(registroItinerancia.Id, out itinerancia))
@@ -173,9 +173,6 @@ namespace SME.SGP.Dados.Repositorios
 
                      if (itineranciaObjetivoBase != null)
                          itinerancia.AdicionarObjetivoBase(itineranciaObjetivoBase);
-
-                     if (itineranciaUe != null)
-                         itinerancia.AdicionarUe(itineranciaUe);
 
                      return itinerancia;
                  }, param: new { id });
@@ -393,16 +390,13 @@ namespace SME.SGP.Dados.Repositorios
 
             Itinerancia registroItinerancia = null;
 
-            await database.Conexao.QueryAsync<Itinerancia, ItineranciaUe, Ue, Dre, Itinerancia>(query,
-                (itinerancia, itineranciaUe, ue, dre) =>
+            await database.Conexao.QueryAsync<Itinerancia, Ue, Dre, Itinerancia>(query,
+                (itinerancia, ue, dre) =>
                 {
                     if (registroItinerancia == null)
                         registroItinerancia = itinerancia;
 
                     ue.Dre = dre;
-                    itineranciaUe.Ue = ue;
-
-                    registroItinerancia.AdicionarUe(itineranciaUe);
 
                     return itinerancia;
                 }, new { id });
