@@ -22,8 +22,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select id,
 	                             nome,
-	                             tem_descricao as TemDescricao,
-	                             permite_varias_ues as PermiteVariasUes
+	                             tem_descricao as TemDescricao
                             from itinerancia_objetivo_base iob  
                            where not excluido 
                            order by ordem  ";
@@ -83,7 +82,6 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select iob.id,
                                  iob.nome,
                                  iob.tem_descricao,
-                                 iob.permite_varias_ues,
                                  io.descricao 
                             from itinerancia_objetivo_base iob 
                            inner join itinerancia_objetivo io on io.itinerancia_base_id = iob.id 
