@@ -1,6 +1,9 @@
 -- DROP SCHEMA public;
+CREATE DATABASE eol_db;
 
-CREATE SCHEMA public AUTHORIZATION postgres;
+\c eol_db;
+
+CREATE SCHEMA IF NOT EXISTS public AUTHORIZATION postgres;
 
 -- DROP SEQUENCE public.componentecurriculargrupomatriz_id_seq;
 
