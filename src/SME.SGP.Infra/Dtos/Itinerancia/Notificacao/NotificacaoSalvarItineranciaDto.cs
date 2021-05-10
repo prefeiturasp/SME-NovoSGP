@@ -8,7 +8,6 @@ namespace SME.SGP.Infra.Dtos
         public DateTime DataVisita { get; set; }
         public long UeId { get; set; }
         public long ItineranciaId { get; set; }
-        public IEnumerable<ItineranciaUeDto> Ues { get; set; }
         public IEnumerable<ItineranciaAlunoDto> Estudantes { get; set; }
         public string CriadoRF { get; set; }
         public string CriadoPor { get; set; }

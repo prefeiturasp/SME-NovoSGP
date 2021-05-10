@@ -81,8 +81,11 @@ namespace SME.SGP.Aplicacao.Interfaces
 
         private async Task SalvarEventosItinerancia(ItineranciaDto dto)
         {
-            foreach (var ue in dto.Ues)
-                await mediator.Send(new CriarEventoItineranciaPAAICommand(dto.Id, ue.CodigoDre, ue.CodigoUe, dto.DataRetornoVerificacao.Value, dto.DataVisita, ObterObjetivos(dto.ObjetivosVisita)));
+            var ue = await mediator.Send(new ObterUePorIdQuery(dto.UeId));
+            if (ue == null )
+                throw new NegocioException("Não foi possível localizar um Unidade Escolar!");
+
+                await mediator.Send(new CriarEventoItineranciaPAAICommand(dto.Id, ue.Dre.CodigoDre, ue.CodigoUe, dto.DataRetornoVerificacao.Value, dto.DataVisita, ObterObjetivos(dto.ObjetivosVisita)));
         }
 
         private IEnumerable<ItineranciaObjetivoDescricaoDto> ObterObjetivos(IEnumerable<ItineranciaObjetivoDto> objetivosVisita)
@@ -115,7 +118,7 @@ namespace SME.SGP.Aplicacao.Interfaces
                         CriadoRF = itinerancia.CriadoRF,
                         CriadoPor = itinerancia.CriadoPor,
                         DataVisita = dto.DataVisita,
-                        Ues = dto.Ues,
+                        UeId = dto.UeId,
                         Estudantes = dto.Alunos,
                         ItineranciaId = itinerancia.Id
                     }, Guid.NewGuid(), null));
