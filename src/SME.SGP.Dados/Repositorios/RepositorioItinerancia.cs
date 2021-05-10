@@ -22,8 +22,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select id,
 	                             nome,
-	                             tem_descricao as TemDescricao,
-	                             permite_varias_ues as PermiteVariasUes
+	                             tem_descricao as TemDescricao
                             from itinerancia_objetivo_base iob  
                            where not excluido 
                            order by ordem  ";
@@ -83,7 +82,6 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select iob.id,
                                  iob.nome,
                                  iob.tem_descricao,
-                                 iob.permite_varias_ues,
                                  io.descricao 
                             from itinerancia_objetivo_base iob 
                            inner join itinerancia_objetivo io on io.itinerancia_base_id = iob.id 
@@ -150,8 +148,8 @@ namespace SME.SGP.Dados.Repositorios
 
             var lookup = new Dictionary<long, Itinerancia>();
 
-            await database.Conexao.QueryAsync<Itinerancia, ItineranciaAluno, ItineranciaAlunoQuestao, ItineranciaQuestao, ItineranciaObjetivo, ItineranciaObjetivoBase, ItineranciaUe, Itinerancia>(query,
-                 (registroItinerancia, itineranciaAluno, itineranciaAlunoquestao, itineranciaQuestao, itineranciaObjetivo, itineranciaObjetivoBase, itineranciaUe) =>
+            await database.Conexao.QueryAsync<Itinerancia, ItineranciaAluno, ItineranciaAlunoQuestao, ItineranciaQuestao, ItineranciaObjetivo, ItineranciaObjetivoBase, Itinerancia>(query,
+                 (registroItinerancia, itineranciaAluno, itineranciaAlunoquestao, itineranciaQuestao, itineranciaObjetivo, itineranciaObjetivoBase) =>
                  {
                      Itinerancia itinerancia;
                      if (!lookup.TryGetValue(registroItinerancia.Id, out itinerancia))
@@ -173,9 +171,6 @@ namespace SME.SGP.Dados.Repositorios
 
                      if (itineranciaObjetivoBase != null)
                          itinerancia.AdicionarObjetivoBase(itineranciaObjetivoBase);
-
-                     if (itineranciaUe != null)
-                         itinerancia.AdicionarUe(itineranciaUe);
 
                      return itinerancia;
                  }, param: new { id });
@@ -393,16 +388,13 @@ namespace SME.SGP.Dados.Repositorios
 
             Itinerancia registroItinerancia = null;
 
-            await database.Conexao.QueryAsync<Itinerancia, ItineranciaUe, Ue, Dre, Itinerancia>(query,
-                (itinerancia, itineranciaUe, ue, dre) =>
+            await database.Conexao.QueryAsync<Itinerancia, Ue, Dre, Itinerancia>(query,
+                (itinerancia, ue, dre) =>
                 {
                     if (registroItinerancia == null)
                         registroItinerancia = itinerancia;
 
                     ue.Dre = dre;
-                    itineranciaUe.Ue = ue;
-
-                    registroItinerancia.AdicionarUe(itineranciaUe);
 
                     return itinerancia;
                 }, new { id });

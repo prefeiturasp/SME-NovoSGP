@@ -50,10 +50,6 @@ namespace SME.SGP.Aplicacao
                         foreach (var questao in itineranciaDto.Questoes)
                             await mediator.Send(new SalvarItineranciaQuestaoCommand(questao.QuestaoId, itinerancia.Id, questao.Resposta));
 
-                    if (itineranciaDto.PossuiUes)
-                        foreach (var ue in itineranciaDto.Ues)
-                            await mediator.Send(new SalvarItineranciaUeCommand(ue.UeId, itinerancia.Id));
-
                     if (itineranciaDto.DataRetornoVerificacao.HasValue && !itineranciaDto.PossuiAlunos)
                         await SalvarEventoItinerancia(itinerancia.Id, itineranciaDto);
 
