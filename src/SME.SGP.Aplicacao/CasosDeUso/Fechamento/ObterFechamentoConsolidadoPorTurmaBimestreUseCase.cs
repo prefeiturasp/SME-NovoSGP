@@ -17,6 +17,9 @@ namespace SME.SGP.Aplicacao
         {
             var listaFechamentosConsolidado = await mediator.Send(new ObterFechamentoConsolidadoPorTurmaBimestreQuery(filtro.TurmaId, filtro.Bimestre));
 
+            if (listaFechamentosConsolidado == null || !listaFechamentosConsolidado.Any())
+                throw new NegocioException("Fechamento consolidado não encontrado!");
+
             var statusAgrupados = listaFechamentosConsolidado.GroupBy(g => g.Status);
 
             return MapearRetornoStatusAgrupado(statusAgrupados);
@@ -28,7 +31,7 @@ namespace SME.SGP.Aplicacao
             {
                 yield return new StatusTotalFechamentoDto()
                 {
-                    Descricao = status.Key.Name(),
+                    Descricao = status.Key.Description(),
                     Quantidade = status.Count()
                 };
             }
