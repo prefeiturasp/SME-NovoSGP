@@ -35,29 +35,9 @@ namespace SME.SGP.Api
         [ProducesResponseType(typeof(IEnumerable<StatusTotalFechamentoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         //[Permissao(Permissao.RI_C, Policy = "Bearer")]
-        public async Task<IActionResult> ListaTotalStatusConselhosClasse(long turmaId, int bimestre)
+        public async Task<IActionResult> ListaTotalStatusConselhosClasse(long turmaId, int bimestre, [FromServices] IObterConselhoClasseConsolidadoPorTurmaBimestreUseCase useCase)
         {
-
-            var listaStatus = new List<StatusTotalFechamentoDto>() {
-
-                new StatusTotalFechamentoDto()
-                {
-                    Descricao = StatusFechamento.NaoIniciado.Description(),
-                    Quantidade = 5
-                },
-
-                new StatusTotalFechamentoDto()
-                {
-                    Descricao = StatusFechamento.EmAndamento.Description(),
-                    Quantidade = 15
-                },
-
-                 new StatusTotalFechamentoDto()
-                {
-                    Descricao = StatusFechamento.Concluido.Description(),
-                    Quantidade = 30
-                }
-            };
+            var listaStatus = await useCase.Executar(new FiltroConselhoClasseConsolidadoTurmaBimestreDto(turmaId, bimestre));
 
             return Ok(listaStatus);
         }
