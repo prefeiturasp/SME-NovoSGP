@@ -4,6 +4,15 @@ CREATE DATABASE sgp_db;
 
 CREATE SCHEMA IF NOT EXISTS public AUTHORIZATION postgres;
 
+CREATE EXTENSION unaccent;
+CREATE EXTENSION pg_stat_statements;
+CREATE OR REPLACE FUNCTION f_unaccent(text)
+  RETURNS text AS
+$func$
+SELECT public.unaccent('public.unaccent', $1)  -- schema-qualify function and dictionary
+$func$
+LANGUAGE sql
+IMMUTABLE;
 
 CREATE SEQUENCE public.abrangencia_id_seq
 	INCREMENT BY 1
@@ -6267,29 +6276,32 @@ AS SELECT pg_stat_statements.userid,
    FROM pg_stat_statements(true) pg_stat_statements(userid, dbid, queryid, query, calls, total_time, min_time, max_time, mean_time, stddev_time, rows, shared_blks_hit, shared_blks_read, shared_blks_dirtied, shared_blks_written, local_blks_hit, local_blks_read, local_blks_dirtied, local_blks_written, temp_blks_read, temp_blks_written, blk_read_time, blk_write_time);
 
 
--- public.v_abrangencia source
+-- public.v_abrangencia_cadeia_turmas source
 
-CREATE OR REPLACE VIEW public.v_abrangencia
-AS SELECT COALESCE(turma.dre_codigo, ue.dre_codigo, dre.dre_codigo) AS dre_codigo,
-    COALESCE(turma.dre_abreviacao, ue.dre_abreviacao, dre.dre_abreviacao) AS dre_abreviacao,
-    COALESCE(turma.dre_nome, ue.dre_nome, dre.dre_nome) AS dre_nome,
-    a.usuario_id,
-    a.perfil AS usuario_perfil,
-    COALESCE(turma.ue_codigo, ue.ue_codigo, dre.ue_codigo) AS ue_codigo,
-    COALESCE(turma.ue_nome, ue.ue_nome, dre.ue_nome) AS ue_nome,
-    COALESCE(turma.turma_ano, ue.turma_ano, dre.turma_ano) AS turma_ano,
-    COALESCE(turma.turma_ano_letivo, ue.turma_ano_letivo, dre.turma_ano_letivo) AS turma_ano_letivo,
-    COALESCE(turma.modalidade_codigo, ue.modalidade_codigo, dre.modalidade_codigo) AS modalidade_codigo,
-    COALESCE(turma.turma_nome, ue.turma_nome, dre.turma_nome) AS turma_nome,
-    COALESCE(turma.turma_semestre, ue.turma_semestre, dre.turma_semestre) AS turma_semestre,
-    COALESCE(turma.qt_duracao_aula, ue.qt_duracao_aula, dre.qt_duracao_aula) AS qt_duracao_aula,
-    COALESCE(turma.tipo_turno, ue.tipo_turno, dre.tipo_turno) AS tipo_turno,
-    COALESCE(turma.turma_codigo, ue.turma_codigo, dre.turma_codigo) AS turma_id
-   FROM abrangencia a
-     LEFT JOIN v_abrangencia_cadeia_dres dre ON dre.dre_id = a.dre_id
-     LEFT JOIN v_abrangencia_cadeia_ues ue ON ue.ue_id = a.ue_id
-     LEFT JOIN v_abrangencia_cadeia_turmas turma ON turma.turma_id = a.turma_id
-  WHERE a.historico = false AND (COALESCE(turma.turma_historica, ue.turma_historica, dre.turma_historica) = false OR COALESCE(turma.turma_historica, ue.turma_historica, dre.turma_historica) IS NULL);
+CREATE OR REPLACE VIEW public.v_abrangencia_cadeia_turmas
+AS SELECT ab_dres.id AS dre_id,
+    ab_dres.dre_id AS dre_codigo,
+    ab_dres.abreviacao AS dre_abreviacao,
+    ab_dres.nome AS dre_nome,
+    ab_ues.id AS ue_id,
+    ab_ues.ue_id AS ue_codigo,
+    ab_ues.nome AS ue_nome,
+    ab_turma.id AS turma_id,
+    ab_turma.ano AS turma_ano,
+    ab_turma.ano_letivo AS turma_ano_letivo,
+    ab_turma.modalidade_codigo,
+    ab_turma.nome AS turma_nome,
+    ab_turma.semestre AS turma_semestre,
+    ab_turma.qt_duracao_aula,
+    ab_turma.tipo_turno,
+    ab_turma.turma_id AS turma_codigo,
+    ab_turma.historica AS turma_historica,
+    ab_turma.dt_fim_eol AS dt_fim_turma,
+    ab_turma.ensino_especial,
+    ab_turma.tipo_turma
+   FROM dre ab_dres
+     JOIN ue ab_ues ON ab_ues.dre_id = ab_dres.id
+     JOIN turma ab_turma ON ab_turma.ue_id = ab_ues.id;
 
 
 -- public.v_abrangencia_cadeia_dres source
@@ -6334,58 +6346,6 @@ UNION ALL
     NULL::boolean AS turma_historica,
     NULL::date AS dt_fim_turma
    FROM dre ab_dres;
-
-
--- public.v_abrangencia_cadeia_dres_somente source
-
-CREATE OR REPLACE VIEW public.v_abrangencia_cadeia_dres_somente
-AS SELECT ab_dres.id AS dre_id,
-    ab_dres.dre_id AS dre_codigo,
-    ab_dres.abreviacao AS dre_abreviacao,
-    ab_dres.nome AS dre_nome,
-    NULL::bigint AS ue_id,
-    NULL::character varying AS ue_codigo,
-    NULL::character varying AS ue_nome,
-    NULL::bigint AS turma_id,
-    NULL::bpchar AS turma_ano,
-    NULL::integer AS turma_ano_letivo,
-    NULL::integer AS modalidade_codigo,
-    NULL::character varying AS turma_nome,
-    NULL::integer AS turma_semestre,
-    NULL::smallint AS qt_duracao_aula,
-    NULL::smallint AS tipo_turno,
-    NULL::character varying AS turma_codigo,
-    NULL::boolean AS turma_historica,
-    NULL::date AS dt_fim_turma
-   FROM dre ab_dres;
-
-
--- public.v_abrangencia_cadeia_turmas source
-
-CREATE OR REPLACE VIEW public.v_abrangencia_cadeia_turmas
-AS SELECT ab_dres.id AS dre_id,
-    ab_dres.dre_id AS dre_codigo,
-    ab_dres.abreviacao AS dre_abreviacao,
-    ab_dres.nome AS dre_nome,
-    ab_ues.id AS ue_id,
-    ab_ues.ue_id AS ue_codigo,
-    ab_ues.nome AS ue_nome,
-    ab_turma.id AS turma_id,
-    ab_turma.ano AS turma_ano,
-    ab_turma.ano_letivo AS turma_ano_letivo,
-    ab_turma.modalidade_codigo,
-    ab_turma.nome AS turma_nome,
-    ab_turma.semestre AS turma_semestre,
-    ab_turma.qt_duracao_aula,
-    ab_turma.tipo_turno,
-    ab_turma.turma_id AS turma_codigo,
-    ab_turma.historica AS turma_historica,
-    ab_turma.dt_fim_eol AS dt_fim_turma,
-    ab_turma.ensino_especial,
-    ab_turma.tipo_turma
-   FROM dre ab_dres
-     JOIN ue ab_ues ON ab_ues.dre_id = ab_dres.id
-     JOIN turma ab_turma ON ab_turma.ue_id = ab_ues.id;
 
 
 -- public.v_abrangencia_cadeia_ues source
@@ -6456,6 +6416,56 @@ AS SELECT ab_dres.id AS dre_id,
     NULL::date AS dt_fim_turma
    FROM dre ab_dres
      JOIN ue ab_ues ON ab_ues.dre_id = ab_dres.id;
+
+
+
+-- public.v_abrangencia source
+
+CREATE OR REPLACE VIEW public.v_abrangencia
+AS SELECT COALESCE(turma.dre_codigo, ue.dre_codigo, dre.dre_codigo) AS dre_codigo,
+    COALESCE(turma.dre_abreviacao, ue.dre_abreviacao, dre.dre_abreviacao) AS dre_abreviacao,
+    COALESCE(turma.dre_nome, ue.dre_nome, dre.dre_nome) AS dre_nome,
+    a.usuario_id,
+    a.perfil AS usuario_perfil,
+    COALESCE(turma.ue_codigo, ue.ue_codigo, dre.ue_codigo) AS ue_codigo,
+    COALESCE(turma.ue_nome, ue.ue_nome, dre.ue_nome) AS ue_nome,
+    COALESCE(turma.turma_ano, ue.turma_ano, dre.turma_ano) AS turma_ano,
+    COALESCE(turma.turma_ano_letivo, ue.turma_ano_letivo, dre.turma_ano_letivo) AS turma_ano_letivo,
+    COALESCE(turma.modalidade_codigo, ue.modalidade_codigo, dre.modalidade_codigo) AS modalidade_codigo,
+    COALESCE(turma.turma_nome, ue.turma_nome, dre.turma_nome) AS turma_nome,
+    COALESCE(turma.turma_semestre, ue.turma_semestre, dre.turma_semestre) AS turma_semestre,
+    COALESCE(turma.qt_duracao_aula, ue.qt_duracao_aula, dre.qt_duracao_aula) AS qt_duracao_aula,
+    COALESCE(turma.tipo_turno, ue.tipo_turno, dre.tipo_turno) AS tipo_turno,
+    COALESCE(turma.turma_codigo, ue.turma_codigo, dre.turma_codigo) AS turma_id
+   FROM abrangencia a
+     LEFT JOIN v_abrangencia_cadeia_dres dre ON dre.dre_id = a.dre_id
+     LEFT JOIN v_abrangencia_cadeia_ues ue ON ue.ue_id = a.ue_id
+     LEFT JOIN v_abrangencia_cadeia_turmas turma ON turma.turma_id = a.turma_id
+  WHERE a.historico = false AND (COALESCE(turma.turma_historica, ue.turma_historica, dre.turma_historica) = false OR COALESCE(turma.turma_historica, ue.turma_historica, dre.turma_historica) IS NULL);
+
+
+-- public.v_abrangencia_cadeia_dres_somente source
+
+CREATE OR REPLACE VIEW public.v_abrangencia_cadeia_dres_somente
+AS SELECT ab_dres.id AS dre_id,
+    ab_dres.dre_id AS dre_codigo,
+    ab_dres.abreviacao AS dre_abreviacao,
+    ab_dres.nome AS dre_nome,
+    NULL::bigint AS ue_id,
+    NULL::character varying AS ue_codigo,
+    NULL::character varying AS ue_nome,
+    NULL::bigint AS turma_id,
+    NULL::bpchar AS turma_ano,
+    NULL::integer AS turma_ano_letivo,
+    NULL::integer AS modalidade_codigo,
+    NULL::character varying AS turma_nome,
+    NULL::integer AS turma_semestre,
+    NULL::smallint AS qt_duracao_aula,
+    NULL::smallint AS tipo_turno,
+    NULL::character varying AS turma_codigo,
+    NULL::boolean AS turma_historica,
+    NULL::date AS dt_fim_turma
+   FROM dre ab_dres;
 
 
 -- public.v_abrangencia_historica source
@@ -7303,51 +7313,6 @@ AS $function$
 $function$
 ;
 
-CREATE OR REPLACE FUNCTION public.f_eventos_calendario_dias_com_eventos_no_mes(p_login character varying, p_perfil_id uuid, p_historico boolean, p_mes integer, p_tipo_calendario_id bigint, p_considera_pendente_aprovacao boolean DEFAULT false, p_dre_id character varying DEFAULT NULL::character varying, p_ue_id character varying DEFAULT NULL::character varying, p_desconsidera_local_dre boolean DEFAULT false, p_desconsidera_evento_sme boolean DEFAULT false)
- RETURNS SETOF v_estrutura_eventos_calendario_dias_com_eventos_no_mes
- LANGUAGE sql
-AS $function$ 	
-select lista.dia,
-	   lista.tipoEvento
-from (
-
-select distinct extract(day from data_evento) as dia,
-				tipoEvento
-	from f_eventos_calendario_por_data_inicio_fim(p_login, p_perfil_id, p_historico, p_mes, p_tipo_calendario_id, p_considera_pendente_aprovacao, p_dre_id, p_ue_id, p_desconsidera_local_dre, p_desconsidera_evento_sme)
-
-union 
-
-select distinct extract(day from data_evento) as dia,
-				tipoEvento
-	from f_eventos_calendario_por_rf_criador(p_login, p_mes, p_tipo_calendario_id, p_dre_id, p_ue_id, p_desconsidera_local_dre, p_desconsidera_evento_sme)) lista
-order by 1;
- $function$
-;
-
-CREATE OR REPLACE FUNCTION public.f_eventos_calendario_eventos_do_dia(p_login character varying, p_perfil_id uuid, p_historico boolean, p_dia integer, p_mes integer, p_tipo_calendario_id bigint, p_considera_pendente_aprovacao boolean DEFAULT false, p_dre_id character varying DEFAULT NULL::character varying, p_ue_id character varying DEFAULT NULL::character varying, p_desconsidera_local_dre boolean DEFAULT false, p_desconsidera_evento_sme boolean DEFAULT false)
- RETURNS SETOF v_estrutura_eventos_calendario
- LANGUAGE sql
-AS $function$
-	
-	select id,
-		   data_evento,
-		   iniciofimdesc,
-		   nome,
-		   tipoevento
-		from f_eventos_calendario_por_data_inicio_fim(p_login, p_perfil_id, p_historico, p_mes, p_tipo_calendario_id, p_considera_pendente_aprovacao, p_dre_id, p_ue_id, p_desconsidera_local_dre, p_desconsidera_evento_sme)
-	where extract(day from data_evento) = p_dia
-	
-	union
-	
-	select id,
-		   data_evento,
-		   iniciofimdesc,
-		   nome,
-		   tipoevento
-		from f_eventos_calendario_por_rf_criador(p_login, p_mes, p_tipo_calendario_id, p_dre_id, p_ue_id, p_desconsidera_local_dre, p_desconsidera_evento_sme)
-	where extract(day from data_evento) = p_dia;
-$function$
-;
 
 CREATE OR REPLACE FUNCTION public.f_eventos_calendario_por_data_inicio_fim(p_login character varying, p_perfil_id uuid, p_historico boolean, p_mes integer, p_tipo_calendario_id bigint, p_considera_pendente_aprovacao boolean DEFAULT false, p_dre_id character varying DEFAULT NULL::character varying, p_ue_id character varying DEFAULT NULL::character varying, p_desconsidera_local_dre boolean DEFAULT false, p_desconsidera_evento_sme boolean DEFAULT false)
  RETURNS SETOF v_estrutura_eventos_calendario
@@ -7448,6 +7413,8 @@ AS $function$
 $function$
 ;
 
+
+
 CREATE OR REPLACE FUNCTION public.f_eventos_calendario_por_rf_criador(p_login character varying, p_mes integer, p_tipo_calendario_id bigint, p_dre_id character varying DEFAULT NULL::character varying, p_ue_id character varying DEFAULT NULL::character varying, p_desconsidera_local_dre boolean DEFAULT false, p_desconsidera_evento_sme boolean DEFAULT false)
  RETURNS SETOF v_estrutura_eventos_calendario
  LANGUAGE sql
@@ -7520,6 +7487,53 @@ AS $function$
 $function$
 ;
 
+CREATE OR REPLACE FUNCTION public.f_eventos_calendario_dias_com_eventos_no_mes(p_login character varying, p_perfil_id uuid, p_historico boolean, p_mes integer, p_tipo_calendario_id bigint, p_considera_pendente_aprovacao boolean DEFAULT false, p_dre_id character varying DEFAULT NULL::character varying, p_ue_id character varying DEFAULT NULL::character varying, p_desconsidera_local_dre boolean DEFAULT false, p_desconsidera_evento_sme boolean DEFAULT false)
+ RETURNS SETOF v_estrutura_eventos_calendario_dias_com_eventos_no_mes
+ LANGUAGE sql
+AS $function$ 	
+select lista.dia,
+	   lista.tipoEvento
+from (
+
+select distinct extract(day from data_evento) as dia,
+				tipoEvento
+	from f_eventos_calendario_por_data_inicio_fim(p_login, p_perfil_id, p_historico, p_mes, p_tipo_calendario_id, p_considera_pendente_aprovacao, p_dre_id, p_ue_id, p_desconsidera_local_dre, p_desconsidera_evento_sme)
+
+union 
+
+select distinct extract(day from data_evento) as dia,
+				tipoEvento
+	from f_eventos_calendario_por_rf_criador(p_login, p_mes, p_tipo_calendario_id, p_dre_id, p_ue_id, p_desconsidera_local_dre, p_desconsidera_evento_sme)) lista
+order by 1;
+ $function$
+;
+
+CREATE OR REPLACE FUNCTION public.f_eventos_calendario_eventos_do_dia(p_login character varying, p_perfil_id uuid, p_historico boolean, p_dia integer, p_mes integer, p_tipo_calendario_id bigint, p_considera_pendente_aprovacao boolean DEFAULT false, p_dre_id character varying DEFAULT NULL::character varying, p_ue_id character varying DEFAULT NULL::character varying, p_desconsidera_local_dre boolean DEFAULT false, p_desconsidera_evento_sme boolean DEFAULT false)
+ RETURNS SETOF v_estrutura_eventos_calendario
+ LANGUAGE sql
+AS $function$
+	
+	select id,
+		   data_evento,
+		   iniciofimdesc,
+		   nome,
+		   tipoevento
+		from f_eventos_calendario_por_data_inicio_fim(p_login, p_perfil_id, p_historico, p_mes, p_tipo_calendario_id, p_considera_pendente_aprovacao, p_dre_id, p_ue_id, p_desconsidera_local_dre, p_desconsidera_evento_sme)
+	where extract(day from data_evento) = p_dia
+	
+	union
+	
+	select id,
+		   data_evento,
+		   iniciofimdesc,
+		   nome,
+		   tipoevento
+		from f_eventos_calendario_por_rf_criador(p_login, p_mes, p_tipo_calendario_id, p_dre_id, p_ue_id, p_desconsidera_local_dre, p_desconsidera_evento_sme)
+	where extract(day from data_evento) = p_dia;
+$function$
+;
+
+
 CREATE OR REPLACE FUNCTION public.f_eventos_listar(p_login character varying, p_perfil_id uuid, p_historico boolean, p_tipo_calendario_id bigint, p_considera_pendente_aprovacao boolean DEFAULT false, p_desconsidera_local_dre boolean DEFAULT false, p_dre_id character varying DEFAULT NULL::character varying, p_ue_id character varying DEFAULT NULL::character varying, p_desconsidera_liberacao_excep_reposicao_recesso boolean DEFAULT false, p_data_inicio date DEFAULT NULL::date, p_data_fim date DEFAULT NULL::date, p_qtde_registros_ignorados integer DEFAULT 0, p_qtde_registros integer DEFAULT 0, p_tipo_evento_id bigint DEFAULT NULL::bigint, p_nome_evento character varying DEFAULT NULL::character varying)
  RETURNS SETOF v_estrutura_eventos_listar
  LANGUAGE plpgsql
@@ -7586,6 +7600,55 @@ AS $function$
 	END;
 $function$
 ;
+
+
+CREATE OR REPLACE FUNCTION public.f_eventos_por_rf_criador(p_login character varying, p_tipo_calendario_id bigint, p_dre_id character varying DEFAULT NULL::character varying, p_ue_id character varying DEFAULT NULL::character varying, p_data_inicio date DEFAULT NULL::date, p_data_fim date DEFAULT NULL::date)
+ RETURNS SETOF v_estrutura_eventos
+ LANGUAGE sql
+AS $function$
+	select e.id,
+		   e.nome,
+		   e.descricao,
+		   e.data_inicio,
+		   e.data_fim,
+		   e.dre_id,
+		   e.letivo,
+		   e.feriado_id,
+		   e.tipo_calendario_id,
+		   e.tipo_evento_id,
+		   e.ue_id,
+		   e.criado_em,
+		   e.criado_por,
+	       e.alterado_em,
+	       e.alterado_por,
+	       e.criado_rf,
+		   e.alterado_rf,
+		   e.status,	
+		   et.id,
+		   et.ativo,
+		   et.tipo_data,
+		   et.descricao,
+		   et.excluido,
+		   et.local_ocorrencia
+		from evento e
+			inner join evento_tipo et
+				on e.tipo_evento_id = et.id		
+			inner join tipo_calendario tc
+				on e.tipo_calendario_id = tc.id
+	where not et.excluido
+		and not e.excluido
+		-- considera somente pendente de aprova��o
+		and e.status = 2
+		and e.criado_rf = p_login		
+		and (extract(year from e.data_inicio) = tc.ano_letivo or extract(year from e.data_fim) = tc.ano_letivo)
+		and e.tipo_calendario_id = p_tipo_calendario_id
+		and (p_dre_id is null or (p_dre_id is not null and e.dre_id = p_dre_id))
+		and (p_ue_id is null or (p_ue_id is not null and e.ue_id = p_ue_id))
+		and (p_data_inicio is null or (p_data_inicio is not null and date(e.data_inicio) >= date(p_data_inicio)))
+		and (p_data_fim is null or (p_data_fim is not null and date(e.data_fim) <= date(p_data_fim)));
+$function$
+;
+
 
 CREATE OR REPLACE FUNCTION public.f_eventos_listar_sem_paginacao(p_login character varying, p_perfil_id uuid, p_historico boolean, p_tipo_calendario_id bigint, p_considera_pendente_aprovacao boolean DEFAULT false, p_desconsidera_local_dre boolean DEFAULT false, p_dre_id character varying DEFAULT NULL::character varying, p_ue_id character varying DEFAULT NULL::character varying, p_desconsidera_liberacao_excep_reposicao_recesso boolean DEFAULT false, p_data_inicio date DEFAULT NULL::date, p_data_fim date DEFAULT NULL::date, p_tipo_evento_id bigint DEFAULT NULL::bigint, p_nome_evento character varying DEFAULT NULL::character varying)
  RETURNS SETOF v_estrutura_eventos_listar
@@ -7669,53 +7732,6 @@ AS $function$
 				from f_eventos_por_rf_criador(p_login, p_tipo_calendario_id, p_dre_id, p_ue_id, p_data_inicio, p_data_fim)) lista
 	where (p_tipo_evento_id is null or (p_tipo_evento_id is not null and tipo_evento_id = p_tipo_evento_id)) and
   		  (p_nome_evento is null or (p_nome_evento is not null and upper(nome) like upper('%' || p_nome_evento || '%')));
-$function$
-;
-
-CREATE OR REPLACE FUNCTION public.f_eventos_por_rf_criador(p_login character varying, p_tipo_calendario_id bigint, p_dre_id character varying DEFAULT NULL::character varying, p_ue_id character varying DEFAULT NULL::character varying, p_data_inicio date DEFAULT NULL::date, p_data_fim date DEFAULT NULL::date)
- RETURNS SETOF v_estrutura_eventos
- LANGUAGE sql
-AS $function$
-	select e.id,
-		   e.nome,
-		   e.descricao,
-		   e.data_inicio,
-		   e.data_fim,
-		   e.dre_id,
-		   e.letivo,
-		   e.feriado_id,
-		   e.tipo_calendario_id,
-		   e.tipo_evento_id,
-		   e.ue_id,
-		   e.criado_em,
-		   e.criado_por,
-	       e.alterado_em,
-	       e.alterado_por,
-	       e.criado_rf,
-		   e.alterado_rf,
-		   e.status,	
-		   et.id,
-		   et.ativo,
-		   et.tipo_data,
-		   et.descricao,
-		   et.excluido,
-		   et.local_ocorrencia
-		from evento e
-			inner join evento_tipo et
-				on e.tipo_evento_id = et.id		
-			inner join tipo_calendario tc
-				on e.tipo_calendario_id = tc.id
-	where not et.excluido
-		and not e.excluido
-		-- considera somente pendente de aprova��o
-		and e.status = 2
-		and e.criado_rf = p_login		
-		and (extract(year from e.data_inicio) = tc.ano_letivo or extract(year from e.data_fim) = tc.ano_letivo)
-		and e.tipo_calendario_id = p_tipo_calendario_id
-		and (p_dre_id is null or (p_dre_id is not null and e.dre_id = p_dre_id))
-		and (p_ue_id is null or (p_ue_id is not null and e.ue_id = p_ue_id))
-		and (p_data_inicio is null or (p_data_inicio is not null and date(e.data_inicio) >= date(p_data_inicio)))
-		and (p_data_fim is null or (p_data_fim is not null and date(e.data_fim) <= date(p_data_fim)));
 $function$
 ;
 
