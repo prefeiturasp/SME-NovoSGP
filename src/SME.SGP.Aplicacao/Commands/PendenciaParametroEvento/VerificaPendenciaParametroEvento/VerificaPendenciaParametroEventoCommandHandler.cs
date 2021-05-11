@@ -45,8 +45,11 @@ namespace SME.SGP.Aplicacao
 
         private async Task VerificaPendenciaEventosCalendario(long tipoCalendarioId, int anoAtual)
         {
-            var ues = await mediator.Send(new ObterUEsPorModalidadeCalendarioQuery(Dominio.ModalidadeTipoCalendario.FundamentalMedio));
-            foreach(var ue in ues)
+            var ues = await mediator.Send(new ObterUEsPorModalidadeCalendarioQuery(ModalidadeTipoCalendario.FundamentalMedio));
+            var tiposEscolasValidos = ObterTiposDeEscolasValidos();
+            ues = ues?.Where(ue => tiposEscolasValidos.Contains(ue.TipoEscola)).ToList();
+
+            foreach (var ue in ues)
             {
                 try
                 {
@@ -72,6 +75,15 @@ namespace SME.SGP.Aplicacao
                 }
             }
         }
+
+        private static TipoEscola[] ObterTiposDeEscolasValidos()
+            => new[]
+            {
+                TipoEscola.EMEF,
+                TipoEscola.EMEFM,
+                TipoEscola.EMEBS,
+                TipoEscola.CEUEMEF
+            };
 
         private async Task<PendenciaCalendarioUe> ObterPendenciaCalendarioUe(long tipoCalendarioId, long ueId)
         {

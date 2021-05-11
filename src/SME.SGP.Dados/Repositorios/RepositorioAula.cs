@@ -836,7 +836,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<Aula>(query.ToString(), new { tipoCalendarioId, turmaId });
         }
 
-        public async Task<IEnumerable<AulaReduzidaDto>> ObterAulasReduzidasPorTipoCalendario(long tipoCalendarioId)
+        public async Task<IEnumerable<AulaReduzidaDto>> ObterAulasReduzidasParaPendenciasAulaDiasNaoLetivos(long tipoCalendarioId, TipoEscola[] tiposEscola)
         {
             var query = @"select
    		                       a.id as aulaId,
@@ -850,8 +850,16 @@ namespace SME.SGP.Dados.Repositorios
                           from aula a 
                         inner join turma t on t.turma_id = a.turma_id
                         inner join ue on ue.id = t.ue_id
-                         where not excluido and tipo_calendario_id = @tipoCalendarioId";
-            return await database.Conexao.QueryAsync<AulaReduzidaDto>(query.ToString(), new { tipoCalendarioId });
+                        where not excluido and tipo_calendario_id = @tipoCalendarioId ";
+
+            int[] tiposEscolaFiltro = null;
+            if(tiposEscola?.Any() ?? false)
+            {
+                tiposEscolaFiltro = tiposEscola.Select(x => (int)x).ToArray();
+                query += " AND ue.tipo_escola = any(@tiposEscolaFiltro)";
+            }
+
+            return await database.Conexao.QueryAsync<AulaReduzidaDto>(query, new { tipoCalendarioId, tiposEscolaFiltro });
         }
 
         public void SalvarVarias(IEnumerable<Aula> aulas)
