@@ -15,9 +15,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<int> Executar()
         {
-            //TODO: Utilizar query que retorna apenas o RF quando for feito merge com dev release
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
-            return await mediator.Send(new ObterQuantidadeNotificacoesNaoLidasPorUsuarioQuery(DateTime.Now.Year, usuarioLogado.CodigoRf));
+            var usuarioLogadoRF = await mediator.Send(new ObterUsuarioLogadoRFQuery());
+            return await mediator.Send(new ObterQuantidadeNotificacoesNaoLidasPorUsuarioQuery(DateTime.Now.Year, usuarioLogadoRF));
         }
     }
 }

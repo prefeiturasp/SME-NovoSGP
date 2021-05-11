@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using static SME.SGP.Dominio.DateTimeExtension;
 
 namespace SME.SGP.Aplicacao
 {
@@ -32,7 +33,8 @@ namespace SME.SGP.Aplicacao
                 Bimestre = request.Bimestre,
                 DisciplinaId = request.DisciplinaId,
                 TipoProcesso = TipoProcesso.CalculoFrequencia,
-                TurmaId = request.TurmaId
+                TurmaId = request.TurmaId,
+                CriadoEm = HorarioBrasilia()
             });
 
             try

@@ -1,4 +1,4 @@
-FROM node:carbon-alpine as build-deps
+FROM node:16-alpine as build-deps
 WORKDIR /usr/src/app
 # COPY src/SME.SGP.WebClient/package.json src/SME.SGP.WebClient/yarn.lock ./
 

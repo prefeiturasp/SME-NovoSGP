@@ -39,7 +39,7 @@ const PlanoAEECadastro = ({ match }) => {
     if (planoId) {
       setBreadcrumbManual(
         match.url,
-        'Editar Plano',
+        'Editar',
         `${RotasDto.RELATORIO_AEE_PLANO}`
       );
     }
