@@ -5,6 +5,7 @@ using Npgsql;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -55,6 +56,19 @@ namespace SME.SGP.Dados
             {
                 return await conexao.QueryFirstOrDefaultAsync<ProcessoExecutando>(query, new { turmaId, disciplinaId, bimestre, tipoProcesso = (int)tipoProcesso });
             }
+        }
+
+        public async Task<IEnumerable<ProcessoExecutando>> ObterProcessosEmExecucaoAsync(string turmaId, string disciplinaId, int bimestre, TipoProcesso tipoProcesso)
+        {
+            var query = @"select * 
+                            from processo_executando
+                           where tipo_processo = @tipoProcesso
+                             and turma_id = @turmaId
+                             and disciplina_id = @disciplinaId
+                             and bimestre = @bimestre
+                           order by id";
+
+            return await database.Conexao.QueryAsync<ProcessoExecutando>(query, new { turmaId, disciplinaId, bimestre, tipoProcesso = (int)tipoProcesso });            
         }
 
         public async Task<bool> ProcessoEstaEmExecucao(TipoProcesso tipoProcesso)
