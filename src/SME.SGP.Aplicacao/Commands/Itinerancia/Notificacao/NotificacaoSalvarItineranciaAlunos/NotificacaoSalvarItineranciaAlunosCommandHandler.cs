@@ -43,18 +43,9 @@ namespace SME.SGP.Aplicacao
 
             List<Turma> turmas = new List<Turma>();
             mensagem.AppendLine();
-            mensagem.AppendLine("<br/><br/><table border=2><tr style='font-weight: bold'><td>Estudante</td><td>Turma Regular</td></tr>");
-            foreach (var estudante in estudantes.OrderBy(a => a.AlunoNome))
-            {
-                var turma = turmas.FirstOrDefault(a => a.Id == estudante.TurmaId);
-                if (turma == null)
-                {
-                    turma = await mediator.Send(new ObterTurmaPorIdQuery(estudante.TurmaId));
-                    turmas.Add(turma);
-                }
-                mensagem.AppendLine($"<tr><td>{estudante.AlunoNome} ({estudante.AlunoCodigo})</td><td>{turma.ModalidadeCodigo.ShortName()} - {turma.Nome}</td></tr>");
-            }
-            mensagem.AppendLine("</table>");
+            
+            await MontarTabelaEstudantes(estudantes, mensagem, turmas);
+
             mensagem.AppendLine();
             mensagem.AppendLine("<br/>Você precisa validar este registro aceitando esta notificação para que o registro seja considerado válido.");
             mensagem.AppendLine();
@@ -74,8 +65,27 @@ namespace SME.SGP.Aplicacao
 
             await mediator.Send(new SalvarWorkflowAprovacaoItineranciaCommand(itineranciaId, workflowId));
             await mediator.Send(new AlterarSituacaoItineranciaCommand(itineranciaId, Dominio.Enumerados.SituacaoItinerancia.AguardandoAprovacao));
-
         }
+
+        private async Task MontarTabelaEstudantes(IEnumerable<ItineranciaAlunoDto> estudantes, StringBuilder mensagem, List<Turma> turmas)
+        {
+            if (estudantes != null && estudantes.Any())
+            {
+                mensagem.AppendLine("<br/><br/><table border=2><tr style='font-weight: bold'><td>Estudante</td><td>Turma Regular</td></tr>");
+                foreach (var estudante in estudantes.OrderBy(a => a.AlunoNome))
+                {
+                    var turma = turmas.FirstOrDefault(a => a.Id == estudante.TurmaId);
+                    if (turma == null)
+                    {
+                        turma = await mediator.Send(new ObterTurmaPorIdQuery(estudante.TurmaId));
+                        turmas.Add(turma);
+                    }
+                    mensagem.AppendLine($"<tr><td>{estudante.AlunoNome} ({estudante.AlunoCodigo})</td><td>{turma.ModalidadeCodigo.ShortName()} - {turma.Nome}</td></tr>");
+                }
+                mensagem.AppendLine("</table>");
+            }
+        }
+
         private Cargo[] ObterCargosGestaoEscola()
             => new[] { Cargo.CP, Cargo.Diretor };
     }
