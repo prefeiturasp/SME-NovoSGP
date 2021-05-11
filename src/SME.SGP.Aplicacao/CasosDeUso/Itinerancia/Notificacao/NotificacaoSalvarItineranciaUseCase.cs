@@ -23,14 +23,7 @@ namespace SME.SGP.Aplicacao
             if (ue == null)
                 throw new NegocioException("Não foi possível localizar um Unidade Escolar!");
 
-            if (mensagemRabbit.Estudantes.Any())
-            {
                 await mediator.Send(new NotificacaoSalvarItineranciaAlunosCommand(ue.CodigoUe, mensagemRabbit.CriadoRF, mensagemRabbit.CriadoPor, mensagemRabbit.DataVisita, mensagemRabbit.Estudantes, mensagemRabbit.ItineranciaId));
-            }
-            else
-            {
-                await mediator.Send(new NotificacaoSalvarItineranciaSemAlunosVinculadosCommand(ue.CodigoUe, mensagemRabbit.CriadoRF, mensagemRabbit.CriadoPor, mensagemRabbit.DataVisita, mensagemRabbit.ItineranciaId));
-            }
 
             return true;
         }
