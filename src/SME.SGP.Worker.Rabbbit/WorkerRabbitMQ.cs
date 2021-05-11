@@ -97,6 +97,21 @@ namespace SME.SGP.Worker.RabbitMQ
             canalRabbit.QueueDeclare(RotasRabbit.SincronizaEstruturaInstitucionalCicloTratar, true, false, false);
             canalRabbit.QueueBind(RotasRabbit.SincronizaEstruturaInstitucionalCicloTratar, RotasRabbit.ExchangeSgp, RotasRabbit.SincronizaEstruturaInstitucionalCicloTratar);
 
+            canalRabbit.QueueDeclare(RotasRabbit.ConsolidaTurmaSync, true, false, false);
+            canalRabbit.QueueBind(RotasRabbit.ConsolidaTurmaSync, RotasRabbit.ExchangeSgp, RotasRabbit.ConsolidaTurmaSync);
+
+            canalRabbit.QueueDeclare(RotasRabbit.ConsolidaTurmaFechamentoSync, true, false, false);
+            canalRabbit.QueueBind(RotasRabbit.ConsolidaTurmaFechamentoSync, RotasRabbit.ExchangeSgp, RotasRabbit.ConsolidaTurmaFechamentoSync);
+
+            canalRabbit.QueueDeclare(RotasRabbit.ConsolidaTurmaFechamentoTratar, true, false, false);
+            canalRabbit.QueueBind(RotasRabbit.ConsolidaTurmaFechamentoTratar, RotasRabbit.ExchangeSgp, RotasRabbit.ConsolidaTurmaFechamentoTratar);
+
+            canalRabbit.QueueDeclare(RotasRabbit.ConsolidaTurmaConselhoClasseSync, true, false, false);
+            canalRabbit.QueueBind(RotasRabbit.ConsolidaTurmaConselhoClasseSync, RotasRabbit.ExchangeSgp, RotasRabbit.ConsolidaTurmaConselhoClasseSync);
+
+            canalRabbit.QueueDeclare(RotasRabbit.ConsolidaTurmaConselhoClasseTratar, true, false, false);
+            canalRabbit.QueueBind(RotasRabbit.ConsolidaTurmaConselhoClasseTratar, RotasRabbit.ExchangeSgp, RotasRabbit.ConsolidaTurmaConselhoClasseTratar);
+
             comandos = new Dictionary<string, ComandoRabbit>();
             RegistrarUseCases();
         }
@@ -174,7 +189,10 @@ namespace SME.SGP.Worker.RabbitMQ
            
             comandos.Add(RotasRabbit.RotaNotificacaoRegistroItineranciaInseridoUseCase, new ComandoRabbit("Enviar Notificação quanto insere um novo Registro de Itinerância", typeof(INotificacaoSalvarItineranciaUseCase)));
 
-           
+            // Consolidação fechamento turmas
+            comandos.Add(RotasRabbit.ConsolidaTurmaConselhoClasseSync, new ComandoRabbit("Consolidação fechamento - Sincronizar alunos da turma", typeof(IExecutarConsolidacaoTurmaConselhoClasseUseCase)));
+
+
         }
 
         private async Task TratarMensagem(BasicDeliverEventArgs ea)
@@ -328,6 +346,7 @@ namespace SME.SGP.Worker.RabbitMQ
             canalRabbit.BasicConsume(RotasRabbit.SincronizaEstruturaInstitucionalCicloTratar, false, consumer);
             canalRabbit.BasicConsume(RotasRabbit.SincronizaEstruturaInstitucionalTurmaTratar, false, consumer);
             canalRabbit.BasicConsume(RotasRabbit.SincronizaEstruturaInstitucionalTurmasSync, false, consumer);
+            canalRabbit.BasicConsume(RotasRabbit.ConsolidaTurmaConselhoClasseSync, false, consumer);
 
             return Task.CompletedTask;
         }
