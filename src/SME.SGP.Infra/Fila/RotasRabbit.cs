@@ -99,6 +99,7 @@
         public static string ConsolidarFrequenciasPorTurma => "sgp.frequencia.turma.consolidar";
 
         public static string ConsolidaTurmaSync => "sgp.consolicacao.turma.sync";
+        public static string ConsolidaTurmaFechamentoComponenteSync => "sgp.consolicacao.turma.fechamento.componente.sync";
         public static string ConsolidaTurmaFechamentoSync => "sgp.consolicacao.turma.fechamento.sync";
         public static string ConsolidaTurmaFechamentoTratar => "sgp.consolicacao.turma.fechamento.tratar";
         public static string ConsolidaTurmaConselhoClasseSync => "sgp.consolicacao.turma.conselhoclasse.sync";

@@ -118,6 +118,9 @@ namespace SME.SGP.Worker.RabbitMQ
             canalRabbit.QueueDeclare(RotasRabbit.ConsolidarFrequenciasPorTurma, true, false, false);
             canalRabbit.QueueBind(RotasRabbit.ConsolidarFrequenciasPorTurma, RotasRabbit.ExchangeSgp, RotasRabbit.ConsolidarFrequenciasPorTurma);
 
+            canalRabbit.QueueDeclare(RotasRabbit.ConsolidaTurmaFechamentoComponenteSync, true, false, false);
+            canalRabbit.QueueBind(RotasRabbit.ConsolidaTurmaFechamentoComponenteSync, RotasRabbit.ExchangeSgp, RotasRabbit.ConsolidaTurmaFechamentoComponenteSync);
+
             comandos = new Dictionary<string, ComandoRabbit>();
             RegistrarUseCases();
         }
