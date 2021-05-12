@@ -107,6 +107,7 @@ namespace SME.SGP.Dominio
         NovosTiposUE = 55,
 
         NovasModalidades = 56,
+
         // Processo Executando
         TempoValidadeProcessoExecutandoEmSegundos = 57,
 
