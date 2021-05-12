@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace SME.SGP.Api.Controllers
 {
     [ApiController]
-    //[Authorize("Bearer")]
+    [Authorize("Bearer")]
     [Route("api/v1/dashboard/devolutivas")]
     public class DashboardDevolutivasController : Controller
     {
