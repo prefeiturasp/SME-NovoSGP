@@ -17,8 +17,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<string> Handle(ObterValorParametroSistemaTipoEAnoQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioParametrosSistema.ObterValorPorTipoEAno(request.Tipo);
-
+            return await repositorioParametrosSistema.ObterValorPorTipoEAno(request.Tipo, request.Ano);
         }
     }
 }
