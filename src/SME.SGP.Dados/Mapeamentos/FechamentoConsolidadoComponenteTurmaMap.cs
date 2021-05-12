@@ -8,7 +8,7 @@ namespace SME.SGP.Dados.Mapeamentos
         {
             ToTable("consolidado_fechamento_componente_turma");
             Map(a => a.DataAtualizacao).ToColumn("dt_atualizacao");
-            Map(a => a.ComponenteCurricularCodigo).ToColumn("componente_curricular_codigo");
+            Map(a => a.ComponenteCurricularCodigo).ToColumn("componente_curricular_id");
             Map(a => a.ProfessorNome).ToColumn("professor_nome");
             Map(a => a.ProfessorRf).ToColumn("professor_rf");
             Map(a => a.TurmaId).ToColumn("turma_id");
