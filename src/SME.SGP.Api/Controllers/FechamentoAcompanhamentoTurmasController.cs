@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Aplicacao;
+using Newtonsoft.Json;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System.Collections.Generic;
@@ -40,6 +42,21 @@ namespace SME.SGP.Api
             var listaStatus = await useCase.Executar(new FiltroConselhoClasseConsolidadoTurmaBimestreDto(turmaId, bimestre));
 
             return Ok(listaStatus);
+        }
+
+
+        //TODO: REMOVER ANTES DA STORY IR PARA DEV!
+        [HttpPost]
+        public async Task<IActionResult> TestarFila([FromServices] IExecutarConsolidacaoTurmaConselhoClasseUseCase executarConsolidacaoTurmaConselhoClasseUseCase)
+        {
+
+            var obj = new ConsolidacaoTurmaConselhoClasseDto() { Bimestre = 1, TurmaId = 639036 };
+            var mensagem = JsonConvert.SerializeObject(obj); 
+            var msgRabbit = new MensagemRabbit(mensagem);
+            
+            await executarConsolidacaoTurmaConselhoClasseUseCase.Executar(msgRabbit);
+
+            return Ok();
         }
     }
 }
