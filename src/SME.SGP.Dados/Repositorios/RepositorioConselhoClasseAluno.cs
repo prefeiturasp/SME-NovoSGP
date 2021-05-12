@@ -146,5 +146,23 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<NotaConceitoFechamentoConselhoFinalDto>(query, new { turmasCodigos, alunoCodigo });
         }
+
+        public async Task<IEnumerable<long>> ObterComponentesPorAlunoTurmaBimestreAsync(string alunoCodigo, int bimestre, long turmaId)
+        {
+            var query = @"select ccn.componente_curricular_codigo as ComponenteCurricularId from conselho_classe_aluno cca 
+	                        inner join conselho_classe_nota ccn
+		                        on ccn.conselho_classe_aluno_id  = cca.id 
+	                        inner join conselho_classe cc 
+		                        on cca.conselho_classe_id = cc.id
+	                        inner join fechamento_turma ft 
+		                        on cc.fechamento_turma_id  = ft.id
+	                        inner join periodo_escolar pe 
+		                        on ft.periodo_escolar_id = pe.id 
+	                        where cca.aluno_codigo = @alunoCodigo
+	                        and ft.turma_id  = @turmaId
+	                        and pe.bimestre = @bimestre";
+
+            return await database.Conexao.QueryAsync<long>(query, new { alunoCodigo, turmaId, bimestre });
+        }
     }
 }

@@ -54,7 +54,7 @@ CREATE TABLE public.consolidado_conselho_classe_aluno_turma (
 	CONSTRAINT consolidado_conselho_classe_aluno_turma_pk PRIMARY KEY (id)
 );
 CREATE INDEX consolidado_conselho_classe_aluno_turma_turma_id_ix ON public.consolidado_conselho_classe_aluno_turma USING btree (turma_id);
-CREATE INDEX consolidado_conselho_classe_aluno_turma_parecer_conclusivo_id_ix ON public.consolidado_conselho_classe_aluno_turma USING btree (parecer_conclusivo_id);
+--CREATE INDEX consolidado_conselho_classe_aluno_turma_parecer_conclusivo_id_ix ON public.consolidado_conselho_classe_aluno_turma USING btree (parecer_conclusivo_id);
 
 -- public.consolidado_conselho_classe_aluno_turma foreign keys
 
