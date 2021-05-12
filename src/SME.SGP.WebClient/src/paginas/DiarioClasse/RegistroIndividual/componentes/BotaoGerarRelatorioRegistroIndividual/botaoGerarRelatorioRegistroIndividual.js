@@ -2,7 +2,7 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { Colors } from '~/componentes';
-import { BotaoCustomizado } from '~/paginas/Relatorios/AEE/RegistroItinerancia/registroItinerancia.css';
+import { BotaoCustomizado } from '~/paginas/AEE/RegistroItinerancia/registroItinerancia.css';
 
 import { setExibirModalImpressaoRegistroIndividual } from '~/redux/modulos/registroIndividual/actions';
 

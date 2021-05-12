@@ -108,6 +108,12 @@ namespace SME.SGP.Dominio
 
         NovasModalidades = 56,
 
+        // Processo Executando
+        TempoValidadeProcessoExecutandoEmSegundos = 57,
+
+        ExecucaoConsolidacaoFrequenciaTurma = 58,
+
+
         //Sistema
         HabilitarServicosEmBackground = 100
     }
