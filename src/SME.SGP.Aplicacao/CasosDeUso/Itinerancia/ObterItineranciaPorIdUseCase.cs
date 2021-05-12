@@ -40,6 +40,7 @@ namespace SME.SGP.Aplicacao
                 Questoes = MontarQuestoesItinerancia(itinerancia, questoesBase),
                 TipoCalendarioId = await ObterTipoCalendario(itinerancia.EventoId),
                 UeId = itinerancia.UeId,
+                DreId = itinerancia.DreId,
                 EventoId = itinerancia.EventoId,
                 CriadoRF = itinerancia.CriadoRF,
                 Auditoria = (AuditoriaDto)itinerancia,
