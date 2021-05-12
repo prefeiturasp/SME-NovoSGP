@@ -15,6 +15,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<StatusTotalFechamentoDto>> Executar(FiltroFechamentoConsolidadoTurmaBimestreDto filtro)
         {
+            var teste = await mediator.Send(new SalvarFechamentoConsolidadoCommand(310712, 1, 138));
+
             var listaFechamentosConsolidado = await mediator.Send(new ObterFechamentoConsolidadoPorTurmaBimestreQuery(filtro.TurmaId, filtro.Bimestre));
 
             if (listaFechamentosConsolidado == null || !listaFechamentosConsolidado.Any())
