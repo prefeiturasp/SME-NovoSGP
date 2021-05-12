@@ -647,7 +647,7 @@
         DF_C = 217,
 
 
-        [PermissaoMenu(Menu = "Acompanhamento do fechamento", Icone = "fas fa-pencil-ruler", Agrupamento = "Fechamento", OrdemAgrupamento = 6, EhConsulta = true, Url = "/fechamento/acompanhamento")]
+        [PermissaoMenu(Menu = "Acompanhamento do fechamento", Icone = "fas fa-pencil-ruler", Agrupamento = "Fechamento", OrdemAgrupamento = 6, EhConsulta = true, Url = "/fechamento/acompanhamento-fechamento")]
         ACF = 218,
     }
 }
