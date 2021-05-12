@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
     public class SalvarHistoricoNotaFechamentoCommandValidator : AbstractValidator<SalvarHistoricoNotaFechamentoCommand>
     {
         public SalvarHistoricoNotaFechamentoCommandValidator()
-        {            
+        {
             RuleFor(a => a.FechamentoNotaId)
             .NotEmpty()
             .WithMessage("O id da nota do fechamento deve ser informada para geração do histórico!");
