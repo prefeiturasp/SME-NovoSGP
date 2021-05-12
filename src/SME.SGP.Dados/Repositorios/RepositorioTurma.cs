@@ -1120,5 +1120,15 @@ namespace SME.SGP.Dados.Repositorios
 
             return await contexto.Conexao.QueryAsync<TurmaModalidadeDto>(query, new { ano });
         }
+
+        public async Task<IEnumerable<TurmaConsolidacaoFechamentoGeralDto>> ObterTurmasConsolidacaoFechamentoGeralAsync()
+        {
+            var query = @"
+                            select t.id as turmaId, t.modalidade_codigo as modalidade from turma t 
+                            where t.tipo_turma  in  (1,2,7)
+                            and t.modalidade_codigo  in (3,5,6)";
+
+            return await contexto.Conexao.QueryAsync<TurmaConsolidacaoFechamentoGeralDto>(query);
+        }
     }
 }
