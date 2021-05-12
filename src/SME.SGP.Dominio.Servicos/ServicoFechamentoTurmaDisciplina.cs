@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using SME.Background.Core;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
@@ -289,9 +290,15 @@ namespace SME.SGP.Dominio.Servicos
                     Cliente.Executar<IServicoFechamentoTurmaDisciplina>(s => s.GerarNotificacaoAlteracaoLimiteDias(turmaFechamento, usuarioLogado, ue, entidadeDto.Bimestre, alunosComNotaAlterada));
 
                 Cliente.Executar<IServicoFechamentoTurmaDisciplina>(c => c.GerarPendenciasFechamento(fechamentoTurmaDisciplina.DisciplinaId, turmaFechamento, periodoEscolar, fechamentoTurmaDisciplina, usuarioLogado, componenteSemNota, disciplinaEOL.RegistraFrequencia));
-
                 await mediator.Send(new PublicaFilaExcluirPendenciaAusenciaFechamentoCommand(fechamentoTurmaDisciplina.DisciplinaId, periodoEscolar.Id, turmaFechamento.Id, usuarioLogado));
 
+                var consolidacaoTurma = new ConsolidacaoTurmaDto {
+                    TurmaId = turmaFechamento.Id,
+                    Bimestre = entidadeDto.Bimestre
+                };
+               
+                await mediator.Send(new PublicarFilaConsolidacaoTurmasCommand(consolidacaoTurma));
+                
                 return (AuditoriaPersistenciaDto)fechamentoTurmaDisciplina;
             }
             catch (Exception e)

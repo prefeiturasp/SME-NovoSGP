@@ -46,17 +46,17 @@ namespace SME.SGP.Api
 
 
         //TODO: REMOVER ANTES DA STORY IR PARA DEV!
-        [HttpPost]
-        public async Task<IActionResult> TestarFila([FromServices] IExecutarConsolidacaoTurmaConselhoClasseUseCase executarConsolidacaoTurmaConselhoClasseUseCase)
-        {
+        //[HttpPost]
+        ////public async Task<IActionResult> TestarFila([FromServices] IExecutarConsolidacaoTurmaConselhoClasseUseCase executarConsolidacaoTurmaConselhoClasseUseCase)
+        ////{
 
-            var obj = new ConsolidacaoTurmaConselhoClasseDto() { Bimestre = 1, TurmaId = 639036 };
-            var mensagem = JsonConvert.SerializeObject(obj); 
-            var msgRabbit = new MensagemRabbit(mensagem);
+        ////    var obj = new ConsolidacaoTurmaConselhoClasseDto() { Bimestre = 1, TurmaId = 639036 };
+        ////    var mensagem = JsonConvert.SerializeObject(obj); 
+        ////    var msgRabbit = new MensagemRabbit(mensagem);
             
-            await executarConsolidacaoTurmaConselhoClasseUseCase.Executar(msgRabbit);
+        ////    await executarConsolidacaoTurmaConselhoClasseUseCase.Executar(msgRabbit);
 
-            return Ok();
-        }
+        ////    return Ok();
+        //}
     }
 }
