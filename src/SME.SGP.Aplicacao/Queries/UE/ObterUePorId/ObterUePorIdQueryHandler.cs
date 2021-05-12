@@ -17,6 +17,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<Ue> Handle(ObterUePorIdQuery request, CancellationToken cancellationToken)
-                => await repositorioUe.ObterUePorId(request.Id);
+                => await repositorioUe.ObterUeComDrePorId(request.Id);
     }
 }
