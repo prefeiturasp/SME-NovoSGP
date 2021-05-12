@@ -16,6 +16,7 @@ namespace SME.SGP.Dominio
             Situacao = SituacaoItinerancia.Digitado;
         }
 
+        public long DreId { get; set; }
         public long UeId { get; set; }
         public Evento Evento { get; set; }
         public long? EventoId { get; set; }

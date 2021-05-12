@@ -7,12 +7,13 @@ namespace SME.SGP.Aplicacao
 {
     public class SalvarItineranciaCommand : IRequest<AuditoriaDto>
     {
-        public SalvarItineranciaCommand(int anoLetivo, DateTime dataVisita, DateTime? dataRetornoVerificacao, long? eventoId, long ueId)
+        public SalvarItineranciaCommand(int anoLetivo, DateTime dataVisita, DateTime? dataRetornoVerificacao, long? eventoId, long dreId, long ueId)
         {
             AnoLetivo = anoLetivo;
             DataVisita = dataVisita;
             DataRetornoVerificacao = dataRetornoVerificacao;
             EventoId = eventoId;
+            DreId = dreId;
             UeId = ueId;
         }
 
@@ -20,6 +21,8 @@ namespace SME.SGP.Aplicacao
         public DateTime DataVisita { get; set; }
         public DateTime? DataRetornoVerificacao { get; set; }
         public long? EventoId { get; }
+
+        public long DreId { get; }
         public long UeId { get; }
     }
     public class SalvarItineranciaCommandValidator : AbstractValidator<SalvarItineranciaCommand>

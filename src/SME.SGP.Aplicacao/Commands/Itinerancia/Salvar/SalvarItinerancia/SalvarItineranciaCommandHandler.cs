@@ -33,6 +33,7 @@ namespace SME.SGP.Aplicacao
                 DataRetornoVerificacao = request.DataRetornoVerificacao,
                 AnoLetivo = request.AnoLetivo,
                 EventoId = request.EventoId,
+                DreId = request.DreId,
                 UeId = request.UeId
             };
     }

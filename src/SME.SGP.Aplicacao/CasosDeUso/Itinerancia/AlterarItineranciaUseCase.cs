@@ -32,6 +32,8 @@ namespace SME.SGP.Aplicacao.Interfaces
             itinerancia.DataVisita = dto.DataVisita;
             itinerancia.DataRetornoVerificacao = dto.DataRetornoVerificacao;            
             itinerancia.EventoId = dto.EventoId;
+            itinerancia.DreId = dto.DreId;
+            itinerancia.UeId = dto.UeId;
 
             await ExcluirFilhosItinerancia(dto, itinerancia);
 
