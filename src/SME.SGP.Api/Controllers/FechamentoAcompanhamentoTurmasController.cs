@@ -50,7 +50,7 @@ namespace SME.SGP.Api
         public async Task<IActionResult> TestarFila([FromServices] IExecutarConsolidacaoTurmaConselhoClasseUseCase executarConsolidacaoTurmaConselhoClasseUseCase)
         {
 
-            var obj = new ConsolidacaoTurmaConselhoClasseDto() { Bimestre = 1, TurmaId = 625342 };
+            var obj = new ConsolidacaoTurmaDto() { Bimestre = 1, TurmaId = 625342 };
             var mensagem = JsonConvert.SerializeObject(obj); 
             var msgRabbit = new MensagemRabbit(mensagem);
             
