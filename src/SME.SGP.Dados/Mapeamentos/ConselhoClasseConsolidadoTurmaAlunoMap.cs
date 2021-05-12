@@ -2,9 +2,9 @@
 
 namespace SME.SGP.Dados
 {
-    public class ConselhoClasseConsolidadoComponenteTurmaMap : BaseMap<ConselhoClasseConsolidadoComponenteTurma>
+    public class ConselhoClasseConsolidadoTurmaAlunoMap : BaseMap<ConselhoClasseConsolidadoTurmaAluno>
     {
-        public ConselhoClasseConsolidadoComponenteTurmaMap()
+        public ConselhoClasseConsolidadoTurmaAlunoMap()
         {
             ToTable("consolidado_conselho_classe_aluno_turma");
             Map(a => a.DataAtualizacao).ToColumn("dt_atualizacao");

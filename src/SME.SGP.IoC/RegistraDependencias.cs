@@ -901,6 +901,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IExecutarConsolidacaoTurmaFechamentoUseCase, ExecutarConsolidacaoTurmaFechamentoUseCase>();
             services.TryAddScoped<IExecutarConsolidacaoTurmaUseCase, ExecutarConsolidacaoTurmaUseCase>();
 
+            services.TryAddScoped<IExecutarConsolidacaoTurmaConselhoClasseAlunoUseCase, ExecutarConsolidacaoTurmaConselhoClasseAlunoUseCase>();
+
 
         }
     }

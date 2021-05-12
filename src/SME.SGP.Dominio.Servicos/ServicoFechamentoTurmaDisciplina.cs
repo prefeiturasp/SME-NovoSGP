@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using SME.Background.Core;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
@@ -202,6 +203,10 @@ namespace SME.SGP.Dominio.Servicos
 
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
             Cliente.Executar<IServicoFechamentoTurmaDisciplina>(c => c.GerarPendenciasFechamento(fechamentoTurmaDisciplina.DisciplinaId, turma, periodoEscolar, fechamentoTurmaDisciplina, usuarioLogado, !disciplinaEOL.LancaNota, disciplinaEOL.RegistraFrequencia));
+
+            var consolidacaoTurma = new ConsolidacaoTurmaDto(turma.Id, periodoEscolar.Bimestre);
+            var mensagemParaPublicar = JsonConvert.SerializeObject(consolidacaoTurma);
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.ConsolidaTurmaFechamentoSync, mensagemParaPublicar, Guid.NewGuid(), null, fila: RotasRabbit.ConsolidaTurmaFechamentoSync));
         }
 
         public async Task<AuditoriaPersistenciaDto> Salvar(long id, FechamentoTurmaDisciplinaDto entidadeDto, bool componenteSemNota = false)

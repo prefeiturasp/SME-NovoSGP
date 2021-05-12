@@ -2,8 +2,12 @@
 
 namespace SME.SGP.Dominio
 {
-    public class ConselhoClasseConsolidadoComponenteTurma : EntidadeBase
+    public class ConselhoClasseConsolidadoTurmaAluno : EntidadeBase
     {
+        public ConselhoClasseConsolidadoTurmaAluno()
+        {
+            DataAtualizacao = DateTime.Now;
+        }
         public DateTime DataAtualizacao { get; set; }
 
         public StatusFechamento Status { get; set; }
