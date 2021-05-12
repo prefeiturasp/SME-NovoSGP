@@ -75,7 +75,6 @@ const RotasDto = {
   DASHBOARD_AEE: '/dashboard/aee',
   DASHBOARD_REGISTRO_ITINERANCIA: '/dashboard/registro-itinerancia',
   DASHBOARD_FREQUENCIA: '/dashboard/frequencia',
-  ACOMPANHAMENTO_FECHAMENTO: '/fechamento/acompanhamento',
 };
 
 export default RotasDto;
