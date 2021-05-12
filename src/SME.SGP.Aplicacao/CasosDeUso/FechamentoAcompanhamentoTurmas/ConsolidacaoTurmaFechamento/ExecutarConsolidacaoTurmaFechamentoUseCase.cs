@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Newtonsoft.Json;
 using Sentry;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
@@ -31,9 +32,16 @@ namespace SME.SGP.Aplicacao
                 return false;
             }
 
-            // obter os componentes da turma por id e bimestre
-            //var componentesCurriculares = await mediator.Send(new ObterComp)
+            var disciplinas = await mediator.Send(new ObterDisciplinasIdFechamentoPorTurmaIdEBimestreQuery(consolidacaoTurma.TurmaId, consolidacaoTurma.Bimestre));
 
+            foreach (var disciplina in disciplinas)
+            {
+
+                var mensagem = JsonConvert.SerializeObject(new FechamentoConsolidacaoTurmaComponenteBimestreDto(consolidacaoTurma.TurmaId, consolidacaoTurma.Bimestre, disciplina));
+
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.ConsolidaTurmaFechamentoTratar, mensagem, mensagemRabbit.CodigoCorrelacao, null, fila: RotasRabbit.ConsolidaTurmaFechamentoTratar));
+
+            }
             return true;
         }
     }
