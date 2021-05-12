@@ -32,7 +32,7 @@ class ServicoCompensacaoAusencia {
   };
 
   obterStatusCalculoFrequencia = async (turmaId, disciplinaId, bimestre) => {
-    const url = `/v1/processos/executando/frequencias/turma/${turmaId}/disciplina/${disciplinaId}/bimestres/${bimestre}`;
+    const url = `/v1/processos/executando/calculo/frequencias/turma/${turmaId}/disciplina/${disciplinaId}/bimestres/${bimestre}`;
     return api.get(url);
   };
 
