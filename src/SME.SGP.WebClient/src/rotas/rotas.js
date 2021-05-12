@@ -1336,6 +1336,19 @@ rotas.set(RotasDto.DASHBOARD_FREQUENCIA, {
   chavePermissao: RotasDto.DASHBOARD_FREQUENCIA,
 });
 
+rotas.set(RotasDto.ACOMPANHAMENTO_FECHAMENTO, {
+  breadcrumbName: 'Acompanhamento do fechamento',
+  menu: ['Fechamento'],
+  parent: '/',
+  component: ,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.ACOMPANHAMENTO_FECHAMENTO,
+});
+
+
+
 const rotasArray = [];
 for (const [key, value] of rotas) {
   const rota = value;
