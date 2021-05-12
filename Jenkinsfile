@@ -28,7 +28,7 @@ pipeline {
         
       stage('Testes API DEV') {
         when {
-           branch 'Story/38310'
+           branch 'development'
         }
         options { retry(3) }
 
@@ -36,7 +36,6 @@ pipeline {
              withCredentials([file(credentialsId: 'dev-newman-sgp', variable: 'NEWMANSGPDEV')]) {
                  
                sh 'pwd'
-               sh 'ls -la'
                sh 'cp $NEWMANSGPDEV /tmp/Dev.json'
                sh 'newman run teste/Postman/GradeComponentesCurriculares.json -e /tmp/Dev.json -r htmlextra --reporter-htmlextra-titleSize 4 --reporter-htmlextra-title "Grade dos Componentes Curriculares" --reporter-htmlextra-export ./results/reportgcc.html'
                publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'results', reportFiles: 'reportgcc.html', reportName: 'Postman Report', reportTitles: 'Report'])
