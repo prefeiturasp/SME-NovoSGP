@@ -23,8 +23,6 @@ namespace SME.SGP.Aplicacao
             if (itinerancia == null)
                 throw new NegocioException($"Não foi possível localizar a itinerância de Id {id}");
 
-            var ues = await mediator.Send(new ObterUePorIdQuery(itinerancia.UeId));
-
             var questoesBase = await mediator.Send(new ObterQuestoesBaseItineranciaEAlunoQuery());
 
             var verificaWorkflow = await mediator.Send(new ObterWorkflowItineranciaPorItineranciaIdQuery(itinerancia.Id));
@@ -41,6 +39,7 @@ namespace SME.SGP.Aplicacao
                 ObjetivosVisita = MontarObjetivosItinerancia(itinerancia),
                 Questoes = MontarQuestoesItinerancia(itinerancia, questoesBase),
                 TipoCalendarioId = await ObterTipoCalendario(itinerancia.EventoId),
+                UeId = itinerancia.UeId,
                 EventoId = itinerancia.EventoId,
                 CriadoRF = itinerancia.CriadoRF,
                 Auditoria = (AuditoriaDto)itinerancia,

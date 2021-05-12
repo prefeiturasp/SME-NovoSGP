@@ -13,7 +13,8 @@ namespace SME.SGP.Infra
             Questoes = new List<ItineranciaQuestaoDto>();
         }
         public long Id { get; set; }
-
+        
+        public long DreId { get; set; }
         public long UeId { get; set; }
         public int AnoLetivo { get; set; }
         public string CriadoRF { get; set; }
