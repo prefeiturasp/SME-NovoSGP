@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-   public class ObterConselhoClasseConsolidadoPorTurmaBimestreQuery : IRequest<IEnumerable<ConselhoClasseConsolidadoComponenteTurma>>
+   public class ObterConselhoClasseConsolidadoPorTurmaBimestreQuery : IRequest<IEnumerable<ConselhoClasseConsolidadoTurmaAluno>>
     {
         public ObterConselhoClasseConsolidadoPorTurmaBimestreQuery(long turmaId, int bimestre)
         {

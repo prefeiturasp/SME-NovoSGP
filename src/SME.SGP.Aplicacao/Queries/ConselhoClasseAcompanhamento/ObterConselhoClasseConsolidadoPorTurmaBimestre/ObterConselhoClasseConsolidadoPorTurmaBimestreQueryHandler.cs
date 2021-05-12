@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterConselhoClasseConsolidadoPorTurmaBimestreQueryHandler : IRequestHandler<ObterConselhoClasseConsolidadoPorTurmaBimestreQuery, IEnumerable<ConselhoClasseConsolidadoComponenteTurma>>
+    public class ObterConselhoClasseConsolidadoPorTurmaBimestreQueryHandler : IRequestHandler<ObterConselhoClasseConsolidadoPorTurmaBimestreQuery, IEnumerable<ConselhoClasseConsolidadoTurmaAluno>>
     {
         private readonly IRepositorioConselhoClasseConsolidado repositorioConselhoClasseConsolidado;
 
@@ -15,9 +15,9 @@ namespace SME.SGP.Aplicacao
             this.repositorioConselhoClasseConsolidado = repositorioConselhoClasseConsolidado ?? throw new System.ArgumentNullException(nameof(repositorioConselhoClasseConsolidado));
         }
 
-        public async Task<IEnumerable<ConselhoClasseConsolidadoComponenteTurma>> Handle(ObterConselhoClasseConsolidadoPorTurmaBimestreQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<ConselhoClasseConsolidadoTurmaAluno>> Handle(ObterConselhoClasseConsolidadoPorTurmaBimestreQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioConselhoClasseConsolidado.ObterConselhosClasseConsolidadoPorTurmaBimestre(request.TurmaId, request.Bimestre);
+            return await repositorioConselhoClasseConsolidado.ObterConselhosClasseConsolidadoPorTurmaBimestreAsync(request.TurmaId, request.Bimestre);
         }
     }
 }

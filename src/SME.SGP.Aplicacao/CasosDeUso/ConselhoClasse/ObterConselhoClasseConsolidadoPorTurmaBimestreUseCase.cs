@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
             return MapearRetornoStatusAgrupado(statusAgrupados);
         }
 
-        private IEnumerable<StatusTotalFechamentoDto> MapearRetornoStatusAgrupado(IEnumerable<IGrouping<StatusFechamento, ConselhoClasseConsolidadoComponenteTurma>> statusAgrupados)
+        private IEnumerable<StatusTotalFechamentoDto> MapearRetornoStatusAgrupado(IEnumerable<IGrouping<StatusFechamento, ConselhoClasseConsolidadoTurmaAluno>> statusAgrupados)
         {
             foreach (var status in statusAgrupados)
             {
