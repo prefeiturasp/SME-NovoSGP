@@ -196,6 +196,7 @@ namespace SME.SGP.Worker.RabbitMQ
             comandos.Add(RotasRabbit.RotaNotificacaoRegistroItineranciaInseridoUseCase, new ComandoRabbit("Enviar Notificação quanto insere um novo Registro de Itinerância", typeof(INotificacaoSalvarItineranciaUseCase)));
 
             // Consolidação fechamento turmas
+            comandos.Add(RotasRabbit.ConsolidaTurmaSync, new ComandoRabbit("Consolidação Fechamento - Consolidar Turmas", typeof(IExecutarConsolidacaoTurmaUseCase)));
             comandos.Add(RotasRabbit.ConsolidaTurmaConselhoClasseSync, new ComandoRabbit("Consolidação fechamento - Sincronizar alunos da turma", typeof(IExecutarConsolidacaoTurmaConselhoClasseUseCase)));
 
 
