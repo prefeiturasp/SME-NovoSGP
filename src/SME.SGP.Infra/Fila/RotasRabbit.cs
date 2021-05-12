@@ -98,7 +98,7 @@
         public static string ConsolidaTurmaFechamentoSync => "sgp.consolicacao.turma.fechamento.sync";
         public static string ConsolidaTurmaFechamentoTratar => "sgp.consolicacao.turma.fechamento.tratar";
         public static string ConsolidaTurmaConselhoClasseSync => "sgp.consolicacao.turma.conselhoclasse.sync";
-        public static string ConsolidaTurmaConselhoClasseTratar => "sgp.consolicacao.turma.conselhoclasse.tratar";
+        public static string ConsolidaTurmaConselhoClasseTratar => "sgp.consolicacao.turma.conselhoclasse.aluno.tratar";
 
     }
 }

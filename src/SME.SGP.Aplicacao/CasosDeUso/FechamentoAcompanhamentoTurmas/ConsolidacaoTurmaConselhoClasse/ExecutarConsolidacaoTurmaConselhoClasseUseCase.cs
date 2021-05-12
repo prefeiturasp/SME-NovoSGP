@@ -23,11 +23,13 @@ namespace SME.SGP.Aplicacao
             if (consolidacaoTurmaConselhoClasse == null)
             {
                 SentrySdk.CaptureMessage($"Não foi possível iniciar a consolidação do conselho de clase da turma. O id da turma e o bimestre não foram informados", Sentry.Protocol.SentryLevel.Error);
+                return false;
             }
 
             if (consolidacaoTurmaConselhoClasse.TurmaId == 0)
             {
                 SentrySdk.CaptureMessage($"Não foi possível iniciar a consolidação do conselho de clase da turma. O id da turma não foi informado", Sentry.Protocol.SentryLevel.Error);
+                return false;
             }
 
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(consolidacaoTurmaConselhoClasse.TurmaId));
@@ -80,12 +82,14 @@ namespace SME.SGP.Aplicacao
                     {
                         var mensagem = $"Não foi possível inserir o aluno de codígo : {aluno.CodigoAluno} na fila de consolidação do conselho de classe.";
                         SentrySdk.CaptureMessage(mensagem, Sentry.Protocol.SentryLevel.Error);
+                        return false;
                     }
                 }
                 catch (Exception ex)
                 {
                     SentrySdk.AddBreadcrumb($"Não foi possível inserir o aluno de codígo : {aluno.CodigoAluno} na fila de consolidação do conselho de classe.", "consolidação-conselho-classe-aluno", null, null, Sentry.Protocol.BreadcrumbLevel.Error);
                     SentrySdk.CaptureException(ex);
+                    return false;
                 }
             }
             return true;

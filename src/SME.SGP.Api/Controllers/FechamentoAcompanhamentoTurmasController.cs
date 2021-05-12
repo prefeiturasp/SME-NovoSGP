@@ -1,14 +1,10 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using SME.SGP.Api.Filtros;
-using SME.SGP.Aplicacao;
+﻿using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.FechamentoAcompanhamentoTurmas;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api
@@ -164,6 +160,19 @@ namespace SME.SGP.Api
             };
 
             return Ok(listaStatus);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> TestarFila([FromServices] IExecutarConsolidacaoTurmaConselhoClasseUseCase executarConsolidacaoTurmaConselhoClasseUseCase)
+        {
+
+            var obj = new ConsolidacaoTurmaConselhoClasseDto() { Bimestre = 1, TurmaId = 639036 };
+            var mensagem = JsonConvert.SerializeObject(obj); 
+            var msgRabbit = new MensagemRabbit(mensagem);
+            
+            await executarConsolidacaoTurmaConselhoClasseUseCase.Executar(msgRabbit);
+
+            return Ok();
         }
     }
 }
