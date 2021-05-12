@@ -419,6 +419,7 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IObterJustificativasAlunoPorComponenteCurricularUseCase, ObterJustificativasAlunoPorComponenteCurricularUseCase>();
             services.TryAddScopedWorkerService<IAlterarNotificacaoObservacaoDiarioBordoUseCase, AlterarNotificacaoObservacaoDiarioBordoUseCase>();
             services.TryAddScopedWorkerService<IObterFechamentoConsolidadoPorTurmaBimestreUseCase, ObterFechamentoConsolidadoPorTurmaBimestreUseCase>();
+            services.TryAddScopedWorkerService<ISalvarFechamentoConsolidadoPorTurmaBimestreComponenteUseCase, SalvarFechamentoConsolidadoPorTurmaBimestreComponenteUseCase>();
 
             services.TryAddScopedWorkerService<ISalvarNotificacaoDevolutivaUseCase, SalvarNotificacaoDevolutivaUseCase>();
             services.TryAddScopedWorkerService<IExcluirNotificacaoDevolutivaUseCase, ExcluirNotificacaoDevolutivaUseCase>();
@@ -555,6 +556,10 @@ namespace SME.SGP.IoC
             
             services.TryAddScopedWorkerService<IExecutarConsolidacaoTurmaConselhoClasseAlunoUseCase, ExecutarConsolidacaoTurmaConselhoClasseAlunoUseCase>();
             
+
+            services.TryAddScopedWorkerService<IExecutarConsolidacaoTurmaUseCase, ExecutarConsolidacaoTurmaUseCase>();
+
+            services.TryAddScopedWorkerService<INotificacaoSalvarItineranciaUseCase, NotificacaoSalvarItineranciaUseCase>();
         }
 
         private static void ResgistraDependenciaHttp(IServiceCollection services)

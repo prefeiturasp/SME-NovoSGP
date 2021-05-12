@@ -499,6 +499,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterMotivosAusenciaUseCase, ObterMotivosAusenciaUseCase>();
             services.TryAddScoped<IObterFechamentoConsolidadoPorTurmaBimestreUseCase, ObterFechamentoConsolidadoPorTurmaBimestreUseCase>();
             services.TryAddScoped<IObterConselhoClasseConsolidadoPorTurmaBimestreUseCase, ObterConselhoClasseConsolidadoPorTurmaBimestreUseCase>();
+            services.TryAddScoped<ISalvarFechamentoConsolidadoPorTurmaBimestreComponenteUseCase, SalvarFechamentoConsolidadoPorTurmaBimestreComponenteUseCase>();
 
             services.TryAddScoped<IObterDashBoardUseCase, ObterDashBoardUseCase>();
             services.TryAddScoped<IInserirDevolutivaUseCase, InserirDevolutivaUseCase>();
@@ -897,6 +898,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterDadosDashboardFrequenciaPorDreUseCase, ObterDadosDashboardFrequenciaPorDreUseCase>();
             services.TryAddScoped<IObterDashboardFrequenciaAusenciasPorMotivoUseCase, ObterDashboardFrequenciaAusenciasPorMotivoUseCase>();
             services.TryAddScoped<IExecutarConsolidacaoTurmaConselhoClasseUseCase, ExecutarConsolidacaoTurmaConselhoClasseUseCase>();
+            services.TryAddScoped<IExecutarConsolidacaoTurmaUseCase, ExecutarConsolidacaoTurmaUseCase>();
 
             services.TryAddScoped<IExecutarConsolidacaoTurmaConselhoClasseAlunoUseCase, ExecutarConsolidacaoTurmaConselhoClasseAlunoUseCase>();
 
