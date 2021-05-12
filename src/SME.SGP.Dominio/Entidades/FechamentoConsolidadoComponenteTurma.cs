@@ -10,8 +10,6 @@ namespace SME.SGP.Dominio
 
         public long ComponenteCurricularCodigo { get; set; }
 
-        public string ComponenteCurricularNome { get; set; }
-
         public string ProfessorRf { get; set; }
 
         public string ProfessorNome { get; set; }

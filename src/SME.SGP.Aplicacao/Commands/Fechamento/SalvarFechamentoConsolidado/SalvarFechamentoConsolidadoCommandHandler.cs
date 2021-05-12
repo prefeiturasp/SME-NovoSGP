@@ -57,7 +57,6 @@ namespace SME.SGP.Aplicacao
                     DataAtualizacao = DateTime.Now,
                     TurmaId = fechamento.FechamentoTurma.TurmaId,
                     Status = fechamento.ObterStatusFechamento(),
-                    ComponenteCurricularNome = professorComponente.DisciplinaNome,
                     ProfessorNome = professorComponente.ProfessorNome,
                     ProfessorRf = professorComponente.ProfessorRf
                 };
