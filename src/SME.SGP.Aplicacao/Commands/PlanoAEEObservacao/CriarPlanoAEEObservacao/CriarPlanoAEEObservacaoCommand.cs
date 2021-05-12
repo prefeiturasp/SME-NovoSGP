@@ -19,9 +19,14 @@ namespace SME.SGP.Aplicacao
 
         public long PlanoAEEId { get; }
         public string Observacao { get; }
-        public IEnumerable<long> Usuarios { get; }
+        public IEnumerable<long> Usuarios { get; internal set; }
 
         public bool PossuiUsuarios { get => Usuarios != null && Usuarios.Any(); }
+
+        internal void TratarUsuariosNotificacao(long usuarioLogadoId)
+        {
+            Usuarios = Usuarios.Where(c => c != usuarioLogadoId);
+        }
     }
 
     public class CriarPlanoAEEObservacaoCommandValidator : AbstractValidator<CriarPlanoAEEObservacaoCommand>

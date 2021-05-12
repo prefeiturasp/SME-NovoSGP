@@ -415,8 +415,13 @@ namespace SME.SGP.Aplicacao
             // Busca nota do conselho de classe consultado
             var notaComponente = notasConselhoClasseAluno.FirstOrDefault(c => c.ComponenteCurricularCodigo == componenteCurricularCodigo);
             if (notaComponente == null)
+            {
                 // Sugere nota final do fechamento
-                notaComponente = notasFechamentoAluno.FirstOrDefault(c => c.ComponenteCurricularCodigo == componenteCurricularCodigo && c.Bimestre == bimestre);
+                var notaComponenteComConselhoNota = notasFechamentoAluno.FirstOrDefault(c => c.ComponenteCurricularCodigo == componenteCurricularCodigo && c.Bimestre == bimestre && c.ConselhoClasseNotaId > 0);
+                if (notaComponenteComConselhoNota != null) notaComponente = notaComponenteComConselhoNota;
+                else
+                    notaComponente = notasFechamentoAluno.FirstOrDefault(c => c.ComponenteCurricularCodigo == componenteCurricularCodigo && c.Bimestre == bimestre);
+            }
 
             return new NotaPosConselhoDto()
             {

@@ -73,6 +73,7 @@ namespace SME.SGP.Aplicacao
             var workflowId = await mediator.Send(new EnviarNotificacaoItineranciaCommand(itineranciaId, titulo, mensagem.ToString(), NotificacaoCategoria.Workflow_Aprovacao, NotificacaoTipo.AEE, ObterCargosGestaoEscola(), ue.Dre.CodigoDre, ue.CodigoUe));
 
             await mediator.Send(new SalvarWorkflowAprovacaoItineranciaCommand(itineranciaId, workflowId));
+            await mediator.Send(new AlterarSituacaoItineranciaCommand(itineranciaId, Dominio.Enumerados.SituacaoItinerancia.AguardandoAprovacao));
 
         }
         private Cargo[] ObterCargosGestaoEscola()

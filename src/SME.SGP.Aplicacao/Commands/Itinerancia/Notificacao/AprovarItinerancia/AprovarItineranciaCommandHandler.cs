@@ -41,6 +41,8 @@ namespace SME.SGP.Aplicacao
                     if (itinerancia.DataRetornoVerificacao.HasValue)
                         await CriarEvento(itinerancia, objetivos);
 
+                    await mediator.Send(new AlterarSituacaoItineranciaCommand(request.ItineranciaId, request.StatusAprovacao ? Dominio.Enumerados.SituacaoItinerancia.Aceito : Dominio.Enumerados.SituacaoItinerancia.Reprovado));
+
                     unitOfWork.PersistirTransacao();
                 }
                 catch (Exception e)

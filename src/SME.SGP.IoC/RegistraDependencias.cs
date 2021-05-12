@@ -376,6 +376,9 @@ namespace SME.SGP.IoC
 
             // Notificações Plano AEE
             services.TryAddScoped<IRepositorioNotificacaoPlanoAEE, RepositorioNotificacaoPlanoAEE>();
+
+            // Consolidação Frequeência Turma
+            services.TryAddScoped<IRepositorioConsolidacaoFrequenciaTurma, RepositorioConsolidacaoFrequenciaTurma>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
@@ -540,6 +543,12 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterBimestresComConselhoClasseTurmaUseCase, ObterBimestresComConselhoClasseTurmaUseCase>();
             services.TryAddScoped<IObterPareceresConclusivosUseCase, ObterPareceresConclusivosUseCase>();
             services.TryAddScoped<IAtualizarSituacaoConselhoClasseUseCase, AtualizarSituacaoConselhoClasseUseCase>();
+
+            // Consolidacao Frequencia Turma
+            services.TryAddScoped<IExecutarConsolidacaoFrequenciaTurmaSyncUseCase, ExecutarConsolidacaoFrequenciaTurmaSyncUseCase>();
+            services.TryAddScoped<IConsolidarFrequenciaTurmasUseCase, ConsolidarFrequenciaTurmasUseCase>();
+            services.TryAddScoped<IConsolidarFrequenciaTurmasPorAnoUseCase, ConsolidarFrequenciaTurmasPorAnoUseCase>();
+            services.TryAddScoped<IConsolidarFrequenciaPorTurmaUseCase, ConsolidarFrequenciaPorTurmaUseCase>();
 
             // Comunicados EA
             services.TryAddScoped<ISolicitarInclusaoComunicadoEscolaAquiUseCase, SolicitarInclusaoComunicadoEscolaAquiUseCase>();
@@ -778,6 +787,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterRegistroIndividualPorAlunoDataUseCase, ObterRegistroIndividualPorAlunoDataUseCase>();
             services.TryAddScoped<IObterRegistroIndividualUseCase, ObterRegistroIndividualUseCase>();
             services.TryAddScoped<IObterRegistrosIndividuaisPorAlunoPeriodoUseCase, ObterRegistrosIndividuaisPorAlunoPeriodoUseCase>();
+            services.TryAddScoped<IObterSugestaoTopicoRegistroIndividualPorMesUseCase, ObterSugestaoTopicoRegistroIndividualPorMesUseCase>();
 
             services.TryAddScoped<IListarOcorrenciasUseCase, ListarOcorrenciasUseCase>();
             services.TryAddScoped<IListarTiposOcorrenciaUseCase, ListarTiposOcorrenciaUseCase>();
@@ -827,6 +837,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<INotificacaoDevolucaoEncaminhamentoAEEUseCase, NotificacaoDevolucaoEncaminhamentoAEEUseCase>();
 
             services.TryAddScoped<IExecutarSyncGeralGoogleClassroomUseCase, ExecutarSyncGeralGoogleClassroomUseCase>();
+            services.TryAddScoped<IExecutaSyncGsaGoogleClassroomUseCase, ExecutaSyncGsaGoogleClassroomUseCase>();
+
             services.TryAddScoped<IObterInformacoesDeFrequenciaAlunoPorSemestreUseCase, ObterInformacoesDeFrequenciaAlunoPorSemestreUseCase>();
 
 
@@ -868,11 +880,19 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterDashboardItineranciaVisitasPAAIsUseCase, ObterDashboardItineranciaVisitasPAAIsUseCase>();
             services.TryAddScoped<IObterDashboardItineranciaObjetivosUseCase, ObterDashboardItineranciaObjetivosUseCase>();
             services.TryAddScoped<IObterEventosItinerânciaPorTipoCalendarioUseCase, ObterEventosItinerânciaPorTipoCalendarioUseCase>();
+            services.TryAddScoped<IObterDadosDashboardAusenciasComJustificativaUseCase, ObterDadosDashboardAusenciasComJustificativaUseCase>();
+            services.TryAddScoped<IObterModalidadesAnoUseCase, ObterModalidadesAnoUseCase>();
+            
 
+            services.TryAddScoped<IObterDataConsolidacaoFrequenciaUseCase, ObterDataConsolidacaoFrequenciaUseCase>();
             services.TryAddScoped<IObterModalidadesPorUeUseCase, ObterModalidadesPorUeUseCase>();
             services.TryAddScoped<IRelatorioAcompanhamentoAprendizagemUseCase, RelatorioAcompanhamentoAprendizagemUseCase>();
 
+            services.TryAddScoped<IRelatorioRegistroIndividualUseCase, RelatorioRegistroIndividualUseCase>();
 
+            services.TryAddScoped<IObterDashboardFrequenciaPorAnoUseCase, ObterDashboardFrequenciaPorAnoUseCase>();
+            services.TryAddScoped<IObterDadosDashboardFrequenciaPorDreUseCase, ObterDadosDashboardFrequenciaPorDreUseCase>();
+            services.TryAddScoped<IObterDashboardFrequenciaAusenciasPorMotivoUseCase, ObterDashboardFrequenciaAusenciasPorMotivoUseCase>();
             
         }
     }

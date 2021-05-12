@@ -7,6 +7,7 @@ namespace SME.SGP.Infra
     public class NotaConceitoBimestreComponenteDto
     {
         public long Id { get; set; }
+        public long ConselhoClasseNotaId { get; set; }
         public int? Bimestre { get; set; }
         public long ComponenteCurricularCodigo { get; set; }
         public long? ConceitoId { get; set; }

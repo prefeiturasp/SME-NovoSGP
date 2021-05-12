@@ -65,15 +65,16 @@ const RotasDto = {
   RELATORIO_ALTERACAO_NOTAS: '/relatorios/fechamento/historico-alteracao-notas',
   RELATORIO_LEITURA: '/relatorios/escola-aqui/leitura',
   RELATORIO_ESCOLA_AQUI_ADESAO: '/relatorios/escola-aqui/adesao',
-  RELATORIO_AEE_ENCAMINHAMENTO: '/relatorios/aee/encaminhamento',
+  RELATORIO_AEE_ENCAMINHAMENTO: '/aee/encaminhamento',
   OCORRENCIAS: '/gestao/ocorrencias',
-  RELATORIO_AEE_REGISTRO_ITINERANCIA: '/relatorios/aee/registro-itinerancia',
-  RELATORIO_AEE_PLANO: '/relatorios/aee/plano',
+  RELATORIO_AEE_REGISTRO_ITINERANCIA: '/aee/registro-itinerancia',
+  RELATORIO_AEE_PLANO: '/aee/plano',
   ACOMPANHAMENTO_APRENDIZAGEM: '/fechamento/acompanhamento-aprendizagem',
   RELATORIO_DEVOLUTIVAS: '/relatorios/planejamento/devolutivas',
   DASHBOARD_ESCOLA_AQUI: '/dashboard/escola-aqui',
   DASHBOARD_AEE: '/dashboard/aee',
   DASHBOARD_REGISTRO_ITINERANCIA: '/dashboard/registro-itinerancia',
+  DASHBOARD_FREQUENCIA: '/dashboard/frequencia',
 };
 
 export default RotasDto;

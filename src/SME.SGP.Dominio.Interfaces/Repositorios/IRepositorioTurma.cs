@@ -23,6 +23,8 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<long> ObterTurmaIdPorCodigo(string turmaCodigo);
         Task<DreUeDaTurmaDto> ObterCodigosDreUe(string turmaCodigo);
+        Task<IEnumerable<ModalidadesPorAnoDto>> ObterModalidadesPorAnos(int anoLetivo, long dreId, long ueId, int modalidade, int semestre);
+        Task<IEnumerable<TurmaModalidadeDto>> ObterTurmasComModalidadePorAno(int ano);
         Task<Turma> ObterTurmaPorAnoLetivoModalidadeTipoAsync(long ueId, int anoLetivo, TipoTurma turmaTipo);
         Task<DreUeDaTurmaDto> ObterCodigosDreUePorId(long turmaId);
         Task<IEnumerable<Turma>> ObterTurmasInfantilNaoDeProgramaPorAnoLetivoAsync(int anoLetivo);
@@ -39,7 +41,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<bool> AtualizarTurmaParaHistorica(string turmaId);
         Task<bool> SalvarAsync(TurmaParaSyncInstitucionalDto turma, long ueId);
         Task ExcluirTurmaExtintaAsync(string turmaCodigo, long turmaId);
-        Task<bool> AtualizarTurmaSincronizacaoInstitucionalAsync(TurmaParaSyncInstitucionalDto turma);
+        Task<bool> AtualizarTurmaSincronizacaoInstitucionalAsync(TurmaParaSyncInstitucionalDto turma, bool deveMarcarHistorica = false);
 
     }
 }

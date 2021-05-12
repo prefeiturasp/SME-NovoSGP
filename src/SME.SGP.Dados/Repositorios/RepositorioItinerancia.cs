@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
@@ -418,5 +419,13 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<ItineranciaObjetivoDescricaoDto>(query, new { itineranciaId });
         }
+
+        public async Task<int> AtualizarStatusItinerancia(long itineranciaId, int situacao)
+        {
+            var query = @"update itinerancia set situacao = @situacao where id = @itineranciaId ";
+
+            return await database.Conexao.ExecuteAsync(query, new { itineranciaId, situacao });
+        }
+
     }
 }

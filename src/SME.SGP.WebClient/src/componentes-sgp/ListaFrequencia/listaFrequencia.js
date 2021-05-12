@@ -165,7 +165,7 @@ const ListaFrequencia = props => {
                   <th className="text-left">
                     Lista de {ehInfantil ? 'crianças' : 'estudantes'}
                   </th>
-                  {dataSource[0].aulas.length > 1 ? (
+                  {dataSource[0].aulas.length > 0 ? (
                     <>
                       <th
                         className="width-50 cursor-pointer"
@@ -249,7 +249,7 @@ const ListaFrequencia = props => {
                             </div>
                           </div>
                         </td>
-                        {dataSource[0].aulas.length > 1 ? (
+                        {dataSource[0].aulas.length > 0 ? (
                           <>
                             <td className="width-50">
                               <button

@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Net;
+using System.Net.Http;
 using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Polly;
+using Polly.Extensions.Http;
 using Sentry;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
@@ -14,6 +17,7 @@ using SME.SGP.Infra;
 using SME.SGP.Infra.Utilitarios;
 using SME.SGP.IoC;
 using SME.SGP.Worker.RabbitMQ;
+
 
 namespace SME.SGP.Worker.Rabbbit
 {
@@ -44,6 +48,7 @@ namespace SME.SGP.Worker.Rabbbit
             services.AddHostedService<WorkerRabbitMQ>();
 
             ConfiguraVariaveisAmbiente(services);
+            ConfiguraGoogleClassroomSync(services);
 
             var serviceProvider = services.BuildServiceProvider();
             var clientTelemetry = serviceProvider.GetService<TelemetryClient>();
@@ -60,6 +65,14 @@ namespace SME.SGP.Worker.Rabbbit
             services.AddSingleton(configuracaoRabbitOptions);
         }
 
+        private void ConfiguraGoogleClassroomSync(IServiceCollection services)
+        {
+            var googleClassroomSyncOptions = new GoogleClassroomSyncOptions();
+            configuration.GetSection(nameof(GoogleClassroomSyncOptions)).Bind(googleClassroomSyncOptions, c => c.BindNonPublicProperties = true);
+
+            services.AddSingleton(googleClassroomSyncOptions);
+        }
+
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
@@ -73,7 +86,13 @@ namespace SME.SGP.Worker.Rabbbit
                 await context.Response.WriteAsync("WorkerRabbitMQ!");
             });
         }
-
+        static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
+        {
+            return HttpPolicyExtensions
+                .HandleTransientHttpError()                
+                .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(3,
+                                                                            retryAttempt)));
+        }
         private static void RegistrarHttpClients(IServiceCollection services, IConfiguration configuration)
         {
             services.AddHttpClient<IServicoJurema, ServicoJurema>(c =>
@@ -93,7 +112,8 @@ namespace SME.SGP.Worker.Rabbbit
                 c.BaseAddress = new Uri(configuration.GetSection("UrlApiEOL").Value);
                 c.DefaultRequestHeaders.Add("Accept", "application/json");
                 c.DefaultRequestHeaders.Add("x-api-eol-key", configuration.GetSection("ApiKeyEolApi").Value);
-            });
+                
+            }).AddPolicyHandler(GetRetryPolicy());
 
             services.AddHttpClient<IServicoAcompanhamentoEscolar, ServicoAcompanhamentoEscolar>(c =>
             {

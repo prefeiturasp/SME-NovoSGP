@@ -39,7 +39,7 @@ const ObservacoesUsuarioMontarDados = props => {
 
   const montaLinhaObservacao = obs => {
     return (
-      <div className="mb-5" key={shortid.generate()}>
+      <div className="mb-5 position-relative" key={shortid.generate()}>
         <ContainerCampoObservacao
           style={{ cursor: 'not-allowed' }}
           className="col-md-12"
@@ -48,7 +48,9 @@ const ObservacoesUsuarioMontarDados = props => {
           value={obs.observacao}
         />
         {obs.auditoria ? <>{auditoria(obs)}</> : ''}
-        {mostrarListaNotificacao && <ListaNotificacoes obs={obs} />}
+        {mostrarListaNotificacao && (
+          <ListaNotificacoes obs={obs} somenteLeitura />
+        )}
       </div>
     );
   };

@@ -1230,7 +1230,8 @@ namespace SME.SGP.Dados.Repositorios
 	      	                    when e.dre_id is not null and e.ue_id is not null then 'UE'
 			                    else 'SME'
 		                    end tipoEvento,
-		                    au.Nome as UeNome
+		                    au.Nome as UeNome,
+                            au.TipoEscola
                     from evento e
 	                    inner join evento_tipo et
 		                    on e.tipo_evento_id = et.id 

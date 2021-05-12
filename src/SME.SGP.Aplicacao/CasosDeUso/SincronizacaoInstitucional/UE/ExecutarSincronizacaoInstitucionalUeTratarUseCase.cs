@@ -15,8 +15,6 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
-            SentrySdk.AddBreadcrumb($"Mensagem TrataSincronizacaoInstitucionalUeUseCase", "Rabbit - TrataSincronizacaoInstitucionalUeUseCase");
-
             var ueCodigo = mensagemRabbit.Mensagem.ToString();
 
             if (string.IsNullOrEmpty(ueCodigo))
@@ -25,6 +23,8 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             var ueEol = await mediator.Send(new ObterUeDetalhesParaSincronizacaoInstitucionalQuery(ueCodigo));
 
             var ueSgp = await mediator.Send(new ObterUeComDrePorCodigoQuery(ueCodigo));
+
+            
 
             if (await mediator.Send(new TrataSincronizacaoInstitucionalUeCommand(ueEol, ueSgp)))
                 return await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.SincronizaEstruturaInstitucionalTurmasSync, ueCodigo, mensagemRabbit.CodigoCorrelacao, null, fila: RotasRabbit.SincronizaEstruturaInstitucionalTurmasSync));

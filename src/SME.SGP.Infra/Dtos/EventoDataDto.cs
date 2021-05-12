@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SME.SGP.Dominio;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -11,5 +12,6 @@ namespace SME.SGP.Infra
         public string Nome { get; set; }
         public string TipoEvento { get; set; }
         public string UeNome { get; set; }
+        public TipoEscola TipoEscola { get; set; }
     }
 }

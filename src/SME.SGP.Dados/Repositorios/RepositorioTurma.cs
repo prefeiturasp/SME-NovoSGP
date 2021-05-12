@@ -663,7 +663,7 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"INSERT INTO public.turma
 				                (turma_id, ue_id, nome, ano, ano_letivo, modalidade_codigo, semestre, qt_duracao_aula, tipo_turno, data_atualizacao, historica, dt_fim_eol, ensino_especial, etapa_eja, data_inicio, serie_ensino, tipo_turma)
 	                        values
-	                            (@Codigo, @ueId, @NomeTurma, @Ano, @AnoLetivo, @CodigoModalidade, @Semestre, @DuracaoTurno, @TipoTurno, @DataAtualizacao, false, @DataFim, @EnsinoEspecial, @EtapaEJA, @DataInicioTurma, @SerieEnsino, @TipoTurma);";
+	                            (@Codigo, @ueId, @NomeTurma, @Ano, @AnoLetivo, @CodigoModalidade, @Semestre, @DuracaoTurno, @TipoTurno, @DataAtualizacao, @historica, @DataFim, @EnsinoEspecial, @EtapaEJA, @DataInicioTurma, @SerieEnsino, @TipoTurma);";
 
             var parametros = new
             {
@@ -684,6 +684,7 @@ namespace SME.SGP.Dados.Repositorios
                 turma.SerieEnsino,
                 turma.TipoTurma,
                 ueId,
+                historica = turma.Extinta
             };
             var retorno = await contexto.Conexao.ExecuteAsync(query, parametros);
 
@@ -964,7 +965,7 @@ namespace SME.SGP.Dados.Repositorios
             }
         }
 
-        public async Task<bool> AtualizarTurmaSincronizacaoInstitucionalAsync(TurmaParaSyncInstitucionalDto turma)
+        public async Task<bool> AtualizarTurmaSincronizacaoInstitucionalAsync(TurmaParaSyncInstitucionalDto turma, bool deveMarcarHistorica = false)
         {
             var query = @"update
 	                            public.turma
@@ -982,7 +983,8 @@ namespace SME.SGP.Dados.Repositorios
                                 data_inicio = @dataInicioTurma,
                                 serie_ensino = @serieEnsino,
                                 dt_fim_eol = @dataFim,
-                                tipo_turma = @tipoTurma                                
+                                tipo_turma = @tipoTurma,
+                                historica = @historica
                             where
 	                            turma_id = @turmaId";
 
@@ -1003,12 +1005,50 @@ namespace SME.SGP.Dados.Repositorios
                 turma.SerieEnsino,
                 turma.TipoTurma,
                 turmaId = turma.Codigo.ToString(),
+                historica = deveMarcarHistorica ? true : false
             };
 
             var retorno = await contexto.Conexao.ExecuteAsync(query, parametros);
             return retorno != 0;
 
 
+        }
+
+        public async Task<IEnumerable<ModalidadesPorAnoDto>> ObterModalidadesPorAnos(int anoLetivo, long dreId, long ueId, int modalidade, int semestre)
+        {
+
+            var query = new StringBuilder(@"select 
+                            distinct modalidade_codigo as modalidade, 
+                            ano
+                         from turma t
+                         inner join ue u on t.ue_id = u.id
+                         inner join dre d on d.id = u.dre_id
+                         where ano in ('1', '2', '3', '4', '5', '6', '7', '8', '9') and
+                         ano_letivo = @anoLetivo  
+                         ");
+
+            if (dreId > 0) 
+                query.AppendLine(" and d.id = @dreId ");
+
+            if (ueId > 0)
+                query.AppendLine(" and u.id  = @ueId ");
+
+            if (modalidade > 0)
+                query.AppendLine(" and t.modalidade_codigo = @modalidade ");
+
+            if (semestre >= 0)
+                query.AppendLine(" and t.semestre = @semestre ");
+
+            query.AppendLine("order by ano");
+
+            return await contexto.Conexao.QueryAsync<ModalidadesPorAnoDto>(query.ToString(), new { anoLetivo, dreId, ueId, modalidade, semestre });
+        }
+
+        public async Task<IEnumerable<TurmaModalidadeDto>> ObterTurmasComModalidadePorAno(int ano)
+        {
+            var query = @"select id as TurmaId, turma_id as TurmaCodigo, modalidade_codigo as Modalidade from turma where ano_letivo = @ano";
+
+            return await contexto.Conexao.QueryAsync<TurmaModalidadeDto>(query, new { ano });
         }
     }
 }

@@ -60,7 +60,7 @@ namespace SME.SGP.Aplicacao
                     unitOfWork.PersistirTransacao();
 
                     SentrySdk.AddBreadcrumb($"Mensagem RotaNotificacaoRegistroItineranciaInseridoUseCase", "Rabbit - RotaNotificacaoRegistroItineranciaInseridoUseCase");
-
+                    await mediator.Send(new AlterarSituacaoItineranciaCommand(itinerancia.Id, Dominio.Enumerados.SituacaoItinerancia.Enviado));
                     await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaNotificacaoRegistroItineranciaInseridoUseCase,
                         new NotificacaoSalvarItineranciaDto
                         {

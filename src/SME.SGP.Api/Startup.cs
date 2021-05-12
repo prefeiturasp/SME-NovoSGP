@@ -24,6 +24,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.IO.Compression;
+using SME.SGP.Infra;
 
 namespace SME.SGP.Api
 {
@@ -133,6 +134,7 @@ namespace SME.SGP.Api
             services.AddApplicationInsightsTelemetry(Configuration);
 
             ConfiguraVariaveisAmbiente(services);
+            ConfiguraGoogleClassroomSync(services);
 
             var serviceProvider = services.BuildServiceProvider();
 
@@ -176,6 +178,14 @@ namespace SME.SGP.Api
             Configuration.GetSection(nameof(ConfiguracaoRabbitOptions)).Bind(configuracaoRabbitOptions, c => c.BindNonPublicProperties = true);
 
             services.AddSingleton(configuracaoRabbitOptions);
+        }
+
+        private void ConfiguraGoogleClassroomSync(IServiceCollection services)
+        {
+            var googleClassroomSyncOptions = new GoogleClassroomSyncOptions();
+            Configuration.GetSection(nameof(GoogleClassroomSyncOptions)).Bind(googleClassroomSyncOptions, c => c.BindNonPublicProperties = true);
+
+            services.AddSingleton(googleClassroomSyncOptions);
         }
     }
 }

@@ -9,9 +9,6 @@
         
         public static string WorkerRelatoriosSgp => "sme.sr.workers.sgp";
 
-        public static string FilaGoogleSync => "googleclass.sync.geral";
-        public static string ExchangeGoogleSync => "googleclass.exchange";
-
         public static string RotaRelatoriosSolicitados => "relatorios.solicitados";
         public static string RotaRelatoriosProntos => "relatorios.prontos";
 
@@ -96,6 +93,10 @@
 
         public static string SincronizaEstruturaInstitucionalCicloSync => "sgp.sincronizacao.institucional.ciclo.sync";
         public static string SincronizaEstruturaInstitucionalCicloTratar => "sgp.sincronizacao.institucional.ciclo.tratar";
+
+        public static string ConsolidacaoFrequenciasTurmasCarregar => "sgp.frequencia.turma.carregar";
+        public static string ConsolidarFrequenciasTurmasNoAno => "sgp.frequencia.turma.ano.consolidar";
+        public static string ConsolidarFrequenciasPorTurma => "sgp.frequencia.turma.consolidar";
 
     }
 }

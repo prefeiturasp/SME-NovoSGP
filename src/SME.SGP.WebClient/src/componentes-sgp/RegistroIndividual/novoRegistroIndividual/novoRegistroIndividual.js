@@ -28,6 +28,8 @@ import {
   verificaSomenteConsulta,
 } from '~/servicos';
 
+import SugestaoTopico from '../SugestaoTopico/sugestaoTopico';
+
 const NovoRegistroIndividual = () => {
   const dataAtual = window.moment();
   const [expandir, setExpandir] = useState(false);
@@ -193,7 +195,12 @@ const NovoRegistroIndividual = () => {
   }, [validaPermissoes, podeRealizarNovoRegistro]);
 
   const desabilitarData = dataCorrente => {
-    return dataCorrente && dataCorrente > window.moment();
+    const anoLetivo = turmaSelecionada?.anoLetivo;
+    return (
+      dataCorrente &&
+      (dataCorrente < window.moment(`${anoLetivo}-01-01`) ||
+        dataCorrente > window.moment())
+    );
   };
 
   const expandirAlternado = useCallback(() => setExpandir(!expandir), [
@@ -224,7 +231,9 @@ const NovoRegistroIndividual = () => {
       elementos[0].addEventListener('click', setarDataVazia, false);
     }
     return () => {
-      elementos[0].removeEventListener('click', setarDataVazia);
+      if (elementos.length) {
+        elementos[0].removeEventListener('click', setarDataVazia);
+      }
     };
   });
 
@@ -252,7 +261,12 @@ const NovoRegistroIndividual = () => {
                 desabilitarData={desabilitarData}
               />
             </div>
-            <div className="pt-1">
+            {permissoesTela.podeIncluir && (
+              <div className="col-12 p-0 pb-3">
+                <SugestaoTopico valorData={data} />
+              </div>
+            )}
+            <div className="pt-2">
               <Loader ignorarTip loading={carregandoNovoRegistro}>
                 <div style={{ minHeight: 200 }}>
                   <JoditEditor

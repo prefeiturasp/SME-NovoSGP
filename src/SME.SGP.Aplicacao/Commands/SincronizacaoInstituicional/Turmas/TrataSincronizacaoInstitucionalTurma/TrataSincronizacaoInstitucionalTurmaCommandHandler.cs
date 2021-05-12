@@ -45,7 +45,7 @@ namespace SME.SGP.Aplicacao
         private async Task<bool> VerificarTurmaExtintaAsync(TurmaParaSyncInstitucionalDto turma, long turmaSgpId)
         {
             var anoAtual = DateTime.Now.Year;
-            var tipoCalendarioId = await mediator.Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(turma.CodigoModalidade, anoAtual, null));
+            var tipoCalendarioId = await mediator.Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(turma.CodigoModalidade, anoAtual, turma.Semestre));
 
             if (tipoCalendarioId > 0)
             {
@@ -61,7 +61,7 @@ namespace SME.SGP.Aplicacao
                     }
                     else
                     {
-                        return await AtualizarTurmaParaHistoricaAsync(turma.Codigo.ToString());
+                        return await repositorioTurma.AtualizarTurmaSincronizacaoInstitucionalAsync(turma, true);                        
                     }
                 }
                 else

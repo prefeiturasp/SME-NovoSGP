@@ -97,6 +97,12 @@ namespace SME.SGP.Worker.RabbitMQ
             canalRabbit.QueueDeclare(RotasRabbit.SincronizaEstruturaInstitucionalCicloTratar, true, false, false);
             canalRabbit.QueueBind(RotasRabbit.SincronizaEstruturaInstitucionalCicloTratar, RotasRabbit.ExchangeSgp, RotasRabbit.SincronizaEstruturaInstitucionalCicloTratar);
 
+            canalRabbit.QueueDeclare(RotasRabbit.ConsolidarFrequenciasTurmasNoAno, true, false, false);
+            canalRabbit.QueueBind(RotasRabbit.ConsolidarFrequenciasTurmasNoAno, RotasRabbit.ExchangeSgp, RotasRabbit.ConsolidarFrequenciasTurmasNoAno);
+
+            canalRabbit.QueueDeclare(RotasRabbit.ConsolidarFrequenciasPorTurma, true, false, false);
+            canalRabbit.QueueBind(RotasRabbit.ConsolidarFrequenciasPorTurma, RotasRabbit.ExchangeSgp, RotasRabbit.ConsolidarFrequenciasPorTurma);
+
             comandos = new Dictionary<string, ComandoRabbit>();
             RegistrarUseCases();
         }
@@ -174,7 +180,9 @@ namespace SME.SGP.Worker.RabbitMQ
            
             comandos.Add(RotasRabbit.RotaNotificacaoRegistroItineranciaInseridoUseCase, new ComandoRabbit("Enviar Notificação quanto insere um novo Registro de Itinerância", typeof(INotificacaoSalvarItineranciaUseCase)));
 
-           
+            comandos.Add(RotasRabbit.ConsolidacaoFrequenciasTurmasCarregar, new ComandoRabbit("Consolidação de Registros de Frequência das Turmas - Carregar", typeof(IConsolidarFrequenciaTurmasUseCase)));
+            comandos.Add(RotasRabbit.ConsolidarFrequenciasTurmasNoAno, new ComandoRabbit("Consolidar Registros de Frequência das Turmas", typeof(IConsolidarFrequenciaTurmasPorAnoUseCase)));
+            comandos.Add(RotasRabbit.ConsolidarFrequenciasPorTurma, new ComandoRabbit("Consolidar Registros de Frequência por Turma", typeof(IConsolidarFrequenciaPorTurmaUseCase)));
         }
 
         private async Task TratarMensagem(BasicDeliverEventArgs ea)
@@ -186,7 +194,7 @@ namespace SME.SGP.Worker.RabbitMQ
                 using (SentrySdk.Init(sentryDSN))
                 {
                     var mensagemRabbit = JsonConvert.DeserializeObject<MensagemRabbit>(mensagem);
-                    SentrySdk.AddBreadcrumb($"Dados: {mensagemRabbit.Mensagem}");
+                    //SentrySdk.AddBreadcrumb($"Dados: {mensagemRabbit.Mensagem}");
                     var comandoRabbit = comandos[rota];
                     try
                     {
@@ -194,19 +202,19 @@ namespace SME.SGP.Worker.RabbitMQ
                         {
                             AtribuirContextoAplicacao(mensagemRabbit, scope);
 
-                            SentrySdk.CaptureMessage($"{mensagemRabbit.UsuarioLogadoRF} - {mensagemRabbit.CodigoCorrelacao.ToString().Substring(0, 3)} - EXECUTANDO - {ea.RoutingKey} - {DateTime.Now:dd/MM/yyyy HH:mm:ss}", SentryLevel.Debug);
+                            //SentrySdk.CaptureMessage($"{mensagemRabbit.UsuarioLogadoRF} - {mensagemRabbit.CodigoCorrelacao.ToString().Substring(0, 3)} - EXECUTANDO - {ea.RoutingKey} - {DateTime.Now:dd/MM/yyyy HH:mm:ss}", SentryLevel.Debug);
                             var casoDeUso = scope.ServiceProvider.GetService(comandoRabbit.TipoCasoUso);
 
                             await ObterMetodo(comandoRabbit.TipoCasoUso, "Executar").InvokeAsync(casoDeUso, new object[] { mensagemRabbit });
 
-                            SentrySdk.CaptureMessage($"{mensagemRabbit.UsuarioLogadoRF} - {mensagemRabbit.CodigoCorrelacao.ToString().Substring(0, 3)} - SUCESSO - {ea.RoutingKey}", SentryLevel.Info);
+                            //SentrySdk.CaptureMessage($"{mensagemRabbit.UsuarioLogadoRF} - {mensagemRabbit.CodigoCorrelacao.ToString().Substring(0, 3)} - SUCESSO - {ea.RoutingKey}", SentryLevel.Info);
                             canalRabbit.BasicAck(ea.DeliveryTag, false);
                         }
                     }
                     catch (NegocioException nex)
                     {
                         canalRabbit.BasicReject(ea.DeliveryTag, false);
-                        SentrySdk.AddBreadcrumb($"Erros: {nex.Message}");
+                        SentrySdk.AddBreadcrumb($"Erros: {nex.Message}" ,null, null, null, BreadcrumbLevel.Error);
                         SentrySdk.CaptureException(nex);
                         RegistrarSentry(ea, mensagemRabbit, nex);
                         if (mensagemRabbit.NotificarErroUsuario)
@@ -215,7 +223,7 @@ namespace SME.SGP.Worker.RabbitMQ
                     catch (ValidacaoException vex)
                     {
                         canalRabbit.BasicReject(ea.DeliveryTag, false);
-                        SentrySdk.AddBreadcrumb($"Erros: {JsonConvert.SerializeObject(vex.Mensagens())}");
+                        SentrySdk.AddBreadcrumb($"Erros: {JsonConvert.SerializeObject(vex.Mensagens())}", null, null, null, BreadcrumbLevel.Error);
                         SentrySdk.CaptureException(vex);
                         RegistrarSentry(ea, mensagemRabbit, vex);
                         if (mensagemRabbit.NotificarErroUsuario)
@@ -224,7 +232,7 @@ namespace SME.SGP.Worker.RabbitMQ
                     catch (Exception ex)
                     {
                         canalRabbit.BasicReject(ea.DeliveryTag, false);
-                        SentrySdk.AddBreadcrumb($"Erros: {ex.Message}");
+                        SentrySdk.AddBreadcrumb($"Erros: {ex.Message}", null, null, null, BreadcrumbLevel.Error);
                         SentrySdk.CaptureException(ex);
                         RegistrarSentry(ea, mensagemRabbit, ex);
                         if (mensagemRabbit.NotificarErroUsuario)
@@ -312,6 +320,7 @@ namespace SME.SGP.Worker.RabbitMQ
                 }
                 catch (Exception ex)
                 {
+                    SentrySdk.AddBreadcrumb($"Erro ao tratar mensagem {ea.DeliveryTag}", "erro", null, null, BreadcrumbLevel.Error);
                     SentrySdk.CaptureException(ex);
                     canalRabbit.BasicReject(ea.DeliveryTag, false);
                 }
@@ -327,6 +336,8 @@ namespace SME.SGP.Worker.RabbitMQ
             canalRabbit.BasicConsume(RotasRabbit.SincronizaEstruturaInstitucionalCicloTratar, false, consumer);
             canalRabbit.BasicConsume(RotasRabbit.SincronizaEstruturaInstitucionalTurmaTratar, false, consumer);
             canalRabbit.BasicConsume(RotasRabbit.SincronizaEstruturaInstitucionalTurmasSync, false, consumer);
+            canalRabbit.BasicConsume(RotasRabbit.ConsolidarFrequenciasTurmasNoAno, false, consumer);
+            canalRabbit.BasicConsume(RotasRabbit.ConsolidarFrequenciasPorTurma, false, consumer);
 
             return Task.CompletedTask;
         }

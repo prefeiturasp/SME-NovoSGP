@@ -29,7 +29,7 @@ namespace SME.SGP.Dados.Repositorios
                           from conselho_classe_aluno cca 
                          inner join conselho_classe_nota ccn on ccn.conselho_classe_aluno_id = cca.id
                           where cca.aluno_codigo = @alunoCodigo
-                            { (conselhoClasseId > 0  ? "and cca.conselho_classe_id = @conselhoClasseId" : string.Empty) }";
+                            and cca.conselho_classe_id = @conselhoClasseId";
 
             return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { conselhoClasseId, alunoCodigo });
         }
@@ -92,7 +92,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var condicaoBimestre = bimestre>0?"and bimestre = @bimestre":"";
             var query = $@"select distinct * from (
-                select pe.bimestre, fn.disciplina_id as ComponenteCurricularCodigo, coalesce(ccn.conceito_id, fn.conceito_id) as ConceitoId, coalesce(ccn.nota, fn.nota) as Nota
+                select pe.bimestre, fn.disciplina_id as ComponenteCurricularCodigo, ccn.id as ConselhoClasseNotaId, coalesce(ccn.conceito_id, fn.conceito_id) as ConceitoId, coalesce(ccn.nota, fn.nota) as Nota
                   from fechamento_turma ft
                   left join periodo_escolar pe on pe.id = ft.periodo_escolar_id 
                  inner join turma t on t.id = ft.turma_id 
@@ -108,7 +108,7 @@ namespace SME.SGP.Dados.Repositorios
                    and fa.aluno_codigo = @alunoCodigo
                    {condicaoBimestre}
                 union all 
-                select pe.bimestre, ccn.componente_curricular_codigo as ComponenteCurricularCodigo, coalesce(ccn.conceito_id, fn.conceito_id) as ConceitoId, coalesce(ccn.nota, fn.nota) as Nota
+                select pe.bimestre, ccn.componente_curricular_codigo as ComponenteCurricularCodigo, ccn.id as ConselhoClasseNotaId, coalesce(ccn.conceito_id, fn.conceito_id) as ConceitoId, coalesce(ccn.nota, fn.nota) as Nota
                   from fechamento_turma ft
                   left join periodo_escolar pe on pe.id = ft.periodo_escolar_id 
                  inner join turma t on t.id = ft.turma_id 
