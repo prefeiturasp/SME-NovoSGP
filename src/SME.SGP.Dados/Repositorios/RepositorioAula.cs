@@ -310,7 +310,8 @@ namespace SME.SGP.Dados.Repositorios
 	                            and data_aula >= @inicioPeriodo
 	                            and data_aula <= @fimPeriodo
                                 and data_aula <= @dataAtual
-	                            and r.id is null";
+	                            and r.id is null
+                                and not a.excluido;";
             return database.Conexao.Query<Aula>(query, new
             {
                 codigoTurma,
