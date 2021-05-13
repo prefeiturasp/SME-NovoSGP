@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao
 
             await repositorioDiarioBordoObservacao.SalvarAsync(diarioBordoObservacao);
 
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaExcluirNotificacaoDiarioBordo,
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaExcluirNotificacaoDiarioBordo,
                       new ExcluirNotificacaoDiarioBordoDto(request.ObservacaoId), Guid.NewGuid(), null));
 
             return true;

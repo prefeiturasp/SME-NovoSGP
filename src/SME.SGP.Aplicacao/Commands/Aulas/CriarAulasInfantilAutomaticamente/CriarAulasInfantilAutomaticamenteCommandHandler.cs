@@ -83,7 +83,7 @@ namespace SME.SGP.Aplicacao
 
                 if (aulasAExcluirComFrequenciaRegistrada.Any())
                 {
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaNotificacaoExclusaoAulasComFrequencia,
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoExclusaoAulasComFrequencia,
                         new NotificarExclusaoAulasComFrequenciaDto(turma, aulasAExcluirComFrequenciaRegistrada), Guid.NewGuid(), null));
 
                     aulasAExcluirComFrequenciaRegistrada.Clear();
