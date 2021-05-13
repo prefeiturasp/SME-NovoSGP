@@ -215,7 +215,6 @@ namespace SME.SGP.Worker.RabbitMQ
                 var mensagem = JsonConvert.SerializeObject(request);
                 var body = Encoding.UTF8.GetBytes(mensagem);
 
-                canalRabbit.QueueBind(RotasRabbitSgp.FilaSgp, ExchangeRabbit.Sgp, RotasRabbitSgp.RotaNotificacaoUsuario);
                 canalRabbit.BasicPublish(ExchangeRabbit.Sgp, RotasRabbitSgp.RotaNotificacaoUsuario, null, body);
             }
         }
