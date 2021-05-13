@@ -41,6 +41,7 @@ namespace SME.SGP.Aplicacao
                 TipoCalendarioId = await ObterTipoCalendario(itinerancia.EventoId),
                 DreId = itinerancia.DreId,
                 UeId = itinerancia.UeId,
+                DreId = itinerancia.DreId,
                 EventoId = itinerancia.EventoId,
                 CriadoRF = itinerancia.CriadoRF,
                 Auditoria = (AuditoriaDto)itinerancia,
