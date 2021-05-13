@@ -51,12 +51,6 @@ namespace SME.SGP.Worker.RabbitMQ
             DeclararFilasSgp();
             DeclararFilasRelatorios();
 
-            canalRabbit.QueueDeclare(RotasRabbitSgp.FilaSgp, false, false, false, null);
-            canalRabbit.QueueBind(RotasRabbitSgp.FilaSgp, ExchangeRabbit.Sgp, "#", null);
-
-            canalRabbit.QueueDeclare(RotasRabbitRelatorios.WorkerRelatoriosSgp, false, false, false, null);
-            canalRabbit.QueueBind(RotasRabbitRelatorios.WorkerRelatoriosSgp, ExchangeRabbit.ServidorRelatorios, "#", null);
-
             comandos = new Dictionary<string, ComandoRabbit>();
             RegistrarUseCases();
         }
@@ -221,7 +215,6 @@ namespace SME.SGP.Worker.RabbitMQ
                 var mensagem = JsonConvert.SerializeObject(request);
                 var body = Encoding.UTF8.GetBytes(mensagem);
 
-                canalRabbit.QueueBind(RotasRabbitSgp.FilaSgp, ExchangeRabbit.Sgp, RotasRabbitSgp.RotaNotificacaoUsuario);
                 canalRabbit.BasicPublish(ExchangeRabbit.Sgp, RotasRabbitSgp.RotaNotificacaoUsuario, null, body);
             }
         }
