@@ -7,3 +7,5 @@ CREATE TABLE public.consolidacao_matricula_turma (
 	
     CONSTRAINT consolidacao_matricula_turma_pk PRIMARY KEY (id)
 );
+
+ALTER TABLE public.consolidacao_matricula_turma ADD CONSTRAINT consolidacao_matricula_turma_turma_fk FOREIGN KEY (turma_id) REFERENCES turma(id);
