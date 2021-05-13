@@ -12,6 +12,17 @@ namespace SME.SGP.Api.Controllers
     [Route("api/v1/dashboard/devolutivas")]
     public class DashboardDevolutivasController : Controller
     {
+        [HttpGet("consolidacao/turma-ano")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(IEnumerable<GraficoDevolutivasEstimadasEConfirmadasDto>), 200)]
+        //[Permissao(Permissao.DF_C, Policy = "Bearer")] Será feito em uma task específica
+        public async Task<IActionResult> ObterDevolutivasEstimadasEConfirmadas([FromQuery] FiltroGraficoDevolutivasEstimadasEConfirmadasDto filtro,
+            [FromServices] IObterDevolutivasEstimadasEConfirmadasUseCase useCase)
+        {
+            return Ok(await useCase.Executar(filtro));
+        }
+
         [HttpGet("diarios-bordo/turma-ano")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
