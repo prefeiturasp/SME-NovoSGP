@@ -232,6 +232,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("where excluido = false");
             query.AppendLine("and ano_letivo = any(@anosLetivo)");
             query.AppendLine("and modalidade = any(@modalidades)");
+            query.AppendLine("order by ano_letivo desc");
 
             return await database.Conexao.QueryAsync<TipoCalendarioBuscaDto>(query.ToString(), new { anosLetivo, modalidades });
         }
