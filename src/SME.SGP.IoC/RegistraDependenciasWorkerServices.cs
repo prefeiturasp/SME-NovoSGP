@@ -63,8 +63,6 @@ namespace SME.SGP.IoC
             services.AddSingleton(canalRabbit);
 
             canalRabbit.ExchangeDeclare(ExchangeRabbit.Sgp, ExchangeType.Topic);
-            canalRabbit.QueueDeclare(RotasRabbitSgp.FilaSgp, false, false, false, null);
-            canalRabbit.QueueBind(RotasRabbitSgp.FilaSgp, ExchangeRabbit.Sgp, "*");
         }
 
         private static void RegistrarComandos(IServiceCollection services)
