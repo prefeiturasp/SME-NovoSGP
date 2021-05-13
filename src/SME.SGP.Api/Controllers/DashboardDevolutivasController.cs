@@ -22,5 +22,16 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(filtro));
         }
+
+        [HttpGet("diarios-bordo/reflexoes-replanejamentos/turma-ano")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(IEnumerable<GraficoDiariosDeBordoComESemReflexoesEReplanejamentosDto>), 200)]
+        //[Permissao(Permissao.DF_C, Policy = "Bearer")] Será feito em uma task específica
+        public async Task<IActionResult> ObterGraficoDiariosDeBordoComDevolutivaEDevolutivaPendente([FromQuery] FiltroGraficoDiariosDeBordoComESemReflexoesEReplanejamentosDto filtro,
+            [FromServices] IObterDiariosDeBordoComESemReflexoesEReplanejamentosUseCase useCase)
+        {
+            return Ok(await useCase.Executar(filtro));
+        }
     }
 }
