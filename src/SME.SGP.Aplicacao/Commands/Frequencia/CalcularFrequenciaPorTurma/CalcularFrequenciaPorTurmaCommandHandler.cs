@@ -39,12 +39,12 @@ namespace SME.SGP.Aplicacao
 
             try
             {
-                var totalAulasNaDisciplina = repositorioRegistroAusenciaAluno.ObterTotalAulasPorDisciplinaETurma(request.DataAula, request.DisciplinaId, request.TurmaId);
-                var totalAulasDaTurmaGeral = repositorioRegistroAusenciaAluno.ObterTotalAulasPorDisciplinaETurma(request.DataAula, string.Empty, request.TurmaId);
+                var totalAulasNaDisciplina = await repositorioRegistroAusenciaAluno.ObterTotalAulasPorDisciplinaETurmaAsync(request.DataAula, request.DisciplinaId, request.TurmaId);
+                var totalAulasDaTurmaGeral = await repositorioRegistroAusenciaAluno.ObterTotalAulasPorDisciplinaETurmaAsync(request.DataAula, string.Empty, request.TurmaId);
 
                 foreach (var codigoAluno in request.Alunos)
                 {
-                    RegistraFrequenciaPorDisciplina(request.TurmaId, request.DisciplinaId, request.DataAula, totalAulasNaDisciplina, codigoAluno);
+                    await RegistraFrequenciaPorDisciplina(request.TurmaId, request.DisciplinaId, request.DataAula, totalAulasNaDisciplina, codigoAluno);
                     RegistraFrequenciaGeral(request.TurmaId, request.DataAula, codigoAluno, totalAulasDaTurmaGeral);
                 }
             }
@@ -56,13 +56,13 @@ namespace SME.SGP.Aplicacao
 
             return true;
         }
-        private void RegistraFrequenciaPorDisciplina(string turmaId, string disciplinaId, DateTime dataAtual, int totalAulasNaDisciplina, string codigoAluno)
+        private async Task RegistraFrequenciaPorDisciplina(string turmaId, string disciplinaId, DateTime dataAtual, int totalAulasNaDisciplina, string codigoAluno)
         {
-            var ausenciasAlunoPorDisciplina = repositorioRegistroAusenciaAluno.ObterTotalAusenciasPorAlunoETurma(dataAtual, codigoAluno, disciplinaId, turmaId);
+            var ausenciasAlunoPorDisciplina = await repositorioRegistroAusenciaAluno.ObterTotalAusenciasPorAlunoETurmaAsync(dataAtual, codigoAluno, disciplinaId, turmaId);
             if (ausenciasAlunoPorDisciplina != null)
             {
-                var totalCompensacoesDisciplinaAluno = repositorioCompensacaoAusenciaAluno.ObterTotalCompensacoesPorAlunoETurma(ausenciasAlunoPorDisciplina.Bimestre, codigoAluno, disciplinaId, turmaId);
-                var frequenciaAluno = MapearFrequenciaAluno(codigoAluno,
+                var totalCompensacoesDisciplinaAluno = await repositorioCompensacaoAusenciaAluno.ObterTotalCompensacoesPorAlunoETurmaAsync(ausenciasAlunoPorDisciplina.Bimestre, codigoAluno, disciplinaId, turmaId);
+                var frequenciaAluno = await MapearFrequenciaAluno(codigoAluno,
                                                             turmaId,
                                                             disciplinaId,
                                                             ausenciasAlunoPorDisciplina.PeriodoEscolarId,
@@ -75,22 +75,22 @@ namespace SME.SGP.Aplicacao
                                                             TipoFrequenciaAluno.PorDisciplina);
 
                 if (frequenciaAluno.TotalAusencias > 0)
-                    repositorioFrequenciaAlunoDisciplinaPeriodo.Salvar(frequenciaAluno);
+                    await repositorioFrequenciaAlunoDisciplinaPeriodo.SalvarAsync(frequenciaAluno);
                 else
                 if (frequenciaAluno.Id > 0)
-                    repositorioFrequenciaAlunoDisciplinaPeriodo.Remover(frequenciaAluno);
+                    await repositorioFrequenciaAlunoDisciplinaPeriodo.RemoverAsync(frequenciaAluno);
             }
             else
             {
-                var frequenciaAluno = repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunoData(codigoAluno, dataAtual, TipoFrequenciaAluno.PorDisciplina, disciplinaId);
+                var frequenciaAluno = await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunoDataAsync(codigoAluno, dataAtual, TipoFrequenciaAluno.PorDisciplina, disciplinaId);
 
                 if (frequenciaAluno != null)
-                    repositorioFrequenciaAlunoDisciplinaPeriodo.Remover(frequenciaAluno);
+                    await repositorioFrequenciaAlunoDisciplinaPeriodo.RemoverAsync(frequenciaAluno);
             }
         }
-        private FrequenciaAluno MapearFrequenciaAluno(string codigoAluno, string turmaId, string disciplinaId, long? periodoEscolarId, DateTime periodoInicio, DateTime periodoFim, int bimestre, int totalAusencias, int totalAulas, int totalCompensacoes, TipoFrequenciaAluno tipo)
+        private async Task<FrequenciaAluno> MapearFrequenciaAluno(string codigoAluno, string turmaId, string disciplinaId, long? periodoEscolarId, DateTime periodoInicio, DateTime periodoFim, int bimestre, int totalAusencias, int totalAulas, int totalCompensacoes, TipoFrequenciaAluno tipo)
         {
-            var frequenciaAluno = repositorioFrequenciaAlunoDisciplinaPeriodo.Obter(codigoAluno, disciplinaId, periodoEscolarId.Value, tipo, turmaId);
+            var frequenciaAluno = await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterAsync(codigoAluno, disciplinaId, periodoEscolarId.Value, tipo, turmaId);
             return frequenciaAluno == null ?
             new FrequenciaAluno
                          (
@@ -109,13 +109,13 @@ namespace SME.SGP.Aplicacao
         }
 
 
-        private void RegistraFrequenciaGeral(string turmaId, DateTime dataAtual, string codigoAluno, int totalAulasDaTurma)
+        private async Task RegistraFrequenciaGeral(string turmaId, DateTime dataAtual, string codigoAluno, int totalAulasDaTurma)
         {
-            var totalAusenciasGeralAluno = repositorioRegistroAusenciaAluno.ObterTotalAusenciasPorAlunoETurma(dataAtual, codigoAluno, string.Empty, turmaId);
+            var totalAusenciasGeralAluno = await repositorioRegistroAusenciaAluno.ObterTotalAusenciasPorAlunoETurmaAsync(dataAtual, codigoAluno, string.Empty, turmaId);
             if (totalAusenciasGeralAluno != null)
             {
-                var totalCompensacoesGeralAluno = repositorioCompensacaoAusenciaAluno.ObterTotalCompensacoesPorAlunoETurma(totalAusenciasGeralAluno.Bimestre, codigoAluno, string.Empty, turmaId);
-                var frequenciaGeralAluno = MapearFrequenciaAluno(codigoAluno,
+                var totalCompensacoesGeralAluno = await repositorioCompensacaoAusenciaAluno.ObterTotalCompensacoesPorAlunoETurmaAsync(totalAusenciasGeralAluno.Bimestre, codigoAluno, string.Empty, turmaId);
+                var frequenciaGeralAluno = await MapearFrequenciaAluno(codigoAluno,
                                                                     turmaId,
                                                                     string.Empty,
                                                                     totalAusenciasGeralAluno.PeriodoEscolarId,
@@ -128,17 +128,17 @@ namespace SME.SGP.Aplicacao
                                                                     TipoFrequenciaAluno.Geral);
 
                 if (frequenciaGeralAluno.PercentualFrequencia < 100)
-                    repositorioFrequenciaAlunoDisciplinaPeriodo.Salvar(frequenciaGeralAluno);
+                    await repositorioFrequenciaAlunoDisciplinaPeriodo.SalvarAsync(frequenciaGeralAluno);
                 else
                 if (frequenciaGeralAluno.Id > 0)
-                    repositorioFrequenciaAlunoDisciplinaPeriodo.Remover(frequenciaGeralAluno);
+                    await repositorioFrequenciaAlunoDisciplinaPeriodo.RemoverAsync(frequenciaGeralAluno);
             }
             else
             {
-                var frequenciaAluno = repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunoData(codigoAluno, dataAtual, TipoFrequenciaAluno.Geral);
+                var frequenciaAluno = await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunoDataAsync(codigoAluno, dataAtual, TipoFrequenciaAluno.Geral);
 
                 if (frequenciaAluno != null)
-                    repositorioFrequenciaAlunoDisciplinaPeriodo.Remover(frequenciaAluno);
+                    await repositorioFrequenciaAlunoDisciplinaPeriodo.RemoverAsync(frequenciaAluno);
             }
         }
 
