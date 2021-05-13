@@ -14,6 +14,8 @@ namespace SME.SGP.Dominio.Interfaces
         void Remover(long id);
 
         void Remover(T entidade);
+        
+        Task RemoverAsync(T entidade);
 
         long Salvar(T entidade);
 
