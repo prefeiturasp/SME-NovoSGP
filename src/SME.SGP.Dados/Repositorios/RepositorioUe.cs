@@ -335,6 +335,16 @@ namespace SME.SGP.Dados.Repositorios
             }, new { ids });
         }
 
+        public async Task<Ue> ObterUePorId(long id)
+        {
+            var query = @"select ue.* 
+                            from ue 
+                           inner join dre on dre.id = ue.dre_id
+                           where ue.id = @id";
+
+            return await contexto.QueryFirstAsync<Ue>(query);
+        }
+
         public async Task<TipoEscola> ObterTipoEscolaPorCodigo(string ueCodigo)
         {
             var query = "select tipo_escola from ue where ue_id = @ueCodigo";
