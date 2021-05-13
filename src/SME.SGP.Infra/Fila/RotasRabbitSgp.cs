@@ -2,7 +2,6 @@
 {
     public static class RotasRabbitSgp
     {
-        public const string FilaSgp = "sme.sgp.clients";
         public const string RotaExcluirAulaRecorrencia = "sgp.aula.excluir.recorrencia";
         public const string RotaInserirAulaRecorrencia = "sgp.aula.cadastrar.recorrencia";
         public const string RotaAlterarAulaRecorrencia = "sgp.aula.alterar.recorrencia";
