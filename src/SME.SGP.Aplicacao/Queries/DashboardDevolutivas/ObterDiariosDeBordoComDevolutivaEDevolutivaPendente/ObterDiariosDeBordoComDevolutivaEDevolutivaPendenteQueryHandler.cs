@@ -29,14 +29,14 @@ namespace SME.SGP.Aplicacao
             {
                 var diariosComDevolutiva = new GraficoDiariosDeBordoComDevolutivaEDevolutivaPendenteDto
                 {
-                    Descricao = GraficoDiariosDeBordoComDevolutivaEDevolutivaPendenteConstants.QuantidadeComDevolutiva,
+                    Descricao = DashboardDevolutivasConstants.QuantidadeComDevolutiva,
                     Quantidade = diarioDeBordoPorTurmaAno.DiariosComDevolutivas,
                     TurmaAno = ObterDescricaoTurmaAno(request.UeId.HasValue, diarioDeBordoPorTurmaAno.TurmaAno, request.Modalidade)
                 };
 
                 var diariosComDevolutivaPendente = new GraficoDiariosDeBordoComDevolutivaEDevolutivaPendenteDto
                 {
-                    Descricao = GraficoDiariosDeBordoComDevolutivaEDevolutivaPendenteConstants.QuantidadeComDevolutivaPendente,
+                    Descricao = DashboardDevolutivasConstants.QuantidadeComDevolutivaPendente,
                     Quantidade = diarioDeBordoPorTurmaAno.DiariosComDevolutivasPendentes,
                     TurmaAno = ObterDescricaoTurmaAno(request.UeId.HasValue, diarioDeBordoPorTurmaAno.TurmaAno, request.Modalidade)
                 };
@@ -51,6 +51,6 @@ namespace SME.SGP.Aplicacao
         private static string ObterDescricaoTurmaAno(bool possuiFiltroUe, string turmaAno, Modalidade modalidade)
             => possuiFiltroUe
             ? turmaAno
-            : $"{modalidade.ShortName()}-{turmaAno}";
+            : $"{modalidade.ShortName()} - {turmaAno}";
     }
 }

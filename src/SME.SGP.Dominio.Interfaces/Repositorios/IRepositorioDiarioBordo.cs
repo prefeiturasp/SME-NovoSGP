@@ -32,5 +32,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<PaginacaoResultadoDto<DiarioBordoResumoDto>> ObterListagemDiarioBordoPorPeriodoPaginado(long turmaId, long componenteCurricularCodigo, DateTime? periodoInicio, DateTime? periodoFim, Paginacao paginacao);
 
         Task<IEnumerable<QuantidadeDiariosDeBordoComDevolutivaEDevolutivaPendentePorTurmaAnoDto>> ObterDiariosDeBordoComDevolutivaEDevolutivaPendenteAsync(int anoLetivo, Modalidade modalidade, DateTime dataAula, long? dreId, long? ueId);
+
+        Task<IEnumerable<QuantidadeDiariosDeBordoComESemReflexoesEReplanejamentosPorTurmaAnoDto>> ObterDiariosDeBordoComESemReflexoesEReplanejamentosAsync(int anoLetivo, Modalidade modalidade, DateTime dataAula, long? dreId, long? ueId);
     }
 }
