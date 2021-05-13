@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(IncluirFilaExcluirPendenciasDiasLetivosInsuficientesCommand request, CancellationToken cancellationToken)
         {
-            return await mediator.Send(new PublicaFilaWorkerSgpCommand(RotasRabbit.RotaExecutaExclusaoPendenciasDiasLetivosInsuficientes,
+            return await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaExecutaExclusaoPendenciasDiasLetivosInsuficientes,
                                                        new ExcluirPendenciasDiasLetivosInsuficientesCommand(request.TipoCalendarioId, request.DreCodigo, request.UeCodigo),
                                                        Guid.NewGuid(),
                                                        request.Usuario));
