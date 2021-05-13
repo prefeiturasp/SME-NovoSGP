@@ -22,9 +22,9 @@ namespace SME.SGP.IoC
             services.AddSingleton(conexaoRabbit);
             services.AddSingleton(_channel);
 
-            _channel.ExchangeDeclare(RotasRabbit.ExchangeSgp, ExchangeType.Topic);
-            _channel.QueueDeclare(RotasRabbit.FilaSgp, false, false, false, null);
-            _channel.QueueBind(RotasRabbit.FilaSgp, RotasRabbit.ExchangeSgp, "*");
+            _channel.ExchangeDeclare(ExchangeRabbit.Sgp, ExchangeType.Topic);
+            _channel.QueueDeclare(RotasRabbitSgp.FilaSgp, false, false, false, null);
+            _channel.QueueBind(RotasRabbitSgp.FilaSgp, ExchangeRabbit.Sgp, "*");
         }
     }
 }

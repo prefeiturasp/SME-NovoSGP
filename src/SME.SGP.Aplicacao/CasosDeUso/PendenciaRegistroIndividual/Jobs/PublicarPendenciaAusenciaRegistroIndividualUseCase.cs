@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
         public async Task Executar()
         {
             SentrySdk.AddBreadcrumb($"Mensagem {nameof(PublicarPendenciaAusenciaRegistroIndividualUseCase)}", $"Rabbit - {nameof(PublicarPendenciaAusenciaRegistroIndividualUseCase)}");
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaPendenciaAusenciaRegistroIndividual, null, Guid.NewGuid(), null));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaPendenciaAusenciaRegistroIndividual, null, Guid.NewGuid(), null));
         }
     }
 }
