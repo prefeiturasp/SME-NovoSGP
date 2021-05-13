@@ -45,7 +45,7 @@ namespace SME.SGP.Aplicacao
                 foreach (var codigoAluno in request.Alunos)
                 {
                     await RegistraFrequenciaPorDisciplina(request.TurmaId, request.DisciplinaId, request.DataAula, totalAulasNaDisciplina, codigoAluno);
-                    RegistraFrequenciaGeral(request.TurmaId, request.DataAula, codigoAluno, totalAulasDaTurmaGeral);
+                    await RegistraFrequenciaGeral(request.TurmaId, request.DataAula, codigoAluno, totalAulasDaTurmaGeral);
                 }
             }
             finally
