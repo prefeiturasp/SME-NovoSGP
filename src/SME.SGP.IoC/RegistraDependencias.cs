@@ -378,6 +378,9 @@ namespace SME.SGP.IoC
 
             // Consolidação Frequeência Turma
             services.TryAddScoped<IRepositorioConsolidacaoFrequenciaTurma, RepositorioConsolidacaoFrequenciaTurma>();
+
+            // Consolidação Matrícula Turma
+            services.TryAddScoped<IRepositorioConsolidacaoMatriculaTurma, RepositorioConsolidacaoMatriculaTurma>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
