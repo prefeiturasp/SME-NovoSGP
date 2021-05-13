@@ -9,3 +9,4 @@ CREATE TABLE public.consolidacao_matricula_turma (
 );
 
 ALTER TABLE public.consolidacao_matricula_turma ADD CONSTRAINT consolidacao_matricula_turma_turma_fk FOREIGN KEY (turma_id) REFERENCES turma(id);
+CREATE INDEX consolidacao_matricula_turma_turma_idx ON public.consolidacao_matricula_turma USING btree (turma_id);
