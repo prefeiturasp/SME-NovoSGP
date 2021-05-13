@@ -6,6 +6,7 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -21,6 +22,11 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioNotificacaoAula repositorioNotificacaoAula;
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IUnitOfWork unitOfWork;
+
+        private const String MSG_NAO_PODE_CRIAR_AULAS_PARA_A_TURMA = "Você não pode criar aulas para essa Turma.";
+
+        private const String MSG_NAO_PODE_ALTERAR_NESTA_TURMA =
+            "Você não pode fazer alterações ou inclusões nesta turma, componente curricular e data.";
 
         public InserirAulaRecorrenteCommandHandler(IMediator mediator,
                                                    IServicoEol servicoEOL,
@@ -42,40 +48,59 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(InserirAulaRecorrenteCommand request, CancellationToken cancellationToken)
         {
             await ValidarComponentesProfessor(request, request.Usuario);
-
             await GerarRecorrencia(request, request.Usuario);
             return true;
         }
 
-        private async Task ValidarComponentesProfessor(InserirAulaRecorrenteCommand aulaRecorrente, Usuario usuarioLogado)
+        private async Task ValidarComponentesProfessor(InserirAulaRecorrenteCommand aulaRecorrente,
+            Usuario usuarioLogado)
         {
             if (usuarioLogado.EhProfessorCj())
             {
-                var componentesCurricularesDoProfessorCJ = await mediator.Send(new ObterComponentesCurricularesDoProfessorCJNaTurmaQuery(usuarioLogado.Login));
-                if (componentesCurricularesDoProfessorCJ == null || !componentesCurricularesDoProfessorCJ.Any(c => c.TurmaId == aulaRecorrente.CodigoTurma && c.DisciplinaId == aulaRecorrente.ComponenteCurricularId))
-                {
-                    throw new NegocioException("Você não pode criar aulas para essa Turma.");
-                }
+                await ValidaComponentesQuandoCj(aulaRecorrente, usuarioLogado);
+                return;
             }
-            else
-            {
-                var componentesCurricularesDoProfessor = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(aulaRecorrente.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual));
-                if (componentesCurricularesDoProfessor == null || !componentesCurricularesDoProfessor.Any(c => c.Codigo == aulaRecorrente.ComponenteCurricularId))
-                {
-                    throw new NegocioException("Você não pode criar aulas para essa Turma.");
-                }
 
-                var usuarioPodePersistirTurmaNaData = await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(aulaRecorrente.ComponenteCurricularId, aulaRecorrente.CodigoTurma, aulaRecorrente.DataAula, usuarioLogado));
-                if (!usuarioPodePersistirTurmaNaData)
-                    throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, componente curricular e data.");
+            var obterComponentesQuery = new ObterComponentesCurricularesDoProfessorNaTurmaQuery(
+                aulaRecorrente.CodigoTurma, 
+                usuarioLogado.Login,
+                usuarioLogado.PerfilAtual);
+            var componentes = await mediator.Send(obterComponentesQuery);
+            if (componentes == null || componentes.All(c => c.Codigo != aulaRecorrente.ComponenteCurricularId))
+            {
+                throw new NegocioException(MSG_NAO_PODE_CRIAR_AULAS_PARA_A_TURMA);
+            }
+
+            var obterUsuarioQuery = new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(
+                aulaRecorrente.ComponenteCurricularId,
+                aulaRecorrente.CodigoTurma, aulaRecorrente.DataAula, usuarioLogado);
+            var usuarioPodePersistirTurmaNaData = await mediator.Send(obterUsuarioQuery);
+            if (!usuarioPodePersistirTurmaNaData)
+                throw new NegocioException(MSG_NAO_PODE_ALTERAR_NESTA_TURMA);
+        }
+        
+        private async Task ValidaComponentesQuandoCj(InserirAulaRecorrenteCommand aulaRecorrente,
+            Usuario usuarioLogado)
+        {
+            var obterComponentesQuery = new ObterComponentesCurricularesDoProfessorCJNaTurmaQuery(usuarioLogado.Login);
+            var componentes = await mediator.Send(obterComponentesQuery);
+            bool FilterComponentesCompativeis(AtribuicaoCJ c) => 
+                c.TurmaId == aulaRecorrente.CodigoTurma && c.DisciplinaId == aulaRecorrente.ComponenteCurricularId;
+
+            if (componentes == null || !componentes.Any(FilterComponentesCompativeis))
+            {
+                throw new NegocioException(MSG_NAO_PODE_CRIAR_AULAS_PARA_A_TURMA);
             }
         }
-
+        
         private async Task GerarRecorrencia(InserirAulaRecorrenteCommand aulaRecorrente, Usuario usuario)
         {
             var inicioRecorrencia = aulaRecorrente.DataAula;
-            var fimRecorrencia = await mediator.Send(new ObterFimPeriodoRecorrenciaQuery(aulaRecorrente.TipoCalendarioId, aulaRecorrente.DataAula, aulaRecorrente.RecorrenciaAula));
-
+            var obterFimPeriodoQuery = new ObterFimPeriodoRecorrenciaQuery(
+                aulaRecorrente.TipoCalendarioId,
+                aulaRecorrente.DataAula, 
+                aulaRecorrente.RecorrenciaAula);
+            var fimRecorrencia = await mediator.Send(obterFimPeriodoQuery);
             await GerarRecorrenciaParaPeriodos(aulaRecorrente, inicioRecorrencia, fimRecorrencia, usuario);
         }
 
@@ -108,11 +133,12 @@ namespace SME.SGP.Aplicacao
 
             if (mensagensValidacao.Any())
             {
-                mensagemUsuario.Append($"<br><br>Não foi possível criar aulas nas seguintes datas:<br>");
-                foreach (var mensagemValidacao in mensagensValidacao.OrderBy(data => data))
-                {
-                    mensagemUsuario.Append($"<br /> {mensagemValidacao}");
-                }
+                mensagemUsuario
+                    .Append($"<br><br>Não foi possível criar aulas nas seguintes datas:<br>")
+                    .Append(mensagensValidacao
+                        .OrderBy(data => data)
+                        .Aggregate((mensagem, aggregation) => aggregation + $"<br /> {mensagem}")
+                    );
             }
 
             if (aulasQueDeramErro.Any())
@@ -141,7 +167,7 @@ namespace SME.SGP.Aplicacao
             try
             {
                 // Salva Notificação
-                servicoNotificacao.Salvar(notificacao);
+                await servicoNotificacao.SalvarAsync(notificacao);
 
                 // Gera vinculo Notificacao x Aula
                 await repositorioNotificacaoAula.Inserir(notificacao.Id, aula.Id);
@@ -260,22 +286,32 @@ namespace SME.SGP.Aplicacao
             {
                 return (datasValidas, Enumerable.Empty<string>());
             }
-            else
-            {
-                var datasAtribuicaoEOL = await servicoEOL.PodePersistirTurmaNasDatas(usuario.CodigoRf, turmaCodigo, datasValidas.Select(a => a.Date).ToArray(), componenteCurricularCodigo);
-                if (datasAtribuicaoEOL == null || !datasAtribuicaoEOL.Any())
-                    throw new NegocioException("Não foi possível validar datas para a atribuição do professor no EOL.");
-                else
-                {
-                    var datasAtribuicao = datasAtribuicaoEOL.Where(a => a.PodePersistir).Select(a => a.Data);
-                    var mensagensValidacao = new List<string>();
 
-                    datasValidas.Where(d => !datasAtribuicao.Any(a => a.Date == d)).ToList()
-                        .ForEach(dataInvalida => IncluirMensagemValidacao(dataInvalida, "Este professor não pode persistir nesta turma neste dia.", ref mensagensValidacao));
+            var datasAtribuicaoEOL = await servicoEOL.PodePersistirTurmaNasDatas(
+                usuario.CodigoRf, 
+                turmaCodigo, 
+                datasValidas.Select(a => a.Date).ToArray(), 
+                componenteCurricularCodigo);
+            
+            if (datasAtribuicaoEOL == null || !datasAtribuicaoEOL.Any())
+                throw new NegocioException("Não foi possível validar datas para a atribuição do professor no EOL.");
+            
+            var datasAtribuicao = datasAtribuicaoEOL
+                .Where(a => a.PodePersistir)
+                .Select(a => a.Data);
+            
+            var mensagensValidacao = new List<string>();
 
-                    return (datasAtribuicao, mensagensValidacao);
-                }
-            }
+            datasValidas
+                .Where(d => !datasAtribuicao.Any(a => a.Date == d))
+                .ToList()
+                .ForEach(dataInvalida => IncluirMensagemValidacao(
+                    dataInvalida, 
+                    "Este professor não pode persistir nesta turma neste dia.", 
+                    ref mensagensValidacao)
+                );
+
+            return (datasAtribuicao, mensagensValidacao);
         }
 
         private async Task<(Aula aula, IEnumerable<(DateTime dataAula, string mensagemDeErro)> aulasQueDeramErro)> GerarAulaDeRecorrenciaParaDias(InserirAulaRecorrenteCommand aulaRecorrente, Usuario usuario, IEnumerable<DateTime> datasParaPersistencia)
@@ -287,22 +323,23 @@ namespace SME.SGP.Aplicacao
             foreach (var dia in datasParaPersistencia)
             {
                 if (aula.Id == 0)
-                    await repositorioAula.SalvarAsync(aula);
-                else
                 {
-                    var aulaParaAdicionar = (Aula)aula.Clone();
-                    aulaParaAdicionar.DataAula = dia;
-                    aulaParaAdicionar.AdicionarAulaPai(aula);
+                    await repositorioAula.SalvarAsync(aula);
+                    continue;
+                }
+                    
+                var aulaParaAdicionar = (Aula)aula.Clone();
+                aulaParaAdicionar.DataAula = dia;
+                aulaParaAdicionar.AdicionarAulaPai(aula);
 
-                    try
-                    {
-                        await repositorioAula.SalvarAsync(aulaParaAdicionar);
-                    }
-                    catch (Exception ex)
-                    {
-                        servicoLog.Registrar(ex);
-                        aulasQueDeramErro.Add((dia, $"Erro Interno: {ex.Message}"));
-                    }
+                try
+                {
+                    await repositorioAula.SalvarAsync(aulaParaAdicionar);
+                }
+                catch (Exception ex)
+                {
+                    servicoLog.Registrar(ex);
+                    aulasQueDeramErro.Add((dia, $"Erro Interno: {ex.Message}"));
                 }
             }
 
