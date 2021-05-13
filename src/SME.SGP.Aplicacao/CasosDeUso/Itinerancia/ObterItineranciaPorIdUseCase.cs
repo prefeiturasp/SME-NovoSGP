@@ -39,6 +39,7 @@ namespace SME.SGP.Aplicacao
                 ObjetivosVisita = MontarObjetivosItinerancia(itinerancia),
                 Questoes = MontarQuestoesItinerancia(itinerancia, questoesBase),
                 TipoCalendarioId = await ObterTipoCalendario(itinerancia.EventoId),
+                DreId = itinerancia.DreId,
                 UeId = itinerancia.UeId,
                 EventoId = itinerancia.EventoId,
                 CriadoRF = itinerancia.CriadoRF,
