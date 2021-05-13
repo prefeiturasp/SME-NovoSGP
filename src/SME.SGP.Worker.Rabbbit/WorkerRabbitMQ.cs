@@ -51,12 +51,6 @@ namespace SME.SGP.Worker.RabbitMQ
             DeclararFilasSgp();
             DeclararFilasRelatorios();
 
-            canalRabbit.QueueDeclare(RotasRabbitSgp.FilaSgp, false, false, false, null);
-            canalRabbit.QueueBind(RotasRabbitSgp.FilaSgp, ExchangeRabbit.Sgp, "#", null);
-
-            canalRabbit.QueueDeclare(RotasRabbitRelatorios.WorkerRelatoriosSgp, false, false, false, null);
-            canalRabbit.QueueBind(RotasRabbitRelatorios.WorkerRelatoriosSgp, ExchangeRabbit.ServidorRelatorios, "#", null);
-
             comandos = new Dictionary<string, ComandoRabbit>();
             RegistrarUseCases();
         }
