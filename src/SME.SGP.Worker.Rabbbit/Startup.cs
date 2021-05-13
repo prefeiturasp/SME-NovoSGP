@@ -38,11 +38,6 @@ namespace SME.SGP.Worker.Rabbbit
             var provider = services.BuildServiceProvider();
             //services.AdicionarRedis(configuration, provider.GetService<IServicoLog>());
 
-            if (env.EnvironmentName != "teste-integrado")
-            {
-                services.AddRabbit();
-            }
-
             services.AddHostedService<WorkerRabbitMQ>();
 
 

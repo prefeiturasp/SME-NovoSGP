@@ -23,6 +23,7 @@ namespace SME.SGP.Dto
 
         [Required(ErrorMessage = "É necessário informar a descrição.")]
         [MinLength(5, ErrorMessage = "A descrição deve conter no mínimo 5 caracteres.")]
+        [MaxLength(1024, ErrorMessage = "A descrição deve conter no máximo 1024 caracteres.")]
         public string Descricao { get; set; }
 
         [Required(ErrorMessage = "O grupo do comunicado deve ser informado.")]
