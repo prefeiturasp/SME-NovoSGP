@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao.Commands.PendenciaRegistroIndividual.PublicarAtualiz
         {
             SentrySdk.AddBreadcrumb("Mensagem AtualizarPendenciaAusenciaRegistroIndividual", "Rabbit - AtualizarPendenciaAusenciaRegistroIndividual");
             var dto = new AtualizarPendenciaRegistroIndividualDto { TurmaId = request.TurmaId, CodigoAluno = request.CodigoAluno, DataRegistro = request.DataRegistro };
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaAtualizarPendenciaAusenciaRegistroIndividual, dto, Guid.NewGuid(), null));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaAtualizarPendenciaAusenciaRegistroIndividual, dto, Guid.NewGuid(), null));
         }
     }
 }

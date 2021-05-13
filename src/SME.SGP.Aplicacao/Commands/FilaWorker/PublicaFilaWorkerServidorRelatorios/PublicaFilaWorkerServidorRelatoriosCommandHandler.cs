@@ -23,8 +23,7 @@ namespace SME.SGP.Aplicacao
         {
             byte[] body = FormataBodyWorker(request);
 
-            rabbitChannel.QueueBind(RotasRabbit.WorkerRelatoriosSgp, RotasRabbit.ExchangeServidorRelatorios, RotasRabbit.RotaRelatoriosSolicitados);
-            rabbitChannel.BasicPublish(RotasRabbit.ExchangeServidorRelatorios, request.Fila, null, body);
+            rabbitChannel.BasicPublish(ExchangeRabbit.ServidorRelatorios, request.Fila, null, body);
 
             SentrySdk.CaptureMessage("3 - AdicionaFilaWorkerRelatorios");
 

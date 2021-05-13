@@ -56,7 +56,7 @@ namespace SME.SGP.Aplicacao
 
                 var comando = new CalcularFrequenciaPorTurmaCommand(request.Alunos, request.DataAula, request.TurmaId, request.DisciplinaId, request.Bimestre);
 
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaCalculoFrequenciaPorTurmaComponente, comando, Guid.NewGuid(), null));
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaCalculoFrequenciaPorTurmaComponente, comando, Guid.NewGuid(), null));
             }
 
             return true;
