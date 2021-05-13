@@ -5,6 +5,7 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -36,7 +37,8 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.Query<RegistroAusenciaAluno>(query, new { aulaId });
         }
 
-        public int ObterTotalAulasPorDisciplinaETurma(DateTime dataAula, string disciplinaId, string turmaId)
+        private String BuildQueryObterTotalAulasPorDisciplinaETurma(DateTime dataAula, string disciplinaId,
+            string turmaId)
         {
             StringBuilder query = new StringBuilder();
             query.AppendLine("select ");
@@ -57,12 +59,23 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and a.disciplina_id = @disciplinaId ");
 
             query.AppendLine("and a.turma_id = @turmaId ");
-
-            return database.Conexao.QueryFirstOrDefault<int>(query.ToString(), new { dataAula, disciplinaId, turmaId });
-
+            return query.ToString();
         }
 
-        public AusenciaPorDisciplinaDto ObterTotalAusenciasPorAlunoETurma(DateTime dataAula, string codigoAluno, string disciplinaId, string turmaId)
+        public int ObterTotalAulasPorDisciplinaETurma(DateTime dataAula, string disciplinaId, string turmaId)
+        {
+            String query = BuildQueryObterTotalAulasPorDisciplinaETurma(dataAula, disciplinaId, turmaId);
+            return database.Conexao.QueryFirstOrDefault<int>(query.ToString(), new { dataAula, disciplinaId, turmaId });
+        }
+        
+        public async Task<int> ObterTotalAulasPorDisciplinaETurmaAsync(DateTime dataAula, string disciplinaId, string turmaId)
+        {
+            String query = BuildQueryObterTotalAulasPorDisciplinaETurma(dataAula, disciplinaId, turmaId);
+            return await database.Conexao.QueryFirstOrDefaultAsync<int>(query.ToString(), new { dataAula, disciplinaId, turmaId });
+        }
+
+        private String BuildQueryObterTotalAusenciasPorAlunoETurma(DateTime dataAula, string codigoAluno,
+            string disciplinaId, string turmaId)
         {
             StringBuilder query = new StringBuilder();
             query.AppendLine("select");
@@ -97,8 +110,19 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("p.periodo_inicio,");
             query.AppendLine("p.periodo_fim,");
             query.AppendLine("p.bimestre");
+            return query.ToString();
+        }
 
+        public AusenciaPorDisciplinaDto ObterTotalAusenciasPorAlunoETurma(DateTime dataAula, string codigoAluno, string disciplinaId, string turmaId)
+        {
+            String query = BuildQueryObterTotalAusenciasPorAlunoETurma(dataAula, codigoAluno, disciplinaId, turmaId);
             return database.Conexao.QueryFirstOrDefault<AusenciaPorDisciplinaDto>(query.ToString(), new { dataAula, codigoAluno, disciplinaId, turmaId });
+        }
+        
+        public async Task<AusenciaPorDisciplinaDto> ObterTotalAusenciasPorAlunoETurmaAsync(DateTime dataAula, string codigoAluno, string disciplinaId, string turmaId)
+        {
+            String query = BuildQueryObterTotalAusenciasPorAlunoETurma(dataAula, codigoAluno, disciplinaId, turmaId);
+            return await database.Conexao.QueryFirstOrDefaultAsync<AusenciaPorDisciplinaDto>(query.ToString(), new { dataAula, codigoAluno, disciplinaId, turmaId });
         }
     }
 }

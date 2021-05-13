@@ -13,6 +13,7 @@ namespace SME.SGP.Aplicacao
         {
             this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
         }
+        
         public async Task<bool> Handle(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery request, CancellationToken cancellationToken)
         {
             return await servicoEOL.PodePersistirTurmaDisciplina(request.Usuario.CodigoRf, request.CodigoTurma, request.ComponenteCurricularId.ToString(), request.Data);

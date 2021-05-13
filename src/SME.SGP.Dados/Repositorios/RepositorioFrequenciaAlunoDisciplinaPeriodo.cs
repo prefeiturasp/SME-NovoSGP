@@ -15,7 +15,7 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public FrequenciaAluno Obter(string codigoAluno, string disciplinaId, long periodoEscolarId, TipoFrequenciaAluno tipoFrequencia, string turmaId)
+        private String BuildQueryObter(string codigoAluno, string disciplinaId, long periodoEscolarId, TipoFrequenciaAluno tipoFrequencia, string turmaId)
         {
             var query = @"select
 	                        *
@@ -27,7 +27,26 @@ namespace SME.SGP.Dados.Repositorios
 	                        and tipo = @tipoFrequencia
 	                        and periodo_escolar_id = @periodoEscolarId
                             and turma_id = @turmaId";
+            return query;
+        }
+
+        public FrequenciaAluno Obter(string codigoAluno, string disciplinaId, long periodoEscolarId, TipoFrequenciaAluno tipoFrequencia, string turmaId)
+        {
+            var query = BuildQueryObter(codigoAluno, disciplinaId, periodoEscolarId, tipoFrequencia, turmaId);
             return database.QueryFirstOrDefault<FrequenciaAluno>(query, new
+            {
+                codigoAluno,
+                disciplinaId,
+                periodoEscolarId,
+                tipoFrequencia,
+                turmaId
+            });
+        }
+        
+        public async Task<FrequenciaAluno> ObterAsync(string codigoAluno, string disciplinaId, long periodoEscolarId, TipoFrequenciaAluno tipoFrequencia, string turmaId)
+        {
+            var query = BuildQueryObter(codigoAluno, disciplinaId, periodoEscolarId, tipoFrequencia, turmaId);
+            return await database.QueryFirstOrDefaultAsync<FrequenciaAluno>(query, new
             {
                 codigoAluno,
                 disciplinaId,
@@ -144,7 +163,8 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
-        public FrequenciaAluno ObterPorAlunoData(string codigoAluno, DateTime dataAtual, TipoFrequenciaAluno tipoFrequencia, string disciplinaId = "", string codigoTurma = "")
+        private String BuildQueryObterPorAlunoData(string codigoAluno, DateTime dataAtual,
+            TipoFrequenciaAluno tipoFrequencia, string disciplinaId = "", string codigoTurma = "")
         {
             var query = new StringBuilder(@"select fa.*
                         from frequencia_aluno fa
@@ -160,8 +180,31 @@ namespace SME.SGP.Dados.Repositorios
 
             if (!string.IsNullOrEmpty(disciplinaId))
                 query.AppendLine("and disciplina_id = @disciplinaId");
+            
+            return query.ToString();
+        }
+
+        public FrequenciaAluno ObterPorAlunoData(string codigoAluno, DateTime dataAtual, TipoFrequenciaAluno tipoFrequencia, string disciplinaId = "", string codigoTurma = "")
+        {
+            String query =
+                BuildQueryObterPorAlunoData(codigoAluno, dataAtual, tipoFrequencia, disciplinaId, codigoTurma);
 
             return database.QueryFirstOrDefault<FrequenciaAluno>(query.ToString(), new
+            {
+                codigoAluno,
+                dataAtual,
+                tipoFrequencia,
+                disciplinaId,
+                codigoTurma
+            });
+        }
+        
+        public async Task<FrequenciaAluno> ObterPorAlunoDataAsync(string codigoAluno, DateTime dataAtual, TipoFrequenciaAluno tipoFrequencia, string disciplinaId = "", string codigoTurma = "")
+        {
+            String query =
+                BuildQueryObterPorAlunoData(codigoAluno, dataAtual, tipoFrequencia, disciplinaId, codigoTurma);
+
+            return await database.QueryFirstOrDefaultAsync<FrequenciaAluno>(query.ToString(), new
             {
                 codigoAluno,
                 dataAtual,
