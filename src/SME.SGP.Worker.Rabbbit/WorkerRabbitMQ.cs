@@ -367,10 +367,14 @@ namespace SME.SGP.Worker.RabbitMQ
             canalRabbit.BasicConsume(RotasRabbit.SincronizaEstruturaInstitucionalCicloTratar, false, consumer);
             canalRabbit.BasicConsume(RotasRabbit.SincronizaEstruturaInstitucionalTurmaTratar, false, consumer);
             canalRabbit.BasicConsume(RotasRabbit.SincronizaEstruturaInstitucionalTurmasSync, false, consumer);
-            canalRabbit.BasicConsume(RotasRabbit.ConsolidarTurmaConselhoClasseSync, false, consumer);
             canalRabbit.BasicConsume(RotasRabbit.ConsolidarFrequenciasTurmasNoAno, false, consumer);
             canalRabbit.BasicConsume(RotasRabbit.ConsolidarFrequenciasPorTurma, false, consumer);
+            canalRabbit.BasicConsume(RotasRabbit.ConsolidarGeralSync, false, consumer);
+            canalRabbit.BasicConsume(RotasRabbit.ConsolidarTurmaSync, false, consumer);
+            canalRabbit.BasicConsume(RotasRabbit.ConsolidarTurmaConselhoClasseSync, false, consumer);
             canalRabbit.BasicConsume(RotasRabbit.ConsolidarTurmaConselhoClasseAlunoTratar, false, consumer);
+            canalRabbit.BasicConsume(RotasRabbit.ConsolidarTurmaFechamentoSync, false, consumer);
+            canalRabbit.BasicConsume(RotasRabbit.ConsolidarTurmaFechamentoComponenteTratar, false, consumer);
 
             return Task.CompletedTask;
         }
