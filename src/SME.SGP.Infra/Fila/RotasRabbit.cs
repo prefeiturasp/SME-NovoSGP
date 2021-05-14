@@ -98,5 +98,7 @@
         public static string ConsolidarFrequenciasTurmasNoAno => "sgp.frequencia.turma.ano.consolidar";
         public static string ConsolidarFrequenciasPorTurma => "sgp.frequencia.turma.consolidar";
 
+        public static string ConsolidacaoMatriculasTurmasCarregar => "sgp.matricula.turma.carregar";
+
     }
 }
