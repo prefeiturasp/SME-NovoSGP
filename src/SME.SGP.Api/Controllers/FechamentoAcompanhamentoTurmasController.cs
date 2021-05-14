@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using SME.SGP.Aplicacao;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using SME.SGP.Api.Filtros;
+using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
-using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -11,13 +12,13 @@ namespace SME.SGP.Api
 {
     [ApiController]
     [Route("api/v1/fechamentos/acompanhamentos")]
-    //[Authorize("Bearer")]
+    [Authorize("Bearer")]
     public class FechamentoAcompanhamentoTurmasController : ControllerBase
     {
         [HttpGet("turmas")]
         [ProducesResponseType(typeof(PaginacaoResultadoDto<TurmaAcompanhamentoFechamentoRetornoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        //[Permissao(Permissao.RI_C, Policy = "Bearer")]
+        [Permissao(Permissao.ACF, Policy = "Bearer")]
         public async Task<IActionResult> ListaTurmas([FromQuery] FiltroAcompanhamentoFechamentoTurmasDto filtro, [FromServices] IObterTurmasFechamentoAcompanhamentoUseCase useCase)
         {
             return Ok(await useCase.Executar(filtro));
@@ -26,7 +27,7 @@ namespace SME.SGP.Api
         [HttpGet("turmas/{turmaId}/fechamentos/bimestres/{bimestre}")]
         [ProducesResponseType(typeof(IEnumerable<StatusTotalFechamentoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        //[Permissao(Permissao.RI_C, Policy = "Bearer")]
+        [Permissao(Permissao.ACF, Policy = "Bearer")]
         public async Task<IActionResult> ListaTotalStatusFechamentos(long turmaId, int bimestre, [FromServices] IObterFechamentoConsolidadoPorTurmaBimestreUseCase useCase)
         {
             var listaStatus = await useCase.Executar(new FiltroFechamentoConsolidadoTurmaBimestreDto(turmaId, bimestre));
@@ -36,7 +37,7 @@ namespace SME.SGP.Api
         [HttpGet("turmas/{turmaId}/conselho-classe/bimestres/{bimestre}")]
         [ProducesResponseType(typeof(IEnumerable<StatusTotalFechamentoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        //[Permissao(Permissao.RI_C, Policy = "Bearer")]
+        [Permissao(Permissao.ACF, Policy = "Bearer")]
         public async Task<IActionResult> ListaTotalStatusConselhosClasse(long turmaId, int bimestre, [FromServices] IObterConselhoClasseConsolidadoPorTurmaBimestreUseCase useCase)
         {
             var listaStatus = await useCase.Executar(new FiltroConselhoClasseConsolidadoTurmaBimestreDto(turmaId, bimestre));
@@ -47,14 +48,14 @@ namespace SME.SGP.Api
 
         //TODO: REMOVER ANTES DA STORY IR PARA DEV!
         [HttpPost]
-        public async Task<IActionResult> TestarFila([FromServices] IExecutarConsolidacaoTurmaConselhoClasseUseCase executarConsolidacaoTurmaConselhoClasseUseCase)
+        public async Task<IActionResult> TestarFila([FromServices] IExecutarConsolidacaoTurmaGeralUseCase executarConsolidacaoTurmaGeralUseCase)
         {
 
             var obj = new ConsolidacaoTurmaDto() { Bimestre = 1, TurmaId = 625342 };
             var mensagem = JsonConvert.SerializeObject(obj); 
             var msgRabbit = new MensagemRabbit(mensagem);
             
-            await executarConsolidacaoTurmaConselhoClasseUseCase.Executar(msgRabbit);
+            await executarConsolidacaoTurmaGeralUseCase.Executar(msgRabbit);
 
             return Ok();
         }
