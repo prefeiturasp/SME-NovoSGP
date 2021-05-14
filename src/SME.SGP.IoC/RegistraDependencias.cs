@@ -499,7 +499,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterMotivosAusenciaUseCase, ObterMotivosAusenciaUseCase>();
             services.TryAddScoped<IObterFechamentoConsolidadoPorTurmaBimestreUseCase, ObterFechamentoConsolidadoPorTurmaBimestreUseCase>();
             services.TryAddScoped<IObterConselhoClasseConsolidadoPorTurmaBimestreUseCase, ObterConselhoClasseConsolidadoPorTurmaBimestreUseCase>();
-            services.TryAddScoped<ISalvarFechamentoConsolidadoPorTurmaBimestreComponenteUseCase, SalvarFechamentoConsolidadoPorTurmaBimestreComponenteUseCase>();
+            services.TryAddScoped<IExecutarFechamentoConsolidadoPorTurmaBimestreComponenteUseCase, ExecutarFechamentoConsolidadoPorTurmaBimestreComponenteUseCase>();
+            services.TryAddScoped<IExecutarConsolidacaoTurmaGeralUseCase, ExecutarConsolidacaoTurmaGeralUseCase>();
 
             services.TryAddScoped<IObterDashBoardUseCase, ObterDashBoardUseCase>();
             services.TryAddScoped<IInserirDevolutivaUseCase, InserirDevolutivaUseCase>();
