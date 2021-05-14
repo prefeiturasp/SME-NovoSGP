@@ -77,7 +77,7 @@ namespace SME.SGP.Aplicacao
 
                     var mensagemParaPublicar = JsonConvert.SerializeObject(mensagemConsolidacaoConselhoClasseAluno);
 
-                    var publicarFilaConsolidacaoConselhoClasseAluno = await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.ConsolidaTurmaConselhoClasseAlunoTratar, mensagemParaPublicar, mensagemRabbit.CodigoCorrelacao, null, fila: RotasRabbit.ConsolidaTurmaConselhoClasseAlunoTratar));
+                    var publicarFilaConsolidacaoConselhoClasseAluno = await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.ConsolidarTurmaConselhoClasseAlunoTratar, mensagemParaPublicar, mensagemRabbit.CodigoCorrelacao, null, fila: RotasRabbit.ConsolidarTurmaConselhoClasseAlunoTratar));
                     if (!publicarFilaConsolidacaoConselhoClasseAluno)
                     {
                         var mensagem = $"Não foi possível inserir o aluno de codígo : {aluno.CodigoAluno} na fila de consolidação do conselho de classe.";

@@ -143,7 +143,7 @@ namespace SME.SGP.Dominio.Servicos
                 }
                 unitOfWork.PersistirTransacao();
 
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.ConsolidaTurmaFechamentoSync, mensagemParaPublicar, Guid.NewGuid(), null, fila: RotasRabbit.ConsolidaTurmaFechamentoSync));
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.ConsolidarTurmaFechamentoSync, mensagemParaPublicar, Guid.NewGuid(), null, fila: RotasRabbit.ConsolidarTurmaFechamentoSync));
             }
             catch (Exception e)
             {
@@ -224,7 +224,7 @@ namespace SME.SGP.Dominio.Servicos
 
                     unitOfWork.PersistirTransacao();
 
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.ConsolidaTurmaConselhoClasseSync, mensagemParaPublicar, Guid.NewGuid(), null, fila: RotasRabbit.ConsolidaTurmaConselhoClasseSync));
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.ConsolidarTurmaConselhoClasseSync, mensagemParaPublicar, Guid.NewGuid(), null, fila: RotasRabbit.ConsolidarTurmaConselhoClasseSync));
                 }
             }
             catch (Exception e)
@@ -438,7 +438,7 @@ namespace SME.SGP.Dominio.Servicos
 
             var consolidacaoTurma = new ConsolidacaoTurmaDto(turma.Id, conselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolar.Bimestre);
             var mensagemParaPublicar = JsonConvert.SerializeObject(consolidacaoTurma);
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.ConsolidaTurmaConselhoClasseSync, mensagemParaPublicar, Guid.NewGuid(), null, fila: RotasRabbit.ConsolidaTurmaConselhoClasseSync));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.ConsolidarTurmaConselhoClasseSync, mensagemParaPublicar, Guid.NewGuid(), null, fila: RotasRabbit.ConsolidarTurmaConselhoClasseSync));
 
             return new ParecerConclusivoDto()
             {
