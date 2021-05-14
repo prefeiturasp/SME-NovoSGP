@@ -99,7 +99,7 @@ namespace SME.SGP.Aplicacao
 
             var consolidacaoTurma = new ConsolidacaoTurmaDto(turma.Id, 0);
             var mensagemParaPublicar = JsonConvert.SerializeObject(consolidacaoTurma);
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.ConsolidaTurmaFechamentoSync, mensagemParaPublicar, Guid.NewGuid(), null, fila: RotasRabbit.ConsolidaTurmaFechamentoSync));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.ConsolidarTurmaFechamentoSync, mensagemParaPublicar, Guid.NewGuid(), null, fila: RotasRabbit.ConsolidarTurmaFechamentoSync));
 
             return fechamentoTurmaDisciplina;
         }

@@ -44,7 +44,7 @@ namespace SME.SGP.Aplicacao
         private async Task PublicaNaFila(ConsolidacaoTurmaDto mensagem, int bimestre, Guid codigoCorrelacao)
         {
             mensagem.Bimestre = bimestre;
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.ConsolidaTurmaSync, mensagem, codigoCorrelacao, null, fila: RotasRabbit.ConsolidaTurmaSync));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.ConsolidarTurmaSync, mensagem, codigoCorrelacao, null, fila: RotasRabbit.ConsolidarTurmaSync));
         }
     }
 }

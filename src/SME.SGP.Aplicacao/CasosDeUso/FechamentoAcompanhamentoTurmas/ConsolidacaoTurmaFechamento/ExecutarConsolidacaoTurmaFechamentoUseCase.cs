@@ -39,7 +39,7 @@ namespace SME.SGP.Aplicacao
 
                 var mensagem = JsonConvert.SerializeObject(new FechamentoConsolidacaoTurmaComponenteBimestreDto(consolidacaoTurma.TurmaId, consolidacaoTurma.Bimestre, disciplina));
 
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.ConsolidaTurmaFechamentoTratar, mensagem, mensagemRabbit.CodigoCorrelacao, null, fila: RotasRabbit.ConsolidaTurmaFechamentoTratar));
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.ConsolidarTurmaFechamentoComponenteTratar, mensagem, mensagemRabbit.CodigoCorrelacao, null, fila: RotasRabbit.ConsolidarTurmaFechamentoComponenteTratar));
 
             }
             return true;

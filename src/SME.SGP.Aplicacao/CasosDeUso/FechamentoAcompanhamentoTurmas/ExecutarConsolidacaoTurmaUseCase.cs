@@ -33,8 +33,8 @@ namespace SME.SGP.Aplicacao
             }
 
             var mensagemParaPublicar = JsonConvert.SerializeObject(consolidacaoTurma);
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.ConsolidaTurmaConselhoClasseSync, mensagemParaPublicar, mensagemRabbit.CodigoCorrelacao, null, fila: RotasRabbit.ConsolidaTurmaConselhoClasseSync));
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.ConsolidaTurmaFechamentoSync, mensagemParaPublicar, mensagemRabbit.CodigoCorrelacao, null, fila: RotasRabbit.ConsolidaTurmaFechamentoSync));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.ConsolidarTurmaConselhoClasseSync, mensagemParaPublicar, mensagemRabbit.CodigoCorrelacao, null, fila: RotasRabbit.ConsolidarTurmaConselhoClasseSync));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.ConsolidarTurmaFechamentoSync, mensagemParaPublicar, mensagemRabbit.CodigoCorrelacao, null, fila: RotasRabbit.ConsolidarTurmaFechamentoSync));
 
             return true;
         }
