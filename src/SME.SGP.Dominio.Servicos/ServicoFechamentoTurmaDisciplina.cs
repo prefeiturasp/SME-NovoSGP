@@ -297,6 +297,10 @@ namespace SME.SGP.Dominio.Servicos
 
                 await mediator.Send(new PublicaFilaExcluirPendenciaAusenciaFechamentoCommand(fechamentoTurmaDisciplina.DisciplinaId, periodoEscolar.Id, turmaFechamento.Id, usuarioLogado));
 
+                var consolidacaoTurma = new ConsolidacaoTurmaDto(turmaFechamento.Id, periodoEscolar.Bimestre);
+                var mensagemParaPublicar = JsonConvert.SerializeObject(consolidacaoTurma);
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.ConsolidaTurmaFechamentoSync, mensagemParaPublicar, Guid.NewGuid(), null, fila: RotasRabbit.ConsolidaTurmaFechamentoSync));
+
                 return (AuditoriaPersistenciaDto)fechamentoTurmaDisciplina;
             }
             catch (Exception e)
