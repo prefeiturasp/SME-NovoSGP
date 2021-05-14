@@ -52,7 +52,7 @@ namespace SME.SGP.Aplicacao
                                 var comando = new CriarAulasInfantilAutomaticamenteCommand(diasLetivosENaoLetivos.ToList(), lista, tipoCalendarioId, diasForaDoPeriodoEscolar);
 
                                 SentrySdk.CaptureMessage($"{DateTime.Now:dd/MM/yyyy HH:mm:ss} - Iniciando Rotina de manutenção de aulas do Infantil");
-                                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaCriarAulasInfatilAutomaticamente, comando, Guid.NewGuid(), null));
+                                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaCriarAulasInfatilAutomaticamente, comando, Guid.NewGuid(), null));
                             }
                         }
                     }
