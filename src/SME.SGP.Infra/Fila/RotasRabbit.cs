@@ -98,11 +98,11 @@
         public static string ConsolidarFrequenciasTurmasNoAno => "sgp.frequencia.turma.ano.consolidar";
         public static string ConsolidarFrequenciasPorTurma => "sgp.frequencia.turma.consolidar";
 
-        public static string ConsolidaTurmaSync => "sgp.consolicacao.turma.sync";
-        public static string ConsolidaTurmaFechamentoSync => "sgp.consolicacao.turma.fechamento.sync";
-        public static string ConsolidaTurmaFechamentoTratar => "sgp.consolicacao.turma.fechamento.tratar";
-        public static string ConsolidaTurmaConselhoClasseSync => "sgp.consolicacao.turma.conselhoclasse.sync";
-        public static string ConsolidaTurmaConselhoClasseAlunoTratar => "sgp.consolicacao.turma.conselhoclasse.aluno.tratar";
+        public static string ConsolidarTurmaSync => "sgp.consolicacao.turma.sync";
+        public static string ConsolidarTurmaFechamentoSync => "sgp.consolicacao.turma.fechamento.componente.sync";
+        public static string ConsolidarTurmaFechamentoComponenteTratar => "sgp.consolicacao.turma.fechamento.tratar";
+        public static string ConsolidarTurmaConselhoClasseSync => "sgp.consolicacao.turma.conselhoclasse.sync";
+        public static string ConsolidarTurmaConselhoClasseAlunoTratar => "sgp.consolicacao.turma.conselhoclasse.aluno.tratar";
 
     }
 }

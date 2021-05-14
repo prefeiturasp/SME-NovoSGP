@@ -206,7 +206,7 @@ namespace SME.SGP.Dominio.Servicos
 
             var consolidacaoTurma = new ConsolidacaoTurmaDto(turma.Id, periodoEscolar.Bimestre);
             var mensagemParaPublicar = JsonConvert.SerializeObject(consolidacaoTurma);
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.ConsolidaTurmaFechamentoSync, mensagemParaPublicar, Guid.NewGuid(), null, fila: RotasRabbit.ConsolidaTurmaFechamentoSync));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.ConsolidarTurmaFechamentoSync, mensagemParaPublicar, Guid.NewGuid(), null, fila: RotasRabbit.ConsolidarTurmaFechamentoSync));
         }
 
         public async Task<AuditoriaPersistenciaDto> Salvar(long id, FechamentoTurmaDisciplinaDto entidadeDto, bool componenteSemNota = false)
@@ -296,6 +296,10 @@ namespace SME.SGP.Dominio.Servicos
                 Cliente.Executar<IServicoFechamentoTurmaDisciplina>(c => c.GerarPendenciasFechamento(fechamentoTurmaDisciplina.DisciplinaId, turmaFechamento, periodoEscolar, fechamentoTurmaDisciplina, usuarioLogado, componenteSemNota, disciplinaEOL.RegistraFrequencia));
 
                 await mediator.Send(new PublicaFilaExcluirPendenciaAusenciaFechamentoCommand(fechamentoTurmaDisciplina.DisciplinaId, periodoEscolar.Id, turmaFechamento.Id, usuarioLogado));
+
+                var consolidacaoTurma = new ConsolidacaoTurmaDto(turmaFechamento.Id, periodoEscolar.Bimestre);
+                var mensagemParaPublicar = JsonConvert.SerializeObject(consolidacaoTurma);
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.ConsolidarTurmaFechamentoSync, mensagemParaPublicar, Guid.NewGuid(), null, fila: RotasRabbit.ConsolidarTurmaFechamentoSync));
 
                 return (AuditoriaPersistenciaDto)fechamentoTurmaDisciplina;
             }
