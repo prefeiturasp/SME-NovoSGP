@@ -436,6 +436,10 @@ namespace SME.SGP.Dominio.Servicos
             conselhoClasseAluno.ConselhoClasseParecerId = parecerConclusivo.Id;
             await repositorioConselhoClasseAluno.SalvarAsync(conselhoClasseAluno);
 
+            var consolidacaoTurma = new ConsolidacaoTurmaDto(turma.Id, conselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolar.Bimestre);
+            var mensagemParaPublicar = JsonConvert.SerializeObject(consolidacaoTurma);
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.ConsolidaTurmaConselhoClasseSync, mensagemParaPublicar, Guid.NewGuid(), null, fila: RotasRabbit.ConsolidaTurmaConselhoClasseSync));
+
             return new ParecerConclusivoDto()
             {
                 Id = parecerConclusivo.Id,
