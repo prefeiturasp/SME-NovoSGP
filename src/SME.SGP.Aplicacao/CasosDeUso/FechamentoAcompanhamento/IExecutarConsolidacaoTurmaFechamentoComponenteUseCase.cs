@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ExecutarFechamentoConsolidadoPorTurmaBimestreComponenteUseCase : AbstractUseCase, IExecutarFechamentoConsolidadoPorTurmaBimestreComponenteUseCase
+    public class ExecutarConsolidacaoTurmaFechamentoComponenteUseCase : AbstractUseCase, IExecutarConsolidacaoTurmaFechamentoComponenteUseCase
     {
-        public ExecutarFechamentoConsolidadoPorTurmaBimestreComponenteUseCase(IMediator mediator) : base(mediator)
+        public ExecutarConsolidacaoTurmaFechamentoComponenteUseCase(IMediator mediator) : base(mediator)
         {
         }
 
