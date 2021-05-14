@@ -254,19 +254,12 @@ namespace SME.SGP.Worker.RabbitMQ
             };
 
             RegistrarConsumerSgp(consumer);
-            RegistrarConsumerRelatorios(consumer);
             return Task.CompletedTask;
         }
 
         private void RegistrarConsumerSgp(EventingBasicConsumer consumer)
         {
             foreach (var fila in typeof(RotasRabbitSgp).ObterConstantesPublicas<string>())
-                canalRabbit.BasicConsume(fila, false, consumer);
-        }
-
-        private void RegistrarConsumerRelatorios(EventingBasicConsumer consumer)
-        {
-            foreach (var fila in typeof(RotasRabbitRelatorios).ObterConstantesPublicas<string>())
                 canalRabbit.BasicConsume(fila, false, consumer);
         }
     }
