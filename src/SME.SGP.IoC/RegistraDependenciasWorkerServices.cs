@@ -46,6 +46,23 @@ namespace SME.SGP.IoC
             services.AddMediatR(assembly);
             services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidacoesPipeline<,>));
         }
+        private static void RegistrarRabbit(IServiceCollection services)
+        {
+            var factory = new ConnectionFactory
+            {
+                HostName = Environment.GetEnvironmentVariable("ConfiguracaoRabbit__HostName"),
+                UserName = Environment.GetEnvironmentVariable("ConfiguracaoRabbit__UserName"),
+                Password = Environment.GetEnvironmentVariable("ConfiguracaoRabbit__Password"),
+                VirtualHost = Environment.GetEnvironmentVariable("ConfiguracaoRabbit__Virtualhost")
+            };
+
+            var conexaoRabbit = factory.CreateConnection();
+            IModel canalRabbit = conexaoRabbit.CreateModel();
+            services.AddSingleton(conexaoRabbit);
+            services.AddSingleton(canalRabbit);
+
+            canalRabbit.ExchangeDeclare(ExchangeRabbit.Sgp, ExchangeType.Topic);
+        }
 
         private static void RegistrarComandos(IServiceCollection services)
         {
