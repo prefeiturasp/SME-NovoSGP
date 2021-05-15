@@ -44,6 +44,21 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { aulaId });
         }
 
+        public async Task<IEnumerable<AlunoComponenteCurricularDto>> ObterAlunosAusentesPorTurmaEPeriodo(string turmaCodigo, DateTime dataInicio, DateTime dataFim)
+        {
+            var query = @"select distinct a.disciplina_id as ComponenteCurricularId, raa.codigo_aluno as AlunoCodigo
+                        from registro_ausencia_aluno raa 
+                       inner join registro_frequencia rf on rf.id = raa.registro_frequencia_id 
+                       inner join aula a on a.id = rf.aula_id 
+                       where not a.excluido 
+                         and not rf.excluido 
+                         and not raa.excluido 
+                         and a.turma_id = @turmaCodigo
+                         and a.data_aula between @dataInicio and @dataFim ";
+
+            return await database.Conexao.QueryAsync<AlunoComponenteCurricularDto>(query, new { turmaCodigo, dataInicio, dataFim });
+        }
+
         public IEnumerable<AlunosFaltososDto> ObterAlunosFaltosos(DateTime dataReferencia, long tipoCalendarioId)
         {
             var query = new StringBuilder();
