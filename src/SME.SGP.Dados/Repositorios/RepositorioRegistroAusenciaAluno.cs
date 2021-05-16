@@ -98,7 +98,9 @@ namespace SME.SGP.Dados.Repositorios
             if (!string.IsNullOrWhiteSpace(disciplinaId))
                 query.AppendLine("and a.disciplina_id = @disciplinaId ");
 
+            //TODO: filtro da turma?
             query.AppendLine("and a.turma_id = @turmaId ");
+
             query.AppendLine("and p.periodo_inicio <= @dataAula ");
             query.AppendLine("and p.periodo_fim >= @dataAula ");
             query.AppendLine("and a.data_aula >= p.periodo_inicio");
@@ -123,6 +125,47 @@ namespace SME.SGP.Dados.Repositorios
         {
             String query = BuildQueryObterTotalAusenciasPorAlunoETurma(dataAula, codigoAluno, disciplinaId, turmaId);
             return await database.Conexao.QueryFirstOrDefaultAsync<AusenciaPorDisciplinaDto>(query.ToString(), new { dataAula, codigoAluno, disciplinaId, turmaId });
+        }
+
+        public async Task<IEnumerable<AusenciaPorDisciplinaAlunoDto>> ObterTotalAusenciasPorAlunosETurmaAsync(DateTime dataAula, IEnumerable<string> codigoAlunos, string turmaId)
+        {
+            var query = @"           
+                    select
+	                count(ra.id) as TotalAusencias,
+	                p.id as PeriodoEscolarId,
+	                p.periodo_inicio as PeriodoInicio,
+	                p.periodo_fim as PeriodoFim,
+	                p.bimestre,
+                    ra.codigo_aluno as AlunoCodigo,
+                    a.disciplina_id as ComponenteCurricularId                    
+                from
+	                registro_ausencia_aluno ra
+                inner join registro_frequencia rf on
+	                ra.registro_frequencia_id = rf.id
+                inner join aula a on
+	                rf.aula_id = a.id
+                inner join periodo_escolar p on
+	                a.tipo_calendario_id = p.tipo_calendario_id
+                where
+	                not ra.excluido
+	                and not a.excluido
+	                and ra.codigo_aluno = any(@codigoAlunos)	                
+	                and a.turma_id = @turmaId
+	                and p.periodo_inicio <= @dataAula
+	                and p.periodo_fim >= @dataAula
+	                and a.data_aula >= p.periodo_inicio
+	                and a.data_aula <= p.periodo_fim
+	                and not ra.excluido
+	                and not a.excluido
+                group by
+	                p.id,
+	                p.periodo_inicio,
+	                p.periodo_fim,
+	                p.bimestre,
+                    ra.codigo_aluno,
+                    a.disciplina_id";
+
+            return await database.Conexao.QueryAsync<AusenciaPorDisciplinaAlunoDto>(query, new { dataAula, codigoAlunos, turmaId });
         }
     }
 }
