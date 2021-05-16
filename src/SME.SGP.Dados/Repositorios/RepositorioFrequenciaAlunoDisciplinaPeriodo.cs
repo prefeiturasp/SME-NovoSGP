@@ -277,8 +277,7 @@ namespace SME.SGP.Dados.Repositorios
             {
                 foreach (var frequencia in entidades)
                 {
-                    writer.StartRow();
-                    //writer.Write(frequencia.Id, NpgsqlDbType.Bigint);
+                    writer.StartRow();                    
                     writer.Write(frequencia.CodigoAluno, NpgsqlDbType.Varchar);
                     writer.Write((int)frequencia.Tipo, NpgsqlDbType.Integer);
                     writer.Write(frequencia.DisciplinaId, NpgsqlDbType.Varchar);
