@@ -34,10 +34,9 @@ namespace SME.SGP.Worker.Rabbbit
             services.AddHttpContextAccessor();
             RegistraDependencias.Registrar(services);
             RegistrarHttpClients(services, configuration);
-            services.AddApplicationInsightsTelemetry(configuration);
-            var provider = services.BuildServiceProvider();
-            //services.AdicionarRedis(configuration, provider.GetService<IServicoLog>());
-
+            services.AddApplicationInsightsTelemetry(configuration);            
+            
+            services.AddRabbit();
             services.AddHostedService<WorkerRabbitMQ>();
 
 
