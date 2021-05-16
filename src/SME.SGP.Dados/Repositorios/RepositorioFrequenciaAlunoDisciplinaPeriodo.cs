@@ -1,4 +1,6 @@
 ﻿using Dapper;
+using Npgsql;
+using NpgsqlTypes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -42,7 +44,7 @@ namespace SME.SGP.Dados.Repositorios
                 turmaId
             });
         }
-        
+
         public async Task<FrequenciaAluno> ObterAsync(string codigoAluno, string disciplinaId, long periodoEscolarId, TipoFrequenciaAluno tipoFrequencia, string turmaId)
         {
             var query = BuildQueryObter(codigoAluno, disciplinaId, periodoEscolarId, tipoFrequencia, turmaId);
@@ -180,7 +182,7 @@ namespace SME.SGP.Dados.Repositorios
 
             if (!string.IsNullOrEmpty(disciplinaId))
                 query.AppendLine("and disciplina_id = @disciplinaId");
-            
+
             return query.ToString();
         }
 
@@ -198,7 +200,7 @@ namespace SME.SGP.Dados.Repositorios
                 codigoTurma
             });
         }
-        
+
         public async Task<FrequenciaAluno> ObterPorAlunoDataAsync(string codigoAluno, DateTime dataAtual, TipoFrequenciaAluno tipoFrequencia, string disciplinaId = "", string codigoTurma = "")
         {
             String query =
@@ -230,6 +232,81 @@ namespace SME.SGP.Dados.Repositorios
                 codigoAluno,
                 disciplinaId,
                 dataAtual,
+            });
+        }
+
+        public async Task<IEnumerable<FrequenciaAluno>> ObterPorAlunosAsync(IEnumerable<string> alunosCodigo, IEnumerable<long?> periodosEscolaresId,  string turmaId)
+        {
+            var query = @"select
+	                        *
+                        from
+	                        frequencia_aluno
+                        where
+	                        codigo_aluno = any(@alunosCodigo)	                        
+	                        and periodo_escolar_id = any(@periodosEscolaresId)
+                            and turma_id = @turmaId";
+
+            return await database.QueryAsync<FrequenciaAluno>(query, new
+            {
+                alunosCodigo,
+                periodosEscolaresId,             
+                turmaId
+            });
+        }
+
+        public async Task SalvarVariosAsync(IEnumerable<FrequenciaAluno> entidades)
+        {
+            var sql = @"copy frequencia_aluno (                                         
+                                        codigo_aluno, 
+                                        tipo, 
+                                        disciplina_id, 
+                                        periodo_inicio, 
+                                        periodo_fim, 
+                                        bimestre, 
+                                        total_aulas, 
+                                        total_ausencias, 
+                                        criado_em,
+                                        criado_por,                                        
+                                        criado_rf,
+                                        total_compensacoes,
+                                        turma_id,
+                                        periodo_escolar_id)
+                            from
+                            stdin (FORMAT binary)";
+            using (var writer = ((NpgsqlConnection)database.Conexao).BeginBinaryImport(sql))
+            {
+                foreach (var frequencia in entidades)
+                {
+                    writer.StartRow();                    
+                    writer.Write(frequencia.CodigoAluno, NpgsqlDbType.Varchar);
+                    writer.Write((int)frequencia.Tipo, NpgsqlDbType.Integer);
+                    writer.Write(frequencia.DisciplinaId, NpgsqlDbType.Varchar);
+                    writer.Write(frequencia.PeriodoInicio, NpgsqlDbType.Timestamp);
+                    writer.Write(frequencia.PeriodoFim, NpgsqlDbType.Timestamp);
+                    writer.Write(frequencia.Bimestre, NpgsqlDbType.Integer);
+                    writer.Write(frequencia.TotalAulas, NpgsqlDbType.Integer);
+                    writer.Write(frequencia.TotalAusencias, NpgsqlDbType.Integer);
+                    writer.Write(frequencia.CriadoEm, NpgsqlDbType.Timestamp);
+                    writer.Write(database.UsuarioLogadoNomeCompleto, NpgsqlDbType.Varchar);
+                    writer.Write(database.UsuarioLogadoRF, NpgsqlDbType.Varchar);
+                    writer.Write(frequencia.TotalCompensacoes, NpgsqlDbType.Integer);
+                    writer.Write(frequencia.TurmaId, NpgsqlDbType.Varchar);
+
+                    if (frequencia.PeriodoEscolarId.HasValue)
+                        writer.Write((long)frequencia.PeriodoEscolarId, NpgsqlDbType.Bigint);
+
+                }
+                await Task.FromResult(writer.Complete());
+            }
+        }
+
+        public async Task RemoverVariosAsync(long[] ids)
+        {
+            var query = @"delete from frequencia_aluno where id = any(@ids)";
+
+            await database.ExecuteAsync(query, new
+            {
+                ids
             });
         }
     }
