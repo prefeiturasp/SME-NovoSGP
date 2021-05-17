@@ -24,23 +24,31 @@ namespace SME.SGP.Aplicacao
             try
             {
                 var periodosPorModalidade = await ObterPeriodosPassadosPorModalidade(request.Data);
+
                 foreach (var modalidade in periodosPorModalidade)
                 {
                     var turmasDaModalidade = await ObterTurmasPorModalidade(modalidade.Key, request.Data.Year);
 
                     foreach (var periodoEscolar in modalidade)
-                        foreach (var turma in turmasDaModalidade)
-                            await mediator.Send(new IncluirFilaConciliacaoFrequenciaTurmaCommand(turma.CodigoTurma, periodoEscolar.Bimestre, periodoEscolar.DataInicio, periodoEscolar.DataFim));
+                        await PublicarFilaConciliacaoTurmas(turmasDaModalidade, periodoEscolar.Bimestre, periodoEscolar.DataInicio, periodoEscolar.DataFim);
                 }
 
                 return true;
-
             }
             catch (Exception ex)
             {
                 SentrySdk.CaptureException(ex);
                 throw;
             }        
+        }
+
+        private Task<bool> PublicarFilaConciliacaoTurmas(IEnumerable<Turma> turmasDaModalidade, int bimestre, DateTime dataInicio, DateTime dataFim)
+        {
+            Parallel.ForEach(turmasDaModalidade, async turma =>
+                await mediator.Send(new IncluirFilaConciliacaoFrequenciaTurmaCommand(turma.CodigoTurma, bimestre, dataInicio, dataFim))
+            );
+
+            return Task.FromResult(true);
         }
 
         private async Task<IEnumerable<Turma>> ObterTurmasPorModalidade(ModalidadeTipoCalendario modalidadeTipoCalendario, int ano)
