@@ -881,13 +881,13 @@ namespace SME.SGP.Dados.Repositorios
 
                             delete from public.aula where turma_id = @turmaCodigo;
 
-                            delete from pendencia_registro_individual_aluno pria where pria.pendencia_registro_individual_id in (select id from pendencia_registro_individual pri where pri.turma_id = @turmaId);
+                            delete from public.pendencia_registro_individual_aluno pria where pria.pendencia_registro_individual_id in (select id from public.pendencia_registro_individual pri where pri.turma_id = @turmaId);
 
-                            delete from pendencia_registro_individual pri where pri.turma_id = @turmaId;
+                            delete from public.pendencia_registro_individual pri where pri.turma_id = @turmaId;
         
-                            delete from consolidacao_frequencia_turma where turma_id = @turmaId;
+                            delete from public.consolidacao_frequencia_turma where turma_id = @turmaId;
     
-                            delete from pendencia_professor where turma_id = @turmaId;
+                            delete from public.pendencia_professor where turma_id = @turmaId;
 
                             delete from public.turma where id = @turmaId;";
 
