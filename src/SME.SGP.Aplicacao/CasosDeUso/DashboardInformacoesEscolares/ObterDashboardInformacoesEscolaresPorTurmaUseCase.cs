@@ -6,18 +6,18 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterDashboardMatriculaUseCase : IObterDashboardMatriculaUseCase
+    public class ObterDashboardInformacoesEscolaresPorTurmaUseCase : IObterDashboardInformacoesEscolaresPorTurmaUseCase
     {
         private readonly IMediator mediator;
 
-        public ObterDashboardMatriculaUseCase(IMediator mediator)
+        public ObterDashboardInformacoesEscolaresPorTurmaUseCase(IMediator mediator)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<IEnumerable<GraficoBaseDto>> Executar(FiltroGraficoMatriculaDto filtro)
         {
-            return await mediator.Send(new ObterDadosDashboardMatriculaQuery(filtro.AnoLetivo, filtro.DreId, filtro.UeId, filtro.Ano, filtro.Modalidade, filtro.Semestre));
+            return await mediator.Send(new ObterDadosDashboardTurmaQuery(filtro.AnoLetivo, filtro.DreId, filtro.UeId, filtro.Ano, filtro.Modalidade, filtro.Semestre));
         }
     }
 }

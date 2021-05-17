@@ -16,12 +16,12 @@ namespace SME.SGP.Dados
             this.database = database;
         }
 
-        public async Task<IEnumerable<TotalMatriculaPorDreEAnoDto>> ObterGraficoMatriculasAsync(int anoLetivo, long dreId, long ueId, string ano, Modalidade modalidade, int? semestre)
+        public async Task<IEnumerable<InformacoesEscolaresPorDreEAnoDto>> ObterGraficoMatriculasAsync(int anoLetivo, long dreId, long ueId, string ano, Modalidade modalidade, int? semestre)
         {
             var sql = dreId > 0 ? QueryConsolidacaoPorAno(dreId, ueId, semestre) : QueryConsolidacaoPorDre(dreId, ueId, ano, semestre);
             return await database
                 .Conexao
-                .QueryAsync<TotalMatriculaPorDreEAnoDto>(sql, new { modalidade, dreId, ueId, anoLetivo, semestre, ano });
+                .QueryAsync<InformacoesEscolaresPorDreEAnoDto>(sql, new { modalidade, dreId, ueId, anoLetivo, semestre, ano });
         }
 
         private string QueryConsolidacaoPorAno( long dreId, long ueId, int? semestre)
@@ -62,7 +62,7 @@ namespace SME.SGP.Dados
 
         private string QueryConsolidacaoPorDre(long dreId, long ueId, string ano, int? semestre)
         {
-            var query = new StringBuilder(@"select dre.abreviacao as DreNome,
+            var query = new StringBuilder(@"select dre.abreviacao as DreDescricao,
 		                                           sum(cfm.quantidade) as quantidade 
 	                                          from consolidacao_matricula_turma cfm
 	                                         inner join turma t on t.id = cfm.turma_id

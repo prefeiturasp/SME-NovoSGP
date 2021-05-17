@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
             return MontarDto(dadosGrafico, request.DreId);
         }
 
-        private IEnumerable<GraficoBaseDto> MontarDto(IEnumerable<TotalMatriculaPorDreEAnoDto> totalMatriculaPorDreEAnoDtos, long dreId)
+        private IEnumerable<GraficoBaseDto> MontarDto(IEnumerable<InformacoesEscolaresPorDreEAnoDto> totalMatriculaPorDreEAnoDtos, long dreId)
         {
             var listaGraficos = new List<GraficoBaseDto>();
             if (totalMatriculaPorDreEAnoDtos.Any())
@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
                 {
                     var grafico = new GraficoBaseDto()
                     {
-                        Descricao = dreId > 0 ? total.AnoDescricao : FormatarAbreviacaoDre(total.DreNome),
+                        Descricao = dreId > 0 ? total.AnoDescricao : FormatarAbreviacaoDre(total.DreDescricao),
                         Quantidade = total.Quantidade
                     };
                     listaGraficos.Add(grafico);
@@ -42,6 +42,6 @@ namespace SME.SGP.Aplicacao
         }
 
         private static string FormatarAbreviacaoDre(string abreviacaoDre)
-            => abreviacaoDre.Replace(DashboardFrequenciaConstants.PrefixoDreParaSerRemovido, string.Empty).Trim();
+            => abreviacaoDre.Replace(DashboardConstants.PrefixoDreParaSerRemovido, string.Empty).Trim();
     }
 }
