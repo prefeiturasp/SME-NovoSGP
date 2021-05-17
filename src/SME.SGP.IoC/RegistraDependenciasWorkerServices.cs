@@ -30,7 +30,6 @@ namespace SME.SGP.IoC
         public static void Registrar(IServiceCollection services)
         {
             RegistrarMediator(services);
-            RegistrarRabbit(services);
 
             ResgistraDependenciaHttp(services);
             RegistrarRepositorios(services);
@@ -63,8 +62,6 @@ namespace SME.SGP.IoC
             services.AddSingleton(canalRabbit);
 
             canalRabbit.ExchangeDeclare(ExchangeRabbit.Sgp, ExchangeType.Topic);
-            canalRabbit.QueueDeclare(RotasRabbitSgp.FilaSgp, false, false, false, null);
-            canalRabbit.QueueBind(RotasRabbitSgp.FilaSgp, ExchangeRabbit.Sgp, "*");
         }
 
         private static void RegistrarComandos(IServiceCollection services)
@@ -330,7 +327,6 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IServicoConselhoClasse, ServicoConselhoClasse>();
             services.TryAddScopedWorkerService<IServicoCalculoParecerConclusivo, ServicoCalculoParecerConclusivo>();
             services.TryAddScopedWorkerService<IServicoObjetivosAprendizagem, ServicoObjetivosAprendizagem>();
-            services.TryAddScopedWorkerService<IServicoFila, FilaRabbit>();
         }
 
 
@@ -410,6 +406,11 @@ namespace SME.SGP.IoC
             
             // Conselho de classe
             services.TryAddScopedWorkerService<IAtualizarSituacaoConselhoClasseUseCase, AtualizarSituacaoConselhoClasseUseCase>();
+
+            // Frequência
+            services.TryAddScopedWorkerService<IConciliacaoFrequenciaTurmaSyncUseCase, ConciliacaoFrequenciaTurmaSyncUseCase>();
+            services.TryAddScopedWorkerService<IConciliacaoFrequenciaTurmasUseCase, ConciliacaoFrequenciaTurmasUseCase>();
+            services.TryAddScopedWorkerService<IValidacaoAusenciaConcolidacaoFrequenciaTurmaUseCase, ValidacaoAusenciaConcolidacaoFrequenciaTurmaUseCase>();
 
             // Notificações
             services.TryAddScopedWorkerService<IExecutaNotificacaoAndamentoFechamentoUseCase, ExecutaNotificacaoAndamentoFechamentoUseCase>();

@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using SME.SGP.Infra;
@@ -11,11 +12,11 @@ namespace SME.SGP.Aplicacao
 {
     public class PublicarFilaSgpCommandHandler : IRequestHandler<PublicarFilaSgpCommand, bool>
     {
-        private readonly IModel model;
+        private readonly IConfiguration configuration;
 
-        public PublicarFilaSgpCommandHandler(IModel model)
+        public PublicarFilaSgpCommandHandler(IConfiguration configuration)
         {
-            this.model = model ?? throw new ArgumentNullException(nameof(model));
+            this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
         public Task<bool> Handle(PublicarFilaSgpCommand command, CancellationToken cancellationToken)
@@ -33,7 +34,23 @@ namespace SME.SGP.Aplicacao
             });
             var body = Encoding.UTF8.GetBytes(mensagem);
 
-            model.BasicPublish(ExchangeRabbit.Sgp, command.Rota, null, body);
+            var factory = new ConnectionFactory
+            {
+                HostName = configuration.GetSection("ConfiguracaoRabbit:HostName").Value,
+                UserName = configuration.GetSection("ConfiguracaoRabbit:UserName").Value,
+                Password = configuration.GetSection("ConfiguracaoRabbit:Password").Value,
+                VirtualHost = configuration.GetSection("ConfiguracaoRabbit:Virtualhost").Value
+            };
+
+            using (var conexaoRabbit = factory.CreateConnection())
+            {
+                using (IModel _channel = conexaoRabbit.CreateModel())
+                {
+                    _channel.BasicPublish(ExchangeRabbit.Sgp, command.Rota, null, body);
+                }
+            }
+
+
             return Task.FromResult(true);
         }
     }

@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using SME.SGP.Infra;
+using Sentry;
 
 namespace SME.SGP.Aplicacao
 {
@@ -31,6 +32,8 @@ namespace SME.SGP.Aplicacao
 
             var nomeArquivo = request.Arquivo.FileName;
             var caminhoArquivo = ObterCaminhoArquivo(request.Tipo, request.Arquivo);
+
+            SentrySdk.AddBreadcrumb($"Upload arquivo. Caminho: {caminhoArquivo} Nome: {nomeArquivo}");
 
             var arquivo = await mediator.Send(new SalvarArquivoRepositorioCommand(nomeArquivo, request.Tipo, request.Arquivo.ContentType));
             await mediator.Send(new ArmazenarArquivoFisicoCommand(request.Arquivo, arquivo.Codigo.ToString(), caminhoArquivo));
