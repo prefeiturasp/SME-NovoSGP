@@ -23,7 +23,6 @@ namespace SME.SGP.Infra
         {
             byte[] body = FormataBodyWorker(adicionaFilaDto);
 
-            rabbitChannel.QueueBind(RotasRabbitRelatorios.WorkerRelatoriosSgp, ExchangeRabbit.ServidorRelatorios, RotasRabbitRelatorios.RotaRelatoriosSolicitados);
             rabbitChannel.BasicPublish(ExchangeRabbit.ServidorRelatorios, adicionaFilaDto.Fila, null, body);
 
             SentrySdk.CaptureMessage("3 - AdicionaFilaWorkerRelatorios");
@@ -41,7 +40,6 @@ namespace SME.SGP.Infra
             var mensagem = JsonConvert.SerializeObject(request);
             var body = Encoding.UTF8.GetBytes(mensagem);
 
-            rabbitChannel.QueueBind(RotasRabbitSgp.FilaSgp, ExchangeRabbit.Sgp, publicaFilaSgpDto.NomeFila);
             rabbitChannel.BasicPublish(ExchangeRabbit.Sgp, publicaFilaSgpDto.NomeFila, null, body);
         }
 
