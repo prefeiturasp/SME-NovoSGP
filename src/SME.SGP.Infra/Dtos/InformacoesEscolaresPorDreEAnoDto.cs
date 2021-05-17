@@ -1,9 +1,9 @@
 ﻿namespace SME.SGP.Infra
 {
-    public class TotalMatriculaPorDreEAnoDto
+    public class InformacoesEscolaresPorDreEAnoDto
     {
         public string AnoDescricao { get; set; }
-        public string DreNome { get; set; }
+        public string DreDescricao { get; set; }
         public int Quantidade { get; set; }
     }
 }

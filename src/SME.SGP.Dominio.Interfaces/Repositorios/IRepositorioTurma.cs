@@ -42,6 +42,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<bool> SalvarAsync(TurmaParaSyncInstitucionalDto turma, long ueId);
         Task ExcluirTurmaExtintaAsync(string turmaCodigo, long turmaId);
         Task<bool> AtualizarTurmaSincronizacaoInstitucionalAsync(TurmaParaSyncInstitucionalDto turma, bool deveMarcarHistorica = false);
+        Task<IEnumerable<GraficoBaseDto>> ObterInformacoesEscolaresTurmasAsync(int anoLetivo, long dreId, long ueId, string ano, Modalidade modalidade, int? semestre);
 
     }
 }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public interface IObterDashboardMatriculaUseCase 
+    public interface IObterDashboardInformacoesEscolaresPorMatriculaUseCase 
     {
         Task<IEnumerable<GraficoBaseDto>> Executar(FiltroGraficoMatriculaDto filtro);
     }

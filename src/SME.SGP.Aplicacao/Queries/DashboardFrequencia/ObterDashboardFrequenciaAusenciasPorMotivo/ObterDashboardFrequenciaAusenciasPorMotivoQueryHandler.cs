@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
                 .Select(ausenciasPorMotivo =>
                 {
                     if (string.IsNullOrWhiteSpace(ausenciasPorMotivo.Descricao))
-                        ausenciasPorMotivo.Descricao = DashboardFrequenciaConstants.DescricaoMotivoPadraoParaAnotacoesSemMotivoSelecionado;
+                        ausenciasPorMotivo.Descricao = DashboardConstants.DescricaoMotivoPadraoParaAnotacoesSemMotivoSelecionado;
 
                     return ausenciasPorMotivo;
                 })
