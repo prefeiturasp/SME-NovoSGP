@@ -7,6 +7,6 @@ namespace SME.SGP.Aplicacao.Interfaces
 {
     public interface IConciliacaoFrequenciaTurmasUseCase
     {
-        public Task Executar();
+        Task Executar();
     }
 }
