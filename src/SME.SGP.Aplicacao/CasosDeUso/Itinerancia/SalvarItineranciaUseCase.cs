@@ -64,7 +64,8 @@ namespace SME.SGP.Aplicacao
                             CriadoPor = itinerancia.CriadoPor,
                             DataVisita = itineranciaDto.DataVisita,
                             Estudantes = itineranciaDto.Alunos,
-                            ItineranciaId = itinerancia.Id
+                            ItineranciaId = itinerancia.Id, 
+                            UeId = itineranciaDto.UeId,
                         }, Guid.NewGuid(), null));
 
                     return itinerancia;
