@@ -204,15 +204,13 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<DisciplinaResposta>> ObterComponentesRegencia(Turma turma, long componenteCurricularCodigo)
         {
             var usuario = await servicoUsuario.ObterUsuarioLogado();
-            var regencias = await mediator.Send(new ObterComponentesCurricularesRegenciaPorTurmaCodigoQuery(turma.CodigoTurma));
-            
             if (usuario.EhProfessorCj())
                 return await ObterComponentesCJ(turma.ModalidadeCodigo, turma.CodigoTurma, turma.Ue.CodigoUe, componenteCurricularCodigo, usuario.CodigoRf);
             else
             {
-                var componentesCurriculares = await servicoEOL.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamento(turma.CodigoTurma, usuario.Login, usuario.PerfilAtual);
-                
-                return MapearComponentes(componentesCurriculares.Where(x => x.Regencia && regencias.Any(c => c.CodigoComponenteCurricular == x.Codigo))).OrderBy(c => c.Nome);
+                var componentesCurriculares = await servicoEOL.ObterDisciplinasPorCodigoTurma(turma.CodigoTurma);
+
+                return componentesCurriculares.Where(x => x.Regencia).OrderBy(c => c.Nome);
             }
         }
 
