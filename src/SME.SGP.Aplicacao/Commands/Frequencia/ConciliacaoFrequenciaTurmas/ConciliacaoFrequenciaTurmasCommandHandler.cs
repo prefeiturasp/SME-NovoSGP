@@ -44,7 +44,8 @@ namespace SME.SGP.Aplicacao
 
         private Task<bool> PublicarFilaConciliacaoTurmas(IEnumerable<Turma> turmasDaModalidade, int bimestre, DateTime dataInicio, DateTime dataFim)
         {
-            Parallel.ForEach(turmasDaModalidade, async turma =>
+            Parallel.ForEach(turmasDaModalidade, new ParallelOptions { MaxDegreeOfParallelism = 3 }
+                , async turma =>
                 await mediator.Send(new IncluirFilaConciliacaoFrequenciaTurmaCommand(turma.CodigoTurma, bimestre, dataInicio, dataFim))
             );
 
