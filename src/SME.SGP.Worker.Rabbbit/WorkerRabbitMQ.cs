@@ -120,7 +120,7 @@ namespace SME.SGP.Worker.RabbitMQ
             comandos.Add(RotasRabbitSgp.RotaPendenciaAusenciaRegistroIndividual, new ComandoRabbit("Gerar as pendências por ausência de registro individual", typeof(IGerarPendenciaAusenciaRegistroIndividualUseCase)));
             comandos.Add(RotasRabbitSgp.RotaAtualizarPendenciaAusenciaRegistroIndividual, new ComandoRabbit("Atualizar pendência por ausência de registro individual", typeof(IAtualizarPendenciaRegistroIndividualUseCase)));
 
-            comandos.Add(RotasRabbitSgp.RotaConciliacaoFrequenciaTurmaSync, new ComandoRabbit("Validação de ausência para conciliação de frequência da turma", typeof()));
+            comandos.Add(RotasRabbitSgp.RotaConciliacaoFrequenciaTurmaSync, new ComandoRabbit("Validação de ausência para conciliação de frequência da turma", typeof(IConciliacaoFrequenciaTurmaSyncUseCase)));
             comandos.Add(RotasRabbitSgp.RotaValidacaoAusenciaConciliacaoFrequenciaTurma, new ComandoRabbit("Validação de ausência para conciliação de frequência da turma", typeof(IValidacaoAusenciaConcolidacaoFrequenciaTurmaUseCase)));
         }
 
