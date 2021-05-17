@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Microsoft.Extensions.Configuration;
+using Sentry;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
@@ -52,12 +53,26 @@ namespace SME.SGP.Aplicacao
             mensagem.AppendLine("<br/><br/>Clique no botão abaixo para fazer o download do arquivo.");
             mensagem.AppendLine();
 
-            var codigoCorrelacao = await mediator.Send(new SolicitaRelatorioItineranciaCommand(new FiltroRelatorioItineranciaDto()
+            var codigoCorrelacao = new Guid();
+            try
             {
-                Itinerancias = new long[] { itineranciaId },
-                UsuarioNome = criadoPor,
-                UsuarioRF = criadoRF
-            }));
+                SentrySdk.CaptureMessage(" 1 - Solicita Relatorio Itinerância ");
+
+                codigoCorrelacao = await mediator.Send(new SolicitaRelatorioItineranciaCommand(new FiltroRelatorioItineranciaDto()
+                {
+                    Itinerancias = new long[] { itineranciaId },
+                    UsuarioNome = criadoPor,
+                    UsuarioRF = criadoRF
+                }));
+
+                SentrySdk.CaptureMessage(" Código de correlação: " + codigoCorrelacao);
+
+            }
+            catch (Exception ex)
+            {
+                SentrySdk.CaptureException(ex);
+            }
+
 
             mensagem.AppendLine($"<br/><br/><a href='{urlServidorRelatorios}api/v1/downloads/sgp/pdf/Itiner%C3%A2ncias.pdf/{codigoCorrelacao}' target='_blank' class='btn-baixar-relatorio'><i class='fas fa-arrow-down mr-2'></i>Download</a>");
 
