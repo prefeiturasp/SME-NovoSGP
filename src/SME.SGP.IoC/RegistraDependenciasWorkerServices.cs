@@ -412,6 +412,7 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IAtualizarSituacaoConselhoClasseUseCase, AtualizarSituacaoConselhoClasseUseCase>();
 
             // Frequência
+            services.TryAddScopedWorkerService<IConciliacaoFrequenciaTurmaSyncUseCase, ConciliacaoFrequenciaTurmaSyncUseCase>();
             services.TryAddScopedWorkerService<IConciliacaoFrequenciaTurmasUseCase, ConciliacaoFrequenciaTurmasUseCase>();
             services.TryAddScopedWorkerService<IValidacaoAusenciaConcolidacaoFrequenciaTurmaUseCase, ValidacaoAusenciaConcolidacaoFrequenciaTurmaUseCase>();
 
