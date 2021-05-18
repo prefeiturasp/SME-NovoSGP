@@ -40,10 +40,10 @@ namespace SME.SGP.Aplicacao
             if(request.Observacao.Length < 200)
             {
                 // Excluir Notificação especifica da observação 
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaExcluirNotificacaoObservacaoCartaIntencoes,
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaExcluirNotificacaoObservacaoCartaIntencoes,
                        new ExcluirNotificacaoCartaIntencoesObservacaoDto(cartaIntencoesObservacao.Id), Guid.NewGuid(), null));
 
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaNovaNotificacaoObservacaoCartaIntencoes,
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNovaNotificacaoObservacaoCartaIntencoes,
                        new SalvarNotificacaoCartaIntencoesObservacaoDto(turma, usuarioLogado, cartaIntencoesObservacao.Id, request.Observacao), Guid.NewGuid(), null));
             }
             return (AuditoriaDto)cartaIntencoesObservacao;
