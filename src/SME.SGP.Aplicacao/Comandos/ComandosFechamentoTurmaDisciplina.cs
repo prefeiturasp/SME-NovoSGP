@@ -29,6 +29,8 @@ namespace SME.SGP.Aplicacao
             {
                 try
                 {
+                    if(fechamentoTurma.Justificativa.Length > Int16.Parse(Dominio.Enumerados.FechamentoTurmaDisciplina.TamanhoCampoJustificativa.ToString()))
+                        throw new NegocioException("Justificativa não pode ter mais que 1000 caracteres");
                     listaAuditoria.Add(await servicoFechamentoTurmaDisciplina.Salvar(fechamentoTurma.Id, fechamentoTurma, componenteSemNota));
                 }
                 catch (Exception e)
