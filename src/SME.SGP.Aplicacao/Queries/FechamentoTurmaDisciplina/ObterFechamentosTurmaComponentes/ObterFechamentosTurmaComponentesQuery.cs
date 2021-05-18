@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
                .WithMessage("Os ids dos componentes curriculares deve ser informado para consulta dos fechamentos.");
 
             RuleFor(c => c.Bimestre)
-               .NotEmpty()
+               .NotNull()
                .WithMessage("O bimestre do período escolar deve ser informado para consulta dos fechamento.");
         }
     }

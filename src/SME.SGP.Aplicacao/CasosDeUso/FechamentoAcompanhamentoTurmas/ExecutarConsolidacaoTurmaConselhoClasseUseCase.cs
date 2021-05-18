@@ -61,7 +61,6 @@ namespace SME.SGP.Aplicacao
                 if (aluno.Inativo && consolidacaoTurmaConselhoClasse.Bimestre > ultimoBimestreAtivo)
                     continue;
 
-
                 var matriculadoDepois = !aluno.Inativo ?
                     periodosEscolares.FirstOrDefault(p => p.PeriodoInicio <= aluno.DataSituacao && p.PeriodoFim >= aluno.DataSituacao)?.Bimestre : null;
 

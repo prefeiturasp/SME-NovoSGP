@@ -100,8 +100,8 @@
 
         public static string ConsolidarGeralSync => "sgp.consolidacao.geral.sync";
         public static string ConsolidarTurmaSync => "sgp.consolidacao.turma.sync";
-        public static string ConsolidarTurmaFechamentoSync => "sgp.consolidacao.turma.fechamento.componente.sync";
-        public static string ConsolidarTurmaFechamentoComponenteTratar => "sgp.consolidacao.turma.fechamento.tratar";
+        public static string ConsolidarTurmaFechamentoSync => "sgp.consolidacao.turma.fechamento.sync";
+        public static string ConsolidarTurmaFechamentoComponenteTratar => "sgp.consolidacao.turma.fechamento.componente.tratar";
         public static string ConsolidarTurmaConselhoClasseSync => "sgp.consolidacao.turma.conselhoclasse.sync";
         public static string ConsolidarTurmaConselhoClasseAlunoTratar => "sgp.consolidacao.turma.conselhoclasse.aluno.tratar";
 

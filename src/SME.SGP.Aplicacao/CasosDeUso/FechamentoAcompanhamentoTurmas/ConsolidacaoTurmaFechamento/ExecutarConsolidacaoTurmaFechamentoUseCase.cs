@@ -36,12 +36,11 @@ namespace SME.SGP.Aplicacao
 
             foreach (var disciplina in disciplinas)
             {
-
                 var mensagem = JsonConvert.SerializeObject(new FechamentoConsolidacaoTurmaComponenteBimestreDto(consolidacaoTurma.TurmaId, consolidacaoTurma.Bimestre, disciplina));
 
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.ConsolidarTurmaFechamentoComponenteTratar, mensagem, mensagemRabbit.CodigoCorrelacao, null, fila: RotasRabbit.ConsolidarTurmaFechamentoComponenteTratar));
-
             }
+
             return true;
         }
     }

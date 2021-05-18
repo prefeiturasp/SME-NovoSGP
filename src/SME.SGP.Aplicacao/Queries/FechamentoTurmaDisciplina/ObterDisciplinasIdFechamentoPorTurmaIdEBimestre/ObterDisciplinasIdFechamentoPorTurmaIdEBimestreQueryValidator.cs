@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
                .WithMessage("O id da turma deve ser informado.");
 
             RuleFor(c => c.Bimestre)
-               .NotEmpty()
+               .NotNull()
                .WithMessage("O bimestre deve ser informado.");
         }
     }

@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Sentry;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
@@ -10,37 +11,57 @@ namespace SME.SGP.Aplicacao
 {
     public class ExecutarConsolidacaoTurmaFechamentoComponenteUseCase : AbstractUseCase, IExecutarConsolidacaoTurmaFechamentoComponenteUseCase
     {
-        public ExecutarConsolidacaoTurmaFechamentoComponenteUseCase(IMediator mediator) : base(mediator)
+        private readonly IRepositorioFechamentoConsolidado repositorioFechamentoConsolidado;
+
+        public ExecutarConsolidacaoTurmaFechamentoComponenteUseCase(IMediator mediator, IRepositorioFechamentoConsolidado repositorioFechamentoConsolidado) : base(mediator)
         {
+            this.repositorioFechamentoConsolidado = repositorioFechamentoConsolidado ?? throw new ArgumentNullException(nameof(repositorioFechamentoConsolidado));
         }
 
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
-            var command = mensagemRabbit.ObterObjetoMensagem<FechamentoConsolidacaoTurmaComponenteBimestreDto>();
+            var filtro = mensagemRabbit.ObterObjetoMensagem<FechamentoConsolidacaoTurmaComponenteBimestreDto>();
 
-            var fechamentos = await mediator.Send(new ObterFechamentosTurmaComponentesQuery(command.TurmaId, new long[] { command.ComponenteCurricularId }, command.Bimestre));
-
-            var professoresDaTurma = await mediator.Send(new ObterProfessoresTitularesPorTurmaIdQuery(command.TurmaId));
-
-            var lstConsolidado = MapearFechamentoConsolidado(fechamentos, professoresDaTurma);
-
-            foreach (var consolidado in lstConsolidado)
+            if (filtro == null)
             {
-                await mediator.Send(new SalvarFechamentoConsolidadoCommand(consolidado));
+                SentrySdk.CaptureMessage($"Não foi possível iniciar a consolidação do fechamento da turma -> componente. O id da turma bimestre componente curricular não foram informados", Sentry.Protocol.SentryLevel.Error);
+                return false;
             }
+
+            var consolidadoTurmaComponente = await repositorioFechamentoConsolidado.ObterFechamentoConsolidadoPorTurmaBimestreComponenteCurricularAsync(filtro.TurmaId, filtro.ComponenteCurricularId, filtro.Bimestre);
+
+            var fechamentos = await mediator.Send(new ObterFechamentosTurmaComponentesQuery(filtro.TurmaId, new long[] { filtro.ComponenteCurricularId }, filtro.Bimestre));
+
+            if (fechamentos == null || !fechamentos.Any())
+            {
+                SentrySdk.CaptureMessage($"Não foi possível iniciar a consolidação do fechamento da turma -> componente. Não foram encontrados fechamentos para a turma bimestre componente curricular não foram informados", Sentry.Protocol.SentryLevel.Error);
+                return false;
+            }
+
+            var professoresDaTurma = await mediator.Send(new ObterProfessoresTitularesPorTurmaIdQuery(filtro.TurmaId));
+
+            var fechamento = fechamentos.FirstOrDefault();
+
+            consolidadoTurmaComponente = MapearFechamentoConsolidado(consolidadoTurmaComponente, fechamento, professoresDaTurma);
+
+            if (consolidadoTurmaComponente.Id == 0 || consolidadoTurmaComponente.Status != fechamento.ObterStatusFechamento())
+                await repositorioFechamentoConsolidado.SalvarAsync(consolidadoTurmaComponente);
 
             return true;
         }
 
-        private IEnumerable<FechamentoConsolidadoComponenteTurma> MapearFechamentoConsolidado(IEnumerable<FechamentoTurmaDisciplina> fechamentos, IEnumerable<Infra.ProfessorTitularDisciplinaEol> professoresDaTurma)
+        private FechamentoConsolidadoComponenteTurma MapearFechamentoConsolidado(FechamentoConsolidadoComponenteTurma consolidadoTurmaComponente, FechamentoTurmaDisciplina fechamento, IEnumerable<Infra.ProfessorTitularDisciplinaEol> professoresDaTurma)
         {
-            foreach (var fechamento in fechamentos)
+            if (consolidadoTurmaComponente == null)
             {
                 var professorComponente = professoresDaTurma.FirstOrDefault(p => p.DisciplinaId == fechamento.DisciplinaId);
 
-                yield return new FechamentoConsolidadoComponenteTurma()
+                var bimestre = fechamento.FechamentoTurma.PeriodoEscolar != null ?
+                               fechamento.FechamentoTurma.PeriodoEscolar.Bimestre : 0;
+
+                consolidadoTurmaComponente = new FechamentoConsolidadoComponenteTurma()
                 {
-                    Bimestre = fechamento.FechamentoTurma.PeriodoEscolar.Bimestre,
+                    Bimestre = bimestre,
                     ComponenteCurricularCodigo = fechamento.DisciplinaId,
                     DataAtualizacao = DateTime.Now,
                     TurmaId = fechamento.FechamentoTurma.TurmaId,
@@ -49,6 +70,10 @@ namespace SME.SGP.Aplicacao
                     ProfessorRf = professorComponente.ProfessorRf
                 };
             }
+
+            consolidadoTurmaComponente.Status = fechamento.ObterStatusFechamento();
+
+            return consolidadoTurmaComponente;
         }
     }
 }

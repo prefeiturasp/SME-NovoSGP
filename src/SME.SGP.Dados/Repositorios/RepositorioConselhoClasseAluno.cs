@@ -149,20 +149,26 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<long>> ObterComponentesPorAlunoTurmaBimestreAsync(string alunoCodigo, int bimestre, long turmaId)
         {
-            var query = @"select ccn.componente_curricular_codigo as ComponenteCurricularId from conselho_classe_aluno cca 
+            var query = new StringBuilder( @"select ccn.componente_curricular_codigo as ComponenteCurricularId 
+                            from conselho_classe_aluno cca 
 	                        inner join conselho_classe_nota ccn
 		                        on ccn.conselho_classe_aluno_id  = cca.id 
 	                        inner join conselho_classe cc 
 		                        on cca.conselho_classe_id = cc.id
 	                        inner join fechamento_turma ft 
 		                        on cc.fechamento_turma_id  = ft.id
-	                        inner join periodo_escolar pe 
+	                        left join periodo_escolar pe 
 		                        on ft.periodo_escolar_id = pe.id 
 	                        where cca.aluno_codigo = @alunoCodigo
-	                        and ft.turma_id  = @turmaId
-	                        and pe.bimestre = @bimestre";
+	                        and ft.turma_id  = @turmaId");
 
-            return await database.Conexao.QueryAsync<long>(query, new { alunoCodigo, turmaId, bimestre });
+            if (bimestre > 0)
+                query.AppendLine(" and pe.bimestre = @bimestre ");
+            else
+                query.AppendLine(" and ft.periodo_escolar_id is null ");
+
+
+            return await database.Conexao.QueryAsync<long>(query.ToString(), new { alunoCodigo, turmaId, bimestre });
         }
     }
 }
