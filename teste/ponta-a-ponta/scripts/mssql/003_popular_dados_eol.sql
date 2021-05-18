@@ -1349,10 +1349,10 @@ insert into v_cargo_base_cotic (cd_cargo_base_servidor,cd_servidor,cd_vinculo_si
 values(31878,35169,2,3255,1,'1993-10-27 00:00:00.000',NULL,'1993-10-27 00:00:00.000','2016-05-17 00:00:00.000',NULL);
 
 insert into v_cargo_base_cotic (cd_cargo_base_servidor,cd_servidor,cd_vinculo_sigpec,cd_cargo,cd_situacao_funcional,dt_nomeacao,dt_posse,dt_inicio_exercicio,dt_fim_nomeacao,dt_cancelamento)
-values(367315,35169,3,3255,1,'2002-10-16 00:00:00.000	2002-10-09 00:00:00.000	2002-10-16 00:00:00.000	NULL	NULL);
+values(367315,35169,3,3255,1,'2002-10-16 00:00:00.000','2002-10-09 00:00:00.000','2002-10-16 00:00:00.000',NULL,NULL);
 
 insert into v_cargo_base_cotic (cd_cargo_base_servidor,cd_servidor,cd_vinculo_sigpec,cd_cargo,cd_situacao_funcional,dt_nomeacao,dt_posse,dt_inicio_exercicio,dt_fim_nomeacao,dt_cancelamento)
-values(36474,40914,NULL,3409,1,NULL,'1997-03-20 00:00:00.000	1997-03-20 00:00:00.000	2002-07-24 00:00:00.000	NULL);
+values(36474,40914,NULL,3409,1,NULL,'1997-03-20 00:00:00.000','1997-03-20 00:00:00.000','2002-07-24 00:00:00.000',NULL);
 
 insert into v_cargo_base_cotic (cd_cargo_base_servidor,cd_servidor,cd_vinculo_sigpec,cd_cargo,cd_situacao_funcional,dt_nomeacao,dt_posse,dt_inicio_exercicio,dt_fim_nomeacao,dt_cancelamento)
 values(357214,40914,1,3298,1,'2002-07-24 00:00:00.000','2002-07-24 00:00:00.000','2002-07-24 00:00:00.000',NULL,NULL);
@@ -1406,106 +1406,106 @@ insert into v_cargo_base_cotic (cd_cargo_base_servidor,cd_servidor,cd_vinculo_si
 values(514611,170427,2,3360,1,NULL,'2019-03-27 00:00:00.000','2019-03-27 00:00:00.000',NULL,NULL);
 
 insert into v_cargo_base_cotic (cd_cargo_base_servidor,cd_servidor,cd_vinculo_sigpec,cd_cargo,cd_situacao_funcional,dt_nomeacao,dt_posse,dt_inicio_exercicio,dt_fim_nomeacao,dt_cancelamento)
-values(370374,198550,2,3239,1,'2003-01-16 00:00:00.000	2003-01-09 00:00:00.000	2003-01-16 00:00:00.000	NULL	NULL);
+values(370374,198550,2,3239,1,'2003-01-16 00:00:00.000','2003-01-09 00:00:00.000','2003-01-16 00:00:00.000',NULL,NULL);
 
 insert into v_cargo_base_cotic (cd_cargo_base_servidor,cd_servidor,cd_vinculo_sigpec,cd_cargo,cd_situacao_funcional,dt_nomeacao,dt_posse,dt_inicio_exercicio,dt_fim_nomeacao,dt_cancelamento)
-values(353425	189115	1	3298	1	2002-08-02 00:00:00.000	2002-08-02 00:00:00.000	2002-08-02 00:00:00.000	2018-01-28 00:00:00.000	NULL);
+values(353425,189115,1,3298,1,'2002-08-02 00:00:00.000','2002-08-02 00:00:00.000','2002-08-02 00:00:00.000','2018-01-28 00:00:00.000',NULL);
 
 insert into v_cargo_base_cotic (cd_cargo_base_servidor,cd_servidor,cd_vinculo_sigpec,cd_cargo,cd_situacao_funcional,dt_nomeacao,dt_posse,dt_inicio_exercicio,dt_fim_nomeacao,dt_cancelamento)
-values(501481	189115	1	3360	1	NULL	2018-01-29 00:00:00.000	2018-01-29 00:00:00.000	NULL	NULL);
+values(501481,189115,1,3360,1,NULL,'2018-01-29 00:00:00.000','2018-01-29 00:00:00.000',NULL,NULL);
 
 insert into v_cargo_base_cotic (cd_cargo_base_servidor,cd_servidor,cd_vinculo_sigpec,cd_cargo,cd_situacao_funcional,dt_nomeacao,dt_posse,dt_inicio_exercicio,dt_fim_nomeacao,dt_cancelamento)
-values(354220	189910	1	3271	1	2002-08-02 00:00:00.000	2002-07-31 00:00:00.000	2002-08-02 00:00:00.000	2018-02-04 00:00:00.000	NULL);
+values(354220,189910,1,3271,1,'2002-08-02 00:00:00.000','2002-07-31 00:00:00.000','2002-08-02 00:00:00.000','2018-02-04 00:00:00.000',NULL);
 
 insert into v_cargo_base_cotic (cd_cargo_base_servidor,cd_servidor,cd_vinculo_sigpec,cd_cargo,cd_situacao_funcional,dt_nomeacao,dt_posse,dt_inicio_exercicio,dt_fim_nomeacao,dt_cancelamento)
-values(439596	189910	2	3271	1	NULL	2010-04-13 00:00:00.000	2010-04-13 00:00:00.000	NULL	NULL);
+values(439596,189910,2,3271,1,NULL,'2010-04-13 00:00:00.000','2010-04-13 00:00:00.000',NULL,NULL);
 
 insert into v_cargo_base_cotic (cd_cargo_base_servidor,cd_servidor,cd_vinculo_sigpec,cd_cargo,cd_situacao_funcional,dt_nomeacao,dt_posse,dt_inicio_exercicio,dt_fim_nomeacao,dt_cancelamento)
-values(502664	189910	1	3360	1	NULL	2018-02-05 00:00:00.000	2018-02-05 00:00:00.000	NULL	NULL);
+values(502664,189910,1,3360,1,NULL,'2018-02-05 00:00:00.000','2018-02-05 00:00:00.000',NULL,NULL);
 
 insert into v_cargo_base_cotic (cd_cargo_base_servidor,cd_servidor,cd_vinculo_sigpec,cd_cargo,cd_situacao_funcional,dt_nomeacao,dt_posse,dt_inicio_exercicio,dt_fim_nomeacao,dt_cancelamento)
-values(358446	190858	1	3239	1	2002-09-16 00:00:00.000	2002-09-09 00:00:00.000	2002-09-16 00:00:00.000	NULL	NULL);
+values(358446,190858,1,3239,1,'2002-09-16 00:00:00.000','2002-09-09 00:00:00.000','2002-09-16 00:00:00.000',NULL,NULL);
 
 insert into v_cargo_base_cotic (cd_cargo_base_servidor,cd_servidor,cd_vinculo_sigpec,cd_cargo,cd_situacao_funcional,dt_nomeacao,dt_posse,dt_inicio_exercicio,dt_fim_nomeacao,dt_cancelamento)
-values(361346	193158	1	3239	1	2002-10-09 00:00:00.000	2002-09-11 00:00:00.000	2002-10-09 00:00:00.000	NULL	NULL);
+values(361346,193158,1,3239,1,'2002-10-09 00:00:00.000','2002-09-11 00:00:00.000','2002-10-09 00:00:00.000',NULL,NULL);
 
 insert into v_cargo_base_cotic (cd_cargo_base_servidor,cd_servidor,cd_vinculo_sigpec,cd_cargo,cd_situacao_funcional,dt_nomeacao,dt_posse,dt_inicio_exercicio,dt_fim_nomeacao,dt_cancelamento)
-values(367586	196687	NULL	3468	1	2002-10-21 00:00:00.000	2002-04-11 00:00:00.000	2002-10-21 00:00:00.000	2008-02-18 00:00:00.000	NULL);
+values(367586,196687,NULL,3468,1,'2002-10-21 00:00:00.000','2002-04-11 00:00:00.000','2002-10-21 00:00:00.000','2008-02-18 00:00:00.000',NULL);
 
 insert into v_cargo_base_cotic (cd_cargo_base_servidor,cd_servidor,cd_vinculo_sigpec,cd_cargo,cd_situacao_funcional,dt_nomeacao,dt_posse,dt_inicio_exercicio,dt_fim_nomeacao,dt_cancelamento)
-values(394549	196687	2	3263	1	2004-08-13 00:00:00.000	2004-08-13 00:00:00.000	2004-08-13 00:00:00.000	2019-04-12 00:00:00.000	NULL);
+values(394549,196687,2,3263,1,'2004-08-13 00:00:00.000','2004-08-13 00:00:00.000','2004-08-13 00:00:00.000','2019-04-12 00:00:00.000',NULL);
 
 insert into v_cargo_base_cotic (cd_cargo_base_servidor,cd_servidor,cd_vinculo_sigpec,cd_cargo,cd_situacao_funcional,dt_nomeacao,dt_posse,dt_inicio_exercicio,dt_fim_nomeacao,dt_cancelamento)
-values(418950	196687	1	3263	1	2008-02-15 00:00:00.000	2008-02-19 00:00:00.000	2008-02-19 00:00:00.000	NULL	NULL);
+values(418950,196687,1,3263,1,'2008-02-15 00:00:00.000','2008-02-19 00:00:00.000','2008-02-19 00:00:00.000',NULL,NULL);
 
 insert into v_cargo_base_cotic (cd_cargo_base_servidor,cd_servidor,cd_vinculo_sigpec,cd_cargo,cd_situacao_funcional,dt_nomeacao,dt_posse,dt_inicio_exercicio,dt_fim_nomeacao,dt_cancelamento)
-values(367776	196820	1	3280	1	2002-10-24 00:00:00.000	2002-10-18 00:00:00.000	2002-10-24 00:00:00.000	2017-04-09 00:00:00.000	NULL);
+values(367776,196820,1,3280,1,'2002-10-24 00:00:00.000','2002-10-18 00:00:00.000','2002-10-24 00:00:00.000','2017-04-09 00:00:00.000',NULL);
 
 insert into v_cargo_base_cotic (cd_cargo_base_servidor,cd_servidor,cd_vinculo_sigpec,cd_cargo,cd_situacao_funcional,dt_nomeacao,dt_posse,dt_inicio_exercicio,dt_fim_nomeacao,dt_cancelamento)
-values(503121	196820	1	3360	1	NULL	2018-04-10 00:00:00.000	2018-04-10 00:00:00.000	NULL	NULL);
+values(503121,196820,1,3360	1,NULL,'2018-04-10 00:00:00.000','2018-04-10 00:00:00.000',NULL,NULL);
 
 insert into v_cargo_base_cotic (cd_cargo_base_servidor,cd_servidor,cd_vinculo_sigpec,cd_cargo,cd_situacao_funcional,dt_nomeacao,dt_posse,dt_inicio_exercicio,dt_fim_nomeacao,dt_cancelamento)
-values(368408	197181	1	3255	1	NULL	2002-11-14 00:00:00.000	2002-11-26 00:00:00.000	NULL	NULL);
+values(368408,197181,1,3255	1,NULL,'2002-11-14 00:00:00.000','2002-11-26 00:00:00.000',NULL,NULL);
 
 insert into v_cargo_base_cotic (cd_cargo_base_servidor,cd_servidor,cd_vinculo_sigpec,cd_cargo,cd_situacao_funcional,dt_nomeacao,dt_posse,dt_inicio_exercicio,dt_fim_nomeacao,dt_cancelamento)
-values(369938	198292	1	3840	1	2003-01-17 00:00:00.000	2003-01-17 00:00:00.000	2003-01-17 00:00:00.000	NULL	NULL);
+values(369938,198292,1,3840,1,'2003-01-17 00:00:00.000','2003-01-17 00:00:00.000','2003-01-17 00:00:00.000',NULL,NULL);
 
 insert into v_cargo_base_cotic (cd_cargo_base_servidor,cd_servidor,cd_vinculo_sigpec,cd_cargo,cd_situacao_funcional,dt_nomeacao,dt_posse,dt_inicio_exercicio,dt_fim_nomeacao,dt_cancelamento)
-values(414703	214547	1	3239	1	2007-02-13 00:00:00.000	2007-02-13 00:00:00.000	2007-02-13 00:00:00.000	NULL	NULL);
+values(414703,214547,1,3239,1,'2007-02-13 00:00:00.000','2007-02-13 00:00:00.000','2007-02-13 00:00:00.000',NULL,NULL);
 
 insert into v_cargo_base_cotic (cd_cargo_base_servidor,cd_servidor,cd_vinculo_sigpec,cd_cargo,cd_situacao_funcional,dt_nomeacao,dt_posse,dt_inicio_exercicio,dt_fim_nomeacao,dt_cancelamento)
-values(426603	220837	1	3875	1	NULL,'2008-09-01 00:00:00.000	2008-09-02 00:00:00.000	NULL	NULL);
+values(426603,220837,1,3875,1,NULL,'2008-09-01 00:00:00.000','2008-09-02 00:00:00.000',NULL,NULL);
 
 insert into v_cargo_base_cotic (cd_cargo_base_servidor,cd_servidor,cd_vinculo_sigpec,cd_cargo,cd_situacao_funcional,dt_nomeacao,dt_posse,dt_inicio_exercicio,dt_fim_nomeacao,dt_cancelamento)
-values(431173	223749	1	3239	1	NULL,'2009-05-22 00:00:00.000	2009-05-22 00:00:00.000	2021-04-18 00:00:00.000	NULL);
+values(431173,223749,1,3239	1,NULL,'2009-05-22 00:00:00.000','2009-05-22 00:00:00.000','2021-04-18 00:00:00.000',NULL);
 
 insert into v_cargo_base_cotic (cd_cargo_base_servidor,cd_servidor,cd_vinculo_sigpec,cd_cargo,cd_situacao_funcional,dt_nomeacao,dt_posse,dt_inicio_exercicio,dt_fim_nomeacao,dt_cancelamento)
-values(528715	223749	1	3379	1	NULL,'2021-04-19 00:00:00.000	2021-04-19 00:00:00.000	NULL	NULL);
+values(528715,223749,1,3379	1,NULL,'2021-04-19 00:00:00.000','2021-04-19 00:00:00.000',NULL,NULL);
 
 insert into v_cargo_base_cotic (cd_cargo_base_servidor,cd_servidor,cd_vinculo_sigpec,cd_cargo,cd_situacao_funcional,dt_nomeacao,dt_posse,dt_inicio_exercicio,dt_fim_nomeacao,dt_cancelamento)
-values(439221	228829	1	3336	1	NULL,'2010-04-13 00:00:00.000	2010-04-13 00:00:00.000	NULL	NULL);
+values(439221,228829,1,3336	1,NULL,'2010-04-13 00:00:00.000','2010-04-13 00:00:00.000',NULL,NULL);
 
 insert into v_cargo_base_cotic (cd_cargo_base_servidor,cd_servidor,cd_vinculo_sigpec,cd_cargo,cd_situacao_funcional,dt_nomeacao,dt_posse,dt_inicio_exercicio,dt_fim_nomeacao,dt_cancelamento)
-values(453064	228829	2	3336	1	NULL,'2012-01-17 00:00:00.000	2012-01-17 00:00:00.000	NULL	NULL);
+values(453064,228829,2,3336	1,NULL,'2012-01-17 00:00:00.000','2012-01-17 00:00:00.000',NULL,NULL);
 
 insert into v_cargo_base_cotic (cd_cargo_base_servidor,cd_servidor,cd_vinculo_sigpec,cd_cargo,cd_situacao_funcional,dt_nomeacao,dt_posse,dt_inicio_exercicio,dt_fim_nomeacao,dt_cancelamento)
-values(440126	229320	1	3280	1	NULL,'2010-04-20 00:00:00.000	2010-04-27 00:00:00.000	NULL	NULL);
+values(440126,229320,1,3280	1,NULL,'2010-04-20 00:00:00.000','2010-04-27 00:00:00.000',NULL,NULL);
 
 insert into v_cargo_base_cotic (cd_cargo_base_servidor,cd_servidor,cd_vinculo_sigpec,cd_cargo,cd_situacao_funcional,dt_nomeacao,dt_posse,dt_inicio_exercicio,dt_fim_nomeacao,dt_cancelamento)
-values(441248	230149	1	3344	1	NULL,'2010-04-29 00:00:00.000	2010-05-05 00:00:00.000	2014-01-16 00:00:00.000	NULL);
+values(441248,230149,1,3344	1,NULL,'2010-04-29 00:00:00.000','2010-05-05 00:00:00.000','2014-01-16 00:00:00.000',NULL);
 
 insert into v_cargo_base_cotic (cd_cargo_base_servidor,cd_servidor,cd_vinculo_sigpec,cd_cargo,cd_situacao_funcional,dt_nomeacao,dt_posse,dt_inicio_exercicio,dt_fim_nomeacao,dt_cancelamento)
-values(464906	230149	1	3379	1	NULL,'2014-01-17 00:00:00.000	2014-01-17 00:00:00.000	NULL	NULL);
+values(464906,230149,1,3379	1,NULL,'2014-01-17 00:00:00.000','2014-01-17 00:00:00.000',NULL,NULL);
 
 insert into v_cargo_base_cotic (cd_cargo_base_servidor,cd_servidor,cd_vinculo_sigpec,cd_cargo,cd_situacao_funcional,dt_nomeacao,dt_posse,dt_inicio_exercicio,dt_fim_nomeacao,dt_cancelamento)
-values(441006	229960	1	3336	1	NULL,'2010-04-22 00:00:00.000	2010-05-03 00:00:00.000	NULL	NULL);
+values(441006,229960,1,3336	1,NULL,'2010-04-22 00:00:00.000','2010-05-03 00:00:00.000',NULL,NULL);
 
 insert into v_cargo_base_cotic (cd_cargo_base_servidor,cd_servidor,cd_vinculo_sigpec,cd_cargo,cd_situacao_funcional,dt_nomeacao,dt_posse,dt_inicio_exercicio,dt_fim_nomeacao,dt_cancelamento)
-values(441796	230563	1	3280	1	NULL,'2010-05-21 00:00:00.000	2010-05-31 00:00:00.000	NULL	NULL);
+values(441796,230563,1,3280	1,NULL,'2010-05-21 00:00:00.000','2010-05-31 00:00:00.000',NULL,NULL);
 
 insert into v_cargo_base_cotic (cd_cargo_base_servidor,cd_servidor,cd_vinculo_sigpec,cd_cargo,cd_situacao_funcional,dt_nomeacao,dt_posse,dt_inicio_exercicio,dt_fim_nomeacao,dt_cancelamento)
-values(443899	231779	1	3239	1	NULL,'2010-09-03 00:00:00.000	2010-09-08 00:00:00.000	NULL	NULL);
+values(443899,231779,1,3239	1,NULL,'2010-09-03 00:00:00.000','2010-09-08 00:00:00.000',NULL,NULL);
 
 insert into v_cargo_base_cotic (cd_cargo_base_servidor,cd_servidor,cd_vinculo_sigpec,cd_cargo,cd_situacao_funcional,dt_nomeacao,dt_posse,dt_inicio_exercicio,dt_fim_nomeacao,dt_cancelamento)
-values(444034	231855	1	3298	1	NULL,'2010-08-26 00:00:00.000	2010-09-08 00:00:00.000	NULL	NULL);
+values(444034,231855,1,3298	1,NULL,'2010-08-26 00:00:00.000','2010-09-08 00:00:00.000',NULL,NULL);
 
 insert into v_cargo_base_cotic (cd_cargo_base_servidor,cd_servidor,cd_vinculo_sigpec,cd_cargo,cd_situacao_funcional,dt_nomeacao,dt_posse,dt_inicio_exercicio,dt_fim_nomeacao,dt_cancelamento)
-values(451530	236279	1	3239	1	NULL,'2011-07-25 00:00:00.000	2011-08-08 00:00:00.000	NULL	NULL);
+values(451530,236279,1,3239	1,NULL,'2011-07-25 00:00:00.000','2011-08-08 00:00:00.000',NULL,NULL);
 
 insert into v_cargo_base_cotic (cd_cargo_base_servidor,cd_servidor,cd_vinculo_sigpec,cd_cargo,cd_situacao_funcional,dt_nomeacao,dt_posse,dt_inicio_exercicio,dt_fim_nomeacao,dt_cancelamento)
-values(453782	237728	1	3344	1	NULL,'2012-01-16 00:00:00.000	2012-01-17 00:00:00.000	2012-08-14 00:00:00.000	NULL);
+values(453782,237728,1,3344	1,NULL,'2012-01-16 00:00:00.000','2012-01-17 00:00:00.000','2012-08-14 00:00:00.000',NULL);
 
 insert into v_cargo_base_cotic (cd_cargo_base_servidor,cd_servidor,cd_vinculo_sigpec,cd_cargo,cd_situacao_funcional,dt_nomeacao,dt_posse,dt_inicio_exercicio,dt_fim_nomeacao,dt_cancelamento)
-values(458384	237728	2	3298	1	NULL,'2012-08-14 00:00:00.000	2012-08-14 00:00:00.000	NULL	NULL);
+values(458384,237728,2,3298	1,NULL,'2012-08-14 00:00:00.000','2012-08-14 00:00:00.000',NULL,NULL);
 
 insert into v_cargo_base_cotic (cd_cargo_base_servidor,cd_servidor,cd_vinculo_sigpec,cd_cargo,cd_situacao_funcional,dt_nomeacao,dt_posse,dt_inicio_exercicio,dt_fim_nomeacao,dt_cancelamento)
-values(464679	244886	1	3239	1	NULL,'2014-01-07 00:00:00.000	2014-01-07 00:00:00.000	NULL	NULL);
+values(464679,244886,1,3239	1,NULL,'2014-01-07 00:00:00.000','2014-01-07 00:00:00.000',NULL,NULL);
 
 insert into v_cargo_base_cotic (cd_cargo_base_servidor,cd_servidor,cd_vinculo_sigpec,cd_cargo,cd_situacao_funcional,dt_nomeacao,dt_posse,dt_inicio_exercicio,dt_fim_nomeacao,dt_cancelamento)
-values(473343	250295	1	3239	1	NULL,'2015-02-19 00:00:00.000	2015-02-20 00:00:00.000	NULL	NULL);
+values(473343,250295,1,3239	1,NULL,'2015-02-19 00:00:00.000','2015-02-20 00:00:00.000',NULL,NULL);
 
 insert into v_cargo_base_cotic (cd_cargo_base_servidor,cd_servidor,cd_vinculo_sigpec,cd_cargo,cd_situacao_funcional,dt_nomeacao,dt_posse,dt_inicio_exercicio,dt_fim_nomeacao,dt_cancelamento)
-values(485438	258342	1	3239	1	NULL,'2016-04-01 00:00:00.000	2016-04-15 00:00:00.000	NULL	NULL);
+values(485438,258342,1,3239	1,NULL,'2016-04-01 00:00:00.000','2016-04-15 00:00:00.000',NULL,NULL);
 
 insert into v_cargo_base_cotic (cd_cargo_base_servidor,cd_servidor,cd_vinculo_sigpec,cd_cargo,cd_situacao_funcional,dt_nomeacao,dt_posse,dt_inicio_exercicio,dt_fim_nomeacao,dt_cancelamento)
-values(495702	265591	1	3255	1	NULL,'2017-07-31 00:00:00.000	2017-08-08 00:00:00.000	NULL	NULL);
+values(495702,265591,1,3255	1,NULL,'2017-07-31 00:00:00.000','2017-08-08 00:00:00.000',NULL,NULL);
