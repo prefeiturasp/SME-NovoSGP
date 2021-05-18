@@ -47,9 +47,6 @@ namespace SME.SGP.Aplicacao.Interfaces
 
                     await SalvarFilhosItinerancia(dto, itinerancia);
 
-                    if (dataRetornoAlterada)
-                        await AltararDataEventosItinerancias(dto, dataRetornoAnterior);
-
                     unitOfWork.PersistirTransacao();
 
                     await EnviarNotificacao(itinerancia, dto);
