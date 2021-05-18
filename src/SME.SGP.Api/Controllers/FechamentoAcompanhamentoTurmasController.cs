@@ -44,20 +44,5 @@ namespace SME.SGP.Api
 
             return Ok(listaStatus);
         }
-
-
-        //TODO: REMOVER ANTES DA STORY IR PARA DEV!
-        [HttpPost]
-        public async Task<IActionResult> TestarFila([FromServices] IExecutarConsolidacaoTurmaGeralUseCase executarConsolidacaoTurmaGeralUseCase)
-        {
-
-            var obj = new ConsolidacaoTurmaDto() { Bimestre = 1, TurmaId = 625342 };
-            var mensagem = JsonConvert.SerializeObject(obj); 
-            var msgRabbit = new MensagemRabbit(mensagem);
-            
-            await executarConsolidacaoTurmaGeralUseCase.Executar(msgRabbit);
-
-            return Ok();
-        }
     }
 }
