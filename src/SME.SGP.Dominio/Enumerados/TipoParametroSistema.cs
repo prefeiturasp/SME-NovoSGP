@@ -114,6 +114,7 @@ namespace SME.SGP.Dominio
         ExecucaoConsolidacaoFrequenciaTurma = 58,
 
         ExecucaoConsolidacaoMatriculaTurma = 59,
+        ExecucaoConsolidacaoInformacoesEscolares = 60,
 
 
         //Sistema
