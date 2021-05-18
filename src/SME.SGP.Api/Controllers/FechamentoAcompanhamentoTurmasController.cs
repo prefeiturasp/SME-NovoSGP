@@ -18,7 +18,7 @@ namespace SME.SGP.Api
         [HttpGet("turmas")]
         [ProducesResponseType(typeof(PaginacaoResultadoDto<TurmaAcompanhamentoFechamentoRetornoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.ACF, Policy = "Bearer")]
+        [Permissao(Permissao.ACF_C, Policy = "Bearer")]
         public async Task<IActionResult> ListaTurmas([FromQuery] FiltroAcompanhamentoFechamentoTurmasDto filtro, [FromServices] IObterTurmasFechamentoAcompanhamentoUseCase useCase)
         {
             return Ok(await useCase.Executar(filtro));
@@ -27,7 +27,7 @@ namespace SME.SGP.Api
         [HttpGet("turmas/{turmaId}/fechamentos/bimestres/{bimestre}")]
         [ProducesResponseType(typeof(IEnumerable<StatusTotalFechamentoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.ACF, Policy = "Bearer")]
+        [Permissao(Permissao.ACF_C, Policy = "Bearer")]
         public async Task<IActionResult> ListaTotalStatusFechamentos(long turmaId, int bimestre, [FromServices] IObterFechamentoConsolidadoPorTurmaBimestreUseCase useCase)
         {
             var listaStatus = await useCase.Executar(new FiltroFechamentoConsolidadoTurmaBimestreDto(turmaId, bimestre));
@@ -37,7 +37,7 @@ namespace SME.SGP.Api
         [HttpGet("turmas/{turmaId}/conselho-classe/bimestres/{bimestre}")]
         [ProducesResponseType(typeof(IEnumerable<StatusTotalFechamentoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.ACF, Policy = "Bearer")]
+        [Permissao(Permissao.ACF_C, Policy = "Bearer")]
         public async Task<IActionResult> ListaTotalStatusConselhosClasse(long turmaId, int bimestre, [FromServices] IObterConselhoClasseConsolidadoPorTurmaBimestreUseCase useCase)
         {
             var listaStatus = await useCase.Executar(new FiltroConselhoClasseConsolidadoTurmaBimestreDto(turmaId, bimestre));

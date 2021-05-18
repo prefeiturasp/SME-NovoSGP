@@ -646,8 +646,7 @@
         [PermissaoMenu(Menu = "Frequência", Icone = "fas fa-chart-bar", Agrupamento = "Dashboard", OrdemAgrupamento = 9, EhConsulta = true, Url = "/dashboard/frequencia")]
         DF_C = 217,
 
-
-        [PermissaoMenu(Menu = "Acompanhamento do fechamento", Icone = "fas fa-pencil-ruler", Agrupamento = "Fechamento", OrdemAgrupamento = 6, EhConsulta = true, Url = "/fechamento/acompanhamento-fechamento")]
-        ACF = 218,
+        [PermissaoMenu(Menu = "Acompanhamento do fechamento", Icone = "fas fa-pencil-ruler", Agrupamento = "Fechamento", OrdemAgrupamento = 3, EhConsulta = true, Url = "/fechamento/acompanhamento-fechamento")]
+        ACF_C = 218,
     }
 }
