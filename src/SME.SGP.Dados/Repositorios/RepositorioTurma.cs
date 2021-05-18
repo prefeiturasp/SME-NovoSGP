@@ -869,83 +869,27 @@ namespace SME.SGP.Dados.Repositorios
 	                            where
 		                            turma_id = @turmaId);
 
-                            delete
-                            from
-	                            public.fechamento_turma
-                            where
-	                            turma_id = @turmaId;
+                            delete from public.fechamento_turma where turma_id = @turmaId;
 
-                            delete
-                            from
-	                            public.frequencia_aluno
-                            where
-	                            turma_id = @turmaCodigo;
+                            delete from public.frequencia_aluno where turma_id = @turmaCodigo;
 
-                            delete
-                            from
-	                            public.diario_bordo
-                            where
-	                            aula_id in (
-	                            select
-		                            id
-	                            from
-		                            public.aula
-	                            where
-		                            turma_id = @turmaCodigo);
+                            delete from public.diario_bordo where aula_id in (select id from public.aula where turma_id = @turmaCodigo);
 
-                            delete
-                            from
-	                            public.notificacao_frequencia
-                            where
-	                            aula_id in (
-	                            select
-		                            id
-	                            from
-		                            public.aula
-	                            where
-		                            turma_id = @turmaCodigo);
+                            delete from public.notificacao_frequencia where aula_id in (select id from public.aula where turma_id = @turmaCodigo);
 
-                            delete
-                            from
-	                            public.registro_frequencia
-                            where
-	                            aula_id in (
-	                            select
-		                            id
-	                            from
-		                            public.aula
-	                            where
-		                            turma_id = @turmaCodigo);
+                            delete from public.registro_frequencia where aula_id in ( select id from public.aula where turma_id = @turmaCodigo);
 
-                            delete
-                            from
-	                            public.aula
-                            where
-	                            turma_id = @turmaCodigo;
+                            delete from public.aula where turma_id = @turmaCodigo;
 
-                            delete
-                            from
-	                            pendencia_registro_individual_aluno pria
-                            where
-	                            pria.pendencia_registro_individual_id in (
-	                            select
-		                            id
-	                            from
-		                            pendencia_registro_individual pri
-	                            where
-		                            pri.turma_id = @turmaId);
+                            delete from public.pendencia_registro_individual_aluno pria where pria.pendencia_registro_individual_id in (select id from public.pendencia_registro_individual pri where pri.turma_id = @turmaId);
 
-                            delete
-                            from
-	                            pendencia_registro_individual pri
-                            where
-	                            pri.turma_id = @turmaId;
+                            delete from public.pendencia_registro_individual pri where pri.turma_id = @turmaId;
+        
+                            delete from public.consolidacao_frequencia_turma where turma_id = @turmaId;
+    
+                            delete from public.pendencia_professor where turma_id = @turmaId;
 
-                            delete
-                            from
-	                            public.turma
-                            where
-	                            id = @turmaId;";
+                            delete from public.turma where id = @turmaId;";
 
 
             var transacao = contexto.Conexao.BeginTransaction();

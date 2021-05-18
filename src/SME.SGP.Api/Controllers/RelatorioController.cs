@@ -168,5 +168,13 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await relatorioUseCase.Executar(filtro));
         }
+
+        [HttpPost("acompanhamento-aprendizagem")]
+        [ProducesResponseType(typeof(Boolean), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> AcompanhamentoAprendizagem([FromBody] FiltroRelatorioAcompanhamentoAprendizagemDto filtro, [FromServices] IRelatorioAcompanhamentoAprendizagemUseCase relatorioUseCase)
+        {
+            return Ok(await relatorioUseCase.Executar(filtro));
+        }
     }
 }

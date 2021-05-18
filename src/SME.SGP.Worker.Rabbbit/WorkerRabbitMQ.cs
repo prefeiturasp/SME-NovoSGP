@@ -61,6 +61,8 @@ namespace SME.SGP.Worker.RabbitMQ
 
             canalRabbit.ExchangeDeclare(RotasRabbit.ExchangeSgp, ExchangeType.Topic);
 
+            canalRabbit.BasicQos(0, 10, false);
+
             canalRabbit.ExchangeDeclare(RotasRabbit.ExchangeServidorRelatorios, ExchangeType.Topic);
             canalRabbit.QueueDeclare(RotasRabbit.FilaSgp, false, false, false, null);
 

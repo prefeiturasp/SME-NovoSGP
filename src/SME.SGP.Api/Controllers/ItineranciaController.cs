@@ -27,6 +27,7 @@ namespace SME.SGP.Api
         {
             return Ok(await useCase.Executar());
         }
+       
         [HttpGet("criadores")]
         [ProducesResponseType(typeof(IEnumerable<ItineranciaObjetivosBaseDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
