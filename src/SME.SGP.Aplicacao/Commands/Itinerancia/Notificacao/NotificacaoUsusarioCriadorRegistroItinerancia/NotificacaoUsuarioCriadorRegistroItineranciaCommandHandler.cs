@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
             var itinerancia = await mediator.Send(new ObterItineranciaPorIdQuery(request.ItineranciaId));
             if (itinerancia == null)
                 throw new NegocioException("Não foi possível encontrar a UE informada");
-            
+
             var ue = await mediator.Send(new ObterUeComDrePorIdQuery(itinerancia.UeId));
             if (ue == null)
                 throw new NegocioException("Não foi possível encontrar a UE informada");
@@ -43,7 +43,7 @@ namespace SME.SGP.Aplicacao
                 mensagem = new StringBuilder($"Registro de Itinerância para a {descricaoUe} no dia {dataVisita:dd/MM/yyyy} para os seguintes estudantes, abaixo foi validado pelos gestores da UE.");
             else
                 mensagem = new StringBuilder($"Registro de Itinerância para a {descricaoUe} no dia {dataVisita:dd/MM/yyyy} foi validado pelos gestores da UE.");
-            
+
             var usuario = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(criadoRF));
 
             if (estudantes != null && estudantes.Any())
@@ -54,7 +54,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task MontarTabelaEstudantes(IEnumerable<ItineranciaAluno> estudantes, StringBuilder mensagem, DateTime dataVisita)
         {
-            List<Turma> turmas = new();
+            List<Turma> turmas = new List<Turma>();
             mensagem.AppendLine();
             mensagem.AppendLine("<br/><br/><table border=2><tr style='font-weight: bold'><td>Estudante</td><td>Turma Regular</td></tr>");
 
@@ -62,14 +62,13 @@ namespace SME.SGP.Aplicacao
 
             foreach (var estudante in estudantesEol.OrderBy(a => a.NomeAluno).DistinctBy(a => a.CodigoAluno))
             {
-                var turma = turmas.FirstOrDefault(a => a.Id == estudantes.FirstOrDefault(e => e.CodigoAluno == estudante.CodigoAluno.ToString()).TurmaId);
-                if (turma == null)
+                var turma = await mediator.Send(new ObterTurmaPorIdQuery(estudantes.FirstOrDefault(e => e.CodigoAluno == estudante.CodigoAluno.ToString()).TurmaId));
+                if (turma != null)
                 {
-                    turma = await mediator.Send(new ObterTurmaPorIdQuery(estudantes.FirstOrDefault(e => e.CodigoAluno == estudante.CodigoAluno.ToString()).TurmaId));
                     turmas.Add(turma);
+                    mensagem.AppendLine($"<tr><td>{estudante.NomeAluno} ({estudante.CodigoAluno})</td><td>{turma.ModalidadeCodigo.ShortName()} - {turma.Nome}</td></tr>");
                 }
-                mensagem.AppendLine($"<tr><td>{estudante.NomeAluno} ({estudante.CodigoAluno})</td><td>{turma.ModalidadeCodigo.ShortName()} - {turma.Nome}</td></tr>");
-                
+
             }
             mensagem.AppendLine("</table>");
         }
