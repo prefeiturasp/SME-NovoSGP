@@ -1,4 +1,7 @@
 ﻿using Dapper;
+using Microsoft.Extensions.Configuration;
+using Npgsql;
+using NpgsqlTypes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -11,8 +14,10 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioRegistroAusenciaAluno : RepositorioBase<RegistroAusenciaAluno>, IRepositorioRegistroAusenciaAluno
     {
-        public RepositorioRegistroAusenciaAluno(ISgpContext database) : base(database)
+        private readonly string connectionString;
+        public RepositorioRegistroAusenciaAluno(ISgpContext database, IConfiguration configuration) : base(database)
         {
+            this.connectionString = configuration.GetConnectionString("SGP_Postgres");
         }
 
         public bool MarcarRegistrosAusenciaAlunoComoExcluidoPorRegistroFrequenciaId(long registroFrequenciaId)
@@ -27,14 +32,14 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.Execute(query, new { registroFrequenciaId }) > 0;
         }
 
-        public IEnumerable<RegistroAusenciaAluno> ObterRegistrosAusenciaPorAula(long aulaId)
+        public Task<IEnumerable<RegistroAusenciaAluno>> ObterRegistrosAusenciaPorAulaAsync(long aulaId)
         {
             var query = @"select a.* 
                       from registro_ausencia_aluno a
                       inner join registro_frequencia f on f.id = a.registro_frequencia_id
                       where f.aula_id = @aulaId ";
 
-            return database.Conexao.Query<RegistroAusenciaAluno>(query, new { aulaId });
+            return database.Conexao.QueryAsync<RegistroAusenciaAluno>(query, new { aulaId });
         }
 
         private String BuildQueryObterTotalAulasPorDisciplinaETurma(DateTime dataAula, string disciplinaId,
@@ -67,7 +72,7 @@ namespace SME.SGP.Dados.Repositorios
             String query = BuildQueryObterTotalAulasPorDisciplinaETurma(dataAula, disciplinaId, turmaId);
             return database.Conexao.QueryFirstOrDefault<int>(query.ToString(), new { dataAula, disciplinaId, turmaId });
         }
-        
+
         public async Task<int> ObterTotalAulasPorDisciplinaETurmaAsync(DateTime dataAula, string disciplinaId, string turmaId)
         {
             String query = BuildQueryObterTotalAulasPorDisciplinaETurma(dataAula, disciplinaId, turmaId);
@@ -120,7 +125,7 @@ namespace SME.SGP.Dados.Repositorios
             String query = BuildQueryObterTotalAusenciasPorAlunoETurma(dataAula, codigoAluno, disciplinaId, turmaId);
             return database.Conexao.QueryFirstOrDefault<AusenciaPorDisciplinaDto>(query.ToString(), new { dataAula, codigoAluno, disciplinaId, turmaId });
         }
-        
+
         public async Task<AusenciaPorDisciplinaDto> ObterTotalAusenciasPorAlunoETurmaAsync(DateTime dataAula, string codigoAluno, string disciplinaId, string turmaId)
         {
             String query = BuildQueryObterTotalAusenciasPorAlunoETurma(dataAula, codigoAluno, disciplinaId, turmaId);
@@ -166,6 +171,57 @@ namespace SME.SGP.Dados.Repositorios
                     a.disciplina_id";
 
             return await database.Conexao.QueryAsync<AusenciaPorDisciplinaAlunoDto>(query, new { dataAula, codigoAlunos, turmaId });
+        }
+
+        public async Task SalvarVarios(List<RegistroAusenciaAluno> entidades)
+        {
+            var sql = @"copy registro_ausencia_aluno (                                         
+                                        codigo_aluno, 
+                                        numero_aula, 
+                                        registro_frequencia_id,
+                                        migrado,
+                                        criado_por,
+                                        criado_rf)
+                            from
+                            stdin (FORMAT binary)";
+
+            using (var conexao = new NpgsqlConnection(connectionString))
+            {
+                using (var writer = conexao.BeginBinaryImport(sql))
+                {
+                    await conexao.OpenAsync();
+                    foreach (var entidade in entidades)
+                    {
+                        writer.StartRow();
+                        writer.Write(entidade.CodigoAluno, NpgsqlDbType.Varchar);
+                        writer.Write(entidade.NumeroAula, NpgsqlDbType.Integer); ;
+                        writer.Write(entidade.RegistroFrequenciaId, NpgsqlDbType.Bigint);
+                        writer.Write(entidade.Migrado, NpgsqlDbType.Bigint);
+                        writer.Write(database.UsuarioLogadoNomeCompleto, NpgsqlDbType.Varchar);
+                        writer.Write(database.UsuarioLogadoRF, NpgsqlDbType.Varchar);
+                    }
+                    await Task.FromResult(writer.Complete());
+                    conexao.Close();
+                }
+            }
+        }
+
+        public async Task ExcluirVarios(List<long> idsParaExcluir)
+        {
+            var query = "delete from registro_ausencia_aluno where = any(@idsParaExcluir)";
+
+            using (var conexao = new NpgsqlConnection(connectionString))
+            {
+                await conexao.OpenAsync();
+                await conexao.ExecuteAsync(
+                    query,
+                    new
+                    {
+                        idsParaExcluir
+
+                    });
+                conexao.Close();
+            }
         }
     }
 }
