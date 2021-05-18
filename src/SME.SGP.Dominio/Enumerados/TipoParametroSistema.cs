@@ -113,6 +113,8 @@ namespace SME.SGP.Dominio
 
         ExecucaoConsolidacaoFrequenciaTurma = 58,
 
+        ExecucaoConsolidacaoInformacoesEscolares = 60,
+
 
         //Sistema
         HabilitarServicosEmBackground = 100
