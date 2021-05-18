@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
 using System;
@@ -37,10 +38,15 @@ namespace SME.SGP.Aplicacao
                     lstAbrangencia.AddRange(abrangenciaHistorica);
 
                 var anosLetivos = lstAbrangencia.Select(a => a.AnoLetivo)?.Distinct()?.ToArray();
-                var modalidades = lstAbrangencia.Select(a => (int)a.ModalidadeTipoCalendario)?.Distinct()?.ToArray();
+                string[] codigosUes = lstAbrangencia.Select(a => a.CodigoUe)?.Distinct()?.ToArray();
 
-                return await mediator.Send(new ObterTiposCalendariosPorAnosLetivoModalidadesQuery(anosLetivos, modalidades));
+                var modalidadesUes = await mediator.Send(new ObterModalidadesPorCodigosUeQuery(codigosUes));
 
+                var modalidadesTipoCalendarioUes = modalidadesUes.Select(a => a == Modalidade.EJA ? (int)ModalidadeTipoCalendario.EJA :
+                                                                              a == Modalidade.Infantil ? (int)ModalidadeTipoCalendario.Infantil :
+                                                                                (int)ModalidadeTipoCalendario.FundamentalMedio).ToArray();             
+
+                return await mediator.Send(new ObterTiposCalendariosPorAnosLetivoModalidadesQuery(anosLetivos, modalidadesTipoCalendarioUes));
             }
             else
                 return await mediator.Send(new ObterTipoCalendarioPorBuscaQuery(descricao));
