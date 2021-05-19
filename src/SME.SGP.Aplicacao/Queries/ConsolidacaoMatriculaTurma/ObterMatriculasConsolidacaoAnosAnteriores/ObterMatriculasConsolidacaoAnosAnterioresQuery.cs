@@ -5,9 +5,9 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterMatriculasPorTurmaConsolidacaoQuery : IRequest<IEnumerable<ConsolidacaoMatriculaTurmaDto>>
+    public class ObterMatriculasConsolidacaoAnosAnterioresQuery : IRequest<IEnumerable<ConsolidacaoMatriculaTurmaDto>>
     {
-        public ObterMatriculasPorTurmaConsolidacaoQuery(int anoLetivo, string ueCodigo)
+        public ObterMatriculasConsolidacaoAnosAnterioresQuery(int anoLetivo, string ueCodigo)
         {
             AnoLetivo = anoLetivo;
             UeCodigo = ueCodigo;
@@ -17,9 +17,9 @@ namespace SME.SGP.Aplicacao
         public string UeCodigo { get; set; }
     }
 
-    public class ObterMatriculasPorTurmaConsolidacaoQueryValidator : AbstractValidator<ObterMatriculasPorTurmaConsolidacaoQuery>
+    public class ObterMatriculasConsolidacaoAnosAnterioresQueryValidator : AbstractValidator<ObterMatriculasConsolidacaoAnosAnterioresQuery>
     {
-        public ObterMatriculasPorTurmaConsolidacaoQueryValidator()
+        public ObterMatriculasConsolidacaoAnosAnterioresQueryValidator()
         {
             RuleFor(a => a.AnoLetivo)
                 .NotEmpty()

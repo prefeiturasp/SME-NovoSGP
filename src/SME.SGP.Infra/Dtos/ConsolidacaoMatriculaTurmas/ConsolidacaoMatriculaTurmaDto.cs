@@ -12,6 +12,7 @@ namespace SME.SGP.Infra
             Quantidade = quantidade;
         }
 
+        public long TurmaId { get; set; }
         public string TurmaCodigo { get; set; }
         public int Quantidade { get; set; }
     }

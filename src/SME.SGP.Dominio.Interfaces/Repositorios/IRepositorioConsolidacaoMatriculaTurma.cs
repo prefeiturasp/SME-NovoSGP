@@ -9,5 +9,6 @@ namespace SME.SGP.Dominio
         Task<IEnumerable<InformacoesEscolaresPorDreEAnoDto>> ObterGraficoMatriculasAsync(int anoLetivo, long dreId, long ueId, string ano, Modalidade modalidade, int? semestre);
         Task<long> Inserir(ConsolidacaoMatriculaTurma consolidacao);
         Task LimparConsolidacaoMatriculasTurmasPorAnoLetivo(int anoLetivo);
+        Task<bool> ExisteConsolidacaoMatriculaTurmaPorAno(int ano);
     }
 }

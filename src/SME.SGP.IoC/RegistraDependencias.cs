@@ -383,6 +383,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioConsolidacaoMatriculaTurma, RepositorioConsolidacaoMatriculaTurma>();
             services.TryAddScoped<ICarregarDresConsolidacaoMatriculaUseCase, CarregarDresConsolidacaoMatriculaUseCase>();
             services.TryAddScoped<IExecutarSincronizacaoDresConsolidacaoMatriculasUseCase, ExecutarSincronizacaoDresConsolidacaoMatriculasUseCase>();
+            services.TryAddScoped<ICarregarMatriculaTurmaUseCase, CarregarMatriculaTurmaUseCase>();
+            services.TryAddScoped<IExecutarConsolidacaoMatriculaTurmasUseCase, ExecutarConsolidacaoMatriculaTurmasUseCase>();
+            services.TryAddScoped<IExecutarSincronizacaoConsolidacaoMatriculasTurmasUseCase, ExecutarSincronizacaoConsolidacaoMatriculasTurmasUseCase>();
 
         }
 

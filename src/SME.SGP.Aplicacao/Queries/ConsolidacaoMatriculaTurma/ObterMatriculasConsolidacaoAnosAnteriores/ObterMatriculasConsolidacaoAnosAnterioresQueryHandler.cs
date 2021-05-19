@@ -7,23 +7,23 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao
+namespace SME.SGP.Aplicacao.Queries.ConsolidacaoMatriculaTurma.ObterMatriculasConsolidacaoAnosAnteriores
 {
-    public class ObterMatriculasPorTurmaConsolidacaoQueryHandler : IRequestHandler<ObterMatriculasPorTurmaConsolidacaoQuery, IEnumerable<ConsolidacaoMatriculaTurmaDto>>
+    public class ObterMatriculasConsolidacaoAnosAnterioresQueryHandler : IRequestHandler<ObterMatriculasConsolidacaoAnosAnterioresQuery, IEnumerable<ConsolidacaoMatriculaTurmaDto>>
     {
         private readonly IHttpClientFactory httpClientFactory;
 
-        public ObterMatriculasPorTurmaConsolidacaoQueryHandler(IHttpClientFactory httpClientFactory)
+        public ObterMatriculasConsolidacaoAnosAnterioresQueryHandler(IHttpClientFactory httpClientFactory)
         {
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
         }
 
-        public async Task<IEnumerable<ConsolidacaoMatriculaTurmaDto>> Handle(ObterMatriculasPorTurmaConsolidacaoQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<ConsolidacaoMatriculaTurmaDto>> Handle(ObterMatriculasConsolidacaoAnosAnterioresQuery request, CancellationToken cancellationToken)
         {
             var matriculasConsolidadas = new List<ConsolidacaoMatriculaTurmaDto>();
 
             var httpClient = httpClientFactory.CreateClient("servicoEOL");
-            var resposta = await httpClient.GetAsync($"api/matriculas?anoLetivo={request.AnoLetivo}&ueCodigo={request.UeCodigo}");
+            var resposta = await httpClient.GetAsync($"api/anos-anteriores?anoLetivo={request.AnoLetivo}");
             if (resposta.IsSuccessStatusCode)
             {
                 var json = await resposta.Content.ReadAsStringAsync();

@@ -206,15 +206,5 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(usuarioRF, usuarioPerfil));
         }
 
-        [HttpGet("teste")]
-        [ProducesResponseType(typeof(bool), 200)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        public async Task<IActionResult> Teste([FromServices] ICarregarDresConsolidacaoMatriculaUseCase useCase)
-        {
-            return Ok(await useCase.Executar());
-        }
-
     }
 }
