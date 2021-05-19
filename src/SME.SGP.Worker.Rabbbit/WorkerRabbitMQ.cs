@@ -122,6 +122,8 @@ namespace SME.SGP.Worker.RabbitMQ
 
             comandos.Add(RotasRabbitSgp.RotaAlterarAulaFrequenciaTratar, new ComandoRabbit("Normaliza as frequências quando há uma alteração de aula única", typeof(IAlterarAulaFrequenciaTratarUseCase)));
             
+
+            comandos.Add(RotasRabbitSgp.RotaValidacaoAusenciaConciliacaoFrequenciaTurma, new ComandoRabbit("Validação de ausência para conciliação de frequência da turma", typeof(IValidacaoAusenciaConcolidacaoFrequenciaTurmaUseCase)));
         }
 
         private async Task TratarMensagem(BasicDeliverEventArgs ea)
@@ -218,7 +220,6 @@ namespace SME.SGP.Worker.RabbitMQ
                 var mensagem = JsonConvert.SerializeObject(request);
                 var body = Encoding.UTF8.GetBytes(mensagem);
 
-                canalRabbit.QueueBind(RotasRabbitSgp.FilaSgp, ExchangeRabbit.Sgp, RotasRabbitSgp.RotaNotificacaoUsuario);
                 canalRabbit.BasicPublish(ExchangeRabbit.Sgp, RotasRabbitSgp.RotaNotificacaoUsuario, null, body);
             }
         }
@@ -258,19 +259,12 @@ namespace SME.SGP.Worker.RabbitMQ
             };
 
             RegistrarConsumerSgp(consumer);
-            RegistrarConsumerRelatorios(consumer);
             return Task.CompletedTask;
         }
 
         private void RegistrarConsumerSgp(EventingBasicConsumer consumer)
         {
             foreach (var fila in typeof(RotasRabbitSgp).ObterConstantesPublicas<string>())
-                canalRabbit.BasicConsume(fila, false, consumer);
-        }
-
-        private void RegistrarConsumerRelatorios(EventingBasicConsumer consumer)
-        {
-            foreach (var fila in typeof(RotasRabbitRelatorios).ObterConstantesPublicas<string>())
                 canalRabbit.BasicConsume(fila, false, consumer);
         }
     }
