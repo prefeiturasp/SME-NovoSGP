@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
@@ -18,7 +19,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(IEnumerable<GraficoBaseDto>), 200)]
-        [Permissao(Permissao.DIE_C, Policy = "Bearer")])]
+        [Permissao(Permissao.DIE_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterGraficoPorMatricula([FromQuery] FiltroGraficoMatriculaDto filtro, [FromServices] IObterDashboardInformacoesEscolaresPorMatriculaUseCase useCase)
         {
             return Ok(await useCase.Executar(filtro));
