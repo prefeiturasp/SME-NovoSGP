@@ -24,6 +24,7 @@ namespace SME.SGP.Aplicacao
             try
             {
                 var periodosPorModalidade = await ObterPeriodosPassadosPorModalidade(request.Data);
+
                 foreach (var modalidade in periodosPorModalidade)
                 {
                     var turmasDaModalidade = await ObterTurmasPorModalidade(modalidade.Key, request.Data.Year);

@@ -1,5 +1,7 @@
 ﻿using MediatR;
+using Sentry;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Infra;
 using System;
 using System.Threading.Tasks;
 
@@ -13,7 +15,10 @@ namespace SME.SGP.Aplicacao
 
         public async Task Executar()
         {
-            await mediator.Send(new ConciliacaoFrequenciaTurmasCommand(DateTime.Now));
+            SentrySdk.AddBreadcrumb($"Mensagem ConciliacaoFrequenciaTurmaSync", "Rabbit - ConciliacaoFrequenciaTurmaSync");
+            var command = new ConciliacaoFrequenciaTurmasCommand(DateTime.Now);
+
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaConciliacaoFrequenciaTurmaSync, command, Guid.NewGuid(), null));
         }
     }
 }

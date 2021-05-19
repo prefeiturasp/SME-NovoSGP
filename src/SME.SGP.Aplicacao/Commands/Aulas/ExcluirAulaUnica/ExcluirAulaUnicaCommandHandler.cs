@@ -45,6 +45,11 @@ namespace SME.SGP.Aplicacao
                 await mediator.Send(new ExcluirDiarioBordoDaAulaCommand(aula.Id));
                 await mediator.Send(new IncluirFilaExclusaoPendenciasAulaCommand(aula.Id, request.Usuario));
 
+                //TODO: TENTAR OTIMIZAR PARA BUSCAR MAIS FÁCIL O BIMESTRE
+                var bimestreAtual = await mediator.Send(new ObterBimestrePorTurmaCodigoQuery(aula.TurmaId, aula.DataAula));
+
+                await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(null, aula.DataAula, aula.TurmaId, aula.DisciplinaId, bimestreAtual));
+
                 aula.Excluido = true;
                 await repositorioAula.SalvarAsync(aula);
 

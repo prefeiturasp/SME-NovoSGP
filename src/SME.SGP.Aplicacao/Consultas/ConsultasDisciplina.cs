@@ -198,21 +198,19 @@ namespace SME.SGP.Aplicacao
             if (!usuario.EhProfessor() && !usuario.EhProfessorCj() && !usuario.EhProfessorPoa())
                 await repositorioCache.SalvarAsync(chaveCache, JsonConvert.SerializeObject(disciplinasDto));
 
-            return await TratarRetornoDisciplinasPlanejamento(disciplinasDto, codigoDisciplina, regencia, codigoTurma);
+            return await TratarRetornoDisciplinasPlanejamento(disciplinasDto, codigoDisciplina, regencia, codigoTurma, usuario.EhProfessorCj());
         }
 
         public async Task<IEnumerable<DisciplinaResposta>> ObterComponentesRegencia(Turma turma, long componenteCurricularCodigo)
         {
             var usuario = await servicoUsuario.ObterUsuarioLogado();
-            var regencias = await mediator.Send(new ObterComponentesCurricularesRegenciaPorTurmaCodigoQuery(turma.CodigoTurma));
-            
             if (usuario.EhProfessorCj())
                 return await ObterComponentesCJ(turma.ModalidadeCodigo, turma.CodigoTurma, turma.Ue.CodigoUe, componenteCurricularCodigo, usuario.CodigoRf);
             else
             {
-                var componentesCurriculares = await servicoEOL.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamento(turma.CodigoTurma, usuario.Login, usuario.PerfilAtual);
-                
-                return MapearComponentes(componentesCurriculares.Where(x => x.Regencia && regencias.Any(c => c.CodigoComponenteCurricular == x.Codigo))).OrderBy(c => c.Nome);
+                var componentesCurriculares = await servicoEOL.ObterDisciplinasPorCodigoTurma(turma.CodigoTurma);
+
+                return componentesCurriculares.Where(x => x.Regencia).OrderBy(c => c.Nome);
             }
         }
 
@@ -442,7 +440,7 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private async Task<IEnumerable<DisciplinaDto>> TratarRetornoDisciplinasPlanejamento(IEnumerable<DisciplinaDto> disciplinas, long codigoDisciplina, bool regencia, string codigoTurma = "")
+        private async Task<IEnumerable<DisciplinaDto>> TratarRetornoDisciplinasPlanejamento(IEnumerable<DisciplinaDto> disciplinas, long codigoDisciplina, bool regencia, string codigoTurma = "", bool CJ = false)
         {
             if (codigoDisciplina == 0)
                 return disciplinas;
@@ -452,12 +450,11 @@ namespace SME.SGP.Aplicacao
                 if(!codigoTurma.Equals(""))
                 {
                     var regencias = await mediator.Send(new ObterComponentesCurricularesRegenciaPorTurmaCodigoQuery(codigoTurma));
-                    return disciplinas.Where(x => x.Regencia && regencias.Any(c => c.CodigoComponenteCurricular == x.CodigoComponenteCurricular));
-                }
-                
-                return disciplinas.Where(x => x.Regencia);
-            }
-                
+                    return CJ ? disciplinas.Where(x => regencias.Any(c => c.CodigoComponenteCurricular == x.CodigoComponenteCurricular))
+                        : disciplinas.Where(x => x.Regencia && regencias.Any(c => c.CodigoComponenteCurricular == x.CodigoComponenteCurricular));
+                }                
+                return CJ ? disciplinas : disciplinas.Where(x => x.Regencia);
+            }                
 
             return disciplinas.Where(x => x.CodigoComponenteCurricular == codigoDisciplina);
         }

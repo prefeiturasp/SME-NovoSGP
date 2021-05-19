@@ -30,7 +30,6 @@ namespace SME.SGP.IoC
         public static void Registrar(IServiceCollection services)
         {
             RegistrarMediator(services);
-            RegistrarRabbit(services);
 
             ResgistraDependenciaHttp(services);
             RegistrarRepositorios(services);
@@ -328,7 +327,6 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IServicoConselhoClasse, ServicoConselhoClasse>();
             services.TryAddScopedWorkerService<IServicoCalculoParecerConclusivo, ServicoCalculoParecerConclusivo>();
             services.TryAddScopedWorkerService<IServicoObjetivosAprendizagem, ServicoObjetivosAprendizagem>();
-            services.TryAddScopedWorkerService<IServicoFila, FilaRabbit>();
         }
 
 
@@ -410,6 +408,7 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IAtualizarSituacaoConselhoClasseUseCase, AtualizarSituacaoConselhoClasseUseCase>();
 
             // Frequência
+            services.TryAddScopedWorkerService<IConciliacaoFrequenciaTurmaSyncUseCase, ConciliacaoFrequenciaTurmaSyncUseCase>();
             services.TryAddScopedWorkerService<IConciliacaoFrequenciaTurmasUseCase, ConciliacaoFrequenciaTurmasUseCase>();
             services.TryAddScopedWorkerService<IValidacaoAusenciaConcolidacaoFrequenciaTurmaUseCase, ValidacaoAusenciaConcolidacaoFrequenciaTurmaUseCase>();
 
@@ -488,6 +487,8 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IAlterarOcorrenciaUseCase, AlterarOcorrenciaUseCase>();
             services.TryAddScopedWorkerService<IExcluirOcorrenciaUseCase, ExcluirOcorrenciaUseCase>();
             services.TryAddScopedWorkerService<IInserirOcorrenciaUseCase, InserirOcorrenciaUseCase>();
+
+            services.TryAddScopedWorkerService<IAlterarAulaFrequenciaTratarUseCase, AlterarAulaFrequenciaTratarUseCase>();
         }
 
         private static void ResgistraDependenciaHttp(IServiceCollection services)

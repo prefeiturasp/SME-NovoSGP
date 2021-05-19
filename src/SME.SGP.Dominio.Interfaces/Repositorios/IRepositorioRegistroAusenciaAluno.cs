@@ -17,6 +17,9 @@ namespace SME.SGP.Dominio.Interfaces
         
         Task<AusenciaPorDisciplinaDto> ObterTotalAusenciasPorAlunoETurmaAsync(DateTime dataAula, string codigoAluno, string disciplinaId, string turmaId);
 
-        IEnumerable<RegistroAusenciaAluno> ObterRegistrosAusenciaPorAula(long aulaId);
+        Task<IEnumerable<RegistroAusenciaAluno>> ObterRegistrosAusenciaPorAulaAsync(long aulaId);
+        Task<IEnumerable<AusenciaPorDisciplinaAlunoDto>> ObterTotalAusenciasPorAlunosETurmaAsync(DateTime dataAula, IEnumerable<string> alunos,  string turmaId);
+        Task SalvarVarios(List<RegistroAusenciaAluno> ausenciasParaAdicionar);
+        Task ExcluirVarios(List<long> idsParaExcluir);
     }
 }
