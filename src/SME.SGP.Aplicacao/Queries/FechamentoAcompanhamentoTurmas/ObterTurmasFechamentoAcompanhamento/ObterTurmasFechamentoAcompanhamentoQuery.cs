@@ -45,10 +45,10 @@ namespace SME.SGP.Aplicacao
                 .NotEmpty()
                 .WithMessage("A modalidade deve ser informada.");
             RuleFor(a => a.Semestre)
-                .NotEmpty()
+                .NotNull()
                 .WithMessage("O semestre deve ser informado.");
             RuleFor(a => a.Bimestre)
-                .NotEmpty()
+                .NotNull()
                 .WithMessage("O bimestre deve ser informado.");
             RuleFor(a => a.AnoLetivo)
                 .NotEmpty()

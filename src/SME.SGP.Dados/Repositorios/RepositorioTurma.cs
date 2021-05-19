@@ -695,7 +695,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task ExcluirTurmaExtintaAsync(string turmaCodigo, long turmaId)
         {
 
-                var sqlExcluirTurmas = @"delete
+            var sqlExcluirTurmas = @"delete
                             from
 	                            public.compensacao_ausencia_aluno
                             where
@@ -897,7 +897,7 @@ namespace SME.SGP.Dados.Repositorios
             try
             {
                 await contexto.Conexao
-                    .ExecuteAsync(sqlExcluirTurmas, new { turmaId, turmaCodigo },  transacao);
+                    .ExecuteAsync(sqlExcluirTurmas, new { turmaId, turmaCodigo }, transacao);
 
                 transacao.Commit();
             }
@@ -954,57 +954,61 @@ namespace SME.SGP.Dados.Repositorios
 
             var retorno = await contexto.Conexao.ExecuteAsync(query, parametros);
             return retorno != 0;
-
-
-        }       
+        }
 
         public async Task<PaginacaoResultadoDto<TurmaAcompanhamentoFechamentoRetornoDto>> ObterTurmasFechamentoAcompanhamento(Paginacao paginacao, long dreId, long ueId, long[] turmasId, Modalidade modalidade, int semestre, int bimestre, int anoLetivo, bool listarTodasTurmas)
-        {            
+        {
             var query = new StringBuilder(@"select t.id as TurmaId,
                                                      t.nome       
                                                 from turma t 
                                                inner join ue on ue.id = t.ue_id
                                                inner join dre on dre.id = ue.dre_id
                                                inner join tipo_calendario tc 
-                                                  on t.ano_letivo = tc.ano_letivo and t.modalidade_codigo = tc.modalidade 
+                                                  on t.ano_letivo = tc.ano_letivo and tc.modalidade = @modalidade
                                                inner join periodo_escolar pe
 	                                              on tc.id = pe.tipo_calendario_id
                                                where dre.id = @dreId
                                                  and ue.id = @ueId ");
 
-                        if (!listarTodasTurmas)
-                            query.AppendLine("and t.id = ANY(@turmasId) ");
+            if (!listarTodasTurmas)
+                query.AppendLine("and t.id = ANY(@turmasId) ");
 
-                             query.AppendLine(@"and t.modalidade_codigo = @modalidade
-                                                 and t.semestre = @semestre
-                                                 and pe.bimestre = @bimestre
-                                                 and t.ano_letivo = @anoLetivo
-                                                 and not t.historica
-                                               order by t.nome
-                                              OFFSET @quantidadeRegistrosIgnorados ROWS FETCH NEXT @quantidadeRegistros ROWS ONLY; ");
-                        
-                            query.AppendLine(@"select count(t.id)      
-                                                 from turma t 
-                                                inner join ue on ue.id = t.ue_id
-                                                inner join dre on dre.id = ue.dre_id
-                                                inner join tipo_calendario tc 
-                                                   on t.ano_letivo = tc.ano_letivo and t.modalidade_codigo = tc.modalidade 
-                                                inner join periodo_escolar pe
-	                                               on tc.id = pe.tipo_calendario_id
-                                                where dre.id = @dreId
-                                                  and ue.id = @ueId ");
+            if (bimestre > 0)
+                query.AppendLine("and pe.bimestre = @bimestre ");
+            else
+                query.AppendLine("and pe.bimestre is null ");
 
-                            if (!listarTodasTurmas)
-                                query.AppendLine("and t.id = ANY(@turmasId) ");
+            query.AppendLine(@" and t.semestre = @semestre
+                                and t.ano_letivo = @anoLetivo
+                                and not t.historica
+                            order by t.nome
+                            OFFSET @quantidadeRegistrosIgnorados ROWS FETCH NEXT @quantidadeRegistros ROWS ONLY; ");
 
-                            query.AppendLine(@"and t.modalidade_codigo = @modalidade
-                                               and t.semestre = @semestre
-                                               and pe.bimestre = @bimestre
-                                               and t.ano_letivo = @anoLetivo
-                                               and not t.historica"); 
-            
+            query.AppendLine(@"select count(t.id)      
+                                    from turma t 
+                                inner join ue on ue.id = t.ue_id
+                                inner join dre on dre.id = ue.dre_id
+                                inner join tipo_calendario tc 
+                                    on t.ano_letivo = tc.ano_letivo and tc.modalidade = @modalidade
+                                inner join periodo_escolar pe
+	                                on tc.id = pe.tipo_calendario_id
+                                where dre.id = @dreId
+                                    and ue.id = @ueId ");
 
-            var retorno = new PaginacaoResultadoDto<TurmaAcompanhamentoFechamentoRetornoDto>();            
+            if (!listarTodasTurmas)
+                query.AppendLine("and t.id = ANY(@turmasId) ");
+
+            if (bimestre > 0)
+                query.AppendLine("and pe.bimestre = @bimestre ");
+            else
+                query.AppendLine("and pe.bimestre is null ");
+
+            query.AppendLine(@"and t.semestre = @semestre
+                               and t.ano_letivo = @anoLetivo
+                               and not t.historica");
+
+
+            var retorno = new PaginacaoResultadoDto<TurmaAcompanhamentoFechamentoRetornoDto>();
 
             var parametros = new
             {
@@ -1013,7 +1017,7 @@ namespace SME.SGP.Dados.Repositorios
                 turmasId,
                 dreId,
                 ueId,
-                modalidade = (int)modalidade,
+                modalidade = (int)modalidade.ObterModalidadeTipoCalendario(),
                 semestre,
                 bimestre,
                 anoLetivo,
@@ -1041,7 +1045,7 @@ namespace SME.SGP.Dados.Repositorios
                          ano_letivo = @anoLetivo  
                          ");
 
-            if (dreId > 0) 
+            if (dreId > 0)
                 query.AppendLine(" and d.id = @dreId ");
 
             if (ueId > 0)
