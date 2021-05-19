@@ -5,6 +5,7 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Dommel;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -43,6 +44,12 @@ namespace SME.SGP.Dados.Repositorios
         {
             database.Conexao.Delete(entidade);
             Auditar(entidade.Id, "E");
+        }
+        
+        public virtual async Task RemoverAsync(T entidade)
+        {
+            await database.Conexao.DeleteAsync(entidade);
+            await AuditarAsync(entidade.Id, "E");
         }
 
         public virtual long Salvar(T entidade)

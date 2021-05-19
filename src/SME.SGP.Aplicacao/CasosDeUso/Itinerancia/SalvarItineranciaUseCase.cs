@@ -49,10 +49,6 @@ namespace SME.SGP.Aplicacao
                     if (itineranciaDto.PossuiQuestoes)
                         foreach (var questao in itineranciaDto.Questoes)
                             await mediator.Send(new SalvarItineranciaQuestaoCommand(questao.QuestaoId, itinerancia.Id, questao.Resposta));
-
-                    if (itineranciaDto.DataRetornoVerificacao.HasValue && !itineranciaDto.PossuiAlunos)
-                        await SalvarEventoItinerancia(itinerancia.Id, itineranciaDto);
-
                     unitOfWork.PersistirTransacao();
 
                     SentrySdk.AddBreadcrumb($"Mensagem RotaNotificacaoRegistroItineranciaInseridoUseCase", "Rabbit - RotaNotificacaoRegistroItineranciaInseridoUseCase");
@@ -64,7 +60,8 @@ namespace SME.SGP.Aplicacao
                             CriadoPor = itinerancia.CriadoPor,
                             DataVisita = itineranciaDto.DataVisita,
                             Estudantes = itineranciaDto.Alunos,
-                            ItineranciaId = itinerancia.Id
+                            ItineranciaId = itinerancia.Id, 
+                            UeId = itineranciaDto.UeId,
                         }, Guid.NewGuid(), null));
 
                     return itinerancia;

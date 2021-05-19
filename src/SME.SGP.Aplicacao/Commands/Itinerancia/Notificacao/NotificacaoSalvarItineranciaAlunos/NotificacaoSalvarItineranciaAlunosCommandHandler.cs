@@ -1,7 +1,5 @@
 ﻿using MediatR;
 using Microsoft.Extensions.Configuration;
-using Sentry;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
@@ -38,12 +36,14 @@ namespace SME.SGP.Aplicacao
         {
             var descricaoUe = $"{ue.TipoEscola.ShortName()} {ue.Nome} ({ue.Dre.Abreviacao})";
             var titulo = $"Novo Registro de Itinerância - {descricaoUe} - {dataVisita:dd/MM/yyyy}";
-            var mensagem = new StringBuilder($"O usuário {criadoPor} ({criadoRF}) inseriu um novo registro de itinerância para a {descricaoUe} no dia {dataVisita:dd/MM/yyyy} para os seguintes estudantes:");
+
+            var mensagem = MontarMensagemComOuSemEstudantes(criadoRF, criadoPor, dataVisita, estudantes, descricaoUe);
+
             var urlServidorRelatorios = configuration.GetSection("UrlServidorRelatorios").Value;
 
             List<Turma> turmas = new List<Turma>();
             mensagem.AppendLine();
-            
+
             await MontarTabelaEstudantes(estudantes, mensagem, turmas);
 
             mensagem.AppendLine();
@@ -65,6 +65,21 @@ namespace SME.SGP.Aplicacao
 
             await mediator.Send(new SalvarWorkflowAprovacaoItineranciaCommand(itineranciaId, workflowId));
             await mediator.Send(new AlterarSituacaoItineranciaCommand(itineranciaId, Dominio.Enumerados.SituacaoItinerancia.AguardandoAprovacao));
+        }
+
+        private static StringBuilder MontarMensagemComOuSemEstudantes(string criadoRF, string criadoPor, DateTime dataVisita, IEnumerable<ItineranciaAlunoDto> estudantes, string descricaoUe)
+        {
+            StringBuilder mensagem = new StringBuilder();
+            if (estudantes != null && estudantes.Any())
+            {
+                mensagem.AppendLine($"O usuário {criadoPor} ({criadoRF}) inseriu um novo registro de itinerância para a {descricaoUe} no dia {dataVisita:dd/MM/yyyy} para os seguintes estudantes:");
+            }
+            else
+            {
+                mensagem.AppendLine($"O usuário {criadoPor} ({criadoRF}) inseriu um novo registro de itinerância para a {descricaoUe} no dia {dataVisita:dd/MM/yyyy}");
+            }
+
+            return mensagem;
         }
 
         private async Task MontarTabelaEstudantes(IEnumerable<ItineranciaAlunoDto> estudantes, StringBuilder mensagem, List<Turma> turmas)
