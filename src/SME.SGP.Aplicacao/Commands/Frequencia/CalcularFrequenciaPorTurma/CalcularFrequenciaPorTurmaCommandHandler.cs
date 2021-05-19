@@ -155,15 +155,15 @@ namespace SME.SGP.Aplicacao
 
             var idsFinaisParaRemover = idsParaRemover.Distinct().ToArray();
 
-            unitOfWork.IniciarTransacao();
-
+            
+            //TODO: BOTAR EM TRANSAÇÃO
             if (idsFinaisParaRemover != null && idsFinaisParaRemover.Any())
                 await repositorioFrequenciaAlunoDisciplinaPeriodo.RemoverVariosAsync(idsFinaisParaRemover);
 
             if (frequenciasParaPersistir != null && frequenciasParaPersistir.Any())
                 await repositorioFrequenciaAlunoDisciplinaPeriodo.SalvarVariosAsync(frequenciasParaPersistir);
 
-            unitOfWork.PersistirTransacao();
+            
         }
 
         private FrequenciaAluno TrataFrequenciaPorDisciplinaAluno(string alunoCodigo, int totalAulasNaDisciplina, IEnumerable<Infra.AusenciaPorDisciplinaAlunoDto> ausenciasDosAlunos,

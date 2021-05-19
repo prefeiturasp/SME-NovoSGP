@@ -5,6 +5,7 @@
         public const string RotaExcluirAulaRecorrencia = "sgp.aula.excluir.recorrencia";
         public const string RotaInserirAulaRecorrencia = "sgp.aula.cadastrar.recorrencia";
         public const string RotaAlterarAulaRecorrencia = "sgp.aula.alterar.recorrencia";
+        public const string RotaAlterarAulaFrequenciaTratar = "sgp.aula.alterar.frequencia.tratar";
         public const string RotaNotificacaoUsuario = "sgp.notificacao.usuario";
         public const string RotaNotificacaoExclusaoAulasComFrequencia = "sgp.notificacao.aulas.exclusao.frequencia";
         public const string RotaCriarAulasInfatilAutomaticamente = "sgp.aulas.infantil.criar";
