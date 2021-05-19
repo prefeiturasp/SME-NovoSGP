@@ -105,6 +105,12 @@ namespace SME.SGP.Worker.RabbitMQ
             canalRabbit.QueueDeclare(RotasRabbit.ConsolidarFrequenciasPorTurma, true, false, false);
             canalRabbit.QueueBind(RotasRabbit.ConsolidarFrequenciasPorTurma, RotasRabbit.ExchangeSgp, RotasRabbit.ConsolidarFrequenciasPorTurma);
 
+            canalRabbit.QueueDeclare(RotasRabbit.SincronizarDresMatriculasTurmas, true, false, false);
+            canalRabbit.QueueBind(RotasRabbit.SincronizarDresMatriculasTurmas, RotasRabbit.ExchangeSgp, RotasRabbit.SincronizarDresMatriculasTurmas);
+
+            canalRabbit.QueueDeclare(RotasRabbit.SincronizarUesMatriculasTurmas, true, false, false);
+            canalRabbit.QueueBind(RotasRabbit.SincronizarUesMatriculasTurmas, RotasRabbit.ExchangeSgp, RotasRabbit.SincronizarUesMatriculasTurmas);
+
             comandos = new Dictionary<string, ComandoRabbit>();
             RegistrarUseCases();
         }
@@ -186,7 +192,9 @@ namespace SME.SGP.Worker.RabbitMQ
             comandos.Add(RotasRabbit.ConsolidarFrequenciasTurmasNoAno, new ComandoRabbit("Consolidar Registros de Frequência das Turmas", typeof(IConsolidarFrequenciaTurmasPorAnoUseCase)));
             comandos.Add(RotasRabbit.ConsolidarFrequenciasPorTurma, new ComandoRabbit("Consolidar Registros de Frequência por Turma", typeof(IConsolidarFrequenciaPorTurmaUseCase)));
 
-            comandos.Add(RotasRabbit.ConsolidacaoMatriculasTurmasCarregar, new ComandoRabbit("Consolidação de matrículas por turmas - Carregar", typeof(IConsolidarMatriculaTurmasUseCase)));
+            comandos.Add(RotasRabbit.SincronizarDresMatriculasTurmas, new ComandoRabbit("Consolidação de matrículas por turmas - Sincronizar Dres", typeof(IExecutarSincronizacaoDresConsolidacaoMatriculasUseCase)));
+            comandos.Add(RotasRabbit.SincronizarUesMatriculasTurmas, new ComandoRabbit("Consolidação de matrículas por turmas - Sincronizar Ues", typeof(IConsolidarMatriculaTurmaUseCase)));
+            //comandos.Add(RotasRabbit.ConsolidacaoMatriculasTurmasCarregar, new ComandoRabbit("Consolidação de matrículas por turmas - Carregar", typeof(IConsolidarMatriculaTurmaUseCase)));
         }
 
         private async Task TratarMensagem(BasicDeliverEventArgs ea)
@@ -342,6 +350,8 @@ namespace SME.SGP.Worker.RabbitMQ
             canalRabbit.BasicConsume(RotasRabbit.SincronizaEstruturaInstitucionalTurmasSync, false, consumer);
             canalRabbit.BasicConsume(RotasRabbit.ConsolidarFrequenciasTurmasNoAno, false, consumer);
             canalRabbit.BasicConsume(RotasRabbit.ConsolidarFrequenciasPorTurma, false, consumer);
+            canalRabbit.BasicConsume(RotasRabbit.SincronizarDresMatriculasTurmas, false, consumer);
+            canalRabbit.BasicConsume(RotasRabbit.SincronizarUesMatriculasTurmas, false, consumer);
 
             return Task.CompletedTask;
         }

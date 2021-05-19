@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SME.SGP.Dominio
+﻿namespace SME.SGP.Dominio
 {
     public class ConsolidacaoMatriculaTurma
     {
-        public ConsolidacaoMatriculaTurma(long id, long turmaId, int quantidade)
+        public ConsolidacaoMatriculaTurma(long turmaId, int quantidade)
         {
-            Id = id;
             TurmaId = turmaId;
             Quantidade = quantidade;
         }

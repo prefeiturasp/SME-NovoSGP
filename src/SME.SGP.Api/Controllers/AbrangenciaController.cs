@@ -14,7 +14,7 @@ namespace SME.SGP.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/abrangencias/{consideraHistorico}")]
-    [Authorize("Bearer")]
+    //[Authorize("Bearer")]
     public class AbrangenciaController : ControllerBase
     {
         private readonly IConsultasAbrangencia consultasAbrangencia;
@@ -204,6 +204,16 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> PodeAcessarSondagem(string usuarioRF, Guid usuarioPerfil, [FromServices] IUsuarioPossuiAbrangenciaAcessoSondagemUseCase useCase)
         {
             return Ok(await useCase.Executar(usuarioRF, usuarioPerfil));
+        }
+
+        [HttpGet("teste")]
+        [ProducesResponseType(typeof(bool), 200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public async Task<IActionResult> Teste([FromServices] ICarregarDresConsolidacaoMatriculaUseCase useCase)
+        {
+            return Ok(await useCase.Executar());
         }
 
     }

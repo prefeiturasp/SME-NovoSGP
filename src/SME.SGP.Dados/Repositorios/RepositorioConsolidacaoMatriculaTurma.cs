@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dominio;
+﻿using Dapper;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
@@ -78,6 +79,20 @@ namespace SME.SGP.Dados
                          order by dre.abreviacao desc");
 
             return query.ToString();
+        }
+
+        public async Task<long> Inserir(ConsolidacaoMatriculaTurma consolidacao)
+        {
+            return (long)(await database.Conexao.InsertAsync(consolidacao));
+        }
+
+        public async Task LimparConsolidacaoMatriculasTurmasPorAnoLetivo(int anoLetivo)
+        {
+            var query = @"delete from consolidacao_frequencia_matricula
+                        where turma_id in (
+                            select id from turma where ano_letivo = @ano)";
+
+            await database.Conexao.ExecuteScalarAsync(query, new { anoLetivo });
         }
     }
 }

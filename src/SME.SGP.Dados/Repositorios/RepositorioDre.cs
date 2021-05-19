@@ -124,5 +124,10 @@ namespace SME.SGP.Dados.Repositorios
 
             return resultado;
         }
+
+        public async Task<IEnumerable<long>> ObterIdsDresAsync()
+        {
+            return await contexto.Conexao.QueryAsync<long>("select Id from dre ", new { });
+        }
     }
 }
