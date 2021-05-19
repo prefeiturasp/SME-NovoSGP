@@ -105,6 +105,15 @@ namespace SME.SGP.Worker.RabbitMQ
             canalRabbit.QueueDeclare(RotasRabbit.ConsolidarFrequenciasPorTurma, true, false, false);
             canalRabbit.QueueBind(RotasRabbit.ConsolidarFrequenciasPorTurma, RotasRabbit.ExchangeSgp, RotasRabbit.ConsolidarFrequenciasPorTurma);
 
+            canalRabbit.QueueDeclare(RotasRabbit.SincronizarDresMatriculasTurmas, true, false, false);
+            canalRabbit.QueueBind(RotasRabbit.SincronizarDresMatriculasTurmas, RotasRabbit.ExchangeSgp, RotasRabbit.SincronizarDresMatriculasTurmas);
+
+            canalRabbit.QueueDeclare(RotasRabbit.ConsolidacaoMatriculasTurmasCarregar, true, false, false);
+            canalRabbit.QueueBind(RotasRabbit.ConsolidacaoMatriculasTurmasCarregar, RotasRabbit.ExchangeSgp, RotasRabbit.ConsolidacaoMatriculasTurmasCarregar);
+
+            canalRabbit.QueueDeclare(RotasRabbit.ConsolidacaoMatriculasTurmasSync, true, false, false);
+            canalRabbit.QueueBind(RotasRabbit.ConsolidacaoMatriculasTurmasSync, RotasRabbit.ExchangeSgp, RotasRabbit.ConsolidacaoMatriculasTurmasSync);
+
             comandos = new Dictionary<string, ComandoRabbit>();
             RegistrarUseCases();
         }
@@ -185,6 +194,11 @@ namespace SME.SGP.Worker.RabbitMQ
             comandos.Add(RotasRabbit.ConsolidacaoFrequenciasTurmasCarregar, new ComandoRabbit("Consolidação de Registros de Frequência das Turmas - Carregar", typeof(IConsolidarFrequenciaTurmasUseCase)));
             comandos.Add(RotasRabbit.ConsolidarFrequenciasTurmasNoAno, new ComandoRabbit("Consolidar Registros de Frequência das Turmas", typeof(IConsolidarFrequenciaTurmasPorAnoUseCase)));
             comandos.Add(RotasRabbit.ConsolidarFrequenciasPorTurma, new ComandoRabbit("Consolidar Registros de Frequência por Turma", typeof(IConsolidarFrequenciaPorTurmaUseCase)));
+
+            comandos.Add(RotasRabbit.ConsolidacaoMatriculasTurmasDreCarregar, new ComandoRabbit("Carrega os dados de todas as Dres para consolidação de matrículas", typeof(ICarregarDresConsolidacaoMatriculaUseCase)));
+            comandos.Add(RotasRabbit.SincronizarDresMatriculasTurmas, new ComandoRabbit("Consolidação de matrículas por turmas - Sincronizar Dres", typeof(IExecutarSincronizacaoDresConsolidacaoMatriculasUseCase)));
+            comandos.Add(RotasRabbit.ConsolidacaoMatriculasTurmasCarregar, new ComandoRabbit("Consolidação de matrículas por turmas - Carregar", typeof(ICarregarMatriculaTurmaUseCase)));
+            comandos.Add(RotasRabbit.ConsolidacaoMatriculasTurmasSync, new ComandoRabbit("Consolidação de matrículas por turmas - Sincronizar", typeof(IExecutarSincronizacaoConsolidacaoMatriculasTurmasUseCase)));
         }
 
         private async Task TratarMensagem(BasicDeliverEventArgs ea)
@@ -340,6 +354,9 @@ namespace SME.SGP.Worker.RabbitMQ
             canalRabbit.BasicConsume(RotasRabbit.SincronizaEstruturaInstitucionalTurmasSync, false, consumer);
             canalRabbit.BasicConsume(RotasRabbit.ConsolidarFrequenciasTurmasNoAno, false, consumer);
             canalRabbit.BasicConsume(RotasRabbit.ConsolidarFrequenciasPorTurma, false, consumer);
+            canalRabbit.BasicConsume(RotasRabbit.SincronizarDresMatriculasTurmas, false, consumer);
+            canalRabbit.BasicConsume(RotasRabbit.ConsolidacaoMatriculasTurmasCarregar, false, consumer);
+            canalRabbit.BasicConsume(RotasRabbit.ConsolidacaoMatriculasTurmasSync, false, consumer);
 
             return Task.CompletedTask;
         }
