@@ -13,10 +13,12 @@ namespace SME.SGP.Aplicacao
     public class BuscarTiposCalendarioPorDescricaoUseCase : IBuscarTiposCalendarioPorDescricaoUseCase
     {
         private readonly IMediator mediator;
+        private readonly IConsultasAbrangencia consultasAbrangencia;
 
-        public BuscarTiposCalendarioPorDescricaoUseCase(IMediator mediator)
+        public BuscarTiposCalendarioPorDescricaoUseCase(IMediator mediator, IConsultasAbrangencia consultasAbrangencia)
         {
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
+            this.consultasAbrangencia = consultasAbrangencia ?? throw new System.ArgumentNullException(nameof(consultasAbrangencia));
         }
 
         public async Task<IEnumerable<TipoCalendarioBuscaDto>> Executar(string descricao)
@@ -37,7 +39,10 @@ namespace SME.SGP.Aplicacao
                 if (abrangenciaHistorica != null && abrangenciaHistorica.Any())
                     lstAbrangencia.AddRange(abrangenciaHistorica);
 
-                var anosLetivos = lstAbrangencia.Select(a => a.AnoLetivo)?.Distinct()?.ToArray();
+                var anosLetivosHistorico = await consultasAbrangencia.ObterAnosLetivos(true);
+                var anosLetivos = await consultasAbrangencia.ObterAnosLetivos(false);
+                int[] anosLetivosTipoCalendario = anosLetivosHistorico.Union(anosLetivos.ToArray()).ToArray();
+
                 string[] codigosUes = lstAbrangencia.Select(a => a.CodigoUe)?.Distinct()?.ToArray();
 
                 var modalidadesUes = await mediator.Send(new ObterModalidadesPorCodigosUeQuery(codigosUes));
@@ -46,7 +51,7 @@ namespace SME.SGP.Aplicacao
                                                                               a == Modalidade.Infantil ? (int)ModalidadeTipoCalendario.Infantil :
                                                                                 (int)ModalidadeTipoCalendario.FundamentalMedio).ToArray();             
 
-                return await mediator.Send(new ObterTiposCalendariosPorAnosLetivoModalidadesQuery(anosLetivos, modalidadesTipoCalendarioUes));
+                return await mediator.Send(new ObterTiposCalendariosPorAnosLetivoModalidadesQuery(anosLetivosTipoCalendario.Distinct().ToArray(), modalidadesTipoCalendarioUes));
             }
             else
                 return await mediator.Send(new ObterTipoCalendarioPorBuscaQuery(descricao));
