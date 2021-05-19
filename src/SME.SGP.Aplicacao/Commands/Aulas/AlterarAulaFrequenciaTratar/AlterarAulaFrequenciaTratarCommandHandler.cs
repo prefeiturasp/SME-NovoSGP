@@ -50,7 +50,9 @@ namespace SME.SGP.Aplicacao
                 var idsParaExcluir = ausencias.Where(a => a.NumeroAula > quantidadeAtual).Select(a => a.Id).ToList();
 
                 //TODO: Criar método genérico com Auditoria
-                await repositorioRegistroAusenciaAluno.ExcluirVarios(idsParaExcluir);
+                if (idsParaExcluir.Count > 0)
+                    await repositorioRegistroAusenciaAluno.ExcluirVarios(idsParaExcluir);                
+
             }
 
             return true;
