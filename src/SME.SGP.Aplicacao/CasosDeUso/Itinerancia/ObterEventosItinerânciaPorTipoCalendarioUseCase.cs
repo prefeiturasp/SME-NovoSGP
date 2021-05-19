@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<EventoNomeDto>> Executar(FiltroEventosItineranciaDto filtro)
         {
             var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
-            return await mediator.Send(new ObterEventosItineranciaPAAIQuery(filtro.TipoCalendarioId, filtro.ItineranciaId, usuario.Login, usuario.PerfilAtual));
+            return await mediator.Send(new ObterEventosItineranciaPAAIQuery(filtro.TipoCalendarioId, filtro.ItineranciaId, filtro.CodigoUE, usuario.Login, usuario.PerfilAtual));
         }
     }
 }
