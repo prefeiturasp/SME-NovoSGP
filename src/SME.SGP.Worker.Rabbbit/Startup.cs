@@ -11,6 +11,7 @@ using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dados;
 using SME.SGP.Infra;
 using SME.SGP.IoC;
+using SME.SGP.IoC.Extensions;
 using SME.SGP.Worker.RabbitMQ;
 
 namespace SME.SGP.Worker.Rabbbit
@@ -34,8 +35,9 @@ namespace SME.SGP.Worker.Rabbbit
             services.AddHttpContextAccessor();
             RegistraDependencias.Registrar(services);
             RegistrarHttpClients(services, configuration);
-            services.AddApplicationInsightsTelemetry(configuration);            
-            
+            services.AddApplicationInsightsTelemetry(configuration);
+            services.AddPolicies();
+
             services.AddRabbit();
             services.AddHostedService<WorkerRabbitMQ>();
 
