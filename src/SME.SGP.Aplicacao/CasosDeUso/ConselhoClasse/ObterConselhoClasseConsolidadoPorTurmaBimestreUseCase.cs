@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -27,14 +28,36 @@ namespace SME.SGP.Aplicacao
 
         private IEnumerable<StatusTotalFechamentoDto> MapearRetornoStatusAgrupado(IEnumerable<IGrouping<StatusFechamento, ConselhoClasseConsolidadoTurmaAluno>> statusAgrupados)
         {
+            var lstStatus = new List<StatusTotalFechamentoDto>();
+
             foreach (var status in statusAgrupados)
             {
-                yield return new StatusTotalFechamentoDto()
+                lstStatus.Add(new StatusTotalFechamentoDto()
                 {
+                    Status = status.Key,
                     Descricao = status.Key.Description(),
-                    Quantidade = status.Select(t => t.TurmaId).Distinct().Count()
-                };
+                    Quantidade = status.Count()
+                });
             }
+
+            var lstTodosStatus = Enum.GetValues(typeof(StatusFechamento)).Cast<StatusFechamento>();
+
+            var statusNaoEncontrados = lstTodosStatus.Where(ls => !lstStatus.Select(s => s.Status).Contains(ls));
+
+            if (statusNaoEncontrados != null && statusNaoEncontrados.Any())
+            {
+                foreach (var status in statusNaoEncontrados)
+                {
+                    lstStatus.Add(new StatusTotalFechamentoDto()
+                    {
+                        Status = status,
+                        Descricao = status.Description(),
+                        Quantidade = 0
+                    });
+                }
+            }
+
+            return lstStatus;
         }
     }
 }

@@ -5,6 +5,7 @@ using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -32,11 +33,25 @@ namespace SME.SGP.Aplicacao
                 return false;
             }
 
-            var disciplinas = await mediator.Send(new ObterDisciplinasIdFechamentoPorTurmaIdEBimestreQuery(consolidacaoTurma.TurmaId, consolidacaoTurma.Bimestre));
+            var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(consolidacaoTurma.TurmaId));
 
-            foreach (var disciplina in disciplinas)
+            if (turma == null)
             {
-                var mensagem = JsonConvert.SerializeObject(new FechamentoConsolidacaoTurmaComponenteBimestreDto(consolidacaoTurma.TurmaId, consolidacaoTurma.Bimestre, disciplina));
+                SentrySdk.CaptureMessage($"Não foi possível encontrar a turma de id {consolidacaoTurma.TurmaId}.", Sentry.Protocol.SentryLevel.Error);
+                return false;
+            }
+
+            var componentes = await mediator.Send(new ObterComponentesCurricularesEOLPorTurmaECodigoUeQuery(new string[] { turma.CodigoTurma }, turma.Ue.CodigoUe));
+
+            if (componentes == null || !componentes.Any())
+            {
+                SentrySdk.CaptureMessage($"Não foi possível encontrar os componentes curricularres da turma de id {consolidacaoTurma.TurmaId}.", Sentry.Protocol.SentryLevel.Error);
+                return false;
+            }
+
+            foreach (var componente in componentes)
+            {
+                var mensagem = JsonConvert.SerializeObject(new FechamentoConsolidacaoTurmaComponenteBimestreDto(consolidacaoTurma.TurmaId, consolidacaoTurma.Bimestre,Convert.ToInt64(componente.Codigo)));
 
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.ConsolidarTurmaFechamentoComponenteTratar, mensagem, mensagemRabbit.CodigoCorrelacao, null, fila: RotasRabbit.ConsolidarTurmaFechamentoComponenteTratar));
             }
