@@ -351,5 +351,10 @@ namespace SME.SGP.Dados.Repositorios
 
             return await contexto.Conexao.QueryFirstOrDefaultAsync<TipoEscola>(query, new { ueCodigo });
         }
+
+        public async Task<IEnumerable<string>> ObterUesCodigosPorDreAsync(long dreId)
+        {
+            return await contexto.Conexao.QueryAsync<string>("select ue_id from ue where dre_id = @dreId", new { dreId });
+        }
     }
 }
