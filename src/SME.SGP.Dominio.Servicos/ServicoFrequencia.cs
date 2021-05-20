@@ -34,37 +34,7 @@ namespace SME.SGP.Dominio.Servicos
             this.unitOfWork = unitOfWork ?? throw new System.ArgumentNullException(nameof(unitOfWork));
             this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
             this.repositorioTurma = repositorioTurma ?? throw new System.ArgumentNullException(nameof(repositorioTurma));
-        }
-
-        public void AtualizarQuantidadeFrequencia(long aulaId, int quantidadeOriginal, int quantidadeAtual)
-        {
-            var ausencias = repositorioRegistroAusenciaAluno.ObterRegistrosAusenciaPorAula(aulaId);
-
-            if (quantidadeAtual > quantidadeOriginal)
-            {
-                // Replicar o ultimo registro de frequencia
-                ausencias.Where(a => a.NumeroAula == quantidadeOriginal).ToList()
-                    .ForEach(ausencia =>
-                    {
-                        for (var n = quantidadeOriginal + 1; n <= quantidadeAtual; n++)
-                        {
-                            var clone = (RegistroAusenciaAluno)ausencia.Clone();
-                            clone.NumeroAula = n;
-
-                            repositorioRegistroAusenciaAluno.Salvar(clone);
-                        }
-                    });
-            }
-            else
-            {
-                // Excluir os registros de aula maior que o atual
-                ausencias.Where(a => a.NumeroAula > quantidadeAtual).ToList()
-                    .ForEach(ausencia =>
-                    {
-                        repositorioRegistroAusenciaAluno.Remover(ausencia);
-                    });
-            }
-        }
+        }        
 
         public async Task ExcluirFrequenciaAula(long aulaId)
         {
