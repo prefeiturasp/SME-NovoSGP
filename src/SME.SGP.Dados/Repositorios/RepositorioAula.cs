@@ -123,12 +123,12 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryAsync<AulaDto>(query.ToString(), new { tipoCalendarioId, turmaId, ueId, codigoRf, mes, semanaAno, disciplinaId }));
         }
 
-        public async Task<IEnumerable<AulaDto>> ObterAulas(string turmaId, string ueId, string codigoRf, DateTime? data, string[] disciplinasId)
+        public async Task<IEnumerable<AulaDto>> ObterAulas(string turmaId, string ueId, string codigoRf, DateTime? data, string[] disciplinasId, bool ehCj)
         {
             StringBuilder query = new StringBuilder();
             MontaCabecalho(query);
             query.AppendLine("FROM public.aula a");
-            MontaWhere(query, null, turmaId, ueId, null, data, codigoRf, null, null, disciplinasId);
+            MontaWhere(query, null, turmaId, ueId, null, data, codigoRf, null, null, disciplinasId, ehCj);
             return (await database.Conexao.QueryAsync<AulaDto>(query.ToString(), new { turmaId, ueId, data, codigoRf, disciplinasId }));
         }
 
@@ -760,7 +760,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("a.migrado;");
         }
 
-        private static void MontaWhere(StringBuilder query, long? tipoCalendarioId, string turmaId, string ueId, int? mes = null, DateTime? data = null, string codigoRf = null, string disciplinaId = null, int? semanaAno = null, string[] disciplinasId = null)
+        private static void MontaWhere(StringBuilder query, long? tipoCalendarioId, string turmaId, string ueId, int? mes = null, DateTime? data = null, string codigoRf = null, string disciplinaId = null, int? semanaAno = null, string[] disciplinasId = null, bool ehCj = false)
         {
             query.AppendLine("WHERE a.excluido = false");
             query.AppendLine("AND a.status <> 3");
@@ -783,6 +783,8 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("AND a.disciplina_id = @disciplinaId");
             if (disciplinasId != null && disciplinasId.Length > 0)
                 query.AppendLine("AND a.disciplina_id = ANY(@disciplinasId)");
+            if (ehCj)
+                query.AppendLine("AND a.aula_cj = true");
         }
 
         public async Task<DateTime> ObterDataAula(long aulaId)
