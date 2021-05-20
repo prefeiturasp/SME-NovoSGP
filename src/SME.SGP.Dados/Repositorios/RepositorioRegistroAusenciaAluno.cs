@@ -181,24 +181,26 @@ namespace SME.SGP.Dados.Repositorios
                                         registro_frequencia_id,
                                         migrado,
                                         criado_por,
-                                        criado_rf)
+                                        criado_rf,
+                                        criado_em)
                             from
                             stdin (FORMAT binary)";
 
             using (var conexao = new NpgsqlConnection(connectionString))
             {
+                await conexao.OpenAsync();
                 using (var writer = conexao.BeginBinaryImport(sql))
                 {
-                    await conexao.OpenAsync();
                     foreach (var entidade in entidades)
                     {
                         writer.StartRow();
                         writer.Write(entidade.CodigoAluno, NpgsqlDbType.Varchar);
                         writer.Write(entidade.NumeroAula, NpgsqlDbType.Integer); ;
                         writer.Write(entidade.RegistroFrequenciaId, NpgsqlDbType.Bigint);
-                        writer.Write(entidade.Migrado, NpgsqlDbType.Bigint);
+                        writer.Write(entidade.Migrado, NpgsqlDbType.Boolean);
                         writer.Write(database.UsuarioLogadoNomeCompleto, NpgsqlDbType.Varchar);
                         writer.Write(database.UsuarioLogadoRF, NpgsqlDbType.Varchar);
+                        writer.Write(entidade.CriadoEm, NpgsqlDbType.Timestamp);
                     }
                     await Task.FromResult(writer.Complete());
                     conexao.Close();
