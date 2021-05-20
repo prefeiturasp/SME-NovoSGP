@@ -39,6 +39,13 @@ namespace SME.SGP.Aplicacao
             });
             var body = Encoding.UTF8.GetBytes(mensagem);
 
+            await policy.ExecuteAsync(() => PublicarMensagem(command.Rota, body));
+
+            return true;
+        }
+
+        private async Task PublicarMensagem(string rota, byte[] body)
+        {
             var factory = new ConnectionFactory
             {
                 HostName = configuration.GetSection("ConfiguracaoRabbit:HostName").Value,
@@ -51,17 +58,9 @@ namespace SME.SGP.Aplicacao
             {
                 using (IModel _channel = conexaoRabbit.CreateModel())
                 {
-                    await policy.ExecuteAsync(() => PublicarMensagem(_channel, command.Rota, body));
+                    _channel.BasicPublish(ExchangeRabbit.Sgp, rota, null, body);
                 }
             }
-
-
-            return true;
-        }
-
-        private async Task PublicarMensagem(IModel _channel, string rota, byte[] body)
-        {
-            _channel.BasicPublish(ExchangeRabbit.Sgp, rota, null, body);
         }
 
     }
