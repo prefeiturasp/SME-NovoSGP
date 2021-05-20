@@ -104,5 +104,37 @@ namespace SME.SGP.Dados
 
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { ano });
         }
+
+        public async Task<IEnumerable<ModalidadesPorAnoItineranciaProgramaDto>> ObterModalidadesPorAnos(int anoLetivo, long dreId, long ueId, int modalidade, int semestre)
+        {
+            var query = new StringBuilder($@"select 
+                            distinct modalidade_codigo as modalidade, 
+                            case when tipo_turma = 2 then '{(int)AnoItinerarioPrograma.Programa}'
+                                 when tipo_turma = 7 then '{(int)AnoItinerarioPrograma.Itinerario}'
+                                 when tipo_turma = 3 then '{(int)AnoItinerarioPrograma.EducacaoFisica}'
+                            else ano end as ano
+                         from turma t
+                         inner join ue u on t.ue_id = u.id
+                         inner join dre d on d.id = u.dre_id
+                         where ano in ('0','1', '2', '3', '4', '5', '6', '7', '8', '9') and
+                         ano_letivo = @anoLetivo
+                         ");
+
+            if (dreId > 0)
+                query.AppendLine(" and d.id = @dreId ");
+
+            if (ueId > 0)
+                query.AppendLine(" and u.id  = @ueId ");
+
+            if (modalidade > 0)
+                query.AppendLine(" and t.modalidade_codigo = @modalidade ");
+
+            if (semestre >= 0)
+                query.AppendLine(" and t.semestre = @semestre ");
+
+            query.AppendLine("order by ano");
+
+            return await database.Conexao.QueryAsync<ModalidadesPorAnoItineranciaProgramaDto>(query.ToString(), new { anoLetivo, dreId, ueId, modalidade, semestre });
+        }
     }
 }

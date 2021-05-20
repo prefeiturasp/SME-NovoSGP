@@ -10,5 +10,6 @@ namespace SME.SGP.Dominio
         Task<long> Inserir(ConsolidacaoMatriculaTurma consolidacao);
         Task LimparConsolidacaoMatriculasTurmasPorAnoLetivo(int anoLetivo);
         Task<bool> ExisteConsolidacaoMatriculaTurmaPorAno(int ano);
+        Task<IEnumerable<ModalidadesPorAnoItineranciaProgramaDto>> ObterModalidadesPorAnos(int anoLetivo, long dreId, long ueId, int modalidade, int semestre);
     }
 }
