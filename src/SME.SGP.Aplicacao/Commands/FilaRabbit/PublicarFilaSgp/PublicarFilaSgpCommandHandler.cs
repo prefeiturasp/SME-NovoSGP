@@ -61,9 +61,6 @@ namespace SME.SGP.Aplicacao
                     _channel.BasicPublish(ExchangeRabbit.Sgp, rota, null, body);
                 }
             }
-
-
-            return true;
         }
 
     }
