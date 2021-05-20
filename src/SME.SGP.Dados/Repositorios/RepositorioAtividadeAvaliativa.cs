@@ -97,7 +97,7 @@ namespace SME.SGP.Dados.Repositorios
             sql.AppendLine(fromCompleto);
             sql.AppendLine("where a.excluido = false");
             sql.AppendLine("and a.turma_id = @turmaCodigo");
-            sql.AppendLine("and a.data_avaliacao >= @inicioPeriodo and a.data_avaliacao <= @fimPeriodo");
+            sql.AppendLine("and a.data_avaliacao::date >= @inicioPeriodo::date and a.data_avaliacao::date <= @fimPeriodo::date");
             sql.AppendLine("and aad.disciplina_id = @disciplinaId");
 
             return await database.QueryAsync<AtividadeAvaliativa>(sql.ToString(), new { turmaCodigo, inicioPeriodo, fimPeriodo, disciplinaId });
