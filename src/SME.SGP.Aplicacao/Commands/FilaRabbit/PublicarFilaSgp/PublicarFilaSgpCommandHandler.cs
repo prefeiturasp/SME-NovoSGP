@@ -1,7 +1,10 @@
 ﻿using MediatR;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using Polly;
+using Polly.Registry;
 using RabbitMQ.Client;
+using SME.GoogleClassroom.Infra;
 using SME.SGP.Infra;
 using System;
 using System.Text;
@@ -13,13 +16,15 @@ namespace SME.SGP.Aplicacao
     public class PublicarFilaSgpCommandHandler : IRequestHandler<PublicarFilaSgpCommand, bool>
     {
         private readonly IConfiguration configuration;
+        private readonly IAsyncPolicy policy;
 
-        public PublicarFilaSgpCommandHandler(IConfiguration configuration)
+        public PublicarFilaSgpCommandHandler(IConfiguration configuration, IReadOnlyPolicyRegistry<string> registry)
         {
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            this.policy = registry.Get<IAsyncPolicy>(PoliticaPolly.PublicaFila);
         }
 
-        public Task<bool> Handle(PublicarFilaSgpCommand command, CancellationToken cancellationToken)
+        public async Task<bool> Handle(PublicarFilaSgpCommand command, CancellationToken cancellationToken)
         {
             var request = new MensagemRabbit(command.Filtros,
                                              command.CodigoCorrelacao,
@@ -34,6 +39,13 @@ namespace SME.SGP.Aplicacao
             });
             var body = Encoding.UTF8.GetBytes(mensagem);
 
+            await policy.ExecuteAsync(() => PublicarMensagem(command.Rota, body));
+
+            return true;
+        }
+
+        private async Task PublicarMensagem(string rota, byte[] body)
+        {
             var factory = new ConnectionFactory
             {
                 HostName = configuration.GetSection("ConfiguracaoRabbit:HostName").Value,
@@ -46,12 +58,10 @@ namespace SME.SGP.Aplicacao
             {
                 using (IModel _channel = conexaoRabbit.CreateModel())
                 {
-                    _channel.BasicPublish(ExchangeRabbit.Sgp, command.Rota, null, body);
+                    _channel.BasicPublish(ExchangeRabbit.Sgp, rota, null, body);
                 }
             }
-
-
-            return Task.FromResult(true);
         }
+
     }
 }
