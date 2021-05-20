@@ -88,7 +88,7 @@ namespace SME.SGP.Dados
         {
             var query = @"delete
                             from processo_executando
-                           where id = ANY(ids)";
+                           where id = ANY(@ids)";
 
             await database.Conexao.ExecuteAsync(query, new { ids });
         }

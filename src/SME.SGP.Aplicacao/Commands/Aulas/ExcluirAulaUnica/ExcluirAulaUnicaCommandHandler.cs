@@ -48,12 +48,12 @@ namespace SME.SGP.Aplicacao
                 //TODO: TENTAR OTIMIZAR PARA BUSCAR MAIS FÁCIL O BIMESTRE
                 var bimestreAtual = await mediator.Send(new ObterBimestrePorTurmaCodigoQuery(aula.TurmaId, aula.DataAula));
 
-                await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(null, aula.DataAula, aula.TurmaId, aula.DisciplinaId, bimestreAtual));
-
                 aula.Excluido = true;
                 await repositorioAula.SalvarAsync(aula);
 
                 unitOfWork.PersistirTransacao();
+
+                await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(null, aula.DataAula, aula.TurmaId, aula.DisciplinaId, bimestreAtual));
             }
             catch (Exception)
             {
