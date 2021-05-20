@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
                 return false;
 
             var anoAtual = DateTime.Now.Year;
-
+            await AtualizarDataExecucao(anoAtual);
             await mediator.Send(new LimparConsolidacaoMatriculaTurmaPorAnoCommand(anoAtual));
 
             var anosLetivosParaConsolidar = new List<int>();
@@ -31,6 +31,7 @@ namespace SME.SGP.Aplicacao
             {
                 if (!await mediator.Send(new ExisteConsolidacaoMatriculaTurmaPorAnoQuery(ano)))
                 {
+                    await AtualizarDataExecucao(ano);
                     anosLetivosParaConsolidar.Add(ano);
                 }
             }
@@ -58,6 +59,17 @@ namespace SME.SGP.Aplicacao
                 return parametroExecucao.Ativo;
 
             return false;
+        }
+
+        private async Task AtualizarDataExecucao(int ano)
+        {
+            var parametroSistema = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.ExecucaoConsolidacaoInformacoesEscolares, ano));
+            if (parametroSistema != null)
+            {
+                parametroSistema.Valor = DateTime.Now.ToString();
+
+                await mediator.Send(new AtualizarParametroSistemaCommand(parametroSistema));
+            }
         }
     }
 }

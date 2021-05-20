@@ -50,5 +50,15 @@ namespace SME.SGP.Api.Controllers
 
             return Ok(ultimaConsolidacao.Value);
         }
+
+        [HttpGet("modalidades/ano")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 200)]
+        [Permissao(Permissao.DIE_C, Policy = "Bearer")]
+        public async Task<IActionResult> ModalidadesPorAno([FromQuery] int anoLetivo, long dreId, long ueId, int modalidade, int semestre, [FromServices] IObterModalidadeAnoItineranciaProgramaUseCase useCase)
+        {
+            return Ok(await useCase.Executar(anoLetivo, dreId, ueId, modalidade, semestre));
+        }
     }
 }
