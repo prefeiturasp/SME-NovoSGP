@@ -51,7 +51,6 @@ namespace SME.SGP.Aplicacao
             {
                 using (IModel _channel = conexaoRabbit.CreateModel())
                 {
-                    _channel.BasicPublish(ExchangeRabbit.Sgp, command.Rota, null, body);
                     await policy.ExecuteAsync(() => PublicarMensagem(_channel, command.Rota, body));
                 }
             }
