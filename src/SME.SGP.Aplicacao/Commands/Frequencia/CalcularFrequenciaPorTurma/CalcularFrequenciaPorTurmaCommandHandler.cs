@@ -109,7 +109,8 @@ namespace SME.SGP.Aplicacao
             finally
             {
                 var idsParaRemover = await repositorioProcessoExecutando.ObterIdsPorFiltrosAsync(request.Bimestre, request.DisciplinaId, request.TurmaId);
-                await repositorioProcessoExecutando.RemoverIdsAsync(idsParaRemover.ToArray());
+                if (idsParaRemover != null && idsParaRemover.Any())
+                    await repositorioProcessoExecutando.RemoverIdsAsync(idsParaRemover.ToArray());
             }
 
             return true;
