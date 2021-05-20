@@ -72,8 +72,10 @@ namespace SME.SGP.Aplicacao
             }
 
             if (consolidadoTurmaAluno.Id == 0 || consolidadoTurmaAluno.Status != statusNovo)
+            {
+                consolidadoTurmaAluno.Status = statusNovo;
                 await repositorioConselhoClasseConsolidado.SalvarAsync(consolidadoTurmaAluno);
-
+            }
 
             return true;
         }

@@ -42,9 +42,14 @@ namespace SME.SGP.Aplicacao
 
             var fechamento = fechamentos.FirstOrDefault();
 
+            var atualizarConsolidado = false;
+
+            if (consolidadoTurmaComponente != null) 
+                atualizarConsolidado = consolidadoTurmaComponente.Status != fechamento.ObterStatusFechamento();
+
             consolidadoTurmaComponente = MapearFechamentoConsolidado(consolidadoTurmaComponente, fechamento, professoresDaTurma);
 
-            if (consolidadoTurmaComponente.Id == 0 || consolidadoTurmaComponente.Status != fechamento.ObterStatusFechamento())
+            if (consolidadoTurmaComponente.Id == 0 || atualizarConsolidado)
                 await repositorioFechamentoConsolidado.SalvarAsync(consolidadoTurmaComponente);
 
             return true;
