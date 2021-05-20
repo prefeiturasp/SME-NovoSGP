@@ -17,6 +17,7 @@ namespace SME.SGP.Aplicacao
         public ComandosFechamentoTurmaDisciplina(IServicoFechamentoTurmaDisciplina servicoFechamentoTurmaDisciplina, IMediator mediator)
         {
             this.servicoFechamentoTurmaDisciplina = servicoFechamentoTurmaDisciplina ?? throw new ArgumentNullException(nameof(servicoFechamentoTurmaDisciplina));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task Reprocessar(long fechamentoId)
@@ -30,9 +31,12 @@ namespace SME.SGP.Aplicacao
                 try
                 {
                     if (fechamentoTurma?.Justificativa != null)
-                        if (fechamentoTurma.Justificativa.Length > Int16.Parse(Dominio.Enumerados.FechamentoTurmaDisciplina.TamanhoCampoJustificativa.ToString()))
-                            throw new NegocioException("Justificativa não pode ter mais que "+ Dominio.Enumerados.FechamentoTurmaDisciplina.TamanhoCampoJustificativa.ToString() + " caracteres");
-
+                    {
+                        int tamanhoJustificativa = fechamentoTurma.Justificativa.Length;
+                        int limite = int.Parse(FechamentoTurmaDisciplinaEnum.TamanhoCampoJustificativa.Description());
+                        if (tamanhoJustificativa > limite)
+                            throw new NegocioException("Justificativa não pode ter mais que " + limite.ToString() + " caracteres");
+                    }
                     listaAuditoria.Add(await servicoFechamentoTurmaDisciplina.Salvar(fechamentoTurma.Id, fechamentoTurma, componenteSemNota));
                 }
                 catch (Exception e)
