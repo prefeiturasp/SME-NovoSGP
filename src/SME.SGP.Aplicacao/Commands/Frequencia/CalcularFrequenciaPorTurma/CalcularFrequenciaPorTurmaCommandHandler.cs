@@ -90,19 +90,9 @@ namespace SME.SGP.Aplicacao
 
                 }
 
-                var alunosParaTratar = ausenciasDosAlunos.Select(a => a.AlunoCodigo)?.Distinct();
-                IEnumerable<string> alunosSemAusencia;
+                ObterFrequenciasParaExcluirGeral(request, frequenciaDosAlunos, frequenciasParaRemover, frequenciasParaPersistir);
 
-                if (alunosParaTratar.Any())
-                {
-                    alunosSemAusencia = request.Alunos.Where(a => !alunosParaTratar.Contains(a));
-                }
-                else
-                {
-                    alunosSemAusencia = request.Alunos;
-                }
-
-                frequenciasParaRemover.AddRange(frequenciaDosAlunos.Where(a => alunosSemAusencia.Contains(a.CodigoAluno)).ToList());
+                ObterFrequenciasParaRemoverAlunosSemAusencia(request, ausenciasDosAlunos, frequenciaDosAlunos, frequenciasParaRemover);
 
                 await TrataPersistencia(frequenciasParaRemover, frequenciasParaPersistir);
             }
@@ -114,6 +104,38 @@ namespace SME.SGP.Aplicacao
             }
 
             return true;
+        }
+
+        private static void ObterFrequenciasParaExcluirGeral(CalcularFrequenciaPorTurmaCommand request, IEnumerable<FrequenciaAluno> frequenciaDosAlunos, List<FrequenciaAluno> frequenciasParaRemover, List<FrequenciaAluno> frequenciasParaPersistir)
+        {
+            var codigoAlunosParaPersistir = frequenciasParaPersistir.Select(a => a.CodigoAluno).Distinct().ToList();
+
+            var frequenciasDaDisciplinaParaRemover = frequenciaDosAlunos.Where(a => a.DisciplinaId == request.DisciplinaId &&
+            a.Tipo == TipoFrequenciaAluno.PorDisciplina &&
+           codigoAlunosParaPersistir.Contains(a.CodigoAluno)).ToList();
+
+            var frequenciasGlobaisParaRemover = frequenciaDosAlunos.Where(a => a.Tipo == TipoFrequenciaAluno.Geral &&
+           codigoAlunosParaPersistir.Contains(a.CodigoAluno)).ToList();
+
+            frequenciasParaRemover.AddRange(frequenciasDaDisciplinaParaRemover);
+            frequenciasParaRemover.AddRange(frequenciasGlobaisParaRemover);
+        }
+
+        private static void ObterFrequenciasParaRemoverAlunosSemAusencia(CalcularFrequenciaPorTurmaCommand request, IEnumerable<AusenciaPorDisciplinaAlunoDto> ausenciasDosAlunos, IEnumerable<FrequenciaAluno> frequenciaDosAlunos, List<FrequenciaAluno> frequenciasParaRemover)
+        {
+            var alunosParaTratar = ausenciasDosAlunos.Select(a => a.AlunoCodigo)?.Distinct();
+            IEnumerable<string> alunosSemAusencia;
+
+            if (alunosParaTratar.Any())
+            {
+                alunosSemAusencia = request.Alunos.Where(a => !alunosParaTratar.Contains(a));
+            }
+            else
+            {
+                alunosSemAusencia = request.Alunos;
+            }
+
+            frequenciasParaRemover.AddRange(frequenciaDosAlunos.Where(a => alunosSemAusencia.Contains(a.CodigoAluno)).ToList());
         }
 
         private void TrataFrequenciaAlunoGlobal(CalcularFrequenciaPorTurmaCommand request, IEnumerable<FrequenciaAluno> frequenciaDosAlunos, List<FrequenciaAluno> frequenciasParaPersistir, int totalAulasDaTurmaGeral, IEnumerable<CompensacaoAusenciaAlunoCalculoFrequenciaDto> totalCompensacoesDisciplinaAlunos, string codigoAluno, List<AusenciaPorDisciplinaAlunoDto> ausenciasDoAluno)
@@ -146,6 +168,7 @@ namespace SME.SGP.Aplicacao
                   .ToList());
             }
 
+          
             if (frequenciasParaRemover.Any())
             {
                 idsParaRemover.AddRange(frequenciasParaRemover
