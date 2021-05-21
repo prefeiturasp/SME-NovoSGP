@@ -333,8 +333,23 @@ namespace SME.SGP.Dados.Repositorios
 	                        and not excluido
 	                        and @dataReferencia between pfb.inicio_fechamento and pfb.final_fechamento ";
 
-
             return await database.Conexao.QueryFirstOrDefaultAsync<int>(query, new { anoLetivo, modalidadeTipoCalendario, dataReferencia, ueId });
+        }
+
+        public async Task<IEnumerable<PeriodoEscolarModalidadeDto>> ObterPeriodosPassadosNoAno(DateTime data)
+        {
+            var query = @"select tc.modalidade
+ 	                    , pe.bimestre
+ 	                    , pe.periodo_inicio as DataInicio
+ 	                    , pe.periodo_fim as DataFim
+                       from tipo_calendario tc 
+                      inner join periodo_escolar pe on pe.tipo_calendario_id = tc.id
+                      where not tc.excluido 
+                        and tc.situacao 
+                        and tc.ano_letivo = @ano
+                        and pe.periodo_inicio <= @data ";
+
+            return await database.Conexao.QueryAsync<PeriodoEscolarModalidadeDto>(query, new { data, ano = data.Year });
         }
     }
 }

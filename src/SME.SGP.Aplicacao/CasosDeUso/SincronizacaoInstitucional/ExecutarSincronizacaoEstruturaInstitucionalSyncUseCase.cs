@@ -19,11 +19,11 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
             SentrySdk.AddBreadcrumb($"Mensagem ExecutarSincronizacaoEstruturaInstitucionalSyncUseCase", "Rabbit - ExecutarSincronizacaoEstruturaInstitucionalSyncUseCase");
                         
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.SincronizaEstruturaInstitucionalDreSync, string.Empty, codigoCorrelacao, null, fila: RotasRabbit.SincronizaEstruturaInstitucionalDreSync));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.SincronizaEstruturaInstitucionalDreSync, string.Empty, codigoCorrelacao, null));
 
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.SincronizaEstruturaInstitucionalTipoEscolaSync, string.Empty, codigoCorrelacao, null, fila: RotasRabbit.SincronizaEstruturaInstitucionalTipoEscolaSync));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.SincronizaEstruturaInstitucionalTipoEscolaSync, string.Empty, codigoCorrelacao, null));
 
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.SincronizaEstruturaInstitucionalCicloSync, string.Empty, codigoCorrelacao, null, fila: RotasRabbit.SincronizaEstruturaInstitucionalCicloSync));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.SincronizaEstruturaInstitucionalCicloSync, string.Empty, codigoCorrelacao, null));
         }
     }
 }

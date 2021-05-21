@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar()
         {
             string mensagem = "Mensagem API Google Classroom";
-            return await mediator.Send(new PublicarFilaGoogleClassroomCommand(RotasRabbitGoogleClassroomApi.FilaGoogleSync, mensagem));
+            return await mediator.Send(new PublicarFilaGoogleClassroomCommand(RotasRabbitSgpGoogleClassroomApi.FilaGoogleSync, mensagem));
         }
     }
 }

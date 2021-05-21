@@ -75,7 +75,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task ConsolidarFrequenciasTurmasNoAno(int ano)
         {
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.ConsolidarFrequenciasTurmasNoAno, new FiltroAnoDto(ano), Guid.NewGuid(), null, fila: RotasRabbit.ConsolidarFrequenciasTurmasNoAno));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarFrequenciasTurmasNoAno, new FiltroAnoDto(ano), Guid.NewGuid(), null));
             await AtualizarDataExecucao(ano);
         }
     }

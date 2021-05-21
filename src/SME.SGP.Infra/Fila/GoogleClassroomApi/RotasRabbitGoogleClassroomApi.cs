@@ -1,6 +1,6 @@
 ﻿namespace SME.SGP.Infra
 {
-    public static class RotasRabbitGoogleClassroomApi
+    public static class RotasRabbitSgpGoogleClassroomApi
     {
         public static string ExchangeGoogleSync => "googleclass.exchange";
         public static string FilaGoogleSync => "googleclass.sync.geral";

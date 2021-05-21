@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
             {
                 try
                 {
-                    var publicarTratamentoDre = await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.SincronizaEstruturaInstitucionalDreTratar, codigoDre, param.CodigoCorrelacao, null, fila: RotasRabbit.SincronizaEstruturaInstitucionalDreTratar));
+                    var publicarTratamentoDre = await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.SincronizaEstruturaInstitucionalDreTratar, codigoDre, param.CodigoCorrelacao, null));
                     if (!publicarTratamentoDre)
                     {
                         var mensagem = $"Não foi possível inserir a Dre : {publicarTratamentoDre} na fila de sync.";
