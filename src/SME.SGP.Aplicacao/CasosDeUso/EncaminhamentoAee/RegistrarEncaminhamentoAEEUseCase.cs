@@ -26,6 +26,12 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             if (turma == null)
                 throw new NegocioException("A turma informada não foi encontrada");
 
+            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+
+            if (await VerificaPodeCadastrar(turma, usuarioLogado) == false) {
+                throw new NegocioException("Você não pode realizar essa ação, somente professores da turma ou o gestor da escola!");
+            }
+
             var aluno = await mediator.Send(new ObterAlunoPorCodigoEolQuery(encaminhamentoAEEDto.AlunoCodigo, DateTime.Now.Year));
             if (aluno == null)
                 throw new NegocioException("O aluno informado não foi encontrado");
@@ -47,12 +53,44 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             encaminhamentoAEEDto.TurmaId, aluno.NomeAluno, aluno.CodigoAluno,
             encaminhamentoAEEDto.Situacao));
 
+
+
             await SalvarEncaminhamento(encaminhamentoAEEDto, resultadoEncaminhamento);
 
             if (await ParametroGeracaoPendenciaAtivo())
                 await mediator.Send(new GerarPendenciaCPEncaminhamentoAEECommand(resultadoEncaminhamento.Id, encaminhamentoAEEDto.Situacao));
 
             return resultadoEncaminhamento;
+        }
+
+        private async Task<bool> VerificaPodeCadastrar(Dominio.Turma turma, Usuario usuarioLogado)
+        {
+            return await EhProfessorDaTurma(usuarioLogado, turma) || await EhGestorDaEscolaDaTurma(usuarioLogado, turma);
+        }
+
+        private Task<bool> EhUsuarioResponsavelPeloEncaminhamento(Usuario usuarioLogado, long? responsavelId)
+            => Task.FromResult(responsavelId.HasValue && usuarioLogado.Id == responsavelId.Value);
+
+        private async Task<bool> EhProfessorDaTurma(Usuario usuarioLogado, Dominio.Turma turma)
+        {
+            if (!usuarioLogado.EhProfessor())
+                return false;
+
+            var professores = await mediator.Send(new ObterProfessoresTitularesDaTurmaCompletosQuery(turma.CodigoTurma));
+
+            return professores.Any(a => a.ProfessorRf.ToString() == usuarioLogado.CodigoRf);
+        }
+
+        private async Task<bool> EhGestorDaEscolaDaTurma(Usuario usuarioLogado, Dominio.Turma turma)
+        {
+            if (!usuarioLogado.EhGestorEscolar())
+                return false;
+
+            var ue = await mediator.Send(new ObterUEPorTurmaCodigoQuery(turma.CodigoTurma));
+            if (ue == null)
+                throw new NegocioException($"Escola da turma [{turma.CodigoTurma}] não localizada.");
+
+            return await mediator.Send(new EhGestorDaEscolaQuery(usuarioLogado.CodigoRf, ue.CodigoUe, usuarioLogado.PerfilAtual));
         }
 
         private async Task<bool> ParametroGeracaoPendenciaAtivo()

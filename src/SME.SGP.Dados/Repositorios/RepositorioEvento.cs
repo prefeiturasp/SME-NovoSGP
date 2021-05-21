@@ -1220,7 +1220,7 @@ namespace SME.SGP.Dados.Repositorios
                 }, new { tipoEvento = (int)tipoEvento, data });
         }
 
-        public async Task<IEnumerable<EventoDataDto>> ListarEventosItinerancia(long tipoCalendarioId, long itineranciaId, string login, Guid perfil, bool historico = false)
+        public async Task<IEnumerable<EventoDataDto>> ListarEventosItinerancia(long tipoCalendarioId, long itineranciaId, string codigoUE, string login, Guid perfil, bool historico = false)
         {
             var query = @"select distinct e.id,
 		                    e.data_inicio as Data,
@@ -1246,11 +1246,12 @@ namespace SME.SGP.Dados.Repositorios
                     where et.ativo 
 	                    and not et.excluido
 	                    and not e.excluido
+                        and e.ue_id = @codigoUE
 	                    and (i.id is null or i.id = @itineranciaId)
 	                    and extract(year from e.data_inicio) = tc.ano_letivo
 	                    and et.codigo = 28
 	                    and e.tipo_calendario_id = @tipoCalendarioId";
-            return await database.Conexao.QueryAsync<EventoDataDto>(query, new { tipoCalendarioId, itineranciaId, login, perfil, historico });
+            return await database.Conexao.QueryAsync<EventoDataDto>(query, new { tipoCalendarioId, itineranciaId, codigoUE, login, perfil, historico });
         }
 
         public async Task<long> ObterTipoCalendarioIdPorEvento(long eventoId)

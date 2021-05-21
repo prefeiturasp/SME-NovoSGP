@@ -181,6 +181,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new ParametrosSistemaMap());
                config.AddMap(new FechamentoConsolidadoComponenteTurmaMap());
                config.AddMap(new ConselhoClasseConsolidadoTurmaAlunoMap());              
+               config.AddMap(new ConsolidacaoMatriculaTurmaMap());
 
                config.ForDommel();
            });
