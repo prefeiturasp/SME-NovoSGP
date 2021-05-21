@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
             var listaConselhosClasseConsolidado = await mediator.Send(new ObterConselhoClasseConsolidadoPorTurmaBimestreQuery(filtro.TurmaId, filtro.Bimestre));
 
             if (listaConselhosClasseConsolidado == null || !listaConselhosClasseConsolidado.Any())
-                throw new NegocioException("Conselhos classe consolidado não encontrado!");
+                return Enumerable.Empty<StatusTotalFechamentoDto>();
 
             var statusAgrupados = listaConselhosClasseConsolidado.GroupBy(g => g.Status);
 

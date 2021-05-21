@@ -964,7 +964,7 @@ namespace SME.SGP.Dados.Repositorios
                                                inner join ue on ue.id = t.ue_id
                                                inner join dre on dre.id = ue.dre_id
                                                inner join tipo_calendario tc 
-                                                  on t.ano_letivo = tc.ano_letivo and tc.modalidade = @modalidade
+                                                  on t.ano_letivo = tc.ano_letivo and tc.modalidade = @modalidadeTipoCalendario
                                                inner join periodo_escolar pe
 	                                              on tc.id = pe.tipo_calendario_id
                                                where dre.id = @dreId
@@ -989,7 +989,8 @@ namespace SME.SGP.Dados.Repositorios
                dataReferencia = new DateTime(anoLetivo, semestre == 1 ? 6 : 7, 1);
             }
 
-            query.AppendLine(@" and t.ano_letivo = @anoLetivo
+            query.AppendLine(@" and t.modalidade_codigo = @modalidade
+                                and t.ano_letivo = @anoLetivo
                                 and not t.historica
                             order by t.nome
                             OFFSET @quantidadeRegistrosIgnorados ROWS FETCH NEXT @quantidadeRegistros ROWS ONLY; ");
@@ -999,7 +1000,7 @@ namespace SME.SGP.Dados.Repositorios
                                 inner join ue on ue.id = t.ue_id
                                 inner join dre on dre.id = ue.dre_id
                                 inner join tipo_calendario tc 
-                                    on t.ano_letivo = tc.ano_letivo and tc.modalidade = @modalidade
+                                    on t.ano_letivo = tc.ano_letivo and tc.modalidade = @modalidadeTipoCalendario
                                 inner join periodo_escolar pe
 	                                on tc.id = pe.tipo_calendario_id
                                 where dre.id = @dreId
@@ -1016,7 +1017,8 @@ namespace SME.SGP.Dados.Repositorios
             if (modalidade == Modalidade.EJA)
                 query.AppendLine(queryPeriodoEJA);
 
-            query.AppendLine(@"and t.ano_letivo = @anoLetivo
+            query.AppendLine(@"and t.modalidade_codigo = @modalidade 
+                               and t.ano_letivo = @anoLetivo
                                and not t.historica");
 
 
@@ -1029,7 +1031,8 @@ namespace SME.SGP.Dados.Repositorios
                 turmasId,
                 dreId,
                 ueId,
-                modalidade = (int)modalidade.ObterModalidadeTipoCalendario(),
+                modalidadeTipoCalendario = (int)modalidade.ObterModalidadeTipoCalendario(),
+                modalidade,
                 semestre,
                 bimestre,
                 anoLetivo,
