@@ -869,83 +869,27 @@ namespace SME.SGP.Dados.Repositorios
 	                            where
 		                            turma_id = @turmaId);
 
-                            delete
-                            from
-	                            public.fechamento_turma
-                            where
-	                            turma_id = @turmaId;
+                            delete from public.fechamento_turma where turma_id = @turmaId;
 
-                            delete
-                            from
-	                            public.frequencia_aluno
-                            where
-	                            turma_id = @turmaCodigo;
+                            delete from public.frequencia_aluno where turma_id = @turmaCodigo;
 
-                            delete
-                            from
-	                            public.diario_bordo
-                            where
-	                            aula_id in (
-	                            select
-		                            id
-	                            from
-		                            public.aula
-	                            where
-		                            turma_id = @turmaCodigo);
+                            delete from public.diario_bordo where aula_id in (select id from public.aula where turma_id = @turmaCodigo);
 
-                            delete
-                            from
-	                            public.notificacao_frequencia
-                            where
-	                            aula_id in (
-	                            select
-		                            id
-	                            from
-		                            public.aula
-	                            where
-		                            turma_id = @turmaCodigo);
+                            delete from public.notificacao_frequencia where aula_id in (select id from public.aula where turma_id = @turmaCodigo);
 
-                            delete
-                            from
-	                            public.registro_frequencia
-                            where
-	                            aula_id in (
-	                            select
-		                            id
-	                            from
-		                            public.aula
-	                            where
-		                            turma_id = @turmaCodigo);
+                            delete from public.registro_frequencia where aula_id in ( select id from public.aula where turma_id = @turmaCodigo);
 
-                            delete
-                            from
-	                            public.aula
-                            where
-	                            turma_id = @turmaCodigo;
+                            delete from public.aula where turma_id = @turmaCodigo;
 
-                            delete
-                            from
-	                            pendencia_registro_individual_aluno pria
-                            where
-	                            pria.pendencia_registro_individual_id in (
-	                            select
-		                            id
-	                            from
-		                            pendencia_registro_individual pri
-	                            where
-		                            pri.turma_id = @turmaId);
+                            delete from public.pendencia_registro_individual_aluno pria where pria.pendencia_registro_individual_id in (select id from public.pendencia_registro_individual pri where pri.turma_id = @turmaId);
 
-                            delete
-                            from
-	                            pendencia_registro_individual pri
-                            where
-	                            pri.turma_id = @turmaId;
+                            delete from public.pendencia_registro_individual pri where pri.turma_id = @turmaId;
+        
+                            delete from public.consolidacao_frequencia_turma where turma_id = @turmaId;
+    
+                            delete from public.pendencia_professor where turma_id = @turmaId;
 
-                            delete
-                            from
-	                            public.turma
-                            where
-	                            id = @turmaId;";
+                            delete from public.turma where id = @turmaId;";
 
 
             var transacao = contexto.Conexao.BeginTransaction();
@@ -1012,6 +956,109 @@ namespace SME.SGP.Dados.Repositorios
             return retorno != 0;
 
 
+        }
+
+        public async Task<IEnumerable<ModalidadesPorAnoDto>> ObterModalidadesPorAnos(int anoLetivo, long dreId, long ueId, int modalidade, int semestre)
+        {
+
+            var query = new StringBuilder(@"select 
+                            distinct modalidade_codigo as modalidade, 
+                            ano
+                         from turma t
+                         inner join ue u on t.ue_id = u.id
+                         inner join dre d on d.id = u.dre_id
+                         where ano in ('1', '2', '3', '4', '5', '6', '7', '8', '9') and
+                         ano_letivo = @anoLetivo  
+                         ");
+
+            if (dreId > 0) 
+                query.AppendLine(" and d.id = @dreId ");
+
+            if (ueId > 0)
+                query.AppendLine(" and u.id  = @ueId ");
+
+            if (modalidade > 0)
+                query.AppendLine(" and t.modalidade_codigo = @modalidade ");
+
+            if (semestre >= 0)
+                query.AppendLine(" and t.semestre = @semestre ");
+
+            query.AppendLine("order by ano");
+
+            return await contexto.Conexao.QueryAsync<ModalidadesPorAnoDto>(query.ToString(), new { anoLetivo, dreId, ueId, modalidade, semestre });
+        }
+
+
+        public async Task<IEnumerable<GraficoBaseDto>> ObterInformacoesEscolaresTurmasAsync(int anoLetivo, long dreId, long ueId, string ano, Modalidade modalidade, int? semestre)
+        {
+            var sql = dreId > 0 ? QueryInformacoesEscolaresTurmasPorAno(dreId, ueId, semestre) : QueryInformacoesEscolaresTurmasPorDre(dreId, ueId, ano, semestre);
+            return await contexto
+                .Conexao
+                .QueryAsync<GraficoBaseDto>(sql, new { modalidade, dreId, ueId, anoLetivo, semestre, ano });
+        }
+
+        private string CondicoesInformacoesEscolares(long dreId, long ueId, string ano, int? semestre)
+        {
+            var query = new StringBuilder("");
+            if (semestre > 0) query.AppendLine(@"  and t.semestre = @semestre");
+            if (dreId > 0) query.AppendLine(@" and dre.id = @dreId");
+            if (ueId > 0) query.AppendLine(@"  and ue.id = @ueId");
+            if (!string.IsNullOrEmpty(ano)) query.AppendLine(@"  and t.ano = @ano");
+            return query.ToString();
+        }
+
+        private string QueryInformacoesEscolaresTurmasPorDre(long dreId, long ueId, string ano, int? semestre)
+        {
+            var query = new StringBuilder(@"select dre.abreviacao as descricao,
+	                                             count(t.id) as quantidade
+                                            from turma t 
+                                           inner join ue on ue.id = t.ue_id 
+                                           inner join dre on dre.id = ue.dre_id 
+                                           where t.ano <> '0'
+                                             and t.ano is not null 
+                                             and t.ano_letivo = @anoLetivo
+                                             and t.modalidade_codigo = @modalidade ");
+            query.AppendLine(CondicoesInformacoesEscolares(dreId, ueId, ano, semestre));
+            query.AppendLine(@" group by dre.abreviacao 
+                         order by dre.abreviacao");
+            return query.ToString();
+        }
+
+        private string QueryInformacoesEscolaresTurmasPorAno(long dreId, long ueId, int? semestre)
+        {
+            var query = new StringBuilder(@"select * from (	
+	                                            (select t.ano as descricao,
+		                                               count(t.id) as quantidade
+	                                              from turma t 
+	                                             inner join ue on ue.id = t.ue_id 
+	                                             inner join dre on dre.id = ue.dre_id 
+	                                             where t.ano <> '0'
+	                                               and t.ano is not null
+	                                               and t.tipo_turma not in (2,7)
+                                                   and t.ano_letivo = @anoLetivo");
+            query.AppendLine(CondicoesInformacoesEscolares(dreId, ueId, "", semestre));
+            query.AppendLine(@" group by t.ano
+	                                             order by t.ano)
+	                                             union
+	                                            select 'Turmas de programa' as descricao,
+		                                               count(t.id) as quantidade
+	                                              from turma t 
+	                                             inner join ue on ue.id = t.ue_id 
+	                                             inner join dre on dre.id = ue.dre_id 
+	                                             where t.ano is not null
+	                                               and t.tipo_turma in (2,7) 
+                                                   and t.ano_letivo = @anoLetivo");
+            query.AppendLine(CondicoesInformacoesEscolares(dreId, ueId, "", semestre));
+            query.AppendLine(@"            ) x
+                                            order by x.descricao");
+            return query.ToString();
+        }
+
+        public async Task<IEnumerable<TurmaModalidadeDto>> ObterTurmasComModalidadePorAno(int ano)
+        {
+            var query = @"select id as TurmaId, turma_id as TurmaCodigo, modalidade_codigo as Modalidade from turma where ano_letivo = @ano";
+
+            return await contexto.Conexao.QueryAsync<TurmaModalidadeDto>(query, new { ano });
         }
     }
 }

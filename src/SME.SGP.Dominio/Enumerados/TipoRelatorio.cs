@@ -85,6 +85,12 @@ namespace SME.SGP.Dominio
         Devolutivas = 28,
 
         [Display(Name = "relatorios/itinerancias", ShortName = "Itinerâncias", Description = "Relatório do Registro de Itinerância")]
-        Itinerancias = 29
+        Itinerancias = 29,
+
+        [Display(Name = "relatorios/registro-individual", ShortName = "RegistroIndividual", Description = "Relatório de Registro Individual")]
+        RegistroIndividual = 30,
+
+        [Display(Name = "relatorios/acompanhamento-aprendizagem", ShortName = "AcompanhamentoAprendizagem", Description = "Relatório do Acompanhamento da Aprendizagem")]
+        AcompanhamentoAprendizagem = 31
     }
 }

@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -18,5 +19,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> ExecutandoCalculoFrequencia(string turmaId, string disciplinaId, int bimestre)
             => (await repositorio.ObterProcessoCalculoFrequenciaAsync(turmaId, disciplinaId, bimestre, Dominio.TipoProcesso.CalculoFrequencia)) != null;
+
+        public async Task<ProcessoExecutando> ObterProcessosEmExecucaoAsync(string turmaId, string disciplinaId, int bimestre, TipoProcesso tipoProcesso)
+            => (await repositorio.ObterProcessoCalculoFrequenciaAsync(turmaId, disciplinaId, bimestre, TipoProcesso.CalculoFrequencia));
     }
 }

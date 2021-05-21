@@ -32,21 +32,20 @@ namespace SME.SGP.Aplicacao.Interfaces
             itinerancia.DataVisita = dto.DataVisita;
             itinerancia.DataRetornoVerificacao = dto.DataRetornoVerificacao;            
             itinerancia.EventoId = dto.EventoId;
+            itinerancia.DreId = dto.DreId;
+            itinerancia.UeId = dto.UeId;
+
+            await ExcluirFilhosItinerancia(dto, itinerancia);
 
             using (var transacao = unitOfWork.IniciarTransacao())
             {
                 try
                 {
                     var auditoriaDto = await mediator.Send(new AlterarItineranciaCommand(itinerancia));
-                    if(auditoriaDto == null)
+                    if (auditoriaDto == null)
                         throw new NegocioException($"Não foi possível alterar a itinerância de Id {itinerancia.Id}");
-                    
-                    await ExluirFilhosItinerancia(itinerancia);
-                    
-                    await SalvarFilhosItinerancia(dto, itinerancia);
 
-                    if (dataRetornoAlterada)
-                        await AltararDataEventosItinerancias(dto, dataRetornoAnterior);
+                    await SalvarFilhosItinerancia(dto, itinerancia);
 
                     unitOfWork.PersistirTransacao();
 
@@ -81,8 +80,11 @@ namespace SME.SGP.Aplicacao.Interfaces
 
         private async Task SalvarEventosItinerancia(ItineranciaDto dto)
         {
-            foreach (var ue in dto.Ues)
-                await mediator.Send(new CriarEventoItineranciaPAAICommand(dto.Id, ue.CodigoDre, ue.CodigoUe, dto.DataRetornoVerificacao.Value, dto.DataVisita, ObterObjetivos(dto.ObjetivosVisita)));
+            var ue = await mediator.Send(new ObterUePorIdQuery(dto.UeId));
+            if (ue == null )
+                throw new NegocioException("Não foi possível localizar um Unidade Escolar!");
+
+                await mediator.Send(new CriarEventoItineranciaPAAICommand(dto.Id, ue.Dre.CodigoDre, ue.CodigoUe, dto.DataRetornoVerificacao.Value, dto.DataVisita, ObterObjetivos(dto.ObjetivosVisita)));
         }
 
         private IEnumerable<ItineranciaObjetivoDescricaoDto> ObterObjetivos(IEnumerable<ItineranciaObjetivoDto> objetivosVisita)
@@ -115,33 +117,28 @@ namespace SME.SGP.Aplicacao.Interfaces
                         CriadoRF = itinerancia.CriadoRF,
                         CriadoPor = itinerancia.CriadoPor,
                         DataVisita = dto.DataVisita,
-                        Ues = dto.Ues,
+                        UeId = dto.UeId,
                         Estudantes = dto.Alunos,
                         ItineranciaId = itinerancia.Id
                     }, Guid.NewGuid(), null));
         }
 
-        public async Task<bool> ExluirFilhosItinerancia(Itinerancia itinerancia)
+        public async Task<bool> ExcluirFilhosItinerancia(ItineranciaDto itineranciaDto, Itinerancia itinerancia)
         {
-            if (itinerancia.PossuiAlunos())
+            if (itineranciaDto.PossuiAlunos)
                 foreach (var aluno in itinerancia.Alunos)
                     if (!await mediator.Send(new ExcluirItineranciaAlunoCommand(aluno)))
                         throw new NegocioException($"Não foi possível excluir a itinerância do aluno de Id {aluno.Id}");
 
-            if (itinerancia.PossuiObjetivos())
+            if (itineranciaDto.PossuiObjetivos)
                 foreach (var objetivo in itinerancia.ObjetivosVisita)
-                    if (!await mediator.Send(new ExcluirItineranciaObjetivoCommand(objetivo.Id)))
+                    if (!await mediator.Send(new ExcluirItineranciaObjetivoCommand(objetivo.Id, itinerancia.Id)))
                         throw new NegocioException($"Não foi possível excluir o objetivo da itinerância de Id {objetivo.Id}");
 
-            if (itinerancia.PossuiQuestoes())
+            if (itineranciaDto.PossuiQuestoes)
                 foreach (var questao in itinerancia.Questoes)
-                    if (!await mediator.Send(new ExcluirItineranciaQuestaoCommand(questao.Id)))
+                    if (!await mediator.Send(new ExcluirItineranciaQuestaoCommand(questao.Id, itinerancia.Id)))
                         throw new NegocioException($"Não foi possível excluir a questão da itinerância de Id {questao.Id}");
-
-            if (itinerancia.PossuiUes())
-                foreach (var ue in itinerancia.Ues)
-                    if (!await mediator.Send(new ExcluirItineranciaUeCommand(ue.Id)))
-                        throw new NegocioException($"Não foi possível excluir a ue da itinerância de Id {ue.Id}");
 
             return true;
         }
@@ -162,10 +159,6 @@ namespace SME.SGP.Aplicacao.Interfaces
             if (itineranciaDto.PossuiQuestoes)
                 foreach (var questao in itineranciaDto.Questoes)
                     await mediator.Send(new SalvarItineranciaQuestaoCommand(questao.QuestaoId, itinerancia.Id, questao.Resposta));
-
-            if (itineranciaDto.PossuiUes)
-                foreach (var ue in itineranciaDto.Ues)
-                    await mediator.Send(new SalvarItineranciaUeCommand(ue.UeId, itinerancia.Id));
 
             return true;
         }

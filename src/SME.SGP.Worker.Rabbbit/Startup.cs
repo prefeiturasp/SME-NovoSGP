@@ -48,6 +48,7 @@ namespace SME.SGP.Worker.Rabbbit
             services.AddHostedService<WorkerRabbitMQ>();
 
             ConfiguraVariaveisAmbiente(services);
+            ConfiguraGoogleClassroomSync(services);
 
             var serviceProvider = services.BuildServiceProvider();
             var clientTelemetry = serviceProvider.GetService<TelemetryClient>();
@@ -62,6 +63,14 @@ namespace SME.SGP.Worker.Rabbbit
             configuration.GetSection(nameof(ConfiguracaoRabbitOptions)).Bind(configuracaoRabbitOptions, c => c.BindNonPublicProperties = true);
 
             services.AddSingleton(configuracaoRabbitOptions);
+        }
+
+        private void ConfiguraGoogleClassroomSync(IServiceCollection services)
+        {
+            var googleClassroomSyncOptions = new GoogleClassroomSyncOptions();
+            configuration.GetSection(nameof(GoogleClassroomSyncOptions)).Bind(googleClassroomSyncOptions, c => c.BindNonPublicProperties = true);
+
+            services.AddSingleton(googleClassroomSyncOptions);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

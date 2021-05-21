@@ -22,8 +22,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select id,
 	                             nome,
-	                             tem_descricao as TemDescricao,
-	                             permite_varias_ues as PermiteVariasUes
+	                             tem_descricao as TemDescricao
                             from itinerancia_objetivo_base iob  
                            where not excluido 
                            order by ordem  ";
@@ -83,7 +82,6 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select iob.id,
                                  iob.nome,
                                  iob.tem_descricao,
-                                 iob.permite_varias_ues,
                                  io.descricao 
                             from itinerancia_objetivo_base iob 
                            inner join itinerancia_objetivo io on io.itinerancia_base_id = iob.id 
@@ -113,19 +111,6 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<ItineranciaQuestaoDto>(query, new { id, tipoQuestionario });
         }
 
-        public async Task<IEnumerable<ItineranciaUeDto>> ObterUesItineranciaPorId(long id)
-        {
-            var query = @"select iu.id,
-       		                     iu.ue_id as UeId,
-       		                     ue.nome as Descricao
-                            from itinerancia_ue iu 
-                           inner join ue on ue.id = iu.ue_id 
-                           where iu.itinerancia_id = @Id
-                             and not iu.excluido";
-
-            return await database.Conexao.QueryAsync<ItineranciaUeDto>(query, new { id });
-        }
-
         public async Task<IEnumerable<int>> ObterAnosLetivosItinerancia()
         {
             var query = @"select distinct ano_letivo 
@@ -137,21 +122,20 @@ namespace SME.SGP.Dados.Repositorios
         }
         public async Task<Itinerancia> ObterEntidadeCompleta(long id)
         {
-            var query = @"select i.*, ia.*, iaq.*, iq.* , io.*, iob.*, iu.*
+            var query = @"select i.*, ia.*, iaq.*, iq.* , io.*, iob.*
                             from itinerancia i 
                            left join itinerancia_aluno ia on ia.itinerancia_id = i.id
                            left join itinerancia_aluno_questao iaq on iaq.itinerancia_aluno_id = ia.id    
                            left join itinerancia_questao iq on iq.itinerancia_id = i.id 
                            left join itinerancia_objetivo io on io.itinerancia_id = i.id   
                            inner join itinerancia_objetivo_base iob on iob.id = io.itinerancia_base_id
-                           left join itinerancia_ue iu on iu.itinerancia_id = i.id                           
                            where i.id = @id
                              and not i.excluido";
 
             var lookup = new Dictionary<long, Itinerancia>();
 
-            await database.Conexao.QueryAsync<Itinerancia, ItineranciaAluno, ItineranciaAlunoQuestao, ItineranciaQuestao, ItineranciaObjetivo, ItineranciaObjetivoBase, ItineranciaUe, Itinerancia>(query,
-                 (registroItinerancia, itineranciaAluno, itineranciaAlunoquestao, itineranciaQuestao, itineranciaObjetivo, itineranciaObjetivoBase, itineranciaUe) =>
+            await database.Conexao.QueryAsync<Itinerancia, ItineranciaAluno, ItineranciaAlunoQuestao, ItineranciaQuestao, ItineranciaObjetivo, ItineranciaObjetivoBase, Itinerancia>(query,
+                 (registroItinerancia, itineranciaAluno, itineranciaAlunoquestao, itineranciaQuestao, itineranciaObjetivo, itineranciaObjetivoBase) =>
                  {
                      Itinerancia itinerancia;
                      if (!lookup.TryGetValue(registroItinerancia.Id, out itinerancia))
@@ -173,9 +157,6 @@ namespace SME.SGP.Dados.Repositorios
 
                      if (itineranciaObjetivoBase != null)
                          itinerancia.AdicionarObjetivoBase(itineranciaObjetivoBase);
-
-                     if (itineranciaUe != null)
-                         itinerancia.AdicionarUe(itineranciaUe);
 
                      return itinerancia;
                  }, param: new { id });
@@ -235,10 +216,10 @@ namespace SME.SGP.Dados.Repositorios
             {
                 sql.AppendLine(" i.id ");
                 sql.AppendLine(", i.data_visita as DataVisita ");
+                sql.AppendLine(", i.ue_id as UeId ");
                 sql.AppendLine(", i.situacao ");
                 sql.AppendLine(", i.criado_por||'('||i.criado_rf||')' as criado_por");
                 sql.AppendLine($", (select count(*) from itinerancia_aluno ia where ia.itinerancia_id = i.id ) as alunos ");
-                sql.AppendLine($", (select count(*) from itinerancia_ue iu where iu.itinerancia_id = i.id ) as ues ");
 
             }
 
@@ -246,8 +227,7 @@ namespace SME.SGP.Dados.Repositorios
 
             if (dreId > 0 || ueId > 0)
             {
-                sql.AppendLine(@" inner join itinerancia_ue iu2 on iu2.itinerancia_id = i.id 
-	                              inner join ue  on iu2.ue_id  = ue.id 
+                sql.AppendLine(@" inner join ue  on i.ue_id  = ue.id 
 	                              inner join dre on ue.dre_id = dre.id ");
             }
 
@@ -324,7 +304,6 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine(@"select dre.abreviacao as Descricao, count(i.id ) as Quantidade");
 
             sql.AppendLine(@" from itinerancia i
-                            inner join itinerancia_ue iu on iu.itinerancia_id = i.id
                             inner join ue on iu.ue_id = ue.id 
                             inner join dre on ue.dre_id = dre.id ");
 
@@ -357,8 +336,7 @@ namespace SME.SGP.Dados.Repositorios
             sql.AppendLine(@"select iob.nome as Descricao, count(i.id) as Quantidade from itinerancia_objetivo io 
                             inner join itinerancia i on io.itinerancia_id = i.id
                             inner join itinerancia_objetivo_base iob on io.itinerancia_base_id = iob.id 
-                            inner join itinerancia_ue iu on iu.itinerancia_id = i.id
-                            inner join ue on iu.ue_id = ue.id 
+                            inner join ue on i.ue_id = ue.id 
                             inner join dre on ue.dre_id = dre.id ");
 
             if (dreId > 0)
@@ -384,25 +362,21 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<Itinerancia> ObterComUesPorId(long id)
         {
-            var query = @"select i.*, iu.*, ue.*, dre.*
+            var query = @"select i.*, ue.*, dre.*
                   from itinerancia i
-                 inner join itinerancia_ue iu on iu.itinerancia_id = i.id
-                 inner join ue on ue.id = iu.ue_id
+                 inner join ue on ue.id = i.ue_id
                  inner join dre on dre.id = ue.dre_id
                  where i.id = @id ";
 
             Itinerancia registroItinerancia = null;
 
-            await database.Conexao.QueryAsync<Itinerancia, ItineranciaUe, Ue, Dre, Itinerancia>(query,
-                (itinerancia, itineranciaUe, ue, dre) =>
+            await database.Conexao.QueryAsync<Itinerancia, Ue, Dre, Itinerancia>(query,
+                (itinerancia, ue, dre) =>
                 {
                     if (registroItinerancia == null)
                         registroItinerancia = itinerancia;
 
                     ue.Dre = dre;
-                    itineranciaUe.Ue = ue;
-
-                    registroItinerancia.AdicionarUe(itineranciaUe);
 
                     return itinerancia;
                 }, new { id });

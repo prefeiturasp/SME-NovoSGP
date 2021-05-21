@@ -112,3 +112,23 @@ export const resetarDadosRegistroIndividual = payload => ({
   type: '@registroIndividual/resetarDadosRegistroIndividual',
   payload,
 });
+
+export const setExibirModalImpressaoRegistroIndividual = payload => ({
+  type: '@registroIndividual/setExibirModalImpressaoRegistroIndividual',
+  payload,
+});
+
+export const setDataInicioImpressaoRegistrosAnteriores = payload => ({
+  type: '@registroIndividual/setDataInicioImpressaoRegistrosAnteriores',
+  payload,
+});
+
+export const setDataFimImpressaoRegistrosAnteriores = payload => ({
+  type: '@registroIndividual/setDataFimImpressaoRegistrosAnteriores',
+  payload,
+});
+
+export const setMostrarMensagemSemHistorico = payload => ({
+  type: '@registroIndividual/setMostrarMensagemSemHistorico',
+  payload,
+});

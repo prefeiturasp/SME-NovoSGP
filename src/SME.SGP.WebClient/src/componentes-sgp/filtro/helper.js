@@ -175,7 +175,7 @@ class FiltroHelper {
             });
           });
         }
-        return turmas.sort(this.ordenarLista('desc'));
+        return turmas;
       })
       .catch(e => {
         if (e?.message.indexOf(TOKEN_EXPIRADO) >= 0) return e;

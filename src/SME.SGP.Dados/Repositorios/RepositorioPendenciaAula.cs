@@ -207,35 +207,25 @@ namespace SME.SGP.Dados.Repositorios
 	                        and aula.id = ANY(@aulas)
                             and aula.data_aula::date < @hoje
                             and (rf.id is null or tr.id is null)
-	                        group by
-	                        1 ";
+	                        ";
 
-            return (await database.Conexao.QuerySingleOrDefaultAsync<bool>(sql, new { aulas = aulasId, hoje = DateTime.Today.Date }));
+            return (await database.Conexao.QueryFirstOrDefaultAsync<bool>(sql, new { aulas = aulasId, hoje = DateTime.Today.Date }));
         }
 
         public async Task<bool> PossuiPendenciasAtividadeAvaliativaPorAulasId(long[] aulasId)
         {
-            var sql = @"select
-	                       1
-                        from
-	                        atividade_avaliativa aa
-                        inner join atividade_avaliativa_disciplina aad on
-	                        aad.atividade_avaliativa_id = aa.id
-                        left join notas_conceito n on
-	                        aa.id = n.atividade_avaliativa
-                        inner join aula a on
-	                        aa.turma_id = a.turma_id
-	                        and aa.data_avaliacao::date = a.data_aula::date
-	                        and aad.disciplina_id = a.disciplina_id
-                        where
-	                        not a.excluido
-	                        and a.id = ANY(@aulas)
+            var sql = @"select 1
+                            from aula a
+                            inner join atividade_avaliativa aa on a.id = ANY(@aulas)
+                            and aa.turma_id = a.turma_id
+                            and not a.excluido
                             and a.data_aula::date < @hoje
-	                        and n.id is null
-                        group by
-	                        1";
+                            and aa.data_avaliacao::date = a.data_aula::date
+                            inner join atividade_avaliativa_disciplina aad on aad.atividade_avaliativa_id = aa.id
+                            and aad.disciplina_id = a.disciplina_id
+                            left join notas_conceito n on aa.id = n.atividade_avaliativa and n.id is null;";
 
-            return (await database.Conexao.QuerySingleOrDefaultAsync<bool>(sql, new { aulas = aulasId, hoje = DateTime.Today.Date }));
+            return (await database.Conexao.QueryFirstOrDefaultAsync<bool>(sql, new { aulas = aulasId, hoje = DateTime.Today.Date }));
         }
 
         public async Task<bool> PossuiPendenciasAtividadeAvaliativaPorAulaId(long aulaId)
@@ -258,7 +248,7 @@ namespace SME.SGP.Dados.Repositorios
                             and a.data_aula::date < @hoje
 	                        and n.id is null";
 
-            return (await database.Conexao.QuerySingleOrDefaultAsync<bool>(sql, new { aula = aulaId, hoje = DateTime.Today.Date }));
+            return (await database.Conexao.QueryFirstOrDefaultAsync<bool>(sql, new { aula = aulaId, hoje = DateTime.Today.Date }));
         }
 
         public async Task<PendenciaAulaDto> PossuiPendenciasPorAulaId(long aulaId, bool ehInfantil)

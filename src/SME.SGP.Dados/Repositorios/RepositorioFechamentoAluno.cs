@@ -36,9 +36,9 @@ namespace SME.SGP.Dados.Repositorios
                         inner join turma t on ft.turma_id = t.id 
                         where not ftd.excluido and not fa.excluido 
                          and fa.aluno_codigo = @alunoCodigo 
-                         and t.turma_id =  ANY(@turmasCodigos)";
+                         and t.turma_id =  ANY(@turmasCodigos);";
 
-            return await database.Conexao.QueryAsync<FechamentoAlunoAnotacaoConselhoDto>(query, new { alunoCodigo, turmasCodigos });
+            return await database.Conexao.QueryAsync<FechamentoAlunoAnotacaoConselhoDto>(query.ToString(), new { alunoCodigo, turmasCodigos });
         }
 
         public async Task<FechamentoAluno> ObterFechamentoAluno(long fechamentoTurmaDisciplinaId, string alunoCodigo)

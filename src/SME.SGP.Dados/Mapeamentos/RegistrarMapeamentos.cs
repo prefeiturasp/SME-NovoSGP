@@ -154,7 +154,6 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new ItineranciaAlunoQuestaoMap());
                config.AddMap(new ItineranciaQuestaoMap());
                config.AddMap(new ItineranciaObjetivoMap());
-               config.AddMap(new ItineranciaUeMap());
                config.AddMap(new PendenciaRegistroIndividualMap());
                config.AddMap(new PendenciaRegistroIndividualAlunoMap());
                config.AddMap(new PlanoAEEMap());
@@ -174,12 +173,14 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new AcompanhamentoTurmaMap());
                config.AddMap(new AlunoFotoMap());
                config.AddMap(new WfAprovacaoItineranciaMap());
-
                config.AddMap(new PerfilEventoTipoMap());
                config.AddMap(new ItineranciaEventoMap());
                config.AddMap(new PlanoAEEObservacaoMap());
                config.AddMap(new NotificacaoPlanoAEEObservacaoMap());
-               
+               config.AddMap(new ConsolidacaoFrequenciaTurmaMap());
+               config.AddMap(new ParametrosSistemaMap());
+               config.AddMap(new ConsolidacaoMatriculaTurmaMap());
+
                config.ForDommel();
            });
         }

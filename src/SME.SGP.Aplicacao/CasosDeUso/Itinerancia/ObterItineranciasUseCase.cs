@@ -52,10 +52,8 @@ namespace SME.SGP.Aplicacao
             if (itinerancias == null || !itinerancias.Any())
                 return itineranciasParaRetornar;
 
-
             var alunosEol = new List<TurmasDoAlunoDto>();
             var itineranciasAlunos = new List<ItineranciaCodigoAlunoDto>();
-            var itineranciasUes = new List<ItineranciaIdUeInfosDto>();
             var turmas = new List<Turma>();
 
             if (itinerancias.Any(a => a.Alunos == 1))
@@ -69,15 +67,7 @@ namespace SME.SGP.Aplicacao
 
                 var codigosDasTurmas = alunosEol.Select(al => al.CodigoTurma.ToString()).Distinct().ToArray();
                 turmas = (await mediator.Send(new ObterTurmasPorCodigosQuery(codigosDasTurmas))).ToList();
-
             }
-
-            if (itinerancias.Any(a => a.Ues == 1))
-            {
-                var itineranciasUesIds = itinerancias.Where(a => a.Ues == 1).Select(a => a.Id).ToArray();
-                itineranciasUes = (await mediator.Send(new ObterUesPorItineranciasIdsQuery(itineranciasUesIds))).ToList();
-            }
-
 
             foreach (var item in itinerancias)
             {
@@ -87,7 +77,7 @@ namespace SME.SGP.Aplicacao
                 itineranciaParaAdicionar.EstudanteNome = ObterEstudanteNomeCodigo(item, alunosEol, itineranciasAlunos);
                 itineranciaParaAdicionar.Id = item.Id;
                 itineranciaParaAdicionar.Situacao = item.Situacao.Name();
-                itineranciaParaAdicionar.UeNome = ObterNomeUe(item, itineranciasUes);
+                itineranciaParaAdicionar.UeNome = await ObterNomeUeAsync(item.UeId);
                 itineranciaParaAdicionar.TurmaNome = ObterTurmaNome(item, turmas, itineranciasAlunos);
                 itineranciaParaAdicionar.CriadoPor = item.CriadoPor;
 
@@ -113,24 +103,17 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private string ObterNomeUe(ItineranciaRetornoQueryDto item, List<ItineranciaIdUeInfosDto> itineranciasUes)
+        private async Task<string> ObterNomeUeAsync(long ueId)
         {
-            if (item.Ues == 1)
-            {
-
-                return itineranciasUes.FirstOrDefault(a => a.ItineranciaId == item.Id)?.NomeFormatado;
-
-            }
-            else if (item.Ues > 1)
-            {
-                return $"{item.Ues} registros selecionados";
-            }
-            else return "Sem informação";
+            var ue = await mediator.Send(new ObterUePorIdQuery(ueId));
+            if (ue == null)
+                throw new NegocioException("Não foi possível encrontra a UE!");
+            
+            return $"{ue.TipoEscola.ShortName()} {ue.Nome}";
         }
 
         private string ObterEstudanteNomeCodigo(ItineranciaRetornoQueryDto itineranciaParaTratar, IEnumerable<TurmasDoAlunoDto> alunosEol, List<ItineranciaCodigoAlunoDto> itineranciaCodigoAlunos)
         {
-
             if (itineranciaParaTratar.Alunos > 1)
                 return $"{itineranciaParaTratar.Alunos} registros selecionados.";
             else if (itineranciaParaTratar.Alunos == 1)

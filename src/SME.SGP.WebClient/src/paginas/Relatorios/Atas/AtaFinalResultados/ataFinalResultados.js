@@ -305,12 +305,30 @@ const AtaFinalResultados = () => {
     obterVisualizacoes();
   }, [obterDres, obterVisualizacoes]);
 
-  const checarTipoTurma = valor => {
-    setVisualizacao('');
-    const turmasSelecionadasItinerancia = listaTurmasCompletas.filter(
-      lt => valor.find(t => lt.codigo === t) && lt.tipoTurma === 7
+  const compararTurmaAno = (stringComparacao, valorComparacao, arrayTurmas) => {
+    return listaTurmasCompletas.filter(
+      turmaCompleta =>
+        arrayTurmas.find(arrayTurma => turmaCompleta.codigo === arrayTurma) &&
+        parseInt(turmaCompleta[stringComparacao], 10) ===
+          parseInt(valorComparacao, 10)
     );
-    if (turmasSelecionadasItinerancia.length === valor?.length) {
+  };
+
+  const checarTipoTurma = arrayTurmas => {
+    setVisualizacao('');
+    const turmaItinerancia = compararTurmaAno('tipoTurma', 7, arrayTurmas);
+    const turmaPrimeiro = compararTurmaAno('ano', 1, arrayTurmas);
+    const turmaSegundo = compararTurmaAno('ano', 2, arrayTurmas);
+    const turmaTerceiro = compararTurmaAno('ano', 3, arrayTurmas);
+    const ehModalidadeMedio =
+      parseInt(modalidadeId, 10) === parseInt(modalidade.ENSINO_MEDIO, 10);
+
+    if (
+      turmaItinerancia.length === arrayTurmas?.length ||
+      (ehModalidadeMedio &&
+        !turmaSegundo.length &&
+        (turmaPrimeiro.length || turmaTerceiro.length))
+    ) {
       setVisualizacao(
         `${
           listaVisualizacao.find(a => a.desc?.toUpperCase() === 'TURMA')?.valor
@@ -318,17 +336,7 @@ const AtaFinalResultados = () => {
       );
       return true;
     }
-
-    const turmasSelecionadas = listaTurmasCompletas.filter(
-      lt => valor.find(t => lt.codigo === t) && String(lt.ano) === '2'
-    );
-
-    if (!turmasSelecionadas.length) {
-      setVisualizacao(
-        `${
-          listaVisualizacao.find(a => a.desc?.toUpperCase() === 'TURMA')?.valor
-        }`
-      );
+    if (!turmaSegundo.length) {
       return true;
     }
     return false;
@@ -336,14 +344,14 @@ const AtaFinalResultados = () => {
 
   useEffect(() => {
     let turmaExcecao = false;
-    if (turmaId?.length) {
+    if (turmaId?.length && turmaId[0] !== '-99') {
       turmaExcecao = checarTipoTurma(turmaId);
     }
     const desabilita =
       !modalidadeId ||
       !turmaId ||
-      String(modalidadeId) !== String(modalidade.ENSINO_MEDIO) ||
       (turmaId.length === 1 && turmaId[0] !== '-99' && turmaExcecao) ||
+      parseInt(modalidadeId, 10) !== parseInt(modalidade.ENSINO_MEDIO, 10) ||
       !turmaId.length ||
       turmaExcecao;
     setDesabilitaVisualizacao(desabilita);
@@ -449,6 +457,7 @@ const AtaFinalResultados = () => {
     const novoValor = todosSetado && valor.length === 2 ? [valor[1]] : valor;
     setTurmaId(todos ? [todos] : novoValor);
     habilitarSelecaoFormato(valor);
+    setVisualizacao('');
   };
   const onChangeFormato = valor => setFormato(valor);
 
