@@ -128,9 +128,6 @@ namespace SME.SGP.Dominio.Servicos
                 if (aluno == null)
                     throw new NegocioException("O aluno informado na frequência não pertence a essa turma.");
 
-                if (aluno.EstaInativo(dataAula))
-                    throw new NegocioException($"Não foi possível registrar a frequência pois o aluno: '{aluno.NomeAluno}' está com a situação: '{aluno.SituacaoMatricula}'.");
-
                 ausencia.RegistroFrequenciaId = registroFrequencia.Id;
                 repositorioRegistroAusenciaAluno.Salvar(ausencia);
             }
