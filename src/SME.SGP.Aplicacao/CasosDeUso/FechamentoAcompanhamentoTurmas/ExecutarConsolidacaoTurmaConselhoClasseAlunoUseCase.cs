@@ -4,6 +4,7 @@ using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -28,7 +29,7 @@ namespace SME.SGP.Aplicacao
                 SentrySdk.CaptureMessage($"Não foi possível iniciar a consolidação do conselho de clase da turma -> aluno. O id da turma bimestre aluno não foram informados", Sentry.Protocol.SentryLevel.Error);
                 return false;
             }
-            
+
             StatusFechamento statusNovo = StatusFechamento.NaoIniciado;
 
             var consolidadoTurmaAluno = await repositorioConselhoClasseConsolidado.ObterConselhoClasseConsolidadoPorTurmaBimestreAlunoAsync(filtro.TurmaId, filtro.Bimestre, filtro.AlunoCodigo);
@@ -57,13 +58,11 @@ namespace SME.SGP.Aplicacao
                 {
                     turmasCodigos = new string[1] { turma.CodigoTurma };
                 }
-                var perfilAtual = await mediator.Send(new ObterPerfilAtualQuery());
-                var loginAtual = await mediator.Send(new ObterLoginAtualQuery());
 
-                var componentesDaTurmaEol = await mediator.Send(new ObterComponentesCurricularesPorTurmasCodigoQuery(turmasCodigos, perfilAtual, loginAtual, turma.EnsinoEspecial, turma.TurnoParaComponentesCurriculares));
-                var componentesDaTurma = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(componentesDaTurmaEol.Select(x => x.CodigoComponenteCurricular).Distinct().ToArray()));
+                var componentesDaTurmaEol = await mediator.Send(new ObterComponentesCurricularesEOLPorTurmasCodigoQuery(turmasCodigos));
+                var componentesDaTurma = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(componentesDaTurmaEol.Select(x => Convert.ToInt64(x.Codigo)).Distinct().ToArray()));
 
-                var possuiComponentesSemNotaConceito = !componentesDaTurma.Select(a => a.CodigoComponenteCurricular).Except(componentesDoAluno).Any();
+                var possuiComponentesSemNotaConceito = componentesDaTurma.Select(a => a.CodigoComponenteCurricular).Except(componentesDoAluno).Any();
 
                 if (possuiComponentesSemNotaConceito)
                     statusNovo = StatusFechamento.EmAndamento;
