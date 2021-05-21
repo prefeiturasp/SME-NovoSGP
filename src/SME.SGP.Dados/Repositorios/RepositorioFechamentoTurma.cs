@@ -1,6 +1,7 @@
 ﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -34,6 +35,20 @@ namespace SME.SGP.Dados.Repositorios
                     return fechamentoTurma;
                 }
                 , new { fechamentoTurmaId })).FirstOrDefault();
+        }
+
+        public async Task<IEnumerable<FechamentoTurma>> ObterPorTurmaBimestreComponenteCurricular(long turmaId, int bimestre, long componenteCurricularId)
+        {
+            var query = new StringBuilder(@"select f.* from fechamento_turma ft
+                    inner join fechamento_turma_disciplina ftd on
+                        ft.id = ftd.fechamento_turma_id 
+                    left join periodo_escolar p on p.id = f.periodo_escolar_id
+                    where 
+                        not ft.excluido and ft.turma_id = @turmaId and 
+                        ftd.disciplina_id = @componenteCurricularId and 
+                        p.bimestre = @bimestre  ");
+
+            return await database.Conexao.QueryAsync<FechamentoTurma>(query.ToString(), new { turmaId, componenteCurricularId, bimestre });
         }
 
         public async Task<FechamentoTurma> ObterPorTurmaCodigoBimestreAsync(string turmaCodigo, int bimestre = 0)
