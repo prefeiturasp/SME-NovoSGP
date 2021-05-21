@@ -143,7 +143,8 @@ namespace SME.SGP.Aplicacao
             var quantidadeMaximaCompensacoes = int.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.QuantidadeMaximaCompensacaoAusencia, DateTime.Today.Year)));
             var percentualFrequenciaAlerta = int.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(disciplinasEOL.First().Regencia ? TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse : TipoParametroSistema.CompensacaoAusenciaPercentualFund2, DateTime.Today.Year)));
 
-            foreach (var alunoEOL in alunosEOL)
+            var alunosAtivos = alunosEOL.Where(a => a.CodigoSituacaoMatricula != SituacaoMatriculaAluno.RemanejadoSaida);
+            foreach (var alunoEOL in alunosAtivos)
             {
                 var frequenciaAluno = repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunoDisciplinaData(alunoEOL.CodigoAluno, disciplinaId, periodo.PeriodoFim);
                 if (frequenciaAluno == null || frequenciaAluno.NumeroFaltasNaoCompensadas == 0)
