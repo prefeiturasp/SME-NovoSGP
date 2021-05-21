@@ -284,6 +284,9 @@ namespace SME.SGP.Dominio
             var componentesCurricularesParaVisualizar = new List<string>();
 
             var componentesCurricularesUsuarioLogado = await servicoEOL.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(turmaCodigo, usuarioLogado.CodigoRf, usuarioLogado.PerfilAtual);
+            if (componentesCurricularesUsuarioLogado == null)
+                return default;
+
             var componentesCurricularesIdsUsuarioLogado = componentesCurricularesUsuarioLogado.Select(b => b.Codigo.ToString());
 
             var hoje = DateTime.Today;
