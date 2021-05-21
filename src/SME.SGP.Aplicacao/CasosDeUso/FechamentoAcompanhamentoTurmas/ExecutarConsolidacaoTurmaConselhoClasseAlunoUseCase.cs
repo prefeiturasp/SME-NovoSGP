@@ -40,7 +40,6 @@ namespace SME.SGP.Aplicacao
                 consolidadoTurmaAluno.Bimestre = filtro.Bimestre;
                 consolidadoTurmaAluno.TurmaId = filtro.TurmaId;
                 consolidadoTurmaAluno.Status = statusNovo;
-
             }
 
             var componentesDoAluno = await mediator.Send(new ObterComponentesParaFechamentoAcompanhamentoCCAlunoQuery(filtro.AlunoCodigo, filtro.Bimestre, filtro.TurmaId));

@@ -978,8 +978,18 @@ namespace SME.SGP.Dados.Repositorios
             else
                 query.AppendLine("and pe.bimestre is null ");
 
-            query.AppendLine(@" and t.semestre = @semestre
-                                and t.ano_letivo = @anoLetivo
+            DateTime dataReferencia = DateTime.MinValue;
+            string queryPeriodoEJA = string.Empty;
+            if (modalidade == Modalidade.EJA)
+            {
+                var periodoReferencia = semestre == 1 ? "p.periodo_inicio < @dataReferencia" : "p.periodo_fim > @dataReferencia";
+                queryPeriodoEJA = $"and exists(select 0 from periodo_escolar p where p.tipo_calendario_id = tc.id and {periodoReferencia})";
+                query.AppendLine(queryPeriodoEJA);
+
+               dataReferencia = new DateTime(anoLetivo, semestre == 1 ? 6 : 7, 1);
+            }
+
+            query.AppendLine(@" and t.ano_letivo = @anoLetivo
                                 and not t.historica
                             order by t.nome
                             OFFSET @quantidadeRegistrosIgnorados ROWS FETCH NEXT @quantidadeRegistros ROWS ONLY; ");
@@ -1003,8 +1013,10 @@ namespace SME.SGP.Dados.Repositorios
             else
                 query.AppendLine("and pe.bimestre is null ");
 
-            query.AppendLine(@"and t.semestre = @semestre
-                               and t.ano_letivo = @anoLetivo
+            if (modalidade == Modalidade.EJA)
+                query.AppendLine(queryPeriodoEJA);
+
+            query.AppendLine(@"and t.ano_letivo = @anoLetivo
                                and not t.historica");
 
 
@@ -1021,6 +1033,7 @@ namespace SME.SGP.Dados.Repositorios
                 semestre,
                 bimestre,
                 anoLetivo,
+                dataReferencia
             };
 
             var multi = await contexto.Conexao.QueryMultipleAsync(query.ToString(), parametros);

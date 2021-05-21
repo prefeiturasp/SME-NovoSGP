@@ -57,7 +57,7 @@ namespace SME.SGP.Aplicacao
                 }
             }
 
-            return lstStatus;
+            return lstStatus.OrderBy(o => (int)o.Status); 
         }
     }
 }
