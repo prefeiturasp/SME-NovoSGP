@@ -30,7 +30,8 @@ namespace SME.SGP.Aplicacao
             var planoAulaDto = repositorioPlanoAula.ObterPorId(request.PlanoAulaMigrar.PlanoAulaId);
             var aula = await mediator.Send(new ObterAulaPorIdQuery(planoAulaDto.AulaId));
 
-            await ValidarMigracao(request.PlanoAulaMigrar, usuario.CodigoRf, usuario.EhProfessorCj(), aula.UeId);
+            if(!usuario.EhGestorEscolar())
+                await ValidarMigracao(request.PlanoAulaMigrar, usuario.CodigoRf, usuario.EhProfessorCj(), aula.UeId);
 
             unitOfWork.IniciarTransacao();
 

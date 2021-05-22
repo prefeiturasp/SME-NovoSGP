@@ -30,7 +30,8 @@ namespace SME.SGP.Aplicacao
             if (await mediator.Send(new AulaPossuiAvaliacaoQuery(aula, request.Usuario.CodigoRf)))
                 throw new NegocioException("Aula com avaliação vinculada. Para excluir esta aula primeiro deverá ser excluída a avaliação.");
 
-            await ValidarComponentesDoProfessor(aula.TurmaId, long.Parse(aula.DisciplinaId), aula.DataAula, request.Usuario);
+            if(!request.Usuario.EhGestorEscolar())
+                await ValidarComponentesDoProfessor(aula.TurmaId, long.Parse(aula.DisciplinaId), aula.DataAula, request.Usuario);
 
             unitOfWork.IniciarTransacao();
             try
