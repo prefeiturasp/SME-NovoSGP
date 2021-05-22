@@ -206,7 +206,7 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task<AuditoriaPersistenciaDto> Salvar(long id, FechamentoTurmaDisciplinaDto entidadeDto, bool componenteSemNota = false)
         {
-            notasEnvioWfAprovacao = new List<FechamentoNotaDto>();
+            notasEnvioWfAprovacao = new List<FechamentoNotaDto>();            
 
             var fechamentoTurmaDisciplina = MapearParaEntidade(id, entidadeDto);
             await CarregarTurma(entidadeDto.TurmaId);
@@ -224,10 +224,10 @@ namespace SME.SGP.Dominio.Servicos
 
             await CarregaFechamentoTurma(fechamentoTurmaDisciplina, turmaFechamento, periodoEscolar);
 
-            var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
+            var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();           
 
             // Valida Permissão do Professor na Turma/Disciplina            
-            if (!turmaFechamento.EhTurmaEdFisicaOuItinerario())
+            if (!turmaFechamento.EhTurmaEdFisicaOuItinerario() && !usuarioLogado.EhGestorEscolar())
             {
                 await VerificaSeProfessorPodePersistirTurma(usuarioLogado.CodigoRf, entidadeDto.TurmaId, periodoEscolar.PeriodoFim);
             }
@@ -623,6 +623,14 @@ namespace SME.SGP.Dominio.Servicos
 
             if (!usuario.EhProfessorCj() && !await servicoUsuario.PodePersistirTurma(codigoRf, turmaId, data))
                 throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma e data.");
+        }
+
+        private bool VerificaSeGestorUe(Guid perfil)
+        {
+            if (perfil == Perfis.PERFIL_CP || perfil == Perfis.PERFIL_AD || perfil == Perfis.PERFIL_DIRETOR)
+                return true;
+
+            return false;
         }
     }
 }

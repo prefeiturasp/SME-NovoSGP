@@ -56,7 +56,8 @@ namespace SME.SGP.Aplicacao
 
                 var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-                await VerificaSeProfessorPodePersistirTurmaDisciplina(usuario.CodigoRf, aula.TurmaId, aula.DisciplinaId, aula.DataAula, usuario);
+                if(!usuario.EhGestorEscolar())
+                    await VerificaSeProfessorPodePersistirTurmaDisciplina(usuario.CodigoRf, aula.TurmaId, aula.DisciplinaId, aula.DataAula, usuario);
 
                 PlanoAula planoAula = await mediator.Send(new ObterPlanoAulaPorAulaIdQuery(planoAulaDto.AulaId));
                 planoAula = MapearParaDominio(planoAulaDto, planoAula);
