@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS public.consolidado_conselho_classe_aluno_turma (
 	dt_atualizacao timestamp NOT NULL,
 	status int4 NOT NULL,
 	aluno_codigo varchar(15) NOT NULL,
-	parecer_conclusivo_id int8 NOT null,
+	parecer_conclusivo_id int8 null,
 	turma_id int8 NOT NULL,
 	bimestre int4 NOT NULL,
 	criado_em timestamp NOT NULL,
