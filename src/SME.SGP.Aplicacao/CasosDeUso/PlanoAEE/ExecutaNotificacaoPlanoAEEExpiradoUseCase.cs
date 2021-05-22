@@ -3,8 +3,6 @@ using Sentry;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -19,7 +17,7 @@ namespace SME.SGP.Aplicacao
         {
             SentrySdk.AddBreadcrumb($"Mensagem ExecutaNotificacaoPlanoAEEExpiradoUseCase", "Rabbit - ExecutaNotificacaoPlanoAEEExpiradoUseCase");
 
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.NotificarPlanoAEEExpirado, null, Guid.NewGuid(), null));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.NotificarPlanoAEEExpirado, null, Guid.NewGuid(), null));
         }
     }
 }

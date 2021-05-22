@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(PublicaFilaAtualizacaoSituacaoConselhoClasseCommand request, CancellationToken cancellationToken)
         {
-            return await mediator.Send(new PublicaFilaWorkerSgpCommand(RotasRabbit.RotaExecutaAtualizacaoSituacaoConselhoClasse,
+            return await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaExecutaAtualizacaoSituacaoConselhoClasse,
                                                        new AtualizaSituacaoConselhoClasseCommand(request.ConselhoClasseId),
                                                        Guid.NewGuid(),
                                                        request.Usuario));

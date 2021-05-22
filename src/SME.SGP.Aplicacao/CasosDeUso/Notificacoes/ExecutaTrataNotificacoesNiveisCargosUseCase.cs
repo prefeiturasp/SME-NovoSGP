@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
         {
             SentrySdk.AddBreadcrumb($"Mensagem TrataNotificacoesNiveisCargosUseCase", "Rabbit - TrataNotificacoesNiveisCargosUseCase");
 
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaTrataNotificacoesNiveis, new TrataNotificacoesNiveisCargosUseCase(mediator), Guid.NewGuid(), null));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaTrataNotificacoesNiveis, new TrataNotificacoesNiveisCargosUseCase(mediator), Guid.NewGuid(), null));
         }
     }
 }

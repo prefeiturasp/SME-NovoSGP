@@ -1,9 +1,11 @@
 ﻿using MediatR;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using Sentry;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Utilitarios;
+using System;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,39 +14,34 @@ namespace SME.SGP.Aplicacao
 {
     public class PublicaFilaWorkerServidorRelatoriosCommandHandler : IRequestHandler<PublicaFilaWorkerServidorRelatoriosCommand, bool>
     {
-        private readonly ConfiguracaoRabbitOptions configuracaoRabbitOptions;
+        private readonly IConfiguration configuration;
 
-        public PublicaFilaWorkerServidorRelatoriosCommandHandler(ConfiguracaoRabbitOptions configuracaoRabbitOptions)
+        public PublicaFilaWorkerServidorRelatoriosCommandHandler(IConfiguration configuration)
         {
-            this.configuracaoRabbitOptions = configuracaoRabbitOptions ?? throw new System.ArgumentNullException(nameof(configuracaoRabbitOptions));
+            this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
         public Task<bool> Handle(PublicaFilaWorkerServidorRelatoriosCommand request, CancellationToken cancellationToken)
         {
-            SentrySdk.CaptureMessage("3 - AdicionaFilaWorkerRelatorios");
+            byte[] body = FormataBodyWorker(request);
 
             var factory = new ConnectionFactory
             {
-                HostName = configuracaoRabbitOptions.HostName,
-                UserName = configuracaoRabbitOptions.UserName,
-                Password = configuracaoRabbitOptions.Password,
-                VirtualHost = configuracaoRabbitOptions.VirtualHost
+                HostName = configuration.GetSection("ConfiguracaoRabbit:HostName").Value,
+                UserName = configuration.GetSection("ConfiguracaoRabbit:UserName").Value,
+                Password = configuration.GetSection("ConfiguracaoRabbit:Password").Value,
+                VirtualHost = configuration.GetSection("ConfiguracaoRabbit:Virtualhost").Value
             };
 
             using (var conexaoRabbit = factory.CreateConnection())
             {
                 using (IModel _channel = conexaoRabbit.CreateModel())
                 {
-                    var mensagem = JsonConvert.SerializeObject(request, new JsonSerializerSettings
-                    {
-                        NullValueHandling = NullValueHandling.Ignore
-                    });
-
-                    byte[] body = FormataBodyWorker(request);
-                    
-                    _channel.BasicPublish(RotasRabbit.ExchangeServidorRelatorios, request.Fila, null, body);
+                    _channel.BasicPublish(ExchangeRabbit.ServidorRelatorios, request.Fila, null, body);
                 }
-            }                 
+            }
+
+            SentrySdk.CaptureMessage("3 - AdicionaFilaWorkerRelatorios");
 
             return Task.FromResult(true);
         }
@@ -52,7 +49,10 @@ namespace SME.SGP.Aplicacao
         private static byte[] FormataBodyWorker(PublicaFilaWorkerServidorRelatoriosCommand request)
         {
             var mensagem = new MensagemRabbit(request.Endpoint, request.Mensagem, request.CodigoCorrelacao, request.UsuarioLogadoRF, request.NotificarErroUsuario, request.PerfilUsuario);
-            var mensagemJson = JsonConvert.SerializeObject(mensagem);
+            var mensagemJson = JsonConvert.SerializeObject(mensagem, new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore
+            });
             var body = Encoding.UTF8.GetBytes(mensagemJson);
             return body;
         }

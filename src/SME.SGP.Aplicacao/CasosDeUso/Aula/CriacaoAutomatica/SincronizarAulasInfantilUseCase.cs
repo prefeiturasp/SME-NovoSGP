@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
         }
         public void Executar()
         {
-            mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.RotaSincronizarAulasInfatil, null, Guid.NewGuid(), null));
+            mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaSincronizarAulasInfatil, null, Guid.NewGuid(), null));
         }
     }
 }

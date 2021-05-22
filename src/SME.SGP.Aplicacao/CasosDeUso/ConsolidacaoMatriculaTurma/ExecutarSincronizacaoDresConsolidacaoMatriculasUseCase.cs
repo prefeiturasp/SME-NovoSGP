@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
                 var ueDto = new FiltroConsolidacaoMatriculaUeDto(ueCodigo, dre.AnosAnterioresParaConsolidar);
                 try
                 {
-                    var publicarTratamentoCiclo = await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.ConsolidacaoMatriculasTurmasCarregar, ueDto, new Guid(), null, fila: RotasRabbit.ConsolidacaoMatriculasTurmasCarregar));
+                    var publicarTratamentoCiclo = await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidacaoMatriculasTurmasCarregar, ueDto, Guid.NewGuid(), null));
                     if (!publicarTratamentoCiclo)
                     {
                         var mensagemSentry = $"Não foi possível inserir a dre : {publicarTratamentoCiclo} na fila de sync.";
