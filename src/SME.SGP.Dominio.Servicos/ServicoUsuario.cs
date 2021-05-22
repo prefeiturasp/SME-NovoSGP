@@ -66,13 +66,13 @@ namespace SME.SGP.Dominio
 
         public string ObterClaim(string nomeClaim)
         {
-            var claim = contextoAplicacao.ObterVarivel<IEnumerable<InternalClaim>>("Claims").FirstOrDefault(a => a.Type == nomeClaim);
+            var claim = contextoAplicacao.ObterVariavel<IEnumerable<InternalClaim>>("Claims").FirstOrDefault(a => a.Type == nomeClaim);
             return claim?.Value;
         }
 
         public string ObterLoginAtual()
         {
-            var loginAtual = contextoAplicacao.ObterVarivel<string>("login");
+            var loginAtual = contextoAplicacao.ObterVariavel<string>("login");
             if (loginAtual == null)
                 throw new NegocioException("Não foi possível localizar o login no token");
 
@@ -81,7 +81,7 @@ namespace SME.SGP.Dominio
 
         public string ObterNomeLoginAtual()
         {
-            var nomeLoginAtual = contextoAplicacao.ObterVarivel<string>("NomeUsuario");
+            var nomeLoginAtual = contextoAplicacao.ObterVariavel<string>("NomeUsuario");
             if (nomeLoginAtual == null)
                 throw new NegocioException("Não foi possível localizar o nome do login no token");
 
@@ -111,7 +111,7 @@ namespace SME.SGP.Dominio
 
         public IEnumerable<Permissao> ObterPermissoes()
         {
-            var claims = contextoAplicacao.ObterVarivel<IEnumerable<InternalClaim>>("Claims").Where(a => a.Type == CLAIM_PERMISSAO);
+            var claims = contextoAplicacao.ObterVariavel<IEnumerable<InternalClaim>>("Claims").Where(a => a.Type == CLAIM_PERMISSAO);
             List<Permissao> retorno = new List<Permissao>();
 
             if (claims.Any())
