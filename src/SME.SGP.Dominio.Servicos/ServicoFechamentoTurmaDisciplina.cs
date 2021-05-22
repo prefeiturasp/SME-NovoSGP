@@ -623,14 +623,6 @@ namespace SME.SGP.Dominio.Servicos
 
             if (!usuario.EhProfessorCj() && !await servicoUsuario.PodePersistirTurma(codigoRf, turmaId, data))
                 throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma e data.");
-        }
-
-        private bool VerificaSeGestorUe(Guid perfil)
-        {
-            if (perfil == Perfis.PERFIL_CP || perfil == Perfis.PERFIL_AD || perfil == Perfis.PERFIL_DIRETOR)
-                return true;
-
-            return false;
-        }
+        }        
     }
 }
