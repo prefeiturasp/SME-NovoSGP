@@ -26,6 +26,7 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.SerieEnsino).ToColumn("serie_ensino");
             Map(c => c.DataFim).ToColumn("dt_fim_eol");
             Map(c => c.Extinta).Ignore();
+            Map(c => c.Historica).ToColumn("historica");
         }
     }
 }
