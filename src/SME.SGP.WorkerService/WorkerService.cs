@@ -8,6 +8,7 @@ using SME.SGP.Dados.Mapeamentos;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Utilitarios;
 using SME.SGP.IoC;
+using SME.SGP.IoC.Extensions;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -69,6 +70,7 @@ namespace SME.SGP.Worker.Service
             RegistrarMapeamentos.Registrar();
             RegistraClientesHttp.Registrar(services, configuration);
             Orquestrador.Inicializar(services.BuildServiceProvider());
+            services.AddPolicies();
         }
 
         internal static void ConfiguraVariaveisAmbiente(IServiceCollection services, IConfiguration configuration)

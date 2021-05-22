@@ -171,7 +171,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<Turma> ObterPorCodigo(string turmaCodigo)
         {
-            return await contexto.QueryFirstOrDefaultAsync<Turma>("select * from turma where turma_id = @turmaCodigo", new { turmaCodigo });
+            return await contexto.Conexao.QueryFirstOrDefaultAsync<Turma>("select * from turma where turma_id = @turmaCodigo", new { turmaCodigo });
         }
 
         public async Task<long> ObterTurmaIdPorCodigo(string turmaCodigo)

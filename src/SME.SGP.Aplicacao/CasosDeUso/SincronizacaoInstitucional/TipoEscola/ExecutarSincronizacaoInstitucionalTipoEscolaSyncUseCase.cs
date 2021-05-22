@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
             {
                 try
                 {
-                    var publicarTratamentoTipoEscola = await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.SincronizaEstruturaInstitucionalTipoEscolaTratar, tipoEscola, param.CodigoCorrelacao, null, fila: RotasRabbit.SincronizaEstruturaInstitucionalTipoEscolaTratar));
+                    var publicarTratamentoTipoEscola = await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.SincronizaEstruturaInstitucionalTipoEscolaTratar, tipoEscola, param.CodigoCorrelacao, null));
                     if (!publicarTratamentoTipoEscola)
                     {
                         var mensagem = $"Não foi possível inserir o Tipo de Escola : {tipoEscola} na fila de sync.";

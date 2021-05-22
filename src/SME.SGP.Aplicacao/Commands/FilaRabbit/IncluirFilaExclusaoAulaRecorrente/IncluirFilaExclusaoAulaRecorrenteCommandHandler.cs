@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
                                                            request.ComponenteCurricularNome,
                                                            request.Usuario);
 
-            await mediator.Send(new PublicaFilaWorkerSgpCommand(RotasRabbit.RotaExcluirAulaRecorrencia, command, Guid.NewGuid(), request.Usuario, true));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaExcluirAulaRecorrencia, command, Guid.NewGuid(), request.Usuario, true));
             SentrySdk.AddBreadcrumb($"Incluir fila exclusão de aula recorrente", "RabbitMQ");
 
             return true;
