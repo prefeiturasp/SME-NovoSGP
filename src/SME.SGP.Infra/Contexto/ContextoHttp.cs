@@ -29,8 +29,9 @@ namespace SME.SGP.Infra.Contexto
             Variaveis.Add("NumeroRegistros", httpContextAccessor.HttpContext?.Request?.Query["NumeroRegistros"].FirstOrDefault() ?? "0");
 
             Variaveis.Add("UsuarioLogado", httpContextAccessor.HttpContext?.User?.Identity?.Name ?? "Sistema");
-            Variaveis.Add("NomeUsuario", httpContextAccessor.HttpContext?.User?.FindFirst("Nome")?.Value ?? "Sistema");            
-            
+            Variaveis.Add("NomeUsuario", httpContextAccessor.HttpContext?.User?.FindFirst("Nome")?.Value ?? "Sistema");
+            Variaveis.Add("PerfilUsuario", ObterPerfilAtual());
+
             var authorizationHeader = httpContextAccessor.HttpContext?.Request?.Headers["authorization"];
 
             if (!authorizationHeader.HasValue || authorizationHeader.Value == StringValues.Empty)
@@ -48,6 +49,11 @@ namespace SME.SGP.Infra.Contexto
         private IEnumerable<InternalClaim> GetInternalClaim()
         {
             return (httpContextAccessor.HttpContext?.User?.Claims ?? Enumerable.Empty<Claim>()).Select(x => new InternalClaim() { Type = x.Type, Value = x.Value }).ToList();
+        }
+
+        private string ObterPerfilAtual()
+        {
+            return (httpContextAccessor.HttpContext?.User?.Claims ?? Enumerable.Empty<Claim>()).FirstOrDefault(x => x.Type.ToLower() == "perfil")?.Value;
         }
 
         public override IContextoAplicacao AtribuirContexto(IContextoAplicacao contexto)
