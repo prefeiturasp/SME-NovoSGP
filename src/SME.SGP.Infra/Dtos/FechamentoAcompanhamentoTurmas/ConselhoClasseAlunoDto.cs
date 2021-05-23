@@ -7,8 +7,9 @@ namespace SME.SGP.Infra
         public int NumeroChamada { get; set; }
         public string AlunoCodigo { get; set; }
         public string NomeAluno { get; set; }
-        public SituacaoConselhoClasse SituacaoConselhoClasse { get; set; }
-        public float FrequenciaGlobal { get; set; }
+        public string SituacaoFechamento { get; set; }
+        public double FrequenciaGlobal { get; set; }
         public bool PodeExpandir { get; set; }
+        public string ParecerConclusivo { get; set; }
     }
 }

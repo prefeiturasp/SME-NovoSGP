@@ -50,32 +50,40 @@ namespace SME.SGP.Api
         [ProducesResponseType(typeof(IEnumerable<ConselhoClasseAlunoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.ACF_C, Policy = "Bearer")]
-        public IActionResult ListaPaginadaAlunosPorTurma(long turmaId, int bimestre)
+        public async Task<IActionResult> ListaAlunosPorTurma(long turmaId, int bimestre, [FromServices] IObterFechamentoConselhoClasseAlunosPorTurmaUseCase useCase)
         {
+            //TODO Adicionar quando o Jenkins Voltar e remover o mockup.
+            //var listaStatus = await useCase.Executar(new FiltroConselhoClasseConsolidadoTurmaBimestreDto(turmaId, bimestre));
+
+            //return Ok(listaStatus);
+
             return Ok(new List<ConselhoClasseAlunoDto>() {
-                new ConselhoClasseAlunoDto() { 
+                new ConselhoClasseAlunoDto() {
                     NumeroChamada = 1,
                     NomeAluno = "Aluno Teste 1",
                     AlunoCodigo = "0000001",
-                    SituacaoConselhoClasse = Dominio.SituacaoConselhoClasse.NaoIniciado,
+                    SituacaoFechamento = Dominio.StatusFechamento.NaoIniciado.Description(),
                     FrequenciaGlobal = 100,
-                    PodeExpandir = false
+                    PodeExpandir = false,
+                    ParecerConclusivo = "Teste"
                 },
                 new ConselhoClasseAlunoDto() {
                     NumeroChamada = 2,
                     NomeAluno = "Aluno Teste 2",
                     AlunoCodigo = "0000002",
-                    SituacaoConselhoClasse = Dominio.SituacaoConselhoClasse.EmAndamento,
+                    SituacaoFechamento = Dominio.StatusFechamento.EmAndamento.Description(),
                     FrequenciaGlobal = 100,
-                    PodeExpandir = true
+                    PodeExpandir = true,
+                    ParecerConclusivo = "Teste"
                 },
                  new ConselhoClasseAlunoDto() {
                     NumeroChamada = 3,
                     NomeAluno = "Aluno Teste 3",
                     AlunoCodigo = "0000003",
-                    SituacaoConselhoClasse = Dominio.SituacaoConselhoClasse.Concluido,
+                    SituacaoFechamento = Dominio.StatusFechamento.Concluido.Description(),
                     FrequenciaGlobal = 100,
-                    PodeExpandir = true
+                    PodeExpandir = true,
+                    ParecerConclusivo = "Teste"
                 },
             });
         }
