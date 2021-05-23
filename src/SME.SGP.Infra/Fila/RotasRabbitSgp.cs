@@ -45,6 +45,7 @@
         public const string RotaNotificacaoAndamentoFechamento = "sgp.fechamento.andamento.notificar";
 
         public const string RotaNotificacaoInicioFimPeriodoFechamento = "sgp.fechamento.iniciofim.periodo.notificar";
+        public const string RotaGeracaoPendenciasFechamento = "sgp.fechamento.pendencias.gerar";
                
         public const string RotaNotificacaoResultadoInsatisfatorio = "sgp.notificacao.nova.resultado.insatisfatorio";
         public const string RotaNotificacaoUeFechamentosInsuficientes = "sgp.fechamento.insuficiente.notificar";
@@ -52,6 +53,7 @@
         public const string RotaNotificacaoReuniaoPedagogica = "sgp.evento.reuniao.pedagogica.notificar";
 
         public const string RotaNotificacaoPeriodoFechamento = "sgp.periodo.fechamento.notificar";
+
         public const string RotaNotificacaoFrequenciaUe = "sgp.frequencia.ue.notificar";
 
         public const string RotaPendenciaAusenciaRegistroIndividual = "sgp.pendencias.professor.ausencia.registro.individual";

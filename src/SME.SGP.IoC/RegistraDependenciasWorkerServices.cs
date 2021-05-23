@@ -407,6 +407,9 @@ namespace SME.SGP.IoC
             // Conselho de classe
             services.TryAddScopedWorkerService<IAtualizarSituacaoConselhoClasseUseCase, AtualizarSituacaoConselhoClasseUseCase>();
 
+            // Fechamento
+            services.TryAddScopedWorkerService<IGerarPendenciasFechamentoUseCase, GerarPendenciasFechamentoUseCase>();
+
             // Frequência
             services.TryAddScopedWorkerService<IConciliacaoFrequenciaTurmaSyncUseCase, ConciliacaoFrequenciaTurmaSyncUseCase>();
             services.TryAddScopedWorkerService<IConciliacaoFrequenciaTurmasUseCase, ConciliacaoFrequenciaTurmasUseCase>();
