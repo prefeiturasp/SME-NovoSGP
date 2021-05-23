@@ -14,7 +14,7 @@ namespace SME.SGP.Dominio
 
         public string AlunoCodigo { get; set; }
 
-        public long? ParecerConclusivoId { get; set; }
+        public long ParecerConclusivoId { get; set; }
 
         public long TurmaId { get; set; }
 
