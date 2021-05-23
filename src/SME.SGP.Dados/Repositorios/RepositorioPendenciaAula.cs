@@ -229,6 +229,22 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryFirstOrDefaultAsync<bool>(sql, new { aulas = aulasId, hoje = DateTime.Today.Date }));
         }
 
+        public async Task<bool> PossuiAtividadeAvaliativaSemNotaPorAulasId(long[] aulasId)
+        {
+            var sql = @"select 1 from     
+                            (select a.id aula_id,aad.atividade_avaliativa_id,max(n.id) nota_id
+                                from aula a
+                                inner join atividade_avaliativa aa on a.id = ANY(@aulas) and aa.turma_id = a.turma_id and not a.excluido
+                                and a.data_aula::date < @hoje
+                                and aa.data_avaliacao::date = a.data_aula::date
+                                inner join atividade_avaliativa_disciplina aad on aad.atividade_avaliativa_id = aa.id
+                                and aad.disciplina_id = a.disciplina_id
+                                left join notas_conceito n on aa.id = n.atividade_avaliativa
+                                group by a.id,aad.atividade_avaliativa_id) a where a.nota_id is null;";
+
+            return (await database.Conexao.QueryFirstOrDefaultAsync<bool>(sql, new { aulas = aulasId, hoje = DateTime.Today.Date }));
+        }
+
         public async Task<bool> PossuiPendenciasAtividadeAvaliativaPorAulaId(long aulaId)
         {
             var sql = @"select
