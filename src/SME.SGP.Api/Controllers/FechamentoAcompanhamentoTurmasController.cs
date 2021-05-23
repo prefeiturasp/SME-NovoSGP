@@ -92,34 +92,39 @@ namespace SME.SGP.Api
         [ProducesResponseType(typeof(IEnumerable<DetalhamentoComponentesCurricularesAlunoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.ACF_C, Policy = "Bearer")]
-        public IActionResult DetalhamentoComponentesCurricularesAluno(long turmaId, int bimestre, string alunoCodigo)
+        public async Task<IActionResult> DetalhamentoComponentesCurricularesAluno(long turmaId, int bimestre, string alunoCodigo, [FromServices] IObterDetalhamentoFechamentoConselhoClasseAlunoUseCase useCase)
         {
-            return Ok(new List<DetalhamentoComponentesCurricularesAlunoDto>() {
-                new DetalhamentoComponentesCurricularesAlunoDto() {
-                    NomeComponenteCurricular = "Componente 1",
-                    NotaFechamento = 1,
-                    NotaPosConselho = 1,
-                    QuantidadeAusencia = 1,
-                    QuantidadeCompensacoes = 1,
-                    PercentualFrequencia = 1
-                },
-                new DetalhamentoComponentesCurricularesAlunoDto() {
-                    NomeComponenteCurricular = "Componente 2",
-                    NotaFechamento = 1,
-                    NotaPosConselho = 1,
-                    QuantidadeAusencia = 1,
-                    QuantidadeCompensacoes = 1,
-                    PercentualFrequencia = 1
-                },
-                new DetalhamentoComponentesCurricularesAlunoDto() {
-                    NomeComponenteCurricular = "Componente 3",
-                    NotaFechamento = 1,
-                    NotaPosConselho = 1,
-                    QuantidadeAusencia = 1,
-                    QuantidadeCompensacoes = 1,
-                    PercentualFrequencia = 1
-                },
-            });
+            //TODO Adicionar quando o Jenkins Voltar e remover o mockup.
+            var listaStatus = await useCase.Executar(new FiltroConselhoClasseConsolidadoDto(turmaId, bimestre, alunoCodigo));
+
+            return Ok(listaStatus);
+
+            //return Ok(new List<DetalhamentoComponentesCurricularesAlunoDto>() {
+            //    new DetalhamentoComponentesCurricularesAlunoDto() {
+            //        NomeComponenteCurricular = "Componente 1",
+            //        NotaFechamento = 1,
+            //        NotaPosConselho = 1,
+            //        QuantidadeAusencia = 1,
+            //        QuantidadeCompensacoes = 1,
+            //        PercentualFrequencia = 1
+            //    },
+            //    new DetalhamentoComponentesCurricularesAlunoDto() {
+            //        NomeComponenteCurricular = "Componente 2",
+            //        NotaFechamento = 1,
+            //        NotaPosConselho = 1,
+            //        QuantidadeAusencia = 1,
+            //        QuantidadeCompensacoes = 1,
+            //        PercentualFrequencia = 1
+            //    },
+            //    new DetalhamentoComponentesCurricularesAlunoDto() {
+            //        NomeComponenteCurricular = "Componente 3",
+            //        NotaFechamento = 1,
+            //        NotaPosConselho = 1,
+            //        QuantidadeAusencia = 1,
+            //        QuantidadeCompensacoes = 1,
+            //        PercentualFrequencia = 1
+            //    },
+            //});
         }
     }
 }
