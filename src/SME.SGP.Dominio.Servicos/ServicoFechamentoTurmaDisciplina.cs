@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Microsoft.Extensions.Configuration;
 using SME.Background.Core;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
@@ -18,7 +17,6 @@ namespace SME.SGP.Dominio.Servicos
     public class ServicoFechamentoTurmaDisciplina : IServicoFechamentoTurmaDisciplina
     {
         private readonly IComandosWorkflowAprovacao comandosWorkflowAprovacao;
-        private readonly IConfiguration configuration;
         private readonly IConsultasDisciplina consultasDisciplina;
         private readonly IConsultasFrequencia consultasFrequencia;
         private readonly IConsultasSupervisor consultasSupervisor;
@@ -49,7 +47,6 @@ namespace SME.SGP.Dominio.Servicos
         private Turma turmaFechamento;
         private readonly IMediator mediator;
 
-
         public ServicoFechamentoTurmaDisciplina(IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina,
                                                 IRepositorioFechamentoTurma repositorioFechamentoTurma,
                                                 IRepositorioFechamentoAluno repositorioFechamentoAluno,
@@ -75,7 +72,6 @@ namespace SME.SGP.Dominio.Servicos
                                                 IServicoUsuario servicoUsuario,
                                                 IComandosWorkflowAprovacao comandosWorkflowAprovacao,
                                                 IUnitOfWork unitOfWork,
-                                                IConfiguration configuration,
                                                 IConsultasSupervisor consultasSupervisor,
                                                 IRepositorioEvento repositorioEvento,
                                                 IRepositorioEventoTipo repositorioEventoTipo,
@@ -97,7 +93,6 @@ namespace SME.SGP.Dominio.Servicos
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
-            this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             this.consultasSupervisor = consultasSupervisor ?? throw new ArgumentNullException(nameof(consultasSupervisor));
             this.repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));
             this.repositorioEventoTipo = repositorioEventoTipo ?? throw new ArgumentNullException(nameof(repositorioEventoTipo));
@@ -152,30 +147,21 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        public async Task GerarPendenciasFechamento(long disciplinaId, Turma turma, PeriodoEscolar periodoEscolar, FechamentoTurmaDisciplina fechamento, Usuario usuarioLogado, bool componenteSemNota = false, bool registraFrequencia = true)
+        private async Task GerarPendenciasFechamento(long componenteCurricularId, string turmaCodigo, string turmaNome, DateTime periodoEscolarInicio, DateTime periodoEscolarFim, int bimestre, Usuario usuario, long fechamentoTurmaDisciplinaId, string justificativa, string criadoRF, bool componenteSemNota = false, bool registraFrequencia = true)
         {
-            var situacaoFechamento = SituacaoFechamento.ProcessadoComSucesso;
-
-            if (!componenteSemNota)
-            {
-                await servicoPendenciaFechamento.ValidarAvaliacoesSemNotasParaNenhumAluno(fechamento.Id, turma.CodigoTurma, disciplinaId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim);
-                await servicoPendenciaFechamento.ValidarPercentualAlunosAbaixoDaMedia(fechamento);
-                await servicoPendenciaFechamento.ValidarAlteracaoExtemporanea(fechamento.Id, turma.CodigoTurma, fechamento.CriadoRF);
-            }
-            await servicoPendenciaFechamento.ValidarAulasReposicaoPendente(fechamento.Id, turma, disciplinaId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim);            
-
-            if (registraFrequencia)
-                await servicoPendenciaFechamento.ValidarAulasSemFrequenciaRegistrada(fechamento.Id, turma, disciplinaId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim);
-
-            var quantidadePendencias = servicoPendenciaFechamento.ObterQuantidadePendenciasGeradas();
-            if (quantidadePendencias > 0)
-            {
-                situacaoFechamento = SituacaoFechamento.ProcessadoComPendencias;
-                await GerarNotificacaoFechamento(fechamento, turma, usuarioLogado, periodoEscolar, servicoPendenciaFechamento);
-            }
-
-            fechamento.AtualizarSituacao(situacaoFechamento);
-            await repositorioFechamentoTurmaDisciplina.SalvarAsync(fechamento);
+            await mediator.Send(new IncluirFilaGeracaoPendenciasFechamentoCommand(
+                componenteCurricularId,
+                turmaCodigo,
+                turmaNome,
+                periodoEscolarInicio,
+                periodoEscolarFim,
+                bimestre,
+                usuario,
+                fechamentoTurmaDisciplinaId,
+                justificativa,
+                criadoRF,
+                componenteSemNota,
+                registraFrequencia));
         }
 
         public async Task Reprocessar(long fechamentoTurmaDisciplinaId)
@@ -201,7 +187,18 @@ namespace SME.SGP.Dominio.Servicos
             repositorioFechamentoTurmaDisciplina.Salvar(fechamentoTurmaDisciplina);
 
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
-            Cliente.Executar<IServicoFechamentoTurmaDisciplina>(c => c.GerarPendenciasFechamento(fechamentoTurmaDisciplina.DisciplinaId, turma, periodoEscolar, fechamentoTurmaDisciplina, usuarioLogado, !disciplinaEOL.LancaNota, disciplinaEOL.RegistraFrequencia));
+            await GerarPendenciasFechamento(fechamentoTurmaDisciplina.DisciplinaId,
+                                            turmaFechamento.CodigoTurma,
+                                            turmaFechamento.Nome,
+                                            periodoEscolar.PeriodoInicio,
+                                            periodoEscolar.PeriodoFim,
+                                            periodoEscolar.Bimestre,
+                                            usuarioLogado,
+                                            fechamentoTurmaDisciplina.Id,
+                                            fechamentoTurmaDisciplina.Justificativa,
+                                            fechamentoTurmaDisciplina.CriadoRF,
+                                            !disciplinaEOL.LancaNota,
+                                            disciplinaEOL.RegistraFrequencia);
         }
 
         public async Task<AuditoriaPersistenciaDto> Salvar(long id, FechamentoTurmaDisciplinaDto entidadeDto, bool componenteSemNota = false)
@@ -284,7 +281,18 @@ namespace SME.SGP.Dominio.Servicos
                 if (alunosComNotaAlterada.Length > 0)
                     Cliente.Executar<IServicoFechamentoTurmaDisciplina>(s => s.GerarNotificacaoAlteracaoLimiteDias(turmaFechamento, usuarioLogado, ue, entidadeDto.Bimestre, alunosComNotaAlterada));
 
-                Cliente.Executar<IServicoFechamentoTurmaDisciplina>(c => c.GerarPendenciasFechamento(fechamentoTurmaDisciplina.DisciplinaId, turmaFechamento, periodoEscolar, fechamentoTurmaDisciplina, usuarioLogado, componenteSemNota, disciplinaEOL.RegistraFrequencia));
+                await GerarPendenciasFechamento(fechamentoTurmaDisciplina.DisciplinaId,
+                                                turmaFechamento.CodigoTurma,
+                                                turmaFechamento.Nome,
+                                                periodoEscolar.PeriodoInicio,
+                                                periodoEscolar.PeriodoFim,
+                                                periodoEscolar.Bimestre,
+                                                usuarioLogado,
+                                                fechamentoTurmaDisciplina.Id,
+                                                fechamentoTurmaDisciplina.Justificativa,
+                                                fechamentoTurmaDisciplina.CriadoRF,
+                                                componenteSemNota,
+                                                disciplinaEOL.RegistraFrequencia);
 
                 await mediator.Send(new PublicaFilaExcluirPendenciaAusenciaFechamentoCommand(fechamentoTurmaDisciplina.DisciplinaId,periodoEscolar.Id, turmaFechamento.Id, usuarioLogado));
 
@@ -454,80 +462,6 @@ namespace SME.SGP.Dominio.Servicos
 
         private bool EnviarWfAprovacao()
             => turmaFechamento.AnoLetivo != DateTime.Today.Year;
-
-        private async Task GerarNotificacaoFechamento(FechamentoTurmaDisciplina fechamentoTurmaDisciplina, Turma turma, Usuario usuarioLogado, PeriodoEscolar periodoEscolar, IServicoPendenciaFechamento servicoPendenciaFechamento)
-        {
-            var componentes = await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { fechamentoTurmaDisciplina.DisciplinaId });
-            if (componentes == null || !componentes.Any())
-            {
-                throw new NegocioException("Componente curricular não encontrado.");
-            }
-            var ue = turma.Ue;
-            if (ue == null)
-                throw new NegocioException("UE não encontrada.");
-
-            var dre = ue.Dre;
-            if (dre == null)
-                throw new NegocioException("DRE não encontrada.");
-
-            var urlFrontEnd = configuration["UrlFrontEnd"];
-            if (string.IsNullOrWhiteSpace(urlFrontEnd))
-                throw new NegocioException("Url do frontend não encontrada.");
-
-            var pendencias = FormatarPendenciasGeradas(servicoPendenciaFechamento.ObterDescricaoPendenciasGeradas());
-
-            var notificacao = new Notificacao()
-            {
-                UsuarioId = usuarioLogado.Id,
-                Ano = DateTime.Now.Year,
-                Categoria = NotificacaoCategoria.Aviso,
-                Titulo = $"Pendência no fechamento da turma {turma.Nome}",
-                Tipo = NotificacaoTipo.Fechamento,
-                Mensagem = $"O fechamento do {periodoEscolar.Bimestre}º bimestre de {componentes.FirstOrDefault().Nome} da turma {turma.Nome} da {ue.Nome} ({dre.Nome}) gerou {servicoPendenciaFechamento.ObterQuantidadePendenciasGeradas()} pendência(s): " +
-                    pendencias + 
-                    "Para consultar os detalhes da(s) pendência(s) acesse a tela 'Fechamento > Pendências do fechamento'"
-            };
-
-            servicoNotificacao.Salvar(notificacao);
-
-            var diretores = servicoEOL.ObterFuncionariosPorCargoUe(ue.CodigoUe, (long)Cargo.Diretor);
-
-            if (diretores != null)
-            {
-                foreach (var diretor in diretores)
-                {
-                    var notificacaoDiretor = notificacao;
-                    notificacaoDiretor.Id = 0;
-                    var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(diretor.CodigoRf);
-                    notificacaoDiretor.UsuarioId = usuario.Id;
-                    servicoNotificacao.Salvar(notificacaoDiretor);
-                }
-            }
-
-            var cps = servicoEOL.ObterFuncionariosPorCargoUe(ue.CodigoUe, (long)Cargo.CP);
-
-            if (cps != null)
-            {
-                foreach (var cp in cps)
-                {
-                    var notificacaoCp = notificacao;
-                    notificacaoCp.Id = 0;
-                    var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(cp.CodigoRf);
-                    notificacaoCp.UsuarioId = usuario.Id;
-                    servicoNotificacao.Salvar(notificacaoCp);
-                }
-            }
-        }
-
-        private string FormatarPendenciasGeradas(IEnumerable<string> descricoesPendencias)
-        {
-            var pendencias = "<ul>";
-            foreach (var descricaoPendencia in descricoesPendencias)
-                pendencias += $"<li>{descricaoPendencia}</li>";
-            pendencias += "</ul>";
-
-            return pendencias;
-        }
 
         private FechamentoNota MapearParaEntidade(FechamentoNotaDto fechamentoNotaDto)
             => fechamentoNotaDto == null ? null :
