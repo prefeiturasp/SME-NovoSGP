@@ -127,6 +127,7 @@ namespace SME.SGP.Dados
                 Chave = identificador,
                 Usuario = database.UsuarioLogadoNomeCompleto,
                 RF = database.UsuarioLogadoRF,
+                Perfil = database.UsuarioPerfil,
                 Acao = acao
             });
         }

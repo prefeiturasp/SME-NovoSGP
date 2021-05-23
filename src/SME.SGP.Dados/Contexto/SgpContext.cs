@@ -45,6 +45,8 @@ namespace SME.SGP.Dados.Contexto
 
         public string UsuarioLogadoRF =>
                                           contextoAplicacao.ObterVarivel<string>("RF") ?? "0";
+        public Guid UsuarioPerfil =>
+                                        contextoAplicacao.UsuarioPerfil;
 
 
         public IDbTransaction BeginTransaction()

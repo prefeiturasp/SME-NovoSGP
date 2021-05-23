@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Infra.Interfaces;
+using System;
 using System.Collections.Generic;
 
 namespace SME.SGP.Infra.Contexto
@@ -12,7 +13,8 @@ namespace SME.SGP.Infra.Contexto
 
         public string NomeUsuario => ObterVarivel<string>("NomeUsuario") ?? "Sistema";
         public string UsuarioLogado => ObterVarivel<string>("UsuarioLogado") ?? "Sistema";
-        public IDictionary<string, object> Variaveis { get; set; }
+        public Guid UsuarioPerfil => ObterPerfil();
+            public IDictionary<string, object> Variaveis { get; set; }
 
         public abstract void AdicionarVariaveis(IDictionary<string, object> variaveis);
         public abstract IContextoAplicacao AtribuirContexto(IContextoAplicacao contexto);
@@ -25,6 +27,16 @@ namespace SME.SGP.Infra.Contexto
                 return (T)valor;
 
             return default(T);
+        }
+
+        public Guid ObterPerfil()
+        {
+            string perfil = ObterVarivel<string>("perfil");
+            
+            if(perfil == string.Empty)
+                return Guid.Empty;
+
+            return new Guid(perfil);
         }
     }
 }
