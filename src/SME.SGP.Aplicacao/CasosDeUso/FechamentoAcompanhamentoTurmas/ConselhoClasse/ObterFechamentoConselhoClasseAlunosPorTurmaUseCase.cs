@@ -39,11 +39,14 @@ namespace SME.SGP.Aplicacao
         private async Task<IEnumerable<ConselhoClasseAlunoDto>> MontarRetorno(IEnumerable<EstudanteDto> alunos, IEnumerable<ConselhoClasseConsolidadoTurmaAluno> consolidadoConselhosClasses, string codigoTurma)
         {
             List<ConselhoClasseAlunoDto> lista = new List<ConselhoClasseAlunoDto>();
+            var pareceresConclusivos = await mediator.Send(new ObterPareceresConclusivosQuery());
 
             foreach (var aluno in alunos)
             {
                 var consolidadoConselhoClasse = consolidadoConselhosClasses.FirstOrDefault(a => a.AlunoCodigo == aluno.CodigoAluno.ToString());
                 var frequenciaGlobal = await mediator.Send(new ObterFrequenciaGeralAlunoQuery(aluno.CodigoAluno.ToString(), codigoTurma));
+                string parecerConclusivo = consolidadoConselhoClasse.ParecerConclusivoId != null ? 
+                    pareceresConclusivos.FirstOrDefault(a => a.Id == consolidadoConselhoClasse.ParecerConclusivoId).Nome : "";
 
                 lista.Add(new ConselhoClasseAlunoDto()
                 {
@@ -52,7 +55,8 @@ namespace SME.SGP.Aplicacao
                     NomeAluno = aluno.NomeAluno,
                     SituacaoFechamento = consolidadoConselhoClasse.Status.Description(),
                     FrequenciaGlobal = frequenciaGlobal,
-                    PodeExpandir = consolidadoConselhoClasse.Status != StatusFechamento.NaoIniciado
+                    PodeExpandir = consolidadoConselhoClasse.Status != StatusFechamento.NaoIniciado,
+                    ParecerConclusivo = parecerConclusivo
                 });
             }
 

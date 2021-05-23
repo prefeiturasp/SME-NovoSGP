@@ -64,7 +64,8 @@ namespace SME.SGP.Api
                     AlunoCodigo = "0000001",
                     SituacaoFechamento = Dominio.StatusFechamento.NaoIniciado.Description(),
                     FrequenciaGlobal = 100,
-                    PodeExpandir = false
+                    PodeExpandir = false,
+                    ParecerConclusivo = "Teste"
                 },
                 new ConselhoClasseAlunoDto() {
                     NumeroChamada = 2,
@@ -72,7 +73,8 @@ namespace SME.SGP.Api
                     AlunoCodigo = "0000002",
                     SituacaoFechamento = Dominio.StatusFechamento.EmAndamento.Description(),
                     FrequenciaGlobal = 100,
-                    PodeExpandir = true
+                    PodeExpandir = true,
+                    ParecerConclusivo = "Teste"
                 },
                  new ConselhoClasseAlunoDto() {
                     NumeroChamada = 3,
@@ -80,7 +82,8 @@ namespace SME.SGP.Api
                     AlunoCodigo = "0000003",
                     SituacaoFechamento = Dominio.StatusFechamento.Concluido.Description(),
                     FrequenciaGlobal = 100,
-                    PodeExpandir = true
+                    PodeExpandir = true,
+                    ParecerConclusivo = "Teste"
                 },
             });
         }

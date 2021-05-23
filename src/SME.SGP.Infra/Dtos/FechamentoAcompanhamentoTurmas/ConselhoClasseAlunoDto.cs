@@ -10,5 +10,6 @@ namespace SME.SGP.Infra
         public string SituacaoFechamento { get; set; }
         public double FrequenciaGlobal { get; set; }
         public bool PodeExpandir { get; set; }
+        public string ParecerConclusivo { get; set; }
     }
 }
