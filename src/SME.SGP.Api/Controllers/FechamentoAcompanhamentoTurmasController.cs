@@ -35,7 +35,7 @@ namespace SME.SGP.Api
             return Ok(listaStatus);
         }
         [HttpGet("turmas/{turmaId}/conselho-classe/bimestres/{bimestre}")]
-        [ProducesResponseType(typeof(IEnumerable<StatusTotalFechamentoDto>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<StatusTotalConselhoClasseDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.ACF_C, Policy = "Bearer")]
         public async Task<IActionResult> ListaTotalStatusConselhosClasse(long turmaId, int bimestre, [FromServices] IObterConselhoClasseConsolidadoPorTurmaBimestreUseCase useCase)
