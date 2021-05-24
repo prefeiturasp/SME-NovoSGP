@@ -8,12 +8,12 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterDadosDashboardTurmaQuery : IRequest<IEnumerable<GraficoBaseDto>>
     {
-        public ObterDadosDashboardTurmaQuery(int anoLetivo, long dreId, long ueId, string ano, Modalidade modalidade, int? semestre)
+        public ObterDadosDashboardTurmaQuery(int anoLetivo, long dreId, long ueId, AnoItinerarioPrograma[] anos, Modalidade modalidade, int? semestre)
         {
             AnoLetivo = anoLetivo;
             DreId = dreId;
             UeId = ueId;
-            Ano = ano;
+            Anos = anos;
             Modalidade = modalidade;
             Semestre = semestre;
         }
@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
         public int AnoLetivo { get; set; }
         public long DreId { get; set; }
         public long UeId { get; set; }
-        public string Ano { get; set; }
+        public AnoItinerarioPrograma[] Anos { get; set; }
         public Modalidade Modalidade { get; set; }
         public int? Semestre { get; set; }
     }

@@ -35,7 +35,7 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(filtro));
         }
 
-        [HttpGet("consolidacao")]
+        [HttpGet("ultima-consolidacao")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(DateTime), 200)]
@@ -51,7 +51,7 @@ namespace SME.SGP.Api.Controllers
             return Ok(ultimaConsolidacao.Value);
         }
 
-        [HttpGet("modalidades/ano")]
+        [HttpGet("modalidades/anos")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(RetornoBaseDto), 200)]
