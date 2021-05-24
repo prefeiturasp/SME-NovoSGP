@@ -17,7 +17,7 @@ namespace SME.SGP.Dados.Repositorios
         private readonly string connectionString;
         public RepositorioFrequenciaAlunoDisciplinaPeriodo(ISgpContext database, IConfiguration configuration) : base(database)
         {
-            this.connectionString = configuration.GetConnectionString("SGP_Postgres");
+            this.connectionString = configuration.GetConnectionString("SGP_PostgresProd");
         }
 
         private String BuildQueryObter(string codigoAluno, string disciplinaId, long periodoEscolarId, TipoFrequenciaAluno tipoFrequencia, string turmaId)
@@ -323,6 +323,13 @@ namespace SME.SGP.Dados.Repositorios
                 });
                 conexao.Close();
             }
+        }
+
+        public async Task RemoverCalculosAlunos(string turmaId, string[] alunos)
+        {
+            var query = @"delete from frequencia_aluno where turma_id = @turmaId and codigo_aluno = Any(@alunos)";
+
+            await database.Conexao.ExecuteAsync(query, new { turmaId, alunos });
         }
     }
 }
