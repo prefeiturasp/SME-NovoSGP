@@ -7,7 +7,7 @@ namespace SME.SGP.Dominio
         [Display(Description =  "Não Iniciado")]
         NaoIniciado = 1,
 
-        [Display(Description = "Processado com Pendências")]
+        [Display(Description = "Processado com pendências")]
         ProcessadoPendencias = 2,
 
         [Display(Description = "Processado")]
