@@ -123,19 +123,11 @@ namespace SME.SGP.Aplicacao
 
         private static void ObterFrequenciasParaRemoverAlunosSemAusencia(CalcularFrequenciaPorTurmaCommand request, IEnumerable<AusenciaPorDisciplinaAlunoDto> ausenciasDosAlunos, IEnumerable<FrequenciaAluno> frequenciaDosAlunos, List<FrequenciaAluno> frequenciasParaRemover)
         {
-            var alunosParaTratar = ausenciasDosAlunos.Select(a => a.AlunoCodigo)?.Distinct();
-            IEnumerable<string> alunosSemAusencia;
-
-            if (alunosParaTratar.Any())
-            {
-                alunosSemAusencia = request.Alunos.Where(a => !alunosParaTratar.Contains(a));
-            }
-            else
-            {
-                alunosSemAusencia = request.Alunos;
-            }
-
-            frequenciasParaRemover.AddRange(frequenciaDosAlunos.Where(a => alunosSemAusencia.Contains(a.CodigoAluno)).ToList());
+            var alunosSemAusencia = frequenciaDosAlunos.Where(f => !ausenciasDosAlunos.Any(a => a.AlunoCodigo == f.CodigoAluno &&
+                                                                                                a.ComponenteCurricularId == f.DisciplinaId &&
+                                                                                                a.PeriodoEscolarId == f.PeriodoEscolarId)).ToList();
+            if (alunosSemAusencia != null && alunosSemAusencia.Any())
+                frequenciasParaRemover.AddRange(alunosSemAusencia);
         }
 
         private void TrataFrequenciaAlunoGlobal(CalcularFrequenciaPorTurmaCommand request, IEnumerable<FrequenciaAluno> frequenciaDosAlunos, List<FrequenciaAluno> frequenciasParaPersistir, int totalAulasDaTurmaGeral, IEnumerable<CompensacaoAusenciaAlunoCalculoFrequenciaDto> totalCompensacoesDisciplinaAlunos, string codigoAluno, List<AusenciaPorDisciplinaAlunoDto> ausenciasDoAluno)
