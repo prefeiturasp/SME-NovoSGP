@@ -245,7 +245,7 @@ namespace SME.SGP.Dominio.Servicos
             }
             else
                 // Carrega notas alunos
-                fechamentoAlunos = await CarregarFechamentoAlunoENota(id, entidadeDto.NotaConceitoAlunos);
+                fechamentoAlunos = await CarregarFechamentoAlunoENota(id, entidadeDto.NotaConceitoAlunos, usuarioLogado);
 
             var alunos = await servicoEOL.ObterAlunosPorTurma(turmaFechamento.CodigoTurma);
             var parametroDiasAlteracao = await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.QuantidadeDiasAlteracaoNotaFinal, turmaFechamento.AnoLetivo);
@@ -353,7 +353,7 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        private async Task<IEnumerable<FechamentoAluno>> CarregarFechamentoAlunoENota(long fechamentoTurmaDisciplinaId, IEnumerable<FechamentoNotaDto> fechamentoNotasDto)
+        private async Task<IEnumerable<FechamentoAluno>> CarregarFechamentoAlunoENota(long fechamentoTurmaDisciplinaId, IEnumerable<FechamentoNotaDto> fechamentoNotasDto, Usuario usuarioLogado)
         {
             var fechamentoAlunos = new List<FechamentoAluno>();
 
@@ -374,7 +374,7 @@ namespace SME.SGP.Dominio.Servicos
                     var notaFechamento = fechamentoAluno.FechamentoNotas.FirstOrDefault(x => x.DisciplinaId == fechamentoNotaDto.DisciplinaId);
                     if (notaFechamento != null)
                     {
-                        if (!EnviarWfAprovacao())
+                        if (!EnviarWfAprovacao(usuarioLogado))
                         {
                             if (fechamentoNotaDto.Nota.HasValue)
                             {                                
@@ -456,8 +456,13 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        private bool EnviarWfAprovacao()
-            => turmaFechamento.AnoLetivo != DateTime.Today.Year;
+        private bool EnviarWfAprovacao(Usuario usuarioLogado)
+        {
+            if (turmaFechamento.AnoLetivo != DateTime.Today.Year && !usuarioLogado.EhGestorEscolar())
+                return true;
+
+            return false;
+        }           
 
         private async Task GerarNotificacaoFechamento(FechamentoTurmaDisciplina fechamentoTurmaDisciplina, Turma turma, Usuario usuarioLogado, PeriodoEscolar periodoEscolar, IServicoPendenciaFechamento servicoPendenciaFechamento)
         {
