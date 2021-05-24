@@ -63,6 +63,7 @@ namespace SME.SGP.Api
                     NomeAluno = "Aluno Teste 1",
                     AlunoCodigo = "0000001",
                     SituacaoFechamento = Dominio.StatusFechamento.NaoIniciado.Description(),
+                    SituacaoFechamentoCodigo = (int)Dominio.StatusFechamento.NaoIniciado,
                     FrequenciaGlobal = 100,
                     PodeExpandir = false,
                     ParecerConclusivo = "Teste"
@@ -72,6 +73,7 @@ namespace SME.SGP.Api
                     NomeAluno = "Aluno Teste 2",
                     AlunoCodigo = "0000002",
                     SituacaoFechamento = Dominio.StatusFechamento.EmAndamento.Description(),
+                    SituacaoFechamentoCodigo = (int)Dominio.StatusFechamento.EmAndamento,
                     FrequenciaGlobal = 100,
                     PodeExpandir = true,
                     ParecerConclusivo = "Teste"
@@ -81,6 +83,7 @@ namespace SME.SGP.Api
                     NomeAluno = "Aluno Teste 3",
                     AlunoCodigo = "0000003",
                     SituacaoFechamento = Dominio.StatusFechamento.Concluido.Description(),
+                    SituacaoFechamentoCodigo = (int)Dominio.StatusFechamento.Concluido,
                     FrequenciaGlobal = 100,
                     PodeExpandir = true,
                     ParecerConclusivo = "Teste"

@@ -54,6 +54,7 @@ namespace SME.SGP.Aplicacao
                     AlunoCodigo = aluno.CodigoAluno.ToString(),
                     NomeAluno = aluno.NomeAluno,
                     SituacaoFechamento = consolidadoConselhoClasse.Status.Description(),
+                    SituacaoFechamentoCodigo = (int)consolidadoConselhoClasse.Status,
                     FrequenciaGlobal = frequenciaGlobal,
                     PodeExpandir = consolidadoConselhoClasse.Status != StatusFechamento.NaoIniciado,
                     ParecerConclusivo = parecerConclusivo
