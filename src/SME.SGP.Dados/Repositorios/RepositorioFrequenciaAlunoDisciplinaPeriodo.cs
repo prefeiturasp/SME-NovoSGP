@@ -324,5 +324,12 @@ namespace SME.SGP.Dados.Repositorios
                 conexao.Close();
             }
         }
+
+        public async Task RemoverCalculosAlunos(string turmaId, string[] alunos)
+        {
+            var query = @"delete from frequencia_aluno where turma_id = @turmaId and codigo_aluno = Any(@alunos)";
+
+            await database.Conexao.ExecuteAsync(query, new { turmaId, alunos });
+        }
     }
 }
