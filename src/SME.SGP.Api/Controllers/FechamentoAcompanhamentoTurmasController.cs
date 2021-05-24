@@ -97,37 +97,9 @@ namespace SME.SGP.Api
         [Permissao(Permissao.ACF_C, Policy = "Bearer")]
         public async Task<IActionResult> DetalhamentoComponentesCurricularesAluno(long turmaId, int bimestre, string alunoCodigo, [FromServices] IObterDetalhamentoFechamentoConselhoClasseAlunoUseCase useCase)
         {
-            //TODO Adicionar quando o Jenkins Voltar e remover o mockup.
             var listaStatus = await useCase.Executar(new FiltroConselhoClasseConsolidadoDto(turmaId, bimestre, alunoCodigo));
 
             return Ok(listaStatus);
-
-            //return Ok(new List<DetalhamentoComponentesCurricularesAlunoDto>() {
-            //    new DetalhamentoComponentesCurricularesAlunoDto() {
-            //        NomeComponenteCurricular = "Componente 1",
-            //        NotaFechamento = 1,
-            //        NotaPosConselho = 1,
-            //        QuantidadeAusencia = 1,
-            //        QuantidadeCompensacoes = 1,
-            //        PercentualFrequencia = 1
-            //    },
-            //    new DetalhamentoComponentesCurricularesAlunoDto() {
-            //        NomeComponenteCurricular = "Componente 2",
-            //        NotaFechamento = 1,
-            //        NotaPosConselho = 1,
-            //        QuantidadeAusencia = 1,
-            //        QuantidadeCompensacoes = 1,
-            //        PercentualFrequencia = 1
-            //    },
-            //    new DetalhamentoComponentesCurricularesAlunoDto() {
-            //        NomeComponenteCurricular = "Componente 3",
-            //        NotaFechamento = 1,
-            //        NotaPosConselho = 1,
-            //        QuantidadeAusencia = 1,
-            //        QuantidadeCompensacoes = 1,
-            //        PercentualFrequencia = 1
-            //    },
-            //});
         }
     }
 }
