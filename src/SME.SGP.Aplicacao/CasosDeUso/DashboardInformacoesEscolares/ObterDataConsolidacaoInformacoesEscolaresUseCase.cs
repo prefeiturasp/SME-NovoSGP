@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<DateTime?> Executar(int anoLetivo)
         {
-            var parametroExecucao = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(Dominio.TipoParametroSistema.ExecucaoConsolidacaoInformacoesEscolares, anoLetivo));
+            var parametroExecucao = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.ExecucaoConsolidacaoInformacoesEscolares, anoLetivo));
             
             if (parametroExecucao == null)
                 throw new NegocioException("Não foi possível localizar a última consolidação de Informações escolares para o Ano informado");
