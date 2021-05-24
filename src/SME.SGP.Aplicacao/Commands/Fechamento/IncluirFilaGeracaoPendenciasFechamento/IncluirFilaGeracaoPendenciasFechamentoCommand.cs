@@ -73,10 +73,6 @@ namespace SME.SGP.Aplicacao
                 .NotEmpty()
                 .WithMessage("O id do Fechamento Turma x Disciplina é necessário para verificação de pendências no fechamento.");
 
-            RuleFor(a => a.Justificativa)
-                .NotEmpty()
-                .WithMessage("A justificativa do Fechamento Turma x Disciplina é necessária para verificação de pendências no fechamento.");
-
             RuleFor(a => a.CriadoRF)
                 .NotEmpty()
                 .WithMessage("O RF do criador do Fechamento Turma x Disciplina é necessário para verificação de pendências no fechamento.");
