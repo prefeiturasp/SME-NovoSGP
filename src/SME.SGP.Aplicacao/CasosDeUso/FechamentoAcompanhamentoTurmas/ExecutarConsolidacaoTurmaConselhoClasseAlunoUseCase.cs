@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
                 return false;
             }
 
-            StatusFechamento statusNovo = StatusFechamento.NaoIniciado;
+            StatusConselhoClasse statusNovo = StatusConselhoClasse.NaoIniciado;
 
             var consolidadoTurmaAluno = await repositorioConselhoClasseConsolidado.ObterConselhoClasseConsolidadoPorTurmaBimestreAlunoAsync(filtro.TurmaId, filtro.Bimestre, filtro.AlunoCodigo);
             if (consolidadoTurmaAluno == null)
@@ -64,9 +64,9 @@ namespace SME.SGP.Aplicacao
                 var possuiComponentesSemNotaConceito = componentesDaTurma.Select(a => a.CodigoComponenteCurricular).Except(componentesDoAluno).Any();
 
                 if (possuiComponentesSemNotaConceito)
-                    statusNovo = StatusFechamento.EmAndamento;
+                    statusNovo = StatusConselhoClasse.EmAndamento;
                 else
-                    statusNovo = StatusFechamento.Concluido;
+                    statusNovo = StatusConselhoClasse.Concluido;
             }
 
             if (consolidadoTurmaAluno.Id == 0 || consolidadoTurmaAluno.Status != statusNovo)

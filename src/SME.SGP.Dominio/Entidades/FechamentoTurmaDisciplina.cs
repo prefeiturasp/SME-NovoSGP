@@ -27,10 +27,10 @@ namespace SME.SGP.Dominio
 
         public StatusFechamento ObterStatusFechamento() 
         {
-            if (Situacao == SituacaoFechamento.EmProcessamento)
-                return StatusFechamento.EmAndamento;
-            else if (Situacao == SituacaoFechamento.ProcessadoComPendencias || Situacao == SituacaoFechamento.ProcessadoComSucesso)
-                return StatusFechamento.Concluido;
+            if (Situacao == SituacaoFechamento.ProcessadoComPendencias)
+                return StatusFechamento.ProcessadoPendencias;
+            else if (Situacao == SituacaoFechamento.ProcessadoComSucesso)
+                return StatusFechamento.Processado;
             else
                 return StatusFechamento.NaoIniciado;
         }

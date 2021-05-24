@@ -14,25 +14,25 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<IEnumerable<StatusTotalFechamentoDto>> Executar(FiltroConselhoClasseConsolidadoTurmaBimestreDto filtro)
+        public async Task<IEnumerable<StatusTotalConselhoClasseDto>> Executar(FiltroConselhoClasseConsolidadoTurmaBimestreDto filtro)
         {
             var listaConselhosClasseConsolidado = await mediator.Send(new ObterConselhoClasseConsolidadoPorTurmaBimestreQuery(filtro.TurmaId, filtro.Bimestre));
 
             if (listaConselhosClasseConsolidado == null || !listaConselhosClasseConsolidado.Any())
-                return Enumerable.Empty<StatusTotalFechamentoDto>();
+                return Enumerable.Empty<StatusTotalConselhoClasseDto>();
 
             var statusAgrupados = listaConselhosClasseConsolidado.GroupBy(g => g.Status);
 
             return MapearRetornoStatusAgrupado(statusAgrupados);
         }
 
-        private IEnumerable<StatusTotalFechamentoDto> MapearRetornoStatusAgrupado(IEnumerable<IGrouping<StatusFechamento, ConselhoClasseConsolidadoTurmaAluno>> statusAgrupados)
+        private IEnumerable<StatusTotalConselhoClasseDto> MapearRetornoStatusAgrupado(IEnumerable<IGrouping<StatusConselhoClasse, ConselhoClasseConsolidadoTurmaAluno>> statusAgrupados)
         {
-            var lstStatus = new List<StatusTotalFechamentoDto>();
+            var lstStatus = new List<StatusTotalConselhoClasseDto>();
 
             foreach (var status in statusAgrupados)
             {
-                lstStatus.Add(new StatusTotalFechamentoDto()
+                lstStatus.Add(new StatusTotalConselhoClasseDto()
                 {
                     Status = status.Key,
                     Descricao = status.Key.Description(),
@@ -40,7 +40,7 @@ namespace SME.SGP.Aplicacao
                 });
             }
 
-            var lstTodosStatus = Enum.GetValues(typeof(StatusFechamento)).Cast<StatusFechamento>();
+            var lstTodosStatus = Enum.GetValues(typeof(StatusConselhoClasse)).Cast<StatusConselhoClasse>();
 
             var statusNaoEncontrados = lstTodosStatus.Where(ls => !lstStatus.Select(s => s.Status).Contains(ls));
 
@@ -48,7 +48,7 @@ namespace SME.SGP.Aplicacao
             {
                 foreach (var status in statusNaoEncontrados)
                 {
-                    lstStatus.Add(new StatusTotalFechamentoDto()
+                    lstStatus.Add(new StatusTotalConselhoClasseDto()
                     {
                         Status = status,
                         Descricao = status.Description(),

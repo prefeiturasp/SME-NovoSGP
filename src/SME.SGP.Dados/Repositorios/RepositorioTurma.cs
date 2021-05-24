@@ -958,7 +958,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<PaginacaoResultadoDto<TurmaAcompanhamentoFechamentoRetornoDto>> ObterTurmasFechamentoAcompanhamento(Paginacao paginacao, long dreId, long ueId, long[] turmasId, Modalidade modalidade, int semestre, int bimestre, int anoLetivo, bool listarTodasTurmas)
         {
-            var query = new StringBuilder(@"select t.id as TurmaId,
+            var query = new StringBuilder(@"select distinct t.id as TurmaId,
                                                      t.nome       
                                                 from turma t 
                                                inner join ue on ue.id = t.ue_id
@@ -975,8 +975,8 @@ namespace SME.SGP.Dados.Repositorios
 
             if (bimestre > 0)
                 query.AppendLine("and pe.bimestre = @bimestre ");
-            else
-                query.AppendLine("and pe.bimestre is null ");
+            //else
+            //    query.AppendLine("and pe.bimestre is null ");
 
             DateTime dataReferencia = DateTime.MinValue;
             string queryPeriodoEJA = string.Empty;
@@ -991,11 +991,11 @@ namespace SME.SGP.Dados.Repositorios
 
             query.AppendLine(@" and t.modalidade_codigo = @modalidade
                                 and t.ano_letivo = @anoLetivo
-                                and not t.historica
+                                and not t.historica 
                             order by t.nome
                             OFFSET @quantidadeRegistrosIgnorados ROWS FETCH NEXT @quantidadeRegistros ROWS ONLY; ");
 
-            query.AppendLine(@"select count(t.id)      
+            query.AppendLine(@"select count(distinct (t.id))
                                     from turma t 
                                 inner join ue on ue.id = t.ue_id
                                 inner join dre on dre.id = ue.dre_id
@@ -1011,8 +1011,8 @@ namespace SME.SGP.Dados.Repositorios
 
             if (bimestre > 0)
                 query.AppendLine("and pe.bimestre = @bimestre ");
-            else
-                query.AppendLine("and pe.bimestre is null ");
+            //else
+            //    query.AppendLine("and pe.bimestre is null ");
 
             if (modalidade == Modalidade.EJA)
                 query.AppendLine(queryPeriodoEJA);
