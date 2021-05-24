@@ -25,6 +25,16 @@ namespace SME.SGP.Dominio
             Situacao = situacao;
         }
 
+        public StatusFechamento ObterStatusFechamento() 
+        {
+            if (Situacao == SituacaoFechamento.ProcessadoComPendencias)
+                return StatusFechamento.ProcessadoPendencias;
+            else if (Situacao == SituacaoFechamento.ProcessadoComSucesso)
+                return StatusFechamento.Processado;
+            else
+                return StatusFechamento.NaoIniciado;
+        }
+
         public void AdicionarPeriodoEscolar(PeriodoEscolar periodoEscolar)
         {
             if (FechamentoTurma == null)

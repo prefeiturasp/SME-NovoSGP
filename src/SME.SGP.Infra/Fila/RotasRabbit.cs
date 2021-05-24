@@ -98,6 +98,12 @@
         public static string ConsolidarFrequenciasTurmasNoAno => "sgp.frequencia.turma.ano.consolidar";
         public static string ConsolidarFrequenciasPorTurma => "sgp.frequencia.turma.consolidar";
 
+        public static string ConsolidarGeralSync => "sgp.consolidacao.geral.sync";
+        public static string ConsolidarTurmaSync => "sgp.consolidacao.turma.sync";
+        public static string ConsolidarTurmaFechamentoSync => "sgp.consolidacao.turma.fechamento.sync";
+        public static string ConsolidarTurmaFechamentoComponenteTratar => "sgp.consolidacao.turma.fechamento.componente.tratar";
+        public static string ConsolidarTurmaConselhoClasseSync => "sgp.consolidacao.turma.conselhoclasse.sync";
+        public static string ConsolidarTurmaConselhoClasseAlunoTratar => "sgp.consolidacao.turma.conselhoclasse.aluno.tratar";
         public static string ConsolidacaoMatriculasTurmasDreCarregar => "sgp.matricula.turma.consolidar.dre.carregar";
         public static string SincronizarDresMatriculasTurmas => "sgp.matricula.turma.consolidar.dre.sync"; 
         public static string ConsolidacaoMatriculasTurmasCarregar => "sgp.matricula.turma.carregar";

@@ -179,6 +179,8 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new NotificacaoPlanoAEEObservacaoMap());
                config.AddMap(new ConsolidacaoFrequenciaTurmaMap());
                config.AddMap(new ParametrosSistemaMap());
+               config.AddMap(new FechamentoConsolidadoComponenteTurmaMap());
+               config.AddMap(new ConselhoClasseConsolidadoTurmaAlunoMap());              
                config.AddMap(new ConsolidacaoMatriculaTurmaMap());
 
                config.ForDommel();
