@@ -282,7 +282,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<(IEnumerable<DateTime> datasAtribuicao, IEnumerable<string> mensagensValidacao)> ValidarAtribuicaoProfessor(IEnumerable<DateTime> datasValidas, string turmaCodigo, long componenteCurricularCodigo, Usuario usuario)
         {
-            if (usuario.EhProfessorCj())
+            if (usuario.EhProfessorCj() || usuario.EhGestorEscolar())
             {
                 return (datasValidas, Enumerable.Empty<string>());
             }

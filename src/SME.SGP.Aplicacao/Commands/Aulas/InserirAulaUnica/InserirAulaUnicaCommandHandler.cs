@@ -47,15 +47,19 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
 
             var aula = MapearEntidade(request);
 
+            if (usuarioLogado.PerfilAtual == Perfis.PERFIL_DIRETOR)
+                aula.Status = EntidadeStatus.Aprovado;
+
             aula.Id = await repositorioAula.SalvarAsync(aula);
 
-            await ValidarAulasDeReposicao(request, turma, aulasExistentes, aula, retorno.Mensagens);
+            if(usuarioLogado.PerfilAtual != Perfis.PERFIL_DIRETOR)
+                await ValidarAulasDeReposicao(request, turma, aulasExistentes, aula, retorno.Mensagens, usuarioLogado);
 
             retorno.Mensagens.Add("Aula cadastrada com sucesso.");
             return retorno;
         }
 
-        private async Task ValidarAulasDeReposicao(InserirAulaUnicaCommand request, Turma turma, IEnumerable<AulaConsultaDto> aulasExistentes, Aula aula, List<string> mensagens)
+        private async Task ValidarAulasDeReposicao(InserirAulaUnicaCommand request, Turma turma, IEnumerable<AulaConsultaDto> aulasExistentes, Aula aula, List<string> mensagens, Usuario usuarioLogado)
         {
             if (request.TipoAula == TipoAula.Reposicao)
             {
@@ -63,7 +67,7 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
 
                 if (AulasReposicaoPrecisamAprovacao(quantidadeDeAulasExistentes + request.Quantidade, request.EhRegencia))
                 {
-                    var idWorkflow = await PersistirWorkflowReposicaoAula(request, turma, aula);
+                    var idWorkflow = await PersistirWorkflowReposicaoAula(request, turma, aula, usuarioLogado);
                     aula.EnviarParaWorkflowDeAprovacao(idWorkflow);
                     await repositorioAula.SalvarAsync(aula);
 
@@ -142,7 +146,7 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
                 throw new NegocioException(resultadoValidacao.mensagem);
         }
 
-        private async Task<long> PersistirWorkflowReposicaoAula(InserirAulaUnicaCommand command, Turma turma, Aula aula)
+        private async Task<long> PersistirWorkflowReposicaoAula(InserirAulaUnicaCommand command, Turma turma, Aula aula, Usuario usuarioLogado)
             => await mediator.Send(new InserirWorkflowReposicaoAulaCommand(command.DataAula.Year,
                                                                            aula.Id,
                                                                            aula.Quantidade,
@@ -151,6 +155,7 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
                                                                            turma.Ue.CodigoUe,
                                                                            turma.Ue.Nome,
                                                                            turma.Nome,
-                                                                           command.NomeComponenteCurricular));
+                                                                           command.NomeComponenteCurricular,
+                                                                           usuarioLogado.PerfilAtual));
     }
 }
