@@ -42,8 +42,7 @@ namespace SME.SGP.Dados.Contexto
 
         public string UsuarioLogadoNomeCompleto =>
                                           contextoAplicacao.NomeUsuario;
-        public Guid PerfilUsuario =>
-                                          Guid.Parse(contextoAplicacao.PerfilUsuario);
+        public string PerfilUsuario => contextoAplicacao.PerfilUsuario;
 
         public string UsuarioLogadoRF =>
                                           contextoAplicacao.ObterVariavel<string>("RF") ?? "0";

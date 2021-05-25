@@ -47,7 +47,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(InserirAulaRecorrenteCommand request, CancellationToken cancellationToken)
         {
-            await ValidarComponentesProfessor(request, request.Usuario);
+            if(!request.Usuario.EhGestorEscolar())
+                await ValidarComponentesProfessor(request, request.Usuario);
             await GerarRecorrencia(request, request.Usuario);
             return true;
         }
@@ -324,8 +325,16 @@ namespace SME.SGP.Aplicacao
             {
                 if (aula.Id == 0)
                 {
-                    await repositorioAula.SalvarAsync(aula);
-                    continue;
+                    try
+                    {
+                        await repositorioAula.SalvarAsync(aula);
+                        continue;
+                    }
+                    catch (Exception ex)
+                    {
+                        throw ex;
+                    }
+                    
                 }
                     
                 var aulaParaAdicionar = (Aula)aula.Clone();
