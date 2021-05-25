@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
         {
             SentrySdk.AddBreadcrumb($"Mensagem EncerrarPlanoAEEEstudantesInativosUseCase", "Rabbit - EncerrarPlanoAEEEstudantesInativosUseCase");
 
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.EncerrarPlanoAEEEstudantesInativos, null, Guid.NewGuid(), null));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.EncerrarPlanoAEEEstudantesInativos, null, Guid.NewGuid(), null));
         }
     }
 }

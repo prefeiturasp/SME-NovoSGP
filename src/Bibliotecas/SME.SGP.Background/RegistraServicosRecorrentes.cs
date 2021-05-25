@@ -79,6 +79,9 @@ namespace SME.SGP.Background
 
             // Removido até melhoria de performance prevista
             //Cliente.ExecutarPeriodicamente<IExecutarConsolidacaoFrequenciaTurmaSyncUseCase>(c => c.Executar(), Cron.Daily(6));
+            
+
+            Cliente.ExecutarPeriodicamente<IConciliacaoFrequenciaTurmasUseCase>(c => c.Executar(), Cron.Weekly(System.DayOfWeek.Saturday, 23));
         }
     }
 }

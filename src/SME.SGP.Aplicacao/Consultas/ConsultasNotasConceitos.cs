@@ -137,7 +137,9 @@ namespace SME.SGP.Aplicacao
             var nomeAvaliacaoAuditoriaInclusao = string.Empty;
             var nomeAvaliacaoAuditoriaAlteracao = string.Empty;
 
-            
+            var usuario = await servicoUsuario.ObterUsuarioLogado();
+            var turma = await repositorioTurma.ObterPorCodigo(filtro.TurmaCodigo);
+
             foreach (var periodoEscolar in periodosEscolares)
             {
                 AtividadeAvaliativa atividadeAvaliativaParaObterTipoNota = null;
@@ -177,10 +179,24 @@ namespace SME.SGP.Aplicacao
                         throw new NegocioException("Componente curricular informado não encontrado no EOL");
                     var disciplinaEOL = consultaEOL.First();
 
-                    IEnumerable<DisciplinaResposta> disciplinasRegencia = null;
-
+                    IEnumerable<DisciplinaResposta> disciplinasRegencia = null;                    
                     if (disciplinaEOL.Regencia)
-                        disciplinasRegencia = await servicoEOL.ObterDisciplinasParaPlanejamento(long.Parse(filtro.TurmaCodigo), servicoUsuario.ObterLoginAtual(), servicoUsuario.ObterPerfilAtual());
+                    {
+                        if (usuario.EhProfessorCj())
+                        {                            
+                            IEnumerable<DisciplinaDto> disciplinasRegenciaCJ = await consultasDisciplina.ObterComponentesCurricularesPorProfessorETurmaParaPlanejamento(long.Parse(filtro.DisciplinaCodigo), filtro.TurmaCodigo, false, disciplinaEOL.Regencia);
+                            if (disciplinasRegenciaCJ == null || !disciplinasRegenciaCJ.Any())
+                                throw new NegocioException("Não foram encontradas as disciplinas de regência");
+                            disciplinasRegencia = MapearParaDto(disciplinasRegenciaCJ);
+                        }
+                        else
+                        {
+                            IEnumerable<ComponenteCurricularEol> disciplinasRegenciaEol = await servicoEOL.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamento(filtro.TurmaCodigo, servicoUsuario.ObterLoginAtual(), servicoUsuario.ObterPerfilAtual());
+                            if (disciplinasRegenciaEol == null || !disciplinasRegenciaEol.Any())
+                                throw new NegocioException("Não foram encontradas disciplinas de regência no EOL");
+                            disciplinasRegencia = MapearParaDto(disciplinasRegenciaEol);
+                        }                        
+                    }                        
 
                     var fechamentosTurma = await consultasFechamentoTurmaDisciplina.ObterFechamentosTurmaDisciplina(filtro.TurmaCodigo, filtro.DisciplinaCodigo, valorBimestreAtual);
 
@@ -302,14 +318,17 @@ namespace SME.SGP.Aplicacao
                         if (disciplinaEOL.Regencia)
                         {
                             // Regencia carrega disciplinas mesmo sem nota de fechamento
-                            foreach (var disciplinaRegencia in disciplinasRegencia)
+                            if(disciplinasRegencia != null)
                             {
-                                notaConceitoAluno.NotasBimestre.Add(new FechamentoNotaRetornoDto()
+                                foreach (var disciplinaRegencia in disciplinasRegencia)
                                 {
-                                    DisciplinaId = disciplinaRegencia.CodigoComponenteCurricular,
-                                    Disciplina = disciplinaRegencia.Nome,
-                                });
-                            }
+                                    notaConceitoAluno.NotasBimestre.Add(new FechamentoNotaRetornoDto()
+                                    {
+                                        DisciplinaId = disciplinaRegencia.CodigoComponenteCurricular,
+                                        Disciplina = disciplinaRegencia.Nome,
+                                    });
+                                }
+                            }                            
                         }
 
                         // Carrega Frequencia Aluno
@@ -437,6 +456,45 @@ namespace SME.SGP.Aplicacao
                 };
             }
         }
+
+        private IEnumerable<DisciplinaResposta> MapearParaDto(IEnumerable<ComponenteCurricularEol> disciplinasRegenciaEol)
+        {
+            foreach(var disciplina in disciplinasRegenciaEol)
+            {
+                yield return new DisciplinaResposta()
+                {
+                    CodigoComponenteCurricular = disciplina.Codigo,
+                    Compartilhada = disciplina.Compartilhada,
+                    CodigoComponenteCurricularPai = disciplina.CodigoComponenteCurricularPai,
+                    Nome = disciplina.Descricao,
+                    Regencia = disciplina.Regencia,
+                    RegistroFrequencia = disciplina.RegistraFrequencia,
+                    TerritorioSaber = disciplina.TerritorioSaber,
+                    LancaNota = disciplina.LancaNota,
+                    BaseNacional = disciplina.BaseNacional,
+                    GrupoMatriz = new Integracoes.Respostas.GrupoMatriz { Id = disciplina.GrupoMatriz.Id, Nome = disciplina.GrupoMatriz.Nome }
+                };
+            }
+        }
+
+        private IEnumerable<DisciplinaResposta> MapearParaDto(IEnumerable<DisciplinaDto> disciplinasRegenciaCJ)
+        {
+            foreach(var disciplina in disciplinasRegenciaCJ)
+            {
+                yield return new DisciplinaResposta()
+                {
+                    CodigoComponenteCurricular = disciplina.CodigoComponenteCurricular,
+                    Compartilhada = disciplina.Compartilhada,
+                    CodigoComponenteCurricularPai = disciplina.CdComponenteCurricularPai,
+                    Nome = disciplina.Nome,
+                    Regencia = disciplina.Regencia,
+                    RegistroFrequencia = disciplina.RegistraFrequencia,
+                    TerritorioSaber = disciplina.TerritorioSaber,
+                    LancaNota = disciplina.LancaNota,
+                    GrupoMatriz = new Integracoes.Respostas.GrupoMatriz { Id = disciplina.GrupoMatrizId, Nome = disciplina.GrupoMatrizNome }
+                };
+            }
+        } 
 
         private int ObterBimestreAtual(IEnumerable<PeriodoEscolar> periodosEscolares)
         {
