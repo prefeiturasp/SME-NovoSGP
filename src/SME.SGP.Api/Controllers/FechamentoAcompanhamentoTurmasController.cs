@@ -52,43 +52,9 @@ namespace SME.SGP.Api
         [Permissao(Permissao.ACF_C, Policy = "Bearer")]
         public async Task<IActionResult> ListaAlunosPorTurma(long turmaId, int bimestre, [FromServices] IObterFechamentoConselhoClasseAlunosPorTurmaUseCase useCase)
         {
-            //TODO Adicionar quando o Jenkins Voltar e remover o mockup.
-            //var listaStatus = await useCase.Executar(new FiltroConselhoClasseConsolidadoTurmaBimestreDto(turmaId, bimestre));
+            var listaStatus = await useCase.Executar(new FiltroConselhoClasseConsolidadoTurmaBimestreDto(turmaId, bimestre));
 
-            //return Ok(listaStatus);
-
-            return Ok(new List<ConselhoClasseAlunoDto>() {
-                new ConselhoClasseAlunoDto() {
-                    NumeroChamada = 1,
-                    NomeAluno = "Aluno Teste 1",
-                    AlunoCodigo = "0000001",
-                    SituacaoFechamento = Dominio.StatusFechamento.NaoIniciado.Description(),
-                    SituacaoFechamentoCodigo = (int)Dominio.StatusFechamento.NaoIniciado,
-                    FrequenciaGlobal = 100,
-                    PodeExpandir = false,
-                    ParecerConclusivo = "Teste"
-                },
-                new ConselhoClasseAlunoDto() {
-                    NumeroChamada = 2,
-                    NomeAluno = "Aluno Teste 2",
-                    AlunoCodigo = "0000002",
-                    SituacaoFechamento = Dominio.StatusFechamento.EmAndamento.Description(),
-                    SituacaoFechamentoCodigo = (int)Dominio.StatusFechamento.EmAndamento,
-                    FrequenciaGlobal = 100,
-                    PodeExpandir = true,
-                    ParecerConclusivo = "Teste"
-                },
-                 new ConselhoClasseAlunoDto() {
-                    NumeroChamada = 3,
-                    NomeAluno = "Aluno Teste 3",
-                    AlunoCodigo = "0000003",
-                    SituacaoFechamento = Dominio.StatusFechamento.Concluido.Description(),
-                    SituacaoFechamentoCodigo = (int)Dominio.StatusFechamento.Concluido,
-                    FrequenciaGlobal = 100,
-                    PodeExpandir = true,
-                    ParecerConclusivo = "Teste"
-                },
-            });
+            return Ok(listaStatus);
         }
 
         [HttpGet("{turmaId}/conselho-classe/bimestres/{bimestre}/alunos/{alunoCodigo}/componentes-curriculares/detalhamento")]
