@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao
                                 <li>Devolutiva da Coordenação: {UtilRegex.RemoverTagsHtml(plano.ParecerCoordenacao)}</li>
                                 <li>Devolutiva PAAI: {UtilRegex.RemoverTagsHtml(plano.ParecerPAAI)}</li>
                             </ul>
-                            <a href='{hostAplicacao}relatorios/aee/plano/editar/{plano.Id}'>Clique aqui</a> para acessar o plano. ";
+                            <a href='{hostAplicacao}aee/plano/editar/{plano.Id}'>Clique aqui</a> para acessar o plano. ";
 
             var usuariosIds = await ObterUsuarios(plano.Turma.Ue.CodigoUe, plano.Turma.Ue.Dre.CodigoDre, plano.CriadoRF);
 

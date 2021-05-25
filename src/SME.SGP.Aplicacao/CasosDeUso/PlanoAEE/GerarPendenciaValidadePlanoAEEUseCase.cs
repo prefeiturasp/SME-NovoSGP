@@ -66,7 +66,7 @@ namespace SME.SGP.Aplicacao
             var estudanteOuCrianca = turma.ModalidadeCodigo == Modalidade.InfantilPreEscola ? "da criança" : "do estudante";
 
             var titulo = $"Plano AEE Expirado - {planoEncerrado.AlunoNome} ({planoEncerrado.AlunoCodigo}) - {ueDre}";
-            var descricao = $"O Plano AEE {estudanteOuCrianca} {planoEncerrado.AlunoNome} ({planoEncerrado.AlunoCodigo}) da turma {turma.NomeComModalidade()} da {ueDre} expirou em {dataFim:dd/MM/yyyy}. <br/><a href='{hostAplicacao}relatorios/aee/plano/editar/{planoEncerrado.Id}'>Clique aqui para acessar o plano.</a> " +
+            var descricao = $"O Plano AEE {estudanteOuCrianca} {planoEncerrado.AlunoNome} ({planoEncerrado.AlunoCodigo}) da turma {turma.NomeComModalidade()} da {ueDre} expirou em {dataFim:dd/MM/yyyy}. <br/><a href='{hostAplicacao}aee/plano/editar/{planoEncerrado.Id}'>Clique aqui para acessar o plano.</a> " +
                 $"<br/><br/>Para resolver esta pendência você precisa alterar o vencimento do plano, criando uma nova versão ou encerrá-lo.";
 
             var usuarioId = await ObterUsuarioPorRF(planoEncerrado.CriadoRF);
