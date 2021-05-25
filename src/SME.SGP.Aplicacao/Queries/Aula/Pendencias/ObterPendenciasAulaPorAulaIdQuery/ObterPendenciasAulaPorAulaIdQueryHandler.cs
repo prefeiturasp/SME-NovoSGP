@@ -21,11 +21,16 @@ namespace SME.SGP.Aplicacao
             var pendencias = await repositorioPendenciaAula.PossuiPendenciasPorAulaId(request.AulaId, request.EhModalidadeInfantil);
             if (pendencias == null && !request.TemAtividadeAvaliativa)
                 return null;
-            else
+
+            pendencias = new PendenciaAulaDto
             {
-                pendencias = new PendenciaAulaDto { AulaId = request.AulaId, PossuiPendenciaFrequencia = false, PossuiPendenciaPlanoAula = false };
-                pendencias.PossuiPendenciaAtividadeAvaliativa = await repositorioPendenciaAula.PossuiPendenciasAtividadeAvaliativaPorAulaId(request.AulaId);                
-            }
+                AulaId = request.AulaId,
+                PossuiPendenciaFrequencia = pendencias.PossuiPendenciaFrequencia,
+                PossuiPendenciaPlanoAula = pendencias.PossuiPendenciaPlanoAula,
+                PossuiPendenciaAtividadeAvaliativa = false
+            };
+            pendencias.PossuiPendenciaAtividadeAvaliativa = request.TemAtividadeAvaliativa ? 
+                await repositorioPendenciaAula.PossuiPendenciasAtividadeAvaliativaPorAulaId(request.AulaId) : false;
 
             return pendencias.RetornarTipoPendecias();
         }
