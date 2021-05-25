@@ -29,7 +29,8 @@ namespace SME.SGP.Aplicacao
             var anosLetivosParaConsolidar = new List<int>();
             for (var ano = 2014; ano < DateTime.Now.Year; ano++)
             {
-                if (!await mediator.Send(new ExisteConsolidacaoMatriculaTurmaPorAnoQuery(ano)))
+                if (!await mediator.Send(new ExisteConsolidacaoMatriculaTurmaPorAnoQuery(ano)) 
+                    && await mediator.Send(new ObterQuantidadeUesPorAnoLetivoQuery(ano)) > 0)
                 {
                     await AtualizarDataExecucao(ano);
                     anosLetivosParaConsolidar.Add(ano);

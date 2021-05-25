@@ -51,20 +51,20 @@ namespace SME.SGP.Aplicacao
 
             var pendenciaRegistroIndividual = await repositorioPendenciaRegistroIndividual.ObterPendenciaRegistroIndividualPorTurmaESituacao(request.Turma.Id, SituacaoPendencia.Pendente);
             unitOfWork.IniciarTransacao();
-            try
-            {
-                if (pendenciaRegistroIndividual is null)
-                    await CriarNovaPendenciaAusenciaRegistroIndividualAsync(request.Turma, alunosTurmaComAusenciaRegistroIndividualPorDias);
-                else
-                    await AlterarPendenciaAusenciaRegistroIndividualAsync(pendenciaRegistroIndividual, alunosTurmaComAusenciaRegistroIndividualPorDias);
+            //try
+            //{
+            //    if (pendenciaRegistroIndividual is null)
+            //        await CriarNovaPendenciaAusenciaRegistroIndividualAsync(request.Turma, alunosTurmaComAusenciaRegistroIndividualPorDias);
+            //    else
+            //        await AlterarPendenciaAusenciaRegistroIndividualAsync(pendenciaRegistroIndividual, alunosTurmaComAusenciaRegistroIndividualPorDias);
 
-                unitOfWork.PersistirTransacao();
-            }
-            catch (Exception ex)
-            {
-                unitOfWork.Rollback();
-                retorno.Mensagens.Add(ex?.InnerException.Message ?? ex.Message);
-            }
+            //    unitOfWork.PersistirTransacao();
+            //}
+            //catch (Exception ex)
+            //{
+            //    unitOfWork.Rollback();
+            //    retorno.Mensagens.Add(ex?.InnerException.Message ?? ex.Message);
+            //}
 
             return retorno;
         }

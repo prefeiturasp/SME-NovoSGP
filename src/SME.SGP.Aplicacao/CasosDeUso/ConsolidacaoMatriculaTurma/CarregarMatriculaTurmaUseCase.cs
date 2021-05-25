@@ -59,14 +59,17 @@ namespace SME.SGP.Aplicacao
                 foreach (var matricula in matriculasConsolidadas)
                 {
                     var turmaId = await mediator.Send(new ObterTurmaIdPorCodigoQuery(matricula.TurmaCodigo));
-                    matricula.TurmaId = turmaId;
-                    try
+                    if (turmaId > 0)
                     {
-                        await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.ConsolidacaoMatriculasTurmasSync, matricula, new Guid(), null, fila: RotasRabbit.ConsolidacaoMatriculasTurmasSync));
-                    }
-                    catch (Exception ex)
-                    {
-                        SentrySdk.CaptureException(ex);
+                        matricula.TurmaId = turmaId;
+                        try
+                        {
+                            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbit.ConsolidacaoMatriculasTurmasSync, matricula, new Guid(), null, fila: RotasRabbit.ConsolidacaoMatriculasTurmasSync));
+                        }
+                        catch (Exception ex)
+                        {
+                            SentrySdk.CaptureException(ex);
+                        }
                     }
                 }
             }
