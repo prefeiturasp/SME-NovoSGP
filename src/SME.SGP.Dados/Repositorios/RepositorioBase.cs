@@ -140,6 +140,7 @@ namespace SME.SGP.Dados.Repositorios
 
         protected async Task AuditarAsync(long identificador, string acao)
         {
+            var perfil = database.PerfilUsuario != String.Empty ? Guid.Parse(database.PerfilUsuario) : (Guid?)null;
             await database.Conexao.InsertAsync<Auditoria>(new Auditoria()
             {
                 Data = DateTimeExtension.HorarioBrasilia(),
@@ -147,7 +148,7 @@ namespace SME.SGP.Dados.Repositorios
                 Chave = identificador,
                 Usuario = database.UsuarioLogadoNomeCompleto,
                 RF = database.UsuarioLogadoRF,
-                Perfil = database.PerfilUsuario,
+                Perfil = perfil,
                 Acao = acao
             });
         }

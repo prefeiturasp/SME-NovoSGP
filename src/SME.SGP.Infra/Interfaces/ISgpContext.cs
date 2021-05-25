@@ -8,7 +8,7 @@ namespace SME.SGP.Infra
     {
         IDbConnection Conexao { get; }
         string UsuarioLogado { get; }
-        Guid PerfilUsuario { get; }
+        string PerfilUsuario { get; }
         string UsuarioLogadoNomeCompleto { get; }
         string UsuarioLogadoRF { get; }
 
