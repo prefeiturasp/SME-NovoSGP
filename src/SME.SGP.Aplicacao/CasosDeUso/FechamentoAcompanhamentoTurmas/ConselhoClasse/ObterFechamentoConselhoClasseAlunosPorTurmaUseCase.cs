@@ -25,13 +25,16 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Turma não encontrada");
 
             var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, param.Bimestre));
-            if (periodoEscolar == null)
+            if (periodoEscolar == null && param.Bimestre != 0)
                 throw new NegocioException("Periodo escolar não encontrado");
+            
+            if(param.Bimestre == 0)
+                periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, 1));
 
             var alunos = await mediator.Send(new ObterEstudantesAtivosPorTurmaEDataReferenciaQuery(turma.CodigoTurma, periodoEscolar.PeriodoInicio));
             var consolidadoConselhosClasses = await mediator.Send(new ObterConselhoClasseConsolidadoPorTurmaBimestreQuery(turma.Id, param.Bimestre));
-            alunos = alunos.Where(a => a.DataSituacao <= periodoEscolar.PeriodoFim).ToList();
 
+            alunos = param.Bimestre == 0 ?  alunos.ToList() : alunos.Where(a => a.DataSituacao <= periodoEscolar.PeriodoFim).ToList();
 
             return await MontarRetorno(alunos, consolidadoConselhosClasses, turma.CodigoTurma);
         }
@@ -44,9 +47,11 @@ namespace SME.SGP.Aplicacao
             foreach (var aluno in alunos)
             {
                 var consolidadoConselhoClasse = consolidadoConselhosClasses.FirstOrDefault(a => a.AlunoCodigo == aluno.CodigoAluno.ToString());
+                if (consolidadoConselhoClasse == null)
+                    continue;
+
                 var frequenciaGlobal = await mediator.Send(new ObterFrequenciaGeralAlunoQuery(aluno.CodigoAluno.ToString(), codigoTurma));
-                string parecerConclusivo = consolidadoConselhoClasse.ParecerConclusivoId != null && consolidadoConselhoClasse.ParecerConclusivoId > 0 ? 
-                    pareceresConclusivos.FirstOrDefault(a => a.Id == consolidadoConselhoClasse.ParecerConclusivoId).Nome : "";
+                string parecerConclusivo = consolidadoConselhoClasse.ParecerConclusivoId != null  ? pareceresConclusivos.FirstOrDefault(a => a.Id == consolidadoConselhoClasse.ParecerConclusivoId).Nome : "Sem parecer";
 
                 lista.Add(new ConselhoClasseAlunoDto()
                 {
