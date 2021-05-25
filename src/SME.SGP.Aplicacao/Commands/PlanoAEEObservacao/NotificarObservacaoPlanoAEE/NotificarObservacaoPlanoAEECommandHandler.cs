@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao
         }
 
         private string GerarBotao(string hostAplicacao, long planoAEEId)
-            => $@"<a class='btn btn-primary active' href='{hostAplicacao}relatorios/aee/plano/editar/{planoAEEId}' role='button'>
+            => $@"<a class='btn btn-primary active' href='{hostAplicacao}aee/plano/editar/{planoAEEId}' role='button'>
                 <i class='sc-jvjKQy iRIIgg fa fa-eye mr-2 py-1'></i>
                 Consultar observações</a>";
     }
