@@ -965,7 +965,7 @@ namespace SME.SGP.Dados.Repositorios
                                                inner join dre on dre.id = ue.dre_id
                                                inner join tipo_calendario tc 
                                                   on t.ano_letivo = tc.ano_letivo and tc.modalidade = @modalidadeTipoCalendario
-                                               inner join periodo_escolar pe
+                                               left join periodo_escolar pe
 	                                              on tc.id = pe.tipo_calendario_id
                                                where dre.id = @dreId
                                                  and ue.id = @ueId ");
@@ -1001,7 +1001,7 @@ namespace SME.SGP.Dados.Repositorios
                                 inner join dre on dre.id = ue.dre_id
                                 inner join tipo_calendario tc 
                                     on t.ano_letivo = tc.ano_letivo and tc.modalidade = @modalidadeTipoCalendario
-                                inner join periodo_escolar pe
+                                left join periodo_escolar pe
 	                                on tc.id = pe.tipo_calendario_id
                                 where dre.id = @dreId
                                     and ue.id = @ueId ");

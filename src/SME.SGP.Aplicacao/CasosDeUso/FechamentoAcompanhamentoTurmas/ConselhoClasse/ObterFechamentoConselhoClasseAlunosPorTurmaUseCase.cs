@@ -45,7 +45,7 @@ namespace SME.SGP.Aplicacao
             {
                 var consolidadoConselhoClasse = consolidadoConselhosClasses.FirstOrDefault(a => a.AlunoCodigo == aluno.CodigoAluno.ToString());
                 var frequenciaGlobal = await mediator.Send(new ObterFrequenciaGeralAlunoQuery(aluno.CodigoAluno.ToString(), codigoTurma));
-                string parecerConclusivo = consolidadoConselhoClasse.ParecerConclusivoId != null ? 
+                string parecerConclusivo = consolidadoConselhoClasse.ParecerConclusivoId != null && consolidadoConselhoClasse.ParecerConclusivoId > 0 ? 
                     pareceresConclusivos.FirstOrDefault(a => a.Id == consolidadoConselhoClasse.ParecerConclusivoId).Nome : "";
 
                 lista.Add(new ConselhoClasseAlunoDto()
