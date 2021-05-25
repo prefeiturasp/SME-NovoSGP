@@ -188,8 +188,8 @@ namespace SME.SGP.Dominio.Servicos
 
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
             await GerarPendenciasFechamento(fechamentoTurmaDisciplina.DisciplinaId,
-                                            turmaFechamento.CodigoTurma,
-                                            turmaFechamento.Nome,
+                                            turma.CodigoTurma,
+                                            turma.Nome,
                                             periodoEscolar.PeriodoInicio,
                                             periodoEscolar.PeriodoFim,
                                             periodoEscolar.Bimestre,
