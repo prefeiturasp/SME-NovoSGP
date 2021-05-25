@@ -424,6 +424,7 @@ namespace SME.SGP.Aplicacao
         {
             CdComponenteCurricularPai = disciplina.CodigoComponenteCurricularPai,
             CodigoComponenteCurricular = disciplina.CodigoComponenteCurricular,
+            Id = disciplina.CodigoComponenteCurricular,
             Nome = disciplina.Nome,
             Regencia = disciplina.Regencia,
             TerritorioSaber = disciplina.TerritorioSaber,
