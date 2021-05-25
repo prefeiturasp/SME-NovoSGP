@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Sentry;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -33,7 +34,9 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<bool> Handle(CalcularFrequenciaPorTurmaCommand request, CancellationToken cancellationToken)
         {
-            await repositorioProcessoExecutando.SalvarAsync(new ProcessoExecutando()
+            try
+            {
+                await repositorioProcessoExecutando.SalvarAsync(new ProcessoExecutando()
             {
                 Bimestre = request.Bimestre,
                 DisciplinaId = request.DisciplinaId,
@@ -42,8 +45,7 @@ namespace SME.SGP.Aplicacao
                 CriadoEm = HorarioBrasilia()
             });
 
-            try
-            {
+           
 
                 if (request.Alunos == null || !request.Alunos.Any())
                 {
@@ -95,6 +97,12 @@ namespace SME.SGP.Aplicacao
                 ObterFrequenciasParaRemoverAlunosSemAusencia(request, ausenciasDosAlunos, frequenciaDosAlunos, frequenciasParaRemover);
 
                 await TrataPersistencia(frequenciasParaRemover, frequenciasParaPersistir);
+            }
+
+            catch (Exception ex)
+            {
+                SentrySdk.AddBreadcrumb("Calcular frequencia por turma", "RabbitMQ");
+                SentrySdk.CaptureException(ex);
             }
             finally
             {

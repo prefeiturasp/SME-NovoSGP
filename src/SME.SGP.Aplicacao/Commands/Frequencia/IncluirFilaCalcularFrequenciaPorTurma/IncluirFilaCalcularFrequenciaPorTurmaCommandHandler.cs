@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Sentry;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -21,6 +22,8 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<bool> Handle(IncluirFilaCalcularFrequenciaPorTurmaCommand request, CancellationToken cancellationToken)
         {
+            try
+            {
             //Verificar se já há essa turma/bimestre/disciplina
             var processoNaFila = await repositorioProcessoExecutando
                 .ObterProcessoCalculoFrequenciaAsync(request.TurmaId, request.DisciplinaId, request.Bimestre, TipoProcesso.CalculoFrequenciaFilaRabbit);
@@ -57,6 +60,13 @@ namespace SME.SGP.Aplicacao
                 var comando = new CalcularFrequenciaPorTurmaCommand(request.Alunos, request.DataAula, request.TurmaId, request.DisciplinaId, request.Bimestre);
 
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaCalculoFrequenciaPorTurmaComponente, comando, Guid.NewGuid(), null));
+            }
+
+            }
+            catch (Exception ex)
+            {
+                SentrySdk.AddBreadcrumb("IncluirFilaCalcularFrequenciaPorTurmaCommand", "IncluirFilaCalcularFrequenciaPorTurmaCommand");
+                SentrySdk.CaptureException(ex);
             }
 
             return true;
