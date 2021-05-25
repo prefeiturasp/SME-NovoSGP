@@ -82,6 +82,10 @@ namespace SME.SGP.Aplicacao
 
             var retorno = new List<DetalhamentoComponentesCurricularesAlunoDto>();
 
+            var areasDoConhecimento = await ObterAreasConhecimento(disciplinasDaTurma);
+
+            var ordenacaoGrupoArea = await ObterOrdenacaoAreasConhecimento(disciplinasDaTurma, areasDoConhecimento);
+
             var gruposMatrizesNotas = new List<ConselhoClasseAlunoNotasConceitosDto>();
 
             var frequenciasAluno = await ObterFrequenciaAlunoRefatorada(disciplinasDaTurmaEol, periodoEscolar, filtro.AlunoCodigo, tipoCalendarioId, bimestre);
@@ -314,6 +318,21 @@ namespace SME.SGP.Aplicacao
             }
 
             return notasPeriodos;
+        }
+
+        private async Task<IEnumerable<AreaDoConhecimentoDto>> ObterAreasConhecimento(IEnumerable<DisciplinaDto> componentesCurriculares)
+        {
+            var listaCodigosComponentes = componentesCurriculares.Where(cc => !cc.Regencia).Select(a => a.CodigoComponenteCurricular);
+
+            return await mediator.Send(new ObterAreasConhecimentoComponenteCurricularQuery(listaCodigosComponentes.Distinct().ToArray()));
+        }
+
+        private async Task<IEnumerable<ComponenteCurricularGrupoAreaOrdenacaoDto>> ObterOrdenacaoAreasConhecimento(IEnumerable<DisciplinaDto> componentesCurriculares, IEnumerable<AreaDoConhecimentoDto> areasDoConhecimento)
+        {
+            var listaGrupoMatrizId = componentesCurriculares?.Select(a => a.GrupoMatrizId)?.Distinct().ToArray();
+            var listaAreaConhecimentoId = areasDoConhecimento?.Select(a => a.Id).ToArray();
+
+            return await mediator.Send(new ObterComponenteCurricularGrupoAreaOrdenacaoQuery(listaGrupoMatrizId, listaAreaConhecimentoId));
         }
     }
 }
