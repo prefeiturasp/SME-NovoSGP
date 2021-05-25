@@ -110,10 +110,11 @@ namespace SME.SGP.Dominio.Servicos
             }
             else 
             {
-                periodoEscolar = await mediator.Send(new ObterPeriodoEscolarePorIdQuery(fechamentoTurma.PeriodoEscolarId.Value));
+                if(fechamentoTurma.PeriodoEscolarId != null)
+                    periodoEscolar = await mediator.Send(new ObterPeriodoEscolarePorIdQuery(fechamentoTurma.PeriodoEscolarId.Value));
             }
 
-            var consolidacaoTurma = new ConsolidacaoTurmaDto(turma.Id, periodoEscolar.Bimestre);
+            var consolidacaoTurma = new ConsolidacaoTurmaDto(turma.Id, fechamentoTurma.PeriodoEscolarId != null ? periodoEscolar.Bimestre : 0);
             var mensagemParaPublicar = JsonConvert.SerializeObject(consolidacaoTurma);
 
             try
