@@ -289,7 +289,7 @@ namespace SME.SGP.Aplicacao
             var usuarioCore = await servicoEOL.ObterMeusDados(loginRecuperar);
 
             if (usuarioCore == null && usuario == null)
-                throw new NegocioException("usuário ou RF não encontrado");
+                throw new NegocioException("Usuário ou RF não encontrado");
 
             if (usuario == null)
                 usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(usuarioCore.CodigoRf, loginRecuperar, usuarioCore.Nome, usuarioCore.Email);
