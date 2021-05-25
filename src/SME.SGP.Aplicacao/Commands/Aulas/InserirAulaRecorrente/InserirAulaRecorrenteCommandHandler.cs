@@ -47,7 +47,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioNotificacaoAula = repositorioNotificacaoAula ?? throw new ArgumentNullException(nameof(repositorioNotificacaoAula));
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
-            this.policy = registry.Get<IAsyncPolicy>(PoliticaPolly.PublicaFila);
+            this.policy = registry.Get<IAsyncPolicy>(PoliticaPolly.SGP);
         }
 
         public async Task<bool> Handle(InserirAulaRecorrenteCommand request, CancellationToken cancellationToken)
