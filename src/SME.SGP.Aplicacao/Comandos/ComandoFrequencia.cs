@@ -1,8 +1,10 @@
 ﻿using MediatR;
+using Sentry;
 using SME.Background.Core;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -22,27 +24,37 @@ namespace SME.SGP.Aplicacao
             this.servicoFrequencia = servicoFrequencia ?? throw new System.ArgumentNullException(nameof(servicoFrequencia));
             this.consultasAula = consultasAula ?? throw new System.ArgumentNullException(nameof(consultasAula));
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
-            
+
         }
 
         public async Task Registrar(FrequenciaDto frequenciaDto)
         {
-            List<RegistroAusenciaAluno> registrosAusenciaAlunos = ObtemListaDeAusencias(frequenciaDto);
-            await servicoFrequencia.Registrar(frequenciaDto.AulaId, registrosAusenciaAlunos);
-
-            var alunos = frequenciaDto.ListaFrequencia.Select(a => a.CodigoAluno).ToList();
-            if (alunos == null || !alunos.Any())
+            try
             {
-                throw new NegocioException("A lista de alunos da turma e o componente curricular devem ser informados para calcular a frequência.");
+
+
+                List<RegistroAusenciaAluno> registrosAusenciaAlunos = ObtemListaDeAusencias(frequenciaDto);
+                await servicoFrequencia.Registrar(frequenciaDto.AulaId, registrosAusenciaAlunos);
+
+                var alunos = frequenciaDto.ListaFrequencia.Select(a => a.CodigoAluno).ToList();
+                if (alunos == null || !alunos.Any())
+                {
+                    throw new NegocioException("A lista de alunos da turma e o componente curricular devem ser informados para calcular a frequência.");
+                }
+
+                var aula = await consultasAula.BuscarPorId(frequenciaDto.AulaId);
+
+                var bimestre = await mediator.Send(new ObterBimestrePorTurmaCodigoQuery(aula.TurmaId, aula.DataAula));
+
+                await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(alunos, aula.DataAula, aula.TurmaId, aula.DisciplinaId, bimestre));
+
+                await mediator.Send(new ExcluirPendenciaAulaCommand(aula.Id, TipoPendencia.Frequencia));
             }
-
-            var aula = await consultasAula.BuscarPorId(frequenciaDto.AulaId);
-
-            var bimestre = await mediator.Send(new ObterBimestrePorTurmaCodigoQuery(aula.TurmaId, aula.DataAula));
-
-            await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(alunos, aula.DataAula, aula.TurmaId, aula.DisciplinaId, bimestre));            
-
-            await mediator.Send(new ExcluirPendenciaAulaCommand(aula.Id, TipoPendencia.Frequencia));
+            catch (Exception ex)
+            {
+                SentrySdk.AddBreadcrumb("Registrar Frequencia ", "Commando");
+                SentrySdk.CaptureException(ex);
+            }
         }
 
         private static List<RegistroAusenciaAluno> ObtemListaDeAusencias(FrequenciaDto frequenciaDto)
