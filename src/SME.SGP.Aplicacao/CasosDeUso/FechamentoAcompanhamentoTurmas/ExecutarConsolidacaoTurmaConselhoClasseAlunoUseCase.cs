@@ -3,7 +3,6 @@ using Sentry;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -48,15 +47,15 @@ namespace SME.SGP.Aplicacao
             if (componentesDoAluno != null && componentesDoAluno.Any())
             {
                 var turma = await mediator.Send(new ObterTurmaPorIdQuery(filtro.TurmaId));
-                
-                if(filtro.Bimestre == 0)
+
+                if (filtro.Bimestre == 0)
                 {
                     var fechamento = await mediator.Send(new ObterFechamentoPorTurmaPeriodoQuery() { TurmaId = filtro.TurmaId });
                     var conselhoClasse = await mediator.Send(new ObterConselhoClassePorFechamentoIdQuery(fechamento.Id));
                     var conselhoClasseAluno = await mediator.Send(new ObterConselhoClasseAlunoPorAlunoCodigoConselhoIdQuery(conselhoClasse.Id, filtro.AlunoCodigo));
-                    consolidadoTurmaAluno.ParecerConclusivoId = conselhoClasseAluno.ConselhoClasseParecerId;
+                    consolidadoTurmaAluno.ParecerConclusivoId = conselhoClasseAluno != null ? conselhoClasseAluno.ConselhoClasseParecerId : null;
                 }
-                
+
 
                 string[] turmasCodigos;
                 if (turma.DeveVerificarRegraRegulares())
@@ -81,12 +80,13 @@ namespace SME.SGP.Aplicacao
                     statusNovo = SituacaoConselhoClasse.Concluido;
             }
 
-            //if (consolidadoTurmaAluno.Id == 0 || consolidadoTurmaAluno.Status != statusNovo)
-            //{
+
             if (consolidadoTurmaAluno.Status != statusNovo)
                 consolidadoTurmaAluno.Status = statusNovo;
+
+            consolidadoTurmaAluno.DataAtualizacao = DateTime.Now;
+
             await repositorioConselhoClasseConsolidado.SalvarAsync(consolidadoTurmaAluno);
-            //}
 
             return true;
         }
