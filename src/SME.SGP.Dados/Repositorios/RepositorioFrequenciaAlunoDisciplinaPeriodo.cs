@@ -15,12 +15,10 @@ namespace SME.SGP.Dados.Repositorios
     public class RepositorioFrequenciaAlunoDisciplinaPeriodo : RepositorioBase<FrequenciaAluno>, IRepositorioFrequenciaAlunoDisciplinaPeriodo
     {
         private readonly string connectionString;
-        private readonly IUnitOfWork unitOfWork;
 
-        public RepositorioFrequenciaAlunoDisciplinaPeriodo(ISgpContext database, IUnitOfWork unitOfWork, IConfiguration configuration) : base(database)
+        public RepositorioFrequenciaAlunoDisciplinaPeriodo(ISgpContext database, IConfiguration configuration) : base(database)
         {
             this.connectionString = configuration.GetConnectionString("SGP_Postgres");
-            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
         private String BuildQueryObter()
@@ -283,36 +281,30 @@ namespace SME.SGP.Dados.Repositorios
                             from
                             stdin (FORMAT binary)";
 
-            using (var conexao = new NpgsqlConnection(connectionString))
+            using (var writer = ((NpgsqlConnection)database.Conexao).BeginBinaryImport(sql))
             {
-                await conexao.OpenAsync();
-                using (var writer = conexao.BeginBinaryImport(sql))
+                foreach (var frequencia in entidades)
                 {
-                    foreach (var frequencia in entidades)
-                    {
-                        writer.StartRow();
-                        writer.Write(frequencia.CodigoAluno, NpgsqlDbType.Varchar);
-                        writer.Write((int)frequencia.Tipo, NpgsqlDbType.Integer);
-                        writer.Write(frequencia.DisciplinaId, NpgsqlDbType.Varchar);
-                        writer.Write(frequencia.PeriodoInicio, NpgsqlDbType.Timestamp);
-                        writer.Write(frequencia.PeriodoFim, NpgsqlDbType.Timestamp);
-                        writer.Write(frequencia.Bimestre, NpgsqlDbType.Integer);
-                        writer.Write(frequencia.TotalAulas, NpgsqlDbType.Integer);
-                        writer.Write(frequencia.TotalAusencias, NpgsqlDbType.Integer);
-                        writer.Write(frequencia.CriadoEm, NpgsqlDbType.Timestamp);
-                        writer.Write(database.UsuarioLogadoNomeCompleto, NpgsqlDbType.Varchar);
-                        writer.Write(database.UsuarioLogadoRF, NpgsqlDbType.Varchar);
-                        writer.Write(frequencia.TotalCompensacoes, NpgsqlDbType.Integer);
-                        writer.Write(frequencia.TurmaId, NpgsqlDbType.Varchar);
+                    writer.StartRow();
+                    writer.Write(frequencia.CodigoAluno, NpgsqlDbType.Varchar);
+                    writer.Write((int)frequencia.Tipo, NpgsqlDbType.Integer);
+                    writer.Write(frequencia.DisciplinaId, NpgsqlDbType.Varchar);
+                    writer.Write(frequencia.PeriodoInicio, NpgsqlDbType.Timestamp);
+                    writer.Write(frequencia.PeriodoFim, NpgsqlDbType.Timestamp);
+                    writer.Write(frequencia.Bimestre, NpgsqlDbType.Integer);
+                    writer.Write(frequencia.TotalAulas, NpgsqlDbType.Integer);
+                    writer.Write(frequencia.TotalAusencias, NpgsqlDbType.Integer);
+                    writer.Write(frequencia.CriadoEm, NpgsqlDbType.Timestamp);
+                    writer.Write(database.UsuarioLogadoNomeCompleto, NpgsqlDbType.Varchar);
+                    writer.Write(database.UsuarioLogadoRF, NpgsqlDbType.Varchar);
+                    writer.Write(frequencia.TotalCompensacoes, NpgsqlDbType.Integer);
+                    writer.Write(frequencia.TurmaId, NpgsqlDbType.Varchar);
 
-                        if (frequencia.PeriodoEscolarId.HasValue)
-                            writer.Write((long)frequencia.PeriodoEscolarId, NpgsqlDbType.Bigint);
-                    }
-                    await Task.FromResult(writer.Complete());
-                    conexao.Close();
+                    if (frequencia.PeriodoEscolarId.HasValue)
+                        writer.Write((long)frequencia.PeriodoEscolarId, NpgsqlDbType.Bigint);
                 }
+                await Task.FromResult(writer.Complete());
             }
-
         }
 
         public async Task RemoverVariosAsync(long[] ids)
@@ -338,6 +330,17 @@ namespace SME.SGP.Dados.Repositorios
                     throw;
                 }                
             }
+        }
+
+        public async Task RemoverFrequenciaGeralAlunos(string[] alunos, string turmaCodigo, long periodoEscolarId)
+        {
+            var query = @"delete from frequencia_aluno 
+                        where tipo = 2 
+                          and turma_id = @turmaCodigo 
+                          and codigo_aluno = any(@alunos) 
+                          and periodo_escolar_id = @periodoEscolarId";
+
+            await database.Conexao.ExecuteAsync(query, new { alunos, turmaCodigo, periodoEscolarId });
         }
     }
 }
