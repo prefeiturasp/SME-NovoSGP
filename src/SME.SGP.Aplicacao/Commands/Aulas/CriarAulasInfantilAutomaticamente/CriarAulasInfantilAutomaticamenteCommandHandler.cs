@@ -172,8 +172,7 @@ namespace SME.SGP.Aplicacao
 
         private IList<DiaLetivoDto> DeterminaDiasLetivos(IEnumerable<DiaLetivoDto> diasDoPeriodo, Turma turma)
         {
-            return diasDoPeriodo.Where(c => (c.CriarAulaUe(turma.Ue.CodigoUe) && c.EhLetivo) ||
-                                       (c.UesIds.Any() && !c.UesIds.Contains(turma.Ue.CodigoUe) && c.EhNaoLetivo) ||
+            return diasDoPeriodo.Where(c => (c.CriarAulaUe(turma.Ue.CodigoUe) && c.EhLetivo) ||                                       
                                        (!c.DreIds.Any() && !c.UesIds.Any() && c.EhLetivo) ||
                                        c.CriarAulaSME())?.OrderBy(c => c.Data)?.ToList();
         }

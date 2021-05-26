@@ -1,5 +1,4 @@
 ﻿using Dapper;
-using Microsoft.Extensions.Configuration;
 using Npgsql;
 using NpgsqlTypes;
 using SME.SGP.Dominio;
@@ -15,10 +14,8 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioFrequenciaAlunoDisciplinaPeriodo : RepositorioBase<FrequenciaAluno>, IRepositorioFrequenciaAlunoDisciplinaPeriodo
     {
-        private readonly string connectionString;
-        public RepositorioFrequenciaAlunoDisciplinaPeriodo(ISgpContext database, IConfiguration configuration) : base(database)
+        public RepositorioFrequenciaAlunoDisciplinaPeriodo(ISgpContext database) : base(database)
         {
-            this.connectionString = configuration.GetConnectionString("SGP_Postgres");
         }
 
         private string BuildQueryObter()
@@ -257,7 +254,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<FrequenciaAluno>(sql, parametros);
         }
 
-     
+
         public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaGeralAlunoPorAnoModalidadeSemestre(string alunoCodigo, int anoTurma, long tipoCalendarioId)
         {
             var query = new StringBuilder($@"select fa.* 
@@ -316,7 +313,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<FrequenciaAlunoDto>(query, new { turmaCodigo });
         }
 
-        public async Task<IEnumerable<FrequenciaAluno>> ObterPorAlunosAsync(IEnumerable<string> alunosCodigo, IEnumerable<long?> periodosEscolaresId,  string turmaId)
+        public async Task<IEnumerable<FrequenciaAluno>> ObterPorAlunosAsync(IEnumerable<string> alunosCodigo, IEnumerable<long?> periodosEscolaresId, string turmaId)
         {
             var query = new StringBuilder(@"select
 	                        *
@@ -325,7 +322,7 @@ namespace SME.SGP.Dados.Repositorios
                         where
 	                        codigo_aluno = any(@alunosCodigo)	                        	                        
                             and turma_id = @turmaId ");
-            if ( periodosEscolaresId != null && periodosEscolaresId.AsList().Count > 0)
+            if (periodosEscolaresId != null && periodosEscolaresId.AsList().Count > 0)
             {
                 query.AppendLine("and periodo_escolar_id = any(@periodosEscolaresId)");
             }
@@ -333,7 +330,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.QueryAsync<FrequenciaAluno>(query.ToString(), new
             {
                 alunosCodigo,
-                periodosEscolaresId,             
+                periodosEscolaresId,
                 turmaId
             });
         }
@@ -357,50 +354,42 @@ namespace SME.SGP.Dados.Repositorios
                                         periodo_escolar_id)
                             from
                             stdin (FORMAT binary)";
-            using (var conexao = new NpgsqlConnection(connectionString))
+
+            using (var writer = ((NpgsqlConnection)database.Conexao).BeginBinaryImport(sql))
             {
-                await conexao.OpenAsync();
-                using (var writer = conexao.BeginBinaryImport(sql))
+                foreach (var frequencia in entidades)
                 {
-                    foreach (var frequencia in entidades)
-                    {
-                        writer.StartRow();
-                        writer.Write(frequencia.CodigoAluno, NpgsqlDbType.Varchar);
-                        writer.Write((int)frequencia.Tipo, NpgsqlDbType.Integer);
-                        writer.Write(frequencia.DisciplinaId, NpgsqlDbType.Varchar);
-                        writer.Write(frequencia.PeriodoInicio, NpgsqlDbType.Timestamp);
-                        writer.Write(frequencia.PeriodoFim, NpgsqlDbType.Timestamp);
-                        writer.Write(frequencia.Bimestre, NpgsqlDbType.Integer);
-                        writer.Write(frequencia.TotalAulas, NpgsqlDbType.Integer);
-                        writer.Write(frequencia.TotalAusencias, NpgsqlDbType.Integer);
-                        writer.Write(frequencia.CriadoEm, NpgsqlDbType.Timestamp);
-                        writer.Write(database.UsuarioLogadoNomeCompleto, NpgsqlDbType.Varchar);
-                        writer.Write(database.UsuarioLogadoRF, NpgsqlDbType.Varchar);
-                        writer.Write(frequencia.TotalCompensacoes, NpgsqlDbType.Integer);
-                        writer.Write(frequencia.TurmaId, NpgsqlDbType.Varchar);
+                    writer.StartRow();
+                    writer.Write(frequencia.CodigoAluno, NpgsqlDbType.Varchar);
+                    writer.Write((int)frequencia.Tipo, NpgsqlDbType.Integer);
+                    writer.Write(frequencia.DisciplinaId, NpgsqlDbType.Varchar);
+                    writer.Write(frequencia.PeriodoInicio, NpgsqlDbType.Timestamp);
+                    writer.Write(frequencia.PeriodoFim, NpgsqlDbType.Timestamp);
+                    writer.Write(frequencia.Bimestre, NpgsqlDbType.Integer);
+                    writer.Write(frequencia.TotalAulas, NpgsqlDbType.Integer);
+                    writer.Write(frequencia.TotalAusencias, NpgsqlDbType.Integer);
+                    writer.Write(frequencia.CriadoEm, NpgsqlDbType.Timestamp);
+                    writer.Write(database.UsuarioLogadoNomeCompleto, NpgsqlDbType.Varchar);
+                    writer.Write(database.UsuarioLogadoRF, NpgsqlDbType.Varchar);
+                    writer.Write(frequencia.TotalCompensacoes, NpgsqlDbType.Integer);
+                    writer.Write(frequencia.TurmaId, NpgsqlDbType.Varchar);
 
-                        if (frequencia.PeriodoEscolarId.HasValue)
-                            writer.Write((long)frequencia.PeriodoEscolarId, NpgsqlDbType.Bigint);
+                    if (frequencia.PeriodoEscolarId.HasValue)
+                        writer.Write((long)frequencia.PeriodoEscolarId, NpgsqlDbType.Bigint);
 
-                    }
-                    await Task.FromResult(writer.Complete());
-                    conexao.Close();
                 }
+                await Task.FromResult(writer.Complete());
             }
         }
 
         public async Task RemoverVariosAsync(long[] ids)
         {
             var query = @"delete from frequencia_aluno where id = any(@ids)";
-            using (var conexao = new NpgsqlConnection(connectionString))
+
+            await database.Conexao.ExecuteAsync(query, new
             {
-                await conexao.OpenAsync();
-                await conexao.ExecuteAsync(query, new
-                {
-                    ids
-                });
-                conexao.Close();
-            }
+                ids
+            });
         }
 
         public async Task<FrequenciaAluno> ObterPorAlunoDataTurmasAsync(string codigoAluno, DateTime dataAtual, TipoFrequenciaAluno tipoFrequencia, string[] turmasCodigo, string disciplinaId = "")
@@ -431,7 +420,7 @@ namespace SME.SGP.Dados.Repositorios
         }
 
         public async Task<IEnumerable<FrequenciaAluno>> ObterPorAlunoTurmasDisciplinasDataAsync(string codigoAluno, TipoFrequenciaAluno tipoFrequencia,
-               string[] disciplinasId, string[] turmasCodigo, int[] bimestres)
+                     string[] disciplinasId, string[] turmasCodigo, int[] bimestres)
         {
             var query = new StringBuilder(@"select fa.*
                         from frequencia_aluno fa
