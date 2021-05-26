@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.Background.Core;
 using SME.SGP.Api.Filtros;
@@ -7,6 +8,7 @@ using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -105,6 +107,17 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> CalcularFrequencia([FromBody] CalcularFrequenciaDto calcularFrequenciaDto, [FromServices] ICalculoFrequenciaTurmaDisciplinaUseCase calculoFrequenciaTurmaDisciplinaUseCase)
         {
             await calculoFrequenciaTurmaDisciplinaUseCase.IncluirCalculoFila(calcularFrequenciaDto);
+            return Ok();
+        }
+
+
+        [HttpPost("frequencias/conciliar")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(bool), 200)]
+        public async Task<IActionResult> ConciliarFrequencia([FromQuery] DateTime dataReferencia, [FromServices] IConciliacaoFrequenciaTurmasUseCase useCase)
+        {
+            await useCase.Executar(dataReferencia);
             return Ok();
         }
     }

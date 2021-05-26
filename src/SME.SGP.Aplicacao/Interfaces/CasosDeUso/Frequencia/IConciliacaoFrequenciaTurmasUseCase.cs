@@ -7,6 +7,6 @@ namespace SME.SGP.Aplicacao.Interfaces
 {
     public interface IConciliacaoFrequenciaTurmasUseCase
     {
-        Task Executar();
+        Task Executar(DateTime? dataPeriodo = null);
     }
 }
