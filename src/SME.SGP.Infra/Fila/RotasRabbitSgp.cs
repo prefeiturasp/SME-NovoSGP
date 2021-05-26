@@ -59,45 +59,45 @@
 
         public const string RotaValidacaoAusenciaConciliacaoFrequenciaTurma = "sgp.frequencia.turma.conciliacao.validar";        
 
-        public static string RotaNotificacaoRegistroConclusaoEncaminhamentoAEE => "notificacao.registro.conclusao.encaminhamentoaee";
-        public static string RotaNotificacaoEncerramentoEncaminhamentoAEE => "notificacao.encerramento.encaminhamentoaee";
-        public static string RotaNotificacaoDevolucaoEncaminhamentoAEE => "notificacao.devolucao.encaminhamentoaee";
+        public const string RotaNotificacaoRegistroConclusaoEncaminhamentoAEE = "notificacao.registro.conclusao.encaminhamentoaee";
+        public const string RotaNotificacaoEncerramentoEncaminhamentoAEE = "notificacao.encerramento.encaminhamentoaee";
+        public const string RotaNotificacaoDevolucaoEncaminhamentoAEE = "notificacao.devolucao.encaminhamentoaee";
 
-        public static string EncerrarPlanoAEEEstudantesInativos => "plano.aee.encerrar.inativos";
-        public static string GerarPendenciaValidadePlanoAEE => "plano.aee.pendencia.validade";
+        public const string EncerrarPlanoAEEEstudantesInativos = "plano.aee.encerrar.inativos";
+        public const string GerarPendenciaValidadePlanoAEE = "plano.aee.pendencia.validade";
 
-        public static string NotificarPlanoAEEExpirado => "plano.aee.notificar.expirados";
-        public static string NotificarPlanoAEEEmAberto => "plano.aee.notificar.emaberto";
-        public static string NotificarPlanoAEEReestruturado => "plano.aee.notificar.reestruturado";
-        public static string NotificarCriacaoPlanoAEE => "plano.aee.notificar.criacao";
-        public static string NotificarPlanoAEEEncerrado => "plano.aee.notificar.encerramento";
-        public static string RotaNotificacaoRegistroItineranciaInseridoUseCase => "notificacao.registro.itinerancia.inserido";
-        public static string SincronizaEstruturaInstitucionalUes => "sincroniza.estrtura.institucional.ues";
-        public static string SincronizaEstruturaInstitucionalDreSync => "sgp.sincronizacao.institucional.dre.sync";
-        public static string SincronizaEstruturaInstitucionalDreTratar => "sgp.sincronizacao.institucional.dre.tratar";
-        public static string SincronizaEstruturaInstitucionalUeTratar => "sgp.sincronizacao.institucional.ue.tratar";
-        public static string SincronizaEstruturaInstitucionalTurmasSync => "sgp.sincronizacao.institucional.turmas.sync";
-        public static string SincronizaEstruturaInstitucionalTurmaTratar => "sgp.sincronizacao.institucional.turma.tratar";
+        public const string NotificarPlanoAEEExpirado = "plano.aee.notificar.expirados";
+        public const string NotificarPlanoAEEEmAberto = "plano.aee.notificar.emaberto";
+        public const string NotificarPlanoAEEReestruturado = "plano.aee.notificar.reestruturado";
+        public const string NotificarCriacaoPlanoAEE = "plano.aee.notificar.criacao";
+        public const string NotificarPlanoAEEEncerrado = "plano.aee.notificar.encerramento";
+        public const string RotaNotificacaoRegistroItineranciaInseridoUseCase = "notificacao.registro.itinerancia.inserido";
+        public const string SincronizaEstruturaInstitucionalUes = "sincroniza.estrtura.institucional.ues";
+        public const string SincronizaEstruturaInstitucionalDreSync = "sgp.sincronizacao.institucional.dre.sync";
+        public const string SincronizaEstruturaInstitucionalDreTratar = "sgp.sincronizacao.institucional.dre.tratar";
+        public const string SincronizaEstruturaInstitucionalUeTratar = "sgp.sincronizacao.institucional.ue.tratar";
+        public const string SincronizaEstruturaInstitucionalTurmasSync = "sgp.sincronizacao.institucional.turmas.sync";
+        public const string SincronizaEstruturaInstitucionalTurmaTratar = "sgp.sincronizacao.institucional.turma.tratar";
 
-        public static string SincronizaEstruturaInstitucionalTipoEscolaSync => "sgp.sincronizacao.institucional.tipoescola.sync";
-        public static string SincronizaEstruturaInstitucionalTipoEscolaTratar => "sgp.sincronizacao.institucional.tipoescola.tratar";
+        public const string SincronizaEstruturaInstitucionalTipoEscolaSync = "sgp.sincronizacao.institucional.tipoescola.sync";
+        public const string SincronizaEstruturaInstitucionalTipoEscolaTratar = "sgp.sincronizacao.institucional.tipoescola.tratar";
 
-        public static string SincronizaEstruturaInstitucionalCicloSync => "sgp.sincronizacao.institucional.ciclo.sync";
-        public static string SincronizaEstruturaInstitucionalCicloTratar => "sgp.sincronizacao.institucional.ciclo.tratar";
+        public const string SincronizaEstruturaInstitucionalCicloSync = "sgp.sincronizacao.institucional.ciclo.sync";
+        public const string SincronizaEstruturaInstitucionalCicloTratar = "sgp.sincronizacao.institucional.ciclo.tratar";
 
-        public static string ConsolidacaoFrequenciasTurmasCarregar => "sgp.frequencia.turma.carregar";
-        public static string ConsolidarFrequenciasTurmasNoAno => "sgp.frequencia.turma.ano.consolidar";
-        public static string ConsolidarFrequenciasPorTurma => "sgp.frequencia.turma.consolidar";
+        public const string ConsolidacaoFrequenciasTurmasCarregar = "sgp.frequencia.turma.carregar";
+        public const string ConsolidarFrequenciasTurmasNoAno = "sgp.frequencia.turma.ano.consolidar";
+        public const string ConsolidarFrequenciasPorTurma = "sgp.frequencia.turma.consolidar";
 
-        public static string ConsolidarGeralSync => "sgp.consolidacao.geral.sync";
-        public static string ConsolidarTurmaSync => "sgp.consolidacao.turma.sync";
-        public static string ConsolidarTurmaFechamentoSync => "sgp.consolidacao.turma.fechamento.sync";
-        public static string ConsolidarTurmaFechamentoComponenteTratar => "sgp.consolidacao.turma.fechamento.componente.tratar";
-        public static string ConsolidarTurmaConselhoClasseSync => "sgp.consolidacao.turma.conselhoclasse.sync";
-        public static string ConsolidarTurmaConselhoClasseAlunoTratar => "sgp.consolidacao.turma.conselhoclasse.aluno.tratar";
-        public static string ConsolidacaoMatriculasTurmasDreCarregar => "sgp.matricula.turma.consolidar.dre.carregar";
-        public static string SincronizarDresMatriculasTurmas => "sgp.matricula.turma.consolidar.dre.sync";
-        public static string ConsolidacaoMatriculasTurmasCarregar => "sgp.matricula.turma.carregar";
-        public static string ConsolidacaoMatriculasTurmasSync => "sgp.matricula.turma.sync";
+        public const string ConsolidacaoMatriculasTurmasDreCarregar = "sgp.matricula.turma.consolidar.dre.carregar";
+        public const string SincronizarDresMatriculasTurmas = "sgp.matricula.turma.consolidar.dre.sync";
+        public const string ConsolidacaoMatriculasTurmasCarregar = "sgp.matricula.turma.carregar";
+        public const string ConsolidacaoMatriculasTurmasSync = "sgp.matricula.turma.sync";
+        public const string ConsolidarGeralSync = "sgp.consolidacao.geral.sync";
+        public const string ConsolidarTurmaSync = "sgp.consolidacao.turma.sync";
+        public const string ConsolidarTurmaFechamentoSync = "sgp.consolidacao.turma.fechamento.sync";
+        public const string ConsolidarTurmaFechamentoComponenteTratar = "sgp.consolidacao.turma.fechamento.componente.tratar";
+        public const string ConsolidarTurmaConselhoClasseSync = "sgp.consolidacao.turma.conselhoclasse.sync";
+        public const string ConsolidarTurmaConselhoClasseAlunoTratar = "sgp.consolidacao.turma.conselhoclasse.aluno.tratar";
     }
 }
