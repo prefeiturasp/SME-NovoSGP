@@ -1,4 +1,7 @@
 ﻿using MediatR;
+using Polly;
+using Polly.Registry;
+using SME.GoogleClassroom.Infra;
 using Sentry;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
@@ -20,10 +23,11 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioProcessoExecutando repositorioProcessoExecutando;
         private readonly IUnitOfWork unitOfWork;
         private readonly IMediator mediator;
+        private readonly IAsyncPolicy policy;
 
         public CalcularFrequenciaPorTurmaCommandHandler(IRepositorioRegistroAusenciaAluno repositorioRegistroAusenciaAluno,
             IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo, IRepositorioCompensacaoAusenciaAluno repositorioCompensacaoAusenciaAluno,
-            IRepositorioProcessoExecutando repositorioProcessoExecutando, IUnitOfWork unitOfWork, IMediator mediator)
+            IRepositorioProcessoExecutando repositorioProcessoExecutando, IUnitOfWork unitOfWork, IMediator mediator, IReadOnlyPolicyRegistry<string> registry)
         {
             this.repositorioRegistroAusenciaAluno = repositorioRegistroAusenciaAluno ?? throw new ArgumentNullException(nameof(repositorioRegistroAusenciaAluno));
             this.repositorioFrequenciaAlunoDisciplinaPeriodo = repositorioFrequenciaAlunoDisciplinaPeriodo ?? throw new ArgumentNullException(nameof(repositorioFrequenciaAlunoDisciplinaPeriodo));
@@ -31,7 +35,9 @@ namespace SME.SGP.Aplicacao
             this.repositorioProcessoExecutando = repositorioProcessoExecutando ?? throw new ArgumentNullException(nameof(repositorioProcessoExecutando));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            this.policy = registry.Get<IAsyncPolicy>(PoliticaPolly.SGP);
         }
+
         public async Task<bool> Handle(CalcularFrequenciaPorTurmaCommand request, CancellationToken cancellationToken)
         {
             try
@@ -89,7 +95,6 @@ namespace SME.SGP.Aplicacao
                         TrataFrequenciaAlunoComponente(request, frequenciaDosAlunos, frequenciasParaPersistir, totalAulasNaDisciplina, totalCompensacoesDisciplinaAlunos, codigoAluno, ausenciasDoAluno);
                         TrataFrequenciaAlunoGlobal(request, frequenciaDosAlunos, frequenciasParaPersistir, totalAulasDaTurmaGeral, totalCompensacoesDisciplinaAlunos, codigoAluno, ausenciasDoAluno);
                     }
-
                 }
 
                 ObterFrequenciasParaExcluirGeral(request, frequenciaDosAlunos, frequenciasParaRemover, frequenciasParaPersistir);
@@ -118,12 +123,12 @@ namespace SME.SGP.Aplicacao
         {
             var codigoAlunosParaPersistir = frequenciasParaPersistir.Select(a => a.CodigoAluno).Distinct().ToList();
 
-            var frequenciasDaDisciplinaParaRemover = frequenciaDosAlunos.Where(a => a.DisciplinaId == request.DisciplinaId &&
-            a.Tipo == TipoFrequenciaAluno.PorDisciplina &&
-           codigoAlunosParaPersistir.Contains(a.CodigoAluno)).ToList();
+            var frequenciasDaDisciplinaParaRemover = frequenciaDosAlunos.Where(a => a.DisciplinaId == request.DisciplinaId
+                                                                                    && a.Tipo == TipoFrequenciaAluno.PorDisciplina
+                                                                                    && codigoAlunosParaPersistir.Contains(a.CodigoAluno)).ToList();
 
-            var frequenciasGlobaisParaRemover = frequenciaDosAlunos.Where(a => a.Tipo == TipoFrequenciaAluno.Geral &&
-           codigoAlunosParaPersistir.Contains(a.CodigoAluno)).ToList();
+            var frequenciasGlobaisParaRemover = frequenciaDosAlunos.Where(a => a.Tipo == TipoFrequenciaAluno.Geral
+                                                                               && codigoAlunosParaPersistir.Contains(a.CodigoAluno)).ToList();
 
             frequenciasParaRemover.AddRange(frequenciasDaDisciplinaParaRemover);
             frequenciasParaRemover.AddRange(frequenciasGlobaisParaRemover);
@@ -131,19 +136,13 @@ namespace SME.SGP.Aplicacao
 
         private static void ObterFrequenciasParaRemoverAlunosSemAusencia(CalcularFrequenciaPorTurmaCommand request, IEnumerable<AusenciaPorDisciplinaAlunoDto> ausenciasDosAlunos, IEnumerable<FrequenciaAluno> frequenciaDosAlunos, List<FrequenciaAluno> frequenciasParaRemover)
         {
-            var alunosParaTratar = ausenciasDosAlunos.Select(a => a.AlunoCodigo)?.Distinct();
-            IEnumerable<string> alunosSemAusencia;
+            var alunosSemAusencia = frequenciaDosAlunos.Where(f => f.Tipo == TipoFrequenciaAluno.PorDisciplina && 
+                                                                   !ausenciasDosAlunos.Any(a => a.AlunoCodigo == f.CodigoAluno &&
+                                                                                                a.ComponenteCurricularId == f.DisciplinaId &&
+                                                                                                a.PeriodoEscolarId == f.PeriodoEscolarId)).ToList();
 
-            if (alunosParaTratar.Any())
-            {
-                alunosSemAusencia = request.Alunos.Where(a => !alunosParaTratar.Contains(a));
-            }
-            else
-            {
-                alunosSemAusencia = request.Alunos;
-            }
-
-            frequenciasParaRemover.AddRange(frequenciaDosAlunos.Where(a => alunosSemAusencia.Contains(a.CodigoAluno)).ToList());
+            if (alunosSemAusencia != null && alunosSemAusencia.Any())
+                frequenciasParaRemover.AddRange(alunosSemAusencia);
         }
 
         private void TrataFrequenciaAlunoGlobal(CalcularFrequenciaPorTurmaCommand request, IEnumerable<FrequenciaAluno> frequenciaDosAlunos, List<FrequenciaAluno> frequenciasParaPersistir, int totalAulasDaTurmaGeral, IEnumerable<CompensacaoAusenciaAlunoCalculoFrequenciaDto> totalCompensacoesDisciplinaAlunos, string codigoAluno, List<AusenciaPorDisciplinaAlunoDto> ausenciasDoAluno)
@@ -176,7 +175,6 @@ namespace SME.SGP.Aplicacao
                   .ToList());
             }
 
-          
             if (frequenciasParaRemover.Any())
             {
                 idsParaRemover.AddRange(frequenciasParaRemover
@@ -187,15 +185,26 @@ namespace SME.SGP.Aplicacao
 
             var idsFinaisParaRemover = idsParaRemover.Distinct().ToArray();
 
-            
-            //TODO: BOTAR EM TRANSAÇÃO
-            if (idsFinaisParaRemover != null && idsFinaisParaRemover.Any())
-                await repositorioFrequenciaAlunoDisciplinaPeriodo.RemoverVariosAsync(idsFinaisParaRemover);
+            await policy.ExecuteAsync(() => Persistir(idsFinaisParaRemover, frequenciasParaPersistir));
+        }
 
-            if (frequenciasParaPersistir != null && frequenciasParaPersistir.Any())
-                await repositorioFrequenciaAlunoDisciplinaPeriodo.SalvarVariosAsync(frequenciasParaPersistir);
+        private async Task Persistir(long[] idsFinaisParaRemover, List<FrequenciaAluno> frequenciasParaPersistir)
+        {
+            unitOfWork.IniciarTransacao();
+            try
+            {
+                if (idsFinaisParaRemover != null && idsFinaisParaRemover.Any())
+                    await repositorioFrequenciaAlunoDisciplinaPeriodo.RemoverVariosAsync(idsFinaisParaRemover);
 
-            
+                if (frequenciasParaPersistir != null && frequenciasParaPersistir.Any())
+                    await repositorioFrequenciaAlunoDisciplinaPeriodo.SalvarVariosAsync(frequenciasParaPersistir);
+
+                unitOfWork.PersistirTransacao();
+            }
+            catch(Exception)
+            {
+                unitOfWork.Rollback();
+            }
         }
 
         private FrequenciaAluno TrataFrequenciaPorDisciplinaAluno(string alunoCodigo, int totalAulasNaDisciplina, IEnumerable<Infra.AusenciaPorDisciplinaAlunoDto> ausenciasDosAlunos,
