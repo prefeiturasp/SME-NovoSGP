@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
                     Ano = (int)item.Ano
                 });
             }
-            return modalidadesPorAnoRetornoDto.OrderBy(a => a.ModalidadeAno);
+            return modalidadesPorAnoRetornoDto.OrderBy(a => a.Ano);
         }
     }
 }

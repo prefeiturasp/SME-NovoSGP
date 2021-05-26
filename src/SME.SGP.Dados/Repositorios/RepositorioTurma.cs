@@ -1169,7 +1169,7 @@ namespace SME.SGP.Dados.Repositorios
 	                                             union
 	                                            select case 
                                                        when t.tipo_turma = 3 then 'Turmas de programa' 
-                                                       when t.tipo_turma = 2 then 'Educação física'
+                                                       when t.tipo_turma = 2 then 'Ed. Física'
                                                        else 'Itinerário' end AS descricao,
 		                                               count(t.id) as quantidade
 	                                              from turma t 

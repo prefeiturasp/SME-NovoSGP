@@ -22,7 +22,7 @@ namespace SME.SGP.Dominio
         Oito = 8,
         [Display(ShortName = "9")]
         Nove = 9,
-        [Display(ShortName = "Educação física")]
+        [Display(ShortName = "Ed. Física")]
         EducacaoFisica = 200,
         [Display(ShortName = "Turmas de programa")]
         Programa = 300,
