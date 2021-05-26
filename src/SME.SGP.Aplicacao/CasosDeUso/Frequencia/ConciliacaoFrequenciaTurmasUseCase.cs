@@ -13,7 +13,12 @@ namespace SME.SGP.Aplicacao
 
         public async Task Executar()
         {
-            await mediator.Send(new ConciliacaoFrequenciaTurmasCommand(DateTime.Now));
+            await Executar(DateTime.Now);
+        }
+
+        public async Task Executar(DateTime dataPeriodo)
+        {
+            await mediator.Send(new ConciliacaoFrequenciaTurmasCommand(dataPeriodo));
         }
     }
 }
