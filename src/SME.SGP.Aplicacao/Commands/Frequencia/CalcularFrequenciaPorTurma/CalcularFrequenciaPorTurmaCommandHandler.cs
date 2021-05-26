@@ -20,7 +20,6 @@ namespace SME.SGP.Aplicacao
         public readonly IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo;
         private readonly IRepositorioCompensacaoAusenciaAluno repositorioCompensacaoAusenciaAluno;
         private readonly IRepositorioProcessoExecutando repositorioProcessoExecutando;
-        private readonly IUnitOfWork unitOfWork;
         private readonly IMediator mediator;
         private readonly IAsyncPolicy policy;
 
@@ -32,7 +31,6 @@ namespace SME.SGP.Aplicacao
             this.repositorioFrequenciaAlunoDisciplinaPeriodo = repositorioFrequenciaAlunoDisciplinaPeriodo ?? throw new ArgumentNullException(nameof(repositorioFrequenciaAlunoDisciplinaPeriodo));
             this.repositorioCompensacaoAusenciaAluno = repositorioCompensacaoAusenciaAluno ?? throw new ArgumentNullException(nameof(repositorioCompensacaoAusenciaAluno));
             this.repositorioProcessoExecutando = repositorioProcessoExecutando ?? throw new ArgumentNullException(nameof(repositorioProcessoExecutando));
-            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.policy = registry.Get<IAsyncPolicy>(PoliticaPolly.SGP);
         }
@@ -185,32 +183,12 @@ namespace SME.SGP.Aplicacao
 
             if (idsFinaisParaRemover != null && idsFinaisParaRemover.Any())
             {
-                try
-                {
-                    unitOfWork.IniciarTransacao();
-                    await repositorioFrequenciaAlunoDisciplinaPeriodo.RemoverVariosAsync(idsFinaisParaRemover);
-                    unitOfWork.PersistirTransacao();
-                }
-                catch (Exception)
-                {
-                    unitOfWork.Rollback();
-                    throw;
-                }
+                await repositorioFrequenciaAlunoDisciplinaPeriodo.RemoverVariosAsync(idsFinaisParaRemover);
             }
 
             if (frequenciasParaPersistir != null && frequenciasParaPersistir.Any())
             {
-                try
-                {
-                    unitOfWork.IniciarTransacao();
-                    await repositorioFrequenciaAlunoDisciplinaPeriodo.SalvarVariosAsync(frequenciasParaPersistir);
-                    unitOfWork.PersistirTransacao();
-                }
-                catch (Exception)
-                {
-                    unitOfWork.Rollback();
-                    throw;
-                }
+                await repositorioFrequenciaAlunoDisciplinaPeriodo.SalvarVariosAsync(frequenciasParaPersistir);
             }
         }
 
