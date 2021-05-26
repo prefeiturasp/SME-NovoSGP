@@ -209,7 +209,7 @@ namespace SME.SGP.Aplicacao
                     throw;
                 }
 
-                await repositorioFrequenciaAlunoDisciplinaPeriodo.RemoverFrequenciaGeralDuplicadas(alunos, turmaCodigo, periodoEscolarId);
+                await repositorioFrequenciaAlunoDisciplinaPeriodo.RemoverFrequenciasDuplicadas(alunos, turmaCodigo, periodoEscolarId);
             }
         }
 

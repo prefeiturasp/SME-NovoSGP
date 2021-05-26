@@ -7,6 +7,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -343,24 +344,38 @@ namespace SME.SGP.Dados.Repositorios
             await database.Conexao.ExecuteAsync(query, new { alunos, turmaCodigo, periodoEscolarId });
         }
 
-        public async Task RemoverFrequenciaGeralDuplicadas(string[] alunos, string turmaCodigo, long periodoEscolarId)
+        public async Task RemoverFrequenciasDuplicadas(string[] alunos, string turmaCodigo, long periodoEscolarId)
         {
-            var query = @"delete
-                          from frequencia_aluno fa 
-                        where fa.turma_id = @turmaCodigo
-                          and fa.codigo_aluno = any(@alunos)
-                          and fa.periodo_escolar_id = @periodoEscolarId
-                          and fa.tipo = 2
-                          and fa.id not in (
-                        select max(id)
-                          from frequencia_aluno fa 
-                        where fa.turma_id = @turmaCodigo
-                          and fa.codigo_aluno = any(@alunos)
-                          and fa.periodo_escolar_id = @periodoEscolarId
-                          and fa.tipo = 2
-                          )";
+            var query = @"select fa.turma_id as TurmaCodigo
+                               , fa.codigo_aluno as AlunoCodigo
+                               , fa.disciplina_id as DisciplinaId
+                               , fa.periodo_escolar_id as PeriodoEscolarId
+                               , max(id) as UltimoId
+                      from frequencia_aluno fa 
+                    where fa.turma_id = @turmaCodigo
+                      and fa.codigo_aluno = any(@alunos)
+                      and fa.periodo_escolar_id = @periodoEscolarId
+                    group by fa.turma_id, fa.codigo_aluno, fa.disciplina_id, fa.periodo_escolar_id  
+                    having count(id) > 1 ";
 
-            await database.Conexao.ExecuteAsync(query, new { alunos, turmaCodigo, periodoEscolarId });
+            var duplicados = await database.Conexao.QueryAsync<RegistroFrequenciaDuplicadoDto>(query, new { alunos, turmaCodigo, periodoEscolarId });
+
+            if (duplicados != null && duplicados.Any())
+            {
+                var delete = @"delete
+                                from frequencia_aluno fa 
+                            where fa.turma_id = @turmaCodigo
+                                and fa.codigo_aluno = @alunoCodigo
+                                and fa.periodo_escolar_id = @periodoEscolarId
+                                and fa.disciplina_id = @disciplinaId
+                                and fa.id <> @ultimoId";
+
+                foreach(var duplicado in duplicados)
+                {
+                    await database.Conexao.ExecuteAsync(delete, new { duplicado.TurmaCodigo, duplicado.AlunoCodigo, duplicado.PeriodoEscolarId, duplicado.DisciplinaId, duplicado.UltimoId });
+                }
+            }
+
         }
     }
 }
