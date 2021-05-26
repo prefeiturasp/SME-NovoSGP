@@ -4,9 +4,9 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterUesCodigosPorDreQuery : IRequest<IEnumerable<string>>
+    public class ObterUesIdsPorDreQuery : IRequest<IEnumerable<long>>
     {
-        public ObterUesCodigosPorDreQuery(long dreId)
+        public ObterUesIdsPorDreQuery(long dreId)
         {
             DreId = dreId;
         }
@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
         public long DreId { get; set; }
     }
 
-    public class ObterUesIdPorDreQueryValidator : AbstractValidator<ObterUesCodigosPorDreQuery>
+    public class ObterUesIdPorDreQueryValidator : AbstractValidator<ObterUesIdsPorDreQuery>
     {
         public ObterUesIdPorDreQueryValidator()
         {

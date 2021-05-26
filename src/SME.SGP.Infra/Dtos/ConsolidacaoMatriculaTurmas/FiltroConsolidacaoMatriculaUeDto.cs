@@ -4,13 +4,13 @@ namespace SME.SGP.Infra
 {
     public class FiltroConsolidacaoMatriculaUeDto
     {
-        public FiltroConsolidacaoMatriculaUeDto(string ueCodigo, IEnumerable<int> anosAnterioresParaConsolidar)
+        public FiltroConsolidacaoMatriculaUeDto(long ueId, IEnumerable<int> anosAnterioresParaConsolidar)
         {
-            UeCodigo = ueCodigo;
+            UeId = ueId;
             AnosAnterioresParaConsolidar = anosAnterioresParaConsolidar;
         }
 
         public IEnumerable<int> AnosAnterioresParaConsolidar { get; set; }
-        public string UeCodigo { get; set; }
+        public long UeId { get; set; }
     }
 }

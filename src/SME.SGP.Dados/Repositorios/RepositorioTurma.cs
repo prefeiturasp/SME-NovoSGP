@@ -1060,5 +1060,17 @@ namespace SME.SGP.Dados.Repositorios
 
             return await contexto.Conexao.QueryAsync<TurmaModalidadeDto>(query, new { ano });
         }
+
+        public async Task<IEnumerable<IdentificadoresTurmaDto>> ObterTurmaIdentificadoresPorUeAnosLetivosAsync(long ueId, IEnumerable<int> anosLetivos)
+        {
+            var query = @"select id as TurmaId, 
+                                 turma_id as TurmaCodigo, 
+                                 ano_letivo as AnoLetivo 
+                            from turma 
+                                 where ue_id = @ueId
+                                 and ano_letivo = ANY(@anosLetivos)";
+
+            return await contexto.Conexao.QueryAsync<IdentificadoresTurmaDto>(query, new { ueId, anosLetivos });
+        }
     }
 }

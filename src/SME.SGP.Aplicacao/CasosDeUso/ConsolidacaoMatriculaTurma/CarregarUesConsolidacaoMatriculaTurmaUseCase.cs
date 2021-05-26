@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class CarregarMatriculaTurmaUseCase : AbstractUseCase, ICarregarMatriculaTurmaUseCase
+    public class CarregarUesConsolidacaoMatriculaTurmaUseCase : AbstractUseCase, ICarregarUesConsolidacaoMatriculaTurmaUseCase
     {
-        public CarregarMatriculaTurmaUseCase(IMediator mediator) : base(mediator)
+        public CarregarUesConsolidacaoMatriculaTurmaUseCase(IMediator mediator) : base(mediator)
         {
         }
         public async Task<bool> Executar(MensagemRabbit mensagem)
@@ -19,9 +19,16 @@ namespace SME.SGP.Aplicacao
             {
                 var ue = mensagem.ObterObjetoMensagem<FiltroConsolidacaoMatriculaUeDto>();
                 var anoAtual = DateTime.Now.Year;
-
-                await ConsolidarMatriculasTurmasAnoAtual(anoAtual, ue.UeCodigo);
-                if(ue.AnosAnterioresParaConsolidar.Any()) await ConsolidarFrequenciaTurmasHistorico(ue.AnosAnterioresParaConsolidar, ue.UeCodigo);
+                var anosLetivos = new List<int>() { 
+                    anoAtual
+                };
+                if (ue.AnosAnterioresParaConsolidar != null && ue.AnosAnterioresParaConsolidar.Any())
+                {
+                    anosLetivos.AddRange(ue.AnosAnterioresParaConsolidar);
+                }
+                var turmas = await mediator.Send(new ObterTurmaIdentificadoresPorUeAnosLetivosQuery(ue.UeId, anosLetivos));
+                //await ConsolidarMatriculasTurmasAnoAtual(anoAtual, ue.UeId);
+                //if(ue.AnosAnterioresParaConsolidar.Any()) await ConsolidarFrequenciaTurmasHistorico(ue.AnosAnterioresParaConsolidar, ue.UeId);
                 return true;
             }
             catch (Exception ex)
@@ -30,6 +37,8 @@ namespace SME.SGP.Aplicacao
                 throw;
             }
         }
+
+        private async Task ConsolidarUes()
 
 
 
