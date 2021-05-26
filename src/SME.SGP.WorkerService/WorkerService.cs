@@ -64,11 +64,12 @@ namespace SME.SGP.Worker.Service
 
         internal static void ConfigurarDependencias(IConfiguration configuration, IServiceCollection services)
         {
+            services.AddPolicies();
             RegistraDependenciasWorkerServices.Registrar(services);
             RegistrarMapeamentos.Registrar();
             RegistraClientesHttp.Registrar(services, configuration);
             Orquestrador.Inicializar(services.BuildServiceProvider());
-            services.AddPolicies();
+            
         }
     }
 }
