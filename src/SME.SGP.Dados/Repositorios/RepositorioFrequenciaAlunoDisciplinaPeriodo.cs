@@ -18,7 +18,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public RepositorioFrequenciaAlunoDisciplinaPeriodo(ISgpContext database, IConfiguration configuration) : base(database)
         {
-            this.connectionString = configuration.GetConnectionString("SGP_Postgres");
+            this.connectionString = configuration.GetConnectionString("SGP_PostgresProd");
         }
 
         private String BuildQueryObter()
@@ -339,6 +339,26 @@ namespace SME.SGP.Dados.Repositorios
                           and turma_id = @turmaCodigo 
                           and codigo_aluno = any(@alunos) 
                           and periodo_escolar_id = @periodoEscolarId";
+
+            await database.Conexao.ExecuteAsync(query, new { alunos, turmaCodigo, periodoEscolarId });
+        }
+
+        public async Task RemoverFrequenciaGeralDuplicadas(string[] alunos, string turmaCodigo, long periodoEscolarId)
+        {
+            var query = @"delete
+                          from frequencia_aluno fa 
+                        where fa.turma_id = @turmaCodigo
+                          and fa.codigo_aluno = any(@alunos)
+                          and fa.periodo_escolar_id = @periodoEscolarId
+                          and fa.tipo = 2
+                          and fa.id not in (
+                        select max(id)
+                          from frequencia_aluno fa 
+                        where fa.turma_id = @turmaCodigo
+                          and fa.codigo_aluno = any(@alunos)
+                          and fa.periodo_escolar_id = @periodoEscolarId
+                          and fa.tipo = 2
+                          )";
 
             await database.Conexao.ExecuteAsync(query, new { alunos, turmaCodigo, periodoEscolarId });
         }

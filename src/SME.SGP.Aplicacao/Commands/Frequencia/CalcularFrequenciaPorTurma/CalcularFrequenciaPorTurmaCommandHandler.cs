@@ -203,11 +203,13 @@ namespace SME.SGP.Aplicacao
 
                     unitOfWork.PersistirTransacao();
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
                     unitOfWork.Rollback();
                     throw;
-                }            
+                }
+
+                await repositorioFrequenciaAlunoDisciplinaPeriodo.RemoverFrequenciaGeralDuplicadas(alunos, turmaCodigo, periodoEscolarId);
             }
         }
 
