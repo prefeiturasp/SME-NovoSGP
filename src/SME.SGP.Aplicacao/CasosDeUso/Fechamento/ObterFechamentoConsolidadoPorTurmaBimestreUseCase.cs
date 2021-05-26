@@ -30,27 +30,54 @@ namespace SME.SGP.Aplicacao
         {
             var lstStatus = new List<StatusTotalFechamentoDto>();
 
-            foreach (var status in statusAgrupados)
+            if (statusAgrupados.Any(sa => sa.Key == SituacaoFechamento.NaoIniciado || 
+                                          sa.Key == SituacaoFechamento.EmProcessamento))
+            {
+                var qtdStatusNaoIniciado = statusAgrupados.Where(sa => sa.Key == SituacaoFechamento.NaoIniciado || 
+                                                                       sa.Key == SituacaoFechamento.EmProcessamento)
+                                                          .SelectMany(s => s).Count();
+
+                lstStatus.Add(new StatusTotalFechamentoDto()
+                {
+                    Status = (int)SituacaoFechamento.NaoIniciado,
+                    Descricao = SituacaoFechamento.NaoIniciado.Name(),
+                    Quantidade = qtdStatusNaoIniciado
+                });
+
+            }
+            else
             {
                 lstStatus.Add(new StatusTotalFechamentoDto()
                 {
-                    Status = status.Key == SituacaoFechamento.EmProcessamento ? (int)SituacaoFechamento.NaoIniciado : (int)status.Key,
-                    Descricao = status.Key == SituacaoFechamento.EmProcessamento ? SituacaoFechamento.NaoIniciado.Name() : status.Key.Name(),
+                    Status = (int)SituacaoFechamento.NaoIniciado,
+                    Descricao = SituacaoFechamento.NaoIniciado.Name(),
+                    Quantidade = 0
+                });
+            }
+
+            foreach (var status in statusAgrupados.Where(sa => sa.Key != SituacaoFechamento.NaoIniciado && 
+                                                               sa.Key != SituacaoFechamento.EmProcessamento))
+            {
+                lstStatus.Add(new StatusTotalFechamentoDto()
+                {
+                    Status = (int)status.Key,
+                    Descricao = status.Key.Name(),
                     Quantidade = status.Count()
                 });
             }
 
-           var lstTodosStatus = Enum.GetValues(typeof(SituacaoFechamento)).Cast<SituacaoFechamento>();
+            var lstTodosStatus = Enum.GetValues(typeof(SituacaoFechamento)).Cast<SituacaoFechamento>();
 
             var statusNaoEncontrados = lstTodosStatus.Where(ls => !lstStatus.Select(s => (SituacaoFechamento)s.Status).Contains(ls));
 
-            if (statusNaoEncontrados != null && statusNaoEncontrados.Any()) 
+            if (statusNaoEncontrados != null && statusNaoEncontrados.Any())
             {
-                foreach (var status in statusNaoEncontrados.Where(s => s != SituacaoFechamento.EmProcessamento))
+                foreach (var status in statusNaoEncontrados.Where(s => s != SituacaoFechamento.NaoIniciado && 
+                                                                       s != SituacaoFechamento.EmProcessamento))
                 {
                     lstStatus.Add(new StatusTotalFechamentoDto()
                     {
-                        Status = status == SituacaoFechamento.EmProcessamento ? (int)SituacaoFechamento.NaoIniciado : (int)status,
+                        Status = (int)status,
                         Descricao = status.Name(),
                         Quantidade = 0
                     });
