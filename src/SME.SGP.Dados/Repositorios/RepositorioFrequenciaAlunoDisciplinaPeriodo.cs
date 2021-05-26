@@ -286,42 +286,31 @@ namespace SME.SGP.Dados.Repositorios
             using (var conexao = new NpgsqlConnection(connectionString))
             {
                 await conexao.OpenAsync();
-                var transacao = conexao.BeginTransaction();
-
-                try
+                using (var writer = conexao.BeginBinaryImport(sql))
                 {
-                    using (var writer = conexao.BeginBinaryImport(sql))
+                    foreach (var frequencia in entidades)
                     {
-                        foreach (var frequencia in entidades)
-                        {
-                            writer.StartRow();
-                            writer.Write(frequencia.CodigoAluno, NpgsqlDbType.Varchar);
-                            writer.Write((int)frequencia.Tipo, NpgsqlDbType.Integer);
-                            writer.Write(frequencia.DisciplinaId, NpgsqlDbType.Varchar);
-                            writer.Write(frequencia.PeriodoInicio, NpgsqlDbType.Timestamp);
-                            writer.Write(frequencia.PeriodoFim, NpgsqlDbType.Timestamp);
-                            writer.Write(frequencia.Bimestre, NpgsqlDbType.Integer);
-                            writer.Write(frequencia.TotalAulas, NpgsqlDbType.Integer);
-                            writer.Write(frequencia.TotalAusencias, NpgsqlDbType.Integer);
-                            writer.Write(frequencia.CriadoEm, NpgsqlDbType.Timestamp);
-                            writer.Write(database.UsuarioLogadoNomeCompleto, NpgsqlDbType.Varchar);
-                            writer.Write(database.UsuarioLogadoRF, NpgsqlDbType.Varchar);
-                            writer.Write(frequencia.TotalCompensacoes, NpgsqlDbType.Integer);
-                            writer.Write(frequencia.TurmaId, NpgsqlDbType.Varchar);
+                        writer.StartRow();
+                        writer.Write(frequencia.CodigoAluno, NpgsqlDbType.Varchar);
+                        writer.Write((int)frequencia.Tipo, NpgsqlDbType.Integer);
+                        writer.Write(frequencia.DisciplinaId, NpgsqlDbType.Varchar);
+                        writer.Write(frequencia.PeriodoInicio, NpgsqlDbType.Timestamp);
+                        writer.Write(frequencia.PeriodoFim, NpgsqlDbType.Timestamp);
+                        writer.Write(frequencia.Bimestre, NpgsqlDbType.Integer);
+                        writer.Write(frequencia.TotalAulas, NpgsqlDbType.Integer);
+                        writer.Write(frequencia.TotalAusencias, NpgsqlDbType.Integer);
+                        writer.Write(frequencia.CriadoEm, NpgsqlDbType.Timestamp);
+                        writer.Write(database.UsuarioLogadoNomeCompleto, NpgsqlDbType.Varchar);
+                        writer.Write(database.UsuarioLogadoRF, NpgsqlDbType.Varchar);
+                        writer.Write(frequencia.TotalCompensacoes, NpgsqlDbType.Integer);
+                        writer.Write(frequencia.TurmaId, NpgsqlDbType.Varchar);
 
-                            if (frequencia.PeriodoEscolarId.HasValue)
-                                writer.Write((long)frequencia.PeriodoEscolarId, NpgsqlDbType.Bigint);
-                        }
-                        await Task.FromResult(writer.Complete());
-                        await transacao.CommitAsync();
-                        conexao.Close();
+                        if (frequencia.PeriodoEscolarId.HasValue)
+                            writer.Write((long)frequencia.PeriodoEscolarId, NpgsqlDbType.Bigint);
                     }
+                    await Task.FromResult(writer.Complete());
+                    conexao.Close();
                 }
-                catch (Exception)
-                {
-                    await transacao.RollbackAsync();
-                    throw;
-                }            
             }
 
         }
