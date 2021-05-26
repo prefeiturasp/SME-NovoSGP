@@ -11,9 +11,10 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task Executar()
+        public async Task Executar(DateTime? dataPeriodo = null)
         {
-            await mediator.Send(new ConciliacaoFrequenciaTurmasCommand(DateTime.Now));
+            var dataReferencia = dataPeriodo.HasValue ? dataPeriodo.Value : DateTime.Now;
+            await mediator.Send(new ConciliacaoFrequenciaTurmasCommand(dataReferencia));
         }
     }
 }
