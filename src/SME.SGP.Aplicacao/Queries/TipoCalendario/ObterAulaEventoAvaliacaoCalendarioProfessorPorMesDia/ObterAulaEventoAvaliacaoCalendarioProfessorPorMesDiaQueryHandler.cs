@@ -21,8 +21,6 @@ namespace SME.SGP.Aplicacao
         {
             var retorno = new List<EventoAulaDto>();
 
-            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(request.TurmaCodigo));
-
             if (request.Aulas.Any())
             {
                 foreach (var aulaParaVisualizar in request.Aulas)
