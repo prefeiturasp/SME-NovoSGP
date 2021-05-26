@@ -22,22 +22,15 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(ExcluirPendenciaAulaCommand request, CancellationToken cancellationToken)
         {
-            try
-            {
 
-                var pendenciasId = await repositorioPendenciaAula.ObterPendenciaIdPorAula(request.AulaId, request.TipoPendenciaAula);
-                foreach (var pendenciaId in pendenciasId)
-                {
-                    await repositorioPendenciaAula.Excluir(pendenciaId, request.AulaId);
-
-                    await ExcluirPendenciaSeNaoHouverMaisPendenciaAula(pendenciaId);
-                }
-            }
-            catch (Exception ex)
+            var pendenciasId = await repositorioPendenciaAula.ObterPendenciaIdPorAula(request.AulaId, request.TipoPendenciaAula);
+            foreach (var pendenciaId in pendenciasId)
             {
-                SentrySdk.AddBreadcrumb("ExcluirPendenciaAulaCommand", "RabbitMQ");
-                SentrySdk.CaptureException(ex);
+                await repositorioPendenciaAula.Excluir(pendenciaId, request.AulaId);
+
+                await ExcluirPendenciaSeNaoHouverMaisPendenciaAula(pendenciaId);
             }
+
             return true;
         }
 

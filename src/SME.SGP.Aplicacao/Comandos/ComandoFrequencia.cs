@@ -29,32 +29,24 @@ namespace SME.SGP.Aplicacao
 
         public async Task Registrar(FrequenciaDto frequenciaDto)
         {
-            try
+
+            List<RegistroAusenciaAluno> registrosAusenciaAlunos = ObtemListaDeAusencias(frequenciaDto);
+            await servicoFrequencia.Registrar(frequenciaDto.AulaId, registrosAusenciaAlunos);
+
+            var alunos = frequenciaDto.ListaFrequencia.Select(a => a.CodigoAluno).ToList();
+            if (alunos == null || !alunos.Any())
             {
-
-
-                List<RegistroAusenciaAluno> registrosAusenciaAlunos = ObtemListaDeAusencias(frequenciaDto);
-                await servicoFrequencia.Registrar(frequenciaDto.AulaId, registrosAusenciaAlunos);
-
-                var alunos = frequenciaDto.ListaFrequencia.Select(a => a.CodigoAluno).ToList();
-                if (alunos == null || !alunos.Any())
-                {
-                    throw new NegocioException("A lista de alunos da turma e o componente curricular devem ser informados para calcular a frequência.");
-                }
-
-                var aula = await consultasAula.BuscarPorId(frequenciaDto.AulaId);
-
-                var bimestre = await mediator.Send(new ObterBimestrePorTurmaCodigoQuery(aula.TurmaId, aula.DataAula));
-
-                await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(alunos, aula.DataAula, aula.TurmaId, aula.DisciplinaId, bimestre));
-
-                await mediator.Send(new ExcluirPendenciaAulaCommand(aula.Id, TipoPendencia.Frequencia));
+                throw new NegocioException("A lista de alunos da turma e o componente curricular devem ser informados para calcular a frequência.");
             }
-            catch (Exception ex)
-            {
-                SentrySdk.AddBreadcrumb("Registrar Frequencia ", "Commando");
-                SentrySdk.CaptureException(ex);
-            }
+
+            var aula = await consultasAula.BuscarPorId(frequenciaDto.AulaId);
+
+            var bimestre = await mediator.Send(new ObterBimestrePorTurmaCodigoQuery(aula.TurmaId, aula.DataAula));
+
+            await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(alunos, aula.DataAula, aula.TurmaId, aula.DisciplinaId, bimestre));
+
+            await mediator.Send(new ExcluirPendenciaAulaCommand(aula.Id, TipoPendencia.Frequencia));
+
         }
 
         private static List<RegistroAusenciaAluno> ObtemListaDeAusencias(FrequenciaDto frequenciaDto)

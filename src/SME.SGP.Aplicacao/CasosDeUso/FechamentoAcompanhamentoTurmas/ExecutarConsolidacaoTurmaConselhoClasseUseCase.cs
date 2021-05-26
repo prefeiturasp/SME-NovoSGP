@@ -66,7 +66,7 @@ namespace SME.SGP.Aplicacao
 
                 if(!aluno.Inativo && matriculadoDepois != null)
                 {
-                    if (consolidacaoTurmaConselhoClasse.Bimestre < matriculadoDepois)
+                    if (consolidacaoTurmaConselhoClasse.Bimestre > 0 && consolidacaoTurmaConselhoClasse.Bimestre < matriculadoDepois)
                         continue;
                 }
 
