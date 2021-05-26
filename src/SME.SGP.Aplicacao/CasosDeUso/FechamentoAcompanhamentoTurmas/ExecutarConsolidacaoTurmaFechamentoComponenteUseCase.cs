@@ -61,13 +61,13 @@ namespace SME.SGP.Aplicacao
                 {
                     Bimestre = filtro.Bimestre,
                     ComponenteCurricularCodigo = filtro.ComponenteCurricularId,
-                    DataAtualizacao = DateTime.Now,
                     TurmaId = filtro.TurmaId,
                     ProfessorNome = professorComponente != null ? professorComponente.ProfessorNome : "Sem professor titular",
                     ProfessorRf = professorComponente?.ProfessorRf
                 };
             }
 
+            consolidadoTurmaComponente.DataAtualizacao = DateTime.Now;
             consolidadoTurmaComponente.Status = statusFechamento;
 
             return consolidadoTurmaComponente;
