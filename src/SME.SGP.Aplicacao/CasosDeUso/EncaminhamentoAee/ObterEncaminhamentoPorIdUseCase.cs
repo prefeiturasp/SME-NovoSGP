@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
 
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-            var podeEditar = await VerificaPodeEditar(encaminhamentoAee, usuarioLogado);
+            var podeEditar = true;
             var podeAtribuirResponsavel = await VerificaPodeAtribuirResponsavel(encaminhamentoAee, usuarioLogado);
 
             return new EncaminhamentoAEERespostaDto()
