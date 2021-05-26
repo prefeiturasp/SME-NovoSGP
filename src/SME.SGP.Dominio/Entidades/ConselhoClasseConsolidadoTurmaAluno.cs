@@ -10,7 +10,7 @@ namespace SME.SGP.Dominio
         }
         public DateTime DataAtualizacao { get; set; }
 
-        public StatusFechamento Status { get; set; }
+        public SituacaoConselhoClasse Status { get; set; }
 
         public string AlunoCodigo { get; set; }
 

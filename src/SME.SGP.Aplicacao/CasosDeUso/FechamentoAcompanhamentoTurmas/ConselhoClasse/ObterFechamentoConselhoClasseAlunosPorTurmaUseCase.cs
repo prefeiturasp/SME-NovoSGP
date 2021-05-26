@@ -58,15 +58,15 @@ namespace SME.SGP.Aplicacao
                     NumeroChamada = aluno.NumeroAlunoChamada,
                     AlunoCodigo = aluno.CodigoAluno.ToString(),
                     NomeAluno = aluno.NomeAluno,
-                    SituacaoFechamento = consolidadoConselhoClasse.Status.Description(),
+                    SituacaoFechamento = consolidadoConselhoClasse.Status.Name(),
                     SituacaoFechamentoCodigo = (int)consolidadoConselhoClasse.Status,
                     FrequenciaGlobal = frequenciaGlobal,
-                    PodeExpandir = consolidadoConselhoClasse.Status != StatusFechamento.NaoIniciado,
+                    PodeExpandir = consolidadoConselhoClasse.Status != SituacaoConselhoClasse.NaoIniciado,
                     ParecerConclusivo = parecerConclusivo
                 });
             }
 
-            return lista;
+            return lista.OrderBy(a => a.NomeAluno).ToList();
 
         }
     }

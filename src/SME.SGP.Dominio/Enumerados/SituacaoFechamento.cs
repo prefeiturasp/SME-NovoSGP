@@ -4,16 +4,16 @@ namespace SME.SGP.Dominio
 {
     public enum SituacaoFechamento
     {
-        [Display(Name = "Não iniciado")]
+        [Display(Name = "Não Iniciado")]
         NaoIniciado = 0,
 
         [Display(Name = "Em Processamento")]
         EmProcessamento = 1,
 
-        [Display(Name = "Processado Com Pendências")]
+        [Display(Name = "Processado com pendências")]
         ProcessadoComPendencias = 2,
 
-        [Display(Name = "Processado Com Sucesso")]
+        [Display(Name = "Processado com sucesso")]
         ProcessadoComSucesso = 3
     }
 }
