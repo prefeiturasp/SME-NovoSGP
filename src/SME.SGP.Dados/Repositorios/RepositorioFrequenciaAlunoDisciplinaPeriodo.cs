@@ -1,5 +1,4 @@
 ﻿using Dapper;
-using Microsoft.Extensions.Configuration;
 using Npgsql;
 using NpgsqlTypes;
 using SME.SGP.Dominio;
@@ -255,7 +254,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<FrequenciaAluno>(sql, parametros);
         }
 
-     
+
         public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaGeralAlunoPorAnoModalidadeSemestre(string alunoCodigo, int anoTurma, long tipoCalendarioId)
         {
             var query = new StringBuilder($@"select fa.* 
@@ -314,7 +313,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<FrequenciaAlunoDto>(query, new { turmaCodigo });
         }
 
-        public async Task<IEnumerable<FrequenciaAluno>> ObterPorAlunosAsync(IEnumerable<string> alunosCodigo, IEnumerable<long?> periodosEscolaresId,  string turmaId)
+        public async Task<IEnumerable<FrequenciaAluno>> ObterPorAlunosAsync(IEnumerable<string> alunosCodigo, IEnumerable<long?> periodosEscolaresId, string turmaId)
         {
             var query = new StringBuilder(@"select
 	                        *
@@ -323,7 +322,7 @@ namespace SME.SGP.Dados.Repositorios
                         where
 	                        codigo_aluno = any(@alunosCodigo)	                        	                        
                             and turma_id = @turmaId ");
-            if ( periodosEscolaresId != null && periodosEscolaresId.AsList().Count > 0)
+            if (periodosEscolaresId != null && periodosEscolaresId.AsList().Count > 0)
             {
                 query.AppendLine("and periodo_escolar_id = any(@periodosEscolaresId)");
             }
@@ -331,7 +330,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.QueryAsync<FrequenciaAluno>(query.ToString(), new
             {
                 alunosCodigo,
-                periodosEscolaresId,             
+                periodosEscolaresId,
                 turmaId
             });
         }
@@ -390,6 +389,59 @@ namespace SME.SGP.Dados.Repositorios
             await database.Conexao.ExecuteAsync(query, new
             {
                 ids
+            });
+        }
+
+        public async Task<FrequenciaAluno> ObterPorAlunoDataTurmasAsync(string codigoAluno, DateTime dataAtual, TipoFrequenciaAluno tipoFrequencia, string[] turmasCodigo, string disciplinaId = "")
+        {
+            var query = new StringBuilder(@"select fa.*
+                        from frequencia_aluno fa
+                        inner join periodo_escolar pe on fa.periodo_escolar_id = pe.id
+                        where
+	                        codigo_aluno = @codigoAluno
+	                        and tipo = @tipoFrequencia                            
+	                        and pe.periodo_inicio <= @dataAtual
+	                        and pe.periodo_fim >= @dataAtual ");
+
+            if (turmasCodigo.Length > 0)
+                query.AppendLine("and turma_id = ANY(turmasCodigo)");
+
+            if (!string.IsNullOrEmpty(disciplinaId))
+                query.AppendLine("and disciplina_id = @disciplinaId");
+
+            return await database.QueryFirstOrDefaultAsync<FrequenciaAluno>(query.ToString(), new
+            {
+                codigoAluno,
+                dataAtual,
+                tipoFrequencia,
+                disciplinaId,
+                turmasCodigo
+            });
+        }
+
+        public async Task<IEnumerable<FrequenciaAluno>> ObterPorAlunoTurmasDisciplinasDataAsync(string codigoAluno, TipoFrequenciaAluno tipoFrequencia,
+                     string[] disciplinasId, string[] turmasCodigo, int[] bimestres)
+        {
+            var query = new StringBuilder(@"select fa.*
+                        from frequencia_aluno fa
+                        inner join periodo_escolar pe on fa.periodo_escolar_id = pe.id
+                        where
+	                        codigo_aluno = @codigoAluno
+	                        and tipo = @tipoFrequencia                            	                       
+                            and turma_id = ANY(@turmasCodigo)
+                            and disciplina_id = ANY(@disciplinasId) ");
+
+            if (bimestres.Length > 0)
+                query.AppendLine(" and pe.bimestre = ANY(@bimestres)");
+
+
+            return await database.QueryAsync<FrequenciaAluno>(query.ToString(), new
+            {
+                codigoAluno,
+                tipoFrequencia,
+                disciplinasId,
+                turmasCodigo,
+                bimestres
             });
         }
     }
